@@ -112,11 +112,13 @@ def descrever(codigo: str) -> Alerta:
 
 # --- limiares (calibrados no livro de teste) --------------------------------
 
-# Cor: uma pagina so de texto preto tem saturacao muito baixa. Uma ilustracao
-# colorida passa facil destes valores.
-SATURACAO_MEDIA_MIN = 18.0
-FRACAO_COLORIDA_MIN = 0.06
-SATURACAO_PIXEL = 40
+# Cor - todos os valores abaixo saem de medição nos nove livros do acervo,
+# não de chute. Ver detectar_cor.
+PERCENTIL_DO_PAPEL = 85     # a partir de que brilho um pixel conta como papel
+CORRECAO_MAXIMA = 2.5       # teto do desconto da dominante, por canal
+SATURACAO_DE_TINTA = 90     # acima disso o pixel e tinta colorida, não mancha
+FRACAO_COLORIDA_MIN = 0.05  # 5% dos pixels: separa xilogravura de iluminura
+SATURACAO_MEDIA_MIN = 28.0  # rede de segurança para página colorida por inteiro
 
 CONFIANCA_LOMBADA_MIN = 0.5
 CONFIANCA_ANGULO_MIN = 0.35
@@ -131,19 +133,59 @@ DPI_BAIXO = 150
 TAMANHO_DIFERENTE_TOLERANCIA = 0.10
 
 
-def detectar_cor(img: np.ndarray) -> tuple[bool, float]:
-    """Diz se a página tem cor de verdade e devolve a saturacao média.
+def _neutralizar_o_papel(img: np.ndarray) -> np.ndarray:
+    """Tira do quadro a cor do PROPRIO papel, antes de procurar cor de tinta.
 
-    Papel amarelado tem saturacao baixa e espalhada; uma ilustração tem
-    saturacao alta concentrada. Por isso olhamos as duas coisas.
+    Papel envelhecido e amarelo, e amarelo tem saturação alta. Sem tirar isso,
+    qualquer livro velho de texto preto e lido como colorido - foi o que
+    aconteceu com os nove livros do acervo, inclusive os de texto puro.
+
+    A dominante e medida nos pixels claros (o papel) e descontada dos tres
+    canais. O que sobrar de cor depois disso e tinta de verdade.
+    """
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    papel = cinza >= np.percentile(cinza, PERCENTIL_DO_PAPEL)
+    if papel.sum() < 100:
+        return img
+
+    medias = [float(img[:, :, c][papel].mean()) for c in range(3)]
+    geral = sum(medias) / 3.0
+    if geral < 1:
+        return img
+
+    saida = img.astype(np.float32)
+    for canal in range(3):
+        if medias[canal] >= 1:
+            fator = geral / medias[canal]
+            saida[:, :, canal] *= min(max(fator, 1 / CORRECAO_MAXIMA), CORRECAO_MAXIMA)
+    return np.clip(saida, 0, 255).astype(np.uint8)
+
+
+def detectar_cor(img: np.ndarray) -> tuple[bool, float]:
+    """Diz se a página tem TINTA colorida e devolve a saturação corrigida.
+
+    Duas decisões, as duas tiradas de medição no acervo do instituto:
+
+    1. medir depois de neutralizar o papel (ver acima);
+    2. contar a FRAÇÃO de pixels fortemente coloridos, não a média. Uma
+       iluminura e cor concentrada numa mancha; papel manchado e cor fraca
+       espalhada pela folha inteira. A média confunde as duas, a fração não.
+
+    Nos livros medidos: texto puro fica em ~1% de pixels coloridos, xilogravura
+    em papel manchado 2-4%, página com rubrica vermelha 3-7%, iluminura 25-36%.
+    O limiar fica baixo de proposito: perder a cor de uma miniatura estraga a
+    página, enquanto um alerta a mais só custa um olhar.
     """
     if img.ndim == 2:
         return False, 0.0
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    saturacao = hsv[:, :, 1]
+
+    limpa = _neutralizar_o_papel(img)
+    saturacao = cv2.cvtColor(limpa, cv2.COLOR_BGR2HSV)[:, :, 1]
+
     media = float(saturacao.mean())
-    fracao = float((saturacao > SATURACAO_PIXEL).mean())
-    tem_cor = media >= SATURACAO_MEDIA_MIN and fracao >= FRACAO_COLORIDA_MIN
+    fracao_forte = float((saturacao > SATURACAO_DE_TINTA).mean())
+
+    tem_cor = fracao_forte >= FRACAO_COLORIDA_MIN or media >= SATURACAO_MEDIA_MIN
     return tem_cor, media
 
 
