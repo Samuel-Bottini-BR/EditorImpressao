@@ -24,6 +24,10 @@ MOLDURA = 0.03
 # Fracao de tinta fora do corte a partir da qual avisamos o usuario.
 TINTA_FORA_MAXIMA = 0.02
 
+# A partir de quanto uma linha (ou coluna) inteira escura e moldura de scanner
+# e nao conteudo. Texto nunca chega perto disso.
+FRACAO_BORDA_SOLIDA = 0.80
+
 
 @dataclass(frozen=True)
 class Recorte:
@@ -73,6 +77,10 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     nucleo = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     tinta = cv2.morphologyEx(tinta, cv2.MORPH_CLOSE, nucleo)
 
+    # A borda preta do scanner tambem e "escura", entao seria confundida com
+    # conteudo e nada seria cortado. Ela e descartada antes.
+    tinta = _apagar_bordas_solidas(tinta)
+
     # Uma linha/coluna so conta se tiver tinta suficiente. O limiar baixo (1%)
     # e proposital: uma linha de texto isolada precisa contar.
     limite_linha = max(2, int(largura * 0.01))
@@ -107,6 +115,43 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
         altura=(y1e - y0e) / altura,
         encostou_no_conteudo=bool(encostou),
     )
+
+
+def _apagar_bordas_solidas(tinta: np.ndarray) -> np.ndarray:
+    """Descarta as faixas escuras macicas coladas nas quatro bordas.
+
+    E assim que se distingue a moldura preta do scanner de uma linha de texto:
+    a moldura preenche quase toda a linha (ou coluna) de ponta a ponta, o que
+    nenhuma linha de texto faz. Caminhamos de cada borda para dentro enquanto a
+    faixa continuar praticamente toda escura, e paramos na primeira que nao for.
+    """
+    limpa = tinta.copy()
+    altura, largura = limpa.shape[:2]
+
+    limite_x = int(largura * CORTE_MAXIMO)
+    limite_y = int(altura * CORTE_MAXIMO)
+
+    # esquerda e direita
+    x = 0
+    while x < limite_x and limpa[:, x].mean() >= FRACAO_BORDA_SOLIDA:
+        limpa[:, x] = 0
+        x += 1
+    x = largura - 1
+    while x > largura - 1 - limite_x and limpa[:, x].mean() >= FRACAO_BORDA_SOLIDA:
+        limpa[:, x] = 0
+        x -= 1
+
+    # topo e base
+    y = 0
+    while y < limite_y and limpa[y, :].mean() >= FRACAO_BORDA_SOLIDA:
+        limpa[y, :] = 0
+        y += 1
+    y = altura - 1
+    while y > altura - 1 - limite_y and limpa[y, :].mean() >= FRACAO_BORDA_SOLIDA:
+        limpa[y, :] = 0
+        y -= 1
+
+    return limpa
 
 
 def _sobrou_conteudo_fora(

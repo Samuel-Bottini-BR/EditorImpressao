@@ -39,6 +39,9 @@ PESO_SOMBRA = 0.35
 # Quanto o ponto escolhido precisa se destacar da faixa para termos certeza.
 DESTAQUE_FORTE = 0.25
 
+# Diferenca de custo abaixo da qual duas colunas sao consideradas empatadas.
+EMPATE = 0.02
+
 
 @dataclass(frozen=True)
 class Lombada:
@@ -122,11 +125,32 @@ def detectar_lombada(img: np.ndarray) -> Lombada:
     custo = _normalizar(tinta) * PESO_TINTA + _normalizar(intensidade) * PESO_SOMBRA
 
     faixa = custo[ini:fim]
-    coluna = ini + int(np.argmin(faixa))
+    deslocamento = _centro_do_vale(faixa)
+    coluna = ini + deslocamento
     posicao = coluna / n
 
-    confianca = _confianca(custo[ini:fim], int(np.argmin(faixa)), posicao)
+    confianca = _confianca(faixa, deslocamento, posicao)
     return Lombada(posicao=posicao, confianca=confianca, e_paisagem=True)
+
+
+def _centro_do_vale(faixa: np.ndarray) -> int:
+    """Indice do MEIO do vale, e nao da primeira coluna dele.
+
+    Num livro bem escaneado a margem entre as duas paginas e uma faixa larga
+    sem tinta nenhuma: dezenas de colunas empatam no custo minimo. Pegar o
+    argmin direto cairia na beirada dessa faixa e o corte comeria a margem de
+    uma das paginas. Aqui pegamos o centro do trecho empatado.
+    """
+    minimo = float(faixa.min())
+    empate = faixa <= minimo + EMPATE
+
+    # trecho contiguo de empate que contem o argmin
+    inicio = fim = int(np.argmin(faixa))
+    while inicio > 0 and empate[inicio - 1]:
+        inicio -= 1
+    while fim < len(faixa) - 1 and empate[fim + 1]:
+        fim += 1
+    return (inicio + fim) // 2
 
 
 def _confianca(custo_faixa: np.ndarray, indice: int, posicao: float) -> float:
