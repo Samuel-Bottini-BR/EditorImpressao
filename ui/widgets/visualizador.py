@@ -22,7 +22,7 @@ from PySide6.QtGui import (
     QPen,
     QPixmap,
 )
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QSizePolicy, QWidget
 
 from ui.estilo import AZUL, LARANJA, TEXTO_FRACO, VERDE
 
@@ -34,6 +34,11 @@ MODO_ANGULO = "angulo"
 TAMANHO_ALCA = 12
 DISTANCIA_PEGA = 14
 GRAUS_POR_PIXEL = 0.02  # sensibilidade do giro ao arrastar
+
+# Zoom: 1,0 e "ajustado a tela". Nao passa de 8x porque acima disso a previa
+# ja mostraria o pixel, e nao mais detalhe.
+ZOOM_MIN, ZOOM_MAX = 1.0, 8.0
+PASSO_DA_RODA = 1.25
 
 
 def numpy_para_qimage(img: np.ndarray) -> QImage:
@@ -64,6 +69,8 @@ class Visualizador(QWidget):
     corte_movido = Signal(float)      # nova posicao 0-1
     recorte_movido = Signal(tuple)    # (x, y, largura, altura) em 0-1
     angulo_movido = Signal(float)     # graus
+    vista_mudou = Signal(float, object)   # zoom, deslocamento (para o comparar)
+    ampliar_pedido = Signal()             # duplo clique: abrir em tela cheia
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -72,6 +79,10 @@ class Visualizador(QWidget):
         # cima da pagina. A imagem se ajusta sozinha ao que sobrar.
         self.setMinimumHeight(150)
         self.setMouseTracking(True)
+        # Pede o espaço que houver, em qualquer tela onde for usado. Deixar
+        # isso a cargo de quem monta a tela ja custou uma janela ampliada com
+        # a página espremida numa faixa no alto.
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self._pixmap: QPixmap | None = None
         self._area = QRect()          # onde a imagem foi desenhada
@@ -87,11 +98,95 @@ class Visualizador(QWidget):
         self._angulo_inicial = 0.0
         self._recorte_inicial = self.recorte
 
+        # Zoom e deslocamento. 1,0 quer dizer "do tamanho da janela"; acima
+        # disso a imagem passa a ser maior que a área e o usuário arrasta para
+        # andar por ela. Como toda a geometria dos controles e calculada a
+        # partir de self._area, a linha de corte e as alças do recorte
+        # continuam certas em qualquer zoom, sem conta nenhuma a mais.
+        self.zoom = 1.0
+        self.deslocamento = QPoint(0, 0)
+        self._arrastando_vista = False
+        self._deslocamento_inicial = QPoint(0, 0)
+
+    # --- zoom -------------------------------------------------------------
+
+    def definir_zoom(self, zoom: float, ancora: QPoint | None = None) -> None:
+        """Muda o zoom mantendo sob o cursor o mesmo ponto da imagem."""
+        novo = float(min(max(zoom, ZOOM_MIN), ZOOM_MAX))
+        if abs(novo - self.zoom) < 1e-4:
+            return
+
+        if ancora is not None and self._area.width() > 0:
+            # posicao do cursor dentro da imagem, de 0 a 1
+            rx = (ancora.x() - self._area.left()) / self._area.width()
+            ry = (ancora.y() - self._area.top()) / self._area.height()
+            largura_nova = self._largura_base() * novo
+            altura_nova = self._altura_base() * novo
+            centro_x = self.width() / 2 + self.deslocamento.x()
+            centro_y = self.height() / 2 + self.deslocamento.y()
+            del centro_x, centro_y
+            # mantem o ponto (rx, ry) parado sob o cursor
+            esquerda = ancora.x() - rx * largura_nova
+            topo = ancora.y() - ry * altura_nova
+            self.deslocamento = QPoint(
+                int(esquerda + largura_nova / 2 - self.width() / 2),
+                int(topo + altura_nova / 2 - self.height() / 2),
+            )
+
+        self.zoom = novo
+        if self.zoom <= 1.0:
+            self.deslocamento = QPoint(0, 0)
+        self.vista_mudou.emit(self.zoom, self.deslocamento)
+        self.update()
+
+    def ajustar_a_tela(self) -> None:
+        self.zoom = 1.0
+        self.deslocamento = QPoint(0, 0)
+        self.vista_mudou.emit(self.zoom, self.deslocamento)
+        self.update()
+
+    def aplicar_vista(self, zoom: float, deslocamento: QPoint) -> None:
+        """Copia a vista de outro visualizador (usado no modo comparar)."""
+        self.zoom = float(zoom)
+        self.deslocamento = QPoint(deslocamento)
+        self.update()
+
+    def _largura_base(self) -> float:
+        """Largura que a imagem teria ajustada a janela, antes do zoom."""
+        if self._pixmap is None or self._pixmap.isNull():
+            return 0.0
+        escala = min(self.width() / self._pixmap.width(),
+                     self.height() / self._pixmap.height())
+        return self._pixmap.width() * escala
+
+    def _altura_base(self) -> float:
+        if self._pixmap is None or self._pixmap.isNull():
+            return 0.0
+        escala = min(self.width() / self._pixmap.width(),
+                     self.height() / self._pixmap.height())
+        return self._pixmap.height() * escala
+
+    def wheelEvent(self, evento) -> None:  # noqa: N802
+        if self._pixmap is None:
+            return
+        passos = evento.angleDelta().y() / 120.0
+        if not passos:
+            return
+        self.definir_zoom(self.zoom * (PASSO_DA_RODA ** passos),
+                          ancora=evento.position().toPoint())
+        evento.accept()
+
     # --- conteudo ---------------------------------------------------------
 
     def definir_imagem(self, img: np.ndarray | None) -> None:
+        """Troca a imagem. None quer dizer "ainda vem".
+
+        Quando a nova ainda não chegou, a anterior CONTINUA na tela em vez de
+        apagar tudo. Sem isso, mexer na linha de corte ou no medidor faz a
+        página piscar em branco a cada ajuste - e justamente no momento em que
+        o usuário está olhando o detalhe.
+        """
         if img is None:
-            self._pixmap = None
             self.carregando = True
         else:
             self._pixmap = QPixmap.fromImage(numpy_para_qimage(img))
@@ -128,16 +223,21 @@ class Visualizador(QWidget):
             pintor.drawText(self.rect(), Qt.AlignCenter, texto)
             return
 
-        escalado = self._pixmap.scaled(
-            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-        )
-        x = (self.width() - escalado.width()) // 2
-        y = (self.height() - escalado.height()) // 2
-        self._area = QRect(x, y, escalado.width(), escalado.height())
+        largura = max(1, int(self._largura_base() * self.zoom))
+        altura = max(1, int(self._altura_base() * self.zoom))
+        x = (self.width() - largura) // 2 + self.deslocamento.x()
+        y = (self.height() - altura) // 2 + self.deslocamento.y()
+        self._area = QRect(x, y, largura, altura)
 
-        pintor.drawPixmap(self._area.topLeft(), escalado)
+        # Com zoom alto, escalar o pixmap inteiro custaria caro; desenhamos
+        # direto no retangulo e deixamos o Qt cuidar do recorte.
+        pintor.setRenderHint(QPainter.SmoothPixmapTransform, self.zoom <= 4.0)
+        pintor.drawPixmap(self._area, self._pixmap)
         pintor.setPen(QPen(QColor("#e5e7eb"), 1))
         pintor.drawRect(self._area.adjusted(0, 0, -1, -1))
+
+        if self.carregando:
+            self._desenhar_aviso_de_espera(pintor)
 
         if self.modo == MODO_CORTE:
             self._desenhar_corte(pintor)
@@ -145,6 +245,19 @@ class Visualizador(QWidget):
             self._desenhar_recorte(pintor)
         elif self.modo == MODO_ANGULO:
             self._desenhar_guias(pintor)
+
+    def _desenhar_aviso_de_espera(self, pintor: QPainter) -> None:
+        """Selo discreto no canto enquanto a nova imagem não chega.
+
+        A página que esta na tela continua sendo a de antes; o selo avisa
+        que ela ainda vai mudar.
+        """
+        area = QRect(self._area.left() + 8, self._area.top() + 8, 112, 24)
+        pintor.setPen(Qt.NoPen)
+        pintor.setBrush(QColor(31, 41, 55, 190))
+        pintor.drawRoundedRect(area, 6, 6)
+        pintor.setPen(QColor("white"))
+        pintor.drawText(area, Qt.AlignCenter, "atualizando...")
 
     def _desenhar_corte(self, pintor: QPainter) -> None:
         x = self._area.left() + int(self.posicao_corte * self._area.width())
@@ -225,10 +338,33 @@ class Visualizador(QWidget):
 
     # --- mouse ------------------------------------------------------------
 
+    def mouseDoubleClickEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        if evento.button() == Qt.LeftButton and self._pixmap is not None:
+            self.ampliar_pedido.emit()
+
     def mousePressEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
-        if self._pixmap is None or evento.button() != Qt.LeftButton:
+        if self._pixmap is None:
             return
         ponto = evento.position().toPoint()
+
+        # Arrastar para andar pela imagem: botão do meio sempre, e tambem o
+        # esquerdo quando não ha o que editar ou quando o Ctrl esta apertado.
+        # Assim a linha de corte continua sendo arrastada com o botão esquerdo.
+        quer_mover = (
+            evento.button() == Qt.MiddleButton
+            or (evento.button() == Qt.LeftButton
+                and (self.modo == MODO_NENHUM
+                     or evento.modifiers() & Qt.ControlModifier))
+        )
+        if quer_mover and self.zoom > 1.0:
+            self._arrastando_vista = True
+            self._ponto_inicial = ponto
+            self._deslocamento_inicial = QPoint(self.deslocamento)
+            self.setCursor(QCursor(Qt.ClosedHandCursor))
+            return
+
+        if evento.button() != Qt.LeftButton:
+            return
         self._ponto_inicial = ponto
 
         if self.modo == MODO_CORTE:
@@ -246,6 +382,12 @@ class Visualizador(QWidget):
     def mouseMoveEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
         ponto = evento.position().toPoint()
 
+        if self._arrastando_vista:
+            self.deslocamento = self._deslocamento_inicial + (ponto - self._ponto_inicial)
+            self.vista_mudou.emit(self.zoom, self.deslocamento)
+            self.update()
+            return
+
         if self._arrastando is None:
             if self.modo == MODO_RECORTE:
                 self._atualizar_cursor(ponto)
@@ -260,6 +402,13 @@ class Visualizador(QWidget):
             self._mover_recorte(ponto)
 
     def mouseReleaseEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        if self._arrastando_vista:
+            self._arrastando_vista = False
+            self.setCursor(QCursor(
+                Qt.SizeHorCursor if self.modo == MODO_CORTE else Qt.ArrowCursor
+            ))
+            return
+
         if self._arrastando is None:
             return
         arrastava = self._arrastando

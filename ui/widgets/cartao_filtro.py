@@ -21,6 +21,7 @@ class CartaoFiltro(QFrame):
     """Um cartao: amostra em cima, nome e explicação embaixo."""
 
     escolhido = Signal(str)
+    ampliar_pedido = Signal(str)   # clicar no cartão abre a página ampliada
 
     def __init__(self, filtro: str, nome: str, explicacao: str, parent=None) -> None:
         super().__init__(parent)
@@ -74,8 +75,15 @@ class CartaoFiltro(QFrame):
         )
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802
+        """Clicar escolhe o filtro E abre a página ampliada.
+
+        As duas coisas juntas de propósito: quem clica num cartão quer ver
+        aquele filtro de perto. A escolha vem primeiro para a tela ampliada
+        já abrir com o filtro certo.
+        """
         if evento.button() == Qt.LeftButton:
             self.escolhido.emit(self.filtro)
+            self.ampliar_pedido.emit(self.filtro)
 
 
 class _Amostra(QWidget):

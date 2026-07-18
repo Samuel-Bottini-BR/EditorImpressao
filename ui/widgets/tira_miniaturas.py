@@ -120,19 +120,31 @@ class Miniatura(QFrame):
             rotulo = "apagada"
         pintor.drawText(rodape, Qt.AlignCenter, rotulo)
 
+    def _tira(self):
+        tira = self.parent()
+        while tira is not None and not isinstance(tira, TiraMiniaturas):
+            tira = tira.parent()
+        return tira
+
     def mousePressEvent(self, evento) -> None:  # noqa: N802
         if evento.button() == Qt.LeftButton:
-            tira = self.parent()
-            while tira is not None and not isinstance(tira, TiraMiniaturas):
-                tira = tira.parent()
+            tira = self._tira()
             if tira is not None:
                 tira.selecionada.emit(self.numero - 1)
+
+    def mouseDoubleClickEvent(self, evento) -> None:  # noqa: N802
+        """Duplo clique abre a página em tamanho grande."""
+        if evento.button() == Qt.LeftButton:
+            tira = self._tira()
+            if tira is not None:
+                tira.ampliar_pedido.emit(self.numero - 1)
 
 
 class TiraMiniaturas(QWidget):
     """A tira inteira, com rolagem horizontal."""
 
     selecionada = Signal(int)
+    ampliar_pedido = Signal(int)   # duplo clique numa miniatura
 
     def __init__(self, titulo: str, parent=None) -> None:
         super().__init__(parent)

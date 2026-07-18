@@ -217,6 +217,7 @@ class TelaConferir(QWidget):
 
         self.tira = TiraMiniaturas("Folhas")                 # 6
         self.tira.selecionada.connect(self._escolher_da_tira)
+        self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
         camadas.addWidget(self.tira)
 
         # Onde salvar fica AQUI, antes de processar: assim o usuario decide o
@@ -296,6 +297,7 @@ class TelaConferir(QWidget):
         _ligar(proxima, lambda: self._navegar(1))
         linha.addWidget(proxima)
 
+        visualizador.ampliar_pedido.connect(self.ampliar)
         self.visualizadores[aba] = visualizador
         self.paginas_de_imagem[aba] = pagina
         return visualizador
@@ -369,6 +371,7 @@ class TelaConferir(QWidget):
         for chave, nome, explica in CARTOES:
             cartao = CartaoFiltro(chave, nome, explica)
             cartao.escolhido.connect(self._escolher_filtro)
+            cartao.ampliar_pedido.connect(self._ampliar_com_filtro)
             self.cartoes[chave] = cartao
             linha.addWidget(cartao, 1)
 
@@ -1041,6 +1044,43 @@ class TelaConferir(QWidget):
             {campo: novo, "revisada": True},
             f"{rotulo} da página {self.indice_pagina + 1}: {palavra_do_ajuste(novo)}",
         )
+
+    # --- ver de perto -----------------------------------------------------
+
+    @protegido
+    def _ampliar_com_filtro(self, _filtro: str) -> None:
+        """Veio de um clique num cartão: o filtro já foi escolhido antes."""
+        self.ampliar()
+
+    @protegido
+    def _ampliar_miniatura(self, indice: int) -> None:
+        """Duplo clique na tira: vai para aquela página e abre ampliada."""
+        if not self._pronta():
+            return
+        self._ir_para(indice)
+        self.ampliar()
+
+    @protegido
+    def ampliar(self) -> None:
+        """Abre a página em tamanho grande, no modo da aba atual."""
+        if not self._pronta():
+            return
+
+        from ui.tela_ampliada import (
+            MODO_BORDAS,
+            MODO_CORTAR,
+            MODO_FILTRO,
+            TelaAmpliada,
+        )
+
+        modos = {ABA_CORTE: MODO_CORTAR, ABA_BORDAS: MODO_BORDAS}
+        modo = modos.get(self.aba_atual, MODO_FILTRO)
+
+        janela = TelaAmpliada(self, modo=modo, parent=self.window())
+        # ao fechar, a tela normal se redesenha: o usuário pode ter trocado o
+        # filtro ou movido a linha de corte lá dentro
+        janela.fechou.connect(self.atualizar)
+        janela.exec()
 
     def _redesenhar_previa(self) -> None:
         """Chamado pelo tempo de espera do arrasto."""
