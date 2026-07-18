@@ -3,7 +3,7 @@
 Uso:
     python teste_filtros.py "livro.pdf" [pagina1 pagina2 ...]
 
-Gera em saida_teste/filtros/ um PNG por pagina com os quatro filtros lado a
+Gera em saida_teste/filtros/ um PNG por página com os quatro filtros lado a
 lado e uma faixa de titulo, mais um recorte ampliado do texto para julgar
 nitidez e bleed-through.
 """
@@ -73,7 +73,7 @@ def main(caminho: str, paginas: list[int]) -> int:
     paginas = [p for p in dict.fromkeys(paginas) if 1 <= p <= doc.page_count]
 
     filtros = [ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO]
-    rotulos = ["Original", "Preto e branco", "Melhorar", "Magico pro"]
+    rotulos = ["Original", "Preto e branco", "Melhorar", "Mágico pro"]
 
     for numero in paginas:
         idx = numero - 1

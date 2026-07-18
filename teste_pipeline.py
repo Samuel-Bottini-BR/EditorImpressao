@@ -3,7 +3,7 @@
 Uso:
     python teste_pipeline.py "livro.pdf"
 
-Roda a analise completa, mostra o resumo dos alertas e gera o PDF final nas
+Roda a análise completa, mostra o resumo dos alertas e gera o PDF final nas
 combinacoes que mais importam.
 """
 
@@ -38,7 +38,7 @@ def main(caminho: str) -> int:
     print("Analisando...")
     t0 = time.perf_counter()
     analisar_projeto(projeto, progresso=_barra)
-    print(f"  {len(projeto.folhas)} folhas -> {len(projeto.paginas)} paginas "
+    print(f"  {len(projeto.folhas)} folhas -> {len(projeto.paginas)} páginas "
           f"em {time.perf_counter() - t0:.1f} s")
     print(f"  Resumo: {resumo_em_portugues(projeto, len(projeto.folhas))}")
 
@@ -62,7 +62,7 @@ def main(caminho: str) -> int:
     combinacoes = [
         ("preto e branco", dict(montar_cadernos=False)),
         ("cadernos", dict(montar_cadernos=True, paginas_por_caderno=20)),
-        ("so cadernos", dict(montar_cadernos=True, dividir_folhas=False, limpar=False,
+        ("só cadernos", dict(montar_cadernos=True, dividir_folhas=False, limpar=False,
                              endireitar=False, cortar_bordas=False)),
     ]
 
@@ -81,8 +81,8 @@ def main(caminho: str) -> int:
         import fitz
         with fitz.open(caminho_saida) as d:
             n = d.page_count
-        print(f"  {n} paginas de saida - {mb:.1f} MB - {dt:.1f} s "
-              f"({dt / max(1, n):.2f} s/pagina)")
+        print(f"  {n} páginas de saida - {mb:.1f} MB - {dt:.1f} s "
+              f"({dt / max(1, n):.2f} s/página)")
 
     print(f"\nOK. PDFs em: {SAIDA.resolve()}")
     return 0

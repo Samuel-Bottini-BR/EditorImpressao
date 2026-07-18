@@ -3,7 +3,7 @@
 Uso:
     python teste_interface.py "livro.pdf"
 
-Abre a janela, carrega o livro, roda a analise, passa pela tela de conferir
+Abre a janela, carrega o livro, roda a análise, passa pela tela de conferir
 mexendo nos controles (filtro, corte, desfazer, refazer, apagar) e grava PNG de
 cada passo em saida_teste/interface/. Serve para conferir a interface sem
 precisar clicar em nada.
@@ -62,7 +62,7 @@ def main(caminho_pdf: str) -> int:
     print("Abrindo o livro...")
     janela.abrir_livro(caminho_pdf)
     esperar(0.3)
-    assert janela.telas.currentIndex() == OPCOES, "nao chegou na tela de opcoes"
+    assert janela.telas.currentIndex() == OPCOES, "não chegou na tela de opções"
     capturar(janela, "tela2_opcoes")
 
     # marca tambem "montar cadernos", para a tela final mostrar as instrucoes
@@ -75,10 +75,10 @@ def main(caminho_pdf: str) -> int:
     esperar(1.0)
     capturar(janela, "progresso_analise")
     pronto = esperar(120, lambda: janela.telas.currentIndex() == CONFERIR)
-    assert pronto, "a analise nao terminou"
+    assert pronto, "a análise não terminou"
 
     projeto = janela.projeto
-    print(f"  {len(projeto.folhas)} folhas -> {len(projeto.paginas)} paginas")
+    print(f"  {len(projeto.folhas)} folhas -> {len(projeto.paginas)} páginas")
     print(f"  pendentes de revisao: {projeto.pendentes_de_revisao()}")
 
     conferir = janela.tela_conferir
@@ -93,7 +93,7 @@ def main(caminho_pdf: str) -> int:
     capturar(janela, "tela3_filtro")
 
     # --- mexer nos controles ---------------------------------------------
-    print("Trocando o filtro da pagina 2 para Magico pro...")
+    print("Trocando o filtro da página 2 para Mágico pro...")
     conferir._ir_para(1)
     esperar(2.0)
     from core.filtros import MAGICO_PRO, PRETO_E_BRANCO
@@ -107,12 +107,12 @@ def main(caminho_pdf: str) -> int:
     print("Desfazendo (Ctrl+Z)...")
     tecla(janela, Qt.Key_Z, Qt.ControlModifier)
     esperar(0.5)
-    assert projeto.paginas[1].filtro == antes, "o desfazer nao voltou o filtro"
+    assert projeto.paginas[1].filtro == antes, "o desfazer não voltou o filtro"
 
     print("Refazendo (Ctrl+Shift+Z)...")
     tecla(janela, Qt.Key_Z, Qt.ControlModifier | Qt.ShiftModifier)
     esperar(0.5)
-    assert projeto.paginas[1].filtro == MAGICO_PRO, "o refazer nao reaplicou"
+    assert projeto.paginas[1].filtro == MAGICO_PRO, "o refazer não reaplicou"
     print("  desfazer e refazer OK")
 
     print("Aplicando em todas e desfazendo o lote inteiro...")
@@ -123,9 +123,9 @@ def main(caminho_pdf: str) -> int:
     esperar(0.6)
     diferentes = sum(1 for p in projeto.paginas if p.filtro != MAGICO_PRO)
     assert diferentes > 0, "um Ctrl+Z tinha que desfazer o lote inteiro"
-    print(f"  o lote voltou com um unico Ctrl+Z ({diferentes} paginas restauradas)")
+    print(f"  o lote voltou com um único Ctrl+Z ({diferentes} páginas restauradas)")
 
-    print("Apagando uma pagina (Delete)...")
+    print("Apagando uma página (Delete)...")
     tecla(janela, Qt.Key_Delete)
     esperar(0.4)
     assert projeto.total_apagadas == 1
@@ -184,7 +184,7 @@ def main(caminho_pdf: str) -> int:
     # a pasta escolhida fica lembrada para a proxima vez
     configuracoes.lembrar_pasta_de_saida(pasta_de_teste)
     assert configuracoes.pasta_de_saida_sugerida() == pasta_de_teste
-    print("  ultima pasta lembrada nas configuracoes")
+    print("  última pasta lembrada nas configuracoes")
 
     # Apaga a sobra da execucao anterior: senao o dialogo de "ja existe um
     # arquivo com esse nome" aparece e trava o teste esperando um clique.
@@ -198,7 +198,7 @@ def main(caminho_pdf: str) -> int:
     esperar(2.0)
     capturar(janela, "progresso_processar")
     pronto = esperar(600, lambda: janela.telas.currentIndex() == FINAL)
-    assert pronto, "o processamento nao terminou"
+    assert pronto, "o processamento não terminou"
     esperar(0.5)
     capturar(janela, "tela4_pronto")
 

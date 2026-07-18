@@ -1,6 +1,6 @@
-"""Deteccao da lombada e divisao da folha em duas paginas.
+"""Deteccao da lombada e divisão da folha em duas páginas.
 
-Muitos escaneamentos trazem duas paginas do livro numa folha so, em paisagem.
+Muitos escaneamentos trazem duas páginas do livro numa folha só, em paisagem.
 A lombada aparece como uma faixa escura vertical no meio - e a sombra do vinco
 do livro. E isso que procuramos.
 """
@@ -75,7 +75,7 @@ def _perfil_de_intensidade(cinza: np.ndarray) -> np.ndarray:
 def _perfil_de_tinta(cinza: np.ndarray) -> np.ndarray:
     """Fracao de pixels de TEXTO por coluna.
 
-    O limiar e estrito de proposito: so conta o que e bem mais escuro que o
+    O limiar e estrito de proposito: só conta o que e bem mais escuro que o
     papel, ou seja, tinta mesmo. A sombra da lombada e um escurecimento suave e
     fica de fora - e justamente por isso este perfil enxerga a lombada como um
     vazio, mesmo quando ela e escura.
@@ -134,12 +134,12 @@ def detectar_lombada(img: np.ndarray) -> Lombada:
 
 
 def _centro_do_vale(faixa: np.ndarray) -> int:
-    """Indice do MEIO do vale, e nao da primeira coluna dele.
+    """Indice do MEIO do vale, e não da primeira coluna dele.
 
-    Num livro bem escaneado a margem entre as duas paginas e uma faixa larga
-    sem tinta nenhuma: dezenas de colunas empatam no custo minimo. Pegar o
+    Num livro bem escaneado a margem entre as duas páginas e uma faixa larga
+    sem tinta nenhuma: dezenas de colunas empatam no custo mínimo. Pegar o
     argmin direto cairia na beirada dessa faixa e o corte comeria a margem de
-    uma das paginas. Aqui pegamos o centro do trecho empatado.
+    uma das páginas. Aqui pegamos o centro do trecho empatado.
     """
     minimo = float(faixa.min())
     empate = faixa <= minimo + EMPATE
@@ -157,7 +157,7 @@ def _confianca(custo_faixa: np.ndarray, indice: int, posicao: float) -> float:
     """Combina duas evidencias: a escolha se destaca? e esta perto do meio?
 
     Nenhuma das duas sozinha basta. Um vale fundo mas na borda costuma ser a
-    sombra da margem; um vale raso bem no meio costuma ser so o papel.
+    sombra da margem; um vale raso bem no meio costuma ser só o papel.
     """
     # 1. destaque: o quanto o melhor ponto e melhor que a faixa em geral.
     tipico = float(np.median(custo_faixa))
@@ -172,9 +172,9 @@ def _confianca(custo_faixa: np.ndarray, indice: int, posicao: float) -> float:
 
 
 def dividir_imagem(img: np.ndarray, posicao: float) -> tuple[np.ndarray, np.ndarray]:
-    """Corta a folha na posicao dada. Devolve (esquerda, direita), nessa ordem.
+    """Corta a folha na posição dada. Devolve (esquerda, direita), nessa ordem.
 
-    A ordem importa: numa folha dupla de livro ocidental, a pagina da esquerda
+    A ordem importa: numa folha dupla de livro ocidental, a página da esquerda
     vem antes da direita.
     """
     largura = img.shape[1]

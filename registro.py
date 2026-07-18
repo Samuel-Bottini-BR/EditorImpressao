@@ -1,6 +1,6 @@
 """Arquivo de log.
 
-Regra 3.3: o erro tecnico vai para o arquivo, nunca para a tela. Na tela o
+Regra 3.3: o erro técnico vai para o arquivo, nunca para a tela. Na tela o
 usuario le uma frase em portugues e o programa continua aberto.
 """
 

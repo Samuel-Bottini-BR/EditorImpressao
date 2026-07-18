@@ -1,7 +1,7 @@
 """Tudo que demora roda aqui, fora da thread da interface.
 
-Regra 3.2 da especificacao: a janela nunca congela. Analise, processamento e
-geracao de previa acontecem em QThread/QThreadPool, sempre com progresso e com
+Regra 3.2 da especificacao: a janela nunca congela. Análise, processamento e
+geracao de prévia acontecem em QThread/QThreadPool, sempre com progresso e com
 um cancelar que funciona de verdade.
 """
 
@@ -25,23 +25,23 @@ TAMANHO_CACHE = 30
 def _mensagem_amigavel(erro: Exception) -> str:
     """Traduz qualquer excecao para uma frase que o Kaique entenda.
 
-    O texto tecnico vai para o arquivo de log, nunca para a tela (regra 3.3).
+    O texto técnico vai para o arquivo de log, nunca para a tela (regra 3.3).
     """
     if isinstance(erro, ErroPDF):
         return str(erro)
     if isinstance(erro, MemoryError):
-        return ("Este livro ficou grande demais para a memoria do computador. "
+        return ("Este livro ficou grande demais para a memória do computador. "
                 "Tente de novo em qualidade normal.")
     if isinstance(erro, PermissionError):
-        return ("Nao consegui gravar o arquivo. Ele pode estar aberto em outro "
+        return ("Não consegui gravar o arquivo. Ele pode estar aberto em outro "
                 "programa - feche e tente de novo.")
     if isinstance(erro, OSError):
-        return "Nao consegui gravar o arquivo. Verifique se ha espaco em disco."
+        return "Não consegui gravar o arquivo. Verifique se ha espaço em disco."
     return "Aconteceu um problema inesperado. O programa continua funcionando."
 
 
 class TarefaAnalise(QThread):
-    """Le o livro em baixa resolucao e propoe corte, angulo, recorte e filtro."""
+    """Le o livro em baixa resolução e propoe corte, ângulo, recorte e filtro."""
 
     progresso = Signal(int, int, str)
     concluida = Signal(object)   # Projeto
@@ -108,7 +108,7 @@ class _SinaisPrevia(QObject):
 
 
 class _TarefaPrevia(QRunnable):
-    """Gera UMA previa. Descartavel: o pool cuida do ciclo de vida."""
+    """Gera UMA prévia. Descartavel: o pool cuida do ciclo de vida."""
 
     def __init__(self, chave: str, caminho_pdf: str, projeto: Projeto,
                  indice_pagina: int, dpi: int, sinais: _SinaisPrevia) -> None:
@@ -161,11 +161,11 @@ class _TarefaPrevia(QRunnable):
 
 
 class GerenciadorPrevias(QObject):
-    """Fila de previas com cache.
+    """Fila de prévias com cache.
 
     Duas coisas garantem que a tela de conferir abra em segundos mesmo com 500
-    paginas: so pedimos a previa da pagina visivel (mais 3 adiante, de fundo) e
-    guardamos as ultimas TAMANHO_CACHE em memoria.
+    páginas: só pedimos a prévia da página visivel (mais 3 adiante, de fundo) e
+    guardamos as ultimas TAMANHO_CACHE em memória.
     """
 
     pronta = Signal(str, object)
@@ -192,7 +192,7 @@ class GerenciadorPrevias(QObject):
 
     def chave(self, indice: int, dpi: int) -> str:
         """A chave inclui tudo que muda a imagem: trocar o filtro invalida o
-        cache daquela pagina sozinho, sem limpar o resto."""
+        cache daquela página sozinho, sem limpar o resto."""
         if not 0 <= indice < len(self.projeto.paginas):
             return f"{indice}:invalida"
         p = self.projeto.paginas[indice]
@@ -254,12 +254,12 @@ class GerenciadorPrevias(QObject):
                 self.pegar_folha(indice + salto, dpi)
 
     def pre_carregar(self, indice: int, dpi: int, quantas: int = 3) -> None:
-        """Adianta as proximas paginas enquanto o usuario olha a atual."""
+        """Adianta as próximas páginas enquanto o usuario olha a atual."""
         for salto in range(1, quantas + 1):
             self.pedir(indice + salto, dpi)
 
     def invalidar(self, indice: int | None = None) -> None:
-        """Some com o cache (de uma pagina ou de tudo)."""
+        """Some com o cache (de uma página ou de tudo)."""
         if indice is None:
             self._cache.clear()
             self._ordem.clear()

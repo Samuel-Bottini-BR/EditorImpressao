@@ -1,4 +1,4 @@
-"""A area de arrastar o PDF da tela de inicio."""
+"""A área de arrastar o PDF da tela de inicio."""
 
 from __future__ import annotations
 

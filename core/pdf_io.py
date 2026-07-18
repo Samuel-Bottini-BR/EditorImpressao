@@ -1,8 +1,8 @@
 """Leitura e escrita de PDF.
 
-Este modulo e a unica porta de entrada e saida de PDF do projeto.
+Este modulo e a única porta de entrada e saida de PDF do projeto.
 Regra de ouro (secao 3.1 da especificacao): NUNCA carregar o livro inteiro
-na memoria. Sempre uma pagina por vez: ler -> processar -> escrever -> soltar.
+na memória. Sempre uma página por vez: ler -> processar -> escrever -> soltar.
 """
 
 from __future__ import annotations
@@ -27,12 +27,12 @@ DPI_MINIATURA = 25
 
 
 class ErroPDF(Exception):
-    """Erro de leitura/escrita de PDF ja traduzido para o usuario final."""
+    """Erro de leitura/escrita de PDF já traduzido para o usuario final."""
 
 
 @dataclass(frozen=True)
 class InfoPagina:
-    """Dados de uma pagina sem carregar a imagem dela."""
+    """Dados de uma página sem carregar a imagem dela."""
 
     indice: int
     largura_pt: float
@@ -47,33 +47,33 @@ class InfoPagina:
 def abrir_pdf(caminho: str | Path) -> fitz.Document:
     """Abre o PDF e devolve o documento aberto.
 
-    Levanta ErroPDF com mensagem em portugues se nao der.
+    Levanta ErroPDF com mensagem em portugues se não der.
     """
     caminho = Path(caminho)
     if not caminho.exists():
         raise ErroPDF(
-            "Nao consegui achar esse arquivo. Ele pode ter sido movido ou apagado."
+            "Não consegui achar esse arquivo. Ele pode ter sido movido ou apagado."
         )
     try:
         doc = fitz.open(caminho)
     except Exception as exc:  # noqa: BLE001 - qualquer falha vira mensagem amigavel
         raise ErroPDF(
-            "Nao consegui abrir esse arquivo. Ele pode estar danificado ou nao ser um PDF."
+            "Não consegui abrir esse arquivo. Ele pode estar danificado ou não ser um PDF."
         ) from exc
 
     if doc.page_count == 0:
         doc.close()
-        raise ErroPDF("Esse PDF esta vazio, nao tem nenhuma pagina.")
+        raise ErroPDF("Esse PDF está vazio, não tem nenhuma página.")
 
     if doc.needs_pass:
         doc.close()
-        raise ErroPDF("Esse PDF esta protegido por senha. Nao consigo abrir.")
+        raise ErroPDF("Esse PDF está protegido por senha. Não consigo abrir.")
 
     return doc
 
 
 def info_paginas(doc: fitz.Document) -> list[InfoPagina]:
-    """Tamanho de cada pagina, sem rasterizar nada (rapido mesmo com 500 paginas)."""
+    """Tamanho de cada página, sem rasterizar nada (rapido mesmo com 500 páginas)."""
     infos: list[InfoPagina] = []
     for i in range(doc.page_count):
         r = doc[i].rect
@@ -82,7 +82,7 @@ def info_paginas(doc: fitz.Document) -> list[InfoPagina]:
 
 
 def dpi_seguro(pagina: fitz.Page, dpi: int) -> int:
-    """Reduz o DPI ate a pagina caber em MAX_PIXELS.
+    """Reduz o DPI até a página caber em MAX_PIXELS.
 
     Trabalha em pontos (1 pt = 1/72 pol), entao pixels = pt / 72 * dpi.
     """
@@ -98,12 +98,12 @@ def dpi_seguro(pagina: fitz.Page, dpi: int) -> int:
 def pagina_para_array(
     doc: fitz.Document, indice: int, dpi: int = DPI_PADRAO
 ) -> np.ndarray:
-    """Rasteriza uma pagina e devolve um array BGR (uint8), no formato do OpenCV.
+    """Rasteriza uma página e devolve um array BGR (uint8), no formato do OpenCV.
 
-    O DPI pedido e reduzido sozinho se a pagina for grande demais.
+    O DPI pedido e reduzido sozinho se a página for grande demais.
     """
     if not 0 <= indice < doc.page_count:
-        raise ErroPDF(f"Essa pagina nao existe (pedi a {indice + 1}).")
+        raise ErroPDF(f"Essa página não existe (pedi a {indice + 1}).")
 
     pagina = doc[indice]
     dpi_usado = dpi_seguro(pagina, dpi)
@@ -123,7 +123,7 @@ def pagina_para_array(
 
 
 def limitar_altura(img: np.ndarray, altura_max: int) -> np.ndarray:
-    """Reduz a imagem se ela passar da altura dada. Usado nas previas e miniaturas."""
+    """Reduz a imagem se ela passar da altura dada. Usado nas prévias e miniaturas."""
     h = img.shape[0]
     if h <= altura_max:
         return img
@@ -133,7 +133,7 @@ def limitar_altura(img: np.ndarray, altura_max: int) -> np.ndarray:
 
 
 class EscritorPDF:
-    """Monta o PDF de saida pagina por pagina.
+    """Monta o PDF de saida página por página.
 
     Uso:
         with EscritorPDF("saida.pdf") as saida:
@@ -158,7 +158,7 @@ class EscritorPDF:
     def escrever_imagem(
         self, img: np.ndarray, dpi: int = DPI_PADRAO, monocromatico: bool = False
     ) -> None:
-        """Acrescenta uma pagina cujo conteudo e a imagem dada.
+        """Acrescenta uma página cujo conteúdo e a imagem dada.
 
         monocromatico=True salva em 1 bit (PNG preto e branco puro). O arquivo
         final fica muito menor - e o que faz o filtro Preto e branco valer a pena.
@@ -174,10 +174,10 @@ class EscritorPDF:
         self._paginas += 1
 
     def copiar_pagina(self, origem: fitz.Document, indice: int) -> None:
-        """Copia a pagina do PDF de origem sem rasterizar.
+        """Copia a página do PDF de origem sem rasterizar.
 
         Preserva texto vetorial e qualidade original. E o caminho rapido do modo
-        "so cadernos" (secao 4.5).
+        "só cadernos" (secao 4.5).
         """
         self.doc.insert_pdf(origem, from_page=indice, to_page=indice)
         self._paginas += 1

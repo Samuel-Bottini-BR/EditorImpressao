@@ -1,6 +1,6 @@
 """A janela e o fluxo entre as telas.
 
-Inicio -> Opcoes -> (analise) -> Conferir -> (processamento) -> Pronto
+Inicio -> Opcoes -> (análise) -> Conferir -> (processamento) -> Pronto
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ INICIO, OPCOES, PROGRESSO, CONFERIR, FINAL = range(5)
 class JanelaPrincipal(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("Editor de Impressao")
+        self.setWindowTitle("Editor de Impressão")
         self.setMinimumSize(1000, 680)
         self.resize(1220, 800)
         self.setStyleSheet(FOLHA_DE_ESTILO)
@@ -99,7 +99,7 @@ class JanelaPrincipal(QMainWindow):
             return
         except Exception:  # noqa: BLE001
             registrar_erro("abrir", traceback.format_exc())
-            self.avisar("Nao consegui abrir esse arquivo. Ele pode nao ser um PDF.")
+            self.avisar("Não consegui abrir esse arquivo. Ele pode não ser um PDF.")
             return
 
         nome = Path(caminho).stem
@@ -110,7 +110,7 @@ class JanelaPrincipal(QMainWindow):
         self.telas.setCurrentIndex(OPCOES)
 
     def _reabrir(self, entrada: historico.Entrada) -> None:
-        """Reabre um projeto do historico, com as mesmas configuracoes."""
+        """Reabre um projeto do histórico, com as mesmas configuracoes."""
         salvo = historico.carregar_projeto(entrada.nome)
         self.abrir_livro(entrada.caminho_entrada)
         if salvo is not None and self.projeto is not None:
@@ -182,10 +182,10 @@ class JanelaPrincipal(QMainWindow):
         self.tarefa.start()
 
     def _resolver_destino(self) -> Path | None:
-        """Confere a pasta e o nome escolhidos. Devolve None se nao der para seguir.
+        """Confere a pasta e o nome escolhidos. Devolve None se não der para seguir.
 
-        Duas perguntas, nesta ordem: da para gravar nessa pasta? e o arquivo ja
-        existe? Nenhuma das duas pode virar um erro tecnico na cara do usuario.
+        Duas perguntas, nesta ordem: da para gravar nessa pasta? e o arquivo já
+        existe? Nenhuma das duas pode virar um erro técnico na cara do usuario.
         """
         destino = self.tela_conferir.destino
         caminho = destino.caminho
@@ -194,7 +194,7 @@ class JanelaPrincipal(QMainWindow):
         if not pode:
             self.avisar(
                 f"{motivo}\n\nA pasta era:\n{destino.pasta}",
-                titulo="Nao consigo salvar ai",
+                titulo="Não consigo salvar ai",
             )
             destino.escolher_pasta()
             return None
@@ -205,13 +205,13 @@ class JanelaPrincipal(QMainWindow):
         return caminho
 
     def _perguntar_sobre_substituir(self, caminho: Path) -> Path | None:
-        """Ja existe arquivo com esse nome: substituir, renomear ou desistir."""
+        """Já existe arquivo com esse nome: substituir, renomear ou desistir."""
         alternativo = configuracoes.caminho_sem_repetir(caminho.parent, caminho.name)
 
         caixa = QMessageBox(self)
-        caixa.setWindowTitle("Ja existe um arquivo com esse nome")
+        caixa.setWindowTitle("Já existe um arquivo com esse nome")
         caixa.setIcon(QMessageBox.Question)
-        caixa.setText(f"Ja existe um arquivo chamado:\n{caminho.name}")
+        caixa.setText(f"Já existe um arquivo chamado:\n{caminho.name}")
         caixa.setInformativeText(
             f"Posso substituir o antigo ou salvar como:\n{alternativo.name}"
         )
@@ -281,7 +281,7 @@ class JanelaPrincipal(QMainWindow):
         super().keyPressEvent(evento)
 
     def closeEvent(self, evento) -> None:  # noqa: N802
-        """Sair no meio de um trabalho nao pode deixar thread solta."""
+        """Sair no meio de um trabalho não pode deixar thread solta."""
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
             self.tarefa.wait(3000)

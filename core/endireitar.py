@@ -1,6 +1,6 @@
 """Endireitar folhas tortas (deskew).
 
-Metodo do perfil de projecao: giramos a pagina em varios angulos e ficamos com
+Metodo do perfil de projecao: giramos a página em varios angulos e ficamos com
 o que deixa as somas por linha mais "picudas". Quando o texto esta alinhado com
 a horizontal, cada linha de texto vira um pico e cada entrelinha vira um vale,
 o que da variancia alta. Torto, tudo borra e a variancia cai.
@@ -66,7 +66,7 @@ def _preparar(img: np.ndarray) -> np.ndarray:
 
 
 def _pontuacao(binaria: np.ndarray, angulo: float) -> float:
-    """Variancia das somas por linha depois de girar o angulo dado."""
+    """Variancia das somas por linha depois de girar o ângulo dado."""
     altura, largura = binaria.shape
     centro = (largura / 2.0, altura / 2.0)
     matriz = cv2.getRotationMatrix2D(centro, angulo, 1.0)
@@ -79,9 +79,9 @@ def _pontuacao(binaria: np.ndarray, angulo: float) -> float:
 
 
 def detectar_angulo(img: np.ndarray) -> Inclinacao:
-    """Descobre o quanto a pagina esta torta.
+    """Descobre o quanto a página esta torta.
 
-    Vai em duas passadas (grossa e fina) para nao testar 101 angulos na mao.
+    Vai em duas passadas (grossa e fina) para não testar 101 angulos na mao.
     """
     binaria = _preparar(img)
     if binaria.sum() < 50:  # pagina praticamente em branco: nada para alinhar
@@ -121,7 +121,7 @@ def rotacionar(img: np.ndarray, angulo: float, fundo: int = 255) -> np.ndarray:
     """Gira a imagem preenchendo o que sobra com branco.
 
     Mantem o mesmo tamanho de folha: o objetivo e reimprimir, entao todas as
-    paginas precisam sair iguais.
+    páginas precisam sair iguais.
     """
     if abs(angulo) < ANGULO_MINIMO:
         return img
@@ -143,7 +143,7 @@ def endireitar(img: np.ndarray) -> tuple[np.ndarray, Inclinacao]:
 
 
 def girar_90(img: np.ndarray, rotacao: int) -> np.ndarray:
-    """Giro de 90 em 90 graus, pedido pelo usuario no botao 'girar'."""
+    """Giro de 90 em 90 graus, pedido pelo usuario no botão 'girar'."""
     rotacao = rotacao % 360
     if rotacao == 90:
         return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)

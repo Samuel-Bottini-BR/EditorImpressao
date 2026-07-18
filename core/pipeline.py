@@ -1,14 +1,14 @@
-"""Orquestra tudo, sempre uma pagina por vez.
+"""Orquestra tudo, sempre uma página por vez.
 
 Ordem obrigatoria do processamento:
     1. dividir folhas -> 2. cortar bordas -> 3. endireitar -> 4. filtro
     -> 5. montar cadernos
 
-As paginas apagadas somem logo depois da etapa 1.
+As páginas apagadas somem logo depois da etapa 1.
 
-Sobre memoria: nenhuma funcao daqui monta uma lista de paginas processadas. Ler
--> processar -> escrever -> soltar. Foi o que travou a versao anterior com
-livros de 500 paginas a 400 DPI.
+Sobre memória: nenhuma funcao daqui monta uma lista de páginas processadas. Ler
+-> processar -> escrever -> soltar. Foi o que travou a versão anterior com
+livros de 500 páginas a 400 DPI.
 """
 
 from __future__ import annotations
@@ -53,7 +53,7 @@ Cancelado = Callable[[], bool] | None
 
 
 class Cancelou(Exception):
-    """O usuario apertou cancelar. Nao e erro."""
+    """O usuario apertou cancelar. Não é erro."""
 
 
 def _checar(cancelado: Cancelado) -> None:
@@ -73,7 +73,7 @@ def _avisar(progresso: Progresso, feito: int, total: int, texto: str) -> None:
 def analisar_projeto(
     projeto: Projeto, progresso: Progresso = None, cancelado: Cancelado = None
 ) -> Projeto:
-    """Le o livro inteiro em baixa resolucao e preenche folhas e paginas.
+    """Le o livro inteiro em baixa resolução e preenche folhas e páginas.
 
     E o que a tela 2 dispara antes de abrir a tela de conferir.
     """
@@ -143,7 +143,7 @@ def analisar_projeto(
 
 
 def _partes_da_folha(img: np.ndarray, folha: ConfigFolha) -> list[tuple[str, np.ndarray]]:
-    """Divide a folha se for o caso. Nao aplica filtro nem recorte."""
+    """Divide a folha se for o caso. Não aplica filtro nem recorte."""
     if not folha.dividir:
         return [(METADE_INTEIRA, img)]
     esq, dir_ = dividir_imagem(img, folha.posicao_corte)
@@ -157,10 +157,10 @@ def _partes_da_folha(img: np.ndarray, folha: ConfigFolha) -> list[tuple[str, np.
 def preparar_metade(
     img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto
 ) -> np.ndarray:
-    """Aplica giro, divisao, recorte e endireitamento - nesta ordem.
+    """Aplica giro, divisão, recorte e endireitamento - nesta ordem.
 
-    O filtro fica de fora de proposito: ele e por pagina e a interface precisa
-    trocar so ele sem refazer o resto.
+    O filtro fica de fora de proposito: ele e por página e a interface precisa
+    trocar só ele sem refazer o resto.
     """
     img = img_folha
     if folha.rotacao:
@@ -194,9 +194,9 @@ def preparar_metade(
 def renderizar_pagina(
     doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA
 ) -> tuple[np.ndarray, bool]:
-    """Imagem final de uma pagina de saida, do jeito que ela vai sair.
+    """Imagem final de uma página de saida, do jeito que ela vai sair.
 
-    Devolve (imagem, monocromatica). E o que a previa da tela 3 mostra.
+    Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
     """
     folha = projeto.folhas[pagina.folha]
     img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
@@ -216,7 +216,7 @@ def processar(
 ) -> str:
     """Gera o PDF final. Devolve o caminho gravado.
 
-    Levanta Cancelou se o usuario cancelar - e a unica excecao esperada.
+    Levanta Cancelou se o usuario cancelar - e a única excecao esperada.
     """
     saida_final = Path(projeto.caminho_saida)
     saida_final.parent.mkdir(parents=True, exist_ok=True)
@@ -243,7 +243,7 @@ def processar(
     ativas = projeto.paginas_ativas
     total = len(ativas)
     if total == 0:
-        raise ErroPDF("Nao sobrou nenhuma pagina para gerar. Restaure alguma pagina apagada.")
+        raise ErroPDF("Não sobrou nenhuma página para gerar. Restaure alguma página apagada.")
 
     doc = abrir_pdf(projeto.caminho_entrada)
     try:
@@ -253,7 +253,7 @@ def processar(
 
             for feito, pagina in enumerate(ativas):
                 _checar(cancelado)
-                _avisar(progresso, feito, total, f"Pagina {feito + 1} de {total}")
+                _avisar(progresso, feito, total, f"Página {feito + 1} de {total}")
 
                 folha = projeto.folhas[pagina.folha]
                 if folha.apagada:
@@ -301,7 +301,7 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     partes: list[str] = []
 
     if projeto.dividir_folhas:
-        partes.append(f"dividir as {total_folhas} folhas em {total_folhas * 2} paginas")
+        partes.append(f"dividir as {total_folhas} folhas em {total_folhas * 2} páginas")
     if projeto.endireitar:
         partes.append("endireitar as tortas")
     if projeto.cortar_bordas:
@@ -310,7 +310,7 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
         nome = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
         partes.append(f"deixar tudo em {nome}")
     if projeto.montar_cadernos:
-        partes.append(f"montar cadernos de {projeto.paginas_por_caderno} paginas")
+        partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")
 
     if not partes:
         return "Marque pelo menos uma coisa para eu fazer."

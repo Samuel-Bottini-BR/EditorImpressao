@@ -4,11 +4,11 @@ Uso:
     python teste_pdf_io.py "caminho\\do\\livro.pdf"
 
 Faz, sem abrir nenhuma janela:
-  1. abre o PDF e lista as paginas (tamanho, retrato/paisagem)
-  2. rasteriza 3 paginas e salva como PNG
-  3. gera um PDF de saida com essas 3 paginas (colorido e 1 bit)
+  1. abre o PDF e lista as páginas (tamanho, retrato/paisagem)
+  2. rasteriza 3 páginas e salva como PNG
+  3. gera um PDF de saida com essas 3 páginas (colorido e 1 bit)
   4. gera um PDF por copia direta, sem rasterizar
-  5. mede memoria e tempo lendo o livro inteiro, uma pagina por vez
+  5. mede memória e tempo lendo o livro inteiro, uma página por vez
 """
 
 from __future__ import annotations
@@ -45,14 +45,14 @@ def main(caminho: str) -> int:
 
     infos = info_paginas(doc)
     print(f"Arquivo: {Path(caminho).name}")
-    print(f"Paginas: {len(infos)}")
+    print(f"Páginas: {len(infos)}")
 
     paisagens = sum(1 for i in infos if i.paisagem)
     print(f"Em paisagem (candidatas a folha dupla): {paisagens} de {len(infos)}")
     for i in infos[:3]:
         orient = "paisagem" if i.paisagem else "retrato"
         print(
-            f"  pagina {i.indice + 1}: {i.largura_pt:.0f} x {i.altura_pt:.0f} pt  [{orient}]"
+            f"  página {i.indice + 1}: {i.largura_pt:.0f} x {i.altura_pt:.0f} pt  [{orient}]"
         )
 
     print(f"\nDPI pedido: {DPI_PADRAO} -> DPI usado: {dpi_seguro(doc[0], DPI_PADRAO)}")
@@ -66,7 +66,7 @@ def main(caminho: str) -> int:
         for idx in alvos:
             img = pagina_para_array(doc, idx, dpi=DPI_PADRAO)
             h, w = img.shape[:2]
-            print(f"  pagina {idx + 1}: {w} x {h} px")
+            print(f"  página {idx + 1}: {w} x {h} px")
             cv2.imwrite(str(SAIDA / f"pagina_{idx + 1:03d}.png"), limitar_altura(img, 1200))
             saida.escrever_imagem(img, dpi=DPI_PADRAO)
 
@@ -85,7 +85,7 @@ def main(caminho: str) -> int:
         print(f"  {nome}: {kb:,.0f} KB")
 
     # --- 5: livro inteiro, uma pagina por vez --------------------------------
-    print("\nLendo o livro inteiro, uma pagina por vez...")
+    print("\nLendo o livro inteiro, uma página por vez...")
     tracemalloc.start()
     inicio = time.perf_counter()
     for i in range(len(infos)):
@@ -95,8 +95,8 @@ def main(caminho: str) -> int:
     _, pico = tracemalloc.get_traced_memory()
     tracemalloc.stop()
 
-    print(f"  {len(infos)} paginas em {decorrido:.1f} s ({decorrido / len(infos):.2f} s/pagina)")
-    print(f"  pico de memoria Python: {pico / 1024 / 1024:.0f} MB")
+    print(f"  {len(infos)} páginas em {decorrido:.1f} s ({decorrido / len(infos):.2f} s/página)")
+    print(f"  pico de memória Python: {pico / 1024 / 1024:.0f} MB")
 
     doc.close()
     print(f"\nOK. Resultados em: {SAIDA.resolve()}")

@@ -1,4 +1,4 @@
-"""A imposicao e a unica parte com resposta certa exata - entao ela e testada
+"""A imposicao e a única parte com resposta certa exata - entao ela e testada
 de verdade: montamos o caderno e 'dobramos' de volta, conferindo se a leitura
 sai 1, 2, 3, ..., N.
 """
@@ -17,11 +17,11 @@ from core.cadernos import (
 
 
 def _ler_dobrado(lados) -> list[int | None]:
-    """Reconstroi a ordem de leitura de um caderno ja dobrado.
+    """Reconstroi a ordem de leitura de um caderno já dobrado.
 
-    Numa dobra, a folha i traz as paginas 2i+1 e 2i+2 no comeco do caderno e
+    Numa dobra, a folha i traz as páginas 2i+1 e 2i+2 no comeco do caderno e
     as duas ultimas no fim. Percorrendo as folhas de fora para dentro montamos
-    a metade da frente; o resto vem invertido, da ultima para a primeira.
+    a metade da frente; o resto vem invertido, da última para a primeira.
     """
     frentes = [lado for lado in lados if lado.frente]
     versos = [lado for lado in lados if not lado.frente]

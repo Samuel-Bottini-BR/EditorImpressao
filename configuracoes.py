@@ -66,7 +66,7 @@ def escrever(chave: str, valor: Any) -> None:
 # ---------------------------------------------------------------------------
 
 def pasta_de_saida_sugerida() -> Path:
-    """A ultima pasta usada, se ainda existir; senao Documentos/Editor de Impressao."""
+    """A última pasta usada, se ainda existir; senao Documentos/Editor de Impressão."""
     from historico import pasta_de_saida_padrao
 
     ultima = ler("ultima_pasta_de_saida")
@@ -84,11 +84,11 @@ def lembrar_pasta_de_saida(pasta: str | Path) -> None:
 
 
 def pode_gravar_em(pasta: str | Path) -> tuple[bool, str]:
-    """Diz se da para gravar na pasta, e por que nao, em portugues.
+    """Diz se da para gravar na pasta, e por que não, em portugues.
 
-    Testa escrevendo de verdade um arquivo temporario. Olhar so os atributos
+    Testa escrevendo de verdade um arquivo temporario. Olhar só os atributos
     engana: uma pasta pode parecer gravavel e a gravacao falhar por causa de
-    permissao de rede, pendrive protegido ou pasta do sistema.
+    permissão de rede, pendrive protegido ou pasta do sistema.
     """
     caminho = Path(pasta)
 
@@ -96,22 +96,22 @@ def pode_gravar_em(pasta: str | Path) -> tuple[bool, str]:
         try:
             caminho.mkdir(parents=True, exist_ok=True)
         except OSError:
-            return False, "Nao consegui criar essa pasta. Escolha outra."
+            return False, "Não consegui criar essa pasta. Escolha outra."
 
     if not caminho.is_dir():
-        return False, "Esse caminho nao e uma pasta."
+        return False, "Esse caminho não é uma pasta."
 
     try:
         with tempfile.NamedTemporaryFile(dir=caminho, prefix=".editor_", suffix=".tmp"):
             pass
     except PermissionError:
         return False, (
-            "Nao tenho permissao para gravar nessa pasta. "
-            "Tente uma pasta dentro de Documentos ou da Area de Trabalho."
+            "Não tenho permissão para gravar nessa pasta. "
+            "Tente uma pasta dentro de Documentos ou da Área de Trabalho."
         )
     except OSError:
         return False, (
-            "Nao consegui gravar nessa pasta. Ela pode estar cheia, "
+            "Não consegui gravar nessa pasta. Ela pode estar cheia, "
             "protegida contra gravacao ou desconectada."
         )
     return True, ""
@@ -131,7 +131,7 @@ def espaco_livre_mb(pasta: str | Path) -> float | None:
 
 
 def caminho_sem_repetir(pasta: str | Path, nome_do_arquivo: str) -> Path:
-    """Acrescenta (2), (3)... ate achar um nome que ainda nao existe."""
+    """Acrescenta (2), (3)... até achar um nome que ainda não existe."""
     base = Path(pasta) / nome_do_arquivo
     if not base.exists():
         return base

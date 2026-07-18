@@ -1,4 +1,4 @@
-"""Editor de Impressao - ponto de entrada.
+"""Editor de Impressão - ponto de entrada.
 
 Recupera PDFs de livros antigos escaneados e prepara para reimpressao.
 """
@@ -19,12 +19,12 @@ def main() -> int:
         Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
     )
     app = QApplication(sys.argv)
-    app.setApplicationName("Editor de Impressao")
+    app.setApplicationName("Editor de Impressão")
 
     # Rede de seguranca final: qualquer erro nao tratado vira aviso em
     # portugues e o programa continua aberto (regra 3.3).
     def tratar(tipo, valor, rastro) -> None:
-        registrar_erro("nao tratado", "".join(traceback.format_exception(tipo, valor, rastro)))
+        registrar_erro("não tratado", "".join(traceback.format_exception(tipo, valor, rastro)))
         QMessageBox.information(
             None, "Um momento",
             "Aconteceu um problema inesperado, mas o programa continua funcionando.",

@@ -1,10 +1,10 @@
 """Os alertas: onde o programa avisa que pode ter errado.
 
 E o coracao da ideia do aplicativo. O ScanTailor deixa tudo manual e cansa; o
-CamScanner faz tudo sozinho e nao avisa nada. Aqui o programa faz sozinho E diz
-onde teve duvida, para o usuario conferir 7 paginas em vez de 500.
+CamScanner faz tudo sozinho e não avisa nada. Aqui o programa faz sozinho E diz
+onde teve dúvida, para o usuario conferir 7 páginas em vez de 500.
 
-Regra de calibragem: num livro bem escaneado, menos de 10% das paginas devem
+Regra de calibragem: num livro bem escaneado, menos de 10% das páginas devem
 ser marcadas. Se marcar tudo, o alerta vira ruido e o usuario para de olhar.
 """
 
@@ -48,37 +48,37 @@ class Alerta:
 ALERTAS: dict[str, Alerta] = {
     COR: Alerta(
         COR, "Tem cor",
-        "Esta pagina tem cor - o preto e branco vai perder a ilustracao.",
-        "usar Magico pro nesta", "filtro:" + MAGICO_PRO,
+        "Esta página tem cor - o preto e branco vai perder a ilustração.",
+        "usar Mágico pro nesta", "filtro:" + MAGICO_PRO,
     ),
     LOMBADA_INCERTA: Alerta(
         LOMBADA_INCERTA, "Lombada incerta",
-        "Nao tenho certeza de onde cortar. Confira a linha.",
+        "Não tenho certeza de onde cortar. Confira a linha.",
         "aceitar o corte", "revisar",
     ),
     NAO_PARECE_DUPLA: Alerta(
-        NAO_PARECE_DUPLA, "Nao parece dupla",
-        "Esta folha parece ter uma pagina so. Confirme se devo dividir.",
-        "nao dividir esta", "nao_dividir",
+        NAO_PARECE_DUPLA, "Não parece dupla",
+        "Esta folha parece ter uma página só. Confirme se devo dividir.",
+        "não dividir esta", "nao_dividir",
     ),
     MUITO_TORTA: Alerta(
         MUITO_TORTA, "Muito torta",
-        "Esta pagina estava bem torta. Veja se ficou certa.",
-        "esta bom assim", "revisar",
+        "Esta página estava bem torta. Veja se ficou certa.",
+        "está bom assim", "revisar",
     ),
     ANGULO_SUSPEITO_: Alerta(
         ANGULO_SUSPEITO_, "Alinhamento duvidoso",
-        "Nao consegui achar o alinhamento do texto direito.",
-        "nao endireitar esta", "angulo_zero",
+        "Não consegui achar o alinhamento do texto direito.",
+        "não endireitar esta", "angulo_zero",
     ),
     EM_BRANCO: Alerta(
         EM_BRANCO, "Parece em branco",
-        "Esta pagina parece estar em branco. Quer apagar?",
-        "apagar esta pagina", "apagar",
+        "Esta página parece estar em branco. Quer apagar?",
+        "apagar esta página", "apagar",
     ),
     ESCURA_DEMAIS: Alerta(
         ESCURA_DEMAIS, "Ficou escura",
-        "Ficou muito escura. Tente mais fraco na forca do preto.",
+        "Ficou muito escura. Tente mais fraco na força do preto.",
         "usar mais fraco", "forca:mais_fraco",
     ),
     APAGADA_DEMAIS: Alerta(
@@ -89,24 +89,24 @@ ALERTAS: dict[str, Alerta] = {
     CORTE_PEGOU_CONTEUDO: Alerta(
         CORTE_PEGOU_CONTEUDO, "Corte encostou no texto",
         "O corte da borda pode ter pegado parte do texto.",
-        "nao cortar esta", "sem_recorte",
+        "não cortar esta", "sem_recorte",
     ),
     RESOLUCAO_BAIXA: Alerta(
         RESOLUCAO_BAIXA, "Qualidade baixa",
-        "Esta pagina foi escaneada em qualidade baixa. O resultado pode nao ficar bom.",
-        "esta bom assim", "revisar",
+        "Esta página foi escaneada em qualidade baixa. O resultado pode não ficar bom.",
+        "está bom assim", "revisar",
     ),
     TAMANHO_DIFERENTE: Alerta(
         TAMANHO_DIFERENTE, "Tamanho diferente",
         "Esta folha tem tamanho diferente das outras.",
-        "esta bom assim", "revisar",
+        "está bom assim", "revisar",
     ),
 }
 
 
 def descrever(codigo: str) -> Alerta:
     return ALERTAS.get(
-        codigo, Alerta(codigo, codigo, "Confira esta pagina.", None, None)
+        codigo, Alerta(codigo, codigo, "Confira esta página.", None, None)
     )
 
 
@@ -132,9 +132,9 @@ TAMANHO_DIFERENTE_TOLERANCIA = 0.10
 
 
 def detectar_cor(img: np.ndarray) -> tuple[bool, float]:
-    """Diz se a pagina tem cor de verdade e devolve a saturacao media.
+    """Diz se a página tem cor de verdade e devolve a saturacao média.
 
-    Papel amarelado tem saturacao baixa e espalhada; uma ilustracao tem
+    Papel amarelado tem saturacao baixa e espalhada; uma ilustração tem
     saturacao alta concentrada. Por isso olhamos as duas coisas.
     """
     if img.ndim == 2:
@@ -155,7 +155,7 @@ def fracao_de_tinta(img: np.ndarray) -> float:
 
 
 def dpi_estimado(largura_px: int, largura_pt: float) -> float:
-    """Quantos pontos por polegada essa pagina realmente tem."""
+    """Quantos pontos por polegada essa página realmente tem."""
     if largura_pt <= 0:
         return 0.0
     return largura_px / (largura_pt / 72.0)
@@ -172,7 +172,7 @@ def analisar_folha(
     dpi_real: float | None = None,
     tamanho_fora_do_padrao: bool = False,
 ) -> list[str]:
-    """Alertas da FOLHA de entrada: corte, angulo, recorte, tamanho."""
+    """Alertas da FOLHA de entrada: corte, ângulo, recorte, tamanho."""
     alertas: list[str] = []
 
     if vai_dividir:
@@ -219,10 +219,10 @@ def analisar_pagina(img: np.ndarray, filtro: str) -> tuple[list[str], bool]:
 
 
 def analisar_resultado(img_filtrada: np.ndarray, filtro: str) -> list[str]:
-    """Alertas que so aparecem DEPOIS de aplicar o filtro.
+    """Alertas que só aparecem DEPOIS de aplicar o filtro.
 
-    So valem para o preto e branco: e o unico filtro em que o texto pode
-    literalmente sumir ou a pagina virar uma mancha preta.
+    Só valem para o preto e branco: e o único filtro em que o texto pode
+    literalmente sumir ou a página virar uma mancha preta.
     """
     if filtro != PRETO_E_BRANCO:
         return []
@@ -240,7 +240,7 @@ def analisar_resultado(img_filtrada: np.ndarray, filtro: str) -> list[str]:
 
 
 def sugerir_filtro(tem_cor: bool, filtro_padrao: str) -> str:
-    """Qual filtro faz sentido para esta pagina, dado o padrao escolhido."""
+    """Qual filtro faz sentido para esta página, dado o padrão escolhido."""
     if tem_cor and filtro_padrao == PRETO_E_BRANCO:
         return MAGICO_PRO
     return filtro_padrao
@@ -249,8 +249,8 @@ def sugerir_filtro(tem_cor: bool, filtro_padrao: str) -> str:
 def tamanhos_fora_do_padrao(tamanhos: list[tuple[float, float]]) -> list[bool]:
     """Marca as folhas cujo tamanho destoa das demais.
 
-    Compara com a mediana, nao com a media: uma unica folha gigante nao pode
-    arrastar a referencia e fazer todo o resto parecer diferente.
+    Compara com a mediana, não com a média: uma única folha gigante não pode
+    arrastar a referência e fazer todo o resto parecer diferente.
     """
     if len(tamanhos) < 3:
         return [False] * len(tamanhos)
@@ -270,7 +270,7 @@ def tamanhos_fora_do_padrao(tamanhos: list[tuple[float, float]]) -> list[bool]:
 def agrupar_por_tipo(
     itens: list[tuple[int, list[str]]]
 ) -> dict[str, list[int]]:
-    """Monta o painel 'Paginas para revisar', agrupado por tipo de alerta.
+    """Monta o painel 'Páginas para revisar', agrupado por tipo de alerta.
 
     itens e uma lista de (numero_da_pagina, codigos_de_alerta).
     """

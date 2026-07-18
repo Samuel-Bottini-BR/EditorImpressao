@@ -41,11 +41,11 @@ def pasta_do_projeto(nome: str) -> Path:
 
 
 def pasta_de_saida_padrao() -> Path:
-    """Documentos / Editor de Impressao - onde os PDFs prontos vao parar."""
+    """Documentos / Editor de Impressão - onde os PDFs prontos vao parar."""
     documentos = Path.home() / "Documents"
     if not documentos.exists():
         documentos = Path.home()
-    pasta = documentos / "Editor de Impressao"
+    pasta = documentos / "Editor de Impressão"
     pasta.mkdir(parents=True, exist_ok=True)
     return pasta
 
@@ -178,7 +178,7 @@ def abrir_pasta(caminho: str | Path) -> None:
 
 
 def imprimir(caminho: str | Path) -> bool:
-    """Manda o PDF para a impressora padrao. Devolve se conseguiu tentar."""
+    """Manda o PDF para a impressora padrão. Devolve se conseguiu tentar."""
     try:
         if sys.platform == "win32":
             os.startfile(str(caminho), "print")  # type: ignore[attr-defined]

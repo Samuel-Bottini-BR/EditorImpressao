@@ -67,7 +67,7 @@ def main(caminho: str, quantas: int) -> int:
 
     dt = time.perf_counter() - t0
     print("-" * 78)
-    print(f"{dt / max(1, len(indices)):.2f} s por folha (analise a 150 DPI)")
+    print(f"{dt / max(1, len(indices)):.2f} s por folha (análise a 150 DPI)")
     pct = 100 * len(baixa_confianca) / max(1, len(indices))
     print(f"Marcadas para revisao: {len(baixa_confianca)} de {len(indices)} ({pct:.0f}%)")
     if baixa_confianca:

@@ -1,10 +1,10 @@
-"""Montar cadernos para impressao (imposicao).
+"""Montar cadernos para impressão (imposicao).
 
 O usuario imprime frente e verso, separa as folhas em grupos e dobra cada
-grupo ao meio. Para isso as paginas precisam sair fora de ordem, na ordem
+grupo ao meio. Para isso as páginas precisam sair fora de ordem, na ordem
 certa da dobra.
 
-A conta, para um caderno de N paginas, com a folha i comecando em zero:
+A conta, para um caderno de N páginas, com a folha i comecando em zero:
 
     frente da folha i:  [ N - 2i ]  [ 1 + 2i ]
     verso  da folha i:  [ 2 + 2i ]  [ N - 1 - 2i ]
@@ -30,10 +30,10 @@ PAGINAS_POR_CADERNO_PADRAO = 20
 
 @dataclass(frozen=True)
 class Lado:
-    """Um lado de uma folha fisica: duas paginas do livro, lado a lado.
+    """Um lado de uma folha fisica: duas páginas do livro, lado a lado.
 
-    Os numeros sao indices de pagina comecando em zero, ja no livro inteiro.
-    None quer dizer pagina em branco (sobra do fechamento do caderno).
+    Os números são indices de página comecando em zero, já no livro inteiro.
+    None quer dizer página em branco (sobra do fechamento do caderno).
     """
 
     esquerda: int | None
@@ -42,7 +42,7 @@ class Lado:
 
 
 def paginas_por_caderno_valido(valor: int) -> int:
-    """Arredonda para o multiplo de 4 mais proximo, no minimo 4."""
+    """Arredonda para o múltiplo de 4 mais próximo, no mínimo 4."""
     if valor < MULTIPLO:
         return MULTIPLO
     # Arredondamento comercial: o round() do Python leva 4,5 para 4, e um
@@ -53,7 +53,7 @@ def paginas_por_caderno_valido(valor: int) -> int:
 def ordem_do_caderno(paginas_no_caderno: int, deslocamento: int = 0) -> list[Lado]:
     """Devolve os lados de um caderno, na ordem em que devem ser impressos.
 
-    deslocamento e o numero da primeira pagina deste caderno no livro.
+    deslocamento e o número da primeira página deste caderno no livro.
     """
     n = paginas_por_caderno_valido(paginas_no_caderno)
     lados: list[Lado] = []
@@ -79,10 +79,10 @@ def ordem_do_caderno(paginas_no_caderno: int, deslocamento: int = 0) -> list[Lad
 
 
 def montar_ordem(total_paginas: int, paginas_por_caderno: int) -> list[Lado]:
-    """Ordem de impressao do livro inteiro, caderno por caderno.
+    """Ordem de impressão do livro inteiro, caderno por caderno.
 
-    As paginas que passarem do total viram branco: sao o arredondamento do
-    ultimo caderno.
+    As páginas que passarem do total viram branco: são o arredondamento do
+    último caderno.
     """
     n = paginas_por_caderno_valido(paginas_por_caderno)
     lados: list[Lado] = []
@@ -118,13 +118,13 @@ def impor_pdf(
     paginas_por_caderno: int = PAGINAS_POR_CADERNO_PADRAO,
     progresso=None,
 ) -> int:
-    """Le um PDF em ordem normal e grava outro ja imposto em cadernos.
+    """Le um PDF em ordem normal e grava outro já imposto em cadernos.
 
-    Cada folha de saida e uma pagina em paisagem com duas paginas do livro lado
-    a lado - o usuario so manda imprimir frente e verso, sem configurar nada.
+    Cada folha de saida e uma página em paisagem com duas páginas do livro lado
+    a lado - o usuario só manda imprimir frente e verso, sem configurar nada.
 
-    A copia e feita com show_pdf_page, que preserva texto vetorial e nao
-    rasteriza nada. E tambem o caminho rapido do modo "so cadernos".
+    A copia e feita com show_pdf_page, que preserva texto vetorial e não
+    rasteriza nada. E tambem o caminho rapido do modo "só cadernos".
     """
     entrada = fitz.open(caminho_entrada)
     saida = fitz.open()
@@ -132,7 +132,7 @@ def impor_pdf(
     try:
         total = entrada.page_count
         if total == 0:
-            raise ValueError("PDF de entrada sem paginas")
+            raise ValueError("PDF de entrada sem páginas")
 
         # Todas as folhas saem do mesmo tamanho, senao a impressora embaralha
         # as margens. Usamos a maior pagina como molde.
@@ -157,7 +157,7 @@ def impor_pdf(
 
 
 def _colocar(folha: fitz.Page, origem: fitz.Document, indice: int | None, area: fitz.Rect) -> None:
-    """Encaixa uma pagina da origem na area dada. indice None deixa em branco."""
+    """Encaixa uma página da origem na área dada. indice None deixa em branco."""
     if indice is None or not 0 <= indice < origem.page_count:
         return
     folha.show_pdf_page(area, origem, indice)
@@ -171,5 +171,5 @@ def instrucoes_de_impressao(total_paginas: int, paginas_por_caderno: int) -> lis
     return [
         "Imprima frente e verso, virando na borda curta.",
         f"Separe as folhas em grupos de {folhas}.",
-        f"Dobre cada grupo ao meio - sao {cadernos} cadernos prontos.",
+        f"Dobre cada grupo ao meio - são {cadernos} cadernos prontos.",
     ]

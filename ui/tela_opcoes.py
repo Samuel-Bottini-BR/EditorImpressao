@@ -24,10 +24,10 @@ from modelos import Projeto
 from ui.estilo import TEXTO_FRACO
 
 FILTROS_NA_TELA = [
-    (ORIGINAL, "Original", "nao mexe na pagina"),
+    (ORIGINAL, "Original", "não mexe na página"),
     (PRETO_E_BRANCO, "Preto e branco", "tira o amarelado, arquivo pequeno"),
-    (MELHORAR, "Melhorar", "limpa o fundo e mantem as cores"),
-    (MAGICO_PRO, "Magico pro", "cor viva e texto nitido"),
+    (MELHORAR, "Melhorar", "limpa o fundo e mantém as cores"),
+    (MAGICO_PRO, "Mágico pro", "cor viva e texto nítido"),
 ]
 
 OPCOES_CADERNO = [8, 12, 16, 20, 24, 32, 40]
@@ -46,7 +46,7 @@ class TelaOpcoes(QWidget):
         camadas.setContentsMargins(46, 26, 46, 22)
         camadas.setSpacing(14)
 
-        self.titulo = QLabel("Marque o que voce quer fazer")
+        self.titulo = QLabel("Marque o que você quer fazer")
         self.titulo.setObjectName("titulo")
         camadas.addWidget(self.titulo)
 
@@ -61,7 +61,7 @@ class TelaOpcoes(QWidget):
         opcoes.setSpacing(6)
 
         self.cx_dividir = self._caixa(
-            "Dividir folhas ao meio", "esta folha tem 2 paginas do livro", opcoes
+            "Dividir folhas ao meio", "esta folha tem 2 páginas do livro", opcoes
         )
         opcoes.addWidget(_separador())
 
@@ -71,7 +71,7 @@ class TelaOpcoes(QWidget):
         opcoes.addWidget(_separador())
 
         self.cx_endireitar = self._caixa(
-            "Endireitar folhas tortas", "corrige paginas inclinadas", opcoes
+            "Endireitar folhas tortas", "corrige páginas inclinadas", opcoes
         )
         opcoes.addWidget(_separador())
 
@@ -81,7 +81,7 @@ class TelaOpcoes(QWidget):
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
-            "Montar cadernos para impressao",
+            "Montar cadernos para impressão",
             "para imprimir, dobrar ao meio e costurar", opcoes,
         )
         self.painel_caderno = self._montar_caderno()
@@ -153,7 +153,7 @@ class TelaOpcoes(QWidget):
         painel = QWidget()
         linha = QHBoxLayout(painel)
         linha.setContentsMargins(34, 4, 0, 4)
-        linha.addWidget(QLabel("paginas por caderno:"))
+        linha.addWidget(QLabel("páginas por caderno:"))
         self.combo_caderno = QComboBox()
         for valor in OPCOES_CADERNO:
             self.combo_caderno.addItem(str(valor), valor)

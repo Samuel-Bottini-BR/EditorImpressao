@@ -31,7 +31,7 @@ FRACAO_BORDA_SOLIDA = 0.80
 
 @dataclass(frozen=True)
 class Recorte:
-    """Area util da pagina, em fracao de 0 a 1: (x, y, largura, altura)."""
+    """Área util da página, em fracao de 0 a 1: (x, y, largura, altura)."""
 
     x: float
     y: float
@@ -49,11 +49,11 @@ class Recorte:
 
 
 def detectar_bordas(img: np.ndarray) -> Recorte:
-    """Acha o retangulo que contem o conteudo da pagina.
+    """Acha o retangulo que contem o conteúdo da página.
 
     Ideia: binarizar de forma bem tolerante, achar as linhas e colunas que tem
     tinta de verdade e envolver tudo isso. Bordas pretas do scanner ficam
-    coladas na moldura, entao sao descartadas por serem grandes demais para
+    coladas na moldura, entao são descartadas por serem grandes demais para
     caberem no limite de CORTE_MAXIMO.
     """
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -123,7 +123,7 @@ def _apagar_bordas_solidas(tinta: np.ndarray) -> np.ndarray:
     E assim que se distingue a moldura preta do scanner de uma linha de texto:
     a moldura preenche quase toda a linha (ou coluna) de ponta a ponta, o que
     nenhuma linha de texto faz. Caminhamos de cada borda para dentro enquanto a
-    faixa continuar praticamente toda escura, e paramos na primeira que nao for.
+    faixa continuar praticamente toda escura, e paramos na primeira que não for.
     """
     limpa = tinta.copy()
     altura, largura = limpa.shape[:2]
@@ -157,11 +157,11 @@ def _apagar_bordas_solidas(tinta: np.ndarray) -> np.ndarray:
 def _sobrou_conteudo_fora(
     tinta: np.ndarray, x0: int, y0: int, x1: int, y1: int
 ) -> bool:
-    """Diz se ficou conteudo de verdade FORA do retangulo que vamos manter.
+    """Diz se ficou conteúdo de verdade FORA do retangulo que vamos manter.
 
-    O cuidado esta em nao confundir com a borda preta do scanner, que e o que
+    O cuidado esta em não confundir com a borda preta do scanner, que e o que
     queremos jogar fora. Por isso a faixa colada na moldura (MOLDURA) e
-    ignorada: sobra so o miolo entre a borda preta e o corte, que e onde
+    ignorada: sobra só o miolo entre a borda preta e o corte, que e onde
     apareceria um pedaco de texto perdido.
     """
     altura, largura = tinta.shape[:2]

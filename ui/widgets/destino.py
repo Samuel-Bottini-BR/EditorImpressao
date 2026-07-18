@@ -1,8 +1,8 @@
 """Onde salvar o PDF: a pasta e o nome do arquivo.
 
-Fica na tela de conferir, logo acima do botao de processar, para o usuario
-decidir ANTES de esperar o processamento - e nao descobrir depois que foi
-parar num lugar que ele nao queria.
+Fica na tela de conferir, logo acima do botão de processar, para o usuario
+decidir ANTES de esperar o processamento - e não descobrir depois que foi
+parar num lugar que ele não queria.
 """
 
 from __future__ import annotations
@@ -27,7 +27,7 @@ LARGURA_MAXIMA_CAMINHO = 62
 
 
 class SeletorDestino(QFrame):
-    """Pasta + nome do arquivo, com aviso quando a pasta nao aceita gravacao."""
+    """Pasta + nome do arquivo, com aviso quando a pasta não aceita gravacao."""
 
     alterado = Signal()
 
@@ -150,7 +150,7 @@ class SeletorDestino(QFrame):
         if self.caminho.exists():
             self._avisar("")
             self.aviso.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
-            self.aviso.setText("Ja existe um arquivo com esse nome - eu pergunto antes de substituir.")
+            self.aviso.setText("Já existe um arquivo com esse nome - eu pergunto antes de substituir.")
             self.aviso.setVisible(True)
             return
         self.aviso.setStyleSheet(f"color: {VERMELHO}; font-size: 12px;")

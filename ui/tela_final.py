@@ -82,7 +82,7 @@ class TelaProgresso(QWidget):
 
 
 def _tempo(segundos: float) -> str:
-    """Tempo em portugues, sem numero quebrado."""
+    """Tempo em portugues, sem número quebrado."""
     if segundos < 10:
         return "poucos segundos"
     if segundos < 90:
@@ -163,9 +163,9 @@ class TelaFinal(QWidget):
                 folhas_de_saida: int | None = None) -> None:
         """num_paginas e o total de PAGINAS DO LIVRO.
 
-        Com cadernos, o PDF de saida tem menos paginas que o livro, porque cada
-        folha carrega duas. Contar as folhas do arquivo como paginas do livro
-        daria um numero de cadernos errado - e o usuario separaria os grupos
+        Com cadernos, o PDF de saida tem menos páginas que o livro, porque cada
+        folha carrega duas. Contar as folhas do arquivo como páginas do livro
+        daria um número de cadernos errado - e o usuario separaria os grupos
         errados na hora de dobrar.
         """
         self.caminho = caminho
@@ -174,7 +174,7 @@ class TelaFinal(QWidget):
         self.nome.setText(arquivo.name)
 
         mb = arquivo.stat().st_size / 1024 / 1024 if arquivo.exists() else 0.0
-        partes = [f"{num_paginas} paginas", f"{mb:.1f} MB".replace(".", ",")]
+        partes = [f"{num_paginas} páginas", f"{mb:.1f} MB".replace(".", ",")]
         if projeto.montar_cadernos:
             total = contar_cadernos(num_paginas, projeto.paginas_por_caderno)
             partes.append(f"{total} cadernos")
@@ -196,7 +196,7 @@ class TelaFinal(QWidget):
 
 
 class _Certo(QWidget):
-    """Um circulo verde com um visto. Desenhado, nao emoji (regra 3.4)."""
+    """Um circulo verde com um visto. Desenhado, não emoji (regra 3.4)."""
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)

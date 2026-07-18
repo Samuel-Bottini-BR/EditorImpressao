@@ -46,20 +46,20 @@ def main(caminho: str) -> int:
     tempo_analise = time.perf_counter() - t0
 
     # 1 - abre livro grande sem travar
-    checar(1, "abre e analisa sem estourar memoria",
+    checar(1, "abre e analisa sem estourar memória",
            tempo_analise < 60, f"{len(projeto.folhas)} folhas em {tempo_analise:.1f}s")
 
     # 2 - divide folhas duplas
     divididas = sum(1 for f in projeto.folhas if f.dividir)
-    checar(2, "detecta e divide folhas com duas paginas",
+    checar(2, "detecta e divide folhas com duas páginas",
            len(projeto.paginas) > len(projeto.folhas), f"{divididas} folhas divididas")
 
     # 5 - funcoes isoladas e combinadas
     combinacoes = [
-        ("so filtro", dict(dividir_folhas=False, endireitar=False, cortar_bordas=False)),
-        ("so dividir", dict(limpar=False, endireitar=False, cortar_bordas=False)),
-        ("so endireitar", dict(dividir_folhas=False, limpar=False, cortar_bordas=False)),
-        ("so cadernos", dict(dividir_folhas=False, limpar=False, endireitar=False,
+        ("só filtro", dict(dividir_folhas=False, endireitar=False, cortar_bordas=False)),
+        ("só dividir", dict(limpar=False, endireitar=False, cortar_bordas=False)),
+        ("só endireitar", dict(dividir_folhas=False, limpar=False, cortar_bordas=False)),
+        ("só cadernos", dict(dividir_folhas=False, limpar=False, endireitar=False,
                              cortar_bordas=False, montar_cadernos=True)),
     ]
     todas_ok = True
@@ -86,9 +86,9 @@ def main(caminho: str) -> int:
     processar(projeto)
     with fitz.open(projeto.caminho_saida) as doc:
         paginas_geradas = doc.page_count
-    checar(6, "filtros diferentes em paginas diferentes, num PDF so",
+    checar(6, "filtros diferentes em páginas diferentes, num PDF só",
            paginas_geradas == len(projeto.paginas_ativas),
-           f"{paginas_geradas} paginas, 3 filtros")
+           f"{paginas_geradas} páginas, 3 filtros")
 
     # 7 e 8 - alertas uteis e sem virar ruido
     universo = len(projeto.folhas) + len(projeto.paginas)
@@ -105,7 +105,7 @@ def main(caminho: str) -> int:
     lados = montar_ordem(total, 20)
     vistas = sorted(p for lado in lados for p in (lado.esquerda, lado.direita)
                     if p is not None)
-    checar(10, "a imposicao cobre todas as paginas, uma vez cada",
+    checar(10, "a imposicao cobre todas as páginas, uma vez cada",
            vistas == list(range(total)), f"{len(lados)} lados de folha")
 
     # 12 e 13 - ajuste manual e desfazer
@@ -126,8 +126,8 @@ def main(caminho: str) -> int:
         acoes.desfazer(projeto)
         if getattr(itens[0], campo) != original:
             todos_desfeitos = False
-            print(f"        '{campo}' nao voltou ao original")
-    checar(12, "todo ajuste automatico e corrigivel na mao", True,
+            print(f"        '{campo}' não voltou ao original")
+    checar(12, "todo ajuste automático e corrigivel na mao", True,
            f"{len(campos)} ajustes")
     checar(13, "Ctrl+Z desfaz qualquer alteracao, sem limite", todos_desfeitos,
            f"{len(campos)} tipos de acao")

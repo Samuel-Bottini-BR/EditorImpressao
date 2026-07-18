@@ -1,11 +1,11 @@
-"""A previa da pagina, com os ajustes manuais em cima dela.
+"""A prévia da página, com os ajustes manuais em cima dela.
 
 Tres modos, conforme a aba:
   - CORTE:  linha tracejada azul que o usuario arrasta para mover a lombada
   - RECORTE: retangulo com alcas nos cantos e nos lados
-  - ANGULO: arrastar gira a pagina, com linhas-guia para alinhar pelo texto
+  - ANGULO: arrastar gira a página, com linhas-guia para alinhar pelo texto
 
-Nada de campo numerico: o usuario ve a pagina e mexe na pagina.
+Nada de campo numerico: o usuario ve a página e mexe na página.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ GRAUS_POR_PIXEL = 0.02  # sensibilidade do giro ao arrastar
 def numpy_para_qimage(img: np.ndarray) -> QImage:
     """Converte o array do OpenCV em QImage, copiando os bytes.
 
-    A copia e obrigatoria: sem ela o QImage aponta para memoria que o Python
+    A copia e obrigatoria: sem ela o QImage aponta para memória que o Python
     pode liberar a qualquer momento, e a janela mostra lixo ou fecha sozinha.
     """
     if img is None or img.size == 0:
@@ -59,7 +59,7 @@ def numpy_para_qimage(img: np.ndarray) -> QImage:
 
 
 class Visualizador(QWidget):
-    """Mostra a pagina e deixa o usuario corrigir o que o automatico errou."""
+    """Mostra a página e deixa o usuario corrigir o que o automático errou."""
 
     corte_movido = Signal(float)      # nova posicao 0-1
     recorte_movido = Signal(tuple)    # (x, y, largura, altura) em 0-1
@@ -124,7 +124,7 @@ class Visualizador(QWidget):
 
         if self._pixmap is None:
             pintor.setPen(QColor(TEXTO_FRACO))
-            texto = "Preparando a previa..." if self.carregando else "Sem previa"
+            texto = "Preparando a prévia..." if self.carregando else "Sem prévia"
             pintor.drawText(self.rect(), Qt.AlignCenter, texto)
             return
 

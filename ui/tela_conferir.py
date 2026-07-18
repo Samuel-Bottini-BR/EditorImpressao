@@ -1,34 +1,34 @@
-"""TELA 3 - Conferir: a previa e todos os ajustes manuais.
+"""TELA 3 - Conferir: a prévia e todos os ajustes manuais.
 
 Empilhamento da tela, de cima para baixo, sem nenhuma sobreposicao:
 
     1. cabecalho (titulo, contador de alertas, desfazer/refazer)
     2. barra de abas
-    3. area da imagem            <- fica com todo o espaco que sobrar
-    4. faixa de explicacao
-    5. linha de botoes
+    3. área da imagem            <- fica com todo o espaço que sobrar
+    4. faixa de explicação
+    5. linha de botões
     6. tira de miniaturas
     7. onde salvar
     8. rodape (voltar / confirmar e processar)
 
-Tudo isso num unico QVBoxLayout. A faixa e os botoes NAO moram dentro das
-paginas das abas: elas guardam so a imagem. Foi por isso que a versao anterior
-sobrepunha - a pagina da aba nao tinha altura para caber imagem + faixa +
-botoes, e o Qt acabava empilhando um por cima do outro.
+Tudo isso num único QVBoxLayout. A faixa e os botões NAO moram dentro das
+páginas das abas: elas guardam só a imagem. Foi por isso que a versão anterior
+sobrepunha - a página da aba não tinha altura para caber imagem + faixa +
+botões, e o Qt acabava empilhando um por cima do outro.
 
-Por isso tambem usamos QTabBar (so a barra) com QStackedWidget, e nao
-QTabWidget: assim a faixa e os botoes ficam de fora, como irmaos.
+Por isso tambem usamos QTabBar (só a barra) com QStackedWidget, e não
+QTabWidget: assim a faixa e os botões ficam de fora, como irmaos.
 
 As abas aparecem conforme o que foi marcado na tela 2. Cada uma edita uma
 unidade diferente:
 
     Onde cortar -> FOLHA do PDF de entrada (a linha da lombada)
     Bordas      -> PAGINA de saida (o retangulo do recorte)
-    Endireitar  -> PAGINA de saida (o angulo)
-    Filtro      -> PAGINA de saida (o filtro e a forca do preto)
+    Endireitar  -> PAGINA de saida (o ângulo)
+    Filtro      -> PAGINA de saida (o filtro e a força do preto)
 
-O alerta chama atencao, nunca restringe: todo controle continua disponivel em
-qualquer pagina, com ou sem alerta.
+O alerta chama atenção, nunca restringe: todo controle continua disponível em
+qualquer página, com ou sem alerta.
 """
 
 from __future__ import annotations
@@ -96,12 +96,12 @@ CARTOES = [
     (ORIGINAL, "Original", "sem mexer"),
     (PRETO_E_BRANCO, "Preto e branco", "tira o amarelado"),
     (MELHORAR, "Melhorar", "mantem a cor"),
-    (MAGICO_PRO, "Magico pro", "cor viva"),
+    (MAGICO_PRO, "Mágico pro", "cor viva"),
 ]
 
 
 def protegido(metodo):
-    """Nenhuma acao de botao pode fechar a janela (regra 3.3).
+    """Nenhuma acao de botão pode fechar a janela (regra 3.3).
 
     Qualquer excecao vira aviso em portugues e vai para o arquivo de log. Sem
     isto, um erro dentro de um slot do Qt derruba o programa inteiro e o
@@ -225,7 +225,7 @@ class TelaConferir(QWidget):
         fora.setSpacing(4)
 
         atalhos = QLabel(
-            "setas: mudar de pagina   -   Espaco: esta certo   -   Tab: proxima duvida   "
+            "setas: mudar de página   -   Espaço: está certo   -   Tab: próxima dúvida   "
             "-   1 2 3 4: filtros   -   Delete: apagar   -   Ctrl+Z: desfazer"
         )
         atalhos.setObjectName("atalhos")
@@ -248,7 +248,7 @@ class TelaConferir(QWidget):
     # --- paginas de imagem e linhas de botoes -----------------------------
 
     def _area_de_visualizador(self, aba: str, modo: str) -> Visualizador:
-        """Uma pagina da area de imagem: setas nas laterais e a previa no meio."""
+        """Uma página da área de imagem: setas nas laterais e a prévia no meio."""
         pagina = QWidget()
         linha = QHBoxLayout(pagina)
         linha.setContentsMargins(0, 0, 0, 0)
@@ -286,8 +286,8 @@ class TelaConferir(QWidget):
         vis.corte_movido.connect(self._mover_corte)
 
         linha = self._linha_de_botoes(ABA_CORTE)
-        _botao("esta certo", linha, self._marcar_revisada)
-        self.botao_nao_dividir = _botao("nao dividir esta", linha, self._alternar_dividir)
+        _botao("está certo", linha, self._marcar_revisada)
+        self.botao_nao_dividir = _botao("não dividir esta", linha, self._alternar_dividir)
         _botao("girar", linha, self._girar)
         _botao("usar em todas", linha, self._corte_em_todas)
         linha.addStretch()
@@ -300,9 +300,9 @@ class TelaConferir(QWidget):
         vis.recorte_movido.connect(self._mover_recorte)
 
         linha = self._linha_de_botoes(ABA_BORDAS)
-        _botao("esta certo", linha, self._marcar_revisada)
-        _botao("nao cortar esta", linha, self._sem_recorte)
-        _botao("voltar ao automatico", linha, self._recorte_automatico)
+        _botao("está certo", linha, self._marcar_revisada)
+        _botao("não cortar esta", linha, self._sem_recorte)
+        _botao("voltar ao automático", linha, self._recorte_automatico)
         _botao("usar em todas", linha, self._recorte_em_todas)
         linha.addStretch()
         self.botoes_de_sugestao[ABA_BORDAS] = _botao(
@@ -314,9 +314,9 @@ class TelaConferir(QWidget):
         vis.angulo_movido.connect(self._mover_angulo)
 
         linha = self._linha_de_botoes(ABA_ANGULO)
-        _botao("esta certo", linha, self._marcar_revisada)
-        _botao("nao endireitar esta", linha, self._angulo_zero)
-        _botao("voltar ao automatico", linha, self._angulo_automatico)
+        _botao("está certo", linha, self._marcar_revisada)
+        _botao("não endireitar esta", linha, self._angulo_zero)
+        _botao("voltar ao automático", linha, self._angulo_automatico)
         linha.addStretch()
         self.botoes_de_sugestao[ABA_ANGULO] = _botao(
             "", linha, self._aplicar_sugestao, "sugestao"
@@ -328,7 +328,7 @@ class TelaConferir(QWidget):
         camadas.setContentsMargins(0, 0, 0, 0)
         camadas.setSpacing(6)
 
-        explicacao = QLabel("A mesma pagina nos quatro filtros - clique no que preferir")
+        explicacao = QLabel("A mesma página nos quatro filtros - clique no que preferir")
         explicacao.setObjectName("fraco")
         camadas.addWidget(explicacao)
 
@@ -358,7 +358,7 @@ class TelaConferir(QWidget):
         forca_linha = QHBoxLayout(self.painel_forca)
         forca_linha.setContentsMargins(0, 0, 0, 0)
         forca_linha.setSpacing(6)
-        forca_linha.addWidget(QLabel("Forca do preto:"))
+        forca_linha.addWidget(QLabel("Força do preto:"))
         for chave in FORCAS:
             botao = QPushButton(ROTULOS_FORCA[chave])
             botao.setCheckable(True)
@@ -367,10 +367,10 @@ class TelaConferir(QWidget):
             forca_linha.addWidget(botao)
         linha_botoes.addWidget(self.painel_forca)
 
-        _botao("so nesta", linha_botoes, self._marcar_revisada)
+        _botao("só nesta", linha_botoes, self._marcar_revisada)
         _botao("usar em todas", linha_botoes, self._filtro_em_todas)
-        _botao("so nas proximas", linha_botoes, self._filtro_nas_proximas)
-        self.botao_apagar = _botao("apagar pagina", linha_botoes, self.apagar_pagina)
+        _botao("só nas próximas", linha_botoes, self._filtro_nas_proximas)
+        self.botao_apagar = _botao("apagar página", linha_botoes, self.apagar_pagina)
         linha_botoes.addStretch()
         self.botoes_de_sugestao[ABA_FILTRO] = _botao(
             "", linha_botoes, self._aplicar_sugestao, "sugestao"
@@ -444,13 +444,13 @@ class TelaConferir(QWidget):
         if self.projeto is None:
             return
         if self.aba_atual == ABA_CORTE:
-            self.tira.definir_titulo("Folhas - as laranjas eu nao tive certeza")
+            self.tira.definir_titulo("Folhas - as laranjas eu não tive certeza")
             self.tira.montar(
                 len(self.projeto.folhas), self.projeto.caminho_entrada,
                 {i: i for i in range(len(self.projeto.folhas))},
             )
         else:
-            self.tira.definir_titulo("Paginas - as laranjas eu nao tive certeza")
+            self.tira.definir_titulo("Páginas - as laranjas eu não tive certeza")
             self.tira.montar(
                 len(self.projeto.paginas), self.projeto.caminho_entrada,
                 {p.indice: p.folha for p in self.projeto.paginas},
@@ -588,7 +588,7 @@ class TelaConferir(QWidget):
             self._atualizar_cartoes(img)
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
-        """Os quatro cartoes mostram a pagina de verdade, cada um com seu filtro."""
+        """Os quatro cartoes mostram a página de verdade, cada um com seu filtro."""
         from core.filtros import aplicar_filtro
         from core.pdf_io import limitar_altura
 
@@ -614,7 +614,7 @@ class TelaConferir(QWidget):
                 cartao.definir_amostra(None)
 
     def _imagem_sem_filtro(self) -> np.ndarray | None:
-        """Versao pequena e sem filtro da pagina atual, para os outros cartoes."""
+        """Versao pequena e sem filtro da página atual, para os outros cartoes."""
         assert self.projeto is not None and self.previas is not None
         pagina = self.projeto.paginas[self.indice_pagina]
         img_folha = self.previas.pegar_folha(pagina.folha, 70)
@@ -649,22 +649,22 @@ class TelaConferir(QWidget):
         if aba == ABA_CORTE:
             folha = self.projeto.folhas[self.indice_folha]
             if not folha.dividir:
-                return "Esta folha nao vai ser dividida."
+                return "Esta folha não vai ser dividida."
             return ("Achei a lombada e vou cortar na linha azul. "
                     "Se estiver errado, arraste a linha.")
         if aba == ABA_BORDAS:
             pagina = self.projeto.paginas[self.indice_pagina]
             if pagina.recorte is None:
                 return "Vou cortar a borda sozinho. Arraste o retangulo se quiser mudar."
-            return "Voce ajustou o corte desta pagina."
+            return "Você ajustou o corte desta página."
         if aba == ABA_ANGULO:
             pagina = self.projeto.paginas[self.indice_pagina]
             if pagina.angulo_manual is None:
-                return "Vou endireitar sozinho. Arraste sobre a pagina para girar na mao."
-            return f"Voce girou esta pagina em {pagina.angulo_manual:+.1f} graus."
+                return "Vou endireitar sozinho. Arraste sobre a página para girar na mao."
+            return f"Você girou esta página em {pagina.angulo_manual:+.1f} graus."
         pagina = self.projeto.paginas[self.indice_pagina]
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
-        return f"Esta pagina vai sair em {nome}."
+        return f"Esta página vai sair em {nome}."
 
     def _pintar_faixa(self, alerta: bool) -> None:
         """Troca a cor da faixa.
@@ -698,7 +698,7 @@ class TelaConferir(QWidget):
         if ABA_CORTE in self._abas_ativas:
             folha = self.projeto.folhas[self.indice_folha]
             self.botao_nao_dividir.setText(
-                "dividir esta" if not folha.dividir else "nao dividir esta"
+                "dividir esta" if not folha.dividir else "não dividir esta"
             )
 
         if ABA_FILTRO in self._abas_ativas:
@@ -707,7 +707,7 @@ class TelaConferir(QWidget):
             for chave, botao in self.botoes_forca.items():
                 botao.setChecked(chave == pagina.forca_preto)
             self.botao_apagar.setText(
-                "restaurar pagina" if pagina.apagada else "apagar pagina"
+                "restaurar página" if pagina.apagada else "apagar página"
             )
 
     def _atualizar_tira(self) -> None:
@@ -727,9 +727,9 @@ class TelaConferir(QWidget):
         if pendentes == 0:
             texto = "tudo certo"
         elif pendentes == 1:
-            texto = "1 pagina para voce olhar"
+            texto = "1 página para você olhar"
         else:
-            texto = f"{pendentes} paginas para voce olhar"
+            texto = f"{pendentes} páginas para você olhar"
         if apagadas:
             texto += f"  -  {apagadas} apagadas"
         self.botao_alertas.setText(texto)
@@ -737,7 +737,7 @@ class TelaConferir(QWidget):
 
     @protegido
     def _previa_chegou(self, chave: str, _img: np.ndarray) -> None:
-        """Uma previa ficou pronta; se for a que estamos vendo, redesenha."""
+        """Uma prévia ficou pronta; se for a que estamos vendo, redesenha."""
         if not self._pronta():
             return
         assert self.previas is not None
@@ -754,7 +754,7 @@ class TelaConferir(QWidget):
 
     def _registrar(self, tipo: str, alvo: str, indices: list[int],
                    campos: dict, descricao: str) -> None:
-        """Aplica a mudanca e guarda no historico, numa acao so."""
+        """Aplica a mudanca e guarda no histórico, numa acao só."""
         assert self.projeto is not None and self.acoes is not None
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
@@ -800,7 +800,7 @@ class TelaConferir(QWidget):
             "nao_dividir", "folha", [self.indice_folha],
             {"dividir": not folha.dividir, "revisada": True},
             f"Folha {self.indice_folha + 1}: "
-            + ("dividir" if not folha.dividir else "nao dividir"),
+            + ("dividir" if not folha.dividir else "não dividir"),
         )
 
     @protegido
@@ -821,7 +821,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "recortar", "pagina", [self.indice_pagina],
             {"recorte": arredondado, "revisada": True},
-            f"Corte de borda da pagina {self.indice_pagina + 1}",
+            f"Corte de borda da página {self.indice_pagina + 1}",
         )
 
     @protegido
@@ -829,14 +829,14 @@ class TelaConferir(QWidget):
         self._registrar(
             "recortar", "pagina", [self.indice_pagina],
             {"recorte": [0.0, 0.0, 1.0, 1.0], "revisada": True},
-            f"Nao cortar a borda da pagina {self.indice_pagina + 1}",
+            f"Não cortar a borda da página {self.indice_pagina + 1}",
         )
 
     @protegido
     def _recorte_automatico(self) -> None:
         self._registrar(
             "recortar", "pagina", [self.indice_pagina], {"recorte": None},
-            f"Voltar ao corte automatico na pagina {self.indice_pagina + 1}",
+            f"Voltar ao corte automático na página {self.indice_pagina + 1}",
         )
 
     @protegido
@@ -847,7 +847,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
             {"recorte": list(recorte) if recorte else None},
-            f"Corte de borda de todas as {len(indices)} paginas",
+            f"Corte de borda de todas as {len(indices)} páginas",
         )
 
     # --- angulo -----------------------------------------------------------
@@ -857,7 +857,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "ajustar_angulo", "pagina", [self.indice_pagina],
             {"angulo_manual": round(angulo, 2), "revisada": True},
-            f"Angulo da pagina {self.indice_pagina + 1}: {angulo:+.1f} graus",
+            f"Angulo da página {self.indice_pagina + 1}: {angulo:+.1f} graus",
         )
 
     @protegido
@@ -865,14 +865,14 @@ class TelaConferir(QWidget):
         self._registrar(
             "ajustar_angulo", "pagina", [self.indice_pagina],
             {"angulo_manual": 0.0, "revisada": True},
-            f"Nao endireitar a pagina {self.indice_pagina + 1}",
+            f"Não endireitar a página {self.indice_pagina + 1}",
         )
 
     @protegido
     def _angulo_automatico(self) -> None:
         self._registrar(
             "ajustar_angulo", "pagina", [self.indice_pagina], {"angulo_manual": None},
-            f"Voltar ao endireitar automatico na pagina {self.indice_pagina + 1}",
+            f"Voltar ao endireitar automático na página {self.indice_pagina + 1}",
         )
 
     # --- filtro -----------------------------------------------------------
@@ -886,7 +886,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "mudar_filtro", "pagina", [self.indice_pagina],
             {"filtro": filtro, "revisada": True},
-            f"Filtro da pagina {self.indice_pagina + 1}: {nome_antes} para {nome_depois}",
+            f"Filtro da página {self.indice_pagina + 1}: {nome_antes} para {nome_depois}",
         )
 
     @protegido
@@ -894,7 +894,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "forca_preto", "pagina", [self.indice_pagina],
             {"forca_preto": forca, "revisada": True},
-            f"Forca do preto da pagina {self.indice_pagina + 1}: {ROTULOS_FORCA[forca]}",
+            f"Força do preto da página {self.indice_pagina + 1}: {ROTULOS_FORCA[forca]}",
         )
 
     @protegido
@@ -906,7 +906,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
             {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto},
-            f"{nome} em todas as {len(indices)} paginas",
+            f"{nome} em todas as {len(indices)} páginas",
         )
 
     @protegido
@@ -918,7 +918,7 @@ class TelaConferir(QWidget):
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
             {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto},
-            f"{nome} da pagina {self.indice_pagina + 1} em diante ({len(indices)} paginas)",
+            f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 
     # --- gerais -----------------------------------------------------------
@@ -931,7 +931,7 @@ class TelaConferir(QWidget):
         self._registrar(
             acao, "pagina", [self.indice_pagina],
             {"apagada": not pagina.apagada, "revisada": True},
-            f"{acao.capitalize()} a pagina {self.indice_pagina + 1}",
+            f"{acao.capitalize()} a página {self.indice_pagina + 1}",
         )
 
     @protegido
@@ -944,15 +944,15 @@ class TelaConferir(QWidget):
 
     @protegido
     def marcar_certo_e_avancar(self) -> None:
-        """Barra de espaco: aprova e ja pula para a proxima."""
+        """Barra de espaço: aprova e já pula para a próxima."""
         self._marcar_revisada()
         self._navegar(1)
 
     @protegido
     def _aplicar_sugestao(self) -> None:
-        """O botao laranja do alerta: aplica a correcao mais provavel.
+        """O botão laranja do alerta: aplica a correcao mais provavel.
 
-        E so um atalho. Todos os controles manuais continuam valendo.
+        E só um atalho. Todos os controles manuais continuam valendo.
         """
         item = self.item_atual
         if not item.alertas:
@@ -1051,17 +1051,17 @@ class TelaConferir(QWidget):
         caixa = QMessageBox(self)
         caixa.setWindowTitle("Um momento")
         caixa.setIcon(QMessageBox.Information)
-        caixa.setText("Nao consegui fazer isso agora.")
+        caixa.setText("Não consegui fazer isso agora.")
         caixa.setInformativeText(
-            "O programa continua funcionando e o seu trabalho esta salvo. "
-            "Tente de novo, ou passe para a proxima pagina."
+            "O programa continua funcionando e o seu trabalho está salvo. "
+            "Tente de novo, ou passe para a próxima página."
         )
         caixa.addButton("entendi", QMessageBox.AcceptRole)
         caixa.exec()
 
     @protegido
     def _pedir_processamento(self) -> None:
-        """Avisa se ainda ha duvidas, mas nunca bloqueia."""
+        """Avisa se ainda ha dúvidas, mas nunca bloqueia."""
         if self.projeto is None:
             return
         pendentes = self.projeto.pendentes_de_revisao()
@@ -1071,8 +1071,8 @@ class TelaConferir(QWidget):
             caixa.setIcon(QMessageBox.Question)
             caixa.setText(
                 f"Ainda tem {pendentes} "
-                + ("pagina que eu nao tive certeza." if pendentes == 1
-                   else "paginas que eu nao tive certeza.")
+                + ("página que eu não tive certeza." if pendentes == 1
+                   else "páginas que eu não tive certeza.")
             )
             caixa.setInformativeText("Quer conferir antes ou processar assim mesmo?")
             conferir = caixa.addButton("conferir", QMessageBox.RejectRole)

@@ -1,7 +1,7 @@
 """Os quatro cartoes de filtro da aba Filtro.
 
 Cada cartao mostra a PAGINA REAL processada com aquele filtro, nunca um exemplo
-generico. O usuario escolhe olhando o resultado, nao lendo o nome.
+generico. O usuario escolhe olhando o resultado, não lendo o nome.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ ALTURA_AMOSTRA = 150
 
 
 class CartaoFiltro(QFrame):
-    """Um cartao: amostra em cima, nome e explicacao embaixo."""
+    """Um cartao: amostra em cima, nome e explicação embaixo."""
 
     escolhido = Signal(str)
 
@@ -79,7 +79,7 @@ class CartaoFiltro(QFrame):
 
 
 class _Amostra(QWidget):
-    """So a imagem, centralizada e proporcional."""
+    """Só a imagem, centralizada e proporcional."""
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)

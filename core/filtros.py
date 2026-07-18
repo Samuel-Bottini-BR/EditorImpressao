@@ -1,17 +1,17 @@
 """Os tres filtros de limpeza + o Original.
 
 Esta e a parte mais importante do programa. As versoes anteriores falharam aqui
-por tentar inventar formula propria. Aqui usamos o que ja e consagrado:
+por tentar inventar formula propria. Aqui usamos o que já e consagrado:
 
 - Preto e branco: binarizacao local de Sauvola (via DoxaPy, licenca CC0).
   E o mesmo caminho do ScanTailor. Resolve amarelado E bleed-through (o texto
-  do verso transparecendo) de uma vez so, porque o limiar e calculado numa
+  do verso transparecendo) de uma vez só, porque o limiar e calculado numa
   janela ao redor de cada pixel: o texto do verso e sempre mais claro que o
   texto da frente na vizinhanca dele, entao cai para o branco.
 
-- Melhorar: divisao pelo fundo estimado. Limpa a iluminacao sem tocar na cor.
+- Melhorar: divisão pelo fundo estimado. Limpa a iluminacao sem tocar na cor.
 
-- Magico pro: Melhorar + CLAHE + saturacao + nitidez, no espirito do
+- Mágico pro: Melhorar + CLAHE + saturacao + nitidez, no espirito do
   "magic color" do CamScanner.
 """
 
@@ -32,7 +32,7 @@ NOMES_AMIGAVEIS = {
     ORIGINAL: "Original",
     PRETO_E_BRANCO: "Preto e branco",
     MELHORAR: "Melhorar",
-    MAGICO_PRO: "Magico pro",
+    MAGICO_PRO: "Mágico pro",
 }
 
 # --- parametros de ajuste (mexer aqui para calibrar) -------------------------
@@ -93,13 +93,13 @@ BRANCO_LIMIAR = 235
 
 
 class ErroFiltro(Exception):
-    """Falha ao aplicar um filtro, ja com mensagem para o usuario."""
+    """Falha ao aplicar um filtro, já com mensagem para o usuario."""
 
 
 # --- binarizacao: DoxaPy com queda automatica para scikit-image --------------
 
 def _sauvola_doxapy(cinza: np.ndarray, janela: int, k: float) -> np.ndarray | None:
-    """Sauvola pelo DoxaPy. Devolve None se a biblioteca nao estiver disponivel."""
+    """Sauvola pelo DoxaPy. Devolve None se a biblioteca não estiver disponível."""
     try:
         import doxapy
     except Exception:  # noqa: BLE001 - biblioteca nativa pode faltar no Windows
@@ -136,7 +136,7 @@ def binarizar(cinza: np.ndarray, janela: int | None = None, k: float = 0.20) -> 
 
 
 def janela_para_altura(altura: int) -> int:
-    """Tamanho da janela do Sauvola proporcional a pagina, sempre impar."""
+    """Tamanho da janela do Sauvola proporcional a página, sempre impar."""
     janela = int(altura * JANELA_FRACAO_ALTURA)
     janela = max(JANELA_MIN, min(JANELA_MAX, janela))
     if janela % 2 == 0:
@@ -162,7 +162,7 @@ def _para_cinza(img: np.ndarray) -> np.ndarray:
 def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
     """Remove manchinhas isoladas de preto (poeira do scanner).
 
-    A area minima acompanha a resolucao: a 600 DPI a mesma sujeira ocupa
+    A área minima acompanha a resolução: a 600 DPI a mesma sujeira ocupa
     4x mais pixels que a 300 DPI.
     """
     escala = max(1.0, altura / 3000.0) ** 2
@@ -188,7 +188,7 @@ def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
 def filtro_preto_e_branco(
     img: np.ndarray, forca: str = "normal", despeckle: bool = True
 ) -> np.ndarray:
-    """Preto e branco (Eco). Devolve imagem de 1 canal, so 0 e 255."""
+    """Preto e branco (Eco). Devolve imagem de 1 canal, só 0 e 255."""
     if forca not in K_POR_FORCA:
         forca = "normal"
     cinza = _para_cinza(img)
@@ -203,11 +203,11 @@ def _estimar_fundo_cinza(cinza: np.ndarray) -> np.ndarray:
     """Estima a iluminacao da folha: a variacao lenta de claro e escuro.
 
     Sao a sombra da lombada, a luz torta do scanner e o amarelado irregular.
-    O desfoque forte apaga o texto e deixa so isso.
+    O desfoque forte apaga o texto e deixa só isso.
 
     Truque de desempenho: como o resultado e liso por definicao, o desfoque e
-    feito numa miniatura e depois esticado de volta. Desfocar a pagina inteira
-    a 300 DPI levava quase 5 segundos por pagina - inviavel para 500 paginas.
+    feito numa miniatura e depois esticado de volta. Desfocar a página inteira
+    a 300 DPI levava quase 5 segundos por página - inviavel para 500 páginas.
     """
     altura, largura = cinza.shape[:2]
     escala = min(1.0, LARGURA_ESTIMATIVA_FUNDO / max(1, largura))
@@ -228,16 +228,16 @@ def _nivel_do_papel(img: np.ndarray) -> float:
 def _achatar_iluminacao(img: np.ndarray, nivel_papel: float) -> np.ndarray:
     """Tira a variacao de luz da folha SEM mexer na cor nem no tom geral.
 
-    Duas diferencas para a divisao ingenua (img / fundo * 255), que foi onde a
-    versao anterior estragava as capas:
+    Duas diferencas para a divisão ingenua (img / fundo * 255), que foi onde a
+    versão anterior estragava as capas:
 
-    1. Dividimos pelo fundo *relativo ao nivel do papel*, nao pelo branco
-       absoluto. So a desigualdade e corrigida, o tom geral fica.
+    1. Dividimos pelo fundo *relativo ao nível do papel*, não pelo branco
+       absoluto. Só a desigualdade e corrigida, o tom geral fica.
 
-    2. A correcao so vale onde o fundo local ainda parece papel. Numa capa
-       azul, o fundo local e escuro porque ali o conteudo E escuro - nao e
+    2. A correcao só vale onde o fundo local ainda parece papel. Numa capa
+       azul, o fundo local e escuro porque ali o conteúdo E escuro - não e
        sombra. Tratar aquilo como sombra era o que lavava a capa. O peso cai a
-       zero conforme o fundo se afasta do nivel do papel.
+       zero conforme o fundo se afasta do nível do papel.
 
     O ganho e igual nos tres canais, o que preserva o matiz.
     """
@@ -262,11 +262,11 @@ def _balanco_de_branco(img: np.ndarray) -> np.ndarray:
     """Faz o papel virar branco de verdade, tirando o amarelado.
 
     Olha SO para os pixels que parecem papel: claros e pouco coloridos. Calcula
-    a media de cada canal neles e estica para o branco. Como a mesma logica
-    ignora tinta e ilustracao, a cor do conteudo nao e afetada.
+    a média de cada canal neles e estica para o branco. Como a mesma logica
+    ignora tinta e ilustração, a cor do conteúdo não e afetada.
 
-    Se a pagina quase nao tem papel branco a vista (uma capa colorida inteira,
-    uma foto de pagina cheia), nao ha o que balancear e a imagem sai como veio.
+    Se a página quase não tem papel branco a vista (uma capa colorida inteira,
+    uma foto de página cheia), não ha o que balancear e a imagem sai como veio.
     """
     cinza = _para_cinza(img)
     hsv_s = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
@@ -300,7 +300,7 @@ def _balanco_de_branco(img: np.ndarray) -> np.ndarray:
 
 
 def _curva_de_ombro(img: np.ndarray, nivel_papel: float) -> np.ndarray:
-    """Mapeia nivel_papel -> 255 mexendo so na parte clara da escala."""
+    """Mapeia nivel_papel -> 255 mexendo só na parte clara da escala."""
     inicio = max(1.0, nivel_papel * OMBRO_INICIO)
     if nivel_papel <= inicio:
         return img
@@ -316,9 +316,9 @@ def _curva_de_ombro(img: np.ndarray, nivel_papel: float) -> np.ndarray:
 
 
 def _aprofundar_pretos(img: np.ndarray, percentil: float = 0.5) -> np.ndarray:
-    """Puxa o ponto de preto para baixo, so na luminosidade.
+    """Puxa o ponto de preto para baixo, só na luminosidade.
 
-    Trabalhar no canal L do LAB (e nao nos tres canais BGR) evita o desvio de
+    Trabalhar no canal L do LAB (e não nos tres canais BGR) evita o desvio de
     matiz que aparecia quando cada canal era esticado por conta propria.
     """
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
@@ -347,7 +347,7 @@ def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.nd
 
 
 def _nitidez(img: np.ndarray, peso: float = NITIDEZ_PESO) -> np.ndarray:
-    """Unsharp mask: soma a propria imagem menos a versao borrada dela."""
+    """Unsharp mask: soma a propria imagem menos a versão borrada dela."""
     sigma = max(1.0, img.shape[0] / 1000.0)
     borrada = cv2.GaussianBlur(img, (0, 0), sigmaX=sigma, sigmaY=sigma)
     return cv2.addWeighted(img, 1.0 + peso, borrada, -peso, 0)
@@ -363,7 +363,7 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
 
 
 def filtro_magico_pro(img: np.ndarray) -> np.ndarray:
-    """Magico pro: cor viva, texto nitido, fundo branco. Para capas e gravuras."""
+    """Mágico pro: cor viva, texto nítido, fundo branco. Para capas e gravuras."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
@@ -393,7 +393,7 @@ def aplicar_filtro(
     """Aplica o filtro pedido.
 
     Devolve (imagem, monocromatica). monocromatica=True avisa o EscritorPDF
-    para salvar a pagina em 1 bit.
+    para salvar a página em 1 bit.
     """
     try:
         if filtro == ORIGINAL:
@@ -405,7 +405,7 @@ def aplicar_filtro(
         if filtro == MAGICO_PRO:
             return filtro_magico_pro(img), False
     except cv2.error as exc:
-        raise ErroFiltro("Nao consegui limpar esta pagina.") from exc
+        raise ErroFiltro("Não consegui limpar esta página.") from exc
 
     # filtro desconhecido: nao mexer e melhor que quebrar
     return img, False

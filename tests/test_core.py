@@ -1,4 +1,4 @@
-"""Testes do core que nao dependem de nenhum PDF real."""
+"""Testes do core que não dependem de nenhum PDF real."""
 
 from __future__ import annotations
 
@@ -68,10 +68,10 @@ def test_filtros_coloridos_mantem_tres_canais(filtro):
 
 
 def test_melhorar_nao_lava_uma_area_colorida_uniforme():
-    """A capa azul: o Melhorar tem que devolver azul, nao um borrao claro.
+    """A capa azul: o Melhorar tem que devolver azul, não um borrao claro.
 
-    E a regressao que motivou trocar a divisao pelo fundo por uma correcao
-    com peso - a versao ingenua lavava a capa e trocava as cores.
+    E a regressao que motivou trocar a divisão pelo fundo por uma correcao
+    com peso - a versão ingenua lavava a capa e trocava as cores.
     """
     img = np.full((600, 400, 3), 235, dtype=np.uint8)
     img[:, 200:] = (150, 70, 20)   # metade direita azul escuro (BGR)
@@ -80,7 +80,7 @@ def test_melhorar_nao_lava_uma_area_colorida_uniforme():
     azul = saida[300, 300].astype(int)
 
     assert azul[0] > azul[2] + 40, f"o azul deixou de ser azul: {azul}"
-    assert azul[0] < 235, f"o azul foi lavado ate o branco: {azul}"
+    assert azul[0] < 235, f"o azul foi lavado até o branco: {azul}"
 
 
 def test_janela_do_sauvola_e_sempre_impar():
@@ -98,7 +98,7 @@ def test_acha_a_lombada_no_meio():
 
 
 def test_acha_a_lombada_mesmo_sem_sombra():
-    """Scan limpo: sobra so a ausencia de texto para nos guiar."""
+    """Scan limpo: sobra só a ausencia de texto para nos guiar."""
     lombada = detectar_lombada(folha_dupla(com_sombra=False))
     assert abs(lombada.posicao - 0.5) < 0.06
 
@@ -196,7 +196,7 @@ def test_desfazer_e_refazer_uma_alteracao():
     acoes = HistoricoAcoes()
 
     acao = montar_acao(projeto, "mudar_filtro", "pagina", [2],
-                       {"filtro": MAGICO_PRO}, "Filtro da pagina 3")
+                       {"filtro": MAGICO_PRO}, "Filtro da página 3")
     aplicar(projeto, acao, acao.depois)
     acoes.registrar(acao)
     assert projeto.paginas[2].filtro == MAGICO_PRO
@@ -208,20 +208,20 @@ def test_desfazer_e_refazer_uma_alteracao():
 
 
 def test_um_ctrl_z_desfaz_o_lote_inteiro():
-    """'Usar em todas' e UMA acao, mesmo mexendo em 6 paginas."""
+    """'Usar em todas' e UMA acao, mesmo mexendo em 6 páginas."""
     projeto = projeto_de_teste()
     projeto.paginas[0].filtro = MELHORAR   # valor diferente, para conferir a volta
     acoes = HistoricoAcoes()
 
     indices = [p.indice for p in projeto.paginas]
     acao = montar_acao(projeto, "aplicar_em_todas", "pagina", indices,
-                       {"filtro": MAGICO_PRO}, "Magico pro em todas")
+                       {"filtro": MAGICO_PRO}, "Mágico pro em todas")
     aplicar(projeto, acao, acao.depois)
     acoes.registrar(acao)
     assert all(p.filtro == MAGICO_PRO for p in projeto.paginas)
 
     acoes.desfazer(projeto)
-    assert projeto.paginas[0].filtro == MELHORAR, "cada pagina volta ao SEU valor"
+    assert projeto.paginas[0].filtro == MELHORAR, "cada página volta ao SEU valor"
     assert all(p.filtro == PRETO_E_BRANCO for p in projeto.paginas[1:])
 
 
@@ -279,7 +279,7 @@ def test_pasta_normal_aceita_gravacao(tmp_path):
 def test_unidade_inexistente_e_recusada():
     pode, motivo = configuracoes.pode_gravar_em("Z:/nao_existe_mesmo")
     assert not pode
-    assert "Nao consegui criar" in motivo
+    assert "Não consegui criar" in motivo
 
 
 def test_permissao_negada_vira_frase_em_portugues(tmp_path, monkeypatch):
@@ -293,7 +293,7 @@ def test_permissao_negada_vira_frase_em_portugues(tmp_path, monkeypatch):
     pode, motivo = configuracoes.pode_gravar_em(tmp_path)
 
     assert not pode
-    assert "permissao" in motivo.lower()
+    assert "permissão" in motivo.lower(), "a mensagem tem que estar acentuada"
     assert "Error" not in motivo and "Errno" not in motivo
     assert "Documentos" in motivo, "a mensagem precisa sugerir uma saida"
 
@@ -360,4 +360,4 @@ def test_caminho_rapido_so_com_cadernos():
     assert projeto.so_cadernos is True
 
     projeto.paginas[0].apagada = True
-    assert projeto.so_cadernos is False, "apagar pagina exige regravar o PDF"
+    assert projeto.so_cadernos is False, "apagar página exige regravar o PDF"

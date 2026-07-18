@@ -1,17 +1,17 @@
-"""Modelos de dados do Editor de Impressao.
+"""Modelos de dados do Editor de Impressão.
 
 Uma observacao sobre a estrutura, que se afasta de proposito da especificacao:
 
-A especificacao previa uma unica lista de ConfigPagina. Na pratica existem dois
+A especificacao prévia uma única lista de ConfigPagina. Na pratica existem dois
 niveis diferentes, e mistura-los complicaria a interface:
 
-  - FOLHA  = o que veio no PDF de entrada. E onde moram dividir, posicao do
-             corte, rotacao e recorte. E o que a aba "Onde cortar" mostra.
-  - PAGINA = o que vai sair no PDF final. Uma folha dividida vira DUAS paginas.
+  - FOLHA  = o que veio no PDF de entrada. E onde moram dividir, posição do
+             corte, rotação e recorte. E o que a aba "Onde cortar" mostra.
+  - PAGINA = o que vai sair no PDF final. Uma folha dividida vira DUAS páginas.
              E onde mora o filtro, que a especificacao exige que seja por
-             pagina. E o que a aba "Filtro" mostra.
+             página. E o que a aba "Filtro" mostra.
 
-Assim "livro todo em preto e branco, so a capa em Magico pro" cai naturalmente,
+Assim "livro todo em preto e branco, só a capa em Mágico pro" cai naturalmente,
 e a tira de miniaturas de cada aba mostra exatamente a unidade que aquela aba
 edita.
 """
@@ -52,7 +52,7 @@ class ConfigFolha:
 
 @dataclass
 class ConfigPagina:
-    """Uma pagina do PDF de saida."""
+    """Uma página do PDF de saida."""
 
     indice: int                      # posicao no livro final, comecando em 0
     folha: int                       # de qual folha de entrada ela veio
@@ -109,7 +109,7 @@ class Projeto:
 
     @property
     def so_cadernos(self) -> bool:
-        """Caminho rapido: nenhuma alteracao de imagem, so reordenar."""
+        """Caminho rapido: nenhuma alteracao de imagem, só reordenar."""
         return (
             self.montar_cadernos
             and not self.dividir_folhas
@@ -149,7 +149,7 @@ class Projeto:
 
 
 def _com_tuplas(dados: dict[str, Any]) -> dict[str, Any]:
-    """JSON nao tem tupla; devolve os recortes ao formato original."""
+    """JSON não tem tupla; devolve os recortes ao formato original."""
     valor = dados.get("recorte")
     if isinstance(valor, list):
         dados["recorte"] = tuple(valor)
@@ -160,7 +160,7 @@ def _com_tuplas(dados: dict[str, Any]) -> dict[str, Any]:
 class Acao:
     """Uma alteracao feita pelo usuario, para desfazer e refazer.
 
-    Guardamos a ACAO, nao uma copia do projeto: com centenas de paginas, copiar
+    Guardamos a ACAO, não uma copia do projeto: com centenas de páginas, copiar
     o estado a cada mexida seria pesado demais. Assim o desfazer e ilimitado.
     """
 
@@ -192,14 +192,14 @@ class Acao:
 
 
 def nome_de_arquivo_seguro(nome: str) -> str:
-    """Tira do nome os caracteres que o Windows nao aceita em arquivo."""
+    """Tira do nome os caracteres que o Windows não aceita em arquivo."""
     proibidos = '<>:"/\\|?*'
     limpo = "".join("-" if c in proibidos else c for c in nome).strip(" .")
     return limpo or "livro"
 
 
 def nome_de_saida_sugerido(projeto: "Projeto") -> str:
-    """Nome de arquivo proposto, ja com a extensao.
+    """Nome de arquivo proposto, já com a extensao.
 
     O sufixo conta o que foi feito, para o Kaique diferenciar duas versoes do
     mesmo livro na mesma pasta.

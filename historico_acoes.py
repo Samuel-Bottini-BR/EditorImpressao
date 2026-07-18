@@ -1,12 +1,12 @@
 """Desfazer e refazer ilimitados, gravados em arquivo.
 
-Padrao Command: guardamos a ACAO, nao uma copia do projeto. Uma acao ocupa
+Padrao Command: guardamos a ACAO, não uma copia do projeto. Uma acao ocupa
 algumas centenas de bytes, entao dar Ctrl+Z quinhentas vezes e barato. Copiar o
-estado inteiro a cada mexida, com 500 paginas, nao seria.
+estado inteiro a cada mexida, com 500 páginas, não seria.
 
-O historico vai para acoes.jsonl (uma acao por linha). JSON Lines porque da
+O histórico vai para acoes.jsonl (uma acao por linha). JSON Lines porque da
 para acrescentar no fim sem reescrever o arquivo, e porque um fechamento
-inesperado no meio da escrita perde no maximo a ultima linha.
+inesperado no meio da escrita perde no máximo a última linha.
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ class HistoricoAcoes:
     # --- registrar --------------------------------------------------------
 
     def registrar(self, acao: Acao) -> None:
-        """Guarda uma acao ja aplicada ao projeto.
+        """Guarda uma acao já aplicada ao projeto.
 
         Uma acao nova depois de um desfazer limpa a pilha de refazer - e o
         comportamento que todo mundo espera de qualquer editor.
@@ -78,7 +78,7 @@ class HistoricoAcoes:
         return acao
 
     def voltar_para(self, projeto: Projeto, posicao: int) -> None:
-        """Leva o projeto ate um ponto do historico (painel 'Historico')."""
+        """Leva o projeto até um ponto do histórico (painel 'Historico')."""
         while len(self.feitas) > posicao and self.desfazer(projeto):
             pass
         while len(self.feitas) < posicao and self.refazer(projeto):
@@ -112,10 +112,10 @@ class HistoricoAcoes:
             pass
 
     def carregar(self) -> None:
-        """Le o historico do disco.
+        """Le o histórico do disco.
 
-        A posicao tambem e restaurada, entao reabrir o programa no meio de um
-        livro mantem o refazer disponivel, nao so o desfazer.
+        A posição tambem e restaurada, entao reabrir o programa no meio de um
+        livro mantem o refazer disponível, não só o desfazer.
         """
         if self.pasta is None:
             return
@@ -160,7 +160,7 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
       - dicionario {indice: valor}: cada item recebe o seu
 
     A segunda forma existe para o desfazer de uma acao em lote: ao aplicar
-    "usar em todas", cada pagina tinha um filtro anterior diferente, e o
+    "usar em todas", cada página tinha um filtro anterior diferente, e o
     Ctrl+Z precisa devolver o de cada uma.
     """
     itens = projeto.folhas if acao.alvo == "folha" else projeto.paginas

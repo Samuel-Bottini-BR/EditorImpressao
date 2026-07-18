@@ -1,7 +1,7 @@
 """A tira de miniaturas do rodape da tela de conferir.
 
-As miniaturas sao geradas em segundo plano e bem pequenas (~90 px). Enquanto
-nao chegam, o quadro fica cinza com o numero - a tela nunca espera por elas.
+As miniaturas são geradas em segundo plano e bem pequenas (~90 px). Enquanto
+não chegam, o quadro fica cinza com o número - a tela nunca espera por elas.
 """
 
 from __future__ import annotations
@@ -172,13 +172,13 @@ class TiraMiniaturas(QWidget):
                corte_de: dict[int, tuple[str, float]] | None = None) -> None:
         """Cria os quadros e dispara a geracao das imagens.
 
-        folha_de mapeia o indice do item (pagina ou folha) para a folha do PDF
-        de onde ele vem - duas paginas de uma mesma folha reaproveitam a mesma
-        leitura, entao o PDF e lido uma vez so por folha.
+        folha_de mapeia o indice do item (página ou folha) para a folha do PDF
+        de onde ele vem - duas páginas de uma mesma folha reaproveitam a mesma
+        leitura, entao o PDF e lido uma vez só por folha.
 
-        corte_de diz, para cada pagina, qual metade da folha ela e. Sem isso a
-        miniatura de uma pagina mostraria a folha dupla inteira, e o usuario
-        veria a mesma imagem em duas paginas seguidas.
+        corte_de diz, para cada página, qual metade da folha ela e. Sem isso a
+        miniatura de uma página mostraria a folha dupla inteira, e o usuario
+        veria a mesma imagem em duas páginas seguidas.
         """
         self.limpar()
         self._cortes = corte_de or {}
@@ -209,7 +209,7 @@ class TiraMiniaturas(QWidget):
                 self._miniaturas[indice].definir_imagem(self._metade(indice, img))
 
     def _metade(self, indice: int, img: np.ndarray) -> np.ndarray:
-        """Recorta a metade que esta pagina representa."""
+        """Recorta a metade que esta página representa."""
         dados = self._cortes.get(indice)
         if not dados:
             return img

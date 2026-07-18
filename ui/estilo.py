@@ -1,6 +1,6 @@
 """Cores, fontes e folha de estilo.
 
-Regra do projeto: nada de emoji em rotulo. A versao anterior quebrou no Windows
+Regra do projeto: nada de emoji em rotulo. A versão anterior quebrou no Windows
 por causa disso. Onde faria falta um icone, usamos texto ou desenho vetorial.
 """
 
@@ -88,7 +88,7 @@ QPushButton#contadorAlerta {{
     font-weight: 600;
 }}
 
-/* Botoes que ficam "apertados", como a forca do preto */
+/* Botoes que ficam "apertados", como a força do preto */
 QPushButton:checked {{
     background: {AZUL};
     color: white;

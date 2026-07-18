@@ -1,11 +1,11 @@
-"""Clica em TODOS os botoes da tela de conferir, de verdade.
+"""Clica em TODOS os botões da tela de conferir, de verdade.
 
 Uso:
     python teste_botoes.py "livro.pdf"
 
-A diferenca para o teste_interface.py: aqui os botoes sao acionados por
-botao.click(), passando pelo sinal clicked do Qt, e nao chamando o metodo
-Python direto. Um erro que so aparece na ligacao do sinal - por exemplo o
+A diferenca para o teste_interface.py: aqui os botões são acionados por
+botão.click(), passando pelo sinal clicked do Qt, e não chamando o metodo
+Python direto. Um erro que só aparece na ligacao do sinal - por exemplo o
 argumento 'checked' que o clicked manda junto - escapa do outro teste e e
 pego aqui.
 
@@ -64,7 +64,7 @@ def sobreposicoes(conferir: QWidget) -> list[str]:
     """Acha linhas do empilhamento cujos retangulos se cruzam.
 
     Num QVBoxLayout isso nunca deveria acontecer: cada faixa fica na sua
-    altura. Se acontecer, alguma coisa esta desenhada por cima do conteudo.
+    altura. Se acontecer, alguma coisa esta desenhada por cima do conteúdo.
     """
     problemas: list[str] = []
     linhas = faixas_da_tela(conferir)
@@ -116,7 +116,7 @@ def main(caminho_pdf: str) -> int:
     print("Analisando...")
     janela.analisar()
     if not esperar(180, lambda: janela.telas.currentIndex() == CONFERIR):
-        print("a analise nao terminou")
+        print("a análise não terminou")
         return 1
 
     conferir = janela.tela_conferir

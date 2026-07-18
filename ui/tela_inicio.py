@@ -32,7 +32,7 @@ class TelaInicio(QWidget):
         camadas.setContentsMargins(46, 30, 46, 26)
         camadas.setSpacing(18)
 
-        titulo = QLabel("Editor de Impressao")
+        titulo = QLabel("Editor de Impressão")
         titulo.setObjectName("titulo")
         camadas.addWidget(titulo)
 
@@ -64,7 +64,7 @@ class TelaInicio(QWidget):
         self.recarregar()
 
     def recarregar(self) -> None:
-        """Le o historico do disco e remonta a lista."""
+        """Le o histórico do disco e remonta a lista."""
         while self.lista.count() > 1:
             item = self.lista.takeAt(0)
             if item.widget():
@@ -105,7 +105,7 @@ class _LinhaProjeto(QFrame):
 
         filtro = NOMES_AMIGAVEIS.get(entrada.filtro, entrada.filtro)
         detalhe = QLabel(
-            f"{entrada.data_amigavel}  -  {entrada.num_paginas} paginas  -  {filtro}"
+            f"{entrada.data_amigavel}  -  {entrada.num_paginas} páginas  -  {filtro}"
         )
         detalhe.setStyleSheet(f"color: {TEXTO_FRACO};")
         textos.addWidget(detalhe)
@@ -115,7 +115,7 @@ class _LinhaProjeto(QFrame):
         abrir = QPushButton("abrir de novo")
         abrir.setEnabled(entrada.existe_entrada)
         if not entrada.existe_entrada:
-            abrir.setToolTip("O PDF original nao esta mais nesse lugar.")
+            abrir.setToolTip("O PDF original não está mais nesse lugar.")
         abrir.clicked.connect(lambda: tela.reabrir_projeto.emit(entrada))
         linha.addWidget(abrir)
 

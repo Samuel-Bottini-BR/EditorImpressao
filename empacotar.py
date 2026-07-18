@@ -1,17 +1,17 @@
 """Gera o programa pronto para entregar (Etapa 8).
 
-    python empacotar.py                 # tudo: pasta + arquivo unico + instalador
-    python empacotar.py --modo pasta        # so a versao portatil em pasta
-    python empacotar.py --modo arquivo      # so o .exe unico (pendrive)
+    python empacotar.py                 # tudo: pasta + arquivo único + instalador
+    python empacotar.py --modo pasta        # só a versão portatil em pasta
+    python empacotar.py --modo arquivo      # só o .exe único (pendrive)
     python empacotar.py --modo instalador   # pasta + EditorImpressao-Setup.exe
 
 Sai tudo em dist/:
 
-    dist\\EditorImpressao\\                 versao em pasta - abre em ~8 s
-    dist\\EditorImpressao.exe               arquivo unico  - abre em ~12 s
+    dist\\EditorImpressao\\                 versão em pasta - abre em ~8 s
+    dist\\EditorImpressao.exe               arquivo único  - abre em ~12 s
     dist\\EditorImpressao-Setup.exe         instalador do Windows
 
-A versao em pasta e a que o instalador empacota: o arquivo unico se descompacta
+A versão em pasta e a que o instalador empacota: o arquivo único se descompacta
 inteiro a cada abertura, o que custa uns 4 segundos a mais. Os dois demoram
 alguns segundos de qualquer jeito - e o custo de carregar Qt e OpenCV.
 (Medido nesta maquina, em aberturas repetidas.)
@@ -61,7 +61,7 @@ def _tamanho(caminho: Path) -> str:
 
 
 def _pyinstaller(onefile: bool) -> bool:
-    """Roda o PyInstaller. onefile=False gera a versao em pasta."""
+    """Roda o PyInstaller. onefile=False gera a versão em pasta."""
     comando = [
         sys.executable, "-m", "PyInstaller",
         "--noconfirm", "--clean",
@@ -105,18 +105,18 @@ def construir_pasta() -> Path | None:
         print("  falhou")
         return None
     if not (destino / f"{NOME}.exe").exists():
-        print("  o PyInstaller terminou mas o programa nao apareceu")
+        print("  o PyInstaller terminou mas o programa não apareceu")
         return None
 
     # Um bilhete dentro da pasta, para quem receber so ela
     (destino / "COMO USAR.txt").write_text(
-        "Editor de Impressao - versao portatil\r\n"
+        "Editor de Impressão - versão portatil\r\n"
         "\r\n"
-        "Nao precisa instalar nada. De dois cliques em EditorImpressao.exe.\r\n"
+        "Não precisa instalar nada. De dois cliques em EditorImpressao.exe.\r\n"
         "A primeira tela leva uns 8 segundos para aparecer.\r\n"
         "\r\n"
-        "A pasta inteira precisa andar junto - se copiar so o .exe,\r\n"
-        "o programa nao abre. Para levar um arquivo so, use a versao\r\n"
+        "A pasta inteira precisa andar junto - se copiar só o .exe,\r\n"
+        "o programa não abre. Para levar um arquivo só, use a versão\r\n"
         "EditorImpressao.exe que fica fora desta pasta.\r\n",
         encoding="utf-8",
     )
@@ -125,8 +125,8 @@ def construir_pasta() -> Path | None:
 
 
 def construir_arquivo_unico() -> Path | None:
-    """Um .exe so, para levar no pendrive."""
-    print("\n=== Arquivo unico (pendrive) ===")
+    """Um .exe só, para levar no pendrive."""
+    print("\n=== Arquivo único (pendrive) ===")
     destino = RAIZ / "dist" / f"{NOME}.exe"
     destino.unlink(missing_ok=True)
 
@@ -135,7 +135,7 @@ def construir_arquivo_unico() -> Path | None:
         return None
 
     print(f"  pronto: {destino}  ({_tamanho(destino)})")
-    print("  atencao: abre uns 4 segundos mais devagar que a versao em pasta")
+    print("  atenção: abre uns 4 segundos mais devagar que a versão em pasta")
     return destino
 
 
@@ -145,19 +145,19 @@ def construir_instalador() -> Path | None:
 
     pasta = RAIZ / "dist" / NOME
     if not (pasta / f"{NOME}.exe").exists():
-        print("  a versao em pasta ainda nao existe; gerando ela antes")
+        print("  a versão em pasta ainda não existe; gerando ela antes")
         if construir_pasta() is None:
             return None
 
     inno = achar_inno()
     if inno is None:
-        print("  Inno Setup nao encontrado.")
+        print("  Inno Setup não encontrado.")
         print("  Instale com:  winget install --id JRSoftware.InnoSetup")
         return None
 
     script = RAIZ / "instalador.iss"
     if not script.exists():
-        print(f"  {script.name} nao encontrado")
+        print(f"  {script.name} não encontrado")
         return None
 
     resultado = subprocess.run(
@@ -171,7 +171,7 @@ def construir_instalador() -> Path | None:
 
     destino = RAIZ / "dist" / f"{NOME}-Setup.exe"
     if not destino.exists():
-        print("  o Inno Setup terminou mas o instalador nao apareceu")
+        print("  o Inno Setup terminou mas o instalador não apareceu")
         return None
 
     print(f"  pronto: {destino}  ({_tamanho(destino)})")
@@ -179,17 +179,17 @@ def construir_instalador() -> Path | None:
 
 
 def entregar() -> Path | None:
-    """Gera SO o instalador e deixa ele sozinho na Area de Trabalho.
+    """Gera SO o instalador e deixa ele sozinho na Área de Trabalho.
 
-    Tudo o mais e apagado no fim: build/, dist/ e qualquer versao portatil.
-    O que sobra para o usuario final e um arquivo unico.
+    Tudo o mais e apagado no fim: build/, dist/ e qualquer versão portatil.
+    O que sobra para o usuario final e um arquivo único.
     """
-    print("\n=== Entrega: so o instalador ===")
+    print("\n=== Entrega: só o instalador ===")
 
     if construir_instalador() is None:
         return None
 
-    pasta = Path.home() / "Desktop" / "Editor de Impressao"
+    pasta = Path.home() / "Desktop" / "Editor de Impressão"
     print(f"\n  preparando {pasta}")
     if pasta.exists():
         shutil.rmtree(pasta, ignore_errors=True)
@@ -213,13 +213,13 @@ def entregar() -> Path | None:
 
 def main() -> int:
     analisador = argparse.ArgumentParser(
-        description="Gera o Editor de Impressao pronto para entregar."
+        description="Gera o Editor de Impressão pronto para entregar."
     )
     analisador.add_argument(
         "--modo",
         choices=["tudo", "pasta", "arquivo", "instalador", "entrega"],
         default="tudo",
-        help="entrega = so o instalador, na Area de Trabalho, e apaga o resto",
+        help="entrega = só o instalador, na Área de Trabalho, e apaga o resto",
     )
     argumentos = analisador.parse_args()
 
@@ -237,9 +237,9 @@ def main() -> int:
     resultados: dict[str, Path | None] = {}
 
     if argumentos.modo in ("tudo", "pasta"):
-        resultados["versao em pasta"] = construir_pasta()
+        resultados["versão em pasta"] = construir_pasta()
     if argumentos.modo in ("tudo", "arquivo"):
-        resultados["arquivo unico"] = construir_arquivo_unico()
+        resultados["arquivo único"] = construir_arquivo_unico()
     if argumentos.modo in ("tudo", "instalador"):
         resultados["instalador"] = construir_instalador()
 
