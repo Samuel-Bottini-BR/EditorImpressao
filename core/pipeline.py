@@ -106,7 +106,6 @@ def analisar_projeto(
                 confianca_corte=lombada.confianca,
                 angulo_detectado=inclinacao.angulo,
                 confianca_angulo=inclinacao.confianca,
-                recorte_detectado=recorte.tupla,
                 e_paisagem=lombada.e_paisagem,
             )
             folha.alertas = analise.analisar_folha(
@@ -156,7 +155,7 @@ def _partes_da_folha(img: np.ndarray, folha: ConfigFolha) -> list[tuple[str, np.
 # ---------------------------------------------------------------------------
 
 def preparar_metade(
-    img_folha: np.ndarray, folha: ConfigFolha, metade: str, projeto: Projeto
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto
 ) -> np.ndarray:
     """Aplica giro, divisao, recorte e endireitamento - nesta ordem.
 
@@ -168,13 +167,13 @@ def preparar_metade(
         img = girar_90(img, folha.rotacao)
 
     # 1. dividir
-    if folha.dividir and metade != METADE_INTEIRA:
+    if folha.dividir and pagina.metade != METADE_INTEIRA:
         esq, dir_ = dividir_imagem(img, folha.posicao_corte)
-        img = esq if metade == METADE_ESQUERDA else dir_
+        img = esq if pagina.metade == METADE_ESQUERDA else dir_
 
     # 2. cortar bordas
     if projeto.cortar_bordas:
-        recorte = folha.recorte
+        recorte = pagina.recorte
         if recorte is None:
             # o recorte automatico e recalculado na metade ja separada: cada
             # pagina tem sua propria sombra de lombada de um lado so
@@ -183,7 +182,7 @@ def preparar_metade(
 
     # 3. endireitar
     if projeto.endireitar:
-        angulo = folha.angulo_manual
+        angulo = pagina.angulo_manual
         if angulo is None:
             angulo = detectar_angulo(img).angulo
         if angulo:
@@ -201,7 +200,7 @@ def renderizar_pagina(
     """
     folha = projeto.folhas[pagina.folha]
     img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
-    img = preparar_metade(img_folha, folha, pagina.metade, projeto)
+    img = preparar_metade(img_folha, folha, pagina, projeto)
 
     if not projeto.limpar:
         return img, False
@@ -265,7 +264,7 @@ def processar(
                     img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
                     folha_atual = folha.indice
 
-                img = preparar_metade(img_folha, folha, pagina.metade, projeto)
+                img = preparar_metade(img_folha, folha, pagina, projeto)
 
                 if projeto.limpar:
                     img, mono = aplicar_filtro(img, pagina.filtro, pagina.forca_preto)

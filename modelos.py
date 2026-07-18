@@ -38,11 +38,8 @@ class ConfigFolha:
     posicao_corte: float = 0.5       # 0.0 a 1.0, relativo a largura
     confianca_corte: float = 0.0     # 0.0 a 1.0
     rotacao: int = 0                 # 0, 90, 180, 270
-    angulo_manual: float | None = None   # None = usar o automatico
-    angulo_detectado: float = 0.0
+    angulo_detectado: float = 0.0    # so para o alerta "muito torta"
     confianca_angulo: float = 0.0
-    recorte: tuple[float, float, float, float] | None = None  # None = automatico
-    recorte_detectado: tuple[float, float, float, float] | None = None
     apagada: bool = False
     e_paisagem: bool = True
     alertas: list[str] = field(default_factory=list)
@@ -60,6 +57,13 @@ class ConfigPagina:
     indice: int                      # posicao no livro final, comecando em 0
     folha: int                       # de qual folha de entrada ela veio
     metade: str = METADE_INTEIRA     # inteira | esquerda | direita
+
+    # Recorte e angulo moram na PAGINA, e nao na folha, porque o pipeline os
+    # aplica depois da divisao: cada metade tem a sua sombra de lombada de um
+    # lado so, e pode estar torta de um jeito diferente da outra.
+    recorte: tuple[float, float, float, float] | None = None  # None = automatico
+    angulo_manual: float | None = None                        # None = automatico
+
     filtro: str = PRETO_E_BRANCO
     forca_preto: str = "normal"      # mais_fraco | normal | mais_escuro
     apagada: bool = False
@@ -136,8 +140,8 @@ class Projeto:
 
     @staticmethod
     def de_dicionario(dados: dict[str, Any]) -> "Projeto":
-        folhas = [ConfigFolha(**_com_tuplas(f)) for f in dados.pop("folhas", [])]
-        paginas = [ConfigPagina(**p) for p in dados.pop("paginas", [])]
+        folhas = [ConfigFolha(**f) for f in dados.pop("folhas", [])]
+        paginas = [ConfigPagina(**_com_tuplas(p)) for p in dados.pop("paginas", [])]
         projeto = Projeto(**dados)
         projeto.folhas = folhas
         projeto.paginas = paginas
@@ -146,10 +150,9 @@ class Projeto:
 
 def _com_tuplas(dados: dict[str, Any]) -> dict[str, Any]:
     """JSON nao tem tupla; devolve os recortes ao formato original."""
-    for campo in ("recorte", "recorte_detectado"):
-        valor = dados.get(campo)
-        if isinstance(valor, list):
-            dados[campo] = tuple(valor)
+    valor = dados.get("recorte")
+    if isinstance(valor, list):
+        dados["recorte"] = tuple(valor)
     return dados
 
 
