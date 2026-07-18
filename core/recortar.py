@@ -17,8 +17,12 @@ CORTE_MAXIMO = 0.25
 
 ALTURA_ANALISE = 800
 
-# Se o retangulo detectado encostar no conteudo escuro, avisamos (secao 4.3).
-MARGEM_ALERTA_PX = 2
+# Faixa colada na moldura que NAO conta como conteudo perdido: e ali que mora
+# a borda preta do scanner, justamente o que queremos cortar.
+MOLDURA = 0.03
+
+# Fracao de tinta fora do corte a partir da qual avisamos o usuario.
+TINTA_FORA_MAXIMA = 0.02
 
 
 @dataclass(frozen=True)
@@ -94,7 +98,7 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     x0e, y0e = min(x0e, max_x), min(y0e, max_y)
     x1e, y1e = max(x1e, largura - max_x), max(y1e, altura - max_y)
 
-    encostou = (x0e >= x0) or (y0e >= y0) or (x1e <= x1) or (y1e <= y1)
+    encostou = _sobrou_conteudo_fora(tinta, x0e, y0e, x1e, y1e)
 
     return Recorte(
         x=x0e / largura,
@@ -103,6 +107,33 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
         altura=(y1e - y0e) / altura,
         encostou_no_conteudo=bool(encostou),
     )
+
+
+def _sobrou_conteudo_fora(
+    tinta: np.ndarray, x0: int, y0: int, x1: int, y1: int
+) -> bool:
+    """Diz se ficou conteudo de verdade FORA do retangulo que vamos manter.
+
+    O cuidado esta em nao confundir com a borda preta do scanner, que e o que
+    queremos jogar fora. Por isso a faixa colada na moldura (MOLDURA) e
+    ignorada: sobra so o miolo entre a borda preta e o corte, que e onde
+    apareceria um pedaco de texto perdido.
+    """
+    altura, largura = tinta.shape[:2]
+    moldura_x = int(largura * MOLDURA)
+    moldura_y = int(altura * MOLDURA)
+
+    faixas = [
+        tinta[moldura_y:y0, moldura_x : largura - moldura_x],            # acima
+        tinta[y1 : altura - moldura_y, moldura_x : largura - moldura_x],  # abaixo
+        tinta[moldura_y : altura - moldura_y, moldura_x:x0],              # esquerda
+        tinta[moldura_y : altura - moldura_y, x1 : largura - moldura_x],  # direita
+    ]
+
+    for faixa in faixas:
+        if faixa.size >= 100 and float(faixa.mean()) > TINTA_FORA_MAXIMA:
+            return True
+    return False
 
 
 def aplicar_recorte(img: np.ndarray, recorte: Recorte | tuple) -> np.ndarray:
