@@ -67,7 +67,10 @@ class Visualizador(QWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.setMinimumHeight(340)
+        # Minimo baixo de proposito. Com 340 px a area da imagem nao cabia em
+        # janelas pequenas e o Qt acabava desenhando a faixa e os botoes por
+        # cima da pagina. A imagem se ajusta sozinha ao que sobrar.
+        self.setMinimumHeight(150)
         self.setMouseTracking(True)
 
         self._pixmap: QPixmap | None = None

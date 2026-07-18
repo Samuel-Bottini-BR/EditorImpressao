@@ -88,7 +88,7 @@ def main(caminho_pdf: str) -> int:
     # --- aba Filtro -------------------------------------------------------
     abas = conferir._abas_ativas
     print(f"  abas: {abas}")
-    conferir.abas.setCurrentIndex(abas.index("filtro"))
+    conferir.barra_abas.setCurrentIndex(abas.index("filtro"))
     esperar(4.0)
     capturar(janela, "tela3_filtro")
 
@@ -144,7 +144,7 @@ def main(caminho_pdf: str) -> int:
 
     # --- aba Onde cortar: arrastar a linha --------------------------------
     if "corte" in abas:
-        conferir.abas.setCurrentIndex(abas.index("corte"))
+        conferir.barra_abas.setCurrentIndex(abas.index("corte"))
         esperar(2.5)
         folha = projeto.folhas[conferir.indice_folha]
         anterior = folha.posicao_corte
@@ -186,6 +186,9 @@ def main(caminho_pdf: str) -> int:
     assert configuracoes.pasta_de_saida_sugerida() == pasta_de_teste
     print("  ultima pasta lembrada nas configuracoes")
 
+    # Apaga a sobra da execucao anterior: senao o dialogo de "ja existe um
+    # arquivo com esse nome" aparece e trava o teste esperando um clique.
+    (pasta_de_teste / "meu livro.pdf").unlink(missing_ok=True)
     destino.definir(pasta_de_teste, "meu livro.pdf")
     esperar(0.2)
 

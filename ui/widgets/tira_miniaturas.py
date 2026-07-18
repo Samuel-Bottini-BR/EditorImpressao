@@ -69,7 +69,7 @@ class Miniatura(QFrame):
         self.apagada = False
         self._pixmap: QPixmap | None = None
 
-        self.setFixedSize(QSize(LARGURA_MAXIMA, ALTURA_MINIATURA + 22))
+        self.setFixedSize(QSize(LARGURA_MAXIMA, ALTURA_MINIATURA + 18))
         self.setCursor(Qt.PointingHandCursor)
 
     def definir_imagem(self, img: np.ndarray) -> None:
@@ -147,15 +147,16 @@ class TiraMiniaturas(QWidget):
 
         fora = QVBoxLayout(self)
         fora.setContentsMargins(0, 0, 0, 0)
-        fora.setSpacing(4)
+        fora.setSpacing(2)
 
         self.rotulo = QLabel(titulo)
         self.rotulo.setObjectName("fraco")
+        self.rotulo.setStyleSheet("font-size: 12px;")
         fora.addWidget(self.rotulo)
 
         self.rolagem = QScrollArea()
         self.rolagem.setWidgetResizable(True)
-        self.rolagem.setFixedHeight(ALTURA_MINIATURA + 46)
+        self.rolagem.setFixedHeight(ALTURA_MINIATURA + 36)
         self.rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.rolagem.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 

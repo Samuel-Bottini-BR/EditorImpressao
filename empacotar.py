@@ -178,14 +178,58 @@ def construir_instalador() -> Path | None:
     return destino
 
 
+def entregar() -> Path | None:
+    """Gera SO o instalador e deixa ele sozinho na Area de Trabalho.
+
+    Tudo o mais e apagado no fim: build/, dist/ e qualquer versao portatil.
+    O que sobra para o usuario final e um arquivo unico.
+    """
+    print("\n=== Entrega: so o instalador ===")
+
+    if construir_instalador() is None:
+        return None
+
+    pasta = Path.home() / "Desktop" / "Editor de Impressao"
+    print(f"\n  preparando {pasta}")
+    if pasta.exists():
+        shutil.rmtree(pasta, ignore_errors=True)
+    pasta.mkdir(parents=True, exist_ok=True)
+
+    origem = RAIZ / "dist" / f"{NOME}-Setup.exe"
+    destino = pasta / f"{NOME}-Setup.exe"
+    shutil.copy2(origem, destino)
+
+    print("  limpando as sobras do empacotamento")
+    shutil.rmtree(RAIZ / "build", ignore_errors=True)
+    shutil.rmtree(RAIZ / "dist", ignore_errors=True)
+
+    sobrando = [f.name for f in pasta.iterdir()]
+    if sobrando != [f"{NOME}-Setup.exe"]:
+        print(f"  ATENCAO: sobrou coisa a mais na pasta: {sobrando}")
+
+    print(f"\n  pronto: {destino}  ({_tamanho(destino)})")
+    return destino
+
+
 def main() -> int:
     analisador = argparse.ArgumentParser(
         description="Gera o Editor de Impressao pronto para entregar."
     )
     analisador.add_argument(
-        "--modo", choices=["tudo", "pasta", "arquivo", "instalador"], default="tudo"
+        "--modo",
+        choices=["tudo", "pasta", "arquivo", "instalador", "entrega"],
+        default="tudo",
+        help="entrega = so o instalador, na Area de Trabalho, e apaga o resto",
     )
     argumentos = analisador.parse_args()
+
+    if argumentos.modo == "entrega":
+        inicio = time.perf_counter()
+        shutil.rmtree(RAIZ / "build", ignore_errors=True)
+        shutil.rmtree(RAIZ / "dist", ignore_errors=True)
+        resultado = entregar()
+        print(f"\nTerminou em {time.perf_counter() - inicio:.0f} s")
+        return 0 if resultado else 1
 
     inicio = time.perf_counter()
     shutil.rmtree(RAIZ / "build", ignore_errors=True)

@@ -37,8 +37,8 @@ class SeletorDestino(QFrame):
         self._pasta = configuracoes.pasta_de_saida_sugerida()
 
         camadas = QVBoxLayout(self)
-        camadas.setContentsMargins(14, 10, 14, 10)
-        camadas.setSpacing(6)
+        camadas.setContentsMargins(12, 7, 12, 7)
+        camadas.setSpacing(4)
 
         linha_pasta = QHBoxLayout()
         linha_pasta.setSpacing(10)

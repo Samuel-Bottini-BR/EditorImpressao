@@ -1,6 +1,25 @@
 """TELA 3 - Conferir: a previa e todos os ajustes manuais.
 
-As abas aparecem conforme o que foi marcado na tela 2. Cada aba edita uma
+Empilhamento da tela, de cima para baixo, sem nenhuma sobreposicao:
+
+    1. cabecalho (titulo, contador de alertas, desfazer/refazer)
+    2. barra de abas
+    3. area da imagem            <- fica com todo o espaco que sobrar
+    4. faixa de explicacao
+    5. linha de botoes
+    6. tira de miniaturas
+    7. onde salvar
+    8. rodape (voltar / confirmar e processar)
+
+Tudo isso num unico QVBoxLayout. A faixa e os botoes NAO moram dentro das
+paginas das abas: elas guardam so a imagem. Foi por isso que a versao anterior
+sobrepunha - a pagina da aba nao tinha altura para caber imagem + faixa +
+botoes, e o Qt acabava empilhando um por cima do outro.
+
+Por isso tambem usamos QTabBar (so a barra) com QStackedWidget, e nao
+QTabWidget: assim a faixa e os botoes ficam de fora, como irmaos.
+
+As abas aparecem conforme o que foi marcado na tela 2. Cada uma edita uma
 unidade diferente:
 
     Onde cortar -> FOLHA do PDF de entrada (a linha da lombada)
@@ -14,16 +33,20 @@ qualquer pagina, com ou sem alerta.
 
 from __future__ import annotations
 
+import functools
+import traceback
+
 import numpy as np
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QButtonGroup,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QSizePolicy,
-    QTabWidget,
+    QStackedWidget,
+    QTabBar,
     QVBoxLayout,
     QWidget,
 )
@@ -39,7 +62,8 @@ from core.filtros import (
 )
 from historico_acoes import HistoricoAcoes, aplicar, montar_acao
 from modelos import Projeto
-from ui.estilo import LARANJA, TEXTO_FRACO
+from registro import registrar_erro
+from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.destino import SeletorDestino
@@ -47,15 +71,20 @@ from ui.widgets.tira_miniaturas import TiraMiniaturas
 from ui.widgets.visualizador import (
     MODO_ANGULO,
     MODO_CORTE,
-    MODO_NENHUM,
     MODO_RECORTE,
     Visualizador,
 )
 
 DPI_PREVIA = 110          # baixo de proposito: a tela precisa abrir em segundos
-ALTURA_MAXIMA_PREVIA = 900
 
 ABA_CORTE, ABA_BORDAS, ABA_ANGULO, ABA_FILTRO = "corte", "bordas", "angulo", "filtro"
+
+TITULOS = {
+    ABA_CORTE: "Onde cortar",
+    ABA_BORDAS: "Bordas",
+    ABA_ANGULO: "Endireitar",
+    ABA_FILTRO: "Filtro",
+}
 
 ROTULOS_FORCA = {
     "mais_fraco": "mais fraco",
@@ -71,6 +100,26 @@ CARTOES = [
 ]
 
 
+def protegido(metodo):
+    """Nenhuma acao de botao pode fechar a janela (regra 3.3).
+
+    Qualquer excecao vira aviso em portugues e vai para o arquivo de log. Sem
+    isto, um erro dentro de um slot do Qt derruba o programa inteiro e o
+    usuario perde o trabalho da tela de conferir.
+    """
+
+    @functools.wraps(metodo)
+    def envolvido(self, *args, **kwargs):
+        try:
+            return metodo(self, *args, **kwargs)
+        except Exception:  # noqa: BLE001 - e exatamente o ponto
+            registrar_erro(f"tela_conferir.{metodo.__name__}", traceback.format_exc())
+            self._avisar_problema()
+            return None
+
+    return envolvido
+
+
 class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
@@ -84,6 +133,20 @@ class TelaConferir(QWidget):
         self.indice_folha = 0
         self.indice_pagina = 0
 
+        self._abas_ativas: list[str] = []
+        self._carregando = False
+
+        # Referencias diretas em Python, uma por aba. A versao anterior
+        # guardava o widget dentro de setProperty() e o buscava de volta a cada
+        # clique; isso devolve um ponteiro que o Python nao mantem vivo e e uma
+        # fonte classica de fechamento sem aviso no PySide6.
+        self.visualizadores: dict[str, Visualizador] = {}
+        self.paginas_de_imagem: dict[str, QWidget] = {}
+        self.linhas_de_botoes: dict[str, QWidget] = {}
+        self.botoes_de_sugestao: dict[str, QPushButton] = {}
+        self.cartoes: dict[str, CartaoFiltro] = {}
+        self.botoes_forca: dict[str, QPushButton] = {}
+
         self._montar()
 
     # ------------------------------------------------------------------
@@ -92,9 +155,51 @@ class TelaConferir(QWidget):
 
     def _montar(self) -> None:
         camadas = QVBoxLayout(self)
-        camadas.setContentsMargins(28, 18, 28, 14)
-        camadas.setSpacing(10)
+        camadas.setContentsMargins(20, 10, 20, 8)
+        camadas.setSpacing(6)
 
+        camadas.addLayout(self._montar_cabecalho())          # 1
+
+        self.barra_abas = QTabBar()
+        self.barra_abas.setExpanding(False)
+        self.barra_abas.currentChanged.connect(self._trocou_de_aba)
+        camadas.addWidget(self.barra_abas)                   # 2
+
+        # 3 - area da imagem: e a unica linha com stretch, entao fica com todo
+        # o espaco que sobrar depois que as outras pegam o minimo delas
+        self.area_imagem = QStackedWidget()
+        self.area_imagem.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Minimo pequeno para que a soma de todas as linhas caiba na janela
+        # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
+        self.area_imagem.setMinimumHeight(130)
+        camadas.addWidget(self.area_imagem, 1)
+
+        self.faixa = QFrame()                                # 4
+        self.faixa.setObjectName("faixaInfo")
+        self.faixa.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        faixa_camadas = QHBoxLayout(self.faixa)
+        faixa_camadas.setContentsMargins(14, 9, 14, 9)
+        self.texto_faixa = QLabel("")
+        self.texto_faixa.setWordWrap(True)
+        faixa_camadas.addWidget(self.texto_faixa, 1)
+        camadas.addWidget(self.faixa)
+
+        self.barra_botoes = QStackedWidget()                 # 5
+        self.barra_botoes.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        camadas.addWidget(self.barra_botoes)
+
+        self.tira = TiraMiniaturas("Folhas")                 # 6
+        self.tira.selecionada.connect(self._escolher_da_tira)
+        camadas.addWidget(self.tira)
+
+        # Onde salvar fica AQUI, antes de processar: assim o usuario decide o
+        # destino sem esperar o livro inteiro para so entao descobrir o lugar.
+        self.destino = SeletorDestino()                      # 7
+        camadas.addWidget(self.destino)
+
+        camadas.addLayout(self._montar_rodape())             # 8
+
+    def _montar_cabecalho(self) -> QHBoxLayout:
         topo = QHBoxLayout()
         titulo = QLabel("Confira antes de processar")
         titulo.setObjectName("secao")
@@ -103,61 +208,55 @@ class TelaConferir(QWidget):
 
         self.botao_alertas = QPushButton("tudo certo")
         self.botao_alertas.setObjectName("contadorAlerta")
-        self.botao_alertas.clicked.connect(self._ir_para_proximo_alerta)
+        _ligar(self.botao_alertas, self._ir_para_proximo_alerta)
         topo.addWidget(self.botao_alertas)
 
         self.botao_desfazer = QPushButton("Desfazer")
-        self.botao_desfazer.clicked.connect(self.desfazer)
+        _ligar(self.botao_desfazer, self.desfazer)
         topo.addWidget(self.botao_desfazer)
 
         self.botao_refazer = QPushButton("Refazer")
-        self.botao_refazer.clicked.connect(self.refazer)
+        _ligar(self.botao_refazer, self.refazer)
         topo.addWidget(self.botao_refazer)
-        camadas.addLayout(topo)
+        return topo
 
-        self.abas = QTabWidget()
-        self.abas.currentChanged.connect(self._trocou_de_aba)
-        camadas.addWidget(self.abas, 1)
-
-        self.tira = TiraMiniaturas("Folhas")
-        self.tira.selecionada.connect(self._escolher_da_tira)
-        camadas.addWidget(self.tira)
-
-        # Onde salvar fica AQUI, antes de processar: assim o usuario decide o
-        # destino sem ter que esperar o livro inteiro para depois descobrir
-        # que foi parar numa pasta que ele nao queria.
-        self.destino = SeletorDestino()
-        camadas.addWidget(self.destino)
-
-        rodape = QHBoxLayout()
-        botao_voltar = QPushButton("voltar")
-        botao_voltar.clicked.connect(self.voltar.emit)
-        rodape.addWidget(botao_voltar)
+    def _montar_rodape(self) -> QVBoxLayout:
+        fora = QVBoxLayout()
+        fora.setSpacing(4)
 
         atalhos = QLabel(
             "setas: mudar de pagina   -   Espaco: esta certo   -   Tab: proxima duvida   "
             "-   1 2 3 4: filtros   -   Delete: apagar   -   Ctrl+Z: desfazer"
         )
         atalhos.setObjectName("atalhos")
-        rodape.addWidget(atalhos, 1, Qt.AlignCenter)
+        atalhos.setAlignment(Qt.AlignCenter)
+        fora.addWidget(atalhos)
+
+        linha = QHBoxLayout()
+        botao_voltar = QPushButton("voltar")
+        _ligar(botao_voltar, self.voltar.emit)
+        linha.addWidget(botao_voltar)
+        linha.addStretch()
 
         self.botao_processar = QPushButton("Confirmar e processar")
         self.botao_processar.setObjectName("primario")
-        self.botao_processar.clicked.connect(self._pedir_processamento)
-        rodape.addWidget(self.botao_processar)
-        camadas.addLayout(rodape)
+        _ligar(self.botao_processar, self._pedir_processamento)
+        linha.addWidget(self.botao_processar)
+        fora.addLayout(linha)
+        return fora
 
-    def _pagina_com_visualizador(self, modo: str) -> tuple[QWidget, Visualizador, QLabel, QHBoxLayout]:
-        """Molde comum das abas: navegacao, previa, faixa e botoes."""
+    # --- paginas de imagem e linhas de botoes -----------------------------
+
+    def _area_de_visualizador(self, aba: str, modo: str) -> Visualizador:
+        """Uma pagina da area de imagem: setas nas laterais e a previa no meio."""
         pagina = QWidget()
-        camadas = QVBoxLayout(pagina)
-        camadas.setContentsMargins(14, 12, 14, 12)
-        camadas.setSpacing(9)
+        linha = QHBoxLayout(pagina)
+        linha.setContentsMargins(0, 0, 0, 0)
+        linha.setSpacing(6)
 
-        linha = QHBoxLayout()
         anterior = QPushButton("<")
-        anterior.setFixedWidth(44)
-        anterior.clicked.connect(lambda: self._navegar(-1))
+        anterior.setFixedWidth(40)
+        _ligar(anterior, lambda: self._navegar(-1))
         linha.addWidget(anterior)
 
         visualizador = Visualizador()
@@ -166,26 +265,116 @@ class TelaConferir(QWidget):
         linha.addWidget(visualizador, 1)
 
         proxima = QPushButton(">")
-        proxima.setFixedWidth(44)
-        proxima.clicked.connect(lambda: self._navegar(1))
+        proxima.setFixedWidth(40)
+        _ligar(proxima, lambda: self._navegar(1))
+        linha.addWidget(proxima)
+
+        self.visualizadores[aba] = visualizador
+        self.paginas_de_imagem[aba] = pagina
+        return visualizador
+
+    def _linha_de_botoes(self, aba: str) -> QHBoxLayout:
+        widget = QWidget()
+        linha = QHBoxLayout(widget)
+        linha.setContentsMargins(0, 0, 0, 0)
+        linha.setSpacing(8)
+        self.linhas_de_botoes[aba] = widget
+        return linha
+
+    def _montar_aba_corte(self) -> None:
+        vis = self._area_de_visualizador(ABA_CORTE, MODO_CORTE)
+        vis.corte_movido.connect(self._mover_corte)
+
+        linha = self._linha_de_botoes(ABA_CORTE)
+        _botao("esta certo", linha, self._marcar_revisada)
+        self.botao_nao_dividir = _botao("nao dividir esta", linha, self._alternar_dividir)
+        _botao("girar", linha, self._girar)
+        _botao("usar em todas", linha, self._corte_em_todas)
+        linha.addStretch()
+        self.botoes_de_sugestao[ABA_CORTE] = _botao(
+            "", linha, self._aplicar_sugestao, "sugestao"
+        )
+
+    def _montar_aba_bordas(self) -> None:
+        vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
+        vis.recorte_movido.connect(self._mover_recorte)
+
+        linha = self._linha_de_botoes(ABA_BORDAS)
+        _botao("esta certo", linha, self._marcar_revisada)
+        _botao("nao cortar esta", linha, self._sem_recorte)
+        _botao("voltar ao automatico", linha, self._recorte_automatico)
+        _botao("usar em todas", linha, self._recorte_em_todas)
+        linha.addStretch()
+        self.botoes_de_sugestao[ABA_BORDAS] = _botao(
+            "", linha, self._aplicar_sugestao, "sugestao"
+        )
+
+    def _montar_aba_angulo(self) -> None:
+        vis = self._area_de_visualizador(ABA_ANGULO, MODO_ANGULO)
+        vis.angulo_movido.connect(self._mover_angulo)
+
+        linha = self._linha_de_botoes(ABA_ANGULO)
+        _botao("esta certo", linha, self._marcar_revisada)
+        _botao("nao endireitar esta", linha, self._angulo_zero)
+        _botao("voltar ao automatico", linha, self._angulo_automatico)
+        linha.addStretch()
+        self.botoes_de_sugestao[ABA_ANGULO] = _botao(
+            "", linha, self._aplicar_sugestao, "sugestao"
+        )
+
+    def _montar_aba_filtro(self) -> None:
+        pagina = QWidget()
+        camadas = QVBoxLayout(pagina)
+        camadas.setContentsMargins(0, 0, 0, 0)
+        camadas.setSpacing(6)
+
+        explicacao = QLabel("A mesma pagina nos quatro filtros - clique no que preferir")
+        explicacao.setObjectName("fraco")
+        camadas.addWidget(explicacao)
+
+        linha = QHBoxLayout()
+        linha.setSpacing(6)
+        anterior = QPushButton("<")
+        anterior.setFixedWidth(40)
+        _ligar(anterior, lambda: self._navegar(-1))
+        linha.addWidget(anterior)
+
+        for chave, nome, explica in CARTOES:
+            cartao = CartaoFiltro(chave, nome, explica)
+            cartao.escolhido.connect(self._escolher_filtro)
+            self.cartoes[chave] = cartao
+            linha.addWidget(cartao, 1)
+
+        proxima = QPushButton(">")
+        proxima.setFixedWidth(40)
+        _ligar(proxima, lambda: self._navegar(1))
         linha.addWidget(proxima)
         camadas.addLayout(linha, 1)
 
-        faixa = QFrame()
-        faixa.setObjectName("faixaInfo")
-        faixa_camadas = QHBoxLayout(faixa)
-        faixa_camadas.setContentsMargins(14, 10, 14, 10)
-        texto = QLabel("")
-        texto.setWordWrap(True)
-        faixa_camadas.addWidget(texto, 1)
-        camadas.addWidget(faixa)
-        faixa.setProperty("rotulo", texto)
+        self.paginas_de_imagem[ABA_FILTRO] = pagina
 
-        botoes = QHBoxLayout()
-        camadas.addLayout(botoes)
+        linha_botoes = self._linha_de_botoes(ABA_FILTRO)
+        self.painel_forca = QWidget()
+        forca_linha = QHBoxLayout(self.painel_forca)
+        forca_linha.setContentsMargins(0, 0, 0, 0)
+        forca_linha.setSpacing(6)
+        forca_linha.addWidget(QLabel("Forca do preto:"))
+        for chave in FORCAS:
+            botao = QPushButton(ROTULOS_FORCA[chave])
+            botao.setCheckable(True)
+            _ligar(botao, functools.partial(self._escolher_forca, chave))
+            self.botoes_forca[chave] = botao
+            forca_linha.addWidget(botao)
+        linha_botoes.addWidget(self.painel_forca)
 
-        pagina.setProperty("faixa", faixa)
-        return pagina, visualizador, texto, botoes
+        _botao("so nesta", linha_botoes, self._marcar_revisada)
+        _botao("usar em todas", linha_botoes, self._filtro_em_todas)
+        _botao("so nas proximas", linha_botoes, self._filtro_nas_proximas)
+        self.botao_apagar = _botao("apagar pagina", linha_botoes, self.apagar_pagina)
+        linha_botoes.addStretch()
+        self.botoes_de_sugestao[ABA_FILTRO] = _botao(
+            "", linha_botoes, self._aplicar_sugestao, "sugestao"
+        )
 
     # ------------------------------------------------------------------
     # carga
@@ -193,37 +382,67 @@ class TelaConferir(QWidget):
 
     def carregar(self, projeto: Projeto, acoes: HistoricoAcoes,
                  previas: GerenciadorPrevias) -> None:
-        self.projeto = projeto
-        self.acoes = acoes
-        self.previas = previas
-        self.previas.pronta.connect(self._previa_chegou)
+        self._carregando = True
+        try:
+            self.projeto = projeto
+            self.acoes = acoes
+            self.previas = previas
+            self.previas.pronta.connect(self._previa_chegou)
 
-        self.indice_folha = 0
-        self.indice_pagina = 0
+            self.indice_folha = 0
+            self.indice_pagina = 0
 
-        self.abas.clear()
-        self._abas_ativas: list[str] = []
+            self._limpar_abas()
 
-        if projeto.dividir_folhas:
-            self._montar_aba_corte()
-        if projeto.cortar_bordas:
-            self._montar_aba_bordas()
-        if projeto.endireitar:
-            self._montar_aba_angulo()
-        if projeto.limpar:
-            self._montar_aba_filtro()
-        if not self._abas_ativas:
-            self._montar_aba_filtro()   # sempre ha ao menos uma para conferir
+            if projeto.dividir_folhas:
+                self._montar_aba_corte()
+                self._abas_ativas.append(ABA_CORTE)
+            if projeto.cortar_bordas:
+                self._montar_aba_bordas()
+                self._abas_ativas.append(ABA_BORDAS)
+            if projeto.endireitar:
+                self._montar_aba_angulo()
+                self._abas_ativas.append(ABA_ANGULO)
+            if projeto.limpar or not self._abas_ativas:
+                self._montar_aba_filtro()
+                self._abas_ativas.append(ABA_FILTRO)
 
-        from modelos import nome_de_saida_sugerido
+            for aba in self._abas_ativas:
+                self.barra_abas.addTab(TITULOS[aba])
+                self.area_imagem.addWidget(self.paginas_de_imagem[aba])
+                self.barra_botoes.addWidget(self.linhas_de_botoes[aba])
 
-        self.destino.definir(None, nome_de_saida_sugerido(projeto))
+            from modelos import nome_de_saida_sugerido
+
+            self.destino.definir(None, nome_de_saida_sugerido(projeto))
+            self.barra_abas.setCurrentIndex(0)
+        finally:
+            self._carregando = False
 
         self._montar_tira()
         self.atualizar()
 
+    def _limpar_abas(self) -> None:
+        """Descarta as abas de um projeto anterior antes de montar as novas."""
+        while self.barra_abas.count():
+            self.barra_abas.removeTab(0)
+        for pilha in (self.area_imagem, self.barra_botoes):
+            while pilha.count():
+                widget = pilha.widget(0)
+                pilha.removeWidget(widget)
+                widget.deleteLater()
+
+        self._abas_ativas.clear()
+        self.visualizadores.clear()
+        self.paginas_de_imagem.clear()
+        self.linhas_de_botoes.clear()
+        self.botoes_de_sugestao.clear()
+        self.cartoes.clear()
+        self.botoes_forca.clear()
+
     def _montar_tira(self) -> None:
-        assert self.projeto is not None
+        if self.projeto is None:
+            return
         if self.aba_atual == ABA_CORTE:
             self.tira.definir_titulo("Folhas - as laranjas eu nao tive certeza")
             self.tira.montar(
@@ -241,129 +460,16 @@ class TelaConferir(QWidget):
                 },
             )
 
-    # --- abas -------------------------------------------------------------
-
-    def _montar_aba_corte(self) -> None:
-        pagina, vis, texto, botoes = self._pagina_com_visualizador(MODO_CORTE)
-        self.vis_corte, self.texto_corte = vis, texto
-        vis.corte_movido.connect(self._mover_corte)
-
-        self.botao_ok_corte = _botao("esta certo", botoes, self._marcar_revisada)
-        self.botao_nao_dividir = _botao("nao dividir esta", botoes, self._alternar_dividir)
-        _botao("girar", botoes, self._girar)
-        _botao("usar em todas", botoes, self._corte_em_todas)
-        botoes.addStretch()
-        self.botao_sugestao_corte = _botao("", botoes, self._aplicar_sugestao, "sugestao")
-
-        self.abas.addTab(pagina, "Onde cortar")
-        self._abas_ativas.append(ABA_CORTE)
-
-    def _montar_aba_bordas(self) -> None:
-        pagina, vis, texto, botoes = self._pagina_com_visualizador(MODO_RECORTE)
-        self.vis_bordas, self.texto_bordas = vis, texto
-        vis.recorte_movido.connect(self._mover_recorte)
-
-        _botao("esta certo", botoes, self._marcar_revisada)
-        _botao("nao cortar esta", botoes, self._sem_recorte)
-        _botao("voltar ao automatico", botoes, self._recorte_automatico)
-        _botao("usar em todas", botoes, self._recorte_em_todas)
-        botoes.addStretch()
-        self.botao_sugestao_bordas = _botao("", botoes, self._aplicar_sugestao, "sugestao")
-
-        self.abas.addTab(pagina, "Bordas")
-        self._abas_ativas.append(ABA_BORDAS)
-
-    def _montar_aba_angulo(self) -> None:
-        pagina, vis, texto, botoes = self._pagina_com_visualizador(MODO_ANGULO)
-        self.vis_angulo, self.texto_angulo = vis, texto
-        vis.angulo_movido.connect(self._mover_angulo)
-
-        _botao("esta certo", botoes, self._marcar_revisada)
-        _botao("nao endireitar esta", botoes, self._angulo_zero)
-        _botao("voltar ao automatico", botoes, self._angulo_automatico)
-        botoes.addStretch()
-        self.botao_sugestao_angulo = _botao("", botoes, self._aplicar_sugestao, "sugestao")
-
-        self.abas.addTab(pagina, "Endireitar")
-        self._abas_ativas.append(ABA_ANGULO)
-
-    def _montar_aba_filtro(self) -> None:
-        pagina = QWidget()
-        camadas = QVBoxLayout(pagina)
-        camadas.setContentsMargins(14, 12, 14, 12)
-        camadas.setSpacing(9)
-
-        explicacao = QLabel("A mesma pagina nos quatro filtros - clique no que preferir")
-        explicacao.setObjectName("fraco")
-        camadas.addWidget(explicacao)
-
-        linha = QHBoxLayout()
-        anterior = QPushButton("<")
-        anterior.setFixedWidth(44)
-        anterior.clicked.connect(lambda: self._navegar(-1))
-        linha.addWidget(anterior)
-
-        self.cartoes: dict[str, CartaoFiltro] = {}
-        for chave, nome, explica in CARTOES:
-            cartao = CartaoFiltro(chave, nome, explica)
-            cartao.escolhido.connect(self._escolher_filtro)
-            self.cartoes[chave] = cartao
-            linha.addWidget(cartao, 1)
-
-        proxima = QPushButton(">")
-        proxima.setFixedWidth(44)
-        proxima.clicked.connect(lambda: self._navegar(1))
-        linha.addWidget(proxima)
-        camadas.addLayout(linha, 1)
-
-        self.painel_forca = QWidget()
-        forca_linha = QHBoxLayout(self.painel_forca)
-        forca_linha.setContentsMargins(0, 0, 0, 0)
-        forca_linha.addWidget(QLabel("Forca do preto:"))
-        self.grupo_forca = QButtonGroup(self)
-        self.botoes_forca: dict[str, QPushButton] = {}
-        for chave in FORCAS:
-            botao = QPushButton(ROTULOS_FORCA[chave])
-            botao.setCheckable(True)
-            botao.clicked.connect(lambda _=False, c=chave: self._escolher_forca(c))
-            self.grupo_forca.addButton(botao)
-            self.botoes_forca[chave] = botao
-            forca_linha.addWidget(botao)
-        forca_linha.addStretch()
-        camadas.addWidget(self.painel_forca)
-
-        faixa = QFrame()
-        faixa.setObjectName("faixaInfo")
-        faixa_camadas = QHBoxLayout(faixa)
-        faixa_camadas.setContentsMargins(14, 10, 14, 10)
-        self.texto_filtro = QLabel("")
-        self.texto_filtro.setWordWrap(True)
-        faixa_camadas.addWidget(self.texto_filtro, 1)
-        camadas.addWidget(faixa)
-        pagina.setProperty("faixa", faixa)
-        self.faixa_filtro = faixa
-
-        botoes = QHBoxLayout()
-        _botao("so nesta", botoes, self._marcar_revisada)
-        _botao("usar em todas", botoes, self._filtro_em_todas)
-        _botao("so nas proximas", botoes, self._filtro_nas_proximas)
-        self.botao_apagar = _botao("apagar pagina", botoes, self.apagar_pagina)
-        botoes.addStretch()
-        self.botao_sugestao_filtro = _botao("", botoes, self._aplicar_sugestao, "sugestao")
-        camadas.addLayout(botoes)
-
-        self.abas.addTab(pagina, "Filtro")
-        self._abas_ativas.append(ABA_FILTRO)
-
     # ------------------------------------------------------------------
     # estado
     # ------------------------------------------------------------------
 
     @property
     def aba_atual(self) -> str:
-        indice = self.abas.currentIndex()
-        abas = getattr(self, "_abas_ativas", [])
-        return abas[indice] if 0 <= indice < len(abas) else ABA_FILTRO
+        indice = self.barra_abas.currentIndex()
+        if 0 <= indice < len(self._abas_ativas):
+            return self._abas_ativas[indice]
+        return self._abas_ativas[0] if self._abas_ativas else ABA_FILTRO
 
     @property
     def trabalha_com_folhas(self) -> bool:
@@ -385,43 +491,55 @@ class TelaConferir(QWidget):
         return (len(self.projeto.folhas) if self.trabalha_com_folhas
                 else len(self.projeto.paginas))
 
+    def _pronta(self) -> bool:
+        return (self.projeto is not None and self.previas is not None
+                and bool(self._abas_ativas) and not self._carregando)
+
     # ------------------------------------------------------------------
     # navegacao
     # ------------------------------------------------------------------
 
+    @protegido
     def _navegar(self, passo: int) -> None:
-        novo = max(0, min(self._total() - 1, self.indice_atual + passo))
-        self._ir_para(novo)
+        if not self._pronta():
+            return
+        self._ir_para(max(0, min(self._total() - 1, self.indice_atual + passo)))
 
     def _ir_para(self, indice: int) -> None:
+        assert self.projeto is not None
         if self.trabalha_com_folhas:
             self.indice_folha = indice
-            # mantem a aba de filtro por perto da mesma folha
-            for pagina in self.projeto.paginas:  # type: ignore[union-attr]
+            for pagina in self.projeto.paginas:
                 if pagina.folha == indice:
                     self.indice_pagina = pagina.indice
                     break
         else:
             self.indice_pagina = indice
-            self.indice_folha = self.projeto.paginas[indice].folha  # type: ignore[union-attr]
+            self.indice_folha = self.projeto.paginas[indice].folha
         self.atualizar()
 
+    @protegido
     def _escolher_da_tira(self, indice: int) -> None:
-        self._ir_para(indice)
+        if self._pronta():
+            self._ir_para(indice)
 
+    @protegido
     def _trocou_de_aba(self, _indice: int) -> None:
-        # abas.clear() tambem dispara este sinal, com a lista ainda vazia:
-        # sem esta guarda a tela tentaria desenhar controles que nem existem.
-        if self.projeto is None or not getattr(self, "_abas_ativas", None):
+        if not self._pronta():
             return
+        self.area_imagem.setCurrentIndex(self.barra_abas.currentIndex())
+        self.barra_botoes.setCurrentIndex(self.barra_abas.currentIndex())
         self._montar_tira()
         self.atualizar()
 
+    @protegido
     def _ir_para_proximo_alerta(self) -> None:
-        """Tab e o contador do topo levam para a proxima pagina marcada."""
+        if not self._pronta():
+            return
+        assert self.projeto is not None
         total = self._total()
-        itens = (self.projeto.folhas if self.trabalha_com_folhas  # type: ignore[union-attr]
-                 else self.projeto.paginas)  # type: ignore[union-attr]
+        itens = (self.projeto.folhas if self.trabalha_com_folhas
+                 else self.projeto.paginas)
         for salto in range(1, total + 1):
             indice = (self.indice_atual + salto) % total
             if itens[indice].precisa_revisao:
@@ -432,8 +550,9 @@ class TelaConferir(QWidget):
     # desenho
     # ------------------------------------------------------------------
 
+    @protegido
     def atualizar(self) -> None:
-        if self.projeto is None or not getattr(self, "_abas_ativas", None):
+        if not self._pronta():
             return
         self._atualizar_previa()
         self._atualizar_faixa()
@@ -447,8 +566,9 @@ class TelaConferir(QWidget):
 
         if aba == ABA_CORTE:
             img = self.previas.pegar_folha(self.indice_folha, DPI_PREVIA)
-            self.vis_corte.definir_imagem(img)
-            self.vis_corte.definir_corte(self.projeto.folhas[self.indice_folha].posicao_corte)
+            vis = self.visualizadores[ABA_CORTE]
+            vis.definir_imagem(img)
+            vis.definir_corte(self.projeto.folhas[self.indice_folha].posicao_corte)
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             return
 
@@ -457,17 +577,20 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[self.indice_pagina]
 
         if aba == ABA_BORDAS:
-            self.vis_bordas.definir_imagem(img)
-            self.vis_bordas.definir_recorte(pagina.recorte or (0.0, 0.0, 1.0, 1.0))
+            vis = self.visualizadores[ABA_BORDAS]
+            vis.definir_imagem(img)
+            vis.definir_recorte(pagina.recorte or (0.0, 0.0, 1.0, 1.0))
         elif aba == ABA_ANGULO:
-            self.vis_angulo.definir_imagem(img)
-            self.vis_angulo.definir_angulo(pagina.angulo_manual or 0.0)
+            vis = self.visualizadores[ABA_ANGULO]
+            vis.definir_imagem(img)
+            vis.definir_angulo(pagina.angulo_manual or 0.0)
         else:
             self._atualizar_cartoes(img)
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
         """Os quatro cartoes mostram a pagina de verdade, cada um com seu filtro."""
         from core.filtros import aplicar_filtro
+        from core.pdf_io import limitar_altura
 
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
@@ -480,16 +603,12 @@ class TelaConferir(QWidget):
                 cartao.definir_amostra(None)
             return
 
-        # A previa ja vem com o filtro da pagina aplicado; para as outras tres
-        # amostras recalculamos numa versao pequena, o que e barato.
-        from core.pdf_io import limitar_altura
-
-        pequena_base = self._imagem_sem_filtro()
+        base = self._imagem_sem_filtro()
         for chave, cartao in self.cartoes.items():
             if chave == pagina.filtro:
                 cartao.definir_amostra(limitar_altura(img, 260))
-            elif pequena_base is not None:
-                amostra, _ = aplicar_filtro(pequena_base, chave, pagina.forca_preto)
+            elif base is not None:
+                amostra, _ = aplicar_filtro(base, chave, pagina.forca_preto)
                 cartao.definir_amostra(amostra)
             else:
                 cartao.definir_amostra(None)
@@ -497,41 +616,32 @@ class TelaConferir(QWidget):
     def _imagem_sem_filtro(self) -> np.ndarray | None:
         """Versao pequena e sem filtro da pagina atual, para os outros cartoes."""
         assert self.projeto is not None and self.previas is not None
-        img_folha = self.previas.pegar_folha(self.projeto.paginas[self.indice_pagina].folha, 70)
+        pagina = self.projeto.paginas[self.indice_pagina]
+        img_folha = self.previas.pegar_folha(pagina.folha, 70)
         if img_folha is None:
             return None
+
         from core.pipeline import preparar_metade
 
-        pagina = self.projeto.paginas[self.indice_pagina]
         folha = self.projeto.folhas[pagina.folha]
         try:
             return preparar_metade(img_folha, folha, pagina, self.projeto)
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001 - amostra que falha nao derruba a tela
+            registrar_erro("amostra_de_filtro", traceback.format_exc())
             return None
 
     def _atualizar_faixa(self) -> None:
-        assert self.projeto is not None
         item = self.item_atual
         aba = self.aba_atual
-
         alerta = analise.descrever(item.alertas[0]) if item.alertas else None
-        rotulos = {
-            ABA_CORTE: getattr(self, "texto_corte", None),
-            ABA_BORDAS: getattr(self, "texto_bordas", None),
-            ABA_ANGULO: getattr(self, "texto_angulo", None),
-            ABA_FILTRO: getattr(self, "texto_filtro", None),
-        }
-        rotulo = rotulos.get(aba)
-        if rotulo is None:
-            return
 
         if alerta is not None and not item.revisada:
-            rotulo.setText(alerta.mensagem)
-            self._pintar_faixa(aba, alerta=True)
+            self.texto_faixa.setText(alerta.mensagem)
+            self._pintar_faixa(alerta=True)
             self._mostrar_sugestao(aba, alerta.acao)
         else:
-            rotulo.setText(self._texto_tranquilo(aba))
-            self._pintar_faixa(aba, alerta=False)
+            self.texto_faixa.setText(self._texto_tranquilo(aba))
+            self._pintar_faixa(alerta=False)
             self._mostrar_sugestao(aba, None)
 
     def _texto_tranquilo(self, aba: str) -> str:
@@ -540,7 +650,8 @@ class TelaConferir(QWidget):
             folha = self.projeto.folhas[self.indice_folha]
             if not folha.dividir:
                 return "Esta folha nao vai ser dividida."
-            return "Achei a lombada e vou cortar na linha azul. Se estiver errado, arraste a linha."
+            return ("Achei a lombada e vou cortar na linha azul. "
+                    "Se estiver errado, arraste a linha.")
         if aba == ABA_BORDAS:
             pagina = self.projeto.paginas[self.indice_pagina]
             if pagina.recorte is None:
@@ -555,24 +666,21 @@ class TelaConferir(QWidget):
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
         return f"Esta pagina vai sair em {nome}."
 
-    def _pintar_faixa(self, aba: str, alerta: bool) -> None:
-        indice = self._abas_ativas.index(aba) if aba in self._abas_ativas else -1
-        if indice < 0:
-            return
-        faixa = self.abas.widget(indice).property("faixa")
-        if faixa is not None:
-            faixa.setObjectName("faixaAlerta" if alerta else "faixaInfo")
-            faixa.style().unpolish(faixa)
-            faixa.style().polish(faixa)
+    def _pintar_faixa(self, alerta: bool) -> None:
+        """Troca a cor da faixa.
+
+        A folha de estilo e aplicada direto no widget, sem buscar ninguem por
+        propriedade do Qt e sem repolir a arvore inteira.
+        """
+        borda = LARANJA if alerta else AZUL
+        fundo = LARANJA_CLARO if alerta else AZUL_CLARO
+        self.faixa.setStyleSheet(
+            f"QFrame {{ background: {fundo}; border: 1px solid {borda};"
+            f" border-radius: 8px; }}"
+        )
 
     def _mostrar_sugestao(self, aba: str, rotulo: str | None) -> None:
-        botoes = {
-            ABA_CORTE: getattr(self, "botao_sugestao_corte", None),
-            ABA_BORDAS: getattr(self, "botao_sugestao_bordas", None),
-            ABA_ANGULO: getattr(self, "botao_sugestao_angulo", None),
-            ABA_FILTRO: getattr(self, "botao_sugestao_filtro", None),
-        }
-        botao = botoes.get(aba)
+        botao = self.botoes_de_sugestao.get(aba)
         if botao is None:
             return
         botao.setVisible(bool(rotulo))
@@ -587,13 +695,13 @@ class TelaConferir(QWidget):
         self.botao_refazer.setEnabled(self.acoes.pode_refazer)
         self.botao_refazer.setToolTip(self.acoes.descricao_refazer())
 
-        if hasattr(self, "botao_nao_dividir"):
+        if ABA_CORTE in self._abas_ativas:
             folha = self.projeto.folhas[self.indice_folha]
             self.botao_nao_dividir.setText(
                 "dividir esta" if not folha.dividir else "nao dividir esta"
             )
 
-        if hasattr(self, "painel_forca"):
+        if ABA_FILTRO in self._abas_ativas:
             pagina = self.projeto.paginas[self.indice_pagina]
             self.painel_forca.setVisible(pagina.filtro == PRETO_E_BRANCO)
             for chave, botao in self.botoes_forca.items():
@@ -627,13 +735,17 @@ class TelaConferir(QWidget):
         self.botao_alertas.setText(texto)
         self.botao_alertas.setEnabled(pendentes > 0)
 
-    def _previa_chegou(self, chave: str, img: np.ndarray) -> None:
+    @protegido
+    def _previa_chegou(self, chave: str, _img: np.ndarray) -> None:
         """Uma previa ficou pronta; se for a que estamos vendo, redesenha."""
-        if self.projeto is None or self.previas is None:
+        if not self._pronta():
             return
-        esperada_pagina = self.previas.chave(self.indice_pagina, DPI_PREVIA)
-        esperada_folha = self.previas.chave_folha(self.indice_folha, DPI_PREVIA)
-        if chave in (esperada_pagina, esperada_folha) or chave.startswith("folha:"):
+        assert self.previas is not None
+        esperadas = (
+            self.previas.chave(self.indice_pagina, DPI_PREVIA),
+            self.previas.chave_folha(self.indice_folha, DPI_PREVIA),
+        )
+        if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
 
     # ------------------------------------------------------------------
@@ -647,8 +759,11 @@ class TelaConferir(QWidget):
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
-        for indice in (indices if alvo == "pagina" else self._paginas_das_folhas(indices)):
-            self.previas.invalidar(indice)  # type: ignore[union-attr]
+
+        afetadas = indices if alvo == "pagina" else self._paginas_das_folhas(indices)
+        if self.previas is not None:
+            for indice in afetadas:
+                self.previas.invalidar(indice)
         self.atualizar()
 
     def _paginas_das_folhas(self, folhas: list[int]) -> list[int]:
@@ -658,6 +773,7 @@ class TelaConferir(QWidget):
 
     # --- corte ------------------------------------------------------------
 
+    @protegido
     def _mover_corte(self, posicao: float) -> None:
         self._registrar(
             "mover_corte", "folha", [self.indice_folha],
@@ -665,6 +781,7 @@ class TelaConferir(QWidget):
             f"Linha de corte da folha {self.indice_folha + 1}",
         )
 
+    @protegido
     def _corte_em_todas(self) -> None:
         assert self.projeto is not None
         posicao = self.projeto.folhas[self.indice_folha].posicao_corte
@@ -675,6 +792,7 @@ class TelaConferir(QWidget):
             f"Linha de corte de todas as {len(indices)} folhas",
         )
 
+    @protegido
     def _alternar_dividir(self) -> None:
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
@@ -685,6 +803,7 @@ class TelaConferir(QWidget):
             + ("dividir" if not folha.dividir else "nao dividir"),
         )
 
+    @protegido
     def _girar(self) -> None:
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
@@ -696,14 +815,16 @@ class TelaConferir(QWidget):
 
     # --- bordas -----------------------------------------------------------
 
+    @protegido
     def _mover_recorte(self, recorte: tuple) -> None:
-        arredondado = tuple(round(float(v), 4) for v in recorte)
+        arredondado = [round(float(v), 4) for v in recorte]
         self._registrar(
             "recortar", "pagina", [self.indice_pagina],
-            {"recorte": list(arredondado), "revisada": True},
+            {"recorte": arredondado, "revisada": True},
             f"Corte de borda da pagina {self.indice_pagina + 1}",
         )
 
+    @protegido
     def _sem_recorte(self) -> None:
         self._registrar(
             "recortar", "pagina", [self.indice_pagina],
@@ -711,12 +832,14 @@ class TelaConferir(QWidget):
             f"Nao cortar a borda da pagina {self.indice_pagina + 1}",
         )
 
+    @protegido
     def _recorte_automatico(self) -> None:
         self._registrar(
             "recortar", "pagina", [self.indice_pagina], {"recorte": None},
             f"Voltar ao corte automatico na pagina {self.indice_pagina + 1}",
         )
 
+    @protegido
     def _recorte_em_todas(self) -> None:
         assert self.projeto is not None
         recorte = self.projeto.paginas[self.indice_pagina].recorte
@@ -729,6 +852,7 @@ class TelaConferir(QWidget):
 
     # --- angulo -----------------------------------------------------------
 
+    @protegido
     def _mover_angulo(self, angulo: float) -> None:
         self._registrar(
             "ajustar_angulo", "pagina", [self.indice_pagina],
@@ -736,6 +860,7 @@ class TelaConferir(QWidget):
             f"Angulo da pagina {self.indice_pagina + 1}: {angulo:+.1f} graus",
         )
 
+    @protegido
     def _angulo_zero(self) -> None:
         self._registrar(
             "ajustar_angulo", "pagina", [self.indice_pagina],
@@ -743,6 +868,7 @@ class TelaConferir(QWidget):
             f"Nao endireitar a pagina {self.indice_pagina + 1}",
         )
 
+    @protegido
     def _angulo_automatico(self) -> None:
         self._registrar(
             "ajustar_angulo", "pagina", [self.indice_pagina], {"angulo_manual": None},
@@ -751,6 +877,7 @@ class TelaConferir(QWidget):
 
     # --- filtro -----------------------------------------------------------
 
+    @protegido
     def _escolher_filtro(self, filtro: str) -> None:
         assert self.projeto is not None
         atual = self.projeto.paginas[self.indice_pagina].filtro
@@ -762,6 +889,7 @@ class TelaConferir(QWidget):
             f"Filtro da pagina {self.indice_pagina + 1}: {nome_antes} para {nome_depois}",
         )
 
+    @protegido
     def _escolher_forca(self, forca: str) -> None:
         self._registrar(
             "forca_preto", "pagina", [self.indice_pagina],
@@ -769,6 +897,7 @@ class TelaConferir(QWidget):
             f"Forca do preto da pagina {self.indice_pagina + 1}: {ROTULOS_FORCA[forca]}",
         )
 
+    @protegido
     def _filtro_em_todas(self) -> None:
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
@@ -780,6 +909,7 @@ class TelaConferir(QWidget):
             f"{nome} em todas as {len(indices)} paginas",
         )
 
+    @protegido
     def _filtro_nas_proximas(self) -> None:
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
@@ -793,6 +923,7 @@ class TelaConferir(QWidget):
 
     # --- gerais -----------------------------------------------------------
 
+    @protegido
     def apagar_pagina(self) -> None:
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
@@ -803,6 +934,7 @@ class TelaConferir(QWidget):
             f"{acao.capitalize()} a pagina {self.indice_pagina + 1}",
         )
 
+    @protegido
     def _marcar_revisada(self) -> None:
         alvo = "folha" if self.trabalha_com_folhas else "pagina"
         self._registrar(
@@ -810,11 +942,13 @@ class TelaConferir(QWidget):
             f"Conferir a {alvo} {self.indice_atual + 1}",
         )
 
+    @protegido
     def marcar_certo_e_avancar(self) -> None:
         """Barra de espaco: aprova e ja pula para a proxima."""
         self._marcar_revisada()
         self._navegar(1)
 
+    @protegido
     def _aplicar_sugestao(self) -> None:
         """O botao laranja do alerta: aplica a correcao mais provavel.
 
@@ -841,27 +975,29 @@ class TelaConferir(QWidget):
 
     # --- desfazer / refazer -----------------------------------------------
 
+    @protegido
     def desfazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
-        acao = self.acoes.desfazer(self.projeto)
-        if acao is not None:
-            self.previas.invalidar()  # type: ignore[union-attr]
+        if self.acoes.desfazer(self.projeto) is not None:
+            if self.previas is not None:
+                self.previas.invalidar()
             self.atualizar()
 
+    @protegido
     def refazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
-        acao = self.acoes.refazer(self.projeto)
-        if acao is not None:
-            self.previas.invalidar()  # type: ignore[union-attr]
+        if self.acoes.refazer(self.projeto) is not None:
+            if self.previas is not None:
+                self.previas.invalidar()
             self.atualizar()
 
     # --- teclado ----------------------------------------------------------
 
     def tratar_tecla(self, evento) -> bool:
         """Atalhos da secao 4.7. Devolve True se consumiu a tecla."""
-        if self.projeto is None:
+        if not self._pronta():
             return False
 
         tecla = evento.key()
@@ -894,9 +1030,8 @@ class TelaConferir(QWidget):
             if not self.trabalha_com_folhas:
                 self.apagar_pagina()
             return True
-        if tecla == Qt.Key_R:
-            if hasattr(self, "vis_corte"):
-                self._girar()
+        if tecla == Qt.Key_R and ABA_CORTE in self._abas_ativas:
+            self._girar()
             return True
 
         atalhos_de_filtro = {
@@ -911,13 +1046,26 @@ class TelaConferir(QWidget):
 
     # --- saida ------------------------------------------------------------
 
+    def _avisar_problema(self) -> None:
+        """O que o usuario ve quando algo deu errado por baixo dos panos."""
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Um momento")
+        caixa.setIcon(QMessageBox.Information)
+        caixa.setText("Nao consegui fazer isso agora.")
+        caixa.setInformativeText(
+            "O programa continua funcionando e o seu trabalho esta salvo. "
+            "Tente de novo, ou passe para a proxima pagina."
+        )
+        caixa.addButton("entendi", QMessageBox.AcceptRole)
+        caixa.exec()
+
+    @protegido
     def _pedir_processamento(self) -> None:
         """Avisa se ainda ha duvidas, mas nunca bloqueia."""
-        assert self.projeto is not None
+        if self.projeto is None:
+            return
         pendentes = self.projeto.pendentes_de_revisao()
         if pendentes > 0:
-            from PySide6.QtWidgets import QMessageBox
-
             caixa = QMessageBox(self)
             caixa.setWindowTitle("Antes de processar")
             caixa.setIcon(QMessageBox.Question)
@@ -936,10 +1084,15 @@ class TelaConferir(QWidget):
         self.processar.emit()
 
 
+def _ligar(botao: QPushButton, acao) -> None:
+    """Liga o clique ignorando o argumento 'checked' que o Qt manda junto."""
+    botao.clicked.connect(lambda *_: acao())
+
+
 def _botao(texto: str, destino: QHBoxLayout, acao, objeto: str = "") -> QPushButton:
     botao = QPushButton(texto)
     if objeto:
         botao.setObjectName(objeto)
-    botao.clicked.connect(acao)
+    _ligar(botao, acao)
     destino.addWidget(botao)
     return botao
