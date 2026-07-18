@@ -104,6 +104,11 @@ class Projeto:
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
 
+    # Fatos do livro INTEIRO, ditos uma vez: "este livro tem uma página
+    # por folha", "foi escaneado em qualidade baixa". Sao alertas que
+    # valiam para quase toda página e viraram ruido no contador.
+    observacoes: list[str] = field(default_factory=list)
+
     # --- conveniencias ----------------------------------------------------
 
     @property

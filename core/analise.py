@@ -267,6 +267,52 @@ def tamanhos_fora_do_padrao(tamanhos: list[tuple[float, float]]) -> list[bool]:
     return [bool(v) for v in fora]
 
 
+# A partir de que fração de páginas um alerta deixa de ser exceção e vira
+# característica do livro. Acima disso ele sai das páginas e vira observação.
+FRACAO_VIRA_OBSERVACAO = 0.7
+
+# Como cada alerta se lê quando vale para o livro todo, e não para uma página.
+OBSERVACOES = {
+    NAO_PARECE_DUPLA: "este livro tem uma página por folha, não duas",
+    RESOLUCAO_BAIXA: "o livro inteiro foi escaneado em qualidade baixa",
+    COR: "o livro inteiro é colorido",
+    TAMANHO_DIFERENTE: "as folhas deste livro têm tamanhos variados",
+    LOMBADA_INCERTA: "a lombada é difícil de achar neste livro",
+    EM_BRANCO: "quase todas as páginas parecem estar em branco",
+}
+
+
+def separar_observacoes(
+    listas_de_alertas: list[list[str]], limiar: float = FRACAO_VIRA_OBSERVACAO
+) -> tuple[list[str], set[str]]:
+    """Tira das páginas os alertas que valem para o livro inteiro.
+
+    Marcar 500 páginas porque TODAS são coloridas não ajuda ninguém: o usuário
+    não vai conferir uma a uma, e o contador perde o sentido justamente onde
+    deveria servir. Um fato do livro inteiro se diz uma vez só.
+
+    Devolve (observações em português, códigos que devem sair das páginas).
+    """
+    total = len(listas_de_alertas)
+    if total < 4:      # livro curto demais para tirar conclusão
+        return [], set()
+
+    contagem: dict[str, int] = {}
+    for alertas in listas_de_alertas:
+        for codigo in set(alertas):
+            contagem[codigo] = contagem.get(codigo, 0) + 1
+
+    observacoes: list[str] = []
+    para_remover: set[str] = set()
+    for codigo, quantas in sorted(contagem.items(), key=lambda kv: -kv[1]):
+        if quantas / total < limiar or codigo not in OBSERVACOES:
+            continue
+        para_remover.add(codigo)
+        observacoes.append(OBSERVACOES[codigo])
+
+    return observacoes, para_remover
+
+
 def agrupar_por_tipo(
     itens: list[tuple[int, list[str]]]
 ) -> dict[str, list[int]]:

@@ -232,6 +232,14 @@ class TelaConferir(QWidget):
         titulo = QLabel("Confira antes de processar")
         titulo.setObjectName("secao")
         topo.addWidget(titulo)
+
+        # Os fatos do livro inteiro ficam aqui, ditos uma vez, em vez de
+        # marcarem todas as páginas e afogarem o contador de alertas.
+        self.rotulo_observacoes = QLabel("")
+        self.rotulo_observacoes.setObjectName("fraco")
+        self.rotulo_observacoes.setVisible(False)
+        topo.addWidget(self.rotulo_observacoes)
+
         topo.addStretch()
 
         self.botao_alertas = QPushButton("tudo certo")
@@ -795,6 +803,11 @@ class TelaConferir(QWidget):
             texto += f"  -  {apagadas} apagadas"
         self.botao_alertas.setText(texto)
         self.botao_alertas.setEnabled(pendentes > 0)
+
+        observacoes = getattr(self.projeto, "observacoes", [])
+        self.rotulo_observacoes.setVisible(bool(observacoes))
+        if observacoes:
+            self.rotulo_observacoes.setText("   -   " + "; ".join(observacoes))
 
     @protegido
     def _previa_chegou(self, chave: str, _img: np.ndarray) -> None:

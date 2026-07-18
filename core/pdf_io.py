@@ -81,6 +81,37 @@ def info_paginas(doc: fitz.Document) -> list[InfoPagina]:
     return infos
 
 
+def dpi_real_da_pagina(doc: fitz.Document, indice: int) -> float:
+    """Com quantos pontos por polegada a página foi ESCANEADA de verdade.
+
+    Vem da imagem embutida no PDF, e não do tamanho com que nós a
+    rasterizamos. Medir na imagem rasterizada devolve sempre o DPI que nós
+    mesmos pedimos - foi assim que o alerta de qualidade baixa ficou sem nunca
+    disparar, nem em scan de 112 DPI.
+
+    Devolve 0.0 quando a página não tem imagem embutida (PDF de texto).
+    """
+    try:
+        pagina = doc[indice]
+        largura_pt = pagina.rect.width
+        if largura_pt <= 0:
+            return 0.0
+
+        maior = 0
+        for imagem in pagina.get_images():
+            try:
+                dados = doc.extract_image(imagem[0])
+            except Exception:  # noqa: BLE001 - imagem estranha não derruba nada
+                continue
+            maior = max(maior, int(dados.get("width", 0)))
+
+        if maior <= 0:
+            return 0.0
+        return maior / (largura_pt / 72.0)
+    except Exception:  # noqa: BLE001
+        return 0.0
+
+
 def dpi_seguro(pagina: fitz.Page, dpi: int) -> int:
     """Reduz o DPI até a página caber em MAX_PIXELS.
 

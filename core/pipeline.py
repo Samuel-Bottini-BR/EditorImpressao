@@ -27,6 +27,7 @@ from core.endireitar import Inclinacao, detectar_angulo, girar_90, rotacionar
 from core.filtros import ORIGINAL, aplicar_filtro
 from core.pdf_io import (
     DPI_PREVIA,
+    dpi_real_da_pagina,
     EscritorPDF,
     ErroPDF,
     abrir_pdf,
@@ -97,7 +98,9 @@ def analisar_projeto(
             inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
             recorte = detectar_bordas(img) if projeto.cortar_bordas else Recorte.inteiro()
 
-            dpi_real = analise.dpi_estimado(img.shape[1], info.largura_pt)
+            # DPI de verdade, tirado da imagem embutida no PDF. Medir na imagem
+            # que acabamos de rasterizar devolveria sempre DPI_ANALISE.
+            dpi_real = dpi_real_da_pagina(doc, indice)
 
             folha = ConfigFolha(
                 indice=indice,
@@ -134,6 +137,21 @@ def analisar_projeto(
 
             del img
 
+        # Um alerta que vale para quase todas as páginas não e exceção, e sim
+        # caracteristica do livro: sai das páginas e vira observação.
+        #
+        # Folhas e páginas sao contadas SEPARADAS. Juntar as duas listas fazia
+        # cada código chegar no máximo a 50% - um alerta de folha nunca aparece
+        # numa página - e nada passava do limiar: a separação nunca acontecia.
+        observacoes: list[str] = []
+        for itens in (folhas, paginas):
+            achadas, remover = analise.separar_observacoes([i.alertas for i in itens])
+            observacoes.extend(achadas)
+            if remover:
+                for item in itens:
+                    item.alertas = [a for a in item.alertas if a not in remover]
+
+        projeto.observacoes = observacoes
         projeto.folhas = folhas
         projeto.paginas = paginas
         _avisar(progresso, total, total, "Pronto")

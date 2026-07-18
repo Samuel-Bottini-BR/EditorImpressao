@@ -378,6 +378,145 @@ def test_nome_livre_fica_como_esta(tmp_path):
     assert configuracoes.caminho_sem_repetir(tmp_path, "livro.pdf").name == "livro.pdf"
 
 
+# --- alerta que vale para o livro inteiro ----------------------------------
+
+def test_alerta_de_todas_as_paginas_vira_observacao():
+    """Marcar 100% das páginas nao ajuda: o contador perde o sentido.
+
+    Achado num manuscrito colorido de 4 páginas em que os tres alertas eram
+    verdadeiros e todos valiam para o livro todo - 100% marcado.
+    """
+    from core.analise import COR, NAO_PARECE_DUPLA, separar_observacoes
+
+    listas = [[NAO_PARECE_DUPLA, COR] for _ in range(4)]
+    observacoes, remover = separar_observacoes(listas)
+
+    assert remover == {NAO_PARECE_DUPLA, COR}
+    assert len(observacoes) == 2
+    assert all(isinstance(o, str) and o for o in observacoes)
+
+
+def test_alerta_de_poucas_paginas_continua_na_pagina():
+    """O caso normal: 1 capa colorida em 10 páginas continua sendo alerta."""
+    from core.analise import COR, separar_observacoes
+
+    listas = [[COR]] + [[] for _ in range(9)]
+    observacoes, remover = separar_observacoes(listas)
+
+    assert remover == set()
+    assert observacoes == []
+
+
+def test_livro_curto_nao_vira_observacao():
+    """Com 3 páginas nao da para concluir nada sobre o livro."""
+    from core.analise import COR, separar_observacoes
+
+    observacoes, remover = separar_observacoes([[COR], [COR], [COR]])
+    assert observacoes == [] and remover == set()
+
+
+def test_o_limiar_e_respeitado():
+    from core.analise import COR, separar_observacoes
+
+    # 6 de 10 = 60%, abaixo do limiar de 70%
+    listas = [[COR] for _ in range(6)] + [[] for _ in range(4)]
+    assert separar_observacoes(listas)[1] == set()
+
+    # 7 de 10 = 70%, no limiar
+    listas = [[COR] for _ in range(7)] + [[] for _ in range(3)]
+    assert separar_observacoes(listas)[1] == {COR}
+
+
+# --- qualidade do scan -----------------------------------------------------
+
+def _pdf_com_imagem(caminho, largura_px: int, altura_px: int, largura_pt: float):
+    """PDF de uma página só, com uma imagem embutida de tamanho conhecido."""
+    import cv2
+    import fitz
+
+    arte = np.full((altura_px, largura_px, 3), 240, dtype=np.uint8)
+    arte[100:140, 100:400] = 20
+    ok, buffer = cv2.imencode(".png", arte)
+    assert ok
+
+    doc = fitz.open()
+    altura_pt = largura_pt * altura_px / largura_px
+    pagina = doc.new_page(width=largura_pt, height=altura_pt)
+    pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt),
+                        stream=buffer.tobytes())
+    doc.save(caminho)
+    doc.close()
+
+
+def test_dpi_real_vem_da_imagem_embutida(tmp_path):
+    """O DPI tem que sair do scan, não do tamanho com que rasterizamos.
+
+    Este teste existe porque a versão anterior media na imagem que ela mesma
+    acabara de rasterizar: devolvia sempre o DPI pedido, e o alerta de
+    qualidade baixa nunca disparava - nem num scan de 112 DPI.
+    """
+    import fitz
+
+    from core.pdf_io import dpi_real_da_pagina
+
+    caminho = tmp_path / "scan.pdf"
+    # 1200 px numa página de 8 polegadas (576 pt) = 150 DPI
+    _pdf_com_imagem(caminho, largura_px=1200, altura_px=1600, largura_pt=576)
+
+    doc = fitz.open(caminho)
+    try:
+        assert dpi_real_da_pagina(doc, 0) == pytest.approx(150, abs=1)
+    finally:
+        doc.close()
+
+
+def test_dpi_real_independe_do_dpi_de_leitura(tmp_path):
+    import fitz
+
+    from core.pdf_io import dpi_real_da_pagina, pagina_para_array
+
+    caminho = tmp_path / "scan.pdf"
+    _pdf_com_imagem(caminho, largura_px=900, altura_px=1200, largura_pt=576)
+
+    doc = fitz.open(caminho)
+    try:
+        medido = dpi_real_da_pagina(doc, 0)
+        for dpi_de_leitura in (72, 150, 300):
+            pagina_para_array(doc, 0, dpi=dpi_de_leitura)
+            assert dpi_real_da_pagina(doc, 0) == pytest.approx(medido)
+        assert medido == pytest.approx(112.5, abs=1)
+    finally:
+        doc.close()
+
+
+def test_scan_ruim_dispara_o_alerta_de_qualidade(tmp_path):
+    from core.analise import DPI_BAIXO, RESOLUCAO_BAIXA, analisar_folha
+    from core.dividir import Lombada
+    from core.endireitar import Inclinacao
+    from core.recortar import Recorte
+
+    alertas = analisar_folha(
+        folha_dupla(), Lombada(0.5, 0.9, True), Inclinacao(0.0, 1.0),
+        Recorte.inteiro(), vai_dividir=False, vai_endireitar=False,
+        vai_cortar=False, dpi_real=112.0,
+    )
+    assert RESOLUCAO_BAIXA in alertas, f"112 DPI e menos que {DPI_BAIXO}"
+
+
+def test_scan_bom_nao_dispara_o_alerta(tmp_path):
+    from core.analise import RESOLUCAO_BAIXA, analisar_folha
+    from core.dividir import Lombada
+    from core.endireitar import Inclinacao
+    from core.recortar import Recorte
+
+    alertas = analisar_folha(
+        folha_dupla(), Lombada(0.5, 0.9, True), Inclinacao(0.0, 1.0),
+        Recorte.inteiro(), vai_dividir=False, vai_endireitar=False,
+        vai_cortar=False, dpi_real=300.0,
+    )
+    assert RESOLUCAO_BAIXA not in alertas
+
+
 # --- caminhos em disco -----------------------------------------------------
 #
 # Estes testes existem porque acentuar um caminho ja quebrou o programa duas
