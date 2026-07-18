@@ -198,7 +198,8 @@ class GerenciadorPrevias(QObject):
         p = self.projeto.paginas[indice]
         f = self.projeto.folhas[p.folha]
         return (
-            f"{indice}:{dpi}:{p.filtro}:{p.forca_preto}:{p.metade}:"
+            f"{indice}:{dpi}:{p.filtro}:{p.forca_preto}:"
+            f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
             f"{self.projeto.limpar}:{self.projeto.endireitar}:"

@@ -37,7 +37,7 @@ import functools
 import traceback
 
 import numpy as np
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -53,12 +53,12 @@ from PySide6.QtWidgets import (
 
 from core import analise
 from core.filtros import (
-    FORCAS,
     MAGICO_PRO,
     MELHORAR,
     NOMES_AMIGAVEIS,
     ORIGINAL,
     PRETO_E_BRANCO,
+    palavra_do_ajuste,
 )
 from historico_acoes import HistoricoAcoes, aplicar, montar_acao
 from modelos import Projeto
@@ -67,6 +67,7 @@ from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.destino import SeletorDestino
+from ui.widgets.medidor import Medidor
 from ui.widgets.tira_miniaturas import TiraMiniaturas
 from ui.widgets.visualizador import (
     MODO_ANGULO,
@@ -86,10 +87,23 @@ TITULOS = {
     ABA_FILTRO: "Filtro",
 }
 
-ROTULOS_FORCA = {
-    "mais_fraco": "mais fraco",
-    "normal": "normal",
-    "mais_escuro": "mais escuro",
+# Enquanto o medidor esta sendo arrastado a prévia sai menor: a 110 DPI o
+# filtro nao acompanha o dedo. Ao soltar, volta para DPI_PREVIA.
+DPI_ARRASTO = 55
+ESPERA_ARRASTO_MS = 150   # espera antes de redesenhar, para nao refazer a cada pixel
+ESPERA_COMMIT_MS = 450    # fecha a ação quando o medidor foi mexido pelo teclado
+
+# Qual campo da página cada filtro ajusta, e como o medidor se apresenta.
+CAMPO_DO_AJUSTE = {
+    PRETO_E_BRANCO: "forca_preto",
+    MELHORAR: "clareza_melhorar",
+    MAGICO_PRO: "intensidade_magico",
+}
+
+ROTULOS_DO_AJUSTE = {
+    PRETO_E_BRANCO: ("Força do preto", "mais fraco", "mais escuro"),
+    MELHORAR: ("Clareza do fundo", "suave", "bem clara"),
+    MAGICO_PRO: ("Intensidade", "suave", "bem forte"),
 }
 
 CARTOES = [
@@ -136,6 +150,18 @@ class TelaConferir(QWidget):
         self._abas_ativas: list[str] = []
         self._carregando = False
 
+        # estado do medidor de ajuste
+        self._valor_ao_pegar: int | None = None
+        self._dpi_atual = DPI_PREVIA
+
+        self._agendar = QTimer(self)
+        self._agendar.setSingleShot(True)
+        self._agendar.timeout.connect(self._redesenhar_previa)
+
+        self._commit = QTimer(self)
+        self._commit.setSingleShot(True)
+        self._commit.timeout.connect(lambda: self._medidor_soltou(None))
+
         # Referencias diretas em Python, uma por aba. A versao anterior
         # guardava o widget dentro de setProperty() e o buscava de volta a cada
         # clique; isso devolve um ponteiro que o Python nao mantem vivo e e uma
@@ -170,8 +196,9 @@ class TelaConferir(QWidget):
         self.area_imagem = QStackedWidget()
         self.area_imagem.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Minimo pequeno para que a soma de todas as linhas caiba na janela
-        # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
-        self.area_imagem.setMinimumHeight(130)
+        # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas. O valor
+        # foi apertado de novo quando o bloco de Ajuste entrou na tela.
+        self.area_imagem.setMinimumHeight(112)
         camadas.addWidget(self.area_imagem, 1)
 
         self.faixa = QFrame()                                # 4
@@ -353,28 +380,58 @@ class TelaConferir(QWidget):
 
         self.paginas_de_imagem[ABA_FILTRO] = pagina
 
-        linha_botoes = self._linha_de_botoes(ABA_FILTRO)
-        self.painel_forca = QWidget()
-        forca_linha = QHBoxLayout(self.painel_forca)
-        forca_linha.setContentsMargins(0, 0, 0, 0)
-        forca_linha.setSpacing(6)
-        forca_linha.addWidget(QLabel("Força do preto:"))
-        for chave in FORCAS:
-            botao = QPushButton(ROTULOS_FORCA[chave])
-            botao.setCheckable(True)
-            _ligar(botao, functools.partial(self._escolher_forca, chave))
-            self.botoes_forca[chave] = botao
-            forca_linha.addWidget(botao)
-        linha_botoes.addWidget(self.painel_forca)
+        # Abaixo da faixa vem AJUSTE (o que muda a página) e, separado dele,
+        # APLICAR EM (o que decide onde a mudança vale). Sao coisas diferentes:
+        # misturar as duas na mesma linha era o que confundia.
+        painel = QWidget()
+        fora = QVBoxLayout(painel)
+        fora.setContentsMargins(0, 0, 0, 0)
+        fora.setSpacing(6)
 
-        _botao("só nesta", linha_botoes, self._marcar_revisada)
-        _botao("usar em todas", linha_botoes, self._filtro_em_todas)
+        self.bloco_ajuste = QFrame()
+        self.bloco_ajuste.setObjectName("cartao")
+        dentro = QVBoxLayout(self.bloco_ajuste)
+        dentro.setContentsMargins(12, 7, 12, 7)
+        dentro.setSpacing(2)
+
+        rotulo_bloco = QLabel("AJUSTE")
+        rotulo_bloco.setObjectName("rotuloBloco")
+        dentro.addWidget(rotulo_bloco)
+
+        self.medidor = Medidor("Força do preto", "mais fraco", "mais escuro")
+        self.medidor.arrastando.connect(self._medidor_arrastando)
+        self.medidor.soltou.connect(self._medidor_soltou)
+        self.medidor.barra.sliderPressed.connect(self._medidor_pegou)
+        dentro.addWidget(self.medidor)
+        fora.addWidget(self.bloco_ajuste)
+
+        linha_botoes = QHBoxLayout()
+        linha_botoes.setSpacing(8)
+        rotulo_aplicar = QLabel("Aplicar em:")
+        rotulo_aplicar.setStyleSheet("font-weight: 600;")
+        linha_botoes.addWidget(rotulo_aplicar)
+
+        _botao("só nesta", linha_botoes, self._marcar_revisada, "acaoPrimaria")
+        _botao("todas", linha_botoes, self._filtro_em_todas)
         _botao("só nas próximas", linha_botoes, self._filtro_nas_proximas)
-        self.botao_apagar = _botao("apagar página", linha_botoes, self.apagar_pagina)
+
+        # Apagar e destrutivo: fica de outro lado do separador, para ninguem
+        # acertar nele querendo clicar em "só nas próximas".
+        separador = QFrame()
+        separador.setFrameShape(QFrame.VLine)
+        separador.setStyleSheet("color: #d1d5db; margin: 0 8px;")
+        linha_botoes.addWidget(separador)
+        self.botao_apagar = _botao(
+            "apagar página", linha_botoes, self.apagar_pagina, "destrutivo"
+        )
+
         linha_botoes.addStretch()
         self.botoes_de_sugestao[ABA_FILTRO] = _botao(
             "", linha_botoes, self._aplicar_sugestao, "sugestao"
         )
+        fora.addLayout(linha_botoes)
+
+        self.linhas_de_botoes[ABA_FILTRO] = painel
 
     # ------------------------------------------------------------------
     # carga
@@ -572,8 +629,8 @@ class TelaConferir(QWidget):
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             return
 
-        img = self.previas.pegar(self.indice_pagina, DPI_PREVIA)
-        self.previas.pre_carregar(self.indice_pagina, DPI_PREVIA)
+        img = self.previas.pegar(self.indice_pagina, self._dpi_atual)
+        self.previas.pre_carregar(self.indice_pagina, self._dpi_atual)
         pagina = self.projeto.paginas[self.indice_pagina]
 
         if aba == ABA_BORDAS:
@@ -608,7 +665,10 @@ class TelaConferir(QWidget):
             if chave == pagina.filtro:
                 cartao.definir_amostra(limitar_altura(img, 260))
             elif base is not None:
-                amostra, _ = aplicar_filtro(base, chave, pagina.forca_preto)
+                amostra, _ = aplicar_filtro(
+                    base, chave, pagina.forca_preto,
+                    pagina.clareza_melhorar, pagina.intensidade_magico,
+                )
                 cartao.definir_amostra(amostra)
             else:
                 cartao.definir_amostra(None)
@@ -703,9 +763,7 @@ class TelaConferir(QWidget):
 
         if ABA_FILTRO in self._abas_ativas:
             pagina = self.projeto.paginas[self.indice_pagina]
-            self.painel_forca.setVisible(pagina.filtro == PRETO_E_BRANCO)
-            for chave, botao in self.botoes_forca.items():
-                botao.setChecked(chave == pagina.forca_preto)
+            self._configurar_medidor()
             self.botao_apagar.setText(
                 "restaurar página" if pagina.apagada else "apagar página"
             )
@@ -742,7 +800,7 @@ class TelaConferir(QWidget):
             return
         assert self.previas is not None
         esperadas = (
-            self.previas.chave(self.indice_pagina, DPI_PREVIA),
+            self.previas.chave(self.indice_pagina, self._dpi_atual),
             self.previas.chave_folha(self.indice_folha, DPI_PREVIA),
         )
         if chave in esperadas or chave.startswith("folha:"):
@@ -889,13 +947,108 @@ class TelaConferir(QWidget):
             f"Filtro da página {self.indice_pagina + 1}: {nome_antes} para {nome_depois}",
         )
 
+    # --- medidor de ajuste ------------------------------------------------
+
+    def _campo_do_ajuste(self, filtro: str | None = None) -> str | None:
+        """Qual campo da página o medidor edita, conforme o filtro escolhido."""
+        if filtro is None:
+            if self.projeto is None:
+                return None
+            filtro = self.projeto.paginas[self.indice_pagina].filtro
+        return CAMPO_DO_AJUSTE.get(filtro)
+
+    def _configurar_medidor(self) -> None:
+        """Mostra o medidor do filtro atual, com o valor daquela página."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        campo = self._campo_do_ajuste(pagina.filtro)
+
+        # Original não tem o que ajustar: o bloco inteiro some.
+        self.bloco_ajuste.setVisible(campo is not None)
+        if campo is None:
+            return
+
+        rotulo, esquerda, direita = ROTULOS_DO_AJUSTE[pagina.filtro]
+        self.medidor.definir_rotulo(rotulo, esquerda, direita)
+        self.medidor.definir(getattr(pagina, campo))
+
     @protegido
-    def _escolher_forca(self, forca: str) -> None:
+    def _medidor_pegou(self) -> None:
+        """Guarda o valor de antes, para o Ctrl+Z voltar ao ponto certo."""
+        campo = self._campo_do_ajuste()
+        if campo and self.projeto is not None:
+            self._valor_ao_pegar = getattr(
+                self.projeto.paginas[self.indice_pagina], campo
+            )
+
+    @protegido
+    def _medidor_arrastando(self, valor: int) -> None:
+        """Prévia ao vivo: aplica no objeto e agenda o redesenho.
+
+        Nao registra no histórico a cada passo - seriam dezenas de ações por
+        arrasto. O histórico só recebe uma ação, ao soltar.
+        """
+        if not self._pronta():
+            return
+        campo = self._campo_do_ajuste()
+        if campo is None:
+            return
+        assert self.projeto is not None
+
+        if self._valor_ao_pegar is None:
+            self._valor_ao_pegar = getattr(
+                self.projeto.paginas[self.indice_pagina], campo
+            )
+
+        setattr(self.projeto.paginas[self.indice_pagina], campo, int(valor))
+
+        # Durante o arrasto a prévia sai em resolução baixa: a 110 DPI o filtro
+        # não acompanha o dedo. Ao soltar volta para a resolução normal.
+        self._dpi_atual = DPI_ARRASTO
+        self._agendar.start(ESPERA_ARRASTO_MS)
+
+        # Sem medidor preso (mexeu pelo teclado), o commit vem por tempo.
+        if not self.medidor.barra.isSliderDown():
+            self._commit.start(ESPERA_COMMIT_MS)
+
+    @protegido
+    def _medidor_soltou(self, valor: int | None = None) -> None:
+        """Fecha o arrasto: uma ação só no histórico e prévia em resolução cheia."""
+        self._commit.stop()
+        if not self._pronta():
+            return
+        campo = self._campo_do_ajuste()
+        if campo is None:
+            return
+        assert self.projeto is not None
+
+        pagina = self.projeto.paginas[self.indice_pagina]
+        novo = int(self.medidor.valor if valor is None else valor)
+        antigo = self._valor_ao_pegar
+        self._valor_ao_pegar = None
+        self._dpi_atual = DPI_PREVIA
+
+        if antigo is None or antigo == novo:
+            self.atualizar()
+            return
+
+        # Volta ao valor de antes para que o "antes" da ação fique correto;
+        # o _registrar aplica o novo em seguida.
+        setattr(pagina, campo, antigo)
+        rotulo = ROTULOS_DO_AJUSTE[pagina.filtro][0]
         self._registrar(
-            "forca_preto", "pagina", [self.indice_pagina],
-            {"forca_preto": forca, "revisada": True},
-            f"Força do preto da página {self.indice_pagina + 1}: {ROTULOS_FORCA[forca]}",
+            "ajuste_filtro", "pagina", [self.indice_pagina],
+            {campo: novo, "revisada": True},
+            f"{rotulo} da página {self.indice_pagina + 1}: {palavra_do_ajuste(novo)}",
         )
+
+    def _redesenhar_previa(self) -> None:
+        """Chamado pelo tempo de espera do arrasto."""
+        if not self._pronta():
+            return
+        assert self.previas is not None
+        self.previas.invalidar(self.indice_pagina)
+        self._atualizar_previa()
 
     @protegido
     def _filtro_em_todas(self) -> None:
@@ -905,7 +1058,9 @@ class TelaConferir(QWidget):
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
-            {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto},
+            {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
+             "clareza_melhorar": pagina.clareza_melhorar,
+             "intensidade_magico": pagina.intensidade_magico},
             f"{nome} em todas as {len(indices)} páginas",
         )
 
@@ -917,7 +1072,9 @@ class TelaConferir(QWidget):
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
-            {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto},
+            {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
+             "clareza_melhorar": pagina.clareza_melhorar,
+             "intensidade_magico": pagina.intensidade_magico},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 

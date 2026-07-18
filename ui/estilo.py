@@ -96,6 +96,37 @@ QPushButton:checked {{
     font-weight: 600;
 }}
 
+/* Acao principal de uma linha de botões: destaque sem o tamanho do #primario */
+QPushButton#acaoPrimaria {{
+    background: {AZUL};
+    color: white;
+    border: none;
+    font-weight: 600;
+}}
+QPushButton#acaoPrimaria:hover {{ background: {AZUL_ESCURO}; }}
+
+/* Acao destrutiva: precisa parecer diferente das outras da mesma linha */
+QPushButton#destrutivo {{ color: {VERMELHO}; border-color: #fecaca; }}
+QPushButton#destrutivo:hover {{ background: #fef2f2; border-color: {VERMELHO}; }}
+
+QLabel#rotuloBloco {{
+    color: {TEXTO_FRACO};
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}}
+
+QSlider::groove:horizontal {{ height: 6px; background: {BORDA}; border-radius: 3px; }}
+QSlider::sub-page:horizontal {{ background: {AZUL}; border-radius: 3px; }}
+QSlider::handle:horizontal {{
+    background: white;
+    border: 2px solid {AZUL};
+    width: 16px;
+    margin: -7px 0;
+    border-radius: 9px;
+}}
+QSlider::handle:horizontal:hover {{ background: {AZUL_CLARO}; }}
+
 QPushButton#plano {{ border: none; background: transparent; color: {AZUL}; }}
 QPushButton#plano:hover {{ text-decoration: underline; background: transparent; }}
 

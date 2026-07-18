@@ -17,6 +17,8 @@ from core.filtros import (
     PRETO_E_BRANCO,
     aplicar_filtro,
     janela_para_altura,
+    k_do_sauvola,
+    palavra_do_ajuste,
 )
 from core.recortar import aplicar_recorte, detectar_bordas
 from historico_acoes import HistoricoAcoes, aplicar, montar_acao
@@ -51,13 +53,68 @@ def test_preto_e_branco_preserva_o_texto():
 
 
 def test_forcas_do_preto_sao_ordenadas():
-    """Mais escuro tem que deixar mais preto que normal, que deixa mais que fraco."""
+    """Subir o medidor tem que deixar mais preto, sempre."""
     img = folha_dupla()
-    pretos = []
-    for forca in ("mais_fraco", "normal", "mais_escuro"):
-        saida, _ = aplicar_filtro(img, PRETO_E_BRANCO, forca_preto=forca)
-        pretos.append((saida == 0).mean())
-    assert pretos[0] <= pretos[1] <= pretos[2], pretos
+    pretos = [
+        (aplicar_filtro(img, PRETO_E_BRANCO, forca_preto=v)[0] == 0).mean()
+        for v in (0, 25, 50, 75, 100)
+    ]
+    assert pretos == sorted(pretos), pretos
+    assert pretos[0] < pretos[-1], "o medidor não mudou nada"
+
+
+def test_medidor_do_meio_cai_no_k_recomendado():
+    """50 tem que dar exatamente o k=0,20, que e o padrão para livro."""
+    assert k_do_sauvola(50) == pytest.approx(0.20)
+    assert k_do_sauvola(0) == pytest.approx(0.40)
+    assert k_do_sauvola(100) == pytest.approx(0.06)
+
+
+def test_k_cai_conforme_o_medidor_sobe():
+    valores = [k_do_sauvola(v) for v in range(0, 101, 10)]
+    assert valores == sorted(valores, reverse=True), valores
+
+
+def test_medidor_aceita_valor_fora_da_faixa():
+    assert k_do_sauvola(-30) == k_do_sauvola(0)
+    assert k_do_sauvola(300) == k_do_sauvola(100)
+
+
+def test_palavras_do_medidor():
+    assert palavra_do_ajuste(0) == "bem fraco"
+    assert palavra_do_ajuste(50) == "normal"
+    assert palavra_do_ajuste(100) == "bem forte"
+
+
+def test_intensidade_do_magico_muda_a_saturacao():
+    """Subir a intensidade tem que deixar a cor mais viva, de fato."""
+    import cv2
+
+    capa = np.full((400, 300, 3), (150, 90, 40), dtype=np.uint8)
+    capa[:60, :] = 240   # uma faixa de papel, para haver o que balancear
+
+    saturacoes = []
+    for valor in (0, 50, 100):
+        saida, _ = aplicar_filtro(capa, MAGICO_PRO, intensidade=valor)
+        hsv = cv2.cvtColor(saida, cv2.COLOR_BGR2HSV)
+        saturacoes.append(float(hsv[200:, :, 1].mean()))
+
+    assert saturacoes == sorted(saturacoes), saturacoes
+    assert saturacoes[-1] > saturacoes[0] * 1.2, saturacoes
+
+
+def test_clareza_do_melhorar_clareia_o_fundo():
+    """Subir a clareza tem que deixar o papel mais claro, nunca mais escuro."""
+    img = folha_dupla()
+    img[:] = (200, 210, 225)          # papel amarelado, sem texto
+    img[100:120, 100:400] = 40        # uma linha de texto
+
+    fundos = []
+    for valor in (0, 50, 100):
+        saida, _ = aplicar_filtro(img, MELHORAR, clareza=valor)
+        fundos.append(float(saida[300:400, 100:400].mean()))
+
+    assert fundos == sorted(fundos), fundos
 
 
 @pytest.mark.parametrize("filtro", [ORIGINAL, MELHORAR, MAGICO_PRO])

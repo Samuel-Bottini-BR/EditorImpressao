@@ -43,14 +43,24 @@ JANELA_FRACAO_ALTURA = 1 / 20
 JANELA_MIN = 15
 JANELA_MAX = 151
 
+# Todos os ajustes de filtro sao um numero de 0 a 100, com 50 no meio. E o que
+# o medidor deslizante da interface mostra: o usuario nunca ve k, clipLimit
+# nem saturacao.
+AJUSTE_MIN, AJUSTE_PADRAO, AJUSTE_MAX = 0, 50, 100
+
 # k do Sauvola. Quanto MAIOR o k, MAIS ALTO fica o limiar de branco, ou seja,
 # menos pixels viram preto. Por isso "mais fraco" tem k maior.
-K_POR_FORCA = {
-    "mais_fraco": 0.34,
-    "normal": 0.20,
-    "mais_escuro": 0.10,
-}
-FORCAS = tuple(K_POR_FORCA)
+# 0 -> 0,40 (bem fraco)   50 -> 0,20 (normal)   100 -> 0,06 (bem escuro)
+K_FRACO, K_NORMAL, K_ESCURO = 0.40, 0.20, 0.06
+
+# Palavras que aparecem ao lado do medidor. O usuario le isto, nao o numero.
+PALAVRAS_DA_FORCA = (
+    (20, "bem fraco"),
+    (40, "leve"),
+    (60, "normal"),
+    (80, "forte"),
+    (101, "bem forte"),
+)
 
 # Ruido: componentes conectados menores que isso (em px, medido a 300 DPI)
 # viram branco. Tira a poeira do scanner sem comer pingo de "i" nem acento.
@@ -84,9 +94,18 @@ BRANCO_ESCALA_MAX = 2.5
 # Tudo mais escuro que isso fica exatamente como estava.
 OMBRO_INICIO = 0.75
 
-# Magico pro
-CLAHE_CLIP = 2.0
+# Melhorar: a "clareza do fundo" mexe em onde comeca o ombro. Quanto mais cedo
+# comeca, mais tons sobem para o branco - o fundo fica mais limpo, com o risco
+# de achatar o que era quase branco.
+OMBRO_SUAVE, OMBRO_FORTE = 0.88, 0.55
+
+# Magico pro: a "intensidade" move os tres de uma vez.
 CLAHE_GRADE = (8, 8)
+CLAHE_CLIP_MIN, CLAHE_CLIP_MAX = 1.0, 3.5
+SATURACAO_MIN, SATURACAO_MAX = 1.0, 2.2
+NITIDEZ_MIN, NITIDEZ_MAX = 0.15, 1.10
+
+CLAHE_CLIP = 2.0
 SATURACAO_GANHO = 1.35
 NITIDEZ_PESO = 0.6
 BRANCO_LIMIAR = 235
@@ -144,6 +163,35 @@ def janela_para_altura(altura: int) -> int:
     return janela
 
 
+# --- traducao do medidor (0 a 100) para os parametros de verdade ------------
+
+def _entre(valor: int, minimo: float, maximo: float) -> float:
+    """Interpola o valor do medidor dentro da faixa dada."""
+    v = max(AJUSTE_MIN, min(AJUSTE_MAX, int(valor))) / 100.0
+    return minimo + (maximo - minimo) * v
+
+
+def k_do_sauvola(forca: int = AJUSTE_PADRAO) -> float:
+    """Medidor de forca do preto -> k do Sauvola.
+
+    Em duas retas para que a posicao do meio caia exatamente no k=0,20, que e
+    o valor que funciona na maioria dos livros. Uma reta so entre 0,40 e 0,06
+    deixaria o meio em 0,23 e o padrao ficaria diferente do recomendado.
+    """
+    forca = max(AJUSTE_MIN, min(AJUSTE_MAX, int(forca)))
+    if forca <= AJUSTE_PADRAO:
+        return K_FRACO + (K_NORMAL - K_FRACO) * (forca / AJUSTE_PADRAO)
+    return K_NORMAL + (K_ESCURO - K_NORMAL) * ((forca - AJUSTE_PADRAO) / AJUSTE_PADRAO)
+
+
+def palavra_do_ajuste(valor: int) -> str:
+    """O ajuste em palavras, para o usuario nao precisar ler numero."""
+    for limite, palavra in PALAVRAS_DA_FORCA:
+        if int(valor) < limite:
+            return palavra
+    return PALAVRAS_DA_FORCA[-1][1]
+
+
 def doxapy_disponivel() -> bool:
     """Informa se estamos no caminho rapido (DoxaPy) ou no plano B (skimage)."""
     try:
@@ -186,14 +234,16 @@ def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
 
 
 def filtro_preto_e_branco(
-    img: np.ndarray, forca: str = "normal", despeckle: bool = True
+    img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle: bool = True
 ) -> np.ndarray:
-    """Preto e branco (Eco). Devolve imagem de 1 canal, só 0 e 255."""
-    if forca not in K_POR_FORCA:
-        forca = "normal"
+    """Preto e branco (Eco). Devolve imagem de 1 canal, só 0 e 255.
+
+    forca vai de 0 (bem fraco, texto mais fino) a 100 (bem escuro, pega mais
+    tinta e mais mancha junto).
+    """
     cinza = _para_cinza(img)
     janela = janela_para_altura(cinza.shape[0])
-    binaria = binarizar(cinza, janela=janela, k=K_POR_FORCA[forca])
+    binaria = binarizar(cinza, janela=janela, k=k_do_sauvola(forca))
     if despeckle:
         binaria = _despeckle(binaria, cinza.shape[0])
     return binaria
@@ -258,7 +308,7 @@ def _achatar_iluminacao(img: np.ndarray, nivel_papel: float) -> np.ndarray:
     return np.clip(saida, 0, 255).astype(np.uint8)
 
 
-def _balanco_de_branco(img: np.ndarray) -> np.ndarray:
+def _balanco_de_branco(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray:
     """Faz o papel virar branco de verdade, tirando o amarelado.
 
     Olha SO para os pixels que parecem papel: claros e pouco coloridos. Calcula
@@ -296,12 +346,20 @@ def _balanco_de_branco(img: np.ndarray) -> np.ndarray:
     nivel_papel = float(np.percentile(_para_cinza(saida)[papel], 50))
     if nivel_papel < 1:
         return saida
-    return _curva_de_ombro(saida, nivel_papel)
+    return _curva_de_ombro(saida, nivel_papel, clareza)
 
 
-def _curva_de_ombro(img: np.ndarray, nivel_papel: float) -> np.ndarray:
-    """Mapeia nivel_papel -> 255 mexendo só na parte clara da escala."""
-    inicio = max(1.0, nivel_papel * OMBRO_INICIO)
+def _curva_de_ombro(
+    img: np.ndarray, nivel_papel: float, clareza: int = AJUSTE_PADRAO
+) -> np.ndarray:
+    """Mapeia nivel_papel -> 255 mexendo só na parte clara da escala.
+
+    clareza decide ONDE o ombro comeca. Quanto mais cedo, mais tons sobem para
+    o branco: o fundo fica mais limpo, ao custo de achatar o que ja era quase
+    branco. E o medidor "Clareza do fundo" do filtro Melhorar.
+    """
+    fracao = _entre(clareza, OMBRO_SUAVE, OMBRO_FORTE)
+    inicio = max(1.0, nivel_papel * fracao)
     if nivel_papel <= inicio:
         return img
 
@@ -331,12 +389,15 @@ def _aprofundar_pretos(img: np.ndarray, percentil: float = 0.5) -> np.ndarray:
     return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
 
-def filtro_melhorar(img: np.ndarray) -> np.ndarray:
-    """Melhorar: fundo branco limpo, cores originais preservadas."""
+def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray:
+    """Melhorar: fundo branco limpo, cores originais preservadas.
+
+    clareza vai de 0 (fundo quase como veio) a 100 (fundo bem branco).
+    """
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     saida = _achatar_iluminacao(img, _nivel_do_papel(img))
-    saida = _balanco_de_branco(saida)
+    saida = _balanco_de_branco(saida, clareza)
     return _aprofundar_pretos(saida)
 
 
@@ -362,8 +423,13 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
     return saida
 
 
-def filtro_magico_pro(img: np.ndarray) -> np.ndarray:
-    """Mágico pro: cor viva, texto nítido, fundo branco. Para capas e gravuras."""
+def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.ndarray:
+    """Mágico pro: cor viva, texto nítido, fundo branco. Para capas e gravuras.
+
+    intensidade move os tres realces de uma vez - saturação, contraste local e
+    nitidez. Um controle só, porque mexer nos tres separado nao faz sentido
+    para quem nao e da area.
+    """
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
@@ -373,25 +439,33 @@ def filtro_magico_pro(img: np.ndarray) -> np.ndarray:
 
     # 2. CLAHE so no canal de luminosidade (L do LAB), para nao mexer no matiz
     lab = cv2.cvtColor(saida, cv2.COLOR_BGR2LAB)
-    clahe = cv2.createCLAHE(clipLimit=CLAHE_CLIP, tileGridSize=CLAHE_GRADE)
+    clahe = cv2.createCLAHE(
+        clipLimit=_entre(intensidade, CLAHE_CLIP_MIN, CLAHE_CLIP_MAX),
+        tileGridSize=CLAHE_GRADE,
+    )
     lab[:, :, 0] = clahe.apply(lab[:, :, 0])
     saida = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
     # 3. cor mais viva
-    saida = _realcar_saturacao(saida)
+    saida = _realcar_saturacao(saida, _entre(intensidade, SATURACAO_MIN, SATURACAO_MAX))
 
     # 4. texto mais nitido
-    saida = _nitidez(saida)
+    saida = _nitidez(saida, _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX))
 
     # 5. fundo branco de verdade
     return _empurrar_branco(saida)
 
 
 def aplicar_filtro(
-    img: np.ndarray, filtro: str, forca_preto: str = "normal"
+    img: np.ndarray,
+    filtro: str,
+    forca_preto: int = AJUSTE_PADRAO,
+    clareza: int = AJUSTE_PADRAO,
+    intensidade: int = AJUSTE_PADRAO,
 ) -> tuple[np.ndarray, bool]:
     """Aplica o filtro pedido.
 
+    Cada filtro tem o seu ajuste de 0 a 100; os outros dois sao ignorados.
     Devolve (imagem, monocromatica). monocromatica=True avisa o EscritorPDF
     para salvar a página em 1 bit.
     """
@@ -401,9 +475,9 @@ def aplicar_filtro(
         if filtro == PRETO_E_BRANCO:
             return filtro_preto_e_branco(img, forca=forca_preto), True
         if filtro == MELHORAR:
-            return filtro_melhorar(img), False
+            return filtro_melhorar(img, clareza=clareza), False
         if filtro == MAGICO_PRO:
-            return filtro_magico_pro(img), False
+            return filtro_magico_pro(img, intensidade=intensidade), False
     except cv2.error as exc:
         raise ErroFiltro("Não consegui limpar esta página.") from exc
 

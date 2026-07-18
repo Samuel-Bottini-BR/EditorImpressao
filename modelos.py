@@ -18,7 +18,7 @@ edita.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime
 from typing import Any
 
@@ -65,7 +65,14 @@ class ConfigPagina:
     angulo_manual: float | None = None                        # None = automatico
 
     filtro: str = PRETO_E_BRANCO
-    forca_preto: str = "normal"      # mais_fraco | normal | mais_escuro
+
+    # Os tres ajustes de filtro, cada um de 0 a 100 com 50 no meio. Ficam
+    # separados de proposito: trocar de filtro e voltar tem que devolver o
+    # ajuste que AQUELE filtro tinha, sem herdar o do outro.
+    forca_preto: int = 50            # Preto e branco - "Força do preto"
+    clareza_melhorar: int = 50       # Melhorar       - "Clareza do fundo"
+    intensidade_magico: int = 50     # Mágico pro     - "Intensidade"
+
     apagada: bool = False
     tem_cor: bool = False
     alertas: list[str] = field(default_factory=list)
@@ -140,19 +147,45 @@ class Projeto:
 
     @staticmethod
     def de_dicionario(dados: dict[str, Any]) -> "Projeto":
-        folhas = [ConfigFolha(**f) for f in dados.pop("folhas", [])]
-        paginas = [ConfigPagina(**_com_tuplas(p)) for p in dados.pop("paginas", [])]
-        projeto = Projeto(**dados)
+        """Reconstroi o projeto, tolerando arquivos de versões anteriores.
+
+        Campos que sumiram entre uma versão e outra sao descartados, e os que
+        surgiram ganham o padrão. Sem isso, reabrir um projeto antigo derrubaria
+        o programa - e o usuário perderia o trabalho por causa de um campo.
+        """
+        folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, f))
+                  for f in dados.pop("folhas", [])]
+        paginas = [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(p)))
+                   for p in dados.pop("paginas", [])]
+        projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas
         return projeto
 
 
-def _com_tuplas(dados: dict[str, Any]) -> dict[str, Any]:
+def _so_campos_conhecidos(classe, dados: dict[str, Any]) -> dict[str, Any]:
+    validos = {c.name for c in fields(classe)}
+    return {k: v for k, v in dados.items() if k in validos}
+
+
+def _migrar(dados: dict[str, Any]) -> dict[str, Any]:
     """JSON não tem tupla; devolve os recortes ao formato original."""
     valor = dados.get("recorte")
     if isinstance(valor, list):
         dados["recorte"] = tuple(valor)
+
+    # Projetos gravados antes do medidor deslizante guardavam a forca do preto
+    # como palavra. Traduzimos para o numero equivalente, senao reabrir um
+    # trabalho antigo quebraria.
+    antigas = {"mais_fraco": 15, "normal": 50, "mais_escuro": 85}
+    forca = dados.get("forca_preto")
+    if isinstance(forca, str):
+        dados["forca_preto"] = antigas.get(forca, 50)
+
+    # campos que nao existiam na versao anterior
+    for campo in ("clareza_melhorar", "intensidade_magico"):
+        dados.setdefault(campo, 50)
+
     return dados
 
 

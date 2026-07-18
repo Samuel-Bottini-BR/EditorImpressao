@@ -204,7 +204,10 @@ def renderizar_pagina(
 
     if not projeto.limpar:
         return img, False
-    return aplicar_filtro(img, pagina.filtro, pagina.forca_preto)
+    return aplicar_filtro(
+        img, pagina.filtro, pagina.forca_preto,
+        pagina.clareza_melhorar, pagina.intensidade_magico,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -267,7 +270,10 @@ def processar(
                 img = preparar_metade(img_folha, folha, pagina, projeto)
 
                 if projeto.limpar:
-                    img, mono = aplicar_filtro(img, pagina.filtro, pagina.forca_preto)
+                    img, mono = aplicar_filtro(
+                        img, pagina.filtro, pagina.forca_preto,
+                        pagina.clareza_melhorar, pagina.intensidade_magico,
+                    )
                 else:
                     mono = False
 
