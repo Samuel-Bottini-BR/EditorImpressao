@@ -42,6 +42,7 @@ from modelos import Projeto
 from ui.estilo import LARANJA, TEXTO_FRACO
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.cartao_filtro import CartaoFiltro
+from ui.widgets.destino import SeletorDestino
 from ui.widgets.tira_miniaturas import TiraMiniaturas
 from ui.widgets.visualizador import (
     MODO_ANGULO,
@@ -121,6 +122,12 @@ class TelaConferir(QWidget):
         self.tira = TiraMiniaturas("Folhas")
         self.tira.selecionada.connect(self._escolher_da_tira)
         camadas.addWidget(self.tira)
+
+        # Onde salvar fica AQUI, antes de processar: assim o usuario decide o
+        # destino sem ter que esperar o livro inteiro para depois descobrir
+        # que foi parar numa pasta que ele nao queria.
+        self.destino = SeletorDestino()
+        camadas.addWidget(self.destino)
 
         rodape = QHBoxLayout()
         botao_voltar = QPushButton("voltar")
@@ -207,6 +214,10 @@ class TelaConferir(QWidget):
             self._montar_aba_filtro()
         if not self._abas_ativas:
             self._montar_aba_filtro()   # sempre ha ao menos uma para conferir
+
+        from modelos import nome_de_saida_sugerido
+
+        self.destino.definir(None, nome_de_saida_sugerido(projeto))
 
         self._montar_tira()
         self.atualizar()

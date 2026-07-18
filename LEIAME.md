@@ -5,11 +5,33 @@ Feito para o Kaique usar sem precisar entender de técnica.
 
 ## Para usar (o programa pronto)
 
-`dist\EditorImpressao.exe` — arquivo único, não precisa instalar nada e não
-precisa de Python na máquina. Basta copiar e dar dois cliques.
+Saem três formatos em `dist\`. Nenhum precisa de Python na máquina.
 
-O fluxo é: arraste o PDF → marque o que quer fazer → confira → processar.
-Os PDFs prontos vão para **Documentos \ Editor de Impressão**.
+| Arquivo | Para quê | Abre em |
+|---|---|---|
+| `EditorImpressao-Setup.exe` | **instalador** — Arquivos de Programas, atalhos no Menu Iniciar e na Área de Trabalho, aparece em "Adicionar ou remover programas" | ~8 s |
+| `EditorImpressao\` (pasta) | portátil — a pasta inteira precisa andar junto | ~8 s |
+| `EditorImpressao.exe` | portátil de arquivo único — cabe sozinho num pendrive | ~12 s |
+
+Os tempos são até a janela aparecer, medidos em aberturas repetidas. Os segundos
+são o custo de carregar o Qt e o OpenCV; o arquivo único perde uns 4 por se
+descompactar inteiro a cada abertura.
+
+O fluxo é: arraste o PDF → marque o que quer fazer → confira → escolha onde
+salvar → processar. A pasta sugerida é a última que você usou; na primeira vez,
+**Documentos \ Editor de Impressão**.
+
+### Para gerar tudo
+
+```
+.venv\Scripts\python.exe empacotar.py                  # os três de uma vez
+.venv\Scripts\python.exe empacotar.py --modo pasta     # só a portátil em pasta
+.venv\Scripts\python.exe empacotar.py --modo arquivo   # só o arquivo único
+.venv\Scripts\python.exe empacotar.py --modo instalador
+```
+
+O instalador precisa do Inno Setup 6 (`winget install --id JRSoftware.InnoSetup`).
+O script fica em `instalador.iss`; o assistente é em português do Brasil.
 
 ### Atalhos de teclado
 
@@ -28,9 +50,8 @@ Os PDFs prontos vão para **Documentos \ Editor de Impressão**.
 ## Para mexer no código
 
 ```
-.venv\Scripts\python.exe -m pytest tests -q      # 42 testes
+.venv\Scripts\python.exe -m pytest tests -q      # 51 testes
 .venv\Scripts\python.exe main.py                 # abre o programa
-.venv\Scripts\python.exe empacotar.py            # gera o .exe
 ```
 
 ### Testes por linha de comando (não abrem janela)
@@ -80,6 +101,7 @@ estar torta de um jeito diferente.
 ```
 %LOCALAPPDATA%\EditorImpressao\
 ├── historico.json              projetos recentes
+├── configuracoes.json          a última pasta usada para salvar
 ├── erros.log                   erros técnicos (nunca aparecem na tela)
 └── projetos\<nome>\
     ├── projeto.json            o estado atual
@@ -88,7 +110,8 @@ estar torta de um jeito diferente.
 ```
 
 Fechar e reabrir o programa preserva o projeto **e o histórico de ações**: ainda
-dá para desfazer.
+dá para desfazer. Desinstalar o programa **não apaga** essa pasta — o histórico
+e os projetos do usuário sobrevivem, de propósito.
 
 ## Bibliotecas
 

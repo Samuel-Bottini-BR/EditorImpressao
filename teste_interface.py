@@ -154,6 +154,41 @@ def main(caminho_pdf: str) -> int:
         print(f"  linha de corte movida de {anterior:.3f} para 0,470")
         capturar(janela, "corte_movido")
 
+    # --- escolher onde salvar --------------------------------------------
+    import configuracoes
+
+    destino = conferir.destino
+    print(f"Destino sugerido: {destino.caminho}")
+    assert destino.nome.lower().endswith(".pdf")
+
+    pasta_de_teste = Path("saida_teste/destino_escolhido").resolve()
+    pasta_de_teste.mkdir(parents=True, exist_ok=True)
+    destino.definir(pasta_de_teste, "meu livro.pdf")
+    esperar(0.3)
+    assert destino.caminho == pasta_de_teste / "meu livro.pdf"
+    capturar(janela, "destino_escolhido")
+
+    # nome com caractere que o Windows nao aceita, e sem extensao
+    destino.campo_nome.setText('livro: teste/1')
+    assert destino.nome == "livro- teste-1.pdf", destino.nome
+    print(f"  nome higienizado: {destino.nome}")
+
+    # pasta onde nao da para gravar (unidade que nao existe)
+    # Obs.: nao usamos C:\Windows\System32 porque numa sessao de administrador
+    # ela E gravavel - o teste passaria por engano.
+    pode, motivo = configuracoes.pode_gravar_em("Z:/pasta_que_nao_existe")
+    assert not pode, "uma unidade inexistente tinha que ser recusada"
+    assert motivo and motivo[0].isupper() and "Error" not in motivo, motivo
+    print(f"  pasta invalida recusada em portugues: {motivo}")
+
+    # a pasta escolhida fica lembrada para a proxima vez
+    configuracoes.lembrar_pasta_de_saida(pasta_de_teste)
+    assert configuracoes.pasta_de_saida_sugerida() == pasta_de_teste
+    print("  ultima pasta lembrada nas configuracoes")
+
+    destino.definir(pasta_de_teste, "meu livro.pdf")
+    esperar(0.2)
+
     # --- processar --------------------------------------------------------
     print("Processando o livro inteiro...")
     janela.processar()
@@ -166,6 +201,9 @@ def main(caminho_pdf: str) -> int:
 
     saida = Path(janela.tela_final.caminho)
     print(f"  gerado: {saida.name} ({saida.stat().st_size / 1024 / 1024:.1f} MB)")
+    assert saida.parent == pasta_de_teste, f"salvou no lugar errado: {saida.parent}"
+    assert saida.name == "meu livro.pdf", f"nome errado: {saida.name}"
+    print("  salvou na pasta e com o nome escolhidos")
 
     print("\nTudo passou.")
     janela.close()

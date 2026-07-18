@@ -198,5 +198,25 @@ def nome_de_arquivo_seguro(nome: str) -> str:
     return limpo or "livro"
 
 
+def nome_de_saida_sugerido(projeto: "Projeto") -> str:
+    """Nome de arquivo proposto, ja com a extensao.
+
+    O sufixo conta o que foi feito, para o Kaique diferenciar duas versoes do
+    mesmo livro na mesma pasta.
+    """
+    from core.filtros import NOMES_AMIGAVEIS
+
+    base = nome_de_arquivo_seguro(projeto.nome or "livro")
+
+    if projeto.montar_cadernos:
+        sufixo = "cadernos"
+    elif projeto.limpar:
+        sufixo = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
+    else:
+        sufixo = "arrumado"
+
+    return f"{base} - {sufixo}.pdf"
+
+
 def filtro_valido(filtro: str) -> str:
     return filtro if filtro in FILTROS else PRETO_E_BRANCO

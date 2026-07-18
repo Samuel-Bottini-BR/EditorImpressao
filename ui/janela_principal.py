@@ -11,11 +11,11 @@ from pathlib import Path
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QStackedWidget
 
+import configuracoes
 import historico
-from core.filtros import NOMES_AMIGAVEIS
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
 from historico_acoes import HistoricoAcoes
-from modelos import Projeto, nome_de_arquivo_seguro
+from modelos import Projeto
 from registro import registrar_erro
 from ui.estilo import FOLHA_DE_ESTILO
 from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaProcessar
@@ -163,7 +163,12 @@ class JanelaPrincipal(QMainWindow):
         if self.projeto is None:
             return
 
-        self.projeto.caminho_saida = self._caminho_de_saida()
+        caminho = self._resolver_destino()
+        if caminho is None:
+            return  # o usuario desistiu ou a pasta nao serve
+
+        self.projeto.caminho_saida = str(caminho)
+        configuracoes.lembrar_pasta_de_saida(caminho.parent)
         historico.salvar_projeto(self.projeto)
 
         self.tela_progresso.comecar("Processando o livro...")
@@ -176,28 +181,55 @@ class JanelaPrincipal(QMainWindow):
         self.tarefa.cancelada.connect(lambda: self.telas.setCurrentIndex(CONFERIR))
         self.tarefa.start()
 
-    def _caminho_de_saida(self) -> str:
-        """Monta o nome do arquivo final, sem o usuario precisar escolher."""
-        assert self.projeto is not None
-        pasta = historico.pasta_de_saida_padrao()
-        nome = nome_de_arquivo_seguro(self.projeto.nome)
+    def _resolver_destino(self) -> Path | None:
+        """Confere a pasta e o nome escolhidos. Devolve None se nao der para seguir.
 
-        if self.projeto.montar_cadernos:
-            sufixo = "cadernos"
-        elif self.projeto.limpar:
-            sufixo = NOMES_AMIGAVEIS.get(
-                self.projeto.filtro_padrao, self.projeto.filtro_padrao
-            ).lower()
-        else:
-            sufixo = "arrumado"
+        Duas perguntas, nesta ordem: da para gravar nessa pasta? e o arquivo ja
+        existe? Nenhuma das duas pode virar um erro tecnico na cara do usuario.
+        """
+        destino = self.tela_conferir.destino
+        caminho = destino.caminho
 
-        caminho = pasta / f"{nome} - {sufixo}.pdf"
-        # nunca sobrescrever um trabalho anterior sem avisar
-        contador = 2
-        while caminho.exists():
-            caminho = pasta / f"{nome} - {sufixo} ({contador}).pdf"
-            contador += 1
-        return str(caminho)
+        pode, motivo = destino.pronto_para_gravar()
+        if not pode:
+            self.avisar(
+                f"{motivo}\n\nA pasta era:\n{destino.pasta}",
+                titulo="Nao consigo salvar ai",
+            )
+            destino.escolher_pasta()
+            return None
+
+        if caminho.exists():
+            return self._perguntar_sobre_substituir(caminho)
+
+        return caminho
+
+    def _perguntar_sobre_substituir(self, caminho: Path) -> Path | None:
+        """Ja existe arquivo com esse nome: substituir, renomear ou desistir."""
+        alternativo = configuracoes.caminho_sem_repetir(caminho.parent, caminho.name)
+
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Ja existe um arquivo com esse nome")
+        caixa.setIcon(QMessageBox.Question)
+        caixa.setText(f"Ja existe um arquivo chamado:\n{caminho.name}")
+        caixa.setInformativeText(
+            f"Posso substituir o antigo ou salvar como:\n{alternativo.name}"
+        )
+        botao_substituir = caixa.addButton("substituir o antigo", QMessageBox.DestructiveRole)
+        botao_renomear = caixa.addButton(
+            f"salvar como {alternativo.name}", QMessageBox.AcceptRole
+        )
+        caixa.addButton("cancelar", QMessageBox.RejectRole)
+        caixa.setDefaultButton(botao_renomear)
+        caixa.exec()
+
+        escolhido = caixa.clickedButton()
+        if escolhido is botao_substituir:
+            return caminho
+        if escolhido is botao_renomear:
+            self.tela_conferir.destino.definir(alternativo.parent, alternativo.name)
+            return alternativo
+        return None
 
     def _processamento_pronto(self, caminho: str) -> None:
         assert self.projeto is not None

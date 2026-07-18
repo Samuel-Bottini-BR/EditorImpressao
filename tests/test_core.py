@@ -5,6 +5,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+import configuracoes
+
 from core.analise import detectar_cor, fracao_de_tinta, tamanhos_fora_do_padrao
 from core.dividir import detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MAXIMO, detectar_angulo, rotacionar
@@ -265,6 +267,89 @@ def test_apagar_paginas_nao_quebra_a_contagem():
     projeto.paginas[4].apagada = True
     assert projeto.total_apagadas == 2
     assert len(projeto.paginas_ativas) == 4
+
+
+# --- destino de gravacao ---------------------------------------------------
+
+def test_pasta_normal_aceita_gravacao(tmp_path):
+    pode, motivo = configuracoes.pode_gravar_em(tmp_path)
+    assert pode and motivo == ""
+
+
+def test_unidade_inexistente_e_recusada():
+    pode, motivo = configuracoes.pode_gravar_em("Z:/nao_existe_mesmo")
+    assert not pode
+    assert "Nao consegui criar" in motivo
+
+
+def test_permissao_negada_vira_frase_em_portugues(tmp_path, monkeypatch):
+    """O usuario nunca pode ver 'PermissionError' na tela (regra 3.3)."""
+    import tempfile as _tempfile
+
+    def recusar(*_args, **_kwargs):
+        raise PermissionError(13, "Access is denied")
+
+    monkeypatch.setattr(_tempfile, "NamedTemporaryFile", recusar)
+    pode, motivo = configuracoes.pode_gravar_em(tmp_path)
+
+    assert not pode
+    assert "permissao" in motivo.lower()
+    assert "Error" not in motivo and "Errno" not in motivo
+    assert "Documentos" in motivo, "a mensagem precisa sugerir uma saida"
+
+
+def test_disco_cheio_vira_frase_em_portugues(tmp_path, monkeypatch):
+    import tempfile as _tempfile
+
+    def recusar(*_args, **_kwargs):
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(_tempfile, "NamedTemporaryFile", recusar)
+    pode, motivo = configuracoes.pode_gravar_em(tmp_path)
+    assert not pode and "Error" not in motivo
+
+
+def test_nome_repetido_ganha_numero(tmp_path):
+    (tmp_path / "livro.pdf").write_bytes(b"x")
+    assert configuracoes.caminho_sem_repetir(tmp_path, "livro.pdf").name == "livro (2).pdf"
+
+    (tmp_path / "livro (2).pdf").write_bytes(b"x")
+    assert configuracoes.caminho_sem_repetir(tmp_path, "livro.pdf").name == "livro (3).pdf"
+
+
+def test_nome_livre_fica_como_esta(tmp_path):
+    assert configuracoes.caminho_sem_repetir(tmp_path, "livro.pdf").name == "livro.pdf"
+
+
+def test_pasta_sugerida_cai_no_padrao_quando_a_ultima_sumiu(monkeypatch, tmp_path):
+    monkeypatch.setattr(configuracoes, "ler", lambda _c: str(tmp_path / "apagada"))
+    monkeypatch.setattr(
+        "historico.pasta_de_saida_padrao", lambda: tmp_path / "padrao"
+    )
+    (tmp_path / "padrao").mkdir()
+    assert configuracoes.pasta_de_saida_sugerida() == tmp_path / "padrao"
+
+
+def test_nome_de_saida_sugerido_descreve_o_que_foi_feito():
+    from modelos import nome_de_saida_sugerido
+
+    projeto = projeto_de_teste()
+    projeto.nome = "Gradus Primus"
+    projeto.limpar, projeto.filtro_padrao = True, PRETO_E_BRANCO
+    assert nome_de_saida_sugerido(projeto) == "Gradus Primus - preto e branco.pdf"
+
+    projeto.montar_cadernos = True
+    assert nome_de_saida_sugerido(projeto) == "Gradus Primus - cadernos.pdf"
+
+
+def test_nome_de_saida_tira_caractere_proibido_no_windows():
+    from modelos import nome_de_saida_sugerido
+
+    projeto = projeto_de_teste()
+    projeto.nome = 'Missal: Romano/1962'
+    projeto.limpar = False
+    nome = nome_de_saida_sugerido(projeto)
+    assert not any(c in nome for c in '<>:"/\\|?*')
 
 
 def test_caminho_rapido_so_com_cadernos():
