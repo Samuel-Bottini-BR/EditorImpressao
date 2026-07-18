@@ -29,6 +29,13 @@ from pathlib import Path
 NOME = "EditorImpressao"
 RAIZ = Path(__file__).parent
 
+# CAMINHO EM DISCO, nao texto de tela: e a pasta que aparece na Area de
+# Trabalho do usuário. Trocar isto faz a pasta "mudar de lugar" para quem ja
+# estava acostumado com a anterior - por isso os nomes antigos ficam listados,
+# para serem apagados em vez de virarem uma segunda pasta parecida.
+PASTA_DE_ENTREGA = "Editor de Impressão"
+OUTROS_NOMES_DE_ENTREGA = ("Editor de Impressao", "PROGRAMA PRONTO - Editor de Impressao")
+
 # Onde o Inno Setup costuma ficar. O winget instala no perfil do usuario.
 CAMINHOS_DO_INNO = [
     Path.home() / "AppData/Local/Programs/Inno Setup 6/ISCC.exe",
@@ -189,11 +196,20 @@ def entregar() -> Path | None:
     if construir_instalador() is None:
         return None
 
-    pasta = Path.home() / "Desktop" / "Editor de Impressão"
+    pasta = Path.home() / "Desktop" / PASTA_DE_ENTREGA
     print(f"\n  preparando {pasta}")
     if pasta.exists():
         shutil.rmtree(pasta, ignore_errors=True)
     pasta.mkdir(parents=True, exist_ok=True)
+
+    # Se sobrou a pasta de uma versão anterior, com outro nome, ela vai embora:
+    # duas pastas parecidas na Area de Trabalho, uma com o instalador velho, e
+    # o usuário nao sabe qual abrir.
+    for antigo in OUTROS_NOMES_DE_ENTREGA:
+        velha = Path.home() / "Desktop" / antigo
+        if velha.is_dir() and velha != pasta:
+            print(f"  removendo a pasta antiga: {velha.name}")
+            shutil.rmtree(velha, ignore_errors=True)
 
     origem = RAIZ / "dist" / f"{NOME}-Setup.exe"
     destino = pasta / f"{NOME}-Setup.exe"

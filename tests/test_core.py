@@ -378,6 +378,49 @@ def test_nome_livre_fica_como_esta(tmp_path):
     assert configuracoes.caminho_sem_repetir(tmp_path, "livro.pdf").name == "livro.pdf"
 
 
+# --- caminhos em disco -----------------------------------------------------
+#
+# Estes testes existem porque acentuar um caminho ja quebrou o programa duas
+# vezes: o historico.json virou histórico.json e a pasta de saida ganhou um
+# til, deixando para tras o que o usuario ja tinha gravado.
+
+def test_nomes_de_arquivo_nao_tem_acento():
+    import historico
+    import historico_acoes
+
+    for nome in (historico.ARQUIVO_HISTORICO, historico_acoes.ARQUIVO_ACOES,
+                 historico_acoes.ARQUIVO_POSICAO):
+        assert nome.isascii(), f"nome de arquivo com acento: {nome}"
+
+
+def test_pasta_de_saida_reaproveita_a_de_uma_versao_anterior(monkeypatch, tmp_path):
+    """Achar a pasta antiga vale mais que criar uma nova com o nome bonito."""
+    import historico
+
+    documentos = tmp_path / "Documents"
+    documentos.mkdir()
+    antiga = documentos / "Editor de Impressao"     # nome da versão anterior
+    antiga.mkdir()
+    (antiga / "livro pronto.pdf").write_bytes(b"x")
+
+    monkeypatch.setattr(historico.Path, "home", staticmethod(lambda: tmp_path))
+    escolhida = historico.pasta_de_saida_padrao()
+
+    assert escolhida == antiga, "os PDFs ja gerados ficariam orfaos"
+    assert (escolhida / "livro pronto.pdf").exists()
+
+
+def test_pasta_de_saida_nova_usa_o_nome_atual(monkeypatch, tmp_path):
+    import historico
+
+    (tmp_path / "Documents").mkdir()
+    monkeypatch.setattr(historico.Path, "home", staticmethod(lambda: tmp_path))
+
+    escolhida = historico.pasta_de_saida_padrao()
+    assert escolhida.name == historico.NOMES_DA_PASTA_DE_SAIDA[0]
+    assert escolhida.is_dir()
+
+
 def test_pasta_sugerida_cai_no_padrao_quando_a_ultima_sumiu(monkeypatch, tmp_path):
     monkeypatch.setattr(configuracoes, "ler", lambda _c: str(tmp_path / "apagada"))
     monkeypatch.setattr(

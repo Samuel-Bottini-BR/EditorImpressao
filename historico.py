@@ -12,8 +12,15 @@ from pathlib import Path
 
 from modelos import Projeto, nome_de_arquivo_seguro
 
+# Nomes de arquivo ficam SEM acento de proposito: sao caminhos em disco, nao
+# texto de interface. Acentuar aqui abandonaria o historico ja gravado.
 ARQUIVO_HISTORICO = "historico.json"
 MAXIMO_NO_HISTORICO = 20
+
+# CAMINHO EM DISCO, nao texto de tela. Mexer nesta lista muda onde os PDFs do
+# usuário vao parar. O primeiro e o nome usado ao criar; os seguintes existem
+# so para reconhecer a pasta de uma versão anterior e continuar usando ela.
+NOMES_DA_PASTA_DE_SAIDA = ("Editor de Impressão", "Editor de Impressao")
 
 
 def pasta_de_dados() -> Path:
@@ -41,11 +48,23 @@ def pasta_do_projeto(nome: str) -> Path:
 
 
 def pasta_de_saida_padrao() -> Path:
-    """Documentos / Editor de Impressão - onde os PDFs prontos vao parar."""
+    """Documentos / Editor de Impressão - onde os PDFs prontos vao parar.
+
+    Se JA existir uma pasta de uma versão anterior (o nome era sem acento),
+    continuamos usando ela. Criar a pasta nova ao lado faria os PDFs que o
+    usuário ja tinha gerado sumirem da vista dele - e o trabalho estaria ali,
+    a um palmo, na pasta de nome parecido.
+    """
     documentos = Path.home() / "Documents"
     if not documentos.exists():
         documentos = Path.home()
-    pasta = documentos / "Editor de Impressão"
+
+    for nome in NOMES_DA_PASTA_DE_SAIDA:
+        candidata = documentos / nome
+        if candidata.is_dir():
+            return candidata
+
+    pasta = documentos / NOMES_DA_PASTA_DE_SAIDA[0]
     pasta.mkdir(parents=True, exist_ok=True)
     return pasta
 
