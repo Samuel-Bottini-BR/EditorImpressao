@@ -932,7 +932,9 @@ def escrever_markdown(dados: dict[str, Any], destino: Path) -> None:
     )
     if piores:
         L.append(
-            f"- **{piores} paginas sairam PIORES que o original.** O criterio de "
+            f"- **{piores} vezes um filtro deixou a pagina pior do que ela era.** "
+            f"Cada caso e uma pagina com um filtro; a mesma pagina pode aparecer "
+            f"mais de uma vez, uma por filtro que a estragou. O criterio de "
             f"aceitacao do projeto exige que esse numero seja zero."
         )
     else:
@@ -1260,7 +1262,20 @@ def main(argv: list[str] | None = None) -> int:
                    help="caminho de um .json anterior, para gerar a comparacao")
     p.add_argument("--livro", default=None,
                    help="mede so os livros cujo nome contenha este texto")
+    p.add_argument("--refazer-md", default=None, metavar="ARQUIVO.json",
+                   help="so reescreve o .md a partir de um .json ja medido, "
+                        "sem medir nada de novo")
     args = p.parse_args(argv)
+
+    # Reescrever o texto do relatorio nao exige remedir o acervo. Sem isto,
+    # trocar uma frase custaria os 33 minutos da bateria inteira.
+    if args.refazer_md:
+        origem = Path(args.refazer_md)
+        dados_md = json.loads(origem.read_text(encoding="utf-8"))
+        destino_md = origem.with_suffix(".md")
+        escrever_markdown(dados_md, destino_md)
+        print(f"Relatorio reescrito: {destino_md}")
+        return 0
 
     acervo = achar_acervo(args.acervo)
     pdfs = sorted(acervo.rglob("*.pdf"))
