@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 saida_teste/
+saida-avaliacao/
 build/
 dist/
 *.spec
