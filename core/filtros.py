@@ -640,14 +640,24 @@ def aplicar_filtro_com_selecao(
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
             else filtro_magico_pro(img, intensidade=intensidade)
 
-        # Na letra, so nitidez: realce de fundo ali e o que fabricava grao.
+        # Na letra, so nitidez - E SO EM CIMA DO TRACO. Um bloco de texto e
+        # metade papel: as entrelinhas e as margens dentro do bloco. Tratar o
+        # bloco inteiro como letra impede o papel de branquear justamente onde
+        # ele mais aparece, que foi o que deixava a folha amarelada.
         if peso_letra.any():
-            so_nitidez = _nitidez(
-                _tres_canais(img), _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX)
-            )
-            base = _misturar(base, so_nitidez, peso_letra)
+            from core.detectar_regioes import refinar_para_tinta
 
-        # No papel, branco de verdade.
+            traco, papel_do_bloco = refinar_para_tinta(img, peso_letra > 0.5)
+            if traco.any():
+                so_nitidez = _nitidez(
+                    _tres_canais(img), _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX)
+                )
+                base = _misturar(base, so_nitidez, traco.astype(np.float32))
+            if papel_do_bloco.any():
+                base = _misturar(base, np.full_like(base, 255),
+                                 papel_do_bloco.astype(np.float32))
+
+        # No papel marcado, branco de verdade.
         if peso_papel.any():
             base = _misturar(base, np.full_like(base, 255), peso_papel)
 

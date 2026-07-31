@@ -223,7 +223,76 @@ def _caixas_para_mascara(achados, classes, altura, largura) -> np.ndarray:
     return m
 
 
+# Quanto engordar o traco ao descer ao nivel da tinta, em fracao da menor
+# dimensao. Precisa cobrir a rampa de antisserrilhamento em volta da letra,
+# senao a borda dela fica de fora e recebe tratamento de papel.
+FOLGA_DA_TINTA = 0.0015
+
+# Abaixo desta fracao de tinta a pagina nao tem conteudo: e capa, folha de
+# guarda, verso em branco. Ali nao ha nada para marcar.
+FRACAO_TINTA_DE_PAGINA_VAZIA = 0.004
+
+
+def mascara_de_tinta(img: np.ndarray) -> np.ndarray:
+    """Onde ha traco de qualquer especie: letra, neuma, linha de gravura.
+
+    Sauvola local, e nao limiar global: papel envelhecido tem manchas que um
+    limiar unico transforma em tinta.
+    """
+    from core.filtros import binarizar, janela_para_altura
+
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+    altura, largura = cinza.shape[:2]
+
+    escala = min(1.0, ALTURA_ANALISE / altura)
+    pequena = cv2.resize(cinza, (max(8, int(largura * escala)),
+                                 max(8, int(altura * escala))),
+                         interpolation=cv2.INTER_AREA) if escala < 1 else cinza
+
+    binaria = binarizar(pequena, janela=janela_para_altura(pequena.shape[0]), k=0.20)
+    tinta = binaria == 0
+
+    folga = max(1, int(FOLGA_DA_TINTA * min(pequena.shape[:2])) | 1)
+    tinta = cv2.dilate(tinta.astype(np.uint8),
+                       cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (folga, folga)))
+
+    return cv2.resize(tinta, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
+
+
+def _pagina_sem_conteudo(tinta: np.ndarray) -> bool:
+    """Capa, folha de guarda, verso em branco: nao ha o que marcar."""
+    return float(tinta.mean()) < FRACAO_TINTA_DE_PAGINA_VAZIA
+
+
 # --- o detector -------------------------------------------------------------
+
+def _e_meio_tom(img: np.ndarray, caixa) -> bool:
+    """Dentro desta caixa ha TOM CONTINUO, ou e traco sobre papel?
+
+    O modelo de layout chama de "figure" tanto uma litografia colorida quanto
+    uma pagina de partitura ou uma folha de caligrafia - para ele, tudo que nao
+    e paragrafo de texto moderno e figura. Mas o tratamento que cada uma pede e
+    oposto: meio-tom nao pode ser binarizado, traco sobre papel pode e deve.
+
+    Meio-tom tem valores espalhados por toda a escala de cinza. Traco sobre
+    papel e quase bilevel: e tinta ou e papel, quase nada no meio.
+    """
+    altura, largura = img.shape[:2]
+    x0, y0, x1, y1 = caixa
+    pedaco = img[int(y0 * altura):int(y1 * altura), int(x0 * largura):int(x1 * largura)]
+    if pedaco.size < 100:
+        return False
+
+    cinza = cv2.cvtColor(pedaco, cv2.COLOR_BGR2GRAY) if pedaco.ndim == 3 else pedaco
+    escuro = float(np.percentile(cinza, 5))
+    claro = float(np.percentile(cinza, 95))
+    faixa = claro - escuro
+    if faixa < 25:
+        return False
+
+    meio = ((cinza > escuro + 0.3 * faixa) & (cinza < claro - 0.3 * faixa)).mean()
+    return bool(meio > 0.28)
+
 
 def detectar(
     img: np.ndarray,
@@ -232,26 +301,67 @@ def detectar(
 ) -> Selecao:
     """Devolve a selecao proposta para esta pagina.
 
-    Tudo que sai daqui e marcado com a origem certa, e por isso pode ser
-    apagado sozinho depois - limpar_origem tira a proposta da maquina e mantem
-    o que a pessoa desenhou a mao.
+    A marcacao desce ao NIVEL DA TINTA. O modelo de layout devolve caixas -
+    "aqui tem texto" - e pintar a caixa inteira de letra estava errado: o papel
+    entre as linhas nao e letra, e receber tratamento de letra o impede de ir a
+    branco. Dentro de cada bloco de texto, so o traco e marcado como letra; o
+    resto sobra para papel.
+
+    Na gravura e o contrario: uma litografia e uma area continua, e a caixa
+    inteira vale. Mas so quando ela e MESMO meio-tom - o modelo chama de
+    "figure" tambem partitura e folha de caligrafia, que sao traco sobre papel
+    e devem ser tratadas como letra.
+
+    Tudo que sai daqui leva a origem marcada, e por isso pode ser apagado
+    sozinho: limpar_origem tira a proposta da maquina e mantem o que a pessoa
+    desenhou a mao.
     """
     altura, largura = img.shape[:2]
     selecao = Selecao()
 
-    achados = _detector.achar(img) if usar_layout else []
-    gravura_layout = _caixas_para_mascara(achados, CLASSES_DE_GRAVURA, altura, largura)
-    letra_layout = _caixas_para_mascara(achados, CLASSES_DE_LETRA, altura, largura)
+    colorida = _tres_canais_ou_cinza(img)
+    tinta = mascara_de_tinta(colorida)
 
-    gravura_cor = mascara_de_cor(img) if usar_cor else np.zeros((altura, largura), bool)
+    # Capa, folha de guarda, verso em branco: nao ha o que marcar. Sem esta
+    # guarda uma capa marrom lisa virava "gravura" de pagina inteira.
+    if _pagina_sem_conteudo(tinta):
+        return selecao
 
-    # A cor so acrescenta onde o layout nao viu nada. Onde ele achou texto, o
-    # texto manda: uma inicial rubricada no meio de um paragrafo e letra, nao
-    # gravura, e transforma-la em gravura arrancaria o paragrafo do preto e
-    # branco.
+    achados = _detector.achar(colorida) if usar_layout else []
+
+    gravura_layout = np.zeros((altura, largura), bool)
+    letra_layout = np.zeros((altura, largura), bool)
+    for a in achados:
+        x0, y0, x1, y1 = a.caixa
+        fatia = (slice(int(y0 * altura), int(y1 * altura)),
+                 slice(int(x0 * largura), int(x1 * largura)))
+        if a.classe in CLASSES_DE_GRAVURA:
+            # so e gravura de verdade se tiver meio-tom
+            if _e_meio_tom(colorida, a.caixa):
+                gravura_layout[fatia] = True
+            else:
+                letra_layout[fatia] = True
+        elif a.classe in CLASSES_DE_LETRA:
+            letra_layout[fatia] = True
+
+    gravura_cor = mascara_de_cor(colorida) if usar_cor else np.zeros((altura, largura), bool)
+
+    # A cor so acrescenta onde o layout nao viu texto: uma inicial rubricada no
+    # meio de um paragrafo e letra, e transforma-la em gravura arrancaria o
+    # paragrafo do preto e branco.
     gravura = gravura_layout | (gravura_cor & ~letra_layout)
-    letra = letra_layout & ~gravura
 
+    # Onde o layout nao achou bloco nenhum, tudo que nao e gravura e bloco de
+    # texto: uma pagina que o modelo nao entendeu nao pode ficar sem marcacao.
+    letra = letra_layout & ~gravura if letra_layout.any() else ~gravura
+
+    # ATENCAO: aqui a letra e guardada como BLOCO, e nao letra a letra.
+    # Guardar cada glifo como poligono daria milhares de formas por pagina e
+    # inviabilizaria o arquivo e a edicao a mao. O bloco e o que a pessoa
+    # arrasta e corrige; a descida ao nivel do traco acontece na hora de
+    # aplicar, em refinar_para_tinta. O efeito cai em cima de cada letra, o
+    # papel entre as linhas continua sendo papel, e o que se edita continua
+    # sendo um retangulo.
     for mascara, tipo, rotulo in ((gravura, GRAVURA, "gravura"),
                                   (letra, LETRA, "letra")):
         if not mascara.any():
@@ -262,6 +372,27 @@ def detectar(
             selecao.acrescentar(regiao)
 
     return selecao
+
+
+def refinar_para_tinta(
+    img: np.ndarray, mascara_letra: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Desce um bloco de texto ao nivel do traco.
+
+    Devolve (letra, papel_dentro_do_bloco). O bloco marcado como texto contem
+    duas coisas muito diferentes: o traco, que precisa de contraste e nitidez,
+    e o papel entre as linhas, que deve ir a branco. Tratar o bloco inteiro
+    como letra impede o papel de branquear justamente onde ele mais aparece.
+    """
+    if not mascara_letra.any():
+        vazia = np.zeros(img.shape[:2], bool)
+        return vazia, vazia
+    tinta = mascara_de_tinta(_tres_canais_ou_cinza(img))
+    return tinta & mascara_letra, (~tinta) & mascara_letra
+
+
+def _tres_canais_ou_cinza(img: np.ndarray) -> np.ndarray:
+    return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.ndim == 2 else img
 
 
 def modelo_disponivel() -> bool:
