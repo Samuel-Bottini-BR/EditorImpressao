@@ -150,6 +150,61 @@ em andamento.
 
 ---
 
+## Investigação — os 18 binarizadores do DoxaPy
+
+**Data:** 30/07/2026
+**Situação:** medido; nenhuma troca feita ainda
+**Motivo:** o Kaique reclamou de uma página em que o preto e branco ficou menos
+legível que o original. O DoxaPy já instalado traz dezessete alternativas ao
+Sauvola, várias feitas para documento histórico degradado.
+
+Medidos 17 algoritmos em 36 páginas do acervo, com a mesma régua.
+
+| Algoritmo | Vazios | Fundo | Tinta | Piorou |
+|---|---|---|---|---|
+| OTSU | 2540 | 255,0 | 0,3495 | 0 |
+| PHANSALKAR | 5096 | 251,4 | 0,2464 | 2 |
+| WELLNER | 2086 | 253,7 | 0,1744 | 2 |
+| BATAINEH | 1834 | 252,7 | 0,1975 | 2 |
+| **SAUVOLA (hoje)** | 1327 | 254,0 | 0,1662 | 3 |
+| ISAUVOLA | 1320 | 254,6 | 0,1604 | 3 |
+| NICK | 1175 | 254,6 | 0,1423 | 3 |
+| GATOS | 778 | 254,6 | 0,1438 | 5 |
+| NIBLACK | 6385 | 183,1 | 0,5120 | 24 |
+
+### Por que não troquei nada
+
+**Os números sozinhos enganam aqui, e a régua tem um ponto cego.** O OTSU marca
+zero piora, mas guarda o dobro de tinta do Sauvola. Em papel envelhecido isso
+quer dizer manter a mancha como se fosse letra, e nenhum dos critérios atuais
+pega isso. Falta um número para "guardou a sujeira".
+
+Olhando as imagens, o resultado se inverte conforme a página:
+
+**No Palatino** (manual de caligrafia, letra gótica pesada) o OTSU sai sólido e
+limpo, enquanto Sauvola, Phansalkar, Wellner e Bradley **quebram o traço** — as
+letras ficam salpicadas de branco por dentro. A janela local, dimensionada para
+linha de texto corrente, fragmenta letra de corpo grande.
+
+Isso confirma o que a literatura diz: Sauvola é melhor em ruído de fundo
+uniforme, Wolf em baixo contraste. Não existe um vencedor único — **a escolha
+certa depende da página**, não do livro.
+
+### Um defeito grave descoberto de passagem
+
+No **Graduale**, manuscrito do século XIV com pautas em vermelho e neumas
+pretos, **os dezessete algoritmos transformaram as linhas vermelhas em barras
+pretas grossas**. O Wellner chegou a apagá-las, mas levou junto metade das
+notas.
+
+Para um instituto de preservação isso é perda de informação: a rubricação
+vermelha é parte do documento. A causa é a conversão para cinza, que trata
+vermelho como escuro. O DoxaPy oferece oito métodos de conversão
+(LABDIST, LUSTER, MINAVG, VALUE, LIGHTNESS, BT601, BT709, BT2100) e algum deles
+deve tratar o vermelho de outra forma. A investigar.
+
+---
+
 ## Pendência da régua
 
 A medida de transição conta pixels de tom intermediário em toda a página, e
