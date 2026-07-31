@@ -10,3 +10,6 @@ dist/
 # PDFs de teste do usuario - nunca vao para o repositorio
 pdfs_teste/
 *.pdf
+
+modelos/
+

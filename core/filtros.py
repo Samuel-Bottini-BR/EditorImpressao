@@ -102,6 +102,16 @@ OMBRO_SUAVE, OMBRO_FORTE = 0.88, 0.55
 # Magico pro: a "intensidade" move os tres de uma vez.
 CLAHE_GRADE = (8, 8)
 CLAHE_CLIP_MIN, CLAHE_CLIP_MAX = 1.0, 3.5
+
+# Onde comeca a valer o realce de contraste local, em fracao do nivel do papel,
+# e em quantos tons ele chega a valer inteiro. Ancorar o inicio ABAIXO do nivel
+# do papel e o que fecha o vazamento: o nivel do papel e o percentil 85, entao
+# a metade mais escura do proprio papel ainda receberia realce se a rampa
+# comecasse nele. Medido no acervo, descer o inicio de 1,00 para 0,80 leva o
+# ruido de 7,2 para 5,1; abaixo de 0,80 nao ha mais ganho, so perda de
+# contraste nas gravuras.
+CLAHE_INICIO_CONTEUDO = 0.80
+CLAHE_FAIXA_CONTEUDO = 0.35
 SATURACAO_MIN, SATURACAO_MAX = 1.0, 2.2
 NITIDEZ_MIN, NITIDEZ_MAX = 0.15, 1.10
 
@@ -401,6 +411,49 @@ def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray
     return _aprofundar_pretos(saida)
 
 
+def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarray:
+    """Realce de contraste local (CLAHE) so onde ha conteudo.
+
+    O CLAHE aplicado na folha inteira estica o histograma tambem dos ladrilhos
+    que sao so papel. Como ali nao ha o que realcar, ele faz duas coisas ruins
+    de uma vez: amplia o grao do scanner - que e o que o Kaique enxerga como
+    "pixelado" - e ainda puxa o papel para baixo, deixando o fundo mais escuro
+    justamente no filtro que deveria embranquece-lo.
+
+    Medido nos nove livros do acervo, so desligar este passo levava o ruido de
+    fundo de 13,6 para 6,4 e o papel de 197 para 219. Em vez de desligar - o
+    que apagaria o realce das gravuras, que e a razao de existir deste filtro -
+    o efeito passa a ser pesado: cheio no conteudo escuro, nulo no papel.
+
+    O peso trabalha no canal de luminosidade do LAB, entao o matiz nao muda.
+    """
+    lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+    luz = lab[:, :, 0]
+
+    nivel_papel = float(np.percentile(luz, BRANCO_PERCENTIL))
+    if nivel_papel < 1:
+        return img
+
+    clahe = cv2.createCLAHE(
+        clipLimit=_entre(intensidade, CLAHE_CLIP_MIN, CLAHE_CLIP_MAX),
+        tileGridSize=CLAHE_GRADE,
+    )
+    realcada = clahe.apply(luz).astype(np.float32)
+
+    # 0 no papel, subindo ate 1 no conteudo bem mais escuro que ele. A rampa
+    # comeca abaixo do nivel do papel para que o papel inteiro - e nao so a
+    # metade mais clara dele - fique de fora.
+    inicio = nivel_papel * CLAHE_INICIO_CONTEUDO
+    faixa = max(1.0, inicio * CLAHE_FAIXA_CONTEUDO)
+    original = luz.astype(np.float32)
+    peso = np.clip((inicio - original) / faixa, 0.0, 1.0)
+
+    lab[:, :, 0] = np.clip(
+        original * (1.0 - peso) + realcada * peso, 0, 255
+    ).astype(np.uint8)
+    return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+
 def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.ndarray:
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype(np.float32)
     hsv[:, :, 1] = np.clip(hsv[:, :, 1] * ganho, 0, 255)
@@ -437,14 +490,8 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     saida = _achatar_iluminacao(img, _nivel_do_papel(img))
     saida = _balanco_de_branco(saida)
 
-    # 2. CLAHE so no canal de luminosidade (L do LAB), para nao mexer no matiz
-    lab = cv2.cvtColor(saida, cv2.COLOR_BGR2LAB)
-    clahe = cv2.createCLAHE(
-        clipLimit=_entre(intensidade, CLAHE_CLIP_MIN, CLAHE_CLIP_MAX),
-        tileGridSize=CLAHE_GRADE,
-    )
-    lab[:, :, 0] = clahe.apply(lab[:, :, 0])
-    saida = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+    # 2. contraste local so onde ha conteudo; o papel fica como estava
+    saida = _contraste_local_no_conteudo(saida, intensidade)
 
     # 3. cor mais viva
     saida = _realcar_saturacao(saida, _entre(intensidade, SATURACAO_MIN, SATURACAO_MAX))
