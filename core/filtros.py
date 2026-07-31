@@ -567,6 +567,96 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     return _empurrar_branco(saida)
 
 
+def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.ndarray:
+    """Mistura duas versoes da mesma imagem pelo peso, pixel a pixel."""
+    if not peso.any():
+        return base
+    p = peso[:, :, None] if base.ndim == 3 else peso
+    saida = base.astype(np.float32) * (1.0 - p) + tratada.astype(np.float32) * p
+    return np.clip(saida, 0, 255).astype(base.dtype)
+
+
+def _tres_canais(img: np.ndarray) -> np.ndarray:
+    return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.ndim == 2 else img
+
+
+def aplicar_filtro_com_selecao(
+    img: np.ndarray,
+    filtro: str,
+    selecao,
+    forca_preto: int = AJUSTE_PADRAO,
+    clareza: int = AJUSTE_PADRAO,
+    intensidade: int = AJUSTE_PADRAO,
+) -> tuple[np.ndarray, bool]:
+    """O filtro pedido, mas cada area da pagina tratada do seu jeito.
+
+    Ate aqui os filtros olhavam a folha inteira igual, e daí vinham os defeitos
+    que medimos: o realce que servia a gravura pegava o papel e virava grao; o
+    empurrao para o branco que servia ao papel comia a borda da letra. Os
+    remendos que ja estao no codigo - "nao realce onde estiver claro", "ancore
+    no nivel do papel" - sao adivinhacao pela luminosidade. Com a selecao o
+    filtro para de adivinhar: ele sabe o que esta olhando.
+
+        gravura  ->  tom continuo preservado; nunca binarizada
+        letra    ->  contraste e nitidez, sem realce de fundo
+        papel    ->  vai a branco, sem medo de estragar o que esta ao lado
+
+    Selecao vazia devolve exatamente o comportamento de sempre. E o caso de
+    todo projeto antigo e de toda pagina que ninguem marcou.
+    """
+    from core.selecao import GRAVURA, LETRA, PAPEL
+
+    if selecao is None or getattr(selecao, "vazia", True):
+        return aplicar_filtro(img, filtro, forca_preto, clareza, intensidade)
+
+    if filtro == ORIGINAL:
+        return img, False
+
+    altura, largura = img.shape[:2]
+    peso_gravura = selecao.peso(altura, largura, GRAVURA)
+    peso_letra = selecao.peso(altura, largura, LETRA)
+    peso_papel = selecao.peso(altura, largura, PAPEL)
+
+    try:
+        # --- Preto e branco -------------------------------------------------
+        # Binarizar uma gravura de meio-tom e joga-la fora. Onde ha gravura
+        # marcada, a pagina deixa de ser monocromatica e o desenho fica em tom
+        # continuo; o resto vira preto e branco como sempre.
+        if filtro == PRETO_E_BRANCO:
+            binaria = filtro_preto_e_branco(img, forca=forca_preto)
+            if not peso_gravura.any():
+                saida = binaria
+                if peso_papel.any():
+                    saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
+                return saida, True
+
+            colorida = _tres_canais(img)
+            saida = _misturar(_tres_canais(binaria), colorida, peso_gravura)
+            if peso_papel.any():
+                saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
+            return saida, False   # tem gravura: nao cabe em 1 bit
+
+        # --- Melhorar e Magico pro ------------------------------------------
+        base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
+            else filtro_magico_pro(img, intensidade=intensidade)
+
+        # Na letra, so nitidez: realce de fundo ali e o que fabricava grao.
+        if peso_letra.any():
+            so_nitidez = _nitidez(
+                _tres_canais(img), _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX)
+            )
+            base = _misturar(base, so_nitidez, peso_letra)
+
+        # No papel, branco de verdade.
+        if peso_papel.any():
+            base = _misturar(base, np.full_like(base, 255), peso_papel)
+
+        return base, False
+
+    except cv2.error as exc:
+        raise ErroFiltro("Não consegui limpar esta página.") from exc
+
+
 def aplicar_filtro(
     img: np.ndarray,
     filtro: str,
@@ -574,11 +664,13 @@ def aplicar_filtro(
     clareza: int = AJUSTE_PADRAO,
     intensidade: int = AJUSTE_PADRAO,
 ) -> tuple[np.ndarray, bool]:
-    """Aplica o filtro pedido.
+    """Aplica o filtro pedido na página inteira, do mesmo jeito.
 
     Cada filtro tem o seu ajuste de 0 a 100; os outros dois sao ignorados.
     Devolve (imagem, monocromatica). monocromatica=True avisa o EscritorPDF
     para salvar a página em 1 bit.
+
+    Quando a página tem marcação, quem manda e aplicar_filtro_com_selecao.
     """
     try:
         if filtro == ORIGINAL:

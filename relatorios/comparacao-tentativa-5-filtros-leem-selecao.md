@@ -1,0 +1,52 @@
+# Comparacao entre duas medicoes
+
+- Antes: Tentativa 4: cinza pelo maior canal so quando a cor e minoria (31/07/2026 as 08:20)
+- Depois: Tentativa 5: filtros lendo da selecao (nenhuma pagina marcada) (31/07/2026 as 12:07)
+
+## Original
+
+| Numero | Antes | Depois | Diferenca | Veredito |
+|---|---|---|---|---|
+| espessura_traco_px | 53.581 | 53.581 | +0.000 | igual |
+| vazios_internos | 2351.857 | 2351.857 | +0.000 | igual |
+| nivel_fundo | 191.940 | 191.940 | +0.000 | igual |
+| ruido_fundo | 2.247 | 2.247 | +0.000 | igual |
+| transicao_borda_px | 1.357 | 1.357 | +0.000 | igual |
+| nitidez | 692.311 | 692.311 | +0.000 | igual |
+
+## Preto e branco
+
+| Numero | Antes | Depois | Diferenca | Veredito |
+|---|---|---|---|---|
+| espessura_traco_px | 8.255 | 8.255 | +0.000 | igual |
+| vazios_internos | 1471.857 | 1471.857 | +0.000 | igual |
+| nivel_fundo | 254.350 | 254.350 | +0.000 | igual |
+| ruido_fundo | 0.000 | 0.000 | +0.000 | igual |
+| transicao_borda_px | 0.000 | 0.000 | +0.000 | igual |
+| nitidez | 13955.000 | 13955.000 | +0.000 | igual |
+
+## Melhorar
+
+| Numero | Antes | Depois | Diferenca | Veredito |
+|---|---|---|---|---|
+| espessura_traco_px | 23.130 | 23.130 | +0.000 | igual |
+| vazios_internos | 2472.397 | 2472.397 | +0.000 | igual |
+| nivel_fundo | 213.298 | 213.298 | +0.000 | igual |
+| ruido_fundo | 3.237 | 3.237 | +0.000 | igual |
+| transicao_borda_px | 1.343 | 1.343 | +0.000 | igual |
+| nitidez | 1405.168 | 1405.168 | +0.000 | igual |
+
+## Mágico pro
+
+| Numero | Antes | Depois | Diferenca | Veredito |
+|---|---|---|---|---|
+| espessura_traco_px | 28.218 | 28.218 | +0.000 | igual |
+| vazios_internos | 3263.508 | 3263.508 | +0.000 | igual |
+| nivel_fundo | 215.396 | 215.396 | +0.000 | igual |
+| ruido_fundo | 3.680 | 3.680 | +0.000 | igual |
+| transicao_borda_px | 0.948 | 0.948 | +0.000 | igual |
+| nitidez | 3144.275 | 3144.275 | +0.000 | igual |
+
+## Paginas piores que o original
+
+Antes: 52. Depois: 52. Igual.

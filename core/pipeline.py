@@ -24,7 +24,7 @@ from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import Inclinacao, detectar_angulo, girar_90, rotacionar
-from core.filtros import ORIGINAL, aplicar_filtro
+from core.filtros import ORIGINAL, aplicar_filtro, aplicar_filtro_com_selecao
 from core.pdf_io import (
     DPI_PREVIA,
     dpi_real_da_pagina,
@@ -222,8 +222,8 @@ def renderizar_pagina(
 
     if not projeto.limpar:
         return img, False
-    return aplicar_filtro(
-        img, pagina.filtro, pagina.forca_preto,
+    return aplicar_filtro_com_selecao(
+        img, pagina.filtro, pagina.obter_selecao(), pagina.forca_preto,
         pagina.clareza_melhorar, pagina.intensidade_magico,
     )
 
@@ -297,9 +297,10 @@ def processar(
                 img = preparar_metade(img_folha, folha, pagina, projeto)
 
                 if projeto.limpar:
-                    img, mono = aplicar_filtro(
-                        img, pagina.filtro, pagina.forca_preto,
-                        pagina.clareza_melhorar, pagina.intensidade_magico,
+                    img, mono = aplicar_filtro_com_selecao(
+                        img, pagina.filtro, pagina.obter_selecao(),
+                        pagina.forca_preto, pagina.clareza_melhorar,
+                        pagina.intensidade_magico,
                     )
                 else:
                     mono = False
