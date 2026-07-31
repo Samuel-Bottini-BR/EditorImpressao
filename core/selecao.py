@@ -288,22 +288,54 @@ def de_mascara(mascara: np.ndarray, tipo: str = GRAVURA, origem: str = REDE,
     E a ponte entre a rede neural e a selecao: a rede devolve pixels, e aqui
     eles viram forma editavel. Sem isto a saida da rede seria intocavel, e o
     usuario nao poderia corrigir o que ela errasse.
+
+    Os BURACOS viram regioes de subtrair, logo depois da regiao que os contem.
+    Sem isso uma moldura - que e um anel - viraria um retangulo cheio e
+    engoliria a mancha de texto no meio dela. Foi exatamente o que aconteceu na
+    iluminura do Livro de Horas: a orla foi detectada certo e o texto no centro
+    dela sumiu junto.
     """
     if mascara.dtype != np.uint8:
         mascara = mascara.astype(np.uint8)
     altura, largura = mascara.shape[:2]
-    contornos, _ = cv2.findContours(mascara, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # RETR_CCOMP devolve dois niveis: o contorno de fora e os buracos dentro
+    # dele. A hierarquia diz quem e filho de quem.
+    contornos, hierarquia = cv2.findContours(
+        mascara, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    if hierarquia is None:
+        return []
+    hierarquia = hierarquia[0]
 
     minimo = area_minima * altura * largura
-    saida: list[Regiao] = []
-    for contorno in contornos:
-        if cv2.contourArea(contorno) < minimo:
-            continue
-        # simplifica: um contorno de mil pontos nao e editavel a mao
+
+    def em_pontos(contorno):
         epsilon = 0.004 * cv2.arcLength(contorno, True)
         simples = cv2.approxPolyDP(contorno, epsilon, True)
-        pontos = [(float(p[0][0]) / largura, float(p[0][1]) / altura) for p in simples]
-        if len(pontos) >= 3:
-            saida.append(Regiao(tipo=tipo, forma=POLIGONO, pontos=pontos,
-                                origem=origem, **extra))
+        return [(float(p[0][0]) / largura, float(p[0][1]) / altura) for p in simples]
+
+    saida: list[Regiao] = []
+    for i, contorno in enumerate(contornos):
+        # nivel de cima: pai igual a -1
+        if hierarquia[i][3] != -1:
+            continue
+        if cv2.contourArea(contorno) < minimo:
+            continue
+        pontos = em_pontos(contorno)
+        if len(pontos) < 3:
+            continue
+        saida.append(Regiao(tipo=tipo, forma=POLIGONO, pontos=pontos,
+                            origem=origem, **extra))
+
+        # os buracos deste contorno, tirados logo em seguida
+        filho = hierarquia[i][2]
+        while filho != -1:
+            if cv2.contourArea(contornos[filho]) >= minimo:
+                pontos_furo = em_pontos(contornos[filho])
+                if len(pontos_furo) >= 3:
+                    saida.append(Regiao(tipo=tipo, forma=POLIGONO,
+                                        pontos=pontos_furo, operacao=SUBTRAIR,
+                                        origem=origem, **extra))
+            filho = hierarquia[filho][0]
+
     return saida

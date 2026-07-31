@@ -174,6 +174,24 @@ def test_de_mascara_descarta_cisco():
     assert de_mascara(m, area_minima=0.01) == []
 
 
+def test_de_mascara_preserva_o_buraco_de_um_anel():
+    """Uma moldura e um anel. Se o buraco sumir, ela engole o texto do meio.
+
+    Foi o que aconteceu na iluminura do Livro de Horas: a orla era detectada
+    certo e a mancha de texto no centro dela desaparecia junto.
+    """
+    m = np.zeros((300, 300), np.uint8)
+    m[40:260, 40:260] = 1      # a moldura
+    m[90:210, 90:210] = 0      # o vao onde mora o texto
+
+    regioes = de_mascara(m, tipo=GRAVURA, origem=REDE, area_minima=0.001)
+    assert any(r.operacao == SUBTRAIR for r in regioes), "o buraco nao virou subtracao"
+
+    refeita = Selecao(regioes=regioes).mascara(300, 300, GRAVURA)
+    assert refeita[50, 150], "a moldura sumiu"
+    assert not refeita[150, 150], "o buraco foi tapado"
+
+
 # --- serializacao -----------------------------------------------------------
 
 def test_ida_e_volta_preserva_tudo():
