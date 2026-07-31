@@ -78,9 +78,25 @@ class ConfigPagina:
     alertas: list[str] = field(default_factory=list)
     revisada: bool = False
 
+    # Onde cada tratamento vale nesta pagina: gravura aqui, letra ali, papel no
+    # resto. Guardado como lista de formas, e nao como imagem, para o arquivo
+    # de projeto continuar pequeno e a mesma marcacao valer em qualquer DPI.
+    # Vazia quer dizer "trate a pagina inteira do mesmo jeito", que e como o
+    # programa sempre funcionou - projetos antigos continuam abrindo.
+    selecao: list[dict[str, Any]] = field(default_factory=list)
+
     @property
     def precisa_revisao(self) -> bool:
         return bool(self.alertas) and not self.revisada
+
+    def obter_selecao(self):
+        """A selecao desta pagina, ja como objeto."""
+        from core.selecao import Selecao
+
+        return Selecao.de_lista(self.selecao)
+
+    def guardar_selecao(self, selecao) -> None:
+        self.selecao = selecao.para_lista()
 
 
 @dataclass
