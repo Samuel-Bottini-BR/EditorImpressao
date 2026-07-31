@@ -240,7 +240,16 @@ def processar(
     Levanta Cancelou se o usuario cancelar - e a única excecao esperada.
     """
     saida_final = Path(projeto.caminho_saida)
-    saida_final.parent.mkdir(parents=True, exist_ok=True)
+    # Pendrive arrancado, unidade de rede caida, pasta apagada entre escolher e
+    # gravar: tudo isso cai aqui, e nao pode virar erro tecnico na tela.
+    try:
+        saida_final.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise ErroPDF(
+            "Não consegui gravar nessa pasta. Ela pode ter sido removida, "
+            "estar cheia ou ser um pendrive que foi tirado. "
+            "Escolha outra pasta e tente de novo."
+        ) from exc
 
     # Caminho rapido: so reordenar, sem tocar em imagem nenhuma.
     if projeto.so_cadernos:

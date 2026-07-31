@@ -218,8 +218,19 @@ class EscritorPDF:
             return
         try:
             if self._paginas:
-                self.caminho.parent.mkdir(parents=True, exist_ok=True)
-                self.doc.save(self.caminho, garbage=3, deflate=True)
+                # A gravacao e o momento em que disco cheio, pendrive arrancado
+                # e pasta sem permissao aparecem. Nada disso pode chegar na tela
+                # como erro tecnico.
+                try:
+                    self.caminho.parent.mkdir(parents=True, exist_ok=True)
+                    self.doc.save(self.caminho, garbage=3, deflate=True)
+                except OSError as exc:
+                    raise ErroPDF(
+                        "Não consegui gravar o arquivo final. O disco pode estar "
+                        "cheio, a pasta pode ter sido removida ou você pode não "
+                        "ter permissão para gravar nela. Escolha outra pasta e "
+                        "tente de novo."
+                    ) from exc
         finally:
             self.doc.close()
             self.doc = None  # type: ignore[assignment]
