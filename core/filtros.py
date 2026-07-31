@@ -217,6 +217,52 @@ def _para_cinza(img: np.ndarray) -> np.ndarray:
     return img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
+# Acima desta fracao de pixels coloridos a pagina nao e "texto com rubricacao":
+# e iluminura ou estampa colorida de pagina cheia. Ali o Preto e branco ja e o
+# filtro errado - o programa avisa "Tem cor" e sugere o Magico pro - e a
+# conversao pelo maior canal so faz perder textura.
+FRACAO_COLORIDA_DE_ILUMINURA = 0.25
+SATURACAO_DE_RUBRICA = 60
+
+
+def _cinza_para_binarizar(img: np.ndarray) -> np.ndarray:
+    """Converte para cinza levando a COR em conta, so para o Preto e branco.
+
+    A conversao comum pesa os canais pelo brilho que o olho percebe, e nela
+    tinta vermelha fica tao escura quanto tinta preta. No Graduale, manuscrito
+    do seculo XIV cujas pautas sao vermelhas, isso transformava as linhas em
+    barras pretas grossas - e a rubricacao vermelha e parte do documento, nao
+    sujeira. Medido no acervo, o vermelho saia em 130 numa escala de 0 a 255,
+    quase colado nos 87 da tinta preta.
+
+    Quando ha rubricacao, usamos o maior dos tres canais: tinta vermelha tem o
+    vermelho alto, entao o maior e alto e ela le como CLARA; tinta preta tem os
+    tres baixos e continua escura. No Graduale o vermelho sobe para 176, a
+    distancia ate o preto quase dobra, e os vazios das letras TRIPLICAM porque
+    as pautas param de engolir a notacao.
+
+    Mas numa pagina inteiramente colorida - uma iluminura do Livro de Horas -
+    a mesma conta so clareia tudo e a textura se perde. Medido: essas paginas
+    perdiam ate 2.900 vazios cada. Por isso a conversao especial vale so quando
+    a cor e MINORIA na pagina, que e o caso da rubricacao.
+    """
+    if img.ndim == 2:
+        return img
+
+    saturacao = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
+    fracao_colorida = float((saturacao > SATURACAO_DE_RUBRICA).mean())
+    if fracao_colorida > FRACAO_COLORIDA_DE_ILUMINURA:
+        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    try:
+        import doxapy
+
+        rgb = np.ascontiguousarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), dtype=np.uint8)
+        return doxapy.to_grayscale(doxapy.GrayscaleAlgorithms.VALUE, rgb)
+    except Exception:  # noqa: BLE001 - o plano B da a mesma conta
+        return img.max(axis=2)
+
+
 def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
     """Remove manchinhas isoladas de preto (poeira do scanner).
 
@@ -251,7 +297,7 @@ def filtro_preto_e_branco(
     forca vai de 0 (bem fraco, texto mais fino) a 100 (bem escuro, pega mais
     tinta e mais mancha junto).
     """
-    cinza = _para_cinza(img)
+    cinza = _cinza_para_binarizar(img)
     janela = janela_para_altura(cinza.shape[0])
     binaria = binarizar(cinza, janela=janela, k=k_do_sauvola(forca))
     if despeckle:
