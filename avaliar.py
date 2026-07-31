@@ -308,6 +308,11 @@ def ruido_do_fundo(cinza: np.ndarray, papel: np.ndarray) -> float:
     return float(np.median(desvio_local[so_papel]))
 
 
+# Ate onde da borda da letra ainda pode ser rampa. Alem disto e papel, e papel
+# sujo nao e rampa de letra.
+RAIO_DA_RAMPA = 4
+
+
 def largura_da_transicao(cinza: np.ndarray, tinta: np.ndarray) -> float:
     """Largura da rampa entre a tinta e o papel, em pixels.
 
@@ -317,6 +322,11 @@ def largura_da_transicao(cinza: np.ndarray, tinta: np.ndarray) -> float:
 
     Conta os pixels que estao no meio do caminho entre o preto e o branco e
     divide pelo comprimento do contorno das letras.
+
+    So conta perto do contorno. A primeira versao contava em toda a pagina, e
+    papel ruidoso - cheio de pixels de tom intermediario - inflava o numero:
+    uma folha suja aparecia com a borda mais suave que uma folha limpa. Isso
+    contaminava exatamente a comparacao que este numero existe para fazer.
     """
     if not tinta.any():
         return 0.0
@@ -327,15 +337,22 @@ def largura_da_transicao(cinza: np.ndarray, tinta: np.ndarray) -> float:
     if faixa < 10:
         return 0.0
 
-    baixo = escuro + 0.2 * faixa
-    alto = escuro + 0.8 * faixa
-    meio_do_caminho = int(((cinza > baixo) & (cinza < alto)).sum())
-
     nucleo = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     contorno = cv2.morphologyEx(tinta, cv2.MORPH_GRADIENT, nucleo)
     comprimento = int((contorno > 0).sum())
     if comprimento == 0:
         return 0.0
+
+    lado = 2 * RAIO_DA_RAMPA + 1
+    perto_da_letra = cv2.dilate(
+        contorno, cv2.getStructuringElement(cv2.MORPH_RECT, (lado, lado))
+    ) > 0
+
+    baixo = escuro + 0.2 * faixa
+    alto = escuro + 0.8 * faixa
+    meio_do_caminho = int(
+        ((cinza > baixo) & (cinza < alto) & perto_da_letra).sum()
+    )
     return float(meio_do_caminho / comprimento)
 
 

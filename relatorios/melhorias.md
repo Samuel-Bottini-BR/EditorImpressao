@@ -95,9 +95,58 @@ piora ainda mais a rampa.
 
 ### Decisão
 
-Em aberto. O ganho é grande e vale para os nove livros; a perda é localizada e
-tem caminho conhecido — a nitidez é o segundo maior gerador de ruído e é ela
-que estreita a rampa.
+**Aceita.** O Samuel viu as imagens do antes e do depois, inclusive da página
+que o número acusou de ter piorado, e nela o resultado a olho é melhor: o
+fundo sai limpo e as letras ficam iguais. A "escadinha" medida vai de 1,20 para
+0,65 pixel — os dois valores já são menores que um pixel, e a 300 DPI isso não
+se enxerga. O limite de 0,7 que eu havia escolhido para a régua está severo
+demais para escaneamento que já vem com a borda dura de origem.
+
+---
+
+## Tentativa 2 — o ponto de preto deixa de arrastar o papel
+
+**Data:** 30/07/2026
+**Situação:** medindo no acervo
+**Número atacado:** o fundo escurecendo no filtro Melhorar, o pior estrago
+isolado da linha de base — na Rhetorica p446 o papel caía de 208 para 64 numa
+escala em que 255 é branco
+
+### O que estava acontecendo
+
+O último passo do Melhorar aprofunda os pretos. Ele pegava o tom mais escuro da
+página, mandava para 0, e reescalava tudo tomando o branco absoluto como
+âncora. Numa página cujo papel já é escuro — uma gravura, uma folha muito
+envelhecida — essa conta arrasta o meio da escala inteiro para baixo junto.
+
+Medido desligando um passo por vez:
+
+| Página | Original | Filtro completo | Sem aprofundar pretos |
+|---|---|---|---|
+| Rhetorica p446 | 208,1 | **64,5** | 210,9 |
+| Boécio p50 | 159,9 | **89,5** | 164,1 |
+| POINTS p16 | 141,5 | **96,7** | 138,0 |
+
+Era ele sozinho. O balanço de branco, que eu suspeitava, nem chega a rodar
+nessas páginas: ele desiste por não achar papel branco à vista.
+
+### O que foi mudado
+
+A âncora passou a ser o nível do papel, e não o branco absoluto. O preto vai
+para 0 e o papel fica exatamente onde estava; só a parte de baixo da escala é
+esticada.
+
+### Resultado imediato
+
+| Página | Original | Antes | Depois |
+|---|---|---|---|
+| Rhetorica p446 | 208,1 | 64,5 | **181,6** |
+| Boécio p50 | 159,9 | 89,5 | **157,4** |
+| POINTS p16 | 141,5 | 96,7 | **138,2** |
+| Boécio p26 (texto) | 204,0 | 221,9 | **222,9** |
+
+Os 68 testes existentes continuam passando. A medição no acervo inteiro está
+em andamento.
 
 ---
 

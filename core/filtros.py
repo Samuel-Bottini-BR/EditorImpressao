@@ -384,18 +384,36 @@ def _curva_de_ombro(
 
 
 def _aprofundar_pretos(img: np.ndarray, percentil: float = 0.5) -> np.ndarray:
-    """Puxa o ponto de preto para baixo, só na luminosidade.
+    """Puxa o ponto de preto para baixo SEM mexer no nivel do papel.
 
     Trabalhar no canal L do LAB (e não nos tres canais BGR) evita o desvio de
     matiz que aparecia quando cada canal era esticado por conta propria.
+
+    A ancora e o papel, e nao o branco absoluto. A versao anterior mapeava o
+    ponto de preto para 0 e o 255 para 255, o que arrasta TODO o meio da escala
+    para baixo junto. Numa pagina de gravura, onde o papel ja e escuro, o
+    estrago era enorme: na Rhetorica p446 o papel caia de 208 para 64 - o
+    filtro que existe para clarear escurecia a folha inteira. Medido no acervo,
+    era ele sozinho o responsavel, e nao o balanco de branco, que nessas
+    paginas nem chega a rodar por nao achar papel branco.
+
+    Agora o preto vai para 0 e o papel fica onde estava; so a parte de baixo da
+    escala e esticada.
     """
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     luz = lab[:, :, 0].astype(np.float32)
+
     preto = float(np.percentile(luz, percentil))
-    if preto < 1:
+    papel = float(np.percentile(luz, BRANCO_PERCENTIL))
+    if preto < 1 or papel - preto < 10:
         return img
-    luz = (luz - preto) * (255.0 / max(1.0, 255.0 - preto))
-    lab[:, :, 0] = np.clip(luz, 0, 255).astype(np.uint8)
+
+    escala = np.arange(256, dtype=np.float32)
+    abaixo = escala <= papel
+    escala[abaixo] = (escala[abaixo] - preto) * (papel / (papel - preto))
+    tabela = np.clip(escala, 0, 255).astype(np.uint8)
+
+    lab[:, :, 0] = cv2.LUT(lab[:, :, 0], tabela)
     return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
 
