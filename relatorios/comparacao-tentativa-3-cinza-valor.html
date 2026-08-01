@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparacao entre duas medicoes</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Comparacao entre duas medicoes</h1>
+<ul>
+<li>Antes: Tentativa 2: ponto de preto ancorado no papel (30/07/2026 as 23:20)</li>
+<li>Depois: Tentativa 3: cinza pelo maior canal na binarizacao (31/07/2026 as 07:51)</li>
+</ul>
+<h2>Original</h2>
+<table>
+<thead>
+<tr>
+<th>Numero</th>
+<th>Antes</th>
+<th>Depois</th>
+<th>Diferenca</th>
+<th>Veredito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>espessura_traco_px</td>
+<td>53.581</td>
+<td>53.581</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>vazios_internos</td>
+<td>2351.857</td>
+<td>2351.857</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nivel_fundo</td>
+<td>191.940</td>
+<td>191.940</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>ruido_fundo</td>
+<td>2.247</td>
+<td>2.247</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>transicao_borda_px</td>
+<td>1.357</td>
+<td>1.357</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nitidez</td>
+<td>692.311</td>
+<td>692.311</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+</tbody>
+</table>
+<h2>Preto e branco</h2>
+<table>
+<thead>
+<tr>
+<th>Numero</th>
+<th>Antes</th>
+<th>Depois</th>
+<th>Diferenca</th>
+<th>Veredito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>espessura_traco_px</td>
+<td>8.580</td>
+<td>8.045</td>
+<td>-0.535</td>
+<td>mudou</td>
+</tr>
+<tr>
+<td>vazios_internos</td>
+<td>1463.603</td>
+<td>1262.762</td>
+<td>-200.841</td>
+<td>PIOROU</td>
+</tr>
+<tr>
+<td>nivel_fundo</td>
+<td>254.318</td>
+<td>254.568</td>
+<td>+0.250</td>
+<td>melhorou</td>
+</tr>
+<tr>
+<td>ruido_fundo</td>
+<td>0.000</td>
+<td>0.000</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>transicao_borda_px</td>
+<td>0.000</td>
+<td>0.000</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nitidez</td>
+<td>13959.513</td>
+<td>13328.851</td>
+<td>-630.662</td>
+<td>PIOROU</td>
+</tr>
+</tbody>
+</table>
+<h2>Melhorar</h2>
+<table>
+<thead>
+<tr>
+<th>Numero</th>
+<th>Antes</th>
+<th>Depois</th>
+<th>Diferenca</th>
+<th>Veredito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>espessura_traco_px</td>
+<td>23.130</td>
+<td>23.130</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>vazios_internos</td>
+<td>2472.397</td>
+<td>2472.397</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nivel_fundo</td>
+<td>213.298</td>
+<td>213.298</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>ruido_fundo</td>
+<td>3.237</td>
+<td>3.237</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>transicao_borda_px</td>
+<td>1.343</td>
+<td>1.343</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nitidez</td>
+<td>1405.168</td>
+<td>1405.168</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+</tbody>
+</table>
+<h2>Mágico pro</h2>
+<table>
+<thead>
+<tr>
+<th>Numero</th>
+<th>Antes</th>
+<th>Depois</th>
+<th>Diferenca</th>
+<th>Veredito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>espessura_traco_px</td>
+<td>28.218</td>
+<td>28.218</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>vazios_internos</td>
+<td>3263.508</td>
+<td>3263.508</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nivel_fundo</td>
+<td>215.396</td>
+<td>215.396</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>ruido_fundo</td>
+<td>3.680</td>
+<td>3.680</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>transicao_borda_px</td>
+<td>0.948</td>
+<td>0.948</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>nitidez</td>
+<td>3144.275</td>
+<td>3144.275</td>
+<td>+0.000</td>
+<td>igual</td>
+</tr>
+</tbody>
+</table>
+<h2>Paginas piores que o original</h2>
+<p>Antes: 52. Depois: 53. PIOROU.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 11:15</p>
+</body>
+</html>

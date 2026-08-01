@@ -77,6 +77,25 @@ Se não abriu todas, diga isso em vez de dar veredito:
 - Usar expectativa escrita por quem implementou como critério de acerto
 - Reportar sucesso quando abriu uma imagem de um conjunto
 
+## Onde guardar, e em que formato
+
+Crie a pasta com `relatorio.pasta_de_teste(assunto, filtro)`:
+
+```
+2026-08-01 14h30 - magico pro - contraste local no papel
+```
+
+Data e hora ordenam sozinho e deixam comparar duas rodadas do mesmo dia. O
+filtro no nome faz achar tudo do Mágico pro junto.
+
+Dentro vai **sempre** um relatório explicando o que foi testado, o que se
+esperava e o que aconteceu — gravado com `relatorio.gravar`, que produz `.md`,
+`.html` e `.pdf` de uma vez. O Samuel não abre `.md`; gravar só ele é o mesmo
+que não entregar.
+
+A pasta precisa se explicar sozinha daqui a seis meses, sem ninguém para
+perguntar.
+
 ## Vale também para
 
 Comparação antes/depois de filtro, prévia de página, recorte de bordas,

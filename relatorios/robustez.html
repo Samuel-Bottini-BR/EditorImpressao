@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robustez: o que acontece quando da errado</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Robustez: o que acontece quando da errado</h1>
+<p>Cada linha e uma coisa que pode acontecer na mao do Kaique. O que se
+cobra e sempre o mesmo: o programa nao pode fechar, a mensagem tem de
+ser compreensivel por quem nao e tecnico, e o trabalho ja feito nao
+pode se perder.</p>
+<p><strong>20 de 20 casos passaram.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Situacao</th>
+<th>O que e</th>
+<th>Continuou de pe?</th>
+<th>Mensagem</th>
+<th>Perdeu trabalho?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OK PDF corrompido</td>
+<td>arquivo picado no meio</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Arquivo que nao e PDF</td>
+<td>texto renomeado para .pdf</td>
+<td>sim</td>
+<td>Não consegui abrir esse arquivo. Ele pode estar danificado ou não ser um PDF.</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Arquivo vazio</td>
+<td>zero byte</td>
+<td>sim</td>
+<td>Não consegui abrir esse arquivo. Ele pode estar danificado ou não ser um PDF.</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK PDF protegido por senha</td>
+<td>aberto so com senha</td>
+<td>sim</td>
+<td>Esse PDF está protegido por senha. Não consigo abrir.</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK PDF de uma pagina so</td>
+<td>livro minimo</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK PDF sem imagem</td>
+<td>so texto vetorial</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Paginas de tamanhos diferentes</td>
+<td>no mesmo arquivo</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Paginas giradas</td>
+<td>0, 90, 180 e 270 graus</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Pagina gigante</td>
+<td>tipo mapa dobrado, 3400x2200 pt</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Pagina toda preta</td>
+<td>scan falhado</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Pagina toda branca</td>
+<td>folha de guarda</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Nome com acento e parenteses</td>
+<td>'Diario do Paroco (copia 2)'</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Caminho com mais de 260 letras</td>
+<td>pastas encadeadas</td>
+<td>sim</td>
+<td>-</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK PDF de mais de 1000 paginas</td>
+<td>1010 paginas</td>
+<td>sim</td>
+<td>1010 folhas analisadas em 16s</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Arquivo aberto em outro programa</td>
+<td>travado por outro</td>
+<td>sim</td>
+<td>leitura funciona com o arquivo aberto por outro</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Arquivo some no meio (pendrive)</td>
+<td>removido apos abrir</td>
+<td>sim</td>
+<td>Não consegui achar esse arquivo. Ele pode ter sido movido ou apagado.</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Disco cheio ou sem destino</td>
+<td>unidade inexistente</td>
+<td>sim</td>
+<td>Não consegui gravar nessa pasta. Ela pode ter sido removida, estar cheia ou ser um pendrive que foi tirado. Escolha outra pasta e tente de novo.</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Cancelar no meio</td>
+<td>usuario desiste</td>
+<td>sim</td>
+<td>nada pela metade ficou no disco</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Abrir varios livros sem reiniciar</td>
+<td>um apos o outro</td>
+<td>sim</td>
+<td>tres livros seguidos, sem reiniciar</td>
+<td>nao</td>
+</tr>
+<tr>
+<td>OK Memoria com livro grande</td>
+<td>1 pagina contra 1010</td>
+<td>sim</td>
+<td>1 pagina: +5 MB; 1010 paginas: +-1 MB</td>
+<td>nao</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 11:15</p>
+</body>
+</html>

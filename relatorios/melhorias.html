@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Melhorias tentadas</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Melhorias tentadas</h1>
+<p>Uma entrada por mudança, aceita ou revertida. As revertidas ficam registradas
+de propósito: saber o que não funcionou vale tanto quanto saber o que funcionou.</p>
+<p>Cada entrada diz qual número a mudança queria melhorar, o que aconteceu com
+todos os outros, e a decisão.</p>
+<hr />
+<h2>Tentativa 1 — o contraste local deixa de agir no papel</h2>
+<p><strong>Data:</strong> 30/07/2026
+<strong>Situação:</strong> aguardando decisão do Samuel
+<strong>Número atacado:</strong> ruído de fundo do Mágico pro, o pior da linha de base
+(2,25 no original contra 8,04 depois do filtro)</p>
+<h3>O que estava acontecendo</h3>
+<p>O Mágico pro aplica realce de contraste local (CLAHE) na folha inteira. Onde a
+folha é só papel não há o que realçar, então ele pega o grão do escâner e o
+amplia. De quebra, puxa o papel para baixo — no filtro que deveria justamente
+embranquecê-lo.</p>
+<p>Foi medido desligando um passo por vez, em cinco páginas:</p>
+<table>
+<thead>
+<tr>
+<th>Variante</th>
+<th>Ruído</th>
+<th>Fundo (255 = branco)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Como estava</td>
+<td>13,57</td>
+<td>196,8</td>
+</tr>
+<tr>
+<td><strong>Sem o contraste local</strong></td>
+<td><strong>6,35</strong></td>
+<td><strong>219,3</strong></td>
+</tr>
+<tr>
+<td>Sem a nitidez</td>
+<td>10,10</td>
+<td>196,8</td>
+</tr>
+<tr>
+<td>Sem a saturação</td>
+<td>13,46</td>
+<td>201,4</td>
+</tr>
+<tr>
+<td>Sem o empurrão para o branco</td>
+<td>13,10</td>
+<td>195,5</td>
+</tr>
+</tbody>
+</table>
+<p>O contraste local responde por mais da metade do ruído e por todo o
+escurecimento. A saturação e o empurrão para o branco não têm nada a ver.</p>
+<h3>O que foi mudado</h3>
+<p>O realce de contraste local passou a ser pesado em vez de aplicado por igual:
+cheio no conteúdo escuro, nenhum no papel. A rampa começa em 80% do nível do
+papel. Esse valor foi escolhido medindo: abaixo dele não há mais ganho, só
+perda de contraste nas gravuras.</p>
+<p>Nada mudou na tela. Nenhum controle novo, nenhum nome diferente.</p>
+<h3>O que aconteceu no acervo inteiro</h3>
+<table>
+<thead>
+<tr>
+<th>Número (Mágico pro)</th>
+<th>Antes</th>
+<th>Depois</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ruído do fundo</td>
+<td>8,04</td>
+<td><strong>3,68</strong></td>
+<td>melhorou 54%</td>
+</tr>
+<tr>
+<td>Nível do fundo</td>
+<td>209,9</td>
+<td><strong>215,4</strong></td>
+<td>melhorou</td>
+</tr>
+<tr>
+<td>Nitidez</td>
+<td>3044</td>
+<td>3144</td>
+<td>melhorou</td>
+</tr>
+<tr>
+<td>Vazios internos</td>
+<td>5218</td>
+<td>3263</td>
+<td>ver observação</td>
+</tr>
+<tr>
+<td>Transição da borda</td>
+<td>2,24</td>
+<td>1,39</td>
+<td><strong>piorou</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Ocorrências de defeito, no acervo todo:</p>
+<table>
+<thead>
+<tr>
+<th>Defeito</th>
+<th>Antes</th>
+<th>Depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O fundo ficou mais sujo</td>
+<td>57</td>
+<td><strong>32</strong></td>
+</tr>
+<tr>
+<td>O fundo escureceu</td>
+<td>15</td>
+<td>13</td>
+</tr>
+<tr>
+<td>O traço afinou demais</td>
+<td>3</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td>A borda das letras borrou</td>
+<td>2</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>As letras entupiram</td>
+<td>5</td>
+<td>5</td>
+</tr>
+<tr>
+<td>A borda virou degrau (serrilhado)</td>
+<td>5</td>
+<td><strong>13</strong></td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>68</strong></td>
+<td><strong>51</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>Observação sobre os vazios internos</h3>
+<p>A queda de 5218 para 3263 parece perda, mas não é. O filtro antigo inventava
+buracos a partir do grão amplificado. Em toda página de texto o número novo se
+aproxima do original, em vez de se afastar dele:</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Original</th>
+<th>Antes</th>
+<th>Depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marial p1</td>
+<td>229</td>
+<td>7491</td>
+<td>645</td>
+</tr>
+<tr>
+<td>Graduale p251</td>
+<td>88</td>
+<td>771</td>
+<td>177</td>
+</tr>
+<tr>
+<td>Marial p605</td>
+<td>1216</td>
+<td>5282</td>
+<td>2386</td>
+</tr>
+</tbody>
+</table>
+<p>E o critério que olha página por página, "as letras entupiram", ficou em 5
+antes e 5 depois. Nenhuma página perdeu miolo de letra de verdade.</p>
+<h3>A piora é real</h3>
+<p>O serrilhado subiu de 5 para 13 páginas. Foi verificado se não era vício da
+medida — a régua contava como rampa qualquer pixel de tom intermediário da
+página, e papel ruidoso enche isso. Medindo só junto do contorno da letra, a
+contaminação some, <strong>mas a piora continua</strong>: a rampa cai de 0,86 para 0,49
+pixel. Segurar o contraste local deixa o papel liso ao redor da letra, e a
+borda fica mais dura.</p>
+<p>Também foi testado se a causa era o empurrão para o branco. Não é: tirá-lo
+piora ainda mais a rampa.</p>
+<h3>Decisão</h3>
+<p><strong>Aceita.</strong> O Samuel viu as imagens do antes e do depois, inclusive da página
+que o número acusou de ter piorado, e nela o resultado a olho é melhor: o
+fundo sai limpo e as letras ficam iguais. A "escadinha" medida vai de 1,20 para
+0,65 pixel — os dois valores já são menores que um pixel, e a 300 DPI isso não
+se enxerga. O limite de 0,7 que eu havia escolhido para a régua está severo
+demais para escaneamento que já vem com a borda dura de origem.</p>
+<hr />
+<h2>Tentativa 2 — o ponto de preto deixa de arrastar o papel</h2>
+<p><strong>Data:</strong> 30/07/2026
+<strong>Situação:</strong> medindo no acervo
+<strong>Número atacado:</strong> o fundo escurecendo no filtro Melhorar, o pior estrago
+isolado da linha de base — na Rhetorica p446 o papel caía de 208 para 64 numa
+escala em que 255 é branco</p>
+<h3>O que estava acontecendo</h3>
+<p>O último passo do Melhorar aprofunda os pretos. Ele pegava o tom mais escuro da
+página, mandava para 0, e reescalava tudo tomando o branco absoluto como
+âncora. Numa página cujo papel já é escuro — uma gravura, uma folha muito
+envelhecida — essa conta arrasta o meio da escala inteiro para baixo junto.</p>
+<p>Medido desligando um passo por vez:</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Original</th>
+<th>Filtro completo</th>
+<th>Sem aprofundar pretos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rhetorica p446</td>
+<td>208,1</td>
+<td><strong>64,5</strong></td>
+<td>210,9</td>
+</tr>
+<tr>
+<td>Boécio p50</td>
+<td>159,9</td>
+<td><strong>89,5</strong></td>
+<td>164,1</td>
+</tr>
+<tr>
+<td>POINTS p16</td>
+<td>141,5</td>
+<td><strong>96,7</strong></td>
+<td>138,0</td>
+</tr>
+</tbody>
+</table>
+<p>Era ele sozinho. O balanço de branco, que eu suspeitava, nem chega a rodar
+nessas páginas: ele desiste por não achar papel branco à vista.</p>
+<h3>O que foi mudado</h3>
+<p>A âncora passou a ser o nível do papel, e não o branco absoluto. O preto vai
+para 0 e o papel fica exatamente onde estava; só a parte de baixo da escala é
+esticada.</p>
+<h3>Resultado imediato</h3>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Original</th>
+<th>Antes</th>
+<th>Depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rhetorica p446</td>
+<td>208,1</td>
+<td>64,5</td>
+<td><strong>181,6</strong></td>
+</tr>
+<tr>
+<td>Boécio p50</td>
+<td>159,9</td>
+<td>89,5</td>
+<td><strong>157,4</strong></td>
+</tr>
+<tr>
+<td>POINTS p16</td>
+<td>141,5</td>
+<td>96,7</td>
+<td><strong>138,2</strong></td>
+</tr>
+<tr>
+<td>Boécio p26 (texto)</td>
+<td>204,0</td>
+<td>221,9</td>
+<td><strong>222,9</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Os 68 testes existentes continuam passando. A medição no acervo inteiro está
+em andamento.</p>
+<hr />
+<h2>Investigação — os 18 binarizadores do DoxaPy</h2>
+<p><strong>Data:</strong> 30/07/2026
+<strong>Situação:</strong> medido; nenhuma troca feita ainda
+<strong>Motivo:</strong> o Kaique reclamou de uma página em que o preto e branco ficou menos
+legível que o original. O DoxaPy já instalado traz dezessete alternativas ao
+Sauvola, várias feitas para documento histórico degradado.</p>
+<p>Medidos 17 algoritmos em 36 páginas do acervo, com a mesma régua.</p>
+<table>
+<thead>
+<tr>
+<th>Algoritmo</th>
+<th>Vazios</th>
+<th>Fundo</th>
+<th>Tinta</th>
+<th>Piorou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OTSU</td>
+<td>2540</td>
+<td>255,0</td>
+<td>0,3495</td>
+<td>0</td>
+</tr>
+<tr>
+<td>PHANSALKAR</td>
+<td>5096</td>
+<td>251,4</td>
+<td>0,2464</td>
+<td>2</td>
+</tr>
+<tr>
+<td>WELLNER</td>
+<td>2086</td>
+<td>253,7</td>
+<td>0,1744</td>
+<td>2</td>
+</tr>
+<tr>
+<td>BATAINEH</td>
+<td>1834</td>
+<td>252,7</td>
+<td>0,1975</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>SAUVOLA (hoje)</strong></td>
+<td>1327</td>
+<td>254,0</td>
+<td>0,1662</td>
+<td>3</td>
+</tr>
+<tr>
+<td>ISAUVOLA</td>
+<td>1320</td>
+<td>254,6</td>
+<td>0,1604</td>
+<td>3</td>
+</tr>
+<tr>
+<td>NICK</td>
+<td>1175</td>
+<td>254,6</td>
+<td>0,1423</td>
+<td>3</td>
+</tr>
+<tr>
+<td>GATOS</td>
+<td>778</td>
+<td>254,6</td>
+<td>0,1438</td>
+<td>5</td>
+</tr>
+<tr>
+<td>NIBLACK</td>
+<td>6385</td>
+<td>183,1</td>
+<td>0,5120</td>
+<td>24</td>
+</tr>
+</tbody>
+</table>
+<h3>Por que não troquei nada</h3>
+<p><strong>Os números sozinhos enganam aqui, e a régua tem um ponto cego.</strong> O OTSU marca
+zero piora, mas guarda o dobro de tinta do Sauvola. Em papel envelhecido isso
+quer dizer manter a mancha como se fosse letra, e nenhum dos critérios atuais
+pega isso. Falta um número para "guardou a sujeira".</p>
+<p>Olhando as imagens, o resultado se inverte conforme a página:</p>
+<p><strong>No Palatino</strong> (manual de caligrafia, letra gótica pesada) o OTSU sai sólido e
+limpo, enquanto Sauvola, Phansalkar, Wellner e Bradley <strong>quebram o traço</strong> — as
+letras ficam salpicadas de branco por dentro. A janela local, dimensionada para
+linha de texto corrente, fragmenta letra de corpo grande.</p>
+<p>Isso confirma o que a literatura diz: Sauvola é melhor em ruído de fundo
+uniforme, Wolf em baixo contraste. Não existe um vencedor único — <strong>a escolha
+certa depende da página</strong>, não do livro.</p>
+<h3>Um defeito grave descoberto de passagem</h3>
+<p>No <strong>Graduale</strong>, manuscrito do século XIV com pautas em vermelho e neumas
+pretos, <strong>os dezessete algoritmos transformaram as linhas vermelhas em barras
+pretas grossas</strong>. O Wellner chegou a apagá-las, mas levou junto metade das
+notas.</p>
+<p>Para um instituto de preservação isso é perda de informação: a rubricação
+vermelha é parte do documento. A causa é a conversão para cinza, que trata
+vermelho como escuro. O DoxaPy oferece oito métodos de conversão
+(LABDIST, LUSTER, MINAVG, VALUE, LIGHTNESS, BT601, BT709, BT2100) e algum deles
+deve tratar o vermelho de outra forma. A investigar.</p>
+<hr />
+<h2>Pendência da régua</h2>
+<p>A medida de transição conta pixels de tom intermediário em toda a página, e
+papel ruidoso infla o número. Deve passar a contar só junto do contorno da
+letra. Não muda o veredito da Tentativa 1, mas muda a magnitude
+(1,32 → 0,60 pela medida atual; 0,86 → 0,49 pela medida limpa) e vai
+contaminar comparações futuras.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 11:15</p>
+</body>
+</html>

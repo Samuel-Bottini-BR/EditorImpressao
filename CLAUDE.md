@@ -19,6 +19,39 @@ travava, a outra dava qualidade ruim — e daí vêm as regras rígidas abaixo.
   numa gravura de 1579, e detalhe inventado entra no PDF como se fosse o livro.
   Rede neural aqui só segmenta: aponta onde estão as coisas, nunca desenha.
 
+## Todo relatório sai em três formatos
+
+O Samuel **não abre `.md`** — o Acrobat recusa o arquivo. Relatório que a pessoa
+não consegue abrir não é relatório.
+
+Use `relatorio.gravar(texto, destino)`, que grava os três de uma vez:
+
+| | para quem |
+|---|---|
+| `.md` | para mim, e para o git comparar linha a linha |
+| `.html` | leitura rápida, abre com dois cliques no navegador |
+| `.pdf` | arquivo e referência futura |
+
+Nunca gravar só o `.md`.
+
+## Como nomear a pasta de um teste
+
+Use `relatorio.pasta_de_teste(assunto, filtro)`, que produz:
+
+```
+2026-08-01 14h30 - magico pro - contraste local no papel
+```
+
+**Data e hora** no começo: ordena sozinho e permite comparar duas rodadas do
+mesmo assunto no mesmo dia. **Filtro** em seguida, para achar tudo do Mágico
+pro junto. **Assunto** por último.
+
+Dentro da pasta vai sempre um PDF explicando o que foi testado, o que se
+esperava e o que aconteceu — a pasta precisa se explicar sozinha daqui a seis
+meses.
+
+Tudo fica em `Desktop\TESTES EDITOR DE IMPRESSAO`.
+
 ## Antes de julgar qualquer resultado visual
 
 Leia a skill `conferir-testes-visuais`. Resumo: **abra todas as imagens antes

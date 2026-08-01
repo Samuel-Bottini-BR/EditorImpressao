@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linha de base do Editor de Impressao</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Linha de base do Editor de Impressao</h1>
+<p>Medido em 30/07/2026 as 16:54.</p>
+<p>Este relatorio e uma <strong>regua</strong>: ele nao diz se o programa esta bonito, diz em numeros como ele esta hoje. Serve para que, depois de qualquer mudanca, se possa medir de novo e saber se melhorou de verdade ou se foi so impressao.</p>
+<h2>O essencial, em quatro linhas</h2>
+<ul>
+<li>Foram medidos <strong>9 livros</strong>, 2903 folhas, 3037 paginas de saida.</li>
+<li>A qualidade de imagem foi medida a fundo em <strong>63 paginas</strong>, as mesmas em toda rodada.</li>
+<li><strong>68 vezes um filtro deixou a pagina pior do que ela era.</strong> Cada caso e uma pagina com um filtro; a mesma pagina pode aparecer mais de uma vez, uma por filtro que a estragou. O criterio de aceitacao do projeto exige que esse numero seja zero.</li>
+<li>O programa nunca passou de <strong>1148 MB</strong> de memoria, contra o teto de 2048 MB.</li>
+</ul>
+<h2>O que cada numero quer dizer</h2>
+<table>
+<thead>
+<tr>
+<th>Numero</th>
+<th>O que e, na pratica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Espessura do traco</td>
+<td>Grossura media da linha da letra, em pontinhos de tela (pixels). Se afina demais, some na impressao.</td>
+</tr>
+<tr>
+<td>Vazios internos</td>
+<td>Buraquinhos fechados dentro das letras: o miolo do <strong>o</strong>, do <strong>e</strong>, do <strong>a</strong>. Se o filtro engrossa demais, eles entopem e a letra vira bolha. Quanto mais sobrarem, melhor.</td>
+</tr>
+<tr>
+<td>Nivel do fundo</td>
+<td>Quao claro esta o papel, de 0 (preto) a 255 (branco). O alvo e 255: papel branco de verdade, sem o amarelado.</td>
+</tr>
+<tr>
+<td>Ruido do fundo</td>
+<td>O quanto o papel varia onde deveria ser liso. Quanto menor, mais limpo.</td>
+</tr>
+<tr>
+<td>Transicao da borda</td>
+<td>Largura da rampa entre a tinta e o papel, em pixels. <strong>Este e o numero da queixa de letra pixelada.</strong> De 1 a 2 e o certo; perto de zero a borda vira degrau de escada; acima de 3 a letra borra.</td>
+</tr>
+<tr>
+<td>Nitidez</td>
+<td>O quanto a imagem tem detalhe definido. Maior e mais nitido, mas exagero vira ruido.</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cada filtro se comporta, na media do acervo</h2>
+<table>
+<thead>
+<tr>
+<th>Filtro</th>
+<th>Espessura</th>
+<th>Vazios</th>
+<th>Fundo (255=branco)</th>
+<th>Ruido</th>
+<th>Transicao (px)</th>
+<th>Nitidez</th>
+<th>Tempo/pagina</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original</td>
+<td>53.58</td>
+<td>2352</td>
+<td>191.9</td>
+<td>2.25</td>
+<td>3.31</td>
+<td>692</td>
+<td>0.00s</td>
+</tr>
+<tr>
+<td>Preto e branco</td>
+<td>8.58</td>
+<td>1464</td>
+<td>254.3</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>13960</td>
+<td>0.09s</td>
+</tr>
+<tr>
+<td>Melhorar</td>
+<td>38.21</td>
+<td>2613</td>
+<td>207.5</td>
+<td>3.15</td>
+<td>2.11</td>
+<td>1389</td>
+<td>0.59s</td>
+</tr>
+<tr>
+<td>Mágico pro</td>
+<td>21.19</td>
+<td>5218</td>
+<td>209.9</td>
+<td>8.04</td>
+<td>2.24</td>
+<td>3044</td>
+<td>0.71s</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Leitura rapida: na coluna <strong>Fundo</strong>, quanto mais perto de 255 melhor - e o amarelado indo embora. Na coluna <strong>Transicao</strong>, o alvo e entre 1 e 2; valor muito baixo e o serrilhado que aparece nas letras.</p>
+</blockquote>
+<h2>Velocidade e memoria</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Medido</th>
+<th>Meta</th>
+<th>Passou?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir o programa</td>
+<td>0.41 s</td>
+<td>10 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Primeiras miniaturas</td>
+<td>0.34 s</td>
+<td>5 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Analisar 500 folhas (projecao)</td>
+<td>140 s</td>
+<td>180 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Exportar 500 paginas a 300 DPI (projecao)</td>
+<td>248 s</td>
+<td>1200 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pico de memoria</td>
+<td>1148 MB</td>
+<td>2048 MB</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>As duas linhas marcadas como <strong>projecao</strong> foram calculadas a partir do custo real por folha e por pagina medido nos nove livros, multiplicado por 500. Nenhum livro do acervo tem 500 paginas.</p>
+</blockquote>
+<h2>Livro a livro</h2>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Tamanho</th>
+<th>Folhas</th>
+<th>Paginas</th>
+<th>Analise</th>
+<th>Paginas piores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Giovambattista Palatino cittadino romano</td>
+<td>9 MB</td>
+<td>134</td>
+<td>134</td>
+<td>39.3s</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>271 MB</td>
+<td>750</td>
+<td>750</td>
+<td>179.0s</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>106 MB</td>
+<td>191</td>
+<td>191</td>
+<td>50.7s</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasar Paez. (1</td>
+<td>205 MB</td>
+<td>907</td>
+<td>907</td>
+<td>105.1s</td>
+<td>11</td>
+</tr>
+<tr>
+<td>Na escola de Jesus - Catecismo explicado com</td>
+<td>48 MB</td>
+<td>199</td>
+<td>199</td>
+<td>23.1s</td>
+<td>3</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLAISES - Lou</td>
+<td>12 MB</td>
+<td>92</td>
+<td>92</td>
+<td>60.5s</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego Valadés</td>
+<td>40 MB</td>
+<td>446</td>
+<td>446</td>
+<td>179.9s</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann Siebmacher</td>
+<td>11 MB</td>
+<td>134</td>
+<td>268</td>
+<td>51.2s</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia - Severino B</td>
+<td>4 MB</td>
+<td>50</td>
+<td>50</td>
+<td>2.2s</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<h2>Paginas que sairam piores que o original</h2>
+<p>Sao <strong>68</strong> ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era antes de qualquer tratamento.</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Pagina</th>
+<th>Filtro</th>
+<th>O que piorou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 6.1 para 19.8</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>27</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.3 para 3.0</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>53</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 0.9 para 3.8</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>79</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.4 para 5.1</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>105</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.2 para 4.2</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>132</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 255 para 230 numa escala em que 255 e branco</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>132</td>
+<td>Mágico pro</td>
+<td>a borda das letras borrou: a rampa subiu de 0.98 para 4.12 pixels</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino</td>
+<td>134</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 6.6 para 22.6</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 4.3 para 11.0</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>126</td>
+<td>Preto e branco</td>
+<td>as letras entupiram: sobraram 448 vazios internos de 1149 (61% a menos)</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>126</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 2.0 para 4.2</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>126</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 2.0 para 10.0</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>251</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.4 para 6.3</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>376</td>
+<td>Preto e branco</td>
+<td>as letras entupiram: sobraram 116 vazios internos de 167 (31% a menos)</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>376</td>
+<td>Melhorar</td>
+<td>as letras entupiram: sobraram 120 vazios internos de 167 (28% a menos)</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>376</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.2 para 5.6</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>501</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.1 para 5.2</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>626</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.6 para 3.2</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>626</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.6 para 7.8</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>750</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 4.9 para 21.7</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>77</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 0.9 para 3.3</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>191</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 4.2 para 8.0</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>1</td>
+<td>Melhorar</td>
+<td>as letras entupiram: sobraram 136 vazios internos de 229 (41% a menos)</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 159 para 148 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 3.0 para 12.5; o traco afinou demai</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>152</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.5 para 15.4</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>303</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.0 para 12.7</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>454</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.3 para 7.4</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>454</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.3 para 17.3</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>605</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.0 para 4.6</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>605</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.0 para 13.2</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>756</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.6 para 6.0</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>756</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.6 para 16.9</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasa</td>
+<td>907</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 3.3 para 13.9</td>
+</tr>
+<tr>
+<td>Na escola de Jesus - Catecismo exp</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 2.2 para 5.8</td>
+</tr>
+<tr>
+<td>Na escola de Jesus - Catecismo exp</td>
+<td>199</td>
+<td>Preto e branco</td>
+<td>as letras entupiram: sobraram 166 vazios internos de 248 (33% a menos); o traco afinou demais: de 28.57 para 12.35 pixels (57% a menos)</td>
+</tr>
+<tr>
+<td>Na escola de Jesus - Catecismo exp</td>
+<td>199</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 223 para 219 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 1.4 para 6.9; o traco afinou demais</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 6.0 para 20.7; a borda das letras virou degrau (serrilhado): a rampa caiu de 0.74 para 0.46 pixels</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>16</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 142 para 97 numa escala em que 255 e branco</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>16</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.7 para 5.4; a borda das letras borrou: a rampa subiu de 6.16 para 9.14 pixels</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>46</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 154 para 110 numa escala em que 255 e branco</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>46</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.3 para 5.1</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>76</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 156 para 150 numa escala em que 255 e branco</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLA</td>
+<td>76</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.0 para 4.4</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego</td>
+<td>5</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.3 para 4.2</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego</td>
+<td>179</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 0.9 para 2.7</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego</td>
+<td>268</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.0 para 3.0</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego</td>
+<td>446</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 205 para 63 numa escala em que 255 e branco</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego</td>
+<td>446</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 205 para 192 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 0.4 para 2.1</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann S</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 2.8 para 9.1</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann S</td>
+<td>45</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 0.8 para 3.1</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann S</td>
+<td>89</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 0.8 para 3.0</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann S</td>
+<td>133</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 1.1 para 3.6</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann S</td>
+<td>221</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 2.0 para 4.9</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann S</td>
+<td>268</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 2.7 para 8.7</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>1</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 5.5 para 17.0; a borda das letras virou degrau (serrilhado): a rampa caiu de 2.74 para 0.64 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 5.5 para 30.5; a borda das letras virou degrau (serrilhado): a rampa caiu de 2.74 para 0.55 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>9</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 5.0 para 7.1</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>9</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 208 para 203 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 5.0 para 19.0</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>17</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 6.3 para 9.4</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>17</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 202 para 198 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 6.3 para 25.1</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>25</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 6.8 para 9.4</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>25</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 204 para 198 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 6.8 para 26.1</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>33</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 7.2 para 10.6</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>33</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 202 para 195 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 7.2 para 28.3</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>41</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 7.4 para 10.1</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>41</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 205 para 197 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 7.4 para 27.6</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>50</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 161 para 91 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 3.8 para 7.0; a borda das letras vir</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>50</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 161 para 154 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 3.8 para 14.6; a borda das letras v</td>
+</tr>
+</tbody>
+</table>
+<h2>Paginas marcadas em laranja, e por que</h2>
+<p>Laranja quer dizer <em>o programa nao teve certeza</em>. Nao e erro: e um pedido de conferida.</p>
+<table>
+<thead>
+<tr>
+<th>Aviso</th>
+<th>Quantas paginas</th>
+<th>O que o programa diz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tem cor</td>
+<td>392</td>
+<td>Esta página tem cor - o preto e branco vai perder a ilustração.</td>
+</tr>
+<tr>
+<td>Alinhamento duvidoso</td>
+<td>349</td>
+<td>Não consegui achar o alinhamento do texto direito.</td>
+</tr>
+<tr>
+<td>Tamanho diferente</td>
+<td>22</td>
+<td>Esta folha tem tamanho diferente das outras.</td>
+</tr>
+<tr>
+<td>Muito torta</td>
+<td>4</td>
+<td>Esta página estava bem torta. Veja se ficou certa.</td>
+</tr>
+<tr>
+<td>Parece em branco</td>
+<td>1</td>
+<td>Esta página parece estar em branco. Quer apagar?</td>
+</tr>
+</tbody>
+</table>
+<h2>Geometria: as paginas saem todas do mesmo tamanho?</h2>
+<p>Paginas do mesmo livro precisam sair identicas, senao o caderno nao fecha direito na hora de imprimir. A coluna de variacao deveria ser zero.</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Menor pagina (px)</th>
+<th>Variacao largura</th>
+<th>Variacao altura</th>
+<th>Inclinacao media</th>
+<th>Inclinacao maxima</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Giovambattista Palatino cittadino roma</td>
+<td>1074x1698</td>
+<td>22.3 mm</td>
+<td>64.3 mm</td>
+<td>0.071</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>1916x5631</td>
+<td>304.1 mm</td>
+<td>158.2 mm</td>
+<td>0.071</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>3092x5732</td>
+<td>99.5 mm</td>
+<td>569.0 mm</td>
+<td>0.086</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Marial de sermoens - Frei Balthasar Pa</td>
+<td>1070x3855</td>
+<td>167.3 mm</td>
+<td>8.5 mm</td>
+<td>0.071</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Na escola de Jesus - Catecismo explica</td>
+<td>1988x2946</td>
+<td>20.8 mm</td>
+<td>15.9 mm</td>
+<td>0.086</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLAISES</td>
+<td>993x2759</td>
+<td>71.9 mm</td>
+<td>7.0 mm</td>
+<td>0.014</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego Val</td>
+<td>1427x2348</td>
+<td>41.1 mm</td>
+<td>40.0 mm</td>
+<td>0.071</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann Siebm</td>
+<td>558x1274</td>
+<td>43.1 mm</td>
+<td>4.3 mm</td>
+<td>0.014</td>
+<td>0.100</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia - Seve</td>
+<td>940x1514</td>
+<td>11.0 mm</td>
+<td>3.2 mm</td>
+<td>0.071</td>
+<td>0.100</td>
+</tr>
+</tbody>
+</table>
+<h2>Em que maquina isto foi medido</h2>
+<ul>
+<li>Windows 11, Python 3.14.3, 16 nucleos, 15 GB de memoria</li>
+<li>OpenCV 5.0.0, DoxaPy disponivel: sim</li>
+<li>Todas as imagens medidas a 300 DPI</li>
+</ul>
+<blockquote>
+<p>A maquina onde isto rodou e mais forte que a do Kaique. Os tempos numa maquina modesta serao maiores; a Etapa 4 preve a conferencia num computador de verdade.</p>
+</blockquote>
+<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 11:15</p>
+</body>
+</html>

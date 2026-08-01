@@ -228,9 +228,26 @@ def _caixas_para_mascara(achados, classes, altura, largura) -> np.ndarray:
 # senao a borda dela fica de fora e recebe tratamento de papel.
 FOLGA_DA_TINTA = 0.0015
 
-# Abaixo desta fracao de tinta a pagina nao tem conteudo: e capa, folha de
-# guarda, verso em branco. Ali nao ha nada para marcar.
-FRACAO_TINTA_DE_PAGINA_VAZIA = 0.004
+# Quanto mais escuro que a mediana da pagina um pixel precisa ser para contar
+# como conteudo, e que fracao deles precisa existir.
+#
+# Uma capa de couro lisa TEM meio-tom - ela e toda tom continuo - e por isso o
+# teste de meio-tom a aprovava como gravura de pagina inteira. O que ela nao
+# tem e CONTEUDO: nada nela e significativamente mais escuro que ela mesma.
+# Medido no acervo:
+#
+#     capa de couro      0,44%      Boecio, pagina de poema    12,70%
+#     folha em branco    0,17%      Graduale, partitura        14,62%
+#                                   catecismo, texto e gravura 32,61%
+#
+# Sao trinta vezes de separacao. O corte em 3% fica no meio do vazio.
+ESCURO_QUE_CONTA = 45
+FRACAO_ESCURA_DE_PAGINA_VAZIA = 0.03
+
+# Quanto da tinta da pagina os blocos do modelo precisam cobrir para eu confiar
+# na proposta dele. Abaixo disto ele viu so um pedaco, e o resto da tinta vira
+# letra por conta propria. Ver o comentario em detectar.
+COBERTURA_MINIMA_DO_LAYOUT = 0.55
 
 
 def mascara_de_tinta(img: np.ndarray) -> np.ndarray:
@@ -259,9 +276,44 @@ def mascara_de_tinta(img: np.ndarray) -> np.ndarray:
     return cv2.resize(tinta, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
 
 
-def _pagina_sem_conteudo(tinta: np.ndarray) -> bool:
-    """Capa, folha de guarda, verso em branco: nao ha o que marcar."""
-    return float(tinta.mean()) < FRACAO_TINTA_DE_PAGINA_VAZIA
+def blocos_de_tinta(tinta: np.ndarray) -> np.ndarray:
+    """Junta o traco em BLOCOS de texto, como o modelo de layout devolveria.
+
+    Necessario porque a selecao guarda bloco, e nao letra a letra: um poligono
+    por glifo daria milhares de formas por pagina, inviaveis de editar e de
+    guardar. Quem desce ao nivel do traco e refinar_para_tinta, na hora de
+    aplicar.
+
+    O fechamento e mais largo na horizontal que na vertical, porque texto se
+    liga ao longo da linha e nao entre linhas - e o mesmo principio do
+    algoritmo de suavizacao por corridas usado em analise de layout.
+    """
+    if not tinta.any():
+        return tinta
+
+    altura, largura = tinta.shape[:2]
+    largo = max(3, int(0.030 * largura) | 1)
+    alto = max(3, int(0.012 * altura) | 1)
+
+    juntos = cv2.morphologyEx(
+        tinta.astype(np.uint8), cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_RECT, (largo, alto)))
+
+    from scipy.ndimage import binary_fill_holes
+
+    return binary_fill_holes(juntos > 0)
+
+
+def _pagina_sem_conteudo(img: np.ndarray) -> bool:
+    """Capa, folha de guarda, verso em branco: nao ha o que marcar.
+
+    A pergunta nao e "tem meio-tom" - couro tem - e sim "tem alguma coisa
+    escura de verdade". Ver ESCURO_QUE_CONTA.
+    """
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+    mediana = float(np.median(cinza))
+    escuros = float((cinza < mediana - ESCURO_QUE_CONTA).mean())
+    return escuros < FRACAO_ESCURA_DE_PAGINA_VAZIA
 
 
 # --- o detector -------------------------------------------------------------
@@ -320,13 +372,15 @@ def detectar(
     selecao = Selecao()
 
     colorida = _tres_canais_ou_cinza(img)
-    tinta = mascara_de_tinta(colorida)
 
     # Capa, folha de guarda, verso em branco: nao ha o que marcar. Sem esta
-    # guarda uma capa marrom lisa virava "gravura" de pagina inteira.
-    if _pagina_sem_conteudo(tinta):
+    # guarda uma capa de couro lisa virava "gravura" de pagina inteira - o
+    # modelo de layout chamava de figure(0.66) e o teste de meio-tom concordava,
+    # porque couro E tom continuo.
+    if _pagina_sem_conteudo(colorida):
         return selecao
 
+    tinta = mascara_de_tinta(colorida)
     achados = _detector.achar(colorida) if usar_layout else []
 
     gravura_layout = np.zeros((altura, largura), bool)
@@ -351,9 +405,18 @@ def detectar(
     # paragrafo do preto e branco.
     gravura = gravura_layout | (gravura_cor & ~letra_layout)
 
-    # Onde o layout nao achou bloco nenhum, tudo que nao e gravura e bloco de
-    # texto: uma pagina que o modelo nao entendeu nao pode ficar sem marcacao.
-    letra = letra_layout & ~gravura if letra_layout.any() else ~gravura
+    # O que o modelo achou SOMA com o que sobrou de tinta - nao substitui.
+    #
+    # Escolher entre um e outro deixava furos: no catecismo o modelo achou a
+    # maioria dos paragrafos e dois ficavam de fora, e como a cobertura passava
+    # do limiar eu confiava nele e os dois sumiam. No Boecio era o contrario:
+    # ele achou so o titulo numa pagina inteira de poema.
+    #
+    # Somando, o modelo contribui com o que sabe fazer - reconhecer bloco mesmo
+    # onde a tinta e rala - e a tinta solta cobre o que ele deixou passar.
+    tinta_fora_da_gravura = tinta & ~gravura
+    sobrou = tinta_fora_da_gravura & ~letra_layout
+    letra = (letra_layout | blocos_de_tinta(sobrou)) & ~gravura
 
     # ATENCAO: aqui a letra e guardada como BLOCO, e nao letra a letra.
     # Guardar cada glifo como poligono daria milhares de formas por pagina e
