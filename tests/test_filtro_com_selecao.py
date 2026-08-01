@@ -71,6 +71,44 @@ def test_preto_e_branco_preserva_tom_continuo_na_gravura(img):
     assert len(tons) > 8, "a gravura foi binarizada"
 
 
+def pagina_de_gravura_de_traco(altura=400, largura=300):
+    """Uma xilogravura: hachura fina sobre papel amarelado, sem meio-tom."""
+    # Papel amarelado, mas dentro da saturacao que o balanco de branco aceita
+    # como papel - acima de BRANCO_SATURACAO_MAX ele desiste, por nao saber se
+    # esta olhando papel ou uma capa colorida.
+    img = np.full((altura, largura, 3), (196, 212, 226), np.uint8)
+    for x in range(40, largura - 40, 6):       # hachura vertical
+        img[60:340, x:x + 2] = (70, 75, 85)
+    for y in range(150, 300, 6):               # hachura cruzada, mais fechada
+        img[y:y + 2, 40:largura - 40] = (55, 60, 70)
+    return img
+
+
+def test_a_gravura_fica_com_o_papel_branco_sem_perder_o_traco():
+    """O pedido do Samuel: papel branco E desenho perfeito.
+
+    Antes desta correcao a gravura saia com o papel amarelado como veio, porque
+    "nao binarizar" tinha virado "nao tocar". Medido na xilogravura da
+    Rhetorica, o papel dentro do desenho parava em 214 numa escala em que 255 e
+    branco, enquanto a margem da folha ia a 255.
+    """
+    img = pagina_de_gravura_de_traco()
+    s = Selecao()
+    s.acrescentar(retangulo(0.0, 0.0, 1.0, 1.0, tipo=GRAVURA))
+
+    saida, _ = aplicar_filtro_com_selecao(img, PRETO_E_BRANCO, s)
+    cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY)
+
+    # O papel que interessa e o que fica ENTRE os tracos, e nao uma margem
+    # limpa: e ele que dava a impressao de folha suja dentro do desenho.
+    dentro = cinza[60:340, 40:260]
+    claro = float(np.percentile(dentro, 85))
+    assert claro >= 245, f"o papel entre os tracos nao clareou: {claro:.0f}"
+
+    assert len(np.unique(dentro)) > 8, "a hachura foi binarizada"
+    assert dentro.min() < 120, "a hachura sumiu no clareamento"
+
+
 def test_preto_e_branco_sem_gravura_continua_em_um_bit(img):
     s = Selecao()
     s.acrescentar(retangulo(0.0, 0.5, 1.0, 1.0, tipo=LETRA))

@@ -286,6 +286,23 @@ TINTA_EM_PEDACOS_DE_GLIFO = 0.45
 # fracao do lado da area examinada.
 ALTURA_DE_GLIFO = 1 / 12
 
+# A mesma medida responde a outra pergunta: o modelo achou "figure" - isso e uma
+# GRAVURA DE TRACO ou e uma pagina escrita? O modelo chama de figure tanto a
+# xilogravura do Valades quanto a caligrafia do Palatino e a partitura do
+# Graduale, e o tratamento que cada uma pede e oposto.
+#
+# O teste de meio-tom nao resolve: xilogravura e traco puro, e reprovava. O vao
+# entre linhas tambem nao: o ornamento do Siebmacher da 23,7% e a partitura do
+# Graduale 22,6%. O tamanho do pedaco separa:
+#
+#     xilogravura do Valades    8,7%      caligrafia do Palatino    50,1%
+#     ornamento Siebmacher      4,3%      partitura do Graduale     49,1%
+#     ornamento Siebmacher      7,7%      partitura do Graduale     90,2%
+#     gravura do catecismo     13,6%      tabela da Rhetorica       93,0%
+#
+# O corte em 30% fica no vao entre 14% e 49%.
+PEDACOS_DE_GLIFO_DE_ESCRITA = 0.30
+
 # Abaixo desta tinta o buraco e papel limpo, e papel nao vira gravura.
 TINTA_MINIMA_DO_BURACO = 0.05
 
@@ -531,8 +548,12 @@ def detectar(
         fatia = (slice(int(y0 * altura), int(y1 * altura)),
                  slice(int(x0 * largura), int(x1 * largura)))
         if a.classe in CLASSES_DE_GRAVURA:
-            # so e gravura de verdade se tiver meio-tom
-            if _e_meio_tom(colorida, a.caixa):
+            # Gravura de verdade se tiver meio-tom OU se for desenho de traco.
+            # O modelo chama de "figure" tambem caligrafia e partitura, que sao
+            # escrita e devem ser tratadas como tal - ver
+            # PEDACOS_DE_GLIFO_DE_ESCRITA.
+            desenho = _tinta_em_pedacos_de_glifo(tinta[fatia]) < PEDACOS_DE_GLIFO_DE_ESCRITA
+            if desenho or _e_meio_tom(colorida, a.caixa):
                 gravura_layout[fatia] = True
             else:
                 letra_layout[fatia] = True

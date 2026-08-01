@@ -567,6 +567,43 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     return _empurrar_branco(saida)
 
 
+# Area minima de uma gravura para valer a pena limpa-la pelo nivel dela, em
+# fracao da pagina. Abaixo disso e respingo, e o recorte nem teria papel dentro
+# para medir.
+AREA_MINIMA_DE_GRAVURA = 0.002
+
+
+def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
+                         clareza: int = AJUSTE_PADRAO) -> np.ndarray:
+    """Limpa cada gravura ancorada no papel DELA, e nao no da folha.
+
+    Sem isso o papel dentro do desenho nao chega a branco: medido na xilogravura
+    da Rhetorica, ele parava em 214 numa escala em que 255 e branco, enquanto a
+    margem da folha, essa sim, ia a 255. O papel dentro de um bloco gravado e
+    mais escuro que a margem, e a curva de ombro calculada pela folha inteira
+    nao alcanca ele.
+
+    Uma iluminura de meio-tom, que quase nao tem papel a vista, passa por aqui
+    sem mudanca: _balanco_de_branco desiste sozinho quando nao acha papel.
+    """
+    saida = filtro_melhorar(_tres_canais(img), clareza=clareza)
+
+    num, _, stats, _ = cv2.connectedComponentsWithStats(
+        (gravura > 0).astype(np.uint8), connectivity=8)
+    minimo = AREA_MINIMA_DE_GRAVURA * gravura.size
+    for i in range(1, num):
+        if stats[i, cv2.CC_STAT_AREA] < minimo:
+            continue
+        x = stats[i, cv2.CC_STAT_LEFT]
+        y = stats[i, cv2.CC_STAT_TOP]
+        w = stats[i, cv2.CC_STAT_WIDTH]
+        h = stats[i, cv2.CC_STAT_HEIGHT]
+        pedaco = _tres_canais(img)[y:y + h, x:x + w]
+        if pedaco.size:
+            saida[y:y + h, x:x + w] = filtro_melhorar(pedaco, clareza=clareza)
+    return saida
+
+
 def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.ndarray:
     """Mistura duas versoes da mesma imagem pelo peso, pixel a pixel."""
     if not peso.any():
@@ -597,9 +634,16 @@ def aplicar_filtro_com_selecao(
     no nivel do papel" - sao adivinhacao pela luminosidade. Com a selecao o
     filtro para de adivinhar: ele sabe o que esta olhando.
 
-        gravura  ->  tom continuo preservado; nunca binarizada
+        gravura  ->  papel branco por curva, tom preservado; nunca binarizada
         letra    ->  contraste e nitidez, sem realce de fundo
         papel    ->  vai a branco, sem medo de estragar o que esta ao lado
+
+    Dentro da gravura o papel tambem precisa ficar branco - o pedido do Samuel
+    foi "quero que o papel saia branco, e o desenho tambem saia perfeito". Quem
+    faz isso e a curva de ombro do filtro Melhorar, que leva o nivel do papel a
+    255 e deixa o resto da escala onde esta. O que NAO pode acontecer ali dentro
+    e binarizar ou pintar de branco chapado: a hachura da xilogravura vive nos
+    tons intermediarios, e os dois caminhos a apagam.
 
     Selecao vazia devolve exatamente o comportamento de sempre. E o caso de
     todo projeto antigo e de toda pagina que ninguem marcou.
@@ -630,8 +674,8 @@ def aplicar_filtro_com_selecao(
                     saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
                 return saida, True
 
-            colorida = _tres_canais(img)
-            saida = _misturar(_tres_canais(binaria), colorida, peso_gravura)
+            limpa = _limpar_cada_gravura(img, peso_gravura > 0.5, clareza)
+            saida = _misturar(_tres_canais(binaria), limpa, peso_gravura)
             if peso_papel.any():
                 saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
             return saida, False   # tem gravura: nao cabe em 1 bit
@@ -639,6 +683,14 @@ def aplicar_filtro_com_selecao(
         # --- Melhorar e Magico pro ------------------------------------------
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
             else filtro_magico_pro(img, intensidade=intensidade)
+
+        # Na gravura, o tratamento suave: papel a branco pela curva de ombro e
+        # tom preservado. O Magico pro leva realce local e ganho de saturacao,
+        # que numa xilogravura fecham a hachura e fabricam grao no papel de
+        # dentro do desenho.
+        if peso_gravura.any():
+            base = _misturar(base, _limpar_cada_gravura(img, peso_gravura > 0.5, clareza),
+                             peso_gravura)
 
         # Na letra, so nitidez - E SO EM CIMA DO TRACO. Um bloco de texto e
         # metade papel: as entrelinhas e as margens dentro do bloco. Tratar o

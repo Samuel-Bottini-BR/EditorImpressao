@@ -96,6 +96,28 @@ def test_a_moldura_continua_sendo_gravura():
         assert mascara(img, GRAVURA)[80, 350], "a moldura deixou de ser gravura"
 
 
+def test_escrita_e_desenho_se_separam_pelo_tamanho_do_pedaco():
+    """A medida que distingue xilogravura de caligrafia e de partitura.
+
+    O modelo de layout chama de "figure" as tres, e o tratamento que cada uma
+    pede e oposto. Meio-tom nao resolve (xilogravura e traco puro) e vao entre
+    linhas nao resolve (ornamento 23,7%, partitura 22,6%). O tamanho do pedaco
+    de tinta resolve: no acervo, desenho fica entre 4% e 14%, escrita entre 49%
+    e 93%.
+    """
+    from core.detectar_regioes import (
+        PEDACOS_DE_GLIFO_DE_ESCRITA,
+        _tinta_em_pedacos_de_glifo,
+        mascara_de_tinta,
+    )
+
+    escrita = mascara_de_tinta(escrever(pagina_crua())[150:750, 150:550])
+    desenho = mascara_de_tinta(pintar(pagina_crua())[150:750, 150:550])
+
+    assert _tinta_em_pedacos_de_glifo(escrita) >= PEDACOS_DE_GLIFO_DE_ESCRITA
+    assert _tinta_em_pedacos_de_glifo(desenho) < PEDACOS_DE_GLIFO_DE_ESCRITA
+
+
 def test_pagina_limpa_nao_marca_nada():
     selecao = detectar(pagina_crua(), usar_layout=False)
 
