@@ -206,6 +206,38 @@ def test_recorte_tira_a_borda_preta_do_scanner():
     assert cortada[:, :5].mean() > 100, "sobrou borda preta depois do corte"
 
 
+def test_risca_do_vinco_nao_segura_o_corte():
+    """A risca da dobra atravessa a pagina e nao pode mandar no recorte.
+
+    E o caso das paginas 429 e 536 do Graduale: o vinco do livro aberto deixa
+    uma risca fina de ponta a ponta que prendia o corte na largura inteira.
+    """
+    img = folha_dupla(com_sombra=False)
+    img[:, 30:33] = 60  # o vinco, de cima a baixo, colado na margem esquerda
+
+    recorte = detectar_bordas(img)
+
+    assert recorte.x > 0.05, "a risca do vinco segurou a borda esquerda"
+
+
+def test_moldura_da_gravura_e_preservada():
+    """O que nao encosta na borda da imagem e conteudo, e fica.
+
+    A moldura de uma gravura tambem e uma linha comprida, mas comeca depois de
+    uma margem - e por isso que da para apagar o vinco sem comer a moldura.
+    """
+    img = np.full((600, 1000, 3), 235, dtype=np.uint8)
+    img[60:540, 80:83] = 30       # lado esquerdo da moldura
+    img[60:540, 917:920] = 30     # lado direito
+    img[60:63, 80:920] = 30       # topo
+    img[537:540, 80:920] = 30     # base
+
+    recorte = detectar_bordas(img)
+
+    assert recorte.x <= 80 / 1000, "comeu o lado esquerdo da moldura"
+    assert recorte.x + recorte.largura >= 920 / 1000, "comeu o lado direito"
+
+
 def test_pagina_em_branco_nao_e_recortada():
     branca = np.full((600, 400, 3), 250, dtype=np.uint8)
     recorte = detectar_bordas(branca)

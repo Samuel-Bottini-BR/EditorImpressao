@@ -7,9 +7,11 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-# Folga deixada em volta do conteudo, em fracao do lado. Sem folga o corte
-# encosta na letra e o texto fica sufocado na impressao.
-FOLGA = 0.02
+# Folga deixada em volta do conteudo, em fracao do lado. Sem folga nenhuma o
+# corte encosta na letra e o texto fica sufocado na impressao; com folga demais
+# sobra papel em branco, que foi a queixa em cinco das dezesseis paginas que o
+# Samuel conferiu. Meio por cento de uma pagina A4 e cerca de um milimetro.
+FOLGA = 0.005
 
 # Nunca cortar mais que isso de cada lado. Protege contra o caso em que a
 # deteccao se perde e devora metade da pagina.
@@ -27,6 +29,26 @@ TINTA_FORA_MAXIMA = 0.02
 # A partir de quanto uma linha (ou coluna) inteira escura e moldura de scanner
 # e nao conteudo. Texto nunca chega perto disso.
 FRACAO_BORDA_SOLIDA = 0.80
+
+# Quanto de um lado uma risca precisa cobrir para ser vinco de folha, e nao
+# conteudo. Medido no acervo: a moldura da gravura do Palatino cobre 81% da
+# altura, o vinco do Graduale cobre 97%. O que separa os dois nao e a cobertura
+# e sim encostar na borda (ver _apagar_riscas_de_dobra), mas abaixo de 70% ja
+# nao e risca nenhuma: e coluna de texto.
+COBERTURA_DE_RISCA = 0.70
+
+# Que fracao da ponta da imagem conta como "encostou na borda".
+PONTA_DA_IMAGEM = 0.01
+
+# Risca de dobra e fina. Acima disso e mancha larga, e mancha larga pode ser
+# conteudo - uma tarja preta, uma lombada fotografada.
+ESPESSURA_DE_RISCA = 0.02
+
+# A risca vem borrada nas laterais: a coluna do meio cobre 97% do lado, e as
+# vizinhas ainda cobrem meio lado. Apagar so o meio nao adianta, porque a sombra
+# em volta continua segurando o corte. Uma vez achada a risca, o borrao ao redor
+# vai junto enquanto ainda for meio lado de tinta.
+COBERTURA_DE_BORRAO = 0.35
 
 
 @dataclass(frozen=True)
@@ -48,9 +70,30 @@ class Recorte:
         return Recorte(0.0, 0.0, 1.0, 1.0)
 
 
-# Que fracao da tinta pode ficar de fora do corte, de cada ponta. Um por mil
-# de cada lado: sujeira de borda cabe nisso, uma linha de texto nao.
-SOBRA_DE_TINTA = 0.001
+# Que fracao da tinta pode ficar de fora do corte, de cada ponta.
+#
+# Era um por mil, e nao dava conta da beirada picotada da folha: na pagina 536
+# do Graduale a sujeira da margem esquerda carrega 0,15% da tinta, passa do um
+# por mil e prende o corte na largura inteira - a queixa de "sobrou muito espaco
+# do lado esquerdo". Dois por mil engole essa sujeira; uma linha de texto dessas
+# paginas pesa de 1% a 3%, dez vezes mais, e continua mandando no recorte.
+SOBRA_DE_TINTA = 0.002
+
+
+def _sem_conteudo_para_recortar(img: np.ndarray) -> bool:
+    """Capa, guarda, foto da encadernacao: nao ha o que recortar.
+
+    Mesma pergunta que o detector de regioes faz, e pela mesma razao: uma capa
+    de couro TEM textura, mas nao tem nada significativamente mais escuro que
+    ela mesma. Cortar uma capa so tira pedaco dela.
+    """
+    try:
+        from core.detectar_regioes import _pagina_sem_conteudo
+
+        return _pagina_sem_conteudo(img if img.ndim == 3 else
+                                    cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))
+    except Exception:  # noqa: BLE001 - na duvida, recorta como antes
+        return False
 
 
 def _faixa_com_a_tinta(perfil: np.ndarray) -> tuple[int, int] | None:
@@ -94,6 +137,12 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     coladas na moldura, entao são descartadas por serem grandes demais para
     caberem no limite de CORTE_MAXIMO.
     """
+    # Capa de couro, guarda, foto da encadernacao: nao ha borda de scanner nem
+    # margem de papel para tirar, e cortar so estraga. O Samuel apontou quatro
+    # casos assim nas dezesseis imagens que conferiu.
+    if _sem_conteudo_para_recortar(img):
+        return Recorte.inteiro()
+
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     altura_orig, largura_orig = cinza.shape[:2]
 
@@ -125,6 +174,10 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     # A borda preta do scanner tambem e "escura", entao seria confundida com
     # conteudo e nada seria cortado. Ela e descartada antes.
     tinta = _apagar_bordas_solidas(tinta)
+
+    # E as riscas finas do vinco e da beirada da folha de tras, que nao sao
+    # escuras o bastante para a regra acima mas atravessam a pagina toda.
+    tinta = _apagar_riscas_de_dobra(tinta)
 
     # Onde esta a MASSA da tinta, e nao onde ha algum pixel dela.
     #
@@ -205,6 +258,88 @@ def _apagar_bordas_solidas(tinta: np.ndarray) -> np.ndarray:
         y -= 1
 
     return limpa
+
+
+def _apagar_riscas_de_dobra(tinta: np.ndarray) -> np.ndarray:
+    """Apaga as riscas finas da dobra e da beirada da folha vizinha.
+
+    Sao aquelas riscas que atravessam a pagina inteira de ponta a ponta, deixadas
+    pelo vinco do livro aberto ou pela beirada da folha de tras. Elas nao sao
+    escuras o bastante para _apagar_bordas_solidas, e como cada uma carrega
+    muita tinta, o recorte fica preso na largura inteira: era o caso das paginas
+    429 e 536 do Graduale.
+
+    O que separa uma risca dessas da moldura de uma gravura, que precisa ser
+    preservada, e ENCOSTAR NA BORDA da imagem. Conteudo nunca encosta: entre a
+    borda do escaneamento e o desenho sempre sobra margem. A moldura do Palatino
+    cobre 81% da altura mas comeca 29 pixels para dentro; o vinco do Graduale vai
+    de y=0 a y=799 sem parar.
+    """
+    limpa = tinta.copy()
+    altura, largura = limpa.shape[:2]
+
+    for eixo, tamanho, comprimento in ((1, largura, altura), (0, altura, largura)):
+        banda = int(tamanho * CORTE_MAXIMO)
+        espessura_maxima = max(1, int(tamanho * ESPESSURA_DE_RISCA))
+        ponta = max(1, int(comprimento * PONTA_DA_IMAGEM))
+
+        candidatas = []
+        for i in list(range(0, banda)) + list(range(tamanho - banda, tamanho)):
+            faixa = limpa[:, i] if eixo == 1 else limpa[i, :]
+            if float(faixa.mean()) < COBERTURA_DE_RISCA:
+                continue
+            onde = np.flatnonzero(faixa)
+            # Encosta em cima ou embaixo (esquerda ou direita, no outro eixo)?
+            if onde[0] <= ponta or onde[-1] >= comprimento - 1 - ponta:
+                candidatas.append(i)
+
+        # So apaga o que for fino: riscas vizinhas em grupo ate ESPESSURA_DE_RISCA.
+        for grupo in _agrupar_vizinhas(candidatas):
+            if len(grupo) > espessura_maxima:
+                continue
+            inicio, fim = _com_o_borrao(limpa, eixo, grupo, espessura_maxima)
+            for i in range(inicio, fim + 1):
+                if eixo == 1:
+                    limpa[:, i] = 0
+                else:
+                    limpa[i, :] = 0
+
+    return limpa
+
+
+def _com_o_borrao(
+    tinta: np.ndarray, eixo: int, grupo: list[int], espessura_maxima: int
+) -> tuple[int, int]:
+    """Estende a risca para os lados enquanto ainda houver o borrao dela.
+
+    Sem isso, apagar a risca do Graduale nao movia o corte um milimetro: a
+    coluna de 97% saia, e as duas ao lado, de 60%, continuavam la segurando a
+    borda no mesmo lugar.
+    """
+    tamanho = tinta.shape[1] if eixo == 1 else tinta.shape[0]
+    inicio, fim = grupo[0], grupo[-1]
+    limite = espessura_maxima * 2
+
+    def cobertura(i: int) -> float:
+        faixa = tinta[:, i] if eixo == 1 else tinta[i, :]
+        return float(faixa.mean())
+
+    while inicio > 0 and (fim - inicio) < limite and cobertura(inicio - 1) >= COBERTURA_DE_BORRAO:
+        inicio -= 1
+    while fim < tamanho - 1 and (fim - inicio) < limite and cobertura(fim + 1) >= COBERTURA_DE_BORRAO:
+        fim += 1
+    return inicio, fim
+
+
+def _agrupar_vizinhas(indices: list[int]) -> list[list[int]]:
+    """Junta indices consecutivos: [3,4,5,40] vira [[3,4,5],[40]]."""
+    grupos: list[list[int]] = []
+    for i in indices:
+        if grupos and i == grupos[-1][-1] + 1:
+            grupos[-1].append(i)
+        else:
+            grupos.append([i])
+    return grupos
 
 
 def _sobrou_conteudo_fora(
