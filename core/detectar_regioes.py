@@ -392,6 +392,41 @@ def _cor_que_a_caixa_de_texto_pode_engolir(
     return cede
 
 
+def _sem_as_manchas_por_cima_da_escrita(
+    gravura_cor: np.ndarray, tinta: np.ndarray
+) -> np.ndarray:
+    """Tira da mascara de cor as manchas que cobrem texto.
+
+    Papel envelhecido tem manchas que passam no corte de saturacao: na pagina
+    223 da Rhetorica, que e so texto, elas cobriam 19,6% da folha e a pagina
+    saia com um borrao de "gravura" por cima dos paragrafos. Antes isso passava
+    despercebido porque qualquer cor sob uma caixa de texto do modelo era
+    descartada; desde que a moldura inteira deixou de ceder para o modelo, a
+    mancha grande tambem parou de ceder.
+
+    O teste certo nao e o tamanho e sim o que ha DENTRO: se a tinta ali e feita
+    de pedacinhos do tamanho de glifos, e escrita, e escrita nao e iluminura. A
+    conta olha so os pixels da mancha, e nao o retangulo em volta dela - a
+    moldura do Livro de Horas e um anel cujo retangulo contem a pagina escrita
+    inteira.
+    """
+    if not gravura_cor.any():
+        return gravura_cor
+
+    from scipy.ndimage import label
+
+    componentes, quantos = label(gravura_cor)
+    limpa = gravura_cor.copy()
+    for k in range(1, quantos + 1):
+        mancha = componentes == k
+        ys, xs = np.nonzero(mancha)
+        janela = (slice(ys.min(), ys.max() + 1), slice(xs.min(), xs.max() + 1))
+        dentro = tinta[janela] & mancha[janela]
+        if _tinta_em_pedacos_de_glifo(dentro) >= PEDACOS_DE_GLIFO_DE_ESCRITA:
+            limpa &= ~mancha
+    return limpa
+
+
 def _fracao_de_linhas_vazias(tinta: np.ndarray) -> float:
     """Quanto desta area e vao entre linhas."""
     if tinta.size < 100:
@@ -561,6 +596,10 @@ def detectar(
             letra_layout[fatia] = True
 
     gravura_cor = mascara_de_cor(colorida) if usar_cor else np.zeros((altura, largura), bool)
+
+    # Mancha de papel envelhecido passa no corte de saturacao. Se ha escrita
+    # embaixo dela, nao e iluminura nenhuma.
+    gravura_cor = _sem_as_manchas_por_cima_da_escrita(gravura_cor, tinta)
 
     # A cor cede para o layout onde a mancha e do tamanho de uma inicial
     # rubricada - essa e letra, e transforma-la em gravura arrancaria o

@@ -96,6 +96,27 @@ def test_a_moldura_continua_sendo_gravura():
         assert mascara(img, GRAVURA)[80, 350], "a moldura deixou de ser gravura"
 
 
+def manchar(img: np.ndarray) -> np.ndarray:
+    """Mancha de papel envelhecido: saturada o bastante para passar por cor."""
+    janela = img[160:620, 160:540]
+    claro = janela.max(axis=2) > 200
+    janela[claro] = (60, 170, 230)
+    return img
+
+
+def test_mancha_do_papel_por_cima_do_texto_nao_vira_gravura():
+    """Foi o borrao vermelho na pagina 223 da Rhetorica, que e so texto.
+
+    Manchas de envelhecimento passam no corte de saturacao e cobriam 19,6% da
+    folha. O que decide nao e o tamanho da mancha e sim o que ha embaixo dela:
+    se e escrita, nao e iluminura.
+    """
+    img = manchar(escrever(pagina_crua()))
+
+    assert not mascara(img, GRAVURA)[400, 350], "a mancha do papel virou gravura"
+    assert mascara(img, LETRA)[400, 350], "o texto sob a mancha nao ficou como letra"
+
+
 def test_escrita_e_desenho_se_separam_pelo_tamanho_do_pedaco():
     """A medida que distingue xilogravura de caligrafia e de partitura.
 
