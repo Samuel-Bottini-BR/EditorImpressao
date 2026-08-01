@@ -255,6 +255,48 @@ FRACAO_ESCURA_DE_PAGINA_VAZIA = 0.03
 # letra por conta propria. Ver o comentario em detectar.
 COBERTURA_MINIMA_DO_LAYOUT = 0.55
 
+# Duas medidas para a mesma pergunta: esta area e ESCRITA ou e PINTURA?
+#
+# A pergunta decide se o buraco no meio de uma moldura iluminada e o bloco de
+# texto que ela cerca (nao tapar, senao a pagina escrita inteira vira gravura) ou
+# uma cena pintada que ficou de fora da mascara de cor (tapar).
+#
+# A primeira medida e o vao entre linhas. Escrita deixa faixas quase sem tinta
+# entre uma linha e outra; pintura cobre de cima a baixo. So que ela se perde em
+# PAPEL PAUTADO: na pagina 142 do Livro de Horas a pauta atravessa o painel de
+# ponta a ponta, nao sobra faixa vazia nenhuma, e o texto era tapado como se
+# fosse pintura.
+#
+# A segunda medida nao se engana com pauta: de que TAMANHO sao os pedacos de
+# tinta. Escrita e feita de centenas de pedacinhos da altura de um glifo;
+# pintura e feita de poucas manchas grandes. Medido nos tres casos de texto e
+# nos sete de pintura das paginas 48, 95 e 142:
+#
+#     bloco de texto, p48     85%      paisagens da p48         6% a  9%
+#     bloco de texto, p95     79%      vinheta da p95          37%
+#     bloco de texto, p142    50%      vinhetas da p142        15%
+#
+# Basta uma das duas dizer "escrita" para o buraco ser preservado: errar para o
+# lado de nao tapar so mantem o comportamento antigo, e errar para o outro lado
+# transforma uma pagina de texto em gravura.
+VAZIAS_DE_TEXTO = 0.30
+TINTA_EM_PEDACOS_DE_GLIFO = 0.45
+
+# Um pedaco de tinta e "do tamanho de um glifo" se for mais baixo que esta
+# fracao do lado da area examinada.
+ALTURA_DE_GLIFO = 1 / 12
+
+# Abaixo desta tinta o buraco e papel limpo, e papel nao vira gravura.
+TINTA_MINIMA_DO_BURACO = 0.05
+
+# Ate este tamanho, uma mancha colorida dentro de uma caixa de texto e uma
+# inicial rubricada, e vale como letra. Acima disso e area pintada, e a caixa do
+# modelo e que esta errada. Na pagina 48 do Livro de Horas o modelo desenhou uma
+# caixa de "plain text" cobrindo a paisagem do alto junto com o texto: a moldura
+# perdia o topo, deixava de ser um anel fechado, e a pintura de dentro nao tinha
+# mais como ser reconhecida como buraco.
+AREA_DE_INICIAL_RUBRICADA = 0.02
+
 
 def mascara_de_tinta(img: np.ndarray) -> np.ndarray:
     """Onde ha traco de qualquer especie: letra, neuma, linha de gravura.
@@ -308,6 +350,99 @@ def blocos_de_tinta(tinta: np.ndarray) -> np.ndarray:
     from scipy.ndimage import binary_fill_holes
 
     return binary_fill_holes(juntos > 0)
+
+
+def _cor_que_a_caixa_de_texto_pode_engolir(
+    gravura_cor: np.ndarray, letra_layout: np.ndarray
+) -> np.ndarray:
+    """Quais manchas coloridas cedem para uma caixa de texto do modelo.
+
+    Uma inicial rubricada no meio de um paragrafo e letra: transforma-la em
+    gravura arrancaria o paragrafo do preto e branco. Mas so quem e do tamanho
+    de uma inicial cede. Quando a mancha e uma moldura inteira, quem esta errado
+    e o modelo - ver AREA_DE_INICIAL_RUBRICADA.
+    """
+    from scipy.ndimage import label
+
+    componentes, quantos = label(gravura_cor)
+    cede = np.zeros_like(gravura_cor)
+    for k in range(1, quantos + 1):
+        mancha = componentes == k
+        if float(mancha.mean()) > AREA_DE_INICIAL_RUBRICADA:
+            continue
+        if float(letra_layout[mancha].mean()) > 0.5:
+            cede |= mancha
+    return cede
+
+
+def _fracao_de_linhas_vazias(tinta: np.ndarray) -> float:
+    """Quanto desta area e vao entre linhas."""
+    if tinta.size < 100:
+        return 0.0
+    perfil = tinta.sum(axis=1).astype(np.float64)
+    if perfil.max() <= 0:
+        return 0.0
+    return float((perfil / perfil.max() < 0.10).mean())
+
+
+def _tinta_em_pedacos_de_glifo(tinta: np.ndarray) -> float:
+    """Que fracao da tinta vive em pedacos do tamanho de uma letra."""
+    if tinta.size < 100 or not tinta.any():
+        return 0.0
+    num, _, stats, _ = cv2.connectedComponentsWithStats(
+        tinta.astype(np.uint8), connectivity=8)
+    if num <= 1:
+        return 0.0
+    areas = stats[1:, cv2.CC_STAT_AREA].astype(np.float64)
+    alturas = stats[1:, cv2.CC_STAT_HEIGHT].astype(np.float64)
+    total = float(areas.sum())
+    if total <= 0:
+        return 0.0
+    lado = float(np.sqrt(tinta.size))
+    return float(areas[alturas < lado * ALTURA_DE_GLIFO].sum() / total)
+
+
+def _parece_escrita(tinta: np.ndarray) -> bool:
+    """Isto e um bloco escrito, ou e area pintada? Ver TINTA_EM_PEDACOS_DE_GLIFO."""
+    if _fracao_de_linhas_vazias(tinta) >= VAZIAS_DE_TEXTO:
+        return True
+    return _tinta_em_pedacos_de_glifo(tinta) >= TINTA_EM_PEDACOS_DE_GLIFO
+
+
+def _tapar_buracos_da_iluminura(gravura: np.ndarray, tinta: np.ndarray) -> np.ndarray:
+    """Fecha os vazios que a mascara de cor deixa dentro de uma iluminura.
+
+    A moldura do Livro de Horas e ouro e azul saturados e cai inteira na mascara
+    de cor, mas as CENAS PINTADAS dentro dela - a paisagem, a ponte, o laguinho -
+    sao claras e pálidas, nao passam no corte de saturacao e ficam de fora. O
+    buraco entao era preenchido pelo detector de tinta e a pintura saia marcada
+    como LETRA: foi o manto azul virando letra que o Samuel viu.
+
+    Tapar tudo nao serve: a moldura cerca o bloco de texto, e tapar aquele
+    buraco engoliria a pagina escrita inteira. O que separa os dois esta em
+    _parece_escrita.
+    """
+    if not gravura.any():
+        return gravura
+
+    from scipy.ndimage import binary_fill_holes, label
+
+    cheia = binary_fill_holes(gravura)
+    buracos, quantos = label(cheia & ~gravura)
+    if not quantos:
+        return gravura
+
+    tapada = gravura.copy()
+    for k in range(1, quantos + 1):
+        buraco = buracos == k
+        if float(tinta[buraco].mean()) < TINTA_MINIMA_DO_BURACO:
+            continue  # papel limpo cercado pela moldura continua sendo papel
+        ys, xs = np.nonzero(buraco)
+        recorte = tinta[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+        if _parece_escrita(recorte):
+            continue  # e o bloco de texto que a moldura cerca
+        tapada |= buraco
+    return tapada
 
 
 def _pagina_sem_conteudo(img: np.ndarray) -> bool:
@@ -406,10 +541,16 @@ def detectar(
 
     gravura_cor = mascara_de_cor(colorida) if usar_cor else np.zeros((altura, largura), bool)
 
-    # A cor so acrescenta onde o layout nao viu texto: uma inicial rubricada no
-    # meio de um paragrafo e letra, e transforma-la em gravura arrancaria o
-    # paragrafo do preto e branco.
-    gravura = gravura_layout | (gravura_cor & ~letra_layout)
+    # A cor cede para o layout onde a mancha e do tamanho de uma inicial
+    # rubricada - essa e letra, e transforma-la em gravura arrancaria o
+    # paragrafo do preto e branco. Uma moldura inteira nao cede.
+    gravura = gravura_layout | (gravura_cor & ~_cor_que_a_caixa_de_texto_pode_engolir(
+        gravura_cor, letra_layout))
+
+    # A pintura clara dentro da moldura nao passa no corte de saturacao e abre
+    # buraco. Sem tapar, o buraco vira letra e o manto azul da figura recebe
+    # tratamento de texto.
+    gravura = _tapar_buracos_da_iluminura(gravura, tinta)
 
     # O que o modelo achou SOMA com o que sobrou de tinta - nao substitui.
     #
