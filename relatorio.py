@@ -257,19 +257,42 @@ def converter_pasta(pasta: str | Path, recursivo: bool = True) -> list[Path]:
     return criados
 
 
+# Uma pasta por filtro. O nome que aparece na Area de Trabalho fica em
+# maiuscula para separar do nome dos testes, que vao dentro.
+PASTAS_DE_FILTRO = {
+    "magico pro": "MAGICO PRO",
+    "preto e branco": "PRETO E BRANCO",
+    "melhorar": "MELHORAR",
+    "selecao": "SELECAO DE REGIOES",
+    "recorte": "RECORTE DE BORDAS",
+    "dividir": "DIVIDIR PAGINAS",
+    "cadernos": "CADERNOS",
+    "desempenho": "DESEMPENHO",
+    "robustez": "ROBUSTEZ",
+}
+
+
 def pasta_de_teste(assunto: str, filtro: str = "", raiz: str | Path | None = None) -> Path:
     """Cria a pasta de um teste novo, no padrao combinado com o Samuel.
 
-        2026-08-01 14h30 - magico pro - contraste local no papel
+        TESTES EDITOR DE IMPRESSAO\\
+            MAGICO PRO\\
+                2026-08-01 14h30 - contraste local no papel
+            PRETO E BRANCO\\
+                2026-07-30 22h52 - comparacao dos 18 binarizadores
+                2026-07-31 07h25 - rubricacao vermelha preservada
 
-    Data e HORA no comeco para ordenar sozinho e para dar para comparar duas
-    rodadas do mesmo assunto no mesmo dia. Depois o filtro, para achar tudo do
-    Magico pro junto. Por ultimo o que foi testado.
+    O filtro e uma PASTA de verdade, e nao um pedaco do nome: assim tudo do
+    Magico pro fica junto e da para percorrer a historia de um filtro so.
+    Dentro dela, data e hora no comeco ordenam sozinho e deixam comparar duas
+    rodadas do mesmo dia.
     """
     raiz = Path(raiz or r"C:\Users\fotog\Desktop\TESTES EDITOR DE IMPRESSAO")
+    chave = (filtro or "").strip().lower()
+    pasta_filtro = PASTAS_DE_FILTRO.get(chave, chave.upper() or "OUTROS")
+
     carimbo = datetime.now().strftime("%Y-%m-%d %Hh%M")
-    partes = [carimbo] + ([filtro] if filtro else []) + [assunto]
-    pasta = raiz / " - ".join(p.strip() for p in partes if p.strip())
+    pasta = raiz / pasta_filtro / f"{carimbo} - {assunto.strip()}"
     pasta.mkdir(parents=True, exist_ok=True)
     return pasta
 

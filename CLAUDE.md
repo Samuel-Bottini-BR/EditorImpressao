@@ -34,23 +34,27 @@ Use `relatorio.gravar(texto, destino)`, que grava os três de uma vez:
 
 Nunca gravar só o `.md`.
 
-## Como nomear a pasta de um teste
+## Onde guardar um teste
 
 Use `relatorio.pasta_de_teste(assunto, filtro)`, que produz:
 
 ```
-2026-08-01 14h30 - magico pro - contraste local no papel
+Desktop\TESTES EDITOR DE IMPRESSAO\
+    MAGICO PRO\
+        2026-08-01 14h30 - contraste local no papel
+    PRETO E BRANCO\
+        2026-07-30 22h52 - comparacao dos 18 binarizadores
+        2026-07-31 07h25 - rubricacao vermelha preservada
 ```
 
-**Data e hora** no começo: ordena sozinho e permite comparar duas rodadas do
-mesmo assunto no mesmo dia. **Filtro** em seguida, para achar tudo do Mágico
-pro junto. **Assunto** por último.
+**O filtro é uma pasta de verdade**, não um pedaço do nome. Assim tudo do
+Mágico pro fica junto e dá para percorrer a história de um filtro só. Dentro
+dela, data e hora no começo ordenam sozinho e deixam comparar duas rodadas do
+mesmo dia.
 
-Dentro da pasta vai sempre um PDF explicando o que foi testado, o que se
-esperava e o que aconteceu — a pasta precisa se explicar sozinha daqui a seis
-meses.
-
-Tudo fica em `Desktop\TESTES EDITOR DE IMPRESSAO`.
+Dentro de cada teste vai sempre `o que foi testado.pdf`, contando o que estava
+errado, como foi descoberto, o que mudou, o resultado medido e qual imagem
+abrir primeiro. A pasta precisa se explicar sozinha daqui a seis meses.
 
 ## Antes de julgar qualquer resultado visual
 
