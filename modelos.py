@@ -116,6 +116,11 @@ class Projeto:
     paginas_por_caderno: int = 20
     qualidade_dpi: int = 300
 
+    # Descobrir sozinho onde estao gravura, letra e papel, para tratar cada
+    # area do seu jeito. Desligar faz o filtro voltar a tratar a folha inteira
+    # igual, que e como o programa funcionava antes.
+    detectar_regioes: bool = True
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""

@@ -1,0 +1,5142 @@
+{
+  "titulo": "Tentativa 6: detector ligado ao programa",
+  "quando": "01/08/2026 as 12:51",
+  "acervo": "C:\\Users\\fotog\\Desktop\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE",
+  "ambiente": {
+    "python": "3.14.3",
+    "sistema": "Windows 11",
+    "processador": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "nucleos": 16,
+    "memoria_total_mb": 15724.0,
+    "opencv": "5.0.0",
+    "doxapy_disponivel": true,
+    "dpi_da_medida": 300
+  },
+  "desempenho": {
+    "abrir_programa_s": 2.765,
+    "primeiras_miniaturas_s": 0.39,
+    "livro_das_miniaturas": "Graduale - Saeculum XIV.pdf"
+  },
+  "resumo": {
+    "livros_avaliados": 9,
+    "livros_com_erro": 0,
+    "total_folhas": 2903,
+    "total_paginas": 3037,
+    "paginas_medidas": 63,
+    "paginas_piores_que_original": 56,
+    "medias_por_filtro": {
+      "original": {
+        "espessura_traco_px": 53.581,
+        "vazios_internos": 2351.857,
+        "vazios_por_mil_tinta": 2.0,
+        "nivel_fundo": 191.94,
+        "ruido_fundo": 2.247,
+        "transicao_borda_px": 1.357,
+        "nitidez": 692.311,
+        "fracao_tinta": 0.333,
+        "tempo_s": 0.004
+      },
+      "preto_e_branco": {
+        "espessura_traco_px": 28.156,
+        "vazios_internos": 1653.635,
+        "vazios_por_mil_tinta": 1.956,
+        "nivel_fundo": 242.901,
+        "ruido_fundo": 0.318,
+        "transicao_borda_px": 0.292,
+        "nitidez": 11057.027,
+        "fracao_tinta": 0.242,
+        "tempo_s": 0.459
+      },
+      "melhorar": {
+        "espessura_traco_px": 21.224,
+        "vazios_internos": 2260.095,
+        "vazios_por_mil_tinta": 1.902,
+        "nivel_fundo": 218.843,
+        "ruido_fundo": 2.114,
+        "transicao_borda_px": 1.034,
+        "nitidez": 3802.351,
+        "fracao_tinta": 0.275,
+        "tempo_s": 1.527
+      },
+      "magico_pro": {
+        "espessura_traco_px": 27.354,
+        "vazios_internos": 2900.937,
+        "vazios_por_mil_tinta": 2.029,
+        "nivel_fundo": 219.086,
+        "ruido_fundo": 2.478,
+        "transicao_borda_px": 0.775,
+        "nitidez": 4172.206,
+        "fracao_tinta": 0.276,
+        "tempo_s": 1.83
+      }
+    },
+    "tempo_analise_por_folha_s": 0.371,
+    "tempo_export_por_pagina_s": 0.682,
+    "projecao_analise_500_folhas_s": 185.5,
+    "projecao_export_500_paginas_s": 341.0,
+    "pico_memoria_mb": 1454.6
+  },
+  "livros": [
+    {
+      "arquivo": "Giovambattista Palatino cittadino romano.pdf",
+      "nome": "Giovambattista Palatino cittadino romano",
+      "tamanho_mb": 9.29,
+      "folhas": 134,
+      "paginas": 134,
+      "erro": "",
+      "tempo_analise_s": 52.91,
+      "tempo_por_folha_analise_s": 0.3949,
+      "tempo_export_s": 3.76,
+      "tempo_por_pagina_export_s": 0.537,
+      "pico_memoria_mb": 768.1,
+      "pdf_saida_mb": 0.55,
+      "pdf_saida_kb_por_pagina": 79.9,
+      "paginas_medidas": [
+        0,
+        26,
+        52,
+        78,
+        104,
+        131,
+        133
+      ],
+      "alertas": {
+        "cor": 20,
+        "angulo_suspeito": 10,
+        "tamanho_diferente": 2,
+        "em_branco": 1
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1257,
+          "altura_px": 2458,
+          "largura_mm": 106.4,
+          "altura_mm": 208.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 11.313,
+              "vazios_internos": 3745,
+              "vazios_por_mil_tinta": 1.9284,
+              "nivel_fundo": 88.36,
+              "ruido_fundo": 6.121,
+              "transicao_borda_px": 1.17,
+              "nitidez": 55.5,
+              "fracao_tinta": 0.62856,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.933,
+              "vazios_internos": 1370,
+              "vazios_por_mil_tinta": 1.4227,
+              "nivel_fundo": 252.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 30459.9,
+              "fracao_tinta": 0.31166,
+              "tempo_s": 0.045,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 12.19,
+              "vazios_internos": 3232,
+              "vazios_por_mil_tinta": 1.6765,
+              "nivel_fundo": 93.58,
+              "ruido_fundo": 6.91,
+              "transicao_borda_px": 1.323,
+              "nitidez": 83.4,
+              "fracao_tinta": 0.62396,
+              "tempo_s": 0.369,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.972,
+              "vazios_internos": 1985,
+              "vazios_por_mil_tinta": 2.2691,
+              "nivel_fundo": 83.31,
+              "ruido_fundo": 6.403,
+              "transicao_borda_px": 0.799,
+              "nitidez": 310.0,
+              "fracao_tinta": 0.28313,
+              "tempo_s": 0.32,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 88 para 83 numa escala em que 255 e branco"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 27,
+          "folha": 27,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1337,
+          "altura_px": 1940,
+          "largura_mm": 113.2,
+          "altura_mm": 164.3,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 7.007,
+              "vazios_internos": 166,
+              "vazios_por_mil_tinta": 0.4189,
+              "nivel_fundo": 213.69,
+              "ruido_fundo": 1.311,
+              "transicao_borda_px": 0.791,
+              "nitidez": 698.6,
+              "fracao_tinta": 0.15277,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 7.61,
+              "vazios_internos": 151,
+              "vazios_por_mil_tinta": 0.3468,
+              "nivel_fundo": 254.59,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.031,
+              "nitidez": 11112.4,
+              "fracao_tinta": 0.16788,
+              "tempo_s": 0.179,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 6.671,
+              "vazios_internos": 210,
+              "vazios_por_mil_tinta": 0.5375,
+              "nivel_fundo": 252.4,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.477,
+              "nitidez": 3180.2,
+              "fracao_tinta": 0.15062,
+              "tempo_s": 0.457,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.79 para 0.48 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 6.676,
+              "vazios_internos": 211,
+              "vazios_por_mil_tinta": 0.5369,
+              "nivel_fundo": 253.74,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.441,
+              "nitidez": 3306.3,
+              "fracao_tinta": 0.15152,
+              "tempo_s": 0.56,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.79 para 0.44 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 15
+        },
+        {
+          "pagina": 53,
+          "folha": 53,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1306,
+          "altura_px": 1921,
+          "largura_mm": 110.6,
+          "altura_mm": 162.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 7.954,
+              "vazios_internos": 69,
+              "vazios_por_mil_tinta": 0.2696,
+              "nivel_fundo": 210.35,
+              "ruido_fundo": 0.921,
+              "transicao_borda_px": 0.897,
+              "nitidez": 388.3,
+              "fracao_tinta": 0.10201,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.623,
+              "vazios_internos": 59,
+              "vazios_por_mil_tinta": 0.209,
+              "nivel_fundo": 254.43,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.12,
+              "nitidez": 6072.3,
+              "fracao_tinta": 0.11253,
+              "tempo_s": 0.179,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 7.661,
+              "vazios_internos": 96,
+              "vazios_por_mil_tinta": 0.3705,
+              "nivel_fundo": 253.87,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.542,
+              "nitidez": 1713.5,
+              "fracao_tinta": 0.10327,
+              "tempo_s": 0.452,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.90 para 0.54 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 7.667,
+              "vazios_internos": 103,
+              "vazios_por_mil_tinta": 0.395,
+              "nivel_fundo": 254.51,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.483,
+              "nitidez": 1824.9,
+              "fracao_tinta": 0.10395,
+              "tempo_s": 0.536,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.90 para 0.48 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 24
+        },
+        {
+          "pagina": 79,
+          "folha": 79,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1281,
+          "altura_px": 1879,
+          "largura_mm": 108.5,
+          "altura_mm": 159.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 6.037,
+              "vazios_internos": 210,
+              "vazios_por_mil_tinta": 0.5754,
+              "nivel_fundo": 211.78,
+              "ruido_fundo": 1.443,
+              "transicao_borda_px": 0.595,
+              "nitidez": 871.0,
+              "fracao_tinta": 0.15162,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 6.563,
+              "vazios_internos": 234,
+              "vazios_por_mil_tinta": 0.5829,
+              "nivel_fundo": 254.7,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.054,
+              "nitidez": 12941.7,
+              "fracao_tinta": 0.16677,
+              "tempo_s": 0.16,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 5.784,
+              "vazios_internos": 238,
+              "vazios_por_mil_tinta": 0.6617,
+              "nivel_fundo": 251.05,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.432,
+              "nitidez": 3794.5,
+              "fracao_tinta": 0.14944,
+              "tempo_s": 0.428,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 5.768,
+              "vazios_internos": 250,
+              "vazios_por_mil_tinta": 0.6905,
+              "nivel_fundo": 253.62,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.381,
+              "nitidez": 4024.6,
+              "fracao_tinta": 0.15041,
+              "tempo_s": 0.521,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 11
+        },
+        {
+          "pagina": 105,
+          "folha": 105,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1287,
+          "altura_px": 2196,
+          "largura_mm": 109.0,
+          "altura_mm": 185.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.504,
+              "vazios_internos": 143,
+              "vazios_por_mil_tinta": 0.4242,
+              "nivel_fundo": 216.51,
+              "ruido_fundo": 1.176,
+              "transicao_borda_px": 0.653,
+              "nitidez": 734.2,
+              "fracao_tinta": 0.11928,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.954,
+              "vazios_internos": 153,
+              "vazios_por_mil_tinta": 0.402,
+              "nivel_fundo": 254.99,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 13865.1,
+              "fracao_tinta": 0.13467,
+              "tempo_s": 0.071,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.254,
+              "vazios_internos": 153,
+              "vazios_por_mil_tinta": 0.4745,
+              "nivel_fundo": 253.76,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.4,
+              "nitidez": 3367.2,
+              "fracao_tinta": 0.1141,
+              "tempo_s": 0.493,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.229,
+              "vazios_internos": 164,
+              "vazios_por_mil_tinta": 0.5102,
+              "nivel_fundo": 254.73,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.353,
+              "nitidez": 3589.8,
+              "fracao_tinta": 0.11373,
+              "tempo_s": 0.639,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 4
+        },
+        {
+          "pagina": 132,
+          "folha": 132,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1074,
+          "altura_px": 1698,
+          "largura_mm": 90.9,
+          "altura_mm": 143.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 844.375,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.263,
+              "nitidez": 13.4,
+              "fracao_tinta": 0.98588,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 3.232,
+              "vazios_internos": 7,
+              "vazios_por_mil_tinta": 2.2386,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 333.3,
+              "fracao_tinta": 0.00171,
+              "tempo_s": 0.028,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 3.303,
+              "vazios_internos": 180,
+              "vazios_por_mil_tinta": 1.3418,
+              "nivel_fundo": 230.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.789,
+              "nitidez": 2371.1,
+              "fracao_tinta": 0.07356,
+              "tempo_s": 0.185,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 255 para 230 numa escala em que 255 e branco"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 2.963,
+              "vazios_internos": 6,
+              "vazios_por_mil_tinta": 1.7341,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.491,
+              "nitidez": 48.3,
+              "fracao_tinta": 0.0019,
+              "tempo_s": 0.259,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 134,
+          "folha": 134,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1297,
+          "altura_px": 2442,
+          "largura_mm": 109.8,
+          "altura_mm": 206.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 8.059,
+              "vazios_internos": 2826,
+              "vazios_por_mil_tinta": 1.7975,
+              "nivel_fundo": 97.62,
+              "ruido_fundo": 6.582,
+              "transicao_borda_px": 1.062,
+              "nitidez": 108.0,
+              "fracao_tinta": 0.49637,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.884,
+              "vazios_internos": 1240,
+              "vazios_por_mil_tinta": 1.2751,
+              "nivel_fundo": 253.94,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 30395.7,
+              "fracao_tinta": 0.30703,
+              "tempo_s": 0.046,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 8.445,
+              "vazios_internos": 3088,
+              "vazios_por_mil_tinta": 1.9367,
+              "nivel_fundo": 108.67,
+              "ruido_fundo": 8.112,
+              "transicao_borda_px": 1.03,
+              "nitidez": 176.8,
+              "fracao_tinta": 0.50341,
+              "tempo_s": 0.248,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 6.6 para 8.1"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.935,
+              "vazios_internos": 1540,
+              "vazios_por_mil_tinta": 1.7649,
+              "nivel_fundo": 98.86,
+              "ruido_fundo": 7.321,
+              "transicao_borda_px": 0.775,
+              "nitidez": 543.9,
+              "fracao_tinta": 0.27549,
+              "tempo_s": 0.307,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 1074,
+        "largura_px_max": 1337,
+        "altura_px_min": 1698,
+        "altura_px_max": 2458,
+        "variacao_largura_px": 263,
+        "variacao_altura_px": 760,
+        "variacao_largura_mm": 22.27,
+        "variacao_altura_mm": 64.35,
+        "angulo_residual_medio_graus": 0.0714,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 1,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 88 para 83 numa escala em que 255 e branco"
+          ]
+        },
+        {
+          "pagina": 27,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.79 para 0.48 pixels"
+          ]
+        },
+        {
+          "pagina": 27,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.79 para 0.44 pixels"
+          ]
+        },
+        {
+          "pagina": 53,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.90 para 0.54 pixels"
+          ]
+        },
+        {
+          "pagina": 53,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.90 para 0.48 pixels"
+          ]
+        },
+        {
+          "pagina": 132,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 255 para 230 numa escala em que 255 e branco"
+          ]
+        },
+        {
+          "pagina": 134,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 6.6 para 8.1"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "Graduale - Saeculum XIV.pdf",
+      "nome": "Graduale - Saeculum XIV",
+      "tamanho_mb": 270.64,
+      "folhas": 750,
+      "paginas": 750,
+      "erro": "",
+      "tempo_analise_s": 232.89,
+      "tempo_por_folha_analise_s": 0.3105,
+      "tempo_export_s": 9.21,
+      "tempo_por_pagina_export_s": 1.316,
+      "pico_memoria_mb": 1383.3,
+      "pdf_saida_mb": 2.13,
+      "pdf_saida_kb_por_pagina": 312.3,
+      "paginas_medidas": [
+        0,
+        125,
+        250,
+        375,
+        500,
+        625,
+        749
+      ],
+      "alertas": {
+        "cor": 211,
+        "tamanho_diferente": 6,
+        "angulo_suspeito": 1
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas",
+        "o livro inteiro foi escaneado em qualidade baixa"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 5508,
+          "altura_px": 6864,
+          "largura_mm": 466.3,
+          "altura_mm": 581.2,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 22.122,
+              "vazios_internos": 33094,
+              "vazios_por_mil_tinta": 1.1378,
+              "nivel_fundo": 83.62,
+              "ruido_fundo": 4.276,
+              "transicao_borda_px": 1.36,
+              "nitidez": 7.6,
+              "fracao_tinta": 0.76936,
+              "tempo_s": 0.018
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 7.356,
+              "vazios_internos": 3374,
+              "vazios_por_mil_tinta": 0.4536,
+              "nivel_fundo": 253.63,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 15069.4,
+              "fracao_tinta": 0.19674,
+              "tempo_s": 0.466,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 20.591,
+              "vazios_internos": 26480,
+              "vazios_por_mil_tinta": 0.9698,
+              "nivel_fundo": 94.41,
+              "ruido_fundo": 5.01,
+              "transicao_borda_px": 1.251,
+              "nitidez": 19.6,
+              "fracao_tinta": 0.72221,
+              "tempo_s": 2.214,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 14.708,
+              "vazios_internos": 40935,
+              "vazios_por_mil_tinta": 1.7796,
+              "nivel_fundo": 85.25,
+              "ruido_fundo": 7.535,
+              "transicao_borda_px": 1.3,
+              "nitidez": 38.1,
+              "fracao_tinta": 0.6084,
+              "tempo_s": 3.342,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 4.3 para 7.5"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 126,
+          "folha": 126,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 3435,
+          "altura_px": 5817,
+          "largura_mm": 290.8,
+          "altura_mm": 492.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 19.113,
+              "vazios_internos": 1149,
+              "vazios_por_mil_tinta": 0.2427,
+              "nivel_fundo": 191.1,
+              "ruido_fundo": 1.973,
+              "transicao_borda_px": 2.906,
+              "nitidez": 8.5,
+              "fracao_tinta": 0.2369,
+              "tempo_s": 0.008
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 14.979,
+              "vazios_internos": 448,
+              "vazios_por_mil_tinta": 0.1521,
+              "nivel_fundo": 254.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 4342.1,
+              "fracao_tinta": 0.14739,
+              "tempo_s": 0.594,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 448 vazios internos de 1149 (61% a menos)"
+              ]
+            },
+            "melhorar": {
+              "espessura_traco_px": 16.632,
+              "vazios_internos": 417,
+              "vazios_por_mil_tinta": 0.1212,
+              "nivel_fundo": 248.15,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.657,
+              "nitidez": 686.8,
+              "fracao_tinta": 0.1722,
+              "tempo_s": 4.048,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 417 vazios internos de 1149 (64% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 2.91 para 0.66 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 16.144,
+              "vazios_internos": 334,
+              "vazios_por_mil_tinta": 0.1037,
+              "nivel_fundo": 250.15,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.559,
+              "nitidez": 695.6,
+              "fracao_tinta": 0.16112,
+              "tempo_s": 4.723,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 334 vazios internos de 1149 (71% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 2.91 para 0.56 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 4
+        },
+        {
+          "pagina": 251,
+          "folha": 251,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 4003,
+          "altura_px": 5631,
+          "largura_mm": 338.9,
+          "altura_mm": 476.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 19.067,
+              "vazios_internos": 88,
+              "vazios_por_mil_tinta": 0.0283,
+              "nivel_fundo": 212.24,
+              "ruido_fundo": 1.359,
+              "transicao_borda_px": 2.375,
+              "nitidez": 7.4,
+              "fracao_tinta": 0.13781,
+              "tempo_s": 0.011
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 13.253,
+              "vazios_internos": 262,
+              "vazios_por_mil_tinta": 0.1372,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 2724.8,
+              "fracao_tinta": 0.08472,
+              "tempo_s": 0.885,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 17.73,
+              "vazios_internos": 145,
+              "vazios_por_mil_tinta": 0.0487,
+              "nivel_fundo": 243.09,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.041,
+              "nitidez": 315.6,
+              "fracao_tinta": 0.13205,
+              "tempo_s": 4.617,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 17.16,
+              "vazios_internos": 132,
+              "vazios_por_mil_tinta": 0.0478,
+              "nivel_fundo": 247.16,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.865,
+              "nitidez": 331.5,
+              "fracao_tinta": 0.12247,
+              "tempo_s": 5.475,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 9
+        },
+        {
+          "pagina": 376,
+          "folha": 376,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 3588,
+          "altura_px": 5817,
+          "largura_mm": 303.8,
+          "altura_mm": 492.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 19.063,
+              "vazios_internos": 167,
+              "vazios_por_mil_tinta": 0.0498,
+              "nivel_fundo": 209.79,
+              "ruido_fundo": 1.23,
+              "transicao_borda_px": 2.282,
+              "nitidez": 7.8,
+              "fracao_tinta": 0.16066,
+              "tempo_s": 0.009
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 12.157,
+              "vazios_internos": 488,
+              "vazios_por_mil_tinta": 0.2445,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 3389.8,
+              "fracao_tinta": 0.09563,
+              "tempo_s": 0.795,
+              "pior_que_original": true,
+              "motivos": [
+                "o traco afinou demais: de 19.06 para 12.16 pixels (36% a menos)"
+              ]
+            },
+            "melhorar": {
+              "espessura_traco_px": 17.012,
+              "vazios_internos": 137,
+              "vazios_por_mil_tinta": 0.0456,
+              "nivel_fundo": 244.82,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.794,
+              "nitidez": 393.4,
+              "fracao_tinta": 0.14402,
+              "tempo_s": 4.208,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 16.543,
+              "vazios_internos": 92,
+              "vazios_por_mil_tinta": 0.0323,
+              "nivel_fundo": 249.38,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.699,
+              "nitidez": 411.3,
+              "fracao_tinta": 0.13636,
+              "tempo_s": 4.947,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 92 vazios internos de 167 (45% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 2.28 para 0.70 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 7
+        },
+        {
+          "pagina": 501,
+          "folha": 501,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "colorida",
+          "largura_px": 3671,
+          "altura_px": 5631,
+          "largura_mm": 310.8,
+          "altura_mm": 476.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 18.416,
+              "vazios_internos": 128,
+              "vazios_por_mil_tinta": 0.04,
+              "nivel_fundo": 206.18,
+              "ruido_fundo": 1.149,
+              "transicao_borda_px": 2.161,
+              "nitidez": 8.1,
+              "fracao_tinta": 0.15466,
+              "tempo_s": 0.011
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 12.158,
+              "vazios_internos": 523,
+              "vazios_por_mil_tinta": 0.2487,
+              "nivel_fundo": 254.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 3462.5,
+              "fracao_tinta": 0.10174,
+              "tempo_s": 0.73,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 17.316,
+              "vazios_internos": 145,
+              "vazios_por_mil_tinta": 0.0445,
+              "nivel_fundo": 244.3,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.073,
+              "nitidez": 394.4,
+              "fracao_tinta": 0.15748,
+              "tempo_s": 4.83,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 16.852,
+              "vazios_internos": 116,
+              "vazios_por_mil_tinta": 0.0386,
+              "nivel_fundo": 248.22,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.874,
+              "nitidez": 404.6,
+              "fracao_tinta": 0.14549,
+              "tempo_s": 5.88,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 2
+        },
+        {
+          "pagina": 626,
+          "folha": 626,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 3777,
+          "altura_px": 5817,
+          "largura_mm": 319.8,
+          "altura_mm": 492.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 16.465,
+              "vazios_internos": 212,
+              "vazios_por_mil_tinta": 0.0645,
+              "nivel_fundo": 207.52,
+              "ruido_fundo": 1.591,
+              "transicao_borda_px": 2.095,
+              "nitidez": 9.7,
+              "fracao_tinta": 0.14968,
+              "tempo_s": 0.009
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 11.985,
+              "vazios_internos": 411,
+              "vazios_por_mil_tinta": 0.1831,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 3826.2,
+              "fracao_tinta": 0.10217,
+              "tempo_s": 0.879,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 15.881,
+              "vazios_internos": 225,
+              "vazios_por_mil_tinta": 0.0716,
+              "nivel_fundo": 244.26,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.925,
+              "nitidez": 428.3,
+              "fracao_tinta": 0.14313,
+              "tempo_s": 4.513,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 15.595,
+              "vazios_internos": 218,
+              "vazios_por_mil_tinta": 0.0721,
+              "nivel_fundo": 249.16,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.831,
+              "nitidez": 453.2,
+              "fracao_tinta": 0.13771,
+              "tempo_s": 5.322,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 6
+        },
+        {
+          "pagina": 750,
+          "folha": 750,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1916,
+          "altura_px": 7500,
+          "largura_mm": 162.2,
+          "altura_mm": 635.0,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 55.072,
+              "vazios_internos": 501,
+              "vazios_por_mil_tinta": 0.0747,
+              "nivel_fundo": 104.75,
+              "ruido_fundo": 4.879,
+              "transicao_borda_px": 1.933,
+              "nitidez": 11.4,
+              "fracao_tinta": 0.46694,
+              "tempo_s": 0.007
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 10.311,
+              "vazios_internos": 325,
+              "vazios_por_mil_tinta": 0.2038,
+              "nivel_fundo": 253.83,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 5015.4,
+              "fracao_tinta": 0.11096,
+              "tempo_s": 0.248,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 63.961,
+              "vazios_internos": 384,
+              "vazios_por_mil_tinta": 0.0582,
+              "nivel_fundo": 117.17,
+              "ruido_fundo": 6.261,
+              "transicao_borda_px": 2.052,
+              "nitidez": 20.3,
+              "fracao_tinta": 0.45918,
+              "tempo_s": 1.55,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 45.639,
+              "vazios_internos": 1022,
+              "vazios_por_mil_tinta": 0.1395,
+              "nivel_fundo": 106.43,
+              "ruido_fundo": 9.033,
+              "transicao_borda_px": 1.424,
+              "nitidez": 63.9,
+              "fracao_tinta": 0.50992,
+              "tempo_s": 1.919,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 4.9 para 9.0"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 1916,
+        "largura_px_max": 5508,
+        "altura_px_min": 5631,
+        "altura_px_max": 7500,
+        "variacao_largura_px": 3592,
+        "variacao_altura_px": 1869,
+        "variacao_largura_mm": 304.12,
+        "variacao_altura_mm": 158.24,
+        "angulo_residual_medio_graus": 0.0714,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 1,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 4.3 para 7.5"
+          ]
+        },
+        {
+          "pagina": 126,
+          "filtro": "Preto e branco",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 448 vazios internos de 1149 (61% a menos)"
+          ]
+        },
+        {
+          "pagina": 126,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 417 vazios internos de 1149 (64% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 2.91 para 0.66 pixels"
+          ]
+        },
+        {
+          "pagina": 126,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 334 vazios internos de 1149 (71% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 2.91 para 0.56 pixels"
+          ]
+        },
+        {
+          "pagina": 376,
+          "filtro": "Preto e branco",
+          "classe": "texto",
+          "motivos": [
+            "o traco afinou demais: de 19.06 para 12.16 pixels (36% a menos)"
+          ]
+        },
+        {
+          "pagina": 376,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 92 vazios internos de 167 (45% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 2.28 para 0.70 pixels"
+          ]
+        },
+        {
+          "pagina": 750,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 4.9 para 9.0"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "Livro de Horas - Luís XIV.pdf",
+      "nome": "Livro de Horas - Luís XIV",
+      "tamanho_mb": 105.85,
+      "folhas": 191,
+      "paginas": 191,
+      "erro": "",
+      "tempo_analise_s": 66.57,
+      "tempo_por_folha_analise_s": 0.3485,
+      "tempo_export_s": 8.74,
+      "tempo_por_pagina_export_s": 1.249,
+      "pico_memoria_mb": 1454.6,
+      "pdf_saida_mb": 1.9,
+      "pdf_saida_kb_por_pagina": 277.9,
+      "paginas_medidas": [
+        0,
+        2,
+        38,
+        76,
+        114,
+        152,
+        190
+      ],
+      "alertas": {
+        "angulo_suspeito": 152,
+        "tamanho_diferente": 8,
+        "muito_torta": 2
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas",
+        "o livro inteiro foi escaneado em qualidade baixa",
+        "o livro inteiro é colorido"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 3850,
+          "altura_px": 6264,
+          "largura_mm": 326.0,
+          "altura_mm": 530.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 22.269,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.0385,
+              "nivel_fundo": 254.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.309,
+              "nitidez": 65.8,
+              "fracao_tinta": 0.02587,
+              "tempo_s": 0.012
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 21.66,
+              "vazios_internos": 25,
+              "vazios_por_mil_tinta": 0.0409,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 501.7,
+              "fracao_tinta": 0.02534,
+              "tempo_s": 0.604,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 22.272,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.0384,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.274,
+              "nitidez": 185.1,
+              "fracao_tinta": 0.02591,
+              "tempo_s": 2.023,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 21.973,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.0388,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.181,
+              "nitidez": 162.3,
+              "fracao_tinta": 0.02567,
+              "tempo_s": 3.357,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 3,
+          "folha": 3,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 4143,
+          "altura_px": 5732,
+          "largura_mm": 350.8,
+          "altura_mm": 485.3,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 66.047,
+              "vazios_internos": 5471,
+              "vazios_por_mil_tinta": 0.2551,
+              "nivel_fundo": 213.2,
+              "ruido_fundo": 0.688,
+              "transicao_borda_px": 2.212,
+              "nitidez": 410.4,
+              "fracao_tinta": 0.90309,
+              "tempo_s": 0.012
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.267,
+              "vazios_internos": 6301,
+              "vazios_por_mil_tinta": 1.0754,
+              "nivel_fundo": 254.86,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 23517.7,
+              "fracao_tinta": 0.24673,
+              "tempo_s": 0.616,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 33.75,
+              "vazios_internos": 19814,
+              "vazios_por_mil_tinta": 0.9312,
+              "nivel_fundo": 246.25,
+              "ruido_fundo": 0.25,
+              "transicao_borda_px": 1.345,
+              "nitidez": 974.3,
+              "fracao_tinta": 0.89596,
+              "tempo_s": 2.192,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 26.797,
+              "vazios_internos": 28890,
+              "vazios_por_mil_tinta": 1.3611,
+              "nivel_fundo": 246.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.753,
+              "nitidez": 2261.9,
+              "fracao_tinta": 0.89378,
+              "tempo_s": 2.707,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 39,
+          "folha": 39,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3778,
+          "altura_px": 5995,
+          "largura_mm": 319.9,
+          "altura_mm": 507.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 24.201,
+              "vazios_internos": 8319,
+              "vazios_por_mil_tinta": 0.8847,
+              "nivel_fundo": 220.3,
+              "ruido_fundo": 0.653,
+              "transicao_borda_px": 2.079,
+              "nitidez": 253.8,
+              "fracao_tinta": 0.41515,
+              "tempo_s": 0.011
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 30.068,
+              "vazios_internos": 5879,
+              "vazios_por_mil_tinta": 0.6462,
+              "nivel_fundo": 253.33,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.523,
+              "nitidez": 2126.5,
+              "fracao_tinta": 0.4017,
+              "tempo_s": 2.222,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 30.454,
+              "vazios_internos": 6491,
+              "vazios_por_mil_tinta": 0.6929,
+              "nivel_fundo": 244.35,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.955,
+              "nitidez": 677.6,
+              "fracao_tinta": 0.41362,
+              "tempo_s": 4.674,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 17.654,
+              "vazios_internos": 9969,
+              "vazios_por_mil_tinta": 1.1787,
+              "nivel_fundo": 248.77,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.722,
+              "nitidez": 1271.9,
+              "fracao_tinta": 0.37343,
+              "tempo_s": 5.431,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 61
+        },
+        {
+          "pagina": 77,
+          "folha": 77,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3794,
+          "altura_px": 6107,
+          "largura_mm": 321.2,
+          "altura_mm": 517.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 19.271,
+              "vazios_internos": 10706,
+              "vazios_por_mil_tinta": 1.1732,
+              "nivel_fundo": 214.55,
+              "ruido_fundo": 0.921,
+              "transicao_borda_px": 1.986,
+              "nitidez": 283.9,
+              "fracao_tinta": 0.39383,
+              "tempo_s": 0.011
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 21.632,
+              "vazios_internos": 9658,
+              "vazios_por_mil_tinta": 1.0807,
+              "nivel_fundo": 251.7,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.525,
+              "nitidez": 2588.6,
+              "fracao_tinta": 0.38571,
+              "tempo_s": 1.952,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 25.245,
+              "vazios_internos": 7861,
+              "vazios_por_mil_tinta": 0.8645,
+              "nivel_fundo": 242.95,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.73,
+              "nitidez": 822.9,
+              "fracao_tinta": 0.39245,
+              "tempo_s": 4.68,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 14.702,
+              "vazios_internos": 11286,
+              "vazios_por_mil_tinta": 1.3717,
+              "nivel_fundo": 246.54,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.587,
+              "nitidez": 1425.5,
+              "fracao_tinta": 0.35511,
+              "tempo_s": 5.487,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 43
+        },
+        {
+          "pagina": 115,
+          "folha": 115,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3846,
+          "altura_px": 6229,
+          "largura_mm": 325.6,
+          "altura_mm": 527.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 19.424,
+              "vazios_internos": 10374,
+              "vazios_por_mil_tinta": 1.0974,
+              "nivel_fundo": 221.09,
+              "ruido_fundo": 0.53,
+              "transicao_borda_px": 2.102,
+              "nitidez": 339.2,
+              "fracao_tinta": 0.39459,
+              "tempo_s": 0.012
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 22.446,
+              "vazios_internos": 8779,
+              "vazios_por_mil_tinta": 0.934,
+              "nivel_fundo": 252.7,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.435,
+              "nitidez": 2839.4,
+              "fracao_tinta": 0.39234,
+              "tempo_s": 2.869,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 25.005,
+              "vazios_internos": 7895,
+              "vazios_por_mil_tinta": 0.827,
+              "nivel_fundo": 245.4,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.733,
+              "nitidez": 925.3,
+              "fracao_tinta": 0.3985,
+              "tempo_s": 5.428,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 13.484,
+              "vazios_internos": 9887,
+              "vazios_por_mil_tinta": 1.2397,
+              "nivel_fundo": 249.03,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.606,
+              "nitidez": 1645.9,
+              "fracao_tinta": 0.33292,
+              "tempo_s": 5.224,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 90
+        },
+        {
+          "pagina": 153,
+          "folha": 153,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 4267,
+          "altura_px": 6246,
+          "largura_mm": 361.3,
+          "altura_mm": 528.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 34.439,
+              "vazios_internos": 5544,
+              "vazios_por_mil_tinta": 0.5908,
+              "nivel_fundo": 217.57,
+              "ruido_fundo": 0.679,
+              "transicao_borda_px": 2.243,
+              "nitidez": 303.5,
+              "fracao_tinta": 0.35208,
+              "tempo_s": 0.01
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 31.257,
+              "vazios_internos": 5045,
+              "vazios_por_mil_tinta": 0.6037,
+              "nivel_fundo": 251.49,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.21,
+              "nitidez": 2017.7,
+              "fracao_tinta": 0.31358,
+              "tempo_s": 2.028,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 37.937,
+              "vazios_internos": 4940,
+              "vazios_por_mil_tinta": 0.5335,
+              "nivel_fundo": 240.82,
+              "ruido_fundo": 0.198,
+              "transicao_borda_px": 1.779,
+              "nitidez": 841.9,
+              "fracao_tinta": 0.34741,
+              "tempo_s": 4.424,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 21.569,
+              "vazios_internos": 9349,
+              "vazios_por_mil_tinta": 1.0917,
+              "nivel_fundo": 245.61,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.686,
+              "nitidez": 1284.9,
+              "fracao_tinta": 0.32131,
+              "tempo_s": 5.398,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 47
+        },
+        {
+          "pagina": 191,
+          "folha": 191,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3092,
+          "altura_px": 12452,
+          "largura_mm": 261.8,
+          "altura_mm": 1054.3,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 33.594,
+              "vazios_internos": 1598,
+              "vazios_por_mil_tinta": 0.094,
+              "nivel_fundo": 189.84,
+              "ruido_fundo": 4.199,
+              "transicao_borda_px": 2.046,
+              "nitidez": 943.4,
+              "fracao_tinta": 0.44152,
+              "tempo_s": 0.014
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 19.38,
+              "vazios_internos": 1841,
+              "vazios_por_mil_tinta": 0.1295,
+              "nivel_fundo": 227.72,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.68,
+              "nitidez": 3316.0,
+              "fracao_tinta": 0.3692,
+              "tempo_s": 5.166,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 28.36,
+              "vazios_internos": 1428,
+              "vazios_por_mil_tinta": 0.0876,
+              "nivel_fundo": 205.27,
+              "ruido_fundo": 3.182,
+              "transicao_borda_px": 1.923,
+              "nitidez": 1457.7,
+              "fracao_tinta": 0.42317,
+              "tempo_s": 10.351,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 23.283,
+              "vazios_internos": 2844,
+              "vazios_por_mil_tinta": 0.1593,
+              "nivel_fundo": 202.0,
+              "ruido_fundo": 4.958,
+              "transicao_borda_px": 1.447,
+              "nitidez": 2752.9,
+              "fracao_tinta": 0.46364,
+              "tempo_s": 13.482,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 113
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 3092,
+        "largura_px_max": 4267,
+        "altura_px_min": 5732,
+        "altura_px_max": 12452,
+        "variacao_largura_px": 1175,
+        "variacao_altura_px": 6720,
+        "variacao_largura_mm": 99.48,
+        "variacao_altura_mm": 568.96,
+        "angulo_residual_medio_graus": 0.0857,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": []
+    },
+    {
+      "arquivo": "Marial de sermoens - Frei Balthasar Paez. (1).pdf",
+      "nome": "Marial de sermoens - Frei Balthasar Paez. (1)",
+      "tamanho_mb": 204.69,
+      "folhas": 907,
+      "paginas": 907,
+      "erro": "",
+      "tempo_analise_s": 144.49,
+      "tempo_por_folha_analise_s": 0.1593,
+      "tempo_export_s": 2.74,
+      "tempo_por_pagina_export_s": 0.392,
+      "pico_memoria_mb": 934.8,
+      "pdf_saida_mb": 0.59,
+      "pdf_saida_kb_por_pagina": 86.4,
+      "paginas_medidas": [
+        0,
+        151,
+        302,
+        453,
+        604,
+        755,
+        906
+      ],
+      "alertas": {
+        "tamanho_diferente": 4,
+        "angulo_suspeito": 2
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas",
+        "o livro inteiro foi escaneado em qualidade baixa"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 3046,
+          "altura_px": 3917,
+          "largura_mm": 257.9,
+          "altura_mm": 331.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 24.66,
+              "vazios_internos": 229,
+              "vazios_por_mil_tinta": 0.2747,
+              "nivel_fundo": 158.72,
+              "ruido_fundo": 2.993,
+              "transicao_borda_px": 3.826,
+              "nitidez": 37.2,
+              "fracao_tinta": 0.06988,
+              "tempo_s": 0.004
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 473.413,
+              "vazios_internos": 99,
+              "vazios_por_mil_tinta": 0.0092,
+              "nivel_fundo": 167.89,
+              "ruido_fundo": 2.752,
+              "transicao_borda_px": 2.01,
+              "nitidez": 136.9,
+              "fracao_tinta": 0.89872,
+              "tempo_s": 0.777,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 99 vazios internos de 229 (57% a menos)"
+              ]
+            },
+            "melhorar": {
+              "espessura_traco_px": 24.11,
+              "vazios_internos": 158,
+              "vazios_por_mil_tinta": 0.2271,
+              "nivel_fundo": 172.8,
+              "ruido_fundo": 3.828,
+              "transicao_borda_px": 3.406,
+              "nitidez": 97.3,
+              "fracao_tinta": 0.05831,
+              "tempo_s": 1.836,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 158 vazios internos de 229 (31% a menos)"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 15.957,
+              "vazios_internos": 642,
+              "vazios_por_mil_tinta": 0.8164,
+              "nivel_fundo": 163.05,
+              "ruido_fundo": 5.057,
+              "transicao_borda_px": 2.334,
+              "nitidez": 197.4,
+              "fracao_tinta": 0.06591,
+              "tempo_s": 2.248,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 3.0 para 5.1",
+                "o traco afinou demais: de 24.66 para 15.96 pixels (35% a menos)"
+              ]
+            }
+          },
+          "regioes_achadas": 3
+        },
+        {
+          "pagina": 152,
+          "folha": 152,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 2905,
+          "altura_px": 3955,
+          "largura_mm": 246.0,
+          "altura_mm": 334.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 8.788,
+              "vazios_internos": 1201,
+              "vazios_por_mil_tinta": 0.6587,
+              "nivel_fundo": 205.33,
+              "ruido_fundo": 3.508,
+              "transicao_borda_px": 1.517,
+              "nitidez": 416.8,
+              "fracao_tinta": 0.15869,
+              "tempo_s": 0.005
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.778,
+              "vazios_internos": 1189,
+              "vazios_por_mil_tinta": 0.657,
+              "nivel_fundo": 254.8,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6906.8,
+              "fracao_tinta": 0.15752,
+              "tempo_s": 0.416,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 9.473,
+              "vazios_internos": 1212,
+              "vazios_por_mil_tinta": 0.6207,
+              "nivel_fundo": 243.36,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.787,
+              "nitidez": 1763.7,
+              "fracao_tinta": 0.16996,
+              "tempo_s": 2.014,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 8.815,
+              "vazios_internos": 1540,
+              "vazios_por_mil_tinta": 0.7916,
+              "nivel_fundo": 244.47,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.853,
+              "nitidez": 1853.2,
+              "fracao_tinta": 0.16933,
+              "tempo_s": 2.441,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 4
+        },
+        {
+          "pagina": 303,
+          "folha": 303,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 2867,
+          "altura_px": 3921,
+          "largura_mm": 242.7,
+          "altura_mm": 332.0,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 8.469,
+              "vazios_internos": 1140,
+              "vazios_por_mil_tinta": 0.7017,
+              "nivel_fundo": 204.43,
+              "ruido_fundo": 2.963,
+              "transicao_borda_px": 1.457,
+              "nitidez": 453.3,
+              "fracao_tinta": 0.14452,
+              "tempo_s": 0.005
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.596,
+              "vazios_internos": 1218,
+              "vazios_por_mil_tinta": 0.7203,
+              "nivel_fundo": 254.44,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6570.1,
+              "fracao_tinta": 0.15042,
+              "tempo_s": 0.35,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 10.456,
+              "vazios_internos": 1161,
+              "vazios_por_mil_tinta": 0.5997,
+              "nivel_fundo": 242.26,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.668,
+              "nitidez": 1750.5,
+              "fracao_tinta": 0.17221,
+              "tempo_s": 1.929,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.46 para 0.67 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 10.14,
+              "vazios_internos": 1319,
+              "vazios_por_mil_tinta": 0.6817,
+              "nivel_fundo": 242.65,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.702,
+              "nitidez": 1831.3,
+              "fracao_tinta": 0.17211,
+              "tempo_s": 2.382,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 3
+        },
+        {
+          "pagina": 454,
+          "folha": 454,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 2786,
+          "altura_px": 3925,
+          "largura_mm": 235.9,
+          "altura_mm": 332.3,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 9.118,
+              "vazios_internos": 1330,
+              "vazios_por_mil_tinta": 0.7342,
+              "nivel_fundo": 169.42,
+              "ruido_fundo": 3.277,
+              "transicao_borda_px": 1.238,
+              "nitidez": 332.0,
+              "fracao_tinta": 0.16566,
+              "tempo_s": 0.004
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.356,
+              "vazios_internos": 1095,
+              "vazios_por_mil_tinta": 0.6964,
+              "nivel_fundo": 254.94,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6639.6,
+              "fracao_tinta": 0.1438,
+              "tempo_s": 0.28,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 9.409,
+              "vazios_internos": 607,
+              "vazios_por_mil_tinta": 0.3887,
+              "nivel_fundo": 254.95,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.423,
+              "nitidez": 1910.2,
+              "fracao_tinta": 0.14282,
+              "tempo_s": 1.968,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 607 vazios internos de 1330 (54% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.24 para 0.42 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 9.409,
+              "vazios_internos": 607,
+              "vazios_por_mil_tinta": 0.3887,
+              "nivel_fundo": 254.95,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.423,
+              "nitidez": 1910.2,
+              "fracao_tinta": 0.14282,
+              "tempo_s": 2.204,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 607 vazios internos de 1330 (54% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.24 para 0.42 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 1
+        },
+        {
+          "pagina": 605,
+          "folha": 605,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 2933,
+          "altura_px": 3917,
+          "largura_mm": 248.3,
+          "altura_mm": 331.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 8.865,
+              "vazios_internos": 1216,
+              "vazios_por_mil_tinta": 0.6824,
+              "nivel_fundo": 194.69,
+              "ruido_fundo": 2.99,
+              "transicao_borda_px": 1.555,
+              "nitidez": 381.0,
+              "fracao_tinta": 0.1551,
+              "tempo_s": 0.005
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.318,
+              "vazios_internos": 1241,
+              "vazios_por_mil_tinta": 0.7395,
+              "nivel_fundo": 254.47,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6696.6,
+              "fracao_tinta": 0.14607,
+              "tempo_s": 0.355,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 10.734,
+              "vazios_internos": 1347,
+              "vazios_por_mil_tinta": 0.6218,
+              "nivel_fundo": 232.04,
+              "ruido_fundo": 2.253,
+              "transicao_borda_px": 0.957,
+              "nitidez": 1707.9,
+              "fracao_tinta": 0.18856,
+              "tempo_s": 2.214,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 9.319,
+              "vazios_internos": 1711,
+              "vazios_por_mil_tinta": 0.8099,
+              "nivel_fundo": 234.15,
+              "ruido_fundo": 2.731,
+              "transicao_borda_px": 1.055,
+              "nitidez": 1834.2,
+              "fracao_tinta": 0.18389,
+              "tempo_s": 2.528,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 14
+        },
+        {
+          "pagina": 756,
+          "folha": 756,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 2758,
+          "altura_px": 3930,
+          "largura_mm": 233.5,
+          "altura_mm": 332.7,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 8.084,
+              "vazios_internos": 1167,
+              "vazios_por_mil_tinta": 0.7107,
+              "nivel_fundo": 201.12,
+              "ruido_fundo": 3.641,
+              "transicao_borda_px": 1.44,
+              "nitidez": 410.8,
+              "fracao_tinta": 0.1515,
+              "tempo_s": 0.005
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.363,
+              "vazios_internos": 1125,
+              "vazios_por_mil_tinta": 0.6812,
+              "nivel_fundo": 254.88,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6974.9,
+              "fracao_tinta": 0.15236,
+              "tempo_s": 0.318,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 8.379,
+              "vazios_internos": 957,
+              "vazios_por_mil_tinta": 0.5934,
+              "nivel_fundo": 245.37,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.686,
+              "nitidez": 1779.7,
+              "fracao_tinta": 0.14878,
+              "tempo_s": 2.057,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.44 para 0.69 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 8.238,
+              "vazios_internos": 992,
+              "vazios_por_mil_tinta": 0.6125,
+              "nivel_fundo": 247.48,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.719,
+              "nitidez": 1879.6,
+              "fracao_tinta": 0.14942,
+              "tempo_s": 2.298,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 3
+        },
+        {
+          "pagina": 907,
+          "folha": 907,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1070,
+          "altura_px": 3855,
+          "largura_mm": 90.6,
+          "altura_mm": 326.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 22.296,
+              "vazios_internos": 529,
+              "vazios_por_mil_tinta": 0.4134,
+              "nivel_fundo": 131.53,
+              "ruido_fundo": 3.338,
+              "transicao_borda_px": 2.694,
+              "nitidez": 73.3,
+              "fracao_tinta": 0.31021,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 343.135,
+              "vazios_internos": 37,
+              "vazios_por_mil_tinta": 0.0099,
+              "nivel_fundo": 144.97,
+              "ruido_fundo": 3.012,
+              "transicao_borda_px": 0.257,
+              "nitidez": 686.6,
+              "fracao_tinta": 0.90599,
+              "tempo_s": 0.262,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 20.833,
+              "vazios_internos": 530,
+              "vazios_por_mil_tinta": 0.4157,
+              "nivel_fundo": 148.02,
+              "ruido_fundo": 4.525,
+              "transicao_borda_px": 2.494,
+              "nitidez": 406.3,
+              "fracao_tinta": 0.3091,
+              "tempo_s": 1.183,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 12.11,
+              "vazios_internos": 1166,
+              "vazios_por_mil_tinta": 1.2405,
+              "nivel_fundo": 141.51,
+              "ruido_fundo": 5.69,
+              "transicao_borda_px": 1.788,
+              "nitidez": 677.8,
+              "fracao_tinta": 0.22787,
+              "tempo_s": 1.245,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 3.3 para 5.7"
+              ]
+            }
+          },
+          "regioes_achadas": 4
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 1070,
+        "largura_px_max": 3046,
+        "altura_px_min": 3855,
+        "altura_px_max": 3955,
+        "variacao_largura_px": 1976,
+        "variacao_altura_px": 100,
+        "variacao_largura_mm": 167.3,
+        "variacao_altura_mm": 8.47,
+        "angulo_residual_medio_graus": 0.0714,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 1,
+          "filtro": "Preto e branco",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 99 vazios internos de 229 (57% a menos)"
+          ]
+        },
+        {
+          "pagina": 1,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 158 vazios internos de 229 (31% a menos)"
+          ]
+        },
+        {
+          "pagina": 1,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 3.0 para 5.1",
+            "o traco afinou demais: de 24.66 para 15.96 pixels (35% a menos)"
+          ]
+        },
+        {
+          "pagina": 303,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.46 para 0.67 pixels"
+          ]
+        },
+        {
+          "pagina": 454,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 607 vazios internos de 1330 (54% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.24 para 0.42 pixels"
+          ]
+        },
+        {
+          "pagina": 454,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 607 vazios internos de 1330 (54% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.24 para 0.42 pixels"
+          ]
+        },
+        {
+          "pagina": 756,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.44 para 0.69 pixels"
+          ]
+        },
+        {
+          "pagina": 907,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 3.3 para 5.7"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "Na escola de Jesus - Catecismo explicado com imagens..pdf",
+      "nome": "Na escola de Jesus - Catecismo explicado com imagens.",
+      "tamanho_mb": 48.34,
+      "folhas": 199,
+      "paginas": 199,
+      "erro": "",
+      "tempo_analise_s": 27.69,
+      "tempo_por_folha_analise_s": 0.1391,
+      "tempo_export_s": 2.58,
+      "tempo_por_pagina_export_s": 0.369,
+      "pico_memoria_mb": 835.8,
+      "pdf_saida_mb": 0.8,
+      "pdf_saida_kb_por_pagina": 117.1,
+      "paginas_medidas": [
+        0,
+        33,
+        66,
+        99,
+        132,
+        165,
+        198
+      ],
+      "alertas": {
+        "angulo_suspeito": 166
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas",
+        "o livro inteiro é colorido"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 2234,
+          "altura_px": 3134,
+          "largura_mm": 189.1,
+          "altura_mm": 265.3,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 50.16,
+              "vazios_internos": 867,
+              "vazios_por_mil_tinta": 0.2153,
+              "nivel_fundo": 210.39,
+              "ruido_fundo": 2.198,
+              "transicao_borda_px": 2.394,
+              "nitidez": 99.9,
+              "fracao_tinta": 0.57521,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 50.142,
+              "vazios_internos": 895,
+              "vazios_por_mil_tinta": 0.2225,
+              "nivel_fundo": 210.69,
+              "ruido_fundo": 2.182,
+              "transicao_borda_px": 2.361,
+              "nitidez": 196.7,
+              "fracao_tinta": 0.57444,
+              "tempo_s": 0.493,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 56.549,
+              "vazios_internos": 826,
+              "vazios_por_mil_tinta": 0.1991,
+              "nivel_fundo": 226.02,
+              "ruido_fundo": 2.193,
+              "transicao_borda_px": 2.365,
+              "nitidez": 150.8,
+              "fracao_tinta": 0.59245,
+              "tempo_s": 1.246,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 26.273,
+              "vazios_internos": 3255,
+              "vazios_por_mil_tinta": 0.8214,
+              "nivel_fundo": 222.26,
+              "ruido_fundo": 3.406,
+              "transicao_borda_px": 2.159,
+              "nitidez": 488.6,
+              "fracao_tinta": 0.56601,
+              "tempo_s": 1.373,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 8
+        },
+        {
+          "pagina": 34,
+          "folha": 34,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1988,
+          "altura_px": 3017,
+          "largura_mm": 168.3,
+          "altura_mm": 255.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 26.55,
+              "vazios_internos": 958,
+              "vazios_por_mil_tinta": 0.524,
+              "nivel_fundo": 247.24,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.22,
+              "nitidez": 243.3,
+              "fracao_tinta": 0.30483,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.849,
+              "vazios_internos": 1111,
+              "vazios_por_mil_tinta": 1.1255,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 10480.5,
+              "fracao_tinta": 0.16459,
+              "tempo_s": 0.206,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 8.96,
+              "vazios_internos": 1009,
+              "vazios_por_mil_tinta": 1.0988,
+              "nivel_fundo": 254.57,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.256,
+              "nitidez": 2017.3,
+              "fracao_tinta": 0.1531,
+              "tempo_s": 1.055,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.22 para 0.26 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 8.96,
+              "vazios_internos": 1009,
+              "vazios_por_mil_tinta": 1.0988,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.256,
+              "nitidez": 2017.5,
+              "fracao_tinta": 0.1531,
+              "tempo_s": 1.335,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.22 para 0.26 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 11
+        },
+        {
+          "pagina": 67,
+          "folha": 67,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 2001,
+          "altura_px": 2946,
+          "largura_mm": 169.4,
+          "altura_mm": 249.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 26.754,
+              "vazios_internos": 959,
+              "vazios_por_mil_tinta": 0.4865,
+              "nivel_fundo": 246.56,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.117,
+              "nitidez": 238.1,
+              "fracao_tinta": 0.3344,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 22.909,
+              "vazios_internos": 1037,
+              "vazios_por_mil_tinta": 0.5685,
+              "nivel_fundo": 250.67,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.745,
+              "nitidez": 7089.7,
+              "fracao_tinta": 0.30944,
+              "tempo_s": 0.511,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 25.055,
+              "vazios_internos": 929,
+              "vazios_por_mil_tinta": 0.5216,
+              "nivel_fundo": 250.58,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.979,
+              "nitidez": 1241.6,
+              "fracao_tinta": 0.30214,
+              "tempo_s": 1.113,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 18.901,
+              "vazios_internos": 1427,
+              "vazios_por_mil_tinta": 0.8503,
+              "nivel_fundo": 251.28,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.078,
+              "nitidez": 1287.7,
+              "fracao_tinta": 0.2847,
+              "tempo_s": 1.351,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 12
+        },
+        {
+          "pagina": 100,
+          "folha": 100,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1992,
+          "altura_px": 3076,
+          "largura_mm": 168.7,
+          "altura_mm": 260.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 18.375,
+              "vazios_internos": 1221,
+              "vazios_por_mil_tinta": 0.727,
+              "nivel_fundo": 245.62,
+              "ruido_fundo": 0.348,
+              "transicao_borda_px": 1.26,
+              "nitidez": 258.9,
+              "fracao_tinta": 0.27411,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 11.296,
+              "vazios_internos": 984,
+              "vazios_por_mil_tinta": 0.8332,
+              "nivel_fundo": 250.7,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.068,
+              "nitidez": 6194.3,
+              "fracao_tinta": 0.19274,
+              "tempo_s": 0.438,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 14.623,
+              "vazios_internos": 1055,
+              "vazios_por_mil_tinta": 0.7989,
+              "nivel_fundo": 253.1,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.118,
+              "nitidez": 1154.5,
+              "fracao_tinta": 0.21553,
+              "tempo_s": 1.2,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 10.168,
+              "vazios_internos": 1200,
+              "vazios_por_mil_tinta": 1.1,
+              "nivel_fundo": 253.87,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.137,
+              "nitidez": 1244.6,
+              "fracao_tinta": 0.17804,
+              "tempo_s": 1.331,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 10
+        },
+        {
+          "pagina": 133,
+          "folha": 133,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 2024,
+          "altura_px": 2951,
+          "largura_mm": 171.4,
+          "altura_mm": 249.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 33.484,
+              "vazios_internos": 650,
+              "vazios_por_mil_tinta": 0.3077,
+              "nivel_fundo": 247.45,
+              "ruido_fundo": 0.354,
+              "transicao_borda_px": 0.907,
+              "nitidez": 300.8,
+              "fracao_tinta": 0.35363,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.085,
+              "vazios_internos": 1302,
+              "vazios_por_mil_tinta": 1.2738,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 12125.7,
+              "fracao_tinta": 0.17113,
+              "tempo_s": 0.181,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 8.032,
+              "vazios_internos": 1119,
+              "vazios_por_mil_tinta": 1.2104,
+              "nivel_fundo": 253.77,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.281,
+              "nitidez": 2572.6,
+              "fracao_tinta": 0.15478,
+              "tempo_s": 1.185,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.91 para 0.28 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 8.033,
+              "vazios_internos": 1117,
+              "vazios_por_mil_tinta": 1.2092,
+              "nivel_fundo": 254.13,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.274,
+              "nitidez": 2573.2,
+              "fracao_tinta": 0.15466,
+              "tempo_s": 1.384,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.91 para 0.27 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 14
+        },
+        {
+          "pagina": 166,
+          "folha": 166,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1996,
+          "altura_px": 3032,
+          "largura_mm": 169.0,
+          "altura_mm": 256.7,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 32.833,
+              "vazios_internos": 849,
+              "vazios_por_mil_tinta": 0.4011,
+              "nivel_fundo": 246.96,
+              "ruido_fundo": 0.492,
+              "transicao_borda_px": 1.057,
+              "nitidez": 200.3,
+              "fracao_tinta": 0.34974,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.746,
+              "vazios_internos": 1214,
+              "vazios_por_mil_tinta": 1.2236,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 10603.5,
+              "fracao_tinta": 0.16395,
+              "tempo_s": 0.183,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 8.786,
+              "vazios_internos": 1106,
+              "vazios_por_mil_tinta": 1.2159,
+              "nivel_fundo": 253.74,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.283,
+              "nitidez": 2075.5,
+              "fracao_tinta": 0.1503,
+              "tempo_s": 1.165,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.06 para 0.28 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 8.786,
+              "vazios_internos": 1106,
+              "vazios_por_mil_tinta": 1.2159,
+              "nivel_fundo": 254.44,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.28,
+              "nitidez": 2078.3,
+              "fracao_tinta": 0.1503,
+              "tempo_s": 1.316,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.06 para 0.28 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 13
+        },
+        {
+          "pagina": 199,
+          "folha": 199,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 2234,
+          "altura_px": 3105,
+          "largura_mm": 189.1,
+          "altura_mm": 262.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 28.574,
+              "vazios_internos": 248,
+              "vazios_por_mil_tinta": 0.5626,
+              "nivel_fundo": 222.52,
+              "ruido_fundo": 1.355,
+              "transicao_borda_px": 1.63,
+              "nitidez": 69.4,
+              "fracao_tinta": 0.06355,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 11.013,
+              "vazios_internos": 148,
+              "vazios_por_mil_tinta": 0.6284,
+              "nivel_fundo": 254.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 1575.1,
+              "fracao_tinta": 0.03395,
+              "tempo_s": 0.19,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 148 vazios internos de 248 (40% a menos)",
+                "o traco afinou demais: de 28.57 para 11.01 pixels (61% a menos)"
+              ]
+            },
+            "melhorar": {
+              "espessura_traco_px": 13.057,
+              "vazios_internos": 176,
+              "vazios_por_mil_tinta": 0.6524,
+              "nivel_fundo": 249.54,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.317,
+              "nitidez": 441.2,
+              "fracao_tinta": 0.03889,
+              "tempo_s": 1.245,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 176 vazios internos de 248 (29% a menos)",
+                "o traco afinou demais: de 28.57 para 13.06 pixels (54% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.63 para 0.32 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 13.073,
+              "vazios_internos": 180,
+              "vazios_por_mil_tinta": 0.666,
+              "nivel_fundo": 252.29,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.313,
+              "nitidez": 497.1,
+              "fracao_tinta": 0.03896,
+              "tempo_s": 1.431,
+              "pior_que_original": true,
+              "motivos": [
+                "as letras entupiram: sobraram 180 vazios internos de 248 (27% a menos)",
+                "o traco afinou demais: de 28.57 para 13.07 pixels (54% a menos)",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.63 para 0.31 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 2
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 1988,
+        "largura_px_max": 2234,
+        "altura_px_min": 2946,
+        "altura_px_max": 3134,
+        "variacao_largura_px": 246,
+        "variacao_altura_px": 188,
+        "variacao_largura_mm": 20.83,
+        "variacao_altura_mm": 15.92,
+        "angulo_residual_medio_graus": 0.0857,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 34,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.22 para 0.26 pixels"
+          ]
+        },
+        {
+          "pagina": 34,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.22 para 0.26 pixels"
+          ]
+        },
+        {
+          "pagina": 133,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.91 para 0.28 pixels"
+          ]
+        },
+        {
+          "pagina": 133,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.91 para 0.27 pixels"
+          ]
+        },
+        {
+          "pagina": 166,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.06 para 0.28 pixels"
+          ]
+        },
+        {
+          "pagina": 166,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.06 para 0.28 pixels"
+          ]
+        },
+        {
+          "pagina": 199,
+          "filtro": "Preto e branco",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 148 vazios internos de 248 (40% a menos)",
+            "o traco afinou demais: de 28.57 para 11.01 pixels (61% a menos)"
+          ]
+        },
+        {
+          "pagina": 199,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 176 vazios internos de 248 (29% a menos)",
+            "o traco afinou demais: de 28.57 para 13.06 pixels (54% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.63 para 0.32 pixels"
+          ]
+        },
+        {
+          "pagina": 199,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "as letras entupiram: sobraram 180 vazios internos de 248 (27% a menos)",
+            "o traco afinou demais: de 28.57 para 13.07 pixels (54% a menos)",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 1.63 para 0.31 pixels"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "POINTS d´ANCIENNES BRODERIES ANGLAISES - Louisa F. Pesel.pdf",
+      "nome": "POINTS d´ANCIENNES BRODERIES ANGLAISES - Louisa F. Pesel",
+      "tamanho_mb": 11.79,
+      "folhas": 92,
+      "paginas": 92,
+      "erro": "",
+      "tempo_analise_s": 80.22,
+      "tempo_por_folha_analise_s": 0.872,
+      "tempo_export_s": 5.95,
+      "tempo_por_pagina_export_s": 0.85,
+      "pico_memoria_mb": 797.0,
+      "pdf_saida_mb": 0.74,
+      "pdf_saida_kb_por_pagina": 108.1,
+      "paginas_medidas": [
+        0,
+        15,
+        30,
+        45,
+        60,
+        75,
+        91
+      ],
+      "alertas": {
+        "angulo_suspeito": 3
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas",
+        "o livro inteiro é colorido"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1277,
+          "altura_px": 2759,
+          "largura_mm": 108.1,
+          "altura_mm": 233.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 5.414,
+              "vazios_internos": 4855,
+              "vazios_por_mil_tinta": 3.5339,
+              "nivel_fundo": 131.88,
+              "ruido_fundo": 6.002,
+              "transicao_borda_px": 0.692,
+              "nitidez": 1371.3,
+              "fracao_tinta": 0.38993,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 6.55,
+              "vazios_internos": 4427,
+              "vazios_por_mil_tinta": 2.9373,
+              "nivel_fundo": 131.88,
+              "ruido_fundo": 6.002,
+              "transicao_borda_px": 0.574,
+              "nitidez": 9746.3,
+              "fracao_tinta": 0.42778,
+              "tempo_s": 0.234,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 9.277,
+              "vazios_internos": 3377,
+              "vazios_por_mil_tinta": 2.0401,
+              "nivel_fundo": 149.85,
+              "ruido_fundo": 7.162,
+              "transicao_borda_px": 0.601,
+              "nitidez": 5160.4,
+              "fracao_tinta": 0.46982,
+              "tempo_s": 0.67,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 3.711,
+              "vazios_internos": 1688,
+              "vazios_por_mil_tinta": 1.4695,
+              "nivel_fundo": 139.16,
+              "ruido_fundo": 9.924,
+              "transicao_borda_px": 0.36,
+              "nitidez": 9115.3,
+              "fracao_tinta": 0.32602,
+              "tempo_s": 0.766,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 6.0 para 9.9"
+              ]
+            }
+          },
+          "regioes_achadas": 7
+        },
+        {
+          "pagina": 16,
+          "folha": 16,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1838,
+          "altura_px": 2763,
+          "largura_mm": 155.6,
+          "altura_mm": 233.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 436.517,
+              "vazios_internos": 10,
+              "vazios_por_mil_tinta": 0.0021,
+              "nivel_fundo": 141.53,
+              "ruido_fundo": 1.657,
+              "transicao_borda_px": 1.808,
+              "nitidez": 10.9,
+              "fracao_tinta": 0.95509,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 13.139,
+              "vazios_internos": 36,
+              "vazios_por_mil_tinta": 0.2597,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 844.2,
+              "fracao_tinta": 0.0273,
+              "tempo_s": 0.072,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 34.585,
+              "vazios_internos": 129,
+              "vazios_por_mil_tinta": 0.1443,
+              "nivel_fundo": 138.16,
+              "ruido_fundo": 1.648,
+              "transicao_borda_px": 3.063,
+              "nitidez": 33.7,
+              "fracao_tinta": 0.17599,
+              "tempo_s": 0.303,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 142 para 138 numa escala em que 255 e branco",
+                "a borda das letras borrou: a rampa subiu de 1.81 para 3.06 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 304.971,
+              "vazios_internos": 99,
+              "vazios_por_mil_tinta": 0.0203,
+              "nivel_fundo": 127.1,
+              "ruido_fundo": 2.467,
+              "transicao_borda_px": 2.076,
+              "nitidez": 35.0,
+              "fracao_tinta": 0.96083,
+              "tempo_s": 0.397,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 142 para 127 numa escala em que 255 e branco"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 31,
+          "folha": 31,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1442,
+          "altura_px": 2842,
+          "largura_mm": 122.1,
+          "altura_mm": 240.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 17.365,
+              "vazios_internos": 68,
+              "vazios_por_mil_tinta": 0.0384,
+              "nivel_fundo": 191.33,
+              "ruido_fundo": 1.191,
+              "transicao_borda_px": 0.558,
+              "nitidez": 893.6,
+              "fracao_tinta": 0.43214,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 11.605,
+              "vazios_internos": 232,
+              "vazios_por_mil_tinta": 0.1793,
+              "nivel_fundo": 253.6,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.115,
+              "nitidez": 20810.3,
+              "fracao_tinta": 0.31569,
+              "tempo_s": 0.341,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 12.866,
+              "vazios_internos": 268,
+              "vazios_por_mil_tinta": 0.2186,
+              "nivel_fundo": 253.35,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.169,
+              "nitidez": 4899.1,
+              "fracao_tinta": 0.29919,
+              "tempo_s": 0.759,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 12.865,
+              "vazios_internos": 268,
+              "vazios_por_mil_tinta": 0.2185,
+              "nivel_fundo": 254.15,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.163,
+              "nitidez": 4919.2,
+              "fracao_tinta": 0.29936,
+              "tempo_s": 0.823,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 14
+        },
+        {
+          "pagina": 46,
+          "folha": 46,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1838,
+          "altura_px": 2763,
+          "largura_mm": 155.6,
+          "altura_mm": 233.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 580.609,
+              "vazios_internos": 10,
+              "vazios_por_mil_tinta": 0.002,
+              "nivel_fundo": 153.77,
+              "ruido_fundo": 1.276,
+              "transicao_borda_px": 0.914,
+              "nitidez": 8.7,
+              "fracao_tinta": 0.96968,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 19.141,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.1806,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 629.9,
+              "fracao_tinta": 0.02617,
+              "tempo_s": 0.057,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 40.763,
+              "vazios_internos": 103,
+              "vazios_por_mil_tinta": 0.1446,
+              "nivel_fundo": 153.24,
+              "ruido_fundo": 1.362,
+              "transicao_borda_px": 3.538,
+              "nitidez": 25.1,
+              "fracao_tinta": 0.1403,
+              "tempo_s": 0.259,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras borrou: a rampa subiu de 0.91 para 3.54 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 428.545,
+              "vazios_internos": 19,
+              "vazios_por_mil_tinta": 0.0039,
+              "nivel_fundo": 147.03,
+              "ruido_fundo": 2.053,
+              "transicao_borda_px": 0.744,
+              "nitidez": 29.6,
+              "fracao_tinta": 0.96963,
+              "tempo_s": 0.354,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 154 para 147 numa escala em que 255 e branco"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 61,
+          "folha": 61,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1448,
+          "altura_px": 2817,
+          "largura_mm": 122.6,
+          "altura_mm": 238.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 13.343,
+              "vazios_internos": 460,
+              "vazios_por_mil_tinta": 0.2103,
+              "nivel_fundo": 195.2,
+              "ruido_fundo": 0.848,
+              "transicao_borda_px": 0.455,
+              "nitidez": 1699.5,
+              "fracao_tinta": 0.53621,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 8.73,
+              "vazios_internos": 713,
+              "vazios_por_mil_tinta": 0.4384,
+              "nivel_fundo": 253.88,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.054,
+              "nitidez": 34734.9,
+              "fracao_tinta": 0.39875,
+              "tempo_s": 0.252,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 10.224,
+              "vazios_internos": 695,
+              "vazios_por_mil_tinta": 0.4527,
+              "nivel_fundo": 249.75,
+              "ruido_fundo": 0.459,
+              "transicao_borda_px": 0.151,
+              "nitidez": 9005.4,
+              "fracao_tinta": 0.37639,
+              "tempo_s": 0.737,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 10.228,
+              "vazios_internos": 698,
+              "vazios_por_mil_tinta": 0.4547,
+              "nivel_fundo": 251.73,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.162,
+              "nitidez": 9044.5,
+              "fracao_tinta": 0.37633,
+              "tempo_s": 0.816,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 12
+        },
+        {
+          "pagina": 76,
+          "folha": 76,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1842,
+          "altura_px": 2780,
+          "largura_mm": 156.0,
+          "altura_mm": 235.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 471.218,
+              "vazios_internos": 13,
+              "vazios_por_mil_tinta": 0.0027,
+              "nivel_fundo": 156.37,
+              "ruido_fundo": 1.032,
+              "transicao_borda_px": 0.835,
+              "nitidez": 19.0,
+              "fracao_tinta": 0.95754,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 16.041,
+              "vazios_internos": 47,
+              "vazios_por_mil_tinta": 0.2869,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 765.3,
+              "fracao_tinta": 0.03199,
+              "tempo_s": 0.062,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 410.068,
+              "vazios_internos": 19,
+              "vazios_por_mil_tinta": 0.0039,
+              "nivel_fundo": 154.37,
+              "ruido_fundo": 1.151,
+              "transicao_borda_px": 0.617,
+              "nitidez": 23.6,
+              "fracao_tinta": 0.95759,
+              "tempo_s": 0.277,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.83 para 0.62 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 347.949,
+              "vazios_internos": 31,
+              "vazios_por_mil_tinta": 0.0063,
+              "nivel_fundo": 147.87,
+              "ruido_fundo": 1.774,
+              "transicao_borda_px": 0.564,
+              "nitidez": 54.3,
+              "fracao_tinta": 0.95744,
+              "tempo_s": 0.444,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 156 para 148 numa escala em que 255 e branco",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.83 para 0.56 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 92,
+          "folha": 92,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 993,
+          "altura_px": 2780,
+          "largura_mm": 84.1,
+          "altura_mm": 235.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 3.358,
+              "vazios_internos": 1040,
+              "vazios_por_mil_tinta": 0.9294,
+              "nivel_fundo": 176.82,
+              "ruido_fundo": 0.986,
+              "transicao_borda_px": 0.397,
+              "nitidez": 1617.9,
+              "fracao_tinta": 0.40535,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 161.007,
+              "vazios_internos": 152,
+              "vazios_por_mil_tinta": 0.0592,
+              "nivel_fundo": 211.52,
+              "ruido_fundo": 0.548,
+              "transicao_borda_px": 0.332,
+              "nitidez": 6763.8,
+              "fracao_tinta": 0.92933,
+              "tempo_s": 0.187,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 6.182,
+              "vazios_internos": 4854,
+              "vazios_por_mil_tinta": 2.9693,
+              "nivel_fundo": 252.96,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.444,
+              "nitidez": 13646.5,
+              "fracao_tinta": 0.59218,
+              "tempo_s": 0.701,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 3.502,
+              "vazios_internos": 1987,
+              "vazios_por_mil_tinta": 1.6185,
+              "nivel_fundo": 254.64,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.499,
+              "nitidez": 22203.9,
+              "fracao_tinta": 0.44472,
+              "tempo_s": 0.76,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 11
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 993,
+        "largura_px_max": 1842,
+        "altura_px_min": 2759,
+        "altura_px_max": 2842,
+        "variacao_largura_px": 849,
+        "variacao_altura_px": 83,
+        "variacao_largura_mm": 71.88,
+        "variacao_altura_mm": 7.03,
+        "angulo_residual_medio_graus": 0.0143,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 1,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 6.0 para 9.9"
+          ]
+        },
+        {
+          "pagina": 16,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 142 para 138 numa escala em que 255 e branco",
+            "a borda das letras borrou: a rampa subiu de 1.81 para 3.06 pixels"
+          ]
+        },
+        {
+          "pagina": 16,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 142 para 127 numa escala em que 255 e branco"
+          ]
+        },
+        {
+          "pagina": 46,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras borrou: a rampa subiu de 0.91 para 3.54 pixels"
+          ]
+        },
+        {
+          "pagina": 46,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 154 para 147 numa escala em que 255 e branco"
+          ]
+        },
+        {
+          "pagina": 76,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.83 para 0.62 pixels"
+          ]
+        },
+        {
+          "pagina": 76,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 156 para 148 numa escala em que 255 e branco",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.83 para 0.56 pixels"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "Rhetorica Christiana -  Fray Diego Valadés.pdf",
+      "nome": "Rhetorica Christiana -  Fray Diego Valadés",
+      "tamanho_mb": 40.29,
+      "folhas": 446,
+      "paginas": 446,
+      "erro": "",
+      "tempo_analise_s": 250.7,
+      "tempo_por_folha_analise_s": 0.5621,
+      "tempo_export_s": 5.68,
+      "tempo_por_pagina_export_s": 0.812,
+      "pico_memoria_mb": 800.7,
+      "pdf_saida_mb": 0.6,
+      "pdf_saida_kb_por_pagina": 88.3,
+      "paginas_medidas": [
+        0,
+        4,
+        89,
+        178,
+        267,
+        356,
+        445
+      ],
+      "alertas": {
+        "cor": 93,
+        "angulo_suspeito": 13,
+        "muito_torta": 2,
+        "tamanho_diferente": 2
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1913,
+          "altura_px": 2817,
+          "largura_mm": 162.0,
+          "altura_mm": 238.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 69.822,
+              "vazios_internos": 136,
+              "vazios_por_mil_tinta": 0.0671,
+              "nivel_fundo": 202.52,
+              "ruido_fundo": 0.472,
+              "transicao_borda_px": 4.082,
+              "nitidez": 1.5,
+              "fracao_tinta": 0.37634,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 7.489,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 48.0,
+              "fracao_tinta": 0.00063,
+              "tempo_s": 0.071,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 24.489,
+              "vazios_internos": 31,
+              "vazios_por_mil_tinta": 0.0527,
+              "nivel_fundo": 242.71,
+              "ruido_fundo": 0.306,
+              "transicao_borda_px": 3.282,
+              "nitidez": 74.6,
+              "fracao_tinta": 0.10923,
+              "tempo_s": 0.438,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 14.802,
+              "vazios_internos": 279,
+              "vazios_por_mil_tinta": 0.6355,
+              "nivel_fundo": 254.89,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.55,
+              "nitidez": 36.2,
+              "fracao_tinta": 0.08147,
+              "tempo_s": 0.736,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 4.08 para 0.55 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 5,
+          "folha": 5,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1617,
+          "altura_px": 2405,
+          "largura_mm": 136.9,
+          "altura_mm": 203.6,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 5.599,
+              "vazios_internos": 5790,
+              "vazios_por_mil_tinta": 4.3001,
+              "nivel_fundo": 187.66,
+              "ruido_fundo": 1.296,
+              "transicao_borda_px": 0.555,
+              "nitidez": 2077.1,
+              "fracao_tinta": 0.34624,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.072,
+              "vazios_internos": 6527,
+              "vazios_por_mil_tinta": 5.018,
+              "nivel_fundo": 253.94,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.122,
+              "nitidez": 30460.8,
+              "fracao_tinta": 0.33447,
+              "tempo_s": 0.364,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 5.232,
+              "vazios_internos": 5108,
+              "vazios_por_mil_tinta": 4.162,
+              "nivel_fundo": 250.22,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.342,
+              "nitidez": 12761.3,
+              "fracao_tinta": 0.31559,
+              "tempo_s": 0.77,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 5.194,
+              "vazios_internos": 5198,
+              "vazios_por_mil_tinta": 4.225,
+              "nivel_fundo": 250.42,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.321,
+              "nitidez": 13070.3,
+              "fracao_tinta": 0.31636,
+              "tempo_s": 0.915,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 4
+        },
+        {
+          "pagina": 90,
+          "folha": 90,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1641,
+          "altura_px": 2490,
+          "largura_mm": 138.9,
+          "altura_mm": 210.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.67,
+              "vazios_internos": 466,
+              "vazios_por_mil_tinta": 0.9258,
+              "nivel_fundo": 225.39,
+              "ruido_fundo": 0.715,
+              "transicao_borda_px": 0.373,
+              "nitidez": 1318.1,
+              "fracao_tinta": 0.12319,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.04,
+              "vazios_internos": 492,
+              "vazios_por_mil_tinta": 0.8948,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 13791.1,
+              "fracao_tinta": 0.13457,
+              "tempo_s": 0.127,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.243,
+              "vazios_internos": 431,
+              "vazios_por_mil_tinta": 0.9373,
+              "nivel_fundo": 247.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.248,
+              "nitidez": 5015.5,
+              "fracao_tinta": 0.11253,
+              "tempo_s": 0.787,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.253,
+              "vazios_internos": 433,
+              "vazios_por_mil_tinta": 0.9379,
+              "nivel_fundo": 252.77,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.228,
+              "nitidez": 5149.3,
+              "fracao_tinta": 0.11299,
+              "tempo_s": 0.972,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 10
+        },
+        {
+          "pagina": 179,
+          "folha": 179,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1644,
+          "altura_px": 2348,
+          "largura_mm": 139.2,
+          "altura_mm": 198.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.746,
+              "vazios_internos": 563,
+              "vazios_por_mil_tinta": 0.9927,
+              "nivel_fundo": 215.35,
+              "ruido_fundo": 0.948,
+              "transicao_borda_px": 0.373,
+              "nitidez": 1538.4,
+              "fracao_tinta": 0.14692,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.109,
+              "vazios_internos": 604,
+              "vazios_por_mil_tinta": 0.9767,
+              "nivel_fundo": 254.99,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 16305.5,
+              "fracao_tinta": 0.16021,
+              "tempo_s": 0.095,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.386,
+              "vazios_internos": 521,
+              "vazios_por_mil_tinta": 0.9843,
+              "nivel_fundo": 249.23,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.246,
+              "nitidez": 6213.2,
+              "fracao_tinta": 0.13712,
+              "tempo_s": 0.73,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.395,
+              "vazios_internos": 524,
+              "vazios_por_mil_tinta": 0.987,
+              "nivel_fundo": 252.48,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.238,
+              "nitidez": 6356.8,
+              "fracao_tinta": 0.13754,
+              "tempo_s": 0.827,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 2
+        },
+        {
+          "pagina": 268,
+          "folha": 268,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1641,
+          "altura_px": 2348,
+          "largura_mm": 138.9,
+          "altura_mm": 198.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.396,
+              "vazios_internos": 443,
+              "vazios_por_mil_tinta": 0.8806,
+              "nivel_fundo": 215.04,
+              "ruido_fundo": 1.036,
+              "transicao_borda_px": 0.428,
+              "nitidez": 1509.0,
+              "fracao_tinta": 0.13057,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.773,
+              "vazios_internos": 480,
+              "vazios_por_mil_tinta": 0.8568,
+              "nivel_fundo": 253.94,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.1,
+              "nitidez": 14790.5,
+              "fracao_tinta": 0.14539,
+              "tempo_s": 0.349,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.092,
+              "vazios_internos": 413,
+              "vazios_por_mil_tinta": 0.8768,
+              "nivel_fundo": 252.07,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.28,
+              "nitidez": 5824.4,
+              "fracao_tinta": 0.12225,
+              "tempo_s": 0.893,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.096,
+              "vazios_internos": 415,
+              "vazios_por_mil_tinta": 0.8761,
+              "nivel_fundo": 253.61,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.255,
+              "nitidez": 6091.2,
+              "fracao_tinta": 0.12293,
+              "tempo_s": 1.036,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 17
+        },
+        {
+          "pagina": 357,
+          "folha": 357,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1677,
+          "altura_px": 2517,
+          "largura_mm": 142.0,
+          "altura_mm": 213.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.106,
+              "vazios_internos": 484,
+              "vazios_por_mil_tinta": 0.9462,
+              "nivel_fundo": 222.5,
+              "ruido_fundo": 0.817,
+              "transicao_borda_px": 0.298,
+              "nitidez": 2022.2,
+              "fracao_tinta": 0.12119,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.402,
+              "vazios_internos": 548,
+              "vazios_por_mil_tinta": 0.9789,
+              "nivel_fundo": 254.77,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 15708.8,
+              "fracao_tinta": 0.13262,
+              "tempo_s": 0.125,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 3.763,
+              "vazios_internos": 389,
+              "vazios_por_mil_tinta": 0.8406,
+              "nivel_fundo": 248.49,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.199,
+              "nitidez": 6907.0,
+              "fracao_tinta": 0.10963,
+              "tempo_s": 0.877,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 3.764,
+              "vazios_internos": 389,
+              "vazios_por_mil_tinta": 0.8374,
+              "nivel_fundo": 250.86,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.199,
+              "nitidez": 6956.0,
+              "fracao_tinta": 0.11005,
+              "tempo_s": 1.002,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 1
+        },
+        {
+          "pagina": 446,
+          "folha": 446,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1427,
+          "altura_px": 2821,
+          "largura_mm": 120.8,
+          "altura_mm": 238.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 81.253,
+              "vazios_internos": 51,
+              "vazios_por_mil_tinta": 0.0348,
+              "nivel_fundo": 204.91,
+              "ruido_fundo": 0.446,
+              "transicao_borda_px": 4.434,
+              "nitidez": 0.9,
+              "fracao_tinta": 0.3638,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.106,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 20.8,
+              "fracao_tinta": 0.00016,
+              "tempo_s": 0.042,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 32.849,
+              "vazios_internos": 119,
+              "vazios_por_mil_tinta": 0.0777,
+              "nivel_fundo": 175.56,
+              "ruido_fundo": 4.805,
+              "transicao_borda_px": 3.415,
+              "nitidez": 89.1,
+              "fracao_tinta": 0.38039,
+              "tempo_s": 0.303,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 205 para 176 numa escala em que 255 e branco",
+                "o fundo ficou mais sujo: ruido subiu de 0.4 para 4.8"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 19.429,
+              "vazios_internos": 2508,
+              "vazios_por_mil_tinta": 1.6038,
+              "nivel_fundo": 197.99,
+              "ruido_fundo": 0.817,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6.9,
+              "fracao_tinta": 0.38846,
+              "tempo_s": 0.386,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 205 para 198 numa escala em que 255 e branco",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 4.43 para 0.00 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 1427,
+        "largura_px_max": 1913,
+        "altura_px_min": 2348,
+        "altura_px_max": 2821,
+        "variacao_largura_px": 486,
+        "variacao_altura_px": 473,
+        "variacao_largura_mm": 41.15,
+        "variacao_altura_mm": 40.05,
+        "angulo_residual_medio_graus": 0.0714,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 1,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 4.08 para 0.55 pixels"
+          ]
+        },
+        {
+          "pagina": 446,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 205 para 176 numa escala em que 255 e branco",
+            "o fundo ficou mais sujo: ruido subiu de 0.4 para 4.8"
+          ]
+        },
+        {
+          "pagina": 446,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 205 para 198 numa escala em que 255 e branco",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 4.43 para 0.00 pixels"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "Schön Neues Modell Buch - Johann Siebmacher.pdf",
+      "nome": "Schön Neues Modell Buch - Johann Siebmacher",
+      "tamanho_mb": 11.3,
+      "folhas": 134,
+      "paginas": 268,
+      "erro": "",
+      "tempo_analise_s": 66.87,
+      "tempo_por_folha_analise_s": 0.499,
+      "tempo_export_s": 3.62,
+      "tempo_por_pagina_export_s": 0.517,
+      "pico_memoria_mb": 768.5,
+      "pdf_saida_mb": 0.27,
+      "pdf_saida_kb_por_pagina": 38.9,
+      "paginas_medidas": [
+        0,
+        44,
+        88,
+        132,
+        176,
+        220,
+        267
+      ],
+      "alertas": {
+        "cor": 67
+      },
+      "observacoes": [
+        "a lombada é difícil de achar neste livro"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "esquerda",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 558,
+          "altura_px": 1305,
+          "largura_mm": 47.2,
+          "altura_mm": 110.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 14.049,
+              "vazios_internos": 252,
+              "vazios_por_mil_tinta": 0.793,
+              "nivel_fundo": 98.9,
+              "ruido_fundo": 2.84,
+              "transicao_borda_px": 1.801,
+              "nitidez": 29.5,
+              "fracao_tinta": 0.43638,
+              "tempo_s": 0.0
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 171.478,
+              "vazios_internos": 1,
+              "vazios_por_mil_tinta": 0.0014,
+              "nivel_fundo": 109.14,
+              "ruido_fundo": 2.836,
+              "transicao_borda_px": 0.606,
+              "nitidez": 387.4,
+              "fracao_tinta": 0.9602,
+              "tempo_s": 0.053,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 13.828,
+              "vazios_internos": 275,
+              "vazios_por_mil_tinta": 0.8706,
+              "nivel_fundo": 110.53,
+              "ruido_fundo": 3.372,
+              "transicao_borda_px": 1.782,
+              "nitidez": 162.6,
+              "fracao_tinta": 0.43379,
+              "tempo_s": 0.293,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 8.575,
+              "vazios_internos": 205,
+              "vazios_por_mil_tinta": 0.9428,
+              "nivel_fundo": 97.64,
+              "ruido_fundo": 3.74,
+              "transicao_borda_px": 1.588,
+              "nitidez": 254.3,
+              "fracao_tinta": 0.2986,
+              "tempo_s": 0.308,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 9
+        },
+        {
+          "pagina": 45,
+          "folha": 23,
+          "metade": "esquerda",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1067,
+          "altura_px": 1282,
+          "largura_mm": 90.3,
+          "altura_mm": 108.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 2.848,
+              "vazios_internos": 15461,
+              "vazios_por_mil_tinta": 36.2738,
+              "nivel_fundo": 198.25,
+              "ruido_fundo": 0.795,
+              "transicao_borda_px": 0.424,
+              "nitidez": 4392.1,
+              "fracao_tinta": 0.3116,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 2.743,
+              "vazios_internos": 13744,
+              "vazios_por_mil_tinta": 34.4531,
+              "nivel_fundo": 254.93,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.001,
+              "nitidez": 53916.1,
+              "fracao_tinta": 0.29163,
+              "tempo_s": 0.091,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 2.679,
+              "vazios_internos": 9087,
+              "vazios_por_mil_tinta": 25.9171,
+              "nivel_fundo": 245.11,
+              "ruido_fundo": 0.234,
+              "transicao_borda_px": 0.231,
+              "nitidez": 27516.5,
+              "fracao_tinta": 0.25632,
+              "tempo_s": 0.278,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 2.712,
+              "vazios_internos": 9151,
+              "vazios_por_mil_tinta": 25.8227,
+              "nivel_fundo": 248.14,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.234,
+              "nitidez": 27583.9,
+              "fracao_tinta": 0.25907,
+              "tempo_s": 0.342,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 6
+        },
+        {
+          "pagina": 89,
+          "folha": 45,
+          "metade": "esquerda",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 654,
+          "altura_px": 1282,
+          "largura_mm": 55.4,
+          "altura_mm": 108.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.547,
+              "vazios_internos": 5865,
+              "vazios_por_mil_tinta": 19.4604,
+              "nivel_fundo": 199.56,
+              "ruido_fundo": 0.841,
+              "transicao_borda_px": 0.49,
+              "nitidez": 3313.2,
+              "fracao_tinta": 0.35946,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.281,
+              "vazios_internos": 5381,
+              "vazios_por_mil_tinta": 19.1034,
+              "nivel_fundo": 254.91,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 37901.6,
+              "fracao_tinta": 0.33596,
+              "tempo_s": 0.065,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.288,
+              "vazios_internos": 4045,
+              "vazios_por_mil_tinta": 15.4348,
+              "nivel_fundo": 241.96,
+              "ruido_fundo": 0.822,
+              "transicao_borda_px": 0.226,
+              "nitidez": 21499.0,
+              "fracao_tinta": 0.31257,
+              "tempo_s": 0.285,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.283,
+              "vazios_internos": 4087,
+              "vazios_por_mil_tinta": 15.4272,
+              "nivel_fundo": 245.01,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.238,
+              "nitidez": 21674.9,
+              "fracao_tinta": 0.31597,
+              "tempo_s": 0.282,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 7
+        },
+        {
+          "pagina": 133,
+          "folha": 67,
+          "metade": "esquerda",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 891,
+          "altura_px": 1274,
+          "largura_mm": 75.4,
+          "altura_mm": 107.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.573,
+              "vazios_internos": 2745,
+              "vazios_por_mil_tinta": 7.3276,
+              "nivel_fundo": 198.93,
+              "ruido_fundo": 1.122,
+              "transicao_borda_px": 0.389,
+              "nitidez": 3218.6,
+              "fracao_tinta": 0.33002,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.543,
+              "vazios_internos": 2812,
+              "vazios_por_mil_tinta": 7.5906,
+              "nivel_fundo": 254.76,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 32465.0,
+              "fracao_tinta": 0.32636,
+              "tempo_s": 0.082,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.23,
+              "vazios_internos": 2851,
+              "vazios_por_mil_tinta": 8.2897,
+              "nivel_fundo": 239.43,
+              "ruido_fundo": 0.745,
+              "transicao_borda_px": 0.231,
+              "nitidez": 18375.8,
+              "fracao_tinta": 0.30298,
+              "tempo_s": 0.252,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.284,
+              "vazios_internos": 2853,
+              "vazios_por_mil_tinta": 8.1591,
+              "nivel_fundo": 241.46,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.229,
+              "nitidez": 18457.5,
+              "fracao_tinta": 0.30804,
+              "tempo_s": 0.267,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 5
+        },
+        {
+          "pagina": 177,
+          "folha": 89,
+          "metade": "esquerda",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 895,
+          "altura_px": 1277,
+          "largura_mm": 75.8,
+          "altura_mm": 108.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 5.502,
+              "vazios_internos": 2152,
+              "vazios_por_mil_tinta": 5.0873,
+              "nivel_fundo": 181.5,
+              "ruido_fundo": 1.358,
+              "transicao_borda_px": 0.394,
+              "nitidez": 2249.2,
+              "fracao_tinta": 0.37012,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.264,
+              "vazios_internos": 2123,
+              "vazios_por_mil_tinta": 5.1774,
+              "nivel_fundo": 254.36,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.017,
+              "nitidez": 38887.7,
+              "fracao_tinta": 0.35878,
+              "tempo_s": 0.081,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 5.159,
+              "vazios_internos": 2029,
+              "vazios_por_mil_tinta": 5.1078,
+              "nivel_fundo": 241.47,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.21,
+              "nitidez": 17901.0,
+              "fracao_tinta": 0.34756,
+              "tempo_s": 0.262,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 5.149,
+              "vazios_internos": 2037,
+              "vazios_por_mil_tinta": 5.0766,
+              "nivel_fundo": 240.44,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.224,
+              "nitidez": 17975.2,
+              "fracao_tinta": 0.35108,
+              "tempo_s": 0.279,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 17
+        },
+        {
+          "pagina": 221,
+          "folha": 111,
+          "metade": "esquerda",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 702,
+          "altura_px": 1274,
+          "largura_mm": 59.4,
+          "altura_mm": 107.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.781,
+              "vazios_internos": 4983,
+              "vazios_por_mil_tinta": 11.6624,
+              "nivel_fundo": 170.1,
+              "ruido_fundo": 1.993,
+              "transicao_borda_px": 0.474,
+              "nitidez": 2051.0,
+              "fracao_tinta": 0.47774,
+              "tempo_s": 0.0
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.377,
+              "vazios_internos": 5126,
+              "vazios_por_mil_tinta": 12.6683,
+              "nivel_fundo": 245.91,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.058,
+              "nitidez": 38975.4,
+              "fracao_tinta": 0.45243,
+              "tempo_s": 0.069,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.26,
+              "vazios_internos": 5080,
+              "vazios_por_mil_tinta": 12.7423,
+              "nivel_fundo": 233.55,
+              "ruido_fundo": 0.661,
+              "transicao_borda_px": 0.217,
+              "nitidez": 21967.5,
+              "fracao_tinta": 0.44577,
+              "tempo_s": 0.256,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.272,
+              "vazios_internos": 5090,
+              "vazios_por_mil_tinta": 12.6618,
+              "nivel_fundo": 233.25,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.217,
+              "nitidez": 22192.3,
+              "fracao_tinta": 0.44948,
+              "tempo_s": 0.284,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 10
+        },
+        {
+          "pagina": 268,
+          "folha": 134,
+          "metade": "direita",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 599,
+          "altura_px": 1325,
+          "largura_mm": 50.7,
+          "altura_mm": 112.2,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 17.197,
+              "vazios_internos": 167,
+              "vazios_por_mil_tinta": 0.6635,
+              "nivel_fundo": 118.8,
+              "ruido_fundo": 2.694,
+              "transicao_borda_px": 2.42,
+              "nitidez": 22.7,
+              "fracao_tinta": 0.31713,
+              "tempo_s": 0.0
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 18.173,
+              "vazios_internos": 212,
+              "vazios_por_mil_tinta": 0.627,
+              "nivel_fundo": 121.64,
+              "ruido_fundo": 2.693,
+              "transicao_borda_px": 2.381,
+              "nitidez": 154.1,
+              "fracao_tinta": 0.42603,
+              "tempo_s": 0.06,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 19.74,
+              "vazios_internos": 122,
+              "vazios_por_mil_tinta": 0.6014,
+              "nivel_fundo": 128.54,
+              "ruido_fundo": 3.106,
+              "transicao_borda_px": 2.535,
+              "nitidez": 48.4,
+              "fracao_tinta": 0.25558,
+              "tempo_s": 0.249,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 10.037,
+              "vazios_internos": 172,
+              "vazios_por_mil_tinta": 0.9475,
+              "nivel_fundo": 113.71,
+              "ruido_fundo": 3.485,
+              "transicao_borda_px": 1.916,
+              "nitidez": 161.1,
+              "fracao_tinta": 0.22872,
+              "tempo_s": 0.269,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 119 para 114 numa escala em que 255 e branco"
+              ]
+            }
+          },
+          "regioes_achadas": 6
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 558,
+        "largura_px_max": 1067,
+        "altura_px_min": 1274,
+        "altura_px_max": 1325,
+        "variacao_largura_px": 509,
+        "variacao_altura_px": 51,
+        "variacao_largura_mm": 43.1,
+        "variacao_altura_mm": 4.32,
+        "angulo_residual_medio_graus": 0.0143,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 268,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 119 para 114 numa escala em que 255 e branco"
+          ]
+        }
+      ]
+    },
+    {
+      "arquivo": "Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+      "nome": "Sobre a Consolação da Filosofia - Severino Boécio",
+      "tamanho_mb": 4.14,
+      "folhas": 50,
+      "paginas": 50,
+      "erro": "",
+      "tempo_analise_s": 2.7,
+      "tempo_por_folha_analise_s": 0.054,
+      "tempo_export_s": 0.65,
+      "tempo_por_pagina_export_s": 0.093,
+      "pico_memoria_mb": 747.7,
+      "pdf_saida_mb": 0.17,
+      "pdf_saida_kb_por_pagina": 25.5,
+      "paginas_medidas": [
+        0,
+        8,
+        16,
+        24,
+        32,
+        40,
+        49
+      ],
+      "alertas": {
+        "angulo_suspeito": 2,
+        "cor": 1
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "colorida",
+          "largura_px": 1070,
+          "altura_px": 1533,
+          "largura_mm": 90.6,
+          "altura_mm": 129.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.789,
+              "vazios_internos": 246,
+              "vazios_por_mil_tinta": 2.0496,
+              "nivel_fundo": 150.76,
+              "ruido_fundo": 5.524,
+              "transicao_borda_px": 1.466,
+              "nitidez": 300.8,
+              "fracao_tinta": 0.07317,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.375,
+              "vazios_internos": 79,
+              "vazios_por_mil_tinta": 1.3737,
+              "nivel_fundo": 254.99,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 3099.5,
+              "fracao_tinta": 0.03506,
+              "tempo_s": 0.026,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.185,
+              "vazios_internos": 1847,
+              "vazios_por_mil_tinta": 3.3028,
+              "nivel_fundo": 184.48,
+              "ruido_fundo": 17.539,
+              "transicao_borda_px": 0.861,
+              "nitidez": 1904.4,
+              "fracao_tinta": 0.34093,
+              "tempo_s": 0.169,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 5.5 para 17.5"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 3.108,
+              "vazios_internos": 486,
+              "vazios_por_mil_tinta": 1.8705,
+              "nivel_fundo": 181.37,
+              "ruido_fundo": 19.895,
+              "transicao_borda_px": 0.811,
+              "nitidez": 3924.2,
+              "fracao_tinta": 0.1584,
+              "tempo_s": 0.182,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 5.5 para 19.9"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 9,
+          "folha": 9,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1055,
+          "altura_px": 1544,
+          "largura_mm": 89.3,
+          "altura_mm": 130.7,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 6.106,
+              "vazios_internos": 156,
+              "vazios_por_mil_tinta": 0.8849,
+              "nivel_fundo": 208.35,
+              "ruido_fundo": 5.022,
+              "transicao_borda_px": 0.724,
+              "nitidez": 182.3,
+              "fracao_tinta": 0.10823,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 6.51,
+              "vazios_internos": 151,
+              "vazios_por_mil_tinta": 0.7536,
+              "nivel_fundo": 254.21,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 10612.6,
+              "fracao_tinta": 0.123,
+              "tempo_s": 0.043,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 5.476,
+              "vazios_internos": 175,
+              "vazios_por_mil_tinta": 0.9952,
+              "nivel_fundo": 228.92,
+              "ruido_fundo": 5.796,
+              "transicao_borda_px": 0.551,
+              "nitidez": 1899.6,
+              "fracao_tinta": 0.10795,
+              "tempo_s": 0.328,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.72 para 0.55 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 5.369,
+              "vazios_internos": 180,
+              "vazios_por_mil_tinta": 0.9892,
+              "nivel_fundo": 233.15,
+              "ruido_fundo": 7.233,
+              "transicao_borda_px": 0.68,
+              "nitidez": 2035.3,
+              "fracao_tinta": 0.11171,
+              "tempo_s": 0.437,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 5.0 para 7.2",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.72 para 0.68 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 8
+        },
+        {
+          "pagina": 17,
+          "folha": 17,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1031,
+          "altura_px": 1544,
+          "largura_mm": 87.3,
+          "altura_mm": 130.7,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.493,
+              "vazios_internos": 242,
+              "vazios_por_mil_tinta": 1.4887,
+              "nivel_fundo": 202.32,
+              "ruido_fundo": 6.257,
+              "transicao_borda_px": 0.787,
+              "nitidez": 985.4,
+              "fracao_tinta": 0.10212,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.95,
+              "vazios_internos": 272,
+              "vazios_por_mil_tinta": 1.4085,
+              "nivel_fundo": 254.36,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 11878.2,
+              "fracao_tinta": 0.12131,
+              "tempo_s": 0.051,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.191,
+              "vazios_internos": 285,
+              "vazios_por_mil_tinta": 1.6852,
+              "nivel_fundo": 229.91,
+              "ruido_fundo": 7.096,
+              "transicao_borda_px": 0.687,
+              "nitidez": 3566.7,
+              "fracao_tinta": 0.10624,
+              "tempo_s": 0.349,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.79 para 0.69 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.098,
+              "vazios_internos": 298,
+              "vazios_por_mil_tinta": 1.6664,
+              "nivel_fundo": 233.17,
+              "ruido_fundo": 10.045,
+              "transicao_borda_px": 0.845,
+              "nitidez": 3955.2,
+              "fracao_tinta": 0.11234,
+              "tempo_s": 0.369,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 6.3 para 10.0"
+              ]
+            }
+          },
+          "regioes_achadas": 11
+        },
+        {
+          "pagina": 25,
+          "folha": 25,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 940,
+          "altura_px": 1514,
+          "largura_mm": 79.6,
+          "altura_mm": 128.2,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.704,
+              "vazios_internos": 186,
+              "vazios_por_mil_tinta": 1.1847,
+              "nivel_fundo": 203.94,
+              "ruido_fundo": 6.845,
+              "transicao_borda_px": 0.637,
+              "nitidez": 1265.9,
+              "fracao_tinta": 0.11032,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.025,
+              "vazios_internos": 208,
+              "vazios_por_mil_tinta": 1.1515,
+              "nivel_fundo": 254.32,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 11969.1,
+              "fracao_tinta": 0.12692,
+              "tempo_s": 0.045,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.333,
+              "vazios_internos": 198,
+              "vazios_por_mil_tinta": 1.2924,
+              "nivel_fundo": 227.4,
+              "ruido_fundo": 8.368,
+              "transicao_borda_px": 0.489,
+              "nitidez": 4086.0,
+              "fracao_tinta": 0.10765,
+              "tempo_s": 0.329,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 6.8 para 8.4"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.143,
+              "vazios_internos": 200,
+              "vazios_por_mil_tinta": 1.2294,
+              "nivel_fundo": 230.27,
+              "ruido_fundo": 12.387,
+              "transicao_borda_px": 0.802,
+              "nitidez": 4673.0,
+              "fracao_tinta": 0.11431,
+              "tempo_s": 0.348,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 6.8 para 12.4"
+              ]
+            }
+          },
+          "regioes_achadas": 20
+        },
+        {
+          "pagina": 33,
+          "folha": 33,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 990,
+          "altura_px": 1540,
+          "largura_mm": 83.8,
+          "altura_mm": 130.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.32,
+              "vazios_internos": 176,
+              "vazios_por_mil_tinta": 1.2071,
+              "nivel_fundo": 202.41,
+              "ruido_fundo": 7.23,
+              "transicao_borda_px": 0.883,
+              "nitidez": 1029.1,
+              "fracao_tinta": 0.09563,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.455,
+              "vazios_internos": 227,
+              "vazios_por_mil_tinta": 1.2669,
+              "nivel_fundo": 253.71,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 13249.0,
+              "fracao_tinta": 0.11752,
+              "tempo_s": 0.046,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 3.946,
+              "vazios_internos": 208,
+              "vazios_por_mil_tinta": 1.3192,
+              "nivel_fundo": 231.36,
+              "ruido_fundo": 8.112,
+              "transicao_borda_px": 0.667,
+              "nitidez": 3891.8,
+              "fracao_tinta": 0.10342,
+              "tempo_s": 0.34,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.88 para 0.67 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 3.848,
+              "vazios_internos": 210,
+              "vazios_por_mil_tinta": 1.2697,
+              "nivel_fundo": 234.58,
+              "ruido_fundo": 11.883,
+              "transicao_borda_px": 0.728,
+              "nitidez": 4339.6,
+              "fracao_tinta": 0.10848,
+              "tempo_s": 0.429,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 7.2 para 11.9"
+              ]
+            }
+          },
+          "regioes_achadas": 16
+        },
+        {
+          "pagina": 41,
+          "folha": 41,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 982,
+          "altura_px": 1529,
+          "largura_mm": 83.1,
+          "altura_mm": 129.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.297,
+              "vazios_internos": 264,
+              "vazios_por_mil_tinta": 1.6203,
+              "nivel_fundo": 205.06,
+              "ruido_fundo": 7.361,
+              "transicao_borda_px": 0.705,
+              "nitidez": 1294.2,
+              "fracao_tinta": 0.10851,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.59,
+              "vazios_internos": 278,
+              "vazios_por_mil_tinta": 1.4625,
+              "nivel_fundo": 253.79,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 13509.8,
+              "fracao_tinta": 0.12659,
+              "tempo_s": 0.05,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 3.863,
+              "vazios_internos": 288,
+              "vazios_por_mil_tinta": 1.8041,
+              "nivel_fundo": 227.85,
+              "ruido_fundo": 8.583,
+              "transicao_borda_px": 0.575,
+              "nitidez": 4285.2,
+              "fracao_tinta": 0.10632,
+              "tempo_s": 0.375,
+              "pior_que_original": true,
+              "motivos": [
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.70 para 0.57 pixels"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 3.732,
+              "vazios_internos": 299,
+              "vazios_por_mil_tinta": 1.7229,
+              "nivel_fundo": 231.58,
+              "ruido_fundo": 12.714,
+              "transicao_borda_px": 0.791,
+              "nitidez": 4860.8,
+              "fracao_tinta": 0.11558,
+              "tempo_s": 0.396,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo ficou mais sujo: ruido subiu de 7.4 para 12.7"
+              ]
+            }
+          },
+          "regioes_achadas": 11
+        },
+        {
+          "pagina": 50,
+          "folha": 50,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "ilustracao",
+          "largura_px": 1003,
+          "altura_px": 1552,
+          "largura_mm": 84.9,
+          "altura_mm": 131.4,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 6.183,
+              "vazios_internos": 3785,
+              "vazios_por_mil_tinta": 4.84,
+              "nivel_fundo": 161.07,
+              "ruido_fundo": 3.845,
+              "transicao_borda_px": 0.864,
+              "nitidez": 148.9,
+              "fracao_tinta": 0.50237,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 3.136,
+              "vazios_internos": 15,
+              "vazios_por_mil_tinta": 1.105,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 1371.8,
+              "fracao_tinta": 0.00872,
+              "tempo_s": 0.025,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.982,
+              "vazios_internos": 3664,
+              "vazios_por_mil_tinta": 5.0323,
+              "nivel_fundo": 158.95,
+              "ruido_fundo": 9.106,
+              "transicao_borda_px": 0.735,
+              "nitidez": 865.7,
+              "fracao_tinta": 0.46773,
+              "tempo_s": 0.139,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 161 para 159 numa escala em que 255 e branco",
+                "o fundo ficou mais sujo: ruido subiu de 3.8 para 9.1"
+              ]
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.476,
+              "vazios_internos": 6327,
+              "vazios_por_mil_tinta": 7.2889,
+              "nivel_fundo": 149.97,
+              "ruido_fundo": 5.563,
+              "transicao_borda_px": 0.558,
+              "nitidez": 471.2,
+              "fracao_tinta": 0.55762,
+              "tempo_s": 0.168,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 161 para 150 numa escala em que 255 e branco",
+                "o fundo ficou mais sujo: ruido subiu de 3.8 para 5.6",
+                "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.86 para 0.56 pixels"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 940,
+        "largura_px_max": 1070,
+        "altura_px_min": 1514,
+        "altura_px_max": 1552,
+        "variacao_largura_px": 130,
+        "variacao_altura_px": 38,
+        "variacao_largura_mm": 11.01,
+        "variacao_altura_mm": 3.22,
+        "angulo_residual_medio_graus": 0.0714,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 1,
+          "filtro": "Melhorar",
+          "classe": "colorida",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 5.5 para 17.5"
+          ]
+        },
+        {
+          "pagina": 1,
+          "filtro": "Mágico pro",
+          "classe": "colorida",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 5.5 para 19.9"
+          ]
+        },
+        {
+          "pagina": 9,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.72 para 0.55 pixels"
+          ]
+        },
+        {
+          "pagina": 9,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 5.0 para 7.2",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.72 para 0.68 pixels"
+          ]
+        },
+        {
+          "pagina": 17,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.79 para 0.69 pixels"
+          ]
+        },
+        {
+          "pagina": 17,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 6.3 para 10.0"
+          ]
+        },
+        {
+          "pagina": 25,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 6.8 para 8.4"
+          ]
+        },
+        {
+          "pagina": 25,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 6.8 para 12.4"
+          ]
+        },
+        {
+          "pagina": 33,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.88 para 0.67 pixels"
+          ]
+        },
+        {
+          "pagina": 33,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 7.2 para 11.9"
+          ]
+        },
+        {
+          "pagina": 41,
+          "filtro": "Melhorar",
+          "classe": "texto",
+          "motivos": [
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.70 para 0.57 pixels"
+          ]
+        },
+        {
+          "pagina": 41,
+          "filtro": "Mágico pro",
+          "classe": "texto",
+          "motivos": [
+            "o fundo ficou mais sujo: ruido subiu de 7.4 para 12.7"
+          ]
+        },
+        {
+          "pagina": 50,
+          "filtro": "Melhorar",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 161 para 159 numa escala em que 255 e branco",
+            "o fundo ficou mais sujo: ruido subiu de 3.8 para 9.1"
+          ]
+        },
+        {
+          "pagina": 50,
+          "filtro": "Mágico pro",
+          "classe": "ilustracao",
+          "motivos": [
+            "o fundo escureceu: passou de 161 para 150 numa escala em que 255 e branco",
+            "o fundo ficou mais sujo: ruido subiu de 3.8 para 5.6",
+            "a borda das letras virou degrau (serrilhado): a rampa caiu de 0.86 para 0.56 pixels"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -48,6 +48,44 @@ class Recorte:
         return Recorte(0.0, 0.0, 1.0, 1.0)
 
 
+# Que fracao da tinta pode ficar de fora do corte, de cada ponta. Um por mil
+# de cada lado: sujeira de borda cabe nisso, uma linha de texto nao.
+SOBRA_DE_TINTA = 0.001
+
+
+def _faixa_com_a_tinta(perfil: np.ndarray) -> tuple[int, int] | None:
+    """Onde comeca e termina a massa da tinta, num perfil de linhas ou colunas.
+
+    Descarta SOBRA_DE_TINTA de cada ponta pela distribuicao acumulada, entao
+    alguns pixels soltos na borda nao mandam no recorte.
+    """
+    total = float(perfil.sum())
+    if total <= 0:
+        return None
+    acumulado = np.cumsum(perfil.astype(np.float64)) / total
+    inicio = int(np.searchsorted(acumulado, SOBRA_DE_TINTA))
+    fim = int(np.searchsorted(acumulado, 1.0 - SOBRA_DE_TINTA))
+    if fim <= inicio:
+        return None
+    return inicio, fim + 1
+
+
+def _mascara_de_tinta_local(cinza: np.ndarray) -> np.ndarray:
+    """Tinta de verdade, pelo limiar local de Sauvola.
+
+    Cai para o limiar global se a binarizacao nao estiver disponivel - melhor um
+    recorte conservador que nenhum recorte.
+    """
+    try:
+        from core.filtros import binarizar, janela_para_altura
+
+        binaria = binarizar(cinza, janela=janela_para_altura(cinza.shape[0]), k=0.20)
+        return (binaria == 0).astype(np.uint8)
+    except Exception:  # noqa: BLE001
+        nivel_papel = float(np.percentile(cinza, 80))
+        return (cinza < max(20.0, nivel_papel * 0.75)).astype(np.uint8)
+
+
 def detectar_bordas(img: np.ndarray) -> Recorte:
     """Acha o retangulo que contem o conteúdo da página.
 
@@ -67,10 +105,17 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
         )
     altura, largura = cinza.shape[:2]
 
-    # Limiar tolerante: qualquer coisa nitidamente mais escura que o papel.
-    nivel_papel = float(np.percentile(cinza, 80))
-    limiar = max(20.0, nivel_papel * 0.75)
-    tinta = (cinza < limiar).astype(np.uint8)
+    # Onde ha tinta de verdade.
+    #
+    # A versao anterior usava um limiar GLOBAL tolerante - qualquer coisa mais
+    # escura que 75% do nivel do papel. Em papel creme manchado isso acha tinta
+    # na folha inteira, e o recorte conclui que nao ha o que cortar: no Livro de
+    # Horas ele mantinha 100% da altura enquanto o conteudo ocupava de 11% a 82%.
+    # Era a queixa de "sobra dos lados uma parte branca".
+    #
+    # O limiar local de Sauvola separa tinta de mancha, que e exatamente o que
+    # um limiar unico nao consegue fazer numa folha envelhecida.
+    tinta = _mascara_de_tinta_local(cinza)
 
     # Um fechamento pequeno junta as letras em blocos de texto e evita que uma
     # unica mancha de poeira defina a borda.
@@ -81,18 +126,26 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     # conteudo e nada seria cortado. Ela e descartada antes.
     tinta = _apagar_bordas_solidas(tinta)
 
-    # Uma linha/coluna so conta se tiver tinta suficiente. O limiar baixo (1%)
-    # e proposital: uma linha de texto isolada precisa contar.
-    limite_linha = max(2, int(largura * 0.01))
-    limite_coluna = max(2, int(altura * 0.01))
-    linhas = np.where(tinta.sum(axis=1) >= limite_linha)[0]
-    colunas = np.where(tinta.sum(axis=0) >= limite_coluna)[0]
-
-    if len(linhas) == 0 or len(colunas) == 0:
+    # Onde esta a MASSA da tinta, e nao onde ha algum pixel dela.
+    #
+    # A versao anterior aceitava uma linha como "tem conteudo" se ela tivesse 1%
+    # da largura em tinta - cinco pixels numa pagina de quinhentos. Sujeira de
+    # borda passa nisso: no Livro de Horas a primeira linha tinha 12 pixels e a
+    # ultima tinha 4, todos ruido, e o recorte mantinha a folha inteira enquanto
+    # o conteudo ocupava de 11% a 82% da altura. Era a queixa de "sobra dos
+    # lados uma parte branca".
+    #
+    # Cortando pela distribuicao acumulada, alguns pixels soltos nao movem a
+    # borda: seria preciso uma fracao real da tinta estar ali.
+    limites = _faixa_com_a_tinta(tinta.sum(axis=1))
+    if limites is None:
         return Recorte.inteiro()  # pagina em branco: nao ha o que recortar
+    y0, y1 = limites
 
-    y0, y1 = int(linhas[0]), int(linhas[-1] + 1)
-    x0, x1 = int(colunas[0]), int(colunas[-1] + 1)
+    limites = _faixa_com_a_tinta(tinta.sum(axis=0))
+    if limites is None:
+        return Recorte.inteiro()
+    x0, x1 = limites
 
     # folga
     folga_x = int(largura * FOLGA)

@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência num computador limpo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conferência num computador limpo</h1>
+<p>Esta lista existe porque metade da Etapa 4 do protocolo <strong>não pode ser
+verificada na máquina de desenvolvimento</strong>. Coisas como o SmartScreen bloquear
+o instalador, o antivírus barrar o programa ou faltar a biblioteca do Visual
+C++ só aparecem num computador que nunca teve o programa nem o Python.</p>
+<p>Quem executa: o Samuel ou o Kaique. Onde: um computador limpo, de preferência o
+que o Kaique vai usar de verdade.</p>
+<p>Marque cada item. Onde falhar, anote o que apareceu na tela — a frase exata
+ajuda mais que a descrição.</p>
+<hr />
+<h2>Antes de começar, anote a máquina</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows (10 ou 11, versão)</td>
+<td></td>
+</tr>
+<tr>
+<td>Memória</td>
+<td></td>
+</tr>
+<tr>
+<td>Processador</td>
+<td></td>
+</tr>
+<tr>
+<td>Já teve Python instalado?</td>
+<td></td>
+</tr>
+<tr>
+<td>Antivírus em uso</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>1. A instalação</h2>
+<ul>
+<li>[ ] <strong>O instalador abre.</strong> Se o Windows mostrar uma tela azul dizendo
+      "O Windows protegeu o computador", isso é o SmartScreen. É esperado num
+      programa sem assinatura digital. Clique em <strong>Mais informações</strong> e depois
+      em <strong>Executar assim mesmo</strong>.
+      Apareceu? ( ) sim ( ) não</li>
+<li>[ ] <strong>O antivírus deixou instalar.</strong> Se bloqueou, anote o nome do antivírus e
+      a mensagem.</li>
+<li>[ ] <strong>Instalou sem pedir senha de administrador.</strong> O instalador foi feito
+      para instalar só para o usuário atual. Se pediu senha, é defeito.</li>
+<li>[ ] O programa aparece no menu Iniciar.</li>
+</ul>
+<h2>2. A primeira abertura</h2>
+<ul>
+<li>[ ] <strong>O programa abre.</strong> Anote quantos segundos levou até a janela aparecer:
+      ______</li>
+<li>[ ] <strong>Não apareceu erro sobre biblioteca faltando.</strong> Se aparecer algo como
+      "VCRUNTIME140.dll não encontrado" ou "MSVCP140.dll", falta a biblioteca do
+      Visual C++ e ela precisa entrar no instalador. Anote a mensagem exata.</li>
+<li>[ ] <strong>Abre num computador que nunca teve Python.</strong> Se pedir Python, o
+      empacotamento falhou.</li>
+</ul>
+<h2>3. A janela cabe na tela</h2>
+<p>Teste em cada resolução que a máquina permitir.</p>
+<ul>
+<li>[ ] Em <strong>1366 × 768</strong> a janela cabe inteira, sem cortar botão nem texto.</li>
+<li>[ ] Com a escala do Windows em <strong>100%</strong> está legível.</li>
+<li>[ ] Com a escala em <strong>125%</strong> os botões continuam inteiros.</li>
+<li>[ ] Com a escala em <strong>150%</strong> o texto não corta.</li>
+</ul>
+<p>A escala fica em: Configurações → Sistema → Vídeo → Escala.</p>
+<h2>4. Um livro do começo ao fim</h2>
+<p>Use um livro de verdade, de preferência um que o Kaique vá processar.</p>
+<ul>
+<li>[ ] Abre um PDF.</li>
+<li>[ ] As miniaturas aparecem. Quantos segundos até a primeira: ______</li>
+<li>[ ] Aplica um filtro e a prévia muda.</li>
+<li>[ ] Gera o resultado até o fim, sem travar.</li>
+<li>[ ] O PDF final abre e está correto.</li>
+<li>[ ] <strong>Quanto tempo levou um livro de cem páginas:</strong> ______</li>
+</ul>
+<h2>5. Sem internet</h2>
+<ul>
+<li>[ ] Desligue a internet (avião, ou tire o cabo) e repita o item 4 inteiro.
+      O programa não pode depender de rede para nada.</li>
+</ul>
+<h2>6. Coisas que já quebraram antes</h2>
+<ul>
+<li>[ ] <strong>Área de Trabalho no OneDrive.</strong> Se esta máquina tem a Área de Trabalho
+      sincronizada com o OneDrive, abra um livro que esteja lá. O programa
+      pergunta ao Windows onde a Área de Trabalho está, em vez de montar o
+      caminho na mão — mas convém confirmar.</li>
+<li>[ ] <strong>Nome de usuário com acento.</strong> Se o usuário do Windows tiver acento
+      (José, Conceição), confirme que o programa abre e grava normalmente.</li>
+<li>[ ] <strong>Nome de arquivo difícil.</strong> Tente abrir um PDF chamado
+      <code>Diário do Pároco (cópia 2) - versão final.pdf</code>.</li>
+<li>[ ] <strong>Pasta de rede ou pendrive.</strong> Grave o resultado num pendrive e confirme
+      que funciona.</li>
+</ul>
+<h2>7. Formato de número</h2>
+<ul>
+<li>[ ] O programa mostra número decimal com <strong>vírgula</strong> (1,5 e não 1.5) e nada
+      aparece errado por causa disso.</li>
+</ul>
+<hr />
+<h2>Se algo falhar</h2>
+<p>Anote três coisas e me mande:</p>
+<ol>
+<li>Em qual item da lista</li>
+<li>A frase exata que apareceu na tela</li>
+<li>Uma foto ou print, se der</li>
+</ol>
+<p>Com isso eu consigo reproduzir aqui. Sem a frase exata, costuma virar
+adivinhação.</p>
+<hr />
+<h2>O que já foi verificado na máquina de desenvolvimento</h2>
+<p>Estes itens <strong>não precisam</strong> ser refeitos, mas estão listados para você saber o
+que já está coberto:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nome de arquivo com acento, espaço e parêntese</td>
+<td>passa</td>
+</tr>
+<tr>
+<td>Caminho com mais de 260 caracteres</td>
+<td>passa</td>
+</tr>
+<tr>
+<td>PDF corrompido, com senha, vazio, só vetor</td>
+<td>passa, com mensagem em português</td>
+</tr>
+<tr>
+<td>Mais de mil páginas</td>
+<td>passa</td>
+</tr>
+<tr>
+<td>Página gigante, toda preta, toda branca</td>
+<td>passa</td>
+</tr>
+<tr>
+<td>Pendrive removido no meio</td>
+<td>passa, com mensagem em português</td>
+</tr>
+<tr>
+<td>Disco cheio ou pasta inexistente</td>
+<td>passa, com mensagem em português</td>
+</tr>
+<tr>
+<td>Cancelar no meio</td>
+<td>passa, sem deixar arquivo pela metade</td>
+</tr>
+<tr>
+<td>Vários livros seguidos sem reiniciar</td>
+<td>passa</td>
+</tr>
+<tr>
+<td>Memória não cresce com o tamanho do livro</td>
+<td>1 página: +4 MB; 1010 páginas: +0 MB</td>
+</tr>
+</tbody>
+</table>
+<p>São os 20 casos da Etapa 3, todos passando. O detalhe está em
+<code>relatorios/robustez.pdf</code>.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 12:47</p>
+</body>
+</html>

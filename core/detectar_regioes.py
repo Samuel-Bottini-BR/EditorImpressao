@@ -39,6 +39,7 @@ from core.selecao import (
     AUTOMATICO,
     GRAVURA,
     LETRA,
+    PAPEL,
     REDE,
     Regiao,
     Selecao,
@@ -92,6 +93,11 @@ ALTURA_ANALISE = 1200
 # maquina erra a borda por alguns pixels; a rampa esconde a emenda em vez de
 # deixar um degrau visivel na impressao.
 SUAVIDADE = 0.004
+
+# Folga entre o conteudo e o papel, em fracao da menor dimensao. Existe para o
+# branco nao encostar na borda da letra: ali mora a rampa de antisserrilhamento,
+# e apaga-la e o que faz a letra virar escada.
+FOLGA_DO_PAPEL = 0.004
 
 
 @dataclass
@@ -425,8 +431,26 @@ def detectar(
     # aplicar, em refinar_para_tinta. O efeito cai em cima de cada letra, o
     # papel entre as linhas continua sendo papel, e o que se edita continua
     # sendo um retangulo.
+    # O PAPEL e o que sobra, e precisa ser marcado EXPLICITAMENTE.
+    #
+    # Sem ele o filtro nao sabe onde pode empurrar para branco sem medo, e o
+    # fundo para na metade do caminho: medido, o Magico pro chegava a 219 numa
+    # escala em que 255 e branco, quando a queixa do Kaique e "queremos que
+    # fique branca a pagina e so as letras pretas".
+    #
+    # A folga em volta e para o branco nao encostar na borda da letra: ali mora
+    # a rampa de antisserrilhamento, e apaga-la e o que faz a letra virar
+    # escada.
+    folga = max(3, int(FOLGA_DO_PAPEL * min(altura, largura)) | 1)
+    ocupado = cv2.dilate(
+        (gravura | letra).astype(np.uint8),
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (folga, folga)),
+    ) > 0
+    papel = ~ocupado
+
     for mascara, tipo, rotulo in ((gravura, GRAVURA, "gravura"),
-                                  (letra, LETRA, "letra")):
+                                  (letra, LETRA, "letra"),
+                                  (papel, PAPEL, "papel")):
         if not mascara.any():
             continue
         origem = REDE if achados else AUTOMATICO

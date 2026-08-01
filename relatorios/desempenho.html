@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desempenho</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Desempenho</h1>
+<p>Medido em 31/07/2026 as 12:07.</p>
+<p>As metas sao as da Etapa 5 do protocolo. Onde houver projecao, ela sai
+do custo real por folha medido nos nove livros, multiplicado por 500 -
+nenhum livro do acervo tem 500 paginas.</p>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Medido</th>
+<th>Meta</th>
+<th>Passou?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir o programa</td>
+<td>0.7 s</td>
+<td>10 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Primeiras miniaturas na tela</td>
+<td>0.4 s</td>
+<td>5 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Analisar 500 folhas</td>
+<td>150.5 s</td>
+<td>180 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Exportar 500 paginas a 300 DPI</td>
+<td>284.5 s</td>
+<td>1200 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pico de memoria</td>
+<td>1135.6 MB</td>
+<td>2048 MB</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<h2>Custo por pagina, que e de onde as projecoes saem</h2>
+<ul>
+<li>Analisar uma folha: 301 milissegundos</li>
+<li>Exportar uma pagina a 300 DPI: 569 milissegundos</li>
+</ul>
+<h2>Quanto tempo cada filtro leva por pagina</h2>
+<table>
+<thead>
+<tr>
+<th>Filtro</th>
+<th>Tempo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original</td>
+<td>3 ms</td>
+</tr>
+<tr>
+<td>Preto e branco</td>
+<td>122 ms</td>
+</tr>
+<tr>
+<td>Melhorar</td>
+<td>626 ms</td>
+</tr>
+<tr>
+<td>Mágico pro</td>
+<td>864 ms</td>
+</tr>
+</tbody>
+</table>
+<h2>Memoria, livro a livro</h2>
+<p>O que importa aqui e o pico <strong>nao acompanhar</strong> o tamanho do livro. Se
+acompanhasse, um livro grande estouraria a memoria da maquina do
+Kaique.</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Folhas</th>
+<th>Pico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marial de sermoens - Frei Balthasar Paez</td>
+<td>907</td>
+<td>541 MB</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>750</td>
+<td>1080 MB</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana -  Fray Diego Valad</td>
+<td>446</td>
+<td>492 MB</td>
+</tr>
+<tr>
+<td>Na escola de Jesus - Catecismo explicado</td>
+<td>199</td>
+<td>494 MB</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>191</td>
+<td>1136 MB</td>
+</tr>
+<tr>
+<td>Giovambattista Palatino cittadino romano</td>
+<td>134</td>
+<td>451 MB</td>
+</tr>
+<tr>
+<td>Schön Neues Modell Buch - Johann Siebmac</td>
+<td>134</td>
+<td>456 MB</td>
+</tr>
+<tr>
+<td>POINTS d´ANCIENNES BRODERIES ANGLAISES -</td>
+<td>92</td>
+<td>486 MB</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia - Severi</td>
+<td>50</td>
+<td>457 MB</td>
+</tr>
+</tbody>
+</table>
+<h2>Em que maquina isto foi medido</h2>
+<ul>
+<li>Windows 11, 16 nucleos, 15 GB de memoria</li>
+</ul>
+<blockquote>
+<p>Esta maquina e mais forte que a do Kaique. Os tempos la serao
+maiores. A conferencia num computador de verdade esta em
+<code>conferencia-outro-computador.pdf</code>.</p>
+</blockquote>
+<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 12:47</p>
+</body>
+</html>

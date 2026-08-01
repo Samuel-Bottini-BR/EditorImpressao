@@ -209,6 +209,39 @@ def preparar_metade(
     return img
 
 
+def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
+    """Descobre onde estao gravura, letra e papel - uma vez por pagina.
+
+    Roda SOB DEMANDA, e nao na analise do livro. Detectar leva quase um segundo
+    por pagina, e na analise isso daria sete minutos para quinhentas folhas,
+    contra a meta de tres. Aqui a conta so acontece quando a pagina vai ser
+    mostrada ou exportada, e o resultado fica guardado no projeto: a segunda vez
+    e de graca, e o que a pessoa corrigir a mao sobrevive.
+
+    A imagem tem de ser a JA PREPARADA - depois de dividir, cortar e endireitar
+    - porque a selecao guarda fracoes daquele recorte. Detectar antes deixaria a
+    marcacao deslocada na hora de aplicar.
+    """
+    from core.selecao import Selecao
+
+    if not projeto.detectar_regioes:
+        return Selecao()
+
+    selecao = pagina.obter_selecao()
+    if not selecao.vazia:
+        return selecao
+
+    try:
+        from core.detectar_regioes import detectar
+
+        selecao = detectar(img)
+    except Exception:  # noqa: BLE001 - sem deteccao o filtro trata a folha toda
+        return Selecao()
+
+    pagina.guardar_selecao(selecao)
+    return selecao
+
+
 def renderizar_pagina(
     doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA
 ) -> tuple[np.ndarray, bool]:
@@ -223,8 +256,8 @@ def renderizar_pagina(
     if not projeto.limpar:
         return img, False
     return aplicar_filtro_com_selecao(
-        img, pagina.filtro, pagina.obter_selecao(), pagina.forca_preto,
-        pagina.clareza_melhorar, pagina.intensidade_magico,
+        img, pagina.filtro, garantir_selecao(projeto, pagina, img),
+        pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
     )
 
 
@@ -298,7 +331,8 @@ def processar(
 
                 if projeto.limpar:
                     img, mono = aplicar_filtro_com_selecao(
-                        img, pagina.filtro, pagina.obter_selecao(),
+                        img, pagina.filtro,
+                        garantir_selecao(projeto, pagina, img),
                         pagina.forca_preto, pagina.clareza_melhorar,
                         pagina.intensidade_magico,
                     )

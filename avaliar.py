@@ -55,6 +55,7 @@ from core.filtros import (  # noqa: E402
     ORIGINAL,
     PRETO_E_BRANCO,
     aplicar_filtro,
+    aplicar_filtro_com_selecao,
     doxapy_disponivel,
 )
 from core.pdf_io import (  # noqa: E402
@@ -653,11 +654,19 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
                 "filtros": {},
             }
 
+            # A selecao e descoberta uma vez por pagina e serve os quatro
+            # filtros, como acontece no programa de verdade.
+            from core.pipeline import garantir_selecao
+
+            selecao = garantir_selecao(projeto, pagina, base_img)
+            registro["regioes_achadas"] = len(selecao)
+
             medidas_base: dict[str, float] = {}
             for filtro in FILTROS_MEDIDOS:
                 try:
                     with Cronometro() as relogio:
-                        saida, _mono = aplicar_filtro(base_img.copy(), filtro)
+                        saida, _mono = aplicar_filtro_com_selecao(
+                            base_img.copy(), filtro, selecao)
                     m = medir_imagem(saida, papel_ref=papel_ref, dpi=dpi)
                     m["tempo_s"] = round(relogio.segundos, 3)
                     del saida
@@ -1165,6 +1174,219 @@ def _passou(valor: float, meta: float) -> str:
     return "sim" if valor <= meta else "NAO"
 
 
+def escrever_por_livro(dados: dict[str, Any], pasta: Path) -> list[Path]:
+    """Um relatorio por livro, como a Etapa 6 do protocolo pede.
+
+    O agregado esconde o livro: uma media boa pode ter dentro dela um livro
+    inteiro saindo mal. Aqui cada um responde por si.
+    """
+    from relatorio import gravar
+
+    escritos: list[Path] = []
+    for livro in dados["livros"]:
+        nome = _sem_acento(livro["nome"])[:56]
+        L = [f"# {livro['nome']}", ""]
+
+        if livro.get("erro"):
+            L += [f"**Nao consegui abrir este livro.** {livro['erro']}", ""]
+            escritos.append(gravar("\n".join(L), pasta / nome)["md"])
+            continue
+
+        L += [
+            f"- Arquivo de {livro['tamanho_mb']:.0f} MB",
+            f"- {livro['folhas']} folhas no PDF, que viram {livro['paginas']} "
+            f"paginas de saida",
+            f"- {len(livro['paginas_medidas'])} paginas medidas a fundo",
+            f"- {livro['tempo_analise_s']:.0f} segundos para analisar o livro "
+            f"inteiro ({livro['tempo_por_folha_analise_s'] * 1000:.0f} "
+            f"milissegundos por folha)",
+            "",
+        ]
+
+        piores = livro.get("piores_que_original", [])
+        L.append("## Paginas que sairam piores que o original")
+        L.append("")
+        if not piores:
+            L.append("Nenhuma. E o resultado esperado.")
+        else:
+            L.append(f"Sao {len(piores)} ocorrencias. Cada linha e uma pagina com um "
+                     f"filtro que a deixou pior do que ela era.")
+            L.append("")
+            L.append("| Pagina | Filtro | O que piorou |")
+            L.append("|---|---|---|")
+            for caso in piores:
+                L.append(f"| {caso['pagina']} | {caso['filtro']} | "
+                         f"{'; '.join(caso['motivos'])[:150]} |")
+        L.append("")
+
+        alertas = livro.get("alertas") or {}
+        L.append("## Paginas marcadas em laranja")
+        L.append("")
+        if not alertas:
+            L.append("Nenhuma.")
+        else:
+            L.append("Laranja quer dizer *o programa nao teve certeza*. Nao e erro:")
+            L.append("e um pedido de conferida.")
+            L.append("")
+            L.append("| Aviso | Quantas | O que significa |")
+            L.append("|---|---|---|")
+            for codigo, quantas in alertas.items():
+                try:
+                    d = analise.descrever(codigo)
+                    L.append(f"| {d.titulo} | {quantas} | {d.mensagem} |")
+                except Exception:  # noqa: BLE001
+                    L.append(f"| {codigo} | {quantas} | |")
+        L.append("")
+
+        if livro.get("observacoes"):
+            L.append("## Observacoes do livro inteiro")
+            L.append("")
+            for obs in livro["observacoes"]:
+                L.append(f"- {obs}")
+            L.append("")
+
+        g = livro.get("geometria") or {}
+        if g:
+            L += [
+                "## As paginas saem todas do mesmo tamanho?",
+                "",
+                "Paginas do mesmo livro precisam sair identicas, senao o caderno",
+                "nao fecha direito na impressao.",
+                "",
+                f"- Menor pagina: {g.get('largura_px_min')} x "
+                f"{g.get('altura_px_min')} pontinhos",
+                f"- Variacao de largura: {g.get('variacao_largura_mm', 0):.1f} mm",
+                f"- Variacao de altura: {g.get('variacao_altura_mm', 0):.1f} mm",
+                f"- Inclinacao que sobrou depois de endireitar: "
+                f"{g.get('angulo_residual_medio_graus', 0):.3f} grau na media, "
+                f"{g.get('angulo_residual_maximo_graus', 0):.3f} no pior caso",
+                "",
+            ]
+
+        L += [
+            "## Como cada filtro se comportou",
+            "",
+            "| Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |",
+            "|---|---|---|---|---|---|",
+        ]
+        por_filtro: dict[str, dict[str, list[float]]] = {}
+        for registro in livro.get("medidas", []):
+            for filtro, m in registro.get("filtros", {}).items():
+                if "erro" in m:
+                    continue
+                for chave, valor in m.items():
+                    if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+                        por_filtro.setdefault(filtro, {}).setdefault(
+                            chave, []).append(float(valor))
+        for filtro in FILTROS_MEDIDOS:
+            campos = por_filtro.get(filtro)
+            if not campos:
+                continue
+            L.append(
+                f"| {NOMES_AMIGAVEIS.get(filtro, filtro)} "
+                f"| {_media(campos.get('espessura_traco_px', [])):.2f} "
+                f"| {_media(campos.get('vazios_internos', [])):.0f} "
+                f"| {_media(campos.get('nivel_fundo', [])):.1f} "
+                f"| {_media(campos.get('ruido_fundo', [])):.2f} "
+                f"| {_media(campos.get('transicao_borda_px', [])):.2f} |")
+        L += [
+            "",
+            "> **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os",
+            "> buraquinhos dentro das letras: quanto mais sobrarem, melhor.",
+            "> **Transicao** entre 1 e 2 e borda saudavel; perto de zero e",
+            "> serrilhado.",
+            "",
+        ]
+        escritos.append(gravar("\n".join(L), pasta / nome)["md"])
+    return escritos
+
+
+def escrever_desempenho(dados: dict[str, Any], pasta: Path) -> Path:
+    """A tabela da Etapa 5: as metas, o medido, e passou ou nao."""
+    from relatorio import gravar
+
+    r, d = dados["resumo"], dados["desempenho"]
+    amb = dados["ambiente"]
+
+    linhas = [
+        ("Abrir o programa", d.get("abrir_programa_s", 0), METAS["abrir_programa_s"], "s"),
+        ("Primeiras miniaturas na tela", d.get("primeiras_miniaturas_s", 0),
+         METAS["primeiras_miniaturas_s"], "s"),
+        ("Analisar 500 folhas", r["projecao_analise_500_folhas_s"],
+         METAS["analise_500_paginas_s"], "s"),
+        ("Exportar 500 paginas a 300 DPI", r["projecao_export_500_paginas_s"],
+         METAS["exportar_500_paginas_300dpi_s"], "s"),
+        ("Pico de memoria", r["pico_memoria_mb"], METAS["pico_memoria_mb"], "MB"),
+    ]
+
+    L = [
+        "# Desempenho",
+        "",
+        f"Medido em {dados['quando']}.",
+        "",
+        "As metas sao as da Etapa 5 do protocolo. Onde houver projecao, ela sai",
+        "do custo real por folha medido nos nove livros, multiplicado por 500 -",
+        "nenhum livro do acervo tem 500 paginas.",
+        "",
+        "| O que | Medido | Meta | Passou? |",
+        "|---|---|---|---|",
+    ]
+    for nome, valor, meta, unidade in linhas:
+        L.append(f"| {nome} | {valor:.1f} {unidade} | {meta:.0f} {unidade} "
+                 f"| {_passou(valor, meta)} |")
+
+    L += [
+        "",
+        "## Custo por pagina, que e de onde as projecoes saem",
+        "",
+        f"- Analisar uma folha: {r['tempo_analise_por_folha_s'] * 1000:.0f} "
+        f"milissegundos",
+        f"- Exportar uma pagina a 300 DPI: "
+        f"{r['tempo_export_por_pagina_s'] * 1000:.0f} milissegundos",
+        "",
+        "## Quanto tempo cada filtro leva por pagina",
+        "",
+        "| Filtro | Tempo |",
+        "|---|---|",
+    ]
+    for filtro in FILTROS_MEDIDOS:
+        m = r["medias_por_filtro"].get(filtro, {})
+        if m:
+            L.append(f"| {NOMES_AMIGAVEIS.get(filtro, filtro)} | "
+                     f"{m.get('tempo_s', 0) * 1000:.0f} ms |")
+
+    L += [
+        "",
+        "## Memoria, livro a livro",
+        "",
+        "O que importa aqui e o pico **nao acompanhar** o tamanho do livro. Se",
+        "acompanhasse, um livro grande estouraria a memoria da maquina do",
+        "Kaique.",
+        "",
+        "| Livro | Folhas | Pico |",
+        "|---|---|---|",
+    ]
+    for livro in sorted(dados["livros"], key=lambda x: -(x.get("folhas") or 0)):
+        if livro.get("erro"):
+            continue
+        L.append(f"| {livro['nome'][:40]} | {livro['folhas']} | "
+                 f"{livro['pico_memoria_mb']:.0f} MB |")
+
+    L += [
+        "",
+        "## Em que maquina isto foi medido",
+        "",
+        f"- {amb['sistema']}, {amb['nucleos']} nucleos, "
+        f"{amb['memoria_total_mb'] / 1024:.0f} GB de memoria",
+        "",
+        "> Esta maquina e mais forte que a do Kaique. Os tempos la serao",
+        "> maiores. A conferencia num computador de verdade esta em",
+        "> `conferencia-outro-computador.pdf`.",
+        "",
+    ]
+    return gravar("\n".join(L), pasta / "desempenho")["md"]
+
+
 # ---------------------------------------------------------------------------
 # Comparacao entre duas rodadas
 # ---------------------------------------------------------------------------
@@ -1252,14 +1474,24 @@ def achar_acervo(indicado: str | None) -> Path:
     candidatas.append(Path.home() / "OneDrive" / "Desktop")
     candidatas.append(Path.home() / "OneDrive" / "Area de Trabalho")
 
-    for base in candidatas:
-        alvo = base / NOME_DO_ACERVO
-        if alvo.is_dir():
-            return alvo
+    # O acervo ja mudou de lugar uma vez, entao olhamos varios lugares
+    # conhecidos - mas em ORDEM DE PREFERENCIA, e nao pelo que tiver mais PDF.
+    # Contar arquivos escolhia errado: a pasta antiga tem uma subpasta de
+    # RESULTADOS, e os PDFs que nos mesmos geramos entravam na conta.
+    nomes = [
+        Path("TESTES EDITOR DE IMPRESSAO") / "LIVROS PARA TESTE",
+        Path(NOME_DO_ACERVO),
+        Path("LIVROS PARA FAZER TESTE"),
+    ]
+    for nome in nomes:
+        for base in candidatas:
+            alvo = base / nome
+            if alvo.is_dir() and any(alvo.rglob("*.pdf")):
+                return alvo
 
     raise SystemExit(
-        f"Nao achei a pasta '{NOME_DO_ACERVO}' na Area de Trabalho. "
-        f"Passe o caminho com --acervo."
+        "Nao achei a pasta dos livros de teste na Area de Trabalho. "
+        "Passe o caminho com --acervo."
     )
 
 
@@ -1279,6 +1511,8 @@ def main(argv: list[str] | None = None) -> int:
                    help="caminho de um .json anterior, para gerar a comparacao")
     p.add_argument("--livro", default=None,
                    help="mede so os livros cujo nome contenha este texto")
+    p.add_argument("--por-livro", action="store_true",
+                   help="grava tambem um relatorio por livro e o de desempenho")
     p.add_argument("--refazer-md", default=None, metavar="ARQUIVO.json",
                    help="so reescreve o .md a partir de um .json ja medido, "
                         "sem medir nada de novo")
@@ -1358,6 +1592,24 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     escrever_markdown(dados, destino_md)
+
+    # Os tres formatos, porque o Samuel nao abre .md
+    try:
+        from relatorio import gravar
+
+        gravar(destino_md.read_text(encoding="utf-8"), destino_md)
+    except Exception:  # noqa: BLE001 - o .md sozinho ainda serve para mim
+        pass
+
+    # A Etapa 6 pede um relatorio por livro e um de desempenho. O agregado
+    # esconde o livro: uma media boa pode ter dentro dela um livro saindo mal.
+    if args.rotulo == "linha-de-base" or args.por_livro:
+        pasta_livros = pasta_relatorios / "por-livro"
+        pasta_livros.mkdir(exist_ok=True)
+        escritos = escrever_por_livro(dados, pasta_livros)
+        print(f"Relatorios por livro: {len(escritos)} em {pasta_livros}")
+        escrever_desempenho(dados, pasta_relatorios)
+        print(f"Desempenho: {pasta_relatorios / 'desempenho.pdf'}")
 
     print("-" * 72)
     r = dados["resumo"]
