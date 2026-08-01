@@ -79,11 +79,13 @@ from ui.widgets.visualizador import (
 DPI_PREVIA = 110          # baixo de proposito: a tela precisa abrir em segundos
 
 ABA_CORTE, ABA_BORDAS, ABA_ANGULO, ABA_FILTRO = "corte", "bordas", "angulo", "filtro"
+ABA_MARCAR = "marcar"
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
     ABA_BORDAS: "Bordas",
     ABA_ANGULO: "Endireitar",
+    ABA_MARCAR: "Marcar",
     ABA_FILTRO: "Filtro",
 }
 
@@ -359,6 +361,201 @@ class TelaConferir(QWidget):
             "", linha, self._aplicar_sugestao, "sugestao"
         )
 
+    def _montar_aba_marcar(self) -> None:
+        """A aba de marcar a mao onde estao gravura, letra e papel.
+
+        O detector acerta a maioria das paginas. Esta aba existe para as que ele
+        erra: sem ela, nao havia como consertar.
+        """
+        from core.selecao import GRAVURA, LETRA, PAPEL, SOMAR, SUBTRAIR
+        from ui.widgets.editor_selecao import (
+            FERRAMENTA_ELIPSE,
+            FERRAMENTA_LACO,
+            FERRAMENTA_PINCEL,
+            FERRAMENTA_POLIGONO,
+            FERRAMENTA_RETANGULO,
+            FERRAMENTA_VARINHA,
+            NOMES_DAS_FERRAMENTAS,
+            EditorSelecao,
+        )
+
+        pagina = QWidget()
+        linha = QHBoxLayout(pagina)
+        linha.setContentsMargins(0, 0, 0, 0)
+        linha.setSpacing(6)
+
+        anterior = QPushButton("<")
+        anterior.setFixedWidth(40)
+        _ligar(anterior, lambda: self._navegar(-1))
+        linha.addWidget(anterior)
+
+        self.editor_selecao = EditorSelecao()
+        self.editor_selecao.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.editor_selecao.selecao_mudou.connect(self._selecao_mudou)
+        self.editor_selecao.aviso.connect(self._mostrar_aviso_da_marcacao)
+        linha.addWidget(self.editor_selecao, 1)
+
+        proxima = QPushButton(">")
+        proxima.setFixedWidth(40)
+        _ligar(proxima, lambda: self._navegar(1))
+        linha.addWidget(proxima)
+        self.paginas_de_imagem[ABA_MARCAR] = pagina
+
+        # --- os botoes ---
+        painel = QWidget()
+        fora = QVBoxLayout(painel)
+        fora.setContentsMargins(0, 0, 0, 0)
+        fora.setSpacing(6)
+
+        # o que estou marcando
+        tipos = QHBoxLayout()
+        tipos.addWidget(QLabel("Marcar como:"))
+        self.botoes_tipo = {}
+        for tipo, texto in ((GRAVURA, "Gravura ou foto"), (LETRA, "Letra e traço"),
+                            (PAPEL, "Papel")):
+            botao = QPushButton(texto)
+            botao.setCheckable(True)
+            botao.setChecked(tipo == GRAVURA)
+            _ligar(botao, lambda t=tipo: self._escolher_tipo_de_marcacao(t))
+            tipos.addWidget(botao)
+            self.botoes_tipo[tipo] = botao
+        tipos.addSpacing(16)
+
+        # somar ou tirar
+        self.botao_somar = QPushButton("Somar")
+        self.botao_somar.setCheckable(True)
+        self.botao_somar.setChecked(True)
+        _ligar(self.botao_somar, lambda: self._escolher_operacao(SOMAR))
+        self.botao_subtrair = QPushButton("Tirar")
+        self.botao_subtrair.setCheckable(True)
+        _ligar(self.botao_subtrair, lambda: self._escolher_operacao(SUBTRAIR))
+        tipos.addWidget(self.botao_somar)
+        tipos.addWidget(self.botao_subtrair)
+        tipos.addStretch()
+        fora.addLayout(tipos)
+
+        # as ferramentas
+        ferramentas = QHBoxLayout()
+        ferramentas.addWidget(QLabel("Ferramenta:"))
+        self.botoes_ferramenta = {}
+        for ferramenta in (FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE, FERRAMENTA_LACO,
+                           FERRAMENTA_POLIGONO, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA):
+            botao = QPushButton(NOMES_DAS_FERRAMENTAS[ferramenta])
+            botao.setCheckable(True)
+            botao.setChecked(ferramenta == FERRAMENTA_RETANGULO)
+            _ligar(botao, lambda f=ferramenta: self._escolher_ferramenta(f))
+            ferramentas.addWidget(botao)
+            self.botoes_ferramenta[ferramenta] = botao
+        ferramentas.addStretch()
+        fora.addLayout(ferramentas)
+
+        # acoes
+        acoes = QHBoxLayout()
+        _botao("desfazer", acoes, self._desfazer_marcacao)
+        _botao("procurar de novo", acoes, self._detectar_de_novo)
+        _botao("limpar tudo", acoes, self._limpar_marcacao)
+        self.aviso_marcacao = QLabel("")
+        self.aviso_marcacao.setObjectName("dica")
+        acoes.addWidget(self.aviso_marcacao, 1)
+        fora.addLayout(acoes)
+
+        self.linhas_de_botoes[ABA_MARCAR] = painel
+
+    # --- acoes da aba de marcar -------------------------------------------
+
+    def _escolher_tipo_de_marcacao(self, tipo: str) -> None:
+        self.editor_selecao.definir_tipo(tipo)
+        for chave, botao in self.botoes_tipo.items():
+            botao.setChecked(chave == tipo)
+
+    def _escolher_operacao(self, operacao: str) -> None:
+        from core.selecao import SOMAR
+
+        self.editor_selecao.definir_operacao(operacao)
+        self.botao_somar.setChecked(operacao == SOMAR)
+        self.botao_subtrair.setChecked(operacao != SOMAR)
+
+    def _escolher_ferramenta(self, ferramenta: str) -> None:
+        self.editor_selecao.definir_ferramenta(ferramenta)
+        for chave, botao in self.botoes_ferramenta.items():
+            botao.setChecked(chave == ferramenta)
+
+    def _mostrar_aviso_da_marcacao(self, texto: str) -> None:
+        if hasattr(self, "aviso_marcacao"):
+            self.aviso_marcacao.setText(texto)
+
+    def _pagina_marcada(self):
+        """A pagina que a aba de marcar esta editando, ou None."""
+        if self.projeto is None or not self.projeto.paginas:
+            return None
+        if not 0 <= self.indice_pagina < len(self.projeto.paginas):
+            return None
+        return self.projeto.paginas[self.indice_pagina]
+
+    def _selecao_mudou(self) -> None:
+        """Grava a marcacao na pagina e joga fora a previa, que ficou velha."""
+        pagina = self._pagina_marcada()
+        if pagina is None:
+            return
+        pagina.guardar_selecao(self.editor_selecao.selecao)
+        self._mostrar_aviso_da_marcacao(
+            self.editor_selecao.selecao.resumo_em_portugues())
+        if self.previas is not None:
+            self.previas.invalidar(self.indice_pagina)
+
+    def _desfazer_marcacao(self) -> None:
+        self.editor_selecao.desfazer()
+        self._selecao_mudou()
+
+    def _limpar_marcacao(self) -> None:
+        from core.selecao import Selecao
+
+        if self._pagina_marcada() is None:
+            return
+        self.editor_selecao.definir_selecao(Selecao())
+        self._selecao_mudou()
+        self._mostrar_aviso_da_marcacao(
+            "Tirei tudo. O filtro volta a tratar a folha inteira igual.")
+
+    def _detectar_de_novo(self) -> None:
+        """Roda a deteccao outra vez, SEM apagar o que foi feito a mao.
+
+        E o ponto de as tres formas de marcar viverem na mesma lista: da para
+        pedir a maquina de novo sem perder a correcao da pessoa.
+        """
+        from core.detectar_regioes import detectar
+
+        pagina = self._pagina_marcada()
+        if pagina is None:
+            return
+
+        quantas = self.editor_selecao.limpar_o_que_a_maquina_marcou()
+        img = self.previas.pegar(self.indice_pagina, self._dpi_atual) \
+            if self.previas is not None else None
+        if img is None:
+            self._mostrar_aviso_da_marcacao("Espere a página terminar de carregar.")
+            return
+
+        try:
+            nova = detectar(img)
+        except Exception:  # noqa: BLE001 - sem deteccao a marcacao a mao continua
+            self._mostrar_aviso_da_marcacao("Não consegui procurar nesta página.")
+            return
+
+        for regiao in nova.regioes:
+            self.editor_selecao.selecao.acrescentar(regiao)
+        pagina.guardar_selecao(self.editor_selecao.selecao)
+        self.editor_selecao.update()
+        if self.previas is not None:
+            self.previas.invalidar(self.indice_pagina)
+
+        achou = len(nova)
+        mantidas = "" if not quantas else f" Mantive as suas {quantas and ''}"
+        del mantidas
+        self._mostrar_aviso_da_marcacao(
+            f"Achei {achou} áreas. O que você marcou à mão continua aí."
+            if achou else "Não achei nada novo nesta página.")
+
     def _montar_aba_filtro(self) -> None:
         pagina = QWidget()
         camadas = QVBoxLayout(pagina)
@@ -471,6 +668,9 @@ class TelaConferir(QWidget):
             if projeto.endireitar:
                 self._montar_aba_angulo()
                 self._abas_ativas.append(ABA_ANGULO)
+            if projeto.limpar and projeto.detectar_regioes:
+                self._montar_aba_marcar()
+                self._abas_ativas.append(ABA_MARCAR)
             if projeto.limpar or not self._abas_ativas:
                 self._montar_aba_filtro()
                 self._abas_ativas.append(ABA_FILTRO)
@@ -652,8 +852,34 @@ class TelaConferir(QWidget):
             vis = self.visualizadores[ABA_ANGULO]
             vis.definir_imagem(img)
             vis.definir_angulo(pagina.angulo_manual or 0.0)
+        elif aba == ABA_MARCAR:
+            self._atualizar_marcacao(img, pagina)
         else:
             self._atualizar_cartoes(img)
+
+    def _atualizar_marcacao(self, img, pagina) -> None:
+        """Poe a pagina e a marcacao dela no editor.
+
+        Se a pagina ainda nao tem marcacao, a deteccao roda aqui - e o mesmo
+        caminho sob demanda do pipeline, so que agora com a pessoa olhando.
+        """
+        self.editor_selecao.definir_imagem(img)
+        selecao = pagina.obter_selecao()
+
+        if selecao.vazia and img is not None and self.projeto.detectar_regioes:
+            try:
+                from core.detectar_regioes import detectar
+
+                selecao = detectar(img)
+                pagina.guardar_selecao(selecao)
+            except Exception:  # noqa: BLE001 - sem deteccao da para marcar a mao
+                pass
+
+        self.editor_selecao.definir_selecao(selecao)
+        self._mostrar_aviso_da_marcacao(
+            selecao.resumo_em_portugues() if not selecao.vazia
+            else "Nada marcado. Use as ferramentas para marcar."
+        )
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
         """Os quatro cartoes mostram a página de verdade, cada um com seu filtro."""
