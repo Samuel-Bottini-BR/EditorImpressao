@@ -292,9 +292,26 @@ def pasta_de_teste(assunto: str, filtro: str = "", raiz: str | Path | None = Non
     pasta_filtro = PASTAS_DE_FILTRO.get(chave, chave.upper() or "OUTROS")
 
     carimbo = datetime.now().strftime("%Y-%m-%d %Hh%M")
-    pasta = raiz / pasta_filtro / f"{carimbo} - {assunto.strip()}"
+    pasta = raiz / pasta_filtro / f"{carimbo} - {_nome_de_pasta(assunto)}"
     pasta.mkdir(parents=True, exist_ok=True)
     return pasta
+
+
+# Caracteres que o Windows nao aceita em nome de pasta.
+PROIBIDOS_NO_NOME = '<>:"/\\|?*'
+
+
+def _nome_de_pasta(assunto: str) -> str:
+    """Deixa o assunto virar nome de pasta sem derrubar o teste.
+
+    Um assunto com dois pontos - "letra arredondada: raio da nitidez" - fazia o
+    mkdir estourar no meio de uma bateria, depois de todo o trabalho pesado ja
+    feito. O assunto e texto escrito a mao a cada teste, entao a pontuacao vai
+    aparecer.
+    """
+    limpo = "".join(" " if c in PROIBIDOS_NO_NOME else c for c in assunto)
+    limpo = " ".join(limpo.split()).strip(" .")
+    return limpo or "sem assunto"
 
 
 if __name__ == "__main__":
