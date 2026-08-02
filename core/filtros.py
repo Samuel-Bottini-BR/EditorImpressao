@@ -584,6 +584,15 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
 
     saida = img.copy()
     saida[quase_branco & ~orla] = 255
+
+    # A orla fica, mas sem a cor do papel: mantida como veio, ela vira um halo
+    # creme em volta de cada letra sobre o papel branco. Igualando os tres
+    # canais ao brilho do pixel, a rampa continua existindo em tom de cinza e o
+    # amarelado some junto com o resto do fundo.
+    if saida.ndim == 3:
+        de_fora = orla & quase_branco
+        if de_fora.any():
+            saida[de_fora] = cinza[de_fora][:, None]
     return saida
 
 
