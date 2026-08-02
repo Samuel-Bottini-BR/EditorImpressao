@@ -120,6 +120,20 @@ SATURACAO_GANHO = 1.35
 NITIDEZ_PESO = 0.6
 BRANCO_LIMIAR = 235
 
+# Largura da orla que o empurrao para o branco NAO toca, como fracao do menor
+# lado da pagina. Da uns dois pixels a 300 DPI - a espessura da rampa de
+# antisserrilhamento de uma letra impressa.
+ORLA_DA_LETRA = 400
+
+# Abaixo desta fracao do nivel do papel o pixel conta como tinta, so para saber
+# onde fica a orla a preservar. Nao e limiar de binarizacao.
+TINTA_PARA_ORLA = 0.60
+
+# Raio do borrao da nitidez, em fracao da altura. Era 1/1000, tres pixels numa
+# pagina de 300 DPI: largo demais para letra, e o que sobrava era um halo claro
+# em volta de cada traco em vez de nitidez. Ver _nitidez.
+RAIO_DA_NITIDEZ = 2500
+
 
 class ErroFiltro(Exception):
     """Falha ao aplicar um filtro, já com mensagem para o usuario."""
@@ -525,18 +539,51 @@ def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.nd
 
 
 def _nitidez(img: np.ndarray, peso: float = NITIDEZ_PESO) -> np.ndarray:
-    """Unsharp mask: soma a propria imagem menos a versão borrada dela."""
-    sigma = max(1.0, img.shape[0] / 1000.0)
+    """Unsharp mask: soma a propria imagem menos a versão borrada dela.
+
+    O raio manda no resultado mais que o peso. Com raio largo, o unsharp nao
+    afia o traco: ele desenha um halo claro de tres pixels em volta da letra e
+    achata a rampa dela, que e o oposto do pedido - letra "arredondada e
+    nitida". Medido no acervo, este passo sozinho levava a rampa de 2,71 para
+    1,95 no Marial e de 1,80 para 1,32 no Boecio.
+
+    Com raio da ordem de um pixel, o realce cai em cima da propria borda: a
+    letra ganha contraste sem ganhar contorno.
+    """
+    sigma = max(0.8, img.shape[0] / RAIO_DA_NITIDEZ)
     borrada = cv2.GaussianBlur(img, (0, 0), sigmaX=sigma, sigmaY=sigma)
     return cv2.addWeighted(img, 1.0 + peso, borrada, -peso, 0)
 
 
 def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray:
-    """Pixels quase brancos viram branco puro: acaba com o cinza de fundo."""
+    """Pixels quase brancos viram branco puro: acaba com o cinza de fundo.
+
+    Menos a ORLA COLADA NA TINTA. Ali mora a rampa de antisserrilhamento, os
+    poucos pixels de tom intermediario que arredondam a letra; jogados a branco,
+    a letra vira escada - e a queixa do Kaique de "letras pixeladas". Medido no
+    acervo, so este corte levava a rampa de 1,32 para 1,03 no Boecio e de 1,95
+    para 1,58 no Marial.
+
+    O miolo do papel continua indo a branco puro: o ruido de fundo medido
+    continua zero. O que sobra fora do branco e uma orla de dois pixels em volta
+    das letras, que e justamente o que faz a letra parecer redonda.
+    """
     cinza = _para_cinza(img)
-    mascara = cinza >= limiar
+    quase_branco = cinza >= limiar
+
+    # A orla e medida a partir da TINTA, e nao do proprio branco. Encolher a
+    # mascara de branco nao serve: onde o papel tem grao ela fica furada, e cada
+    # furo abriria um anel cinza no meio do papel aberto - medido, 80% do papel
+    # do Boecio deixava de ir a branco.
+    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    tinta = (cinza < nivel_papel * TINTA_PARA_ORLA).astype(np.uint8)
+
+    lado = max(3, int(min(img.shape[:2]) / ORLA_DA_LETRA) | 1)
+    orla = cv2.dilate(
+        tinta, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+
     saida = img.copy()
-    saida[mascara] = 255
+    saida[quase_branco & ~orla] = 255
     return saida
 
 

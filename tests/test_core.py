@@ -206,6 +206,27 @@ def test_recorte_tira_a_borda_preta_do_scanner():
     assert cortada[:, :5].mean() > 100, "sobrou borda preta depois do corte"
 
 
+def test_o_branco_nao_come_a_orla_da_letra():
+    """A rampa que arredonda a letra tem de sobreviver ao empurrao do branco.
+
+    Era a queixa 1 do Kaique, "letras pixeladas": todo pixel acima de 235 virava
+    255, inclusive os poucos tons intermediarios que ficam colados no traco. Sem
+    eles a letra vira escada.
+    """
+    from core.filtros import _empurrar_branco
+
+    img = np.full((200, 200, 3), 252, np.uint8)
+    img[80:120, 80:120] = 20                       # o traco
+    img[76:80, 80:120] = 200                       # a rampa em cima dele
+    img[120:124, 80:120] = 240                     # e a rampa embaixo
+
+    saida = _empurrar_branco(img)
+
+    assert (saida[10:40, 10:40] == 255).all(), "o papel aberto nao foi a branco"
+    assert saida[120, 100, 0] != 255, "a orla colada na letra foi apagada"
+    assert saida[78, 100, 0] == 200, "a rampa escura foi mexida"
+
+
 def test_risca_do_vinco_nao_segura_o_corte():
     """A risca da dobra atravessa a pagina e nao pode mandar no recorte.
 
