@@ -306,6 +306,19 @@ PEDACOS_DE_GLIFO_DE_ESCRITA = 0.30
 # Abaixo desta tinta o buraco e papel limpo, e papel nao vira gravura.
 TINTA_MINIMA_DO_BURACO = 0.05
 
+# Quando a pagina inteira e UMA FOTO so - capa de madeira, foto da encadernacao,
+# frontispicio gravado - o modelo desenha a caixa em quase toda ela e sobra uma
+# faixa fina de fora, cortada pelo retangulo. Essa faixa e o mesmo objeto, e nao
+# texto: sem esta regra ela virava letra por eliminacao e o veio da madeira seria
+# binarizado numa tarja no alto da capa.
+#
+# Nao da para decidir isso pelo tamanho do pedaco de tinta, que e a regua usada
+# no resto do arquivo: o veio da madeira do Palatino da 73,6% de pedacos do
+# tamanho de glifo, tao "escrito" quanto uma pagina de texto. O que decide e a
+# pagina nao ter bloco de texto nenhum e a sobra ser fina.
+FOTO_DE_PAGINA_INTEIRA = 0.60
+SOBRA_FORA_DA_FOTO = 0.08
+
 # Ate este tamanho, uma mancha colorida dentro de uma caixa de texto e uma
 # inicial rubricada, e vale como letra. Acima disso e area pintada, e a caixa do
 # modelo e que esta errada. Na pagina 48 do Livro de Horas o modelo desenhou uma
@@ -390,6 +403,26 @@ def _cor_que_a_caixa_de_texto_pode_engolir(
         if float(letra_layout[mancha].mean()) > 0.5:
             cede |= mancha
     return cede
+
+
+def _e_uma_foto_de_pagina_inteira(
+    gravura: np.ndarray, letra_layout: np.ndarray, tinta: np.ndarray
+) -> bool:
+    """A pagina inteira e uma foto so - capa, encadernacao, frontispicio?
+
+    Nessas paginas o modelo desenha a caixa em quase toda a folha e sobra uma
+    faixa fina de fora, cortada pelo retangulo. A faixa e o mesmo objeto, e por
+    eliminacao virava LETRA: no verso da capa do Palatino, o veio da madeira do
+    alto seria binarizado numa tarja preta e branca.
+
+    Ver FOTO_DE_PAGINA_INTEIRA para por que a regua do tamanho do pedaco de
+    tinta, usada no resto do arquivo, nao serve aqui.
+    """
+    if letra_layout.any():
+        return False
+    if float(gravura.mean()) < FOTO_DE_PAGINA_INTEIRA:
+        return False
+    return float((tinta & ~gravura).mean()) <= SOBRA_FORA_DA_FOTO
 
 
 def _sem_as_manchas_por_cima_da_escrita(
@@ -611,6 +644,11 @@ def detectar(
     # buraco. Sem tapar, o buraco vira letra e o manto azul da figura recebe
     # tratamento de texto.
     gravura = _tapar_buracos_da_iluminura(gravura, tinta)
+
+    # Pagina que e uma foto so: a faixa que sobrou fora da caixa e a mesma foto,
+    # cortada pelo retangulo, e nao um bloco de texto.
+    if _e_uma_foto_de_pagina_inteira(gravura, letra_layout, tinta):
+        gravura = np.ones((altura, largura), bool)
 
     # O que o modelo achou SOMA com o que sobrou de tinta - nao substitui.
     #

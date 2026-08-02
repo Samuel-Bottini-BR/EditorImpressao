@@ -139,6 +139,36 @@ def test_escrita_e_desenho_se_separam_pelo_tamanho_do_pedaco():
     assert _tinta_em_pedacos_de_glifo(desenho) < PEDACOS_DE_GLIFO_DE_ESCRITA
 
 
+def test_capa_inteira_nao_ganha_tarja_de_letra():
+    """No verso da capa do Palatino sobrava uma faixa de letra no alto.
+
+    O modelo desenha a caixa da foto em quase toda a folha, e a faixa que fica
+    de fora e a mesma capa, cortada pelo retangulo. Virando letra, o veio da
+    madeira seria binarizado.
+    """
+    from core.detectar_regioes import _e_uma_foto_de_pagina_inteira
+
+    vazio = np.zeros((100, 100), bool)
+    foto = np.zeros((100, 100), bool)
+    foto[:88, :] = True          # a caixa do modelo, como nas capas do acervo
+    # A textura da capa que sobra fora da caixa: no acervo isso da de 1,8% a
+    # 4,9% da pagina.
+    tinta = np.zeros((100, 100), bool)
+    tinta[:92, :] = True
+
+    assert _e_uma_foto_de_pagina_inteira(foto, vazio, tinta)
+
+    # com bloco de texto na pagina, nao e foto de pagina inteira
+    com_texto = np.zeros((100, 100), bool)
+    com_texto[90:, :] = True
+    assert not _e_uma_foto_de_pagina_inteira(foto, com_texto, tinta)
+
+    # gravura pequena tambem nao vale
+    pequena = np.zeros((100, 100), bool)
+    pequena[:30, :] = True
+    assert not _e_uma_foto_de_pagina_inteira(pequena, vazio, tinta)
+
+
 def test_pagina_limpa_nao_marca_nada():
     selecao = detectar(pagina_crua(), usar_layout=False)
 
