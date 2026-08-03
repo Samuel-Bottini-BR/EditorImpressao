@@ -117,6 +117,12 @@ NITIDEZ_MIN, NITIDEZ_MAX = 0.15, 1.10
 
 CLAHE_CLIP = 2.0
 SATURACAO_GANHO = 1.35
+
+# Onde o realce de cor NAO deve pegar: claro como papel e sem cor de verdade.
+# Medido no acervo, o grao do papel ja limpo fica entre 13 e 16 de saturacao; a
+# rubricacao comeca em 60 (SATURACAO_DE_RUBRICA).
+CLARO_COMO_PAPEL = 0.80
+SATURACAO_DE_GRAO = 25
 NITIDEZ_PESO = 0.6
 BRANCO_LIMIAR = 235
 
@@ -518,13 +524,8 @@ def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarra
     )
     realcada = clahe.apply(luz).astype(np.float32)
 
-    # 0 no papel, subindo ate 1 no conteudo bem mais escuro que ele. A rampa
-    # comeca abaixo do nivel do papel para que o papel inteiro - e nao so a
-    # metade mais clara dele - fique de fora.
-    inicio = nivel_papel * CLAHE_INICIO_CONTEUDO
-    faixa = max(1.0, inicio * CLAHE_FAIXA_CONTEUDO)
     original = luz.astype(np.float32)
-    peso = np.clip((inicio - original) / faixa, 0.0, 1.0)
+    peso = _peso_do_conteudo(original, nivel_papel)
 
     lab[:, :, 0] = np.clip(
         original * (1.0 - peso) + realcada * peso, 0, 255
@@ -532,9 +533,43 @@ def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarra
     return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
 
+def _peso_do_conteudo(luz: np.ndarray, nivel_papel: float) -> np.ndarray:
+    """0 no papel, subindo ate 1 no conteudo bem mais escuro que ele.
+
+    A rampa comeca abaixo do nivel do papel para que o papel inteiro - e nao so
+    a metade mais clara dele - fique de fora do realce.
+    """
+    inicio = nivel_papel * CLAHE_INICIO_CONTEUDO
+    faixa = max(1.0, inicio * CLAHE_FAIXA_CONTEUDO)
+    return np.clip((inicio - luz) / faixa, 0.0, 1.0)
+
+
 def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.ndarray:
+    """Cor mais viva NO CONTEUDO. No papel, cor nenhuma a avivar.
+
+    Aplicado na folha inteira, este passo pinta o grao do papel: medido no
+    acervo, a cor do papel subia de 14,9 para 24,6 no Boecio e de 13,7 para 20,6
+    no Marial, e o que se ve na pagina limpa e um chuvisco de pontinhos rosa e
+    verde onde deveria haver so branco.
+
+    O peso NAO pode ser o do contraste local, que olha so o brilho: numa capa
+    colorida de pagina inteira a propria capa vira "o papel" daquela folha, e a
+    capa deixaria de ganhar cor - que e para o que este filtro existe. O que
+    separa papel de conteudo aqui e a dupla claro E sem cor: grao de papel e
+    claro e quase cinza; tinta colorida, mesmo clara, tem cor de verdade.
+    """
+    cinza = _para_cinza(img)
+    saturacao = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1].astype(np.float32)
+    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+
+    claro = cinza > nivel_papel * CLARO_COMO_PAPEL
+    tem_cor = np.clip(
+        (saturacao - SATURACAO_DE_GRAO) / max(1.0, SATURACAO_DE_RUBRICA - SATURACAO_DE_GRAO),
+        0.0, 1.0)
+    peso = np.where(claro, tem_cor, 1.0).astype(np.float32)
+
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype(np.float32)
-    hsv[:, :, 1] = np.clip(hsv[:, :, 1] * ganho, 0, 255)
+    hsv[:, :, 1] = np.clip(hsv[:, :, 1] * (1.0 + (ganho - 1.0) * peso), 0, 255)
     return cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
 
 
