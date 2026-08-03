@@ -192,6 +192,28 @@ def test_de_mascara_preserva_o_buraco_de_um_anel():
     assert not refeita[150, 150], "o buraco foi tapado"
 
 
+def test_o_buraco_de_uma_forma_nao_apaga_outra():
+    """Um buraco so pode tirar area de quem o contem.
+
+    A selecao pinta as regioes na ordem, e o buraco tira tudo que ja foi pintado
+    embaixo dele. No livro de bordados da Pesel, a foto saia como uma regiao, a
+    pagina inteira como outra, e o buraco da segunda vinha depois e apagava a
+    primeira: uma mascara de 95,7% da pagina virava uma selecao de 49,7%.
+    """
+    m = np.zeros((300, 300), np.uint8)
+    m[10:290, 10:290] = 1      # a pagina quase inteira
+    m[80:220, 80:220] = 0      # um vao no meio dela
+    m[110:190, 110:190] = 1    # e uma forma DENTRO do vao
+
+    regioes = de_mascara(m, tipo=GRAVURA, origem=REDE, area_minima=0.001)
+    refeita = Selecao(regioes=regioes).mascara(300, 300, GRAVURA) > 0
+
+    assert refeita[20, 20], "a area de fora sumiu"
+    assert not refeita[90, 90], "o vao foi tapado"
+    assert refeita[150, 150], "o buraco apagou a forma que estava dentro dele"
+    assert abs(float(refeita.mean()) - float((m > 0).mean())) < 0.02
+
+
 # --- serializacao -----------------------------------------------------------
 
 def test_ida_e_volta_preserva_tudo():

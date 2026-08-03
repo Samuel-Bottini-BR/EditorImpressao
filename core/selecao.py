@@ -69,6 +69,10 @@ MAO = "mao"
 
 ORIGENS = (AUTOMATICO, REDE, MAO)
 
+# Teto da simplificacao de contorno, em fracao do menor lado da pagina. Ver
+# de_mascara: sem teto, um contorno picotado achata a regiao inteira.
+TOLERANCIA_DO_POLIGONO = 0.004
+
 
 @dataclass
 class Regiao:
@@ -309,12 +313,23 @@ def de_mascara(mascara: np.ndarray, tipo: str = GRAVURA, origem: str = REDE,
 
     minimo = area_minima * altura * largura
 
+    # Quanto a forma pode ser simplificada. Era so uma fracao do PERIMETRO, e
+    # isso quebra em mascara de borda recortada: o contorno da mascara de cor de
+    # uma pagina inteira tem perimetro enorme, a tolerancia vira centenas de
+    # pixels e o poligono sai achatado. Medido no livro de bordados da Pesel,
+    # uma mascara que cobria 95,7% da pagina virava uma regiao de 50,2%.
+    #
+    # O teto amarra a tolerancia ao tamanho da pagina: fica fina para forma
+    # pequena, como antes, e para de crescer quando o contorno e picotado.
+    teto = TOLERANCIA_DO_POLIGONO * min(altura, largura)
+
     def em_pontos(contorno):
-        epsilon = 0.004 * cv2.arcLength(contorno, True)
-        simples = cv2.approxPolyDP(contorno, epsilon, True)
+        epsilon = min(0.004 * cv2.arcLength(contorno, True), teto)
+        simples = cv2.approxPolyDP(contorno, max(1.0, epsilon), True)
         return [(float(p[0][0]) / largura, float(p[0][1]) / altura) for p in simples]
 
-    saida: list[Regiao] = []
+    # (area em pixels, regiao). A ordem de pintura importa: ver o final.
+    achadas: list[tuple[float, Regiao]] = []
     for i, contorno in enumerate(contornos):
         # nivel de cima: pai igual a -1
         if hierarquia[i][3] != -1:
@@ -324,18 +339,33 @@ def de_mascara(mascara: np.ndarray, tipo: str = GRAVURA, origem: str = REDE,
         pontos = em_pontos(contorno)
         if len(pontos) < 3:
             continue
-        saida.append(Regiao(tipo=tipo, forma=POLIGONO, pontos=pontos,
-                            origem=origem, **extra))
+        achadas.append((cv2.contourArea(contorno),
+                        Regiao(tipo=tipo, forma=POLIGONO, pontos=pontos,
+                               origem=origem, **extra)))
 
-        # os buracos deste contorno, tirados logo em seguida
+        # os buracos deste contorno
         filho = hierarquia[i][2]
         while filho != -1:
-            if cv2.contourArea(contornos[filho]) >= minimo:
+            area_furo = cv2.contourArea(contornos[filho])
+            if area_furo >= minimo:
                 pontos_furo = em_pontos(contornos[filho])
                 if len(pontos_furo) >= 3:
-                    saida.append(Regiao(tipo=tipo, forma=POLIGONO,
-                                        pontos=pontos_furo, operacao=SUBTRAIR,
-                                        origem=origem, **extra))
+                    achadas.append((area_furo,
+                                    Regiao(tipo=tipo, forma=POLIGONO,
+                                           pontos=pontos_furo, operacao=SUBTRAIR,
+                                           origem=origem, **extra)))
             filho = hierarquia[filho][0]
 
-    return saida
+    # Do maior para o menor. A selecao pinta na ordem, e um buraco tira tudo que
+    # ja foi pintado embaixo dele - inclusive area que nao era dele.
+    #
+    # E o que acontecia no livro de bordados da Pesel: a foto do bordado saia
+    # como uma regiao de 46%, a pagina inteira como outra de 100%, e o buraco de
+    # 50% da segunda vinha depois e apagava a primeira. Uma mascara que cobria
+    # 95,7% da pagina virava uma selecao de 49,7%.
+    #
+    # Ordenar por tamanho resolve porque a hierarquia e sempre encaixada: um
+    # buraco cabe dentro do seu contorno, e uma forma dentro de um buraco cabe
+    # dentro dele. Do maior para o menor, cada uma pinta depois do que a contem.
+    achadas.sort(key=lambda par: -par[0])
+    return [regiao for _, regiao in achadas]

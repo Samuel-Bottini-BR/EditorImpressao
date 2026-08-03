@@ -250,6 +250,14 @@ FOLGA_DA_TINTA = 0.0015
 ESCURO_QUE_CONTA = 45
 FRACAO_ESCURA_DE_PAGINA_VAZIA = 0.03
 
+# Ate este espalhamento de tons no miolo, a folha e limpa mesmo e o veredito de
+# pagina vazia fica de pe sem consultar o modelo. Ver _espalhamento_do_miolo.
+ESPALHAMENTO_DE_FOLHA_LIMPA = 110
+
+# E, na duvida, so uma caixa grande do modelo desmente a pagina vazia. Caixa
+# pequena em folha clara costuma ser sujeira ou numero de pagina.
+AREA_QUE_DESMENTE_PAGINA_VAZIA = 0.15
+
 # Quanto da tinta da pagina os blocos do modelo precisam cobrir para eu confiar
 # na proposta dele. Abaixo disto ele viu so um pedaco, e o resto da tinta vira
 # letra por conta propria. Ver o comentario em detectar.
@@ -540,6 +548,31 @@ def _tapar_buracos_da_iluminura(gravura: np.ndarray, tinta: np.ndarray) -> np.nd
     return tapada
 
 
+def _area_da_caixa(achado: "Achado") -> float:
+    x0, y0, x1, y1 = achado.caixa
+    return max(0.0, x1 - x0) * max(0.0, y1 - y0)
+
+
+def _espalhamento_do_miolo(img: np.ndarray) -> float:
+    """Quantos tons ha no meio da pagina, longe da borda do escaneamento.
+
+    Serve para desconfiar do veredito de pagina vazia. A borda fica de fora
+    porque e la que moram a sombra do vinco e a moldura preta do scanner, que
+    espalham o tom de qualquer folha: medido, uma folha limpa do Livro de Horas
+    da 194 de espalhamento na pagina toda e 94 so no miolo.
+
+        folha limpa, no miolo        0 a 95
+        foto sobre cartao, Pesel   132 a 148
+    """
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+    altura, largura = cinza.shape[:2]
+    miolo = cinza[int(altura * 0.12):int(altura * 0.88),
+                  int(largura * 0.12):int(largura * 0.88)]
+    if miolo.size < 100:
+        return 0.0
+    return float(np.percentile(miolo, 97) - np.percentile(miolo, 3))
+
+
 def _pagina_sem_conteudo(img: np.ndarray) -> bool:
     """Capa, folha de guarda, verso em branco: nao ha o que marcar.
 
@@ -644,11 +677,23 @@ def detectar(
     # guarda uma capa de couro lisa virava "gravura" de pagina inteira - o
     # modelo de layout chamava de figure(0.66) e o teste de meio-tom concordava,
     # porque couro E tom continuo.
+    achados: list[Achado] = []
     if _pagina_sem_conteudo(colorida):
-        return selecao
+        # A pergunta "ha algo mais escuro que a propria pagina?" nao serve numa
+        # pagina de fundo escuro: no livro de bordados da Pesel, as fotos ficam
+        # sobre um cartao pardo e a pagina inteira era dada como vazia. Quando o
+        # miolo tem tons demais para uma folha limpa, vale acordar o modelo antes
+        # de desistir - so nesse caso, para nao pagar o modelo em toda folha em
+        # branco de um livro de novecentas paginas.
+        if _espalhamento_do_miolo(colorida) < ESPALHAMENTO_DE_FOLHA_LIMPA:
+            return selecao
+        achados = _detector.achar(colorida) if usar_layout else []
+        if not any(_area_da_caixa(a) >= AREA_QUE_DESMENTE_PAGINA_VAZIA for a in achados):
+            return selecao
 
     tinta = mascara_de_tinta(colorida)
-    achados = _detector.achar(colorida) if usar_layout else []
+    if not achados:
+        achados = _detector.achar(colorida) if usar_layout else []
 
     gravura_layout = np.zeros((altura, largura), bool)
     letra_layout = np.zeros((altura, largura), bool)
