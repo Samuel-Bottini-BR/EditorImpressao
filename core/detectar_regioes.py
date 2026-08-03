@@ -303,6 +303,16 @@ ALTURA_DE_GLIFO = 1 / 12
 # O corte em 30% fica no vao entre 14% e 49%.
 PEDACOS_DE_GLIFO_DE_ESCRITA = 0.30
 
+# Abaixo deste tanto de papel nu a caixa nao e pagina escrita, e sim foto de um
+# objeto que cobre a area. Ver _papel_a_vista, onde estao as medidas: foto de
+# bordado 30% a 48%, escrita 57% a 76%. O corte fica no vao.
+PAPEL_A_VISTA_DE_ESCRITA = 0.52
+
+# O que conta como papel nu, para essa conta: claro perto do mais claro da
+# caixa, e sem cor.
+CLARO_DE_PAPEL = 0.80
+SATURACAO_DE_PAPEL = 60
+
 # Abaixo desta tinta o buraco e papel limpo, e papel nao vira gravura.
 TINTA_MINIMA_DO_BURACO = 0.05
 
@@ -544,6 +554,37 @@ def _pagina_sem_conteudo(img: np.ndarray) -> bool:
 
 # --- o detector -------------------------------------------------------------
 
+def _papel_a_vista(img: np.ndarray, caixa) -> float:
+    """Que fracao desta caixa e papel nu: claro e sem cor.
+
+    Escrita e tinta SOBRE papel, entao a maior parte da caixa continua sendo
+    papel - o vao entre as linhas, a margem dentro do bloco. A foto de um objeto
+    cobre a area: no livro de bordados da Pesel, o cartao de fundo e a trama do
+    tecido tomam a caixa inteira.
+
+    E a medida que faltava para o Pesel. Nem o tamanho do pedaco de tinta nem o
+    meio-tom separavam aquelas paginas de uma pagina escrita - a trama do tecido
+    imita glifo, e a foto e contrastada - mas o papel a vista separa:
+
+        foto de bordado, Pesel     30% a 48%
+        caligrafia do Palatino     62% a 66%
+        partitura do Graduale      57% a 76%
+        texto da Rhetorica         65%
+        texto do Boecio            68%
+    """
+    altura, largura = img.shape[:2]
+    x0, y0, x1, y1 = caixa
+    pedaco = img[int(y0 * altura):int(y1 * altura), int(x0 * largura):int(x1 * largura)]
+    if pedaco.size < 100:
+        return 1.0
+
+    cinza = cv2.cvtColor(pedaco, cv2.COLOR_BGR2GRAY) if pedaco.ndim == 3 else pedaco
+    saturacao = (cv2.cvtColor(pedaco, cv2.COLOR_BGR2HSV)[:, :, 1] if pedaco.ndim == 3
+                 else np.zeros_like(cinza))
+    claro = float(np.percentile(cinza, 95))
+    return float(((cinza > claro * CLARO_DE_PAPEL) & (saturacao < SATURACAO_DE_PAPEL)).mean())
+
+
 def _e_meio_tom(img: np.ndarray, caixa) -> bool:
     """Dentro desta caixa ha TOM CONTINUO, ou e traco sobre papel?
 
@@ -611,6 +652,9 @@ def detectar(
 
     gravura_layout = np.zeros((altura, largura), bool)
     letra_layout = np.zeros((altura, largura), bool)
+    # Onde o modelo viu texto E ha mesmo letra miuda embaixo. E o unico sinal
+    # forte o bastante para tirar area da gravura, mais adiante.
+    escrita_certa = np.zeros((altura, largura), bool)
     for a in achados:
         x0, y0, x1, y1 = a.caixa
         fatia = (slice(int(y0 * altura), int(y1 * altura)),
@@ -621,12 +665,15 @@ def detectar(
             # escrita e devem ser tratadas como tal - ver
             # PEDACOS_DE_GLIFO_DE_ESCRITA.
             desenho = _tinta_em_pedacos_de_glifo(tinta[fatia]) < PEDACOS_DE_GLIFO_DE_ESCRITA
-            if desenho or _e_meio_tom(colorida, a.caixa):
+            foto = _papel_a_vista(colorida, a.caixa) < PAPEL_A_VISTA_DE_ESCRITA
+            if desenho or foto or _e_meio_tom(colorida, a.caixa):
                 gravura_layout[fatia] = True
             else:
                 letra_layout[fatia] = True
         elif a.classe in CLASSES_DE_LETRA:
             letra_layout[fatia] = True
+            if _tinta_em_pedacos_de_glifo(tinta[fatia]) >= PEDACOS_DE_GLIFO_DE_ESCRITA:
+                escrita_certa[fatia] = True
 
     gravura_cor = mascara_de_cor(colorida) if usar_cor else np.zeros((altura, largura), bool)
 
@@ -649,6 +696,12 @@ def detectar(
     # cortada pelo retangulo, e nao um bloco de texto.
     if _e_uma_foto_de_pagina_inteira(gravura, letra_layout, tinta):
         gravura = np.ones((altura, largura), bool)
+
+    # Legenda impressa sobre a foto continua sendo legenda. No livro de bordados
+    # da Pesel as legendas ficam em cima do cartao de fundo, que e colorido: a
+    # mascara de cor as engolia junto com a foto e a pagina saia sem uma linha de
+    # texto. Onde o modelo viu texto E ha letra miuda embaixo, o texto ganha.
+    gravura &= ~escrita_certa
 
     # O que o modelo achou SOMA com o que sobrou de tinta - nao substitui.
     #
