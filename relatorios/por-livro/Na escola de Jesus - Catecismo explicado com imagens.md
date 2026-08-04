@@ -3,16 +3,11 @@
 - Arquivo de 48 MB
 - 199 folhas no PDF, que viram 199 paginas de saida
 - 7 paginas medidas a fundo
-- 25 segundos para analisar o livro inteiro (126 milissegundos por folha)
+- 34 segundos para analisar o livro inteiro (172 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
-Sao 2 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
-
-| Pagina | Filtro | O que piorou |
-|---|---|---|
-| 199 | Preto e branco | as letras entupiram: sobraram 148 vazios internos de 248 (40% a menos); o traco afinou demais: de 28.57 para 11.01 pixels (61% a menos) |
-| 199 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 1.4 para 3.9 |
+Nenhuma. E o resultado esperado.
 
 ## Paginas marcadas em laranja
 
@@ -33,19 +28,19 @@ e um pedido de conferida.
 Paginas do mesmo livro precisam sair identicas, senao o caderno
 nao fecha direito na impressao.
 
-- Menor pagina: 1988 x 2946 pontinhos
-- Variacao de largura: 20.8 mm
-- Variacao de altura: 15.9 mm
-- Inclinacao que sobrou depois de endireitar: 0.086 grau na media, 0.100 no pior caso
+- Menor pagina: 1894 x 2896 pontinhos
+- Variacao de largura: 26.2 mm
+- Variacao de altura: 18.5 mm
+- Inclinacao que sobrou depois de endireitar: 0.100 grau na media, 0.300 no pior caso
 
 ## Como cada filtro se comportou
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 30.96 | 822 | 238.1 | 0.68 | 1.37 |
-| Preto e branco | 9.41 | 1062 | 254.9 | 0.00 | 0.00 |
-| Melhorar | 32.05 | 773 | 245.5 | 0.58 | 1.34 |
-| Mágico pro | 21.60 | 1431 | 246.3 | 1.04 | 1.26 |
+| Original | 31.12 | 834 | 237.4 | 0.75 | 1.36 |
+| Preto e branco | 27.69 | 818 | 247.0 | 0.56 | 1.06 |
+| Melhorar | 27.87 | 792 | 247.0 | 0.56 | 1.33 |
+| Mágico pro | 27.92 | 793 | 247.0 | 0.56 | 1.33 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

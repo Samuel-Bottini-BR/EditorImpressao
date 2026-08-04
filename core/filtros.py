@@ -483,6 +483,63 @@ def _aprofundar_pretos(img: np.ndarray, percentil: float = 0.5) -> np.ndarray:
     return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
 
+def _recompor_a_rampa(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
+    """Devolve a borda da letra o meio-tom que as curvas de contraste comem.
+
+    As curvas que limpam a pagina - o ombro que leva o papel a branco e o
+    esticao do ponto de preto - deixam o salto entre tinta e papel mais
+    ingreme. Isso e bom no meio da letra e ruim na borda dela: os poucos pixels
+    de tom intermediario que a arredondam caem para um lado ou para o outro, e a
+    borda vira degrau. Medido pela regua do projeto, a rampa do Graduale caia de
+    2,38 para 0,68 pixels; era o defeito mais frequente do acervo, 35 das 53
+    paginas que sairam piores que o original.
+
+    Aqui a rampa e reconstruida: para cada pixel da orla, olha-se ONDE ele
+    estava entre o preto e o papel na imagem original, e ele e recolocado na
+    mesma posicao relativa entre o preto e o papel da imagem tratada. A forma da
+    borda volta a ser a do original, agora entre um preto mais fundo e um papel
+    mais claro.
+
+    So a orla e mexida. O miolo da letra e o papel aberto ficam como o filtro os
+    deixou.
+    """
+    cinza_antes = _para_cinza(original)
+    cinza_depois = _para_cinza(saida)
+
+    preto_antes = float(np.percentile(cinza_antes, 2))
+    papel_antes = float(np.percentile(cinza_antes, BRANCO_PERCENTIL))
+    if papel_antes - preto_antes < 20:
+        return saida
+
+    tinta = (cinza_antes < papel_antes * TINTA_PARA_ORLA).astype(np.uint8)
+    if not tinta.any():
+        return saida
+
+    lado = max(3, int(min(saida.shape[:2]) / ORLA_DA_LETRA) | 1)
+    nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+    orla = (cv2.dilate(tinta, nucleo) > 0) & (cv2.erode(tinta, nucleo) == 0)
+    if not orla.any():
+        return saida
+
+    preto_depois = float(np.percentile(cinza_depois[tinta > 0], 20))
+    papel_depois = float(np.percentile(cinza_depois[tinta == 0], 80)) \
+        if (tinta == 0).any() else 255.0
+    if papel_depois - preto_depois < 20:
+        return saida
+
+    onde = np.clip((cinza_antes.astype(np.float32) - preto_antes)
+                   / (papel_antes - preto_antes), 0.0, 1.0)
+    rampa = preto_depois + onde * (papel_depois - preto_depois)
+
+    lab = cv2.cvtColor(saida, cv2.COLOR_BGR2LAB)
+    luz = lab[:, :, 0].astype(np.float32)
+    # A conta e feita em cinza; o canal L do LAB segue a mesma escala de 0 a 255
+    # e mexer so nele preserva o matiz da tinta colorida.
+    luz[orla] = np.clip(rampa[orla], 0, 255)
+    lab[:, :, 0] = luz.astype(np.uint8)
+    return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+
 def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray:
     """Melhorar: fundo branco limpo, cores originais preservadas.
 
@@ -492,7 +549,8 @@ def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     saida = _achatar_iluminacao(img, _nivel_do_papel(img))
     saida = _balanco_de_branco(saida, clareza)
-    return _aprofundar_pretos(saida)
+    saida = _aprofundar_pretos(saida)
+    return _recompor_a_rampa(img, saida)
 
 
 def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarray:
@@ -655,7 +713,11 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     saida = _nitidez(saida, _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX))
 
     # 5. fundo branco de verdade
-    return _empurrar_branco(saida)
+    saida = _empurrar_branco(saida)
+
+    # 6. e a borda da letra de volta ao que era, agora entre um preto mais fundo
+    # e um papel mais claro
+    return _recompor_a_rampa(img, saida)
 
 
 # Area minima de uma gravura para valer a pena limpa-la pelo nivel dela, em

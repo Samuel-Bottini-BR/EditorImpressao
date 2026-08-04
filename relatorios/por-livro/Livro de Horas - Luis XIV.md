@@ -3,15 +3,11 @@
 - Arquivo de 106 MB
 - 191 folhas no PDF, que viram 191 paginas de saida
 - 7 paginas medidas a fundo
-- 51 segundos para analisar o livro inteiro (268 milissegundos por folha)
+- 93 segundos para analisar o livro inteiro (489 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
-Sao 1 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
-
-| Pagina | Filtro | O que piorou |
-|---|---|---|
-| 191 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 4.2 para 6.3 |
+Nenhuma. E o resultado esperado.
 
 ## Paginas marcadas em laranja
 
@@ -22,6 +18,7 @@ e um pedido de conferida.
 |---|---|---|
 | Alinhamento duvidoso | 152 | Não consegui achar o alinhamento do texto direito. |
 | Tamanho diferente | 8 | Esta folha tem tamanho diferente das outras. |
+| Corte encostou no texto | 5 | O corte da borda pode ter pegado parte do texto. |
 | Muito torta | 2 | Esta página estava bem torta. Veja se ficou certa. |
 
 ## Observacoes do livro inteiro
@@ -35,19 +32,19 @@ e um pedido de conferida.
 Paginas do mesmo livro precisam sair identicas, senao o caderno
 nao fecha direito na impressao.
 
-- Menor pagina: 3092 x 5732 pontinhos
-- Variacao de largura: 99.5 mm
-- Variacao de altura: 569.0 mm
+- Menor pagina: 2952 x 5527 pontinhos
+- Variacao de largura: 111.3 mm
+- Variacao de altura: 563.9 mm
 - Inclinacao que sobrou depois de endireitar: 0.086 grau na media, 0.100 no pior caso
 
 ## Como cada filtro se comportou
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 31.32 | 6005 | 218.8 | 1.10 | 1.85 |
-| Preto e branco | 12.30 | 4005 | 253.8 | 0.00 | 0.00 |
-| Melhorar | 29.83 | 7337 | 236.5 | 1.06 | 1.70 |
-| Mágico pro | 19.44 | 10935 | 240.4 | 0.89 | 1.36 |
+| Original | 32.99 | 5814 | 219.5 | 1.51 | 1.87 |
+| Preto e branco | 26.68 | 5035 | 244.0 | 1.00 | 1.20 |
+| Melhorar | 35.79 | 4953 | 242.0 | 1.04 | 1.66 |
+| Mágico pro | 33.72 | 5571 | 242.2 | 1.00 | 1.52 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

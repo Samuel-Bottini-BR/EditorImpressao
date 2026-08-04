@@ -206,6 +206,38 @@ def test_recorte_tira_a_borda_preta_do_scanner():
     assert cortada[:, :5].mean() > 100, "sobrou borda preta depois do corte"
 
 
+def test_a_rampa_da_borda_sobrevive_ao_filtro():
+    """O defeito mais frequente do acervo, medido pela regua do projeto.
+
+    As curvas que limpam a pagina deixam o salto entre tinta e papel mais
+    ingreme, e a borda da letra perde o meio-tom que a arredonda: a rampa do
+    Graduale caia de 2,38 para 0,68 pixels. Eram 35 das 53 paginas que sairam
+    piores que o original.
+    """
+    import cv2
+
+    from core.filtros import filtro_magico_pro, filtro_melhorar
+
+    img = np.full((400, 400, 3), 226, np.uint8)
+    for linha in range(6):
+        y = 60 + linha * 50
+        for palavra in range(5):
+            x = 40 + palavra * 70
+            img[y:y + 26, x:x + 40] = 40                 # o traco
+            img[y - 3:y, x:x + 40] = 150                 # a rampa em cima
+            img[y + 26:y + 29, x:x + 40] = 150           # e embaixo
+
+    def rampa(m):
+        cinza = cv2.cvtColor(m, cv2.COLOR_BGR2GRAY) if m.ndim == 3 else m
+        return float(((cinza > 90) & (cinza < 200)).sum())
+
+    antes = rampa(img)
+    for filtro in (filtro_melhorar, filtro_magico_pro):
+        depois = rampa(filtro(img))
+        assert depois > antes * 0.5, (
+            f"{filtro.__name__} comeu a rampa: {antes:.0f} -> {depois:.0f}")
+
+
 def test_o_branco_nao_come_a_orla_da_letra():
     """A rampa que arredonda a letra tem de sobreviver ao empurrao do branco.
 

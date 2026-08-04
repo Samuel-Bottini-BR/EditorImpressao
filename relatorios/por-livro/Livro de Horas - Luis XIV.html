@@ -67,26 +67,10 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <li>Arquivo de 106 MB</li>
 <li>191 folhas no PDF, que viram 191 paginas de saida</li>
 <li>7 paginas medidas a fundo</li>
-<li>51 segundos para analisar o livro inteiro (268 milissegundos por folha)</li>
+<li>93 segundos para analisar o livro inteiro (489 milissegundos por folha)</li>
 </ul>
 <h2>Paginas que sairam piores que o original</h2>
-<p>Sao 1 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.</p>
-<table>
-<thead>
-<tr>
-<th>Pagina</th>
-<th>Filtro</th>
-<th>O que piorou</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>191</td>
-<td>Mágico pro</td>
-<td>o fundo ficou mais sujo: ruido subiu de 4.2 para 6.3</td>
-</tr>
-</tbody>
-</table>
+<p>Nenhuma. E o resultado esperado.</p>
 <h2>Paginas marcadas em laranja</h2>
 <p>Laranja quer dizer <em>o programa nao teve certeza</em>. Nao e erro:
 e um pedido de conferida.</p>
@@ -110,6 +94,11 @@ e um pedido de conferida.</p>
 <td>Esta folha tem tamanho diferente das outras.</td>
 </tr>
 <tr>
+<td>Corte encostou no texto</td>
+<td>5</td>
+<td>O corte da borda pode ter pegado parte do texto.</td>
+</tr>
+<tr>
 <td>Muito torta</td>
 <td>2</td>
 <td>Esta página estava bem torta. Veja se ficou certa.</td>
@@ -126,9 +115,9 @@ e um pedido de conferida.</p>
 <p>Paginas do mesmo livro precisam sair identicas, senao o caderno
 nao fecha direito na impressao.</p>
 <ul>
-<li>Menor pagina: 3092 x 5732 pontinhos</li>
-<li>Variacao de largura: 99.5 mm</li>
-<li>Variacao de altura: 569.0 mm</li>
+<li>Menor pagina: 2952 x 5527 pontinhos</li>
+<li>Variacao de largura: 111.3 mm</li>
+<li>Variacao de altura: 563.9 mm</li>
 <li>Inclinacao que sobrou depois de endireitar: 0.086 grau na media, 0.100 no pior caso</li>
 </ul>
 <h2>Como cada filtro se comportou</h2>
@@ -146,35 +135,35 @@ nao fecha direito na impressao.</p>
 <tbody>
 <tr>
 <td>Original</td>
-<td>31.32</td>
-<td>6005</td>
-<td>218.8</td>
-<td>1.10</td>
-<td>1.85</td>
+<td>32.99</td>
+<td>5814</td>
+<td>219.5</td>
+<td>1.51</td>
+<td>1.87</td>
 </tr>
 <tr>
 <td>Preto e branco</td>
-<td>12.30</td>
-<td>4005</td>
-<td>253.8</td>
-<td>0.00</td>
-<td>0.00</td>
+<td>26.68</td>
+<td>5035</td>
+<td>244.0</td>
+<td>1.00</td>
+<td>1.20</td>
 </tr>
 <tr>
 <td>Melhorar</td>
-<td>29.83</td>
-<td>7337</td>
-<td>236.5</td>
-<td>1.06</td>
-<td>1.70</td>
+<td>35.79</td>
+<td>4953</td>
+<td>242.0</td>
+<td>1.04</td>
+<td>1.66</td>
 </tr>
 <tr>
 <td>Mágico pro</td>
-<td>19.44</td>
-<td>10935</td>
-<td>240.4</td>
-<td>0.89</td>
-<td>1.36</td>
+<td>33.72</td>
+<td>5571</td>
+<td>242.2</td>
+<td>1.00</td>
+<td>1.52</td>
 </tr>
 </tbody>
 </table>
@@ -184,6 +173,6 @@ buraquinhos dentro das letras: quanto mais sobrarem, melhor.
 <strong>Transicao</strong> entre 1 e 2 e borda saudavel; perto de zero e
 serrilhado.</p>
 </blockquote>
-<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 12:47</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 03/08/2026 às 23:57</p>
 </body>
 </html>
