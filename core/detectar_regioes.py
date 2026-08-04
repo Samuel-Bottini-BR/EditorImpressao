@@ -99,6 +99,10 @@ SUAVIDADE = 0.004
 # e apaga-la e o que faz a letra virar escada.
 FOLGA_DO_PAPEL = 0.004
 
+# Largura da orla em volta do traco que nao vira papel nem letra, em fracao do
+# menor lado da pagina. Da uns dois pixels a 300 DPI. Ver refinar_para_tinta.
+ORLA_DO_TRACO = 1 / 250
+
 
 @dataclass
 class Achado:
@@ -807,12 +811,26 @@ def refinar_para_tinta(
     duas coisas muito diferentes: o traco, que precisa de contraste e nitidez,
     e o papel entre as linhas, que deve ir a branco. Tratar o bloco inteiro
     como letra impede o papel de branquear justamente onde ele mais aparece.
+
+    A ORLA COLADA NO TRACO nao entra em nenhum dos dois. Ela nao e traco, mas
+    tambem nao pode ir a branco chapado: ali mora a rampa de antisserrilhamento,
+    os poucos pixels de tom intermediario que arredondam a letra. Jogada a
+    branco, a letra vira escada - medido pela regua do projeto, era a queixa de
+    "letra pixelada" reaparecendo pelo caminho da selecao, com a rampa do Boecio
+    caindo de 0,72 para 0,45 pixels. Sem a orla, o papel entre as linhas
+    continua indo a branco igual.
     """
     if not mascara_letra.any():
         vazia = np.zeros(img.shape[:2], bool)
         return vazia, vazia
     tinta = mascara_de_tinta(_tres_canais_ou_cinza(img))
-    return tinta & mascara_letra, (~tinta) & mascara_letra
+
+    lado = max(3, int(min(img.shape[:2]) * ORLA_DO_TRACO) | 1)
+    com_a_orla = cv2.dilate(
+        tinta.astype(np.uint8),
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+
+    return tinta & mascara_letra, (~com_a_orla) & mascara_letra
 
 
 def _tres_canais_ou_cinza(img: np.ndarray) -> np.ndarray:

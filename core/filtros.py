@@ -135,6 +135,10 @@ ORLA_DA_LETRA = 400
 # onde fica a orla a preservar. Nao e limiar de binarizacao.
 TINTA_PARA_ORLA = 0.60
 
+# Orla em volta da tinta onde o branco do papel marcado nao entra, em fracao do
+# menor lado da pagina. Ver _peso_do_papel_sem_tocar_a_tinta.
+ORLA_DA_TINTA_NO_PAPEL = 1 / 250
+
 # Raio do borrao da nitidez, em fracao da altura. Era 1/1000, tres pixels numa
 # pagina de 300 DPI: largo demais para letra, e o que sobrava era um halo claro
 # em volta de cada traco em vez de nitidez. Ver _nitidez.
@@ -757,6 +761,36 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
     return saida
 
 
+def _peso_do_papel_sem_tocar_a_tinta(img: np.ndarray, peso: np.ndarray) -> np.ndarray:
+    """Zera o peso do papel em cima da tinta e da orla dela.
+
+    A regiao de papel tem borda suave, de proposito, para nao deixar degrau na
+    impressao. So que essa borda passa por cima das letras da beirada do bloco:
+    medido no Boecio, de 16% a 26% da tinta da pagina cai dentro da rampa do
+    papel, e o branco por cima dela come a borda da letra. Era o ultimo lugar
+    onde a queixa de "letra pixelada" ainda acontecia - a rampa caia de 0,84
+    para 0,58 justamente neste passo.
+
+    A mancha do verso continua indo a branco: ela e clara demais para o limiar
+    local de Sauvola chamar de tinta, que e a razao de o limiar ser local.
+    """
+    if not peso.any():
+        return peso
+    from core.detectar_regioes import mascara_de_tinta
+
+    tinta = mascara_de_tinta(_tres_canais(img)).astype(np.uint8)
+    if not tinta.any():
+        return peso
+
+    lado = max(3, int(min(img.shape[:2]) * ORLA_DA_TINTA_NO_PAPEL) | 1)
+    com_a_orla = cv2.dilate(
+        tinta, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+
+    limpo = peso.copy()
+    limpo[com_a_orla] = 0.0
+    return limpo
+
+
 def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.ndarray:
     """Mistura duas versoes da mesma imagem pelo peso, pixel a pixel."""
     if not peso.any():
@@ -813,6 +847,11 @@ def aplicar_filtro_com_selecao(
     peso_gravura = selecao.peso(altura, largura, GRAVURA)
     peso_letra = selecao.peso(altura, largura, LETRA)
     peso_papel = selecao.peso(altura, largura, PAPEL)
+
+    # A borda suave do papel nao pode passar por cima de letra: ver
+    # _peso_do_papel_sem_tocar_a_tinta.
+    if peso_papel.any() and filtro != ORIGINAL:
+        peso_papel = _peso_do_papel_sem_tocar_a_tinta(img, peso_papel)
 
     try:
         # --- Preto e branco -------------------------------------------------

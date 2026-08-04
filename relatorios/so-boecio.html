@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>So o Boecio, depois da rampa</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>So o Boecio, depois da rampa</h1>
+<p>Medido em 04/08/2026 as 00:20.</p>
+<p>Este relatorio e uma <strong>regua</strong>: ele nao diz se o programa esta bonito, diz em numeros como ele esta hoje. Serve para que, depois de qualquer mudanca, se possa medir de novo e saber se melhorou de verdade ou se foi so impressao.</p>
+<h2>O essencial, em quatro linhas</h2>
+<ul>
+<li>Foram medidos <strong>1 livros</strong>, 50 folhas, 50 paginas de saida.</li>
+<li>A qualidade de imagem foi medida a fundo em <strong>7 paginas</strong>, as mesmas em toda rodada.</li>
+<li><strong>12 vezes um filtro deixou a pagina pior do que ela era.</strong> Cada caso e uma pagina com um filtro; a mesma pagina pode aparecer mais de uma vez, uma por filtro que a estragou. O criterio de aceitacao do projeto exige que esse numero seja zero.</li>
+<li>O programa nunca passou de <strong>468 MB</strong> de memoria, contra o teto de 2048 MB.</li>
+</ul>
+<h2>O que cada numero quer dizer</h2>
+<table>
+<thead>
+<tr>
+<th>Numero</th>
+<th>O que e, na pratica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Espessura do traco</td>
+<td>Grossura media da linha da letra, em pontinhos de tela (pixels). Se afina demais, some na impressao.</td>
+</tr>
+<tr>
+<td>Vazios internos</td>
+<td>Buraquinhos fechados dentro das letras: o miolo do <strong>o</strong>, do <strong>e</strong>, do <strong>a</strong>. Se o filtro engrossa demais, eles entopem e a letra vira bolha. Quanto mais sobrarem, melhor.</td>
+</tr>
+<tr>
+<td>Nivel do fundo</td>
+<td>Quao claro esta o papel, de 0 (preto) a 255 (branco). O alvo e 255: papel branco de verdade, sem o amarelado.</td>
+</tr>
+<tr>
+<td>Ruido do fundo</td>
+<td>O quanto o papel varia onde deveria ser liso. Quanto menor, mais limpo.</td>
+</tr>
+<tr>
+<td>Transicao da borda</td>
+<td>Largura da rampa entre a tinta e o papel, em pixels. <strong>Este e o numero da queixa de letra pixelada.</strong> De 1 a 2 e o certo; perto de zero a borda vira degrau de escada; acima de 3 a letra borra.</td>
+</tr>
+<tr>
+<td>Nitidez</td>
+<td>O quanto a imagem tem detalhe definido. Maior e mais nitido, mas exagero vira ruido.</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cada filtro se comporta, na media do acervo</h2>
+<table>
+<thead>
+<tr>
+<th>Filtro</th>
+<th>Espessura</th>
+<th>Vazios</th>
+<th>Fundo (255=branco)</th>
+<th>Ruido</th>
+<th>Transicao (px)</th>
+<th>Nitidez</th>
+<th>Tempo/pagina</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original</td>
+<td>4.98</td>
+<td>722</td>
+<td>190.7</td>
+<td>6.33</td>
+<td>0.86</td>
+<td>850</td>
+<td>0.00s</td>
+</tr>
+<tr>
+<td>Preto e branco</td>
+<td>4.71</td>
+<td>175</td>
+<td>254.3</td>
+<td>0.00</td>
+<td>0.01</td>
+<td>10083</td>
+<td>0.06s</td>
+</tr>
+<tr>
+<td>Melhorar</td>
+<td>4.66</td>
+<td>938</td>
+<td>230.3</td>
+<td>3.81</td>
+<td>0.51</td>
+<td>3070</td>
+<td>0.40s</td>
+</tr>
+<tr>
+<td>Mágico pro</td>
+<td>4.44</td>
+<td>1074</td>
+<td>228.7</td>
+<td>3.22</td>
+<td>0.49</td>
+<td>3205</td>
+<td>0.46s</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Leitura rapida: na coluna <strong>Fundo</strong>, quanto mais perto de 255 melhor - e o amarelado indo embora. Na coluna <strong>Transicao</strong>, o alvo e entre 1 e 2; valor muito baixo e o serrilhado que aparece nas letras.</p>
+</blockquote>
+<h2>Velocidade e memoria</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Medido</th>
+<th>Meta</th>
+<th>Passou?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir o programa</td>
+<td>0.47 s</td>
+<td>10 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Primeiras miniaturas</td>
+<td>0.04 s</td>
+<td>5 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Analisar 500 folhas (projecao)</td>
+<td>28 s</td>
+<td>180 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Exportar 500 paginas a 300 DPI (projecao)</td>
+<td>55 s</td>
+<td>1200 s</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pico de memoria</td>
+<td>468 MB</td>
+<td>2048 MB</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>As duas linhas marcadas como <strong>projecao</strong> foram calculadas a partir do custo real por folha e por pagina medido nos nove livros, multiplicado por 500. Nenhum livro do acervo tem 500 paginas.</p>
+</blockquote>
+<h2>Livro a livro</h2>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Tamanho</th>
+<th>Folhas</th>
+<th>Paginas</th>
+<th>Analise</th>
+<th>Paginas piores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sobre a Consolação da Filosofia - Severino B</td>
+<td>4 MB</td>
+<td>50</td>
+<td>50</td>
+<td>2.8s</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<h2>Paginas que sairam piores que o original</h2>
+<p>Sao <strong>12</strong> ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era antes de qualquer tratamento.</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Pagina</th>
+<th>Filtro</th>
+<th>O que piorou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>1</td>
+<td>Melhorar</td>
+<td>o fundo ficou mais sujo: ruido subiu de 5.5 para 17.5</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>1</td>
+<td>Mágico pro</td>
+<td>o fundo ficou mais sujo: ruido subiu de 5.5 para 17.6</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>9</td>
+<td>Melhorar</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.72 para 0.45 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>9</td>
+<td>Mágico pro</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.72 para 0.44 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>17</td>
+<td>Melhorar</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.75 para 0.39 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>17</td>
+<td>Mágico pro</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.75 para 0.38 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>33</td>
+<td>Melhorar</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.86 para 0.41 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>33</td>
+<td>Mágico pro</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.86 para 0.38 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>41</td>
+<td>Melhorar</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.70 para 0.40 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>41</td>
+<td>Mágico pro</td>
+<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 0.70 para 0.38 pixels</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>50</td>
+<td>Melhorar</td>
+<td>o fundo escureceu: passou de 161 para 159 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 3.8 para 9.1</td>
+</tr>
+<tr>
+<td>Sobre a Consolação da Filosofia -</td>
+<td>50</td>
+<td>Mágico pro</td>
+<td>o fundo escureceu: passou de 161 para 150 numa escala em que 255 e branco; a borda das letras virou degrau (serrilhado): a rampa caiu de 0.86 para 0.6</td>
+</tr>
+</tbody>
+</table>
+<h2>Paginas marcadas em laranja, e por que</h2>
+<p>Laranja quer dizer <em>o programa nao teve certeza</em>. Nao e erro: e um pedido de conferida.</p>
+<table>
+<thead>
+<tr>
+<th>Aviso</th>
+<th>Quantas paginas</th>
+<th>O que o programa diz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Corte encostou no texto</td>
+<td>3</td>
+<td>O corte da borda pode ter pegado parte do texto.</td>
+</tr>
+<tr>
+<td>Alinhamento duvidoso</td>
+<td>2</td>
+<td>Não consegui achar o alinhamento do texto direito.</td>
+</tr>
+<tr>
+<td>Tem cor</td>
+<td>1</td>
+<td>Esta página tem cor - o preto e branco vai perder a ilustração.</td>
+</tr>
+</tbody>
+</table>
+<h2>Geometria: as paginas saem todas do mesmo tamanho?</h2>
+<p>Paginas do mesmo livro precisam sair identicas, senao o caderno nao fecha direito na hora de imprimir. A coluna de variacao deveria ser zero.</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Menor pagina (px)</th>
+<th>Variacao largura</th>
+<th>Variacao altura</th>
+<th>Inclinacao media</th>
+<th>Inclinacao maxima</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sobre a Consolação da Filosofia - Seve</td>
+<td>833x1399</td>
+<td>20.1 mm</td>
+<td>12.9 mm</td>
+<td>0.071</td>
+<td>0.100</td>
+</tr>
+</tbody>
+</table>
+<h2>Em que maquina isto foi medido</h2>
+<ul>
+<li>Windows 11, Python 3.14.3, 16 nucleos, 15 GB de memoria</li>
+<li>OpenCV 5.0.0, DoxaPy disponivel: sim</li>
+<li>Todas as imagens medidas a 300 DPI</li>
+</ul>
+<blockquote>
+<p>A maquina onde isto rodou e mais forte que a do Kaique. Os tempos numa maquina modesta serao maiores; a Etapa 4 preve a conferencia num computador de verdade.</p>
+</blockquote>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/08/2026 às 00:20</p>
+</body>
+</html>
