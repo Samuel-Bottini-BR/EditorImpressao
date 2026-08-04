@@ -139,6 +139,10 @@ TINTA_PARA_ORLA = 0.60
 # menor lado da pagina. Ver _peso_do_papel_sem_tocar_a_tinta.
 ORLA_DA_TINTA_NO_PAPEL = 1 / 250
 
+# Abaixo desta fracao de tinta a folha esta em branco: nao ha preto a aprofundar
+# nem contraste a realcar, so grao de scanner a nao amplificar.
+TINTA_DE_FOLHA_ESCRITA = 0.01
+
 # Raio do borrao da nitidez, em fracao da altura. Era 1/1000, tres pixels numa
 # pagina de 300 DPI: largo demais para letra, e o que sobrava era um halo claro
 # em volta de cada traco em vez de nitidez. Ver _nitidez.
@@ -544,6 +548,45 @@ def _recompor_a_rampa(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
 
 
+def _quase_sem_tinta(img: np.ndarray) -> bool:
+    """Folha em branco, guarda, verso limpo: nao ha preto a aprofundar.
+
+    Numa folha assim o ponto de preto cai em cima do proprio ruido do scanner, e
+    estica-lo e amplificar grao: medido, a pagina 446 da Rhetorica saia com o
+    ruido de fundo subindo de 1,8 para 7,6.
+    """
+    cinza = _para_cinza(img)
+    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    if nivel_papel < 1:
+        return True
+    return float((cinza < nivel_papel * TINTA_PARA_ORLA).mean()) < TINTA_DE_FOLHA_ESCRITA
+
+
+def _alisar_o_papel(img: np.ndarray) -> np.ndarray:
+    """Tira o grao do papel sem encostar na tinta.
+
+    As curvas que clareiam a folha multiplicam o que ja estava la: numa pagina
+    de papel escuro e granulado, levar o papel de 159 para 255 leva junto o
+    ruido de 11 para 18. Alisar SO o papel resolve sem tocar na letra - o
+    alisamento fica de fora da tinta e da orla dela, que sao justamente o que
+    precisa continuar nitido.
+    """
+    cinza = _para_cinza(img)
+    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    if nivel_papel < 1:
+        return img
+
+    tinta = (cinza < nivel_papel * TINTA_PARA_ORLA).astype(np.uint8)
+    lado = max(3, int(min(img.shape[:2]) * ORLA_DA_TINTA_NO_PAPEL) | 1)
+    perto_da_tinta = cv2.dilate(
+        tinta, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+
+    alisada = cv2.medianBlur(img, 3)
+    saida = img.copy()
+    saida[~perto_da_tinta] = alisada[~perto_da_tinta]
+    return saida
+
+
 def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray:
     """Melhorar: fundo branco limpo, cores originais preservadas.
 
@@ -553,7 +596,9 @@ def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     saida = _achatar_iluminacao(img, _nivel_do_papel(img))
     saida = _balanco_de_branco(saida, clareza)
-    saida = _aprofundar_pretos(saida)
+    if not _quase_sem_tinta(img):
+        saida = _aprofundar_pretos(saida)
+    saida = _alisar_o_papel(saida)
     return _recompor_a_rampa(img, saida)
 
 
@@ -707,8 +752,10 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     saida = _achatar_iluminacao(img, _nivel_do_papel(img))
     saida = _balanco_de_branco(saida)
 
-    # 2. contraste local so onde ha conteudo; o papel fica como estava
-    saida = _contraste_local_no_conteudo(saida, intensidade)
+    # 2. contraste local so onde ha conteudo; o papel fica como estava. Em folha
+    # em branco nao ha conteudo nenhum, e realcar so amplifica grao.
+    if not _quase_sem_tinta(img):
+        saida = _contraste_local_no_conteudo(saida, intensidade)
 
     # 3. cor mais viva
     saida = _realcar_saturacao(saida, _entre(intensidade, SATURACAO_MIN, SATURACAO_MAX))
@@ -716,7 +763,8 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     # 4. texto mais nitido
     saida = _nitidez(saida, _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX))
 
-    # 5. fundo branco de verdade
+    # 5. fundo branco de verdade, e sem o grao que as curvas amplificaram
+    saida = _alisar_o_papel(saida)
     saida = _empurrar_branco(saida)
 
     # 6. e a borda da letra de volta ao que era, agora entre um preto mais fundo

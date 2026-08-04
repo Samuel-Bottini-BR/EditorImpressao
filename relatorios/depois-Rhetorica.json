@@ -1,0 +1,589 @@
+{
+  "titulo": "Linha de base do Editor de Impressao",
+  "quando": "04/08/2026 as 08:59",
+  "acervo": "C:\\Users\\fotog\\Desktop\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE",
+  "ambiente": {
+    "python": "3.14.3",
+    "sistema": "Windows 11",
+    "processador": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "nucleos": 16,
+    "memoria_total_mb": 15724.0,
+    "opencv": "5.0.0",
+    "doxapy_disponivel": true,
+    "dpi_da_medida": 300
+  },
+  "desempenho": {
+    "abrir_programa_s": 0.472,
+    "primeiras_miniaturas_s": 5.086,
+    "livro_das_miniaturas": "Rhetorica Christiana -  Fray Diego Valadés.pdf"
+  },
+  "resumo": {
+    "livros_avaliados": 1,
+    "livros_com_erro": 0,
+    "total_folhas": 446,
+    "total_paginas": 446,
+    "paginas_medidas": 7,
+    "paginas_piores_que_original": 1,
+    "medias_por_filtro": {
+      "original": {
+        "espessura_traco_px": 3.358,
+        "vazios_internos": 1123.857,
+        "vazios_por_mil_tinta": 1.172,
+        "nivel_fundo": 208.416,
+        "ruido_fundo": 0.887,
+        "transicao_borda_px": 0.28,
+        "nitidez": 1419.129,
+        "fracao_tinta": 0.137,
+        "tempo_s": 0.002
+      },
+      "preto_e_branco": {
+        "espessura_traco_px": 3.516,
+        "vazios_internos": 1366.0,
+        "vazios_por_mil_tinta": 1.34,
+        "nivel_fundo": 251.733,
+        "ruido_fundo": 0.245,
+        "transicao_borda_px": 0.094,
+        "nitidez": 10706.914,
+        "fracao_tinta": 0.144,
+        "tempo_s": 0.501
+      },
+      "melhorar": {
+        "espessura_traco_px": 3.373,
+        "vazios_internos": 1384.714,
+        "vazios_por_mil_tinta": 1.378,
+        "nivel_fundo": 244.421,
+        "ruido_fundo": 0.359,
+        "transicao_borda_px": 0.319,
+        "nitidez": 2901.571,
+        "fracao_tinta": 0.139,
+        "tempo_s": 1.382
+      },
+      "magico_pro": {
+        "espessura_traco_px": 3.372,
+        "vazios_internos": 1386.143,
+        "vazios_por_mil_tinta": 1.38,
+        "nivel_fundo": 243.367,
+        "ruido_fundo": 0.335,
+        "transicao_borda_px": 0.309,
+        "nitidez": 2910.257,
+        "fracao_tinta": 0.139,
+        "tempo_s": 1.615
+      }
+    },
+    "tempo_analise_por_folha_s": 0.535,
+    "tempo_export_por_pagina_s": 0.871,
+    "projecao_analise_500_folhas_s": 267.5,
+    "projecao_export_500_paginas_s": 435.5,
+    "pico_memoria_mb": 753.9
+  },
+  "livros": [
+    {
+      "arquivo": "Rhetorica Christiana -  Fray Diego Valadés.pdf",
+      "nome": "Rhetorica Christiana -  Fray Diego Valadés",
+      "tamanho_mb": 40.29,
+      "folhas": 446,
+      "paginas": 446,
+      "erro": "",
+      "tempo_analise_s": 238.74,
+      "tempo_por_folha_analise_s": 0.5353,
+      "tempo_export_s": 6.1,
+      "tempo_por_pagina_export_s": 0.871,
+      "pico_memoria_mb": 753.9,
+      "pdf_saida_mb": 0.6,
+      "pdf_saida_kb_por_pagina": 87.1,
+      "paginas_medidas": [
+        0,
+        4,
+        89,
+        178,
+        267,
+        356,
+        445
+      ],
+      "alertas": {
+        "cor": 93,
+        "angulo_suspeito": 13,
+        "corte_pegou_conteudo": 10,
+        "muito_torta": 2,
+        "tamanho_diferente": 2
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "vazia",
+          "largura_px": 1913,
+          "altura_px": 2817,
+          "largura_mm": 162.0,
+          "altura_mm": 238.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 194.93,
+              "ruido_fundo": 0.492,
+              "transicao_borda_px": 0.0,
+              "nitidez": 1.5,
+              "fracao_tinta": 0.0,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 254.84,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 48.0,
+              "fracao_tinta": 0.0,
+              "tempo_s": 0.089,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 249.86,
+              "ruido_fundo": 0.325,
+              "transicao_borda_px": 0.0,
+              "nitidez": 6.6,
+              "fracao_tinta": 0.0,
+              "tempo_s": 1.06,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 253.02,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 20.1,
+              "fracao_tinta": 0.0,
+              "tempo_s": 1.329,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 5,
+          "folha": 5,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 1534,
+          "altura_px": 2282,
+          "largura_mm": 129.9,
+          "altura_mm": 193.2,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 5.619,
+              "vazios_internos": 5910,
+              "vazios_por_mil_tinta": 4.4369,
+              "nivel_fundo": 187.26,
+              "ruido_fundo": 1.278,
+              "transicao_borda_px": 0.509,
+              "nitidez": 2860.1,
+              "fracao_tinta": 0.38051,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.335,
+              "vazios_internos": 7449,
+              "vazios_por_mil_tinta": 5.6712,
+              "nivel_fundo": 232.88,
+              "ruido_fundo": 1.714,
+              "transicao_borda_px": 0.653,
+              "nitidez": 6710.9,
+              "fracao_tinta": 0.37521,
+              "tempo_s": 1.493,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 5.316,
+              "vazios_internos": 7605,
+              "vazios_por_mil_tinta": 5.7792,
+              "nivel_fundo": 232.88,
+              "ruido_fundo": 1.714,
+              "transicao_borda_px": 0.652,
+              "nitidez": 6625.1,
+              "fracao_tinta": 0.37592,
+              "tempo_s": 1.912,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 5.315,
+              "vazios_internos": 7608,
+              "vazios_por_mil_tinta": 5.78,
+              "nivel_fundo": 232.88,
+              "ruido_fundo": 1.714,
+              "transicao_borda_px": 0.652,
+              "nitidez": 6634.7,
+              "fracao_tinta": 0.37601,
+              "tempo_s": 2.029,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 1
+        },
+        {
+          "pagina": 90,
+          "folha": 90,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1601,
+          "altura_px": 2269,
+          "largura_mm": 135.6,
+          "altura_mm": 192.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.655,
+              "vazios_internos": 466,
+              "vazios_por_mil_tinta": 0.9297,
+              "nivel_fundo": 224.72,
+              "ruido_fundo": 0.791,
+              "transicao_borda_px": 0.37,
+              "nitidez": 1469.2,
+              "fracao_tinta": 0.13798,
+              "tempo_s": 0.001
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.031,
+              "vazios_internos": 490,
+              "vazios_por_mil_tinta": 0.8934,
+              "nivel_fundo": 254.81,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.004,
+              "nitidez": 15380.4,
+              "fracao_tinta": 0.15099,
+              "tempo_s": 1.235,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.763,
+              "vazios_internos": 496,
+              "vazios_por_mil_tinta": 0.9538,
+              "nivel_fundo": 254.52,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.373,
+              "nitidez": 2721.9,
+              "fracao_tinta": 0.14315,
+              "tempo_s": 2.056,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.751,
+              "vazios_internos": 493,
+              "vazios_por_mil_tinta": 0.951,
+              "nivel_fundo": 254.75,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.367,
+              "nitidez": 2708.2,
+              "fracao_tinta": 0.1427,
+              "tempo_s": 2.307,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 28
+        },
+        {
+          "pagina": 179,
+          "folha": 179,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1581,
+          "altura_px": 2262,
+          "largura_mm": 133.9,
+          "altura_mm": 191.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.748,
+              "vazios_internos": 562,
+              "vazios_por_mil_tinta": 0.9911,
+              "nivel_fundo": 214.74,
+              "ruido_fundo": 1.05,
+              "transicao_borda_px": 0.378,
+              "nitidez": 1655.2,
+              "fracao_tinta": 0.15855,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.098,
+              "vazios_internos": 602,
+              "vazios_por_mil_tinta": 0.9752,
+              "nivel_fundo": 254.99,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 17594.7,
+              "fracao_tinta": 0.17262,
+              "tempo_s": 0.192,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.871,
+              "vazios_internos": 595,
+              "vazios_por_mil_tinta": 1.0076,
+              "nivel_fundo": 254.72,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.435,
+              "nitidez": 3174.0,
+              "fracao_tinta": 0.16512,
+              "tempo_s": 1.322,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.872,
+              "vazios_internos": 600,
+              "vazios_por_mil_tinta": 1.0155,
+              "nivel_fundo": 254.85,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.403,
+              "nitidez": 3232.3,
+              "fracao_tinta": 0.16521,
+              "tempo_s": 1.487,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 5
+        },
+        {
+          "pagina": 268,
+          "folha": 268,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1608,
+          "altura_px": 2262,
+          "largura_mm": 136.1,
+          "altura_mm": 191.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.364,
+              "vazios_internos": 455,
+              "vazios_por_mil_tinta": 0.9089,
+              "nivel_fundo": 213.37,
+              "ruido_fundo": 1.116,
+              "transicao_borda_px": 0.352,
+              "nitidez": 2055.7,
+              "fracao_tinta": 0.13764,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.659,
+              "vazios_internos": 484,
+              "vazios_por_mil_tinta": 0.8873,
+              "nivel_fundo": 254.66,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 16327.9,
+              "fracao_tinta": 0.14996,
+              "tempo_s": 0.209,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.458,
+              "vazios_internos": 484,
+              "vazios_por_mil_tinta": 0.9288,
+              "nivel_fundo": 254.39,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.422,
+              "nitidez": 4243.7,
+              "fracao_tinta": 0.14326,
+              "tempo_s": 1.226,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.457,
+              "vazios_internos": 484,
+              "vazios_por_mil_tinta": 0.9277,
+              "nivel_fundo": 254.52,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.399,
+              "nitidez": 4256.1,
+              "fracao_tinta": 0.14344,
+              "tempo_s": 1.456,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 10
+        },
+        {
+          "pagina": 357,
+          "folha": 357,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 1585,
+          "altura_px": 2236,
+          "largura_mm": 134.2,
+          "altura_mm": 189.3,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 4.118,
+              "vazios_internos": 474,
+              "vazios_por_mil_tinta": 0.9379,
+              "nivel_fundo": 222.01,
+              "ruido_fundo": 1.029,
+              "transicao_borda_px": 0.35,
+              "nitidez": 1891.2,
+              "fracao_tinta": 0.1426,
+              "tempo_s": 0.002
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 4.492,
+              "vazios_internos": 537,
+              "vazios_por_mil_tinta": 0.9515,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 18865.8,
+              "fracao_tinta": 0.15924,
+              "tempo_s": 0.208,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 4.204,
+              "vazios_internos": 513,
+              "vazios_por_mil_tinta": 0.9758,
+              "nivel_fundo": 254.9,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.35,
+              "nitidez": 3537.8,
+              "fracao_tinta": 0.14835,
+              "tempo_s": 1.198,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 4.209,
+              "vazios_internos": 518,
+              "vazios_por_mil_tinta": 0.9832,
+              "nivel_fundo": 254.98,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.345,
+              "nitidez": 3515.5,
+              "fracao_tinta": 0.14866,
+              "tempo_s": 1.674,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 7
+        },
+        {
+          "pagina": 446,
+          "folha": 446,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "vazia",
+          "largura_px": 1900,
+          "altura_px": 2821,
+          "largura_mm": 160.9,
+          "altura_mm": 238.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 201.88,
+              "ruido_fundo": 0.455,
+              "transicao_borda_px": 0.0,
+              "nitidez": 1.0,
+              "fracao_tinta": 0.0,
+              "tempo_s": 0.003
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 254.95,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 20.7,
+              "fracao_tinta": 0.0,
+              "tempo_s": 0.081,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 209.68,
+              "ruido_fundo": 0.472,
+              "transicao_borda_px": 0.0,
+              "nitidez": 1.9,
+              "fracao_tinta": 0.0,
+              "tempo_s": 0.903,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 0.0,
+              "vazios_internos": 0,
+              "vazios_por_mil_tinta": 0.0,
+              "nivel_fundo": 198.57,
+              "ruido_fundo": 0.628,
+              "transicao_borda_px": 0.0,
+              "nitidez": 4.9,
+              "fracao_tinta": 0.0,
+              "tempo_s": 1.025,
+              "pior_que_original": true,
+              "motivos": [
+                "o fundo escureceu: passou de 202 para 199 numa escala em que 255 e branco"
+              ]
+            }
+          },
+          "regioes_achadas": 0
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 1534,
+        "largura_px_max": 1913,
+        "altura_px_min": 2236,
+        "altura_px_max": 2821,
+        "variacao_largura_px": 379,
+        "variacao_altura_px": 585,
+        "variacao_largura_mm": 32.09,
+        "variacao_altura_mm": 49.53,
+        "angulo_residual_medio_graus": 0.0286,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": [
+        {
+          "pagina": 446,
+          "filtro": "Mágico pro",
+          "classe": "vazia",
+          "motivos": [
+            "o fundo escureceu: passou de 202 para 199 numa escala em que 255 e branco"
+          ]
+        }
+      ]
+    }
+  ]
+}

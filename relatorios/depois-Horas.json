@@ -1,0 +1,579 @@
+{
+  "titulo": "Linha de base do Editor de Impressao",
+  "quando": "04/08/2026 as 01:06",
+  "acervo": "C:\\Users\\fotog\\Desktop\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE",
+  "ambiente": {
+    "python": "3.14.3",
+    "sistema": "Windows 11",
+    "processador": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "nucleos": 16,
+    "memoria_total_mb": 15724.0,
+    "opencv": "5.0.0",
+    "doxapy_disponivel": true,
+    "dpi_da_medida": 300
+  },
+  "desempenho": {
+    "abrir_programa_s": 0.456,
+    "primeiras_miniaturas_s": 0.571,
+    "livro_das_miniaturas": "Livro de Horas - Luís XIV.pdf"
+  },
+  "resumo": {
+    "livros_avaliados": 1,
+    "livros_com_erro": 0,
+    "total_folhas": 191,
+    "total_paginas": 191,
+    "paginas_medidas": 7,
+    "paginas_piores_que_original": 0,
+    "medias_por_filtro": {
+      "original": {
+        "espessura_traco_px": 32.995,
+        "vazios_internos": 5814.286,
+        "vazios_por_mil_tinta": 0.585,
+        "nivel_fundo": 219.511,
+        "ruido_fundo": 1.51,
+        "transicao_borda_px": 1.866,
+        "nitidez": 401.129,
+        "fracao_tinta": 0.444,
+        "tempo_s": 0.01
+      },
+      "preto_e_branco": {
+        "espessura_traco_px": 21.536,
+        "vazios_internos": 7549.714,
+        "vazios_por_mil_tinta": 0.858,
+        "nivel_fundo": 243.964,
+        "ruido_fundo": 1.129,
+        "transicao_borda_px": 1.226,
+        "nitidez": 4913.029,
+        "fracao_tinta": 0.355,
+        "tempo_s": 6.008
+      },
+      "melhorar": {
+        "espessura_traco_px": 23.264,
+        "vazios_internos": 19962.857,
+        "vazios_por_mil_tinta": 1.398,
+        "nivel_fundo": 241.299,
+        "ruido_fundo": 1.172,
+        "transicao_borda_px": 1.63,
+        "nitidez": 937.557,
+        "fracao_tinta": 0.44,
+        "tempo_s": 9.501
+      },
+      "magico_pro": {
+        "espessura_traco_px": 23.126,
+        "vazios_internos": 20443.143,
+        "vazios_por_mil_tinta": 1.427,
+        "nivel_fundo": 241.826,
+        "ruido_fundo": 1.129,
+        "transicao_borda_px": 1.58,
+        "nitidez": 994.586,
+        "fracao_tinta": 0.44,
+        "tempo_s": 10.58
+      }
+    },
+    "tempo_analise_por_folha_s": 0.331,
+    "tempo_export_por_pagina_s": 1.047,
+    "projecao_analise_500_folhas_s": 165.5,
+    "projecao_export_500_paginas_s": 523.5,
+    "pico_memoria_mb": 1182.0
+  },
+  "livros": [
+    {
+      "arquivo": "Livro de Horas - Luís XIV.pdf",
+      "nome": "Livro de Horas - Luís XIV",
+      "tamanho_mb": 105.85,
+      "folhas": 191,
+      "paginas": 191,
+      "erro": "",
+      "tempo_analise_s": 63.3,
+      "tempo_por_folha_analise_s": 0.3314,
+      "tempo_export_s": 7.33,
+      "tempo_por_pagina_export_s": 1.047,
+      "pico_memoria_mb": 1182.0,
+      "pdf_saida_mb": 1.89,
+      "pdf_saida_kb_por_pagina": 276.3,
+      "paginas_medidas": [
+        0,
+        2,
+        38,
+        76,
+        114,
+        152,
+        190
+      ],
+      "alertas": {
+        "angulo_suspeito": 152,
+        "tamanho_diferente": 8,
+        "corte_pegou_conteudo": 5,
+        "muito_torta": 2
+      },
+      "observacoes": [
+        "este livro tem uma página por folha, não duas",
+        "o livro inteiro foi escaneado em qualidade baixa",
+        "o livro inteiro é colorido"
+      ],
+      "medidas": [
+        {
+          "pagina": 1,
+          "folha": 1,
+          "metade": "inteira",
+          "tem_cor": false,
+          "classe": "texto",
+          "largura_px": 4267,
+          "altura_px": 6400,
+          "largura_mm": 361.3,
+          "altura_mm": 541.9,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 22.252,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.0385,
+              "nivel_fundo": 254.97,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.32,
+              "nitidez": 57.4,
+              "fracao_tinta": 0.02284,
+              "tempo_s": 0.01
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 21.659,
+              "vazios_internos": 25,
+              "vazios_por_mil_tinta": 0.0409,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 442.8,
+              "fracao_tinta": 0.02238,
+              "tempo_s": 0.581,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 22.46,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.0381,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.313,
+              "nitidez": 144.2,
+              "fracao_tinta": 0.02305,
+              "tempo_s": 2.928,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 22.529,
+              "vazios_internos": 24,
+              "vazios_por_mil_tinta": 0.038,
+              "nivel_fundo": 255.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.26,
+              "nitidez": 67.4,
+              "fracao_tinta": 0.02311,
+              "tempo_s": 4.656,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 3,
+          "folha": 3,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 4267,
+          "altura_px": 5805,
+          "largura_mm": 361.3,
+          "altura_mm": 491.5,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 79.317,
+              "vazios_internos": 4220,
+              "vazios_por_mil_tinta": 0.1956,
+              "nivel_fundo": 219.08,
+              "ruido_fundo": 0.496,
+              "transicao_borda_px": 2.268,
+              "nitidez": 407.5,
+              "fracao_tinta": 0.87093,
+              "tempo_s": 0.012
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 5.298,
+              "vazios_internos": 6361,
+              "vazios_por_mil_tinta": 1.0724,
+              "nivel_fundo": 254.77,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 0.0,
+              "nitidez": 22714.0,
+              "fracao_tinta": 0.23948,
+              "tempo_s": 0.535,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 11.221,
+              "vazios_internos": 90965,
+              "vazios_por_mil_tinta": 4.8312,
+              "nivel_fundo": 242.4,
+              "ruido_fundo": 0.306,
+              "transicao_borda_px": 1.19,
+              "nitidez": 2257.8,
+              "fracao_tinta": 0.76014,
+              "tempo_s": 3.307,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 10.782,
+              "vazios_internos": 94282,
+              "vazios_por_mil_tinta": 5.035,
+              "nivel_fundo": 243.1,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.112,
+              "nitidez": 2577.8,
+              "fracao_tinta": 0.75597,
+              "tempo_s": 3.811,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 0
+        },
+        {
+          "pagina": 39,
+          "folha": 39,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3599,
+          "altura_px": 5647,
+          "largura_mm": 304.7,
+          "altura_mm": 478.1,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 24.249,
+              "vazios_internos": 8239,
+              "vazios_por_mil_tinta": 0.8784,
+              "nivel_fundo": 221.2,
+              "ruido_fundo": 0.688,
+              "transicao_borda_px": 2.089,
+              "nitidez": 284.0,
+              "fracao_tinta": 0.4615,
+              "tempo_s": 0.008
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 23.849,
+              "vazios_internos": 8900,
+              "vazios_por_mil_tinta": 0.9999,
+              "nivel_fundo": 252.5,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.704,
+              "nitidez": 2346.7,
+              "fracao_tinta": 0.43796,
+              "tempo_s": 7.826,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 25.111,
+              "vazios_internos": 9495,
+              "vazios_por_mil_tinta": 1.0116,
+              "nivel_fundo": 250.87,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 2.0,
+              "nitidez": 663.9,
+              "fracao_tinta": 0.46182,
+              "tempo_s": 11.036,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 24.714,
+              "vazios_internos": 9500,
+              "vazios_por_mil_tinta": 1.0158,
+              "nivel_fundo": 251.7,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.926,
+              "nitidez": 698.0,
+              "fracao_tinta": 0.46019,
+              "tempo_s": 12.016,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 71
+        },
+        {
+          "pagina": 77,
+          "folha": 77,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3637,
+          "altura_px": 5801,
+          "largura_mm": 307.9,
+          "altura_mm": 491.2,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 18.866,
+              "vazios_internos": 10615,
+              "vazios_por_mil_tinta": 1.1755,
+              "nivel_fundo": 214.42,
+              "ruido_fundo": 1.042,
+              "transicao_borda_px": 2.003,
+              "nitidez": 311.2,
+              "fracao_tinta": 0.42801,
+              "tempo_s": 0.008
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 18.295,
+              "vazios_internos": 14997,
+              "vazios_por_mil_tinta": 1.6032,
+              "nivel_fundo": 249.82,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.724,
+              "nitidez": 2217.4,
+              "fracao_tinta": 0.44338,
+              "tempo_s": 7.16,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 19.071,
+              "vazios_internos": 15306,
+              "vazios_por_mil_tinta": 1.603,
+              "nivel_fundo": 248.36,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.916,
+              "nitidez": 692.4,
+              "fracao_tinta": 0.45257,
+              "tempo_s": 11.336,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 18.956,
+              "vazios_internos": 15436,
+              "vazios_por_mil_tinta": 1.6139,
+              "nivel_fundo": 249.05,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.872,
+              "nitidez": 736.2,
+              "fracao_tinta": 0.45332,
+              "tempo_s": 12.071,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 31
+        },
+        {
+          "pagina": 115,
+          "folha": 115,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 3685,
+          "altura_px": 5672,
+          "largura_mm": 312.0,
+          "altura_mm": 480.2,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 19.084,
+              "vazios_internos": 10320,
+              "vazios_por_mil_tinta": 1.1056,
+              "nivel_fundo": 221.56,
+              "ruido_fundo": 0.734,
+              "transicao_borda_px": 2.104,
+              "nitidez": 387.7,
+              "fracao_tinta": 0.44661,
+              "tempo_s": 0.008
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 17.784,
+              "vazios_internos": 13025,
+              "vazios_por_mil_tinta": 1.4143,
+              "nivel_fundo": 250.48,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.524,
+              "nitidez": 3700.2,
+              "fracao_tinta": 0.44061,
+              "tempo_s": 7.049,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 20.525,
+              "vazios_internos": 13939,
+              "vazios_por_mil_tinta": 1.38,
+              "nivel_fundo": 248.78,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.87,
+              "nitidez": 883.9,
+              "fracao_tinta": 0.48325,
+              "tempo_s": 10.936,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 20.663,
+              "vazios_internos": 13804,
+              "vazios_por_mil_tinta": 1.3599,
+              "nivel_fundo": 249.6,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.824,
+              "nitidez": 935.8,
+              "fracao_tinta": 0.48566,
+              "tempo_s": 12.084,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 37
+        },
+        {
+          "pagina": 153,
+          "folha": 153,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 4134,
+          "altura_px": 5527,
+          "largura_mm": 350.0,
+          "altura_mm": 468.0,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 33.887,
+              "vazios_internos": 5670,
+              "vazios_por_mil_tinta": 0.6093,
+              "nivel_fundo": 216.9,
+              "ruido_fundo": 0.836,
+              "transicao_borda_px": 2.233,
+              "nitidez": 352.5,
+              "fracao_tinta": 0.4073,
+              "tempo_s": 0.009
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 34.728,
+              "vazios_internos": 7694,
+              "vazios_por_mil_tinta": 0.7662,
+              "nivel_fundo": 246.5,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 1.63,
+              "nitidez": 1815.5,
+              "fracao_tinta": 0.43951,
+              "tempo_s": 7.253,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 35.317,
+              "vazios_internos": 8165,
+              "vazios_por_mil_tinta": 0.8116,
+              "nivel_fundo": 245.0,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 2.117,
+              "nitidez": 766.1,
+              "fracao_tinta": 0.44031,
+              "tempo_s": 11.573,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 35.098,
+              "vazios_internos": 8210,
+              "vazios_por_mil_tinta": 0.8148,
+              "nivel_fundo": 245.65,
+              "ruido_fundo": 0.0,
+              "transicao_borda_px": 2.061,
+              "nitidez": 792.3,
+              "fracao_tinta": 0.44098,
+              "tempo_s": 12.348,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 24
+        },
+        {
+          "pagina": 191,
+          "folha": 191,
+          "metade": "inteira",
+          "tem_cor": true,
+          "classe": "ilustracao",
+          "largura_px": 2952,
+          "altura_px": 12187,
+          "largura_mm": 249.9,
+          "altura_mm": 1031.8,
+          "filtros": {
+            "original": {
+              "espessura_traco_px": 33.308,
+              "vazios_internos": 1612,
+              "vazios_por_mil_tinta": 0.0956,
+              "nivel_fundo": 188.45,
+              "ruido_fundo": 6.776,
+              "transicao_borda_px": 2.048,
+              "nitidez": 1007.6,
+              "fracao_tinta": 0.46848,
+              "tempo_s": 0.017
+            },
+            "preto_e_branco": {
+              "espessura_traco_px": 29.142,
+              "vazios_internos": 1846,
+              "vazios_por_mil_tinta": 0.1114,
+              "nivel_fundo": 198.68,
+              "ruido_fundo": 7.901,
+              "transicao_borda_px": 2.003,
+              "nitidez": 1154.6,
+              "fracao_tinta": 0.46046,
+              "tempo_s": 11.649,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "melhorar": {
+              "espessura_traco_px": 29.142,
+              "vazios_internos": 1846,
+              "vazios_por_mil_tinta": 0.1114,
+              "nivel_fundo": 198.68,
+              "ruido_fundo": 7.901,
+              "transicao_borda_px": 2.003,
+              "nitidez": 1154.6,
+              "fracao_tinta": 0.46046,
+              "tempo_s": 15.388,
+              "pior_que_original": false,
+              "motivos": []
+            },
+            "magico_pro": {
+              "espessura_traco_px": 29.142,
+              "vazios_internos": 1846,
+              "vazios_por_mil_tinta": 0.1114,
+              "nivel_fundo": 198.68,
+              "ruido_fundo": 7.901,
+              "transicao_borda_px": 2.003,
+              "nitidez": 1154.6,
+              "fracao_tinta": 0.46046,
+              "tempo_s": 17.077,
+              "pior_que_original": false,
+              "motivos": []
+            }
+          },
+          "regioes_achadas": 1
+        }
+      ],
+      "geometria": {
+        "largura_px_min": 2952,
+        "largura_px_max": 4267,
+        "altura_px_min": 5527,
+        "altura_px_max": 12187,
+        "variacao_largura_px": 1315,
+        "variacao_altura_px": 6660,
+        "variacao_largura_mm": 111.34,
+        "variacao_altura_mm": 563.88,
+        "angulo_residual_medio_graus": 0.0857,
+        "angulo_residual_maximo_graus": 0.1
+      },
+      "piores_que_original": []
+    }
+  ]
+}

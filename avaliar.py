@@ -184,6 +184,12 @@ class VigiaDeMemoria:
 # As medidas de qualidade de imagem
 # ---------------------------------------------------------------------------
 
+# Contraste minimo, do percentil 1 ao 99, para haver tinta a separar. Medido no
+# acervo: folha em branco fica entre 14 e 55, pagina com conteudo entre 167 e
+# 193. O corte em 80 fica no vao.
+CONTRASTE_DE_FOLHA_ESCRITA = 80
+
+
 def _cinza(img: np.ndarray) -> np.ndarray:
     return img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -194,7 +200,18 @@ def _mascara_de_tinta(cinza: np.ndarray) -> np.ndarray:
     Otsu global e proposital: e a mesma regra para todos os filtros, entao a
     comparacao entre eles e justa. Um separador esperto por filtro mediria
     coisas diferentes em cada um.
+
+    Mas Otsu SEMPRE parte a imagem em dois, mesmo quando nao ha nada para
+    partir: numa folha em branco ele corta o proprio grao do scanner ao meio e
+    declara 38% de tinta. A pagina virava "ilustracao" no relatorio, e limpar
+    aquele grao - que e o certo - aparecia como "a borda das letras virou
+    degrau", com uma rampa de 4,59 pixels que nunca existiu. Antes de separar,
+    portanto, ha uma pergunta mais simples: existe contraste aqui?
     """
+    espalhamento = float(np.percentile(cinza, 99) - np.percentile(cinza, 1))
+    if espalhamento < CONTRASTE_DE_FOLHA_ESCRITA:
+        return np.zeros_like(cinza)
+
     _, mascara = cv2.threshold(cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     return mascara
 
@@ -396,7 +413,14 @@ def medir_imagem(
 # uma xilogravura de proposito, e isso nao e defeito.
 FRACAO_TINTA_DE_ILUSTRACAO = 0.25
 
-TEXTO, ILUSTRACAO, COLORIDA = "texto", "ilustracao", "colorida"
+# Abaixo desta fracao de tinta nao ha letra nenhuma na pagina: e folha em
+# branco, guarda ou verso limpo. Cobrar dela "borda de letra" mede ficcao - a
+# mascara de tinta pega grao de scanner, e a rampa medida na pagina 446 da
+# Rhetorica dava 4,59 pixels de "borda" que nao existe. Limpar esse grao, que e
+# o certo, aparecia como defeito.
+FRACAO_TINTA_DE_FOLHA_VAZIA = 0.01
+
+TEXTO, ILUSTRACAO, COLORIDA, VAZIA = "texto", "ilustracao", "colorida", "vazia"
 
 
 def classificar_pagina(fracao_tinta: float, tem_cor: bool) -> str:
@@ -405,6 +429,8 @@ def classificar_pagina(fracao_tinta: float, tem_cor: bool) -> str:
     A classificacao sai sempre do ORIGINAL, nunca do resultado filtrado: e o
     conteudo que decide o que se pode exigir, nao o efeito aplicado.
     """
+    if fracao_tinta < FRACAO_TINTA_DE_FOLHA_VAZIA:
+        return VAZIA
     if fracao_tinta > FRACAO_TINTA_DE_ILUSTRACAO:
         return ILUSTRACAO
     if tem_cor:
@@ -430,6 +456,9 @@ def comparar_com_original(
     """
     motivos: list[str] = []
     pagina_de_texto = classe == TEXTO
+    # Numa folha vazia nao ha letra a medir. O que se cobra dela e so nao
+    # escurecer e nao sujar - ver FRACAO_TINTA_DE_FOLHA_VAZIA.
+    tem_letra = classe != VAZIA
 
     # 1. letras entupidas (so em pagina de texto)
     antes = base.get("vazios_internos", 0)
@@ -469,7 +498,7 @@ def comparar_com_original(
 
     # 5. borda serrilhada ou borrada
     # O Preto e branco e 1 bit por definicao: cobrar rampa dele nao faz sentido.
-    if filtro != PRETO_E_BRANCO:
+    if filtro != PRETO_E_BRANCO and tem_letra:
         t = medidas.get("transicao_borda_px", 0.0)
         t_base = base.get("transicao_borda_px", 0.0)
         if t < TRANSICAO_BOA_MIN <= t_base:
