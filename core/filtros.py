@@ -664,6 +664,32 @@ def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.nd
     capa deixaria de ganhar cor - que e para o que este filtro existe. O que
     separa papel de conteudo aqui e a dupla claro E sem cor: grao de papel e
     claro e quase cinza; tinta colorida, mesmo clara, tem cor de verdade.
+
+    Este passo continua em HSV, e nao e por falta de tentativa. Subir o S do HSV
+    mantem o V, mas nao mantem a luminancia (0,299 R + 0,587 G + 0,114 B): numa
+    cor quente o verde cai, e o verde carrega quase seis decimos do peso. Por
+    isso o passo escurecia o papel velho, que e sempre amarelo-pardo.
+
+    A troca obvia - subir a cor em LAB, que preserva o L - foi medida e
+    REVERTIDA. Ela conserta o papel, mas faz o mesmo estrago do outro lado: L*
+    nao e a luminancia do cinza, e num vermelho saturado manter L* enquanto se
+    afasta do eixo cinza tambem derruba o verde. Na pagina 376 do Graduale, de
+    rubricacao vermelha, a letra engrossou e os vazios internos cairam de 18%
+    para 30% abaixo do original - entupimento de letra, que e o defeito mais
+    grave que existe aqui. Trocava um problema por outro pior.
+
+    O YCrCb, que preserva exatamente a luminancia do cinza, foi medido tambem:
+    conserta o papel em TODAS as paginas - inclusive as duas que o guarda de
+    folha vazia nao alcanca, a capa do Palatino e a folha 1 do Graduale - mas
+    engrossa a mesma rubricacao do Graduale 376, de 18% para 28%. Preservar a
+    luminancia nao basta: o que binariza a letra e a conversao para cinza por
+    VALUE (o maior canal), e essa nao ve o Y.
+
+    O caminho que sobra, para quem pegar isto depois: deixar a TINTA de fora do
+    realce, e nao so o papel claro. O peso abaixo separa papel de conteudo pelo
+    par claro-e-sem-cor; falta uma terceira condicao que reconheca tinta
+    colorida - a rubricacao - e a preserve. Ai da para trocar o espaco de cor
+    sem engrossar letra nenhuma.
     """
     cinza = _para_cinza(img)
     saturacao = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1].astype(np.float32)
@@ -758,6 +784,17 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
         saida = _contraste_local_no_conteudo(saida, intensidade)
 
     # 3. cor mais viva
+    #
+    # ATENCAO, ja medido: este passo tambem realca a UNICA cor de uma folha
+    # velha sem tinta, que e o amarelado do proprio papel. Olhadas as imagens, a
+    # folha vazia do Boecio e a 446 da Rhetorica saem de um creme palido para um
+    # amarelo forte - o oposto do que o filtro deveria fazer. Por o passo dentro
+    # do guarda acima resolve quatro reprovacoes da regua e nao cria nenhuma,
+    # mas tem um preco: numa pagina colorida SEM TINTA o medidor de intensidade
+    # deixa de mexer na cor, e ha teste cobrando esse comportamento
+    # (test_intensidade_do_magico_muda_a_saturacao). Fica como esta ate haver
+    # decisao. Ver o cabecalho de _realcar_saturacao para as trocas de espaco de
+    # cor ja tentadas e por que foram revertidas.
     saida = _realcar_saturacao(saida, _entre(intensidade, SATURACAO_MIN, SATURACAO_MAX))
 
     # 4. texto mais nitido

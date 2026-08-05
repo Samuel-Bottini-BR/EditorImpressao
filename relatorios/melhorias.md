@@ -212,3 +212,69 @@ papel ruidoso infla o número. Deve passar a contar só junto do contorno da
 letra. Não muda o veredito da Tentativa 1, mas muda a magnitude
 (1,32 → 0,60 pela medida atual; 0,86 → 0,49 pela medida limpa) e vai
 contaminar comparações futuras.
+
+---
+
+## Tentativa 7 — o realce de cor do Mágico pro escurece o papel
+
+**Data:** 04/08/2026
+**Situação:** medido, três variantes; **nada trocado**, e o porquê está abaixo
+**Motivo:** oito das vinte e sete reprovações da régua eram "o fundo escureceu",
+espalhadas por quatro livros. Sete delas no Mágico pro.
+
+### A causa, medida passo a passo
+
+Reproduzidas as páginas reprovadas e medido o fundo **depois de cada passo** do
+filtro, a causa é uma só: `_realcar_saturacao`. Todos os outros passos são
+neutros ou clareiam — no Boécio o achatamento da iluminação sobe o fundo de
+145,5 para 154,4, e a saturação joga para 138,4. O filtro Melhorar, que não tem
+esse passo, passa nas seis páginas.
+
+| Página | Fundo original | Queda causada pelo passo |
+|---|---|---|
+| BRODERIES 16 | 91,5 | 13,4 |
+| BRODERIES 46 | 153,8 | 6,3 |
+| BRODERIES 76 | 156,4 | 6,5 |
+| Palatino 1 | 81,2 | 10,0 |
+| Rhetorica 446 | 201,9 | 11,0 |
+| Boécio 50 | 145,5 | 15,9 |
+
+O passo multiplica o S do HSV mantendo o V. Isso preserva o brilho, mas não a
+luminância: o cinza é 0,299 R + 0,587 G + 0,114 B, e numa cor quente subir a
+saturação empurra verde e azul para baixo. Papel envelhecido é sempre
+amarelo-pardo, então isso acontece em todo o acervo.
+
+**E o número escondia metade do estrago.** Olhadas as imagens, a folha vazia do
+Boécio e a 446 da Rhetorica saem de um creme pálido para um **amarelo forte** —
+exatamente o amarelado que o Kaique pediu para tirar. A régua não pega isso: ela
+mede quão CLARO está o papel, e uma folha mais amarela pode estar mais clara.
+
+### As três variantes medidas
+
+| | fundo | rubricação do Graduale 376 | teste |
+|---|---|---|---|
+| **Hoje (HSV)** | escurece em 8 páginas | vazios −18% | passa |
+| **Cor em LAB** | conserta 6 | vazios **−30%** (entope) | passa |
+| **Cor em YCrCb** | conserta 8 | vazios **−28%** (entope) | passa |
+| **Não rodar em folha sem tinta** | conserta 4 | vazios −18% | **falha** |
+
+**LAB e YCrCb foram revertidos.** Os dois consertam o papel e fazem o mesmo
+estrago do outro lado: na página 376 do Graduale, de rubricação vermelha, a
+letra engrossa e os vazios internos caem abaixo do limite de 25%. Entupimento de
+letra é o defeito mais grave que existe neste projeto. Preservar a luminância
+não basta — quem binariza a letra é a conversão para cinza por VALUE, o maior
+canal, e essa não vê o Y.
+
+**O guarda de folha vazia** é o único sem regressão na régua: 27 motivos passam
+a 23, quatro reprovações somem e nenhuma nasce. Mas derruba
+`test_intensidade_do_magico_muda_a_saturacao`: numa página colorida **sem
+tinta**, o medidor de intensidade deixa de mexer na cor. O medidor foi um pedido
+explícito, então isto não é detalhe de teste. Fica para decisão.
+
+### O caminho que sobra
+
+Deixar a **tinta** de fora do realce, e não só o papel claro. O peso de hoje
+separa papel de conteúdo pelo par claro-e-sem-cor; falta uma terceira condição
+que reconheça tinta colorida — a rubricação — e a preserve. Com ela, dá para
+trocar o espaço de cor sem engrossar letra nenhuma, e aí LAB ou YCrCb passam a
+valer.

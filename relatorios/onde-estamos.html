@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde estamos - Editor de Impressao</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Onde estamos — Editor de Impressão</h1>
+<p>Escrito em 04/08/2026. Registra o que foi feito nesta conversa, o que foi
+pedido, o que foi perguntado, e o que falta para o programa estar pronto.</p>
+<hr />
+<h2>1. O que é o programa, e para quem</h2>
+<p>Aplicativo de Windows que recupera PDFs de livros antigos escaneados e os
+prepara para reimpressão em cadernos. Projeto do Pe. Rosenei, de um instituto
+de preservação de livros.</p>
+<p><strong>Quem usa é o Kaique, impressor, sem formação técnica.</strong> Ele nunca vê
+"Sauvola", "k" ou "deskew" — vê "Força do preto", "Melhorar", "girar a folha".
+Duas versões anteriores fracassaram: uma travava, a outra dava qualidade ruim.
+Daí vêm as regras rígidas do projeto.</p>
+<p>O fluxo é: arrasta o PDF, marca o que quer fazer, confere página a página,
+escolhe onde salvar, processa. Quatro filtros: Original, Preto e branco,
+Melhorar e Mágico pro.</p>
+<hr />
+<h2>2. O que você me pediu nesta conversa</h2>
+<p>Foram três pedidos, nesta ordem:</p>
+<ol>
+<li><strong>"vamos continuar o trabalho do editor de impressão"</strong></li>
+<li><strong>"porque você continua travando, porque não vai até o final?"</strong></li>
+<li><strong>"me da um resumo de tudo que tu fez agora em arquivo md, as perguntas que
+   me fez os prints que eu te mandei, os pedidos que eu te fiz em toda a
+   conversa, as questões que tu perguntou para mim e o que falta para o
+   programa estar pronto"</strong></li>
+</ol>
+<p>O segundo pedido era uma correção, e é o mais importante dos três. Eu havia
+parado duas vezes para perguntar por onde seguir em vez de fazer o trabalho.
+A partir dali passei a escolher o caminho sozinho, dentro da fronteira de
+autonomia que o projeto define, e a executar até o fim. Ficou anotado na minha
+memória permanente para valer nas próximas conversas.</p>
+<hr />
+<h2>3. O que eu perguntei, e o que você respondeu</h2>
+<p>Duas perguntas, ambas antes da sua correção.</p>
+<p><strong>Pergunta 1 — "Por onde continuamos?"</strong></p>
+<p>Ofereci quatro caminhos: conferir a página de imagens que estava sem revisão;
+atacar o serrilhado do Boécio (8 casos); atacar o fundo que escurece (7 casos);
+ou o entupimento das letras no Catecismo (3 casos).</p>
+<blockquote>
+<p><strong>Você respondeu:</strong> conferir a página de imagens primeiro.</p>
+</blockquote>
+<p><strong>Pergunta 2 — "O que faço com o <code>o-que-mudou.html</code>?"</strong></p>
+<p>Ofereci: corrigir os textos e commitar; corrigir e ir atrás do problema do
+BRODERIES; só commitar como estava; ou não commitar ainda.</p>
+<blockquote>
+<p><strong>Você respondeu:</strong> corrigir os textos e commitar.</p>
+</blockquote>
+<p>Depois dessas duas veio a sua correção, e não perguntei mais nada.</p>
+<hr />
+<h2>4. Sobre os prints</h2>
+<p><strong>Nesta conversa você não me mandou nenhum print.</strong> As dez imagens que eu abri
+não vieram de você: elas estavam embutidas dentro do arquivo
+<code>relatorios/o-que-mudou.html</code>, que o próprio projeto tinha gerado às 09:15 de
+hoje e que ainda não havia sido conferido por ninguém. Eu extraí as dez do
+arquivo e as abri uma a uma.</p>
+<p>Os prints que existem no projeto e que são fonte de requisito são outros: são
+as capturas de tela que o <strong>Kaique</strong> deixou junto das queixas dele, na pasta
+<code>Desktop\BIBLIOTECA DO FIM DOS TEMPOS\Teste de livros</code>. Elas estão listadas na
+seção 6, junto de cada queixa.</p>
+<hr />
+<h2>5. O que eu fiz</h2>
+<h3>5.1 Retomada do contexto</h3>
+<p>Localizei o projeto em <code>Desktop\EditorImpressao</code> e reconstruí onde o trabalho
+havia parado. O último commit era de hoje às 09:05 — <em>"Folha em branco para de
+sair mais escura e mais suja"</em> —, e havia um arquivo não commitado gerado dez
+minutos depois: <code>relatorios/o-que-mudou.html</code>, uma página de conferência visual
+com dez imagens.</p>
+<p>Descobri também que <strong>cinco dos nove relatórios estavam desatualizados</strong>:
+Graduale, Horas, Marial, BRODERIES e Siebmacher foram medidos entre 00:58 e
+01:23, mas o <code>core/filtros.py</code> mudou às 08:37. Os números daqueles cinco livros
+descrevem um programa que não existe mais.</p>
+<h3>5.2 Conferência das dez imagens</h3>
+<p>Segui a regra do projeto: abrir todas as imagens antes de dizer que funcionou,
+e julgar contra a página, não contra a legenda de quem implementou.</p>
+<p>Abri as dez. Em seis lugares a legenda prometia mais do que eu conseguia
+enxergar no tamanho normal, então ampliei essas regiões de 2 a 3,4 vezes e
+olhei de novo. <strong>Oito conferem, uma confere com ressalva, uma não confere.</strong></p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Quadro</th>
+<th>Veredito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Letra arredondada (Rhetorica p334)</td>
+<td>confere — a borda tem meio-tom e fecha redonda</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Papel branco, mancha do verso fora (Boécio p33)</td>
+<td>confere, com ressalva</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Risca do vinco (Graduale p536)</td>
+<td>confere — a faixa de papel saiu, nada de conteúdo foi cortado</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Inicial preservada (Graduale p108)</td>
+<td>confere — a capitular está inteira</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Xilogravura é gravura (Rhetorica p112)</td>
+<td>confere</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Mancha do papel não é gravura (Rhetorica p223)</td>
+<td>confere</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Iluminura sai inteira (Horas p95)</td>
+<td>confere — só dava para ver ampliado</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Foto do bordado (BRODERIES p73)</td>
+<td><strong>não confere</strong></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Gravura e texto na mesma página (Catecismo p118)</td>
+<td>confere — conferido em três pontos</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Capa é foto (Palatino p134)</td>
+<td>confere</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A ressalva do quadro 2.</strong> A mancha do verso sumiu, o papel ficou branco e
+nenhuma letra foi comida — a legenda só promete isso e cumpre. Mas ampliado
+quatro vezes, o papel branco tem uma dúzia de pontos escuros de 3 a 8 pixels
+espalhados e sobra um véu esverdeado na borda direita. É sujeira que ficou.</p>
+<p><strong>O que não confere no quadro 8.</strong> A legenda dizia que só as legendas impressas
+viram texto. Ampliado, não é isso: o <strong>título impresso</strong> "POINT DE VANNIER OU
+POINT DE BRIQUES." está dentro do vermelho, tratado como foto; e das quatro
+caixas de legenda do pé, três saem azuis e a quarta sai vermelha. É texto
+impresso do mesmo tipo, no mesmo fundo pardo, decidido de dois jeitos na mesma
+folha.</p>
+<p><strong>Um achado de fora do roteiro.</strong> No quadro 7, as rubricas vermelhas da
+iluminura — <em>Secreta.</em>, <em>Præfatio…</em>, <em>Communio.</em>, <em>Postcommunio.</em> — estão
+marcadas como letra. No preto e branco elas vão sair pretas. É a mesma perda de
+rubricação vermelha já anotada no Graduale, agora aparecendo num segundo livro.</p>
+<h3>5.3 Correção e commit</h3>
+<p>Commit <code>07b550e</code>. A legenda do quadro 8 passou a dizer o que a imagem mostra; o
+fecho da página passou a listar o caso do BRODERIES junto dos outros problemas
+que já estavam assumidos, e ganhou um parágrafo sobre a rubricação do Livro de
+Horas. Só texto: nenhum filtro, detector ou régua foi tocado.</p>
+<h3>5.4 Diagnóstico do fundo que escurece</h3>
+<p>Escolhi este grupo por ser o maior que se espalha por vários livros — sete
+ocorrências em quatro livros —, o que costuma indicar causa única.</p>
+<p>Reproduzi as seis páginas reprovadas e medi o fundo <strong>depois de cada passo</strong> do
+Melhorar e do Mágico pro, sempre na mesma região de papel tirada do original.
+O resultado foi unânime: quem escurece é um passo só, o <strong>realce de saturação</strong>
+do Mágico pro.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Classe</th>
+<th>Fundo original</th>
+<th>Queda causada pela saturação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BRODERIES 16</td>
+<td>vazia</td>
+<td>91,5</td>
+<td>13,4</td>
+</tr>
+<tr>
+<td>BRODERIES 46</td>
+<td>ilustração</td>
+<td>153,8</td>
+<td>6,3</td>
+</tr>
+<tr>
+<td>BRODERIES 76</td>
+<td>ilustração</td>
+<td>156,4</td>
+<td>6,5</td>
+</tr>
+<tr>
+<td>Palatino 1</td>
+<td>ilustração</td>
+<td>81,2</td>
+<td>10,0</td>
+</tr>
+<tr>
+<td>Rhetorica 446</td>
+<td>vazia</td>
+<td>201,9</td>
+<td>11,0</td>
+</tr>
+<tr>
+<td>Boécio 50</td>
+<td>vazia</td>
+<td>145,5</td>
+<td>15,9</td>
+</tr>
+</tbody>
+</table>
+<p>Todos os outros passos são neutros ou clareiam. No Boécio, o achatamento da
+iluminação chega a subir o fundo de 145,5 para 154,4 — e a saturação joga para
+138,6. E o Melhorar, que não tem esse passo, <strong>passa nas seis páginas</strong>.</p>
+<p><strong>Por que acontece.</strong> O passo multiplica o S do HSV mantendo o V. Isso preserva
+o brilho, mas não a luminância: o cinza é 0,299 R + 0,587 G + 0,114 B, com o
+maior peso no verde, e numa cor quente subir a saturação empurra verde e azul
+para baixo. Papel envelhecido é sempre amarelo-pardo. Então o papel escurece —
+que é exatamente a queixa do Kaique sobre o amarelado.</p>
+<p><strong>A correção que preparei</strong> é medir a mesma coisa em LAB: multiplicar <code>a</code> e <code>b</code>,
+que são os dois eixos de cor, e não tocar em <code>L</code>. Matiz igual, cor mais forte,
+luminância no lugar — que é o que "cor mais viva" deveria significar. O passo
+vizinho, o contraste local, já trabalha em LAB pelo mesmo motivo.</p>
+<p><strong>A correção ainda não foi aplicada.</strong> Está escrita e pronta, com o experimento
+montado para medi-la contra a versão de hoje nas seis páginas reprovadas e em
+quatro páginas de controle — rubricação do Graduale, iluminura do Horas,
+estampa do Catecismo e texto corrido do Marial —, onde a cor <strong>tem</strong> de
+continuar subindo, senão a troca custa aquilo para que o filtro existe.</p>
+<h3>5.5 Linha de base</h3>
+<p>Como cinco dos nove relatórios estavam desatualizados, pus a régua para rodar
+sobre o acervo inteiro antes de mexer em qualquer coisa. <strong>Estava em andamento
+quando esta conversa foi interrompida</strong> — livro 2 de 9. São cerca de 33 minutos.</p>
+<p>Sem esse "antes" honesto, o "depois" não quer dizer nada.</p>
+<hr />
+<h2>6. O que o Kaique pediu, e onde está cada pedido</h2>
+<p>As queixas estão nos <code>.txt</code> que ele deixou junto dos prints, em
+<code>Desktop\BIBLIOTECA DO FIM DOS TEMPOS\Teste de livros</code>. São a fonte de
+requisito do projeto.</p>
+<table>
+<thead>
+<tr>
+<th>Queixa, nas palavras dele</th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"as letras estão ficando pixeladas, precisamos que elas fiquem mais arredondadas, mais nítidas"</td>
+<td><strong>Atendido e conferido na imagem</strong> (quadro 1). O raio da nitidez era largo demais e desenhava um halo em vez de afiar.</td>
+</tr>
+<tr>
+<td>"o magico pro está deixando muito pixelado a imagem"</td>
+<td><strong>Atendido e conferido</strong>, mesma causa da anterior.</td>
+</tr>
+<tr>
+<td>"as vezes a parte de trás fica com uma mancha da parte da frente"</td>
+<td><strong>Atendido e conferido</strong> (quadro 2), com a ressalva dos pontinhos que ficaram.</td>
+</tr>
+<tr>
+<td>"o programa não localizou as bordas corretamente"</td>
+<td><strong>Atendido e conferido em dois casos</strong> (quadros 3 e 4): a risca do vinco e a inicial que era cortada.</td>
+</tr>
+<tr>
+<td>"queremos que fique branco a pagina e só a letras pretas" (Preto e branco)</td>
+<td><strong>Atendido em número</strong> — o fundo do Preto e branco mede 253,8 numa escala em que 255 é branco. Mas a queixa original era de uma página que ficou <em>menos legível</em> que o original, e isso levou à comparação dos 18 binarizadores: a conclusão foi que <strong>não existe vencedor único, a escolha certa depende da página</strong>. Continua em aberto.</td>
+</tr>
+<tr>
+<td>"no filtro mágico pro o fundo deveria remover o amarelado e deixar totalmente branco, e preservar as cores dos textos e imagens"</td>
+<td><strong>Em curso.</strong> É exatamente o trabalho da seção 5.4. Hoje o Mágico pro deixa o fundo em torno de 226 contra 255 de alvo.</td>
+</tr>
+<tr>
+<td>"colocar botão clicável nas paginas que o programa não tem certeza"</td>
+<td>Os alertas laranja existem e são contados nos relatórios. <strong>Não verifiquei se há o botão clicável.</strong></td>
+</tr>
+<tr>
+<td>"pode dar problema na sequência dos cadernos? como ter certeza sem olhar folha por folha?"</td>
+<td>Existe <code>core/cadernos.py</code> com instruções de impressão. <strong>Não verifiquei nesta conversa.</strong></td>
+</tr>
+<tr>
+<td>"o livro já foi recortado ao meio, sobra dos lados uma parte branca que devia ser recortada"</td>
+<td><strong>Não verifiquei nesta conversa.</strong> É caso diferente do quadro 3.</td>
+</tr>
+<tr>
+<td>"a barra de scroll devia ser preta para ficar com visualização mais fácil"</td>
+<td><strong>Não verifiquei nesta conversa.</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. O que falta para o programa estar pronto</h2>
+<h3>7.1 A régua tem de zerar</h3>
+<p>O critério de aceitação do projeto é duro e é um só: <strong>nenhuma página pode sair
+pior do que entrou, em nenhum filtro.</strong> Hoje esse número não é zero.</p>
+<p>Pela última medição completa eram 25 ocorrências. Essa contagem está sendo
+refeita agora, e vai mudar — cinco livros foram medidos com código antigo.
+Agrupadas por causa, eram assim:</p>
+<table>
+<thead>
+<tr>
+<th>Causa</th>
+<th>Ocorrências</th>
+<th>Onde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Borda virou degrau</td>
+<td>8</td>
+<td>Boécio 9, 17, 33, 41; BRODERIES 76</td>
+</tr>
+<tr>
+<td>Fundo escureceu</td>
+<td>7</td>
+<td>BRODERIES 16, 46, 76; Palatino 1; Rhetorica 446; Boécio 50</td>
+</tr>
+<tr>
+<td>Fundo ficou mais sujo</td>
+<td>6</td>
+<td>Graduale 1, 126, 750; Boécio 1</td>
+</tr>
+<tr>
+<td>Letras entupiram</td>
+<td>3</td>
+<td>Catecismo 199, nos três filtros</td>
+</tr>
+<tr>
+<td>Borda borrou</td>
+<td>1</td>
+<td>BRODERIES 46</td>
+</tr>
+</tbody>
+</table>
+<p>O grupo do fundo que escurece está diagnosticado e com a correção pronta. Os
+outros quatro ainda não foram investigados.</p>
+<p>Sobre o grupo do serrilhado: <strong>todas as páginas do Boécio têm rampa original
+entre 0,70 e 0,86</strong>, abaixo da faixa saudável antes de qualquer tratamento — é
+um scan de baixa resolução, 4 MB para 50 folhas. Ampliada, a letra sai redonda.
+Falta decidir se ali o defeito é do filtro ou da própria régua, que penalizada
+uma queda relativa num número que já nasce fora da faixa.</p>
+<h3>7.2 Os dois achados de hoje</h3>
+<ul>
+<li><strong>BRODERIES:</strong> título impresso e uma das quatro legendas saem como foto,
+  enquanto as outras três saem como texto — na mesma folha, no mesmo fundo.
+  Provavelmente a mesma causa da folha do Siebmacher que sai tratada como foto.</li>
+<li><strong>Rubricação vermelha virando preto</strong>, agora em dois livros. A causa suspeita
+  já está escrita: a conversão para cinza trata vermelho como escuro. O DoxaPy
+  oferece oito métodos de conversão a investigar.</li>
+</ul>
+<h3>7.3 Pendências já anotadas em <code>melhorias.md</code></h3>
+<ul>
+<li><strong>A medida de transição está contaminada.</strong> Ela conta pixels de tom
+  intermediário na página inteira, e papel ruidoso infla o número. Precisa
+  contar só junto do contorno da letra. Não muda nenhum veredito já dado, mas
+  muda a magnitude e vai contaminar toda comparação futura.</li>
+<li><strong>Falta um número para "guardou a sujeira".</strong> O Otsu marca zero pioras, mas
+  guarda o dobro de tinta do Sauvola — em papel envelhecido isso quer dizer
+  manter a mancha como se fosse letra, e <strong>nenhum critério atual pega isso</strong>.
+  Enquanto esse número não existir, a régua pode aprovar o filtro errado.</li>
+<li><strong>Escolha do binarizador por página.</strong> No Palatino, de letra gótica pesada, o
+  Otsu sai sólido enquanto o Sauvola quebra o traço; em outras páginas se
+  inverte. Hoje o programa usa um só para tudo.</li>
+</ul>
+<h3>7.4 Fora da imagem</h3>
+<p>Quatro pedidos do Kaique da lista acima não foram verificados nesta conversa e
+não têm evidência de conferência: o botão clicável nas páginas incertas, a
+garantia da sequência dos cadernos sem olhar folha por folha, o recorte do
+livro que já veio cortado ao meio, e a barra de rolagem preta.</p>
+<h3>7.5 Duas coisas pequenas de arrumação</h3>
+<ul>
+<li><strong>O <code>CLAUDE.md</code> está desatualizado num ponto:</strong> diz que o acervo de teste está
+  em <code>Desktop\BIBLIOTECA DO FIM DOS TEMPOS</code>. Os PDFs não estão mais lá — estão
+  em <code>Desktop\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE</code>. Na pasta antiga
+  ficaram só as queixas e os prints do Kaique. O <code>avaliar.py</code> já sabe disso e
+  procura nos dois lugares; o texto é que não acompanhou.</li>
+<li><strong>O repositório não tem identidade de git configurada.</strong> Os commits vêm sendo
+  feitos passando nome e e-mail por variável de ambiente a cada vez.</li>
+</ul>
+<hr />
+<h2>8. Como isso é medido, e a regra que não muda</h2>
+<p>O protocolo do projeto é: <strong>medir antes, uma mudança por vez, medir de novo, e
+reverter se qualquer número piorar.</strong> Se a mudança parecer valer a pena mesmo
+assim, não reverter por conta própria — apresentar os dois resultados.</p>
+<p>E antes de julgar qualquer resultado visual: <strong>abrir todas as imagens.</strong>
+Percentual não é veredito, e expectativa escrita por quem implementou não é
+critério de acerto. Essa regra existe porque já foi reportado "10 de 10
+corretas" tendo olhado uma imagem — seis estavam erradas.</p>
+<p>Fora da imagem, o que já está de pé: <strong>124 testes automatizados</strong> em <code>tests\</code>, e
+<strong>20 de 20 casos de robustez</strong> — PDF corrompido, protegido por senha, arquivo
+que some no meio, disco cheio, livro de 1010 páginas, cancelar no meio. Em
+nenhum deles o programa fecha, e em nenhum deles se perde trabalho já feito.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/08/2026 às 14:47</p>
+</body>
+</html>

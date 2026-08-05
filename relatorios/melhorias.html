@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Melhorias tentadas</title>
+<title>Melhorias tentadas e medidas</title>
 <style>
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -467,6 +467,121 @@ papel ruidoso infla o número. Deve passar a contar só junto do contorno da
 letra. Não muda o veredito da Tentativa 1, mas muda a magnitude
 (1,32 → 0,60 pela medida atual; 0,86 → 0,49 pela medida limpa) e vai
 contaminar comparações futuras.</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 01/08/2026 às 11:15</p>
+<hr />
+<h2>Tentativa 7 — o realce de cor do Mágico pro escurece o papel</h2>
+<p><strong>Data:</strong> 04/08/2026
+<strong>Situação:</strong> medido, três variantes; <strong>nada trocado</strong>, e o porquê está abaixo
+<strong>Motivo:</strong> oito das vinte e sete reprovações da régua eram "o fundo escureceu",
+espalhadas por quatro livros. Sete delas no Mágico pro.</p>
+<h3>A causa, medida passo a passo</h3>
+<p>Reproduzidas as páginas reprovadas e medido o fundo <strong>depois de cada passo</strong> do
+filtro, a causa é uma só: <code>_realcar_saturacao</code>. Todos os outros passos são
+neutros ou clareiam — no Boécio o achatamento da iluminação sobe o fundo de
+145,5 para 154,4, e a saturação joga para 138,4. O filtro Melhorar, que não tem
+esse passo, passa nas seis páginas.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Fundo original</th>
+<th>Queda causada pelo passo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BRODERIES 16</td>
+<td>91,5</td>
+<td>13,4</td>
+</tr>
+<tr>
+<td>BRODERIES 46</td>
+<td>153,8</td>
+<td>6,3</td>
+</tr>
+<tr>
+<td>BRODERIES 76</td>
+<td>156,4</td>
+<td>6,5</td>
+</tr>
+<tr>
+<td>Palatino 1</td>
+<td>81,2</td>
+<td>10,0</td>
+</tr>
+<tr>
+<td>Rhetorica 446</td>
+<td>201,9</td>
+<td>11,0</td>
+</tr>
+<tr>
+<td>Boécio 50</td>
+<td>145,5</td>
+<td>15,9</td>
+</tr>
+</tbody>
+</table>
+<p>O passo multiplica o S do HSV mantendo o V. Isso preserva o brilho, mas não a
+luminância: o cinza é 0,299 R + 0,587 G + 0,114 B, e numa cor quente subir a
+saturação empurra verde e azul para baixo. Papel envelhecido é sempre
+amarelo-pardo, então isso acontece em todo o acervo.</p>
+<p><strong>E o número escondia metade do estrago.</strong> Olhadas as imagens, a folha vazia do
+Boécio e a 446 da Rhetorica saem de um creme pálido para um <strong>amarelo forte</strong> —
+exatamente o amarelado que o Kaique pediu para tirar. A régua não pega isso: ela
+mede quão CLARO está o papel, e uma folha mais amarela pode estar mais clara.</p>
+<h3>As três variantes medidas</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>fundo</th>
+<th>rubricação do Graduale 376</th>
+<th>teste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hoje (HSV)</strong></td>
+<td>escurece em 8 páginas</td>
+<td>vazios −18%</td>
+<td>passa</td>
+</tr>
+<tr>
+<td><strong>Cor em LAB</strong></td>
+<td>conserta 6</td>
+<td>vazios <strong>−30%</strong> (entope)</td>
+<td>passa</td>
+</tr>
+<tr>
+<td><strong>Cor em YCrCb</strong></td>
+<td>conserta 8</td>
+<td>vazios <strong>−28%</strong> (entope)</td>
+<td>passa</td>
+</tr>
+<tr>
+<td><strong>Não rodar em folha sem tinta</strong></td>
+<td>conserta 4</td>
+<td>vazios −18%</td>
+<td><strong>falha</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>LAB e YCrCb foram revertidos.</strong> Os dois consertam o papel e fazem o mesmo
+estrago do outro lado: na página 376 do Graduale, de rubricação vermelha, a
+letra engrossa e os vazios internos caem abaixo do limite de 25%. Entupimento de
+letra é o defeito mais grave que existe neste projeto. Preservar a luminância
+não basta — quem binariza a letra é a conversão para cinza por VALUE, o maior
+canal, e essa não vê o Y.</p>
+<p><strong>O guarda de folha vazia</strong> é o único sem regressão na régua: 27 motivos passam
+a 23, quatro reprovações somem e nenhuma nasce. Mas derruba
+<code>test_intensidade_do_magico_muda_a_saturacao</code>: numa página colorida <strong>sem
+tinta</strong>, o medidor de intensidade deixa de mexer na cor. O medidor foi um pedido
+explícito, então isto não é detalhe de teste. Fica para decisão.</p>
+<h3>O caminho que sobra</h3>
+<p>Deixar a <strong>tinta</strong> de fora do realce, e não só o papel claro. O peso de hoje
+separa papel de conteúdo pelo par claro-e-sem-cor; falta uma terceira condição
+que reconheça tinta colorida — a rubricação — e a preserve. Com ela, dá para
+trocar o espaço de cor sem engrossar letra nenhuma, e aí LAB ou YCrCb passam a
+valer.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/08/2026 às 19:56</p>
 </body>
 </html>
