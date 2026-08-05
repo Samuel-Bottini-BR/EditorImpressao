@@ -3,27 +3,20 @@
 - Arquivo de 271 MB
 - 750 folhas no PDF, que viram 750 paginas de saida
 - 7 paginas medidas a fundo
-- 355 segundos para analisar o livro inteiro (473 milissegundos por folha)
+- 248 segundos para analisar o livro inteiro (331 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
-Sao 13 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
+Sao 6 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
 
 | Pagina | Filtro | O que piorou |
 |---|---|---|
-| 1 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 4.3 para 6.5 |
-| 126 | Preto e branco | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.4 |
-| 126 | Melhorar | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.4 |
-| 126 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.4 |
-| 251 | Melhorar | a borda das letras virou degrau (serrilhado): a rampa caiu de 2.38 para 0.68 pixels |
-| 251 | Mágico pro | as letras entupiram: sobraram 65 vazios internos de 91 (29% a menos); a borda das letras virou degrau (serrilhado): a rampa caiu de 2.38 para 0.66 pix |
-| 376 | Melhorar | as letras entupiram: sobraram 102 vazios internos de 142 (28% a menos); a borda das letras virou degrau (serrilhado): a rampa caiu de 2.21 para 0.54 p |
-| 376 | Mágico pro | as letras entupiram: sobraram 93 vazios internos de 142 (35% a menos); a borda das letras virou degrau (serrilhado): a rampa caiu de 2.21 para 0.52 pi |
-| 501 | Melhorar | a borda das letras virou degrau (serrilhado): a rampa caiu de 2.12 para 0.62 pixels |
-| 501 | Mágico pro | a borda das letras virou degrau (serrilhado): a rampa caiu de 2.12 para 0.60 pixels |
-| 626 | Melhorar | a borda das letras virou degrau (serrilhado): a rampa caiu de 2.08 para 0.69 pixels |
-| 626 | Mágico pro | as letras entupiram: sobraram 154 vazios internos de 224 (31% a menos); a borda das letras virou degrau (serrilhado): a rampa caiu de 2.08 para 0.66 p |
-| 750 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 4.9 para 7.8 |
+| 1 | Melhorar | o fundo escureceu: passou de 47 para 44 numa escala em que 255 e branco |
+| 1 | Mágico pro | o fundo escureceu: passou de 47 para 42 numa escala em que 255 e branco |
+| 126 | Preto e branco | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
+| 126 | Melhorar | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
+| 126 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
+| 750 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 4.9 para 7.2 |
 
 ## Paginas marcadas em laranja
 
@@ -39,8 +32,8 @@ e um pedido de conferida.
 
 ## Observacoes do livro inteiro
 
-- este livro tem uma página por folha, não duas
 - o livro inteiro foi escaneado em qualidade baixa
+- este livro tem uma página por folha, não duas
 
 ## As paginas saem todas do mesmo tamanho?
 
@@ -56,12 +49,12 @@ nao fecha direito na impressao.
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 33.82 | 5268 | 172.5 | 2.58 | 2.10 |
-| Preto e branco | 13.91 | 824 | 249.9 | 0.91 | 0.36 |
-| Melhorar | 34.14 | 4145 | 207.4 | 2.50 | 1.19 |
-| Mágico pro | 29.80 | 6479 | 204.1 | 2.95 | 1.10 |
+| Original | 30.33 | 262 | 167.2 | 2.50 | 2.35 |
+| Preto e branco | 13.83 | 856 | 243.3 | 0.87 | 1.29 |
+| Melhorar | 32.50 | 4060 | 199.5 | 2.38 | 2.41 |
+| Mágico pro | 29.86 | 521 | 197.9 | 2.30 | 1.90 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.
-> **Transicao** entre 1 e 2 e borda saudavel; perto de zero e
+> **Transicao** entre 1,2 e 2 e borda saudavel; em 1,0 cravado e
 > serrilhado.

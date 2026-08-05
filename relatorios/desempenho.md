@@ -1,6 +1,6 @@
 # Desempenho
 
-Medido em 03/08/2026 as 23:57.
+Medido em 05/08/2026 as 16:13.
 
 As metas sao as da Etapa 5 do protocolo. Onde houver projecao, ela sai
 do custo real por folha medido nos nove livros, multiplicado por 500 -
@@ -8,25 +8,25 @@ nenhum livro do acervo tem 500 paginas.
 
 | O que | Medido | Meta | Passou? |
 |---|---|---|---|
-| Abrir o programa | 3.0 s | 10 s | sim |
+| Abrir o programa | 0.5 s | 10 s | sim |
 | Primeiras miniaturas na tela | 0.5 s | 5 s | sim |
-| Analisar 500 folhas | 220.0 s | 180 s | NAO |
-| Exportar 500 paginas a 300 DPI | 404.5 s | 1200 s | sim |
-| Pico de memoria | 1363.4 MB | 2048 MB | sim |
+| Analisar 500 folhas | 186.5 s | 180 s | NAO |
+| Exportar 500 paginas a 300 DPI | 349.5 s | 1200 s | sim |
+| Pico de memoria | 1450.3 MB | 2048 MB | sim |
 
 ## Custo por pagina, que e de onde as projecoes saem
 
-- Analisar uma folha: 440 milissegundos
-- Exportar uma pagina a 300 DPI: 809 milissegundos
+- Analisar uma folha: 373 milissegundos
+- Exportar uma pagina a 300 DPI: 699 milissegundos
 
 ## Quanto tempo cada filtro leva por pagina
 
 | Filtro | Tempo |
 |---|---|
-| Original | 5 ms |
-| Preto e branco | 1387 ms |
-| Melhorar | 2640 ms |
-| Mágico pro | 3230 ms |
+| Original | 4 ms |
+| Preto e branco | 1737 ms |
+| Melhorar | 3451 ms |
+| Mágico pro | 3919 ms |
 
 ## Memoria, livro a livro
 
@@ -36,15 +36,15 @@ Kaique.
 
 | Livro | Folhas | Pico |
 |---|---|---|
-| Marial de sermoens - Frei Balthasar Paez | 907 | 734 MB |
-| Graduale - Saeculum XIV | 750 | 1131 MB |
-| Rhetorica Christiana -  Fray Diego Valad | 446 | 679 MB |
-| Na escola de Jesus - Catecismo explicado | 199 | 630 MB |
-| Livro de Horas - Luís XIV | 191 | 1363 MB |
-| Giovambattista Palatino cittadino romano | 134 | 756 MB |
-| Schön Neues Modell Buch - Johann Siebmac | 134 | 671 MB |
-| POINTS d´ANCIENNES BRODERIES ANGLAISES - | 92 | 643 MB |
-| Sobre a Consolação da Filosofia - Severi | 50 | 667 MB |
+| Marial de sermoens - Frei Balthasar Paez | 907 | 960 MB |
+| Graduale - Saeculum XIV | 750 | 1414 MB |
+| Rhetorica Christiana -  Fray Diego Valad | 446 | 843 MB |
+| Na escola de Jesus - Catecismo explicado | 199 | 861 MB |
+| Livro de Horas - Luís XIV | 191 | 1450 MB |
+| Giovambattista Palatino cittadino romano | 134 | 760 MB |
+| Schön Neues Modell Buch - Johann Siebmac | 134 | 796 MB |
+| POINTS d´ANCIENNES BRODERIES ANGLAISES - | 92 | 837 MB |
+| Sobre a Consolação da Filosofia - Severi | 50 | 798 MB |
 
 ## Em que maquina isto foi medido
 

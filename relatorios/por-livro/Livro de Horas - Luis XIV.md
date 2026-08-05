@@ -3,7 +3,7 @@
 - Arquivo de 106 MB
 - 191 folhas no PDF, que viram 191 paginas de saida
 - 7 paginas medidas a fundo
-- 93 segundos para analisar o livro inteiro (489 milissegundos por folha)
+- 66 segundos para analisar o livro inteiro (344 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -23,8 +23,8 @@ e um pedido de conferida.
 
 ## Observacoes do livro inteiro
 
-- este livro tem uma página por folha, não duas
 - o livro inteiro foi escaneado em qualidade baixa
+- este livro tem uma página por folha, não duas
 - o livro inteiro é colorido
 
 ## As paginas saem todas do mesmo tamanho?
@@ -41,12 +41,12 @@ nao fecha direito na impressao.
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 32.99 | 5814 | 219.5 | 1.51 | 1.87 |
-| Preto e branco | 26.68 | 5035 | 244.0 | 1.00 | 1.20 |
-| Melhorar | 35.79 | 4953 | 242.0 | 1.04 | 1.66 |
-| Mágico pro | 33.72 | 5571 | 242.2 | 1.00 | 1.52 |
+| Original | 32.99 | 5814 | 219.5 | 1.51 | 1.60 |
+| Preto e branco | 21.50 | 7557 | 244.0 | 1.10 | 1.01 |
+| Melhorar | 23.31 | 19660 | 241.3 | 1.13 | 1.53 |
+| Mágico pro | 23.12 | 20406 | 241.9 | 1.10 | 1.48 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.
-> **Transicao** entre 1 e 2 e borda saudavel; perto de zero e
+> **Transicao** entre 1,2 e 2 e borda saudavel; em 1,0 cravado e
 > serrilhado.

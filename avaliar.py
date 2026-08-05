@@ -770,9 +770,25 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
             # folha que o detector marcou como desenho de ponta a ponta, e a
             # capa - onde nada e mais escuro que a propria folha. Ver
             # e_so_desenho e e_capa_ou_folha_nua.
-            sem_letra = (e_so_desenho(selecao, altura, largura)
-                         or e_capa_ou_folha_nua(base_img))
-            if sem_letra and classe in (TEXTO, COLORIDA):
+            # Duas perguntas diferentes, com pesos diferentes.
+            #
+            # 1. Vale medir FORMA de letra aqui? Se o detector diz que a
+            #    folha e desenho de ponta a ponta, nao: vazio interno e
+            #    espessura de traco nao querem dizer nada num desenho. A
+            #    palavra do detector basta, porque o estrago de errar aqui e
+            #    pequeno - esses dois numeros ja nao valem para ILUSTRACAO.
+            #
+            # 2. Vale medir BORDA de letra aqui? So se nao houver letra
+            #    nenhuma na folha, e para isso a palavra do detector NAO
+            #    basta. Medido: na pagina 126 do Graduale, uma partitura
+            #    manuscrita cheia de texto, ele marcou 100% da folha como
+            #    gravura e 0% como letra. E o erro que a regra do projeto
+            #    cita pelo nome. Aqui vale o teste por imagem - nada mais
+            #    escuro que a propria folha -, que e o mesmo do recorte de
+            #    bordas e acerta capa e folha nua.
+            so_desenho = e_so_desenho(selecao, altura, largura)
+            sem_letra = e_capa_ou_folha_nua(base_img)
+            if (so_desenho or sem_letra) and classe in (TEXTO, COLORIDA):
                 classe = ILUSTRACAO
                 registro["classe"] = classe
             if sem_letra:
@@ -1224,11 +1240,11 @@ def escrever_markdown(dados: dict[str, Any], destino: Path) -> None:
         L.append("## Paginas em que a regua nao cobrou letra")
         L.append("")
         L.append(
-            "A conta de tinta e cor chamou estas paginas de texto, mas o detector "
-            "de regioes marcou a folha INTEIRA como desenho e nada como letra. "
-            "Numa pagina assim nao ha letra para medir, entao os criterios de "
-            "letra - vazios internos, espessura e borda - ficam de fora. Os de "
-            "fundo continuam valendo."
+            "Sao capas, folhas de guarda e versos limpos: nada nelas e mais "
+            "escuro que a propria folha, entao nao ha letra para medir. Os "
+            "criterios de letra - vazios internos, espessura e borda - ficam de "
+            "fora. Os de fundo continuam valendo: sujar ou escurecer uma capa e "
+            "estrago igual."
         )
         L.append("")
         L.append(

@@ -67,36 +67,10 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <li>Arquivo de 40 MB</li>
 <li>446 folhas no PDF, que viram 446 paginas de saida</li>
 <li>7 paginas medidas a fundo</li>
-<li>246 segundos para analisar o livro inteiro (551 milissegundos por folha)</li>
+<li>237 segundos para analisar o livro inteiro (531 milissegundos por folha)</li>
 </ul>
 <h2>Paginas que sairam piores que o original</h2>
-<p>Sao 3 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.</p>
-<table>
-<thead>
-<tr>
-<th>Pagina</th>
-<th>Filtro</th>
-<th>O que piorou</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Mágico pro</td>
-<td>a borda das letras virou degrau (serrilhado): a rampa caiu de 4.08 para 0.52 pixels</td>
-</tr>
-<tr>
-<td>446</td>
-<td>Melhorar</td>
-<td>o fundo escureceu: passou de 208 para 182 numa escala em que 255 e branco; o fundo ficou mais sujo: ruido subiu de 0.4 para 4.5</td>
-</tr>
-<tr>
-<td>446</td>
-<td>Mágico pro</td>
-<td>o fundo escureceu: passou de 208 para 201 numa escala em que 255 e branco; a borda das letras virou degrau (serrilhado): a rampa caiu de 4.59 para 0.0</td>
-</tr>
-</tbody>
-</table>
+<p>Nenhuma. E o resultado esperado.</p>
 <h2>Paginas marcadas em laranja</h2>
 <p>Laranja quer dizer <em>o programa nao teve certeza</em>. Nao e erro:
 e um pedido de conferida.</p>
@@ -164,44 +138,44 @@ nao fecha direito na impressao.</p>
 <tbody>
 <tr>
 <td>Original</td>
-<td>24.38</td>
-<td>1157</td>
-<td>210.4</td>
-<td>0.88</td>
-<td>1.52</td>
+<td>3.36</td>
+<td>1124</td>
+<td>208.4</td>
+<td>0.89</td>
+<td>0.78</td>
 </tr>
 <tr>
 <td>Preto e branco</td>
-<td>5.67</td>
-<td>932</td>
-<td>251.8</td>
-<td>0.26</td>
-<td>0.11</td>
+<td>3.52</td>
+<td>1366</td>
+<td>251.7</td>
+<td>0.24</td>
+<td>0.74</td>
 </tr>
 <tr>
 <td>Melhorar</td>
-<td>11.24</td>
-<td>914</td>
-<td>239.4</td>
-<td>0.95</td>
-<td>1.20</td>
+<td>3.37</td>
+<td>1385</td>
+<td>244.4</td>
+<td>0.36</td>
+<td>0.79</td>
 </tr>
 <tr>
 <td>Mágico pro</td>
-<td>7.94</td>
-<td>1330</td>
-<td>244.1</td>
-<td>0.36</td>
-<td>0.32</td>
+<td>3.37</td>
+<td>1386</td>
+<td>245.0</td>
+<td>0.31</td>
+<td>0.79</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
 <p><strong>Fundo</strong> perto de 255 e papel branco de verdade. <strong>Vazios</strong> sao os
 buraquinhos dentro das letras: quanto mais sobrarem, melhor.
-<strong>Transicao</strong> entre 1 e 2 e borda saudavel; perto de zero e
+<strong>Transicao</strong> entre 1,2 e 2 e borda saudavel; em 1,0 cravado e
 serrilhado.</p>
 </blockquote>
-<p class="rodape">Editor de Impressão &middot; gerado em 03/08/2026 às 23:57</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/08/2026 às 16:13</p>
 </body>
 </html>

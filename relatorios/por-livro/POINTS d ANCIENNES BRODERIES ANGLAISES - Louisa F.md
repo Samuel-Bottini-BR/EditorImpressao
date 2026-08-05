@@ -3,20 +3,15 @@
 - Arquivo de 12 MB
 - 92 folhas no PDF, que viram 92 paginas de saida
 - 7 paginas medidas a fundo
-- 83 segundos para analisar o livro inteiro (898 milissegundos por folha)
+- 80 segundos para analisar o livro inteiro (866 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
-Sao 6 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
+Sao 1 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
 
 | Pagina | Filtro | O que piorou |
 |---|---|---|
-| 16 | Melhorar | o fundo escureceu: passou de 142 para 138 numa escala em que 255 e branco; a borda das letras borrou: a rampa subiu de 1.81 para 3.06 pixels |
-| 16 | Mágico pro | o fundo escureceu: passou de 142 para 127 numa escala em que 255 e branco |
-| 46 | Melhorar | a borda das letras borrou: a rampa subiu de 0.91 para 3.54 pixels |
-| 46 | Mágico pro | o fundo escureceu: passou de 154 para 147 numa escala em que 255 e branco |
-| 76 | Melhorar | a borda das letras virou degrau (serrilhado): a rampa caiu de 0.83 para 0.62 pixels |
-| 76 | Mágico pro | o fundo escureceu: passou de 156 para 148 numa escala em que 255 e branco; a borda das letras virou degrau (serrilhado): a rampa caiu de 0.83 para 0.5 |
+| 76 | Mágico pro | o fundo escureceu: passou de 156 para 148 numa escala em que 255 e branco |
 
 ## Paginas marcadas em laranja
 
@@ -47,12 +42,12 @@ nao fecha direito na impressao.
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 218.92 | 1160 | 163.8 | 1.84 | 0.82 |
-| Preto e branco | 12.99 | 1607 | 236.5 | 1.23 | 0.31 |
-| Melhorar | 75.41 | 1636 | 190.7 | 1.86 | 1.34 |
-| Mágico pro | 169.45 | 1615 | 187.4 | 2.03 | 0.81 |
+| Original | 156.56 | 1159 | 156.6 | 1.67 | 0.92 |
+| Preto e branco | 11.43 | 3987 | 235.7 | 1.01 | 1.14 |
+| Melhorar | 121.38 | 3992 | 184.8 | 1.46 | 1.02 |
+| Mágico pro | 172.30 | 3983 | 183.9 | 1.48 | 0.95 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.
-> **Transicao** entre 1 e 2 e borda saudavel; perto de zero e
+> **Transicao** entre 1,2 e 2 e borda saudavel; em 1,0 cravado e
 > serrilhado.

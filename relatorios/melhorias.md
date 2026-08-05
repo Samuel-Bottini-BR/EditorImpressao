@@ -354,3 +354,42 @@ recorte de bordas. Medido nas páginas do acervo, ele dá verdadeiro exatamente
 para capas e folhas vazias — Boécio 1 e 50, Palatino 1, Graduale 1, BRODERIES
 16/46/76, Rhetorica 446 — e falso para página de texto e para ilustração. É por
 aí que o conserto deve vir, e ele precisa ser medido antes de entrar.
+
+---
+
+## Onde a régua deixou de cobrar letra — e o limite disso
+
+**Data:** 05/08/2026
+
+Treze das 63 páginas medidas passaram a não ter os critérios de letra cobrados.
+**Abri as treze.** Doze estão certas: capas do Boécio, Palatino, Graduale, Horas
+e as duas do Pesel; guarda em branco do Palatino e da Rhetorica; três folhas
+pardas sem tinta do Pesel; folha vazia do Boécio; e a foto do corte do Graduale,
+que é o livro fechado visto de lado.
+
+**Uma é discutível:** a página 1 do Livro de Horas é o cartão de rosto que a
+Gallica acrescentou à digitalização — "Heures de Louis XIV. Ms. déposé au
+Louvre." em tipo cinza-claro sobre branco. Tem texto, e mesmo assim passou no
+teste, porque nada nela é escuro o bastante. Não é conteúdo do livro, então o
+estrago é pequeno; fica registrado como limite conhecido do teste.
+
+### A regra foi apertada no meio do caminho
+
+A primeira versão aceitava a palavra do detector de regiões: folha marcada
+inteira como gravura, nada como letra. Com ela, **30 das 63 páginas** deixavam
+de ser cobradas — e entre elas estava a **página 126 do Graduale, uma partitura
+manuscrita cheia de texto**, que o detector marcou como 100% gravura. É o erro
+que a regra do projeto cita pelo nome: partitura tratada como uma grande
+ilustração.
+
+Nenhuma medida de pixel separa aquela partitura de uma prancha de padrão do
+Siebmacher — fração de tinta 0,276 contra 0,307 e 0,341. Então a régua passou a
+tratar as duas perguntas com pesos diferentes:
+
+| Pergunta | Quem responde |
+|---|---|
+| Vale medir **forma** de letra? (vazios, espessura) | o detector basta — esses números já não valem para ilustração |
+| Vale medir **borda** de letra? | só o teste por imagem: nada mais escuro que a própria folha |
+
+Com isso a partitura voltou a ser cobrada, e as páginas afrouxadas caíram de 30
+para 13.

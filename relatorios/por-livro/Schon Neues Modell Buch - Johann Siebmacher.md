@@ -3,7 +3,7 @@
 - Arquivo de 11 MB
 - 134 folhas no PDF, que viram 268 paginas de saida
 - 7 paginas medidas a fundo
-- 70 segundos para analisar o livro inteiro (520 milissegundos por folha)
+- 68 segundos para analisar o livro inteiro (505 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -37,12 +37,12 @@ nao fecha direito na impressao.
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 8.72 | 4510 | 164.1 | 1.92 | 1.10 |
-| Preto e branco | 9.52 | 4468 | 199.8 | 2.36 | 1.20 |
-| Melhorar | 9.53 | 4464 | 199.8 | 2.36 | 1.20 |
-| Mágico pro | 9.53 | 4464 | 199.8 | 2.36 | 1.20 |
+| Original | 8.72 | 4510 | 164.1 | 1.92 | 1.73 |
+| Preto e branco | 7.35 | 4670 | 199.8 | 2.25 | 1.81 |
+| Melhorar | 7.35 | 4669 | 199.8 | 2.25 | 1.81 |
+| Mágico pro | 7.35 | 4671 | 199.8 | 2.25 | 1.81 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.
-> **Transicao** entre 1 e 2 e borda saudavel; perto de zero e
+> **Transicao** entre 1,2 e 2 e borda saudavel; em 1,0 cravado e
 > serrilhado.
