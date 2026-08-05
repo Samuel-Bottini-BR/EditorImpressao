@@ -86,3 +86,50 @@ def test_contagem_de_cadernos_e_folhas():
     assert contar_cadernos(136, 20) == 7   # 6 cheios + 1 parcial
     assert contar_cadernos(140, 20) == 7
     assert folhas_por_caderno(20) == 5
+
+
+def test_conferencia_da_sequencia_responde_a_pergunta_do_kaique():
+    """"Como ter certeza que estão na sequência correta sem olhar folha por folha?"
+
+    A conferência simula a dobra: empilhadas as folhas de um caderno e dobradas
+    ao meio, a leitura tem de sair 1, 2, 3... até o fim. Antes o programa só
+    dizia como dobrar, e não conferia nada.
+    """
+    from core.cadernos import conferir_sequencia, instrucoes_de_impressao
+
+    for total, por_caderno in ((4, 4), (8, 8), (20, 20), (199, 20), (907, 20)):
+        certo, recado = conferir_sequencia(total, por_caderno)
+        assert certo, (total, por_caderno, recado)
+        assert "Conferido" in recado
+
+    # o número de páginas em branco do último caderno entra no recado
+    certo, recado = conferir_sequencia(199, 20)
+    assert certo and "sobra 1 página em branco" in recado
+
+    certo, recado = conferir_sequencia(907, 20)
+    assert certo and "sobram 13 páginas em branco" in recado
+
+    # a conferência não entra na lista numerada: ela não é um passo a fazer,
+    # e sim o resultado de uma conferência já feita. A tela final a mostra
+    # embaixo dos passos.
+    passos = instrucoes_de_impressao(199, 20)
+    assert len(passos) == 3
+    assert not any("Conferido" in linha for linha in passos)
+
+
+def test_conferencia_pega_imposicao_errada(monkeypatch):
+    """Se a conta da imposicao quebrar, a conferencia tem de reprovar."""
+    from core import cadernos
+
+    certa = cadernos.ordem_do_caderno
+
+    def trocada(paginas_no_caderno, deslocamento=0):
+        lados = certa(paginas_no_caderno, deslocamento)
+        if len(lados) >= 2:            # troca duas folhas de lugar
+            lados[0], lados[1] = lados[1], lados[0]
+        return lados
+
+    monkeypatch.setattr(cadernos, "ordem_do_caderno", trocada)
+    certo, recado = cadernos.conferir_sequencia(20, 20)
+    assert not certo
+    assert "Não imprima assim" in recado

@@ -18,9 +18,13 @@ from PySide6.QtWidgets import (
 )
 
 import historico
-from core.cadernos import contar_cadernos, instrucoes_de_impressao
+from core.cadernos import (
+    conferir_sequencia,
+    contar_cadernos,
+    instrucoes_de_impressao,
+)
 from modelos import Projeto
-from ui.estilo import TEXTO_FRACO, VERDE
+from ui.estilo import TEXTO_FRACO, VERDE, VERMELHO
 
 
 class TelaProgresso(QWidget):
@@ -193,6 +197,19 @@ class TelaFinal(QWidget):
             linhas = instrucoes_de_impressao(num_paginas, projeto.paginas_por_caderno)
             for i, texto in enumerate(linhas, start=1):
                 self.passos.addWidget(QLabel(f"{i}. {texto}"))
+
+            # A resposta ao "como ter certeza que estao na sequencia correta sem
+            # olhar folha por folha?". Nao entra na lista numerada porque nao e
+            # um passo a fazer: e o resultado de uma conferencia ja feita.
+            certo, recado = conferir_sequencia(
+                num_paginas, projeto.paginas_por_caderno)
+            aviso = QLabel(recado)
+            aviso.setWordWrap(True)
+            aviso.setStyleSheet(
+                f"color: {VERDE if certo else VERMELHO}; "
+                "margin-top: 8px;"
+            )
+            self.passos.addWidget(aviso)
 
 
 class _Certo(QWidget):

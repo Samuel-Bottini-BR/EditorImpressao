@@ -163,6 +163,84 @@ def _colocar(folha: fitz.Page, origem: fitz.Document, indice: int | None, area: 
     folha.show_pdf_page(area, origem, indice)
 
 
+def conferir_sequencia(total_paginas: int, paginas_por_caderno: int) -> tuple[bool, str]:
+    """Confere, sem ninguem olhar folha por folha, se a ordem sai certa.
+
+    E a pergunta do Kaique: "pode dar problema na sequencia dos cadernos? como
+    ter certeza que estao todas na sequencia correta sem ter que olhar folha por
+    folha?". Ate aqui a resposta era so a instrucao de como dobrar - o programa
+    dizia o que fazer, mas nao conferia nada.
+
+    A conferencia simula a dobra. Empilhadas as folhas de um caderno e dobradas
+    ao meio, a leitura tem de sair 1, 2, 3... ate o fim: a pagina 1 e a direita
+    da frente da folha de fora, a 2 e a esquerda do verso dela, e assim por
+    diante ate o miolo, voltando pelo outro lado. Se a conta da imposicao
+    estiver errada em qualquer folha, a leitura sai fora de ordem e isto pega.
+
+    Confere tambem que nenhuma pagina do livro sumiu ou saiu repetida.
+
+    Devolve (esta certo, frase em portugues para a tela).
+    """
+    n = paginas_por_caderno_valido(paginas_por_caderno)
+    if total_paginas <= 0:
+        return True, "Nao ha paginas para conferir."
+
+    vistas: list[int] = []
+    for inicio in range(0, total_paginas, n):
+        lados = ordem_do_caderno(n, deslocamento=inicio)
+
+        # Os lados saem aos pares, na ordem em que o papel entra na impressora:
+        # frente da folha, verso da mesma folha, frente da proxima. Conferir
+        # nessa ordem - e nao separando frentes de versos - e o que pega uma
+        # folha impressa fora de lugar, que e o erro que embaralha a dobra.
+        if len(lados) % 2 or any(
+            not lados[i].frente or lados[i + 1].frente
+            for i in range(0, len(lados), 2)
+        ):
+            return False, (
+                "As folhas não saíram em pares de frente e verso. Não imprima "
+                "assim: avise quem cuida do programa."
+            )
+        folhas = [(lados[i], lados[i + 1]) for i in range(0, len(lados), 2)]
+
+        leitura: list[int | None] = []
+        for frente, verso in folhas:                 # do lado de fora para o miolo
+            leitura.append(frente.direita)
+            leitura.append(verso.esquerda)
+        for frente, verso in reversed(folhas):       # e de volta, pelo outro lado
+            leitura.append(verso.direita)
+            leitura.append(frente.esquerda)
+
+        esperado = list(range(inicio, inicio + n))
+        if leitura != esperado:
+            return False, (
+                "A ordem das páginas não fechou na conferência. Não imprima "
+                "assim: avise quem cuida do programa."
+            )
+        vistas.extend(p for p in leitura if _existe(p, total_paginas))
+
+    if sorted(vistas) != list(range(total_paginas)):
+        return False, (
+            "Alguma página ficou de fora ou saiu repetida. Não imprima assim: "
+            "avise quem cuida do programa."
+        )
+
+    quantas = ("1 página" if total_paginas == 1
+               else f"as {total_paginas} páginas")
+    brancos = contar_cadernos(total_paginas, n) * n - total_paginas
+    if brancos:
+        sobra = ("sobra 1 página em branco" if brancos == 1
+                 else f"sobram {brancos} páginas em branco")
+        return True, (
+            f"Conferido: {quantas} saem na ordem certa depois de dobrar, e "
+            f"{sobra} no fim do último caderno."
+        )
+    return True, (
+        f"Conferido: {quantas} saem na ordem certa depois de dobrar, sem "
+        f"nenhuma repetida nem faltando."
+    )
+
+
 def instrucoes_de_impressao(total_paginas: int, paginas_por_caderno: int) -> list[str]:
     """Texto em portugues para a tela final. Sem jargao."""
     n = paginas_por_caderno_valido(paginas_por_caderno)

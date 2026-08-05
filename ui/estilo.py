@@ -164,11 +164,17 @@ QComboBox, QSpinBox {{
 }}
 
 QScrollArea {{ border: none; background: transparent; }}
-QScrollBar:horizontal {{ height: 10px; background: transparent; }}
-QScrollBar::handle:horizontal {{ background: {BORDA}; border-radius: 5px; min-width: 40px; }}
-QScrollBar:vertical {{ width: 10px; background: transparent; }}
-QScrollBar::handle:vertical {{ background: {BORDA}; border-radius: 5px; min-height: 40px; }}
+/* Barra de rolagem escura, a pedido do Kaique: a de antes era cinza claro
+   sobre fundo claro e ele nao a enxergava na tira de miniaturas - "a barra de
+   scrool devia ser preta para ficar com visualizacao mais facil". O trilho fica
+   claro para o punho se destacar dentro dele. */
+QScrollBar:horizontal {{ height: 12px; background: {FUNDO_DESABILITADO}; border-radius: 6px; }}
+QScrollBar::handle:horizontal {{ background: {TEXTO}; border-radius: 6px; min-width: 40px; }}
+QScrollBar:vertical {{ width: 12px; background: {FUNDO_DESABILITADO}; border-radius: 6px; }}
+QScrollBar::handle:vertical {{ background: {TEXTO}; border-radius: 6px; min-height: 40px; }}
+QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {{ background: black; }}
 QScrollBar::add-line, QScrollBar::sub-line {{ width: 0; height: 0; }}
+QScrollBar::add-page, QScrollBar::sub-page {{ background: transparent; }}
 
 QToolTip {{
     background: {TEXTO}; color: white; border: none; padding: 6px 9px; border-radius: 5px;
