@@ -167,6 +167,56 @@ def montar_html(texto_markdown: str, titulo: str | None = None) -> str:
 """
 
 
+# Teto de paginas de um relatorio. Existe por seguranca, nao por limite de
+# tamanho: o maior relatorio do projeto tem cinco paginas. Ver _paginar.
+PAGINAS_MAXIMAS = 200
+
+
+def _paginar(html: str, caminho: Path) -> tuple[int, bool]:
+    """Escreve o HTML em paginas A4. Devolve (quantas paginas, terminou).
+
+    O laco PRECISA de teto. O Story do PyMuPDF devolve "ainda tem mais" sem
+    consumir nada quando um elemento nao cabe na area util, e ai o programa
+    escreve paginas para sempre: medido, a linha de base de 04/08/2026 entrava
+    num ciclo de tres paginas que se repetia sem fim, com o conteudo repetido, e
+    deixava um .pdf de zero byte. Travar e pior que falhar - ninguem sabe se
+    esperar ou matar o programa.
+    """
+    import fitz
+
+    story = fitz.Story(html=html)
+    escritor = fitz.DocumentWriter(str(caminho))
+    moldura = fitz.paper_rect("a4")
+    area = moldura + (50, 50, -50, -50)
+    mais, paginas = True, 0
+    while mais and paginas < PAGINAS_MAXIMAS:
+        paginas += 1
+        dispositivo = escritor.begin_page(moldura)
+        mais, _ = story.place(area)
+        story.draw(dispositivo)
+        escritor.end_page()
+    escritor.close()
+    return paginas, not mais
+
+
+def _pagina_simples(corpo: str, quando: str) -> str:
+    """O mesmo relatorio num estilo que o Story sempre consegue paginar.
+
+    Sem margens, sem bordas e sem entrelinha: e a combinacao dessas com uma
+    tabela longa que faz o layout entrar em ciclo. Medido no relatorio que
+    travava, este estilo fecha em quatro paginas.
+    """
+    return (
+        "<html><head><style>"
+        "body { font-family: sans-serif; font-size: 10pt; color: #1c1c1e; }"
+        "table { border-collapse: collapse; width: 100%; font-size: 9pt; }"
+        "th, td { padding: 3pt 5pt; text-align: left; }"
+        "</style></head><body>" + corpo +
+        "<p>Editor de Impressão &middot; gerado em " + quando + "</p>"
+        "</body></html>"
+    )
+
+
 def gravar_pdf(texto_markdown: str, destino: str | Path,
                titulo: str | None = None) -> Path | None:
     """Gera o PDF do relatorio. Devolve None se nao for possivel.
@@ -199,17 +249,13 @@ def gravar_pdf(texto_markdown: str, destino: str | Path,
     </body></html>"""
 
     try:
-        story = fitz.Story(html=pagina_html)
-        escritor = fitz.DocumentWriter(str(caminho))
-        moldura = fitz.paper_rect("a4")
-        area = moldura + (50, 50, -50, -50)
-        mais = True
-        while mais:
-            dispositivo = escritor.begin_page(moldura)
-            mais, _ = story.place(area)
-            story.draw(dispositivo)
-            escritor.end_page()
-        escritor.close()
+        paginas, terminou = _paginar(pagina_html, caminho)
+        if not terminou:
+            # O layout entrou em ciclo: ver _paginar. O mesmo texto num estilo
+            # sem margens nem bordas fecha normalmente, entao vale a pena
+            # regravar assim - relatorio simples e melhor que relatorio nenhum.
+            paginas, terminou = _paginar(
+                _pagina_simples(corpo, quando), caminho)
         return caminho
     except Exception:  # noqa: BLE001 - sem PDF o md e o html ainda saem
         return None
