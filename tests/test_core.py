@@ -685,3 +685,36 @@ def test_caminho_rapido_so_com_cadernos():
 
     projeto.paginas[0].apagada = True
     assert projeto.so_cadernos is False, "apagar página exige regravar o PDF"
+
+
+def test_pagina_toda_desenho_nao_e_cobrada_como_texto():
+    """Pagina que o detector diz ser desenho de ponta a ponta nao tem letra.
+
+    A pagina 199 do Catecismo e uma estampa colorida de pagina inteira, sem uma
+    letra. A conta de tinta e cor a chamava de TEXTO - a tinta e so 7%, porque a
+    estampa e clara, e o "tem cor" saia falso por um fio: a analise roda a 150
+    DPI e ali a fracao de pixels coloridos da 0,0499 contra o limiar de 0,05.
+    Resultado: a regua cobrava dela os vazios internos das letras e reprovava os
+    tres filtros por "as letras entupiram", numa pagina sem letra nenhuma.
+    """
+    import avaliar
+    from core.selecao import GRAVURA, LETRA, RETANGULO, Regiao, Selecao
+
+    folha_inteira = [(0.0, 0.0), (1.0, 1.0)]
+
+    so_desenho = Selecao()
+    so_desenho.acrescentar(
+        Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=folha_inteira))
+    assert avaliar.e_so_desenho(so_desenho, 400, 300)
+
+    # com texto marcado, ainda que pouco, a regua continua cobrando letra
+    com_texto = Selecao()
+    com_texto.acrescentar(
+        Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=folha_inteira))
+    com_texto.acrescentar(
+        Regiao(tipo=LETRA, forma=RETANGULO,
+               pontos=[(0.0, 0.0), (1.0, 0.2)]))
+    assert not avaliar.e_so_desenho(com_texto, 400, 300)
+
+    # sem deteccao nenhuma nao se afrouxa nada
+    assert not avaliar.e_so_desenho(Selecao(), 400, 300)

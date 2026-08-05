@@ -423,6 +423,45 @@ FRACAO_TINTA_DE_FOLHA_VAZIA = 0.01
 TEXTO, ILUSTRACAO, COLORIDA, VAZIA = "texto", "ilustracao", "colorida", "vazia"
 
 
+# Quanto da folha o detector precisa marcar como gravura, e quao pouco como
+# letra, para a pagina contar como desenho de ponta a ponta.
+SO_DESENHO_GRAVURA_MIN = 0.98
+SO_DESENHO_LETRA_MAX = 0.01
+
+
+def e_so_desenho(selecao, altura: int, largura: int) -> bool:
+    """A pagina inteira e desenho, sem uma linha de texto?
+
+    A classificacao por fracao de tinta e cor tem um buraco: a pagina 199 do
+    Catecismo e uma estampa colorida de pagina inteira, sem uma letra, e caia
+    como TEXTO. A tinta dela e so 7% - a estampa e clara - e o "tem cor" saiu
+    falso porque a analise roda a 150 DPI e ali a fracao de pixels coloridos
+    da 0,0499 contra o limiar de 0,05; medida a 300 DPI a mesma pagina da
+    0,0500 e sai como colorida. Decisao na navalha.
+
+    O resultado era a regua cobrar dela os vazios internos das letras e reprovar
+    os tres filtros por "as letras entupiram" - numa pagina onde nao ha letra
+    nenhuma. Os filtros estavam certos: o Preto e branco preservou a estampa,
+    que e o que se espera.
+
+    O detector de regioes ja sabia a resposta, e a regua ja o tinha em maos:
+    marcou 100% da pagina como gravura e 0% como letra. Aqui isso passa a valer
+    mais que a conta de tinta e cor.
+
+    O limite e proposital de apertado - a folha INTEIRA marcada como desenho e
+    nada como letra. Se o detector errar e marcar uma pagina de texto assim, a
+    regua deixa de cobrar letra onde deveria; por isso as paginas reclassificadas
+    saem nomeadas no relatorio, e nao caladas.
+    """
+    from core.selecao import GRAVURA, LETRA
+
+    if selecao is None or len(selecao) == 0:
+        return False
+    gravura = float(selecao.mascara(altura, largura, GRAVURA).mean())
+    letra = float(selecao.mascara(altura, largura, LETRA).mean())
+    return gravura >= SO_DESENHO_GRAVURA_MIN and letra <= SO_DESENHO_LETRA_MAX
+
+
 def classificar_pagina(fracao_tinta: float, tem_cor: bool) -> str:
     """Que tipo de pagina e esta, para saber o que cobrar dela.
 
@@ -584,6 +623,10 @@ class ResultadoLivro:
     medidas: list[dict[str, Any]] = field(default_factory=list)
     geometria: dict[str, Any] = field(default_factory=dict)
     piores_que_original: list[dict[str, Any]] = field(default_factory=list)
+    # Paginas que a classificacao chamou de texto e o detector mostrou serem
+    # desenho de ponta a ponta. Saem nomeadas no relatorio de proposito: e onde
+    # a regua deixa de cobrar letra, e um erro do detector tem de aparecer.
+    reclassificadas: list[int] = field(default_factory=list)
 
 
 def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLivro:
@@ -689,6 +732,15 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
 
             selecao = garantir_selecao(projeto, pagina, base_img)
             registro["regioes_achadas"] = len(selecao)
+
+            # Pagina que o detector diz ser desenho de ponta a ponta nao tem
+            # letra para medir, mesmo que a classificacao por tinta e cor diga
+            # que tem. Ver e_so_desenho.
+            if classe == TEXTO and e_so_desenho(selecao, altura, largura):
+                classe = ILUSTRACAO
+                registro["classe"] = classe
+                registro["reclassificada_por_desenho"] = True
+                resultado.reclassificadas.append(indice + 1)
 
             medidas_base: dict[str, float] = {}
             for filtro in FILTROS_MEDIDOS:
@@ -1122,6 +1174,35 @@ def escrever_markdown(dados: dict[str, Any], destino: Path) -> None:
                 ])
         L.append(_tabela(linhas, ["Livro", "Pagina", "Filtro", "O que piorou"]))
     L.append("")
+
+    # --- paginas em que a regua deixou de cobrar letra ---
+    reclassificadas = [
+        (livro["nome"], pagina)
+        for livro in dados["livros"]
+        for pagina in livro.get("reclassificadas", [])
+    ]
+    if reclassificadas:
+        L.append("## Paginas em que a regua nao cobrou letra")
+        L.append("")
+        L.append(
+            "A conta de tinta e cor chamou estas paginas de texto, mas o detector "
+            "de regioes marcou a folha INTEIRA como desenho e nada como letra. "
+            "Numa pagina assim nao ha letra para medir, entao os criterios de "
+            "letra - vazios internos, espessura e borda - ficam de fora. Os de "
+            "fundo continuam valendo."
+        )
+        L.append("")
+        L.append(
+            "**Elas saem nomeadas aqui de proposito.** E onde a regua afrouxa, e "
+            "se o detector errar - marcar como desenho uma pagina que tem texto - "
+            "o erro tem de estar a vista, e nao escondido num numero menor."
+        )
+        L.append("")
+        L.append(_tabela(
+            [[nome[:44], str(pagina)] for nome, pagina in reclassificadas],
+            ["Livro", "Pagina"],
+        ))
+        L.append("")
 
     # --- alertas ---
     L.append("## Paginas marcadas em laranja, e por que")
