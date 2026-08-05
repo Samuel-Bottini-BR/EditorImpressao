@@ -73,6 +73,12 @@ própria: apresentar os dois resultados ao Samuel.
 O histórico de tentativas, incluindo as revertidas e os caminhos descartados,
 está em `relatorios/melhorias.md`. Leia antes de propor algo que já foi testado.
 
+**Número que piora não é a única prova de estrago, e número que melhora não é
+prova de acerto.** Duas vezes a régua reprovou coisa que estava certa — letra
+entupida numa página sem letra, borda serrilhada numa letra redonda — e uma vez
+ela aprovou uma folha que saía amarelo-forte, porque mais amarelo pode ser mais
+claro. Antes de aceitar um veredito da régua, abra a página e olhe.
+
 ## Fronteira de autonomia
 
 **Pode decidir sozinho:** limiar, janela, `k`, `clipLimit`, tamanho de bloco,
@@ -92,8 +98,13 @@ formato dos arquivos de dados, alterar desfazer/refazer, trocar biblioteca.
 .venv\Scripts\python.exe teste_robustez_completo.py   # os 18 casos de falha
 ```
 
-Acervo de teste: `Desktop\BIBLIOTECA DO FIM DOS TEMPOS`, nove livros. Os `.txt`
-soltos nas subpastas são queixas do Kaique e são fonte de requisito.
+Acervo de teste: `Desktop\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE`, nove
+livros. O `avaliar.py` acha sozinho — não passar `--acervo` à toa.
+
+As queixas do Kaique ficaram na pasta antiga,
+`Desktop\BIBLIOTECA DO FIM DOS TEMPOS\Teste de livros`: são os `.txt` soltos nas
+subpastas, cada um com o print ao lado. **São fonte de requisito**, e é a única
+coisa que sobrou lá — os PDFs mudaram de lugar.
 
 **Os PDFs do acervo são intocáveis.** Abrir somente para leitura, e gravar
 sempre fora dessa pasta.

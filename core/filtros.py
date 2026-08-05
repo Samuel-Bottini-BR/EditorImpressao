@@ -562,6 +562,49 @@ def _quase_sem_tinta(img: np.ndarray) -> bool:
     return float((cinza < nivel_papel * TINTA_PARA_ORLA).mean()) < TINTA_DE_FOLHA_ESCRITA
 
 
+# Matiz do papel envelhecido, na escala do OpenCV (0 a 180, nao 0 a 360).
+# Medido nas folhas sem tinta do acervo: 19,6 e 20,1 no BRODERIES, 20,5 no
+# Boecio, 23,0 na Rhetorica. Todas no ambar, e bem juntas. A faixa e larga o
+# bastante para caber pergaminho mais rosado ou mais esverdeado.
+MATIZ_DE_PAPEL_MIN, MATIZ_DE_PAPEL_MAX = 12.0, 32.0
+
+
+def _so_o_amarelado_do_papel(img: np.ndarray) -> bool:
+    """A unica cor desta folha e o amarelado do proprio papel?
+
+    Serve para decidir se ha cor a avivar. Numa folha velha sem tinta a resposta
+    e nao: a unica cor ali e o amarelado, e realca-lo e o oposto do pedido - a
+    folha vazia do Boecio saia de um creme palido para um amarelo forte.
+
+    Nao basta perguntar "tem tinta?". Uma capa colorida lisa tambem nao tem
+    tinta, e ali a cor E o conteudo - deixar de avivar seria tirar do Magico pro
+    justamente aquilo para que ele existe, e o medidor de intensidade pararia de
+    fazer efeito. Tentei separar os dois casos pela saturacao e nao da: medida
+    no acervo, uma folha velha amarelada marca 0,99 de fracao colorida, MAIS que
+    uma capa lisa.
+
+    O que separa e o MATIZ. Papel envelhecido e ambar, sempre; uma capa pode ser
+    de qualquer cor. Por isso a pergunta aqui e dupla: sem tinta E da cor do
+    papel.
+    """
+    if not _quase_sem_tinta(img) or img.ndim != 3:
+        return False
+
+    cinza = _para_cinza(img)
+    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    claro = cinza >= nivel_papel * 0.95
+    if claro.sum() < 100:
+        return False
+
+    # Media circular: matiz e um angulo, e a media comum erra na volta do zero.
+    matiz = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 0][claro].astype(np.float32)
+    angulo = matiz * 2.0 * np.pi / 180.0
+    medio = np.arctan2(float(np.sin(angulo).mean()),
+                       float(np.cos(angulo).mean())) * 180.0 / np.pi / 2.0
+    medio = (medio + 180.0) % 180.0
+    return MATIZ_DE_PAPEL_MIN <= medio <= MATIZ_DE_PAPEL_MAX
+
+
 def _alisar_o_papel(img: np.ndarray) -> np.ndarray:
     """Tira o grao do papel sem encostar na tinta.
 
@@ -783,19 +826,13 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
     if not _quase_sem_tinta(img):
         saida = _contraste_local_no_conteudo(saida, intensidade)
 
-    # 3. cor mais viva
-    #
-    # ATENCAO, ja medido: este passo tambem realca a UNICA cor de uma folha
-    # velha sem tinta, que e o amarelado do proprio papel. Olhadas as imagens, a
-    # folha vazia do Boecio e a 446 da Rhetorica saem de um creme palido para um
-    # amarelo forte - o oposto do que o filtro deveria fazer. Por o passo dentro
-    # do guarda acima resolve quatro reprovacoes da regua e nao cria nenhuma,
-    # mas tem um preco: numa pagina colorida SEM TINTA o medidor de intensidade
-    # deixa de mexer na cor, e ha teste cobrando esse comportamento
-    # (test_intensidade_do_magico_muda_a_saturacao). Fica como esta ate haver
-    # decisao. Ver o cabecalho de _realcar_saturacao para as trocas de espaco de
-    # cor ja tentadas e por que foram revertidas.
-    saida = _realcar_saturacao(saida, _entre(intensidade, SATURACAO_MIN, SATURACAO_MAX))
+    # 3. cor mais viva - onde houver cor que nao seja a do proprio papel.
+    # Numa folha velha sem tinta a unica cor e o amarelado, e avivar aquilo e o
+    # oposto do pedido: a folha vazia do Boecio saia de um creme palido para um
+    # amarelo forte. Numa capa colorida, que tambem nao tem tinta, a cor E o
+    # conteudo e o realce tem de valer. Ver _so_o_amarelado_do_papel.
+    if not _so_o_amarelado_do_papel(img):
+        saida = _realcar_saturacao(saida, _entre(intensidade, SATURACAO_MIN, SATURACAO_MAX))
 
     # 4. texto mais nitido
     saida = _nitidez(saida, _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX))

@@ -107,9 +107,13 @@ QUEDA_FUNDO_MAXIMA = 2.0
 AUMENTO_RUIDO_MAXIMO = 1.5
 
 # Faixa saudavel da transicao na borda da letra, em pixels.
-#   abaixo de 0,7  -> escada (o serrilhado que o Kaique chama de "pixelado")
+#   abaixo de 1,05 -> escada (o serrilhado que o Kaique chama de "pixelado")
 #   acima de 3,0   -> borrado
-TRANSICAO_BOA_MIN, TRANSICAO_BOA_MAX = 0.7, 3.0
+#
+# O piso e 1,05 e nao 0,7 porque a medida mudou: ver largura_da_transicao. Uma
+# imagem binarizada - o degrau mais duro possivel - da exatamente 1,00 nesta
+# escala, entao nada pode ficar abaixo disso, e o que passa perto ja e degrau.
+TRANSICAO_BOA_MIN, TRANSICAO_BOA_MAX = 1.05, 3.0
 
 # O traco nao pode sumir: perder mais de um terco da espessura e texto fino
 # demais para imprimir.
@@ -326,25 +330,30 @@ def ruido_do_fundo(cinza: np.ndarray, papel: np.ndarray) -> float:
     return float(np.median(desvio_local[so_papel]))
 
 
-# Ate onde da borda da letra ainda pode ser rampa. Alem disto e papel, e papel
-# sujo nao e rampa de letra.
-RAIO_DA_RAMPA = 4
 
 
 def largura_da_transicao(cinza: np.ndarray, tinta: np.ndarray) -> float:
     """Largura da rampa entre a tinta e o papel, em pixels.
 
     E o numero por tras da queixa de "letra pixelada". Uma borda saudavel tem
-    de 1 a 2 pixels de rampa: de longe a letra parece lisa. Perto de zero a
-    borda vira degrau de escada (o serrilhado). Acima de 3 a letra borra.
+    de 1 a 2 pixels de rampa: de longe a letra parece lisa. Em 1 pixel cravado a
+    borda e degrau de escada (o serrilhado). Acima de 3 a letra borra.
 
-    Conta os pixels que estao no meio do caminho entre o preto e o branco e
-    divide pelo comprimento do contorno das letras.
+    Mede a INCLINACAO em cima do contorno e divide o contraste por ela. A
+    largura de uma rampa e isso, e o resultado sai em pixels de verdade: medido,
+    uma imagem binarizada da exatamente 1,00 - o degrau mais duro que existe -,
+    e a mesma pagina desfocada da 1,37 com sigma 1, 1,81 com sigma 2 e 3,19 com
+    sigma 4.
 
-    So conta perto do contorno. A primeira versao contava em toda a pagina, e
-    papel ruidoso - cheio de pixels de tom intermediario - inflava o numero:
-    uma folha suja aparecia com a borda mais suave que uma folha limpa. Isso
-    contaminava exatamente a comparacao que este numero existe para fazer.
+    As duas versoes anteriores contavam PIXELS de tom intermediario e dividiam
+    pelo comprimento do contorno. A primeira contava na pagina inteira, e papel
+    ruidoso inflava o numero. A segunda contava so a quatro pixels do contorno,
+    o que melhorou mas nao resolveu: o grao do papel ali ao lado continuava
+    entrando na conta. O estrago aparecia como defeito de filtro - nas paginas
+    9, 17, 33 e 41 do Boecio, limpar o papel (ruido de 8,1 para 0,0) derrubava
+    a "rampa" de 0,86 para 0,55 e a regua acusava serrilhado. Ampliadas, as
+    letras estavam redondas, e por esta medida elas nunca sairam da faixa
+    saudavel: 1,20 antes, 1,14 depois.
     """
     if not tinta.any():
         return 0.0
@@ -356,22 +365,20 @@ def largura_da_transicao(cinza: np.ndarray, tinta: np.ndarray) -> float:
         return 0.0
 
     nucleo = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    contorno = cv2.morphologyEx(tinta, cv2.MORPH_GRADIENT, nucleo)
-    comprimento = int((contorno > 0).sum())
-    if comprimento == 0:
+    contorno = cv2.morphologyEx(tinta, cv2.MORPH_GRADIENT, nucleo) > 0
+    if not contorno.any():
         return 0.0
 
-    lado = 2 * RAIO_DA_RAMPA + 1
-    perto_da_letra = cv2.dilate(
-        contorno, cv2.getStructuringElement(cv2.MORPH_RECT, (lado, lado))
-    ) > 0
-
-    baixo = escuro + 0.2 * faixa
-    alto = escuro + 0.8 * faixa
-    meio_do_caminho = int(
-        ((cinza > baixo) & (cinza < alto) & perto_da_letra).sum()
-    )
-    return float(meio_do_caminho / comprimento)
+    # Inclinacao medida EM CIMA do contorno. A largura de uma rampa e o
+    # contraste dividido pela inclinacao dela - e a definicao de largura de
+    # borda, e sai em pixels de verdade.
+    f = cinza.astype(np.float32)
+    gx = cv2.Sobel(f, cv2.CV_32F, 1, 0, ksize=3) / 4.0
+    gy = cv2.Sobel(f, cv2.CV_32F, 0, 1, ksize=3) / 4.0
+    inclinacao = float(np.percentile(np.sqrt(gx * gx + gy * gy)[contorno], 75))
+    if inclinacao <= 0.5:
+        return 0.0
+    return faixa / inclinacao
 
 
 def nitidez(cinza: np.ndarray) -> float:
@@ -429,6 +436,27 @@ SO_DESENHO_GRAVURA_MIN = 0.98
 SO_DESENHO_LETRA_MAX = 0.01
 
 
+def e_capa_ou_folha_nua(img: np.ndarray) -> bool:
+    """Capa, guarda, verso limpo: nao ha nada mais escuro que a propria folha.
+
+    Mesma pergunta que o recorte de bordas ja faz antes de cortar, e pela mesma
+    razao: uma capa de couro TEM textura, mas nao tem letra. Medir borda de letra
+    ali e medir ficcao - na pagina 1 do Boecio, que e a capa de pergaminho com a
+    etiqueta da biblioteca, a regua acusava serrilhado numa folha onde nao ha
+    uma linha de texto.
+
+    Os criterios de FUNDO continuam valendo numa capa: sujar ou escurecer uma
+    capa e estrago igual.
+    """
+    try:
+        from core.detectar_regioes import _pagina_sem_conteudo
+
+        return bool(_pagina_sem_conteudo(
+            img if img.ndim == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)))
+    except Exception:  # noqa: BLE001 - na duvida, cobra tudo como antes
+        return False
+
+
 def e_so_desenho(selecao, altura: int, largura: int) -> bool:
     """A pagina inteira e desenho, sem uma linha de texto?
 
@@ -479,7 +507,7 @@ def classificar_pagina(fracao_tinta: float, tem_cor: bool) -> str:
 
 def comparar_com_original(
     medidas: dict[str, float], base: dict[str, float], filtro: str,
-    classe: str = TEXTO,
+    classe: str = TEXTO, tem_letra: bool | None = None,
 ) -> list[str]:
     """Lista, em portugues, o que piorou nesta pagina em relacao ao original.
 
@@ -497,7 +525,11 @@ def comparar_com_original(
     pagina_de_texto = classe == TEXTO
     # Numa folha vazia nao ha letra a medir. O que se cobra dela e so nao
     # escurecer e nao sujar - ver FRACAO_TINTA_DE_FOLHA_VAZIA.
-    tem_letra = classe != VAZIA
+    # tem_letra vem de fora quando quem chama sabe mais que a classe: uma
+    # capa de couro nao e VAZIA - tem a etiqueta da biblioteca - e mesmo
+    # assim nao ha uma linha de texto nela para medir borda.
+    if tem_letra is None:
+        tem_letra = classe != VAZIA
 
     # 1. letras entupidas (so em pagina de texto)
     antes = base.get("vazios_internos", 0)
@@ -733,13 +765,18 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
             selecao = garantir_selecao(projeto, pagina, base_img)
             registro["regioes_achadas"] = len(selecao)
 
-            # Pagina que o detector diz ser desenho de ponta a ponta nao tem
-            # letra para medir, mesmo que a classificacao por tinta e cor diga
-            # que tem. Ver e_so_desenho.
-            if classe == TEXTO and e_so_desenho(selecao, altura, largura):
+            # Pagina sem letra nenhuma nao tem borda de letra a medir, mesmo que
+            # a classificacao por tinta e cor diga que tem. Sao dois casos: a
+            # folha que o detector marcou como desenho de ponta a ponta, e a
+            # capa - onde nada e mais escuro que a propria folha. Ver
+            # e_so_desenho e e_capa_ou_folha_nua.
+            sem_letra = (e_so_desenho(selecao, altura, largura)
+                         or e_capa_ou_folha_nua(base_img))
+            if sem_letra and classe in (TEXTO, COLORIDA):
                 classe = ILUSTRACAO
                 registro["classe"] = classe
-                registro["reclassificada_por_desenho"] = True
+            if sem_letra:
+                registro["sem_letra_para_medir"] = True
                 resultado.reclassificadas.append(indice + 1)
 
             medidas_base: dict[str, float] = {}
@@ -760,7 +797,9 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
                 if filtro == ORIGINAL:
                     medidas_base = dict(m)
                 else:
-                    motivos = comparar_com_original(m, medidas_base, filtro, classe)
+                    motivos = comparar_com_original(
+                        m, medidas_base, filtro, classe,
+                        tem_letra=None if not sem_letra else False)
                     m["pior_que_original"] = bool(motivos)
                     m["motivos"] = motivos
                     if motivos:
@@ -1061,7 +1100,7 @@ def escrever_markdown(dados: dict[str, Any], destino: Path) -> None:
             ["Vazios internos", "Buraquinhos fechados dentro das letras: o miolo do **o**, do **e**, do **a**. Se o filtro engrossa demais, eles entopem e a letra vira bolha. Quanto mais sobrarem, melhor."],
             ["Nivel do fundo", "Quao claro esta o papel, de 0 (preto) a 255 (branco). O alvo e 255: papel branco de verdade, sem o amarelado."],
             ["Ruido do fundo", "O quanto o papel varia onde deveria ser liso. Quanto menor, mais limpo."],
-            ["Transicao da borda", "Largura da rampa entre a tinta e o papel, em pixels. **Este e o numero da queixa de letra pixelada.** De 1 a 2 e o certo; perto de zero a borda vira degrau de escada; acima de 3 a letra borra."],
+            ["Transicao da borda", "Largura da rampa entre a tinta e o papel, em pixels. **Este e o numero da queixa de letra pixelada.** De 1,2 a 2 e o certo; em 1,0 cravado a borda e degrau de escada, sem meio-tom nenhum; acima de 3 a letra borra."],
             ["Nitidez", "O quanto a imagem tem detalhe definido. Maior e mais nitido, mas exagero vira ruido."],
         ],
         ["Numero", "O que e, na pratica"],
@@ -1093,7 +1132,7 @@ def escrever_markdown(dados: dict[str, Any], destino: Path) -> None:
     L.append("")
     L.append(
         "> Leitura rapida: na coluna **Fundo**, quanto mais perto de 255 melhor - "
-        "e o amarelado indo embora. Na coluna **Transicao**, o alvo e entre 1 e 2; "
+        "e o amarelado indo embora. Na coluna **Transicao**, o alvo e entre 1,2 e 2; "
         "valor muito baixo e o serrilhado que aparece nas letras."
     )
     L.append("")
@@ -1403,7 +1442,7 @@ def escrever_por_livro(dados: dict[str, Any], pasta: Path) -> list[Path]:
             "",
             "> **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os",
             "> buraquinhos dentro das letras: quanto mais sobrarem, melhor.",
-            "> **Transicao** entre 1 e 2 e borda saudavel; perto de zero e",
+            "> **Transicao** entre 1,2 e 2 e borda saudavel; em 1,0 cravado e",
             "> serrilhado.",
             "",
         ]

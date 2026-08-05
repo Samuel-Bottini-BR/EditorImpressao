@@ -278,3 +278,79 @@ separa papel de conteúdo pelo par claro-e-sem-cor; falta uma terceira condiçã
 que reconheça tinta colorida — a rubricação — e a preserve. Com ela, dá para
 trocar o espaço de cor sem engrossar letra nenhuma, e aí LAB ou YCrCb passam a
 valer.
+
+---
+
+## Tentativa 8 — a rampa da borda media papel, não letra
+
+**Data:** 05/08/2026
+**Situação:** **trocada a medida da régua**; nenhum filtro tocado
+
+Dez dos vinte e quatro motivos de reprovação eram "a borda das letras virou
+degrau". Quatro deles no Boécio, que é um scan de baixa resolução.
+
+Medido passo a passo, o padrão era sempre o mesmo:
+
+| Página | Ruído do papel | Rampa "de hoje" |
+|---|---|---|
+| Boécio 33 | 8,14 → **0,00** | 0,86 → 0,55 |
+| Boécio 41 | 7,57 → **0,00** | 0,70 → 0,55 |
+| Boécio 17 | 6,77 → **0,00** | 0,75 → 0,56 |
+
+O papel saía **perfeitamente limpo** e a "rampa" caía junto. Não é coincidência:
+a medida contava pixels de tom intermediário até quatro pixels do contorno da
+letra, e o grão do papel ali ao lado entra nessa conta. Papel sujo inflava o
+número; limpar o papel — que é o certo — aparecia como estrago na letra.
+
+### A medida nova
+
+Rampa é contraste dividido por inclinação, medida **em cima do contorno**. Sai
+em pixels de verdade, e o grão do papel não entra. Validada contra casos
+extremos na mesma página:
+
+| Caso | Medida antiga | Medida nova |
+|---|---|---|
+| Imagem binarizada (degrau mais duro possível) | 0,00 | **1,00** |
+| Original | 0,86 | 1,20 |
+| Desfocado sigma 1 | 1,02 | 1,37 |
+| Desfocado sigma 2 | 1,35 | 1,81 |
+| Desfocado sigma 4 | 2,27 | 3,19 |
+
+Por ela, as letras do Boécio nunca saíram da faixa saudável: **1,20 antes do
+filtro, 1,14 depois**. Bate com a imagem — ampliadas quatro vezes, elas estão
+redondas. O piso do critério passou de 0,7 para 1,05, porque um degrau puro dá
+exatamente 1,00 nesta escala.
+
+---
+
+## Pendência — o ruído da capa
+
+**Data:** 05/08/2026
+**Situação:** diagnosticado, **não consertado**
+
+Sobram seis motivos de "o fundo ficou mais sujo". O maior salto é a página 1 do
+Boécio, de 5,5 para 14,8. Aberta a imagem, ela é a **capa** do livro: pergaminho
+mosqueado com a etiqueta da biblioteca. Não é papel de texto.
+
+Medido passo a passo, o ruído sobe em dois lugares:
+
+| Passo | Ruído |
+|---|---|
+| original | 5,52 |
+| achatar iluminação | 5,94 |
+| **balanço de branco** | **13,34** |
+| **aprofundar pretos** | **17,54** |
+| alisar o papel | 14,78 |
+
+São os dois passos que levam o papel ao branco. Numa capa não há papel a
+branquear: o que eles esticam é o mosqueado do couro.
+
+O `_aprofundar_pretos` já tem guarda de folha sem tinta, mas ela não pega esta
+página — a etiqueta é escura de verdade. O `_balanco_de_branco` não tem guarda
+nenhuma.
+
+Existe pronto um teste que acerta o caso: `_pagina_sem_conteudo`, usado pelo
+recorte de bordas. Medido nas páginas do acervo, ele dá verdadeiro exatamente
+para capas e folhas vazias — Boécio 1 e 50, Palatino 1, Graduale 1, BRODERIES
+16/46/76, Rhetorica 446 — e falso para página de texto e para ilustração. É por
+aí que o conserto deve vir, e ele precisa ser medido antes de entrar.
