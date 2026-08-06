@@ -350,6 +350,10 @@ SOBRA_FORA_DA_FOTO = 0.08
 # mais como ser reconhecida como buraco.
 AREA_DE_INICIAL_RUBRICADA = 0.02
 
+# So vale avisar 'desenho ou escrita?' quando a duvida cobre um pedaco
+# grande da folha. Uma vinheta de 3% marcada errado nao muda a pagina.
+AREA_DE_DUVIDA_QUE_IMPORTA = 0.25
+
 
 def mascara_de_tinta(img: np.ndarray) -> np.ndarray:
     """Onde ha traco de qualquer especie: letra, neuma, linha de gravura.
@@ -751,6 +755,7 @@ def detectar(
         if not any(_area_da_caixa(a) >= AREA_QUE_DESMENTE_PAGINA_VAZIA for a in achados):
             return _folha_nua_ou_objeto(selecao, colorida)
 
+    em_duvida = False
     tinta = mascara_de_tinta(colorida)
     if not achados:
         achados = _detector.achar(colorida) if usar_layout else []
@@ -771,8 +776,22 @@ def detectar(
             # PEDACOS_DE_GLIFO_DE_ESCRITA.
             desenho = _tinta_em_pedacos_de_glifo(tinta[fatia]) < PEDACOS_DE_GLIFO_DE_ESCRITA
             foto = _papel_a_vista(colorida, a.caixa) < PAPEL_A_VISTA_DE_ESCRITA
-            if desenho or foto or _e_meio_tom(colorida, a.caixa):
+            meio_tom = _e_meio_tom(colorida, a.caixa)
+            if desenho or foto or meio_tom:
                 gravura_layout[fatia] = True
+                # Quando a folha VAI para gravura so porque sobrou pouco papel a
+                # vista, e ao mesmo tempo tem cara de escrita, nao ha como saber
+                # pela imagem: medidos cinco sinais diferentes, os numeros de
+                # escrita e de foto se cruzam em todos - esta contado em
+                # relatorios/melhorias.md. Foi assim que a partitura da pagina
+                # 126 do Graduale ficou dois dias marcada como desenho.
+                #
+                # Entao o programa para de fingir certeza e avisa. Laranja aqui
+                # quer dizer o que sempre quis: confira esta.
+                if (foto and not desenho and not meio_tom
+                        and _parece_escrita(tinta[fatia])
+                        and _area_da_caixa(a) >= AREA_DE_DUVIDA_QUE_IMPORTA):
+                    em_duvida = True
             else:
                 letra_layout[fatia] = True
         elif a.classe in CLASSES_DE_LETRA:
@@ -855,6 +874,9 @@ def detectar(
                                  suavidade=SUAVIDADE, rotulo=rotulo):
             selecao.acrescentar(regiao)
 
+    # A duvida viaja junto com a selecao, e quem a usa decide o que fazer
+    # com ela. Ver DESENHO_OU_ESCRITA em core/analise.py.
+    selecao.em_duvida = em_duvida
     return selecao
 
 

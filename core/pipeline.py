@@ -238,6 +238,15 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
     except Exception:  # noqa: BLE001 - sem deteccao o filtro trata a folha toda
         return Selecao()
 
+    # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.
+    # Quando isso acontece a pagina fica laranja, para a pessoa conferir na
+    # aba Marcar - ver DESENHO_OU_ESCRITA. Ficar calado seria pior: a
+    # partitura do Graduale passou dois dias marcada como desenho sem
+    # ninguem ver.
+    if getattr(selecao, "em_duvida", False):
+        if analise.DESENHO_OU_ESCRITA not in pagina.alertas:
+            pagina.alertas.append(analise.DESENHO_OU_ESCRITA)
+
     pagina.guardar_selecao(selecao)
     return selecao
 

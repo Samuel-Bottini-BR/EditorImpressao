@@ -173,3 +173,27 @@ def test_pagina_limpa_nao_marca_nada():
     selecao = detectar(pagina_crua(), usar_layout=False)
 
     assert selecao.vazia
+
+
+def test_avisa_quando_nao_sabe_se_e_desenho_ou_escrita():
+    """O detector para de fingir certeza onde ele nao tem.
+
+    A pagina 126 do Graduale e uma partitura manuscrita cheia de texto, e o
+    modelo de layout a chama de figura. Cinco sinais diferentes foram medidos
+    para separar escrita de foto - pedacos de glifo, papel a vista, meio-tom,
+    periodicidade das linhas e uniformidade do claro - e em TODOS os numeros das
+    duas se cruzam. Ver relatorios/melhorias.md.
+
+    Como nao da para decidir pela imagem, a folha continua indo para gravura -
+    que e o lado seguro, porque binarizar uma foto a destroi - mas a pagina fica
+    laranja para a pessoa conferir na aba Marcar.
+    """
+    from core import analise
+    from core.selecao import Selecao
+
+    assert analise.DESENHO_OU_ESCRITA in analise.ALERTAS
+    aviso = analise.descrever(analise.DESENHO_OU_ESCRITA)
+    assert "Marcar" in aviso.mensagem
+
+    # a bandeira viaja na selecao, e por padrao nao existe
+    assert getattr(Selecao(), "em_duvida", False) is False

@@ -32,6 +32,7 @@ APAGADA_DEMAIS = "apagada_demais"
 CORTE_PEGOU_CONTEUDO = "corte_pegou_conteudo"
 RESOLUCAO_BAIXA = "resolucao_baixa"
 TAMANHO_DIFERENTE = "tamanho_diferente"
+DESENHO_OU_ESCRITA = "desenho_ou_escrita"
 
 
 @dataclass(frozen=True)
@@ -50,6 +51,12 @@ ALERTAS: dict[str, Alerta] = {
         COR, "Tem cor",
         "Esta página tem cor - o preto e branco vai perder a ilustração.",
         "usar Mágico pro nesta", "filtro:" + MAGICO_PRO,
+    ),
+    DESENHO_OU_ESCRITA: Alerta(
+        DESENHO_OU_ESCRITA, "Desenho ou escrita?",
+        "Não tenho certeza se esta página é desenho ou escrita. Confira "
+        "na aba Marcar - se for escrita, marque como letra.",
+        None, None,
     ),
     LOMBADA_INCERTA: Alerta(
         LOMBADA_INCERTA, "Lombada incerta",
