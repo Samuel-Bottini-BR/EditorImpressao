@@ -274,3 +274,46 @@ def test_pintar_nao_quebra_com_selecao_cheia(editor):
     for k in range(6):
         arrastar(editor, 0.05 * k, 0.05 * k, 0.5 + 0.05 * k, 0.5 + 0.05 * k)
     editor.paintEvent(QPaintEvent(editor.rect()))
+
+
+def test_pegar_tudo_desta_cor_pega_a_pagina_toda_e_nao_so_a_mancha(qtbot=None):
+    """A varinha cresce a partir do ponto; esta olha a folha inteira.
+
+    Numa partitura com pautas vermelhas, a varinha comum pega UMA pauta - ou
+    vaza pelo pergaminho, que e continuo. Esta aqui pega as vinte pautas, que e
+    o que serve para consertar o que o detector errou.
+    """
+    import cv2
+    import numpy as np
+    from PySide6.QtWidgets import QApplication
+
+    from core.selecao import GRAVURA
+    from ui.widgets.editor_selecao import (
+        FERRAMENTA_COR,
+        FERRAMENTA_VARINHA,
+        EditorSelecao,
+    )
+
+    QApplication.instance() or QApplication([])
+
+    # pergaminho creme, com tres riscas vermelhas separadas
+    pagina = np.full((300, 200, 3), (180, 200, 215), np.uint8)
+    for y in (60, 150, 240):
+        pagina[y:y + 6, 20:180] = (40, 40, 200)      # vermelho, em BGR
+
+    editor = EditorSelecao()
+    editor.definir_imagem(pagina)
+    editor.definir_tipo(GRAVURA)
+
+    # a varinha comum pega so a risca onde se clicou
+    editor.definir_ferramenta(FERRAMENTA_VARINHA)
+    editor._varinha((0.5, 60.0 / 300.0 + 0.005))
+    uma = float(editor.selecao.mascara(300, 200, GRAVURA).mean())
+
+    # a nova pega as tres
+    editor.definir_selecao(type(editor.selecao)())
+    editor.definir_ferramenta(FERRAMENTA_COR)
+    editor._tudo_desta_cor((0.5, 60.0 / 300.0 + 0.005))
+    todas = float(editor.selecao.mascara(300, 200, GRAVURA).mean())
+
+    assert todas > uma * 2, (uma, todas)

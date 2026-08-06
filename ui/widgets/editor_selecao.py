@@ -12,6 +12,7 @@ provavelmente já viu isso em algum lugar:
     poligono    clicar ponto a ponto, duplo clique para fechar
     pincel      pintar por cima, com espessura ajustavel
     varinha     clicar e pegar a mancha inteira daquela cor
+    cor         clicar numa cor e pegar TUDO daquela cor na pagina
 
 Cada uma pode SOMAR ou SUBTRAIR, e cada marcação tem um tipo - gravura, letra
 ou papel. Tudo vai para a mesma lista de regiões que o detector automático e a
@@ -64,6 +65,7 @@ FERRAMENTA_LACO = "laco"
 FERRAMENTA_POLIGONO = "poligono"
 FERRAMENTA_PINCEL = "pincel"
 FERRAMENTA_VARINHA = "varinha"
+FERRAMENTA_COR = "cor"
 
 FERRAMENTAS = (
     FERRAMENTA_RETANGULO,
@@ -72,6 +74,7 @@ FERRAMENTAS = (
     FERRAMENTA_POLIGONO,
     FERRAMENTA_PINCEL,
     FERRAMENTA_VARINHA,
+    FERRAMENTA_COR,
 )
 
 NOMES_DAS_FERRAMENTAS = {
@@ -81,6 +84,7 @@ NOMES_DAS_FERRAMENTAS = {
     FERRAMENTA_POLIGONO: "Ponto a ponto",
     FERRAMENTA_PINCEL: "Pincel",
     FERRAMENTA_VARINHA: "Varinha mágica",
+    FERRAMENTA_COR: "Pegar tudo desta cor",
 }
 
 AJUDA_DAS_FERRAMENTAS = {
@@ -90,6 +94,8 @@ AJUDA_DAS_FERRAMENTAS = {
     FERRAMENTA_POLIGONO: "Clique ponto a ponto. Duplo clique fecha.",
     FERRAMENTA_PINCEL: "Pinte por cima. A roda do mouse muda a espessura.",
     FERRAMENTA_VARINHA: "Clique numa cor e ela pega a mancha inteira.",
+    FERRAMENTA_COR: "Clique numa cor e ela pega TUDO daquela cor na página. "
+                    "A roda do mouse muda o quanto a cor pode variar.",
 }
 
 # Cor de cada tipo na tela. As mesmas dos testes, para quem viu os relatorios
@@ -327,6 +333,9 @@ class EditorSelecao(QWidget):
         if self.ferramenta == FERRAMENTA_VARINHA:
             self._varinha(ponto)
             return
+        if self.ferramenta == FERRAMENTA_COR:
+            self._tudo_desta_cor(ponto)
+            return
         if self.ferramenta == FERRAMENTA_POLIGONO:
             self._pontos_poligono.append(ponto)
             self.update()
@@ -383,7 +392,7 @@ class EditorSelecao(QWidget):
                                      ESPESSURA_MIN), ESPESSURA_MAX)
             self.aviso.emit(f"Pincel: {self.espessura * 100:.1f}% da página")
             self.update()
-        elif self.ferramenta == FERRAMENTA_VARINHA:
+        elif self.ferramenta in (FERRAMENTA_VARINHA, FERRAMENTA_COR):
             self.tolerancia = int(min(max(self.tolerancia * passo,
                                           TOLERANCIA_MIN), TOLERANCIA_MAX))
             self.aviso.emit(f"Varinha: tolerância {self.tolerancia}")
@@ -456,6 +465,69 @@ class EditorSelecao(QWidget):
         for regiao in regioes:
             regiao.operacao = self.operacao
             self.selecao.acrescentar(regiao)
+        self.selecao_mudou.emit()
+        self.update()
+
+    def _tudo_desta_cor(self, ponto: tuple[float, float]) -> None:
+        """Pega TUDO daquela cor na pagina, e nao so a mancha onde se clicou.
+
+        A varinha comum cresce a partir do ponto e para quando a cor muda -
+        entao ela pega uma pauta vermelha, e nao as vinte pautas da folha. Esta
+        aqui olha a pagina inteira e marca todo pixel parecido com o que foi
+        clicado, esteja onde estiver. E o "selecionar faixa de cor" do
+        Photoshop.
+
+        Serve justamente para consertar o que o detector erra: a rubricacao
+        vermelha espalhada, o carimbo, a mancha de tinta de uma cor so.
+
+        A comparacao e feita em LAB e sem o L, ou seja, so pelo MATIZ: assim a
+        parte iluminada e a parte na sombra da mesma tinta contam como a mesma
+        cor. Comparar em RGB separaria as duas, e quem clicasse no vermelho
+        claro nao pegaria o vermelho escuro da mesma pauta.
+        """
+        if self._img is None:
+            return
+        altura, largura = self._img.shape[:2]
+        x = int(min(max(ponto[0], 0.0), 0.999) * largura)
+        y = int(min(max(ponto[1], 0.0), 0.999) * altura)
+
+        escala = min(1.0, 900 / max(altura, largura))
+        img = cv2.resize(self._img, (max(8, int(largura * escala)),
+                                     max(8, int(altura * escala))),
+                         interpolation=cv2.INTER_AREA) if escala < 1 else self._img
+
+        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB).astype(np.int16)
+        alvo = lab[min(int(y * escala), lab.shape[0] - 1),
+                   min(int(x * escala), lab.shape[1] - 1)]
+        distancia = np.abs(lab[:, :, 1:] - alvo[1:]).sum(axis=2)
+        parecido = (distancia <= self.tolerancia).astype(np.uint8)
+
+        # Tira o respingo solto e fecha o buraco de um pixel, para a marcacao
+        # sair em manchas e nao em poeira.
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        parecido = cv2.morphologyEx(parecido, cv2.MORPH_OPEN, nucleo)
+        parecido = cv2.morphologyEx(parecido, cv2.MORPH_CLOSE, nucleo)
+
+        if parecido.mean() < 0.0002:
+            self.aviso.emit("Quase nada dessa cor. Aumente a tolerância com a roda.")
+            return
+        if parecido.mean() > 0.97:
+            self.aviso.emit("Essa cor cobre a página toda. Diminua a tolerância.")
+            return
+
+        regioes = de_mascara(parecido, tipo=self.tipo, origem=MAO,
+                             area_minima=0.0002)
+        if not regioes:
+            self.aviso.emit("Não consegui transformar isso em uma área.")
+            return
+
+        self._marcar()
+        for regiao in regioes:
+            regiao.operacao = self.operacao
+            self.selecao.acrescentar(regiao)
+        self.aviso.emit(
+            f"Peguei {parecido.mean():.0%} da página nessa cor, "
+            f"em {len(regioes)} pedaços.")
         self.selecao_mudou.emit()
         self.update()
 

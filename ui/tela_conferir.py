@@ -374,6 +374,7 @@ class TelaConferir(QWidget):
             FERRAMENTA_PINCEL,
             FERRAMENTA_POLIGONO,
             FERRAMENTA_RETANGULO,
+            FERRAMENTA_COR,
             FERRAMENTA_VARINHA,
             NOMES_DAS_FERRAMENTAS,
             EditorSelecao,
@@ -439,7 +440,8 @@ class TelaConferir(QWidget):
         ferramentas.addWidget(QLabel("Ferramenta:"))
         self.botoes_ferramenta = {}
         for ferramenta in (FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE, FERRAMENTA_LACO,
-                           FERRAMENTA_POLIGONO, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA):
+                           FERRAMENTA_POLIGONO, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA,
+                           FERRAMENTA_COR):
             botao = QPushButton(NOMES_DAS_FERRAMENTAS[ferramenta])
             botao.setCheckable(True)
             botao.setChecked(ferramenta == FERRAMENTA_RETANGULO)
