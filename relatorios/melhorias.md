@@ -393,3 +393,99 @@ tratar as duas perguntas com pesos diferentes:
 
 Com isso a partitura voltou a ser cobrada, e as páginas afrouxadas caíram de 30
 para 13.
+
+
+---
+
+## Tentativa 9 — a partitura marcada como gravura, e os quatro sinais que não a salvam
+
+**Data:** 06/08/2026
+**Situação:** **não resolvido**; quatro caminhos medidos e descartados
+
+A página 126 do Graduale é uma partitura manuscrita cheia de texto, e o detector
+a marca como **100% gravura**. É o erro que a regra do projeto cita pelo nome —
+"uma partitura tratada como uma grande ilustração".
+
+### Por onde ela escapa
+
+Numa caixa que o modelo chamou de `figure`, o detector pergunta três coisas, e
+basta uma para virar gravura:
+
+    desenho    pedaços de glifo < 0,30      p126: 0,425  -> não
+    foto       papel à vista   < 0,52       p126: 0,066  -> SIM
+    meio-tom                                p126: falso
+
+É o `papel à vista` que a condena. E o motivo é o mesmo já corrigido nos
+filtros: **papel velho é colorido**. O pergaminho da 126 tem saturação mediana
+75, acima do limiar de 60, então o próprio papel deixa de contar como papel —
+sobram 7% de "papel à vista" numa página que é quase toda papel.
+
+### Os quatro caminhos medidos
+
+| Caminho | O que faz na 126 | Por que não serve |
+|---|---|---|
+| Neutralizar a cor do papel antes de medir | 0,07 → 0,64, conserta | Quebra as fotos: Pesel 73 vai a 0,75 e Rhetorica 112 a 0,60 — as duas viram escrita |
+| Exigir que `foto` também não pareça escrita | conserta | O bordado do Pesel passa no teste de escrita e vira letra — seria binarizado |
+| Usar só os outros dois sinais | — | Nenhum separa: glifo dá 0,425 na escrita e 0,668 numa foto |
+| Periodicidade do perfil de linhas | 0,410 | Não separa: a estampa do Catecismo dá 0,931 e a xilogravura 0,601 |
+
+Medidos lado a lado, os números de escrita e de foto **se cruzam em todos os
+quatro**. Não é questão de achar o limiar certo.
+
+### O que isso quer dizer
+
+O sinal que falta não é estatística de pixel — é reconhecer escrita antiga como
+escrita, e o modelo que temos foi treinado em documento moderno. O conserto de
+verdade é trocar ou somar um modelo treinado em documento histórico. A
+pesquisa aponta três abertos que fazem exatamente isto: **Eynollah**,
+**dhSegment** e o **Kraken/eScriptorium**, e existe dataset anotado pixel a
+pixel para validar — o **DIVA-HisDB**, 150 páginas de manuscritos medievais da
+competição ICDAR 2017.
+
+Enquanto isso não acontece, o estrago tem conserto na mão: a aba Marcar permite
+corrigir a página, e a régua da seleção nomeia quais são.
+
+---
+
+## Tentativa 10 — a capa não é papel, e por isso não se branqueia
+
+**Data:** 06/08/2026
+**Situação:** **aplicado**; 10 motivos passam a 4
+
+Depois que o detector passou a marcar capa como gravura, as capas começaram a
+passar pelo caminho do `filtro_melhorar` — e é ele que as suja. Medido passo a
+passo na capa do Boécio:
+
+| Passo | Ruído |
+|---|---|
+| original | 5,52 |
+| achatar iluminação | 5,94 |
+| **balanço de branco** | **13,34** |
+| **aprofundar pretos** | **17,54** |
+
+Numa capa não há papel a branquear: o que ali parece papel é o couro. Então o
+filtro passou a perguntar se aquilo é capa, e numa capa faz só o alisamento.
+
+Três passos tiveram de sair, e cada um custou uma medição para descobrir:
+
+| Passo retirado | Por quê | Medido |
+|---|---|---|
+| branqueamento e ponto de preto | não há papel a branquear | ruído do Boécio 5,5 → 17,5 |
+| achatamento da iluminação | não há luz torta a corrigir; o que varia é o relevo do objeto | couro verde do Horas 219 → 194 |
+| recomposição da rampa | ela devolve a borda da LETRA, e não há letra | couro vermelho do Graduale 47,4 → 43,9 |
+
+Com os três fora, nas três capas medidas o fundo **não anda um décimo**, e o
+ruído cai — o do Boécio de 5,52 para 4,48.
+
+A folha de guarda em branco não entra nisso: ela é papel, e continua indo a
+branco. É o mesmo teste de objeto-ou-folha que o detector usa, e mantê-lo num
+lugar só evita que o filtro e o detector discordem sobre a mesma folha.
+
+### O que sobra
+
+Quatro motivos, e os dois são conhecidos:
+
+- **Graduale 126, três filtros** — é a partitura que o detector marca como
+  gravura. O ruído sobe porque ela é tratada como desenho. Mesma raiz da
+  Tentativa 9; conserta-se consertando a detecção.
+- **Pesel 76** — o fundo escurece 156 → 148 no Mágico pro.

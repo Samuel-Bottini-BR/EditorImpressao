@@ -3,20 +3,17 @@
 - Arquivo de 271 MB
 - 750 folhas no PDF, que viram 750 paginas de saida
 - 7 paginas medidas a fundo
-- 248 segundos para analisar o livro inteiro (331 milissegundos por folha)
+- 271 segundos para analisar o livro inteiro (362 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
-Sao 6 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
+Sao 3 ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era.
 
 | Pagina | Filtro | O que piorou |
 |---|---|---|
-| 1 | Melhorar | o fundo escureceu: passou de 47 para 44 numa escala em que 255 e branco |
-| 1 | Mágico pro | o fundo escureceu: passou de 47 para 42 numa escala em que 255 e branco |
 | 126 | Preto e branco | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
 | 126 | Melhorar | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
 | 126 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
-| 750 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 4.9 para 7.2 |
 
 ## Paginas marcadas em laranja
 
@@ -50,9 +47,9 @@ nao fecha direito na impressao.
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
 | Original | 30.33 | 262 | 167.2 | 2.50 | 2.35 |
-| Preto e branco | 13.83 | 856 | 243.3 | 0.87 | 1.29 |
-| Melhorar | 32.50 | 4060 | 199.5 | 2.38 | 2.41 |
-| Mágico pro | 29.86 | 521 | 197.9 | 2.30 | 1.90 |
+| Preto e branco | 29.07 | 386 | 199.1 | 2.06 | 1.31 |
+| Melhorar | 32.29 | 385 | 198.3 | 2.06 | 2.07 |
+| Mágico pro | 32.06 | 328 | 198.8 | 2.06 | 1.89 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

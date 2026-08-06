@@ -61,3 +61,51 @@ def test_tabela_longa_nao_trava_o_pdf(tmp_path):
     with fitz.open(caminho) as doc:
         assert 0 < doc.page_count <= relatorio.PAGINAS_MAXIMAS
         assert "Relatorio de teste" in doc[0].get_text()
+
+
+def test_conferencia_grava_o_que_a_pessoa_disse(tmp_path, monkeypatch):
+    """A tela de conferir tem de guardar o veredito de quem olhou.
+
+    O gargalo do projeto nao e medir, e olhar - e ate aqui o que a pessoa dizia
+    olhando a amostra se perdia, porque era anotado fora do projeto.
+    """
+    import numpy as np
+    import cv2
+    import relatorio
+    import conferir
+
+    amostras = tmp_path / "amostras"
+    amostras.mkdir()
+    for nome in ("uma.png", "outra.png"):
+        cv2.imwrite(str(amostras / nome), np.full((40, 40, 3), 200, np.uint8))
+
+    saida = tmp_path / "testes"
+    monkeypatch.setattr(
+        relatorio, "pasta_de_teste",
+        lambda assunto, filtro="", raiz=None: _pasta(saida, assunto))
+
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance() or QApplication([])
+    tela = conferir.Conferencia(
+        sorted(amostras.iterdir()), "conferencia de teste")
+
+    tela.caixa.setPlainText("o titulo saiu vermelho")
+    tela.responder(False)
+    tela.responder(True)          # a segunda fecha e grava
+
+    assert len(tela.vereditos) == 2
+    assert tela.vereditos[0]["veredito"] == "ERRADA"
+    assert tela.vereditos[0]["o_que_disse"] == "o titulo saiu vermelho"
+    assert tela.vereditos[1]["veredito"] == "certa"
+
+    escrito = next(saida.rglob("o que foi conferido.md"))
+    texto = escrito.read_text(encoding="utf-8")
+    assert "o titulo saiu vermelho" in texto
+    assert "1 certas, 1 erradas" in texto
+
+
+def _pasta(raiz, assunto):
+    destino = raiz / assunto
+    destino.mkdir(parents=True, exist_ok=True)
+    return destino

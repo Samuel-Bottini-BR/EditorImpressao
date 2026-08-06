@@ -630,6 +630,27 @@ def _alisar_o_papel(img: np.ndarray) -> np.ndarray:
     return saida
 
 
+def _e_capa_e_nao_papel(img: np.ndarray) -> bool:
+    """Isto e a encadernacao do livro, ou uma folha de papel?
+
+    A diferenca decide se ha papel a branquear. Numa capa nao ha: o que parece
+    papel e o couro. Numa folha de guarda em branco ha, e ela tem de ir a
+    branco - foi o pedido do Kaique.
+
+    Pergunta emprestada do detector de regioes, que decide a mesma coisa para
+    marcar ou nao a pagina como gravura. Manter a resposta num lugar so evita
+    que o filtro e o detector discordem sobre a mesma folha.
+    """
+    try:
+        from core.detectar_regioes import _e_objeto_e_nao_folha, _pagina_sem_conteudo
+
+        colorida = img if img.ndim == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        return bool(_pagina_sem_conteudo(colorida)
+                    and _e_objeto_e_nao_folha(colorida))
+    except Exception:  # noqa: BLE001 - na duvida, limpa como sempre limpou
+        return False
+
+
 def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray:
     """Melhorar: fundo branco limpo, cores originais preservadas.
 
@@ -637,6 +658,27 @@ def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray
     """
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+    # Numa CAPA nao ha papel a branquear: o que ali parece papel e o couro, a
+    # madeira ou o pergaminho da encadernacao, e branquear aquilo estica o
+    # mosqueado dele. Medido na capa do Boecio, passo a passo: o balanco de
+    # branco leva o ruido de 5,9 para 13,3 e o ponto de preto de 13,3 para 17,5.
+    # A folha de guarda EM BRANCO nao entra aqui - ela e papel, e tem de
+    # branquear mesmo. Ver _e_capa_e_nao_papel.
+    # Numa capa nem o achatamento de iluminacao serve: nao ha luz torta de
+    # scanner a corrigir, o que varia e o relevo do proprio objeto, e achatar
+    # aquilo o escurece. Medido na capa de couro verde do Livro de Horas, o
+    # achatamento sozinho levava o fundo de 219 para 194. Fica so o alisamento,
+    # que tira grao sem mexer no tom: nas tres capas medidas o fundo nao se move
+    # um decimo, e o ruido cai.
+    # Nem a recomposicao da rampa entra: ela existe para devolver a borda da
+    # LETRA ao lugar, e numa capa nao ha letra. Medido na capa de couro vermelho
+    # do Graduale, ela sozinha levava o fundo de 47,4 para 43,9. Sobra o
+    # alisamento, que tira grao sem mexer no tom: nas tres capas medidas o fundo
+    # nao anda um decimo, e o ruido do Boecio cai de 5,52 para 4,48.
+    if _e_capa_e_nao_papel(img):
+        return _alisar_o_papel(img.copy())
+
     saida = _achatar_iluminacao(img, _nivel_do_papel(img))
     saida = _balanco_de_branco(saida, clareza)
     if not _quase_sem_tinta(img):
