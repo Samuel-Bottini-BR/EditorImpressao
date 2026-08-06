@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A regua da selecao</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>A regua da selecao</h1>
+<p>Mede o detector de regioes nas mesmas paginas em toda rodada. Cada
+expectativa foi escrita OLHANDO a pagina, nunca a partir do que o
+programa devolve.</p>
+<p><strong>23 de 26 paginas passaram.</strong></p>
+<h2>O que esta errado</h2>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Pagina</th>
+<th>O que a pagina e</th>
+<th>O que saiu errado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graduale</td>
+<td>126</td>
+<td>partitura manuscrita: texto gotico, pautas vermelhas e neumas pretos</td>
+<td>pagina de texto marcada como desenho: 100% de gravura; o texto nao foi marcado: so 0.0% de letra</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>45</td>
+<td>prancha de padrao de bordado, com duas legendas impressas miudas</td>
+<td>texto impresso nao virou letra: so 0% da faixa em y=0.03-0.10; texto impresso nao virou letra: so 0% da faixa em y=0.54-0.63</td>
+</tr>
+<tr>
+<td>Pesel</td>
+<td>73</td>
+<td>foto de bordado montado, com titulo impresso no alto e quatro caixas de legenda no pe</td>
+<td>texto impresso nao virou letra: so 0% da faixa em y=0.03-0.11</td>
+</tr>
+</tbody>
+</table>
+<h2>Pagina a pagina</h2>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Pagina</th>
+<th>O que e</th>
+<th>Tipo</th>
+<th>Gravura</th>
+<th>Letra</th>
+<th>Respingos</th>
+<th>Passou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graduale</td>
+<td>1</td>
+<td>capa de couro vermelho com fechos de metal</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Graduale</td>
+<td>750</td>
+<td>foto do corte do livro fechado, visto de lado</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Boecio</td>
+<td>1</td>
+<td>capa de pergaminho com a etiqueta RESERVADO 623 da b</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Boecio</td>
+<td>50</td>
+<td>folha de guarda, sem nada impresso</td>
+<td>folha_nua</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Palatino</td>
+<td>1</td>
+<td>capa de madeira com veio, sem letra</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Palatino</td>
+<td>132</td>
+<td>guarda em branco com um carimbo apagado</td>
+<td>folha_nua</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Rhetorica</td>
+<td>1</td>
+<td>folha de guarda de pergaminho, em branco</td>
+<td>folha_nua</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Rhetorica</td>
+<td>446</td>
+<td>folha em branco, so o creme do papel</td>
+<td>folha_nua</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pesel</td>
+<td>1</td>
+<td>capa de tecido com o titulo gravado a ouro e um bord</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pesel</td>
+<td>92</td>
+<td>contracapa de tecido com a etiqueta de codigo de bar</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pesel</td>
+<td>16</td>
+<td>folha parda sem tinta, com um carimbo pequeno</td>
+<td>folha_nua</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pesel</td>
+<td>46</td>
+<td>folha parda sem tinta, com um carimbo pequeno</td>
+<td>folha_nua</td>
+<td>0.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Marial</td>
+<td>1</td>
+<td>foto da capa de pergaminho, com a lombada escura a e</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Horas</td>
+<td>3</td>
+<td>capa de couro verde com fechos dourados</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>1</td>
+<td>capa de couro gasta, sem letra</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>268</td>
+<td>contracapa de couro gasta, sem letra</td>
+<td>capa</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Graduale</td>
+<td>126</td>
+<td>partitura manuscrita: texto gotico, pautas vermelhas</td>
+<td>texto</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>NAO</td>
+</tr>
+<tr>
+<td>Graduale</td>
+<td>376</td>
+<td>partitura manuscrita com letra gotica ocre e pautas</td>
+<td>texto</td>
+<td>0.0%</td>
+<td>88.2%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Boecio</td>
+<td>33</td>
+<td>pagina de texto impresso em italico, com mancha do v</td>
+<td>texto</td>
+<td>0.0%</td>
+<td>54.3%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Boecio</td>
+<td>17</td>
+<td>pagina de texto impresso</td>
+<td>texto</td>
+<td>0.0%</td>
+<td>57.4%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Rhetorica</td>
+<td>223</td>
+<td>pagina so de texto, com notas na margem e manchas de</td>
+<td>texto</td>
+<td>0.0%</td>
+<td>97.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Catecismo</td>
+<td>199</td>
+<td>estampa colorida de pagina inteira: figura sobre fun</td>
+<td>desenho</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>45</td>
+<td>prancha de padrao de bordado, com duas legendas impr</td>
+<td>desenho</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>NAO</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>133</td>
+<td>prancha de padrao de bordado, em tres faixas</td>
+<td>desenho</td>
+<td>100.0%</td>
+<td>0.0%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Pesel</td>
+<td>73</td>
+<td>foto de bordado montado, com titulo impresso no alto</td>
+<td>texto_e_desenho</td>
+<td>88.7%</td>
+<td>6.2%</td>
+<td>0</td>
+<td>NAO</td>
+</tr>
+<tr>
+<td>Rhetorica</td>
+<td>112</td>
+<td>xilogravura emoldurada embaixo de um bloco de texto</td>
+<td>texto_e_desenho</td>
+<td>48.1%</td>
+<td>23.2%</td>
+<td>0</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<h2>A historia dos casos dificeis</h2>
+<ul>
+<li><strong>Graduale p126</strong> - Em 05/08/2026 saia 100% gravura e 0% letra - o erro que a regra do projeto cita pelo nome.</li>
+<li><strong>Rhetorica p223</strong> - Ja saiu com 39% da folha em vermelho, tomando mancha de papel velho por pintura.</li>
+<li><strong>Siebmacher p45</strong> - As legendas impressas tem de sair como letra.</li>
+<li><strong>Pesel p73</strong> - O titulo e a quarta legenda saiam como foto; as outras tres saiam como texto - dois criterios na mesma folha.</li>
+</ul>
+<h2>As amostras</h2>
+<p>Uma imagem por pagina, com a marcacao por cima: <strong>vermelho e gravura,
+azul e letra, sem cor e papel</strong>. Estao na pasta <code>selecao/</code> ao lado
+deste relatorio, e as erradas tem ERRADO no nome.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/08/2026 às 09:46</p>
+</body>
+</html>

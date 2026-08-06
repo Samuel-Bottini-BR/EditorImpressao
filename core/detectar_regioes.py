@@ -41,6 +41,7 @@ from core.selecao import (
     LETRA,
     PAPEL,
     REDE,
+    RETANGULO,
     Regiao,
     Selecao,
     de_mascara,
@@ -577,6 +578,61 @@ def _espalhamento_do_miolo(img: np.ndarray) -> float:
     return float(np.percentile(miolo, 97) - np.percentile(miolo, 3))
 
 
+# Uma folha de papel nua nao tem textura nem fundo escuro em volta; um objeto
+# fotografado - couro, madeira, tecido, o corte do livro - tem uma coisa ou a
+# outra. Medido nas paginas do acervo:
+#
+#   textura   folha nua 1,3 a 5,0   |  capa 6,1 a 21,1  (o corte do livro, 1,5)
+#   orla      folha nua 0,96 a 1,22 |  capa 0,48 a 0,97 (o corte do livro, 0,81)
+#
+# O corte do livro nao tem textura, mas e um bloco claro sobre fundo preto - e
+# por isso a orla entra na conta.
+TEXTURA_DE_OBJETO = 5.5
+ORLA_ESCURA_DE_OBJETO = 0.85
+
+
+def _e_objeto_e_nao_folha(img: np.ndarray) -> bool:
+    """Isto e um objeto fotografado, ou uma folha de papel nua?
+
+    A resposta muda o destino da pagina no Preto e branco, e a diferenca e
+    grande. Sem marcacao nenhuma a folha inteira e binarizada: medido e
+    fotografado, a capa de pergaminho do Boecio sai uma folha BRANCA, com so a
+    etiqueta da biblioteca sobrando. Marcada como gravura, ela sai inteira.
+
+    Mas o contrario tambem custa: uma folha de guarda em branco marcada como
+    gravura para de ir a branco - fica no creme de 210 em vez dos 255 que o
+    Kaique pediu. Entao nao da para marcar as duas iguais.
+    """
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
+    largura = 400
+    altura = max(8, int(largura * cinza.shape[0] / max(1, cinza.shape[1])))
+    pequena = cv2.resize(cinza, (largura, altura),
+                         interpolation=cv2.INTER_AREA).astype(np.float32)
+
+    media = cv2.boxFilter(pequena, -1, (9, 9))
+    media_dos_quadrados = cv2.boxFilter(pequena * pequena, -1, (9, 9))
+    textura = float(np.median(
+        np.sqrt(np.clip(media_dos_quadrados - media * media, 0, None))))
+    if textura > TEXTURA_DE_OBJETO:
+        return True
+
+    faixa = 6
+    orla = np.concatenate([
+        pequena[:faixa].ravel(), pequena[-faixa:].ravel(),
+        pequena[:, :faixa].ravel(), pequena[:, -faixa:].ravel()])
+    miolo = float(np.median(pequena))
+    return miolo >= 1 and float(orla.mean()) / miolo < ORLA_ESCURA_DE_OBJETO
+
+
+def _folha_nua_ou_objeto(selecao: Selecao, img: np.ndarray) -> Selecao:
+    """Folha nua sai sem marcacao; objeto sai marcado como gravura inteira."""
+    if _e_objeto_e_nao_folha(img):
+        selecao.acrescentar(Regiao(
+            tipo=GRAVURA, forma=RETANGULO, pontos=[(0.0, 0.0), (1.0, 1.0)],
+            origem=AUTOMATICO, rotulo="capa"))
+    return selecao
+
+
 def _pagina_sem_conteudo(img: np.ndarray) -> bool:
     """Capa, folha de guarda, verso em branco: nao ha o que marcar.
 
@@ -690,10 +746,10 @@ def detectar(
         # de desistir - so nesse caso, para nao pagar o modelo em toda folha em
         # branco de um livro de novecentas paginas.
         if _espalhamento_do_miolo(colorida) < ESPALHAMENTO_DE_FOLHA_LIMPA:
-            return selecao
+            return _folha_nua_ou_objeto(selecao, colorida)
         achados = _detector.achar(colorida) if usar_layout else []
         if not any(_area_da_caixa(a) >= AREA_QUE_DESMENTE_PAGINA_VAZIA for a in achados):
-            return selecao
+            return _folha_nua_ou_objeto(selecao, colorida)
 
     tinta = mascara_de_tinta(colorida)
     if not achados:
