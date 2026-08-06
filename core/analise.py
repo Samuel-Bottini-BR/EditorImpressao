@@ -124,7 +124,26 @@ def descrever(codigo: str) -> Alerta:
 PERCENTIL_DO_PAPEL = 85     # a partir de que brilho um pixel conta como papel
 CORRECAO_MAXIMA = 2.5       # teto do desconto da dominante, por canal
 SATURACAO_DE_TINTA = 90     # acima disso o pixel e tinta colorida, não mancha
-FRACAO_COLORIDA_MIN = 0.05  # 5% dos pixels: separa xilogravura de iluminura
+# 2% dos pixels fortemente coloridos. Era 5%, e 5% caia DENTRO da faixa das
+# paginas coloridas, nao entre elas: medido no acervo, a estampa colorida da
+# pagina 199 do Catecismo da 0,0499 na analise a 150 DPI e 0,0500 medida a
+# 300 - decisao na navalha, e ela caiu do lado errado. Numa estampa de pagina
+# inteira o aviso nao acendia.
+#
+# O vao de verdade esta mais abaixo. Medidas nas paginas do acervo:
+#
+#   texto puro do Boecio        0,009 a 0,017
+#   pranchas do Siebmacher      0,006 a 0,015
+#   -------- o vao --------
+#   folha parda do Pesel        0,026
+#   capa de couro do Horas      0,044
+#   estampa do Catecismo        0,050
+#   rubricacao do Graduale      0,056 a 0,059
+#
+# 0,02 fica no vao, com folga dos dois lados. E o erro para o lado certo: o
+# aviso a mais custa um olhar, e a cor perdida numa miniatura estraga a
+# pagina.
+FRACAO_COLORIDA_MIN = 0.02
 SATURACAO_MEDIA_MIN = 28.0  # rede de segurança para página colorida por inteiro
 
 CONFIANCA_LOMBADA_MIN = 0.5

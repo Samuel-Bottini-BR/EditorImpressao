@@ -3,7 +3,7 @@
 - Arquivo de 11 MB
 - 134 folhas no PDF, que viram 268 paginas de saida
 - 7 paginas medidas a fundo
-- 60 segundos para analisar o livro inteiro (448 milissegundos por folha)
+- 57 segundos para analisar o livro inteiro (427 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -16,7 +16,7 @@ e um pedido de conferida.
 
 | Aviso | Quantas | O que significa |
 |---|---|---|
-| Tem cor | 67 | Esta página tem cor - o preto e branco vai perder a ilustração. |
+| Tem cor | 124 | Esta página tem cor - o preto e branco vai perder a ilustração. |
 | Corte encostou no texto | 6 | O corte da borda pode ter pegado parte do texto. |
 
 ## Observacoes do livro inteiro

@@ -3,7 +3,7 @@
 - Arquivo de 12 MB
 - 92 folhas no PDF, que viram 92 paginas de saida
 - 7 paginas medidas a fundo
-- 70 segundos para analisar o livro inteiro (756 milissegundos por folha)
+- 66 segundos para analisar o livro inteiro (717 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 

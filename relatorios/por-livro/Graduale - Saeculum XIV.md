@@ -3,7 +3,7 @@
 - Arquivo de 271 MB
 - 750 folhas no PDF, que viram 750 paginas de saida
 - 7 paginas medidas a fundo
-- 271 segundos para analisar o livro inteiro (362 milissegundos por folha)
+- 211 segundos para analisar o livro inteiro (282 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -22,15 +22,15 @@ e um pedido de conferida.
 
 | Aviso | Quantas | O que significa |
 |---|---|---|
-| Tem cor | 211 | Esta página tem cor - o preto e branco vai perder a ilustração. |
 | Tamanho diferente | 6 | Esta folha tem tamanho diferente das outras. |
 | Corte encostou no texto | 6 | O corte da borda pode ter pegado parte do texto. |
 | Alinhamento duvidoso | 1 | Não consegui achar o alinhamento do texto direito. |
 
 ## Observacoes do livro inteiro
 
-- o livro inteiro foi escaneado em qualidade baixa
 - este livro tem uma página por folha, não duas
+- o livro inteiro foi escaneado em qualidade baixa
+- o livro inteiro é colorido
 
 ## As paginas saem todas do mesmo tamanho?
 
