@@ -718,3 +718,34 @@ def test_pagina_toda_desenho_nao_e_cobrada_como_texto():
 
     # sem deteccao nenhuma nao se afrouxa nada
     assert not avaliar.e_so_desenho(Selecao(), 400, 300)
+
+
+def test_folha_inteira_marcada_papel_sai_em_branco():
+    """Marcar a folha toda como papel quer dizer "quero esta folha em branco".
+
+    Serve para a capa que nao se quer no livro reimpresso. Antes sobrava a
+    etiqueta da biblioteca e a sujeira da borda no meio do branco, porque a
+    protecao que impede o branco de comer a borda da letra tambem protegia isso.
+    Marcar SO UM PEDACO como papel continua protegendo a letra.
+    """
+    import cv2
+    from core.filtros import MELHORAR, aplicar_filtro_com_selecao
+    from core.selecao import MAO, PAPEL, RETANGULO, Regiao, Selecao
+
+    pagina = np.full((300, 220, 3), 150, np.uint8)
+    pagina[40:70, 30:190] = 20          # uma etiqueta escura, como a do Boecio
+    pagina[:, :6] = 15                  # a lombada escura da borda
+
+    inteira = Selecao()
+    inteira.acrescentar(Regiao(tipo=PAPEL, forma=RETANGULO,
+                               pontos=[(0.0, 0.0), (1.0, 1.0)], origem=MAO))
+    saida, _mono = aplicar_filtro_com_selecao(pagina.copy(), MELHORAR, inteira)
+    cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY) if saida.ndim == 3 else saida
+    assert float((cinza < 250).mean()) == 0.0, "sobrou coisa na folha em branco"
+
+    so_o_topo = Selecao()
+    so_o_topo.acrescentar(Regiao(tipo=PAPEL, forma=RETANGULO,
+                                 pontos=[(0.0, 0.0), (1.0, 0.12)], origem=MAO))
+    saida2, _m = aplicar_filtro_com_selecao(pagina.copy(), MELHORAR, so_o_topo)
+    cinza2 = cv2.cvtColor(saida2, cv2.COLOR_BGR2GRAY) if saida2.ndim == 3 else saida2
+    assert float((cinza2 < 250).mean()) > 0.05, "a etiqueta tinha de sobreviver"

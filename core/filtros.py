@@ -143,6 +143,10 @@ ORLA_DA_TINTA_NO_PAPEL = 1 / 250
 # nem contraste a realcar, so grao de scanner a nao amplificar.
 TINTA_DE_FOLHA_ESCRITA = 0.01
 
+# A partir desta fracao da folha marcada como papel, entende-se que a pessoa
+# quer a FOLHA EM BRANCO, e nao "aqui e fundo". Ver aplicar_filtro_com_selecao.
+FOLHA_INTEIRA_EM_BRANCO = 0.95
+
 # Raio do borrao da nitidez, em fracao da altura. Era 1/1000, tres pixels numa
 # pagina de 300 DPI: largo demais para letra, e o que sobrava era um halo claro
 # em volta de cada traco em vez de nitidez. Ver _nitidez.
@@ -1014,8 +1018,15 @@ def aplicar_filtro_com_selecao(
 
     # A borda suave do papel nao pode passar por cima de letra: ver
     # _peso_do_papel_sem_tocar_a_tinta.
+    #
+    # Menos quando a pessoa marcou a FOLHA INTEIRA como papel. Ai ela nao esta
+    # dizendo "aqui e fundo", esta dizendo "quero esta folha em branco" - uma
+    # capa que nao se quer no livro reimpresso, por exemplo. Proteger a tinta
+    # nesse caso deixa a etiqueta da biblioteca e a sujeira da borda no meio da
+    # folha branca, que e o oposto do pedido.
     if peso_papel.any() and filtro != ORIGINAL:
-        peso_papel = _peso_do_papel_sem_tocar_a_tinta(img, peso_papel)
+        if float((peso_papel > 0.5).mean()) < FOLHA_INTEIRA_EM_BRANCO:
+            peso_papel = _peso_do_papel_sem_tocar_a_tinta(img, peso_papel)
 
     try:
         # --- Preto e branco -------------------------------------------------
