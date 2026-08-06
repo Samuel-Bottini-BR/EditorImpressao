@@ -143,6 +143,9 @@ class EditorSelecao(QWidget):
         self.operacao = SOMAR
         self.espessura = ESPESSURA_PADRAO
         self.tolerancia = TOLERANCIA_PADRAO
+        # Filtro so para o que for marcado daqui em diante. Vazio quer
+        # dizer "use o filtro da pagina", que e o comportamento de sempre.
+        self.filtro_da_regiao = ""
         self.mostrar_marcacao = True
 
         self._desenhando = False
@@ -189,6 +192,11 @@ class EditorSelecao(QWidget):
         self.operacao = SUBTRAIR if operacao == SUBTRAIR else SOMAR
         self.update()
 
+    def definir_filtro_da_regiao(self, filtro: str) -> None:
+        """Que filtro vale so no que for marcado daqui em diante."""
+        self.filtro_da_regiao = filtro or ""
+        self.update()
+
     # --- desfazer ---------------------------------------------------------
 
     @property
@@ -223,6 +231,7 @@ class EditorSelecao(QWidget):
     def _acrescentar(self, regiao: Regiao) -> None:
         if not regiao.valida():
             return
+        regiao.filtro = self.filtro_da_regiao
         self._marcar()
         self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()
@@ -464,6 +473,7 @@ class EditorSelecao(QWidget):
         self._marcar()
         for regiao in regioes:
             regiao.operacao = self.operacao
+            regiao.filtro = self.filtro_da_regiao
             self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()
         self.update()
@@ -524,6 +534,7 @@ class EditorSelecao(QWidget):
         self._marcar()
         for regiao in regioes:
             regiao.operacao = self.operacao
+            regiao.filtro = self.filtro_da_regiao
             self.selecao.acrescentar(regiao)
         self.aviso.emit(
             f"Peguei {parecido.mean():.0%} da página nessa cor, "
@@ -557,6 +568,7 @@ class EditorSelecao(QWidget):
         self._marcar()
         for regiao in regioes:
             regiao.operacao = self.operacao
+            regiao.filtro = self.filtro_da_regiao
             self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()
         self.update()

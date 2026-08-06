@@ -96,6 +96,13 @@ class Regiao:
     confianca: float = 1.0
     rotulo: str = ""        # o nome que o detector deu, para o relatorio
 
+    # Filtro so para esta regiao. Vazio quer dizer "use o filtro da pagina".
+    # Serve para o pedido de tratar um pedaco diferente do resto: deixar uma
+    # gravura no Original enquanto a folha vai a Preto e branco, por exemplo.
+    # Campo novo e opcional: projeto gravado antes disto abre igual, porque
+    # de_dicionario descarta chave que nao conhece e o padrao e vazio.
+    filtro: str = ""
+
     # suavizacao da borda, em fracao da menor dimensao. Zero e corte seco.
     suavidade: float = 0.0
 
@@ -226,6 +233,41 @@ class Selecao:
         raio = max(suavidades) * min(altura, largura)
         sigma = max(0.6, raio / 2.0)
         return np.clip(cv2.GaussianBlur(dura, (0, 0), sigmaX=sigma, sigmaY=sigma), 0, 1)
+
+    def peso_do_filtro(self, altura: int, largura: int,
+                       filtro: str) -> np.ndarray:
+        """Onde vale um filtro pedido so para um pedaco, de 0 a 1.
+
+        Diferente de peso(), que separa por TIPO. Aqui o que agrupa e o
+        filtro que a pessoa escolheu para aquele pedaco.
+        """
+        tela = np.zeros((altura, largura), np.uint8)
+        suavidades: list[float] = []
+        for regiao in self.regioes:
+            if regiao.filtro != filtro or not regiao.valida():
+                continue
+            camada = np.zeros_like(tela)
+            _desenhar(camada, regiao)
+            if regiao.operacao == SOMAR:
+                tela = np.maximum(tela, camada)
+            else:
+                tela[camada > 0] = 0
+            if regiao.suavidade > 0:
+                suavidades.append(regiao.suavidade)
+        peso = (tela > 0).astype(np.float32)
+        if not suavidades or not peso.any():
+            return peso
+        sigma = max(0.6, max(suavidades) * min(altura, largura) / 2.0)
+        return np.clip(cv2.GaussianBlur(peso, (0, 0), sigmaX=sigma,
+                                        sigmaY=sigma), 0, 1)
+
+    def filtros_pedidos(self) -> list[str]:
+        """Quais filtros foram pedidos para pedacos desta pagina."""
+        vistos: list[str] = []
+        for regiao in self.regioes:
+            if regiao.filtro and regiao.filtro not in vistos:
+                vistos.append(regiao.filtro)
+        return vistos
 
     def tipos_presentes(self) -> list[str]:
         return [t for t in TIPOS if any(r.tipo == t for r in self.regioes)]

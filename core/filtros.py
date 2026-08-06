@@ -972,6 +972,44 @@ def _tres_canais(img: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.ndim == 2 else img
 
 
+def _filtro_so_no_pedaco(
+    img: np.ndarray, base: np.ndarray, selecao, filtro: str,
+    forca_preto: int, clareza: int, intensidade: int,
+) -> np.ndarray:
+    """Aplica, por cima do resultado, o filtro que a pessoa pediu para um pedaco.
+
+    E o pedido do Samuel: "aplicar filtro so em uma parte selecionada". A
+    marcacao ja dizia o que cada area E - gravura, letra, papel -, e isso decide
+    COMO o filtro da pagina trata cada uma. O que faltava era dizer QUAL filtro
+    vale num pedaco: deixar uma gravura no Original enquanto a folha inteira vai
+    a Preto e branco, por exemplo.
+
+    Cada filtro pedido e calculado UMA vez na pagina inteira e colado so onde
+    foi pedido. Calcular no recorte sairia diferente: todos os filtros aqui se
+    ancoram no nivel do papel da folha, e um recorte de gravura escura teria
+    outro nivel de papel - a mesma armadilha que ja custou as capas lavadas.
+    """
+    pedidos = [f for f in getattr(selecao, "filtros_pedidos", lambda: [])()
+               if f in FILTROS and f != filtro]
+    if not pedidos:
+        return base
+
+    altura, largura = img.shape[:2]
+    saida = base
+    for pedido in pedidos:
+        peso = selecao.peso_do_filtro(altura, largura, pedido)
+        if not peso.any():
+            continue
+        if pedido == ORIGINAL:
+            pedaco = _tres_canais(img)
+        else:
+            pedaco, _mono = aplicar_filtro(
+                img.copy(), pedido, forca_preto, clareza, intensidade)
+            pedaco = _tres_canais(pedaco)
+        saida = _misturar(_tres_canais(saida), pedaco, peso)
+    return saida
+
+
 def aplicar_filtro_com_selecao(
     img: np.ndarray,
     filtro: str,
@@ -1080,7 +1118,8 @@ def aplicar_filtro_com_selecao(
         if peso_papel.any():
             base = _misturar(base, np.full_like(base, 255), peso_papel)
 
-        return base, False
+        return _filtro_so_no_pedaco(img, base, selecao, filtro,
+                                    forca_preto, clareza, intensidade), False
 
     except cv2.error as exc:
         raise ErroFiltro("Não consegui limpar esta página.") from exc

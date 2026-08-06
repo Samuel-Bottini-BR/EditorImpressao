@@ -451,6 +451,26 @@ class TelaConferir(QWidget):
         ferramentas.addStretch()
         fora.addLayout(ferramentas)
 
+        # Filtro so no pedaco marcado. Serve para deixar uma gravura no
+        # Original enquanto a folha inteira vai a Preto e branco.
+        so_aqui = QHBoxLayout()
+        so_aqui.addWidget(QLabel("Filtro só neste pedaço:"))
+        self.botoes_filtro_da_regiao = {}
+        from core.filtros import NOMES_AMIGAVEIS as _NOMES
+        for chave, texto in (("", "o mesmo da página"),
+                             (ORIGINAL, _NOMES[ORIGINAL]),
+                             (PRETO_E_BRANCO, _NOMES[PRETO_E_BRANCO]),
+                             (MELHORAR, _NOMES[MELHORAR]),
+                             (MAGICO_PRO, _NOMES[MAGICO_PRO])):
+            botao = QPushButton(texto)
+            botao.setCheckable(True)
+            botao.setChecked(chave == "")
+            _ligar(botao, lambda c=chave: self._escolher_filtro_da_regiao(c))
+            so_aqui.addWidget(botao)
+            self.botoes_filtro_da_regiao[chave] = botao
+        so_aqui.addStretch()
+        fora.addLayout(so_aqui)
+
         # acoes
         acoes = QHBoxLayout()
         _botao("desfazer", acoes, self._desfazer_marcacao)
@@ -481,6 +501,12 @@ class TelaConferir(QWidget):
         self.editor_selecao.definir_ferramenta(ferramenta)
         for chave, botao in self.botoes_ferramenta.items():
             botao.setChecked(chave == ferramenta)
+
+    def _escolher_filtro_da_regiao(self, filtro: str) -> None:
+        """Que filtro vale so no que for marcado daqui em diante."""
+        for chave, botao in self.botoes_filtro_da_regiao.items():
+            botao.setChecked(chave == filtro)
+        self.editor_selecao.definir_filtro_da_regiao(filtro)
 
     def _mostrar_aviso_da_marcacao(self, texto: str) -> None:
         if hasattr(self, "aviso_marcacao"):

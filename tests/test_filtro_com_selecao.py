@@ -207,3 +207,55 @@ def test_selecao_so_de_tipo_ausente_nao_quebra(img):
     s.acrescentar(retangulo(0.0, 0.0, 0.2, 0.2, tipo="fora"))
     saida, _ = aplicar_filtro_com_selecao(img, MAGICO_PRO, s)
     assert saida.shape == img.shape
+
+
+def test_filtro_so_no_pedaco_marcado():
+    """Pedido: aplicar um filtro so numa parte, e o resto segue o da pagina.
+
+    O caso concreto e a xilogravura da Rhetorica: a folha vai a Preto e branco,
+    mas a gravura tem de ficar no Original, senao o meio-tom da hachura vira
+    mancha preta.
+    """
+    import cv2
+    import numpy as np
+
+    from core.filtros import ORIGINAL, PRETO_E_BRANCO, aplicar_filtro_com_selecao
+    from core.selecao import GRAVURA, MAO, RETANGULO, Regiao, Selecao
+
+    pagina = np.full((400, 300, 3), 235, np.uint8)
+    pagina[20:80, 20:280] = 40                       # uma linha de texto escura
+    degrade = np.linspace(30, 220, 200).astype(np.uint8)
+    pagina[180:380, 50:250] = degrade[None, :, None]  # a gravura, em meio-tom
+
+    selecao = Selecao()
+    selecao.acrescentar(Regiao(
+        tipo=GRAVURA, forma=RETANGULO, pontos=[(0.16, 0.44), (0.84, 0.96)],
+        origem=MAO, filtro=ORIGINAL))
+
+    saida, mono = aplicar_filtro_com_selecao(
+        pagina.copy(), PRETO_E_BRANCO, selecao)
+    cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY) if saida.ndim == 3 else saida
+
+    assert not mono, "com um pedaco em tom continuo a pagina nao cabe em 1 bit"
+
+    tons_no_texto = len(np.unique(cinza[10:100, 10:290]))
+    tons_na_gravura = len(np.unique(cinza[200:360, 70:230]))
+    assert tons_no_texto <= 4, f"o texto tinha de sair binarizado: {tons_no_texto}"
+    assert tons_na_gravura > 30, f"a gravura perdeu o meio-tom: {tons_na_gravura}"
+
+
+def test_regiao_sem_filtro_proprio_segue_a_pagina():
+    """Sem filtro na regiao, tudo continua como sempre foi."""
+    import numpy as np
+
+    from core.filtros import PRETO_E_BRANCO, aplicar_filtro_com_selecao
+    from core.selecao import LETRA, MAO, RETANGULO, Regiao, Selecao
+
+    pagina = np.full((300, 200, 3), 230, np.uint8)
+    pagina[40:80, 20:180] = 40
+
+    selecao = Selecao()
+    selecao.acrescentar(Regiao(tipo=LETRA, forma=RETANGULO,
+                               pontos=[(0.05, 0.10), (0.95, 0.30)], origem=MAO))
+    saida, _mono = aplicar_filtro_com_selecao(pagina.copy(), PRETO_E_BRANCO, selecao)
+    assert saida is not None and saida.size > 0
