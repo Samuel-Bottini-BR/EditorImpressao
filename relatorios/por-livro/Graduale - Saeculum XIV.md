@@ -3,7 +3,7 @@
 - Arquivo de 271 MB
 - 750 folhas no PDF, que viram 750 paginas de saida
 - 7 paginas medidas a fundo
-- 211 segundos para analisar o livro inteiro (282 milissegundos por folha)
+- 262 segundos para analisar o livro inteiro (349 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -40,16 +40,16 @@ nao fecha direito na impressao.
 - Menor pagina: 2630 x 4537 pontinhos
 - Variacao de largura: 265.6 mm
 - Variacao de altura: 250.9 mm
-- Inclinacao que sobrou depois de endireitar: 0.071 grau na media, 0.200 no pior caso
+- Inclinacao que sobrou depois de endireitar: 0.086 grau na media, 0.200 no pior caso
 
 ## Como cada filtro se comportou
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 30.33 | 262 | 167.2 | 2.50 | 2.35 |
-| Preto e branco | 29.07 | 386 | 199.1 | 2.06 | 1.31 |
-| Melhorar | 32.29 | 385 | 198.3 | 2.06 | 2.07 |
-| Mágico pro | 32.06 | 328 | 198.8 | 2.06 | 1.89 |
+| Original | 30.30 | 262 | 167.1 | 2.53 | 2.34 |
+| Preto e branco | 29.45 | 400 | 198.8 | 2.05 | 1.31 |
+| Melhorar | 32.17 | 350 | 198.3 | 2.05 | 2.04 |
+| Mágico pro | 31.95 | 315 | 198.8 | 2.05 | 1.88 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

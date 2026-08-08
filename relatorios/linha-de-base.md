@@ -1,6 +1,6 @@
-# Linha de base de 06/08/2026
+# Linha de base de 08/08/2026
 
-Medido em 06/08/2026 as 19:49.
+Medido em 08/08/2026 as 00:58.
 
 Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em numeros como ele esta hoje. Serve para que, depois de qualquer mudanca, se possa medir de novo e saber se melhorou de verdade ou se foi so impressao.
 
@@ -8,8 +8,8 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 
 - Foram medidos **9 livros**, 2903 folhas, 3037 paginas de saida.
 - A qualidade de imagem foi medida a fundo em **63 paginas**, as mesmas em toda rodada.
-- **4 vezes um filtro deixou a pagina pior do que ela era.** Cada caso e uma pagina com um filtro; a mesma pagina pode aparecer mais de uma vez, uma por filtro que a estragou. O criterio de aceitacao do projeto exige que esse numero seja zero.
-- O programa nunca passou de **1402 MB** de memoria, contra o teto de 2048 MB.
+- **8 vezes um filtro deixou a pagina pior do que ela era.** Cada caso e uma pagina com um filtro; a mesma pagina pode aparecer mais de uma vez, uma por filtro que a estragou. O criterio de aceitacao do projeto exige que esse numero seja zero.
+- O programa nunca passou de **1442 MB** de memoria, contra o teto de 2048 MB.
 
 ## O que cada numero quer dizer
 
@@ -26,10 +26,10 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 
 | Filtro | Espessura | Vazios | Fundo (255=branco) | Ruido | Transicao (px) | Nitidez | Tempo/pagina |
 |---|---|---|---|---|---|---|---|
-| Original | 32.58 | 1763 | 189.0 | 2.42 | 1.42 | 733 | 0.00s |
-| Preto e branco | 15.53 | 2326 | 227.4 | 1.19 | 1.19 | 5554 | 1.65s |
-| Melhorar | 28.25 | 2457 | 218.9 | 1.32 | 1.45 | 1669 | 3.01s |
-| Mágico pro | 33.83 | 2465 | 219.1 | 1.32 | 1.41 | 1717 | 3.52s |
+| Original | 32.55 | 1753 | 189.0 | 2.41 | 1.43 | 741 | 0.00s |
+| Preto e branco | 13.83 | 2127 | 228.5 | 1.09 | 1.17 | 6383 | 2.52s |
+| Melhorar | 27.60 | 2172 | 220.0 | 1.22 | 1.44 | 1815 | 3.26s |
+| Mágico pro | 33.16 | 2177 | 220.1 | 1.22 | 1.39 | 1869 | 3.81s |
 
 > Leitura rapida: na coluna **Fundo**, quanto mais perto de 255 melhor - e o amarelado indo embora. Na coluna **Transicao**, o alvo e entre 1,2 e 2; valor muito baixo e o serrilhado que aparece nas letras.
 
@@ -37,11 +37,11 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 
 | O que | Medido | Meta | Passou? |
 |---|---|---|---|
-| Abrir o programa | 0.60 s | 10 s | sim |
-| Primeiras miniaturas | 0.47 s | 5 s | sim |
-| Analisar 500 folhas (projecao) | 158 s | 180 s | sim |
-| Exportar 500 paginas a 300 DPI (projecao) | 295 s | 1200 s | sim |
-| Pico de memoria | 1402 MB | 2048 MB | sim |
+| Abrir o programa | 0.59 s | 10 s | sim |
+| Primeiras miniaturas | 0.49 s | 5 s | sim |
+| Analisar 500 folhas (projecao) | 177 s | 180 s | sim |
+| Exportar 500 paginas a 300 DPI (projecao) | 799 s | 1200 s | sim |
+| Pico de memoria | 1442 MB | 2048 MB | sim |
 
 > As duas linhas marcadas como **projecao** foram calculadas a partir do custo real por folha e por pagina medido nos nove livros, multiplicado por 500. Nenhum livro do acervo tem 500 paginas.
 
@@ -49,19 +49,19 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 
 | Livro | Tamanho | Folhas | Paginas | Analise | Paginas piores |
 |---|---|---|---|---|---|
-| Giovambattista Palatino cittadino romano | 9 MB | 134 | 134 | 48.0s | 0 |
-| Graduale - Saeculum XIV | 271 MB | 750 | 750 | 211.3s | 3 |
-| Livro de Horas - Luís XIV | 106 MB | 191 | 191 | 56.9s | 0 |
-| Marial de sermoens - Frei Balthasar Paez. (1 | 205 MB | 907 | 907 | 121.5s | 0 |
-| Na escola de Jesus - Catecismo explicado com | 48 MB | 199 | 199 | 26.8s | 0 |
-| POINTS d´ANCIENNES BRODERIES ANGLAISES - Lou | 12 MB | 92 | 92 | 65.9s | 1 |
-| Rhetorica Christiana -  Fray Diego Valadés | 40 MB | 446 | 446 | 195.7s | 0 |
-| Schön Neues Modell Buch - Johann Siebmacher | 11 MB | 134 | 268 | 57.2s | 0 |
-| Sobre a Consolação da Filosofia - Severino B | 4 MB | 50 | 50 | 2.6s | 0 |
+| Giovambattista Palatino cittadino romano | 9 MB | 134 | 134 | 63.3s | 0 |
+| Graduale - Saeculum XIV | 271 MB | 750 | 750 | 262.1s | 3 |
+| Livro de Horas - Luís XIV | 106 MB | 191 | 191 | 61.7s | 0 |
+| Marial de sermoens - Frei Balthasar Paez. (1 | 205 MB | 907 | 907 | 132.5s | 0 |
+| Na escola de Jesus - Catecismo explicado com | 48 MB | 199 | 199 | 29.1s | 0 |
+| POINTS d´ANCIENNES BRODERIES ANGLAISES - Lou | 12 MB | 92 | 92 | 70.4s | 1 |
+| Rhetorica Christiana -  Fray Diego Valadés | 40 MB | 446 | 446 | 212.1s | 0 |
+| Schön Neues Modell Buch - Johann Siebmacher | 11 MB | 134 | 268 | 60.9s | 4 |
+| Sobre a Consolação da Filosofia - Severino B | 4 MB | 50 | 50 | 2.9s | 0 |
 
 ## Paginas que sairam piores que o original
 
-Sao **4** ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era antes de qualquer tratamento.
+Sao **8** ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior do que ela era antes de qualquer tratamento.
 
 | Livro | Pagina | Filtro | O que piorou |
 |---|---|---|---|
@@ -69,6 +69,10 @@ Sao **4** ocorrencias. Cada linha e uma pagina com um filtro que a deixou pior d
 | Graduale - Saeculum XIV | 126 | Melhorar | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
 | Graduale - Saeculum XIV | 126 | Mágico pro | o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1 |
 | POINTS d´ANCIENNES BRODERIES ANGLA | 76 | Mágico pro | o fundo escureceu: passou de 156 para 148 numa escala em que 255 e branco |
+| Schön Neues Modell Buch - Johann S | 221 | Melhorar | a borda das letras virou degrau (serrilhado): a rampa caiu de 1.07 para 1.05 pixels |
+| Schön Neues Modell Buch - Johann S | 221 | Mágico pro | a borda das letras virou degrau (serrilhado): a rampa caiu de 1.07 para 1.05 pixels |
+| Schön Neues Modell Buch - Johann S | 268 | Melhorar | a borda das letras borrou: a rampa subiu de 3.46 para 4.54 pixels |
+| Schön Neues Modell Buch - Johann S | 268 | Mágico pro | a borda das letras borrou: a rampa subiu de 3.46 para 4.54 pixels |
 
 ## Paginas em que a regua nao cobrou letra
 
@@ -100,7 +104,7 @@ Laranja quer dizer *o programa nao teve certeza*. Nao e erro: e um pedido de con
 |---|---|---|
 | Alinhamento duvidoso | 349 | Não consegui achar o alinhamento do texto direito. |
 | Tem cor | 305 | Esta página tem cor - o preto e branco vai perder a ilustração. |
-| Corte encostou no texto | 43 | O corte da borda pode ter pegado parte do texto. |
+| Corte encostou no texto | 33 | O corte da borda pode ter pegado parte do texto. |
 | Tamanho diferente | 22 | Esta folha tem tamanho diferente das outras. |
 | Muito torta | 4 | Esta página estava bem torta. Veja se ficou certa. |
 | Parece em branco | 1 | Esta página parece estar em branco. Quer apagar? |
@@ -112,14 +116,14 @@ Paginas do mesmo livro precisam sair identicas, senao o caderno nao fecha direit
 | Livro | Menor pagina (px) | Variacao largura | Variacao altura | Inclinacao media | Inclinacao maxima |
 |---|---|---|---|---|---|
 | Giovambattista Palatino cittadino roma | 1229x1805 | 34.4 mm | 55.3 mm | 0.057 | 0.100 |
-| Graduale - Saeculum XIV | 2630x4537 | 265.6 mm | 250.9 mm | 0.071 | 0.200 |
-| Livro de Horas - Luís XIV | 2952x5527 | 111.3 mm | 563.9 mm | 0.086 | 0.100 |
-| Marial de sermoens - Frei Balthasar Pa | 1046x3802 | 183.0 mm | 8.7 mm | 0.071 | 0.100 |
-| Na escola de Jesus - Catecismo explica | 1894x2896 | 26.2 mm | 18.5 mm | 0.100 | 0.300 |
-| POINTS d´ANCIENNES BRODERIES ANGLAISES | 1018x2591 | 69.8 mm | 16.0 mm | 0.014 | 0.100 |
-| Rhetorica Christiana -  Fray Diego Val | 1534x2236 | 32.1 mm | 49.5 mm | 0.029 | 0.100 |
-| Schön Neues Modell Buch - Johann Siebm | 594x1179 | 39.3 mm | 12.8 mm | 0.043 | 0.100 |
-| Sobre a Consolação da Filosofia - Seve | 833x1399 | 20.1 mm | 12.9 mm | 0.071 | 0.100 |
+| Graduale - Saeculum XIV | 2630x4537 | 265.6 mm | 250.9 mm | 0.086 | 0.200 |
+| Livro de Horas - Luís XIV | 2983x5461 | 108.7 mm | 566.8 mm | 0.114 | 0.200 |
+| Marial de sermoens - Frei Balthasar Pa | 1167x3729 | 175.7 mm | 17.1 mm | 0.071 | 0.100 |
+| Na escola de Jesus - Catecismo explica | 1897x2896 | 23.9 mm | 18.9 mm | 0.071 | 0.100 |
+| POINTS d´ANCIENNES BRODERIES ANGLAISES | 1035x2595 | 68.3 mm | 15.7 mm | 0.000 | 0.000 |
+| Rhetorica Christiana -  Fray Diego Val | 1534x2210 | 32.1 mm | 51.7 mm | 0.014 | 0.100 |
+| Schön Neues Modell Buch - Johann Siebm | 594x1206 | 39.3 mm | 10.8 mm | 0.043 | 0.100 |
+| Sobre a Consolação da Filosofia - Seve | 833x1396 | 20.1 mm | 13.2 mm | 0.071 | 0.100 |
 
 ## Em que maquina isto foi medido
 

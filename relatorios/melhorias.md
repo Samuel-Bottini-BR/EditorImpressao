@@ -489,3 +489,70 @@ Quatro motivos, e os dois são conhecidos:
   gravura. O ruído sobe porque ela é tratada como desenho. Mesma raiz da
   Tentativa 9; conserta-se consertando a detecção.
 - **Pesel 76** — o fundo escurece 156 → 148 no Mágico pro.
+
+---
+
+## Tentativa 16 — a mancha do verso e o creme, no Melhorar e no Mágico pro
+
+O Samuel apontou nos prints do teste completo:
+
+> "era para tirar a mancha do verso, se era está ruim, não tirou a mancha do
+> verso"
+
+> "melhorar e magico pro não estão deixando a pagina totalmente branca, ela
+> ainda deixa o fundo meio amarelado (e isso é ruim porque a impressora vai
+> entender como cor a ser impressa, mesmo em preto e branco)"
+
+As duas queixas são o mesmo defeito. O Preto e branco já tinha resolvido a
+mancha — o Sauvola de `k` adaptativo, da Tentativa 15, a reduziu a chuvisco.
+Os outros dois filtros não usam Sauvola: eles empurravam para branco com um
+**limiar fixo de 235**. Numa folha amarelada isso não alcança nada:
+
+| na página 33 do Boécio | tom |
+|---|---|
+| papel já tratado | 225 |
+| mancha do verso | 210 |
+| limiar do empurrão | **235** |
+
+Nenhum dos dois passa. O fundo continuava creme e a mancha, legível.
+
+### O que separa a mancha da letra não é o tom
+
+Quem sabe separar é o **Sauvola** — ele compara cada pixel com a vizinhança, e
+a mancha perde por ser mais fraca que a vizinhança dela. É a mesma conta que o
+Preto e branco já faz. Então a pergunta passou a ser feita a ele: o que o Preto
+e branco chamaria de papel, aqui vira branco puro.
+
+Só que o Sauvola sozinho ainda pega a parte forte da mancha, e ali ela virava
+um fantasma cinza. O que separa esses dois é o **tamanho da peça**:
+
+| página 33 do Boécio | área mediana da peça | peças |
+|---|---|---|
+| o texto | 66 px | 1012 |
+| a mancha do verso | 4 px | 689 |
+
+Corte em 30 px, e peça pequena volta se encostar numa grande — que é o caso de
+acento, pingo do i e serifa solta.
+
+### Três travas, e cada uma custou uma medição
+
+| Trava | Por quê | O que estragava sem ela |
+|---|---|---|
+| não entra em página sem texto | entre os traços de uma estampa está a obra | a estampa do Catecismo perdia o céu azul inteiro |
+| só onde a cor é a do papel | mancha é âmbar; céu, rubricação e couro não | mesmo céu, agora manchado |
+| pergunta ao ORIGINAL se o pixel é escuro | o realce do Mágico pro escurece a mancha | o próprio realce promovia a mancha a "escura demais para ser mancha" e a protegia |
+
+A primeira saiu de uma contagem no acervo inteiro. Página de texto tem de 264
+(Graduale) a 2405 (Rhetorica) peças de letra; estampa e prancha ficam entre 6 e
+83. Há um vão de três vezes entre os dois grupos, e o corte cai no meio dele.
+
+A segunda também consertou um erro meu: escrevi a janela de matiz em graus, e
+no resto do arquivo ela está na escala do OpenCV. Com a unidade errada a trava
+excluía o próprio amarelado do papel, e a mancha voltava inteira.
+
+### Resultado
+
+Aberta imagem por imagem: no Boécio 33 e 17 o fundo é branco puro e a mancha
+sumiu nos dois filtros; a Rhetorica 112 mantém a hachura da xilogravura e o
+texto ao redor; o Graduale 376 mantém rubricação e pautas vermelhas; as cinco
+capas do acervo saem intactas.

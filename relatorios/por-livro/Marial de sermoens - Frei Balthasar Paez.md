@@ -3,7 +3,7 @@
 - Arquivo de 205 MB
 - 907 folhas no PDF, que viram 907 paginas de saida
 - 7 paginas medidas a fundo
-- 122 segundos para analisar o livro inteiro (134 milissegundos por folha)
+- 133 segundos para analisar o livro inteiro (146 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -16,7 +16,7 @@ e um pedido de conferida.
 
 | Aviso | Quantas | O que significa |
 |---|---|---|
-| Corte encostou no texto | 11 | O corte da borda pode ter pegado parte do texto. |
+| Corte encostou no texto | 7 | O corte da borda pode ter pegado parte do texto. |
 | Tamanho diferente | 4 | Esta folha tem tamanho diferente das outras. |
 | Alinhamento duvidoso | 2 | Não consegui achar o alinhamento do texto direito. |
 
@@ -30,19 +30,19 @@ e um pedido de conferida.
 Paginas do mesmo livro precisam sair identicas, senao o caderno
 nao fecha direito na impressao.
 
-- Menor pagina: 1046 x 3802 pontinhos
-- Variacao de largura: 183.0 mm
-- Variacao de altura: 8.7 mm
+- Menor pagina: 1167 x 3729 pontinhos
+- Variacao de largura: 175.7 mm
+- Variacao de altura: 17.1 mm
 - Inclinacao que sobrou depois de endireitar: 0.071 grau na media, 0.100 no pior caso
 
 ## Como cada filtro se comportou
 
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
-| Original | 19.50 | 895 | 181.4 | 3.29 | 1.78 |
-| Preto e branco | 17.48 | 843 | 227.4 | 1.09 | 1.62 |
-| Melhorar | 17.66 | 1690 | 225.9 | 1.09 | 1.96 |
-| Mágico pro | 17.33 | 1819 | 226.1 | 1.09 | 1.93 |
+| Original | 19.73 | 994 | 180.8 | 3.29 | 1.85 |
+| Preto e branco | 18.26 | 881 | 227.1 | 1.04 | 1.69 |
+| Melhorar | 18.48 | 1597 | 226.2 | 1.03 | 2.05 |
+| Mágico pro | 18.30 | 1656 | 226.3 | 1.04 | 2.02 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

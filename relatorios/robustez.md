@@ -22,10 +22,10 @@ pode se perder.
 | OK Pagina toda branca | folha de guarda | sim | - | nao |
 | OK Nome com acento e parenteses | 'Diario do Paroco (copia 2)' | sim | - | nao |
 | OK Caminho com mais de 260 letras | pastas encadeadas | sim | - | nao |
-| OK PDF de mais de 1000 paginas | 1010 paginas | sim | 1010 folhas analisadas em 16s | nao |
+| OK PDF de mais de 1000 paginas | 1010 paginas | sim | 1010 folhas analisadas em 11s | nao |
 | OK Arquivo aberto em outro programa | travado por outro | sim | leitura funciona com o arquivo aberto por outro | nao |
 | OK Arquivo some no meio (pendrive) | removido apos abrir | sim | Não consegui achar esse arquivo. Ele pode ter sido movido ou apagado. | nao |
 | OK Disco cheio ou sem destino | unidade inexistente | sim | Não consegui gravar nessa pasta. Ela pode ter sido removida, estar cheia ou ser um pendrive que foi tirado. Escolha outra pasta e tente de novo. | nao |
 | OK Cancelar no meio | usuario desiste | sim | nada pela metade ficou no disco | nao |
 | OK Abrir varios livros sem reiniciar | um apos o outro | sim | tres livros seguidos, sem reiniciar | nao |
-| OK Memoria com livro grande | 1 pagina contra 1010 | sim | 1 pagina: +5 MB; 1010 paginas: +-1 MB | nao |
+| OK Memoria com livro grande | 1 pagina contra 1010 | sim | 1 pagina: +5 MB; 1010 paginas: +1 MB | nao |

@@ -166,6 +166,33 @@ TINTA_DE_FOLHA_ESCRITA = 0.01
 # quer a FOLHA EM BRANCO, e nao "aqui e fundo". Ver aplicar_filtro_com_selecao.
 FOLHA_INTEIRA_EM_BRANCO = 0.95
 
+# Acima desta fracao de tinta, o Sauvola nao esta vendo LETRA e sim hachura de
+# gravura ou pergaminho escuro inteiro. Ali o branco a limpo nao entra: apagar
+# "o que nao e tinta" numa gravura arranca o meio-tom. Medido no acervo: pagina
+# de texto fica entre 3% e 12%; as pranchas do Siebmacher passam de 25%.
+TINTA_DEMAIS_PARA_LIMPAR = 0.22
+
+# Tamanho minimo de uma peca de tinta para valer como letra, em fracao da area
+# da pagina. Medido na pagina 33 do Boecio, a mais manchada do acervo: as pecas
+# do texto tem area mediana de 66 pixels e as da mancha do verso, 4. O corte em
+# 30 pixels - 2,5 centesimos de milesimo da folha - separa os dois lados sem
+# depender do DPI. As pecas menores nao se perdem: sobrevivem se encostarem numa
+# peca grande, que e o caso de acento, pingo e serifa solta.
+PECA_DE_LETRA_MINIMA = 0.000025
+
+# Abaixo desta fracao do nivel do papel o pixel e escuro demais para ser mancha,
+# e fica como esta mesmo longe de qualquer letra. Rede de seguranca: e melhor
+# deixar uma sujeira escura do que apagar tinta fraca que o Sauvola nao viu.
+ESCURO_DEMAIS_PARA_SER_MANCHA = 0.45
+
+# Quantas pecas de letra a pagina precisa ter para valer como pagina de TEXTO.
+# A limpeza do papel so faz sentido entre letras; numa estampa ou numa prancha o
+# que esta entre os tracos e a obra, e branquear aquilo a arruina - a estampa do
+# Catecismo perdia o ceu azul. Contado no acervo: pagina de texto vai de 264
+# (Graduale) a 2405 (Rhetorica) pecas; estampa e prancha ficam entre 6 e 83.
+# Entre os dois grupos ha um vao de tres vezes, e o corte cai no meio dele.
+PECAS_DE_TEXTO_MINIMAS = 200
+
 # Raio do borrao da nitidez, em fracao da altura. Era 1/1000, tres pixels numa
 # pagina de 300 DPI: largo demais para letra, e o que sobrava era um halo claro
 # em volta de cada traco em vez de nitidez. Ver _nitidez.
@@ -755,7 +782,8 @@ def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray
     if not _quase_sem_tinta(img):
         saida = _aprofundar_pretos(saida)
     saida = _alisar_o_papel(saida)
-    return _recompor_a_rampa(img, saida)
+    saida = _recompor_a_rampa(img, saida)
+    return _limpar_o_papel_de_verdade(img, saida)
 
 
 def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarray:
@@ -969,6 +997,99 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
     return saida
 
 
+def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
+    """O que nao e tinta vira papel branco puro - inclusive a mancha do verso.
+
+    O empurrao de branco antigo usava um limiar fixo (235). Numa folha amarelada
+    o papel tratado fica em 225 e a mancha do verso em 210: nenhum dos dois
+    passa do limiar, entao o fundo continuava creme e a mancha continuava
+    legivel. Foram as duas queixas do Samuel sobre o Melhorar e o Magico pro:
+    "nao tirou a mancha do verso" e "ainda deixa o fundo meio amarelado (e isso
+    e ruim porque a impressora vai entender como cor a ser impressa)".
+
+    O limiar fixo e o erro. Quem sabe separar a tinta da mancha nao e um numero
+    e sim o SAUVOLA - ele compara cada pixel com a vizinhanca dele, e a mancha
+    do verso perde justamente por ser mais fraca que a vizinhanca. E a mesma
+    conta que o Preto e branco ja faz, e ali a mancha some. Entao a pergunta
+    passa a ser feita a ele: o que o Preto e branco chamaria de papel, aqui vira
+    branco puro; o resto fica com o tom que o filtro deu.
+
+    A orla colada na tinta continua de fora, pelo mesmo motivo de sempre: ali
+    mora a rampa de antisserrilhamento, e joga-la a branco serrilha a letra.
+
+    Nao entra em capa, nem em gravura, nem em folha sem tinta - em nenhuma
+    dessas o "fundo" e papel, e branquear objeto e o oposto do pedido.
+    """
+    if _e_capa_e_nao_papel(original) or _quase_sem_tinta(original):
+        return saida
+
+    cinza = _para_cinza(original)
+    tinta = binarizar(cinza, k=k_para_a_letra(cinza)) == 0
+    fracao = float(tinta.mean())
+    # Sem tinta nenhuma nao ha o que preservar; com tinta demais nao e letra, e
+    # hachura de gravura - e ali limpar arranca o meio-tom.
+    if fracao < 0.0005 or fracao > TINTA_DEMAIS_PARA_LIMPAR:
+        return saida
+
+    # O Sauvola sozinho nao basta: ele tambem pega a parte mais forte da mancha
+    # do verso, e ali ela vira um fantasma cinza. O que separa os dois nao e o
+    # tom e sim o TAMANHO DA PECA - a mancha e um chuvisco de pontinhos, a letra
+    # e um traco inteiro. Medido na pagina 33 do Boecio: 66 pixels de area
+    # mediana no texto contra 4 na mancha. Ver PECA_DE_LETRA_MINIMA.
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(
+        tinta.astype(np.uint8), 8)
+    corte = max(4.0, PECA_DE_LETRA_MINIMA * original.shape[0] * original.shape[1])
+    grandes = np.zeros(quantas, bool)
+    grandes[1:] = medidas[1:, cv2.CC_STAT_AREA] >= corte
+    if int(grandes.sum()) < PECAS_DE_TEXTO_MINIMAS:
+        return saida
+    semente = grandes[rotulos]
+
+    lado = max(3, int(min(original.shape[:2]) / ORLA_DA_LETRA) | 1)
+    nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+    perto = cv2.dilate(semente.astype(np.uint8), nucleo) > 0
+
+    # Acento, pingo do i e serifa solta sao pecas pequenas, mas encostadas numa
+    # grande. Elas voltam: peca pequena que toca a orla de uma grande conta como
+    # letra. Peca pequena isolada no meio do papel e a mancha, e sai.
+    encostadas = set(np.unique(rotulos[perto & tinta]))
+    encostadas.discard(0)
+    de_letra = np.isin(rotulos, list(encostadas)) if encostadas else semente
+
+    perto_da_tinta = cv2.dilate(de_letra.astype(np.uint8), nucleo) > 0
+
+    # Rede de seguranca: pixel muito escuro fica onde esta, mesmo longe de
+    # letra. E melhor deixar uma sujeira escura do que apagar tinta fraca.
+    #
+    # A pergunta e feita ao ORIGINAL, e nao a saida. O Magico pro realca
+    # contraste local, e o realce escurece a mancha do verso junto com o resto -
+    # perguntado a saida dele, o proprio realce promovia a mancha a "escura
+    # demais para ser mancha" e a protegia. Medido nesta pagina, era a unica
+    # diferenca entre o Melhorar sair limpo e o Magico pro sair com fantasma.
+    escuro = cinza < float(np.percentile(cinza, BRANCO_PERCENTIL)) \
+        * ESCURO_DEMAIS_PARA_SER_MANCHA
+
+    # E so entra onde a cor e a do PAPEL. A mancha do verso e amarelo-pardo,
+    # do mesmo tom do resto da folha; ceu de estampa, rubricacao vermelha,
+    # couro verde e madeira nao sao. Sem esta trava, a estampa colorida do
+    # Catecismo perdia o ceu azul inteiro - o fundo dela e claro e tem pouca
+    # tinta escura, entao passava por "papel sujo" e ia a branco.
+    hsv = cv2.cvtColor(original, cv2.COLOR_BGR2HSV) if original.ndim == 3 else None
+    if hsv is not None:
+        matiz = hsv[:, :, 0].astype(np.float32)  # mesma escala 0..179 do resto
+        cor_de_papel = (hsv[:, :, 1] <= SATURACAO_DE_GRAO) | (
+            (matiz >= MATIZ_DE_PAPEL_MIN) & (matiz <= MATIZ_DE_PAPEL_MAX)
+            & (hsv[:, :, 1] < SATURACAO_DE_RUBRICA))
+    else:
+        cor_de_papel = np.ones(cinza.shape, bool)
+
+    papel_limpo = ~perto_da_tinta & ~escuro & cor_de_papel
+
+    limpa = saida.copy()
+    limpa[papel_limpo] = 255
+    return limpa
+
+
 def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.ndarray:
     """Mágico pro: cor viva, texto nítido, fundo branco. Para capas e gravuras.
 
@@ -1005,7 +1126,12 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
 
     # 6. e a borda da letra de volta ao que era, agora entre um preto mais fundo
     # e um papel mais claro
-    return _recompor_a_rampa(img, saida)
+    saida = _recompor_a_rampa(img, saida)
+
+    # 7. o que sobrou de creme e de mancha do verso sai agora, perguntando ao
+    # Sauvola o que e tinta de verdade. O limiar fixo do passo 5 nao alcanca
+    # papel amarelado - ver _limpar_o_papel_de_verdade.
+    return _limpar_o_papel_de_verdade(img, saida)
 
 
 # Area minima de uma gravura para valer a pena limpa-la pelo nivel dela, em
