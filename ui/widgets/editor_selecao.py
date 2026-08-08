@@ -270,9 +270,22 @@ class EditorSelecao(QWidget):
 
     # --- desenho na tela --------------------------------------------------
 
+    # Fundo em volta da pagina. E o mesmo tom da area da pagina no desenho
+    # aprovado - um cinza-creme claro, nao preto.
+    #
+    # Era quase preto, 28-28-30, escolhido para as cores da marcacao saltarem.
+    # O efeito na tela foi outro: a area de marcar e larga e baixa, uma pagina
+    # em pe cabe nela como uma fatia fina no meio, e o fundo tomava o resto.
+    # O que o Samuel viu foi "a area de visualizacao aparecendo como um
+    # retangulo preto" - e nao era falha de renderizacao, era este fundo.
+    #
+    # As cores da marcacao nao perdem nada: elas sao pintadas por cima da
+    # PAGINA, e nao do fundo.
+    FUNDO_DA_AREA = QColor("#f1efe8")
+
     def paintEvent(self, evento: QPaintEvent) -> None:  # noqa: N802 (nome do Qt)
         pintor = QPainter(self)
-        pintor.fillRect(self.rect(), QColor(28, 28, 30))
+        pintor.fillRect(self.rect(), self.FUNDO_DA_AREA)
         if self._pixmap is None or self._pixmap.isNull():
             return
 
