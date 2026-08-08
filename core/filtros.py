@@ -795,6 +795,55 @@ def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.nd
     return cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
 
 
+def tirar_o_amarelado_da_tinta(img: np.ndarray,
+                               fora_da_gravura: np.ndarray | None = None) -> np.ndarray:
+    """Deixa neutro o que nao e cor de verdade - papel velho e tinta marrom.
+
+    O Samuel olhou a saida do Melhorar e disse que a pagina continuava
+    amarelada, "e isso e ruim porque a impressora vai entender como cor a ser
+    impressa, mesmo em preto e branco". Ele estava certo, e eu tinha
+    diagnosticado errado: o FUNDO ja sai entre 250 e 255. A cor esta na TINTA.
+
+    Tinta impressa de 1579 e marrom, nao preta, e a orla de cada letra carrega
+    esse marrom. Mapeados os pixels claros que ainda tem cor, eles desenham o
+    texto - nao o papel. Uma pagina inteira disso o olho le como amarelada, e a
+    impressora gasta tinta colorida em cada letra.
+
+    O que fica: cor de VERDADE. A conta e a mesma que o resto do arquivo usa -
+    abaixo de SATURACAO_DE_GRAO e grao de papel, acima de SATURACAO_DE_RUBRICA e
+    tinta colorida de propósito. A rubricacao vermelha e a iluminura passam
+    inteiras; o marrom da tinta velha, nao.
+
+    E dentro da gravura nao se mexe em nada: ali a cor e o conteudo. Quem diz
+    onde e a gravura e a selecao, por isso o peso vem de fora.
+
+    Medido no acervo, na saida do Melhorar - fracao de pixel claro que ainda tem
+    cor, contra a fracao de cor forte que TEM de sobreviver:
+
+        Rhetorica 223, texto        7,7% -> 2,7%     18,40% -> 18,38%
+        Boecio 33, texto            2,1% -> 0,4%      7,66% ->  7,69%
+        Graduale 376, rubricacao    7,5% -> 2,4%     17,32% -> 17,31%
+        Catecismo 199, estampa     39,6% -> 39,5%     intacta
+    """
+    if img.ndim != 3:
+        return img
+
+    saturacao = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1].astype(np.float32)
+    guardar = np.clip(
+        (saturacao - SATURACAO_DE_GRAO)
+        / max(1.0, SATURACAO_DE_RUBRICA - SATURACAO_DE_GRAO), 0.0, 1.0)
+    peso = 1.0 - guardar
+    if fora_da_gravura is not None:
+        peso = peso * np.clip(fora_da_gravura, 0.0, 1.0)
+    if not peso.any():
+        return img
+
+    ycc = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb).astype(np.float32)
+    ycc[:, :, 1] = 128.0 + (ycc[:, :, 1] - 128.0) * (1.0 - peso)
+    ycc[:, :, 2] = 128.0 + (ycc[:, :, 2] - 128.0) * (1.0 - peso)
+    return cv2.cvtColor(np.clip(ycc, 0, 255).astype(np.uint8), cv2.COLOR_YCrCb2BGR)
+
+
 def _nitidez(img: np.ndarray, peso: float = NITIDEZ_PESO) -> np.ndarray:
     """Unsharp mask: soma a propria imagem menos a versão borrada dela.
 
@@ -995,9 +1044,24 @@ def _filtro_so_no_pedaco(
         return base
 
     altura, largura = img.shape[:2]
+
+    # O PAPEL de dentro da regiao nao segue o filtro da regiao: segue a pagina.
+    # Quem marca um retangulo em volta de uma gravura pega papel junto, e se
+    # esse papel ficar no Original ele sai creme ao lado do branco do resto -
+    # uma faixa cinza no pe da gravura, que foi o que o Samuel apontou. Papel e
+    # papel em qualquer regiao; o filtro do pedaco vale para o CONTEUDO dele.
+    cinza = _para_cinza(img)
+    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    e_papel = cinza > nivel_papel * TINTA_PARA_ORLA
+    lado = max(3, int(min(altura, largura) * ORLA_DA_TINTA_NO_PAPEL) | 1)
+    nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+    # a orla em volta do conteudo continua sendo do pedaco, para nao serrilhar
+    e_papel = cv2.erode(e_papel.astype(np.uint8), nucleo) > 0
+    so_conteudo = 1.0 - e_papel.astype(np.float32)
+
     saida = base
     for pedido in pedidos:
-        peso = selecao.peso_do_filtro(altura, largura, pedido)
+        peso = selecao.peso_do_filtro(altura, largura, pedido) * so_conteudo
         if not peso.any():
             continue
         if pedido == ORIGINAL:
@@ -1118,6 +1182,12 @@ def aplicar_filtro_com_selecao(
         if peso_papel.any():
             base = _misturar(base, np.full_like(base, 255), peso_papel)
 
+        # A tinta velha e marrom, e a impressora imprime isso como cor.
+        # Dentro da gravura nao se toca. Ver tirar_o_amarelado_da_tinta.
+        if filtro in (MELHORAR, MAGICO_PRO):
+            base = tirar_o_amarelado_da_tinta(
+                _tres_canais(base), 1.0 - np.clip(peso_gravura, 0.0, 1.0))
+
         return _filtro_so_no_pedaco(img, base, selecao, filtro,
                                     forca_preto, clareza, intensidade), False
 
@@ -1145,10 +1215,14 @@ def aplicar_filtro(
             return img, False
         if filtro == PRETO_E_BRANCO:
             return filtro_preto_e_branco(img, forca=forca_preto), True
+        # Sem selecao nao ha mascara de gravura, entao a protecao vem so da
+        # forca da cor: o que passa de SATURACAO_DE_RUBRICA fica.
         if filtro == MELHORAR:
-            return filtro_melhorar(img, clareza=clareza), False
+            return tirar_o_amarelado_da_tinta(
+                filtro_melhorar(img, clareza=clareza)), False
         if filtro == MAGICO_PRO:
-            return filtro_magico_pro(img, intensidade=intensidade), False
+            return tirar_o_amarelado_da_tinta(
+                filtro_magico_pro(img, intensidade=intensidade)), False
     except cv2.error as exc:
         raise ErroFiltro("Não consegui limpar esta página.") from exc
 

@@ -259,3 +259,71 @@ def test_regiao_sem_filtro_proprio_segue_a_pagina():
                                pontos=[(0.05, 0.10), (0.95, 0.30)], origem=MAO))
     saida, _mono = aplicar_filtro_com_selecao(pagina.copy(), PRETO_E_BRANCO, selecao)
     assert saida is not None and saida.size > 0
+
+
+def test_o_amarelado_da_tinta_sai_e_a_cor_de_verdade_fica():
+    """A tinta velha e marrom, e a impressora imprime isso como cor.
+
+    O Samuel apontou: "melhorar e magico pro nao estao deixando a pagina
+    totalmente branca... e isso e ruim porque a impressora vai entender como cor
+    a ser impressa, mesmo em preto e branco". A cor nao estava no fundo, que ja
+    saia em 250; estava na TINTA e na orla de cada letra.
+
+    O que nao pode acontecer e a rubricacao vermelha desbotar junto.
+    """
+    import cv2
+    import numpy as np
+
+    from core.filtros import SATURACAO_DE_RUBRICA, tirar_o_amarelado_da_tinta
+
+    pagina = np.full((200, 200, 3), 250, np.uint8)
+    pagina[40:60, 20:180] = (170, 185, 200)     # tinta marrom, saturacao ~38
+    pagina[120:140, 20:180] = (40, 40, 220)     # rubricacao vermelha forte
+
+    saida = tirar_o_amarelado_da_tinta(pagina)
+    sat = cv2.cvtColor(saida, cv2.COLOR_BGR2HSV)[:, :, 1]
+
+    # a rampa e proporcional: quanto mais perto do grao, mais se tira.
+    # A tinta do fixture tem saturacao 38 e cai para 15.
+    assert sat[45:55, 30:170].mean() < 20, "o marrom da tinta tinha de sair"
+    assert sat[125:135, 30:170].mean() > SATURACAO_DE_RUBRICA * 0.8, \
+        "a rubricacao vermelha nao pode desbotar"
+
+
+def test_o_papel_dentro_da_regiao_segue_a_pagina():
+    """Marcar um retangulo em volta da gravura pega papel junto.
+
+    Esse papel nao pode ficar no filtro da regiao: sai creme ao lado do branco
+    do resto, e vira uma faixa cinza no pe da gravura. Foi o que o Samuel
+    apontou circulando de vermelho.
+    """
+    import cv2
+    import numpy as np
+
+    from core.filtros import ORIGINAL, PRETO_E_BRANCO, aplicar_filtro_com_selecao
+    from core.selecao import GRAVURA, MAO, RETANGULO, Regiao, Selecao
+
+    pagina = np.full((400, 300, 3), 205, np.uint8)   # papel creme
+    pagina[20:60, 20:280] = 40                        # texto
+    degrade = np.linspace(30, 200, 160).astype(np.uint8)
+    pagina[150:290, 60:220] = degrade[None, :, None]  # a gravura
+
+    selecao = Selecao()
+    selecao.acrescentar(Regiao(                        # o retangulo pega papel
+        tipo=GRAVURA, forma=RETANGULO, pontos=[(0.10, 0.35), (0.90, 0.95)],
+        origem=MAO, filtro=ORIGINAL))
+
+    saida, _mono = aplicar_filtro_com_selecao(
+        pagina.copy(), PRETO_E_BRANCO, selecao)
+    cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY) if saida.ndim == 3 else saida
+
+    # Antes do conserto o pe ficava no filtro da regiao - Original -, ou
+    # seja, no creme de 205 em que a folha entrou. Agora ele e branqueado
+    # como o resto do papel.
+    no_pe = cinza[int(400 * 0.80):int(400 * 0.93), 80:200].mean()
+    assert no_pe > 225, f"o pe da regiao ficou no creme: {no_pe:.0f}"
+    assert no_pe > 205 + 20, "o pe nao foi branqueado"
+
+    # e a gravura em si continua em tom continuo
+    na_gravura = cinza[170:270, 70:210]
+    assert len(np.unique(na_gravura)) > 30, "a gravura perdeu o meio-tom"
