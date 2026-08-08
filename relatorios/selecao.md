@@ -4,7 +4,7 @@ Mede o detector de regioes nas mesmas paginas em toda rodada. Cada
 expectativa foi escrita OLHANDO a pagina, nunca a partir do que o
 programa devolve.
 
-**23 de 26 paginas passaram.**
+**24 de 26 paginas passaram.**
 
 ## O que esta errado
 
@@ -12,7 +12,6 @@ programa devolve.
 |---|---|---|---|
 | Graduale | 126 | partitura manuscrita: texto gotico, pautas vermelhas e neumas pretos | pagina de texto marcada como desenho: 100% de gravura; o texto nao foi marcado: so 0.0% de letra |
 | Siebmacher | 45 | prancha de padrao de bordado, com duas legendas impressas miudas | texto impresso nao virou letra: so 0% da faixa em y=0.03-0.10; texto impresso nao virou letra: so 0% da faixa em y=0.54-0.63 |
-| Pesel | 73 | foto de bordado montado, com titulo impresso no alto e quatro caixas de legenda no pe | texto impresso nao virou letra: so 0% da faixa em y=0.03-0.11 |
 
 ## Pagina a pagina
 
@@ -35,15 +34,15 @@ programa devolve.
 | Siebmacher | 1 | capa de couro gasta, sem letra | capa | 100.0% | 0.0% | 0 | sim |
 | Siebmacher | 268 | contracapa de couro gasta, sem letra | capa | 100.0% | 0.0% | 0 | sim |
 | Graduale | 126 | partitura manuscrita: texto gotico, pautas vermelhas | texto | 100.0% | 0.0% | 0 | NAO |
-| Graduale | 376 | partitura manuscrita com letra gotica ocre e pautas  | texto | 0.0% | 88.2% | 0 | sim |
-| Boecio | 33 | pagina de texto impresso em italico, com mancha do v | texto | 0.0% | 54.3% | 0 | sim |
-| Boecio | 17 | pagina de texto impresso | texto | 0.0% | 57.4% | 0 | sim |
-| Rhetorica | 223 | pagina so de texto, com notas na margem e manchas de | texto | 0.0% | 97.0% | 0 | sim |
+| Graduale | 376 | partitura manuscrita com letra gotica ocre e pautas  | texto | 0.0% | 89.9% | 0 | sim |
+| Boecio | 33 | pagina de texto impresso em italico, com mancha do v | texto | 0.0% | 45.6% | 0 | sim |
+| Boecio | 17 | pagina de texto impresso | texto | 0.0% | 54.5% | 0 | sim |
+| Rhetorica | 223 | pagina so de texto, com notas na margem e manchas de | texto | 0.0% | 97.2% | 0 | sim |
 | Catecismo | 199 | estampa colorida de pagina inteira: figura sobre fun | desenho | 100.0% | 0.0% | 0 | sim |
 | Siebmacher | 45 | prancha de padrao de bordado, com duas legendas impr | desenho | 100.0% | 0.0% | 0 | NAO |
 | Siebmacher | 133 | prancha de padrao de bordado, em tres faixas | desenho | 100.0% | 0.0% | 0 | sim |
-| Pesel | 73 | foto de bordado montado, com titulo impresso no alto | texto_e_desenho | 88.7% | 6.2% | 0 | NAO |
-| Rhetorica | 112 | xilogravura emoldurada embaixo de um bloco de texto | texto_e_desenho | 48.1% | 23.2% | 0 | sim |
+| Pesel | 73 | foto de bordado montado, com titulo impresso no alto | texto_e_desenho | 58.4% | 20.2% | 0 | sim |
+| Rhetorica | 112 | xilogravura emoldurada embaixo de um bloco de texto | texto_e_desenho | 48.1% | 23.3% | 0 | sim |
 
 ## A historia dos casos dificeis
 

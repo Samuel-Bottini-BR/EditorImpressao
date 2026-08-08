@@ -292,8 +292,36 @@ ESPESSURA_DE_LETRA_FINA, ESPESSURA_DE_LETRA_GROSSA = 5.0, 10.0
 K_PARA_LETRA_FINA, K_PARA_LETRA_GROSSA = 0.30, 0.12
 
 
+# Altura em que a espessura do traco e medida. A medicao usa esqueletizacao,
+# que e a conta mais cara do programa: numa pagina de 300 DPI ela sozinha levava
+# 1,9 s, contra 59 ms do proprio Sauvola. Medida num reduzido e reconvertida
+# pela escala, cai para pouco mais de 100 ms sem mudar a resposta - a espessura
+# e uma media sobre milhares de tracos, e reduzir nao a enviesa.
+#
+# A altura saiu de comparar com a medicao nativa nas 14 paginas do acervo:
+#
+#   altura   paginas com k fora de 0,01 do nativo   custo por pagina
+#    1500                 4 de 14                       105 ms
+#    2000                 2 de 14                       207 ms
+#    2500                 1 de 14                       319 ms
+#    3000                 1 de 14                       435 ms
+#   nativo                  -                          1900 ms
+#
+# Em 2500 a resposta empata com a nativa em 13 das 14 e o custo cai seis vezes.
+# Acima disso so se paga mais caro pela mesma resposta. A que sobra e a pagina
+# 454 do Marial, que cai bem no meio da rampa entre traco fino e grosso, onde
+# qualquer decimo de pixel move o k.
+ALTURA_PARA_MEDIR_TRACO = 2500
+
+
 def k_para_a_letra(cinza: np.ndarray) -> float:
     """O k que a letra desta pagina pede. Ver o comentario acima."""
+    escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
+    if escala < 1.0:
+        cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
+                                   max(8, int(cinza.shape[0] * escala))),
+                           interpolation=cv2.INTER_AREA)
+
     # A mesma mascara que a regua usa para medir espessura - Otsu -, para o
     # filtro e a regua nao discordarem sobre a grossura da mesma letra.
     _lim, tinta = cv2.threshold(
@@ -308,7 +336,9 @@ def k_para_a_letra(cinza: np.ndarray) -> float:
     esqueleto = skeletonize(tinta > 0)
     if not esqueleto.any():
         return K_NORMAL
-    espessura = float(2.0 * distancia[esqueleto].mean())
+    # De volta a escala da pagina: os limites de 5 e 10 pixels estao escritos
+    # no tamanho de verdade, e nao no reduzido.
+    espessura = float(2.0 * distancia[esqueleto].mean()) / escala
 
     fatia = np.clip(
         (espessura - ESPESSURA_DE_LETRA_FINA)

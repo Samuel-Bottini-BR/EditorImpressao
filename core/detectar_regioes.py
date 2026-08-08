@@ -360,25 +360,31 @@ def mascara_de_tinta(img: np.ndarray) -> np.ndarray:
 
     Sauvola local, e nao limiar global: papel envelhecido tem manchas que um
     limiar unico transforma em tinta.
+
+    A conta e feita no TAMANHO DE VERDADE da pagina. Antes ela era feita num
+    reduzido de 1200 px de altura e a resposta voltava ampliada com vizinho mais
+    proximo: numa pagina de 300 DPI isso e um terco da resolucao, e a marcacao
+    saia com degraus de tres pixels em volta de cada letra. Era a queixa do
+    Samuel de que "as ferramentas de selecao precisam ser mais precisas". Uma
+    pagina de cada vez na memoria continua valendo - o que sai daqui e uma
+    mascara de um byte por pixel, e ela morre com a pagina.
+
+    O k tambem passou a ser o mesmo que o filtro usa, medido pela espessura do
+    traco da propria pagina. Com dois k diferentes, o detector e o filtro
+    discordavam sobre o que era tinta na MESMA pagina.
     """
-    from core.filtros import binarizar, janela_para_altura
+    from core.filtros import binarizar, janela_para_altura, k_para_a_letra
 
     cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
     altura, largura = cinza.shape[:2]
 
-    escala = min(1.0, ALTURA_ANALISE / altura)
-    pequena = cv2.resize(cinza, (max(8, int(largura * escala)),
-                                 max(8, int(altura * escala))),
-                         interpolation=cv2.INTER_AREA) if escala < 1 else cinza
+    binaria = binarizar(cinza, janela=janela_para_altura(altura),
+                        k=k_para_a_letra(cinza))
+    tinta = (binaria == 0).astype(np.uint8)
 
-    binaria = binarizar(pequena, janela=janela_para_altura(pequena.shape[0]), k=0.20)
-    tinta = binaria == 0
-
-    folga = max(1, int(FOLGA_DA_TINTA * min(pequena.shape[:2])) | 1)
-    tinta = cv2.dilate(tinta.astype(np.uint8),
-                       cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (folga, folga)))
-
-    return cv2.resize(tinta, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
+    folga = max(1, int(FOLGA_DA_TINTA * min(altura, largura)) | 1)
+    return cv2.dilate(tinta, cv2.getStructuringElement(
+        cv2.MORPH_ELLIPSE, (folga, folga))) > 0
 
 
 def blocos_de_tinta(tinta: np.ndarray) -> np.ndarray:
