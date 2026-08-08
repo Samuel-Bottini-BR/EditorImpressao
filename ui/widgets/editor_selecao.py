@@ -111,6 +111,14 @@ CORES_BORDA = {
     PAPEL: QColor(90, 170, 90),
 }
 
+# Escolher por cor trabalha em resolucao alta e com pouca simplificacao: o
+# alvo dela e coisa fina - pauta de partitura, contorno de letra rubricada.
+# Medido na pagina 126 do Graduale, a 900 px a pauta saia picada; a 2000 ela
+# sai inteira.
+LADO_DA_ESCOLHA_POR_COR = 2000
+AREA_MINIMA_DA_COR = 0.00002    # pedaco menor que isto e respingo
+TOLERANCIA_DA_COR = 0.0008      # simplificacao do contorno, 5x mais fina
+
 # Varinha magica: quanto a cor pode variar e ainda contar como a mesma mancha.
 TOLERANCIA_PADRAO = 30
 TOLERANCIA_MIN, TOLERANCIA_MAX = 4, 120
@@ -501,7 +509,10 @@ class EditorSelecao(QWidget):
         x = int(min(max(ponto[0], 0.0), 0.999) * largura)
         y = int(min(max(ponto[1], 0.0), 0.999) * altura)
 
-        escala = min(1.0, 900 / max(altura, largura))
+        # Em resolucao cheia: quem escolhe por cor esta atras de coisa fina -
+        # uma pauta de dois pixels, o contorno de uma letra rubricada. A 900
+        # px a pauta some no reamostrar, e a marcacao sai grossa e picada.
+        escala = min(1.0, LADO_DA_ESCOLHA_POR_COR / max(altura, largura))
         img = cv2.resize(self._img, (max(8, int(largura * escala)),
                                      max(8, int(altura * escala))),
                          interpolation=cv2.INTER_AREA) if escala < 1 else self._img
@@ -512,10 +523,10 @@ class EditorSelecao(QWidget):
         distancia = np.abs(lab[:, :, 1:] - alvo[1:]).sum(axis=2)
         parecido = (distancia <= self.tolerancia).astype(np.uint8)
 
-        # Tira o respingo solto e fecha o buraco de um pixel, para a marcacao
-        # sair em manchas e nao em poeira.
+        # Fecha o buraco de um pixel, para a marcacao sair em manchas e nao
+        # em poeira. NAO se abre a mascara: a abertura come a pauta fina, que
+        # e justamente o que se estava tentando pegar.
         nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        parecido = cv2.morphologyEx(parecido, cv2.MORPH_OPEN, nucleo)
         parecido = cv2.morphologyEx(parecido, cv2.MORPH_CLOSE, nucleo)
 
         if parecido.mean() < 0.0002:
@@ -526,7 +537,8 @@ class EditorSelecao(QWidget):
             return
 
         regioes = de_mascara(parecido, tipo=self.tipo, origem=MAO,
-                             area_minima=0.0002)
+                             area_minima=AREA_MINIMA_DA_COR,
+                             tolerancia=TOLERANCIA_DA_COR)
         if not regioes:
             self.aviso.emit("Não consegui transformar isso em uma área.")
             return

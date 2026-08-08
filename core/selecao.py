@@ -328,7 +328,8 @@ def traco(pontos, espessura: float = 0.02, tipo: str = GRAVURA,
 
 
 def de_mascara(mascara: np.ndarray, tipo: str = GRAVURA, origem: str = REDE,
-               area_minima: float = 0.0005, **extra) -> list[Regiao]:
+               area_minima: float = 0.0005, tolerancia: float | None = None,
+               **extra) -> list[Regiao]:
     """Converte uma mascara de pixels em regioes de poligono.
 
     E a ponte entre a rede neural e a selecao: a rede devolve pixels, e aqui
@@ -363,10 +364,14 @@ def de_mascara(mascara: np.ndarray, tipo: str = GRAVURA, origem: str = REDE,
     #
     # O teto amarra a tolerancia ao tamanho da pagina: fica fina para forma
     # pequena, como antes, e para de crescer quando o contorno e picotado.
-    teto = TOLERANCIA_DO_POLIGONO * min(altura, largura)
+    # Quem marca a mao pede precisao maior que a proposta da maquina: uma
+    # pauta de partitura tem dois pixels de espessura, e simplificar o
+    # contorno dela com a tolerancia da rede a engorda ou a parte.
+    passo = TOLERANCIA_DO_POLIGONO if tolerancia is None else float(tolerancia)
+    teto = passo * min(altura, largura)
 
     def em_pontos(contorno):
-        epsilon = min(0.004 * cv2.arcLength(contorno, True), teto)
+        epsilon = min(passo * cv2.arcLength(contorno, True), teto)
         simples = cv2.approxPolyDP(contorno, max(1.0, epsilon), True)
         return [(float(p[0][0]) / largura, float(p[0][1]) / altura) for p in simples]
 
