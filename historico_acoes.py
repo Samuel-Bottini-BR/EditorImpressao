@@ -28,6 +28,10 @@ class HistoricoAcoes:
         self.pasta = Path(pasta_projeto) if pasta_projeto else None
         self.feitas: list[Acao] = []     # ja aplicadas, do mais antigo ao mais novo
         self.desfeitas: list[Acao] = []  # desfeitas, prontas para refazer
+        # Quantas linhas o carregar() nao conseguiu ler. Fica guardado para a
+        # tela poder avisar: sem aviso, a pessoa procura um trabalho que a
+        # queda de energia levou e acha que o programa comeu.
+        self.linhas_perdidas = 0
 
     # --- consulta ---------------------------------------------------------
 
@@ -124,17 +128,28 @@ class HistoricoAcoes:
             return
 
         acoes: list[Acao] = []
+        self.linhas_perdidas = 0
         try:
-            for linha in caminho.read_text(encoding="utf-8").splitlines():
-                linha = linha.strip()
-                if not linha:
-                    continue
-                try:
-                    acoes.append(Acao.de_dicionario(json.loads(linha)))
-                except (ValueError, TypeError):
-                    continue  # linha truncada por um fechamento no meio: ignora
+            # errors="replace" de proposito: uma queda de energia no meio da
+            # gravacao deixa bytes pela metade, e read_text sem isso levanta
+            # UnicodeDecodeError - que nao e OSError e derrubaria o programa
+            # ao abrir o projeto. O projeto nao pode se perder por causa da
+            # ultima linha.
+            texto = caminho.read_text(encoding="utf-8", errors="replace")
         except OSError:
             return
+
+        for linha in texto.splitlines():
+            linha = linha.strip()
+            if not linha:
+                continue
+            try:
+                acoes.append(Acao.de_dicionario(json.loads(linha)))
+            except (ValueError, TypeError):
+                # linha cortada por um fechamento no meio. Ela e ignorada, mas
+                # CONTADA: a pessoa precisa saber que as ultimas acoes se
+                # perderam, senao vai procurar um trabalho que nao esta la.
+                self.linhas_perdidas += 1
 
         aplicadas = len(acoes)
         try:
