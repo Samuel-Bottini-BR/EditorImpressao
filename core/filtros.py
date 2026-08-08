@@ -37,9 +37,24 @@ NOMES_AMIGAVEIS = {
 
 # --- parametros de ajuste (mexer aqui para calibrar) -------------------------
 
-# Janela do Sauvola, em fracao da altura da pagina. ~1/20 da altura pega algumas
-# linhas de texto de cada vez, que e o tamanho certo para separar texto de fundo.
-JANELA_FRACAO_ALTURA = 1 / 20
+# Janela do Sauvola, em fracao da altura da pagina. Era 1/20 - algumas linhas de
+# texto de cada vez -, e isso e grande demais para separar a mancha do verso.
+#
+# O Sauvola compara cada pixel com a vizinhanca dele. Numa janela larga, a
+# vizinhanca de uma marca do verso inclui o texto da frente, que e bem mais
+# escuro; a media desce, o limiar desce junto, e a marca do verso passa por
+# tinta. Numa janela do tamanho de UMA linha, a marca do verso e comparada com
+# o papel ao redor dela, e cai para o branco - que e para isto que o Sauvola
+# serve.
+#
+# Medido na pagina 33 do Boecio, quanto da mancha do verso sobrevive:
+#
+#   janela 139 (1/20)   64%      <- saia legivel, da para ler espelhado
+#   janela  56 (1/50)   30%
+#   janela  46 (1/60)   24%
+#
+# A tinta de verdade fica em 100% em todas elas - nao ha texto a perder aqui.
+JANELA_FRACAO_ALTURA = 1 / 50
 JANELA_MIN = 15
 JANELA_MAX = 151
 
@@ -50,8 +65,12 @@ AJUSTE_MIN, AJUSTE_PADRAO, AJUSTE_MAX = 0, 50, 100
 
 # k do Sauvola. Quanto MAIOR o k, MAIS ALTO fica o limiar de branco, ou seja,
 # menos pixels viram preto. Por isso "mais fraco" tem k maior.
-# 0 -> 0,40 (bem fraco)   50 -> 0,20 (normal)   100 -> 0,06 (bem escuro)
-K_FRACO, K_NORMAL, K_ESCURO = 0.40, 0.20, 0.06
+# 0 -> 0,40 (bem fraco)   50 -> 0,30 (normal)   100 -> 0,06 (bem escuro)
+#
+# O normal era 0,20, e 0,20 engordava a letra: ampliada, ela saia mais grossa
+# que no original, e o vao entre as linhas ficava salpicado da mancha do verso.
+# Em 0,30 a letra volta ao peso do original e o fundo limpa.
+K_FRACO, K_NORMAL, K_ESCURO = 0.40, 0.30, 0.06
 
 # Palavras que aparecem ao lado do medidor. O usuario le isto, nao o numero.
 PALAVRAS_DA_FORCA = (
@@ -213,7 +232,8 @@ def _entre(valor: int, minimo: float, maximo: float) -> float:
     return minimo + (maximo - minimo) * v
 
 
-def k_do_sauvola(forca: int = AJUSTE_PADRAO) -> float:
+def k_do_sauvola(forca: int = AJUSTE_PADRAO,
+                 k_do_meio: float | None = None) -> float:
     """Medidor de forca do preto -> k do Sauvola.
 
     Em duas retas para que a posicao do meio caia exatamente no k=0,20, que e
@@ -221,9 +241,52 @@ def k_do_sauvola(forca: int = AJUSTE_PADRAO) -> float:
     deixaria o meio em 0,23 e o padrao ficaria diferente do recomendado.
     """
     forca = max(AJUSTE_MIN, min(AJUSTE_MAX, int(forca)))
+    meio = K_NORMAL if k_do_meio is None else float(k_do_meio)
     if forca <= AJUSTE_PADRAO:
-        return K_FRACO + (K_NORMAL - K_FRACO) * (forca / AJUSTE_PADRAO)
-    return K_NORMAL + (K_ESCURO - K_NORMAL) * ((forca - AJUSTE_PADRAO) / AJUSTE_PADRAO)
+        return K_FRACO + (meio - K_FRACO) * (forca / AJUSTE_PADRAO)
+    return meio + (K_ESCURO - meio) * ((forca - AJUSTE_PADRAO) / AJUSTE_PADRAO)
+
+
+# O k que a LETRA daquela pagina pede, e nao um numero fixo para o acervo todo.
+#
+# Foi medido pagina a pagina, e a espessura do traco separa os casos sozinha:
+#
+#              espessura   k=0,20 (o antigo)        k=0,30
+#   Boecio 33      4,3     mancha do verso 49%   mancha 31%, letra intacta
+#   Rhetorica     5,4      mancha 61%            mancha 51%, letra intacta
+#   Marial 454     8,6     vazios -20%           vazios -26%  REPROVA
+#   Marial 756    10,3     vazios -26% ja no li- vazios -37%  REPROVA
+#
+# Letra fina aguenta k alto, e k alto e o que mata a mancha do verso. Letra
+# grossa nao aguenta: o Sauvola come a barriga do traco e o "o" entope. O
+# Marial 756 ja vivia na beirada com o valor antigo - traco afinando 34% contra
+# o limite de 34% - e qualquer aperto o derrubava.
+ESPESSURA_DE_LETRA_FINA, ESPESSURA_DE_LETRA_GROSSA = 5.0, 10.0
+K_PARA_LETRA_FINA, K_PARA_LETRA_GROSSA = 0.30, 0.12
+
+
+def k_para_a_letra(cinza: np.ndarray) -> float:
+    """O k que a letra desta pagina pede. Ver o comentario acima."""
+    # A mesma mascara que a regua usa para medir espessura - Otsu -, para o
+    # filtro e a regua nao discordarem sobre a grossura da mesma letra.
+    _lim, tinta = cv2.threshold(
+        cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    tinta = (tinta > 0).astype(np.uint8)
+    if tinta.mean() < 0.002 or tinta.mean() > 0.6:
+        return K_NORMAL
+
+    from skimage.morphology import skeletonize
+
+    distancia = cv2.distanceTransform(tinta, cv2.DIST_L2, 5)
+    esqueleto = skeletonize(tinta > 0)
+    if not esqueleto.any():
+        return K_NORMAL
+    espessura = float(2.0 * distancia[esqueleto].mean())
+
+    fatia = np.clip(
+        (espessura - ESPESSURA_DE_LETRA_FINA)
+        / (ESPESSURA_DE_LETRA_GROSSA - ESPESSURA_DE_LETRA_FINA), 0.0, 1.0)
+    return K_PARA_LETRA_FINA + (K_PARA_LETRA_GROSSA - K_PARA_LETRA_FINA) * fatia
 
 
 def palavra_do_ajuste(valor: int) -> str:
@@ -331,7 +394,11 @@ def filtro_preto_e_branco(
     """
     cinza = _cinza_para_binarizar(img)
     janela = janela_para_altura(cinza.shape[0])
-    binaria = binarizar(cinza, janela=janela, k=k_do_sauvola(forca))
+    # O meio do medidor passa a ser o k que a LETRA desta pagina pede; o
+    # medidor continua andando em volta dele, para mais fraco ou mais
+    # escuro. Ver k_para_a_letra.
+    binaria = binarizar(cinza, janela=janela,
+                        k=k_do_sauvola(forca, k_para_a_letra(cinza)))
     if despeckle:
         binaria = _despeckle(binaria, cinza.shape[0])
     return binaria

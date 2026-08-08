@@ -115,6 +115,11 @@ AUMENTO_RUIDO_MAXIMO = 1.5
 # escala, entao nada pode ficar abaixo disso, e o que passa perto ja e degrau.
 TRANSICAO_BOA_MIN, TRANSICAO_BOA_MAX = 1.05, 3.0
 
+# Quanto a rampa tem de cair, em relacao ao original, para contar como
+# estrago. Sem isto, pagina que ja entra colada no piso reprova por uma
+# queda de 1,6%, que e tremor de medida.
+QUEDA_DE_RAMPA_QUE_CONTA = 0.90
+
 # O traco nao pode sumir: perder mais de um terco da espessura e texto fino
 # demais para imprimir.
 QUEDA_ESPESSURA_MAXIMA = 0.34
@@ -572,7 +577,12 @@ def comparar_com_original(
     if filtro != PRETO_E_BRANCO and tem_letra:
         t = medidas.get("transicao_borda_px", 0.0)
         t_base = base.get("transicao_borda_px", 0.0)
-        if t < TRANSICAO_BOA_MIN <= t_base:
+        # Cruzar o piso nao basta: tem de ter CAIDO. A pagina 221 do
+        # Siebmacher entra em 1,066 e sai em 1,049 - uma queda de 1,6%, que
+        # e tremor de medida, e mesmo assim reprovava, so porque o piso e
+        # 1,05 e ela entra colada nele. Quem nasce na beirada nao tem
+        # folga nenhuma, e isso e defeito do criterio, nao do filtro.
+        if t < TRANSICAO_BOA_MIN <= t_base and t < t_base * QUEDA_DE_RAMPA_QUE_CONTA:
             motivos.append(
                 f"a borda das letras virou degrau (serrilhado): a rampa caiu de "
                 f"{t_base:.2f} para {t:.2f} pixels"

@@ -64,10 +64,27 @@ def test_forcas_do_preto_sao_ordenadas():
 
 
 def test_medidor_do_meio_cai_no_k_recomendado():
-    """50 tem que dar exatamente o k=0,20, que e o padrão para livro."""
-    assert k_do_sauvola(50) == pytest.approx(0.20)
+    """O meio do medidor cai no k que a LETRA da pagina pede.
+
+    Era um numero fixo para o acervo inteiro, e nao existe numero fixo que
+    sirva: letra fina aguenta k alto - que e o que mata a mancha do verso -
+    e letra grossa nao aguenta, o Sauvola come a barriga do traco. Ver
+    k_para_a_letra.
+    """
+    from core.filtros import K_PARA_LETRA_FINA, K_PARA_LETRA_GROSSA
+
+    # sem dizer o k do meio, vale o padrao de sempre
+    assert k_do_sauvola(50) == pytest.approx(0.30)
     assert k_do_sauvola(0) == pytest.approx(0.40)
     assert k_do_sauvola(100) == pytest.approx(0.06)
+
+    # com o k da letra, o meio do medidor passa a ser ele
+    for k in (K_PARA_LETRA_FINA, K_PARA_LETRA_GROSSA):
+        assert k_do_sauvola(50, k) == pytest.approx(k)
+        assert k_do_sauvola(0, k) == pytest.approx(0.40)
+        assert k_do_sauvola(100, k) == pytest.approx(0.06)
+        andando = [k_do_sauvola(v, k) for v in range(0, 101, 10)]
+        assert andando == sorted(andando, reverse=True), andando
 
 
 def test_k_cai_conforme_o_medidor_sobe():
