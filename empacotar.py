@@ -150,11 +150,16 @@ def construir_instalador() -> Path | None:
     """EditorImpressao-Setup.exe, com atalhos e desinstalador."""
     print("\n=== Instalador do Windows ===")
 
+    # A pasta e SEMPRE refeita. Antes, ela era reaproveitada quando ja existia,
+    # e o instalador saia com o codigo de uma compilacao anterior sem avisar
+    # nada - o arquivo tem data de hoje e conteudo de ontem. E o pior tipo de
+    # erro: o instalador parece pronto e leva o programa errado ao Kaique.
     pasta = RAIZ / "dist" / NOME
-    if not (pasta / f"{NOME}.exe").exists():
-        print("  a versão em pasta ainda não existe; gerando ela antes")
-        if construir_pasta() is None:
-            return None
+    if (pasta / f"{NOME}.exe").exists():
+        print("  refazendo a versão em pasta, para o instalador nao levar")
+        print("  codigo de uma compilacao anterior")
+    if construir_pasta() is None:
+        return None
 
     inno = achar_inno()
     if inno is None:

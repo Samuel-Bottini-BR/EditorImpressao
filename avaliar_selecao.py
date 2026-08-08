@@ -224,8 +224,18 @@ CASOS = [
          "foto do corte do livro fechado, visto de lado", "capa"),
     Caso("Sobre_a_Consolacao_da_Filoso-p1.png", "Boecio", 1,
          "capa de pergaminho com a etiqueta RESERVADO 623 da biblioteca", "capa"),
+    # Este caso estava classificado como folha de guarda, e nao e: e a CAPA DE
+    # TRAS do mesmo pergaminho da p1. Aberta e comparada com ela lado a lado, a
+    # cor e o grao do couro sao os mesmos, e as duas trazem a etiqueta octogonal
+    # RESERVADO / B. N. L. da biblioteca - na p1 a esquerda, na p50 a direita,
+    # como e de esperar do verso. A textura mede 5,05, junto com as outras capas
+    # (5,05 a 12,48) e longe das folhas nuas (0,00 a 1,91).
+    #
+    # A classificacao errada escondia um bug de verdade: com ela, o Preto e
+    # branco apagava esta capa e devolvia uma folha branca.
     Caso("Sobre_a_Consolacao_da_Filosofia-p50.png", "Boecio", 50,
-         "folha de guarda, sem nada impresso", "folha_nua"),
+         "capa de tras, do mesmo pergaminho da p1, com a etiqueta da biblioteca",
+         "capa"),
     Caso("Giovambattista_Palatino-p1.png", "Palatino", 1,
          "capa de madeira com veio, sem letra", "capa"),
     Caso("Giovambattista_Palatino_citt-p132.png", "Palatino", 132,

@@ -590,14 +590,25 @@ def _espalhamento_do_miolo(img: np.ndarray) -> float:
 
 # Uma folha de papel nua nao tem textura nem fundo escuro em volta; um objeto
 # fotografado - couro, madeira, tecido, o corte do livro - tem uma coisa ou a
-# outra. Medido nas paginas do acervo:
+# outra.
 #
-#   textura   folha nua 1,3 a 5,0   |  capa 6,1 a 21,1  (o corte do livro, 1,5)
+# Contada a textura em todas as paginas sem conteudo do acervo, os dois grupos
+# nao se encostam:
+#
+#   folha nua   0,00  1,31  1,36  1,40  1,49  1,51  1,55  1,91
+#   capa                                            5,05  6,19  6,25  7,10  12,48
+#
+# O valor antigo era 5,5, e caia DENTRO do grupo das capas: a capa de
+# pergaminho do Boecio, que marca 5,05, ficava de fora e o Preto e branco a
+# apagava inteira - era o bug da capa apagada, que voltava por este caminho.
+# O corte novo fica no meio do vao, com folga de mais de duas vezes para cada
+# lado.
+#
+# A orla entra na conta a parte porque o corte do livro nao tem textura: ele e
+# um bloco claro sobre fundo preto.
+#
 #   orla      folha nua 0,96 a 1,22 |  capa 0,48 a 0,97 (o corte do livro, 0,81)
-#
-# O corte do livro nao tem textura, mas e um bloco claro sobre fundo preto - e
-# por isso a orla entra na conta.
-TEXTURA_DE_OBJETO = 5.5
+TEXTURA_DE_OBJETO = 3.0
 ORLA_ESCURA_DE_OBJETO = 0.85
 
 

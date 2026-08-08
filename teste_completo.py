@@ -127,8 +127,8 @@ CASOS = [
     ("Marial_de_sermoens_-_Frei_Ba-p1.png", "Marial", 1,
      "capa de couro", "Capa."),
     ("Giovambattista_Palatino_citt-p132.png", "Palatino", 132,
-     "prancha de caligrafia gravada",
-     "Caligrafia gravada: fino demais para binarizar de qualquer jeito."),
+     "folha quase em branco, com marca-d'agua e uma anotacao a lapis",
+     "Tem de ir a branco. A anotacao a lapis no pe da folha nao pode sumir."),
     ("Livro_de_Horas_-_Luis_XIV-p1.png", "Horas", 1,
      "capa do livro de horas", "Capa."),
 ]
@@ -327,12 +327,18 @@ def parte_5_bugs(destino: Path) -> tuple[list[str], bool]:
     texto = (saida.stdout or "") + (saida.stderr or "")
     (destino / "5 - testes de falha.txt").write_text(texto, encoding="utf-8")
 
-    # A tabela sai com uma linha por caso e tres colunas de sim/ok. Falha e
-    # qualquer linha da tabela que tenha um "nao" ou um "falhou".
-    casos = [linha for linha in texto.splitlines()
-             if linha.count("  ") >= 2 and ("ok" in linha or "falhou" in linha)]
-    falhas = [linha for linha in casos
-              if "falhou" in linha.lower() or " nao" in linha.lower()]
+    # A tabela sai com uma linha por caso e TRES COLUNAS no fim: sim/nao, ok ou
+    # falhou, sim/nao. So essas tres contam. O nome do caso nao pode ser lido
+    # como resultado - havia um caso chamado "Arquivo que nao e PDF", e o "nao"
+    # do nome fazia a bateria inteira aparecer como reprovada.
+    casos, falhas = [], []
+    for linha in texto.splitlines():
+        colunas = linha.split()
+        if len(colunas) < 4 or colunas[-2] not in ("ok", "falhou"):
+            continue
+        casos.append(linha)
+        if colunas[-3:] != ["sim", "ok", "sim"]:
+            falhas.append(linha)
     placar = next((linha.strip() for linha in reversed(texto.splitlines())
                    if " de " in linha and "passaram" in linha), "")
     notas = [f"- {placar or f'{len(casos) - len(falhas)} de {len(casos)} passaram'}"]

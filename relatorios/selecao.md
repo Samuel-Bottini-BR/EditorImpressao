@@ -20,7 +20,7 @@ programa devolve.
 | Graduale | 1 | capa de couro vermelho com fechos de metal | capa | 100.0% | 0.0% | 0 | sim |
 | Graduale | 750 | foto do corte do livro fechado, visto de lado | capa | 100.0% | 0.0% | 0 | sim |
 | Boecio | 1 | capa de pergaminho com a etiqueta RESERVADO 623 da b | capa | 100.0% | 0.0% | 0 | sim |
-| Boecio | 50 | folha de guarda, sem nada impresso | folha_nua | 0.0% | 0.0% | 0 | sim |
+| Boecio | 50 | capa de tras, do mesmo pergaminho da p1, com a etiqu | capa | 100.0% | 0.0% | 0 | sim |
 | Palatino | 1 | capa de madeira com veio, sem letra | capa | 100.0% | 0.0% | 0 | sim |
 | Palatino | 132 | guarda em branco com um carimbo apagado | folha_nua | 0.0% | 0.0% | 0 | sim |
 | Rhetorica | 1 | folha de guarda de pergaminho, em branco | folha_nua | 0.0% | 0.0% | 0 | sim |
