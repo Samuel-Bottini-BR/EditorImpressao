@@ -58,6 +58,7 @@ class JanelaPrincipal(QMainWindow):
 
         self.telas = QStackedWidget()
         self.setCentralWidget(self.telas)
+        self.telas.currentChanged.connect(self._tela_mudou)
 
         self.tela_inicio = TelaInicio()
         self.tela_inicio.abrir_pdf.connect(self.abrir_livro)
@@ -84,7 +85,109 @@ class JanelaPrincipal(QMainWindow):
         self.tela_final.fazer_outro.connect(self._recomecar)
         self.telas.addWidget(self.tela_final)
 
+        self._montar_menu()
         self.telas.setCurrentIndex(INICIO)
+        self._tela_mudou(INICIO)
+
+    # ------------------------------------------------------------------
+    # a barra de menu
+    # ------------------------------------------------------------------
+
+    def _montar_menu(self) -> None:
+        """Liga cada item do menu a uma acao que ja existe.
+
+        Nada aqui e funcionalidade nova: sao os mesmos comandos que eram botoes
+        soltos na tela, agora num lugar so, com o atalho escrito ao lado.
+        """
+        from core.filtros import MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO
+        from ui.barra_de_menu import BarraDeMenu
+
+        self.menu = BarraDeMenu(self)
+        self.setMenuBar(self.menu)
+        conferir = self.tela_conferir
+
+        self.menu.ligar("abrir", lambda: self.tela_inicio.area.mousePressEvent(None))
+        self.menu.ligar("pasta_de_saida", self._escolher_pasta_de_saida)
+        self.menu.ligar("nome_do_arquivo", self._escolher_nome_do_arquivo)
+        self.menu.ligar("processar", self.processar)
+        self.menu.ligar("voltar", self._sair_da_conferencia)
+        self.menu.ligar("sair", self.close)
+
+        self.menu.ligar("desfazer", conferir.desfazer)
+        self.menu.ligar("refazer", conferir.refazer)
+
+        self.menu.ligar("procurar_de_novo", conferir._detectar_de_novo)
+        self.menu.ligar("limpar_marcacao", conferir._limpar_marcacao)
+        self.menu.ligar("folha_em_branco", conferir._folha_em_branco)
+
+        for chave in (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
+            self.menu.ligar(f"filtro_{chave}",
+                            lambda _marcado=False, f=chave: conferir._escolher_filtro(f))
+
+        self.menu.ligar("ir_para_pagina", self._perguntar_a_pagina)
+        self.menu.ligar("girar", conferir._girar)
+        self.menu.ligar("apagar", conferir.apagar_pagina)
+
+        self.menu.ligar("atalhos", self._mostrar_atalhos)
+
+    def _tela_mudou(self, indice: int) -> None:
+        if not hasattr(self, "menu"):
+            return
+        if indice == CONFERIR:
+            self.menu.mostrar_tela_de_trabalho()
+        else:
+            self.menu.mostrar_tela_inicial()
+
+    def _escolher_pasta_de_saida(self) -> None:
+        from PySide6.QtWidgets import QFileDialog
+
+        if self.projeto is None:
+            return
+        pasta = QFileDialog.getExistingDirectory(
+            self, "Onde salvar o livro pronto",
+            self.projeto.caminho_saida or str(historico.pasta_de_saida_padrao()))
+        if pasta:
+            configuracoes.lembrar_pasta_de_saida(Path(pasta))
+            self.avisar(f"O livro pronto vai para:\n{pasta}", titulo="Pasta escolhida")
+
+    def _escolher_nome_do_arquivo(self) -> None:
+        from PySide6.QtWidgets import QInputDialog, QLineEdit
+
+        from modelos import nome_de_saida_sugerido
+
+        if self.projeto is None:
+            return
+        atual = Path(self.projeto.caminho_saida).name if self.projeto.caminho_saida \
+            else nome_de_saida_sugerido(self.projeto)
+        novo, certo = QInputDialog.getText(
+            self, "Nome do arquivo", "Como o PDF pronto vai se chamar:",
+            QLineEdit.Normal, atual)
+        if certo and novo.strip():
+            pasta = (Path(self.projeto.caminho_saida).parent
+                     if self.projeto.caminho_saida
+                     else configuracoes.pasta_de_saida_sugerida())
+            self.projeto.caminho_saida = str(Path(pasta) / novo.strip())
+
+    def _perguntar_a_pagina(self) -> None:
+        from PySide6.QtWidgets import QInputDialog
+
+        if self.projeto is None or not self.projeto.paginas:
+            return
+        total = len(self.projeto.paginas)
+        numero, certo = QInputDialog.getInt(
+            self, "Ir para a página", f"Página (1 a {total}):",
+            self.tela_conferir.indice_pagina + 1, 1, total)
+        if certo:
+            self.tela_conferir.ir_para_pagina(numero - 1)
+
+    def _mostrar_atalhos(self) -> None:
+        """A lista sai dos proprios menus - nunca de uma segunda lista."""
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Lista de atalhos")
+        caixa.setText("O que dá para fazer, e por qual tecla:")
+        caixa.setDetailedText(self.menu.texto_dos_atalhos())
+        caixa.addButton("fechar", QMessageBox.AcceptRole)
+        caixa.exec()
 
     # ------------------------------------------------------------------
     # avisos
@@ -287,26 +390,28 @@ class JanelaPrincipal(QMainWindow):
         self.tarefa.start()
 
     def _resolver_destino(self) -> Path | None:
-        """Confere a pasta e o nome escolhidos. Devolve None se não der para seguir.
+        """A janela de confirmacao: pasta, nome e os dois avisos.
 
-        Duas perguntas, nesta ordem: da para gravar nessa pasta? e o arquivo já
-        existe? Nenhuma das duas pode virar um erro técnico na cara do usuario.
+        Ela substitui a faixa "Salvar em / Nome do arquivo" que ficava sempre na
+        tela de trabalho. O destino importa num momento so - o de gravar - e
+        ocupava uma faixa de altura o tempo todo.
+
+        A propria janela ja nao deixa seguir com pasta que nao aceita gravacao,
+        e avisa quando o arquivo existe e quando ha pagina nao conferida. Aqui
+        so sobra a pergunta de substituir, que e destrutiva e merece um passo a
+        parte.
         """
-        destino = self.tela_conferir.destino
-        caminho = destino.caminho
+        from modelos import nome_de_saida_sugerido
+        from ui.janela_confirmar import pedir_confirmacao
 
-        pode, motivo = destino.pronto_para_gravar()
-        if not pode:
-            self.avisar(
-                f"{motivo}\n\nA pasta era:\n{destino.pasta}",
-                titulo="Não consigo salvar ai",
-            )
-            destino.escolher_pasta()
+        assert self.projeto is not None
+        caminho = pedir_confirmacao(
+            self.projeto, nome_de_saida_sugerido(self.projeto), self)
+        if caminho is None:
             return None
 
         if caminho.exists():
             return self._perguntar_sobre_substituir(caminho)
-
         return caminho
 
     def _perguntar_sobre_substituir(self, caminho: Path) -> Path | None:

@@ -66,7 +66,7 @@ from registro import registrar_erro
 from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.cartao_filtro import CartaoFiltro
-from ui.widgets.destino import SeletorDestino
+
 from ui.widgets.medidor import Medidor
 from ui.widgets.tira_miniaturas import TiraMiniaturas
 from ui.widgets.visualizador import (
@@ -228,12 +228,12 @@ class TelaConferir(QWidget):
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
         camadas.addWidget(self.tira)
 
-        # Onde salvar fica AQUI, antes de processar: assim o usuario decide o
-        # destino sem esperar o livro inteiro para so entao descobrir o lugar.
-        self.destino = SeletorDestino()                      # 7
-        camadas.addWidget(self.destino)
-
-        camadas.addLayout(self._montar_rodape())             # 8
+        # "Salvar em" e "Nome do arquivo" NAO ficam mais aqui. Eles importam
+        # num momento so - o de gravar - e ocupavam uma faixa inteira de altura
+        # o tempo todo. Agora aparecem na janela de confirmacao, ao clicar em
+        # Confirmar e processar, e tambem no menu Arquivo. So isso devolve uma
+        # faixa de altura para a pagina, que e o que precisa ser olhado.
+        camadas.addLayout(self._montar_rodape())             # 7
 
     def _montar_cabecalho(self) -> QHBoxLayout:
         topo = QHBoxLayout()
@@ -742,9 +742,6 @@ class TelaConferir(QWidget):
                 self.area_imagem.addWidget(self.paginas_de_imagem[aba])
                 self.barra_botoes.addWidget(self.linhas_de_botoes[aba])
 
-            from modelos import nome_de_saida_sugerido
-
-            self.destino.definir(None, nome_de_saida_sugerido(projeto))
             self.barra_abas.setCurrentIndex(0)
         finally:
             self._carregando = False
