@@ -476,6 +476,10 @@ class TelaConferir(QWidget):
         _botao("desfazer", acoes, self._desfazer_marcacao)
         _botao("procurar de novo", acoes, self._detectar_de_novo)
         _botao("limpar tudo", acoes, self._limpar_marcacao)
+        # Pedido do Samuel, duas vezes: "quero ter a opção de transformar a
+        # folha em uma folha em branco". Serve para a capa e para a folha de
+        # rosto do escaneamento, que ninguem quer reimprimir.
+        _botao("deixar a folha em branco", acoes, self._folha_em_branco)
         self.aviso_marcacao = QLabel("")
         self.aviso_marcacao.setObjectName("dica")
         acoes.addWidget(self.aviso_marcacao, 1)
@@ -544,6 +548,27 @@ class TelaConferir(QWidget):
         self._selecao_mudou()
         self._mostrar_aviso_da_marcacao(
             "Tirei tudo. O filtro volta a tratar a folha inteira igual.")
+
+    def _folha_em_branco(self) -> None:
+        """Manda a folha inteira sair branca, seja capa ou pagina escrita.
+
+        E o mesmo caminho da marcacao a mao: marcar a folha inteira como PAPEL.
+        O filtro entende folha inteira marcada como papel como "quero a folha em
+        branco", e nao como "aqui e fundo" - ver FOLHA_INTEIRA_EM_BRANCO. Assim
+        nao ha um segundo jeito de dizer a mesma coisa dentro do programa, e o
+        desfazer funciona igual ao das outras marcacoes.
+        """
+        from core.selecao import MAO, PAPEL, RETANGULO, Regiao, Selecao
+
+        if self._pagina_marcada() is None:
+            return
+        folha = Selecao()
+        folha.acrescentar(Regiao(tipo=PAPEL, forma=RETANGULO,
+                                 pontos=[(0.0, 0.0), (1.0, 1.0)], origem=MAO))
+        self.editor_selecao.definir_selecao(folha)
+        self._selecao_mudou()
+        self._mostrar_aviso_da_marcacao(
+            "Esta folha vai sair em branco. Para voltar atrás, desfazer.")
 
     def _detectar_de_novo(self) -> None:
         """Roda a deteccao outra vez, SEM apagar o que foi feito a mao.

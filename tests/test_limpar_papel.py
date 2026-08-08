@@ -75,3 +75,26 @@ def test_nao_apaga_cor_que_nao_e_do_papel():
     limpa = _limpar_o_papel_de_verdade(img, img.copy())
     vermelho = limpa[300:340, 350:450]
     assert vermelho.mean() < 200, "a rubricacao vermelha foi apagada"
+
+
+def test_folha_marcada_papel_sai_em_branco():
+    """O botao "deixar a folha em branco" da tela de Marcar.
+
+    Ele nao tem caminho proprio: marca a folha inteira como PAPEL, e o filtro
+    entende isso como "quero a folha em branco". O teste cobre uma CAPA, que e
+    o caso do pedido - sozinha ela e protegida de proposito, e so a marcacao a
+    mao a manda para o branco.
+    """
+    from core.filtros import PRETO_E_BRANCO, aplicar_filtro_com_selecao
+    from core.selecao import MAO, PAPEL, RETANGULO, Regiao, Selecao
+
+    capa = np.full((400, 300, 3), (40, 70, 60), np.uint8)  # couro verde escuro
+    ruido = np.random.default_rng(7).integers(-12, 12, capa.shape, dtype=np.int16)
+    capa = np.clip(capa.astype(np.int16) + ruido, 0, 255).astype(np.uint8)
+
+    folha = Selecao()
+    folha.acrescentar(Regiao(tipo=PAPEL, forma=RETANGULO,
+                             pontos=[(0.0, 0.0), (1.0, 1.0)], origem=MAO))
+
+    saida, _mono = aplicar_filtro_com_selecao(capa.copy(), PRETO_E_BRANCO, folha)
+    assert saida.min() >= 250, "a folha marcada como papel nao saiu em branco"
