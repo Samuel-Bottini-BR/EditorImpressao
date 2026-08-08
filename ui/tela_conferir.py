@@ -140,6 +140,12 @@ class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
 
+    # Alguma coisa do trabalho mudou e precisa ir para o disco. Sai de UM lugar
+    # so - o metodo `atualizar`, por onde toda alteracao passa - porque um sinal
+    # espalhado por vinte metodos e um sinal que alguem esquece de emitir no
+    # vigesimo primeiro, e o trabalho da pessoa some sem ninguem notar.
+    trabalho_mudou = Signal()
+
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.projeto: Projeto | None = None
@@ -534,6 +540,9 @@ class TelaConferir(QWidget):
             self.editor_selecao.selecao.resumo_em_portugues())
         if self.previas is not None:
             self.previas.invalidar(self.indice_pagina)
+        # A marcacao nao passa por `atualizar` - ela nao mexe na tira nem no
+        # contador. Mas mexe no TRABALHO, e por isso avisa daqui.
+        self.trabalho_mudou.emit()
 
     def _desfazer_marcacao(self) -> None:
         self.editor_selecao.desfazer()
@@ -854,6 +863,20 @@ class TelaConferir(QWidget):
         self.atualizar()
 
     @protegido
+    def ir_para_pagina(self, indice: int) -> None:
+        """Poe a tela na pagina pedida. E como o projeto volta onde parou.
+
+        Nao e o `_ir_para`: aquele trabalha no indice da ABA - que na aba de
+        corte conta FOLHAS, e nao paginas. Aqui o numero e sempre de pagina,
+        porque e isso que fica guardado no resumo do projeto.
+        """
+        if not self._pronta() or self.projeto is None:
+            return
+        indice = max(0, min(int(indice), len(self.projeto.paginas) - 1))
+        self.indice_pagina = indice
+        self.indice_folha = self.projeto.paginas[indice].folha
+        self.atualizar()
+
     def _ir_para_proximo_alerta(self) -> None:
         if not self._pronta():
             return
@@ -880,6 +903,7 @@ class TelaConferir(QWidget):
         self._atualizar_botoes()
         self._atualizar_tira()
         self._atualizar_contador()
+        self.trabalho_mudou.emit()
 
     def _atualizar_previa(self) -> None:
         assert self.previas is not None and self.projeto is not None

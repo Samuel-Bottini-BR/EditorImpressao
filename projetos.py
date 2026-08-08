@@ -284,6 +284,75 @@ def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None) -> Resum
     return resumo
 
 
+# --- o estado da conferencia -----------------------------------------------
+
+ARQUIVO_ESTADO = "projeto.json"
+
+
+def salvar_estado(resumo: Resumo, projeto) -> None:
+    """Grava o trabalho da pagina: filtro, corte, angulo, marcacao, tudo.
+
+    Nunca levanta. Falhar ao gravar nao pode derrubar a tela em que a pessoa
+    esta trabalhando - o pior caso aceitavel e perder a ultima acao, e nao a
+    sessao inteira.
+    """
+    try:
+        pasta = Path(resumo.pasta)
+        pasta.mkdir(parents=True, exist_ok=True)
+        temporario = pasta / (ARQUIVO_ESTADO + ".novo")
+        # Grava num arquivo ao lado e so entao troca. Escrever por cima do bom
+        # deixaria o projeto pela metade se a energia caisse no meio - e o
+        # arquivo pela metade e justamente o que nao pode acontecer aqui.
+        temporario.write_text(
+            json.dumps(projeto.para_dicionario(), ensure_ascii=False, indent=1),
+            encoding="utf-8")
+        temporario.replace(pasta / ARQUIVO_ESTADO)
+    except (OSError, ValueError, TypeError):
+        pass
+
+
+def carregar_estado(resumo: Resumo):
+    """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler."""
+    from modelos import Projeto
+
+    caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
+    if not caminho.is_file():
+        return None
+    try:
+        return Projeto.de_dicionario(json.loads(caminho.read_text(encoding="utf-8")))
+    except (OSError, ValueError, TypeError):
+        return None
+
+
+def combina_com(salvo, recem_analisado) -> bool:
+    """O trabalho salvo pode ser aplicado neste livro recem-aberto?
+
+    So se for o MESMO livro e a mesma divisao. Se a pessoa trocou "dividir
+    folhas ao meio" entre uma sessao e outra, a pagina 40 salva nao e a pagina
+    40 de agora, e devolver o corte de uma na outra estragaria o trabalho.
+    """
+    if salvo is None or recem_analisado is None:
+        return False
+    return (len(salvo.paginas) == len(recem_analisado.paginas)
+            and len(salvo.folhas) == len(recem_analisado.folhas)
+            and salvo.caminho_entrada == recem_analisado.caminho_entrada)
+
+
+def achar_por_assinatura(caminho_pdf: str) -> Resumo | None:
+    """Ja ha um projeto deste mesmo livro? Devolve o mais recente.
+
+    E o que faz "abrir o mesmo livro de novo" continuar de onde parou em vez de
+    comecar um projeto novo ao lado do antigo.
+    """
+    assinatura = assinatura_do_arquivo(caminho_pdf)
+    if not assinatura:
+        return None
+    for resumo in listar():           # ja vem do mais recente para o mais antigo
+        if resumo.assinatura == assinatura:
+            return resumo
+    return None
+
+
 def remover_da_lista(resumo: Resumo) -> None:
     """Tira o projeto da tela inicial, apagando a pasta DELE.
 

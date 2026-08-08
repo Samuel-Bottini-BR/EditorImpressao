@@ -8,11 +8,12 @@ from __future__ import annotations
 import traceback
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QStackedWidget
 
 import configuracoes
 import historico
+import projetos
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
@@ -40,6 +41,20 @@ class JanelaPrincipal(QMainWindow):
         self.previas: GerenciadorPrevias | None = None
         self.tarefa = None
         self.total_folhas = 0
+        self.resumo: projetos.Resumo | None = None
+
+        # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
+        # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
+        # projeto de um livro de mil paginas nao e um arquivo pequeno. O relogio
+        # junta a rajada e grava uma vez depois que a mao para.
+        #
+        # NAO existe botao de salvar e nunca se pergunta "quer salvar?". Essa
+        # pergunta e uma armadilha para quem nao e tecnico: um "nao" por engano
+        # apaga um dia de trabalho.
+        self._relogio_de_salvar = QTimer(self)
+        self._relogio_de_salvar.setSingleShot(True)
+        self._relogio_de_salvar.setInterval(600)
+        self._relogio_de_salvar.timeout.connect(self._salvar_agora)
 
         self.telas = QStackedWidget()
         self.setCentralWidget(self.telas)
@@ -59,8 +74,9 @@ class JanelaPrincipal(QMainWindow):
         self.telas.addWidget(self.tela_progresso)
 
         self.tela_conferir = TelaConferir()
-        self.tela_conferir.voltar.connect(lambda: self.telas.setCurrentIndex(OPCOES))
+        self.tela_conferir.voltar.connect(self._sair_da_conferencia)
         self.tela_conferir.processar.connect(self.processar)
+        self.tela_conferir.trabalho_mudou.connect(self._marcar_para_salvar)
         self.telas.addWidget(self.tela_conferir)
 
         self.tela_final = TelaFinal()
@@ -104,7 +120,16 @@ class JanelaPrincipal(QMainWindow):
 
         nome = Path(caminho).stem
         self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
-        self.acoes = HistoricoAcoes(historico.pasta_do_projeto(nome))
+
+        # Abrir o MESMO livro de novo continua o projeto de antes, em vez de
+        # criar um ao lado: quem for reabrir de propósito passa pela tela
+        # inicial, que tem "começar de novo" no menu do cartão.
+        self.resumo = projetos.achar_por_assinatura(caminho)
+        if self.resumo is None:
+            self.resumo = projetos.criar(self.projeto, self.total_folhas)
+        else:
+            self.resumo.caminho_entrada = caminho   # pode ter mudado de pasta
+        self.acoes = HistoricoAcoes(Path(self.resumo.pasta))
 
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.telas.setCurrentIndex(OPCOES)
@@ -138,11 +163,28 @@ class JanelaPrincipal(QMainWindow):
         self.tarefa.start()
 
     def _analise_pronta(self, projeto: Projeto) -> None:
-        self.projeto = projeto
         assert self.acoes is not None
 
-        # O historico de acoes de um projeto ja trabalhado antes volta do disco:
-        # fechar e reabrir o programa nao apaga o desfazer (criterio 14).
+        # O trabalho da sessao passada volta AQUI, depois da analise: filtro de
+        # cada pagina, corte, angulo, marcacao, apagadas, conferidas. Sem isto,
+        # quem conferiu 80 paginas e fechou o programa reabria do zero.
+        #
+        # So volta se combinar com o livro recem-analisado - mesmo arquivo,
+        # mesma contagem de folhas e de paginas. Se a pessoa mudou "dividir
+        # folhas ao meio" entre uma sessao e outra, a pagina 40 salva nao e a
+        # pagina 40 de agora, e devolver o corte de uma na outra estragaria o
+        # trabalho em silencio. Ver projetos.combina_com.
+        paginas_perdidas = 0
+        if self.resumo is not None:
+            salvo = projetos.carregar_estado(self.resumo)
+            if projetos.combina_com(salvo, projeto):
+                projeto = salvo
+            elif salvo is not None:
+                paginas_perdidas = len(salvo.paginas)
+
+        self.projeto = projeto
+
+        # O desfazer de um projeto ja trabalhado tambem volta do disco.
         self.acoes.carregar()
 
         if self.previas is not None:
@@ -150,8 +192,42 @@ class JanelaPrincipal(QMainWindow):
         self.previas = GerenciadorPrevias(projeto.caminho_entrada, projeto, self)
 
         self.tela_conferir.carregar(projeto, self.acoes, self.previas)
+        if self.resumo is not None:
+            self.tela_conferir.ir_para_pagina(self.resumo.pagina_atual)
         self.telas.setCurrentIndex(CONFERIR)
-        historico.salvar_projeto(projeto)
+        self._salvar_agora()
+
+        if self.acoes.linhas_perdidas:
+            self.avisar(
+                f"O computador foi desligado no meio da última gravação, e "
+                f"{self.acoes.linhas_perdidas} ação(ões) do fim se perderam. "
+                "O resto do trabalho está aqui.")
+        elif paginas_perdidas:
+            self.avisar(
+                "Você mudou as opções desde a última vez, e o livro ficou com "
+                "outro número de páginas. Comecei a conferência de novo - o "
+                "trabalho antigo não serve para páginas diferentes.")
+
+    # --- salvar sozinho ---------------------------------------------------
+
+    def _marcar_para_salvar(self) -> None:
+        """Alguma coisa mudou. Grava daqui a pouco, quando a mao parar."""
+        if self.resumo is not None and self.projeto is not None:
+            self._relogio_de_salvar.start()
+
+    def _salvar_agora(self) -> None:
+        """Grava de verdade. Chamado pelo relogio e ao sair da tela."""
+        self._relogio_de_salvar.stop()
+        if self.resumo is None or self.projeto is None:
+            return
+        projetos.salvar_estado(self.resumo, self.projeto)
+        projetos.atualizar(self.resumo, self.projeto,
+                           pagina_atual=self.tela_conferir.indice_pagina)
+
+    def _sair_da_conferencia(self) -> None:
+        """Voltar para as opcoes grava antes: sair nao pode custar trabalho."""
+        self._salvar_agora()
+        self.telas.setCurrentIndex(OPCOES)
 
     def _falhou_na_analise(self, mensagem: str) -> None:
         self.telas.setCurrentIndex(OPCOES)
@@ -281,7 +357,17 @@ class JanelaPrincipal(QMainWindow):
         super().keyPressEvent(evento)
 
     def closeEvent(self, evento) -> None:  # noqa: N802
-        """Sair no meio de um trabalho não pode deixar thread solta."""
+        """Sair no meio de um trabalho não pode deixar thread solta nem perder
+        o que foi feito.
+
+        Grava ANTES de encerrar as threads: a prévia que ainda vier não muda o
+        trabalho, e esperar por ela só atrasaria o fechamento.
+
+        E não pergunta nada. A pergunta "quer salvar?" é o que este programa
+        não faz - um "não" por engano apagaria um dia de trabalho do Kaique.
+        """
+        self._salvar_agora()
+
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
             self.tarefa.wait(3000)
