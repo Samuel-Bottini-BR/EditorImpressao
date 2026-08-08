@@ -19,7 +19,10 @@ class AreaArrastar(QWidget):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.setAcceptDrops(True)
-        self.setMinimumHeight(210)
+        # Baixa de proposito. Abrir livro novo se faz uma vez por livro, e a
+        # caixa antiga tomava um terco da tela para isso - o espaco pertence
+        # aos projetos, que e o que a pessoa vem ver todo dia.
+        self.setMinimumHeight(62)
         self.setCursor(Qt.PointingHandCursor)
         self._por_cima = False
 
@@ -34,33 +37,30 @@ class AreaArrastar(QWidget):
         pintor.setPen(QPen(QColor(AZUL if self._por_cima else BORDA), 2, Qt.DashLine))
         pintor.drawRoundedRect(area, 14, 14)
 
-        # icone de arquivo desenhado a mao: nada de emoji (regra 3.4)
-        centro_x = self.width() // 2
-        topo = self.height() // 2 - 62
-        self._desenhar_icone_arquivo(pintor, centro_x, topo)
+        # Icone a esquerda e as duas linhas ao lado dele, como no desenho
+        # aprovado - e nao centralizado, que so funcionava na caixa alta.
+        # Icone desenhado a mao: nada de emoji em rotulo.
+        margem = 22
+        self._desenhar_icone_arquivo(pintor, margem, (self.height() - 32) // 2)
+
+        texto_x = margem + 44
+        meio = self.height() // 2
 
         pintor.setPen(QColor(TEXTO))
         fonte = pintor.font()
-        fonte.setPointSize(13)
+        fonte.setPointSize(11)
         fonte.setBold(True)
         pintor.setFont(fonte)
-        pintor.drawText(
-            self.rect().adjusted(0, 28, 0, 0), Qt.AlignHCenter | Qt.AlignVCenter,
-            "Arraste o PDF do livro aqui",
-        )
+        pintor.drawText(texto_x, meio - 4, "Arraste o PDF de um livro novo aqui")
 
         fonte.setBold(False)
-        fonte.setPointSize(11)
+        fonte.setPointSize(9)
         pintor.setFont(fonte)
         pintor.setPen(QColor(TEXTO_FRACO))
-        pintor.drawText(
-            self.rect().adjusted(0, 78, 0, 0), Qt.AlignHCenter | Qt.AlignVCenter,
-            "ou clique para procurar",
-        )
+        pintor.drawText(texto_x, meio + 16, "ou clique para procurar no computador")
 
-    def _desenhar_icone_arquivo(self, pintor: QPainter, cx: int, topo: int) -> None:
-        largura, altura, dobra = 46, 58, 14
-        x, y = cx - largura // 2, topo
+    def _desenhar_icone_arquivo(self, pintor: QPainter, x: int, y: int) -> None:
+        largura, altura, dobra = 26, 32, 8
 
         pintor.setPen(QPen(QColor(AZUL), 2))
         pintor.setBrush(QColor("#ffffff"))
@@ -79,10 +79,11 @@ class AreaArrastar(QWidget):
         pintor.drawLine(x + largura - dobra, y, x + largura - dobra, y + dobra)
         pintor.drawLine(x + largura - dobra, y + dobra, x + largura, y + dobra)
 
-        pintor.setPen(QPen(QColor(AZUL), 2))
+        pintor.setPen(QPen(QColor(AZUL), 1))
         for i in range(3):
-            linha_y = y + 26 + i * 9
-            pintor.drawLine(x + 10, linha_y, x + largura - 10, linha_y)
+            linha_y = y + 14 + i * 6
+            fim = x + largura - (10 if i == 2 else 6)
+            pintor.drawLine(x + 6, linha_y, fim, linha_y)
 
     # --- interacao --------------------------------------------------------
 

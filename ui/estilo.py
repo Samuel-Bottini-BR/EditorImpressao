@@ -168,11 +168,14 @@ QScrollArea {{ border: none; background: transparent; }}
    sobre fundo claro e ele nao a enxergava na tira de miniaturas - "a barra de
    scrool devia ser preta para ficar com visualizacao mais facil". O trilho fica
    claro para o punho se destacar dentro dele. */
+/* A alca era {TEXTO}, quase preta: uma barra dessas atravessada no pe da
+   tela le como um risco preto no meio do trabalho, e nao como um controle.
+   Cinza medio se enxerga igual e nao disputa com a pagina. */
 QScrollBar:horizontal {{ height: 12px; background: {FUNDO_DESABILITADO}; border-radius: 6px; }}
-QScrollBar::handle:horizontal {{ background: {TEXTO}; border-radius: 6px; min-width: 40px; }}
+QScrollBar::handle:horizontal {{ background: #a8a49e; border-radius: 6px; min-width: 40px; }}
 QScrollBar:vertical {{ width: 12px; background: {FUNDO_DESABILITADO}; border-radius: 6px; }}
-QScrollBar::handle:vertical {{ background: {TEXTO}; border-radius: 6px; min-height: 40px; }}
-QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {{ background: black; }}
+QScrollBar::handle:vertical {{ background: #a8a49e; border-radius: 6px; min-height: 40px; }}
+QScrollBar::handle:horizontal:hover, QScrollBar::handle:vertical:hover {{ background: #7d7a74; }}
 QScrollBar::add-line, QScrollBar::sub-line {{ width: 0; height: 0; }}
 QScrollBar::add-page, QScrollBar::sub-page {{ background: transparent; }}
 

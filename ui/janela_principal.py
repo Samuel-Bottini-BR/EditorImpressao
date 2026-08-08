@@ -61,7 +61,8 @@ class JanelaPrincipal(QMainWindow):
 
         self.tela_inicio = TelaInicio()
         self.tela_inicio.abrir_pdf.connect(self.abrir_livro)
-        self.tela_inicio.reabrir_projeto.connect(self._reabrir)
+        self.tela_inicio.continuar_projeto.connect(self._continuar_projeto)
+        self.tela_inicio.recomecar_projeto.connect(self._recomecar_projeto)
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
@@ -134,11 +135,20 @@ class JanelaPrincipal(QMainWindow):
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.telas.setCurrentIndex(OPCOES)
 
-    def _reabrir(self, entrada: historico.Entrada) -> None:
-        """Reabre um projeto do histórico, com as mesmas configuracoes."""
-        salvo = historico.carregar_projeto(entrada.nome)
-        self.abrir_livro(entrada.caminho_entrada)
-        if salvo is not None and self.projeto is not None:
+    def _continuar_projeto(self, resumo: projetos.Resumo) -> None:
+        """Retoma um projeto exatamente onde parou.
+
+        A tela inicial ja conferiu que o livro esta la e que e ELE - o cartao
+        so oferece "continuar" quando a assinatura bate. Aqui a analise roda de
+        novo (e barata perto de perder o trabalho) e o estado salvo volta por
+        cima dela, em `_analise_pronta`.
+        """
+        self.abrir_livro(resumo.caminho_entrada)
+        if self.projeto is None:
+            return
+
+        salvo = projetos.carregar_estado(resumo)
+        if salvo is not None:
             self.projeto.dividir_folhas = salvo.dividir_folhas
             self.projeto.limpar = salvo.limpar
             self.projeto.filtro_padrao = salvo.filtro_padrao
@@ -147,6 +157,25 @@ class JanelaPrincipal(QMainWindow):
             self.projeto.montar_cadernos = salvo.montar_cadernos
             self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
             self.tela_opcoes.carregar(self.projeto, self.total_folhas)
+        self.analisar()
+
+    def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
+        """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado."""
+        import shutil
+        from historico_acoes import ARQUIVO_ACOES, ARQUIVO_POSICAO
+
+        pasta = Path(resumo.pasta)
+        for arquivo in (projetos.ARQUIVO_ESTADO, ARQUIVO_ACOES, ARQUIVO_POSICAO):
+            try:
+                (pasta / arquivo).unlink(missing_ok=True)
+            except OSError:
+                pass
+        resumo.conferidas = 0
+        resumo.pagina_atual = 0
+        resumo.pdf_gerado = False
+        projetos.gravar_resumo(resumo)
+        self.tela_inicio.recarregar()
+        self.abrir_livro(resumo.caminho_entrada)
 
     # --- analise ----------------------------------------------------------
 

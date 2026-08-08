@@ -353,6 +353,53 @@ def achar_por_assinatura(caminho_pdf: str) -> Resumo | None:
     return None
 
 
+# --- a miniatura do cartao --------------------------------------------------
+
+# Altura da miniatura guardada. A area dela no cartao tem 112 px; o dobro
+# aguenta uma tela em 200% sem ficar borrada, e um PNG desse tamanho nao chega
+# a 30 KB.
+ALTURA_DA_MINIATURA = 224
+
+
+def caminho_da_miniatura(resumo: Resumo) -> Path:
+    return Path(resumo.pasta) / ARQUIVO_MINIATURA
+
+
+def garantir_miniatura(resumo: Resumo, caminho_pdf: str = "") -> str:
+    """A primeira pagina do livro, gravada uma vez.
+
+    E isto que distingue quatro projetos de nome parecido: a pessoa reconhece o
+    livro pela aparencia, e nao pelo nome. Gerada uma vez e reaproveitada -
+    abrir cinquenta PDFs a cada vez que a tela inicial aparece seria lento
+    justamente em quem mais usa o programa.
+    """
+    destino = caminho_da_miniatura(resumo)
+    if destino.is_file():
+        return str(destino)
+
+    origem = caminho_pdf or resumo.caminho_entrada
+    if not origem or not Path(origem).is_file():
+        return ""
+    try:
+        import cv2
+
+        from core.pdf_io import abrir_pdf, limitar_altura, pagina_para_array
+
+        doc = abrir_pdf(origem)
+        try:
+            img = pagina_para_array(doc, 0, dpi=40)
+        finally:
+            doc.close()
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        cv2.imwrite(str(destino), limitar_altura(img, ALTURA_DA_MINIATURA))
+    except Exception:  # noqa: BLE001 - sem capa o cartao ainda serve
+        return ""
+
+    resumo.miniatura = str(destino)
+    gravar_resumo(resumo)
+    return str(destino)
+
+
 def remover_da_lista(resumo: Resumo) -> None:
     """Tira o projeto da tela inicial, apagando a pasta DELE.
 
