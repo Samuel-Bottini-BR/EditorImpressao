@@ -3,7 +3,7 @@
 - Arquivo de 4 MB
 - 50 folhas no PDF, que viram 50 paginas de saida
 - 7 paginas medidas a fundo
-- 3 segundos para analisar o livro inteiro (57 milissegundos por folha)
+- 3 segundos para analisar o livro inteiro (58 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -39,9 +39,9 @@ nao fecha direito na impressao.
 | Filtro | Espessura | Vazios | Fundo | Ruido | Transicao |
 |---|---|---|---|---|---|
 | Original | 4.10 | 184 | 188.5 | 6.50 | 1.04 |
-| Preto e branco | 4.06 | 160 | 239.9 | 0.64 | 0.82 |
-| Melhorar | 4.70 | 154 | 225.6 | 1.23 | 0.93 |
-| Mágico pro | 4.61 | 155 | 225.6 | 1.29 | 0.92 |
+| Preto e branco | 4.06 | 160 | 224.5 | 1.18 | 0.82 |
+| Melhorar | 4.70 | 154 | 224.3 | 1.18 | 0.93 |
+| Mágico pro | 4.61 | 155 | 224.3 | 1.18 | 0.92 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

@@ -1,6 +1,6 @@
 {
   "titulo": "Linha de base do Editor de Impressao",
-  "quando": "08/08/2026 as 02:43",
+  "quando": "08/08/2026 as 03:41",
   "acervo": "C:\\Users\\fotog\\Desktop\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE",
   "ambiente": {
     "python": "3.14.3",
@@ -13,8 +13,8 @@
     "dpi_da_medida": 300
   },
   "desempenho": {
-    "abrir_programa_s": 0.443,
-    "primeiras_miniaturas_s": 0.386,
+    "abrir_programa_s": 0.461,
+    "primeiras_miniaturas_s": 0.514,
     "livro_das_miniaturas": "Graduale - Saeculum XIV.pdf"
   },
   "resumo": {
@@ -40,41 +40,41 @@
         "espessura_traco_px": 14.552,
         "vazios_internos": 2333.571,
         "vazios_por_mil_tinta": 2.222,
-        "nivel_fundo": 228.007,
-        "ruido_fundo": 1.121,
+        "nivel_fundo": 226.29,
+        "ruido_fundo": 1.181,
         "transicao_borda_px": 1.164,
-        "nitidez": 6149.179,
+        "nitidez": 6135.116,
         "fracao_tinta": 0.24,
-        "tempo_s": 2.105
+        "tempo_s": 2.175
       },
       "melhorar": {
         "espessura_traco_px": 27.946,
         "vazios_internos": 2560.048,
         "vazios_por_mil_tinta": 2.223,
-        "nivel_fundo": 219.487,
-        "ruido_fundo": 1.266,
+        "nivel_fundo": 219.347,
+        "ruido_fundo": 1.261,
         "transicao_borda_px": 1.438,
-        "nitidez": 1796.465,
+        "nitidez": 1795.478,
         "fracao_tinta": 0.271,
-        "tempo_s": 3.911
+        "tempo_s": 3.969
       },
       "magico_pro": {
         "espessura_traco_px": 33.557,
         "vazios_internos": 2644.54,
         "vazios_por_mil_tinta": 2.223,
-        "nivel_fundo": 219.541,
-        "ruido_fundo": 1.266,
+        "nivel_fundo": 219.401,
+        "ruido_fundo": 1.254,
         "transicao_borda_px": 1.404,
-        "nitidez": 1814.808,
+        "nitidez": 1812.762,
         "fracao_tinta": 0.285,
-        "tempo_s": 4.409
+        "tempo_s": 4.505
       }
     },
-    "tempo_analise_por_folha_s": 0.329,
-    "tempo_export_por_pagina_s": 0.944,
-    "projecao_analise_500_folhas_s": 164.5,
-    "projecao_export_500_paginas_s": 472.0,
-    "pico_memoria_mb": 1457.5
+    "tempo_analise_por_folha_s": 0.341,
+    "tempo_export_por_pagina_s": 0.985,
+    "projecao_analise_500_folhas_s": 170.5,
+    "projecao_export_500_paginas_s": 492.5,
+    "pico_memoria_mb": 1453.8
   },
   "livros": [
     {
@@ -84,11 +84,11 @@
       "folhas": 134,
       "paginas": 134,
       "erro": "",
-      "tempo_analise_s": 47.04,
-      "tempo_por_folha_analise_s": 0.351,
-      "tempo_export_s": 5.37,
-      "tempo_por_pagina_export_s": 0.767,
-      "pico_memoria_mb": 778.3,
+      "tempo_analise_s": 46.58,
+      "tempo_por_folha_analise_s": 0.3476,
+      "tempo_export_s": 5.42,
+      "tempo_por_pagina_export_s": 0.775,
+      "pico_memoria_mb": 778.4,
       "pdf_saida_mb": 0.66,
       "pdf_saida_kb_por_pagina": 96.1,
       "paginas_medidas": [
@@ -131,7 +131,7 @@
               "transicao_borda_px": 1.815,
               "nitidez": 55.4,
               "fracao_tinta": 0.56748,
-              "tempo_s": 0.001
+              "tempo_s": 0.002
             },
             "preto_e_branco": {
               "espessura_traco_px": 11.816,
@@ -142,7 +142,7 @@
               "transicao_borda_px": 1.754,
               "nitidez": 52.9,
               "fracao_tinta": 0.56501,
-              "tempo_s": 1.148,
+              "tempo_s": 1.154,
               "pior_que_original": false,
               "motivos": []
             },
@@ -155,7 +155,7 @@
               "transicao_borda_px": 1.754,
               "nitidez": 52.9,
               "fracao_tinta": 0.56501,
-              "tempo_s": 0.693,
+              "tempo_s": 0.646,
               "pior_que_original": false,
               "motivos": []
             },
@@ -168,7 +168,7 @@
               "transicao_borda_px": 1.754,
               "nitidez": 52.9,
               "fracao_tinta": 0.56501,
-              "tempo_s": 1.431,
+              "tempo_s": 1.368,
               "pior_que_original": false,
               "motivos": []
             }
@@ -207,7 +207,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 13302.3,
               "fracao_tinta": 0.16429,
-              "tempo_s": 1.148,
+              "tempo_s": 1.151,
               "pior_que_original": false,
               "motivos": []
             },
@@ -220,7 +220,7 @@
               "transicao_borda_px": 1.156,
               "nitidez": 1873.6,
               "fracao_tinta": 0.17265,
-              "tempo_s": 1.888,
+              "tempo_s": 1.94,
               "pior_que_original": false,
               "motivos": []
             },
@@ -233,7 +233,7 @@
               "transicao_borda_px": 1.146,
               "nitidez": 1946.0,
               "fracao_tinta": 0.17309,
-              "tempo_s": 1.974,
+              "tempo_s": 2.011,
               "pior_que_original": false,
               "motivos": []
             }
@@ -271,7 +271,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 6985.2,
               "fracao_tinta": 0.11406,
-              "tempo_s": 1.124,
+              "tempo_s": 1.109,
               "pior_que_original": false,
               "motivos": []
             },
@@ -284,7 +284,7 @@
               "transicao_borda_px": 1.231,
               "nitidez": 966.6,
               "fracao_tinta": 0.11785,
-              "tempo_s": 1.922,
+              "tempo_s": 1.913,
               "pior_que_original": false,
               "motivos": []
             },
@@ -297,7 +297,7 @@
               "transicao_borda_px": 1.207,
               "nitidez": 1024.1,
               "fracao_tinta": 0.11783,
-              "tempo_s": 2.097,
+              "tempo_s": 1.966,
               "pior_que_original": false,
               "motivos": []
             }
@@ -335,7 +335,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 14787.1,
               "fracao_tinta": 0.16176,
-              "tempo_s": 0.996,
+              "tempo_s": 0.923,
               "pior_que_original": false,
               "motivos": []
             },
@@ -348,7 +348,7 @@
               "transicao_borda_px": 1.133,
               "nitidez": 2141.4,
               "fracao_tinta": 0.16929,
-              "tempo_s": 1.769,
+              "tempo_s": 1.68,
               "pior_que_original": false,
               "motivos": []
             },
@@ -361,7 +361,7 @@
               "transicao_borda_px": 1.12,
               "nitidez": 2237.1,
               "fracao_tinta": 0.17008,
-              "tempo_s": 1.795,
+              "tempo_s": 1.756,
               "pior_que_original": false,
               "motivos": []
             }
@@ -399,7 +399,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 14626.3,
               "fracao_tinta": 0.12544,
-              "tempo_s": 0.213,
+              "tempo_s": 0.235,
               "pior_que_original": false,
               "motivos": []
             },
@@ -412,7 +412,7 @@
               "transicao_borda_px": 1.084,
               "nitidez": 2357.1,
               "fracao_tinta": 0.13717,
-              "tempo_s": 1.154,
+              "tempo_s": 1.125,
               "pior_que_original": false,
               "motivos": []
             },
@@ -425,7 +425,7 @@
               "transicao_borda_px": 1.072,
               "nitidez": 2437.3,
               "fracao_tinta": 0.13545,
-              "tempo_s": 1.333,
+              "tempo_s": 1.363,
               "pior_que_original": false,
               "motivos": []
             }
@@ -463,7 +463,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 129.0,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.068,
+              "tempo_s": 0.078,
               "pior_que_original": false,
               "motivos": []
             },
@@ -476,7 +476,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 9.9,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.67,
+              "tempo_s": 0.674,
               "pior_que_original": false,
               "motivos": []
             },
@@ -489,7 +489,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 16.7,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.861,
+              "tempo_s": 0.868,
               "pior_que_original": false,
               "motivos": []
             }
@@ -528,7 +528,7 @@
               "transicao_borda_px": 1.562,
               "nitidez": 136.0,
               "fracao_tinta": 0.50241,
-              "tempo_s": 1.544,
+              "tempo_s": 1.663,
               "pior_que_original": false,
               "motivos": []
             },
@@ -541,7 +541,7 @@
               "transicao_borda_px": 1.562,
               "nitidez": 136.0,
               "fracao_tinta": 0.50241,
-              "tempo_s": 2.085,
+              "tempo_s": 2.08,
               "pior_que_original": false,
               "motivos": []
             },
@@ -554,7 +554,7 @@
               "transicao_borda_px": 1.562,
               "nitidez": 136.0,
               "fracao_tinta": 0.50241,
-              "tempo_s": 2.349,
+              "tempo_s": 2.288,
               "pior_que_original": false,
               "motivos": []
             }
@@ -587,11 +587,11 @@
       "folhas": 750,
       "paginas": 750,
       "erro": "",
-      "tempo_analise_s": 221.22,
-      "tempo_por_folha_analise_s": 0.295,
-      "tempo_export_s": 7.86,
-      "tempo_por_pagina_export_s": 1.123,
-      "pico_memoria_mb": 1457.5,
+      "tempo_analise_s": 230.8,
+      "tempo_por_folha_analise_s": 0.3077,
+      "tempo_export_s": 7.99,
+      "tempo_por_pagina_export_s": 1.142,
+      "pico_memoria_mb": 1449.8,
       "pdf_saida_mb": 1.75,
       "pdf_saida_kb_por_pagina": 256.4,
       "paginas_medidas": [
@@ -634,7 +634,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 7.2,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.016
+              "tempo_s": 0.014
             },
             "preto_e_branco": {
               "espessura_traco_px": 0.0,
@@ -645,7 +645,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 7.1,
               "fracao_tinta": 0.0,
-              "tempo_s": 6.412,
+              "tempo_s": 6.504,
               "pior_que_original": false,
               "motivos": []
             },
@@ -658,7 +658,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 7.1,
               "fracao_tinta": 0.0,
-              "tempo_s": 7.483,
+              "tempo_s": 7.49,
               "pior_que_original": false,
               "motivos": []
             },
@@ -671,7 +671,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 7.1,
               "fracao_tinta": 0.0,
-              "tempo_s": 12.186,
+              "tempo_s": 12.602,
               "pior_que_original": false,
               "motivos": []
             }
@@ -710,7 +710,7 @@
               "transicao_borda_px": 3.074,
               "nitidez": 64.1,
               "fracao_tinta": 0.32088,
-              "tempo_s": 5.685,
+              "tempo_s": 5.766,
               "pior_que_original": true,
               "motivos": [
                 "o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1"
@@ -725,7 +725,7 @@
               "transicao_borda_px": 3.075,
               "nitidez": 63.8,
               "fracao_tinta": 0.32054,
-              "tempo_s": 8.315,
+              "tempo_s": 8.493,
               "pior_que_original": true,
               "motivos": [
                 "o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1"
@@ -740,7 +740,7 @@
               "transicao_borda_px": 3.094,
               "nitidez": 64.4,
               "fracao_tinta": 0.32065,
-              "tempo_s": 8.903,
+              "tempo_s": 9.093,
               "pior_que_original": true,
               "motivos": [
                 "o fundo ficou mais sujo: ruido subiu de 2.8 para 6.1"
@@ -780,7 +780,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 3692.9,
               "fracao_tinta": 0.12811,
-              "tempo_s": 1.164,
+              "tempo_s": 1.184,
               "pior_que_original": false,
               "motivos": []
             },
@@ -793,7 +793,7 @@
               "transicao_borda_px": 2.254,
               "nitidez": 160.4,
               "fracao_tinta": 0.19663,
-              "tempo_s": 7.393,
+              "tempo_s": 7.634,
               "pior_que_original": false,
               "motivos": []
             },
@@ -806,7 +806,7 @@
               "transicao_borda_px": 2.121,
               "nitidez": 135.0,
               "fracao_tinta": 0.18639,
-              "tempo_s": 8.235,
+              "tempo_s": 8.318,
               "pior_que_original": false,
               "motivos": []
             }
@@ -844,7 +844,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 3947.4,
               "fracao_tinta": 0.16812,
-              "tempo_s": 0.884,
+              "tempo_s": 0.978,
               "pior_que_original": false,
               "motivos": []
             },
@@ -857,7 +857,7 @@
               "transicao_borda_px": 2.471,
               "nitidez": 133.7,
               "fracao_tinta": 0.21448,
-              "tempo_s": 7.103,
+              "tempo_s": 7.085,
               "pior_que_original": false,
               "motivos": []
             },
@@ -870,7 +870,7 @@
               "transicao_borda_px": 2.0,
               "nitidez": 135.1,
               "fracao_tinta": 0.20635,
-              "tempo_s": 7.924,
+              "tempo_s": 8.056,
               "pior_que_original": false,
               "motivos": []
             }
@@ -908,7 +908,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 4589.1,
               "fracao_tinta": 0.19894,
-              "tempo_s": 0.872,
+              "tempo_s": 0.882,
               "pior_que_original": false,
               "motivos": []
             },
@@ -921,7 +921,7 @@
               "transicao_borda_px": 2.343,
               "nitidez": 167.8,
               "fracao_tinta": 0.253,
-              "tempo_s": 6.114,
+              "tempo_s": 6.612,
               "pior_que_original": false,
               "motivos": []
             },
@@ -934,7 +934,7 @@
               "transicao_borda_px": 2.098,
               "nitidez": 155.5,
               "fracao_tinta": 0.24314,
-              "tempo_s": 6.94,
+              "tempo_s": 7.139,
               "pior_que_original": false,
               "motivos": []
             }
@@ -961,7 +961,7 @@
               "transicao_borda_px": 2.735,
               "nitidez": 11.5,
               "fracao_tinta": 0.17834,
-              "tempo_s": 0.006
+              "tempo_s": 0.007
             },
             "preto_e_branco": {
               "espessura_traco_px": 12.907,
@@ -972,7 +972,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 5290.3,
               "fracao_tinta": 0.1577,
-              "tempo_s": 1.416,
+              "tempo_s": 1.362,
               "pior_que_original": false,
               "motivos": []
             },
@@ -985,7 +985,7 @@
               "transicao_borda_px": 2.385,
               "nitidez": 156.2,
               "fracao_tinta": 0.23101,
-              "tempo_s": 7.227,
+              "tempo_s": 7.409,
               "pior_que_original": false,
               "motivos": []
             },
@@ -998,7 +998,7 @@
               "transicao_borda_px": 2.02,
               "nitidez": 160.9,
               "fracao_tinta": 0.2238,
-              "tempo_s": 8.2,
+              "tempo_s": 8.387,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1036,7 +1036,7 @@
               "transicao_borda_px": 2.09,
               "nitidez": 7.5,
               "fracao_tinta": 0.60366,
-              "tempo_s": 2.628,
+              "tempo_s": 2.679,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1049,7 +1049,7 @@
               "transicao_borda_px": 2.09,
               "nitidez": 7.5,
               "fracao_tinta": 0.60366,
-              "tempo_s": 3.266,
+              "tempo_s": 3.267,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1062,7 +1062,7 @@
               "transicao_borda_px": 2.09,
               "nitidez": 7.5,
               "fracao_tinta": 0.60366,
-              "tempo_s": 6.232,
+              "tempo_s": 6.103,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1121,11 +1121,11 @@
       "folhas": 191,
       "paginas": 191,
       "erro": "",
-      "tempo_analise_s": 57.83,
-      "tempo_por_folha_analise_s": 0.3028,
-      "tempo_export_s": 8.91,
-      "tempo_por_pagina_export_s": 1.274,
-      "pico_memoria_mb": 1447.7,
+      "tempo_analise_s": 61.32,
+      "tempo_por_folha_analise_s": 0.321,
+      "tempo_export_s": 9.86,
+      "tempo_por_pagina_export_s": 1.409,
+      "pico_memoria_mb": 1453.8,
       "pdf_saida_mb": 1.78,
       "pdf_saida_kb_por_pagina": 260.3,
       "paginas_medidas": [
@@ -1180,7 +1180,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 444.9,
               "fracao_tinta": 0.02273,
-              "tempo_s": 0.641,
+              "tempo_s": 0.82,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1193,7 +1193,7 @@
               "transicao_borda_px": 1.016,
               "nitidez": 144.2,
               "fracao_tinta": 0.02305,
-              "tempo_s": 5.865,
+              "tempo_s": 5.835,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1206,7 +1206,7 @@
               "transicao_borda_px": 0.844,
               "nitidez": 67.4,
               "fracao_tinta": 0.02311,
-              "tempo_s": 7.459,
+              "tempo_s": 7.492,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1234,7 +1234,7 @@
               "transicao_borda_px": 2.174,
               "nitidez": 407.5,
               "fracao_tinta": 0.87093,
-              "tempo_s": 0.01
+              "tempo_s": 0.011
             },
             "preto_e_branco": {
               "espessura_traco_px": 80.899,
@@ -1245,7 +1245,7 @@
               "transicao_borda_px": 2.211,
               "nitidez": 396.6,
               "fracao_tinta": 0.87082,
-              "tempo_s": 3.094,
+              "tempo_s": 3.363,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1258,7 +1258,7 @@
               "transicao_borda_px": 2.211,
               "nitidez": 396.6,
               "fracao_tinta": 0.87082,
-              "tempo_s": 3.6,
+              "tempo_s": 3.562,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1271,7 +1271,7 @@
               "transicao_borda_px": 2.211,
               "nitidez": 396.6,
               "fracao_tinta": 0.87082,
-              "tempo_s": 7.39,
+              "tempo_s": 7.601,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1310,7 +1310,7 @@
               "transicao_borda_px": 0.833,
               "nitidez": 2530.0,
               "fracao_tinta": 0.52984,
-              "tempo_s": 8.043,
+              "tempo_s": 8.263,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1323,7 +1323,7 @@
               "transicao_borda_px": 1.875,
               "nitidez": 753.0,
               "fracao_tinta": 0.5306,
-              "tempo_s": 12.698,
+              "tempo_s": 12.859,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1336,7 +1336,7 @@
               "transicao_borda_px": 1.862,
               "nitidez": 760.9,
               "fracao_tinta": 0.53301,
-              "tempo_s": 13.627,
+              "tempo_s": 13.756,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1363,7 +1363,7 @@
               "transicao_borda_px": 1.834,
               "nitidez": 331.0,
               "fracao_tinta": 0.45296,
-              "tempo_s": 0.008
+              "tempo_s": 0.007
             },
             "preto_e_branco": {
               "espessura_traco_px": 18.46,
@@ -1374,7 +1374,7 @@
               "transicao_borda_px": 1.519,
               "nitidez": 2390.1,
               "fracao_tinta": 0.48045,
-              "tempo_s": 9.322,
+              "tempo_s": 8.997,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1387,7 +1387,7 @@
               "transicao_borda_px": 2.004,
               "nitidez": 758.9,
               "fracao_tinta": 0.48354,
-              "tempo_s": 13.551,
+              "tempo_s": 13.981,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1400,7 +1400,7 @@
               "transicao_borda_px": 2.001,
               "nitidez": 779.8,
               "fracao_tinta": 0.48383,
-              "tempo_s": 14.529,
+              "tempo_s": 15.05,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1427,7 +1427,7 @@
               "transicao_borda_px": 1.917,
               "nitidez": 392.6,
               "fracao_tinta": 0.45228,
-              "tempo_s": 0.008
+              "tempo_s": 0.007
             },
             "preto_e_branco": {
               "espessura_traco_px": 17.838,
@@ -1438,7 +1438,7 @@
               "transicao_borda_px": 0.868,
               "nitidez": 3777.6,
               "fracao_tinta": 0.46751,
-              "tempo_s": 9.123,
+              "tempo_s": 9.331,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1451,7 +1451,7 @@
               "transicao_borda_px": 1.853,
               "nitidez": 921.8,
               "fracao_tinta": 0.49743,
-              "tempo_s": 14.078,
+              "tempo_s": 14.079,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1464,7 +1464,7 @@
               "transicao_borda_px": 1.869,
               "nitidez": 946.7,
               "fracao_tinta": 0.49728,
-              "tempo_s": 15.014,
+              "tempo_s": 15.263,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1491,7 +1491,7 @@
               "transicao_borda_px": 1.597,
               "nitidez": 355.6,
               "fracao_tinta": 0.41082,
-              "tempo_s": 0.008
+              "tempo_s": 0.01
             },
             "preto_e_branco": {
               "espessura_traco_px": 34.008,
@@ -1502,7 +1502,7 @@
               "transicao_borda_px": 0.788,
               "nitidez": 1919.8,
               "fracao_tinta": 0.44726,
-              "tempo_s": 9.547,
+              "tempo_s": 9.995,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1515,7 +1515,7 @@
               "transicao_borda_px": 1.771,
               "nitidez": 805.2,
               "fracao_tinta": 0.44244,
-              "tempo_s": 15.664,
+              "tempo_s": 15.164,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1528,7 +1528,7 @@
               "transicao_borda_px": 1.762,
               "nitidez": 818.9,
               "fracao_tinta": 0.44257,
-              "tempo_s": 15.996,
+              "tempo_s": 16.669,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1555,7 +1555,7 @@
               "transicao_borda_px": 0.934,
               "nitidez": 1001.4,
               "fracao_tinta": 0.46483,
-              "tempo_s": 0.014
+              "tempo_s": 0.013
             },
             "preto_e_branco": {
               "espessura_traco_px": 18.761,
@@ -1566,7 +1566,7 @@
               "transicao_borda_px": 0.997,
               "nitidez": 2924.4,
               "fracao_tinta": 0.3824,
-              "tempo_s": 16.424,
+              "tempo_s": 17.117,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1579,7 +1579,7 @@
               "transicao_borda_px": 1.253,
               "nitidez": 1661.7,
               "fracao_tinta": 0.48215,
-              "tempo_s": 26.028,
+              "tempo_s": 26.263,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1592,7 +1592,7 @@
               "transicao_borda_px": 1.272,
               "nitidez": 1628.9,
               "fracao_tinta": 0.47669,
-              "tempo_s": 27.568,
+              "tempo_s": 27.914,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1625,11 +1625,11 @@
       "folhas": 907,
       "paginas": 907,
       "erro": "",
-      "tempo_analise_s": 130.2,
-      "tempo_por_folha_analise_s": 0.1436,
-      "tempo_export_s": 4.86,
-      "tempo_por_pagina_export_s": 0.695,
-      "pico_memoria_mb": 969.4,
+      "tempo_analise_s": 135.32,
+      "tempo_por_folha_analise_s": 0.1492,
+      "tempo_export_s": 4.99,
+      "tempo_por_pagina_export_s": 0.712,
+      "pico_memoria_mb": 961.7,
       "pdf_saida_mb": 0.68,
       "pdf_saida_kb_por_pagina": 99.4,
       "paginas_medidas": [
@@ -1682,7 +1682,7 @@
               "transicao_borda_px": 4.367,
               "nitidez": 53.9,
               "fracao_tinta": 0.11483,
-              "tempo_s": 5.124,
+              "tempo_s": 5.56,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1695,7 +1695,7 @@
               "transicao_borda_px": 4.377,
               "nitidez": 53.3,
               "fracao_tinta": 0.11474,
-              "tempo_s": 7.528,
+              "tempo_s": 7.787,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1708,7 +1708,7 @@
               "transicao_borda_px": 4.409,
               "nitidez": 53.4,
               "fracao_tinta": 0.11481,
-              "tempo_s": 7.832,
+              "tempo_s": 8.133,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1735,7 +1735,7 @@
               "transicao_borda_px": 1.384,
               "nitidez": 420.8,
               "fracao_tinta": 0.15588,
-              "tempo_s": 0.004
+              "tempo_s": 0.005
             },
             "preto_e_branco": {
               "espessura_traco_px": 8.111,
@@ -1746,7 +1746,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 7734.5,
               "fracao_tinta": 0.16192,
-              "tempo_s": 0.905,
+              "tempo_s": 0.924,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1759,7 +1759,7 @@
               "transicao_borda_px": 1.528,
               "nitidez": 1299.4,
               "fracao_tinta": 0.20811,
-              "tempo_s": 4.51,
+              "tempo_s": 4.625,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1772,7 +1772,7 @@
               "transicao_borda_px": 1.519,
               "nitidez": 1308.1,
               "fracao_tinta": 0.20672,
-              "tempo_s": 5.07,
+              "tempo_s": 5.649,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1799,7 +1799,7 @@
               "transicao_borda_px": 1.252,
               "nitidez": 449.2,
               "fracao_tinta": 0.15061,
-              "tempo_s": 0.004
+              "tempo_s": 0.005
             },
             "preto_e_branco": {
               "espessura_traco_px": 8.002,
@@ -1810,7 +1810,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 7236.4,
               "fracao_tinta": 0.15201,
-              "tempo_s": 0.952,
+              "tempo_s": 0.892,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1823,7 +1823,7 @@
               "transicao_borda_px": 1.447,
               "nitidez": 1273.6,
               "fracao_tinta": 0.18219,
-              "tempo_s": 4.363,
+              "tempo_s": 4.67,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1836,7 +1836,7 @@
               "transicao_borda_px": 1.446,
               "nitidez": 1284.3,
               "fracao_tinta": 0.18005,
-              "tempo_s": 4.815,
+              "tempo_s": 4.899,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1874,7 +1874,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 6851.0,
               "fracao_tinta": 0.14172,
-              "tempo_s": 3.319,
+              "tempo_s": 3.334,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1887,7 +1887,7 @@
               "transicao_borda_px": 1.78,
               "nitidez": 1348.7,
               "fracao_tinta": 0.23959,
-              "tempo_s": 6.298,
+              "tempo_s": 6.392,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1900,7 +1900,7 @@
               "transicao_borda_px": 1.639,
               "nitidez": 1541.9,
               "fracao_tinta": 0.28641,
-              "tempo_s": 6.735,
+              "tempo_s": 6.905,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1938,7 +1938,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 8167.9,
               "fracao_tinta": 0.16378,
-              "tempo_s": 0.785,
+              "tempo_s": 0.888,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1951,7 +1951,7 @@
               "transicao_borda_px": 1.367,
               "nitidez": 1324.3,
               "fracao_tinta": 0.20603,
-              "tempo_s": 4.099,
+              "tempo_s": 4.463,
               "pior_que_original": false,
               "motivos": []
             },
@@ -1964,7 +1964,7 @@
               "transicao_borda_px": 1.33,
               "nitidez": 1339.5,
               "fracao_tinta": 0.20023,
-              "tempo_s": 4.435,
+              "tempo_s": 4.632,
               "pior_que_original": false,
               "motivos": []
             }
@@ -1991,7 +1991,7 @@
               "transicao_borda_px": 1.037,
               "nitidez": 389.0,
               "fracao_tinta": 0.19528,
-              "tempo_s": 0.004
+              "tempo_s": 0.005
             },
             "preto_e_branco": {
               "espessura_traco_px": 7.611,
@@ -2002,7 +2002,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 7673.3,
               "fracao_tinta": 0.15002,
-              "tempo_s": 1.047,
+              "tempo_s": 1.036,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2015,7 +2015,7 @@
               "transicao_borda_px": 1.419,
               "nitidez": 1243.9,
               "fracao_tinta": 0.20827,
-              "tempo_s": 4.377,
+              "tempo_s": 4.725,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2028,7 +2028,7 @@
               "transicao_borda_px": 1.425,
               "nitidez": 1251.7,
               "fracao_tinta": 0.20332,
-              "tempo_s": 4.836,
+              "tempo_s": 4.903,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2066,7 +2066,7 @@
               "transicao_borda_px": 2.138,
               "nitidez": 347.2,
               "fracao_tinta": 0.29755,
-              "tempo_s": 2.757,
+              "tempo_s": 2.803,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2079,7 +2079,7 @@
               "transicao_borda_px": 2.172,
               "nitidez": 345.8,
               "fracao_tinta": 0.2959,
-              "tempo_s": 4.343,
+              "tempo_s": 4.199,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2092,7 +2092,7 @@
               "transicao_borda_px": 2.172,
               "nitidez": 347.3,
               "fracao_tinta": 0.29644,
-              "tempo_s": 4.209,
+              "tempo_s": 4.387,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2122,11 +2122,11 @@
       "folhas": 199,
       "paginas": 199,
       "erro": "",
-      "tempo_analise_s": 28.55,
-      "tempo_por_folha_analise_s": 0.1435,
-      "tempo_export_s": 9.43,
-      "tempo_por_pagina_export_s": 1.347,
-      "pico_memoria_mb": 868.5,
+      "tempo_analise_s": 29.5,
+      "tempo_por_folha_analise_s": 0.1482,
+      "tempo_export_s": 9.68,
+      "tempo_por_pagina_export_s": 1.383,
+      "pico_memoria_mb": 848.7,
       "pdf_saida_mb": 0.89,
       "pdf_saida_kb_por_pagina": 129.5,
       "paginas_medidas": [
@@ -2177,7 +2177,7 @@
               "transicao_borda_px": 2.611,
               "nitidez": 195.0,
               "fracao_tinta": 0.58589,
-              "tempo_s": 2.599,
+              "tempo_s": 3.042,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2190,7 +2190,7 @@
               "transicao_borda_px": 2.611,
               "nitidez": 195.0,
               "fracao_tinta": 0.58589,
-              "tempo_s": 3.954,
+              "tempo_s": 3.721,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2203,7 +2203,7 @@
               "transicao_borda_px": 2.611,
               "nitidez": 195.0,
               "fracao_tinta": 0.58589,
-              "tempo_s": 3.939,
+              "tempo_s": 4.087,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2230,7 +2230,7 @@
               "transicao_borda_px": 1.362,
               "nitidez": 269.7,
               "fracao_tinta": 0.32324,
-              "tempo_s": 0.002
+              "tempo_s": 0.003
             },
             "preto_e_branco": {
               "espessura_traco_px": 23.677,
@@ -2241,7 +2241,7 @@
               "transicao_borda_px": 0.592,
               "nitidez": 6270.2,
               "fracao_tinta": 0.31739,
-              "tempo_s": 2.021,
+              "tempo_s": 2.212,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2254,7 +2254,7 @@
               "transicao_borda_px": 1.154,
               "nitidez": 483.8,
               "fracao_tinta": 0.32721,
-              "tempo_s": 3.861,
+              "tempo_s": 4.026,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2267,7 +2267,7 @@
               "transicao_borda_px": 1.153,
               "nitidez": 482.8,
               "fracao_tinta": 0.32725,
-              "tempo_s": 4.215,
+              "tempo_s": 4.311,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2294,7 +2294,7 @@
               "transicao_borda_px": 1.379,
               "nitidez": 254.3,
               "fracao_tinta": 0.35334,
-              "tempo_s": 0.002
+              "tempo_s": 0.003
             },
             "preto_e_branco": {
               "espessura_traco_px": 19.529,
@@ -2305,7 +2305,7 @@
               "transicao_borda_px": 0.835,
               "nitidez": 8018.6,
               "fracao_tinta": 0.29433,
-              "tempo_s": 2.708,
+              "tempo_s": 2.783,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2318,7 +2318,7 @@
               "transicao_borda_px": 1.478,
               "nitidez": 835.9,
               "fracao_tinta": 0.28278,
-              "tempo_s": 4.16,
+              "tempo_s": 4.329,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2331,7 +2331,7 @@
               "transicao_borda_px": 1.478,
               "nitidez": 837.0,
               "fracao_tinta": 0.28277,
-              "tempo_s": 4.478,
+              "tempo_s": 4.624,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2369,7 +2369,7 @@
               "transicao_borda_px": 0.812,
               "nitidez": 6896.7,
               "fracao_tinta": 0.18346,
-              "tempo_s": 3.05,
+              "tempo_s": 3.18,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2382,7 +2382,7 @@
               "transicao_borda_px": 1.256,
               "nitidez": 747.9,
               "fracao_tinta": 0.20366,
-              "tempo_s": 4.196,
+              "tempo_s": 4.27,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2395,7 +2395,7 @@
               "transicao_borda_px": 1.255,
               "nitidez": 751.9,
               "fracao_tinta": 0.20365,
-              "tempo_s": 4.515,
+              "tempo_s": 4.661,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2422,7 +2422,7 @@
               "transicao_borda_px": 1.582,
               "nitidez": 299.7,
               "fracao_tinta": 0.37371,
-              "tempo_s": 0.003
+              "tempo_s": 0.002
             },
             "preto_e_branco": {
               "espessura_traco_px": 35.207,
@@ -2433,7 +2433,7 @@
               "transicao_borda_px": 0.651,
               "nitidez": 8748.1,
               "fracao_tinta": 0.3942,
-              "tempo_s": 2.091,
+              "tempo_s": 2.192,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2446,7 +2446,7 @@
               "transicao_borda_px": 1.33,
               "nitidez": 554.9,
               "fracao_tinta": 0.37712,
-              "tempo_s": 3.919,
+              "tempo_s": 4.014,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2459,7 +2459,7 @@
               "transicao_borda_px": 1.329,
               "nitidez": 553.6,
               "fracao_tinta": 0.37709,
-              "tempo_s": 4.247,
+              "tempo_s": 4.319,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2486,7 +2486,7 @@
               "transicao_borda_px": 1.653,
               "nitidez": 213.5,
               "fracao_tinta": 0.37164,
-              "tempo_s": 0.002
+              "tempo_s": 0.003
             },
             "preto_e_branco": {
               "espessura_traco_px": 31.439,
@@ -2497,7 +2497,7 @@
               "transicao_borda_px": 0.643,
               "nitidez": 7277.0,
               "fracao_tinta": 0.38412,
-              "tempo_s": 2.099,
+              "tempo_s": 2.168,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2510,7 +2510,7 @@
               "transicao_borda_px": 1.4,
               "nitidez": 384.9,
               "fracao_tinta": 0.37637,
-              "tempo_s": 3.822,
+              "tempo_s": 3.949,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2523,7 +2523,7 @@
               "transicao_borda_px": 1.397,
               "nitidez": 385.7,
               "fracao_tinta": 0.37637,
-              "tempo_s": 4.161,
+              "tempo_s": 4.307,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2561,7 +2561,7 @@
               "transicao_borda_px": 1.144,
               "nitidez": 115.2,
               "fracao_tinta": 0.06737,
-              "tempo_s": 3.224,
+              "tempo_s": 3.251,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2574,7 +2574,7 @@
               "transicao_borda_px": 1.144,
               "nitidez": 115.2,
               "fracao_tinta": 0.06737,
-              "tempo_s": 4.142,
+              "tempo_s": 4.217,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2587,7 +2587,7 @@
               "transicao_borda_px": 1.144,
               "nitidez": 115.2,
               "fracao_tinta": 0.06737,
-              "tempo_s": 4.899,
+              "tempo_s": 4.69,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2617,11 +2617,11 @@
       "folhas": 92,
       "paginas": 92,
       "erro": "",
-      "tempo_analise_s": 69.15,
-      "tempo_por_folha_analise_s": 0.7516,
-      "tempo_export_s": 10.25,
-      "tempo_por_pagina_export_s": 1.465,
-      "pico_memoria_mb": 847.8,
+      "tempo_analise_s": 72.33,
+      "tempo_por_folha_analise_s": 0.7862,
+      "tempo_export_s": 11.13,
+      "tempo_por_pagina_export_s": 1.59,
+      "pico_memoria_mb": 844.9,
       "pdf_saida_mb": 0.78,
       "pdf_saida_kb_por_pagina": 114.4,
       "paginas_medidas": [
@@ -2673,7 +2673,7 @@
               "transicao_borda_px": 1.213,
               "nitidez": 1698.9,
               "fracao_tinta": 0.44761,
-              "tempo_s": 1.539,
+              "tempo_s": 1.493,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2686,7 +2686,7 @@
               "transicao_borda_px": 1.215,
               "nitidez": 1649.2,
               "fracao_tinta": 0.45109,
-              "tempo_s": 2.179,
+              "tempo_s": 2.283,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2699,7 +2699,7 @@
               "transicao_borda_px": 1.223,
               "nitidez": 1660.5,
               "fracao_tinta": 0.44706,
-              "tempo_s": 2.347,
+              "tempo_s": 2.484,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2750,7 +2750,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 27.7,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.932,
+              "tempo_s": 0.923,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2763,7 +2763,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 30.1,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.994,
+              "tempo_s": 1.029,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2802,7 +2802,7 @@
               "transicao_borda_px": 1.827,
               "nitidez": 6136.5,
               "fracao_tinta": 0.14607,
-              "tempo_s": 2.045,
+              "tempo_s": 1.927,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2815,7 +2815,7 @@
               "transicao_borda_px": 1.435,
               "nitidez": 3828.2,
               "fracao_tinta": 0.21578,
-              "tempo_s": 3.039,
+              "tempo_s": 3.087,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2828,7 +2828,7 @@
               "transicao_borda_px": 1.394,
               "nitidez": 3699.3,
               "fracao_tinta": 0.2165,
-              "tempo_s": 3.337,
+              "tempo_s": 3.45,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2866,7 +2866,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 574.9,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.094,
+              "tempo_s": 0.088,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2879,7 +2879,7 @@
               "transicao_borda_px": 0.961,
               "nitidez": 19.8,
               "fracao_tinta": 0.96996,
-              "tempo_s": 0.902,
+              "tempo_s": 0.906,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2892,7 +2892,7 @@
               "transicao_borda_px": 0.883,
               "nitidez": 24.7,
               "fracao_tinta": 0.96995,
-              "tempo_s": 1.006,
+              "tempo_s": 1.031,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2931,7 +2931,7 @@
               "transicao_borda_px": 1.577,
               "nitidez": 7011.8,
               "fracao_tinta": 0.23842,
-              "tempo_s": 1.695,
+              "tempo_s": 1.734,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2944,7 +2944,7 @@
               "transicao_borda_px": 1.389,
               "nitidez": 4732.2,
               "fracao_tinta": 0.30906,
-              "tempo_s": 2.713,
+              "tempo_s": 2.769,
               "pior_que_original": false,
               "motivos": []
             },
@@ -2957,7 +2957,7 @@
               "transicao_borda_px": 1.379,
               "nitidez": 4645.8,
               "fracao_tinta": 0.31018,
-              "tempo_s": 2.84,
+              "tempo_s": 2.933,
               "pior_que_original": false,
               "motivos": []
             }
@@ -2995,7 +2995,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 740.2,
               "fracao_tinta": 0.01308,
-              "tempo_s": 0.086,
+              "tempo_s": 0.097,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3008,7 +3008,7 @@
               "transicao_borda_px": 1.187,
               "nitidez": 42.8,
               "fracao_tinta": 0.01211,
-              "tempo_s": 1.068,
+              "tempo_s": 1.059,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3021,7 +3021,7 @@
               "transicao_borda_px": 0.789,
               "nitidez": 38.9,
               "fracao_tinta": 0.95843,
-              "tempo_s": 1.192,
+              "tempo_s": 1.302,
               "pior_que_original": true,
               "motivos": [
                 "o fundo escureceu: passou de 156 para 148 numa escala em que 255 e branco"
@@ -3062,7 +3062,7 @@
               "transicao_borda_px": 1.064,
               "nitidez": 14543.3,
               "fracao_tinta": 0.5547,
-              "tempo_s": 1.727,
+              "tempo_s": 1.677,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3075,7 +3075,7 @@
               "transicao_borda_px": 1.064,
               "nitidez": 14543.3,
               "fracao_tinta": 0.5547,
-              "tempo_s": 2.565,
+              "tempo_s": 2.444,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3088,7 +3088,7 @@
               "transicao_borda_px": 1.064,
               "nitidez": 14543.3,
               "fracao_tinta": 0.5547,
-              "tempo_s": 2.532,
+              "tempo_s": 2.541,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3131,11 +3131,11 @@
       "folhas": 446,
       "paginas": 446,
       "erro": "",
-      "tempo_analise_s": 207.57,
-      "tempo_por_folha_analise_s": 0.4654,
-      "tempo_export_s": 7.75,
-      "tempo_por_pagina_export_s": 1.107,
-      "pico_memoria_mb": 866.8,
+      "tempo_analise_s": 214.7,
+      "tempo_por_folha_analise_s": 0.4814,
+      "tempo_export_s": 8.09,
+      "tempo_por_pagina_export_s": 1.156,
+      "pico_memoria_mb": 862.6,
       "pdf_saida_mb": 0.6,
       "pdf_saida_kb_por_pagina": 87.3,
       "paginas_medidas": [
@@ -3189,7 +3189,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 90.6,
               "fracao_tinta": 0.0,
-              "tempo_s": 1.292,
+              "tempo_s": 1.237,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3202,7 +3202,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 6.6,
               "fracao_tinta": 0.0,
-              "tempo_s": 1.076,
+              "tempo_s": 1.119,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3215,7 +3215,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 19.3,
               "fracao_tinta": 0.0,
-              "tempo_s": 1.289,
+              "tempo_s": 1.448,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3254,7 +3254,7 @@
               "transicao_borda_px": 1.193,
               "nitidez": 6631.1,
               "fracao_tinta": 0.37632,
-              "tempo_s": 1.388,
+              "tempo_s": 1.419,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3267,7 +3267,7 @@
               "transicao_borda_px": 1.195,
               "nitidez": 6543.6,
               "fracao_tinta": 0.37792,
-              "tempo_s": 2.078,
+              "tempo_s": 2.139,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3280,7 +3280,7 @@
               "transicao_borda_px": 1.194,
               "nitidez": 6553.2,
               "fracao_tinta": 0.37803,
-              "tempo_s": 2.205,
+              "tempo_s": 2.187,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3307,7 +3307,7 @@
               "transicao_borda_px": 1.058,
               "nitidez": 1469.2,
               "fracao_tinta": 0.13798,
-              "tempo_s": 0.002
+              "tempo_s": 0.001
             },
             "preto_e_branco": {
               "espessura_traco_px": 4.808,
@@ -3318,7 +3318,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 15235.0,
               "fracao_tinta": 0.14343,
-              "tempo_s": 1.533,
+              "tempo_s": 1.456,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3331,7 +3331,7 @@
               "transicao_borda_px": 1.077,
               "nitidez": 2774.6,
               "fracao_tinta": 0.14237,
-              "tempo_s": 2.84,
+              "tempo_s": 2.744,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3344,7 +3344,7 @@
               "transicao_borda_px": 1.075,
               "nitidez": 2759.9,
               "fracao_tinta": 0.14235,
-              "tempo_s": 3.027,
+              "tempo_s": 2.864,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3371,7 +3371,7 @@
               "transicao_borda_px": 1.073,
               "nitidez": 1655.2,
               "fracao_tinta": 0.15855,
-              "tempo_s": 0.001
+              "tempo_s": 0.002
             },
             "preto_e_branco": {
               "espessura_traco_px": 4.907,
@@ -3382,7 +3382,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 17454.0,
               "fracao_tinta": 0.16475,
-              "tempo_s": 0.267,
+              "tempo_s": 0.264,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3395,7 +3395,7 @@
               "transicao_borda_px": 1.08,
               "nitidez": 3039.1,
               "fracao_tinta": 0.16644,
-              "tempo_s": 1.453,
+              "tempo_s": 1.548,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3408,7 +3408,7 @@
               "transicao_borda_px": 1.08,
               "nitidez": 3039.9,
               "fracao_tinta": 0.16644,
-              "tempo_s": 1.706,
+              "tempo_s": 1.676,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3446,7 +3446,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 16405.9,
               "fracao_tinta": 0.14568,
-              "tempo_s": 0.296,
+              "tempo_s": 0.274,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3459,7 +3459,7 @@
               "transicao_borda_px": 1.067,
               "nitidez": 4048.8,
               "fracao_tinta": 0.14586,
-              "tempo_s": 1.579,
+              "tempo_s": 1.561,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3472,7 +3472,7 @@
               "transicao_borda_px": 1.065,
               "nitidez": 4051.8,
               "fracao_tinta": 0.14597,
-              "tempo_s": 1.717,
+              "tempo_s": 1.711,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3510,7 +3510,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 18065.4,
               "fracao_tinta": 0.14394,
-              "tempo_s": 0.288,
+              "tempo_s": 0.328,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3523,7 +3523,7 @@
               "transicao_borda_px": 1.07,
               "nitidez": 4651.0,
               "fracao_tinta": 0.14208,
-              "tempo_s": 1.507,
+              "tempo_s": 1.563,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3536,7 +3536,7 @@
               "transicao_borda_px": 1.069,
               "nitidez": 4634.7,
               "fracao_tinta": 0.14239,
-              "tempo_s": 1.718,
+              "tempo_s": 1.715,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3563,7 +3563,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 1.0,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.002
+              "tempo_s": 0.003
             },
             "preto_e_branco": {
               "espessura_traco_px": 0.0,
@@ -3574,7 +3574,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 31.9,
               "fracao_tinta": 0.0,
-              "tempo_s": 1.337,
+              "tempo_s": 1.753,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3587,7 +3587,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 1.9,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.99,
+              "tempo_s": 0.965,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3600,7 +3600,7 @@
               "transicao_borda_px": 0.0,
               "nitidez": 2.5,
               "fracao_tinta": 0.0,
-              "tempo_s": 1.068,
+              "tempo_s": 1.014,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3634,11 +3634,11 @@
       "folhas": 134,
       "paginas": 268,
       "erro": "",
-      "tempo_analise_s": 60.53,
-      "tempo_por_folha_analise_s": 0.4517,
-      "tempo_export_s": 3.93,
-      "tempo_por_pagina_export_s": 0.561,
-      "pico_memoria_mb": 800.2,
+      "tempo_analise_s": 62.36,
+      "tempo_por_folha_analise_s": 0.4654,
+      "tempo_export_s": 3.88,
+      "tempo_por_pagina_export_s": 0.555,
+      "pico_memoria_mb": 793.5,
       "pdf_saida_mb": 0.28,
       "pdf_saida_kb_por_pagina": 41.5,
       "paginas_medidas": [
@@ -3689,7 +3689,7 @@
               "transicao_borda_px": 2.339,
               "nitidez": 143.9,
               "fracao_tinta": 0.24043,
-              "tempo_s": 0.591,
+              "tempo_s": 0.626,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3702,7 +3702,7 @@
               "transicao_borda_px": 2.339,
               "nitidez": 143.9,
               "fracao_tinta": 0.24043,
-              "tempo_s": 0.862,
+              "tempo_s": 0.894,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3715,7 +3715,7 @@
               "transicao_borda_px": 2.339,
               "nitidez": 143.9,
               "fracao_tinta": 0.24043,
-              "tempo_s": 0.889,
+              "tempo_s": 0.986,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3753,7 +3753,7 @@
               "transicao_borda_px": 1.038,
               "nitidez": 7098.9,
               "fracao_tinta": 0.32594,
-              "tempo_s": 0.691,
+              "tempo_s": 0.679,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3766,7 +3766,7 @@
               "transicao_borda_px": 1.038,
               "nitidez": 7098.9,
               "fracao_tinta": 0.32594,
-              "tempo_s": 0.887,
+              "tempo_s": 0.841,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3779,7 +3779,7 @@
               "transicao_borda_px": 1.038,
               "nitidez": 7098.9,
               "fracao_tinta": 0.32594,
-              "tempo_s": 0.888,
+              "tempo_s": 0.975,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3817,7 +3817,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 38960.7,
               "fracao_tinta": 0.2918,
-              "tempo_s": 0.071,
+              "tempo_s": 0.072,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3830,7 +3830,7 @@
               "transicao_borda_px": 1.101,
               "nitidez": 8191.7,
               "fracao_tinta": 0.34606,
-              "tempo_s": 0.356,
+              "tempo_s": 0.374,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3843,7 +3843,7 @@
               "transicao_borda_px": 1.097,
               "nitidez": 8268.6,
               "fracao_tinta": 0.34427,
-              "tempo_s": 0.409,
+              "tempo_s": 0.413,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3870,7 +3870,7 @@
               "transicao_borda_px": 1.114,
               "nitidez": 2887.1,
               "fracao_tinta": 0.35054,
-              "tempo_s": 0.0
+              "tempo_s": 0.001
             },
             "preto_e_branco": {
               "espessura_traco_px": 4.603,
@@ -3881,7 +3881,7 @@
               "transicao_borda_px": 1.164,
               "nitidez": 4750.7,
               "fracao_tinta": 0.34813,
-              "tempo_s": 0.618,
+              "tempo_s": 0.593,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3894,7 +3894,7 @@
               "transicao_borda_px": 1.166,
               "nitidez": 4687.7,
               "fracao_tinta": 0.34781,
-              "tempo_s": 0.81,
+              "tempo_s": 0.884,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3907,7 +3907,7 @@
               "transicao_borda_px": 1.162,
               "nitidez": 4715.2,
               "fracao_tinta": 0.34794,
-              "tempo_s": 0.835,
+              "tempo_s": 0.847,
               "pior_que_original": false,
               "motivos": []
             }
@@ -3945,7 +3945,7 @@
               "transicao_borda_px": 1.189,
               "nitidez": 5644.4,
               "fracao_tinta": 0.35958,
-              "tempo_s": 0.559,
+              "tempo_s": 0.588,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3958,7 +3958,7 @@
               "transicao_borda_px": 1.189,
               "nitidez": 5644.4,
               "fracao_tinta": 0.35958,
-              "tempo_s": 0.839,
+              "tempo_s": 0.852,
               "pior_que_original": false,
               "motivos": []
             },
@@ -3971,7 +3971,7 @@
               "transicao_borda_px": 1.189,
               "nitidez": 5644.4,
               "fracao_tinta": 0.35958,
-              "tempo_s": 0.795,
+              "tempo_s": 0.87,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4009,7 +4009,7 @@
               "transicao_borda_px": 1.049,
               "nitidez": 4588.2,
               "fracao_tinta": 0.46475,
-              "tempo_s": 0.467,
+              "tempo_s": 0.504,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4022,7 +4022,7 @@
               "transicao_borda_px": 1.049,
               "nitidez": 4524.0,
               "fracao_tinta": 0.46593,
-              "tempo_s": 0.703,
+              "tempo_s": 0.702,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4035,7 +4035,7 @@
               "transicao_borda_px": 1.047,
               "nitidez": 4546.0,
               "fracao_tinta": 0.46607,
-              "tempo_s": 0.799,
+              "tempo_s": 0.732,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4062,7 +4062,7 @@
               "transicao_borda_px": 3.465,
               "nitidez": 22.4,
               "fracao_tinta": 0.20046,
-              "tempo_s": 0.0
+              "tempo_s": 0.001
             },
             "preto_e_branco": {
               "espessura_traco_px": 20.012,
@@ -4073,7 +4073,7 @@
               "transicao_borda_px": 4.482,
               "nitidez": 85.2,
               "fracao_tinta": 0.24328,
-              "tempo_s": 0.566,
+              "tempo_s": 0.648,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4086,7 +4086,7 @@
               "transicao_borda_px": 4.482,
               "nitidez": 85.2,
               "fracao_tinta": 0.24328,
-              "tempo_s": 0.85,
+              "tempo_s": 0.868,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4099,7 +4099,7 @@
               "transicao_borda_px": 4.482,
               "nitidez": 85.2,
               "fracao_tinta": 0.24328,
-              "tempo_s": 0.948,
+              "tempo_s": 0.854,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4129,11 +4129,11 @@
       "folhas": 50,
       "paginas": 50,
       "erro": "",
-      "tempo_analise_s": 2.84,
-      "tempo_por_folha_analise_s": 0.0568,
-      "tempo_export_s": 1.11,
-      "tempo_por_pagina_export_s": 0.158,
-      "pico_memoria_mb": 796.7,
+      "tempo_analise_s": 2.9,
+      "tempo_por_folha_analise_s": 0.058,
+      "tempo_export_s": 1.01,
+      "tempo_por_pagina_export_s": 0.144,
+      "pico_memoria_mb": 787.5,
       "pdf_saida_mb": 0.15,
       "pdf_saida_kb_por_pagina": 21.3,
       "paginas_medidas": [
@@ -4185,7 +4185,7 @@
               "transicao_borda_px": 0.796,
               "nitidez": 229.0,
               "fracao_tinta": 0.05703,
-              "tempo_s": 0.443,
+              "tempo_s": 0.464,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4198,7 +4198,7 @@
               "transicao_borda_px": 0.796,
               "nitidez": 229.0,
               "fracao_tinta": 0.05703,
-              "tempo_s": 0.481,
+              "tempo_s": 0.554,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4211,7 +4211,7 @@
               "transicao_borda_px": 0.796,
               "nitidez": 229.0,
               "fracao_tinta": 0.05703,
-              "tempo_s": 0.799,
+              "tempo_s": 0.887,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4250,7 +4250,7 @@
               "transicao_borda_px": 0.943,
               "nitidez": 11322.4,
               "fracao_tinta": 0.1162,
-              "tempo_s": 0.117,
+              "tempo_s": 0.163,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4263,7 +4263,7 @@
               "transicao_borda_px": 1.221,
               "nitidez": 1184.1,
               "fracao_tinta": 0.14283,
-              "tempo_s": 0.67,
+              "tempo_s": 0.671,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4276,7 +4276,7 @@
               "transicao_borda_px": 1.213,
               "nitidez": 1046.6,
               "fracao_tinta": 0.13942,
-              "tempo_s": 0.72,
+              "tempo_s": 0.754,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4303,7 +4303,7 @@
               "transicao_borda_px": 1.194,
               "nitidez": 1173.7,
               "fracao_tinta": 0.11902,
-              "tempo_s": 0.001
+              "tempo_s": 0.0
             },
             "preto_e_branco": {
               "espessura_traco_px": 4.205,
@@ -4314,7 +4314,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 12126.7,
               "fracao_tinta": 0.10646,
-              "tempo_s": 0.141,
+              "tempo_s": 0.114,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4327,7 +4327,7 @@
               "transicao_borda_px": 1.119,
               "nitidez": 2671.4,
               "fracao_tinta": 0.13226,
-              "tempo_s": 0.628,
+              "tempo_s": 0.644,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4340,7 +4340,7 @@
               "transicao_borda_px": 1.114,
               "nitidez": 2848.3,
               "fracao_tinta": 0.1291,
-              "tempo_s": 0.755,
+              "tempo_s": 0.775,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4378,7 +4378,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 13154.5,
               "fracao_tinta": 0.12878,
-              "tempo_s": 0.095,
+              "tempo_s": 0.119,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4391,7 +4391,7 @@
               "transicao_borda_px": 1.138,
               "nitidez": 3021.1,
               "fracao_tinta": 0.14826,
-              "tempo_s": 0.591,
+              "tempo_s": 0.684,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4404,7 +4404,7 @@
               "transicao_borda_px": 1.128,
               "nitidez": 3199.5,
               "fracao_tinta": 0.14778,
-              "tempo_s": 0.734,
+              "tempo_s": 0.678,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4442,7 +4442,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 12627.2,
               "fracao_tinta": 0.10791,
-              "tempo_s": 0.107,
+              "tempo_s": 0.113,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4455,7 +4455,7 @@
               "transicao_borda_px": 1.122,
               "nitidez": 2955.4,
               "fracao_tinta": 0.1358,
-              "tempo_s": 0.69,
+              "tempo_s": 0.608,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4468,7 +4468,7 @@
               "transicao_borda_px": 1.112,
               "nitidez": 3244.1,
               "fracao_tinta": 0.13315,
-              "tempo_s": 0.639,
+              "tempo_s": 0.662,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4506,7 +4506,7 @@
               "transicao_borda_px": 1.0,
               "nitidez": 12801.5,
               "fracao_tinta": 0.10913,
-              "tempo_s": 0.106,
+              "tempo_s": 0.119,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4519,7 +4519,7 @@
               "transicao_borda_px": 1.115,
               "nitidez": 2789.5,
               "fracao_tinta": 0.13172,
-              "tempo_s": 0.643,
+              "tempo_s": 0.699,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4532,7 +4532,7 @@
               "transicao_borda_px": 1.101,
               "nitidez": 2970.2,
               "fracao_tinta": 0.13069,
-              "tempo_s": 0.746,
+              "tempo_s": 0.742,
               "pior_que_original": false,
               "motivos": []
             }
@@ -4565,12 +4565,12 @@
               "espessura_traco_px": 0.0,
               "vazios_internos": 0,
               "vazios_por_mil_tinta": 0.0,
-              "nivel_fundo": 253.67,
-              "ruido_fundo": 0.0,
+              "nivel_fundo": 145.53,
+              "ruido_fundo": 3.796,
               "transicao_borda_px": 0.0,
-              "nitidez": 984.0,
+              "nitidez": 98.0,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.169,
+              "tempo_s": 0.547,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4578,12 +4578,12 @@
               "espessura_traco_px": 0.0,
               "vazios_internos": 0,
               "vazios_por_mil_tinta": 0.0,
-              "nivel_fundo": 154.33,
-              "ruido_fundo": 4.105,
+              "nivel_fundo": 145.53,
+              "ruido_fundo": 3.796,
               "transicao_borda_px": 0.0,
-              "nitidez": 160.2,
+              "nitidez": 98.0,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.348,
+              "tempo_s": 0.481,
               "pior_que_original": false,
               "motivos": []
             },
@@ -4591,17 +4591,17 @@
               "espessura_traco_px": 0.0,
               "vazios_internos": 0,
               "vazios_por_mil_tinta": 0.0,
-              "nivel_fundo": 154.33,
-              "ruido_fundo": 4.554,
+              "nivel_fundo": 145.53,
+              "ruido_fundo": 3.796,
               "transicao_borda_px": 0.0,
-              "nitidez": 226.9,
+              "nitidez": 98.0,
               "fracao_tinta": 0.0,
-              "tempo_s": 0.396,
+              "tempo_s": 0.675,
               "pior_que_original": false,
               "motivos": []
             }
           },
-          "regioes_achadas": 0,
+          "regioes_achadas": 1,
           "sem_letra_para_medir": true
         }
       ],

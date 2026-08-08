@@ -625,3 +625,49 @@ Sobre isso entrou um cache: a mesma página pergunta o `k` três vezes — o
 detector, o filtro e a limpeza do papel. A chave é o **conteúdo** da imagem, e
 não o objeto, porque o programa copia a página entre um passo e outro. Medido:
 873 ms na primeira vez, 19 ms numa cópia da mesma página.
+
+---
+
+## Tentativa 18 — a capa de trás do Boécio voltava a ser apagada
+
+Achado ao abrir a bateria completa, imagem por imagem: o Preto e branco
+devolvia a capa de pergaminho da página 50 do Boécio como uma **folha branca**.
+É o bug da capa apagada, voltando por um caminho que ninguém tinha medido.
+
+A capa é protegida por ser marcada como gravura de página inteira, e quem
+decide isso é a textura. Contada em todas as páginas sem conteúdo do acervo, os
+dois grupos não se encostam:
+
+| | valores |
+|---|---|
+| folha nua | 0,00 1,31 1,36 1,40 1,49 1,51 1,55 1,91 |
+| capa | 5,05 6,19 6,25 7,10 12,48 |
+
+O limiar estava em **5,5 — dentro do grupo das capas**. A de 5,05 ficava de
+fora. Agora está em 3,0, no meio do vão, com folga de mais de duas vezes para
+cada lado.
+
+### A régua estava errada, e isso escondia o bug
+
+A régua da seleção classificava essa página como "folha de guarda, sem nada
+impresso". Não é. Aberta ao lado da página 1, é a **capa de trás do mesmo
+pergaminho**: mesma cor, mesmo grão de couro, e as duas trazem a etiqueta
+octogonal RESERVADO / B. N. L. da biblioteca — na p1 à esquerda, na p50 à
+direita, como é de esperar do verso.
+
+Enquanto o caso dizia "folha nua", a régua **aprovava** a página sair branca. A
+classificação errada não era um detalhe: era ela que escondia o defeito.
+
+Corrigi o caso e escrevi o porquê dentro do próprio arquivo, para o Samuel
+poder discordar sem ter de reconstituir o raciocínio.
+
+### Resultado
+
+| | antes | depois |
+|---|---|---|
+| páginas piores que o original | 4 | **4** |
+| régua da seleção | 24 de 26 | **24 de 26** |
+| pico de memória | 1458 MB | 1454 MB |
+
+Nada piorou, e a capa sai inteira. As folhas nuas continuam indo a branco — a
+anotação a lápis no pé do Palatino sobrevive.
