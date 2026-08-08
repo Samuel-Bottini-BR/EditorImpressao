@@ -28,4 +28,4 @@ pode se perder.
 | OK Disco cheio ou sem destino | unidade inexistente | sim | Não consegui gravar nessa pasta. Ela pode ter sido removida, estar cheia ou ser um pendrive que foi tirado. Escolha outra pasta e tente de novo. | nao |
 | OK Cancelar no meio | usuario desiste | sim | nada pela metade ficou no disco | nao |
 | OK Abrir varios livros sem reiniciar | um apos o outro | sim | tres livros seguidos, sem reiniciar | nao |
-| OK Memoria com livro grande | 1 pagina contra 1010 | sim | 1 pagina: +6 MB; 1010 paginas: +4 MB | nao |
+| OK Memoria com livro grande | 1 pagina contra 1010 | sim | 1 pagina: +5 MB; 1010 paginas: +4 MB | nao |
