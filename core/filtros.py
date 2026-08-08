@@ -314,8 +314,35 @@ K_PARA_LETRA_FINA, K_PARA_LETRA_GROSSA = 0.30, 0.12
 ALTURA_PARA_MEDIR_TRACO = 2500
 
 
+# A mesma pagina pergunta o k tres vezes: o detector, ao marcar; o filtro, ao
+# binarizar; e a limpeza do papel. Guardar as ultimas respostas corta duas
+# medicoes de cada tres. A chave e o conteudo da imagem, e nao o objeto: o
+# programa copia a pagina entre um passo e outro, e por objeto o cache nunca
+# acertaria. Somar o hash custa uns 10 ms contra os 319 ms da medicao.
+# Sao quatro entradas porque uma pagina passa por no maximo quatro versoes
+# diferentes de si mesma dentro de um filtro.
+_KS_GUARDADOS: dict[tuple, float] = {}
+_KS_GUARDADOS_MAX = 4
+
+
 def k_para_a_letra(cinza: np.ndarray) -> float:
     """O k que a letra desta pagina pede. Ver o comentario acima."""
+    from hashlib import blake2b
+
+    chave = (cinza.shape, cinza.dtype.str,
+             blake2b(np.ascontiguousarray(cinza), digest_size=16).digest())
+    if chave in _KS_GUARDADOS:
+        return _KS_GUARDADOS[chave]
+
+    k = _medir_k_para_a_letra(cinza)
+    if len(_KS_GUARDADOS) >= _KS_GUARDADOS_MAX:
+        _KS_GUARDADOS.pop(next(iter(_KS_GUARDADOS)))
+    _KS_GUARDADOS[chave] = k
+    return k
+
+
+def _medir_k_para_a_letra(cinza: np.ndarray) -> float:
+    """A medicao de verdade, sem o cache. Ver k_para_a_letra."""
     escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
     if escala < 1.0:
         cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
