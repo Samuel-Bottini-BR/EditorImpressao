@@ -65,7 +65,13 @@ from modelos import Projeto
 from registro import registrar_erro
 from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO
 from ui.tarefas import GerenciadorPrevias
+from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
+from ui.widgets.editor_selecao import (
+    ATALHOS_DAS_FERRAMENTAS,
+    FERRAMENTA_RETANGULO,
+)
+from ui.widgets.trilha_ferramentas import TrilhaFerramentas
 
 from ui.widgets.medidor import Medidor
 from ui.widgets.tira_miniaturas import TiraMiniaturas
@@ -199,15 +205,28 @@ class TelaConferir(QWidget):
         self.barra_abas.currentChanged.connect(self._trocou_de_aba)
         camadas.addWidget(self.barra_abas)                   # 2
 
-        # 3 - area da imagem: e a unica linha com stretch, entao fica com todo
-        # o espaco que sobrar depois que as outras pegam o minimo delas
+        # A barra de opcoes: faixa fina que muda conforme a ferramenta na mao.
+        # E o que deixa a tela ter nove ferramentas sem entulhar - so os
+        # controles da ferramenta ativa aparecem.
+        self.barra_opcoes = BarraOpcoes()
+        camadas.addWidget(self.barra_opcoes)
+
+        # 3 - a pagina, com a trilha de ferramentas ao lado. E a unica linha
+        # com stretch, entao fica com todo o espaco que sobrar.
+        meio = QHBoxLayout()
+        meio.setContentsMargins(0, 0, 0, 0)
+        meio.setSpacing(0)
+
+        self.trilha = TrilhaFerramentas()
+        meio.addWidget(self.trilha)
+
         self.area_imagem = QStackedWidget()
         self.area_imagem.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Minimo pequeno para que a soma de todas as linhas caiba na janela
-        # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas. O valor
-        # foi apertado de novo quando o bloco de Ajuste entrou na tela.
+        # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
         self.area_imagem.setMinimumHeight(112)
-        camadas.addWidget(self.area_imagem, 1)
+        meio.addWidget(self.area_imagem, 1)
+        camadas.addLayout(meio, 1)
 
         self.faixa = QFrame()                                # 4
         self.faixa.setObjectName("faixaInfo")
@@ -234,6 +253,34 @@ class TelaConferir(QWidget):
         # Confirmar e processar, e tambem no menu Arquivo. So isso devolve uma
         # faixa de altura para a pagina, que e o que precisa ser olhado.
         camadas.addLayout(self._montar_rodape())             # 7
+
+    def _ligar_ferramentas(self) -> None:
+        """A trilha manda na barra de opcoes e no editor, nesta ordem.
+
+        Um lugar so decide qual ferramenta esta na mao. Antes havia uma fila de
+        botoes que sabia disso e o editor que sabia de novo, e os dois saiam do
+        ar quando alguem esquecia de avisar o outro.
+        """
+        self.trilha.escolhida.connect(self.barra_opcoes.definir_ferramenta)
+        self.trilha.escolhida.connect(self.editor_selecao.definir_ferramenta)
+
+        opcoes, editor = self.barra_opcoes, self.editor_selecao
+        opcoes.operacao_mudou.connect(editor.definir_operacao)
+        opcoes.tolerancia_mudou.connect(
+            lambda valor: setattr(editor, "tolerancia", int(valor)))
+        opcoes.espessura_mudou.connect(
+            lambda valor: setattr(editor, "espessura", float(valor)))
+        opcoes.zoom_mudou.connect(editor.definir_zoom)
+        opcoes.ajustar_pedido.connect(editor.ajustar_a_tela)
+
+        self.trilha.definir_ferramenta(FERRAMENTA_RETANGULO)
+        self.barra_opcoes.definir_ferramenta(FERRAMENTA_RETANGULO)
+
+    def escolher_ferramenta(self, ferramenta: str) -> None:
+        """Ponto unico de troca - usado tambem pelos atalhos de letra."""
+        self.trilha.definir_ferramenta(ferramenta)
+        self.barra_opcoes.definir_ferramenta(ferramenta)
+        self.editor_selecao.definir_ferramenta(ferramenta)
 
     def _montar_cabecalho(self) -> QHBoxLayout:
         topo = QHBoxLayout()
@@ -428,34 +475,16 @@ class TelaConferir(QWidget):
             self.botoes_tipo[tipo] = botao
         tipos.addSpacing(16)
 
-        # somar ou tirar
-        self.botao_somar = QPushButton("Somar")
-        self.botao_somar.setCheckable(True)
-        self.botao_somar.setChecked(True)
-        _ligar(self.botao_somar, lambda: self._escolher_operacao(SOMAR))
-        self.botao_subtrair = QPushButton("Tirar")
-        self.botao_subtrair.setCheckable(True)
-        _ligar(self.botao_subtrair, lambda: self._escolher_operacao(SUBTRAIR))
-        tipos.addWidget(self.botao_somar)
-        tipos.addWidget(self.botao_subtrair)
+        # SOMAR e TIRAR sairam daqui: eles nao sao ferramentas, sao modos que
+        # modificam a ferramenta escolhida, e agora ficam a direita da barra de
+        # opcoes, em todas as ferramentas de selecao. Misturados com Retangulo
+        # e Laco, pareciam uma escolha entre eles.
+        #
+        # As FERRAMENTAS tambem sairam: eram sete botoes largos numa linha
+        # atravessando a tela, e cada linha dessas custava altura da pagina.
+        # Agora sao nove icones numa coluna de 42 px - largura sobra.
         tipos.addStretch()
         fora.addLayout(tipos)
-
-        # as ferramentas
-        ferramentas = QHBoxLayout()
-        ferramentas.addWidget(QLabel("Ferramenta:"))
-        self.botoes_ferramenta = {}
-        for ferramenta in (FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE, FERRAMENTA_LACO,
-                           FERRAMENTA_POLIGONO, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA,
-                           FERRAMENTA_COR):
-            botao = QPushButton(NOMES_DAS_FERRAMENTAS[ferramenta])
-            botao.setCheckable(True)
-            botao.setChecked(ferramenta == FERRAMENTA_RETANGULO)
-            _ligar(botao, lambda f=ferramenta: self._escolher_ferramenta(f))
-            ferramentas.addWidget(botao)
-            self.botoes_ferramenta[ferramenta] = botao
-        ferramentas.addStretch()
-        fora.addLayout(ferramentas)
 
         # Filtro so no pedaco marcado. Serve para deixar uma gravura no
         # Original enquanto a folha inteira vai a Preto e branco.
@@ -501,16 +530,13 @@ class TelaConferir(QWidget):
             botao.setChecked(chave == tipo)
 
     def _escolher_operacao(self, operacao: str) -> None:
-        from core.selecao import SOMAR
-
+        """Somar ou tirar. Quem mostra o estado agora e a barra de opcoes."""
         self.editor_selecao.definir_operacao(operacao)
-        self.botao_somar.setChecked(operacao == SOMAR)
-        self.botao_subtrair.setChecked(operacao != SOMAR)
+        self.barra_opcoes._escolher_modo(operacao, avisar=False)
 
     def _escolher_ferramenta(self, ferramenta: str) -> None:
-        self.editor_selecao.definir_ferramenta(ferramenta)
-        for chave, botao in self.botoes_ferramenta.items():
-            botao.setChecked(chave == ferramenta)
+        """Mantido pelo nome antigo; passa pelo ponto unico de troca."""
+        self.escolher_ferramenta(ferramenta)
 
     def _escolher_filtro_da_regiao(self, filtro: str) -> None:
         """Que filtro vale so no que for marcado daqui em diante."""
@@ -733,6 +759,9 @@ class TelaConferir(QWidget):
             if projeto.limpar and projeto.detectar_regioes:
                 self._montar_aba_marcar()
                 self._abas_ativas.append(ABA_MARCAR)
+                # A trilha e a barra so podem ser ligadas depois que o editor
+                # existe - ele nasce aqui, e nao no construtor da tela.
+                self._ligar_ferramentas()
             if projeto.limpar or not self._abas_ativas:
                 self._montar_aba_filtro()
                 self._abas_ativas.append(ABA_FILTRO)
@@ -1523,6 +1552,16 @@ class TelaConferir(QWidget):
         if ctrl and tecla in (Qt.Key_Return, Qt.Key_Enter):
             self._pedir_processamento()
             return True
+
+        # As letras das ferramentas: R O L P B V C Z E. Nao conflitam com os
+        # numeros 1 2 3 4, que continuam trocando o filtro. So valem sem Ctrl,
+        # senao roubariam Ctrl+O e Ctrl+Z de quem espera abrir e desfazer.
+        if not ctrl:
+            letra = evento.text().upper()
+            for ferramenta, atalho in ATALHOS_DAS_FERRAMENTAS.items():
+                if letra == atalho:
+                    self.escolher_ferramenta(ferramenta)
+                    return True
 
         if tecla == Qt.Key_Left:
             self._navegar(-1)

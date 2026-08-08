@@ -67,6 +67,14 @@ FERRAMENTA_PINCEL = "pincel"
 FERRAMENTA_VARINHA = "varinha"
 FERRAMENTA_COR = "cor"
 
+# As duas de NAVEGACAO, novas. Elas nao marcam nada: mudam o que se ve. Antes
+# nao havia como olhar a pagina de perto sem sair da tela, e conferir marcacao
+# fina - pauta de partitura, contorno de letra - de longe nao da.
+FERRAMENTA_ZOOM = "zoom"
+FERRAMENTA_MAO = "mao"
+
+FERRAMENTAS_DE_NAVEGACAO = (FERRAMENTA_ZOOM, FERRAMENTA_MAO)
+
 FERRAMENTAS = (
     FERRAMENTA_RETANGULO,
     FERRAMENTA_ELIPSE,
@@ -75,6 +83,8 @@ FERRAMENTAS = (
     FERRAMENTA_PINCEL,
     FERRAMENTA_VARINHA,
     FERRAMENTA_COR,
+    FERRAMENTA_ZOOM,
+    FERRAMENTA_MAO,
 )
 
 NOMES_DAS_FERRAMENTAS = {
@@ -85,7 +95,32 @@ NOMES_DAS_FERRAMENTAS = {
     FERRAMENTA_PINCEL: "Pincel",
     FERRAMENTA_VARINHA: "Varinha mágica",
     FERRAMENTA_COR: "Pegar tudo desta cor",
+    FERRAMENTA_ZOOM: "Zoom",
+    FERRAMENTA_MAO: "Mão",
 }
+
+# A letra do atalho de cada uma, como no desenho aprovado. Nao conflitam com os
+# numeros 1 2 3 4, que continuam trocando o filtro.
+ATALHOS_DAS_FERRAMENTAS = {
+    FERRAMENTA_RETANGULO: "R",
+    FERRAMENTA_ELIPSE: "O",
+    FERRAMENTA_LACO: "L",
+    FERRAMENTA_POLIGONO: "P",
+    FERRAMENTA_PINCEL: "B",
+    FERRAMENTA_VARINHA: "V",
+    FERRAMENTA_COR: "C",
+    FERRAMENTA_ZOOM: "Z",
+    FERRAMENTA_MAO: "E",
+}
+
+# A ordem da trilha. O traco entre a setima e a oitava separa as de MARCAR das
+# de NAVEGAR - sao coisas diferentes e nao devem parecer irmas.
+ORDEM_DA_TRILHA = (
+    FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE, FERRAMENTA_LACO,
+    FERRAMENTA_POLIGONO, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA,
+    FERRAMENTA_COR,
+    FERRAMENTA_ZOOM, FERRAMENTA_MAO,
+)
 
 AJUDA_DAS_FERRAMENTAS = {
     FERRAMENTA_RETANGULO: "Arraste de um canto ao outro.",
@@ -96,7 +131,15 @@ AJUDA_DAS_FERRAMENTAS = {
     FERRAMENTA_VARINHA: "Clique numa cor e ela pega a mancha inteira.",
     FERRAMENTA_COR: "Clique numa cor e ela pega TUDO daquela cor na página. "
                     "A roda do mouse muda o quanto a cor pode variar.",
+    FERRAMENTA_ZOOM: "Clique para aproximar. Com Alt, afasta. "
+                     "A roda do mouse também aproxima e afasta.",
+    FERRAMENTA_MAO: "Arraste para andar pela página aproximada.",
 }
+
+# Ate onde da para aproximar. Abaixo de 1 a pagina ficaria menor que a area, o
+# que nao serve para nada aqui.
+ZOOM_MIN, ZOOM_MAX = 1.0, 8.0
+PASSO_DO_ZOOM = 1.25
 
 # Cor de cada tipo na tela. As mesmas dos testes, para quem viu os relatorios
 # reconhecer.
@@ -164,6 +207,33 @@ class EditorSelecao(QWidget):
         # e barato e suficiente - toda acao so ACRESCENTA regioes.
         self._marcos: list[int] = []
 
+        # Zoom e deslocamento. 1,0 quer dizer "do tamanho da area". Como toda a
+        # geometria sai de _calcular_area, as alcas e a marcacao continuam no
+        # lugar certo em qualquer aproximacao, sem conta nenhuma a mais.
+        self.zoom = 1.0
+        self.deslocamento = QPoint(0, 0)
+        self._arrastando_vista = False
+        self._ponto_do_arrasto = QPoint()
+        self._deslocamento_inicial = QPoint()
+
+    # --- zoom e deslocamento ---------------------------------------------
+
+    def definir_zoom(self, zoom: float) -> None:
+        novo = float(min(max(zoom, ZOOM_MIN), ZOOM_MAX))
+        if abs(novo - self.zoom) < 1e-4:
+            return
+        self.zoom = novo
+        if self.zoom <= 1.0:
+            self.deslocamento = QPoint(0, 0)
+        self.aviso.emit(f"Zoom: {self.zoom * 100:.0f}%")
+        self.update()
+
+    def ajustar_a_tela(self) -> None:
+        self.zoom = 1.0
+        self.deslocamento = QPoint(0, 0)
+        self.aviso.emit("Zoom: 100%")
+        self.update()
+
     # --- entrada ----------------------------------------------------------
 
     def definir_imagem(self, img: np.ndarray | None) -> None:
@@ -185,11 +255,18 @@ class EditorSelecao(QWidget):
         self.update()
 
     def definir_ferramenta(self, ferramenta: str) -> None:
-        if ferramenta in FERRAMENTAS:
-            self.ferramenta = ferramenta
-            self._pontos_poligono.clear()
-            self.aviso.emit(AJUDA_DAS_FERRAMENTAS[ferramenta])
-            self.update()
+        if ferramenta not in FERRAMENTAS:
+            return
+        self.ferramenta = ferramenta
+        self._pontos_poligono.clear()
+        self.aviso.emit(AJUDA_DAS_FERRAMENTAS[ferramenta])
+        # O cursor diz qual ferramenta esta na mao sem a pessoa ter de olhar
+        # para a trilha.
+        self.setCursor({
+            FERRAMENTA_MAO: Qt.OpenHandCursor,
+            FERRAMENTA_ZOOM: Qt.CrossCursor,
+        }.get(ferramenta, Qt.ArrowCursor))
+        self.update()
 
     def definir_tipo(self, tipo: str) -> None:
         if tipo in (GRAVURA, LETRA, PAPEL):
@@ -248,12 +325,20 @@ class EditorSelecao(QWidget):
     # --- geometria --------------------------------------------------------
 
     def _calcular_area(self) -> QRect:
+        """Onde a pagina e desenhada, ja com o zoom e o deslocamento.
+
+        Toda a geometria da marcacao sai daqui. Por isso as alcas e as regioes
+        continuam certas em qualquer aproximacao: quem muda e a area, e nao
+        cada conta espalhada pelo arquivo.
+        """
         if self._pixmap is None or self._pixmap.isNull():
             return QRect()
         largura, altura = self._pixmap.width(), self._pixmap.height()
-        escala = min(self.width() / largura, self.height() / altura)
-        w, h = int(largura * escala), int(altura * escala)
-        return QRect((self.width() - w) // 2, (self.height() - h) // 2, w, h)
+        escala = min(self.width() / largura, self.height() / altura) * self.zoom
+        w, h = max(1, int(largura * escala)), max(1, int(altura * escala))
+        x = (self.width() - w) // 2 + self.deslocamento.x()
+        y = (self.height() - h) // 2 + self.deslocamento.y()
+        return QRect(x, y, w, h)
 
     def _para_fracao(self, ponto: QPoint) -> tuple[float, float]:
         """Ponto da tela para fracao da imagem, de 0 a 1."""
@@ -358,6 +443,21 @@ class EditorSelecao(QWidget):
         if self._pixmap is None or evento.button() != Qt.LeftButton:
             return
         self._area = self._calcular_area()
+
+        # As duas de navegacao vem antes: elas nao marcam nada, e nao devem
+        # deixar rastro na selecao.
+        if self.ferramenta == FERRAMENTA_ZOOM:
+            afastar = bool(evento.modifiers() & Qt.AltModifier)
+            self.definir_zoom(self.zoom / PASSO_DO_ZOOM if afastar
+                              else self.zoom * PASSO_DO_ZOOM)
+            return
+        if self.ferramenta == FERRAMENTA_MAO:
+            self._arrastando_vista = True
+            self._ponto_do_arrasto = evento.position().toPoint()
+            self._deslocamento_inicial = QPoint(self.deslocamento)
+            self.setCursor(Qt.ClosedHandCursor)
+            return
+
         ponto = self._para_fracao(evento.position().toPoint())
 
         if self.ferramenta == FERRAMENTA_VARINHA:
@@ -376,6 +476,11 @@ class EditorSelecao(QWidget):
         self.update()
 
     def mouseMoveEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        if self._arrastando_vista:
+            andou = evento.position().toPoint() - self._ponto_do_arrasto
+            self.deslocamento = self._deslocamento_inicial + andou
+            self.update()
+            return
         if not self._desenhando:
             return
         ponto = self._para_fracao(evento.position().toPoint())
@@ -389,6 +494,10 @@ class EditorSelecao(QWidget):
         self.update()
 
     def mouseReleaseEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        if self._arrastando_vista:
+            self._arrastando_vista = False
+            self.setCursor(Qt.OpenHandCursor)
+            return
         if not self._desenhando or evento.button() != Qt.LeftButton:
             return
         self._desenhando = False
@@ -426,6 +535,9 @@ class EditorSelecao(QWidget):
             self.tolerancia = int(min(max(self.tolerancia * passo,
                                           TOLERANCIA_MIN), TOLERANCIA_MAX))
             self.aviso.emit(f"Varinha: tolerância {self.tolerancia}")
+        elif self.ferramenta in FERRAMENTAS_DE_NAVEGACAO:
+            self.definir_zoom(self.zoom * (PASSO_DO_ZOOM if passo > 1
+                                           else 1 / PASSO_DO_ZOOM))
         else:
             super().wheelEvent(evento)
 
