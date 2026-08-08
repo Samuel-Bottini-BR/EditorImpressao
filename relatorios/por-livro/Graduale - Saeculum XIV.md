@@ -3,7 +3,7 @@
 - Arquivo de 271 MB
 - 750 folhas no PDF, que viram 750 paginas de saida
 - 7 paginas medidas a fundo
-- 231 segundos para analisar o livro inteiro (308 milissegundos por folha)
+- 288 segundos para analisar o livro inteiro (384 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -28,8 +28,8 @@ e um pedido de conferida.
 
 ## Observacoes do livro inteiro
 
-- este livro tem uma página por folha, não duas
 - o livro inteiro foi escaneado em qualidade baixa
+- este livro tem uma página por folha, não duas
 - o livro inteiro é colorido
 
 ## As paginas saem todas do mesmo tamanho?

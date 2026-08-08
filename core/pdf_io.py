@@ -132,6 +132,9 @@ def pagina_para_array(
     """Rasteriza uma página e devolve um array BGR (uint8), no formato do OpenCV.
 
     O DPI pedido e reduzido sozinho se a página for grande demais.
+
+    Ao sair, o armazem interno do MuPDF e esvaziado - ver o fim da funcao. Sem
+    isso, uma pagina de cada vez na memoria deixa de valer.
     """
     if not 0 <= indice < doc.page_count:
         raise ErroPDF(f"Essa página não existe (pedi a {indice + 1}).")
@@ -150,6 +153,21 @@ def pagina_para_array(
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     resultado = np.ascontiguousarray(img)
     del pix  # solta a memoria do pixmap na hora
+
+    # E esvazia o armazem do MuPDF. Soltar o pixmap nao basta: por baixo, a
+    # biblioteca guarda fontes, imagens e a arvore de cada pagina ja aberta,
+    # num cache que ela so limpa quando o documento fecha. Num livro de 900
+    # folhas isso e o programa inteiro na memoria, e nao uma folha.
+    #
+    # Medido no Marial, 205 MB de arquivo, virando 100 folhas:
+    #
+    #     sem esvaziar   65 -> 279 MB, subindo uns 2 MB por folha
+    #     esvaziando     65 ->  70 MB, e para de subir
+    #
+    # O store_shrink(100) manda liberar 100% do que der. O custo e reabrir o
+    # que for preciso na proxima folha - e como cada folha e lida uma vez so,
+    # nao ha nada a reaproveitar.
+    fitz.TOOLS.store_shrink(100)
     return resultado
 
 

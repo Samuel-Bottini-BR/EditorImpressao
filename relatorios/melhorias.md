@@ -671,3 +671,70 @@ poder discordar sem ter de reconstituir o raciocínio.
 
 Nada piorou, e a capa sai inteira. As folhas nuas continuam indo a branco — a
 anotação a lápis no pé do Palatino sobrevive.
+
+---
+
+## Tentativa 19 — folhear o livro, e o vazamento que ele revelou
+
+> "gostaria de poder visualizar o PDF e poder folhear ele enquanto escolho as
+> opções que vão ser aplicadas nele nesta parte do programa aqui" — o Samuel,
+> sobre a tela "Marque o que você quer fazer"
+
+A tela passou a ter duas colunas: as escolhas à esquerda, o livro à direita,
+com `<`, `>`, contador de folhas e botão **tela cheia**. Sem isso a pessoa
+marcava "dividir folhas ao meio" sem ter visto se a folha tem mesmo duas
+páginas, e só descobria o engano na tela seguinte.
+
+Mostra a folha **como ela é no arquivo**, sem filtro nenhum. O que os filtros
+fazem se vê na tela de conferir, com a prévia lado a lado; misturar as duas
+coisas aqui faria julgar o filtro por uma imagem pequena.
+
+### O que apareceu ao medir a memória
+
+Medindo o folhear no Marial (907 folhas, 205 MB), a memória subia **uns 2 MB a
+cada folha virada**:
+
+| folhas viradas | memória |
+|---|---|
+| 25 | 157 MB |
+| 50 | 209 MB |
+| 75 | 262 MB |
+| 100 | 314 MB |
+
+Não era do folhear: era do `pagina_para_array`, que **todo o programa usa** — o
+pipeline, as prévias, as miniaturas e a régua. Por baixo, o MuPDF guarda
+fontes, imagens e a árvore de cada página já aberta, num armazém que ele só
+limpa quando o documento fecha. Num livro de 900 folhas isso é o programa
+inteiro na memória, e não uma folha.
+
+Uma linha resolve — `fitz.TOOLS.store_shrink(100)` ao fim de cada leitura:
+
+| folhas viradas | antes | depois |
+|---|---|---|
+| 100 | 314 MB | **105 MB, e para de subir** |
+
+### Sobre o teste dessa correção
+
+Tentei testar medindo a memória do processo, e não dá: o armazém do MuPDF tem
+teto próprio, uns 256 MB. Um PDF de teste satura o teto na primeira volta e
+para de crescer — **o teste passava com e sem a correção**, e teste que passa
+sempre não é teste. Reproduzir de verdade exigiria mais de 256 MB de páginas
+diferentes, e uma bateria não pode custar isso.
+
+O teste que ficou verifica o que dá para afirmar sem enganar: **ler uma folha
+esvazia o armazém**. Conferido que ele reprova quando a linha sai. O número de
+verdade está medido acima, no acervo, à mão.
+
+### O que a correção do vazamento fez no acervo inteiro
+
+A régua sobre os nove livros, com e sem a linha:
+
+| | antes | depois |
+|---|---|---|
+| pico de memória | 1454 MB | **1148 MB** (teto 2048) |
+| páginas piores que o original | 4 | 4 |
+| abrir o programa | 0,46 s | 0,56 s |
+
+São 306 MB a menos no programa inteiro, e não só no folhear — porque quem
+lia página era o `pagina_para_array`, e ele é o mesmo para o pipeline, as
+prévias, as miniaturas e a própria régua. Nada piorou em qualidade.

@@ -1,6 +1,6 @@
 # Linha de base do Editor de Impressao
 
-Medido em 08/08/2026 as 03:41.
+Medido em 08/08/2026 as 09:40.
 
 Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em numeros como ele esta hoje. Serve para que, depois de qualquer mudanca, se possa medir de novo e saber se melhorou de verdade ou se foi so impressao.
 
@@ -9,7 +9,7 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 - Foram medidos **9 livros**, 2903 folhas, 3037 paginas de saida.
 - A qualidade de imagem foi medida a fundo em **63 paginas**, as mesmas em toda rodada.
 - **4 vezes um filtro deixou a pagina pior do que ela era.** Cada caso e uma pagina com um filtro; a mesma pagina pode aparecer mais de uma vez, uma por filtro que a estragou. O criterio de aceitacao do projeto exige que esse numero seja zero.
-- O programa nunca passou de **1454 MB** de memoria, contra o teto de 2048 MB.
+- O programa nunca passou de **1148 MB** de memoria, contra o teto de 2048 MB.
 
 ## O que cada numero quer dizer
 
@@ -27,9 +27,9 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 | Filtro | Espessura | Vazios | Fundo (255=branco) | Ruido | Transicao (px) | Nitidez | Tempo/pagina |
 |---|---|---|---|---|---|---|---|
 | Original | 32.55 | 1753 | 189.0 | 2.41 | 1.43 | 741 | 0.00s |
-| Preto e branco | 14.55 | 2334 | 226.3 | 1.18 | 1.16 | 6135 | 2.17s |
-| Melhorar | 27.95 | 2560 | 219.3 | 1.26 | 1.44 | 1795 | 3.97s |
-| Mágico pro | 33.56 | 2645 | 219.4 | 1.25 | 1.40 | 1813 | 4.50s |
+| Preto e branco | 14.55 | 2334 | 226.3 | 1.18 | 1.16 | 6135 | 2.88s |
+| Melhorar | 27.95 | 2560 | 219.3 | 1.26 | 1.44 | 1795 | 5.21s |
+| Mágico pro | 33.56 | 2645 | 219.4 | 1.25 | 1.40 | 1813 | 5.82s |
 
 > Leitura rapida: na coluna **Fundo**, quanto mais perto de 255 melhor - e o amarelado indo embora. Na coluna **Transicao**, o alvo e entre 1,2 e 2; valor muito baixo e o serrilhado que aparece nas letras.
 
@@ -37,11 +37,11 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 
 | O que | Medido | Meta | Passou? |
 |---|---|---|---|
-| Abrir o programa | 0.46 s | 10 s | sim |
+| Abrir o programa | 0.56 s | 10 s | sim |
 | Primeiras miniaturas | 0.51 s | 5 s | sim |
-| Analisar 500 folhas (projecao) | 170 s | 180 s | sim |
-| Exportar 500 paginas a 300 DPI (projecao) | 492 s | 1200 s | sim |
-| Pico de memoria | 1454 MB | 2048 MB | sim |
+| Analisar 500 folhas (projecao) | 220 s | 180 s | NAO |
+| Exportar 500 paginas a 300 DPI (projecao) | 646 s | 1200 s | sim |
+| Pico de memoria | 1148 MB | 2048 MB | sim |
 
 > As duas linhas marcadas como **projecao** foram calculadas a partir do custo real por folha e por pagina medido nos nove livros, multiplicado por 500. Nenhum livro do acervo tem 500 paginas.
 
@@ -49,15 +49,15 @@ Este relatorio e uma **regua**: ele nao diz se o programa esta bonito, diz em nu
 
 | Livro | Tamanho | Folhas | Paginas | Analise | Paginas piores |
 |---|---|---|---|---|---|
-| Giovambattista Palatino cittadino romano | 9 MB | 134 | 134 | 46.6s | 0 |
-| Graduale - Saeculum XIV | 271 MB | 750 | 750 | 230.8s | 3 |
-| Livro de Horas - Luís XIV | 106 MB | 191 | 191 | 61.3s | 0 |
-| Marial de sermoens - Frei Balthasar Paez. (1 | 205 MB | 907 | 907 | 135.3s | 0 |
-| Na escola de Jesus - Catecismo explicado com | 48 MB | 199 | 199 | 29.5s | 0 |
-| POINTS d´ANCIENNES BRODERIES ANGLAISES - Lou | 12 MB | 92 | 92 | 72.3s | 1 |
-| Rhetorica Christiana -  Fray Diego Valadés | 40 MB | 446 | 446 | 214.7s | 0 |
-| Schön Neues Modell Buch - Johann Siebmacher | 11 MB | 134 | 268 | 62.4s | 0 |
-| Sobre a Consolação da Filosofia - Severino B | 4 MB | 50 | 50 | 2.9s | 0 |
+| Giovambattista Palatino cittadino romano | 9 MB | 134 | 134 | 54.8s | 0 |
+| Graduale - Saeculum XIV | 271 MB | 750 | 750 | 288.0s | 3 |
+| Livro de Horas - Luís XIV | 106 MB | 191 | 191 | 81.1s | 0 |
+| Marial de sermoens - Frei Balthasar Paez. (1 | 205 MB | 907 | 907 | 170.7s | 0 |
+| Na escola de Jesus - Catecismo explicado com | 48 MB | 199 | 199 | 40.9s | 0 |
+| POINTS d´ANCIENNES BRODERIES ANGLAISES - Lou | 12 MB | 92 | 92 | 98.0s | 1 |
+| Rhetorica Christiana -  Fray Diego Valadés | 40 MB | 446 | 446 | 278.2s | 0 |
+| Schön Neues Modell Buch - Johann Siebmacher | 11 MB | 134 | 268 | 79.7s | 0 |
+| Sobre a Consolação da Filosofia - Severino B | 4 MB | 50 | 50 | 3.3s | 0 |
 
 ## Paginas que sairam piores que o original
 

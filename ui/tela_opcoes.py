@@ -22,6 +22,7 @@ from core.filtros import MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO
 from core.pipeline import resumo_em_portugues
 from modelos import Projeto
 from ui.estilo import TEXTO_FRACO
+from ui.widgets.folhear_pdf import FolhearPDF
 
 FILTROS_NA_TELA = [
     (ORIGINAL, "Original", "não mexe na página"),
@@ -53,6 +54,18 @@ class TelaOpcoes(QWidget):
         self.arquivo = QLabel("")
         self.arquivo.setObjectName("fraco")
         camadas.addWidget(self.arquivo)
+
+        # Duas colunas: as escolhas de um lado, o livro do outro. Antes as
+        # escolhas ocupavam a largura toda e sobrava meia tela em branco - e a
+        # pessoa marcava "dividir folhas ao meio" sem ter visto se a folha tem
+        # mesmo duas páginas. Ver FolhearPDF.
+        colunas = QHBoxLayout()
+        colunas.setSpacing(20)
+        camadas.addLayout(colunas, 1)
+
+        esquerda = QVBoxLayout()
+        esquerda.setSpacing(14)
+        colunas.addLayout(esquerda, 3)
 
         cartao = QFrame()
         cartao.setObjectName("cartao")
@@ -87,7 +100,7 @@ class TelaOpcoes(QWidget):
         self.painel_caderno = self._montar_caderno()
         opcoes.addWidget(self.painel_caderno)
 
-        camadas.addWidget(cartao)
+        esquerda.addWidget(cartao)
 
         self.faixa = QFrame()
         self.faixa.setObjectName("faixaInfo")
@@ -96,18 +109,27 @@ class TelaOpcoes(QWidget):
         self.resumo = QLabel("")
         self.resumo.setWordWrap(True)
         faixa_camada.addWidget(self.resumo)
-        camadas.addWidget(self.faixa)
+        esquerda.addWidget(self.faixa)
 
-        camadas.addStretch()
+        esquerda.addStretch()
+
+        direita = QVBoxLayout()
+        direita.setSpacing(6)
+        rotulo_livro = QLabel("O livro, como está agora")
+        rotulo_livro.setStyleSheet(f"color: {TEXTO_FRACO};")
+        direita.addWidget(rotulo_livro)
+        self.folhear = FolhearPDF()
+        direita.addWidget(self.folhear, 1)
+        colunas.addLayout(direita, 2)
 
         rodape = QHBoxLayout()
         botao_voltar = QPushButton("voltar")
-        botao_voltar.clicked.connect(self.voltar.emit)
+        botao_voltar.clicked.connect(self._sair)
         rodape.addWidget(botao_voltar)
         rodape.addStretch()
         self.botao_conferir = QPushButton("Conferir")
         self.botao_conferir.setObjectName("primario")
-        self.botao_conferir.clicked.connect(self.conferir.emit)
+        self.botao_conferir.clicked.connect(self._seguir)
         rodape.addWidget(self.botao_conferir)
         camadas.addLayout(rodape)
 
@@ -185,6 +207,18 @@ class TelaOpcoes(QWidget):
             if botao.property("filtro") == projeto.filtro_padrao:
                 botao.setChecked(True)
         self._mudou()
+
+        self.folhear.abrir(projeto.caminho_entrada)
+
+    def _sair(self) -> None:
+        """Solta o arquivo antes de sair. Ver FolhearPDF.fechar."""
+        self.folhear.fechar()
+        self.voltar.emit()
+
+    def _seguir(self) -> None:
+        """Idem, indo para a conferência: quem lê o livro daqui é o pipeline."""
+        self.folhear.fechar()
+        self.conferir.emit()
 
     def _filtro_escolhido(self) -> str:
         for botao in self.grupo_filtros.buttons():
