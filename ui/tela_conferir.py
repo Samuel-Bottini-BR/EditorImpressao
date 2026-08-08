@@ -71,6 +71,7 @@ from ui.widgets.editor_selecao import (
     ATALHOS_DAS_FERRAMENTAS,
     FERRAMENTA_RETANGULO,
 )
+from ui.widgets.paineis import ColunaDePaineis
 from ui.widgets.trilha_ferramentas import TrilhaFerramentas
 
 from ui.widgets.medidor import Medidor
@@ -226,7 +227,14 @@ class TelaConferir(QWidget):
         # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
         self.area_imagem.setMinimumHeight(112)
         meio.addWidget(self.area_imagem, 1)
+
+        # Os quatro paineis, na coluna de 172 px do desenho. Eles recebem o que
+        # eram linhas de botoes atravessando a tela.
+        self.paineis = ColunaDePaineis()
+        meio.addWidget(self.paineis)
         camadas.addLayout(meio, 1)
+
+        self._ligar_paineis()
 
         self.faixa = QFrame()                                # 4
         self.faixa.setObjectName("faixaInfo")
@@ -238,6 +246,14 @@ class TelaConferir(QWidget):
         faixa_camadas.addWidget(self.texto_faixa, 1)
         camadas.addWidget(self.faixa)
 
+        # A fila de botoes de cada aba. O QStackedWidget reserva, por padrao, a
+        # altura da MAIOR pagina dele - entao a aba de Marcar, que agora tem uma
+        # linha so, ficava com o buraco da aba de Filtro embaixo. Eram uns
+        # 150 px de vazio no meio da tela, tirados justamente da pagina.
+        #
+        # A conta e feita a mao em _encolher_a_barra_de_botoes: as paginas que
+        # nao estao na frente passam a ser ignoradas no calculo, e a pilha
+        # ganha a altura da atual. A troca de aba reavalia.
         self.barra_botoes = QStackedWidget()                 # 5
         self.barra_botoes.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         camadas.addWidget(self.barra_botoes)
@@ -253,6 +269,25 @@ class TelaConferir(QWidget):
         # Confirmar e processar, e tambem no menu Arquivo. So isso devolve uma
         # faixa de altura para a pagina, que e o que precisa ser olhado.
         camadas.addLayout(self._montar_rodape())             # 7
+
+    def _ligar_paineis(self) -> None:
+        """Cada painel manda no mesmo lugar em que o botao antigo mandava."""
+        painel = self.paineis
+        painel.para_revisar.ir_para.connect(self.ir_para_pagina)
+        painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
+        painel.filtro_da_pagina.filtro_do_pedaco.connect(
+            self._escolher_filtro_da_regiao)
+        painel.filtro_da_pagina.medidor_mudou.connect(self._medidor_soltou)
+        painel.historico.voltar_para.connect(self._voltar_no_historico)
+
+    def _voltar_no_historico(self, posicao: int) -> None:
+        """Volta o trabalho ate a acao clicada no painel Historico."""
+        if self.acoes is None or self.projeto is None:
+            return
+        self.acoes.voltar_para(self.projeto, posicao)
+        if self.previas is not None:
+            self.previas.invalidar()
+        self.atualizar()
 
     def _ligar_ferramentas(self) -> None:
         """A trilha manda na barra de opcoes e no editor, nesta ordem.
@@ -456,78 +491,35 @@ class TelaConferir(QWidget):
         self.paginas_de_imagem[ABA_MARCAR] = pagina
 
         # --- os botoes ---
+        #
+        # Tres linhas sairam daqui na etapa 3, e nao se perderam:
+        #
+        #   Marcar como               painel "Marcar como", um embaixo do outro
+        #   Filtro so neste pedaco    painel "Filtro da pagina"
+        #   desfazer, procurar de     menu Marcar e menu Editar, ja na etapa 1
+        #   novo, limpar tudo,
+        #   deixar a folha em branco
+        #
+        # Cada uma custava altura da pagina, e a pagina e o que precisa ser
+        # olhado. Sobra so o aviso do que foi marcado, que e uma frase e nao um
+        # controle.
         painel = QWidget()
         fora = QVBoxLayout(painel)
         fora.setContentsMargins(0, 0, 0, 0)
-        fora.setSpacing(6)
-
-        # o que estou marcando
-        tipos = QHBoxLayout()
-        tipos.addWidget(QLabel("Marcar como:"))
-        self.botoes_tipo = {}
-        for tipo, texto in ((GRAVURA, "Gravura ou foto"), (LETRA, "Letra e traço"),
-                            (PAPEL, "Papel")):
-            botao = QPushButton(texto)
-            botao.setCheckable(True)
-            botao.setChecked(tipo == GRAVURA)
-            _ligar(botao, lambda t=tipo: self._escolher_tipo_de_marcacao(t))
-            tipos.addWidget(botao)
-            self.botoes_tipo[tipo] = botao
-        tipos.addSpacing(16)
-
-        # SOMAR e TIRAR sairam daqui: eles nao sao ferramentas, sao modos que
-        # modificam a ferramenta escolhida, e agora ficam a direita da barra de
-        # opcoes, em todas as ferramentas de selecao. Misturados com Retangulo
-        # e Laco, pareciam uma escolha entre eles.
-        #
-        # As FERRAMENTAS tambem sairam: eram sete botoes largos numa linha
-        # atravessando a tela, e cada linha dessas custava altura da pagina.
-        # Agora sao nove icones numa coluna de 42 px - largura sobra.
-        tipos.addStretch()
-        fora.addLayout(tipos)
-
-        # Filtro so no pedaco marcado. Serve para deixar uma gravura no
-        # Original enquanto a folha inteira vai a Preto e branco.
-        so_aqui = QHBoxLayout()
-        so_aqui.addWidget(QLabel("Filtro só neste pedaço:"))
-        self.botoes_filtro_da_regiao = {}
-        from core.filtros import NOMES_AMIGAVEIS as _NOMES
-        for chave, texto in (("", "o mesmo da página"),
-                             (ORIGINAL, _NOMES[ORIGINAL]),
-                             (PRETO_E_BRANCO, _NOMES[PRETO_E_BRANCO]),
-                             (MELHORAR, _NOMES[MELHORAR]),
-                             (MAGICO_PRO, _NOMES[MAGICO_PRO])):
-            botao = QPushButton(texto)
-            botao.setCheckable(True)
-            botao.setChecked(chave == "")
-            _ligar(botao, lambda c=chave: self._escolher_filtro_da_regiao(c))
-            so_aqui.addWidget(botao)
-            self.botoes_filtro_da_regiao[chave] = botao
-        so_aqui.addStretch()
-        fora.addLayout(so_aqui)
-
-        # acoes
-        acoes = QHBoxLayout()
-        _botao("desfazer", acoes, self._desfazer_marcacao)
-        _botao("procurar de novo", acoes, self._detectar_de_novo)
-        _botao("limpar tudo", acoes, self._limpar_marcacao)
-        # Pedido do Samuel, duas vezes: "quero ter a opção de transformar a
-        # folha em uma folha em branco". Serve para a capa e para a folha de
-        # rosto do escaneamento, que ninguem quer reimprimir.
-        _botao("deixar a folha em branco", acoes, self._folha_em_branco)
+        fora.setSpacing(0)
         self.aviso_marcacao = QLabel("")
         self.aviso_marcacao.setObjectName("dica")
-        acoes.addWidget(self.aviso_marcacao, 1)
-        fora.addLayout(acoes)
+        fora.addWidget(self.aviso_marcacao)
 
         self.linhas_de_botoes[ABA_MARCAR] = painel
 
     # --- acoes da aba de marcar -------------------------------------------
 
     def _escolher_tipo_de_marcacao(self, tipo: str) -> None:
+        """Quem mostra o estado agora e o painel "Marcar como"."""
         self.editor_selecao.definir_tipo(tipo)
-        for chave, botao in self.botoes_tipo.items():
-            botao.setChecked(chave == tipo)
+        self.paineis.marcar_como.tipo = tipo
+        self.paineis.marcar_como._montar()
 
     def _escolher_operacao(self, operacao: str) -> None:
         """Somar ou tirar. Quem mostra o estado agora e a barra de opcoes."""
@@ -539,9 +531,10 @@ class TelaConferir(QWidget):
         self.escolher_ferramenta(ferramenta)
 
     def _escolher_filtro_da_regiao(self, filtro: str) -> None:
-        """Que filtro vale so no que for marcado daqui em diante."""
-        for chave, botao in self.botoes_filtro_da_regiao.items():
-            botao.setChecked(chave == filtro)
+        """Que filtro vale so no que for marcado daqui em diante.
+
+        Quem mostra o estado agora e o painel "Filtro da pagina".
+        """
         self.editor_selecao.definir_filtro_da_regiao(filtro)
 
     def _mostrar_aviso_da_marcacao(self, texto: str) -> None:
@@ -772,6 +765,7 @@ class TelaConferir(QWidget):
                 self.barra_botoes.addWidget(self.linhas_de_botoes[aba])
 
             self.barra_abas.setCurrentIndex(0)
+            self._encolher_a_barra_de_botoes()
         finally:
             self._carregando = False
 
@@ -885,8 +879,23 @@ class TelaConferir(QWidget):
             return
         self.area_imagem.setCurrentIndex(self.barra_abas.currentIndex())
         self.barra_botoes.setCurrentIndex(self.barra_abas.currentIndex())
+        # A pilha volta a caber na aba ATUAL. Sem isto ela guardaria a altura
+        # da aba mais alta pelo resto da sessao, e o buraco voltaria.
+        self._encolher_a_barra_de_botoes()
         self._montar_tira()
         self.atualizar()
+
+    def _encolher_a_barra_de_botoes(self) -> None:
+        """Deixa a fila de botoes com a altura da aba que esta na frente."""
+        atual = self.barra_botoes.currentWidget()
+        if atual is None:
+            return
+        for indice in range(self.barra_botoes.count()):
+            pagina = self.barra_botoes.widget(indice)
+            pagina.setSizePolicy(
+                QSizePolicy.Preferred,
+                QSizePolicy.Preferred if pagina is atual else QSizePolicy.Ignored)
+        self.barra_botoes.setFixedHeight(max(0, atual.sizeHint().height()))
 
     @protegido
     def ir_para_pagina(self, indice: int) -> None:
@@ -929,7 +938,18 @@ class TelaConferir(QWidget):
         self._atualizar_botoes()
         self._atualizar_tira()
         self._atualizar_contador()
+        self._atualizar_paineis()
         self.trabalho_mudou.emit()
+
+    def _atualizar_paineis(self) -> None:
+        """Os quatro da direita leem o mesmo estado que o resto da tela."""
+        if self.projeto is None:
+            return
+        self.paineis.para_revisar.atualizar(self.projeto)
+        self.paineis.historico.atualizar(self.acoes)
+        pagina = (self.projeto.paginas[self.indice_pagina]
+                  if 0 <= self.indice_pagina < len(self.projeto.paginas) else None)
+        self.paineis.filtro_da_pagina.atualizar(pagina)
 
     def _atualizar_previa(self) -> None:
         assert self.previas is not None and self.projeto is not None
