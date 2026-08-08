@@ -199,7 +199,8 @@ class TelaConferir(QWidget):
         camadas.setContentsMargins(20, 10, 20, 8)
         camadas.setSpacing(6)
 
-        camadas.addLayout(self._montar_cabecalho())          # 1
+        # O cabecalho e criado mas NAO entra na tela: ver _montar_cabecalho.
+        self._cabecalho_escondido = self._montar_cabecalho()
 
         self.barra_abas = QTabBar()
         self.barra_abas.setExpanding(False)
@@ -258,17 +259,22 @@ class TelaConferir(QWidget):
         self.barra_botoes.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         camadas.addWidget(self.barra_botoes)
 
+        # A tira e o botao de processar dividem UMA faixa, como no desenho: a
+        # tira a esquerda, "Confirmar e processar" no canto direito. Eram duas
+        # faixas empilhadas, e a de baixo custava uns 70 px so para segurar um
+        # botao.
         self.tira = TiraMiniaturas("Folhas")                 # 6
         self.tira.selecionada.connect(self._escolher_da_tira)
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
-        camadas.addWidget(self.tira)
 
-        # "Salvar em" e "Nome do arquivo" NAO ficam mais aqui. Eles importam
-        # num momento so - o de gravar - e ocupavam uma faixa inteira de altura
-        # o tempo todo. Agora aparecem na janela de confirmacao, ao clicar em
-        # Confirmar e processar, e tambem no menu Arquivo. So isso devolve uma
-        # faixa de altura para a pagina, que e o que precisa ser olhado.
-        camadas.addLayout(self._montar_rodape())             # 7
+        faixa_da_tira = QHBoxLayout()
+        faixa_da_tira.setContentsMargins(0, 0, 0, 0)
+        faixa_da_tira.setSpacing(10)
+        faixa_da_tira.addWidget(self.tira, 1)
+        self._montar_rodape()
+        faixa_da_tira.addWidget(self.botao_processar)
+        camadas.addLayout(faixa_da_tira)
+
 
     def _ligar_paineis(self) -> None:
         """Cada painel manda no mesmo lugar em que o botao antigo mandava."""
@@ -317,8 +323,25 @@ class TelaConferir(QWidget):
         self.barra_opcoes.definir_ferramenta(ferramenta)
         self.editor_selecao.definir_ferramenta(ferramenta)
 
-    def _montar_cabecalho(self) -> QHBoxLayout:
-        topo = QHBoxLayout()
+    def _montar_cabecalho(self) -> QWidget:
+        """Os controles do antigo cabecalho, que agora vivem em outros lugares.
+
+        A FAIXA some da tela - custava 42 px para dizer o que a barra de menu e
+        a propria tela ja dizem. Os controles nao somem:
+
+          contador de alertas    virou o painel "Para revisar"
+          Desfazer / Refazer     estao no menu Editar e no painel Historico
+          observacoes do livro   vao para a faixa de estado
+
+        Eles continuam sendo CRIADOS aqui, e escondidos. O resto da tela ainda
+        escreve neles - o contador, por exemplo, e atualizado a cada pagina - e
+        deixar de cria-los quebraria isso em silencio: o erro viraria uma caixa
+        modal, e numa bateria de testes uma caixa modal trava tudo. Foi
+        exatamente o que aconteceu quando eu simplesmente tirei a chamada.
+        """
+        caixa = QWidget(self)
+        caixa.setVisible(False)
+        topo = QHBoxLayout(caixa)
         titulo = QLabel("Confira antes de processar")
         titulo.setObjectName("secao")
         topo.addWidget(titulo)
@@ -344,31 +367,23 @@ class TelaConferir(QWidget):
         self.botao_refazer = QPushButton("Refazer")
         _ligar(self.botao_refazer, self.refazer)
         topo.addWidget(self.botao_refazer)
-        return topo
+        return caixa
 
     def _montar_rodape(self) -> QVBoxLayout:
+        """O rodape encolheu a uma linha, e ela mora ao lado da tira.
+
+        A linha de atalhos saiu: eram 25 px repetindo o que Ajuda ja lista, e a
+        lista de Ajuda sai dos proprios menus, entao nao diverge. "voltar" saiu
+        tambem - esta em Arquivo. Sobra "Confirmar e processar", que o desenho
+        poe no canto direito da faixa da tira.
+        """
         fora = QVBoxLayout()
-        fora.setSpacing(4)
-
-        atalhos = QLabel(
-            "setas: mudar de página   -   Espaço: está certo   -   Tab: próxima dúvida   "
-            "-   1 2 3 4: filtros   -   Delete: apagar   -   Ctrl+Z: desfazer"
-        )
-        atalhos.setObjectName("atalhos")
-        atalhos.setAlignment(Qt.AlignCenter)
-        fora.addWidget(atalhos)
-
-        linha = QHBoxLayout()
-        botao_voltar = QPushButton("voltar")
-        _ligar(botao_voltar, self.voltar.emit)
-        linha.addWidget(botao_voltar)
-        linha.addStretch()
+        fora.setContentsMargins(0, 0, 0, 0)
+        fora.setSpacing(0)
 
         self.botao_processar = QPushButton("Confirmar e processar")
         self.botao_processar.setObjectName("primario")
         _ligar(self.botao_processar, self._pedir_processamento)
-        linha.addWidget(self.botao_processar)
-        fora.addLayout(linha)
         return fora
 
     # --- paginas de imagem e linhas de botoes -----------------------------

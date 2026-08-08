@@ -25,8 +25,11 @@ from registro import registrar_erro
 from ui.estilo import AZUL, BORDA, LARANJA, TEXTO_FRACO
 from ui.widgets.visualizador import numpy_para_qimage
 
-ALTURA_MINIATURA = 90
-LARGURA_MAXIMA = 130
+# A tira toda ocupa 58 px no desenho aprovado - contra os 144 de antes. Cada
+# linha de altura sai da PAGINA, que e o que precisa ser olhado; a tira serve
+# para achar a pagina, e para isso a miniatura nao precisa ser grande.
+ALTURA_MINIATURA = 40
+LARGURA_MAXIMA = 62
 
 
 class _Sinais(QObject):
@@ -69,7 +72,7 @@ class Miniatura(QFrame):
         self.apagada = False
         self._pixmap: QPixmap | None = None
 
-        self.setFixedSize(QSize(LARGURA_MAXIMA, ALTURA_MINIATURA + 18))
+        self.setFixedSize(QSize(LARGURA_MAXIMA, ALTURA_MINIATURA + 14))
         self.setCursor(Qt.PointingHandCursor)
 
     def definir_imagem(self, img: np.ndarray) -> None:
@@ -161,14 +164,16 @@ class TiraMiniaturas(QWidget):
         fora.setContentsMargins(0, 0, 0, 0)
         fora.setSpacing(2)
 
+        # O rotulo acima da tira saiu: custava 18 px e dizia o que a propria
+        # cor ja diz. A explicacao das cores foi para a dica do mouse.
         self.rotulo = QLabel(titulo)
-        self.rotulo.setObjectName("fraco")
-        self.rotulo.setStyleSheet("font-size: 12px;")
-        fora.addWidget(self.rotulo)
+        self.rotulo.setVisible(False)
+        self.setToolTip("A selecionada tem borda grossa. "
+                        "As laranjas são as que eu não tive certeza.")
 
         self.rolagem = QScrollArea()
         self.rolagem.setWidgetResizable(True)
-        self.rolagem.setFixedHeight(ALTURA_MINIATURA + 36)
+        self.rolagem.setFixedHeight(ALTURA_MINIATURA + 18)
         self.rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.rolagem.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
