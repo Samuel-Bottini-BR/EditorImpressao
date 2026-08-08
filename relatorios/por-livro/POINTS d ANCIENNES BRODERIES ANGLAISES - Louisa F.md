@@ -3,7 +3,7 @@
 - Arquivo de 12 MB
 - 92 folhas no PDF, que viram 92 paginas de saida
 - 7 paginas medidas a fundo
-- 70 segundos para analisar o livro inteiro (765 milissegundos por folha)
+- 69 segundos para analisar o livro inteiro (752 milissegundos por folha)
 
 ## Paginas que sairam piores que o original
 
@@ -44,8 +44,8 @@ nao fecha direito na impressao.
 |---|---|---|---|---|---|
 | Original | 156.34 | 1125 | 156.7 | 1.66 | 0.91 |
 | Preto e branco | 3.81 | 3871 | 236.5 | 0.98 | 0.95 |
-| Melhorar | 119.63 | 3858 | 185.1 | 1.35 | 1.04 |
-| Mágico pro | 170.34 | 3825 | 184.2 | 1.40 | 0.96 |
+| Melhorar | 119.72 | 3846 | 185.1 | 1.36 | 1.04 |
+| Mágico pro | 170.43 | 3809 | 184.2 | 1.40 | 0.96 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.

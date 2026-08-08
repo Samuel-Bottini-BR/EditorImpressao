@@ -556,3 +556,72 @@ Aberta imagem por imagem: no Boécio 33 e 17 o fundo é branco puro e a mancha
 sumiu nos dois filtros; a Rhetorica 112 mantém a hachura da xilogravura e o
 texto ao redor; o Graduale 376 mantém rubricação e pautas vermelhas; as cinco
 capas do acervo saem intactas.
+
+### O que a régua diz depois das Tentativas 16 e 17
+
+Nove livros, 63 páginas medidas:
+
+| | antes | agora |
+|---|---|---|
+| páginas piores que o original | 6 a 8 | **4** |
+| régua da seleção | 23 de 26 | **24 de 26** |
+| pico de memória | 1402 MB | 1458 MB (teto 2048) |
+| abrir o programa | — | 0,44 s (meta 10) |
+
+Os 4 que sobram são os dois casos já documentados, e nenhum é novo:
+
+- **Graduale 126, nos três filtros** — a partitura que o detector marca como
+  gravura. O ruído sobe porque ela é tratada como desenho. A página fica
+  laranja avisando da dúvida.
+- **Pesel 76, no Mágico pro** — o fundo escurece de 156 para 148.
+
+A memória subiu 56 MB, e é o preço da marcação em resolução plena: a máscara de
+tinta de uma página de 300 DPI ocupa 10 MB em vez de 1. Continua uma página de
+cada vez, e continua bem abaixo do teto.
+
+---
+
+## Tentativa 17 — a marcação em resolução plena
+
+> "as ferramentas de seleção precisam ser mais precisas, precisam conseguir
+> selecionar só o texto, precisam conseguir reconhecer desenhos cores padrões"
+
+A máscara de tinta era calculada num reduzido de 1200 px de altura e a resposta
+voltava ampliada com vizinho mais próximo. Numa página de 300 DPI isso é um
+terço da resolução: a marcação saía com degraus de três pixels em volta de cada
+letra. E o `k` era fixo em 0,20, enquanto o filtro já usava o adaptativo — o
+detector e o filtro discordavam sobre o que era tinta na **mesma** página.
+
+Régua da seleção: **23 → 24 de 26**. O Pesel 73 passou a separar o título
+impresso, o número da página e as quatro legendas da foto do bordado. Aberto e
+conferido: a marcação do Boécio 33 segue linha por linha e deixa a mancha do
+verso de fora, que é literalmente "selecionar só o texto".
+
+### O gargalo não era o Sauvola
+
+Medido numa página de 3729 px de altura:
+
+| passo | tempo |
+|---|---|
+| Sauvola (DoxaPy) | 59 ms |
+| medir a espessura do traço | **1899 ms** |
+
+A esqueletização é a conta mais cara do programa. Ela passou a ser feita num
+reduzido e reconvertida pela escala. Comparado com a medição nativa nas 14
+páginas do acervo:
+
+| altura | páginas com `k` fora de 0,01 | custo por página |
+|---|---|---|
+| 1500 | 4 de 14 | 105 ms |
+| 2000 | 2 de 14 | 207 ms |
+| **2500** | **1 de 14** | **319 ms** |
+| 3000 | 1 de 14 | 435 ms |
+| nativo | — | 1900 ms |
+
+Em 2500 a resposta empata em 13 das 14 e o custo cai seis vezes. A que sobra é
+a página 454 do Marial, que cai no meio da rampa entre traço fino e grosso.
+
+Sobre isso entrou um cache: a mesma página pergunta o `k` três vezes — o
+detector, o filtro e a limpeza do papel. A chave é o **conteúdo** da imagem, e
+não o objeto, porque o programa copia a página entre um passo e outro. Medido:
+873 ms na primeira vez, 19 ms numa cópia da mesma página.

@@ -40,8 +40,8 @@ nao fecha direito na impressao.
 |---|---|---|---|---|---|
 | Original | 4.10 | 184 | 188.5 | 6.50 | 1.04 |
 | Preto e branco | 4.06 | 160 | 239.9 | 0.64 | 0.82 |
-| Melhorar | 4.54 | 164 | 224.7 | 1.23 | 0.96 |
-| Mágico pro | 4.46 | 166 | 224.7 | 1.29 | 0.94 |
+| Melhorar | 4.70 | 154 | 225.6 | 1.23 | 0.93 |
+| Mágico pro | 4.61 | 155 | 225.6 | 1.29 | 0.92 |
 
 > **Fundo** perto de 255 e papel branco de verdade. **Vazios** sao os
 > buraquinhos dentro das letras: quanto mais sobrarem, melhor.
