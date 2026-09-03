@@ -117,3 +117,16 @@ sempre fora dessa pasta.
 - `core/pipeline.py` — a ordem: dividir, cortar, endireitar, filtrar, impor
 - `avaliar.py` — a régua
 - `modelos/` — pesos de rede neural, fora do repositório
+- `historico/` — os pedidos e handoffs de todas as conversas, incluindo a
+  conversa gênesis (a versão antiga em customtkinter que travava)
+
+**Handoff:** `historico/Editor de Impressao - resumo para o Claude.md` é o
+mais completo e atualizado — leia primeiro numa sessão nova. Só atualize
+esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
+
+## Commit e push regulares
+
+Este repositório tem GitHub remoto (`origin`, https://github.com/Samuel-Bottini-BR/EditorImpressao).
+Faça commit do progresso relevante regularmente e dê `git push` — não é
+preciso perguntar cada vez, mas sempre revise o que está sendo commitado
+antes (nunca commitar segredo, nunca desfazer o `.gitignore` sem avisar).
