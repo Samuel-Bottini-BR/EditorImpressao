@@ -1,0 +1,151 @@
+ # Briefing: projeto "Editor de Impressão"
+
+  ## O que é
+  App desktop Windows que recupera PDFs de livros antigos escaneados e prepara para
+  reimpressão em cadernos (imposição). Projeto do Pe. Rosenei, de um instituto de
+  preservação de livros.
+
+  **Usuário final: o Kaique, impressor, sem nenhum conhecimento técnico.** Toda a
+  interface é em português do Brasil, sem jargão: ele nunca vê "Sauvola", "k",
+  "deskew", "DPI de saída" — vê "Força do preto", "Melhorar", "girar a folha".
+
+  Pasta: `C:\Users\fotog\Desktop\EditorImpressao` (venv própria em `.venv`).
+  Repositório git local, árvore limpa.
+
+  ## Restrições da máquina e regras rígidas
+  - A máquina só tem **Python 3.14**, e todas as dependências funcionam nele
+    (PySide6 6.11, PyMuPDF, opencv, numpy, Pillow, doxapy, scikit-image).
+    **Não sugerir rebaixar a versão do Python.**
+  - GPU: GTX 1650 4 GB, sem tensor cores — nada que dependa de float16 rápido.
+  - **PySide6 sempre, tkinter/customtkinter nunca** (duas versões anteriores do
+    programa fracassaram: customtkinter travava).
+  - **Processar uma página por vez.** Nada de montar lista de páginas processadas em
+    memória: ler → processar → escrever → soltar. Foi o que travou a versão
+    anterior com livros de 500 páginas a 400 DPI.
+  - **Nenhum emoji em rótulo de interface.**
+  - Binarização é **Sauvola do DoxaPy** (plano B: scikit-image), não fórmula
+    caseira — foi assim que a qualidade parou de ser ruim.
+  - Erro nunca aparece como stack trace: `sys.excepthook` grava em `erros.log` e
+    mostra "Aconteceu um problema inesperado, mas o programa continua funcionando."
+  - Caminhos de disco **sem acento** (uma vez a pasta de saída sumiu da vista por
+    causa disso); textos de interface **com** acento.
+
+  ## Arquitetura
+  `core/` não importa nada de `ui/` — todo o processamento roda sem janela.
+
+  main.py             ponto de entrada; aceita um .pdf como argv[1]
+  modelos.py          ConfigFolha, ConfigPagina, Projeto, Acao
+  configuracoes.py    preferências (última pasta usada), gravação testada de verdade
+  historico.py        projetos recentes, pastas de dados
+  historico_acoes.py  desfazer/refazer ilimitado, gravado em acoes.jsonl
+  registro.py         erros.log
+
+  core/pdf_io.py      abrir/salvar PDF, página <-> ndarray, limite automático de DPI,
+                      EscritorPDF (escreve incremental), PNG inclusive 1 bit
+  core/filtros.py     Original / Preto e branco (Sauvola) / Melhorar / Mágico pro
+  core/dividir.py     detecção da lombada por perfil de intensidade e de tinta
+  core/endireitar.py  deskew por perfil de projeção + giro de 90°
+  core/recortar.py    detecção e corte das bordas pretas do scanner
+  core/cadernos.py    imposição: ordem das páginas, impor_pdf, instruções de impressão
+  core/analise.py     alertas, sugestões, detecção de cor, DPI estimado
+  core/pipeline.py    analisar_projeto() e processar(), uma página por vez
+
+  ui/                 PySide6: tela_inicio -> tela_opcoes -> tela_conferir -> tela_final
+                      + tela_ampliada (zoom/arrasto/comparar), tarefas.py (QThread/QRunnable),
+                      estilo.py, widgets/ (medidor, cartao_filtro, tira_miniaturas,
+                      visualizador, area_arrastar, destino)
+
+  ## Modelo de dados — a decisão que mais importa
+  Existem **dois níveis**, de propósito (a especificação original previa só um):
+
+  - **ConfigFolha** = o que veio no PDF de entrada. Guarda `dividir`,
+    `posicao_corte`, `confianca_corte`, `rotacao`, `angulo_detectado`, `apagada`,
+    `e_paisagem`, `alertas`, `revisada`.
+  - **ConfigPagina** = o que vai sair no PDF final. Uma folha dividida vira **duas**
+    páginas (`metade` = inteira/esquerda/direita). Guarda `filtro`, `recorte`,
+    `angulo_manual`, `tem_cor`, `apagada`, e os três ajustes separados
+    (`forca_preto`, `clareza_melhorar`, `intensidade_magico`, todos 0–100 com 50 no
+    meio) — separados porque trocar de filtro e voltar tem que devolver o ajuste
+    daquele filtro, sem herdar o do outro.
+
+  Recorte e ângulo moram na **página**, não na folha, porque o pipeline os aplica
+  *depois* de dividir: cada metade tem a sombra de lombada de um lado só e pode
+  estar torta de um jeito diferente. As abas da tela de conferir seguem exatamente
+  essa separação ("Onde cortar" edita folhas, "Filtro" edita páginas).
+
+  `Projeto` reúne tudo: caminhos, as opções gerais (`dividir_folhas`, `limpar`,
+  `filtro_padrao`, `endireitar`, `cortar_bordas`, `montar_cadernos`,
+  `paginas_por_caderno`, `qualidade_dpi`), as listas de folhas e páginas, e
+  `observacoes` (fatos do livro inteiro, ditos uma vez, para não virarem ruído no
+  contador de alertas).
+
+  ## Pipeline (ordem obrigatória)
+  1. dividir folhas → 2. cortar bordas → 3. endireitar → 4. filtro → 5. montar
+  cadernos. Páginas apagadas somem logo depois da etapa 1.
+
+  A análise roda a **150 DPI** (lombada, ângulo e cor aparecem de sobra) — livro
+  inteiro em segundos em vez de minutos. O processamento final usa o DPI escolhido
+  (padrão 300). Há caminho rápido `so_cadernos` quando nada altera imagem.
+
+  ## Filtros — armadilha já paga
+  A receita difundida de "magic color" (`img / GaussianBlur(img) * 255`, por canal)
+  **estraga capas coloridas**: numa área azul uniforme o próprio azul é o fundo,
+  então a divisão lava a cor e desloca o matiz (o título azul virou vermelho no
+  livro de teste). A correção adotada em `core/filtros.py`:
+  1. dividir pelo fundo **relativo ao nível do papel**, não ao branco absoluto, com
+     ganho igual nos 3 canais (preserva o matiz);
+  2. **pesar** a correção por quanto o fundo local ainda parece papel — cai a zero
+     em conteúdo escuro de verdade;
+  3. branquear com **curva de ombro** no canal L do LAB (só tons acima de ~0,75× o
+     nível do papel), nunca com multiplicação linear.
+
+  Desempenho: o fundo é estimado numa miniatura de ~400 px e reescalado — mesmo
+  resultado ~10× mais rápido (5,0 s → 0,5 s por página a 300 DPI).
+
+  ## Interface
+  Fluxo: arrasta o PDF → marca o que quer fazer → confere página a página → escolhe
+  onde salvar → processa. Pasta sugerida é a última usada; na primeira vez,
+  `Documentos\Editor de Impressão`.
+
+  Atalhos: ← → navega; Espaço marca "está certo" e avança; Tab pula para a próxima
+  marcada em laranja; 1 2 3 4 trocam o filtro; R gira; Delete apaga; Ctrl+Z /
+  Ctrl+Shift+Z desfaz e refaz (sem limite); Ctrl+Enter processa.
+
+  ## Onde o programa guarda estado
+  %LOCALAPPDATA%\EditorImpressao
+  ├── historico.json          projetos recentes
+  ├── configuracoes.json      última pasta de saída
+  ├── erros.log               erros técnicos (nunca aparecem na tela)
+  └── projetos<nome>
+      ├── projeto.json        estado atual
+      ├── acoes.jsonl         histórico completo, uma ação por linha
+      └── posicao.json        onde a pilha de desfazer parou
+  Fechar e reabrir preserva o projeto **e o histórico de ações** — ainda dá para
+  desfazer. Desinstalar **não apaga** essa pasta, de propósito.
+
+  ## Testes e empacotamento
+  - `.venv\Scripts\python.exe -m pytest tests -q` — 59 testes em `tests/test_core.py`
+    e `tests/test_cadernos.py`.
+  - Scripts de linha de comando na raiz, que não abrem janela e recebem um PDF:
+    `teste_pdf_io.py`, `teste_filtros.py`, `teste_dividir.py`, `teste_pipeline.py`,
+    `teste_criterios.py` (critérios de aceitação), `teste_bateria.py`,
+    `teste_robustez.py`, `teste_livros.py`, `teste_acervo.py`.
+    `teste_interface.py` dirige a interface de verdade e salva capturas.
+  - PDF de teste: `C:\Users\fotog\Desktop\Estudos\Latim\pdfcoffee.com_gradus-primus-pdf-pdf-free.pdf`
+    (70 folhas duplas, capa azul — bom caso para o problema das capas coloridas).
+  - `empacotar.py` gera três formatos em `dist\`: instalador
+    (`EditorImpressao-Setup.exe`, via Inno Setup 6 e `instalador.iss`), portátil em
+    pasta, e arquivo único. Nenhum precisa de Python na máquina do Kaique.
+
+  ## Licenças (ponto de atenção)
+  PySide6 LGPL, OpenCV/numpy Apache-2.0/BSD, DoxaPy CC0, scikit-image BSD, Pillow
+  HPND — e **PyMuPDF é AGPL**. Para uso interno do instituto está tudo certo; se um
+  dia for distribuído fora, ou o código-fonte acompanha, ou compra-se a licença
+  comercial, ou troca-se por pypdfium2 (BSD). O ScanTailor (GPL v3, C++/Qt) serviu
+  só como referência de algoritmo — nada dele foi incorporado.
+
+  ## Estado atual
+  Último commit: "Bateria do acervo: detectar_cor corrigida e três bugs de teste".
+  Programa funcional ponta a ponta, com bateria de testes em livros reais já rodada.
+
+  Ajustei um detalhe: o LEIAME diz 51 testes, mas hoje são 59 (52 + 7) — usei o número real no resumo.
