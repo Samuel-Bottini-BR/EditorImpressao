@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 07/08/2026. Reúne o que o programa é, tudo que já foi pedido, tudo
+Atualizado em 07/09/2026. Reúne o que o programa é, tudo que já foi pedido, tudo
 que já foi feito e o que falta. Serve para começar uma conversa nova sem perder
 nada.
 
@@ -110,6 +110,102 @@ Como rodar:
 .venv\Scripts\python.exe avaliar_selecao.py      a régua da seleção
 .venv\Scripts\python.exe conferir.py             conferir amostras falando
 ```
+
+---
+
+# PARTE 1B — Todas as funcionalidades: o que o app faz, o que falta
+
+Lista mestra, cruzando a especificação original (18/07), os 68 pedidos feitos
+desde então e uma conferência direta no código em 07/09/2026 — não só no que
+este documento dizia. `[x]` feito e conferido, `[~]` parcial, `[ ]` falta.
+
+## Processamento da página
+
+- `[x]` Dividir a folha ao meio, detectando a lombada sozinho — corrigir
+  arrastando a linha, "não dividir esta", "usar em todas", girar 90°
+- `[x]` Endireitar sozinho (perfil de projeção, até ±5°, não mexe abaixo de
+  0,1°) — ajuste manual arrastando o mouse, com linhas-guia
+- `[x]` Cortar bordas sozinho, com alças arrastáveis na prévia
+- `[x]` Apagar página, com opção de restaurar
+- `[x]` Aplicar filtros diferentes em páginas diferentes, saindo num PDF só
+- `[x]` Transformar uma capa inteira em página branca ("marcar como papel")
+- `[~]` Filtro só numa parte da página — existe ("Filtro só neste pedaço", aba
+  Marcar) mas nunca foi conferido ponta a ponta num livro real
+
+## Os quatro filtros
+
+- `[x]` Original / Preto e branco (Sauvola) / Melhorar / Mágico pro
+- `[ ]` Escolher o binarizador certo por página — hoje usa um só para tudo;
+  comparados os 18 do DoxaPy, não existe vencedor único
+- `[ ]` Rubricação vermelha não virar barra preta no Preto e branco
+
+## Ferramenta de seleção (aba Marcar) — conferido direto no código hoje
+
+- `[x]` Marcar à mão: gravura, letra, papel (`core/selecao.py`)
+- `[x]` Detecção automática das três (`core/detectar_regioes.py`,
+  `core/rede_selecao.py`)
+- `[x]` "Pegar tudo desta cor" (compara por matiz, não vaza como a varinha)
+- `[x]` Marcar a folha inteira como papel = fica em branco
+- `[x]` Selecionar por cor manualmente, para quando o automático errar
+- `[~]` Reconhecer letra antiga — 23 de 26 na régua da seleção; os 3 que
+  faltam pedem um modelo treinado em documento histórico (Eynollah, dhSegment
+  ou Kraken/eScriptorium), o que por sua vez pede marcar 30-40 páginas à mão
+  como gabarito primeiro
+
+## Sistema de alertas (onze tipos — "o princípio central do app")
+
+- `[x]` página colorida, lombada incerta, não parece dupla, muito torta,
+  ângulo suspeito, em branco, escura demais, apagada demais, corte pegou
+  conteúdo, resolução baixa, tamanho diferente
+- `[x]` Contador clicável, miniatura laranja, faixa explicativa com botão de
+  correção, painel "Páginas para revisar" agrupado por tipo, aviso antes de
+  processar
+- `[ ]` Critério "menos de 10% das páginas marcadas" nunca foi conferido —
+  hoje só "ângulo suspeito" já passa de 12% do acervo
+
+## Ajustes manuais
+
+- `[x]` Medidores deslizantes: Força do preto, Intensidade, Clareza do fundo
+  (0 a 100, prévia ao vivo)
+- `[x]` Desfazer ilimitado gravado em arquivo, sobrevive fechar e reabrir
+
+## Navegação e tela
+
+- `[x]` Zoom, arrastar, atalhos (setas, Espaço, Tab, 1-4, R, Delete, Ctrl+Z,
+  Ctrl+Shift+Z, Ctrl+Enter)
+- `[x]` Modo comparar: dois filtros lado a lado, zoom sincronizado
+- `[x]` Barra de rolagem preta
+- `[x]` Regras de fundo respeitadas: sem emoji, acento certo, PySide6
+
+## Salvar o resultado
+
+- `[x]` Escolher pasta, editar nome, lembrar última pasta usada, avisar
+  duplicata ou pasta sem permissão
+
+## Cadernos (o objetivo final)
+
+- `[x]` Montar cadernos (imposição), caminho rápido sem rasterizar quando só
+  isso está marcado
+- `[x]` Conferir a sequência simulando a dobra
+- `[ ]` Critério "filtros diferentes por página, um PDF só" nunca foi
+  conferido ponta a ponta num livro de verdade
+
+## Instalador
+
+- `[x]` Inno Setup: instala em Arquivos de Programas, atalhos, aparece em
+  Adicionar/remover programas, assistente em português, desinstalador
+
+## Medição e testes (para o Claude, não para o Kaique)
+
+- `[x]` `avaliar.py` (régua dos filtros) — 4 motivos de reprovação restantes,
+  3 deles a mesma página (Graduale 126, uma partitura manuscrita)
+- `[x]` `avaliar_selecao.py` (régua da seleção) — 3 de 26 restantes
+- `[x]` `conferir.py`, com ditado por voz (Win+H)
+- `[ ]` Falta um número na régua: "guardou a sujeira" — o Otsu passa zero
+  pioras mas guarda o dobro de tinta do Sauvola, e nenhum critério pega isso
+- `[ ]` **A pergunta decisiva, pendente desde 18/07:** comparar com o
+  CamScanner nas 5 páginas difíceis já preparadas em `para_comparar/`, e
+  responder em uma frase — sim, não, ou ainda não substitui
 
 ---
 
