@@ -17,7 +17,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent
 PRINTS = RAIZ / "relatorios" / "prints"
-DESENHOS = Path(r"C:\Users\fotog\Desktop\pasta do prompt")
+DESENHOS = Path(r"D:\programas\EditorImpressao-arquivos\pasta do prompt")
 SAIDA = RAIZ / "relatorios" / "para-conferir.html"
 
 

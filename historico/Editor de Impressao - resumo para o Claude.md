@@ -168,26 +168,28 @@ conferir.py                a tela de conferir amostras falando
 relatorios/melhorias.md    o histórico de tudo que foi tentado, inclusive o que falhou
 ```
 
-O código descobre a área de trabalho do Windows sozinho (`Path.home() /
-"Desktop"`), então continua funcionando de onde estiver — não tem caminho fixo
-para a pasta do projeto em si. Só três scripts têm caminho fixo para pastas de
-**apoio** na área de trabalho (não no projeto): `gerar_prints.py`,
-`montar_para_conferir.py`, `relatorio.py`, `teste_completo.py` apontam para
-`Desktop\TESTES EDITOR DE IMPRESSAO` e `Desktop\pasta do prompt`.
+**Mudou em 07/09/2026:** as pastas de apoio (acervo de teste, mockups,
+queixas do Kaique) saíram da área de trabalho e foram para
+`D:\programas\EditorImpressao-arquivos\`, numa pasta separada do código
+(que fica em `D:\programas\EditorImpressao\`, o repositório git). Os scripts
+que tinham caminho fixo — `gerar_prints.py`, `montar_para_conferir.py`,
+`relatorio.py`, `teste_completo.py` — foram atualizados para o novo caminho, e
+`avaliar.py` ganhou o novo caminho na lista de candidatos de busca automática
+(antes só olhava dentro da área de trabalho).
 
-**Acervo de teste:** `Desktop\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE`,
-nove livros, 2903 folhas. As queixas do Kaique estão na pasta antiga,
-`Desktop\BIBLIOTECA DO FIM DOS TEMPOS\Teste de livros` — são `.txt` soltos com
-um print ao lado, e **são fonte de requisito**.
+**Acervo de teste:**
+`D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\LIVROS PARA
+TESTE`, nove livros, 2903 folhas. As queixas do Kaique estão em
+`D:\programas\EditorImpressao-arquivos\BIBLIOTECA DO FIM DOS TEMPOS\Teste de
+livros` — são `.txt` soltos com um print ao lado, e **são fonte de
+requisito**.
 
-**Achado em 07/09/2026:** existe uma pasta duplicada,
-`Desktop\LIVROS PARA FAZER TESTE` (~1,5 GB), com os mesmos nove livros, byte a
-byte idênticos aos de dentro de `TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE`
-— sobra do prompt de testes original (18/07), de antes da reorganização.
-Nenhum script aponta mais para ela. **Em 07/09/2026 o Samuel pediu para
-arquivar tudo isso (e o resto do que sobra do projeto na área de trabalho) numa
-pasta única no D:, tirando do Desktop** — ver nota de status no fim deste
-documento.
+**A pasta duplicada** (`LIVROS PARA FAZER TESTE`, ~1,5 GB, byte a byte
+idêntica aos nove livros de dentro de `TESTES EDITOR DE IMPRESSAO\LIVROS PARA
+TESTE` — sobra do prompt de testes original de 18/07) foi levada junto para
+`D:\programas\EditorImpressao-arquivos\LIVROS PARA FAZER TESTE (duplicata)`,
+sem apagar. Nenhum script aponta para ela; fica ali só até o Samuel decidir se
+apaga.
 
 Como rodar:
 
@@ -1083,17 +1085,17 @@ O passo 1 é o único que o programa não faz sozinho.
 - **Mudança de local em 07/09/2026:** o projeto vive agora em
   `D:\programas\EditorImpressao`, com o GitHub ligado normalmente. A pasta
   antiga, `C:\Users\fotog\Desktop\EditorImpressao`, virou o backup.
-- **Arrumação da área de trabalho, em andamento em 07/09/2026:** o Samuel
-  pediu para arquivar numa pasta única no D: tudo que sobra do projeto na área
-  de trabalho (o acervo de testes `TESTES EDITOR DE IMPRESSAO`, a pasta
-  duplicada `LIVROS PARA FAZER TESTE`, `BIBLIOTECA DO FIM DOS TEMPOS`,
-  `pasta do prompt`, os instaladores soltos e as cópias antigas destes
-  documentos de handoff) e tirar tudo isso da área de trabalho. Se você está
-  lendo este documento numa conversa nova, **confira se essa arrumação já
-  aconteceu** — os caminhos fixos em `gerar_prints.py`, `relatorio.py`,
-  `montar_para_conferir.py` e `teste_completo.py` (hoje apontando para
-  `Desktop\TESTES EDITOR DE IMPRESSAO` e `Desktop\pasta do prompt`) precisam
-  ser atualizados junto, ou o programa vai procurar o acervo no lugar errado.
+- **Arrumação da área de trabalho, feita em 07/09/2026:** tudo que sobrava do
+  projeto na área de trabalho foi arquivado em
+  `D:\programas\EditorImpressao-arquivos\` — o acervo de testes
+  `TESTES EDITOR DE IMPRESSAO`, a pasta duplicada `LIVROS PARA FAZER TESTE`
+  (mantida, não apagada), `BIBLIOTECA DO FIM DOS TEMPOS`, `pasta do prompt`,
+  os instaladores soltos e as cópias antigas destes documentos de handoff. Os
+  caminhos fixos em `gerar_prints.py`, `relatorio.py`, `montar_para_conferir.py`
+  e `teste_completo.py` foram atualizados, e `avaliar.py` ganhou o novo caminho
+  na busca automática. A pasta `C:\Users\fotog\Desktop\EditorImpressao`
+  (código antigo, agora só backup) **não foi mexida** nesta arrumação — segue
+  onde estava.
 
 ---
 

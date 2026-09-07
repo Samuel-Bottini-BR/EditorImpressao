@@ -1648,6 +1648,7 @@ def achar_acervo(indicado: str | None) -> Path:
     candidatas.append(Path.home() / "Desktop")
     candidatas.append(Path.home() / "OneDrive" / "Desktop")
     candidatas.append(Path.home() / "OneDrive" / "Area de Trabalho")
+    candidatas.append(Path(r"D:\programas\EditorImpressao-arquivos"))
 
     # O acervo ja mudou de lugar uma vez, entao olhamos varios lugares
     # conhecidos - mas em ORDEM DE PREFERENCIA, e nao pelo que tiver mais PDF.

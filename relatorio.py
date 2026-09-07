@@ -333,7 +333,7 @@ def pasta_de_teste(assunto: str, filtro: str = "", raiz: str | Path | None = Non
     Dentro dela, data e hora no comeco ordenam sozinho e deixam comparar duas
     rodadas do mesmo dia.
     """
-    raiz = Path(raiz or r"C:\Users\fotog\Desktop\TESTES EDITOR DE IMPRESSAO")
+    raiz = Path(raiz or r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO")
     chave = (filtro or "").strip().lower()
     pasta_filtro = PASTAS_DE_FILTRO.get(chave, chave.upper() or "OUTROS")
 
@@ -365,7 +365,7 @@ if __name__ == "__main__":
 
     alvos = sys.argv[1:] or [
         str(Path(__file__).resolve().parent / "relatorios"),
-        r"C:\Users\fotog\Desktop\TESTES EDITOR DE IMPRESSAO",
+        r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO",
     ]
     for alvo in alvos:
         caminho = Path(alvo)

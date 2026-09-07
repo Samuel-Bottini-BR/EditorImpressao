@@ -39,7 +39,7 @@ Nunca gravar só o `.md`.
 Use `relatorio.pasta_de_teste(assunto, filtro)`, que produz:
 
 ```
-Desktop\TESTES EDITOR DE IMPRESSAO\
+D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\
     MAGICO PRO\
         2026-08-01 14h30 - contraste local no papel
     PRETO E BRANCO\
@@ -98,13 +98,16 @@ formato dos arquivos de dados, alterar desfazer/refazer, trocar biblioteca.
 .venv\Scripts\python.exe teste_robustez_completo.py   # os 18 casos de falha
 ```
 
-Acervo de teste: `Desktop\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE`, nove
-livros. O `avaliar.py` acha sozinho — não passar `--acervo` à toa.
+Acervo de teste: `D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE
+IMPRESSAO\LIVROS PARA TESTE`, nove livros. Mudou da área de trabalho para lá em
+07/09/2026 — o `avaliar.py` acha sozinho, com o novo caminho já na lista de
+candidatos; não passar `--acervo` à toa.
 
-As queixas do Kaique ficaram na pasta antiga,
-`Desktop\BIBLIOTECA DO FIM DOS TEMPOS\Teste de livros`: são os `.txt` soltos nas
-subpastas, cada um com o print ao lado. **São fonte de requisito**, e é a única
-coisa que sobrou lá — os PDFs mudaram de lugar.
+As queixas do Kaique ficaram na pasta antiga, agora em
+`D:\programas\EditorImpressao-arquivos\BIBLIOTECA DO FIM DOS TEMPOS\Teste de
+livros`: são os `.txt` soltos nas subpastas, cada um com o print ao lado.
+**São fonte de requisito**, e é a única coisa que sobrou lá — os PDFs mudaram
+de lugar.
 
 **Os PDFs do acervo são intocáveis.** Abrir somente para leitura, e gravar
 sempre fora dessa pasta.

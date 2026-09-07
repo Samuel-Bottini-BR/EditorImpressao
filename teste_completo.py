@@ -356,7 +356,7 @@ def main() -> int:
 
     # Tudo numa pasta so, na raiz, porque esta bateria nao e de um filtro so -
     # e do programa inteiro, e o Samuel pediu que ficasse tudo junto.
-    destino = (Path(r"C:\Users\fotog\Desktop\TESTES EDITOR DE IMPRESSAO")
+    destino = (Path(r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO")
                / f"{datetime.now():%Y-%m-%d %Hh%M} - CONFERENCIA COMPLETA")
     destino.mkdir(parents=True, exist_ok=True)
     print(f"Pasta: {destino}")

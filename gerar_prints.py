@@ -23,8 +23,8 @@ if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
 DESTINO = RAIZ / "relatorios" / "prints"
-DESENHOS = Path(r"C:\Users\fotog\Desktop\pasta do prompt")
-ACERVO = Path(r"C:\Users\fotog\Desktop\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE")
+DESENHOS = Path(r"D:\programas\EditorImpressao-arquivos\pasta do prompt")
+ACERVO = Path(r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE")
 LIVRO = ACERVO / "Sobre a Consolação da Filosofia - Severino Boécio.pdf"
 
 
