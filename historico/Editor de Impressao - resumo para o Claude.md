@@ -14,6 +14,170 @@ o backup). Repositório git ligado a
 
 ---
 
+# PARTE -1 — Checkpoint de 07/09/2026 (leia isto primeiro)
+
+Esta parte é o resumo de continuação mais recente. O resto do documento
+(PARTE 0 em diante) é o handoff máximo gerado mais cedo no mesmo dia — ainda
+vale como referência histórica e institucional, mas **os processos de
+trabalho que ele descreve foram substituídos** pelos três arquivos abaixo,
+adicionados à raiz do projeto depois dele:
+
+- **`CLAUDE.md`** — regras de trabalho atuais. Lê primeiro, sempre.
+- **`PEDIDOS.md`** — a lista de conferência (~80 itens, 10 blocos). **Só o
+  Samuel marca `[x]` APROVADO.**
+- **`PLANO-RETOMADA.md`** — o diagnóstico e as 5 fases da retomada.
+
+## Estado atual — o que está validado ao vivo, não só no código
+
+- **Fase 0 do `PLANO-RETOMADA.md` está completa**, os três itens:
+  1. Causa da "tela antiga" (sem menu, barra já preta) investigada: não há
+     tela legada no código-fonte — a causa mais provável eram três
+     instaladores `.exe` soltos na área de trabalho, construídos numa janela
+     de tempo entre o commit da barra quase-preta e o da barra de menu. Já
+     arquivados (não estão mais soltos).
+  2. Atalho **"Editor de Impressao (desenvolvimento)"** criado na área de
+     trabalho do Samuel — roda `.venv\Scripts\pythonw.exe main.py` direto do
+     código em `D:\programas\EditorImpressao`, sempre a versão mais nova.
+  3. `teste_botoes.py` ampliado para clicar de verdade em **todas** as telas
+     (antes só cobria a de conferir): tela inicial, opções, conferir,
+     ampliada, o diálogo de confirmar, tela final e o menu inteiro.
+     **Rodado de verdade: 118 ações, 0 falhas.** Os 279 casos de
+     `pytest tests` continuam passando.
+- Um bug real de produção foi achado e **corrigido**: a ação "Abrir" do menu
+  simulava um clique de mouse com `evento=None`, o que levantava
+  `AttributeError` toda vez que alguém clicasse nela pelo menu (não pelo
+  clique normal na área de arrastar). Corrigido extraindo a lógica para
+  `AreaArrastar.abrir_dialogo_de_arquivo()`, usado pelos dois caminhos.
+- O handoff máximo (PARTE 0 em diante) e os três novos documentos foram
+  escritos **antes** da migração de hoje e precisaram ter os caminhos
+  corrigidos (Desktop → `D:\programas\...`) ao serem adotados — já feito.
+
+## Decisões fechadas nesta sessão, e por quê
+
+- **O projeto vive em `D:\programas\EditorImpressao`, não mais em
+  `C:\Users\fotog\Desktop\EditorImpressao`.** A pasta do C: virou o backup
+  (`backup_path` no registro de projetos). Motivo: pedido direto do Samuel,
+  depois de uma investigação mostrar que o C: era a cópia realmente ativa e o
+  D: (que ele achava que era a ativa) estava com ~13 commits de atraso.
+- **As pastas de apoio (acervo de teste, mockups, queixas do Kaique) foram
+  para `D:\programas\EditorImpressao-arquivos\`**, separadas do repositório
+  git. Motivo: tirar arquivos grandes e não-código da área de trabalho, a
+  pedido do Samuel. Os 4 scripts com caminho fixo para essas pastas
+  (`gerar_prints.py`, `relatorio.py`, `montar_para_conferir.py`,
+  `teste_completo.py`) e a busca automática do `avaliar.py` foram
+  atualizados.
+- **Adotado o novo `CLAUDE.md`/`PEDIDOS.md`/`PLANO-RETOMADA.md`** trazidos
+  pelo Samuel de uma conversa de replanejamento (fora deste Claude Code),
+  mesclando duas regras do `CLAUDE.md` antigo que a nova versão tinha
+  perdido: "relatório sempre em três formatos" (o Samuel não abre `.md`) e o
+  ponteiro para este handoff.
+- **`teste_botoes.py` foi expandido, não reescrito, e não fundido com
+  `teste_interface.py`.** Os dois continuam existindo porque testam coisas
+  diferentes: `teste_botoes.py` clica de verdade (`.click()`/`.trigger()`,
+  passa pelo sinal do Qt); `teste_interface.py` chama métodos internos direto,
+  para validar o *resultado* de uma ação, não a fiação do botão.
+
+## Caminhos tentados e descartados
+
+- **Detectar o diálogo aberto via `QApplication.activeModalWidget()`** —
+  não funciona sob `QT_QPA_PLATFORM=offscreen` (usado para rodar o programa
+  sem abrir janela de verdade neste ambiente): o diálogo nunca vira "ativo"
+  de verdade, e o `.exec()` trava para sempre. **Substituído por**:
+  interceptar o próprio método `.exec()` da classe do diálogo
+  (`TelaAmpliada.exec`, `JanelaConfirmar.exec`), que aponta direto para a
+  instância certa, sem depender de estado de janela ativa.
+- **Fechar um `QMessageBox` com `.close()` sem clicar em nada, achando que
+  seria neutro** — o Qt trata isso como clicar no botão de `RejectRole`. Numa
+  caixa tipo "conferir" / "processar assim mesmo", isso sempre escolhia
+  "conferir" e o fluxo de processar nunca avançava. **Substituído por**:
+  clicar de propósito no botão de `AcceptRole` quando ele existir.
+- **Testar `teste_botoes.py` contra um PDF do acervo real** (`TESTES EDITOR
+  DE IMPRESSAO\LIVROS PARA TESTE`) — **não fazer isso.** Cada um dos nove
+  livros já tem um projeto de rodada de teste anterior salvo em
+  `%LOCALAPPDATA%\EditorImpressao\projetos\`, e a limpeza automática no fim
+  do script (`remover da lista`) apagaria esse histórico. Descoberto na
+  prática: a primeira tentativa quase apagou um projeto do Boécio de 05/08
+  (só não apagou porque o script travou antes de chegar na limpeza).
+  **Substituído por**: o script agora gera seu próprio PDF sintético de duas
+  páginas quando rodado sem argumento.
+
+## Descobertas de comportamento real (Qt/PySide6), caras de redescobrir
+
+- `botao.click()` / `acao.trigger()` **não propagam** uma exceção levantada
+  dentro do slot conectado para um `try/except` em volta da chamada — ela vai
+  direto para `sys.excepthook` e o processo continua normalmente. Detecção de
+  falha em teste de clique real **tem** que ser via `sys.excepthook` global,
+  não `try/except`.
+- `QAction.isEnabled()` continua `True` mesmo quando o `QMenu` inteiro
+  (dropdown) está desabilitado — só o `menuAction()` do menu-pai reflete
+  isso. Um varrimento "clique em toda ação habilitada" tem que checar os
+  dois níveis, senão aciona coisas que um clique de mouse de verdade nunca
+  alcançaria.
+- Bytecode cache (`__pycache__`) copiado junto com o código (via
+  `robocopy /COPY:DAT`, que preserva timestamp) **não recompila**, mesmo que
+  o arquivo tenha vindo de outro caminho — o `co_filename` embutido no
+  `.pyc` antigo aparece em tracebacks/warnings, mostrando o caminho de
+  origem (C:) mesmo já rodando do D:. Inofensivo, mas confunde debug. Já
+  limpo; se acontecer de novo depois de outra cópia/robocopy, apagar
+  `__pycache__` resolve.
+
+## Perguntas em aberto
+
+- **A barra de rolagem: preta ou cinza médio?** O código hoje está em cinza
+  médio (`#a8a49e`, revertido de propósito em 08/08 — o preto puro lia como
+  risco de erro atravessado no pé da tela; ver `CLAUDE.md` seção 9). O novo
+  `PEDIDOS.md`/`CLAUDE.md` (Bloco 9, queixa do Kaique) presumem "preta" como
+  o estado correto — desatualizado. **Pergunta exata feita ao Samuel:** "A
+  barra de rolagem: o código hoje está em cinza médio (revertido de
+  propósito em 08/08, porque o preto puro lia como risco de erro na tela). O
+  novo PEDIDOS.md/CLAUDE.md que você trouxe presume que 'preta' ainda é o
+  certo. Qual fica?" — **resposta do Samuel: "isso é irrelevante agora,
+  deixe para depois."** Ainda sem decisão; não mexer na cor sem perguntar de
+  novo quando for a hora.
+- Achado, mencionado ao Samuel mas **não perguntado diretamente**: existe um
+  arquivo `historico/handoff-editor-de-impressao 2.md`, sozinho, criado às
+  15:19 de 07/09 sem ninguém pedir — parece cópia de conflito de algum
+  sincronizador rodando em segundo plano (o Samuel tem uma pasta de backup
+  no Google Drive, `D:\Backup_GoogleDrive\`). Não commitado, não apagado.
+  Vale perguntar ao Samuel se algo está sincronizando essa pasta sem ele
+  saber.
+- A pasta duplicada `LIVROS PARA FAZER TESTE (duplicata)` (~1,5 GB) dentro de
+  `D:\programas\EditorImpressao-arquivos\` ainda não foi apagada — o Samuel
+  não confirmou se quer apagar.
+
+## Próximo passo recomendado
+
+**Fase 1 do `PLANO-RETOMADA.md`: escolher os 5 PDFs fixos de teste** (folha
+dupla amarelada, capa colorida, página com gravura, folha com mancha do
+verso, scan ruim/baixa resolução) e preencher os nomes no topo do
+`PEDIDOS.md`. Depois disso, começar a varredura pelo Bloco 1 e o Bloco 4
+(filtros) do `PEDIDOS.md` — são os que mais importam, por essa ordem.
+
+## Como rodar e testar (comandos exatos, confirmados nesta sessão)
+
+```
+cd D:\programas\EditorImpressao
+
+.venv\Scripts\python.exe main.py                          # o programa
+.venv\Scripts\python.exe -m pytest tests -q                # 279 testes (confirmado passando)
+.venv\Scripts\python.exe teste_botoes.py                   # clica em tudo; gera PDF de teste sozinho
+.venv\Scripts\python.exe avaliar.py                         # a régua dos filtros
+.venv\Scripts\python.exe avaliar_selecao.py                 # a régua da seleção
+```
+
+Para rodar sem abrir janela de verdade (usado nesta sessão, roda em
+segundo plano/CI): prefixar com `QT_QPA_PLATFORM=offscreen` (bash) ou
+`$env:QT_QPA_PLATFORM="offscreen"` (PowerShell) antes do comando.
+
+## Ambiente — nada novo instalado nesta sessão
+
+Nenhum pacote novo foi instalado (`pytest-qt` foi considerado e
+**descartado** para o `teste_botoes.py` — ver justificativa no próprio
+commit; `PySide6.QtTest` já incluso no PySide6 já instalado bastou). A
+migração de disco não mudou o `.venv` nem a versão do Python (3.14.3).
+
+---
+
 # PARTE 0 — Quem está envolvido, e por quê
 
 **Pe. Rosenei**, sacerdote católico, fundou um **instituto de preservação de
