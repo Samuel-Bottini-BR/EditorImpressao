@@ -106,7 +106,7 @@ class JanelaPrincipal(QMainWindow):
         self.setMenuBar(self.menu)
         conferir = self.tela_conferir
 
-        self.menu.ligar("abrir", lambda: self.tela_inicio.area.mousePressEvent(None))
+        self.menu.ligar("abrir", self.tela_inicio.area.abrir_dialogo_de_arquivo)
         self.menu.ligar("pasta_de_saida", self._escolher_pasta_de_saida)
         self.menu.ligar("nome_do_arquivo", self._escolher_nome_do_arquivo)
         self.menu.ligar("processar", self.processar)

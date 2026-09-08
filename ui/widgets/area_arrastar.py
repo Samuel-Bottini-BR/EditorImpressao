@@ -107,6 +107,10 @@ class AreaArrastar(QWidget):
     def mousePressEvent(self, evento) -> None:  # noqa: N802
         if evento.button() != Qt.LeftButton:
             return
+        self.abrir_dialogo_de_arquivo()
+
+    def abrir_dialogo_de_arquivo(self) -> None:
+        """Abre o seletor de PDF. Usado pelo clique na área e pelo menu Arquivo > Abrir."""
         caminho, _ = QFileDialog.getOpenFileName(
             self, "Escolha o PDF do livro", str(Path.home()), "Arquivos PDF (*.pdf)"
         )
