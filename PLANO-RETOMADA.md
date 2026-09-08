@@ -87,10 +87,15 @@ fantasma — e aí sim consertamos, antes de qualquer outra coisa.
 > 18/07 (o programa fechando ao clicar nos botões da tela de conferir) era
 > exatamente desse tipo. Uma vez construído, roda de graça a cada mudança.
 
-**Status em 07/09/2026:** itens 1 e 2 concluídos (ver `CLAUDE.md` seção 9 e o
-atalho já criado). O item 3 está em desenho/execução — expandindo
-`teste_botoes.py` (que já clica de verdade, mas só na tela de conferir) para
-cobrir as telas que faltam.
+**Status em 07/09/2026: Fase 0 concluída, os três itens.**
+- Item 1 (causa da tela antiga): investigado — ver `CLAUDE.md` seção 9.
+- Item 2 (atalho de desenvolvimento): criado na área de trabalho.
+- Item 3 (clicar em tudo, redimensionar, reportar travamento): `teste_botoes.py`
+  agora cobre todas as telas (antes só a de conferir) — 118 ações, 0 falhas,
+  rodado de verdade contra um PDF sintético isolado (nunca use um livro do
+  acervo real aqui: cada um já tem projeto de rodada de teste anterior, e a
+  limpeza no fim apagaria esse histórico — o próprio script gera o PDF de
+  teste sozinho se você não passar nenhum).
 
 ---
 
