@@ -14,6 +14,365 @@ o backup). Repositório git ligado a
 
 ---
 
+# PARTE -3 — Checkpoint de 12-13/09/2026 (leia isto primeiro, é o mais novo)
+
+A PARTE -2 abaixo (08/09) continua valendo como registro histórico, mas o
+Samuel replanejou o trabalho nesta sessão porque sentiu que o projeto não
+estava indo a lugar nenhum (com razão — ver "Descoberta dura" abaixo). Esta
+parte é o novo protocolo e o estado real de agora.
+
+## O replanejamento (decisões fechadas com o Samuel)
+
+O Samuel mandou um documento (`explicações/Vamos recapitular o que o Editor
+de Impressão precisa fazer para restaurar um livro.docx/.pdf`) recapitulando
+os requisitos originais e mostrando, livro a livro, o resultado que quer
+(usando imagens geradas por IA generativa **só como referência visual** de
+comparação — nunca para o programa em si, que continua proibido de gerar
+pixel, regra inalterada). A partir disso:
+
+- **Stack: mantém Python + PySide6.** Discutido a fundo (o Samuel perguntou
+  se valia trocar por C++, já que o ScanTailor - referência do Sauvola - é
+  C++). Decisão: não trocar. O algoritmo já roda em C++ por baixo via
+  `doxapy`/OpenCV; os bugs relatados são de lógica/interface, não da
+  linguagem; reescrever jogaria fora ~12.500 linhas já funcionando.
+- **OCR: adiado, não descartado.** Desenhamos a arquitetura definitiva caso
+  seja retomado: **Tesseract** (rápido, sem treino) + **Calamari** (impresso
+  histórico, mais adequado que Kraken para o caso do Samuel - texto
+  impresso, não manuscrito à mão) + eventualmente **Kraken** para os livros
+  que são manuscritos de verdade (o Samuel confirmou que existem mais
+  manuscritos além do Graduale, ainda não identificados individualmente).
+  **Decisão importante e definitiva: nenhum motor de OCR baseado em
+  LLM/modelo generativo (Mistral OCR, Qwen2.5-VL, Nanonets, GPT-4V etc.) —
+  eles podem "inventar" palavras plausíveis em texto ilegível, o mesmo risco
+  que já proibimos para imagem.** Isso teria corrompido silenciosamente
+  texto de livro raro. Motivo de adiar: treinar OCR de verdade dá trabalho
+  grande (mesmo usando Tesseract para acelerar a criação do gabarito de
+  treino do Calamari/Kraken), e o Samuel preferiu resolver primeiro o que já
+  existe. Volume real de produção mencionado pelo Samuel: **100+ livros/mês**
+  (bem mais que os ~20 mil páginas/mês que ele cogitou ao pesquisar preço do
+  Transkribus - que custaria 12-25 mil EUR/ano nesse volume, inviável;
+  motivo a mais para ir 100% local/grátis quando o OCR for retomado).
+- **Novo protocolo de trabalho, pedido explicitamente pelo Samuel**: nada de
+  "fiz 20 coisas e commitei". Agora é **um livro de cada vez**, sequencial
+  (não paralelo - decisão explícita dele): eu testo a funcionalidade sozinho
+  (pilotando a janela de verdade com `pywinauto`/`py-spy`, sem precisar que
+  ele descreva passo a passo), trago prints reais do resultado, ele aprova
+  ou reprova, só então seguimos pro próximo item/livro.
+- **Os 3 livros escolhidos para este ciclo, nesta ordem**: **1) Sobre a
+  Consolação da Filosofia - Severino Boécio, 2) Rhetorica Christiana - Fray
+  Diego Valadés, 3) Na escola de Jesus - Catecismo explicado com imagens.**
+  Testar função E interface juntas em cada um (o Samuel insistiu: "não
+  quero problemas nela, hoje o aplicativo é travado demais").
+- Plano completo escrito em
+  `C:\Users\fotog\.claude\plans\d-programas-editorimpressao-explica-es-d-temporal-whale.md`
+  (fora do repositório, é um arquivo de plano do Claude Code).
+
+## Descoberta dura (por que o replanejamento era necessário)
+
+Investigação objetiva confirmou a desconfiança do Samuel, com números:
+**dos 109 itens do `PEDIDOS.md`, zero foram aprovados por ele (`[x]`), zero
+sequer preparados para conferência (`[?]`)** - a Fase 4 (varredura com o
+olho dele) nunca começou de verdade, apesar de 89 commits e ~279 testes
+automáticos. Ritmo de commits mostra retrabalho (pico de 20 num dia, depois
+quase um mês parado). As 3 correções de travamento da sessão de 08/09
+(cartões, trava do MuPDF, painel torto) foram commitadas como resolvidas
+nos testes de máquina, mas **o Samuel testou de verdade e voltou a
+travar** - é o que a Fase 0 desta sessão investigou e corrigiu (ver abaixo).
+
+## Fase 0 desta sessão: travamento re-investigado e corrigido de verdade
+
+Reproduzi o travamento **ao vivo**, sozinho, sem precisar que o Samuel
+descrevesse passo a passo: rodei o programa com `pythonw.exe main.py <pdf>`,
+pilotei a janela real com `pywinauto` (livro Boécio, aba Conferir, ~60
+navegações rápidas de página com seta direita + troca de filtro), e o
+cartão "Preto e branco" ficou preso em "preparando..." por **mais de 70
+segundos**, confirmado com 3 amostras de `py-spy dump --pid <PID>` (zero
+threads ativas todas as vezes) e zero linha nova em
+`%LOCALAPPDATA%\EditorImpressao\erros.log`.
+
+**Duas causas reais achadas, cada uma com teste automático que falha antes
+da correção e passa depois** (`tests/test_cartoes_e_previas.py`, novo):
+
+1. **Os cartões de filtro dividiam o mesmo pool de threads (2 no máximo) que
+   o carregamento de prévia de página.** Navegar rápido — uso normal do
+   Samuel folheando um livro — enche essa fila sem nenhum cancelamento de
+   pedido obsoleto, e como os cartões entravam na MESMA fila, ficavam presos
+   atrás dela por tempo desproporcional. Corrigido em `ui/tarefas.py`:
+   `GerenciadorPrevias` ganhou um `QThreadPool` **separado e dedicado**
+   (`self._pool_cartoes`, 1 thread) só para `_TarefaCartoes` - não compete
+   mais com `_TarefaPrevia`.
+2. **`RuntimeError: Signal source has been deleted`** - achado no
+   `erros.log` de 08/09/2026, 8+ ocorrências seguidas em
+   `ui/tarefas.py:178`. Acontece quando a tela fecha (ou troca de livro)
+   enquanto uma tarefa de fundo ainda está calculando: o objeto de sinais já
+   foi destruído pelo Qt quando a tarefa tenta avisar, e o próprio
+   tratamento de erro (`self.sinais.falhou.emit(...)`) quebra de novo com o
+   mesmo erro, silenciosamente (thread morre sem novo log). Corrigido com
+   uma função `_emitir_se_vivo()` que checa `shiboken6.isValid(dono)` antes
+   de emitir qualquer sinal de `_TarefaPrevia`/`_TarefaCartoes` - se a tela
+   já não existe mais, descarta em silêncio (não é erro de verdade, é uma
+   corrida de desligamento esperada).
+
+**Verificação feita, não só alegada:**
+- Os dois testes novos falham isoladamente sem a correção (confirmado
+  revertendo cada mudança separadamente) e passam com ela.
+- Suíte inteira: **281 testes passando**, nenhuma regressão.
+- Repeti a MESMA navegação agressiva no programa de verdade depois da
+  correção: o cartão que travava agora resolve em **~2 segundos**.
+
+**Nada foi commitado ainda** - `core/pdf_io.py`, `ui/tarefas.py`,
+`ui/tela_conferir.py`, `ui/widgets/paineis.py` e `PEDIDOS.md` seguem
+modificados sem stage (mistura as 3 correções da sessão de 08/09 + as 2
+novas desta sessão). Regra do `CLAUDE.md` seção 8 continua valendo: **o
+Samuel precisa abrir pelo atalho, testar navegação rápida + troca de
+filtro/aba, e confirmar que não trava mais antes do commit.**
+
+## Pontas soltas que continuam, sem mudança
+
+- `empacotar.py` com a mudança não commitada de antes (tirou `"scipy"` da
+  lista de exclusão do instalador) - ainda não perguntado ao Samuel
+  especificamente sobre isso.
+- `historico/handoff-editor-de-impressao 2.md` órfão, não commitado, mesma
+  suspeita de sincronizador do Google Drive.
+- `.pytest_cache/` não rastreado, ainda não está no `.gitignore`.
+
+## Próximo passo recomendado
+
+1. Perguntar ao Samuel se ele já testou (atalho "Editor de Impressao
+   (desenvolvimento)") e confirmou que não trava mais navegando rápido.
+2. Se confirmado: commitar as 5 correções (3 de 08/09 + 2 desta sessão),
+   cada uma separada se possível.
+3. Depois disso, começar a Fase 1 do novo protocolo: testar o livro
+   **Boécio** primeiro (função + interface juntas), trazer prints reais,
+   pedir aprovação item a item no `PEDIDOS.md` - só então passar para
+   Rhetorica Christiana e depois Na escola de Jesus.
+
+## Como rodar e testar (confirmado nesta sessão)
+
+```
+cd D:\programas\EditorImpressao
+
+.venv\Scripts\python.exe -m pytest tests -q                 # 281 casos, confirmado passando
+.venv\Scripts\python.exe -m pytest tests/test_cartoes_e_previas.py -v   # os 2 testes novos desta sessão
+```
+
+Reproduzir o travamento/verificar a correção ao vivo (o que fiz nesta
+sessão, sem precisar o Samuel):
+```
+.venv\Scripts\pythonw.exe main.py "<caminho do PDF de teste>"
+# pywinauto (Python 3.12 do sistema, fora do venv do projeto):
+# Application(backend="uia").connect(process=PID) -> clicar "Conferir",
+# depois "Filtro", enquanto navega rapido com send_keys("{RIGHT}")
+```
+
+Abrir para o Samuel testar: atalho "Editor de Impressao (desenvolvimento)"
+na área de trabalho, ou `.venv\Scripts\pythonw.exe main.py`.
+
+## Ambiente — nada novo instalado nesta sessão
+
+`py-spy` e `pywinauto` já estavam instalados (sessão de 08/09, Python 3.12
+do sistema, `pip install --user`) e foram reusados sem mudança. Nenhum
+pacote novo no `.venv` do projeto.
+
+---
+
+# PARTE -2 — Checkpoint de 08/09/2026
+
+A PARTE -1 abaixo (07/09) ainda vale como registro histórico da retomada, mas
+o estado dela está desatualizado nalguns pontos — esta parte corrige e
+substitui. `CLAUDE.md`, `PEDIDOS.md` e `PLANO-RETOMADA.md` continuam sendo os
+arquivos de regra, lidos primeiro.
+
+## Estado atual
+
+- **Fase 1 do `PLANO-RETOMADA.md` está fechada, com 7 livros em vez de 5**
+  (o Samuel preferiu ampliar). Nomes e o defeito que cada um representa estão
+  no topo do `PEDIDOS.md`. Nenhum item do `PEDIDOS.md` foi conferido ainda
+  (Bloco 1 em diante continua tudo `[ ]`) — a varredura de verdade não
+  começou, porque o Samuel esbarrou em bugs reais só de abrir o programa.
+- **Três defeitos achados e corrigidos nesta sessão, todos com teste de
+  máquina passando (279 casos do pytest + 118 cliques do `teste_botoes.py`)
+  — mas AINDA SEM o "abri, testei, aprovei" do Samuel.** Ver "Pergunta em
+  aberto" abaixo antes de fazer commit.
+  1. **Cálculo síncrono dos cartões de filtro travava a tela.**
+     `ui/tela_conferir.py::_atualizar_cartoes` chamava `aplicar_filtro` para
+     os 3 filtros não-escolhidos direto no thread da interface —
+     `k_para_a_letra` usa `skimage.morphology.skeletonize`, medido em 4,4s
+     numa página comum do Rhetorica Christiana. Corrigido: `ui/tarefas.py`
+     ganhou `_TarefaCartoes`/`_SinaisCartoes` (mesmo padrão de
+     `_TarefaPrevia`), rodando em `QThreadPool`; `_atualizar_cartoes` mostra
+     "preparando..." e pinta quando o sinal `cartoes_prontos` chega.
+  2. **O travamento "de verdade" (o que o Samuel viu, tela toda travada,
+     "Não está respondendo") tinha causa raiz diferente e mais grave: MuPDF
+     não aguenta duas threads lendo o mesmo arquivo PDF ao mesmo tempo —
+     pode travar para sempre dentro de `fz_run_display_list`, sem erro
+     nenhum no log.** Achado ao vivo com `py-spy` (duas vezes, dois livros
+     diferentes: Rhetorica Christiana e Giovambattista Palatino, sempre a
+     mesma pilha travada). Corrigido em duas partes:
+     - `ui/tela_conferir.py::_montar_tira` parou de refazer a tira de
+       miniaturas do livro inteiro toda vez que a aba troca — só remonta
+       quando o conjunto de páginas/folhas muda de verdade (guarda uma
+       "assinatura" em `self._tira_assinatura`).
+     - `core/pdf_io.py` ganhou uma trava global (`_TRANCA =
+       threading.Lock()`) em volta de toda chamada nativa ao MuPDF
+       (`abrir_pdf`, `info_paginas`, `dpi_real_da_pagina`,
+       `pagina_para_array`, e os métodos de `EscritorPDF`) — só uma parte do
+       programa lê/escreve PDF por vez agora.
+  3. **O painel da direita (Para revisar / Marcar como / Filtro da página /
+     Histórico) saía com o dobro da largura do desenho (172px → ~320-380px),
+     cortando o texto pela metade e mostrando só o final de cada rótulo**
+     (ex.: "gravura ou foto" virava "u foto"). Causa: `QPushButton` não
+     encolhe sozinho abaixo do que precisa pra mostrar o texto inteiro sem
+     quebrar linha, e um item de histórico comprido ("Filtro da página 12:
+     Preto e branco para Melhorar") forçava a coluna inteira a alargar.
+     **Só apareceu agora porque este projeto (Palatino) já tinha histórico
+     acumulado o bastante pra disparar isso** — projeto novo não mostra o
+     bug. Corrigido em `ui/widgets/paineis.py`: nova classe
+     `_BotaoDoPainel` (corta o próprio texto com reticências, guarda o texto
+     inteiro na dica do mouse, `minimumSizeHint` não depende mais do
+     tamanho do texto); `Painel` ganhou `setMaximumWidth(LARGURA)` como
+     trava definitiva; dois rótulos em `PainelFiltroDaPagina` que tinham
+     escapado do `setWordWrap(True)` (nome do filtro, "tecla N") ganharam.
+
+## Decisões fechadas nesta sessão, e por quê
+
+- **7 livros de teste, não 5** — o Samuel escolheu ampliar depois de ver os
+  9 disponíveis. Lista e motivo de cada um no topo do `PEDIDOS.md`.
+- **Trava global em vez de reescrever o acesso a PDF.** Trocar biblioteca ou
+  redesenhar como o programa lê PDF estava fora de cogitação (`CLAUDE.md`
+  proíbe "trocar biblioteca" sem perguntar); um `threading.Lock()` em volta
+  das chamadas nativas resolve o mesmo problema com uma mudança pequena e
+  reversível. Isso está dentro da alçada de decidir sozinho (`CLAUDE.md`
+  seção 6: "paralelismo" é item que o Claude Code pode decidir).
+- **Cache de assinatura em vez de remontar a tira sob demanda de outro
+  jeito** — mantém o comportamento (remonta quando precisa) sem inventar
+  mecanismo novo.
+
+## Caminhos tentados e descartados, e por quê
+
+- **Hipótese "o modelo ONNX de detecção de layout carrega devagar e trava"**
+  — medido direto (fora da tela): 1,57s a primeira vez, 0,71s depois. Rápido
+  demais para explicar o travamento. Descartada.
+- **Hipótese "é um glitch de repintura da tela"** (para o painel torto) —
+  forcei a janela a maximizar e restaurar (repaint completo) e o defeito
+  continuou idêntico, pixel a pixel. Descartada; confirmou que é um bug de
+  layout de verdade, não um problema visual passageiro.
+- **Reproduzir o travamento com um script isolado, uma thread só** — rodei
+  a geração de miniatura (dpi=20) nas 134 páginas do Palatino, sequencial,
+  sem nenhuma outra tarefa rodando junto: **nunca travou**, todas as páginas
+  abaixo de 0,5s. Só reproduz com VÁRIAS threads batendo no mesmo arquivo ao
+  mesmo tempo (o cenário real do programa rodando). **Lição para quem for
+  investigar um travamento parecido: testar em isolamento não basta — o
+  bug só aparece com concorrência de verdade.**
+
+## Descobertas de comportamento real, caras de redescobrir
+
+- **MuPDF (PyMuPDF/fitz) não é seguro para uso concorrente entre threads**,
+  mesmo cada thread abrindo o seu próprio `fitz.Document` — a biblioteca
+  guarda estado global (cache de fontes/imagens) por baixo, e duas chamadas
+  nativas ao mesmo tempo podem travar dentro de `fz_run_display_list` para
+  sempre, sem exceção, sem log. Não é um bug de UMA página específica: é a
+  concorrência em si.
+- **`QPushButton` não elide nem quebra texto sozinho.** Se o texto não
+  cabe, o botão simplesmente pede mais espaço (via `minimumSizeHint`) em vez
+  de cortar — e um `QVBoxLayout`/`QScrollArea` com `setWidgetResizable(True)`
+  deixa isso vazar: a coluna inteira alarga, sem aviso, sem erro.
+- **`py-spy` é a ferramenta certa para travamento de app PySide6.** Instalado
+  fora do projeto (`pip install --user py-spy`, python do sistema 3.12, não
+  o `.venv` do projeto que é 3.14) — o binário fica em
+  `C:\Users\fotog\AppData\Roaming\Python\Python312\Scripts\py-spy.exe`.
+  `py-spy dump --pid <PID>` mostra a pilha de TODAS as threads; `--locals`
+  mostra variáveis locais também. Não precisa reiniciar o programa nem
+  adicionar instrumentação: funciona no processo já travado.
+- **`pywinauto` (mesma instalação `--user`) consegue pilotar a janela de
+  verdade já aberta**, sem precisar escrever script de teste separado —
+  `Application(backend="uia").connect(process=pid)`, depois
+  `.child_window(title=..., control_type=...).click_input()`. Serviu para
+  reproduzir o travamento ao vivo clicando exatamente como o Samuel clicou.
+  Cuidado: `capture_as_image()` pega o que estiver na FRENTE da tela nesse
+  retângulo, não necessariamente o conteúdo da janela-alvo — sempre
+  `.set_focus()` antes de tirar print. `GetWindowRect` via PowerShell (sem
+  DPI awareness) devolve coordenadas escaladas, não confiar no valor
+  absoluto — só comparar proporções, ou usar a `.rectangle()` do próprio
+  pywinauto.
+
+## Pergunta em aberto — a mais importante deste checkpoint
+
+**As três correções acima passam nos testes automáticos e eu reproduzi e
+confirmei cada uma ao vivo (com `py-spy`/`pywinauto`, não só olhando o
+código) — mas o Samuel ainda NÃO abriu o programa pelo atalho normal e
+confirmou com as próprias mãos que ficou bom.** A última coisa que perguntei
+a ele, sem resposta ainda quando este checkpoint foi escrito: *"Agora é sua
+vez de testar de verdade: abra a janela que já deixei aberta, mexa no
+Palatino como antes... e me diga se travou ou se o painel voltou a ficar
+torto."*
+
+**Por isso: NADA foi commitado ainda.** `git status` mostra
+`core/pdf_io.py`, `ui/tarefas.py`, `ui/tela_conferir.py`,
+`ui/widgets/paineis.py` e `PEDIDOS.md` modificados, sem stage. Isso é de
+propósito — `CLAUDE.md` seção 8 diz "eu abro pelo atalho, testo, e marco
+aprovado" ANTES do commit (passo 9 antes do passo 10), e a razão de existir
+dessa regra é justamente não deixar o Claude Code se autoaprovar de novo
+(era o problema original de 57+ commits sem nenhum aprovado). **Quem pegar
+esta sessão: pergunte ao Samuel se ele já testou e aprovou antes de
+commitar.** Se ele já confirmou (em uma mensagem que não chegou a entrar
+neste arquivo), pode seguir direto para o commit.
+
+## Pontas soltas, ainda não resolvidas
+
+- **`empacotar.py` tem uma mudança não commitada de ANTES desta sessão**
+  (tirou `"scipy"` da lista de bibliotecas excluídas do instalador) — não fui
+  eu quem fez, encontrei já assim no início da sessão, avisei o Samuel, e
+  ele não respondeu sobre isso especificamente. Não commitar misturado com
+  as correções de hoje sem perguntar primeiro.
+- **`historico/handoff-editor-de-impressao 2.md`** continua órfão, não
+  commitado (mencionado na PARTE -1 abaixo — mesma suspeita de sincronizador
+  do Google Drive, ainda não investigada).
+- **`.pytest_cache/`** apareceu como pasta não rastreada e não está no
+  `.gitignore` — inofensivo (é regenerável), mas vale adicionar ao
+  `.gitignore` num commit de limpeza futuro.
+
+## Próximo passo recomendado
+
+1. Confirmar com o Samuel se as três correções acima passaram no teste real
+   dele (perguntar, não supor).
+2. Commitar as três correções (uma vez confirmado), cada uma como commit
+   separado se possível — travamento (cartões), travamento (MuPDF/trava
+   global + tira de miniaturas), painel torto.
+3. Depois disso, a fila já combinada com o Samuel:
+   - **Investigar os pontinhos pretos no filtro Preto e branco** (defeito
+     visual visto ao vivo no Rhetorica Christiana, página 6 — plano de
+     ataque de 4 tentativas já desenhado numa sessão de plan mode desta
+     mesma conversa: quantificar primeiro, depois despeckle maior, depois
+     pré-processamento, depois trocar binarizador só se precisar).
+   - Retomar a Fase 4 do `PLANO-RETOMADA.md`: varredura bloco a bloco do
+     `PEDIDOS.md`, começando pelo Bloco 1 e Bloco 4.
+
+## Como rodar e testar (confirmado nesta sessão)
+
+```
+cd D:\programas\EditorImpressao
+
+.venv\Scripts\python.exe -m pytest tests -q          # 279 casos, confirmado passando
+.venv\Scripts\pythonw.exe teste_botoes.py             # 118 acoes, 0 falhas (usar QT_QPA_PLATFORM=offscreen no bash)
+```
+
+Abrir o programa de verdade para o Samuel testar: atalho "Editor de
+Impressao (desenvolvimento)" na área de trabalho, ou
+`.venv\Scripts\pythonw.exe main.py` (aceita opcionalmente um caminho de PDF
+como argumento, que abre direto — `janela.abrir_livro(caminho)`).
+
+## Ambiente — instalado nesta sessão (fora do `.venv` do projeto)
+
+Ferramentas de diagnóstico, no Python do sistema (3.12, `pip install
+--user`), não no `.venv` do projeto (3.14) — não afetam o programa em si:
+
+- `py-spy` 0.4.2
+- `pywinauto` 0.6.9 (+ `pywin32`, `comtypes`, `six`)
+- `pillow` 12.3.0 (pywinauto precisa para `capture_as_image`)
+
+---
+
 # PARTE -1 — Checkpoint de 07/09/2026 (leia isto primeiro)
 
 Esta parte é o resumo de continuação mais recente. O resto do documento
