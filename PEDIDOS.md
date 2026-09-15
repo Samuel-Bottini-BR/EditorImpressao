@@ -28,15 +28,28 @@ O Claude Code pode marcar `[?]`. **Nunca `[x]`.**
 
 ## Os PDFs de teste
 
-Sempre os mesmos cinco, para o resultado ser comparável entre um dia e outro.
-(Preencher na Fase 1 — ver `PLANO-RETOMADA.md`.)
+Sete livros fixos, escolhidos pelo Samuel em 08/09/2026, para o resultado ser
+comparável entre um dia e outro. Todos em
+`D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE\`.
 
-1. Folha dupla amarelada — ...
-2. Capa colorida — sugestão: `Estudos\Latim\pdfcoffee.com_gradus-primus...pdf`
-   (70 folhas duplas, capa azul — é o caso que já pegou o defeito da capa)
-3. Página com gravura — sugestão: Siebmacher ou BRODERIES
-4. Folha quase transparente, mancha do verso — ...
-5. Scan ruim, baixa resolução — sugestão: Boécio (4 MB para 50 folhas)
+1. **Giovambattista Palatino cittadino romano** — folha dupla amarelada, o caso
+   mais comum (texto simples, sem outro defeito somado)
+2. **Livro de Horas - Luís XIV** — capa colorida / iluminura com ouro (pág. 61
+   já documentada em `para_comparar/LEIA.txt`)
+3. **Rhetorica Christiana - Fray Diego Valadés** — página com gravura,
+   xilogravura de traço fino (pág. 73 já documentada)
+4. **Marial de sermoens - Frei Balthasar Paez** — folha quase transparente,
+   mancha do verso, o pior defeito aberto (pág. 862 já documentada); também
+   tem página bem amarelada (pág. 575)
+5. **Sobre a Consolação da Filosofia - Severino Boécio** — scan ruim, baixa
+   resolução (4 MB para 50 folhas); também tem página torta (pág. 2)
+6. **Na escola de Jesus - Catecismo explicado com imagens** — catecismo com
+   imagens, ainda sem defeito específico documentado
+7. **Schön Neues Modell Buch - Johann Siebmacher** — livro de padrões/gravuras,
+   ainda sem defeito específico documentado
+
+Ficaram de fora: Graduale - Saeculum XIV (partitura manuscrita, tratada à parte
+em `avaliar.py`) e POINTS d'ANCIENNES BRODERIES ANGLAISES.
 
 ---
 
