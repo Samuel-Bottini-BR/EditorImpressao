@@ -52,7 +52,7 @@ EXCLUIR = [
     "PySide6.QtDataVisualization", "PySide6.QtBluetooth", "PySide6.QtNetworkAuth",
     "PySide6.QtPositioning", "PySide6.QtSensors", "PySide6.QtSerialPort",
     "PySide6.QtSql", "PySide6.QtTest", "PySide6.QtDesigner", "PySide6.QtHelp",
-    "matplotlib", "scipy", "pandas", "IPython", "tkinter", "pytest",
+    "matplotlib", "pandas", "IPython", "tkinter", "pytest",
 ]
 
 # O DoxaPy e uma biblioteca nativa: o PyInstaller nao acha sozinho.

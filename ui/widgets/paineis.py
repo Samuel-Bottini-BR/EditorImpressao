@@ -19,7 +19,7 @@ e quem não usa um painel recupera a altura dele para os outros.
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -48,6 +48,48 @@ QPushButton:hover {{ border-color: {azul}; }}
 """
 
 
+class _BotaoDoPainel(QPushButton):
+    """Um botão da coluna de 172px que corta o próprio texto, em vez de
+    empurrar a coluna inteira para o dobro da largura do desenho.
+
+    Achado ao vivo: o `QPushButton` não encolhe abaixo do que precisa para
+    mostrar o texto inteiro sem quebrar. Um item de histórico como "Filtro da
+    página 12: Preto e branco para Melhorar" pedia ~350px, e como os quatro
+    painéis dividem a MESMA coluna, isso alargava a coluna toda - inclusive
+    "Marcar como" e "Filtro da página" - bem além dos 172px, cortando o
+    resultado pela metade sem aviso nenhum.
+    """
+
+    def __init__(self, texto: str, parent=None) -> None:
+        super().__init__(texto, parent)
+        self._texto_completo = ""
+        self.setText(texto)
+
+    def setText(self, texto: str) -> None:  # noqa: N802
+        # Alguns paineis trocam o texto depois (o contador de "Para revisar",
+        # por exemplo) - guardar aqui de novo garante que o elidir usa sempre
+        # o texto atual, nao o do momento em que o botao foi criado.
+        self._texto_completo = texto
+        self.setToolTip(texto)
+        self._reelidir()
+
+    def minimumSizeHint(self) -> QSize:
+        # Nao depender do tamanho do texto: e exatamente essa dependencia que
+        # forcava a coluna a crescer para caber o texto inteiro sem cortar.
+        cheio = super().minimumSizeHint()
+        return QSize(0, cheio.height())
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802
+        super().resizeEvent(evento)
+        self._reelidir()
+
+    def _reelidir(self) -> None:
+        disponivel = self.width() - 20  # o padding de "3px 8px" + a borda
+        elidido = self.fontMetrics().elidedText(
+            self._texto_completo, Qt.ElideRight, max(0, disponivel))
+        QPushButton.setText(self, elidido)
+
+
 class Painel(QFrame):
     """Um painel com título clicável e um corpo que recolhe."""
 
@@ -55,6 +97,12 @@ class Painel(QFrame):
 
     def __init__(self, titulo: str, parent=None) -> None:
         super().__init__(parent)
+        # Trava a largura nos 172px do desenho de verdade: sem isto, um botao
+        # ou rotulo comprido (achado ao vivo: um item de historico como
+        # "Filtro da pagina 12: Preto e branco para Melhorar") empurra a
+        # coluna inteira para o dobro da largura, cortando os OUTROS paineis
+        # pela metade sem aviso nenhum.
+        self.setMaximumWidth(LARGURA)
         self.setStyleSheet(
             f"QFrame {{ background: {FUNDO}; border: none; "
             f"border-bottom: 1px solid {BORDA}; }}")
@@ -63,7 +111,7 @@ class Painel(QFrame):
         camadas.setContentsMargins(0, 0, 0, 0)
         camadas.setSpacing(0)
 
-        self.cabecalho = QPushButton(titulo)
+        self.cabecalho = _BotaoDoPainel(titulo)
         self.cabecalho.setCursor(Qt.PointingHandCursor)
         self.cabecalho.setStyleSheet(
             "QPushButton { border: none; background: transparent; "
@@ -107,7 +155,7 @@ class Painel(QFrame):
         return rotulo
 
     def _botao(self, texto: str, acao, escolhido: bool = False) -> QPushButton:
-        botao = QPushButton(texto)
+        botao = _BotaoDoPainel(texto)
         botao.setCursor(Qt.PointingHandCursor)
         botao.setStyleSheet(BOTAO_DO_PAINEL.format(
             borda=AZUL if escolhido else "#d3d1c7",
@@ -237,10 +285,12 @@ class PainelFiltroDaPagina(Painel):
         dentro = QHBoxLayout(linha)
         dentro.setContentsMargins(0, 0, 0, 2)
         nome = QLabel(NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro))
+        nome.setWordWrap(True)
         nome.setStyleSheet("font-size: 13px; background: transparent; border: none;")
         dentro.addWidget(nome)
         dentro.addStretch()
         tecla = QLabel(f"tecla {teclas.get(pagina.filtro, '')}")
+        tecla.setWordWrap(True)
         tecla.setStyleSheet(
             f"color: {TEXTO_FRACO}; font-size: 11px; background: transparent; "
             "border: none;")

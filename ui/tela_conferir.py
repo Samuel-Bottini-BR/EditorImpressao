@@ -187,6 +187,9 @@ class TelaConferir(QWidget):
         self.botoes_de_sugestao: dict[str, QPushButton] = {}
         self.cartoes: dict[str, CartaoFiltro] = {}
         self.botoes_forca: dict[str, QPushButton] = {}
+        self._cartoes_cache: dict[str, np.ndarray] = {}
+        self._cartoes_cache_chave: tuple | None = None
+        self._tira_assinatura: tuple | None = None
 
         self._montar()
 
@@ -749,6 +752,10 @@ class TelaConferir(QWidget):
             self.acoes = acoes
             self.previas = previas
             self.previas.pronta.connect(self._previa_chegou)
+            self.previas.cartoes_prontos.connect(self._cartoes_prontos)
+            self._cartoes_cache = {}
+            self._cartoes_cache_chave = None
+            self._tira_assinatura = None
 
             self.indice_folha = 0
             self.indice_pagina = 0
@@ -806,24 +813,42 @@ class TelaConferir(QWidget):
         self.botoes_forca.clear()
 
     def _montar_tira(self) -> None:
+        """Recria a tira de miniaturas - mas só quando o conjunto de
+        páginas/folhas muda de verdade.
+
+        Remontar refaz a miniatura do livro inteiro do zero, reabrindo o PDF
+        numa thread nova - achado ao vivo: se isso acontece enquanto outra
+        tarefa de fundo já está lendo o mesmo arquivo, o MuPDF pode travar o
+        programa inteiro (regra 3.2). Só trocar de aba, o caso comum, não
+        muda nem a quantidade nem o mapeamento - remontar aí é caro à toa.
+        """
         if self.projeto is None:
             return
         if self.aba_atual == ABA_CORTE:
-            self.tira.definir_titulo("Folhas - as laranjas eu não tive certeza")
-            self.tira.montar(
-                len(self.projeto.folhas), self.projeto.caminho_entrada,
-                {i: i for i in range(len(self.projeto.folhas))},
-            )
+            titulo = "Folhas - as laranjas eu não tive certeza"
+            quantidade = len(self.projeto.folhas)
+            folha_de = {i: i for i in range(len(self.projeto.folhas))}
+            corte_de = None
         else:
-            self.tira.definir_titulo("Páginas - as laranjas eu não tive certeza")
-            self.tira.montar(
-                len(self.projeto.paginas), self.projeto.caminho_entrada,
-                {p.indice: p.folha for p in self.projeto.paginas},
-                {
-                    p.indice: (p.metade, self.projeto.folhas[p.folha].posicao_corte)
-                    for p in self.projeto.paginas
-                },
-            )
+            titulo = "Páginas - as laranjas eu não tive certeza"
+            quantidade = len(self.projeto.paginas)
+            folha_de = {p.indice: p.folha for p in self.projeto.paginas}
+            corte_de = {
+                p.indice: (p.metade, self.projeto.folhas[p.folha].posicao_corte)
+                for p in self.projeto.paginas
+            }
+
+        self.tira.definir_titulo(titulo)
+
+        assinatura = (
+            quantidade,
+            tuple(sorted(folha_de.items())),
+            tuple(sorted(corte_de.items())) if corte_de is not None else None,
+        )
+        if assinatura == self._tira_assinatura:
+            return
+        self._tira_assinatura = assinatura
+        self.tira.montar(quantidade, self.projeto.caminho_entrada, folha_de, corte_de)
 
     # ------------------------------------------------------------------
     # estado
@@ -1020,8 +1045,14 @@ class TelaConferir(QWidget):
         )
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
-        """Os quatro cartoes mostram a página de verdade, cada um com seu filtro."""
-        from core.filtros import aplicar_filtro
+        """Os quatro cartoes mostram a página de verdade, cada um com seu filtro.
+
+        Só o cartão do filtro escolhido é imediato (a imagem já veio pronta).
+        Os outros três pedem o cálculo em segundo plano (regra 3.2): aplicar
+        preto_e_branco/magico_pro de verdade - k_para_a_letra usa skeletonize -
+        pode levar segundos numa página de traço fino, e isso não pode travar
+        a tela.
+        """
         from core.pdf_io import limitar_altura
 
         assert self.projeto is not None
@@ -1035,18 +1066,48 @@ class TelaConferir(QWidget):
                 cartao.definir_amostra(None)
             return
 
-        base = self._imagem_sem_filtro()
         for chave, cartao in self.cartoes.items():
             if chave == pagina.filtro:
                 cartao.definir_amostra(limitar_altura(img, 260))
-            elif base is not None:
-                amostra, _ = aplicar_filtro(
-                    base, chave, pagina.forca_preto,
-                    pagina.clareza_melhorar, pagina.intensidade_magico,
-                )
-                cartao.definir_amostra(amostra)
-            else:
-                cartao.definir_amostra(None)
+
+        outros = [chave for chave in self.cartoes if chave != pagina.filtro]
+        base = self._imagem_sem_filtro()
+        if base is None:
+            for chave in outros:
+                self.cartoes[chave].definir_amostra(None)
+            return
+
+        chave_cache = (self.indice_pagina, pagina.forca_preto,
+                       pagina.clareza_melhorar, pagina.intensidade_magico)
+        if chave_cache == self._cartoes_cache_chave:
+            for chave in outros:
+                self.cartoes[chave].definir_amostra(self._cartoes_cache.get(chave))
+            return
+
+        for chave in outros:
+            self.cartoes[chave].definir_amostra(None)
+        assert self.previas is not None
+        self.previas.pedir_cartoes(
+            self.indice_pagina, base, outros,
+            pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
+        )
+
+    @protegido
+    def _cartoes_prontos(self, indice: int, resultados: dict) -> None:
+        """Os cartões calculados em segundo plano chegaram.
+
+        Se o usuário já virou a página nesse meio tempo, descarta - senão
+        pinta e guarda no cache, para não recalcular ao voltar para cá.
+        """
+        if self.projeto is None or indice != self.indice_pagina:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        self._cartoes_cache_chave = (indice, pagina.forca_preto,
+                                      pagina.clareza_melhorar, pagina.intensidade_magico)
+        self._cartoes_cache = resultados
+        for chave, amostra in resultados.items():
+            if chave in self.cartoes:
+                self.cartoes[chave].definir_amostra(amostra)
 
     def _imagem_sem_filtro(self) -> np.ndarray | None:
         """Versao pequena e sem filtro da página atual, para os outros cartoes."""

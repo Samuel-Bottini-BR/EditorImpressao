@@ -21,6 +21,12 @@ def main() -> int:
     app = QApplication(sys.argv)
     app.setApplicationName("Editor de Impressão")
 
+    # Aquece em segundo plano o import pesado que o filtro Preto e branco
+    # faria sob demanda - ver core/aquecimento.py para o motivo.
+    from core.aquecimento import aquecer_em_segundo_plano
+
+    aquecer_em_segundo_plano()
+
     # Rede de seguranca final: qualquer erro nao tratado vira aviso em
     # portugues e o programa continua aberto (regra 3.3).
     def tratar(tipo, valor, rastro) -> None:

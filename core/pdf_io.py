@@ -8,6 +8,7 @@ na memória. Sempre uma página por vez: ler -> processar -> escrever -> soltar.
 from __future__ import annotations
 
 import io
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -15,6 +16,14 @@ import cv2
 import fitz  # PyMuPDF
 import numpy as np
 from PIL import Image
+
+# Trava tudo que chama o MuPDF nativo. Achado ao vivo (py-spy, 08/09/2026):
+# duas threads chamando fitz ao mesmo tempo - uma tarefa de fundo lendo uma
+# pagina enquanto a tira de miniaturas le outra do MESMO arquivo - pode travar
+# o processo inteiro dentro de fz_run_display_list, sem erro nenhum no log.
+# O MuPDF guarda estado global (cache de fontes/imagens) por baixo de cada
+# fitz.Document; abrir "o seu proprio documento" por thread nao basta.
+_TRANCA = threading.Lock()
 
 # Teto de pixels por pagina. Acima disso o DPI e reduzido automaticamente.
 # 40 milhoes de pixels ~= uma folha A4 a 550 DPI. Passar disso estoura a
@@ -55,7 +64,8 @@ def abrir_pdf(caminho: str | Path) -> fitz.Document:
             "Não consegui achar esse arquivo. Ele pode ter sido movido ou apagado."
         )
     try:
-        doc = fitz.open(caminho)
+        with _TRANCA:
+            doc = fitz.open(caminho)
     except Exception as exc:  # noqa: BLE001 - qualquer falha vira mensagem amigavel
         raise ErroPDF(
             "Não consegui abrir esse arquivo. Ele pode estar danificado ou não ser um PDF."
@@ -75,9 +85,10 @@ def abrir_pdf(caminho: str | Path) -> fitz.Document:
 def info_paginas(doc: fitz.Document) -> list[InfoPagina]:
     """Tamanho de cada página, sem rasterizar nada (rapido mesmo com 500 páginas)."""
     infos: list[InfoPagina] = []
-    for i in range(doc.page_count):
-        r = doc[i].rect
-        infos.append(InfoPagina(indice=i, largura_pt=r.width, altura_pt=r.height))
+    with _TRANCA:
+        for i in range(doc.page_count):
+            r = doc[i].rect
+            infos.append(InfoPagina(indice=i, largura_pt=r.width, altura_pt=r.height))
     return infos
 
 
@@ -92,22 +103,23 @@ def dpi_real_da_pagina(doc: fitz.Document, indice: int) -> float:
     Devolve 0.0 quando a página não tem imagem embutida (PDF de texto).
     """
     try:
-        pagina = doc[indice]
-        largura_pt = pagina.rect.width
-        if largura_pt <= 0:
-            return 0.0
+        with _TRANCA:
+            pagina = doc[indice]
+            largura_pt = pagina.rect.width
+            if largura_pt <= 0:
+                return 0.0
 
-        maior = 0
-        for imagem in pagina.get_images():
-            try:
-                dados = doc.extract_image(imagem[0])
-            except Exception:  # noqa: BLE001 - imagem estranha não derruba nada
-                continue
-            maior = max(maior, int(dados.get("width", 0)))
+            maior = 0
+            for imagem in pagina.get_images():
+                try:
+                    dados = doc.extract_image(imagem[0])
+                except Exception:  # noqa: BLE001 - imagem estranha não derruba nada
+                    continue
+                maior = max(maior, int(dados.get("width", 0)))
 
-        if maior <= 0:
-            return 0.0
-        return maior / (largura_pt / 72.0)
+            if maior <= 0:
+                return 0.0
+            return maior / (largura_pt / 72.0)
     except Exception:  # noqa: BLE001
         return 0.0
 
@@ -139,35 +151,36 @@ def pagina_para_array(
     if not 0 <= indice < doc.page_count:
         raise ErroPDF(f"Essa página não existe (pedi a {indice + 1}).")
 
-    pagina = doc[indice]
-    dpi_usado = dpi_seguro(pagina, dpi)
-    escala = dpi_usado / 72.0
-    pix = pagina.get_pixmap(matrix=fitz.Matrix(escala, escala), alpha=False)
+    with _TRANCA:
+        pagina = doc[indice]
+        dpi_usado = dpi_seguro(pagina, dpi)
+        escala = dpi_usado / 72.0
+        pix = pagina.get_pixmap(matrix=fitz.Matrix(escala, escala), alpha=False)
 
-    # frombuffer nao copia; o reshape cria a visao. O .copy() no fim garante que
-    # o array sobrevive ao descarte do pixmap logo abaixo.
-    img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
-    if pix.n == 1:
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-    else:
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    resultado = np.ascontiguousarray(img)
-    del pix  # solta a memoria do pixmap na hora
+        # frombuffer nao copia; o reshape cria a visao. O .copy() no fim garante
+        # que o array sobrevive ao descarte do pixmap logo abaixo.
+        img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
+        if pix.n == 1:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        else:
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        resultado = np.ascontiguousarray(img)
+        del pix  # solta a memoria do pixmap na hora
 
-    # E esvazia o armazem do MuPDF. Soltar o pixmap nao basta: por baixo, a
-    # biblioteca guarda fontes, imagens e a arvore de cada pagina ja aberta,
-    # num cache que ela so limpa quando o documento fecha. Num livro de 900
-    # folhas isso e o programa inteiro na memoria, e nao uma folha.
-    #
-    # Medido no Marial, 205 MB de arquivo, virando 100 folhas:
-    #
-    #     sem esvaziar   65 -> 279 MB, subindo uns 2 MB por folha
-    #     esvaziando     65 ->  70 MB, e para de subir
-    #
-    # O store_shrink(100) manda liberar 100% do que der. O custo e reabrir o
-    # que for preciso na proxima folha - e como cada folha e lida uma vez so,
-    # nao ha nada a reaproveitar.
-    fitz.TOOLS.store_shrink(100)
+        # E esvazia o armazem do MuPDF. Soltar o pixmap nao basta: por baixo, a
+        # biblioteca guarda fontes, imagens e a arvore de cada pagina ja aberta,
+        # num cache que ela so limpa quando o documento fecha. Num livro de 900
+        # folhas isso e o programa inteiro na memoria, e nao uma folha.
+        #
+        # Medido no Marial, 205 MB de arquivo, virando 100 folhas:
+        #
+        #     sem esvaziar   65 -> 279 MB, subindo uns 2 MB por folha
+        #     esvaziando     65 ->  70 MB, e para de subir
+        #
+        # O store_shrink(100) manda liberar 100% do que der. O custo e reabrir
+        # o que for preciso na proxima folha - e como cada folha e lida uma vez
+        # so, nao ha nada a reaproveitar.
+        fitz.TOOLS.store_shrink(100)
     return resultado
 
 
@@ -191,7 +204,8 @@ class EscritorPDF:
 
     def __init__(self, caminho: str | Path) -> None:
         self.caminho = Path(caminho)
-        self.doc = fitz.open()
+        with _TRANCA:
+            self.doc = fitz.open()
         self._paginas = 0
 
     def __enter__(self) -> "EscritorPDF":
@@ -218,8 +232,9 @@ class EscritorPDF:
 
         dados = _codificar_png(img, monocromatico=monocromatico)
 
-        pagina = self.doc.new_page(width=largura_pt, height=altura_pt)
-        pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), stream=dados)
+        with _TRANCA:
+            pagina = self.doc.new_page(width=largura_pt, height=altura_pt)
+            pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), stream=dados)
         self._paginas += 1
 
     def copiar_pagina(self, origem: fitz.Document, indice: int) -> None:
@@ -228,7 +243,8 @@ class EscritorPDF:
         Preserva texto vetorial e qualidade original. E o caminho rapido do modo
         "só cadernos" (secao 4.5).
         """
-        self.doc.insert_pdf(origem, from_page=indice, to_page=indice)
+        with _TRANCA:
+            self.doc.insert_pdf(origem, from_page=indice, to_page=indice)
         self._paginas += 1
 
     def fechar(self) -> None:
@@ -241,7 +257,8 @@ class EscritorPDF:
                 # como erro tecnico.
                 try:
                     self.caminho.parent.mkdir(parents=True, exist_ok=True)
-                    self.doc.save(self.caminho, garbage=3, deflate=True)
+                    with _TRANCA:
+                        self.doc.save(self.caminho, garbage=3, deflate=True)
                 except OSError as exc:
                     raise ErroPDF(
                         "Não consegui gravar o arquivo final. O disco pode estar "
@@ -250,7 +267,8 @@ class EscritorPDF:
                         "tente de novo."
                     ) from exc
         finally:
-            self.doc.close()
+            with _TRANCA:
+                self.doc.close()
             self.doc = None  # type: ignore[assignment]
 
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 import traceback
 
 import numpy as np
+import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
 from core.pdf_io import ErroPDF, abrir_pdf
@@ -20,6 +21,21 @@ from registro import registrar_erro
 # Quantas previas ficam guardadas na memoria. Cada uma tem ~900 px de altura;
 # 30 delas cabem folgado e cobrem a navegacao para frente e para tras.
 TAMANHO_CACHE = 30
+
+
+def _emitir_se_vivo(dono: QObject, sinal, *args) -> None:
+    """Emite um sinal só se o QObject dono ainda existir.
+
+    Achado no log de produção em 08/09/2026: se a tela fecha (ou troca de
+    livro) enquanto uma tarefa de fundo ainda está calculando, o objeto de
+    sinais pode já ter sido destruído pelo Qt quando a tarefa termina -
+    emitir nesse caso levanta `RuntimeError: Signal source has been deleted`.
+    Isso não é um erro de verdade (a tela que pediria a prévia já não existe
+    mais), só um resultado que ninguém vai mais usar - descartar em silêncio.
+    """
+    if not shiboken6.isValid(dono):
+        return
+    sinal.emit(*args)
 
 
 def _mensagem_amigavel(erro: Exception) -> str:
@@ -107,6 +123,46 @@ class _SinaisPrevia(QObject):
     falhou = Signal(str)
 
 
+class _SinaisCartoes(QObject):
+    prontos = Signal(int, dict)   # indice_pagina, {chave_filtro: imagem}
+
+
+class _TarefaCartoes(QRunnable):
+    """Calcula os cartoes de filtro que faltam, fora da tela.
+
+    A amostra ja vem pronta (sem PDF, sem pipeline) - so aplica os filtros.
+    Existe por causa da regra 3.2: k_para_a_letra usa skeletonize, que pode
+    levar varios segundos numa pagina de traco fino (gravura), e isso rodando
+    direto na tela travava a interface inteira.
+    """
+
+    def __init__(self, indice_pagina: int, base: np.ndarray, filtros: list[str],
+                 forca_preto: int, clareza: int, intensidade: int,
+                 sinais: _SinaisCartoes) -> None:
+        super().__init__()
+        self.indice_pagina = indice_pagina
+        self.base = base
+        self.filtros = filtros
+        self.forca_preto = forca_preto
+        self.clareza = clareza
+        self.intensidade = intensidade
+        self.sinais = sinais
+
+    def run(self) -> None:
+        from core.filtros import aplicar_filtro
+
+        resultados: dict[str, np.ndarray] = {}
+        try:
+            for chave in self.filtros:
+                amostra, _ = aplicar_filtro(
+                    self.base, chave, self.forca_preto, self.clareza, self.intensidade,
+                )
+                resultados[chave] = amostra
+        except Exception:  # noqa: BLE001 - cartao que falha so fica "preparando..."
+            registrar_erro("cartoes", traceback.format_exc())
+        _emitir_se_vivo(self.sinais, self.sinais.prontos, self.indice_pagina, resultados)
+
+
 class _TarefaPrevia(QRunnable):
     """Gera UMA prévia. Descartavel: o pool cuida do ciclo de vida."""
 
@@ -135,10 +191,10 @@ class _TarefaPrevia(QRunnable):
                 img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
             finally:
                 doc.close()
-            self.sinais.pronta.emit(self.chave, img)
+            _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
         except Exception:  # noqa: BLE001 - previa que falha nao derruba a tela
             registrar_erro("previa", traceback.format_exc())
-            self.sinais.falhou.emit(self.chave)
+            _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave)
 
     def _folha_crua(self) -> None:
         """A folha inteira, sem nenhum processamento.
@@ -157,7 +213,7 @@ class _TarefaPrevia(QRunnable):
         folha = self.projeto.folhas[self.indice_pagina]
         if folha.rotacao:
             img = girar_90(img, folha.rotacao)
-        self.sinais.pronta.emit(self.chave, img)
+        _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
 
 
 class GerenciadorPrevias(QObject):
@@ -169,6 +225,7 @@ class GerenciadorPrevias(QObject):
     """
 
     pronta = Signal(str, object)
+    cartoes_prontos = Signal(int, dict)
 
     def __init__(self, caminho_pdf: str, projeto: Projeto, parent=None) -> None:
         super().__init__(parent)
@@ -184,9 +241,23 @@ class GerenciadorPrevias(QObject):
         # propria interface.
         self._pool.setMaxThreadCount(2)
 
+        # Pool separado dos cartões de filtro. Achado ao vivo em 12/09/2026
+        # (py-spy, livro Boécio): navegar rápido enche o pool de prévias acima
+        # com dezenas de pedidos de pré-carregamento, e como os cartões
+        # entravam na MESMA fila, um cartão podia ficar "preparando..." por
+        # muito mais tempo que o razoável, sem nenhuma exceção no log -
+        # parecia travado. Cartão é trabalho leve (só aplica filtro numa
+        # amostra já em memória, sem tocar o PDF) e não pode esperar atrás de
+        # prévia pesada.
+        self._pool_cartoes = QThreadPool(self)
+        self._pool_cartoes.setMaxThreadCount(1)
+
         self._sinais = _SinaisPrevia()
         self._sinais.pronta.connect(self._guardar)
         self._sinais.falhou.connect(self._esquecer_pedido)
+
+        self._sinais_cartoes = _SinaisCartoes()
+        self._sinais_cartoes.prontos.connect(self.cartoes_prontos.emit)
 
     # --- chave ------------------------------------------------------------
 
@@ -226,6 +297,14 @@ class GerenciadorPrevias(QObject):
         self._pedidas.add(chave)
         self._pool.start(
             _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
+        )
+
+    def pedir_cartoes(self, indice: int, base: np.ndarray, filtros: list[str],
+                       forca_preto: int, clareza: int, intensidade: int) -> None:
+        """Pede os cartoes que faltam para uma pagina, fora da thread da tela."""
+        self._pool_cartoes.start(
+            _TarefaCartoes(indice, base, filtros, forca_preto, clareza, intensidade,
+                            self._sinais_cartoes)
         )
 
     # --- folha crua (aba "Onde cortar") -----------------------------------
@@ -291,4 +370,6 @@ class GerenciadorPrevias(QObject):
 
     def parar(self) -> None:
         self._pool.clear()
+        self._pool_cartoes.clear()
         self._pool.waitForDone(3000)
+        self._pool_cartoes.waitForDone(3000)
