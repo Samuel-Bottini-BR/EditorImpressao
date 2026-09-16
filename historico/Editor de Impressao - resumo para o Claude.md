@@ -14,7 +14,199 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -3 — Checkpoint de 12-13/09/2026 (leia isto primeiro, é o mais novo)
+# PARTE -4 — Checkpoint de 15-16/09/2026 (leia isto primeiro, é o mais novo)
+
+Continuação da mesma sessão de replanejamento da PARTE -3 (abaixo). Três
+coisas aconteceram, nesta ordem: (1) uma tentativa real de testar o Boécio
+que confundiu o Samuel, corrigida duas vezes; (2) uma frente grande de trazer
+técnicas do ScanTailor, implementada por completo e depois **revertida a
+pedido do Samuel**; (3) um bug novo, ainda em aberto, de travamento no zoom.
+
+## 1. Protocolo de teste da Fase 1 — ajustado DUAS vezes com feedback real
+
+Primeira tentativa (testar o Boécio, filtro "folha branca"): o Samuel não
+conseguiu acompanhar o que eu tinha testado ("não consegui ter nenhuma noção
+do que você testou") - eu tinha pulado entre ferramentas sem mostrar Antes,
+e testado sozinho sem avisar a ordem. **Protocolo final, adotado com o
+Samuel, substitui qualquer versão anterior deste documento:**
+
+1. **O Samuel aponta UM problema por vez** - a fonte é o documento dele
+   (`D:\programas\EditorImpressao-arquivos\explicacoes-do-samuel\Vamos
+   recapitular...`, exemplos reais por página/livro) e o `PEDIDOS.md`.
+2. **Eu digo qual ferramenta vou usar** para atacar aquele problema
+   específico, e por quê - o Samuel pode corrigir antes de eu tocar em nada.
+3. **Eu testo só isso**, pilotando a janela real, função e interface juntas.
+4. **Relatório de UM problema só**, sempre: problema → ferramenta usada →
+   print de **Antes** (sem processamento) → ação exata → print de **Depois**
+   → uma frase do que observar.
+5. **Só passa pro próximo problema quando o atual estiver resolvido ou
+   explicitamente adiado.** Nada de acumular.
+6. `[?]` no `PEDIDOS.md`, nunca `[x]` - só o Samuel aprova.
+
+Chegamos a testar "folha branca" no Boécio (aba Filtro) e achamos dois
+achados reais (pontinhos pretos nas margens do Preto e branco/Melhorar/
+Mágico pro, e uma faixa preta na borda direita da página 32 - fundo de
+scanner não cortado) - relatório em
+`relatorios/para-conferir-boecio-15-09-2026/para-conferir.html`, **ainda
+sem resposta do Samuel sobre os dois achados**.
+
+## 2. ScanTailor: implementado por completo, depois REVERTIDO - fica só como registro
+
+O Samuel lembrou que o projeto foi instruído a se basear no ScanTailor,
+pediu para trazer tudo que falta no nosso e existe de bom lá (original e o
+fork "Advanced"). Pesquisei via WebFetch no GitHub (código GPL, resumido em
+palavras próprias, nunca copiado) e implementei as 9 frentes do plano
+(despeckle por proximidade, threshold sem contaminação de gravura, Wolf além
+de Sauvola com escolha automática, detecção de polaridade invertida,
+detecção de gravura por reconstrução morfológica, tamanho final de página +
+margem automática pela lombada). Tudo com TDD, 312 testes passando, nada
+commitado.
+
+**Depois de eu resumir o que tinha feito, o Samuel decidiu não seguir com
+isso agora: "não vou comitar, quero voltar a versão que estava antes."**
+Revertido com `git stash` (não descartado de vez - fica em
+`stash@{0}` na mensagem "Fase 3 ScanTailor - revertido a pedido do Samuel,
+16/09/2026", recuperável com `git stash pop` se algum dia for retomado).
+Confirmado: `git status` limpo, 284 testes passando (o número de antes desta
+frente).
+
+**Achados técnicos desta investigação, valiosos mesmo com o código
+revertido** (para não precisar repesquisar do zero se isso for retomado):
+
+- **Técnica de separar gravura de letra por reconstrução morfológica JÁ FOI
+  TENTADA E FALHOU neste acervo antes** (`core/detectar_regioes.py`,
+  docstring do topo do arquivo: "o detector morfológico do ScanTailor
+  portado para Python" - commit `e8aeec9`, 31/07/2026). Motivo medido: o vão
+  entre linha de texto de um livro pode ser MENOR que o vão entre traço de
+  gravura de outro - nenhum tamanho de janela separa os dois quando as
+  medidas se cruzam entre livros do acervo. Medi de novo com uma
+  reimplementação (reconstrução sobre mapa de contraste, via
+  `skimage.morphology.reconstruction`) e **confirmou o mesmo problema**:
+  `avaliar_selecao.py` caiu de 24/26 para 20/26, todas as 4 novas
+  reprovações do mesmo tipo (página de texto virando "100% gravura").
+  **Não vale tentar de novo sem uma ideia genuinamente diferente.**
+- **`doxapy` já tem Wolf instalado** (`doxapy.Binarization.Algorithms.WOLF`),
+  nunca tinha sido ligado no código - funciona com os mesmos parâmetros
+  (`window`, `k`) que o Sauvola já usa.
+- **ScanTailor não resolve "margem pela lombada" nem "tamanho A4 real" de
+  graça**: pesquisei o filtro "Margins" dele (`4lex4/scantailor-advanced`,
+  `src/core/filters/page_layout/`) e confirmei que lá a escolha de qual lado
+  é a lombada é **manual**, página por página (não existe detecção
+  automática), e o "tamanho final" dele só iguala as páginas do próprio
+  livro ao maior tamanho encontrado nelas - não força nenhuma medida real de
+  papel (A4/A5/Carta). O nosso projeto já sabe a lombada sozinho
+  (`ConfigPagina.metade`, do passo "dividir folha ao meio") - se isso for
+  retomado, dá pra fazer melhor que o ScanTailor, não só igual.
+- Documento completo da pesquisa (o que existe no ScanTailor, o que já
+  existe/falta no nosso código, prioridade) só existiu na conversa - **não
+  ficou salvo em arquivo**. Se for retomado, a pesquisa provavelmente
+  precisa ser refeita ou pedida de novo ao Samuel via transcript desta
+  sessão.
+
+## 3. Bug novo, EM ABERTO: travamento ao usar o zoom muitas vezes
+
+Reportado pelo Samuel ("programa travou novamente quando eu usei o zoom
+muitas vezes"). Detalhe dele: **a roda do mouse não estava funcionando**, e
+o travamento aconteceu **clicando repetidas vezes na página** depois de
+apertar o botão/ferramenta "Zoom" (aba Marcar, `ui/widgets/editor_selecao.py`,
+`FERRAMENTA_ZOOM`).
+
+**Não foi reproduzido nem corrigido ainda.** O que já foi feito:
+
+- Tentei pegar o processo travado ao vivo com `py-spy dump` duas vezes
+  (uma logo após o aviso do Samuel, outra pedindo pra ele reproduzir de
+  novo) - **nas duas vezes a MainThread já estava idle** quando consegui
+  capturar, ou seja, é um travamento **transitório** (trava por alguns
+  segundos e volta sozinho), não um deadlock permanente - o mesmo padrão do
+  travamento antigo do cartão de filtro. Isso significa que travar rápido o
+  bastante pra pegar com py-spy é difícil; ou peço pro Samuel travar o
+  py-spy NELE MESMO no momento exato, ou preciso reproduzir de forma mais
+  controlada (ex.: script que clica e checa responsividade a cada passo, em
+  vez de checar só no final).
+- Li o código do zoom (`ui/widgets/editor_selecao.py`): `definir_zoom`
+  (linha ~221), `_calcular_area` (linha ~327), `paintEvent`/`_pintar_marcacao`
+  (linha ~371-405) - **nada ali parece caro o suficiente pra travar sozinho**
+  (multiplicação, clamp, um `update()`). Não achei a causa só lendo.
+  `ZOOM_MIN, ZOOM_MAX = 1.0, 8.0` - o zoom É limitado, não é crescimento sem
+  fim.
+- **Hipótese ainda não testada**: `_pintar_marcacao` recalcula a máscara de
+  seleção (`self.selecao.mascara(...)`) a cada repintura, para os 3 tipos
+  (papel/gravura/letra) - se a página tiver MUITAS regiões marcadas (ex.:
+  detecção automática gerou muitos polígonos), isso pode ficar caro por
+  repintura, e cliques rápidos podem gerar mais repinturas do que o Qt
+  consegue coalescer. Vale medir quantas regiões a página que travou tinha.
+- **A roda do mouse não funcionar é uma pista separada**, talvez um bug de
+  verdade (não só do meu teste) - vale confirmar com o Samuel se é sempre
+  assim ou só naquela hora.
+
+## 4. Lição de processo: como testar sem atrapalhar o Samuel
+
+**Importante para qualquer sessão futura que for pilotar o programa de
+verdade com `pywinauto`:** o Samuel trabalha na mesma máquina ao mesmo
+tempo, e testes anteriores tomaram o mouse/teclado dele e abriram a janela
+por cima do que ele estava fazendo - ele reclamou explicitamente disso duas
+vezes nesta sessão.
+
+**O que foi tentado e o resultado de cada um:**
+- `pywinauto` `click_input()`/`send_keys()` (mouse/teclado de verdade) -
+  **funciona, mas atrapalha o Samuel**. Evitar.
+- Minimizar a janela + `PrintWindow` comum - a janela minimizada **não
+  renderiza** (print sai preto). Serve só quando não precisa ver a tela,
+  só checar processo vivo/travado via `py-spy`.
+- Mover a janela pra fora da tela (`SetWindowPos` com coordenada tipo
+  -32000, `SW_SHOWNOACTIVATE`) + `PrintWindow` com `PW_RENDERFULLCONTENT` -
+  **funciona bem pra tirar print sem aparecer nem mexer no mouse**. Script:
+  `mover_para_fora_da_tela.py` + `print_sem_restaurar.py` (ver histórico da
+  conversa - ficaram só no scratchpad, não no projeto).
+- Mandar `WM_MOUSEWHEEL` via `PostMessage` direto pro HWND, sem foco -
+  **não funciona**: o Qt parece ignorar mensagens de roda quando a janela
+  não está ativa/focada. Zoom não mudou nem depois de 100 tentativas.
+- Criar uma área de trabalho nova do Windows (Ctrl+Win+D) e ativar a janela
+  lá - **não funciona como esperado**: `SetForegroundWindow` numa janela
+  de outra área de trabalho trouxe ela de volta pra área do Samuel, em vez
+  de ficar isolada. Não tentar de novo sem pesquisar uma forma real de mover
+  janela entre áreas de trabalho no Windows (a API pública
+  `IVirtualDesktopManager` só confirma/consulta em qual área uma janela
+  está - não existe API pública documentada pra criar+mover pra uma área
+  nova; ferramentas de terceiros existem mas não foram instaladas).
+
+**Conclusão prática**: pra ações que só precisam ler o estado (print,
+`py-spy`), usar janela fora da tela sem ativar. **Pra ações que precisam de
+clique/tecla de verdade (like o zoom), ainda não existe um jeito confirmado
+de testar sem pedir a colaboração do Samuel ou sem aparecer na tela dele
+brevemente** - a saída que funcionou nesta sessão foi pedir pro próprio
+Samuel reproduzir e descrever o que viu.
+
+## Próximo passo recomendado
+
+1. **Perguntar ao Samuel** se os dois achados do relatório "folha branca"
+   (pontinhos pretos, faixa preta na borda) incomodam ou não - isso decide
+   se seguimos pro próximo problema do Boécio ou corrigimos esses primeiro.
+2. **Retomar a investigação do travamento do zoom**: perguntar quantas
+   regiões marcadas tinha a página onde travou (testar a hipótese da
+   máscara cara), ou pedir ao Samuel pra rodar com o `py-spy` já preparado
+   e disparar o dump assim que perceber o travamento (timing mais preciso
+   que eu tentando de fora).
+3. Confirmar com o Samuel se quer mesmo deixar o ScanTailor de lado por
+   enquanto, ou só adiar - a pesquisa (seção 2 acima) fica pronta pra
+   reaproveitar se ele mudar de ideia.
+
+## Como rodar e testar (confirmado nesta sessão, 16/09/2026)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q      # 284 passed, 86 warnings (deprecation do PySide6, sem problema)
+```
+
+## Ambiente - nada novo instalado no `.venv` do projeto
+
+`comtypes` e `pywin32` (`win32gui`, `win32process`, `win32ui`, `win32con`)
+foram usados no Python de sistema (fora do projeto) para os experimentos de
+janela fora da tela - já estavam disponíveis, nada novo instalado.
+
+---
+
+# PARTE -3 — Checkpoint de 12-13/09/2026
 
 A PARTE -2 abaixo (08/09) continua valendo como registro histórico, mas o
 Samuel replanejou o trabalho nesta sessão porque sentiu que o projeto não

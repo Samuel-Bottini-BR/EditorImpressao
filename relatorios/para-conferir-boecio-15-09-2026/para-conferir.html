@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Boécio — para conferir (15/09/2026)</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #222; }
+  h1 { font-size: 22px; }
+  .quadro { border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin: 24px 0; }
+  .quadro h2 { margin-top: 0; font-size: 17px; }
+  .frase { background: #eef4ff; border-left: 4px solid #3366cc; padding: 10px 14px; margin: 12px 0; }
+  .ressalva { background: #fff6e5; border-left: 4px solid #cc8800; padding: 10px 14px; margin: 12px 0; }
+  img { max-width: 100%; border: 1px solid #ddd; border-radius: 4px; }
+  .pergunta { font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>Boécio — primeira rodada de teste (15/09/2026)</h1>
+<p>Livro: <em>Sobre a Consolação da Filosofia - Severino Boécio</em> (scan ruim, baixa
+resolução). Testado ao vivo, pilotando o programa de verdade. Nada foi processado/exportado
+— só conferência visual.</p>
+
+<div class="quadro">
+  <h2>1. Os quatro filtros, mesma página (32)</h2>
+  <img src="1-quatro-filtros-pagina32.png" alt="Comparação dos quatro filtros na página 32">
+  <div class="frase">O que olhar: o fundo ficou branco de verdade nos três filtros
+  processados (Preto e branco, Melhorar, Mágico pro)? As letras continuam legíveis?</div>
+  <div class="ressalva">Ressalva minha: reparei pontinhos pretos espalhados nas margens
+  do Preto e branco/Melhorar/Mágico pro (mais visível nas bordas da folha) — pode ser
+  textura do papel envelhecido sendo lida como tinta. Não tenho certeza se isso
+  incomoda no resultado final; queria sua opinião antes de decidir se vale investigar.</div>
+  <p class="pergunta">Ficou bom, ou algum dos quatro te incomoda?</p>
+</div>
+
+<div class="quadro">
+  <h2>2. Endireitar — mesma página, com o filtro Preto e branco já aplicado</h2>
+  <img src="2-endireitar-pagina32.png" alt="Tela de endireitar mostrando linhas-guia e uma faixa preta na borda direita">
+  <div class="frase">O que olhar: as linhas laranja tracejadas mostram onde o programa
+  "pensa" que está a linha de texto — se estiverem inclinadas em relação ao texto de
+  verdade, o ângulo detectado (mostrado no canto, "inclinação: +0,0 graus" nesta página)
+  está errado.</div>
+  <div class="ressalva">Ressalva minha, esta sim mais concreta: tem uma <strong>faixa
+  preta vertical na borda direita da página</strong> (bem visível, desce quase até o
+  fim). Parece fundo de scanner não cortado — o mesmo tipo de defeito já documentado
+  para outro livro, só que do lado esquerdo lá. Aqui está do lado direito.</div>
+  <p class="pergunta">Essa faixa preta te incomoda? Isso deveria ter sido cortado pela
+  aba "Bordas" antes de chegar aqui, ou o corte automático está errando nesta página
+  específica?</p>
+</div>
+
+<div class="quadro">
+  <h2>O que eu NÃO consegui confirmar ainda</h2>
+  <p>A inclinação automática (endireitar) mostrou 0,0° em duas páginas diferentes que
+  testei — não achei ainda a página especificamente torta que está anotada no
+  <code>PEDIDOS.md</code> ("também tem página torta"). Preciso navegar mais o livro
+  para achar essa página exata antes de testar o endireitamento de verdade.</p>
+</div>
+
+<div class="quadro">
+  <h2>Próximo passo, se você aprovar seguir</h2>
+  <p>Continuar percorrendo o livro pra achar a página torta específica, testar a aba
+  "Bordas" pra ver se a faixa preta é cortada automaticamente ou não, e testar a
+  "mancha do verso" (ainda não achei uma página com esse defeito visível neste livro
+  especificamente — pode ser mais forte em outro dos 3 livros escolhidos).</p>
+</div>
+
+</body>
+</html>
