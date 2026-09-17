@@ -89,8 +89,6 @@ este `CLAUDE.md`, `PEDIDOS.md` ou o handoff em `historico/`.
 - **Nenhum modelo generativo.** Modelo que produz pixel pode inventar detalhe
   numa gravura de 1579, e detalhe inventado entra no PDF como se fosse o livro.
   Rede neural aqui só segmenta: aponta onde estão as coisas, nunca desenha.
-- **Licença:** só incorporar código com licença permissiva (CC0, MIT, BSD,
-  Apache). Nada de GPL. Referência GPL se estuda, não se embute.
 - **A máquina só tem Python 3.14**, e todas as dependências funcionam nele
   (PySide6 6.11, PyMuPDF, OpenCV, numpy, Pillow, doxapy, scikit-image).
   **Não sugerir rebaixar a versão do Python.**
@@ -99,11 +97,16 @@ este `CLAUDE.md`, `PEDIDOS.md` ou o handoff em `historico/`.
   e mostra "Aconteceu um problema inesperado, mas o programa continua
   funcionando."
 
-**Ponto de atenção de licença:** PySide6 é LGPL, OpenCV/numpy Apache-2.0/BSD,
-DoxaPy CC0, scikit-image BSD, Pillow HPND — e **PyMuPDF é AGPL**. Para uso
-interno do instituto está tudo certo. Se um dia for distribuído fora, ou o
-código-fonte acompanha, ou compra-se licença comercial, ou troca-se por
-pypdfium2 (BSD).
+**Licença — decisão mudou em 17/09/2026.** Código GPL pode ser incorporado
+direto agora (não só estudado de longe): o Samuel decidiu que, se um dia o
+programa for liberado, é de graça com doação voluntária — então o programa
+inteiro virar GPL (a obrigação que vem de usar código GPL) não é problema.
+Isso também resolve a ressalva antiga do PyMuPDF: ele é AGPL (mais estrito
+que GPL comum), e antes isso só valia "para uso interno está tudo certo, se
+distribuir fora precisa rever" — agora, com a decisão de liberar com
+código-fonte aberto, essa ressalva deixa de existir. PySide6 continua LGPL,
+OpenCV/numpy Apache-2.0/BSD, DoxaPy CC0, scikit-image BSD, Pillow HPND — sem
+mudança nenhuma nesses.
 
 ---
 

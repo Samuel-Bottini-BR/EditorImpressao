@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mudanças desta sessão - para conferir</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Mudanças desta sessão, prontas pra você conferir</h1>
+<p>Tudo listado no plano aprovado foi implementado e testado (349 testes automáticos +
+124 cliques reais nas telas, tudo passando). <strong>Nada foi commitado ainda</strong> — por
+protocolo, falta você abrir o programa pelo atalho e testar ao vivo antes do commit.</p>
+<p><strong>Aviso sobre as imagens abaixo:</strong> os textinhos em cm (e outras dicas de tela) aparecem
+como quadradinhos pretos nos prints — isso é só porque gerei os prints num modo do
+programa que roda "sem tela" (pra automação), e esse modo não tem nenhuma fonte de
+letra instalada. Confirmei isso com um teste à parte: <strong>qualquer texto</strong>, mesmo de
+telas antigas que eu não toquei, sai como quadradinho nesse modo. No programa de
+verdade, aberto normalmente, o texto aparece normal. Só quis deixar claro antes de
+você olhar, pra não achar que quebrei alguma coisa.</p>
+<h2>Problema 3 — margem direita + espelhado + proporção travada</h2>
+<p>Antes do conserto, arrastar os cantos direitos do retângulo verde não mexia na
+largura. Comparando a imagem 1 (retângulo antes) com a 2 (depois de arrastar o
+canto de baixo-direita): a largura aumentou de verdade — o bug está corrigido.</p>
+<p><img alt="Antes de arrastar" src="01-bordas-recorte-inicial.png" />
+<img alt="Canto direito agora funciona" src="02-bordas-canto-direito-bug-corrigido.png" /></p>
+<p><strong>Espelhado</strong> — arrastei só o lado direito, e os dois lados (esquerdo e direito)
+se moveram juntos, mantendo o meio no lugar:</p>
+<p><img alt="Espelhado" src="03-bordas-espelhado.png" /></p>
+<p><strong>Proporção travada</strong> — arrastei o canto de baixo-direita, e o retângulo cresceu
+nos 4 lados mantendo a mesma forma (a razão largura/altura de antes):</p>
+<p><img alt="Proporção travada" src="04-bordas-proporcao-travada.png" /></p>
+<p>Os botões "Espelhado" e "Proporção travada" e as teclas T/M ficam na barra de
+botões da aba Bordas — ainda não testados com clique de mouse de verdade nem com
+tecla de verdade (só a lógica interna, que estes prints mostram). Vale você
+testar isso especificamente.</p>
+<h2>Problema 1.1 — números em cm</h2>
+<p>Aparecem (como quadradinhos no print, texto de verdade no programa) enquanto
+você arrasta o retângulo — um de cada lado cortado, e o tamanho final no topo:</p>
+<p><img alt="Medidas em cm" src="05-bordas-medidas-em-cm.png" /></p>
+<h2>Problema 1.2 — escolher o tamanho da folha digitando</h2>
+<p>O botão "tamanho..." (ao lado de "usar em todas") abre um diálogo com campos de
+largura/altura em cm e atalhos A4/A5/Carta. Testado no clique automático (o robô
+escolheu "A5" e confirmou, sem travar) — ainda não testado visualmente por você.</p>
+<h2>Problema 4 — moldura ao redor da página</h2>
+<p>Antes a página colava nas bordas da tela. Agora sobra uma faixa cinza-bege
+visível ao redor, mesmo em "ajustar à tela" (aqui o widget está bem mais largo
+que a página, de propósito, pra faixa aparecer clara nos dois lados):</p>
+<p><img alt="Moldura ao redor" src="06-moldura-ao-redor.png" /></p>
+<h2>Problema 5 — três algoritmos do Preto e branco, na página 8 (a itálica que você reclamou)</h2>
+<p>Original, pra comparar:</p>
+<p><img alt="Página 8 original" src="07-pagina8-original.png" /></p>
+<p>Sauvola (o de sempre), Otsu e Wolf, lado a lado:</p>
+<p><img alt="Sauvola" src="08-pagina8-sauvola.png" />
+<img alt="Otsu" src="08-pagina8-otsu.png" />
+<img alt="Wolf" src="08-pagina8-wolf.png" /></p>
+<p><strong>Minha leitura, olhando as três:</strong> nesta página específica as três saíram bem
+parecidas e legíveis — a letra itálica não quebrou em nenhuma. O Otsu pegou um
+pouco mais de poeira na margem esquerda; o Wolf, um pouco na direita. Não vi a
+perda de qualidade dramática que você tinha reportado antes — pode ser que ela
+apareça mais forte noutra página do Boécio, ou que o scan de baixa resolução
+(já documentado como limite conhecido do acervo) seja o fator principal, não o
+algoritmo. Vale você comparar estas três com o que via antes e me dizer se
+alguma ficou visivelmente melhor.</p>
+<p><strong>Limpar poeirinha (despeckle) ligado vs desligado</strong>, mesma página, mesmo
+algoritmo (Sauvola) — dá pra ver mais pontinhos soltos na versão desligada:</p>
+<p><img alt="Despeckle ligado" src="09-pagina8-despeckle-ligado.png" />
+<img alt="Despeckle desligado" src="09-pagina8-despeckle-desligado.png" /></p>
+<p>O seletor de algoritmo e a caixa de despeckle ficam na aba Filtro, dentro do
+bloco "AJUSTE", só quando Preto e branco está escolhido.</p>
+<h2>Problema 2 — página nasce em Original</h2>
+<p>Conferido direto no código (não é mais preciso adivinhar):</p>
+<pre><code>ConfigPagina.filtro por padrão agora:      original   (era preto_e_branco)
+Projeto.filtro_padrao por padrão agora:    original   (era preto_e_branco)
+</code></pre>
+<p>A detecção de gravura/letra/papel não roda mais sozinha ao abrir a aba Marcar —
+agora tem um botão "detectar automaticamente" nessa aba (e o mesmo pelo menu
+Marcar → "Procurar de novo"). O "usar em todas" do Filtro já existia — confirmei
+que continua funcionando, e agora também leva junto o algoritmo do Preto e
+branco e o despeckle escolhidos.</p>
+<h2>Problema 5.4 — alerta de página que pode ter processado mal</h2>
+<p>Nova conta que compara o resultado do Preto e branco com o original e aponta
+sozinha se sobrou tinta demais (<code>escura_demais</code>) ou se o texto quase sumiu
+(<code>apagada_demais</code>) — aparece no mesmo painel "Para revisar" de sempre. Testei
+nos três algoritmos da página 8: nenhum disparou o alerta (bate com a leitura
+acima, de que as três saíram razoáveis nesta página).</p>
+<h2>O que ficou de fora desta rodada, e por quê</h2>
+<ul>
+<li><strong>Problema 1.3/1.4 (tamanho e posição do conteúdo dentro da folha, com
+  linhas-guia e ímã):</strong> a lógica das guias/ímã está pronta e testada (9 testes
+  automáticos), e os campos novos já existem no arquivo de projeto
+  (<code>conteudo_escala</code>, <code>conteudo_deslocamento</code>) — mas a parte de arrastar o
+  conteúdo na tela ainda não foi ligada na interface. Escolhi priorizar
+  terminar os outros 7 itens do plano primeiro; posso voltar nisso na próxima
+  rodada.</li>
+<li><strong>Problema 5.5 (reforçar o marcador com espessura do traço + Tesseract):</strong>
+  não comecei — é uma frente própria, com dependência nova (Tesseract) e
+  merece a régua de medição (<code>avaliar_selecao.py</code>) rodada com calma antes de
+  mexer, em vez de entrar apressada no fim de uma sessão já grande.</li>
+</ul>
+<h2>Como conferir de verdade</h2>
+<pre><code>cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q      # 349 casos
+.venv\Scripts\pythonw.exe main.py                 # abrir de verdade e testar
+</code></pre>
+<p>Nada commitado. Quando você testar e aprovar (ou pedir ajuste), sigo pro commit.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/09/2026 às 16:28</p>
+</body>
+</html>

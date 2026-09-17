@@ -14,7 +14,204 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -4 — Checkpoint de 15-16/09/2026 (leia isto primeiro, é o mais novo)
+# PARTE -5 — Checkpoint de 17/09/2026 (leia isto primeiro, é o mais novo)
+
+Sessão gigante: o Samuel mandou `TESTE BOÉCIO 1 -- 16-09-2026\TESTE 1.docx`
+(5 problemas com print) e, discutindo cada um a fundo (várias rodadas de
+"me explique melhor", perguntas técnicas dele sobre ScanTailor/GPL/Wolf/
+Tesseract), o escopo cresceu para **8 itens**. Depois de aprovar o plano
+inteiro (não item a item — ele pediu explicitamente para eu "fazer todas as
+mudanças e depois mostrar prints"), implementei os 8, com TDD, e gerei um
+relatório de prints reais no Boécio. **Nada commitado ainda** — ver seção 6.
+
+**O plano completo, com todo o raciocínio/opções descartadas da discussão,
+está em**
+`C:\Users\fotog\.claude\plans\d-programas-editorimpressao-arquivos-exp-synthetic-hinton.md`
+— vale ler se precisar entender o *porquê* de alguma decisão que o resumo
+abaixo não detalhar.
+
+## 1. Estado de cada item — o que é código só e o que já foi visto rodando
+
+Testes automáticos: **349 passando** (`pytest tests -q`, eram 284 no fim da
+sessão de 15-16/09) + **124 cliques reais** sem falha (`teste_botoes.py`,
+incluindo os diálogos modais novos, interceptados do jeito de sempre pra não
+travar). Isso é "roda sem quebrar" — **não é** "o Samuel viu e aprovou".
+Zero testado por ele ao vivo ainda.
+
+1. **Bug da margem direita (Bordas) — corrigido.** `ui/widgets/visualizador.py`,
+   `_mover_recorte`: os cantos `"ne"`/`"se"` usavam `"e"` de leste, o teste só
+   reconhecia `"l"`. Conserto de uma linha (`"l" in lado or "e" in lado`).
+   Regressão coberta por `tests/test_visualizador.py` (8 testes, um por alça).
+   **Visto no print** (`02-bordas-canto-direito-bug-corrigido.png` no
+   relatório) — mas nunca clicado com mouse de verdade pelo Samuel.
+2. **Espelhado / Proporção travada** — dois modos novos de arrastar o
+   retângulo, `RECORTE_ESPELHADO`/`RECORTE_PROPORCAO` em `visualizador.py`.
+   Botões + tooltip com a tecla + atalhos M/T na aba Bordas. Matemática
+   testada (13 testes). **Visto no print, nunca testado com clique/tecla
+   real pelo Samuel** — é o primeiro candidato a dar errado se algo estiver
+   errado, por ser geometria nova.
+3. **Configurações com atalhos editáveis** — `atalhos.py` (registro único,
+   puro Python, 15 testes) + `ui/tela_configuracoes.py` (tela nova, captura
+   de tecla via `QKeySequenceEdit`, detecção de conflito, restaurar padrões)
+   + menu Arquivo → "Configurações...". Cobre ferramentas de marcar (R O L P
+   B V C Z E), navegação (setas/espaço/tab), M/T novos, e tudo que já tinha
+   atalho de menu. **Clicado pelo `teste_botoes.py` (abre, mexe, fecha) sem
+   travar — nunca aberto pelo Samuel.**
+4. **Problema 1 — só a parte 1.1 e 1.2 estão de pé:**
+   - 1.1 (cm de cada lado + tamanho final): aparece **enquanto arrasta**,
+     função pura `medidas_do_recorte_em_cm` testada (6 testes). Visto no
+     print (`05-bordas-medidas-em-cm.png`) — **os números saíram como
+     quadradinhos pretos no print porque o modo "offscreen" usado pra gerar
+     screenshot não tem NENHUMA fonte instalada** (confirmado isolando o
+     teste — texto de tela antiga também sai quadriculado do mesmo jeito).
+     No programa aberto normal o texto renderiza certo — mas isso **não foi
+     confirmado ao vivo ainda**, só por inferência.
+   - 1.2 (digitar tamanho da folha, atalhos A4/A5/Carta):
+     `ui/dialogo_tamanho_da_folha.py`, botão "tamanho..." na aba Bordas.
+     Clicado pelo `teste_botoes.py` (escolhe A5, confirma) sem travar.
+   - **1.3/1.4 (tamanho e posição do CONTEÚDO dentro da folha, com
+     linhas-guia + ímã) NÃO FORAM LIGADOS NA TELA.** Só existem: a lógica
+     pura testada (`guias_ativas`, `encaixar_no_ima`, 9 testes) e os campos
+     novos no modelo (`ConfigPagina.conteudo_escala`,
+     `.conteudo_deslocamento`, ambos sem nenhum código lendo/escrevendo eles
+     ainda). **Ninguém consegue mexer nisso pela interface hoje.**
+5. **Moldura ao redor da página (Problema 4)** — `PADDING_MOLDURA`,
+   `FUNDO_DA_AREA` (`#f1efe8`, cor já usada na aba Marcar) em
+   `visualizador.py`. Zoom continua sem limite (decisão do Samuel). Visto
+   claramente no print (`06-moldura-ao-redor.png`).
+6. **Qualidade da prévia (Rápida/Média/Alta)** — só ligado na **aba Bordas**
+   (`QUALIDADES_DA_PREVIA` em `tela_conferir.py`, persiste em
+   `configuracoes.json`). **Não foi ligado em Marcar nem em "Ver de perto"**
+   — ficou de fora por tempo, o mecanismo (`_dpi_normal`/`_dpi_atual`) já
+   dá pra estender igual.
+7. **Licença GPL liberada** — `CLAUDE.md` seção 3 atualizada (decisão do
+   Samuel: se liberar o programa um dia, é de graça com doação, então GPL
+   incorporado direto não é mais problema; resolve de quebra a ressalva do
+   PyMuPDF/AGPL).
+8. **Problema 2 (redesenho do fluxo) — parcialmente feito:**
+   - ✅ `ConfigPagina.filtro` e `Projeto.filtro_padrao` agora nascem
+     `ORIGINAL` (eram `PRETO_E_BRANCO`). `ui/tela_opcoes.py` também mudou o
+     rádio pré-marcado. **Só vale pra página/projeto NOVO** — ver a seção 3
+     abaixo, achado real já testado com o Samuel ao vivo.
+   - ✅ A aba Marcar não detecta mais sozinha: tirei o gatilho automático de
+     `_atualizar_marcacao`; entrou um botão "detectar automaticamente"
+     visível na aba (`_detectar_de_novo`, que já existia só no menu).
+   - ✅ "Usar em todas"/"só nas próximas" do Filtro **já existiam antes
+     desta sessão** (`_filtro_em_todas`/`_filtro_nas_proximas`,
+     `ui/tela_conferir.py`) — não precisei criar, só confirmei que
+     funcionam e estendi pra levar `algoritmo_preto_branco`/`despeckle`
+     junto.
+   - ⏸️ Não criei um "usar em todas" pra MARCAÇÃO (copiar forma marcada
+     entre páginas não faz sentido — cada página tem conteúdo diferente).
+     Decisão minha, não pedida explicitamente — se o Samuel quiser algo
+     tipo "detectar em todas as páginas de uma vez" (ação em lote, não
+     cópia), isso precisaria rodar em `QThreadPool` (a detecção sozinha já
+     leva ~1s/página — 300 páginas sync travaria a interface, contra a
+     regra do `CLAUDE.md`).
+9. **Problema 5 — a maior parte:**
+   - ✅ Três algoritmos (`ALGORITMO_SAUVOLA/OTSU/WOLF` em `core/filtros.py`,
+     `doxapy.Binarization.Algorithms.WOLF` confirmado disponível de verdade
+     nesta máquina). `escolher_algoritmo_automatico` decide pela espessura
+     do traço (só distingue Otsu de Sauvola por ora — Wolf fica manual/
+     "usar em todas", falta uma medida de contraste local barata pra
+     automatizar ele também).
+   - ✅ Seletor de algoritmo + checkbox de despeckle na aba Filtro (só
+     aparecem com Preto e branco escolhido).
+   - ✅ **Achado de código morto, ressuscitado**: `ESCURA_DEMAIS` e
+     `APAGADA_DEMAIS` já existiam em `core/analise.py` (texto e botão de
+     correção prontos) mas **nunca eram disparados por ninguém** em lugar
+     nenhum do código. Escrevi `avaliar_preto_e_branco()` (comparação
+     leve, não é a régua pesada do `avaliar.py`) e liguei em
+     `_cartoes_prontos` — dispara sozinho quando o resultado sai escuro/
+     apagado demais comparado ao original.
+   - ❌ **5.5 (reforçar o marcador com espessura do traço + Tesseract) NÃO
+     FOI COMEÇADO.** Precisa de dependência nova (Tesseract) e merece
+     `avaliar_selecao.py` rodado com calma antes — decidi não apressar no
+     fim de uma sessão já enorme.
+
+## 2. Relatório de prints — real, no Boécio
+
+`relatorios/para-conferir-mudancas-17-09-2026/` (`.md`/`.html`/`.pdf` +
+12 PNGs) — gerado com um script fora do repo (só no scratchpad da sessão,
+não ficou salvo no projeto) que abre o Boécio de verdade
+(`core.pdf_io.abrir_pdf`), instancia `Visualizador`/chama
+`filtro_preto_e_branco` direto (sem tela cheia), e salva `.grab()`/`cv2.imwrite`.
+Útil como referência se for gerar prints de novo: rodar com
+`QT_QPA_PLATFORM=offscreen`, e **saber que texto desenhado por QPainter sai
+ilegível nesse modo** (ver achado abaixo) — geometria/imagem em si sai
+perfeita, só rótulo de texto que não dá pra conferir assim.
+
+## 3. Achado de comportamento real, importante pra não repetir susto
+
+**Reabrir um livro já testado antes CONTINUA o projeto salvo, com os ajustes
+de sessões passadas — não usa os novos padrões.** O Samuel abriu o Boécio de
+verdade depois do relatório e estranhou ver "Mágico pro"/"Preto e branco" em
+vez de Original. Investigado: o projeto salvo do Boécio
+(`%LOCALAPPDATA%\EditorImpressao\projetos\Sobre a Consolação da Filosofia -
+Severino Boécio\projeto.json`, salvo 16/09 19:54, **antes** desta sessão) já
+tinha `filtro_padrao: "preto_e_branco"` e a maioria das páginas com filtro
+próprio já salvo. A mudança do Problema 2 só vale pra **página/projeto que
+ainda não tem nada salvo** — não reescreve o passado. Pra ver o padrão novo
+de verdade: **"Começar de novo" no Boécio** (descarta o salvo, reanalisa) ou
+abrir um **livro nunca testado antes**.
+
+## 4. Outro achado, menor, pra não confundir sessão futura
+
+`ui/tela_conferir.py` tem sua **própria constante local `DPI_PREVIA = 110`**,
+diferente da `DPI_PREVIA = 150` de `core/pdf_io.py` (nomes iguais, valores
+diferentes, sem relação). A prévia das abas Bordas/Endireitar/Marcar renderiza
+a **110 DPI** de verdade, não 150 — eu mesmo errei isso numa explicação pro
+Samuel no meio da sessão antes de checar o código direito. Se for mexer em
+qualidade/DPI de novo, checar os dois lugares.
+
+## 5. Pergunta em aberto — a mais importante deste checkpoint
+
+Perguntei ao Samuel, palavra por palavra: **"Quer que eu explique como achar
+o 'começar de novo' na tela inicial, ou prefere testar com outro livro?"** —
+a sessão terminou (pedido de checkpoint) antes da resposta. Quem pegar esta
+sessão: essa é a pergunta a retomar, não reconstruir do zero.
+
+## 6. Por que nada foi commitado, e o que fazer quando o Samuel testar
+
+Regra do `CLAUDE.md` seção 8 (passos 9-10): só commita depois do Samuel abrir
+pelo atalho, testar, e aprovar/pedir ajuste. Isso vale mesmo com o pedido dele
+de "fazer tudo e só depois mostrar prints" — os prints substituem o
+"eu testei sozinho e trago resultado", não o "o Samuel testou com as próprias
+mãos". `git status` mostra 15 arquivos modificados + 8 novos (7 código + o
+relatório) — nada staged, nada commitado.
+
+## 7. Próximo passo recomendado
+
+1. Responder a pergunta da seção 5 (começar de novo no Boécio, ou livro novo)
+   e testar ao vivo o que a pergunta destrava.
+2. Testar especificamente Espelhado/Proporção travada com mouse de verdade
+   (item mais arriscado por ser geometria nova) e os atalhos M/T com teclado
+   de verdade (nunca testados, só chamados direto no código).
+3. Depois de aprovado o que já existe, decidir: terminar 1.3/1.4 (mover/
+   redimensionar conteúdo, UI ainda não ligada) e/ou começar o 5.5
+   (Tesseract) como itens novos, ou seguir pra commit do que já está pronto.
+
+## Como rodar e testar (confirmado nesta sessão, 17/09/2026)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q                 # 349 passed
+QT_QPA_PLATFORM=offscreen .venv\Scripts\python.exe teste_botoes.py   # 124 ações, 0 falhas
+.venv\Scripts\pythonw.exe main.py                             # abrir de verdade
+```
+
+## Ambiente — nada novo instalado nesta sessão
+
+Nenhuma dependência nova foi adicionada. `doxapy` (já instalado) tem `WOLF` e
+`OTSU` prontos — confirmado com
+`dir(doxapy.Binarization.Algorithms)` nesta máquina, sem precisar instalar
+nada. Se o Problema 5.5 (Tesseract) for retomado, aí sim precisa instalar
+(`pytesseract` + o binário do Tesseract no Windows) — nada disso existe
+ainda.
+
+---
+
+# PARTE -4 — Checkpoint de 15-16/09/2026
 
 Continuação da mesma sessão de replanejamento da PARTE -3 (abaixo). Três
 coisas aconteceram, nesta ordem: (1) uma tentativa real de testar o Boécio
