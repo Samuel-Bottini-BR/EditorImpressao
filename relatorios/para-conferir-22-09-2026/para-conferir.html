@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Para conferir — correções do teste do Boécio (22/09/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Para conferir — correções do teste do Boécio (22/09/2026)</h1>
+<p>Feito a partir do que você relatou testando o atalho "(desenvolvimento)", mais duas
+observações em documentos separados, e depois ajustado de novo a partir do seu teste ao
+vivo do mesmo dia. <strong>Nada foi commitado</strong> — segue a regra do projeto: só commita depois de
+você abrir pelo atalho, testar, e aprovar.</p>
+<p><strong>Antes de testar: feche a janela do programa que já está aberta e abra de novo pelo
+atalho.</strong> Ela está rodando com o código de antes das correções 4 e 5 (o processo continua
+vivo desde mais cedo hoje); só abrindo de novo carrega o código corrigido.</p>
+<h2>O que foi corrigido de verdade</h2>
+<h3>1. Arrastar o recorte perto da borda da página (o bug do "só abre pro lado esquerdo")</h3>
+<p>Achado o problema real: perto do limite da página (comum logo depois da detecção
+automática de bordas), arrastar QUALQUER alça ou canto para abrir mais o recorte — direita,
+esquerda, qualquer canto — empurrava sempre o lado esquerdo/de cima pra fora, não importa
+qual lado você tocasse. Corrigido: agora cada alça trava no lado que deveria ficar parado.</p>
+<p><strong>O que testar</strong>: abra um livro, aba Bordas, arraste a alça direita e os cantos direitos
+perto da borda da página (recorte já quase do tamanho da página inteira) — a largura deve
+crescer, sem o lado esquerdo se mexer sozinho. Teste os 3 modos: normal, Espelhado (tecla
+M), Proporção travada (tecla T).</p>
+<h3>2. Botão "tamanho..." não mexe mais no seu recorte</h3>
+<p>Antes, usar o botão "tamanho..." recentralizava e substituía sua seleção manual. Agora ele
+só define o tamanho final da folha de impressão — sua seleção continua exatamente onde
+você deixou, e a folha maior aparece como margem branca ao redor, <strong>já visível na tela</strong>
+enquanto você edita (não só no arquivo final).</p>
+<p>Se você digitar um tamanho de folha menor que o que já recortou, ou se aumentar o recorte
+depois e a folha escolhida ficar pequena demais, aparece um aviso visível na tela (não
+bloqueia, só avisa) — o corte nunca é cortado escondido.</p>
+<p><strong>O que testar</strong>: recorte algo fora do centro, use "tamanho..." e escolha A4 — sua seleção
+não deve se mexer, só deve aparecer a margem branca ao redor, na posição certa. Tente
+também escolher um tamanho menor que o recorte, pra ver o aviso.</p>
+<h3>3. Aba Marcar: "usar em todas" / "só nas próximas" para a detecção automática</h3>
+<p>A detecção automática (letra/gravura) agora pode ser aplicada à página atual, a todas, ou
+só nas próximas — mesmo padrão que corte, bordas e filtro já tinham. Copia a marcação já
+calculada nesta página (não roda a detecção de novo em cada uma — isso travaria a tela num
+livro grande).</p>
+<h3>4. A margem da folha agora é branca de verdade</h3>
+<p>Achada a causa: a sombra que escurece o que "vai ficar de fora" ao arrastar o recorte
+estava sendo desenhada em cima da folha inteira, não só do conteúdo — por isso a margem
+aparecia cinza (185,185,185) em vez de branca. Corrigido: a sombra agora só cobre a área do
+conteúdo, a margem fica branca de verdade. Confirmado lendo o pixel real da tela, não só em
+teste automático.</p>
+<p><strong>O que testar</strong>: escolha uma folha maior que o recorte — a margem ao redor tem que estar
+branca de verdade, não acinzentada.</p>
+<h3>5. Mover e redimensionar o conteúdo dentro da folha (aba Bordas)</h3>
+<p>Você testou a primeira versão do "Mover conteúdo" e continuou sem conseguir mover — com
+razão: o clique só funcionava se caísse <strong>exatamente em cima do retângulo do conteúdo</strong>, sem
+nenhuma pista visual de onde esse retângulo começava (sem alça, sem cursor diferente). Na
+prática, qualquer clique um pouco fora do pixel exato — o normal de um clique de verdade —
+caía "no vazio" e não fazia nada. Reproduzido com a janela de verdade (mouse pilotado de
+verdade, não simulado) antes de corrigir.</p>
+<p><strong>Corrigido</strong>: agora qualquer clique dentro da folha visível arrasta o conteúdo — como
+arrastar uma foto dentro de uma moldura, não precisa acertar o retângulo exato. Continua com
+linhas-guia e "ímã" de alinhamento como antes.</p>
+<p><strong>Redimensionar, novo</strong>: 4 alças azuis nos cantos do conteúdo. Arrastar um canto redimensiona
+mantendo a proporção da imagem (não distorce), sempre ancorado no centro — a posição não
+muda, só o tamanho. Cursor muda sobre as alças pra indicar que dá pra redimensionar ali.
+Sem ímã de tamanho por enquanto (ex.: "gruda em 100%") — se quiser isso, é uma entrega à
+parte, avise.</p>
+<p><strong>O que testar</strong>: aba Bordas, escolha um tamanho de folha maior que o recorte, clique "Mover
+conteúdo" — arraste clicando em qualquer lugar da folha (não só em cima da imagem) e veja se
+move; depois arraste um dos 4 cantos azuis e veja se redimensiona sem distorcer, mantendo o
+centro parado.</p>
+<h2>Sobre os itens que NÃO precisaram de conserto</h2>
+<ul>
+<li><strong>A tela de Configurações existe e funciona</strong> (Arquivo → Configurações...) — testado
+  clicando de verdade. Bem provável que você estivesse procurando um botão dedicado na
+  tela, e não um item dentro do menu Arquivo — isso é uma questão de onde as coisas ficam
+  na interface, não um defeito. Fica anotado para quando tratarmos do redesenho de layout
+  (você pediu um estilo mais parecido com Photoshop/After Effects — ainda não iniciado).</li>
+<li><strong>A detecção de gravura continua preenchendo a caixa inteira</strong>, não o contorno exato —
+  uma tentativa anterior de contornar isso (reconstrução morfológica) já foi tentada e
+  falhou neste acervo. Não mexemos nisso agora; avise se quiser retomar essa investigação
+  com uma ideia diferente.</li>
+</ul>
+<h2>Testes automáticos</h2>
+<ul>
+<li><code>pytest tests -q</code>: <strong>434 passando</strong> (eram 349 no início do dia), sem nenhum teste antigo
+  removido ou alterado — só testes novos ao lado dos existentes.</li>
+<li><code>teste_botoes.py</code> (clique real, não simulado): <strong>128 ações, 0 falhas</strong>.</li>
+<li>Os itens 1, 4 e 5 foram, além disso, confirmados pilotando a janela real do programa com
+  mouse de verdade (não só em teste automático) — é o padrão que este projeto usa depois de
+  já ter visto teste simulado passar enquanto o uso real falhava.</li>
+</ul>
+<h2>Outras mudanças desta sessão, sem precisar do seu teste ao vivo</h2>
+<ul>
+<li>Regras novas registradas no <code>CLAUDE.md</code> (seção 10): trabalho por subagentes, branches
+  separadas quando houver duas conversas em paralelo, documentação obrigatória de código,
+  nunca perder pendência antiga, sempre guardar o pedido original de todo item resolvido.</li>
+<li><code>PEDIDOS.md</code> ganhou um bloco novo com ~12 pendências que só existiam soltas no histórico
+  (a mais importante: <strong>ninguém nunca respondeu se o programa já substitui o CamScanner do
+  Kaique de verdade</strong> — fica registrada, priorizável quando você quiser).</li>
+<li>Boa parte do código existente ganhou comentários/docstrings explicando o que cada parte
+  faz (trabalho separado, numa cópia isolada do repositório, sem mudar nenhum
+  comportamento).</li>
+</ul>
+<h2>Próximo passo</h2>
+<p><strong>Feche e reabra o programa pelo atalho "Editor de Impressao (desenvolvimento)"</strong> (importante
+para os itens 4 e 5), teste os 5 itens acima, e me diga se aprova, quer ajuste, ou quer
+adiar algum.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 22/09/2026 às 20:09</p>
+</body>
+</html>

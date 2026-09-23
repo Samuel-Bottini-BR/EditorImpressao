@@ -345,13 +345,46 @@ arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
   o preto puro lia como risco de erro atravessado no pé da tela. O estado
   atual (cinza) é intencional e documentado no próprio `ui/estilo.py`; não
   reverter sem decisão explícita do Samuel.
-- **Achado em 07/09/2026, ainda não corrigido:** a ação "Abrir" do menu
-  (`ui/janela_principal.py`, `_montar_menu`) está ligada a
-  `lambda: self.tela_inicio.area.mousePressEvent(None)` — isso passa `None`
-  como evento, e `AreaArrastar.mousePressEvent` começa lendo `evento.button()`,
-  o que levanta `AttributeError` em tempo de execução. A ação fica habilitada
-  em qualquer tela. Provável primeira falha que um teste de clique real no
-  menu vai reportar. Correção sugerida: abrir o `QFileDialog` diretamente (ou
-  expor um método público tipo `abrir_pelo_menu()`), não simular o evento de
-  mouse. **Não corrigido ainda — mostrar o diff antes de mexer, por ser
-  mudança de tela.**
+- **O bug do menu "Abrir" (achado 07/09/2026) já foi corrigido — esta seção
+  estava desatualizada.** Era: a ação "Abrir" do menu (`ui/janela_principal.py`,
+  `_montar_menu`) simulava um clique com `lambda:
+  self.tela_inicio.area.mousePressEvent(None)`, o que levantava `AttributeError`
+  (`evento.button()` em `evento=None`). Corrigido no mesmo dia, commit `9d27b76`
+  ("Corrige o bug do menu Abrir: simulava evento de mouse com None") — hoje o
+  menu chama `self.tela_inicio.area.abrir_dialogo_de_arquivo()` diretamente
+  (`ui/widgets/area_arrastar.py`), o mesmo método usado pelo clique normal.
+  Achado em 22/09/2026: a prosa do handoff (PARTE -1) já registrava a correção
+  no mesmo dia; era só esta seção do `CLAUDE.md` que tinha ficado pra trás —
+  ver seção 10, item 6.
+
+---
+
+## 10. Como este projeto trabalha agora (a partir de 22/09/2026)
+
+1. **Modo de trabalho padrão: subagentes.** Implementação roda em subagentes em segundo
+   plano (um implementa, outro verifica/testa); a conversa principal com o Samuel é
+   gerenciamento — reporta o que precisa de decisão ou teste ao vivo dele, não escreve
+   código diretamente linha a linha ali.
+2. **Duas conversas em paralelo, uma branch cada.** Quando houver mais de uma frente ativa
+   ao mesmo tempo (ex.: bugs/backend + redesenho de layout), cada uma trabalha na sua
+   própria branch git (nomeada pelo tema, ex. `redesenho-layout`), com commits pequenos e
+   frequentes. Antes de começar a mexer, conferir `git log`/`git status` pra ver o que a
+   outra frente mudou. Merge de tempos em tempos, não acumular divergência grande.
+3. **Documentação obrigatória de código.** Todo arquivo/função tocado a partir de agora
+   precisa ter comentário/docstring explicando o que é, o que faz, e (quando não for óbvio)
+   o que é seguro ou arriscado mudar ali. Vale tanto pra código novo quanto pra qualquer
+   arquivo existente que for tocado por outro motivo.
+4. **Nenhum plano novo substitui silenciosamente o que já estava pendente.** Antes de
+   fechar qualquer plano (modo de planejamento), conferir o `PEDIDOS.md` e a seção 9 acima
+   — todo item em aberto continua valendo até ser resolvido ou descartado explicitamente
+   pelo Samuel. Um plano novo declara o que resolve e o que deixa de fora; nunca apaga
+   pendência por omissão.
+5. **Todo item resolvido guarda o pedido original.** Ao marcar algo como implementado com
+   sucesso (no `PEDIDOS.md` ou em qualquer registro equivalente), preservar a frase de quem
+   pediu (Samuel ou Kaique, citação literal sempre que existir) junto com o que foi feito e
+   onde — pra poder ser revisitado sem precisar garimpar o histórico de conversas.
+6. **Cuidado com o handoff vs. o código real.** Já aconteceu de um checkpoint do handoff
+   dizer "corrigido" e outro documento (`CLAUDE.md` seção 9) mostrar o oposto, escritos no
+   mesmo dia (caso do menu "Abrir", acima). Prosa de checkpoint é registro histórico, não
+   prova — quando o estado importar de verdade, checar o código e o `git log`, não só
+   confiar no texto.

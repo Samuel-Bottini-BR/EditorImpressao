@@ -14,7 +14,231 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -5 — Checkpoint de 17/09/2026 (leia isto primeiro, é o mais novo)
+# PARTE -6 — Checkpoint de 22-23/09/2026 (leia isto primeiro, é o mais novo)
+
+Sessão longa, em duas pontas (uma foi fechada sem querer no meio, retomada por
+reconstrução de log — ver seção 6). Resultado: **3 bugs reais corrigidos, 1
+funcionalidade nova (redimensionar conteúdo), fluxo de trabalho por
+subagentes adotado de vez, e um monte de pendência antiga finalmente
+registrada no `PEDIDOS.md`.** Nada commitado ainda — Samuel não testou esta
+rodada ao vivo até o fim desta sessão.
+
+## 1. Estado atual — o que é código só e o que já foi visto rodando
+
+**434 testes automáticos passando** (`pytest tests -q`, eram 349 no início do
+dia 22/09). Os itens 1, 4 e 5 abaixo foram, além disso, **confirmados
+pilotando a janela real do programa com mensagens de mouse nativas** (não
+clique simulado do Qt) — ver seção 4, é o padrão que este projeto adotou
+depois de ver teste simulado passar enquanto o uso real falhava, mais de uma
+vez.
+
+1. **Bug do canto direito (arrastar recorte perto da borda) — corrigido e
+   confirmado.** Causa: `_mover_recorte` limitava a largura/altura por baixo,
+   nunca por cima — perto do limite da página (comum após detecção
+   automática), arrastar qualquer alça empurrava a borda oposta para
+   negativo. Reproduzido com clique/arrasto real (`QTest`/mouse de verdade)
+   antes de corrigir.
+2. **Botão "tamanho..." não mexe mais na seleção manual — corrigido.** Só
+   define o tamanho da folha; a margem extra aparece como branco ao redor,
+   já visível na tela.
+3. **Aba Marcar ganhou "usar em todas"/"só nas próximas" pra detecção
+   automática** — mesmo padrão que corte/bordas/filtro já tinham.
+4. **Margem da folha realmente branca (era cinza 185,185,185) — corrigido e
+   confirmado por pixel real.** Causa: a sombra de "vai ficar de fora" ao
+   arrastar o recorte usava `self._area` (canvas inteiro) em vez de
+   `_area_do_conteudo()`. 255-70=185 batia exato com o cinza medido.
+5. **Mover conteúdo dentro da folha — o bug real só foi achado na SEGUNDA
+   rodada de teste do Samuel, e está corrigido agora.** Primeira versão
+   (implementada mais cedo no dia) só iniciava o arrasto se o clique caísse
+   **exatamente em cima do retângulo do conteúdo** — sem alça, sem cursor
+   diferente, nenhuma pista visual de onde esse retângulo começava. Testado
+   pelo subagente só com clique simulado (que é sempre pixel-perfeito) — por
+   isso passou no teste automático e falhou pro Samuel de verdade. Achado
+   reproduzindo com mouse nativo pilotando a janela real (não simulado).
+   **Corrigido**: agora qualquer clique dentro da folha visível arrasta o
+   conteúdo, como mover uma foto dentro de uma moldura. Linhas-guia/ímã
+   continuam como antes.
+6. **Redimensionar o conteúdo — novo, entregue nesta sessão** (o Samuel
+   confirmou que queria, não estava mais "de fora" do escopo). 4 alças azuis
+   nos cantos do retângulo do conteúdo; arrastar redimensiona mantendo a
+   proporção (nunca distorce), ancorado no centro (a posição não muda, só o
+   tamanho). Reaproveita o mesmo algoritmo de `RECORTE_PROPORCAO` que o
+   recorte já usava. **Sem ímã de tamanho** (tipo "gruda em 100%") — decisão
+   deixada em aberto, ver seção 5.
+7. **Tela de Configurações e detecção de gravura**: confirmado que não são
+   bugs — ver PARTE -5 (checkpoint anterior) para o resumo, nada mudou aqui.
+
+**Relatório de conferência atualizado nos três formatos de sempre**
+(`relatorios/para-conferir-22-09-2026/para-conferir.md`/`.html`/`.pdf`),
+cobrindo os 5 itens junto com o que testar em cada um.
+
+**Importante para quem retomar**: a janela do programa que ficou aberta
+durante esta sessão (processo antigo) está rodando com o código de ANTES das
+correções 4 e 5 — não foi possível fechá-la sem interferir no que o Samuel
+estava fazendo (ver seção 3). Ele precisa fechar essa janela e abrir de novo
+pelo atalho "(desenvolvimento)" antes de testar.
+
+## 2. Decisões fechadas nesta sessão, e por quê
+
+- **Fluxo de trabalho por subagentes, adotado de vez** — pedido explícito do
+  Samuel: "quero começar a trabalhar com subagentes agora, para que aqui
+  fique uma conversa livre, enquanto subagentes implementam coisas no código
+  e outros verificam, e eu fico só vendo coisas novas a serem mudadas ou
+  testadas aqui nesse chat — ele vira nosso chat de gerenciamento e não de
+  codar." Registrado como regra permanente no `CLAUDE.md` (seção 10, nova
+  nesta sessão): trabalho por subagentes, branches separadas quando houver
+  duas conversas em paralelo (ex.: uma de bugs, uma de redesenho de layout),
+  documentação obrigatória de código, nunca perder pendência antiga, sempre
+  guardar o pedido original de todo item resolvido (pra poder ser
+  revisitado).
+- **Duas conversas paralelas = duas branches git**, cada uma commitando com
+  frequência e checando `git log`/`git status` da outra antes de mexer —
+  decisão registrada no `CLAUDE.md` seção 10, ainda não posta em prática (só
+  uma frente rodou desta vez).
+- **Mensagem nativa de mouse (`SendMessage`/`PostMessage` direto pro hwnd) em
+  vez de clique simulado (pywinauto `click_input()`) pra pilotar a janela
+  real sem roubar o foco do Samuel.** Achado técnico novo, importante: o
+  `click_input()` exige a janela em primeiro plano de verdade, e com o Samuel
+  usando o PC o tempo todo (YouTube, VS Code em paralelo) isso é uma corrida
+  perdida a maioria das vezes. Mensagens nativas pro hwnd funcionam **mesmo
+  sem foco**, sem tirar a janela do Samuel da frente. Isso substitui/atualiza
+  a conclusão da PARTE -4 ("não existe jeito confirmado de testar sem
+  atrapalhar") — agora existe.
+- **`PEDIDOS.md` ganhou um BLOCO 11** com ~12 pendências que só existiam
+  soltas na prosa do handoff — a maioria já tinha linha em outro bloco (só
+  recebeu nota cruzada), 3 eram de fato novas. **A mais importante: ninguém
+  nunca confirmou se o programa já substitui o CamScanner do Kaique de
+  verdade** — é o critério de sucesso original do projeto (desde julho), sem
+  resposta até hoje. Fica registrada com prioridade máxima.
+- **`CLAUDE.md` seção 9 corrigida**: o bug do menu "Abrir" (`evento=None`)
+  estava marcado como "não corrigido" — na verdade FOI corrigido em 07/09
+  (commit `9d27b76`); o `CLAUDE.md` é que nunca tinha sido revisado depois.
+  Contradição achada comparando código atual com o texto, não só confiando
+  no handoff.
+- **Redimensionar o conteúdo entra no escopo** — o plano original (aprovado
+  antes desta sessão) deixava isso de fora de propósito; o Samuel confirmou
+  que queria depois de testar só o "mover" e sentir falta.
+
+## 3. Caminhos tentados e descartados, e por quê
+
+- **Matar o processo antigo do programa (`Stop-Process` no PID 15248) pra
+  forçar recarregar o código** — bloqueado pelo classificador de permissões
+  do Claude Code, que tratou como interferir no workload do Samuel (ele
+  estava usando o PC ativamente). **Não tentar de novo sem autorização
+  explícita dele** — em vez disso, abra uma instância nova pra validar (feito
+  desta vez: PID 19656, fechado normalmente com `WM_CLOSE` no final) e peça
+  pro Samuel fechar a antiga manualmente.
+- **Confiar em teste simulado (`QTest`/`click_input`) sozinho pra aprovar uma
+  interação de arrastar mouse** — aconteceu DUAS vezes nesta mesma frente de
+  trabalho (canto direito antes, mover conteúdo agora) de um teste simulado
+  passar 100% enquanto o uso real falhava. Lição consolidada: qualquer
+  funcionalidade de arrastar/clicar precisa de confirmação com mouse real
+  (nativo, não simulado) antes de reportar como pronta pro Samuel.
+- **Atalho antigo da Área de Trabalho Pública** (`C:\Users\Public\Desktop\
+  Editor de Impressao.lnk`, aponta pro instalador de 01/09, 16 dias
+  desatualizado) — **ainda não removido**, falta permissão de admin que o
+  Claude Code não tem daqui. Samuel precisa apagar/renomear manualmente. Até
+  lá, continua existindo o risco de ele (ou o Kaique) clicar no atalho errado
+  e testar código velho — foi exatamente o que gerou confusão no início desta
+  sessão com os itens 1 e 3 do teste do Boécio.
+
+## 4. Descobertas de comportamento real, caras de redescobrir
+
+- **Causa exata do "mover conteúdo não funciona"**: zona de clique válida
+  era só a fração pequena do retângulo do conteúdo dentro da folha, sem
+  nenhuma pista visual (comparar com o modo Recorte, que muda o cursor sobre
+  as alças) — pra quem usa, isso é indistinguível de "quebrado". Vale lembrar
+  disso ao desenhar qualquer interação de arrastar nova: sempre dar pista
+  visual (cursor, alça, contorno) da zona clicável real.
+- **`pywinauto.click_input()` perde a corrida quando o usuário está ativo na
+  máquina** — só funciona de verdade se a janela ficar em primeiro plano
+  tempo suficiente. `win32gui.SendMessage`/`PostMessage` com mensagens de
+  mouse nativas direto pro `hwnd` não precisam disso.
+- **O Claude Code recusa `Stop-Process`/matar processo enquanto o usuário
+  está ativo na máquina**, tratando como possível interferência — não é bug,
+  é o comportamento esperado; a saída é pedir pro usuário fechar manualmente
+  ou abrir uma instância nova em paralelo pra validar.
+
+## 5. Perguntas em aberto
+
+- **A pergunta pendente do checkpoint anterior (17/09: "explicar o 'começar
+  de novo', ou testar livro novo?") está superada** — o Samuel não lembrava
+  do contexto no início desta sessão e migrou direto para reportar bugs
+  novos. Não precisa retomar essa pergunta específica.
+- **Redimensionar sem ímã de tamanho — decisão de produto pendente**:
+  perguntado ao Samuel se quer algo tipo "gruda em 100%" ou "gruda quando o
+  conteúdo cabe exatamente na largura da folha" ao redimensionar. Sem
+  resposta ainda (a sessão foi encerrada com checkpoint antes dele
+  testar/responder).
+- **O programa já substitui o CamScanner do Kaique de verdade?** — critério
+  de sucesso original do projeto, sem resposta desde julho. Registrado no
+  `PEDIDOS.md` BLOCO 11, prioridade máxima, mas não perguntado diretamente
+  ao Samuel ainda nesta sessão.
+- **Redesenho de layout estilo Photoshop/After Effects** (pedido do Samuel:
+  "o botão deveria ficar embaixo da tela de trabalho, de forma pequena como
+  no After Effects") — respondido tecnicamente (PySide6 tem `QDockWidget`
+  nativo pra isso, é o mesmo mecanismo que apps profissionais usam) mas
+  **nada foi planejado ou implementado ainda**. Fica como frente separada,
+  possivelmente em branch própria (`redesenho-layout`), quando o Samuel
+  quiser começar.
+
+## 6. Nota sobre como esta sessão foi retomada (útil se acontecer de novo)
+
+A sessão de teste ao vivo (a que gerou os achados 1, 4 e 5 acima) foi fechada
+pelo Samuel sem querer, no meio de uma investigação com subagente rodando.
+Como não tinha handoff escrito daquele momento, a sessão seguinte reconstruiu
+o que estava acontecendo lendo os **logs brutos do Claude Code**
+(`C:\Users\fotog\.claude\projects\<pasta-do-projeto>\*.jsonl` e
+`.../subagents/*.jsonl`), cruzando com timestamps de arquivos reais (pasta de
+projetos salvos em `%LOCALAPPDATA%\EditorImpressao\projetos\`,
+`saida_teste\`, `erros.log`) — deu pra achar a última mensagem do Samuel e
+exatamente em que ponto o subagente parou. **Registrando aqui como técnica de
+recuperação válida**, caso aconteça de novo e não haja checkpoint escrito: os
+logs do Claude Code (jsonl) guardam a conversa inteira, incluindo relatórios
+de subagentes, e têm timestamp — dá pra reconstruir "o que estava
+acontecendo" sem perguntar ao Samuel.
+
+## Próximo passo recomendado
+
+1. Samuel fecha a janela antiga do programa e abre de novo pelo atalho
+   "Editor de Impressao (desenvolvimento)".
+2. Testa os 5 itens do relatório (`relatorios/para-conferir-22-09-2026/
+   para-conferir.html`), especialmente mover/redimensionar conteúdo (nunca
+   testado por ele ainda de verdade).
+3. Responde a pergunta do ímã no redimensionar (seção 5).
+4. Se aprovado: commitar o trabalho acumulado (múltiplas sessões desde
+   17/09 — `git status` mostra ~34 arquivos entre modificados e novos, nunca
+   commitados). Vale considerar separar em mais de um commit (ex.: os bugs
+   de arrasto/folha, separado da funcionalidade de mover/redimensionar,
+   separado dos comentários de código, separado das regras novas do
+   CLAUDE.md/PEDIDOS.md) — nenhum desses grupos depende do outro.
+5. Apagar/renomear manualmente o atalho antigo da Área de Trabalho Pública
+   (`C:\Users\Public\Desktop\Editor de Impressao.lnk`) — Claude Code não tem
+   permissão de admin pra isso.
+6. Considerar começar a frente de redesenho de layout (branch separada) e/ou
+   perguntar diretamente ao Samuel sobre o veredito CamScanner (BLOCO 11 do
+   PEDIDOS.md).
+
+## Como rodar e testar (confirmado nesta sessão, 22-23/09/2026)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q          # 434 passed, confirmado
+```
+
+Abrir de verdade: fechar qualquer janela "Editor de Impressão" já aberta,
+depois atalho "Editor de Impressao (desenvolvimento)" (ou
+`.venv\Scripts\pythonw.exe main.py`).
+
+## Ambiente — nada novo instalado nesta sessão
+
+Nenhuma dependência nova. Mensagens nativas de mouse usaram `pywin32`
+(`win32gui`/`win32api`), já instalado de sessões anteriores (fora do `.venv`
+do projeto, Python de sistema).
+
+---
+
+# PARTE -5 — Checkpoint de 17/09/2026
 
 Sessão gigante: o Samuel mandou `TESTE BOÉCIO 1 -- 16-09-2026\TESTE 1.docx`
 (5 problemas com print) e, discutindo cada um a fundo (várias rodadas de
