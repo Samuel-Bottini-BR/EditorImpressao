@@ -14,3 +14,6 @@ pdfs_teste/
 
 modelos/
 
+
+# Copias temporarias de trabalho dos agentes (git worktree)
+.claude/worktrees/
