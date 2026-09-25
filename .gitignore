@@ -17,3 +17,9 @@ modelos/
 
 # Copias temporarias de trabalho dos agentes (git worktree)
 .claude/worktrees/
+
+# Paginas-gabarito (Fase 0.3): pesadas, ficam fora do git.
+# So o LEIA-ME e a lista de paginas por item entram.
+gabarito/*
+!gabarito/LEIA-ME.md
+!gabarito/lista.json
