@@ -183,6 +183,9 @@ class _TarefaPrevia(QRunnable):
                 return
             if not 0 <= self.indice_pagina < len(self.projeto.paginas):
                 return
+            if ":recorte:" in self.chave:
+                self._para_recorte()
+                return
             pagina = self.projeto.paginas[self.indice_pagina]
             # Cada tarefa abre o seu proprio documento: um fitz.Document nao
             # pode ser usado por duas threads ao mesmo tempo.
@@ -195,6 +198,22 @@ class _TarefaPrevia(QRunnable):
         except Exception:  # noqa: BLE001 - previa que falha nao derruba a tela
             registrar_erro("previa", traceback.format_exc())
             _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave)
+
+    def _para_recorte(self) -> None:
+        """Girada e dividida, mas nunca cortada - o que a aba Bordas mostra
+        enquanto o recorte está sendo ajustado. Ver `core.pipeline.
+        preparar_para_recorte`: sem isso, o retângulo do recorte era desenhado
+        como fração de uma prévia já cortada, e comprimia sozinho a cada
+        atualização."""
+        from core.pipeline import renderizar_pagina_para_recorte
+
+        pagina = self.projeto.paginas[self.indice_pagina]
+        doc = abrir_pdf(self.caminho_pdf)
+        try:
+            img = renderizar_pagina_para_recorte(doc, self.projeto, pagina, dpi=self.dpi)
+        finally:
+            doc.close()
+        _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
 
     def _folha_crua(self) -> None:
         """A folha inteira, sem nenhum processamento.
@@ -298,6 +317,30 @@ class GerenciadorPrevias(QObject):
         self._pool.start(
             _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
         )
+
+    # --- imagem para ajustar o recorte (aba Bordas) ------------------------
+
+    def chave_para_recorte(self, indice: int, dpi: int) -> str:
+        """Depende de girar/dividir, nunca de `recorte` - ver
+        `core.pipeline.preparar_para_recorte`. Prefixo `f"{indice}:"` igual
+        ao de `chave()`, para `invalidar(indice)` limpar as duas juntas."""
+        if not 0 <= indice < len(self.projeto.paginas):
+            return f"{indice}:recorte:invalida"
+        p = self.projeto.paginas[indice]
+        f = self.projeto.folhas[p.folha]
+        return f"{indice}:recorte:{dpi}:{p.metade}:{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}"
+
+    def pegar_para_recorte(self, indice: int, dpi: int) -> np.ndarray | None:
+        chave = self.chave_para_recorte(indice, dpi)
+        if chave in self._cache:
+            self._promover(chave)
+            return self._cache[chave]
+        if chave not in self._pedidas and 0 <= indice < len(self.projeto.paginas):
+            self._pedidas.add(chave)
+            self._pool.start(
+                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
+            )
+        return None
 
     def pedir_cartoes(self, indice: int, base: np.ndarray, filtros: list[str],
                        forca_preto: int, clareza: int, intensidade: int) -> None:

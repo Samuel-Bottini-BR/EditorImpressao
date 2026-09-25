@@ -37,8 +37,12 @@ import functools
 import traceback
 
 import numpy as np
+
+import atalhos
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
+    QCheckBox,
+    QComboBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -53,9 +57,11 @@ from PySide6.QtWidgets import (
 
 from core import analise
 from core.filtros import (
+    ALGORITMOS_PB,
     MAGICO_PRO,
     MELHORAR,
     NOMES_AMIGAVEIS,
+    NOMES_DOS_ALGORITMOS_PB,
     ORIGINAL,
     PRETO_E_BRANCO,
     palavra_do_ajuste,
@@ -68,8 +74,8 @@ from ui.tarefas import GerenciadorPrevias
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.editor_selecao import (
-    ATALHOS_DAS_FERRAMENTAS,
     FERRAMENTA_RETANGULO,
+    ferramenta_da_tecla,
 )
 from ui.widgets.paineis import ColunaDePaineis
 from ui.widgets.trilha_ferramentas import TrilhaFerramentas
@@ -85,6 +91,14 @@ from ui.widgets.visualizador import (
 
 DPI_PREVIA = 110          # baixo de proposito: a tela precisa abrir em segundos
 
+# Qualidade da prévia, ajustável pelo Samuel (estilo After Effects) nas telas
+# de trabalho - troca a resolução usada para renderizar a página nas abas
+# Bordas/Endireitar/Marcar. "Rápida" é o valor de sempre (DPI_PREVIA); as
+# outras duas custam mais memória/tempo por página, nunca acumulam páginas
+# (continua sendo uma só por vez), só deixam ESSA página mais pesada.
+QUALIDADES_DA_PREVIA = {"rapida": DPI_PREVIA, "media": 180, "alta": 300}
+NOMES_DA_QUALIDADE = {"rapida": "Rápida", "media": "Média", "alta": "Alta"}
+
 ABA_CORTE, ABA_BORDAS, ABA_ANGULO, ABA_FILTRO = "corte", "bordas", "angulo", "filtro"
 ABA_MARCAR = "marcar"
 
@@ -94,6 +108,31 @@ TITULOS = {
     ABA_ANGULO: "Endireitar",
     ABA_MARCAR: "Marcar",
     ABA_FILTRO: "Filtro",
+}
+
+# Atalhos que não passam pelo menu (BarraDeMenu já registra os dela sozinha) -
+# registrados aqui para a tela de Configurações também poder listá-los e
+# remapeá-los. Ver `atalhos.py`.
+CHAVE_RECORTE_ESPELHADO = "recorte_espelhado"
+CHAVE_RECORTE_PROPORCAO = "recorte_proporcao_travada"
+atalhos.registrar(CHAVE_RECORTE_ESPELHADO, "Recorte: espelhado", "M")
+atalhos.registrar(CHAVE_RECORTE_PROPORCAO, "Recorte: proporção travada", "T")
+
+CHAVE_NAVEGAR_ANTERIOR = "navegar_anterior"
+CHAVE_NAVEGAR_PROXIMA = "navegar_proxima"
+CHAVE_MARCAR_CERTO = "marcar_certo"
+CHAVE_PROXIMO_ALERTA = "proximo_alerta"
+atalhos.registrar(CHAVE_NAVEGAR_ANTERIOR, "Página anterior", "Left")
+atalhos.registrar(CHAVE_NAVEGAR_PROXIMA, "Próxima página", "Right")
+atalhos.registrar(CHAVE_MARCAR_CERTO, "Marcar como certo e avançar", "Space")
+atalhos.registrar(CHAVE_PROXIMO_ALERTA, "Ir para a próxima dúvida", "Tab")
+
+# Nomes de tecla que o QKeySequenceEdit da tela de Configurações devolve para
+# essas quatro - não são letras simples, então precisam de uma tradução de
+# volta para o Qt.Key que o `tratar_tecla` compara.
+_QT_KEY_DAS_TECLAS_DE_NAVEGACAO = {
+    "Left": Qt.Key_Left, "Right": Qt.Key_Right,
+    "Space": Qt.Key_Space, "Tab": Qt.Key_Tab,
 }
 
 # Enquanto o medidor esta sendo arrastado a prévia sai menor: a 110 DPI o
@@ -167,7 +206,12 @@ class TelaConferir(QWidget):
 
         # estado do medidor de ajuste
         self._valor_ao_pegar: int | None = None
-        self._dpi_atual = DPI_PREVIA
+        import configuracoes
+        self._qualidade_da_previa = configuracoes.ler("qualidade_previa") or "rapida"
+        if self._qualidade_da_previa not in QUALIDADES_DA_PREVIA:
+            self._qualidade_da_previa = "rapida"
+        self._dpi_normal = QUALIDADES_DA_PREVIA[self._qualidade_da_previa]
+        self._dpi_atual = self._dpi_normal
 
         self._agendar = QTimer(self)
         self._agendar.setSingleShot(True)
@@ -443,16 +487,253 @@ class TelaConferir(QWidget):
     def _montar_aba_bordas(self) -> None:
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
         vis.recorte_movido.connect(self._mover_recorte)
+        vis.conteudo_movido.connect(self._mover_conteudo)
 
         linha = self._linha_de_botoes(ABA_BORDAS)
         _botao("está certo", linha, self._marcar_revisada)
         _botao("não cortar esta", linha, self._sem_recorte)
         _botao("voltar ao automático", linha, self._recorte_automatico)
         _botao("usar em todas", linha, self._recorte_em_todas)
+        _botao("tamanho...", linha, self._escolher_tamanho_da_folha)
+
+        self.botao_espelhado = _botao("Espelhado", linha, self._alternar_espelhado)
+        self.botao_espelhado.setCheckable(True)
+        self.botao_espelhado.setToolTip(
+            f"Espelhado  ({atalhos.tecla_atual(CHAVE_RECORTE_ESPELHADO)})")
+
+        self.botao_proporcao_travada = _botao(
+            "Proporção travada", linha, self._alternar_proporcao_travada
+        )
+        self.botao_proporcao_travada.setCheckable(True)
+        self.botao_proporcao_travada.setToolTip(
+            f"Proporção travada  ({atalhos.tecla_atual(CHAVE_RECORTE_PROPORCAO)})")
+
+        # Fase 2 (aprovada pelo Samuel em 22/09/2026): mover o conteúdo
+        # dentro da folha - só faz sentido quando há uma folha maior que o
+        # recorte escolhida (`_atualizar_previa` habilita/desabilita este
+        # botão, ver `_conferir_tamanho_da_folha` / ABA_BORDAS).
+        self.botao_mover_conteudo = _botao(
+            "Mover conteúdo", linha, self._alternar_mover_conteudo
+        )
+        self.botao_mover_conteudo.setCheckable(True)
+        self.botao_mover_conteudo.setEnabled(False)
+        self.botao_mover_conteudo.setToolTip(
+            "Arrastar a página dentro da folha escolhida (aba \"tamanho...\"). "
+            "Só disponível quando a folha é maior que o recorte."
+        )
+
         linha.addStretch()
+
+        linha.addWidget(QLabel("Qualidade:"))
+        seletor_qualidade = QComboBox()
+        for chave, nome in NOMES_DA_QUALIDADE.items():
+            seletor_qualidade.addItem(nome, chave)
+        seletor_qualidade.setCurrentIndex(
+            seletor_qualidade.findData(self._qualidade_da_previa))
+        seletor_qualidade.setToolTip(
+            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."
+        )
+        seletor_qualidade.currentIndexChanged.connect(
+            lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
+        linha.addWidget(seletor_qualidade)
         self.botoes_de_sugestao[ABA_BORDAS] = _botao(
             "", linha, self._aplicar_sugestao, "sugestao"
         )
+
+    def _escolher_tamanho_da_folha(self) -> None:
+        """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
+
+        Item 2/4 do teste do Boécio (seção 3a do plano): este botão SÓ decide
+        o tamanho da FOLHA (`ConfigPagina.tamanho_folha_cm`) - nunca mais toca
+        em `recorte`. Antes ele chamava `recorte_para_tamanho_cm` e
+        `_mover_recorte`, o que substituía e recentralizava o corte que o
+        usuário já tinha feito à mão (o bug relatado). O recorte serve para
+        DUAS coisas agora, sem se atropelar: recortar a imagem original, e
+        (separadamente) posicionar-se dentro do tamanho de folha escolhido
+        aqui - ver `core/folha.py::compor_na_folha`.
+        """
+        from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
+        from core.folha import medidas_do_recorte_em_cm
+
+        if not self._pronta() or self.projeto is None:
+            return
+        vis = self.visualizadores[ABA_BORDAS]
+        largura_px, altura_px = vis.tamanho_da_pagina_px()
+        if largura_px == 0:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        dpi = vis.dpi_atual()
+
+        atual = medidas_do_recorte_em_cm(
+            pagina.recorte or (0.0, 0.0, 1.0, 1.0), largura_px, altura_px, dpi)
+
+        dialogo = DialogoTamanhoDaFolha(
+            atual["largura_final"], atual["altura_final"],
+            tamanho_atual=pagina.tamanho_folha_cm, parent=self,
+        )
+
+        if dialogo.exec() != DialogoTamanhoDaFolha.Accepted:
+            return
+
+        self._mudar_tamanho_da_folha(dialogo.tamanho_escolhido())
+
+    @protegido
+    def _mudar_tamanho_da_folha(self, tamanho_cm: tuple[float, float]) -> None:
+        """Registra `tamanho_folha_cm` no histórico - mesmo padrão de
+        `_mover_corte`/`_mover_angulo` (`@protegido` + `_registrar`)."""
+        arredondado = (round(tamanho_cm[0], 2), round(tamanho_cm[1], 2))
+        self._registrar(
+            "tamanho_folha", "pagina", [self.indice_pagina],
+            {"tamanho_folha_cm": list(arredondado)},
+            f"Tamanho da folha da página {self.indice_pagina + 1}: "
+            f"{arredondado[0]:.1f} × {arredondado[1]:.1f} cm",
+        )
+
+    def _atualizar_previa_para_recorte(self, vis, pagina) -> None:
+        """A aba Bordas, fora do modo "Mover conteúdo": mostra a folha girada
+        e dividida, mas NUNCA cortada - o recorte é só um retângulo desenhado
+        por cima, sempre em fração da MESMA imagem estável.
+
+        Bug real achado ao vivo (23/09/2026, Samuel: "quando eu diminuo a
+        linha verde ele corta a própria folha e o corte vai pra frente
+        sozinho"): antes, esta aba mostrava a prévia JÁ cortada por
+        `pagina.recorte` (a mesma que `_atualizar_previa_composta` usa) - o
+        retângulo do recorte era desenhado como fração de uma imagem que já
+        era um recorte, e cada atualização (ao soltar o mouse) reaplicava a
+        fração em cima do resultado anterior, comprimindo o corte sozinho a
+        cada vez. Ver `core.pipeline.preparar_para_recorte`.
+        """
+        img = self.previas.pegar_para_recorte(self.indice_pagina, self._dpi_atual)
+        vis.definir_imagem(img)
+        if img is not None:
+            vis.definir_composicao((0.0, 0.0, 1.0, 1.0), (img.shape[1], img.shape[0]))
+
+    def _atualizar_previa_composta(self, vis, pagina, img) -> None:
+        """Decisão 3 do plano (passo 8, o item de maior risco): a aba Bordas
+        mostra a página JÁ COMPOSTA na folha escolhida (recorte + margem
+        branca de verdade), ao vivo - não só um contorno decorativo.
+
+        `img` é o conteúdo (o recorte, já processado - mesma imagem que
+        sempre foi mostrada aqui). `core.folha.compor_na_folha` é a MESMA
+        função que `core/pipeline.py::processar` usa na exportação final,
+        então a prévia sai idêntica ao que vai para o arquivo. Quando não
+        cabe (rede de segurança) ou não há folha escolhida, devolve `img`
+        sem alteração - detectado comparando o tamanho antes/depois, sem
+        duplicar a lógica de "cabe" que já mora em `compor_na_folha`.
+
+        `vis.definir_composicao(...)` ensina ao widget onde o conteúdo fica
+        dentro do canvas maior, para o retângulo do recorte e o arrasto do
+        mouse continuarem certos (`Visualizador._area_do_conteudo`).
+        """
+        from core.folha import compor_na_folha, conteudo_como_retangulo
+
+        if img is None:
+            vis.definir_imagem(None)
+            return
+
+        composto = compor_na_folha(
+            img, pagina.tamanho_folha_cm, self._dpi_atual,
+            escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
+        )
+        vis.definir_imagem(composto)
+
+        tamanho_conteudo_px = (img.shape[1], img.shape[0])
+        if composto.shape[:2] == img.shape[:2]:
+            retangulo_conteudo = (0.0, 0.0, 1.0, 1.0)
+        else:
+            retangulo_conteudo = conteudo_como_retangulo(
+                pagina.conteudo_escala, pagina.conteudo_deslocamento,
+                pagina.tamanho_folha_cm, tamanho_conteudo_px, self._dpi_atual,
+            )
+        vis.definir_composicao(retangulo_conteudo, tamanho_conteudo_px)
+
+    def _conferir_tamanho_da_folha(self, pagina, vis) -> None:
+        """Decisão 2 do plano: se o recorte crescer depois de já haver uma
+        folha escolhida e ela ficar pequena demais, avisa DE FORMA VISÍVEL
+        E PERSISTENTE na tela (não só no instante do diálogo) - mesmo padrão
+        de `_conferir_qualidade_do_preto_e_branco` (alerta computado ao vivo,
+        comparando com o estado atual da página).
+        """
+        from core.analise import FOLHA_MENOR_QUE_O_RECORTE
+        from core.folha import medidas_do_recorte_em_cm, tamanho_da_folha_cabe
+
+        largura_px, altura_px = vis.tamanho_da_pagina_px()
+        tinha = FOLHA_MENOR_QUE_O_RECORTE in pagina.alertas
+        pagina.alertas = [a for a in pagina.alertas if a != FOLHA_MENOR_QUE_O_RECORTE]
+
+        cabe = True
+        if pagina.tamanho_folha_cm is not None and largura_px > 0 and altura_px > 0:
+            medidas = medidas_do_recorte_em_cm(
+                pagina.recorte or (0.0, 0.0, 1.0, 1.0), largura_px, altura_px, vis.dpi_atual())
+            cabe = tamanho_da_folha_cabe(
+                pagina.tamanho_folha_cm,
+                (medidas["largura_final"], medidas["altura_final"]),
+            )
+            if not cabe:
+                pagina.alertas.append(FOLHA_MENOR_QUE_O_RECORTE)
+
+        if tinha != (not cabe):
+            self._atualizar_faixa()
+            self._atualizar_tira()
+            self._atualizar_contador()
+
+    def _mudar_qualidade_da_previa(self, nome_qualidade: str) -> None:
+        """Troca a resolução da prévia (estilo After Effects: Rápida/Média/Alta).
+
+        Fica salvo (configuracoes.py) e vale para a próxima vez que o
+        programa abrir também.
+        """
+        import configuracoes
+
+        if nome_qualidade not in QUALIDADES_DA_PREVIA:
+            return
+        self._qualidade_da_previa = nome_qualidade
+        self._dpi_normal = QUALIDADES_DA_PREVIA[nome_qualidade]
+        self._dpi_atual = self._dpi_normal
+        configuracoes.escrever("qualidade_previa", nome_qualidade)
+        self.atualizar()
+
+    def _alternar_espelhado(self) -> None:
+        if self.botao_espelhado.isChecked():
+            self.botao_proporcao_travada.setChecked(False)
+        self._atualizar_modo_arraste_recorte()
+
+    def _alternar_proporcao_travada(self) -> None:
+        if self.botao_proporcao_travada.isChecked():
+            self.botao_espelhado.setChecked(False)
+        self._atualizar_modo_arraste_recorte()
+
+    def _atualizar_modo_arraste_recorte(self) -> None:
+        from ui.widgets.visualizador import (
+            RECORTE_ESPELHADO,
+            RECORTE_LIVRE,
+            RECORTE_PROPORCAO,
+        )
+
+        if self.botao_espelhado.isChecked():
+            modo = RECORTE_ESPELHADO
+        elif self.botao_proporcao_travada.isChecked():
+            modo = RECORTE_PROPORCAO
+        else:
+            modo = RECORTE_LIVRE
+        self.visualizadores[ABA_BORDAS].definir_modo_arraste_recorte(modo)
+
+    def _alternar_mover_conteudo(self) -> None:
+        """Fase 2: troca o visualizador entre editar o RECORTE (padrão) e
+        arrastar o CONTEÚDO dentro da folha - são exclusivos (o widget só
+        tem um `modo` por vez)."""
+        from ui.widgets.visualizador import MODO_CONTEUDO, MODO_RECORTE
+
+        vis = self.visualizadores[ABA_BORDAS]
+        if self.botao_mover_conteudo.isChecked():
+            vis.definir_modo(MODO_CONTEUDO)
+        else:
+            vis.definir_modo(MODO_RECORTE)
+        # As duas telas usam prévias diferentes (composta vs. só girada/
+        # dividida, ver `_atualizar_previa_para_recorte`) - sem isto, a tela
+        # só troca na próxima atualização natural, mostrando por um instante
+        # o retângulo desenhado sobre a imagem errada.
+        self.atualizar()
 
     def _montar_aba_angulo(self) -> None:
         vis = self._area_de_visualizador(ABA_ANGULO, MODO_ANGULO)
@@ -524,7 +805,20 @@ class TelaConferir(QWidget):
         painel = QWidget()
         fora = QVBoxLayout(painel)
         fora.setContentsMargins(0, 0, 0, 0)
-        fora.setSpacing(0)
+        fora.setSpacing(4)
+
+        # Problema 2 do plano (redesenho do fluxo): a detecção automática não
+        # roda mais sozinha ao abrir esta aba - o Samuel pede quando quiser,
+        # aqui ou pelo menu Marcar -> "Procurar de novo" (mesma ação).
+        linha_detectar = QHBoxLayout()
+        _botao("detectar automaticamente", linha_detectar, self._detectar_de_novo)
+        # Fase 3b do plano: mesma granularidade que corte/bordas/filtro já
+        # tinham ("usar em todas"/"só nas próximas") - faltava só aqui.
+        _botao("usar em todas", linha_detectar, self._marcacao_em_todas)
+        _botao("só nas próximas", linha_detectar, self._marcacao_nas_proximas)
+        linha_detectar.addStretch()
+        fora.addLayout(linha_detectar)
+
         self.aviso_marcacao = QLabel("")
         self.aviso_marcacao.setObjectName("dica")
         fora.addWidget(self.aviso_marcacao)
@@ -655,6 +949,56 @@ class TelaConferir(QWidget):
             f"Achei {achou} áreas. O que você marcou à mão continua aí."
             if achou else "Não achei nada novo nesta página.")
 
+    # Fase 3b do plano "corrigir bugs do teste do Boécio": faltava aqui o
+    # "usar em todas / só nesta" que já existia para corte
+    # (`_corte_em_todas`), recorte/bordas (`_recorte_em_todas`) e filtro
+    # (`_filtro_em_todas`/`_filtro_nas_proximas`). O "resultado da detecção
+    # automática" copiado é a MARCAÇÃO já computada nesta página (detecção +
+    # qualquer correção manual, `ConfigPagina.selecao`) - mesmo padrão dos
+    # irmãos acima: copia um valor já decidido para as outras páginas, não
+    # roda `detectar()` de novo em cada uma (isso exigiria rasterizar e
+    # processar o livro inteiro de forma síncrona na interface - a regra do
+    # projeto "nenhum processamento pesado trava a interface" não permite
+    # isso sem uma tarefa em segundo plano própria, fora do escopo desta
+    # entrega; rodar a detecção de verdade página por página continua sendo
+    # o botão "detectar automaticamente" de cima).
+    @protegido
+    def _marcacao_em_todas(self) -> None:
+        import copy
+
+        pagina = self._pagina_marcada()
+        if pagina is None or not pagina.selecao:
+            # Uma marcacao VAZIA copiada para todas apagaria sem querer o
+            # trabalho de outras paginas - mesmo cuidado de `_limpar_marcacao`
+            # so valer na pagina atual, nunca em lote.
+            self._mostrar_aviso_da_marcacao(
+                "Marque ou detecte algo nesta página antes de usar em todas.")
+            return
+        assert self.projeto is not None
+        indices = [p.indice for p in self.projeto.paginas]
+        self._registrar(
+            "aplicar_em_todas", "pagina", indices,
+            {"selecao": copy.deepcopy(pagina.selecao)},
+            f"Marcação da página {self.indice_pagina + 1} em todas as {len(indices)} páginas",
+        )
+
+    @protegido
+    def _marcacao_nas_proximas(self) -> None:
+        import copy
+
+        pagina = self._pagina_marcada()
+        if pagina is None or not pagina.selecao:
+            self._mostrar_aviso_da_marcacao(
+                "Marque ou detecte algo nesta página antes de aplicar nas próximas.")
+            return
+        assert self.projeto is not None
+        indices = [p.indice for p in self.projeto.paginas if p.indice >= self.indice_pagina]
+        self._registrar(
+            "aplicar_em_todas", "pagina", indices,
+            {"selecao": copy.deepcopy(pagina.selecao)},
+            f"Marcação da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
+        )
+
     def _montar_aba_filtro(self) -> None:
         pagina = QWidget()
         camadas = QVBoxLayout(pagina)
@@ -710,6 +1054,27 @@ class TelaConferir(QWidget):
         self.medidor.soltou.connect(self._medidor_soltou)
         self.medidor.barra.sliderPressed.connect(self._medidor_pegou)
         dentro.addWidget(self.medidor)
+
+        # Problema 5 do plano: só aparece com o Preto e branco escolhido (ver
+        # _configurar_medidor). "Automático" é o padrão - o programa decide
+        # pela espessura do traço desta página.
+        linha_algoritmo = QHBoxLayout()
+        linha_algoritmo.addWidget(QLabel("Algoritmo:"))
+        self.seletor_algoritmo_pb = QComboBox()
+        self.seletor_algoritmo_pb.addItem("Automático", "auto")
+        for chave in ALGORITMOS_PB:
+            self.seletor_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
+        self.seletor_algoritmo_pb.currentIndexChanged.connect(self._mudar_algoritmo_pb)
+        linha_algoritmo.addWidget(self.seletor_algoritmo_pb, 1)
+        self.caixa_despeckle = QCheckBox("limpar poeirinha")
+        self.caixa_despeckle.setToolTip(
+            "Remove manchas pretas pequenas demais pra ser letra. "
+            "Ligado é o comportamento de sempre."
+        )
+        self.caixa_despeckle.toggled.connect(self._mudar_despeckle)
+        linha_algoritmo.addWidget(self.caixa_despeckle)
+        dentro.addLayout(linha_algoritmo)
+
         fora.addWidget(self.bloco_ajuste)
 
         linha_botoes = QHBoxLayout()
@@ -1009,8 +1374,24 @@ class TelaConferir(QWidget):
 
         if aba == ABA_BORDAS:
             vis = self.visualizadores[ABA_BORDAS]
-            vis.definir_imagem(img)
+            vis.definir_dpi(self._dpi_atual)
+            if self.botao_mover_conteudo.isChecked():
+                self._atualizar_previa_composta(vis, pagina, img)
+            else:
+                self._atualizar_previa_para_recorte(vis, pagina)
             vis.definir_recorte(pagina.recorte or (0.0, 0.0, 1.0, 1.0))
+            self._conferir_tamanho_da_folha(pagina, vis)
+
+            # Fase 2: "Mover conteúdo" só faz sentido com uma folha escolhida.
+            # Sem ela, forçar de volta ao modo recorte - não deixar o botão
+            # marcado apontando para um modo que não existe mais na tela.
+            from ui.widgets.visualizador import MODO_RECORTE
+
+            tem_folha = pagina.tamanho_folha_cm is not None
+            self.botao_mover_conteudo.setEnabled(tem_folha)
+            if not tem_folha and self.botao_mover_conteudo.isChecked():
+                self.botao_mover_conteudo.setChecked(False)
+                vis.definir_modo(MODO_RECORTE)
         elif aba == ABA_ANGULO:
             vis = self.visualizadores[ABA_ANGULO]
             vis.definir_imagem(img)
@@ -1023,25 +1404,22 @@ class TelaConferir(QWidget):
     def _atualizar_marcacao(self, img, pagina) -> None:
         """Poe a pagina e a marcacao dela no editor.
 
-        Se a pagina ainda nao tem marcacao, a deteccao roda aqui - e o mesmo
-        caminho sob demanda do pipeline, so que agora com a pessoa olhando.
+        Problema 2 do plano (redesenho do fluxo): a deteccao NAO roda mais
+        sozinha aqui - antes disparava toda vez que a pagina nao tinha
+        marcacao, sem avisar; agora so quando o Samuel pede (botao
+        "detectar automaticamente" desta aba, ou menu Marcar -> "Procurar de
+        novo" - mesma acao, `_detectar_de_novo`). O pipeline final continua
+        detectando sozinho quando precisa (`core/pipeline.py::garantir_selecao`)
+        - isso e so a tela deixar de adivinhar por baixo dos panos.
         """
         self.editor_selecao.definir_imagem(img)
         selecao = pagina.obter_selecao()
 
-        if selecao.vazia and img is not None and self.projeto.detectar_regioes:
-            try:
-                from core.detectar_regioes import detectar
-
-                selecao = detectar(img)
-                pagina.guardar_selecao(selecao)
-            except Exception:  # noqa: BLE001 - sem deteccao da para marcar a mao
-                pass
-
         self.editor_selecao.definir_selecao(selecao)
         self._mostrar_aviso_da_marcacao(
             selecao.resumo_em_portugues() if not selecao.vazia
-            else "Nada marcado. Use as ferramentas para marcar."
+            else 'Nada marcado ainda. Clique em "detectar automaticamente" '
+                 "ou marque à mão."
         )
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
@@ -1108,6 +1486,30 @@ class TelaConferir(QWidget):
         for chave, amostra in resultados.items():
             if chave in self.cartoes:
                 self.cartoes[chave].definir_amostra(amostra)
+
+        self._conferir_qualidade_do_preto_e_branco(pagina, resultados)
+
+    def _conferir_qualidade_do_preto_e_branco(self, pagina, resultados: dict) -> None:
+        """Problema 5.4 do plano: aponta sozinho páginas que podem ter saído
+        erradas, comparando o resultado com o original - em vez do Samuel
+        ter que abrir imagem por imagem procurando problema."""
+        from core.analise import ESCURA_DEMAIS, APAGADA_DEMAIS, avaliar_preto_e_branco
+
+        original = resultados.get(ORIGINAL)
+        pb = resultados.get(PRETO_E_BRANCO)
+        if original is None or pb is None:
+            return
+
+        achado = avaliar_preto_e_branco(original, pb)
+        tinha_algum = pagina.alertas.count(ESCURA_DEMAIS) or pagina.alertas.count(APAGADA_DEMAIS)
+        pagina.alertas = [a for a in pagina.alertas if a not in (ESCURA_DEMAIS, APAGADA_DEMAIS)]
+        if achado is not None:
+            pagina.alertas.append(achado)
+
+        if achado is not None or tinha_algum:
+            self._atualizar_faixa()
+            self._atualizar_tira()
+            self._atualizar_contador()
 
     def _imagem_sem_filtro(self) -> np.ndarray | None:
         """Versao pequena e sem filtro da página atual, para os outros cartoes."""
@@ -1243,6 +1645,7 @@ class TelaConferir(QWidget):
         esperadas = (
             self.previas.chave(self.indice_pagina, self._dpi_atual),
             self.previas.chave_folha(self.indice_folha, DPI_PREVIA),
+            self.previas.chave_para_recorte(self.indice_pagina, self._dpi_atual),
         )
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
@@ -1349,6 +1752,52 @@ class TelaConferir(QWidget):
             f"Corte de borda de todas as {len(indices)} páginas",
         )
 
+    @protegido
+    def _mover_conteudo(self, retangulo: tuple) -> None:
+        """Fase 2+3 (aprovadas pelo Samuel em 22/09/2026): arrastar E
+        redimensionar o CONTEÚDO dentro da folha - grava
+        `conteudo_deslocamento` e `conteudo_escala` juntos, numa ação só.
+
+        `retangulo` vem do widget em fração do CANVAS
+        (`Visualizador.conteudo_movido` - tanto de `_mover_conteudo` quanto
+        de `_redimensionar_conteudo` no widget, o sinal é o mesmo); aqui é
+        convertido para o formato salvo em `ConfigPagina` via
+        `core.folha.deslocamento_do_retangulo` - o mesmo par de funções
+        (`conteudo_como_retangulo`/`deslocamento_do_retangulo`) que a prévia
+        composta (passo 8) já usa. Até a Fase 3, `_escala` vinha do
+        `deslocamento_do_retangulo` mas era descartado (`_escala, ... =`) -
+        só mover mudava x/y, nunca w/h, então `escala` nunca mudava de
+        verdade. Agora que redimensionar existe, `escala` também precisa
+        ser persistida.
+        """
+        from core.folha import deslocamento_do_retangulo
+
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if pagina.tamanho_folha_cm is None:
+            return
+        vis = self.visualizadores[ABA_BORDAS]
+        tamanho_conteudo_px = vis.tamanho_da_pagina_px()
+        if tamanho_conteudo_px == (0, 0):
+            return
+
+        escala, deslocamento = deslocamento_do_retangulo(
+            retangulo, pagina.tamanho_folha_cm, tamanho_conteudo_px, vis.dpi_atual())
+        escala_arredondada = round(escala, 4)
+        deslocamento_arredondado = (round(deslocamento[0], 4), round(deslocamento[1], 4))
+        if (escala_arredondada == pagina.conteudo_escala
+                and deslocamento_arredondado == pagina.conteudo_deslocamento):
+            return
+        self._registrar(
+            "mover_conteudo", "pagina", [self.indice_pagina],
+            {
+                "conteudo_deslocamento": list(deslocamento_arredondado),
+                "conteudo_escala": escala_arredondada,
+            },
+            f"Posição/tamanho do conteúdo na página {self.indice_pagina + 1}",
+        )
+
     # --- angulo -----------------------------------------------------------
 
     @protegido
@@ -1388,6 +1837,40 @@ class TelaConferir(QWidget):
             f"Filtro da página {self.indice_pagina + 1}: {nome_antes} para {nome_depois}",
         )
 
+    @protegido
+    def _mudar_algoritmo_pb(self, indice: int) -> None:
+        """Problema 5 do plano: qual dos 3 algoritmos o Preto e branco usa
+        nesta página. Chamado pelo seletor da aba Filtro."""
+        if not self._pronta() or self.projeto is None:
+            return
+        novo = self.seletor_algoritmo_pb.itemData(indice)
+        if novo is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if novo == pagina.algoritmo_preto_branco:
+            return
+        nome = NOMES_DOS_ALGORITMOS_PB.get(novo, novo) if novo != "auto" else "Automático"
+        self._registrar(
+            "mudar_algoritmo_pb", "pagina", [self.indice_pagina],
+            {"algoritmo_preto_branco": novo},
+            f"Algoritmo do Preto e branco na página {self.indice_pagina + 1}: {nome}",
+        )
+
+    @protegido
+    def _mudar_despeckle(self, ligado: bool) -> None:
+        """Problema 5 do plano: limpar poeirinha vira controle visível."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if ligado == pagina.despeckle:
+            return
+        self._registrar(
+            "mudar_despeckle", "pagina", [self.indice_pagina],
+            {"despeckle": ligado},
+            f"Limpar poeirinha na página {self.indice_pagina + 1}: "
+            + ("ligado" if ligado else "desligado"),
+        )
+
     # --- medidor de ajuste ------------------------------------------------
 
     def _campo_do_ajuste(self, filtro: str | None = None) -> str | None:
@@ -1412,6 +1895,20 @@ class TelaConferir(QWidget):
         rotulo, esquerda, direita = ROTULOS_DO_AJUSTE[pagina.filtro]
         self.medidor.definir_rotulo(rotulo, esquerda, direita)
         self.medidor.definir(getattr(pagina, campo))
+
+        # O algoritmo só faz sentido no Preto e branco - Melhorar/Mágico pro
+        # não binarizam.
+        eh_preto_e_branco = pagina.filtro == PRETO_E_BRANCO
+        self.seletor_algoritmo_pb.setVisible(eh_preto_e_branco)
+        self.caixa_despeckle.setVisible(eh_preto_e_branco)
+        if eh_preto_e_branco:
+            indice = self.seletor_algoritmo_pb.findData(pagina.algoritmo_preto_branco)
+            self.seletor_algoritmo_pb.blockSignals(True)
+            self.seletor_algoritmo_pb.setCurrentIndex(max(0, indice))
+            self.seletor_algoritmo_pb.blockSignals(False)
+            self.caixa_despeckle.blockSignals(True)
+            self.caixa_despeckle.setChecked(pagina.despeckle)
+            self.caixa_despeckle.blockSignals(False)
 
     @protegido
     def _medidor_pegou(self) -> None:
@@ -1467,7 +1964,7 @@ class TelaConferir(QWidget):
         novo = int(self.medidor.valor if valor is None else valor)
         antigo = self._valor_ao_pegar
         self._valor_ao_pegar = None
-        self._dpi_atual = DPI_PREVIA
+        self._dpi_atual = self._dpi_normal
 
         if antigo is None or antigo == novo:
             self.atualizar()
@@ -1538,7 +2035,9 @@ class TelaConferir(QWidget):
             "aplicar_em_todas", "pagina", indices,
             {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
              "clareza_melhorar": pagina.clareza_melhorar,
-             "intensidade_magico": pagina.intensidade_magico},
+             "intensidade_magico": pagina.intensidade_magico,
+             "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
+             "despeckle": pagina.despeckle},
             f"{nome} em todas as {len(indices)} páginas",
         )
 
@@ -1552,7 +2051,9 @@ class TelaConferir(QWidget):
             "aplicar_em_todas", "pagina", indices,
             {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
              "clareza_melhorar": pagina.clareza_melhorar,
-             "intensidade_magico": pagina.intensidade_magico},
+             "intensidade_magico": pagina.intensidade_magico,
+             "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
+             "despeckle": pagina.despeckle},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 
@@ -1649,26 +2150,38 @@ class TelaConferir(QWidget):
             self._pedir_processamento()
             return True
 
-        # As letras das ferramentas: R O L P B V C Z E. Nao conflitam com os
+        # As letras das ferramentas (R O L P B V C Z E por padrão, mas
+        # remapeáveis pela tela de Configurações). Nao conflitam com os
         # numeros 1 2 3 4, que continuam trocando o filtro. So valem sem Ctrl,
         # senao roubariam Ctrl+O e Ctrl+Z de quem espera abrir e desfazer.
         if not ctrl:
             letra = evento.text().upper()
-            for ferramenta, atalho in ATALHOS_DAS_FERRAMENTAS.items():
-                if letra == atalho:
-                    self.escolher_ferramenta(ferramenta)
+            ferramenta = ferramenta_da_tecla(letra)
+            if ferramenta is not None:
+                self.escolher_ferramenta(ferramenta)
+                return True
+            if ABA_BORDAS in self._abas_ativas:
+                if letra == atalhos.tecla_atual(CHAVE_RECORTE_ESPELHADO):
+                    self.botao_espelhado.click()
+                    return True
+                if letra == atalhos.tecla_atual(CHAVE_RECORTE_PROPORCAO):
+                    self.botao_proporcao_travada.click()
                     return True
 
-        if tecla == Qt.Key_Left:
+        if tecla == _QT_KEY_DAS_TECLAS_DE_NAVEGACAO.get(
+                atalhos.tecla_atual(CHAVE_NAVEGAR_ANTERIOR), Qt.Key_Left):
             self._navegar(-1)
             return True
-        if tecla == Qt.Key_Right:
+        if tecla == _QT_KEY_DAS_TECLAS_DE_NAVEGACAO.get(
+                atalhos.tecla_atual(CHAVE_NAVEGAR_PROXIMA), Qt.Key_Right):
             self._navegar(1)
             return True
-        if tecla == Qt.Key_Space:
+        if tecla == _QT_KEY_DAS_TECLAS_DE_NAVEGACAO.get(
+                atalhos.tecla_atual(CHAVE_MARCAR_CERTO), Qt.Key_Space):
             self.marcar_certo_e_avancar()
             return True
-        if tecla == Qt.Key_Tab:
+        if tecla == _QT_KEY_DAS_TECLAS_DE_NAVEGACAO.get(
+                atalhos.tecla_atual(CHAVE_PROXIMO_ALERTA), Qt.Key_Tab):
             self._ir_para_proximo_alerta()
             return True
         if tecla == Qt.Key_Delete:

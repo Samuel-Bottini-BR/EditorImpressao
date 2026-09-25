@@ -22,7 +22,7 @@ from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime
 from typing import Any
 
-from core.filtros import FILTROS, PRETO_E_BRANCO
+from core.filtros import FILTROS, ORIGINAL, PRETO_E_BRANCO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -64,7 +64,24 @@ class ConfigPagina:
     recorte: tuple[float, float, float, float] | None = None  # None = automatico
     angulo_manual: float | None = None                        # None = automatico
 
-    filtro: str = PRETO_E_BRANCO
+    # Problema 2 do plano (redesenho do fluxo): a página nasce em Original,
+    # nunca com um filtro já aplicado sozinho - o Samuel decide quando
+    # aplicar algo. TelaOpcoes ainda deixa escolher outro filtro padrão para
+    # o livro inteiro antes de começar; PRETO_E_BRANCO segue sendo o padrão
+    # de `filtro_valido()`, que é outra coisa (corrigir valor inválido salvo).
+    filtro: str = ORIGINAL
+
+    # Problema 5 do plano: qual dos 3 algoritmos o Preto e branco usa nesta
+    # página - "auto" deixa o programa decidir sozinho pela espessura do
+    # traço (ver core/filtros.py::escolher_algoritmo_automatico); os outros
+    # valores vêm de ALGORITMOS_PB (sauvola/otsu/wolf), escolha manual ou
+    # "usar em todas". Só importa quando `filtro` é Preto e branco.
+    algoritmo_preto_branco: str = "auto"
+
+    # Problema 5 do plano: a limpeza de poeirinha (manchas pretas pequenas
+    # demais pra ser letra) rodava sempre, escondida - agora é um controle
+    # visível. True mantém o comportamento de sempre.
+    despeckle: bool = True
 
     # Os tres ajustes de filtro, cada um de 0 a 100 com 50 no meio. Ficam
     # separados de proposito: trocar de filtro e voltar tem que devolver o
@@ -84,6 +101,26 @@ class ConfigPagina:
     # Vazia quer dizer "trate a pagina inteira do mesmo jeito", que e como o
     # programa sempre funcionou - projetos antigos continuam abrindo.
     selecao: list[dict[str, Any]] = field(default_factory=list)
+
+    # Problema 1, opcoes B e C do plano: depois que `recorte` decide o
+    # tamanho da FOLHA final, estes dois decidem o tamanho e a posicao do
+    # CONTEUDO escaneado dentro dela - independentes um do outro e do
+    # recorte. 1.0/centro (x=y=0.0 aqui significa "sem deslocamento", nao
+    # fracao de pagina) e o padrao: comportamento identico a hoje, conteudo
+    # do tamanho da folha, sem sobra. Ver `ui/widgets/visualizador.py`
+    # (`guias_ativas`, `encaixar_no_ima`) para a logica de posicionar.
+    conteudo_escala: float = 1.0
+    conteudo_deslocamento: tuple[float, float] = (0.0, 0.0)
+
+    # Item 2/4 do teste do Boecio (secao 3a do plano): o tamanho de folha
+    # FINAL que o usuario escolheu no dialogo "tamanho..." - independente do
+    # `recorte`. None (padrao) quer dizer "a folha tem o tamanho do
+    # recorte", que e o comportamento de sempre; projetos salvos antes deste
+    # campo existir abrem iguais. Quando setado, `core/folha.py::compor_na_folha`
+    # cola o recorte (conteudo) centralizado dentro de uma folha branca desse
+    # tamanho - nunca o contrario (o recorte NUNCA e esticado/recentralizado
+    # so por causa do tamanho de folha escolhido, que era o bug relatado).
+    tamanho_folha_cm: tuple[float, float] | None = None
 
     @property
     def precisa_revisao(self) -> bool:
@@ -109,7 +146,7 @@ class Projeto:
 
     dividir_folhas: bool = True
     limpar: bool = True
-    filtro_padrao: str = PRETO_E_BRANCO
+    filtro_padrao: str = ORIGINAL
     endireitar: bool = True
     cortar_bordas: bool = True
     montar_cadernos: bool = False
@@ -199,6 +236,12 @@ def _migrar(dados: dict[str, Any]) -> dict[str, Any]:
     valor = dados.get("recorte")
     if isinstance(valor, list):
         dados["recorte"] = tuple(valor)
+
+    # Mesma migração para o tamanho de folha escolhido (item 2/4 do teste do
+    # Boécio, seção 3a do plano) - None fica None, so lista vira tupla.
+    tamanho = dados.get("tamanho_folha_cm")
+    if isinstance(tamanho, list):
+        dados["tamanho_folha_cm"] = tuple(tamanho)
 
     # Projetos gravados antes do medidor deslizante guardavam a forca do preto
     # como palavra. Traduzimos para o numero equivalente, senao reabrir um

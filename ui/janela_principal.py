@@ -86,6 +86,17 @@ class JanelaPrincipal(QMainWindow):
         self.telas.addWidget(self.tela_final)
 
         self._montar_menu()
+
+        # Carrega as teclas que o Samuel remapeou, por cima dos padroes - so
+        # depois de _montar_menu(), porque so ai TODA acao (menu, ferramentas
+        # de marcar, navegacao, espelhado/proporcao) ja se registrou em
+        # atalhos.py. reaplicar_atalhos() copia o resultado para os QAction de
+        # verdade, que ja tinham nascido com a tecla padrao.
+        import atalhos
+
+        atalhos.carregar_de(configuracoes.ler("atalhos"))
+        self.menu.reaplicar_atalhos()
+
         self.telas.setCurrentIndex(INICIO)
         self._tela_mudou(INICIO)
 
@@ -129,6 +140,7 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("apagar", conferir.apagar_pagina)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
+        self.menu.ligar("configuracoes", self._abrir_configuracoes)
 
     def _tela_mudou(self, indice: int) -> None:
         if not hasattr(self, "menu"):
@@ -179,6 +191,11 @@ class JanelaPrincipal(QMainWindow):
             self.tela_conferir.indice_pagina + 1, 1, total)
         if certo:
             self.tela_conferir.ir_para_pagina(numero - 1)
+
+    def _abrir_configuracoes(self) -> None:
+        from ui.tela_configuracoes import TelaConfiguracoes
+
+        TelaConfiguracoes(self).exec()
 
     def _mostrar_atalhos(self) -> None:
         """A lista sai dos proprios menus - nunca de uma segunda lista."""

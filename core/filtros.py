@@ -231,10 +231,107 @@ def _sauvola_skimage(cinza: np.ndarray, janela: int, k: float) -> np.ndarray:
     return np.where(cinza > limiar, 255, 0).astype(np.uint8)
 
 
-def binarizar(cinza: np.ndarray, janela: int | None = None, k: float = 0.20) -> np.ndarray:
-    """Binarizacao local de Sauvola. Devolve imagem 0/255 de um canal."""
+def _wolf_doxapy(cinza: np.ndarray, janela: int, k: float) -> np.ndarray | None:
+    """Wolf pelo DoxaPy - mesma biblioteca do Sauvola, só troca o algoritmo.
+
+    Achado em `relatorios/melhorias.md`: a literatura indica Wolf melhor que
+    Sauvola em scan de baixo contraste. Devolve None se a biblioteca não
+    estiver disponível (mesma regra do `_sauvola_doxapy`) - quem chama cai
+    para Sauvola em vez de travar.
+    """
+    try:
+        import doxapy
+    except Exception:  # noqa: BLE001 - biblioteca nativa pode faltar no Windows
+        return None
+
+    try:
+        entrada = np.ascontiguousarray(cinza, dtype=np.uint8)
+        saida = np.empty_like(entrada)
+        bin_ = doxapy.Binarization(doxapy.Binarization.Algorithms.WOLF)
+        bin_.initialize(entrada)
+        bin_.to_binary(saida, {"window": int(janela), "k": float(k)})
+        return saida
+    except Exception:  # noqa: BLE001 - se o nativo falhar, usamos o plano B
+        return None
+
+
+def _otsu_binario(cinza: np.ndarray) -> np.ndarray:
+    """Otsu (cv2) - um limiar só para a página inteira, sem janela nem k.
+
+    Achado em `relatorios/melhorias.md` (30/07/2026): sai sólido em letra
+    gótica pesada (Palatino), onde o Sauvola quebra o traço - mas guarda o
+    dobro de "tinta" que o Sauvola, risco de manter mancha do verso como se
+    fosse letra. Por isso não é o padrão, só uma opção.
+    """
+    _limiar, saida = cv2.threshold(cinza, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return saida
+
+
+ALGORITMO_SAUVOLA = "sauvola"
+ALGORITMO_OTSU = "otsu"
+ALGORITMO_WOLF = "wolf"
+ALGORITMOS_PB = (ALGORITMO_SAUVOLA, ALGORITMO_OTSU, ALGORITMO_WOLF)
+NOMES_DOS_ALGORITMOS_PB = {
+    ALGORITMO_SAUVOLA: "Sauvola (padrão)",
+    ALGORITMO_OTSU: "Otsu (letra grossa/gótica)",
+    ALGORITMO_WOLF: "Wolf (scan de baixo contraste)",
+}
+
+
+def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
+    """Tenta adivinhar qual dos 3 fica melhor nesta página, pela espessura
+    do traço - a mesma medida que `k_para_a_letra` já faz, mas independente
+    dela (não mexe no cache existente).
+
+    Critério único por enquanto: traço muito grosso (letra gótica pesada,
+    tipo Palatino) tende a ir melhor com Otsu, que não quebra o traço como o
+    Sauvola. Sem uma medida de contraste local barata o bastante para rodar
+    em toda página, o Wolf fica de fora da escolha automática por ora -
+    continua disponível como escolha manual ou "usar em todas".
+    """
+    try:
+        _lim, tinta = cv2.threshold(
+            cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        tinta = (tinta > 0).astype(np.uint8)
+        if not (0.002 <= tinta.mean() <= 0.6):
+            return ALGORITMO_SAUVOLA
+        from skimage.morphology import skeletonize
+
+        distancia = cv2.distanceTransform(tinta, cv2.DIST_L2, 5)
+        esqueleto = skeletonize(tinta > 0)
+        if not esqueleto.any():
+            return ALGORITMO_SAUVOLA
+        espessura = float(2.0 * distancia[esqueleto].mean())
+    except Exception:  # noqa: BLE001 - medicao falhou, fica no padrao seguro
+        return ALGORITMO_SAUVOLA
+
+    if espessura >= ESPESSURA_DE_LETRA_GROSSA:
+        return ALGORITMO_OTSU
+    return ALGORITMO_SAUVOLA
+
+
+def binarizar(
+    cinza: np.ndarray, janela: int | None = None, k: float = 0.20,
+    algoritmo: str = ALGORITMO_SAUVOLA,
+) -> np.ndarray:
+    """Binarizacao local. Devolve imagem 0/255 de um canal.
+
+    `algoritmo` escolhe entre os 3 candidatos já medidos no acervo (ver
+    ALGORITMOS_PB) - Otsu não usa janela/k (é um limiar só pra página
+    inteira), os outros dois usam.
+    """
     if janela is None:
         janela = janela_para_altura(cinza.shape[0])
+
+    if algoritmo == ALGORITMO_OTSU:
+        return _otsu_binario(cinza)
+
+    if algoritmo == ALGORITMO_WOLF:
+        resultado = _wolf_doxapy(cinza, janela, k)
+        if resultado is not None:
+            return resultado
+        # Sem Wolf disponível (biblioteca faltando) cai para Sauvola em vez
+        # de travar - mesma filosofia do _sauvola_doxapy/_sauvola_skimage.
 
     resultado = _sauvola_doxapy(cinza, janela, k)
     if resultado is None:
@@ -469,20 +566,29 @@ def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
 
 
 def filtro_preto_e_branco(
-    img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle: bool = True
+    img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle: bool = True,
+    algoritmo: str = "auto",
 ) -> np.ndarray:
     """Preto e branco (Eco). Devolve imagem de 1 canal, só 0 e 255.
 
     forca vai de 0 (bem fraco, texto mais fino) a 100 (bem escuro, pega mais
     tinta e mais mancha junto).
+
+    `algoritmo`: "auto" (o programa escolhe pela espessura do traço desta
+    página, ver `escolher_algoritmo_automatico`), ou um de `ALGORITMOS_PB`
+    escolhido à mão / vindo de "usar em todas" (Problema 5 do plano).
     """
     cinza = _cinza_para_binarizar(img)
     janela = janela_para_altura(cinza.shape[0])
+    algoritmo_de_verdade = (
+        escolher_algoritmo_automatico(cinza) if algoritmo == "auto" else algoritmo
+    )
     # O meio do medidor passa a ser o k que a LETRA desta pagina pede; o
     # medidor continua andando em volta dele, para mais fraco ou mais
-    # escuro. Ver k_para_a_letra.
+    # escuro. Ver k_para_a_letra. So vale para Sauvola/Wolf - o Otsu nao usa k.
     binaria = binarizar(cinza, janela=janela,
-                        k=k_do_sauvola(forca, k_para_a_letra(cinza)))
+                        k=k_do_sauvola(forca, k_para_a_letra(cinza)),
+                        algoritmo=algoritmo_de_verdade)
     if despeckle:
         binaria = _despeckle(binaria, cinza.shape[0])
     return binaria
@@ -1331,6 +1437,8 @@ def aplicar_filtro_com_selecao(
     forca_preto: int = AJUSTE_PADRAO,
     clareza: int = AJUSTE_PADRAO,
     intensidade: int = AJUSTE_PADRAO,
+    algoritmo_pb: str = "auto",
+    despeckle: bool = True,
 ) -> tuple[np.ndarray, bool]:
     """O filtro pedido, mas cada area da pagina tratada do seu jeito.
 
@@ -1386,7 +1494,8 @@ def aplicar_filtro_com_selecao(
         # marcada, a pagina deixa de ser monocromatica e o desenho fica em tom
         # continuo; o resto vira preto e branco como sempre.
         if filtro == PRETO_E_BRANCO:
-            binaria = filtro_preto_e_branco(img, forca=forca_preto)
+            binaria = filtro_preto_e_branco(img, forca=forca_preto, algoritmo=algoritmo_pb,
+                                            despeckle=despeckle)
             if not peso_gravura.any():
                 saida = binaria
                 if peso_papel.any():
@@ -1451,6 +1560,8 @@ def aplicar_filtro(
     forca_preto: int = AJUSTE_PADRAO,
     clareza: int = AJUSTE_PADRAO,
     intensidade: int = AJUSTE_PADRAO,
+    algoritmo_pb: str = "auto",
+    despeckle: bool = True,
 ) -> tuple[np.ndarray, bool]:
     """Aplica o filtro pedido na página inteira, do mesmo jeito.
 
@@ -1458,13 +1569,17 @@ def aplicar_filtro(
     Devolve (imagem, monocromatica). monocromatica=True avisa o EscritorPDF
     para salvar a página em 1 bit.
 
+    `algoritmo_pb` e `despeckle` só valem para o Preto e branco.
+
     Quando a página tem marcação, quem manda e aplicar_filtro_com_selecao.
     """
     try:
         if filtro == ORIGINAL:
             return img, False
         if filtro == PRETO_E_BRANCO:
-            return filtro_preto_e_branco(img, forca=forca_preto), True
+            return filtro_preto_e_branco(
+                img, forca=forca_preto, algoritmo=algoritmo_pb,
+                despeckle=despeckle), True
         # Sem selecao nao ha mascara de gravura, entao a protecao vem so da
         # forca da cor: o que passa de SATURACAO_DE_RUBRICA fica.
         if filtro == MELHORAR:

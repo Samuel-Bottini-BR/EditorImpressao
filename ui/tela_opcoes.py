@@ -161,7 +161,7 @@ class TelaOpcoes(QWidget):
         for i, (chave, nome, explicacao) in enumerate(FILTROS_NA_TELA):
             radio = QRadioButton(nome)
             radio.setProperty("filtro", chave)
-            radio.setChecked(chave == PRETO_E_BRANCO)
+            radio.setChecked(chave == ORIGINAL)
             radio.toggled.connect(self._mudou)
             self.grupo_filtros.addButton(radio)
             grade.addWidget(radio, i // 2, (i % 2) * 2)
@@ -224,7 +224,7 @@ class TelaOpcoes(QWidget):
         for botao in self.grupo_filtros.buttons():
             if botao.isChecked():
                 return str(botao.property("filtro"))
-        return PRETO_E_BRANCO
+        return ORIGINAL
 
     def _mudou(self) -> None:
         """Guarda as escolhas e atualiza o resumo ao vivo."""

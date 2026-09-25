@@ -15,6 +15,7 @@ de largura ao trocar de tela.
 
 from __future__ import annotations
 
+import atalhos
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import QMenuBar
 
@@ -53,14 +54,32 @@ class BarraDeMenu(QMenuBar):
 
     def _acao(self, menu, chave: str, texto: str, atalho: str = "",
               acao=None) -> QAction:
-        item = QAction(texto, self.janela)
+        # Registrado no atalhos.py mesmo quando não tem tecla nenhuma (atalho
+        # vazio) - assim toda ação de menu aparece na mesma tabela; só as que
+        # já têm uma tecla de fábrica ficam editáveis na tela de
+        # Configurações (ver TelaConfiguracoes).
         if atalho:
-            item.setShortcut(QKeySequence(atalho))
+            atalhos.registrar(chave, texto.replace("&", ""), atalho)
+        item = QAction(texto, self.janela)
+        tecla = atalhos.tecla_atual(chave) if atalho else ""
+        if tecla:
+            item.setShortcut(QKeySequence(tecla))
         if acao is not None:
             item.triggered.connect(acao)
         menu.addAction(item)
         self.acoes[chave] = item
         return item
+
+    def reaplicar_atalhos(self) -> None:
+        """Copia o registro (atalhos.py) para os QAction de verdade.
+
+        Chamado ao iniciar (depois de carregar o que o Samuel salvou) e toda
+        vez que a tela de Configurações muda alguma tecla - sem isso o menu
+        continuaria mostrando a tecla antiga até reabrir o programa.
+        """
+        for chave, item in self.acoes.items():
+            tecla = atalhos.tecla_atual(chave)
+            item.setShortcut(QKeySequence(tecla) if tecla else QKeySequence())
 
     def _montar_arquivo(self) -> None:
         menu = self._menu("Arquivo")
@@ -73,6 +92,8 @@ class BarraDeMenu(QMenuBar):
         self._acao(menu, "processar", "Confirmar e processar", "Ctrl+Return")
         menu.addSeparator()
         self._acao(menu, "voltar", "Voltar para as opções")
+        menu.addSeparator()
+        self._acao(menu, "configuracoes", "Configurações...")
         self._acao(menu, "sair", "Sair", "Ctrl+Q")
 
     def _montar_editar(self) -> None:

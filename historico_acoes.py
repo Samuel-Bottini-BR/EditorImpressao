@@ -192,9 +192,18 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
                 setattr(item, campo, _restaurar_tipo(campo, valor))
 
 
+# Campos que sao tupla em modelos.py mas o JSON grava como lista - o
+# desfazer/refazer precisa devolver ao formato certo, senao uma comparacao
+# `== (a, b)` depois de um Ctrl+Z falha (bug latente achado no plano "corrigir
+# bugs do teste do Boecio", secao 3a: `conteudo_deslocamento` ja tinha esse
+# problema, nunca pego por nunca ter sido lido antes de `tamanho_folha_cm`
+# existir).
+_CAMPOS_TUPLA = ("recorte", "recorte_detectado", "tamanho_folha_cm", "conteudo_deslocamento")
+
+
 def _restaurar_tipo(campo: str, valor: Any) -> Any:
     """O JSON perde a tupla do recorte; devolvemos ao formato certo."""
-    if campo in ("recorte", "recorte_detectado") and isinstance(valor, list):
+    if campo in _CAMPOS_TUPLA and isinstance(valor, list):
         return tuple(valor)
     return valor
 

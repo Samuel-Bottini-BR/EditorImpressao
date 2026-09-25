@@ -33,6 +33,7 @@ CORTE_PEGOU_CONTEUDO = "corte_pegou_conteudo"
 RESOLUCAO_BAIXA = "resolucao_baixa"
 TAMANHO_DIFERENTE = "tamanho_diferente"
 DESENHO_OU_ESCRITA = "desenho_ou_escrita"
+FOLHA_MENOR_QUE_O_RECORTE = "folha_menor_que_o_recorte"
 
 
 @dataclass(frozen=True)
@@ -108,6 +109,19 @@ ALERTAS: dict[str, Alerta] = {
         "Esta folha tem tamanho diferente das outras.",
         "está bom assim", "revisar",
     ),
+    # Item 2/4 do teste do Boecio (secao 3a do plano): decisoes 1 e 2 - a
+    # folha nunca trava um tamanho pequeno demais, so avisa (aqui, e tambem
+    # ao vivo no dialogo "tamanho..." - ver ui/dialogo_tamanho_da_folha.py).
+    # Dispara quando ha um `tamanho_folha_cm` escolhido que nao cabe mais o
+    # `recorte` atual (por exemplo: o recorte cresceu depois da escolha).
+    # Na exportacao o pipeline nunca corta escondido - se nao couber de
+    # verdade, o tamanho do recorte prevalece (core/folha.py::compor_na_folha).
+    FOLHA_MENOR_QUE_O_RECORTE: Alerta(
+        FOLHA_MENOR_QUE_O_RECORTE, "Folha menor que o corte",
+        "A folha escolhida é menor que o corte desta página - ele não vai "
+        "caber inteiro nela. Ajuste o tamanho da folha ou o corte.",
+        "está bom assim", "revisar",
+    ),
 }
 
 
@@ -115,6 +129,55 @@ def descrever(codigo: str) -> Alerta:
     return ALERTAS.get(
         codigo, Alerta(codigo, codigo, "Confira esta página.", None, None)
     )
+
+
+# --- Problema 5 do plano: "esta página pode não ter processado bem" --------
+#
+# ESCURA_DEMAIS e APAGADA_DEMAIS já existiam em ALERTAS (texto e botão de
+# correção prontos) mas nunca eram disparados por ninguém - achado ao
+# procurar onde eles seriam calculados. Esta função é o que faltava: uma
+# versão leve, para rodar ao vivo na tela (não é a régua completa do
+# avaliar.py, que é um script de desenvolvedor e mede o acervo inteiro
+# offline) do mesmo princípio - comparar a fração de tinta do resultado
+# contra uma estimativa do original, e avisar se destoou muito.
+FRACAO_PRETA_MINIMA = 0.003   # abaixo disso, pouca tinta sobrou - texto sumindo
+FRACAO_PRETA_MAXIMA = 0.40    # acima disso, sobrou fundo demais - mancha virou preto
+RAZAO_MINIMA_OK = 0.3         # resultado com menos de 30% da tinta esperada
+RAZAO_MAXIMA_OK = 3.0         # ou mais de 300% - já é caso pra avisar
+
+
+def avaliar_preto_e_branco(original: np.ndarray, resultado: np.ndarray) -> str | None:
+    """Compara o Preto e branco com o original e devolve um alerta se
+    destoou muito, ou None se parece razoável.
+
+    `original` é a página antes do filtro (colorida ou cinza); `resultado`
+    é a saída do filtro Preto e branco (0/255, um canal ou três iguais).
+    """
+    if original is None or resultado is None or resultado.size == 0:
+        return None
+
+    cinza_resultado = resultado if resultado.ndim == 2 else resultado[:, :, 0]
+    fracao_preta = float((cinza_resultado < 128).mean())
+
+    cinza_original = original if original.ndim == 2 else cv2.cvtColor(
+        original, cv2.COLOR_BGR2GRAY)
+    _limiar, tinta_esperada = cv2.threshold(
+        cinza_original, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    fracao_esperada = float((tinta_esperada > 0).mean())
+
+    if fracao_preta >= FRACAO_PRETA_MAXIMA:
+        return ESCURA_DEMAIS
+    if fracao_preta <= FRACAO_PRETA_MINIMA and fracao_esperada > FRACAO_PRETA_MINIMA:
+        return APAGADA_DEMAIS
+
+    if fracao_esperada > 0.001:
+        razao = fracao_preta / fracao_esperada
+        if razao >= RAZAO_MAXIMA_OK:
+            return ESCURA_DEMAIS
+        if razao <= RAZAO_MINIMA_OK:
+            return APAGADA_DEMAIS
+
+    return None
 
 
 # --- limiares (calibrados no livro de teste) --------------------------------

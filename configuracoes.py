@@ -18,6 +18,8 @@ ARQUIVO = "configuracoes.json"
 PADROES: dict[str, Any] = {
     "ultima_pasta_de_saida": "",
     "ultima_pasta_de_entrada": "",
+    "atalhos": {},
+    "qualidade_previa": "rapida",
 }
 
 

@@ -420,6 +420,45 @@ def test_historico_sobrevive_a_fechar_o_programa(tmp_path):
     assert outro.pode_desfazer and outro.pode_refazer
 
 
+def test_desfazer_tamanho_da_folha_devolve_tupla():
+    """Bug latente achado no plano (secao 3a): `conteudo_deslocamento` ja
+    tinha esse problema, nunca pego por nunca ter sido lido antes.
+    `tamanho_folha_cm` (novo) precisa do mesmo tratamento que `recorte` -
+    senao o Ctrl+Z devolve uma LISTA (o JSON engoliu a tupla), e qualquer
+    comparacao `== (w, h)` depois de desfazer falha."""
+    projeto = projeto_de_teste()
+    projeto.paginas[2].tamanho_folha_cm = (21.0, 29.7)
+    acoes = HistoricoAcoes()
+
+    acao = montar_acao(projeto, "tamanho_folha", "pagina", [2],
+                       {"tamanho_folha_cm": (14.8, 21.0)}, "Tamanho da folha")
+    aplicar(projeto, acao, acao.depois)
+    acoes.registrar(acao)
+    assert projeto.paginas[2].tamanho_folha_cm == (14.8, 21.0)
+
+    acoes.desfazer(projeto)
+    valor = projeto.paginas[2].tamanho_folha_cm
+    assert valor == (21.0, 29.7)
+    assert isinstance(valor, tuple), f"devolveu {type(valor)}, nao tupla"
+
+
+def test_desfazer_conteudo_deslocamento_devolve_tupla():
+    """Mesmo bug latente, agora no campo que ja existia mas nunca era lido."""
+    projeto = projeto_de_teste()
+    projeto.paginas[0].conteudo_deslocamento = (0.1, -0.2)
+    acoes = HistoricoAcoes()
+
+    acao = montar_acao(projeto, "mover_conteudo", "pagina", [0],
+                       {"conteudo_deslocamento": (0.3, 0.4)}, "Mover conteúdo")
+    aplicar(projeto, acao, acao.depois)
+    acoes.registrar(acao)
+
+    acoes.desfazer(projeto)
+    valor = projeto.paginas[0].conteudo_deslocamento
+    assert valor == (0.1, -0.2)
+    assert isinstance(valor, tuple), f"devolveu {type(valor)}, nao tupla"
+
+
 def test_apagar_paginas_nao_quebra_a_contagem():
     projeto = projeto_de_teste()
     projeto.paginas[1].apagada = True

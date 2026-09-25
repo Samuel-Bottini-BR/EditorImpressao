@@ -284,6 +284,7 @@ class TelaAmpliada(QDialog):
         saida, _ = aplicar_filtro(
             preparada, outro, pagina.forca_preto,
             pagina.clareza_melhorar, pagina.intensidade_magico,
+            algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
         )
         return saida
 

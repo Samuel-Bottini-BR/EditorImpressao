@@ -267,6 +267,51 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
         return _exec_original_caixa(self)
 
     QMessageBox.exec = _exec_caixa_sem_travar
+
+    # A tela de Configurações também é modal (.exec()) - mesma técnica das
+    # duas acima, senão o clique em "menu: configuracoes" trava o script.
+    from ui.tela_configuracoes import TelaConfiguracoes
+
+    _exec_original_configuracoes = TelaConfiguracoes.exec
+
+    def _interagir_com_configuracoes(dialogo) -> None:
+        restaurar = next(
+            (b for b in dialogo.findChildren(QPushButton)
+             if "restaurar" in b.text().lower()), None)
+        if restaurar is not None:
+            restaurar.click()
+        fechar = next(
+            (b for b in dialogo.findChildren(QPushButton)
+             if b.text().lower() == "fechar"), None)
+        if fechar is not None:
+            fechar.click()
+        else:
+            dialogo.close()
+
+    def _exec_configuracoes_sem_travar(self):
+        QTimer.singleShot(0, lambda: _interagir_com_configuracoes(self))
+        return _exec_original_configuracoes(self)
+
+    TelaConfiguracoes.exec = _exec_configuracoes_sem_travar
+
+    # O diálogo "tamanho..." (Problema 1, opção A) também é modal.
+    from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
+
+    _exec_original_tamanho = DialogoTamanhoDaFolha.exec
+
+    def _interagir_com_tamanho(dialogo) -> None:
+        botao_a5 = next(
+            (b for b in dialogo.findChildren(QPushButton) if b.text() == "A5"), None)
+        if botao_a5 is not None:
+            botao_a5.click()
+        dialogo.accept()
+
+    def _exec_tamanho_sem_travar(self):
+        QTimer.singleShot(0, lambda: _interagir_com_tamanho(self))
+        return _exec_original_tamanho(self)
+
+    DialogoTamanhoDaFolha.exec = _exec_tamanho_sem_travar
+
     QInputDialog.getText = staticmethod(
         lambda *a, **k: ("Projeto de teste (renomeado)", True))
     QInputDialog.getInt = staticmethod(
@@ -422,10 +467,40 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
         alvos += list(botoes_de(conferir.barra_botoes.currentWidget()))
         for botao in alvos:
             rotulo = botao.text() or "(sem texto)"
+
+            # Item 2/4 do teste do Boecio (secao 3a do plano): o botao
+            # "tamanho..." (aba Bordas) NAO PODE mais mexer no recorte que o
+            # usuario ja fez - so no tamanho de folha. Este e o unico jeito de
+            # pegar o bug de verdade: `.click()` passa pelo sinal `clicked` do
+            # Qt de ponta a ponta, dialogo modal incluido (ver
+            # _instalar_monkeypatches / DialogoTamanhoDaFolha.exec acima).
+            confere_recorte = aba == "bordas" and rotulo == "tamanho..."
+            if confere_recorte:
+                pagina_antes = conferir.projeto.paginas[conferir.indice_pagina]
+                recorte_antes = pagina_antes.recorte
+
             if acionar(botao, rotulo):
                 ok += 1
             else:
                 falhas += 1
+
+            if confere_recorte:
+                pagina_depois = conferir.projeto.paginas[conferir.indice_pagina]
+                if pagina_depois.recorte == recorte_antes:
+                    ok += 1
+                    print(f"  ok    'tamanho...' nao mexeu no recorte do usuario "
+                          f"(continua {recorte_antes})")
+                else:
+                    falhas += 1
+                    print(f"  REGRESSAO: 'tamanho...' mudou o recorte do usuario "
+                          f"({recorte_antes} -> {pagina_depois.recorte})")
+                if pagina_depois.tamanho_folha_cm is None:
+                    falhas += 1
+                    print("  REGRESSAO: 'tamanho...' nao registrou tamanho_folha_cm")
+                else:
+                    ok += 1
+                    print(f"  ok    tamanho_folha_cm registrado: "
+                          f"{pagina_depois.tamanho_folha_cm}")
 
     print("\n--- cabecalho e rodape (conferir) ---")
     for botao in (conferir.botao_alertas, conferir.botao_desfazer, conferir.botao_refazer):

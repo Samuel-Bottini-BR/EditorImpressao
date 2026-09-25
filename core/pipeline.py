@@ -25,6 +25,7 @@ from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import Inclinacao, detectar_angulo, girar_90, rotacionar
 from core.filtros import ORIGINAL, aplicar_filtro, aplicar_filtro_com_selecao
+from core.folha import compor_na_folha
 from core.pdf_io import (
     DPI_PREVIA,
     dpi_real_da_pagina,
@@ -172,6 +173,31 @@ def _partes_da_folha(img: np.ndarray, folha: ConfigFolha) -> list[tuple[str, np.
 # Fase 2: gerar a imagem final de uma pagina
 # ---------------------------------------------------------------------------
 
+def preparar_para_recorte(
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina
+) -> np.ndarray:
+    """Gira e divide a folha, mas NUNCA corta bordas nem endireita.
+
+    É a base estável que a aba Bordas mostra enquanto o recorte está sendo
+    ajustado - bug real achado ao vivo (23/09/2026, Samuel): a aba usava a
+    MESMA prévia das outras abas, já cortada por `aplicar_recorte` (a que
+    `renderizar_pagina` gera) - o retângulo do recorte era então desenhado
+    como fração de uma imagem que JÁ era um recorte, e cada atualização
+    (ao soltar o mouse) reaplicava a fração em cima do resultado anterior,
+    encolhendo o corte sozinho a cada vez ("corto até a metade da coroa, mas
+    o corte vai pra frente"). Com a aba mostrando sempre esta versão
+    (girada/dividida, nunca cortada), o recorte sempre mapeia 1:1 para a
+    imagem original, sem compor com o recorte de antes.
+    """
+    img = img_folha
+    if folha.rotacao:
+        img = girar_90(img, folha.rotacao)
+    if folha.dividir and pagina.metade != METADE_INTEIRA:
+        esq, dir_ = dividir_imagem(img, folha.posicao_corte)
+        img = esq if pagina.metade == METADE_ESQUERDA else dir_
+    return img
+
+
 def preparar_metade(
     img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto
 ) -> np.ndarray:
@@ -180,14 +206,7 @@ def preparar_metade(
     O filtro fica de fora de proposito: ele e por página e a interface precisa
     trocar só ele sem refazer o resto.
     """
-    img = img_folha
-    if folha.rotacao:
-        img = girar_90(img, folha.rotacao)
-
-    # 1. dividir
-    if folha.dividir and pagina.metade != METADE_INTEIRA:
-        esq, dir_ = dividir_imagem(img, folha.posicao_corte)
-        img = esq if pagina.metade == METADE_ESQUERDA else dir_
+    img = preparar_para_recorte(img_folha, folha, pagina)
 
     # 2. cortar bordas
     if projeto.cortar_bordas:
@@ -267,7 +286,18 @@ def renderizar_pagina(
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, garantir_selecao(projeto, pagina, img),
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
+        algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
     )
+
+
+def renderizar_pagina_para_recorte(
+    doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA
+) -> np.ndarray:
+    """A imagem que a aba Bordas mostra enquanto o recorte está sendo
+    ajustado - girada e dividida, nunca cortada. Ver `preparar_para_recorte`."""
+    folha = projeto.folhas[pagina.folha]
+    img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
+    return preparar_para_recorte(img_folha, folha, pagina)
 
 
 # ---------------------------------------------------------------------------
@@ -344,9 +374,24 @@ def processar(
                         garantir_selecao(projeto, pagina, img),
                         pagina.forca_preto, pagina.clareza_melhorar,
                         pagina.intensidade_magico,
+                        algoritmo_pb=pagina.algoritmo_preto_branco,
+                        despeckle=pagina.despeckle,
                     )
                 else:
                     mono = False
+
+                # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
+                # conteudo (ja filtrado) dentro do tamanho de folha escolhido,
+                # com a margem branca ao redor - nunca antes daqui, porque
+                # `preparar_metade` tambem alimenta `avaliar.py` (a regua de
+                # qualidade dos filtros) e padding ali contaminaria as
+                # metricas. Sem `tamanho_folha_cm` (None, o padrao) devolve
+                # `img` sem nenhuma alteracao - comportamento de sempre.
+                img = compor_na_folha(
+                    img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
+                    escala=pagina.conteudo_escala,
+                    deslocamento=pagina.conteudo_deslocamento,
+                )
 
                 escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
                 del img

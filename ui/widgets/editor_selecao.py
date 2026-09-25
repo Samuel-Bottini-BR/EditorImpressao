@@ -29,6 +29,8 @@ from __future__ import annotations
 
 import cv2
 import numpy as np
+
+import atalhos
 from PySide6.QtCore import QPoint, QRect, Qt, Signal
 from PySide6.QtGui import (
     QColor,
@@ -112,6 +114,28 @@ ATALHOS_DAS_FERRAMENTAS = {
     FERRAMENTA_ZOOM: "Z",
     FERRAMENTA_MAO: "E",
 }
+
+# Registra cada ferramenta no registro único de atalhos (atalhos.py), para a
+# tela de Configurações poder listar e remapear - ver `tecla_da_ferramenta`.
+for _ferramenta, _tecla_padrao in ATALHOS_DAS_FERRAMENTAS.items():
+    atalhos.registrar(f"ferramenta_{_ferramenta}", NOMES_DAS_FERRAMENTAS[_ferramenta],
+                       _tecla_padrao)
+del _ferramenta, _tecla_padrao
+
+
+def tecla_da_ferramenta(ferramenta: str) -> str:
+    """A tecla de hoje para essa ferramenta - já considera remapeamento."""
+    return atalhos.tecla_atual(f"ferramenta_{ferramenta}") or \
+        ATALHOS_DAS_FERRAMENTAS.get(ferramenta, "")
+
+
+def ferramenta_da_tecla(tecla: str) -> str | None:
+    """A ferramenta de hoje ligada a essa tecla, ou None. Usa o atalho atual,
+    não o padrão - é o que faz o remapeamento funcionar de verdade."""
+    for ferramenta in FERRAMENTAS:
+        if tecla and tecla_da_ferramenta(ferramenta) == tecla:
+            return ferramenta
+    return None
 
 # A ordem da trilha. O traco entre a setima e a oitava separa as de MARCAR das
 # de NAVEGAR - sao coisas diferentes e nao devem parecer irmas.

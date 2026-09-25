@@ -14,7 +14,237 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -6 — Checkpoint de 22-23/09/2026 (leia isto primeiro, é o mais novo)
+# PARTE -7 — Checkpoint de 23-24/09/2026 (leia isto primeiro, é o mais novo)
+
+Sessão que começou testando os itens do checkpoint anterior (PARTE -6) e
+virou uma investigação de bug real, em duas rodadas. Resultado: **1 bug
+sério achado e corrigido de verdade (com causa raiz confirmada por
+reprodução, não só teoria), 3 testes de regressão novos, um `.exe` gerado e
+entregue ao Kaique (a pedido do Samuel, com um bug conhecido ainda dentro),
+e uma pasta de contexto montada na Área de Trabalho para o Samuel criar um
+projeto no Claude sobre este programa.** Nada commitado ainda — Samuel não
+testou esta rodada ao vivo até o fim desta sessão.
+
+## 1. Estado atual — o que é código só e o que já foi visto rodando
+
+**438 testes automáticos passando** (`pytest tests -q`, eram 434 no início
+desta sessão) — **nenhum item foi testado ao vivo pelo Samuel ainda**, só
+por reprodução isolada (scripts de investigação, ver seção 4) e pela suíte.
+
+1. **Bug real achado e corrigido: o recorte "comprimia" sozinho a cada
+   ajuste, em páginas com "tamanho da folha" definido.** O Samuel reportou
+   isso tentando testar o item 6 do checkpoint anterior (redimensionar
+   conteúdo) — descrição dele: "quando eu diminuo a linha verde ele corta
+   a própria folha branca", depois "eu cortei a folha só até a metade da
+   coroa, mas o corte vai pra frente" (a linha pulava de posição **assim que
+   soltava o mouse**, sozinha, sem ele arrastar de novo).
+   - **Causa raiz confirmada por reprodução direta** (script isolado, PDF
+     sintético, pipeline assíncrono real - não só teoria): a aba Bordas
+     mostrava a **mesma prévia já cortada** por `pagina.recorte` que
+     Marcar/Filtro usam (`renderizar_pagina` → `preparar_metade` →
+     `aplicar_recorte`). O retângulo do recorte era desenhado como fração
+     dessa imagem **já cortada** - cada vez que soltava o mouse, a prévia
+     recarregava com o corte novo já aplicado, e o retângulo recalculava a
+     MESMA fração em cima do resultado anterior. Um corte de 85% virava
+     85%×85% ≈ 72% na tela, comprimindo sozinho a cada ajuste - não era só
+     "recentralização", era um corte **duplicado**, que compunha a cada
+     atualização.
+   - **Mesma causa raiz também bagunçava `_escolher_tamanho_da_folha`**
+     (diálogo "tamanho...") **e** `_conferir_tamanho_da_folha` (o alerta de
+     "folha menor que o recorte") - os dois multiplicam a fração de
+     `pagina.recorte` em cima de `vis.tamanho_da_pagina_px()`, esperando o
+     tamanho da imagem ORIGINAL; com a prévia já cortada, isso também
+     aplicava o recorte em dobro nas contas de cm.
+   - **Corrigido de verdade**, não só "recentralizando": criada
+     `core.pipeline.preparar_para_recorte()` (gira e divide, NUNCA corta -
+     `preparar_metade` foi refatorada para reusá-la, comportamento externo
+     idêntico, testado) + `renderizar_pagina_para_recorte()` +
+     `GerenciadorPrevias.chave_para_recorte()`/`pegar_para_recorte()` +
+     `_TarefaPrevia._para_recorte()` (mesmo padrão de `_folha_crua`, prefixo
+     `f"{indice}:recorte:..."` para `invalidar(indice)` continuar
+     funcionando) + `TelaConferir._atualizar_previa_para_recorte()`. A aba
+     Bordas agora mostra a página girada/dividida **nunca cortada** enquanto
+     o recorte está sendo ajustado (fora do modo "Mover conteúdo") - o
+     retângulo sempre mapeia 1:1 pra imagem original, sem compor com o corte
+     de antes. A visão composta na folha (com margem branca) continua
+     existindo, só que agora fica reservada **só** para dentro do modo
+     "Mover conteúdo" (`_alternar_mover_conteudo` agora chama
+     `self.atualizar()` na hora de trocar, pra não mostrar por um instante o
+     retângulo em cima da imagem errada).
+   - **Achado durante a própria implementação, corrigido junto**:
+     `_previa_chegou` (o callback que redesenha quando uma prévia assíncrona
+     fica pronta) não reconhecia a nova chave `"...:recorte:..."` - sem essa
+     correção, a prévia nova carregava em segundo plano mas a tela nunca era
+     avisada pra redesenhar, ficando presa em "preparando..." pra sempre.
+     Fácil de não notar porque o cache às vezes já tinha a chave de uma
+     rodada anterior do teste.
+   - **Verificado por reprodução, duas vezes**: script isolado confirmou o
+     pulo ANTES da correção (retângulo saltando ~23px de 408px, ~5.6%) e a
+     ausência dele DEPOIS (diferença de 1px, arredondamento normal de
+     `round()`/`int()`, não o bug). Testado tanto em página SEM
+     `tamanho_folha_cm` quanto COM - o bug existia nos dois casos (a folha só
+     tornava mais fácil de perceber, pelas margens brancas visíveis e pelos
+     números em cm que a Fase 1 desta mesma sessão de trabalho já tinha
+     acrescentado).
+2. **`.exe` entregue ao Kaique** - a pedido explícito do Samuel, gerado a
+   partir do estado ATUAL do código (com sua confirmação de que sabia que
+   incluía o bug do redimensionar conteúdo ainda quebrado, ver PARTE -6). Ver
+   seção 2 abaixo, "instalador entregue antes da correção do recorte" - esse
+   `.exe` **não tem** a correção do item 1 acima.
+3. **Pasta de contexto montada** em
+   `C:\Users\fotog\Desktop\Editor de Impressao - Contexto para Claude\` -
+   reúne CLAUDE.md/PEDIDOS.md/PLANO-RETOMADA.md/o handoff inteiro/versões
+   antigas do handoff/os documentos originais do Samuel e do Kaique (`.docx`
+   de recapitulação, teste do Boécio, "kaique explica")/os mockups de layout
+   - pedido pelo Samuel pra criar um projeto novo no Claude sobre este
+   programa. Não é código nem regra do projeto, é só um output desta sessão.
+
+## 2. Decisões fechadas nesta sessão, e por quê
+
+- **Investigar o bug do recorte com reprodução direta antes de propor
+  qualquer correção** (`superpowers:systematic-debugging`) - a primeira
+  hipótese (era só "recentralização" ao mudar de folha) foi DESCARTADA por
+  reprodução real, que revelou algo mais grave (compressão/duplicação do
+  corte). Sem reproduzir de verdade, a correção teria sido rasa (só
+  ajustaria o "recentralizar", sem resolver o corte comprimindo sozinho).
+- **A aba Bordas passa a ter DUAS prévias diferentes, escolhidas pelo modo
+  do botão "Mover conteúdo"** - decisão de arquitetura pra resolver o bug
+  pela raiz: mostrar a imagem crua (nunca cortada) enquanto se edita o
+  RECORTE, e só compor na folha quando o modo é especificamente sobre
+  posicionar o conteúdo NA folha. Alternativa descartada: só "consertar a
+  matemática" da composição pra não recentralizar - impossível sem também
+  buscar a imagem crua, porque uma vez que a prévia SÓ tem os pixels já
+  cortados, não tem como desenhar "mais do scan original" ao redor pra
+  ajustar o corte de novo.
+- **`.exe` gerado do estado ATUAL (com o bug do redimensionar ainda dentro),
+  não do último commit** - pergunta feita explicitamente ao Samuel antes de
+  gerar (ver AskUserQuestion desta sessão), ele escolheu incluir o trabalho
+  desta sessão mesmo sabendo do bug.
+- **Não mexi em `_escolher_tamanho_da_folha`/`_conferir_tamanho_da_folha`
+  além do necessário** - achei que elas TAMBÉM sofrem de double-counting do
+  recorte quando chamadas DENTRO do modo "Mover conteúdo" especificamente
+  (fora desse modo, a correção do item 1 já resolve por tabela). Decidi não
+  mexer agora pra não estourar o escopo de uma correção já grande - fica
+  registrado como pendência conhecida na seção 5.
+
+## 3. Caminhos tentados e descartados, e por quê
+
+- **Hipótese inicial do Samuel sobre o item 6 (redimensionar conteúdo)**:
+  ele achava que a funcionalidade em si estava quebrada (sem alças visíveis).
+  Reproduzi o widget isolado E o pipeline completo (PDF real, prévia
+  assíncrona real) em MÚLTIPLOS cenários (com/sem composição, com/sem
+  margem) e as alças SEMPRE renderizaram certinho, pixel a pixel confirmado.
+  **Descartada**: o código de desenho das alças nunca teve bug - a causa era
+  outra (ver próximo item).
+- **Causa real do "sem alças"**: a página que o Samuel estava testando não
+  tinha `tamanho_folha_cm` definido (confirmado lendo o `projeto.json` salvo
+  do Boécio de verdade) - o botão "Mover conteúdo" estava desabilitado, e o
+  retângulo verde que ele via era o RECORTE normal (8 alças, cor verde), não
+  o retângulo de conteúdo (4 cantos, azul). Um print de tela resolveu a
+  dúvida de vez - **lição**: quando a reprodução por código não bate com o
+  relato do usuário, pedir print é mais rápido que multiplicar hipóteses.
+- **"Não deixar a aba Bordas usar cache nenhum, sempre recalcular na hora"**
+  - descartado antes de tentar: destruiria a resposta ao vivo do arrasto
+    (a mesma razão de existir do `GerenciadorPrevias` inteiro). A solução
+    certa era uma chave de cache NOVA e ESTÁVEL (que não depende de
+    `recorte`), não abandonar cache.
+
+## 4. Descobertas de comportamento real, caras de redescobrir
+
+- **`previas.pegar()` (a função geral, usada por Marcar/Filtro/Bordas) já
+  devolve a imagem COM `pagina.recorte` aplicado** (via
+  `renderizar_pagina` → `preparar_metade` → `aplicar_recorte`), porque essa
+  é "a imagem final, do jeito que ela vai sair" - correto para
+  Marcar/Filtro, mas ERRADO para uma aba de EDITAR o próprio recorte, que
+  precisa ver o que fica FORA do corte atual pra poder ajustar.
+- **`GerenciadorPrevias.invalidar(indice)` só limpa chaves que começam com
+  `f"{indice}:"`** - por isso a nova chave de recorte foi desenhada nesse
+  MESMO formato (`f"{indice}:recorte:..."`), pra continuar sendo invalidada
+  quando girar/dividir mudam. As chaves `"folha:..."` (usadas por "Onde
+  cortar") NÃO seguem esse formato e por isso NUNCA são invalidadas por
+  `_registrar` - achado como efeito colateral, não é bug meu, é
+  pré-existente; não mexi nisso (fora do escopo desta correção).
+- **`_previa_chegou` (o callback de "prévia ficou pronta, redesenha") tem uma
+  lista fixa de chaves que ele reconhece** (`chave()`, `chave_folha()`) -
+  qualquer chave nova de cache introduzida em `GerenciadorPrevias` PRECISA
+  ser adicionada aqui também, ou a tela fica esperando pra sempre uma prévia
+  que já chegou. Testado esquecendo esse passo de propósito (script de
+  reprodução travou em "carregando" pra sempre) e confirmando depois de
+  corrigir - fica registrado pra quem adicionar outro tipo de prévia no
+  futuro.
+- **Teste de widget isolado (`tests/test_visualizador.py`) nunca teria
+  achado este bug** - ele nunca refaz a prévia depois de soltar o mouse
+  (só chama `definir_recorte` uma vez, direto). O bug só aparece indo pelo
+  caminho REAL (sinal → `_registrar` → invalida cache → prévia assíncrona
+  nova → redesenha). Mesma lição que este projeto já tinha aprendido outras
+  vezes (teste simulado passa, uso real falha) - desta vez pegando o
+  PRÓPRIO mecanismo de recorte, não uma funcionalidade nova.
+- **`test_cartao_nao_espera_a_fila_de_previas_lenta` é instável rodando
+  dentro da suíte inteira** (falhou uma vez em ~94s de suíte completa,
+  passou sozinho e numa segunda rodada completa de 12s) - é um teste de
+  timing real com `QThreadPool`, sensível a quanto a máquina está ocupada
+  no momento. Não investigado a fundo (não é dessa sessão), só registrado
+  pra não confundir quem rodar a suíte de novo e ver falhar uma vez.
+
+## 5. Perguntas em aberto / pendências
+
+- **O Samuel ainda não testou ao vivo a correção do recorte** (seção 1,
+  item 1) - próximo passo óbvio, ver seção 6.
+- **`_escolher_tamanho_da_folha`/`_conferir_tamanho_da_folha` ainda podem
+  ter double-counting do recorte quando chamadas DENTRO do modo "Mover
+  conteúdo"** (fora desse modo, já corrigido por tabela nesta sessão) -
+  achado durante a investigação, não confirmado por reprodução, não
+  corrigido de propósito (fora do escopo desta correção). Vale investigar
+  se for mexer de novo em "tamanho da folha"/"Mover conteúdo".
+- **Pergunta antiga do checkpoint anterior (PARTE -6, ainda sem resposta):
+  ímã de tamanho ao redimensionar conteúdo** ("gruda em 100%" ou "gruda
+  quando cabe na largura da folha") - não retomada nesta sessão, que virou
+  outra coisa.
+- **Pergunta antiga, a mais importante do projeto, ainda sem resposta desde
+  18/07/2026: o programa já substitui o CamScanner do Kaique de verdade?**
+  (Bloco 10 do `PEDIDOS.md`). Não perguntada de novo nesta sessão.
+- **`PEDIDOS.md` continua com ZERO itens aprovados** (`[x]`) em todos os 11
+  blocos, confirmado relendo o arquivo nesta sessão - a Fase 4 (varredura
+  bloco a bloco com o Samuel) nunca começou de verdade.
+
+## 6. Próximo passo recomendado
+
+1. Samuel abre pelo atalho "Editor de Impressao (desenvolvimento)", vai na
+   aba Bordas de uma página com "tamanho da folha" definida, arrasta a
+   borda do recorte, solta, e confere se o corte fica onde ele largou o
+   mouse (sem pular).
+2. Se aprovado: commitar (múltiplas frentes acumuladas - vale separar em
+   mais de um commit, ex.: a correção do recorte separada do resto do
+   trabalho de 22-23/09 que já estava pendente).
+3. Considerar registrar o achado de
+   `_escolher_tamanho_da_folha`/`_conferir_tamanho_da_folha` (seção 5) no
+   `PEDIDOS.md`, pra não se perder.
+4. Depois disso, a fila de sempre: retomar a Fase 4 (varredura do
+   `PEDIDOS.md`, Bloco 1 e Bloco 4 primeiro) ou o veredito do CamScanner
+   (Bloco 10) - nenhum dos dois foi tocado nesta sessão.
+
+## Como rodar e testar (confirmado nesta sessão, 23-24/09/2026)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q          # 438 passed, confirmado (2x)
+.venv\Scripts\python.exe -m pytest tests/test_pipeline_folha.py tests/test_previa_composta.py -v
+                                                        # os testes novos/ajustados desta sessão
+```
+
+Abrir de verdade: fechar qualquer janela "Editor de Impressão" já aberta,
+depois atalho "Editor de Impressao (desenvolvimento)" (ou
+`.venv\Scripts\pythonw.exe main.py`).
+
+## Ambiente - nada novo instalado nesta sessão
+
+Nenhuma dependência nova. `winrar`/`Rar.exe` (já instalado,
+`C:\Program Files\WinRAR\`) foi usado pra compactar o `.exe` entregue ao
+Kaique - achado nesta sessão, não precisou instalar nada.
+
+---
+
+# PARTE -6 — Checkpoint de 22-23/09/2026
 
 Sessão longa, em duas pontas (uma foi fechada sem querer no meio, retomada por
 reconstrução de log — ver seção 6). Resultado: **3 bugs reais corrigidos, 1

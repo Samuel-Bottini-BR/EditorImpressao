@@ -19,7 +19,6 @@ from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
 from ui.widgets.editor_selecao import (
-    ATALHOS_DAS_FERRAMENTAS,
     FERRAMENTA_COR,
     FERRAMENTA_ELIPSE,
     FERRAMENTA_LACO,
@@ -31,6 +30,7 @@ from ui.widgets.editor_selecao import (
     FERRAMENTA_ZOOM,
     NOMES_DAS_FERRAMENTAS,
     ORDEM_DA_TRILHA,
+    tecla_da_ferramenta,
 )
 
 LARGURA = 42          # do desenho aprovado
@@ -150,7 +150,7 @@ class TrilhaFerramentas(QWidget):
         fonte.setPointSize(7)
         pintor.setFont(fonte)
         pintor.drawText(QRect(0, topo + lado + 4, LARGURA, 12), Qt.AlignCenter,
-                        ATALHOS_DAS_FERRAMENTAS[ferramenta])
+                        tecla_da_ferramenta(ferramenta))
 
     def _desenhar_icone(self, pintor: QPainter, ferramenta: str,
                         x: int, y: int, lado: int = LADO_DO_ICONE) -> None:
@@ -230,7 +230,7 @@ class TrilhaFerramentas(QWidget):
             self.update()
         if sob:
             self.setToolTip(
-                f"{NOMES_DAS_FERRAMENTAS[sob]}  ({ATALHOS_DAS_FERRAMENTAS[sob]})")
+                f"{NOMES_DAS_FERRAMENTAS[sob]}  ({tecla_da_ferramenta(sob)})")
         else:
             self.setToolTip("")
 
