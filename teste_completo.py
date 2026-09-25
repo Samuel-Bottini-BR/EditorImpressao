@@ -135,6 +135,7 @@ CASOS = [
 
 
 def _rotular(img: np.ndarray, texto: str, altura: int = 460) -> np.ndarray:
+    """Reduz a imagem a uma altura fixa e cola uma faixa branca com o texto em cima."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     h, w = img.shape[:2]
@@ -148,6 +149,7 @@ def _rotular(img: np.ndarray, texto: str, altura: int = 460) -> np.ndarray:
 
 
 def _lado_a_lado(pedacos: list[np.ndarray]) -> np.ndarray:
+    """Junta os pedacos numa unica imagem horizontal, com 10 px de folga entre eles."""
     largura = sum(p.shape[1] for p in pedacos) + 10 * (len(pedacos) - 1)
     altura = max(p.shape[0] for p in pedacos)
     tela = np.full((altura, largura, 3), 255, np.uint8)
@@ -159,6 +161,8 @@ def _lado_a_lado(pedacos: list[np.ndarray]) -> np.ndarray:
 
 
 def _marcado(img: np.ndarray, selecao) -> np.ndarray:
+    """A pagina com a marcacao por cima: vermelho gravura, azul letra (mesma
+    convencao de cor de avaliar_selecao.desenhar)."""
     altura, largura = img.shape[:2]
     saida = img.copy()
     for tipo, cor in ((GRAVURA, (60, 60, 200)), (LETRA, (200, 90, 40))):
@@ -347,6 +351,11 @@ def parte_5_bugs(destino: Path) -> tuple[list[str], bool]:
 
 
 def main() -> int:
+    """Roda as cinco partes (filtros sozinhos, selecao sozinha, os dois
+    juntos, ferramentas, casos de falha), confere a sequencia dos cadernos e
+    monta um relatorio unico (md/html/pdf) com tudo, numa pasta nova dentro
+    de TESTES EDITOR DE IMPRESSAO - copiando o instalador para dentro dela,
+    se ja tiver sido gerado."""
     if not PAGINAS.is_dir() or not any(PAGINAS.glob("*.png")):
         print(f"Nao achei as paginas em {PAGINAS}.")
         print("Rode antes: .venv\\Scripts\\python.exe avaliar_selecao.py")

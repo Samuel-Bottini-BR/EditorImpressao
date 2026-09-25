@@ -1,4 +1,11 @@
-"""TELA 2 - O que fazer: as caixinhas do que o programa deve fazer."""
+"""TELA 2 - O que fazer: as caixinhas do que o programa deve fazer.
+
+Cada caixinha (dividir, limpar, endireitar, cortar, montar cadernos) liga a um
+campo de `Projeto` (modelos.py) em tempo real - _mudou() e chamado a cada
+clique e escreve direto no projeto, sem botao "aplicar" separado. O resumo em
+portugues embaixo (core.pipeline.resumo_em_portugues) e o que confirma para a
+pessoa o que ela acabou de marcar, sem jargao.
+"""
 
 from __future__ import annotations
 
@@ -35,10 +42,15 @@ OPCOES_CADERNO = [8, 12, 16, 20, 24, 32, 40]
 
 
 class TelaOpcoes(QWidget):
+    """A tela de "o que fazer": caixinhas de escolha + prevalidacao do PDF."""
+
     voltar = Signal()
     conferir = Signal()
 
     def __init__(self, parent=None) -> None:
+        """Monta as duas colunas: as caixinhas de escolha a esquerda, o
+        folhear do PDF de entrada a direita (ver FolhearPDF e o comentario
+        abaixo sobre por que as duas colunas existem)."""
         super().__init__(parent)
         self.projeto: Projeto | None = None
         self.total_folhas = 0
@@ -140,6 +152,7 @@ class TelaOpcoes(QWidget):
     # --- montagem ---------------------------------------------------------
 
     def _caixa(self, titulo: str, explicacao: str, destino: QVBoxLayout) -> QCheckBox:
+        """Uma caixinha de marcar com a explicacao em portugues simples embaixo."""
         bloco = QVBoxLayout()
         bloco.setSpacing(1)
         caixa = QCheckBox(titulo)
@@ -152,6 +165,8 @@ class TelaOpcoes(QWidget):
         return caixa
 
     def _montar_filtros(self) -> QWidget:
+        """Painel de radio-buttons com os quatro filtros (FILTROS_NA_TELA).
+        So aparece quando "Limpar a folha" esta marcada - ver _mudou."""
         painel = QWidget()
         grade = QGridLayout(painel)
         grade.setContentsMargins(34, 6, 0, 6)
@@ -172,6 +187,8 @@ class TelaOpcoes(QWidget):
         return painel
 
     def _montar_caderno(self) -> QWidget:
+        """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
+        esta marcada - ver _mudou."""
         painel = QWidget()
         linha = QHBoxLayout(painel)
         linha.setContentsMargins(34, 4, 0, 4)
@@ -188,6 +205,9 @@ class TelaOpcoes(QWidget):
     # --- uso --------------------------------------------------------------
 
     def carregar(self, projeto: Projeto, total_folhas: int) -> None:
+        """Preenche a tela com o projeto escolhido: cada caixinha volta ao
+        valor salvo, e o folhear abre o PDF de entrada para a pessoa ver antes
+        de marcar o que fazer."""
         self.projeto = projeto
         self.total_folhas = total_folhas
 
@@ -221,6 +241,7 @@ class TelaOpcoes(QWidget):
         self.conferir.emit()
 
     def _filtro_escolhido(self) -> str:
+        """O filtro marcado no grupo de radio-buttons, ou Preto e branco por padrão."""
         for botao in self.grupo_filtros.buttons():
             if botao.isChecked():
                 return str(botao.property("filtro"))
@@ -250,6 +271,7 @@ class TelaOpcoes(QWidget):
 
 
 def _separador() -> QFrame:
+    """Uma linha horizontal fina, para separar os blocos de opcao."""
     linha = QFrame()
     linha.setFrameShape(QFrame.HLine)
     linha.setStyleSheet("color: #e5e7eb; margin: 4px 0;")

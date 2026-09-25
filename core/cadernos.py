@@ -100,15 +100,18 @@ def montar_ordem(total_paginas: int, paginas_por_caderno: int) -> list[Lado]:
 
 
 def _existe(indice: int | None, total: int) -> bool:
+    """Indice valido (nao None e dentro do livro)? Usado para virar branco."""
     return indice is not None and 0 <= indice < total
 
 
 def contar_cadernos(total_paginas: int, paginas_por_caderno: int) -> int:
+    """Quantos cadernos o livro inteiro precisa, arredondando para cima."""
     n = paginas_por_caderno_valido(paginas_por_caderno)
     return max(1, -(-total_paginas // n))  # divisao para cima
 
 
 def folhas_por_caderno(paginas_por_caderno: int) -> int:
+    """Quantas folhas de papel fisico formam um caderno (4 paginas por folha)."""
     return paginas_por_caderno_valido(paginas_por_caderno) // 4
 
 

@@ -19,6 +19,8 @@ _falhas = 0
 
 
 def esperar(segundos: float, condicao=None) -> bool:
+    """Bombeia o loop de eventos do Qt ate `segundos` passarem ou `condicao`
+    ficar verdadeira (o que vier primeiro). Devolve se a condicao foi atendida."""
     fim = time.perf_counter() + segundos
     while time.perf_counter() < fim:
         QApplication.processEvents()
@@ -29,6 +31,7 @@ def esperar(segundos: float, condicao=None) -> bool:
 
 
 def checar(descricao: str, condicao: bool, detalhe: str = "") -> None:
+    """Imprime ok/FALHA para uma checagem e soma no contador global de falhas."""
     global _falhas
     if condicao:
         print(f"  ok    {descricao}" + (f"  ({detalhe})" if detalhe else ""))
@@ -38,17 +41,25 @@ def checar(descricao: str, condicao: bool, detalhe: str = "") -> None:
 
 
 def capturar(janela, nome: str) -> None:
+    """Tira um print da janela e grava em SAIDA/<nome>.png."""
     QApplication.processEvents()
     janela.grab().save(str(SAIDA / f"{nome}.png"))
     print(f"        captura: {nome}.png")
 
 
 def tecla(alvo, chave) -> None:
+    """Simula uma tecla pressionada (sem modificador) direto no widget - mais
+    confiavel que mandar o evento pela fila do Qt num teste automatizado."""
     alvo.keyPressEvent(QKeyEvent(QEvent.KeyPress, chave, Qt.NoModifier))
     QApplication.processEvents()
 
 
 def main(caminho_pdf: str) -> int:
+    """Abre o programa de verdade e confere a tela ampliada de ponta a ponta:
+    carregamento em DPI maior, zoom (botão, roda do mouse, teto), arrasto,
+    troca de filtro por atalho, modo comparar (zoom/posicao amarrados), Esc
+    fecha, navegar entre páginas, e - no modo de cortar folha - que a linha
+    de corte continua arrastavel e acompanha o zoom."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     app = QApplication(sys.argv)
 

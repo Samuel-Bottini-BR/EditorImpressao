@@ -54,6 +54,11 @@ class TelaAmpliada(QDialog):
     fechou = Signal()
 
     def __init__(self, conferir, modo: str = MODO_FILTRO, parent=None) -> None:
+        """conferir e a TelaConferir dona: esta janela nao guarda projeto nem
+        cache proprio, so pede tudo emprestado dela (self.conferir.previas,
+        self.conferir.projeto etc). modo decide o que a tela mostra e edita -
+        filtro, corte da lombada (MODO_CORTAR) ou recorte de bordas
+        (MODO_BORDAS)."""
         super().__init__(parent or conferir)
         self.conferir = conferir
         self.modo = modo
@@ -210,6 +215,7 @@ class TelaAmpliada(QDialog):
     # ------------------------------------------------------------------
 
     def _modo_do_visualizador(self) -> str:
+        """Traduz o modo da tela ampliada para o modo do Visualizador (widget)."""
         if self.modo == MODO_CORTAR:
             return MODO_CORTE
         if self.modo == MODO_BORDAS:
@@ -221,11 +227,13 @@ class TelaAmpliada(QDialog):
         return self.conferir.projeto
 
     def _indice(self) -> int:
+        """Indice atual - de folha (MODO_CORTAR) ou de pagina (outros modos)."""
         if self.modo == MODO_CORTAR:
             return self.conferir.indice_folha
         return self.conferir.indice_pagina
 
     def _total(self) -> int:
+        """Quantas folhas ou paginas existem, de acordo com o modo atual."""
         if self.projeto is None:
             return 0
         if self.modo == MODO_CORTAR:
@@ -237,6 +245,9 @@ class TelaAmpliada(QDialog):
     # ------------------------------------------------------------------
 
     def atualizar(self) -> None:
+        """Redesenha imagem(ns) e rotulos a partir do estado atual do conferir.
+        Ponto de entrada chamado apos qualquer navegacao, troca de filtro ou
+        chegada de previa nova. Nunca deixa excecao fechar a janela (regra 3.3)."""
         if self.projeto is None or self.conferir.previas is None:
             return
         try:
@@ -246,6 +257,8 @@ class TelaAmpliada(QDialog):
             registrar_erro("tela_ampliada.atualizar", traceback.format_exc())
 
     def _atualizar_imagens(self) -> None:
+        """Busca a previa em DPI_AMPLIADA (na cache do gerenciador, pede se
+        faltar) e a poe no(s) visualizador(es)."""
         previas = self.conferir.previas
 
         if self.modo == MODO_CORTAR:
@@ -289,6 +302,7 @@ class TelaAmpliada(QDialog):
         return saida
 
     def _atualizar_rotulos(self) -> None:
+        """Atualiza o texto de página/filtro/zoom e o estado dos botões < >."""
         indice = self._indice()
         unidade = "Folha" if self.modo == MODO_CORTAR else "Página"
         self.rotulo_pagina.setText(f"{unidade} {indice + 1} de {self._total()}")
@@ -371,6 +385,8 @@ class TelaAmpliada(QDialog):
     # ------------------------------------------------------------------
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802
+        """Atalhos de teclado: Esc fecha, setas navegam, +/- e 0 controlam
+        zoom, 1-4 trocam de filtro (exceto no modo de cortar folha)."""
         tecla = evento.key()
 
         if tecla == Qt.Key_Escape:
@@ -403,6 +419,8 @@ class TelaAmpliada(QDialog):
         super().keyPressEvent(evento)
 
     def closeEvent(self, evento) -> None:  # noqa: N802
+        """Desliga o sinal de prévia antes de fechar, para uma prévia que
+        chegue depois nao tentar redesenhar uma janela ja destruida."""
         try:
             if self.conferir.previas is not None:
                 self.conferir.previas.pronta.disconnect(self._previa_chegou)

@@ -109,6 +109,7 @@ class Caso:
 
 
 def _fracao(selecao, altura: int, largura: int, tipo: str) -> float:
+    """Que fracao da pagina inteira esta marcada com este tipo (0.0 a 1.0)."""
     return float(selecao.mascara(altura, largura, tipo).mean())
 
 
@@ -186,6 +187,11 @@ def julgar(caso: Caso, gravura: float, letra: float, respingos: int,
 
 
 def medir(caso: Caso, pasta: Path) -> dict[str, Any]:
+    """Roda o detector numa pagina do acervo e julga o resultado contra o `Caso`.
+
+    Devolve um dicionario com {"erro": ...} se a imagem nao existir/nao abrir,
+    ou com as medidas (gravura, letra, respingos, faixas, erros) caso contrario.
+    """
     caminho = pasta / caso.arquivo
     if not caminho.exists():
         return {"caso": caso, "erro": f"nao achei {caso.arquivo}"}
@@ -317,6 +323,8 @@ def desenhar(img: np.ndarray, selecao) -> np.ndarray:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Mede todos os CASOS, grava relatorios/selecao (md/html/pdf) e as amostras
+    marcadas em relatorios/selecao/, e devolve 1 se algum caso reprovou."""
     argv = list(sys.argv[1:] if argv is None else argv)
     pasta = Path(argv[0]) if argv else (RAIZ / "saida-avaliacao" / "paginas")
     destino = PASTA_RELATORIOS / "selecao"

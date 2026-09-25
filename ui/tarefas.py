@@ -69,9 +69,15 @@ class TarefaAnalise(QThread):
         self._cancelar = False
 
     def cancelar(self) -> None:
+        """Pede para a analise parar. E so uma bandeira - quem checa e o
+        callback `cancelado` passado a analisar_projeto, entre uma pagina e
+        outra, o que faz o cancelar responder rapido sem interromper no meio
+        de uma pagina."""
         self._cancelar = True
 
     def run(self) -> None:
+        """Ponto de entrada da QThread. Nunca deixa excecao escapar: registra
+        no log e emite `falhou` com mensagem em portugues (regra 3.3)."""
         try:
             resultado = analisar_projeto(
                 self.projeto,
@@ -101,9 +107,13 @@ class TarefaProcessar(QThread):
         self._cancelar = False
 
     def cancelar(self) -> None:
+        """Pede para o processamento parar entre uma página e outra (mesma
+        logica de TarefaAnalise.cancelar)."""
         self._cancelar = True
 
     def run(self) -> None:
+        """Ponto de entrada da QThread: gera o PDF final e emite concluida/
+        cancelada/falhou conforme o resultado."""
         try:
             caminho = processar(
                 self.projeto,
@@ -119,11 +129,16 @@ class TarefaProcessar(QThread):
 
 
 class _SinaisPrevia(QObject):
+    """Sinais de uma tarefa de prévia. Existe separado de _TarefaPrevia porque
+    QRunnable nao e QObject e nao pode emitir sinal Qt sozinho."""
+
     pronta = Signal(str, object)   # chave, imagem numpy
     falhou = Signal(str)
 
 
 class _SinaisCartoes(QObject):
+    """Mesma ideia de _SinaisPrevia, para as tarefas de cartao de filtro."""
+
     prontos = Signal(int, dict)   # indice_pagina, {chave_filtro: imagem}
 
 
@@ -149,6 +164,9 @@ class _TarefaCartoes(QRunnable):
         self.sinais = sinais
 
     def run(self) -> None:
+        """Aplica cada filtro pedido na amostra e emite todos de uma vez.
+        Falha silenciosa (so vira log): o cartao so fica "preparando..." e a
+        tela continua funcionando."""
         from core.filtros import aplicar_filtro
 
         resultados: dict[str, np.ndarray] = {}
@@ -177,6 +195,8 @@ class _TarefaPrevia(QRunnable):
         self.sinais = sinais
 
     def run(self) -> None:
+        """Renderiza a pagina (ou a folha crua) e emite o resultado pelo
+        sinal - nunca levanta excecao para fora, so registra e emite falhou."""
         try:
             if self.chave.startswith("folha:"):
                 self._folha_crua()
@@ -247,6 +267,8 @@ class GerenciadorPrevias(QObject):
     cartoes_prontos = Signal(int, dict)
 
     def __init__(self, caminho_pdf: str, projeto: Projeto, parent=None) -> None:
+        """Cria os dois pools (prévias e cartões, separados de propósito -
+        ver o comentário abaixo) e as filas de sinal/cache vazias."""
         super().__init__(parent)
         self.caminho_pdf = caminho_pdf
         self.projeto = projeto
@@ -308,6 +330,7 @@ class GerenciadorPrevias(QObject):
         return None
 
     def pedir(self, indice: int, dpi: int) -> None:
+        """Poe na fila do pool, se ainda nao estiver no cache nem ja pedida."""
         chave = self.chave(indice, dpi)
         if chave in self._cache or chave in self._pedidas:
             return
@@ -353,6 +376,7 @@ class GerenciadorPrevias(QObject):
     # --- folha crua (aba "Onde cortar") -----------------------------------
 
     def chave_folha(self, indice: int, dpi: int) -> str:
+        """Chave de cache da folha crua (aba "Onde cortar"): so muda com o giro manual."""
         rotacao = (
             self.projeto.folhas[indice].rotacao
             if 0 <= indice < len(self.projeto.folhas) else 0
@@ -360,6 +384,7 @@ class GerenciadorPrevias(QObject):
         return f"folha:{indice}:{dpi}:{rotacao}"
 
     def pegar_folha(self, indice: int, dpi: int) -> np.ndarray | None:
+        """Equivalente a `pegar`, mas para a folha crua (sem processamento)."""
         chave = self.chave_folha(indice, dpi)
         if chave in self._cache:
             self._promover(chave)
@@ -372,6 +397,7 @@ class GerenciadorPrevias(QObject):
         return None
 
     def pre_carregar_folhas(self, indice: int, dpi: int, quantas: int = 3) -> None:
+        """Adianta as próximas folhas cruas enquanto a pessoa olha a atual."""
         for salto in range(1, quantas + 1):
             if indice + salto < len(self.projeto.folhas):
                 self.pegar_folha(indice + salto, dpi)
@@ -395,6 +421,7 @@ class GerenciadorPrevias(QObject):
     # --- interno ----------------------------------------------------------
 
     def _guardar(self, chave: str, img: np.ndarray) -> None:
+        """Poe no cache e descarta a mais antiga se passar de TAMANHO_CACHE (LRU simples)."""
         self._pedidas.discard(chave)
         self._cache[chave] = img
         self._ordem.append(chave)
@@ -404,14 +431,20 @@ class GerenciadorPrevias(QObject):
         self.pronta.emit(chave, img)
 
     def _esquecer_pedido(self, chave: str) -> None:
+        """Tira da lista de 'ja pedidas' quando uma previa falha, para poder pedir de novo."""
         self._pedidas.discard(chave)
 
     def _promover(self, chave: str) -> None:
+        """Move a chave para o fim da fila de LRU (foi usada agora, entao e a
+        ultima que deve sair quando o cache lotar)."""
         if chave in self._ordem:
             self._ordem.remove(chave)
             self._ordem.append(chave)
 
     def parar(self) -> None:
+        """Esvazia as filas e espera as tarefas em andamento (ate 3s cada).
+        Chamar ao trocar de livro ou fechar, para nao deixar thread orfa
+        escrevendo num projeto que ja foi trocado."""
         self._pool.clear()
         self._pool_cartoes.clear()
         self._pool.waitForDone(3000)

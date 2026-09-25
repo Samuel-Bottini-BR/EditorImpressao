@@ -29,7 +29,15 @@ INICIO, OPCOES, PROGRESSO, CONFERIR, FINAL = range(5)
 
 
 class JanelaPrincipal(QMainWindow):
+    """A janela unica do programa: um QStackedWidget com as cinco telas do
+    fluxo (ver INICIO..FINAL acima) e a orquestracao entre elas - abrir livro,
+    disparar analise e processamento em thread, salvar sozinho, etc.
+    Nao ha varias janelas nem dialogo modal para o fluxo principal: trocar de
+    tela e so mudar o indice do QStackedWidget."""
+
     def __init__(self) -> None:
+        """Cria as cinco telas, liga os sinais entre elas e monta o menu.
+        Comeca sempre na tela de INICIO."""
         super().__init__()
         self.setWindowTitle("Editor de Impressão")
         self.setMinimumSize(1000, 680)
@@ -143,6 +151,7 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
 
     def _tela_mudou(self, indice: int) -> None:
+        """So a tela de Conferir usa o menu completo; nas outras ele fica apagado."""
         if not hasattr(self, "menu"):
             return
         if indice == CONFERIR:
@@ -151,6 +160,8 @@ class JanelaPrincipal(QMainWindow):
             self.menu.mostrar_tela_inicial()
 
     def _escolher_pasta_de_saida(self) -> None:
+        """Item de menu "Escolher a pasta de saída...": so lembra a pasta
+        padrao, quem decide o destino de verdade e a janela de confirmacao."""
         from PySide6.QtWidgets import QFileDialog
 
         if self.projeto is None:
@@ -163,6 +174,8 @@ class JanelaPrincipal(QMainWindow):
             self.avisar(f"O livro pronto vai para:\n{pasta}", titulo="Pasta escolhida")
 
     def _escolher_nome_do_arquivo(self) -> None:
+        """Item de menu "Nome do arquivo...": pede o nome e ja monta o caminho
+        de saida completo com a pasta atual (ou a sugerida)."""
         from PySide6.QtWidgets import QInputDialog, QLineEdit
 
         from modelos import nome_de_saida_sugerido
@@ -181,6 +194,7 @@ class JanelaPrincipal(QMainWindow):
             self.projeto.caminho_saida = str(Path(pasta) / novo.strip())
 
     def _perguntar_a_pagina(self) -> None:
+        """Item de menu "Ir para a página...": pede o número e pula direto."""
         from PySide6.QtWidgets import QInputDialog
 
         if self.projeto is None or not self.projeto.paginas:
@@ -224,6 +238,10 @@ class JanelaPrincipal(QMainWindow):
     # ------------------------------------------------------------------
 
     def abrir_livro(self, caminho: str) -> None:
+        """Ponto de entrada de "abrir um livro novo": valida o PDF, cria (ou
+        recupera) o Projeto e o resumo em disco, e vai para a tela de Opções.
+        Chamada tambem por _continuar_projeto/_recomecar_projeto, que so
+        preenchem o Projeto com o que ja estava salvo depois desta abertura."""
         try:
             doc = abrir_pdf(caminho)
             try:
@@ -300,6 +318,8 @@ class JanelaPrincipal(QMainWindow):
     # --- analise ----------------------------------------------------------
 
     def analisar(self) -> None:
+        """Dispara a análise (dividir/endireitar/recorte/alertas) numa
+        TarefaAnalise em QThread - a interface nunca congela (regra 3)."""
         if self.projeto is None:
             return
         self.tela_progresso.comecar("Olhando o livro...")
@@ -379,12 +399,15 @@ class JanelaPrincipal(QMainWindow):
         self.telas.setCurrentIndex(OPCOES)
 
     def _falhou_na_analise(self, mensagem: str) -> None:
+        """Analise deu erro: volta para Opções e mostra o aviso amigavel (regra 3.3)."""
         self.telas.setCurrentIndex(OPCOES)
         self.avisar(mensagem)
 
     # --- processamento ----------------------------------------------------
 
     def processar(self) -> None:
+        """Ponto de entrada de "Confirmar e processar": pede o destino (com a
+        janela de confirmacao) e dispara TarefaProcessar em QThread."""
         if self.projeto is None:
             return
 
@@ -459,6 +482,8 @@ class JanelaPrincipal(QMainWindow):
         return None
 
     def _processamento_pronto(self, caminho: str) -> None:
+        """PDF gravado: registra no histórico e mostra a tela Pronto com o
+        número certo de páginas DO LIVRO (ver comentário abaixo sobre cadernos)."""
         assert self.projeto is not None
         try:
             import fitz
@@ -483,16 +508,21 @@ class JanelaPrincipal(QMainWindow):
         self.telas.setCurrentIndex(FINAL)
 
     def _falhou_no_processamento(self, mensagem: str) -> None:
+        """Processamento deu erro: volta para Conferir (o projeto continua
+        intacto) e mostra o aviso amigavel."""
         self.telas.setCurrentIndex(CONFERIR)
         self.avisar(mensagem)
 
     def cancelar(self) -> None:
+        """Botão "cancelar" da tela de progresso: pede pra thread parar e volta
+        para Conferir (se ja havia analise) ou Opções."""
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
         destino = CONFERIR if self.projeto and self.projeto.paginas else OPCOES
         self.telas.setCurrentIndex(destino)
 
     def _recomecar(self) -> None:
+        """Botão "fazer outro" da tela final: volta para o inicio."""
         self.tela_inicio.recarregar()
         self.telas.setCurrentIndex(INICIO)
 
@@ -501,6 +531,8 @@ class JanelaPrincipal(QMainWindow):
     # ------------------------------------------------------------------
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802
+        """Repassa a tecla para a tela de Conferir tratar primeiro (setas,
+        atalhos de filtro etc); só cai no comportamento padrão do Qt se ela nao usar."""
         if self.telas.currentIndex() == CONFERIR:
             if self.tela_conferir.tratar_tecla(evento):
                 evento.accept()

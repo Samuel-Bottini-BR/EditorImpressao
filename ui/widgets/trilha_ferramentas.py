@@ -59,6 +59,7 @@ class TrilhaFerramentas(QWidget):
     escolhida = Signal(str)
 
     def __init__(self, parent=None) -> None:
+        """Comeca com o Retangulo escolhido e sem rolagem."""
         super().__init__(parent)
         self.setFixedWidth(LARGURA)
         self.setMouseTracking(True)
@@ -73,6 +74,7 @@ class TrilhaFerramentas(QWidget):
     # --- estado -----------------------------------------------------------
 
     def definir_ferramenta(self, ferramenta: str) -> None:
+        """Marca a ferramenta escolhida (por fora, ex.: atalho de teclado) e redesenha."""
         if ferramenta in ORDEM_DA_TRILHA and ferramenta != self.ferramenta:
             self.ferramenta = ferramenta
             self.update()
@@ -89,13 +91,16 @@ class TrilhaFerramentas(QWidget):
         return int(max(ALTURA_MINIMA_DO_ITEM, min(ALTURA_DO_ITEM, cabe)))
 
     def _lado_do_icone(self) -> int:
+        """Tamanho do icone, acompanhando a altura do item (com um piso legivel)."""
         return int(max(LADO_MINIMO_DO_ICONE,
                        min(LADO_DO_ICONE, self._altura_do_item() - 16)))
 
     def _altura_total(self) -> int:
+        """Altura que a trilha inteira ocupa (margens + as nove + o traco separador)."""
         return 10 + len(ORDEM_DA_TRILHA) * self._altura_do_item() + 10 + 10
 
     def _rolagem_maxima(self) -> int:
+        """Quanto da pra rolar (0 se a trilha inteira ja cabe na altura disponivel)."""
         return max(0, self._altura_total() - self.height())
 
     def _posicao_de(self, indice: int) -> int:
@@ -105,6 +110,7 @@ class TrilhaFerramentas(QWidget):
                 - self._deslocamento)
 
     def _ferramenta_em(self, y: int) -> str | None:
+        """Qual ferramenta esta desenhada na coordenada y (para clique e hover)."""
         altura = self._altura_do_item()
         for indice, ferramenta in enumerate(ORDEM_DA_TRILHA):
             topo = self._posicao_de(indice)
@@ -115,6 +121,8 @@ class TrilhaFerramentas(QWidget):
     # --- desenho ----------------------------------------------------------
 
     def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Desenha o fundo, a borda direita e cada ferramenta (com o traco
+        separador antes do item SEPARA_DEPOIS_DE)."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
         pintor.fillRect(self.rect(), QColor(FUNDO))
@@ -129,6 +137,7 @@ class TrilhaFerramentas(QWidget):
             self._desenhar_item(pintor, ferramenta, topo)
 
     def _desenhar_item(self, pintor: QPainter, ferramenta: str, topo: int) -> None:
+        """Um item da trilha: fundo (escolhido/hover), icone e a letra do atalho embaixo."""
         escolhida = ferramenta == self.ferramenta
         altura = self._altura_do_item()
         lado = self._lado_do_icone()
@@ -154,6 +163,8 @@ class TrilhaFerramentas(QWidget):
 
     def _desenhar_icone(self, pintor: QPainter, ferramenta: str,
                         x: int, y: int, lado: int = LADO_DO_ICONE) -> None:
+        """Desenha o icone de UMA ferramenta a mao (QPainterPath/linhas simples,
+        nunca emoji - regra 3 do CLAUDE.md)."""
         meio = QPoint(x + lado // 2, y + lado // 2)
 
         if ferramenta == FERRAMENTA_RETANGULO:
@@ -216,6 +227,7 @@ class TrilhaFerramentas(QWidget):
     # --- interacao --------------------------------------------------------
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Clique na trilha escolhe a ferramenta e emite o sinal `escolhida`."""
         if evento.button() != Qt.LeftButton:
             return
         ferramenta = self._ferramenta_em(int(evento.position().y()))
@@ -224,6 +236,7 @@ class TrilhaFerramentas(QWidget):
             self.escolhida.emit(ferramenta)
 
     def mouseMoveEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Realce de hover + tooltip com o nome completo e o atalho."""
         sob = self._ferramenta_em(int(evento.position().y()))
         if sob != self._sob_o_mouse:
             self._sob_o_mouse = sob
@@ -235,6 +248,8 @@ class TrilhaFerramentas(QWidget):
             self.setToolTip("")
 
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Rola a trilha quando ela nao cabe inteira (janela baixa, tela em
+        150%) - ver o comentario em __init__ sobre por que isso e obrigatorio."""
         maximo = self._rolagem_maxima()
         if maximo <= 0:
             return
@@ -250,5 +265,6 @@ class TrilhaFerramentas(QWidget):
         self.update()
 
     def leaveEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Tira o realce de hover quando o mouse sai da trilha."""
         self._sob_o_mouse = None
         self.update()

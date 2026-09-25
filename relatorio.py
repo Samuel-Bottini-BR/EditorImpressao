@@ -132,6 +132,8 @@ def _conversao_simples(texto: str) -> str:
 
 
 def _inline(texto: str) -> str:
+    """Formatacao dentro de uma linha: escapa HTML e converte `codigo`,
+    **negrito** e *italico*. Usado pelo conversor simples (sem a lib markdown)."""
     t = _html.escape(texto)
     t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
     t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
@@ -140,6 +142,7 @@ def _inline(texto: str) -> str:
 
 
 def _titulo_de(texto: str, padrao: str) -> str:
+    """O titulo do relatorio e o primeiro `# ...` do markdown, ou `padrao` se nao houver."""
     for linha in texto.split("\n"):
         if linha.startswith("# "):
             return linha[2:].strip()

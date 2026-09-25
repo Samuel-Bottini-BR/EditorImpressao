@@ -23,6 +23,7 @@ _ok = _falhou = 0
 
 
 def checar(numero: int, descricao: str, condicao: bool, detalhe: str = "") -> None:
+    """Imprime [ok]/[FALHA] para um criterio numerado e soma nos contadores globais."""
     global _ok, _falhou
     if condicao:
         _ok += 1
@@ -33,6 +34,10 @@ def checar(numero: int, descricao: str, condicao: bool, detalhe: str = "") -> No
 
 
 def main(caminho: str) -> int:
+    """Roda o livro pelo pipeline inteiro e confere, um a um, os criterios de
+    aceitacao da secao 10 que dao para checar por linha de comando (o resto -
+    3, 4, 9, 11, 14, 15 - depende de olhar imagem ou abrir a interface, e fica
+    para o comparativo de filtros, o teste_interface.py e o executavel)."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     print("Criterios de aceitacao (secao 10)\n")
 

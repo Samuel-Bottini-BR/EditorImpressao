@@ -63,10 +63,12 @@ class Recorte:
 
     @property
     def tupla(self) -> tuple[float, float, float, float]:
+        """(x, y, largura, altura) como tupla simples, para serializar/comparar."""
         return (self.x, self.y, self.largura, self.altura)
 
     @staticmethod
     def inteiro() -> "Recorte":
+        """Recorte que cobre a folha inteira - usado quando nao ha o que cortar."""
         return Recorte(0.0, 0.0, 1.0, 1.0)
 
 

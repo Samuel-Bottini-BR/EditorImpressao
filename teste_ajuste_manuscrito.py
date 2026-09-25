@@ -34,6 +34,7 @@ def manchado(img: np.ndarray) -> float:
 
 
 def _rotular(img: np.ndarray, texto: str) -> np.ndarray:
+    """Poe uma faixa branca com o texto em cima da imagem, para o comparativo."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     faixa = np.full((46, img.shape[1], 3), 255, dtype=np.uint8)
@@ -43,6 +44,9 @@ def _rotular(img: np.ndarray, texto: str) -> np.ndarray:
 
 
 def main(caminho: str, numero: int = 1) -> int:
+    """Roda os tres filtros com ajuste na pagina pedida e grava um painel
+    (visao geral + zoom) por filtro, com o fundo manchado e a fracao de tinta
+    impressos no console para cada valor."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     doc = abrir_pdf(caminho)
     bruta = pagina_para_array(doc, numero - 1, dpi=300)

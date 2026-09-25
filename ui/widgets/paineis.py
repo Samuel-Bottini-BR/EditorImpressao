@@ -80,10 +80,12 @@ class _BotaoDoPainel(QPushButton):
         return QSize(0, cheio.height())
 
     def resizeEvent(self, evento) -> None:  # noqa: N802
+        """Reelide o texto quando o botão muda de tamanho."""
         super().resizeEvent(evento)
         self._reelidir()
 
     def _reelidir(self) -> None:
+        """Corta o texto completo com reticencias para caber na largura atual."""
         disponivel = self.width() - 20  # o padding de "3px 8px" + a borda
         elidido = self.fontMetrics().elidedText(
             self._texto_completo, Qt.ElideRight, max(0, disponivel))
@@ -96,6 +98,8 @@ class Painel(QFrame):
     recolheu = Signal(bool)
 
     def __init__(self, titulo: str, parent=None) -> None:
+        """Monta o cabeçalho clicável (que recolhe/expande) e o corpo vazio -
+        cada subclasse preenche o corpo em `atualizar` ou `_montar`."""
         super().__init__(parent)
         # Trava a largura nos 172px do desenho de verdade: sem isto, um botao
         # ou rotulo comprido (achado ao vivo: um item de historico como
@@ -130,14 +134,17 @@ class Painel(QFrame):
         self.recolhido = False
 
     def alternar(self) -> None:
+        """Clique no cabeçalho: recolhe se estava aberto, abre se estava recolhido."""
         self.definir_recolhido(not self.recolhido)
 
     def definir_recolhido(self, recolhido: bool) -> None:
+        """Mostra/esconde o corpo do painel (só a barra de título fica, se recolhido)."""
         self.recolhido = bool(recolhido)
         self.corpo.setVisible(not self.recolhido)
         self.recolheu.emit(self.recolhido)
 
     def limpar(self) -> None:
+        """Remove todo o conteudo do corpo, antes de `atualizar`/`_montar` repovoar."""
         while self.dentro.count():
             item = self.dentro.takeAt(0)
             widget = item.widget()
@@ -146,6 +153,7 @@ class Painel(QFrame):
                 widget.deleteLater()
 
     def _texto(self, texto: str, cor: str = "", tamanho: int = 12) -> QLabel:
+        """Rotulo simples de texto fraco, ja adicionado ao corpo do painel."""
         rotulo = QLabel(texto)
         rotulo.setWordWrap(True)
         rotulo.setStyleSheet(
@@ -155,6 +163,8 @@ class Painel(QFrame):
         return rotulo
 
     def _botao(self, texto: str, acao, escolhido: bool = False) -> QPushButton:
+        """Botão de acao do painel, ja adicionado ao corpo e ligado a `acao`.
+        escolhido=True destaca em azul (usado para o item atualmente selecionado)."""
         botao = _BotaoDoPainel(texto)
         botao.setCursor(Qt.PointingHandCursor)
         botao.setStyleSheet(BOTAO_DO_PAINEL.format(
@@ -185,6 +195,8 @@ class PainelParaRevisar(Painel):
             f"border-bottom: 1px solid {LARANJA}; }}")
 
     def atualizar(self, projeto) -> None:
+        """Reconstroi a lista agrupada por tipo de alerta, dos maiores grupos
+        para os menores, e o contador no cabeçalho."""
         self.limpar()
         if projeto is None:
             return
@@ -231,6 +243,7 @@ class PainelMarcarComo(Painel):
         self._montar()
 
     def _montar(self) -> None:
+        """(Re)desenha os três botões de tipo, destacando o escolhido."""
         from core.selecao import GRAVURA, LETRA, PAPEL
 
         self.limpar()
@@ -244,6 +257,7 @@ class PainelMarcarComo(Painel):
         self.tipo = self.tipo or GRAVURA
 
     def definir_tipo(self, tipo: str) -> None:
+        """Troca o tipo escolhido (gravura/letra/papel) e emite `escolheu`."""
         if tipo == self.tipo:
             return
         self.tipo = tipo
@@ -264,6 +278,9 @@ class PainelFiltroDaPagina(Painel):
         self.filtro_pedaco = ""
 
     def atualizar(self, pagina) -> None:
+        """Reconstroi o painel para a página atual: nome do filtro + tecla, o
+        medidor do ajuste daquele filtro (cada filtro guarda o seu - ver o
+        comentario abaixo) e os botões de "só neste pedaço"."""
         from core.filtros import (
             MAGICO_PRO,
             MELHORAR,
@@ -325,6 +342,7 @@ class PainelFiltroDaPagina(Painel):
                         escolhido=(chave == self.filtro_pedaco))
 
     def _escolher_pedaco(self, chave: str) -> None:
+        """Marca qual filtro vale "só neste pedaço" (chave vazia = o mesmo da página)."""
         self.filtro_pedaco = chave
         self.filtro_do_pedaco.emit(chave)
 
@@ -343,6 +361,8 @@ class PainelHistorico(Painel):
         super().__init__("Histórico", parent)
 
     def atualizar(self, acoes) -> None:
+        """Mostra as últimas 12 ações (de acoes.feitas) na ordem do tempo, a
+        mais recente embaixo e destacada."""
         self.limpar()
         if acoes is None or not acoes.feitas:
             self._texto("nada ainda")
@@ -366,6 +386,8 @@ class ColunaDePaineis(QScrollArea):
     """Os quatro empilhados, na largura do desenho."""
 
     def __init__(self, parent=None) -> None:
+        """Cria os quatro painéis (na ordem fixa comentada no topo do arquivo)
+        dentro de uma area de rolagem vertical."""
         super().__init__(parent)
         self.setFixedWidth(LARGURA)
         self.setWidgetResizable(True)

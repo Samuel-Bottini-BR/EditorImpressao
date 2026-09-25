@@ -1,4 +1,11 @@
-"""TELA 4 - Pronto, e a tela de progresso."""
+"""TELA 4 (Pronto) e a tela de progresso que aparece antes dela.
+
+Duas telas neste arquivo porque uma so faz sentido depois da outra: primeiro
+`TelaProgresso` mostra a barra enquanto o pipeline roda numa QThread (a
+interface nunca pode congelar, regra 3), depois `TelaFinal` mostra onde o PDF
+foi salvo, como imprimir - e, se o livro vai em cadernos, o resultado da
+conferencia de sequencia (ver core/cadernos.conferir_sequencia).
+"""
 
 from __future__ import annotations
 
@@ -65,12 +72,18 @@ class TelaProgresso(QWidget):
         camadas.addStretch()
 
     def comecar(self, titulo: str) -> None:
+        """Zera a barra e marca o instante inicial, para avancar() estimar o tempo."""
         self.titulo.setText(titulo)
         self.barra.setValue(0)
         self.detalhe.setText("")
         self._inicio = time.perf_counter()
 
     def avancar(self, feito: int, total: int, texto: str) -> None:
+        """Atualiza a barra e a estimativa de tempo restante.
+
+        So estima depois de pelo menos 3 unidades feitas e 1 segundo
+        decorrido - antes disso a media e ruido e a estimativa oscila.
+        """
         if total <= 0:
             return
         porcentagem = int(100 * feito / total)
@@ -220,6 +233,7 @@ class _Certo(QWidget):
         self.setFixedSize(76, 76)
 
     def paintEvent(self, evento) -> None:  # noqa: N802
+        """Desenha o circulo e o visto a mao, com QPainter - nunca emoji (regra 3)."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
         pintor.setPen(QPen(QColor(VERDE), 4))

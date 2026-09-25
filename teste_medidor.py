@@ -19,6 +19,8 @@ SAIDA = Path("saida_teste/medidor")
 
 
 def esperar(segundos: float, condicao=None) -> bool:
+    """Bombeia o loop de eventos do Qt ate `segundos` passarem ou `condicao`
+    ficar verdadeira (o que vier primeiro). Devolve se a condicao foi atendida."""
     fim = time.perf_counter() + segundos
     while time.perf_counter() < fim:
         QApplication.processEvents()
@@ -29,6 +31,7 @@ def esperar(segundos: float, condicao=None) -> bool:
 
 
 def capturar(janela, nome: str) -> None:
+    """Tira um print da janela e grava em SAIDA/<nome>.png."""
     QApplication.processEvents()
     caminho = SAIDA / f"{nome}.png"
     janela.grab().save(str(caminho))
@@ -36,6 +39,10 @@ def capturar(janela, nome: str) -> None:
 
 
 def main(caminho_pdf: str) -> int:
+    """Abre o programa de verdade (janela real, cliques simulados) e confere:
+    cada filtro mostra o medidor certo, arrastar o medidor muda a imagem de
+    fato, um arrasto inteiro vira UMA acao no desfazer, e "aplicar a todas"
+    leva o ajuste do medidor junto. Grava um print a cada checagem."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     app = QApplication(sys.argv)
 

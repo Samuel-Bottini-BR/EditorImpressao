@@ -216,6 +216,7 @@ class EscritorPDF:
 
     @property
     def paginas(self) -> int:
+        """Quantas páginas já foram escritas até agora."""
         return self._paginas
 
     def escrever_imagem(
@@ -248,6 +249,11 @@ class EscritorPDF:
         self._paginas += 1
 
     def fechar(self) -> None:
+        """Grava o PDF no disco (se alguma página foi escrita) e solta o documento.
+
+        Seguro chamar mais de uma vez: a segunda chamada não faz nada, porque
+        self.doc já fica None depois da primeira. É o que o __exit__ chama.
+        """
         if self.doc is None:
             return
         try:

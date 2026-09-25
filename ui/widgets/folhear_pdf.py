@@ -48,6 +48,8 @@ class FolhearPDF(QWidget):
     """Uma folha por vez, com setas, contador e botão de tela cheia."""
 
     def __init__(self, parent=None) -> None:
+        """Monta o visor de folha e a barra de navegacao, sem abrir arquivo
+        nenhum ainda - ver `abrir`."""
         super().__init__(parent)
         self._doc = None
         self._indice = 0
@@ -112,9 +114,11 @@ class FolhearPDF(QWidget):
         self._total = 0
 
     def virar(self, passo: int) -> None:
+        """Anda `passo` folhas (negativo volta)."""
         self.ir_para(self._indice + passo)
 
     def ir_para(self, indice: int) -> None:
+        """Rasteriza e mostra a folha pedida (recortada aos limites do livro)."""
         if self._doc is None or self._total == 0:
             return
         self._indice = max(0, min(int(indice), self._total - 1))
@@ -128,12 +132,14 @@ class FolhearPDF(QWidget):
         self._atualizar_botoes()
 
     def _atualizar_botoes(self) -> None:
+        """Liga/desliga < > e tela cheia conforme a posicao atual e se ha arquivo aberto."""
         tem = self._doc is not None and self._total > 0
         self.botao_anterior.setEnabled(tem and self._indice > 0)
         self.botao_proxima.setEnabled(tem and self._indice < self._total - 1)
         self.botao_tela_cheia.setEnabled(tem)
 
     def abrir_em_tela_cheia(self) -> None:
+        """Abre TelaCheiaDoPDF (dialogo modal) reaproveitando o mesmo documento aberto."""
         if self._doc is None or self._total == 0:
             return
         janela = TelaCheiaDoPDF(self._doc, self._indice, self)
@@ -144,6 +150,7 @@ class FolhearPDF(QWidget):
 
     # o teclado: setas viram a folha, como num leitor de verdade
     def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Setas/PageUp/PageDown viram a folha, como um leitor de verdade."""
         if evento.key() in (Qt.Key_Left, Qt.Key_PageUp):
             self.virar(-1)
         elif evento.key() in (Qt.Key_Right, Qt.Key_PageDown):
@@ -163,6 +170,8 @@ class TelaCheiaDoPDF(QDialog):
     fechou = Signal()
 
     def __init__(self, doc, indice: int, parent=None) -> None:
+        """Abre maximizada na folha `indice`, reaproveitando `doc` (nao abre
+        outro descritor do mesmo PDF)."""
         super().__init__(parent)
         self.setWindowTitle("Folhear o livro")
         self.setStyleSheet(FOLHA_DE_ESTILO)
@@ -211,6 +220,8 @@ class TelaCheiaDoPDF(QDialog):
         self.ir_para(indice)
 
     def ir_para(self, indice: int) -> None:
+        """Rasteriza e mostra a folha pedida, em DPI mais alto que o FolhearPDF
+        normal (aqui a folha ocupa a tela toda)."""
         self.indice = max(0, min(int(indice), self._total - 1))
         try:
             # Aqui vale mais DPI: a folha ocupa a tela toda e a pessoa veio
@@ -225,6 +236,7 @@ class TelaCheiaDoPDF(QDialog):
         self._proxima.setEnabled(self.indice < self._total - 1)
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Setas/PageUp/PageDown viram a folha; Esc fecha."""
         if evento.key() in (Qt.Key_Left, Qt.Key_PageUp):
             self.ir_para(self.indice - 1)
         elif evento.key() in (Qt.Key_Right, Qt.Key_PageDown):

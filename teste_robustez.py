@@ -24,6 +24,8 @@ _ok = _falhou = 0
 
 
 def checar(descricao: str, condicao: bool, detalhe: str = "") -> bool:
+    """Imprime ok/FALHA para uma checagem, soma nos contadores globais e
+    devolve a propria condicao (para poder ser usada em `if checar(...)`)."""
     global _ok, _falhou
     if condicao:
         _ok += 1
@@ -50,6 +52,10 @@ def memoria_mb() -> float:
 # ---------------------------------------------------------------------------
 
 def fabricar(pasta: Path) -> dict[str, Path]:
+    """Cria, do zero (nunca a partir de um PDF do acervo), um PDF defeituoso
+    de cada tipo que pode aparecer na mão do Kaique: pagina unica, tamanhos
+    variados, protegido por senha, corrompido de proposito, um arquivo que
+    nao e PDF de verdade e um arquivo vazio. Devolve {rotulo: caminho}."""
     import cv2
 
     arte = np.full((900, 600, 3), 235, dtype=np.uint8)
@@ -104,6 +110,12 @@ def fabricar(pasta: Path) -> dict[str, Path]:
 # ---------------------------------------------------------------------------
 
 def testar_arquivos_ruins(temporaria: Path) -> None:
+    """Confere que cada arquivo problematico de `fabricar` e tratado
+    corretamente: senha/nao-PDF/vazio/inexistente sao recusados com aviso em
+    português (nunca stack trace); o corrompido tanto pode ser recusado
+    quanto recuperado (o PyMuPDF as vezes recupera o que da, e isso e melhor
+    que recusar); e os formatos incomuns que TEM que funcionar (1 pagina so,
+    tamanhos variados) processam ate o fim."""
     from core.pdf_io import ErroPDF, abrir_pdf
 
     print("\n--- arquivos problemáticos ---")
@@ -170,6 +182,8 @@ def testar_arquivos_ruins(temporaria: Path) -> None:
 
 
 def testar_cancelamento(livro: Path, temporaria: Path) -> None:
+    """Cancela o processamento no meio (apos a 5a pagina) e confere que
+    levanta Cancelou e que nao sobra PDF pela metade no disco."""
     from core.pipeline import Cancelou, analisar_projeto, processar
     from modelos import Projeto
 
@@ -198,6 +212,9 @@ def testar_cancelamento(livro: Path, temporaria: Path) -> None:
 
 
 def testar_repetibilidade(livro: Path, temporaria: Path) -> None:
+    """Processa o mesmo livro duas vezes e confere que a IMAGEM de saida e
+    identica (compara o hash dos pixels renderizados, nao os bytes do
+    arquivo - todo PDF leva um /ID unico gerado na hora de gravar)."""
     import hashlib
 
     from core.pipeline import analisar_projeto, processar
@@ -233,6 +250,8 @@ def testar_repetibilidade(livro: Path, temporaria: Path) -> None:
 
 
 def testar_pasta_sem_permissao() -> None:
+    """Confere que uma unidade inexistente e recusada com mensagem em
+    português (nunca um erro tecnico tipo WinError)."""
     import configuracoes
 
     print("\n--- pasta onde não dá para gravar ---")
@@ -242,6 +261,8 @@ def testar_pasta_sem_permissao() -> None:
 
 
 def testar_contagem(livro: Path) -> None:
+    """Confere a aritmetica da divisao de folhas: N duplas + M simples tem de
+    virar exatamente 2N+M paginas, sem pagina repetida nem folha esquecida."""
     from core.pipeline import analisar_projeto
     from modelos import Projeto
 
@@ -269,6 +290,9 @@ def testar_contagem(livro: Path) -> None:
 
 
 def testar_imposicao() -> None:
+    """Simula a dobra fisica de um caderno de 20 paginas e confere que a
+    leitura sai 1..20 em ordem - a mesma conta de core.cadernos.conferir_sequencia,
+    aqui rodada a mao para ilustrar passo a passo no console."""
     from core.cadernos import montar_ordem
 
     print("\n--- imposição: simular a dobra de um caderno de 20 ---")
@@ -293,6 +317,9 @@ def testar_imposicao() -> None:
 
 
 def testar_vazamento(livros: list[Path], temporaria: Path) -> None:
+    """Analisa 5 livros seguidos e confere que a memoria do processo nao fica
+    subindo sem parar entre um livro e outro (regra 3: pico nao pode
+    acompanhar o tamanho do acervo)."""
     from core.pipeline import analisar_projeto
     from modelos import Projeto
 
@@ -317,6 +344,10 @@ def testar_vazamento(livros: list[Path], temporaria: Path) -> None:
 
 
 def main(pasta: str) -> int:
+    """Roda todas as baterias de robustez (arquivos ruins, cancelamento,
+    repetibilidade, pasta sem permissao, contagem, imposicao, vazamento) e
+    resume ok/falhas no fim. Usa o menor PDF da pasta para os testes de
+    fluxo, por serem os mais rapidos de rodar."""
     raiz = Path(pasta)
     livros = sorted(raiz.glob("*.pdf"), key=lambda p: p.stat().st_size)
     if not livros:

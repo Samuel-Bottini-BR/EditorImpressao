@@ -202,6 +202,8 @@ class EditorSelecao(QWidget):
     aviso = Signal(str)     # frase curta para a barra de status
 
     def __init__(self, parent=None) -> None:
+        """Comeca sem imagem, com a ferramenta Retangulo e uma Selecao vazia.
+        Quem usa o widget chama definir_imagem/definir_selecao depois."""
         super().__init__(parent)
         self.setMinimumHeight(200)
         self.setMouseTracking(True)
@@ -243,6 +245,8 @@ class EditorSelecao(QWidget):
     # --- zoom e deslocamento ---------------------------------------------
 
     def definir_zoom(self, zoom: float) -> None:
+        """Ajusta o zoom (preso a ZOOM_MIN/MAX). Volta o deslocamento a zero
+        se cair de volta em 100%, para nao deixar a pagina "presa" fora do centro."""
         novo = float(min(max(zoom, ZOOM_MIN), ZOOM_MAX))
         if abs(novo - self.zoom) < 1e-4:
             return
@@ -253,6 +257,7 @@ class EditorSelecao(QWidget):
         self.update()
 
     def ajustar_a_tela(self) -> None:
+        """Volta ao zoom 100% (a pagina inteira cabendo na area)."""
         self.zoom = 1.0
         self.deslocamento = QPoint(0, 0)
         self.aviso.emit("Zoom: 100%")
@@ -261,6 +266,7 @@ class EditorSelecao(QWidget):
     # --- entrada ----------------------------------------------------------
 
     def definir_imagem(self, img: np.ndarray | None) -> None:
+        """Poe a imagem de fundo (converte BGR/cinza para QPixmap). None limpa a tela."""
         self._img = img
         if img is None:
             self._pixmap = None
@@ -274,11 +280,14 @@ class EditorSelecao(QWidget):
         self.update()
 
     def definir_selecao(self, selecao: Selecao) -> None:
+        """Troca a Selecao mostrada/editada (ex.: ao trocar de página) e
+        limpa o historico de desfazer, que so vale para a selecao anterior."""
         self.selecao = selecao
         self._marcos.clear()
         self.update()
 
     def definir_ferramenta(self, ferramenta: str) -> None:
+        """Troca a ferramenta ativa: muda o cursor e a dica na barra de status."""
         if ferramenta not in FERRAMENTAS:
             return
         self.ferramenta = ferramenta
@@ -293,11 +302,13 @@ class EditorSelecao(QWidget):
         self.update()
 
     def definir_tipo(self, tipo: str) -> None:
+        """Que tipo (gravura/letra/papel) a proxima marcacao vai receber."""
         if tipo in (GRAVURA, LETRA, PAPEL):
             self.tipo = tipo
             self.update()
 
     def definir_operacao(self, operacao: str) -> None:
+        """Somar ou subtrair - o modo que a proxima marcacao vai usar."""
         self.operacao = SUBTRAIR if operacao == SUBTRAIR else SOMAR
         self.update()
 
@@ -310,6 +321,7 @@ class EditorSelecao(QWidget):
 
     @property
     def pode_desfazer(self) -> bool:
+        """Ha alguma acao de marcacao para desfazer nesta pagina?"""
         return bool(self._marcos)
 
     def desfazer(self) -> None:
@@ -333,11 +345,16 @@ class EditorSelecao(QWidget):
         return quantas
 
     def _marcar(self) -> None:
+        """Guarda um marco de desfazer (tamanho da lista de regiões ANTES da
+        proxima acao). Toda acao so ACRESCENTA regiões, entao guardar so o
+        tamanho basta - nao precisa copiar a lista inteira."""
         self._marcos.append(len(self.selecao.regioes))
         if len(self._marcos) > 200:
             self._marcos.pop(0)
 
     def _acrescentar(self, regiao: Regiao) -> None:
+        """Aplica o filtro-do-pedaço atual a regiao, marca para desfazer e
+        adiciona a selecao."""
         if not regiao.valida():
             return
         regiao.filtro = self.filtro_da_regiao
@@ -374,6 +391,7 @@ class EditorSelecao(QWidget):
         return (min(max(x, 0.0), 1.0), min(max(y, 0.0), 1.0))
 
     def _para_tela(self, fx: float, fy: float) -> QPoint:
+        """Fracao da imagem (0 a 1) para ponto de tela - o inverso de _para_fracao."""
         a = self._area
         return QPoint(int(a.left() + fx * a.width()), int(a.top() + fy * a.height()))
 
@@ -393,6 +411,8 @@ class EditorSelecao(QWidget):
     FUNDO_DA_AREA = QColor("#f1efe8")
 
     def paintEvent(self, evento: QPaintEvent) -> None:  # noqa: N802 (nome do Qt)
+        """Desenha o fundo, a pagina, a marcacao ja feita e o que esta sendo
+        desenhado no momento (arrasto em andamento, ou poligono ponto a ponto)."""
         pintor = QPainter(self)
         pintor.fillRect(self.rect(), self.FUNDO_DA_AREA)
         if self._pixmap is None or self._pixmap.isNull():
@@ -429,6 +449,8 @@ class EditorSelecao(QWidget):
             pintor.drawImage(self._area.topLeft(), imagem)
 
     def _pintar_o_que_esta_sendo_desenhado(self, pintor: QPainter) -> None:
+        """A forma em andamento (retangulo/elipse/laço/pincel sendo arrastado,
+        ou os pontos ja marcados do poligono)."""
         cor = CORES_BORDA.get(self.tipo, QColor(255, 255, 255))
         caneta = QPen(cor, 2, Qt.SolidLine if self.operacao == SOMAR else Qt.DashLine)
         pintor.setPen(caneta)
@@ -453,17 +475,22 @@ class EditorSelecao(QWidget):
                 pintor.drawEllipse(p, 3, 3)
 
     def _retangulo_dos_pontos(self) -> QRect:
+        """O retangulo entre o primeiro e o ultimo ponto arrastados, em tela."""
         a = self._para_tela(*self._pontos[0])
         b = self._para_tela(*self._pontos[-1])
         return QRect(a, b).normalized()
 
     def _espessura_na_tela(self) -> int:
+        """Converte a espessura do pincel (fracao da pagina) para pixels de tela."""
         lado = min(self._area.width(), self._area.height())
         return max(2, int(self.espessura * lado))
 
     # --- mouse ------------------------------------------------------------
 
     def mousePressEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        """Comeca a acao da ferramenta ativa: zoom/mao navegam sem marcar
+        nada; varinha/cor/poligono agem no clique; as demais comecam um
+        arrasto que termina em mouseReleaseEvent."""
         if self._pixmap is None or evento.button() != Qt.LeftButton:
             return
         self._area = self._calcular_area()
@@ -500,6 +527,8 @@ class EditorSelecao(QWidget):
         self.update()
 
     def mouseMoveEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        """Continua o arrasto: move a vista (ferramenta Mao) ou acrescenta
+        pontos a forma sendo desenhada."""
         if self._arrastando_vista:
             andou = evento.position().toPoint() - self._ponto_do_arrasto
             self.deslocamento = self._deslocamento_inicial + andou
@@ -518,6 +547,9 @@ class EditorSelecao(QWidget):
         self.update()
 
     def mouseReleaseEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        """Termina o arrasto e transforma os pontos acumulados numa Regiao de
+        verdade (retangulo/elipse precisam de 2 pontos distantes, laço de 3+,
+        pincel de qualquer quantidade)."""
         if self._arrastando_vista:
             self._arrastando_vista = False
             self.setCursor(Qt.OpenHandCursor)
@@ -566,6 +598,7 @@ class EditorSelecao(QWidget):
             super().wheelEvent(evento)
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802
+        """Esc cancela um poligono em andamento; Ctrl+Z desfaz a ultima marcacao."""
         if evento.key() == Qt.Key_Escape and self._pontos_poligono:
             self._pontos_poligono.clear()
             self.update()
@@ -579,6 +612,7 @@ class EditorSelecao(QWidget):
     # --- as ferramentas que precisam olhar a imagem -----------------------
 
     def _nova(self, forma: str, pontos: list) -> Regiao:
+        """Monta uma Regiao com o tipo/operacao/espessura correntes do editor."""
         return Regiao(
             tipo=self.tipo, forma=forma, pontos=pontos, operacao=self.operacao,
             origem=MAO, espessura=self.espessura,
@@ -738,4 +772,7 @@ class EditorSelecao(QWidget):
 
 def _longe(a: tuple[float, float], b: tuple[float, float],
            minimo: float = 0.004) -> bool:
+    """Os dois pontos (em fracao da pagina) estao mais longe que `minimo`?
+    Usado para nao guardar ponto demais no laço/pincel (um traco de mil
+    pontos nao e editavel nem cabe bem no arquivo de projeto)."""
     return abs(a[0] - b[0]) > minimo or abs(a[1] - b[1]) > minimo

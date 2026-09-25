@@ -29,12 +29,16 @@ LIVRO = ACERVO / "Sobre a Consolação da Filosofia - Severino Boécio.pdf"
 
 
 def _esperar(app, segundos: float) -> None:
+    """Bombeia o loop de eventos do Qt por `segundos`, para dar tempo das
+    tarefas de fundo (analise, previas, miniaturas) terminarem antes do print."""
     fim = time.time() + segundos
     while time.time() < fim:
         app.processEvents()
 
 
 def _pasta_de_projetos_temporaria():
+    """Redireciona onde os projetos de teste ficam gravados, para os prints
+    nao poluirem (nem serem poluidos por) os projetos reais do usuario."""
     import projetos
 
     pasta = Path(tempfile.mkdtemp()) / "projetos"
@@ -47,6 +51,13 @@ def _pasta_de_projetos_temporaria():
 
 
 def gerar(app, escala_150: bool = False) -> None:
+    """Abre a janela de verdade com o livro do Boécio, navega ate cada tela
+    que precisa de print e grava um .png por captura em DESTINO.
+
+    escala_150=True so tira o primeiro print (a tela de trabalho): a escala
+    do Qt so e lida na abertura do processo, entao o print em 150% precisa
+    rodar num processo separado - ver `main`.
+    """
     import projetos
     from PySide6.QtWidgets import QApplication
 
@@ -212,6 +223,8 @@ def gerar(app, escala_150: bool = False) -> None:
 
 
 def main() -> int:
+    """Gera os prints em 100%, depois relanca o proprio script num processo
+    filho com QT_SCALE_FACTOR=1.5 para os prints em 150%."""
     from PySide6.QtWidgets import QApplication
 
     app = QApplication.instance() or QApplication([])

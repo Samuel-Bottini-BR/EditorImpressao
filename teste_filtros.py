@@ -44,6 +44,8 @@ def _rotular(img: np.ndarray, texto: str) -> np.ndarray:
 
 
 def _lado_a_lado(paineis: list[np.ndarray]) -> np.ndarray:
+    """Junta os paineis numa unica imagem horizontal, com uma tarja cinza
+    entre eles e preenchimento branco para igualar a altura de todos."""
     altura = max(p.shape[0] for p in paineis)
     ajustados = []
     for p in paineis:
@@ -64,6 +66,9 @@ def _recorte_texto(img: np.ndarray, frac_y=0.35, frac_x=0.12, largura=700, altur
 
 
 def main(caminho: str, paginas: list[int]) -> int:
+    """Para cada pagina pedida, gera o comparativo dos quatro filtros lado a
+    lado (visao geral + recorte de texto ampliado) e um terceiro painel so do
+    Preto e branco nas tres posicoes da força do preto."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     print(f"Binarizacao: {'DoxaPy (Sauvola)' if doxapy_disponivel() else 'scikit-image (plano B)'}")
 

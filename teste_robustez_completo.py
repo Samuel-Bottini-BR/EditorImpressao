@@ -49,6 +49,8 @@ JARGAO = (
 
 @dataclass
 class Caso:
+    """Uma das dezoito situacoes ruins e o que aconteceu ao rodar ela (ver `rodar`)."""
+
     nome: str
     o_que_e: str
     de_pe: bool = False
@@ -60,6 +62,7 @@ class Caso:
 
     @property
     def passou(self) -> bool:
+        """So passa se ficou de pe, a mensagem foi boa e nada de trabalho se perdeu."""
         return self.de_pe and self.boa_mensagem and not self.perdeu_trabalho
 
 
@@ -77,6 +80,9 @@ def mensagem_e_boa(texto: str) -> tuple[bool, str]:
 
 
 def pagina_png(cor: int = 235, com_texto: bool = True) -> bytes:
+    """Fabrica um PNG simples de teste: fundo de `cor` com linhas escuras
+    simulando texto (ou nenhuma, se com_texto=False - serve para "pagina toda
+    preta"/"pagina toda branca")."""
     arte = np.full((900, 600, 3), cor, dtype=np.uint8)
     if com_texto:
         for y in range(120, 800, 60):
@@ -193,6 +199,8 @@ def rodar(caso: Caso, funcao) -> Caso:
 
 
 def projeto_de(caminho: Path, saida: Path, **extra) -> Projeto:
+    """Monta um Projeto rapido para um dos arquivos fabricados, com DPI baixo
+    por padrao (os testes de robustez nao precisam de qualidade, so de nao quebrar)."""
     p = Projeto(
         caminho_entrada=str(caminho),
         caminho_saida=str(saida),
@@ -205,6 +213,10 @@ def projeto_de(caminho: Path, saida: Path, **extra) -> Projeto:
 
 
 def main() -> int:
+    """Fabrica os arquivos de teste, roda os dezoito casos (cada um definido
+    como uma funcao interna `executar(caso)` passada para `rodar`) e grava
+    relatorios/robustez.md com o resultado de cada um. Devolve 0 so se todos
+    passaram."""
     temporaria = Path(tempfile.mkdtemp(prefix="robustez_"))
     saida = temporaria / "saida"
     saida.mkdir()

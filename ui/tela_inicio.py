@@ -74,6 +74,8 @@ class TelaInicio(QWidget):
     reabrir_projeto = Signal(object)
 
     def __init__(self, parent=None) -> None:
+        """Monta a faixa de arrastar, a busca e a grade (vazia) de cartões,
+        depois chama recarregar() para preencher com o que ja existe em disco."""
         super().__init__(parent)
         self._resumos: list[projetos.Resumo] = []
 
@@ -137,6 +139,8 @@ class TelaInicio(QWidget):
         self._remontar()
 
     def _remontar(self) -> None:
+        """Refaz a grade de cartões do zero (filtrando pela busca) e reflui
+        quantos cabem por linha, dado a largura atual da area de rolagem."""
         while self.grade.count():
             item = self.grade.takeAt(0)
             velho = item.widget()
@@ -170,6 +174,7 @@ class TelaInicio(QWidget):
             self.grade.addWidget(cartao, posicao // por_linha, posicao % por_linha)
 
     def _recado(self, procurado: str) -> QLabel:
+        """Texto para quando a grade fica vazia: motivo muda conforme ha busca ou não."""
         texto = (f'Nenhum projeto com "{procurado}" no nome.' if procurado
                  else "Nenhum livro ainda. Arraste o primeiro PDF ali em cima "
                       "para começar.")
@@ -185,6 +190,9 @@ class TelaInicio(QWidget):
     # --- acoes dos cartoes ------------------------------------------------
 
     def pedir_para_continuar(self, resumo: projetos.Resumo) -> None:
+        """Reabre o projeto - mas so depois de conferir que o PDF de entrada
+        ainda existe e e o MESMO livro (nao um arquivo trocado no mesmo lugar).
+        Aplicar ajustes salvos num livro diferente estragaria as páginas."""
         situacao, caminho = projetos.procurar_o_livro(resumo)
 
         if situacao == projetos.TROCADO:
@@ -208,6 +216,8 @@ class TelaInicio(QWidget):
         self.continuar_projeto.emit(resumo)
 
     def procurar_o_livro_a_mao(self, resumo: projetos.Resumo) -> None:
+        """Pede pra pessoa apontar onde o PDF foi parar, e confere a assinatura
+        antes de aceitar - mesma cautela de pedir_para_continuar."""
         from PySide6.QtWidgets import QFileDialog
 
         caminho, _filtro = QFileDialog.getOpenFileName(
@@ -229,6 +239,8 @@ class TelaInicio(QWidget):
         self.continuar_projeto.emit(resumo)
 
     def pedir_para_recomecar(self, resumo: projetos.Resumo) -> None:
+        """Confirma antes de jogar fora a conferência ja feita (o livro em si
+        nunca e tocado - só o projeto salvo)."""
         resposta = QMessageBox.question(
             self, "Começar de novo?",
             f"Isto joga fora todos os ajustes de {resumo.nome} e abre o livro "
@@ -239,6 +251,7 @@ class TelaInicio(QWidget):
             self.recomecar_projeto.emit(resumo)
 
     def pedir_para_renomear(self, resumo: projetos.Resumo) -> None:
+        """Renomeia so o projeto (para diferenciar livros de nome igual), nao o arquivo em disco."""
         novo, certo = QInputDialog.getText(
             self, "Renomear", "Nome deste projeto:", QLineEdit.Normal, resumo.nome)
         if certo and novo.strip():
@@ -246,6 +259,7 @@ class TelaInicio(QWidget):
             self.recarregar()
 
     def pedir_para_remover(self, resumo: projetos.Resumo) -> None:
+        """Tira o projeto da lista (nao apaga o PDF, que nunca esteve guardado aqui)."""
         resposta = QMessageBox.question(
             self, "Tirar da lista?",
             f"{resumo.nome} sai desta tela e a conferência feita nele se "
@@ -261,6 +275,9 @@ class CartaoDeProjeto(QFrame):
     """Um livro na tela inicial: capa, nome, andamento e o que dá para fazer."""
 
     def __init__(self, resumo: projetos.Resumo, tela: TelaInicio) -> None:
+        """Monta o cartão: capa, nome, progresso (ou aviso de PDF perdido) e o
+        rodapé de acao. `tela` e guardada so para os botões chamarem de volta
+        pedir_para_continuar/renomear/etc."""
         super().__init__()
         self.resumo = resumo
         self.tela = tela
@@ -306,6 +323,8 @@ class CartaoDeProjeto(QFrame):
     # --- pedacos ----------------------------------------------------------
 
     def _montar_capa(self) -> QWidget:
+        """A miniatura da primeira página, ou "sem capa" se nao existir - e o
+        que distingue livros de nome igual na lista."""
         capa = QLabel()
         capa.setFixedHeight(ALTURA_DA_CAPA)
         capa.setAlignment(Qt.AlignCenter)
@@ -324,6 +343,7 @@ class CartaoDeProjeto(QFrame):
         return capa
 
     def _montar_progresso(self) -> QWidget:
+        """Barra fina: verde e 100% se ja gerou PDF, azul com o progresso salvo senão."""
         caixa = QWidget()
         dentro = QVBoxLayout(caixa)
         dentro.setContentsMargins(0, 0, 0, 0)
@@ -343,6 +363,8 @@ class CartaoDeProjeto(QFrame):
         return caixa
 
     def _montar_rodape(self) -> QHBoxLayout:
+        """Frase de progresso + o botão de ação (abrir pasta se ja gerou PDF,
+        continuar senão)."""
         linha = QHBoxLayout()
         linha.setContentsMargins(0, 0, 0, 0)
 
@@ -394,6 +416,7 @@ class CartaoDeProjeto(QFrame):
         return caixa
 
     def _aplicar_cor(self) -> None:
+        """Pinta o cartão de laranja quando o PDF de entrada esta perdido/trocado."""
         if not self.perdido:
             return
         # O seletor precisa ser QFrame#cartao e nao so o widget: sem ele, o Qt
@@ -424,6 +447,8 @@ class CartaoDeProjeto(QFrame):
     # --- menu do botao direito --------------------------------------------
 
     def _abrir_menu(self, posicao) -> None:
+        """Menu de contexto (botão direito) do cartão, com as mesmas ações do
+        clique/rodapé, mais renomear e remover."""
         menu = QMenu(self)
         if not self.perdido:
             menu.addAction("continuar",
@@ -448,5 +473,6 @@ class CartaoDeProjeto(QFrame):
         menu.exec(self.mapToGlobal(posicao))
 
     def mouseDoubleClickEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Duplo clique no cartão continua o projeto (se o livro nao estiver perdido)."""
         if not self.perdido:
             self.tela.pedir_para_continuar(self.resumo)

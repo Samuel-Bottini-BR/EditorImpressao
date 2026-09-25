@@ -35,12 +35,14 @@ def pasta_de_dados() -> Path:
 
 
 def pasta_de_projetos() -> Path:
+    """A pasta-mae onde cada projeto tem a sua propria subpasta."""
     pasta = pasta_de_dados() / "projetos"
     pasta.mkdir(parents=True, exist_ok=True)
     return pasta
 
 
 def pasta_do_projeto(nome: str) -> Path:
+    """A pasta de UM projeto (projeto.json, acoes.jsonl, posicao.json, thumbs/)."""
     pasta = pasta_de_projetos() / nome_de_arquivo_seguro(nome)
     pasta.mkdir(parents=True, exist_ok=True)
     (pasta / "thumbs").mkdir(exist_ok=True)
@@ -99,10 +101,13 @@ class Entrada:
 
 
 def _caminho_historico() -> Path:
+    """Onde o historico.json mora."""
     return pasta_de_dados() / ARQUIVO_HISTORICO
 
 
 def carregar() -> list[Entrada]:
+    """Le a lista de projetos recentes. Historico corrompido ou ausente vira
+    lista vazia - nunca impede o programa de abrir."""
     caminho = _caminho_historico()
     if not caminho.exists():
         return []
@@ -115,6 +120,7 @@ def carregar() -> list[Entrada]:
 
 
 def salvar(entradas: list[Entrada]) -> None:
+    """Grava a lista, cortada em MAXIMO_NO_HISTORICO itens."""
     try:
         _caminho_historico().write_text(
             json.dumps(
@@ -169,6 +175,7 @@ def salvar_projeto(projeto: Projeto) -> None:
 
 
 def carregar_projeto(nome: str) -> Projeto | None:
+    """Le o projeto.json salvo, ou None se nao existir ou estiver corrompido."""
     caminho = pasta_do_projeto(nome) / "projeto.json"
     if not caminho.exists():
         return None

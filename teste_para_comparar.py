@@ -44,6 +44,9 @@ def gravar(caminho: Path, img: np.ndarray) -> None:
 
 
 def main(pasta: str) -> int:
+    """Para cada CASO, exporta a página ORIGINAL (crua) e NOSSO (com o filtro
+    julgado certo) em DPI alto, e escreve um LEIA.txt explicando o que
+    comparar e por quê."""
     raiz = Path(pasta)
     destino = raiz / "para_comparar"
     destino.mkdir(parents=True, exist_ok=True)

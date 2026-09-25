@@ -21,11 +21,16 @@ SAIDA = Path("saida_teste/pipeline")
 
 
 def _barra(feito: int, total: int, texto: str) -> None:
+    """Callback de progresso simplificado: imprime so a cada ~10% do total."""
     if total and feito % max(1, total // 10) == 0:
         print(f"    {texto}")
 
 
 def main(caminho: str) -> int:
+    """Roda a analise completa do livro, imprime o resumo e o painel "Paginas
+    para revisar", e gera o PDF final nas tres combinacoes que mais importam
+    (preto e branco simples, com cadernos, e "so cadernos" sem processar
+    imagem - o caminho rapido que so reimpoe o PDF original)."""
     SAIDA.mkdir(parents=True, exist_ok=True)
 
     projeto = Projeto(
