@@ -14,6 +14,7 @@ _TAMANHO_MAXIMO = 1_000_000  # 1 MB: passou disso, recomeca
 
 
 def caminho_do_log() -> Path:
+    """Onde o erros.log mora - dentro da pasta de dados do programa (%LOCALAPPDATA%)."""
     from historico import pasta_de_dados
 
     return pasta_de_dados() / _ARQUIVO

@@ -168,6 +168,7 @@ class VigiaDeMemoria:
             self._proc = None
 
     def _laco(self) -> None:
+        """Roda numa thread separada, amostrando a memoria RSS a cada `intervalo`."""
         while self._rodando and self._proc is not None:
             try:
                 mb = self._proc.memory_info().rss / (1024 * 1024)
@@ -200,6 +201,7 @@ CONTRASTE_DE_FOLHA_ESCRITA = 80
 
 
 def _cinza(img: np.ndarray) -> np.ndarray:
+    """Converte para cinza se preciso - a maioria das medidas trabalha em 1 canal."""
     return img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
@@ -646,6 +648,10 @@ def escolher_paginas(projeto: Projeto, quantas: int) -> list[int]:
 
 @dataclass
 class ResultadoLivro:
+    """Tudo que avaliar_livro mede num unico livro: tempos, memoria, geometria
+    das folhas e as medidas de qualidade pagina a pagina/filtro a filtro. Um
+    resultado por livro vira uma secao do relatorio (ver escrever_markdown)."""
+
     arquivo: str
     nome: str
     tamanho_mb: float
@@ -999,6 +1005,8 @@ def _sem_acento(texto: str) -> str:
 
 
 def _ambiente() -> dict[str, Any]:
+    """Dados da maquina onde a regua rodou - vao no relatorio para uma medida
+    nao ser comparada, por engano, com outra tirada num computador diferente."""
     memoria_mb = 0.0
     try:
         import psutil
@@ -1019,6 +1027,7 @@ def _ambiente() -> dict[str, Any]:
 
 
 def _media(valores: list[float]) -> float:
+    """Media simples, arredondada; 0.0 para lista vazia (em vez de levantar excecao)."""
     return round(statistics.fmean(valores), 3) if valores else 0.0
 
 
@@ -1064,6 +1073,7 @@ def montar_resumo(livros: list[ResultadoLivro]) -> dict[str, Any]:
 
 
 def _tabela(linhas: list[list[str]], cabecalho: list[str]) -> str:
+    """Monta uma tabela em markdown a partir de linhas e cabecalho ja formatados em texto."""
     partes = ["| " + " | ".join(cabecalho) + " |",
               "|" + "|".join(["---"] * len(cabecalho)) + "|"]
     for linha in linhas:
@@ -1344,6 +1354,7 @@ def escrever_markdown(dados: dict[str, Any], destino: Path) -> None:
 
 
 def _passou(valor: float, meta: float) -> str:
+    """"sim"/"NAO"/"nao medido", para as tabelas de metas do relatorio de desempenho."""
     if valor <= 0:
         return "nao medido"
     return "sim" if valor <= meta else "NAO"
@@ -1672,6 +1683,10 @@ def achar_acervo(indicado: str | None) -> Path:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Linha de comando da regua: mede o acervo inteiro (ou so um livro, com
+    --livro) e grava os relatorios. --refazer-md e --comparar pulam a medicao
+    e trabalham em cima de um .json ja gravado - ver o argparse abaixo para
+    todas as opcoes."""
     p = argparse.ArgumentParser(
         description="Mede o Editor de Impressao em numeros e grava os relatorios."
     )

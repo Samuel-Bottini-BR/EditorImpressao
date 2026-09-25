@@ -83,6 +83,9 @@ def zerar_pico() -> None:
 
 @dataclass
 class Pagina:
+    """O que medimos de uma página durante `analisar_livro`, para escrever a
+    ficha do livro e escolher as páginas mais difíceis para comparativo."""
+
     numero: int
     paisagem: bool
     dpi: float
@@ -103,6 +106,7 @@ class Pagina:
 
 
 def _amarelado(img: np.ndarray) -> float:
+    """Quanto o papel puxa para o amarelo (canal b* do LAB, so nos pixels claros)."""
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     luz, b = lab[:, :, 0], lab[:, :, 2].astype(np.float32)
     papel = luz >= np.percentile(luz, 75)
@@ -110,6 +114,7 @@ def _amarelado(img: np.ndarray) -> float:
 
 
 def _verso(img: np.ndarray) -> float:
+    """Fração de pixels em cinza intermediário - sinal de marca do verso transparecendo."""
     cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     nivel = float(np.percentile(cinza, 80))
     if nivel < 10:
@@ -118,6 +123,9 @@ def _verso(img: np.ndarray) -> float:
 
 
 def analisar_livro(caminho: Path, progresso=True) -> tuple[list[Pagina], float]:
+    """Mede cada página do livro a DPI_ANALISE (lombada, ângulo, cor, tinta) e
+    devolve (lista de Pagina, tempo total em segundos). progresso=True
+    imprime a memória a cada 100 páginas, para acompanhar livro grande."""
     doc = abrir_pdf(caminho)
     paginas: list[Pagina] = []
     t0 = time.perf_counter()
@@ -208,6 +216,7 @@ def gravar_imagem(caminho: Path, img: np.ndarray) -> bool:
 
 
 def _rotular(img: np.ndarray, texto: str) -> np.ndarray:
+    """Cola uma faixa branca com o nome do filtro em cima da imagem."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     faixa = np.full((50, img.shape[1], 3), 255, dtype=np.uint8)
@@ -217,6 +226,7 @@ def _rotular(img: np.ndarray, texto: str) -> np.ndarray:
 
 
 def _juntar(paineis: list[np.ndarray]) -> np.ndarray:
+    """Junta os paineis lado a lado, com uma tarja cinza entre eles."""
     altura = max(p.shape[0] for p in paineis)
     partes = []
     for p in paineis:
@@ -229,6 +239,7 @@ def _juntar(paineis: list[np.ndarray]) -> np.ndarray:
 
 
 def quatro_filtros(bruta: np.ndarray, altura: int = 900) -> np.ndarray:
+    """Painel com os quatro filtros lado a lado, na página inteira (reduzida)."""
     paineis = []
     for filtro, nome in ((ORIGINAL, "Original"), (PRETO_E_BRANCO, "Preto e branco"),
                          (MELHORAR, "Melhorar"), (MAGICO_PRO, "Magico pro")):
@@ -238,6 +249,8 @@ def quatro_filtros(bruta: np.ndarray, altura: int = 900) -> np.ndarray:
 
 
 def recorte_central(img: np.ndarray, fx=0.20, fy=0.35, largura=900, altura=340):
+    """Recorta um pedaço do miolo da página (posicao relativa fx,fy) para julgar
+    nitidez de perto, em resolução cheia."""
     h, w = img.shape[:2]
     y, x = int(h * fy), int(w * fx)
     return img[y:min(h, y + altura), x:min(w, x + largura)]
@@ -290,6 +303,10 @@ def gerar_imagens(caminho: Path, paginas: list[Pagina], destino: Path) -> list[s
 def escrever_ficha(caminho: Path, paginas: list[Pagina], tempo_analise: float,
                    amostra: dict, imagens: list[str], destino_img: Path,
                    pico_mb: float) -> str:
+    """Monta a ficha de texto de um livro: o que ele é, o que o programa
+    detectou, desempenho medido, e como os quatro casos-problema do Kaique se
+    aplicam a este livro especificamente. Grava <livro>.txt ao lado do PDF e
+    devolve o texto."""
     total = len(paginas)
     paisagens = [p for p in paginas if p.paisagem]
     coloridas = [p for p in paginas if p.tem_cor]
@@ -404,6 +421,9 @@ def escrever_ficha(caminho: Path, paginas: list[Pagina], tempo_analise: float,
 
 
 def main(pasta: str) -> int:
+    """Para cada PDF da pasta: analisa, processa uma amostra de verdade,
+    gera os comparativos das páginas mais difíceis e escreve a ficha. No fim,
+    monta o RELATORIO_GERAL.txt com o ranking do acervo inteiro."""
     raiz = Path(pasta)
     arquivos = sorted(raiz.glob("*.pdf"))
     if not arquivos:
@@ -447,6 +467,8 @@ def main(pasta: str) -> int:
 
 
 def _relatorio_geral(raiz: Path, resultados: list[dict]) -> None:
+    """Tabela com uma linha por livro e a projeção de tempo para processar o
+    acervo inteiro. Grava RELATORIO_GERAL.txt na raiz da pasta testada."""
     linhas = [
         "RELATÓRIO GERAL - acervo do instituto",
         f"Gerado em {datetime.now().strftime('%d/%m/%Y %H:%M')}",

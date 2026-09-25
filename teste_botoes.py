@@ -103,6 +103,8 @@ sys.excepthook = _excepthook
 
 
 def esperar(segundos: float, condicao=None) -> bool:
+    """Bombeia o loop de eventos do Qt ate `segundos` passarem ou `condicao`
+    ficar verdadeira (o que vier primeiro). Devolve se a condicao foi atendida."""
     fim = time.perf_counter() + segundos
     while time.perf_counter() < fim:
         QApplication.processEvents()
@@ -135,6 +137,7 @@ def acionar(controle, rotulo: str) -> bool:
 
 
 def botoes_de(widget: QWidget) -> list[QPushButton]:
+    """Todos os QPushButton visíveis e habilitados dentro de `widget` (recursivo)."""
     return [b for b in widget.findChildren(QPushButton) if b.isVisible() and b.isEnabled()]
 
 
@@ -226,6 +229,12 @@ def ordem_correta(conferir: QWidget) -> list[str]:
 
 
 def _instalar_monkeypatches(caminho_pdf: str) -> None:
+    """Troca os diálogos nativos do Qt (arquivo, pasta, mensagem, entrada) e
+    as ações de abrir_pasta/imprimir por versões falsas, para o teste
+    conseguir clicar em tudo sem travar esperando um clique humano de
+    verdade e sem mandar nada para o Explorer/impressora reais. Ver a
+    ressalva no docstring do módulo sobre QMessageBox.exec() precisar de
+    tratamento especial."""
     pasta_destino = PASTA_DE_SAIDA_DO_TESTE / "destino_escolhido"
     if pasta_destino.exists():
         shutil.rmtree(pasta_destino)
@@ -289,6 +298,9 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
 
 
 def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
+    """Testa a busca, o clique na área de arrastar (abre o PDF de teste via
+    o QFileDialog mockado), o menu no estado "tela inicial" e o
+    redimensionamento. Devolve (quantos passaram, quantos falharam)."""
     from ui.janela_principal import OPCOES
 
     print("\n--- tela inicial ---")
@@ -331,6 +343,11 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
 
 
 def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
+    """Clica cada caixinha (e volta ao estado original, senao "Conferir" fica
+    desabilitado com nenhuma função marcada), cada radio de filtro, troca o
+    combo de páginas por caderno, redimensiona, e confere que "voltar" volta
+    para a tela inicial (reabrindo o PDF depois, para os testes seguintes
+    poderem continuar)."""
     from ui.janela_principal import INICIO, OPCOES
 
     print("\n--- tela de opções ---")
@@ -398,6 +415,11 @@ def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
 
 
 def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
+    """Para cada aba ativa da tela de conferir: confere que o layout não tem
+    sobreposição nem ordem trocada, e clica em todos os botões da area de
+    imagem e da barra de botões daquela aba. Depois clica cabeçalho/rodapé,
+    redimensiona em vários tamanhos grandes conferindo layout em cada aba, o
+    menu, e por fim a tela ampliada (`testar_tela_ampliada`)."""
     ok = falhas = 0
     conferir = janela.tela_conferir
     esperar(2.0)
@@ -521,7 +543,10 @@ def testar_tela_ampliada(conferir) -> tuple[int, int]:
 
 
 def testar_processar_e_final(janela) -> tuple[int, int]:
-    """Mesma técnica de `testar_tela_ampliada`: intercepta o `.exec()` da
+    """Clica "Processar", interage com a janela de confirmação (escolher
+    pasta, digitar nome, confirmar), espera o processamento terminar e
+    depois clica os botões da tela final (abrir pasta, imprimir, fazer
+    outro). Mesma técnica de `testar_tela_ampliada`: intercepta o `.exec()` da
     própria `JanelaConfirmar`, em vez de `QApplication.activeModalWidget()`."""
     from ui.janela_confirmar import JanelaConfirmar
     from ui.janela_principal import FINAL
@@ -722,6 +747,10 @@ TAMANHOS_PEQUENOS = ((1000, 680), (1400, 900))  # so para as telas mais simples
 
 
 def redimensionar_sem_quebrar(janela, tamanhos) -> tuple[int, int]:
+    """Redimensiona a janela para cada (largura, altura) da lista e confere
+    que nenhuma exceção nova apareceu (o teste de "botao_botoes.py" clica em
+    botões de verdade, mas aqui só se checa que o resize em si não derruba nada -
+    ver CLAUDE.md secao 4.5)."""
     global _contexto_atual
     ok = falhas = 0
     for largura, altura in tamanhos:
@@ -740,6 +769,10 @@ def redimensionar_sem_quebrar(janela, tamanhos) -> tuple[int, int]:
 
 
 def main(caminho_pdf: str) -> int:
+    """Instala os monkeypatches, abre a janela de verdade e roda, em ordem,
+    todos os testes de tela (inicial, opções, análise, conferir+ampliada,
+    processar+final, cartão+limpeza). Devolve 1 se qualquer clique ou
+    checagem de layout falhou em algum lugar."""
     _instalar_monkeypatches(caminho_pdf)
     if CAMINHO_DO_LOG.exists():
         CAMINHO_DO_LOG.unlink()

@@ -27,6 +27,8 @@ class BarraDeMenu(QMenuBar):
     """Monta os menus e guarda as acoes pelo nome, para a janela ligar depois."""
 
     def __init__(self, janela) -> None:
+        """Monta os sete menus de uma vez. Ligar cada acao a um metodo de
+        verdade e trabalho de quem cria a janela - ver `ligar`."""
         super().__init__(janela)
         self.janela = janela
         self.acoes: dict[str, QAction] = {}
@@ -47,12 +49,15 @@ class BarraDeMenu(QMenuBar):
     # --- montagem ---------------------------------------------------------
 
     def _menu(self, titulo: str):
+        """Cria um menu de topo e guarda pelo titulo, para mostrar/esconder depois."""
         menu = self.addMenu(titulo)
         self.menus[titulo] = menu
         return menu
 
     def _acao(self, menu, chave: str, texto: str, atalho: str = "",
               acao=None) -> QAction:
+        """Cria um item de menu, guarda em self.acoes[chave] para `ligar` achar
+        depois, e opcionalmente ja conecta a uma funcao (`acao`)."""
         item = QAction(texto, self.janela)
         if atalho:
             item.setShortcut(QKeySequence(atalho))
@@ -132,12 +137,18 @@ class BarraDeMenu(QMenuBar):
     # --- estado por tela --------------------------------------------------
 
     def mostrar_tela_inicial(self) -> None:
+        """Apaga (nao esconde) os menus que so fazem sentido na tela de trabalho.
+
+        Esconder e reaparecer mudaria a largura da barra ao trocar de tela -
+        ver o comentario do modulo.
+        """
         for titulo, menu in self.menus.items():
             menu.menuAction().setEnabled(titulo in MENUS_DA_TELA_INICIAL)
         for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar"):
             self.acoes[chave].setEnabled(False)
 
     def mostrar_tela_de_trabalho(self) -> None:
+        """Reacende todos os menus, ao entrar na tela de trabalho."""
         for menu in self.menus.values():
             menu.menuAction().setEnabled(True)
         for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar"):

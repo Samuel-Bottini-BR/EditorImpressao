@@ -22,12 +22,15 @@ PADROES: dict[str, Any] = {
 
 
 def _caminho() -> Path:
+    """Onde o configuracoes.json mora."""
     from historico import pasta_de_dados
 
     return pasta_de_dados() / ARQUIVO
 
 
 def carregar() -> dict[str, Any]:
+    """Le o arquivo, completando com PADROES o que faltar. Se o arquivo estiver
+    ausente ou corrompido, devolve so os padroes - nunca quebra o programa."""
     dados = dict(PADROES)
     try:
         arquivo = _caminho()
@@ -41,6 +44,7 @@ def carregar() -> dict[str, Any]:
 
 
 def salvar(dados: dict[str, Any]) -> None:
+    """Grava o dicionario inteiro. Falha em silencio (config nao e essencial)."""
     try:
         arquivo = _caminho()
         arquivo.parent.mkdir(parents=True, exist_ok=True)
@@ -52,10 +56,13 @@ def salvar(dados: dict[str, Any]) -> None:
 
 
 def ler(chave: str) -> Any:
+    """Le uma unica chave (recarrega o arquivo inteiro - configuracao e
+    pequena, nao vale a pena guardar em cache)."""
     return carregar().get(chave, PADROES.get(chave))
 
 
 def escrever(chave: str, valor: Any) -> None:
+    """Muda uma unica chave e regrava o arquivo inteiro."""
     dados = carregar()
     dados[chave] = valor
     salvar(dados)
@@ -78,6 +85,7 @@ def pasta_de_saida_sugerida() -> Path:
 
 
 def lembrar_pasta_de_saida(pasta: str | Path) -> None:
+    """Grava a pasta como sugestao para a proxima vez, so se ela existir de verdade."""
     caminho = Path(pasta)
     if caminho.is_dir():
         escrever("ultima_pasta_de_saida", str(caminho))
@@ -118,6 +126,9 @@ def pode_gravar_em(pasta: str | Path) -> tuple[bool, str]:
 
 
 def espaco_livre_mb(pasta: str | Path) -> float | None:
+    """Espaco livre em disco, em MB. os.statvfs primeiro (Linux/Mac - nao
+    existe no Windows, cai no except), shutil.disk_usage como plano B
+    (funciona em qualquer SO). None se nenhum dos dois conseguir responder."""
     try:
         return os.statvfs(pasta).f_bavail * os.statvfs(pasta).f_frsize / 1024 / 1024  # type: ignore[attr-defined]
     except (AttributeError, OSError):

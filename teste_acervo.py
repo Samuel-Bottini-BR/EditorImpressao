@@ -34,6 +34,11 @@ def _amostrar(total: int, quantas: int) -> list[int]:
 
 
 def recon(caminho: Path) -> dict:
+    """Amostra AMOSTRA paginas de um livro a DPI_AMOSTRA e devolve um
+    dicionario com o perfil dele: tamanho, DPI real, fracao de paginas em
+    paisagem/coloridas/tortas/em branco, e sinais usados para detectar mancha
+    do verso e amarelado - tudo para dimensionar o trabalho antes de gastar
+    hora de CPU processando o acervo inteiro."""
     doc = abrir_pdf(caminho)
     try:
         total = doc.page_count
@@ -98,6 +103,8 @@ def recon(caminho: Path) -> dict:
 
 
 def main(argumentos: list[str]) -> int:
+    """Roda `recon` em todo PDF de uma pasta e imprime uma tabela-resumo,
+    terminando com uma projecao de quanto tempo a analise do acervo inteiro levaria."""
     # a pasta e sempre o ultimo argumento; o que vier antes e so rotulo
     pasta = Path(argumentos[-1]) if len(argumentos) > 1 else Path(".")
     arquivos = sorted(pasta.glob("*.pdf"))

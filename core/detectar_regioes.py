@@ -107,6 +107,8 @@ ORLA_DO_TRACO = 1 / 250
 
 @dataclass
 class Achado:
+    """Uma caixa que o modelo de layout encontrou na pagina."""
+
     classe: str
     confianca: float
     caixa: tuple[float, float, float, float]   # fracoes 0 a 1
@@ -122,9 +124,16 @@ class DetectorDeLayout:
 
     @property
     def disponivel(self) -> bool:
+        """O modelo existe em disco e carregou com sucesso?"""
         return self._carregar() is not None
 
     def _carregar(self):
+        """Carrega a sessao ONNX uma unica vez (guarda em self._tentou).
+
+        Se faltar o arquivo ou o onnxruntime nao estiver instalado, devolve
+        None em vez de propagar erro - o resto do detector sabe lidar com
+        "sem modelo" caindo nos sinais que nao dependem dele.
+        """
         if self._tentou:
             return self._sessao
         self._tentou = True
@@ -142,6 +151,13 @@ class DetectorDeLayout:
         return self._sessao
 
     def achar(self, img: np.ndarray) -> list[Achado]:
+        """Roda o modelo na pagina e devolve as caixas encontradas.
+
+        Redimensiona para o lado de entrada do modelo (com padding cinza para
+        manter a proporcao) e depois converte as coordenadas de volta para
+        fracao da pagina original. Lista vazia se o modelo nao estiver
+        disponivel ou a inferencia falhar - nunca levanta excecao.
+        """
         sessao = self._carregar()
         if sessao is None:
             return []
@@ -225,6 +241,7 @@ def mascara_de_cor(img: np.ndarray) -> np.ndarray:
 
 
 def _caixas_para_mascara(achados, classes, altura, largura) -> np.ndarray:
+    """Preenche de True os retangulos dos achados cuja classe esta em `classes`."""
     m = np.zeros((altura, largura), bool)
     for a in achados:
         if a.classe not in classes:
@@ -564,6 +581,7 @@ def _tapar_buracos_da_iluminura(gravura: np.ndarray, tinta: np.ndarray) -> np.nd
 
 
 def _area_da_caixa(achado: "Achado") -> float:
+    """Area da caixa do achado, em fracao da pagina (0 a 1)."""
     x0, y0, x1, y1 = achado.caixa
     return max(0.0, x1 - x0) * max(0.0, y1 - y0)
 
@@ -929,6 +947,8 @@ def refinar_para_tinta(
 
 
 def _tres_canais_ou_cinza(img: np.ndarray) -> np.ndarray:
+    """Garante BGR de 3 canais - varias contas aqui usam cv2.cvtColor(..., HSV/etc)
+    que exige 3 canais, mesmo quando a pagina de entrada e so cinza."""
     return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.ndim == 2 else img
 
 

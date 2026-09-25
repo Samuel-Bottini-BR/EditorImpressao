@@ -79,6 +79,7 @@ class Medidor(QFrame):
 
     @property
     def valor(self) -> int:
+        """O valor atual do medidor, de AJUSTE_MIN a AJUSTE_MAX (0-100)."""
         return int(self.barra.value())
 
     def definir(self, valor: int) -> None:
@@ -94,6 +95,9 @@ class Medidor(QFrame):
 
     def definir_rotulo(self, rotulo: str, ponta_esquerda: str,
                        ponta_direita: str) -> None:
+        """Troca o texto do rotulo e das pontas - usado ao trocar de filtro,
+        onde o mesmo medidor passa a significar outra coisa ("Força do preto"
+        vira "Clareza do fundo", por exemplo)."""
         self.rotulo.setText(rotulo)
         linha = self.layout().itemAt(0).layout()
         linha.itemAt(1).widget().setText(ponta_esquerda)
@@ -102,8 +106,10 @@ class Medidor(QFrame):
     # --- interno ----------------------------------------------------------
 
     def _mudou(self, valor: int) -> None:
+        """A cada passo do arrasto: atualiza a palavra e emite `arrastando`."""
         self.palavra.setText(palavra_do_ajuste(valor))
         self.arrastando.emit(int(valor))
 
     def _largou(self) -> None:
+        """Ao soltar o mouse: emite `soltou`, o sinal que vira acao no desfazer."""
         self.soltou.emit(self.valor)

@@ -33,6 +33,7 @@ def gravar(caminho: Path, img: np.ndarray) -> bool:
 
 
 def rotular(img: np.ndarray, texto: str) -> np.ndarray:
+    """Cola uma faixa branca com o nome do filtro em cima da imagem."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     faixa = np.full((50, img.shape[1], 3), 255, dtype=np.uint8)
@@ -42,6 +43,7 @@ def rotular(img: np.ndarray, texto: str) -> np.ndarray:
 
 
 def juntar(paineis: list[np.ndarray]) -> np.ndarray:
+    """Junta os paineis lado a lado, com uma tarja cinza entre eles."""
     altura = max(p.shape[0] for p in paineis)
     partes = []
     for p in paineis:
@@ -54,6 +56,7 @@ def juntar(paineis: list[np.ndarray]) -> np.ndarray:
 
 
 def comparativo(bruta: np.ndarray) -> np.ndarray:
+    """Painel com os quatro filtros lado a lado, na pagina inteira (reduzida)."""
     paineis = []
     for filtro, nome in ((ORIGINAL, "Original"), (PRETO_E_BRANCO, "Preto e branco"),
                          (MELHORAR, "Melhorar"), (MAGICO_PRO, "Magico pro")):
@@ -64,6 +67,8 @@ def comparativo(bruta: np.ndarray) -> np.ndarray:
 
 def ampliacao(bruta: np.ndarray, fx=0.18, fy=0.30, largura=760, altura=520,
               filtros=(ORIGINAL, MELHORAR, MAGICO_PRO)) -> np.ndarray:
+    """Painel com um recorte ampliado (fx,fy = posicao relativa do canto) da
+    mesma pagina, em resolucao cheia, para julgar nitidez de perto."""
     h, w = bruta.shape[:2]
     y, x = int(h * fy), int(w * fx)
     recorte = bruta[y:min(h, y + altura), x:min(w, x + largura)]
@@ -77,6 +82,9 @@ def ampliacao(bruta: np.ndarray, fx=0.18, fy=0.30, largura=760, altura=520,
 
 
 def main(caminho: str, paginas: list[int]) -> int:
+    """Gera o comparativo e a ampliacao para cada pagina pedida (ou, sem
+    pedido nenhum, escolhe sozinho a mais colorida e a mais torta amostrando
+    o livro inteiro a 90 DPI)."""
     livro = Path(caminho)
     destino = livro.parent / "resultados" / livro.stem[:40]
     doc = abrir_pdf(livro)

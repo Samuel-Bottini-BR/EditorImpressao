@@ -1268,6 +1268,8 @@ def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.nda
 
 
 def _tres_canais(img: np.ndarray) -> np.ndarray:
+    """Garante BGR de 3 canais - a mistura por peso (_misturar) e as demais
+    contas deste arquivo assumem imagem colorida mesmo quando a entrada e cinza."""
     return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.ndim == 2 else img
 
 

@@ -155,12 +155,14 @@ class Resumo:
 
     @property
     def progresso(self) -> float:
+        """Fracao de 0 a 1 (paginas conferidas / total), para a barrinha do cartao."""
         if self.total_paginas <= 0:
             return 0.0
         return min(1.0, self.conferidas / self.total_paginas)
 
     @property
     def frase_do_progresso(self) -> str:
+        """O texto embaixo da barra: "pronto", "ainda nao olhado" ou "X de Y conferidas"."""
         if self.pdf_gerado:
             return "pronto, PDF gerado"
         if self.total_paginas <= 0:
@@ -185,10 +187,13 @@ class Resumo:
 
 
 def pasta_dos_projetos() -> Path:
+    """A pasta-mae onde cada projeto tem a sua subpasta (atalho para
+    historico.pasta_de_projetos)."""
     return historico.pasta_de_projetos()
 
 
 def _caminho_do_resumo(pasta: Path) -> Path:
+    """Onde o resumo.json de UM projeto mora."""
     return Path(pasta) / ARQUIVO_RESUMO
 
 
@@ -208,6 +213,7 @@ def gravar_resumo(resumo: Resumo) -> None:
 
 
 def ler_resumo(pasta: str | Path) -> Resumo | None:
+    """Le o resumo.json de uma pasta de projeto, ou None se faltar/estiver corrompido."""
     caminho = _caminho_do_resumo(Path(pasta))
     if not caminho.is_file():
         return None
@@ -362,6 +368,7 @@ ALTURA_DA_MINIATURA = 224
 
 
 def caminho_da_miniatura(resumo: Resumo) -> Path:
+    """Onde a capa.png deste projeto mora (pode nao existir ainda - ver garantir_miniatura)."""
     return Path(resumo.pasta) / ARQUIVO_MINIATURA
 
 

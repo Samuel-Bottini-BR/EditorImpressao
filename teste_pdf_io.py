@@ -35,6 +35,7 @@ SAIDA = Path("saida_teste")
 
 
 def main(caminho: str) -> int:
+    """Roda os cinco passos descritos no docstring do modulo, em sequencia."""
     SAIDA.mkdir(exist_ok=True)
 
     try:

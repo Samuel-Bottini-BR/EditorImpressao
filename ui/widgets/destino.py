@@ -80,6 +80,8 @@ class SeletorDestino(QFrame):
     # --- uso --------------------------------------------------------------
 
     def definir(self, pasta: str | Path | None, nome: str) -> None:
+        """Preenche pasta e nome de uma vez (ex.: ao abrir a janela de
+        confirmar com os valores ja salvos do projeto)."""
         if pasta:
             self._pasta = Path(pasta)
         self.campo_nome.setText(nome)
@@ -88,6 +90,7 @@ class SeletorDestino(QFrame):
 
     @property
     def pasta(self) -> Path:
+        """A pasta de destino escolhida."""
         return self._pasta
 
     @property
@@ -103,9 +106,11 @@ class SeletorDestino(QFrame):
 
     @property
     def caminho(self) -> Path:
+        """Pasta + nome juntos: o caminho completo do PDF de saida."""
         return self._pasta / self.nome
 
     def escolher_pasta(self) -> None:
+        """Abre o seletor nativo de pastas e valida se da para gravar ali."""
         # Sem DontUseNativeDialog: queremos o seletor de pastas do proprio
         # Windows, que e o que o usuario ja conhece.
         escolhida = QFileDialog.getExistingDirectory(
@@ -129,6 +134,7 @@ class SeletorDestino(QFrame):
     # --- interno ----------------------------------------------------------
 
     def _mostrar_pasta(self) -> None:
+        """Mostra o caminho da pasta, encurtado pelo MEIO se for comprido demais."""
         texto = str(self._pasta)
         if len(texto) > LARGURA_MAXIMA_CAMINHO:
             # encurta pelo MEIO: o comeco (o disco) e o fim (a pasta) sao o que
@@ -139,10 +145,14 @@ class SeletorDestino(QFrame):
         self.rotulo_pasta.setToolTip(str(self._pasta))
 
     def _avisar(self, mensagem: str) -> None:
+        """Mostra (ou esconde, com string vazia) a faixa de aviso vermelha."""
         self.aviso.setText(mensagem)
         self.aviso.setVisible(bool(mensagem))
 
     def _conferir(self) -> None:
+        """Reavalia o destino a cada mudanca: pasta sem permissao vira aviso
+        vermelho, nome ja existente vira aviso neutro (nao bloqueia, so avisa -
+        quem pergunta se substitui e a janela de confirmar)."""
         pode, motivo = configuracoes.pode_gravar_em(self._pasta)
         if not pode:
             self._avisar(motivo)
@@ -157,4 +167,5 @@ class SeletorDestino(QFrame):
         self._avisar("")
 
     def pronto_para_gravar(self) -> tuple[bool, str]:
+        """(pode gravar?, motivo se nao puder) - usado para ligar/desligar o botão Processar."""
         return configuracoes.pode_gravar_em(self._pasta)

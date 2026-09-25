@@ -54,15 +54,20 @@ class CartaoFiltro(QFrame):
         self._aplicar_borda()
 
     def definir_amostra(self, img: np.ndarray | None) -> None:
+        """Poe (ou tira, com None) a imagem mostrada no cartao. None mostra
+        "preparando..." - ver _Amostra.paintEvent."""
         self.amostra.definir(img)
 
     def definir_selecionado(self, selecionado: bool) -> None:
+        """Liga/desliga a borda azul de destaque. Nao redesenha a toa se o
+        estado nao mudou."""
         if self.selecionado == selecionado:
             return
         self.selecionado = selecionado
         self._aplicar_borda()
 
     def _aplicar_borda(self) -> None:
+        """Redesenha o estilo do cartão (borda + cor do nome) conforme selecionado."""
         cor = AZUL if self.selecionado else BORDA
         espessura = 3 if self.selecionado else 1
         self.setStyleSheet(
@@ -95,10 +100,13 @@ class _Amostra(QWidget):
         self._pixmap: QPixmap | None = None
 
     def definir(self, img: np.ndarray | None) -> None:
+        """Guarda o array numpy como QPixmap e pede um redesenho."""
         self._pixmap = None if img is None else QPixmap.fromImage(numpy_para_qimage(img))
         self.update()
 
     def paintEvent(self, evento) -> None:  # noqa: N802
+        """Desenha a amostra centralizada e proporcional, ou "preparando..." se
+        ainda nao chegou."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.SmoothPixmapTransform)
         pintor.fillRect(self.rect(), QColor("#f9fafb"))

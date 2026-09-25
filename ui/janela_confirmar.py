@@ -37,6 +37,8 @@ class JanelaConfirmar(QDialog):
     """Pasta, nome e os avisos. Devolve o caminho escolhido, ou None."""
 
     def __init__(self, projeto, nome_sugerido: str, parent=None) -> None:
+        """Monta a janela: seletor de destino, as duas faixas de aviso (ocultas
+        ate _reavaliar decidir se aparecem) e o resumo do livro."""
         super().__init__(parent)
         self.setWindowTitle("Confirmar e processar")
         self.setStyleSheet(FOLHA_DE_ESTILO)
@@ -80,6 +82,8 @@ class JanelaConfirmar(QDialog):
     # --- pedacos ----------------------------------------------------------
 
     def _faixa_de_aviso(self) -> QFrame:
+        """Cria uma faixa laranja de aviso, ja comecando escondida.
+        O rotulo fica pendurado em faixa.rotulo para _reavaliar preencher."""
         faixa = QFrame()
         faixa.setStyleSheet(
             f"QFrame {{ background: {LARANJA_FUNDO}; border: 1px solid {LARANJA}; "
@@ -94,6 +98,7 @@ class JanelaConfirmar(QDialog):
         return faixa
 
     def _frase_do_livro(self) -> str:
+        """Frase-resumo: quantas páginas vão pro PDF e quantas foram apagadas."""
         paginas = [p for p in self.projeto.paginas if not p.apagada]
         apagadas = len(self.projeto.paginas) - len(paginas)
         frase = f"{len(paginas)} páginas vão para o PDF"
@@ -104,10 +109,16 @@ class JanelaConfirmar(QDialog):
     # --- avisos -----------------------------------------------------------
 
     def _nao_conferidas(self) -> int:
+        """Quantas páginas (nao apagadas) a pessoa ainda nao olhou na tela de conferir."""
         return sum(1 for p in self.projeto.paginas
                    if not p.apagada and not p.revisada)
 
     def _reavaliar(self) -> None:
+        """Reconstroi os dois avisos e liga/desliga o botão Processar.
+
+        Chamado toda vez que o destino muda (sinal `alterado`), e uma vez no
+        fim do __init__ para o estado inicial já sair correto.
+        """
         caminho = self.destino.caminho
 
         if caminho.exists():
@@ -136,6 +147,7 @@ class JanelaConfirmar(QDialog):
 
     @property
     def caminho(self) -> Path:
+        """O caminho de arquivo escolhido no seletor de destino."""
         return self.destino.caminho
 
 

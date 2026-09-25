@@ -61,6 +61,8 @@ class BarraOpcoes(QFrame):
     operacao_mudou = Signal(str)
 
     def __init__(self, parent=None) -> None:
+        """Monta o esqueleto fixo (rotulo, area de controles, dica, botões
+        somar/tirar) e comeca ja no estado da ferramenta "retangulo"."""
         super().__init__(parent)
         self.setFixedHeight(ALTURA)
         self.setStyleSheet(
@@ -93,6 +95,8 @@ class BarraOpcoes(QFrame):
     # --- somar e tirar, sempre a direita ----------------------------------
 
     def _montar_modos(self) -> None:
+        """Cria os botões somar/tirar (ver o comentário do modulo: nao sao
+        ferramentas, sao modos que ficam sempre visiveis a direita)."""
         self.botoes_modo: dict[str, QPushButton] = {}
         for chave, texto in ((SOMAR, "somar"), (SUBTRAIR, "tirar")):
             botao = QPushButton(texto)
@@ -103,6 +107,8 @@ class BarraOpcoes(QFrame):
         self._escolher_modo(SOMAR, avisar=False)
 
     def _escolher_modo(self, modo: str, avisar: bool = True) -> None:
+        """Marca visualmente o botão escolhido. avisar=False so no estado
+        inicial, para nao emitir um sinal antes de qualquer coisa estar ligada."""
         self.operacao = modo
         for chave, botao in self.botoes_modo.items():
             escolhido = chave == modo
@@ -159,6 +165,7 @@ class BarraOpcoes(QFrame):
             botao.setVisible(de_marcar)
 
     def _limpar(self) -> None:
+        """Remove os controles da ferramenta anterior antes de montar a nova faixa."""
         while self.dentro.count():
             item = self.dentro.takeAt(0)
             widget = item.widget()
@@ -168,6 +175,7 @@ class BarraOpcoes(QFrame):
 
     def _deslizante(self, nome: str, minimo: int, maximo: int, valor: int,
                     aviso, sufixo: str = "") -> QSlider:
+        """Monta rotulo + slider (+ sufixo opcional), ligando o slider ao callback `aviso`."""
         rotulo = QLabel(nome)
         rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; border: none;")
         self.dentro.addWidget(rotulo)
@@ -186,6 +194,7 @@ class BarraOpcoes(QFrame):
         return deslizante
 
     def _botao(self, texto: str, acao) -> QPushButton:
+        """Um botão simples na faixa de controles, com o estilo neutro de BOTAO_DE_MODO."""
         botao = QPushButton(texto)
         botao.setCursor(Qt.PointingHandCursor)
         botao.setStyleSheet(BOTAO_DE_MODO.format(

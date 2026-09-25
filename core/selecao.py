@@ -107,6 +107,7 @@ class Regiao:
     suavidade: float = 0.0
 
     def valida(self) -> bool:
+        """Tipo e forma reconhecidos, e pontos suficientes para desenhar a forma?"""
         if self.tipo not in TIPOS or self.forma not in FORMAS:
             return False
         minimo = {RETANGULO: 2, ELIPSE: 2, POLIGONO: 3, TRACO: 1}[self.forma]
@@ -115,12 +116,16 @@ class Regiao:
     # --- serializacao -------------------------------------------------------
 
     def para_dicionario(self) -> dict[str, Any]:
+        """Forma pronta para gravar em JSON (projeto.json)."""
         dados = asdict(self)
         dados["pontos"] = [[float(x), float(y)] for x, y in self.pontos]
         return dados
 
     @staticmethod
     def de_dicionario(dados: dict[str, Any]) -> "Regiao":
+        """Reconstroi a partir do JSON. Chave desconhecida e descartada, e nao
+        erro - e o que deixa um projeto de versao anterior abrir sem quebrar
+        (ver o comentario do campo `filtro` acima)."""
         validos = {c.name for c in fields(Regiao)}
         limpos = {k: v for k, v in dados.items() if k in validos}
         pontos = limpos.get("pontos") or []
@@ -129,6 +134,7 @@ class Regiao:
 
 
 def _pixels(pontos, largura: int, altura: int) -> np.ndarray:
+    """Converte pontos em fracao (0 a 1) para coordenadas inteiras em pixels."""
     return np.array(
         [[int(round(x * largura)), int(round(y * altura))] for x, y in pontos],
         dtype=np.int32,
@@ -184,9 +190,11 @@ class Selecao:
 
     @property
     def vazia(self) -> bool:
+        """Nenhuma regiao marcada nesta pagina."""
         return not self.regioes
 
     def acrescentar(self, regiao: Regiao) -> None:
+        """Adiciona ao fim da lista - regiao invalida e ignorada em silencio."""
         if regiao.valida():
             self.regioes.append(regiao)
 
@@ -270,6 +278,7 @@ class Selecao:
         return vistos
 
     def tipos_presentes(self) -> list[str]:
+        """Quais tipos (gravura/letra/papel/fora) tem pelo menos uma regiao aqui."""
         return [t for t in TIPOS if any(r.tipo == t for r in self.regioes)]
 
     def resumo_em_portugues(self) -> str:
@@ -288,6 +297,7 @@ class Selecao:
     # --- serializacao -------------------------------------------------------
 
     def para_lista(self) -> list[dict[str, Any]]:
+        """Todas as regioes como lista de dicionarios, pronta para JSON."""
         return [r.para_dicionario() for r in self.regioes]
 
     @staticmethod
@@ -308,21 +318,26 @@ class Selecao:
         return Selecao(regioes=regioes)
 
 
-# --- atalhos para quem desenha ----------------------------------------------
+# --- atalhos para quem desenha -----------------------------------------------
+# Tres construtores de conveniencia, um por forma, para quem chama nao precisar
+# montar Regiao(...) na mao toda vez.
 
 def retangulo(x0: float, y0: float, x1: float, y1: float, tipo: str = GRAVURA,
               origem: str = MAO, **extra) -> Regiao:
+    """Regiao retangular a partir de dois cantos opostos (em fracao 0 a 1)."""
     return Regiao(tipo=tipo, forma=RETANGULO, pontos=[(x0, y0), (x1, y1)],
                   origem=origem, **extra)
 
 
 def poligono(pontos, tipo: str = GRAVURA, origem: str = MAO, **extra) -> Regiao:
+    """Regiao poligonal a partir de uma lista de pontos (em fracao 0 a 1)."""
     return Regiao(tipo=tipo, forma=POLIGONO, pontos=list(pontos),
                   origem=origem, **extra)
 
 
 def traco(pontos, espessura: float = 0.02, tipo: str = GRAVURA,
           origem: str = MAO, **extra) -> Regiao:
+    """Regiao de pincel: uma linha com espessura, para marcar a mao livre."""
     return Regiao(tipo=tipo, forma=TRACO, pontos=list(pontos),
                   espessura=espessura, origem=origem, **extra)
 

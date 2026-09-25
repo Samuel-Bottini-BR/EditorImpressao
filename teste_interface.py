@@ -24,6 +24,7 @@ _passo = 0
 
 
 def capturar(janela, nome: str) -> None:
+    """Tira um print da janela e grava numerado em SAIDA (para ver a ordem dos passos)."""
     global _passo
     _passo += 1
     QApplication.processEvents()
@@ -44,11 +45,18 @@ def esperar(segundos: float, condicao=None) -> bool:
 
 
 def tecla(janela, chave, modificadores=Qt.NoModifier) -> None:
+    """Simula uma tecla (com modificador opcional, ex.: Ctrl+Z) direto na janela."""
     janela.keyPressEvent(QKeyEvent(QEvent.KeyPress, chave, modificadores))
     QApplication.processEvents()
 
 
 def main(caminho_pdf: str) -> int:
+    """Dirige a interface de ponta a ponta - abrir, opções, análise, trocar
+    filtro, desfazer/refazer (item a item e em lote), apagar página, navegar,
+    mover a linha de corte, escolher destino (com higienizacao de nome e
+    recusa de pasta invalida) e processar - conferindo cada passo com
+    `assert` e gravando um print numerado. Levanta AssertionError na primeira
+    coisa que sair diferente do esperado."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     app = QApplication(sys.argv)
 

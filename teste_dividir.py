@@ -25,6 +25,10 @@ SAIDA = Path("saida_teste/dividir")
 
 
 def main(caminho: str, quantas: int) -> int:
+    """Roda lombada/deskew/recorte nas primeiras `quantas` folhas, imprime uma
+    tabela com confianca de cada deteccao e grava uma imagem por folha com a
+    linha de corte (azul) e o retangulo de recorte (verde) desenhados. No fim
+    grava tambem uma amostra ja dividida e recortada de verdade (esquerda/direita)."""
     SAIDA.mkdir(parents=True, exist_ok=True)
     doc = abrir_pdf(caminho)
     total = doc.page_count

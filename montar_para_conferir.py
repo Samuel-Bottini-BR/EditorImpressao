@@ -160,6 +160,8 @@ QUADROS = [
 
 
 def montar() -> Path:
+    """Monta o HTML a partir de QUADROS (imagens embutidas em base64, para o
+    arquivo abrir sozinho sem depender da pasta de prints) e grava em SAIDA."""
     partes = ["""<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <title>Editor de Impressão - para conferir</title>

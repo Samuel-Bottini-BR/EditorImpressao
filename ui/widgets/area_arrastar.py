@@ -29,6 +29,8 @@ class AreaArrastar(QWidget):
     # --- desenho ----------------------------------------------------------
 
     def paintEvent(self, evento) -> None:  # noqa: N802
+        """Desenha a caixa tracejada, o icone de arquivo (a mao, nunca emoji)
+        e o texto - muda de cor quando um PDF esta sendo arrastado por cima."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
 
@@ -60,6 +62,7 @@ class AreaArrastar(QWidget):
         pintor.drawText(texto_x, meio + 16, "ou clique para procurar no computador")
 
     def _desenhar_icone_arquivo(self, pintor: QPainter, x: int, y: int) -> None:
+        """Um icone de folha com a quina dobrada, desenhado a mao com QPainterPath."""
         largura, altura, dobra = 26, 32, 8
 
         pintor.setPen(QPen(QColor(AZUL), 2))
@@ -88,16 +91,19 @@ class AreaArrastar(QWidget):
     # --- interacao --------------------------------------------------------
 
     def dragEnterEvent(self, evento) -> None:  # noqa: N802
+        """So aceita o arrasto (e acende a cor azul) se for mesmo um PDF."""
         if self._pdf_de(evento):
             evento.acceptProposedAction()
             self._por_cima = True
             self.update()
 
     def dragLeaveEvent(self, evento) -> None:  # noqa: N802
+        """Volta a cor normal quando o arrasto sai da area sem soltar."""
         self._por_cima = False
         self.update()
 
     def dropEvent(self, evento) -> None:  # noqa: N802
+        """PDF solto na area: emite arquivo_escolhido com o caminho."""
         self._por_cima = False
         self.update()
         caminho = self._pdf_de(evento)
@@ -105,6 +111,12 @@ class AreaArrastar(QWidget):
             self.arquivo_escolhido.emit(caminho)
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802
+        """Clique com o botão esquerdo abre o seletor de arquivo.
+
+        O menu Arquivo > Abrir (ui/janela_principal.py, _montar_menu) chama
+        `abrir_dialogo_de_arquivo` diretamente, e NAO este metodo - de
+        propósito, para nao precisar simular um QMouseEvent falso so para
+        acionar o clique (ver o metodo abaixo)."""
         if evento.button() != Qt.LeftButton:
             return
         self.abrir_dialogo_de_arquivo()
@@ -119,6 +131,7 @@ class AreaArrastar(QWidget):
 
     @staticmethod
     def _pdf_de(evento) -> str | None:
+        """Extrai o caminho do primeiro PDF entre as URLs arrastadas, ou None."""
         dados = evento.mimeData()
         if not dados.hasUrls():
             return None

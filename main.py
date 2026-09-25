@@ -10,6 +10,10 @@ import traceback
 
 
 def main() -> int:
+    """Sobe o QApplication, arma a rede de seguranca contra excecao nao
+    tratada (regra 3.3: nunca stack trace na tela) e abre a janela principal.
+    Se o programa foi chamado com um caminho de PDF (associacao de arquivo do
+    instalador), abre esse livro direto."""
     from PySide6.QtCore import Qt
     from PySide6.QtWidgets import QApplication, QMessageBox
 

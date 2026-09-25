@@ -112,6 +112,8 @@ ALERTAS: dict[str, Alerta] = {
 
 
 def descrever(codigo: str) -> Alerta:
+    """O Alerta completo para um codigo. Codigo desconhecido vira um alerta
+    generico ("Confira esta página") em vez de quebrar a interface."""
     return ALERTAS.get(
         codigo, Alerta(codigo, codigo, "Confira esta página.", None, None)
     )

@@ -33,7 +33,9 @@ LARGURA_MAXIMA = 62
 
 
 class _Sinais(QObject):
-    pronta = Signal(int, object)
+    """Sinal da tarefa de miniaturas - separado porque QRunnable nao e QObject."""
+
+    pronta = Signal(int, object)   # indice_da_folha, imagem numpy
 
 
 class _TarefaMiniaturas(QRunnable):
@@ -47,6 +49,9 @@ class _TarefaMiniaturas(QRunnable):
         self.parar = False
 
     def run(self) -> None:
+        """Le cada FOLHA uma vez (`self.indices` ja vem sem repeticao - ver
+        montar()) em resolucao bem baixa (20 DPI) e emite conforme vai pronta.
+        `self.parar` permite interromper no meio de um livro grande."""
         try:
             doc = abrir_pdf(self.caminho_pdf)
             try:
@@ -76,10 +81,13 @@ class Miniatura(QFrame):
         self.setCursor(Qt.PointingHandCursor)
 
     def definir_imagem(self, img: np.ndarray) -> None:
+        """Guarda a miniatura recebida e pede redesenho."""
         self._pixmap = QPixmap.fromImage(numpy_para_qimage(img))
         self.update()
 
     def paintEvent(self, evento) -> None:  # noqa: N802
+        """Desenha a imagem (ou cinza, se ainda nao chegou), a moldura
+        (azul=selecionada, laranja=alerta) e o número/rótulo embaixo."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
 
@@ -124,12 +132,15 @@ class Miniatura(QFrame):
         pintor.drawText(rodape, Qt.AlignCenter, rotulo)
 
     def _tira(self):
+        """Sobe na arvore de widgets ate achar a TiraMiniaturas dona, para
+        emitir os sinais dela (a miniatura nao guarda referencia direta)."""
         tira = self.parent()
         while tira is not None and not isinstance(tira, TiraMiniaturas):
             tira = tira.parent()
         return tira
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802
+        """Clique simples seleciona esta página."""
         if evento.button() == Qt.LeftButton:
             tira = self._tira()
             if tira is not None:
@@ -150,6 +161,7 @@ class TiraMiniaturas(QWidget):
     ampliar_pedido = Signal(int)   # duplo clique numa miniatura
 
     def __init__(self, titulo: str, parent=None) -> None:
+        """Monta a area de rolagem vazia; os quadros so aparecem em `montar`."""
         super().__init__(parent)
         self._miniaturas: list[Miniatura] = []
         self._tarefa: _TarefaMiniaturas | None = None
@@ -211,6 +223,8 @@ class TiraMiniaturas(QWidget):
         self._pool.start(self._tarefa)
 
     def limpar(self) -> None:
+        """Interrompe a geracao em andamento e tira todos os quadros - usado
+        antes de remontar (livro novo) e em `parar`."""
         if self._tarefa is not None:
             self._tarefa.parar = True
             self._tarefa = None
@@ -221,6 +235,8 @@ class TiraMiniaturas(QWidget):
         self._mapa_folha.clear()
 
     def _receber(self, indice_folha: int, img: np.ndarray) -> None:
+        """Uma folha chegou pronta: distribui (recortada pela metade certa)
+        para TODAS as páginas que vieram dela (ver _mapa_folha em montar())."""
         for indice in self._mapa_folha.get(indice_folha, []):
             if 0 <= indice < len(self._miniaturas):
                 self._miniaturas[indice].definir_imagem(self._metade(indice, img))
@@ -242,6 +258,7 @@ class TiraMiniaturas(QWidget):
     # --- estado -----------------------------------------------------------
 
     def marcar(self, indice: int, em_alerta: bool = False, apagada: bool = False) -> None:
+        """Liga/desliga a moldura de alerta e a marca de apagada de uma miniatura."""
         if 0 <= indice < len(self._miniaturas):
             mini = self._miniaturas[indice]
             mini.em_alerta = em_alerta
@@ -249,6 +266,7 @@ class TiraMiniaturas(QWidget):
             mini.update()
 
     def selecionar(self, indice: int) -> None:
+        """Marca a miniatura escolhida (borda grossa) e rola a tira para ela ficar visivel."""
         for i, mini in enumerate(self._miniaturas):
             estava = mini.selecionada
             mini.selecionada = i == indice
@@ -258,8 +276,12 @@ class TiraMiniaturas(QWidget):
             self.rolagem.ensureWidgetVisible(self._miniaturas[indice], 200, 0)
 
     def definir_titulo(self, texto: str) -> None:
+        """Muda o texto do rotulo (hoje invisivel - ver o comentario no __init__)."""
         self.rotulo.setText(texto)
 
     def parar(self) -> None:
+        """Interrompe a geracao e espera a thread atual terminar. Chamar ao
+        trocar de livro ou fechar, para nao deixar tarefa orfa escrevendo
+        numa tira que ja nao existe mais."""
         self.limpar()
         self._pool.waitForDone(2000)

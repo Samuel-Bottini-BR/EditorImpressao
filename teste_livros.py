@@ -92,6 +92,7 @@ def _marca_do_verso(img: np.ndarray) -> float:
 
 
 def medir(img: np.ndarray, numero: int, dpi_real: float) -> Medidas:
+    """Roda todas as deteccoes numa pagina e devolve o pacote de Medidas dela."""
     altura, largura = img.shape[:2]
     lombada = detectar_lombada(img)
     inclinacao = detectar_angulo(img)
@@ -118,6 +119,7 @@ def medir(img: np.ndarray, numero: int, dpi_real: float) -> Medidas:
 
 
 def _rotular(img: np.ndarray, texto: str, altura_faixa: int = 54) -> np.ndarray:
+    """Cola uma faixa branca com o nome do filtro em cima da imagem."""
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     faixa = np.full((altura_faixa, img.shape[1], 3), 255, dtype=np.uint8)
@@ -129,6 +131,7 @@ def _rotular(img: np.ndarray, texto: str, altura_faixa: int = 54) -> np.ndarray:
 
 
 def _lado_a_lado(paineis: list[np.ndarray]) -> np.ndarray:
+    """Junta os paineis lado a lado, com uma tarja cinza entre eles."""
     altura = max(p.shape[0] for p in paineis)
     partes = []
     for p in paineis:
@@ -162,6 +165,9 @@ def comparativo(doc, indice: int, destino: Path, motivo: str) -> None:
 
 
 def analisar_arquivo(caminho: Path) -> None:
+    """Mede o livro inteiro a DPI_ANALISE, imprime o relatorio de texto
+    (`_relatorio`) e gera os comparativos das paginas mais dificeis
+    (`_gerar_comparativos`)."""
     print("\n" + "=" * 74)
     print(f"ARQUIVO: {caminho.name}")
     print("=" * 74)
@@ -302,6 +308,9 @@ def _gerar_comparativos(doc, medidas: list[Medidas], destino: Path) -> None:
 
 
 def main(alvos: list[str]) -> int:
+    """Aceita arquivos e/ou pastas na linha de comando (pasta = todos os
+    .pdf dentro) e analisa cada um. Um livro que falha não interrompe os
+    outros - o erro so vira uma linha impressa."""
     SAIDA.mkdir(parents=True, exist_ok=True)
 
     arquivos: list[Path] = []

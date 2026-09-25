@@ -52,6 +52,9 @@ class Conferencia(QWidget):
     """Uma imagem por vez, e o que a pessoa disse sobre ela."""
 
     def __init__(self, imagens: list[Path], assunto: str) -> None:
+        """Monta a janela de conferencia com os atalhos de teclado (espaco =
+        certa, seta esquerda = voltar, Ctrl+Enter = errada) e mostra a
+        primeira imagem."""
         super().__init__()
         self.imagens = imagens
         self.assunto = assunto
@@ -116,6 +119,7 @@ class Conferencia(QWidget):
         self.mostrar()
 
     def mostrar(self) -> None:
+        """Exibe a imagem atual (ou termina a conferencia se acabaram as imagens)."""
         if self.atual >= len(self.imagens):
             self.terminar()
             return
@@ -131,6 +135,7 @@ class Conferencia(QWidget):
         self.caixa.setFocus()
 
     def resizeEvent(self, evento):  # noqa: N802 - nome do Qt
+        """Reescala a imagem atual quando a janela muda de tamanho."""
         super().resizeEvent(evento)
         if self.atual < len(self.imagens):
             figura = QPixmap(str(self.imagens[self.atual]))
@@ -140,6 +145,8 @@ class Conferencia(QWidget):
                     Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
     def responder(self, certa: bool) -> None:
+        """Registra o veredito da imagem atual e avanca para a proxima.
+        "certa" com algo escrito ainda vira ERRADA - o texto e sempre uma ressalva."""
         dito = self.caixa.toPlainText().strip()
         self.vereditos.append({
             "imagem": self.imagens[self.atual].name,
@@ -150,6 +157,7 @@ class Conferencia(QWidget):
         self.mostrar()
 
     def voltar(self) -> None:
+        """Desfaz o ultimo veredito e volta uma imagem, devolvendo o que foi escrito."""
         if self.atual > 0:
             self.atual -= 1
             if self.vereditos:
@@ -158,6 +166,8 @@ class Conferencia(QWidget):
                 self.caixa.setPlainText(anterior["o_que_disse"])
 
     def terminar(self) -> None:
+        """Monta o relatorio final (tabela de erradas + tabela completa) e
+        grava nos tres formatos (regra do CLAUDE.md secao 2 - ver relatorio.gravar)."""
         pasta = relatorio.pasta_de_teste(self.assunto, "")
         erradas = [v for v in self.vereditos if v["veredito"] == "ERRADA"]
 
@@ -190,6 +200,8 @@ class Conferencia(QWidget):
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Ponto de entrada de linha de comando: acha as imagens na pasta pedida
+    (ou relatorios/selecao por padrão) e abre a janela de conferencia."""
     argv = list(sys.argv[1:] if argv is None else argv)
     pasta = Path(argv[0]) if argv else (RAIZ / "relatorios" / "selecao")
     if not pasta.is_dir():

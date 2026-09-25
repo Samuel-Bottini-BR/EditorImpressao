@@ -60,6 +60,7 @@ OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder"]
 
 
 def _tamanho(caminho: Path) -> str:
+    """Tamanho em MB, de um arquivo ou (somando tudo dentro) de uma pasta."""
     if caminho.is_file():
         mb = caminho.stat().st_size / 1024 / 1024
     else:
@@ -95,6 +96,7 @@ def _pyinstaller(onefile: bool) -> bool:
 
 
 def achar_inno() -> Path | None:
+    """Localiza o compilador do Inno Setup (ISCC.exe) nos lugares usuais, ou no PATH."""
     for caminho in CAMINHOS_DO_INNO:
         if caminho.exists():
             return caminho
@@ -233,6 +235,8 @@ def entregar() -> Path | None:
 
 
 def main() -> int:
+    """Linha de comando: escolhe o que construir conforme --modo (ver o
+    cabeçalho do arquivo para os modos disponiveis)."""
     analisador = argparse.ArgumentParser(
         description="Gera o Editor de Impressão pronto para entregar."
     )
