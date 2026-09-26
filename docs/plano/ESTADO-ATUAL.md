@@ -31,6 +31,8 @@ Código: `D:\programas\EditorImpressao` (GitHub `Samuel-Bottini-BR/EditorImpress
 | R8 | Apagar em todas as páginas um texto repetido (ex.: endereço de site) | Escola de Jesus p. 7 |
 | R9 | Seleção de letra / gravura / cor que funcione de verdade | TESTE 1 (Boécio) |
 
+**Páginas de teste escolhidas em 25/09:** Palatino 67, Siebmacher 9, Marial 7. A tabela acima fica como estava no começo; valem estas. Conferido comparando com os prints do "Vamos recapitular": o print marcado "76" do Palatino é a página 67 do PDF; o marcado "7" do Siebmacher é a página 9 do PDF; o do Marial é a página 7 do PDF (a 862 veio de uma lista de 18/07). A lista completa de páginas por item está em `gabarito/lista.json`.
+
 **OCR (mudou em 24/09):** volta ao plano na **Fase 1**, só para *achar onde está o texto* (fazer a máscara de tinta como o Internet Archive), não para transcrever. A transcrição fica na Fase 7.
 
 ## 3. Onde o projeto está de verdade (23/09/2026)

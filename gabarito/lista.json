@@ -1,0 +1,1537 @@
+{
+  "sobre": {
+    "o_que_e": "Páginas-gabarito do Editor de Impressão (item 0.3 do plano). Lida pelo script de antes/depois (item 0.4). Explicação completa no LEIA-ME.md desta pasta.",
+    "data": "25/09/2026",
+    "numeracao": "'pagina' é o número da página no PDF, começando em 1. NÃO é o número impresso na folha.",
+    "caminhos": "pdf, png, fotos e arquivos do ScanTailor são relativos à pasta gabarito/. 'livro' é o caminho completo do PDF original (somente leitura).",
+    "a_confirmar": "true = o Samuel ainda precisa confirmar essa página antes de ela virar gabarito fixo (ver 'pendencias').",
+    "dpi_png": "DPI do PNG = resolução do scan (maior imagem da página: pixels divididos pelas polegadas em que ela é desenhada), com teto de 400."
+  },
+  "paginas": {
+    "palatino_p005": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 5,
+      "pdf": "paginas/palatino_p005.pdf",
+      "png": "paginas/palatino_p005.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em resolução cheia + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R1: papel branco, letras e gravura (retrato) intactas",
+      "detalhe": [
+        0.28,
+        0.37,
+        0.68,
+        0.63
+      ],
+      "origem": "Vamos recapitular; teste do ScanTailor 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular e com o PNG do teste do ScanTailor"
+    },
+    "palatino_p007": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 7,
+      "pdf": "paginas/palatino_p007.pdf",
+      "png": "paginas/palatino_p007.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em resolução cheia + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R1: papel branco, letras intactas; tem mancha de outra página (marcada de azul no documento)",
+      "detalhe": [
+        0.12,
+        0.585,
+        0.8,
+        0.71
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "palatino_p009": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 9,
+      "pdf": "paginas/palatino_p009.pdf",
+      "png": "paginas/palatino_p009.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em resolução cheia + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R1: papel branco, letras e gravura intactas; borda preta em volta do texto",
+      "detalhe": [
+        0.03,
+        0.24,
+        0.5,
+        0.48
+      ],
+      "origem": "Vamos recapitular; teste do ScanTailor 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular e com o PNG do teste do ScanTailor"
+    },
+    "palatino_p010": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 10,
+      "pdf": "paginas/palatino_p010.pdf",
+      "png": "paginas/palatino_p010.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em resolução cheia + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R2: sumir com a sombra do verso (folha só de letras)",
+      "detalhe": [
+        0.4,
+        0.24,
+        0.93,
+        0.44
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "palatino_p057": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 57,
+      "pdf": "paginas/palatino_p057.pdf",
+      "png": "paginas/palatino_p057.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            643,
+            981
+          ],
+          "dpi": 133.3,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R3: margens iguais / centralizar (texto mais à esquerda, moldura em volta)",
+      "detalhe": [
+        0.0,
+        0.7,
+        1.0,
+        1.0
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "palatino_p066": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 66,
+      "pdf": "paginas/palatino_p066.pdf",
+      "png": "paginas/palatino_p066.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            643,
+            981
+          ],
+          "dpi": 133.3,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R4: tirar as manchas vermelhas sem mexer no título",
+      "detalhe": [
+        0.15,
+        0.595,
+        0.9,
+        0.8
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "palatino_p067": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Giovambattista Palatino cittadino romano.pdf",
+      "pagina": 67,
+      "pdf": "paginas/palatino_p067.pdf",
+      "png": "paginas/palatino_p067.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.0,
+      "png_px": [
+        1929,
+        2943
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            643,
+            981
+          ],
+          "dpi": 133.3,
+          "mascara": false
+        },
+        {
+          "px": [
+            1929,
+            2943
+          ],
+          "dpi": 400.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "R4: manchas no papel amarelado (circuladas de laranja no documento), 'mesmo problema da anterior' (p. 66)",
+      "detalhe": [
+        0.2,
+        0.21,
+        0.85,
+        0.37
+      ],
+      "origem": "Vamos recapitular (citada como 'Pagina 76')",
+      "a_confirmar": false,
+      "observacao": "Escolhida pelo Samuel em 25/09/2026: é a página do print marcado 'Pagina 76' no Vamos recapitular. A p. 76 do PDF saiu do gabarito.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); é a página do print 'Pagina 76' do Vamos recapitular"
+    },
+    "marial_p007": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Marial de sermoens - Frei Balthasar Paez. (1).pdf",
+      "pagina": 7,
+      "pdf": "paginas/marial_p007.pdf",
+      "png": "paginas/marial_p007.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        714,
+        937
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            714,
+            937
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R2 / item 6.1: letras do verso aparecendo através do papel. (No Vamos recapitular, o 'Livro 4' também cita linhas tortas, centralizar, papel branco, mancha amarronzada embaixo à direita e margens.)",
+      "detalhe": [
+        0.15,
+        0.42,
+        0.9,
+        0.54
+      ],
+      "origem": "Vamos recapitular ('Livro 4: Pagina 7', sem nome do livro)",
+      "a_confirmar": false,
+      "observacao": "Escolhida pelo Samuel em 25/09/2026 para o item 6.1 (mancha do verso), no lugar da p. 862, que saiu do gabarito.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print 'Livro 4, Pagina 7' do Vamos recapitular"
+    },
+    "graduale_p221": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Graduale - Saeculum XIV.pdf",
+      "pagina": 221,
+      "pdf": "paginas/graduale_p221.pdf",
+      "png": "paginas/graduale_p221.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        961,
+        1352
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1499,
+            1800
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R5/R6: endireitar a partitura torta, manter as linhas vermelhas e os neumas, papel branco, tirar manchas",
+      "detalhe": [
+        0.1,
+        0.4,
+        0.62,
+        0.63
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "graduale_p222": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Graduale - Saeculum XIV.pdf",
+      "pagina": 222,
+      "pdf": "paginas/graduale_p222.pdf",
+      "png": "paginas/graduale_p222.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        961,
+        1396
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1499,
+            1800
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R3: aumentar a margem do lado direito",
+      "detalhe": [
+        0.6,
+        0.38,
+        1.0,
+        0.62
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "graduale_p223": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Graduale - Saeculum XIV.pdf",
+      "pagina": 223,
+      "pdf": "paginas/graduale_p223.pdf",
+      "png": "paginas/graduale_p223.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        961,
+        1352
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1499,
+            1800
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R3: mais margem do lado esquerdo (página seguinte da 222)",
+      "detalhe": [
+        0.0,
+        0.38,
+        0.4,
+        0.62
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "horas_p011": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Livro de Horas - Luís XIV.pdf",
+      "pagina": 11,
+      "pdf": "paginas/horas_p011.pdf",
+      "png": "paginas/horas_p011.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        1024,
+        1446
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1024,
+            1446
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R6: letras nas cores originais no meio da iluminura, papel branco, gravura intacta, pôr ou tirar margem",
+      "detalhe": [
+        0.27,
+        0.29,
+        0.7,
+        0.54
+      ],
+      "origem": "Vamos recapitular; teste do ScanTailor 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "No teste do ScanTailor: ruim (áreas da iluminura viraram preto sólido).",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular e com o PNG do teste do ScanTailor"
+    },
+    "horas_p013": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Livro de Horas - Luís XIV.pdf",
+      "pagina": 13,
+      "pdf": "paginas/horas_p013.pdf",
+      "png": "paginas/horas_p013.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        1024,
+        1453
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1024,
+            1453
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R6: manter o texto, as cores (vermelho e azul) e a borda dourada (o documento chama de 'borda prata'); centralizar; papel branco",
+      "detalhe": [
+        0.07,
+        0.1,
+        0.62,
+        0.3
+      ],
+      "origem": "Vamos recapitular; teste do ScanTailor 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "No teste do ScanTailor: ruim na cor (vermelho e azul viraram preto, moldura dourada sumiu).",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular e com o PNG do teste do ScanTailor"
+    },
+    "horas_p014": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Livro de Horas - Luís XIV.pdf",
+      "pagina": 14,
+      "pdf": "paginas/horas_p014.pdf",
+      "png": "paginas/horas_p014.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        1024,
+        1501
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1024,
+            1501
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R3: centralizar (margem muito à esquerda)",
+      "detalhe": [
+        0.5,
+        0.66,
+        1.0,
+        0.9
+      ],
+      "origem": "Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular"
+    },
+    "horas_p026": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Livro de Horas - Luís XIV.pdf",
+      "pagina": 26,
+      "pdf": "paginas/horas_p026.pdf",
+      "png": "paginas/horas_p026.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        1024,
+        1533
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1024,
+            1533
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "CamScanner: calendário NOVEMBRE (comparar com o Mágico Pro)",
+      "detalhe": [
+        0.2,
+        0.1,
+        0.82,
+        0.36
+      ],
+      "origem": "fotos do CamScanner 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com a foto horas_p026_NOVEMBRE_original.jpg"
+    },
+    "horas_p027": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Livro de Horas - Luís XIV.pdf",
+      "pagina": 27,
+      "pdf": "paginas/horas_p027.pdf",
+      "png": "paginas/horas_p027.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        1024,
+        1471
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1024,
+            1471
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "CamScanner: calendário DECEMBRE (comparar com o Mágico Pro)",
+      "detalhe": [
+        0.07,
+        0.1,
+        0.66,
+        0.36
+      ],
+      "origem": "fotos do CamScanner 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com a foto horas_p027_DECEMBRE_original.jpg"
+    },
+    "horas_p047": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Livro de Horas - Luís XIV.pdf",
+      "pagina": 47,
+      "pdf": "paginas/horas_p047.pdf",
+      "png": "paginas/horas_p047.png",
+      "dpi_png": 72,
+      "dpi_scan": 72.0,
+      "png_px": [
+        1024,
+        1504
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1024,
+            1504
+          ],
+          "dpi": 72.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R6: gravura e texto, papel branco, tirar margem da esquerda, sem perder qualidade",
+      "detalhe": [
+        0.0,
+        0.19,
+        0.6,
+        0.42
+      ],
+      "origem": "Vamos recapitular; teste do ScanTailor 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "No teste do ScanTailor: muito bom (borrão preto no canto inferior direito).",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular e com o PNG do teste do ScanTailor"
+    },
+    "escola_p007": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Na escola de Jesus - Catecismo explicado com imagens..pdf",
+      "pagina": 7,
+      "pdf": "paginas/escola_p007.pdf",
+      "png": "paginas/escola_p007.png",
+      "dpi_png": 200,
+      "dpi_scan": 200.1,
+      "png_px": [
+        1420,
+        2089
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1419,
+            2090
+          ],
+          "dpi": 200.1,
+          "mascara": false
+        }
+      ],
+      "para_que": "R5/R8: endireitar as linhas tortas, mais margem à esquerda, papel branco mantendo a cor das letras e da gravura, tirar o endereço do site",
+      "detalhe": [
+        0.0,
+        0.82,
+        1.0,
+        1.0
+      ],
+      "origem": "Vamos recapitular; teste do ScanTailor 24/09/2026",
+      "a_confirmar": false,
+      "observacao": "No teste do ScanTailor: ótimo.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do Vamos recapitular e com o PNG do teste do ScanTailor"
+    },
+    "escola_p035": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Na escola de Jesus - Catecismo explicado com imagens..pdf",
+      "pagina": 35,
+      "pdf": "paginas/escola_p035.pdf",
+      "png": "paginas/escola_p035.png",
+      "dpi_png": 200,
+      "dpi_scan": 200.0,
+      "png_px": [
+        1517,
+        2098
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            1517,
+            2097
+          ],
+          "dpi": 200.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "CamScanner: é a página das fotos 'escola_p037' (número impresso 37; pergunta 30, Adão e Eva expulsos do Paraíso)",
+      "detalhe": [
+        0.06,
+        0.3,
+        0.66,
+        0.53
+      ],
+      "origem": "fotos do CamScanner 24/09/2026 (citada como p. 37, o número impresso)",
+      "a_confirmar": false,
+      "observacao": "É a página das fotos do CamScanner (número impresso 37). Decidido pela gerente em 25/09/2026: é fato, não escolha - as fotos mostram esta página (pergunta 30, Adão e Eva).",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com as fotos escola_p037_original.jpg e escola_p037_camscanner_magico_pro.jpg"
+    },
+    "siebmacher_p007": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Schön Neues Modell Buch - Johann Siebmacher.pdf",
+      "pagina": 7,
+      "pdf": "paginas/siebmacher_p007.pdf",
+      "png": "paginas/siebmacher_p007.png",
+      "dpi_png": 400,
+      "dpi_scan": 600.3,
+      "png_px": [
+        2217,
+        1712
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1109,
+            856
+          ],
+          "dpi": 200.1,
+          "mascara": false
+        },
+        {
+          "px": [
+            3325,
+            2568
+          ],
+          "dpi": 600.3,
+          "mascara": true
+        }
+      ],
+      "para_que": "R7: tamanho final A4 com margem certa para encadernar (página do teste do ScanTailor)",
+      "detalhe": [
+        0.55,
+        0.5,
+        1.0,
+        1.0
+      ],
+      "origem": "teste do ScanTailor 24/09/2026; Vamos recapitular (ver observação)",
+      "a_confirmar": false,
+      "observacao": "Fora do item 2.6 por decisão do Samuel em 25/09/2026. Fica no gabarito como página do teste do ScanTailor de 24/09 (como a Rhetorica 18 e 73).",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o PNG do teste do ScanTailor; NÃO bate com o print do Vamos recapitular (esse é a p. 9)"
+    },
+    "siebmacher_p009": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Schön Neues Modell Buch - Johann Siebmacher.pdf",
+      "pagina": 9,
+      "pdf": "paginas/siebmacher_p009.pdf",
+      "png": "paginas/siebmacher_p009.png",
+      "dpi_png": 400,
+      "dpi_scan": 601.3,
+      "png_px": [
+        2212,
+        1712
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1108,
+            856
+          ],
+          "dpi": 200.4,
+          "mascara": false
+        },
+        {
+          "px": [
+            3324,
+            2567
+          ],
+          "dpi": 601.3,
+          "mascara": true
+        }
+      ],
+      "para_que": "R7: tamanho final A4 com margem certa para encadernar (página do print do Vamos recapitular, assinada 'J. Sibmacher')",
+      "detalhe": [
+        0.42,
+        0.62,
+        1.0,
+        1.0
+      ],
+      "origem": "Vamos recapitular (citada como 'Pagina: 7')",
+      "a_confirmar": false,
+      "observacao": "Escolhida pelo Samuel em 25/09/2026 para o item 2.6: é a página do print marcado 'Pagina 7' no Vamos recapitular.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); é a página do print 'Pagina: 7' do Vamos recapitular"
+    },
+    "rhetorica_p018": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Rhetorica Christiana -  Fray Diego Valadés.pdf",
+      "pagina": 18,
+      "pdf": "paginas/rhetorica_p018.pdf",
+      "png": "paginas/rhetorica_p018.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.3,
+      "png_px": [
+        2350,
+        3528
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            784,
+            1176
+          ],
+          "dpi": 133.4,
+          "mascara": false
+        },
+        {
+          "px": [
+            2352,
+            3528
+          ],
+          "dpi": 400.3,
+          "mascara": true
+        }
+      ],
+      "para_que": "Teste do ScanTailor de 24/09: página de texto ('Præfatio') com notas na margem; papel branco com o texto 'o mais vivo possível'",
+      "detalhe": [
+        0.08,
+        0.17,
+        0.56,
+        0.33
+      ],
+      "origem": "teste do ScanTailor 24/09/2026; Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "No Vamos recapitular é a página da esquerda do print 'Pagina: 18' (o leitor de PDF mostrava duas páginas lado a lado). A mancha da gravura do verso que o Samuel cita está na página da direita, que é a p. 19 do PDF (não extraída). O pedido de 'cortar ao meio' vem dessa vista de duas páginas: no PDF, cada página já está separada.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o PNG do teste do ScanTailor e com a metade esquerda do print do Vamos recapitular"
+    },
+    "rhetorica_p073": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Rhetorica Christiana -  Fray Diego Valadés.pdf",
+      "pagina": 73,
+      "pdf": "paginas/rhetorica_p073.pdf",
+      "png": "paginas/rhetorica_p073.png",
+      "dpi_png": 400,
+      "dpi_scan": 400.3,
+      "png_px": [
+        2350,
+        3528
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            784,
+            1176
+          ],
+          "dpi": 133.4,
+          "mascara": false
+        },
+        {
+          "px": [
+            2352,
+            3528
+          ],
+          "dpi": 400.3,
+          "mascara": true
+        }
+      ],
+      "para_que": "Teste do ScanTailor de 24/09: esquema com chaves e dois ornamentos ('Pars secunda', número impresso 49); na lista de 18/07, 'gravura de traço fino'",
+      "detalhe": [
+        0.0,
+        0.04,
+        0.44,
+        0.23
+      ],
+      "origem": "teste do ScanTailor 24/09/2026; lista para_comparar de 18/07/2026 (caso 04_xilogravura)",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o PNG do teste do ScanTailor e com a imagem 04_xilogravura_ORIGINAL.png"
+    },
+    "boecio_p003": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+      "pagina": 3,
+      "pdf": "paginas/boecio_p003.pdf",
+      "png": "paginas/boecio_p003.png",
+      "dpi_png": 150,
+      "dpi_scan": 150.2,
+      "png_px": [
+        519,
+        770
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            583,
+            830
+          ],
+          "dpi": 150.2,
+          "mascara": false
+        }
+      ],
+      "para_que": "R9: folha de rosto com gravura (IHS); o marcador não separa direito letra e gravura (item 2 do TESTE 1)",
+      "detalhe": [
+        0.12,
+        0.14,
+        0.96,
+        0.46
+      ],
+      "origem": "TESTE 1 do Boécio (16/09/2026)",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com o print do TESTE 1 (miniatura 3 selecionada)"
+    },
+    "boecio_p007": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+      "pagina": 7,
+      "pdf": "paginas/boecio_p007.pdf",
+      "png": "paginas/boecio_p007.png",
+      "dpi_png": 150,
+      "dpi_scan": 150.0,
+      "png_px": [
+        526,
+        772
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            583,
+            829
+          ],
+          "dpi": 150.0,
+          "mascara": false
+        }
+      ],
+      "para_que": "R9/margens: a margem não aumenta para o lado direito; ver a parte de cima do papel (itens 3 e 4 do TESTE 1)",
+      "detalhe": [
+        0.35,
+        0.0,
+        1.0,
+        0.3
+      ],
+      "origem": "TESTE 1 do Boécio (16/09/2026)",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com os prints do TESTE 1 (miniatura 7 selecionada)"
+    },
+    "boecio_p008": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+      "pagina": 8,
+      "pdf": "paginas/boecio_p008.pdf",
+      "png": "paginas/boecio_p008.png",
+      "dpi_png": 150,
+      "dpi_scan": 150.3,
+      "png_px": [
+        517,
+        764
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            576,
+            821
+          ],
+          "dpi": 150.3,
+          "mascara": false
+        }
+      ],
+      "para_que": "R9/preto e branco: letras perdendo qualidade no preto e branco (item 5 do TESTE 1); também é a 'Pagina original: 8' do Vamos recapitular (linhas retas e folha branca)",
+      "detalhe": [
+        0.04,
+        0.22,
+        0.62,
+        0.46
+      ],
+      "origem": "TESTE 1 do Boécio (16/09/2026); Vamos recapitular",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com os prints do TESTE 1 ('Pagina 8 de 50') e com o print do Vamos recapitular"
+    },
+    "boecio_p022": {
+      "livro": "D:\\programas\\EditorImpressao-arquivos\\TESTES EDITOR DE IMPRESSAO\\LIVROS PARA TESTE\\Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+      "pagina": 22,
+      "pdf": "paginas/boecio_p022.pdf",
+      "png": "paginas/boecio_p022.png",
+      "dpi_png": 150,
+      "dpi_scan": 149.9,
+      "png_px": [
+        529,
+        756
+      ],
+      "camadas": "uma imagem só (scan comum, sem camadas)",
+      "imagens": [
+        {
+          "px": [
+            608,
+            808
+          ],
+          "dpi": 149.9,
+          "mascara": false
+        }
+      ],
+      "para_que": "R9: quantos cm vão para cada lado da borda (item 1) e marcador que não seleciona exatamente as letras (item 2 do TESTE 1)",
+      "detalhe": [
+        0.05,
+        0.21,
+        0.75,
+        0.45
+      ],
+      "origem": "TESTE 1 do Boécio (16/09/2026)",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); bate com os prints do TESTE 1 (miniatura 22 selecionada)"
+    },
+    "opusmajus_p011": {
+      "livro": "C:\\Users\\fotog\\Desktop\\opusmajustransla01baco.pdf",
+      "pagina": 11,
+      "pdf": "paginas/opusmajus_p011.pdf",
+      "png": "paginas/opusmajus_p011.png",
+      "dpi_png": 400,
+      "dpi_scan": 500.0,
+      "png_px": [
+        2300,
+        3699
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            958,
+            1541
+          ],
+          "dpi": 166.7,
+          "mascara": false
+        },
+        {
+          "px": [
+            2874,
+            4623
+          ],
+          "dpi": 500.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "Fase 1.1 (tirar o fundo de PDF com camadas): texto corrido, abertura da Introdução. O fundo é só papel, em baixa resolução; todo o texto está na camada de cima. Caso normal.",
+      "detalhe": [
+        0.08,
+        0.11,
+        0.56,
+        0.28
+      ],
+      "origem": "plano, item 0.3 (página pedida pelo Samuel)",
+      "a_confirmar": false,
+      "observacao": "",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); página pedida; conferida olhando"
+    },
+    "opusmajus_p003": {
+      "livro": "C:\\Users\\fotog\\Desktop\\opusmajustransla01baco.pdf",
+      "pagina": 3,
+      "pdf": "paginas/opusmajus_p003.pdf",
+      "png": "paginas/opusmajus_p003.png",
+      "dpi_png": 400,
+      "dpi_scan": 500.0,
+      "png_px": [
+        2300,
+        3699
+      ],
+      "camadas": "duas camadas: fundo em resolução cheia + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            2874,
+            4623
+          ],
+          "dpi": 500.0,
+          "mascara": false
+        },
+        {
+          "px": [
+            2874,
+            4623
+          ],
+          "dpi": 500.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "Fase 1.1: folha de rosto com título em vermelho. As letras (vermelhas e pretas) e o emblema estão na camada de cima, com a cor original. O fundo vem em resolução cheia e tem o carimbo da biblioteca, um tique de lápis e 'fantasmas' claros das letras: ao tirar o fundo, o carimbo some e as letras têm de continuar vermelhas.",
+      "detalhe": [
+        0.12,
+        0.0,
+        1.0,
+        0.27
+      ],
+      "origem": "candidata escolhida pelo implementador",
+      "a_confirmar": false,
+      "observacao": "Aprovada pelo Samuel em 25/09/2026.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); conferida olhando, camada por camada"
+    },
+    "opusmajus_p020": {
+      "livro": "C:\\Users\\fotog\\Desktop\\opusmajustransla01baco.pdf",
+      "pagina": 20,
+      "pdf": "paginas/opusmajus_p020.pdf",
+      "png": "paginas/opusmajus_p020.png",
+      "dpi_png": 400,
+      "dpi_scan": 500.0,
+      "png_px": [
+        2212,
+        3620
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            921,
+            1507
+          ],
+          "dpi": 166.5,
+          "mascara": false
+        },
+        {
+          "px": [
+            2765,
+            4525
+          ],
+          "dpi": 500.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "Fase 1.1: foto (estátua de Roger Bacon). Os tons da foto estão só no fundo, em baixa resolução; a camada de cima tem os pontinhos pretos da foto e a legenda. Jogando o fundo fora, a foto vira um pontilhado duro: caso que o programa precisa perceber para não estragar a foto.",
+      "detalhe": [
+        0.25,
+        0.15,
+        0.7,
+        0.42
+      ],
+      "origem": "candidata escolhida pelo implementador",
+      "a_confirmar": false,
+      "observacao": "Aprovada pelo Samuel em 25/09/2026.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); conferida olhando, camada por camada"
+    },
+    "opusmajus_p165": {
+      "livro": "C:\\Users\\fotog\\Desktop\\opusmajustransla01baco.pdf",
+      "pagina": 165,
+      "pdf": "paginas/opusmajus_p165.pdf",
+      "png": "paginas/opusmajus_p165.png",
+      "dpi_png": 400,
+      "dpi_scan": 500.0,
+      "png_px": [
+        2160,
+        3576
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            899,
+            1489
+          ],
+          "dpi": 166.6,
+          "mascara": false
+        },
+        {
+          "px": [
+            2699,
+            4470
+          ],
+          "dpi": 500.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "Fase 1.1: texto com dois diagramas geométricos de traço fino (Fig. 7 e 8). O fundo é só papel; texto e diagramas estão na camada de cima. Caso fácil com figura: os traços finos não podem sumir.",
+      "detalhe": [
+        0.45,
+        0.3,
+        0.86,
+        0.58
+      ],
+      "origem": "candidata escolhida pelo implementador",
+      "a_confirmar": false,
+      "observacao": "Aprovada pelo Samuel em 25/09/2026.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); conferida olhando, camada por camada"
+    },
+    "opusmajus_p256": {
+      "livro": "C:\\Users\\fotog\\Desktop\\opusmajustransla01baco.pdf",
+      "pagina": 256,
+      "pdf": "paginas/opusmajus_p256.pdf",
+      "png": "paginas/opusmajus_p256.png",
+      "dpi_png": 400,
+      "dpi_scan": 500.0,
+      "png_px": [
+        3283,
+        2767
+      ],
+      "camadas": "duas camadas: fundo em baixa resolução + camada de cima com máscara",
+      "imagens": [
+        {
+          "px": [
+            1367,
+            1152
+          ],
+          "dpi": 166.6,
+          "mascara": false
+        },
+        {
+          "px": [
+            4103,
+            3458
+          ],
+          "dpi": 500.0,
+          "mascara": true
+        }
+      ],
+      "para_que": "Fase 1.1: tabela grande numa folha dobrável deitada (tamanho de página diferente das outras), com linhas finas e números pequenos. A tabela está na camada de cima; o fundo tem o papel, a marca da dobra e 'fantasmas' claros das linhas.",
+      "detalhe": [
+        0.5,
+        0.26,
+        0.8,
+        0.46
+      ],
+      "origem": "candidata escolhida pelo implementador",
+      "a_confirmar": false,
+      "observacao": "Aprovada pelo Samuel em 25/09/2026.",
+      "conferida": true,
+      "bate_com_a_origem": true,
+      "como_foi_conferida": "PNG aberto e olhado (página certa do PDF, não está em branco, cortada nem girada); conferida olhando, camada por camada"
+    }
+  },
+  "camscanner": {
+    "horas_p026": {
+      "pagina_gabarito": "horas_p026",
+      "pagina_do_pdf_nas_fotos": 26,
+      "original": "camscanner/horas_p026_NOVEMBRE_original.jpg",
+      "magico_pro": "camscanner/horas_p026_NOVEMBRE_camscanner_magico_pro.jpg",
+      "recorte_da_pagina": {
+        "original": [
+          28,
+          82,
+          548,
+          860
+        ],
+        "magico_pro": [
+          28,
+          82,
+          548,
+          860
+        ]
+      },
+      "a_confirmar": false,
+      "observacao": "calendário NOVEMBRE; as fotos batem com a p. 26 do PDF"
+    },
+    "horas_p027": {
+      "pagina_gabarito": "horas_p027",
+      "pagina_do_pdf_nas_fotos": 27,
+      "original": "camscanner/horas_p027_DECEMBRE_original.jpg",
+      "magico_pro": "camscanner/horas_p027_DECEMBRE_camscanner_magico_pro.jpg",
+      "recorte_da_pagina": {
+        "original": [
+          24,
+          93,
+          552,
+          849
+        ],
+        "magico_pro": [
+          24,
+          92,
+          552,
+          851
+        ]
+      },
+      "a_confirmar": false,
+      "observacao": "calendário DECEMBRE; as fotos batem com a p. 27 do PDF"
+    },
+    "escola_p037": {
+      "pagina_gabarito": "escola_p035",
+      "pagina_do_pdf_nas_fotos": 35,
+      "original": "camscanner/escola_p037_original.jpg",
+      "magico_pro": "camscanner/escola_p037_camscanner_magico_pro.jpg",
+      "recorte_da_pagina": {
+        "original": [
+          75,
+          241,
+          501,
+          830
+        ],
+        "magico_pro": [
+          75,
+          241,
+          501,
+          830
+        ]
+      },
+      "a_confirmar": false,
+      "observacao": "As fotos mostram o número IMPRESSO 37 (pergunta 30, 'Adão e Eva expulsos do Paraíso'), que é a p. 35 do PDF (escola_p035). O '037' no nome das fotos é o número impresso."
+    }
+  },
+  "scantailor_24_09": {
+    "escola_p007": {
+      "pagina_gabarito": "escola_p007",
+      "entrada": "scantailor-24-09/escola_p007.png",
+      "saida": "scantailor-24-09/out/escola_p007.tif",
+      "comparacao": "scantailor-24-09/comparacoes/escola_p007.jpg",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/escola_p007.tif"
+    },
+    "horas_p011": {
+      "pagina_gabarito": "horas_p011",
+      "entrada": "scantailor-24-09/horas_p011.png",
+      "saida": "scantailor-24-09/out/horas_p011.tif",
+      "comparacao": "scantailor-24-09/comparacoes/horas_p011.jpg",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/horas_p011.tif"
+    },
+    "horas_p013": {
+      "pagina_gabarito": "horas_p013",
+      "entrada": "scantailor-24-09/horas_p013.png",
+      "saida": "scantailor-24-09/out/horas_p013.tif",
+      "comparacao": "scantailor-24-09/comparacoes/horas_p013.jpg",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/horas_p013.tif"
+    },
+    "horas_p047": {
+      "pagina_gabarito": "horas_p047",
+      "entrada": "scantailor-24-09/horas_p047.png",
+      "saida": "scantailor-24-09/out/horas_p047.tif",
+      "comparacao": "scantailor-24-09/comparacoes/horas_p047.jpg",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/horas_p047.tif"
+    },
+    "palatino_p005": {
+      "pagina_gabarito": "palatino_p005",
+      "entrada": "scantailor-24-09/palatino_p005.png",
+      "saida": "scantailor-24-09/out/palatino_p005.tif",
+      "comparacao": "scantailor-24-09/comparacoes/palatino_p005.jpg",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/palatino_p005.tif"
+    },
+    "palatino_p009": {
+      "pagina_gabarito": "palatino_p009",
+      "entrada": "scantailor-24-09/palatino_p009.png",
+      "saida": "scantailor-24-09/out/palatino_p009.tif",
+      "comparacao": "scantailor-24-09/comparacoes/palatino_p009.jpg",
+      "comparacao_detalhe": "scantailor-24-09/comparacoes/palatino_p009_detalhe.jpg",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/palatino_p009.tif"
+    },
+    "rhetorica_p018": {
+      "pagina_gabarito": "rhetorica_p018",
+      "entrada": "scantailor-24-09/rhetorica_p018.png",
+      "saida": "scantailor-24-09/out/rhetorica_p018.tif",
+      "mascara_automatica": "scantailor-24-09/out/cache/automask/rhetorica_p018.tif"
+    },
+    "rhetorica_p073": {
+      "pagina_gabarito": "rhetorica_p073",
+      "entrada": "scantailor-24-09/rhetorica_p073.png",
+      "observacao": "sem saída na pasta out/ (o teste de 24/09 não processou esta página até o fim)"
+    },
+    "siebmacher_p007": {
+      "pagina_gabarito": "siebmacher_p007",
+      "entrada": "scantailor-24-09/siebmacher_p007.png",
+      "observacao": "sem saída na pasta out/ (o teste de 24/09 não processou esta página até o fim)"
+    }
+  },
+  "itens": {
+    "fase1": [
+      "palatino_p005",
+      "palatino_p007",
+      "palatino_p009",
+      "palatino_p010",
+      "escola_p007",
+      "horas_p011",
+      "horas_p013",
+      "horas_p047",
+      "opusmajus_p011",
+      "opusmajus_p003",
+      "opusmajus_p020",
+      "opusmajus_p165",
+      "opusmajus_p256",
+      "horas_p026",
+      "horas_p027",
+      "escola_p035"
+    ],
+    "2.2": [
+      "graduale_p221",
+      "escola_p007"
+    ],
+    "2.4": [
+      "palatino_p057",
+      "graduale_p222",
+      "graduale_p223",
+      "horas_p014"
+    ],
+    "2.6": [
+      "siebmacher_p009"
+    ],
+    "fase3": [
+      "boecio_p003",
+      "boecio_p007",
+      "boecio_p008",
+      "boecio_p022"
+    ],
+    "6.1": [
+      "palatino_p010",
+      "marial_p007"
+    ],
+    "6.2": [
+      "palatino_p066",
+      "palatino_p067"
+    ],
+    "6.3": [
+      "graduale_p221",
+      "horas_p011",
+      "horas_p013",
+      "horas_p047"
+    ],
+    "6.4": [
+      "escola_p007"
+    ],
+    "6.7": [
+      "horas_p026",
+      "horas_p027",
+      "escola_p035"
+    ]
+  },
+  "nomes_dos_itens": {
+    "fase1": "Fase 1 inteira (1.1 a 1.6): separar o escrito do fundo. Gabarito do plano: Palatino 5, 7, 9, 10; Escola de Jesus 7; Horas 11, 13, 47; Opus Majus; fotos do CamScanner",
+    "2.2": "Endireitar (R5)",
+    "2.4": "Margens iguais em todas as páginas + alinhamento (R3)",
+    "2.6": "Tamanho final da página em cm/mm (R7)",
+    "fase3": "Seleção manual no nível do Photoshop (R9, TESTE 1 do Boécio)",
+    "6.1": "Mancha do verso (R2)",
+    "6.2": "Manchas vermelhas e marrons sem mexer no título (R4)",
+    "6.3": "Tinta vermelha não virar preto (R6)",
+    "6.4": "Apagar texto repetido em todas as páginas (R8)",
+    "6.7": "Comparação final com o CamScanner"
+  },
+  "pendencias": [
+    {
+      "assunto": "Palatino p. 76 (R4, item 6.2)",
+      "pedida": "palatino_p076",
+      "parece_certa": "palatino_p067",
+      "por_que": "O print marcado 'Pagina 76' no Vamos recapitular é a página 'LETTERA FORMATA' com as manchas circuladas de laranja, que é a p. 67 do PDF (casamento de pontos: 919 contra no máximo 17 nas outras 133 páginas; conferido olhando). A p. 76 do PDF é 'DELLE CIFRE'. O texto diz 'mesmo problema da anterior' (p. 66), o que combina com a p. 67: provável troca de dígitos.",
+      "resolvida": "25/09/2026, Samuel: é realmente a p. 67. Item 6.2 = 66 e 67; a 76 saiu do gabarito."
+    },
+    {
+      "assunto": "Na escola de Jesus p. 37 (fotos do CamScanner, itens fase1 e 6.7)",
+      "pedida": "escola_p037",
+      "parece_certa": "escola_p035",
+      "por_que": "As duas fotos mostram o número impresso 37 no pé da página (pergunta 30, Adão e Eva expulsos do Paraíso). Essa é a p. 35 do PDF. A p. 37 do PDF é a pergunta 32 (número impresso 39). O '37' do nome das fotos é o número impresso, não o do PDF.",
+      "resolvida": "25/09/2026, pela gerente: as fotos são a p. 35 do PDF; itens fase1 e 6.7 trocados para escola_p035; a extração da p. 37 do PDF foi apagada."
+    },
+    {
+      "assunto": "Siebmacher p. 7 (R7, item 2.6)",
+      "pedida": "siebmacher_p007",
+      "parece_certa": "siebmacher_p007 ou siebmacher_p009 (o Samuel escolhe)",
+      "por_que": "A p. 7 do PDF é a do teste do ScanTailor (PNG idêntico byte a byte). Mas o print 'Pagina: 7' do Vamos recapitular, de onde vem o R7, é a p. 9 do PDF (assinada 'J. Sibmacher'). As duas são do mesmo tipo (texto com moldura de ornamentos, folha deitada) e servem para o R7.",
+      "resolvida": "25/09/2026, Samuel: só a p. 9 no item 2.6. A p. 7 fica como página do teste do ScanTailor."
+    },
+    {
+      "assunto": "Marial (R2, item 6.1)",
+      "pedida": "marial_p862",
+      "parece_certa": "marial_p862 está certa; marial_p007 é a página do Marial que o Vamos recapitular mostra",
+      "por_que": "A p. 862 não aparece no Vamos recapitular: ela vem da lista para_comparar de 18/07 (caso '02_bleedthrough'), e bate com aquela imagem. No Vamos recapitular o Marial aparece como 'Livro 4, Pagina 7' (APPROVAÇOENS: linhas tortas, centralizar, mancha amarronzada, letras do verso aparecendo), que é a p. 7 do PDF. Extraída como marial_p007, fora dos itens.",
+      "resolvida": "25/09/2026, Samuel: só a p. 7 no item 6.1. A 862 saiu do gabarito."
+    },
+    {
+      "assunto": "Opus Majus: 4 candidatas (item fase1)",
+      "pedida": "4 páginas à escolha, para o Samuel aprovar",
+      "parece_certa": "opusmajus_p003, opusmajus_p020, opusmajus_p165, opusmajus_p256",
+      "por_que": "Ver opusmajus-candidatas.png. Alternativa, se o Samuel quiser trocar uma: a p. 1 (capa de pano vermelho), em que o Internet Archive confundiu a trama do tecido com letra e pôs 46% da capa na camada de cima; tirar o fundo ali estragaria a capa.",
+      "resolvida": "25/09/2026, Samuel aprovou as 4 candidatas (3, 20, 165, 256)."
+    },
+    {
+      "assunto": "Páginas citadas no Vamos recapitular que não estão na tabela (NÃO extraídas)",
+      "pedida": "nenhuma",
+      "parece_certa": "graduale p. 224; marial p. 8; rhetorica p. 19; rhetorica p. 36 e 37",
+      "por_que": "Graduale p. 224: 'L com um desenho grande, queremos manter o desenho'. Marial p. 8: 'cortar a lombada'. Rhetorica p. 19: página da direita do print 'Pagina: 18', onde está a mancha da gravura do verso. Rhetorica 'Pagina 13 ou 37': o print mostra as p. 36 e 37 do PDF (números impressos 12 e 13), com ornamentos circulados que o Samuel quer manter mesmo no preto e branco. Todas conferidas por casamento de pontos com os prints."
+    }
+  ]
+}

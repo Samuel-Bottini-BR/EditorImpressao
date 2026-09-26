@@ -156,6 +156,9 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 |---|---|---|---|
 | 15-16/09 | Travamento ao usar o zoom muitas vezes; roda do mouse não funciona às vezes | aba Marcar | — |
 | 24/09 | Zoom não funciona em algumas sessões | — | — |
+| 25/09 | **O instalador não leva os modelos**: nem o detector de gravura e letra (`modelos/doclayout.onnx`) nem a seleção por clique (`modelos/mobile_sam`), que ficam fora do git. O `empacotar.py` só junta a pasta `recursos/` (que nem existe) e o `instalador.iss` só copia `dist/EditorImpressao/*`. **Confirmado** no programa instalado no PC do Samuel (instalador de 01/09): não tem a pasta `_internal\modelos` nem nenhum `.onnx`, então roda sem o detector e sem a seleção por clique, sem avisar. O instalador de 23/09 (o do Kaique) tem o mesmo tamanho (120,5 MB) e quase certamente também não tem; o Samuel vai conferir no notebook. | `empacotar.py`, `instalador.iss` | `bugs/2026-09-25-instalador-sem-modelos.txt` |
+| 25/09 | `EditorImpressao.spec` velho (aponta para a Área de Trabalho e deixa o scipy de fora): quem empacotar por ele gera um programa quebrado. | `EditorImpressao.spec` | — |
+| 25/09 | PDF dos relatórios: faixas cinzas atravessando o texto e uma última página só com o rodapé. O conteúdo sai todo legível. | `relatorio.py` (`gravar_pdf`) | `bugs/2026-09-25-relatorio-pdf-faixas-e-pagina-vazia.png` |
 
 ## 6. Lista de espera (ideias novas)
 
@@ -164,6 +167,9 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 24/09/2026 | Ver todas as páginas do livro em grade, como o "Organizar páginas" do UPDF: seleção múltipla, girar, apagar, extrair, inserir, dividir. Referência: `referencias-layout/updf-todas-as-paginas.jpg` | Samuel | Fase 4 (layout), a confirmar |
 | 24/09/2026 | Layout limpo como o do UPDF: página no centro, poucas ferramentas em ícones numa barra fina no topo, miniaturas numa coluna à esquerda que dá para esconder, navegação e zoom num canto de baixo. Referência: `referencias-layout/updf-tela-de-leitura.jpg` | Samuel | Fase 4 (layout), a confirmar |
 | 24/09/2026 | Aviso que o Kaique pediu (ainda sem descrição: o áudio enviado não fala disso) | Kaique | a definir |
+| 25/09/2026 | Prévia mais rápida: mostrar a página primeiro e achar gravura e letra depois. Hoje toda prévia nova roda essa detecção (cerca de 1 s por página), mesmo no filtro Original, que não usa o resultado. Deduzido do código, não medido. | agente implementador (achado no teste de velocidade) | Fase 5, a confirmar |
+| 25/09/2026 | PDF de saída em Mágico pro muito pesado: cerca de 8 MB por página (imagem sem perda a 300 DPI), perto de 2,4 GB num livro de 300 páginas. Pensar em JPEG de alta qualidade ou na saída em duas camadas (1.6). Medido em 2 páginas só. | agente implementador (achado no teste de velocidade) | Fase 1 (junto do 1.6) ou Fase 5, a confirmar |
+| 25/09/2026 | Script `montar_gabarito.py` no repositório, que remonta a pasta `gabarito/` a partir da `lista.json` (hoje, se a pasta se perder, só dá para refazer seguindo o método do LEIA-ME; os scripts usados ficaram numa pasta temporária). | agente implementador (achado ao montar o gabarito) | a definir |
 
 ## 7. Registro de mudanças
 

@@ -1,0 +1,25 @@
+Prova do bug 'instalador sem os modelos' - 25/09/2026
+
+Programa instalado neste PC (instalador de 01/09), pasta C:\Program Files\Editor de Impressao:
+drwxr-xr-x 1 fotog 197609        0 01/09/2026 15:17 .
+drwxr-xr-x 1 fotog 197609        0 19/09/2026 15:42 ..
+-rw-r--r-- 1 fotog 197609      347 01/09/2026 15:10 COMO USAR.txt
+-rwxr-xr-x 1 fotog 197609 12580451 01/09/2026 15:10 EditorImpressao.exe
+-rw-r--r-- 1 fotog 197609     5736 18/07/2026 12:47 LEIAME.md
+drwxr-xr-x 1 fotog 197609        0 01/09/2026 15:17 _internal
+-rw-r--r-- 1 fotog 197609   313138 01/09/2026 15:17 unins000.dat
+-rwxr-xr-x 1 fotog 197609  4455700 01/09/2026 15:12 unins000.exe
+
+Pasta _internal\modelos:
+ls: cannot access '/c/Program Files/Editor de Impressao/_internal/modelos': No such file or directory
+
+Arquivos .onnx em toda a instalacao (procura com find):
+0 arquivo(s)
+
+Onde o codigo procura o modelo (core/detectar_regioes.py, linha 52):
+CAMINHO_MODELO = Path(__file__).resolve().parent.parent / "modelos" / "doclayout.onnx"
+  -> empacotado, isso vira _internal\modelos\doclayout.onnx
+
+Instaladores (tamanho em bytes):
+  120507605 23/09/2026 18:29 /c/Users/fotog/Desktop/Editor de Impressão/EditorImpressao-Setup.exe 
+  120510597 01/09/2026 15:11 /c/Users/fotog/Desktop/EditorImpressao/dist/EditorImpressao-Setup.exe   

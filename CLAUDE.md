@@ -6,6 +6,20 @@ Escrito em 07/09/2026, ao retomar o projeto depois de um mês parado. Substitui
 a versão anterior — a versão anterior media tudo por número e nunca chegava a
 "aprovado pelo Samuel"; esta corrige isso (ver seção 4).
 
+> **Leia primeiro, nesta ordem (desde 24/09/2026):**
+>
+> 1. `docs/plano/ESTADO-ATUAL.md` — onde o projeto está, e o que vale quando
+>    os documentos antigos se contradizem.
+> 2. `docs/plano/PLANO-DEFINITIVO.md` — **o plano. Ele manda.** Fases, Lista de
+>    bugs, Lista de espera e Registro de mudanças. Só o Samuel muda.
+> 3. Este `CLAUDE.md` — as regras técnicas. **O que ele disser em contrário ao
+>    plano, vale o plano.**
+> 4. Consulta: `docs/plano/TESTE-SCANTAILOR-MISTO.md` e
+>    `docs/plano/OCR-PESQUISA.md`.
+>
+> O `PEDIDOS.md` e o handoff em `historico/` viraram **histórico** em 24/09.
+> Servem para consulta, não dizem mais o que fazer.
+
 ---
 
 ## 1. O que é este programa, e para quem
@@ -38,8 +52,10 @@ daí. Nenhuma é preferência de estilo — cada uma é cicatriz.
 
 - **Não recomeçar do zero.** Não reescrever módulos inteiros, não reorganizar o
   que funciona. Testar não é permissão para reconstruir.
-- **Uma mudança por vez.** Antes de alterar um arquivo, me mostrar o diff e
-  esperar minha confirmação.
+- **Uma mudança por vez** — um item do plano por vez, na fase atual. Eu aprovo
+  pela página de antes/depois de cada item (regra 4 do plano), não pelo diff.
+  Mexer em estrutura, em tela ou no que está na seção 6 ("precisa perguntar
+  antes") continua exigindo perguntar antes.
 - **Planejar antes de codar.** Perguntar antes de mexer em estrutura.
 - **Ir até o fim dentro da alçada.** Decidir o que é da alçada e executar o
   protocolo inteiro, em vez de parar a cada passo. Se o contexto acabar, parar
@@ -156,7 +172,8 @@ O que o Claude Code faz:
 ### 4.3 A regra de ouro
 
 > O Claude Code pode escrever **"PRONTO PARA CONFERIR"** e a opinião dele.
-> **Nunca "APROVADO".** Só eu marco APROVADO, no `PEDIDOS.md`.
+> **Nunca "APROVADO".** Só eu marco, no `docs/plano/PLANO-DEFINITIVO.md`:
+> `[x]` aprovado, `[~]` melhorar, `[-]` descartado.
 >
 > E todo item precisa dizer se foi teste de **máquina** ou de **olho**.
 
@@ -226,7 +243,10 @@ avaliar.py                  a régua dos filtros
 avaliar_selecao.py          a régua da seleção
 conferir.py                 a tela de conferir amostras falando
 teste_botoes.py              clica em botões de verdade, redimensiona a janela
-PEDIDOS.md                  a lista de conferência — só o Samuel marca APROVADO
+docs/plano/                 o plano e o estado atual — leia primeiro (ver topo)
+.claude/agents/             as regras dos agentes (ver seção 10)
+gabarito/                   páginas fixas de conferência, fora do git (ver LEIA-ME)
+PEDIDOS.md                  HISTÓRICO desde 24/09 — a lista que vale é o plano
 relatorios/melhorias.md     tudo que foi tentado, inclusive o que falhou
 relatorios/para-conferir.html   a entrega padrão
 ```
@@ -270,7 +290,7 @@ Comandos:
 
 ```
 .venv\Scripts\python.exe main.py                 o programa
-.venv\Scripts\python.exe -m pytest tests -q      os testes (279 casos)
+.venv\Scripts\python.exe -m pytest tests -q      os testes (438 casos em 25/09/2026)
 .venv\Scripts\python.exe avaliar.py              a régua dos filtros
 .venv\Scripts\python.exe avaliar_selecao.py      a régua da seleção
 .venv\Scripts\python.exe conferir.py             conferir amostras falando
@@ -285,29 +305,36 @@ As queixas do Kaique: `D:\programas\EditorImpressao-arquivos\BIBLIOTECA DO FIM
 DOS TEMPOS\Teste de livros` — `.txt` soltos com um print ao lado. **São fonte
 de requisito.**
 
-**Handoff:** `historico/Editor de Impressao - resumo para o Claude.md` é o
-mais completo e atualizado — leia primeiro numa sessão nova. Só atualize esse
-arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
+**Handoff:** `historico/Editor de Impressao - resumo para o Claude.md` virou
+**histórico** em 24/09 — numa sessão nova, leia primeiro `docs/plano/` (ver
+topo). O handoff continua útil para achados técnicos caros de redescobrir. Só
+atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
 
 ---
 
 ## 8. O ciclo de uma mudança, do começo ao fim
 
-1. Eu escolho um item do `PEDIDOS.md`.
-2. O Claude Code mostra o diff e espera minha confirmação.
-3. Faz a mudança. Uma só.
+1. O item vem da **fase atual** do `docs/plano/PLANO-DEFINITIVO.md`, na
+   ordem. Nada de fase seguinte. No começo de cada fase, antes do primeiro
+   item, resolve-se a **Lista de bugs**.
+2. A conversa gerente passa o item ao **implementador** (seção 10).
+3. Ele faz a mudança. Uma só.
 4. Roda os testes de máquina. Se algum quebrar, conserta antes de seguir.
-5. Roda a régua nos PDFs de teste. Se qualquer número piorar, reverte — ou
-   apresenta os dois resultados.
-6. Abre **todas** as imagens.
-7. Monta o `para-conferir.html` com a opinião e as ressalvas.
+5. Roda a régua e o **teste de velocidade** (`teste_velocidade.py`). Se
+   qualquer número piorar, reverte — ou apresenta os dois resultados. Nenhum
+   item pode deixar o programa mais lento.
+6. O **verificador** gera o antes/depois **só com as páginas-gabarito daquele
+   item** (`gabarito/lista.json`) e abre **todas** as imagens. Item de tela:
+   pilota a janela real com mensagens nativas de mouse.
+7. Monta o relatório de conferência (três formatos) com a opinião e as
+   ressalvas.
 8. Marca o item como **PRONTO PARA CONFERIR** e me chama.
-9. **Eu abro o programa pelo atalho, testo, e marco APROVADO, melhorar ou
-   descartado.**
-10. Commit com o defeito que resolveu escrito por extenso, e `git push` (o
-    repositório tem GitHub remoto — não é preciso perguntar cada vez, mas
-    sempre revisar o que está sendo commitado antes: nunca commitar segredo,
-    nunca desfazer o `.gitignore` sem avisar).
+9. **Eu abro o programa pelo atalho "(desenvolvimento)", confiro em até 10
+   minutos, e marco `[x]`, `[~]` ou `[-]` no plano.**
+10. Se aprovado, commit **na hora**, com o defeito que resolveu escrito por
+    extenso, e `git push` (o repositório tem GitHub remoto — não é preciso
+    perguntar cada vez, mas sempre revisar o que está sendo commitado antes:
+    nunca commitar segredo, nunca desfazer o `.gitignore` sem avisar).
 
 ---
 
@@ -355,35 +382,55 @@ arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
   (`ui/widgets/area_arrastar.py`), o mesmo método usado pelo clique normal.
   Achado em 22/09/2026: a prosa do handoff (PARTE -1) já registrava a correção
   no mesmo dia; era só esta seção do `CLAUDE.md` que tinha ficado pra trás —
-  ver seção 10, item 6.
+  ver seção 10, item 8.
 
 ---
 
-## 10. Como este projeto trabalha agora (a partir de 22/09/2026)
+## 10. Como este projeto trabalha agora (a partir de 25/09/2026)
 
-1. **Modo de trabalho padrão: subagentes.** Implementação roda em subagentes em segundo
-   plano (um implementa, outro verifica/testa); a conversa principal com o Samuel é
-   gerenciamento — reporta o que precisa de decisão ou teste ao vivo dele, não escreve
-   código diretamente linha a linha ali.
-2. **Duas conversas em paralelo, uma branch cada.** Quando houver mais de uma frente ativa
-   ao mesmo tempo (ex.: bugs/backend + redesenho de layout), cada uma trabalha na sua
-   própria branch git (nomeada pelo tema, ex. `redesenho-layout`), com commits pequenos e
-   frequentes. Antes de começar a mexer, conferir `git log`/`git status` pra ver o que a
-   outra frente mudou. Merge de tempos em tempos, não acumular divergência grande.
-3. **Documentação obrigatória de código.** Todo arquivo/função tocado a partir de agora
+1. **Conversa gerente + agentes** (PLANO-DEFINITIVO, seção 3). A conversa do Claude Code
+   com o Samuel é a **gerente**: conversa com ele, divide o trabalho, chama os agentes e
+   junta tudo. **Não escreve código linha por linha ali.** Os agentes têm as regras em
+   `.claude/agents/`:
+   - **`implementador`** — código de processamento (`core/`) e scripts de apoio. Uma
+     mudança por vez, com comentário do que faz e do que é arriscado mudar.
+   - **`verificador`** — testes, velocidade, antes/depois nas páginas-gabarito, abre
+     todas as imagens, pilota a janela real quando o item é de tela, escreve a opinião
+     com as ressalvas. **Nunca** marca aprovado.
+   - **`pesquisador`** — estuda código e documentação de fora (ScanTailor Advanced,
+     archive-pdf-tools, OCRs), resume com as próprias palavras e diz a licença de cada
+     coisa. Grava em `docs/pesquisa/`.
+   - **`layout`** — só mexe em `ui/`, na própria cópia do projeto (git worktree em
+     `.claude/worktrees/layout`, ramo `layout`). **Só começa quando o Samuel entregar o
+     plano de layout** (Fase 4).
+2. **Uma fase por vez, na ordem do plano.** Ideia nova (de quem for) vai para a **Lista de
+   espera** do plano, com data — nunca para a fase atual. Bug que **impede** a tarefa é
+   consertado na hora; bug que **não impede** vai para a **Lista de bugs** do plano, com
+   print e data, e é resolvido no começo da fase seguinte.
+3. **Frentes em paralelo, uma cópia e um ramo cada.** Processamento (`core/`) e layout
+   (`ui/`) trabalham cada um na sua cópia (git worktree) e no seu ramo, com commits
+   pequenos e frequentes. Antes de mexer, conferir `git log` do `master` para ver o que a
+   outra frente mudou. **Só a gerente junta as frentes** no `master`.
+4. **O plano tem duas cópias** — `docs/plano/` (no git) e
+   `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\` (onde o Samuel edita). No
+   começo de cada conversa, a gerente compara as duas; se o Samuel mudou a dele, copia
+   para `docs/plano/` e faz commit. Quando a gerente aplica uma mudança que o Samuel
+   pediu, aplica **nas duas**. As duas nunca ficam diferentes.
+5. **Documentação obrigatória de código.** Todo arquivo/função tocado a partir de agora
    precisa ter comentário/docstring explicando o que é, o que faz, e (quando não for óbvio)
    o que é seguro ou arriscado mudar ali. Vale tanto pra código novo quanto pra qualquer
    arquivo existente que for tocado por outro motivo.
-4. **Nenhum plano novo substitui silenciosamente o que já estava pendente.** Antes de
-   fechar qualquer plano (modo de planejamento), conferir o `PEDIDOS.md` e a seção 9 acima
+6. **Nenhum plano novo substitui silenciosamente o que já estava pendente.** Antes de
+   fechar qualquer plano (modo de planejamento), conferir o `PLANO-DEFINITIVO.md` (fases,
+   Lista de bugs, Lista de espera) e a seção 9 acima
    — todo item em aberto continua valendo até ser resolvido ou descartado explicitamente
    pelo Samuel. Um plano novo declara o que resolve e o que deixa de fora; nunca apaga
    pendência por omissão.
-5. **Todo item resolvido guarda o pedido original.** Ao marcar algo como implementado com
-   sucesso (no `PEDIDOS.md` ou em qualquer registro equivalente), preservar a frase de quem
+7. **Todo item resolvido guarda o pedido original.** Ao marcar algo como implementado com
+   sucesso (no `PLANO-DEFINITIVO.md` ou em qualquer registro equivalente), preservar a frase de quem
    pediu (Samuel ou Kaique, citação literal sempre que existir) junto com o que foi feito e
    onde — pra poder ser revisitado sem precisar garimpar o histórico de conversas.
-6. **Cuidado com o handoff vs. o código real.** Já aconteceu de um checkpoint do handoff
+8. **Cuidado com o handoff vs. o código real.** Já aconteceu de um checkpoint do handoff
    dizer "corrigido" e outro documento (`CLAUDE.md` seção 9) mostrar o oposto, escritos no
    mesmo dia (caso do menu "Abrir", acima). Prosa de checkpoint é registro histórico, não
    prova — quando o estado importar de verdade, checar o código e o `git log`, não só

@@ -1,16 +1,18 @@
-"""Grava todo relatorio em duas versoes: uma para o Samuel, outra para mim.
+"""Grava todo relatorio em tres versoes: duas para o Samuel, uma para mim.
 
 O Samuel nao abre .md - o Acrobat recusa o arquivo e nao ha o que fazer. Um
 relatorio que a pessoa nao consegue abrir nao e relatorio.
 
-Entao todo relatorio sai em dois arquivos com o mesmo nome:
+Entao todo relatorio sai em tres arquivos com o mesmo nome (gravar):
 
     relatorio.md     texto puro, que eu leio e o git compara linha a linha
     relatorio.html   formatado, que abre com dois cliques no navegador
+    relatorio.pdf    para arquivo e referencia futura
 
 O HTML nao depende de internet nem de programa instalado: o estilo vai dentro
-do proprio arquivo. E as imagens que estiverem ao lado dele aparecem embutidas,
-para o relatorio poder ser lido sozinho, sem abrir pasta.
+do proprio arquivo. As imagens sao arquivos ao lado dele, com endereco relativo
+(![legenda](pasta/imagem.png) no .md): o HTML aponta para elas, e o PDF as leva
+dentro (ver _paginar). Mudar o relatorio de pasta sem as imagens quebra o HTML.
 """
 
 from __future__ import annotations
@@ -184,10 +186,18 @@ def _paginar(html: str, caminho: Path) -> tuple[int, bool]:
     num ciclo de tres paginas que se repetia sem fim, com o conteudo repetido, e
     deixava um .pdf de zero byte. Travar e pior que falhar - ninguem sabe se
     esperar ou matar o programa.
+
+    As imagens do relatorio (<img src="paineis/x.jpg">) sao procuradas a partir
+    da pasta do proprio PDF, que e a mesma do .md e do .html. Sem o "archive",
+    o Story nao acha arquivo nenhum e cada imagem vira o texto "[image]" - foi
+    assim ate 25/09/2026 (achado no item 0.4, cuja pagina de conferencia tem de
+    levar as imagens tambem no PDF).
     """
     import fitz
 
-    story = fitz.Story(html=html)
+    pasta = Path(caminho).parent
+    story = (fitz.Story(html=html, archive=fitz.Archive(str(pasta))) if pasta.is_dir()
+             else fitz.Story(html=html))
     escritor = fitz.DocumentWriter(str(caminho))
     moldura = fitz.paper_rect("a4")
     area = moldura + (50, 50, -50, -50)

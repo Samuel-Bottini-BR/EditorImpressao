@@ -63,6 +63,30 @@ def test_tabela_longa_nao_trava_o_pdf(tmp_path):
         assert "Relatorio de teste" in doc[0].get_text()
 
 
+def test_pdf_leva_as_imagens_que_estao_ao_lado_do_relatorio(tmp_path):
+    """Imagem citada no relatorio tem de sair DENTRO do PDF.
+
+    Ate 25/09/2026 o Story do PyMuPDF nao sabia onde procurar os arquivos, e
+    cada imagem virava o texto "[image]" no PDF (conferido no relatorio de
+    17/09). A pagina de conferencia do item 0.4 depende disso: o PDF leva os
+    paineis de antes/depois.
+    """
+    import cv2
+    import fitz
+    import numpy as np
+
+    (tmp_path / "paineis").mkdir()
+    cv2.imwrite(str(tmp_path / "paineis" / "a.jpg"), np.full((300, 200, 3), (40, 90, 200), np.uint8))
+    texto = ("# Com imagem\n\n![o painel](paineis/a.jpg)\n\n"
+             '<table><tr><td><img src="paineis/a.jpg" width="120"></td></tr></table>\n')
+
+    arquivos = relatorio.gravar(texto, tmp_path / "com-imagem")
+
+    with fitz.open(arquivos["pdf"]) as doc:
+        assert sum(len(pagina.get_images()) for pagina in doc) >= 1
+        assert "[image]" not in "".join(pagina.get_text() for pagina in doc)
+
+
 def test_conferencia_grava_o_que_a_pessoa_disse(tmp_path, monkeypatch):
     """A tela de conferir tem de guardar o veredito de quem olhou.
 
