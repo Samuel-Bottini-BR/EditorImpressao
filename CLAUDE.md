@@ -290,7 +290,7 @@ Comandos:
 
 ```
 .venv\Scripts\python.exe main.py                 o programa
-.venv\Scripts\python.exe -m pytest tests -q      os testes (438 casos em 25/09/2026)
+.venv\Scripts\python.exe -m pytest tests -q      os testes (666 casos em 26/09/2026)
 .venv\Scripts\python.exe avaliar.py              a régua dos filtros
 .venv\Scripts\python.exe avaliar_selecao.py      a régua da seleção
 .venv\Scripts\python.exe conferir.py             conferir amostras falando
