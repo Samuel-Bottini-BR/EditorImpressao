@@ -189,8 +189,10 @@ def test_nome_da_pasta_sem_acento_e_sem_caractere_proibido():
 
 
 def test_nome_do_relatorio_nao_tem_ponto():
-    """relatorio.gravar tira a extensão do destino: "conferencia-6.7" virava
-    "conferencia-6.md" (aconteceu na primeira rodada de verdade, 25/09)."""
+    """Até 28/09 o relatorio.gravar cortava o nome no último ponto:
+    "conferencia-6.7" virava "conferencia-6.md" (aconteceu na primeira rodada
+    de verdade, 25/09). Consertado lá; o hífen fica para as rodadas novas
+    terem o mesmo nome das antigas."""
     assert conferencia.nome_do_relatorio("6.7") == "conferencia-6-7"
     assert conferencia.nome_do_relatorio("fase1") == "conferencia-fase1"
 

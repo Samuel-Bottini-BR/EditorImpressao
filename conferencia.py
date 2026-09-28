@@ -203,9 +203,11 @@ def nome_da_pasta(item: str, quando: datetime) -> str:
 
 
 def nome_do_relatorio(item: str) -> str:
-    """ "conferencia-6-7" (sem extensão). Sem ponto de propósito: o
-    relatorio.gravar tira a extensão do destino, e "conferencia-6.7" viraria
-    "conferencia-6.md" - foi o que aconteceu na primeira rodada de verdade."""
+    """ "conferencia-6-7" (sem extensão). Sem ponto de propósito: até
+    28/09/2026 o relatorio.gravar cortava o nome no último ponto, e
+    "conferencia-6.7" virava "conferencia-6.md" - foi o que aconteceu na
+    primeira rodada de verdade. O relatorio.gravar foi consertado em 28/09;
+    o hífen fica para as rodadas novas terem o mesmo nome das antigas."""
     return f"conferencia-{nome_seguro(item).replace('.', '-')}"
 
 
@@ -1796,8 +1798,8 @@ def main(argv: list[str] | None = None, *, gabarito: Path | None = None,
 
     import relatorio
 
-    # Sem ponto no nome: relatorio.gravar tira a "extensão" do destino, e
-    # "conferencia-6.7" viraria "conferencia-6.md".
+    # Sem ponto no nome, como nas rodadas antigas (ver nome_do_relatorio: até
+    # 28/09 o relatorio.gravar cortava "conferencia-6.7" em "conferencia-6").
     arquivos = relatorio.gravar(montar_texto(dados), pasta / nome_do_relatorio(item))
     _dizer("")
     _dizer("Página de conferência gravada em:")

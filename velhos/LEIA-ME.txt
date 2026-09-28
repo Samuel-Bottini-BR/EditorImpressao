@@ -1,0 +1,10 @@
+Pasta "velhos" - arquivos antigos guardados, NAO USAR.
+
+Criada em 28/09/2026 a pedido do Samuel: em vez de apagar, os arquivos
+desatualizados vêm para cá.
+
+- EditorImpressao.spec (18/07/2026): receita antiga do PyInstaller para montar
+  o programa. Aponta para a pasta velha na Área de Trabalho e deixa o scipy de
+  fora; quem montar o programa por ela gera um programa quebrado. Quem monta o
+  programa hoje é o empacotar.py (que não usa este arquivo). Ver a Lista de
+  bugs do PLANO-DEFINITIVO (25/09).

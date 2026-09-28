@@ -7,3 +7,7 @@ doxapy>=0.9.9
 scikit-image>=0.24
 pytest>=8.0
 pyinstaller>=6.0
+# Os relatorios (relatorio.py): converte o .md em .html e .pdf. Sem ela, os
+# relatorios saem pela conversao simples e perdem as tabelas e as imagens.
+# Versao minima = a do .venv em 28/09/2026 (Lista de bugs, 25/09).
+markdown>=3.10.3

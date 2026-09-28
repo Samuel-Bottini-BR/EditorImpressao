@@ -177,7 +177,31 @@ def montar_html(texto_markdown: str, titulo: str | None = None) -> str:
 PAGINAS_MAXIMAS = 200
 
 
-def _paginar(html: str, caminho: Path) -> tuple[int, bool]:
+def _rodape_html(quando: str) -> str:
+    """O rodape do PDF ("Editor de Impressao - gerado em ..."), que _paginar
+    desenha na margem de baixo da ultima pagina. Seguro mudar: texto e cor."""
+    return ('<p style="font-family: sans-serif; font-size: 8pt; color: #86827c;">'
+            f"Editor de Impressão &middot; gerado em {quando}</p>")
+
+
+def _desenhar_rodape(dispositivo, rodape: str, moldura) -> None:
+    """Desenha o rodape na margem de baixo da folha, FORA da area do texto.
+
+    Ate 28/09/2026 o rodape era o ultimo paragrafo do texto corrido: quando
+    o texto acabava perto do pe da folha, ele nao cabia e ia sozinho para uma
+    folha nova - a "ultima pagina so com o rodape" (Lista de bugs, 25/09).
+    Na margem, ele nunca pede folha. A faixa fica entre o fim da area do
+    texto (50 pt acima do pe) e 20 pt do pe: nao encosta no texto.
+    """
+    import fitz
+
+    faixa = fitz.Rect(moldura.x0 + 50, moldura.y1 - 42, moldura.x1 - 50, moldura.y1 - 20)
+    story = fitz.Story(html=rodape)
+    story.place(faixa)
+    story.draw(dispositivo)
+
+
+def _paginar(html: str, caminho: Path, rodape: str = "") -> tuple[int, bool]:
     """Escreve o HTML em paginas A4. Devolve (quantas paginas, terminou).
 
     O laco PRECISA de teto. O Story do PyMuPDF devolve "ainda tem mais" sem
@@ -192,6 +216,11 @@ def _paginar(html: str, caminho: Path) -> tuple[int, bool]:
     o Story nao acha arquivo nenhum e cada imagem vira o texto "[image]" - foi
     assim ate 25/09/2026 (achado no item 0.4, cuja pagina de conferencia tem de
     levar as imagens tambem no PDF).
+
+    rodape (HTML, opcional) vai na margem de baixo da ULTIMA pagina, fora do
+    texto (ver _desenhar_rodape). Se o laco bater no teto, nao ha ultima
+    pagina de verdade e o rodape nao sai - quem chama regrava no estilo
+    simples, que fecha.
     """
     import fitz
 
@@ -207,17 +236,21 @@ def _paginar(html: str, caminho: Path) -> tuple[int, bool]:
         dispositivo = escritor.begin_page(moldura)
         mais, _ = story.place(area)
         story.draw(dispositivo)
+        if rodape and not mais:
+            _desenhar_rodape(dispositivo, rodape, moldura)
         escritor.end_page()
     escritor.close()
     return paginas, not mais
 
 
-def _pagina_simples(corpo: str, quando: str) -> str:
+def _pagina_simples(corpo: str) -> str:
     """O mesmo relatorio num estilo que o Story sempre consegue paginar.
 
     Sem margens, sem bordas e sem entrelinha: e a combinacao dessas com uma
     tabela longa que faz o layout entrar em ciclo. Medido no relatorio que
-    travava, este estilo fecha em quatro paginas.
+    travava, este estilo fecha em quatro paginas. Sem fundo cinza em lugar
+    nenhum, entao o 'border-collapse' daqui nao causa as faixas do estilo
+    normal (ver gravar_pdf). O rodape vai a parte, pelo _paginar.
     """
     return (
         "<html><head><style>"
@@ -225,9 +258,35 @@ def _pagina_simples(corpo: str, quando: str) -> str:
         "table { border-collapse: collapse; width: 100%; font-size: 9pt; }"
         "th, td { padding: 3pt 5pt; text-align: left; }"
         "</style></head><body>" + corpo +
-        "<p>Editor de Impressão &middot; gerado em " + quando + "</p>"
         "</body></html>"
     )
+
+
+# As extensoes que gravar() produz. So uma destas sai do fim do destino;
+# qualquer outro ponto faz parte do nome. Ver _sem_extensao.
+EXTENSOES_DO_RELATORIO = (".md", ".html", ".pdf")
+
+
+def _sem_extensao(destino: str | Path) -> Path:
+    """O destino sem a extensao - mas SO se ela for .md, .html ou .pdf.
+
+    Ate 28/09/2026 era Path.with_suffix(""), que corta no ULTIMO ponto,
+    qualquer que seja: o destino "conferencia-6.7" gravava
+    "conferencia-6.md" (Lista de bugs, 25/09). Agora o nome dado fica
+    inteiro, e quem ja passava o proprio .md (avaliar.py, `python
+    relatorio.py x.md`) continua funcionando. Arriscado: voltar a usar
+    with_suffix aqui, ou em qualquer lugar que monte o nome dos arquivos.
+    """
+    caminho = Path(destino)
+    if caminho.suffix.lower() in EXTENSOES_DO_RELATORIO:
+        return caminho.with_suffix("")
+    return caminho
+
+
+def _com_extensao(base: Path, extensao: str) -> Path:
+    """base + extensao, sem mexer no que ja esta no nome ("conferencia-6.7"
+    vira "conferencia-6.7.pdf"; o with_suffix daria "conferencia-6.pdf")."""
+    return base.with_name(base.name + extensao)
 
 
 def gravar_pdf(texto_markdown: str, destino: str | Path,
@@ -235,40 +294,50 @@ def gravar_pdf(texto_markdown: str, destino: str | Path,
     """Gera o PDF do relatorio. Devolve None se nao for possivel.
 
     Usa o proprio PyMuPDF, que ja e dependencia do programa - nada de motor de
-    navegador nem de instalador extra.
+    navegador nem de instalador extra. destino pode vir com extensao ou sem
+    (ver _sem_extensao); o PDF sai com o nome inteiro mais ".pdf".
     """
     import fitz
 
-    caminho = Path(destino).with_suffix(".pdf")
+    caminho = _com_extensao(_sem_extensao(destino), ".pdf")
     corpo = _markdown_para_html(texto_markdown)
     quando = datetime.now().strftime("%d/%m/%Y às %H:%M")
 
+    rodape = _rodape_html(quando)
+
     # O Story do PyMuPDF entende um subconjunto de CSS; o estilo aqui e mais
     # simples que o do HTML de propósito.
+    #
+    # A TABELA USA 'border-spacing: 0', NUNCA 'border-collapse: collapse'.
+    # Com o collapse, o Story redesenha o fundo cinza do cabecalho (th) de
+    # cada tabela em TODAS as paginas seguintes, na mesma altura em que ele
+    # estava, so com a altura do enchimento (6 pt): eram as "faixas cinzas
+    # atravessando o texto" (Lista de bugs, 25/09/2026; medido em 28/09 - sem
+    # o collapse, nenhuma faixa). O border-spacing: 0 da a mesma aparencia,
+    # linha colada na linha. Arriscado: voltar o collapse com fundo em th/td.
+    #
+    # O rodape nao vai aqui: vai na margem da ultima pagina (_paginar).
     pagina_html = f"""<html><head><style>
     body {{ font-family: sans-serif; font-size: 10pt; line-height: 1.5; color: #1c1c1e; }}
     h1 {{ font-size: 19pt; margin: 0 0 8pt; }}
     h2 {{ font-size: 13pt; margin: 16pt 0 5pt; color: #33312e; }}
     h3 {{ font-size: 11pt; margin: 12pt 0 4pt; }}
     p, li {{ margin: 0 0 6pt; }}
-    table {{ border-collapse: collapse; width: 100%; margin: 8pt 0; font-size: 9pt; }}
+    table {{ border-spacing: 0; width: 100%; margin: 8pt 0; font-size: 9pt; }}
     th, td {{ padding: 3pt 5pt; text-align: left; border-bottom: 1px solid #ddd; }}
     th {{ background: #f2f0ed; font-weight: bold; }}
     code {{ font-family: monospace; font-size: 9pt; background: #f2f0ed; }}
     blockquote {{ margin: 8pt 0 8pt 12pt; color: #55524d; }}
-    .rodape {{ margin-top: 20pt; font-size: 8pt; color: #86827c; }}
     </style></head><body>{corpo}
-    <p class="rodape">Editor de Impressão &middot; gerado em {quando}</p>
     </body></html>"""
 
     try:
-        paginas, terminou = _paginar(pagina_html, caminho)
+        paginas, terminou = _paginar(pagina_html, caminho, rodape)
         if not terminou:
             # O layout entrou em ciclo: ver _paginar. O mesmo texto num estilo
             # sem margens nem bordas fecha normalmente, entao vale a pena
             # regravar assim - relatorio simples e melhor que relatorio nenhum.
-            paginas, terminou = _paginar(
-                _pagina_simples(corpo, quando), caminho)
+            paginas, terminou = _paginar(_pagina_simples(corpo), caminho, rodape)
         return caminho
     except Exception:  # noqa: BLE001 - sem PDF o md e o html ainda saem
         return None
@@ -279,15 +348,17 @@ def gravar(texto_markdown: str, destino: str | Path,
     """Grava o relatorio nas tres versoes.
 
     Devolve um dicionario com as chaves md, html e pdf (esta ultima ausente se
-    a geracao falhar). destino pode vir com extensao ou sem.
+    a geracao falhar). destino pode vir sem extensao ou com a de um dos tres
+    formatos (.md, .html, .pdf); qualquer outro ponto faz parte do nome:
+    "conferencia-6.7" grava conferencia-6.7.md/.html/.pdf (ver _sem_extensao).
     """
-    base = Path(destino).with_suffix("")
+    base = _sem_extensao(destino)
     base.parent.mkdir(parents=True, exist_ok=True)
 
-    md = base.with_suffix(".md")
+    md = _com_extensao(base, ".md")
     md.write_text(texto_markdown, encoding="utf-8")
 
-    htm = base.with_suffix(".html")
+    htm = _com_extensao(base, ".html")
     htm.write_text(montar_html(texto_markdown, titulo), encoding="utf-8")
 
     saida = {"md": md, "html": htm}

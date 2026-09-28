@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investigação dos 3 bugs de imagem da conferência 6.7 (28/09/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Investigação dos 3 bugs de imagem da conferência 6.7 (28/09/2026)</h1>
+<p>Feita pelo agente implementador, <strong>sem consertar nada</strong>: nenhum arquivo do programa foi alterado. Os consertos que aparecem aqui foram só <strong>simulados na memória</strong>, para medir o tamanho e o risco de cada um. Quem decide o que fazer é o Samuel.</p>
+<p>Os três bugs foram achados pelo Samuel na conferência do item 6.7 (filtro Mágico pro): <code>relatorios/conferir/6.7-2026-09-25-1720/</code>, prints em <code>docs/plano/bugs/2026-09-28-*.jpg</code>.</p>
+<h2>Resumo em uma página</h2>
+<p>Onde fica cada coisa no código está no começo de cada seção.</p>
+<table>
+<thead>
+<tr>
+<th>Bug</th>
+<th>A causa, em uma frase</th>
+<th>Conserto pequeno?</th>
+<th>Item do plano que substitui</th>
+<th>Recomendação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Corte de bordas</td>
+<td>O corte procura <strong>a tinta, não a folha</strong>: põe uma caixa justa em volta da tinta, joga fora a tinta mais de fora e depois gira a página sem aumentar a folha. Por isso come letra, número de página e nota de música, e nas Horas a margem de papel some de um lado e sobra do outro. Acontece em qualquer filtro.</td>
+<td>Sim para "não comer conteúdo" (30 a 40 linhas; simulado: 77 peças partidas viram 9). <strong>Não</strong> para "seguir a beirada do papel": isso é o ScanTailor.</td>
+<td>2.13, 2.5, 2.14 (e 2.4, 2.2), na <strong>Fase 2</strong></td>
+<td>Consertar agora só o "não comer conteúdo"</td>
+</tr>
+<tr>
+<td>2. Quadradinhos na roupa do anjo</td>
+<td>Dentro da gravura roda uma limpeza que devia valer só para o papel, e ela achou que o pano branco era papel. Como decide pela cor de cada ponto, e o JPEG original guarda a cor em quadrados de 16×16 pontos, uns quadrados passaram e outros não. A mesma limpeza lava a branco a <strong>foto do Opus Majus 20</strong>.</td>
+<td>Sim, 5 a 10 linhas. Simulado: muda 6 das 33 páginas, 4 para melhor e 2 com papel um pouco menos branco dentro da gravura</td>
+<td>1.4/1.5 só se o Mágico pro for refeito sobre a montagem nova (o plano não diz)</td>
+<td>Consertar agora</td>
+</tr>
+<tr>
+<td>3. Moldura dourada com furinhos</td>
+<td>O programa achou que a moldura era <strong>parte do bloco de texto</strong>. Dentro de um bloco de texto, tudo que não é traço vira papel branco, e a faixa dourada é lisa por dentro. O mesmo <strong>apaga a iluminura da Horas 11</strong> (gabarito da Fase 1).</td>
+<td><strong>Não.</strong> O conserto simples devolve a moldura, mas traz de volta a mancha vermelha do Palatino 66 (R4) e a beirada da folha em outras páginas</td>
+<td>1.2, 1.4 e 1.5, na <strong>Fase 1 (a atual)</strong></td>
+<td>Deixar para 1.2/1.4/1.5</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Os quadradinhos e os furinhos têm causas diferentes.</strong> Prova: desligando só a limpeza do papel, a roupa do anjo volta e a moldura continua furada; desligando só o "papel do bloco de texto", a moldura volta e a roupa continua com quadradinhos (seções 3 e 4).</p>
+<p><strong>Não é o detector de gravura (<code>doclayout.onnx</code>) que erra no anjo:</strong> ele marcou a gravura inteira certo. Nas Horas, sim, a classificação de região está no começo do problema (seção 4).</p>
+<h2>1. Como reproduzi</h2>
+<ul>
+<li>Mesmo caminho da conferência: <code>conferencia.processar_pelo_programa</code>, que chama <code>TarefaAnalise.run</code> (análise automática) e <code>TarefaProcessar.run</code> (o botão "Confirmar e processar"), a partir dos PDFs de uma página em <code>gabarito/paginas/</code>.</li>
+<li><strong>As 3 páginas saíram idênticas, ponto por ponto, às da conferência de 25/09</strong> (diferença máxima 0). O código de <code>core/</code> não mudou desde 25/09 às 14h51 (<code>git log</code>), antes da conferência (17h20).</li>
+<li>Depois refiz cada etapa à mão, com as mesmas funções do programa, e conferi que o passo a passo dá o mesmo resultado que o programa (diferença 0), antes de olhar as etapas do meio.</li>
+<li>Rodei também no filtro <strong>Original</strong>: a folha sai <strong>do mesmo tamanho</strong>, com o mesmo corte. Ou seja, o corte não depende do filtro.</li>
+</ul>
+<p>Abri todas as imagens que gerei (cerca de 60, as de prova estão na pasta <code>provas/</code>).</p>
+<h2>2. Bug 1: corte de bordas errado</h2>
+<h3>A causa, em português comum</h3>
+<p>O corte automático <strong>não procura a beirada do papel. Ele procura onde tem tinta</strong> e desenha uma caixa justa em volta dela. Três coisas nessa conta fazem ele comer conteúdo:</p>
+<ol>
+<li><strong>Ele joga fora a tinta mais de fora.</strong> Para não se prender em sujeira da margem, descarta os 0,2% da tinta mais perto de cada beirada. Só que, numa página de texto, esses 0,2% muitas vezes <strong>são</strong> o conteúdo: o começo e o fim das linhas justificadas, o número da página, a marca de caderno ("A iii"), a primeira nota de cada pauta.</li>
+<li><strong>Deixa só meio por cento de folga</strong> (na Escola 35, uns 8 pontos a 300 DPI, menos de 1 mm), menos do que ele descartou (de 16 a 24 pontos de cada lado).</li>
+<li><strong>Endireita depois de cortar, sem aumentar a folha.</strong> A página é girada dentro do mesmo retângulo, e os cantos do conteúdo saem para fora.</li>
+</ol>
+<p>Nas Horas acontece o contrário do que se espera de uma página com margem: <strong>quem decide até onde o corte vai é a sujeira da margem.</strong> Onde a margem está limpa, o corte vai justo até a moldura e a margem de papel some. Onde há um risco (a beirada da folha vizinha, a sombra da lombada), o corte fica preso nele e leva a margem inteira, com a faixa cinza junto.</p>
+<h3>A prova</h3>
+<p><strong>Escola p. 35.</strong> O retângulo vermelho é o que o programa escolheu, desenhado sobre a página inteira (antes do corte):</p>
+<p><a href="provas/b1-01-escola35-retangulo-do-corte.jpg" target="_blank"><img src="provas/b1-01-escola35-retangulo-do-corte.jpg" width="480" alt="Escola 35: o corte (vermelho) passa rente ao começo das linhas à esquerda e em cima do "7" do "37""></a></p>
+<p><em>Escola 35: o corte (vermelho) passa rente ao começo das linhas à esquerda e em cima do "7" do "37"</em> (<code>provas/b1-01-escola35-retangulo-do-corte.jpg</code>)</p>
+<p>O "37" é partido <strong>pelo próprio corte</strong>, antes de endireitar. O quadro mostra: original com a linha do corte, só o corte, corte + endireitar (o que o programa faz) e endireitar sem cortar:</p>
+<p><a href="provas/b1-02-escola35-numero-37.jpg" target="_blank"><img src="provas/b1-02-escola35-numero-37.jpg" width="480" alt=""37": a linha do corte passa no meio do 7"></a></p>
+<p><em>"37": a linha do corte passa no meio do 7</em> (<code>provas/b1-02-escola35-numero-37.jpg</code>)</p>
+<p>No começo das linhas, o corte encosta na primeira letra e o endireitar (−0,8°) empurra para fora o começo das linhas de baixo, até 21 pontos (1,8 mm). "para" vira "oara", "to para" vira "o para". Endireitando <strong>sem cortar</strong> (último quadro), nada se perde:</p>
+<p><a href="provas/b1-03-escola35-comeco-das-linhas.jpg" target="_blank"><img src="provas/b1-03-escola35-comeco-das-linhas.jpg" width="480" alt="Começo das linhas: com o corte só, as letras ainda estão lá; com corte + endireitar, somem"></a></p>
+<p><em>Começo das linhas: com o corte só, as letras ainda estão lá; com corte + endireitar, somem</em> (<code>provas/b1-03-escola35-comeco-das-linhas.jpg</code>)</p>
+<p><strong>O alto da gravura: não consegui confirmar que foi cortado.</strong> No resultado há 22 pontos (1,9 mm) de papel acima da gravura, e a borda de cima dela está inteira no filtro Original. O que parece corte no Mágico pro é o céu azul-claro que virou branco (é o bug 2) e emendou com a margem:</p>
+<p><a href="provas/b1-04-escola35-alto-da-gravura.jpg" target="_blank"><img src="provas/b1-04-escola35-alto-da-gravura.jpg" width="480" alt="Em cima: Original (a gravura está inteira). Embaixo: Mágico pro (o céu virou branco e a borda de cima some nesse trecho)"></a></p>
+<p><em>Em cima: Original (a gravura está inteira). Embaixo: Mágico pro (o céu virou branco e a borda de cima some nesse trecho)</em> (<code>provas/b1-04-escola35-alto-da-gravura.jpg</code>)</p>
+<p><strong>Horas p. 26 (NOVEMBRE).</strong> O corte vai justo até a moldura na esquerda (tira 22% da largura, toda a margem de papel) e, na direita, vai até a beirada da folha vizinha:</p>
+<p><a href="provas/b1-05-horas26-retangulo-do-corte.jpg" target="_blank"><img src="provas/b1-05-horas26-retangulo-do-corte.jpg" width="480" alt="Horas 26: corte justo na esquerda, frouxo na direita (leva a beirada da folha vizinha)"></a></p>
+<p><em>Horas 26: corte justo na esquerda, frouxo na direita (leva a beirada da folha vizinha)</em> (<code>provas/b1-05-horas26-retangulo-do-corte.jpg</code>)</p>
+<p>Isto é a tinta que o corte enxerga (preto). O risco da beirada da folha vizinha, à direita, é levemente torto: espalha-se por várias colunas, cada uma cobrindo só 20% a 25% da altura. A regra que apaga "risca de dobra" pede 70% numa coluna só, então ele não é apagado, pesa 933 pontos de "tinta" (o limite de descarte é 73) e segura o corte. A margem da esquerda, com poucos pontinhos, não segura nada:</p>
+<p><a href="provas/b1-06-horas26-tinta-que-o-corte-enxerga.jpg" target="_blank"><img src="provas/b1-06-horas26-tinta-que-o-corte-enxerga.jpg" width="480" alt="A "tinta" que o corte usa. Vermelho: o corte. Verde: onde está a massa da tinta"></a></p>
+<p><em>A "tinta" que o corte usa. Vermelho: o corte. Verde: onde está a massa da tinta</em> (<code>provas/b1-06-horas26-tinta-que-o-corte-enxerga.jpg</code>)</p>
+<p><strong>Horas p. 27 (DECEMBRE)</strong>, o espelho: a sombra da lombada na esquerda segura o corte na beirada, e a direita vai justa até a moldura (sobram 0,4 a 2 mm depois da faixa dourada):</p>
+<p><a href="provas/b1-07-horas27-retangulo-do-corte.jpg" target="_blank"><img src="provas/b1-07-horas27-retangulo-do-corte.jpg" width="480" alt="Horas 27: frouxo na esquerda, justo na direita"></a></p>
+<p><em>Horas 27: frouxo na esquerda, justo na direita</em> (<code>provas/b1-07-horas27-retangulo-do-corte.jpg</code>)</p>
+<p><strong>A moldura não foi cortada por dentro</strong>: no filtro Original a faixa dourada está inteira dos dois lados. Na Horas 26 sobram de 13 a 53 pontos (1 a 4,5 mm) entre a beirada da imagem e o dourado. O que dá a impressão de corte por dentro no Mágico pro é a faixa ficar branca por dentro (bug 3) e colada na beirada:</p>
+<p><a href="provas/b1-08-horas26-moldura-inteira-no-original.jpg" target="_blank"><img src="provas/b1-08-horas26-moldura-inteira-no-original.jpg" width="480" alt="Horas 26, lado esquerdo: a faixa dourada inteira, com folga, depois do corte"></a></p>
+<p><em>Horas 26, lado esquerdo: a faixa dourada inteira, com folga, depois do corte</em> (<code>provas/b1-08-horas26-moldura-inteira-no-original.jpg</code>)</p>
+<p><a href="provas/b1-09-horas27-original-x-magico-mesmo-corte.jpg" target="_blank"><img src="provas/b1-09-horas27-original-x-magico-mesmo-corte.jpg" width="480" alt="Horas 27: Original (esquerda) e Mágico pro (direita) com o mesmo corte; a diferença na moldura é do filtro"></a></p>
+<p><em>Horas 27: Original (esquerda) e Mágico pro (direita) com o mesmo corte; a diferença na moldura é do filtro</em> (<code>provas/b1-09-horas27-original-x-magico-mesmo-corte.jpg</code>)</p>
+<h3>Respostas às perguntas da gerente</h3>
+<ul>
+<li><strong>Acontece com qualquer filtro?</strong> Sim. No Original a folha sai do mesmo tamanho, com o mesmo corte.</li>
+<li><strong>Vem da análise automática (bordas, lombada, ângulo) ou do recorte?</strong> Vem do <strong>recorte</strong>, feito na hora de gravar: <code>preparar_metade</code> recalcula o corte a 300 DPI, porque a página não tem corte manual. A análise a 150 DPI só gera os avisos; o corte dela nem é usado (e às vezes dá outro: na Horas 26, a 150 DPI a caixa começa em 2% da largura, a 300 DPI em 22%). A lombada não interfere: nenhuma das 3 foi dividida. O <strong>ângulo</strong> entra como agravante: é medido depois do corte e aplicado sem aumentar a folha.</li>
+</ul>
+<h3>Não são só estas 3 páginas</h3>
+<p>Medi as 33 páginas do gabarito. Em <strong>13 delas o corte parte duas ou mais peças de tinta num mesmo lado</strong> (em 19, pelo menos uma; 77 peças ao todo). Olhei cada uma, e não é sujeira: são letras no fim ou no começo da linha (Boécio 7 e 22, Escola 7 e 35), as primeiras notas e claves das pautas (Graduale 222), as iniciais grandes (Graduale 221), o número da página cortado na horizontal (Opus Majus 11 e 165), a marca de caderno (Palatino 9), a decoração dourada (Horas 47) e os rótulos da tabela (Opus Majus 256). Cada quadro abaixo é uma peça partida, com a linha do corte em vermelho:</p>
+<p><a href="provas/b1-10-gabarito-pecas-partidas.jpg" target="_blank"><img src="provas/b1-10-gabarito-pecas-partidas.jpg" width="480" alt="As peças de tinta que o corte parte ao meio, nas páginas do gabarito com 2 ou mais"></a></p>
+<p><em>As peças de tinta que o corte parte ao meio, nas páginas do gabarito com 2 ou mais</em> (<code>provas/b1-10-gabarito-pecas-partidas.jpg</code>)</p>
+<h3>Tamanho do conserto e risco</h3>
+<ul>
+<li><strong>"Não comer conteúdo"</strong> é pequeno: em <code>detectar_bordas</code>, quando a borda do corte atravessa uma peça de tinta, levar a borda até o fim da peça (menos as que encostam na beirada da imagem, que são scanner ou folha vizinha). E em <code>preparar_metade</code>, medir o ângulo <strong>antes</strong> de cortar e alargar a caixa o quanto a rotação vai deslocar os cantos. A ordem "cortar → endireitar" do <code>CLAUDE.md</code> continua a mesma. Simulei isso nas 33 páginas: as peças partidas caem de 77 (em 19 páginas) para 9 (em 5), e a folha final cresce de 0,2% a 3,4% na largura e até 4,8% na altura (vermelho: hoje; verde: simulado):</li>
+</ul>
+<p><a href="provas/b1-12-simulacao-conserto-pequeno.jpg" target="_blank"><img src="provas/b1-12-simulacao-conserto-pequeno.jpg" width="480" alt="Simulação do conserto pequeno nas 33 páginas. No título: peças partidas hoje → simulado"></a></p>
+<p><em>Simulação do conserto pequeno nas 33 páginas. No título: peças partidas hoje → simulado</em> (<code>provas/b1-12-simulacao-conserto-pequeno.jpg</code>)</p>
+<ul>
+<li><strong>Risco:</strong> o corte mexe em <strong>toda página de todo livro</strong>. O descarte dos 0,2% existe por causa da sujeira da margem do Graduale 536 (a queixa "sobrou muito espaço do lado esquerdo"). A simulação não traz aquela sujeira de volta porque só estica a borda até o fim da peça que ela já atravessa, mas as margens ficam um pouco maiores, e a queixa antiga de "sobra papel em branco" (5 de 16 páginas) pode voltar um pouco. É <strong>medível por máquina</strong>: contar as peças partidas, que devia dar zero.</li>
+<li><strong>"Seguir a beirada do papel"</strong>, que é o que o Samuel espera nas Horas, <strong>não é conserto pequeno</strong>. O corte atual não sabe onde está o papel, só onde está a tinta. Isso é a caixa da página do ScanTailor: itens <strong>2.13</strong> (achar a página dentro da borda do scanner), <strong>2.5</strong> (caixa da página), <strong>2.14</strong> (preencher com branco), junto com <strong>2.4</strong> (margens iguais) e <strong>2.2</strong> (endireitar). Tudo na Fase 2.</li>
+</ul>
+<h3>Opções</h3>
+<ol>
+<li><strong>Consertar agora só o "não comer conteúdo"</strong> (as duas mudanças acima, em torno de 30 a 40 linhas, com teste de máquina "nenhuma peça partida").
+   - A favor: acaba com a perda de letra, número e nota já, inclusive nas conferências da Fase 1, que passam todas pelo corte. É pequeno e conferível por máquina.
+   - Contra: é código que a Fase 2 vai substituir. As margens ficam um pouco maiores. As Horas continuam sem seguir a beirada do papel.</li>
+<li><strong>Não mexer no programa agora; nas conferências da Fase 1, rodar com "cortar bordas" desligado</strong> (mudança no <code>conferencia.py</code>, que é script de apoio, dizendo isso na página).
+   - A favor: nenhum risco para o programa, e o Samuel julga o filtro sem o defeito do corte no meio.
+   - Contra: o programa continua comendo conteúdo até a Fase 2, para quem processar um livro. A conferência deixa de ser exatamente o caminho do programa.</li>
+<li><strong>Deixar tudo para 2.13/2.5/2.14.</strong>
+   - A favor: nenhum retrabalho.
+   - Contra: até a Fase 2, toda conferência e todo livro processado perde conteúdo na beirada, e o Samuel vai ver o mesmo defeito em cada conferência.</li>
+</ol>
+<p><strong>Minha recomendação: a opção 1.</strong> Perder letra e número de página é o pior tipo de defeito para reimpressão ("o desenho também saia perfeito"), atinge 13 das 33 páginas do gabarito, e o conserto é pequeno. "Seguir a beirada do papel" fica para 2.13/2.5. Se o Samuel preferir não mexer no corte antes da Fase 2, então a opção 2, pelo menos, para as conferências não ficarem contaminadas.</p>
+<h2>3. Bug 2: quadradinhos brancos na roupa do anjo</h2>
+<h3>A causa, em português comum</h3>
+<p>O detector marcou certo a gravura inteira. Para a gravura, o programa usa um tratamento suave ("papel a branco pela curva, tom preservado"). Só que esse tratamento roda o filtro <strong>Melhorar</strong> em cada gravura, e o Melhorar termina com uma <strong>limpeza que devia valer só para o papel</strong>: "o que não é tinta vira papel branco". Ela decide o que é papel por três perguntas: longe de traço, não escuro e <strong>com cor de papel</strong>. "Cor de papel" é pouca cor <strong>ou</strong> tom âmbar (o amarelado de papel velho) com pouca saturação.</p>
+<p>O pano do anjo é quase branco e levemente creme. Longe das dobras, não tem traço, então <strong>passa por papel e vira branco chapado</strong>.</p>
+<p>E por que em <strong>quadradinhos</strong>? A imagem dentro do PDF é um JPEG que guarda a cor em blocos de 16×16 pontos (24×24 depois de ampliar para 300 DPI). O creme do pano fica <strong>exatamente na fronteira</strong> do "tom âmbar". Cada bloco do JPEG tem uma cor só, então o bloco inteiro cai de um lado ou do outro: uns quadrados viram branco, os vizinhos não.</p>
+<p>A documentação da própria função diz "Não entra em capa, nem em gravura". Mas a única trava para gravura é "tinta demais" (mais de 22%), pensada para xilogravura de hachura. Esta gravura colorida tem 16%, então passa.</p>
+<h3>A prova</h3>
+<p>A seleção do detector: gravura (vermelho) marcada inteira e certa:</p>
+<p><a href="provas/b2-01-escola35-selecao.jpg" target="_blank"><img src="provas/b2-01-escola35-selecao.jpg" width="480" alt="Escola 35: vermelho = gravura, azul = texto, verde = papel"></a></p>
+<p><em>Escola 35: vermelho = gravura, azul = texto, verde = papel</em> (<code>provas/b2-01-escola35-selecao.jpg</code>)</p>
+<p>Quem pintou de branco cada ponto que não era branco no original. <strong>Rosa = a limpeza do papel rodando dentro da gravura</strong>, e os quadradinhos aparecem ali, na roupa e no céu:</p>
+<p><a href="provas/b2-02-escola35-quem-pintou-de-branco.jpg" target="_blank"><img src="provas/b2-02-escola35-quem-pintou-de-branco.jpg" width="480" alt="Rosa: limpeza do papel dentro da gravura. Vermelho: limpeza da página. Laranja: empurrão de branco. Azul: papel do bloco de texto. Verde: região papel"></a></p>
+<p><em>Rosa: limpeza do papel dentro da gravura. Vermelho: limpeza da página. Laranja: empurrão de branco. Azul: papel do bloco de texto. Verde: região papel</em> (<code>provas/b2-02-escola35-quem-pintou-de-branco.jpg</code>)</p>
+<p>As máscaras da limpeza na roupa, com a grade dos blocos do JPEG desenhada por cima (azul-claro). A máscara "tom âmbar" é feita de quadrados <strong>exatamente na grade do JPEG</strong>, e ela manda no que vai a branco:</p>
+<p><a href="provas/b2-03-roupa-mascaras-e-grade-jpeg.jpg" target="_blank"><img src="provas/b2-03-roupa-mascaras-e-grade-jpeg.jpg" width="480" alt="Máscaras da limpeza do papel na roupa, com a grade dos blocos do JPEG"></a></p>
+<p><em>Máscaras da limpeza do papel na roupa, com a grade dos blocos do JPEG</em> (<code>provas/b2-03-roupa-mascaras-e-grade-jpeg.jpg</code>)</p>
+<p>Desligando uma coisa de cada vez (só na memória, para teste): <strong>sem a limpeza do papel (V1), a roupa volta inteira</strong>. Sem o papel do bloco de texto (V2), nada muda. A parte branca chapada do recorte da roupa cai de 27% para 7%, e o que sobra de branco são os pontos mais claros do pano, sem quadrados:</p>
+<p><a href="provas/b2-04-roupa-desligando-uma-coisa-por-vez.jpg" target="_blank"><img src="provas/b2-04-roupa-desligando-uma-coisa-por-vez.jpg" width="480" alt="Original, programa, V1 sem limpeza do papel, V2 sem papel do bloco, V3 sem os dois"></a></p>
+<p><em>Original, programa, V1 sem limpeza do papel, V2 sem papel do bloco, V3 sem os dois</em> (<code>provas/b2-04-roupa-desligando-uma-coisa-por-vez.jpg</code>)</p>
+<p>O céu azul-claro sofre o mesmo:</p>
+<p><a href="provas/b2-05-ceu.jpg" target="_blank"><img src="provas/b2-05-ceu.jpg" width="480" alt="Céu: manchas brancas no programa, céu inteiro em V1"></a></p>
+<p><em>Céu: manchas brancas no programa, céu inteiro em V1</em> (<code>provas/b2-05-ceu.jpg</code>)</p>
+<p><strong>Não é só o Mágico pro.</strong> Os três filtros de cor usam o mesmo tratamento de gravura, e os quadradinhos aparecem no Melhorar e também na gravura do Preto e branco:</p>
+<p><a href="provas/b2-06-roupa-nos-tres-filtros.jpg" target="_blank"><img src="provas/b2-06-roupa-nos-tres-filtros.jpg" width="480" alt="Original, Mágico pro, Melhorar, Preto e branco: quadradinhos nos três"></a></p>
+<p><em>Original, Mágico pro, Melhorar, Preto e branco: quadradinhos nos três</em> (<code>provas/b2-06-roupa-nos-tres-filtros.jpg</code>)</p>
+<h3>Tamanho do conserto e risco</h3>
+<ul>
+<li><strong>Arquivo e função:</strong> <code>core/filtros.py</code>, <code>_limpar_o_papel_de_verdade</code>, chamada no fim de <code>filtro_melhorar</code>, que <code>_limpar_cada_gravura</code> roda em cada gravura. <code>_limpar_cada_gravura</code> é chamada por <code>aplicar_filtro_com_selecao</code> no Mágico pro, no Melhorar e no Preto e branco.</li>
+<li><strong>Conserto pequeno (5 a 10 linhas):</strong> não rodar essa limpeza dentro de <code>_limpar_cada_gravura</code>, que é o que a documentação da função já promete. Não mexe em nada do que o <code>CLAUDE.md</code> (seção 9) manda não desfazer: a divisão pelo fundo relativo ao papel, o peso pelo "parece papel" e a curva de ombro continuam.</li>
+<li><strong>Risco medido nas 33 páginas</strong> (simulado na memória, Mágico pro, 300 DPI). O conserto muda só 6 páginas, e olhei as 6:</li>
+<li><strong>Melhora</strong>: Escola 35 (roupa e céu), Escola 7 (o céu da gravura deixa de ter manchas brancas quadradas) e, a maior, <strong>Opus Majus 20</strong>: o programa de hoje lava a branco boa parte da <strong>foto da estátua</strong> (31% da página muda), e com o conserto a foto volta com os tons de cinza.</li>
+<li><strong>Misto</strong>: Palatino 5 (o fundo do retrato perde as manchas brancas irregulares, mas fica creme-claro uniforme em vez de branco) e Opus Majus 256 (a tabela conta como gravura: o "36" deixa de ser comido, mas o papel fica levemente cinza perto da beirada).</li>
+<li><strong>Quase nada</strong>: Retórica 73 (0,1%, na beirada; não ampliei).</li>
+<li>Nenhuma das 27 outras muda.</li>
+</ul>
+<p><a href="provas/b2-07-risco-do-conserto-nas-33.jpg" target="_blank"><img src="provas/b2-07-risco-do-conserto-nas-33.jpg" width="480" alt="As 6 páginas que o conserto muda: programa, com o conserto, e em vermelho onde mudou"></a></p>
+<p><em>As 6 páginas que o conserto muda: programa, com o conserto, e em vermelho onde mudou</em> (<code>provas/b2-07-risco-do-conserto-nas-33.jpg</code>)</p>
+<p><a href="provas/b2-08-risco-ampliado.jpg" target="_blank"><img src="provas/b2-08-risco-ampliado.jpg" width="480" alt="Ampliado: Opus Majus 20 (foto), Escola 7 (céu), Palatino 5 (fundo do retrato), Opus Majus 256 (tabela). Original, programa, com o conserto"></a></p>
+<p><em>Ampliado: Opus Majus 20 (foto), Escola 7 (céu), Palatino 5 (fundo do retrato), Opus Majus 256 (tabela). Original, programa, com o conserto</em> (<code>provas/b2-08-risco-ampliado.jpg</code>)</p>
+<ul>
+<li><strong>Item do plano:</strong> o seletor de gravura do ScanTailor (1.2) troca <strong>quem acha</strong> a gravura, não o <strong>tratamento</strong> dentro dela, então não resolve isto. A montagem nova da página (1.4/1.5, "gravura intacta") substituiria este tratamento, <strong>se</strong> o Mágico pro for refeito sobre ela. O plano não diz se vai ser.</li>
+</ul>
+<h3>Opções</h3>
+<ol>
+<li><strong>Consertar agora:</strong> não rodar a limpeza do papel dentro da gravura.
+   - A favor: pequeno, isolado, conserta a roupa e o céu nos três filtros de uma vez, devolve a foto do Opus Majus 20, e faz o código cumprir a própria documentação.
+   - Contra: o papel <strong>dentro</strong> de uma gravura ou tabela fica um pouco menos branco, creme-claro ou cinza-claro em vez de branco puro (Palatino 5, Opus Majus 256). A curva de ombro continua agindo.</li>
+<li><strong>Tornar o teste "cor de papel" imune aos blocos do JPEG</strong> (alisar a cor antes de testar).
+   - A favor: acaba com a forma quadrada.
+   - Contra: <strong>não conserta</strong>. A roupa continuaria indo a branco, só que sem quadrados. Não recomendo.</li>
+<li><strong>Deixar para 1.4/1.5.</strong>
+   - A favor: nenhum retrabalho, se o Mágico pro for mesmo refeito lá.
+   - Contra: não é certo que será. Até lá, toda gravura colorida com partes claras (roupa, céu, nuvem) sai manchada nos três filtros.</li>
+</ol>
+<p><strong>Minha recomendação: a opção 1</strong>, conferindo de olho as 6 páginas que mudam (Palatino 5 e Opus Majus 256 são o preço).</p>
+<h2>4. Bug 3: moldura dourada com furinhos</h2>
+<h3>A causa, em português comum</h3>
+<p>Três passos, um puxando o outro:</p>
+<ol>
+<li><strong>O detector não reconhece a moldura dourada como desenho.</strong> O detector de layout (<code>doclayout.onnx</code>) não marca moldura. O sinal de cor só pega cor muito forte (saturação acima de 130), e o dourado destas páginas fica em 114 a 117 (mediana). Só pedaços passam: na Horas 27 nenhum chega a virar gravura; na Horas 26 sobra um pedaço de 0,9% da página, no lado esquerdo.</li>
+<li><strong>Os fios escuros que contornam a faixa dourada contam como "tinta".</strong> A etapa que junta a tinta solta em blocos de texto (<code>blocos_de_tinta</code>) une esses fios. Na Horas 26 ela ainda <strong>preenche o buraco</strong> do retângulo fechado, e <strong>a moldura inteira, com o que tem dentro, vira um grande "bloco de texto"</strong>. Na Horas 27, a própria faixa da moldura vira bloco de texto.</li>
+<li><strong>Dentro de um bloco de texto, tudo que não é traço vira papel branco</strong> (<code>refinar_para_tinta</code> → "papel do bloco"). O dourado é liso por dentro, sem traço nenhum, então vai a branco. Ficam os fios escuros da borda e as manchinhas escuras do ouro, que parecem traço: é o "só o contorno e pontinhos".</li>
+</ol>
+<h3>A prova</h3>
+<p>As caixas do detector (azul: texto) e os blocos de tinta (verde). Na Horas 26 o verde cobre a moldura inteira; na Horas 27, a faixa da moldura:</p>
+<p><a href="provas/b3-01-horas26-caixas-do-detector.jpg" target="_blank"><img src="provas/b3-01-horas26-caixas-do-detector.jpg" width="480" alt="Horas 26: caixas do detector e blocos de tinta (verde); a moldura inteira virou bloco"></a></p>
+<p><em>Horas 26: caixas do detector e blocos de tinta (verde); a moldura inteira virou bloco</em> (<code>provas/b3-01-horas26-caixas-do-detector.jpg</code>)</p>
+<p><a href="provas/b3-02-horas27-caixas-do-detector.jpg" target="_blank"><img src="provas/b3-02-horas27-caixas-do-detector.jpg" width="480" alt="Horas 27: a faixa da moldura virou bloco de texto (verde); o vermelho é o pouco dourado forte o bastante para o sinal de cor"></a></p>
+<p><em>Horas 27: a faixa da moldura virou bloco de texto (verde); o vermelho é o pouco dourado forte o bastante para o sinal de cor</em> (<code>provas/b3-02-horas27-caixas-do-detector.jpg</code>)</p>
+<p>A seleção final da Horas 27: a moldura está dentro do texto (azul), e não há gravura:</p>
+<p><a href="provas/b3-03-horas27-selecao.jpg" target="_blank"><img src="provas/b3-03-horas27-selecao.jpg" width="480" alt="Horas 27: azul = texto, verde = papel. Nenhuma gravura"></a></p>
+<p><em>Horas 27: azul = texto, verde = papel. Nenhuma gravura</em> (<code>provas/b3-03-horas27-selecao.jpg</code>)</p>
+<p>As máscaras no canto de baixo da moldura. A limpeza do papel <strong>não</strong> toca o dourado (ele tem cor forte demais para "cor de papel"). Quem pinta a faixa de branco é o <strong>papel do bloco de texto</strong> (último quadro, preto = vai a branco):</p>
+<p><a href="provas/b3-04-horas27-mascaras.jpg" target="_blank"><img src="provas/b3-04-horas27-mascaras.jpg" width="480" alt="Canto da moldura: só o "papel do bloco de texto" cobre a faixa dourada"></a></p>
+<p><em>Canto da moldura: só o "papel do bloco de texto" cobre a faixa dourada</em> (<code>provas/b3-04-horas27-mascaras.jpg</code>)</p>
+<p>Desligando uma coisa de cada vez: <strong>sem o papel do bloco (V2), a moldura volta inteira</strong>. Sem a limpeza do papel (V1), ela continua furada:</p>
+<p><a href="provas/b3-05-horas27-desligando-uma-coisa-por-vez.jpg" target="_blank"><img src="provas/b3-05-horas27-desligando-uma-coisa-por-vez.jpg" width="480" alt="Horas 27: original, programa, V1, V2, V3"></a></p>
+<p><em>Horas 27: original, programa, V1, V2, V3</em> (<code>provas/b3-05-horas27-desligando-uma-coisa-por-vez.jpg</code>)</p>
+<p><a href="provas/b3-06-horas26-desligando-uma-coisa-por-vez.jpg" target="_blank"><img src="provas/b3-06-horas26-desligando-uma-coisa-por-vez.jpg" width="480" alt="Horas 26, canto de cima à direita: o mesmo"></a></p>
+<p><em>Horas 26, canto de cima à direita: o mesmo</em> (<code>provas/b3-06-horas26-desligando-uma-coisa-por-vez.jpg</code>)</p>
+<p>Mas desligar o papel do bloco inteiro não serve: em V2 e V3 aparecem pontinhos cinzas no papel entre as linhas, que é justamente o que esse passo limpa. O conserto tem de ser mirado.</p>
+<p>O Melhorar tem o mesmo defeito. No Preto e branco a moldura vira traço preto, o que é de esperar nesse filtro:</p>
+<p><a href="provas/b3-07-moldura-nos-tres-filtros.jpg" target="_blank"><img src="provas/b3-07-moldura-nos-tres-filtros.jpg" width="480" alt="Original, Mágico pro, Melhorar, Preto e branco"></a></p>
+<p><em>Original, Mágico pro, Melhorar, Preto e branco</em> (<code>provas/b3-07-moldura-nos-tres-filtros.jpg</code>)</p>
+<h3>O mesmo mecanismo apaga a iluminura inteira da Horas 11</h3>
+<p>Procurando o risco do conserto, achei algo mais grave que a moldura. A <strong>Horas 11</strong> é página de gabarito da Fase 1, do resultado R6 ("letras nas cores originais no meio da iluminura, gravura intacta"). <strong>No Mágico pro de hoje, a iluminura dela sai quase toda branca</strong>, só com contornos e pontinhos. Esta página não estava na conferência 6.7, mas está no gabarito da Fase 1:</p>
+<p><a href="provas/b3-08-horas11-pagina-original-x-magico.jpg" target="_blank"><img src="provas/b3-08-horas11-pagina-original-x-magico.jpg" width="480" alt="Horas 11: original (esquerda) e Mágico pro de hoje (direita)"></a></p>
+<p><em>Horas 11: original (esquerda) e Mágico pro de hoje (direita)</em> (<code>provas/b3-08-horas11-pagina-original-x-magico.jpg</code>)</p>
+<p>O caminho é o mesmo da moldura, com um passo a mais no começo:</p>
+<ul>
+<li>O detector de layout não achou nada nesta página.</li>
+<li>O sinal de cor pegou a iluminura inteira, uma peça só de 43% da página.</li>
+<li>Mas a regra que descarta "mancha de papel velho por cima de texto" (<code>_sem_as_manchas_por_cima_da_escrita</code>) olhou a tinta dentro dela e achou 83% em pedaços do tamanho de letra: são as hachuras e os detalhes da pintura. O limite é 30%, então a regra concluiu que aquilo é escrita e jogou a iluminura fora como mancha.</li>
+<li>Resultado: <strong>0% de gravura e 84% da página marcada como texto</strong>. No texto, tudo que não é traço vai a branco.</li>
+</ul>
+<p><a href="provas/b3-09-horas11-selecao.jpg" target="_blank"><img src="provas/b3-09-horas11-selecao.jpg" width="480" alt="Horas 11: a seleção do programa. Azul = texto (a iluminura inteira), verde = papel, e nenhuma gravura"></a></p>
+<p><em>Horas 11: a seleção do programa. Azul = texto (a iluminura inteira), verde = papel, e nenhuma gravura</em> (<code>provas/b3-09-horas11-selecao.jpg</code>)</p>
+<p><a href="provas/b3-10-horas11-iluminura.jpg" target="_blank"><img src="provas/b3-10-horas11-iluminura.jpg" width="480" alt="Horas 11, cena de cima, ampliada: original, programa, e com o conserto simples C3 (volta)"></a></p>
+<p><em>Horas 11, cena de cima, ampliada: original, programa, e com o conserto simples C3 (volta)</em> (<code>provas/b3-10-horas11-iluminura.jpg</code>)</p>
+<h3>Tamanho do conserto e risco</h3>
+<ul>
+<li><strong>Arquivos e funções:</strong> a origem está em <code>core/detectar_regioes.py</code> (<code>detectar</code>, com <code>mascara_de_cor</code>, <code>_sem_as_manchas_por_cima_da_escrita</code> e <code>blocos_de_tinta</code>). Quem pinta de branco é <code>refinar_para_tinta</code> + a mistura do "papel do bloco" em <code>core/filtros.py</code>, <code>aplicar_filtro_com_selecao</code>.</li>
+<li><strong>O conserto simples no filtro não serve.</strong> Testei (simulado na memória, Mágico pro, 300 DPI, 33 páginas) a ideia de 3 a 5 linhas: no "papel do bloco de texto", não pintar de branco o que tem <strong>cor de verdade</strong> (saturação acima de 60, o mesmo corte <code>SATURACAO_DE_RUBRICA</code> que o resto de <code>filtros.py</code> usa). Ela devolve a moldura das Horas 26 e 27 e a iluminura da Horas 11. Mas o "papel do bloco" também é o que <strong>tira as manchas coloridas</strong> do papel, e elas voltam:</li>
+<li>a mancha marrom-avermelhada do <strong>Palatino 66</strong>, justamente a página do R4 ("tirar as manchas vermelhas sem mexer no título");</li>
+<li>a beirada marrom da folha no <strong>Siebmacher 9</strong> (5,5% da página) e no Graduale 221;</li>
+<li>o grão amarelado do papel em volta da gravura do <strong>Boécio 3</strong>.</li>
+<li>Muda 19 das 33 páginas.</li>
+</ul>
+<p><a href="provas/b3-11-risco-do-conserto-simples-nas-33.jpg" target="_blank"><img src="provas/b3-11-risco-do-conserto-simples-nas-33.jpg" width="480" alt="As páginas que o conserto simples muda: programa, com o conserto, e em vermelho onde mudou"></a></p>
+<p><em>As páginas que o conserto simples muda: programa, com o conserto, e em vermelho onde mudou</em> (<code>provas/b3-11-risco-do-conserto-simples-nas-33.jpg</code>)</p>
+<p><a href="provas/b3-12-pioras-do-conserto-simples.jpg" target="_blank"><img src="provas/b3-12-pioras-do-conserto-simples.jpg" width="480" alt="Ampliado, onde o conserto simples piora: Palatino 66 (a mancha volta), Graduale 221 e Siebmacher 9 (a beirada da folha volta), Boécio 3 (o grão volta)"></a></p>
+<p><em>Ampliado, onde o conserto simples piora: Palatino 66 (a mancha volta), Graduale 221 e Siebmacher 9 (a beirada da folha volta), Boécio 3 (o grão volta)</em> (<code>provas/b3-12-pioras-do-conserto-simples.jpg</code>)</p>
+<ul>
+<li><strong>Por que não há conserto pequeno:</strong> no "papel do bloco", o dourado da moldura, a pintura da iluminura e a mancha vermelha são a mesma coisa para o programa: área lisa, colorida e sem traço. Separar "enfeite que fica" de "mancha que sai" é decidir <strong>o que é desenho</strong>, e isso é trabalho do detector.</li>
+<li><strong>Conserto no detector</strong> (não deixar que um anel de fios ou os buracos de uma iluminura virem "bloco de texto"; ou aceitar dourado com saturação mais baixa como desenho): não simulei. Mexe na marcação de todas as páginas. É médio e de risco maior.</li>
+<li><strong>Itens do plano:</strong> o <strong>1.2</strong> (seletor de gravura do ScanTailor, código original) é quem deve marcar moldura e iluminura como desenho. O <strong>1.4</strong> (achar a tinta <strong>só dentro das linhas de texto</strong>, guardando a cor original) e o <strong>1.5</strong> (juntar os detectores e montar a página) substituem justamente esse "tudo no bloco que não é traço vira branco". Os três são da <strong>Fase 1, a atual</strong>.</li>
+</ul>
+<h3>Opções</h3>
+<ol>
+<li><strong>Conserto simples no filtro agora</strong> (não branquear cor de verdade no papel do bloco).
+   - A favor: pequeno; devolve a moldura e a iluminura.
+   - Contra: traz de volta as manchas vermelhas (Palatino 66, R4), a beirada da folha e o grão em outras páginas. Troca um defeito por outro. Não recomendo.</li>
+<li><strong>Consertar no detector agora</strong>: não deixar <code>blocos_de_tinta</code> transformar um anel de fios (a moldura) em bloco de texto, e não deixar <code>_sem_as_manchas_por_cima_da_escrita</code> descartar uma iluminura grande como mancha.
+   - A favor: ataca a origem, nas duas páginas.
+   - Contra: maior, não simulado, muda a marcação de outras páginas (a regra das manchas existe por causa da Rhetorica 223, e os blocos de tinta, para pegar o texto que o detector de layout deixa passar, como no catecismo e no Boécio), e é exatamente o que o 1.2 vai trocar daqui a pouco.</li>
+<li><strong>Deixar para 1.2/1.4/1.5</strong>, na Fase 1, e pôr Horas 11, 26 e 27 como páginas obrigatórias da conferência desses itens.
+   - A favor: é a fase atual, o código vai ser trocado ali, e não se mexe duas vezes no mesmo lugar.
+   - Contra: até lá, toda moldura, faixa dourada ou pintura menos saturada que cair num "bloco de texto" sai furada no Mágico pro e no Melhorar. Isso inclui a iluminura inteira da Horas 11, e as conferências da Fase 1 vão mostrar isso.</li>
+</ol>
+<p><strong>Minha recomendação: a opção 3.</strong> O conserto pequeno troca um defeito por outro, e o conserto certo é o próprio assunto da fase atual. Vale avisar nas páginas de conferência da Fase 1 que a iluminura da Horas 11 e as molduras das Horas 26 e 27 têm este defeito conhecido, para o Samuel não precisar reportar de novo. Se o 1.2 demorar, a opção 2 vira a alternativa, com a mesma medição nas 33 páginas antes de entregar.</p>
+<h2>5. O que eu não consegui confirmar</h2>
+<ul>
+<li><strong>"O alto da gravura" cortado (Escola 35):</strong> medi 22 pontos de papel acima da gravura e a borda inteira no Original. Acho que a impressão vem do céu que virou branco (bug 2), mas não é certeza.</li>
+<li><strong>"Cortou por dentro da moldura" (Horas 26/27):</strong> no Original a faixa dourada está inteira. Pelo que medi, a impressão vem da faixa branca por dentro (bug 3) e colada na beirada.</li>
+<li><strong>Os consertos foram só simulados na memória</strong>, trocando a função dentro do meu script, nas 33 páginas do gabarito e só no Mágico pro. Não rodei os testes automáticos nem o teste de velocidade com eles.</li>
+<li><strong>A explicação dos quadrados pelo JPEG</strong> está provada pela coincidência das bordas da máscara com a grade dos blocos (imagem <code>b2-03</code>). Não refiz o teste regravando a imagem sem JPEG.</li>
+<li><strong>A Horas 11 no Melhorar:</strong> o caminho é o mesmo, mas só conferi no Mágico pro. A moldura das Horas 26/27 eu conferi nos dois.</li>
+<li><strong>A tela não foi testada.</strong> Os dois achados sobre a prévia, abaixo, vêm do código e da função medida, não da janela.</li>
+<li><strong>Se 1.4/1.5 vão substituir o Mágico pro</strong> ou vir ao lado dele: o plano não diz. <strong>Se o seletor do ScanTailor (1.2) marca a moldura dourada como desenho:</strong> não testei.</li>
+</ul>
+<h2>6. Bugs para a Lista de bugs (achados no caminho, não consertados)</h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Bug</th>
+<th>Onde</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>28/09</td>
+<td>O corte automático parte tinta ao meio em 13 das 33 páginas do gabarito: letras, notas, número de página e marca de caderno (ampliação do bug 1).</td>
+<td><code>core/recortar.py</code></td>
+<td><code>provas/b1-10-gabarito-pecas-partidas.jpg</code></td>
+</tr>
+<tr>
+<td>28/09</td>
+<td>Opus Majus 20: a foto da estátua sai lavada a branco em boa parte no Mágico pro (mesma causa do bug 2: a limpeza do papel dentro da gravura).</td>
+<td><code>core/filtros.py</code></td>
+<td><code>provas/b2-08-risco-ampliado.jpg</code> (primeira linha)</td>
+</tr>
+<tr>
+<td>28/09</td>
+<td>Horas 11 (gabarito da Fase 1, R6): a iluminura sai quase toda branca no Mágico pro. A regra <code>_sem_as_manchas_por_cima_da_escrita</code> toma a iluminura inteira por mancha sobre escrita, a página vira 84% "texto" e o papel do bloco pinta a pintura de branco (mesmo mecanismo do bug 3).</td>
+<td><code>core/detectar_regioes.py</code>, <code>core/filtros.py</code></td>
+<td><code>provas/b3-08-horas11-pagina-original-x-magico.jpg</code></td>
+</tr>
+<tr>
+<td>28/09</td>
+<td>A prévia da tela ("rápida", 110 DPI) e o PDF final (300 DPI) calculam o corte automático em resoluções diferentes, e às vezes dão cortes diferentes: Palatino 5 (8% da largura), Escola 7 (7% da altura), Siebmacher 7 (4,8%), Horas 14 (4,6%). O que a tela mostra pode não ser o que sai. Medido na função; não testado na tela.</td>
+<td><code>core/pipeline.py</code> (<code>preparar_metade</code>), <code>ui/tela_conferir.py</code></td>
+<td><code>provas/b1-11-gabarito-cortes-110-x-300dpi.jpg</code> (azul: 110 DPI; vermelho: 300 DPI)</td>
+</tr>
+<tr>
+<td>28/09</td>
+<td>Na aba Bordas, com o corte automático, o retângulo mostrado é a folha inteira (<code>pagina.recorte</code> vazio vira (0, 0, 1, 1)), com o texto "Vou cortar a borda sozinho". A pessoa não vê onde o corte vai passar. Deduzido do código (<code>ui/tela_conferir.py</code>, linha 1382); não testado na tela.</td>
+<td><code>ui/tela_conferir.py</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>7. Ideia para a Lista de espera</h2>
+<ul>
+<li><strong>Teste de máquina do corte: "nenhuma peça de tinta partida"</strong>, rodado nas 33 páginas do gabarito. É objetivo e teria pegado o bug 1 antes da conferência (sugestão do agente implementador, 28/09).</li>
+</ul>
+<h2>Onde está o trabalho</h2>
+<ul>
+<li>Scripts e imagens intermediárias: <code>C:\Users\fotog\AppData\Local\Temp\claude\d--programas\e4642c9c-e61b-4a83-8212-99957ed37365\scratchpad\investigacao-6-7\</code> (pasta temporária, de <code>p1_reproduzir.py</code> a <code>p10_corte_simulado.py</code>).</li>
+<li>Imagens de prova deste relatório: <code>provas/</code>, ao lado deste arquivo.</li>
+<li>Nenhum arquivo do programa (<code>core/</code>, <code>ui/</code>, scripts, testes, <code>gabarito/</code>, <code>docs/</code>) foi alterado. Nada foi commitado.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 28/09/2026 às 15:38</p>
+</body>
+</html>
