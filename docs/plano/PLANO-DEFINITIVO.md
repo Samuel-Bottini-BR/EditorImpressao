@@ -54,13 +54,13 @@ As fotos do CamScanner enviadas pelo Samuel em 24/09 (calendário Novembre/Decem
 
 ### FASE 0 — Arrumar a casa
 
-- [ ] 0.1 Fazer uma cópia de segurança, num ramo separado (`trabalho-17-a-23-09`), do trabalho sem commit desde 17/09, e depois salvar esse trabalho no programa principal (ver Registro de mudanças, 25/09).
-- [ ] 0.2 Apagar o atalho antigo `C:\Users\Public\Desktop\Editor de Impressao.lnk` (o Samuel apaga à mão, precisa de admin).
-- [ ] 0.3 Montar a pasta `gabarito/` com as páginas fixas: as do "Vamos recapitular", as fotos do CamScanner e as do Opus Majus.
-- [ ] 0.4 Criar o script que gera a página de antes/depois de qualquer item.
-- [ ] 0.5 Criar o **teste de velocidade**: abrir livro de 300 páginas, trocar de página, processar 10 páginas.
-- [ ] 0.6 Rodar o teste de velocidade **uma vez** no notebook do Kaique (Samsung Galaxy Book2: i5-1235U, 32 GB, SSD NVMe, placa de vídeo integrada Iris Xe) e no PC do Samuel. A diferença entre os dois vira a régua. Daí em diante, o Samuel testa só no PC dele.
-- [ ] 0.7 Criar os arquivos dos agentes (`.claude/agents/`) e atualizar o `CLAUDE.md` com as regras deste plano.
+- [x] 0.1 Fazer uma cópia de segurança, num ramo separado (`trabalho-17-a-23-09`), do trabalho sem commit desde 17/09, e depois salvar esse trabalho no programa principal (ver Registro de mudanças, 25/09).
+- [~] 0.2 Apagar o atalho antigo `C:\Users\Public\Desktop\Editor de Impressao.lnk` (o Samuel apaga à mão, precisa de admin).
+- [x] 0.3 Montar a pasta `gabarito/` com as páginas fixas: as do "Vamos recapitular", as fotos do CamScanner e as do Opus Majus.
+- [x] 0.4 Criar o script que gera a página de antes/depois de qualquer item.
+- [x] 0.5 Criar o **teste de velocidade**: abrir livro de 300 páginas, trocar de página, processar 10 páginas.
+- [~] 0.6 Rodar o teste de velocidade **uma vez** no notebook do Kaique (Samsung Galaxy Book2: i5-1235U, 32 GB, SSD NVMe, placa de vídeo integrada Iris Xe) e no PC do Samuel. A diferença entre os dois vira a régua. Daí em diante, o Samuel testa só no PC dele.
+- [x] 0.7 Criar os arquivos dos agentes (`.claude/agents/`) e atualizar o `CLAUDE.md` com as regras deste plano.
 
 ### FASE 1 — Separar o escrito do fundo (automático)
 
@@ -159,6 +159,11 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 25/09 | **O instalador não leva os modelos**: nem o detector de gravura e letra (`modelos/doclayout.onnx`) nem a seleção por clique (`modelos/mobile_sam`), que ficam fora do git. O `empacotar.py` só junta a pasta `recursos/` (que nem existe) e o `instalador.iss` só copia `dist/EditorImpressao/*`. **Confirmado** no programa instalado no PC do Samuel (instalador de 01/09): não tem a pasta `_internal\modelos` nem nenhum `.onnx`, então roda sem o detector e sem a seleção por clique, sem avisar. O instalador de 23/09 (o do Kaique) tem o mesmo tamanho (120,5 MB) e quase certamente também não tem; o Samuel vai conferir no notebook. | `empacotar.py`, `instalador.iss` | `bugs/2026-09-25-instalador-sem-modelos.txt` |
 | 25/09 | `EditorImpressao.spec` velho (aponta para a Área de Trabalho e deixa o scipy de fora): quem empacotar por ele gera um programa quebrado. | `EditorImpressao.spec` | — |
 | 25/09 | PDF dos relatórios: faixas cinzas atravessando o texto e uma última página só com o rodapé. O conteúdo sai todo legível. | `relatorio.py` (`gravar_pdf`) | `bugs/2026-09-25-relatorio-pdf-faixas-e-pagina-vazia.png` |
+| 25/09 | `relatorio.gravar` corta o nome do arquivo no último ponto: o destino `conferencia-6.7` gravava `conferencia-6.md` (o `conferencia.py` contorna trocando o ponto por hífen). | `relatorio.py` (`gravar`) | — |
+| 25/09 | A biblioteca `markdown` não está no `requirements.txt`: numa instalação do zero, os relatórios `.html` perdem as tabelas e as imagens. | `requirements.txt` | — |
+| 28/09 | Conferência 6.7 (Mágico pro): **corte de bordas errado nas 3 páginas**. Escola 35: o corte comeu o começo das linhas à esquerda, o "37" do pé virou "3" e o alto da gravura. Horas 26 e 27: o corte não seguiu a margem do papel e cortou por dentro da moldura. Achado pelo Samuel. | corte de bordas (`core/`) | `bugs/2026-09-28-corte-de-bordas-6-7.jpg` |
+| 28/09 | Conferência 6.7 (Mágico pro): **quadradinhos brancos na roupa do anjo** (Escola 35): o filtro tratou partes do pano branco como papel, em blocos. Achado pelo Samuel. | filtro Mágico pro (`core/filtros.py`) | `bugs/2026-09-28-quadradinhos-roupa-do-anjo.jpg` |
+| 28/09 | Conferência 6.7 (Mágico pro): **moldura dourada com furinhos** (Horas 26 e 27): a faixa dourada ficou branca por dentro, só com o contorno e pontinhos. Achado pelo Samuel. | filtro Mágico pro (`core/filtros.py`) | `bugs/2026-09-28-moldura-dourada-furinhos.jpg` |
 
 ## 6. Lista de espera (ideias novas)
 
@@ -170,6 +175,9 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 25/09/2026 | Prévia mais rápida: mostrar a página primeiro e achar gravura e letra depois. Hoje toda prévia nova roda essa detecção (cerca de 1 s por página), mesmo no filtro Original, que não usa o resultado. Deduzido do código, não medido. | agente implementador (achado no teste de velocidade) | Fase 5, a confirmar |
 | 25/09/2026 | PDF de saída em Mágico pro muito pesado: cerca de 8 MB por página (imagem sem perda a 300 DPI), perto de 2,4 GB num livro de 300 páginas. Pensar em JPEG de alta qualidade ou na saída em duas camadas (1.6). Medido em 2 páginas só. | agente implementador (achado no teste de velocidade) | Fase 1 (junto do 1.6) ou Fase 5, a confirmar |
 | 25/09/2026 | Script `montar_gabarito.py` no repositório, que remonta a pasta `gabarito/` a partir da `lista.json` (hoje, se a pasta se perder, só dá para refazer seguindo o método do LEIA-ME; os scripts usados ficaram numa pasta temporária). | agente implementador (achado ao montar o gabarito) | a definir |
+| 25/09/2026 | Teste de velocidade: o relatório dizer também se o Windows aceitou o pedido de manter o computador acordado durante a medição. | agente implementador (ajustes da 0.6) | a definir |
+| 25/09/2026 | Teste de velocidade: um "Atenção" no topo do relatório quando a medição não rodou na janela clássica. | agente implementador (ajustes da 0.6) | a definir |
+| 25/09/2026 | Pôr `relatorios/conferir/` no `.gitignore`: cada rodada de conferência tem dezenas de MB de imagem (a da Fase 1 inteira, 100 MB), e hoje `relatorios/` vai para o git. | agente implementador (item 0.4) | a definir |
 
 ## 7. Registro de mudanças
 
@@ -178,3 +186,7 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 24/09/2026 | Plano criado e discutido ponto por ponto | projeto parado há mais de 1 mês | Samuel |
 | 25/09/2026 | As mudanças feitas de 17 a 23/09 (aba Bordas, Configurações, três tipos de preto e branco, aba Marcar, página nova em "Original") **ficam no programa principal**, marcadas como "a aperfeiçoar": Bordas/margens na Fase 2, aba Marcar na Fase 3, Configurações/atalhos na Fase 4. O ramo `trabalho-17-a-23-09` fica só como cópia de segurança. Os comentários de código de 22/09 entram no programa principal (pedido do Samuel: código comentado para manutenção futura). | o Samuel quer manter essas melhorias e não perder o trabalho | Samuel |
 | 25/09/2026 | Item 0.3: as fotos do CamScanner (Mágico Pro, feitas pelo Kaique) estão em `camscanner/`. O calendário é do **Livro de Horas de Luís XIV, páginas 26 (NOVEMBRE) e 27 (DECEMBRE)**; a outra é a página 37 da "Na escola de Jesus". As três entram no gabarito para comparar o nosso resultado com o CamScanner. | resultado-alvo do plano (seção 2) | Samuel |
+| 25/09/2026 | Gabarito: páginas escolhidas conferindo com os prints do "Vamos recapitular": Palatino 67 (o print marcado "76"), Siebmacher 9 (o marcado "7"), Marial 7 (no lugar da 862); Opus Majus 11 + 3, 20, 165 e 256; Escola = p. 35 do PDF ("37" impresso). O ESTADO-ATUAL guarda a tabela original e ganhou uma linha com as páginas que valem. | os números pedidos não batiam com as páginas dos prints | Samuel |
+| 26/09/2026 | Teste de velocidade: o livro é aberto com o filtro Mágico pro (o programa começa em Original). Mantido. | uma lentidão de filtro aparece também em "trocar de página" | Samuel |
+| 28/09/2026 | Fase 0 conferida: 0.1, 0.3, 0.4, 0.5 e 0.7 `[x]`; 0.2 e 0.6 `[~]` (o teste no notebook do Kaique fica para outro dia). **A Fase 1 começa mesmo com 0.2 e 0.6 em aberto** (exceção à regra 1). `CLAUDE.md` novo aprovado. | decisão do Samuel | Samuel |
+| 28/09/2026 | O `dist\TesteVelocidade-notebook-do-Kaique.zip` (fora do git) é a versão da Fase 0: **não pode ser apagado nem refeito**. Identificação (SHA-256): `65ef4db543e5faa6b091436f88d0542fb9484d768911d4a84f9f80a1a855dd04`. O arquivo ficou marcado como somente leitura no Windows. | a rodada no notebook tem de medir o mesmo programa medido no PC do Samuel em 26/09 | Samuel |
