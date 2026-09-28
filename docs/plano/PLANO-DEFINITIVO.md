@@ -113,7 +113,7 @@ Para corrigir onde o automático errar.
 - [ ] 3.5 Laço, laço magnético, retângulo, oval
 - [ ] 3.6 Refinar a borda da seleção
 - [ ] 3.7 Somar, tirar e cruzar seleções; salvar seleção
-- [ ] 3.8 Consertar o zoom que às vezes não funciona e o travamento com muitos cliques
+- [ ] 3.8 Consertar o zoom que às vezes não funciona e o travamento com muitos cliques (inclui os dois bugs de zoom da Lista de bugs, de 15-16/09 e 24/09)
 - [ ] 3.9 Tudo testado com mouse de verdade, não só com clique simulado
 
 **Já no programa, a aperfeiçoar nesta fase** (feito de 17 a 23/09; ver Registro de mudanças, 25/09):
@@ -154,10 +154,10 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 
 | Data | Bug | Onde | Print |
 |---|---|---|---|
-| 15-16/09 | Travamento ao usar o zoom muitas vezes; roda do mouse não funciona às vezes | aba Marcar | — |
-| 24/09 | Zoom não funciona em algumas sessões | — | — |
+| 15-16/09 | **Movido para o item 3.8 em 28/09.** Travamento ao usar o zoom muitas vezes; roda do mouse não funciona às vezes | aba Marcar | — |
+| 24/09 | **Movido para o item 3.8 em 28/09.** Zoom não funciona em algumas sessões | — | — |
 | 25/09 | **O instalador não leva os modelos**: nem o detector de gravura e letra (`modelos/doclayout.onnx`) nem a seleção por clique (`modelos/mobile_sam`), que ficam fora do git. O `empacotar.py` só junta a pasta `recursos/` (que nem existe) e o `instalador.iss` só copia `dist/EditorImpressao/*`. **Confirmado** no programa instalado no PC do Samuel (instalador de 01/09): não tem a pasta `_internal\modelos` nem nenhum `.onnx`, então roda sem o detector e sem a seleção por clique, sem avisar. O instalador de 23/09 (o do Kaique) tem o mesmo tamanho (120,5 MB) e quase certamente também não tem; o Samuel vai conferir no notebook. | `empacotar.py`, `instalador.iss` | `bugs/2026-09-25-instalador-sem-modelos.txt` |
-| 25/09 | `EditorImpressao.spec` velho (aponta para a Área de Trabalho e deixa o scipy de fora): quem empacotar por ele gera um programa quebrado. | `EditorImpressao.spec` | — |
+| 25/09 | **Resolvido em 28/09: o arquivo foi movido para a pasta `velhos/`** (decisão do Samuel: guardar, não apagar). `EditorImpressao.spec` velho (aponta para a Área de Trabalho e deixa o scipy de fora): quem empacotar por ele gera um programa quebrado. | `EditorImpressao.spec` | — |
 | 25/09 | PDF dos relatórios: faixas cinzas atravessando o texto e uma última página só com o rodapé. O conteúdo sai todo legível. | `relatorio.py` (`gravar_pdf`) | `bugs/2026-09-25-relatorio-pdf-faixas-e-pagina-vazia.png` |
 | 25/09 | `relatorio.gravar` corta o nome do arquivo no último ponto: o destino `conferencia-6.7` gravava `conferencia-6.md` (o `conferencia.py` contorna trocando o ponto por hífen). | `relatorio.py` (`gravar`) | — |
 | 25/09 | A biblioteca `markdown` não está no `requirements.txt`: numa instalação do zero, os relatórios `.html` perdem as tabelas e as imagens. | `requirements.txt` | — |
@@ -190,3 +190,4 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 26/09/2026 | Teste de velocidade: o livro é aberto com o filtro Mágico pro (o programa começa em Original). Mantido. | uma lentidão de filtro aparece também em "trocar de página" | Samuel |
 | 28/09/2026 | Fase 0 conferida: 0.1, 0.3, 0.4, 0.5 e 0.7 `[x]`; 0.2 e 0.6 `[~]` (o teste no notebook do Kaique fica para outro dia). **A Fase 1 começa mesmo com 0.2 e 0.6 em aberto** (exceção à regra 1). `CLAUDE.md` novo aprovado. | decisão do Samuel | Samuel |
 | 28/09/2026 | O `dist\TesteVelocidade-notebook-do-Kaique.zip` (fora do git) é a versão da Fase 0: **não pode ser apagado nem refeito**. Identificação (SHA-256): `65ef4db543e5faa6b091436f88d0542fb9484d768911d4a84f9f80a1a855dd04`. O arquivo ficou marcado como somente leitura no Windows. | a rodada no notebook tem de medir o mesmo programa medido no PC do Samuel em 26/09 | Samuel |
+| 28/09/2026 | Começo da Fase 1 pela Lista de bugs: os dois bugs do zoom vão para o item 3.8; o `EditorImpressao.spec` velho vai para a pasta `velhos/` (guardado, não apagado); os bugs de imagem da conferência 6.7 são investigados antes de decidir se o conserto é agora ou no item que vai substituir aquele código. | plano de execução aprovado | Samuel |
