@@ -912,10 +912,15 @@ def _e_capa_e_nao_papel(img: np.ndarray) -> bool:
         return False
 
 
-def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray:
+def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO,
+                    dentro_da_gravura: bool = False) -> np.ndarray:
     """Melhorar: fundo branco limpo, cores originais preservadas.
 
     clareza vai de 0 (fundo quase como veio) a 100 (fundo bem branco).
+
+    dentro_da_gravura=True so e usado por _limpar_cada_gravura, que roda este
+    filtro no recorte de cada gravura: ai a limpeza final do papel so branqueia
+    o papel de verdade, e nao a pintura clara (ver _limpar_o_papel_de_verdade).
     """
     if img.ndim == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
@@ -946,7 +951,7 @@ def filtro_melhorar(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndarray
         saida = _aprofundar_pretos(saida)
     saida = _alisar_o_papel(saida)
     saida = _recompor_a_rampa(img, saida)
-    return _limpar_o_papel_de_verdade(img, saida)
+    return _limpar_o_papel_de_verdade(img, saida, dentro_da_gravura=dentro_da_gravura)
 
 
 def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarray:
@@ -1160,7 +1165,8 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
     return saida
 
 
-def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
+def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
+                               dentro_da_gravura: bool = False) -> np.ndarray:
     """O que nao e tinta vira papel branco puro - inclusive a mancha do verso.
 
     O empurrao de branco antigo usava um limiar fixo (235). Numa folha amarelada
@@ -1180,8 +1186,19 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray) -> np.nd
     A orla colada na tinta continua de fora, pelo mesmo motivo de sempre: ali
     mora a rampa de antisserrilhamento, e joga-la a branco serrilha a letra.
 
-    Nao entra em capa, nem em gravura, nem em folha sem tinta - em nenhuma
-    dessas o "fundo" e papel, e branquear objeto e o oposto do pedido.
+    Nao entra em capa nem em folha sem tinta - em nenhuma dessas o "fundo" e
+    papel, e branquear objeto e o oposto do pedido.
+
+    Dentro da gravura (dentro_da_gravura=True, chamado por _limpar_cada_gravura)
+    a pergunta final muda. Numa pagina de texto, tudo o que nao e letra e papel;
+    numa gravura, nao: o pano quase branco da roupa do anjo e o cinza claro da
+    foto da estatua sao PINTURA, e iam a branco por aqui - era o bug dos
+    quadradinhos de 28/09/2026. Ali quem decide e _so_o_papel_da_gravura, que so
+    branqueia o papel de gravura de TRACO (xilogravura, tabela) e deixa a de tom
+    continuo (pintura, foto) como o Melhorar a deixou. As travas de cima (capa,
+    tinta de menos ou de mais, poucas pecas de letra) e o "nao escuro" valem
+    igual nos dois casos; o "longe da letra" e a trava de cor fixa, nao - la o
+    papel e o ponto no nivel do fundo em volta, com a cor do papel DELA.
     """
     if _e_capa_e_nao_papel(original) or _quase_sem_tinta(original):
         return saida
@@ -1206,6 +1223,13 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray) -> np.nd
     grandes[1:] = medidas[1:, cv2.CC_STAT_AREA] >= corte
     if int(grandes.sum()) < PECAS_DE_TEXTO_MINIMAS:
         return saida
+
+    # Dentro da gravura, daqui em diante a pergunta e outra (ver a docstring e
+    # _so_o_papel_da_gravura): o "longe da letra" de baixo nao e usado la, e
+    # pula-lo poupa a conta mais cara desta funcao (o np.isin da pagina toda).
+    if dentro_da_gravura:
+        return _so_o_papel_da_gravura(original, saida)
+
     semente = grandes[rotulos]
 
     lado = max(3, int(min(original.shape[:2]) / ORLA_DA_LETRA) | 1)
@@ -1251,6 +1275,282 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray) -> np.nd
     limpa = saida.copy()
     limpa[papel_limpo] = 255
     return limpa
+
+
+# --- o papel DENTRO da gravura (bug dos quadradinhos no anjo, 28/09/2026) ----
+#
+# Regra do resultado da Fase 1 (Samuel, 28/09): "todo o papel totalmente
+# branco, inclusive o papel dentro da gravura" (o fundo do retrato do Palatino
+# 5), e "so pintura de verdade mantem a cor" (a roupa do anjo da Escola 35, o
+# ceu, a foto da estatua do Opus Majus 20), sem quadradinhos.
+#
+# Pela COR nao da para separar: medido, o pano do anjo (luz 222 a 233, pouca
+# cor) e MAIS parecido com o papel da pagina (250) do que o papel de dentro do
+# retrato do Palatino 5 e parecido com o da margem dele (183 contra 213, e bem
+# mais amarelado); e a estatua do Opus 20 tem a cor exata do papel, so 14 tons
+# mais escura. O que separa e a ESTRUTURA: xilogravura e tabela sao traco fino
+# e escuro sobre papel liso; pintura e foto sao tom continuo, sem traco.
+#
+# O traco fino e achado pelo "top-hat preto" (fechamento menos a imagem), a
+# operacao consagrada de morfologia para tirar letra e traco escuro de cima de
+# um fundo irregular: o fechamento apaga o que e mais fino que o elemento e
+# deixa o fundo; a diferenca e o traco.
+
+# Elemento do fechamento, em fracao do menor lado do recorte: bem mais largo
+# que um traco de xilogravura ou de letra (3 a 8 pontos a 300 DPI), bem mais
+# estreito que uma area de tinta de verdade (o escuro de uma porta na foto).
+TRACO_FECHAMENTO = 1 / 90
+
+# Um ponto e traco quando fica abaixo de 60% do fundo em volta (o mesmo
+# TINTA_PARA_ORLA do resto do arquivo) e o fundo em volta e claro, perto do
+# papel: tinta sobre papel, e nao a textura de uma area escura de foto.
+TRACO_CONTRASTE = 0.40
+TRACO_SOBRE_PAPEL = 0.80
+
+# Densidade do traco: media numa vizinhanca de 1/25 do menor lado. Medido no
+# gabarito (densidade media): pintura do anjo e da Escola 7 = 0,000; foto do
+# Opus 20 = 0,001 (com um pico de 0,15 so no livro da mao da estatua); retrato
+# do Palatino 5 = 0,09 a 0,13; tabela do Opus 256 = 0,06; Rhetorica 73 = 0,10.
+# Abaixo de MIN nao e traco, acima de MAX e; no meio, a rampa.
+TRACO_ESPALHAMENTO = 1 / 25
+TRACO_DENSIDADE_MIN, TRACO_DENSIDADE_MAX = 0.02, 0.06
+
+# "Tamanho da regiao": a gravura so e tratada como gravura de traco se o traco
+# cobrir pelo menos esta fracao dela. Medido: foto do Opus 20 = 0,9% (so o
+# livro da mao), pinturas da Escola = 0%; as de traco = 24% (tabela das Horas
+# 14) a 88% (Rhetorica 73). E o que impede o livro da mao de abrir uma mancha
+# branca na estatua.
+GRAVURA_DE_TRACO_MINIMA = 0.05
+
+# Qual ponto e PAPEL dentro da gravura de traco: o que esta no nivel do fundo
+# (o fechamento) em volta dele, e nao "o que esta longe de letra", que e a
+# pergunta da pagina de texto. Tentado primeiro com a pergunta da pagina de
+# texto: no retrato do Palatino 5 a hachura fraca, que o Sauvola regulado para
+# letra nao ve, ia a branco, e o traco se partia. Medido no fundo do retrato
+# (luz do ponto / fundo em volta): o papel entre as linhas fica em 0,90 (a
+# digitalizacao borra), a borda das linhas de 0,5 a 0,8. Abaixo de MIN o ponto
+# fica como esta; acima de MAX vai a branco; no meio, a rampa - que tambem
+# clareia aos poucos a orla da letra, em vez de deixar um contorno creme.
+PAPEL_NO_FUNDO_MIN, PAPEL_NO_FUNDO_MAX = 0.78, 0.90
+
+# E o fundo em volta tem de ser claro, perto do nivel do papel da gravura: numa
+# mancha de tinta mais larga que o fechamento, o ponto tambem esta "no nivel do
+# fundo", mas o fundo ali e a propria tinta. Medido no Palatino 5: o fundo do
+# papel escurecido do retrato fica em 0,79 a 0,93 do papel da margem.
+FUNDO_CLARO_MIN, FUNDO_CLARO_MAX = 0.65, 0.80
+
+# A cor do papel de cada gravura e medida nela mesma, no papel entre os tracos
+# (o papel do Palatino 5 e ambar forte, o das Horas quase cinza). Um ponto tem
+# cor de papel se a distancia dele (em a,b do LAB) a mediana desse papel cabe em
+# CHEIO vezes o percentil 99 das distancias do proprio papel; de CHEIO a ZERO
+# vezes, a rampa. CHEIO passa de 1 de proposito: por definicao 1% do papel fica
+# alem do percentil 99, e com o corte nele esse papel saia 248 em vez de 255.
+# Medido: papel das Horas 13 ate 7, a moldura dourada dela a partir de 25; papel
+# do Palatino 5 ate 13 (o fundo do retrato fica em 10). Arriscado subir ZERO: e
+# ele que segura o dourado das molduras.
+COR_DO_PAPEL_PERCENTIL = 99
+COR_DO_PAPEL_RAIO_MIN = 6.0
+COR_DO_PAPEL_CHEIO = 1.2
+COR_DO_PAPEL_ZERO = 1.6
+
+# A cor e medida alisada, para nao herdar a grade do JPEG: a imagem dentro do
+# PDF guarda a cor em quadrados de 16x16 pontos (24x24 depois de ampliar), e
+# decidir ponto a ponto sobre a cor crua era o que fazia os quadradinhos.
+COR_DO_PAPEL_ALISAMENTO = 1 / 150
+
+# Os mapas lisos (densidade do traco e cor alisada) sao calculados numa copia
+# reduzida a este menor lado e esticados de volta, como o fundo em
+# _estimar_fundo_cinza: o resultado e liso por definicao. Medido: a primeira
+# versao deste conserto, em tamanho cheio e em ponto flutuante, deixava o filtro
+# da pagina 13 das Horas (4150 x 5800) um segundo mais lento; assim, e em 8
+# bits, antes e depois empatam (diferenca dentro do ruido da medida).
+LADO_DOS_MAPAS_LISOS = 400
+
+
+def _escala_dos_mapas(forma: tuple[int, ...]) -> float:
+    """Quanto reduzir a imagem para os mapas lisos (1.0 = nao reduz)."""
+    return min(1.0, LADO_DOS_MAPAS_LISOS / max(1, min(forma[:2])))
+
+
+def _reduzir(mapa: np.ndarray, escala: float) -> np.ndarray:
+    """Copia reduzida (media por area) de um mapa, em float32."""
+    altura, largura = mapa.shape[:2]
+    tamanho = (max(1, round(largura * escala)), max(1, round(altura * escala)))
+    return cv2.resize(mapa, tamanho, interpolation=cv2.INTER_AREA).astype(np.float32)
+
+
+def _voltar(pequeno: np.ndarray, forma: tuple[int, ...]) -> np.ndarray:
+    """Estica um mapa reduzido de volta ao tamanho da imagem."""
+    return cv2.resize(pequeno, (forma[1], forma[0]), interpolation=cv2.INTER_LINEAR)
+
+
+def _desfocar(pequeno: np.ndarray, forma: tuple[int, ...], escala: float,
+              sigma_fracao: float) -> np.ndarray:
+    """Desfoque gaussiano de sigma_fracao do menor lado da imagem ORIGINAL,
+    feito na copia reduzida."""
+    sigma = max(0.8, min(forma[:2]) * escala * sigma_fracao)
+    return cv2.GaussianBlur(pequeno, (0, 0), sigmaX=sigma, sigmaY=sigma)
+
+
+def _fundo_e_nivel(lab: np.ndarray) -> tuple[np.ndarray, np.ndarray, float]:
+    """A luz da gravura, o fundo dela sem os tracos finos e o nivel do papel.
+
+    O fundo e o fechamento (TRACO_FECHAMENTO): em cada ponto, o nivel do papel
+    em volta, com a letra e a hachura apagadas. O nivel do papel e o percentil
+    85 da gravura, o mesmo BRANCO_PERCENTIL do resto do arquivo. Tudo em 8 bits.
+    """
+    luz = np.ascontiguousarray(lab[:, :, 0])
+    lado = max(9, int(min(luz.shape) * TRACO_FECHAMENTO) | 1)
+    fundo = cv2.morphologyEx(
+        luz, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
+    nivel = float(np.percentile(luz[::4, ::4], BRANCO_PERCENTIL))
+    return luz, fundo, nivel
+
+
+def _peso_de_traco(luz: np.ndarray, fundo: np.ndarray, nivel: float) -> np.ndarray:
+    """0 a 255: quanto cada ponto esta numa area de TRACO SOBRE PAPEL.
+
+    255 na xilogravura, na tabela e no texto; 0 na pintura e na foto. E a pista
+    "textura e sombreado": traco fino e escuro sobre fundo claro e liso so
+    existe em gravura de traco. Ver TRACO_FECHAMENTO e os numeros medidos em
+    TRACO_ESPALHAMENTO.
+
+    Arriscado mudar: TRACO_SOBRE_PAPEL (baixar deixa a textura das areas
+    escuras de uma foto contar como traco) e TRACO_FECHAMENTO (pequeno demais
+    deixa de apagar o traco grosso; grande demais passa a contar as sombras
+    da pintura como traco).
+    """
+    # luz <= (1 - TRACO_CONTRASTE) * fundo, e fundo claro; em 8 bits, que e a
+    # conta que roda em toda a gravura
+    limite = cv2.convertScaleAbs(fundo, alpha=1.0 - TRACO_CONTRASTE)
+    escuro = cv2.compare(luz, limite, cv2.CMP_LE)
+    _t, claro = cv2.threshold(fundo, TRACO_SOBRE_PAPEL * nivel - 1e-3, 255, cv2.THRESH_BINARY)
+    traco = cv2.bitwise_and(escuro, claro)
+    escala = _escala_dos_mapas(luz.shape)
+    densidade = _desfocar(_reduzir(traco, escala) / 255.0, luz.shape, escala,
+                          TRACO_ESPALHAMENTO)
+    peso = np.clip((densidade - TRACO_DENSIDADE_MIN)
+                   / (TRACO_DENSIDADE_MAX - TRACO_DENSIDADE_MIN), 0.0, 1.0)
+    return _voltar((peso * 255.0 + 0.5).astype(np.uint8), luz.shape)
+
+
+def _rampa_8_bits(inicio: float, fim: float, divisor: float) -> np.ndarray:
+    """Tabela de 256 valores: 0 ate inicio, 255 a partir de fim (em v/divisor)."""
+    v = np.arange(256, dtype=np.float32) / max(divisor, 1.0)
+    return (np.clip((v - inicio) / (fim - inicio), 0.0, 1.0) * 255.0 + 0.5).astype(np.uint8)
+
+
+def _no_nivel_do_papel(luz: np.ndarray, fundo: np.ndarray, nivel: float) -> np.ndarray:
+    """0 a 255: quanto cada ponto e o proprio papel, e nao traco nem orla.
+
+    255 onde o ponto esta no nivel do fundo em volta e esse fundo e claro; 0 no
+    traco (mesmo o fraco, que fica abaixo do fundo) e na mancha larga de tinta
+    (onde o fundo e escuro). Ver PAPEL_NO_FUNDO_MIN e FUNDO_CLARO_MIN. Em 8 bits,
+    com tabelas: e a conta que roda em toda a gravura.
+    """
+    razao = cv2.divide(luz, fundo, scale=255)   # luz / fundo, 0 a 255
+    no_fundo = cv2.LUT(razao, _rampa_8_bits(PAPEL_NO_FUNDO_MIN, PAPEL_NO_FUNDO_MAX, 255.0))
+    claro = cv2.LUT(fundo, _rampa_8_bits(FUNDO_CLARO_MIN, FUNDO_CLARO_MAX, nivel))
+    return cv2.multiply(no_fundo, claro, scale=1.0 / 255.0)
+
+
+def _cor_parecida_com_o_papel(lab: np.ndarray, papel_certo: np.ndarray) -> np.ndarray | None:
+    """0 a 255: quanto a cor de cada ponto e a do papel desta gravura.
+
+    A referencia e o papel_certo (papel entre os tracos), medido na propria
+    gravura: e a pista "cor igual a do papel da propria pagina", mas com o papel
+    DELA, porque o papel de dentro de um retrato escurece e amarela mais que o
+    da margem. A comparacao e so na cor (a e b do LAB), nao na luz: papel
+    escurecido continua papel. A cor vem alisada (COR_DO_PAPEL_ALISAMENTO), e a
+    decisao sai em rampa - as duas coisas juntas impedem os quadrados do JPEG.
+    Calculada na copia reduzida: e lisa de qualquer jeito.
+
+    None quando nao ha papel certo que chegue para medir.
+    """
+    forma = lab.shape
+    escala = _escala_dos_mapas(forma)
+    pequeno = _desfocar(_reduzir(lab, escala), forma, escala, COR_DO_PAPEL_ALISAMENTO)
+    a = pequeno[:, :, 1] - 128.0
+    b = pequeno[:, :, 2] - 128.0
+    certo = _reduzir(np.multiply(papel_certo, 255, dtype=np.uint8), escala) >= 128.0
+    if int(certo.sum()) < 10:
+        return None
+    a_papel = float(np.median(a[certo]))
+    b_papel = float(np.median(b[certo]))
+    distancia = np.hypot(a - a_papel, b - b_papel)
+    raio = max(COR_DO_PAPEL_RAIO_MIN,
+               float(np.percentile(distancia[certo], COR_DO_PAPEL_PERCENTIL)))
+    cheio, zero = raio * COR_DO_PAPEL_CHEIO, raio * COR_DO_PAPEL_ZERO
+    cor = np.clip((zero - distancia) / (zero - cheio), 0.0, 1.0)
+    return _voltar((cor * 255.0 + 0.5).astype(np.uint8), forma)
+
+
+def _so_o_papel_da_gravura(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
+    """Dentro de uma gravura, vai a branco o papel e so o papel.
+
+    Chamada por _limpar_o_papel_de_verdade depois das travas dela (capa, tinta
+    de menos ou de mais, poucas pecas de letra). A decisao passa por quatro
+    perguntas, uma para cada pista:
+
+    1. A gravura e de TRACO? (_peso_de_traco: textura). Se o traco cobre menos
+       que GRAVURA_DE_TRACO_MINIMA dela, e pintura ou foto: nada vai a branco
+       por aqui, e o tom fica como o Melhorar deixou (a curva de ombro ja leva
+       o papel dela a branco). E o que devolve a roupa do anjo, o ceu e a
+       estatua.
+    2. O ponto esta no NIVEL DO PAPEL em volta? (_no_nivel_do_papel). O traco,
+       ate o fraco da hachura, fica abaixo dele e nao e tocado.
+    3. A cor e a do papel DESTA gravura? (_cor_parecida_com_o_papel). Protege a
+       moldura dourada, a iluminura e a cor pintada a mao numa xilogravura.
+    4. Esta LIGADO ao papel entre os tracos? (tamanho e ligacao). O papel certo
+       - onde ha traco em volta - e a semente; vai a branco o que passa em 2 e 3
+       e se liga a ela sem atravessar traco. Assim o rosto liso de um retrato,
+       longe da hachura, vai junto; uma area da mesma cor que nao encosta no
+       papel de traco, nao.
+
+    O branco entra em rampa (pelo nivel e pela cor) e e decidido ponto a ponto,
+    nunca por bloco.
+
+    Arriscado mudar: tirar a pergunta 1 traz de volta o bug do anjo; trocar a 2
+    pela pergunta da pagina de texto ("longe de letra") parte a hachura do
+    Palatino 5; tirar a 3 apaga a moldura dourada das Horas 13; tirar a 4 deixa
+    o rosto do retrato creme.
+    """
+    if original.ndim != 3 or saida.ndim != 3:
+        return saida
+    lab = cv2.cvtColor(original, cv2.COLOR_BGR2LAB)
+    luz, fundo, nivel = _fundo_e_nivel(lab)
+    traco_certo = _peso_de_traco(luz, fundo, nivel) >= 128
+    if float(traco_certo.mean()) < GRAVURA_DE_TRACO_MINIMA:
+        return saida
+
+    no_papel = _no_nivel_do_papel(luz, fundo, nivel)
+    # o papel certo, de onde se mede a cor: no nivel do fundo, com traco em
+    # volta e nao escuro demais (a rede de seguranca ESCURO_DEMAIS_PARA_SER_MANCHA
+    # da limpeza da pagina)
+    papel_certo = traco_certo & (no_papel == 255) & (
+        luz >= nivel * ESCURO_DEMAIS_PARA_SER_MANCHA)
+    if int(papel_certo.sum()) < 100:
+        return saida
+
+    cor = _cor_parecida_com_o_papel(lab, papel_certo)
+    if cor is None:
+        return saida
+    peso = cv2.multiply(no_papel, cor, scale=1.0 / 255.0)
+    semente = papel_certo & (cor == 255)
+
+    _n, rotulos = cv2.connectedComponents((peso > 0).astype(np.uint8), connectivity=8)
+    ligados = np.zeros(int(rotulos.max()) + 1, np.uint8)
+    # a semente vista de 2 em 2 pontos: basta um ponto dela para ligar a regiao
+    # inteira, e a conta cai a um quarto
+    ligados[rotulos[::2, ::2][semente[::2, ::2]]] = 255
+    ligados[0] = 0
+    peso = cv2.bitwise_and(peso, ligados[rotulos])
+    if not peso.any():
+        return saida
+
+    # saida + (255 - saida) * peso, em 8 bits
+    return cv2.add(saida, cv2.multiply(cv2.bitwise_not(saida), cv2.merge([peso, peso, peso]),
+                                       scale=1.0 / 255.0))
 
 
 def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.ndarray:
@@ -1315,6 +1615,13 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
 
     Uma iluminura de meio-tom, que quase nao tem papel a vista, passa por aqui
     sem mudanca: _balanco_de_branco desiste sozinho quando nao acha papel.
+
+    Cada recorte vai com dentro_da_gravura=True: a limpeza final do papel so
+    branqueia o papel de verdade (o fundo do retrato do Palatino 5), nunca a
+    pintura clara (a roupa do anjo) nem a foto (a estatua do Opus 20). Era o
+    bug dos quadradinhos de 28/09/2026 - ver _so_o_papel_da_gravura. Arriscado
+    mudar: tirar isso traz os quadradinhos de volta nos tres filtros (Magico
+    pro, Melhorar e a gravura do Preto e branco passam todos por aqui).
     """
     saida = filtro_melhorar(_tres_canais(img), clareza=clareza)
 
@@ -1330,7 +1637,8 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
         h = stats[i, cv2.CC_STAT_HEIGHT]
         pedaco = _tres_canais(img)[y:y + h, x:x + w]
         if pedaco.size:
-            saida[y:y + h, x:x + w] = filtro_melhorar(pedaco, clareza=clareza)
+            saida[y:y + h, x:x + w] = filtro_melhorar(pedaco, clareza=clareza,
+                                                      dentro_da_gravura=True)
     return saida
 
 

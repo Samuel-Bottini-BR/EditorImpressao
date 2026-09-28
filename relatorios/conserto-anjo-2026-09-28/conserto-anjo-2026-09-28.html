@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conserto dos quadradinhos na roupa do anjo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conserto dos quadradinhos na roupa do anjo (28/09/2026)</h1>
+<p>Feito pelo agente implementador. <strong>Nada foi commitado.</strong> É teste de <strong>olho</strong>: quem decide é o Samuel. Bug da Lista de bugs do plano (28/09), com a regra do resultado da Fase 1 do mesmo dia.</p>
+<h2>Em uma frase</h2>
+<p>Dentro da gravura, o filtro agora só leva a branco o <strong>papel das gravuras de traço</strong> (xilogravura, tabela, página de texto marcada como gravura) e deixa a <strong>pintura e a foto</strong> como estão. A roupa do anjo, o céu e a foto da estátua voltam; o fundo do retrato do Palatino 5 fica branco; não há mais quadradinhos. Vale para os três filtros atingidos (Mágico pro, Melhorar e a gravura do Preto e branco).</p>
+<h2>A causa (da investigação de 28/09)</h2>
+<p>A limpeza do papel feita para página de texto ("o que não é letra e tem cor de papel vira branco") rodava também no recorte de cada gravura. O pano quase branco do anjo passava por papel, e como a cor do JPEG vem em quadrados de 16×16 pontos, uns quadrados passavam e outros não. A mesma limpeza lavava a foto do Opus Majus 20.</p>
+<h2>O que mudou</h2>
+<ul>
+<li><code>core/filtros.py</code>: dentro da gravura, a limpeza final do papel passa a perguntar outra coisa (função nova <code>_so_o_papel_da_gravura</code> e as auxiliares dela). Fora da gravura, nada mudou. Todas as funções novas têm comentário do que fazem e do que é arriscado mexer.</li>
+<li><code>tests/test_papel_dentro_da_gravura.py</code>: 12 testes novos (3 casos × 3 filtros + 1 caso × 3 filtros).</li>
+<li><code>relatorios/melhorias.md</code>: tentativa 20, com o que deu certo e o que não deu.</li>
+<li><code>relatorios/conferir/_antes-conserto-anjo-2026-09-28/</code>: o "antes" do Melhorar e do Preto e branco, para a coluna "Rodada anterior" (ver o LEIA-ME de lá).</li>
+</ul>
+<h2>Como separa papel de pintura, e com que prova</h2>
+<p><strong>Pela cor não dá.</strong> Medido: o pano do anjo (luz 222 a 233, pouca cor) é <em>mais</em> parecido com o papel da página (250) do que o papel de dentro do retrato do Palatino 5 é parecido com a margem dele (183 contra 213, e bem mais amarelado). A estátua do Opus 20 tem a cor exata do papel, só 14 tons mais escura.</p>
+<p><strong>Pela estrutura dá.</strong> Xilogravura, tabela e texto são traço fino e escuro sobre papel liso; pintura e foto são tom contínuo. O traço fino é achado pelo "top-hat preto" (fechamento menos a imagem), operação consagrada de morfologia para separar letra e traço de um fundo irregular.</p>
+<table>
+<thead>
+<tr>
+<th>Gravura</th>
+<th>densidade de traço</th>
+<th>fração da gravura com traço</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pintura do anjo (Escola 35) e Escola 7</td>
+<td>0,000</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Foto do Opus 20</td>
+<td>0,001 (pico só no livro da mão)</td>
+<td>0,9%</td>
+</tr>
+<tr>
+<td>Retrato do Palatino 5</td>
+<td>0,09 a 0,13</td>
+<td>79%</td>
+</tr>
+<tr>
+<td>Tabela do Opus 256</td>
+<td>0,06</td>
+<td>76%</td>
+</tr>
+<tr>
+<td>Rhetorica 73 (texto marcado como gravura)</td>
+<td>0,10</td>
+<td>88%</td>
+</tr>
+<tr>
+<td>Tabelas das Horas 13 e 14</td>
+<td></td>
+<td>24% a 52%</td>
+</tr>
+</tbody>
+</table>
+<p>Com isso, dentro da gravura, quatro perguntas (uma por pista pedida):</p>
+<ol>
+<li><strong>Textura:</strong> a gravura é de traço? Com menos de 5% de traço (pintura, foto), nada vai a branco por aqui.</li>
+<li><strong>Nível do papel:</strong> o ponto está no nível do fundo em volta dele? O traço, até o fraco da hachura, fica abaixo e não é tocado.</li>
+<li><strong>Cor igual à do papel:</strong> do papel <em>da própria gravura</em>, medido entre os traços, com a cor alisada e em rampa (é o que impede a grade do JPEG). A moldura dourada das Horas 13 fica a 25 de distância; o papel dela, até 7.</li>
+<li><strong>Tamanho e ligação:</strong> o ponto está ligado ao papel entre os traços? Assim o rosto liso do retrato vai junto.</li>
+</ol>
+<p>Tudo decidido ponto a ponto, em rampa, nunca por bloco.</p>
+<p><strong>Tentado e descartado</strong> (detalhe em <code>relatorios/melhorias.md</code>, tentativa 20):</p>
+<ul>
+<li>não limpar dentro da gravura (o conserto simulado da investigação): o papel do retrato fica creme e o da tabela cinza (<code>provas/p17</code>, <code>provas/p18</code>);</li>
+<li>usar a pergunta da página de texto ("longe da letra") com a cor relativa: <strong>partia a hachura fraca do retrato</strong>;</li>
+<li>vetar pelo "sombreado" a manchinha do livro na mão da estátua: não funcionou (<code>provas/p16</code>); ficou a fração mínima de traço.</li>
+</ul>
+<h2>Página por página (abri todas as imagens)</h2>
+<p>As 32 páginas do gabarito, Mágico pro, pelo caminho do programa: <strong>24 saem idênticas ponto a ponto</strong> à rodada de referência; <strong>8 mudam</strong>.</p>
+<ul>
+<li><strong>Palatino 5 — melhor.</strong> O fundo do retrato fica branco com a hachura inteira; o rosto, que é papel, também; a margem e o texto, brancos. A barba fica mais contrastada que no original (o papel entre os fios vai a branco). A manchinha vermelha perto do olho continua (é cor, não papel; é do R4). <code>provas/p01</code>, <code>provas/p02</code>.</li>
+</ul>
+<p><a href="provas/p01-palatino5-fundo-do-retrato.jpg"><img src="provas/p01-palatino5-fundo-do-retrato.jpg" width="640"></a></p>
+<ul>
+<li><strong>Escola 35 — melhor.</strong> A roupa do anjo volta inteira, com as dobras, sem quadradinhos; o céu também. A roupa sai num branco mais neutro, levemente frio, que o creme quente do original: é o balanço de branco do Melhorar dentro da gravura, que já existia (igual no conserto simulado da investigação). <code>provas/p03</code>.</li>
+</ul>
+<p><a href="provas/p03-escola35-roupa-do-anjo.jpg"><img src="provas/p03-escola35-roupa-do-anjo.jpg" width="640"></a></p>
+<ul>
+<li><strong>Escola 7 — melhor.</strong> O céu e as nuvens perdem as manchas brancas quadradas. <code>provas/p04</code>.</li>
+<li><strong>Opus Majus 20 — bem melhor, com uma ressalva.</strong> A foto volta com os cinzas e o sombreado da estátua, em vez de lavada. Duas coisas: a estátua sai mais clara que no original (a parte mais clara dela vai a branco, porque o Melhorar da gravura se ancora no tom mais claro da própria foto — já era assim, não é deste conserto); e <strong>aparece um degrau no alto da foto</strong>: a caixa da gravura do detector começa 67 pontos abaixo do topo da foto, e essa faixa continua lavada pela limpeza da página. Antes não se via porque a foto inteira estava lavada. <code>provas/p05</code>, <code>p06</code>, <code>p07</code>.</li>
+</ul>
+<p><a href="provas/p07-opus20-faixa-do-alto-fora-da-gravura.jpg"><img src="provas/p07-opus20-faixa-do-alto-fora-da-gravura.jpg" width="640"></a></p>
+<ul>
+<li><strong>Opus Majus 256 — melhor.</strong> O papel da tabela fica branco, e os números da última coluna que o programa de hoje come (o "16", o "36") ficam inteiros. <code>provas/p08</code>.</li>
+<li><strong>Rhetorica 73 — melhor (não estava entre as 5).</strong> Página de texto que o detector marcou inteira como gravura: hoje sai amarelada; agora papel branco, letras e ornamentos inteiros, sem contorno creme em volta das letras. <code>provas/p09</code>, <code>p10</code>.</li>
+<li><strong>Horas 13 e 14 — igual a olho.</strong> Muda só a beirinha vermelha da moldura (0,06% dos pontos, na maioria um pouco <em>menos</em> branqueada). O dourado fica como estava. <code>provas/p11</code>, <code>p12</code>.</li>
+</ul>
+<p><strong>O que o Samuel pediu para vigiar:</strong> papel que deixou de ficar branco — nenhum; mancha do Palatino 66 (R4) — a página saiu idêntica; cor saturada — nenhuma (o caminho da gravura não mexe na saturação); pontos brancos no azul — sumiram os do céu da Escola; Horas 13, 14, 26, 27 e 11 iguais ou idênticas.</p>
+<p><strong>Melhorar e Preto e branco</strong>, nas 5 páginas: as mesmas melhoras, nas mesmas proporções (a gravura passa pelo mesmo caminho nos três). <code>provas/p13</code>, <code>p14</code>. <strong>Prévia da tela</strong> (110 DPI): as mesmas decisões do PDF (300 DPI). <code>provas/p15</code>.</p>
+<h2>Conferências (<code>conferencia.py</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Pasta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completa, 32 páginas, Mágico pro, contra a referência 16:44</td>
+<td><code>relatorios/conferir/fase1-2026-09-28-1844</code></td>
+</tr>
+<tr>
+<td>As 5 em destaque, Mágico pro, contra a referência 16:44</td>
+<td><code>relatorios/conferir/fase1-2026-09-28-1853</code></td>
+</tr>
+<tr>
+<td>As 5, Melhorar, contra o filtro de antes</td>
+<td><code>relatorios/conferir/fase1-2026-09-28-1854</code></td>
+</tr>
+<tr>
+<td>As 5, Preto e branco, contra o filtro de antes</td>
+<td><code>relatorios/conferir/fase1-2026-09-28-1855</code></td>
+</tr>
+</tbody>
+</table>
+<p>Sem a opinião do verificador (não é papel do implementador). Em todas, o resultado do programa é idêntico, ponto a ponto, ao que medi fora dele.</p>
+<h2>Testes</h2>
+<ul>
+<li>Os 12 novos <strong>reprovam o código antigo</strong> (os 12) e passam no novo. Números: pano 99% → 0,2% de branco chapado; salto na grade de 16 pontos 22,7 → 8,0 tons (o original tem 6,6); papel do retrato 0% → 100% branco, rosto incluído, hachura intacta.</li>
+<li>Bateria completa: <strong>765 passaram, nenhum falhou</strong> (os 699 de hoje de manhã, os 12 meus e os de outros agentes).</li>
+</ul>
+<h2>Tempo só do filtro (Mágico pro, 300 DPI)</h2>
+<p>Medido com antes e depois intercalados no mesmo processo (o PC tinha outros agentes rodando, e a mesma página variava até 0,7 s entre voltas):</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>antes</th>
+<th>depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Palatino 5</td>
+<td>1,96 s</td>
+<td>1,96 s</td>
+</tr>
+<tr>
+<td>Escola 35 (12 voltas)</td>
+<td>4,35 s</td>
+<td>4,33 s</td>
+</tr>
+<tr>
+<td>Escola 7</td>
+<td>4,77 s</td>
+<td>4,71 s</td>
+</tr>
+<tr>
+<td>Opus 20</td>
+<td>2,38 s</td>
+<td>2,27 s</td>
+</tr>
+<tr>
+<td>Opus 256</td>
+<td>3,50 s</td>
+<td>3,48 s</td>
+</tr>
+<tr>
+<td>Rhetorica 73</td>
+<td>2,79 s</td>
+<td>2,81 s</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td>19,50 s</td>
+<td>19,62 s (mínimo 19,39 contra 19,49)</td>
+</tr>
+</tbody>
+</table>
+<p>Diferença dentro do ruído. A primeira versão deixava a Horas 13 um segundo mais lenta; foi refeita em 8 bits e com os mapas lisos numa cópia reduzida. O teste de velocidade não foi rodado (combinado).</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Opus 20, faixa do alto:</strong> o degrau descrito acima. É do detector (caixa curta), não do filtro, mas agora aparece.</li>
+<li><strong>A estátua do Opus 20</strong> sai mais clara que no original (ver acima). Se o Samuel achar que "intacta" pede o cinza claro de lá, é outra mudança: a âncora do Melhorar dentro de foto.</li>
+<li><strong>Mancha do verso dentro de gravura de traço:</strong> o critério novo tira só o que está no nível do papel; uma mancha do verso mais escura que isso fica mais fraca, mas pode não sumir. Nas páginas do gabarito não vi nenhuma.</li>
+<li><strong>Gravura de traço com foto clara colada no papel:</strong> uma área cinza-clara da cor do papel, ligada ao papel de uma gravura de traço, iria a branco. Não há caso no gabarito.</li>
+<li><strong>A decisão por gravura</strong> (menos de 5% de traço = pintura) é por gravura inteira: uma gravura grande de pintura com um pedaço pequeno de traço fica toda como pintura (o lado seguro).</li>
+<li>A barba e o retrato do Palatino 5 ficam <strong>mais contrastados</strong> que no original, porque o papel entre os fios vai a branco. É o que a regra pede; vale o Samuel olhar.</li>
+<li>Só 8 páginas do gabarito passam por este caminho. O acervo inteiro não foi rodado.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Bug</th>
+<th>Onde</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>28/09</td>
+<td>Opus Majus 20: a caixa da gravura começa 67 pontos abaixo do topo da foto; a faixa de cima fica fora da gravura, é lavada pela limpeza da página e agora aparece como um degrau.</td>
+<td>detector (<code>core/detectar_regioes.py</code>)</td>
+<td><code>relatorios/conserto-anjo-2026-09-28/provas/p07-opus20-faixa-do-alto-fora-da-gravura.jpg</code></td>
+</tr>
+<tr>
+<td>28/09</td>
+<td>Na foto do Opus 20, o Melhorar da gravura desenha contornos claros finos nas áreas lisas (parede, fundo). Já existia (igual no conserto simulado da investigação), escondido pela foto lavada.</td>
+<td><code>core/filtros.py</code> (Melhorar no recorte)</td>
+<td><code>provas/p07</code> (lado direito)</td>
+</tr>
+</tbody>
+</table>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>Dentro de foto, ancorar o Melhorar no papel da página (e não no tom mais claro da foto), para a estátua do Opus 20 manter o cinza claro do original.</li>
+<li>Guardar na seleção se a caixa do detector é "traço" ou "meio-tom" (ele já decide isso, em <code>_e_meio_tom</code>), para o filtro não ter de medir de novo.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 28/09/2026 às 19:01</p>
+</body>
+</html>

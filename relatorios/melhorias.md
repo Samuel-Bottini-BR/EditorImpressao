@@ -738,3 +738,79 @@ A régua sobre os nove livros, com e sem a linha:
 São 306 MB a menos no programa inteiro, e não só no folhear — porque quem
 lia página era o `pagina_para_array`, e ele é o mesmo para o pipeline, as
 prévias, as miniaturas e a própria régua. Nada piorou em qualidade.
+
+---
+
+## Tentativa 20 — o papel dentro da gravura (os quadradinhos na roupa do anjo)
+
+**Data:** 28/09/2026
+**Situação:** aguardando conferência do Samuel (Lista de bugs do plano, 28/09)
+**O que se queria:** a regra do resultado da Fase 1 — todo o papel branco,
+inclusive dentro da gravura (fundo do retrato do Palatino 5); só a pintura de
+verdade mantém a cor (roupa do anjo da Escola 35, céu, foto da estátua do Opus
+Majus 20); sem quadradinhos.
+
+### A causa (investigação de 28/09)
+
+A limpeza do papel da página de texto (`_limpar_o_papel_de_verdade`: "o que não
+é letra e tem cor de papel vira branco") rodava também no recorte de cada
+gravura, pelo Melhorar dentro de `_limpar_cada_gravura`. O pano quase branco
+passava por papel; a cor do JPEG, em quadrados de 16×16, fazia uns quadrados
+passarem e outros não. A mesma coisa lavava a foto do Opus 20. Afeta Mágico
+pro, Melhorar e a gravura do Preto e branco.
+
+### O que foi medido antes de escolher
+
+- **Pela cor não separa.** O pano do anjo (luz 222 a 233, pouca cor) é mais
+  parecido com o papel da página (250) do que o papel de dentro do retrato do
+  Palatino 5 é com a margem dele (183 contra 213, saturação 97 contra 56). A
+  estátua do Opus 20 tem a cor do papel, só 14 tons mais escura.
+- **Pela estrutura separa.** Densidade de traço fino e escuro sobre fundo claro
+  (top-hat preto, o fechamento menos a imagem): pinturas da Escola 0,000; foto
+  do Opus 20 0,001 (só um pico no livro da mão); retrato do Palatino 5 0,09 a
+  0,13; tabela do Opus 256 0,06; Rhetorica 73 0,10. Fração da gravura coberta
+  por traço: foto 0,9%, pinturas 0%, gravuras de traço 24% a 88%.
+- **Cor relativa ao papel da própria gravura.** Horas 13: papel até 7 de
+  distância, moldura dourada a partir de 25. Palatino 5: papel até 13.
+
+### O que foi tentado
+
+1. **Não limpar dentro da gravura** (o conserto simulado da investigação):
+   devolve o anjo e a foto, mas o papel do retrato do Palatino 5 fica creme e o
+   da tabela do Opus 256 cinza-claro. Fere a regra. Descartado.
+2. **Veto por "sombreado"** (densidade de tom médio liso) para a mancha do
+   livro da mão da estátua: não funciona — a estátua é lisa e clara, não conta
+   como sombreado; e o veto se acendia nas tabelas das Horas. Trocado pela
+   fração mínima de traço na gravura (5%).
+3. **Na gravura de traço, a pergunta da página de texto ("longe da letra")
+   com a cor relativa**: o papel ficou branco, mas **a hachura fraca do retrato
+   se partiu** e a barba perdeu detalhe — o Sauvola regulado para letra não vê
+   o traço fraco. Descartado.
+4. **Adotado:** na gravura de traço, papel é o ponto **no nível do fundo em
+   volta** (o próprio fechamento; rampa de 0,78 a 0,90 da luz do fundo), com
+   fundo claro, cor do papel da própria gravura (a e b alisados, rampa), e
+   **ligado** ao papel entre os traços (componentes ligados a partir de
+   sementes). Gravura de tom contínuo (menos de 5% de traço): nada vai a branco
+   por aqui. `core/filtros.py`, `_so_o_papel_da_gravura`.
+
+### Resultado (as 32 páginas do gabarito, Mágico pro, conferido de olho)
+
+- Mudam 8 páginas, todas entre as que passam pelas travas da limpeza; as outras
+  ficam idênticas ponto a ponto.
+- Escola 35 e 7: roupa, céu e nuvens de volta, sem quadrados.
+- Opus 20: a foto volta com os cinzas. Sobra uma faixa lavada no alto da foto
+  (a caixa da gravura do detector começa 67 pontos abaixo do topo da foto).
+- Palatino 5 e Rhetorica 73: papel branco, hachura e letras inteiras, sem o
+  contorno creme em volta da letra.
+- Opus 256: papel branco, e os números da última coluna (o "16", o "36") que
+  a limpeza antiga comia ficam inteiros.
+- Horas 13 e 14: só a beirinha vermelha da moldura, a olho igual.
+- Tempo só do filtro (antes e depois intercalados no mesmo processo, PC com
+  outros agentes rodando): diferença dentro do ruído, de −0,11 a +0,11 s por
+  página. A primeira versão, em ponto flutuante e em tamanho cheio, deixava a
+  Horas 13 um segundo mais lenta; refeita em 8 bits e com os mapas lisos numa
+  cópia reduzida.
+- Conferências: `relatorios/conferir/fase1-2026-09-28-1844` (32 páginas,
+  Mágico pro) e `-1853`, `-1854`, `-1855` (as 5 em destaque: Mágico pro,
+  Melhorar, Preto e branco). Relatório com as provas:
+  `relatorios/conserto-anjo-2026-09-28/`.
