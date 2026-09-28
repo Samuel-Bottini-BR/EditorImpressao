@@ -23,7 +23,7 @@ import numpy as np
 from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
-from core.endireitar import Inclinacao, detectar_angulo, girar_90, rotacionar
+from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
 from core.filtros import ORIGINAL, aplicar_filtro, aplicar_filtro_com_selecao
 from core.folha import compor_na_folha
 from core.pdf_io import (
@@ -35,7 +35,7 @@ from core.pdf_io import (
     info_paginas,
     pagina_para_array,
 )
-from core.recortar import Recorte, aplicar_recorte, detectar_bordas
+from core.recortar import Recorte, alargar_para_o_giro, aplicar_recorte, detectar_bordas, fatiar
 from modelos import (
     METADE_DIREITA,
     METADE_ESQUERDA,
@@ -205,17 +205,30 @@ def preparar_metade(
 
     O filtro fica de fora de proposito: ele e por página e a interface precisa
     trocar só ele sem refazer o resto.
+
+    Corte automatico + endireitar (conserto de 28/09/2026, Lista de bugs): o
+    angulo continua sendo medido na pagina ja cortada, como sempre; se ela vai
+    ser girada, o corte automatico e refeito um pouco maior
+    (alargar_para_o_giro), para o giro nao levar os cantos do conteudo - era
+    o comeco das linhas sumindo na Escola 35. O recorte que a pessoa escolheu
+    a mao (pagina.recorte) NAO e alargado: sai como ela escolheu.
+
+    Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
+    avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md.
     """
-    img = preparar_para_recorte(img_folha, folha, pagina)
+    inteira = preparar_para_recorte(img_folha, folha, pagina)
+    img = inteira
 
     # 2. cortar bordas
+    automatico = None
     if projeto.cortar_bordas:
         recorte = pagina.recorte
         if recorte is None:
             # o recorte automatico e recalculado na metade ja separada: cada
             # pagina tem sua propria sombra de lombada de um lado so
-            recorte = detectar_bordas(img).tupla
-        img = aplicar_recorte(img, recorte)
+            automatico = detectar_bordas(inteira)
+            recorte = automatico.tupla
+        img = aplicar_recorte(inteira, recorte)
 
     # 3. endireitar
     if projeto.endireitar:
@@ -223,6 +236,11 @@ def preparar_metade(
         if angulo is None:
             angulo = detectar_angulo(img).angulo
         if angulo:
+            if automatico is not None and abs(angulo) >= ANGULO_MINIMO:
+                # mesma regra do rotacionar: abaixo de ANGULO_MINIMO nao gira.
+                # fatiar (sem copiar): o rotacionar ja devolve uma imagem nova.
+                alargado = alargar_para_o_giro(automatico, angulo, inteira.shape)
+                img = fatiar(inteira, alargado.tupla)
             img = rotacionar(img, angulo)
 
     return img
