@@ -38,7 +38,13 @@ verdade sobre ele, incluindo o que está ruim.
    isso.
 5. **Item de tela** (clicar, arrastar, zoom): pilote a **janela real** do
    programa e tire prints. Veja "Como pilotar a janela" abaixo.
-6. **Escreva a opinião com as ressalvas** e grave o relatório nos três formatos
+6. **Defeitos conhecidos (decisão do Samuel, 28/09):** até a Fase 1 ficar
+   pronta, toda conferência avisa, em destaque, que **moldura dourada e
+   iluminura são defeito conhecido** (vão ser resolvidos nos itens 1.2, 1.4 e
+   1.5). Confira as **regras do resultado da Fase 1** no PLANO-DEFINITIVO
+   (seção 4, Fase 1) antes de opinar: papel todo branco, inclusive dentro da
+   gravura; só pintura de verdade mantém a cor.
+7. **Escreva a opinião com as ressalvas** e grave o relatório nos três formatos
    com `relatorio.gravar(texto, destino)` (`.md`, `.html`, `.pdf`). O Samuel
    não abre `.md`.
 
