@@ -18,7 +18,7 @@ Cada item: implementador → verificador (antes/depois nas páginas do gabarito,
 
 Neste PC não há compilador de C++, CMake, Tesseract nem Linux no WSL (conferido em 28/09).
 
-- **Para o 1.3, Tesseract 5.5 (UB Mannheim).** Pede administrador. Os outros OCRs eu instalo sem administrador, num ambiente de teste separado, sem mexer no programa.
+- **Para o 1.3, Tesseract (UB Mannheim).** Pelo `winget` sai a versão 5.4 (conferido em 28/09); o site da UB Mannheim tem a 5.5. Pede administrador. Os outros OCRs eu instalo sem administrador, num ambiente de teste separado, sem mexer no programa.
 - **Kraken:** só roda em Linux (WSL com Ubuntu, 1 a 2 GB). **Recomendação:** deixar fora da primeira comparação e só instalar se os outros falharem, porque ele também exigiria o WSL no notebook do Kaique.
 - **Para o 1.2, Visual Studio 2022 Build Tools (C++) e CMake.** Pede administrador; de 6 a 8 GB. O Qt de desenvolvimento eu baixo sem administrador.
 - **Como instalar:** eu rodo os comandos e o Samuel só clica em "Sim" no aviso do Windows; ou ele mesmo roda:
