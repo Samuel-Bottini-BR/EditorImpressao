@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fase 1: plano de execução (28/09/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Fase 1: plano de execução (28/09/2026)</h1>
+<p>Escrito pela conversa gerente. <strong>Regra de trabalho (Samuel, 28/09):</strong> cada item termina como PRONTO PARA CONFERIR, com relatório de antes/depois em <code>relatorios/</code>; cada item é um commit separado no ramo <code>fase-1</code> (com cópia no GitHub); o ramo principal só recebe o que o Samuel aprovar.</p>
+<h2>A ordem</h2>
+<ol>
+<li><strong>Lista de bugs (em andamento).</strong> Quadradinhos na gravura (agente consertando). Depois, juntos: a diferença de corte entre a prévia e o PDF, a faixa escura do Marial 7 e as sobras do Graduale.</li>
+<li><strong>1.1 Tirar o fundo de PDF com camadas (começou em 28/09).</strong> Primeiro só o núcleo (<code>core/camadas.py</code>): reconhecer sozinho o PDF do Internet Archive e montar a página com papel branco, letra na cor original e gravura/foto intactas. Depois: ligar ao processamento e pôr o botão de ligar e desligar (regra 8).</li>
+<li><strong>1.3 Comparar os OCRs, só para achar onde está o texto.</strong> Tesseract (com e sem o filtro do Internet Archive; modelos da UB Mannheim), docTR (OnnxTR) e PP-OCRv5 (RapidOCR); as linhas que já vêm nos PDFs do Internet Archive entram como referência. Medidas: quanto da tinta de texto cai nas caixas (meta: 98% ou mais) e quanto da tinta de gravura, iluminura, moldura e foto cai nelas (meta: 1% ou menos). Ficam os 2 melhores. <strong>Precisa instalar programas (ver abaixo).</strong></li>
+<li><strong>1.2 Seletor de gravura do ScanTailor, com o código original.</strong> Recomendação da pesquisa: compilar só o detector numa biblioteca pequena (DLL), chamada pelo programa. A régua já existe: as máscaras que o próprio ScanTailor gravou no teste de 24/09. <strong>Precisa de ferramentas de compilação (ver abaixo).</strong></li>
+<li><strong>1.4 Máscara de tinta com a cor original</strong>, só dentro das linhas de texto (usa o resultado do 1.3).</li>
+<li><strong>1.5 Juntar os dois detectores e montar a página</strong>, com as regras do resultado de 28/09: papel todo branco (inclusive dentro da gravura), iluminura e moldura intactas, a <strong>moldura detectada como gravura</strong> e o <strong>botão de manter ou tirar a moldura</strong>.</li>
+<li><strong>1.6 PDF de saída em duas camadas</strong>, como opção.</li>
+</ol>
+<p>Cada item: implementador → verificador (antes/depois nas páginas do gabarito, sempre com as páginas obrigatórias e o aviso de defeito conhecido) → relatório → commit no <code>fase-1</code>. Item que mexe no processamento também passa pelo teste de velocidade.</p>
+<h2>Preciso do Samuel: instalar programas</h2>
+<p>Neste PC não há compilador de C++, CMake, Tesseract nem Linux no WSL (conferido em 28/09).</p>
+<ul>
+<li><strong>Para o 1.3, Tesseract 5.5 (UB Mannheim).</strong> Pede administrador. Os outros OCRs eu instalo sem administrador, num ambiente de teste separado, sem mexer no programa.</li>
+<li><strong>Kraken:</strong> só roda em Linux (WSL com Ubuntu, 1 a 2 GB). <strong>Recomendação:</strong> deixar fora da primeira comparação e só instalar se os outros falharem, porque ele também exigiria o WSL no notebook do Kaique.</li>
+<li><strong>Para o 1.2, Visual Studio 2022 Build Tools (C++) e CMake.</strong> Pede administrador; de 6 a 8 GB. O Qt de desenvolvimento eu baixo sem administrador.</li>
+<li><strong>Como instalar:</strong> eu rodo os comandos e o Samuel só clica em "Sim" no aviso do Windows; ou ele mesmo roda:</li>
+<li><code>winget install --id UB-Mannheim.TesseractOCR</code></li>
+<li><code>winget install --id Kitware.CMake</code></li>
+<li><code>winget install --id Microsoft.VisualStudio.2022.BuildTools --override "--quiet --wait --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"</code></li>
+</ul>
+<h2>Uma correção num documento do Samuel</h2>
+<p>A pesquisa do 1.1 corrigiu duas frases do <code>TESTE-SCANTAILOR-MISTO.md</code>: (1) no Palatino, nenhuma página do gabarito tem "tudo na camada de baixo"; o fundo em resolução cheia das primeiras páginas é uma opção de qualidade do Internet Archive; (2) o Internet Archive também sobe moldura, gravura e pontinhos de foto para a camada de cima. O documento é do Samuel: ele decide se atualiza.</p>
+<h2>Documentos da pesquisa</h2>
+<ul>
+<li><code>docs/pesquisa/fase1-1.1-camadas-internet-archive.md</code></li>
+<li><code>docs/pesquisa/fase1-1.2-scantailor.md</code></li>
+<li><code>docs/pesquisa/fase1-1.3-ocr-para-achar-texto.md</code></li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 28/09/2026 às 18:18</p>
+</body>
+</html>
