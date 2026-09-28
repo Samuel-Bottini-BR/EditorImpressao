@@ -203,6 +203,49 @@ def test_a_biblioteca_markdown_esta_no_requirements():
     assert "markdown" in nomes
 
 
+def test_linha_de_comando_com_um_md_grava_os_tres_e_nao_quebra(tmp_path, capsys):
+    """Bug de 28/09/2026: `python relatorio.py arquivo.md` gravava os tres
+    arquivos e depois quebrava com "too many values to unpack": o fim do
+    arquivo fazia `_, htm = gravar(...)`, e o gravar devolve um dicionario
+    de TRES chaves (md, html, pdf). Agora diz onde cada um ficou."""
+    md = tmp_path / "relatorio-6.7.md"
+    md.write_text("# Titulo\n\nTexto.", encoding="utf-8")
+
+    assert relatorio.main([str(md)]) == 0
+
+    saida = capsys.readouterr().out
+    for extensao in (".md", ".html", ".pdf"):
+        caminho = tmp_path / f"relatorio-6.7{extensao}"
+        assert caminho.is_file()
+        assert str(caminho) in saida
+
+
+def test_linha_de_comando_avisa_o_que_nao_e_md_nem_pasta(tmp_path, capsys):
+    """Antes, um nome errado era ignorado calado: parecia que tinha dado certo."""
+    assert relatorio.main([str(tmp_path / "nao-existe.md")]) == 1
+    assert "nao-existe.md" in capsys.readouterr().out
+
+
+def test_linha_de_comando_de_verdade_sai_sem_erro(tmp_path):
+    """O mesmo comando, rodado como o Claude Code roda: um processo novo,
+    `python relatorio.py x.md`. Saida 0 e nada de Traceback na tela."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    md = tmp_path / "x.md"
+    md.write_text("# Titulo\n\n| a | b |\n|---|---|\n| 1 | 2 |\n", encoding="utf-8")
+    script = Path(relatorio.__file__).resolve()
+
+    feito = subprocess.run([sys.executable, str(script), str(md)],
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=120)
+
+    assert feito.returncode == 0, feito.stderr
+    assert "Traceback" not in feito.stdout + feito.stderr
+    assert (tmp_path / "x.pdf").is_file() and (tmp_path / "x.html").is_file()
+
+
 def test_conferencia_grava_o_que_a_pessoa_disse(tmp_path, monkeypatch):
     """A tela de conferir tem de guardar o veredito de quem olhou.
 

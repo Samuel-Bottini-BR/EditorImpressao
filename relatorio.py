@@ -444,13 +444,26 @@ def _nome_de_pasta(assunto: str) -> str:
     return limpo or "sem assunto"
 
 
-if __name__ == "__main__":
-    import sys
+def main(alvos: list[str] | None = None) -> int:
+    """Linha de comando: `python relatorio.py [pasta ou arquivo.md ...]`.
 
-    alvos = sys.argv[1:] or [
+    Pasta: gera o .html e o .pdf de todo .md que ainda nao tem par
+    (converter_pasta). Arquivo .md: grava os tres de novo (gravar) e diz onde
+    cada um ficou. Sem nada, converte relatorios\\ e a pasta de testes do
+    acervo. Devolve 0 se deu tudo certo, 1 se algum alvo nao era pasta nem
+    .md existente (e diz qual).
+
+    Ate 28/09/2026 isto ficava solto no fim do arquivo e fazia
+    `_, htm = gravar(...)`: o gravar devolve um dicionario de TRES chaves, e o
+    comando gravava os arquivos e quebrava com "too many values to unpack"
+    (Lista de bugs, 28/09). Arriscado: desempacotar o dicionario do gravar
+    em variaveis soltas - use as chaves ("md", "html", "pdf").
+    """
+    alvos = alvos or [
         str(Path(__file__).resolve().parent / "relatorios"),
         r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO",
     ]
+    tudo_certo = True
     for alvo in alvos:
         caminho = Path(alvo)
         if caminho.is_dir():
@@ -458,6 +471,17 @@ if __name__ == "__main__":
             print(f"{caminho}: {len(feitos)} arquivo(s) gerado(s)")
             for f in feitos:
                 print(f"   {f.name}")
-        elif caminho.suffix == ".md" and caminho.exists():
-            _, htm = gravar(caminho.read_text(encoding="utf-8"), caminho)
-            print(f"   {htm}")
+        elif caminho.suffix.lower() == ".md" and caminho.is_file():
+            gravados = gravar(caminho.read_text(encoding="utf-8"), caminho)
+            for formato in ("md", "html", "pdf"):
+                print(f"   {formato:<4} {gravados.get(formato, 'não saiu')}")
+        else:
+            print(f"   não é pasta nem arquivo .md que exista: {caminho}")
+            tudo_certo = False
+    return 0 if tudo_certo else 1
+
+
+if __name__ == "__main__":
+    import sys
+
+    raise SystemExit(main(sys.argv[1:]))

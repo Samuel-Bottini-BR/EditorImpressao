@@ -11,3 +11,8 @@ pyinstaller>=6.0
 # relatorios saem pela conversao simples e perdem as tabelas e as imagens.
 # Versao minima = a do .venv em 28/09/2026 (Lista de bugs, 25/09).
 markdown>=3.10.3
+# As duas redes neurais (so apontam, nunca desenham): o detector de gravura e
+# letra (core/detectar_regioes.py) e a selecao por clique
+# (core/rede_selecao.py). Sem ela, os dois se desligam sem avisar.
+# Versao minima = a do .venv em 28/09/2026 (Lista de bugs, 28/09).
+onnxruntime>=1.28.0
