@@ -84,6 +84,65 @@ def test_figuras_pelo_scantailor_sem_dll_usa_a_reserva(tmp_path, monkeypatch):
     assert sem_reserva.dtype == np.float32 and float(sem_reserva.max()) == 0.0
 
 
+class _DllDeMentira:
+    """Faz o papel da DLL e só conta as chamadas: prova que a trava recusa a página
+    SEM chamar a DLL de verdade (com esses valores ela corrompe a memória)."""
+
+    def __init__(self):
+        self.chamadas = 0
+
+    def st_gravura_detectar(self, *argumentos):
+        self.chamadas += 1
+        return 0
+
+
+def _detector_de_mentira(monkeypatch, tmp_path):
+    detector = gs.DetectorGravuraScanTailor(tmp_path / "nao_importa.dll")
+    falsa = _DllDeMentira()
+    monkeypatch.setattr(detector, "_carregar", lambda: falsa)
+    return detector, falsa
+
+
+@pytest.mark.parametrize("largura, altura, dpi", [
+    (450, 600, 300_000),      # o caso do verificador: vira 1x1 a 300 DPI e mata o processo
+    (2000, 1500, 700_000),    # idem
+    (2390, 3374, 73_918),     # vira 10x14 a 300 DPI: falhou na medição de 28/09
+    (3, 4, 2400),             # vira 1x1 dentro da faixa de DPI: falhou na medição
+    (1200, 1600, 2401),       # DPI acima do teto
+    (1200, 1600, 29),         # DPI abaixo do piso
+    (40, 1600, 2400),         # 40 pontos a 2400 DPI = 5 pontos a 300 DPI
+    (15, 1600, 300),          # página com menos de 16 pontos de lado
+])
+def test_trava_recusa_sem_chamar_a_dll(monkeypatch, tmp_path, largura, altura, dpi):
+    detector, falsa = _detector_de_mentira(monkeypatch, tmp_path)
+    resultado = detector.detectar(np.zeros((altura, largura, 3), np.uint8), dpi)
+    assert not resultado.disponivel
+    assert resultado.motivo and "detector de gravura" in resultado.motivo
+    assert falsa.chamadas == 0
+
+
+def test_trava_recusa_pagina_gigante():
+    # 40 MP (o teto do pdf_io) a 30 DPI viraria 4.000 MP a 300 DPI; e 132 MP na própria página
+    assert gs.motivo_de_recusa(7300, 5480, 7300, 5480, 30, 30) is not None
+    assert gs.motivo_de_recusa(12000, 11000, 12000, 11000, 300, 300) is not None
+
+
+def test_trava_deixa_passar_pagina_normal(monkeypatch, tmp_path):
+    detector, falsa = _detector_de_mentira(monkeypatch, tmp_path)
+    for largura, altura, dpi in [(1024, 1446, 72), (1929, 2943, 400), (2480, 3508, 300), (620, 877, 30)]:
+        assert gs.motivo_de_recusa(largura, altura, largura, altura, dpi, dpi) is None
+    detector.detectar(np.zeros((1446, 1024, 3), np.uint8), 72)
+    assert falsa.chamadas == 1
+
+
+def test_trava_vale_para_o_retangulo_de_trabalho(monkeypatch, tmp_path):
+    """Com a geometria do ScanTailor, o que conta é o retângulo de trabalho no DPI de saída."""
+    detector, falsa = _detector_de_mentira(monkeypatch, tmp_path)
+    img = np.zeros((600, 450, 3), np.uint8)
+    resultado = detector.detectar_como_no_scantailor(img, 600, [1, 0, 0, 1, 0, 0], [0, 0, 20, 20])
+    assert not resultado.disponivel and falsa.chamadas == 0     # 20 pontos a 600 DPI = 10 a 300
+
+
 @precisa_da_dll
 def test_entrada_invalida_nao_derruba():
     for ruim in (np.zeros((10, 10, 3), np.float32), np.zeros((0, 5, 3), np.uint8), np.zeros((5, 5, 2), np.uint8)):
@@ -139,6 +198,24 @@ def test_figuras_pelo_scantailor_tem_a_assinatura_das_camadas():
 
 
 # ------------------------------------------------------------- cópia fiel
+
+# SHA-256 de src/core/filters/output/OutputGenerator.cpp do GitHub, v1.2.1
+# (commit 5eaac1884cdcabb6514bd632114f688631bd8dbc), como o GitHub serve: fim de
+# linha LF. Medido em 28/09/2026 no arquivo cru do GitHub e na cópia do projeto
+# sem o CR (as duas deram esta soma). Serve para pegar alguém que mude a
+# referência E a ligação juntas. NÃO atualize esta soma para "consertar" o teste:
+# se ela não bate, a referência deixou de ser a do ScanTailor.
+SHA256_REFERENCIA_GITHUB = "eb372bb89142b5825e2204d51eedde5f87fe70c7914843db1e15550414aef0e9"
+
+
+def test_referencia_e_a_do_github():
+    """A referência no projeto é a do GitHub. O git deste PC (core.autocrlf=true)
+    põe CR+LF na pasta; tirar o CR dá os bytes que o GitHub serve."""
+    import hashlib
+
+    conteudo = REFERENCIA.read_bytes().replace(b"\r\n", b"\n")
+    assert hashlib.sha256(conteudo).hexdigest() == SHA256_REFERENCIA_GITHUB
+
 
 def test_funcoes_copiadas_sem_mudanca():
     """Cada bloco entre as marcas COPIADO SEM MUDANCA é idêntico às linhas do original."""

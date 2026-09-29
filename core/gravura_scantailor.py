@@ -14,6 +14,9 @@ SE A DLL FALTAR OU FALHAR
     Nada levanta exceção: o resultado vem "indisponível" (mascara None), com o
     motivo em português (para a tela) e o detalhe técnico (para o erros.log).
     Quem chama decide o que fazer - por exemplo, cair no detector de hoje.
+    Página com DPI absurdo, minúscula ou gigante também volta "indisponível",
+    SEM chegar à DLL (ver TRAVA DE SEGURANÇA abaixo): ali o código do
+    ScanTailor corrompe a memória e derrubaria o programa.
 
 AINDA NÃO ESTÁ LIGADO AO PROGRAMA (28/09/2026)
     Nem o pipeline, nem os filtros, nem a tela chamam este módulo. Ligar (com o
@@ -64,6 +67,27 @@ _FORMAS = {"desligada": 0, "livre": 1, "retangular": 2}
 # Repetido aqui para este módulo não depender de camadas.py.
 DPI_DAS_CAMADAS = 150
 
+# TRAVA DE SEGURANÇA (Lista de bugs, 28/09/2026, achado pelo verificador).
+# Com DPI absurdo a página, reduzida a 300 DPI, vira um punhado de pontos, e o
+# código do ScanTailor (a redução/ampliação de escala) ESCREVE FORA DA MEMÓRIA:
+# o processo morre sem aviso (0xC0000374) ou o Python recebe "access violation".
+# Não dá para consertar sem mudar o código original, então a página é recusada
+# ANTES de chegar à DLL. Medido em 28/09, cada caso num processo filho com uma
+# cópia da DLL:
+#   - falhou com a página reduzida a 1x1 a 1200-2400 DPI (página de 3x4 pontos),
+#     e, com DPI de 27.000 a 740.000, com a página reduzida a até 10x14 pontos;
+#   - não falhou em nenhum dos 150 casos sorteados dentro destes limites (DPI de
+#     30 a 2400, menor lado a 300 DPI entre 16 e 45 pontos, página lisa,
+#     sintética e com ruído), nem nas páginas de verdade do gabarito.
+# Arriscado mudar: afrouxar DPI_MINIMO/DPI_MAXIMO ou LADO_MINIMO sem medir de
+# novo (em processo filho!). PONTOS_MAXIMOS não foi medido: é uma folga contra
+# faltar memória (uma página de 40 MP, o teto do pdf_io, a 30 DPI viraria
+# 4.000 MP a 300 DPI); 120 MP a 300 DPI é uma folha de ~ 90 x 110 cm.
+DPI_MINIMO = 30
+DPI_MAXIMO = 2400
+LADO_MINIMO = 16                # menor lado, em pontos, na página e na página a 300 DPI
+PONTOS_MAXIMOS = 120_000_000    # na página e na página a 300 DPI
+
 
 @dataclass(frozen=True)
 class ResultadoGravura:
@@ -100,7 +124,7 @@ class DetectorGravuraScanTailor:
     """
 
     def __init__(self, caminho: Path | None = None) -> None:
-        self.caminho = Path(caminho or CAMINHO_DLL)
+        self.caminho = Path(caminho or CAMINHO_DLL).resolve()   # o ctypes quer caminho completo
         self._dll = None
         self._tentou = False
         self._motivo: str | None = None
@@ -221,6 +245,10 @@ class DetectorGravuraScanTailor:
                 xform_c = (ctypes.c_double * 6)(*[float(v) for v in transformacao])
         except (TypeError, ValueError) as erro:
             return _indisponivel("A página não pôde ser passada ao detector de gravura.", str(erro))
+        recusa = motivo_de_recusa(largura, altura, saida_l, saida_a, dpi_x, dpi_y)
+        if recusa is not None:
+            return _indisponivel(recusa, f"página {largura}x{altura}, trabalho {saida_l}x{saida_a}, "
+                                         f"DPI {dpi_x}x{dpi_y}")
 
         mascara = np.empty((saida_a, saida_l), np.uint8)
         erro = ctypes.create_string_buffer(512)
@@ -278,6 +306,31 @@ def _preparar_imagem(img: np.ndarray, ordem: str) -> tuple[np.ndarray, int]:
     if img.shape[0] == 0 or img.shape[1] == 0:
         raise ValueError("página vazia")
     return np.ascontiguousarray(img), formato
+
+
+def tamanho_a_300_dpi(largura: int, altura: int, dpi_x: int, dpi_y: int) -> tuple[int, int]:
+    """O tamanho em que o detector trabalha: a conta de to300dpi() do ScanTailor."""
+    return (max(1, round(largura * 300.0 / dpi_x)), max(1, round(altura * 300.0 / dpi_y)))
+
+
+def motivo_de_recusa(largura: int, altura: int, trabalho_l: int, trabalho_a: int,
+                     dpi_x: int, dpi_y: int) -> str | None:
+    """Por que a página NÃO pode ir para a DLL (ver TRAVA DE SEGURANÇA no topo), ou None.
+
+    largura/altura: a página que entra; trabalho_l/trabalho_a: o retângulo de
+    trabalho (a própria página, sem geometria), no DPI dpi_x/dpi_y.
+    """
+    for dpi in (dpi_x, dpi_y):
+        if not DPI_MINIMO <= dpi <= DPI_MAXIMO:
+            return (f"O DPI da página ({dpi}) está fora da faixa que o detector de gravura "
+                    f"aceita ({DPI_MINIMO} a {DPI_MAXIMO}).")
+    reduzida = tamanho_a_300_dpi(trabalho_l, trabalho_a, dpi_x, dpi_y)
+    if min(largura, altura, trabalho_l, trabalho_a, *reduzida) < LADO_MINIMO:
+        return ("A página é pequena demais para o detector de gravura "
+                f"(menos de {LADO_MINIMO} pontos de lado).")
+    if max(largura * altura, trabalho_l * trabalho_a, reduzida[0] * reduzida[1]) > PONTOS_MAXIMOS:
+        return "A página é grande demais para o detector de gravura."
+    return None
 
 
 def _dpi_inteiro(dpi) -> tuple[int, int]:

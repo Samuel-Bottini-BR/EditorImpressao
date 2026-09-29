@@ -20,7 +20,7 @@ distribuído, vai com o código-fonte aberto.
 
 | Pasta | O que é | Mudou? |
 |---|---|---|
-| `src/` | 72 arquivos do ScanTailor (24 `.cpp`, 48 `.h`), nos mesmos caminhos do repositório: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*` | **Não.** Byte a byte iguais aos da v1.2.1 (conferido com `cmp` em 28/09) |
+| `src/` | 72 arquivos do ScanTailor (24 `.cpp`, 48 `.h`), nos mesmos caminhos do repositório: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*` | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
 | `referencia/OutputGenerator.cpp` | O arquivo do ScanTailor onde mora o detector. **Não é compilado**: serve para o teste conferir que as funções copiadas não mudaram | Não |
 | `ligacao/st_gravura.cpp` | A "cola": copia as funções do detector de `OutputGenerator.cpp` **letra por letra** (entre as marcas `COPIADO SEM MUDANCA (linhas X-Y)`) e troca só o que ligava o detector à janela do ScanTailor | Só a ligação (ver abaixo) |
 | `ligacao/st_gravura.h` | As funções em C que o Python chama por `ctypes` | Nosso |
@@ -68,6 +68,38 @@ confere, a cada rodada, que esses 7 blocos continuam idênticos ao original.
    detecção automática que às vezes decide o contrário; ver "Ressalvas").
 5. A função em C `st_gravura_detectar()`, que recebe os pontos da página do
    Python e devolve a máscara (255 = gravura).
+
+## Como conferir que nada mudou
+
+**Não use `cmp` direto na pasta do PC.** O git deste PC está com
+`core.autocrlf=true` (na configuração do próprio Git for Windows): ao tirar os
+arquivos do git, ele troca o fim de linha para o do Windows (CR+LF). O arquivo
+no GitHub tem só LF. Então um `cmp` contra o arquivo baixado do GitHub dá
+"diferente" nos 74 arquivos, mesmo sem nenhuma mudança. (Em 28/09 o `cmp` deu
+"igual" só porque a cópia de comparação também tinha sido tirada do git neste
+PC, com o mesmo CR+LF - não provava nada contra o original.)
+
+Dois jeitos certos (os dois feitos em 28/09/2026: **74 de 74 iguais**, os 72
+de `src/`, o `LICENSE` e a `referencia/OutputGenerator.cpp`):
+
+1. **Pela soma do git** (o que vai para o repositório já sem o CR). Com uma
+   cópia do repositório do ScanTailor na tag v1.2.1 em `<clone>`, no Git Bash,
+   dentro desta pasta:
+
+       for f in $(find src -type f); do
+         [ "$(git hash-object --path="$f" "$f")" = "$(git -C <clone> rev-parse "v1.2.1:$f")" ] || echo "MUDOU $f"
+       done
+
+   (`--path` faz o git aplicar a mesma troca de fim de linha que aplica ao
+   guardar; o `LICENSE` compara com `v1.2.1:LICENSE` e a
+   `referencia/OutputGenerator.cpp` com `v1.2.1:src/core/filters/output/OutputGenerator.cpp`.)
+2. **Tirando o CR** e comparando com o arquivo cru do GitHub:
+
+       curl -sL https://raw.githubusercontent.com/ScanTailor-Advanced/scantailor-advanced/5eaac1884cdcabb6514bd632114f688631bd8dbc/src/imageproc/Scale.cpp \
+         | cmp - <(tr -d '\r' < src/imageproc/Scale.cpp) && echo igual
+
+O teste `tests/test_gravura_scantailor.py` guarda a soma SHA-256 da
+`referencia/OutputGenerator.cpp` do GitHub (sem o CR) e confere a cada rodada.
 
 ## Como recompilar
 
