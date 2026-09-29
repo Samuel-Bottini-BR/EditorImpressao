@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 07/09/2026. Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 29/09/2026 (PARTE -8). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,198 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -7 — Checkpoint de 23-24/09/2026 (leia isto primeiro, é o mais novo)
+# PARTE -8 — Checkpoint de 25 a 29/09/2026 (leia isto primeiro, é o mais novo)
+
+**O que manda agora não é este arquivo.** Desde 24/09 o projeto segue
+`docs/plano/` (no git): `ESTADO-ATUAL.md` → `PLANO-DEFINITIVO.md` (fases, Lista
+de bugs, Lista de espera, Registro de mudanças) → `CLAUDE.md`. O plano tem uma
+segunda cópia em `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\`, onde o
+Samuel edita, às vezes por uma conversa do claude.ai que NÃO enxerga a cópia do
+repositório. **Toda sessão começa comparando as duas** (`diff`); a gerente aplica
+toda mudança nas duas, idênticas. Em 25/09 a conversa do claude.ai sobrescreveu a
+cópia do Samuel e apagou anotações; foi preciso juntar à mão. Esta PARTE só
+resume e aponta: o detalhe está no plano e nos relatórios.
+
+## 1. Modo de trabalho (decidido pelo Samuel)
+
+- Conversa **gerente** + agentes (`.claude/agents/`: implementador, verificador,
+  pesquisador, layout). Os agentes não aparecem como tipo próprio no Claude Code
+  sem reiniciar: a gerente chama `general-purpose` mandando ler o arquivo do papel.
+- **Desde 28/09: seguir sem esperar aprovação item a item.** Cada item termina
+  "PRONTO PARA CONFERIR" com relatório (antes/depois) e vira **commit separado no
+  ramo `fase-1`** (no GitHub). O `master` só recebe o que o Samuel aprovar; o
+  recusado é desfeito no ramo. Bug novo sem decisão do Samuel: a gerente decide
+  pela recomendação e registra no Registro de mudanças "a rever pelo Samuel".
+- Todo item passa por **verificador independente**, que confere olhando todas as
+  imagens e nunca escreve "aprovado". Os verificadores foram mais rigorosos que
+  os implementadores várias vezes (acharam perda sem aviso, contagens erradas):
+  **não pular essa etapa**.
+- **Limite de uso da conta:** com 3 ou mais agentes ao mesmo tempo, por horas, a
+  conta bateu o limite 3 vezes e todos pararam no meio. Retomar com SendMessage
+  (o agente continua do ponto). Preferir no máximo 2 agentes ao mesmo tempo.
+- **Teste de velocidade só vale com a máquina sem agentes.** Uma medição feita
+  com um agente rodando foi descartada em 29/09.
+
+## 2. Estado do git (29/09)
+
+- `master`: Fase 0 aprovada + 3 consertos aprovados (faixas do PDF, nome cortado,
+  markdown) + decisões no plano. Último commit no master: `44c86a4`.
+- **A pasta de trabalho está no ramo `fase-1`.** Tudo de 28–29/09 está lá, item
+  por item. **48 MB de imagens** entraram por engano no histórico do `fase-1`
+  (commit do parecer do 1.1, rodada `2352`); já saíram do git no commit seguinte,
+  mas continuam no histórico. Limpar antes de juntar ao master (squash ou
+  reescrever o ramo): **perguntar ao Samuel**.
+- **Não commitado:** `core/camadas.py` e `tests/test_camadas.py`, trabalho em
+  andamento do agente do 1.1 (aviso do Siebmacher 106); a sessão foi fechada
+  antes da entrega. Olhar o `git diff` antes de continuar. Os testes passavam
+  com esse trabalho (826).
+- `.gitignore`: `gabarito/*` (menos `LEIA-ME.md`, `lista.json`, `ocr-zonas.json`);
+  `relatorios/conferir/**` guarda só os `.md` (as imagens ficam no PC);
+  `.venv-ocr/`; `*.pdf` já era ignorado.
+
+## 3. O que existe e o que foi validado
+
+Tudo validado por teste automático + verificador olhando imagens. **Nada disso
+foi visto pelo Samuel no programa aberto** (os consertos estão "a conferir").
+
+- **Fase 0:** gabarito (`gabarito/`, 32 páginas, escolhas do Samuel de 25/09),
+  `conferencia.py` (antes/depois de qualquer item), `teste_velocidade.py`, pacote
+  do notebook do Kaique (`dist\TesteVelocidade-notebook-do-Kaique.zip`, somente
+  leitura, SHA-256 `65ef4db5…dd04`: **não apagar nem refazer**).
+- **Lista de bugs, consertados (ramo `fase-1`, a conferir):** corte de bordas não
+  come conteúdo (`core/recortar.py`, `core/pipeline.py`); faixa do Marial 7; clave
+  do Graduale 222; prévia igual ao PDF (corte calculado uma vez na resolução do
+  PDF); quadradinhos na gravura (`_so_o_papel_da_gravura` em `core/filtros.py`);
+  gravura pequena sem o Melhorar da folha inteira (desfaz os 8% do Preto e
+  branco); instalador leva os modelos e o modo entrega não apaga `dist\`;
+  `onnxruntime` no requirements. Relatórios com a "lista dos 10 minutos":
+  `relatorios/conferir/fase1-2026-09-28-1745`, `-1927-2`, `-2058`, `-2058-2`,
+  `-2058-3`, e `fase1-2026-09-29-0212`, `-0220`, `-0226`.
+- **1.1 tirar o fundo de PDF com camadas** (`core/camadas.py`, não ligado ao
+  programa): reconhece as 1256 páginas dos 5 livros com camadas, nenhuma por
+  engano nos outros. 2ª conferência (`relatorios/conferir/fase1-2026-09-29-0205`):
+  **NÃO ESTÁ PRONTO**, porque o Siebmacher 106 perde manuscrito claro sem aviso.
+  Placar contra o Mágico pro: 5 melhores, 2 piores, 7 empates. Função ~25% mais
+  lenta.
+- **1.2 detector de gravura do ScanTailor Advanced v1.2.1,** código original
+  (GPL-3) em `terceiros/scantailor-advanced/`, DLL `core/nativo/st_gravura.dll`
+  (163 KB, usa o Qt 6.11.1 do PySide6), `core/gravura_scantailor.py`; recompila
+  com `compilar_detector_gravura.py` (Qt e Boost baixados em
+  `D:\programas\EditorImpressao-arquivos\ferramentas\`). Régua contra as máscaras
+  do ScanTailor de 24/09: 6 de 7 iguais. Verificador: PRONTO como núcleo; não
+  ligado ao programa nem ao instalador.
+- **1.3 comparação de OCRs para achar texto**
+  (`relatorios/fase1-1.3-comparacao-ocr-2026-09-28/`): recomendação Kraken
+  (`blla`) + docTR `fast_base`; Tesseract fora. As zonas em
+  `gabarito/ocr-zonas.json` foram desenhadas pelo agente e **precisam ser
+  conferidas pelo Samuel**.
+- **Velocidade oficial (29/09, máquina limpa):** igual a 26/09 em tudo, menos o
+  Preto e branco, +8%. Já consertado; **falta rodar o teste oficial de novo**.
+
+## 4. Decisões fechadas (25–29/09) — detalhe no Registro de mudanças
+
+- As mudanças de 17–23/09 ficam no programa, "a aperfeiçoar" nas Fases 2, 3 e 4;
+  os comentários de 22/09 foram para o master; página nova começa em "Original".
+- Gabarito: Palatino 67 (não 76), Siebmacher 9, Marial 7 (não 862), Opus Majus
+  11 + 3/20/165/256, Escola 35 do PDF (impresso 37). O ESTADO-ATUAL ganhou uma
+  linha; a tabela original ficou.
+- O teste de velocidade abre o livro com Mágico pro; o `.bat` reabre na janela
+  clássica (conhost). A rodada no notebook do Kaique é a medição oficial e ficou
+  para outro dia (0.6 `[~]`).
+- Regras do resultado da Fase 1 (papel todo branco, inclusive dentro da gravura;
+  pintura e foto mantêm a cor; iluminura e moldura intactas; botão de manter ou
+  tirar a moldura) e páginas obrigatórias: seção 4 do plano.
+- Bugs do zoom → item 3.8. `.spec` velho → pasta `velhos/`. O Kraken entra na
+  comparação do 1.3 (OCR de manuscrito desde o começo).
+
+## 5. Tentado e descartado (detalhe em `relatorios/melhorias.md`, tentativas 20 a 23)
+
+- Não limpar o papel dentro da gravura: o papel ficava creme, contra a regra.
+- Separar papel de pintura pela cor: o pano do anjo parece mais papel que o papel
+  do retrato. O que funciona é a estrutura (top-hat, traço).
+- Limitar o Melhorar a uma área em volta da gravura: halo cinza. Ficou o filtro
+  da própria página na borda.
+- Corte calculado em imagem reduzida (1600 a 3200 px): parte peças. Ficou a 300 DPI.
+- 1.1: decidir por zona inteira; separar o meio-tom perdido do verso por fração,
+  raio ou densidade; separar o verso da tinta clara pelo escuro (0,32 a 0,45 nos dois).
+- `aqtinstall` não baixa mais o Qt (o servidor mudou): o script baixa direto.
+- Tesseract para achar texto: falha no título da Horas 11 e no Graduale.
+
+## 6. Descobertas de comportamento real
+
+- Os PDFs do Internet Archive (Palatino, Opus Majus, Rhetorica, Siebmacher,
+  Pesel) têm fundo + camada de cima com máscara JBIG2 de 1 bit. As páginas HQ
+  (primeiras e últimas) têm o fundo em resolução cheia. O IA soma à máscara uma
+  binarização da página inteira, então moldura, gravura e pontinhos de foto
+  sobem para a camada de cima. Por isso duas frases do `TESTE-SCANTAILOR-MISTO.md`
+  estão erradas (o Samuel ainda não autorizou corrigir).
+- O detector de gravura de hoje é **sensível ao enquadramento**: mudar o corte em
+  1 a 2% muda a classificação (Palatino 67, Rhetorica 18, Graduale 222, títulos
+  do Marial 146 e 153). Isso muda também o tempo, porque gravura dispara uma
+  etapa pesada.
+- O instalador de 01/09 **não tem os modelos** (confirmado no programa instalado
+  no PC do Samuel); o de 23/09, o do Kaique, quase certamente também não.
+- O Kraken 7.1.1 roda no Windows num Python 3.12 separado (`PYTHONUTF8=1`); no
+  Python 3.14 perde linhas sem aviso. O autor não dá suporte a Windows.
+- A DLL do ScanTailor corrompe a memória com DPI absurdo (página que vira 1×1 a
+  300 DPI). Há trava em `core/gravura_scantailor.py`.
+- As fotos do CamScanner em `gabarito/camscanner/` são capturas da tela do
+  celular (576×1280): servem para comparar cor, não detalhe.
+- No Windows 11 deste PC o `.bat` abre no Terminal novo; a janela clássica
+  (conhost) precisa ser forçada.
+
+## 7. Perguntas em aberto (as perguntas exatas já feitas ao Samuel)
+
+1. Conferir os consertos da Lista de bugs (relatórios na seção 3).
+2. **1.1:** "usar 'tirar o fundo' sempre em PDF com camadas, só como opção
+   (botão, livro por livro), ou esperar o 1.2 e o 1.5?" O verificador recomenda
+   o botão. E: "a foto do Opus Majus 20 sai mais clara que o original: pode?"
+   O botão precisa de um campo novo no projeto, o que muda o formato dos dados:
+   perguntar antes de fazer.
+3. **1.2:** "aceita em duas etapas: agora o detector, depois a ligação ao programa?"
+4. **1.3:** "quais OCRs ficam: (a) Kraken + docTR (recomendado), (b) docTR +
+   PP-OCRv6, (c) só docTR?"; "levar o OCR de manuscrito ao Kaique como motor à
+   parte (Python 3.12 + Kraken, cerca de 1,2 GB) no instalador?"; "transcrever
+   agora, ou manter na Fase 7 (recomendado)?"; e conferir `gabarito/ocr-zonas.json`.
+5. As duas frases propostas para o `TESTE-SCANTAILOR-MISTO.md` (enviadas no chat
+   de 28/09): aprovar ou não.
+6. Quando puder: instalar o instalador novo e testar a detecção na aba Marcar;
+   o atalho antigo (0.2); o teste no notebook do Kaique (0.6); limpar os 48 MB
+   do histórico do `fase-1` antes de juntar ao master.
+
+## 8. Próximo passo recomendado
+
+Ver o `git diff` de `core/camadas.py` (trabalho interrompido do 1.1), terminar o
+aviso do Siebmacher 106 (na dúvida, marcar "conferir"), mandar o verificador
+conferir, e rodar `teste_velocidade.py` com a máquina sem agentes para fechar a
+regra 6. Depois, conforme as respostas do Samuel, ligar o 1.1 e o 1.2 ao
+programa (com botão e no instalador) e começar o 1.4.
+
+## 9. Como rodar e testar (29/09)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q        # 826 passed em 29/09 (teste instável conhecido: test_marcacao_em_todas)
+.venv\Scripts\python.exe teste_velocidade.py       # ~12 min, máquina SEM agentes; referência: relatorios\velocidade\velocidade-SAMUEL-PC-2026-09-26-1305.md
+.venv\Scripts\python.exe conferencia.py fase1      # antes/depois do gabarito (ver gabarito\LEIA-ME.md)
+.venv\Scripts\python.exe compilar_detector_gravura.py   # recompila a DLL do ScanTailor (--baixar se faltar Qt/Boost)
+```
+
+## 10. Ambiente instalado nesta sessão
+
+- Tesseract 5.4 (UB Mannheim, winget), CMake 4.4, Visual Studio 2022 Build Tools
+  (MSVC 14.44), Ubuntu 26.04 no WSL (usuário root; Kraken 7.1.1 em
+  `/root/ocr-kraken/.venv`, Python 3.13). Nada pediu reinício.
+- `.venv-ocr\` (OnnxTR 0.9, RapidOCR 3.9.2, pytesseract), fora do git;
+  `modelos\tessdata\`; modelos do OnnxTR em `%USERPROFILE%\.cache\onnxtr`.
+- Qt 6.11.1 (só o qtbase) e Boost 1.78 em
+  `D:\programas\EditorImpressao-arquivos\ferramentas\`.
+- O ambiente do Kraken no Windows (Python 3.12) está só na pasta temporária da
+  sessão (`...\scratchpad\kraken312`): pode sumir.
+
+---
+
+# PARTE -7 — Checkpoint de 23-24/09/2026
 
 Sessão que começou testando os itens do checkpoint anterior (PARTE -6) e
 virou uma investigação de bug real, em duas rodadas. Resultado: **1 bug
