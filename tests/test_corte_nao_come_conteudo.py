@@ -25,7 +25,7 @@ import numpy as np
 
 from core.endireitar import rotacionar
 from core.pipeline import preparar_metade
-from core.recortar import detectar_bordas
+from core.recortar import Recorte, alargar_para_o_giro, detectar_bordas
 from modelos import ConfigFolha, ConfigPagina, Projeto
 
 _PALAVRAS = ("mente felizes inclinados ao bem isentos de enfermidades "
@@ -162,3 +162,58 @@ def test_recorte_manual_nao_e_alargado_pelo_giro():
     saida = preparar_metade(torta, ConfigFolha(indice=0), pagina, projeto)
 
     assert saida.shape[:2] == (640, 448)
+
+
+def test_a_folga_do_giro_nao_traz_o_fundo_escuro_do_scanner():
+    """Marial 7 (verificador, 28/09): a beirada da folha, em "L" no canto de
+    baixo a direita, fica dentro do corte; a folga do giro tentava protege-la e
+    levava o corte ate o fim da imagem, trazendo o fundo escuro do scanner (uma
+    faixa de 2 mm na borda direita inteira). Teste direto da folga do giro, com
+    a mesma geometria: o corte termina em x=535, o fundo escuro comeca em 538."""
+    img = np.full((800, 560, 3), 230, np.uint8)
+    img[:, 538:] = 40                                  # fundo escuro do scanner
+    pecas = np.array([[0.40, 0.60, 530 / 560, 0.94, 0.0]])   # o "L" da beirada
+    recorte = Recorte(0.1, 0.05, 535 / 560 - 0.1, 0.9, pecas=pecas)
+
+    for angulo in (1.2, -1.2):
+        alargado = alargar_para_o_giro(recorte, angulo, img)
+        assert (alargado.x + alargado.largura) * 560 <= 538, (
+            f"a folga do giro ({angulo} graus) levou o corte para o fundo escuro")
+
+
+def test_a_folga_do_giro_ainda_protege_o_que_esta_colado_na_beirada():
+    """Graduale 223 (28/09): o numero da folha fica a 2,7% do alto da imagem,
+    dentro da faixa de 3% colada na beirada. Se a folga do giro nao pudesse
+    entrar ali, o giro raspava os acentos do numero. O que barra a folga e o
+    fundo escuro do scanner (teste acima), nao a distancia ate a beirada."""
+    img = _pagina_de_texto(esquerda=40, direita=515, numero=False)
+    cv2.putText(img, "C viij", (42, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                (40, 40, 40), 2, cv2.LINE_AA)   # numero da folha, colado no alto, no canto que o giro empurra
+    torta = rotacionar(img, 1.2, fundo=238)
+    projeto = Projeto(caminho_entrada="x.pdf")
+    projeto.dividir_folhas = False
+
+    saida = preparar_metade(torta, ConfigFolha(indice=0), ConfigPagina(indice=0, folha=0),
+                            projeto)
+
+    tinta = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY) < _TINTA
+    assert int(tinta[:2].sum()) == 0, "o giro raspou o numero colado no alto"
+
+
+def test_o_corte_nao_parte_a_clave_grudada_na_pauta():
+    """Graduale 222 (verificador, 28/09): a clave encosta nas linhas da pauta,
+    e clave + pauta viram uma peca so, comprida (75% da largura) e fina (4% da
+    altura). O corte tratava essa peca como risco de margem e nao a respeitava:
+    a ponta de cima da clave saia cortada. Risco comprido so nao pode empurrar
+    a borda PERPENDICULAR a ele (o tracejado da beirada arrastando o pe); a
+    borda paralela, fora da faixa colada na beirada da imagem, ele empurra."""
+    img = _pagina_de_texto(numero=False)
+    img[:110] = 238                                   # espaco no alto para a pauta
+    for k in range(4):                                # pauta: 4 linhas de 75% da largura
+        y = 70 + k * 9
+        img[y:y + 2, 60:480] = 90
+    img[62:90, 62:67] = 40                            # clave: sobe 8 pontos acima da pauta
+
+    recorte = detectar_bordas(img)
+
+    assert _pecas_partidas(img, recorte) == [], "a borda do corte partiu a clave"

@@ -92,6 +92,17 @@ def info_paginas(doc: fitz.Document) -> list[InfoPagina]:
     return infos
 
 
+def tamanho_da_pagina_pt(doc: fitz.Document, indice: int) -> tuple[float, float]:
+    """(largura, altura) de uma página em pontos (1/72 pol), sem rasterizar.
+
+    Usado para desenhar a página numa altura fixa em pontos da imagem (a
+    imagem de referência do corte automático, core/pipeline.py).
+    """
+    with _TRANCA:
+        r = doc[indice].rect
+        return float(r.width), float(r.height)
+
+
 def dpi_real_da_pagina(doc: fitz.Document, indice: int) -> float:
     """Com quantos pontos por polegada a página foi ESCANEADA de verdade.
 

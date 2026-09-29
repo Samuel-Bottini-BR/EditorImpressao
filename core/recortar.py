@@ -95,6 +95,14 @@ PECA_FINA = 0.05
 # descer volta a partir letra.
 ESTICAR_NO_MAXIMO = 0.02
 
+# A folga do giro (alargar_para_o_giro) nunca traz fundo escuro do scanner:
+# cada lado que cresce para antes da primeira coluna (ou linha) nova cuja media
+# fique abaixo desta fracao do nivel do papel. No Marial 7 o papel fica em
+# ~215 e o fundo do scanner em 45 a 90; a transicao (a beirada da folha)
+# passa por ~130. Arriscado mudar: subir faz o giro parar em mancha escura de
+# papel velho; descer deixa entrar a faixa escura (bug do Marial 7, 28/09).
+ESCURO_DO_SCANNER = 0.6
+
 
 @dataclass(frozen=True)
 class Recorte:
@@ -272,10 +280,10 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     # encosta na beirada da imagem (borda de scanner, folha vizinha) nem e
     # peca. Ver _pecas_de_tinta e _nao_partir_pecas.
     pecas = _pecas_de_tinta(tinta)
-    respeitar = pecas[pecas[:, 4] == 0, :4]     # sem os riscos compridos e finos
+    respeitar, pode_x, pode_y = _quem_empurra(pecas, largura, altura)
     esticar_x, esticar_y = largura * ESTICAR_NO_MAXIMO, altura * ESTICAR_NO_MAXIMO
     x0, y0, x1, y1 = (int(v) for v in _nao_partir_pecas(respeitar, x0, y0, x1, y1,
-                                                         esticar_x, esticar_y))
+                                                         esticar_x, esticar_y, pode_x, pode_y))
 
     # folga
     folga_x = int(largura * FOLGA)
@@ -292,7 +300,7 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     # A folga e o limite afastam a borda, e ela pode ter caido em cima de
     # outra peca (um ponto, um acento logo depois do fim da linha).
     x0e, y0e, x1e, y1e = (int(v) for v in _nao_partir_pecas(respeitar, x0e, y0e, x1e, y1e,
-                                                             esticar_x, esticar_y))
+                                                             esticar_x, esticar_y, pode_x, pode_y))
 
     encostou = _sobrou_conteudo_fora(tinta, x0e, y0e, x1e, y1e)
 
@@ -322,10 +330,10 @@ def _pecas_de_tinta(tinta: np.ndarray) -> np.ndarray:
     tirar.
 
     `risco` = 1 para o risco comprido e fino: maior que PECA_GRANDE num lado e
-    mais fino que PECA_FINA no outro (ver PECA_GRANDE). O corte nao se estica
-    por ele (_nao_partir_pecas nao o recebe), mas, se ele esta dentro do
-    corte, o giro o respeita (um fio de tabela, a regua embaixo do titulo).
-    Peca grande e larga (moldura, pauta, gravura) nao e risco: e conteudo.
+    mais fino que PECA_FINA no outro (ver PECA_GRANDE). Quais bordas ele pode
+    empurrar: ver _quem_empurra. Se ele esta dentro do corte, o giro o
+    respeita (um fio de tabela, a regua embaixo do titulo). Peca grande e
+    larga (moldura, gravura) nao e risco: e conteudo.
 
     Arriscado mudar: aceitar peca que encosta na beirada faz o corte voltar a
     manter a folha inteira em qualquer pagina com borda de scanner.
@@ -343,7 +351,40 @@ def _pecas_de_tinta(tinta: np.ndarray) -> np.ndarray:
     return np.stack([x[fica], y[fica], (x + w)[fica], (y + h)[fica], risco[fica]], axis=1)
 
 
-def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y):
+def _quem_empurra(pecas: np.ndarray, largura: float, altura: float):
+    """Das pecas de _pecas_de_tinta, quais podem empurrar que borda do corte.
+
+    Devolve (caixas, pode_x, pode_y), prontos para _nao_partir_pecas.
+    `largura` e `altura` na mesma unidade das pecas (pontos da mascara em
+    detectar_bordas; 1.0 e 1.0 quando as pecas estao em fracao da pagina).
+
+    - Peca comum: empurra as quatro bordas.
+    - Risco comprido e fino (coluna `risco`): so empurra as bordas PARALELAS a
+      ele, e so se estiver fora da faixa de MOLDURA (3%) colada na beirada da
+      imagem. Um risco vertical (a beirada torta da folha vizinha, o tracejado
+      da Horas 26) nunca puxa o topo ou o pe - era ele que arrastava o pe da
+      Horas 14 -, e um risco colado na beirada e a propria beirada da folha.
+      Mas um risco horizontal no meio da pagina e conteudo: a pauta do
+      Graduale 222, com a clave grudada nela, virava uma peca so de 75% x 4%,
+      e a ponta da clave saia cortada (verificador, 28/09).
+
+    Arriscado mudar: deixar o risco empurrar a borda perpendicular traz de
+    volta o tracejado arrastando o corte; tirar o teste da faixa de 3% deixa a
+    beirada da folha segurar o corte.
+    """
+    a0, b0, a1, b1, risco = (pecas[:, i] for i in range(5))
+    risco = risco > 0
+    horizontal = (a1 - a0) > PECA_GRANDE * largura
+    fora_da_faixa_y = (b0 >= MOLDURA * altura) & (b1 <= (1.0 - MOLDURA) * altura)
+    fora_da_faixa_x = (a0 >= MOLDURA * largura) & (a1 <= (1.0 - MOLDURA) * largura)
+    pode_y = ~risco | (horizontal & fora_da_faixa_y)
+    pode_x = ~risco | (~horizontal & fora_da_faixa_x)
+    usar = pode_x | pode_y
+    return pecas[usar, :4], pode_x[usar], pode_y[usar]
+
+
+def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y,
+                      pode_x=None, pode_y=None):
     """Afasta cada borda da caixa ate o fim de toda peca que ela atravessa.
 
     `pecas` e a caixa (x0, y0, x1, y1) de cada peca, na MESMA unidade da caixa
@@ -362,6 +403,10 @@ def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y):
     a peca que precisaria de mais que isso e risco que entra pela margem, nao
     letra, e continua cortada.
 
+    `pode_x` e `pode_y` (listas de sim/nao, uma por peca; None = todas podem)
+    dizem que peca pode empurrar as bordas da esquerda e da direita (pode_x) e
+    as de cima e de baixo (pode_y). Ver _quem_empurra.
+
     Arriscado mudar: tirar o "esta na altura da caixa" faz uma peca do canto,
     fora da caixa, puxar a borda; tirar a repeticao deixa peca partida; tirar
     o limite deixa o risco tracejado arrastar a borda trecho por trecho.
@@ -369,6 +414,9 @@ def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y):
     if len(pecas) == 0:
         return x0, y0, x1, y1
     a0, b0, a1, b1 = pecas[:, 0], pecas[:, 1], pecas[:, 2], pecas[:, 3]
+    todas = np.ones(len(pecas), bool)
+    pode_x = todas if pode_x is None else pode_x
+    pode_y = todas if pode_y is None else pode_y
     # ate onde cada borda pode ir
     x0_max, y0_max = x0 - esticar_x, y0 - esticar_y
     x1_max, y1_max = x1 + esticar_x, y1 + esticar_y
@@ -377,10 +425,10 @@ def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y):
     for _ in range(len(pecas) + 1):
         na_altura = (b1 > y0) & (b0 < y1)
         na_largura = (a1 > x0) & (a0 < x1)
-        esquerda = na_altura & (a0 < x0) & (a1 > x0) & (a0 >= x0_max)
-        direita = na_altura & (a0 < x1) & (a1 > x1) & (a1 <= x1_max)
-        topo = na_largura & (b0 < y0) & (b1 > y0) & (b0 >= y0_max)
-        pe = na_largura & (b0 < y1) & (b1 > y1) & (b1 <= y1_max)
+        esquerda = pode_x & na_altura & (a0 < x0) & (a1 > x0) & (a0 >= x0_max)
+        direita = pode_x & na_altura & (a0 < x1) & (a1 > x1) & (a1 <= x1_max)
+        topo = pode_y & na_largura & (b0 < y0) & (b1 > y0) & (b0 >= y0_max)
+        pe = pode_y & na_largura & (b0 < y1) & (b1 > y1) & (b1 <= y1_max)
         if not (esquerda.any() or direita.any() or topo.any() or pe.any()):
             break
         if esquerda.any():
@@ -394,7 +442,7 @@ def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y):
     return x0, y0, x1, y1
 
 
-def alargar_para_o_giro(recorte: Recorte, angulo: float, forma: tuple) -> Recorte:
+def alargar_para_o_giro(recorte: Recorte, angulo: float, img: np.ndarray) -> Recorte:
     """Aumenta o corte automatico so onde o endireitar empurraria tinta para fora.
 
     O endireitar gira a pagina DEPOIS do corte, dentro do mesmo retangulo (ver
@@ -412,11 +460,21 @@ def alargar_para_o_giro(recorte: Recorte, angulo: float, forma: tuple) -> Recort
     Depois, o mesmo cuidado de detectar_bordas: a borda nova nao pode partir
     peca de tinta.
 
-    `forma` e o shape da imagem que vai ser cortada (altura, largura, ...).
+    `img` e a imagem que vai ser cortada (a pagina inteira, antes do corte).
     Devolve o recorte do mesmo jeito quando o angulo e zero ou quando ele nao
     tem pecas (folha inteira, pagina em branco). Nunca passa da beirada da
     imagem: se o conteudo ja encosta nela, o giro ainda pode levar uma
     lasquinha do canto (ressalva de 28/09).
+
+    Nunca traz fundo escuro do scanner (conserto de 28/09, noite; ver
+    _parar_no_escuro e ESCURO_DO_SCANNER). No Marial 7 a beirada da folha, em
+    "L" no canto de baixo a direita, estava dentro do corte; a folga do giro
+    tentou protege-la e levou o corte ate o fim da imagem, e entrou uma faixa
+    escura de 2 mm na borda direita inteira. Agora o giro volta a poder levar
+    uma lasquinha dessa beirada no canto, como antes do conserto. A distancia
+    ate a beirada NAO serve de regra: o numero da folha do Graduale 223 fica a
+    2,7% do alto e precisa da folga (testes em
+    tests/test_corte_nao_come_conteudo.py).
 
     A ordem do CLAUDE.md continua: cortar -> endireitar. So o tamanho do corte
     muda. Seguro mudar: os 2 pontos de arredondamento. Arriscado mudar: usar
@@ -426,7 +484,7 @@ def alargar_para_o_giro(recorte: Recorte, angulo: float, forma: tuple) -> Recort
     """
     if not angulo or recorte.pecas is None or len(recorte.pecas) == 0:
         return recorte
-    altura_px, largura_px = forma[0], forma[1]
+    altura_px, largura_px = img.shape[0], img.shape[1]
     x0, y0 = recorte.x, recorte.y
     x1, y1 = recorte.x + recorte.largura, recorte.y + recorte.altura
     pecas = recorte.pecas
@@ -453,17 +511,68 @@ def alargar_para_o_giro(recorte: Recorte, angulo: float, forma: tuple) -> Recort
 
     x0, y0 = X0 / largura_px, Y0 / altura_px
     x1, y1 = X1 / largura_px, Y1 / altura_px
-    respeitar = pecas[pecas[:, 4] == 0, :4]
+    respeitar, pode_x, pode_y = _quem_empurra(pecas, 1.0, 1.0)
     x0, y0, x1, y1 = _nao_partir_pecas(respeitar, x0, y0, x1, y1,
-                                       ESTICAR_NO_MAXIMO, ESTICAR_NO_MAXIMO)
+                                       ESTICAR_NO_MAXIMO, ESTICAR_NO_MAXIMO, pode_x, pode_y)
     x0, y0 = max(0.0, float(x0)), max(0.0, float(y0))
     x1, y1 = min(1.0, float(x1)), min(1.0, float(y1))
+    x0, y0, x1, y1 = _parar_no_escuro(img, recorte, x0, y0, x1, y1)
 
     return Recorte(
         x=x0, y=y0, largura=x1 - x0, altura=y1 - y0,
         encostou_no_conteudo=recorte.encostou_no_conteudo,
         pecas=recorte.pecas,
     )
+
+
+def _parar_no_escuro(img: np.ndarray, velho: Recorte, x0, y0, x1, y1):
+    """Recolhe cada lado que a folga do giro fez crescer ate antes do escuro.
+
+    Olha so a faixa nova (entre a borda de `velho` e a borda nova), coluna por
+    coluna (esquerda, direita) ou linha por linha (topo, pe), andando para
+    fora; para na primeira cuja media fique abaixo de ESCURO_DO_SCANNER vezes o
+    nivel do papel. O nivel do papel e o percentil 90 do cinza dentro do corte
+    velho (amostrado de 8 em 8 pontos: rapido, e o papel e a maioria clara).
+    Tudo em fracao da pagina, como o resto do arquivo.
+
+    Arriscado mudar: aplicar isto ao corte de detectar_bordas (e nao so a
+    folga do giro) mudaria o corte de todas as paginas.
+    """
+    altura, largura = img.shape[:2]
+    cinza_de = (lambda m: m) if img.ndim == 2 else (lambda m: cv2.cvtColor(m, cv2.COLOR_BGR2GRAY))
+    vx0, vy0 = int(velho.x * largura), int(velho.y * altura)
+    vx1 = int((velho.x + velho.largura) * largura)
+    vy1 = int((velho.y + velho.altura) * altura)
+    X0, Y0 = int(x0 * largura), int(y0 * altura)
+    X1, Y1 = int(np.ceil(x1 * largura)), int(np.ceil(y1 * altura))
+    if X0 >= vx0 and Y0 >= vy0 and X1 <= vx1 and Y1 <= vy1:
+        return x0, y0, x1, y1                    # nada cresceu
+    amostra = cinza_de(np.ascontiguousarray(img[vy0:vy1:8, vx0:vx1:8]))
+    if amostra.size == 0:
+        return x0, y0, x1, y1
+    limite = ESCURO_DO_SCANNER * float(np.percentile(amostra, 90))
+
+    def primeira_escura(medias):
+        escuras = np.flatnonzero(medias < limite)
+        return int(escuras[0]) if escuras.size else None
+
+    if X0 < vx0:          # esquerda: da borda velha para fora
+        k = primeira_escura(cinza_de(img[Y0:Y1, X0:vx0]).mean(axis=0)[::-1])
+        if k is not None:
+            x0 = (vx0 - k) / largura
+    if X1 > vx1:          # direita
+        k = primeira_escura(cinza_de(img[Y0:Y1, vx1:X1]).mean(axis=0))
+        if k is not None:
+            x1 = (vx1 + k) / largura
+    if Y0 < vy0:          # topo
+        k = primeira_escura(cinza_de(img[Y0:vy0, X0:X1]).mean(axis=1)[::-1])
+        if k is not None:
+            y0 = (vy0 - k) / altura
+    if Y1 > vy1:          # pe
+        k = primeira_escura(cinza_de(img[vy1:Y1, X0:X1]).mean(axis=1))
+        if k is not None:
+            y1 = (vy1 + k) / altura
+    return x0, y0, x1, y1
 
 
 def _apagar_bordas_solidas(tinta: np.ndarray) -> np.ndarray:

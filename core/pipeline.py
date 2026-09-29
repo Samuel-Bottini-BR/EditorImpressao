@@ -13,11 +13,15 @@ livros de 500 páginas a 400 DPI.
 
 from __future__ import annotations
 
+import os
 import shutil
 import tempfile
+import threading
+from collections import OrderedDict
 from collections.abc import Callable
 from pathlib import Path
 
+import cv2
 import numpy as np
 
 from core import analise
@@ -34,6 +38,7 @@ from core.pdf_io import (
     abrir_pdf,
     info_paginas,
     pagina_para_array,
+    tamanho_da_pagina_pt,
 )
 from core.recortar import Recorte, alargar_para_o_giro, aplicar_recorte, detectar_bordas, fatiar
 from modelos import (
@@ -213,37 +218,152 @@ def preparar_metade(
     o comeco das linhas sumindo na Escola 35. O recorte que a pessoa escolheu
     a mao (pagina.recorte) NAO e alargado: sai como ela escolheu.
 
+    Previa = PDF (conserto de 28/09/2026, noite): usa o corte e o angulo ja
+    GUARDADOS para esta pagina (ver _GEOMETRIAS), calculados na folha na
+    resolucao do PDF - por processar ou por renderizar_pagina. So quando nao
+    ha nada guardado calcula em `img_folha`, como antes. Nunca abre o PDF: os
+    cartoes e a tela ampliada chamam esta funcao no fio da tela.
+
     Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
     avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md.
     """
     inteira = preparar_para_recorte(img_folha, folha, pagina)
-    img = inteira
 
-    # 2. cortar bordas
-    automatico = None
-    if projeto.cortar_bordas:
-        recorte = pagina.recorte
-        if recorte is None:
-            # o recorte automatico e recalculado na metade ja separada: cada
-            # pagina tem sua propria sombra de lombada de um lado so
-            automatico = detectar_bordas(inteira)
-            recorte = automatico.tupla
-        img = aplicar_recorte(inteira, recorte)
+    geometria = _geometria_guardada(folha, pagina, projeto)
+    if geometria is None:
+        geometria = _geometria(inteira, pagina, projeto)
+    recorte, angulo = geometria
+
+    # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
+    img = inteira
+    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    if recorte is not None:
+        # fatiar (sem copiar) quando vai girar: o rotacionar ja devolve uma
+        # imagem nova. Sem giro, copia, como sempre.
+        img = fatiar(inteira, recorte) if girar else aplicar_recorte(inteira, recorte)
 
     # 3. endireitar
+    if girar:
+        img = rotacionar(img, angulo)
+
+    return img
+
+
+def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto):
+    """(recorte, angulo) da pagina, medidos em `base` (a pagina ja girada de
+    90 em 90 e dividida, antes de cortar).
+
+    recorte: (x, y, largura, altura) em fracao, ou None quando nao corta. O
+    manual (pagina.recorte) vale como esta; o automatico vem de
+    detectar_bordas e ganha a folga do giro (alargar_para_o_giro).
+    angulo: em graus; 0.0 quando nao endireita. O manual (pagina.angulo_manual)
+    vale como esta; o automatico e medido na pagina ja cortada.
+    """
+    recorte = None
+    automatico = None
+    if projeto.cortar_bordas:
+        if pagina.recorte is None:
+            # o recorte automatico e calculado na metade ja separada: cada
+            # pagina tem sua propria sombra de lombada de um lado so
+            automatico = detectar_bordas(base)
+            recorte = automatico.tupla
+        else:
+            recorte = tuple(pagina.recorte)
+
+    angulo = 0.0
     if projeto.endireitar:
         angulo = pagina.angulo_manual
         if angulo is None:
-            angulo = detectar_angulo(img).angulo
-        if angulo:
-            if automatico is not None and abs(angulo) >= ANGULO_MINIMO:
-                # mesma regra do rotacionar: abaixo de ANGULO_MINIMO nao gira.
-                # fatiar (sem copiar): o rotacionar ja devolve uma imagem nova.
-                alargado = alargar_para_o_giro(automatico, angulo, inteira.shape)
-                img = fatiar(inteira, alargado.tupla)
-            img = rotacionar(img, angulo)
+            cortada = base if recorte is None else fatiar(base, recorte)
+            angulo = detectar_angulo(cortada).angulo
+        angulo = float(angulo or 0.0)
+        if automatico is not None and abs(angulo) >= ANGULO_MINIMO:
+            # mesma regra do rotacionar: abaixo de ANGULO_MINIMO nao gira
+            recorte = alargar_para_o_giro(automatico, angulo, base).tupla
+    return recorte, angulo
 
-    return img
+
+# ---------------------------------------------------------------------------
+# Previa = PDF: o corte e o angulo automaticos sao calculados UMA vez por
+# pagina, na folha desenhada na resolucao do PDF (projeto.qualidade_dpi), e
+# guardados. Antes, a previa (110 DPI na "rapida", 180 na "media") e o PDF
+# (300 DPI) calculavam cada um na sua imagem, e a conta do corte tem limiares
+# (80% de coluna escura, 0,2% de tinta descartada, fechamento de 5 x 5
+# pontos) que caem de um lado numa imagem e do outro na outra: ate 8% de
+# diferenca no Palatino 5 - o Kaique via um corte na tela e recebia outro no
+# PDF (Lista de bugs, 28/09/2026).
+#
+# Por que a resolucao do PDF, e nao uma imagem menor e mais rapida: qualquer
+# outra imagem muda o corte de algumas paginas, e para pior (medido em 28/09
+# com 1600, 2000, 2400 e 3200 pontos de altura: a barra da moldura do
+# Palatino 66 saia cortada, a pauta do Graduale 222 tambem). O corte do PDF
+# e o que foi conferido; a previa passa a mostrar ele.
+#
+# Guardado so na memoria, nesta sessao do programa (nada muda no arquivo do
+# projeto). A chave leva o arquivo (caminho, data, tamanho) e tudo de que o
+# corte depende. Quem enche: processar (de graca, a imagem ja esta na
+# resolucao do PDF) e renderizar_pagina (a previa, num fio de fundo). Quem so
+# le: preparar_metade.
+# ---------------------------------------------------------------------------
+
+_GEOMETRIAS: "OrderedDict[tuple, tuple]" = OrderedDict()
+_TRANCA_GEOMETRIAS = threading.Lock()
+MAX_GEOMETRIAS = 4096
+
+
+def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
+    """Tudo de que o corte e o angulo dependem. None se o arquivo do projeto
+    nao existe (projeto de teste, arquivo movido) - ai nada e guardado."""
+    try:
+        caminho = os.path.abspath(projeto.caminho_entrada)
+        info = os.stat(caminho)
+    except (OSError, TypeError, ValueError):
+        return None
+    recorte = None if pagina.recorte is None else tuple(round(float(v), 6) for v in pagina.recorte)
+    dividir = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
+    return (
+        caminho, info.st_mtime_ns, info.st_size, int(projeto.qualidade_dpi),
+        folha.indice, int(folha.rotacao) % 360,
+        dividir, round(float(folha.posicao_corte), 6) if dividir else None,
+        pagina.metade if dividir else None, bool(projeto.cortar_bordas),
+        bool(projeto.endireitar), recorte, pagina.angulo_manual,
+    )
+
+
+def _geometria_guardada(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
+    """O (recorte, angulo) ja guardado para esta pagina, ou None."""
+    chave = _chave_da_geometria(folha, pagina, projeto)
+    if chave is None:
+        return None
+    with _TRANCA_GEOMETRIAS:
+        geometria = _GEOMETRIAS.get(chave)
+        if geometria is not None:
+            _GEOMETRIAS.move_to_end(chave)
+        return geometria
+
+
+def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+                       img_folha_do_pdf: np.ndarray) -> None:
+    """Calcula e guarda o (recorte, angulo) da pagina, a partir da folha JA
+    desenhada na resolucao do PDF (projeto.qualidade_dpi). Arriscado: passar
+    aqui uma imagem de outra resolucao guardaria um corte diferente do PDF."""
+    chave = _chave_da_geometria(folha, pagina, projeto)
+    if chave is None:
+        return
+    with _TRANCA_GEOMETRIAS:
+        if chave in _GEOMETRIAS:
+            return
+    geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina), pagina, projeto)
+    with _TRANCA_GEOMETRIAS:
+        _GEOMETRIAS[chave] = geometria
+        while len(_GEOMETRIAS) > MAX_GEOMETRIAS:
+            _GEOMETRIAS.popitem(last=False)
+
+
+def _precisa_de_geometria(pagina: ConfigPagina, projeto: Projeto) -> bool:
+    """Ha corte ou angulo automatico a calcular nesta pagina?"""
+    return ((projeto.cortar_bordas and pagina.recorte is None)
+            or (projeto.endireitar and pagina.angulo_manual is None))
 
 
 def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
@@ -296,7 +416,20 @@ def renderizar_pagina(
     Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
     """
     folha = projeto.folhas[pagina.folha]
-    img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
+    if (dpi != projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto)
+            and _geometria_guardada(folha, pagina, projeto) is None):
+        # Primeira vez desta pagina: desenha a folha UMA vez, na resolucao do
+        # PDF, calcula e guarda o corte (o mesmo que o PDF vai usar) e reduz
+        # essa mesma imagem para a previa, em vez de desenhar de novo. Da
+        # segunda vez em diante, desenha so na resolucao da previa.
+        grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+        _guardar_geometria(folha, pagina, projeto, grande)
+        img_folha = _reduzir_para_o_dpi(doc, folha.indice, grande, dpi)
+        del grande
+    else:
+        img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
+        if dpi == projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto):
+            _guardar_geometria(folha, pagina, projeto, img_folha)
     img = preparar_metade(img_folha, folha, pagina, projeto)
 
     if not projeto.limpar:
@@ -306,6 +439,23 @@ def renderizar_pagina(
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
     )
+
+
+def _reduzir_para_o_dpi(doc, indice: int, img: np.ndarray, dpi: int) -> np.ndarray:
+    """A folha desenhada em alta resolucao, reduzida ao tamanho que o MuPDF
+    daria em `dpi` (pontos da pagina x dpi / 72, arredondado para cima, com o
+    mesmo teto de pixels de pdf_io.dpi_seguro). Media de area (INTER_AREA)."""
+    from core.pdf_io import MAX_PIXELS
+
+    largura_pt, altura_pt = tamanho_da_pagina_pt(doc, indice)
+    area_pol = (largura_pt / 72.0) * (altura_pt / 72.0)
+    if area_pol > 0:
+        dpi = max(50, min(dpi, int((MAX_PIXELS / area_pol) ** 0.5)))
+    largura = max(1, int(np.ceil(largura_pt * dpi / 72.0 - 0.001)))
+    altura = max(1, int(np.ceil(altura_pt * dpi / 72.0 - 0.001)))
+    if (largura, altura) == (img.shape[1], img.shape[0]):
+        return img
+    return cv2.resize(img, (largura, altura), interpolation=cv2.INTER_AREA)
 
 
 def renderizar_pagina_para_recorte(
@@ -384,6 +534,10 @@ def processar(
                     img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
                     folha_atual = folha.indice
 
+                # o corte e calculado nesta mesma imagem (a do PDF) e guardado:
+                # a previa, se vier depois, mostra este (ver _GEOMETRIAS)
+                if _precisa_de_geometria(pagina, projeto):
+                    _guardar_geometria(folha, pagina, projeto, img_folha)
                 img = preparar_metade(img_folha, folha, pagina, projeto)
 
                 if projeto.limpar:
