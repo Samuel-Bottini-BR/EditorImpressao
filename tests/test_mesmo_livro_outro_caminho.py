@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import time
 import uuid
 from pathlib import Path
 
@@ -69,7 +70,21 @@ def pasta(monkeypatch):
     monkeypatch.delenv("APPDATA", raising=False)
     assert projetos.pasta_dos_projetos().is_relative_to(aqui)
     yield aqui
-    shutil.rmtree(aqui, ignore_errors=True)
+    # Limpeza do que o proprio teste criou. No Windows nao se apaga a pasta
+    # em que o programa "esta" (o teste do caminho relativo entra nela) nem
+    # arquivo que uma tarefa de fundo ainda fecha: sai dela e tenta de novo.
+    if Path.cwd().is_relative_to(aqui):
+        os.chdir(RAIZ_DO_PROJETO)
+    for _tentativa in range(10):
+        shutil.rmtree(aqui, ignore_errors=True)
+        if not aqui.exists():
+            break
+        QApplication.processEvents()
+        time.sleep(0.1)
+    try:
+        PASTA_DOS_TESTES.rmdir()             # so se ficou vazia
+    except OSError:
+        pass
 
 
 def _pdf(pasta: Path, folhas: int = 4) -> Path:
