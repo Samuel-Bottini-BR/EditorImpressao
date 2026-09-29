@@ -435,3 +435,13 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
    mesmo dia (caso do menu "Abrir", acima). Prosa de checkpoint é registro histórico, não
    prova — quando o estado importar de verdade, checar o código e o `git log`, não só
    confiar no texto.
+9. **Apagar arquivo ou pasta (regra do Samuel, 29/09/2026).** Vale para a conversa gerente e
+   para todos os agentes:
+   - **Fora da pasta do projeto** (`D:\programas\EditorImpressao`): **nada é apagado sem
+     perguntar ao Samuel antes**, nem pasta que pareça criada por engano. O agente não
+     pergunta direto: para, relata à gerente o caminho e o que há dentro, e a gerente
+     pergunta ao Samuel.
+   - **Dentro da pasta do projeto:** só se apaga o que o próprio agente criou naquela
+     tarefa. O que já existia não se apaga sem perguntar.
+   - Motivo: em 29/09 um agente apagou uma pasta inteira `D:\d` sem conferir o que havia
+     nela, achando que era só um download dele. Apagado por comando não vai para a Lixeira.
