@@ -1,0 +1,447 @@
+{
+  "regua": [
+    {
+      "nome": "escola_p007",
+      "dpi": 338,
+      "com_geometria": {
+        "iou": 0.999016306562216,
+        "iguais": 0.9996265905071252,
+        "so_nossa": 3694,
+        "so_dele": 4150,
+        "fracao_dele": 0.37942360407854187,
+        "fracao_nossa": 0.3794018964384665,
+        "segundos": 2.240739200002281
+      },
+      "invertida": null,
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 0.998575509827929,
+          "iguais": 0.9994591655725968,
+          "so_nossa": 5150,
+          "so_dele": 6211,
+          "fracao_dele": 0.37942360407854187,
+          "fracao_nossa": 0.3793730957317876,
+          "segundos": 1.2825635999906808
+        },
+        "150_dpi": {
+          "iou": 0.9967163255430921,
+          "iguais": 0.9987527151806715,
+          "so_nossa": 8836,
+          "so_dele": 17365,
+          "fracao_dele": 0.37942360407854187,
+          "fracao_nossa": 0.3790175855210802,
+          "segundos": 0.6103016000124626
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 952,
+        "correlacao_ecc": 0.9472,
+        "giro_graus": -0.1244,
+        "escala": 1.775148
+      }
+    },
+    {
+      "nome": "horas_p011",
+      "dpi": 168,
+      "com_geometria": {
+        "iou": 0.394821658304387,
+        "iguais": 0.5217731156360645,
+        "so_nossa": 37162996,
+        "so_dele": 7995896,
+        "fracao_dele": 0.39667334845228175,
+        "fracao_nossa": 0.7055492030443594,
+        "segundos": 9.398152500012657
+      },
+      "invertida": {
+        "iou": 0.8119348859967471,
+        "iguais": 0.9128473869829802,
+        "so_nossa": 6302614,
+        "so_dele": 1927194,
+        "fracao_dele": 0.39667334845228175,
+        "fracao_nossa": 0.44300848604564097
+      },
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 0.39508935217059676,
+          "iguais": 0.5216925373002824,
+          "so_nossa": 37208597,
+          "so_dele": 7957904,
+          "fracao_dele": 0.39667334845228175,
+          "fracao_nossa": 0.7064344422115346,
+          "segundos": 3.6653544000000693
+        },
+        "150_dpi": {
+          "iou": 0.395626398906016,
+          "iguais": 0.5230523615795718,
+          "so_nossa": 37062481,
+          "so_dele": 7975612,
+          "fracao_dele": 0.39667334845228175,
+          "fracao_nossa": 0.7046995670267308,
+          "segundos": 2.636491500015836
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 447,
+        "correlacao_ecc": 0.6329,
+        "giro_graus": 0.002,
+        "escala": 3.571428
+      }
+    },
+    {
+      "nome": "horas_p013",
+      "dpi": 168,
+      "com_geometria": {
+        "iou": 0.9862629076680081,
+        "iguais": 0.9994156263357956,
+        "so_nossa": 20128,
+        "so_dele": 7564,
+        "fracao_dele": 0.042115083205085696,
+        "fracao_nossa": 0.04238021648246052,
+        "segundos": 4.736479599989252
+      },
+      "invertida": null,
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 0.6617790360220946,
+          "iguais": 0.9785026165556613,
+          "so_nossa": 1016229,
+          "so_dele": 2478,
+          "fracao_dele": 0.042115083205085696,
+          "fracao_nossa": 0.06350788208060322,
+          "segundos": 2.6398397000157274
+        },
+        "150_dpi": {
+          "iou": 0.6578139903848854,
+          "iguais": 0.978144188609449,
+          "so_nossa": 1030965,
+          "so_dele": 4727,
+          "fracao_dele": 0.042115083205085696,
+          "fracao_nossa": 0.06377139045648506,
+          "segundos": 2.7951366000052076
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 711,
+        "correlacao_ecc": 0.8451,
+        "giro_graus": -0.6232,
+        "escala": 3.571429
+      }
+    },
+    {
+      "nome": "horas_p047",
+      "dpi": 168,
+      "com_geometria": {
+        "iou": 0.9981226467898998,
+        "iguais": 0.9983345137191291,
+        "so_nossa": 79741,
+        "so_dele": 51479,
+        "fracao_dele": 0.88613384305692,
+        "fracao_nossa": 0.8864925534156304,
+        "segundos": 10.279922699992312
+      },
+      "invertida": null,
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 0.9879924456124897,
+          "iguais": 0.9892339169262246,
+          "so_nossa": 825326,
+          "so_dele": 22910,
+          "fracao_dele": 0.88613384305692,
+          "fracao_nossa": 0.8963183640106717,
+          "segundos": 3.77859579998767
+        },
+        "150_dpi": {
+          "iou": 0.9880434425570329,
+          "iguais": 0.9892815385123077,
+          "so_nossa": 812824,
+          "so_dele": 31660,
+          "fracao_dele": 0.88613384305692,
+          "fracao_nossa": 0.8960486268178576,
+          "segundos": 3.4147777000034694
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 3512,
+        "correlacao_ecc": 0.9649,
+        "giro_graus": -0.499,
+        "escala": 3.571428
+      }
+    },
+    {
+      "nome": "palatino_p005",
+      "dpi": 400,
+      "com_geometria": {
+        "iou": 0.9951908789978056,
+        "iguais": 0.9975203163546655,
+        "so_nossa": 16172,
+        "so_dele": 7067,
+        "fracao_dele": 0.5138953622371891,
+        "fracao_nossa": 0.5148668979999488,
+        "segundos": 1.4685620999953244
+      },
+      "invertida": null,
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 0.9904255139639582,
+          "iguais": 0.9950352975321605,
+          "so_nossa": 43478,
+          "so_dele": 3050,
+          "fracao_dele": 0.5138953622371891,
+          "fracao_nossa": 0.51820917309022,
+          "segundos": 1.0611809999973048
+        },
+        "150_dpi": {
+          "iou": 0.9885453119920449,
+          "iguais": 0.9940558657071884,
+          "so_nossa": 47145,
+          "so_dele": 8562,
+          "fracao_dele": 0.5138953622371891,
+          "fracao_nossa": 0.5180123050526262,
+          "segundos": 0.4321594999928493
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 2373,
+        "correlacao_ecc": 0.9634,
+        "giro_graus": -0.3752,
+        "escala": 1.5
+      }
+    },
+    {
+      "nome": "palatino_p009",
+      "dpi": 400,
+      "com_geometria": {
+        "iou": 1.0,
+        "iguais": 1.0,
+        "so_nossa": 0,
+        "so_dele": 0,
+        "fracao_dele": 0.0,
+        "fracao_nossa": 0.0,
+        "segundos": 1.3788283000176307
+      },
+      "invertida": null,
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 1.0,
+          "iguais": 1.0,
+          "so_nossa": 0,
+          "so_dele": 0,
+          "fracao_dele": 0.0,
+          "fracao_nossa": 0.0,
+          "segundos": 0.9970949999988079
+        },
+        "150_dpi": {
+          "iou": 1.0,
+          "iguais": 1.0,
+          "so_nossa": 0,
+          "so_dele": 0,
+          "fracao_dele": 0.0,
+          "fracao_nossa": 0.0,
+          "segundos": 0.31240120000438765
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 1599,
+        "correlacao_ecc": 0.8586,
+        "giro_graus": 0.0021,
+        "escala": 1.5
+      }
+    },
+    {
+      "nome": "rhetorica_p018",
+      "dpi": 400,
+      "com_geometria": {
+        "iou": 1.0,
+        "iguais": 1.0,
+        "so_nossa": 0,
+        "so_dele": 0,
+        "fracao_dele": 0.0,
+        "fracao_nossa": 0.0,
+        "segundos": 1.8894660999940243
+      },
+      "invertida": null,
+      "como_programa": {
+        "dpi_da_pagina": {
+          "iou": 1.0,
+          "iguais": 1.0,
+          "so_nossa": 0,
+          "so_dele": 0,
+          "fracao_dele": 0.0,
+          "fracao_nossa": 0.0,
+          "segundos": 1.3524978999921586
+        },
+        "150_dpi": {
+          "iou": 1.0,
+          "iguais": 1.0,
+          "so_nossa": 0,
+          "so_dele": 0,
+          "fracao_dele": 0.0,
+          "fracao_nossa": 0.0,
+          "segundos": 0.5715064000105485
+        }
+      },
+      "alinhamento": {
+        "pontos_sift": 1750,
+        "correlacao_ecc": 0.9301,
+        "giro_graus": -0.0015,
+        "escala": 1.5
+      }
+    }
+  ],
+  "obrigatorias": [
+    {
+      "nome": "palatino_p005",
+      "dpi": 400,
+      "tamanho": [
+        2943,
+        1929
+      ],
+      "fracao": 0.38021968111238114,
+      "fracao_hoje": 1.0,
+      "tempos": {
+        "dpi_da_pagina": 0.9477077999908943,
+        "detector_de_hoje": 2.8653352999826893,
+        "150_dpi": 0.46471240001847036,
+        "300_dpi": 0.7214928999892436
+      },
+      "fracao_opcoes": {
+        "retangular": 0.5060340349480988,
+        "mais_sensivel": 0.5078931000571247
+      },
+      "iou_150_x_pagina": 0.9941432857746704,
+      "iou_300_x_pagina": 0.9971160968802674
+    },
+    {
+      "nome": "escola_p035",
+      "dpi": 200,
+      "tamanho": [
+        2098,
+        1517
+      ],
+      "fracao": 0.28535919257628667,
+      "fracao_hoje": 0.29087249494606093,
+      "tempos": {
+        "dpi_da_pagina": 1.0715361000038683,
+        "detector_de_hoje": 2.535410700016655,
+        "150_dpi": 0.7804055000015069,
+        "300_dpi": 1.3690537000074983
+      },
+      "fracao_opcoes": {
+        "retangular": 0.2970839541441043,
+        "mais_sensivel": 0.45089619834440686
+      },
+      "iou_150_x_pagina": 0.9977501265210025,
+      "iou_300_x_pagina": 0.9981146943779812
+    },
+    {
+      "nome": "horas_p011",
+      "dpi": 72,
+      "tamanho": [
+        1446,
+        1024
+      ],
+      "fracao": 0.6549182010719226,
+      "fracao_hoje": 0.5873071187759336,
+      "tempos": {
+        "dpi_da_pagina": 2.932532800012268,
+        "detector_de_hoje": 1.1877347999834456,
+        "150_dpi": 2.7463225000246894,
+        "300_dpi": 5.004390099988086
+      },
+      "fracao_opcoes": {
+        "retangular": 0.7439258622925311,
+        "mais_sensivel": 0.8404596732365145
+      },
+      "iou_150_x_pagina": 0.9929822795109478,
+      "iou_300_x_pagina": 0.9926465978567736
+    },
+    {
+      "nome": "horas_p013",
+      "dpi": 72,
+      "tamanho": [
+        1453,
+        1024
+      ],
+      "fracao": 0.04341905755333792,
+      "fracao_hoje": 0.032592857450103235,
+      "tempos": {
+        "dpi_da_pagina": 2.249435200006701,
+        "detector_de_hoje": 0.8645185999921523,
+        "150_dpi": 2.8811743000114802,
+        "300_dpi": 4.289567200001329
+      },
+      "fracao_opcoes": {
+        "retangular": 0.556602315252925,
+        "mais_sensivel": 0.9341294143582244
+      },
+      "iou_150_x_pagina": 0.6751195083086728,
+      "iou_300_x_pagina": 0.7004064801178204
+    },
+    {
+      "nome": "horas_p026",
+      "dpi": 72,
+      "tamanho": [
+        1533,
+        1024
+      ],
+      "fracao": 0.5250326157860404,
+      "fracao_hoje": 0.0,
+      "tempos": {
+        "dpi_da_pagina": 1.86187210000935,
+        "detector_de_hoje": 0.9034699000185356,
+        "150_dpi": 3.150498200004222,
+        "300_dpi": 4.804616599984001
+      },
+      "fracao_opcoes": {
+        "retangular": 0.9612814946183953,
+        "mais_sensivel": 0.5807858620759948
+      },
+      "iou_150_x_pagina": 0.9879550951002913,
+      "iou_300_x_pagina": 0.9921284543234759
+    },
+    {
+      "nome": "horas_p027",
+      "dpi": 72,
+      "tamanho": [
+        1471,
+        1024
+      ],
+      "fracao": 0.040902765975526854,
+      "fracao_hoje": 0.0,
+      "tempos": {
+        "dpi_da_pagina": 1.8813847999845166,
+        "detector_de_hoje": 0.8872209999826737,
+        "150_dpi": 2.7069024000084028,
+        "300_dpi": 4.462833800003864
+      },
+      "fracao_opcoes": {
+        "retangular": 0.9036495953008158,
+        "mais_sensivel": 0.9345669931169273
+      },
+      "iou_150_x_pagina": 0.6997826223930439,
+      "iou_300_x_pagina": 0.6932473279112524
+    },
+    {
+      "nome": "opusmajus_p020",
+      "dpi": 400,
+      "tamanho": [
+        3620,
+        2212
+      ],
+      "fracao": 0.25394320781673047,
+      "fracao_hoje": 0.49834054329473587,
+      "tempos": {
+        "dpi_da_pagina": 0.9393189999973401,
+        "detector_de_hoje": 1.9085414000146557,
+        "150_dpi": 0.38502399998833425,
+        "300_dpi": 0.8602066999883391
+      },
+      "fracao_opcoes": {
+        "retangular": 0.49173768395392287,
+        "mais_sensivel": 0.4898124743988091
+      },
+      "iou_150_x_pagina": 0.889139689580862,
+      "iou_300_x_pagina": 0.985157792978549
+    }
+  ]
+}

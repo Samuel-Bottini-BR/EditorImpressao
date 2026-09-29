@@ -1,0 +1,240 @@
+{
+  "escola_p007": {
+    "transformacao": [
+      1.7751438242317898,
+      -0.0038548080443322574,
+      0.00385479249086827,
+      1.7751437060831707,
+      1869.2803550889596,
+      2750.8380371225435
+    ],
+    "retangulo_conteudo": [
+      2040,
+      3234,
+      3841,
+      5469
+    ],
+    "retangulo_trabalho": [
+      2000,
+      3194,
+      3921,
+      5549
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7925,
+      11932
+    ],
+    "dpi_entrada": 338,
+    "alinhamento": {
+      "pontos_sift": 952,
+      "correlacao_ecc": 0.9472,
+      "giro_graus": -0.1244,
+      "escala": 1.775148
+    }
+  },
+  "horas_p011": {
+    "transformacao": [
+      3.5714284392728026,
+      0.00012175552141022675,
+      -0.00012176655240550061,
+      3.57142868025151,
+      -621.6419881192688,
+      -61.36916369963752
+    ],
+    "retangulo_conteudo": [
+      0,
+      0,
+      7914,
+      11932
+    ],
+    "retangulo_trabalho": [
+      0,
+      0,
+      7914,
+      11932
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7924,
+      11932
+    ],
+    "dpi_entrada": 168,
+    "alinhamento": {
+      "pontos_sift": 447,
+      "correlacao_ecc": 0.6329,
+      "giro_graus": 0.002,
+      "escala": 3.571428
+    }
+  },
+  "horas_p013": {
+    "transformacao": [
+      3.5712172609848247,
+      -0.038844798364619716,
+      0.0388448015568194,
+      3.5712173011317683,
+      246.3788433745765,
+      441.3042087848399
+    ],
+    "retangulo_conteudo": [
+      1145,
+      1762,
+      5636,
+      8408
+    ],
+    "retangulo_trabalho": [
+      1105,
+      1722,
+      5716,
+      8488
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7924,
+      11932
+    ],
+    "dpi_entrada": 168,
+    "alinhamento": {
+      "pontos_sift": 711,
+      "correlacao_ecc": 0.8451,
+      "giro_graus": -0.6232,
+      "escala": 3.571429
+    }
+  },
+  "horas_p047": {
+    "transformacao": [
+      3.5712930130610774,
+      -0.0311036844958879,
+      0.031103693143865692,
+      3.571293041800161,
+      -118.19140872152518,
+      37.186064013428684
+    ],
+    "retangulo_conteudo": [
+      581,
+      145,
+      6760,
+      11655
+    ],
+    "retangulo_trabalho": [
+      541,
+      105,
+      6840,
+      11735
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7924,
+      11932
+    ],
+    "dpi_entrada": 168,
+    "alinhamento": {
+      "pontos_sift": 3512,
+      "correlacao_ecc": 0.9649,
+      "giro_graus": -0.499,
+      "escala": 3.571428
+    }
+  },
+  "palatino_p005": {
+    "transformacao": [
+      1.4999679062921392,
+      -0.009821805153385836,
+      0.00982180891273521,
+      1.4999678719649354,
+      2579.480550993984,
+      3756.4281200807022
+    ],
+    "retangulo_conteudo": [
+      2812,
+      3927,
+      2297,
+      4080
+    ],
+    "retangulo_trabalho": [
+      2772,
+      3887,
+      2377,
+      4160
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7925,
+      11933
+    ],
+    "dpi_entrada": 400,
+    "alinhamento": {
+      "pontos_sift": 2373,
+      "correlacao_ecc": 0.9634,
+      "giro_graus": -0.3752,
+      "escala": 1.5
+    }
+  },
+  "palatino_p009": {
+    "transformacao": [
+      1.4999999932265857,
+      5.628115921641062e-05,
+      -5.628535230613184e-05,
+      1.5000000433883591,
+      2510.5600236625314,
+      3999.887074978781
+    ],
+    "retangulo_conteudo": [
+      2735,
+      4143,
+      2456,
+      3648
+    ],
+    "retangulo_trabalho": [
+      2695,
+      4103,
+      2536,
+      3728
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7925,
+      11933
+    ],
+    "dpi_entrada": 400,
+    "alinhamento": {
+      "pontos_sift": 1599,
+      "correlacao_ecc": 0.8586,
+      "giro_graus": 0.0021,
+      "escala": 1.5
+    }
+  },
+  "rhetorica_p018": {
+    "transformacao": [
+      1.4999999951980167,
+      -3.9522168945387254e-05,
+      3.9516705280808574e-05,
+      1.4999999963678896,
+      2066.4260927097316,
+      3526.0489530153236
+    ],
+    "retangulo_conteudo": [
+      2441,
+      3755,
+      3044,
+      4418
+    ],
+    "retangulo_trabalho": [
+      2401,
+      3715,
+      3124,
+      4498
+    ],
+    "dpi_saida": 600,
+    "tamanho_saida": [
+      7925,
+      11933
+    ],
+    "dpi_entrada": 400,
+    "alinhamento": {
+      "pontos_sift": 1750,
+      "correlacao_ecc": 0.9301,
+      "giro_graus": -0.0015,
+      "escala": 1.5
+    }
+  }
+}

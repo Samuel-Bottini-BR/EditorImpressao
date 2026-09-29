@@ -1,0 +1,10 @@
+st_gravura.dll - detector de gravura do ScanTailor Advanced (item 1.2 da Fase 1)
+
+Código:      https://github.com/ScanTailor-Advanced/scantailor-advanced
+Versão:      v1.2.1 (commit 5eaac1884cdcabb6514bd632114f688631bd8dbc)
+Fontes:      terceiros/scantailor-advanced/ (licença GPL-3, ver LEIA-ME.md lá)
+Qt:          6.11.1 (o do PySide6; a DLL usa as DLLs do Qt da pasta do PySide6)
+Compilador:  MSVC 19.44.35229.0
+Compilada:   28/09/2026 23:08 por compilar_detector_gravura.py
+Tamanho:     166912 bytes
+SHA-256:     833d03db094e4f8a6ff811491f30b603f78558e1ec7b452b2f08b0c2bee4193f
