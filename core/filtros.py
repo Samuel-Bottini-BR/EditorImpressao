@@ -1602,9 +1602,46 @@ def filtro_magico_pro(img: np.ndarray, intensidade: int = AJUSTE_PADRAO) -> np.n
 # para medir.
 AREA_MINIMA_DE_GRAVURA = 0.002
 
+# Ate que tamanho a gravura conta como "pequena" para _limpar_cada_gravura, em
+# fracao da folha: a caixa em volta de onde o peso dela passa de zero. Ver o
+# comentario "Gravura pequena" dentro da funcao.
+#
+# Historia (29/09/2026, regra 6 do plano): o Preto e branco ficou 8% mais lento
+# no teste de velocidade. O detector passou a marcar como gravura o titulo
+# corrido "de Maria." do Marial 153 (0,4% da folha), e qualquer gravura, por
+# menor que fosse, fazia rodar o Melhorar na FOLHA INTEIRA - quase 3 segundos a
+# 300 DPI - so para usar o resultado numa borda de uns 15 pontos em volta dela.
+#
+# Tentado primeiro (decisao da gerente): rodar esse Melhorar so numa area em
+# volta da gravura. Ficou rapido, mas numa area pequena a limpeza do papel nao
+# reconhece mais "pagina de texto" (75 letras no Marial 153, e ela pede 200) e o
+# papel da borda parava em 220 a 229 em vez de 255: um halo cinza em volta da
+# caixa, visivel, em 11 a 28 mil pontos por pagina. Descartado.
+#
+# Seguro mudar: o numero (mais alto poe mais paginas no caminho rapido e muda
+# mais bordas; medido nas 32 do gabarito, com 0,25 as 5 paginas em destaque do
+# Samuel ficam de fora, identicas).
+GRAVURA_PEQUENA_ATE = 0.25
+
+
+def _gravura_pequena_sem_pedacinhos(gravura: np.ndarray, onde_vale: np.ndarray) -> bool:
+    """True quando o caminho rapido de _limpar_cada_gravura vale: a caixa em
+    volta de onde o peso passa de zero cabe em GRAVURA_PEQUENA_ATE da folha, e
+    nenhum pedaco de gravura e menor que AREA_MINIMA_DE_GRAVURA (pedacinho nao
+    tem recorte proprio e depende do Melhorar da folha inteira)."""
+    x, y, largura, altura = cv2.boundingRect(onde_vale.astype(np.uint8))
+    if largura * altura == 0 or largura * altura > GRAVURA_PEQUENA_ATE * onde_vale.size:
+        return False
+    num, _, stats, _ = cv2.connectedComponentsWithStats(
+        (gravura > 0).astype(np.uint8), connectivity=8)
+    minimo = AREA_MINIMA_DE_GRAVURA * gravura.size
+    return bool(num > 1 and (stats[1:, cv2.CC_STAT_AREA] >= minimo).all())
+
 
 def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
-                         clareza: int = AJUSTE_PADRAO) -> np.ndarray:
+                         clareza: int = AJUSTE_PADRAO,
+                         onde_vale: np.ndarray | None = None,
+                         fundo: np.ndarray | None = None) -> np.ndarray:
     """Limpa cada gravura ancorada no papel DELA, e nao no da folha.
 
     Sem isso o papel dentro do desenho nao chega a branco: medido na xilogravura
@@ -1622,8 +1659,33 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
     bug dos quadradinhos de 28/09/2026 - ver _so_o_papel_da_gravura. Arriscado
     mudar: tirar isso traz os quadradinhos de volta nos tres filtros (Magico
     pro, Melhorar e a gravura do Preto e branco passam todos por aqui).
+
+    onde_vale e fundo (os dois juntos, ou nenhum): onde o resultado desta funcao
+    vai entrar na pagina (o peso da gravura maior que zero) e o resultado do
+    filtro da pagina sem a gravura (o "base" de aplicar_filtro_com_selecao).
+    Servem ao caminho rapido da gravura pequena, abaixo. Sem eles, a folha
+    inteira, como sempre.
     """
-    saida = filtro_melhorar(_tres_canais(img), clareza=clareza)
+    img3 = _tres_canais(img)
+
+    # Gravura pequena (29/09/2026, ver GRAVURA_PEQUENA_ATE): fora dos recortes o
+    # resultado desta funcao so entra na borda suave, misturado com o filtro da
+    # pagina pelo peso. Ali vai o PROPRIO filtro da pagina (fundo), e nao um
+    # Melhorar da folha inteira: a borda fica igual a pagina em volta, e a conta
+    # mais cara desta funcao some. No filtro Melhorar o resultado e identico
+    # ponto a ponto (o fundo ja e o Melhorar da folha). No Magico pro e no Preto
+    # e branco, muda so a letra que cai na borda suave: sai com o tratamento da
+    # pagina (no Preto e branco, preto e branco) em vez de meio a meio com o
+    # Melhorar.
+    # Arriscado mudar: o fundo tem de ser o filtro da pagina de verdade - fundo
+    # errado aparece como moldura em volta de toda gravura pequena; e so vale sem
+    # pedacinhos (ver _gravura_pequena_sem_pedacinhos): pedacinho de gravura
+    # usaria o fundo e sairia binarizado no Preto e branco.
+    if (onde_vale is not None and fundo is not None
+            and _gravura_pequena_sem_pedacinhos(gravura, onde_vale)):
+        saida = _tres_canais(fundo).copy()
+    else:
+        saida = filtro_melhorar(img3, clareza=clareza)
 
     num, _, stats, _ = cv2.connectedComponentsWithStats(
         (gravura > 0).astype(np.uint8), connectivity=8)
@@ -1635,7 +1697,7 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
         y = stats[i, cv2.CC_STAT_TOP]
         w = stats[i, cv2.CC_STAT_WIDTH]
         h = stats[i, cv2.CC_STAT_HEIGHT]
-        pedaco = _tres_canais(img)[y:y + h, x:x + w]
+        pedaco = img3[y:y + h, x:x + w]
         if pedaco.size:
             saida[y:y + h, x:x + w] = filtro_melhorar(pedaco, clareza=clareza,
                                                       dentro_da_gravura=True)
@@ -1812,7 +1874,8 @@ def aplicar_filtro_com_selecao(
                     saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
                 return saida, True
 
-            limpa = _limpar_cada_gravura(img, peso_gravura > 0.5, clareza)
+            limpa = _limpar_cada_gravura(img, peso_gravura > 0.5, clareza,
+                                         onde_vale=peso_gravura > 0, fundo=binaria)
             saida = _misturar(_tres_canais(binaria), limpa, peso_gravura)
             if peso_papel.any():
                 saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
@@ -1827,7 +1890,9 @@ def aplicar_filtro_com_selecao(
         # que numa xilogravura fecham a hachura e fabricam grao no papel de
         # dentro do desenho.
         if peso_gravura.any():
-            base = _misturar(base, _limpar_cada_gravura(img, peso_gravura > 0.5, clareza),
+            base = _misturar(base, _limpar_cada_gravura(img, peso_gravura > 0.5, clareza,
+                                                        onde_vale=peso_gravura > 0,
+                                                        fundo=base),
                              peso_gravura)
 
         # Na letra, so nitidez - E SO EM CIMA DO TRACO. Um bloco de texto e

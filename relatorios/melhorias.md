@@ -854,3 +854,33 @@ ficam abaixo de 20%). Tentado e descartado:
 3. **Dividir o papel canal a canal** para branquear dentro das zonas mantidas:
    puxa o cinza da foto para o azul (Opus Majus 20). Trocado pela conta em Lab
    (brilho multiplicado igual para todos os tons, cor do papel tirada).
+
+---
+
+## Tentativa 23 — gravura pequena não roda mais o Melhorar na folha inteira
+
+**Data:** 29/09/2026
+**Situação:** aguardando conferência (decisão da gerente pela regra 6)
+**Número atacado:** o Preto e branco do teste de velocidade, 8% mais lento
+(33,1 → 35,7 s). Causa medida: o detector passou a marcar o título corrido
+"de Maria." do Marial 153 como gravura, e qualquer gravura fazia
+`_limpar_cada_gravura` rodar o Melhorar na folha inteira (quase 3 s a 300 DPI)
+só para usar o resultado na borda suave em volta dela.
+
+1. **Melhorar só numa área em volta da gravura** (o pedido da gerente):
+   rápido, mas numa área pequena a limpeza do papel não reconhece mais
+   "página de texto" (75 letras no Marial 153; pede 200) e o papel da borda
+   parava em 220–229 em vez de 255 — um halo cinza em volta da caixa, visível,
+   de 11 a 28 mil pontos por página. Descartado.
+2. **Adotado:** com gravura pequena (caixa até 25% da folha) e sem pedacinhos
+   de gravura menores que 0,2%, a borda suave usa o próprio filtro da página
+   em vez do Melhorar da folha inteira (`GRAVURA_PEQUENA_ATE`,
+   `core/filtros.py`). Os recortes das gravuras continuam com o Melhorar
+   deles.
+
+**Resultado:** Melhorar idêntico ponto a ponto nas 32 páginas; Mágico pro e
+Preto e branco com 27 de 32 idênticas (as 5 em destaque do Samuel idênticas nos
+3 filtros); nas 5 que mudam, de 17 a 426 pontos na beirada da caixa, sem
+diferença a olho. Marial 146–155: 8 idênticas; 146 e 153 mudam 14 a 152 pontos
+na beirada. Etapa Processar em Preto e branco, antes e depois intercalados (PC
+com outros agentes): 52,3 → 46,6 s (−5,6 s).
