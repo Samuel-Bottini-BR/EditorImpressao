@@ -1086,3 +1086,84 @@ causa no código, que é o mesmo caminho). Página nova em Original num livro co
 camadas não paga o "tirar o fundo" na prévia (1,1-2,4 s por página); o cartão
 "Tirar o fundo" custa de 1,2 a 2,8 s por página em segundo plano, ao abrir a
 aba Filtro.
+
+---
+
+## Tentativa 27 — o motor do Kraken no Windows, sem WSL (item 1.3, etapa do motor, 29/09/2026)
+
+**Pedido (Samuel, 29/09):** "todos os OCRs instalados, com ligar/desligar e
+comparação automática entre eles [...] De fábrica, docTR fast_base + Kraken; o
+Kraken direto no Windows, sem WSL." Depois da pesquisa
+(`docs/pesquisa/fase1-1.3-kraken-windows.md`), escolheu o **motor à parte**:
+Python 3.12 embutível + Kraken original + PyTorch para processador, chamado
+como outro processo. Esta etapa é só o motor e a ponte até ele; **nada foi
+ligado ao programa** (pipeline, tela, empacotador e instalador ficam para a
+etapa de ligação, junto com o docTR e a comparação automática).
+
+**O que ficou:**
+
+- `montar_motor_kraken.py` (raiz): monta o motor, do zero, numa pasta fora do
+  git (padrão `D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`,
+  `--destino` para o empacotador). Baixa o Python 3.12.10 embutível oficial
+  (conferido pela soma que a python.org publica no `.spdx.json`), roda o pip
+  direto do `.whl` (conferido; não fica no motor) e instala as 73 versões de
+  `motor_kraken/requisitos-travados.txt` com `--require-hashes --no-deps
+  --only-binary`. Nunca apaga pasta: se o destino existir, para e diz.
+- `motor_kraken/servidor_kraken.py`: roda dentro do motor; abre o Kraken e o
+  modelo uma vez e atende pedidos (uma linha de JSON por pedido) até a entrada
+  fechar. Conta os "Polygonizer failed" do Kraken (linhas jogadas fora em
+  silêncio).
+- `core/ocr_kraken.py`: a ponte, no Python 3.14 do programa. `MotorKraken`
+  abre o motor na primeira página, manda cada página por um `.npy`
+  temporário (apagado em seguida), devolve `ResultadoKraken` (linhas, falhas,
+  `precisa_revisar`), e nunca levanta exceção.
+- `tests/test_ocr_kraken.py`: 24 testes com "motores de mentira" (morre ao
+  abrir, morre no meio, trava, responde lixo, outra versão, escreve 1,5 MB de
+  aviso, cancelar...) e os testes com o motor de verdade contra as linhas do
+  Kraken do WSL (4 páginas por padrão; as 22 com `KRAKEN_22=1`).
+
+**Resultado contra o Kraken do WSL (22 páginas do 1.3, duas rodadas):** as
+**mesmas linhas em todas**: mesma contagem (862 linhas) e área em comum de
+100,00% nas 22. O Opus Majus 256 dá as mesmas 233 linhas e o motor conta as 8
+perdidas ("Polygonizer failed"), então a página sai `precisa_revisar`.
+
+**Tempos (PC do Samuel, Ryzen 7 5800H; máquina DIVIDIDA com outro agente
+trabalhando ao mesmo tempo, servem para comparar, não como número final):**
+abrir o motor 4,6 a 5,1 s (importar 4,1-4,6 s + modelo 0,4 s) com o disco
+"quente"; 10,2 s na primeira vez logo depois de montar; e **65 s** na primeira
+vez depois de reescrever os 10.644 `.pyc` (o antivírus do Windows está ligado;
+causa provável, não provada: ele lê cada arquivo novo uma vez). É o que deve
+acontecer na primeira abertura depois de instalar: por isso a ponte espera até
+180 s para o motor abrir, e a tela vai precisar dizer "a primeira vez demora". Por página: mediana 9,1-9,4 s,
+de 4,9 s (Opus 20) a 19,8 s (Opus 256).
+
+**O que deu errado no caminho (não repetir):**
+
+1. **O coremltools 9.0 não tem pacote pronto para Windows** (só Mac e Linux).
+   `--only-binary=:all:` falhou. Solução: uma segunda rodada do pip, só com
+   ele, a partir do `.tar.gz` (conferido pela soma), sem isolamento de
+   montagem, usando o setuptools travado que a primeira rodada instalou. No
+   Windows ele é Python puro.
+2. **O `compileall` não trocou nenhum `.pyc`.** O pip já deixa os `.pyc` no
+   modo "confere a data", e o `compileall` sem `-f` os acha em dia. Sem o
+   modo "não confere" (unchecked-hash), o motor instalado em Arquivos de
+   Programas (sem permissão de escrita) poderia recompilar tudo a cada
+   arranque se as datas mudassem na instalação. Corrigido com `-f`; o motor
+   já montado foi recompilado no lugar.
+3. **O Kraken não tem `kraken.__version__`**: a versão vem de
+   `importlib.metadata`.
+4. **DLLs da Microsoft**: além das duas que a pesquisa achou
+   (`msvcp140.dll`, `vcruntime140_threads.dll`), a leitura das importações de
+   todas as DLLs do motor pediu `msvcp140_atomic_wait.dll` (PyTorch) e
+   `vcomp140.dll` (scikit-learn). O script as copia da pasta de
+   redistribuíveis do Visual Studio 2022 (14.44.35112), junto com
+   `vcruntime140.dll`/`vcruntime140_1.dll` da mesma versão (o zip do Python
+   traz as suas, mais velhas). Conferido pelo próprio motor: as 11 DLLs do
+   Visual C++ carregadas são todas de dentro da pasta dele.
+
+**Reprodutível:** montado duas vezes com o mesmo script (a segunda numa pasta
+de teste, apagada depois): os 34.550 arquivos batem; fora os `.pyc` e o
+LEIA-ME, só diferem os 23 atalhos `bin\*.exe` (que guardam o caminho de quem
+montou e não servem ao motor) e os `RECORD` que listam esses atalhos.
+
+**Tamanho:** 1.147 MB no disco (34.550 arquivos); 211 MB comprimido (7-Zip, tar + xz nível 9, sólido: o mais perto do `lzma2/max` sólido do Inno Setup que dá para medir sem gerar o instalador).
