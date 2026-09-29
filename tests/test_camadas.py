@@ -454,6 +454,49 @@ def test_tinta_clara_da_camada_de_cima_nao_vira_branco():
     assert float(img[m].mean()) < 200
 
 
+def fundo_com_escrita_fraca(fator: float = 0.90) -> np.ndarray:
+    """Siebmacher 106: sete linhas de escrita a mao tao clara (10% mais escura
+    que o papel) que nao passa no limite da escrita clara (12%)."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    tinta = tuple(int(v * fator) for v in PAPEL_RGB)
+    rng = np.random.default_rng(7)
+    for y in range(30, 130, 14):
+        x = 15
+        while x < 110:
+            comprimento = int(rng.integers(4, 10))
+            cv2.line(fundo, (x, y + int(rng.integers(-2, 3))), (x + comprimento, y), tinta, 1)
+            cv2.line(fundo, (x + 2, y - 5), (x + 2, y + 1), tinta, 1)
+            x += comprimento + int(rng.integers(3, 7))
+    return fundo
+
+
+def test_escrita_fraca_em_pagina_quase_vazia_pede_conferencia():
+    """Pagina com quase nada na camada de cima (uma data, um borrao) e escrita
+    muito clara so no fundo: o fundo sai, e a pagina vem marcada para
+    conferir (regra do Samuel: nenhuma perda sem aviso)."""
+    pouca = np.zeros((ALTURA_CIMA, LARGURA_CIMA), bool)
+    pouca[600:640, 150:260] = True                                # "1672"
+    doc = pdf_com_camadas(fundo=fundo_com_escrita_fraca(), mascara=pouca)
+    resultado = tirar_fundo(doc, 0, detector_de_figuras=sem_figuras)
+    assert resultado.conferir
+    assert "fraca" in resultado.explicacao
+
+
+def test_pagina_quase_vazia_e_limpa_nao_pede_conferencia():
+    pouca = np.zeros((ALTURA_CIMA, LARGURA_CIMA), bool)
+    pouca[600:640, 150:260] = True
+    doc = pdf_com_camadas(fundo=fundo_com_escrita_fraca(fator=1.0), mascara=pouca)
+    assert not tirar_fundo(doc, 0, detector_de_figuras=sem_figuras).conferir
+
+
+def test_escrita_fraca_atras_do_texto_impresso_nao_pede_conferencia():
+    """Pagina cheia de texto impresso: o traco fraco atras dele e verso ou
+    fantasma (Palatino 7 e 10), e o livro inteiro nao pode virar "conferir"."""
+    doc = pdf_com_camadas(fundo=fundo_com_escrita_fraca(), mascara=mascara_de_pagina_de_texto())
+    assert not tirar_fundo(doc, 0, detector_de_figuras=sem_figuras).conferir
+
+
 def test_verso_escuro_longe_da_tinta_nao_volta_do_fundo():
     """Palatino 48: o verso transparece forte (mais de 30% mais escuro que o
     papel) no espaco em branco da pagina. Tinta de verdade que falta encosta

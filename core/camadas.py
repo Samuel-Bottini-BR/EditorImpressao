@@ -276,6 +276,28 @@ METADE_NA_FAIXA = 0.5
 # Arriscado: a escrita clara de verdade e o verso ficam na MESMA faixa de
 # escuro; o que os separa aqui é a quantidade (e a nitidez), medida só nestes
 # cinco livros. Nota clara pequena numa página cheia de texto some sem aviso.
+# A ESCRITA FRACA (_escrita_fraca): mais clara ainda que TINTA_CLARA_COMECA
+# (Siebmacher 106: sete linhas de manuscrito a 5-10% do papel, que somem sem
+# aviso - verificador, 29/09). Não volta; só avisa. É achada pela FORMA:
+# traço fino (passa-banda: o traço contra o papel a 1,5 mm) em pedaços
+# alongados, juntos em blocos de escrita de pelo menos 1,5 cm², longe da tinta
+# de cima e do fundo de scanner. Só vale em página com POUCA tinta de cima:
+# numa página impressa, o traço fraco atrás do texto é verso e fantasma
+# (Palatino 7 e 10), e contar ali marcaria o livro inteiro. Medido em 29/09:
+# Siebmacher 106, 1,1% da página em blocos; 118, 1,7%; 124, 2,8%. Mas as
+# folhas em branco do Siebmacher com o bordado da outra face transparecendo
+# (as pares de 12 a 74) dão 1,2% a 6%: a mesma faixa. Tentado separar pela
+# direção do traço (a grade do bordado é de pé e deitada; a escrita, torta):
+# 0,94 a 0,95 contra 0,88 a 0,92 - folga pequena demais para confiar. Então
+# elas também saem "conferir". Nos cinco livros inteiros, esta regra marca:
+# Siebmacher 39 páginas, Rhetorica 7, Opus Majus 6, Pesel 4, Palatino 1.
+ESCRITA_FRACA_BANDA = 0.03          # traço: 3% mais escuro que o papel a 1,5 mm
+ESCRITA_FRACA_BLOCO_MM2 = 150       # bloco mínimo (1,5 cm²)
+ESCRITA_FRACA_DENSIDADE = 0.03      # traço dentro do bloco
+ESCRITA_FRACA_TINTA_NO_BLOCO = 0.10  # tinta de cima dentro do bloco, no máximo
+POUCA_TINTA_DE_CIMA = 0.05          # só em página com menos que isto de tinta de cima
+CONFERIR_ESCRITA_FRACA = 0.005      # blocos somando isto da página: conferir
+
 TINTA_CLARA_COMECA = 0.12
 LONGE_DA_TINTA_MM = 0.8
 NITIDEZ_MM = 1.0
@@ -793,17 +815,29 @@ def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None,
     """
     largura, altura = lidas.largura, lidas.altura
     saida = np.empty((altura, largura, 3), np.uint8)
+    # Linhas do fundo limpo que são todas brancas: na faixa que só usa essas
+    # linhas, o fundo limpo é branco e a conta é a de "branco embaixo" (o
+    # resultado é o mesmo, ponto por ponto; só não amplia nem multiplica).
+    if fundo_limpo is not None:
+        alt_limpo = fundo_limpo.shape[0]
+        linha_branca = np.all(fundo_limpo.reshape(alt_limpo, -1) == 255, axis=1)
     for y0 in range(0, altura, LINHAS_POR_FAIXA):
         y1 = min(altura, y0 + LINHAS_POR_FAIXA)
         cima, alfa = lidas.cima[y0:y1], lidas.alfa[y0:y1]
         transparente = cv2.merge([255 - alfa] * 3)
         # Primeiro, fora das zonas: conta inteira e exata (cima <= alfa depois
         # da multiplicação, e limpo <= 255, então não estoura).
-        if fundo_limpo is None:
-            limpo = None
+        limpo = None
+        if fundo_limpo is not None:
+            # as linhas do fundo limpo que _faixa usa para y0..y1 (bilinear:
+            # a linha de baixo e a de cima de cada ponto)
+            r0 = max(0, int(np.floor((y0 + 0.5) * alt_limpo / altura - 0.5)))
+            r1 = min(alt_limpo - 1, int(np.floor((y1 - 0.5) * alt_limpo / altura - 0.5)) + 1)
+            if not linha_branca[r0:r1 + 1].all():
+                limpo = _faixa(fundo_limpo, largura, altura, y0, y1)
+        if limpo is None:
             saida[y0:y1] = cv2.add(cima, transparente)
         else:
-            limpo = _faixa(fundo_limpo, largura, altura, y0, y1)
             saida[y0:y1] = cv2.add(cima, cv2.multiply(limpo, transparente, scale=1.0 / 255.0))
         if peso_figura is None:
             continue
@@ -969,6 +1003,14 @@ def _papel_de_cima_vira_branco(lidas: CamadasLidas, papel_local: np.ndarray) -> 
     largura, altura = lidas.largura, lidas.altura
     tom0, tom1 = PAPEL_EM_CIMA_TOM, 2 * PAPEL_EM_CIMA_TOM
     matiz0, matiz1 = PAPEL_EM_CIMA_MATIZ, 2 * PAPEL_EM_CIMA_MATIZ
+    # Filtro barato e EXATO (só tira quem de certeza fica igual): para o peso
+    # passar de 0, cada canal da cor de cima tem de ser pelo menos
+    # (1 - tom1) - matiz1 (76%) do papel local, e o papel local nunca é menor
+    # que o menor valor de papel_local. A folga de 2% cobre o arredondamento.
+    # Na página comum (tinta escura) quase nenhum pixel passa, e a conta cara
+    # (ampliar o papel local, dividir) nem acontece.
+    papel_minimo = np.maximum(papel_local.reshape(-1, 3).min(axis=0), 1.0)
+    limite = (0.98 * (1.0 - tom1 - matiz1) * papel_minimo).astype(np.float32)
     for y0 in range(0, altura, LINHAS_POR_FAIXA):
         y1 = min(altura, y0 + LINHAS_POR_FAIXA)
         # Só os pixels em que a camada de cima aparece (uns 10% da página): a
@@ -977,6 +1019,11 @@ def _papel_de_cima_vira_branco(lidas: CamadasLidas, papel_local: np.ndarray) -> 
         onde = np.nonzero(lidas.alfa[y0:y1])
         if onde[0].size == 0:
             continue
+        a8 = lidas.alfa[y0:y1][onde].astype(np.float32)[:, None]
+        claro = np.all(lidas.cima[y0:y1][onde].astype(np.float32) * 255.0 > a8 * limite, axis=1)
+        if not claro.any():
+            continue
+        onde = (onde[0][claro], onde[1][claro])
         a = lidas.alfa[y0:y1][onde].astype(np.float32)[:, None]
         cima = lidas.cima[y0:y1][onde].astype(np.float32)
         papel = _faixa(papel_local, largura, altura, y0, y1)[onde]
@@ -1045,6 +1092,7 @@ class _Fundo:
     so_no_fundo: np.ndarray    # tom de figura onde a camada de cima não cobre (zonas)
     volta: np.ndarray          # tinta do fundo que limpar_fundo traz de volta
     clara: np.ndarray          # tinta clara, nítida, só no fundo, que NÃO volta
+    fraca: float = 0.0         # blocos de escrita fraca (fração da página)
 
 
 def _cor_do_papel(cinza: np.ndarray, lab: np.ndarray, livre: np.ndarray,
@@ -1127,7 +1175,52 @@ def _medir_fundo(pequena: CamadasLidas, peso: np.ndarray) -> _Fundo:
     escuro, volta, _ = _tinta_do_fundo(fundo, pequena.alfa, papel, pequena.dpi)
     return _Fundo(papel, livre, livre & tom,
                   _sem_a_borda(tom & (pequena.alfa < ALFA_QUE_NAO_COBRE)),
-                  volta, _tinta_clara(escuro, pequena.alfa, pequena.dpi))
+                  volta, _tinta_clara(escuro, pequena.alfa, pequena.dpi),
+                  _escrita_fraca(escuro, pequena.alfa, pequena.dpi))
+
+
+def _escrita_fraca(escuro: np.ndarray, alfa: np.ndarray, dpi: float) -> float:
+    """Que fração da página está em blocos de escrita FRACA (ver
+    ESCRITA_FRACA_BANDA): traço fino e alongado, longe da tinta de cima e do
+    fundo de scanner, juntado em blocos de escrita. 0 = nenhum bloco."""
+    mm = dpi / 25.4
+    d = escuro.astype(np.float32) / 255.0
+    banda = cv2.GaussianBlur(d, (0, 0), 0.25 * mm) - cv2.GaussianBlur(d, (0, 0), 1.5 * mm)
+    lado = max(3, int(round(1.6 * mm)) | 1)
+    perto = cv2.dilate((alfa > 12).astype(np.uint8),
+                       cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+    escuro_forte = d >= TINTA_DO_FUNDO_COMECA
+    da_borda = escuro_forte & ~_sem_a_borda(escuro_forte)
+    lado = max(3, int(round(4 * mm)) | 1)
+    perto_da_borda = cv2.dilate(da_borda.astype(np.uint8),
+                                cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+    traco = (banda >= ESCRITA_FRACA_BANDA) & ~escuro_forte & ~perto & ~perto_da_borda
+    quantos, rotulos, caixas, _ = cv2.connectedComponentsWithStats(traco.astype(np.uint8),
+                                                                   connectivity=8)
+    if quantos <= 1:
+        return 0.0
+    alongado = np.zeros(quantos, bool)
+    maior_lado = np.maximum(caixas[:, 2], caixas[:, 3])
+    alongado[1:] = (caixas[1:, 4] >= 3) & (maior_lado[1:] >= 0.6 * mm)
+    traco = alongado[rotulos]
+    lado = max(3, int(round(3 * mm)) | 1)
+    bloco = cv2.dilate(traco.astype(np.uint8),
+                       cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
+    quantos, rotulos, caixas, _ = cv2.connectedComponentsWithStats(bloco, connectivity=8)
+    cima = alfa > 127
+    soma = 0.0
+    for k in range(1, quantos):
+        x, y, w, h, area = caixas[k]
+        if area < ESCRITA_FRACA_BLOCO_MM2 * mm * mm:
+            continue
+        janela = (slice(y, y + h), slice(x, x + w))
+        dentro = rotulos[janela] == k
+        if float(traco[janela][dentro].mean()) < ESCRITA_FRACA_DENSIDADE:
+            continue
+        if float(cima[janela][dentro].mean()) > ESCRITA_FRACA_TINTA_NO_BLOCO:
+            continue
+        soma += float(area) / traco.size
+    return soma
 
 
 def _tinta_clara(escuro: np.ndarray, alfa: np.ndarray, dpi: float) -> np.ndarray:
@@ -1363,6 +1456,8 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
                # e ela dividida pela tinta da camada de cima
                "tinta_clara_perdida": round(clara, 4),
                "tinta_clara_por_tinta_de_cima": round(razao_clara, 3),
+               "escrita_fraca": round(fundo.fraca, 4),
+               "tinta_de_cima": round(de_cima, 4),
                "tamanho_analise": [pequena.largura, pequena.altura]}
     if esquecida >= AREA_DE_FIGURA_ESQUECIDA:
         return PaginaSemFundo(
@@ -1398,12 +1493,17 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
     else:
         explicacao = "Fundo tirado: papel branco, letra e figuras da camada de cima."
     muito_do_fundo = perdida + trazida >= CONFERIR_TINTA_PERDIDA
-    conferir = muito_do_fundo or clara >= CONFERIR_TINTA_CLARA
+    escrita_fraca = (de_cima < POUCA_TINTA_DE_CIMA
+                     and fundo.fraca >= CONFERIR_ESCRITA_FRACA)
+    conferir = muito_do_fundo or clara >= CONFERIR_TINTA_CLARA or escrita_fraca
     if muito_do_fundo:
         explicacao += (" Confira: parte do traço desta página (moldura, gravura, "
                        "recheio da letra) só existia no fundo; ele foi trazido de "
                        "volta de lá, mais macio, e o meio-tom em volta pode ter "
                        "clareado.")
+    if escrita_fraca:
+        explicacao += (" Confira: esta página quase sem impressão tinha traço ou "
+                       "escrita fraca só no fundo, que pode ter sumido.")
     if clara >= CONFERIR_TINTA_CLARA:
         explicacao += (" Confira: esta página tinha escrita clara que só existia no "
                        "fundo e pode ter sumido.")
