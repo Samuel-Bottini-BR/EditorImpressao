@@ -836,3 +836,21 @@ Módulo novo `core/camadas.py` (ainda não ligado ao programa). Conferência:
 6. **Separar gravura de página inteira de texto com moldura grossa** por
    fração, densidade local e manchas compactas: os números se cruzam entre os
    dois tipos. Virou só o aviso "conferir"; fica para o detector do item 1.2.
+
+## Tentativa 22 — tirar o fundo sem perder a tinta que só existe na camada de baixo (item 1.1, 29/09/2026)
+
+Conserto das perdas achadas pelo verificador (Siebmacher 104 e 105, molduras e
+título do Palatino). Conferência: `relatorios/conferir/fase1-2026-09-29-0108`.
+Adotado: trazer de volta o traço do fundo que é pelo menos 30% mais escuro que
+o papel e fica perto da tinta de cima (o verso, o carimbo e a mancha d'água
+ficam abaixo de 20%). Tentado e descartado:
+
+1. **Separar o meio-tom perdido (pontilhado de gravura) do verso** por fração,
+   raio de 1 e 2 pixels e densidade local: os números se cruzam (2,0% no
+   Palatino 68 contra 2,7% no Palatino 10). Ficou só o aviso "conferir".
+2. **Separar o verso da tinta clara pelo escuro:** os dois dão de 0,32 a 0,45.
+   A escrita clara que só existe no fundo não volta; a página fica intacta
+   quando ela é muita (Siebmacher 103 a 105).
+3. **Dividir o papel canal a canal** para branquear dentro das zonas mantidas:
+   puxa o cinza da foto para o azul (Opus Majus 20). Trocado pela conta em Lab
+   (brilho multiplicado igual para todos os tons, cor do papel tirada).
