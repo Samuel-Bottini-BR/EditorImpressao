@@ -1361,3 +1361,44 @@ reabrir sem mudar nada e livro novo não fazem cópia.
 **Fica de fora:** o "começar de novo" do cartão da tela inicial continua
 apagando o trabalho sem cópia (é pedido pela pessoa, com pergunta de
 confirmação).
+
+---
+
+## Tentativa 32 — o livro que mudou de pasta (ou cópia em outra pasta) mantém o trabalho (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09, "GRAVE, antigo, mesma família: livro que mudou
+de pasta (ou cópia do mesmo PDF em outra pasta) perde o trabalho de vez".
+
+**O que acontecia:** o projeto era achado pela assinatura do arquivo
+(`achar_por_assinatura`, e a tela inicial "religa sozinha"), mas
+`combina_com` só olhava o caminho: o antigo (que não existe mais, ou é outro
+lugar) e o novo eram "livros diferentes", e a conferência recomeçava.
+
+**O que mudou:** `combina_com(salvo, recem, assinatura=...)`: além do mesmo
+arquivo (`mesmo_arquivo`), aceita o arquivo recém-aberto com a assinatura do
+projeto (`resumo.assinatura`). A contagem de folhas e páginas continua
+valendo. Assinatura vazia (projeto de antes da assinatura) não vale.
+`_analise_pronta` passa a assinatura; o caminho novo já era o gravado (no
+`projeto.json` pela Tentativa 28, no resumo pelo `abrir_livro`).
+
+**O risco do caso contrário (dois PDFs diferentes com a mesma assinatura):**
+a assinatura é o tamanho do arquivo mais 64 KB do começo, do meio e do fim
+(resumo blake2b de 128 bits). Dois PDFs diferentes só a dividem se tiverem o
+mesmo tamanho em bytes **e** forem iguais nesses três pedaços; o fim de um PDF
+tem a tabela de posições dos objetos, que muda quando qualquer coisa muda de
+tamanho. Arquivo de até 192 KB é lido inteiro. O risco existe só para um PDF
+editado "no lugar", sem mudar de tamanho, no miolo fora dos três pedaços
+(raro). E ele já existia: `achar_por_assinatura` já ligava o projeto ao
+arquivo pela assinatura; a comparação do caminho só o escondia quando o livro
+estava em outra pasta.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 8 (7 falhavam antes,
+4 deles com "Você mudou as opções..."): livro movido aberto pelo "Abrir",
+"continuar" depois de religar sozinho, livro apontado à mão ("procurar de
+novo"), cópia em outra pasta (em todos voltam páginas, filtros, corte,
+alertas, conferidas e Histórico, e o caminho novo fica gravado no resumo e no
+projeto); outro PDF com o mesmo nome e o mesmo número de páginas em outra pasta
+não recebe o trabalho (e o do primeiro fica intacto); `combina_com` direto
+(assinatura igual, diferente, vazia, e igual com outro número de páginas).

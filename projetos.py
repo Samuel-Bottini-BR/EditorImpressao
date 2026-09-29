@@ -437,7 +437,38 @@ def mesmo_arquivo(a: str | Path, b: str | Path) -> bool:
         return False
 
 
-def combina_com(salvo, recem_analisado) -> bool:
+def _mesmo_livro(salvo, recem_analisado, assinatura: str) -> bool:
+    """O trabalho salvo e deste livro? (Sem olhar a contagem de paginas.)
+
+    Duas formas de ser o mesmo livro:
+      1. o mesmo ARQUIVO (mesmo_arquivo): o caminho gravado e o de agora
+         apontam para o mesmo lugar, escritos como for;
+      2. a mesma ASSINATURA: o arquivo aberto agora tem a assinatura do
+         projeto (`assinatura`, a resumo.assinatura, gravada quando o
+         projeto nasceu). Cobre o livro que mudou de pasta e a copia do
+         mesmo PDF em outra pasta - o caminho gravado nao existe mais, ou
+         aponta para outro lugar. Bug grave de 29/09/2026: o projeto era
+         achado pela assinatura, mas aqui so se olhava o caminho, e o
+         trabalho ia embora.
+
+    Assinatura vazia (projeto antigo, de antes da assinatura) nao vale: sem
+    ela nao ha como saber se o outro arquivo e o mesmo livro.
+
+    O risco do caso contrario (dois PDFs diferentes com a mesma assinatura):
+    a assinatura le o tamanho e 64 KB do comeco, do meio e do fim
+    (assinatura_do_arquivo). Dois PDFs diferentes so a dividem se tiverem o
+    MESMO tamanho em bytes e forem iguais nesses tres pedacos - o fim de um
+    PDF tem a tabela de onde fica cada objeto, que muda quando qualquer
+    coisa muda de tamanho. E achar_por_assinatura ja liga o projeto ao
+    arquivo por ela mesma. Arriscado: aceitar assinatura vazia, ou trocar a
+    assinatura por algo mais fraco (so o nome, so o tamanho).
+    """
+    if mesmo_arquivo(salvo.caminho_entrada, recem_analisado.caminho_entrada):
+        return True
+    return bool(assinatura) and assinatura_do_arquivo(recem_analisado.caminho_entrada) == assinatura
+
+
+def combina_com(salvo, recem_analisado, assinatura: str = "") -> bool:
     """O trabalho salvo pode ser aplicado neste livro recem-aberto?
 
     So se for o MESMO livro e a mesma divisao. Se a pessoa trocou "dividir
@@ -447,13 +478,15 @@ def combina_com(salvo, recem_analisado) -> bool:
     "Mesmo livro" = mesmo ARQUIVO (mesmo_arquivo), e nao o mesmo texto de
     caminho: ate 29/09/2026 comparava o texto, e o mesmo PDF aberto com `/`
     depois de salvo com `\\` perdia o trabalho (bug grave da Lista de bugs).
-    Arriscado: voltar a comparar com `==`.
+    Ou a mesma assinatura do arquivo, quando `assinatura` (a do projeto,
+    resumo.assinatura) e dada: livro que mudou de pasta ou copia em outra
+    pasta (ver _mesmo_livro). Arriscado: voltar a comparar com `==`.
     """
     if salvo is None or recem_analisado is None:
         return False
     return (len(salvo.paginas) == len(recem_analisado.paginas)
             and len(salvo.folhas) == len(recem_analisado.folhas)
-            and mesmo_arquivo(salvo.caminho_entrada, recem_analisado.caminho_entrada))
+            and _mesmo_livro(salvo, recem_analisado, assinatura))
 
 
 def achar_por_assinatura(caminho_pdf: str) -> Resumo | None:

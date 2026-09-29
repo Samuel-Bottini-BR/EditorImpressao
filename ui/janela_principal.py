@@ -434,7 +434,10 @@ class JanelaPrincipal(QMainWindow):
         self.copia_do_trabalho = None
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
-            if projetos.combina_com(salvo, projeto):
+            # A assinatura do projeto entra na comparacao: livro que mudou de
+            # pasta, ou copia do mesmo PDF em outra pasta, e o mesmo livro
+            # (bug grave de 29/09; ver projetos._mesmo_livro).
+            if projetos.combina_com(salvo, projeto, assinatura=self.resumo.assinatura):
                 # Item 1.1: o salvo volta por cima, menos o tem_camadas, que e
                 # fato do PDF (a analise acabou de detectar; um projeto salvo
                 # antes de 29/09 nem tem o campo). O filtro "Tirar o fundo" de
@@ -446,7 +449,9 @@ class JanelaPrincipal(QMainWindow):
                 # 29/09, projetos.mesmo_arquivo). Fica o caminho que acabou
                 # de ser aberto - existe e funciona agora -, e nao a forma
                 # antiga gravada no projeto (as previas e o PDF final abrem
-                # por ele).
+                # por ele). Vale tambem para o livro que mudou de pasta e para
+                # a copia em outra pasta: o caminho novo passa a ser o gravado
+                # (aqui no projeto.json; no resumo, em abrir_livro).
                 salvo.caminho_entrada = projeto.caminho_entrada
                 projeto = salvo
             else:
