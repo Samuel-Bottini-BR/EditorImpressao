@@ -484,9 +484,45 @@ def combina_com(salvo, recem_analisado, assinatura: str = "") -> bool:
     """
     if salvo is None or recem_analisado is None:
         return False
-    return (len(salvo.paginas) == len(recem_analisado.paginas)
-            and len(salvo.folhas) == len(recem_analisado.folhas)
-            and _mesmo_livro(salvo, recem_analisado, assinatura))
+    return motivo_para_nao_combinar(salvo, recem_analisado, assinatura) == ""
+
+
+def _quantas(numero: int, singular: str, plural: str) -> str:
+    """"1 página", "3 páginas" - para as frases da tela."""
+    return f"{numero} {singular if numero == 1 else plural}"
+
+
+def motivo_para_nao_combinar(salvo, recem_analisado, assinatura: str = "") -> str:
+    """Por que o trabalho salvo NAO serve para este livro? "" se serve.
+
+    E a regra de combina_com (que so pergunta se o motivo e vazio) e, ao mesmo
+    tempo, o texto que a janela mostra quando a conferencia recomeca
+    (ui/janela_principal.py, _analise_pronta). Pedido da gerente em
+    29/09/2026: a mensagem dizia "Voce mudou as opcoes... outro numero de
+    paginas" para qualquer motivo, inclusive o livro que so mudou de pasta.
+
+    Os motivos, na ordem em que sao olhados (o primeiro que valer e o dito):
+      1. nao e o mesmo livro (_mesmo_livro: nem o mesmo arquivo, nem a mesma
+         assinatura);
+      2. o arquivo tem outro numero de folhas (o PDF mudou);
+      3. outro numero de paginas (mudou "Dividir folhas ao meio").
+
+    Frase em portugues comum, comecando em minuscula, sem ponto final (a
+    janela a encaixa no meio da mensagem). Seguro mudar: o texto. Arriscado:
+    a ordem ou as condicoes - elas decidem se o trabalho volta.
+    """
+    if not _mesmo_livro(salvo, recem_analisado, assinatura):
+        return "o arquivo aberto agora não é o mesmo livro do trabalho salvo"
+    antes, agora = len(salvo.folhas), len(recem_analisado.folhas)
+    if antes != agora:
+        return (f"o arquivo tinha {_quantas(antes, 'folha', 'folhas')} quando o "
+                f"trabalho foi salvo e agora tem {agora}: ele foi trocado ou mudou")
+    antes, agora = len(salvo.paginas), len(recem_analisado.paginas)
+    if antes != agora:
+        return (f"o trabalho salvo tinha {_quantas(antes, 'página', 'páginas')} e "
+                f"agora o livro tem {agora}. Isso acontece quando se muda a opção "
+                "“Dividir folhas ao meio”")
+    return ""
 
 
 def achar_por_assinatura(caminho_pdf: str) -> Resumo | None:

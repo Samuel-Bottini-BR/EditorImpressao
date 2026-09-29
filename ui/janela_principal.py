@@ -431,6 +431,7 @@ class JanelaPrincipal(QMainWindow):
         # pagina 40 de agora, e devolver o corte de uma na outra estragaria o
         # trabalho em silencio. Ver projetos.combina_com.
         paginas_perdidas = 0
+        motivo = ""
         self.copia_do_trabalho = None
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
@@ -466,6 +467,8 @@ class JanelaPrincipal(QMainWindow):
                 self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 if salvo is not None:
                     paginas_perdidas = len(salvo.paginas)
+                    motivo = projetos.motivo_para_nao_combinar(
+                        salvo, projeto, assinatura=self.resumo.assinatura)
 
         self.projeto = projeto
         # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
@@ -500,10 +503,28 @@ class JanelaPrincipal(QMainWindow):
                 f"{self.acoes.linhas_perdidas} ação(ões) do fim se perderam. "
                 "O resto do trabalho está aqui.")
         elif paginas_perdidas:
-            self.avisar(
-                "Você mudou as opções desde a última vez, e o livro ficou com "
-                "outro número de páginas. Comecei a conferência de novo - o "
-                "trabalho antigo não serve para páginas diferentes.")
+            self.avisar(self._frase_do_recomeco(motivo, self.copia_do_trabalho))
+
+    @staticmethod
+    def _frase_do_recomeco(motivo: str, copia) -> str:
+        """O aviso de quando a conferencia recomeca por cima de um trabalho salvo.
+
+        Pedido da gerente (29/09/2026): antes dizia "Voce mudou as opcoes desde
+        a ultima vez, e o livro ficou com outro numero de paginas..." para
+        qualquer motivo - inclusive o livro que so tinha mudado de pasta -, e
+        nao dizia que havia copia. Agora diz o motivo de verdade
+        (projetos.motivo_para_nao_combinar) e onde esta a copia do trabalho
+        anterior (projetos.guardar_copia_do_trabalho), ou que ela nao pode ser
+        feita. So o texto mudou: quando o aviso aparece continua igual.
+        """
+        frase = "Comecei a conferência deste livro de novo"
+        frase += f": {motivo}." if motivo else "."
+        if copia is not None:
+            frase += ("\n\nO trabalho anterior não foi apagado. Guardei uma cópia "
+                      f"dele, que pode ser recuperada:\n{copia}")
+        else:
+            frase += "\n\nNão consegui guardar uma cópia do trabalho anterior."
+        return frase
 
     # --- salvar sozinho ---------------------------------------------------
 

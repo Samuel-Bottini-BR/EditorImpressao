@@ -252,7 +252,7 @@ def _trabalhar_e_fechar(janela, caminho: str) -> None:
 
 def _conferir_que_o_trabalho_voltou(janela, caminho_aberto: str) -> None:
     paginas = janela.projeto.paginas
-    assert not any("mudou as opções" in a for a in janela.avisos), janela.avisos
+    assert not janela.avisos, janela.avisos      # nem "recomecei a conferência"
     assert paginas[1].filtro == MAGICO_PRO, "o filtro salvo se perdeu"
     assert paginas[1].intensidade_magico == 80
     assert paginas[2].filtro == PRETO_E_BRANCO

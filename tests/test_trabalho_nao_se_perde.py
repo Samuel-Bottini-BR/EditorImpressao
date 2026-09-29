@@ -18,7 +18,10 @@ O que se cobra aqui (teste de maquina):
       pasta, voltam com o trabalho (paginas, filtros, corte, alertas,
       conferidas, Historico), e o caminho novo passa a ser o gravado;
     - o caso contrario: outro PDF, mesmo nome e mesmo numero de paginas, em
-      outra pasta, NAO recebe o trabalho do primeiro.
+      outra pasta, NAO recebe o trabalho do primeiro;
+    - a mensagem do recomeco diz o motivo de verdade (outro livro, outro
+      numero de folhas, outro numero de paginas) e onde esta a copia do
+      trabalho anterior - ou que a copia nao pode ser feita.
 
 Pasta de dados propria em saida_teste\\ (LOCALAPPDATA trocado): nada e criado
 na pasta de dados real do Samuel. Os ajudantes e as fixtures vem de
@@ -286,12 +289,15 @@ def test_outro_pdf_com_o_mesmo_nome_em_outra_pasta_nao_recebe_o_trabalho(janela,
 # --- combina_com, direto ----------------------------------------------------------------
 
 
-def _projeto_de(caminho: str, paginas: int = 4):
+def _projeto_de(caminho: str, paginas: int = 4, folhas: int | None = None):
+    """Projeto de `folhas` folhas (o padrao: uma por pagina) e `paginas`
+    paginas (mais paginas que folhas = folhas divididas ao meio)."""
     from modelos import ConfigFolha, ConfigPagina, Projeto
 
+    folhas = paginas if folhas is None else folhas
     p = Projeto(caminho_entrada=caminho, nome="x")
-    p.folhas = [ConfigFolha(indice=i) for i in range(paginas)]
-    p.paginas = [ConfigPagina(indice=i, folha=i) for i in range(paginas)]
+    p.folhas = [ConfigFolha(indice=i) for i in range(folhas)]
+    p.paginas = [ConfigPagina(indice=i, folha=min(i, folhas - 1)) for i in range(paginas)]
     return p
 
 
@@ -317,3 +323,89 @@ def test_assinatura_igual_com_outro_numero_de_paginas_nao_combina(pasta):
     salvo = _projeto_de(str(pasta / "sumiu" / livro.name), paginas=4)
     agora = _projeto_de(str(livro), paginas=8)
     assert not projetos.combina_com(salvo, agora, assinatura=assinatura)
+
+
+# --- a mensagem do recomeco diz o motivo de verdade (commit 3 do conserto) ------------------
+#
+# Antes: "Voce mudou as opcoes desde a ultima vez, e o livro ficou com outro
+# numero de paginas..." para QUALQUER motivo (inclusive o livro que mudou de
+# pasta, sem opcao nenhuma mudada), e sem dizer que havia copia. Quando ela
+# aparece nao mudou: so o texto.
+
+
+def test_motivo_outro_numero_de_paginas(pasta):
+    livro = str(_pdf(pasta))
+    motivo = projetos.motivo_para_nao_combinar(_projeto_de(livro, 3, folhas=3),
+                                               _projeto_de(livro, 4, folhas=3))
+    assert "3 páginas" in motivo and "4" in motivo
+    assert "Dividir folhas ao meio" in motivo
+
+
+def test_motivo_outro_numero_de_folhas(pasta):
+    from modelos import ConfigFolha
+
+    livro = str(_pdf(pasta))
+    salvo, agora = _projeto_de(livro, 4), _projeto_de(livro, 4)
+    agora.folhas.append(ConfigFolha(indice=4))
+    motivo = projetos.motivo_para_nao_combinar(salvo, agora)
+    assert "4 folhas" in motivo and "5" in motivo
+
+
+def test_motivo_outro_livro(pasta):
+    livro = _pdf(pasta)
+    salvo = _projeto_de(str(pasta / "sumiu" / livro.name))
+    motivo = projetos.motivo_para_nao_combinar(salvo, _projeto_de(str(livro)),
+                                               assinatura="0" * 32)
+    assert "não é o mesmo livro" in motivo
+
+
+def test_sem_motivo_quando_combina(pasta):
+    livro = str(_pdf(pasta))
+    assert projetos.motivo_para_nao_combinar(_projeto_de(livro), _projeto_de(livro)) == ""
+
+
+def test_uma_pagina_no_singular(pasta):
+    livro = str(_pdf(pasta))
+    motivo = projetos.motivo_para_nao_combinar(_projeto_de(livro, 1, folhas=1),
+                                               _projeto_de(livro, 2, folhas=1))
+    assert "1 página " in motivo or motivo.endswith("1 página")
+
+
+def test_mensagem_do_recomeco_diz_o_motivo_e_onde_esta_a_copia(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    estado = _estado(janela)
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    dados["paginas"] = dados["paginas"][:3]
+    estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
+
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+
+    assert len(janela.avisos) == 1
+    aviso = janela.avisos[0]
+    assert "Você mudou as opções" not in aviso           # nao acusa quem nao mudou nada
+    assert "3 páginas" in aviso and "4" in aviso           # o motivo de verdade
+    assert "não foi apagado" in aviso
+    copia = _copias(estado.parent, "projeto")[0]
+    assert str(copia) in aviso, "nao disse onde esta a copia"
+    assert all(ord(c) < 0x2000 for c in aviso if c not in "“”")   # sem emoji
+
+
+def test_mensagem_sem_copia_nao_promete_copia(janela, pasta, monkeypatch):
+    """Se a copia falhou (disco cheio, sem permissao), a mensagem nao diz que
+    guardou: diz que nao conseguiu."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    estado = _estado(janela)
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    dados["paginas"] = dados["paginas"][:3]
+    estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setattr(projetos, "guardar_copia_do_trabalho", lambda *a, **k: None)
+
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+
+    assert len(janela.avisos) == 1
+    assert "não foi apagado" not in janela.avisos[0]
+    assert "Não consegui guardar uma cópia" in janela.avisos[0]

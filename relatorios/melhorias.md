@@ -1402,3 +1402,41 @@ alertas, conferidas e Histórico, e o caminho novo fica gravado no resumo e no
 projeto); outro PDF com o mesmo nome e o mesmo número de páginas em outra pasta
 não recebe o trabalho (e o do primeiro fica intacto); `combina_com` direto
 (assinatura igual, diferente, vazia, e igual com outro número de páginas).
+
+---
+
+## Tentativa 33 — a mensagem do recomeço diz o motivo de verdade e onde está a cópia (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** feito, a conferir (teste de máquina; o texto é para o Samuel ler)
+**Bug:** Lista de bugs, 29/09, "A mensagem 'Você mudou as opções...' diz 'outro
+número de páginas' para qualquer motivo".
+
+**Antes:** "Você mudou as opções desde a última vez, e o livro ficou com outro
+número de páginas. Comecei a conferência de novo - o trabalho antigo não serve
+para páginas diferentes." Para qualquer motivo, inclusive o livro que só tinha
+mudado de pasta, e sem dizer que havia cópia.
+
+**Agora** (exemplo, livro com a opção "Dividir folhas ao meio" mudada):
+
+> Comecei a conferência deste livro de novo: o trabalho salvo tinha 3 páginas
+> e agora o livro tem 4. Isso acontece quando se muda a opção “Dividir folhas
+> ao meio”.
+>
+> O trabalho anterior não foi apagado. Guardei uma cópia dele, que pode ser
+> recuperada:
+> C:\Users\...\EditorImpressao\projetos\<livro>\projeto.antigo-2026-09-29-1930.json
+
+Os outros motivos: "o arquivo aberto agora não é o mesmo livro do trabalho
+salvo" e "o arquivo tinha N folhas quando o trabalho foi salvo e agora tem M:
+ele foi trocado ou mudou". Se a cópia falhar: "Não consegui guardar uma cópia
+do trabalho anterior." O motivo vem de `projetos.motivo_para_nao_combinar`,
+que passou a ser também a regra do `combina_com` (um lugar só decide e
+explica). **Quando** a mensagem aparece não mudou.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 7 (falhavam antes): os
+três motivos, singular ("1 página"), sem motivo quando combina, a mensagem na
+janela de verdade (motivo, "não foi apagado", caminho da cópia, sem "Você
+mudou as opções") e sem cópia não promete cópia. Em
+`tests/test_mesmo_livro_outro_caminho.py`, a conferência "sem a mensagem"
+passou a exigir nenhum aviso (antes procurava o texto velho).
