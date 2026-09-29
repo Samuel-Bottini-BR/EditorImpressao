@@ -25,3 +25,9 @@ gabarito/*
 !gabarito/lista.json
 .venv-ocr/
 !gabarito/ocr-zonas.json
+
+# Paginas de conferencia (conferencia.py): as imagens sao pesadas e se refazem;
+# so o texto (.md, com a opiniao do verificador) vai para o git.
+relatorios/conferir/**
+!relatorios/conferir/**/
+!relatorios/conferir/**/*.md
