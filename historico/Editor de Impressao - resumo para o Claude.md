@@ -55,10 +55,13 @@ resume e aponta: o detalhe está no plano e nos relatórios.
   (commit do parecer do 1.1, rodada `2352`); já saíram do git no commit seguinte,
   mas continuam no histórico. Limpar antes de juntar ao master (squash ou
   reescrever o ramo): **perguntar ao Samuel**.
-- **Não commitado:** `core/camadas.py` e `tests/test_camadas.py`, trabalho em
-  andamento do agente do 1.1 (aviso do Siebmacher 106); a sessão foi fechada
-  antes da entrega. Olhar o `git diff` antes de continuar. Os testes passavam
-  com esse trabalho (826).
+- **Atualização pós-checkpoint (29/09):** o agente do 1.1 entregou depois do checkpoint e o trabalho foi
+  commitado no `fase-1`: aviso "conferir" para escrita fraca só no fundo (Siebmacher 106, 118 e 124
+  agora avisam; imagens idênticas). Efeito colateral: 39 folhas em branco do Siebmacher (bordado
+  transparecendo) também saem "conferir" — o Samuel decide se prefere deixá-las intactas. O tempo da
+  função não baixou (8,7 s contra 7,25 s em 28/09 nas mesmas 6 páginas). **Falta o verificador** desta
+  rodada (`relatorios/conferir/fase1-2026-09-29-0851`). O Palatino 12 não é perda: os pontinhos do verso
+  já vêm na camada de cima do Internet Archive (item 6.1).
 - `.gitignore`: `gabarito/*` (menos `LEIA-ME.md`, `lista.json`, `ocr-zonas.json`);
   `relatorios/conferir/**` guarda só os `.md` (as imagens ficam no PC);
   `.venv-ocr/`; `*.pdf` já era ignorado.
@@ -175,9 +178,7 @@ foi visto pelo Samuel no programa aberto** (os consertos estão "a conferir").
 
 ## 8. Próximo passo recomendado
 
-Ver o `git diff` de `core/camadas.py` (trabalho interrompido do 1.1), terminar o
-aviso do Siebmacher 106 (na dúvida, marcar "conferir"), mandar o verificador
-conferir, e rodar `teste_velocidade.py` com a máquina sem agentes para fechar a
+Mandar o verificador conferir o aviso novo do 1.1 (`relatorios/conferir/fase1-2026-09-29-0851`), e rodar `teste_velocidade.py` com a máquina sem agentes para fechar a
 regra 6. Depois, conforme as respostas do Samuel, ligar o 1.1 e o 1.2 ao
 programa (com botão e no instalador) e começar o 1.4.
 
