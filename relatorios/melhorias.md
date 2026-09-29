@@ -1228,3 +1228,29 @@ trocado), nada criado na pasta de dados real.
 **Velocidade:** `mesmo_arquivo` roda uma vez por abertura de livro;
 `normcase` na chave das memórias é uma troca de texto. Teste de velocidade não
 rodado (pedido da gerente).
+
+---
+
+## Tentativa 29 — "Para revisar" conta o alerta que chega pela prévia (item 1.1, bug pequeno, 29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09, "Item 1.1 (pequeno)" (achado pelo verificador;
+print `relatorios/conferir/fase1-2026-09-29-1826/verificador/t03-cinco-cartoes-alerta-mas-para-revisar-vazio.jpg`).
+
+**O que acontecia:** o alerta "Conferir o fundo tirado" só é conhecido quando
+a página é desenhada. Quando ele chegava com a prévia, a faixa laranja, a
+miniatura e o contador mudavam, mas o quadro "Para revisar" continuava "nada
+pendente" até virar a página: `ui/tela_conferir.py` (`_alertas_da_previa`)
+não chamava `_atualizar_paineis`.
+
+**O que mudou:** `_alertas_da_previa` chama `_atualizar_paineis` (o mesmo que
+`atualizar()` faz a cada mudança), só quando os alertas da página mudaram.
+
+**Teste:** `tests/test_tirar_fundo_no_programa.py`,
+`test_alerta_que_chega_pela_previa_entra_no_para_revisar` (falhava antes: o
+painel ficava vazio; passa depois).
+
+**Não coberto:** alerta de página VIZINHA que chega pela pré-carga (a página
+que não está na tela) só entra no "Para revisar" na próxima atualização da
+tela (qualquer clique ou virar a página), como antes.

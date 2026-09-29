@@ -837,6 +837,38 @@ def test_escolher_o_filtro_na_pagina_mostra_o_alerta(conferir):
     assert conferir.texto_faixa.text() != mensagem
 
 
+def test_alerta_que_chega_pela_previa_entra_no_para_revisar(app, tmp_path):
+    """Bug pequeno do item 1.1 (verificador, 29/09; print
+    t03-cinco-cartoes-alerta-mas-para-revisar-vazio.jpg): quando o alerta
+    "conferir o fundo tirado" chegava com a previa, a faixa e a miniatura o
+    mostravam, mas o quadro "Para revisar" ficava "nada pendente" ate virar a
+    pagina. A pagina ja nasce no filtro: na hora de abrir a decisao do
+    core/camadas.py ainda nao e conhecida, e o alerta so vem com a previa."""
+    from historico_acoes import HistoricoAcoes
+    from PySide6.QtWidgets import QPushButton
+    from ui.tarefas import GerenciadorPrevias
+    from ui.tela_conferir import TelaConferir
+
+    projeto = _projeto(_pdf_duvidoso(tmp_path, paginas=2), filtro=TIRAR_FUNDO, dividir=False)
+    tela = TelaConferir()
+    previas = GerenciadorPrevias(projeto.caminho_entrada, projeto, tela)
+    try:
+        tela.carregar(projeto, HistoricoAcoes(), previas)
+        painel = tela.paineis.para_revisar
+
+        def textos() -> list[str]:
+            return [b.text() for b in painel.findChildren(QPushButton)
+                    if b is not painel.cabecalho]
+
+        assert _esperar(lambda: projeto.paginas[0].precisa_revisao), "o alerta nao chegou"
+        titulo = analise.descrever(analise.CONFERIR_FUNDO_TIRADO).titulo
+        assert _esperar(lambda: any(titulo in t for t in textos()), segundos=5), (
+            f"'Para revisar' nao contou o alerta que chegou pela previa: {textos()}")
+        assert painel.cabecalho.text() != "Para revisar"      # com o numero
+    finally:
+        previas.parar()
+
+
 def test_todas_poe_o_livro_inteiro_no_filtro_e_desfazer_volta(conferir):
     projeto = conferir.projeto
     conferir._escolher_filtro(TIRAR_FUNDO)

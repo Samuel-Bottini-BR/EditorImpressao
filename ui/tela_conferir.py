@@ -1736,6 +1736,13 @@ class TelaConferir(QWidget):
         miniatura e o contador só apareceriam ao virar a página. Só redesenha
         se os alertas mudaram desde a última vez (a tira tem uma miniatura por
         página).
+
+        Os painéis da direita também (_atualizar_paineis): sem isso o "Para
+        revisar" ficava "nada pendente" até virar a página, com a faixa e a
+        miniatura já mostrando o alerta (bug do verificador, 29/09, print
+        t03-cinco-cartoes-alerta-mas-para-revisar-vazio.jpg). Seguro: é o
+        mesmo que atualizar() faz a cada mudança, e aqui só roda quando os
+        alertas da página mudaram.
         """
         item = self.item_atual
         estado = (self.indice_pagina, tuple(item.alertas), item.revisada)
@@ -1746,6 +1753,7 @@ class TelaConferir(QWidget):
         self.tira.marcar(self.indice_pagina, em_alerta=item.precisa_revisao,
                          apagada=getattr(item, "apagada", False))
         self._atualizar_contador()
+        self._atualizar_paineis()
 
     # ------------------------------------------------------------------
     # alteracoes (todas passam pelo historico)
