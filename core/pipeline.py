@@ -6,6 +6,15 @@ Ordem obrigatoria do processamento:
 
 As páginas apagadas somem logo depois da etapa 1.
 
+Item 1.1 (tirar o fundo de PDF com camadas, core/camadas.py): quando ligado
+(Projeto.tirar_fundo_ligado), a página que pede um filtro (não "Original")
+troca o filtro pelo "tirar o fundo". Ele trabalha na PÁGINA DO PDF (as camadas
+são da folha inteira), então roda ANTES da etapa 1, no lugar do desenho da
+folha, e as etapas 1 a 3 seguem por cima do resultado, com o corte e o ângulo
+medidos na folha como ela veio (os mesmos de sempre, guardados para a prévia =
+PDF). A etapa 4 (filtro) é pulada nessas páginas. Ver usa_tirar_fundo e
+_sem_fundo_da_folha.
+
 Sobre memória: nenhuma funcao daqui monta uma lista de páginas processadas. Ler
 -> processar -> escrever -> soltar. Foi o que travou a versão anterior com
 livros de 500 páginas a 400 DPI.
@@ -13,6 +22,7 @@ livros de 500 páginas a 400 DPI.
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 import tempfile
@@ -55,6 +65,8 @@ from modelos import (
 # segundos em vez de minutos.
 DPI_ANALISE = 150
 
+_log = logging.getLogger(__name__)
+
 Progresso = Callable[[int, int, str], None] | None
 Cancelado = Callable[[], bool] | None
 
@@ -88,6 +100,14 @@ def analisar_projeto(
     try:
         infos = info_paginas(doc)
         total = len(infos)
+
+        # Item 1.1: o PDF vem com camadas? Só a estrutura (lista de imagens e
+        # conteúdo de até 12 páginas), sem desenhar nada: milissegundos. Feito
+        # aqui também (além de ui/janela_principal.abrir_livro) para quem
+        # chega sem passar pela tela - a conferencia.py e o teste de velocidade.
+        from core.camadas import pdf_tem_camadas
+
+        projeto.tem_camadas = pdf_tem_camadas(doc)
         tamanhos = [(i.largura_pt, i.altura_pt) for i in infos]
         fora_do_padrao = analise.tamanhos_fora_do_padrao(tamanhos)
 
@@ -204,7 +224,8 @@ def preparar_para_recorte(
 
 
 def preparar_metade(
-    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+    geometria: tuple | None = None,
 ) -> np.ndarray:
     """Aplica giro, divisão, recorte e endireitamento - nesta ordem.
 
@@ -224,12 +245,18 @@ def preparar_metade(
     ha nada guardado calcula em `img_folha`, como antes. Nunca abre o PDF: os
     cartoes e a tela ampliada chamam esta funcao no fio da tela.
 
+    geometria: (recorte, angulo) ja pronto, que vale no lugar do guardado.
+    Item 1.1: a folha sem o fundo (core/camadas.py) e cortada e endireitada
+    com a geometria medida na folha COMO VEIO (_geometria_da_folha_como_veio),
+    nunca medida nela mesma. None (o padrao) = como sempre.
+
     Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
     avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md.
     """
     inteira = preparar_para_recorte(img_folha, folha, pagina)
 
-    geometria = _geometria_guardada(folha, pagina, projeto)
+    if geometria is None:
+        geometria = _geometria_guardada(folha, pagina, projeto)
     if geometria is None:
         geometria = _geometria(inteira, pagina, projeto)
     recorte, angulo = geometria
@@ -408,14 +435,174 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
     return selecao
 
 
+# ---------------------------------------------------------------------------
+# Item 1.1: tirar o fundo de PDF com camadas (core/camadas.py)
+#
+# Decisao do Samuel (29/09/2026): "automatico quando o programa detectar
+# camadas, com botao para desligar por livro; pagina duvidosa sai marcada
+# 'conferir'." Decisao da gerente (a rever pelo Samuel): com o botao ligado,
+# o "tirar o fundo" entra NO LUGAR do filtro (Preto e branco, Melhorar,
+# Magico pro); a pagina em "Original" ("nao mexe na pagina") fica como esta;
+# a pagina que core/camadas.py deixa intacta (foto que o detector nao viu,
+# manuscrito claro, capa) segue o filtro escolhido, como antes.
+#
+# Onde entra na ordem dividir -> cortar -> endireitar -> filtro: as camadas
+# sao da PAGINA DO PDF (a folha inteira, antes de dividir), entao o "tirar o
+# fundo" roda primeiro, na folha, no lugar do desenho dela; dividir, cortar e
+# endireitar seguem por cima do resultado; o filtro e pulado. O corte e o
+# angulo sao os da folha COMO VEIO (medidos no desenho normal, na resolucao
+# do PDF, e guardados em _GEOMETRIAS): os mesmos de antes, os mesmos com o
+# botao ligado ou desligado, e os mesmos na previa e no PDF.
+#
+# Os tres caminhos que desenham pagina final passam por aqui: processar (o
+# PDF), renderizar_pagina (a previa da tela de conferir, e por ela a
+# conferencia.py e o teste de velocidade).
+# ---------------------------------------------------------------------------
+
+
+def usa_tirar_fundo(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """Esta pagina tenta o "tirar o fundo" (item 1.1)?
+
+    Sim quando "Limpar a folha" esta marcada, o livro tem camadas e a caixinha
+    "Tirar o fundo sozinho" ficou marcada (Projeto.tirar_fundo_ligado), e a
+    pagina pede um filtro - Original nunca. Se a pagina vai mesmo sair sem o
+    fundo, quem diz e core/camadas.py (pode deixa-la intacta).
+    """
+    return bool(projeto.limpar and projeto.tirar_fundo_ligado and pagina.filtro != ORIGINAL)
+
+
+def _sem_fundo_da_folha(doc, folha: ConfigFolha, dpi: int):
+    """core.camadas.tirar_fundo da folha inteira, no DPI pedido.
+
+    Devolve o PaginaSemFundo (imagem None = seguir como antes, com o filtro).
+    Um erro aqui nunca derruba a previa nem o PDF: a folha segue com o filtro
+    escolhido, como se o PDF nao tivesse camadas, e o erro vai para o log.
+    A decisao (tirar, deixar intacta, conferir) e tomada sempre na mesma
+    resolucao (camadas.DPI_DA_ANALISE), qualquer que seja `dpi`: a previa e o
+    PDF decidem igual.
+    """
+    from core import camadas
+
+    chave = _chave_da_folha(doc, folha)
+    if chave is not None:
+        with _TRANCA_GEOMETRIAS:
+            if chave in _FOLHAS_SEM_TIRAR_FUNDO:
+                return camadas.PaginaSemFundo(
+                    None, camadas.DEIXADA_INTACTA,
+                    "Esta página fica como está (decidido antes, nesta sessão).")
+    try:
+        resultado = camadas.tirar_fundo(doc, folha.indice, dpi=dpi)
+        if resultado.imagem is None and chave is not None:
+            with _TRANCA_GEOMETRIAS:
+                _FOLHAS_SEM_TIRAR_FUNDO.add(chave)
+        return resultado
+    except Exception as erro:  # noqa: BLE001 - na duvida, segue como antes
+        _log.exception("tirar o fundo falhou na folha %s", folha.indice + 1)
+        return camadas.PaginaSemFundo(
+            None, camadas.DEIXADA_INTACTA,
+            "Não consegui tirar o fundo desta página; ela segue com o filtro.",
+            medidas={"erro": f"{type(erro).__name__}: {erro}"})
+
+
+# As folhas em que core/camadas.py ja disse "fica como esta" (intacta ou sem
+# camadas), nesta sessao do programa. A decisao nao depende do DPI (e tomada
+# sempre em camadas.DPI_DA_ANALISE), entao a segunda previa, a ampliada e o
+# PDF dessa folha nao pagam de novo o ~1,8 s de tirar o fundo para depois
+# jogar fora (medido em 29/09: Palatino 5, previa de 2,6-3,2 s para 4,6-4,8
+# s sem isto). So guarda o "nao"; a imagem sem o fundo nunca fica guardada
+# (uma pagina por vez na memoria). A chave leva o arquivo (caminho, data,
+# tamanho), como _GEOMETRIAS. Seguro mudar: pode ser esvaziado a qualquer
+# hora (so custa tempo).
+_FOLHAS_SEM_TIRAR_FUNDO: set[tuple] = set()
+
+
+def _chave_da_folha(doc, folha: ConfigFolha) -> tuple | None:
+    """(arquivo, data, tamanho, folha) do PDF aberto em `doc`; None se o
+    documento nao vem de um arquivo no disco."""
+    try:
+        caminho = os.path.abspath(doc.name)
+        info = os.stat(caminho)
+    except (OSError, TypeError, ValueError, AttributeError):
+        return None
+    return (caminho, info.st_mtime_ns, info.st_size, folha.indice)
+
+
+def _anotar_conferir(pagina: ConfigPagina, conferir: bool) -> None:
+    """Poe ou tira o alerta analise.CONFERIR_FUNDO_TIRADO da pagina.
+
+    Posto quando o fundo saiu mas core/camadas.py ficou em duvida (escrita
+    fraca, traco trazido do fundo); tirado quando a pagina deixa de usar o
+    "tirar o fundo" (voltou a Original, botao desligado) ou saiu sem duvida.
+    Mesmo mecanismo do DESENHO_OU_ESCRITA em garantir_selecao: a tela mostra
+    pagina.alertas. Nao mexe em `revisada`: o que a pessoa ja conferiu fica.
+    """
+    tem = analise.CONFERIR_FUNDO_TIRADO in pagina.alertas
+    if conferir and not tem:
+        pagina.alertas.append(analise.CONFERIR_FUNDO_TIRADO)
+    elif not conferir and tem:
+        pagina.alertas = [a for a in pagina.alertas if a != analise.CONFERIR_FUNDO_TIRADO]
+
+
+def tirar_alertas_do_fundo_se_desligado(projeto: Projeto) -> None:
+    """Botao desligado (ou "Limpar a folha" desmarcada): nenhuma pagina fica
+    com o alerta "conferir o fundo tirado" de uma vez anterior. Chamado pela
+    tela ao abrir a conferencia; as paginas com o botao ligado sao acertadas
+    uma a uma por _anotar_conferir, quando desenhadas."""
+    if projeto.limpar and projeto.tirar_fundo_ligado:
+        return
+    for pagina in projeto.paginas:
+        _anotar_conferir(pagina, False)
+
+
+def _geometria_da_folha_como_veio(doc, folha: ConfigFolha, pagina: ConfigPagina,
+                                  projeto: Projeto, img_folha_do_pdf: np.ndarray | None):
+    """O (recorte, angulo) da pagina medido na folha COMO VEIO (sem tirar o
+    fundo), na resolucao do PDF - o mesmo que o caminho sem o 1.1 usa.
+
+    Usa o guardado; se falta, desenha a folha na resolucao do PDF (ou usa
+    img_folha_do_pdf, se quem chamou ja a tem), calcula e guarda. Arriscado:
+    medir o corte na folha SEM o fundo mudaria o corte das paginas (o papel
+    branco e a borda do scanner sumida confundem detectar_bordas) e faria a
+    previa e o PDF dependerem do botao.
+    """
+    if not _precisa_de_geometria(pagina, projeto):
+        return None          # preparar_metade calcula sozinho (manual ou desligado)
+    geometria = _geometria_guardada(folha, pagina, projeto)
+    if geometria is not None:
+        return geometria
+    grande = img_folha_do_pdf
+    if grande is None:
+        grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+    _guardar_geometria(folha, pagina, projeto, grande)
+    geometria = _geometria_guardada(folha, pagina, projeto)
+    if geometria is None:     # arquivo sem chave (nao existe no disco): so calcula
+        geometria = _geometria(preparar_para_recorte(grande, folha, pagina), pagina, projeto)
+    return geometria
+
+
 def renderizar_pagina(
     doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA
 ) -> tuple[np.ndarray, bool]:
     """Imagem final de uma página de saida, do jeito que ela vai sair.
 
     Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
+
+    Item 1.1: se a pagina usa o "tirar o fundo" (usa_tirar_fundo) e o PDF
+    deixa, a previa e a folha sem o fundo, dividida, cortada e endireitada
+    como o PDF final (processar faz a mesma coisa), sem filtro. O alerta
+    "conferir" da pagina e acertado aqui (_anotar_conferir).
     """
     folha = projeto.folhas[pagina.folha]
+    if usa_tirar_fundo(projeto, pagina):
+        resultado = _sem_fundo_da_folha(doc, folha, dpi)
+        _anotar_conferir(pagina, bool(resultado.imagem is not None and resultado.conferir))
+        if resultado.imagem is not None:
+            geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, None)
+            img = preparar_metade(resultado.imagem, folha, pagina, projeto, geometria=geometria)
+            return img, False
+    else:
+        _anotar_conferir(pagina, False)
+
     if (dpi != projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto)
             and _geometria_guardada(folha, pagina, projeto) is None):
         # Primeira vez desta pagina: desenha a folha UMA vez, na resolucao do
@@ -431,7 +618,16 @@ def renderizar_pagina(
         if dpi == projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto):
             _guardar_geometria(folha, pagina, projeto, img_folha)
     img = preparar_metade(img_folha, folha, pagina, projeto)
+    return _filtrar(projeto, pagina, img)
 
+
+def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray) -> tuple[np.ndarray, bool]:
+    """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
+
+    O MESMO para a previa (renderizar_pagina) e o PDF (processar): antes era
+    escrito duas vezes, igual. Devolve (imagem, monocromatica); sem "Limpar a
+    folha", a imagem como veio.
+    """
     if not projeto.limpar:
         return img, False
     return aplicar_filtro_com_selecao(
@@ -518,8 +714,12 @@ def processar(
     doc = abrir_pdf(projeto.caminho_entrada)
     try:
         with EscritorPDF(destino) as escritor:
+            # A folha da vez, uma so na memoria (as duas metades vem dela):
+            # o desenho normal e, se alguma metade usa o item 1.1, a folha sem
+            # o fundo. Os dois sao feitos so quando alguem precisa.
             folha_atual: int | None = None
             img_folha: np.ndarray | None = None
+            sem_fundo = None          # core.camadas.PaginaSemFundo da folha da vez
 
             for feito, pagina in enumerate(ativas):
                 _checar(cancelado)
@@ -529,28 +729,44 @@ def processar(
                 if folha.apagada:
                     continue
 
-                # As duas metades vem da mesma folha: rasterizamos so uma vez.
                 if folha_atual != folha.indice:
-                    img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+                    img_folha, sem_fundo = None, None
                     folha_atual = folha.indice
 
-                # o corte e calculado nesta mesma imagem (a do PDF) e guardado:
-                # a previa, se vier depois, mostra este (ver _GEOMETRIAS)
-                if _precisa_de_geometria(pagina, projeto):
-                    _guardar_geometria(folha, pagina, projeto, img_folha)
-                img = preparar_metade(img_folha, folha, pagina, projeto)
-
-                if projeto.limpar:
-                    img, mono = aplicar_filtro_com_selecao(
-                        img, pagina.filtro,
-                        garantir_selecao(projeto, pagina, img),
-                        pagina.forca_preto, pagina.clareza_melhorar,
-                        pagina.intensidade_magico,
-                        algoritmo_pb=pagina.algoritmo_preto_branco,
-                        despeckle=pagina.despeckle,
-                    )
+                # Item 1.1: esta pagina sai sem o fundo? (ver usa_tirar_fundo)
+                imagem_sem_fundo = None
+                if usa_tirar_fundo(projeto, pagina):
+                    if sem_fundo is None:
+                        sem_fundo = _sem_fundo_da_folha(doc, folha, projeto.qualidade_dpi)
+                    imagem_sem_fundo = sem_fundo.imagem
+                    _anotar_conferir(pagina, bool(imagem_sem_fundo is not None
+                                                  and sem_fundo.conferir))
                 else:
+                    _anotar_conferir(pagina, False)
+
+                # O desenho normal da folha: para o filtro e para medir o corte
+                # (que e sempre medido nele, mesmo quando sai sem o fundo).
+                precisa_do_desenho = imagem_sem_fundo is None or (
+                    _precisa_de_geometria(pagina, projeto)
+                    and _geometria_guardada(folha, pagina, projeto) is None)
+                if precisa_do_desenho and img_folha is None:
+                    img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+
+                if imagem_sem_fundo is not None:
+                    # dividir, cortar e endireitar a folha sem o fundo, com o
+                    # corte da folha como veio; o filtro fica de fora
+                    geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
+                    img = preparar_metade(imagem_sem_fundo, folha, pagina, projeto,
+                                          geometria=geometria)
                     mono = False
+                else:
+                    # o corte e calculado nesta mesma imagem (a do PDF) e
+                    # guardado: a previa, se vier depois, mostra este (ver
+                    # _GEOMETRIAS)
+                    if _precisa_de_geometria(pagina, projeto):
+                        _guardar_geometria(folha, pagina, projeto, img_folha)
+                    img = preparar_metade(img_folha, folha, pagina, projeto)
+                    img, mono = _filtrar(projeto, pagina, img)
 
                 # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
                 # conteudo (ja filtrado) dentro do tamanho de folha escolhido,
@@ -589,7 +805,13 @@ def processar(
 
 
 def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
-    """A caixa (i) da tela 2, atualizada ao vivo. Sem jargao nenhum."""
+    """A caixa (i) da tela 2, atualizada ao vivo. Sem jargao nenhum.
+
+    Item 1.1: com a caixinha "Tirar o fundo sozinho" valendo (so aparece em
+    PDF com camadas), diz isso - e, com o filtro do livro em Original, avisa
+    que so vale nas paginas em que a pessoa escolher um filtro (a pagina em
+    Original nao e mexida; ver usa_tirar_fundo).
+    """
     from core.filtros import NOMES_AMIGAVEIS
 
     partes: list[str] = []
@@ -600,9 +822,16 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
         partes.append("endireitar as tortas")
     if projeto.cortar_bordas:
         partes.append("cortar as bordas")
+    sem_fundo = projeto.limpar and projeto.tirar_fundo_ligado
     if projeto.limpar and projeto.filtro_padrao != ORIGINAL:
         nome = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
-        partes.append(f"deixar tudo em {nome}")
+        if sem_fundo:
+            partes.append("tirar o fundo sozinho, que este PDF já traz separado do "
+                          f"texto (onde não der, uso o {nome})")
+        else:
+            partes.append(f"deixar tudo em {nome}")
+    elif sem_fundo:
+        partes.append("tirar o fundo sozinho nas páginas em que você escolher um filtro")
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")
 

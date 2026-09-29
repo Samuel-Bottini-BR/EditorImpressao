@@ -138,7 +138,20 @@ class ConfigPagina:
 
 @dataclass
 class Projeto:
-    """Um livro sendo trabalhado."""
+    """Um livro sendo trabalhado.
+
+    As opções do livro inteiro (as caixinhas da tela "O que fazer") moram
+    aqui; o que é de cada folha e de cada página mora em ConfigFolha e
+    ConfigPagina. Campos do item 1.1 (29/09/2026):
+
+    tem_camadas: o PDF vem com as camadas do Internet Archive (fundo + texto
+        recortado por cima)? Detectado pelo programa ao abrir e na análise;
+        não é escolha da pessoa.
+    tirar_fundo_sozinho: a caixinha "Tirar o fundo sozinho" (padrão: marcada).
+        Só vale junto com tem_camadas (ver tirar_fundo_ligado). Projeto salvo
+        antes de 29/09 não tem os dois campos e abre normalmente, com os
+        padrões (ver de_dicionario).
+    """
 
     caminho_entrada: str
     caminho_saida: str = ""
@@ -157,6 +170,32 @@ class Projeto:
     # area do seu jeito. Desligar faz o filtro voltar a tratar a folha inteira
     # igual, que e como o programa funcionava antes.
     detectar_regioes: bool = True
+
+    # Item 1.1 do Plano Definitivo: "tirar o fundo" de PDF que ja vem com
+    # camadas (Internet Archive: fundo embaixo, texto recortado por cima; ver
+    # core/camadas.py). Decisao do Samuel (29/09/2026): "automatico quando o
+    # programa detectar camadas, com botao para desligar por livro; pagina
+    # duvidosa sai marcada 'conferir'." Sao dois campos, de proposito:
+    #
+    #   tem_camadas          FATO do PDF, nao escolha: o programa olha a
+    #                        estrutura do arquivo ao abrir (core.camadas.
+    #                        pdf_tem_camadas, milissegundos, sem desenhar
+    #                        pagina) e na analise. Refeito a cada abertura -
+    #                        o valor salvo no projeto nao manda.
+    #   tirar_fundo_sozinho  a ESCOLHA da pessoa, por livro: a caixinha
+    #                        "Tirar o fundo sozinho" da tela "O que fazer",
+    #                        que so aparece quando tem_camadas. Nasce True,
+    #                        e por isso "liga sozinho" quando o PDF tem
+    #                        camadas; desmarcar grava False. Projeto salvo
+    #                        antes destes campos abre com True e o
+    #                        tem_camadas volta da deteccao: segue a decisao
+    #                        do Samuel (automatico) - ver tirar_fundo_ligado.
+    #
+    # Seguro mudar: nada aqui muda imagem sozinho; quem decide pagina a pagina
+    # e core/pipeline.py (usa_tirar_fundo). Arriscado: trocar o padrao de
+    # tirar_fundo_sozinho para False desliga o 1.1 em todo projeto antigo.
+    tem_camadas: bool = False
+    tirar_fundo_sozinho: bool = True
 
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
@@ -190,6 +229,15 @@ class Projeto:
         )
 
     @property
+    def tirar_fundo_ligado(self) -> bool:
+        """O "tirar o fundo" (item 1.1) vale para este livro? Só quando o PDF
+        tem camadas E a pessoa deixou a caixinha marcada. Sem camadas a
+        caixinha nem aparece, e então nada liga escondido (regra 8 do plano:
+        toda função automática tem botão). Página a página, quem decide é
+        core.pipeline.usa_tirar_fundo."""
+        return bool(self.tem_camadas and self.tirar_fundo_sozinho)
+
+    @property
     def alguma_funcao_marcada(self) -> bool:
         return any(
             (self.dividir_folhas, self.limpar, self.endireitar,
@@ -215,6 +263,9 @@ class Projeto:
         Campos que sumiram entre uma versão e outra sao descartados, e os que
         surgiram ganham o padrão. Sem isso, reabrir um projeto antigo derrubaria
         o programa - e o usuário perderia o trabalho por causa de um campo.
+        Exemplo: tem_camadas e tirar_fundo_sozinho (item 1.1, 29/09/2026)
+        faltam nos projetos antigos e voltam False e True (testado em
+        tests/test_tirar_fundo_no_programa.py).
         """
         folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, f))
                   for f in dados.pop("folhas", [])]

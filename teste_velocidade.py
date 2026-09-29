@@ -753,7 +753,8 @@ def medir_abrir(caminho: Path, avisar: Avisar) -> tuple[dict, object]:
     Faz o que o programa faz, na mesma ordem, sem a tela:
 
     1. ui/janela_principal.py, JanelaPrincipal.abrir_livro: abrir_pdf, contar
-       as folhas, info_paginas, fechar; e a leitura da assinatura do arquivo
+       as folhas, info_paginas, olhar se o PDF tem camadas (item 1.1,
+       core.camadas.pdf_tem_camadas), fechar; e a leitura da assinatura do arquivo
        (projetos.assinatura_do_arquivo, que achar_por_assinatura faz para saber
        se o livro já tem projeto). A parte que GRAVA o projeto em
        %LOCALAPPDATA% fica de fora de propósito: o teste não pode encher a
@@ -768,6 +769,7 @@ def medir_abrir(caminho: Path, avisar: Avisar) -> tuple[dict, object]:
     Opções: as que modelos.Projeto já traz (as mesmas caixas marcadas da tela
     "O que fazer"), com o filtro do livro em FILTRO_DO_LIVRO.
     """
+    from core.camadas import pdf_tem_camadas
     from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
     from modelos import Projeto
     from projetos import assinatura_do_arquivo
@@ -782,6 +784,9 @@ def medir_abrir(caminho: Path, avisar: Avisar) -> tuple[dict, object]:
     try:
         folhas = doc.page_count
         info_paginas(doc)
+        # item 1.1 (29/09/2026): abrir_livro olha também se o PDF vem com
+        # camadas (só a estrutura, milissegundos)
+        pdf_tem_camadas(doc)
     finally:
         doc.close()
     assinatura_do_arquivo(caminho)

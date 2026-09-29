@@ -14,7 +14,9 @@ from PySide6.QtWidgets import QMainWindow, QMessageBox, QStackedWidget
 import configuracoes
 import historico
 import projetos
+from core.camadas import pdf_tem_camadas
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
+from core.pipeline import tirar_alertas_do_fundo_se_desligado
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
@@ -247,6 +249,11 @@ class JanelaPrincipal(QMainWindow):
             try:
                 self.total_folhas = doc.page_count
                 info_paginas(doc)
+                # Item 1.1: o PDF vem com camadas (Internet Archive)? Só a
+                # estrutura de até 12 páginas, sem desenhar nenhuma
+                # (milissegundos). Decide se a caixinha "Tirar o fundo
+                # sozinho" aparece na tela "O que fazer".
+                tem_camadas = pdf_tem_camadas(doc)
             finally:
                 doc.close()
         except ErroPDF as erro:
@@ -259,6 +266,7 @@ class JanelaPrincipal(QMainWindow):
 
         nome = Path(caminho).stem
         self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
+        self.projeto.tem_camadas = tem_camadas
 
         # Abrir o MESMO livro de novo continua o projeto de antes, em vez de
         # criar um ao lado: quem for reabrir de propósito passa pela tela
@@ -294,6 +302,9 @@ class JanelaPrincipal(QMainWindow):
             self.projeto.cortar_bordas = salvo.cortar_bordas
             self.projeto.montar_cadernos = salvo.montar_cadernos
             self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
+            # item 1.1: a escolha da pessoa volta; o tem_camadas, nao (e fato
+            # do PDF, acabou de ser detectado em abrir_livro)
+            self.projeto.tirar_fundo_sozinho = salvo.tirar_fundo_sozinho
             self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.analisar()
 
@@ -347,11 +358,27 @@ class JanelaPrincipal(QMainWindow):
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
             if projetos.combina_com(salvo, projeto):
+                # Item 1.1: o salvo volta por cima, menos o "tirar o fundo":
+                # tem_camadas e fato do PDF (a analise acabou de detectar; um
+                # projeto salvo antes de 29/09 nem tem o campo) e a caixinha
+                # e a que a pessoa acabou de deixar na tela "O que fazer" -
+                # sem isto, desmarcar la depois da primeira conferencia nao
+                # valia nada (o salvo trazia de volta a marcada).
+                salvo.tem_camadas = projeto.tem_camadas
+                salvo.tirar_fundo_sozinho = projeto.tirar_fundo_sozinho
                 projeto = salvo
             elif salvo is not None:
                 paginas_perdidas = len(salvo.paginas)
 
         self.projeto = projeto
+        # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
+        # conferencia e para o disco). Antes ela ficava com o objeto de antes
+        # da analise, e o que se marcava la, na volta, se perdia. Achado ao
+        # ligar o item 1.1 (a caixinha do fundo tem de valer ao desmarcar).
+        self.tela_opcoes.projeto = projeto
+        # Caixinha do fundo desligada: nenhuma pagina fica com o alerta
+        # "conferir o fundo tirado" de uma sessao anterior.
+        tirar_alertas_do_fundo_se_desligado(projeto)
 
         # O desfazer de um projeto ja trabalhado tambem volta do disco.
         self.acoes.carregar()

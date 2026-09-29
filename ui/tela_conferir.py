@@ -1649,6 +1649,28 @@ class TelaConferir(QWidget):
         )
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
+        if chave == esperadas[0] and not self.trabalha_com_folhas:
+            self._alertas_da_previa()
+
+    def _alertas_da_previa(self) -> None:
+        """A prévia da página que está na tela pode ter mudado os alertas dela.
+
+        Item 1.1 (29/09/2026): o alerta "conferir o fundo tirado" só é
+        conhecido quando a página é desenhada (core.pipeline._anotar_conferir,
+        numa tarefa de fundo), não na análise. Sem isto a faixa laranja, a
+        miniatura e o contador só apareceriam ao virar a página. Só redesenha
+        se os alertas mudaram desde a última vez (a tira tem uma miniatura por
+        página).
+        """
+        item = self.item_atual
+        estado = (self.indice_pagina, tuple(item.alertas), item.revisada)
+        if estado == getattr(self, "_alertas_vistos", None):
+            return
+        self._alertas_vistos = estado
+        self._atualizar_faixa()
+        self.tira.marcar(self.indice_pagina, em_alerta=item.precisa_revisao,
+                         apagada=getattr(item, "apagada", False))
+        self._atualizar_contador()
 
     # ------------------------------------------------------------------
     # alteracoes (todas passam pelo historico)

@@ -34,6 +34,13 @@ RESOLUCAO_BAIXA = "resolucao_baixa"
 TAMANHO_DIFERENTE = "tamanho_diferente"
 DESENHO_OU_ESCRITA = "desenho_ou_escrita"
 FOLHA_MENOR_QUE_O_RECORTE = "folha_menor_que_o_recorte"
+# Item 1.1 (29/09/2026): a pagina saiu com o fundo tirado (core/camadas.py),
+# mas pode ter perdido escrita fraca ou traco fino que so existia no fundo.
+# Nao e calculado na analise (tirar o fundo leva ~1 s por pagina): quem poe e
+# tira e core.pipeline, quando a pagina e desenhada (previa ou PDF), como o
+# DESENHO_OU_ESCRITA. Decisao do Samuel: "pagina duvidosa sai marcada
+# 'conferir'."
+CONFERIR_FUNDO_TIRADO = "conferir_fundo_tirado"
 
 
 @dataclass(frozen=True)
@@ -58,6 +65,14 @@ ALERTAS: dict[str, Alerta] = {
         "Não tenho certeza se esta página é desenho ou escrita. Confira "
         "na aba Marcar - se for escrita, marque como letra.",
         None, None,
+    ),
+    # Item 1.1. "está bom assim" so marca a pagina como conferida (o mesmo
+    # botao de RESOLUCAO_BAIXA): nao ha conserto automatico a oferecer.
+    CONFERIR_FUNDO_TIRADO: Alerta(
+        CONFERIR_FUNDO_TIRADO, "Conferir o fundo tirado",
+        "Tirei o fundo desta página, e pode ter sumido escrita fraca ou "
+        "traço fino junto: confira.",
+        "está bom assim", "revisar",
     ),
     LOMBADA_INCERTA: Alerta(
         LOMBADA_INCERTA, "Lombada incerta",

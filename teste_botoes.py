@@ -399,8 +399,16 @@ def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
     ok = falhas = 0
     opcoes = janela.tela_opcoes
 
-    for caixa in (opcoes.cx_dividir, opcoes.cx_limpar, opcoes.cx_endireitar,
-                  opcoes.cx_cortar, opcoes.cx_cadernos):
+    caixas = [opcoes.cx_dividir, opcoes.cx_limpar, opcoes.cx_endireitar,
+              opcoes.cx_cortar, opcoes.cx_cadernos]
+    # Item 1.1: "Tirar o fundo sozinho" so aparece em PDF com camadas (o PDF
+    # gerado por este script nao tem; rode com um PDF do Internet Archive,
+    # COPIADO para fora do acervo, para cobri-la - ver o topo do arquivo).
+    if not opcoes.painel_tirar_fundo.isHidden():
+        caixas.append(opcoes.cx_tirar_fundo)
+    else:
+        print("  (a caixinha 'Tirar o fundo sozinho' não aparece: este PDF não tem camadas)")
+    for caixa in caixas:
         if acionar(caixa, caixa.text()):
             ok += 1
         else:

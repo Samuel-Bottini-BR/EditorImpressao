@@ -956,3 +956,58 @@ túnica da estátua ia do cinza 183 para 226 e o creme sumia (b do Lab 140 → 1
 - Conferência: `relatorios/conferir/fase1-2026-09-29-0956` (as 16 páginas;
   em `acervo\`, Opus 20, Pesel 2 e Siebmacher 25 lado a lado: original,
   antes, depois).
+
+## Tentativa 25 — ligar o "tirar o fundo" (item 1.1) ao programa (29/09/2026)
+
+**Pedido (Samuel, 29/09):** "automático quando o programa detectar camadas,
+com botão para desligar por livro; página duvidosa sai marcada 'conferir'."
+**Decisão da gerente (a rever pelo Samuel):** com o botão ligado, a página que
+`core/camadas.py` deixa sem o fundo usa esse resultado no lugar do filtro
+(Preto e branco, Melhorar, Mágico pro); página em "Original" fica como está;
+página deixada intacta segue o filtro.
+
+**Como ficou:**
+
+- Detecção ao abrir (`core.camadas.pdf_tem_camadas`, só a estrutura de até 12
+  páginas): em `ui/janela_principal.abrir_livro` (para a caixinha) e em
+  `core.pipeline.analisar_projeto` (para quem chega sem a tela: conferência,
+  teste de velocidade). Campos novos em `Projeto`: `tem_camadas` (fato do PDF)
+  e `tirar_fundo_sozinho` (a caixinha, nasce marcada).
+- Onde entra na ordem: as camadas são da página do PDF (a folha inteira), então
+  o "tirar o fundo" roda **antes** de dividir, no lugar do desenho da folha;
+  dividir, cortar e endireitar seguem por cima; o filtro é pulado. O corte e o
+  ângulo são **medidos na folha como veio** (os mesmos de sempre, guardados em
+  `_GEOMETRIAS`), não na folha sem o fundo: assim o corte não muda com o botão
+  e a prévia continua igual ao PDF (teste: igual ponto por ponto).
+- O alerta novo `conferir_fundo_tirado` é posto e tirado quando a página é
+  desenhada (prévia ou PDF), como o "desenho ou escrita".
+
+**O que deu errado no caminho:**
+
+- A primeira versão só lia a caixinha no projeto: **desmarcar depois da
+  primeira conferência não valia**. Causa (já existia, vale para todas as
+  caixinhas): depois da análise o projeto salvo volta por cima e a tela "O que
+  fazer" continuava mexendo no objeto de antes. Consertado só para o 1.1
+  (a tela passa a mexer no projeto de verdade; o salvo não traz de volta a
+  caixinha antiga). As outras caixinhas continuam com o problema (Lista de bugs).
+- Página deixada intacta (Palatino 5) pagava o "tirar o fundo" (~1,8 s) para
+  jogar fora e depois o filtro: prévia de 2,4-3,2 s para 4,6-4,8 s. Agora a
+  decisão "fica como está" é guardada por folha, na sessão (não depende do
+  DPI): a segunda prévia e o PDF não pagam de novo. A primeira prévia ainda paga.
+
+**Tempo** (medida isolada, 16 páginas do gabarito do 1.1, Mágico pro, código de
+antes num worktree do `bbb9861` e o de depois, rodadas alternadas; **máquina
+dividida com outro agente**, números com ruído grande):
+
+| | antes | depois |
+|---|---|---|
+| processar (PDF, 300 DPI), rodada 1 / 2 / 3 | 77,7 / 64,8 / 52,6 s | 55,7 / 55,2 / 45,0 s |
+| primeira prévia de cada página, rodada 1 / 2 / 3 | 45,9 / 39,5 / 32,3 s | 46,8 / 46,9 / 39,0 s |
+| detectar camadas ao abrir (Palatino, 134 folhas) | — | 0,10 s |
+| detectar camadas ao abrir (Escola, sem camadas) | — | 0,002 s |
+
+O PDF sai 14% a 28% mais rápido (pula a marcação de gravura e o filtro). A
+**primeira prévia** de cada página de livro com camadas fica **2% a 21% mais
+lenta** (~0,5 s): o "tirar o fundo" (~1,8 s) custa mais que marcação + filtro,
+e a primeira vista ainda desenha a folha a 300 DPI para medir o corte. Livro
+sem camadas: nada muda (a detecção para na primeira página, 2 ms).

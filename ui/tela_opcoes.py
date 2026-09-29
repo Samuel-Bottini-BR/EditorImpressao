@@ -5,6 +5,10 @@ campo de `Projeto` (modelos.py) em tempo real - _mudou() e chamado a cada
 clique e escreve direto no projeto, sem botao "aplicar" separado. O resumo em
 portugues embaixo (core.pipeline.resumo_em_portugues) e o que confirma para a
 pessoa o que ela acabou de marcar, sem jargao.
+
+Item 1.1 (29/09/2026): a caixinha "Tirar o fundo sozinho" (Projeto.
+tirar_fundo_sozinho) so aparece quando o PDF tem camadas (Projeto.tem_camadas,
+detectado ao abrir o livro em ui/janela_principal.abrir_livro).
 """
 
 from __future__ import annotations
@@ -93,6 +97,8 @@ class TelaOpcoes(QWidget):
         self.cx_limpar = self._caixa("Limpar a folha", "tira o amarelado", opcoes)
         self.painel_filtros = self._montar_filtros()
         opcoes.addWidget(self.painel_filtros)
+        self.painel_tirar_fundo, self.cx_tirar_fundo = self._montar_tirar_fundo()
+        opcoes.addWidget(self.painel_tirar_fundo)
         opcoes.addWidget(_separador())
 
         self.cx_endireitar = self._caixa(
@@ -146,7 +152,7 @@ class TelaOpcoes(QWidget):
         camadas.addLayout(rodape)
 
         for caixa in (self.cx_dividir, self.cx_limpar, self.cx_endireitar,
-                      self.cx_cortar, self.cx_cadernos):
+                      self.cx_cortar, self.cx_cadernos, self.cx_tirar_fundo):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -186,6 +192,26 @@ class TelaOpcoes(QWidget):
             grade.addWidget(rotulo, i // 2, (i % 2) * 2 + 1)
         return painel
 
+    def _montar_tirar_fundo(self) -> tuple[QWidget, QCheckBox]:
+        """Item 1.1: a caixinha "Tirar o fundo sozinho", por livro.
+
+        Decisao do Samuel (29/09/2026): "automatico quando o programa detectar
+        camadas, com botao para desligar por livro". Liga o campo
+        Projeto.tirar_fundo_sozinho. So aparece quando o PDF tem camadas
+        (Projeto.tem_camadas) e "Limpar a folha" esta marcada - ver _mudou.
+        Fica dentro de um painel (com o recuo dos filtros, porque faz parte
+        de "Limpar") para a caixinha e a explicacao sumirem juntas. A
+        aparencia final fica para o layout (Fase 4).
+        """
+        painel = QWidget()
+        camada = QVBoxLayout(painel)
+        camada.setContentsMargins(34, 2, 0, 4)
+        camada.setSpacing(0)
+        caixa = self._caixa("Tirar o fundo sozinho",
+                            "este PDF já vem com o texto separado do fundo", camada)
+        painel.setVisible(False)
+        return painel, caixa
+
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
         esta marcada - ver _mudou."""
@@ -210,6 +236,10 @@ class TelaOpcoes(QWidget):
         de marcar o que fazer."""
         self.projeto = projeto
         self.total_folhas = total_folhas
+        # Lido ANTES dos setChecked abaixo: cada um que muda dispara _mudou,
+        # que grava no projeto o estado de TODAS as caixinhas - inclusive o
+        # da caixinha do fundo ainda com o valor do livro anterior.
+        tirar_fundo = projeto.tirar_fundo_sozinho
 
         from pathlib import Path
 
@@ -221,6 +251,7 @@ class TelaOpcoes(QWidget):
         self.cx_endireitar.setChecked(projeto.endireitar)
         self.cx_cortar.setChecked(projeto.cortar_bordas)
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
+        self.cx_tirar_fundo.setChecked(tirar_fundo)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
         for botao in self.grupo_filtros.buttons():
@@ -257,13 +288,16 @@ class TelaOpcoes(QWidget):
         self.projeto.endireitar = self.cx_endireitar.isChecked()
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
+        self.projeto.tirar_fundo_sozinho = self.cx_tirar_fundo.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(
             self.combo_caderno.currentData() or 20
         )
 
-        # os painéis so aparecem quando fazem sentido
+        # os painéis so aparecem quando fazem sentido; o "tirar o fundo" (item
+        # 1.1), so em PDF com camadas - fora dele a caixinha nao faria nada
         self.painel_filtros.setVisible(self.projeto.limpar)
+        self.painel_tirar_fundo.setVisible(self.projeto.limpar and self.projeto.tem_camadas)
         self.painel_caderno.setVisible(self.projeto.montar_cadernos)
 
         self.resumo.setText(resumo_em_portugues(self.projeto, self.total_folhas))

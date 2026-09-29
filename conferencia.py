@@ -721,6 +721,10 @@ class Depois:
     partes: int = 1                         # quantas páginas saíram da folha
     aviso: str | None = None                # por que não há imagem, se não houver
     arquivo: Path | None = None             # a imagem pronta de onde veio (--pasta-depois)
+    # só no programa: o que ele disse da página (item 1.1, 29/09/2026: se o
+    # "tirar o fundo" estava ligado e os alertas, como "conferir o fundo
+    # tirado"), para quem confere saber sem abrir o programa
+    nota: str | None = None
 
 
 # A aplicação Qt fica viva até o fim do processo (mesma ideia do
@@ -829,7 +833,22 @@ def processar_pelo_programa(pdf: Path, filtro: str, pasta: Path) -> Depois:
     partes = paginas_do_pdf(caminho, projeto.qualidade_dpi)
     caminho.unlink(missing_ok=True)
     imagem = partes[0] if len(partes) == 1 else juntar_lado_a_lado(partes)
-    return Depois(imagem, segundos, segundos_analise, len(partes))
+    return Depois(imagem, segundos, segundos_analise, len(partes), nota=_nota_do_programa(projeto))
+
+
+def _nota_do_programa(projeto) -> str | None:
+    """O que o programa disse desta página, em português: se o "tirar o fundo"
+    (item 1.1) estava ligado e os alertas que as páginas ficaram (o mesmo que
+    a tela de conferir mostraria). Só lê o projeto já processado."""
+    from core.analise import descrever
+
+    partes = []
+    if projeto.tirar_fundo_ligado and projeto.limpar:
+        partes.append("PDF com camadas: \"Tirar o fundo sozinho\" ligado")
+    alertas = sorted({a for p in projeto.paginas for a in p.alertas})
+    if alertas:
+        partes.append("alertas: " + "; ".join(descrever(a).titulo for a in alertas))
+    return ". ".join(partes) + "." if partes else None
 
 
 class FonteDoPrograma:
@@ -1246,6 +1265,7 @@ def conferir_pagina(numero: int, pid: str, lista: dict, gabarito: Path, fonte, a
                 registro["tempo_s"] = depois.segundos
                 registro["tempo_analise_s"] = depois.segundos_analise
                 registro["partes"] = depois.partes
+                registro["nota"] = depois.nota
                 if depois.imagem is None:
                     aviso = depois.aviso or "sem imagem"
                     registro["falhou"] = True
@@ -1453,6 +1473,8 @@ def _bloco_da_pagina(pagina: dict, dados: dict) -> list[str]:
     if (pagina.get("partes") or 1) > 1:
         t += [f"> **Atenção:** o programa dividiu esta folha em {pagina['partes']} páginas. No "
               "Resultado elas aparecem lado a lado, separadas por uma faixa cinza.", ""]
+    if pagina.get("nota"):
+        t += [f"> **O programa:** {pagina['nota']}", ""]
     for aviso in pagina.get("avisos", []):
         t += [f"> **Atenção:** {aviso}", ""]
     colunas = pagina.get("colunas") or []
