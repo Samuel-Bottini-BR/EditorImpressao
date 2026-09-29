@@ -23,3 +23,5 @@ modelos/
 gabarito/*
 !gabarito/LEIA-ME.md
 !gabarito/lista.json
+.venv-ocr/
+!gabarito/ocr-zonas.json

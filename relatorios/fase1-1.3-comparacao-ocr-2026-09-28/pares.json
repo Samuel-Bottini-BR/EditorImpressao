@@ -1,0 +1,2286 @@
+{
+ "K1+D2": {
+  "e": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9969619262417483,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 0.9999879612834877,
+    "figura_tomada": 0.003991235911145111,
+    "figura_area": 0.005775640735144055,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 0.9999931282576353,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00018135531359734133,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9966025315025145,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 0.9685893774985722,
+    "figura_tomada": 2.907822041291073e-05,
+    "figura_area": 5.058919920596952e-05,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 0.9576772616136919,
+    "figura_tomada": 0.006787488629207194,
+    "figura_area": 0.020439497887893586,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 0.9998258689141185,
+    "figura_tomada": 0.00113841720204119,
+    "figura_area": 0.0007812647329017519,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9852143531577364,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 0.979635254620805,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 0.9999460563326013,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0032161719675848225,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.32064977857997357,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "horas_p026": {
+    "texto_achado": 0.9728885012356447,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9854211923726768,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00010978802466007938,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.9978000652452133,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9988625264578295,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.955650623885918,
+    "figura_tomada": 0.00038072645536348397,
+    "figura_area": 0.00038867372565614566,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9397384040789127,
+    "figura_tomada": 0.003355820963486886,
+    "figura_area": 0.0018252654588739306,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p221": {
+    "texto_achado": 0.969355285002767,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9807625043721581,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9433438533784555,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  },
+  "ou": {
+   "palatino_p005": {
+    "texto_achado": 0.9998987273402424,
+    "figura_tomada": 0.020756899802938586,
+    "figura_area": 0.01591611116271205,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9998214917113796,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.023003654475381143,
+    "figura_area": 0.018369225335935706,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.007907091672844082,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9978739334350455,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 0.9999048162954502,
+    "figura_tomada": 0.0075457981971503345,
+    "figura_area": 0.006486415150365397,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.08459869848156182,
+    "figura_area": 0.05690703735881842,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.010818943899118721,
+    "figura_area": 0.0076779465129999756,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9935692563391525,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.07600627286983795,
+    "figura_area": 0.02487902925630909,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.06553143973759509,
+    "figura_area": 0.03257273206787185,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.8802023212374336,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "horas_p026": {
+    "texto_achado": 0.996947230702137,
+    "figura_tomada": 0.0,
+    "figura_area": 0.007617083811003993,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9970552739560705,
+    "figura_tomada": 0.0013440860215053765,
+    "figura_area": 0.013470146102525124,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.9996905034755623,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00023556146768650925,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9997954009046203,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9831491384432561,
+    "figura_tomada": 0.8300422459932202,
+    "figura_area": 0.7948285695886959,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9881290002634556,
+    "figura_tomada": 0.006196884729034781,
+    "figura_area": 0.023060604024360644,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p221": {
+    "texto_achado": 0.9992736579966796,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9951469045120671,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9771474200539945,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  }
+ },
+ "K1+P3": {
+  "e": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9972262558229747,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.005587730275603155,
+    "figura_area": 0.006530411967577653,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0051663594961042615,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9966802282872803,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 0.9686845612031221,
+    "figura_tomada": 2.907822041291073e-05,
+    "figura_area": 5.498826000648861e-05,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 0.9625672371638142,
+    "figura_tomada": 0.008956686026170318,
+    "figura_area": 0.02464124149914617,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0017354891611537021,
+    "figura_area": 0.0023276301007831507,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9865815191328772,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 0.979635254620805,
+    "figura_tomada": 0.0,
+    "figura_area": 0.002575746296434155,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 0.9999460563326013,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.32552591628713945,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": [
+     "notas de margem April./Mart. (claras, cortadas)"
+    ]
+   },
+   "horas_p026": {
+    "texto_achado": 0.9853176333769443,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0020773864939101798,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9753560222061308,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.9994897489732244,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00018226701798367912,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.999071996960242,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9524777183600713,
+    "figura_tomada": 0.0421581332689027,
+    "figura_area": 0.05228466555660837,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.854084336789251,
+    "figura_tomada": 0.0014997252978414845,
+    "figura_area": 0.010191865432269761,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "assinatura D iii"
+    ]
+   },
+   "graduale_p221": {
+    "texto_achado": 0.9674183729939125,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9723242392444911,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9481729343321039,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  },
+  "ou": {
+   "palatino_p005": {
+    "texto_achado": 0.9998987273402424,
+    "figura_tomada": 0.0034742245792544215,
+    "figura_area": 0.006006349297076132,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.999296265400631,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.012534975283440112,
+    "figura_area": 0.010805886278008967,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.008303806421338267,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9966802282872803,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.008330910148298924,
+    "figura_area": 0.007364027780068955,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.09271569519277867,
+    "figura_area": 0.07257557146709008,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.01698868747661468,
+    "figura_area": 0.009508530602678391,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9935841492146986,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.07449032932566649,
+    "figura_area": 0.03231345690960073,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.06553143973759509,
+    "figura_area": 0.03242202752412985,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.9624530400654816,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "horas_p026": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.008101807326249702,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9936760801351677,
+    "figura_tomada": 0.0,
+    "figura_area": 0.01233848492525969,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.99966540916277,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00029631714034773565,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9997954009046203,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9837314319667261,
+    "figura_tomada": 0.8300422459932202,
+    "figura_area": 0.7950562541972163,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9875168534102003,
+    "figura_tomada": 0.00564253082356202,
+    "figura_area": 0.02118734135206779,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p221": {
+    "texto_achado": 0.998996956281129,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9951469045120671,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9953230160842618,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  }
+ },
+ "D2+P3": {
+  "e": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0,
+    "figura_area": 1.5083351393661975e-05,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9980261102700625,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 0.9999879612834877,
+    "figura_tomada": 0.006909827171169973,
+    "figura_area": 0.007508645490359087,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 0.9999931282576353,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00036497756861464945,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9966025315025145,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 0.9998096325909004,
+    "figura_tomada": 4.361733061936609e-05,
+    "figura_area": 8.248239000973292e-05,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 0.9951100244498777,
+    "figura_tomada": 0.0718634105381009,
+    "figura_area": 0.04542526738368435,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 0.9998258689141185,
+    "figura_tomada": 0.007324082698446817,
+    "figura_area": 0.0026926693121906934,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9853156247114505,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00020550619601180975,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.8528833574691655,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": [
+     "notas de margem April./Mart. (claras, cortadas)"
+    ]
+   },
+   "horas_p026": {
+    "texto_achado": 0.9845180985608374,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9799420709630703,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0007262900092897559,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.9978000652452133,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9988040695734353,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9535710041592395,
+    "figura_tomada": 0.00038072645536348397,
+    "figura_area": 0.00038867372565614566,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.8584391030111426,
+    "figura_tomada": 0.001326489702381247,
+    "figura_area": 0.0007007593159162874,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "assinatura D iii"
+    ]
+   },
+   "graduale_p221": {
+    "texto_achado": 0.978486441615938,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9817243791535502,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9718240237271379,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  },
+  "ou": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.017282675223684162,
+    "figura_area": 0.00992484521702958,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9996807447915057,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.026699705230597812,
+    "figura_area": 0.01966155620389137,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.006939107686518273,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9978739334350455,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0008868857225937773,
+    "figura_area": 0.0010414776445228943,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.10314183752011756,
+    "figura_area": 0.07901674705653255,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.019249599961787395,
+    "figura_area": 0.008542725751832604,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9868763980686919,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.15049660219550445,
+    "figura_area": 0.05461673986947567,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.005380837232242552,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.9718974961697484,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "horas_p026": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0025621100091558885,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9980690321023413,
+    "figura_tomada": 0.0013440860215053765,
+    "figura_area": 0.002694029220505025,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.9995148432860166,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0002430226906449055,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9991304538446362,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9584670231729056,
+    "figura_tomada": 0.0421581332689027,
+    "figura_area": 0.05251235016512884,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9897097339098362,
+    "figura_tomada": 0.0042912931789721685,
+    "figura_area": 0.014517100035792208,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p221": {
+    "texto_achado": 0.9818068622025456,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9903375306051067,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9955131373816495,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  }
+ },
+ "T1+D2": {
+  "e": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9803434911415262,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "assinatura A ii"
+    ]
+   },
+   "palatino_p009": {
+    "texto_achado": 0.9999879612834877,
+    "figura_tomada": 0.0053299629563417,
+    "figura_area": 0.005125568617768534,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 0.9999931282576353,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0006438113632705617,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9977962366502797,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 0.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 0.9951100244498777,
+    "figura_tomada": 0.010985935203974529,
+    "figura_area": 0.022207076305461516,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 0.9930695827819183,
+    "figura_tomada": 0.005994602469489623,
+    "figura_area": 0.0021350079338780634,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "numero 20"
+    ]
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9854049819647277,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 0.9903341244758168,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0019180578294435578,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.8546323308218076,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": [
+     "nota de margem Hic.",
+     "notas de margem April./Mart. (claras, cortadas)"
+    ]
+   },
+   "horas_p026": {
+    "texto_achado": 0.9845180985608374,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.960559980690321,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0012752301325901529,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.9978251595580055,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9966338577403004,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "reclamo lunt"
+    ]
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9573143196672609,
+    "figura_tomada": 0.00038072645536348397,
+    "figura_area": 0.00038867372565614566,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9247989213817471,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0023216937805210854,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "assinatura D iii"
+    ]
+   },
+   "graduale_p221": {
+    "texto_achado": 0.25498063087991146,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "folio C vij"
+    ]
+   },
+   "graduale_p222": {
+    "texto_achado": 0.0,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.15818091942659418,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "folio C viij"
+    ]
+   }
+  },
+  "ou": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0675846355778994,
+    "figura_area": 0.04814923309096769,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9991658170358698,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 0.9999879612834877,
+    "figura_tomada": 0.06353964419794868,
+    "figura_area": 0.06506190530511978,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 0.9999931282576353,
+    "figura_tomada": 0.06096269100724122,
+    "figura_area": 0.059566152751046764,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.002394983140579208,
+    "figura_area": 0.027201031857507475,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "horas_p011": {
+    "texto_achado": 0.9998096325909004,
+    "figura_tomada": 7.269555103227682e-05,
+    "figura_area": 0.00012097417201427495,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.08662794765936603,
+    "figura_area": 0.07756373767937925,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.05251844952353658,
+    "figura_area": 0.028551184963078506,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 1.0,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.07710402509147936,
+    "figura_area": 0.08448844884488449,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.08974806336799497,
+    "figura_area": 0.1485844048198053,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.9879180920799491,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "horas_p026": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9992517499396573,
+    "figura_tomada": 0.0013440860215053765,
+    "figura_area": 0.014956507051769275,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9991304538446362,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.9935935452222491,
+    "figura_area": 0.9706700827024093,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9684473166271483,
+    "figura_tomada": 0.23040334196211584,
+    "figura_area": 0.5792893395446299,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p221": {
+    "texto_achado": 0.9828444936358606,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9902500874431619,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9721662420624358,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  }
+ },
+ "K1+T1": {
+  "e": {
+   "palatino_p005": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9804087153239067,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "assinatura A ii"
+    ]
+   },
+   "palatino_p009": {
+    "texto_achado": 0.9999879612834877,
+    "figura_tomada": 0.0038083042652176263,
+    "figura_area": 0.0040441986532880995,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 0.9999931282576353,
+    "figura_tomada": 0.0,
+    "figura_area": 0.001863425847212682,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 0.9966802282872803,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "numero da pagina 9"
+    ]
+   },
+   "horas_p011": {
+    "texto_achado": 0.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 0.9625672371638142,
+    "figura_tomada": 0.005597928766356448,
+    "figura_area": 0.017765661044369215,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 0.9932437138677996,
+    "figura_tomada": 0.0010349247291283545,
+    "figura_area": 0.000831104034828243,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "numero 20"
+    ]
+   },
+   "opusmajus_p011": {
+    "texto_achado": 0.9933786275321612,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 0.979635254620805,
+    "figura_tomada": 0.0,
+    "figura_area": 0.002575746296434155,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 0.9999460563326013,
+    "figura_tomada": 0.027287319422150885,
+    "figura_area": 0.014840972455319528,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.325323035378233,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": [
+     "nota de margem Hic.",
+     "notas de margem April./Mart. (claras, cortadas)"
+    ]
+   },
+   "horas_p026": {
+    "texto_achado": 0.9853176333769443,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9535119478638667,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0013681276919179123,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 0.99966540916277,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9969017851271071,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": [
+     "reclamo lunt"
+    ]
+   },
+   "siebmacher_p009": {
+    "texto_achado": 0.9814854426619133,
+    "figura_tomada": 0.8300422459932202,
+    "figura_area": 0.7934049658243103,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9056518976552451,
+    "figura_tomada": 0.0,
+    "figura_area": 0.018333564177074064,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "assinatura D iii"
+    ]
+   },
+   "graduale_p221": {
+    "texto_achado": 0.25615661317100163,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "folio C vij"
+    ]
+   },
+   "graduale_p222": {
+    "texto_achado": 0.0,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.15818091942659418,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": [
+     "folio C viij"
+    ]
+   }
+  },
+  "ou": {
+   "palatino_p005": {
+    "texto_achado": 0.9998987273402424,
+    "figura_tomada": 0.05377618493346966,
+    "figura_area": 0.04421565381962058,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 88869,
+    "tinta_figura_px": 282653,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p007": {
+    "texto_achado": 0.9979162590155268,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291303,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.04957447604634823,
+    "figura_area": 0.056309371820936385,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 249196,
+    "tinta_figura_px": 240527,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "palatino_p010": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.06096269100724122,
+    "figura_area": 0.06451261892941425,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 291047,
+    "tinta_figura_px": 137822,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p007": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.002394983140579208,
+    "figura_area": 0.027201031857507475,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 141576,
+    "tinta_figura_px": 95199,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "horas_p011": {
+    "texto_achado": 0.9686845612031221,
+    "figura_tomada": 0.007502180866530968,
+    "figura_area": 0.006416030177557092,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 10506,
+    "tinta_figura_px": 68780,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p013": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.018683087257714646,
+    "figura_area": 0.05477995146649091,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 40900,
+    "tinta_figura_px": 14291,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p047": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.04962862124143202,
+    "figura_area": 0.03045585450156657,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28714,
+    "tinta_figura_px": 125613,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p011": {
+    "texto_achado": 1.0,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 335731,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p003": {
+    "texto_achado": 0.9903341244758168,
+    "figura_tomada": 0.001097752221641401,
+    "figura_area": 0.06218516588500955,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 81317,
+    "tinta_figura_px": 19130,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p020": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.0,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 6580,
+    "tinta_figura_px": 277855,
+    "pequenos": 2,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p165": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.12799218368343918,
+    "figura_area": 0.16249717428980484,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 259530,
+    "tinta_figura_px": 14329,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "opusmajus_p256": {
+    "texto_achado": 0.9804254902372307,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 142941,
+    "tinta_figura_px": 0,
+    "pequenos": 4,
+    "pequenos_perdidos": []
+   },
+   "horas_p026": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.007617083811003993,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41274,
+    "tinta_figura_px": 1686,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "horas_p027": {
+    "texto_achado": 0.9973207820419986,
+    "figura_tomada": 0.0,
+    "figura_area": 0.023781775187906428,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 41430,
+    "tinta_figura_px": 744,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "escola_p035": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0,
+    "figura_area": 0.00023556146768650925,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 119549,
+    "tinta_figura_px": 59991,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "rhetorica_p018": {
+    "texto_achado": 0.9997954009046203,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 410559,
+    "tinta_figura_px": 0,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "siebmacher_p009": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.9935935452222491,
+    "figura_area": 0.9720936864667948,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 84150,
+    "tinta_figura_px": 136581,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "palatino_p057": {
+    "texto_achado": 0.9810466936321229,
+    "figura_tomada": 0.23192781520216593,
+    "figura_area": 0.579438816580706,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 129054,
+    "tinta_figura_px": 202037,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p221": {
+    "texto_achado": 0.9877905368013282,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 28912,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   },
+   "graduale_p222": {
+    "texto_achado": 0.9856593214410633,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 22872,
+    "tinta_figura_px": 0,
+    "pequenos": 0,
+    "pequenos_perdidos": []
+   },
+   "graduale_p223": {
+    "texto_achado": 0.9483250313700141,
+    "figura_tomada": null,
+    "figura_area": null,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 26299,
+    "tinta_figura_px": 0,
+    "pequenos": 1,
+    "pequenos_perdidos": []
+   }
+  }
+ }
+}
