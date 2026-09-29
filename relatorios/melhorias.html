@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Melhorias tentadas e medidas</title>
+<title>Melhorias tentadas</title>
 <style>
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -891,6 +891,612 @@ lugar só evita que o filtro e o detector discordem sobre a mesma folha.</p>
   Tentativa 9; conserta-se consertando a detecção.</li>
 <li><strong>Pesel 76</strong> — o fundo escurece 156 → 148 no Mágico pro.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 06/08/2026 às 12:56</p>
+<hr />
+<h2>Tentativa 16 — a mancha do verso e o creme, no Melhorar e no Mágico pro</h2>
+<p>O Samuel apontou nos prints do teste completo:</p>
+<blockquote>
+<p>"era para tirar a mancha do verso, se era está ruim, não tirou a mancha do
+verso"</p>
+<p>"melhorar e magico pro não estão deixando a pagina totalmente branca, ela
+ainda deixa o fundo meio amarelado (e isso é ruim porque a impressora vai
+entender como cor a ser impressa, mesmo em preto e branco)"</p>
+</blockquote>
+<p>As duas queixas são o mesmo defeito. O Preto e branco já tinha resolvido a
+mancha — o Sauvola de <code>k</code> adaptativo, da Tentativa 15, a reduziu a chuvisco.
+Os outros dois filtros não usam Sauvola: eles empurravam para branco com um
+<strong>limiar fixo de 235</strong>. Numa folha amarelada isso não alcança nada:</p>
+<table>
+<thead>
+<tr>
+<th>na página 33 do Boécio</th>
+<th>tom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>papel já tratado</td>
+<td>225</td>
+</tr>
+<tr>
+<td>mancha do verso</td>
+<td>210</td>
+</tr>
+<tr>
+<td>limiar do empurrão</td>
+<td><strong>235</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Nenhum dos dois passa. O fundo continuava creme e a mancha, legível.</p>
+<h3>O que separa a mancha da letra não é o tom</h3>
+<p>Quem sabe separar é o <strong>Sauvola</strong> — ele compara cada pixel com a vizinhança, e
+a mancha perde por ser mais fraca que a vizinhança dela. É a mesma conta que o
+Preto e branco já faz. Então a pergunta passou a ser feita a ele: o que o Preto
+e branco chamaria de papel, aqui vira branco puro.</p>
+<p>Só que o Sauvola sozinho ainda pega a parte forte da mancha, e ali ela virava
+um fantasma cinza. O que separa esses dois é o <strong>tamanho da peça</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>página 33 do Boécio</th>
+<th>área mediana da peça</th>
+<th>peças</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>o texto</td>
+<td>66 px</td>
+<td>1012</td>
+</tr>
+<tr>
+<td>a mancha do verso</td>
+<td>4 px</td>
+<td>689</td>
+</tr>
+</tbody>
+</table>
+<p>Corte em 30 px, e peça pequena volta se encostar numa grande — que é o caso de
+acento, pingo do i e serifa solta.</p>
+<h3>Três travas, e cada uma custou uma medição</h3>
+<table>
+<thead>
+<tr>
+<th>Trava</th>
+<th>Por quê</th>
+<th>O que estragava sem ela</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>não entra em página sem texto</td>
+<td>entre os traços de uma estampa está a obra</td>
+<td>a estampa do Catecismo perdia o céu azul inteiro</td>
+</tr>
+<tr>
+<td>só onde a cor é a do papel</td>
+<td>mancha é âmbar; céu, rubricação e couro não</td>
+<td>mesmo céu, agora manchado</td>
+</tr>
+<tr>
+<td>pergunta ao ORIGINAL se o pixel é escuro</td>
+<td>o realce do Mágico pro escurece a mancha</td>
+<td>o próprio realce promovia a mancha a "escura demais para ser mancha" e a protegia</td>
+</tr>
+</tbody>
+</table>
+<p>A primeira saiu de uma contagem no acervo inteiro. Página de texto tem de 264
+(Graduale) a 2405 (Rhetorica) peças de letra; estampa e prancha ficam entre 6 e
+83. Há um vão de três vezes entre os dois grupos, e o corte cai no meio dele.</p>
+<p>A segunda também consertou um erro meu: escrevi a janela de matiz em graus, e
+no resto do arquivo ela está na escala do OpenCV. Com a unidade errada a trava
+excluía o próprio amarelado do papel, e a mancha voltava inteira.</p>
+<h3>Resultado</h3>
+<p>Aberta imagem por imagem: no Boécio 33 e 17 o fundo é branco puro e a mancha
+sumiu nos dois filtros; a Rhetorica 112 mantém a hachura da xilogravura e o
+texto ao redor; o Graduale 376 mantém rubricação e pautas vermelhas; as cinco
+capas do acervo saem intactas.</p>
+<h3>O que a régua diz depois das Tentativas 16 e 17</h3>
+<p>Nove livros, 63 páginas medidas:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>antes</th>
+<th>agora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>páginas piores que o original</td>
+<td>6 a 8</td>
+<td><strong>4</strong></td>
+</tr>
+<tr>
+<td>régua da seleção</td>
+<td>23 de 26</td>
+<td><strong>24 de 26</strong></td>
+</tr>
+<tr>
+<td>pico de memória</td>
+<td>1402 MB</td>
+<td>1458 MB (teto 2048)</td>
+</tr>
+<tr>
+<td>abrir o programa</td>
+<td>—</td>
+<td>0,44 s (meta 10)</td>
+</tr>
+</tbody>
+</table>
+<p>Os 4 que sobram são os dois casos já documentados, e nenhum é novo:</p>
+<ul>
+<li><strong>Graduale 126, nos três filtros</strong> — a partitura que o detector marca como
+  gravura. O ruído sobe porque ela é tratada como desenho. A página fica
+  laranja avisando da dúvida.</li>
+<li><strong>Pesel 76, no Mágico pro</strong> — o fundo escurece de 156 para 148.</li>
+</ul>
+<p>A memória subiu 56 MB, e é o preço da marcação em resolução plena: a máscara de
+tinta de uma página de 300 DPI ocupa 10 MB em vez de 1. Continua uma página de
+cada vez, e continua bem abaixo do teto.</p>
+<hr />
+<h2>Tentativa 17 — a marcação em resolução plena</h2>
+<blockquote>
+<p>"as ferramentas de seleção precisam ser mais precisas, precisam conseguir
+selecionar só o texto, precisam conseguir reconhecer desenhos cores padrões"</p>
+</blockquote>
+<p>A máscara de tinta era calculada num reduzido de 1200 px de altura e a resposta
+voltava ampliada com vizinho mais próximo. Numa página de 300 DPI isso é um
+terço da resolução: a marcação saía com degraus de três pixels em volta de cada
+letra. E o <code>k</code> era fixo em 0,20, enquanto o filtro já usava o adaptativo — o
+detector e o filtro discordavam sobre o que era tinta na <strong>mesma</strong> página.</p>
+<p>Régua da seleção: <strong>23 → 24 de 26</strong>. O Pesel 73 passou a separar o título
+impresso, o número da página e as quatro legendas da foto do bordado. Aberto e
+conferido: a marcação do Boécio 33 segue linha por linha e deixa a mancha do
+verso de fora, que é literalmente "selecionar só o texto".</p>
+<h3>O gargalo não era o Sauvola</h3>
+<p>Medido numa página de 3729 px de altura:</p>
+<table>
+<thead>
+<tr>
+<th>passo</th>
+<th>tempo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sauvola (DoxaPy)</td>
+<td>59 ms</td>
+</tr>
+<tr>
+<td>medir a espessura do traço</td>
+<td><strong>1899 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A esqueletização é a conta mais cara do programa. Ela passou a ser feita num
+reduzido e reconvertida pela escala. Comparado com a medição nativa nas 14
+páginas do acervo:</p>
+<table>
+<thead>
+<tr>
+<th>altura</th>
+<th>páginas com <code>k</code> fora de 0,01</th>
+<th>custo por página</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1500</td>
+<td>4 de 14</td>
+<td>105 ms</td>
+</tr>
+<tr>
+<td>2000</td>
+<td>2 de 14</td>
+<td>207 ms</td>
+</tr>
+<tr>
+<td><strong>2500</strong></td>
+<td><strong>1 de 14</strong></td>
+<td><strong>319 ms</strong></td>
+</tr>
+<tr>
+<td>3000</td>
+<td>1 de 14</td>
+<td>435 ms</td>
+</tr>
+<tr>
+<td>nativo</td>
+<td>—</td>
+<td>1900 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Em 2500 a resposta empata em 13 das 14 e o custo cai seis vezes. A que sobra é
+a página 454 do Marial, que cai no meio da rampa entre traço fino e grosso.</p>
+<p>Sobre isso entrou um cache: a mesma página pergunta o <code>k</code> três vezes — o
+detector, o filtro e a limpeza do papel. A chave é o <strong>conteúdo</strong> da imagem, e
+não o objeto, porque o programa copia a página entre um passo e outro. Medido:
+873 ms na primeira vez, 19 ms numa cópia da mesma página.</p>
+<hr />
+<h2>Tentativa 18 — a capa de trás do Boécio voltava a ser apagada</h2>
+<p>Achado ao abrir a bateria completa, imagem por imagem: o Preto e branco
+devolvia a capa de pergaminho da página 50 do Boécio como uma <strong>folha branca</strong>.
+É o bug da capa apagada, voltando por um caminho que ninguém tinha medido.</p>
+<p>A capa é protegida por ser marcada como gravura de página inteira, e quem
+decide isso é a textura. Contada em todas as páginas sem conteúdo do acervo, os
+dois grupos não se encostam:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>valores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>folha nua</td>
+<td>0,00 1,31 1,36 1,40 1,49 1,51 1,55 1,91</td>
+</tr>
+<tr>
+<td>capa</td>
+<td>5,05 6,19 6,25 7,10 12,48</td>
+</tr>
+</tbody>
+</table>
+<p>O limiar estava em <strong>5,5 — dentro do grupo das capas</strong>. A de 5,05 ficava de
+fora. Agora está em 3,0, no meio do vão, com folga de mais de duas vezes para
+cada lado.</p>
+<h3>A régua estava errada, e isso escondia o bug</h3>
+<p>A régua da seleção classificava essa página como "folha de guarda, sem nada
+impresso". Não é. Aberta ao lado da página 1, é a <strong>capa de trás do mesmo
+pergaminho</strong>: mesma cor, mesmo grão de couro, e as duas trazem a etiqueta
+octogonal RESERVADO / B. N. L. da biblioteca — na p1 à esquerda, na p50 à
+direita, como é de esperar do verso.</p>
+<p>Enquanto o caso dizia "folha nua", a régua <strong>aprovava</strong> a página sair branca. A
+classificação errada não era um detalhe: era ela que escondia o defeito.</p>
+<p>Corrigi o caso e escrevi o porquê dentro do próprio arquivo, para o Samuel
+poder discordar sem ter de reconstituir o raciocínio.</p>
+<h3>Resultado</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>antes</th>
+<th>depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>páginas piores que o original</td>
+<td>4</td>
+<td><strong>4</strong></td>
+</tr>
+<tr>
+<td>régua da seleção</td>
+<td>24 de 26</td>
+<td><strong>24 de 26</strong></td>
+</tr>
+<tr>
+<td>pico de memória</td>
+<td>1458 MB</td>
+<td>1454 MB</td>
+</tr>
+</tbody>
+</table>
+<p>Nada piorou, e a capa sai inteira. As folhas nuas continuam indo a branco — a
+anotação a lápis no pé do Palatino sobrevive.</p>
+<hr />
+<h2>Tentativa 19 — folhear o livro, e o vazamento que ele revelou</h2>
+<blockquote>
+<p>"gostaria de poder visualizar o PDF e poder folhear ele enquanto escolho as
+opções que vão ser aplicadas nele nesta parte do programa aqui" — o Samuel,
+sobre a tela "Marque o que você quer fazer"</p>
+</blockquote>
+<p>A tela passou a ter duas colunas: as escolhas à esquerda, o livro à direita,
+com <code>&lt;</code>, <code>&gt;</code>, contador de folhas e botão <strong>tela cheia</strong>. Sem isso a pessoa
+marcava "dividir folhas ao meio" sem ter visto se a folha tem mesmo duas
+páginas, e só descobria o engano na tela seguinte.</p>
+<p>Mostra a folha <strong>como ela é no arquivo</strong>, sem filtro nenhum. O que os filtros
+fazem se vê na tela de conferir, com a prévia lado a lado; misturar as duas
+coisas aqui faria julgar o filtro por uma imagem pequena.</p>
+<h3>O que apareceu ao medir a memória</h3>
+<p>Medindo o folhear no Marial (907 folhas, 205 MB), a memória subia <strong>uns 2 MB a
+cada folha virada</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>folhas viradas</th>
+<th>memória</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25</td>
+<td>157 MB</td>
+</tr>
+<tr>
+<td>50</td>
+<td>209 MB</td>
+</tr>
+<tr>
+<td>75</td>
+<td>262 MB</td>
+</tr>
+<tr>
+<td>100</td>
+<td>314 MB</td>
+</tr>
+</tbody>
+</table>
+<p>Não era do folhear: era do <code>pagina_para_array</code>, que <strong>todo o programa usa</strong> — o
+pipeline, as prévias, as miniaturas e a régua. Por baixo, o MuPDF guarda
+fontes, imagens e a árvore de cada página já aberta, num armazém que ele só
+limpa quando o documento fecha. Num livro de 900 folhas isso é o programa
+inteiro na memória, e não uma folha.</p>
+<p>Uma linha resolve — <code>fitz.TOOLS.store_shrink(100)</code> ao fim de cada leitura:</p>
+<table>
+<thead>
+<tr>
+<th>folhas viradas</th>
+<th>antes</th>
+<th>depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>314 MB</td>
+<td><strong>105 MB, e para de subir</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>Sobre o teste dessa correção</h3>
+<p>Tentei testar medindo a memória do processo, e não dá: o armazém do MuPDF tem
+teto próprio, uns 256 MB. Um PDF de teste satura o teto na primeira volta e
+para de crescer — <strong>o teste passava com e sem a correção</strong>, e teste que passa
+sempre não é teste. Reproduzir de verdade exigiria mais de 256 MB de páginas
+diferentes, e uma bateria não pode custar isso.</p>
+<p>O teste que ficou verifica o que dá para afirmar sem enganar: <strong>ler uma folha
+esvazia o armazém</strong>. Conferido que ele reprova quando a linha sai. O número de
+verdade está medido acima, no acervo, à mão.</p>
+<h3>O que a correção do vazamento fez no acervo inteiro</h3>
+<p>A régua sobre os nove livros, com e sem a linha:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>antes</th>
+<th>depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pico de memória</td>
+<td>1454 MB</td>
+<td><strong>1148 MB</strong> (teto 2048)</td>
+</tr>
+<tr>
+<td>páginas piores que o original</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>abrir o programa</td>
+<td>0,46 s</td>
+<td>0,56 s</td>
+</tr>
+</tbody>
+</table>
+<p>São 306 MB a menos no programa inteiro, e não só no folhear — porque quem
+lia página era o <code>pagina_para_array</code>, e ele é o mesmo para o pipeline, as
+prévias, as miniaturas e a própria régua. Nada piorou em qualidade.</p>
+<hr />
+<h2>Tentativa 20 — o papel dentro da gravura (os quadradinhos na roupa do anjo)</h2>
+<p><strong>Data:</strong> 28/09/2026
+<strong>Situação:</strong> aguardando conferência do Samuel (Lista de bugs do plano, 28/09)
+<strong>O que se queria:</strong> a regra do resultado da Fase 1 — todo o papel branco,
+inclusive dentro da gravura (fundo do retrato do Palatino 5); só a pintura de
+verdade mantém a cor (roupa do anjo da Escola 35, céu, foto da estátua do Opus
+Majus 20); sem quadradinhos.</p>
+<h3>A causa (investigação de 28/09)</h3>
+<p>A limpeza do papel da página de texto (<code>_limpar_o_papel_de_verdade</code>: "o que não
+é letra e tem cor de papel vira branco") rodava também no recorte de cada
+gravura, pelo Melhorar dentro de <code>_limpar_cada_gravura</code>. O pano quase branco
+passava por papel; a cor do JPEG, em quadrados de 16×16, fazia uns quadrados
+passarem e outros não. A mesma coisa lavava a foto do Opus 20. Afeta Mágico
+pro, Melhorar e a gravura do Preto e branco.</p>
+<h3>O que foi medido antes de escolher</h3>
+<ul>
+<li><strong>Pela cor não separa.</strong> O pano do anjo (luz 222 a 233, pouca cor) é mais
+  parecido com o papel da página (250) do que o papel de dentro do retrato do
+  Palatino 5 é com a margem dele (183 contra 213, saturação 97 contra 56). A
+  estátua do Opus 20 tem a cor do papel, só 14 tons mais escura.</li>
+<li><strong>Pela estrutura separa.</strong> Densidade de traço fino e escuro sobre fundo claro
+  (top-hat preto, o fechamento menos a imagem): pinturas da Escola 0,000; foto
+  do Opus 20 0,001 (só um pico no livro da mão); retrato do Palatino 5 0,09 a
+  0,13; tabela do Opus 256 0,06; Rhetorica 73 0,10. Fração da gravura coberta
+  por traço: foto 0,9%, pinturas 0%, gravuras de traço 24% a 88%.</li>
+<li><strong>Cor relativa ao papel da própria gravura.</strong> Horas 13: papel até 7 de
+  distância, moldura dourada a partir de 25. Palatino 5: papel até 13.</li>
+</ul>
+<h3>O que foi tentado</h3>
+<ol>
+<li><strong>Não limpar dentro da gravura</strong> (o conserto simulado da investigação):
+   devolve o anjo e a foto, mas o papel do retrato do Palatino 5 fica creme e o
+   da tabela do Opus 256 cinza-claro. Fere a regra. Descartado.</li>
+<li><strong>Veto por "sombreado"</strong> (densidade de tom médio liso) para a mancha do
+   livro da mão da estátua: não funciona — a estátua é lisa e clara, não conta
+   como sombreado; e o veto se acendia nas tabelas das Horas. Trocado pela
+   fração mínima de traço na gravura (5%).</li>
+<li><strong>Na gravura de traço, a pergunta da página de texto ("longe da letra")
+   com a cor relativa</strong>: o papel ficou branco, mas <strong>a hachura fraca do retrato
+   se partiu</strong> e a barba perdeu detalhe — o Sauvola regulado para letra não vê
+   o traço fraco. Descartado.</li>
+<li><strong>Adotado:</strong> na gravura de traço, papel é o ponto <strong>no nível do fundo em
+   volta</strong> (o próprio fechamento; rampa de 0,78 a 0,90 da luz do fundo), com
+   fundo claro, cor do papel da própria gravura (a e b alisados, rampa), e
+   <strong>ligado</strong> ao papel entre os traços (componentes ligados a partir de
+   sementes). Gravura de tom contínuo (menos de 5% de traço): nada vai a branco
+   por aqui. <code>core/filtros.py</code>, <code>_so_o_papel_da_gravura</code>.</li>
+</ol>
+<h3>Resultado (as 32 páginas do gabarito, Mágico pro, conferido de olho)</h3>
+<ul>
+<li>Mudam 8 páginas, todas entre as que passam pelas travas da limpeza; as outras
+  ficam idênticas ponto a ponto.</li>
+<li>Escola 35 e 7: roupa, céu e nuvens de volta, sem quadrados.</li>
+<li>Opus 20: a foto volta com os cinzas. Sobra uma faixa lavada no alto da foto
+  (a caixa da gravura do detector começa 67 pontos abaixo do topo da foto).</li>
+<li>Palatino 5 e Rhetorica 73: papel branco, hachura e letras inteiras, sem o
+  contorno creme em volta da letra.</li>
+<li>Opus 256: papel branco, e os números da última coluna (o "16", o "36") que
+  a limpeza antiga comia ficam inteiros.</li>
+<li>Horas 13 e 14: só a beirinha vermelha da moldura, a olho igual.</li>
+<li>Tempo só do filtro (antes e depois intercalados no mesmo processo, PC com
+  outros agentes rodando): diferença dentro do ruído, de −0,11 a +0,11 s por
+  página. A primeira versão, em ponto flutuante e em tamanho cheio, deixava a
+  Horas 13 um segundo mais lenta; refeita em 8 bits e com os mapas lisos numa
+  cópia reduzida.</li>
+<li>Conferências: <code>relatorios/conferir/fase1-2026-09-28-1844</code> (32 páginas,
+  Mágico pro) e <code>-1853</code>, <code>-1854</code>, <code>-1855</code> (as 5 em destaque: Mágico pro,
+  Melhorar, Preto e branco). Relatório com as provas:
+  <code>relatorios/conserto-anjo-2026-09-28/</code>.</li>
+</ul>
+<h2>Tentativa 21 — tirar o fundo de PDF com camadas do Internet Archive (item 1.1, 28/09/2026)</h2>
+<p>Módulo novo <code>core/camadas.py</code> (ainda não ligado ao programa). Conferência:
+<code>relatorios/conferir/fase1-2026-09-28-1915</code>. O que foi tentado e descartado:</p>
+<ol>
+<li><strong>Manter a zona do detector inteira como o PDF desenha.</strong> Páginas que o
+   detector marca inteiras (Opus Majus 256, Rhetorica 73) saíam sem mudança
+   nenhuma. Descartado.</li>
+<li><strong>"Fundo escuro longe da tinta" para decidir a zona.</strong> O retrato do Palatino
+   5 perdia a hachura fina. Trocado por "onde a máscara não cobre".</li>
+<li><strong>Papel = percentil 75 do fundo, depois o pico da página inteira.</strong> Na Pesel
+   o linho claro virava "papel" e a foto sumia, e a decisão mudava com a
+   resolução. Trocado pelo pico na margem.</li>
+<li><strong>Análise no DPI de saída.</strong> A prévia e o PDF decidiam diferente (Palatino
+   116). Agora é sempre a 150 DPI.</li>
+<li><strong>Descartar o que "encosta na borda".</strong> No Siebmacher, 97 de 134 páginas
+   ficavam intactas por causa do preto do scanner. Trocado pela regra da faixa
+   de 10% junto à borda.</li>
+<li><strong>Separar gravura de página inteira de texto com moldura grossa</strong> por
+   fração, densidade local e manchas compactas: os números se cruzam entre os
+   dois tipos. Virou só o aviso "conferir"; fica para o detector do item 1.2.</li>
+</ol>
+<h2>Tentativa 22 — tirar o fundo sem perder a tinta que só existe na camada de baixo (item 1.1, 29/09/2026)</h2>
+<p>Conserto das perdas achadas pelo verificador (Siebmacher 104 e 105, molduras e
+título do Palatino). Conferência: <code>relatorios/conferir/fase1-2026-09-29-0108</code>.
+Adotado: trazer de volta o traço do fundo que é pelo menos 30% mais escuro que
+o papel e fica perto da tinta de cima (o verso, o carimbo e a mancha d'água
+ficam abaixo de 20%). Tentado e descartado:</p>
+<ol>
+<li><strong>Separar o meio-tom perdido (pontilhado de gravura) do verso</strong> por fração,
+   raio de 1 e 2 pixels e densidade local: os números se cruzam (2,0% no
+   Palatino 68 contra 2,7% no Palatino 10). Ficou só o aviso "conferir".</li>
+<li><strong>Separar o verso da tinta clara pelo escuro:</strong> os dois dão de 0,32 a 0,45.
+   A escrita clara que só existe no fundo não volta; a página fica intacta
+   quando ela é muita (Siebmacher 103 a 105).</li>
+<li><strong>Dividir o papel canal a canal</strong> para branquear dentro das zonas mantidas:
+   puxa o cinza da foto para o azul (Opus Majus 20). Trocado pela conta em Lab
+   (brilho multiplicado igual para todos os tons, cor do papel tirada).</li>
+</ol>
+<hr />
+<h2>Tentativa 23 — gravura pequena não roda mais o Melhorar na folha inteira</h2>
+<p><strong>Data:</strong> 29/09/2026
+<strong>Situação:</strong> aguardando conferência (decisão da gerente pela regra 6)
+<strong>Número atacado:</strong> o Preto e branco do teste de velocidade, 8% mais lento
+(33,1 → 35,7 s). Causa medida: o detector passou a marcar o título corrido
+"de Maria." do Marial 153 como gravura, e qualquer gravura fazia
+<code>_limpar_cada_gravura</code> rodar o Melhorar na folha inteira (quase 3 s a 300 DPI)
+só para usar o resultado na borda suave em volta dela.</p>
+<ol>
+<li><strong>Melhorar só numa área em volta da gravura</strong> (o pedido da gerente):
+   rápido, mas numa área pequena a limpeza do papel não reconhece mais
+   "página de texto" (75 letras no Marial 153; pede 200) e o papel da borda
+   parava em 220–229 em vez de 255 — um halo cinza em volta da caixa, visível,
+   de 11 a 28 mil pontos por página. Descartado.</li>
+<li><strong>Adotado:</strong> com gravura pequena (caixa até 25% da folha) e sem pedacinhos
+   de gravura menores que 0,2%, a borda suave usa o próprio filtro da página
+   em vez do Melhorar da folha inteira (<code>GRAVURA_PEQUENA_ATE</code>,
+   <code>core/filtros.py</code>). Os recortes das gravuras continuam com o Melhorar
+   deles.</li>
+</ol>
+<p><strong>Resultado:</strong> Melhorar idêntico ponto a ponto nas 32 páginas; Mágico pro e
+Preto e branco com 27 de 32 idênticas (as 5 em destaque do Samuel idênticas nos
+3 filtros); nas 5 que mudam, de 17 a 426 pontos na beirada da caixa, sem
+diferença a olho. Marial 146–155: 8 idênticas; 146 e 153 mudam 14 a 152 pontos
+na beirada. Etapa Processar em Preto e branco, antes e depois intercalados (PC
+com outros agentes): 52,3 → 46,6 s (−5,6 s).</p>
+<h2>Tentativa 24 — a foto do Opus Majus 20 fica igual ao original (bug do item 1.1)</h2>
+<p><strong>Data:</strong> 29/09/2026
+<strong>Situação:</strong> aguardando conferência (Lista de bugs do plano, linha de 29/09 "Bug do 1.1")
+<strong>O pedido, nas palavras do Samuel:</strong> "A foto do Opus Majus 20 não pode sair
+mais clara: tem que ficar igual ao original."</p>
+<p><strong>A causa.</strong> O conserto da auréola (Tentativa 22, item 3) passou a branquear o
+papel de toda zona mantida com <code>_branquear_papel</code>: o brilho (L do Lab) era
+multiplicado para o papel chegar a branco, <strong>igual para todos os tons</strong>, e a
+cor do papel era tirada. Na gravura de traço isso é o papel entre os traços
+indo a branco (o pedido da Fase 1). Na foto, é a foto inteira clareando: a
+túnica da estátua ia do cinza 183 para 226 e o creme sumia (b do Lab 140 → 129).</p>
+<p><strong>Adotado</strong> (<code>core/camadas.py</code>, <code>_onde_branquear</code> e <code>_zona_de_traco</code>):</p>
+<ol>
+<li>Zona a zona, a pergunta "é de traço ou de tom contínuo?" é a mesma do Mágico
+   pro (<code>core/filtros.py</code>, <code>_peso_de_traco</code> e <code>GRAVURA_DE_TRACO_MINIMA</code>, da
+   Tentativa 20). Medido nas zonas mantidas: foto do Opus 20, 0,3% de traço;
+   todas as outras (molduras e capitulares do Palatino 9, 10, 57, 66 e 67;
+   Palatino 12; Rhetorica 38; ex-libris da Pesel 2), de 29% a 100%.</li>
+<li>De traço: branqueia como antes (imagem idêntica ponto a ponto).</li>
+<li>De tom contínuo: o miolo fica <strong>como o PDF desenha</strong>; vai a branco só o
+   papel que a zona pegou em volta da foto: o que tem o tom e a cor do papel
+   logo fora da zona e se liga ao lado de fora sem atravessar a foto, até
+   12 mm da beirada da zona.</li>
+</ol>
+<p><strong>Tentado e descartado:</strong></p>
+<ul>
+<li><strong>Curva que só clareia o que está perto do tom do papel</strong> (em vez de
+  separar foto de traço): a estátua fica a só uns 25 níveis do papel (e o
+  claro dela chega a 11 níveis); qualquer curva que leve o papel a branco
+  clareia a estátua. Não cumpre "igual ao original". Não implementado.</li>
+<li><strong>Referência do papel = papel da página inteira</strong>: no Opus 20 o papel à
+  direita da foto é 15 níveis mais escuro que à esquerda (199 a 220 no anel
+  em volta); com a tolerância apertada, a folga da direita ficava creme.
+  Trocado pelo papel do anel de 3 mm em volta da zona, e tolerância de 20 de
+  tom (só para mais escuro; mais claro vale).</li>
+<li><strong>Limite de 5 mm da beirada da zona</strong> (contra o papel "vazar" para dentro de
+  uma parte clara da foto): a zona sintética do teste passa 11 mm da foto e
+  sobrava um remendo creme. Subido para 12 mm (a zona do detector de hoje
+  passa uns 2 mm da foto).</li>
+<li><strong>Dilatação de 3 mm para achar o anel</strong> custava 10 ms por página com foto;
+  trocada por distância (a mesma coisa).</li>
+</ul>
+<p><strong>Resultado:</strong></p>
+<ul>
+<li>Opus Majus 20, em resolução cheia: túnica da estátua 183 (original) / 226
+  (antes) / <strong>183</strong> (depois); creme (b do Lab) 140 / 129 / <strong>140</strong>; a foto
+  inteira, fora a linha de 1 ponto da beirada, <strong>idêntica ao PDF</strong>; o papel
+  entre a foto e a legenda continua branco (mínimo 245), sem a auréola.</li>
+<li>As outras 15 páginas do 1.1 no gabarito: <strong>idênticas</strong> ponto a ponto à
+  rodada <code>fase1-2026-09-29-0851</code>. Também idênticas: Palatino 12, 48, 68, 94;
+  Rhetorica 38; Pesel 2; Siebmacher 13, 15, 104, 105, 106, 118, 124.</li>
+<li>Os 5 livros inteiros (1256 páginas, análise a 40 DPI): <strong>nenhuma decisão
+  mudou</strong> (fundo tirado / intacta / conferir), contra a conta de 29/09. Só
+  duas páginas têm zona "de tom contínuo": o Opus 20 e o Siebmacher 25 (lá a
+  zona é o preto do scanner embaixo da folha, 0,3% dos pontos mudam, sem
+  diferença a olho).</li>
+<li><strong>Pesel 2 (ferrugem rosada no ex-libris): não resolvido.</strong> A zona é de
+  traço (58%) e continua branqueando como antes; o rosado vem da mesma
+  função (<code>_branquear_papel</code> tira o amarelo do papel também da ferrugem,
+  que tem quase o brilho do papel), mas não deste conserto.</li>
+<li>Tempo (a medida isolada de 6 páginas a 300 DPI, antes e depois
+  alternados, 6 rodadas, sem outro agente rodando no momento): antes 8,58 s
+  em média (menor 8,47), depois 8,64 s (menor 8,52), dentro do ruído das
+  rodadas (8,47 a 8,80). Só a página com foto paga a pergunta nova: Opus 20
+  de 1,72 para 1,76 s (cerca de 35 ms).</li>
+<li>Conferência: <code>relatorios/conferir/fase1-2026-09-29-0956</code> (as 16 páginas;
+  em <code>acervo\</code>, Opus 20, Pesel 2 e Siebmacher 25 lado a lado: original,
+  antes, depois).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 29/09/2026 às 09:58</p>
 </body>
 </html>

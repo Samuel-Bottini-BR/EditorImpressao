@@ -884,3 +884,75 @@ Preto e branco com 27 de 32 idênticas (as 5 em destaque do Samuel idênticas no
 diferença a olho. Marial 146–155: 8 idênticas; 146 e 153 mudam 14 a 152 pontos
 na beirada. Etapa Processar em Preto e branco, antes e depois intercalados (PC
 com outros agentes): 52,3 → 46,6 s (−5,6 s).
+
+## Tentativa 24 — a foto do Opus Majus 20 fica igual ao original (bug do item 1.1)
+
+**Data:** 29/09/2026
+**Situação:** aguardando conferência (Lista de bugs do plano, linha de 29/09 "Bug do 1.1")
+**O pedido, nas palavras do Samuel:** "A foto do Opus Majus 20 não pode sair
+mais clara: tem que ficar igual ao original."
+
+**A causa.** O conserto da auréola (Tentativa 22, item 3) passou a branquear o
+papel de toda zona mantida com `_branquear_papel`: o brilho (L do Lab) era
+multiplicado para o papel chegar a branco, **igual para todos os tons**, e a
+cor do papel era tirada. Na gravura de traço isso é o papel entre os traços
+indo a branco (o pedido da Fase 1). Na foto, é a foto inteira clareando: a
+túnica da estátua ia do cinza 183 para 226 e o creme sumia (b do Lab 140 → 129).
+
+**Adotado** (`core/camadas.py`, `_onde_branquear` e `_zona_de_traco`):
+
+1. Zona a zona, a pergunta "é de traço ou de tom contínuo?" é a mesma do Mágico
+   pro (`core/filtros.py`, `_peso_de_traco` e `GRAVURA_DE_TRACO_MINIMA`, da
+   Tentativa 20). Medido nas zonas mantidas: foto do Opus 20, 0,3% de traço;
+   todas as outras (molduras e capitulares do Palatino 9, 10, 57, 66 e 67;
+   Palatino 12; Rhetorica 38; ex-libris da Pesel 2), de 29% a 100%.
+2. De traço: branqueia como antes (imagem idêntica ponto a ponto).
+3. De tom contínuo: o miolo fica **como o PDF desenha**; vai a branco só o
+   papel que a zona pegou em volta da foto: o que tem o tom e a cor do papel
+   logo fora da zona e se liga ao lado de fora sem atravessar a foto, até
+   12 mm da beirada da zona.
+
+**Tentado e descartado:**
+
+- **Curva que só clareia o que está perto do tom do papel** (em vez de
+  separar foto de traço): a estátua fica a só uns 25 níveis do papel (e o
+  claro dela chega a 11 níveis); qualquer curva que leve o papel a branco
+  clareia a estátua. Não cumpre "igual ao original". Não implementado.
+- **Referência do papel = papel da página inteira**: no Opus 20 o papel à
+  direita da foto é 15 níveis mais escuro que à esquerda (199 a 220 no anel
+  em volta); com a tolerância apertada, a folga da direita ficava creme.
+  Trocado pelo papel do anel de 3 mm em volta da zona, e tolerância de 20 de
+  tom (só para mais escuro; mais claro vale).
+- **Limite de 5 mm da beirada da zona** (contra o papel "vazar" para dentro de
+  uma parte clara da foto): a zona sintética do teste passa 11 mm da foto e
+  sobrava um remendo creme. Subido para 12 mm (a zona do detector de hoje
+  passa uns 2 mm da foto).
+- **Dilatação de 3 mm para achar o anel** custava 10 ms por página com foto;
+  trocada por distância (a mesma coisa).
+
+**Resultado:**
+
+- Opus Majus 20, em resolução cheia: túnica da estátua 183 (original) / 226
+  (antes) / **183** (depois); creme (b do Lab) 140 / 129 / **140**; a foto
+  inteira, fora a linha de 1 ponto da beirada, **idêntica ao PDF**; o papel
+  entre a foto e a legenda continua branco (mínimo 245), sem a auréola.
+- As outras 15 páginas do 1.1 no gabarito: **idênticas** ponto a ponto à
+  rodada `fase1-2026-09-29-0851`. Também idênticas: Palatino 12, 48, 68, 94;
+  Rhetorica 38; Pesel 2; Siebmacher 13, 15, 104, 105, 106, 118, 124.
+- Os 5 livros inteiros (1256 páginas, análise a 40 DPI): **nenhuma decisão
+  mudou** (fundo tirado / intacta / conferir), contra a conta de 29/09. Só
+  duas páginas têm zona "de tom contínuo": o Opus 20 e o Siebmacher 25 (lá a
+  zona é o preto do scanner embaixo da folha, 0,3% dos pontos mudam, sem
+  diferença a olho).
+- **Pesel 2 (ferrugem rosada no ex-libris): não resolvido.** A zona é de
+  traço (58%) e continua branqueando como antes; o rosado vem da mesma
+  função (`_branquear_papel` tira o amarelo do papel também da ferrugem,
+  que tem quase o brilho do papel), mas não deste conserto.
+- Tempo (a medida isolada de 6 páginas a 300 DPI, antes e depois
+  alternados, 6 rodadas, sem outro agente rodando no momento): antes 8,58 s
+  em média (menor 8,47), depois 8,64 s (menor 8,52), dentro do ruído das
+  rodadas (8,47 a 8,80). Só a página com foto paga a pergunta nova: Opus 20
+  de 1,72 para 1,76 s (cerca de 35 ms).
+- Conferência: `relatorios/conferir/fase1-2026-09-29-0956` (as 16 páginas;
+  em `acervo\`, Opus 20, Pesel 2 e Siebmacher 25 lado a lado: original,
+  antes, depois).

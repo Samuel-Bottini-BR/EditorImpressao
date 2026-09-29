@@ -637,20 +637,15 @@ def test_figura_achada_fica_como_o_pdf_desenha():
     img = resultado.imagem
     lidas = ler_camadas(doc, 0)
     como_o_pdf = compor(lidas, np.ones((lidas.altura, lidas.largura), np.float32))
-    # dentro da foto: os tons do PDF, so com o papel levado a branco (o brilho
-    # multiplicado na mesma proporcao para todos os tons)
-    cinza = lambda x: cv2.cvtColor(x, cv2.COLOR_BGR2GRAY).astype(np.float32)  # noqa: E731
-    papel = float(cinza(np.uint8([[bgr(PAPEL_RGB)]]))[0, 0])
-    esperado = np.clip(cinza(_meio_da_foto(como_o_pdf)) * 255.0 / papel, 0, 255)
-    assert np.abs(cinza(_meio_da_foto(img)) - esperado).mean() < 8.0
+    # dentro da foto: IGUAL ao PDF, tom e cor (decisao do Samuel, 29/09/2026:
+    # "A foto do Opus Majus 20 nao pode sair mais clara: tem que ficar igual
+    # ao original"). Antes o brilho da foto era multiplicado junto com o papel.
+    assert resultado.medidas["zonas_de_foto"] == 1
+    diferenca = np.abs(_meio_da_foto(img).astype(np.int16)
+                       - _meio_da_foto(como_o_pdf).astype(np.int16))
+    assert diferenca.max() <= 1
     # o lado escuro da foto continua escuro (nao virou pontilhado no branco)
     assert _meio_da_foto(img)[:, :20].mean() < 90
-    # a sombra cinza da foto continua cinza: tirar o amarelado do papel nao
-    # pode puxar o tom escuro para o azul (o erro do "magic color", CLAUDE.md
-    # secao 9; dividindo canal a canal, a diferenca azul - vermelho daria ~20)
-    fora_dos_pontinhos = _meio_da_foto(~mascara_com_pontinhos()[:, :, None].repeat(3, 2))[:, :, 0]
-    sombra = _meio_da_foto(img).astype(np.int16)[:, :30][fora_dos_pontinhos[:, :30]]
-    assert np.abs(sombra[:, 0] - sombra[:, 2]).mean() < 8
     # fora da foto: papel branco
     assert img[5:40, 5:40].min() >= 250
 
@@ -676,8 +671,66 @@ def test_papel_dentro_da_zona_mantida_fica_branco():
     folga = img[int((y0 - 0.06) * ALTURA_CIMA):int((y0 - 0.01) * ALTURA_CIMA),
                 int(x0 * LARGURA_CIMA):int(x1 * LARGURA_CIMA)]
     assert folga.min() >= 245
-    # e a foto continua com os tons
+    # e a foto continua com os tons, iguais aos do PDF (nem mais clara, nem
+    # sem o creme do papel)
     assert _meio_da_foto(img)[:, :20].mean() < 90
+    lidas = ler_camadas(doc, 0)
+    como_o_pdf = compor(lidas, np.ones((lidas.altura, lidas.largura), np.float32))
+    diferenca = np.abs(_meio_da_foto(img).astype(np.int16)
+                       - _meio_da_foto(como_o_pdf).astype(np.int16))
+    assert diferenca.max() <= 1
+
+
+def test_foto_com_parte_clara_na_beirada_nao_vai_a_branco():
+    """A parte mais clara da foto (a estatua do Opus Majus 20 chega a 198, o
+    papel em volta a 199-220) encostada na beirada da zona: o papel que vai a
+    branco e so o que se liga ao lado de fora; o claro da foto, cercado pelo
+    escuro dela, fica. E o que passa da beirada fica, no maximo, a
+    BRANQUEAR_ATE_MM dela."""
+    fundo = fundo_com_foto()
+    x0, y0, x1, y1 = FOTO
+    a, b = int(x0 * LARGURA_FUNDO), int(x1 * LARGURA_FUNDO)
+    c, d = int(y0 * ALTURA_FUNDO), int(y1 * ALTURA_FUNDO)
+    # um "rosto" claro, quase da cor do papel, no meio da foto
+    meio_y, meio_x = (c + d) // 2, (a + b) // 2
+    rosto = tuple(int(v * 0.93) for v in PAPEL_RGB)
+    fundo[meio_y - 8:meio_y + 8, meio_x - 12:meio_x + 12] = rosto
+    doc = pdf_com_camadas(fundo=fundo, mascara=mascara_padrao())
+    resultado = tirar_fundo(doc, 0, detector_de_figuras=detector_que_acha_a_foto)
+    assert resultado.medidas["zonas_de_foto"] == 1
+    lidas = ler_camadas(doc, 0)
+    como_o_pdf = compor(lidas, np.ones((lidas.altura, lidas.largura), np.float32))
+    fy, fx = ALTURA_CIMA / ALTURA_FUNDO, LARGURA_CIMA / LARGURA_FUNDO
+    j = (slice(int((meio_y - 5) * fy), int((meio_y + 5) * fy)),
+         slice(int((meio_x - 9) * fx), int((meio_x + 9) * fx)))
+    assert np.abs(resultado.imagem[j].astype(np.int16) - como_o_pdf[j].astype(np.int16)).max() <= 1
+
+
+def test_gravura_de_traco_ainda_branqueia_o_papel_entre_os_tracos():
+    """Na zona de TRACO (xilogravura, moldura, capitular: Palatino 9, 10, 57,
+    66 e 67), o papel entre os tracos continua indo a branco, como antes do
+    conserto da foto; so a foto e a pintura ficam com o tom do original."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    mascara = mascara_padrao()
+    x0, y0, x1, y1 = ZONA_DA_GRAVURA
+    for i, y in enumerate(range(int(y0 * ALTURA_CIMA) + 4, int(y1 * ALTURA_CIMA) - 4, 9)):
+        faixa = slice(int(x0 * LARGURA_CIMA) + 4, int(x1 * LARGURA_CIMA) - 4)
+        if i % 2 == 0:
+            mascara[y:y + 3, faixa] = True
+        else:
+            yf = int(y * ALTURA_FUNDO / ALTURA_CIMA)
+            fundo[yf:yf + 2, int(x0 * LARGURA_FUNDO) + 2:int(x1 * LARGURA_FUNDO) - 2] = (60, 50, 40)
+    doc = pdf_com_camadas(fundo=fundo, mascara=mascara)
+    resultado = tirar_fundo(doc, 0, detector_de_figuras=detector_que_acha_a_gravura)
+    assert resultado.zonas_mantidas == 1
+    assert resultado.medidas["zonas_de_foto"] == 0
+    # o papel da zona, longe de qualquer traco (a coluna de papel liso entre
+    # a beirada da zona e o comeco das linhas), sai branco
+    img = resultado.imagem
+    coluna = img[int((y0 + 0.02) * ALTURA_CIMA):int((y1 - 0.02) * ALTURA_CIMA),
+                 int(x0 * LARGURA_CIMA) + 1:int(x0 * LARGURA_CIMA) + 3]
+    assert coluna.min() >= 240
 
 
 def test_zona_de_figura_sem_tons_no_fundo_vai_a_branco():
@@ -917,3 +970,123 @@ def test_gabarito_mascara_jbig2_le_como_o_mupdf_desenha(pid):
         mupdf = desenho_do_mupdf(doc, 0, lidas.largura, lidas.altura)
     borrado = [cv2.GaussianBlur(img, (0, 0), 2).astype(np.int16) for img in (como_o_pdf, mupdf)]
     assert np.abs(borrado[0] - borrado[1]).mean() < 5.0
+
+
+# --- o que ja foi consertado no 1.1 nao pode voltar (29/09/2026) ---------------
+
+def _gray(img: np.ndarray) -> np.ndarray:
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
+@precisa_do_gabarito
+def test_gabarito_opus20_a_foto_fica_igual_ao_original():
+    """Bug do 1.1, decisao do Samuel (29/09/2026): "A foto do Opus Majus 20 nao
+    pode sair mais clara: tem que ficar igual ao original." A estatua saia do
+    cinza 183 para 225 e perdia o creme; o papel em volta da foto continua
+    branco (sem a aureola bege de 28/09)."""
+    with fitz.open(GABARITO / "opusmajus_p020.pdf") as doc:
+        resultado = tirar_fundo(doc, 0, dpi=100)
+        lidas = ler_camadas(doc, 0, 100)
+        como_o_pdf = compor(lidas, np.ones((lidas.altura, lidas.largura), np.float32))
+    assert resultado.situacao == FUNDO_TIRADO
+    assert resultado.medidas["zonas_de_foto"] == 1
+    img = resultado.imagem
+    altura, largura = img.shape[:2]
+    # a tunica da estatua (fracao da pagina)
+    estatua = (slice(int(0.354 * altura), int(0.604 * altura)),
+               slice(int(0.530 * largura), int(0.602 * largura)))
+    antes, depois = (np.median(_gray(x)[estatua]) for x in (como_o_pdf, img))
+    assert abs(float(depois) - float(antes)) <= 2
+    lab_antes, lab_depois = (cv2.cvtColor(x[estatua], cv2.COLOR_BGR2LAB) for x in (como_o_pdf, img))
+    assert abs(float(np.median(lab_depois[:, :, 2])) - float(np.median(lab_antes[:, :, 2]))) <= 2
+    # a foto inteira (sem a linha da beirada) igual ao PDF
+    foto = (slice(int(0.105 * altura), int(0.780 * altura)),
+            slice(int(0.195 * largura), int(0.880 * largura)))
+    assert np.abs(img[foto].astype(np.int16) - como_o_pdf[foto].astype(np.int16)).max() <= 2
+    # o papel logo abaixo da foto e acima da legenda: branco
+    abaixo = (slice(int(0.792 * altura), int(0.800 * altura)),
+              slice(int(0.25 * largura), int(0.80 * largura)))
+    assert _gray(img)[abaixo].min() >= 240
+
+
+@precisa_do_gabarito
+@pytest.mark.parametrize("pid", ["palatino_p066", "palatino_p009", "palatino_p010",
+                                 "palatino_p057"])
+def test_gabarito_titulo_e_molduras_do_palatino_continuam_cheios(pid):
+    """Palatino 66 (titulo gotico) e as molduras do 9, 10 e 57: o traco que so
+    existia no fundo volta (conserto de 29/09). Medida: do que e escuro no PDF,
+    quanto virou branco. Na versao de 28/09 (titulo oco, moldura furada) dava
+    1% a 6%; hoje, 0."""
+    with fitz.open(GABARITO / f"{pid}.pdf") as doc:
+        resultado = tirar_fundo(doc, 0, dpi=100)
+        lidas = ler_camadas(doc, 0, 100)
+        como_o_pdf = compor(lidas, np.ones((lidas.altura, lidas.largura), np.float32))
+    escuro = cv2.GaussianBlur(_gray(como_o_pdf), (0, 0), 1) < 110
+    virou_branco = escuro & (cv2.GaussianBlur(_gray(resultado.imagem), (0, 0), 1) > 200)
+    assert virou_branco.sum() / max(1, escuro.sum()) < 0.003
+
+
+# --- o acervo inteiro (pula se os livros nao estiverem nesta maquina) ---------
+
+ACERVO = Path(r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO"
+              r"\LIVROS PARA TESTE")
+OPUS_MAJUS = Path(r"C:\Users\fotog\Desktop\opusmajustransla01baco.pdf")
+
+
+def _livro(trecho: str) -> Path | None:
+    if not ACERVO.is_dir():
+        return None
+    achados = [p for p in ACERVO.glob("*.pdf") if trecho in p.name]
+    return achados[0] if achados else None
+
+
+# Paginas com camadas em cada livro, contadas em 28/09/2026: 1256 nos cinco
+# livros do Internet Archive, nenhuma nos outros.
+PAGINAS_COM_CAMADAS = [("Palatino", 134), ("Rhetorica", 446), ("Siebmacher", 134),
+                       ("Pesel", 92), ("Graduale", 0), ("Livro de Horas", 0),
+                       ("Marial", 0), ("Na escola de Jesus", 0), ("Consola", 0)]
+
+
+@pytest.mark.parametrize("trecho,esperado", PAGINAS_COM_CAMADAS)
+def test_acervo_reconhece_as_paginas_com_camadas(trecho, esperado):
+    caminho = _livro(trecho)
+    if caminho is None:
+        pytest.skip("acervo ausente nesta maquina")
+    with fitz.open(caminho) as doc:
+        resumo = resumo_do_pdf(doc)
+    assert len(resumo.com_camadas) == esperado
+    if esperado:
+        assert len(resumo.com_camadas) == resumo.paginas
+
+
+def test_acervo_opus_majus_todas_as_paginas_tem_camadas():
+    if not OPUS_MAJUS.is_file():
+        pytest.skip("Opus Majus ausente nesta maquina")
+    with fitz.open(OPUS_MAJUS) as doc:
+        resumo = resumo_do_pdf(doc)
+    assert len(resumo.com_camadas) == resumo.paginas == 450
+
+
+# Siebmacher: as paginas de escrita clara ou fraca so no fundo. 104 e 105
+# ficam intactas; 106, 118 e 124 (manuscrito fraco) e as folhas em branco com
+# o bordado do outro lado transparecendo saem "conferir" ("pagina duvidosa sai
+# marcada 'conferir'", Samuel, 29/09/2026). Lista medida em 29/09/2026.
+SIEBMACHER_CONFERIR = [12, 14, 18, 20, 22, 24, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48,
+                       50, 52, 54, 58, 60, 62, 64, 66, 68, 70, 72, 74, 88, 94, 97, 106,
+                       112, 118, 124, 126, 128, 130]
+
+
+def test_acervo_siebmacher_escrita_clara_nunca_some_sem_aviso():
+    caminho = _livro("Siebmacher")
+    if caminho is None:
+        pytest.skip("acervo ausente nesta maquina")
+    assert len(SIEBMACHER_CONFERIR) == 39
+    with fitz.open(caminho) as doc:
+        for pagina in (104, 105):
+            assert tirar_fundo(doc, pagina - 1, dpi=40).situacao == DEIXADA_INTACTA, pagina
+        sem_aviso = []
+        for pagina in SIEBMACHER_CONFERIR:
+            r = tirar_fundo(doc, pagina - 1, dpi=40)
+            if r.situacao == FUNDO_TIRADO and not r.conferir:
+                sem_aviso.append(pagina)
+    assert sem_aviso == []

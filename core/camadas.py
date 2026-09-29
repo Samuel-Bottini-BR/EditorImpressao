@@ -24,7 +24,9 @@ Majus 20: a camada de cima tem só os pontinhos escuros). Por isso:
     - dentro de uma zona em que o FUNDO tem traço ou tom que a camada de cima
       não cobre (a foto; a hachura fina da xilogravura que a máscara do
       Internet Archive não pegou), a página fica como o PDF desenha (fundo +
-      camada de cima), com o papel da zona como está; zona em que o fundo é só
+      camada de cima); na gravura de traço o papel entre os traços vai a
+      branco, e a FOTO (ou pintura) fica igual ao original, só com o papel em
+      volta dela branco (ver PAPEL_EM_VOLTA_TOM); zona em que o fundo é só
       papel, mancha clara e letra "fantasma" (tabela, esquema, diagrama: tudo
       está em cima) sai branca como o resto;
     - se as zonas mantidas são a página inteira, ou se sobra no fundo, fora
@@ -54,7 +56,9 @@ Seguro mudar: DPI_DA_ANALISE, LINHAS_POR_FAIXA (só tempo e memória).
 Arriscado mudar: TOM_DE_FIGURA, COR_DE_FIGURA, TINTA_SO_NO_FUNDO e
 AREA_DE_FIGURA_ESQUECIDA (medidos nas 14 páginas do gabarito e no livro da
 Pesel; afrouxar faz foto virar pontilhado e xilogravura virar mancha, apertar
-faz mancha e dobra voltarem); _cor_do_papel (o "papel" errado inverte tudo:
+faz mancha e dobra voltarem); PAPEL_EM_VOLTA_TOM e PAPEL_EM_VOLTA_COR (o
+papel em volta da foto: subir deixa o branco entrar na foto, baixar traz a
+auréola de volta); _cor_do_papel (o "papel" errado inverte tudo:
 na Pesel o linho viraria papel e sumiria); a leitura da máscara em _ler_alfa
 (a polaridade foi conferida contra o desenho do MuPDF nas duas formas de
 máscara, ver tests/test_camadas.py); a ordem "fundo antes, cima depois" em
@@ -143,6 +147,45 @@ PAPEL_EM_CIMA_MATIZ = 0.06
 # A cor do papel da página, para branquear as zonas mantidas (_papel_em_lab):
 # a mediana do fundo livre a menos de 25 níveis do tom do papel.
 GANHO_BANDA = 25
+
+# A FOTO FICA IGUAL AO ORIGINAL (_onde_branquear). Decisão do Samuel, 29/09/2026:
+# "A foto do Opus Majus 20 não pode sair mais clara: tem que ficar igual ao
+# original." Branquear o papel de uma zona mantida multiplica o brilho de
+# todos os tons (_branquear_papel): na gravura de TRAÇO isso é o papel entre
+# os traços indo a branco (o pedido da Fase 1), mas na FOTO a estátua do Opus
+# Majus 20 passava do cinza 183 para 225 e perdia o creme. Então, zona a zona:
+#
+#   - a zona é de traço ou de tom contínuo? A mesma medida do Mágico pro
+#     (core/filtros.py, _peso_de_traco e GRAVURA_DE_TRACO_MINIMA, Tentativa 20
+#     de relatorios/melhorias.md). Medido em 29/09/2026 nas zonas mantidas do
+#     gabarito e do acervo, fração da zona com traço: foto do Opus Majus 20,
+#     0,3%; molduras do Palatino 9, 10, 57 e 66, 29% a 54%; capitulares do
+#     Palatino 9 e 67, 92% a 100%; Palatino 12 e Rhetorica 38, 100%; ex-libris
+#     da Pesel 2, 58%. De traço: branqueia como antes.
+#   - de tom contínuo (foto, pintura): o miolo fica como o PDF desenha, sem
+#     mexer em nada; só vai a branco o PAPEL que a zona pegou em volta dela
+#     (a zona do detector passa uns 2 mm da foto: era a auréola bege). Papel é
+#     o que tem o tom (no máximo PAPEL_EM_VOLTA_TOM mais escuro; mais claro
+#     vale) e a cor (até PAPEL_EM_VOLTA_COR) do papel logo FORA da zona
+#     (ANEL_DO_PAPEL_MM), e que se liga ao lado de fora sem atravessar a foto
+#     (FECHAR_A_FOTO_MM junta os pontinhos da retícula). E nunca a mais de
+#     BRANQUEAR_ATE_MM da beirada da zona: é o limite do estrago se o papel
+#     "vazar" para uma parte clara da foto encostada na beirada. 12 mm cobre
+#     com folga a zona do detector de hoje (uns 2 mm além da foto); zona que
+#     passe mais que isso da foto deixa um remendo creme além dos 12 mm.
+#
+# Medido no Opus Majus 20 (150 DPI): o papel em volta vai de 199 a 220 de luz
+# (percentis 1 e 99; o lado direito da página é mais escuro); a foto chega a
+# 198 (percentil 99), mas cercada pela beirada escura. Com 20 de tom, o papel
+# da folga vira branco (18.600 de 21.000 pontos; o resto é a linha de 1 ponto
+# da beirada da foto) e nada a mais de 2 mm para dentro da foto.
+# Arriscado mudar: subir PAPEL_EM_VOLTA_TOM ou PAPEL_EM_VOLTA_COR deixa o
+# papel entrar na parte clara da foto; baixar deixa a auréola de volta.
+PAPEL_EM_VOLTA_TOM = 20        # luz, na escala de 0 a 255 do Lab do OpenCV
+PAPEL_EM_VOLTA_COR = 12        # distância em a, b
+ANEL_DO_PAPEL_MM = 3.0
+FECHAR_A_FOTO_MM = 0.5
+BRANQUEAR_ATE_MM = 12.0
 
 # O papel em volta (_papel_local): a média do fundo num raio de 4 mm, contando
 # só o que está a menos de 50 níveis do papel da página (entra a mancha
@@ -793,7 +836,8 @@ def _faixa(img: np.ndarray, largura: int, altura: int, y0: int, y1: int,
 
 def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None,
            fundo_limpo: np.ndarray | None = None,
-           papel_da_zona: tuple[float, float, float] | None = None) -> np.ndarray:
+           papel_da_zona: tuple[float, float, float] | None = None,
+           branquear: np.ndarray | None = None) -> np.ndarray:
     """Monta a página: camada de cima + (fora dela) o papel limpo ou o fundo.
 
     fundo_limpo (BGR, em qualquer tamanho; é ampliado): o que vai embaixo da
@@ -806,6 +850,11 @@ def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None,
     papel_da_zona (L, a, b do Lab do OpenCV em float, L de 0 a 100): se vier,
     o papel do fundo das zonas de figura vira branco (ver _branquear_papel).
     None = como veio.
+
+    branquear (0 a 1, em qualquer tamanho; é ampliado; só vale com
+    papel_da_zona): ONDE o fundo das zonas vai a branco. 1 = branqueado, 0 =
+    como veio (o miolo de uma foto: ver _onde_branquear). None = em toda a
+    zona.
 
         saída = cima + (1 - alfa) x (limpo + peso x (fundo' - limpo))
 
@@ -854,7 +903,23 @@ def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None,
         for x0, x1 in zip(inicios.tolist(), fins.tolist()):
             fundo = _faixa(lidas.fundo, largura, altura, y0, y1, x0, x1).astype(np.float32)
             if papel_da_zona is not None:
-                fundo = _branquear_papel(fundo, papel_da_zona)
+                if branquear is None:
+                    fundo = _branquear_papel(fundo, papel_da_zona)
+                else:
+                    b = np.clip(_faixa(branquear, largura, altura, y0, y1, x0, x1),
+                                0.0, 1.0).astype(np.float32)
+                    if b.min() >= 1.0:
+                        fundo = _branquear_papel(fundo, papel_da_zona)
+                    elif b.max() > 0.0:
+                        # só nas colunas que branqueiam (na foto, a folga dos
+                        # lados): a conta em Lab no miolo seria jogada fora
+                        cols = np.flatnonzero(b.max(axis=0) > 0.0)
+                        quebras = np.flatnonzero(np.diff(cols) > 1)
+                        for c0, c1 in zip(np.concatenate(([cols[0]], cols[quebras + 1])).tolist(),
+                                          (np.concatenate((cols[quebras], [cols[-1]])) + 1).tolist()):
+                            pedaco = fundo[:, c0:c1]
+                            fundo[:, c0:c1] = pedaco + b[:, c0:c1, None] * (
+                                _branquear_papel(pedaco, papel_da_zona) - pedaco)
             base_limpa = 255.0 if limpo is None else limpo[:, x0:x1].astype(np.float32)
             p = np.clip(peso[:, x0:x1].astype(np.float32), 0.0, 1.0)[:, :, None]
             base = base_limpa + p * (fundo - base_limpa)
@@ -1367,6 +1432,101 @@ def _branquear_papel(fundo: np.ndarray, papel_lab: tuple[float, float, float]) -
     return np.clip(cv2.cvtColor(lab, cv2.COLOR_LAB2BGR) * 255.0, 0.0, 255.0)
 
 
+def _zona_de_traco(lab_da_janela: np.ndarray, zona: np.ndarray) -> bool:
+    """A zona (bool, na janela) é gravura de TRAÇO (xilogravura, moldura,
+    capitular), e não foto ou pintura de tom contínuo? É a pergunta 1 do
+    Mágico pro (core/filtros.py, _so_o_papel_da_gravura), com as mesmas
+    funções e o mesmo corte: um lugar só para as duas decidirem igual. Se o
+    core/filtros.py mudar essa medida, ela muda aqui também (de propósito)."""
+    from core.filtros import GRAVURA_DE_TRACO_MINIMA, _fundo_e_nivel, _peso_de_traco
+
+    luz, fundo, nivel = _fundo_e_nivel(lab_da_janela)
+    traco = _peso_de_traco(luz, fundo, nivel) >= 128
+    return float(traco[zona].mean()) >= GRAVURA_DE_TRACO_MINIMA
+
+
+def _onde_branquear(como_o_pdf: np.ndarray, mantido: np.ndarray, livre: np.ndarray,
+                    papel_lab: tuple[float, float, float], dpi: float
+                    ) -> tuple[np.ndarray | None, int]:
+    """Onde o fundo das zonas mantidas vai a branco (ver PAPEL_EM_VOLTA_TOM).
+
+    Recebe a análise pequena: a página como o PDF desenha (BGR), o peso das
+    zonas mantidas, o fundo livre de tinta de cima (_Fundo.livre) e a cor do
+    papel (_papel_em_lab). Devolve (mapa de 0 a 1 no tamanho da análise, ou
+    None se todas as zonas são de traço e branqueiam inteiras, como antes;
+    quantas zonas são foto ou pintura).
+
+    Numa zona de traço o mapa é 1 (o papel entre os traços vai a branco). Numa
+    zona de tom contínuo é 0 (o miolo fica como o PDF desenha: a foto igual ao
+    original), menos no papel que a zona pegou em volta da foto, ligado ao
+    lado de fora.
+    Arriscado mudar: ver PAPEL_EM_VOLTA_TOM; e a pergunta "é de traço?" é a
+    mesma do Mágico pro (_zona_de_traco).
+    """
+    apoio = (mantido > 0.02).astype(np.uint8)
+    quantas, rotulos, caixas, _ = cv2.connectedComponentsWithStats(apoio, connectivity=8)
+    if quantas <= 1:
+        return None, 0
+    altura, largura = apoio.shape
+    mm = dpi / 25.4
+    lab = cv2.cvtColor(como_o_pdf, cv2.COLOR_BGR2LAB)
+    # a cor do papel da página, na escala de 8 bits do Lab do OpenCV (a
+    # referência quando o anel em volta da zona não tem papel bastante)
+    l_p, a_p, b_p = papel_lab
+    papel_da_pagina = np.array([l_p * 255.0 / 100.0, a_p + 128.0, b_p + 128.0], np.float32)
+    anel = max(3, int(round(2 * ANEL_DO_PAPEL_MM * mm)) | 1)
+    fechar = max(3, int(round(FECHAR_A_FOTO_MM * mm)) | 1)
+    ate = BRANQUEAR_ATE_MM * mm
+    folga = anel // 2 + 2
+    mapa = None
+    fotos = 0
+    for k in range(1, quantas):
+        x, y, w, h = (int(v) for v in caixas[k, :4])
+        xa, ya = max(0, x - folga), max(0, y - folga)
+        xb, yb = min(largura, x + w + folga), min(altura, y + h + folga)
+        janela = (slice(ya, yb), slice(xa, xb))
+        da_zona = rotulos[janela] == k
+        miolo = da_zona & (mantido[janela] > 0.5)
+        if not miolo.any():
+            continue
+        lab_j = lab[janela]
+        if _zona_de_traco(lab_j, miolo):
+            continue
+        fotos += 1
+        if mapa is None:
+            mapa = np.ones((altura, largura), np.float32)
+        # o papel logo fora da zona (sem a tinta de cima): até ANEL_DO_PAPEL_MM
+        # dela (distância, e não dilatação: a mesma coisa, mais barata)
+        zona8 = da_zona.astype(np.uint8)
+        fora = cv2.distanceTransform(1 - zona8, cv2.DIST_L2, 3)
+        anel_de_papel = (fora > 0) & (fora <= anel / 2.0) & livre[janela]
+        if int(anel_de_papel.sum()) >= 100:
+            ref = np.median(lab_j[anel_de_papel].reshape(-1, 3), axis=0).astype(np.float32)
+        else:
+            ref = papel_da_pagina
+        # em inteiros: tom (L) e distância de cor ao quadrado (a, b)
+        da = lab_j[:, :, 1].astype(np.int32) - int(round(float(ref[1])))
+        db = lab_j[:, :, 2].astype(np.int32) - int(round(float(ref[2])))
+        parece_papel = ((lab_j[:, :, 0] >= ref[0] - PAPEL_EM_VOLTA_TOM)
+                        & (da * da + db * db <= PAPEL_EM_VOLTA_COR ** 2))
+        # a foto: o que não parece papel, com os pontinhos da retícula juntos
+        foto = cv2.morphologyEx((~parece_papel).astype(np.uint8), cv2.MORPH_CLOSE,
+                                cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (fechar, fechar)))
+        passa = ((foto == 0) | ~da_zona).astype(np.uint8)
+        _n, partes = cv2.connectedComponents(passa, connectivity=4)
+        de_fora = np.unique(partes[~da_zona])
+        ligado = np.zeros(int(partes.max()) + 1, bool)
+        ligado[de_fora[de_fora > 0]] = True
+        # até BRANQUEAR_ATE_MM da beirada da zona
+        distancia = cv2.distanceTransform(zona8, cv2.DIST_L2, 3)
+        papel_em_volta = ligado[partes] & da_zona & (distancia <= ate)
+        # e mais um ponto: a linha da beirada da foto, que mistura foto e papel
+        papel_em_volta = (cv2.dilate(papel_em_volta.astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
+                          ) & da_zona
+        mapa[janela][da_zona] = papel_em_volta[da_zona].astype(np.float32)
+    return mapa, fotos
+
+
 def _tinta_perdida(perdida: np.ndarray) -> float:
     """Que fração da página tem traço que só existia no fundo (e sai com ele).
     O fundo de scanner e a borda da folha já saíram em _medir_fundo: o preto
@@ -1483,13 +1643,23 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
             "ela fica como está, para não quebrar a figura.",
             lidas.dpi, achadas, mantidas, medidas)
 
+    # O papel das zonas mantidas vai a branco; o miolo de foto e pintura, não
+    # (a foto igual ao original: ver PAPEL_EM_VOLTA_TOM).
+    papel_lab, branquear, fotos = None, None, 0
+    if mantidas:
+        papel_lab = _papel_em_lab(pequena, fundo)
+        branquear, fotos = _onde_branquear(como_o_pdf, mantido, fundo.livre, papel_lab,
+                                           pequena.dpi)
+    medidas["zonas_de_foto"] = fotos
     limpo, papel_local = _limpar_fundo(lidas, fundo.papel)
     _papel_de_cima_vira_branco(lidas, papel_local)
-    imagem = compor(lidas, mantido if mantidas else None, limpo,
-                    _papel_em_lab(pequena, fundo) if mantidas else None)
+    imagem = compor(lidas, mantido if mantidas else None, limpo, papel_lab, branquear)
     if mantidas:
         explicacao = (f"Fundo tirado; {mantidas} figura(s) com traço ou tom só no "
                       "fundo ficaram como o PDF mostra.")
+        if fotos:
+            explicacao += (f" {fotos} delas é foto ou pintura: fica com o tom do "
+                           "original, e só o papel em volta vai a branco.")
     else:
         explicacao = "Fundo tirado: papel branco, letra e figuras da camada de cima."
     muito_do_fundo = perdida + trazida >= CONFERIR_TINTA_PERDIDA
