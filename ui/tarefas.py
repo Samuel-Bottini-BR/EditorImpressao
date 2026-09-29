@@ -14,7 +14,13 @@ import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
 from core.pdf_io import ErroPDF, abrir_pdf
-from core.pipeline import Cancelou, analisar_projeto, processar, renderizar_pagina
+from core.pipeline import (
+    Cancelou,
+    analisar_projeto,
+    processar,
+    renderizar_com_filtro,
+    renderizar_pagina,
+)
 from modelos import Projeto
 from registro import registrar_erro
 
@@ -182,10 +188,18 @@ class _TarefaCartoes(QRunnable):
 
 
 class _TarefaPrevia(QRunnable):
-    """Gera UMA prévia. Descartavel: o pool cuida do ciclo de vida."""
+    """Gera UMA prévia. Descartavel: o pool cuida do ciclo de vida.
+
+    filtro: None (o padrao) desenha a pagina como ela esta. Um filtro desenha
+    a pagina COMO SAIRIA com ele, sem muda-la (core.pipeline.
+    renderizar_com_filtro) - item 1.1: o cartao "Tirar o fundo" e o
+    "comparar" da tela ampliada, que precisam do resultado de verdade do
+    core/camadas.py (le o PDF, ~1 a 2 s), por isso numa tarefa de fundo.
+    """
 
     def __init__(self, chave: str, caminho_pdf: str, projeto: Projeto,
-                 indice_pagina: int, dpi: int, sinais: _SinaisPrevia) -> None:
+                 indice_pagina: int, dpi: int, sinais: _SinaisPrevia,
+                 filtro: str | None = None) -> None:
         super().__init__()
         self.chave = chave
         self.caminho_pdf = caminho_pdf
@@ -193,6 +207,7 @@ class _TarefaPrevia(QRunnable):
         self.indice_pagina = indice_pagina
         self.dpi = dpi
         self.sinais = sinais
+        self.filtro = filtro
 
     def run(self) -> None:
         """Renderiza a pagina (ou a folha crua) e emite o resultado pelo
@@ -211,7 +226,11 @@ class _TarefaPrevia(QRunnable):
             # pode ser usado por duas threads ao mesmo tempo.
             doc = abrir_pdf(self.caminho_pdf)
             try:
-                img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
+                if self.filtro is None:
+                    img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
+                else:
+                    img, _ = renderizar_com_filtro(doc, self.projeto, pagina,
+                                                   self.filtro, dpi=self.dpi)
             finally:
                 doc.close()
             _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
@@ -302,15 +321,17 @@ class GerenciadorPrevias(QObject):
 
     # --- chave ------------------------------------------------------------
 
-    def chave(self, indice: int, dpi: int) -> str:
+    def chave(self, indice: int, dpi: int, filtro: str | None = None) -> str:
         """A chave inclui tudo que muda a imagem: trocar o filtro invalida o
-        cache daquela página sozinho, sem limpar o resto."""
+        cache daquela página sozinho, sem limpar o resto.
+
+        filtro: o da pagina (None) ou outro, para chave_com_filtro."""
         if not 0 <= indice < len(self.projeto.paginas):
             return f"{indice}:invalida"
         p = self.projeto.paginas[indice]
         f = self.projeto.folhas[p.folha]
         return (
-            f"{indice}:{dpi}:{p.filtro}:{p.forca_preto}:"
+            f"{indice}:{dpi}:{filtro or p.filtro}:{p.forca_preto}:"
             f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
@@ -340,6 +361,35 @@ class GerenciadorPrevias(QObject):
         self._pool.start(
             _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
         )
+
+    # --- a pagina com outro filtro (item 1.1) --------------------------------
+
+    def chave_com_filtro(self, indice: int, dpi: int, filtro: str) -> str:
+        """Chave da pagina desenhada com `filtro` sem muda-la (ver
+        pegar_com_filtro). Diferente da chave da previa normal de proposito:
+        a previa normal e desenhada na pagina de verdade (e acerta os alertas
+        dela), esta numa copia. Comeca com f"{indice}:", para invalidar(indice)
+        limpar as duas juntas."""
+        return f"{indice}:com:{self.chave(indice, dpi, filtro)}"
+
+    def pegar_com_filtro(self, indice: int, dpi: int, filtro: str) -> np.ndarray | None:
+        """A pagina como sairia com `filtro` (core.pipeline.renderizar_com_filtro).
+
+        Item 1.1: e o cartao "Tirar o fundo" e o "comparar" da tela ampliada
+        - o resultado de verdade do core/camadas.py. Mesmo jeito de `pegar`:
+        devolve na hora se estiver no cache; senao pede, devolve None, e o
+        sinal `pronta` avisa quando chegar (com chave_com_filtro)."""
+        chave = self.chave_com_filtro(indice, dpi, filtro)
+        if chave in self._cache:
+            self._promover(chave)
+            return self._cache[chave]
+        if chave not in self._pedidas and 0 <= indice < len(self.projeto.paginas):
+            self._pedidas.add(chave)
+            self._pool.start(
+                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi,
+                              self._sinais, filtro=filtro)
+            )
+        return None
 
     # --- imagem para ajustar o recorte (aba Bordas) ------------------------
 

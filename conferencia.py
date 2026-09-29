@@ -837,14 +837,18 @@ def processar_pelo_programa(pdf: Path, filtro: str, pasta: Path) -> Depois:
 
 
 def _nota_do_programa(projeto) -> str | None:
-    """O que o programa disse desta página, em português: se o "tirar o fundo"
-    (item 1.1) estava ligado e os alertas que as páginas ficaram (o mesmo que
-    a tela de conferir mostraria). Só lê o projeto já processado."""
+    """O que o programa disse desta página, em português: se a página estava
+    no filtro "Tirar o fundo" (item 1.1) num PDF com camadas, e os alertas
+    que as páginas ficaram (o mesmo que a tela de conferir mostraria). Só lê
+    o projeto já processado."""
     from core.analise import descrever
+    from core.pipeline import usa_tirar_fundo
 
     partes = []
-    if projeto.tirar_fundo_ligado and projeto.limpar:
-        partes.append("PDF com camadas: \"Tirar o fundo sozinho\" ligado")
+    if any(usa_tirar_fundo(projeto, p) for p in projeto.paginas):
+        partes.append("PDF com camadas, filtro \"Tirar o fundo\"")
+    elif projeto.tem_camadas:
+        partes.append("PDF com camadas (o fundo não foi tirado: outro filtro)")
     alertas = sorted({a for p in projeto.paginas for a in p.alertas})
     if alertas:
         partes.append("alertas: " + "; ".join(descrever(a).titulo for a in alertas))

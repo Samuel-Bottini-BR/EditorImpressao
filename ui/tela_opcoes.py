@@ -6,9 +6,13 @@ clique e escreve direto no projeto, sem botao "aplicar" separado. O resumo em
 portugues embaixo (core.pipeline.resumo_em_portugues) e o que confirma para a
 pessoa o que ela acabou de marcar, sem jargao.
 
-Item 1.1 (29/09/2026): a caixinha "Tirar o fundo sozinho" (Projeto.
-tirar_fundo_sozinho) so aparece quando o PDF tem camadas (Projeto.tem_camadas,
-detectado ao abrir o livro em ui/janela_principal.abrir_livro).
+Item 1.1 (29/09/2026, decisao do Samuel depois de ver a primeira ligacao):
+"Tirar o fundo" e mais um filtro do livro, ao lado dos outros quatro, e so
+aparece quando o PDF tem camadas (Projeto.tem_camadas, detectado ao abrir o
+livro em ui/janela_principal.abrir_livro). A caixinha "Tirar o fundo
+sozinho" da primeira ligacao saiu. escolher_filtro_do_livro e o que o aviso
+"Este livro tem fundo separado. Quer tirar o fundo?" usa quando a pessoa
+responde que sim.
 """
 
 from __future__ import annotations
@@ -29,7 +33,14 @@ from PySide6.QtWidgets import (
 )
 
 from core.cadernos import paginas_por_caderno_valido
-from core.filtros import MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO
+from core.filtros import (
+    MAGICO_PRO,
+    MELHORAR,
+    ORIGINAL,
+    PRETO_E_BRANCO,
+    TIRAR_FUNDO,
+    filtros_do_livro,
+)
 from core.pipeline import resumo_em_portugues
 from modelos import Projeto
 from ui.estilo import TEXTO_FRACO
@@ -40,6 +51,9 @@ FILTROS_NA_TELA = [
     (PRETO_E_BRANCO, "Preto e branco", "tira o amarelado, arquivo pequeno"),
     (MELHORAR, "Melhorar", "limpa o fundo e mantém as cores"),
     (MAGICO_PRO, "Mágico pro", "cor viva e texto nítido"),
+    # Item 1.1: so aparece em PDF com camadas (ver _mudou e
+    # core.filtros.filtros_do_livro).
+    (TIRAR_FUNDO, "Tirar o fundo", "tira o papel e deixa só o que está impresso"),
 ]
 
 OPCOES_CADERNO = [8, 12, 16, 20, 24, 32, 40]
@@ -97,8 +111,6 @@ class TelaOpcoes(QWidget):
         self.cx_limpar = self._caixa("Limpar a folha", "tira o amarelado", opcoes)
         self.painel_filtros = self._montar_filtros()
         opcoes.addWidget(self.painel_filtros)
-        self.painel_tirar_fundo, self.cx_tirar_fundo = self._montar_tirar_fundo()
-        opcoes.addWidget(self.painel_tirar_fundo)
         opcoes.addWidget(_separador())
 
         self.cx_endireitar = self._caixa(
@@ -152,7 +164,7 @@ class TelaOpcoes(QWidget):
         camadas.addLayout(rodape)
 
         for caixa in (self.cx_dividir, self.cx_limpar, self.cx_endireitar,
-                      self.cx_cortar, self.cx_cadernos, self.cx_tirar_fundo):
+                      self.cx_cortar, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -171,14 +183,23 @@ class TelaOpcoes(QWidget):
         return caixa
 
     def _montar_filtros(self) -> QWidget:
-        """Painel de radio-buttons com os quatro filtros (FILTROS_NA_TELA).
-        So aparece quando "Limpar a folha" esta marcada - ver _mudou."""
+        """Painel de radio-buttons com os filtros do livro (FILTROS_NA_TELA).
+        So aparece quando "Limpar a folha" esta marcada - ver _mudou.
+
+        Item 1.1: o "Tirar o fundo" (quinto da lista, na terceira linha da
+        grade) nasce escondido e so aparece em PDF com camadas - ver _mudou.
+        Os radios ficam guardados por filtro em self.radios_de_filtro (e o
+        rotulo de explicacao de cada um em self._rotulos_de_filtro), para
+        mostrar/esconder e para escolher_filtro_do_livro.
+        """
         painel = QWidget()
         grade = QGridLayout(painel)
         grade.setContentsMargins(34, 6, 0, 6)
         grade.setSpacing(8)
 
         self.grupo_filtros = QButtonGroup(self)
+        self.radios_de_filtro: dict[str, QRadioButton] = {}
+        self._rotulos_de_filtro: dict[str, QLabel] = {}
         for i, (chave, nome, explicacao) in enumerate(FILTROS_NA_TELA):
             radio = QRadioButton(nome)
             radio.setProperty("filtro", chave)
@@ -190,27 +211,11 @@ class TelaOpcoes(QWidget):
             rotulo = QLabel(explicacao)
             rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
             grade.addWidget(rotulo, i // 2, (i % 2) * 2 + 1)
+            self.radios_de_filtro[chave] = radio
+            self._rotulos_de_filtro[chave] = rotulo
+        self.radios_de_filtro[TIRAR_FUNDO].setVisible(False)
+        self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(False)
         return painel
-
-    def _montar_tirar_fundo(self) -> tuple[QWidget, QCheckBox]:
-        """Item 1.1: a caixinha "Tirar o fundo sozinho", por livro.
-
-        Decisao do Samuel (29/09/2026): "automatico quando o programa detectar
-        camadas, com botao para desligar por livro". Liga o campo
-        Projeto.tirar_fundo_sozinho. So aparece quando o PDF tem camadas
-        (Projeto.tem_camadas) e "Limpar a folha" esta marcada - ver _mudou.
-        Fica dentro de um painel (com o recuo dos filtros, porque faz parte
-        de "Limpar") para a caixinha e a explicacao sumirem juntas. A
-        aparencia final fica para o layout (Fase 4).
-        """
-        painel = QWidget()
-        camada = QVBoxLayout(painel)
-        camada.setContentsMargins(34, 2, 0, 4)
-        camada.setSpacing(0)
-        caixa = self._caixa("Tirar o fundo sozinho",
-                            "este PDF já vem com o texto separado do fundo", camada)
-        painel.setVisible(False)
-        return painel, caixa
 
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
@@ -237,9 +242,9 @@ class TelaOpcoes(QWidget):
         self.projeto = projeto
         self.total_folhas = total_folhas
         # Lido ANTES dos setChecked abaixo: cada um que muda dispara _mudou,
-        # que grava no projeto o estado de TODAS as caixinhas - inclusive o
-        # da caixinha do fundo ainda com o valor do livro anterior.
-        tirar_fundo = projeto.tirar_fundo_sozinho
+        # que grava no projeto o estado de TODAS as caixinhas e do filtro -
+        # o filtro ainda com o radio do livro anterior marcado.
+        filtro_do_livro = projeto.filtro_padrao
 
         from pathlib import Path
 
@@ -251,11 +256,10 @@ class TelaOpcoes(QWidget):
         self.cx_endireitar.setChecked(projeto.endireitar)
         self.cx_cortar.setChecked(projeto.cortar_bordas)
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
-        self.cx_tirar_fundo.setChecked(tirar_fundo)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
         for botao in self.grupo_filtros.buttons():
-            if botao.property("filtro") == projeto.filtro_padrao:
+            if botao.property("filtro") == filtro_do_livro:
                 botao.setChecked(True)
         self._mudou()
 
@@ -270,6 +274,23 @@ class TelaOpcoes(QWidget):
         """Idem, indo para a conferência: quem lê o livro daqui é o pipeline."""
         self.folhear.fechar()
         self.conferir.emit()
+
+    def escolher_filtro_do_livro(self, filtro: str) -> None:
+        """Marca `filtro` como o filtro do livro, como se a pessoa clicasse no
+        radio (e marca "Limpar a folha", sem a qual nenhum filtro vale).
+
+        Item 1.1: e o que o "Sim, tirar o fundo" do aviso de livro com
+        camadas faz (ui/janela_principal._resposta_do_aviso_do_fundo). Passa
+        pelos mesmos sinais do clique: _mudou grava no projeto e o resumo
+        acompanha.
+        """
+        radio = self.radios_de_filtro.get(filtro)
+        if radio is None:
+            return
+        if not self.cx_limpar.isChecked():
+            self.cx_limpar.setChecked(True)
+        radio.setChecked(True)
+        self._mudou()
 
     def _filtro_escolhido(self) -> str:
         """O filtro marcado no grupo de radio-buttons, ou Preto e branco por padrão."""
@@ -288,16 +309,19 @@ class TelaOpcoes(QWidget):
         self.projeto.endireitar = self.cx_endireitar.isChecked()
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
-        self.projeto.tirar_fundo_sozinho = self.cx_tirar_fundo.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(
             self.combo_caderno.currentData() or 20
         )
 
-        # os painéis so aparecem quando fazem sentido; o "tirar o fundo" (item
-        # 1.1), so em PDF com camadas - fora dele a caixinha nao faria nada
+        # os painéis so aparecem quando fazem sentido; o filtro "Tirar o
+        # fundo" (item 1.1), so em PDF com camadas - fora dele nao faria nada
+        # (e se ja estiver escolhido num PDF sem camadas, continua a vista
+        # para a pessoa poder sair dele: ver core.filtros.filtros_do_livro)
         self.painel_filtros.setVisible(self.projeto.limpar)
-        self.painel_tirar_fundo.setVisible(self.projeto.limpar and self.projeto.tem_camadas)
+        mostrar_fundo = TIRAR_FUNDO in filtros_do_livro(self.projeto)
+        self.radios_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
+        self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
         self.painel_caderno.setVisible(self.projeto.montar_cadernos)
 
         self.resumo.setText(resumo_em_portugues(self.projeto, self.total_folhas))

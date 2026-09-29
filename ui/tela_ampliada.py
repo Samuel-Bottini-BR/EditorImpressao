@@ -10,6 +10,11 @@ parecidos: comparar de longe não resolve.
 
 A imagem sai em resolução maior que a da prévia da tela de conferir. Esticar a
 prévia de 110 DPI deixaria tudo borrado justamente na hora de olhar de perto.
+
+Item 1.1 (29/09/2026): em livro com camadas, os botões de filtro e o seletor
+do comparar ganham o "Tirar o fundo" (core.filtros.filtros_do_livro), e o
+comparar mostra o resultado de verdade do core/camadas.py (pedido ao
+GerenciadorPrevias, chega em segundo plano), e não um filtro comum.
 """
 
 from __future__ import annotations
@@ -28,7 +33,15 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from core.filtros import MAGICO_PRO, MELHORAR, NOMES_AMIGAVEIS, ORIGINAL, PRETO_E_BRANCO
+from core.filtros import (
+    MAGICO_PRO,
+    MELHORAR,
+    NOMES_AMIGAVEIS,
+    ORIGINAL,
+    PRETO_E_BRANCO,
+    TIRAR_FUNDO,
+    filtros_do_livro,
+)
 from registro import registrar_erro
 from ui.estilo import FOLHA_DE_ESTILO, TEXTO_FRACO
 from ui.widgets.visualizador import (
@@ -45,6 +58,8 @@ DPI_AMPLIADA = 220
 
 MODO_FILTRO, MODO_CORTAR, MODO_BORDAS = "filtro", "corte", "bordas"
 
+# Os quatro de sempre. Item 1.1: a lista que vale para um livro e
+# self.ordem_dos_filtros (com o "Tirar o fundo" no fim, em livro com camadas).
 ORDEM_DOS_FILTROS = [ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO]
 
 
@@ -63,6 +78,10 @@ class TelaAmpliada(QDialog):
         self.conferir = conferir
         self.modo = modo
         self.comparando = False
+        # Item 1.1: os filtros deste livro, na ordem da tela (ver
+        # core.filtros.filtros_do_livro). Fixos enquanto a janela esta aberta.
+        self.ordem_dos_filtros = list(filtros_do_livro(conferir.projeto)) \
+            if conferir.projeto is not None else list(ORDEM_DOS_FILTROS)
 
         self.setWindowTitle("Ver de perto")
         self.setStyleSheet(FOLHA_DE_ESTILO)
@@ -156,7 +175,7 @@ class TelaAmpliada(QDialog):
         barra.addWidget(self.botao_comparar)
 
         self.combo_comparar = QComboBox()
-        for chave in ORDEM_DOS_FILTROS:
+        for chave in self.ordem_dos_filtros:
             self.combo_comparar.addItem(NOMES_AMIGAVEIS.get(chave, chave), chave)
         self.combo_comparar.setVisible(False)
         self.combo_comparar.currentIndexChanged.connect(lambda *_: self.atualizar())
@@ -178,7 +197,7 @@ class TelaAmpliada(QDialog):
         self.botoes_de_filtro: dict[str, QPushButton] = {}
         if self.modo == MODO_FILTRO:
             linha.addWidget(QLabel("Filtro:"))
-            for chave in ORDEM_DOS_FILTROS:
+            for chave in self.ordem_dos_filtros:
                 botao = QPushButton(NOMES_AMIGAVEIS.get(chave, chave))
                 botao.setCheckable(True)
                 botao.clicked.connect(
@@ -280,13 +299,26 @@ class TelaAmpliada(QDialog):
             self.vista_b.definir_imagem(self._imagem_do_outro_filtro())
 
     def _imagem_do_outro_filtro(self) -> np.ndarray | None:
-        """A mesma página com o filtro escolhido no seletor do comparar."""
+        """A mesma página com o filtro escolhido no seletor do comparar.
+
+        Item 1.1: o "Tirar o fundo" nao e um filtro que se aplique na folha ja
+        desenhada - e o core/camadas.py lendo as camadas do PDF (~1 a 2 s).
+        Vem do GerenciadorPrevias (pegar_com_filtro), em segundo plano: None
+        ate chegar, e _previa_chegou redesenha. E o resultado de verdade
+        (pagina intacta aparece como veio). Os outros filtros sao aplicados
+        aqui na folha como veio, como sempre - e o que eles dariam tambem numa
+        pagina que esta em "Tirar o fundo".
+        """
         from core.filtros import aplicar_filtro
         from core.pipeline import preparar_metade
 
         outro = self.combo_comparar.currentData()
         pagina = self.projeto.paginas[self.conferir.indice_pagina]
         folha = self.projeto.folhas[pagina.folha]
+
+        if outro == TIRAR_FUNDO and self.projeto.limpar:
+            return self.conferir.previas.pegar_com_filtro(
+                self.conferir.indice_pagina, DPI_AMPLIADA, TIRAR_FUNDO)
 
         bruta = self.conferir.previas.pegar_folha(pagina.folha, DPI_AMPLIADA)
         if bruta is None:
@@ -356,9 +388,9 @@ class TelaAmpliada(QDialog):
         if self.comparando:
             # começa comparando com um filtro diferente do atual
             atual = self.projeto.paginas[self.conferir.indice_pagina].filtro
-            for chave in ORDEM_DOS_FILTROS:
+            for chave in self.ordem_dos_filtros:
                 if chave != atual:
-                    self.combo_comparar.setCurrentIndex(ORDEM_DOS_FILTROS.index(chave))
+                    self.combo_comparar.setCurrentIndex(self.ordem_dos_filtros.index(chave))
                     break
             self.vista_b.aplicar_vista(self.vista.zoom, self.vista.deslocamento)
         self.atualizar()

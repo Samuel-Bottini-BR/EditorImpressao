@@ -375,6 +375,14 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
         ok += 1
         print("  ok    área de arrastar abriu o PDF de teste")
 
+    # Item 1.1: livro com camadas aberto pela primeira vez -> o aviso "Este
+    # livro tem fundo separado. Quer tirar o fundo?". Responde "Sim" clicando
+    # o botao de verdade, e confere que o filtro do livro virou "Tirar o
+    # fundo" (o resto do teste, entao, confere com o filtro novo).
+    o, f = responder_aviso_do_fundo(janela)
+    ok += o
+    falhas += f
+
     # menu, no estado "tela inicial" (so Arquivo/Ver/Ajuda valem)
     o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair"})
     ok += o
@@ -385,6 +393,47 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     ok += o
     falhas += f
     return ok, falhas
+
+
+def responder_aviso_do_fundo(janela) -> tuple[int, int]:
+    """Item 1.1: se a janela abriu o aviso de livro com camadas
+    (janela.aviso_do_fundo), clica "Sim, tirar o fundo" e confere que o
+    filtro do livro virou "Tirar o fundo". Sem camadas, confere que o aviso
+    NAO apareceu (nunca pergunta em livro sem camadas)."""
+    from core.filtros import TIRAR_FUNDO
+    from PySide6.QtWidgets import QAbstractButton
+
+    global _contexto_atual
+    esperar(0.3)
+    caixa = janela.aviso_do_fundo
+    tem_camadas = bool(janela.projeto is not None and janela.projeto.tem_camadas)
+    if caixa is None:
+        if tem_camadas:
+            _contexto_atual = "aviso de livro com camadas"
+            print("  FALHA livro com camadas aberto pela primeira vez e o aviso não apareceu"
+                  " (se o projeto de teste já existia de uma rodada anterior, é esperado)")
+            return 0, 1
+        print("  ok    sem camadas: o aviso 'Quer tirar o fundo?' não apareceu")
+        return 1, 0
+    if not tem_camadas:
+        print("  FALHA o aviso 'Quer tirar o fundo?' apareceu num livro sem camadas")
+        return 0, 1
+    print(f"  (aviso: {caixa.text()})")
+    sim = next((b for b in caixa.findChildren(QAbstractButton)
+                if b.text() == "Sim, tirar o fundo"), None)
+    if sim is None:
+        print("  FALHA o aviso não tem o botão 'Sim, tirar o fundo'")
+        return 0, 1
+    if not acionar(sim, "Sim, tirar o fundo"):
+        return 0, 1
+    certo = (janela.aviso_do_fundo is None
+             and janela.projeto.filtro_padrao == TIRAR_FUNDO
+             and janela.tela_opcoes.radios_de_filtro[TIRAR_FUNDO].isChecked())
+    if certo:
+        print("  ok    'Sim' deixou o livro inteiro em 'Tirar o fundo'")
+        return 2, 0
+    print(f"  FALHA depois do 'Sim' o filtro do livro ficou {janela.projeto.filtro_padrao}")
+    return 1, 1
 
 
 def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
@@ -401,13 +450,6 @@ def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
 
     caixas = [opcoes.cx_dividir, opcoes.cx_limpar, opcoes.cx_endireitar,
               opcoes.cx_cortar, opcoes.cx_cadernos]
-    # Item 1.1: "Tirar o fundo sozinho" so aparece em PDF com camadas (o PDF
-    # gerado por este script nao tem; rode com um PDF do Internet Archive,
-    # COPIADO para fora do acervo, para cobri-la - ver o topo do arquivo).
-    if not opcoes.painel_tirar_fundo.isHidden():
-        caixas.append(opcoes.cx_tirar_fundo)
-    else:
-        print("  (a caixinha 'Tirar o fundo sozinho' não aparece: este PDF não tem camadas)")
     for caixa in caixas:
         if acionar(caixa, caixa.text()):
             ok += 1
@@ -420,7 +462,19 @@ def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
         else:
             falhas += 1
 
+    # Item 1.1: o filtro "Tirar o fundo" so aparece em PDF com camadas (o PDF
+    # gerado por este script nao tem; rode com um PDF do Internet Archive,
+    # COPIADO para fora do acervo, para cobri-lo - ver o topo do arquivo). O
+    # radio escondido nao e clicado: a pessoa nao o ve. O ultimo clicado e o
+    # filtro com que o livro segue para a conferencia ("Tirar o fundo" com
+    # camadas, "Mágico pro" sem).
+    from core.filtros import TIRAR_FUNDO
+
+    if opcoes.radios_de_filtro[TIRAR_FUNDO].isHidden():
+        print("  (o filtro 'Tirar o fundo' não aparece: este PDF não tem camadas)")
     for radio in opcoes.grupo_filtros.buttons():
+        if radio.isHidden():
+            continue
         if acionar(radio, radio.text()):
             ok += 1
         else:
@@ -532,6 +586,10 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
                     print(f"  ok    tamanho_folha_cm registrado: "
                           f"{pagina_depois.tamanho_folha_cm}")
 
+    o, f = testar_cartao_tirar_fundo(conferir)
+    ok += o
+    falhas += f
+
     print("\n--- cabecalho e rodape (conferir) ---")
     for botao in (conferir.botao_alertas, conferir.botao_desfazer, conferir.botao_refazer):
         if not botao.isEnabled():
@@ -570,6 +628,60 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     ok += o
     falhas += f
 
+    return ok, falhas
+
+
+def testar_cartao_tirar_fundo(conferir) -> tuple[int, int]:
+    """Item 1.1: na aba Filtro de um livro com camadas, espera o cartão
+    "Tirar o fundo" mostrar a página de verdade (desenhada em segundo plano) e
+    clica nele com o mouse (escolhe o filtro e abre a tela ampliada, que aqui
+    fecha sozinha). Confere que a página ficou em "Tirar o fundo". Sem o
+    cartão (livro sem camadas), só avisa."""
+    from core.filtros import ORIGINAL, TIRAR_FUNDO
+    from ui.tela_ampliada import TelaAmpliada
+
+    global _contexto_atual
+    cartao = conferir.cartoes.get(TIRAR_FUNDO)
+    if cartao is None:
+        print("  (sem o cartão 'Tirar o fundo': este livro não tem camadas)")
+        return 0, 0
+    print("\n--- cartão 'Tirar o fundo' ---")
+    ok = falhas = 0
+    if "filtro" in conferir._abas_ativas:
+        conferir.barra_abas.setCurrentIndex(conferir._abas_ativas.index("filtro"))
+    pagina = conferir.projeto.paginas[conferir.indice_pagina]
+    if pagina.filtro == TIRAR_FUNDO:
+        # para o cartão ser o desenhado em segundo plano, a página sai do filtro
+        conferir._escolher_filtro(ORIGINAL)
+    if esperar(60, lambda: cartao.amostra._pixmap is not None):
+        ok += 1
+        print("  ok    o cartão 'Tirar o fundo' mostrou a página")
+    else:
+        falhas += 1
+        _contexto_atual = "cartão 'Tirar o fundo'"
+        print("  FALHA o cartão 'Tirar o fundo' ficou em 'preparando...' por 60 s")
+
+    exec_original = TelaAmpliada.exec
+
+    def exec_fechando(self):
+        QTimer.singleShot(200, self.close)
+        return exec_original(self)
+
+    TelaAmpliada.exec = exec_fechando
+    try:
+        _contexto_atual = "clique no cartão 'Tirar o fundo'"
+        antes = len(_falhas)
+        QTest.mouseClick(cartao, Qt.LeftButton)
+        esperar(1.0)
+    finally:
+        TelaAmpliada.exec = exec_original
+    pagina = conferir.projeto.paginas[conferir.indice_pagina]
+    if len(_falhas) == antes and pagina.filtro == TIRAR_FUNDO:
+        ok += 1
+        print("  ok    clique no cartão 'Tirar o fundo' (a página ficou nele)")
+    else:
+        falhas += 1
+        print(f"  FALHA clique no cartão 'Tirar o fundo' (filtro: {pagina.filtro})")
     return ok, falhas
 
 

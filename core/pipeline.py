@@ -6,13 +6,14 @@ Ordem obrigatoria do processamento:
 
 As páginas apagadas somem logo depois da etapa 1.
 
-Item 1.1 (tirar o fundo de PDF com camadas, core/camadas.py): quando ligado
-(Projeto.tirar_fundo_ligado), a página que pede um filtro (não "Original")
-troca o filtro pelo "tirar o fundo". Ele trabalha na PÁGINA DO PDF (as camadas
-são da folha inteira), então roda ANTES da etapa 1, no lugar do desenho da
-folha, e as etapas 1 a 3 seguem por cima do resultado, com o corte e o ângulo
-medidos na folha como ela veio (os mesmos de sempre, guardados para a prévia =
-PDF). A etapa 4 (filtro) é pulada nessas páginas. Ver usa_tirar_fundo e
+Item 1.1 (tirar o fundo de PDF com camadas, core/camadas.py): é o filtro
+"Tirar o fundo" (core.filtros.TIRAR_FUNDO), que só aparece em PDF com
+camadas. Ele trabalha na PÁGINA DO PDF (as camadas são da folha inteira),
+então roda ANTES da etapa 1, no lugar do desenho da folha, e as etapas 1 a 3
+seguem por cima do resultado, com o corte e o ângulo medidos na folha como
+ela veio (os mesmos de sempre, guardados para a prévia = PDF). A etapa 4 é
+pulada: nenhum outro filtro vai por cima. Página que core/camadas.py deixa
+intacta sai como veio (igual ao Original). Ver usa_tirar_fundo e
 _sem_fundo_da_folha.
 
 Sobre memória: nenhuma funcao daqui monta uma lista de páginas processadas. Ler
@@ -38,7 +39,7 @@ from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
-from core.filtros import ORIGINAL, aplicar_filtro, aplicar_filtro_com_selecao
+from core.filtros import ORIGINAL, TIRAR_FUNDO, aplicar_filtro, aplicar_filtro_com_selecao
 from core.folha import compor_na_folha
 from core.pdf_io import (
     DPI_PREVIA,
@@ -105,6 +106,7 @@ def analisar_projeto(
         # conteúdo de até 12 páginas), sem desenhar nada: milissegundos. Feito
         # aqui também (além de ui/janela_principal.abrir_livro) para quem
         # chega sem passar pela tela - a conferencia.py e o teste de velocidade.
+        # É o que faz o filtro "Tirar o fundo" aparecer na tela.
         from core.camadas import pdf_tem_camadas
 
         projeto.tem_camadas = pdf_tem_camadas(doc)
@@ -438,91 +440,118 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
 # ---------------------------------------------------------------------------
 # Item 1.1: tirar o fundo de PDF com camadas (core/camadas.py)
 #
-# Decisao do Samuel (29/09/2026): "automatico quando o programa detectar
-# camadas, com botao para desligar por livro; pagina duvidosa sai marcada
-# 'conferir'." Decisao da gerente (a rever pelo Samuel): com o botao ligado,
-# o "tirar o fundo" entra NO LUGAR do filtro (Preto e branco, Melhorar,
-# Magico pro); a pagina em "Original" ("nao mexe na pagina") fica como esta;
-# a pagina que core/camadas.py deixa intacta (foto que o detector nao viu,
-# manuscrito claro, capa) segue o filtro escolhido, como antes.
+# Decisao do Samuel (29/09/2026, depois de ver a primeira ligacao, commit
+# bb54b7d): "Pagina sempre abre em 'Original', sem mexer. Em PDF com camadas,
+# 'Tirar o fundo' vira mais uma opcao na lista de filtros (ao lado de
+# Original, Preto e branco, Melhorar e Magico pro), com botao para aplicar no
+# livro inteiro. Assim eu decido se tiro ou nao, e o Kaique escolhe um filtro
+# so, sem mudanca escondida." E: "eu quero poder escolher tirar o fundo sem
+# colocar nenhum filtro." A pagina duvidosa continua saindo "conferir".
+#
+# Entao: so a pagina com o filtro "Tirar o fundo" (TIRAR_FUNDO) usa o
+# core/camadas.py. Se ele diz "fundo tirado" ou "conferir", sai o resultado
+# dele; se diz "intacta" (ou o PDF nao tem camadas, ou deu erro), a pagina
+# sai COMO VEIO, igual ao Original - nunca com outro filtro por cima.
 #
 # Onde entra na ordem dividir -> cortar -> endireitar -> filtro: as camadas
 # sao da PAGINA DO PDF (a folha inteira, antes de dividir), entao o "tirar o
 # fundo" roda primeiro, na folha, no lugar do desenho dela; dividir, cortar e
 # endireitar seguem por cima do resultado; o filtro e pulado. O corte e o
 # angulo sao os da folha COMO VEIO (medidos no desenho normal, na resolucao
-# do PDF, e guardados em _GEOMETRIAS): os mesmos de antes, os mesmos com o
-# botao ligado ou desligado, e os mesmos na previa e no PDF.
+# do PDF, e guardados em _GEOMETRIAS): os mesmos de qualquer outro filtro, e
+# os mesmos na previa e no PDF.
 #
-# Os tres caminhos que desenham pagina final passam por aqui: processar (o
-# PDF), renderizar_pagina (a previa da tela de conferir, e por ela a
-# conferencia.py e o teste de velocidade).
+# Os caminhos que desenham pagina final passam por aqui: processar (o PDF),
+# renderizar_pagina (a previa da tela de conferir, e por ela a
+# conferencia.py e o teste de velocidade) e renderizar_com_filtro (o cartao
+# "Tirar o fundo" da aba Filtro e o "comparar" da tela ampliada).
 # ---------------------------------------------------------------------------
 
 
 def usa_tirar_fundo(projeto: Projeto, pagina: ConfigPagina) -> bool:
     """Esta pagina tenta o "tirar o fundo" (item 1.1)?
 
-    Sim quando "Limpar a folha" esta marcada, o livro tem camadas e a caixinha
-    "Tirar o fundo sozinho" ficou marcada (Projeto.tirar_fundo_ligado), e a
-    pagina pede um filtro - Original nunca. Se a pagina vai mesmo sair sem o
-    fundo, quem diz e core/camadas.py (pode deixa-la intacta).
+    Sim quando a pagina tem o filtro "Tirar o fundo", "Limpar a folha" esta
+    marcada (sem ela nenhum filtro vale) e o PDF tem camadas. Se a pagina vai
+    mesmo sair sem o fundo, quem diz e core/camadas.py (pode deixa-la
+    intacta). Com o filtro salvo num PDF sem camadas: False, e a pagina sai
+    como veio (_filtrar).
     """
-    return bool(projeto.limpar and projeto.tirar_fundo_ligado and pagina.filtro != ORIGINAL)
+    return bool(projeto.limpar and projeto.tem_camadas and pagina.filtro == TIRAR_FUNDO)
 
 
 def _sem_fundo_da_folha(doc, folha: ConfigFolha, dpi: int):
     """core.camadas.tirar_fundo da folha inteira, no DPI pedido.
 
-    Devolve o PaginaSemFundo (imagem None = seguir como antes, com o filtro).
-    Um erro aqui nunca derruba a previa nem o PDF: a folha segue com o filtro
-    escolhido, como se o PDF nao tivesse camadas, e o erro vai para o log.
-    A decisao (tirar, deixar intacta, conferir) e tomada sempre na mesma
-    resolucao (camadas.DPI_DA_ANALISE), qualquer que seja `dpi`: a previa e o
-    PDF decidem igual.
+    Devolve o PaginaSemFundo (imagem None = a pagina sai como veio). Um erro
+    aqui nunca derruba a previa nem o PDF: a folha sai como veio, como se o
+    PDF nao tivesse camadas, e o erro vai para o log. A decisao (tirar,
+    deixar intacta, conferir) e tomada sempre na mesma resolucao
+    (camadas.DPI_DA_ANALISE), qualquer que seja `dpi`: a previa e o PDF
+    decidem igual. A decisao fica guardada por folha nesta sessao
+    (_DECISOES_DO_FUNDO), para o alerta "conferir" poder ser acertado sem
+    desenhar a pagina de novo (acertar_alertas_do_fundo).
     """
     from core import camadas
 
     chave = _chave_da_folha(doc, folha)
     if chave is not None:
         with _TRANCA_GEOMETRIAS:
-            if chave in _FOLHAS_SEM_TIRAR_FUNDO:
+            if _DECISOES_DO_FUNDO.get(chave) == _INTACTA:
                 return camadas.PaginaSemFundo(
                     None, camadas.DEIXADA_INTACTA,
                     "Esta página fica como está (decidido antes, nesta sessão).")
     try:
         resultado = camadas.tirar_fundo(doc, folha.indice, dpi=dpi)
-        if resultado.imagem is None and chave is not None:
-            with _TRANCA_GEOMETRIAS:
-                _FOLHAS_SEM_TIRAR_FUNDO.add(chave)
-        return resultado
-    except Exception as erro:  # noqa: BLE001 - na duvida, segue como antes
+    except Exception as erro:  # noqa: BLE001 - na duvida, a pagina sai como veio
         _log.exception("tirar o fundo falhou na folha %s", folha.indice + 1)
         return camadas.PaginaSemFundo(
             None, camadas.DEIXADA_INTACTA,
-            "Não consegui tirar o fundo desta página; ela segue com o filtro.",
+            "Não consegui tirar o fundo desta página; ela sai como veio.",
             medidas={"erro": f"{type(erro).__name__}: {erro}"})
+    if chave is not None:
+        if resultado.imagem is None:
+            decisao = _INTACTA
+        else:
+            decisao = _CONFERIR if resultado.conferir else _TIRADO
+        with _TRANCA_GEOMETRIAS:
+            _DECISOES_DO_FUNDO[chave] = decisao
+    return resultado
 
 
-# As folhas em que core/camadas.py ja disse "fica como esta" (intacta ou sem
-# camadas), nesta sessao do programa. A decisao nao depende do DPI (e tomada
-# sempre em camadas.DPI_DA_ANALISE), entao a segunda previa, a ampliada e o
-# PDF dessa folha nao pagam de novo o ~1,8 s de tirar o fundo para depois
-# jogar fora (medido em 29/09: Palatino 5, previa de 2,6-3,2 s para 4,6-4,8
-# s sem isto). So guarda o "nao"; a imagem sem o fundo nunca fica guardada
-# (uma pagina por vez na memoria). A chave leva o arquivo (caminho, data,
-# tamanho), como _GEOMETRIAS. Seguro mudar: pode ser esvaziado a qualquer
-# hora (so custa tempo).
-_FOLHAS_SEM_TIRAR_FUNDO: set[tuple] = set()
+# O que core/camadas.py decidiu para cada folha, nesta sessao do programa:
+# _TIRADO (fundo tirado, sem duvida), _CONFERIR (tirado, mas pede
+# conferencia) ou _INTACTA (fica como veio: intacta ou sem camadas). A
+# decisao nao depende do DPI (e tomada sempre em camadas.DPI_DA_ANALISE).
+# Serve para duas coisas:
+#   - a folha _INTACTA nao paga de novo o ~1,8 s de tirar o fundo para depois
+#     jogar fora (medido em 29/09: Palatino 5, previa de 2,6-3,2 s para
+#     4,6-4,8 s sem isto) - a segunda previa, a ampliada, o cartao e o PDF;
+#   - o alerta "conferir" pode ser posto na hora em que a pessoa escolhe o
+#     filtro, sem esperar a previa (acertar_alertas_do_fundo), quando o
+#     cartao ou uma previa anterior ja descobriu a decisao.
+# Um erro no core/camadas.py nao e guardado (a proxima vez tenta de novo).
+# So guarda a decisao; a imagem sem o fundo nunca fica guardada (uma pagina
+# por vez na memoria). A chave leva o arquivo (caminho, data, tamanho), como
+# _GEOMETRIAS. Seguro mudar: pode ser esvaziado a qualquer hora (so custa
+# tempo; o alerta volta quando a pagina for desenhada).
+_TIRADO, _CONFERIR, _INTACTA = "tirado", "conferir", "intacta"
+_DECISOES_DO_FUNDO: dict[tuple, str] = {}
 
 
 def _chave_da_folha(doc, folha: ConfigFolha) -> tuple | None:
     """(arquivo, data, tamanho, folha) do PDF aberto em `doc`; None se o
     documento nao vem de um arquivo no disco."""
+    return _chave_do_arquivo(getattr(doc, "name", None), folha)
+
+
+def _chave_do_arquivo(caminho, folha: ConfigFolha) -> tuple | None:
+    """A mesma chave de _chave_da_folha, a partir do caminho do PDF (o
+    projeto.caminho_entrada, que e o que o programa abre)."""
     try:
-        caminho = os.path.abspath(doc.name)
+        caminho = os.path.abspath(caminho)
         info = os.stat(caminho)
-    except (OSError, TypeError, ValueError, AttributeError):
+    except (OSError, TypeError, ValueError):
         return None
     return (caminho, info.st_mtime_ns, info.st_size, folha.indice)
 
@@ -531,27 +560,53 @@ def _anotar_conferir(pagina: ConfigPagina, conferir: bool) -> None:
     """Poe ou tira o alerta analise.CONFERIR_FUNDO_TIRADO da pagina.
 
     Posto quando o fundo saiu mas core/camadas.py ficou em duvida (escrita
-    fraca, traco trazido do fundo); tirado quando a pagina deixa de usar o
-    "tirar o fundo" (voltou a Original, botao desligado) ou saiu sem duvida.
-    Mesmo mecanismo do DESENHO_OU_ESCRITA em garantir_selecao: a tela mostra
-    pagina.alertas. Nao mexe em `revisada`: o que a pessoa ja conferiu fica.
+    fraca, traco trazido do fundo); tirado quando a pagina sai do filtro
+    "Tirar o fundo" ou saiu sem duvida.
+
+    Ao POR o alerta, a pagina volta a "nao conferida" (revisada = False) e o
+    alerta vai para a frente da lista (e o primeiro que a faixa mostra).
+    Conserto do defeito 2 do verificador (29/09): escolher o filtro marca a
+    pagina como conferida (tela_conferir._escolher_filtro), e o alerta, que
+    so e conhecido depois, nascia escondido. O "esta bom assim" continua
+    valendo: ele marca a pagina conferida com o alerta ja posto, e o alerta
+    ja posto nao mexe mais em `revisada`. Arriscado: por o alerta sem voltar
+    `revisada` traz o defeito de volta.
     """
     tem = analise.CONFERIR_FUNDO_TIRADO in pagina.alertas
     if conferir and not tem:
-        pagina.alertas.append(analise.CONFERIR_FUNDO_TIRADO)
+        pagina.alertas.insert(0, analise.CONFERIR_FUNDO_TIRADO)
+        pagina.revisada = False
     elif not conferir and tem:
         pagina.alertas = [a for a in pagina.alertas if a != analise.CONFERIR_FUNDO_TIRADO]
 
 
-def tirar_alertas_do_fundo_se_desligado(projeto: Projeto) -> None:
-    """Botao desligado (ou "Limpar a folha" desmarcada): nenhuma pagina fica
-    com o alerta "conferir o fundo tirado" de uma vez anterior. Chamado pela
-    tela ao abrir a conferencia; as paginas com o botao ligado sao acertadas
-    uma a uma por _anotar_conferir, quando desenhadas."""
-    if projeto.limpar and projeto.tirar_fundo_ligado:
-        return
-    for pagina in projeto.paginas:
-        _anotar_conferir(pagina, False)
+def acertar_alertas_do_fundo(projeto: Projeto,
+                             paginas: list[ConfigPagina] | None = None) -> None:
+    """Acerta o alerta "conferir o fundo tirado" sem desenhar nada.
+
+    Pagina fora do filtro "Tirar o fundo" (ou livro sem camadas, ou sem
+    "Limpar a folha"): o alerta sai. Pagina no filtro: o alerta entra ou sai
+    conforme a decisao ja conhecida nesta sessao (_DECISOES_DO_FUNDO); se
+    ainda nao se sabe, fica como esta, e a previa acerta quando chegar
+    (renderizar_pagina). Barato: nenhuma pagina e lida.
+
+    Chamado pela tela ao abrir a conferencia (todas as paginas) e a cada
+    atualizacao da tela de conferir (a pagina da vez) - e assim que o alerta
+    aparece na hora em que se escolhe o filtro, e some quando se sai dele.
+    """
+    for pagina in projeto.paginas if paginas is None else paginas:
+        if not usa_tirar_fundo(projeto, pagina):
+            _anotar_conferir(pagina, False)
+            continue
+        if not 0 <= pagina.folha < len(projeto.folhas):
+            continue
+        chave = _chave_do_arquivo(projeto.caminho_entrada, projeto.folhas[pagina.folha])
+        if chave is None:
+            continue
+        with _TRANCA_GEOMETRIAS:
+            decisao = _DECISOES_DO_FUNDO.get(chave)
+        if decisao is not None:
+            _anotar_conferir(pagina, decisao == _CONFERIR)
 
 
 def _geometria_da_folha_como_veio(doc, folha: ConfigFolha, pagina: ConfigPagina,
@@ -587,10 +642,11 @@ def renderizar_pagina(
 
     Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
 
-    Item 1.1: se a pagina usa o "tirar o fundo" (usa_tirar_fundo) e o PDF
-    deixa, a previa e a folha sem o fundo, dividida, cortada e endireitada
-    como o PDF final (processar faz a mesma coisa), sem filtro. O alerta
-    "conferir" da pagina e acertado aqui (_anotar_conferir).
+    Item 1.1: se a pagina esta no filtro "Tirar o fundo" (usa_tirar_fundo)
+    e core/camadas.py tira o fundo, a previa e a folha sem o fundo, dividida,
+    cortada e endireitada como o PDF final (processar faz a mesma coisa), sem
+    filtro. Se ele deixa a pagina intacta, ela sai como veio (_filtrar). O
+    alerta "conferir" da pagina e acertado aqui (_anotar_conferir).
     """
     folha = projeto.folhas[pagina.folha]
     if usa_tirar_fundo(projeto, pagina):
@@ -627,14 +683,39 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray) -> tuple[n
     O MESMO para a previa (renderizar_pagina) e o PDF (processar): antes era
     escrito duas vezes, igual. Devolve (imagem, monocromatica); sem "Limpar a
     folha", a imagem como veio.
+
+    Filtro "Tirar o fundo" (item 1.1) que chega aqui: core/camadas.py deixou
+    a pagina intacta, o PDF nao tem camadas ou deu erro - a pagina sai como
+    veio, sem outro filtro por cima e sem procurar gravura e letra (a
+    marcacao nao serviria para nada, e custa ~1 s).
     """
-    if not projeto.limpar:
+    if not projeto.limpar or pagina.filtro == TIRAR_FUNDO:
         return img, False
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, garantir_selecao(projeto, pagina, img),
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
     )
+
+
+def renderizar_com_filtro(
+    doc, projeto: Projeto, pagina: ConfigPagina, filtro: str, dpi: int = DPI_PREVIA
+) -> tuple[np.ndarray, bool]:
+    """A pagina como sairia com `filtro`, SEM mudar a pagina.
+
+    E o que o cartao "Tirar o fundo" da aba Filtro e o "comparar" da tela
+    ampliada mostram (item 1.1, 29/09/2026: o resultado de verdade, e nao o
+    filtro comum): o mesmo renderizar_pagina, numa copia da pagina com o
+    outro filtro. Os alertas que o desenho acertar (o "conferir") ficam na
+    copia; a decisao do core/camadas.py fica guardada por folha
+    (_DECISOES_DO_FUNDO), e a pagina de verdade ganha o alerta quando passar
+    para esse filtro (acertar_alertas_do_fundo). Arriscado: desenhar a pagina
+    de verdade aqui mudaria os alertas dela sem ela ter mudado de filtro.
+    """
+    from dataclasses import replace
+
+    copia = replace(pagina, filtro=filtro, alertas=list(pagina.alertas))
+    return renderizar_pagina(doc, projeto, copia, dpi=dpi)
 
 
 def _reduzir_para_o_dpi(doc, indice: int, img: np.ndarray, dpi: int) -> np.ndarray:
@@ -807,10 +888,10 @@ def processar(
 def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     """A caixa (i) da tela 2, atualizada ao vivo. Sem jargao nenhum.
 
-    Item 1.1: com a caixinha "Tirar o fundo sozinho" valendo (so aparece em
-    PDF com camadas), diz isso - e, com o filtro do livro em Original, avisa
-    que so vale nas paginas em que a pessoa escolher um filtro (a pagina em
-    Original nao e mexida; ver usa_tirar_fundo).
+    Item 1.1: com o filtro do livro em "Tirar o fundo" (so aparece em PDF
+    com camadas), diz que tira o fundo de todas as paginas e que, onde nao
+    der, a pagina fica como veio (ver usa_tirar_fundo e _filtrar). Num PDF
+    sem camadas esse filtro nao faz nada, e o resumo nao fala dele.
     """
     from core.filtros import NOMES_AMIGAVEIS
 
@@ -822,16 +903,14 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
         partes.append("endireitar as tortas")
     if projeto.cortar_bordas:
         partes.append("cortar as bordas")
-    sem_fundo = projeto.limpar and projeto.tirar_fundo_ligado
-    if projeto.limpar and projeto.filtro_padrao != ORIGINAL:
+    if projeto.limpar and projeto.filtro_padrao == TIRAR_FUNDO:
+        if projeto.tem_camadas:
+            partes.append("tirar o fundo de todas as páginas, que este PDF já traz "
+                          "separado do que está impresso (onde não der, a página "
+                          "fica como veio)")
+    elif projeto.limpar and projeto.filtro_padrao != ORIGINAL:
         nome = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
-        if sem_fundo:
-            partes.append("tirar o fundo sozinho, que este PDF já traz separado do "
-                          f"texto (onde não der, uso o {nome})")
-        else:
-            partes.append(f"deixar tudo em {nome}")
-    elif sem_fundo:
-        partes.append("tirar o fundo sozinho nas páginas em que você escolher um filtro")
+        partes.append(f"deixar tudo em {nome}")
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")
 

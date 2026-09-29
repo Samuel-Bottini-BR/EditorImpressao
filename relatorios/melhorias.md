@@ -1011,3 +1011,78 @@ O PDF sai 14% a 28% mais rápido (pula a marcação de gravura e o filtro). A
 lenta** (~0,5 s): o "tirar o fundo" (~1,8 s) custa mais que marcação + filtro,
 e a primeira vista ainda desenha a folha a 300 DPI para medir o corte. Livro
 sem camadas: nada muda (a detecção para na primeira página, 2 ms).
+
+## Tentativa 26 — "Tirar o fundo" vira filtro (item 1.1, 29/09/2026)
+
+**Pedido (Samuel, 29/09, depois de ver a primeira ligação):** "Página sempre
+abre em 'Original', sem mexer. Em PDF com camadas, 'Tirar o fundo' vira mais
+uma opção na lista de filtros (ao lado de Original, Preto e branco, Melhorar e
+Mágico pro), com botão para aplicar no livro inteiro. [...] Ao abrir um livro
+com camadas, o programa pode avisar: 'Este livro tem fundo separado. Quer
+tirar o fundo?'. A caixinha 'Tirar o fundo sozinho' não é mais necessária." E:
+"eu quero poder escolher tirar o fundo sem colocar nenhum filtro." E: "nenhum
+livro vem marcado, nem novo, nem velho."
+
+**Como ficou:**
+
+- Filtro novo `core.filtros.TIRAR_FUNDO` ("Tirar o fundo", "tira o papel e
+  deixa só o que está impresso"). `filtros_do_livro(projeto)` diz onde ele
+  aparece: só em livro com camadas (ou, para poder sair dele, quando já está
+  escolhido num PDF sem camadas). Aparece no filtro do livro da tela "O que
+  fazer", como quinto cartão da aba Filtro e nos botões e no "comparar" da tela
+  ampliada. Por página e para o livro inteiro pelos mecanismos de sempre
+  (cartão, "todas", "só nas próximas", filtro do livro), com desfazer/refazer
+  sem mudança no mecanismo.
+- Sai a caixinha e o campo `tirar_fundo_sozinho` (e `tirar_fundo_ligado`).
+  Projeto salvo com o campo abre (o campo é ignorado); projeto sem
+  `tem_camadas` abre com False. Nenhum projeto vem com o fundo tirado: só a
+  página com o filtro escolhido.
+- Sem filtro por cima: "fundo tirado" e "conferir" saem como o
+  `core/camadas.py` deixa; "intacta", PDF sem camadas ou erro saem **como
+  vieram**, igual ao Original (`_filtrar` e `aplicar_filtro*` tratam o nome
+  como Original, sem procurar gravura e letra). Palatino 5 pelo programa com
+  "Tirar o fundo": idêntico ponto por ponto ao Original.
+- O cartão e o "comparar" desenham o resultado de verdade
+  (`pipeline.renderizar_com_filtro`, numa cópia da página, pedido ao
+  `GerenciadorPrevias` com `pegar_com_filtro`; o cartão só é pedido depois
+  que a prévia principal chegou).
+- Aviso ao abrir: só quando o livro com camadas é aberto pela primeira vez
+  (projeto novo; decisão da gerente, a rever). `QMessageBox.open()` (não
+  `exec()`), guardado em `janela.aviso_do_fundo` para os testes clicarem.
+  Sim = filtro do livro "Tirar o fundo"; Não, X ou Esc = nada muda.
+- Alerta "Conferir o fundo tirado" (defeito 2 do verificador): ao ser posto,
+  a página volta a "não conferida" e o alerta vai para a frente da lista; a
+  decisão do `core/camadas.py` fica guardada por folha na sessão
+  (`_DECISOES_DO_FUNDO`, substitui `_FOLHAS_SEM_TIRAR_FUNDO`), e
+  `acertar_alertas_do_fundo` põe/tira o alerta sem desenhar, a cada
+  atualização da tela de conferir. O "está bom assim" continua valendo.
+- Defeito 1 do verificador (caixinha voltando marcada pelo "Abrir"): some com
+  a caixinha; o filtro de cada página volta do salvo igual pelo "Abrir" e pelo
+  "continuar" (teste).
+
+**Conferência pelo programa** (`relatorios/conferir/fase1-2026-09-29-1826`,
+filtro "Tirar o fundo", comparada com `fase1-2026-09-29-1603`): 15 das 16
+páginas **idênticas ponto por ponto** à rodada anterior; o Palatino 5, que o
+`core/camadas.py` deixa intacto, antes saía no Mágico pro e agora sai como
+veio (papel amarelo, igual ao Original). "Conferir" nas mesmas 4: Palatino 9,
+57, 66 e Opus Majus 3.
+
+**Tempo** (medida isolada, 16 páginas do gabarito do 1.1, código da primeira
+ligação num worktree do `f4d9a60` com a caixinha e Mágico pro, contra o de
+agora com "Tirar o fundo"; duas rodadas alternadas; **máquina dividida com
+outros agentes**):
+
+| | antes (caixinha + Mágico pro) | depois ("Tirar o fundo") |
+|---|---|---|
+| primeira prévia das 16, rodada 1 / 2 | 44,7 / 37,9 s | 44,2 / 36,9 s |
+| processar (PDF, 300 DPI), rodada 1 / 2 | 50,0 / 42,1 s | 48,1 / 40,1 s |
+| prévia em Original (página nova) | — | 27,2 / 23,1 s |
+| cartão "Tirar o fundo" (em segundo plano) | — | 30,7 / 26,4 s |
+
+O ganho vem do Palatino 5 (intacto: prévia 3,4-4,0 s → 2,2 s; PDF 5,6-5,9 s →
+2,8-3,0 s, porque não roda mais o Mágico pro). Nas outras, igual dentro do
+ruído (o Opus Majus saiu de 0,1 a 0,4 s mais lento nas duas rodadas; não achei
+causa no código, que é o mesmo caminho). Página nova em Original num livro com
+camadas não paga o "tirar o fundo" na prévia (1,1-2,4 s por página); o cartão
+"Tirar o fundo" custa de 1,2 a 2,8 s por página em segundo plano, ao abrir a
+aba Filtro.

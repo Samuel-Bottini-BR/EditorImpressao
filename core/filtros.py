@@ -13,6 +13,14 @@ por tentar inventar formula propria. Aqui usamos o que já e consagrado:
 
 - Mágico pro: Melhorar + CLAHE + saturacao + nitidez, no espirito do
   "magic color" do CamScanner.
+
+- Tirar o fundo (item 1.1, 29/09/2026): NAO e calculado aqui. So existe em
+  PDF com camadas (Internet Archive: fundo embaixo, texto recortado por cima)
+  e quem faz e core/camadas.py, chamado por core/pipeline.py na folha inteira,
+  antes de dividir (ver pipeline.usa_tirar_fundo). Aqui ele e so um nome na
+  lista, e as funcoes deste arquivo o tratam como o Original (devolvem a
+  imagem como veio): e assim que sai a pagina que core/camadas.py deixa
+  intacta, ou um projeto com o filtro salvo num PDF sem camadas.
 """
 
 from __future__ import annotations
@@ -26,14 +34,47 @@ PRETO_E_BRANCO = "preto_e_branco"
 MELHORAR = "melhorar"
 MAGICO_PRO = "magico_pro"
 
-FILTROS = (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO)
+# Item 1.1 do Plano Definitivo. Decisao do Samuel (29/09/2026): "Em PDF com
+# camadas, 'Tirar o fundo' vira mais uma opcao na lista de filtros (ao lado de
+# Original, Preto e branco, Melhorar e Magico pro), com botao para aplicar no
+# livro inteiro." E "eu quero poder escolher tirar o fundo sem colocar nenhum
+# filtro": nenhum outro filtro vai por cima dele. Quem desenha a pagina e
+# core/camadas.py (via core/pipeline.py); ver o topo deste arquivo.
+# Arriscado mudar o valor: e o que fica gravado em ConfigPagina.filtro nos
+# projetos salvos.
+TIRAR_FUNDO = "tirar_fundo"
+
+# Os quatro filtros de sempre, que valem em qualquer livro.
+FILTROS_COMUNS = (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO)
+
+# Todos os nomes que ConfigPagina.filtro aceita. O "Tirar o fundo" so aparece
+# na tela em livro com camadas: ver filtros_do_livro.
+FILTROS = FILTROS_COMUNS + (TIRAR_FUNDO,)
 
 NOMES_AMIGAVEIS = {
     ORIGINAL: "Original",
     PRETO_E_BRANCO: "Preto e branco",
     MELHORAR: "Melhorar",
     MAGICO_PRO: "Mágico pro",
+    TIRAR_FUNDO: "Tirar o fundo",
 }
+
+
+def filtros_do_livro(projeto) -> tuple[str, ...]:
+    """Os filtros que a tela oferece para este livro, na ordem da tela.
+
+    "Tirar o fundo" so entra quando o PDF tem camadas (projeto.tem_camadas,
+    detectado ao abrir). Tambem entra, para a pessoa poder sair dele, quando o
+    livro ja tem esse filtro escolhido (salvo antes) mesmo sem camadas - ai a
+    pagina sai como veio, sem erro (ver core/pipeline.py). `projeto` e um
+    modelos.Projeto; lido so por atributo, para este arquivo nao importar
+    modelos (que importa este).
+    """
+    mostrar = bool(getattr(projeto, "tem_camadas", False)) or (
+        getattr(projeto, "filtro_padrao", None) == TIRAR_FUNDO
+        or any(getattr(p, "filtro", None) == TIRAR_FUNDO
+               for p in getattr(projeto, "paginas", ())))
+    return FILTROS if mostrar else FILTROS_COMUNS
 
 # --- parametros de ajuste (mexer aqui para calibrar) -------------------------
 
@@ -1767,7 +1808,7 @@ def _filtro_so_no_pedaco(
     outro nivel de papel - a mesma armadilha que ja custou as capas lavadas.
     """
     pedidos = [f for f in getattr(selecao, "filtros_pedidos", lambda: [])()
-               if f in FILTROS and f != filtro]
+               if f in FILTROS_COMUNS and f != filtro]   # "Tirar o fundo" nao vale por pedaco
     if not pedidos:
         return base
 
@@ -1840,7 +1881,10 @@ def aplicar_filtro_com_selecao(
     if selecao is None or getattr(selecao, "vazia", True):
         return aplicar_filtro(img, filtro, forca_preto, clareza, intensidade)
 
-    if filtro == ORIGINAL:
+    # Tirar o fundo (item 1.1) chega aqui so quando core/camadas.py deixou a
+    # pagina intacta, ou o PDF nao tem camadas: sai como veio, igual ao
+    # Original - nunca com outro filtro por cima (decisao do Samuel, 29/09).
+    if filtro in (ORIGINAL, TIRAR_FUNDO):
         return img, False
 
     altura, largura = img.shape[:2]
@@ -1949,7 +1993,9 @@ def aplicar_filtro(
     Quando a página tem marcação, quem manda e aplicar_filtro_com_selecao.
     """
     try:
-        if filtro == ORIGINAL:
+        # Tirar o fundo (item 1.1): ver aplicar_filtro_com_selecao - aqui so
+        # chega a pagina que fica como veio.
+        if filtro in (ORIGINAL, TIRAR_FUNDO):
             return img, False
         if filtro == PRETO_E_BRANCO:
             return filtro_preto_e_branco(

@@ -29,6 +29,13 @@ unidade diferente:
 
 O alerta chama atenção, nunca restringe: todo controle continua disponível em
 qualquer página, com ou sem alerta.
+
+Item 1.1 (29/09/2026): em PDF com camadas a aba Filtro ganha o quinto cartão,
+"Tirar o fundo" (core.filtros.filtros_do_livro). Ele mostra o resultado de
+verdade do core/camadas.py (core.pipeline.renderizar_com_filtro, pedido ao
+GerenciadorPrevias como qualquer prévia), e não um filtro comum. O alerta
+"Conferir o fundo tirado" é acertado a cada atualização da tela
+(core.pipeline.acertar_alertas_do_fundo) e quando a prévia chega.
 """
 
 from __future__ import annotations
@@ -56,6 +63,7 @@ from PySide6.QtWidgets import (
 )
 
 from core import analise
+from core.pipeline import acertar_alertas_do_fundo
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -64,6 +72,8 @@ from core.filtros import (
     NOMES_DOS_ALGORITMOS_PB,
     ORIGINAL,
     PRETO_E_BRANCO,
+    TIRAR_FUNDO,
+    filtros_do_livro,
     palavra_do_ajuste,
 )
 from historico_acoes import HistoricoAcoes, aplicar, montar_acao
@@ -159,7 +169,16 @@ CARTOES = [
     (PRETO_E_BRANCO, "Preto e branco", "tira o amarelado"),
     (MELHORAR, "Melhorar", "mantem a cor"),
     (MAGICO_PRO, "Mágico pro", "cor viva"),
+    # Item 1.1: so em livro com camadas (ver _montar_aba_filtro).
+    (TIRAR_FUNDO, "Tirar o fundo", "só o que está impresso"),
 ]
+
+# Item 1.1: resolucao do cartao "Tirar o fundo". A mesma da amostra dos outros
+# cartoes (_imagem_sem_filtro). Ele e desenhado pelo caminho do programa
+# (core/camadas.py, na folha inteira), numa tarefa de previa; a decisao do
+# core/camadas.py nao depende da resolucao, entao o cartao mostra o mesmo que
+# a pagina vai ter. Seguro mudar (so tempo e nitidez do cartao).
+DPI_CARTAO_SEM_FUNDO = 70
 
 
 def protegido(metodo):
@@ -1005,7 +1024,12 @@ class TelaConferir(QWidget):
         camadas.setContentsMargins(0, 0, 0, 0)
         camadas.setSpacing(6)
 
-        explicacao = QLabel("A mesma página nos quatro filtros - clique no que preferir")
+        # Item 1.1: em livro com camadas, cinco cartoes (o quinto e o "Tirar
+        # o fundo"); nos outros, os quatro de sempre.
+        assert self.projeto is not None
+        filtros = filtros_do_livro(self.projeto)
+        quantos = {4: "quatro", 5: "cinco"}.get(len(filtros), str(len(filtros)))
+        explicacao = QLabel(f"A mesma página nos {quantos} filtros - clique no que preferir")
         explicacao.setObjectName("fraco")
         camadas.addWidget(explicacao)
 
@@ -1017,6 +1041,8 @@ class TelaConferir(QWidget):
         linha.addWidget(anterior)
 
         for chave, nome, explica in CARTOES:
+            if chave not in filtros:
+                continue
             cartao = CartaoFiltro(chave, nome, explica)
             cartao.escolhido.connect(self._escolher_filtro)
             cartao.ampliar_pedido.connect(self._ampliar_com_filtro)
@@ -1336,8 +1362,20 @@ class TelaConferir(QWidget):
 
     @protegido
     def atualizar(self) -> None:
+        """Redesenha a tela inteira a partir do projeto (depois de qualquer
+        mudanca, navegacao ou desfazer).
+
+        Item 1.1: antes de desenhar, acerta o alerta "conferir o fundo
+        tirado" da pagina da vez (core.pipeline.acertar_alertas_do_fundo):
+        some se ela saiu do filtro "Tirar o fundo", e aparece na hora se ela
+        entrou nele e a decisao do core/camadas.py ja e conhecida (o cartao
+        ja desenhou). Se nao e conhecida, a previa acerta quando chegar
+        (_alertas_da_previa).
+        """
         if not self._pronta():
             return
+        if self.projeto is not None and 0 <= self.indice_pagina < len(self.projeto.paginas):
+            acertar_alertas_do_fundo(self.projeto, [self.projeto.paginas[self.indice_pagina]])
         self._atualizar_previa()
         self._atualizar_faixa()
         self._atualizar_botoes()
@@ -1423,13 +1461,19 @@ class TelaConferir(QWidget):
         )
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
-        """Os quatro cartoes mostram a página de verdade, cada um com seu filtro.
+        """Os cartoes mostram a página de verdade, cada um com seu filtro.
 
         Só o cartão do filtro escolhido é imediato (a imagem já veio pronta).
-        Os outros três pedem o cálculo em segundo plano (regra 3.2): aplicar
+        Os outros pedem o cálculo em segundo plano (regra 3.2): aplicar
         preto_e_branco/magico_pro de verdade - k_para_a_letra usa skeletonize -
         pode levar segundos numa página de traço fino, e isso não pode travar
         a tela.
+
+        Item 1.1: o cartão "Tirar o fundo" (só em livro com camadas) não é um
+        filtro aplicado na amostra: é a página desenhada pelo caminho do
+        programa (core/camadas.py na folha inteira), pedida ao
+        GerenciadorPrevias depois que a prévia principal chegou (para não
+        disputar a máquina com ela) - ver _cartao_sem_fundo.
         """
         from core.pdf_io import limitar_altura
 
@@ -1449,6 +1493,9 @@ class TelaConferir(QWidget):
                 cartao.definir_amostra(limitar_altura(img, 260))
 
         outros = [chave for chave in self.cartoes if chave != pagina.filtro]
+        if TIRAR_FUNDO in outros:
+            outros.remove(TIRAR_FUNDO)
+            self._cartao_sem_fundo()
         base = self._imagem_sem_filtro()
         if base is None:
             for chave in outros:
@@ -1469,6 +1516,24 @@ class TelaConferir(QWidget):
             self.indice_pagina, base, outros,
             pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
         )
+
+    def _cartao_sem_fundo(self, img: np.ndarray | None = None) -> None:
+        """Item 1.1: poe no cartão "Tirar o fundo" a página sem o fundo.
+
+        `img` e a previa que acabou de chegar (de _previa_chegou); sem ela,
+        pega do cache do GerenciadorPrevias ou pede (e mostra
+        "preparando..." ate chegar). E o resultado de verdade: uma pagina que
+        o core/camadas.py deixa intacta aparece como veio, igual ao Original.
+        """
+        from core.pdf_io import limitar_altura
+
+        cartao = self.cartoes.get(TIRAR_FUNDO)
+        if cartao is None or self.previas is None:
+            return
+        if img is None:
+            img = self.previas.pegar_com_filtro(
+                self.indice_pagina, DPI_CARTAO_SEM_FUNDO, TIRAR_FUNDO)
+        cartao.definir_amostra(None if img is None else limitar_altura(img, 260))
 
     @protegido
     def _cartoes_prontos(self, indice: int, resultados: dict) -> None:
@@ -1561,6 +1626,11 @@ class TelaConferir(QWidget):
                 return "Vou endireitar sozinho. Arraste sobre a página para girar na mao."
             return f"Você girou esta página em {pagina.angulo_manual:+.1f} graus."
         pagina = self.projeto.paginas[self.indice_pagina]
+        if pagina.filtro == TIRAR_FUNDO:
+            # item 1.1: "vai sair em Tirar o fundo" nao se le bem; e se o
+            # core/camadas.py deixar a pagina intacta, ela sai como veio
+            return ("Vou tirar o fundo desta página. Onde não der, "
+                    "ela sai como veio.")
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
         return f"Esta página vai sair em {nome}."
 
@@ -1651,6 +1721,11 @@ class TelaConferir(QWidget):
             self._atualizar_previa()
         if chave == esperadas[0] and not self.trabalha_com_folhas:
             self._alertas_da_previa()
+        # Item 1.1: chegou o cartao "Tirar o fundo" da pagina da vez.
+        if (self.aba_atual == ABA_FILTRO and TIRAR_FUNDO in self.cartoes
+                and chave == self.previas.chave_com_filtro(
+                    self.indice_pagina, DPI_CARTAO_SEM_FUNDO, TIRAR_FUNDO)):
+            self._cartao_sem_fundo(_img)
 
     def _alertas_da_previa(self) -> None:
         """A prévia da página que está na tela pode ter mudado os alertas dela.

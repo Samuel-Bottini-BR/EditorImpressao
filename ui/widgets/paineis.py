@@ -306,12 +306,16 @@ class PainelFiltroDaPagina(Painel):
         nome.setStyleSheet("font-size: 13px; background: transparent; border: none;")
         dentro.addWidget(nome)
         dentro.addStretch()
-        tecla = QLabel(f"tecla {teclas.get(pagina.filtro, '')}")
-        tecla.setWordWrap(True)
-        tecla.setStyleSheet(
-            f"color: {TEXTO_FRACO}; font-size: 11px; background: transparent; "
-            "border: none;")
-        dentro.addWidget(tecla)
+        # Item 1.1: o filtro "Tirar o fundo" nao tem tecla (1 a 4 sao os
+        # quatro de sempre); sem tecla, o rotulo nao aparece (antes sairia
+        # "tecla " sozinho).
+        if pagina.filtro in teclas:
+            tecla = QLabel(f"tecla {teclas[pagina.filtro]}")
+            tecla.setWordWrap(True)
+            tecla.setStyleSheet(
+                f"color: {TEXTO_FRACO}; font-size: 11px; background: transparent; "
+                "border: none;")
+            dentro.addWidget(tecla)
         self.dentro.addWidget(linha)
 
         # O deslizante daquele filtro. Cada um tem o seu, e trocar de filtro e

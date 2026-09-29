@@ -1,6 +1,10 @@
 """A janela e o fluxo entre as telas.
 
 Inicio -> Opcoes -> (análise) -> Conferir -> (processamento) -> Pronto
+
+Item 1.1 (29/09/2026): ao abrir pela primeira vez um livro com camadas
+(Internet Archive), a janela pergunta "Este livro tem fundo separado. Quer
+tirar o fundo?" - ver _perguntar_se_tira_o_fundo.
 """
 
 from __future__ import annotations
@@ -16,7 +20,7 @@ import historico
 import projetos
 from core.camadas import pdf_tem_camadas
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
-from core.pipeline import tirar_alertas_do_fundo_se_desligado
+from core.pipeline import acertar_alertas_do_fundo
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
@@ -52,6 +56,10 @@ class JanelaPrincipal(QMainWindow):
         self.tarefa = None
         self.total_folhas = 0
         self.resumo: projetos.Resumo | None = None
+        # Item 1.1: a caixa "Este livro tem fundo separado..." aberta agora
+        # (None quando nao ha). Guardada para os testes (pytest e
+        # teste_botoes.py) acharem a caixa e clicarem num dos botoes.
+        self.aviso_do_fundo: QMessageBox | None = None
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -251,8 +259,8 @@ class JanelaPrincipal(QMainWindow):
                 info_paginas(doc)
                 # Item 1.1: o PDF vem com camadas (Internet Archive)? Só a
                 # estrutura de até 12 páginas, sem desenhar nenhuma
-                # (milissegundos). Decide se a caixinha "Tirar o fundo
-                # sozinho" aparece na tela "O que fazer".
+                # (milissegundos). Decide se o filtro "Tirar o fundo" aparece
+                # e se a janela pergunta se quer tirar o fundo.
                 tem_camadas = pdf_tem_camadas(doc)
             finally:
                 doc.close()
@@ -272,7 +280,8 @@ class JanelaPrincipal(QMainWindow):
         # criar um ao lado: quem for reabrir de propósito passa pela tela
         # inicial, que tem "começar de novo" no menu do cartão.
         self.resumo = projetos.achar_por_assinatura(caminho)
-        if self.resumo is None:
+        livro_novo = self.resumo is None
+        if livro_novo:
             self.resumo = projetos.criar(self.projeto, self.total_folhas)
         else:
             self.resumo.caminho_entrada = caminho   # pode ter mudado de pasta
@@ -280,6 +289,69 @@ class JanelaPrincipal(QMainWindow):
 
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.telas.setCurrentIndex(OPCOES)
+
+        # Item 1.1: livro com camadas aberto pela PRIMEIRA vez (projeto novo).
+        # Decisao da gerente, a rever pelo Samuel: nao perguntar de novo a cada
+        # reabertura de projeto que ja existe (pelo "continuar", pelo "Abrir"
+        # ou arrastando o mesmo PDF, nem pelo "começar de novo") - a escolha
+        # de antes esta nos filtros salvos. Livro sem camadas: nunca pergunta.
+        if livro_novo and tem_camadas:
+            self._perguntar_se_tira_o_fundo()
+
+    def _perguntar_se_tira_o_fundo(self) -> None:
+        """Item 1.1: "Este livro tem fundo separado. Quer tirar o fundo?"
+
+        Palavras do Samuel (29/09/2026): "Ao abrir um livro com camadas, o
+        programa pode avisar: 'Este livro tem fundo separado. Quer tirar o
+        fundo?'". Sim = o filtro do livro vira "Tirar o fundo" (todas as
+        paginas nascem nele, na analise); Nao = nada muda (tudo em Original).
+
+        A caixa e aberta com open(), e nao exec(): nao para o programa
+        esperando a resposta (o resto da janela fica parado atras dela, que e
+        modal para a janela, mas a interface nao congela) e os testes
+        automaticos conseguem responder clicando no botao (self.aviso_do_fundo).
+        Fechar pelo X ou pelo Esc vale como "Nao".
+        """
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Fundo separado")
+        caixa.setIcon(QMessageBox.Question)
+        caixa.setText("Este livro tem fundo separado. Quer tirar o fundo?")
+        caixa.setInformativeText(
+            "Tirar o fundo deixa o papel branco e só o que está impresso, em "
+            "todas as páginas. Dá para mudar depois, página por página, na "
+            "lista de filtros.")
+        sim = caixa.addButton("Sim, tirar o fundo", QMessageBox.AcceptRole)
+        nao = caixa.addButton("Não, deixar como está", QMessageBox.RejectRole)
+        caixa.setDefaultButton(nao)
+        caixa.setEscapeButton(nao)
+        projeto = self.projeto
+
+        def respondeu(_codigo: int) -> None:
+            self._resposta_do_aviso_do_fundo(projeto, caixa.clickedButton() is sim)
+            if self.aviso_do_fundo is caixa:
+                self.aviso_do_fundo = None
+            caixa.deleteLater()
+
+        caixa.finished.connect(respondeu)
+        self.aviso_do_fundo = caixa
+        caixa.open()
+
+    def _resposta_do_aviso_do_fundo(self, projeto: Projeto | None, tirar: bool) -> None:
+        """Aplica a resposta do aviso do item 1.1.
+
+        Sim: o filtro do livro vira "Tirar o fundo" na tela "O que fazer" (o
+        mesmo que clicar no radio), e todas as paginas nascem nele na analise.
+        Nao: nada muda. A resposta so vale para o livro que fez a pergunta e
+        enquanto ele esta na tela "O que fazer" (a caixa e modal, entao isso
+        so falharia se alguem trocasse de livro por fora, como um teste).
+        """
+        from core.filtros import TIRAR_FUNDO
+
+        if not tirar or projeto is None or projeto is not self.projeto:
+            return
+        if self.telas.currentIndex() != OPCOES or self.tela_opcoes.projeto is not projeto:
+            return
+        self.tela_opcoes.escolher_filtro_do_livro(TIRAR_FUNDO)
 
     def _continuar_projeto(self, resumo: projetos.Resumo) -> None:
         """Retoma um projeto exatamente onde parou.
@@ -302,9 +374,9 @@ class JanelaPrincipal(QMainWindow):
             self.projeto.cortar_bordas = salvo.cortar_bordas
             self.projeto.montar_cadernos = salvo.montar_cadernos
             self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
-            # item 1.1: a escolha da pessoa volta; o tem_camadas, nao (e fato
-            # do PDF, acabou de ser detectado em abrir_livro)
-            self.projeto.tirar_fundo_sozinho = salvo.tirar_fundo_sozinho
+            # item 1.1: o tem_camadas nao volta do salvo (e fato do PDF,
+            # acabou de ser detectado em abrir_livro); o "Tirar o fundo" volta
+            # com o filtro do livro, acima, e das paginas, em _analise_pronta
             self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.analisar()
 
@@ -358,14 +430,12 @@ class JanelaPrincipal(QMainWindow):
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
             if projetos.combina_com(salvo, projeto):
-                # Item 1.1: o salvo volta por cima, menos o "tirar o fundo":
-                # tem_camadas e fato do PDF (a analise acabou de detectar; um
-                # projeto salvo antes de 29/09 nem tem o campo) e a caixinha
-                # e a que a pessoa acabou de deixar na tela "O que fazer" -
-                # sem isto, desmarcar la depois da primeira conferencia nao
-                # valia nada (o salvo trazia de volta a marcada).
+                # Item 1.1: o salvo volta por cima, menos o tem_camadas, que e
+                # fato do PDF (a analise acabou de detectar; um projeto salvo
+                # antes de 29/09 nem tem o campo). O filtro "Tirar o fundo" de
+                # cada pagina volta com o salvo, como qualquer filtro - pelo
+                # "Abrir" ou pelo "continuar", do mesmo jeito.
                 salvo.tem_camadas = projeto.tem_camadas
-                salvo.tirar_fundo_sozinho = projeto.tirar_fundo_sozinho
                 projeto = salvo
             elif salvo is not None:
                 paginas_perdidas = len(salvo.paginas)
@@ -374,11 +444,15 @@ class JanelaPrincipal(QMainWindow):
         # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
         # conferencia e para o disco). Antes ela ficava com o objeto de antes
         # da analise, e o que se marcava la, na volta, se perdia. Achado ao
-        # ligar o item 1.1 (a caixinha do fundo tem de valer ao desmarcar).
+        # ligar o item 1.1. (As caixinhas continuam perdendo o que se muda na
+        # volta quando o projeto salvo volta por cima: bug registrado em
+        # 29/09, para depois.)
         self.tela_opcoes.projeto = projeto
-        # Caixinha do fundo desligada: nenhuma pagina fica com o alerta
-        # "conferir o fundo tirado" de uma sessao anterior.
-        tirar_alertas_do_fundo_se_desligado(projeto)
+        # Item 1.1: pagina fora do filtro "Tirar o fundo" (ou livro sem
+        # camadas) nao fica com o alerta "conferir o fundo tirado" de uma
+        # sessao anterior; as que estao nele sao acertadas pela tela de
+        # conferir, pagina a pagina.
+        acertar_alertas_do_fundo(projeto)
 
         # O desfazer de um projeto ja trabalhado tambem volta do disco.
         self.acoes.carregar()

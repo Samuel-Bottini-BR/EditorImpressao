@@ -22,7 +22,7 @@ from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime
 from typing import Any
 
-from core.filtros import FILTROS, ORIGINAL, PRETO_E_BRANCO
+from core.filtros import FILTROS, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -142,15 +142,19 @@ class Projeto:
 
     As opções do livro inteiro (as caixinhas da tela "O que fazer") moram
     aqui; o que é de cada folha e de cada página mora em ConfigFolha e
-    ConfigPagina. Campos do item 1.1 (29/09/2026):
+    ConfigPagina. Campo do item 1.1 (29/09/2026):
 
     tem_camadas: o PDF vem com as camadas do Internet Archive (fundo + texto
         recortado por cima)? Detectado pelo programa ao abrir e na análise;
-        não é escolha da pessoa.
-    tirar_fundo_sozinho: a caixinha "Tirar o fundo sozinho" (padrão: marcada).
-        Só vale junto com tem_camadas (ver tirar_fundo_ligado). Projeto salvo
-        antes de 29/09 não tem os dois campos e abre normalmente, com os
-        padrões (ver de_dicionario).
+        não é escolha da pessoa. É ele que faz o filtro "Tirar o fundo"
+        aparecer (core.filtros.filtros_do_livro).
+
+    Projetos salvos antes de 29/09 não têm o campo, e os salvos na primeira
+    ligação do 1.1 (commit bb54b7d) têm também "tirar_fundo_sozinho", a
+    caixinha que saiu por decisão do Samuel: os dois abrem normalmente (campo
+    que falta ganha o padrão, campo que sobra é ignorado - ver de_dicionario)
+    e nenhum vem com o fundo tirado, porque o fundo só sai na página com o
+    filtro "Tirar o fundo" escolhido.
     """
 
     caminho_entrada: str
@@ -173,29 +177,21 @@ class Projeto:
 
     # Item 1.1 do Plano Definitivo: "tirar o fundo" de PDF que ja vem com
     # camadas (Internet Archive: fundo embaixo, texto recortado por cima; ver
-    # core/camadas.py). Decisao do Samuel (29/09/2026): "automatico quando o
-    # programa detectar camadas, com botao para desligar por livro; pagina
-    # duvidosa sai marcada 'conferir'." Sao dois campos, de proposito:
+    # core/camadas.py). tem_camadas e FATO do PDF, nao escolha: o programa olha
+    # a estrutura do arquivo ao abrir (core.camadas.pdf_tem_camadas,
+    # milissegundos, sem desenhar pagina) e na analise, e o valor salvo no
+    # projeto nao manda (e refeito a cada abertura).
     #
-    #   tem_camadas          FATO do PDF, nao escolha: o programa olha a
-    #                        estrutura do arquivo ao abrir (core.camadas.
-    #                        pdf_tem_camadas, milissegundos, sem desenhar
-    #                        pagina) e na analise. Refeito a cada abertura -
-    #                        o valor salvo no projeto nao manda.
-    #   tirar_fundo_sozinho  a ESCOLHA da pessoa, por livro: a caixinha
-    #                        "Tirar o fundo sozinho" da tela "O que fazer",
-    #                        que so aparece quando tem_camadas. Nasce True,
-    #                        e por isso "liga sozinho" quando o PDF tem
-    #                        camadas; desmarcar grava False. Projeto salvo
-    #                        antes destes campos abre com True e o
-    #                        tem_camadas volta da deteccao: segue a decisao
-    #                        do Samuel (automatico) - ver tirar_fundo_ligado.
+    # Decisao do Samuel (29/09/2026, depois de ver a primeira ligacao): "Pagina
+    # sempre abre em 'Original', sem mexer. Em PDF com camadas, 'Tirar o fundo'
+    # vira mais uma opcao na lista de filtros." A ESCOLHA mora, entao, no filtro
+    # de cada pagina (ConfigPagina.filtro = core.filtros.TIRAR_FUNDO) e no
+    # filtro do livro (filtro_padrao), como a de qualquer filtro. A caixinha
+    # "Tirar o fundo sozinho" (campo tirar_fundo_sozinho, commit bb54b7d) saiu.
     #
     # Seguro mudar: nada aqui muda imagem sozinho; quem decide pagina a pagina
-    # e core/pipeline.py (usa_tirar_fundo). Arriscado: trocar o padrao de
-    # tirar_fundo_sozinho para False desliga o 1.1 em todo projeto antigo.
+    # e core/pipeline.py (usa_tirar_fundo).
     tem_camadas: bool = False
-    tirar_fundo_sozinho: bool = True
 
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
@@ -229,15 +225,6 @@ class Projeto:
         )
 
     @property
-    def tirar_fundo_ligado(self) -> bool:
-        """O "tirar o fundo" (item 1.1) vale para este livro? Só quando o PDF
-        tem camadas E a pessoa deixou a caixinha marcada. Sem camadas a
-        caixinha nem aparece, e então nada liga escondido (regra 8 do plano:
-        toda função automática tem botão). Página a página, quem decide é
-        core.pipeline.usa_tirar_fundo."""
-        return bool(self.tem_camadas and self.tirar_fundo_sozinho)
-
-    @property
     def alguma_funcao_marcada(self) -> bool:
         return any(
             (self.dividir_folhas, self.limpar, self.endireitar,
@@ -263,9 +250,10 @@ class Projeto:
         Campos que sumiram entre uma versão e outra sao descartados, e os que
         surgiram ganham o padrão. Sem isso, reabrir um projeto antigo derrubaria
         o programa - e o usuário perderia o trabalho por causa de um campo.
-        Exemplo: tem_camadas e tirar_fundo_sozinho (item 1.1, 29/09/2026)
-        faltam nos projetos antigos e voltam False e True (testado em
-        tests/test_tirar_fundo_no_programa.py).
+        Exemplo: tem_camadas (item 1.1, 29/09/2026) falta nos projetos
+        antigos e volta False; tirar_fundo_sozinho (a caixinha da primeira
+        ligacao do 1.1, que saiu) sobra nos projetos dessa rodada e e
+        descartado (testado em tests/test_tirar_fundo_no_programa.py).
         """
         folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, f))
                   for f in dados.pop("folhas", [])]
@@ -363,6 +351,10 @@ def nome_de_saida_sugerido(projeto: "Projeto") -> str:
 
     if projeto.montar_cadernos:
         sufixo = "cadernos"
+    elif projeto.limpar and projeto.filtro_padrao == TIRAR_FUNDO:
+        # item 1.1: "livro - tirar o fundo.pdf" soaria como ordem; o arquivo
+        # diz como o livro saiu
+        sufixo = "sem fundo"
     elif projeto.limpar:
         sufixo = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
     else:
