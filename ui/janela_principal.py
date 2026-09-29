@@ -436,6 +436,13 @@ class JanelaPrincipal(QMainWindow):
                 # cada pagina volta com o salvo, como qualquer filtro - pelo
                 # "Abrir" ou pelo "continuar", do mesmo jeito.
                 salvo.tem_camadas = projeto.tem_camadas
+                # O mesmo arquivo pode ter chegado escrito de outro jeito
+                # (`\` pelo Windows, `/` pela caixa "Abrir"; bug grave de
+                # 29/09, projetos.mesmo_arquivo). Fica o caminho que acabou
+                # de ser aberto - existe e funciona agora -, e nao a forma
+                # antiga gravada no projeto (as previas e o PDF final abrem
+                # por ele).
+                salvo.caminho_entrada = projeto.caminho_entrada
                 projeto = salvo
             elif salvo is not None:
                 paginas_perdidas = len(salvo.paginas)

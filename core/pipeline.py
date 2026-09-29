@@ -344,7 +344,9 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
     """Tudo de que o corte e o angulo dependem. None se o arquivo do projeto
     nao existe (projeto de teste, arquivo movido) - ai nada e guardado."""
     try:
-        caminho = os.path.abspath(projeto.caminho_entrada)
+        # normcase: o mesmo PDF escrito com `\` ou `/`, ou com maiusculas
+        # diferentes, da a mesma chave (bug de 29/09, projetos.mesmo_arquivo).
+        caminho = os.path.normcase(os.path.abspath(projeto.caminho_entrada))
         info = os.stat(caminho)
     except (OSError, TypeError, ValueError):
         return None
@@ -547,9 +549,14 @@ def _chave_da_folha(doc, folha: ConfigFolha) -> tuple | None:
 
 def _chave_do_arquivo(caminho, folha: ConfigFolha) -> tuple | None:
     """A mesma chave de _chave_da_folha, a partir do caminho do PDF (o
-    projeto.caminho_entrada, que e o que o programa abre)."""
+    projeto.caminho_entrada, que e o que o programa abre).
+
+    O caminho entra na forma comum (absoluto, normcase): o mesmo PDF escrito
+    com `\\` ou `/`, ou com maiusculas diferentes, da a mesma chave - senao
+    a decisao do "tirar o fundo" e as geometrias guardadas nao seriam achadas
+    (bug de 29/09, projetos.mesmo_arquivo). So muda o texto da chave."""
     try:
-        caminho = os.path.abspath(caminho)
+        caminho = os.path.normcase(os.path.abspath(caminho))
         info = os.stat(caminho)
     except (OSError, TypeError, ValueError):
         return None

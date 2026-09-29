@@ -30,6 +30,7 @@ trabalho. Toda acao grava na hora.
 from __future__ import annotations
 
 import json
+import os
 import unicodedata
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
@@ -330,18 +331,74 @@ def carregar_estado(resumo: Resumo):
         return None
 
 
+def _forma_comum(caminho: str | Path) -> str:
+    """O caminho escrito de um jeito so, para comparar: absoluto, sem `..`,
+    com a barra do sistema e, no Windows, em minusculas (os.path.normcase).
+
+    So para COMPARAR. Nunca gravar isto no projeto nem abrir o arquivo por
+    ele: o que se grava continua sendo o caminho como veio (formato de sempre).
+    """
+    return os.path.normcase(os.path.abspath(os.fspath(caminho)))
+
+
+def mesmo_arquivo(a: str | Path, b: str | Path) -> bool:
+    """Os dois caminhos apontam para o MESMO arquivo, escritos como for?
+
+    Conserto do bug grave de 29/09/2026 (Lista de bugs, achado pelo
+    verificador): o mesmo PDF chega com `\\` pela associacao de arquivo do
+    Windows e com `/` pela caixa "Abrir" ou arrastando, e comparar o texto
+    dizia "outro livro" - e o trabalho salvo era descartado.
+
+    Duas etapas:
+      1. a forma comum (_forma_comum): cobre `\\` x `/`, maiusculas e
+         minusculas (o Windows nao diferencia), letra de unidade, caminho
+         relativo e `..`. Funciona mesmo se o arquivo nao existir mais;
+      2. se a forma nao bate mas os dois existem, pergunta ao sistema
+         (os.path.samefile): cobre atalhos de pasta (junction), nome curto
+         do DOS (PROGRA~1) e unidade mapeada para a mesma pasta.
+
+    Caminho vazio so e "o mesmo" que outro vazio (comportamento de antes).
+    Nunca levanta. Seguro mudar: acrescentar casos que devolvem True para o
+    mesmo arquivo. Arriscado: qualquer coisa que devolva True para arquivos
+    DIFERENTES - o trabalho de um livro seria aplicado noutro sem aviso.
+    Caminho relativo e resolvido pela pasta atual do programa: dois relativos
+    iguais escritos em pastas atuais diferentes nao sao comparaveis (o
+    programa so recebe caminho absoluto, das caixas do Windows e do Qt).
+    """
+    a = os.fspath(a) if a else ""
+    b = os.fspath(b) if b else ""
+    if not a or not b:
+        return a == b
+    if a == b:
+        return True
+    try:
+        if _forma_comum(a) == _forma_comum(b):
+            return True
+    except (TypeError, ValueError):
+        return False
+    try:
+        return os.path.samefile(a, b)
+    except (OSError, ValueError):
+        return False
+
+
 def combina_com(salvo, recem_analisado) -> bool:
     """O trabalho salvo pode ser aplicado neste livro recem-aberto?
 
     So se for o MESMO livro e a mesma divisao. Se a pessoa trocou "dividir
     folhas ao meio" entre uma sessao e outra, a pagina 40 salva nao e a pagina
     40 de agora, e devolver o corte de uma na outra estragaria o trabalho.
+
+    "Mesmo livro" = mesmo ARQUIVO (mesmo_arquivo), e nao o mesmo texto de
+    caminho: ate 29/09/2026 comparava o texto, e o mesmo PDF aberto com `/`
+    depois de salvo com `\\` perdia o trabalho (bug grave da Lista de bugs).
+    Arriscado: voltar a comparar com `==`.
     """
     if salvo is None or recem_analisado is None:
         return False
     return (len(salvo.paginas) == len(recem_analisado.paginas)
             and len(salvo.folhas) == len(recem_analisado.folhas)
-            and salvo.caminho_entrada == recem_analisado.caminho_entrada)
+            and mesmo_arquivo(salvo.caminho_entrada, recem_analisado.caminho_entrada))
 
 
 def achar_por_assinatura(caminho_pdf: str) -> Resumo | None:

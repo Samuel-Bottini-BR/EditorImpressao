@@ -1167,3 +1167,64 @@ LEIA-ME, só diferem os 23 atalhos `bin\*.exe` (que guardam o caminho de quem
 montou e não servem ao motor) e os `RECORD` que listam esses atalhos.
 
 **Tamanho:** 1.147 MB no disco (34.550 arquivos); 211 MB comprimido (7-Zip, tar + xz nível 9, sólido: o mais perto do `lzma2/max` sólido do Inno Setup que dá para medir sem gerar o instalador).
+
+---
+
+## Tentativa 28 — o mesmo PDF com o caminho escrito de outro jeito não perde mais o trabalho (bug grave, 29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09, "GRAVE, antigo" (achado pelo verificador;
+print `relatorios/conferir/fase1-2026-09-29-1826/verificador/t11-abrir-perdeu-o-trabalho.jpg`).
+
+**O que acontecia:** o mesmo PDF chega com `\` quando se abre pelo Windows
+(associação de arquivo) e com `/` pela caixa "Abrir" ou arrastando. O projeto
+era achado certo (pela assinatura do arquivo), mas na hora de devolver o
+trabalho salvo `projetos.combina_com` comparava o **texto** do caminho: não
+batia, o programa dizia "Você mudou as opções desde a última vez..." e
+recomeçava a conferência. O Histórico de ações ficava, o trabalho não.
+
+**O que mudou:**
+
+- `projetos.mesmo_arquivo(a, b)`: compara o **arquivo**, não o texto. Primeiro
+  a forma comum (absoluto, sem `..`, barra do sistema, minúsculas no Windows:
+  `os.path.normcase(os.path.abspath(...))`), que cobre `\`/`/`, maiúsculas,
+  letra de unidade, caminho relativo e `..`, mesmo com o arquivo sumido; se não
+  bater e os dois existirem, `os.path.samefile` (atalho de pasta, nome curto do
+  DOS, unidade mapeada).
+- `combina_com` usa `mesmo_arquivo` (a contagem de folhas e páginas continua
+  valendo).
+- `ui/janela_principal.py` (`_analise_pronta`): quando o salvo volta, fica o
+  caminho que acabou de ser aberto (o que existe e funciona agora), não a forma
+  antiga gravada.
+- `historico.registrar`: uma linha por PDF de saída comparando o arquivo (o
+  mesmo PDF escrito de dois jeitos repetia a linha).
+- `core/pipeline.py` (`_chave_da_geometria`, `_chave_do_arquivo`): a chave das
+  memórias (geometria, decisão do "tirar o fundo") usa a forma comum.
+
+**O formato gravado não mudou:** o caminho continua sendo gravado como veio.
+Projeto antigo (gravado com `\`, como o Palatino do Samuel) abre pelo "Abrir"
+com o trabalho: coberto por teste (`projeto.json` escrito à mão como o
+programa gravava).
+
+**Onde se comparava caminho de livro (todos os lugares vistos):**
+`projetos.combina_com` (texto: **era o bug**); `historico.registrar` (texto do
+PDF de saída: linha repetida); `core/pipeline.py` (chaves das memórias:
+`abspath` já tirava a diferença de barra, faltavam maiúsculas);
+`projetos._pastas_conhecidas` (compara `Path`, que no Windows já ignora barra e
+maiúsculas: sem mudança); `achar_por_assinatura`, `procurar_o_livro` e a tela
+inicial (`pedir_para_continuar`, `procurar_o_livro_a_mao`) comparam a
+assinatura do arquivo: já não dependiam da forma do caminho, sem mudança.
+
+**Testes:** `tests/test_mesmo_livro_outro_caminho.py`, 17 casos (15 falhavam
+antes do conserto, com a mensagem "Você mudou as opções..."; os 2 que já
+passavam são os de "arquivos diferentes não são o mesmo" e "outro tamanho
+continua recusado"). Na janela de verdade: salvo com `\` e aberto com `/`, o
+contrário, maiúsculas diferentes, "continuar" depois de abrir de outro jeito, e
+projeto antigo com `\`: voltam páginas, filtros, corte, alertas, conferidas e
+Histórico de ações. Pasta de dados própria em `saida_teste\` (LOCALAPPDATA
+trocado), nada criado na pasta de dados real.
+
+**Velocidade:** `mesmo_arquivo` roda uma vez por abertura de livro;
+`normcase` na chave das memórias é uma troca de texto. Teste de velocidade não
+rodado (pedido da gerente).

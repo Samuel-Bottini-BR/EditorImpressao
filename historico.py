@@ -158,7 +158,14 @@ def registrar(projeto: Projeto, num_paginas: int, miniatura: str = "") -> None:
         miniatura=miniatura,
     )
 
-    entradas = [e for e in carregar() if e.caminho_saida != nova.caminho_saida]
+    # Uma linha por PDF de saida: a mais nova substitui a antiga. Compara o
+    # ARQUIVO, nao o texto (o mesmo PDF escrito com `\` e com `/` repetia a
+    # linha; mesma familia do bug grave de 29/09, ver projetos.mesmo_arquivo).
+    # Importado aqui dentro porque projetos importa este modulo.
+    from projetos import mesmo_arquivo
+
+    entradas = [e for e in carregar()
+                if not mesmo_arquivo(e.caminho_saida, nova.caminho_saida)]
     salvar([nova] + entradas)
 
 
