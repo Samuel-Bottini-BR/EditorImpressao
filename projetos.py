@@ -318,6 +318,61 @@ def salvar_estado(resumo: Resumo, projeto) -> None:
         pass
 
 
+def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> Path | None:
+    """Guarda ao lado uma copia do trabalho salvo, antes de ele ser regravado.
+
+    Rede de seguranca pedida pela gerente em 29/09/2026 (bug grave "livro que
+    mudou de pasta perde o trabalho de vez"): quando a conferencia recomeca
+    por cima de um projeto salvo (ui/janela_principal.py, _analise_pronta),
+    o projeto.json antigo ia embora na hora. Agora ele fica, com data e hora
+    no nome, e nada e apagado:
+
+        projeto.antigo-2026-09-29-1930.json
+        acoes.antigo-2026-09-29-1930.jsonl      (o Historico de acoes)
+        posicao.antigo-2026-09-29-1930.json     (onde o desfazer estava)
+
+    O acoes.jsonl e o posicao.json nao sao descartados pelo recomeco (as
+    acoes novas vao para o fim do mesmo arquivo e a posicao e regravada), mas
+    vao junto para a copia ficar inteira: e com os tres que se remonta o
+    trabalho de antes.
+
+    Nunca sobrescreve copia anterior: se ja ha copia naquele minuto, a nova
+    ganha "-2", "-3"... e cada arquivo e criado em modo exclusivo ("x"), que
+    falha em vez de escrever por cima. Devolve o caminho da copia do
+    projeto.json, ou None se nao havia projeto salvo (ou nao deu para
+    copiar). Nunca levanta: nao poder copiar nao pode derrubar a abertura do
+    livro - mas ai quem chama deve saber que nao ha copia (None).
+    """
+    from historico_acoes import ARQUIVO_ACOES, ARQUIVO_POSICAO
+
+    pasta = Path(resumo.pasta)
+    estado = pasta / ARQUIVO_ESTADO
+    if not estado.is_file():
+        return None
+    carimbo = (agora or datetime.now()).strftime("%Y-%m-%d-%H%M")
+    origens = [pasta / nome for nome in (ARQUIVO_ESTADO, ARQUIVO_ACOES, ARQUIVO_POSICAO)]
+
+    def destino(origem: Path, sufixo: str) -> Path:
+        return origem.with_name(f"{origem.stem}.antigo-{sufixo}{origem.suffix}")
+
+    for numero in range(1, 1000):
+        sufixo = carimbo if numero == 1 else f"{carimbo}-{numero}"
+        if any(destino(o, sufixo).exists() for o in origens):
+            continue
+        try:
+            for origem in origens:
+                if not origem.is_file():
+                    continue
+                with destino(origem, sufixo).open("xb") as copia:
+                    copia.write(origem.read_bytes())
+        except FileExistsError:
+            continue                 # outra copia nasceu no mesmo instante
+        except OSError:
+            return None
+        return destino(estado, sufixo)
+    return None
+
+
 def carregar_estado(resumo: Resumo):
     """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler."""
     from modelos import Projeto

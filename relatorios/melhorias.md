@@ -1326,3 +1326,38 @@ programa a cada página.
 docTR, o `tesseract.exe` nem os `.traineddata` (vem na ligação); o OnnxTR
 empacotado pelo PyInstaller não foi testado; a tela ainda não tem o
 ligar/desligar.
+
+---
+
+## Tentativa 31 — rede de segurança: o trabalho antigo é guardado antes de a conferência recomeçar (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** feito, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09, "GRAVE, antigo, mesma família: livro que mudou
+de pasta [...] perde o trabalho de vez" (decisão da gerente, commit `2856987`:
+primeiro a rede de segurança, depois o conserto, depois a mensagem).
+
+**O que acontecia:** quando o trabalho salvo não combinava com o livro
+recém-analisado, a conferência recomeçava e o `projeto.json` era regravado na
+hora (`_salvar_agora`, no fim de `_analise_pronta`), sem cópia. Qualquer
+engano na comparação (como o do livro que mudou de pasta) virava perda de vez.
+
+**O que mudou:** `projetos.guardar_copia_do_trabalho(resumo)` copia, antes de
+regravar, o `projeto.json`, o `acoes.jsonl` e o `posicao.json` para
+`projeto.antigo-AAAA-MM-DD-HHMM.json`, `acoes.antigo-...jsonl` e
+`posicao.antigo-...json`, na pasta do projeto. Nunca sobrescreve: se já há
+cópia naquele minuto, a nova ganha `-2`, `-3`..., e cada arquivo é criado em
+modo exclusivo. Nada é apagado. Chamada em `_analise_pronta` sempre que o
+salvo não volta (inclusive quando o `projeto.json` não dá para ler, que também
+seria regravado). O `acoes.jsonl` não é descartado pelo recomeço (as ações
+novas vão para o fim dele), mas vai junto para a cópia ficar inteira.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, 8 casos (6 falhavam antes:
+a função não existia e o recomeço não deixava cópia): cópia com os três
+arquivos, nunca sobrescreve, só o que existe; na janela de verdade, recomeço
+guarda o trabalho igualzinho, `projeto.json` ilegível também é guardado,
+reabrir sem mudar nada e livro novo não fazem cópia.
+
+**Fica de fora:** o "começar de novo" do cartão da tela inicial continua
+apagando o trabalho sem cópia (é pedido pela pessoa, com pergunta de
+confirmação).

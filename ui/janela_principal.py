@@ -60,6 +60,10 @@ class JanelaPrincipal(QMainWindow):
         # (None quando nao ha). Guardada para os testes (pytest e
         # teste_botoes.py) acharem a caixa e clicarem num dos botoes.
         self.aviso_do_fundo: QMessageBox | None = None
+        # A copia do trabalho antigo guardada na ultima vez que a conferencia
+        # recomecou por cima de um projeto salvo (projetos.
+        # guardar_copia_do_trabalho); None se nao houve copia.
+        self.copia_do_trabalho = None
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -427,6 +431,7 @@ class JanelaPrincipal(QMainWindow):
         # pagina 40 de agora, e devolver o corte de uma na outra estragaria o
         # trabalho em silencio. Ver projetos.combina_com.
         paginas_perdidas = 0
+        self.copia_do_trabalho = None
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
             if projetos.combina_com(salvo, projeto):
@@ -444,8 +449,18 @@ class JanelaPrincipal(QMainWindow):
                 # por ele).
                 salvo.caminho_entrada = projeto.caminho_entrada
                 projeto = salvo
-            elif salvo is not None:
-                paginas_perdidas = len(salvo.paginas)
+            else:
+                # Rede de seguranca (29/09/2026, bug grave "livro que mudou de
+                # pasta perde o trabalho de vez"): o _salvar_agora, logo
+                # abaixo, regrava o projeto.json com a conferencia nova. Antes
+                # disso, o trabalho antigo e guardado ao lado, com data e hora
+                # no nome (projetos.guardar_copia_do_trabalho). Vale tambem
+                # para o projeto.json que nao deu para ler (salvo None): ele
+                # seria regravado igual. Sem projeto salvo, nao faz nada.
+                # Arriscado: tirar isto, ou mover para depois do _salvar_agora.
+                self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
+                if salvo is not None:
+                    paginas_perdidas = len(salvo.paginas)
 
         self.projeto = projeto
         # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
