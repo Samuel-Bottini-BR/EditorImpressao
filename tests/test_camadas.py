@@ -346,25 +346,193 @@ def test_previa_e_pdf_final_decidem_na_mesma_resolucao():
     assert resultados[2].imagem.shape[:2] == (round(ALTURA_PT * 300 / 72), round(LARGURA_PT * 300 / 72))
 
 
-def test_traco_que_so_existia_no_fundo_fora_das_zonas_pede_conferencia():
-    """Moldura grossa que a mascara do Internet Archive furou: os furos so
-    tem tinta no fundo. O fundo sai, mas a pagina vem marcada para conferir."""
+FIOS_DA_MOLDURA = (300, 420, 540)   # linhas (na camada de cima) dos fios grossos
+
+
+def pdf_com_moldura_furada(cor_do_fio=(40, 35, 30)) -> fitz.Document:
+    """Moldura grossa que a mascara do Internet Archive furou (Palatino 9, 10 e
+    57): a mascara pega 65% do fio, e os furos so tem tinta no fundo."""
     fundo = fundo_padrao()
     fundo[:] = PAPEL_RGB
     mascara = mascara_padrao()
     rng = np.random.default_rng(3)
-    for y0 in (300, 420, 540):
+    for y0 in FIOS_DA_MOLDURA:
         faixa = (slice(y0, y0 + 40), slice(30, 570))
         mascara[faixa] = rng.random((40, 540)) > 0.35          # 35% de furos
         yf = slice(int(y0 * ALTURA_FUNDO / ALTURA_CIMA), int((y0 + 40) * ALTURA_FUNDO / ALTURA_CIMA))
-        fundo[yf, 10:190] = (40, 35, 30)                        # o fio inteiro, no fundo
+        fundo[yf, 10:190] = cor_do_fio                          # o fio inteiro, no fundo
+    return pdf_com_camadas(fundo=fundo, mascara=mascara)
+
+
+def test_furos_da_moldura_voltam_do_fundo():
+    """A tinta que so existe no fundo, bem mais escura que o papel, volta: o
+    fio sai cheio, sem os buracos brancos (figuras 3 e 4 do verificador)."""
+    resultado = tirar_fundo(pdf_com_moldura_furada(), 0, detector_de_figuras=sem_figuras)
+    assert resultado.situacao == FUNDO_TIRADO
+    img = cv2.cvtColor(resultado.imagem, cv2.COLOR_BGR2GRAY)
+    for y0 in FIOS_DA_MOLDURA:
+        miolo = img[y0 + 8:y0 + 32, 60:540]
+        assert float((miolo > 200).mean()) < 0.02, y0      # nenhum buraco branco
+        assert float(miolo.mean()) < 90
+    # o traco voltou do fundo, mais macio (resolucao do fundo): confira
+    assert resultado.conferir
+    assert "trazido de volta" in resultado.explicacao
+    # e uma pagina limpa nao pede
+    assert not tirar_fundo(pdf_com_camadas(), 0, detector_de_figuras=sem_figuras).conferir
+
+
+def test_tinta_que_volta_do_fundo_guarda_a_cor():
+    """O fio marrom volta marrom (so o amarelado do papel sai da conta)."""
+    resultado = tirar_fundo(pdf_com_moldura_furada(cor_do_fio=(110, 60, 30)), 0,
+                            detector_de_figuras=sem_figuras)
+    b, g, r = (float(v) for v in resultado.imagem[300 + 8:300 + 32, 60:540].reshape(-1, 3).mean(axis=0))
+    assert r > g + 15 and g > b
+
+
+def test_recheio_da_letra_que_so_ficou_no_fundo_volta():
+    """Palatino 66: a mascara pegou so o contorno das letras goticas; o
+    recheio esta no fundo. A letra sai cheia, e nao oca."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    mascara = mascara_padrao()
+    for x0 in range(60, 540, 60):
+        # a haste da letra (2 mm de largura), na camada de cima so o contorno
+        mascara[300:400, x0:x0 + 12] = True
+        mascara[302:398, x0 + 2:x0 + 10] = False
+        fundo[int(300 / 3):int(400 / 3), int(x0 / 3):int((x0 + 12) / 3) + 1] = (70, 55, 45)
     doc = pdf_com_camadas(fundo=fundo, mascara=mascara)
+    img = cv2.cvtColor(tirar_fundo(doc, 0, detector_de_figuras=sem_figuras).imagem,
+                       cv2.COLOR_BGR2GRAY)
+    for x0 in range(60, 540, 60):
+        assert float(img[315:385, x0 + 4:x0 + 8].mean()) < 110, x0
+
+
+def mascara_de_pagina_de_texto() -> np.ndarray:
+    """Uma pagina cheia de linhas de texto na camada de cima (cerca de 12%)."""
+    m = np.zeros((ALTURA_CIMA, LARGURA_CIMA), bool)
+    for y in range(60, 740, 34):
+        for x in range(60, 540, 26):
+            m[y:y + 16, x:x + 16] = True
+    return m
+
+
+def test_mascara_invertida_papel_na_camada_de_cima_vira_branco():
+    """Siebmacher 13, 15 e 25: numa faixa do bordado o Internet Archive pos o
+    PAPEL (as casinhas claras) na camada de cima e a TINTA (a grade e o
+    desenho) so no fundo. A cor de papel que veio de cima vira branco, e a
+    tinta volta do fundo: a faixa sai como as outras, e nao bege-palida."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    fundo[100:170, 20:180] = (45, 40, 35)                     # a faixa: tinta no fundo
+    cima = cima_padrao()
+    mascara = mascara_padrao()
+    faixa = np.zeros_like(mascara)
+    for y in range(300, 510, 12):
+        for x in range(60, 540, 12):
+            faixa[y + 2:y + 11, x + 2:x + 11] = True            # as casinhas de papel
+    cima[faixa] = PAPEL_RGB                                     # ... em cima, cor de papel
+    doc = pdf_com_camadas(fundo=fundo, cima=cima, mascara=mascara | faixa)
+    img = cv2.cvtColor(tirar_fundo(doc, 0, detector_de_figuras=sem_figuras).imagem,
+                       cv2.COLOR_BGR2GRAY)
+    miolo_das_casinhas = cv2.erode(faixa.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    assert float(img[miolo_das_casinhas].mean()) > 245        # papel branco
+    grade = np.zeros_like(faixa)
+    grade[320:490, 80:520] = True
+    grade &= cv2.dilate(faixa.astype(np.uint8), np.ones((3, 3), np.uint8)) == 0
+    assert float(img[grade].mean()) < 90                       # a tinta voltou
+
+
+def test_tinta_clara_da_camada_de_cima_nao_vira_branco():
+    """So o que tem a cor do papel vira branco: a letra clara (15% mais
+    escura que o papel) continua."""
+    cima = cima_padrao()
+    cima[:] = tuple(int(v * 0.85) for v in PAPEL_RGB)
+    doc = pdf_com_camadas(cima=cima)
+    img = cv2.cvtColor(tirar_fundo(doc, 0, detector_de_figuras=sem_figuras).imagem,
+                       cv2.COLOR_BGR2GRAY)
+    m = cv2.erode(mascara_padrao().astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    assert float(img[m].mean()) < 200
+
+
+def test_verso_escuro_longe_da_tinta_nao_volta_do_fundo():
+    """Palatino 48: o verso transparece forte (mais de 30% mais escuro que o
+    papel) no espaco em branco da pagina. Tinta de verdade que falta encosta
+    na tinta de cima (furo da moldura, recheio da letra, hachura); o verso
+    longe dela nao volta."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    verso = tuple(int(v * 0.55) for v in PAPEL_RGB)             # 45% mais escuro
+    for y in (170, 185):                                         # longe das LETRAS
+        fundo[y:y + 3, 40:160] = verso
+    fundo = cv2.GaussianBlur(fundo, (0, 0), 1.0)
+    doc = pdf_com_camadas(fundo=fundo)
+    img = tirar_fundo(doc, 0, detector_de_figuras=sem_figuras).imagem
+    assert img[490:590, 90:510].min() >= 245
+
+
+def test_verso_claro_nao_volta_do_fundo():
+    """A mancha do verso (letras da outra face vistas atraves do papel, macias
+    por atravessar a folha) fica so no fundo e e clara: nao volta, e a pagina
+    de texto nao e marcada. Medido no Palatino 10: 10% a 20% mais escura que o
+    papel, 0,8% da pagina, contra 11% de texto na camada de cima."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    verso = tuple(int(v * 0.84) for v in PAPEL_RGB)             # 16% mais escuro
+    for y in (112, 142, 172):
+        fundo[y:y + 2, 40:160] = verso
+    fundo = cv2.GaussianBlur(fundo, (0, 0), 1.2)
+    doc = pdf_com_camadas(fundo=fundo, mascara=mascara_de_pagina_de_texto())
+    resultado = tirar_fundo(doc, 0, detector_de_figuras=sem_figuras)
+    assert resultado.situacao == FUNDO_TIRADO
+    assert not resultado.conferir
+    m = mascara_de_pagina_de_texto()
+    longe = cv2.dilate(m.astype(np.uint8), np.ones((9, 9), np.uint8)) == 0
+    assert resultado.imagem[longe].min() >= 250
+
+
+def fundo_com_manuscrito_claro(ate_a_linha: int = 240) -> np.ndarray:
+    """Siebmacher 104 e 105: linhas de escrita a mao em tinta clara (20% mais
+    escura que o papel), finas e nitidas, que so existem no fundo."""
+    fundo = fundo_padrao()
+    fundo[:] = PAPEL_RGB
+    tinta = tuple(int(v * 0.78) for v in PAPEL_RGB)
+    rng = np.random.default_rng(5)
+    for y in range(40, ate_a_linha, 16):
+        x = 20
+        while x < 180:
+            comprimento = int(rng.integers(4, 12))
+            cv2.line(fundo, (x, y + int(rng.integers(-3, 4))), (x + comprimento, y), tinta, 1)
+            cv2.line(fundo, (x + 2, y - 5), (x + 2, y + 2), tinta, 1)
+            x += comprimento + int(rng.integers(3, 8))
+    return fundo
+
+
+def test_manuscrito_claro_que_so_existe_no_fundo_deixa_a_pagina_intacta():
+    """A mascara pegou so uns pingos da escrita; o resto e claro demais para
+    voltar sem trazer junto o verso (e da mesma faixa). Tirar o fundo apagaria
+    a escrita: a pagina fica como esta (regra do Samuel: nenhuma perda)."""
+    pingos = np.zeros((ALTURA_CIMA, LARGURA_CIMA), bool)
+    for y in range(120, 720, 48):
+        pingos[y:y + 4, 100:104] = True
+        pingos[y:y + 4, 400:404] = True
+    doc = pdf_com_camadas(fundo=fundo_com_manuscrito_claro(), mascara=pingos)
+    resultado = tirar_fundo(doc, 0, detector_de_figuras=sem_figuras)
+    assert resultado.situacao == DEIXADA_INTACTA
+    assert resultado.imagem is None
+    assert "clara" in resultado.explicacao
+
+
+def test_escrita_clara_ao_lado_de_muito_texto_pede_conferencia():
+    """Pagina cheia de texto na camada de cima, com muita escrita clara que so
+    existe no fundo (nota a mao, por exemplo): o fundo sai, e a pagina vem
+    marcada para conferir."""
+    mascara = np.zeros((ALTURA_CIMA, LARGURA_CIMA), bool)
+    mascara[560:780, 20:580] = True          # muito texto (um bloco), longe da escrita clara
+    doc = pdf_com_camadas(fundo=fundo_com_manuscrito_claro(ate_a_linha=170), mascara=mascara)
     resultado = tirar_fundo(doc, 0, detector_de_figuras=sem_figuras)
     assert resultado.situacao == FUNDO_TIRADO
     assert resultado.conferir
     assert "Confira" in resultado.explicacao
-    # e uma pagina limpa nao pede
-    assert not tirar_fundo(pdf_com_camadas(), 0, detector_de_figuras=sem_figuras).conferir
 
 
 def test_pagina_sem_camadas_nao_se_aplica():
@@ -426,13 +594,47 @@ def test_figura_achada_fica_como_o_pdf_desenha():
     img = resultado.imagem
     lidas = ler_camadas(doc, 0)
     como_o_pdf = compor(lidas, np.ones((lidas.altura, lidas.largura), np.float32))
-    # dentro da foto: igual ao PDF (tons do fundo preservados)
-    dif = np.abs(_meio_da_foto(img).astype(np.int16) - _meio_da_foto(como_o_pdf).astype(np.int16))
-    assert dif.mean() < 1.0
+    # dentro da foto: os tons do PDF, so com o papel levado a branco (o brilho
+    # multiplicado na mesma proporcao para todos os tons)
+    cinza = lambda x: cv2.cvtColor(x, cv2.COLOR_BGR2GRAY).astype(np.float32)  # noqa: E731
+    papel = float(cinza(np.uint8([[bgr(PAPEL_RGB)]]))[0, 0])
+    esperado = np.clip(cinza(_meio_da_foto(como_o_pdf)) * 255.0 / papel, 0, 255)
+    assert np.abs(cinza(_meio_da_foto(img)) - esperado).mean() < 8.0
     # o lado escuro da foto continua escuro (nao virou pontilhado no branco)
     assert _meio_da_foto(img)[:, :20].mean() < 90
+    # a sombra cinza da foto continua cinza: tirar o amarelado do papel nao
+    # pode puxar o tom escuro para o azul (o erro do "magic color", CLAUDE.md
+    # secao 9; dividindo canal a canal, a diferenca azul - vermelho daria ~20)
+    fora_dos_pontinhos = _meio_da_foto(~mascara_com_pontinhos()[:, :, None].repeat(3, 2))[:, :, 0]
+    sombra = _meio_da_foto(img).astype(np.int16)[:, :30][fora_dos_pontinhos[:, :30]]
+    assert np.abs(sombra[:, 0] - sombra[:, 2]).mean() < 8
     # fora da foto: papel branco
     assert img[5:40, 5:40].min() >= 250
+
+
+def test_papel_dentro_da_zona_mantida_fica_branco():
+    """A zona do detector e maior que a foto (Opus Majus 20: 2 a 3 mm de papel
+    em volta; Palatino 9 e 10: o papel entre os fios da moldura). Esse papel
+    sai branco, sem o remendo amarelado nem a aureola (figuras 4 e 5 do
+    verificador)."""
+    def zona_com_folga(img):
+        altura, largura = img.shape[:2]
+        peso = np.zeros((altura, largura), np.float32)
+        x0, y0, x1, y1 = FOTO
+        peso[int((y0 - 0.08) * altura):int((y1 + 0.08) * altura),
+             int((x0 - 0.08) * largura):int((x1 + 0.08) * largura)] = 1.0
+        return peso
+
+    doc = pdf_com_camadas(fundo=fundo_com_foto(), mascara=mascara_padrao())
+    resultado = tirar_fundo(doc, 0, detector_de_figuras=zona_com_folga)
+    assert resultado.zonas_mantidas == 1
+    img = resultado.imagem
+    x0, y0, x1, y1 = FOTO
+    folga = img[int((y0 - 0.06) * ALTURA_CIMA):int((y0 - 0.01) * ALTURA_CIMA),
+                int(x0 * LARGURA_CIMA):int(x1 * LARGURA_CIMA)]
+    assert folga.min() >= 245
+    # e a foto continua com os tons
+    assert _meio_da_foto(img)[:, :20].mean() < 90
 
 
 def test_zona_de_figura_sem_tons_no_fundo_vai_a_branco():

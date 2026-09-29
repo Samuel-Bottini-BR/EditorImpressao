@@ -101,6 +101,61 @@ DPI_DA_ANALISE = 150
 # megapixels na resolução da camada de cima).
 LINHAS_POR_FAIXA = 256
 
+# A TINTA QUE SÓ EXISTE NO FUNDO (limpar_fundo). Quanto um pixel do fundo
+# precisa ser mais escuro que o papel em volta (fração: 0,30 = 30% mais
+# escuro) para voltar, e a partir de quanto ele volta inteiro (entre os dois,
+# volta em parte, sem degrau). Medido em 28-29/09/2026 no mapa do fundo, fora
+# da máscara:
+#
+#     recheio das letras góticas do Palatino 66     acima de 0,45
+#     furos da moldura do Palatino 9 e 10           acima de 0,45
+#     mancha do verso do Palatino 10                0,10 a 0,20
+#     escrita da página vizinha do Palatino 7       0,10 a 0,30 (poucos pontos acima)
+#     carimbo e tique de lápis do Opus Majus 3      0,10 a 0,20
+#     mancha d'água da Rhetorica 73                 abaixo de 0,20
+#     letras "fantasma" em volta da tinta de cima   0,10 a 0,30
+#     manuscrito de tinta clara do Siebmacher 105   0,10 a 0,30 (!)
+#
+# O manuscrito claro fica na mesma faixa do verso: não dá para trazer um sem
+# trazer o outro. Ele não volta, e a página é marcada para conferir (ver
+# CONFERIR_TINTA_CLARA).
+TINTA_DO_FUNDO_COMECA = 0.30
+TINTA_DO_FUNDO_CHEIA = 0.45
+
+# E só volta o que está a menos disto (em mm) da tinta da camada de cima. O
+# traço que falta encosta no que a máscara pegou: o furo da moldura fica
+# dentro do fio, o recheio da letra gótica dentro do contorno, a hachura ao
+# lado da hachura, a grade do bordado ao lado das casinhas. O verso que
+# transparece forte (Palatino 48, mais de 30% mais escuro) fica no meio do
+# papel e não volta (visto na rodada de 29/09, 00:55: sem este limite, os
+# floreios do verso do Palatino 48 voltavam cinzentos).
+PERTO_DA_TINTA_DE_CIMA_MM = 1.0
+
+# O PAPEL QUE VEIO NA CAMADA DE CIMA (_papel_de_cima_vira_branco): a menos
+# de 6% do tom do papel local e com o mesmo matiz (cada canal a menos de 6% da
+# média), vira branco; até o dobro, em parte. Medido em 29/09/2026: no
+# Siebmacher 13 (máscara invertida em duas faixas) muda 64% da máscara; em 13
+# outras páginas (Palatino 7, 10, 66, 68; Opus 3, 11, 20; Rhetorica 18, 38,
+# 73; Siebmacher 2, 9, 103), de 0% a 0,09% da máscara - a letra fica.
+PAPEL_EM_CIMA_TOM = 0.06
+PAPEL_EM_CIMA_MATIZ = 0.06
+
+# A cor do papel da página, para branquear as zonas mantidas (_papel_em_lab):
+# a mediana do fundo livre a menos de 25 níveis do tom do papel.
+GANHO_BANDA = 25
+
+# O papel em volta (_papel_local): a média do fundo num raio de 4 mm, contando
+# só o que está a menos de 50 níveis do papel da página (entra a mancha
+# d'água, que assim some; não entra a tinta). Calculado a 40 DPI (é liso).
+BANDA_DO_PAPEL_LOCAL = 50
+RAIO_DO_PAPEL_LOCAL_MM = 4.0
+DPI_DO_PAPEL_LOCAL = 40
+
+# O fundo limpo é calculado no máximo a esta resolução (o fundo das páginas
+# comuns já vem a 133-200 DPI; só as 14 páginas "HQ" de cada livro vêm a 400-
+# 500 DPI, e ali o traço que volta fica um pouco mais macio que o de cima).
+DPI_MAX_DO_FUNDO_LIMPO = 300
+
 # Quanto um pixel do FUNDO precisa se afastar do papel (em níveis de cinza, 0
 # a 255, para mais escuro OU mais claro) para contar como tinta ou tom de
 # figura. A mancha d'água, o amarelado, o verso e as letras "fantasma" que o
@@ -194,17 +249,53 @@ BORDA_DA_IMAGEM = 0.01
 FAIXA_DA_BORDA = 0.10
 METADE_NA_FAIXA = 0.5
 
+# A ESCRITA CLARA QUE SÓ EXISTE NO FUNDO (_tinta_clara). Entre 12% e
+# TINTA_DO_FUNDO_COMECA (30%) mais escura que o papel, o fundo pode ser verso,
+# fantasma ou escrita clara de verdade (manuscrito do Siebmacher 103 a 105):
+# não volta, mas é medida. Só conta o traço nítido (o verso atravessou a folha
+# e chega macio) e longe da tinta de cima (a franja da letra não conta).
+# Medido em 29/09/2026 a 150 DPI, nos livros inteiros (Opus Majus e Rhetorica
+# de 5 em 5 e de 3 em 3 páginas), em fração da página e dividido pela tinta da
+# camada de cima:
+#
+#     Siebmacher 104, 105 (manuscrito some)     1,6% a 2,1%    0,53 a 0,80
+#     Siebmacher 103 (metade some)               1,6%           0,17
+#     Siebmacher 76 a 96 (folhas em branco com
+#       o bordado do outro lado transparecendo)  0,8% a 3,7%    0,2 a 5
+#     Palatino 10 e 7 (verso, vizinha)           0,7% a 0,8%    0,07 a 0,08
+#     Siebmacher 99 a 102 (manuscrito escuro)    0,2% a 0,5%    0,02 a 0,07
+#     Rhetorica                                  até 0,5%       até 0,08
+#     Opus Majus                                 até 0,01%      ~0
+#
+# A partir de TINTA_CLARA_DOMINA (a escrita clara perdida passa de 15% da
+# tinta de cima), a página fica INTACTA: é o manuscrito do Siebmacher (e
+# também as folhas em branco com o bordado do outro lado, que ficam com a
+# transparência: sem perda, mas sem limpeza - o item 6.1 resolve com a frente
+# e o verso). Com menos, mas acima de CONFERIR_TINTA_CLARA, sai marcada
+# "conferir". Abaixo de TINTA_CLARA_MINIMA, é pontinho e não conta.
+# Arriscado: a escrita clara de verdade e o verso ficam na MESMA faixa de
+# escuro; o que os separa aqui é a quantidade (e a nitidez), medida só nestes
+# cinco livros. Nota clara pequena numa página cheia de texto some sem aviso.
+TINTA_CLARA_COMECA = 0.12
+LONGE_DA_TINTA_MM = 0.8
+NITIDEZ_MM = 1.0
+NITIDEZ_MINIMA = 0.05
+TINTA_CLARA_MINIMA = 0.003
+TINTA_CLARA_DOMINA = 0.15
+CONFERIR_TINTA_CLARA = 0.010
+
 # A partir desta fração da página com "tinta só no fundo" FORA das zonas
-# mantidas, a página sai com o fundo tirado mas marcada para CONFERIR (como o
-# DESENHO_OU_ESCRITA do detector: não finge certeza). É o traço que some com o
-# fundo: moldura grossa que a máscara furou, ou gravura inteira que o detector
-# de hoje não marca. Medido no Palatino inteiro (28/09/2026): as gravuras de
-# página inteira que perdem hachura (48, 66, 68, 73, 94, 95, 130) dão 2,6% a
-# 3,9%; as páginas de texto com moldura grossa, 1,2% a 2,1% (e perdem o peso
-# da moldura); texto sem moldura, até 0,7%. Nenhuma medida separou as duas
-# primeiras (tentado: fração, densidade local, manchas compactas - os números
-# se cruzam), então a decisão fica com o detector do item 1.2, e aqui só se
-# avisa.
+# mantidas - a que limpar_fundo traz de volta MAIS a que não volta -, a página
+# sai com o fundo tirado mas marcada para CONFERIR (como o DESENHO_OU_ESCRITA
+# do detector: não finge certeza). Desde 29/09 o traço escuro volta do fundo,
+# mas volta na resolução dele (mais macio), e o meio-tom em volta não volta: o
+# recheio cinza entre os pontinhos das letras do Palatino 68 e do fundo da
+# gravura do Palatino 94 clareia. Tentado separar esse meio-tom perdido do
+# verso e dos fantasmas das páginas de texto (fração, raio de 1 e 2 pixels,
+# densidade local): Palatino 68 dá 2,0%, Palatino 10 (texto e verso) 2,7% -
+# os números se cruzam. Então a conta continua a de antes (a mesma que o
+# verificador conferiu em 28/09: gravuras de página inteira do Palatino, 2,6% a
+# 3,9%; texto com moldura grossa, 1,2% a 2,1%; texto sem moldura, até 0,7%).
 CONFERIR_TINTA_PERDIDA = 0.015
 
 # Na margem, abaixo deste cinza é o preto de fora do livro (fundo do scanner),
@@ -678,26 +769,42 @@ def _faixa(img: np.ndarray, largura: int, altura: int, y0: int, y1: int,
     return cv2.remap(img, mapa_x, mapa_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
 
 
-def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None) -> np.ndarray:
-    """Monta a página: camada de cima + (fora dela) branco ou fundo.
+def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None,
+           fundo_limpo: np.ndarray | None = None,
+           papel_da_zona: tuple[float, float, float] | None = None) -> np.ndarray:
+    """Monta a página: camada de cima + (fora dela) o papel limpo ou o fundo.
+
+    fundo_limpo (BGR, em qualquer tamanho; é ampliado): o que vai embaixo da
+    camada de cima fora das zonas de figura - branco, com a tinta que só existe
+    no fundo (ver limpar_fundo). None = branco em tudo.
 
     peso_figura (0 a 1, em qualquer tamanho; é ampliado): onde é 1 fica o fundo
-    (a página como o PDF desenha); onde é 0 fica branco. None = branco em tudo.
+    como veio (a página como o PDF desenha); onde é 0 fica o fundo limpo.
 
-        saída = cima + (1 - alfa) x (branco + peso x (fundo - branco))
+    papel_da_zona (L, a, b do Lab do OpenCV em float, L de 0 a 100): se vier,
+    o papel do fundo das zonas de figura vira branco (ver _branquear_papel).
+    None = como veio.
 
-    Nenhum pixel é inventado: cada um vem da camada de cima, do fundo ou é
-    branco. Feito em faixas (LINHAS_POR_FAIXA) para a memória não passar de uma
-    página.
+        saída = cima + (1 - alfa) x (limpo + peso x (fundo' - limpo))
+
+    Nenhum pixel é inventado: cada um vem da camada de cima, do fundo (como
+    veio ou com o papel levado a branco) ou é branco. Feito em faixas
+    (LINHAS_POR_FAIXA) para a memória não passar de uma página.
     """
     largura, altura = lidas.largura, lidas.altura
     saida = np.empty((altura, largura, 3), np.uint8)
     for y0 in range(0, altura, LINHAS_POR_FAIXA):
         y1 = min(altura, y0 + LINHAS_POR_FAIXA)
         cima, alfa = lidas.cima[y0:y1], lidas.alfa[y0:y1]
-        # Primeiro tudo com branco embaixo: conta inteira e exata (cima <= alfa
-        # depois da multiplicação, então não estoura).
-        saida[y0:y1] = cv2.add(cima, cv2.merge([255 - alfa] * 3))
+        transparente = cv2.merge([255 - alfa] * 3)
+        # Primeiro, fora das zonas: conta inteira e exata (cima <= alfa depois
+        # da multiplicação, e limpo <= 255, então não estoura).
+        if fundo_limpo is None:
+            limpo = None
+            saida[y0:y1] = cv2.add(cima, transparente)
+        else:
+            limpo = _faixa(fundo_limpo, largura, altura, y0, y1)
+            saida[y0:y1] = cv2.add(cima, cv2.multiply(limpo, transparente, scale=1.0 / 255.0))
         if peso_figura is None:
             continue
         peso = _faixa(peso_figura, largura, altura, y0, y1)
@@ -712,12 +819,176 @@ def compor(lidas: CamadasLidas, peso_figura: np.ndarray | None = None) -> np.nda
         fins = np.concatenate((colunas[quebras], [colunas[-1]])) + 1
         for x0, x1 in zip(inicios.tolist(), fins.tolist()):
             fundo = _faixa(lidas.fundo, largura, altura, y0, y1, x0, x1).astype(np.float32)
+            if papel_da_zona is not None:
+                fundo = _branquear_papel(fundo, papel_da_zona)
+            base_limpa = 255.0 if limpo is None else limpo[:, x0:x1].astype(np.float32)
             p = np.clip(peso[:, x0:x1].astype(np.float32), 0.0, 1.0)[:, :, None]
-            base = 255.0 + p * (fundo - 255.0)
+            base = base_limpa + p * (fundo - base_limpa)
             transparencia = (1.0 - alfa[:, x0:x1].astype(np.float32) / 255.0)[:, :, None]
             saida[y0:y1, x0:x1] = np.clip(cima[:, x0:x1].astype(np.float32)
                                           + transparencia * base + 0.5, 0, 255).astype(np.uint8)
     return saida
+
+
+# --- a tinta que só existe no fundo --------------------------------------------------
+
+
+def _papel_local(fundo: np.ndarray, alfa: np.ndarray, papel: float,
+                 dpi_do_fundo: float) -> np.ndarray:
+    """A cor do papel em cada ponto, pequena (DPI_DO_PAPEL_LOCAL), em float32 BGR.
+
+    É a média do fundo em volta (raio RAIO_DO_PAPEL_LOCAL_MM), contando só o
+    que parece papel: longe da tinta de cima e a menos de BANDA_DO_PAPEL_LOCAL
+    níveis do papel da página. Por isso ela acompanha a mancha d'água e o
+    amarelado (que ficam dentro da banda), mas não a tinta nem a foto.
+    """
+    fator = min(1.0, DPI_DO_PAPEL_LOCAL / dpi_do_fundo)
+    largura = max(8, round(fundo.shape[1] * fator))
+    altura = max(8, round(fundo.shape[0] * fator))
+    dpi_pequeno = dpi_do_fundo * largura / fundo.shape[1]
+    pequeno = cv2.resize(fundo, (largura, altura), interpolation=cv2.INTER_AREA).astype(np.float32)
+    alfa_p = cv2.resize(alfa, (largura, altura), interpolation=cv2.INTER_AREA)
+    cinza = cv2.cvtColor(pequeno, cv2.COLOR_BGR2GRAY)
+    perto_da_tinta = cv2.dilate((alfa_p > 12).astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
+    peso = ((~perto_da_tinta) & (np.abs(cinza - papel) < BANDA_DO_PAPEL_LOCAL)).astype(np.float32)
+    if float(peso.sum()) < 20:
+        cor = np.median(pequeno.reshape(-1, 3), axis=0)
+        return np.broadcast_to(cor.astype(np.float32), pequeno.shape).copy()
+    cor_da_pagina = np.median(pequeno[peso > 0], axis=0).astype(np.float32)
+    sigma = max(1.0, RAIO_DO_PAPEL_LOCAL_MM / 25.4 * dpi_pequeno)
+    soma_peso = cv2.GaussianBlur(peso, (0, 0), sigma)
+    local = np.empty_like(pequeno)
+    for canal in range(3):
+        local[:, :, canal] = cv2.GaussianBlur(pequeno[:, :, canal] * peso, (0, 0), sigma)
+    confianca = np.clip(soma_peso / 0.05, 0.0, 1.0)[:, :, None]
+    local = local / np.maximum(soma_peso, 1e-6)[:, :, None]
+    # Onde quase não há papel por perto (dentro de uma gravura grande), vale a
+    # cor do papel da página.
+    return confianca * local + (1.0 - confianca) * cor_da_pagina
+
+
+def _tinta_do_fundo(fundo: np.ndarray, alfa: np.ndarray, papel: float,
+                    dpi_do_fundo: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(escuro, tinta, papel_local) no tamanho do fundo.
+
+    escuro: uint8, quanto cada pixel do fundo é mais escuro que o papel local
+    (0 a 255 = 0% a 100%); uint8 para a memória ficar pequena.
+    tinta: bool, onde escuro passa de TINTA_DO_FUNDO_COMECA, a menos de
+    PERTO_DA_TINTA_DE_CIMA_MM da tinta de cima (o traço que falta encosta no
+    que a máscara pegou; o verso forte no meio do papel, não - Palatino 48), e
+    sem o que encosta na borda da imagem (fundo de scanner, borda da folha).
+    papel_local: ver _papel_local (pequeno; ampliar com _faixa).
+    """
+    altura, largura = fundo.shape[:2]
+    papel_local = _papel_local(fundo, alfa, papel, dpi_do_fundo)
+    escuro = np.empty((altura, largura), np.uint8)
+    for y0 in range(0, altura, LINHAS_POR_FAIXA):
+        y1 = min(altura, y0 + LINHAS_POR_FAIXA)
+        cinza = cv2.cvtColor(fundo[y0:y1], cv2.COLOR_BGR2GRAY).astype(np.float32)
+        cinza_papel = cv2.cvtColor(_faixa(papel_local, largura, altura, y0, y1),
+                                   cv2.COLOR_BGR2GRAY)
+        d = 1.0 - cinza / np.maximum(cinza_papel, 1.0)
+        escuro[y0:y1] = np.clip(d * 255.0 + 0.5, 0, 255).astype(np.uint8)
+    lado = max(3, int(round(2 * PERTO_DA_TINTA_DE_CIMA_MM / 25.4 * dpi_do_fundo)) | 1)
+    perto = cv2.dilate((alfa > 12).astype(np.uint8),
+                       cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+    tinta = _sem_a_borda(escuro >= int(round(TINTA_DO_FUNDO_COMECA * 255))) & perto
+    return escuro, tinta, papel_local
+
+
+def limpar_fundo(lidas: CamadasLidas, papel: float) -> np.ndarray:
+    """Ver _limpar_fundo (esta devolve só o fundo limpo)."""
+    return _limpar_fundo(lidas, papel)[0]
+
+
+def _limpar_fundo(lidas: CamadasLidas, papel: float) -> tuple[np.ndarray, np.ndarray]:
+    """O fundo com o papel levado a branco e só a TINTA que ele tem a mais.
+
+    É o que vai embaixo da camada de cima fora das zonas de figura. Branco em
+    tudo, menos onde o fundo é bem mais escuro que o papel em volta (a partir
+    de TINTA_DO_FUNDO_COMECA, cheio em TINTA_DO_FUNDO_CHEIA): ali volta o pixel
+    do fundo, dividido pela cor do papel local (o papel vira branco e a tinta
+    guarda a cor). É o traço que a máscara do Internet Archive não pegou - o
+    furo da moldura, o recheio da letra gótica, a hachura da gravura - e que
+    antes sumia com o fundo (figuras 1, 3 e 4 do verificador, 28/09/2026).
+
+    A mancha do verso, o carimbo, a mancha d'água e as letras "fantasma" ficam
+    abaixo do limiar e não voltam (ver as medidas em TINTA_DO_FUNDO_COMECA). O
+    fundo de scanner e a borda da folha também não (_sem_a_borda).
+
+    Devolve (fundo limpo, papel local): o fundo limpo em BGR uint8 no tamanho
+    do fundo (no máximo DPI_MAX_DO_FUNDO_LIMPO); o papel local, pequeno, é o
+    de _papel_local (serve também a _papel_de_cima_vira_branco).
+    Arriscado mudar: os dois limiares (abaixo, o verso volta; acima, o furo
+    fica) e a divisão pela cor do papel (sem ela o papel amarelado da tinta
+    fraca voltaria como mancha).
+    """
+    fundo = lidas.fundo
+    dpi_do_fundo = fundo.shape[1] / (lidas.largura_pt / 72.0)
+    if dpi_do_fundo > DPI_MAX_DO_FUNDO_LIMPO:
+        fator = DPI_MAX_DO_FUNDO_LIMPO / dpi_do_fundo
+        fundo = _redimensionar(fundo, max(1, round(fundo.shape[1] * fator)),
+                               max(1, round(fundo.shape[0] * fator)))
+        dpi_do_fundo = DPI_MAX_DO_FUNDO_LIMPO
+    altura, largura = fundo.shape[:2]
+    alfa = _redimensionar(lidas.alfa, largura, altura)
+    escuro, tinta, papel_local = _tinta_do_fundo(fundo, alfa, papel, dpi_do_fundo)
+
+    # branco + peso x (fundo / papel - branco), em faixas.
+    limpo = np.empty_like(fundo)
+    inicio, fim = TINTA_DO_FUNDO_COMECA * 255.0, TINTA_DO_FUNDO_CHEIA * 255.0
+    for y0 in range(0, altura, LINHAS_POR_FAIXA):
+        y1 = min(altura, y0 + LINHAS_POR_FAIXA)
+        limpo[y0:y1] = 255
+        onde = np.nonzero(tinta[y0:y1])            # só onde a tinta volta
+        if onde[0].size == 0:
+            continue
+        peso = np.clip((escuro[y0:y1][onde].astype(np.float32) - inicio) / (fim - inicio),
+                       0.0, 1.0)[:, None]
+        papel = _faixa(papel_local, largura, altura, y0, y1)[onde]
+        normal = np.clip(fundo[y0:y1][onde].astype(np.float32) * 255.0
+                         / np.maximum(papel, 1.0), 0.0, 255.0)
+        faixa = limpo[y0:y1]
+        faixa[onde] = np.clip(255.0 + peso * (normal - 255.0) + 0.5, 0, 255).astype(np.uint8)
+    return limpo, papel_local
+
+
+def _papel_de_cima_vira_branco(lidas: CamadasLidas, papel_local: np.ndarray) -> None:
+    """Na camada de cima, o que tem a COR DO PAPEL vira branco (muda lidas.cima).
+
+    Em algumas faixas o Internet Archive escolheu a máscara "invertida": a
+    camada de cima leva o papel (as casinhas claras do bordado do Siebmacher 13,
+    15 e 25) e a tinta fica só no fundo. Sem isto, a faixa saía bege-pálida
+    (figuras 8 e 14 do verificador, 28/09/2026). A tinta dessas faixas volta do
+    fundo por limpar_fundo.
+
+    Só vira branco o que está a menos de PAPEL_EM_CIMA_TOM do tom do papel
+    local e com o mesmo matiz (PAPEL_EM_CIMA_MATIZ); entre isso e o dobro, em
+    parte. A letra, mesmo clara, fica como está.
+    """
+    largura, altura = lidas.largura, lidas.altura
+    tom0, tom1 = PAPEL_EM_CIMA_TOM, 2 * PAPEL_EM_CIMA_TOM
+    matiz0, matiz1 = PAPEL_EM_CIMA_MATIZ, 2 * PAPEL_EM_CIMA_MATIZ
+    for y0 in range(0, altura, LINHAS_POR_FAIXA):
+        y1 = min(altura, y0 + LINHAS_POR_FAIXA)
+        # Só os pixels em que a camada de cima aparece (uns 10% da página): a
+        # conta em ponto flutuante sobre a faixa inteira custava 0,3 s por
+        # página a 300 DPI.
+        onde = np.nonzero(lidas.alfa[y0:y1])
+        if onde[0].size == 0:
+            continue
+        a = lidas.alfa[y0:y1][onde].astype(np.float32)[:, None]
+        cima = lidas.cima[y0:y1][onde].astype(np.float32)
+        papel = _faixa(papel_local, largura, altura, y0, y1)[onde]
+        razao = cima * 255.0 / np.maximum(a, 1.0) / np.maximum(papel, 1.0)
+        tom = razao.mean(axis=1)
+        matiz = np.abs(razao - tom[:, None]).max(axis=1)
+        peso = (np.clip((tom - (1.0 - tom1)) / (tom1 - tom0), 0.0, 1.0)
+                * np.clip((matiz1 - matiz) / (matiz1 - matiz0), 0.0, 1.0))
+        if not peso.any():
+            continue
+        faixa = lidas.cima[y0:y1]
+        faixa[onde] = np.clip(cima + peso[:, None] * (a - cima) + 0.5, 0, 255).astype(np.uint8)
 
 
 # --- o detector de figuras (a emenda do item 1.2) ----------------------------------
@@ -772,6 +1043,8 @@ class _Fundo:
     livre: np.ndarray          # longe da tinta de cima
     tom_livre: np.ndarray      # tom de figura E longe da tinta: foto (rede de segurança)
     so_no_fundo: np.ndarray    # tom de figura onde a camada de cima não cobre (zonas)
+    volta: np.ndarray          # tinta do fundo que limpar_fundo traz de volta
+    clara: np.ndarray          # tinta clara, nítida, só no fundo, que NÃO volta
 
 
 def _cor_do_papel(cinza: np.ndarray, lab: np.ndarray, livre: np.ndarray,
@@ -844,15 +1117,34 @@ def _medir_fundo(pequena: CamadasLidas, peso: np.ndarray) -> _Fundo:
     livre = cv2.dilate(tinta, np.ones((lado, lado), np.uint8)) == 0
     if int(livre.sum()) < 100:
         vazio = np.zeros_like(livre)
-        return _Fundo(255.0, livre, vazio, vazio)
+        return _Fundo(255.0, livre, vazio, vazio, vazio, vazio)
     lab = cv2.cvtColor(fundo, cv2.COLOR_BGR2LAB).astype(np.int16)
     papel, a0, b0 = _cor_do_papel(cinza, lab, livre, peso)
     fora_da_cor = ((lab[:, :, 1] - a0) ** 2 + (lab[:, :, 2] - b0) ** 2
                    > COR_DE_FIGURA ** 2)
 
     tom = (np.abs(cinza - papel) > TOM_DE_FIGURA) | fora_da_cor
+    escuro, volta, _ = _tinta_do_fundo(fundo, pequena.alfa, papel, pequena.dpi)
     return _Fundo(papel, livre, livre & tom,
-                  _sem_a_borda(tom & (pequena.alfa < ALFA_QUE_NAO_COBRE)))
+                  _sem_a_borda(tom & (pequena.alfa < ALFA_QUE_NAO_COBRE)),
+                  volta, _tinta_clara(escuro, pequena.alfa, pequena.dpi))
+
+
+def _tinta_clara(escuro: np.ndarray, alfa: np.ndarray, dpi: float) -> np.ndarray:
+    """A escrita clara que só existe no fundo e NÃO volta (ver
+    CONFERIR_TINTA_CLARA): entre TINTA_CLARA_COMECA e TINTA_DO_FUNDO_COMECA
+    mais escura que o papel, onde a camada de cima não cobre, longe da tinta
+    de cima (LONGE_DA_TINTA_MM: não é a franja da letra), nítida (traço, e
+    não o borrão macio do verso) e sem o que encosta na borda da imagem.
+    """
+    mm = dpi / 25.4
+    d = escuro.astype(np.float32) / 255.0
+    lado = max(3, int(round(LONGE_DA_TINTA_MM * mm)) | 1)
+    perto = cv2.dilate((alfa > 12).astype(np.uint8),
+                       cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
+    faixa = (d >= TINTA_CLARA_COMECA) & (d < TINTA_DO_FUNDO_COMECA)
+    nitida = (d - cv2.GaussianBlur(d, (0, 0), max(0.5, NITIDEZ_MM * mm))) > NITIDEZ_MINIMA
+    return faixa & nitida & ~perto & _sem_a_borda(d >= TINTA_CLARA_COMECA)
 
 
 def _manchas_da_borda(rotulos: np.ndarray, caixas: np.ndarray) -> np.ndarray:
@@ -940,6 +1232,48 @@ def _figura_esquecida(tom: np.ndarray, mantido: np.ndarray) -> float:
     return maior
 
 
+def _papel_em_lab(pequena: CamadasLidas, fundo: _Fundo) -> tuple[float, float, float]:
+    """A cor do papel da página, em Lab (L de 0 a 100; a e b em volta de 0),
+    para branquear o papel das zonas mantidas (_branquear_papel). É a mediana
+    do fundo livre com o tom do papel (mais ou menos GANHO_BANDA níveis)."""
+    cor = _redimensionar(pequena.fundo, pequena.largura, pequena.altura)
+    cinza = cv2.cvtColor(cor, cv2.COLOR_BGR2GRAY).astype(np.int16)
+    base = fundo.livre & (np.abs(cinza - fundo.papel) < GANHO_BANDA)
+    if int(base.sum()) < 100:
+        base = fundo.livre
+    if int(base.sum()) < 100:
+        return (100.0, 0.0, 0.0)
+    papel = np.median(cor[base].reshape(-1, 3), axis=0).astype(np.float32) / 255.0
+    lab = cv2.cvtColor(papel.reshape(1, 1, 3), cv2.COLOR_BGR2LAB)[0, 0]
+    return float(lab[0]), float(lab[1]), float(lab[2])
+
+
+def _branquear_papel(fundo: np.ndarray, papel_lab: tuple[float, float, float]) -> np.ndarray:
+    """O fundo de uma zona mantida (BGR float32, 0 a 255) com o papel levado a
+    branco, sem mexer no matiz da figura.
+
+    Dentro de uma zona mantida (foto, gravura com hachura só no fundo) o fundo
+    fica, mas o papel dele vira branco: sem isto sobrava um remendo amarelado
+    onde a zona acaba, com a borda esfumada (Palatino 9 e 10, auréola de 2 a
+    3 mm em volta da foto do Opus Majus 20 - figuras 4 e 5 do verificador).
+
+    No Lab, e não canal a canal (CLAUDE.md, seção 9: dividir canal a canal
+    desloca o matiz - o cinza da foto viraria azul): o brilho (L) é
+    multiplicado para o papel chegar a 100, igual para todos os tons; a cor do
+    papel (a, b) é tirada inteira do que tem o brilho do papel e cada vez menos
+    do que é mais escuro (peso = (L / L do papel) ao quadrado). O tom da foto e
+    o traço escuro ficam com a cor deles.
+    """
+    l_papel, a_papel, b_papel = papel_lab
+    lab = cv2.cvtColor(np.ascontiguousarray(fundo / 255.0, dtype=np.float32), cv2.COLOR_BGR2LAB)
+    relativo = lab[:, :, 0] / max(l_papel, 1.0)
+    peso = np.clip(relativo, 0.0, 1.0) ** 2
+    lab[:, :, 0] = np.minimum(100.0, lab[:, :, 0] * (100.0 / max(l_papel, 1.0)))
+    lab[:, :, 1] -= a_papel * peso
+    lab[:, :, 2] -= b_papel * peso
+    return np.clip(cv2.cvtColor(lab, cv2.COLOR_LAB2BGR) * 255.0, 0.0, 255.0)
+
+
 def _tinta_perdida(perdida: np.ndarray) -> float:
     """Que fração da página tem traço que só existia no fundo (e sai com ele).
     O fundo de scanner e a borda da folha já saíram em _medir_fundo: o preto
@@ -1003,7 +1337,18 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
     mantido, achadas, mantidas, fracoes = _zonas_mantidas(peso, fundo)
     esquecida = _figura_esquecida(fundo.tom_livre, mantido)
     cobertura = float(mantido.mean())
-    perdida = _tinta_perdida(fundo.so_no_fundo & (mantido < 0.5))
+    # O que volta do fundo como tinta (limpar_fundo) não conta como perdido.
+    fora_das_zonas = mantido < 0.5
+    perdida = _tinta_perdida(fundo.so_no_fundo & fora_das_zonas & ~fundo.volta)
+    # O que volta do fundo (limpar_fundo) volta na resolução do fundo (1/3 da
+    # de cima nas páginas comuns), mais macio, e o meio-tom em volta dele (o
+    # recheio cinza entre os pontinhos da gravura - Palatino 68 e 94) não
+    # volta: na página em que muito traço teve de vir do fundo, pede conferir.
+    trazida = float((fundo.so_no_fundo & fora_das_zonas & fundo.volta).mean())
+    # A escrita clara que não volta, e quanto ela é da escrita da página.
+    clara = float((fundo.clara & fora_das_zonas).mean())
+    de_cima = float((pequena.alfa > 127).mean())
+    razao_clara = clara / max(de_cima, 1e-4)
     medidas = {"papel": round(fundo.papel, 1), "fundo_livre": round(livre, 3),
                "tinta_so_no_fundo_por_zona": fracoes,
                "zonas_mantidas_cobrem": round(cobertura, 3),
@@ -1011,13 +1356,27 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
                # da página): hachura de figura que o detector não marcou,
                # fio grosso furado pela máscara, sujeira escura
                "tinta_so_no_fundo_fora_das_zonas": round(perdida, 4),
+               # a que voltou do fundo por limpar_fundo (fração da página)
+               "tinta_trazida_do_fundo": round(trazida, 4),
                "figura_fora_das_zonas": round(esquecida, 4),
+               # a escrita clara só no fundo, que não volta (fração da página),
+               # e ela dividida pela tinta da camada de cima
+               "tinta_clara_perdida": round(clara, 4),
+               "tinta_clara_por_tinta_de_cima": round(razao_clara, 3),
                "tamanho_analise": [pequena.largura, pequena.altura]}
     if esquecida >= AREA_DE_FIGURA_ESQUECIDA:
         return PaginaSemFundo(
             None, DEIXADA_INTACTA,
             "O fundo tem uma figura (foto ou pintura) fora das zonas de "
             "figura; a página fica como está, para não apagá-la.",
+            lidas.dpi, achadas, mantidas, medidas)
+    if clara >= TINTA_CLARA_MINIMA and razao_clara >= TINTA_CLARA_DOMINA:
+        # Siebmacher 103 a 105: a escrita a mão, clara, está quase toda só no
+        # fundo, na mesma faixa de escuro do verso. Tirar o fundo a apagaria.
+        return PaginaSemFundo(
+            None, DEIXADA_INTACTA,
+            "Boa parte da escrita desta página é clara e só existe no fundo; "
+            "tirar o fundo a apagaria, então ela fica como está.",
             lidas.dpi, achadas, mantidas, medidas)
     if cobertura >= PAGINA_INTEIRA_E_FIGURA:
         # O detector marcou a página inteira como figura, e ela tem tinta só no
@@ -1029,16 +1388,25 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
             "ela fica como está, para não quebrar a figura.",
             lidas.dpi, achadas, mantidas, medidas)
 
-    imagem = compor(lidas, mantido if mantidas else None)
+    limpo, papel_local = _limpar_fundo(lidas, fundo.papel)
+    _papel_de_cima_vira_branco(lidas, papel_local)
+    imagem = compor(lidas, mantido if mantidas else None, limpo,
+                    _papel_em_lab(pequena, fundo) if mantidas else None)
     if mantidas:
         explicacao = (f"Fundo tirado; {mantidas} figura(s) com traço ou tom só no "
                       "fundo ficaram como o PDF mostra.")
     else:
         explicacao = "Fundo tirado: papel branco, letra e figuras da camada de cima."
-    conferir = perdida >= CONFERIR_TINTA_PERDIDA
-    if conferir:
-        explicacao += (" Confira: parte do traço desta página (moldura ou gravura) "
-                       "só existia no fundo e pode ter ficado mais fraca.")
+    muito_do_fundo = perdida + trazida >= CONFERIR_TINTA_PERDIDA
+    conferir = muito_do_fundo or clara >= CONFERIR_TINTA_CLARA
+    if muito_do_fundo:
+        explicacao += (" Confira: parte do traço desta página (moldura, gravura, "
+                       "recheio da letra) só existia no fundo; ele foi trazido de "
+                       "volta de lá, mais macio, e o meio-tom em volta pode ter "
+                       "clareado.")
+    if clara >= CONFERIR_TINTA_CLARA:
+        explicacao += (" Confira: esta página tinha escrita clara que só existia no "
+                       "fundo e pode ter sumido.")
     return PaginaSemFundo(imagem, FUNDO_TIRADO, explicacao, lidas.dpi,
                           achadas, mantidas, medidas, conferir)
 
