@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Item 1.2 - conferencia do verificador</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Item 1.2: conferência do verificador (seletor de gravura do ScanTailor)</h1>
+<p>28/09/2026 · verificador · commit <code>776c6c4</code> no ramo <code>fase-1</code> · relatório do implementador: <code>../gravura-scantailor.html</code></p>
+<blockquote>
+<p><strong>AVISO (decisão do Samuel, 28/09): moldura dourada e iluminura são DEFEITO CONHECIDO até a Fase 1 ficar pronta.</strong> Elas vão ser resolvidas nos itens 1.2, 1.4 e 1.5. Nada nesta conferência muda isso: o item 1.2 sozinho não entrega o resultado final (papel branco, letra com a cor original, gravura intacta).</p>
+</blockquote>
+<h2>1. Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR, como núcleo.</strong> O detector é o código original do ScanTailor e dá a mesma máscara que o ScanTailor deu em 24/09. Mas:</p>
+<ul>
+<li>ele <strong>ainda não está ligado ao programa</strong>: abrindo o programa pelo atalho "(desenvolvimento)" não há nada novo para ver. A conferência deste item é pelas imagens abaixo;</li>
+<li>sozinho, ele <strong>não cumpre as regras da Fase 1 em 3 das 7 páginas obrigatórias</strong> (Horas 11, Horas 26 e Opus Majus 20).</li>
+</ul>
+<p>Nunca "aprovado": só o Samuel marca.</p>
+<h2>2. O que foi conferido, e como</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Testes do programa (<code>pytest tests -q</code>)</td>
+<td>máquina</td>
+<td><strong>790 passaram</strong>, nenhum falhou</td>
+</tr>
+<tr>
+<td>Testes do item (<code>tests/test_gravura_scantailor.py</code>)</td>
+<td>máquina</td>
+<td><strong>12 de 12 passaram</strong></td>
+</tr>
+<tr>
+<td>O código de terceiros é o original?</td>
+<td>máquina</td>
+<td><strong>Sim.</strong> Detalhe na seção 3</td>
+</tr>
+<tr>
+<td>A "ligação" esconde mudança de lógica?</td>
+<td>leitura do código, comparada com o original</td>
+<td><strong>Não achei nenhuma.</strong> As 5 diferenças estão todas escritas no <code>LEIA-ME</code> (seção 3)</td>
+</tr>
+<tr>
+<td>A DLL do projeto é mesmo compilada desse código?</td>
+<td>máquina (recompilei numa pasta temporária)</td>
+<td><strong>Sim.</strong> Só 4 bytes diferentes (duas datas), máscaras idênticas em 14 páginas</td>
+</tr>
+<tr>
+<td>A DLL usa o Qt do PySide6?</td>
+<td>máquina</td>
+<td><strong>Sim.</strong> Com a janela aberta, só um Qt fica na memória, o do PySide6</td>
+</tr>
+<tr>
+<td>Régua contra as máscaras de 24/09</td>
+<td>máquina + olho</td>
+<td><strong>Confere.</strong> Refiz tudo com a DLL do commit: números idênticos aos do implementador. Abri as 8 imagens</td>
+</tr>
+<tr>
+<td>Páginas obrigatórias da Fase 1</td>
+<td>olho (o Samuel decide)</td>
+<td>Abri as 7 imagens, as 7 de opções e 6 ampliações. Seção 5</td>
+</tr>
+<tr>
+<td>DLL ausente ou quebrada</td>
+<td>máquina</td>
+<td><strong>Não derruba nada</strong> (seção 6). Mas achei um jeito de derrubar o programa com um DPI absurdo (bug novo 1)</td>
+</tr>
+<tr>
+<td>Teste de velocidade (<code>teste_velocidade.py</code>)</td>
+<td>não rodei</td>
+<td>O commit só <strong>acrescenta</strong> arquivos (110 novos, nenhum alterado), e nada do programa chama o detector. A velocidade do programa não mudou. O tempo do detector sozinho está na seção 7</td>
+</tr>
+</tbody>
+</table>
+<h2>3. O código de terceiros confere</h2>
+<ul>
+<li><strong>É a versão v1.2.1 de verdade.</strong> O commit citado no <code>LEIA-ME</code> (<code>5eaac1884cdc...</code>) é o da etiqueta v1.2.1 no GitHub (conferido pela API do GitHub).</li>
+<li><strong>Os 72 arquivos, a cópia de referência <code>OutputGenerator.cpp</code> e a <code>LICENSE</code> são idênticos ao original, byte a byte, no que está guardado no git</strong> (74 de 74, pela soma do git).</li>
+<li><strong>Cuidado ao repetir a conferência:</strong> na pasta do PC os arquivos estão com fim de linha do Windows (o git converte ao tirar os arquivos: <code>core.autocrlf=true</code>). Um <code>cmp</code> direto na pasta dá "diferente" nos 72. Tirando só o fim de linha, são iguais. Nenhuma letra mudou.</li>
+<li><strong>Os 7 blocos copiados em <code>ligacao/st_gravura.cpp</code> são iguais ao original.</strong> O teste confere contra a cópia de referência, e eu conferi que a referência é igual à do GitHub.</li>
+<li><strong>A parte que não é cópia faz o mesmo que o ScanTailor.</strong> Comparei com o original, linhas 1253 a 1400 e 2540 a 2569: a mesma ordem das etapas, a mesma imagem de entrada, a mesma máscara. As diferenças são 5, e as 5 estão escritas no <code>LEIA-ME</code>:<ol>
+<li>a página é sempre tratada como "preto no branco" (o ScanTailor às vezes decide inverter);</li>
+<li>a área analisada é a imagem inteira (o ScanTailor analisa só a caixa do conteúdo mais 20 pontos a 300 DPI);</li>
+<li>o filtro de Wiener fica de fora. No padrão do ScanTailor ele não faz nada: o código original só age com coeficiente maior que 0, e o padrão é 0;</li>
+<li>um atalho pula a "cor do fundo de fora da página" quando nada cai fora da página: sem efeito;</li>
+<li>na forma "retangular", os retângulos são pintados direto na máscara. O ScanTailor guarda os retângulos como zonas e pinta depois, com a mesma função: dá o mesmo resultado.</li>
+</ol>
+</li>
+<li><strong>A DLL do projeto sai exatamente desse código.</strong> Recompilei numa pasta temporária, com o mesmo kit: mesmo tamanho (166.912 bytes) e só 4 bytes diferentes (a data gravada no cabeçalho). As máscaras são idênticas nas 14 páginas (7 da régua + 7 obrigatórias), nas 3 formas (livre, retangular, mais sensível).</li>
+<li><strong>A DLL usa o Qt do PySide6.</strong> Ela só chama o <code>Qt6Core.dll</code> e o <code>Qt6Gui.dll</code>, e o runtime do Visual C++, que o PySide6 também traz. Com uma janela Qt aberta (e também abrindo a DLL antes da janela), só um Qt fica na memória, o da pasta do PySide6. A DLL também funciona chamada de 4 linhas de execução ao mesmo tempo, com o mesmo resultado.</li>
+</ul>
+<h2>4. A régua (DLL contra as máscaras que o ScanTailor gravou em 24/09)</h2>
+<p>Refiz a régua numa pasta temporária, com a DLL do commit: os números saíram <strong>idênticos</strong> aos do relatório do implementador (só os tempos mudam). O relatório dele foi gerado minutos antes da última compilação da DLL (23:04 a 23:07; DLL às 23:07:55). Por isso refiz, e deu o mesmo.</p>
+<p>Abri as 8 imagens da régua (cinza = os dois marcam; vermelho = só a DLL; azul = só o ScanTailor):</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>O que eu vi</th>
+<th>IoU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Escola 7</td>
+<td>A gravura retangular marcada igual. Diferença só na linha da borda.</td>
+<td>0,999</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td>A faixa fina da moldura, igual nos dois. Diferença em pontinhos na beira.</td>
+<td>0,986</td>
+</tr>
+<tr>
+<td>Horas 47</td>
+<td>Quase a página inteira, igual. Diferença num ornamento do canto de baixo.</td>
+<td>0,998</td>
+</tr>
+<tr>
+<td>Palatino 5</td>
+<td>O retrato oval, igual. Diferença só na borda do oval.</td>
+<td>0,995</td>
+</tr>
+<tr>
+<td>Palatino 9</td>
+<td>As duas vazias. A capitular <strong>não</strong> é achada, igual a 24/09.</td>
+<td>(vazias)</td>
+</tr>
+<tr>
+<td>Rhetorica 18</td>
+<td>As duas vazias.</td>
+<td>(vazias)</td>
+</tr>
+<tr>
+<td><strong>Horas 11</strong></td>
+<td><strong>Não bate.</strong> A DLL marca o centro claro do oval, com o título; o ScanTailor não marcou. O ScanTailor marcou a margem de papel à direita e embaixo; a DLL não.</td>
+<td><strong>0,39</strong></td>
+</tr>
+<tr>
+<td>Horas 11, página invertida</td>
+<td>O desenho geral passa a bater: centro do oval fora, margem dentro. Sobra um contorno azul em volta de quase tudo (a máscara do ScanTailor é um pouco maior).</td>
+<td>0,81</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>"6 de 7 batem" é verdade, mas 2 das 6 são "as duas vazias".</strong> A comparação de verdade, com gravura, é em 4 páginas. As 2 vazias mostram que a DLL não inventa gravura em página de texto.</li>
+<li><strong>Horas 11, a explicação da "página invertida": convincente pela imagem, mas não provada.</strong><ul>
+<li>A favor: o print de 24/09 (abaixo) mostra a margem de papel guardada colorida e a iluminura virando preto, exatamente o que uma análise invertida faz. E a concordância sobe de 0,39 para 0,81.</li>
+<li>Contra: refiz a conta que o ScanTailor usa para decidir. A página inteira tem 48,5% de pontos escuros, abaixo da linha de 50%, e aí o ScanTailor diria "preto no branco", sem inverter. Para ele inverter, teria de ter olhado uma área menor que a imagem. O projeto do ScanTailor de 24/09 não foi salvo, então não dá para confirmar.</li>
+<li>E mesmo invertida fica em 0,81, não em 0,99. A diferença que sobra não está explicada.</li>
+</ul>
+</li>
+</ul>
+<p><img alt="Horas 11: DLL (vermelho) x ScanTailor (azul), página normal" src="paineis/regua_horas_p011.jpg" /></p>
+<p><img alt="Horas 11: a DLL com a página invertida" src="paineis/regua_horas_p011_invertida.jpg" /></p>
+<p><img alt="O resultado do ScanTailor em 24/09 na Horas 11" src="paineis/scantailor_24_09_horas_p011.jpg" /></p>
+<h2>5. As páginas obrigatórias, página por página (teste de olho: o Samuel decide)</h2>
+<p>Em cada imagem: original | <strong>DLL (vermelho)</strong> | <strong>detector de hoje (azul)</strong>. Abri as 7, as 7 de opções ("retangular" e "mais sensível") e ampliações onde tive dúvida. A primeira frase de cada linha diz o que tem na página.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>A DLL (forma livre, o padrão)</th>
+<th>O detector de hoje</th>
+<th>Quem acerta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Palatino 5</strong>: título em texto, retrato oval em xilogravura</td>
+<td>Marca <strong>só o oval</strong> (38%). O texto fica fora. <strong>Certo.</strong> O papel dentro do oval entra junto: branqueá-lo é do 1.5.</td>
+<td>Marca a <strong>página inteira</strong> (100%), texto junto. <strong>Errado.</strong></td>
+<td><strong>DLL</strong></td>
+</tr>
+<tr>
+<td><strong>Escola 35</strong>: pintura colorida em cima, texto embaixo</td>
+<td>Marca <strong>o retângulo da pintura</strong>. <strong>Certo.</strong></td>
+<td>Marca o retângulo da pintura. <strong>Certo.</strong></td>
+<td>Os dois</td>
+</tr>
+<tr>
+<td><strong>Horas 11</strong>: iluminura de página inteira, centro claro com o título</td>
+<td>Marca <strong>a iluminura inteira</strong>, inclusive a cena azul e os ornamentos de baixo. <strong>Certo.</strong> Mas marca também <strong>o centro claro com o título</strong> (a regra pede o centro branco) e uma faixa na dobra à esquerda. <strong>Errado nisso.</strong></td>
+<td>Marca um retângulo nos 80% de cima (centro incluído) e <strong>perde a parte de baixo</strong> da iluminura. <strong>Errado.</strong></td>
+<td><strong>DLL</strong>, os dois erram o centro</td>
+</tr>
+<tr>
+<td><strong>Horas 13</strong>: texto dentro de moldura dourada</td>
+<td>Marca <strong>a moldura dos 4 lados</strong> (ampliação abaixo). <strong>Certo.</strong> Erros pequenos: um triângulo sobre "pag. 54" no canto de baixo e faixas finas na beira do papel.</td>
+<td>Marca a moldura dos 4 lados. <strong>Certo.</strong></td>
+<td>Os dois (o de hoje, um pouco mais limpo)</td>
+</tr>
+<tr>
+<td><strong>Horas 26</strong>: calendário de novembro dentro de moldura dourada</td>
+<td>Marca <strong>a moldura e o calendário inteiro por dentro</strong> (52%), texto junto. <strong>Errado</strong>: o texto não seria limpo e o papel de dentro ficaria amarelado.</td>
+<td>Marca <strong>nada</strong> (0%). <strong>Errado</strong>: a moldura some.</td>
+<td>Nenhum</td>
+</tr>
+<tr>
+<td><strong>Horas 27</strong>: calendário de dezembro dentro de moldura dourada</td>
+<td>Marca <strong>a moldura dos 4 lados</strong> (4%), texto fora. <strong>Certo.</strong> Erros pequenos: o fim da linha 17 ("Brabant", que encosta na moldura) e faixas finas na beira do papel.</td>
+<td>Marca <strong>nada</strong> (0%). <strong>Errado.</strong></td>
+<td><strong>DLL</strong></td>
+</tr>
+<tr>
+<td><strong>Opus Majus 20</strong>: foto da estátua</td>
+<td>Marca só pedaços da foto (52% dela): <strong>a estátua, o pedestal e o nicho escuro ficam fora.</strong> <strong>Errado.</strong> Onde marca, chega ao alto da foto, sem degrau.</td>
+<td>Marca <strong>a foto inteira</strong>. <strong>Certo</strong> (nesta chamada).</td>
+<td><strong>Hoje</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Placar:</strong> a DLL acerta mais que o detector de hoje em 3 páginas (Palatino 5, Horas 11, Horas 27), empata em 2 (Escola 35, Horas 13), perde em 1 (Opus Majus 20). Na Horas 26 os dois erram, de jeitos diferentes.</p>
+<p><strong>Contra as regras do Samuel (28/09):</strong></p>
+<ul>
+<li><strong>Moldura dourada detectada como gravura:</strong> sim na Horas 13 e na 27. Na 26 a moldura entra, mas leva o calendário junto.</li>
+<li><strong>Iluminura intacta com o centro branco:</strong> a iluminura entra inteira, mas o centro claro com o título entra junto.</li>
+<li><strong>Papel branco dentro da gravura</strong> (fundo do retrato do Palatino 5): não é trabalho do detector. Ele marca o oval inteiro, e o branqueamento de dentro fica para o 1.5.</li>
+</ul>
+<p><strong>As opções "retangular" e "mais sensível":</strong></p>
+<ul>
+<li>Conferem com o que o implementador escreveu: no Opus Majus 20 as duas cobrem a foto inteira, certinho; no Livro de Horas marcam de 56% a 96% da página.</li>
+<li><strong>Achado:</strong> a "retangular" <strong>nunca vai servir para página com moldura.</strong> Achei que a causa fossem as faixas na beira do papel. Testei cortando a página logo fora da moldura, e a "retangular" continuou marcando 93%. O motivo é outro: a moldura é oca, e o retângulo que a contém leva todo o texto de dentro.</li>
+<li>A "mais sensível" também piora o Palatino 5 (pega a mancha em volta do oval e a linha de baixo) e a Escola 35 (pega as margens e pedaços do texto).</li>
+</ul>
+<p><img alt="Palatino 5" src="paineis/obrigatoria_palatino_p005.jpg" /></p>
+<p><img alt="Escola 35" src="paineis/obrigatoria_escola_p035.jpg" /></p>
+<p><img alt="Horas 11" src="paineis/obrigatoria_horas_p011.jpg" /></p>
+<p><img alt="Horas 13" src="paineis/obrigatoria_horas_p013.jpg" /></p>
+<p><img alt="Horas 13, a máscara pura (branco = gravura): moldura nos 4 lados, triângulo no canto, faixas na beira do papel" src="paineis/mascara_pura_horas_p013.jpg" /></p>
+<p><img alt="Horas 13, ampliação do canto de baixo: o triângulo sobre &quot;pag. 54&quot;" src="paineis/zoom_horas_p013_canto.jpg" /></p>
+<p><img alt="Horas 26" src="paineis/obrigatoria_horas_p026.jpg" /></p>
+<p><img alt="Horas 26 cortada logo fora da moldura: original | livre | retangular | mais sensível. Nada muda: o miolo continua marcado" src="paineis/recortado_horas_p026.jpg" /></p>
+<p><img alt="Horas 27" src="paineis/obrigatoria_horas_p027.jpg" /></p>
+<p><img alt="Horas 27, a máscara pura: a moldura nos 4 lados, o texto fora" src="paineis/mascara_pura_horas_p027.jpg" /></p>
+<p><img alt="Horas 27 cortada logo fora da moldura: original | livre | retangular | mais sensível" src="paineis/recortado_horas_p027.jpg" /></p>
+<p><img alt="Opus Majus 20" src="paineis/obrigatoria_opusmajus_p020.jpg" /></p>
+<p><img alt="Opus Majus 20, alto da foto: DLL (vermelho) x hoje (azul). Nenhum dos dois tem degrau nesta chamada" src="paineis/opusmajus_p020_topo.jpg" /></p>
+<h2>6. A DLL ausente ou quebrada</h2>
+<ul>
+<li><strong>Os 3 testes automáticos disso passam.</strong></li>
+<li><strong>Conferi também com cópias,</strong> numa pasta temporária, sem tocar na DLL do projeto (a soma SHA-256 dela é a mesma antes e depois: <code>833d03db...</code>):<ul>
+<li>DLL que não existe: volta "O detector de gravura do ScanTailor não foi encontrado", sem erro;</li>
+<li>DLL cortada ao meio: volta "O detector de gravura do ScanTailor não abriu", com o detalhe técnico para o <code>erros.log</code>;</li>
+<li>cópia boa, noutra pasta: funciona.</li>
+</ul>
+</li>
+<li><strong>Sem a DLL, o adaptador das camadas</strong> (<code>figuras_pelo_scantailor</code>) cai na reserva, se ela for passada, ou devolve "nenhuma figura".</li>
+<li><strong>Casos-limite que não derrubam nada:</strong> página de 1×1 ponto e de 2×2; tira de 1×3000 (volta mensagem de erro); imagem fatiada da memória; imagem com 4 canais; página toda branca; página toda preta; sensibilidade fora de 0 a 100.</li>
+<li><strong>O caso que derruba</strong> está no bug novo 1.</li>
+</ul>
+<h2>7. Tempo do detector (ainda não conta para a regra 6, porque não está ligado)</h2>
+<p>Por página, no DPI da página. Primeiro o tempo do implementador, depois o meu (medi com o PC mais ocupado).</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>DLL</th>
+<th>Detector de hoje</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Palatino 5</td>
+<td>0,9 a 1,2 s</td>
+<td>2,9 a 5,0 s</td>
+</tr>
+<tr>
+<td>Escola 35</td>
+<td>1,1 a 1,2 s</td>
+<td>2,5 a 3,5 s</td>
+</tr>
+<tr>
+<td>Opus Majus 20</td>
+<td>0,9 a 1,7 s</td>
+<td>1,9 a 2,9 s</td>
+</tr>
+<tr>
+<td>Horas 11, 13, 26 e 27</td>
+<td><strong>1,9 a 3,9 s</strong></td>
+<td><strong>0,9 a 2,0 s</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>No Livro de Horas a DLL é cerca de 2 vezes mais lenta que o detector de hoje</strong> (de 1,5 a 2,7 vezes, conforme a página e a medição). O PDF diz que a página tem 51 cm de altura, e a DLL amplia a página de 1024×1446 pontos para cerca de 4300×6000, para trabalhar a 300 DPI.</li>
+<li><strong>Quando for ligada, isso tem de passar pelo teste de velocidade (regra 6).</strong></li>
+</ul>
+<h2>8. Ressalvas</h2>
+<ol>
+<li><strong>Não está ligado ao programa</strong>: não tem o botão de ligar e desligar (regra 8), não está no instalador, e o Samuel não tem o que ver no programa. O item 1.2 do plano diz "compilado <strong>e ligado</strong> ao programa". Isto é a primeira metade.</li>
+<li><strong>Horas 11: a "página invertida" é a melhor explicação, mas não está provada</strong> (seção 4). E mesmo invertida a concordância fica em 0,81.</li>
+<li><strong>Opus Majus 20: esta conferência não mostra "o degrau sumindo".</strong> Chamado sozinho, na página inteira, o detector de hoje também não tem degrau: começa no alto da foto. O degrau do bug de 28/09 aparece no programa, depois do corte. O que dá para dizer é que a máscara da DLL chega ao alto da foto onde marca. Mas ela deixa a estátua de fora, o que é pior que o degrau.</li>
+<li><strong>A frase da Lista de bugs "preenche o miolo de moldura fechada" é larga demais.</strong> A Horas 13 e a 27 também têm moldura fechada, e o miolo <strong>não</strong> foi preenchido. Só a 26 foi (e o oval da Horas 11). Não sei dizer por que a 26 é diferente.</li>
+<li><strong>Faixas finas na beira do papel</strong> (sombra da dobra à esquerda, beiras de cima e da direita) aparecem na Horas 11, 13, 26 e 27. No ScanTailor elas não aparecem, porque ele só olha a caixa do conteúdo. No programa, dependem de o detector rodar depois do corte de bordas (já está na Lista de espera, 28/09).</li>
+<li><strong>Moldura fina é frágil à resolução:</strong> na Horas 13 e na 27, rodar a 150 DPI ou no DPI da página muda a máscara em cerca de 30% (IoU 0,68 a 0,70). Olhei só no DPI da página.</li>
+<li><strong>O teste da "cópia fiel" confere a ligação contra a cópia de referência que está no próprio projeto.</strong> Se alguém mudar as duas juntas, o teste não pega. Sugestão para o implementador: gravar no teste a soma SHA-256 da referência (a do GitHub).</li>
+<li><strong>Não pilotei a janela:</strong> o item não mexe em tela.</li>
+</ol>
+<h2>9. Bugs novos (para a Lista de bugs)</h2>
+<ol>
+<li><strong>28/09: um DPI absurdo faz a DLL corromper a memória e o programa fecha sem aviso.</strong>
+   - Como acontece: quando a página, reduzida a 300 DPI, vira 1×1 ponto. Por exemplo, uma página de 600×450 pontos declarada com 300.000 DPI; ou uma de 2000×1500 com 700.000 DPI.
+   - O que acontece: "access violation writing" dentro do código do ScanTailor. Às vezes o Python devolve um erro, às vezes o processo morre com código <code>0xC0000374</code> (memória corrompida). Reproduzi 3 de 3 vezes. Com um espaço de saída 4 vezes maior, continua: a falha não é na ligação.
+   - Risco: em uso normal não acontece (precisa de DPI acima de uns 200.000). Mas contraria "nenhuma exceção fecha a janela".
+   - Conserto sugerido, antes de ligar: <code>gravura_scantailor.py</code> recusar DPI fora de uma faixa razoável (por exemplo 30 a 2400) e página que fique com menos de uns 8 pontos a 300 DPI.
+   - Onde: <code>core/gravura_scantailor.py</code> (a trava) e o código do ScanTailor (a causa). Print: não se aplica, é o processo que morre.</li>
+<li><strong>28/09: Horas 13, triângulo marcado como gravura sobre "pag. 54"</strong>, no canto de baixo à direita, dentro da moldura (ampliação na seção 5). Pequeno. Onde: detector do ScanTailor (forma livre). Print: <code>paineis/zoom_horas_p013_canto.jpg</code>.</li>
+<li><strong>28/09 (documentação): o <code>LEIA-ME</code> diz "conferido com <code>cmp</code>"</strong>, mas na pasta do PC um <code>cmp</code> dá diferente nos 72 arquivos, por causa do fim de linha. Sugestão: dizer que a conferência é no git, ou marcar <code>terceiros/</code> para o git não converter o fim de linha. Mudar a configuração do git é decisão da gerente.</li>
+</ol>
+<h2>10. Para o Samuel conferir em 10 minutos</h2>
+<p>Abra as imagens da seção 5 (ou as do relatório do implementador, que são as mesmas: <code>../obrigatoria_&lt;página&gt;.jpg</code>).</p>
+<ol>
+<li><strong>Palatino 5</strong>: o vermelho está só no retrato, e o azul (hoje) na página toda? <em>(1 min)</em></li>
+<li><strong>Horas 27 e Horas 13</strong>: a moldura dourada está marcada nos 4 lados, com o texto fora? O triângulo sobre "pag. 54" incomoda? <em>(2 min)</em></li>
+<li><strong>Horas 26</strong>: o calendário inteiro está marcado. Aceita isso como defeito conhecido, a resolver no 1.4 e 1.5? <em>(1 min)</em></li>
+<li><strong>Horas 11</strong>: a iluminura inteira está marcada (bom), mas o centro claro com o título também. Aceita como defeito conhecido? <em>(1 min)</em></li>
+<li><strong>Opus Majus 20</strong>: a estátua fica fora na forma livre. A gerente propõe usar a "retangular" nos livros com foto. Concorda? Lembrete: a "retangular" não serve para página com moldura. <em>(2 min)</em></li>
+<li><strong>Horas 11, a régua</strong>: compare <code>regua_horas_p011.jpg</code>, <code>regua_horas_p011_invertida.jpg</code> e o print de 24/09. A explicação da página invertida convence? <em>(2 min)</em></li>
+<li><strong>Decida</strong> se aceita o 1.2 em duas etapas: agora o detector, depois a ligação ao programa com o botão de ligar e desligar. <em>(1 min)</em></li>
+</ol>
+<hr />
+<p>Arquivos desta conferência: <code>paineis/</code> (as imagens acima). Os scripts de conferência ficaram na pasta temporária da sessão (régua refeita, cópias da DLL, recompilação), fora do projeto. Nenhum código foi alterado, nenhuma DLL do projeto foi tocada, nenhum commit foi feito.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 28/09/2026 às 23:41</p>
+</body>
+</html>
