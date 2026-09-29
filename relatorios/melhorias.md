@@ -814,3 +814,25 @@ pro, Melhorar e a gravura do Preto e branco.
   Mágico pro) e `-1853`, `-1854`, `-1855` (as 5 em destaque: Mágico pro,
   Melhorar, Preto e branco). Relatório com as provas:
   `relatorios/conserto-anjo-2026-09-28/`.
+
+## Tentativa 21 — tirar o fundo de PDF com camadas do Internet Archive (item 1.1, 28/09/2026)
+
+Módulo novo `core/camadas.py` (ainda não ligado ao programa). Conferência:
+`relatorios/conferir/fase1-2026-09-28-1915`. O que foi tentado e descartado:
+
+1. **Manter a zona do detector inteira como o PDF desenha.** Páginas que o
+   detector marca inteiras (Opus Majus 256, Rhetorica 73) saíam sem mudança
+   nenhuma. Descartado.
+2. **"Fundo escuro longe da tinta" para decidir a zona.** O retrato do Palatino
+   5 perdia a hachura fina. Trocado por "onde a máscara não cobre".
+3. **Papel = percentil 75 do fundo, depois o pico da página inteira.** Na Pesel
+   o linho claro virava "papel" e a foto sumia, e a decisão mudava com a
+   resolução. Trocado pelo pico na margem.
+4. **Análise no DPI de saída.** A prévia e o PDF decidiam diferente (Palatino
+   116). Agora é sempre a 150 DPI.
+5. **Descartar o que "encosta na borda".** No Siebmacher, 97 de 134 páginas
+   ficavam intactas por causa do preto do scanner. Trocado pela regra da faixa
+   de 10% junto à borda.
+6. **Separar gravura de página inteira de texto com moldura grossa** por
+   fração, densidade local e manchas compactas: os números se cruzam entre os
+   dois tipos. Virou só o aviso "conferir"; fica para o detector do item 1.2.
