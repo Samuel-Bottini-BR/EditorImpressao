@@ -1254,3 +1254,75 @@ painel ficava vazio; passa depois).
 **Não coberto:** alerta de página VIZINHA que chega pela pré-carga (a página
 que não está na tela) só entra no "Para revisar" na próxima atualização da
 tela (qualquer clique ou virar a página), como antes.
+
+---
+
+## Tentativa 30 — as pontes do docTR e do Tesseract (item 1.3, etapa das pontes, 29/09/2026)
+
+**Pedido (Samuel, 29/09):** "todos os OCRs instalados, com ligar/desligar e
+comparação automática entre eles (onde discordam, a página vai para 'Para
+revisar'). De fábrica, docTR fast_base + Kraken [...] Tesseract instalado, mas
+desligado na detecção." Esta etapa é só a ponte de cada um (como a do Kraken,
+Tentativa 27); **nada foi ligado ao programa** (pipeline, tela, empacotador,
+instalador). O número 28 ficou com o outro implementador, que trabalhava ao
+mesmo tempo; por isso esta é a 30.
+
+**O que ficou:**
+
+- `core/ocr_comum.py`: o resultado comum (`ResultadoOCR`, `LinhaOCR`,
+  `PalavraOCR`), com os mesmos nomes do `ResultadoKraken` (linhas, motivo,
+  detalhe_tecnico, segundos, largura, altura, disponivel, precisa_revisar), e
+  `de_kraken()`, que converte o resultado do Kraken **sem mudar a ponte dele**.
+- `core/ocr_doctr.py`: `DetectorDoctr`, o fast_base pelo OnnxTR 0.9.0 dentro
+  do programa (Python 3.14), só detecção. Opções do preditor e limiares
+  escritos e fixos (os da comparação "D2"); só processador; modelo local
+  `modelos\doctr\rep_fast_base-1b89ebf9.onnx` (42 MB, conferido pela soma
+  SHA-256; o OnnxTR nunca recebe endereço de internet). Devolve palavras e
+  linhas (as linhas pelo montador do próprio docTR, como na comparação).
+- `core/ocr_tesseract.py`: `MotorTesseract`, um `tesseract.exe` por página,
+  com o comando que o pytesseract montou na comparação ("T1": modelo do
+  idioma em `modelos\tessdata`, `--psm 3`, `--dpi` só de 150 para cima, hOCR).
+  Procura o `tesseract.exe` ao lado do programa instalado, na raiz do código,
+  em Arquivos de Programas (winget), na instalação só do usuário e no PATH.
+- `tests/test_ocr_doctr.py` (41) e `tests/test_ocr_tesseract.py` (36; 52 com
+  `OCR_22=1`): sem o OCR, "de mentira" (ausente, danificado, morre, trava,
+  lixo, 1,5 MB de aviso, cancelar); com o OCR, as páginas do 1.3.
+- `.venv`: `onnxtr==0.9.0` e 20 dependências novas (pyclipper, rapidfuzz,
+  pypdfium2, langdetect, huggingface-hub, httpx...), **nenhuma versão já
+  instalada mudou** (`pip check` limpo). `requirements.txt`: `onnxtr==0.9.0`
+  e `pyclipper==1.4.0` travados.
+
+**Resultado contra a comparação do 1.3 (22 páginas):**
+
+- docTR: as **mesmas palavras e linhas nas 22** (mesma contagem: 3.841
+  palavras, 915 linhas; área em comum 100,00%, e 99,99% no Palatino 9, onde
+  as caixas diferem em 0,0000000000001 ponto e só o arredondamento do desenho
+  muda um pixel). Isso com o onnxruntime 1.28 do programa; a comparação usou
+  o 1.30.
+- Tesseract: as **mesmas linhas nas 22** (mesma contagem, área 100,00%, e a
+  mesma confiança média em cada linha). Horas 11 e Graduale 222 continuam
+  sem nenhuma linha, como na comparação.
+
+**Tempos (PC do Samuel, Ryzen 7 5800H; máquina DIVIDIDA com outro agente
+trabalhando ao mesmo tempo: servem para comparar, não como número final):**
+docTR: carregar o modelo 0,9 s (mais 1 a 3 s para importar o OnnxTR na
+primeira vez); por página mediana 0,65 s (0,58 a 1,1 s). Tesseract: por página
+mediana 1,3 s (0,2 s no Graduale 222 a 5,2 s no Opus 256), já contando abrir o
+programa a cada página.
+
+**O que deu errado no caminho (não repetir):**
+
+1. **O "hocr" do fim do comando não liga o hOCR aqui.** Rodando o
+   `tesseract.exe` à mão com `... hocr` e a pasta `modelos\tessdata`, sai só
+   texto e o aviso "read_params_file: Can't open hocr": esse arquivo de
+   configuração fica em `tessdata\configs\` da instalação, e a
+   `modelos\tessdata` não tem essa pasta. Na comparação funcionou porque o
+   pytesseract põe `-c tessedit_create_hocr=1` antes. A ponte usa o `-c` (e
+   deixa o "hocr" de fora, porque lá ele não fazia nada).
+2. Um teste usou `pytest.approx` com lista dentro de lista, que o pytest não
+   aceita; trocado por `np.allclose`.
+
+**Ressalvas:** o empacotador e o instalador ainda não levam o modelo do
+docTR, o `tesseract.exe` nem os `.traineddata` (vem na ligação); o OnnxTR
+empacotado pelo PyInstaller não foi testado; a tela ainda não tem o
+ligar/desligar.
