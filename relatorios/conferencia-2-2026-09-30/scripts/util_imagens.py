@@ -89,13 +89,17 @@ def na_largura(img: np.ndarray, larg: int) -> np.ndarray:
                       interpolation=cv2.INTER_AREA if esc < 1 else cv2.INTER_CUBIC)
 
 
-def lado_a_lado(imgs: list[np.ndarray], espaco: int = 18) -> np.ndarray:
-    """Junta na horizontal; completa embaixo com branco se as alturas diferirem."""
+def lado_a_lado(imgs: list[np.ndarray], espaco: int = 18, por_baixo: bool = False) -> np.ndarray:
+    """Junta na horizontal; completa com branco se as alturas diferirem.
+
+    por_baixo=True completa EM CIMA: com rotulos de alturas diferentes, as imagens (que
+    tem a mesma altura) ficam na mesma linha, e a mesma coisa fica na mesma altura."""
     alt = max(i.shape[0] for i in imgs)
     partes = []
     for k, i in enumerate(imgs):
         if i.shape[0] < alt:
-            i = np.vstack([i, np.full((alt - i.shape[0], i.shape[1], 3), 255, np.uint8)])
+            branco = np.full((alt - i.shape[0], i.shape[1], 3), 255, np.uint8)
+            i = np.vstack([branco, i] if por_baixo else [i, branco])
         partes.append(i)
         if k < len(imgs) - 1:
             partes.append(np.full((alt, espaco, 3), 255, np.uint8))

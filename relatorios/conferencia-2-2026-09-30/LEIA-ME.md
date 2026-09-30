@@ -41,3 +41,13 @@ Script: `scripts/recalcular_regua.py` (lê as linhas dos OCRs já gravadas; não
 - `scripts/print_o_que_fazer.py`: print da tela "O que fazer" sem janela visível (Qt offscreen).
 - `scripts/simular_vermelho.py`: Preto e branco pelo caminho inteiro do programa, trocando só dentro do processo a conversão para cinza. **Achado:** a pauta vermelha do Graduale já sai preta hoje (221 e 222 idênticos nas duas contas); o que muda é só a rubrica (títulos da Horas 13, palavra vermelha do Graduale 223).
 - `scripts/recalcular_regua.py`: a régua do 1.3 com as zonas antigas e novas.
+
+## 4. Resultado ao lado da zona (pedido do Samuel, 30/09)
+
+"nessa conferência, tu tem que colocar não só a seleção, mas o resultado da seleção como ela ficou depois de retirar o fundo, junto do que você já colocou."
+
+Todos os cartões de zona (Z6–Z12, Z16–Z18, Z20–Z22) ganharam o painel azul **RESULTADO**, com a página já processada, no mesmo recorte. Nenhuma página foi processada de novo: só imagens prontas, alinhadas à página original por pontos em comum (ORB + ECC, `resultado_alinhado` em `montar_imagens.py`).
+
+- Mágico pro: `relatorios/conferir/fase1-1.2-opcoes-2026-09-30/resultado/*-magico_pro-A.png` (programa de hoje) quando há; senão `fase1-1.2-ligacao-2026-09-30/2-depois-magico-pro/1.2-2026-09-30-0023/resultado/`; senão `fase1-2026-09-29-0212/resultado/` (29/09, detector antigo: **Graduale 221 e 223**).
+- "Tirar o fundo" (Opus 165, Opus 256, Rhetorica 18): `fase1-2026-09-29-1826/resultado/`.
+- Nenhuma página ficou sem resultado pronto.

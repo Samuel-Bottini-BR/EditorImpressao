@@ -72,6 +72,103 @@ def com_zonas_finas(pagina: str, Z: dict) -> np.ndarray:
     return U.zonas_por_cima(img, zm, esp=1, veu=0.10)
 
 
+# --------------------------------------------------------------------------- resultado ao lado da zona
+# Pedido do Samuel (30/09): "colocar nao so a selecao, mas o resultado da selecao como ela ficou
+# depois de retirar o fundo". SO imagens ja prontas (nada e processado de novo): a rodada mais nova
+# de cada pagina no Magico pro e, nos livros com camadas, a rodada do "Tirar o fundo".
+# Seguro mudar: a escolha das rodadas. Arriscado: nada (so leitura).
+OPC_RES = CONF / "fase1-1.2-opcoes-2026-09-30" / "resultado"
+LIG_MP = CONF / "fase1-1.2-ligacao-2026-09-30" / "2-depois-magico-pro" / "1.2-2026-09-30-0023" / "resultado"
+MP_2909 = CONF / "fase1-2026-09-29-0212" / "resultado"          # Magico pro, 29/09 02:12 (detector antigo)
+TF_2909 = CONF / "fase1-2026-09-29-1826" / "resultado"          # filtro "Tirar o fundo", 29/09 18:26
+
+
+def fontes_do_resultado(pagina: str) -> list[tuple[str, Path | None]]:
+    """[(rotulo, arquivo)] do resultado pronto da pagina; arquivo None = nao ha."""
+    if (OPC_RES / f"{pagina}-magico_pro-A.png").exists():
+        mp = ("RESULTADO: Mágico pro (30/09, programa de hoje)", OPC_RES / f"{pagina}-magico_pro-A.png")
+    elif (LIG_MP / f"{pagina}.png").exists():
+        mp = ("RESULTADO: Mágico pro (30/09)", LIG_MP / f"{pagina}.png")
+    elif (MP_2909 / f"{pagina}.png").exists():
+        mp = ("RESULTADO: Mágico pro (29/09, detector antigo)", MP_2909 / f"{pagina}.png")
+    else:
+        mp = ("RESULTADO: Mágico pro", None)
+    saida = [mp]
+    if C.livro(pagina) in ("palatino", "opusmajus", "rhetorica", "siebmacher"):
+        tf = TF_2909 / f"{pagina}.png"
+        saida.append(("RESULTADO: Tirar o fundo (29/09)", tf if tf.exists() else None))
+    return saida
+
+
+_CACHE_ALINHADO: dict = {}
+
+
+def resultado_alinhado(pagina: str, arquivo: Path | None) -> np.ndarray:
+    """O resultado posto no MESMO enquadramento da pagina original (a de trabalho do 1.3).
+
+    O programa corta e endireita, entao o resultado tem outro tamanho e posicao. Acha a
+    semelhanca (escala, giro, deslocamento) pelos pontos em comum (ORB + RANSAC) e desenha
+    o resultado por cima da moldura da pagina original: assim o mesmo recorte serve para a
+    zona e para o resultado. O que o programa cortou fica cinza liso.
+    """
+    orig = C.ler_imagem(pagina)
+    h, w = orig.shape[:2]
+    if arquivo is None:
+        vazio = np.full_like(orig, 225)
+        return U.marcar(vazio, (int(w * .1), int(h * .45), int(w * .9), int(h * .55)), cor=U.CINZA,
+                        texto="resultado ainda não gerado", tam=max(20, w // 25))
+    chave = (pagina, str(arquivo))
+    if chave in _CACHE_ALINHADO:
+        return _CACHE_ALINHADO[chave]
+    res = ler_rgb(arquivo)
+    esc_o, esc_r = 1200 / w, 1200 / res.shape[1]
+    go = cv2.cvtColor(cv2.resize(orig, None, fx=esc_o, fy=esc_o, interpolation=cv2.INTER_AREA), cv2.COLOR_RGB2GRAY)
+    gr = cv2.cvtColor(cv2.resize(res, None, fx=esc_r, fy=esc_r, interpolation=cv2.INTER_AREA), cv2.COLOR_RGB2GRAY)
+    orb = cv2.ORB_create(8000)
+    ko, do = orb.detectAndCompute(go, None)
+    kr, dr = orb.detectAndCompute(gr, None)
+    pares = sorted(cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True).match(dr, do), key=lambda m: m.distance)[:1500]
+    src = np.float32([kr[m.queryIdx].pt for m in pares]) / esc_r
+    dst = np.float32([ko[m.trainIdx].pt for m in pares]) / esc_o
+    M, dentro = cv2.estimateAffinePartial2D(src, dst, method=cv2.RANSAC, ransacReprojThreshold=4.0, maxIters=5000)
+    n_bons = int(dentro.sum()) if dentro is not None else 0
+    if M is None or n_bons < 25:
+        print(f"  AVISO {pagina}: nao alinhou ({n_bons} pontos); resultado mostrado sem alinhar")
+        out = cv2.resize(res, (w, h), interpolation=cv2.INTER_AREA)
+    else:
+        # refina com ECC (afim) em miniatura: o ORB sozinho deixa ~1% de erro.
+        # ECC acha W que leva o ponto da miniatura do original ao da miniatura do resultado.
+        try:
+            e = 800 / w
+            er = e / float(np.hypot(M[0, 0], M[0, 1]))
+            go2 = cv2.cvtColor(cv2.resize(orig, None, fx=e, fy=e, interpolation=cv2.INTER_AREA),
+                               cv2.COLOR_RGB2GRAY).astype(np.float32)
+            gr2 = cv2.cvtColor(cv2.resize(res, None, fx=er, fy=er, interpolation=cv2.INTER_AREA),
+                               cv2.COLOR_RGB2GRAY).astype(np.float32)
+            Se, Sr = np.diag([e, e, 1.0]), np.diag([er, er, 1.0])
+            A = np.vstack([M, [0, 0, 1]])
+            W0 = (Sr @ np.linalg.inv(A) @ np.linalg.inv(Se))[:2].astype(np.float32)
+            _, W = cv2.findTransformECC(go2, gr2, W0, cv2.MOTION_AFFINE,
+                                        (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 200, 1e-6), None, 5)
+            W3 = np.vstack([W.astype(np.float64), [0, 0, 1]])
+            M = (np.linalg.inv(Se) @ np.linalg.inv(W3) @ Sr)[:2]
+        except cv2.error as erro:
+            print(f"  {pagina}: ECC nao convergiu ({str(erro)[:60]}); fica o ORB")
+        out = cv2.warpAffine(res, M, (w, h), flags=cv2.INTER_AREA, borderMode=cv2.BORDER_CONSTANT,
+                             borderValue=(200, 200, 200))
+        print(f"  {pagina}: alinhado com {n_bons} pontos, escala {np.hypot(M[0, 0], M[0, 1]):.3f}")
+    _CACHE_ALINHADO[chave] = out
+    return out
+
+
+def paineis_resultado(pagina: str) -> list[tuple[str, np.ndarray]]:
+    return [(rot, resultado_alinhado(pagina, arq)) for rot, arq in fontes_do_resultado(pagina)]
+
+
+COR_RES = (0, 70, 140)
+SUB_RES = "a mesma página depois do programa (cinza liso = parte cortada pelo programa)"
+
+
 # --------------------------------------------------------------------------- zonas
 def antes_depois_zonas(pagina: str, nome: str, detalhes: list[tuple], arquivo: str,
                        titulo_antes="ANTES (zona antiga)", titulo_depois="DEPOIS (zona corrigida)") -> None:
@@ -81,22 +178,36 @@ def antes_depois_zonas(pagina: str, nome: str, detalhes: list[tuple], arquivo: s
         texto = f"detalhe {i + 1}" if len(detalhes) > 1 else "detalhe"
         a = U.marcar(a, px(ret, a), texto=texto)
         d = U.marcar(d, px(ret, d), texto=texto)
-    alt = 1000
+    res = paineis_resultado(pagina)
+    rs = []
+    for _rot, r in res:
+        for i, (ret, _x) in enumerate(detalhes):
+            r = U.marcar(r, px(ret, r), texto=f"detalhe {i + 1}" if len(detalhes) > 1 else "detalhe")
+        rs.append(r)
+    alt = 1000 if len(res) == 1 else 820
     a, d = U.na_altura(a, alt), U.na_altura(d, alt)
-    topo = U.lado_a_lado([U.rotulo(a, titulo_antes, fundo=(90, 90, 90)),
-                          U.rotulo(d, titulo_depois, fundo=(0, 110, 0))])
+    quadros = ([U.rotulo(a, titulo_antes, fundo=(90, 90, 90)), U.rotulo(d, titulo_depois, fundo=(0, 110, 0))]
+               + [U.rotulo(U.na_altura(r, alt), rot, fundo=COR_RES, sub=SUB_RES) for (rot, _), r in zip(res, rs)])
+    if a.shape[1] > a.shape[0] and len(quadros) > 2:
+        # pagina deitada (tabela do Opus 256): 2 por linha, senao fica pequena demais
+        topo = U.um_embaixo_do_outro([U.lado_a_lado(quadros[k:k + 2], por_baixo=True)
+                                      for k in range(0, len(quadros), 2)], espaco=18)
+    else:
+        topo = U.lado_a_lado(quadros, por_baixo=True)
     partes = [U.rotulo(topo, f"{nome}: zonas contornadas por cima da página original", fundo=(30, 42, 54),
                        sub=U.LEGENDA_ZONAS + " · retângulo rosa = onde fica o detalhe ampliado embaixo")]
     af, df = com_zonas_finas(pagina, Z_ANTES), com_zonas_finas(pagina, Z_DEPOIS)
     for i, (ret, rot) in enumerate(detalhes):
         ra, rd = recorte(af, ret), recorte(df, ret)
-        larg = 900
+        larg = 900 if not res else (620 if len(res) == 1 else 470)
         ra, rd = U.na_largura(ra, larg), U.na_largura(rd, larg)
         n = f"DETALHE {i + 1}" if len(detalhes) > 1 else "DETALHE"
         par = U.lado_a_lado([U.rotulo(U.moldura(ra), f"{n} · ANTES", fundo=(90, 90, 90)),
-                             U.rotulo(U.moldura(rd), f"{n} · DEPOIS", fundo=(0, 110, 0))])
+                             U.rotulo(U.moldura(rd), f"{n} · DEPOIS", fundo=(0, 110, 0))]
+                            + [U.rotulo(U.moldura(U.na_largura(recorte(r, ret), larg)), f"{n} · " + rot.split(" (")[0],
+                                        fundo=COR_RES) for rot, r in res], por_baixo=True)
         partes.append(U.rotulo(par, rot, fundo=(80, 60, 0)))
-    U.gravar(U.um_embaixo_do_outro(partes, espaco=30), SAIDA / "zonas" / arquivo, largura_max=1900)
+    U.gravar(U.um_embaixo_do_outro(partes, espaco=30), SAIDA / "zonas" / arquivo, largura_max=2400)
 
 
 def imagem_antiga_x_nova(pagina: str, nome: str, arquivo: str, explicacao: str) -> None:
@@ -104,14 +215,16 @@ def imagem_antiga_x_nova(pagina: str, nome: str, arquivo: str, explicacao: str) 
     antiga = ler_rgb(ESC_ANTIGA / f"{pagina}.jpg")
     metade = antiga[:, antiga.shape[1] // 2 + 6:]   # o painel da direita (tinta pintada)
     nova = com_zonas(pagina, Z_DEPOIS)
-    alt = 1000
+    res = paineis_resultado(pagina)
+    alt = 1000 if len(res) == 1 else 820
     metade, nova = U.na_altura(metade, alt), U.na_altura(nova, alt)
     par = U.lado_a_lado([
         U.rotulo(U.moldura(metade), "O QUE VOCÊ VIU NA CONFERÊNCIA PASSADA", fundo=(90, 90, 90),
                  sub="só aparece o risco escuro; pintura e dourado ficam brancos e parecem 'fora'"),
         U.rotulo(nova, "A ZONA DE VERDADE", fundo=(0, 110, 0),
-                 sub="contornada por cima da página original, nada escondido")])
-    U.gravar(U.rotulo(par, nome, sub=explicacao), SAIDA / "zonas" / arquivo, largura_max=1900)
+                 sub="contornada por cima da página original, nada escondido")]
+        + [U.rotulo(U.na_altura(r, alt), rot, fundo=COR_RES, sub=SUB_RES) for rot, r in res], por_baixo=True)
+    U.gravar(U.rotulo(par, nome, sub=explicacao), SAIDA / "zonas" / arquivo, largura_max=2400)
 
 
 def zonas() -> None:
