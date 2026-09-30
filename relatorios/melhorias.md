@@ -1618,3 +1618,30 @@ recomeça; as caixinhas do livro anterior não contaminam as salvas; o
 "continuar" continua trazendo; livro novo abre com as de fábrica. A reprodução
 do verificador (`reproduz_dividir_desmarcado_abrir.py`, numa cópia com pasta
 própria) agora mostra 3 páginas, o trabalho e nenhum aviso.
+
+---
+
+## Tentativa 38 — o caminho da cópia não deixa mais "D:" sozinho numa linha (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador, print p23): na mensagem
+do recomeço, o caminho da cópia quebrava a linha logo depois de "D:".
+
+**Por quê:** na regra de quebra de linha do Qt, as barras `\` de um caminho
+não são lugar de quebra; o único lugar antes do primeiro espaço é depois de
+"D:". Quando o caminho não cabe na largura da caixa, o "D:" fica sozinho.
+
+**O que mudou:** `_frase_do_recomeco` põe um WORD JOINER (U+2060, invisível)
+entre a letra da unidade e o resto do caminho. A caixa se alarga para o
+caminho caber (conferido com a caixa de verdade: 716 → 728 pontos no exemplo
+do print) e, se o caminho tiver espaço, quebra no espaço.
+
+**Ressalvas:** quem copiar o texto da caixa (Ctrl+C) leva o sinal invisível
+junto no caminho. Um caminho sem espaço nenhum e mais largo que a caixa
+máxima do Qt (cerca de 1000 pontos) continua cortado, como antes.
+
+**Teste:** `tests/test_trabalho_nao_se_perde.py`,
+`test_caminho_da_copia_nao_deixa_a_letra_da_unidade_sozinha`: mostra a caixa
+de verdade, com a folha de estilo do programa, e confere as linhas em que o
+Qt quebra o texto (falhava antes: uma linha "D:").

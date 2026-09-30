@@ -555,8 +555,18 @@ class JanelaPrincipal(QMainWindow):
         frase = "Comecei a conferência deste livro de novo"
         frase += f": {motivo}." if motivo else "."
         if copia is not None:
+            # A letra da unidade fica grudada no resto do caminho: o Qt so
+            # achava lugar de quebrar a linha depois de "D:" (as barras nao
+            # quebram), e o "D:" ficava sozinho numa linha (print p23 do
+            # verificador, 29/09). O WORD JOINER (U+2060) e invisivel e
+            # proibe a quebra ali; a caixa se alarga para o caminho caber e,
+            # com espaco no nome, quebra no espaco. Ressalva: quem copiar o
+            # texto da caixa leva o sinal junto.
+            caminho = str(copia)
+            if len(caminho) > 2 and caminho[1] == ":":
+                caminho = caminho[:2] + "⁠" + caminho[2:]
             frase += ("\n\nO trabalho anterior não foi apagado. Guardei uma cópia "
-                      f"dele, que pode ser recuperada:\n{copia}")
+                      f"dele, que pode ser recuperada:\n{caminho}")
         else:
             frase += "\n\nNão consegui guardar uma cópia do trabalho anterior."
         return frase

@@ -389,8 +389,9 @@ def test_mensagem_do_recomeco_diz_o_motivo_e_onde_esta_a_copia(janela, pasta):
     assert "3 páginas" in aviso and "4" in aviso           # o motivo de verdade
     assert "não foi apagado" in aviso
     copia = _copias(estado.parent, "projeto")[0]
-    assert str(copia) in aviso, "nao disse onde esta a copia"
-    assert all(ord(c) < 0x2000 for c in aviso if c not in "“”")   # sem emoji
+    # (o sinal invisivel U+2060 segura a letra da unidade no resto do caminho)
+    assert str(copia) in aviso.replace("\u2060", ""), "nao disse onde esta a copia"
+    assert all(ord(c) < 0x2000 for c in aviso if c not in "\u201c\u201d\u2060")   # sem emoji
 
 
 def test_mensagem_sem_copia_nao_promete_copia(janela, pasta, monkeypatch):
@@ -717,3 +718,55 @@ def test_livro_novo_abre_com_as_opcoes_de_fabrica(janela, pasta):
     janela.abrir_livro(str(_pdf_deitado(pasta)))
     assert janela.tela_opcoes.cx_dividir.isChecked()
     assert janela.projeto.filtro_padrao == "original"
+
+
+# --- o caminho da copia nao quebra a linha depois de "D:" (parecer do verificador, bug 4) ---
+
+
+def _linhas_da_caixa(janela, texto: str) -> list[str]:
+    """Mostra a caixa de aviso de verdade (a mesma de JanelaPrincipal.avisar,
+    com a folha de estilo do programa) e devolve as linhas em que o texto se
+    quebra nela, com a regra de quebra do Qt (QTextLayout, na fonte e na
+    largura do rotulo)."""
+    from PySide6.QtGui import QTextLayout, QTextOption
+    from PySide6.QtWidgets import QApplication, QLabel, QMessageBox
+
+    caixa = QMessageBox(janela)
+    caixa.setText(texto)
+    caixa.addButton("entendi", QMessageBox.AcceptRole)
+    caixa.show()
+    QApplication.processEvents()
+    try:
+        rotulo = next(r for r in caixa.findChildren(QLabel) if r.text() == texto)
+        linhas = []
+        for paragrafo in texto.split("\n"):
+            layout = QTextLayout(paragrafo, rotulo.font())
+            opcao = QTextOption()
+            opcao.setWrapMode(QTextOption.WrapMode.WordWrap)
+            layout.setTextOption(opcao)
+            layout.beginLayout()
+            while True:
+                linha = layout.createLine()
+                if not linha.isValid():
+                    break
+                linha.setLineWidth(rotulo.contentsRect().width())
+                linhas.append(paragrafo[linha.textStart():linha.textStart() + linha.textLength()])
+            layout.endLayout()
+        return linhas
+    finally:
+        caixa.close()
+
+
+def test_caminho_da_copia_nao_deixa_a_letra_da_unidade_sozinha(janela):
+    """Print p23: "D:" sozinho numa linha e o resto do caminho embaixo."""
+    copia = Path(r"D:\programas\EditorImpressao\saida_teste\verificador_trabalho_salvo"
+                 r"\dados\EditorImpressao\projetos\Modelo Siebmacher"
+                 r"\projeto.antigo-2026-09-29-2033.json")
+    frase = janela._frase_do_recomeco(
+        "o trabalho salvo tinha 13 páginas e agora o livro tem 7. Isso acontece quando "
+        "se muda a opção “Dividir folhas ao meio”", copia)
+    linhas = [linha.strip().replace("\u2060", "") for linha in _linhas_da_caixa(janela, frase)]
+    assert "D:" not in linhas, linhas
+    # o caminho continua la, inteiro (tirando o sinal invisivel que segura a
+    # letra da unidade junto do resto)
+    assert str(copia) in frase.replace("\u2060", "")
