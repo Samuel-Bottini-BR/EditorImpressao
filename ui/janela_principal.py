@@ -296,6 +296,14 @@ class JanelaPrincipal(QMainWindow):
             self.resumo = projetos.criar(self.projeto, self.total_folhas)
         else:
             self.resumo.caminho_entrada = caminho   # pode ter mudado de pasta
+            # Livro com projeto salvo, aberto por QUALQUER caminho ("Abrir",
+            # arrastar, Windows, "continuar"): a tela "O que fazer" vem com as
+            # opcoes salvas. Antes so o "continuar" as trazia; pelo "Abrir",
+            # "Dividir folhas ao meio" desmarcada voltava marcada e a
+            # conferencia recomecava sem a pessoa mudar nada (parecer do
+            # verificador de 29/09, p25-p26), e o filtro do livro aparecia em
+            # Original (print t10 da rodada de 18:26).
+            self._trazer_opcoes_salvas(projetos.carregar_estado(self.resumo))
         self.acoes = HistoricoAcoes(Path(self.resumo.pasta))
 
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
@@ -376,20 +384,36 @@ class JanelaPrincipal(QMainWindow):
         if self.projeto is None:
             return
 
-        salvo = projetos.carregar_estado(resumo)
-        if salvo is not None:
-            self.projeto.dividir_folhas = salvo.dividir_folhas
-            self.projeto.limpar = salvo.limpar
-            self.projeto.filtro_padrao = salvo.filtro_padrao
-            self.projeto.endireitar = salvo.endireitar
-            self.projeto.cortar_bordas = salvo.cortar_bordas
-            self.projeto.montar_cadernos = salvo.montar_cadernos
-            self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
-            # item 1.1: o tem_camadas nao volta do salvo (e fato do PDF,
-            # acabou de ser detectado em abrir_livro); o "Tirar o fundo" volta
-            # com o filtro do livro, acima, e das paginas, em _analise_pronta
-            self.tela_opcoes.carregar(self.projeto, self.total_folhas)
+        # As opcoes salvas ja vieram em abrir_livro (do projeto achado pela
+        # assinatura). Aqui vem de novo, do projeto do CARTAO: e o mesmo
+        # quando ha um so projeto deste PDF (ver ressalva no relatorio de
+        # 29/09 sobre dois projetos do mesmo PDF).
+        self._trazer_opcoes_salvas(projetos.carregar_estado(resumo))
         self.analisar()
+
+    def _trazer_opcoes_salvas(self, salvo: Projeto | None) -> None:
+        """Poe no projeto recem-aberto as opcoes da tela "O que fazer" do
+        projeto salvo (dividir, limpar, filtro do livro, endireitar, cortar,
+        cadernos) e redesenha a tela. Sem salvo, nada muda (opcoes de fabrica).
+
+        Usado por abrir_livro (qualquer caminho de abertura) e por
+        _continuar_projeto. O tem_camadas nao volta do salvo (item 1.1: e fato
+        do PDF, acabou de ser detectado em abrir_livro); o "Tirar o fundo"
+        volta com o filtro do livro, aqui, e com o das paginas, em
+        _analise_pronta. Seguro mudar: acrescentar opcao nova da tela.
+        Arriscado: trazer folhas/paginas daqui (quem traz e _analise_pronta,
+        depois de conferir que combinam).
+        """
+        if salvo is None or self.projeto is None:
+            return
+        self.projeto.dividir_folhas = salvo.dividir_folhas
+        self.projeto.limpar = salvo.limpar
+        self.projeto.filtro_padrao = salvo.filtro_padrao
+        self.projeto.endireitar = salvo.endireitar
+        self.projeto.cortar_bordas = salvo.cortar_bordas
+        self.projeto.montar_cadernos = salvo.montar_cadernos
+        self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
+        self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
         """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado."""

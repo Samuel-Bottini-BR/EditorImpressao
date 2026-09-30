@@ -1580,3 +1580,41 @@ livro novo fechado no "O que fazer" grava as opções, e depois da análise fech
 grava normalmente. A reprodução do verificador
 (`reproduz_fechar_no_o_que_fazer.py`, numa cópia com pasta própria) agora
 mostra o trabalho intacto.
+
+---
+
+## Tentativa 37 — reabrir um livro traz as opções salvas na tela "O que fazer" (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador, prints p25 e p26):
+"Dividir folhas ao meio" desmarcada num livro conferido voltava marcada ao
+reabrir pelo "Abrir", arrastando ou pelo Windows, e a conferência recomeçava
+sem a pessoa mudar nada. Resolve também o registrado "reabrindo pelo 'Abrir',
+'O que fazer' mostra o filtro do livro em Original" (t10, rodada de 18:26).
+
+**O que acontecia:** só o "continuar" trazia as opções salvas; `abrir_livro`
+(por onde passam o "Abrir", o arrastar e o Windows) abria com as de fábrica.
+
+**O que mudou:**
+- `abrir_livro`: livro com projeto salvo traz as opções dele (dividir, limpar,
+  filtro do livro, endireitar, cortar, cadernos), por
+  `_trazer_opcoes_salvas`, que o `_continuar_projeto` também usa agora.
+- `ui/tela_opcoes.py` (`carregar`): enquanto as caixinhas são acertadas, o
+  projeto fica desligado da tela, e o `_mudou` roda uma vez só no fim. Antes,
+  cada caixinha que mudava gravava no projeto o estado das outras ainda com o
+  valor do livro anterior (parte do bug "as caixinhas...", Lista de bugs de
+  29/09): com o livro anterior sem "Limpar", o livro salvo abria sem ele.
+
+**O que fica do bug "as caixinhas perdem o que se muda na volta":** o que se
+muda na tela "O que fazer" **depois** de uma conferência (voltar, mudar, e
+"Conferir" de novo) ainda se perde quando o salvo volta por cima em
+`_analise_pronta`, nas opções que não mudam o número de páginas (limpar,
+filtro do livro, endireitar, cortar, cadernos). Não é deste conserto.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 4 (2 falhavam antes):
+reabrir pelo "Abrir" traz "Dividir" desmarcada e o filtro do livro, e não
+recomeça; as caixinhas do livro anterior não contaminam as salvas; o
+"continuar" continua trazendo; livro novo abre com as de fábrica. A reprodução
+do verificador (`reproduz_dividir_desmarcado_abrir.py`, numa cópia com pasta
+própria) agora mostra 3 páginas, o trabalho e nenhum aviso.

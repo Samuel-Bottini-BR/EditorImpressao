@@ -238,12 +238,18 @@ class TelaOpcoes(QWidget):
     def carregar(self, projeto: Projeto, total_folhas: int) -> None:
         """Preenche a tela com o projeto escolhido: cada caixinha volta ao
         valor salvo, e o folhear abre o PDF de entrada para a pessoa ver antes
-        de marcar o que fazer."""
-        self.projeto = projeto
+        de marcar o que fazer.
+
+        Enquanto as caixinhas sao acertadas, self.projeto fica None: cada
+        setChecked que muda dispara _mudou, que gravava no projeto o estado de
+        TODAS as caixinhas - as ainda nao acertadas com o valor do livro
+        anterior (bug "as caixinhas...", Lista de bugs de 29/09: com o livro
+        anterior sem "Limpar", o livro salvo com "Limpar" abria sem ele). Com
+        None, _mudou nao faz nada, e roda uma vez so no fim, com tudo certo.
+        Arriscado: ligar self.projeto antes dos setChecked.
+        """
+        self.projeto = None
         self.total_folhas = total_folhas
-        # Lido ANTES dos setChecked abaixo: cada um que muda dispara _mudou,
-        # que grava no projeto o estado de TODAS as caixinhas e do filtro -
-        # o filtro ainda com o radio do livro anterior marcado.
         filtro_do_livro = projeto.filtro_padrao
 
         from pathlib import Path
@@ -261,6 +267,7 @@ class TelaOpcoes(QWidget):
         for botao in self.grupo_filtros.buttons():
             if botao.property("filtro") == filtro_do_livro:
                 botao.setChecked(True)
+        self.projeto = projeto
         self._mudou()
 
         self.folhear.abrir(projeto.caminho_entrada)

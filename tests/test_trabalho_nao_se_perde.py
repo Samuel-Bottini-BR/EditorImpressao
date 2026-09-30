@@ -41,6 +41,7 @@ fitz = pytest.importorskip("fitz")
 
 import projetos  # noqa: E402
 from historico_acoes import ARQUIVO_ACOES, ARQUIVO_POSICAO  # noqa: E402
+from core.filtros import MAGICO_PRO  # noqa: E402
 from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixtures
     _analisar,
     _conferir_que_o_trabalho_voltou,
@@ -618,3 +619,101 @@ def test_depois_da_analise_fechar_grava_normalmente(janela, pasta):
     janela.projeto.paginas[0].filtro = "melhorar"
     janela.close()
     assert projetos.carregar_estado(janela.resumo).paginas[0].filtro == "melhorar"
+
+
+# --- reabrir traz as opcoes salvas na tela "O que fazer" (parecer do verificador, bug 3) ---
+#
+# Livro conferido com "Dividir folhas ao meio" desmarcado e reaberto pelo
+# "Abrir", arrastando ou pelo Windows (todos passam por abrir_livro): a opcao
+# voltava marcada, a conferencia recomecava e a mensagem dizia que a pessoa
+# tinha mudado a opcao. Pelo "continuar" nao acontecia (so ele trazia as
+# opcoes salvas). Reproducao: reproducoes/reproduz_dividir_desmarcado_abrir.py;
+# prints p25, p26. Resolve tambem "reabrindo pelo 'Abrir', 'O que fazer'
+# mostra o filtro do livro em Original" (print t10 da rodada de 18:26).
+
+
+def _pdf_deitado(pasta: Path) -> Path:
+    """3 folhas deitadas com a lombada no meio: com "Dividir folhas ao meio",
+    viram 6 paginas; sem, 3."""
+    (pasta / "livros").mkdir(exist_ok=True)
+    caminho = pasta / "livros" / "Deitado.pdf"
+    doc = fitz.open()
+    for i in range(3):
+        pagina = doc.new_page(width=800, height=560)
+        pagina.insert_text((40, 60), f"esquerda {i}", fontsize=14)
+        pagina.insert_text((440, 60), f"direita {i}", fontsize=14)
+        pagina.draw_line((400, 0), (400, 560), width=3)
+    doc.save(str(caminho))
+    doc.close()
+    return caminho
+
+
+def _conferir_deitado_sem_dividir(janela, caminho: str) -> None:
+    """Abre, desmarca "Dividir folhas ao meio" e escolhe Melhorar para o
+    livro, pela tela "O que fazer"; confere, mexe e fecha."""
+    janela.abrir_livro(caminho)
+    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.tela_opcoes.radios_de_filtro["melhorar"].setChecked(True)
+    _analisar(janela)
+    assert len(janela.projeto.paginas) == 3
+    janela.projeto.paginas[1].filtro = MAGICO_PRO
+    janela.projeto.paginas[1].revisada = True
+    janela._salvar_agora()
+    janela.previas.parar()
+    janela.previas = None
+    janela.tela_opcoes.folhear.fechar()
+
+
+def test_reabrir_pelo_abrir_traz_as_opcoes_salvas_e_nao_recomeca(janela, pasta):
+    livro = _pdf_deitado(pasta)
+    _conferir_deitado_sem_dividir(janela, str(livro))
+
+    janela.abrir_livro(str(livro).replace("\\", "/"))       # pelo "Abrir"
+    opcoes = janela.tela_opcoes
+    assert not opcoes.cx_dividir.isChecked(), "'Dividir folhas ao meio' voltou marcada"
+    assert opcoes.radios_de_filtro["melhorar"].isChecked(), "o filtro do livro voltou a Original"
+    assert janela.projeto.dividir_folhas is False
+    assert janela.projeto.filtro_padrao == "melhorar"
+
+    _analisar(janela)
+    assert not janela.avisos, janela.avisos
+    assert len(janela.projeto.paginas) == 3
+    assert janela.projeto.paginas[1].filtro == MAGICO_PRO
+    assert not _copias(Path(janela.resumo.pasta), "projeto")
+
+
+def test_as_caixinhas_do_livro_anterior_nao_contaminam_as_salvas(janela, pasta):
+    """Bug das caixinhas (Lista de bugs, 29/09), no caso que importa aqui: ao
+    carregar, cada caixinha que mudava gravava no projeto o estado das outras
+    ainda com o valor do livro anterior."""
+    livro = _pdf_deitado(pasta)
+    _conferir_deitado_sem_dividir(janela, str(livro))     # salvo: limpar ligado
+
+    janela.abrir_livro(str(_pdf(pasta)))                   # outro livro...
+    janela.tela_opcoes.cx_limpar.setChecked(False)         # ...com "Limpar" desligado
+    janela.tela_opcoes.cx_endireitar.setChecked(False)
+    janela.tela_opcoes.folhear.fechar()
+
+    janela.abrir_livro(str(livro))
+    opcoes = janela.tela_opcoes
+    assert opcoes.cx_limpar.isChecked() and janela.projeto.limpar
+    assert opcoes.cx_endireitar.isChecked() and janela.projeto.endireitar
+    assert not opcoes.cx_dividir.isChecked() and not janela.projeto.dividir_folhas
+    assert janela.projeto.filtro_padrao == "melhorar"
+
+
+def test_continuar_continua_trazendo_as_opcoes_salvas(janela, pasta, monkeypatch):
+    livro = _pdf_deitado(pasta)
+    _conferir_deitado_sem_dividir(janela, str(livro))
+    monkeypatch.setattr(janela, "analisar", lambda: None)
+    janela._continuar_projeto(projetos.achar_por_assinatura(str(livro)))
+    assert not janela.tela_opcoes.cx_dividir.isChecked()
+    _analisar(janela)
+    assert not janela.avisos
+    assert janela.projeto.paginas[1].filtro == MAGICO_PRO
+
+
+def test_livro_novo_abre_com_as_opcoes_de_fabrica(janela, pasta):
+    janela.abrir_livro(str(_pdf_deitado(pasta)))
+    assert janela.tela_opcoes.cx_dividir.isChecked()
+    assert janela.projeto.filtro_padrao == "original"
