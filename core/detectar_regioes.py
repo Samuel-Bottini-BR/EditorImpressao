@@ -25,10 +25,33 @@ quando as duas medidas se cruzam entre livros.
 
 O modelo de layout e opcional. Sem ele o detector continua funcionando com cor
 e tinta - so fica mais fraco em separar letra de gravura em pagina cinza.
+
+QUEM ACHA A GRAVURA (item 1.2 da Fase 1, ligado em 29/09/2026)
+    Dois caminhos, escolhidos pelo parametro detector_de_gravura de detectar():
+
+    - GRAVURA_SCANTAILOR: o seletor de gravura do ScanTailor Advanced, com o
+      codigo original (core/gravura_scantailor.py + core/nativo/st_gravura.dll).
+      So a ZONA GRAVURA vem dele; a letra e o papel continuam saindo daqui, do
+      mesmo jeito (modelo de layout + tinta), agora em volta da gravura nova.
+      Roda numa linha a parte, AO MESMO TEMPO que o modelo de layout e a
+      mascara de tinta (a DLL solta o GIL), para a pagina nao demorar a soma
+      dos dois. A pagina vai a DLL no DPI do escaneamento (nunca mais pontos
+      do que o scan tem; teto de 300): ver _dpi_para_a_gravura.
+    - GRAVURA_ANTIGA: o caminho de sempre (layout + cor + tinta), identico ao
+      de antes do 1.2. E o padrao de detectar() para quem nao sabe o DPI da
+      imagem (a aba Marcar, core/camadas.py, avaliar_selecao.py).
+
+    Quem escolhe no processamento e core/pipeline.py (garantir_selecao), com
+    DETECTOR_DE_GRAVURA_PADRAO e FORMA_DA_GRAVURA_PADRAO - o botao de ligar e
+    desligar (regra 8 do plano) ainda nao existe na tela. Se a DLL faltar ou
+    falhar numa pagina, cai sozinho no caminho antigo, com o motivo no log e
+    em selecao.aviso_gravura; nada levanta excecao.
 """
 
 from __future__ import annotations
 
+import logging
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -46,6 +69,32 @@ from core.selecao import (
     Selecao,
     de_mascara,
 )
+
+_log = logging.getLogger(__name__)
+
+# --- quem acha a gravura (item 1.2) -----------------------------------------
+
+GRAVURA_SCANTAILOR = "scantailor"   # o seletor do ScanTailor Advanced (a DLL)
+GRAVURA_ANTIGA = "antigo"           # layout + cor + tinta, como antes do 1.2
+DETECTORES_DE_GRAVURA = (GRAVURA_SCANTAILOR, GRAVURA_ANTIGA)
+
+# O que o processamento usa enquanto nao houver campo no projeto nem botao na
+# tela (regra 8). Proposta de fabrica do implementador, a decidir pelo Samuel:
+# o ScanTailor na forma "livre" (a do teste de 24/09 que o Samuel viu). A
+# "retangular" cobre foto inteira (a estatua do Opus Majus 20), mas pega de
+# 55% a 96% das paginas do Livro de Horas: serve para livro de foto, por
+# escolha do livro, nunca de fabrica.
+DETECTOR_DE_GRAVURA_PADRAO = GRAVURA_SCANTAILOR
+FORMA_DA_GRAVURA_PADRAO = "livre"
+FORMAS_DA_GRAVURA = ("livre", "retangular")
+
+# Teto do DPI da pagina que vai a DLL. O ScanTailor trabalha a 300 DPI por
+# dentro (to300dpi): mandar mais so custa a reducao. Ver _dpi_para_a_gravura.
+DPI_MAXIMO_DA_GRAVURA = 300
+
+# Teto do tamanho em que a DLL trabalha por dentro (a pagina levada a 300 DPI),
+# em milhoes de pontos. Ver _dpi_declarado_a_dll.
+PONTOS_MAXIMOS_DA_GRAVURA = 7_000_000
 
 # --- modelo de layout -------------------------------------------------------
 
@@ -745,12 +794,277 @@ def _e_meio_tom(img: np.ndarray, caixa) -> bool:
     return bool(meio > 0.28)
 
 
+def _gravura_antiga(colorida: np.ndarray, gravura_layout: np.ndarray,
+                    letra_layout: np.ndarray, tinta: np.ndarray, usar_cor: bool) -> np.ndarray:
+    """A zona gravura do caminho de sempre (antes do item 1.2): caixas do
+    modelo + cor + buracos tapados + foto de pagina inteira.
+
+    So foi tirada de dentro de detectar() para poder ser trocada pela do
+    ScanTailor; a conta e a mesma, na mesma ordem. Arriscado mudar: e o que o
+    programa faz com o ScanTailor desligado, e quando a DLL falha.
+    """
+    altura, largura = colorida.shape[:2]
+    gravura_cor = mascara_de_cor(colorida) if usar_cor else np.zeros((altura, largura), bool)
+
+    # Mancha de papel envelhecido passa no corte de saturacao. Se ha escrita
+    # embaixo dela, nao e iluminura nenhuma.
+    gravura_cor = _sem_as_manchas_por_cima_da_escrita(gravura_cor, tinta)
+
+    # A cor cede para o layout onde a mancha e do tamanho de uma inicial
+    # rubricada - essa e letra, e transforma-la em gravura arrancaria o
+    # paragrafo do preto e branco. Uma moldura inteira nao cede.
+    gravura = gravura_layout | (gravura_cor & ~_cor_que_a_caixa_de_texto_pode_engolir(
+        gravura_cor, letra_layout))
+
+    # A pintura clara dentro da moldura nao passa no corte de saturacao e abre
+    # buraco. Sem tapar, o buraco vira letra e o manto azul da figura recebe
+    # tratamento de texto.
+    gravura = _tapar_buracos_da_iluminura(gravura, tinta)
+
+    # Pagina que e uma foto so: a faixa que sobrou fora da caixa e a mesma foto,
+    # cortada pelo retangulo, e nao um bloco de texto.
+    if _e_uma_foto_de_pagina_inteira(gravura, letra_layout, tinta):
+        gravura = np.ones((altura, largura), bool)
+    return gravura
+
+
+# Onde o modelo de layout viu texto E ha letra miuda embaixo (escrita_certa),
+# o texto ganha tambem da gravura do ScanTailor? Ver o comentario em
+# detectar() e relatorios/melhorias.md (29/09/2026).
+ESCRITA_GANHA_DO_SCANTAILOR = True
+
+# Pedaco de gravura do ScanTailor menor que isto (fracao da pagina) sai: e
+# borrao de tinta no meio do texto (Marial 150: "lugar", "Tambem", palavras
+# soltas, de 0,06% a 0,15% da pagina), nao gravura. O mesmo numero que o
+# filtro usa para "respingo" (core.filtros.AREA_MINIMA_DE_GRAVURA): abaixo
+# dele o filtro nem limpa a gravura pelo papel dela, e so a deixaria cinza
+# no meio da letra preta - e ainda faria o filtro rodar o Melhorar na folha
+# inteira (a lentidao de 29/09). Seguro mudar para menos, medindo de novo.
+AREA_MINIMA_DA_GRAVURA_ST = 0.002
+
+# O ScanTailor marca como gravura a faixa escura do scanner que o corte deixou
+# na beirada da pagina (Marial 150 e 153: uma moldura vermelha fina em volta
+# da folha, mais grossa de um lado). No ScanTailor de verdade isso nao
+# acontece: ele procura so dentro da caixa do conteudo. Aqui, o pedaco que
+# ENCOSTA na beirada da imagem e vive quase todo (FRACAO_NA_BEIRADA da area)
+# na faixa da beirada (BEIRADA_DO_SCANNER do menor lado) sai. Uma moldura de
+# verdade fica dentro da margem do papel (nao encosta), ou tem a maior parte
+# para dentro da faixa. Medido em 29/09: no Marial 150, sem esta regra, a
+# faixa (4,9% da pagina) fazia o Preto e branco daquela pagina levar 12,8 s
+# em vez de 2,3 s (a gravura em volta da folha inteira roda o Melhorar na
+# folha toda).
+# Arriscado: engordar a faixa, ou baixar a fracao, pode tirar a moldura de
+# uma pagina cortada rente a ela.
+BEIRADA_DO_SCANNER = 0.05
+FRACAO_NA_BEIRADA = 0.80
+
+# A mesma coisa quando a faixa e mais larga (Horas 27: a sombra da lombada, na
+# beirada esquerda, 1 cm de largura por 100% da altura): o pedaco que ENCOSTA
+# numa beirada da pagina e e uma tira - fino na direcao dessa beirada (ate
+# TIRA_FINA do lado) e comprido ao longo dela (pelo menos TIRA_COMPRIDA) -
+# sai. Moldura de verdade e um anel: a caixa dela e larga nos dois sentidos.
+TIRA_FINA = 0.06
+TIRA_COMPRIDA = 0.30
+
+
+def _limpar_gravura_do_scantailor(mascara: np.ndarray) -> np.ndarray:
+    """Tira da gravura do ScanTailor os respingos e a faixa do scanner.
+
+    Ver AREA_MINIMA_DA_GRAVURA_ST e BEIRADA_DO_SCANNER. O resto fica como o
+    ScanTailor achou, ponto a ponto.
+    """
+    if not mascara.any():
+        return mascara
+    altura, largura = mascara.shape[:2]
+    num, rotulos, stats, _ = cv2.connectedComponentsWithStats(mascara.astype(np.uint8),
+                                                              connectivity=8)
+    minimo = AREA_MINIMA_DA_GRAVURA_ST * mascara.size
+    faixa = max(1, int(round(BEIRADA_DO_SCANNER * min(altura, largura))))
+    beirada = np.ones((altura, largura), bool)
+    beirada[faixa:altura - faixa, faixa:largura - faixa] = False
+    # quanto de cada pedaco cai na faixa da beirada
+    na_beirada = np.bincount(rotulos[beirada], minlength=num)
+    fica = np.zeros(num, bool)
+    for k in range(1, num):
+        area = int(stats[k, cv2.CC_STAT_AREA])
+        if area < minimo:
+            continue
+        if (_encosta_na_beirada(stats[k], largura, altura)
+                and na_beirada[k] >= FRACAO_NA_BEIRADA * area):
+            continue
+        if _e_tira_na_beirada(stats[k], largura, altura):
+            continue
+        fica[k] = True
+    return fica[rotulos]
+
+
+def _encosta_na_beirada(caixa, largura: int, altura: int) -> bool:
+    """A caixa (x, y, largura, altura) toca a borda da imagem?"""
+    x, y, w, h = (int(v) for v in caixa[:4])
+    return x <= 1 or y <= 1 or x + w >= largura - 1 or y + h >= altura - 1
+
+
+def _e_tira_na_beirada(caixa, largura: int, altura: int) -> bool:
+    """A caixa (x, y, largura, altura, area do connectedComponentsWithStats)
+    encosta numa beirada da pagina e e uma tira ao longo dela? Ver TIRA_FINA."""
+    x, y, w, h = (int(v) for v in caixa[:4])
+    em_pe = ((x <= 1 or x + w >= largura - 1) and w <= TIRA_FINA * largura
+             and h >= TIRA_COMPRIDA * altura)
+    deitada = ((y <= 1 or y + h >= altura - 1) and h <= TIRA_FINA * altura
+               and w >= TIRA_COMPRIDA * largura)
+    return bool(em_pe or deitada)
+
+
+def _dpi_para_a_gravura(dpi: float, dpi_do_scan: float | None) -> float:
+    """O DPI em que a pagina vai a DLL do ScanTailor.
+
+    O menor entre: o DPI em que a pagina foi desenhada, o do escaneamento
+    (quando se sabe) e DPI_MAXIMO_DA_GRAVURA. Por que o do escaneamento:
+    medido em 29/09 no Marial 150 (escaneado a 72 DPI), a mesma pagina de
+    texto ia a DLL desenhada a 110 DPI e saia 98% "gravura"; desenhada a 72,
+    150, 200 ou 300, saia 3% a 5%. Ampliar o scan so inventa pontos que o
+    ScanTailor le de outro jeito conforme a ampliacao; no DPI do scan, a
+    previa (110 DPI) e o PDF (300 DPI) dao quase a mesma imagem de entrada, e a
+    mesma gravura. E e o que o ScanTailor recebeu no teste de 24/09 (as
+    paginas como foram escaneadas).
+    Arriscado mudar: tirar o dpi_do_scan traz de volta o caso do Marial 150.
+    """
+    alvo = float(dpi)
+    if dpi_do_scan and dpi_do_scan > 0:
+        alvo = min(alvo, float(dpi_do_scan))
+    return min(alvo, float(DPI_MAXIMO_DA_GRAVURA))
+
+
+def _dpi_declarado_a_dll(largura: int, altura: int, dpi: float) -> float:
+    """O DPI que se diz a DLL para uma imagem de largura x altura pontos a `dpi`.
+
+    O proprio `dpi`, a menos que a pagina levada a 300 DPI (o que a DLL faz
+    por dentro) passe de PONTOS_MAXIMOS_DA_GRAVURA: ai se diz um DPI maior, na
+    medida para ela caber. Por que (29/09/2026, regra 6 do plano): os livros
+    que o PDF diz escaneados a 72 DPI (Marial, Livro de Horas, Graduale) viram
+    folhas de 24 x 33 cm a 36 x 51 cm, e a DLL trabalha em 11 a 23 milhoes de
+    pontos: 1,4 a 2,8 s por pagina, mais que todo o resto do detector - a
+    previa do Marial ficava 0,6 a 1,3 s mais lenta. O 72 desses PDFs nao e a
+    resolucao de verdade (e o padrao de quem gravou o PDF), e o proprio
+    ScanTailor do teste de 24/09 trabalhou as paginas do Livro de Horas a 168
+    DPI. Medido em 29/09 (pagina desenhada a 300 DPI, sem teto x com teto):
+    com teto de 7 milhoes a DLL cai de 1,2-2,9 s para 0,7-1,2 s nessas
+    paginas; onde a gravura e grande (Horas 11, 26, 47) a mascara fica igual
+    (99,9% em comum); a moldura fina da Horas 13 e 27 muda o contorno (57% e
+    90% em comum; cobre 3,2% e 6,9% da pagina, contra 4,9% e 6,3%), como ja
+    mudava entre 72 e 150 DPI no relatorio do nucleo; o Graduale 222 marca
+    menos da partitura como gravura (14% da pagina, contra 31%) e o Marial
+    153 nada (contra 2,3%, uma mancha no meio do texto). Paginas que ja cabem
+    (Palatino, Opus Majus, Escola, Rhetorica, Pesel, Siebmacher, Boecio) nao
+    mudam. Com 6 milhoes a Escola (6,9) entraria; com 9, o Marial ficava
+    0,3 a 0,6 s mais lento na deteccao.
+    Arriscado mudar: subir o teto devolve a lentidao; baixar demais faz a DLL
+    ver a letra pequena demais.
+    """
+    a_300 = (largura * 300.0 / dpi) * (altura * 300.0 / dpi)
+    if a_300 <= PONTOS_MAXIMOS_DA_GRAVURA:
+        return float(dpi)
+    return float(dpi) * (a_300 / PONTOS_MAXIMOS_DA_GRAVURA) ** 0.5
+
+
+def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
+                             forma: str) -> tuple[np.ndarray | None, str | None]:
+    """(mascara bool do tamanho de img, None) ou (None, motivo em portugues).
+
+    Nunca levanta excecao: qualquer falha vira motivo (e o detalhe tecnico vai
+    para o log, em core/gravura_scantailor.py).
+    """
+    try:
+        if not dpi or dpi <= 0:
+            return None, ("O detector de gravura do ScanTailor precisa saber a resolução "
+                          "da página; usei o detector antigo.")
+        if forma not in FORMAS_DA_GRAVURA:
+            _log.warning("forma de gravura desconhecida: %r (usei a livre)", forma)
+            forma = "livre"
+        from core import gravura_scantailor
+
+        altura, largura = img.shape[:2]
+        alvo = _dpi_para_a_gravura(dpi, dpi_do_scan)
+        entrada = img
+        if alvo < float(dpi) * 0.999:
+            escala = alvo / float(dpi)
+            entrada = cv2.resize(img, (max(1, round(largura * escala)), max(1, round(altura * escala))),
+                                 interpolation=cv2.INTER_AREA)
+        declarado = _dpi_declarado_a_dll(entrada.shape[1], entrada.shape[0], alvo)
+        resultado = gravura_scantailor.detectar_gravura(entrada, declarado, forma=forma)
+        if not resultado.disponivel:
+            return None, f"{resultado.motivo} Usei o detector antigo nesta página."
+        mascara = resultado.mascara
+        if mascara.shape[:2] != (altura, largura):
+            # de volta ao tamanho da pagina, com a borda pela media (e nao em
+            # degraus do tamanho do ponto reduzido)
+            mascara = cv2.resize(mascara.astype(np.uint8) * 255, (largura, altura),
+                                 interpolation=cv2.INTER_LINEAR) >= 128
+        return _limpar_gravura_do_scantailor(mascara), None
+    except Exception as erro:  # noqa: BLE001 - a gravura nunca derruba a pagina
+        _log.warning("gravura do ScanTailor falhou: %s: %s", type(erro).__name__, erro)
+        return None, "O detector de gravura do ScanTailor falhou nesta página; usei o detector antigo."
+
+
+class _ProcuraNoScanTailor:
+    """A gravura do ScanTailor calculada numa linha a parte.
+
+    Comeca ao nascer; resultado() espera acabar. A DLL solta o GIL (ctypes), e
+    o modelo de layout e o OpenCV tambem: as duas contas andam juntas, e a
+    pagina demora o maior dos dois, e nao a soma. Seguro mudar: rodar sem
+    linha a parte (chamar _gravura_pelo_scantailor direto) da o mesmo
+    resultado, so mais devagar.
+    """
+
+    def __init__(self, img, dpi, dpi_do_scan, forma) -> None:
+        self._saida: tuple = (None, "O detector de gravura do ScanTailor não terminou; "
+                                    "usei o detector antigo.")
+        self._linha = threading.Thread(target=self._rodar, args=(img, dpi, dpi_do_scan, forma),
+                                       name="gravura-scantailor", daemon=True)
+        self._linha.start()
+
+    def _rodar(self, img, dpi, dpi_do_scan, forma) -> None:
+        self._saida = _gravura_pelo_scantailor(img, dpi, dpi_do_scan, forma)
+
+    def resultado(self) -> tuple[np.ndarray | None, str | None]:
+        self._linha.join()
+        return self._saida
+
+
+_JA_AVISADOS: set[str] = set()
+
+
+def _avisar_uma_vez(motivo: str | None) -> None:
+    """Poe no log, uma vez por sessao, por que o ScanTailor nao foi usado."""
+    if motivo and motivo not in _JA_AVISADOS:
+        _JA_AVISADOS.add(motivo)
+        _log.warning("gravura: %s", motivo)
+
+
 def detectar(
     img: np.ndarray,
     usar_layout: bool = True,
     usar_cor: bool = True,
+    *,
+    detector_de_gravura: str = GRAVURA_ANTIGA,
+    forma_da_gravura: str = FORMA_DA_GRAVURA_PADRAO,
+    dpi: float | None = None,
+    dpi_do_scan: float | None = None,
 ) -> Selecao:
     """Devolve a selecao proposta para esta pagina.
+
+    detector_de_gravura: quem acha a zona GRAVURA (ver "QUEM ACHA A GRAVURA",
+        no topo). GRAVURA_SCANTAILOR precisa de `dpi` (o DPI em que `img` foi
+        desenhada); sem ele, ou sem a DLL, vale o caminho antigo e o motivo
+        fica em selecao.aviso_gravura.
+    forma_da_gravura: "livre" ou "retangular" (so vale para o ScanTailor).
+    dpi_do_scan: o DPI do escaneamento (a imagem embutida no PDF); limita o
+        DPI em que a pagina vai a DLL. None/0 = desconhecido.
+
+    A selecao devolvida leva dois atributos a mais, que NAO vao para o
+    projeto salvo: gravura_por (qual detector achou a gravura desta pagina) e
+    aviso_gravura (por que o ScanTailor nao foi usado, em portugues; None se
+    foi, ou se nem foi pedido).
 
     A marcacao desce ao NIVEL DA TINTA. O modelo de layout devolve caixas -
     "aqui tem texto" - e pintar a caixa inteira de letra estava errado: o papel
@@ -769,6 +1083,8 @@ def detectar(
     """
     altura, largura = img.shape[:2]
     selecao = Selecao()
+    selecao.gravura_por = GRAVURA_ANTIGA
+    selecao.aviso_gravura = None
 
     colorida = _tres_canais_ou_cinza(img)
 
@@ -791,6 +1107,16 @@ def detectar(
             return _folha_nua_ou_objeto(selecao, colorida)
 
     em_duvida = False
+
+    # Item 1.2: o ScanTailor comeca a procurar a gravura AGORA, numa linha a
+    # parte, e trabalha enquanto esta linha faz a tinta e o modelo de layout.
+    # E recolhido mais abaixo, onde a gravura antiga seria montada.
+    procura_st = None
+    if detector_de_gravura == GRAVURA_SCANTAILOR:
+        procura_st = _ProcuraNoScanTailor(colorida, dpi, dpi_do_scan, forma_da_gravura)
+    elif detector_de_gravura != GRAVURA_ANTIGA:
+        _log.warning("detector de gravura desconhecido: %r (usei o antigo)", detector_de_gravura)
+
     tinta = mascara_de_tinta(colorida)
     if not achados:
         achados = _detector.achar(colorida) if usar_layout else []
@@ -834,33 +1160,30 @@ def detectar(
             if _tinta_em_pedacos_de_glifo(tinta[fatia]) >= PEDACOS_DE_GLIFO_DE_ESCRITA:
                 escrita_certa[fatia] = True
 
-    gravura_cor = mascara_de_cor(colorida) if usar_cor else np.zeros((altura, largura), bool)
+    gravura_st = None
+    if procura_st is not None:
+        gravura_st, aviso = procura_st.resultado()
+        if gravura_st is not None:
+            selecao.gravura_por = GRAVURA_SCANTAILOR
+            # A duvida "desenho ou escrita?" nasce das caixas "figure" do
+            # modelo, que nao decidem mais a gravura: nao vale aqui.
+            em_duvida = False
+        else:
+            selecao.aviso_gravura = aviso
+            _avisar_uma_vez(aviso)
 
-    # Mancha de papel envelhecido passa no corte de saturacao. Se ha escrita
-    # embaixo dela, nao e iluminura nenhuma.
-    gravura_cor = _sem_as_manchas_por_cima_da_escrita(gravura_cor, tinta)
-
-    # A cor cede para o layout onde a mancha e do tamanho de uma inicial
-    # rubricada - essa e letra, e transforma-la em gravura arrancaria o
-    # paragrafo do preto e branco. Uma moldura inteira nao cede.
-    gravura = gravura_layout | (gravura_cor & ~_cor_que_a_caixa_de_texto_pode_engolir(
-        gravura_cor, letra_layout))
-
-    # A pintura clara dentro da moldura nao passa no corte de saturacao e abre
-    # buraco. Sem tapar, o buraco vira letra e o manto azul da figura recebe
-    # tratamento de texto.
-    gravura = _tapar_buracos_da_iluminura(gravura, tinta)
-
-    # Pagina que e uma foto so: a faixa que sobrou fora da caixa e a mesma foto,
-    # cortada pelo retangulo, e nao um bloco de texto.
-    if _e_uma_foto_de_pagina_inteira(gravura, letra_layout, tinta):
-        gravura = np.ones((altura, largura), bool)
+    if gravura_st is not None:
+        gravura = gravura_st
+    else:
+        gravura = _gravura_antiga(colorida, gravura_layout, letra_layout, tinta, usar_cor)
 
     # Legenda impressa sobre a foto continua sendo legenda. No livro de bordados
     # da Pesel as legendas ficam em cima do cartao de fundo, que e colorido: a
     # mascara de cor as engolia junto com a foto e a pagina saia sem uma linha de
     # texto. Onde o modelo viu texto E ha letra miuda embaixo, o texto ganha.
-    gravura &= ~escrita_certa
+    # Vale tambem para a gravura do ScanTailor (ver ESCRITA_GANHA_DO_SCANTAILOR).
+    if gravura_st is None or ESCRITA_GANHA_DO_SCANTAILOR:
+        gravura &= ~escrita_certa
 
     # O que o modelo achou SOMA com o que sobrou de tinta - nao substitui.
     #

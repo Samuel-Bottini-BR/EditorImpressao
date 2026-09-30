@@ -49,6 +49,17 @@ def aquecer_dependencias_pesadas() -> None:
     except Exception:  # noqa: BLE001 - aquecimento e so uma otimizacao
         pass
 
+    try:
+        # Item 1.2 (29/09/2026): a DLL do detector de gravura do ScanTailor
+        # (core/gravura_scantailor.py) e as DLLs do Qt que ela puxa levam
+        # ~0,15 s para abrir, na primeira pagina. Abrir aqui tira isso da
+        # primeira previa. Se faltar, disponivel() so diz False (sem erro).
+        from core import gravura_scantailor
+
+        gravura_scantailor.disponivel()
+    except Exception:  # noqa: BLE001 - aquecimento e so uma otimizacao
+        pass
+
 
 def aquecer_em_segundo_plano() -> threading.Thread:
     """Dispara o aquecimento numa thread daemon e devolve ela (para testes)."""

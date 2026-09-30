@@ -18,11 +18,15 @@ SE A DLL FALTAR OU FALHAR
     SEM chegar à DLL (ver TRAVA DE SEGURANÇA abaixo): ali o código do
     ScanTailor corrompe a memória e derrubaria o programa.
 
-AINDA NÃO ESTÁ LIGADO AO PROGRAMA (28/09/2026)
-    Nem o pipeline, nem os filtros, nem a tela chamam este módulo. Ligar (com o
-    botão de ligar e desligar da regra 8) é o passo seguinte. Para o item 1.1,
-    figuras_pelo_scantailor() tem a mesma assinatura de
-    core/camadas.DETECTOR_DE_FIGURAS.
+LIGADO AO PROCESSAMENTO (29/09/2026, segunda etapa do 1.2)
+    Quem chama é core/detectar_regioes.detectar (detector_de_gravura=
+    "scantailor"), pedido por core/pipeline.garantir_selecao na prévia e no
+    PDF: a zona GRAVURA da página vem daqui; a letra e o papel continuam do
+    detector de antes. Ver "QUEM ACHA A GRAVURA" em core/detectar_regioes.py.
+    Ainda NÃO usam este módulo: a aba Marcar ("detectar automaticamente", que
+    não sabe o DPI da prévia) e o item 1.1 (core/camadas.DETECTOR_DE_FIGURAS;
+    figuras_pelo_scantailor() tem a assinatura dele, para quando decidirem).
+    O botão de ligar e desligar da regra 8 (campo no projeto + tela) falta.
 
 O QUE É SEGURO MUDAR
     Os textos das mensagens; a função figuras_pelo_scantailor (é só adaptador).

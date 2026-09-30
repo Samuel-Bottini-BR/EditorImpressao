@@ -19,6 +19,11 @@ PARA QUE SERVE
     Não é usada pelo Kaique. Não abre janela, não mexe em projeto, não grava
     nada além do arquivo de saída.
 
+    Desde 29/09/2026 (item 1.2) o JSON traz também "gravura_scantailor": se a
+    DLL do detector de gravura do ScanTailor (core\\nativo\\st_gravura.dll)
+    chegou ao programa empacotado e abre (com o Qt do PySide6 empacotado).
+    Só informa: o código de saída continua sendo o dos três OCRs.
+
 O QUE É SEGURO MUDAR
     O que vai no JSON (é só para quem confere).
 O QUE É ARRISCADO MUDAR
@@ -96,7 +101,35 @@ def conferir(imagem: Path, idioma: str = "lat", dpi: float | None = None) -> dic
     saida["comparacao"] = {"para_revisar": c.para_revisar, "motivos": c.motivos,
                            "motores": list(c.motores)}
     saida["todos_leram"] = all(v["disponivel"] for v in saida["ocrs"].values())
+    saida["gravura_scantailor"] = conferir_gravura(imagem, dpi)
     return saida
+
+
+def conferir_gravura(imagem: Path, dpi: float | None = None) -> dict:
+    """O detector de gravura do ScanTailor (item 1.2, core/nativo/st_gravura.dll)
+    abre neste programa e acha gravura nesta imagem? Não conta para o código de
+    saída (que é dos OCRs): só informa. Nunca levanta exceção."""
+    try:
+        import cv2
+        import numpy as np
+
+        from core import gravura_scantailor as gs
+
+        info: dict = {"dll": str(gs.CAMINHO_DLL), "dll_existe": gs.CAMINHO_DLL.is_file(),
+                      "disponivel": gs.disponivel(), "motivo": gs.motivo_indisponivel(),
+                      "origem": gs.origem()}
+        if info["disponivel"]:
+            img = cv2.imdecode(np.fromfile(str(imagem), np.uint8), cv2.IMREAD_COLOR)
+            if img is None:
+                info["erro"] = "não consegui ler a imagem"
+            else:
+                r = gs.detectar_gravura(img, dpi or 300)
+                info.update({"leu": r.disponivel, "motivo_na_pagina": r.motivo,
+                             "gravura_fracao": None if r.mascara is None else round(float(r.mascara.mean()), 4),
+                             "segundos": round(r.segundos, 2)})
+        return info
+    except Exception as erro:  # noqa: BLE001 - diagnóstico nunca derruba
+        return {"erro": f"{type(erro).__name__}: {erro}"}
 
 
 def linha_de_comando(argumentos: list[str]) -> int:

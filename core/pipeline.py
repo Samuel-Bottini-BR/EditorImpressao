@@ -397,8 +397,37 @@ def _precisa_de_geometria(pagina: ConfigPagina, projeto: Projeto) -> bool:
             or (projeto.endireitar and pagina.angulo_manual is None))
 
 
-def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
+def escolha_da_gravura(projeto: Projeto) -> tuple[str, str]:
+    """(detector de gravura, forma) que este projeto usa (item 1.2).
+
+    Le os campos do projeto quando existirem (o campo e o botao de ligar e
+    desligar da regra 8 ainda nao foram criados: o implementador do 1.2 nao
+    podia mexer em modelos.py) e, sem eles, os padroes de fabrica
+    (core.detectar_regioes.DETECTOR_DE_GRAVURA_PADRAO e
+    FORMA_DA_GRAVURA_PADRAO). Nomes esperados dos campos: detector_de_gravura
+    ("scantailor" | "antigo") e forma_da_gravura ("livre" | "retangular").
+    Valor desconhecido vale o padrao. Seguro mudar: os padroes, la em
+    detectar_regioes.
+    """
+    from core import detectar_regioes as dr
+
+    detector = getattr(projeto, "detector_de_gravura", None) or dr.DETECTOR_DE_GRAVURA_PADRAO
+    if detector not in dr.DETECTORES_DE_GRAVURA:
+        detector = dr.DETECTOR_DE_GRAVURA_PADRAO
+    forma = getattr(projeto, "forma_da_gravura", None) or dr.FORMA_DA_GRAVURA_PADRAO
+    if forma not in dr.FORMAS_DA_GRAVURA:
+        forma = dr.FORMA_DA_GRAVURA_PADRAO
+    return detector, forma
+
+
+def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                     dpi: float | None = None, dpi_do_scan: float | None = None):
     """Descobre onde estao gravura, letra e papel - uma vez por pagina.
+
+    Item 1.2: a gravura vem do detector escolhido em escolha_da_gravura (de
+    fabrica, o ScanTailor). dpi = o DPI em que `img` foi desenhada; sem ele
+    o ScanTailor nao roda e vale o detector antigo (ver detectar).
+    dpi_do_scan = o DPI do escaneamento, que limita o DPI da gravura.
 
     Roda SOB DEMANDA, e nao na analise do livro. Detectar leva quase um segundo
     por pagina, e na analise isso daria sete minutos para quinhentas folhas,
@@ -422,8 +451,11 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray):
     try:
         from core.detectar_regioes import detectar
 
-        selecao = detectar(img)
+        detector, forma = escolha_da_gravura(projeto)
+        selecao = detectar(img, detector_de_gravura=detector, forma_da_gravura=forma,
+                           dpi=dpi, dpi_do_scan=dpi_do_scan)
     except Exception:  # noqa: BLE001 - sem deteccao o filtro trata a folha toda
+        _log.exception("a deteccao de gravura e letra falhou")
         return Selecao()
 
     # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.
@@ -680,12 +712,89 @@ def renderizar_pagina(
         img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
         if dpi == projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto):
             _guardar_geometria(folha, pagina, projeto, img_folha)
+    # item 1.2: o DPI de verdade desta imagem e o do scan, para o detector de
+    # gravura (so custam alguma coisa quando a pagina ainda nao tem marcacao)
+    dpi_desenho = dpi_scan = None
+    if _vai_detectar(projeto, pagina):
+        dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
+        dpi_scan = _dpi_do_scan(doc, folha)
     img = preparar_metade(img_folha, folha, pagina, projeto)
-    return _filtrar(projeto, pagina, img)
+    return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
 
 
-def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray) -> tuple[np.ndarray, bool]:
+def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """_filtrar vai chamar a deteccao de gravura e letra nesta pagina? (a
+    mesma conta de _filtrar + garantir_selecao; so serve para nao medir DPI a
+    toa). Errar para "sim" so custa milissegundos. Atencao: no filtro
+    Original a deteccao roda do mesmo jeito (_filtrar chama garantir_selecao
+    antes de saber o filtro), e a marcacao fica guardada para quando a pessoa
+    trocar de filtro - por isso o Original NAO fica de fora aqui."""
+    return bool(projeto.limpar and pagina.filtro != TIRAR_FUNDO
+                and projeto.detectar_regioes and not pagina.selecao)
+
+
+def _dpi_do_desenho(doc, indice: int, img_folha: np.ndarray) -> float | None:
+    """O DPI em que a folha `indice` foi desenhada em img_folha (a folha
+    inteira, antes de girar, dividir e cortar).
+
+    Nao e o DPI pedido: pdf_io.dpi_seguro (e _reduzir_para_o_dpi) baixam o
+    DPI de pagina gigante. Medido pela area (pontos x pixels), para nao
+    depender de a folha estar em pe ou deitada. None se nao der para medir.
+    Usado pelo detector de gravura do ScanTailor (item 1.2), que precisa do
+    DPI de verdade da imagem.
+    """
+    try:
+        largura_pt, altura_pt = tamanho_da_pagina_pt(doc, indice)
+        area_pol = (largura_pt / 72.0) * (altura_pt / 72.0)
+        if area_pol <= 0:
+            return None
+        return float((img_folha.shape[0] * img_folha.shape[1] / area_pol) ** 0.5)
+    except Exception:  # noqa: BLE001 - sem o DPI, o detector antigo resolve
+        return None
+
+
+def _dpi_do_scan(doc, folha: ConfigFolha) -> float | None:
+    """O DPI do escaneamento da folha: a largura da maior imagem
+    embutida dividida pela largura da pagina em polegadas - a mesma conta de
+    pdf_io.dpi_real_da_pagina, mas lendo a largura na lista de imagens
+    (get_images), sem tirar a imagem de dentro do PDF (milissegundos, contra
+    ate um segundo num JPEG 2000 grande). None se nao ha imagem (PDF de
+    texto) ou se der erro. Guardado por folha nesta sessao (_DPIS_DO_SCAN).
+    """
+    chave = _chave_da_folha(doc, folha)
+    if chave is not None:
+        with _TRANCA_GEOMETRIAS:
+            if chave in _DPIS_DO_SCAN:
+                return _DPIS_DO_SCAN[chave]
+    dpi = None
+    try:
+        from core.pdf_io import _TRANCA
+
+        with _TRANCA:
+            pagina = doc[folha.indice]
+            largura_pt = float(pagina.rect.width)
+            maior = max((int(i[2]) for i in pagina.get_images()), default=0)
+        if largura_pt > 0 and maior > 0:
+            dpi = maior / (largura_pt / 72.0)
+    except Exception:  # noqa: BLE001 - sem o DPI do scan, vale o do desenho
+        dpi = None
+    if chave is not None:
+        with _TRANCA_GEOMETRIAS:
+            _DPIS_DO_SCAN[chave] = dpi
+    return dpi
+
+
+# O DPI do escaneamento de cada folha, nesta sessao (ver _dpi_do_scan). Seguro
+# esvaziar a qualquer hora.
+_DPIS_DO_SCAN: dict[tuple, float | None] = {}
+
+
+def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+             dpi: float | None = None, dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:
     """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
+
+    dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
+    ScanTailor precisa deles; item 1.2).
 
     O MESMO para a previa (renderizar_pagina) e o PDF (processar): antes era
     escrito duas vezes, igual. Devolve (imagem, monocromatica); sem "Limpar a
@@ -699,7 +808,7 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray) -> tuple[n
     if not projeto.limpar or pagina.filtro == TIRAR_FUNDO:
         return img, False
     return aplicar_filtro_com_selecao(
-        img, pagina.filtro, garantir_selecao(projeto, pagina, img),
+        img, pagina.filtro, garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan),
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
     )
@@ -853,8 +962,12 @@ def processar(
                     # _GEOMETRIAS)
                     if _precisa_de_geometria(pagina, projeto):
                         _guardar_geometria(folha, pagina, projeto, img_folha)
+                    dpi_desenho = dpi_scan = None
+                    if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
+                        dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
+                        dpi_scan = _dpi_do_scan(doc, folha)
                     img = preparar_metade(img_folha, folha, pagina, projeto)
-                    img, mono = _filtrar(projeto, pagina, img)
+                    img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
 
                 # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
                 # conteudo (ja filtrado) dentro do tamanho de folha escolhido,

@@ -738,6 +738,12 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
             try:
                 img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
                 base_img = preparar_metade(img_folha, folha, pagina, projeto)
+                # item 1.2: o detector de gravura do ScanTailor precisa do DPI
+                # de verdade da imagem e do DPI do scan (como no programa)
+                from core.pipeline import _dpi_do_desenho, _dpi_do_scan
+
+                dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
+                dpi_scan = _dpi_do_scan(doc, folha)
                 del img_folha
             except Exception as exc:  # noqa: BLE001
                 resultado.medidas.append(
@@ -778,7 +784,7 @@ def avaliar_livro(caminho: Path, quantas_paginas: int, dpi: int) -> ResultadoLiv
             # filtros, como acontece no programa de verdade.
             from core.pipeline import garantir_selecao
 
-            selecao = garantir_selecao(projeto, pagina, base_img)
+            selecao = garantir_selecao(projeto, pagina, base_img, dpi_desenho, dpi_scan)
             registro["regioes_achadas"] = len(selecao)
 
             # Pagina sem letra nenhuma nao tem borda de letra a medir, mesmo que
