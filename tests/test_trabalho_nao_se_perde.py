@@ -1350,3 +1350,91 @@ def test_mudar_uma_opcao_e_conferir_ate_o_fim_continua_valendo(janela, pasta):
     assert len(janela.projeto.paginas) == 3
     assert janela.projeto.dividir_folhas is False
     assert janela.avisos and "Dividir folhas ao meio" in janela.avisos[0]
+
+
+# --- "Tirar da lista" nao apaga as copias de seguranca (decisao do Samuel, 29/09) --------
+#
+# "'Tirar da lista' nao deve apagar as copias de seguranca (projeto.antigo-*),
+# ou pelo menos deve avisar antes" (Registro de mudancas, f94f69b). Antes, a
+# pasta inteira do projeto ia embora, com as copias dentro.
+
+
+def _projeto_com_copias(janela, pasta: Path):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    resumo = projetos.ler_resumo(janela.resumo.pasta)
+    copia = projetos.guardar_copia_do_trabalho(resumo)
+    assert copia is not None
+    return resumo, copia
+
+
+def test_tirar_da_lista_guarda_as_copias_numa_pasta_a_parte(janela, pasta):
+    import historico
+
+    resumo, copia = _projeto_com_copias(janela, pasta)
+    conteudo = copia.read_bytes()
+    acoes = (Path(resumo.pasta) / "acoes.jsonl").read_bytes()
+
+    guardadas = projetos.remover_da_lista(resumo)
+
+    assert not Path(resumo.pasta).exists(), "o projeto nao saiu da lista"
+    assert guardadas is not None and guardadas.is_dir()
+    assert guardadas.is_relative_to(historico.pasta_de_dados() / "copias-de-seguranca")
+    assert not guardadas.is_relative_to(projetos.pasta_dos_projetos())
+    assert (guardadas / copia.name).read_bytes() == conteudo
+    assert (guardadas / copia.name.replace("projeto.", "acoes.").replace(".json", ".jsonl")
+            ).read_bytes() == acoes
+    assert (guardadas / projetos.ARQUIVO_RESUMO).is_file(), "sem o resumo, nao se sabe de que livro e"
+    assert (guardadas / "LEIA-ME.txt").read_text(encoding="utf-8")
+    assert projetos.listar() == []                       # nao vira cartao
+
+
+def test_tirar_da_lista_sem_copias_nao_cria_pasta(janela, pasta):
+    import historico
+
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    resumo = projetos.ler_resumo(janela.resumo.pasta)
+    assert projetos.remover_da_lista(resumo) is None
+    assert not Path(resumo.pasta).exists()
+    assert not (historico.pasta_de_dados() / "copias-de-seguranca").exists()
+
+
+def test_tirar_da_lista_duas_vezes_o_mesmo_nome_nao_sobrescreve(janela, pasta):
+    resumo, _copia = _projeto_com_copias(janela, pasta)
+    primeira = projetos.remover_da_lista(resumo)
+    resumo2, _copia2 = _projeto_com_copias(janela, pasta)
+    segunda = projetos.remover_da_lista(resumo2)
+    assert primeira != segunda and primeira.is_dir() and segunda.is_dir()
+
+
+def test_se_as_copias_nao_puderem_ser_guardadas_nada_e_apagado(janela, pasta, monkeypatch):
+    import shutil as modulo_shutil
+
+    resumo, copia = _projeto_com_copias(janela, pasta)
+
+    def falha(*_a, **_k):
+        raise OSError("disco cheio")
+
+    monkeypatch.setattr(modulo_shutil, "copy2", falha)
+    assert projetos.remover_da_lista(resumo) is None
+    assert copia.is_file() and Path(resumo.pasta).is_dir(), "apagou sem guardar as copias"
+
+
+def test_a_pergunta_de_tirar_da_lista_avisa_das_copias_e_esta_em_portugues(janela, pasta,
+                                                                          monkeypatch):
+    import ui.perguntas as perguntas
+
+    resumo, _copia = _projeto_com_copias(janela, pasta)
+    vistas = []
+
+    def perguntar(pai, titulo, texto, sim="Sim", nao="Não", padrao_sim=False):
+        vistas.append((titulo, texto, sim, nao, padrao_sim))
+        return False
+
+    monkeypatch.setattr(perguntas, "perguntar", perguntar)
+    janela.tela_inicio.pedir_para_remover(resumo)
+    assert Path(resumo.pasta).is_dir()                     # "Nao": nada muda
+    titulo, texto, sim, nao, padrao_sim = vistas[0]
+    assert "cópia" in texto and "não são apagadas" in texto
+    assert sim != "Yes" and nao != "No" and not padrao_sim

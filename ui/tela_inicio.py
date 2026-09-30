@@ -259,14 +259,26 @@ class TelaInicio(QWidget):
             self.recarregar()
 
     def pedir_para_remover(self, resumo: projetos.Resumo) -> None:
-        """Tira o projeto da lista (nao apaga o PDF, que nunca esteve guardado aqui)."""
-        resposta = QMessageBox.question(
-            self, "Tirar da lista?",
-            f"{resumo.nome} sai desta tela e a conferência feita nele se "
-            "perde.\n\nO livro em PDF continua onde está - ele nunca esteve "
-            "guardado aqui dentro.",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if resposta == QMessageBox.Yes:
+        """Tira o projeto da lista (nao apaga o PDF, que nunca esteve guardado aqui).
+
+        As copias de seguranca do trabalho (projeto.antigo-*) nao sao
+        apagadas: vao para a pasta copias-de-seguranca, e a pergunta diz
+        isso (decisao do Samuel, 29/09; projetos.remover_da_lista). Botoes
+        em portugues, com o "nao" no Enter (ui.perguntas).
+        """
+        from ui import perguntas
+
+        texto = (f"{resumo.nome} sai desta tela e a conferência feita nele se "
+                 "perde.\n\nO livro em PDF continua onde está - ele nunca esteve "
+                 "guardado aqui dentro.")
+        quantas = len([c for c in projetos.copias_do_trabalho(resumo)
+                       if c.name.startswith("projeto.")])
+        if quantas:
+            texto += (f"\n\nAs cópias de segurança do trabalho deste livro ({quantas}) "
+                      "não são apagadas: ficam guardadas na pasta "
+                      f"{projetos.pasta_das_copias_guardadas()}.")
+        if perguntas.perguntar(self, "Tirar da lista?", texto,
+                               sim="Tirar da lista", nao="Não, deixar"):
             projetos.remover_da_lista(resumo)
             self.recarregar()
 

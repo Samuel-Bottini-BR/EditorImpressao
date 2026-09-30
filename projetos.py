@@ -640,21 +640,89 @@ def garantir_miniatura(resumo: Resumo, caminho_pdf: str = "") -> str:
     return str(destino)
 
 
-def remover_da_lista(resumo: Resumo) -> None:
-    """Tira o projeto da tela inicial, apagando a pasta DELE.
+PASTA_DAS_COPIAS = "copias-de-seguranca"
 
-    O PDF de origem nunca e tocado: ele nunca esteve aqui dentro.
+
+def copias_do_trabalho(resumo: Resumo) -> list[Path]:
+    """As copias de seguranca que estao na pasta do projeto
+    (projeto.antigo-*, acoes.antigo-*, posicao.antigo-*; ver
+    guardar_copia_do_trabalho)."""
+    pasta = Path(resumo.pasta)
+    if not pasta.is_dir():
+        return []
+    return sorted(c for c in pasta.glob("*.antigo-*") if c.is_file())
+
+
+def pasta_das_copias_guardadas() -> Path:
+    """Onde ficam as copias de seguranca de projetos tirados da lista:
+    %LOCALAPPDATA%\\EditorImpressao\\copias-de-seguranca. Fora da pasta de
+    projetos de proposito: la dentro, com o resumo.json copiado junto, a
+    pasta viraria um cartao falso na tela inicial (listar), e ocuparia o
+    nome de um projeto novo do mesmo livro."""
+    return historico.pasta_de_dados() / PASTA_DAS_COPIAS
+
+
+def remover_da_lista(resumo: Resumo, agora: datetime | None = None) -> Path | None:
+    """Tira o projeto da tela inicial, apagando a pasta DELE - mas as copias
+    de seguranca nao vao junto.
+
+    Decisao do Samuel (29/09/2026, Registro de mudancas): "'Tirar da lista'
+    nao deve apagar as copias de seguranca (projeto.antigo-*)". Antes de
+    apagar a pasta, as copias (e o resumo.json, que diz de que livro sao)
+    sao copiadas para pasta_das_copias_guardadas() / "<pasta do projeto>
+    (tirado da lista em AAAA-MM-DD-HHMM)", com um LEIA-ME.txt. Nunca por cima
+    de outra: no mesmo minuto ganha "-2", "-3"...
+
+    Devolve a pasta onde as copias ficaram, ou None se nao havia copias. Se
+    as copias NAO puderem ser guardadas (disco cheio, sem permissao), nada e
+    apagado e devolve None: o cartao continua na lista. O que se perde no
+    "Tirar da lista" e o trabalho atual (projeto.json) - a pergunta da tela
+    inicial avisa.
+
+    O PDF de origem nunca e tocado: ele nunca esteve aqui dentro. Arriscado:
+    apagar a pasta antes de conferir que as copias foram guardadas.
     """
     import shutil
 
     pasta = Path(resumo.pasta)
     raiz = pasta_dos_projetos()
+    # trava de seguranca: so apaga dentro da pasta de projetos
+    if not (pasta.is_dir() and raiz in pasta.parents):
+        return None
+
+    copias = copias_do_trabalho(resumo)
+    guardadas = None
+    if copias:
+        carimbo = (agora or datetime.now()).strftime("%Y-%m-%d-%H%M")
+        base = pasta_das_copias_guardadas()
+        nome = f"{pasta.name} (tirado da lista em {carimbo})"
+        guardadas = base / nome
+        numero = 2
+        while guardadas.exists():
+            guardadas = base / f"{nome}-{numero}"
+            numero += 1
+        try:
+            guardadas.mkdir(parents=True)
+            for copia in copias:
+                shutil.copy2(copia, guardadas / copia.name)
+            resumo_do_livro = _caminho_do_resumo(pasta)
+            if resumo_do_livro.is_file():
+                shutil.copy2(resumo_do_livro, guardadas / ARQUIVO_RESUMO)
+            (guardadas / "LEIA-ME.txt").write_text(
+                f"Copias de seguranca do trabalho do livro \"{resumo.nome}\",\n"
+                f"guardadas quando o projeto foi tirado da lista em {carimbo}.\n"
+                f"Livro: {resumo.caminho_entrada}\n\n"
+                "Cada projeto.antigo-*.json e o trabalho como estava antes de a\n"
+                "conferencia recomecar; o acoes.antigo-*.jsonl e o posicao.antigo-*.json\n"
+                "da mesma data e hora sao o Historico daquele momento.\n",
+                encoding="utf-8")
+        except OSError:
+            return None                  # nada e apagado sem as copias guardadas
     try:
-        # trava de seguranca: so apaga dentro da pasta de projetos
-        if pasta.is_dir() and raiz in pasta.parents:
-            shutil.rmtree(pasta, ignore_errors=True)
+        shutil.rmtree(pasta, ignore_errors=True)
     except OSError:
         pass
+    return guardadas
 
 
 def renomear(resumo: Resumo, novo_nome: str) -> Resumo:

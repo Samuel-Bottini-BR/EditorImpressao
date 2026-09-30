@@ -2080,3 +2080,42 @@ parte (a queda mata o processo) um livro de 12 folhas grandes, três vezes
 "voltar", "Conferir", "cancelar", "Conferir" e "cancelar" em seguida. Antes:
 o processo caía (código 3221226505). Depois: termina normalmente (3 rodadas
 seguidas).
+
+---
+
+## Tentativa 48 — "Tirar da lista" não apaga mais as cópias de segurança (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito, a conferir (teste de máquina)
+**Pedido (Samuel, 29/09, Registro de mudanças, `f94f69b`):** "'Tirar da lista'
+não deve apagar as cópias de segurança (`projeto.antigo-*`), ou pelo menos deve
+avisar antes."
+
+**Antes:** o "Tirar da lista" apagava a pasta inteira do projeto, com as
+cópias `projeto.antigo-*` (e `acoes.antigo-*`, `posicao.antigo-*`) dentro.
+
+**Escolha (a que não apaga nada das cópias):** antes de apagar a pasta do
+projeto, `projetos.remover_da_lista` copia as cópias de segurança, o
+`resumo.json` (diz de que livro são) e um `LEIA-ME.txt` para
+`%LOCALAPPDATA%\EditorImpressao\copias-de-seguranca\<pasta do projeto> (tirado da lista em AAAA-MM-DD-HHMM)`.
+- **Fora da pasta de projetos** de propósito: lá dentro, com o `resumo.json`
+  copiado, viraria um cartão falso na tela inicial, e ocuparia o nome de um
+  projeto novo do mesmo livro.
+- Nunca por cima de outra (no mesmo minuto ganha "-2", "-3"...).
+- **Se as cópias não puderem ser guardadas** (disco cheio, sem permissão),
+  **nada é apagado** e o cartão continua na lista.
+- Projeto sem cópias: nada é criado; a pasta sai como antes.
+- A pergunta "Tirar da lista?" diz quantas cópias há e onde vão ficar, e tem
+  os botões em português ("Tirar da lista" / "Não, deixar"), com o "não" no
+  Enter (`ui/perguntas.py`, novo: pergunta e aviso com botões escritos por
+  nós).
+
+**O que continua se perdendo no "Tirar da lista":** o trabalho atual
+(`projeto.json`, `acoes.jsonl`), como a pergunta já dizia ("a conferência
+feita nele se perde"). Não foi pedido guardar; fica como ideia.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 5 (falhavam antes):
+as cópias vão para a pasta à parte, iguais byte a byte, com o resumo e o
+LEIA-ME, e não viram cartão; sem cópias não cria pasta; duas vezes no mesmo
+minuto não sobrescreve; se as cópias não puderem ser guardadas nada é
+apagado; a pergunta avisa das cópias, em português, com o "não" no Enter.
