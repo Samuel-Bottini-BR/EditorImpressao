@@ -85,7 +85,10 @@ def test_gravura_pequena_nao_roda_o_melhorar_na_folha_inteira(monkeypatch):
         return original(im, *a, **k)
 
     monkeypatch.setattr(F, "filtro_melhorar", envelope)
-    F.aplicar_filtro_com_selecao(img.copy(), F.PRETO_E_BRANCO, selecao)
+    # Era no Preto e branco. Desde a regra de 30/09/2026 o Preto e branco nao
+    # roda mais o Melhorar em gravura nenhuma (so em foto): o titulo vira
+    # desenho. O caminho rapido continua valendo no Magico pro.
+    F.aplicar_filtro_com_selecao(img.copy(), F.MAGICO_PRO, selecao)
 
     assert formas, "a gravura nao passou pelo Melhorar"
     assert img.shape[:2] not in formas, "o Melhorar ainda roda na folha inteira"

@@ -96,7 +96,11 @@ def test_a_gravura_fica_com_o_papel_branco_sem_perder_o_traco():
     s = Selecao()
     s.acrescentar(retangulo(0.0, 0.0, 1.0, 1.0, tipo=GRAVURA))
 
-    saida, _ = aplicar_filtro_com_selecao(img, PRETO_E_BRANCO, s)
+    # Era no Preto e branco. Desde a regra do Samuel de 30/09/2026 ("no Preto e
+    # branco, tudo sai em preto e branco") a gravura de traco sai la como
+    # desenho de 1 bit (tests/test_preto_e_branco_regra_30_09.py); o papel
+    # branco com a hachura em tons continua valendo no Melhorar.
+    saida, _ = aplicar_filtro_com_selecao(img, MELHORAR, s)
     cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY)
 
     # O papel que interessa e o que fica ENTRE os tracos, e nao uma margem

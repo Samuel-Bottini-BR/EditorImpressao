@@ -2250,3 +2250,82 @@ fica com as opções do trabalho, e a abertura seguinte não recomeça); livro
 recém-aberto com trabalho, opção mudada e voltar não grava nada; o trabalho
 feito antes de sair para "O que fazer" continua gravado; livro novo guarda a
 opção como antes.
+
+---
+
+## Tentativa 52 — a regra nova do Preto e branco: a gravura vira desenho (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito, a conferir (teste de máquina + teste de olho do Samuel)
+**Pedido (Samuel, 30/09):** "No Preto e branco, tudo sai em preto e branco,
+inclusive moldura dourada, título colorido e iluminura. A moldura não deve sair
+dourada (como no detector antigo) nem preta chapada (como no novo): deve sair
+como desenho em preto e branco, com os traços e detalhes em preto e o fundo da
+faixa em branco, sem perder o desenho. O título 'NOVEMBRE.' da Horas 26 sai
+preto no Preto e branco. Nos outros filtros (Mágico pro, Melhorar, Original),
+sai com a cor original."
+
+**O que mudou (`core/filtros.py`, `_preto_e_branco_com_gravura`):** no Preto e
+branco, cada zona de gravura da marcação vira **desenho de 1 bit**: preto é o
+ponto bem mais escuro que o fundo em volta dele (o fundo é o fechamento
+morfológico, a mesma operação consagrada de `_peso_de_traco`; elemento de 1/120
+do menor lado da página; limiar 0,80 do fundo). A faixa pintada, mais larga que
+o elemento, é fundo dela mesma e sai branca; o contorno, o detalhe e a letra
+saem pretos. Mancha escura pequena e sem cor (nota quadrada, letra grossa de
+tinta preta) volta cheia. Sem foto na página, ela sai inteira em 1 bit e o
+Melhorar não roda mais no Preto e branco. **Foto e pintura de tom contínuo
+ficam como estavam** (pouco traço, `GRAVURA_DE_TRACO_MINIMA`, e zona "grossa",
+`FOTO_ESPESSURA_MINIMA` = 12% do menor lado), até o Samuel decidir. Melhorar,
+Mágico pro e Original: sem mudança.
+
+**Tentado e descartado (protótipos em `saida_teste/pb_30_09/proto/`):**
+
+1. *Sauvola da página dentro da gravura* (o que o detector antigo fazia): a
+   faixa dourada mais estreita que a janela sai preta; a iluminura da Horas 11
+   vira borrão preto. É o defeito que a regra proíbe.
+2. *Normalizar pelo fundo e passar Sauvola por cima*: faixa da Horas 13 cheia de
+   ruído, hachura do Palatino 5 partida. Trocado pelo limiar fixo sobre o fundo.
+3. *Elemento de 1/200 da página*: o título "NOVEMBRE." sai oco (só contorno).
+   1/90 a 1/120 enchem a letra; 1/120 ainda cabe nas faixas das molduras.
+4. *Contraste 0,15 / 0,22 / 0,30*: 0,15 enche a faixa da Horas 13 de pontinhos;
+   0,30 apaga a hachura do retrato do Palatino 5 e o contorno da Horas 27. 0,20.
+5. *Canal verde, ou os três canais*, no lugar do brilho: o verde não mudou nada
+   à vista; os três canais enchem a faixa dourada de ruído. Fica o brilho.
+6. *Encher toda mancha escura pequena* (para a nota do Graduale não sair oca):
+   pedaços da moldura dourada da Horas 13 viram blocos pretos, e a hachura
+   fechada do Palatino 5 vira manchas. Encher só a mancha **sem cor** (tinta):
+   as notas voltam cheias e o dourado não. Encher pela "lisura" do miolo: a
+   nota do Graduale tem textura e não enche. Descartado.
+7. *Somar o Sauvola da página onde não há cor* (para a tinta preta larga): a
+   iluminura da Horas 11 e as cenas da Horas 47 ganham grandes manchas pretas.
+   Descartado.
+8. *Pedaço fino de moldura contado como foto*: a medida de traço sozinha dá 0%
+   nos pedaços da moldura das Horas 13 e 27 (o recorte só tem faixa) e eles
+   ficariam em cor. Por isso a foto precisa também ser "grossa".
+
+**Resultado da rodada** (`relatorios/conferir/pb-regra-30-09/antes/1.2-2026-09-30-1004`
+e `.../depois/1.2-2026-09-30-1031`, Preto e branco, 15 páginas, com a coluna
+"rodada anterior"): mudam só as 6 páginas com gravura que não é foto (Horas 11,
+13, 26, 27, Palatino 5, Graduale 222), e todas saem só com preto e branco; as
+outras 9 (inclusive Opus 20 e Escola 35, fotos) ficam idênticas ponto a ponto.
+
+**Tempo** (só o filtro, nas mesmas entradas, antes e depois alternados, máquina
+dividida com outro agente): Horas 11 23,8 → 12,0 s; Horas 13 17,9 → 4,0 s;
+Horas 26 13,4 → 3,0 s; Horas 27 12,8 → 2,5 s; Graduale 222 13,3 → 3,5 s;
+Palatino 5 1,6 → 0,4 s; páginas de texto iguais; Marial, 10 páginas do teste de
+velocidade, 25,2 → 24,5 s. **Página com foto: Opus 20 5,4 → 5,7 s (+0,3 s, a
+conta de "foto ou não")**; Escola 35 5,8 → 5,0 s (dentro do ruído).
+
+**O que continua:** o que a gravura não pega continua no Preto e branco da
+página (o lado direito e o pé da moldura da Horas 13 seguem pretos: o detector
+não os marca); o título vermelho fora da gravura some no Preto e branco da
+página ("TABLE" e "CONTENU EN CE LIVRE." da Horas 13), pela conversão para
+cinza pelo maior canal (`_cinza_para_binarizar`, a escolha feita para a pauta
+vermelha do Graduale). Fotos: exemplos para o Samuel escolher em
+`relatorios/conferir/fotos-no-preto-e-branco-2026-09-30/`.
+
+**Testes:** `tests/test_preto_e_branco_regra_30_09.py` (8, novos). Mudados
+para a regra nova: `test_a_gravura_fica_com_o_papel_branco_sem_perder_o_traco`
+(`tests/test_filtro_com_selecao.py`, agora no Melhorar) e
+`test_gravura_pequena_nao_roda_o_melhorar_na_folha_inteira`
+(`tests/test_melhorar_em_volta_da_gravura.py`, agora no Mágico pro).

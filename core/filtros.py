@@ -4,6 +4,9 @@ Esta e a parte mais importante do programa. As versoes anteriores falharam aqui
 por tentar inventar formula propria. Aqui usamos o que já e consagrado:
 
 - Preto e branco: binarizacao local de Sauvola (via DoxaPy, licenca CC0).
+  Na gravura marcada (moldura, iluminura, titulo colorido, gravura de traco),
+  o desenho em preto e branco de _preto_e_branco_com_gravura (regra do
+  Samuel de 30/09/2026: no Preto e branco tudo sai em preto e branco).
   E o mesmo caminho do ScanTailor. Resolve amarelado E bleed-through (o texto
   do verso transparecendo) de uma vez só, porque o limiar e calculado numa
   janela ao redor de cada pixel: o texto do verso e sempre mais claro que o
@@ -1699,7 +1702,8 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
     pintura clara (a roupa do anjo) nem a foto (a estatua do Opus 20). Era o
     bug dos quadradinhos de 28/09/2026 - ver _so_o_papel_da_gravura. Arriscado
     mudar: tirar isso traz os quadradinhos de volta nos tres filtros (Magico
-    pro, Melhorar e a gravura do Preto e branco passam todos por aqui).
+    pro e Melhorar passam por aqui; no Preto e branco, desde 30/09/2026, so a
+    foto ou pintura de tom continuo - ver _preto_e_branco_com_gravura).
 
     onde_vale e fundo (os dois juntos, ou nenhum): onde o resultado desta funcao
     vai entrar na pagina (o peso da gravura maior que zero) e o resultado do
@@ -1743,6 +1747,206 @@ def _limpar_cada_gravura(img: np.ndarray, gravura: np.ndarray,
             saida[y:y + h, x:x + w] = filtro_melhorar(pedaco, clareza=clareza,
                                                       dentro_da_gravura=True)
     return saida
+
+
+# --- Preto e branco: a gravura vira desenho (regra do Samuel, 30/09/2026) ----
+#
+# "No Preto e branco, tudo sai em preto e branco, inclusive moldura dourada,
+# titulo colorido e iluminura. A moldura nao deve sair dourada (como no
+# detector antigo) nem preta chapada (como no novo): deve sair como desenho em
+# preto e branco, com os tracos e detalhes em preto e o fundo da faixa em
+# branco, sem perder o desenho. O titulo 'NOVEMBRE.' da Horas 26 sai preto no
+# Preto e branco. Nos outros filtros (Magico pro, Melhorar, Original), sai com
+# a cor original."
+#
+# Por que nao o Sauvola da pagina dentro da gravura: ele compara cada ponto com
+# a vizinhanca, e uma faixa dourada mais estreita que a janela dele e mais
+# escura que o papel em volta - sai inteira preta (a moldura preta da Horas 13,
+# print v04 do verificador). Numa iluminura, tudo o que e mais escuro que o
+# papel vira um borrao preto (Horas 11 no detector antigo).
+#
+# O desenho usa o "fundo" de cada ponto pelo FECHAMENTO morfologico (a mesma
+# operacao consagrada de _peso_de_traco: o fechamento apaga o que e mais fino
+# que o elemento e deixa o fundo). Preto e o que fica bem mais escuro que o
+# fundo em volta: traco, contorno, detalhe, letra. Uma area pintada mais larga
+# que o elemento (a faixa dourada, o verde de fundo de uma iluminura) e fundo
+# dela mesma e sai branca. E a normalizacao pelo fundo seguida de um limiar
+# fixo, como o top-hat preto; nao e fotografia de nada, so decide preto ou
+# branco ponto a ponto a partir do proprio original.
+#
+# Medido nas paginas-gabarito (saida_teste/pb_30_09, prototipos v2 a v8):
+# elemento 1/200 da pagina deixava oco o titulo "NOVEMBRE."; 1/120 deixa a
+# letra cheia e ainda cabe dentro das faixas das molduras (39 a 44 pontos de
+# largura mediana nas Horas 13, 26 e 27, contra 27 a 35 do elemento). Contraste
+# 0,15 enchia a faixa da Horas 13 de pontinhos; 0,30 apagava a hachura do
+# retrato do Palatino 5; 0,20 fica no meio. O canal verde no lugar do brilho
+# nao mudou nada a vista; os tres canais juntos enchiam a faixa de ruido.
+DESENHO_FECHAMENTO = 1 / 120        # elemento, em fracao do menor lado da PAGINA
+DESENHO_CONTRASTE = 0.20            # preto se o ponto < (1 - isto) x fundo em volta
+
+# A letra ou nota MAIS LARGA que o elemento ficaria oca (so o contorno): as
+# notas quadradas do Graduale 222 saiam vazadas. Ela volta cheia quando e uma
+# mancha escura (fundo abaixo de DESENHO_AREA_ESCURA do papel), pequena (maior
+# lado abaixo de DESENHO_MANCHA_PEQUENA do menor lado da pagina) e SEM COR
+# (croma media, em a e b do LAB, abaixo de DESENHO_CROMA_DE_TINTA): tinta.
+# Medido: notas do Graduale 17 de croma; faixa dourada da Horas 13 de 29 para
+# cima. Arriscado tirar a trava da cor: pedacos da moldura dourada viravam
+# blocos pretos (prototipo v6). Arriscado trocar o "pequena" por "lisa": a
+# hachura fechada do retrato do Palatino 5 virava manchas pretas.
+DESENHO_AREA_ESCURA = 0.80
+DESENHO_MANCHA_PEQUENA = 1 / 12
+DESENHO_CROMA_DE_TINTA = 22.0
+
+# Foto e pintura de tom continuo (a estatua do Opus Majus 20, o anjo da Escola
+# 35): o Samuel ainda nao decidiu como ficam no Preto e branco (pergunta da
+# gerente, 30/09). Ate ele decidir, ficam como estavam (tom continuo, limpas
+# pelo Melhorar, e a pagina deixa de caber em 1 bit). E foto quem tem pouco
+# traco (_peso_de_traco abaixo de GRAVURA_DE_TRACO_MINIMA, a mesma medida do
+# Magico pro) E e "grossa": cabe dentro dela um circulo de FOTO_ESPESSURA_MINIMA
+# do menor lado da pagina. A espessura e o que separa uma foto de um pedaco
+# fino de moldura, que tambem quase nao tem traco no recorte dele. Medido
+# (espessura / menor lado): fotos e pinturas 34% a 65%; pedacos de moldura das
+# Horas 0,7% a 4%; pedacos de pauta do Graduale 4,5%; iluminura da Horas 11
+# 89%, mas com 22% de traco (sai desenho, como pede a regra).
+FOTO_ESPESSURA_MINIMA = 0.12
+
+
+def _e_foto_ou_pintura(img3: np.ndarray, zona: np.ndarray, caixa: tuple[int, int, int, int],
+                       menor_lado: int) -> bool:
+    """Esta zona de gravura e foto/pintura de tom continuo (fica como esta)?
+
+    zona: mascara booleana da zona, do tamanho da caixa (x, y, largura,
+    altura) na pagina. Ver FOTO_ESPESSURA_MINIMA. A espessura vem primeiro
+    porque e barata: zona fina (moldura, titulo) nem chega a medir o traco.
+    Arriscado mudar: e esta resposta que decide se a zona sai em cor ou em
+    preto e branco.
+    """
+    distancia = cv2.distanceTransform(
+        np.pad(zona.astype(np.uint8), 1), cv2.DIST_L2, 5)
+    if 2.0 * float(distancia.max()) < FOTO_ESPESSURA_MINIMA * menor_lado:
+        return False
+    x, y, largura, altura = caixa
+    lab = cv2.cvtColor(img3[y:y + altura, x:x + largura], cv2.COLOR_BGR2LAB)
+    luz, fundo, nivel = _fundo_e_nivel(lab)
+    traco = _peso_de_traco(luz, fundo, nivel) >= 128
+    return float(traco.mean()) < GRAVURA_DE_TRACO_MINIMA
+
+
+def _desenho_em_preto_e_branco(img3: np.ndarray, nivel_papel: float,
+                               menor_lado: int) -> np.ndarray:
+    """A gravura como desenho de 1 bit: 0 no traco e no detalhe, 255 no resto.
+
+    img3 e o recorte (BGR) com uma folga em volta; nivel_papel e menor_lado
+    sao os da PAGINA inteira, para o desenho sair igual em qualquer recorte.
+    Ver o comentario de DESENHO_FECHAMENTO e de DESENHO_AREA_ESCURA.
+    """
+    cinza = cv2.cvtColor(img3, cv2.COLOR_BGR2GRAY)
+    lado = max(5, int(menor_lado * DESENHO_FECHAMENTO) | 1)
+    fundo = cv2.morphologyEx(
+        cinza, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
+    # cinza < (1 - contraste) x fundo, em 8 bits
+    limite = cv2.convertScaleAbs(fundo, alpha=1.0 - DESENHO_CONTRASTE)
+    preto = cv2.compare(cinza, limite, cv2.CMP_LT) > 0
+
+    # a letra e a nota mais largas que o elemento: de volta cheias (tinta)
+    _t, escura = cv2.threshold(fundo, DESENHO_AREA_ESCURA * nivel_papel, 255,
+                               cv2.THRESH_BINARY_INV)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(escura, connectivity=8)
+    if quantas > 1:
+        pequenas = np.zeros(quantas, bool)
+        pequenas[1:] = (np.maximum(medidas[1:, cv2.CC_STAT_WIDTH], medidas[1:, cv2.CC_STAT_HEIGHT])
+                        < DESENHO_MANCHA_PEQUENA * menor_lado)
+        if pequenas.any():
+            # a cor media so das manchas pequenas (contar a pagina toda custava
+            # o dobro)
+            nas_pequenas = pequenas[rotulos]
+            lab = cv2.cvtColor(img3, cv2.COLOR_BGR2LAB)
+            a_ = lab[:, :, 1][nas_pequenas].astype(np.float32) - 128.0
+            b_ = lab[:, :, 2][nas_pequenas].astype(np.float32) - 128.0
+            media = (np.bincount(rotulos[nas_pequenas], weights=np.hypot(a_, b_),
+                                 minlength=quantas)
+                     / np.maximum(medidas[:, cv2.CC_STAT_AREA], 1))
+            tinta = pequenas & (media < DESENHO_CROMA_DE_TINTA)
+            if tinta.any():
+                preto |= tinta[rotulos]
+    saida = np.full(cinza.shape, 255, np.uint8)
+    saida[preto] = 0
+    return saida
+
+
+def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
+                                peso_gravura: np.ndarray, peso_papel: np.ndarray,
+                                clareza: int = AJUSTE_PADRAO) -> tuple[np.ndarray, bool]:
+    """O Preto e branco de uma pagina com gravura marcada (regra de 30/09/2026).
+
+    binaria e o Preto e branco da pagina inteira (filtro_preto_e_branco). Cada
+    zona de gravura (pedaco ligado de peso_gravura > 0) vira:
+
+    - DESENHO em preto e branco (_desenho_em_preto_e_branco): moldura,
+      iluminura, titulo colorido, gravura de traco - tudo o que nao e foto;
+    - ou fica COMO ESTAVA, se for foto ou pintura de tom continuo
+      (_e_foto_ou_pintura): limpa pelo Melhorar (_limpar_cada_gravura),
+      misturada pela borda suave. So nesse caso a pagina deixa de caber em 1
+      bit - enquanto o Samuel nao decide como a foto sai no Preto e branco.
+
+    Sem foto nenhuma, a pagina inteira sai em 1 bit (so 0 e 255) e
+    monocromatica=True. Dentro da zona de desenho vale o desenho onde o peso
+    passa de 0,5; na borda suave, a pagina.
+
+    Arriscado mudar: nao misturar desenho e pagina pelo peso (sairia cinza, e
+    a pagina deixaria de caber em 1 bit); nao rodar o Melhorar sem foto (era o
+    que deixava a moldura dourada e custava ~3 s por pagina).
+    """
+    img3 = _tres_canais(img)
+    altura, largura = img3.shape[:2]
+    menor_lado = min(altura, largura)
+    saida = binaria if binaria.ndim == 2 else _para_cinza(binaria)
+    saida = saida.copy()
+
+    onde = (peso_gravura > 0).astype(np.uint8)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(onde, connectivity=8)
+    foto = np.zeros(quantas, bool)
+    desenho = np.zeros(quantas, bool)
+    for i in range(1, quantas):
+        x, y, w, h = (int(v) for v in medidas[i, :4])
+        zona = rotulos[y:y + h, x:x + w] == i
+        if _e_foto_ou_pintura(img3, zona, (x, y, w, h), menor_lado):
+            foto[i] = True
+        else:
+            desenho[i] = True
+
+    if desenho.any():
+        nivel_papel = float(np.percentile(_para_cinza(img3)[::4, ::4], BRANCO_PERCENTIL))
+        vale = desenho[rotulos] & (peso_gravura > 0.5)
+        if vale.any():
+            # o desenho e feito so na caixa das zonas, com folga para o
+            # fechamento nao ver a beirada do recorte como fundo
+            bx, by, bw, bh = cv2.boundingRect(vale.astype(np.uint8))
+            folga = max(5, int(menor_lado * DESENHO_FECHAMENTO) | 1) * 2
+            y0, y1 = max(0, by - folga), min(altura, by + bh + folga)
+            x0, x1 = max(0, bx - folga), min(largura, bx + bw + folga)
+            feito = _desenho_em_preto_e_branco(img3[y0:y1, x0:x1], nivel_papel, menor_lado)
+            feito = _despeckle(feito, altura)
+            pedaco = saida[y0:y1, x0:x1]
+            dentro = vale[y0:y1, x0:x1]
+            pedaco[dentro] = feito[dentro]
+
+    if peso_papel.any():
+        saida[peso_papel >= 0.5] = 255
+
+    if not foto.any():
+        return saida, True
+
+    # so foto na pagina (o caso do Opus Majus 20): o peso e o da gravura
+    # inteira, sem a conta ponto a ponto
+    peso_foto = peso_gravura if foto[1:].all() else \
+        np.where(foto[rotulos], peso_gravura, 0.0).astype(np.float32)
+    limpa = _limpar_cada_gravura(img, peso_foto > 0.5, clareza,
+                                 onde_vale=peso_foto > 0, fundo=saida)
+    mistura = _misturar(_tres_canais(saida), limpa, peso_foto)
+    if peso_papel.any():
+        mistura = _misturar(mistura, np.full_like(mistura, 255), peso_papel)
+    return mistura, False   # tem foto em tom continuo: nao cabe em 1 bit
 
 
 def _peso_do_papel_sem_tocar_a_tinta(img: np.ndarray, peso: np.ndarray) -> np.ndarray:
@@ -1862,7 +2066,9 @@ def aplicar_filtro_com_selecao(
     no nivel do papel" - sao adivinhacao pela luminosidade. Com a selecao o
     filtro para de adivinhar: ele sabe o que esta olhando.
 
-        gravura  ->  papel branco por curva, tom preservado; nunca binarizada
+        gravura  ->  papel branco por curva, tom preservado (Melhorar e
+                     Magico pro); no Preto e branco vira desenho em 1 bit,
+                     menos foto/pintura (regra de 30/09/2026)
         letra    ->  contraste e nitidez, sem realce de fundo
         papel    ->  vai a branco, sem medo de estragar o que esta ao lado
 
@@ -1871,7 +2077,11 @@ def aplicar_filtro_com_selecao(
     faz isso e a curva de ombro do filtro Melhorar, que leva o nivel do papel a
     255 e deixa o resto da escala onde esta. O que NAO pode acontecer ali dentro
     e binarizar ou pintar de branco chapado: a hachura da xilogravura vive nos
-    tons intermediarios, e os dois caminhos a apagam.
+    tons intermediarios, e os dois caminhos a apagam. (Isso vale para o
+    Melhorar e o Magico pro. No Preto e branco o Samuel pediu, em 30/09/2026,
+    tudo em preto e branco: a gravura sai como desenho, e o que protege a
+    hachura ali e o limiar pelo fundo em volta de cada ponto - ver
+    _preto_e_branco_com_gravura.)
 
     Selecao vazia devolve exatamente o comportamento de sempre. E o caso de
     todo projeto antigo e de toda pagina que ninguem marcou.
@@ -1906,9 +2116,12 @@ def aplicar_filtro_com_selecao(
 
     try:
         # --- Preto e branco -------------------------------------------------
-        # Binarizar uma gravura de meio-tom e joga-la fora. Onde ha gravura
-        # marcada, a pagina deixa de ser monocromatica e o desenho fica em tom
-        # continuo; o resto vira preto e branco como sempre.
+        # Regra do Samuel (30/09/2026): no Preto e branco TUDO sai em preto e
+        # branco - moldura dourada, iluminura, titulo colorido e gravura de
+        # traco viram desenho (traco em preto, fundo em branco). So a foto ou
+        # pintura de tom continuo fica como estava, ate o Samuel decidir. Ver
+        # _preto_e_branco_com_gravura. Antes daqui, toda gravura ficava em
+        # cor (o Melhorar rodava dentro dela).
         if filtro == PRETO_E_BRANCO:
             binaria = filtro_preto_e_branco(img, forca=forca_preto, algoritmo=algoritmo_pb,
                                             despeckle=despeckle)
@@ -1918,12 +2131,8 @@ def aplicar_filtro_com_selecao(
                     saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
                 return saida, True
 
-            limpa = _limpar_cada_gravura(img, peso_gravura > 0.5, clareza,
-                                         onde_vale=peso_gravura > 0, fundo=binaria)
-            saida = _misturar(_tres_canais(binaria), limpa, peso_gravura)
-            if peso_papel.any():
-                saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
-            return saida, False   # tem gravura: nao cabe em 1 bit
+            return _preto_e_branco_com_gravura(img, binaria, peso_gravura, peso_papel,
+                                               clareza)
 
         # --- Melhorar e Magico pro ------------------------------------------
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
