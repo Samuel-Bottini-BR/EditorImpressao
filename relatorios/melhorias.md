@@ -1544,3 +1544,39 @@ reaberto, volta com o trabalho; "Confirmar e processar" e o fim do
 processamento gravam na pasta do projeto. A reprodução do verificador
 (`reproduz_mesmo_nome.py`, rodada numa cópia com pasta própria) agora mostra o
 livro 1 intacto.
+
+---
+
+## Tentativa 36 — fechar antes do fim da análise não grava mais por cima do trabalho (bug grave, 29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador, prints p18 a p20):
+"abrir um livro salvo e fechar o programa antes do fim da análise [...] apaga
+o trabalho, sem cópia e sem aviso na próxima vez".
+
+**O que acontecia:** entre abrir o livro (Abrir, arrastar, Windows,
+"continuar") e o fim da análise, o projeto em memória está vazio (0 páginas).
+O `closeEvent` chamava `_salvar_agora`, que o gravava por cima do trabalho
+salvo, e o resumo passava a "0 conferidas".
+
+**O que mudou:** `JanelaPrincipal.trabalho_carregado`: falso ao abrir o livro
+e ao disparar uma análise (que refaz as páginas no próprio projeto),
+verdadeiro em `_analise_pronta`. Enquanto é falso, `_salvar_agora` não grava
+(nem o `projeto.json` nem o resumo) se `projetos.tem_trabalho_salvo(resumo)`:
+o `projeto.json` existe e tem páginas, ou existe e não dá para ler. Livro sem
+trabalho salvo continua gravando nesse intervalo (só as opções, como antes: é
+o que o "continuar" traz de volta).
+
+**O que se perde agora nesse intervalo:** só as mudanças feitas na tela "O que
+fazer" de um livro com trabalho salvo, se o programa for fechado antes de
+"Conferir" (antes, perdia-se o trabalho inteiro).
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 6 (4 falhavam antes):
+fechar no "O que fazer" (trabalho e cartão intactos, e o trabalho volta),
+fechar durante a análise do "continuar", fechar no meio de uma nova análise,
+`projeto.json` ilegível não é regravado; e os dois que já passavam e continuam:
+livro novo fechado no "O que fazer" grava as opções, e depois da análise fechar
+grava normalmente. A reprodução do verificador
+(`reproduz_fechar_no_o_que_fazer.py`, numa cópia com pasta própria) agora
+mostra o trabalho intacto.

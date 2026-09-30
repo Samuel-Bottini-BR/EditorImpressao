@@ -64,6 +64,12 @@ class JanelaPrincipal(QMainWindow):
         # recomecou por cima de um projeto salvo (projetos.
         # guardar_copia_do_trabalho); None se nao houve copia.
         self.copia_do_trabalho = None
+        # O projeto em memoria e o trabalho de verdade (voltou de
+        # _analise_pronta)? False entre abrir o livro (ou disparar uma nova
+        # analise) e o fim da analise: nesse intervalo o projeto em memoria
+        # esta vazio ou pela metade, e gravar por cima de um trabalho salvo o
+        # apagaria (bug grave de 29/09/2026; ver _salvar_agora).
+        self.trabalho_carregado = False
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -277,6 +283,7 @@ class JanelaPrincipal(QMainWindow):
             return
 
         nome = Path(caminho).stem
+        self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
         self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
         self.projeto.tem_camadas = tem_camadas
 
@@ -409,6 +416,9 @@ class JanelaPrincipal(QMainWindow):
         TarefaAnalise em QThread - a interface nunca congela (regra 3)."""
         if self.projeto is None:
             return
+        # A analise refaz folhas e paginas no proprio projeto: ate ela acabar,
+        # nada e gravado por cima do trabalho salvo (_salvar_agora).
+        self.trabalho_carregado = False
         self.tela_progresso.comecar("Olhando o livro...")
         self.telas.setCurrentIndex(PROGRESSO)
 
@@ -471,6 +481,7 @@ class JanelaPrincipal(QMainWindow):
                         salvo, projeto, assinatura=self.resumo.assinatura)
 
         self.projeto = projeto
+        self.trabalho_carregado = True        # agora pode gravar (_salvar_agora)
         # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
         # conferencia e para o disco). Antes ela ficava com o objeto de antes
         # da analise, e o que se marcava la, na volta, se perdia. Achado ao
@@ -534,9 +545,22 @@ class JanelaPrincipal(QMainWindow):
             self._relogio_de_salvar.start()
 
     def _salvar_agora(self) -> None:
-        """Grava de verdade. Chamado pelo relogio e ao sair da tela."""
+        """Grava de verdade. Chamado pelo relogio, ao sair da tela, ao
+        processar e ao fechar o programa - sempre na pasta do projeto aberto.
+
+        Nunca grava por cima de um trabalho salvo com um projeto que ainda
+        nao foi analisado (self.trabalho_carregado False: entre abrir o livro
+        e o fim da analise). Bug grave de 29/09/2026 achado pelo verificador:
+        abrir um livro salvo e fechar na tela "O que fazer" (ou em "Olhando o
+        livro...") gravava um projeto de 0 paginas por cima, sem copia. Livro
+        sem trabalho salvo continua gravando nesse intervalo (so as opcoes;
+        e o que o "continuar" traz de volta). Arriscado: tirar essa trava, ou
+        marcar trabalho_carregado antes de _analise_pronta.
+        """
         self._relogio_de_salvar.stop()
         if self.resumo is None or self.projeto is None:
+            return
+        if not self.trabalho_carregado and projetos.tem_trabalho_salvo(self.resumo):
             return
         projetos.salvar_estado(self.resumo, self.projeto)
         projetos.atualizar(self.resumo, self.projeto,

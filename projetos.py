@@ -373,6 +373,31 @@ def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> 
     return None
 
 
+def tem_trabalho_salvo(resumo: Resumo) -> bool:
+    """Ha trabalho de conferencia gravado neste projeto (que nao pode ser
+    regravado por um projeto ainda nao analisado)?
+
+    Sim quando o projeto.json existe e tem paginas, ou quando existe mas nao
+    da para ler (pode ser recuperado a mao; regravar apagaria). Nao quando
+    nao existe, ou quando so tem as opcoes (0 paginas: o livro foi aberto e
+    fechado no "O que fazer" sem nunca ter sido conferido).
+
+    Usado por ui/janela_principal.py (_salvar_agora) - bug grave de
+    29/09/2026 achado pelo verificador: abrir um livro salvo e fechar o
+    programa antes do fim da analise gravava um projeto vazio por cima do
+    trabalho. Le o arquivo inteiro: so e chamado antes de a analise acabar.
+    Arriscado: devolver False para arquivo ilegivel.
+    """
+    caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
+    if not caminho.is_file():
+        return False
+    try:
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return True
+    return not isinstance(dados, dict) or bool(dados.get("paginas"))
+
+
 def carregar_estado(resumo: Resumo):
     """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler."""
     from modelos import Projeto

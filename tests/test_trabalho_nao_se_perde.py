@@ -516,3 +516,105 @@ def test_processar_grava_na_pasta_do_projeto_e_nao_pelo_nome(janela, pasta, monk
     salvo_dois = projetos.carregar_estado(projetos.ler_resumo(pasta_dois))
     assert projetos.mesmo_arquivo(salvo_dois.caminho_saida, str(saida))
     assert _pastas_de_projeto() == sorted([pasta_um.name, pasta_dois.name])
+
+
+# --- fechar antes do fim da analise nao grava por cima (parecer do verificador, bug 2) ---
+#
+# GRAVE, antigo: abrir um livro salvo e fechar o programa na tela "O que
+# fazer" (ou em "Olhando o livro...") gravava o projeto ainda vazio (0
+# paginas) por cima do salvo, sem copia e sem aviso na proxima vez
+# (closeEvent -> _salvar_agora). Reproducao: reproducoes/
+# reproduz_fechar_no_o_que_fazer.py; prints p18-p20.
+
+
+def test_abrir_livro_salvo_e_fechar_no_o_que_fazer_nao_apaga_o_trabalho(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    estado = _estado(janela)
+    antes = estado.read_bytes()
+    resumo_antes = projetos.ler_resumo(janela.resumo.pasta)
+
+    janela.abrir_livro(str(livro))             # fica em "O que fazer"
+    janela.close()
+
+    assert estado.read_bytes() == antes, "fechar no 'O que fazer' apagou o trabalho"
+    resumo = projetos.ler_resumo(janela.resumo.pasta)
+    assert resumo.conferidas == resumo_antes.conferidas == 3, "o cartao perdeu as conferidas"
+
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    _conferir_que_o_trabalho_voltou(janela, str(livro))
+
+
+def test_fechar_durante_a_analise_do_continuar_nao_apaga_o_trabalho(janela, pasta,
+                                                                    monkeypatch):
+    """"continuar" e fechar em "Olhando o livro..." (a analise nao acabou)."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    antes = _estado(janela).read_bytes()
+    monkeypatch.setattr(janela, "analisar", lambda: None)      # analise "rodando"
+
+    janela._continuar_projeto(projetos.achar_por_assinatura(str(livro)))
+    janela._salvar_agora()                     # o relogio de salvar dispara
+    janela.close()
+
+    assert _estado(janela).read_bytes() == antes
+
+
+def test_fechar_no_meio_de_uma_nova_analise_nao_grava_o_projeto_pela_metade(janela, pasta,
+                                                                          monkeypatch):
+    """Voltou da conferencia para "O que fazer" e clicou "Conferir" de novo: a
+    analise refaz as paginas no proprio projeto. Fechar no meio nao grava."""
+    import ui.janela_principal as modulo
+
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    antes = _estado(janela).read_bytes()
+
+    class AnaliseQueNaoAcaba:
+        def __init__(self, projeto):
+            from unittest.mock import MagicMock
+            self.progresso = self.concluida = self.falhou = MagicMock()
+            projeto.paginas = []                # a analise mexeu no projeto
+
+        def start(self):
+            pass
+
+        def isRunning(self):
+            return False
+
+    monkeypatch.setattr(modulo, "TarefaAnalise", AnaliseQueNaoAcaba)
+    janela.abrir_livro(str(livro))
+    janela.analisar()
+    janela.close()
+    assert _estado(janela).read_bytes() == antes
+
+
+def test_livro_novo_fechado_no_o_que_fazer_guarda_as_opcoes_como_antes(janela, pasta):
+    """Livro sem trabalho salvo: fechar no "O que fazer" continua gravando o
+    projeto vazio com as opcoes escolhidas (o "continuar" as traz de volta)."""
+    janela.abrir_livro(str(_pdf(pasta)))
+    janela.projeto.dividir_folhas = False
+    janela.close()
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert salvo is not None and salvo.paginas == []
+    assert salvo.dividir_folhas is False
+
+
+def test_projeto_ilegivel_nao_e_regravado_ao_fechar_antes_da_analise(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    _estado(janela).write_text("{ quebrado", encoding="utf-8")
+    janela.abrir_livro(str(livro))
+    janela.close()
+    assert _estado(janela).read_text(encoding="utf-8") == "{ quebrado"
+
+
+def test_depois_da_analise_fechar_grava_normalmente(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    janela.projeto.paginas[0].filtro = "melhorar"
+    janela.close()
+    assert projetos.carregar_estado(janela.resumo).paginas[0].filtro == "melhorar"
