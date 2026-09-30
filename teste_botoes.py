@@ -3,6 +3,14 @@
 Uso:
     python teste_botoes.py               # gera um PDF de teste sozinho (recomendado)
     python teste_botoes.py "livro.pdf"   # usa um PDF à sua escolha
+    python teste_botoes.py --com-tela    # mostra as janelas (só para depurar)
+
+**Por padrão, nenhuma janela aparece na tela** (pedido da gerente, 30/09/2026:
+rodadas de teste abriam janelas na tela do Samuel): o Qt desenha fora da tela
+(`QT_QPA_PLATFORM=offscreen`), a menos que se passe `--com-tela`. E a pasta de
+dados do programa é uma pasta própria, `saida_teste/botoes/dados` (apagada e
+recriada a cada rodada), para o script não criar projetos na pasta de dados
+real (%LOCALAPPDATA%\\EditorImpressao).
 
 **Nunca aponte para um livro do acervo real** (`TESTES EDITOR DE
 IMPRESSAO\\LIVROS PARA TESTE`): este script cria, mexe e no fim **apaga** o
@@ -49,11 +57,24 @@ um arquivo com aquele nome - o destino de teste é sempre uma pasta nova);
 
 from __future__ import annotations
 
+import os
 import shutil
 import sys
 import time
 import traceback
 from pathlib import Path
+
+# Antes de importar o Qt e o programa: sem janela na tela e pasta de dados
+# propria (ver o topo). O Qt le QT_QPA_PLATFORM ao criar a QApplication; o
+# programa le LOCALAPPDATA a cada gravacao (historico.pasta_de_dados).
+if "--com-tela" in sys.argv:
+    sys.argv.remove("--com-tela")
+else:
+    os.environ["QT_QPA_PLATFORM"] = "offscreen"
+_DADOS_DO_TESTE = Path(__file__).resolve().parent / "saida_teste" / "botoes" / "dados"
+shutil.rmtree(_DADOS_DO_TESTE, ignore_errors=True)       # criada por este script
+_DADOS_DO_TESTE.mkdir(parents=True, exist_ok=True)
+os.environ["LOCALAPPDATA"] = str(_DADOS_DO_TESTE)
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtTest import QTest

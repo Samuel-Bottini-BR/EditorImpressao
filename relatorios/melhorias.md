@@ -2161,3 +2161,53 @@ novo com camadas, com "Sim" e com "Não", não ganha cópia (falhavam antes); a
 pergunta de "Começar de novo" em português com o "não" no Enter.
 `tests/test_tela_inicio.py`: os dois testes que trocavam as funções prontas
 do Qt passaram a trocar as de `ui/perguntas.py`.
+
+---
+
+## Tentativa 50 — nenhuma rodada de testes abre janela na tela (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito, a conferir (teste de máquina)
+**Pedido da gerente (30/09, plano no commit `4a30026`):** depois de uma caixa
+"Tirar da lista?" de um teste meu ficar minutos na tela do Samuel esperando
+clique, nenhuma rodada de pytest pode abrir janela na tela, e caixa sem
+resposta tem de falhar rápido em vez de travar. O mesmo no `teste_botoes.py`,
+por padrão.
+
+**O que mudou:**
+- `tests/conftest.py`, antes de qualquer teste: `QT_QPA_PLATFORM=offscreen`
+  (o Qt desenha na memória; vale para os processos filhos). Só com
+  `EDITOR_TESTES_COM_TELA=1` as janelas aparecem, de propósito.
+- Vigia nas caixas modais: `QDialog.exec`, `QMessageBox.exec` e `QMenu.exec`
+  fecham a caixa depois de 20 s sem resposta e o teste **falha** dizendo qual
+  caixa foi (em vez de a bateria ficar parada para sempre). Teste que responde
+  a caixa a tempo não é afetado.
+- As funções prontas do Qt que abrem caixa por dentro do C++
+  (`QMessageBox.question/warning/...`, `QInputDialog.getText/getInt/...`,
+  `QFileDialog.getOpenFileName/...`) levantam erro **na hora** se um teste as
+  chamar sem trocá-las por uma resposta. A caixa de arquivo do Windows
+  apareceria na tela mesmo com o offscreen.
+- `teste_botoes.py`: offscreen por padrão (`--com-tela` para ver) e pasta de
+  dados própria (`saida_teste\botoes\dados`), para não criar projetos na
+  pasta real.
+
+**Fontes:** nenhum teste precisa de fontes de verdade: a bateria inteira passa
+com o offscreen (inclusive o teste da quebra de linha do caminho da cópia,
+que mede o texto).
+
+**Conferido (como):** um vigia de janelas (script à parte, com a API do
+Windows: `EnumWindows` + `IsWindowVisible` + o processo dono de cada janela)
+olhou a cada 0,1 s todas as janelas visíveis do processo do pytest e dos
+filhos. Primeiro provei que o vigia enxerga: uma janela de 50×50 pontos posta
+**fora** da tela (x = −20000), por 1,5 s, sem pegar o foco, foi vista. Depois:
+- bateria inteira, rodada **sem** `QT_QPA_PLATFORM` no ambiente (para provar
+  que o conftest põe sozinho): 1215 passaram, 1 pulado; **0 janelas visíveis**
+  em 2648 olhadas;
+- `teste_botoes.py` sem `QT_QPA_PLATFORM` nem `LOCALAPPDATA` trocados: 129
+  ações, 0 falhas; **0 janelas visíveis** em 618 olhadas; a pasta de dados real
+  ficou igual (lista de arquivos, tamanhos e datas, antes e depois).
+
+**Testes:** `tests/test_sem_janela_na_tela.py` (novo, 8): o Qt dos testes é o
+offscreen; as funções prontas de caixa sem resposta falham na hora (5
+casos); a caixa modal sem resposta é fechada pelo vigia e marcada; a caixa
+respondida a tempo não é afetada.
