@@ -177,14 +177,30 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
     A segunda forma existe para o desfazer de uma acao em lote: ao aplicar
     "usar em todas", cada página tinha um filtro anterior diferente, e o
     Ctrl+Z precisa devolver o de cada uma.
+
+    Campo com o prefixo "livro." vale para o PROJETO, e nao para os itens
+    (ex.: "livro.filtro_padrao", o filtro do livro): assim uma acao so muda
+    paginas e o filtro do livro juntos, e o desfazer devolve os dois. Usado
+    pelo "Sim" da pergunta do fundo (ui/janela_principal.py,
+    _tirar_o_fundo_do_livro_inteiro; pedido do verificador, 30/09). Arquivo
+    de acoes antigo nao tem esses campos: nada muda para ele. Arriscado: por
+    "livro." em campo que nao existe no Projeto (o setattr criaria um).
     """
     itens = projeto.folhas if acao.alvo == "folha" else projeto.paginas
+
+    for campo, valor in valores.items():
+        if campo.startswith("livro."):
+            nome = campo[len("livro."):]
+            if hasattr(projeto, nome):
+                setattr(projeto, nome, valor)
 
     for indice in acao.indices:
         if not 0 <= indice < len(itens):
             continue
         item = itens[indice]
         for campo, valor in valores.items():
+            if campo.startswith("livro."):
+                continue
             if isinstance(valor, dict):
                 if str(indice) in valor:
                     setattr(item, campo, _restaurar_tipo(campo, valor[str(indice)]))

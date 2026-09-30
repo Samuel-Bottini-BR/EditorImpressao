@@ -1887,3 +1887,52 @@ antigo põe o livro inteiro no filtro e se desfaz pelo Histórico; Sim durante a
 análise do "continuar" vale; livro sem camadas nunca pergunta, nem o antigo;
 o campo vai e volta do disco. Os testes antigos do aviso
 (`tests/test_tirar_fundo_no_programa.py`) continuam passando.
+
+---
+
+## Tentativa 44 — a pergunta do fundo: o "Sim" troca só as páginas em Original, e a resposta vale a qualquer momento (item 1.1, 30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bugs:** Lista de bugs, 30/09 (parecer do verificador, 3ª rodada, prints s15 a
+s23), e decisão do Samuel de 29/09 (commit `f94f69b`): o "Sim" num livro
+antigo troca **só as páginas que estão em "Original"**.
+
+**O que acontecia:**
+- O "Sim" trocava todas as páginas, inclusive as que o Samuel tinha posto em
+  outro filtro de propósito; e o desfazer não devolvia o filtro do livro (s17).
+- Pelo "continuar", a resposta dada **depois** do fim da análise era jogada
+  fora: a janela reconhecia o livro pelo objeto do projeto, e a análise troca
+  esse objeto (s19 a s21). Nada ficava anotado e a pergunta voltava sempre.
+- "Sim" e fechar (ou voltar, ou cancelar) antes de "Conferir": o "Sim" ficava
+  só na memória e se perdia, mas a pergunta já estava anotada como respondida
+  e não voltava (s23).
+
+**O que mudou (`ui/janela_principal.py`, `historico_acoes.py`):**
+- O livro que perguntou é reconhecido pela **pasta do projeto**, não pelo
+  objeto: a resposta vale antes, durante ou depois da análise.
+- **"Sim"** com o trabalho na tela: aplica na hora. Livro sem trabalho salvo
+  (novo): o filtro do livro vira "Tirar o fundo" e é gravado com as opções,
+  junto com o "já perguntou" (fechar antes de "Conferir" não perde nada).
+  Projeto com trabalho salvo ainda não carregado: o "Sim" espera o trabalho
+  carregar e **só então** conta como respondido; se o programa fechar, a
+  pessoa voltar ou cancelar antes, nada foi aplicado e nada fica anotado, e a
+  pergunta volta na próxima abertura.
+- **Por que assim:** é o mais simples e seguro. A alternativa, gravar o "Sim"
+  direto no `projeto.json` do trabalho sem carregá-lo, pularia o Histórico
+  (não daria para desfazer) e a trava que não grava por cima do trabalho antes
+  da análise (Tentativa 36).
+- **"Não", Esc e X:** anotados na hora (só o campo), a qualquer momento.
+- O "Sim" num projeto com páginas troca **só as páginas em "Original"** e o
+  filtro do livro, numa ação só do Histórico. O desfazer devolve os dois: a
+  ação ganhou o campo `livro.filtro_padrao`, que `historico_acoes.aplicar`
+  aplica no projeto e não nas páginas (arquivo de ações antigo não tem o
+  campo: nada muda para ele).
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`: o teste do "Sim" em
+projeto antigo foi refeito (só as de Original; o desfazer devolve o filtro do
+livro) e ganhou 8 casos (6 falhavam antes): desfazer numa sessão seguinte;
+resposta depois do fim da análise do "continuar", com "Sim" e com "Não" (vale
+e fica anotada); "Sim" e fechar, voltar ou cancelar antes de "Conferir" (a
+pergunta volta e o trabalho fica igual); "Sim", cancelar e "Conferir" de novo
+aplica o "Sim"; livro novo, "Sim" e fechar guarda o "Sim".

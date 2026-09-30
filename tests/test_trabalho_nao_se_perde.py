@@ -1096,7 +1096,10 @@ def test_projeto_antigo_nao_esc_e_x_nao_mudam_nada(janela, pasta, como):
     assert depois["perguntou_fundo"] is True, "Esc/X/Nao nao contou como perguntado"
 
 
-def test_projeto_antigo_sim_poe_o_livro_inteiro_no_filtro_e_da_para_desfazer(janela, pasta):
+def test_projeto_antigo_sim_troca_so_as_paginas_em_original_e_da_para_desfazer(janela, pasta):
+    """Decisao do Samuel (29/09, f94f69b): o "Sim" num livro antigo troca SO
+    as paginas que estao em "Original"; as que ele pos em outro filtro ficam.
+    O desfazer devolve tambem o filtro do livro (print s17 do verificador)."""
     from core.filtros import TIRAR_FUNDO
 
     livro = _pdf_com_fundo(pasta)
@@ -1105,16 +1108,36 @@ def test_projeto_antigo_sim_poe_o_livro_inteiro_no_filtro_e_da_para_desfazer(jan
     _responder(janela, sim=True)
     _analisar(janela)
 
-    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO] * 3
+    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO, MAGICO_PRO, TIRAR_FUNDO]
+    assert janela.projeto.filtro_padrao == TIRAR_FUNDO
     assert janela.projeto.paginas[1].revisada, "o resto do trabalho se perdeu"
     assert not janela.avisos
     janela.tela_conferir.desfazer()                        # pelo Historico
     assert [p.filtro for p in janela.projeto.paginas] == ["original", MAGICO_PRO, "original"]
+    assert janela.projeto.filtro_padrao == "original", "o desfazer nao devolveu o filtro do livro"
     janela.tela_conferir.refazer()
+    assert janela.projeto.filtro_padrao == TIRAR_FUNDO
     janela.close()
     salvo = projetos.carregar_estado(janela.resumo)
-    assert [p.filtro for p in salvo.paginas] == [TIRAR_FUNDO] * 3
+    assert [p.filtro for p in salvo.paginas] == [TIRAR_FUNDO, MAGICO_PRO, TIRAR_FUNDO]
+    assert salvo.filtro_padrao == TIRAR_FUNDO
     assert salvo.perguntou_fundo is True
+
+
+def test_desfazer_o_sim_depois_de_reabrir_devolve_o_filtro_do_livro(janela, pasta):
+    """O Historico vem do disco: desfazer o "Sim" numa sessao seguinte tambem
+    devolve o filtro do livro."""
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=True)
+    _analisar(janela)
+    _fechar_a_conferencia(janela)
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    janela.tela_conferir.desfazer()
+    assert janela.projeto.filtro_padrao == "original"
+    assert [p.filtro for p in janela.projeto.paginas] == ["original", MAGICO_PRO, "original"]
 
 
 def test_sim_respondido_durante_a_analise_do_continuar_vale(janela, pasta, monkeypatch):
@@ -1127,6 +1150,94 @@ def test_sim_respondido_durante_a_analise_do_continuar_vale(janela, pasta, monke
     monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     _responder(janela, sim=True)
+    _analisar(janela)
+    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO, MAGICO_PRO, TIRAR_FUNDO]
+
+
+# Parecer do verificador, 3a rodada (30/09): pelo "continuar", a resposta dada
+# DEPOIS do fim da analise era jogada fora (o projeto da tela ja era outro
+# objeto), e o "Sim" seguido de fechar/voltar/cancelar antes de "Conferir" se
+# perdia (so existia na memoria) e a pergunta nao voltava.
+
+
+@pytest.mark.parametrize("sim", [True, False])
+def test_resposta_depois_do_fim_da_analise_do_continuar_vale_e_fica_anotada(janela, pasta,
+                                                                          monkeypatch, sim):
+    from core.filtros import TIRAR_FUNDO
+
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+    monkeypatch.setattr(janela, "analisar", lambda: None)
+    janela._continuar_projeto(projetos.listar()[0])
+    _analisar(janela)                                      # a analise acaba antes
+    _responder(janela, sim=sim)                            # da resposta (s19-s21)
+
+    esperado = [TIRAR_FUNDO, MAGICO_PRO, TIRAR_FUNDO] if sim else ["original", MAGICO_PRO, "original"]
+    assert [p.filtro for p in janela.projeto.paginas] == esperado
+    janela.close()
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert salvo.perguntou_fundo is True, "a resposta nao ficou anotada"
+    assert [p.filtro for p in salvo.paginas] == esperado
+    janela.abrir_livro(str(livro))
+    assert janela.aviso_do_fundo is None, "perguntou de novo"
+
+
+@pytest.mark.parametrize("como", ["fechar", "voltar", "cancelar"])
+def test_sim_e_sair_antes_de_conferir_faz_a_pergunta_voltar(janela, pasta, como):
+    """Projeto antigo: "Sim" e depois fechar, voltar para o inicio ou
+    cancelar a analise, antes de o trabalho carregar. O "Sim" nao foi aplicado:
+    nada muda no trabalho e a pergunta volta na proxima abertura (s23)."""
+    livro = _pdf_com_fundo(pasta)
+    estado = _projeto_antigo_com_trabalho(janela, livro)
+    antes = json.loads(estado.read_text(encoding="utf-8"))
+
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=True)
+    if como == "fechar":
+        janela.close()
+    elif como == "voltar":
+        janela.tela_opcoes.voltar.emit()
+    else:
+        janela.analisar()
+        janela.cancelar()
+        _esperar_a_tarefa(janela)
+    janela.tela_opcoes.folhear.fechar()
+
+    depois = json.loads(estado.read_text(encoding="utf-8"))
+    assert depois["paginas"] == antes["paginas"]
+    assert not depois.get("perguntou_fundo"), "o Sim nao aplicado ficou como respondido"
+    janela.abrir_livro(str(livro))
+    assert janela.aviso_do_fundo is not None, "a pergunta nao voltou"
+
+
+def test_sim_e_cancelar_e_conferir_de_novo_aplica_o_sim(janela, pasta):
+    from core.filtros import TIRAR_FUNDO
+
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=True)
+    janela.analisar()
+    janela.cancelar()
+    _esperar_a_tarefa(janela)
+    _analisar(janela)
+    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO, MAGICO_PRO, TIRAR_FUNDO]
+
+
+def test_livro_novo_sim_e_fechar_antes_de_conferir_guarda_o_sim(janela, pasta):
+    """Livro novo (sem trabalho): o "Sim" vira o filtro do livro, gravado com
+    as opcoes; fechar antes de "Conferir" nao o perde, e nao pergunta de novo."""
+    from core.filtros import TIRAR_FUNDO
+
+    livro = _pdf_com_fundo(pasta)
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=True)
+    janela.close()
+    janela.tela_opcoes.folhear.fechar()
+
+    janela.abrir_livro(str(livro))
+    assert janela.aviso_do_fundo is None
+    assert janela.projeto.filtro_padrao == TIRAR_FUNDO
     _analisar(janela)
     assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO] * 3
 

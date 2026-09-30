@@ -372,10 +372,14 @@ class JanelaPrincipal(QMainWindow):
         nao = caixa.addButton("Não, deixar como está", QMessageBox.RejectRole)
         caixa.setDefaultButton(nao)
         caixa.setEscapeButton(nao)
-        projeto = self.projeto
+        # O livro que perguntou e identificado pela PASTA do projeto, e nao
+        # pelo objeto Projeto: pelo "continuar", a analise termina atras da
+        # pergunta e troca o objeto da tela (o salvo volta por cima). Antes a
+        # resposta dada depois disso era jogada fora (verificador, s19-s21).
+        pasta = self.resumo.pasta if self.resumo is not None else None
 
         def respondeu(_codigo: int) -> None:
-            self._resposta_do_aviso_do_fundo(projeto, caixa.clickedButton() is sim)
+            self._resposta_do_aviso_do_fundo(pasta, caixa.clickedButton() is sim)
             if self.aviso_do_fundo is caixa:
                 self.aviso_do_fundo = None
             caixa.deleteLater()
@@ -384,62 +388,103 @@ class JanelaPrincipal(QMainWindow):
         self.aviso_do_fundo = caixa
         caixa.open()
 
-    def _resposta_do_aviso_do_fundo(self, projeto: Projeto | None, tirar: bool) -> None:
-        """Aplica a resposta do aviso do item 1.1.
+    def _resposta_do_aviso_do_fundo(self, pasta: str | None, tirar: bool) -> None:
+        """Aplica a resposta do aviso do item 1.1, a QUALQUER momento.
 
-        Qualquer resposta (Sim, Nao, Esc, X) fica gravada como "ja
-        perguntou" (Projeto.perguntou_fundo): a pergunta aparece uma vez por
-        livro (decisao do Samuel, 29/09). Grava so esse campo no projeto.json
-        (projetos.anotar_no_estado), sem tocar no trabalho; livro ainda sem
-        projeto.json grava o projeto (so as opcoes) por _salvar_agora.
+        A resposta vale para o projeto que perguntou (`pasta`), enquanto ele
+        estiver aberto - antes, durante ou depois da analise (pelo
+        "continuar" a analise roda atras da pergunta). Outro livro aberto no
+        meio: a resposta nao vale (so pelo teste; a caixa e modal).
 
-        Sim: o filtro do livro vira "Tirar o fundo" na tela "O que fazer" (o
-        mesmo que clicar no radio), e as paginas novas nascem nele na
-        analise. Projeto que ja tem paginas (antigo, ou pelo "continuar"): o
-        livro inteiro vai para o filtro quando o trabalho carrega, como UMA
-        acao do Historico ("Tirar o fundo em N paginas"), que se desfaz
-        (_tirar_o_fundo_do_livro_inteiro). Nao: nada muda - projeto antigo
-        nunca vem com o fundo tirado sem o "Sim".
+        Nao (e Esc, e X): fica anotado "ja perguntou" (Projeto.perguntou_fundo)
+        na hora, e nada mais muda. Projeto antigo nunca vem com o fundo
+        tirado sem o "Sim".
 
-        A resposta so vale para o livro que fez a pergunta (a caixa e modal,
-        entao isso so falharia se alguem trocasse de livro por fora, como um
-        teste).
+        Sim - depende de haver trabalho na tela:
+          - trabalho carregado (conferencia aberta): aplica ja
+            (_tirar_o_fundo_do_livro_inteiro) e grava;
+          - livro sem trabalho salvo (novo, ou so com as opcoes): o filtro do
+            livro vira "Tirar o fundo" e e gravado com as opcoes, junto com o
+            "ja perguntou". As paginas nascem nele na analise. Fechar antes de
+            "Conferir" nao perde nada: o filtro do livro ja esta no disco;
+          - projeto com trabalho salvo, ainda nao carregado ("O que fazer", ou
+            "Olhando o livro..." do "continuar"): o "Sim" espera o trabalho
+            carregar (_fundo_pendente, em _analise_pronta) e so entao conta
+            como respondido. Se o programa fechar, a pessoa voltar ou cancelar
+            antes, nada foi aplicado e NADA fica anotado: a pergunta volta na
+            proxima abertura (verificador, s23). Escolhido por ser o mais
+            simples e seguro: mexer no projeto.json do trabalho sem o carregar
+            (trocar filtros direto no disco) pularia o Historico e a trava
+            que nao grava por cima do trabalho antes da analise.
+
+        Seguro mudar: os textos. Arriscado: anotar "ja perguntou" para um
+        "Sim" que ainda nao foi aplicado (o "Sim" se perdia calado).
         """
         from core.filtros import TIRAR_FUNDO
 
-        if projeto is None or projeto is not self.projeto or self.resumo is None:
+        if pasta is None or self.resumo is None or self.resumo.pasta != pasta:
             return
-        projeto.perguntou_fundo = True
-        if not projetos.anotar_no_estado(self.resumo, perguntou_fundo=True):
-            self._salvar_agora()
+        if self.projeto is None:
+            return
+        na_tela_o_que_fazer = (self.telas.currentIndex() == OPCOES
+                               and self.tela_opcoes.projeto is self.projeto)
         if not tirar:
+            self.projeto.perguntou_fundo = True
+            if not projetos.anotar_no_estado(self.resumo, perguntou_fundo=True):
+                self._salvar_agora()
             return
-        if self.telas.currentIndex() == OPCOES and self.tela_opcoes.projeto is projeto:
-            self.tela_opcoes.escolher_filtro_do_livro(TIRAR_FUNDO)
+
         if self.trabalho_carregado:
+            self.projeto.perguntou_fundo = True
             self._tirar_o_fundo_do_livro_inteiro()
+            self._salvar_agora()
+            return
+        if na_tela_o_que_fazer:
+            self.tela_opcoes.escolher_filtro_do_livro(TIRAR_FUNDO)
         else:
-            self._fundo_pendente = self.resumo.pasta
+            self.projeto.filtro_padrao = TIRAR_FUNDO
+        self._fundo_pendente = pasta
+        if not projetos.tem_trabalho_salvo(self.resumo):
+            self.projeto.perguntou_fundo = True
+            self._salvar_agora()          # opcoes, com o filtro do livro
 
     def _tirar_o_fundo_do_livro_inteiro(self) -> None:
-        """O "Sim" da pergunta do fundo num livro com paginas carregadas: todas
-        as paginas vao para "Tirar o fundo", numa acao so do Historico (que se
-        desfaz), como o "todas" da aba Filtro. So o filtro muda: o resto do
-        trabalho (corte, conferidas, alertas) fica. O filtro do livro tambem
-        (e o que a tela "O que fazer" mostra). Paginas ja no filtro nao entram.
+        """O "Sim" da pergunta do fundo num livro com paginas carregadas.
+
+        Decisao do Samuel (29/09, f94f69b): troca SO as paginas que estao em
+        "Original"; as que ele pos em outro filtro ficam. E o filtro do livro
+        vira "Tirar o fundo". Tudo numa acao so do Historico ("Tirar o fundo
+        em N paginas"), e o desfazer devolve tambem o filtro do livro (campo
+        "livro.filtro_padrao" da acao, historico_acoes.aplicar; verificador,
+        s17). So o filtro muda: corte, conferidas e alertas ficam.
+        Marca o projeto como "ja perguntou" (o "Sim" foi aplicado).
         """
-        from core.filtros import TIRAR_FUNDO
+        from core.filtros import ORIGINAL, TIRAR_FUNDO
+        from historico_acoes import aplicar, montar_acao
 
         self._fundo_pendente = None
         if self.projeto is None:
             return
-        self.projeto.filtro_padrao = TIRAR_FUNDO
-        indices = [p.indice for p in self.projeto.paginas if p.filtro != TIRAR_FUNDO]
-        if not indices or self.tela_conferir.projeto is not self.projeto:
+        self.projeto.perguntou_fundo = True
+        indices = [p.indice for p in self.projeto.paginas if p.filtro == ORIGINAL]
+        filtro_do_livro = self.projeto.filtro_padrao
+        conferir = self.tela_conferir
+        if conferir.projeto is not self.projeto or self.acoes is None:
+            self.projeto.filtro_padrao = TIRAR_FUNDO
             return
-        self.tela_conferir._registrar(
-            "aplicar_em_todas", "pagina", indices, {"filtro": TIRAR_FUNDO},
+        if not indices and filtro_do_livro == TIRAR_FUNDO:
+            return
+        acao = montar_acao(
+            self.projeto, "aplicar_em_todas", "pagina", indices, {"filtro": TIRAR_FUNDO},
             f"Tirar o fundo em {len(indices)} páginas (resposta à pergunta do fundo)")
+        acao.antes["livro.filtro_padrao"] = filtro_do_livro
+        acao.depois["livro.filtro_padrao"] = TIRAR_FUNDO
+        aplicar(self.projeto, acao, acao.depois)
+        self.acoes.registrar(acao)
+        if conferir.previas is not None:
+            for indice in indices:
+                conferir.previas.invalidar(indice)
+        conferir.atualizar()
 
     def _continuar_projeto(self, resumo: projetos.Resumo) -> None:
         """Retoma um projeto exatamente onde parou.
@@ -622,7 +667,9 @@ class JanelaPrincipal(QMainWindow):
         if self.resumo is not None:
             self.tela_conferir.ir_para_pagina(self.resumo.pagina_atual)
         # Item 1.1: "Sim, tirar o fundo" respondido antes de o trabalho
-        # carregar (projeto antigo, "continuar"): vale agora.
+        # carregar (projeto antigo, "continuar", ou com um cancelar no meio):
+        # vale agora, e so agora conta como respondido (_salvar_agora, logo
+        # abaixo, grava o "ja perguntou" junto com o trabalho).
         if self.resumo is not None and self._fundo_pendente == self.resumo.pasta:
             self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
