@@ -442,6 +442,53 @@ def _gravura_a_refazer(projeto: Projeto, pagina: ConfigPagina) -> bool:
     return pagina.gravura_feita_com != assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
 
 
+# As opcoes de gravura do LIVRO (modelos.Projeto), na tela "O que fazer".
+CAMPOS_DA_GRAVURA = ("gravura_forma", "gravura_sensibilidade",
+                     "gravura_mais_sensivel", "gravura_normalizar")
+
+# Assinatura posta na pagina marcada antes do campo gravura_feita_com existir,
+# quando a pessoa muda as opcoes do livro: nao bate com nenhuma assinatura de
+# verdade, e garantir_selecao refaz a parte automatica dela.
+REFAZER_A_GRAVURA = "refazer"
+
+
+def trocar_opcoes_da_gravura(projeto: Projeto, novas: Projeto) -> int:
+    """Poe em `projeto` as opcoes de gravura do livro que estao em `novas`.
+
+    E o que acontece ao clicar "Conferir" depois de mudar o grupo "Gravuras e
+    fotos" da tela "O que fazer" num livro com trabalho
+    (ui/janela_principal._analise_pronta: o trabalho salvo volta por cima da
+    analise, e estas opcoes vem da tela). Devolve quantas paginas vao ter a
+    gravura achada sozinha refeita (na proxima vez que forem desenhadas; a
+    marcacao a mao fica - ver garantir_selecao). 0 = nada muda.
+
+    Pagina marcada antes do campo gravura_feita_com existir (assinatura
+    vazia) e que tem alguma regiao automatica ganha REFAZER_A_GRAVURA:
+    quem mudou as opcoes do livro quer ver o efeito tambem nela. Pagina so
+    com marcacao a mao nao e tocada. Nunca desenha nada nem apaga regiao
+    aqui. Arriscado: refazer sem guardar copia do trabalho antes (quem chama
+    guarda) - um ajuste feito numa regiao automatica se perde.
+    """
+    from core.selecao import MAO
+
+    antes = [getattr(projeto, campo) for campo in CAMPOS_DA_GRAVURA]
+    for campo in CAMPOS_DA_GRAVURA:
+        setattr(projeto, campo, getattr(novas, campo))
+    if antes == [getattr(projeto, campo) for campo in CAMPOS_DA_GRAVURA]:
+        return 0
+    refeitas = 0
+    for pagina in projeto.paginas:
+        if not pagina.selecao:
+            continue
+        if not pagina.gravura_feita_com:
+            if not any(isinstance(r, dict) and r.get("origem") != MAO for r in pagina.selecao):
+                continue
+            pagina.gravura_feita_com = REFAZER_A_GRAVURA
+        if _gravura_a_refazer(projeto, pagina):
+            refeitas += 1
+    return refeitas
+
+
 def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
                      dpi: float | None = None, dpi_do_scan: float | None = None):
     """Descobre onde estao gravura, letra e papel - uma vez por pagina.
@@ -1058,6 +1105,7 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
         partes.append("endireitar as tortas")
     if projeto.cortar_bordas:
         partes.append("cortar as bordas")
+    comum = projeto.limpar and projeto.filtro_padrao not in (ORIGINAL, TIRAR_FUNDO)
     if projeto.limpar and projeto.filtro_padrao == TIRAR_FUNDO:
         if projeto.tem_camadas:
             partes.append("tirar o fundo de todas as páginas, que este PDF já traz "
@@ -1066,6 +1114,15 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     elif projeto.limpar and projeto.filtro_padrao != ORIGINAL:
         nome = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
         partes.append(f"deixar tudo em {nome}")
+    if comum:
+        # item 1.2: o grupo "Gravuras e fotos" (ui/tela_opcoes.py)
+        forma = getattr(projeto, "gravura_forma", "livre")
+        if forma == "desligada":
+            partes.append("não procurar gravuras e fotos")
+        elif forma == "retangular":
+            partes.append("achar as fotos em retângulo")
+        else:
+            partes.append("separar as gravuras do texto")
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")
 

@@ -13,6 +13,19 @@ livro em ui/janela_principal.abrir_livro). A caixinha "Tirar o fundo
 sozinho" da primeira ligacao saiu. escolher_filtro_do_livro e o que o aviso
 "Este livro tem fundo separado. Quer tirar o fundo?" usa quando a pessoa
 responde que sim.
+
+Item 1.2 (30/09/2026, decisao do Samuel: "o programa tem que ter essas opcoes
+para o usuario conseguir usar"): o grupo "Gravuras e fotos", logo abaixo dos
+filtros, com as opcoes do detector de gravuras do ScanTailor Advanced, por
+livro (Projeto.gravura_forma, gravura_sensibilidade, gravura_mais_sensivel,
+gravura_normalizar): "Achar gravuras e fotos" (desmarcada = nao procurar: o
+desligar da regra 8), "Este livro tem fotos" (desmarcada = contorno que segue
+o desenho; marcada = em retangulo), "Sensibilidade" (so com fotos), "Procurar
+tambem imagens claras" e "Igualar a luz da pagina antes". So aparece com
+"Limpar a folha" marcada (sem filtro, a gravura nao muda nada). Mudar num
+livro com trabalho so vale ao clicar "Conferir", como as outras opcoes; ai a
+gravura achada sozinha e refeita e a marcacao a mao fica
+(ui/janela_principal._analise_pronta, core.pipeline.trocar_opcoes_da_gravura).
 """
 
 from __future__ import annotations
@@ -28,6 +41,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QRadioButton,
+    QSlider,
     QVBoxLayout,
     QWidget,
 )
@@ -111,6 +125,8 @@ class TelaOpcoes(QWidget):
         self.cx_limpar = self._caixa("Limpar a folha", "tira o amarelado", opcoes)
         self.painel_filtros = self._montar_filtros()
         opcoes.addWidget(self.painel_filtros)
+        self.painel_gravuras = self._montar_gravuras()
+        opcoes.addWidget(self.painel_gravuras)
         opcoes.addWidget(_separador())
 
         self.cx_endireitar = self._caixa(
@@ -217,6 +233,99 @@ class TelaOpcoes(QWidget):
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(False)
         return painel
 
+    def _montar_gravuras(self) -> QWidget:
+        """O grupo "Gravuras e fotos" (item 1.2): as opcoes do detector de
+        gravuras do ScanTailor, cada uma com uma frase curta AO LADO (como os
+        filtros, logo acima), para a tela caber numa janela de 880 pontos de
+        altura (com a frase embaixo, as caixinhas eram espremidas).
+
+        Recuado como o painel dos filtros, e so aparece com "Limpar a folha"
+        (ver _mudou). As opcoes de dentro so aparecem com "Achar gravuras e
+        fotos" marcada; a sensibilidade so fica habilitada com "Este livro tem
+        fotos" (o ScanTailor so a usa no retangulo). Cada mudanca passa por
+        _mudou, que grava no projeto. Seguro mudar: os textos.
+        """
+        painel = QWidget()
+        grade = QGridLayout(painel)
+        grade.setContentsMargins(34, 4, 0, 4)
+        grade.setHorizontalSpacing(12)
+        grade.setVerticalSpacing(4)
+        grade.setColumnStretch(1, 1)
+        miuda = f"color: {TEXTO_FRACO}; font-size: 12px;"
+
+        titulo = QLabel("Gravuras e fotos")
+        titulo.setStyleSheet("font-weight: bold;")
+        grade.addWidget(titulo, 0, 0, 1, 2)
+
+        def caixa(linha: int, texto: str, explicacao: str, recuo: int) -> QCheckBox:
+            c = QCheckBox(texto)
+            c.setStyleSheet(f"font-size: 14px; font-weight: normal; margin-left: {recuo}px;")
+            grade.addWidget(c, linha, 0)
+            rotulo = QLabel(explicacao)
+            rotulo.setStyleSheet(miuda)
+            rotulo.setWordWrap(True)
+            grade.addWidget(rotulo, linha, 1)
+            self._rotulos_da_gravura.append(rotulo)
+            return c
+
+        self._rotulos_da_gravura: list[QLabel] = []
+        self.cx_achar_gravuras = caixa(
+            1, "Achar gravuras e fotos",
+            "separa desenho, foto e moldura do texto, para cada um ser tratado do seu jeito", 0)
+        self.cx_tem_fotos = caixa(
+            2, "Este livro tem fotos",
+            "procura em retângulo, que pega a foto inteira; desmarcada, segue o contorno do desenho",
+            24)
+
+        linha = QHBoxLayout()
+        linha.setContentsMargins(24, 0, 0, 0)
+        self.rotulo_sensibilidade = QLabel("Sensibilidade")
+        linha.addWidget(self.rotulo_sensibilidade)
+        self.deslizante_sensibilidade = QSlider(Qt.Horizontal)
+        self.deslizante_sensibilidade.setRange(0, 100)
+        self.deslizante_sensibilidade.setSingleStep(10)
+        self.deslizante_sensibilidade.setPageStep(10)
+        self.deslizante_sensibilidade.setValue(100)
+        self.deslizante_sensibilidade.setMinimumWidth(90)
+        # desabilitado (sem "Este livro tem fotos") fica cinza: a folha de
+        # estilo do programa pinta o deslizante de azul sempre
+        self.deslizante_sensibilidade.setStyleSheet(
+            "QSlider::sub-page:horizontal:disabled { background: #d1d5db; }"
+            "QSlider::handle:horizontal:disabled { border-color: #d1d5db; }")
+        linha.addWidget(self.deslizante_sensibilidade, 1)
+        self.valor_sensibilidade = QLabel("100")
+        self.valor_sensibilidade.setMinimumWidth(28)
+        linha.addWidget(self.valor_sensibilidade)
+        grade.addLayout(linha, 3, 0)
+        self.explicacao_sensibilidade = QLabel(
+            "só com fotos: no máximo, o retângulo pega a foto inteira; menos, "
+            "aperta o retângulo e deixa de fora a beirada mais rala")
+        self.explicacao_sensibilidade.setStyleSheet(miuda)
+        self.explicacao_sensibilidade.setWordWrap(True)
+        grade.addWidget(self.explicacao_sensibilidade, 3, 1)
+
+        self.cx_imagens_claras = caixa(
+            4, "Procurar também imagens claras",
+            "acha desenho e foto bem apagados; pode pegar mancha junto", 24)
+        self.cx_igualar_luz = caixa(
+            5, "Igualar a luz da página antes",
+            "acerta a página mais escura de um lado antes de procurar", 24)
+        self.cx_achar_gravuras.setChecked(True)
+        self.cx_igualar_luz.setChecked(True)
+
+        # o que so aparece com "Achar gravuras e fotos" marcada (ver _mudou)
+        self._opcoes_da_gravura = [
+            self.cx_tem_fotos, self._rotulos_da_gravura[1], self.rotulo_sensibilidade,
+            self.deslizante_sensibilidade, self.valor_sensibilidade,
+            self.explicacao_sensibilidade, self.cx_imagens_claras, self._rotulos_da_gravura[2],
+            self.cx_igualar_luz, self._rotulos_da_gravura[3]]
+
+        for c in (self.cx_achar_gravuras, self.cx_tem_fotos,
+                  self.cx_imagens_claras, self.cx_igualar_luz):
+            c.toggled.connect(self._mudou)
+        self.deslizante_sensibilidade.valueChanged.connect(self._mudou)
+        return painel
+
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
         esta marcada - ver _mudou."""
@@ -287,6 +396,18 @@ class TelaOpcoes(QWidget):
         for botao in self.grupo_filtros.buttons():
             if botao.property("filtro") == filtro_do_livro:
                 botao.setChecked(True)
+
+        # item 1.2: o grupo "Gravuras e fotos"
+        forma = projeto.gravura_forma
+        self.cx_achar_gravuras.setChecked(forma != "desligada")
+        self.cx_tem_fotos.setChecked(forma == "retangular")
+        try:
+            sensibilidade = max(0, min(100, int(projeto.gravura_sensibilidade)))
+        except (TypeError, ValueError):
+            sensibilidade = 100
+        self.deslizante_sensibilidade.setValue(sensibilidade)
+        self.cx_imagens_claras.setChecked(bool(projeto.gravura_mais_sensivel))
+        self.cx_igualar_luz.setChecked(bool(projeto.gravura_normalizar))
         self.projeto = projeto
         self._mudou()
 
@@ -339,11 +460,33 @@ class TelaOpcoes(QWidget):
             self.combo_caderno.currentData() or 20
         )
 
+        # item 1.2: o grupo "Gravuras e fotos" (a forma sai de duas caixinhas)
+        if not self.cx_achar_gravuras.isChecked():
+            self.projeto.gravura_forma = "desligada"
+        elif self.cx_tem_fotos.isChecked():
+            self.projeto.gravura_forma = "retangular"
+        else:
+            self.projeto.gravura_forma = "livre"
+        self.projeto.gravura_sensibilidade = int(self.deslizante_sensibilidade.value())
+        self.projeto.gravura_mais_sensivel = self.cx_imagens_claras.isChecked()
+        self.projeto.gravura_normalizar = self.cx_igualar_luz.isChecked()
+        self.valor_sensibilidade.setText(str(self.projeto.gravura_sensibilidade))
+
         # os painéis so aparecem quando fazem sentido; o filtro "Tirar o
         # fundo" (item 1.1), so em PDF com camadas - fora dele nao faria nada
         # (e se ja estiver escolhido num PDF sem camadas, continua a vista
         # para a pessoa poder sair dele: ver core.filtros.filtros_do_livro)
         self.painel_filtros.setVisible(self.projeto.limpar)
+        self.painel_gravuras.setVisible(self.projeto.limpar)
+        for controle in self._opcoes_da_gravura:
+            controle.setVisible(self.cx_achar_gravuras.isChecked())
+        com_fotos = self.cx_tem_fotos.isChecked()
+        for controle in (self.rotulo_sensibilidade, self.deslizante_sensibilidade,
+                         self.valor_sensibilidade, self.explicacao_sensibilidade):
+            controle.setEnabled(com_fotos)
+        cor = "" if com_fotos else f"color: {TEXTO_FRACO};"
+        self.rotulo_sensibilidade.setStyleSheet(cor)
+        self.valor_sensibilidade.setStyleSheet(cor)
         mostrar_fundo = TIRAR_FUNDO in filtros_do_livro(self.projeto)
         self.radios_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)

@@ -20,7 +20,7 @@ import historico
 import projetos
 from core.camadas import pdf_tem_camadas
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
-from core.pipeline import acertar_alertas_do_fundo
+from core.pipeline import CAMPOS_DA_GRAVURA, acertar_alertas_do_fundo, trocar_opcoes_da_gravura
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
@@ -537,6 +537,9 @@ class JanelaPrincipal(QMainWindow):
         self.projeto.montar_cadernos = salvo.montar_cadernos
         self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
         self.projeto.perguntou_fundo = salvo.perguntou_fundo      # item 1.1
+        # item 1.2: o grupo "Gravuras e fotos"
+        for campo in CAMPOS_DA_GRAVURA:
+            setattr(self.projeto, campo, getattr(salvo, campo))
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
@@ -613,6 +616,7 @@ class JanelaPrincipal(QMainWindow):
         # trabalho em silencio. Ver projetos.combina_com.
         paginas_perdidas = 0
         motivo = ""
+        gravuras_refeitas = 0
         self.copia_do_trabalho = None
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
@@ -635,6 +639,17 @@ class JanelaPrincipal(QMainWindow):
                 # a copia em outra pasta: o caminho novo passa a ser o gravado
                 # (aqui no projeto.json; no resumo, em abrir_livro).
                 salvo.caminho_entrada = projeto.caminho_entrada
+                # Item 1.2: as opcoes do grupo "Gravuras e fotos" vem da tela
+                # (as que a pessoa acabou de escolher), e nao do salvo. Se
+                # mudaram, a gravura achada sozinha das paginas ja marcadas
+                # vai ser refeita (a marcacao a mao fica: ver
+                # core.pipeline.garantir_selecao). ANTES, uma copia do
+                # trabalho (um ajuste feito numa regiao automatica se perde) e,
+                # depois, o aviso. Arriscado: refazer sem a copia, ou sem
+                # avisar (pedido da gerente, 30/09).
+                gravuras_refeitas = trocar_opcoes_da_gravura(salvo, projeto)
+                if gravuras_refeitas:
+                    self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 projeto = salvo
             else:
                 # Rede de seguranca (29/09/2026, bug grave "livro que mudou de
@@ -699,6 +714,25 @@ class JanelaPrincipal(QMainWindow):
                 "O resto do trabalho está aqui.")
         elif paginas_perdidas:
             self.avisar(self._frase_do_recomeco(motivo, self.copia_do_trabalho))
+        elif gravuras_refeitas:
+            self.avisar(self._frase_das_gravuras_refeitas(gravuras_refeitas,
+                                                          self.copia_do_trabalho))
+
+    @staticmethod
+    def _frase_das_gravuras_refeitas(quantas: int, copia) -> str:
+        """O aviso de quando as opcoes de "Gravuras e fotos" mudaram num
+        livro com trabalho (item 1.2; texto pedido pela gerente, 30/09)."""
+        frase = ("As gravuras achadas pelo programa serão procuradas de novo "
+                 f"({quantas} {'página' if quantas == 1 else 'páginas'} já "
+                 "marcadas); o que você marcou à mão fica.")
+        if copia is not None:
+            caminho = str(copia)
+            if len(caminho) > 2 and caminho[1] == ":":
+                caminho = caminho[:2] + "\u2060" + caminho[2:]      # ver _frase_do_recomeco
+            frase += f"\n\nGuardei uma cópia do trabalho:\n{caminho}"
+        else:
+            frase += "\n\nNão consegui guardar uma cópia do trabalho anterior."
+        return frase
 
     @staticmethod
     def _frase_do_recomeco(motivo: str, copia) -> str:
@@ -789,7 +823,8 @@ class JanelaPrincipal(QMainWindow):
     # As opcoes da tela "O que fazer" que mudam quais paginas existem ou como
     # nascem (ver _parar_a_analise).
     OPCOES_DO_LIVRO = ("dividir_folhas", "limpar", "filtro_padrao", "endireitar",
-                       "cortar_bordas", "montar_cadernos", "paginas_por_caderno")
+                       "cortar_bordas", "montar_cadernos", "paginas_por_caderno",
+                       *CAMPOS_DA_GRAVURA)      # item 1.2: "Gravuras e fotos"
 
     def _sair_da_conferencia(self) -> None:
         """Voltar para as opcoes grava antes: sair nao pode custar trabalho.
