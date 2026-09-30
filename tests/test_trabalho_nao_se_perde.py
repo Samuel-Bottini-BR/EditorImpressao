@@ -1538,3 +1538,38 @@ def test_livro_novo_opcao_mudada_e_fechar_guarda_a_opcao(janela, pasta):
     janela.tela_opcoes.cx_dividir.setChecked(False)
     janela.close()
     assert projetos.carregar_estado(janela.resumo).dividir_folhas is False
+
+
+# --- o aviso das opcoes de gravura tem o titulo e o texto certos (30/09) ---------------------
+#
+# Parecer do verificador (rodada geral, r09): mudar as opcoes de "Gravuras e
+# fotos" num livro conferido mostrava "As gravuras ... serao procuradas de
+# novo" mesmo no "nao procurar", numa caixa de titulo "Um momento". O texto
+# certo vem de core.pipeline.aviso_das_opcoes_da_gravura (feito pelo outro
+# implementador); aqui se confere que a janela o usa, com o titulo.
+
+
+def test_aviso_das_opcoes_de_gravura_usa_o_titulo_e_o_texto_certos(janela, pasta):
+    from core.pipeline import TITULO_DO_AVISO_DA_GRAVURA
+    from core.selecao import AUTOMATICO, GRAVURA, RETANGULO, Regiao, Selecao
+
+    vistos = []
+    janela.avisar = lambda mensagem, titulo="Um momento": vistos.append((titulo, mensagem))
+    livro = _pdf(pasta)
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    selecao = Selecao()
+    selecao.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO,
+                               pontos=[(0.1, 0.1), (0.5, 0.5)], origem=AUTOMATICO))
+    janela.projeto.paginas[0].guardar_selecao(selecao)
+    janela._salvar_agora()
+
+    janela._sair_da_conferencia()
+    janela.projeto.gravura_forma = "desligada"             # "nao procurar"
+    _analisar(janela)
+
+    assert vistos, "nao avisou"
+    titulo, frase = vistos[-1]
+    assert titulo == TITULO_DO_AVISO_DA_GRAVURA
+    assert "não vai mais procurar" in frase and "serão procuradas de novo" not in frase
+    assert "Guardei uma cópia" in frase

@@ -2497,3 +2497,26 @@ teste que espia o esvaziamento do armazém do MuPDF passou a desenhar aqui (é
 no servidor que ele acontece agora, com a mesma função).
 `tests/test_mesmo_livro_outro_caminho.py`: o ajudante que "fecha o livro" para
 também a tira, como o fechamento do programa.
+
+---
+
+## Tentativa 56 — o aviso das opções de gravura com o título e o texto de cada caso (item 1.2, 30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito, a conferir (teste de máquina)
+**Pedido da gerente (30/09):** ligar à janela o aviso novo que o outro
+implementador fez em `core.pipeline.aviso_das_opcoes_da_gravura` (parecer do
+verificador, rodada geral, r09: mudar as opções de "Gravuras e fotos" num
+livro conferido dizia "serão procuradas de novo" até no "não procurar", numa
+caixa de título "Um momento").
+
+**O que mudou:** `ui/janela_principal.py` (`_analise_pronta`) mostra
+`self.avisar(frase, titulo)` com o `(titulo, frase)` de
+`aviso_das_opcoes_da_gravura`; o texto antigo (`_frase_das_gravuras_refeitas`)
+saiu. O `avisar` já aceitava o título.
+
+**Teste:** `tests/test_trabalho_nao_se_perde.py`,
+`test_aviso_das_opcoes_de_gravura_usa_o_titulo_e_o_texto_certos` (falhava
+antes: o título era "Um momento"): livro conferido com uma gravura achada pelo
+programa, "não procurar" e "Conferir" → caixa "Gravuras e fotos", texto "não
+vai mais procurar", com o caminho da cópia.

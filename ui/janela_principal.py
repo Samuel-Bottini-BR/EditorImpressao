@@ -20,7 +20,12 @@ import historico
 import projetos
 from core.camadas import pdf_tem_camadas
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
-from core.pipeline import CAMPOS_DA_GRAVURA, acertar_alertas_do_fundo, trocar_opcoes_da_gravura
+from core.pipeline import (
+    CAMPOS_DA_GRAVURA,
+    acertar_alertas_do_fundo,
+    aviso_das_opcoes_da_gravura,
+    trocar_opcoes_da_gravura,
+)
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
@@ -718,24 +723,13 @@ class JanelaPrincipal(QMainWindow):
         elif paginas_perdidas:
             self.avisar(self._frase_do_recomeco(motivo, self.copia_do_trabalho))
         elif gravuras_refeitas:
-            self.avisar(self._frase_das_gravuras_refeitas(gravuras_refeitas,
-                                                          self.copia_do_trabalho))
-
-    @staticmethod
-    def _frase_das_gravuras_refeitas(quantas: int, copia) -> str:
-        """O aviso de quando as opcoes de "Gravuras e fotos" mudaram num
-        livro com trabalho (item 1.2; texto pedido pela gerente, 30/09)."""
-        frase = ("As gravuras achadas pelo programa serão procuradas de novo "
-                 f"({quantas} {'página' if quantas == 1 else 'páginas'} já "
-                 "marcadas); o que você marcou à mão fica.")
-        if copia is not None:
-            caminho = str(copia)
-            if len(caminho) > 2 and caminho[1] == ":":
-                caminho = caminho[:2] + "\u2060" + caminho[2:]      # ver _frase_do_recomeco
-            frase += f"\n\nGuardei uma cópia do trabalho:\n{caminho}"
-        else:
-            frase += "\n\nNão consegui guardar uma cópia do trabalho anterior."
-        return frase
+            # O titulo e o texto de cada caso ("procurar de novo" ou "nao
+            # procurar mais") vem de core.pipeline.aviso_das_opcoes_da_gravura
+            # (parecer do verificador, 30/09, r09: o texto dizia "procuradas de
+            # novo" tambem no "nao procurar", numa caixa "Um momento").
+            titulo, frase = aviso_das_opcoes_da_gravura(
+                self.projeto, gravuras_refeitas, self.copia_do_trabalho)
+            self.avisar(frase, titulo)
 
     @staticmethod
     def _frase_do_recomeco(motivo: str, copia) -> str:
