@@ -54,4 +54,11 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Conferência dos detectores de texto, sem janela (item 1.3): prova que o
+    # programa EMPACOTADO acha o docTR, o Tesseract e o motor do Kraken. Ver
+    # core/ocr_diagnostico.py. Não é usada pelo Kaique.
+    if len(sys.argv) > 1 and sys.argv[1] == "--conferir-ocr":
+        from core.ocr_diagnostico import linha_de_comando
+
+        raise SystemExit(linha_de_comando(sys.argv[2:]))
     raise SystemExit(main())

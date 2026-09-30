@@ -1645,3 +1645,96 @@ máxima do Qt (cerca de 1000 pontos) continua cortado, como antes.
 `test_caminho_da_copia_nao_deixa_a_letra_da_unidade_sozinha`: mostra a caixa
 de verdade, com a folha de estilo do programa, e confere as linhas em que o
 Qt quebra o texto (falhava antes: uma linha "D:").
+
+
+---
+
+## Tentativa 39 — os três detectores de texto no instalador, com o Visual C++ oficial (item 1.3, 29/09/2026)
+
+**Pedido (Samuel, 29/09, Registro de mudanças):**
+- "O instalador roda o instalador oficial da Microsoft, e pula se já estiver
+  instalado": as DLLs do Visual C++ deixam de ir dentro do motor do Kraken.
+- O Tesseract vai com os seis idiomas da comparação.
+- Todos os OCRs vão instalados, com o Tesseract desligado de fábrica.
+
+**O que ficou:**
+
+- `montar_motor_kraken.py` (commit separado):
+  - não copia mais as seis DLLs do Visual C++;
+  - tira o `vcruntime140.dll` e o `vcruntime140_1.dll` que vêm no zip do
+    Python, que são mais velhos e misturariam versões;
+  - tira os 23 atalhos `Lib\site-packages\bin\*.exe`;
+  - `--levar-dlls-do-visual-c` faz como antes, só para teste;
+  - no teste do fim, a DLL do Visual C++ tem de vir do motor ou do System32.
+- Motor novo em `saida_teste\motor-kraken` (1143 MB). Com o Visual C++ 14.50
+  do Windows, deu as mesmas linhas do Kraken do WSL em 6 páginas, inclusive
+  as 8 perdidas do Opus 256. O motor antigo em `ferramentas\motor-kraken` não
+  foi tocado; o empacotador o recusa.
+- `empacotar.py`: a versão em pasta (e, por ela, o instalador) leva:
+  - o motor do Kraken, em `motor-kraken\`;
+  - o Tesseract, em `tesseract\`: os 27 arquivos, `LICENSE`, `AUTHORS`,
+    `LEIA-ME-TESSERACT.txt` e `tessdata\` com lat, ita, por, fra, eng e
+    script/Fraktur;
+  - o modelo do docTR, em `_internal\modelos\doctr\`;
+  - o OnnxTR, pelas importações escondidas do PyInstaller.
+- O `vc_redist.x64.exe` oficial:
+  - é baixado de `https://aka.ms/vs/17/release/vc_redist.x64.exe` para
+    `ferramentas\downloads`;
+  - é conferido pela assinatura digital, porque não há soma publicada fixa;
+  - vai só no instalador.
+- **A trava vale para tudo:** se faltar peça ou o motor for do jeito velho, o
+  empacotamento para antes do PyInstaller. Depois, cada peça é conferida na
+  pasta e no registro do Inno.
+- `instalador.iss`:
+  - `#error` para cada peça que faltar;
+  - `[Code]`: lê a chave oficial `...\VisualStudio\14.0\VC\Runtimes\x64` nas
+    duas vistas do registro e roda o vc_redist em silêncio só se faltar ou
+    for mais velho;
+  - trata os resultados 0, 1638 e 3010, e para qualquer outro mostra um aviso
+    em português.
+- `core/ocr_diagnostico.py` e `main.py --conferir-ocr`: rodam os três
+  detectores numa imagem, sem janela, e gravam onde cada um achou o seu
+  motor. É o que prova que o programa **empacotado** funciona.
+- `core/ocr_tesseract.py`: no programa instalado, procura os idiomas em
+  `{app}\tesseract\tessdata`.
+
+**Resultado:**
+
+- Instalador de 561 MB (o de 28/09 tinha 209 MB), com 35.086 arquivos:
+  - motor do Kraken: 34.521 arquivos, 1091 MB;
+  - Tesseract: 36 arquivos, 177 MB;
+  - Visual C++: 24 MB.
+- O Inno levou 14 min para comprimir; o empacotamento inteiro, 21 min.
+- O programa empacotado, rodado de `dist\` com `--conferir-ocr`, achou os três
+  detectores. Deu as mesmas linhas que no código em 4 páginas: Opus 20
+  (2/2/2), Palatino 57 (24/16/17), Graduale 222 (20/0/13), Horas 11 (12/0/16).
+- O Kraken empacotado carregou o Visual C++ só do System32.
+
+**O que deu errado no caminho (não repetir):**
+
+1. **O motor do Kraken, aberto pelo programa empacotado, carregava o Visual
+   C++ da pasta `_internal\` do programa.**
+   - Causa: o PyInstaller marca `_internal` com `SetDllDirectoryW`, e o
+     Windows passa essa marca ao processo filho.
+   - Reproduzido fora do empacotado.
+   - Conserto: `ocr_comum.abrir_processo` tira a marca só durante o `Popen` e
+     a devolve em seguida; também tira `_internal` do PATH do filho. Vale para
+     o Kraken e o Tesseract.
+2. **Caminho relativo** da imagem ou da pasta do motor era lido de dentro da
+   pasta do motor, que roda com `cwd` = a pasta dele. Agora vai absoluto
+   (commit do motor).
+3. **O Inno põe a versão no fim da linha "Compressing:"** de um `.exe` sem
+   `ignoreversion` ("... vc_redist.x64.exe   (14.44.35211.0)"). A conferência
+   não reconhecia o vc_redist, e a trava apagou o primeiro instalador bom:
+   14 min perdidos. Consertado em `_comprimidos`, com teste.
+4. **A ferramenta Bash desta sessão corta pela metade as barras invertidas**
+   dentro de heredoc. Vários trechos com `\\` saíram errados; use a
+   ferramenta de edição para código com barra invertida.
+
+**Não testado:**
+- instalar;
+- rodar o vc_redist;
+- uma máquina sem o Visual C++;
+- o notebook do Kaique.
+
+Nada foi instalado neste PC.

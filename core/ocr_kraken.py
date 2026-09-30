@@ -89,7 +89,7 @@ from typing import Callable
 
 import numpy as np
 
-from core.ocr_comum import MOTOR_KRAKEN, LinhaOCR, ResultadoOCR, indisponivel
+from core.ocr_comum import MOTOR_KRAKEN, LinhaOCR, ResultadoOCR, abrir_processo, indisponivel
 
 _log = logging.getLogger(__name__)
 
@@ -254,7 +254,7 @@ class MotorKraken:
             bandeiras = _SEM_JANELA | (_PRIORIDADE_BAIXA if self.prioridade_baixa else 0)
         inicio = time.perf_counter()
         try:
-            self._processo = subprocess.Popen(
+            self._processo = abrir_processo(
                 comando, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 cwd=str(pasta) if pasta else None, creationflags=bandeiras)
         except OSError as erro:

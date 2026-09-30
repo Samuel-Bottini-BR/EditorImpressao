@@ -43,8 +43,10 @@ ONDE FICA O TESSERACT
     lugares_do_tesseract(): ao lado do programa instalado ({app}\\tesseract\\),
     na raiz do código (tesseract\\, fora do git), onde o winget instala
     (C:\\Program Files\\Tesseract-OCR\\), a instalação só do usuário, e o PATH.
-    Os modelos: modelos\\tessdata\\ (fora do git; empacotado,
-    _internal\\modelos\\tessdata\\, como os outros modelos).
+    Os modelos (lugares_dos_modelos): no programa instalado,
+    {app}\\tesseract\\tessdata\\ (o empacotar.py põe ali os seis idiomas da
+    comparação, IDIOMAS_DO_INSTALADOR); no código, modelos\\tessdata\\ (fora
+    do git).
 
 NADA AQUI DERRUBA O PROGRAMA
     Tesseract ausente, modelo do idioma ausente, programa que morre, que
@@ -94,7 +96,8 @@ from typing import Callable
 import cv2
 import numpy as np
 
-from core.ocr_comum import MOTOR_TESSERACT, LinhaOCR, PalavraOCR, ResultadoOCR, indisponivel, retangulo
+from core.ocr_comum import (MOTOR_TESSERACT, LinhaOCR, PalavraOCR, ResultadoOCR, abrir_processo,
+                             indisponivel, retangulo)
 
 _log = logging.getLogger(__name__)
 
@@ -106,7 +109,10 @@ TEMPO_POR_PAGINA = 300.0   # segundos; a página mais lenta do 1.3 levou 9 s
 CLASSES_DE_LINHA = frozenset({"ocr_line", "ocr_textfloat", "ocr_header", "ocr_caption"})
 
 NOME_DO_PROGRAMA = "tesseract.exe" if os.name == "nt" else "tesseract"
-PASTA_DOS_MODELOS = Path(__file__).resolve().parent.parent / "modelos" / "tessdata"
+PASTA_DOS_MODELOS = Path(__file__).resolve().parent.parent / "modelos" / "tessdata"   # no código
+# Os seis idiomas da comparação do 1.3, que o instalador leva (decisão do
+# Samuel, 29/09/2026). O empacotar.py confere que os seis existem.
+IDIOMAS_DO_INSTALADOR = ("lat", "ita", "por", "fra", "eng", "script/Fraktur")
 
 # Windows: sem janela preta de console; prioridade abaixo do normal.
 _SEM_JANELA = 0x08000000
@@ -154,6 +160,30 @@ def lugares_do_tesseract() -> list[Path]:
     return lugares
 
 
+def lugares_dos_modelos() -> list[Path]:
+    """Onde a pasta tessdata é procurada, em ordem.
+
+    1. Ao lado do programa instalado: {app}\\tesseract\\tessdata (empacotado).
+    2. Na raiz do código: modelos\\tessdata (desenvolvimento; fora do git).
+    """
+    lugares = []
+    if getattr(sys, "frozen", False):
+        lugares.append(Path(sys.executable).resolve().parent / "tesseract" / "tessdata")
+    lugares.append(PASTA_DOS_MODELOS)
+    return lugares
+
+
+def achar_pasta_dos_modelos() -> Path:
+    """A primeira pasta de lugares_dos_modelos() que existe (ou a do código, se nenhuma existir)."""
+    for pasta in lugares_dos_modelos():
+        try:
+            if pasta.is_dir():
+                return pasta
+        except OSError:
+            continue
+    return PASTA_DOS_MODELOS
+
+
 def achar_tesseract() -> Path | None:
     """O primeiro tesseract.exe de lugares_do_tesseract() que existe, ou None."""
     for caminho in lugares_do_tesseract():
@@ -183,12 +213,13 @@ class MotorTesseract:
                  tempo_por_pagina: float = TEMPO_POR_PAGINA,
                  prioridade_baixa: bool = True) -> None:
         """executavel: o tesseract.exe (None = procurar em lugares_do_tesseract()).
-        pasta_dos_modelos: a pasta tessdata (None = PASTA_DOS_MODELOS).
+        pasta_dos_modelos: a pasta tessdata (None = achar_pasta_dos_modelos()).
         comando: só para os testes - roda outro programa no lugar do tesseract.exe
             (os argumentos de sempre vão depois dele).
         """
         self.executavel = Path(executavel) if executavel is not None else None
-        self.pasta_dos_modelos = Path(pasta_dos_modelos) if pasta_dos_modelos is not None else PASTA_DOS_MODELOS
+        self.pasta_dos_modelos = (Path(pasta_dos_modelos) if pasta_dos_modelos is not None
+                                  else achar_pasta_dos_modelos())
         self._comando_de_teste = list(comando) if comando else None
         self.tempo_por_pagina = tempo_por_pagina
         self.prioridade_baixa = prioridade_baixa
@@ -309,7 +340,7 @@ class MotorTesseract:
         if os.name == "nt":
             bandeiras = _SEM_JANELA | (_PRIORIDADE_BAIXA if self.prioridade_baixa else 0)
         try:
-            processo = subprocess.Popen(comando, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+            processo = abrir_processo(comando, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                         stderr=subprocess.PIPE, cwd=pasta, creationflags=bandeiras)
         except OSError as erro:
             return indisponivel(MOTOR_TESSERACT, _AVISO_NAO_ABRIU, f"não consegui iniciar {comando[0]}: {erro}")

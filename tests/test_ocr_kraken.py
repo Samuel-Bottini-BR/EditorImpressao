@@ -406,7 +406,7 @@ def _mascara(poligonos, largura: int, altura: int) -> np.ndarray:
 
 @precisa_do_motor
 def test_motor_de_verdade_abre_e_usa_o_visual_c_certo(motor_de_verdade):
-    """O Visual C++ vem do motor (motor antigo, até 29/09) ou do Windows\System32
+    """O Visual C++ vem do motor (motor antigo, até 29/09) ou do Windows\\System32
     (o normal desde 29/09: o instalador roda o vc_redist oficial). De nenhum outro lugar."""
     import montar_motor_kraken
 

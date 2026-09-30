@@ -37,12 +37,13 @@ def _valor_de(comando: list[str], opcao: str) -> list[str]:
 def test_a_lista_de_modelos_e_a_que_o_codigo_procura():
     """Os caminhos vem do proprio codigo: se alguem mudar onde o core procura
     um modelo, o empacotamento acompanha sozinho."""
-    from core import detectar_regioes, rede_selecao
+    from core import detectar_regioes, ocr_doctr, rede_selecao
 
     origens = {origem for origem, _ in empacotar.modelos_do_programa()}
 
     assert origens == {detectar_regioes.CAMINHO_MODELO,
-                       rede_selecao.CODIFICADOR, rede_selecao.DECODIFICADOR}
+                       rede_selecao.CODIFICADOR, rede_selecao.DECODIFICADOR,
+                       ocr_doctr.CAMINHO_MODELO}
 
 
 def test_cada_modelo_vai_para_onde_o_codigo_empacotado_procura():
@@ -55,7 +56,8 @@ def test_cada_modelo_vai_para_onde_o_codigo_empacotado_procura():
     destinos = {origem.relative_to(raiz_do_codigo).parent.as_posix(): destino
                 for origem, destino in empacotar.modelos_do_programa()}
 
-    assert destinos == {"modelos": "modelos", "modelos/mobile_sam": "modelos/mobile_sam"}
+    assert destinos == {"modelos": "modelos", "modelos/mobile_sam": "modelos/mobile_sam",
+                        "modelos/doctr": "modelos/doctr"}
 
 
 @pytest.mark.parametrize("onefile", [False, True])
@@ -282,6 +284,7 @@ def test_modo_entrega_nao_apaga_o_teste_do_kaique(raiz_temporaria, monkeypatch):
     monkeypatch.setattr(empacotar, "AREA_DE_TRABALHO", area)
     monkeypatch.setattr(empacotar, "construir_instalador", instalador_falso)
     monkeypatch.setattr(empacotar, "_avisar_modelos_faltando", lambda: True)
+    monkeypatch.setattr(empacotar, "_avisar_pecas_faltando", lambda motor=None: object())
 
     assert empacotar.main(["--modo", "entrega"]) == 0
 
@@ -290,3 +293,172 @@ def test_modo_entrega_nao_apaga_o_teste_do_kaique(raiz_temporaria, monkeypatch):
     for gerado in empacotar.gerados_em_dist(raiz):
         assert not gerado.exists(), f"{gerado.name} ficou em dist"
     _confere_intactos(raiz, protegidos)
+
+
+# ---------------------------------------------------------------------------
+# os detectores de texto (item 1.3, 29/09/2026): motor do Kraken, Tesseract,
+# Visual C++ oficial. A mesma trava dos modelos: faltou peca, para.
+# ---------------------------------------------------------------------------
+
+BARRA = "\\"
+
+
+def _motor_falso(pasta: Path, *, velho: bool = False, com_bin: bool = False,
+                 protocolo: int | None = None) -> Path:
+    from core import ocr_kraken
+
+    kraken = pasta / "python" / "Lib" / "site-packages" / "kraken"
+    kraken.mkdir(parents=True)
+    (pasta / "python" / "python.exe").write_bytes(b"x")
+    (kraken / "blla.mlmodel").write_bytes(b"modelo")
+    versao = ocr_kraken.VERSAO_PROTOCOLO if protocolo is None else protocolo
+    (pasta / "servidor_kraken.py").write_text(f"VERSAO_PROTOCOLO = {versao}\n", encoding="utf-8")
+    if velho:
+        (pasta / "python" / "msvcp140.dll").write_bytes(b"x")
+    if com_bin:
+        (kraken.parent / "bin").mkdir()
+    return pasta
+
+
+def test_motor_do_jeito_novo_passa(tmp_path):
+    assert empacotar.conferir_motor_kraken(_motor_falso(tmp_path / "m")) == []
+
+
+@pytest.mark.parametrize("defeito, trecho", [
+    ({"velho": True}, "jeito velho, com o Visual C++"),
+    ({"com_bin": True}, "atalhos"),
+    ({"protocolo": 99}, "outra versão"),
+])
+def test_motor_com_defeito_e_recusado(tmp_path, defeito, trecho):
+    problemas = empacotar.conferir_motor_kraken(_motor_falso(tmp_path / "m", **defeito))
+    assert any(trecho in p for p in problemas), problemas
+
+
+def test_pasta_sem_motor_e_recusada(tmp_path):
+    assert "não há motor montado" in empacotar.conferir_motor_kraken(tmp_path)[0]
+
+
+def test_achar_motor_pula_o_velho_e_fica_com_o_novo(tmp_path, monkeypatch):
+    velho = _motor_falso(tmp_path / "velho", velho=True)
+    novo = _motor_falso(tmp_path / "novo")
+    monkeypatch.setattr(empacotar, "LUGARES_DO_MOTOR", [tmp_path / "nao_existe", velho, novo])
+    assert empacotar.achar_motor_kraken() == (novo.resolve(), [])
+    so_velho, problemas = empacotar.achar_motor_kraken(velho)
+    assert so_velho is None and any("jeito velho" in p for p in problemas)
+
+
+def test_pecas_faltando_param_antes_do_pyinstaller(tmp_path, monkeypatch, capsys):
+    """Sem o motor do Kraken, o Tesseract ou o Visual C++, o empacotamento
+    para ANTES de rodar o PyInstaller, dizendo o que falta."""
+    monkeypatch.setattr(empacotar, "_avisar_modelos_faltando", lambda: True)
+    monkeypatch.setattr(empacotar, "LUGARES_DO_MOTOR", [tmp_path / "nao_existe"])
+    monkeypatch.setattr(empacotar, "achar_pasta_do_tesseract", lambda: None)
+    monkeypatch.setattr(empacotar, "preparar_vc_redist",
+                        lambda baixar=True: (None, "", ["falta o vc_redist (teste)"]))
+    rodou: list = []
+    monkeypatch.setattr(empacotar.subprocess, "run", lambda *a, **k: rodou.append(a))
+
+    assert empacotar.construir_pasta() is None
+    assert rodou == [], "nao pode chegar a rodar o PyInstaller"
+    saida = capsys.readouterr().out
+    assert "PAREI" in saida and "motor do Kraken" in saida and "Tesseract" in saida
+    assert "falta o vc_redist (teste)" in saida
+    assert empacotar.main(["--modo", "pasta"]) == 1
+    assert rodou == []
+
+
+def _assinatura(**trocas):
+    boa = {"status": "Valid",
+           "assinante": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+           "produto": "Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.44.35211",
+           "versao": "14.44.35211.0"}
+    boa.update(trocas)
+    return boa
+
+
+def test_vc_redist_oficial_confere():
+    assert empacotar.vc_redist_confere(_assinatura()) == []
+
+
+@pytest.mark.parametrize("trocas, trecho", [
+    ({"status": "HashMismatch"}, "assinatura digital não confere"),
+    ({"status": "NotSigned", "assinante": ""}, "não foi assinado pela Microsoft"),
+    ({"assinante": "CN=Microsoft Corporation Falsa, O=Outra"}, "não foi assinado pela Microsoft"),
+    ({"produto": "Microsoft Visual C++ 2015-2022 Redistributable (x86)"}, "não é o Visual C++"),
+    ({"versao": "12.0.1"}, "versão inesperada"),
+])
+def test_vc_redist_que_nao_confere(trocas, trecho):
+    assert any(trecho in p for p in empacotar.vc_redist_confere(_assinatura(**trocas)))
+
+
+def test_assinatura_de_um_arquivo_sem_assinatura(tmp_path):
+    """O leitor da assinatura (PowerShell) roda de verdade: um arquivo
+    qualquer nao e o vc_redist oficial."""
+    falso = tmp_path / "vc_redist.x64.exe"
+    falso.write_bytes(b"MZ nao sou da Microsoft")
+    assert empacotar.vc_redist_confere(empacotar.assinatura_do_arquivo(falso))
+
+
+def test_registro_do_inno_tem_de_listar_cada_peca(tmp_path):
+    pecas = empacotar.PecasDosDetectores(tmp_path / "motor", tmp_path / "tess", tmp_path / "tess" / "doc",
+                                         tmp_path / "tessdata", tmp_path / "vc_redist.x64.exe", "14.44")
+    esperadas = empacotar.pecas_esperadas_no_instalador(pecas)
+    b = BARRA
+    for caminho in (f"tesseract{b}tesseract.exe", f"tesseract{b}tessdata{b}script{b}Fraktur.traineddata",
+                    f"tesseract{b}LICENSE", f"build{b}vc_redist.x64.exe", f"motor-kraken{b}python{b}python.exe"):
+        assert caminho in esperadas, caminho
+    registro = "".join(f"   Compressing: D:{b}x{b}dist{b}EditorImpressao{b}{r}\n" for r in esperadas)
+    assert empacotar.pecas_faltando_no_registro_do_inno(registro, pecas) == []
+    lat = f"tesseract{b}tessdata{b}lat.traineddata"
+    sem_um = registro.replace(lat, f"outra{b}coisa")
+    assert empacotar.pecas_faltando_no_registro_do_inno(sem_um, pecas) == [lat]
+
+
+def test_registro_do_inno_com_versao_no_fim_da_linha(tmp_path):
+    """O Inno escreve a versao no fim da linha de um .exe versionado sem
+    ignoreversion (o vc_redist). Achado em 29/09: sem isto, a trava apagava
+    o instalador bom."""
+    b = BARRA
+    pecas = empacotar.PecasDosDetectores(tmp_path / "motor", tmp_path / "tess", tmp_path / "tess" / "doc",
+                                         tmp_path / "tessdata", tmp_path / "vc_redist.x64.exe", "14.44")
+    linha = f"   Compressing: D:{b}x{b}build{b}vc_redist.x64.exe   (14.44.35211.0)"
+    comprimidos = empacotar._comprimidos(linha)
+    assert len(comprimidos) == 1 and comprimidos[0].endswith(f"d:{b}x{b}build{b}vc_redist.x64.exe")
+    faltando = empacotar.pecas_faltando_no_registro_do_inno(linha, pecas)
+    assert f"build{b}vc_redist.x64.exe" not in faltando
+
+
+def test_o_script_do_inno_recusa_pasta_sem_as_pecas():
+    """Quem compilar o instalador.iss na mao tambem nao gera instalador sem
+    os detectores de texto, e o Visual C++ so roda se faltar."""
+    from core import ocr_tesseract
+
+    b = BARRA
+    script = (empacotar.RAIZ / "instalador.iss").read_text(encoding="utf-8")
+    for trecho in (f"motor-kraken{b}python{b}python.exe", f"motor-kraken{b}servidor_kraken.py",
+                   f"tesseract{b}tesseract.exe", f"tesseract{b}LICENSE", f"build{b}vc_redist.x64.exe",
+                   f"SOFTWARE{b}Microsoft{b}VisualStudio{b}14.0{b}VC{b}Runtimes{b}x64",
+                   "/install /quiet /norestart", "HKLM64", "HKLM32", "1638", "3010"):
+        assert trecho in script, trecho
+    for idioma in ocr_tesseract.IDIOMAS_DO_INSTALADOR:
+        assert f'Idioma("{idioma.replace("/", b)}")' in script, idioma
+
+
+def test_os_27_arquivos_sao_os_que_o_tesseract_carrega():
+    """A lista fixa ARQUIVOS_DO_TESSERACT = o tesseract.exe e as DLLs da pasta
+    dele que ele (e elas) importam, lidas da tabela de importacao."""
+    import montar_motor_kraken as m
+
+    pasta = empacotar.achar_pasta_do_tesseract()
+    if pasta is None:
+        pytest.skip("Tesseract não instalado")
+    locais = {f.name.lower(): f for f in pasta.iterdir() if f.is_file()}
+    vistos, fila = set(), ["tesseract.exe"]
+    while fila:
+        nome = fila.pop().lower()
+        if nome in vistos or nome not in locais:
+            continue
+        vistos.add(nome)
+        fila.extend(m.importacoes_da_dll(locais[nome]))
+    assert vistos == {n.lower() for n in empacotar.ARQUIVOS_DO_TESSERACT}
+

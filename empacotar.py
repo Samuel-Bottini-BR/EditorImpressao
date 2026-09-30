@@ -43,14 +43,54 @@ Agora:
   instalador incompleto e para. O registro do Inno fica em
   build\\instalador-registro.txt.
 
+OS DETECTORES DE TEXTO VAO JUNTO (item 1.3, 29/09/2026). Decisao do Samuel:
+"todos os OCRs instalados", com o Tesseract desligado de fabrica. Na versao
+em pasta (e, por ela, no instalador):
+
+- docTR: o modelo modelos\\doctr\\rep_fast_base-1b89ebf9.onnx vai para
+  _internal\\modelos\\doctr\\ (mais um em modelos_do_programa) e o OnnxTR
+  entra pelo PyInstaller (OCULTOS);
+- Kraken: o motor a parte (Python 3.12 + Kraken, ~1,2 GB, montado por
+  montar_motor_kraken.py) vai INTEIRO para <pasta>\\motor-kraken\\, ao lado do
+  .exe (e onde core/ocr_kraken.py o procura empacotado). O motor tem de ser
+  do jeito novo, SEM as DLLs do Visual C++ (conferir_motor_kraken);
+- Tesseract: os 27 arquivos do tesseract.exe da UB Mannheim (5.4.0), a
+  LICENSE e os AUTHORS, e os seis idiomas da comparacao (lat, ita, por, fra,
+  eng, script/Fraktur) vao para <pasta>\\tesseract\\ e
+  <pasta>\\tesseract\\tessdata\\;
+- Visual C++: o vc_redist.x64.exe OFICIAL da Microsoft (decisao do Samuel,
+  29/09: "O instalador roda o instalador oficial da Microsoft, e pula se ja
+  estiver instalado"). Baixado de https://aka.ms/vs/17/release/vc_redist.x64.exe
+  para a pasta de downloads das ferramentas (fora do git) e conferido pela
+  ASSINATURA DIGITAL (a Microsoft nao publica uma soma fixa para ele): o
+  Windows tem de dizer "assinatura valida" e o assinante tem de ser a
+  Microsoft Corporation (preparar_vc_redist). Vai so dentro do instalador
+  (build\\vc_redist.x64.exe), que o roda em silencio quando o Visual C++
+  2015-2022 x64 falta ou e mais velho (instalador.iss, secao [Code]).
+
+A TRAVA vale para tudo isso, como para os modelos: faltando qualquer peca
+(motor, Tesseract, idioma, licenca, vc_redist, modelo), ou o motor sendo do
+jeito velho, o script PARA antes de gerar qualquer coisa, dizendo o que falta
+e como resolver; depois de gerar, confere que cada peca chegou inteira na
+pasta (conferir_pecas_no_pacote) e dentro do instalador
+(pecas_faltando_no_registro_do_inno). O arquivo único (pendrive) NAO leva o
+Kraken nem o Tesseract (sao programas a parte, de ~1,4 GB): so o docTR.
+
+Para provar que o programa empacotado acha os tres detectores:
+    dist\\EditorImpressao\\EditorImpressao.exe --conferir-ocr <imagem> <saida.json>
+(ver core/ocr_diagnostico.py).
+
 Arriscado mudar: o destino de cada modelo (tem de ser o caminho relativo que
 o codigo procura, ver modelos_do_programa) e o --contents-directory _internal
-(o instalador.iss e as conferencias contam com esse nome).
+(o instalador.iss e as conferencias contam com esse nome); os nomes das
+pastas motor-kraken\\ e tesseract\\ (core/ocr_kraken.py e core/ocr_tesseract.py
+procuram exatamente ali, ao lado do .exe).
 """
 
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import shutil
 import subprocess
 import sys
@@ -92,7 +132,42 @@ EXCLUIR = [
 ]
 
 # O DoxaPy e uma biblioteca nativa: o PyInstaller nao acha sozinho.
-OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder"]
+# Os detectores de texto (item 1.3) ainda nao estao ligados a tela: vao
+# explicitos, e o OnnxTR e importado so dentro de uma funcao (ocr_doctr).
+OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder",
+           "core.ocr_comum", "core.ocr_doctr", "core.ocr_tesseract", "core.ocr_kraken",
+           "core.ocr_comparar", "core.ocr_diagnostico",
+           "onnxtr", "onnxtr.models", "onnxtr.models.detection", "onnxtr.models.builder",
+           "onnxtr.models.engine"]
+
+# ---- os detectores de texto que vao ao lado do .exe (item 1.3) ----------
+PASTA_DO_MOTOR = "motor-kraken"     # core/ocr_kraken.NOME_DA_PASTA
+PASTA_DO_TESSERACT = "tesseract"    # core/ocr_tesseract.lugares_do_tesseract
+# Onde procurar um motor do Kraken pronto, em ordem (o primeiro VALIDO vale;
+# --motor-kraken passa outro). O de EditorImpressao-arquivos\ferramentas foi
+# montado ate 29/09 com as DLLs do Visual C++ dentro, e e recusado.
+LUGARES_DO_MOTOR = [
+    RAIZ / "motor-kraken",
+    RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas" / "motor-kraken",
+    RAIZ / "saida_teste" / "motor-kraken",
+]
+# Os 27 arquivos de que o tesseract.exe 5.4.0 (UB Mannheim) precisa: ele e as
+# DLLs que ele carrega, lidas da tabela de importacao em 29/09/2026 e
+# testadas numa copia so com elas e o PATH limpo. O resto da pasta do
+# Tesseract (ferramentas de treino, Cairo/Pango, documentacao) nao vai.
+ARQUIVOS_DO_TESSERACT = (
+    "tesseract.exe", "libtesseract-5.dll", "libleptonica-6.dll", "libarchive-13.dll",
+    "libb2-1.dll", "libbz2-1.dll", "libcrypto-3-x64.dll", "libdeflate.dll", "libexpat-1.dll",
+    "libgcc_s_seh-1.dll", "libgif-7.dll", "libiconv-2.dll", "libjbig-0.dll", "libjpeg-8.dll",
+    "libLerc.dll", "liblz4.dll", "liblzma-5.dll", "libopenjp2-7.dll", "libpng16-16.dll",
+    "libsharpyuv-0.dll", "libstdc++-6.dll", "libtiff-6.dll", "libwebp-7.dll",
+    "libwebpmux-3.dll", "libwinpthread-1.dll", "libzstd.dll", "zlib1.dll",
+)
+LICENCAS_DO_TESSERACT = ("LICENSE", "AUTHORS")   # da pasta doc\ da instalacao
+# O instalador oficial do Visual C++ 2015-2022 x64 (link permanente da Microsoft).
+VC_REDIST_URL = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+VC_REDIST_NOME = "vc_redist.x64.exe"
+DOWNLOADS = RAIZ.parent / "EditorImpressao-arquivos" / "ferramentas" / "downloads"
 
 # Onde o PyInstaller 6 poe tudo o que nao e o .exe, na versão em pasta. E o
 # padrao dele, mas vai explicito no comando: o instalador.iss (a limpeza do
@@ -119,7 +194,9 @@ def modelos_do_programa() -> list[tuple[Path, str]]:
     - core/detectar_regioes.CAMINHO_MODELO: o detector de gravura e letra
       (modelos/doclayout.onnx, 75 MB);
     - core/rede_selecao.CODIFICADOR e DECODIFICADOR: a selecao por clique
-      (modelos/mobile_sam/*.onnx, 45 MB).
+      (modelos/mobile_sam/*.onnx, 45 MB);
+    - core/ocr_doctr.CAMINHO_MODELO: o detector de texto docTR fast_base
+      (modelos/doctr/rep_fast_base-1b89ebf9.onnx, 42 MB; item 1.3).
 
     O destino e o caminho da pasta do modelo relativo a raiz do codigo (a
     pasta acima de core/). Empacotado, a raiz do codigo e _internal\\ (na
@@ -131,11 +208,12 @@ def modelos_do_programa() -> list[tuple[Path, str]]:
     empacotar_teste_velocidade.py importa este modulo so pelas listas
     EXCLUIR e OCULTOS.
     """
-    from core import detectar_regioes, rede_selecao
+    from core import detectar_regioes, ocr_doctr, rede_selecao
 
     raiz_do_codigo = Path(detectar_regioes.__file__).resolve().parent.parent
     usados = (detectar_regioes.CAMINHO_MODELO,
-              rede_selecao.CODIFICADOR, rede_selecao.DECODIFICADOR)
+              rede_selecao.CODIFICADOR, rede_selecao.DECODIFICADOR,
+              ocr_doctr.CAMINHO_MODELO)
     return [(origem, origem.relative_to(raiz_do_codigo).parent.as_posix())
             for origem in usados]
 
@@ -188,6 +266,25 @@ def _caminho_no_instalador(origem: Path, destino: str) -> str:
     return "\\".join([INTERNO, *destino.split("/"), origem.name])
 
 
+def _comprimidos(registro: str) -> list[str]:
+    """Os caminhos das linhas "Compressing:" do registro do Inno, em minusculas.
+
+    Tira o "   (14.44.35211.0)" que o Inno poe no fim da linha de um .exe
+    com numero de versao que NAO tem a opcao ignoreversion (achado em 29/09:
+    o vc_redist.x64.exe entrou no instalador, mas a conferencia nao o
+    reconhecia, e o instalador bom foi apagado pela trava).
+    """
+    import re
+
+    saida = []
+    for linha in registro.splitlines():
+        if "Compressing:" not in linha:
+            continue
+        caminho = re.sub(r"\s+\([\d.]+\)\s*$", "", linha.strip())
+        saida.append(caminho.lower().replace("/", "\\"))
+    return saida
+
+
 def modelos_faltando_no_registro_do_inno(registro: str) -> list[str]:
     """Os modelos que o Inno Setup NAO comprimiu para dentro do instalador.
 
@@ -196,8 +293,7 @@ def modelos_faltando_no_registro_do_inno(registro: str) -> list[str]:
     dentro, e nao so na pasta dist\\. Devolve os caminhos relativos
     ('_internal\\modelos\\doclayout.onnx') que faltam.
     """
-    comprimidos = [linha.strip().lower().replace("/", "\\")
-                   for linha in registro.splitlines() if "Compressing:" in linha]
+    comprimidos = _comprimidos(registro)
     faltando: list[str] = []
     for origem, destino in modelos_do_programa():
         relativo = _caminho_no_instalador(origem, destino)
@@ -213,6 +309,325 @@ def _tamanho(caminho: Path) -> str:
     else:
         mb = sum(f.stat().st_size for f in caminho.rglob("*") if f.is_file()) / 1024 / 1024
     return f"{mb:.0f} MB"
+
+
+# ---------------------------------------------------------------------------
+# os detectores de texto que vao ao lado do .exe (item 1.3, 29/09/2026)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class PecasDosDetectores:
+    """Onde estao, neste PC, as pecas que vao ao lado do .exe e no instalador.
+
+    motor: a pasta do motor do Kraken (vai inteira para motor-kraken\\);
+    tesseract: a pasta com o tesseract.exe e as 26 DLLs (so as 27 vao);
+    licencas: a pasta com LICENSE e AUTHORS do Tesseract;
+    tessdata: a pasta com os seis idiomas;
+    vc_redist: o vc_redist.x64.exe oficial conferido; vc_versao: a versao dele.
+    """
+
+    motor: Path
+    tesseract: Path
+    licencas: Path
+    tessdata: Path
+    vc_redist: Path
+    vc_versao: str
+
+
+def conferir_motor_kraken(pasta: Path) -> list[str]:
+    """O que impede esta pasta de ir como motor do Kraken (vazio = pode ir).
+
+    Recusa o motor do jeito velho (com as DLLs do Visual C++ ao lado do
+    python.exe, ou com os atalhos bin\\*.exe): desde 29/09 o Visual C++ vem do
+    vc_redist oficial, e um motor com as DLLs dentro misturaria versoes.
+    """
+    import montar_motor_kraken as m
+    from core import ocr_kraken
+
+    pasta = Path(pasta)
+    python = pasta / "python"
+    problemas = []
+    if not (python / "python.exe").is_file():
+        return [f"não há motor montado em {pasta} (falta python\\python.exe)"]
+    servidor = pasta / ocr_kraken.NOME_DO_SERVIDOR
+    if not servidor.is_file():
+        problemas.append(f"falta {servidor.name} em {pasta}")
+    elif f"VERSAO_PROTOCOLO = {ocr_kraken.VERSAO_PROTOCOLO}\n" not in servidor.read_text(encoding="utf-8"):
+        problemas.append(f"o {servidor.name} de {pasta} é de outra versão (rode montar_motor_kraken.py "
+                         f"--so-servidor --destino {pasta})")
+    if not (python / "Lib" / "site-packages" / "kraken" / "blla.mlmodel").is_file():
+        problemas.append(f"falta o modelo do Kraken (kraken\\blla.mlmodel) em {pasta}")
+    velhas = [n for n in m.DLLS_DO_VISUAL_C if (python / n).is_file()]
+    if velhas:
+        problemas.append(f"o motor de {pasta} é do jeito velho, com o Visual C++ dentro ({', '.join(velhas)}); "
+                         "monte um novo com: montar_motor_kraken.py --destino saida_teste\\motor-kraken")
+    if (python / "Lib" / "site-packages" / "bin").is_dir():
+        problemas.append(f"o motor de {pasta} ainda tem os atalhos Lib\\site-packages\\bin (jeito velho)")
+    return problemas
+
+
+def achar_motor_kraken(escolhido: Path | None = None) -> tuple[Path | None, list[str]]:
+    """O motor que vai no pacote: o escolhido, ou o primeiro VALIDO de LUGARES_DO_MOTOR.
+
+    Devolve (pasta, []) ou (None, [o que ha de errado em cada lugar]).
+    """
+    lugares = [Path(escolhido)] if escolhido else LUGARES_DO_MOTOR
+    problemas = []
+    for lugar in lugares:
+        if not lugar.exists():
+            problemas.append(f"não existe {lugar}")
+            continue
+        erros = conferir_motor_kraken(lugar)
+        if not erros:
+            return lugar.resolve(), []
+        problemas.extend(erros)
+    return None, problemas
+
+
+def achar_pasta_do_tesseract() -> Path | None:
+    """A pasta do tesseract.exe NESTE PC (a que o programa, rodando pelo codigo, usaria)."""
+    from core import ocr_tesseract
+
+    exe = ocr_tesseract.achar_tesseract()
+    return exe.parent if exe is not None else None
+
+
+def conferir_tesseract(pasta: Path | None) -> list[str]:
+    """O que falta para o Tesseract ir no pacote (vazio = tudo certo)."""
+    from core import ocr_tesseract
+
+    if pasta is None:
+        return ["não achei o Tesseract neste PC (instale com: winget install UB-Mannheim.TesseractOCR)"]
+    problemas = [f"falta {nome} em {pasta}" for nome in ARQUIVOS_DO_TESSERACT if not (pasta / nome).is_file()]
+    problemas += [f"falta a licença {nome} em {pasta / 'doc'}" for nome in LICENCAS_DO_TESSERACT
+                  if not (pasta / "doc" / nome).is_file()]
+    if not problemas:
+        versao = ocr_tesseract.MotorTesseract(pasta / "tesseract.exe").versao() or "?"
+        if not versao.startswith(ocr_tesseract.VERSAO_DA_COMPARACAO):
+            problemas.append(f"o Tesseract de {pasta} é o {versao}; a comparação do 1.3 usou o "
+                             f"{ocr_tesseract.VERSAO_DA_COMPARACAO}")
+    faltam = ocr_tesseract.modelos_que_faltam("+".join(ocr_tesseract.IDIOMAS_DO_INSTALADOR),
+                                              ocr_tesseract.PASTA_DOS_MODELOS)
+    problemas += [f"falta o idioma {i} ({i}.traineddata) em {ocr_tesseract.PASTA_DOS_MODELOS}" for i in faltam]
+    return problemas
+
+
+def assinatura_do_arquivo(arquivo: Path) -> dict:
+    """A assinatura digital de um arquivo, lida pelo proprio Windows (Get-AuthenticodeSignature).
+
+    Devolve {"status", "assinante", "produto", "versao"} ("status" = "Valid"
+    quando a assinatura confere e o certificado e de uma autoridade em que o
+    Windows confia). Nunca levanta: erro vira status "erro: ...".
+    """
+    import json
+    import os
+
+    comando = ("$s = Get-AuthenticodeSignature -LiteralPath $env:ARQUIVO_A_CONFERIR; "
+               "$v = (Get-Item -LiteralPath $env:ARQUIVO_A_CONFERIR).VersionInfo; "
+               "[pscustomobject]@{status=[string]$s.Status; assinante=[string]$s.SignerCertificate.Subject; "
+               "produto=[string]$v.ProductName; versao=[string]$v.FileVersion} | ConvertTo-Json -Compress")
+    try:
+        saida = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", comando],
+                               capture_output=True, text=True, timeout=120,
+                               env={**os.environ, "ARQUIVO_A_CONFERIR": str(arquivo)})
+        return json.loads(saida.stdout)
+    except (OSError, subprocess.SubprocessError, ValueError) as erro:
+        return {"status": f"erro: {erro}", "assinante": "", "produto": "", "versao": ""}
+
+
+def vc_redist_confere(assinatura: dict) -> list[str]:
+    """O que ha de errado com a assinatura lida (vazio = e o instalador oficial da Microsoft).
+
+    Nao ha soma publicada fixa para o vc_redist.x64.exe (o link permanente da
+    Microsoft muda de versao sozinho). A garantia e a assinatura digital:
+    valida para o Windows, e de "CN=Microsoft Corporation, O=Microsoft
+    Corporation"; e o produto tem de ser o Visual C++ 2015-20xx x64.
+    """
+    import re
+
+    problemas = []
+    if assinatura.get("status") != "Valid":
+        problemas.append(f"a assinatura digital não confere (o Windows diz: {assinatura.get('status')})")
+    assinante = assinatura.get("assinante") or ""
+    if not (assinante.startswith("CN=Microsoft Corporation,") and "O=Microsoft Corporation" in assinante):
+        problemas.append(f"o arquivo não foi assinado pela Microsoft (assinante: {assinante or 'nenhum'})")
+    if not re.match(r"^Microsoft Visual C\+\+ 2015-20\d\d Redistributable \(x64\)", assinatura.get("produto") or ""):
+        problemas.append(f"não é o Visual C++ 2015-2022 x64 (produto: {assinatura.get('produto')})")
+    if not (assinatura.get("versao") or "").startswith("14."):
+        problemas.append(f"versão inesperada: {assinatura.get('versao')}")
+    return problemas
+
+
+def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]]:
+    """Acha (ou baixa) o vc_redist.x64.exe oficial em DOWNLOADS e confere a assinatura.
+
+    Devolve (arquivo, versao, problemas). Nunca apaga nada: um arquivo que
+    nao confere fica onde esta e o empacotamento para, dizendo o que fazer.
+    O download vai para um nome provisorio e so ganha o nome certo depois de
+    conferido.
+    """
+    import urllib.request
+
+    arquivo = DOWNLOADS / VC_REDIST_NOME
+    if not arquivo.is_file():
+        if not baixar:
+            return None, "", [f"falta {arquivo}"]
+        DOWNLOADS.mkdir(parents=True, exist_ok=True)
+        provisorio = arquivo.with_name(arquivo.name + ".baixando")
+        if provisorio.exists():
+            return None, "", [f"sobrou {provisorio} de um download anterior: apague à mão e rode de novo"]
+        print(f"  baixando o Visual C++ oficial de {VC_REDIST_URL}")
+        try:
+            with urllib.request.urlopen(VC_REDIST_URL, timeout=120) as resposta, open(provisorio, "wb") as saida:
+                shutil.copyfileobj(resposta, saida)
+        except OSError as erro:
+            return None, "", [f"não consegui baixar o Visual C++ ({erro}); baixe à mão de {VC_REDIST_URL} "
+                              f"para {arquivo}"]
+        problemas = vc_redist_confere(assinatura_do_arquivo(provisorio))
+        if problemas:
+            return None, "", [f"o arquivo baixado ({provisorio}) não é o oficial: " + "; ".join(problemas)]
+        provisorio.rename(arquivo)
+    assinatura = assinatura_do_arquivo(arquivo)
+    problemas = vc_redist_confere(assinatura)
+    if problemas:
+        return None, "", [f"{arquivo} não é o oficial da Microsoft: " + "; ".join(problemas)
+                          + " (apague à mão e rode de novo para baixar outro)"]
+    return arquivo, assinatura.get("versao", ""), []
+
+
+def juntar_pecas(motor_escolhido: Path | None = None,
+                 baixar: bool = True) -> tuple[PecasDosDetectores | None, list[str]]:
+    """Confere TODAS as pecas dos detectores de texto. (pecas, []) ou (None, problemas)."""
+    from core import ocr_tesseract
+
+    problemas = []
+    motor, erros = achar_motor_kraken(motor_escolhido)
+    if motor is None:
+        problemas.append("motor do Kraken: nenhum motor pronto do jeito novo:")
+        problemas += [f"  {e}" for e in erros]
+    tesseract = achar_pasta_do_tesseract()
+    problemas += [f"Tesseract: {e}" for e in conferir_tesseract(tesseract)]
+    vc_redist, versao, erros = preparar_vc_redist(baixar)
+    problemas += [f"Visual C++: {e}" for e in erros]
+    if problemas:
+        return None, problemas
+    return PecasDosDetectores(motor, tesseract, tesseract / "doc", ocr_tesseract.PASTA_DOS_MODELOS,
+                              vc_redist, versao), []
+
+
+def _avisar_pecas_faltando(motor_escolhido: Path | None = None) -> PecasDosDetectores | None:
+    """juntar_pecas, imprimindo o que falta. Chamada ANTES de apagar ou gerar qualquer coisa."""
+    pecas, problemas = juntar_pecas(motor_escolhido)
+    if pecas is not None:
+        print(f"  motor do Kraken: {pecas.motor}")
+        print(f"  Tesseract: {pecas.tesseract}  (idiomas de {pecas.tessdata})")
+        print(f"  Visual C++: {pecas.vc_redist}  (versão {pecas.vc_versao}, assinatura da Microsoft conferida)")
+        return pecas
+    print("\n  PAREI: falta peça dos detectores de texto, e sem ela o programa sairia incompleto.")
+    for problema in problemas:
+        print(f"    {problema}")
+    return None
+
+
+def _destinos_das_pecas(pecas: PecasDosDetectores) -> list[tuple[Path, str]]:
+    """[(origem, caminho relativo dentro da pasta do programa)] de cada arquivo solto.
+
+    O motor do Kraken nao entra aqui (vai a pasta inteira; ver copiar_pecas).
+    """
+    from core import ocr_tesseract
+
+    saida = [(pecas.tesseract / nome, f"{PASTA_DO_TESSERACT}/{nome}") for nome in ARQUIVOS_DO_TESSERACT]
+    saida += [(pecas.licencas / nome, f"{PASTA_DO_TESSERACT}/{nome}") for nome in LICENCAS_DO_TESSERACT]
+    saida += [(pecas.tessdata / f"{idioma}.traineddata", f"{PASTA_DO_TESSERACT}/tessdata/{idioma}.traineddata")
+              for idioma in ocr_tesseract.IDIOMAS_DO_INSTALADOR]
+    return saida
+
+
+LEIA_ME_DO_TESSERACT = """TESSERACT - Editor de Impressão (item 1.3 da Fase 1)
+
+O programa usa este Tesseract só para ACHAR onde está o texto (vem desligado
+de fábrica). Não é usado para transcrever.
+
+Origem: Tesseract {versao}, versão para Windows da UB Mannheim
+(https://github.com/UB-Mannheim/tesseract), instalada pelo winget. Só foram
+copiados o tesseract.exe e as 26 bibliotecas (.dll) que ele carrega, sem
+modificar.
+Licença do Tesseract: Apache-2.0 (arquivo LICENSE; autores em AUTHORS).
+As bibliotecas (.dll) têm licenças próprias (Leptonica, libarchive, OpenSSL,
+libstdc++/libgcc, libiconv, libjpeg, libpng, libtiff, libwebp, OpenJPEG,
+zlib, zstd, lz4, xz, bzip2, expat, giflib, JBIG-KIT, LERC, libdeflate,
+libb2, winpthreads); ver https://github.com/UB-Mannheim/tesseract.
+Idiomas (pasta tessdata): lat, ita, por, fra, eng e script/Fraktur, do
+conjunto "tessdata_best" (https://github.com/tesseract-ocr/tessdata_best),
+licença Apache-2.0.
+"""
+
+
+def copiar_pecas(pasta: Path, pecas: PecasDosDetectores) -> None:
+    """Poe o motor do Kraken e o Tesseract ao lado do .exe, na versao em pasta."""
+    from core import ocr_tesseract
+
+    destino_motor = pasta / PASTA_DO_MOTOR
+    print(f"  copiando o motor do Kraken ({_tamanho(pecas.motor)}) para {destino_motor.name}\\")
+    shutil.copytree(pecas.motor, destino_motor)
+    print(f"  copiando o Tesseract e os {len(ocr_tesseract.IDIOMAS_DO_INSTALADOR)} idiomas "
+          f"para {PASTA_DO_TESSERACT}\\")
+    for origem, relativo in _destinos_das_pecas(pecas):
+        alvo = pasta / relativo
+        alvo.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(origem, alvo)
+    versao = ocr_tesseract.MotorTesseract(pecas.tesseract / "tesseract.exe").versao() or "?"
+    (pasta / PASTA_DO_TESSERACT / "LEIA-ME-TESSERACT.txt").write_text(
+        LEIA_ME_DO_TESSERACT.format(versao=versao).replace("\n", "\r\n"), encoding="utf-8")
+
+
+def conferir_pecas_no_pacote(pasta: Path, pecas: PecasDosDetectores) -> list[str]:
+    """Confere que cada peca chegou inteira na versao em pasta (vazio = tudo certo)."""
+    problemas = []
+    for origem, relativo in _destinos_das_pecas(pecas):
+        alvo = Path(pasta) / relativo
+        if not alvo.is_file():
+            problemas.append(f"{relativo} não chegou")
+        elif alvo.stat().st_size != origem.stat().st_size:
+            problemas.append(f"{relativo} chegou pela metade")
+    motor = Path(pasta) / PASTA_DO_MOTOR
+    if not motor.is_dir():
+        problemas.append(f"{PASTA_DO_MOTOR}\\ não chegou")
+    else:
+        def resumo(p: Path) -> tuple[int, int]:
+            arquivos = [f for f in p.rglob("*") if f.is_file()]
+            return len(arquivos), sum(f.stat().st_size for f in arquivos)
+
+        if resumo(motor) != resumo(pecas.motor):
+            problemas.append(f"{PASTA_DO_MOTOR}\\ chegou diferente do original ({resumo(motor)} x "
+                             f"{resumo(pecas.motor)} arquivos/bytes)")
+        problemas += [f"{PASTA_DO_MOTOR}\\: {p}" for p in conferir_motor_kraken(motor)]
+    return problemas
+
+
+# Arquivos do motor que TEM de estar no registro do Inno (uma amostra do que
+# importa: o Python, o servidor, o modelo e a biblioteca do PyTorch). Os ~34
+# mil arquivos do motor entram pela mesma linha do [Files]; se estes quatro
+# entraram, a pasta entrou.
+AMOSTRA_DO_MOTOR = ("python\\python.exe", "servidor_kraken.py",
+                    "python\\Lib\\site-packages\\kraken\\blla.mlmodel",
+                    "python\\Lib\\site-packages\\torch\\lib\\torch_cpu.dll")
+
+
+def pecas_esperadas_no_instalador(pecas: PecasDosDetectores) -> list[str]:
+    """Os caminhos (relativos a dist\\EditorImpressao\\, ou build\\ para o
+    vc_redist) que o registro do Inno tem de listar como "Compressing:"."""
+    saida = [relativo.replace("/", "\\") for _, relativo in _destinos_das_pecas(pecas)]
+    saida += [f"{PASTA_DO_MOTOR}\\{a}" for a in AMOSTRA_DO_MOTOR]
+    saida.append(f"build\\{VC_REDIST_NOME}")
+    return saida
+
+
+def pecas_faltando_no_registro_do_inno(registro: str, pecas: PecasDosDetectores) -> list[str]:
+    """As pecas que o Inno Setup NAO comprimiu para dentro do instalador."""
+    comprimidos = _comprimidos(registro)
+    return [relativo for relativo in pecas_esperadas_no_instalador(pecas)
+            if not any(linha.endswith("\\" + relativo.lower()) for linha in comprimidos)]
 
 
 def comando_do_pyinstaller(onefile: bool) -> list[str]:
@@ -270,15 +685,26 @@ def achar_inno() -> Path | None:
     return Path(achado) if achado else None
 
 
+# O motor do Kraken escolhido na linha de comando (--motor-kraken); None =
+# procurar em LUGARES_DO_MOTOR. E as pecas conferidas pela ultima
+# construir_pasta, que construir_instalador usa (vc_redist, registro do Inno).
+MOTOR_ESCOLHIDO: Path | None = None
+_PECAS: PecasDosDetectores | None = None
+
+
 def construir_pasta() -> Path | None:
     """Versao portatil em pasta. E tambem o que o instalador empacota.
 
-    Para (devolve None) se faltar modelo ANTES de apagar a pasta anterior, e
-    de novo se algum modelo nao chegar inteiro em _internal\\ (ver
-    conferir_modelos_no_pacote).
+    Para (devolve None) se faltar modelo ou peca dos detectores de texto
+    ANTES de apagar a pasta anterior, e de novo se algum modelo ou peca nao
+    chegar inteiro (ver conferir_modelos_no_pacote e conferir_pecas_no_pacote).
     """
+    global _PECAS
     print("\n=== Versao em pasta (portatil, abre na hora) ===")
     if not _avisar_modelos_faltando():
+        return None
+    pecas = _avisar_pecas_faltando(MOTOR_ESCOLHIDO)
+    if pecas is None:
         return None
     destino = RAIZ / "dist" / NOME
     shutil.rmtree(destino, ignore_errors=True)
@@ -296,6 +722,15 @@ def construir_pasta() -> Path | None:
             print(f"    {problema}")
         return None
     print(f"  modelos dentro da pasta: {len(modelos_do_programa())}, conferidos")
+    copiar_pecas(destino, pecas)
+    problemas = conferir_pecas_no_pacote(destino, pecas)
+    if problemas:
+        print("  PAREI: o programa saiu sem alguma peça dos detectores de texto:")
+        for problema in problemas:
+            print(f"    {problema}")
+        return None
+    print("  motor do Kraken e Tesseract dentro da pasta, conferidos")
+    _PECAS = pecas
 
     # Um bilhete dentro da pasta, para quem receber so ela
     (destino / "COMO USAR.txt").write_text(
@@ -334,6 +769,8 @@ def construir_arquivo_unico() -> Path | None:
 
     print(f"  pronto: {destino}  ({_tamanho(destino)})")
     print("  atenção: abre uns 4 segundos mais devagar que a versão em pasta")
+    print("  atenção: o arquivo único NÃO leva o Kraken nem o Tesseract (são programas")
+    print("  à parte, de ~1,4 GB): nele só o docTR acha texto. Para os três, use o instalador.")
     return destino
 
 
@@ -362,6 +799,17 @@ def construir_instalador() -> Path | None:
     if not script.exists():
         print(f"  {script.name} não encontrado")
         return None
+
+    # O vc_redist oficial vai so no instalador (nao em {app}): o .iss o pega
+    # de build\ (rascunho) e o roda quando o Visual C++ falta.
+    pecas = _PECAS
+    if pecas is None:
+        print("  PAREI: a versão em pasta não conferiu as peças dos detectores de texto")
+        return None
+    (RAIZ / "build").mkdir(exist_ok=True)
+    shutil.copy2(pecas.vc_redist, RAIZ / "build" / VC_REDIST_NOME)
+    print(f"  Visual C++ oficial {pecas.vc_versao} no instalador (roda só se faltar)")
+    print("  comprimindo (o motor do Kraken tem ~1,1 GB: leva vários minutos)")
 
     resultado = subprocess.run(
         [str(inno), str(script)], cwd=RAIZ, capture_output=True, text=True
@@ -392,9 +840,20 @@ def construir_instalador() -> Path | None:
             print(f"    {relativo}")
         print(f"  registro completo em {REGISTRO_DO_INNO}")
         return None
+    faltando = pecas_faltando_no_registro_do_inno(resultado.stdout, pecas)
+    if faltando:
+        destino.unlink(missing_ok=True)
+        print("  PAREI: o Inno Setup não pôs estas peças dos detectores de texto no instalador")
+        print("  (o instalador incompleto foi apagado):")
+        for relativo in faltando:
+            print(f"    {relativo}")
+        print(f"  registro completo em {REGISTRO_DO_INNO}")
+        return None
     print("  modelos dentro do instalador (registro do Inno Setup):")
     for origem, destino_no_pacote in modelos_do_programa():
         print(f"    {_caminho_no_instalador(origem, destino_no_pacote)}")
+    print(f"  peças dos detectores de texto dentro do instalador: {len(pecas_esperadas_no_instalador(pecas))} "
+          "conferidas (motor do Kraken, Tesseract, 6 idiomas, licenças, Visual C++)")
 
     print(f"  pronto: {destino}  ({_tamanho(destino)})")
     return destino
@@ -514,11 +973,23 @@ def main(argumentos_da_linha: list[str] | None = None) -> int:
              "do que este script gerou (o que outros scripts guardam em dist "
              "fica)",
     )
+    analisador.add_argument(
+        "--motor-kraken", type=Path, default=None,
+        help="pasta do motor do Kraken a levar (padrão: o primeiro motor do jeito novo "
+             "em motor-kraken\\, EditorImpressao-arquivos\\ferramentas\\motor-kraken ou "
+             "saida_teste\\motor-kraken)",
+    )
     argumentos = analisador.parse_args(argumentos_da_linha)
+    global MOTOR_ESCOLHIDO
+    MOTOR_ESCOLHIDO = argumentos.motor_kraken
 
     # Antes de apagar qualquer coisa (o modo entrega apaga, logo abaixo, o que
     # este script gerou antes): sem os modelos, nada do que sairia daqui presta.
     if not _avisar_modelos_faltando():
+        return 1
+    # O mesmo para as pecas dos detectores de texto (so a versao em pasta e o
+    # instalador as levam; o arquivo único nao).
+    if argumentos.modo != "arquivo" and _avisar_pecas_faltando(MOTOR_ESCOLHIDO) is None:
         return 1
 
     if argumentos.modo == "entrega":

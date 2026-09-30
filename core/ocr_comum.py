@@ -35,6 +35,10 @@ O QUE É ARRISCADO MUDAR
 from __future__ import annotations
 
 import logging
+import os
+import subprocess
+import sys
+import threading
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -171,3 +175,48 @@ def de_dict(dados: dict) -> ResultadoOCR:
         detalhe_tecnico=dados.get("detalhe_tecnico"), segundos=float(dados.get("segundos", 0.0)),
         largura=int(dados.get("largura", 0)), altura=int(dados.get("altura", 0)),
         extra=dict(dados.get("extra") or {}))
+
+
+# ---------------------------------------------------------------- abrir um OCR à parte
+
+_TRANCA_DA_PASTA_DE_DLLS = threading.Lock()
+
+
+def abrir_processo(comando: list[str], **opcoes) -> subprocess.Popen:
+    """subprocess.Popen para um OCR que roda à parte (motor do Kraken, tesseract.exe).
+
+    POR QUE EXISTE (achado em 29/09/2026, conferindo o programa empacotado):
+    o PyInstaller marca a pasta _internal\\ do programa como "pasta de DLLs"
+    (SetDllDirectoryW), e o Windows passa essa marca para os processos
+    filhos. O motor do Kraken, aberto pelo programa empacotado, carregava o
+    msvcp140.dll e o vcruntime140*.dll de _internal\\ (os que o PyInstaller
+    trouxe para o próprio programa), e não os do Visual C++ oficial no
+    System32, misturando versões. Aqui a marca é tirada só durante o Popen e
+    posta de volta logo depois; e as pastas do programa empacotado saem do
+    PATH do filho. Fora do programa empacotado, é um Popen comum.
+
+    Arriscado mudar: a volta da marca no finally (sem ela, o próprio
+    programa deixaria de achar as DLLs de _internal\\ que carrega depois).
+    Pode levantar OSError (como o Popen); quem chama trata.
+    """
+    empacotado = bool(getattr(sys, "frozen", False)) and os.name == "nt"
+    if not empacotado:
+        return subprocess.Popen(comando, **opcoes)
+    base = os.path.normcase(os.path.abspath(getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))))
+    caminhos = [p for p in os.environ.get("PATH", "").split(os.pathsep)
+                if p and not os.path.normcase(os.path.abspath(p)).startswith(base)]
+    opcoes.setdefault("env", {**os.environ, "PATH": os.pathsep.join(caminhos)})
+    import ctypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    with _TRANCA_DA_PASTA_DE_DLLS:
+        memoria = ctypes.create_unicode_buffer(32768)
+        tamanho = kernel32.GetDllDirectoryW(32768, memoria)
+        antes = memoria.value if tamanho else None
+        if antes:
+            kernel32.SetDllDirectoryW(None)
+        try:
+            return subprocess.Popen(comando, **opcoes)
+        finally:
+            if antes:
+                kernel32.SetDllDirectoryW(antes)
