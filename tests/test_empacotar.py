@@ -462,3 +462,86 @@ def test_os_27_arquivos_sao_os_que_o_tesseract_carrega():
         fila.extend(m.importacoes_da_dll(locais[nome]))
     assert vistos == {n.lower() for n in empacotar.ARQUIVOS_DO_TESSERACT}
 
+
+
+# ---------------------------------------------------------------------------
+# o detector de gravura do ScanTailor (item 1.2, 29/09/2026): a DLL
+# core/nativo/st_gravura.dll vai junto, com a mesma trava dos modelos
+# ---------------------------------------------------------------------------
+
+def test_a_dll_da_gravura_vai_para_onde_o_codigo_procura():
+    """core/gravura_scantailor.CAMINHO_DLL = <raiz do codigo>/core/nativo/:
+    empacotado, a raiz do codigo e _internal/, entao o destino e core/nativo."""
+    from core import gravura_scantailor
+
+    nativos = dict(empacotar.nativos_do_programa())
+    assert set(nativos) == {gravura_scantailor.CAMINHO_DLL,
+                            gravura_scantailor.CAMINHO_DLL.with_suffix(".txt")}
+    assert set(nativos.values()) == {"core/nativo"}
+
+
+@pytest.mark.parametrize("onefile", [False, True])
+def test_o_comando_do_pyinstaller_leva_a_dll_da_gravura(onefile):
+    comando = empacotar.comando_do_pyinstaller(onefile)
+    dados = _valor_de(comando, "--add-data")
+    for origem, destino in empacotar.nativos_do_programa():
+        assert f"{origem}{SEPARADOR}{destino}" in dados
+    assert "core.gravura_scantailor" in _valor_de(comando, "--hidden-import")
+
+
+def test_dll_da_gravura_existe_para_empacotar():
+    assert empacotar.nativos_faltando() == []
+
+
+def test_dll_da_gravura_faltando_para_antes_do_pyinstaller(tmp_path, monkeypatch, capsys):
+    sumida = tmp_path / "core" / "nativo" / "st_gravura.dll"
+    monkeypatch.setattr(empacotar, "nativos_do_programa", lambda: [(sumida, "core/nativo")])
+    monkeypatch.setattr(empacotar, "modelos_faltando", lambda: [])
+    rodou: list = []
+    monkeypatch.setattr(empacotar.subprocess, "run", lambda *a, **k: rodou.append(a))
+
+    assert empacotar.construir_pasta() is None
+    assert empacotar.construir_arquivo_unico() is None
+    assert rodou == [], "nao pode chegar a rodar o PyInstaller"
+    saida = capsys.readouterr().out
+    assert str(sumida) in saida and "compilar_detector_gravura.py" in saida
+
+
+def test_conferir_no_pacote_pega_dll_ausente_ou_pela_metade(tmp_path, monkeypatch):
+    origem = tmp_path / "origem"
+    origem.mkdir()
+    dll = origem / "st_gravura.dll"
+    dll.write_bytes(b"0123456789")
+    txt = origem / "st_gravura.txt"
+    txt.write_bytes(b"origem")
+    monkeypatch.setattr(empacotar, "nativos_do_programa",
+                        lambda: [(dll, "core/nativo"), (txt, "core/nativo")])
+    pasta = tmp_path / "EditorImpressao"
+    (pasta / "_internal" / "core" / "nativo").mkdir(parents=True)
+
+    assert len(empacotar.conferir_nativos_no_pacote(pasta)) == 2
+    (pasta / "_internal" / "core" / "nativo" / "st_gravura.dll").write_bytes(b"01234")
+    (pasta / "_internal" / "core" / "nativo" / "st_gravura.txt").write_bytes(b"origem")
+    problemas = empacotar.conferir_nativos_no_pacote(pasta)
+    assert len(problemas) == 1 and "pela metade" in problemas[0]
+    (pasta / "_internal" / "core" / "nativo" / "st_gravura.dll").write_bytes(b"0123456789")
+    assert empacotar.conferir_nativos_no_pacote(pasta) == []
+
+
+def test_registro_do_inno_tem_de_listar_a_dll_da_gravura():
+    b = BARRA
+    registro = "".join(
+        f"   Compressing: D:{b}x{b}dist{b}EditorImpressao{b}_internal{b}core{b}nativo{b}{n}\n"
+        for n in ("st_gravura.dll", "st_gravura.txt"))
+    assert empacotar.nativos_faltando_no_registro_do_inno(registro) == []
+    so_o_txt = registro.splitlines()[1]
+    assert empacotar.nativos_faltando_no_registro_do_inno(so_o_txt) == [
+        f"_internal{b}core{b}nativo{b}st_gravura.dll"]
+
+
+def test_o_script_do_inno_recusa_pasta_sem_a_dll_da_gravura():
+    b = BARRA
+    script = (empacotar.RAIZ / "instalador.iss").read_text(encoding="utf-8")
+    for origem, destino in empacotar.nativos_do_programa():
+        caminho = f"_internal{b}{destino.replace('/', b)}{b}{origem.name}"
+        assert f'FileExists(PastaDoPrograma + "{caminho}")' in script, caminho

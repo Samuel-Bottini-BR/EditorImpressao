@@ -76,6 +76,17 @@ pasta (conferir_pecas_no_pacote) e dentro do instalador
 (pecas_faltando_no_registro_do_inno). O arquivo único (pendrive) NAO leva o
 Kraken nem o Tesseract (sao programas a parte, de ~1,4 GB): so o docTR.
 
+O DETECTOR DE GRAVURA DO SCANTAILOR VAI JUNTO (item 1.2, 29/09/2026). A DLL
+core\\nativo\\st_gravura.dll (codigo original do ScanTailor Advanced, GPL-3,
+compilado por compilar_detector_gravura.py) e o st_gravura.txt que diz de
+onde ela veio vao para _internal\\core\\nativo\\ (onde
+core/gravura_scantailor.CAMINHO_DLL a procura; ver nativos_do_programa).
+Mesma trava dos modelos: faltando, o script PARA antes de gerar; depois,
+confere que chegou inteira na pasta e dentro do instalador; e o
+instalador.iss recusa compilar sem ela. Sem a DLL o programa nao quebra (cai
+no detector de gravura antigo), mas perde o 1.2 calado - o mesmo tipo de
+defeito do instalador sem modelos de 25/09.
+
 Para provar que o programa empacotado acha os tres detectores:
     dist\\EditorImpressao\\EditorImpressao.exe --conferir-ocr <imagem> <saida.json>
 (ver core/ocr_diagnostico.py).
@@ -135,6 +146,7 @@ EXCLUIR = [
 # Os detectores de texto (item 1.3) ainda nao estao ligados a tela: vao
 # explicitos, e o OnnxTR e importado so dentro de uma funcao (ocr_doctr).
 OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder",
+           "core.gravura_scantailor",
            "core.ocr_comum", "core.ocr_doctr", "core.ocr_tesseract", "core.ocr_kraken",
            "core.ocr_comparar", "core.ocr_diagnostico",
            "onnxtr", "onnxtr.models", "onnxtr.models.detection", "onnxtr.models.builder",
@@ -296,6 +308,78 @@ def modelos_faltando_no_registro_do_inno(registro: str) -> list[str]:
     comprimidos = _comprimidos(registro)
     faltando: list[str] = []
     for origem, destino in modelos_do_programa():
+        relativo = _caminho_no_instalador(origem, destino)
+        if not any(linha.endswith("\\" + relativo.lower()) for linha in comprimidos):
+            faltando.append(relativo)
+    return faltando
+
+
+# ---------------------------------------------------------------------------
+# o detector de gravura do ScanTailor (item 1.2), que e uma DLL nossa
+# ---------------------------------------------------------------------------
+
+def nativos_do_programa() -> list[tuple[Path, str]]:
+    """As bibliotecas nativas (DLL) que o programa usa: [(origem, destino no pacote)].
+
+    Hoje so o detector de gravura do ScanTailor: core/nativo/st_gravura.dll
+    (o caminho vem do proprio codigo, core/gravura_scantailor.CAMINHO_DLL) e o
+    st_gravura.txt ao lado (de onde veio o codigo, versao, soma - e a licenca
+    GPL-3 exige dizer isso). O destino e o caminho relativo a raiz do codigo
+    (core/nativo), onde o codigo empacotado procura. Vai por --add-data, e nao
+    --add-binary: a DLL usa o Qt do PySide6 que ja vai no pacote, e a analise
+    de dependencias do PyInstaller so arrastaria copias dele.
+    """
+    from core import detectar_regioes, gravura_scantailor
+
+    raiz_do_codigo = Path(detectar_regioes.__file__).resolve().parent.parent
+    dll = gravura_scantailor.CAMINHO_DLL
+    usados = (dll, dll.with_suffix(".txt"))
+    return [(origem, origem.relative_to(raiz_do_codigo).parent.as_posix()) for origem in usados]
+
+
+def nativos_faltando() -> list[Path]:
+    """As DLLs (e o .txt delas) que o programa usa e que nao estao em disco."""
+    return [origem for origem, _ in nativos_do_programa() if not origem.is_file()]
+
+
+def _avisar_nativos_faltando() -> bool:
+    """Imprime a mensagem de DLL faltando. Devolve True se esta tudo la.
+
+    Chamada ANTES de apagar ou gerar qualquer coisa (a trava dos modelos).
+    """
+    faltando = nativos_faltando()
+    if not faltando:
+        return True
+    print("\n  PAREI: falta o detector de gravura do ScanTailor, e sem ele o programa")
+    print("  sairia usando o detector antigo, sem avisar.")
+    for origem in faltando:
+        print(f"    não achei {origem}")
+    print("  A DLL está no git (core\\nativo\\). Se sumiu, recompile com:")
+    print("    .venv\\Scripts\\python.exe compilar_detector_gravura.py")
+    return False
+
+
+def conferir_nativos_no_pacote(pasta: Path) -> list[str]:
+    """A versao em pasta ja gerada tem cada DLL em <pasta>\\_internal\\<destino>\\,
+    com o mesmo tamanho do original? Devolve os problemas (vazio = tudo certo)."""
+    problemas: list[str] = []
+    for origem, destino in nativos_do_programa():
+        empacotado = Path(pasta) / INTERNO / destino / origem.name
+        if not empacotado.is_file():
+            problemas.append(f"{origem.name} não chegou em {empacotado}")
+        elif not origem.is_file():
+            problemas.append(f"{origem.name}: o original sumiu de {origem}")
+        elif empacotado.stat().st_size != origem.stat().st_size:
+            problemas.append(f"{origem.name} chegou pela metade em {empacotado}")
+    return problemas
+
+
+def nativos_faltando_no_registro_do_inno(registro: str) -> list[str]:
+    """As DLLs que o Inno Setup NAO comprimiu para dentro do instalador (ver
+    modelos_faltando_no_registro_do_inno)."""
+    comprimidos = _comprimidos(registro)
+    faltando: list[str] = []
+    for origem, destino in nativos_do_programa():
         relativo = _caminho_no_instalador(origem, destino)
         if not any(linha.endswith("\\" + relativo.lower()) for linha in comprimidos):
             faltando.append(relativo)
@@ -666,6 +750,9 @@ def comando_do_pyinstaller(onefile: bool) -> list[str]:
     # de referencia e o __pycache__ dele. Ver modelos_do_programa.
     for origem, destino in modelos_do_programa():
         comando += ["--add-data", f"{origem}{separador}{destino}"]
+    # a DLL do detector de gravura do ScanTailor (item 1.2): nativos_do_programa
+    for origem, destino in nativos_do_programa():
+        comando += ["--add-data", f"{origem}{separador}{destino}"]
 
     comando.append(str(RAIZ / "main.py"))
     return comando
@@ -701,7 +788,7 @@ def construir_pasta() -> Path | None:
     """
     global _PECAS
     print("\n=== Versao em pasta (portatil, abre na hora) ===")
-    if not _avisar_modelos_faltando():
+    if not _avisar_modelos_faltando() or not _avisar_nativos_faltando():
         return None
     pecas = _avisar_pecas_faltando(MOTOR_ESCOLHIDO)
     if pecas is None:
@@ -722,6 +809,13 @@ def construir_pasta() -> Path | None:
             print(f"    {problema}")
         return None
     print(f"  modelos dentro da pasta: {len(modelos_do_programa())}, conferidos")
+    problemas = conferir_nativos_no_pacote(destino)
+    if problemas:
+        print("  PAREI: o programa saiu sem o detector de gravura do ScanTailor:")
+        for problema in problemas:
+            print(f"    {problema}")
+        return None
+    print("  detector de gravura do ScanTailor (core\\nativo\\st_gravura.dll) dentro da pasta, conferido")
     copiar_pecas(destino, pecas)
     problemas = conferir_pecas_no_pacote(destino, pecas)
     if problemas:
@@ -758,7 +852,7 @@ def construir_arquivo_unico() -> Path | None:
     conferida.
     """
     print("\n=== Arquivo único (pendrive) ===")
-    if not _avisar_modelos_faltando():
+    if not _avisar_modelos_faltando() or not _avisar_nativos_faltando():
         return None
     destino = RAIZ / "dist" / f"{NOME}.exe"
     destino.unlink(missing_ok=True)
@@ -835,6 +929,15 @@ def construir_instalador() -> Path | None:
     if faltando:
         destino.unlink(missing_ok=True)
         print("  PAREI: o Inno Setup não pôs estes modelos no instalador")
+        print("  (o instalador incompleto foi apagado):")
+        for relativo in faltando:
+            print(f"    {relativo}")
+        print(f"  registro completo em {REGISTRO_DO_INNO}")
+        return None
+    faltando = nativos_faltando_no_registro_do_inno(resultado.stdout)
+    if faltando:
+        destino.unlink(missing_ok=True)
+        print("  PAREI: o Inno Setup não pôs o detector de gravura do ScanTailor no instalador")
         print("  (o instalador incompleto foi apagado):")
         for relativo in faltando:
             print(f"    {relativo}")

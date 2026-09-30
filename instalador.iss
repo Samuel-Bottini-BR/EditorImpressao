@@ -37,6 +37,18 @@
   #error Falta _internal\modelos\doctr\rep_fast_base-1b89ebf9.onnx (detector de texto docTR). Gere o instalador pelo empacotar.py.
 #endif
 
+; O DETECTOR DE GRAVURA DO SCANTAILOR (item 1.2, 29/09/2026): a DLL
+; core\nativo\st_gravura.dll (codigo original do ScanTailor Advanced, GPL-3)
+; e o st_gravura.txt que diz de onde ela veio, postos pelo empacotar.py
+; (nativos_do_programa) em _internal\core\nativo\. Mesma trava dos modelos:
+; sem ela o programa cairia no detector de gravura antigo sem avisar.
+#if !FileExists(PastaDoPrograma + "_internal\core\nativo\st_gravura.dll")
+  #error Falta _internal\core\nativo\st_gravura.dll (detector de gravura do ScanTailor). Gere o instalador pelo empacotar.py.
+#endif
+#if !FileExists(PastaDoPrograma + "_internal\core\nativo\st_gravura.txt")
+  #error Falta _internal\core\nativo\st_gravura.txt (origem e licenca do detector de gravura). Gere o instalador pelo empacotar.py.
+#endif
+
 ; OS DETECTORES DE TEXTO (item 1.3, 29/09/2026: "todos os OCRs instalados").
 ; O empacotar.py poe ao lado do .exe o motor do Kraken (motor-kraken\) e o
 ; Tesseract com os seis idiomas (tesseract\), e deixa o instalador oficial do
