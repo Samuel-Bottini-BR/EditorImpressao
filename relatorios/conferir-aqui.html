@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir - Editor de Impressão</title>
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --fraco:#666; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1100px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  h2 { margin:32px 0 6px; font-size:22px; }
+  .sub { color:var(--fraco); margin:0 0 14px; font-size:15px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 16px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao h3 { margin:0 0 4px; font-size:18px; }
+  .cartao p.olhar { margin:0 0 10px; }
+  .cartao img { display:block; max-width:100%; max-height:520px; margin:0 auto 10px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .grade { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:12px; }
+  .grade .cartao img { max-height:260px; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  button.principal { background:#1565c0; border-color:#1565c0; color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:10; align-items:center; justify-content:center; cursor:zoom-out; }
+  #zoom img { max-width:98vw; max-height:98vh; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid #1565c0; border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir - Editor de Impressão</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <b>Como usar:</b> em cada cartão, olhe a imagem (clique para ampliar) e aperte <b>Bom</b>, <b>Ruim</b> ou <b>Não sei</b>.
+    Se quiser, escreva um comentário. Não precisa fazer tudo de uma vez: suas marcações ficam guardadas neste computador.
+    No fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada secao: titulo, explicacao curta e cartoes [codigo, titulo, o que olhar, imagem].
+const SECOES = [
+ { titulo:"1. Tirar o fundo (PDF que já vem com camadas)",
+   sub:"Antes (esquerda) e depois (direita). O fundo sai e o papel fica branco.",
+   cartoes:[
+    ["F1","Siebmacher 106","A escrita clarinha some (só fica o 1672), mas o programa marca a página \"conferir\" para você olhar. Aceitável assim?","conferir/fase1-2026-09-29-0956/verificador/v13-siebmacher106.jpg"],
+    ["F2","Opus Majus 20 - a estátua","A foto tem de ficar igual ao original (mesmo cinza, mesmo creme).","conferir/fase1-2026-09-29-0956/verificador/v04-opus20-lado-direito.jpg"],
+    ["F3","Palatino 66 - o título","O título gótico sai cheio (antes saía oco), mas um pouco mais claro que o original.","conferir/fase1-2026-09-29-0956/verificador/v10-palatino66-titulo.jpg"],
+    ["F4","Palatino 10 - ao lado da moldura","Sobra uma faixa cinza com buracos ao lado da moldura (defeito conhecido, vai para o item 1.5).","conferir/fase1-2026-09-29-0956/verificador/v05-palatino10-faixa-cinza.jpg"],
+    ["F5","A pergunta ao abrir o livro","Ao abrir um livro com camadas: \"Este livro tem fundo separado. Quer tirar o fundo?\". Está claro?","conferir/fase1-2026-09-29-1826/verificador/t01-aviso-primeira-abertura.jpg"],
+    ["F6","O filtro \"Tirar o fundo\" na tela","O quinto cartão e o \"comparar\" mostram o resultado de verdade.","conferir/fase1-2026-09-29-1826/verificador/t15-comparar-mostra-tirar-fundo-de-verdade.jpg"],
+   ]},
+ { titulo:"2. Consertos de 28/09 (Mágico pro)",
+   sub:"Antes e depois de cada conserto.",
+   cartoes:[
+    ["B1","Escola 35 - o corte das bordas","O corte não come mais o começo das linhas nem o \"37\" do pé.","conferir/fase1-2026-09-28-1745/verificador/01-escola35.jpg"],
+    ["B2","Palatino 5 - fundo do retrato e barba","Some o papel amarelado e os quadradinhos dentro da gravura.","conferir/fase1-2026-09-28-1927-2/verificador/01-palatino5-fundo-e-barba.jpg"],
+    ["B3","Escola 35 - roupa e céu do anjo","A pintura mantém a cor; o papel em volta fica branco.","conferir/fase1-2026-09-28-1927-2/verificador/02-escola35-roupa-e-ceu.jpg"],
+    ["B4","Marial 7 - borda direita","Some a faixa escura na borda direita.","conferir/fase1-2026-09-28-2058/ampliacoes/m2-borda-direita-3-alturas.jpg"],
+    ["B5","Graduale 222 - a clave","A clave e o começo da pauta ficam inteiros.","conferir/fase1-2026-09-28-2058-2/ampliacoes/g2-graduale222-clave.jpg"],
+    ["B6","Prévia igual ao PDF","O que aparece na tela é o mesmo que sai no PDF (mesmo corte).","conferir/fase1-2026-09-28-2058-3/ampliacoes/v1-palatino5-previas-e-pdf.jpg"],
+   ]},
+ { titulo:"3. Detector de gravura do ScanTailor (ainda em ajuste)",
+   sub:"Comparação entre o detector antigo e o do ScanTailor. Ainda vai mudar (opções na tela, consertos); aqui é para você dizer se a direção está boa.",
+   cartoes:[
+    ["G1","Horas 11 - a iluminura","A iluminura volta inteira e colorida, com o centro branco.","conferir/fase1-1.2-ligacao-2026-09-30/verificador/v01-horas11-iluminura.jpg"],
+    ["G2","Horas 26 - moldura dourada","A moldura sai cheia (antes saía com furinhos).","conferir/fase1-1.2-ligacao-2026-09-30/verificador/v09-horas26-inteira.jpg"],
+    ["G3","Palatino 67 - caixa cinza","Some a caixa cinza em volta da linha.","conferir/fase1-1.2-ligacao-2026-09-30/verificador/v06-palatino67-caixa-cinza.jpg"],
+    ["G4","Marial 153 - o título","O título não é mais tratado como gravura (some a caixa cinza).","conferir/fase1-1.2-ligacao-2026-09-30/verificador/v08-marial153-titulo.jpg"],
+    ["G5","Opus Majus 20 - \"livre\" x \"retangular\"","Na forma \"livre\" a estátua sai lavada; na \"retangular\" (caixinha \"Este livro tem fotos\") sai quase igual ao original.","conferir/fase1-1.2-ligacao-2026-09-30/verificador/v02-opus20-livre-x-retangular.jpg"],
+   ]},
+ { titulo:"4. OCR: as zonas de cada página",
+   sub:"Na imagem da esquerda: VERDE = tem de ser texto, VERMELHO = figura (não pode ter linha de texto), CINZA = não conta. As zonas foram desenhadas por um agente; diga se estão certas.",
+   grade:true,
+   cartoes:["palatino_p005","palatino_p007","palatino_p009","palatino_p010","palatino_p057","escola_p007","escola_p035","horas_p011","horas_p013","horas_p026","horas_p027","horas_p047","opusmajus_p003","opusmajus_p011","opusmajus_p020","opusmajus_p165","opusmajus_p256","rhetorica_p018","siebmacher_p009","graduale_p221","graduale_p222","graduale_p223"].map((n,i)=>["Z"+(i+1), n.replace("_p"," ").replace("palatino","Palatino").replace("escola","Escola").replace("horas","Horas").replace("opusmajus","Opus Majus").replace("rhetorica","Rhetorica").replace("siebmacher","Siebmacher").replace("graduale","Graduale").replace(/ 0+/," "), "", "fase1-1.3-comparacao-ocr-2026-09-28/zonas/"+n+".jpg"]),
+ },
+ { titulo:"5. Decisões que o agente tomou ao desenhar as zonas",
+   sub:"Bom = concordo. Ruim = não concordo.",
+   cartoes:[
+    ["D1","Palatino 57","Os floreios ficaram dentro do texto; os laços em volta do título ficaram como figura.",""],
+    ["D2","Capitulares","A capitular gravada (o Q do Palatino 9) é figura; as capitulares desenhadas a pena do Graduale não contam.",""],
+    ["D3","Escola - endereço do site","O endereço do site no pé da página conta como texto (mesmo que depois seja apagado).",""],
+    ["D4","Opus 3 - emblema","O emblema é figura, embora tenha letras dentro.",""],
+    ["D5","Opus 165 - diagramas","As letrinhas dentro dos diagramas não contam.",""],
+    ["D6","Rhetorica - filetes","Os filetes (linhas decorativas) não contam.",""],
+    ["D7","Graduale - pauta e notas","A pauta e as notas ficam fora de toda zona (não contam).",""],
+   ]},
+ { titulo:"6. Pergunta",
+   sub:"",
+   cartoes:[
+    ["P1","Fotos no Preto e branco","No filtro Preto e branco, as fotos e pinturas (estátua do Opus 20, anjo da Escola 35) saem como? Bom = pontilhado de jornal (só preto e branco). Ruim = tons de cinza, como hoje. Ou escreva no comentário.",""],
+   ]},
+];
+
+const CHAVE = "conferir-2026-09-30";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  const caixa = document.createElement("div"); if (sec.grade) caixa.className = "grade"; conteudo.appendChild(caixa);
+  sec.cartoes.forEach(([cod, tit, olhar, img]) => {
+    todos.push({cod, tit});
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+cod;
+    c.innerHTML = `<h3>${cod} · ${tit}</h3>` + (olhar ? `<p class="olhar">${olhar}</p>` : "") +
+      (img ? `<img loading="lazy" src="${img}" alt="${tit}">` : "") +
+      `<div class="botoes">
+         <button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button>
+       </div>
+       <textarea placeholder="Comentário (opcional)"></textarea>`;
+    caixa.appendChild(c);
+    const e = estado[cod] || {};
+    const ta = c.querySelector("textarea"); ta.value = e.nota || "";
+    function pintar(){ const v=(estado[cod]||{}).voto; c.classList.remove("bom","ruim","naosei"); if(v) c.classList.add(v);
+      c.querySelectorAll(".botoes button").forEach(b=>b.classList.toggle("ativo", b.classList.contains("b-"+v))); }
+    c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[cod] = Object.assign({}, estado[cod], {voto: (estado[cod]||{}).voto===v ? undefined : v});
+      pintar(); guardar(); });
+    ta.oninput = () => { estado[cod] = Object.assign({}, estado[cod], {nota: ta.value}); guardar(); };
+    const im = c.querySelector("img");
+    if (im) { im.onclick = () => { const z=document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display="flex"; };
+              im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"),{textContent:"(imagem não encontrada: "+img+")"})); }; }
+    pintar();
+  });
+});
+
+function contar(){
+  const feitos = todos.filter(t => (estado[t.cod]||{}).voto).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${todos.length} marcados`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência de 30/09 (Editor de Impressão):"];
+  todos.forEach(t => { const e = estado[t.cod]||{};
+    if (!e.voto && !(e.nota||"").trim()) return;
+    linhas.push(`${t.cod} ${t.tit}: ${e.voto ? ROTULO[e.voto] : "sem marca"}${(e.nota||"").trim() ? " - " + e.nota.trim() : ""}`); });
+  const faltam = todos.filter(t => !(estado[t.cod]||{}).voto).map(t=>t.cod);
+  if (faltam.length) linhas.push(`(não marcados: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(()=>document.execCommand("copy")); } catch(e) { try{document.execCommand("copy");}catch(_){} }
+}
+</script>
+</body>
+</html>
