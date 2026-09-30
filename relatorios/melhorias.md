@@ -2051,3 +2051,32 @@ marcados como gravura (14% da página); a Horas 11 inteira vira gravura
 (inclusive o centro claro com o texto); a Horas 13 mantém o triângulo sobre
 "pag. 54". A aba Marcar ("detectar automaticamente") e o item 1.1
 (`core/camadas.py`) continuam com o detector antigo.
+
+---
+
+## Tentativa 47 — "Conferir" logo depois do "cancelar" não derruba mais o programa (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 30/09 (parecer do verificador, 3ª rodada, print s33,
+sonda `sonda3_thread.py`), antigo: "Conferir" menos de 0,1 s depois do
+"cancelar" fazia o programa sumir, sem mensagem e sem nada no `erros.log`.
+
+**Causa:** a análise cancelada termina a página em que está antes de parar.
+Se nesse intervalo começava outra análise, a janela trocava `self.tarefa`, e
+a análise antiga perdia a última referência do Python; o Qt destruía o
+`QThread` ainda rodando e derrubava o processo ("QThread: Destroyed while
+thread is still running", queda nativa com código 0xC0000409). Não é exceção
+Python: o `sys.excepthook` não vê, por isso nada no log.
+
+**O que mudou (`ui/janela_principal.py`):** `_trocar_tarefa` põe a tarefa nova
+em `self.tarefa` e guarda a antiga, se ainda roda, em `_tarefas_saindo` até
+ela acabar (as que acabaram saem da lista a cada troca). Vale para a análise
+e para o processamento. Ao fechar o programa, espera também essas (até 3 s
+cada). O resultado da antiga não entra (Tentativa 40).
+
+**Teste:** `tests/test_cancelar_e_conferir_rapido.py`: roda num processo à
+parte (a queda mata o processo) um livro de 12 folhas grandes, três vezes
+"voltar", "Conferir", "cancelar", "Conferir" e "cancelar" em seguida. Antes:
+o processo caía (código 3221226505). Depois: termina normalmente (3 rodadas
+seguidas).

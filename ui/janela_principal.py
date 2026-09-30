@@ -54,6 +54,12 @@ class JanelaPrincipal(QMainWindow):
         self.acoes: HistoricoAcoes | None = None
         self.previas: GerenciadorPrevias | None = None
         self.tarefa = None
+        # Tarefas (QThread) que sairam de self.tarefa ainda rodando - uma
+        # analise cancelada termina a pagina em que esta antes de parar.
+        # Ficam guardadas aqui ate acabar: se o Python soltasse a ultima
+        # referencia, o Qt destruiria a thread rodando e derrubaria o
+        # programa sem mensagem (verificador, 30/09, s33). Ver _trocar_tarefa.
+        self._tarefas_saindo: list = []
         self.total_folhas = 0
         self.resumo: projetos.Resumo | None = None
         # Item 1.1: a caixa "Este livro tem fundo separado..." aberta agora
@@ -581,7 +587,7 @@ class JanelaPrincipal(QMainWindow):
         # listas do projeto recebido.
         import copy
 
-        self.tarefa = TarefaAnalise(copy.copy(self.projeto))
+        self._trocar_tarefa(TarefaAnalise(copy.copy(self.projeto)))
         self.tarefa.progresso.connect(self.tela_progresso.avancar)
         self.tarefa.concluida.connect(self._analise_pronta)
         self.tarefa.falhou.connect(self._falhou_na_analise)
@@ -783,6 +789,26 @@ class JanelaPrincipal(QMainWindow):
         self.telas.setCurrentIndex(OPCOES)
         self.avisar(mensagem)
 
+    def _trocar_tarefa(self, nova) -> None:
+        """Poe `nova` em self.tarefa sem soltar uma tarefa que ainda roda.
+
+        Bug antigo achado pelo verificador (30/09, s33): "Conferir" logo
+        depois do "cancelar" (menos de 0,1 s) trocava self.tarefa enquanto a
+        analise cancelada ainda terminava a pagina dela; sem nenhuma
+        referencia no Python, o QThread era destruido rodando e o Qt
+        derrubava o programa inteiro, sem mensagem e sem nada no erros.log
+        (queda nativa, nenhuma excecao para o sys.excepthook pegar). A antiga
+        vai para self._tarefas_saindo ate acabar; as que ja acabaram saem de
+        la a cada troca. O resultado dela nao entra (_analise_pronta ignora
+        o que nao vem da tarefa da vez). Arriscado: atribuir self.tarefa
+        direto, em qualquer lugar.
+        """
+        self._tarefas_saindo = [t for t in self._tarefas_saindo if t.isRunning()]
+        antiga = self.tarefa
+        if antiga is not None and antiga.isRunning():
+            self._tarefas_saindo.append(antiga)
+        self.tarefa = nova
+
     def _parar_a_analise(self) -> None:
         """A analise da vez acabou sem resultado (cancelada ou com erro): o
         marcador trabalho_carregado volta ao que era quando ela comecou.
@@ -833,7 +859,7 @@ class JanelaPrincipal(QMainWindow):
         self.tela_progresso.comecar("Processando o livro...")
         self.telas.setCurrentIndex(PROGRESSO)
 
-        self.tarefa = TarefaProcessar(self.projeto)
+        self._trocar_tarefa(TarefaProcessar(self.projeto))
         self.tarefa.progresso.connect(self.tela_progresso.avancar)
         self.tarefa.concluida.connect(self._processamento_pronto)
         self.tarefa.falhou.connect(self._falhou_no_processamento)
@@ -971,6 +997,10 @@ class JanelaPrincipal(QMainWindow):
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
             self.tarefa.wait(3000)
+        # As que ja estavam saindo (canceladas) tambem: fechar com uma thread
+        # rodando derruba o processo na saida.
+        for tarefa in self._tarefas_saindo:
+            tarefa.wait(3000)
         if self.previas is not None:
             self.previas.parar()
         self.tela_conferir.tira.parar()
