@@ -124,9 +124,24 @@ def rodar(saida: Path) -> dict[str, Path]:
         ("4-depois-preto-e-branco", "scantailor", "livre", "Preto e branco", "3-antes-preto-e-branco"),
         ("5-retangular-magico-pro", "scantailor", "retangular", "Mágico pro", "2-depois-magico-pro"),
     ]
+    # Desde 30/09 a forma vem do projeto (Projeto.gravura_forma), e o
+    # conferencia.py cria o projeto sozinho: a forma da rodada entra no
+    # projeto logo antes da analise (o mesmo analisar_projeto que a
+    # TarefaAnalise chama).
+    import ui.tarefas as tarefas
+    from core import pipeline
+
+    analisar_de_verdade = pipeline.analisar_projeto
+    escolhida = {"forma": "livre"}
+
+    def analisar_com_a_forma(projeto, *a, **k):
+        projeto.gravura_forma = escolhida["forma"]
+        return analisar_de_verdade(projeto, *a, **k)
+
+    tarefas.analisar_projeto = analisar_com_a_forma
     for nome, detector, forma, filtro, anterior in plano:
         dr.DETECTOR_DE_GRAVURA_PADRAO = detector
-        dr.FORMA_DA_GRAVURA_PADRAO = forma
+        escolhida["forma"] = forma
         argv = [ITEM, "--filtro", filtro]
         if anterior:
             argv += ["--comparar-com", str(feitas[anterior])]

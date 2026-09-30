@@ -2329,3 +2329,60 @@ para a regra nova: `test_a_gravura_fica_com_o_papel_branco_sem_perder_o_traco`
 (`tests/test_filtro_com_selecao.py`, agora no Melhorar) e
 `test_gravura_pequena_nao_roda_o_melhorar_na_folha_inteira`
 (`tests/test_melhorar_em_volta_da_gravura.py`, agora no Mágico pro).
+
+---
+
+## Tentativa 53 — item 1.2: as opções do ScanTailor na tela, por livro e por página; pauta do Graduale e moldura da Horas 13 (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** a conferir (teste de máquina + teste de olho do Samuel)
+**Pedidos:** Samuel, 30/09: "o programa tem que ter essas opções para o
+usuário conseguir usar"; "Todo livro começa no contorno 'livre', com a
+caixinha 'Este livro tem fotos' para trocar para 'retangular'. Quero poder
+trocar também só numa página (ex.: só a página da estátua do Opus Majus), sem
+mudar o livro inteiro."; consertar agora a pauta do Graduale 222 e a moldura
+da Horas 13; o título da Horas 26 vai para o 1.5.
+
+**O que mudou (commits a5ec20b, ee1f6d6, fc25d72, 2c6cb15, 47cabac):**
+- `Projeto.gravura_forma` / `gravura_sensibilidade` / `gravura_mais_sensivel`
+  / `gravura_normalizar` (padrões do ScanTailor) e `ConfigPagina.gravura_forma`
+  (só a página) + `gravura_feita_com` (assinatura das opções que fizeram a
+  parte automática). Não há campo "detector": o "não procurar" (forma
+  "desligada") é o desligar da regra 8; o detector antigo só entra sozinho,
+  quando a DLL falha.
+- Tela "O que fazer": grupo "Gravuras e fotos" (frases ao lado de cada
+  caixinha: com elas embaixo, a tela não cabia em 880 pontos de altura e as
+  caixinhas eram espremidas — visto na foto da tela).
+- Mudar as opções num livro com trabalho: só ao clicar "Conferir"; cópia do
+  trabalho antes; a parte que a máquina marcou é refeita quando a página é
+  desenhada; a marcação à mão (e o filtro por pedaço) volta por cima, na ordem;
+  aviso na tela.
+- Aba Marcar: "detectar automaticamente" passa pelo mesmo caminho da prévia e
+  do PDF (antes chamava o detector antigo na prévia já filtrada);
+  "Esta página tem foto" com "usar em todas", "só nas próximas" e desfazer.
+- Falha da DLL: erros.log (uma vez por motivo) e uma frase na tela (uma vez).
+
+**Tentado no detector (Graduale 222 e Horas 13):**
+1. *"Tira de escrita" pela medida de pedaços de letra em cada peça da
+   gravura* — **descartado**: a medida não separa (moldura da Horas 26 dá 1,0,
+   retrato do Palatino 5 dá 0,7), e a pauta do Graduale era uma peça só com a
+   faixa escura da beirada.
+2. *Caixa "figure" do modelo julgada escrita tira a gravura* — **ficou**: no
+   Graduale 222 o modelo desenha uma caixa "figure" em volta da partitura que
+   o detector antigo julga escrita (46% de pedaços de letra); ali a escrita
+   ganha, e a peça que é mais da metade de dentro da caixa sai inteira.
+   Barras finas encostadas na beirada (até 10% do outro lado) saem mesmo
+   presas a outra peça. Graduale 222: 14% → 0% (em todas as combinações).
+3. *A gravura cresce pelo que não é papel* (até 2% do menor lado) —
+   **ficou**: a Horas 13 tinha só a beirada de dentro da moldura (37% do
+   dourado coberto); agora 88%. Feito na linha a parte do ScanTailor.
+   As outras páginas mudam no máximo a beirada.
+
+**Rodada das opções** (`relatorios/conferir/fase1-1.2-opcoes-2026-09-30/`, 9
+páginas × 10 combinações × 2 filtros): a de fábrica (contorno livre, sem
+imagens claras, luz igualada) é a melhor ou empata em 8 de 9; o Opus 20 fica
+bom com "tem foto" (retângulo); "imagens claras" resolve o Opus 20 mas põe
+gravura no texto (Marial 153, Palatino 9 e 67) — **não recomendada de
+fábrica**. O título da Horas 26 nenhuma opção resolve (1.5, depende do OCR).
+Visto de passagem: no Preto e branco (regra nova do filtro, outro
+implementador) o título vermelho da Horas 13 some em todas as combinações.
