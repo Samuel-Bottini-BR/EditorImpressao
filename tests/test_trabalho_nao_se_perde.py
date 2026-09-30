@@ -977,3 +977,176 @@ def test_abrir_pelo_abrir_continua_achando_o_mais_recente(janela, pasta):
     livro, _resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
     janela.abrir_livro(str(livro))
     assert janela.resumo.pasta == resumo_b.pasta
+
+
+# --- a pergunta do fundo: uma vez por livro, inclusive nos que ja existem (item 1.1) ------
+#
+# Decisao do Samuel (29/09, Registro de mudancas): a pergunta "Este livro tem
+# fundo separado. Quer tirar o fundo?" aparece UMA VEZ POR LIVRO, INCLUSIVE
+# NOS QUE ELE JA TEM: na proxima vez que abrir (por qualquer caminho), e
+# depois nao pergunta mais. Antes so aparecia em projeto novo. O projeto
+# guarda que ja perguntou (Projeto.perguntou_fundo; projeto antigo sem o
+# campo = ainda nao perguntou). "Nao" (e Esc, e X) tambem conta. Projeto
+# antigo nunca vem com o fundo tirado sem a pessoa dizer "Sim".
+
+
+def _pdf_com_fundo(pasta: Path, paginas: int = 3) -> Path:
+    from tests.test_tirar_fundo_no_programa import _pdf_camadas
+
+    (pasta / "livros").mkdir(exist_ok=True)
+    return Path(_pdf_camadas(pasta / "livros", "Com Fundo.pdf", paginas=paginas))
+
+
+def _responder(janela, sim: bool) -> None:
+    caixa = janela.aviso_do_fundo
+    assert caixa is not None, "nao perguntou"
+    texto = "Sim, tirar o fundo" if sim else "Não, deixar como está"
+    next(b for b in caixa.buttons() if b.text() == texto).click()
+    assert janela.aviso_do_fundo is None
+
+
+def _fechar_a_conferencia(janela) -> None:
+    if janela.previas is not None:
+        janela.previas.parar()
+        janela.previas = None
+    janela.tela_opcoes.folhear.fechar()
+
+
+def _projeto_antigo_com_trabalho(janela, livro: Path) -> Path:
+    """Um projeto como os que o Samuel ja tem: trabalho feito (pagina 2 em
+    Magico pro, conferida), gravado ANTES do campo perguntou_fundo existir."""
+    janela.abrir_livro(str(livro))
+    if janela.aviso_do_fundo is not None:
+        janela.aviso_do_fundo.done(0)
+    _analisar(janela)
+    janela.projeto.paginas[1].filtro = MAGICO_PRO
+    janela.projeto.paginas[1].revisada = True
+    janela._salvar_agora()
+    _fechar_a_conferencia(janela)
+    estado = _estado(janela)
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    dados.pop("perguntou_fundo", None)                     # como antes de 29/09
+    estado.write_text(json.dumps(dados, ensure_ascii=False, indent=1), encoding="utf-8")
+    return estado
+
+
+def test_livro_novo_com_camadas_pergunta_uma_vez_so(janela, pasta):
+    livro = _pdf_com_fundo(pasta)
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=False)
+    janela.tela_opcoes.folhear.fechar()
+    janela.abrir_livro(str(livro))                         # de novo, sem conferir
+    assert janela.aviso_do_fundo is None, "perguntou de novo"
+    _analisar(janela)
+    _fechar_a_conferencia(janela)
+    janela.abrir_livro(str(livro).replace("\\", "/"))      # pelo "Abrir"
+    assert janela.aviso_do_fundo is None
+
+
+def test_projeto_antigo_pergunta_na_proxima_abertura_e_nao_mais(janela, pasta):
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+
+    janela.abrir_livro(str(livro))
+    assert janela.aviso_do_fundo is not None, "o projeto antigo nao perguntou"
+    _responder(janela, sim=False)
+    _analisar(janela)
+    assert [p.filtro for p in janela.projeto.paginas] == ["original", MAGICO_PRO, "original"]
+    _fechar_a_conferencia(janela)
+
+    janela.abrir_livro(str(livro))
+    assert janela.aviso_do_fundo is None, "perguntou de novo"
+    _fechar_a_conferencia(janela)
+    janela.close()
+    assert projetos.carregar_estado(janela.resumo).perguntou_fundo is True
+
+
+def test_projeto_antigo_pelo_continuar_tambem_pergunta(janela, pasta, monkeypatch):
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+    monkeypatch.setattr(janela, "analisar", lambda: None)
+    janela._continuar_projeto(projetos.listar()[0])
+    assert janela.aviso_do_fundo is not None
+    _responder(janela, sim=False)
+    janela.tela_opcoes.folhear.fechar()
+    janela._continuar_projeto(projetos.listar()[0])
+    assert janela.aviso_do_fundo is None
+
+
+@pytest.mark.parametrize("como", ["nao", "esc", "x"])
+def test_projeto_antigo_nao_esc_e_x_nao_mudam_nada(janela, pasta, como):
+    livro = _pdf_com_fundo(pasta)
+    estado = _projeto_antigo_com_trabalho(janela, livro)
+    paginas_antes = json.loads(estado.read_text(encoding="utf-8"))["paginas"]
+
+    janela.abrir_livro(str(livro))
+    if como == "nao":
+        _responder(janela, sim=False)
+    elif como == "esc":
+        janela.aviso_do_fundo.reject()
+    else:
+        janela.aviso_do_fundo.done(0)
+    assert janela.aviso_do_fundo is None
+    assert janela.projeto.filtro_padrao == "original"
+    _analisar(janela)
+    assert not janela.avisos
+    janela.close()
+    depois = json.loads(estado.read_text(encoding="utf-8"))
+    assert depois["paginas"] == paginas_antes, "o trabalho mudou sem a pessoa dizer Sim"
+    assert depois["perguntou_fundo"] is True, "Esc/X/Nao nao contou como perguntado"
+
+
+def test_projeto_antigo_sim_poe_o_livro_inteiro_no_filtro_e_da_para_desfazer(janela, pasta):
+    from core.filtros import TIRAR_FUNDO
+
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=True)
+    _analisar(janela)
+
+    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO] * 3
+    assert janela.projeto.paginas[1].revisada, "o resto do trabalho se perdeu"
+    assert not janela.avisos
+    janela.tela_conferir.desfazer()                        # pelo Historico
+    assert [p.filtro for p in janela.projeto.paginas] == ["original", MAGICO_PRO, "original"]
+    janela.tela_conferir.refazer()
+    janela.close()
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert [p.filtro for p in salvo.paginas] == [TIRAR_FUNDO] * 3
+    assert salvo.perguntou_fundo is True
+
+
+def test_sim_respondido_durante_a_analise_do_continuar_vale(janela, pasta, monkeypatch):
+    """Pelo "continuar", a analise comeca com a pergunta aberta: o "Sim"
+    chega antes do trabalho carregar, e vale quando ele carrega."""
+    from core.filtros import TIRAR_FUNDO
+
+    livro = _pdf_com_fundo(pasta)
+    _projeto_antigo_com_trabalho(janela, livro)
+    monkeypatch.setattr(janela, "analisar", lambda: None)
+    janela._continuar_projeto(projetos.listar()[0])
+    _responder(janela, sim=True)
+    _analisar(janela)
+    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO] * 3
+
+
+def test_livro_sem_camadas_nunca_pergunta_nem_o_antigo(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    estado = _estado(janela)
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    dados.pop("perguntou_fundo", None)
+    estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
+    janela.abrir_livro(str(livro))
+    assert janela.aviso_do_fundo is None
+
+
+def test_campo_novo_vai_e_volta_do_disco_e_projeto_antigo_vem_sem_perguntar():
+    from modelos import Projeto
+
+    assert Projeto(caminho_entrada="x.pdf").perguntou_fundo is False
+    assert Projeto.de_dicionario({"caminho_entrada": "x.pdf"}).perguntou_fundo is False
+    p = Projeto(caminho_entrada="x.pdf")
+    p.perguntou_fundo = True
+    assert Projeto.de_dicionario(p.para_dicionario()).perguntou_fundo is True

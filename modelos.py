@@ -193,6 +193,17 @@ class Projeto:
     # e core/pipeline.py (usa_tirar_fundo).
     tem_camadas: bool = False
 
+    # Item 1.1: a pergunta "Este livro tem fundo separado. Quer tirar o
+    # fundo?" ja foi feita neste projeto? Decisao do Samuel (29/09/2026,
+    # Registro de mudancas): ela aparece "uma vez por livro, inclusive nos que
+    # ele ja tem: na proxima vez que abrir, e depois nao pergunta mais". Projeto
+    # antigo, gravado antes deste campo, volta com False (= ainda nao
+    # perguntou) - campo novo autorizado por essa decisao. Qualquer resposta
+    # conta (Sim, Nao, Esc, X). Quem pergunta e grava: ui/janela_principal.py
+    # (abrir_livro, _resposta_do_aviso_do_fundo). Seguro mudar: nada; o
+    # campo so decide se a pergunta aparece, nunca mexe em pagina.
+    perguntou_fundo: bool = False
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""

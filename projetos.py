@@ -398,6 +398,33 @@ def tem_trabalho_salvo(resumo: Resumo) -> bool:
     return not isinstance(dados, dict) or bool(dados.get("paginas"))
 
 
+def anotar_no_estado(resumo: Resumo, **campos) -> bool:
+    """Muda so alguns campos de cima do projeto.json gravado, sem tocar no
+    resto (paginas, folhas, trabalho). Devolve False se nao ha projeto.json
+    legivel (ai nada e gravado).
+
+    Existe para o que precisa ficar gravado ANTES de o trabalho ser carregado
+    (entre abrir o livro e o fim da analise, quando _salvar_agora nao grava
+    por cima do trabalho salvo): hoje, que a pergunta do fundo ja foi feita
+    (Projeto.perguntou_fundo, item 1.1). Grava num arquivo ao lado e troca,
+    como salvar_estado. Nunca levanta. Arriscado: usar para mudar paginas ou
+    folhas (e trabalho de salvar_estado, com o projeto inteiro).
+    """
+    caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
+    try:
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        if not isinstance(dados, dict):
+            return False
+        dados.update(campos)
+        temporario = caminho.with_name(ARQUIVO_ESTADO + ".novo")
+        temporario.write_text(json.dumps(dados, ensure_ascii=False, indent=1),
+                              encoding="utf-8")
+        temporario.replace(caminho)
+        return True
+    except (OSError, ValueError, TypeError):
+        return False
+
+
 def carregar_estado(resumo: Resumo):
     """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler."""
     from modelos import Projeto

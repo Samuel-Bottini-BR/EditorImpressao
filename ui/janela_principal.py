@@ -73,6 +73,10 @@ class JanelaPrincipal(QMainWindow):
         # O valor de trabalho_carregado quando a analise em curso comecou: e
         # o que volta se ela for cancelada ou der erro (_parar_a_analise).
         self._carregado_antes_da_analise = False
+        # Item 1.1: "Sim, tirar o fundo" respondido antes de o trabalho salvo
+        # carregar (projeto antigo, ou pelo "continuar"): a pasta do projeto
+        # que espera o livro inteiro ir para o filtro em _analise_pronta.
+        self._fundo_pendente: str | None = None
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -302,6 +306,7 @@ class JanelaPrincipal(QMainWindow):
         if isinstance(self.tarefa, TarefaAnalise):
             self.tarefa.cancelar()
         self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
+        self._fundo_pendente = None
         self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
         self.projeto.tem_camadas = tem_camadas
 
@@ -310,6 +315,7 @@ class JanelaPrincipal(QMainWindow):
         # inicial, que tem "começar de novo" no menu do cartão.
         self.resumo = resumo if resumo is not None else projetos.achar_por_assinatura(caminho)
         livro_novo = self.resumo is None
+        salvo = None
         if livro_novo:
             self.resumo = projetos.criar(self.projeto, self.total_folhas)
         else:
@@ -321,18 +327,23 @@ class JanelaPrincipal(QMainWindow):
             # conferencia recomecava sem a pessoa mudar nada (parecer do
             # verificador de 29/09, p25-p26), e o filtro do livro aparecia em
             # Original (print t10 da rodada de 18:26).
-            self._trazer_opcoes_salvas(projetos.carregar_estado(self.resumo))
+            salvo = projetos.carregar_estado(self.resumo)
+            self._trazer_opcoes_salvas(salvo)
         self.acoes = HistoricoAcoes(Path(self.resumo.pasta))
 
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.telas.setCurrentIndex(OPCOES)
 
-        # Item 1.1: livro com camadas aberto pela PRIMEIRA vez (projeto novo).
-        # Decisao da gerente, a rever pelo Samuel: nao perguntar de novo a cada
-        # reabertura de projeto que ja existe (pelo "continuar", pelo "Abrir"
-        # ou arrastando o mesmo PDF, nem pelo "começar de novo") - a escolha
-        # de antes esta nos filtros salvos. Livro sem camadas: nunca pergunta.
-        if livro_novo and tem_camadas:
+        # Item 1.1, decisao do Samuel (29/09, Registro de mudancas): a
+        # pergunta aparece "uma vez por livro, inclusive nos que ele ja tem:
+        # na proxima vez que abrir, e depois nao pergunta mais". Por qualquer
+        # caminho (Abrir, arrastar, Windows, "continuar"). Ja perguntou =
+        # Projeto.perguntou_fundo no projeto salvo (projeto antigo sem o
+        # campo: ainda nao). Substitui a decisao da gerente de perguntar so em
+        # projeto novo. Livro sem camadas: nunca pergunta. Depois do "comecar
+        # de novo" (o projeto salvo e apagado) pergunta de novo.
+        ja_perguntou = salvo is not None and salvo.perguntou_fundo
+        if tem_camadas and not ja_perguntou:
             self._perguntar_se_tira_o_fundo()
 
     def _perguntar_se_tira_o_fundo(self) -> None:
@@ -376,19 +387,59 @@ class JanelaPrincipal(QMainWindow):
     def _resposta_do_aviso_do_fundo(self, projeto: Projeto | None, tirar: bool) -> None:
         """Aplica a resposta do aviso do item 1.1.
 
+        Qualquer resposta (Sim, Nao, Esc, X) fica gravada como "ja
+        perguntou" (Projeto.perguntou_fundo): a pergunta aparece uma vez por
+        livro (decisao do Samuel, 29/09). Grava so esse campo no projeto.json
+        (projetos.anotar_no_estado), sem tocar no trabalho; livro ainda sem
+        projeto.json grava o projeto (so as opcoes) por _salvar_agora.
+
         Sim: o filtro do livro vira "Tirar o fundo" na tela "O que fazer" (o
-        mesmo que clicar no radio), e todas as paginas nascem nele na analise.
-        Nao: nada muda. A resposta so vale para o livro que fez a pergunta e
-        enquanto ele esta na tela "O que fazer" (a caixa e modal, entao isso
-        so falharia se alguem trocasse de livro por fora, como um teste).
+        mesmo que clicar no radio), e as paginas novas nascem nele na
+        analise. Projeto que ja tem paginas (antigo, ou pelo "continuar"): o
+        livro inteiro vai para o filtro quando o trabalho carrega, como UMA
+        acao do Historico ("Tirar o fundo em N paginas"), que se desfaz
+        (_tirar_o_fundo_do_livro_inteiro). Nao: nada muda - projeto antigo
+        nunca vem com o fundo tirado sem o "Sim".
+
+        A resposta so vale para o livro que fez a pergunta (a caixa e modal,
+        entao isso so falharia se alguem trocasse de livro por fora, como um
+        teste).
         """
         from core.filtros import TIRAR_FUNDO
 
-        if not tirar or projeto is None or projeto is not self.projeto:
+        if projeto is None or projeto is not self.projeto or self.resumo is None:
             return
-        if self.telas.currentIndex() != OPCOES or self.tela_opcoes.projeto is not projeto:
+        projeto.perguntou_fundo = True
+        if not projetos.anotar_no_estado(self.resumo, perguntou_fundo=True):
+            self._salvar_agora()
+        if not tirar:
             return
-        self.tela_opcoes.escolher_filtro_do_livro(TIRAR_FUNDO)
+        if self.telas.currentIndex() == OPCOES and self.tela_opcoes.projeto is projeto:
+            self.tela_opcoes.escolher_filtro_do_livro(TIRAR_FUNDO)
+        if self.trabalho_carregado:
+            self._tirar_o_fundo_do_livro_inteiro()
+        else:
+            self._fundo_pendente = self.resumo.pasta
+
+    def _tirar_o_fundo_do_livro_inteiro(self) -> None:
+        """O "Sim" da pergunta do fundo num livro com paginas carregadas: todas
+        as paginas vao para "Tirar o fundo", numa acao so do Historico (que se
+        desfaz), como o "todas" da aba Filtro. So o filtro muda: o resto do
+        trabalho (corte, conferidas, alertas) fica. O filtro do livro tambem
+        (e o que a tela "O que fazer" mostra). Paginas ja no filtro nao entram.
+        """
+        from core.filtros import TIRAR_FUNDO
+
+        self._fundo_pendente = None
+        if self.projeto is None:
+            return
+        self.projeto.filtro_padrao = TIRAR_FUNDO
+        indices = [p.indice for p in self.projeto.paginas if p.filtro != TIRAR_FUNDO]
+        if not indices or self.tela_conferir.projeto is not self.projeto:
+            return
+        self.tela_conferir._registrar(
+            "aplicar_em_todas", "pagina", indices, {"filtro": TIRAR_FUNDO},
+            f"Tirar o fundo em {len(indices)} páginas (resposta à pergunta do fundo)")
 
     def _continuar_projeto(self, resumo: projetos.Resumo) -> None:
         """Retoma um projeto exatamente onde parou.
@@ -430,6 +481,7 @@ class JanelaPrincipal(QMainWindow):
         self.projeto.cortar_bordas = salvo.cortar_bordas
         self.projeto.montar_cadernos = salvo.montar_cadernos
         self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
+        self.projeto.perguntou_fundo = salvo.perguntou_fundo      # item 1.1
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
@@ -569,6 +621,10 @@ class JanelaPrincipal(QMainWindow):
         self.tela_conferir.carregar(projeto, self.acoes, self.previas)
         if self.resumo is not None:
             self.tela_conferir.ir_para_pagina(self.resumo.pagina_atual)
+        # Item 1.1: "Sim, tirar o fundo" respondido antes de o trabalho
+        # carregar (projeto antigo, "continuar"): vale agora.
+        if self.resumo is not None and self._fundo_pendente == self.resumo.pasta:
+            self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
         self._salvar_agora()
 

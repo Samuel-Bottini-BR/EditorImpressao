@@ -1844,3 +1844,46 @@ resumo e tornava aquele cartão o mais recente): "continuar" do cartão mais
 antigo abre ele, grava nele e não toca no outro; "continuar" do mais recente
 abre ele; "começar de novo" limpa e abre aquele projeto; o "Abrir" continua
 achando o mais recente.
+
+---
+
+## Tentativa 43 — a pergunta do fundo: uma vez por livro, inclusive nos que já existem (item 1.1, 29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** feito, a conferir (teste de máquina; a pergunta é de tela)
+**Pedido (Samuel, 29/09, Registro de mudanças):** a pergunta "Este livro tem
+fundo separado. Quer tirar o fundo?" aparece "uma vez por livro, inclusive
+nos que ele já tem: na próxima vez que abrir, e depois não pergunta mais"
+(substitui a decisão da gerente de perguntar só em projeto novo).
+
+**O que mudou:**
+- `modelos.Projeto.perguntou_fundo` (campo novo, autorizado pela decisão):
+  projeto antigo sem o campo volta com `False` (= ainda não perguntou).
+- `abrir_livro` (por qualquer caminho: "Abrir", arrastar, Windows,
+  "continuar") pergunta se o PDF tem camadas e o projeto salvo ainda não
+  perguntou. Livro sem camadas: nunca.
+- Qualquer resposta (Sim, Não, Esc, X) grava "já perguntou". Com trabalho
+  salvo, grava **só esse campo** no `projeto.json`
+  (`projetos.anotar_no_estado`), sem tocar no trabalho (nessa hora
+  `_salvar_agora` não grava por cima, Tentativa 36). Livro novo grava o projeto
+  (só as opções).
+- **Sim** num livro novo: como antes (o filtro do livro vira "Tirar o fundo" e
+  as páginas nascem nele). **Sim** num projeto que já tem páginas: quando o
+  trabalho carrega, o livro inteiro vai para "Tirar o fundo" numa ação só do
+  Histórico ("Tirar o fundo em N páginas (resposta à pergunta do fundo)"), que
+  se desfaz; o resto do trabalho (corte, conferidas, alertas) fica. Vale também
+  para o "Sim" respondido durante a análise do "continuar".
+- **Não/Esc/X:** nada muda; projeto antigo nunca vem com o fundo tirado sem o
+  "Sim".
+
+**Decisão minha, a conferir:** depois do "começar de novo" (que apaga o
+projeto salvo) a pergunta aparece de novo, como num livro novo.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 10 (8 falhavam
+antes): livro novo pergunta uma vez só (e não de novo pelo "Abrir"); projeto
+antigo pergunta na próxima abertura e não mais; pelo "continuar" também;
+Não, Esc e X não mudam o trabalho e contam como perguntado; Sim num projeto
+antigo põe o livro inteiro no filtro e se desfaz pelo Histórico; Sim durante a
+análise do "continuar" vale; livro sem camadas nunca pergunta, nem o antigo;
+o campo vai e volta do disco. Os testes antigos do aviso
+(`tests/test_tirar_fundo_no_programa.py`) continuam passando.
