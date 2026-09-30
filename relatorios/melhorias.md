@@ -2211,3 +2211,42 @@ filhos. Primeiro provei que o vigia enxerga: uma janela de 50×50 pontos posta
 offscreen; as funções prontas de caixa sem resposta falham na hora (5
 casos); a caixa modal sem resposta é fechada pelo vigia e marcada; a caixa
 respondida a tempo não é afetada.
+
+---
+
+## Tentativa 51 — opção mudada em "O que fazer" sem "Conferir" não vai para o disco (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** achado pelo implementador em 30/09 (relatório da Tentativa 45);
+decisão da gerente: consertar agora (plano no commit `4a30026`).
+
+**O que acontecia:** num livro com trabalho, sair da conferência para "O que
+fazer", mudar uma opção (ex.: desmarcar "Dividir folhas ao meio") e **fechar**
+o programa, ou **voltar** para o início, sem clicar "Conferir": a opção nova
+era gravada com as páginas de antes (pelo fechamento ou pelo relógio de
+salvar), e a abertura seguinte recomeçava a conferência (com cópia e aviso).
+
+**O que mudou (`ui/janela_principal.py`):** `_salvar_agora` grava
+`_o_que_gravar()`: enquanto houver opções do trabalho guardadas (desde
+`_sair_da_conferencia` até o "Conferir" terminar, em `_analise_pronta`), vai
+para o disco uma cópia rasa do projeto com **as opções do trabalho** e as
+páginas de sempre. O trabalho das páginas continua sendo gravado; só as
+opções não conferidas ficam fora. A opção nova passa a valer quando o
+"Conferir" termina (ou volta à de antes no "cancelar", Tentativa 45).
+
+**Conferido, os outros caminhos:**
+- livro **recém-aberto** com trabalho salvo, opção mudada e "voltar" ou
+  fechar: já não gravava (a trava da Tentativa 36); o teste confirma, byte a
+  byte;
+- **"voltar"** (tela "O que fazer" → início) não grava nada por si; o
+  relógio de salvar, se disparar depois, grava as opções do trabalho;
+- **livro novo** (sem trabalho): as opções continuam indo para o disco, como
+  antes (o "continuar" as traz de volta; não há páginas com que brigar).
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 6 (4 falhavam antes):
+opção mudada e fechar, voltar e fechar, voltar e o relógio disparar (o disco
+fica com as opções do trabalho, e a abertura seguinte não recomeça); livro
+recém-aberto com trabalho, opção mudada e voltar não grava nada; o trabalho
+feito antes de sair para "O que fazer" continua gravado; livro novo guarda a
+opção como antes.

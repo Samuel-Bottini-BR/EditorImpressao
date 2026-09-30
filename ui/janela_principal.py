@@ -756,9 +756,35 @@ class JanelaPrincipal(QMainWindow):
             return
         if not self.trabalho_carregado and projetos.tem_trabalho_salvo(self.resumo):
             return
-        projetos.salvar_estado(self.resumo, self.projeto)
+        projetos.salvar_estado(self.resumo, self._o_que_gravar())
         projetos.atualizar(self.resumo, self.projeto,
                            pagina_atual=self.tela_conferir.indice_pagina)
+
+    def _o_que_gravar(self) -> Projeto:
+        """O projeto como deve ir para o disco.
+
+        Normalmente o proprio projeto aberto. Mas se a pessoa saiu da
+        conferencia para "O que fazer" e mudou uma opcao (ex.: desmarcou
+        "Dividir folhas ao meio") sem clicar "Conferir", a opcao nova NAO vai
+        para o disco: grava-se o projeto com as opcoes do trabalho
+        (self._opcoes_do_trabalho, guardadas em _sair_da_conferencia), e as
+        paginas de sempre. Antes, fechar ou voltar para o inicio gravava a
+        opcao nova com as paginas de antes, e a abertura seguinte recomecava a
+        conferencia (bug achado em 30/09; decisao da gerente). A opcao nova so
+        vale quando o "Conferir" termina (_analise_pronta limpa o guardado).
+
+        Copia rasa: as paginas e folhas sao as mesmas (nada e duplicado na
+        memoria); so as opcoes da copia sao trocadas. Arriscado: gravar
+        self.projeto direto enquanto _opcoes_do_trabalho estiver guardado.
+        """
+        if self.projeto is None or self._opcoes_do_trabalho is None:
+            return self.projeto
+        import copy
+
+        gravar = copy.copy(self.projeto)
+        for campo, valor in self._opcoes_do_trabalho.items():
+            setattr(gravar, campo, valor)
+        return gravar
 
     # As opcoes da tela "O que fazer" que mudam quais paginas existem ou como
     # nascem (ver _parar_a_analise).

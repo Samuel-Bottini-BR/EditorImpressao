@@ -1466,3 +1466,75 @@ def test_comecar_de_novo_pergunta_em_portugues(janela, pasta, monkeypatch):
     assert vistas and vistas[0][0] not in ("Yes", "Sim") and vistas[0][1] != "No"
     assert vistas[0][2] is False                  # o "nao" no Enter
     assert projetos.tem_trabalho_salvo(projetos.listar()[0])   # "nao": nada apagado
+
+
+# --- mudar uma opcao em "O que fazer" sem "Conferir" nao vai para o disco (30/09) -----------
+#
+# Bug achado pelo implementador (30/09), decisao da gerente: consertar. Num
+# livro com trabalho, mudar uma opcao em "O que fazer" (ex.: desmarcar
+# "Dividir folhas ao meio") e fechar o programa, ou voltar para o inicio, sem
+# clicar "Conferir", gravava a opcao nova com as paginas de antes, e a
+# abertura seguinte recomecava a conferencia (com copia e aviso).
+
+
+@pytest.mark.parametrize("como", ["fechar", "voltar_e_fechar", "voltar_e_relogio"])
+def test_opcao_mudada_sem_conferir_nao_vai_para_o_disco(janela, pasta, como):
+    livro = _deitado_conferido(janela, pasta)
+    janela._sair_da_conferencia()
+    janela.tela_opcoes.cx_dividir.setChecked(False)          # a pessoa muda...
+    janela.tela_opcoes.radios_de_filtro["melhorar"].setChecked(True)
+    if como == "fechar":
+        janela.close()                                        # ...e fecha
+    elif como == "voltar_e_fechar":
+        janela.tela_opcoes.voltar.emit()                      # ...volta ao inicio
+        janela.close()
+    else:
+        janela.tela_opcoes.voltar.emit()
+        janela._salvar_agora()                                # o relogio de salvar dispara
+
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert salvo.dividir_folhas is True, "a opcao nao conferida foi para o disco"
+    assert salvo.filtro_padrao == "original"
+    assert len(salvo.paginas) == 6 and salvo.paginas[1].filtro == MAGICO_PRO
+
+    _fechar_a_conferencia(janela)
+    janela.abrir_livro(str(livro))
+    assert janela.tela_opcoes.cx_dividir.isChecked()
+    _analisar(janela)
+    assert not janela.avisos, janela.avisos                    # nao recomecou
+    assert len(janela.projeto.paginas) == 6
+
+
+def test_livro_recem_aberto_com_trabalho_opcao_mudada_e_voltar_nao_grava(janela, pasta):
+    livro = _deitado_conferido(janela, pasta)
+    _fechar_a_conferencia(janela)
+    antes = _estado(janela).read_bytes()
+    janela.abrir_livro(str(livro))
+    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.tela_opcoes.voltar.emit()
+    janela._salvar_agora()
+    janela.close()
+    assert _estado(janela).read_bytes() == antes
+
+
+def test_trabalho_feito_depois_de_voltar_da_conferencia_continua_sendo_gravado(janela, pasta):
+    """So as OPCOES nao conferidas ficam fora do disco: o trabalho das
+    paginas (feito antes de sair para "O que fazer") continua gravado."""
+    _deitado_conferido(janela, pasta)
+    janela.projeto.paginas[3].filtro = "preto_e_branco"
+    janela._sair_da_conferencia()
+    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.close()
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert salvo.paginas[3].filtro == "preto_e_branco"
+    assert salvo.dividir_folhas is True
+
+
+def test_livro_novo_opcao_mudada_e_fechar_guarda_a_opcao(janela, pasta):
+    """Livro sem trabalho: as opcoes vao para o disco como antes (o
+    "continuar" as traz de volta)."""
+    livro = _pdf_deitado(pasta)
+    janela.abrir_livro(str(livro))
+    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.close()
+    assert projetos.carregar_estado(janela.resumo).dividir_folhas is False
