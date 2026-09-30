@@ -899,3 +899,81 @@ def test_trocar_de_livro_no_meio_da_analise_nao_mistura_os_livros(janela, pasta)
     assert janela.projeto.paginas == [], "o resultado do livro 1 entrou no livro 2"
     janela.close()
     assert (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes() == antes
+
+
+# --- o "continuar" de um cartao abre exatamente aquele projeto (verificador, 2a rodada) ---
+#
+# Dois projetos do mesmo PDF (o segundo nasce com "(2)" no nome): o
+# "continuar" do cartao mais antigo abria o mais recente, porque abrir_livro
+# achava o projeto pela assinatura (o mais recente). Prints q24 e q25.
+
+
+def _dois_projetos_do_mesmo_livro(janela, pasta: Path):
+    """Projeto A (o mais antigo, pagina 2 em Magico pro) e projeto B (o mais
+    recente, tudo em Preto e branco), do MESMO PDF. Devolve (livro, A, B)."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    resumo_a = projetos.ler_resumo(janela.resumo.pasta)
+
+    estado_a = json.loads((Path(resumo_a.pasta) / projetos.ARQUIVO_ESTADO).read_text(
+        encoding="utf-8"))
+    from modelos import Projeto
+
+    resumo_b = projetos.criar(Projeto(caminho_entrada=str(livro), nome=livro.stem), 4)
+    for pagina in estado_a["paginas"]:
+        pagina["filtro"] = "preto_e_branco"
+    (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).write_text(
+        json.dumps(estado_a, ensure_ascii=False), encoding="utf-8")
+    # datas diferentes de proposito: A e o cartao mais antigo
+    for resumo, quando in ((resumo_a, "2026-09-01T10:00:00"), (resumo_b, "2026-09-20T10:00:00")):
+        caminho = Path(resumo.pasta) / projetos.ARQUIVO_RESUMO
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        dados["mexido_em"] = quando
+        caminho.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
+    assert [r.pasta for r in projetos.listar()] == [resumo_b.pasta, resumo_a.pasta]
+    return livro, projetos.ler_resumo(resumo_a.pasta), projetos.ler_resumo(resumo_b.pasta)
+
+
+def test_continuar_o_cartao_mais_antigo_abre_ele_e_nao_o_mais_recente(janela, pasta,
+                                                                    monkeypatch):
+    _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
+    estado_b = (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).read_bytes()
+    monkeypatch.setattr(janela, "analisar", lambda: None)
+
+    janela.tela_inicio.pedir_para_continuar(resumo_a)          # o cartao de A
+    _analisar(janela)
+
+    assert janela.resumo.pasta == resumo_a.pasta, "abriu o outro projeto"
+    assert [p.filtro for p in janela.projeto.paginas][:2] == ["original", MAGICO_PRO]
+    janela.projeto.paginas[0].filtro = "melhorar"
+    janela.close()
+    assert projetos.carregar_estado(resumo_a).paginas[0].filtro == "melhorar"
+    assert (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).read_bytes() == estado_b
+
+
+def test_continuar_o_cartao_mais_recente_abre_ele(janela, pasta, monkeypatch):
+    _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
+    monkeypatch.setattr(janela, "analisar", lambda: None)
+    janela.tela_inicio.pedir_para_continuar(resumo_b)
+    _analisar(janela)
+    assert janela.resumo.pasta == resumo_b.pasta
+    assert {p.filtro for p in janela.projeto.paginas} == {"preto_e_branco"}
+
+
+def test_comecar_de_novo_limpa_e_abre_aquele_projeto(janela, pasta):
+    """O "comecar de novo" do cartao de A apaga o trabalho de A (depois de
+    perguntar) e abre A limpo - e nao o B."""
+    _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
+    estado_b = (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).read_bytes()
+    janela._recomecar_projeto(resumo_a)
+    assert janela.resumo.pasta == resumo_a.pasta
+    janela.close()
+    assert (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).read_bytes() == estado_b
+
+
+def test_abrir_pelo_abrir_continua_achando_o_mais_recente(janela, pasta):
+    """O "Abrir" (sem cartao) continua o projeto mais recente do livro, como
+    sempre fez."""
+    livro, _resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
+    janela.abrir_livro(str(livro))
+    assert janela.resumo.pasta == resumo_b.pasta

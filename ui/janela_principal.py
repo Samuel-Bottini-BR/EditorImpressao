@@ -260,11 +260,20 @@ class JanelaPrincipal(QMainWindow):
     # fluxo
     # ------------------------------------------------------------------
 
-    def abrir_livro(self, caminho: str) -> None:
+    def abrir_livro(self, caminho: str, resumo: projetos.Resumo | None = None) -> None:
         """Ponto de entrada de "abrir um livro novo": valida o PDF, cria (ou
         recupera) o Projeto e o resumo em disco, e vai para a tela de Opções.
         Chamada tambem por _continuar_projeto/_recomecar_projeto, que so
-        preenchem o Projeto com o que ja estava salvo depois desta abertura."""
+        preenchem o Projeto com o que ja estava salvo depois desta abertura.
+
+        `resumo`: o projeto EXATO a abrir (o do cartao da tela inicial, pelo
+        "continuar" ou pelo "comecar de novo"). Sem ele ("Abrir", arrastar,
+        Windows), o projeto e achado pela assinatura do arquivo - o mais
+        recente, se houver mais de um do mesmo PDF. Antes o cartao tambem
+        passava pela assinatura, e o "continuar" do cartao mais antigo abria
+        o mais recente (verificador, 29/09, q24-q25). Arriscado: voltar a
+        procurar pela assinatura quando o cartao ja disse qual e.
+        """
         try:
             doc = abrir_pdf(caminho)
             try:
@@ -299,7 +308,7 @@ class JanelaPrincipal(QMainWindow):
         # Abrir o MESMO livro de novo continua o projeto de antes, em vez de
         # criar um ao lado: quem for reabrir de propósito passa pela tela
         # inicial, que tem "começar de novo" no menu do cartão.
-        self.resumo = projetos.achar_por_assinatura(caminho)
+        self.resumo = resumo if resumo is not None else projetos.achar_por_assinatura(caminho)
         livro_novo = self.resumo is None
         if livro_novo:
             self.resumo = projetos.criar(self.projeto, self.total_folhas)
@@ -389,14 +398,13 @@ class JanelaPrincipal(QMainWindow):
         novo (e barata perto de perder o trabalho) e o estado salvo volta por
         cima dela, em `_analise_pronta`.
         """
-        self.abrir_livro(resumo.caminho_entrada)
+        self.abrir_livro(resumo.caminho_entrada, resumo=resumo)   # ESTE projeto
         if self.projeto is None:
             return
 
-        # As opcoes salvas ja vieram em abrir_livro (do projeto achado pela
-        # assinatura). Aqui vem de novo, do projeto do CARTAO: e o mesmo
-        # quando ha um so projeto deste PDF (ver ressalva no relatorio de
-        # 29/09 sobre dois projetos do mesmo PDF).
+        # As opcoes salvas ja vieram em abrir_livro (do projeto do cartao).
+        # Aqui vem de novo, do mesmo projeto: nao muda nada, e fica por
+        # garantia caso abrir_livro deixe de traze-las.
         self._trazer_opcoes_salvas(projetos.carregar_estado(resumo))
         self.analisar()
 
@@ -440,7 +448,7 @@ class JanelaPrincipal(QMainWindow):
         resumo.pdf_gerado = False
         projetos.gravar_resumo(resumo)
         self.tela_inicio.recarregar()
-        self.abrir_livro(resumo.caminho_entrada)
+        self.abrir_livro(resumo.caminho_entrada, resumo=resumo)   # ESTE projeto, limpo
 
     # --- analise ----------------------------------------------------------
 

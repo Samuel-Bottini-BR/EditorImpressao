@@ -1817,3 +1817,30 @@ ficam fora da pasta real; um erro registrado vai para o log de mentira.
 **Fica de fora:** a pasta Documentos\Editor de Impressão (saída padrão) não é
 trocada; nenhum teste grava nela hoje (conferido na mesma comparação: a lista
 não mudou). O TEMP do Windows continua sendo usado pelo `tmp_path` do pytest.
+
+---
+
+## Tentativa 42 — o "continuar" de um cartão abre exatamente aquele projeto (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador, 2ª rodada, prints q24
+e q25): com dois projetos do mesmo PDF, o "continuar" do cartão mais antigo
+abria o mais recente. O trabalho do antigo ficava no disco, mas inalcançável
+pelo cartão.
+
+**Por quê:** o cartão chamava `_continuar_projeto(resumo)`, que chamava
+`abrir_livro(caminho)`, que achava o projeto pela assinatura do arquivo
+(`achar_por_assinatura`: o mais recente) e esquecia o cartão.
+
+**O que mudou:** `abrir_livro(caminho, resumo=None)`: com `resumo`, abre
+**esse** projeto. O "continuar" e o "começar de novo" do cartão passam o
+resumo do cartão. Sem ele ("Abrir", arrastar, Windows), continua achando pela
+assinatura (o mais recente), como sempre.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 4 (1 falhava antes; o
+do "começar de novo" passava por acaso, porque apagar o trabalho regravava o
+resumo e tornava aquele cartão o mais recente): "continuar" do cartão mais
+antigo abre ele, grava nele e não toca no outro; "continuar" do mais recente
+abre ele; "começar de novo" limpa e abre aquele projeto; o "Abrir" continua
+achando o mais recente.
