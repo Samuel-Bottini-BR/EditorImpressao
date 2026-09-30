@@ -1976,3 +1976,78 @@ também devolve; mudar e conferir até o fim continua valendo (recomeço com
 aviso). A sonda do verificador, numa cópia com pasta própria, agora mostra
 "dividir na memória: True" depois do cancelar e 13 páginas sem aviso na
 abertura seguinte.
+
+---
+
+## Tentativa 46 — item 1.2, segunda etapa: o detector de gravura do ScanTailor ligado ao processamento (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** ligado, a conferir (teste de máquina + teste de olho do Samuel)
+**Pedido:** decisão do Samuel (29/09): o 1.2 "em duas etapas: primeiro o
+detector (já entregue como núcleo), depois a ligação ao programa".
+
+**O que mudou:** a zona GRAVURA de cada página passa a vir do seletor do
+ScanTailor Advanced (`core/gravura_scantailor.py` + `core/nativo/st_gravura.dll`),
+chamado por `core/detectar_regioes.detectar(detector_de_gravura="scantailor")`,
+pedido por `core/pipeline.garantir_selecao` na prévia e no PDF (depois do corte
+e do endireitamento, na imagem da página). A letra e o papel continuam do
+detector de antes, agora em volta da gravura nova. Escolha como parâmetro no
+`core/` (sem campo nem botão ainda): `DETECTOR_DE_GRAVURA_PADRAO = "scantailor"`,
+`FORMA_DA_GRAVURA_PADRAO = "livre"`; `pipeline.escolha_da_gravura` lê os campos
+`detector_de_gravura`/`forma_da_gravura` do projeto quando existirem. DLL
+faltando ou falhando: cai no detector antigo, motivo no log e em
+`selecao.aviso_gravura`.
+
+**Tentado e medido no caminho (o que ficou e o que não):**
+
+1. *DPI da imagem que vai à DLL.* Dar a página no DPI em que foi desenhada:
+   no Marial 150 (escaneado a 72 DPI) a mesma página de texto saía 98%
+   "gravura" desenhada a 110 DPI e 3-5% a 72, 150, 200 ou 300. **Ficou:** a
+   página vai à DLL no DPI do escaneamento (nunca mais pontos que o scan
+   tem; teto 300). Assim a prévia e o PDF dão quase a mesma entrada.
+2. *Tempo.* Primeira versão: prévia do Marial 0,6 a 1,3 s mais lenta. Duas
+   coisas: (a) a DLL roda numa linha a parte, ao mesmo tempo que o modelo de
+   layout e a tinta (solta o GIL; 72 chamadas em 4 linhas deram a mesma
+   máscara que em série); (b) teto de trabalho da DLL: páginas que o PDF diz
+   ter 72 DPI (Marial, Horas, Graduale) viram folhas de 24 x 33 a 36 x 51 cm
+   e a DLL trabalhava em 11 a 26 milhões de pontos. **Ficou** um teto de 7
+   milhões (`PONTOS_MAXIMOS_DA_GRAVURA`): acima dele se diz à DLL um DPI
+   maior. Testado 6 milhões (a Escola, 6,9, entraria; e uma gravura
+   sintética numa folha Carta a 150 DPI deixou de ser achada: prova de que
+   dizer outro DPI muda o resultado) e 9 milhões (a detecção do Marial ficava
+   0,3-0,6 s mais lenta).
+3. *O que o ScanTailor marca e não é gravura.* Na página inteira, sem a caixa
+   do conteúdo que o ScanTailor de verdade usa, ele marca: a faixa escura do
+   scanner que o corte deixou (Marial 150 e 153; sem limpar, o Preto e branco
+   do Marial 150 levava 12,8 s em vez de 2,3 s), a sombra da lombada (Horas
+   27, tira de 1 cm na beirada), e borrões de tinta no meio do texto (palavras
+   soltas, 0,06% a 0,15% da página). **Ficou:** `_limpar_gravura_do_scantailor`
+   tira pedaço menor que 0,2% da página, pedaço que encosta na beirada e vive
+   80% na faixa de 5% da beirada, e tira fina e comprida encostada na beirada.
+   Uma mancha escura de canto que avança para dentro (Marial 151, canto de
+   cima à esquerda) continua como gravura.
+4. *Texto dentro da gravura do ScanTailor.* Onde o modelo de layout viu texto
+   com letra miúda embaixo, o texto ganha (a mesma regra da legenda do
+   Pesel): **ficou ligado** (`ESCRITA_GANHA_DO_SCANTAILOR = True`). Na Horas
+   26, a forma livre enche o miolo da moldura; com a regra, o bloco do
+   calendário volta a ser letra e sobra como gravura o papel liso em volta.
+
+**Resultado da rodada** (`relatorios/conferir/fase1-1.2-ligacao-2026-09-30/`,
+Mágico pro e Preto e branco, 21 páginas): melhorou a Horas 11 (iluminura
+inteira), a moldura dourada da Horas 26 e 27, o Palatino 5 (só o retrato é
+gravura), o título corrido do Marial, a tabela do Opus 256. **Piorou** o Opus
+Majus 20 na forma livre (estátua lavada; na retangular sai perfeita) e o
+Graduale 222 (pedaços da pauta viram gravura: blocos cinza e +11 a +17 s no
+processar). A "retangular" como padrão não serve: 100% do Graduale 222, 31%
+do Marial 153 (texto).
+
+**Tempo (medida isolada, máquina dividida):** Marial, primeira prévia +0,5 s
+(mediana 2,82 → 3,33 s); processar 10 páginas igual (Mágico pro 126 → 120 s;
+Preto e branco 57 → 58 s).
+
+**Riscos que continuam (para a conferência):** forma livre deixa a estátua
+branca do Opus Majus 20 fora da gravura; o Graduale 222 tem pedaços da pauta
+marcados como gravura (14% da página); a Horas 11 inteira vira gravura
+(inclusive o centro claro com o texto); a Horas 13 mantém o triângulo sobre
+"pag. 54". A aba Marcar ("detectar automaticamente") e o item 1.1
+(`core/camadas.py`) continuam com o detector antigo.
