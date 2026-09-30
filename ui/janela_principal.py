@@ -39,6 +39,10 @@ from ui.tela_opcoes import TelaOpcoes
 INICIO, OPCOES, PROGRESSO, CONFERIR, FINAL = range(5)
 
 
+# (largura, altura) minimas da janela, em pontos. Ver JanelaPrincipal.__init__.
+LARGURA_E_ALTURA_MINIMAS = (1000, 600)
+
+
 class JanelaPrincipal(QMainWindow):
     """A janela unica do programa: um QStackedWidget com as cinco telas do
     fluxo (ver INICIO..FINAL acima) e a orquestracao entre elas - abrir livro,
@@ -51,8 +55,15 @@ class JanelaPrincipal(QMainWindow):
         Comeca sempre na tela de INICIO."""
         super().__init__()
         self.setWindowTitle("Editor de Impressão")
-        self.setMinimumSize(1000, 680)
-        self.resize(1220, 800)
+        # Cabe no notebook do Kaique (1920 x 1080 com escala de 150%: area util
+        # de ~1280 x 657 pontos, tirada a barra de tarefas e o titulo). Antes o
+        # minimo era 1000 x 680 e o tamanho inicial 1220 x 800: a janela
+        # passava da tela (pedido da gerente, 30/09). As telas cabem em 600 de
+        # altura sem se sobrepor (conferido com as fontes de verdade, a 150%;
+        # a lista de opcoes e os paineis da direita ja tem rolagem). Arriscado:
+        # subir o minimo de novo acima de ~650.
+        self.setMinimumSize(*LARGURA_E_ALTURA_MINIMAS)
+        self.resize(*self.tamanho_que_cabe(self.screen().availableGeometry()))
         self.setStyleSheet(FOLHA_DE_ESTILO)
 
         self.projeto: Projeto | None = None
@@ -264,6 +275,16 @@ class JanelaPrincipal(QMainWindow):
     # ------------------------------------------------------------------
     # avisos
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def tamanho_que_cabe(area_util) -> tuple[int, int]:
+        """O tamanho inicial da janela: 1220 x 800, ou menos se a area util da
+        tela (QRect, sem a barra de tarefas) for menor - tirando uns 40 pontos
+        para o titulo e a moldura da janela. Nunca abaixo do minimo."""
+        largura_min, altura_min = LARGURA_E_ALTURA_MINIMAS
+        largura = max(largura_min, min(1220, area_util.width() - 16))
+        altura = max(altura_min, min(800, area_util.height() - 40))
+        return largura, altura
 
     def avisar(self, mensagem: str, titulo: str = "Um momento") -> None:
         """Regra 3.3: erro vira aviso gentil e o programa continua aberto."""

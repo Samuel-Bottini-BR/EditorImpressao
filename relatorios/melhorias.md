@@ -2520,3 +2520,32 @@ saiu. O `avisar` já aceitava o título.
 antes: o título era "Um momento"): livro conferido com uma gravura achada pelo
 programa, "não procurar" e "Conferir" → caixa "Gravuras e fotos", texto "não
 vai mais procurar", com o caminho da cópia.
+
+---
+
+## Tentativa 57 — a janela cabe no notebook do Kaique a 150% (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito, a conferir (teste de máquina; o Samuel confere na tela)
+**Pedido da gerente (30/09):** a janela principal não cabia no notebook do
+Kaique a 150% de escala: altura mínima de 680 pontos, e a área útil é de ~657.
+
+**O que mudou (`ui/janela_principal.py`):** mínimo 1000 × 600 pontos (antes
+1000 × 680); o tamanho inicial (1220 × 800) passa a ser reduzido à área útil
+da tela, tirando ~40 pontos para o título e a moldura
+(`JanelaPrincipal.tamanho_que_cabe`); nunca abaixo do mínimo.
+
+**Conferido (como):** com as fontes de verdade, a janela desenhada sem ir para
+a tela (`WA_DontShowOnScreen`, e o vigia de janelas confirmou nenhuma janela
+visível), `QT_SCALE_FACTOR=1.5`, a 1280 × 600: início, "O que fazer",
+conferência (abas Onde cortar, Bordas, Endireitar e Filtro), progresso e
+final cabem sem se sobrepor (olhei as imagens). O que os layouts exigem é no
+máximo 463 pontos de altura (a do "O que fazer" com o menu). A lista de opções
+do "O que fazer" e os painéis da direita da conferência já tinham rolagem e a
+usam. Observação: o monitor do Samuel é 1920 × 1080 a 125%; com o fator 1,5
+por cima, a tela lógica ficou 1024 × 576 (menor que a do Kaique), então a
+conferência foi feita pelo tamanho da janela, não pela tela.
+
+**Teste:** `tests/test_janela_cabe_na_tela.py` (novo, 2; os 2 falhavam antes):
+a altura mínima (e a que os layouts exigem) cabe em 657; o tamanho inicial
+não passa da área útil de 1280 × 688, e numa tela grande continua 1220 × 800.
