@@ -645,3 +645,53 @@ def test_a_janela_mostra_o_aviso_da_gravura_uma_vez(monkeypatch, avisos_limpos):
     finally:
         janela.tela_opcoes.folhear.fechar()
         janela.close()
+
+
+# ------------------------------------------------------------- consertos do detector (Graduale 222, Horas 13)
+
+def test_a_gravura_cresce_pela_moldura_e_para_no_papel():
+    """Horas 13: o ScanTailor pega só a beirada de dentro da moldura; a
+    gravura cresce pela faixa (não é papel) e para no papel em volta."""
+    altura, largura = 1000, 800
+    img = np.full((altura, largura, 3), (205, 225, 235), np.uint8)       # papel creme
+    faixa = np.zeros((altura, largura), bool)
+    faixa[100:900, 100:700] = True
+    faixa[115:885, 115:685] = False                                     # moldura de 15 pontos (1,9%)
+    img[faixa] = (40, 140, 170)                                         # dourado
+    so_a_beirada = np.zeros_like(faixa)
+    so_a_beirada[110:890, 110:690] = True
+    so_a_beirada[115:885, 115:685] = False                              # 5 pontos de dentro
+    crescida = dr._crescer_pela_moldura(so_a_beirada, img)
+    assert crescida[faixa].mean() > 0.98, "a faixa inteira tem de entrar"
+    assert not crescida[50, 400] and not crescida[500, 400], "o papel não entra"
+    assert (crescida | so_a_beirada).sum() == crescida.sum(), "nunca encolhe"
+
+
+def test_barra_fina_na_beirada_sai_mesmo_presa_a_gravura():
+    altura, largura = 1000, 800
+    m = np.zeros((altura, largura), bool)
+    m[300:600, 200:500] = True                 # gravura de verdade
+    m[:, largura - 25:] = True                 # faixa escura da beirada direita
+    m[400:420, 500:largura] = True             # ligando as duas
+    limpa = dr._sem_barras_na_beirada(m)
+    assert limpa[450, 350] and not limpa[100, largura - 5]
+    foto = np.zeros((altura, largura), bool)
+    foto[:, :] = True                          # foto que vai até a beirada: grossa, fica
+    assert dr._sem_barras_na_beirada(foto).all()
+
+
+def test_figura_julgada_escrita_tira_a_gravura_do_scantailor(monkeypatch):
+    """Graduale 222: a caixa "figure" do modelo em volta da partitura é
+    julgada escrita; ali a gravura do ScanTailor sai (e a peça que era quase
+    toda de dentro da caixa sai inteira)."""
+    img, gravura, escrita = pagina_com_gravura()
+    altura, largura = img.shape[:2]
+    faixa = np.zeros((altura, largura), bool)
+    faixa[100:700, 50:1050] = True             # "pauta" marcada pelo ScanTailor
+    faixa[60:100, 50:1050] = True              # um pouco para fora da caixa
+    monkeypatch.setattr(dr, "_gravura_pelo_scantailor", lambda *a, **k: (faixa.copy(), None))
+    caixa = dr.Achado("figure", 0.9, (50 / largura, 100 / altura, 1050 / largura, 700 / altura))
+    monkeypatch.setattr(dr._detector, "achar", lambda img: [caixa])
+    selecao = dr.detectar(img, detector_de_gravura=dr.GRAVURA_SCANTAILOR, dpi=150)
+    achada, _l = _mascaras(selecao, img)
+    assert not achada[faixa].any(), "a pauta (e o pedaço fora da caixa) não pode ser gravura"

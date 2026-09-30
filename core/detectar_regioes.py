@@ -927,11 +927,12 @@ TIRA_COMPRIDA = 0.30
 def _limpar_gravura_do_scantailor(mascara: np.ndarray) -> np.ndarray:
     """Tira da gravura do ScanTailor os respingos e a faixa do scanner.
 
-    Ver AREA_MINIMA_DA_GRAVURA_ST e BEIRADA_DO_SCANNER. O resto fica como o
-    ScanTailor achou, ponto a ponto.
+    Ver AREA_MINIMA_DA_GRAVURA_ST, BEIRADA_DO_SCANNER e _sem_barras_na_beirada.
+    O resto fica como o ScanTailor achou, ponto a ponto.
     """
     if not mascara.any():
         return mascara
+    mascara = _sem_barras_na_beirada(mascara)
     altura, largura = mascara.shape[:2]
     num, rotulos, stats, _ = cv2.connectedComponentsWithStats(mascara.astype(np.uint8),
                                                               connectivity=8)
@@ -955,10 +956,128 @@ def _limpar_gravura_do_scantailor(mascara: np.ndarray) -> np.ndarray:
     return fica[rotulos]
 
 
+# A barra encostada na beirada e "fina" ate este tanto do outro lado da pagina.
+# Mais larga que TIRA_FINA: no Graduale 222 a pauta cortada no alto, presa a
+# faixa escura, tem 8% da altura. Uma foto que encosta na beirada tem muito
+# mais (Opus Majus 20: a pagina toda).
+BARRA_FINA = 0.10
+
+
+def _sem_barras_na_beirada(mascara: np.ndarray) -> np.ndarray:
+    """Tira as BARRAS finas encostadas na beirada da pagina, mesmo presas a
+    outro pedaco da gravura.
+
+    Item 1.2 (Graduale 222, 30/09/2026): a faixa escura da beirada direita e
+    a pauta cortada no alto viravam gravura, e as duas estavam ligadas numa
+    peca so, cuja caixa e larga e alta - a regra da tira (_e_tira_na_beirada)
+    nao as via. Aqui as barras sao separadas do resto por abertura com uma
+    linha comprida (TIRA_COMPRIDA do lado): so fica o que e comprido naquela
+    direcao. A barra que encosta na beirada da pagina e e fina (ate TIRA_FINA
+    do outro lado) sai. Moldura de verdade fica dentro da margem (nao
+    encosta); foto que vai ate a beirada e grossa (nao e fina).
+    Arriscado: engordar BARRA_FINA tira a borda de foto que encosta na beirada.
+    """
+    altura, largura = mascara.shape[:2]
+    m = mascara.astype(np.uint8)
+    fora = np.zeros_like(m)
+    for deitada in (True, False):
+        comprimento = int(TIRA_COMPRIDA * (largura if deitada else altura))
+        if comprimento < 3:
+            continue
+        linha = cv2.getStructuringElement(
+            cv2.MORPH_RECT, (comprimento, 1) if deitada else (1, comprimento))
+        barras = cv2.morphologyEx(m, cv2.MORPH_OPEN, linha)
+        if not barras.any():
+            continue
+        num, rotulos, stats, _ = cv2.connectedComponentsWithStats(barras, connectivity=8)
+        for k in range(1, num):
+            x, y, w, h = (int(v) for v in stats[k, :4])
+            if deitada:
+                encosta = y <= 1 or y + h >= altura - 1
+                fina = h <= BARRA_FINA * altura
+            else:
+                encosta = x <= 1 or x + w >= largura - 1
+                fina = w <= BARRA_FINA * largura
+            if encosta and fina:
+                fora[rotulos == k] = 1
+    if not fora.any():
+        return mascara
+    return mascara & (fora == 0)
+
+
 def _encosta_na_beirada(caixa, largura: int, altura: int) -> bool:
     """A caixa (x, y, largura, altura) toca a borda da imagem?"""
     x, y, w, h = (int(v) for v in caixa[:4])
     return x <= 1 or y <= 1 or x + w >= largura - 1 or y + h >= altura - 1
+
+
+# Item 1.2 (Graduale 222, 30/09/2026): a caixa "figure" do modelo julgada
+# escrita (partitura, caligrafia) tira area da gravura do ScanTailor, como a
+# caixa de texto (ESCRITA_GANHA_DO_SCANTAILOR). Seguro desligar (False): o
+# Graduale volta a ter faixas da pauta como gravura.
+ESCRITA_DA_FIGURA_GANHA = True
+# A peca da gravura que tem mais que isto dentro dessa caixa sai INTEIRA (o
+# resto dela, fora da caixa, era a mesma pauta). So vale para a caixa
+# "figure" julgada escrita: a caixa de texto (escrita_certa) tira so o que
+# esta dentro dela - na Horas 26 ela cobre metade da moldura cheia, e a
+# moldura tem de ficar.
+PECA_QUASE_TODA_ESCRITA = 0.5
+
+# Item 1.2 (Horas 13, 30/09/2026): o ScanTailor pega so a beirada de dentro
+# da moldura dourada fina (37% do dourado, medido a 300 DPI): o resto da
+# faixa ficava fora da gravura e ia para o filtro da pagina. A gravura
+# CRESCE, ate CRESCER_ATE do menor lado da pagina, por tudo que encosta nela
+# e nao e papel (mais escuro que o papel ou com outra cor): a faixa dourada
+# inteira entra; o papel em volta para o crescimento. Medido nas 13 paginas
+# do 1.2: a Horas 13 passa de 3,3% para 5,4% da pagina (a moldura inteira);
+# as outras mudam ate 2 pontos (a beirada da foto do Opus 20, o vao escuro).
+# Arriscado: crescer demais leva letra encostada na gravura (a escrita ganha
+# depois, onde o modelo viu texto) e mancha do verso escura.
+CRESCER_ATE = 0.02
+ALTURA_DO_CRESCIMENTO = 1200    # a conta e feita numa copia reduzida (tempo)
+# O que e papel, para o crescimento: claro perto do papel da pagina (L no
+# percentil 90) e com a cor dele (distancia de cor no LAB).
+PAPEL_CLARO = 0.85
+PAPEL_COR = 14
+
+
+def _nao_e_papel(img: np.ndarray) -> np.ndarray:
+    """Onde a pagina NAO e papel: mais escuro que PAPEL_CLARO do papel, ou
+    com cor diferente dele (distancia no LAB acima de PAPEL_COR)."""
+    lab = cv2.cvtColor(_tres_canais_ou_cinza(img), cv2.COLOR_BGR2LAB).astype(np.float32)
+    luz = lab[..., 0]
+    nivel = float(np.percentile(luz, 90))
+    claro = luz >= nivel * 0.95
+    if not claro.any():
+        return np.ones(luz.shape, bool)
+    a0 = float(np.median(lab[..., 1][claro]))
+    b0 = float(np.median(lab[..., 2][claro]))
+    cor = np.hypot(lab[..., 1] - a0, lab[..., 2] - b0)
+    return (luz < nivel * PAPEL_CLARO) | (cor > PAPEL_COR)
+
+
+def _crescer_pela_moldura(mascara: np.ndarray, img: np.ndarray) -> np.ndarray:
+    """A gravura do ScanTailor cresce pelo que encosta nela e nao e papel,
+    ate CRESCER_ATE do menor lado (ver o comentario la). Nunca encolhe: o
+    que o ScanTailor marcou fica. Feita numa copia de ALTURA_DO_CRESCIMENTO
+    pontos de altura e levada de volta ao tamanho da pagina."""
+    if not mascara.any():
+        return mascara
+    altura, largura = mascara.shape[:2]
+    escala = min(1.0, ALTURA_DO_CRESCIMENTO / altura)
+    tamanho = (max(1, int(round(largura * escala))), max(1, int(round(altura * escala))))
+    pequena = cv2.resize(mascara.astype(np.uint8), tamanho, interpolation=cv2.INTER_NEAREST)
+    foto = cv2.resize(img, tamanho, interpolation=cv2.INTER_AREA) if escala < 1 else img
+    pode = _nao_e_papel(foto).astype(np.uint8) | pequena
+    nucleo = np.ones((3, 3), np.uint8)
+    atual = pequena
+    for _passo in range(max(1, int(CRESCER_ATE * min(tamanho)))):
+        nova = cv2.dilate(atual, nucleo) & pode
+        if np.array_equal(nova, atual):
+            break
+        atual = nova
+    crescida = cv2.resize(atual, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
+    return crescida | mascara
 
 
 def _e_tira_na_beirada(caixa, largura: int, altura: int) -> bool:
@@ -1066,7 +1185,7 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
             # degraus do tamanho do ponto reduzido)
             mascara = cv2.resize(mascara.astype(np.uint8) * 255, (largura, altura),
                                  interpolation=cv2.INTER_LINEAR) >= 128
-        return _limpar_gravura_do_scantailor(mascara), None
+        return _crescer_pela_moldura(_limpar_gravura_do_scantailor(mascara), img), None
     except Exception as erro:  # noqa: BLE001 - a gravura nunca derruba a pagina
         return _falhou("O detector de gravura do ScanTailor falhou nesta página; usei o "
                        "detector antigo.", f"{type(erro).__name__}: {erro}")
@@ -1250,6 +1369,10 @@ def detectar(
     # Onde o modelo viu texto E ha mesmo letra miuda embaixo. E o unico sinal
     # forte o bastante para tirar area da gravura, mais adiante.
     escrita_certa = np.zeros((altura, largura), bool)
+    # Caixa "figure" do modelo que as medidas de baixo dizem ser ESCRITA
+    # (partitura, caligrafia: nem desenho de traco, nem foto, nem meio-tom).
+    # So a gravura do ScanTailor usa (ver ESCRITA_DA_FIGURA_GANHA).
+    escrita_da_figura = np.zeros((altura, largura), bool)
     for a in achados:
         x0, y0, x1, y1 = a.caixa
         fatia = (slice(int(y0 * altura), int(y1 * altura)),
@@ -1279,6 +1402,7 @@ def detectar(
                     em_duvida = True
             else:
                 letra_layout[fatia] = True
+                escrita_da_figura[fatia] = True
         elif a.classe in CLASSES_DE_LETRA:
             letra_layout[fatia] = True
             if _tinta_em_pedacos_de_glifo(tinta[fatia]) >= PEDACOS_DE_GLIFO_DE_ESCRITA:
@@ -1311,6 +1435,24 @@ def detectar(
     # Vale tambem para a gravura do ScanTailor (ver ESCRITA_GANHA_DO_SCANTAILOR).
     if gravura_st is None or ESCRITA_GANHA_DO_SCANTAILOR:
         gravura &= ~escrita_certa
+    if gravura_st is not None and gravura.any():
+        # Item 1.2 (Graduale 222, 30/09/2026): o ScanTailor marca faixas da
+        # pauta como gravura; a caixa do modelo em volta da partitura foi
+        # julgada ESCRITA (as medidas do detector antigo: partitura 49% a 90%
+        # de tinta em pedacos de letra, xilogravura 4% a 14%). Ali o texto
+        # ganha tambem. E o que sobrou (a beirada da caixa, a tira da
+        # lombada) passa de novo pela limpeza.
+        if ESCRITA_DA_FIGURA_GANHA and escrita_da_figura.any():
+            # a peca que era quase toda escrita sai inteira (no Graduale 222,
+            # a faixa da pauta que passa um pouco para fora da caixa)
+            num, rotulos, stats, _ = cv2.connectedComponentsWithStats(
+                gravura.astype(np.uint8), connectivity=8)
+            dentro = np.bincount(rotulos[escrita_da_figura], minlength=num)
+            sai = dentro > PECA_QUASE_TODA_ESCRITA * stats[:, cv2.CC_STAT_AREA]
+            sai[0] = False
+            gravura &= ~sai[rotulos]
+            gravura &= ~escrita_da_figura
+        gravura = _limpar_gravura_do_scantailor(gravura)
 
     # O que o modelo achou SOMA com o que sobrou de tinta - nao substitui.
     #
