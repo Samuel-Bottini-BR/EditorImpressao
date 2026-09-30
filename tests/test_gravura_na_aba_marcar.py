@@ -183,3 +183,20 @@ def test_livro_em_nao_procurar_apaga_a_caixinha(conferir):
     conferir._atualizar_marcacao(None, conferir.projeto.paginas[0])
     assert not conferir.caixa_tem_foto.isEnabled()
     assert not conferir.caixa_tem_foto.isChecked()
+
+
+def test_as_duas_linhas_dizem_a_que_se_referem(conferir):
+    """Verificador, 30/09 (r06): duas linhas iguais de "usar em todas / só nas
+    próximas", sem dizer a que cada uma se refere; e a caixinha sem quadrado
+    quando desmarcada."""
+    from PySide6.QtWidgets import QLabel, QPushButton
+
+    painel = conferir.linhas_de_botoes[__import__("ui.tela_conferir", fromlist=["x"]).ABA_MARCAR]
+    rotulos = [r.text() for r in painel.findChildren(QLabel)]
+    assert "Marcação:" in rotulos and "Foto:" in rotulos
+    dicas = [b.toolTip() for b in painel.findChildren(QPushButton)
+             if b.text() in ("usar em todas", "só nas próximas")]
+    assert len(dicas) == 4 and all(dicas)
+    assert sum("marcação" in d for d in dicas) == 2
+    assert sum("tem foto" in d for d in dicas) == 2
+    assert "QCheckBox::indicator" in conferir.caixa_tem_foto.styleSheet()

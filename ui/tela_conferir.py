@@ -79,7 +79,7 @@ from core.filtros import (
 from historico_acoes import HistoricoAcoes, aplicar, montar_acao
 from modelos import Projeto
 from registro import registrar_erro
-from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO
+from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
@@ -829,12 +829,22 @@ class TelaConferir(QWidget):
         # Problema 2 do plano (redesenho do fluxo): a detecção automática não
         # roda mais sozinha ao abrir esta aba - o Samuel pede quando quiser,
         # aqui ou pelo menu Marcar -> "Procurar de novo" (mesma ação).
+        # Item 1.2 (verificador, 30/09, r06): as duas linhas tinham o mesmo par
+        # "usar em todas / so nas proximas", sem dizer a que cada um se
+        # referia. Cada linha comeca agora com o nome do que ela leva para as
+        # outras paginas ("Marcação:" e "Foto:"), na mesma largura, e cada
+        # botao diz na dica o que copia.
         linha_detectar = QHBoxLayout()
+        rotulo_marcacao = QLabel("Marcação:")
+        rotulo_marcacao.setMinimumWidth(90)
+        linha_detectar.addWidget(rotulo_marcacao)
         _botao("detectar automaticamente", linha_detectar, self._detectar_de_novo)
         # Fase 3b do plano: mesma granularidade que corte/bordas/filtro já
         # tinham ("usar em todas"/"só nas próximas") - faltava só aqui.
-        _botao("usar em todas", linha_detectar, self._marcacao_em_todas)
-        _botao("só nas próximas", linha_detectar, self._marcacao_nas_proximas)
+        _botao("usar em todas", linha_detectar, self._marcacao_em_todas).setToolTip(
+            "Copia a marcação desta página (gravura, letra, papel) para todas as páginas.")
+        _botao("só nas próximas", linha_detectar, self._marcacao_nas_proximas).setToolTip(
+            "Copia a marcação desta página para esta e as páginas seguintes.")
         linha_detectar.addStretch()
         fora.addLayout(linha_detectar)
 
@@ -846,14 +856,22 @@ class TelaConferir(QWidget):
         # "O que fazer". Mesmo padrao dos outros controles de pagina ("usar em
         # todas", "so nas proximas") e mesmo desfazer (ConfigPagina.gravura_forma).
         linha_foto = QHBoxLayout()
+        rotulo_foto = QLabel("Foto:")
+        rotulo_foto.setMinimumWidth(90)
+        linha_foto.addWidget(rotulo_foto)
         self.caixa_tem_foto = QCheckBox("Esta página tem foto")
+        # com quadrado tambem desmarcada (na janela de verdade saia so o
+        # texto: verificador, 30/09, r06); ver ui/estilo.py
+        self.caixa_tem_foto.setStyleSheet(estilo_da_caixinha_com_quadrado(15))
         self.caixa_tem_foto.setToolTip(
             "Procura a gravura desta página em retângulo, que pega a foto inteira. "
             "Desmarcada, segue o contorno do desenho. O que você marcou à mão continua.")
         self.caixa_tem_foto.toggled.connect(self._mudar_forma_da_pagina)
         linha_foto.addWidget(self.caixa_tem_foto)
-        _botao("usar em todas", linha_foto, self._forma_em_todas)
-        _botao("só nas próximas", linha_foto, self._forma_nas_proximas)
+        _botao("usar em todas", linha_foto, self._forma_em_todas).setToolTip(
+            "Leva o \"Esta página tem foto\" desta página (marcado ou não) para todas as páginas.")
+        _botao("só nas próximas", linha_foto, self._forma_nas_proximas).setToolTip(
+            "Leva o \"Esta página tem foto\" desta página para esta e as páginas seguintes.")
         linha_foto.addStretch()
         fora.addLayout(linha_foto)
 
