@@ -75,7 +75,12 @@ def pasta(monkeypatch):
     # arquivo que uma tarefa de fundo ainda fecha: sai dela e tenta de novo.
     if Path.cwd().is_relative_to(aqui):
         os.chdir(RAIZ_DO_PROJETO)
-    for _tentativa in range(10):
+    # O servidor de paginas (core/paginas_em_outro_processo.py) pode estar com
+    # o PDF do teste aberto (fecha sozinho em meio segundo): solta ja.
+    from core.paginas_em_outro_processo import soltar_livro
+
+    soltar_livro(None)
+    for _tentativa in range(30):
         shutil.rmtree(aqui, ignore_errors=True)
         if not aqui.exists():
             break
