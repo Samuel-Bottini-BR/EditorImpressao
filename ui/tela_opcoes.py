@@ -392,6 +392,21 @@ class TelaOpcoes(QWidget):
                   else dentro.sizeHint().height())
         self.rolagem.setMaximumHeight(max(120, altura + 2))
 
+    def showEvent(self, evento) -> None:  # noqa: N802
+        """Toda vez que a tela aparece, as caixinhas voltam a mostrar o que o
+        projeto tem AGORA (mostrar_opcoes).
+
+        Parecer do verificador (30/09, r15): depois de desfazer o "Sim" da
+        pergunta do fundo (o desfazer devolve o filtro do livro), a tela
+        continuava marcando "Tirar o fundo", com o projeto em Original. O
+        desfazer e o refazer mudam o projeto por baixo da tela; aqui ela se
+        reacerta ao aparecer (e ui/tela_conferir.py a reacerta na hora, se ela
+        ja estiver a vista). Seguro: so le o projeto e grava de volta os
+        mesmos valores."""
+        super().showEvent(evento)
+        if self.projeto is not None:
+            self.mostrar_opcoes()
+
     def resizeEvent(self, evento) -> None:  # noqa: N802
         """Ver _acertar_altura_da_rolagem."""
         super().resizeEvent(evento)

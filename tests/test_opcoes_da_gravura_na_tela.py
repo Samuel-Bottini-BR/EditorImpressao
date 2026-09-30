@@ -244,3 +244,50 @@ def test_janela_baixa_nao_espreme_as_linhas(janela, pasta, largura, altura):
         assert frase.height() >= frase.heightForWidth(frase.width()) - 1, frase.text()
     assert tela.rolagem.verticalScrollBar().maximum() > 0, "janela baixa: tem de aparecer a rolagem"
     janela.hide()
+
+
+# ---------------------------------------------------------------------------
+# a tela acompanha o desfazer e o refazer (parecer do verificador, 30/09, r15)
+# ---------------------------------------------------------------------------
+
+def _filtro_marcado(tela) -> str:
+    return tela._filtro_escolhido()
+
+
+def test_a_tela_o_que_fazer_acompanha_o_desfazer(janela, pasta):
+    """Desfeito o "Sim" da pergunta do fundo (uma ação que muda o filtro do
+    livro, "livro.filtro_padrao"), a tela "O que fazer" tem de mostrar o
+    filtro de antes - estando à vista ou não."""
+    from PySide6.QtWidgets import QApplication
+
+    from historico_acoes import aplicar
+    from modelos import Acao
+
+    janela.abrir_livro(str(_pdf(pasta)))
+    _analisar(janela)
+    projeto = janela.projeto
+    acao = Acao.nova("tirar_o_fundo_do_livro", "pagina", [0],
+                     {"livro.filtro_padrao": projeto.filtro_padrao},
+                     {"livro.filtro_padrao": "magico_pro"}, "Filtro do livro")
+    aplicar(projeto, acao, acao.depois)
+    janela.acoes.registrar(acao)
+
+    janela.show()
+    janela._sair_da_conferencia()            # "O que fazer" à vista
+    QApplication.processEvents()
+    tela = _tela(janela)
+    assert _filtro_marcado(tela) == "magico_pro"
+
+    janela.tela_conferir.desfazer()          # menu Editar, com "O que fazer" à vista
+    QApplication.processEvents()
+    assert projeto.filtro_padrao == "original"
+    assert _filtro_marcado(tela) == "original", "a tela ficou mostrando o filtro desfeito"
+    assert "mágico" not in tela.resumo.text().lower()
+
+    # refazer com a tela escondida: ela se reacerta ao aparecer
+    janela.telas.setCurrentIndex(3)          # CONFERIR
+    janela.tela_conferir.refazer()
+    janela._sair_da_conferencia()
+    QApplication.processEvents()
+    assert _filtro_marcado(tela) == "magico_pro"
+    janela.hide()

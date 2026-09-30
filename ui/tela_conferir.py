@@ -2338,6 +2338,7 @@ class TelaConferir(QWidget):
             if self.previas is not None:
                 self.previas.invalidar()
             self.atualizar()
+            self._reacertar_as_opcoes()
 
     @protegido
     def refazer(self) -> None:
@@ -2347,6 +2348,26 @@ class TelaConferir(QWidget):
             if self.previas is not None:
                 self.previas.invalidar()
             self.atualizar()
+            self._reacertar_as_opcoes()
+
+    def _reacertar_as_opcoes(self) -> None:
+        """Depois de desfazer ou refazer, a tela "O que fazer" deste mesmo
+        projeto volta a mostrar o que ele tem agora (parecer do verificador,
+        30/09, r15: desfeito o "Sim" da pergunta do fundo, ela continuava em
+        "Tirar o fundo"). O menu Editar desfaz em qualquer tela, inclusive com
+        "O que fazer" a vista; escondida, ela se reacerta sozinha ao aparecer
+        (ui/tela_opcoes.showEvent). Nunca levanta excecao."""
+        try:
+            from ui.tela_opcoes import TelaOpcoes
+
+            janela = self.window()
+            if janela is None or janela is self:
+                return
+            for tela in janela.findChildren(TelaOpcoes):
+                if tela.projeto is self.projeto and tela.isVisible():
+                    tela.mostrar_opcoes()
+        except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
+            registrar_erro("reacertar as opcoes", traceback.format_exc())
 
     # --- teclado ----------------------------------------------------------
 
