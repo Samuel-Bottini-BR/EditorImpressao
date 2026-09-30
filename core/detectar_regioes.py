@@ -86,7 +86,64 @@ DETECTORES_DE_GRAVURA = (GRAVURA_SCANTAILOR, GRAVURA_ANTIGA)
 # escolha do livro, nunca de fabrica.
 DETECTOR_DE_GRAVURA_PADRAO = GRAVURA_SCANTAILOR
 FORMA_DA_GRAVURA_PADRAO = "livre"
-FORMAS_DA_GRAVURA = ("livre", "retangular")
+# "desligada" = nao procurar gravura nenhuma (o botao de desligar da regra 8;
+# decisao do Samuel de 30/09: as opcoes do ScanTailor vao para a tela).
+FORMA_DESLIGADA = "desligada"
+FORMAS_DA_GRAVURA = ("livre", "retangular", FORMA_DESLIGADA)
+
+# Quem achou a gravura desta pagina, quando a forma e "desligada": ninguem.
+GRAVURA_NENHUMA = "nenhuma"
+
+
+@dataclass(frozen=True)
+class OpcoesDaGravura:
+    """As opcoes do detector de gravuras do ScanTailor Advanced (aba "Saida",
+    modo Misto), com os padroes dele. Por livro: modelos.Projeto guarda cada
+    uma (gravura_forma, gravura_sensibilidade, gravura_mais_sensivel,
+    gravura_normalizar) e core/pipeline.escolha_da_gravura monta esta.
+
+    forma: "livre" | "retangular" | "desligada";
+    sensibilidade: 0 a 100, so vale na retangular (o ScanTailor so a usa ali);
+    mais_sensivel: "maior sensibilidade de busca" (vale nas duas formas);
+    normalizar: igualar a iluminacao da pagina antes de procurar.
+    Seguro mudar: nada aqui muda os padroes do Samuel sem mudar modelos.py.
+    """
+
+    forma: str = FORMA_DA_GRAVURA_PADRAO
+    sensibilidade: int = 100
+    mais_sensivel: bool = False
+    normalizar: bool = True
+
+    def corrigida(self) -> "OpcoesDaGravura":
+        """A mesma, com valor invalido trocado pelo padrao (forma
+        desconhecida) ou levado para dentro da faixa (sensibilidade)."""
+        forma = self.forma if self.forma in FORMAS_DA_GRAVURA else FORMA_DA_GRAVURA_PADRAO
+        try:
+            sensibilidade = int(self.sensibilidade)
+        except (TypeError, ValueError):
+            sensibilidade = 100
+        return OpcoesDaGravura(forma, max(0, min(100, sensibilidade)),
+                               bool(self.mais_sensivel), bool(self.normalizar))
+
+
+def assinatura_da_gravura(detector: str, opcoes: OpcoesDaGravura) -> str:
+    """Um texto curto que muda sempre que a gravura achada sozinha mudaria.
+
+    Fica guardado na pagina (ConfigPagina.gravura_feita_com) junto com a
+    marcacao que o detector fez: se o livro ou a pagina passam a pedir
+    outras opcoes, a assinatura deixa de bater e core/pipeline.garantir_selecao
+    refaz so a parte que a maquina marcou (a marcacao a mao fica). A
+    sensibilidade so entra na forma retangular (e so ali que o ScanTailor a
+    usa): mexer nela num livro "livre" nao refaz nada. Arriscado: tirar um
+    campo daqui faz a mudanca dele nao refazer a gravura.
+    """
+    o = opcoes.corrigida()
+    if detector != GRAVURA_SCANTAILOR:
+        return detector
+    if o.forma == FORMA_DESLIGADA:
+        return f"{detector}|{o.forma}"
+    sens = o.sensibilidade if o.forma == "retangular" else "-"
+    return f"{detector}|{o.forma}|{sens}|{int(o.mais_sensivel)}|{int(o.normalizar)}"
 
 # Teto do DPI da pagina que vai a DLL. O ScanTailor trabalha a 300 DPI por
 # dentro (to300dpi): mandar mais so custa a reducao. Ver _dpi_para_a_gravura.
@@ -968,8 +1025,11 @@ def _dpi_declarado_a_dll(largura: int, altura: int, dpi: float) -> float:
 
 
 def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
-                             forma: str) -> tuple[np.ndarray | None, str | None]:
+                             opcoes: "OpcoesDaGravura | str") -> tuple[np.ndarray | None, str | None]:
     """(mascara bool do tamanho de img, None) ou (None, motivo em portugues).
+
+    opcoes: as do livro (OpcoesDaGravura), ou so a forma (texto), com o resto
+    no padrao. A forma "desligada" nao chega aqui (detectar() nem procura).
 
     Nunca levanta excecao: qualquer falha vira motivo (e o detalhe tecnico vai
     para o log, em core/gravura_scantailor.py).
@@ -978,9 +1038,11 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
         if not dpi or dpi <= 0:
             return None, ("O detector de gravura do ScanTailor precisa saber a resolução "
                           "da página; usei o detector antigo.")
-        if forma not in FORMAS_DA_GRAVURA:
-            _log.warning("forma de gravura desconhecida: %r (usei a livre)", forma)
-            forma = "livre"
+        if isinstance(opcoes, str):
+            opcoes = OpcoesDaGravura(forma=opcoes)
+        if opcoes.forma not in FORMAS_DA_GRAVURA:
+            _log.warning("forma de gravura desconhecida: %r (usei a livre)", opcoes.forma)
+        opcoes = opcoes.corrigida()
         from core import gravura_scantailor
 
         altura, largura = img.shape[:2]
@@ -991,7 +1053,9 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
             entrada = cv2.resize(img, (max(1, round(largura * escala)), max(1, round(altura * escala))),
                                  interpolation=cv2.INTER_AREA)
         declarado = _dpi_declarado_a_dll(entrada.shape[1], entrada.shape[0], alvo)
-        resultado = gravura_scantailor.detectar_gravura(entrada, declarado, forma=forma)
+        resultado = gravura_scantailor.detectar_gravura(
+            entrada, declarado, forma=opcoes.forma, sensibilidade=opcoes.sensibilidade,
+            mais_sensivel=opcoes.mais_sensivel, normalizar_iluminacao=opcoes.normalizar)
         if not resultado.disponivel:
             return None, f"{resultado.motivo} Usei o detector antigo nesta página."
         mascara = resultado.mascara
@@ -1016,15 +1080,15 @@ class _ProcuraNoScanTailor:
     resultado, so mais devagar.
     """
 
-    def __init__(self, img, dpi, dpi_do_scan, forma) -> None:
+    def __init__(self, img, dpi, dpi_do_scan, opcoes) -> None:
         self._saida: tuple = (None, "O detector de gravura do ScanTailor não terminou; "
                                     "usei o detector antigo.")
-        self._linha = threading.Thread(target=self._rodar, args=(img, dpi, dpi_do_scan, forma),
+        self._linha = threading.Thread(target=self._rodar, args=(img, dpi, dpi_do_scan, opcoes),
                                        name="gravura-scantailor", daemon=True)
         self._linha.start()
 
-    def _rodar(self, img, dpi, dpi_do_scan, forma) -> None:
-        self._saida = _gravura_pelo_scantailor(img, dpi, dpi_do_scan, forma)
+    def _rodar(self, img, dpi, dpi_do_scan, opcoes) -> None:
+        self._saida = _gravura_pelo_scantailor(img, dpi, dpi_do_scan, opcoes)
 
     def resultado(self) -> tuple[np.ndarray | None, str | None]:
         self._linha.join()
@@ -1047,7 +1111,8 @@ def detectar(
     usar_cor: bool = True,
     *,
     detector_de_gravura: str = GRAVURA_ANTIGA,
-    forma_da_gravura: str = FORMA_DA_GRAVURA_PADRAO,
+    forma_da_gravura: str | None = None,
+    opcoes_da_gravura: OpcoesDaGravura | None = None,
     dpi: float | None = None,
     dpi_do_scan: float | None = None,
 ) -> Selecao:
@@ -1057,7 +1122,13 @@ def detectar(
         no topo). GRAVURA_SCANTAILOR precisa de `dpi` (o DPI em que `img` foi
         desenhada); sem ele, ou sem a DLL, vale o caminho antigo e o motivo
         fica em selecao.aviso_gravura.
-    forma_da_gravura: "livre" ou "retangular" (so vale para o ScanTailor).
+    opcoes_da_gravura: as opcoes do ScanTailor (OpcoesDaGravura; so valem
+        para ele). Sem elas, as de fabrica, com a forma de forma_da_gravura
+        ("livre", "retangular" ou "desligada") quando dada. Forma "desligada"
+        = nao procurar gravura: a DLL nem e chamada, e a pagina fica sem
+        gravura achada sozinha (gravura_por = GRAVURA_NENHUMA). A capa e a
+        foto de pagina inteira sem conteudo (_folha_nua_ou_objeto) continuam
+        marcadas: e protecao do Preto e branco, nao busca de gravura.
     dpi_do_scan: o DPI do escaneamento (a imagem embutida no PDF); limita o
         DPI em que a pagina vai a DLL. None/0 = desconhecido.
 
@@ -1111,10 +1182,14 @@ def detectar(
     # Item 1.2: o ScanTailor comeca a procurar a gravura AGORA, numa linha a
     # parte, e trabalha enquanto esta linha faz a tinta e o modelo de layout.
     # E recolhido mais abaixo, onde a gravura antiga seria montada.
+    opcoes = (opcoes_da_gravura or OpcoesDaGravura(
+        forma=forma_da_gravura or FORMA_DA_GRAVURA_PADRAO)).corrigida()
     procura_st = None
-    if detector_de_gravura == GRAVURA_SCANTAILOR:
-        procura_st = _ProcuraNoScanTailor(colorida, dpi, dpi_do_scan, forma_da_gravura)
-    elif detector_de_gravura != GRAVURA_ANTIGA:
+    nao_procurar = (detector_de_gravura == GRAVURA_SCANTAILOR
+                    and opcoes.forma == FORMA_DESLIGADA)
+    if detector_de_gravura == GRAVURA_SCANTAILOR and not nao_procurar:
+        procura_st = _ProcuraNoScanTailor(colorida, dpi, dpi_do_scan, opcoes)
+    elif detector_de_gravura not in DETECTORES_DE_GRAVURA:
         _log.warning("detector de gravura desconhecido: %r (usei o antigo)", detector_de_gravura)
 
     tinta = mascara_de_tinta(colorida)
@@ -1161,6 +1236,10 @@ def detectar(
                 escrita_certa[fatia] = True
 
     gravura_st = None
+    if nao_procurar:
+        gravura_st = np.zeros((altura, largura), bool)
+        selecao.gravura_por = GRAVURA_NENHUMA
+        em_duvida = False
     if procura_st is not None:
         gravura_st, aviso = procura_st.resultado()
         if gravura_st is not None:

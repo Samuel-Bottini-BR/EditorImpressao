@@ -252,20 +252,93 @@ def test_mascara_volta_no_tamanho_da_pagina():
 # ------------------------------------------------------------- no processamento (core/pipeline.py)
 
 def test_escolha_da_gravura_de_fabrica_e_do_projeto():
+    """As opções de fábrica são as do ScanTailor; o livro manda; a página só
+    troca a forma (e não quando o livro está em "não procurar")."""
     from core.pipeline import escolha_da_gravura
-    from modelos import Projeto
+    from modelos import ConfigPagina, Projeto
 
     projeto = Projeto(caminho_entrada="")
-    assert escolha_da_gravura(projeto) == (dr.DETECTOR_DE_GRAVURA_PADRAO, dr.FORMA_DA_GRAVURA_PADRAO)
-    assert dr.DETECTOR_DE_GRAVURA_PADRAO == dr.GRAVURA_SCANTAILOR
-    assert dr.FORMA_DA_GRAVURA_PADRAO == "livre"
-    # o campo que ainda não existe em modelos.Projeto: quando existir, manda
-    projeto.detector_de_gravura = dr.GRAVURA_ANTIGA
-    projeto.forma_da_gravura = "retangular"
-    assert escolha_da_gravura(projeto) == (dr.GRAVURA_ANTIGA, "retangular")
-    projeto.detector_de_gravura = "qualquer coisa"
-    projeto.forma_da_gravura = "redonda"
-    assert escolha_da_gravura(projeto) == (dr.DETECTOR_DE_GRAVURA_PADRAO, dr.FORMA_DA_GRAVURA_PADRAO)
+    detector, opcoes = escolha_da_gravura(projeto)
+    assert detector == dr.GRAVURA_SCANTAILOR
+    assert opcoes == dr.OpcoesDaGravura("livre", 100, False, True)
+
+    projeto.gravura_forma = "retangular"
+    projeto.gravura_sensibilidade = 70
+    projeto.gravura_mais_sensivel = True
+    projeto.gravura_normalizar = False
+    assert escolha_da_gravura(projeto)[1] == dr.OpcoesDaGravura("retangular", 70, True, False)
+
+    pagina = ConfigPagina(indice=0, folha=0)
+    assert escolha_da_gravura(projeto, pagina)[1].forma == "retangular"   # segue o livro
+    pagina.gravura_forma = "livre"
+    assert escolha_da_gravura(projeto, pagina)[1].forma == "livre"        # só esta página
+    projeto.gravura_forma = "desligada"
+    assert escolha_da_gravura(projeto, pagina)[1].forma == "desligada"    # o livro desligou
+
+    # valor estragado no arquivo vale o padrão (ou fica dentro da faixa)
+    projeto.gravura_forma = "redonda"
+    projeto.gravura_sensibilidade = 500
+    pagina.gravura_forma = "oval"
+    opcoes = escolha_da_gravura(projeto, pagina)[1]
+    assert opcoes.forma == "livre" and opcoes.sensibilidade == 100
+
+
+def test_projeto_antigo_abre_com_as_opcoes_de_fabrica():
+    from modelos import Projeto
+
+    antigo = {"caminho_entrada": "x.pdf", "filtro_padrao": "magico_pro",
+              "paginas": [{"indice": 0, "folha": 0, "metade": "inteira", "selecao": []}],
+              "folhas": [{"indice": 0}]}
+    projeto = Projeto.de_dicionario(antigo)
+    assert (projeto.gravura_forma, projeto.gravura_sensibilidade,
+            projeto.gravura_mais_sensivel, projeto.gravura_normalizar) == ("livre", 100, False, True)
+    assert projeto.paginas[0].gravura_forma is None
+    assert projeto.paginas[0].gravura_feita_com == ""
+    # e ida e volta pelo dicionário guarda tudo
+    projeto.gravura_forma = "retangular"
+    projeto.paginas[0].gravura_forma = "livre"
+    de_novo = Projeto.de_dicionario(projeto.para_dicionario())
+    assert de_novo.gravura_forma == "retangular" and de_novo.paginas[0].gravura_forma == "livre"
+
+
+def test_assinatura_muda_so_com_o_que_muda_a_gravura():
+    a = dr.assinatura_da_gravura
+    livre = dr.OpcoesDaGravura("livre", 100)
+    assert a(dr.GRAVURA_SCANTAILOR, livre) == a(dr.GRAVURA_SCANTAILOR, dr.OpcoesDaGravura("livre", 40))
+    assert a(dr.GRAVURA_SCANTAILOR, livre) != a(dr.GRAVURA_SCANTAILOR, dr.OpcoesDaGravura("retangular"))
+    ret_100 = a(dr.GRAVURA_SCANTAILOR, dr.OpcoesDaGravura("retangular", 100))
+    assert ret_100 != a(dr.GRAVURA_SCANTAILOR, dr.OpcoesDaGravura("retangular", 70))
+    assert a(dr.GRAVURA_SCANTAILOR, livre) != a(dr.GRAVURA_SCANTAILOR, dr.OpcoesDaGravura(mais_sensivel=True))
+    assert a(dr.GRAVURA_SCANTAILOR, livre) != a(dr.GRAVURA_SCANTAILOR, dr.OpcoesDaGravura(normalizar=False))
+
+
+def test_forma_desligada_nao_chama_a_dll(monkeypatch):
+    chamadas = []
+    monkeypatch.setattr(gs, "detectar_gravura", lambda *a, **k: chamadas.append(1))
+    img, gravura, escrita = pagina_com_gravura()
+    selecao = dr.detectar(img, usar_layout=False, detector_de_gravura=dr.GRAVURA_SCANTAILOR,
+                          opcoes_da_gravura=dr.OpcoesDaGravura("desligada"), dpi=150)
+    achada, letra = _mascaras(selecao, img)
+    assert chamadas == []
+    assert selecao.gravura_por == dr.GRAVURA_NENHUMA and selecao.aviso_gravura is None
+    assert not achada.any()
+
+
+@precisa_da_dll
+def test_as_opcoes_chegam_a_dll(monkeypatch):
+    pedidos = []
+    original = gs.detectar_gravura
+
+    def espiao(img, dpi, **k):
+        pedidos.append(k)
+        return original(img, dpi, **k)
+
+    monkeypatch.setattr(gs, "detectar_gravura", espiao)
+    img, _g, _e = pagina_com_gravura()
+    dr.detectar(img, usar_layout=False, detector_de_gravura=dr.GRAVURA_SCANTAILOR,
+                opcoes_da_gravura=dr.OpcoesDaGravura("retangular", 40, True, False), dpi=150)
+    assert pedidos == [{"forma": "retangular", "sensibilidade": 40, "mais_sensivel": True,
+                        "normalizar_iluminacao": False}]
 
 
 def _pdf_com_imagem(caminho: Path, dpi_do_scan: int = 150) -> Path:
@@ -322,7 +395,7 @@ def test_previa_passa_o_dpi_de_verdade_para_a_deteccao(tmp_path, monkeypatch, fi
 
     assert len(pedidos) == 1
     assert pedidos[0]["detector_de_gravura"] == dr.DETECTOR_DE_GRAVURA_PADRAO
-    assert pedidos[0]["forma_da_gravura"] == dr.FORMA_DA_GRAVURA_PADRAO
+    assert pedidos[0]["opcoes_da_gravura"] == dr.OpcoesDaGravura()
     assert pedidos[0]["dpi"] == pytest.approx(110, abs=1)
     assert pedidos[0]["dpi_do_scan"] == pytest.approx(150, abs=1)
     assert projeto.paginas[0].selecao, "a marcação não ficou guardada na página"
@@ -423,3 +496,96 @@ def test_conferir_gravura_do_diagnostico(tmp_path):
         assert info["leu"] and info["gravura_fracao"] > 0.1
     sem_imagem = conferir_gravura(tmp_path / "nao_existe.png", 150)
     assert "erro" in sem_imagem and not sem_imagem.get("leu", False)
+
+
+# ------------------------------------------------------------- refazer a gravura quando as opções mudam
+
+def _garantir(projeto, pagina, img):
+    """garantir_selecao numa imagem a 150 DPI, escaneada a 150."""
+    from core import pipeline
+
+    return pipeline.garantir_selecao(projeto, pagina, img, 150, 150)
+
+
+def test_opcao_mudada_refaz_so_o_que_a_maquina_marcou(monkeypatch):
+    """Mudou a forma (no livro ou na página): a parte automática é refeita, a
+    marcação à mão (com o filtro por pedaço) volta por cima, na ordem."""
+    from core.selecao import MAO, SUBTRAIR, Regiao, retangulo
+    from modelos import ConfigPagina, Projeto
+
+    feitas = []
+    original = dr.detectar
+
+    def espiao(img, *a, **k):
+        feitas.append(k["opcoes_da_gravura"].forma)
+        return original(img, *a, **{**k, "usar_layout": False})
+
+    monkeypatch.setattr(dr, "detectar", espiao)
+    img, _g, _e = pagina_com_gravura()
+    projeto = Projeto(caminho_entrada="")
+    pagina = ConfigPagina(indice=0, folha=0)
+
+    primeira = _garantir(projeto, pagina, img)
+    assert feitas == ["livre"] and pagina.gravura_feita_com.startswith("scantailor|livre")
+    a_mao = retangulo(0.1, 0.1, 0.3, 0.2, origem=MAO, filtro="original")
+    tirar = Regiao(tipo="gravura", forma="retangulo", pontos=[(0.2, 0.5), (0.3, 0.6)],
+                   operacao=SUBTRAIR, origem=MAO)
+    primeira.acrescentar(a_mao)
+    primeira.acrescentar(tirar)
+    pagina.guardar_selecao(primeira)
+
+    _garantir(projeto, pagina, img)                       # nada mudou: não refaz
+    assert feitas == ["livre"]
+
+    pagina.gravura_forma = "retangular"                   # "Esta página tem foto"
+    nova = _garantir(projeto, pagina, img)
+    assert feitas == ["livre", "retangular"]
+    assert pagina.gravura_feita_com.startswith("scantailor|retangular")
+    a_mao_depois = [r for r in nova.regioes if r.origem == MAO]
+    assert [r.para_dicionario() for r in a_mao_depois] == [a_mao.para_dicionario(),
+                                                           tirar.para_dicionario()]
+    assert nova.regioes[-2:] == a_mao_depois, "a marcação à mão tem de vir por cima"
+
+    pagina.gravura_forma = None                           # desfazer: volta a seguir o livro
+    _garantir(projeto, pagina, img)
+    assert feitas[-1] == "livre"
+
+
+def test_marcacao_de_projeto_antigo_nao_e_refeita_sozinha(monkeypatch):
+    """Página marcada antes deste campo existir (assinatura vazia): fica como está."""
+    from core.selecao import Selecao, retangulo
+    from modelos import ConfigPagina, Projeto
+
+    chamadas = []
+    monkeypatch.setattr(dr, "detectar", lambda *a, **k: chamadas.append(k))
+    projeto = Projeto(caminho_entrada="")
+    projeto.gravura_forma = "retangular"
+    pagina = ConfigPagina(indice=0, folha=0)
+    antiga = Selecao()
+    antiga.acrescentar(retangulo(0.1, 0.1, 0.5, 0.5, origem="rede"))
+    pagina.guardar_selecao(antiga)
+    img, _g, _e = pagina_com_gravura()
+    assert _garantir(projeto, pagina, img).para_lista() == antiga.para_lista()
+    assert chamadas == []
+
+
+def test_deteccao_que_falha_ao_refazer_nao_perde_a_marcacao(monkeypatch):
+    from core.selecao import MAO, Selecao, retangulo
+    from modelos import ConfigPagina, Projeto
+
+    projeto = Projeto(caminho_entrada="")
+    pagina = ConfigPagina(indice=0, folha=0)
+    marcada = Selecao()
+    marcada.acrescentar(retangulo(0.1, 0.1, 0.5, 0.5, origem="rede"))
+    marcada.acrescentar(retangulo(0.6, 0.6, 0.7, 0.7, origem=MAO))
+    pagina.guardar_selecao(marcada)
+    pagina.gravura_feita_com = "scantailor|livre|-|0|1"
+    projeto.gravura_forma = "retangular"
+
+    def explode(*_a, **_k):
+        raise RuntimeError("de mentira")
+
+    monkeypatch.setattr(dr, "detectar", explode)
+    img, _g, _e = pagina_com_gravura()
+    assert _garantir(projeto, pagina, img).para_lista() == marcada.para_lista()
+    assert pagina.selecao == marcada.para_lista()

@@ -102,6 +102,24 @@ class ConfigPagina:
     # programa sempre funcionou - projetos antigos continuam abrindo.
     selecao: list[dict[str, Any]] = field(default_factory=list)
 
+    # Item 1.2 (decisao do Samuel, 30/09/2026): "Quero poder trocar tambem so
+    # numa pagina (ex.: so a pagina da estatua do Opus Majus), sem mudar o
+    # livro inteiro." gravura_forma e a forma do contorno da gravura SO desta
+    # pagina ("livre" ou "retangular"), por cima da do livro
+    # (Projeto.gravura_forma); None = segue o livro. E o controle "Esta
+    # pagina tem foto" da aba Marcar (ui/tela_conferir.py).
+    #
+    # gravura_feita_com: com que opcoes a parte da selecao que a MAQUINA
+    # marcou foi feita (core.detectar_regioes.assinatura_da_gravura). Nao e
+    # escolha de ninguem: e o que deixa core/pipeline.garantir_selecao saber
+    # que as opcoes mudaram e refazer so a parte automatica, mantendo a
+    # marcacao a mao. "" = feita antes deste campo existir (projeto antigo):
+    # fica como esta, a menos que a pessoa mude as opcoes do livro (ai
+    # ui/janela_principal marca para refazer). Seguro mudar: nada, o valor e
+    # interno. Projeto antigo sem os dois campos abre com os padroes.
+    gravura_forma: str | None = None
+    gravura_feita_com: str = ""
+
     # Problema 1, opcoes B e C do plano: depois que `recorte` decide o
     # tamanho da FOLHA final, estes dois decidem o tamanho e a posicao do
     # CONTEUDO escaneado dentro dela - independentes um do outro e do
@@ -203,6 +221,27 @@ class Projeto:
     # (abrir_livro, _resposta_do_aviso_do_fundo). Seguro mudar: nada; o
     # campo so decide se a pergunta aparece, nunca mexe em pagina.
     perguntou_fundo: bool = False
+
+    # Item 1.2: as opcoes do detector de gravuras do ScanTailor Advanced, por
+    # livro. Decisao do Samuel (30/09/2026, Registro de mudancas): "o programa
+    # tem que ter essas opcoes para o usuario conseguir usar". Os padroes sao
+    # os do proprio ScanTailor no modo Misto (os do teste de 24/09). Quem le e
+    # core/pipeline.escolha_da_gravura (que tambem corrige valor invalido
+    # vindo do arquivo); quem mostra e ui/tela_opcoes.py ("Gravuras e fotos").
+    #   gravura_forma: "livre" (seguindo o desenho), "retangular" (em
+    #       retangulo, bom para fotos) ou "desligada" (nao procurar gravura:
+    #       e o botao de desligar da regra 8 do plano);
+    #   gravura_sensibilidade: 0 a 100, so vale na forma retangular;
+    #   gravura_mais_sensivel: "maior sensibilidade de busca" (acha tambem
+    #       imagens claras);
+    #   gravura_normalizar: igualar a luz da pagina antes de procurar.
+    # Projeto antigo, sem estes campos, abre com os padroes (de_dicionario).
+    # Mudar num livro com trabalho so vale ao clicar "Conferir", e a gravura
+    # achada sozinha e refeita (ui/janela_principal._analise_pronta).
+    gravura_forma: str = "livre"
+    gravura_sensibilidade: int = 100
+    gravura_mais_sensivel: bool = False
+    gravura_normalizar: bool = True
 
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)

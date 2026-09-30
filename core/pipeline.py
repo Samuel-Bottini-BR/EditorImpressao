@@ -397,27 +397,49 @@ def _precisa_de_geometria(pagina: ConfigPagina, projeto: Projeto) -> bool:
             or (projeto.endireitar and pagina.angulo_manual is None))
 
 
-def escolha_da_gravura(projeto: Projeto) -> tuple[str, str]:
-    """(detector de gravura, forma) que este projeto usa (item 1.2).
+def escolha_da_gravura(projeto: Projeto,
+                       pagina: ConfigPagina | None = None):
+    """(detector, OpcoesDaGravura) que valem para esta pagina (item 1.2).
 
-    Le os campos do projeto quando existirem (o campo e o botao de ligar e
-    desligar da regra 8 ainda nao foram criados: o implementador do 1.2 nao
-    podia mexer em modelos.py) e, sem eles, os padroes de fabrica
-    (core.detectar_regioes.DETECTOR_DE_GRAVURA_PADRAO e
-    FORMA_DA_GRAVURA_PADRAO). Nomes esperados dos campos: detector_de_gravura
-    ("scantailor" | "antigo") e forma_da_gravura ("livre" | "retangular").
-    Valor desconhecido vale o padrao. Seguro mudar: os padroes, la em
-    detectar_regioes.
+    As opcoes vem do livro (Projeto.gravura_forma, gravura_sensibilidade,
+    gravura_mais_sensivel, gravura_normalizar - a tela "O que fazer", grupo
+    "Gravuras e fotos"). A forma pode ser trocada so numa pagina
+    (ConfigPagina.gravura_forma, "Esta pagina tem foto" na aba Marcar), menos
+    quando o livro esta em "nao procurar" (forma "desligada"): ai nenhuma
+    pagina procura. Valor invalido vindo do arquivo vale o padrao
+    (OpcoesDaGravura.corrigida). O detector e sempre o do ScanTailor
+    (core.detectar_regioes.DETECTOR_DE_GRAVURA_PADRAO); o antigo so entra
+    sozinho, quando a DLL falha - o "desligar" da regra 8 e a forma
+    "desligada". Seguro mudar: os padroes, em modelos.Projeto.
     """
     from core import detectar_regioes as dr
 
-    detector = getattr(projeto, "detector_de_gravura", None) or dr.DETECTOR_DE_GRAVURA_PADRAO
-    if detector not in dr.DETECTORES_DE_GRAVURA:
-        detector = dr.DETECTOR_DE_GRAVURA_PADRAO
-    forma = getattr(projeto, "forma_da_gravura", None) or dr.FORMA_DA_GRAVURA_PADRAO
-    if forma not in dr.FORMAS_DA_GRAVURA:
-        forma = dr.FORMA_DA_GRAVURA_PADRAO
-    return detector, forma
+    forma = getattr(projeto, "gravura_forma", None) or dr.FORMA_DA_GRAVURA_PADRAO
+    da_pagina = getattr(pagina, "gravura_forma", None) if pagina is not None else None
+    if (da_pagina in ("livre", "retangular") and forma in dr.FORMAS_DA_GRAVURA
+            and forma != dr.FORMA_DESLIGADA):
+        forma = da_pagina
+    opcoes = dr.OpcoesDaGravura(
+        forma=forma,
+        sensibilidade=getattr(projeto, "gravura_sensibilidade", 100),
+        mais_sensivel=getattr(projeto, "gravura_mais_sensivel", False),
+        normalizar=getattr(projeto, "gravura_normalizar", True),
+    ).corrigida()
+    return dr.DETECTOR_DE_GRAVURA_PADRAO, opcoes
+
+
+def _gravura_a_refazer(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A marcacao desta pagina foi feita com outras opcoes de gravura?
+
+    Compara a assinatura guardada na pagina (gravura_feita_com) com a das
+    opcoes de agora (escolha_da_gravura). Pagina sem marcacao, ou com
+    assinatura vazia (marcacao de antes do campo existir), nao conta aqui.
+    """
+    from core.detectar_regioes import assinatura_da_gravura
+
+    if not pagina.selecao or not getattr(pagina, "gravura_feita_com", ""):
+        return False
+    return pagina.gravura_feita_com != assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
 
 
 def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
@@ -439,24 +461,37 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     - porque a selecao guarda fracoes daquele recorte. Detectar antes deixaria a
     marcacao deslocada na hora de aplicar.
     """
-    from core.selecao import Selecao
+    from core.selecao import MAO, Selecao
 
     if not projeto.detectar_regioes:
         return Selecao()
 
-    selecao = pagina.obter_selecao()
-    if not selecao.vazia:
-        return selecao
+    antiga = pagina.obter_selecao()
+    refazer = _gravura_a_refazer(projeto, pagina)
+    if not antiga.vazia and not refazer:
+        return antiga
 
     try:
-        from core.detectar_regioes import detectar
+        from core.detectar_regioes import assinatura_da_gravura, detectar
 
-        detector, forma = escolha_da_gravura(projeto)
-        selecao = detectar(img, detector_de_gravura=detector, forma_da_gravura=forma,
+        detector, opcoes = escolha_da_gravura(projeto, pagina)
+        selecao = detectar(img, detector_de_gravura=detector, opcoes_da_gravura=opcoes,
                            dpi=dpi, dpi_do_scan=dpi_do_scan)
     except Exception:  # noqa: BLE001 - sem deteccao o filtro trata a folha toda
         _log.exception("a deteccao de gravura e letra falhou")
-        return Selecao()
+        return antiga      # vazia, ou a marcacao de antes intacta
+
+    # Item 1.2: as opcoes de gravura mudaram (no livro ou so nesta pagina):
+    # sai o que a MAQUINA tinha marcado, entra o novo, e o que a pessoa
+    # marcou a mao volta POR CIMA, na ordem em que estava (a ordem importa:
+    # um "tirar" a mao so apaga o que veio antes dele). O filtro por pedaco
+    # mora na regiao a mao e vem junto. Arriscado: por a marcacao a mao antes
+    # da nova (o "tirar" deixaria de valer), ou refazer sem assinatura.
+    if refazer:
+        for regiao in antiga.regioes:
+            if regiao.origem == MAO:
+                selecao.acrescentar(regiao)
+    pagina.gravura_feita_com = assinatura_da_gravura(detector, opcoes)
 
     # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.
     # Quando isso acontece a pagina fica laranja, para a pessoa conferir na
@@ -729,8 +764,8 @@ def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
     Original a deteccao roda do mesmo jeito (_filtrar chama garantir_selecao
     antes de saber o filtro), e a marcacao fica guardada para quando a pessoa
     trocar de filtro - por isso o Original NAO fica de fora aqui."""
-    return bool(projeto.limpar and pagina.filtro != TIRAR_FUNDO
-                and projeto.detectar_regioes and not pagina.selecao)
+    return bool(projeto.limpar and pagina.filtro != TIRAR_FUNDO and projeto.detectar_regioes
+                and (not pagina.selecao or _gravura_a_refazer(projeto, pagina)))
 
 
 def _dpi_do_desenho(doc, indice: int, img_folha: np.ndarray) -> float | None:
