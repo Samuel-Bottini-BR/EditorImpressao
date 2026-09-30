@@ -489,6 +489,39 @@ def trocar_opcoes_da_gravura(projeto: Projeto, novas: Projeto) -> int:
     return refeitas
 
 
+TITULO_DO_AVISO_DA_GRAVURA = "Gravuras e fotos"
+
+
+def aviso_das_opcoes_da_gravura(projeto: Projeto, quantas: int, copia) -> tuple[str, str]:
+    """(titulo, frase) do aviso de quando as opcoes de "Gravuras e fotos"
+    mudaram num livro ja conferido (trocar_opcoes_da_gravura devolveu
+    `quantas` > 0). `copia` = o caminho da copia do trabalho, ou None.
+
+    Parecer do verificador (30/09, r09): o aviso dizia "serao procuradas de
+    novo" tambem no "nao procurar", em que elas deixam de ser procuradas, e a
+    caixa tinha o titulo generico "Um momento". Agora a frase diz o que vai
+    acontecer em cada caso, e o titulo diz do que se trata. Quem mostra e
+    ui/janela_principal._analise_pronta. Seguro mudar: os textos.
+    """
+    paginas = f"{quantas} {'página' if quantas == 1 else 'páginas'} já {'marcada' if quantas == 1 else 'marcadas'}"
+    if getattr(projeto, "gravura_forma", "livre") == "desligada":
+        frase = ("Este livro não vai mais procurar gravuras e fotos: o que o programa "
+                 f"tinha achado sozinho sai de {paginas}. O que você marcou à mão fica.")
+    else:
+        frase = ("As gravuras e fotos vão ser procuradas de novo, com as opções novas, "
+                 f"em {paginas}. O que você marcou à mão fica.")
+    if copia is not None:
+        caminho = str(copia)
+        if len(caminho) > 2 and caminho[1] == ":":
+            # WORD JOINER: o Qt nao quebra a linha depois de "D:" (ver
+            # ui/janela_principal._frase_do_recomeco)
+            caminho = caminho[:2] + "⁠" + caminho[2:]
+        frase += f"\n\nGuardei uma cópia do trabalho de antes:\n{caminho}"
+    else:
+        frase += "\n\nNão consegui guardar uma cópia do trabalho de antes."
+    return TITULO_DO_AVISO_DA_GRAVURA, frase
+
+
 def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
                      dpi: float | None = None, dpi_do_scan: float | None = None):
     """Descobre onde estao gravura, letra e papel - uma vez por pagina.

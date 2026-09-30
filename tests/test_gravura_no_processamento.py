@@ -695,3 +695,23 @@ def test_figura_julgada_escrita_tira_a_gravura_do_scantailor(monkeypatch):
     selecao = dr.detectar(img, detector_de_gravura=dr.GRAVURA_SCANTAILOR, dpi=150)
     achada, _l = _mascaras(selecao, img)
     assert not achada[faixa].any(), "a pauta (e o pedaço fora da caixa) não pode ser gravura"
+
+
+# ------------------------------------------------------------- o aviso das opções mudadas (verificador, 30/09, r09)
+
+def test_aviso_das_opcoes_diz_o_que_acontece_em_cada_caso():
+    from core.pipeline import TITULO_DO_AVISO_DA_GRAVURA, aviso_das_opcoes_da_gravura
+    from modelos import Projeto
+
+    projeto = Projeto(caminho_entrada="")
+    projeto.gravura_forma = "desligada"
+    titulo, frase = aviso_das_opcoes_da_gravura(projeto, 3, Path("D:/x/projeto.antigo.json"))
+    assert titulo == TITULO_DO_AVISO_DA_GRAVURA == "Gravuras e fotos"
+    assert "não vai mais procurar" in frase and "procuradas de novo" not in frase
+    assert "3 páginas já marcadas" in frase and "à mão fica" in frase
+    assert "Guardei uma cópia" in frase and "projeto.antigo.json" in frase
+
+    projeto.gravura_forma = "retangular"
+    _t, frase = aviso_das_opcoes_da_gravura(projeto, 1, None)
+    assert "procuradas de novo" in frase and "1 página já marcada" in frase
+    assert "Não consegui guardar" in frase
