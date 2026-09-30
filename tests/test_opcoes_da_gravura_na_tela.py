@@ -70,7 +70,7 @@ def test_cada_controle_grava_no_projeto(janela, pasta):
     assert projeto.gravura_mais_sensivel and not projeto.gravura_normalizar
     tela.cx_achar_gravuras.setChecked(False)
     assert projeto.gravura_forma == "desligada"
-    assert tela.cx_tem_fotos.isHidden() and tela.deslizante_sensibilidade.isHidden()
+    assert tela.painel_opcoes_gravura.isHidden()
     tela.cx_achar_gravuras.setChecked(True)
     assert projeto.gravura_forma == "retangular"
 
@@ -195,3 +195,52 @@ def test_conferir_sem_mudar_nada_nao_avisa_nem_copia(janela, pasta):
     _analisar(janela)
     assert not janela.avisos
     assert not list(Path(janela.resumo.pasta).glob("projeto.antigo-*.json"))
+
+
+# ---------------------------------------------------------------------------
+# a tela nao espreme o grupo (parecer do verificador de 30/09, r01-r04)
+# ---------------------------------------------------------------------------
+
+def test_mais_opcoes_comeca_fechado_e_abre(janela, pasta):
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela = _tela(janela)
+    tela.escolher_filtro_do_livro("magico_pro")
+    assert tela.painel_mais_opcoes.isHidden() and tela.botao_mais_opcoes.text() == "Mais opções"
+    tela.botao_mais_opcoes.click()
+    assert not tela.painel_mais_opcoes.isHidden()
+    assert tela.botao_mais_opcoes.text() == "Menos opções"
+
+
+def test_mais_opcoes_abre_sozinho_quando_algo_avancado_mudou(janela, pasta):
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela = _tela(janela)
+    janela.projeto.gravura_mais_sensivel = True
+    tela.mostrar_opcoes()
+    assert tela.botao_mais_opcoes.isChecked() and not tela.painel_mais_opcoes.isHidden()
+
+
+@pytest.mark.parametrize("largura, altura", [(1152, 560), (1280, 520), (1366, 600)])
+def test_janela_baixa_nao_espreme_as_linhas(janela, pasta, largura, altura):
+    """Numa janela baixa aparece a rolagem; nenhuma linha fica mais baixa que
+    precisa (a 1440 x 880 com 125%, as linhas ficavam com 2 pontos: r01)."""
+    from PySide6.QtWidgets import QApplication
+
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela = _tela(janela)
+    tela.escolher_filtro_do_livro("magico_pro")
+    tela.cx_tem_fotos.setChecked(True)
+    tela.botao_mais_opcoes.setChecked(True)
+    janela.resize(largura, altura)
+    janela.show()
+    for _ in range(5):
+        QApplication.processEvents()
+    controles = [tela.cx_dividir, tela.cx_limpar, tela.cx_achar_gravuras, tela.cx_tem_fotos,
+                 tela.cx_imagens_claras, tela.cx_igualar_luz, tela.cx_endireitar,
+                 tela.cx_cortar, tela.cx_cadernos, tela.deslizante_sensibilidade,
+                 *tela._frases_da_gravura]
+    for controle in controles:
+        assert controle.height() >= controle.minimumSizeHint().height(), controle
+    for frase in tela._frases_da_gravura:
+        assert frase.height() >= frase.heightForWidth(frase.width()) - 1, frase.text()
+    assert tela.rolagem.verticalScrollBar().maximum() > 0, "janela baixa: tem de aparecer a rolagem"
+    janela.hide()

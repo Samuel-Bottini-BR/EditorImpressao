@@ -183,3 +183,69 @@ QToolTip {{
     background: {TEXTO}; color: white; border: none; padding: 6px 9px; border-radius: 5px;
 }}
 """
+
+
+# ---------------------------------------------------------------------------
+# Caixinha COM QUADRADO (item 1.2, parecer do verificador de 30/09/2026, r06)
+# ---------------------------------------------------------------------------
+# Na janela de verdade (estilo "windows11" do Qt), a folha de estilo acima faz
+# a caixinha DESMARCADA sair sem quadrado nenhum: so o texto, e a pessoa nao
+# sabe que ali se clica ("Esta pagina tem foto", "Este livro tem fotos"). A
+# marcada sai so com o tique. Esta e a caixinha com quadrado nas duas: borda
+# cinza e fundo branco desmarcada; azul com tique branco marcada. Usada, por
+# enquanto, so nas caixinhas do grupo "Gravuras e fotos" e na da aba Marcar;
+# as outras caixinhas do programa continuam como estao (mudar todas e decisao
+# de tela: Lista de bugs de 30/09).
+#
+# O tique e desenhado uma vez, com o proprio Qt, num PNG na pasta temporaria
+# (a folha de estilo so aceita imagem por arquivo, e assim nada precisa ir
+# junto no instalador). Se nao der para gravar, a marcada fica azul cheia,
+# sem tique - continua dando para ver o que esta marcado. Seguro mudar: as
+# cores. Chamar so depois de existir a QApplication.
+
+_CAIXINHA_COM_QUADRADO: str | None = None
+
+
+def _desenhar_o_tique() -> str | None:
+    """Grava o tique branco (24 x 24) num PNG temporario e devolve o caminho
+    com barras normais (o que a folha de estilo quer), ou None."""
+    try:
+        import tempfile
+        from pathlib import Path
+
+        from PySide6.QtCore import QPointF, Qt
+        from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
+
+        caminho = Path(tempfile.gettempdir()) / "editor_impressao_tique.png"
+        if not caminho.is_file():
+            imagem = QPixmap(48, 48)
+            imagem.fill(Qt.transparent)
+            pintor = QPainter(imagem)
+            pintor.setRenderHint(QPainter.Antialiasing)
+            caneta = QPen(QColor("white"), 6.5)
+            caneta.setCapStyle(Qt.RoundCap)
+            caneta.setJoinStyle(Qt.RoundJoin)
+            pintor.setPen(caneta)
+            pintor.drawPolyline([QPointF(10.5, 25.5), QPointF(20, 35), QPointF(38, 14)])
+            pintor.end()
+            if not imagem.save(str(caminho), "PNG"):
+                return None
+        return caminho.as_posix()
+    except Exception:  # noqa: BLE001 - sem o tique, a caixinha marcada fica azul cheia
+        return None
+
+
+def estilo_da_caixinha_com_quadrado(tamanho_da_letra: int = 14) -> str:
+    """A folha de estilo de uma caixinha com quadrado (ver acima), para
+    QCheckBox.setStyleSheet."""
+    global _CAIXINHA_COM_QUADRADO
+    if _CAIXINHA_COM_QUADRADO is None:
+        tique = _desenhar_o_tique()
+        imagem = f" image: url({tique});" if tique else ""
+        _CAIXINHA_COM_QUADRADO = (
+            "QCheckBox::indicator { width: 16px; height: 16px; border: 2px solid #9ca3af;"
+            " border-radius: 4px; background: white; }"
+            f" QCheckBox::indicator:checked {{ border-color: {AZUL}; background: {AZUL};{imagem} }}"
+            " QCheckBox::indicator:disabled { border-color: #d1d5db; background: #f3f4f6; }")
+    return (f"QCheckBox {{ font-size: {tamanho_da_letra}px; font-weight: normal; spacing: 8px; }} "
+            + _CAIXINHA_COM_QUADRADO)

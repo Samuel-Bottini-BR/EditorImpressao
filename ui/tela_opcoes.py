@@ -41,6 +41,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QRadioButton,
+    QScrollArea,
     QSlider,
     QVBoxLayout,
     QWidget,
@@ -57,7 +58,7 @@ from core.filtros import (
 )
 from core.pipeline import resumo_em_portugues
 from modelos import Projeto
-from ui.estilo import TEXTO_FRACO
+from ui.estilo import TEXTO_FRACO, estilo_da_caixinha_com_quadrado
 from ui.widgets.folhear_pdf import FolhearPDF
 
 FILTROS_NA_TELA = [
@@ -146,7 +147,31 @@ class TelaOpcoes(QWidget):
         self.painel_caderno = self._montar_caderno()
         opcoes.addWidget(self.painel_caderno)
 
-        esquerda.addWidget(cartao)
+        # O cartao vai dentro de uma area com ROLAGEM (parecer do verificador,
+        # 30/09/2026, prints r01-r04): sem ela, numa janela baixa (1440 x 880 com
+        # a escala de 125% do Windows = uns 1150 x 680 pontos; o notebook do
+        # Kaique, 1920 x 1080 a 125-150%) o Qt espremia as linhas do cartao ate
+        # ficarem ilegiveis, umas por cima das outras. Com a rolagem, cada linha
+        # fica na altura dela e aparece uma barra quando nao cabe. O resumo e os
+        # botoes ficam sempre a vista, fora da rolagem. Arriscado: tirar a
+        # rolagem, ou por o resumo dentro dela.
+        dentro_da_rolagem = QWidget()
+        dentro_da_rolagem.setObjectName("dentroDaRolagem")
+        pilha = QVBoxLayout(dentro_da_rolagem)
+        pilha.setContentsMargins(0, 0, 6, 0)      # espaco para a barra nao cobrir o cartao
+        pilha.addWidget(cartao)
+        pilha.addStretch()
+        self.rolagem = QScrollArea()
+        self.rolagem.setWidgetResizable(True)
+        self.rolagem.setFrameShape(QFrame.NoFrame)
+        self.rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.rolagem.setStyleSheet(
+            "QScrollArea { background: transparent; }"
+            " QWidget#dentroDaRolagem { background: transparent; }")
+        self.rolagem.viewport().setAutoFillBackground(False)
+        self.rolagem.setWidget(dentro_da_rolagem)
+        self._dentro_da_rolagem = dentro_da_rolagem
+        esquerda.addWidget(self.rolagem, 1)
 
         self.faixa = QFrame()
         self.faixa.setObjectName("faixaInfo")
@@ -156,7 +181,6 @@ class TelaOpcoes(QWidget):
         self.resumo.setWordWrap(True)
         faixa_camada.addWidget(self.resumo)
         esquerda.addWidget(self.faixa)
-
         esquerda.addStretch()
 
         direita = QVBoxLayout()
@@ -226,6 +250,8 @@ class TelaOpcoes(QWidget):
 
             rotulo = QLabel(explicacao)
             rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+            # quebra a linha numa janela estreita (antes saia cortada: r02)
+            rotulo.setWordWrap(True)
             grade.addWidget(rotulo, i // 2, (i % 2) * 2 + 1)
             self.radios_de_filtro[chave] = radio
             self._rotulos_de_filtro[chave] = rotulo
@@ -235,50 +261,73 @@ class TelaOpcoes(QWidget):
 
     def _montar_gravuras(self) -> QWidget:
         """O grupo "Gravuras e fotos" (item 1.2): as opcoes do detector de
-        gravuras do ScanTailor, cada uma com uma frase curta AO LADO (como os
-        filtros, logo acima), para a tela caber numa janela de 880 pontos de
-        altura (com a frase embaixo, as caixinhas eram espremidas).
+        gravuras do ScanTailor, cada uma com uma frase curta EMBAIXO.
 
-        Recuado como o painel dos filtros, e so aparece com "Limpar a folha"
-        (ver _mudou). As opcoes de dentro so aparecem com "Achar gravuras e
-        fotos" marcada; a sensibilidade so fica habilitada com "Este livro tem
-        fotos" (o ScanTailor so a usa no retangulo). Cada mudanca passa por
+        A vista: "Achar gravuras e fotos" (desmarcada = nao procurar: o
+        desligar da regra 8) e "Este livro tem fotos". Atras do botao "Mais
+        opcoes" (fechado ao abrir; aberto sozinho quando alguma delas nao esta
+        no padrao, para a pessoa ver o que mudou): "Sensibilidade" (so vale
+        com fotos: o ScanTailor so a usa no retangulo), "Procurar tambem
+        imagens claras" e "Igualar a luz da pagina antes".
+
+        Frase EMBAIXO (e nao ao lado, como na primeira versao): ao lado, numa
+        grade, as frases cortavam e as linhas se espremiam (verificador,
+        30/09, r01-r04); numa coluna so, o Qt da a cada frase a altura que ela
+        precisa, e a rolagem do cartao (ver __init__) cuida do resto.
+        So aparece com "Limpar a folha" (ver _mudou). Cada mudanca passa por
         _mudou, que grava no projeto. Seguro mudar: os textos.
         """
         painel = QWidget()
-        grade = QGridLayout(painel)
-        grade.setContentsMargins(34, 4, 0, 4)
-        grade.setHorizontalSpacing(12)
-        grade.setVerticalSpacing(4)
-        grade.setColumnStretch(1, 1)
-        miuda = f"color: {TEXTO_FRACO}; font-size: 12px;"
+        fora = QVBoxLayout(painel)
+        fora.setContentsMargins(34, 6, 0, 6)
+        fora.setSpacing(2)
 
         titulo = QLabel("Gravuras e fotos")
         titulo.setStyleSheet("font-weight: bold;")
-        grade.addWidget(titulo, 0, 0, 1, 2)
+        fora.addWidget(titulo)
 
-        def caixa(linha: int, texto: str, explicacao: str, recuo: int) -> QCheckBox:
+        self._frases_da_gravura: list[QLabel] = []
+
+        def caixa(texto: str, explicacao: str, destino: QVBoxLayout, marcada: bool) -> QCheckBox:
             c = QCheckBox(texto)
-            c.setStyleSheet(f"font-size: 14px; font-weight: normal; margin-left: {recuo}px;")
-            grade.addWidget(c, linha, 0)
-            rotulo = QLabel(explicacao)
-            rotulo.setStyleSheet(miuda)
-            rotulo.setWordWrap(True)
-            grade.addWidget(rotulo, linha, 1)
-            self._rotulos_da_gravura.append(rotulo)
+            c.setStyleSheet(estilo_da_caixinha_com_quadrado(14))   # com quadrado (ui/estilo.py)
+            c.setChecked(marcada)
+            destino.addWidget(c)
+            destino.addWidget(self._frase(explicacao))
             return c
 
-        self._rotulos_da_gravura: list[QLabel] = []
         self.cx_achar_gravuras = caixa(
-            1, "Achar gravuras e fotos",
-            "separa desenho, foto e moldura do texto, para cada um ser tratado do seu jeito", 0)
-        self.cx_tem_fotos = caixa(
-            2, "Este livro tem fotos",
-            "procura em retângulo, que pega a foto inteira; desmarcada, segue o contorno do desenho",
-            24)
+            "Achar gravuras e fotos",
+            "separa desenho, foto e moldura do texto, para cada um ser tratado do seu jeito",
+            fora, True)
 
+        # o que so aparece com "Achar gravuras e fotos" marcada (ver _mudou)
+        self.painel_opcoes_gravura = QWidget()
+        dentro = QVBoxLayout(self.painel_opcoes_gravura)
+        dentro.setContentsMargins(26, 4, 0, 0)
+        dentro.setSpacing(2)
+        self.cx_tem_fotos = caixa(
+            "Este livro tem fotos",
+            "procura em retângulo, que pega a foto inteira; desmarcada, segue o contorno do desenho",
+            dentro, False)
+
+        self.botao_mais_opcoes = QPushButton("Mais opções")
+        self.botao_mais_opcoes.setObjectName("plano")
+        self.botao_mais_opcoes.setCheckable(True)
+        self.botao_mais_opcoes.setCursor(Qt.PointingHandCursor)
+        self.botao_mais_opcoes.toggled.connect(self._abrir_mais_opcoes)
+        linha_mais = QHBoxLayout()
+        linha_mais.setContentsMargins(0, 4, 0, 0)
+        linha_mais.addWidget(self.botao_mais_opcoes)
+        linha_mais.addStretch()
+        dentro.addLayout(linha_mais)
+
+        self.painel_mais_opcoes = QWidget()
+        mais = QVBoxLayout(self.painel_mais_opcoes)
+        mais.setContentsMargins(0, 0, 0, 0)
+        mais.setSpacing(2)
         linha = QHBoxLayout()
-        linha.setContentsMargins(24, 0, 0, 0)
+        linha.setContentsMargins(0, 0, 0, 0)
         self.rotulo_sensibilidade = QLabel("Sensibilidade")
         linha.addWidget(self.rotulo_sensibilidade)
         self.deslizante_sensibilidade = QSlider(Qt.Horizontal)
@@ -286,7 +335,8 @@ class TelaOpcoes(QWidget):
         self.deslizante_sensibilidade.setSingleStep(10)
         self.deslizante_sensibilidade.setPageStep(10)
         self.deslizante_sensibilidade.setValue(100)
-        self.deslizante_sensibilidade.setMinimumWidth(90)
+        self.deslizante_sensibilidade.setMinimumWidth(120)
+        self.deslizante_sensibilidade.setMaximumWidth(260)
         # desabilitado (sem "Este livro tem fotos") fica cinza: a folha de
         # estilo do programa pinta o deslizante de azul sempre
         self.deslizante_sensibilidade.setStyleSheet(
@@ -294,37 +344,64 @@ class TelaOpcoes(QWidget):
             "QSlider::handle:horizontal:disabled { border-color: #d1d5db; }")
         linha.addWidget(self.deslizante_sensibilidade, 1)
         self.valor_sensibilidade = QLabel("100")
-        self.valor_sensibilidade.setMinimumWidth(28)
+        self.valor_sensibilidade.setMinimumWidth(32)
         linha.addWidget(self.valor_sensibilidade)
-        grade.addLayout(linha, 3, 0)
-        self.explicacao_sensibilidade = QLabel(
+        linha.addStretch()
+        mais.addLayout(linha)
+        self.explicacao_sensibilidade = self._frase(
             "só com fotos: no máximo, o retângulo pega a foto inteira; menos, "
             "aperta o retângulo e deixa de fora a beirada mais rala")
-        self.explicacao_sensibilidade.setStyleSheet(miuda)
-        self.explicacao_sensibilidade.setWordWrap(True)
-        grade.addWidget(self.explicacao_sensibilidade, 3, 1)
-
+        mais.addWidget(self.explicacao_sensibilidade)
         self.cx_imagens_claras = caixa(
-            4, "Procurar também imagens claras",
-            "acha desenho e foto bem apagados; pode pegar mancha junto", 24)
+            "Procurar também imagens claras",
+            "acha desenho e foto bem apagados; pode pegar mancha junto", mais, False)
         self.cx_igualar_luz = caixa(
-            5, "Igualar a luz da página antes",
-            "acerta a página mais escura de um lado antes de procurar", 24)
-        self.cx_achar_gravuras.setChecked(True)
-        self.cx_igualar_luz.setChecked(True)
-
-        # o que so aparece com "Achar gravuras e fotos" marcada (ver _mudou)
-        self._opcoes_da_gravura = [
-            self.cx_tem_fotos, self._rotulos_da_gravura[1], self.rotulo_sensibilidade,
-            self.deslizante_sensibilidade, self.valor_sensibilidade,
-            self.explicacao_sensibilidade, self.cx_imagens_claras, self._rotulos_da_gravura[2],
-            self.cx_igualar_luz, self._rotulos_da_gravura[3]]
+            "Igualar a luz da página antes",
+            "acerta a página mais escura de um lado antes de procurar", mais, True)
+        self.painel_mais_opcoes.setVisible(False)
+        dentro.addWidget(self.painel_mais_opcoes)
+        fora.addWidget(self.painel_opcoes_gravura)
 
         for c in (self.cx_achar_gravuras, self.cx_tem_fotos,
                   self.cx_imagens_claras, self.cx_igualar_luz):
             c.toggled.connect(self._mudou)
         self.deslizante_sensibilidade.valueChanged.connect(self._mudou)
         return painel
+
+    def _frase(self, texto: str) -> QLabel:
+        """A frase curta que explica uma opcao do grupo "Gravuras e fotos":
+        miuda, cinza, recuada para ficar embaixo do texto da caixinha, e
+        quebrando a linha (nunca cortada)."""
+        rotulo = QLabel(texto)
+        rotulo.setWordWrap(True)
+        # o recuo pela margem do widget (e nao pela folha de estilo): assim o
+        # Qt conta o recuo ao quebrar a linha, e a frase nunca sai cortada
+        rotulo.setContentsMargins(28, 0, 0, 2)
+        rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        self._frases_da_gravura.append(rotulo)
+        return rotulo
+
+    def _acertar_altura_da_rolagem(self) -> None:
+        """A rolagem nunca fica mais alta que o cartao: com a janela grande, o
+        resumo fica logo embaixo do cartao (e nao la no pe da tela, com um
+        buraco no meio). Com a janela baixa, a rolagem encolhe e a barra
+        aparece. Chamado ao redimensionar e quando algo aparece ou some."""
+        largura = self.rolagem.viewport().width() or self.rolagem.width()
+        dentro = self._dentro_da_rolagem
+        altura = (dentro.heightForWidth(largura) if dentro.hasHeightForWidth()
+                  else dentro.sizeHint().height())
+        self.rolagem.setMaximumHeight(max(120, altura + 2))
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802
+        """Ver _acertar_altura_da_rolagem."""
+        super().resizeEvent(evento)
+        self._acertar_altura_da_rolagem()
+
+    def _abrir_mais_opcoes(self, aberto: bool) -> None:
+        """O botao "Mais opcoes": mostra ou esconde as opcoes avancadas."""
+        self.painel_mais_opcoes.setVisible(aberto)
+        self.botao_mais_opcoes.setText("Menos opções" if aberto else "Mais opções")
+        self._acertar_altura_da_rolagem()
 
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
@@ -408,6 +485,12 @@ class TelaOpcoes(QWidget):
         self.deslizante_sensibilidade.setValue(sensibilidade)
         self.cx_imagens_claras.setChecked(bool(projeto.gravura_mais_sensivel))
         self.cx_igualar_luz.setChecked(bool(projeto.gravura_normalizar))
+        # "Mais opcoes" abre sozinho quando alguma das avancadas nao esta no
+        # padrao: a pessoa ve o que foi mudado (fechado, ficaria escondido)
+        fora_do_padrao = (sensibilidade != 100 or bool(projeto.gravura_mais_sensivel)
+                          or not bool(projeto.gravura_normalizar))
+        if fora_do_padrao and not self.botao_mais_opcoes.isChecked():
+            self.botao_mais_opcoes.setChecked(True)
         self.projeto = projeto
         self._mudou()
 
@@ -478,8 +561,7 @@ class TelaOpcoes(QWidget):
         # para a pessoa poder sair dele: ver core.filtros.filtros_do_livro)
         self.painel_filtros.setVisible(self.projeto.limpar)
         self.painel_gravuras.setVisible(self.projeto.limpar)
-        for controle in self._opcoes_da_gravura:
-            controle.setVisible(self.cx_achar_gravuras.isChecked())
+        self.painel_opcoes_gravura.setVisible(self.cx_achar_gravuras.isChecked())
         com_fotos = self.cx_tem_fotos.isChecked()
         for controle in (self.rotulo_sensibilidade, self.deslizante_sensibilidade,
                          self.valor_sensibilidade, self.explicacao_sensibilidade):
@@ -493,6 +575,7 @@ class TelaOpcoes(QWidget):
         self.painel_caderno.setVisible(self.projeto.montar_cadernos)
 
         self.resumo.setText(resumo_em_portugues(self.projeto, self.total_folhas))
+        self._acertar_altura_da_rolagem()
         self.botao_conferir.setEnabled(self.projeto.alguma_funcao_marcada)
 
 
