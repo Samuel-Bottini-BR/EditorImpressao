@@ -1936,3 +1936,43 @@ resposta depois do fim da análise do "continuar", com "Sim" e com "Não" (vale
 e fica anotada); "Sim" e fechar, voltar ou cancelar antes de "Conferir" (a
 pergunta volta e o trabalho fica igual); "Sim", cancelar e "Conferir" de novo
 aplica o "Sim"; livro novo, "Sim" e fechar guarda o "Sim".
+
+---
+
+## Tentativa 45 — "cancelar" devolve as opções de antes da análise (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 30/09 (parecer do verificador, 3ª rodada, prints s34 a
+s36; sonda `sonda3_opcao_e_cancelar.py`).
+
+**O que acontecia:** a tela "O que fazer" muda as opções direto no projeto
+aberto. Mudar uma opção (ex.: desmarcar "Dividir folhas ao meio"), clicar
+"Conferir" e "cancelar" devolvia a conferência com as páginas de antes, mas a
+opção nova ficava no projeto e era gravada com elas. Na abertura seguinte a
+opção salva mandava recomeçar a conferência (com cópia e aviso, mas sem jeito
+de trazer o trabalho de volta pela tela).
+
+**O que mudou:**
+- `ui/janela_principal.py`: `_sair_da_conferencia` guarda as opções do
+  trabalho carregado (dividir, limpar, filtro do livro, endireitar, cortar,
+  cadernos). Quando a análise é cancelada ou dá erro e a conferência de antes
+  volta (`_parar_a_analise`), essas opções voltam para o projeto e para a tela
+  "O que fazer".
+- `ui/tela_opcoes.py`: `mostrar_opcoes()` acerta as caixinhas pelo projeto da
+  tela sem abrir o folhear (o `carregar` passou a usá-la).
+- Livro recém-aberto (sem trabalho na tela): a opção nova fica, como antes
+  (não há páginas de antes para combinar).
+
+**Fica como estava (a conferir se é o desejado):** mudar uma opção em "O que
+fazer" e **fechar** o programa (ou voltar para o início) sem clicar
+"Conferir" grava a opção nova com as páginas de antes, e a conferência
+recomeça na abertura seguinte (com cópia e aviso). Não foi pedido; relatado.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 3 (2 falhavam antes):
+cancelar depois de mudar "Dividir" volta com a opção de antes (no projeto e
+na tela), grava assim e a abertura seguinte não recomeça; erro na análise
+também devolve; mudar e conferir até o fim continua valendo (recomeço com
+aviso). A sonda do verificador, numa cópia com pasta própria, agora mostra
+"dividir na memória: True" depois do cancelar e 13 páginas sem aviso na
+abertura seguinte.

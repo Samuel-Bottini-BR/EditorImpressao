@@ -73,6 +73,11 @@ class JanelaPrincipal(QMainWindow):
         # O valor de trabalho_carregado quando a analise em curso comecou: e
         # o que volta se ela for cancelada ou der erro (_parar_a_analise).
         self._carregado_antes_da_analise = False
+        # As opcoes da tela "O que fazer" do trabalho carregado, guardadas ao
+        # sair da conferencia para "O que fazer" (_sair_da_conferencia). Se a
+        # pessoa mudar uma opcao, clicar "Conferir" e cancelar, sao elas que
+        # voltam (_parar_a_analise). None quando nao ha o que devolver.
+        self._opcoes_do_trabalho: dict | None = None
         # Item 1.1: "Sim, tirar o fundo" respondido antes de o trabalho salvo
         # carregar (projeto antigo, ou pelo "continuar"): a pasta do projeto
         # que espera o livro inteiro ir para o filtro em _analise_pronta.
@@ -307,6 +312,7 @@ class JanelaPrincipal(QMainWindow):
             self.tarefa.cancelar()
         self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
         self._fundo_pendente = None
+        self._opcoes_do_trabalho = None
         self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
         self.projeto.tem_camadas = tem_camadas
 
@@ -643,6 +649,7 @@ class JanelaPrincipal(QMainWindow):
 
         self.projeto = projeto
         self.trabalho_carregado = True        # agora pode gravar (_salvar_agora)
+        self._opcoes_do_trabalho = None       # as opcoes deste trabalho valem
         # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
         # conferencia e para o disco). Antes ela ficava com o objeto de antes
         # da analise, e o que se marcava la, na volta, se perdia. Achado ao
@@ -743,9 +750,23 @@ class JanelaPrincipal(QMainWindow):
         projetos.atualizar(self.resumo, self.projeto,
                            pagina_atual=self.tela_conferir.indice_pagina)
 
+    # As opcoes da tela "O que fazer" que mudam quais paginas existem ou como
+    # nascem (ver _parar_a_analise).
+    OPCOES_DO_LIVRO = ("dividir_folhas", "limpar", "filtro_padrao", "endireitar",
+                       "cortar_bordas", "montar_cadernos", "paginas_por_caderno")
+
     def _sair_da_conferencia(self) -> None:
-        """Voltar para as opcoes grava antes: sair nao pode custar trabalho."""
+        """Voltar para as opcoes grava antes: sair nao pode custar trabalho.
+
+        E guarda as opcoes do trabalho como estao agora: se a pessoa mudar uma
+        opcao la, clicar "Conferir" e cancelar, a conferencia volta com as
+        paginas de antes e tem de voltar com as opcoes de antes tambem
+        (_parar_a_analise; verificador, 30/09, s34-s36).
+        """
         self._salvar_agora()
+        if self.trabalho_carregado and self.projeto is not None:
+            self._opcoes_do_trabalho = {campo: getattr(self.projeto, campo)
+                                        for campo in self.OPCOES_DO_LIVRO}
         self.telas.setCurrentIndex(OPCOES)
 
     def _falhou_na_analise(self, mensagem: str) -> None:
@@ -774,6 +795,19 @@ class JanelaPrincipal(QMainWindow):
         """
         if isinstance(self.tarefa, TarefaAnalise):
             self.trabalho_carregado = self._carregado_antes_da_analise
+        # As opcoes tambem voltam ao que eram quando se saiu da conferencia:
+        # a pessoa mudou uma opcao em "O que fazer" (ex.: desmarcou "Dividir
+        # folhas ao meio"), clicou "Conferir" e cancelou. A conferencia volta
+        # com as paginas de antes; se a opcao nova ficasse, seria gravada com
+        # elas, e na abertura seguinte a conferencia recomecava sem a pessoa
+        # querer (verificador, 30/09, s34-s36). Com o trabalho nao carregado
+        # (livro recem-aberto), nao ha paginas de antes: a opcao nova fica.
+        if (self.trabalho_carregado and self.projeto is not None
+                and self._opcoes_do_trabalho is not None):
+            for campo, valor in self._opcoes_do_trabalho.items():
+                setattr(self.projeto, campo, valor)
+            if self.tela_opcoes.projeto is self.projeto:
+                self.tela_opcoes.mostrar_opcoes()
 
     # --- processamento ----------------------------------------------------
 

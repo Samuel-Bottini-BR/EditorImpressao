@@ -248,14 +248,34 @@ class TelaOpcoes(QWidget):
         None, _mudou nao faz nada, e roda uma vez so no fim, com tudo certo.
         Arriscado: ligar self.projeto antes dos setChecked.
         """
-        self.projeto = None
         self.total_folhas = total_folhas
-        filtro_do_livro = projeto.filtro_padrao
 
         from pathlib import Path
 
         nome = Path(projeto.caminho_entrada).name
         self.arquivo.setText(f"{nome}  -  {total_folhas} folhas")
+
+        self.projeto = projeto
+        self.mostrar_opcoes()
+
+        self.folhear.abrir(projeto.caminho_entrada)
+
+    def mostrar_opcoes(self) -> None:
+        """Acerta as caixinhas, o filtro do livro e o combo pelo projeto da
+        tela (self.projeto), sem abrir o folhear. Usado por carregar e pela
+        janela quando as opcoes do projeto mudam por fora (o "cancelar" da
+        analise devolve as opcoes de antes: ui/janela_principal.py,
+        _parar_a_analise).
+
+        Enquanto as caixinhas sao acertadas, self.projeto fica None (ver
+        carregar): senao cada setChecked gravaria no projeto as outras
+        caixinhas ainda com o valor antigo. Arriscado: tirar isso.
+        """
+        projeto = self.projeto
+        if projeto is None:
+            return
+        self.projeto = None
+        filtro_do_livro = projeto.filtro_padrao
 
         self.cx_dividir.setChecked(projeto.dividir_folhas)
         self.cx_limpar.setChecked(projeto.limpar)
@@ -269,8 +289,6 @@ class TelaOpcoes(QWidget):
                 botao.setChecked(True)
         self.projeto = projeto
         self._mudou()
-
-        self.folhear.abrir(projeto.caminho_entrada)
 
     def _sair(self) -> None:
         """Solta o arquivo antes de sair. Ver FolhearPDF.fechar."""

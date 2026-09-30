@@ -1261,3 +1261,92 @@ def test_campo_novo_vai_e_volta_do_disco_e_projeto_antigo_vem_sem_perguntar():
     p = Projeto(caminho_entrada="x.pdf")
     p.perguntou_fundo = True
     assert Projeto.de_dicionario(p.para_dicionario()).perguntou_fundo is True
+
+
+# --- "cancelar" devolve as opcoes de antes (verificador, 3a rodada, s34-s36) ---------------
+#
+# Mudar uma opcao em "O que fazer" (ex.: desmarcar "Dividir folhas ao meio"),
+# "Conferir" e "cancelar": a conferencia antiga voltava, mas a opcao nova
+# ficava no projeto e era gravada com as paginas de antes; na abertura
+# seguinte a conferencia recomecava (com copia). Sonda:
+# reproducoes/sonda3_opcao_e_cancelar.py.
+
+
+def _deitado_conferido(janela, pasta: Path) -> Path:
+    """Livro de 3 folhas deitadas, conferido com "Dividir" (6 paginas)."""
+    livro = _pdf_deitado(pasta)
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    assert len(janela.projeto.paginas) == 6
+    janela.projeto.paginas[1].filtro = MAGICO_PRO
+    janela.projeto.paginas[1].revisada = True
+    janela._salvar_agora()
+    return livro
+
+
+def test_cancelar_depois_de_mudar_uma_opcao_devolve_as_opcoes_de_antes(janela, pasta):
+    from ui.janela_principal import CONFERIR
+
+    livro = _deitado_conferido(janela, pasta)
+    janela._sair_da_conferencia()
+    janela.tela_opcoes.cx_dividir.setChecked(False)          # a pessoa muda
+    assert janela.projeto.dividir_folhas is False
+    janela.analisar()
+    janela.cancelar()
+    _esperar_a_tarefa(janela)
+
+    assert janela.telas.currentIndex() == CONFERIR
+    assert janela.projeto.dividir_folhas is True, "a opcao nova ficou no projeto"
+    assert janela.tela_opcoes.cx_dividir.isChecked(), "a tela 'O que fazer' ficou com a nova"
+    janela.projeto.paginas[2].filtro = "melhorar"
+    janela.close()
+    assert projetos.carregar_estado(janela.resumo).dividir_folhas is True
+
+    _fechar_a_conferencia(janela)
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    assert not janela.avisos, janela.avisos                    # nao recomecou
+    assert len(janela.projeto.paginas) == 6
+    assert [janela.projeto.paginas[i].filtro for i in (1, 2)] == [MAGICO_PRO, "melhorar"]
+
+
+def test_erro_na_analise_depois_de_mudar_uma_opcao_devolve_as_opcoes(janela, pasta,
+                                                                    monkeypatch):
+    import ui.janela_principal as modulo
+
+    _deitado_conferido(janela, pasta)
+
+    class AnaliseQueFalha:
+        foi_cancelada = False
+
+        def __init__(self, projeto):
+            from unittest.mock import MagicMock
+            self.progresso = self.concluida = self.falhou = MagicMock()
+
+        def start(self):
+            pass
+
+        def isRunning(self):
+            return False
+
+        def cancelar(self):
+            pass
+
+    monkeypatch.setattr(modulo, "TarefaAnalise", AnaliseQueFalha)
+    janela._sair_da_conferencia()
+    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.analisar()
+    janela._falhou_na_analise("Não consegui ler o livro.")
+    assert janela.projeto.dividir_folhas is True
+    assert janela.tela_opcoes.cx_dividir.isChecked()
+
+
+def test_mudar_uma_opcao_e_conferir_ate_o_fim_continua_valendo(janela, pasta):
+    """Sem cancelar, a opcao nova vale (recomeco com copia e aviso, como antes)."""
+    _deitado_conferido(janela, pasta)
+    janela._sair_da_conferencia()
+    janela.tela_opcoes.cx_dividir.setChecked(False)
+    _analisar(janela)
+    assert len(janela.projeto.paginas) == 3
+    assert janela.projeto.dividir_folhas is False
+    assert janela.avisos and "Dividir folhas ao meio" in janela.avisos[0]
