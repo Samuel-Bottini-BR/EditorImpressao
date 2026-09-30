@@ -199,7 +199,9 @@ class MotorKraken:
         """pasta: a pasta do motor (None = procurar em lugares_do_motor()).
         comando: só para os testes - roda outro programa no lugar do motor.
         """
-        self.pasta = Path(pasta) if pasta is not None else None
+        # Absoluta: o motor roda com cwd=pasta, e um caminho relativo seria lido
+        # a partir de dentro dela (achado em 29/09).
+        self.pasta = Path(pasta).resolve() if pasta is not None else None
         self._comando_de_teste = list(comando) if comando else None
         self.tempo_para_abrir = tempo_para_abrir
         self.tempo_por_pagina = tempo_por_pagina
@@ -421,7 +423,10 @@ class MotorKraken:
         temporario = None
         try:
             if isinstance(imagem, (str, Path)):
-                caminho = Path(imagem)
+                # Caminho ABSOLUTO: o motor roda com a pasta dele como pasta
+                # atual, e um caminho relativo apontaria para dentro do motor
+                # (bug achado em 29/09 pela conferência do programa empacotado).
+                caminho = Path(imagem).resolve()
                 if not caminho.is_file():
                     return _indisponivel(_AVISO_PAGINA, f"imagem não encontrada: {caminho}")
             else:

@@ -4,6 +4,7 @@
     .venv\\Scripts\\python.exe montar_motor_kraken.py --destino X:\\pasta  # monta em outro lugar (empacotador)
     .venv\\Scripts\\python.exe montar_motor_kraken.py --so-servidor      # só recopia o servidor_kraken.py
     .venv\\Scripts\\python.exe montar_motor_kraken.py --gerar-travado    # refaz as somas do arquivo travado
+    .venv\\Scripts\\python.exe montar_motor_kraken.py --destino saida_teste\\motor-kraken   # motor para o empacotador
 
 POR QUE EXISTE
     Decisão do Samuel (29/09/2026, Registro de mudanças): o Kraken roda direto
@@ -26,18 +27,28 @@ O QUE FAZ
     4. Pré-compila as bibliotecas (.pyc que valem mesmo sem conferir a data):
        na pasta do programa instalado o motor não tem permissão de escrita, e
        sem isso ele recompilaria tudo a cada arranque.
-    5. Lê as importações de todas as DLLs do motor e copia, da pasta de
-       redistribuíveis do Visual Studio 2022 (VC\\Redist\\MSVC\\<versão>\\x64\\
-       Microsoft.VC143.CRT), as DLLs da Microsoft que faltarem (a pesquisa
-       achou MSVCP140.dll e VCRUNTIME140_THREADS.dll; o PyTorch precisa delas
-       e o Python embutível não as traz). A licença do Visual Studio permite
-       levar esses arquivos, sem modificar, junto do programa (ver LEIA-ME
-       gravado no motor).
+    5. O VISUAL C++ NÃO VAI DENTRO DO MOTOR (decisão do Samuel, 29/09/2026:
+       "O instalador roda o instalador oficial da Microsoft, e pula se já
+       estiver instalado"). O motor usa as DLLs do Visual C++ 2015-2022 x64
+       que o vc_redist.x64.exe oficial põe em Windows\\System32 (o
+       instalador do programa o leva e roda quando falta: ver empacotar.py e
+       instalador.iss). Por isso o script TIRA do motor o vcruntime140.dll e
+       o vcruntime140_1.dll que vêm no zip do Python (versão mais velha: ao
+       lado do python.exe, o motor misturaria duas versões do Visual C++) e
+       não copia mais as outras quatro (msvcp140.dll,
+       msvcp140_atomic_wait.dll, vcomp140.dll, vcruntime140_threads.dll).
+       Com --levar-dlls-do-visual-c faz como até 29/09: lê as importações de
+       todas as DLLs do motor e copia as seis da pasta de redistribuíveis do
+       Visual Studio 2022 (VC\\Redist\\MSVC\\<versão>\\x64\\Microsoft.VC143.CRT),
+       para testar numa máquina sem o Visual C++ (o empacotador recusa esse
+       motor). Também tira a pasta Lib\\site-packages\\bin: os 23 atalhos .exe
+       do pip apontam para o Python de quem montou e não servem ao motor.
     6. Copia motor_kraken/servidor_kraken.py e grava LEIA-ME-MOTOR.txt com a
        origem de tudo (versões, somas, de onde vieram as DLLs).
     7. Troca o nome "<destino>.montando" para "<destino>" e testa o motor pelo
        próprio core/ocr_kraken.py: abre, segmenta uma página sintética, confere
-       que as DLLs da Microsoft carregadas são as do motor, e fecha.
+       que as DLLs do Visual C++ carregadas vieram do Windows\\System32 (ou do
+       motor, com --levar-dlls-do-visual-c) e de nenhum outro lugar, e fecha.
 
     Destino padrão (FORA do git):
     D:\\programas\\EditorImpressao-arquivos\\ferramentas\\motor-kraken\\
@@ -49,8 +60,10 @@ REGRAS DE SEGURANÇA (CLAUDE.md, seção 10, item 9)
     máquina, nem no Windows. Nada pede administrador.
 
 O QUE O KAIQUE PRECISA
-    Nada. O motor montado vai pronto dentro do instalador (etapa seguinte do
-    item 1.3). Este script só roda no PC de quem empacota.
+    Nada. O motor montado vai pronto dentro do instalador, que instala o
+    Visual C++ oficial se faltar. Este script só roda no PC de quem empacota;
+    o teste do fim precisa do Visual C++ 2015-2022 x64 instalado nesse PC (o
+    do Samuel tem: versão 14.50 em 29/09/2026).
 
 O QUE É ARRISCADO MUDAR
     - motor_kraken/requisitos-travados.txt: são as 73 versões que deram as
@@ -124,6 +137,10 @@ _PADRAO_DLL_DA_MICROSOFT = re.compile(
 # mais velha; ficam trocadas pelas do mesmo Visual C++ das outras, para o
 # conjunto ser de uma versão só (versão nova serve para programa feito com a velha).
 _SEMPRE_DO_MESMO_CONJUNTO = ("vcruntime140.dll", "vcruntime140_1.dll")
+# As seis que iam dentro do motor até 29/09. O empacotador recusa um motor que
+# ainda tenha qualquer uma (ver empacotar.conferir_motor_kraken).
+DLLS_DO_VISUAL_C = ("msvcp140.dll", "msvcp140_atomic_wait.dll", "vcomp140.dll",
+                    "vcruntime140.dll", "vcruntime140_1.dll", "vcruntime140_threads.dll")
 
 # Tem de bater com VERSAO_PROTOCOLO em motor_kraken/servidor_kraken.py e em
 # core/ocr_kraken.py (conferido no teste do fim).
@@ -361,8 +378,26 @@ def _tamanho_da_pasta(pasta: Path) -> int:
     return sum(f.stat().st_size for f in pasta.rglob("*") if f.is_file())
 
 
-def montar(destino: Path, downloads: Path) -> Path:
-    """Monta o motor em '<destino>.montando' e troca o nome para 'destino' no fim."""
+def tirar_dlls_do_python(pasta_python: Path) -> list[str]:
+    """Tira de python\\ as DLLs do Visual C++ que vêm no zip do Python.
+
+    Só apaga dentro da pasta '<destino>.montando' que o próprio script acabou
+    de criar (CLAUDE.md, seção 10, item 9). Devolve os nomes tirados.
+    """
+    tiradas = []
+    for arquivo in sorted(pasta_python.iterdir()):
+        if arquivo.is_file() and _PADRAO_DLL_DA_MICROSOFT.match(arquivo.name):
+            arquivo.unlink()
+            tiradas.append(arquivo.name)
+    return tiradas
+
+
+def montar(destino: Path, downloads: Path, levar_dlls: bool = False) -> Path:
+    """Monta o motor em '<destino>.montando' e troca o nome para 'destino' no fim.
+
+    levar_dlls: copia as DLLs do Visual C++ para dentro do motor (como até
+    29/09). Sem isso (o normal), o motor usa o Visual C++ instalado no Windows.
+    """
     if os.name != "nt":
         raise ErroDeMontagem("Este script só monta o motor no Windows.")
     if destino.exists():
@@ -411,7 +446,12 @@ def montar(destino: Path, downloads: Path) -> Path:
             _rodar(base + ["--no-build-isolation", "--no-binary=:all:", "--upgrade",
                            "-r", str(fonte)], env=ambiente)
     # Os executáveis de linha de comando (kraken.exe, ketos.exe...) apontam para
-    # o Python de quem montou; não servem ao motor. Ficam, mas ninguém os usa.
+    # o Python de quem montou; não servem ao motor. Saem (23 arquivos em 29/09).
+    atalhos = site_packages / "bin"
+    if atalhos.is_dir():
+        dizer(f"  tirando os {len(list(atalhos.iterdir()))} atalhos de Lib\\site-packages\\bin "
+              "(não servem ao motor)")
+        shutil.rmtree(atalhos)   # dentro da pasta .montando que este script criou
 
     dizer("4/7 pré-compilando (.pyc que valem sem conferir a data)")
     # -f é obrigatório: o pip já deixou .pyc no modo "confere a data", e sem
@@ -420,23 +460,29 @@ def montar(destino: Path, downloads: Path) -> Path:
             "--invalidation-mode", "unchecked-hash", str(site_packages)], env=ambiente)
 
     dizer("5/7 DLLs da Microsoft (Visual C++)")
-    copiadas = copiar_dlls_da_microsoft(pasta_python)
-    for c in copiadas:
-        dizer(f"  {c['dll']:28s} de {Path(c['origem']).parent}")
+    if levar_dlls:
+        copiadas = copiar_dlls_da_microsoft(pasta_python)
+        for c in copiadas:
+            dizer(f"  {c['dll']:28s} de {Path(c['origem']).parent}")
+    else:
+        copiadas = []
+        tiradas = tirar_dlls_do_python(pasta_python)
+        dizer("  não vão no motor: vêm do Visual C++ instalado no Windows "
+              f"(tiradas do zip do Python: {', '.join(tiradas) or 'nenhuma'})")
 
     dizer("6/7 servidor e LEIA-ME")
     shutil.copy2(SERVIDOR, montando / SERVIDOR.name)
     modelo = site_packages / "kraken" / "blla.mlmodel"
     if not modelo.is_file():
         raise ErroDeMontagem(f"O Kraken instalou, mas o modelo blla não está em {modelo}.")
-    gravar_leia_me(montando, copiadas, modelo)
+    gravar_leia_me(montando, copiadas, modelo, levar_dlls)
 
     dizer("7/7 trocando o nome da pasta")
     montando.rename(destino)
     return destino
 
 
-def gravar_leia_me(motor: Path, copiadas: list[dict], modelo: Path) -> None:
+def gravar_leia_me(motor: Path, copiadas: list[dict], modelo: Path, levar_dlls: bool = True) -> None:
     """LEIA-ME-MOTOR.txt: de onde veio cada parte do motor (para o empacotador e para a licença)."""
     versao_crt = Path(copiadas[0]["origem"]).parent.parent.parent.name if copiadas else "?"
     linhas = [
@@ -454,12 +500,22 @@ def gravar_leia_me(motor: Path, copiadas: list[dict], modelo: Path) -> None:
         f"              SHA-256 {_soma(modelo)}",
         f"Protocolo:    versão {VERSAO_PROTOCOLO} (servidor_kraken.py <-> core/ocr_kraken.py)",
         "",
-        f"DLLs da Microsoft (Visual C++ {versao_crt}), copiadas SEM modificar da pasta de",
-        "redistribuíveis do Visual Studio 2022 (VC\\Redist\\MSVC\\<versão>\\x64\\Microsoft.VC143.CRT).",
-        "A lista 'Distributable Code' do Visual Studio 2022 (https://aka.ms/vs/17/redist.txt)",
-        "permite copiar e distribuir com o programa os arquivos da pasta VC\\Redist, sem",
-        "modificar, sujeito à licença do Visual Studio (exceto a subpasta debug_nonredist).",
     ]
+    if not levar_dlls:
+        linhas += [
+            "Visual C++: NÃO vai dentro do motor. O motor usa o Visual C++ 2015-2022 x64",
+            "instalado no Windows (System32), que o instalador do programa instala com o",
+            "vc_redist.x64.exe oficial da Microsoft quando falta (decisão do Samuel, 29/09/2026).",
+            "O vcruntime140.dll e o vcruntime140_1.dll do zip do Python foram tirados.",
+        ]
+    else:
+        linhas += [
+            f"DLLs da Microsoft (Visual C++ {versao_crt}), copiadas SEM modificar da pasta de",
+            "redistribuíveis do Visual Studio 2022 (VC\\Redist\\MSVC\\<versão>\\x64\\Microsoft.VC143.CRT).",
+            "A lista 'Distributable Code' do Visual Studio 2022 (https://aka.ms/vs/17/redist.txt)",
+            "permite copiar e distribuir com o programa os arquivos da pasta VC\\Redist, sem",
+            "modificar, sujeito à licença do Visual Studio (exceto a subpasta debug_nonredist).",
+        ]
     for c in copiadas:
         linhas.append(f"  {c['dll']:26s} SHA-256 {c['sha256']}  (pedida por: {', '.join(c['pedida_por'])})")
     (motor / "LEIA-ME-MOTOR.txt").write_text("\n".join(linhas) + "\n", encoding="utf-8")
@@ -487,13 +543,32 @@ def testar_o_motor(destino: Path) -> None:
     dizer(f"  abriu em {motor.segundos_para_abrir:.1f} s; página sintética: "
           f"{len(resultado.linhas)} linha(s) em {resultado.segundos:.1f} s; "
           f"tudo em {time.perf_counter() - inicio:.1f} s")
-    fora = [c for c in (diag or {}).get("dlls_da_microsoft", [])
-            if not Path(c).resolve().is_relative_to(destino.resolve())]
+    carregadas = (diag or {}).get("dlls_da_microsoft", [])
+    fora = dlls_de_lugar_errado(carregadas, destino)
     if fora:
-        raise ErroDeMontagem("O motor carregou DLLs da Microsoft de fora dele (numa máquina limpa "
-                             f"elas não existiriam): {fora}")
-    dizer(f"  DLLs da Microsoft carregadas: todas de dentro do motor "
-          f"({len((diag or {}).get('dlls_da_microsoft', []))})")
+        raise ErroDeMontagem("O motor carregou DLLs do Visual C++ de um lugar que o instalador não "
+                             f"garante (nem do motor, nem do Windows\\System32): {fora}")
+    do_motor = sum(1 for c in carregadas if Path(c).resolve().is_relative_to(destino.resolve()))
+    dizer(f"  DLLs do Visual C++ carregadas: {len(carregadas)} ({do_motor} de dentro do motor - "
+          f"as cópias que as próprias bibliotecas trazem, como numpy.libs -, "
+          f"{len(carregadas) - do_motor} do Windows\\System32)")
+
+
+def dlls_de_lugar_errado(carregadas: list[str], motor: Path) -> list[str]:
+    """As DLLs do Visual C++ carregadas que não vieram nem do motor nem do System32.
+
+    O instalador garante o Visual C++ no System32 (vc_redist.x64.exe oficial).
+    Uma DLL vinda de outro lugar (a pasta de outro programa, o PATH) funciona
+    neste PC e pode faltar no notebook do Kaique.
+    """
+    sistema = str((Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32").resolve()).lower()
+    fora = []
+    for caminho in carregadas:
+        pasta = Path(caminho).resolve().parent
+        if pasta.is_relative_to(motor.resolve()) or str(pasta).lower() == sistema:
+            continue
+        fora.append(caminho)
+    return fora
 
 
 def main(argumentos: list[str] | None = None) -> int:
@@ -505,6 +580,9 @@ def main(argumentos: list[str] | None = None) -> int:
     analisador.add_argument("--so-servidor", action="store_true",
                             help="só recopia motor_kraken/servidor_kraken.py para um motor já montado")
     analisador.add_argument("--so-testar", action="store_true", help="só testa um motor já montado")
+    analisador.add_argument("--levar-dlls-do-visual-c", action="store_true",
+                            help="copia as DLLs do Visual C++ para dentro do motor, como até 29/09 "
+                                 "(só para teste: o empacotador recusa esse motor)")
     analisador.add_argument("--gerar-travado", action="store_true",
                             help="refaz as somas SHA-256 do arquivo travado (pelo PyPI)")
     opcoes = analisador.parse_args(argumentos)
@@ -522,7 +600,7 @@ def main(argumentos: list[str] | None = None) -> int:
             shutil.copy2(SERVIDOR, destino / SERVIDOR.name)
             dizer(f"Servidor recopiado para {destino}")
         elif not opcoes.so_testar:
-            montar(destino, opcoes.downloads.resolve())
+            montar(destino, opcoes.downloads.resolve(), levar_dlls=opcoes.levar_dlls_do_visual_c)
         dizer("teste: abrindo o motor pelo core/ocr_kraken.py")
         testar_o_motor(destino)
     except ErroDeMontagem as erro:

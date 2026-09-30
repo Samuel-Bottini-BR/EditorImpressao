@@ -405,15 +405,40 @@ def _mascara(poligonos, largura: int, altura: int) -> np.ndarray:
 
 
 @precisa_do_motor
-def test_motor_de_verdade_abre_e_usa_as_dlls_dele(motor_de_verdade):
+def test_motor_de_verdade_abre_e_usa_o_visual_c_certo(motor_de_verdade):
+    """O Visual C++ vem do motor (motor antigo, até 29/09) ou do Windows\System32
+    (o normal desde 29/09: o instalador roda o vc_redist oficial). De nenhum outro lugar."""
+    import montar_motor_kraken
+
     motor, diag, arranque = motor_de_verdade
     assert diag is not None, "o motor montado não abriu"
     assert motor.info.get("kraken") == "7.1.1"
     assert motor.info.get("python", "").startswith("3.12.")
     dlls = diag["dlls_da_microsoft"]
     assert any("msvcp140.dll" in d.lower() for d in dlls), dlls
-    pasta = str(_PASTA_DO_MOTOR.resolve()).lower()
-    assert all(str(Path(d).resolve()).lower().startswith(pasta) for d in dlls), dlls
+    assert montar_motor_kraken.dlls_de_lugar_errado(dlls, _PASTA_DO_MOTOR) == [], dlls
+
+
+def test_tirar_dlls_do_python_so_tira_as_do_visual_c(tmp_path):
+    import montar_motor_kraken as m
+
+    for nome in ("python.exe", "python312.dll", "vcruntime140.dll", "vcruntime140_1.dll", "libffi-8.dll"):
+        (tmp_path / nome).write_bytes(b"x")
+    assert m.tirar_dlls_do_python(tmp_path) == ["vcruntime140.dll", "vcruntime140_1.dll"]
+    assert sorted(f.name for f in tmp_path.iterdir()) == ["libffi-8.dll", "python.exe", "python312.dll"]
+    assert all(m._PADRAO_DLL_DA_MICROSOFT.match(n) for n in m.DLLS_DO_VISUAL_C)
+
+
+def test_dll_de_lugar_errado(tmp_path):
+    import os
+    import montar_motor_kraken as m
+
+    sistema = Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32"
+    motor = tmp_path / "motor"
+    assert m.dlls_de_lugar_errado([str(sistema / "msvcp140.dll"),
+                                   str(motor / "python" / "vcomp140.dll")], motor) == []
+    outro = str(tmp_path / "OutroPrograma" / "msvcp140.dll")
+    assert m.dlls_de_lugar_errado([outro], motor) == [outro]
 
 
 @precisa_do_motor
@@ -453,3 +478,23 @@ def test_pagina_em_memoria_bgr_da_o_mesmo_que_o_arquivo(motor_de_verdade):
     for a, b in zip(pelo_arquivo.linhas, pela_memoria.linhas):
         assert np.array_equal(a.poligono, b.poligono)
         assert np.array_equal(a.linha_de_base, b.linha_de_base)
+
+
+def test_caminho_relativo_vai_absoluto_para_o_motor(motor_de_mentira, tmp_path, monkeypatch):
+    """O motor roda com a pasta dele como pasta atual: um caminho relativo
+    apontaria para dentro do motor (achado em 29/09)."""
+    arquivo = tmp_path / "pagina.png"
+    arquivo.write_bytes(b"x")
+    monkeypatch.chdir(tmp_path)
+    motor = motor_de_mentira("certo")
+    pedidos = []
+
+    def pedir(pedido, tempo, cancelar):
+        pedidos.append(pedido)
+        return {"ok": False, "erro": "so para o teste"}
+
+    motor._abrir = lambda: None
+    motor._pedir = pedir
+    motor.segmentar("pagina.png")
+    assert pedidos and Path(pedidos[0]["imagem"]).is_absolute()
+    assert Path(pedidos[0]["imagem"]) == arquivo.resolve()
