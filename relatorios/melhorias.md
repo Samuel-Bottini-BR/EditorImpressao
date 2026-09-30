@@ -2386,3 +2386,35 @@ gravura no texto (Marial 153, Palatino 9 e 67) — **não recomendada de
 fábrica**. O título da Horas 26 nenhuma opção resolve (1.5, depende do OCR).
 Visto de passagem: no Preto e branco (regra nova do filtro, outro
 implementador) o título vermelho da Horas 13 some em todas as combinações.
+
+---
+
+## Tentativa 54 — a tela do 1.2 legível em qualquer janela; o desfazer na tela "O que fazer"; o aviso certo (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** a conferir (teste de máquina + prints da janela real)
+**Pedido:** parecer do verificador da rodada geral (30/09, r01, r02, r04, r06,
+r09, r15).
+
+**O que estava errado, e por quê:** a foto "sem janela" (plataforma
+offscreen) de 29/09 dizia que o grupo cabia em 1440 × 880. Não servia de
+prova: este PC tem escala de 125% no Windows, e a janela de 1440 × 880 do
+verificador tem uns 1150 × 680 pontos; a foto não tinha barra de título nem
+menu. Na janela real, o Qt espremia as linhas até 2 pontos. **Lição:** conferir
+tela na janela real (fora da tela), com a escala do Windows (`QT_SCALE_FACTOR`
+para simular 100% e 150% num monitor a 125%).
+
+**O que mudou (commits f9ab43a, 6400b5d, 749d70f, a20257c):**
+- o cartão da tela "O que fazer" vai numa área com rolagem (a altura dela para
+  no cartão quando cabe, para o resumo ficar logo embaixo);
+- no grupo, frase embaixo de cada caixinha, quebrando a linha; "Mais opções"
+  guarda sensibilidade, imagens claras e igualar a luz (abre sozinho se alguma
+  não está no padrão); as frases dos filtros também quebram;
+- caixinha com quadrado (`ui/estilo.estilo_da_caixinha_com_quadrado`): na
+  janela real, a desmarcada saía sem quadrado nenhum. Só no grupo e na aba
+  Marcar; as outras caixinhas do programa têm o mesmo defeito (a decidir);
+- a tela "O que fazer" se reacerta pelo projeto ao aparecer e depois de
+  desfazer/refazer (r15);
+- `pipeline.aviso_das_opcoes_da_gravura`: título "Gravuras e fotos" e frase
+  certa no "não procurar" (r09) — falta ligar em `ui/janela_principal.py`;
+- aba Marcar: linhas "Marcação:" e "Foto:", dicas nos botões (r06).
