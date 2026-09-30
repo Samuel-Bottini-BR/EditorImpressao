@@ -1,0 +1,11093 @@
+{
+ "paginas": {
+  "palatino_p005": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       208,
+       966,
+       283,
+       1060
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.16
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 16,
+      "kraken": 14
+     },
+     "altura_linha": 56.29947090148926,
+     "maior_zona": 2.1605744154287025,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 12
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 2
+     }
+    },
+    "erro_conhecido": "docTR: duas caixinhas na borda do retrato (1,7% da figura)"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha.",
+     "O docTR achou texto nesta área e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       473,
+       694,
+       904,
+       791
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 13.21
+     },
+     {
+      "caixa": [
+       208,
+       966,
+       283,
+       1060
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.36
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 16,
+      "tesseract": 13
+     },
+     "altura_linha": 53.90624237060547,
+     "maior_zona": 13.206163098157319,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "tesseract": 11
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 3
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       473,
+       694,
+       904,
+       791
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 12.38
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 14,
+      "tesseract": 13
+     },
+     "altura_linha": 55.68624496459961,
+     "maior_zona": 12.375390413740613,
+     "linhas_confirmadas": {
+      "kraken": 12,
+      "tesseract": 11
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha.",
+     "O docTR achou texto nesta área e o Kraken e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       473,
+       694,
+       904,
+       791
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 12.38
+     },
+     {
+      "caixa": [
+       208,
+       966,
+       283,
+       1060
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "tamanho": 2.21
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 16,
+      "kraken": 14,
+      "tesseract": 13
+     },
+     "altura_linha": 55.68624496459961,
+     "maior_zona": 12.375390413740613,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 12,
+      "tesseract": 11
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 2,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 3,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "palatino_p007": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 3 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       296,
+       1373,
+       381,
+       1443
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.73
+     },
+     {
+      "caixa": [
+       890,
+       1442,
+       1116,
+       1507
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.5
+     },
+     {
+      "caixa": [
+       285,
+       1446,
+       537,
+       1520
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 5.4
+     },
+     {
+      "caixa": [
+       400,
+       1853,
+       925,
+       1910
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 9.35
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 48,
+      "kraken": 40
+     },
+     "altura_linha": 53.320722579956055,
+     "maior_zona": 9.354878648256149,
+     "linhas_confirmadas": {
+      "doctr": 45,
+      "kraken": 40
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 1,
+      "kraken/doctr": 5
+     }
+    },
+    "erro_conhecido": "docTR: caixas em letras fantasmas da mancha do verso; Kraken: contorno grande no papel embaixo (visto na folha de contato em 29/09)"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 2 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       296,
+       1373,
+       390,
+       1443
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.41
+     },
+     {
+      "caixa": [
+       285,
+       1446,
+       399,
+       1520
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.21
+     },
+     {
+      "caixa": [
+       552,
+       1457,
+       885,
+       1539
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.83
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 48,
+      "tesseract": 38
+     },
+     "altura_linha": 46.499996185302734,
+     "maior_zona": 4.82914876319658,
+     "linhas_confirmadas": {
+      "doctr": 43,
+      "tesseract": 37
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 1,
+      "tesseract/doctr": 6
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 3 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       132,
+       209,
+       196,
+       288
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.4
+     },
+     {
+      "caixa": [
+       804,
+       1457,
+       1005,
+       1539
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.21
+     },
+     {
+      "caixa": [
+       396,
+       1498,
+       593,
+       1539
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.12
+     },
+     {
+      "caixa": [
+       1047,
+       1813,
+       1169,
+       1905
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.55
+     },
+     {
+      "caixa": [
+       400,
+       1849,
+       925,
+       1910
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 13.04
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 40,
+      "tesseract": 38
+     },
+     "altura_linha": 46.99999237060547,
+     "maior_zona": 13.040273314622858,
+     "linhas_confirmadas": {
+      "kraken": 39,
+      "tesseract": 36
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Kraken acharam texto nesta área e o Tesseract não: confira se há texto ou mancha.",
+     "O docTR achou texto nesta área e o Kraken e o Tesseract não: confira se há texto ou mancha.",
+     "O docTR e o Tesseract acharam texto nesta área e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto em 2 lugares e o docTR e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       124,
+       209,
+       195,
+       286
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.63
+     },
+     {
+      "caixa": [
+       296,
+       1373,
+       387,
+       1443
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "tamanho": 2.12
+     },
+     {
+      "caixa": [
+       285,
+       1391,
+       1116,
+       1539
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 18.17
+     },
+     {
+      "caixa": [
+       1047,
+       1813,
+       1169,
+       1905
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "tamanho": 4.07
+     },
+     {
+      "caixa": [
+       400,
+       1849,
+       925,
+       1910
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "tamanho": 11.39
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 48,
+      "kraken": 40,
+      "tesseract": 38
+     },
+     "altura_linha": 49.657575607299805,
+     "maior_zona": 18.170720964382056,
+     "linhas_confirmadas": {
+      "doctr": 47,
+      "kraken": 40,
+      "tesseract": 37
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 1,
+      "doctr/tesseract": 1,
+      "kraken/doctr": 5,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 6,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "palatino_p009": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       132,
+       247,
+       358,
+       344
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.02
+     },
+     {
+      "caixa": [
+       140,
+       347,
+       438,
+       448
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.83
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 37,
+      "kraken": 29
+     },
+     "altura_linha": 62.53125,
+     "maior_zona": 4.023431153388823,
+     "linhas_confirmadas": {
+      "doctr": 30,
+      "kraken": 29
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 2
+     }
+    },
+    "erro_conhecido": "docTR: capitular Q (2,1%) e 4 caixas em fantasmas da mancha do verso"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 2 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       132,
+       235,
+       372,
+       344
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.44
+     },
+     {
+      "caixa": [
+       140,
+       347,
+       439,
+       448
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.25
+     },
+     {
+      "caixa": [
+       397,
+       885,
+       601,
+       973
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.33
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 37,
+      "tesseract": 27
+     },
+     "altura_linha": 54.0,
+     "maior_zona": 6.435513580246913,
+     "linhas_confirmadas": {
+      "doctr": 30,
+      "tesseract": 27
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 3
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       397,
+       885,
+       604,
+       983
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.97
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 29,
+      "tesseract": 27
+     },
+     "altura_linha": 58.0,
+     "maior_zona": 3.9678774078478005,
+     "linhas_confirmadas": {
+      "kraken": 29,
+      "tesseract": 27
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 2 lugares e o Kraken e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       132,
+       237,
+       370,
+       344
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "tamanho": 5.44
+     },
+     {
+      "caixa": [
+       140,
+       347,
+       439,
+       448
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "tamanho": 4.53
+     },
+     {
+      "caixa": [
+       397,
+       885,
+       604,
+       983
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 4.11
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 37,
+      "kraken": 29,
+      "tesseract": 27
+     },
+     "altura_linha": 58.0,
+     "maior_zona": 5.44316468489893,
+     "linhas_confirmadas": {
+      "doctr": 30,
+      "kraken": 29,
+      "tesseract": 27
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 2,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 3,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "palatino_p010": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 30,
+      "kraken": 28
+     },
+     "altura_linha": 64.00321197509766,
+     "maior_zona": 0.5978546377376425,
+     "linhas_confirmadas": {
+      "doctr": 28,
+      "kraken": 28
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1308,
+       314,
+       1347,
+       482
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.46
+     },
+     {
+      "caixa": [
+       96,
+       1506,
+       134,
+       1702
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.57
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 30,
+      "tesseract": 28
+     },
+     "altura_linha": 61.765621185302734,
+     "maior_zona": 1.566453419042991,
+     "linhas_confirmadas": {
+      "doctr": 28,
+      "tesseract": 28
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 1,
+      "tesseract/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "kraken": 28,
+      "tesseract": 28
+     },
+     "altura_linha": 65.36188507080078,
+     "maior_zona": 1.2780172854369065,
+     "linhas_confirmadas": {
+      "kraken": 28,
+      "tesseract": 28
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 1,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1306,
+       314,
+       1347,
+       482
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 1.42
+     },
+     {
+      "caixa": [
+       96,
+       1506,
+       134,
+       1702
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 1.46
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 30,
+      "kraken": 28,
+      "tesseract": 28
+     },
+     "altura_linha": 63.96792984008789,
+     "maior_zona": 1.460449417546258,
+     "linhas_confirmadas": {
+      "doctr": 28,
+      "kraken": 28,
+      "tesseract": 28
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 1,
+      "kraken/doctr": 0,
+      "kraken/tesseract": 1,
+      "tesseract/doctr": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "escola_p007": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 50,
+      "kraken": 45
+     },
+     "altura_linha": 40.8203125,
+     "maior_zona": 0.718848,
+     "linhas_confirmadas": {
+      "doctr": 49,
+      "kraken": 45
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 5 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       501,
+       804,
+       712,
+       877
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 11.69
+     },
+     {
+      "caixa": [
+       488,
+       1912,
+       556,
+       1944
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.69
+     },
+     {
+      "caixa": [
+       394,
+       1947,
+       536,
+       1993
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.3
+     },
+     {
+      "caixa": [
+       721,
+       1947,
+       1166,
+       1993
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 16.04
+     },
+     {
+      "caixa": [
+       1238,
+       2027,
+       1329,
+       2090
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.89
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 50,
+      "tesseract": 43
+     },
+     "altura_linha": 34.69725799560547,
+     "maior_zona": 16.038185599812223,
+     "linhas_confirmadas": {
+      "doctr": 50,
+      "tesseract": 43
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 1,
+      "tesseract/doctr": 2
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 4 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       498,
+       804,
+       712,
+       877
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 9.96
+     },
+     {
+      "caixa": [
+       399,
+       1947,
+       528,
+       1993
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.95
+     },
+     {
+      "caixa": [
+       717,
+       1947,
+       1157,
+       1993
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 13.43
+     },
+     {
+      "caixa": [
+       1243,
+       2027,
+       1329,
+       2090
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.72
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 45,
+      "tesseract": 43
+     },
+     "altura_linha": 37.67641639709473,
+     "maior_zona": 13.430223175846777,
+     "linhas_confirmadas": {
+      "kraken": 45,
+      "tesseract": 43
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 1,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 4 lugares e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       498,
+       804,
+       712,
+       877
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 9.79
+     },
+     {
+      "caixa": [
+       395,
+       1947,
+       533,
+       1993
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 3.39
+     },
+     {
+      "caixa": [
+       717,
+       1947,
+       1162,
+       1993
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 13.34
+     },
+     {
+      "caixa": [
+       1239,
+       2027,
+       1329,
+       2090
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 3.83
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 50,
+      "kraken": 45,
+      "tesseract": 43
+     },
+     "altura_linha": 38.00110626220703,
+     "maior_zona": 13.344672222885128,
+     "linhas_confirmadas": {
+      "doctr": 50,
+      "kraken": 45,
+      "tesseract": 43
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 1,
+      "kraken/doctr": 1,
+      "kraken/tesseract": 1,
+      "tesseract/doctr": 2,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "horas_p011": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       113,
+       103,
+       212,
+       130
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.92
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 12,
+      "kraken": 16
+     },
+     "altura_linha": 31.7724609375,
+     "maior_zona": 1.9197826563059408,
+     "linhas_confirmadas": {
+      "doctr": 12,
+      "kraken": 11
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 1,
+      "kraken/doctr": 2
+     }
+    },
+    "erro_conhecido": "Kraken: perde parte do título (96,9%) e põe contornos na iluminura"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 12 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       396,
+       448,
+       596,
+       480
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.58
+     },
+     {
+      "caixa": [
+       464,
+       501,
+       530,
+       531
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.0
+     },
+     {
+      "caixa": [
+       337,
+       549,
+       637,
+       611
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 19.22
+     },
+     {
+      "caixa": [
+       316,
+       631,
+       396,
+       672
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.35
+     },
+     {
+      "caixa": [
+       419,
+       634,
+       666,
+       676
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 10.7
+     },
+     {
+      "caixa": [
+       409,
+       692,
+       567,
+       718
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.21
+     },
+     {
+      "caixa": [
+       444,
+       736,
+       653,
+       768
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.88
+     },
+     {
+      "caixa": [
+       323,
+       740,
+       421,
+       762
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.18
+     },
+     {
+      "caixa": [
+       392,
+       785,
+       601,
+       817
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.88
+     },
+     {
+      "caixa": [
+       454,
+       837,
+       529,
+       860
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.74
+     },
+     {
+      "caixa": [
+       359,
+       881,
+       632,
+       915
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 9.57
+     },
+     {
+      "caixa": [
+       386,
+       931,
+       599,
+       956
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.47
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 12,
+      "tesseract": 0
+     },
+     "altura_linha": 31.066402435302734,
+     "maior_zona": 19.22245301333706,
+     "linhas_confirmadas": {
+      "doctr": 0,
+      "tesseract": 0
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 11 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       113,
+       103,
+       211,
+       130
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.42
+     },
+     {
+      "caixa": [
+       429,
+       440,
+       584,
+       484
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.46
+     },
+     {
+      "caixa": [
+       465,
+       495,
+       529,
+       533
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.67
+     },
+     {
+      "caixa": [
+       339,
+       542,
+       631,
+       616
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 13.4
+     },
+     {
+      "caixa": [
+       320,
+       624,
+       664,
+       681
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 13.64
+     },
+     {
+      "caixa": [
+       491,
+       683,
+       566,
+       724
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.0
+     },
+     {
+      "caixa": [
+       323,
+       727,
+       650,
+       772
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 9.58
+     },
+     {
+      "caixa": [
+       395,
+       776,
+       601,
+       822
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.63
+     },
+     {
+      "caixa": [
+       457,
+       828,
+       525,
+       865
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.68
+     },
+     {
+      "caixa": [
+       360,
+       874,
+       624,
+       916
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.01
+     },
+     {
+      "caixa": [
+       392,
+       919,
+       594,
+       959
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.99
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 16,
+      "tesseract": 0
+     },
+     "altura_linha": 36.81282043457031,
+     "maior_zona": 13.643906239682153,
+     "linhas_confirmadas": {
+      "kraken": 0,
+      "tesseract": 0
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR e o Tesseract não: confira se há texto ou mancha.",
+     "O docTR e o Kraken acharam texto em 10 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       113,
+       103,
+       212,
+       130
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "tamanho": 1.92
+     },
+     {
+      "caixa": [
+       396,
+       440,
+       596,
+       484
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.58
+     },
+     {
+      "caixa": [
+       464,
+       495,
+       530,
+       533
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.33
+     },
+     {
+      "caixa": [
+       337,
+       542,
+       637,
+       616
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 19.67
+     },
+     {
+      "caixa": [
+       316,
+       624,
+       666,
+       681
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 18.54
+     },
+     {
+      "caixa": [
+       409,
+       682,
+       567,
+       724
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.04
+     },
+     {
+      "caixa": [
+       323,
+       727,
+       653,
+       772
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 13.01
+     },
+     {
+      "caixa": [
+       392,
+       776,
+       601,
+       822
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.99
+     },
+     {
+      "caixa": [
+       454,
+       828,
+       529,
+       865
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.41
+     },
+     {
+      "caixa": [
+       359,
+       874,
+       632,
+       916
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.05
+     },
+     {
+      "caixa": [
+       386,
+       919,
+       599,
+       959
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.03
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 12,
+      "kraken": 16,
+      "tesseract": 0
+     },
+     "altura_linha": 31.7724609375,
+     "maior_zona": 19.672323927543694,
+     "linhas_confirmadas": {
+      "doctr": 12,
+      "kraken": 11,
+      "tesseract": 0
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 1,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 2,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "horas_p013": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       140,
+       272,
+       297,
+       329
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.05
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 25,
+      "kraken": 22
+     },
+     "altura_linha": 50.35260009765625,
+     "maior_zona": 3.054369267896353,
+     "linhas_confirmadas": {
+      "doctr": 24,
+      "kraken": 21
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 3
+     }
+    },
+    "erro_conhecido": "docTR encosta na moldura dourada (8,2%); Kraken perde o \"DE\" grande"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       272,
+       1115,
+       631,
+       1149
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.97
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 25,
+      "tesseract": 17
+     },
+     "altura_linha": 49.33154296875,
+     "maior_zona": 4.97123371719511,
+     "linhas_confirmadas": {
+      "doctr": 25,
+      "tesseract": 17
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 7
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 4 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       121,
+       275,
+       297,
+       336
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.54
+     },
+     {
+      "caixa": [
+       353,
+       782,
+       641,
+       824
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.66
+     },
+     {
+      "caixa": [
+       425,
+       999,
+       627,
+       1037
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.56
+     },
+     {
+      "caixa": [
+       269,
+       1110,
+       637,
+       1149
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.6
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 22,
+      "tesseract": 17
+     },
+     "altura_linha": 49.74875259399414,
+     "maior_zona": 4.600922621179314,
+     "linhas_confirmadas": {
+      "kraken": 21,
+      "tesseract": 17
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 4
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Tesseract acharam texto nesta área e o Kraken não: confira se há texto ou mancha.",
+     "O Tesseract achou texto em 3 lugares e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       121,
+       272,
+       297,
+       336
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.62
+     },
+     {
+      "caixa": [
+       354,
+       783,
+       640,
+       823
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 3.36
+     },
+     {
+      "caixa": [
+       426,
+       999,
+       626,
+       1036
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 2.36
+     },
+     {
+      "caixa": [
+       270,
+       1111,
+       636,
+       1149
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 4.87
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 25,
+      "kraken": 22,
+      "tesseract": 17
+     },
+     "altura_linha": 50.0,
+     "maior_zona": 4.8712,
+     "linhas_confirmadas": {
+      "doctr": 25,
+      "kraken": 21,
+      "tesseract": 17
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 3,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 7,
+      "tesseract/kraken": 4
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "horas_p047": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "kraken": 21
+     },
+     "altura_linha": 38.1875,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "doctr": 20,
+      "kraken": 20
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       226,
+       392,
+       314,
+       415
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.44
+     },
+     {
+      "caixa": [
+       753,
+       428,
+       846,
+       540
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 6.24
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "tesseract": 19
+     },
+     "altura_linha": 37.0,
+     "maior_zona": 6.243243243243243,
+     "linhas_confirmadas": {
+      "doctr": 19,
+      "tesseract": 19
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       224,
+       387,
+       315,
+       416
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.91
+     },
+     {
+      "caixa": [
+       730,
+       428,
+       846,
+       540
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.09
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 21,
+      "tesseract": 19
+     },
+     "altura_linha": 35.40244102478027,
+     "maior_zona": 8.093620268326974,
+     "linhas_confirmadas": {
+      "kraken": 19,
+      "tesseract": 19
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Kraken acharam texto nesta área e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       224,
+       387,
+       314,
+       415
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.61
+     },
+     {
+      "caixa": [
+       734,
+       428,
+       846,
+       540
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 7.05
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "kraken": 21,
+      "tesseract": 19
+     },
+     "altura_linha": 37.588462829589844,
+     "maior_zona": 7.045829553928024,
+     "linhas_confirmadas": {
+      "doctr": 20,
+      "kraken": 20,
+      "tesseract": 19
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 0,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "opusmajus_p011": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 40,
+      "kraken": 39
+     },
+     "altura_linha": 54.17967987060547,
+     "maior_zona": 1.1294723180966788,
+     "linhas_confirmadas": {
+      "doctr": 40,
+      "kraken": 39
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       211,
+       459,
+       351,
+       593
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 7.51
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 40,
+      "tesseract": 39
+     },
+     "altura_linha": 48.0,
+     "maior_zona": 7.505590180799697,
+     "linhas_confirmadas": {
+      "doctr": 40,
+      "tesseract": 39
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 2,
+      "tesseract/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       211,
+       459,
+       342,
+       554
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.78
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 39,
+      "tesseract": 39
+     },
+     "altura_linha": 46.31753349304199,
+     "maior_zona": 3.7760772397500704,
+     "linhas_confirmadas": {
+      "kraken": 39,
+      "tesseract": 39
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 2,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       211,
+       450,
+       351,
+       593
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 7.46
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 40,
+      "kraken": 39,
+      "tesseract": 39
+     },
+     "altura_linha": 48.41341209411621,
+     "maior_zona": 7.4587484725833955,
+     "linhas_confirmadas": {
+      "doctr": 40,
+      "kraken": 39,
+      "tesseract": 39
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 2,
+      "kraken/doctr": 1,
+      "kraken/tesseract": 2,
+      "tesseract/doctr": 1,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "opusmajus_p003": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       684,
+       376,
+       739,
+       496
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.64
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 17,
+      "kraken": 13
+     },
+     "altura_linha": 61.02005577087402,
+     "maior_zona": 1.635562666325099,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 13
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 1
+     }
+    },
+    "erro_conhecido": "docTR: emblema da editora (7,6%); Kraken perde o \"OF\""
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha.",
+     "O docTR achou texto em 2 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       251,
+       303,
+       1370,
+       479
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 55.95
+     },
+     {
+      "caixa": [
+       721,
+       535,
+       810,
+       593
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.37
+     },
+     {
+      "caixa": [
+       721,
+       1790,
+       810,
+       1823
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.82
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 17,
+      "tesseract": 13
+     },
+     "altura_linha": 38.462886810302734,
+     "maior_zona": 55.94870612416337,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "tesseract": 13
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       251,
+       303,
+       736,
+       356
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.5
+     },
+     {
+      "caixa": [
+       859,
+       303,
+       1370,
+       479
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.8
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 13,
+      "tesseract": 13
+     },
+     "altura_linha": 61.35519027709961,
+     "maior_zona": 7.8004641130807855,
+     "linhas_confirmadas": {
+      "kraken": 13,
+      "tesseract": 13
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha.",
+     "O docTR achou texto nesta área e o Kraken e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       249,
+       303,
+       1370,
+       498
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 34.21
+     },
+     {
+      "caixa": [
+       721,
+       535,
+       810,
+       593
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "tamanho": 2.07
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 17,
+      "kraken": 13,
+      "tesseract": 13
+     },
+     "altura_linha": 48.76171875,
+     "maior_zona": 34.21297777777778,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 13,
+      "tesseract": 13
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 1,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 1,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "opusmajus_p020": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 2,
+      "kraken": 2
+     },
+     "altura_linha": 41.88400077819824,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "doctr": 2,
+      "kraken": 2
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 2,
+      "tesseract": 2
+     },
+     "altura_linha": 31.58251953125,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "doctr": 2,
+      "tesseract": 2
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "kraken": 2,
+      "tesseract": 2
+     },
+     "altura_linha": 38.99874687194824,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "kraken": 2,
+      "tesseract": 2
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 2,
+      "kraken": 2,
+      "tesseract": 2
+     },
+     "altura_linha": 36.88525390625,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "doctr": 2,
+      "kraken": 2,
+      "tesseract": 2
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 0,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "opusmajus_p165": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1181,
+       2132,
+       1233,
+       2250
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.65
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 48,
+      "kraken": 46
+     },
+     "altura_linha": 52.3828125,
+     "maior_zona": 1.6476159999999995,
+     "linhas_confirmadas": {
+      "doctr": 44,
+      "kraken": 44
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 0
+     }
+    },
+    "erro_conhecido": "Kraken: uma linha num traço do diagrama (6,6%)"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 5 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1020,
+       1327,
+       1224,
+       1450
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 8.07
+     },
+     {
+      "caixa": [
+       1022,
+       1481,
+       1137,
+       1529
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.26
+     },
+     {
+      "caixa": [
+       1072,
+       1795,
+       1325,
+       1843
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 5.04
+     },
+     {
+      "caixa": [
+       995,
+       2207,
+       1296,
+       2258
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 6.46
+     },
+     {
+      "caixa": [
+       995,
+       2266,
+       1114,
+       2310
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.16
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 48,
+      "tesseract": 40
+     },
+     "altura_linha": 48.0,
+     "maior_zona": 8.068459130859374,
+     "linhas_confirmadas": {
+      "doctr": 45,
+      "tesseract": 40
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 5
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 5 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1025,
+       1327,
+       1171,
+       1450
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.44
+     },
+     {
+      "caixa": [
+       1029,
+       1481,
+       1132,
+       1529
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.1
+     },
+     {
+      "caixa": [
+       999,
+       1795,
+       1325,
+       1843
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.85
+     },
+     {
+      "caixa": [
+       1002,
+       2207,
+       1172,
+       2258
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.67
+     },
+     {
+      "caixa": [
+       1000,
+       2266,
+       1109,
+       2310
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.04
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 46,
+      "tesseract": 40
+     },
+     "altura_linha": 46.99999237060547,
+     "maior_zona": 7.437296585419481,
+     "linhas_confirmadas": {
+      "kraken": 46,
+      "tesseract": 40
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 5
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 5 lugares e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1022,
+       1327,
+       1228,
+       1450
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 6.79
+     },
+     {
+      "caixa": [
+       1024,
+       1481,
+       1135,
+       1529
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 1.88
+     },
+     {
+      "caixa": [
+       1000,
+       1795,
+       1325,
+       1846
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 5.6
+     },
+     {
+      "caixa": [
+       997,
+       2132,
+       1295,
+       2258
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 6.51
+     },
+     {
+      "caixa": [
+       997,
+       2266,
+       1112,
+       2310
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 1.79
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 48,
+      "kraken": 46,
+      "tesseract": 40
+     },
+     "altura_linha": 51.90904998779297,
+     "maior_zona": 6.792649013347073,
+     "linhas_confirmadas": {
+      "doctr": 45,
+      "kraken": 46,
+      "tesseract": 40
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 0,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 5,
+      "tesseract/kraken": 5
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "opusmajus_p256": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken avisou que não conseguiu desenhar 8 linhas nesta página: confira se falta texto.",
+     "O docTR achou texto em 93 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto em 5 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1992,
+       176,
+       2047,
+       261
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.41
+     },
+     {
+      "caixa": [
+       1063,
+       178,
+       1198,
+       382
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 20.27
+     },
+     {
+      "caixa": [
+       1714,
+       181,
+       1753,
+       285
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 5.62
+     },
+     {
+      "caixa": [
+       1817,
+       184,
+       1856,
+       250
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.5
+     },
+     {
+      "caixa": [
+       1547,
+       186,
+       1587,
+       230
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.32
+     },
+     {
+      "caixa": [
+       613,
+       189,
+       768,
+       547
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 34.91
+     },
+     {
+      "caixa": [
+       567,
+       212,
+       605,
+       245
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.65
+     },
+     {
+      "caixa": [
+       738,
+       220,
+       771,
+       402
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.64
+     },
+     {
+      "caixa": [
+       1988,
+       261,
+       2025,
+       325
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.94
+     },
+     {
+      "caixa": [
+       480,
+       280,
+       519,
+       468
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.87
+     },
+     {
+      "caixa": [
+       2158,
+       284,
+       2196,
+       330
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.98
+     },
+     {
+      "caixa": [
+       1717,
+       287,
+       1807,
+       513
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 16.73
+     },
+     {
+      "caixa": [
+       567,
+       292,
+       605,
+       351
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.03
+     },
+     {
+      "caixa": [
+       1651,
+       293,
+       1690,
+       453
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.74
+     },
+     {
+      "caixa": [
+       821,
+       309,
+       853,
+       356
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.96
+     },
+     {
+      "caixa": [
+       1988,
+       327,
+       2086,
+       418
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.77
+     },
+     {
+      "caixa": [
+       1543,
+       392,
+       1698,
+       542
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 16.9
+     },
+     {
+      "caixa": [
+       406,
+       403,
+       485,
+       547
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 11.46
+     },
+     {
+      "caixa": [
+       824,
+       427,
+       856,
+       484
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.2
+     },
+     {
+      "caixa": [
+       1240,
+       472,
+       1272,
+       507
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.44
+     },
+     {
+      "caixa": [
+       1743,
+       557,
+       1818,
+       590
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.07
+     },
+     {
+      "caixa": [
+       1840,
+       557,
+       2381,
+       642
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 44.98
+     },
+     {
+      "caixa": [
+       906,
+       569,
+       987,
+       648
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.62
+     },
+     {
+      "caixa": [
+       1027,
+       569,
+       1358,
+       648
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 31.35
+     },
+     {
+      "caixa": [
+       1849,
+       661,
+       2318,
+       744
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 44.57
+     },
+     {
+      "caixa": [
+       2351,
+       661,
+       2381,
+       744
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.6
+     },
+     {
+      "caixa": [
+       1740,
+       667,
+       1813,
+       739
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.18
+     },
+     {
+      "caixa": [
+       909,
+       672,
+       1356,
+       751
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 39.27
+     },
+     {
+      "caixa": [
+       824,
+       698,
+       855,
+       736
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.48
+     },
+     {
+      "caixa": [
+       667,
+       720,
+       767,
+       747
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.63
+     },
+     {
+      "caixa": [
+       2235,
+       763,
+       2276,
+       847
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.28
+     },
+     {
+      "caixa": [
+       864,
+       770,
+       988,
+       850
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.6
+     },
+     {
+      "caixa": [
+       1032,
+       770,
+       1190,
+       851
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.86
+     },
+     {
+      "caixa": [
+       1197,
+       770,
+       1272,
+       855
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.65
+     },
+     {
+      "caixa": [
+       1284,
+       770,
+       1356,
+       804
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.22
+     },
+     {
+      "caixa": [
+       1943,
+       770,
+       2024,
+       821
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.98
+     },
+     {
+      "caixa": [
+       1740,
+       772,
+       1764,
+       841
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.0
+     },
+     {
+      "caixa": [
+       409,
+       780,
+       516,
+       821
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.65
+     },
+     {
+      "caixa": [
+       2321,
+       789,
+       2353,
+       845
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.19
+     },
+     {
+      "caixa": [
+       2154,
+       792,
+       2192,
+       847
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.79
+     },
+     {
+      "caixa": [
+       663,
+       804,
+       687,
+       850
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.42
+     },
+     {
+      "caixa": [
+       1321,
+       804,
+       1358,
+       855
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.44
+     },
+     {
+      "caixa": [
+       1828,
+       815,
+       1933,
+       847
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.16
+     },
+     {
+      "caixa": [
+       2154,
+       869,
+       2195,
+       945
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.94
+     },
+     {
+      "caixa": [
+       2240,
+       870,
+       2353,
+       950
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 9.58
+     },
+     {
+      "caixa": [
+       1906,
+       874,
+       1939,
+       907
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.41
+     },
+     {
+      "caixa": [
+       2003,
+       874,
+       2075,
+       901
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.09
+     },
+     {
+      "caixa": [
+       990,
+       877,
+       1356,
+       958
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 25.52
+     },
+     {
+      "caixa": [
+       409,
+       881,
+       442,
+       928
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.97
+     },
+     {
+      "caixa": [
+       409,
+       930,
+       601,
+       956
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.66
+     },
+     {
+      "caixa": [
+       1661,
+       972,
+       2356,
+       1059
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 73.57
+     },
+     {
+      "caixa": [
+       910,
+       980,
+       1356,
+       1061
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 41.83
+     },
+     {
+      "caixa": [
+       823,
+       984,
+       851,
+       1048
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.21
+     },
+     {
+      "caixa": [
+       1828,
+       1070,
+       2321,
+       1159
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 47.52
+     },
+     {
+      "caixa": [
+       2358,
+       1070,
+       2379,
+       1159
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.75
+     },
+     {
+      "caixa": [
+       410,
+       1083,
+       601,
+       1110
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.02
+     },
+     {
+      "caixa": [
+       750,
+       1083,
+       996,
+       1164
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 16.06
+     },
+     {
+      "caixa": [
+       1032,
+       1083,
+       1356,
+       1164
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 28.9
+     },
+     {
+      "caixa": [
+       409,
+       1112,
+       442,
+       1162
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.22
+     },
+     {
+      "caixa": [
+       1661,
+       1181,
+       1810,
+       1225
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.94
+     },
+     {
+      "caixa": [
+       1852,
+       1181,
+       2353,
+       1265
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 44.68
+     },
+     {
+      "caixa": [
+       914,
+       1184,
+       1361,
+       1268
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 52.33
+     },
+     {
+      "caixa": [
+       381,
+       1212,
+       441,
+       1275
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.99
+     },
+     {
+      "caixa": [
+       443,
+       1212,
+       604,
+       1253
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.71
+     },
+     {
+      "caixa": [
+       867,
+       1284,
+       1236,
+       1367
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 30.26
+     },
+     {
+      "caixa": [
+       1281,
+       1284,
+       1358,
+       1367
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.51
+     },
+     {
+      "caixa": [
+       1829,
+       1287,
+       2353,
+       1367
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 44.42
+     },
+     {
+      "caixa": [
+       409,
+       1318,
+       524,
+       1372
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 5.84
+     },
+     {
+      "caixa": [
+       1928,
+       1391,
+       2227,
+       1475
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 13.87
+     },
+     {
+      "caixa": [
+       910,
+       1392,
+       1365,
+       1472
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 41.55
+     },
+     {
+      "caixa": [
+       1828,
+       1420,
+       1904,
+       1467
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.8
+     },
+     {
+      "caixa": [
+       1955,
+       1420,
+       2024,
+       1444
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.18
+     },
+     {
+      "caixa": [
+       2161,
+       1420,
+       2192,
+       1472
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.07
+     },
+     {
+      "caixa": [
+       1663,
+       1443,
+       1764,
+       1462
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.59
+     },
+     {
+      "caixa": [
+       914,
+       1494,
+       1358,
+       1576
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 30.07
+     },
+     {
+      "caixa": [
+       2004,
+       1497,
+       2087,
+       1522
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.95
+     },
+     {
+      "caixa": [
+       2097,
+       1497,
+       2261,
+       1524
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 5.01
+     },
+     {
+      "caixa": [
+       586,
+       1498,
+       685,
+       1518
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.55
+     },
+     {
+      "caixa": [
+       826,
+       1520,
+       855,
+       1565
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.66
+     },
+     {
+      "caixa": [
+       2161,
+       1523,
+       2232,
+       1578
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.71
+     },
+     {
+      "caixa": [
+       2291,
+       1540,
+       2356,
+       1572
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.08
+     },
+     {
+      "caixa": [
+       1748,
+       1544,
+       2024,
+       1572
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.85
+     },
+     {
+      "caixa": [
+       1948,
+       1597,
+       2075,
+       1681
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.33
+     },
+     {
+      "caixa": [
+       2111,
+       1597,
+       2356,
+       1681
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 25.14
+     },
+     {
+      "caixa": [
+       910,
+       1600,
+       1361,
+       1681
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 48.63
+     },
+     {
+      "caixa": [
+       406,
+       1631,
+       519,
+       1687
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.36
+     },
+     {
+      "caixa": [
+       1834,
+       1651,
+       1915,
+       1681
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.96
+     },
+     {
+      "caixa": [
+       240,
+       1691,
+       299,
+       1733
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.78
+     },
+     {
+      "caixa": [
+       1860,
+       1700,
+       2442,
+       1785
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 54.17
+     },
+     {
+      "caixa": [
+       863,
+       1703,
+       1362,
+       1785
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 41.41
+     },
+     {
+      "caixa": [
+       409,
+       1711,
+       516,
+       1785
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 5.98
+     },
+     {
+      "caixa": [
+       1783,
+       1712,
+       1853,
+       1779
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.59
+     },
+     {
+      "caixa": [
+       1663,
+       1749,
+       1767,
+       1779
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.26
+     },
+     {
+      "caixa": [
+       1949,
+       1794,
+       2387,
+       1867
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 43.3
+     },
+     {
+      "caixa": [
+       864,
+       1806,
+       905,
+       1838
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.55
+     },
+     {
+      "caixa": [
+       955,
+       1806,
+       1070,
+       1864
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.26
+     },
+     {
+      "caixa": [
+       1120,
+       1806,
+       1362,
+       1864
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 16.65
+     },
+     {
+      "caixa": [
+       409,
+       1809,
+       516,
+       1864
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 5.57
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 330,
+      "kraken": 233
+     },
+     "altura_linha": 26.447265625,
+     "maior_zona": 73.56889917355372,
+     "linhas_confirmadas": {
+      "doctr": 87,
+      "kraken": 220
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 62,
+      "kraken/doctr": 4
+     }
+    },
+    "erro_conhecido": "Kraken: perde a tabela (33%) e avisa 8 linhas perdidas; docTR 86,9%"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 87 lugares e o docTR não: confira se há texto ou mancha.",
+     "O docTR achou texto em 8 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1178,
+       176,
+       1539,
+       199
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 9.82
+     },
+     {
+      "caixa": [
+       1595,
+       176,
+       1705,
+       199
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.93
+     },
+     {
+      "caixa": [
+       1864,
+       176,
+       1984,
+       199
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.18
+     },
+     {
+      "caixa": [
+       1063,
+       178,
+       1124,
+       207
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.05
+     },
+     {
+      "caixa": [
+       681,
+       215,
+       730,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.71
+     },
+     {
+      "caixa": [
+       777,
+       215,
+       1056,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 29.32
+     },
+     {
+      "caixa": [
+       1178,
+       215,
+       1539,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 37.62
+     },
+     {
+      "caixa": [
+       1595,
+       215,
+       1707,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 10.69
+     },
+     {
+      "caixa": [
+       1760,
+       215,
+       1809,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.84
+     },
+     {
+      "caixa": [
+       1864,
+       215,
+       1984,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 12.24
+     },
+     {
+      "caixa": [
+       527,
+       307,
+       565,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.1
+     },
+     {
+      "caixa": [
+       684,
+       307,
+       731,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.03
+     },
+     {
+      "caixa": [
+       777,
+       307,
+       813,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.19
+     },
+     {
+      "caixa": [
+       861,
+       307,
+       1059,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.67
+     },
+     {
+      "caixa": [
+       1206,
+       307,
+       1547,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 32.45
+     },
+     {
+      "caixa": [
+       1584,
+       307,
+       1642,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 5.14
+     },
+     {
+      "caixa": [
+       1691,
+       307,
+       1713,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.6
+     },
+     {
+      "caixa": [
+       1755,
+       307,
+       1812,
+       336
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.88
+     },
+     {
+      "caixa": [
+       1860,
+       307,
+       1981,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 11.06
+     },
+     {
+      "caixa": [
+       446,
+       395,
+       479,
+       461
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.59
+     },
+     {
+      "caixa": [
+       524,
+       395,
+       564,
+       461
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.1
+     },
+     {
+      "caixa": [
+       693,
+       395,
+       730,
+       439
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.58
+     },
+     {
+      "caixa": [
+       777,
+       395,
+       816,
+       551
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 7.04
+     },
+     {
+      "caixa": [
+       861,
+       395,
+       1539,
+       551
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 89.24
+     },
+     {
+      "caixa": [
+       1621,
+       395,
+       1642,
+       481
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.09
+     },
+     {
+      "caixa": [
+       1860,
+       395,
+       1984,
+       548
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 22.57
+     },
+     {
+      "caixa": [
+       1758,
+       420,
+       1813,
+       548
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 5.45
+     },
+     {
+      "caixa": [
+       409,
+       555,
+       911,
+       647
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 50.98
+     },
+     {
+      "caixa": [
+       1281,
+       555,
+       1735,
+       647
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 41.62
+     },
+     {
+      "caixa": [
+       2357,
+       557,
+       2438,
+       642
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.34
+     },
+     {
+      "caixa": [
+       1768,
+       598,
+       1905,
+       647
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 7.83
+     },
+     {
+      "caixa": [
+       2354,
+       661,
+       2438,
+       744
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.18
+     },
+     {
+      "caixa": [
+       427,
+       663,
+       661,
+       751
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 23.37
+     },
+     {
+      "caixa": [
+       695,
+       663,
+       915,
+       751
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.21
+     },
+     {
+      "caixa": [
+       1361,
+       663,
+       1736,
+       751
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 38.29
+     },
+     {
+      "caixa": [
+       1768,
+       663,
+       1896,
+       678
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.18
+     },
+     {
+      "caixa": [
+       1766,
+       730,
+       1907,
+       751
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.48
+     },
+     {
+      "caixa": [
+       2194,
+       753,
+       2235,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.78
+     },
+     {
+      "caixa": [
+       2280,
+       753,
+       2355,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 5.21
+     },
+     {
+      "caixa": [
+       2388,
+       763,
+       2438,
+       796
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.96
+     },
+     {
+      "caixa": [
+       437,
+       766,
+       654,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.03
+     },
+     {
+      "caixa": [
+       695,
+       766,
+       901,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.82
+     },
+     {
+      "caixa": [
+       1364,
+       766,
+       1739,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 41.73
+     },
+     {
+      "caixa": [
+       1768,
+       766,
+       1899,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 9.58
+     },
+     {
+      "caixa": [
+       2028,
+       766,
+       2064,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.61
+     },
+     {
+      "caixa": [
+       2112,
+       766,
+       2162,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.87
+     },
+     {
+      "caixa": [
+       1280,
+       812,
+       1313,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.7
+     },
+     {
+      "caixa": [
+       447,
+       870,
+       587,
+       922
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 8.25
+     },
+     {
+      "caixa": [
+       593,
+       870,
+       908,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 29.65
+     },
+     {
+      "caixa": [
+       1364,
+       870,
+       1736,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 36.03
+     },
+     {
+      "caixa": [
+       1768,
+       870,
+       1898,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 13.27
+     },
+     {
+      "caixa": [
+       1943,
+       870,
+       1995,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.98
+     },
+     {
+      "caixa": [
+       2112,
+       870,
+       2150,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.12
+     },
+     {
+      "caixa": [
+       2195,
+       870,
+       2235,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.16
+     },
+     {
+      "caixa": [
+       2028,
+       909,
+       2064,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.9
+     },
+     {
+      "caixa": [
+       944,
+       914,
+       987,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.8
+     },
+     {
+      "caixa": [
+       446,
+       972,
+       902,
+       1064
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 47.65
+     },
+     {
+      "caixa": [
+       1364,
+       972,
+       1735,
+       1064
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 34.51
+     },
+     {
+      "caixa": [
+       1772,
+       972,
+       1898,
+       998
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.84
+     },
+     {
+      "caixa": [
+       2343,
+       1070,
+       2439,
+       1159
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 9.64
+     },
+     {
+      "caixa": [
+       450,
+       1075,
+       744,
+       1165
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 24.38
+     },
+     {
+      "caixa": [
+       777,
+       1075,
+       902,
+       1091
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.37
+     },
+     {
+      "caixa": [
+       1364,
+       1075,
+       1898,
+       1165
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 51.26
+     },
+     {
+      "caixa": [
+       783,
+       1149,
+       902,
+       1165
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.25
+     },
+     {
+      "caixa": [
+       450,
+       1181,
+       745,
+       1268
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.73
+     },
+     {
+      "caixa": [
+       775,
+       1181,
+       915,
+       1268
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 14.07
+     },
+     {
+      "caixa": [
+       1364,
+       1181,
+       1739,
+       1268
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 34.29
+     },
+     {
+      "caixa": [
+       375,
+       1212,
+       404,
+       1275
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.03
+     },
+     {
+      "caixa": [
+       1768,
+       1223,
+       1898,
+       1268
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.73
+     },
+     {
+      "caixa": [
+       2195,
+       1247,
+       2318,
+       1268
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.03
+     },
+     {
+      "caixa": [
+       447,
+       1284,
+       918,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 38.97
+     },
+     {
+      "caixa": [
+       1364,
+       1284,
+       1901,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 49.81
+     },
+     {
+      "caixa": [
+       447,
+       1389,
+       902,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 40.21
+     },
+     {
+      "caixa": [
+       1366,
+       1389,
+       1912,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 39.38
+     },
+     {
+      "caixa": [
+       2032,
+       1427,
+       2066,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.7
+     },
+     {
+      "caixa": [
+       2117,
+       1427,
+       2153,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.87
+     },
+     {
+      "caixa": [
+       2200,
+       1427,
+       2235,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.79
+     },
+     {
+      "caixa": [
+       2285,
+       1427,
+       2329,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.99
+     },
+     {
+      "caixa": [
+       450,
+       1489,
+       905,
+       1575
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 38.35
+     },
+     {
+      "caixa": [
+       1366,
+       1489,
+       1745,
+       1575
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 38.56
+     },
+     {
+      "caixa": [
+       1769,
+       1489,
+       1901,
+       1536
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 6.46
+     },
+     {
+      "caixa": [
+       1948,
+       1489,
+       1996,
+       1536
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.43
+     },
+     {
+      "caixa": [
+       2285,
+       1489,
+       2316,
+       1532
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.56
+     },
+     {
+      "caixa": [
+       2032,
+       1531,
+       2072,
+       1575
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.04
+     },
+     {
+      "caixa": [
+       2121,
+       1531,
+       2155,
+       1575
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.65
+     },
+     {
+      "caixa": [
+       447,
+       1594,
+       905,
+       1679
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 40.48
+     },
+     {
+      "caixa": [
+       1366,
+       1594,
+       1902,
+       1679
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 49.5
+     },
+     {
+      "caixa": [
+       447,
+       1695,
+       918,
+       1785
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 39.45
+     },
+     {
+      "caixa": [
+       1037,
+       1695,
+       1155,
+       1719
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.37
+     },
+     {
+      "caixa": [
+       1369,
+       1695,
+       1902,
+       1785
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 47.76
+     },
+     {
+      "caixa": [
+       2363,
+       1717,
+       2442,
+       1785
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.63
+     },
+     {
+      "caixa": [
+       2365,
+       1794,
+       2442,
+       1838
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.16
+     },
+     {
+      "caixa": [
+       447,
+       1800,
+       918,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 27.93
+     },
+     {
+      "caixa": [
+       1369,
+       1800,
+       1659,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 24.15
+     },
+     {
+      "caixa": [
+       1689,
+       1800,
+       1912,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.0
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 330,
+      "tesseract": 54
+     },
+     "altura_linha": 27.999996185302734,
+     "maior_zona": 89.24372160253753,
+     "linhas_confirmadas": {
+      "doctr": 328,
+      "tesseract": 46
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 50
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken avisou que não conseguiu desenhar 8 linhas nesta página: confira se falta texto.",
+     "O Tesseract achou texto em 41 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto em 6 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       1132,
+       176,
+       2041,
+       199
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 24.01
+     },
+     {
+      "caixa": [
+       578,
+       215,
+       1133,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 54.01
+     },
+     {
+      "caixa": [
+       1183,
+       215,
+       2030,
+       299
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 76.44
+     },
+     {
+      "caixa": [
+       489,
+       307,
+       1807,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 111.88
+     },
+     {
+      "caixa": [
+       1861,
+       307,
+       2039,
+       384
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 13.82
+     },
+     {
+      "caixa": [
+       412,
+       395,
+       561,
+       527
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 18.89
+     },
+     {
+      "caixa": [
+       609,
+       395,
+       1825,
+       551
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 157.86
+     },
+     {
+      "caixa": [
+       1837,
+       395,
+       2049,
+       551
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 25.65
+     },
+     {
+      "caixa": [
+       407,
+       555,
+       985,
+       647
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 63.75
+     },
+     {
+      "caixa": [
+       1023,
+       555,
+       1819,
+       647
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 84.74
+     },
+     {
+      "caixa": [
+       1843,
+       555,
+       2350,
+       647
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 42.94
+     },
+     {
+      "caixa": [
+       2383,
+       557,
+       2436,
+       641
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.62
+     },
+     {
+      "caixa": [
+       2383,
+       649,
+       2436,
+       799
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.19
+     },
+     {
+      "caixa": [
+       407,
+       663,
+       2316,
+       751
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 185.62
+     },
+     {
+      "caixa": [
+       2106,
+       753,
+       2355,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 29.07
+     },
+     {
+      "caixa": [
+       409,
+       766,
+       824,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 44.94
+     },
+     {
+      "caixa": [
+       858,
+       766,
+       990,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 13.43
+     },
+     {
+      "caixa": [
+       1032,
+       766,
+       2066,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 98.79
+     },
+     {
+      "caixa": [
+       412,
+       870,
+       2078,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 143.47
+     },
+     {
+      "caixa": [
+       2091,
+       870,
+       2349,
+       955
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 21.18
+     },
+     {
+      "caixa": [
+       412,
+       972,
+       825,
+       1064
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 45.4
+     },
+     {
+      "caixa": [
+       857,
+       972,
+       2350,
+       1064
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 159.05
+     },
+     {
+      "caixa": [
+       412,
+       1075,
+       996,
+       1165
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 60.51
+     },
+     {
+      "caixa": [
+       1032,
+       1075,
+       2312,
+       1165
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 125.03
+     },
+     {
+      "caixa": [
+       2386,
+       1077,
+       2438,
+       1161
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.83
+     },
+     {
+      "caixa": [
+       412,
+       1181,
+       2339,
+       1268
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 191.87
+     },
+     {
+      "caixa": [
+       407,
+       1284,
+       822,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 43.36
+     },
+     {
+      "caixa": [
+       858,
+       1284,
+       1236,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 31.02
+     },
+     {
+      "caixa": [
+       1281,
+       1284,
+       2336,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 101.65
+     },
+     {
+      "caixa": [
+       412,
+       1389,
+       578,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 12.45
+     },
+     {
+      "caixa": [
+       597,
+       1389,
+       1907,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 120.15
+     },
+     {
+      "caixa": [
+       1931,
+       1389,
+       2241,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 28.32
+     },
+     {
+      "caixa": [
+       2277,
+       1389,
+       2352,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 4.06
+     },
+     {
+      "caixa": [
+       412,
+       1489,
+       2347,
+       1575
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 161.93
+     },
+     {
+      "caixa": [
+       412,
+       1594,
+       1910,
+       1679
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 146.52
+     },
+     {
+      "caixa": [
+       1948,
+       1594,
+       2075,
+       1679
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.12
+     },
+     {
+      "caixa": [
+       2112,
+       1594,
+       2355,
+       1679
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 21.03
+     },
+     {
+      "caixa": [
+       238,
+       1649,
+       299,
+       1733
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.33
+     },
+     {
+      "caixa": [
+       410,
+       1695,
+       1779,
+       1785
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 136.1
+     },
+     {
+      "caixa": [
+       1857,
+       1695,
+       2356,
+       1785
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 49.01
+     },
+     {
+      "caixa": [
+       2392,
+       1738,
+       2439,
+       1789
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.36
+     },
+     {
+      "caixa": [
+       2392,
+       1798,
+       2439,
+       1845
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.33
+     },
+     {
+      "caixa": [
+       406,
+       1800,
+       824,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 33.33
+     },
+     {
+      "caixa": [
+       857,
+       1800,
+       905,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 3.07
+     },
+     {
+      "caixa": [
+       949,
+       1800,
+       1071,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.49
+     },
+     {
+      "caixa": [
+       1117,
+       1800,
+       1905,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 60.82
+     },
+     {
+      "caixa": [
+       1951,
+       1800,
+       2356,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 32.76
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 233,
+      "tesseract": 54
+     },
+     "altura_linha": 28.425195693969727,
+     "maior_zona": 191.8689559745478,
+     "linhas_confirmadas": {
+      "kraken": 220,
+      "tesseract": 5
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 47
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken avisou que não conseguiu desenhar 8 linhas nesta página: confira se falta texto.",
+     "O Tesseract achou texto em 18 lugares e o docTR e o Kraken não: confira se há texto ou mancha.",
+     "O docTR e o Tesseract acharam texto em 10 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O docTR e o Kraken acharam texto em 2 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Kraken achou texto nesta área e o docTR e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       406,
+       176,
+       2052,
+       551
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 535.92
+     },
+     {
+      "caixa": [
+       2157,
+       266,
+       2195,
+       330
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.43
+     },
+     {
+      "caixa": [
+       403,
+       555,
+       985,
+       650
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 66.27
+     },
+     {
+      "caixa": [
+       1023,
+       555,
+       2438,
+       648
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 143.88
+     },
+     {
+      "caixa": [
+       2354,
+       649,
+       2438,
+       799
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.89
+     },
+     {
+      "caixa": [
+       406,
+       661,
+       2316,
+       751
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 196.81
+     },
+     {
+      "caixa": [
+       2106,
+       753,
+       2355,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 30.21
+     },
+     {
+      "caixa": [
+       406,
+       766,
+       995,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 63.36
+     },
+     {
+      "caixa": [
+       1032,
+       766,
+       2066,
+       856
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 102.48
+     },
+     {
+      "caixa": [
+       2091,
+       869,
+       2353,
+       955
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 22.29
+     },
+     {
+      "caixa": [
+       409,
+       870,
+       2078,
+       958
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 154.75
+     },
+     {
+      "caixa": [
+       409,
+       972,
+       2356,
+       1064
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 216.42
+     },
+     {
+      "caixa": [
+       1032,
+       1070,
+       2318,
+       1165
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 132.51
+     },
+     {
+      "caixa": [
+       2343,
+       1070,
+       2439,
+       1161
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 9.68
+     },
+     {
+      "caixa": [
+       409,
+       1075,
+       996,
+       1165
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 62.71
+     },
+     {
+      "caixa": [
+       375,
+       1181,
+       2353,
+       1275
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 203.74
+     },
+     {
+      "caixa": [
+       407,
+       1284,
+       1236,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 79.48
+     },
+     {
+      "caixa": [
+       1281,
+       1284,
+       2353,
+       1372
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 105.73
+     },
+     {
+      "caixa": [
+       409,
+       1389,
+       1912,
+       1475
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 142.37
+     },
+     {
+      "caixa": [
+       1931,
+       1389,
+       2241,
+       1475
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 29.48
+     },
+     {
+      "caixa": [
+       2277,
+       1389,
+       2352,
+       1472
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 4.24
+     },
+     {
+      "caixa": [
+       410,
+       1489,
+       2356,
+       1578
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 176.55
+     },
+     {
+      "caixa": [
+       406,
+       1594,
+       1913,
+       1687
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 157.38
+     },
+     {
+      "caixa": [
+       1948,
+       1594,
+       2075,
+       1681
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 7.59
+     },
+     {
+      "caixa": [
+       2112,
+       1594,
+       2356,
+       1681
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 23.23
+     },
+     {
+      "caixa": [
+       238,
+       1649,
+       299,
+       1733
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "tamanho": 5.49
+     },
+     {
+      "caixa": [
+       409,
+       1695,
+       2442,
+       1789
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 210.74
+     },
+     {
+      "caixa": [
+       1949,
+       1794,
+       2442,
+       1867
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 42.17
+     },
+     {
+      "caixa": [
+       406,
+       1800,
+       918,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 39.81
+     },
+     {
+      "caixa": [
+       949,
+       1800,
+       1071,
+       1867
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.69
+     },
+     {
+      "caixa": [
+       1117,
+       1800,
+       1912,
+       1867
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 63.17
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 330,
+      "kraken": 233,
+      "tesseract": 54
+     },
+     "altura_linha": 27.999996185302734,
+     "maior_zona": 535.9183635225681,
+     "linhas_confirmadas": {
+      "doctr": 330,
+      "kraken": 233,
+      "tesseract": 46
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 62,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 4,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 50,
+      "tesseract/kraken": 47
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "horas_p026": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 39,
+      "kraken": 53
+     },
+     "altura_linha": 35.81299018859863,
+     "maior_zona": 1.113389291470712,
+     "linhas_confirmadas": {
+      "doctr": 39,
+      "kraken": 50
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 13,
+      "kraken/doctr": 6
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       260,
+       333,
+       292,
+       398
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.75
+     },
+     {
+      "caixa": [
+       260,
+       496,
+       292,
+       561
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.77
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 39,
+      "tesseract": 33
+     },
+     "altura_linha": 33.5,
+     "maior_zona": 1.765203831588327,
+     "linhas_confirmadas": {
+      "doctr": 39,
+      "tesseract": 33
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 19,
+      "tesseract/doctr": 4
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "kraken": 53,
+      "tesseract": 33
+     },
+     "altura_linha": 31.312777519226074,
+     "maior_zona": 0.7302470945487165,
+     "linhas_confirmadas": {
+      "kraken": 53,
+      "tesseract": 33
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 5,
+      "tesseract/kraken": 4
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken e o Tesseract acharam texto em 2 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       260,
+       314,
+       300,
+       398
+      ],
+      "acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.49
+     },
+     {
+      "caixa": [
+       260,
+       496,
+       294,
+       561
+      ],
+      "acharam": [
+       "kraken",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.71
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 39,
+      "kraken": 53,
+      "tesseract": 33
+     },
+     "altura_linha": 34.43260955810547,
+     "maior_zona": 2.49492958913337,
+     "linhas_confirmadas": {
+      "doctr": 39,
+      "kraken": 53,
+      "tesseract": 33
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 13,
+      "doctr/tesseract": 19,
+      "kraken/doctr": 6,
+      "kraken/tesseract": 5,
+      "tesseract/doctr": 4,
+      "tesseract/kraken": 4
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "horas_p027": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 38,
+      "kraken": 74
+     },
+     "altura_linha": 33.0400390625,
+     "maior_zona": 0.4671851952852491,
+     "linhas_confirmadas": {
+      "doctr": 38,
+      "kraken": 72
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 20,
+      "kraken/doctr": 5
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 3 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       166,
+       254,
+       199,
+       370
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.91
+     },
+     {
+      "caixa": [
+       112,
+       261,
+       142,
+       330
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.22
+     },
+     {
+      "caixa": [
+       152,
+       375,
+       196,
+       420
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.1
+     },
+     {
+      "caixa": [
+       152,
+       424,
+       193,
+       817
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 17.28
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 38,
+      "tesseract": 38
+     },
+     "altura_linha": 30.0,
+     "maior_zona": 17.275555555555556,
+     "linhas_confirmadas": {
+      "doctr": 38,
+      "tesseract": 38
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 20,
+      "tesseract/doctr": 6
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto em 2 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       112,
+       261,
+       142,
+       308
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.57
+     },
+     {
+      "caixa": [
+       557,
+       324,
+       663,
+       341
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.76
+     },
+     {
+      "caixa": [
+       159,
+       376,
+       196,
+       468
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.6
+     },
+     {
+      "caixa": [
+       152,
+       500,
+       192,
+       817
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 12.41
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 74,
+      "tesseract": 38
+     },
+     "altura_linha": 29.0,
+     "maior_zona": 12.410225921521997,
+     "linhas_confirmadas": {
+      "kraken": 59,
+      "tesseract": 38
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 3,
+      "tesseract/kraken": 6
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Kraken acharam texto em 2 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto em 2 lugares e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       162,
+       254,
+       199,
+       372
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.06
+     },
+     {
+      "caixa": [
+       112,
+       261,
+       148,
+       330
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 2.31
+     },
+     {
+      "caixa": [
+       557,
+       324,
+       663,
+       341
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 1.64
+     },
+     {
+      "caixa": [
+       151,
+       375,
+       196,
+       817
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 19.45
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 38,
+      "kraken": 74,
+      "tesseract": 38
+     },
+     "altura_linha": 30.0,
+     "maior_zona": 19.446666666666665,
+     "linhas_confirmadas": {
+      "doctr": 38,
+      "kraken": 73,
+      "tesseract": 38
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 20,
+      "doctr/tesseract": 20,
+      "kraken/doctr": 5,
+      "kraken/tesseract": 3,
+      "tesseract/doctr": 6,
+      "tesseract/kraken": 6
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "escola_p035": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 26,
+      "kraken": 25
+     },
+     "altura_linha": 47.44242858886719,
+     "maior_zona": 0.7027890797732483,
+     "linhas_confirmadas": {
+      "doctr": 26,
+      "kraken": 25
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       470,
+       924,
+       1225,
+       956
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 10.81
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 26,
+      "tesseract": 24
+     },
+     "altura_linha": 43.5,
+     "maior_zona": 10.805562732857709,
+     "linhas_confirmadas": {
+      "doctr": 26,
+      "tesseract": 23
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 2
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       468,
+       924,
+       1220,
+       956
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 10.04
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 25,
+      "tesseract": 24
+     },
+     "altura_linha": 45.0,
+     "maior_zona": 10.042008199845679,
+     "linhas_confirmadas": {
+      "kraken": 25,
+      "tesseract": 23
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       468,
+       924,
+       1225,
+       956
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 10.38
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 26,
+      "kraken": 25,
+      "tesseract": 24
+     },
+     "altura_linha": 45.04311752319336,
+     "maior_zona": 10.383805707188102,
+     "linhas_confirmadas": {
+      "doctr": 26,
+      "kraken": 25,
+      "tesseract": 23
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 1,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 2,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "rhetorica_p018": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 41,
+      "kraken": 42
+     },
+     "altura_linha": 64.599609375,
+     "maior_zona": 0.86048768,
+     "linhas_confirmadas": {
+      "doctr": 41,
+      "kraken": 42
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 3,
+      "kraken/doctr": 2
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       367,
+       119,
+       869,
+       179
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 8.02
+     },
+     {
+      "caixa": [
+       168,
+       360,
+       373,
+       487
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 6.97
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 41,
+      "tesseract": 38
+     },
+     "altura_linha": 60.0,
+     "maior_zona": 8.0208218671875,
+     "linhas_confirmadas": {
+      "doctr": 40,
+      "tesseract": 37
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 2
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto nesta área e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       367,
+       119,
+       865,
+       192
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 9.87
+     },
+     {
+      "caixa": [
+       168,
+       360,
+       366,
+       487
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.99
+     },
+     {
+      "caixa": [
+       1564,
+       2234,
+       1684,
+       2347
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.84
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 42,
+      "tesseract": 38
+     },
+     "altura_linha": 58.999996185302734,
+     "maior_zona": 9.867129036906164,
+     "linhas_confirmadas": {
+      "kraken": 41,
+      "tesseract": 37
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 3
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 2 lugares e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       367,
+       119,
+       869,
+       192
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 8.78
+     },
+     {
+      "caixa": [
+       168,
+       360,
+       373,
+       487
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 6.52
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 41,
+      "kraken": 42,
+      "tesseract": 38
+     },
+     "altura_linha": 62.01561737060547,
+     "maior_zona": 8.777246604063834,
+     "linhas_confirmadas": {
+      "doctr": 41,
+      "kraken": 42,
+      "tesseract": 37
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 3,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 2,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 2,
+      "tesseract/kraken": 3
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "siebmacher_p009": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 14 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       82,
+       24,
+       1334,
+       103
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 39.21
+     },
+     {
+      "caixa": [
+       1223,
+       115,
+       1325,
+       247
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.93
+     },
+     {
+      "caixa": [
+       78,
+       199,
+       183,
+       430
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 9.35
+     },
+     {
+      "caixa": [
+       1222,
+       261,
+       1326,
+       331
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.43
+     },
+     {
+      "caixa": [
+       1220,
+       422,
+       1320,
+       473
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.51
+     },
+     {
+      "caixa": [
+       75,
+       448,
+       182,
+       616
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 8.32
+     },
+     {
+      "caixa": [
+       1218,
+       548,
+       1321,
+       622
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.49
+     },
+     {
+      "caixa": [
+       75,
+       688,
+       177,
+       763
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.4
+     },
+     {
+      "caixa": [
+       1215,
+       741,
+       1318,
+       826
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 4.06
+     },
+     {
+      "caixa": [
+       1215,
+       837,
+       1318,
+       909
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.32
+     },
+     {
+      "caixa": [
+       73,
+       851,
+       175,
+       902
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 2.43
+     },
+     {
+      "caixa": [
+       576,
+       935,
+       1300,
+       1062
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 42.39
+     },
+     {
+      "caixa": [
+       130,
+       937,
+       452,
+       1061
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 18.37
+     },
+     {
+      "caixa": [
+       495,
+       942,
+       556,
+       1059
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 3.41
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "kraken": 70
+     },
+     "altura_linha": 43.90656089782715,
+     "maior_zona": 42.39402882029908,
+     "linhas_confirmadas": {
+      "doctr": 20,
+      "kraken": 19
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 0
+     }
+    },
+    "erro_conhecido": "Kraken: toma a moldura ornamental por texto (83%)"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       69,
+       27,
+       1558,
+       1053
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 329.39
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "tesseract": 26
+     },
+     "altura_linha": 51.843746185302734,
+     "maior_zona": 329.38644847294177,
+     "linhas_confirmadas": {
+      "doctr": 20,
+      "tesseract": 4
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 2
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto em 5 lugares e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       78,
+       100,
+       826,
+       950
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 65.94
+     },
+     {
+      "caixa": [
+       676,
+       106,
+       1321,
+       939
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 150.24
+     },
+     {
+      "caixa": [
+       1296,
+       415,
+       1558,
+       533
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 12.53
+     },
+     {
+      "caixa": [
+       1310,
+       902,
+       1558,
+       1052
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 18.37
+     },
+     {
+      "caixa": [
+       69,
+       916,
+       132,
+       1024
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 2.53
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 70,
+      "tesseract": 26
+     },
+     "altura_linha": 44.23895263671875,
+     "maior_zona": 150.24460166350514,
+     "linhas_confirmadas": {
+      "kraken": 70,
+      "tesseract": 22
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 1,
+      "tesseract/kraken": 20
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       69,
+       24,
+       1558,
+       1062
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 443.12
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "kraken": 70,
+      "tesseract": 26
+     },
+     "altura_linha": 45.36327362060547,
+     "maior_zona": 443.11786333669227,
+     "linhas_confirmadas": {
+      "doctr": 20,
+      "kraken": 70,
+      "tesseract": 22
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 0,
+      "kraken/tesseract": 1,
+      "tesseract/doctr": 2,
+      "tesseract/kraken": 20
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "palatino_p057": {
+   "doctr+kraken": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       416,
+       1287,
+       554,
+       1371
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.65
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 24,
+      "kraken": 17
+     },
+     "altura_linha": 77.625,
+     "maior_zona": 1.645669135802469,
+     "linhas_confirmadas": {
+      "doctr": 21,
+      "kraken": 16
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 2
+     }
+    },
+    "erro_conhecido": "os dois perdem parte do título (docTR 96,7%, Kraken 96,1% achado)"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       168,
+       147,
+       1185,
+       543
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 55.95
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 24,
+      "tesseract": 16
+     },
+     "altura_linha": 75.81249237060547,
+     "maior_zona": 55.95241549352456,
+     "linhas_confirmadas": {
+      "doctr": 16,
+      "tesseract": 13
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 1,
+      "tesseract/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto nesta área e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       168,
+       147,
+       1185,
+       543
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 36.12
+     },
+     {
+      "caixa": [
+       1000,
+       1890,
+       1175,
+       1989
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.62
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 17,
+      "tesseract": 16
+     },
+     "altura_linha": 91.75231170654297,
+     "maior_zona": 36.1156791129443,
+     "linhas_confirmadas": {
+      "kraken": 15,
+      "tesseract": 13
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 1,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha.",
+     "O docTR e o Tesseract acharam texto nesta área e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto nesta área e o docTR e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       168,
+       147,
+       1185,
+       543
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 48.24
+     },
+     {
+      "caixa": [
+       416,
+       1288,
+       559,
+       1392
+      ],
+      "acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 1.76
+     },
+     {
+      "caixa": [
+       997,
+       1889,
+       1178,
+       1989
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "tesseract"
+      ],
+      "tamanho": 2.25
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 24,
+      "kraken": 17,
+      "tesseract": 16
+     },
+     "altura_linha": 81.21282196044922,
+     "maior_zona": 48.244058294788736,
+     "linhas_confirmadas": {
+      "doctr": 21,
+      "kraken": 16,
+      "tesseract": 13
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 1,
+      "kraken/doctr": 2,
+      "kraken/tesseract": 1,
+      "tesseract/doctr": 1,
+      "tesseract/kraken": 1
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "graduale_p221": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 17,
+      "kraken": 9
+     },
+     "altura_linha": 48.765625,
+     "maior_zona": 0.9360468166314722,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 9
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 5
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 9 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto em 2 lugares e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       870,
+       50,
+       961,
+       87
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.8
+     },
+     {
+      "caixa": [
+       123,
+       206,
+       632,
+       252
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 12.61
+     },
+     {
+      "caixa": [
+       667,
+       211,
+       825,
+       255
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.71
+     },
+     {
+      "caixa": [
+       115,
+       354,
+       614,
+       402
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 12.9
+     },
+     {
+      "caixa": [
+       653,
+       363,
+       796,
+       404
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.12
+     },
+     {
+      "caixa": [
+       209,
+       502,
+       792,
+       554
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 16.35
+     },
+     {
+      "caixa": [
+       194,
+       665,
+       389,
+       710
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.7
+     },
+     {
+      "caixa": [
+       447,
+       665,
+       743,
+       719
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.59
+     },
+     {
+      "caixa": [
+       179,
+       811,
+       827,
+       866
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 19.23
+     },
+     {
+      "caixa": [
+       95,
+       1045,
+       518,
+       1104
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 9.95
+     },
+     {
+      "caixa": [
+       467,
+       1135,
+       520,
+       1201
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 1.79
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 17,
+      "tesseract": 4
+     },
+     "altura_linha": 43.0,
+     "maior_zona": 19.225527312060574,
+     "linhas_confirmadas": {
+      "doctr": 3,
+      "tesseract": 2
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 1
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 6 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       129,
+       204,
+       848,
+       264
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.46
+     },
+     {
+      "caixa": [
+       133,
+       349,
+       806,
+       408
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 10.37
+     },
+     {
+      "caixa": [
+       120,
+       498,
+       794,
+       554
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 10.42
+     },
+     {
+      "caixa": [
+       122,
+       655,
+       418,
+       715
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.12
+     },
+     {
+      "caixa": [
+       463,
+       660,
+       746,
+       718
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.04
+     },
+     {
+      "caixa": [
+       176,
+       807,
+       841,
+       873
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.54
+     },
+     {
+      "caixa": [
+       95,
+       1037,
+       518,
+       1104
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 6.36
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 9,
+      "tesseract": 4
+     },
+     "altura_linha": 54.170223236083984,
+     "maior_zona": 11.535185747320158,
+     "linhas_confirmadas": {
+      "kraken": 2,
+      "tesseract": 2
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Kraken acharam texto em 7 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       870,
+       45,
+       961,
+       95
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.6
+     },
+     {
+      "caixa": [
+       123,
+       204,
+       848,
+       264
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 14.8
+     },
+     {
+      "caixa": [
+       115,
+       349,
+       806,
+       408
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 13.89
+     },
+     {
+      "caixa": [
+       116,
+       498,
+       794,
+       554
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 14.49
+     },
+     {
+      "caixa": [
+       122,
+       655,
+       418,
+       715
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.4
+     },
+     {
+      "caixa": [
+       447,
+       660,
+       746,
+       719
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.79
+     },
+     {
+      "caixa": [
+       176,
+       806,
+       841,
+       873
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 15.71
+     },
+     {
+      "caixa": [
+       95,
+       1035,
+       518,
+       1104
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 7.9
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 17,
+      "kraken": 9,
+      "tesseract": 4
+     },
+     "altura_linha": 48.765625,
+     "maior_zona": 15.708429866165892,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 9,
+      "tesseract": 3
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 5,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 1,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "graduale_p222": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "kraken": 13
+     },
+     "altura_linha": 41.83906555175781,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "doctr": 19,
+      "kraken": 13
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 4
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 16 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       205,
+       206,
+       499,
+       261
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 9.39
+     },
+     {
+      "caixa": [
+       720,
+       210,
+       816,
+       249
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.44
+     },
+     {
+      "caixa": [
+       609,
+       363,
+       775,
+       403
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.68
+     },
+     {
+      "caixa": [
+       313,
+       365,
+       465,
+       405
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.29
+     },
+     {
+      "caixa": [
+       213,
+       368,
+       278,
+       407
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.76
+     },
+     {
+      "caixa": [
+       487,
+       513,
+       787,
+       549
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.64
+     },
+     {
+      "caixa": [
+       213,
+       517,
+       427,
+       556
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.9
+     },
+     {
+      "caixa": [
+       632,
+       668,
+       922,
+       711
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 8.83
+     },
+     {
+      "caixa": [
+       217,
+       682,
+       347,
+       718
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.29
+     },
+     {
+      "caixa": [
+       389,
+       682,
+       454,
+       714
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.44
+     },
+     {
+      "caixa": [
+       617,
+       821,
+       897,
+       859
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.53
+     },
+     {
+      "caixa": [
+       216,
+       822,
+       578,
+       868
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.81
+     },
+     {
+      "caixa": [
+       528,
+       983,
+       796,
+       1023
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.59
+     },
+     {
+      "caixa": [
+       374,
+       988,
+       464,
+       1032
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.78
+     },
+     {
+      "caixa": [
+       217,
+       1147,
+       596,
+       1201
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 14.52
+     },
+     {
+      "caixa": [
+       692,
+       1149,
+       764,
+       1187
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.91
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "tesseract": 0
+     },
+     "altura_linha": 37.490230560302734,
+     "maior_zona": 14.521342946042513,
+     "linhas_confirmadas": {
+      "doctr": 0,
+      "tesseract": 0
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 12 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       216,
+       214,
+       499,
+       261
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.33
+     },
+     {
+      "caixa": [
+       606,
+       356,
+       781,
+       409
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.28
+     },
+     {
+      "caixa": [
+       211,
+       360,
+       469,
+       413
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.77
+     },
+     {
+      "caixa": [
+       479,
+       504,
+       787,
+       549
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.52
+     },
+     {
+      "caixa": [
+       212,
+       509,
+       440,
+       552
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.27
+     },
+     {
+      "caixa": [
+       656,
+       663,
+       917,
+       718
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.6
+     },
+     {
+      "caixa": [
+       213,
+       673,
+       459,
+       723
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.9
+     },
+     {
+      "caixa": [
+       213,
+       813,
+       899,
+       873
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 12.22
+     },
+     {
+      "caixa": [
+       521,
+       974,
+       910,
+       1030
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.52
+     },
+     {
+      "caixa": [
+       369,
+       981,
+       464,
+       1035
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.84
+     },
+     {
+      "caixa": [
+       215,
+       1141,
+       605,
+       1220
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 9.64
+     },
+     {
+      "caixa": [
+       681,
+       1143,
+       767,
+       1203
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.7
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 13,
+      "tesseract": 0
+     },
+     "altura_linha": 51.032711029052734,
+     "maior_zona": 12.21961394767176,
+     "linhas_confirmadas": {
+      "kraken": 0,
+      "tesseract": 0
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Kraken acharam texto em 13 lugares e o Tesseract não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       205,
+       206,
+       499,
+       262
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.66
+     },
+     {
+      "caixa": [
+       720,
+       210,
+       816,
+       252
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.08
+     },
+     {
+      "caixa": [
+       606,
+       356,
+       781,
+       409
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 4.9
+     },
+     {
+      "caixa": [
+       211,
+       360,
+       469,
+       413
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.12
+     },
+     {
+      "caixa": [
+       479,
+       503,
+       787,
+       549
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.11
+     },
+     {
+      "caixa": [
+       212,
+       509,
+       440,
+       556
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.48
+     },
+     {
+      "caixa": [
+       632,
+       663,
+       922,
+       718
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.78
+     },
+     {
+      "caixa": [
+       213,
+       673,
+       459,
+       723
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.85
+     },
+     {
+      "caixa": [
+       213,
+       813,
+       899,
+       873
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 18.79
+     },
+     {
+      "caixa": [
+       521,
+       974,
+       910,
+       1030
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.2
+     },
+     {
+      "caixa": [
+       369,
+       981,
+       464,
+       1035
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.77
+     },
+     {
+      "caixa": [
+       215,
+       1141,
+       605,
+       1220
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 14.57
+     },
+     {
+      "caixa": [
+       681,
+       1143,
+       767,
+       1203
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.54
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 20,
+      "kraken": 13,
+      "tesseract": 0
+     },
+     "altura_linha": 41.83906555175781,
+     "maior_zona": 18.786552906141022,
+     "linhas_confirmadas": {
+      "doctr": 19,
+      "kraken": 13,
+      "tesseract": 0
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 4,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  },
+  "graduale_p223": {
+   "doctr+kraken": {
+    "para_revisar": false,
+    "motivos": [],
+    "zonas": [],
+    "medidas": {
+     "linhas": {
+      "doctr": 15,
+      "kraken": 11
+     },
+     "altura_linha": 44.23046875,
+     "maior_zona": 0.0,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 11
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "kraken/doctr": 2
+     }
+    },
+    "erro_conhecido": "os dois perdem texto (docTR 97,2%, Kraken 94,8%)"
+   },
+   "doctr+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 12 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       867,
+       41,
+       961,
+       82
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.21
+     },
+     {
+      "caixa": [
+       165,
+       201,
+       237,
+       239
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.54
+     },
+     {
+      "caixa": [
+       451,
+       203,
+       608,
+       244
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.68
+     },
+     {
+      "caixa": [
+       643,
+       209,
+       726,
+       244
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.64
+     },
+     {
+      "caixa": [
+       275,
+       346,
+       701,
+       394
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 11.78
+     },
+     {
+      "caixa": [
+       108,
+       494,
+       355,
+       534
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.67
+     },
+     {
+      "caixa": [
+       397,
+       500,
+       497,
+       542
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.38
+     },
+     {
+      "caixa": [
+       531,
+       500,
+       833,
+       546
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 7.99
+     },
+     {
+      "caixa": [
+       107,
+       656,
+       356,
+       701
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.43
+     },
+     {
+      "caixa": [
+       389,
+       663,
+       491,
+       697
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.96
+     },
+     {
+      "caixa": [
+       104,
+       803,
+       827,
+       861
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 24.2
+     },
+     {
+      "caixa": [
+       102,
+       960,
+       801,
+       1019
+      ],
+      "acharam": [
+       "doctr"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 23.8
+     },
+     {
+      "caixa": [
+       78,
+       1086,
+       811,
+       1109
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr"
+      ],
+      "tamanho": 8.87
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 15,
+      "tesseract": 1
+     },
+     "altura_linha": 41.58984375,
+     "maior_zona": 24.199360879595833,
+     "linhas_confirmadas": {
+      "doctr": 1,
+      "tesseract": 1
+     },
+     "linhas_partidas": {
+      "doctr/tesseract": 0,
+      "tesseract/doctr": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 8 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       142,
+       195,
+       233,
+       236
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.46
+     },
+     {
+      "caixa": [
+       449,
+       196,
+       728,
+       249
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.14
+     },
+     {
+      "caixa": [
+       275,
+       344,
+       707,
+       393
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.78
+     },
+     {
+      "caixa": [
+       124,
+       490,
+       833,
+       554
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 14.14
+     },
+     {
+      "caixa": [
+       135,
+       651,
+       344,
+       699
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 3.63
+     },
+     {
+      "caixa": [
+       376,
+       654,
+       488,
+       704
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.98
+     },
+     {
+      "caixa": [
+       104,
+       802,
+       832,
+       861
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 12.82
+     },
+     {
+      "caixa": [
+       103,
+       956,
+       819,
+       1021
+      ],
+      "acharam": [
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 14.49
+     },
+     {
+      "caixa": [
+       78,
+       1086,
+       811,
+       1123
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "kraken"
+      ],
+      "tamanho": 8.8
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "kraken": 11,
+      "tesseract": 1
+     },
+     "altura_linha": 49.11722183227539,
+     "maior_zona": 14.49325535437588,
+     "linhas_confirmadas": {
+      "kraken": 1,
+      "tesseract": 1
+     },
+     "linhas_partidas": {
+      "kraken/tesseract": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   },
+   "doctr+kraken+tesseract": {
+    "para_revisar": true,
+    "motivos": [
+     "O docTR e o Kraken acharam texto em 9 lugares e o Tesseract não: confira se há texto ou mancha.",
+     "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha."
+    ],
+    "zonas": [
+     {
+      "caixa": [
+       867,
+       41,
+       961,
+       82
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.89
+     },
+     {
+      "caixa": [
+       142,
+       195,
+       237,
+       239
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 1.92
+     },
+     {
+      "caixa": [
+       449,
+       196,
+       728,
+       249
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 6.25
+     },
+     {
+      "caixa": [
+       275,
+       344,
+       707,
+       394
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 10.25
+     },
+     {
+      "caixa": [
+       108,
+       490,
+       833,
+       554
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 17.34
+     },
+     {
+      "caixa": [
+       107,
+       651,
+       356,
+       701
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 5.9
+     },
+     {
+      "caixa": [
+       376,
+       654,
+       491,
+       704
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 2.44
+     },
+     {
+      "caixa": [
+       104,
+       802,
+       832,
+       861
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 20.87
+     },
+     {
+      "caixa": [
+       102,
+       956,
+       819,
+       1021
+      ],
+      "acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "nao_acharam": [
+       "tesseract"
+      ],
+      "tamanho": 20.9
+     },
+     {
+      "caixa": [
+       78,
+       1086,
+       811,
+       1124
+      ],
+      "acharam": [
+       "tesseract"
+      ],
+      "nao_acharam": [
+       "doctr",
+       "kraken"
+      ],
+      "tamanho": 10.92
+     }
+    ],
+    "medidas": {
+     "linhas": {
+      "doctr": 15,
+      "kraken": 11,
+      "tesseract": 1
+     },
+     "altura_linha": 44.890625,
+     "maior_zona": 20.895029869293296,
+     "linhas_confirmadas": {
+      "doctr": 14,
+      "kraken": 11,
+      "tesseract": 1
+     },
+     "linhas_partidas": {
+      "doctr/kraken": 0,
+      "doctr/tesseract": 0,
+      "kraken/doctr": 2,
+      "kraken/tesseract": 0,
+      "tesseract/doctr": 0,
+      "tesseract/kraken": 0
+     }
+    },
+    "erro_conhecido": null
+   }
+  }
+ },
+ "combinada": {
+  "palatino_p005": {
+   "voto": {
+    "texto_achado": 0.9998987273402424,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 0.9998987273402424,
+    "figura_tomada": 0.020756899802938586
+   },
+   "intersecao": {
+    "texto_achado": 0.9998087071982356,
+    "figura_tomada": 0.0
+   }
+  },
+  "palatino_p007": {
+   "voto": {
+    "texto_achado": 0.9993340267693775,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.9998214917113796,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.9969619262417483,
+    "figura_tomada": null
+   }
+  },
+  "palatino_p009": {
+   "voto": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.009695377234156664
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.023003654475381143
+   },
+   "intersecao": {
+    "texto_achado": 0.9999879612834877,
+    "figura_tomada": 0.003991235911145111
+   }
+  },
+  "palatino_p010": {
+   "voto": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0
+   },
+   "intersecao": {
+    "texto_achado": 0.9999931282576353,
+    "figura_tomada": 0.0
+   }
+  },
+  "escola_p007": {
+   "voto": {
+    "texto_achado": 0.9966802282872803,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 0.9978739334350455,
+    "figura_tomada": 0.0
+   },
+   "intersecao": {
+    "texto_achado": 0.9966025315025145,
+    "figura_tomada": 0.0
+   }
+  },
+  "horas_p011": {
+   "voto": {
+    "texto_achado": 0.9999048162954502,
+    "figura_tomada": 0.00014539110206455364
+   },
+   "uniao": {
+    "texto_achado": 0.9999048162954502,
+    "figura_tomada": 0.0075457981971503345
+   },
+   "intersecao": {
+    "texto_achado": 0.9685893774985722,
+    "figura_tomada": 2.907822041291073e-05
+   }
+  },
+  "horas_p013": {
+   "voto": {
+    "texto_achado": 0.9647432762836186,
+    "figura_tomada": 0.08459869848156182
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.08459869848156182
+   },
+   "intersecao": {
+    "texto_achado": 0.9576772616136919,
+    "figura_tomada": 0.006787488629207194
+   }
+  },
+  "horas_p047": {
+   "voto": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.010667685669476885
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.010818943899118721
+   },
+   "intersecao": {
+    "texto_achado": 0.9998258689141185,
+    "figura_tomada": 0.00113841720204119
+   }
+  },
+  "opusmajus_p011": {
+   "voto": {
+    "texto_achado": 0.9935692563391525,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.9935692563391525,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.9852143531577364,
+    "figura_tomada": null
+   }
+  },
+  "opusmajus_p003": {
+   "voto": {
+    "texto_achado": 0.9903341244758168,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.07600627286983795
+   },
+   "intersecao": {
+    "texto_achado": 0.979635254620805,
+    "figura_tomada": 0.0
+   }
+  },
+  "opusmajus_p020": {
+   "voto": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0
+   },
+   "intersecao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0
+   }
+  },
+  "opusmajus_p165": {
+   "voto": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.0025821760066997
+   },
+   "uniao": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.06553143973759509
+   },
+   "intersecao": {
+    "texto_achado": 0.9999460563326013,
+    "figura_tomada": 0.0
+   }
+  },
+  "opusmajus_p256": {
+   "voto": {
+    "texto_achado": 0.36953008583961217,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.8802023212374336,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.32064977857997357,
+    "figura_tomada": null
+   }
+  },
+  "horas_p026": {
+   "voto": {
+    "texto_achado": 0.9905994088288026,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 0.996947230702137,
+    "figura_tomada": 0.0
+   },
+   "intersecao": {
+    "texto_achado": 0.9728885012356447,
+    "figura_tomada": 0.0
+   }
+  },
+  "horas_p027": {
+   "voto": {
+    "texto_achado": 0.9966932174752595,
+    "figura_tomada": 0.0013440860215053765
+   },
+   "uniao": {
+    "texto_achado": 0.9970552739560705,
+    "figura_tomada": 0.0013440860215053765
+   },
+   "intersecao": {
+    "texto_achado": 0.9854211923726768,
+    "figura_tomada": 0.0
+   }
+  },
+  "escola_p035": {
+   "voto": {
+    "texto_achado": 0.9996905034755623,
+    "figura_tomada": 0.0
+   },
+   "uniao": {
+    "texto_achado": 0.9996905034755623,
+    "figura_tomada": 0.0
+   },
+   "intersecao": {
+    "texto_achado": 0.9978000652452133,
+    "figura_tomada": 0.0
+   }
+  },
+  "rhetorica_p018": {
+   "voto": {
+    "texto_achado": 0.9997954009046203,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.9997954009046203,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.9988625264578295,
+    "figura_tomada": null
+   }
+  },
+  "siebmacher_p009": {
+   "voto": {
+    "texto_achado": 0.9654664289958408,
+    "figura_tomada": 0.00038072645536348397
+   },
+   "uniao": {
+    "texto_achado": 0.9831491384432561,
+    "figura_tomada": 0.8300422459932202
+   },
+   "intersecao": {
+    "texto_achado": 0.955650623885918,
+    "figura_tomada": 0.00038072645536348397
+   }
+  },
+  "palatino_p057": {
+   "voto": {
+    "texto_achado": 0.9881290002634556,
+    "figura_tomada": 0.006196884729034781
+   },
+   "uniao": {
+    "texto_achado": 0.9881290002634556,
+    "figura_tomada": 0.006196884729034781
+   },
+   "intersecao": {
+    "texto_achado": 0.9397384040789127,
+    "figura_tomada": 0.003355820963486886
+   }
+  },
+  "graduale_p221": {
+   "voto": {
+    "texto_achado": 0.9992736579966796,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.9992736579966796,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.969355285002767,
+    "figura_tomada": null
+   }
+  },
+  "graduale_p222": {
+   "voto": {
+    "texto_achado": 0.9951469045120671,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.9951469045120671,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.9807625043721581,
+    "figura_tomada": null
+   }
+  },
+  "graduale_p223": {
+   "voto": {
+    "texto_achado": 0.9736111639225826,
+    "figura_tomada": null
+   },
+   "uniao": {
+    "texto_achado": 0.9771474200539945,
+    "figura_tomada": null
+   },
+   "intersecao": {
+    "texto_achado": 0.9433438533784555,
+    "figura_tomada": null
+   }
+  }
+ },
+ "resumo_fabrica": {
+  "certo": 21,
+  "revisar_a_toa": 0,
+  "erro_nao_pego": 1
+ },
+ "tempo_ms": {
+  "mediana": 39.16504999506287,
+  "maximo": 210.0174000079278
+ },
+ "resumo_combinada": {
+  "voto": {
+   "texto_medio_19": 0.9607562369249522,
+   "paginas_figura_acima_1pct": [
+    "horas_p013",
+    "horas_p047"
+   ]
+  },
+  "uniao": {
+   "texto_medio_19": 0.9913703733738845,
+   "paginas_figura_acima_1pct": [
+    "palatino_p005",
+    "palatino_p009",
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "siebmacher_p009"
+   ]
+  },
+  "intersecao": {
+   "texto_medio_19": 0.9502765009724904,
+   "paginas_figura_acima_1pct": []
+  }
+ }
+}

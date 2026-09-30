@@ -10,32 +10,24 @@ O QUE É
       - ResultadoOCR: o que cada ponte devolve para UMA página;
       - LinhaOCR: uma linha de texto (o contorno, em pontos da imagem enviada);
       - PalavraOCR: uma palavra (caixa reta), quando o OCR as dá;
-      - de_kraken(): converte o ResultadoKraken da ponte do Kraken neste tipo,
-        SEM mudar a ponte do Kraken (ver "Proposta" abaixo).
+      - para_dict() / de_dict(): o resultado em dicionário simples (JSON),
+        para guardar num arquivo e ler de volta sem rodar o OCR de novo (o
+        Kraken leva ~10 s por página).
 
     Só ACHA ONDE ESTÁ O TEXTO. Nenhum campo guarda texto transcrito (Fase 7).
 
-    Os nomes batem com os do ResultadoKraken de propósito (linhas, motivo,
-    detalhe_tecnico, segundos, largura, altura, disponivel, precisa_revisar):
-    quem já lê o Kraken lê este tipo sem mudar nada, e cada linha tem
-    .poligono como a LinhaKraken.
-
-PROPOSTA (não aplicada, 29/09/2026)
-    A ponte do Kraken continua devolvendo o ResultadoKraken dela. Quando a
-    comparação automática for ligada, a proposta é a ponte do Kraken passar a
-    devolver ResultadoOCR direto (motor="kraken", perdidas=falhas_contorno +
-    linhas_sem_contorno, extra={"regioes": ...}) e o de_kraken() sair daqui.
-    Até lá, de_kraken() faz a ponte entre os dois.
+    As três pontes devolvem este tipo direto (a do Kraken desde 29/09/2026;
+    antes ela tinha um ResultadoKraken próprio, com os mesmos nomes).
+    A comparação automática entre eles é core/ocr_comparar.py.
 
 NÃO USA Qt, NÃO IMPORTA ui/, NÃO LEVANTA EXCEÇÃO
-    São só tipos de dados. de_kraken() nunca levanta: um objeto estranho vira
-    um ResultadoOCR "indisponível" com o motivo.
+    São só tipos de dados.
 
 O QUE É SEGURO MUDAR
     Acrescentar campos novos com valor padrão no fim das classes.
 
 O QUE É ARRISCADO MUDAR
-    - Os nomes dos campos que coincidem com o ResultadoKraken (ver acima).
+    - Os nomes dos campos: as três pontes e core/ocr_comparar.py os leem.
     - poligono em float32 (m, 2), pontos (x, y) na imagem ENVIADA à ponte (não
       na página do PDF): a comparação e o item 1.4 fazem máscara com eles.
 """
@@ -138,26 +130,44 @@ def retangulo(x0: float, y0: float, x1: float, y1: float) -> np.ndarray:
     return np.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], dtype=np.float32)
 
 
-def de_kraken(resultado) -> ResultadoOCR:
-    """Converte o ResultadoKraken (core/ocr_kraken.py) em ResultadoOCR.
+def para_dict(resultado: ResultadoOCR) -> dict:
+    """O resultado como dicionário simples, que o json grava (listas, números, textos)."""
+    def linha(l: LinhaOCR) -> dict:
+        d = {"poligono": np.asarray(l.poligono, np.float64).tolist(), "confianca": l.confianca,
+             "palavras": int(l.palavras)}
+        if l.linha_de_base is not None:
+            d["linha_de_base"] = np.asarray(l.linha_de_base, np.float64).tolist()
+        return d
 
-    Não muda a ponte do Kraken; só lê os campos dela. perdidas =
-    falhas_contorno + linhas_sem_contorno (a mesma regra do
-    ResultadoKraken.precisa_revisar). Nunca levanta exceção.
-    """
-    try:
-        if resultado.linhas is None:
-            return ResultadoOCR(MOTOR_KRAKEN, None, motivo=resultado.motivo,
-                                detalhe_tecnico=resultado.detalhe_tecnico)
-        linhas = [LinhaOCR(np.asarray(l.poligono, np.float32).reshape(-1, 2),
-                           linha_de_base=np.asarray(l.linha_de_base, np.float32).reshape(-1, 2))
-                  for l in resultado.linhas]
-        return ResultadoOCR(
-            MOTOR_KRAKEN, linhas, palavras=None,
-            perdidas=int(resultado.falhas_contorno) + int(resultado.linhas_sem_contorno),
-            segundos=float(resultado.segundos), largura=int(resultado.largura),
-            altura=int(resultado.altura), extra={"regioes": dict(resultado.regioes or {})})
-    except Exception as erro:   # objeto estranho: aviso, nunca exceção
-        return indisponivel(MOTOR_KRAKEN, "O resultado do detector de linhas do Kraken veio num formato "
-                                          "que o programa não entendeu.",
-                            f"{type(erro).__name__}: {erro}")
+    return {
+        "motor": resultado.motor,
+        "linhas": None if resultado.linhas is None else [linha(l) for l in resultado.linhas],
+        "palavras": None if resultado.palavras is None else
+        [{"caixa": list(p.caixa), "confianca": p.confianca} for p in resultado.palavras],
+        "perdidas": int(resultado.perdidas), "motivo": resultado.motivo,
+        "detalhe_tecnico": resultado.detalhe_tecnico, "segundos": float(resultado.segundos),
+        "largura": int(resultado.largura), "altura": int(resultado.altura),
+        "extra": resultado.extra,
+    }
+
+
+def de_dict(dados: dict) -> ResultadoOCR:
+    """O contrário de para_dict(). Levanta KeyError/TypeError/ValueError se o dicionário
+    estiver fora do formato (quem lê de arquivo deve tratar)."""
+    def linha(d: dict) -> LinhaOCR:
+        base = d.get("linha_de_base")
+        return LinhaOCR(np.asarray(d["poligono"], np.float32).reshape(-1, 2), d.get("confianca"),
+                        int(d.get("palavras", 0)),
+                        None if base is None else np.asarray(base, np.float32).reshape(-1, 2))
+
+    linhas = dados["linhas"]
+    palavras = dados.get("palavras")
+    return ResultadoOCR(
+        str(dados["motor"]),
+        None if linhas is None else [linha(d) for d in linhas],
+        palavras=None if palavras is None else
+        [PalavraOCR(tuple(float(v) for v in p["caixa"]), p.get("confianca")) for p in palavras],
+        perdidas=int(dados.get("perdidas", 0)), motivo=dados.get("motivo"),
+        detalhe_tecnico=dados.get("detalhe_tecnico"), segundos=float(dados.get("segundos", 0.0)),
+        largura=int(dados.get("largura", 0)), altura=int(dados.get("altura", 0)),
+        extra=dict(dados.get("extra") or {}))

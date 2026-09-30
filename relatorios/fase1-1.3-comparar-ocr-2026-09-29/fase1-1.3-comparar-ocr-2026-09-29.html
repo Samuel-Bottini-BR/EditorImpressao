@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Item 1.3: comparação automática entre os OCRs</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Item 1.3: comparação automática entre os OCRs</h1>
+<p><strong>29/09/2026 · implementador · teste de máquina (calibração). Nada foi ligado ao programa.</strong></p>
+<blockquote>
+<p><strong>Atenção, Samuel:</strong> isto ainda não aparece no programa. O programa ainda não roda os OCRs nem tem o "Para revisar" deles. A calibração usou o que já se sabia das 22 páginas da comparação de 28/09, e a folga entre página boa e página com erro é pequena (seção 4).</p>
+</blockquote>
+<h2>1. Em poucas palavras</h2>
+<ol>
+<li>Com o par de fábrica (docTR + Kraken), <strong>10 das 22 páginas vão para "Para revisar"</strong>, e cada uma delas tem um erro já conhecido. <strong>Nenhuma página boa foi para revisar à toa.</strong></li>
+<li><strong>Uma página com erro passa sem aviso: o Graduale 223.</strong> Ali os dois OCRs perdem <strong>o mesmo</strong> pedaço de texto. Comparando um com o outro, não há como ver isso.</li>
+<li>Em 9 das 10 páginas, o lugar marcado é o erro de verdade: caixa do docTR na borda do retrato ou na mancha do verso, "linha" do Kraken na moldura ou no diagrama, palavra que um viu e o outro não. No <strong>Opus Majus 3</strong>, a página foi para revisar pelo motivo errado. O lugar marcado é o vão entre "OPUS" e "MAJUS": o Kraken desenha uma linha só, o docTR desenha duas.</li>
+<li><strong>O texto que vai para o item 1.4 é decidido por voto, linha por linha.</strong> Uma linha entra quando os dois OCRs a veem. O que só um viu fica de fora, e a página vai para revisar.</li>
+<li><strong>Com o Tesseract ligado, quase todas as páginas vão para revisar</strong> (20 ou 21 de 22). As "linhas" dele pegam blocos inteiros e não batem com as dos outros. Isso reforça a decisão de deixá-lo desligado.</li>
+</ol>
+<h2>2. O que é "discordar"</h2>
+<table>
+<thead>
+<tr>
+<th>Conta?</th>
+<th>O quê</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>sim</strong></td>
+<td>Um pedaço de página que um OCR marca como texto e o outro não, do tamanho de uma palavra ou maior (1,4 "quadrados de altura de linha"; uma letra grande dá cerca de 1).</td>
+<td>É o erro que importa: caixa em gravura ou na mancha do verso, ou palavra perdida.</td>
+</tr>
+<tr>
+<td><strong>sim</strong></td>
+<td>O próprio OCR avisa que perdeu linhas (o Kraken, na tabela do Opus Majus 256: 8 linhas).</td>
+<td>Texto sumido em silêncio.</td>
+</tr>
+<tr>
+<td><strong>sim</strong></td>
+<td>Um OCR ligado não conseguiu ler a página.</td>
+<td>Não houve comparação.</td>
+</tr>
+<tr>
+<td>não</td>
+<td>Uma letra solta a mais ou a menos.</td>
+<td>Aparece em quase toda página (as letrinhas da coluna do calendário das Horas 26).</td>
+</tr>
+<tr>
+<td>não</td>
+<td>Borda da caixa diferente.</td>
+<td>O docTR desenha retângulos e o Kraken desenha contornos colados na letra; a comparação dá uma folga de 0,35 altura de linha.</td>
+</tr>
+<tr>
+<td>não</td>
+<td>Número de linhas muito diferente, ou uma linha partida em duas.</td>
+<td>Varia demais em página boa: na Horas 27 o docTR acha 38 linhas e o Kraken 74, porque o Kraken separa as colunas do calendário. Esses números ficam guardados nas medidas, mas não decidem.</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Página a página (docTR + Kraken)</h2>
+<p>A "maior zona" é o maior pedaço de desacordo, em quadrados de altura de linha. O limite é 1,4.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Decisão</th>
+<th>Maior zona</th>
+<th>Motivo que o programa daria</th>
+<th>O que já se sabia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Palatino 5</td>
+<td><strong>revisar</strong></td>
+<td>2,16</td>
+<td>O docTR achou texto nesta área e o Kraken não</td>
+<td>docTR: caixinhas na borda do retrato <strong>(é isso que foi marcado)</strong></td>
+</tr>
+<tr>
+<td>Palatino 7</td>
+<td><strong>revisar</strong></td>
+<td>9,35</td>
+<td>O docTR achou texto em 3 lugares e o Kraken não; o Kraken achou texto nesta área e o docTR não</td>
+<td>docTR: caixas em letras fantasmas da mancha do verso; Kraken: contorno grande no papel embaixo</td>
+</tr>
+<tr>
+<td>Palatino 9</td>
+<td><strong>revisar</strong></td>
+<td>4,02</td>
+<td>O docTR achou texto em 2 lugares e o Kraken não</td>
+<td>docTR: caixas nos fantasmas da mancha do verso <strong>(marcado)</strong></td>
+</tr>
+<tr>
+<td>Palatino 10</td>
+<td>concorda</td>
+<td>0,60</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Escola 7</td>
+<td>concorda</td>
+<td>0,72</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Horas 11</td>
+<td><strong>revisar</strong></td>
+<td>1,92</td>
+<td>O Kraken achou texto nesta área e o docTR não</td>
+<td>Kraken: contorno na iluminura <strong>(marcado)</strong> e perde parte do título</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td><strong>revisar</strong></td>
+<td>3,05</td>
+<td>O docTR achou texto nesta área e o Kraken não</td>
+<td>Kraken perde o "DE" grande <strong>(marcado)</strong>; docTR encosta na moldura</td>
+</tr>
+<tr>
+<td>Horas 47</td>
+<td>concorda</td>
+<td>0,00</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Opus Majus 11</td>
+<td>concorda</td>
+<td>1,13</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Opus Majus 3</td>
+<td><strong>revisar</strong></td>
+<td>1,64</td>
+<td>O Kraken achou texto nesta área e o docTR não</td>
+<td>docTR no emblema e Kraken perde o "OF". <strong>O que foi marcado é outra coisa:</strong> o vão entre OPUS e MAJUS</td>
+</tr>
+<tr>
+<td>Opus Majus 20</td>
+<td>concorda</td>
+<td>0,00</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Opus Majus 165</td>
+<td><strong>revisar</strong></td>
+<td>1,65</td>
+<td>O Kraken achou texto nesta área e o docTR não</td>
+<td>Kraken: linha num traço do diagrama <strong>(marcado)</strong></td>
+</tr>
+<tr>
+<td>Opus Majus 256</td>
+<td><strong>revisar</strong></td>
+<td>73,57</td>
+<td>O Kraken avisou que não conseguiu desenhar 8 linhas; o docTR achou texto em 93 lugares e o Kraken não; o Kraken achou texto em 5 lugares e o docTR não</td>
+<td>Kraken perde a tabela</td>
+</tr>
+<tr>
+<td>Horas 26</td>
+<td>concorda</td>
+<td>1,11</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Horas 27</td>
+<td>concorda</td>
+<td>0,47</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Escola 35</td>
+<td>concorda</td>
+<td>0,70</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Rhetorica 18</td>
+<td>concorda</td>
+<td>0,86</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Siebmacher 9</td>
+<td><strong>revisar</strong></td>
+<td>42,39</td>
+<td>O Kraken achou texto em 14 lugares e o docTR não</td>
+<td>Kraken: toma a moldura ornamental por texto <strong>(marcado)</strong></td>
+</tr>
+<tr>
+<td>Palatino 57</td>
+<td><strong>revisar</strong></td>
+<td>1,65</td>
+<td>O docTR achou texto nesta área e o Kraken não</td>
+<td>os dois perdem parte do título; o Kraken perde o "QR" <strong>(marcado)</strong></td>
+</tr>
+<tr>
+<td>Graduale 221</td>
+<td>concorda</td>
+<td>0,94</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Graduale 222</td>
+<td>concorda</td>
+<td>0,00</td>
+<td>-</td>
+<td>boa</td>
+</tr>
+<tr>
+<td>Graduale 223</td>
+<td>concorda</td>
+<td>0,00</td>
+<td>-</td>
+<td><strong>erro não pego:</strong> os dois perdem o mesmo texto</td>
+</tr>
+</tbody>
+</table>
+<p>Cada frase de motivo termina com "confira se há texto ou mancha." Na tela, cada lugar marcado virá com a caixa dele (as imagens da pasta <code>zonas\</code> mostram o docTR em azul, o Kraken em vermelho e o lugar marcado em verde).</p>
+<p><strong>Resultado: a decisão bate com o que se sabia em 21 de 22 páginas. Nenhuma página foi para revisar à toa, e um erro conhecido não foi pego (Graduale 223).</strong></p>
+<h3>Com o Tesseract ligado (fica desligado de fábrica)</h3>
+<table>
+<thead>
+<tr>
+<th>OCRs ligados</th>
+<th>Vão para revisar</th>
+<th>Concordam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>docTR + Tesseract</td>
+<td>21 de 22</td>
+<td>só o Opus 20</td>
+</tr>
+<tr>
+<td>Kraken + Tesseract</td>
+<td>19 de 22</td>
+<td>Palatino 10, Opus 20, Horas 26</td>
+</tr>
+<tr>
+<td>os três</td>
+<td>21 de 22</td>
+<td>só o Opus 20</td>
+</tr>
+</tbody>
+</table>
+<p>O Tesseract desenha "linhas" que cobrem blocos inteiros, incluindo o espaço entre colunas e a gravura (Siebmacher, Escola 7, Opus 3). Ele também não acha nada na Horas 11 nem no Graduale 222. Ligado, ele manda quase tudo para revisar.</p>
+<h2>4. Como foi calibrado, e a folga</h2>
+<ul>
+<li>Os limites foram escolhidos varrendo a folga (0,15 a 0,5 altura de linha), a espessura mínima (0,2 a 0,9) e o tamanho mínimo, até separar as páginas com erro das boas.</li>
+<li>O que ficou: <strong>folga 0,35, espessura mínima 0,4, tamanho mínimo 1,4.</strong></li>
+<li>A maior zona numa página boa foi <strong>1,13</strong> (Opus 11). A menor numa página com erro foi <strong>1,64</strong> (Opus 3). A folga entre as duas é de cerca de 20% de cada lado do limite. <strong>É pouca.</strong> Um livro diferente dos 22 pode cair do lado errado, e o risco maior é página boa indo para revisar.</li>
+<li>Comparar custa <strong>39 ms por página</strong> (mediana; a mais lenta, a tabela do Opus 256, levou 210 a 390 ms).</li>
+</ul>
+<h2>5. O texto que vai para o item 1.4: voto por linha</h2>
+<p>Medido com a régua da comparação de 28/09: zonas do gabarito, tinta pela Sauvola, caixas alargadas 15%.</p>
+<table>
+<thead>
+<tr>
+<th>Como juntar</th>
+<th>Texto achado (média, 19 páginas)</th>
+<th>Sem o Opus 256</th>
+<th>Páginas com mais de 1% de figura tomada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>União (qualquer um dos dois)</td>
+<td>99,1%</td>
+<td>99,8%</td>
+<td><strong>7</strong> (Palatino 5 e 9, Horas 13 e 47, Opus 3 e 165, Siebmacher 9)</td>
+</tr>
+<tr>
+<td>Interseção (ponto a ponto, os dois)</td>
+<td>95,0%</td>
+<td>98,5%</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>Voto por linha (escolhido)</strong></td>
+<td>96,1%</td>
+<td><strong>99,4%</strong></td>
+<td><strong>2</strong> (Horas 13: 8,5%; Horas 47: 1,07%)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Por que o voto:</strong> ele tira as caixas que só um OCR viu, que quase sempre caem em figura. Ao mesmo tempo guarda a linha inteira quando os dois a veem. A interseção ponto a ponto corta a letra onde um contorno é mais justo que o outro: o título da Horas 11 cai para 96,9%, o Palatino 57 para 94%, o Graduale 221 para 96,9%.</li>
+<li><strong>As duas páginas acima de 1%</strong> vêm do alargamento de 15%. Os dois OCRs veem a linha colada na moldura dourada, e a caixa alargada encosta nela. É o problema já anotado no relatório de 28/09, para o item 1.5. A Horas 13 vai para revisar de qualquer jeito; a Horas 47 (1,07%) não vai.</li>
+<li>A máscara entregue ao 1.4 <strong>não</strong> leva o alargamento de 15%. Quanto alargar é decisão do 1.4.</li>
+</ul>
+<h2>6. O que deu errado no caminho</h2>
+<ol>
+<li><strong>A primeira ideia, comparar linha por linha</strong> ("esta linha do docTR está coberta pelo Kraken?"), não separava as páginas. Uma linha do Tesseract que cobre meio parágrafo fica "meio coberta". Troquei por comparar <strong>áreas</strong>: o que um cobre e o outro não, sem as lascas de borda.</li>
+<li><strong>Número de linhas e linha partida</strong> foram medidos e descartados como critério (seção 2).</li>
+<li><strong>No Opus Majus 3, a decisão certa sai pelo motivo errado.</strong> O erro real (caixa pequena no emblema, "OF" perdido) é menor que o limite.</li>
+</ol>
+<h2>7. Ressalvas</h2>
+<ul>
+<li><strong>Calibrado nas mesmas 22 páginas em que foi medido.</strong> Não há páginas separadas para confirmar. A folga é pequena (seção 4).</li>
+<li>O "erro conhecido" de cada página vem do relatório de 28/09, com as zonas ainda <strong>não conferidas</strong> pelo Samuel. O do Palatino 7 eu vi na folha de contato nesta tarefa.</li>
+<li>O Graduale 223 mostra o limite do método: quando os dois erram igual, a comparação não vê.</li>
+<li>Uma letra solta que só um OCR viu não manda para revisar, e também fica fora do texto combinado. Se a letra existe de verdade, o 1.4 pode tratá-la como não-texto.</li>
+<li>Os resultados das pontes foram guardados em <code>saida_teste\ocr-comparar\</code> (fora do git). Com <code>OCR_22=1</code>, o teste roda as pontes de verdade e confere a mesma decisão.</li>
+</ul>
+<h2>8. Arquivos</h2>
+<ul>
+<li><code>core\ocr_comparar.py</code>: a comparação (<code>comparar()</code>), com o que é seguro e arriscado mudar.</li>
+<li><code>tests\test_ocr_comparar.py</code>: testes sintéticos e as 22 páginas.</li>
+<li><code>scripts\rodar_pontes.py</code>: roda as três pontes nas 22 páginas e guarda o resultado.</li>
+<li><code>scripts\calibrar.py</code>: refaz as seções 3 e 5 e grava <code>resultados.json</code>.</li>
+<li><code>zonas\</code>: as 10 páginas que vão para revisar (docTR azul, Kraken vermelho, lugar marcado verde).</li>
+</ul>
+<h2>9. As 10 páginas que vão para revisar</h2>
+<p>docTR em azul, Kraken em vermelho, lugar marcado em verde.</p>
+<h4 style="page-break-before: always">horas_p011</h4>
+<p><img src="zonas/horas_p011.jpg" alt="horas_p011"></p>
+
+<h4 style="page-break-before: always">horas_p013</h4>
+<p><img src="zonas/horas_p013.jpg" alt="horas_p013"></p>
+
+<h4 style="page-break-before: always">opusmajus_p003</h4>
+<p><img src="zonas/opusmajus_p003.jpg" alt="opusmajus_p003"></p>
+
+<h4 style="page-break-before: always">opusmajus_p165</h4>
+<p><img src="zonas/opusmajus_p165.jpg" alt="opusmajus_p165"></p>
+
+<h4 style="page-break-before: always">opusmajus_p256</h4>
+<p><img src="zonas/opusmajus_p256.jpg" alt="opusmajus_p256"></p>
+
+<h4 style="page-break-before: always">palatino_p005</h4>
+<p><img src="zonas/palatino_p005.jpg" alt="palatino_p005"></p>
+
+<h4 style="page-break-before: always">palatino_p007</h4>
+<p><img src="zonas/palatino_p007.jpg" alt="palatino_p007"></p>
+
+<h4 style="page-break-before: always">palatino_p009</h4>
+<p><img src="zonas/palatino_p009.jpg" alt="palatino_p009"></p>
+
+<h4 style="page-break-before: always">palatino_p057</h4>
+<p><img src="zonas/palatino_p057.jpg" alt="palatino_p057"></p>
+
+<h4 style="page-break-before: always">siebmacher_p009</h4>
+<p><img src="zonas/siebmacher_p009.jpg" alt="siebmacher_p009"></p>
+<p class="rodape">Editor de Impressão &middot; gerado em 29/09/2026 às 19:56</p>
+</body>
+</html>

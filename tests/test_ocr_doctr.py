@@ -1,4 +1,4 @@
-"""Testes da ponte até o docTR (core/ocr_doctr.py) e do tipo comum (core/ocr_comum.py), item 1.3.
+"""Testes da ponte até o docTR (core/ocr_doctr.py), item 1.3.
 
 DUAS PARTES
     1. Sem o modelo (rodam sempre, em segundos): modelo ausente, danificado,
@@ -24,13 +24,12 @@ import importlib.util
 import json
 import time
 from pathlib import Path
-from types import SimpleNamespace
 
 import cv2
 import numpy as np
 import pytest
 
-from core import ocr_comum, ocr_doctr
+from core import ocr_doctr
 from core.ocr_comum import LinhaOCR, ResultadoOCR
 from core.ocr_doctr import DetectorDoctr
 
@@ -242,30 +241,6 @@ def test_core_nao_importa_ui_nem_qt(arquivo):
         elif isinstance(no, ast.ImportFrom) and no.module:
             nomes.add(no.module)
     assert not any(n.split(".")[0] in ("ui", "PySide6", "PyQt5", "PyQt6") for n in nomes), nomes
-
-
-# ---------------------------------------------------------------- o tipo comum
-
-def test_de_kraken_converte_sem_mudar_a_ponte_do_kraken():
-    from core.ocr_kraken import LinhaKraken, ResultadoKraken
-
-    base = np.array([[0, 5], [9, 5]], np.float32)
-    poligono = np.array([[0, 0], [9, 0], [9, 6], [0, 6]], np.float32)
-    kraken = ResultadoKraken([LinhaKraken(base, poligono)], falhas_contorno=2, linhas_sem_contorno=1,
-                             segundos=3.5, largura=10, altura=20, regioes={"text": 1})
-    r = ocr_comum.de_kraken(kraken)
-    assert r.motor == "kraken" and r.disponivel and r.palavras is None
-    assert r.perdidas == 3 and r.precisa_revisar
-    assert np.array_equal(r.linhas[0].poligono, poligono)
-    assert np.array_equal(r.linhas[0].linha_de_base, base)
-    assert (r.largura, r.altura, r.segundos) == (10, 20, 3.5)
-    assert r.extra == {"regioes": {"text": 1}}
-
-    fora = ocr_comum.de_kraken(ResultadoKraken(None, motivo="Cancelado.", detalhe_tecnico="x"))
-    assert not fora.disponivel and fora.motivo == "Cancelado." and fora.detalhe_tecnico == "x"
-
-    estranho = ocr_comum.de_kraken(SimpleNamespace(linhas=[object()]))
-    assert not estranho.disponivel and "não entendeu" in estranho.motivo
 
 
 # =====================================================================

@@ -36,7 +36,8 @@ import numpy as np
 import pytest
 
 from core import ocr_kraken
-from core.ocr_kraken import MotorKraken, ResultadoKraken
+from core.ocr_comum import ResultadoOCR
+from core.ocr_kraken import MotorKraken
 
 RAIZ = Path(__file__).resolve().parent.parent
 PASTA_13 = RAIZ / "saida_teste" / "ocr-1.3"
@@ -129,8 +130,9 @@ def _pagina(altura=40, largura=30, cor=(10, 20, 30)):
     return img
 
 
-def _sem_excecao_e_indisponivel(r: ResultadoKraken, trecho_do_motivo: str):
-    assert isinstance(r, ResultadoKraken)
+def _sem_excecao_e_indisponivel(r: ResultadoOCR, trecho_do_motivo: str):
+    assert isinstance(r, ResultadoOCR)
+    assert r.motor == "kraken"
     assert not r.disponivel
     assert r.linhas is None
     assert trecho_do_motivo in r.motivo
@@ -251,8 +253,10 @@ def test_resposta_certa_e_cores_em_rgb(motor_de_mentira, tmp_path):
     assert r.linhas[0].poligono.shape == (4, 2) and r.linhas[0].poligono.dtype == np.float32
     assert r.linhas[0].linha_de_base.shape == (2, 2)
     assert (r.largura, r.altura) == (30, 40)
-    assert r.falhas_contorno == 2 and r.precisa_revisar
-    assert r.regioes == {"text": 1}
+    assert r.perdidas == 2 and r.precisa_revisar
+    assert r.extra == {"regioes": {"text": 1}, "falhas_contorno": 2, "linhas_sem_contorno": 0}
+    assert r.motor == "kraken" and r.palavras is None
+    assert r.linhas[0].confianca is None and r.linhas[0].palavras == 0
     # o motor recebeu a página em RGB (a ponte inverte o BGR do programa)
     motor._proximo_id  # noqa: B018 - só para deixar claro que é o mesmo motor
     resposta = motor._pedir({"comando": "segmentar", "imagem": _salvar_npy(tmp_path, _pagina(cor=(1, 2, 3)))},
@@ -430,10 +434,10 @@ def test_mesmas_linhas_do_kraken_do_wsl(motor_de_verdade, pagina):
     assert comum / max(1, np.count_nonzero(novo)) >= AREA_MINIMA, pagina
     if pagina == "opusmajus_p256":
         # a tabela: o Kraken perde 8 linhas em silêncio ("Polygonizer failed")
-        assert r.falhas_contorno == 8
-        assert r.precisa_revisar
+        assert r.extra["falhas_contorno"] == 8
+        assert r.perdidas >= 8 and r.precisa_revisar
     elif pagina in ("opusmajus_p020", "graduale_p222", "palatino_p057"):
-        assert r.falhas_contorno == 0 and not r.precisa_revisar
+        assert r.extra["falhas_contorno"] == 0 and not r.precisa_revisar
 
 
 @precisa_do_motor

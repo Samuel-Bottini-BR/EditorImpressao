@@ -1440,3 +1440,59 @@ janela de verdade (motivo, "não foi apagado", caminho da cópia, sem "Você
 mudou as opções") e sem cópia não promete cópia. Em
 `tests/test_mesmo_livro_outro_caminho.py`, a conferência "sem a mensagem"
 passou a exigir nenhum aviso (antes procurava o texto velho).
+
+---
+
+## Tentativa 34 — comparação automática entre os OCRs (item 1.3, 29/09/2026)
+
+**Pedido (Samuel, 29/09):** "comparação automática entre eles (onde
+discordam, a página vai para 'Para revisar')". De fábrica docTR fast_base +
+Kraken; Tesseract instalado mas desligado. **Nada foi ligado ao programa.**
+
+**O que ficou:**
+
+- A ponte do Kraken passou a devolver o tipo comum (`ResultadoOCR`):
+  `perdidas = falhas_contorno + linhas_sem_contorno`, `extra` com as regiões
+  e as duas contagens. O `ResultadoKraken`, a `LinhaKraken` e o `de_kraken()`
+  saíram. `core/ocr_comum.py` ganhou `para_dict`/`de_dict`, para guardar um
+  resultado em JSON e ler de volta sem rodar o OCR de novo.
+- `core/ocr_comparar.py`: `comparar(resultados)` diz se a página vai para
+  revisar e por quê, em português comum. Também devolve as zonas de desacordo
+  e a máscara de texto combinado para o 1.4.
+  - **Discordar** é: uma área do tamanho de uma palavra ou maior (1,4
+    quadrados de altura de linha) que um OCR marca como texto e o outro não,
+    com folga de 0,35 altura de linha e sem as lascas mais finas que 0,4; uma
+    linha perdida avisada pelo próprio OCR; ou um OCR ligado que falhou.
+  - **Máscara**: voto por linha. A linha entra se a maioria dos OCRs a vê.
+- `tests/test_ocr_comparar.py`: 16 testes sintéticos e as 22 páginas. Com
+  `OCR_22=1`, roda também as pontes de verdade.
+- `relatorios/fase1-1.3-comparar-ocr-2026-09-29/`: relatório (três formatos),
+  `rodar_pontes.py`, `calibrar.py`, `resultados.json` e as imagens das zonas.
+
+**Resultado (docTR + Kraken, 22 páginas):**
+
+- 10 vão para revisar e todas têm erro conhecido; 0 revisar à toa.
+- 1 erro conhecido não pego: no Graduale 223, os dois perdem o mesmo texto.
+- No Opus 3, a página vai para revisar certo, mas pelo vão entre "OPUS" e
+  "MAJUS", não pelo erro real.
+- Com o Tesseract ligado, vão para revisar 19 a 21 de 22.
+- Voto por linha: 99,4% do texto achado sem contar o Opus 256; 2 páginas
+  acima de 1% de figura (Horas 13 e 47, pelo alargamento de 15% colado na
+  moldura). A união dá 7 páginas acima de 1% de figura; a interseção perde
+  texto (98,5%).
+- Comparar leva 39 ms por página (mediana).
+
+**O que falhou (não repetir):**
+
+1. Comparar linha por linha ("esta linha está coberta pelo outro?") não
+   separava as páginas: uma linha do Tesseract que cobre meio parágrafo fica
+   "meio coberta". Comparar áreas separou.
+2. Número de linhas e "linha partida em duas" não servem para decidir: em
+   página boa variam demais (Horas 27: 38 × 74 linhas; 20 linhas partidas).
+   Ficam só como medida.
+3. Primeira versão das frases: `str.capitalize()` escrevia "O doctr" e
+   "o Kraken" com a caixa errada; consertado.
+
+**Ressalva principal:** calibrado nas mesmas 22 páginas em que foi medido, e
+a folga é pequena (maior zona em página boa 1,13; menor em página com erro
+1,64; limite 1,4).

@@ -28,7 +28,7 @@ O QUE FAZ
 NADA AQUI DERRUBA O PROGRAMA
     Motor ausente, motor que não abre, que morre no meio, que responde errado,
     que passa do tempo, ou pedido cancelado: segmentar() devolve um
-    ResultadoKraken "indisponível" (linhas None), com o motivo em português
+    ResultadoOCR "indisponível" (linhas None), com o motivo em português
     (para a tela) e o detalhe técnico (para o erros.log, via logging). Nenhuma
     exceção sai daqui. Motor que passou do tempo, foi cancelado ou respondeu
     errado é FECHADO À FORÇA (só o processo do motor, nunca o programa).
@@ -51,7 +51,8 @@ AINDA NÃO ESTÁ LIGADO AO PROGRAMA (29/09/2026)
     O Kraken 7.1.1, quando não consegue desenhar o contorno de uma linha,
     avisa "Polygonizer failed" e JOGA A LINHA FORA sem dizer nada a quem
     chamou (a pesquisa achou 8 linhas perdidas no Opus Majus 256). O motor
-    conta esses avisos: ResultadoKraken.falhas_contorno. precisa_revisar é
+    conta esses avisos: extra["falhas_contorno"]; eles entram em
+    ResultadoOCR.perdidas, e precisa_revisar é
     True quando há falha.
 
 O QUE É SEGURO MUDAR
@@ -83,11 +84,12 @@ import sys
 import tempfile
 import threading
 import time
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
 import numpy as np
+
+from core.ocr_comum import MOTOR_KRAKEN, LinhaOCR, ResultadoOCR, indisponivel
 
 _log = logging.getLogger(__name__)
 
@@ -157,57 +159,20 @@ def achar_pasta_do_motor() -> Path | None:
     return None
 
 
-@dataclass(frozen=True)
-class LinhaKraken:
-    """Uma linha de texto achada pelo Kraken, em pontos da imagem enviada.
-
-    linha_de_base: float32 (n, 2), pontos (x, y) da linha em que as letras "assentam".
-    poligono: float32 (m, 2), o contorno da linha (m >= 3).
-    """
-
-    linha_de_base: np.ndarray
-    poligono: np.ndarray
-
-
-@dataclass(frozen=True)
-class ResultadoKraken:
-    """O que segmentar() devolve.
-
-    linhas: as linhas achadas; None = indisponível (ver motivo).
-    falhas_contorno: quantas linhas o Kraken jogou fora por não conseguir o
-        contorno ("Polygonizer failed"). > 0 manda a página para "Para revisar".
-    linhas_sem_contorno: linhas que vieram com contorno vazio (não entram em linhas).
-    motivo: por que ficou indisponível, em português (para a tela). None se deu certo.
-    detalhe_tecnico: o erro de verdade, para o erros.log (nunca para a tela).
-    segundos: quanto o motor levou na página (sem contar abrir o motor).
-    largura, altura: da imagem que o motor recebeu.
-    regioes: quantas regiões de cada tipo o Kraken achou (ex.: {"text": 4}).
-    """
-
-    linhas: list[LinhaKraken] | None
-    falhas_contorno: int = 0
-    linhas_sem_contorno: int = 0
-    motivo: str | None = None
-    detalhe_tecnico: str | None = None
-    segundos: float = 0.0
-    largura: int = 0
-    altura: int = 0
-    regioes: dict = field(default_factory=dict)
-
-    @property
-    def disponivel(self) -> bool:
-        return self.linhas is not None
-
-    @property
-    def precisa_revisar(self) -> bool:
-        """O Kraken perdeu linhas nesta página (e não avisou a ninguém além do motor)."""
-        return self.falhas_contorno > 0 or self.linhas_sem_contorno > 0
+# O resultado é o tipo comum dos OCRs (core/ocr_comum.py, desde 29/09/2026;
+# antes era um ResultadoKraken próprio). Do Kraken:
+#   - linhas: LinhaOCR com poligono (o contorno) E linha_de_base; confianca
+#     None e palavras 0 (o Kraken não separa palavras); palavras do resultado None;
+#   - perdidas = falhas_contorno + linhas_sem_contorno (> 0 = "Para revisar");
+#   - extra: {"regioes": {"text": 4, ...}, "falhas_contorno": n,
+#     "linhas_sem_contorno": m}.
+# "falhas_contorno": linhas que o Kraken jogou fora por não conseguir o
+# contorno ("Polygonizer failed"); "linhas_sem_contorno": linhas que vieram com
+# contorno vazio (não entram em linhas).
 
 
-def _indisponivel(motivo: str, detalhe: str | None = None) -> ResultadoKraken:
-    if detalhe:
-        _log.warning("ocr_kraken: %s (%s)", motivo, detalhe)
-    return ResultadoKraken(None, motivo=motivo, detalhe_tecnico=detalhe)
+def _indisponivel(motivo: str, detalhe: str | None = None) -> ResultadoOCR:
+    return indisponivel(MOTOR_KRAKEN, motivo, detalhe)
 
 
 class _MotorNaoRespondeu(Exception):
@@ -245,7 +210,7 @@ class MotorKraken:
         self._respostas: queue.Queue = queue.Queue()
         self._erros_do_motor: collections.deque[str] = collections.deque(maxlen=60)
         self._proximo_id = 0
-        self._falha_ao_abrir: ResultadoKraken | None = None
+        self._falha_ao_abrir: ResultadoOCR | None = None
         self._tranca = threading.RLock()
 
     # ------------------------------------------------------------ abrir e fechar
@@ -260,7 +225,7 @@ class MotorKraken:
     def aberto(self) -> bool:
         return self._processo is not None and self._processo.poll() is None
 
-    def _comando(self) -> tuple[list[str] | None, Path | None, ResultadoKraken | None]:
+    def _comando(self) -> tuple[list[str] | None, Path | None, ResultadoOCR | None]:
         if self._comando_de_teste:
             return self._comando_de_teste, None, None
         pasta = self.pasta if self.pasta is not None else achar_pasta_do_motor()
@@ -270,7 +235,7 @@ class MotorKraken:
         python = pasta / "python" / "python.exe"
         return [str(python), "-I", "-X", "utf8", str(pasta / NOME_DO_SERVIDOR)], pasta, None
 
-    def _abrir(self) -> ResultadoKraken | None:
+    def _abrir(self) -> ResultadoOCR | None:
         """Abre o motor, se ainda não estiver aberto. Devolve None se deu certo, ou o aviso."""
         if self.aberto:
             return None
@@ -436,7 +401,7 @@ class MotorKraken:
     # ------------------------------------------------------------ o que se pede
 
     def segmentar(self, imagem: np.ndarray | str | Path, *, ordem: str = "BGR",
-                  cancelar: Callable[[], bool] | None = None) -> ResultadoKraken:
+                  cancelar: Callable[[], bool] | None = None) -> ResultadoOCR:
         """Acha as linhas de texto de UMA página.
 
         imagem: uint8, altura x largura (cinza) ou altura x largura x 3 (BGR,
@@ -452,7 +417,7 @@ class MotorKraken:
             _log.exception("ocr_kraken: erro inesperado")
             return _indisponivel(_AVISO_PAGINA, f"{type(erro).__name__}: {erro}")
 
-    def _segmentar(self, imagem, ordem: str, cancelar) -> ResultadoKraken:
+    def _segmentar(self, imagem, ordem: str, cancelar) -> ResultadoOCR:
         temporario = None
         try:
             if isinstance(imagem, (str, Path)):
@@ -523,8 +488,8 @@ def _para_rgb(imagem, ordem: str) -> np.ndarray | None:
     return np.ascontiguousarray(tres)
 
 
-def _ler_resultado(resposta: dict) -> ResultadoKraken:
-    """Transforma a resposta do motor em ResultadoKraken, conferindo o formato."""
+def _ler_resultado(resposta: dict) -> ResultadoOCR:
+    """Transforma a resposta do motor em ResultadoOCR, conferindo o formato."""
     if not resposta.get("ok"):
         return _indisponivel(_AVISO_PAGINA, f"o motor recusou a página: {resposta.get('erro')!r}")
     try:
@@ -534,19 +499,20 @@ def _ler_resultado(resposta: dict) -> ResultadoKraken:
             poligono = np.asarray(item["poligono"], dtype=np.float32).reshape(-1, 2)
             if len(poligono) < 3 or not (np.isfinite(base).all() and np.isfinite(poligono).all()):
                 raise ValueError("linha com contorno inválido")
-            linhas.append(LinhaKraken(base, poligono))
-        return ResultadoKraken(
-            linhas,
-            falhas_contorno=int(resposta.get("falhas_contorno", 0)),
-            linhas_sem_contorno=int(resposta.get("linhas_sem_contorno", 0)),
+            linhas.append(LinhaOCR(poligono, linha_de_base=base))
+        falhas = int(resposta.get("falhas_contorno", 0))
+        sem_contorno = int(resposta.get("linhas_sem_contorno", 0))
+        return ResultadoOCR(
+            MOTOR_KRAKEN, linhas, palavras=None, perdidas=falhas + sem_contorno,
             segundos=float(resposta.get("segundos", 0.0)),
             largura=int(resposta.get("largura", 0)), altura=int(resposta.get("altura", 0)),
-            regioes=dict(resposta.get("regioes") or {}))
+            extra={"regioes": dict(resposta.get("regioes") or {}),
+                   "falhas_contorno": falhas, "linhas_sem_contorno": sem_contorno})
     except (KeyError, TypeError, ValueError) as erro:
         return _indisponivel(_AVISO_RESPOSTA, f"resposta fora do formato: {erro}; {str(resposta)[:300]}")
 
 
-def segmentar_pagina(imagem: np.ndarray | str | Path, **opcoes) -> ResultadoKraken:
+def segmentar_pagina(imagem: np.ndarray | str | Path, **opcoes) -> ResultadoOCR:
     """Atalho para UMA página só: abre o motor, segmenta e fecha (paga os 6-7 s de abrir).
 
     Para um livro, use MotorKraken diretamente e mantenha-o aberto.
