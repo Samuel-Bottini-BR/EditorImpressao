@@ -1,0 +1,3102 @@
+{
+ "antes": {
+  "R0": {
+   "texto_medio_19": 0.9299201601004211,
+   "paginas_98": "9 de 12",
+   "pior_pagina": [
+    0.30411848245080136,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.010571265827711009,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.013915582451552673,
+    "palatino_p005"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.006569893119832445,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "T1": {
+   "texto_medio_19": 0.9381389992853862,
+   "paginas_98": "15 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.05030196035421524,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.04748494562449444,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.04277329446352949,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "T2": {
+   "texto_medio_19": 0.9222439267817361,
+   "paginas_98": "14 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.05030196035421524,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.04748494562449444,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.04277329446352949,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "siebmacher_p009"
+   ]
+  },
+  "T3a": {
+   "texto_medio_19": 0.900657820835384,
+   "paginas_98": "12 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.038856831521335344,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.0413658288145241,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.030330475883857594,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "T3b": {
+   "texto_medio_19": 0.8211334691304291,
+   "paginas_98": "6 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.04652347578125829,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.03995775787171575,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.04039228311746205,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "D1": {
+   "texto_medio_19": 0.9739447383849241,
+   "paginas_98": "15 de 19",
+   "pior_pagina": [
+    0.6268530372671242,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.12511370792806661,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.10406243446478325,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.025537634408602152,
+    "horas_p027"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p003",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "D2": {
+   "texto_medio_19": 0.9866843567925774,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.8688269985518501,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.08235952697501925,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.05228586836034633,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.011813071150845737,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "opusmajus_p003",
+    "palatino_p005",
+    "palatino_p009"
+   ]
+  },
+  "P1": {
+   "texto_medio_19": 0.9920038640138531,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.9468207107102453,
+    "palatino_p057"
+   ],
+   "figura_pior_obrigatoria": [
+    0.481211945388869,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "escola_p035",
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.5275441842963259,
+    "palatino_p005"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.3086788394250194,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "escola_p035",
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "escola_p007",
+    "escola_p035",
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "siebmacher_p009"
+   ]
+  },
+  "P2": {
+   "texto_medio_19": 0.9914221026341093,
+   "paginas_98": "15 de 19",
+   "pior_pagina": [
+    0.9597316375287707,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.12504373381848716,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.10135114892597141,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.02162199986005178,
+    "horas_p013"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "horas_p013"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p003",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "siebmacher_p009"
+   ]
+  },
+  "P3": {
+   "texto_medio_19": 0.9870769971094937,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.880941311389031,
+    "palatino_p057"
+   ],
+   "figura_pior_obrigatoria": [
+    0.09264572108319921,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013"
+   ],
+   "area_pior_obrigatoria": [
+    0.07215614607987057,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0020292491778042127,
+    "horas_p013"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p003",
+    "palatino_p009",
+    "siebmacher_p009"
+   ]
+  },
+  "K1": {
+   "texto_medio_19": 0.9549625175537976,
+   "paginas_98": "14 de 19",
+   "pior_pagina": [
+    0.3320251012655571,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.009026660135749773,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [],
+   "area_pior_obrigatoria": [
+    0.025060666886365678,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.005408548996801396,
+    "horas_p011"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "opusmajus_p165",
+    "siebmacher_p009"
+   ]
+  },
+  "K1+D2 concordam": {
+   "texto_medio_19": 0.9502765009724904,
+   "paginas_98": "12 de 19",
+   "pior_pagina": [
+    0.32064977857997357,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.006787488629207194,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [],
+   "area_pior_obrigatoria": [
+    0.020439497887893586,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": []
+  },
+  "K1+D2 qualquer": {
+   "texto_medio_19": 0.9913703733738845,
+   "paginas_98": "18 de 19",
+   "pior_pagina": [
+    0.8802023212374336,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.08459869848156182,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.05690703735881842,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "siebmacher_p009"
+   ]
+  },
+  "voto": {
+   "texto_medio_19": 0.9607562369249522,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.36953008583961217,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.08459869848156182,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013"
+   ],
+   "area_pior_obrigatoria": [
+    0.05690703735881842,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p047"
+   ]
+  }
+ },
+ "depois": {
+  "R0": {
+   "texto_medio_19": 0.9298780817311424,
+   "paginas_98": "9 de 12",
+   "pior_pagina": [
+    0.3042367662290401,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.010571265827711009,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.013915582451552673,
+    "palatino_p005"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.006569893119832445,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "T1": {
+   "texto_medio_19": 0.938092955379197,
+   "paginas_98": "15 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.05030196035421524,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.08729794933655007,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.04277329446352949,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "T2": {
+   "texto_medio_19": 0.9222003267155165,
+   "paginas_98": "14 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.05030196035421524,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.08729794933655007,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.04277329446352949,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "siebmacher_p009"
+   ]
+  },
+  "T3a": {
+   "texto_medio_19": 0.9006715422859382,
+   "paginas_98": "12 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.038856831521335344,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.0780940892641737,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.030330475883857594,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "T3b": {
+   "texto_medio_19": 0.8211291010322782,
+   "paginas_98": "6 de 19",
+   "pior_pagina": [
+    0.0,
+    "horas_p011"
+   ],
+   "figura_pior_obrigatoria": [
+    0.04652347578125829,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "escola_p035",
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.07028950542822678,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.04039228311746205,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "escola_p035",
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "escola_p035",
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "D1": {
+   "texto_medio_19": 0.9740079329219946,
+   "paginas_98": "15 de 19",
+   "pior_pagina": [
+    0.62710998516362,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.15373189751206834,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.1936550060313631,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.03502908775838594,
+    "horas_p013"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "palatino_p057",
+    "siebmacher_p009"
+   ]
+  },
+  "D2": {
+   "texto_medio_19": 0.9867493902552301,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.8691529266858886,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.11560836737219952,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.10490952955367913,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.014234434954821141,
+    "horas_p013"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009"
+   ]
+  },
+  "P1": {
+   "texto_medio_19": 0.9920378139142383,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.9468207107102453,
+    "palatino_p057"
+   ],
+   "figura_pior_obrigatoria": [
+    0.481211945388869,
+    "palatino_p005"
+   ],
+   "obrigatorias_acima_1pct": [
+    "escola_p035",
+    "horas_p013",
+    "horas_p026",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.5275441842963259,
+    "palatino_p005"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.3086788394250194,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "escola_p035",
+    "horas_p013",
+    "palatino_p005"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "escola_p007",
+    "escola_p035",
+    "horas_p013",
+    "horas_p026",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "siebmacher_p009"
+   ]
+  },
+  "P2": {
+   "texto_medio_19": 0.991472834831301,
+   "paginas_98": "15 de 19",
+   "pior_pagina": [
+    0.959710830557344,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.17254610719148408,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p026",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.19307599517490953,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0437554152741676,
+    "horas_p013"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027"
+   ],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p026",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "palatino_p010",
+    "siebmacher_p009"
+   ]
+  },
+  "P3": {
+   "texto_medio_19": 0.9871312563483743,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.880941311389031,
+    "palatino_p057"
+   ],
+   "figura_pior_obrigatoria": [
+    0.12408713949746256,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p026",
+    "horas_p027"
+   ],
+   "area_pior_obrigatoria": [
+    0.1394571773220748,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0022279985146676567,
+    "horas_p013"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p026",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p009",
+    "siebmacher_p009"
+   ]
+  },
+  "K1": {
+   "texto_medio_19": 0.9550189114708862,
+   "paginas_98": "14 de 19",
+   "pior_pagina": [
+    0.332138958094225,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.013924990716672856,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013"
+   ],
+   "area_pior_obrigatoria": [
+    0.041459589867310014,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.005337848502676099,
+    "horas_p011"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "opusmajus_p165",
+    "siebmacher_p009"
+   ]
+  },
+  "K1+D2 concordam": {
+   "texto_medio_19": 0.9503364435650212,
+   "paginas_98": "12 de 19",
+   "pior_pagina": [
+    0.32075973462475155,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.011944547592523827,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013"
+   ],
+   "area_pior_obrigatoria": [
+    0.03381182147165259,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "opusmajus_p165"
+   ]
+  },
+  "K1+D2 qualquer": {
+   "texto_medio_19": 0.9914318581610949,
+   "paginas_98": "18 de 19",
+   "pior_pagina": [
+    0.8805321501553621,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.11758881049634856,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027",
+    "palatino_p005"
+   ],
+   "area_pior_obrigatoria": [
+    0.11255729794933655,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p003",
+    "opusmajus_p165",
+    "palatino_p005",
+    "palatino_p009",
+    "siebmacher_p009"
+   ]
+  },
+  "voto": {
+   "texto_medio_19": 0.960807065981976,
+   "paginas_98": "16 de 19",
+   "pior_pagina": [
+    0.36965680373988746,
+    "opusmajus_p256"
+   ],
+   "figura_pior_obrigatoria": [
+    0.11758881049634856,
+    "horas_p013"
+   ],
+   "obrigatorias_acima_1pct": [
+    "horas_p013",
+    "horas_p027"
+   ],
+   "area_pior_obrigatoria": [
+    0.11255729794933655,
+    "horas_p013"
+   ],
+   "sem_alargar_pior_obrigatoria": [
+    0.0,
+    "palatino_p005"
+   ],
+   "sem_alargar_obrigatorias_acima_1pct": [],
+   "paginas_figura_acima_1pct_22": [
+    "horas_p013",
+    "horas_p027",
+    "horas_p047",
+    "opusmajus_p165"
+   ]
+  }
+ },
+ "paginas": {
+  "palatino_p005": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9998087071982356,
+     "figura_tomada": 0.017282675223684162,
+     "figura_area": 0.00992484521702958,
+     "figura_tomada_sem_alargar": 0.011813071150845737,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998087071982356,
+     "figura_tomada": 0.017282675223684162,
+     "figura_area": 0.00992484521702958,
+     "figura_tomada_sem_alargar": 0.011813071150845737,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9998987273402424,
+     "figura_tomada": 0.0034742245792544215,
+     "figura_area": 0.00599126594568247,
+     "figura_tomada_sem_alargar": 0.0018786285657679204,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998987273402424,
+     "figura_tomada": 0.0034742245792544215,
+     "figura_area": 0.00599126594568247,
+     "figura_tomada_sem_alargar": 0.0018786285657679204,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9998987273402424,
+     "figura_tomada": 0.0,
+     "figura_area": 1.5083351393661975e-05,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998987273402424,
+     "figura_tomada": 0.0,
+     "figura_area": 1.5083351393661975e-05,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9998087071982356,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998087071982356,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "palatino_p007": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9989838758955452,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9989838758955452,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9977995420575827,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9977995420575827,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9993340267693775,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9993340267693775,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9969619262417483,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9969619262417483,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O docTR achou texto em 3 lugares e o Kraken não: confira se há texto ou mancha.",
+    "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "palatino_p009": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9999879612834877,
+     "figura_tomada": 0.021240858614625387,
+     "figura_area": 0.016989384759871797,
+     "figura_tomada_sem_alargar": 0.01035226814453263,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999879612834877,
+     "figura_tomada": 0.021240858614625387,
+     "figura_area": 0.016989384759871797,
+     "figura_tomada_sem_alargar": 0.01035226814453263,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.005754031771900868,
+     "figura_area": 0.007155481311207962,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.005754031771900868,
+     "figura_area": 0.007155481311207962,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.009695377234156664,
+     "figura_area": 0.011449707701948185,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.009695377234156664,
+     "figura_area": 0.011449707701948185,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9999879612834877,
+     "figura_tomada": 0.003991235911145111,
+     "figura_area": 0.005775640735144055,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999879612834877,
+     "figura_tomada": 0.003991235911145111,
+     "figura_area": 0.005775640735144055,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O docTR achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "palatino_p010": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9999931282576353,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0009611831620659091,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999931282576353,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0009611831620659091,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007127263824375514,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007127263824375514,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007907091672844082,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007907091672844082,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9999931282576353,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00018135531359734133,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999931282576353,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00018135531359734133,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "escola_p007": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9977962366502797,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    },
+    "depois": {
+     "texto_achado": 0.9977962366502797,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9966802282872803,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    },
+    "depois": {
+     "texto_achado": 0.9966802282872803,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9966802282872803,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    },
+    "depois": {
+     "texto_achado": 0.9966802282872803,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9966025315025145,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    },
+    "depois": {
+     "texto_achado": 0.9966025315025145,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "horas_p011": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9998096325909004,
+     "figura_tomada": 7.269555103227682e-05,
+     "figura_area": 0.00012097417201427495,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 68780,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998096325909004,
+     "figura_tomada": 0.00015783960626192765,
+     "figura_area": 0.0003696739857866726,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9686845612031221,
+     "figura_tomada": 0.007502180866530968,
+     "figura_area": 0.006416030177557092,
+     "figura_tomada_sem_alargar": 0.005408548996801396,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 68780,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9686845612031221,
+     "figura_tomada": 0.007475857714769482,
+     "figura_area": 0.006423616643827613,
+     "figura_tomada_sem_alargar": 0.005337848502676099,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9999048162954502,
+     "figura_tomada": 0.00014539110206455364,
+     "figura_area": 0.000430008193250741,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 68780,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999048162954502,
+     "figura_tomada": 0.00022958488183553113,
+     "figura_area": 0.0007605936029403954,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9685893774985722,
+     "figura_tomada": 2.907822041291073e-05,
+     "figura_area": 5.058919920596952e-05,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 68780,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9685893774985722,
+     "figura_tomada": 0.00010044338580304487,
+     "figura_area": 0.0001827124297566313,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "horas_p013": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9951100244498777,
+     "figura_tomada": 0.08235952697501925,
+     "figura_area": 0.05228586836034633,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 40900,
+     "tinta_figura_px": 14291,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9950856947262903,
+     "figura_tomada": 0.11560836737219952,
+     "figura_area": 0.10490952955367913,
+     "figura_tomada_sem_alargar": 0.014234434954821141,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9625672371638142,
+     "figura_tomada": 0.009026660135749773,
+     "figura_area": 0.025060666886365678,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 40900,
+     "tinta_figura_px": 14291,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9625681523679127,
+     "figura_tomada": 0.013924990716672856,
+     "figura_area": 0.041459589867310014,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9647432762836186,
+     "figura_tomada": 0.08459869848156182,
+     "figura_area": 0.05690703735881842,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40900,
+     "tinta_figura_px": 14291,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9647441382851275,
+     "figura_tomada": 0.11758881049634856,
+     "figura_area": 0.11255729794933655,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9576772616136919,
+     "figura_tomada": 0.006787488629207194,
+     "figura_area": 0.020439497887893586,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40900,
+     "tinta_figura_px": 14291,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9576538470942031,
+     "figura_tomada": 0.011944547592523827,
+     "figura_area": 0.03381182147165259,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "horas_p047": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9998258689141185,
+     "figura_tomada": 0.00990343356181287,
+     "figura_area": 0.003929222803231742,
+     "figura_tomada_sem_alargar": 0.004665122240532429,
+     "tinta_texto_px": 28714,
+     "tinta_figura_px": 125613,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998258021809567,
+     "figura_tomada": 0.00998440682281059,
+     "figura_area": 0.010388200024472815,
+     "figura_tomada_sem_alargar": 0.0047495544806517315,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.002053927539347042,
+     "figura_area": 0.004529988442669985,
+     "figura_tomada_sem_alargar": 0.00011145343236766895,
+     "tinta_texto_px": 28714,
+     "tinta_figura_px": 125613,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0021400840122199594,
+     "figura_area": 0.009098278745360362,
+     "figura_tomada_sem_alargar": 0.0001352469450101833,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.010667685669476885,
+     "figura_area": 0.006215095651049454,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28714,
+     "tinta_figura_px": 125613,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.010748154276985743,
+     "figura_area": 0.013228066239752008,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9998258689141185,
+     "figura_tomada": 0.00113841720204119,
+     "figura_area": 0.0007812647329017519,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28714,
+     "tinta_figura_px": 125613,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998258021809567,
+     "figura_tomada": 0.0012251782077393075,
+     "figura_area": 0.004874168943998042,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "opusmajus_p011": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9854049819647277,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9854049819647277,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9933786275321612,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9933786275321612,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9935692563391525,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9935692563391525,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9852143531577364,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9852143531577364,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "opusmajus_p003": {
+   "D2": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.07600627286983795,
+     "figura_area": 0.022303282959874934,
+     "figura_tomada_sem_alargar": 0.05875588081547308,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.07600627286983795,
+     "figura_area": 0.022303282959874934,
+     "figura_tomada_sem_alargar": 0.05875588081547308,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.979635254620805,
+     "figura_tomada": 0.0,
+     "figura_area": 0.002575746296434155,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.979635254620805,
+     "figura_tomada": 0.0,
+     "figura_area": 0.002575746296434155,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9903341244758168,
+     "figura_tomada": 0.0,
+     "figura_area": 0.002575746296434155,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9903341244758168,
+     "figura_tomada": 0.0,
+     "figura_area": 0.002575746296434155,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.979635254620805,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.979635254620805,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "opusmajus_p020": {
+   "D2": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "opusmajus_p165": {
+   "D2": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.004476609969790589,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 259530,
+     "tinta_figura_px": 14329,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.054307000800443324,
+     "figura_area": 0.021525342345025438,
+     "figura_tomada_sem_alargar": 0.03368019210639739,
+     "tinta_texto_px": 260605,
+     "tinta_figura_px": 16241,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9999460563326013,
+     "figura_tomada": 0.06553143973759509,
+     "figura_area": 0.03131229406566608,
+     "figura_tomada_sem_alargar": 0.05443506176285854,
+     "tinta_texto_px": 259530,
+     "tinta_figura_px": 14329,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999462788511349,
+     "figura_tomada": 0.09266670771504218,
+     "figura_area": 0.043965428166805445,
+     "figura_tomada_sem_alargar": 0.07364078566590727,
+     "tinta_texto_px": 260605,
+     "tinta_figura_px": 16241,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0025821760066997,
+     "figura_area": 0.005671971009925949,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 259530,
+     "tinta_figura_px": 14329,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.03811341666153562,
+     "figura_area": 0.020960085578658822,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 260605,
+     "tinta_figura_px": 16241,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9999460563326013,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0032161719675848225,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 259530,
+     "tinta_figura_px": 14329,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999462788511349,
+     "figura_tomada": 0.03392648235946062,
+     "figura_area": 0.01436846231925459,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 260605,
+     "tinta_figura_px": 16241,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "opusmajus_p256": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.8688269985518501,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142941,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.8691529266858886,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.3320251012655571,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142941,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.332138958094225,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.36953008583961217,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142941,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.36965680373988746,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.32064977857997357,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142941,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.32075973462475155,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O Kraken avisou que não conseguiu desenhar 8 linhas nesta página: confira se falta texto.",
+    "O docTR achou texto em 93 lugares e o Kraken não: confira se há texto ou mancha.",
+    "O Kraken achou texto em 5 lugares e o docTR não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "horas_p026": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9845180985608374,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 1686,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9845180985608374,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9853176333769443,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007617083811003993,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 1686,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9853176333769443,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0022866561426316276,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9905994088288026,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007617083811003993,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 1686,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9905994088288026,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0022866561426316276,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9728885012356447,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 1686,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9728885012356447,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "horas_p027": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9957277335264301,
+     "figura_tomada": 0.0013440860215053765,
+     "figura_area": 0.002330884215860147,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41430,
+     "tinta_figura_px": 744,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9964014877070956,
+     "figura_tomada": 0.012835472578763127,
+     "figura_area": 0.011349871602306313,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9867487328023171,
+     "figura_tomada": 0.0,
+     "figura_area": 0.011249049911325058,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41430,
+     "tinta_figura_px": 744,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9876587934115829,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00835796307960657,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9966932174752595,
+     "figura_tomada": 0.0013440860215053765,
+     "figura_area": 0.0076175998648762774,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41430,
+     "tinta_figura_px": 744,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9973675312756606,
+     "figura_tomada": 0.012835472578763127,
+     "figura_area": 0.01252483162943941,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9854211923726768,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00010978802466007938,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41430,
+     "tinta_figura_px": 744,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9863304835048061,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0015868016861282038,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": true
+  },
+  "escola_p035": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9978251595580055,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 59991,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9978251595580055,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.99966540916277,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00023556146768650925,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 59991,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.99966540916277,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0003837650690359988,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9996905034755623,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00023556146768650925,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 59991,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9996905034755623,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0003837650690359988,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9978000652452133,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 59991,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9978000652452133,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "rhetorica_p018": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9988625264578295,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 410559,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9991228763902769,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9997954009046203,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 410559,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9998418301687384,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9997954009046203,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 410559,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9999592592858871,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9988625264578295,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 410559,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9990054472731281,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": false
+  },
+  "siebmacher_p009": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9573143196672609,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": 0.0002416148659037494,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9573143196672609,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": 0.0002416148659037494,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9814854426619133,
+     "figura_tomada": 0.8300422459932202,
+     "figura_area": 0.7948285695886959,
+     "figura_tomada_sem_alargar": 0.7402420541656599,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9814854426619133,
+     "figura_tomada": 0.8300422459932202,
+     "figura_area": 0.7948285695886959,
+     "figura_tomada_sem_alargar": 0.7402420541656599,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9654664289958408,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9654664289958408,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.955650623885918,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.955650623885918,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O Kraken achou texto em 14 lugares e o docTR não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "palatino_p057": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9672075255319479,
+     "figura_tomada": 0.004014116226235789,
+     "figura_area": 0.00436226102530276,
+     "figura_tomada_sem_alargar": 7.919341506753713e-05,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9672075255319479,
+     "figura_tomada": 0.004014116226235789,
+     "figura_area": 0.00436226102530276,
+     "figura_tomada_sem_alargar": 7.919341506753713e-05,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9606598788104205,
+     "figura_tomada": 0.005538589466285878,
+     "figura_area": 0.020523608457931813,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9606598788104205,
+     "figura_tomada": 0.005538589466285878,
+     "figura_area": 0.020523608457931813,
+     "figura_tomada_sem_alargar": 0.0,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9881290002634556,
+     "figura_tomada": 0.006196884729034781,
+     "figura_area": 0.020873302441412545,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9881290002634556,
+     "figura_tomada": 0.006196884729034781,
+     "figura_area": 0.020873302441412545,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9397384040789127,
+     "figura_tomada": 0.003355820963486886,
+     "figura_area": 0.0018252654588739306,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9397384040789127,
+     "figura_tomada": 0.003355820963486886,
+     "figura_area": 0.0018252654588739306,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": true,
+   "motivos": [
+    "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+   ],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  },
+  "graduale_p221": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9812534587714444,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28912,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9747423032288893,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9873754842280023,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28912,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9811932555123216,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9992736579966796,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28912,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9950167246911052,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.969355285002767,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28912,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9609188340501058,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": true
+  },
+  "graduale_p222": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9902500874431619,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 22872,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9751702550653526,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9856593214410633,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 22872,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9647646038661647,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9951469045120671,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 22872,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9806268770356584,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9807625043721581,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 22872,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9593079818958589,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": false,
+   "erro_visivel_depois": true
+  },
+  "graduale_p223": {
+   "D2": {
+    "antes": {
+     "texto_achado": 0.9721662420624358,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 26299,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9564640011485177,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1": {
+    "antes": {
+     "texto_achado": 0.9483250313700141,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 26299,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9106668580862823,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "voto": {
+    "antes": {
+     "texto_achado": 0.9736111639225826,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 26299,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9583303424018377,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "K1+D2 concordam": {
+    "antes": {
+     "texto_achado": 0.9433438533784555,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 26299,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "depois": {
+     "texto_achado": 0.9054626372837556,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "revisar": false,
+   "motivos": [],
+   "erro_visivel_antes": true,
+   "erro_visivel_depois": true
+  }
+ }
+}

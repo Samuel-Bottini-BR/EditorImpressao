@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 2 - Editor de Impressão</title>
+<!--
+  Segunda conferencia do Samuel (30/09/2026). Mesmo formato de conferir-aqui.html:
+  cartoes com Bom / Ruim / Nao sei, comentario, "Copiar respostas".
+  As marcacoes ficam no navegador com a chave NOVA "conferir-2026-09-30-b"
+  (nao mistura com a conferencia anterior). As imagens estao em
+  relatorios/conferencia-2-2026-09-30/ e sao refeitas por
+  conferencia-2-2026-09-30/scripts/montar_imagens.py.
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou).
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --fraco:#666; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:32px 0 6px; font-size:22px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 18px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao h3 { margin:0 0 6px; font-size:19px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  button.principal { background:#1565c0; border-color:#1565c0; color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid #1565c0; border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 2 - Editor de Impressão (30/09)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>Como usar:</b> em cada cartão, leia a frase "O que olhar", olhe a imagem (clique para ver em tamanho cheio; clique de novo para fechar) e aperte <b>Bom</b>, <b>Ruim</b> ou <b>Não sei</b>. Embaixo de cada pergunta está escrito o que o Bom e o Ruim querem dizer naquele cartão.</p>
+    <p>Em todas as imagens: <b>o retângulo rosa</b> marca o lugar que está ampliado logo abaixo, e cada parte tem um <b>rótulo em cima</b> (ORIGINAL, ANTES, DEPOIS...).</p>
+    <p>Suas marcações ficam guardadas neste computador. No fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que olhar (pode ter <b>), s: o que Bom/Ruim querem dizer, i: [imagens]}
+const P = "conferencia-2-2026-09-30/";
+const ZONAS_SIGNIFICA = "Bom = a zona agora está certa. Ruim = ainda falta ou sobra alguma coisa (diga onde no comentário).";
+const SECOES = [
+ { titulo:"1. Zonas do OCR corrigidas (as que você marcou RUIM)",
+   sub:"Lembrete do que são as zonas: é o gabarito que usamos para dar nota aos OCRs. Verde = ali TEM de ser texto; vermelho = ali é figura e o OCR NÃO pode pôr linha de texto; cinza = não conta. As zonas não apagam nada da página: servem só para conferir o OCR. Agora elas aparecem contornadas por cima da página original, sem esconder nada.",
+   cartoes:[
+    {c:"Z9", t:"Horas 13 - moldura e subtítulo", o:"Olhe <b class='onde'>o detalhe 1, canto de baixo à direita</b>: antes, a moldura dourada saía um pouco para fora do vermelho; agora ela fica inteira dentro. No <b class='onde'>detalhe 2, no alto</b>: 'TABLE' e 'CONTENU EN CE LIVRE.' estão no verde. A segunda imagem explica por que parecia que o subtítulo era apagado: a imagem da conferência passada só mostrava o risco escuro das letras.", s:ZONAS_SIGNIFICA, i:["zonas/z-horas13.jpg","zonas/z-horas13-explica.jpg"]},
+    {c:"Z10", t:"Horas 26 - moldura e letras", o:"Olhe <b class='onde'>o canto de baixo à esquerda</b> (detalhe): antes a linha de dentro do vermelho cortava a faixa dourada; agora o vermelho abraça o ouro inteiro, com o contorno marrom. As letras (inclusive os 'A' dourados da coluna da esquerda) estão todas no verde; a segunda imagem mostra por que pareciam de fora.", s:ZONAS_SIGNIFICA, i:["zonas/z-horas26.jpg","zonas/z-horas26-explica.jpg"]},
+    {c:"Z11", t:"Horas 27 - moldura e letras", o:"Olhe <b class='onde'>o lado direito</b> (detalhe): antes o verde entrava na faixa dourada (a faixa desse lado é um pouco torta); agora o ouro fica todo no vermelho, e só a letra que encosta nele (o 't.' de 'Brabant.' e o 'r.' de 'de Fr.') ganhou um pedacinho verde.", s:ZONAS_SIGNIFICA, i:["zonas/z-horas27.jpg"]},
+    {c:"Z12", t:"Horas 47 - a gravura inteira", o:"Olhe <b class='onde'>o canto de cima à esquerda</b> (detalhe): o vermelho agora tem uma folga em volta de toda a pintura. A segunda imagem mostra que a zona sempre cobriu as cenas pintadas; na imagem antiga só o risco escuro aparecia em vermelho.", s:ZONAS_SIGNIFICA, i:["zonas/z-horas47.jpg","zonas/z-horas47-explica.jpg"]},
+    {c:"Z17", t:"Opus Majus 256 - a tabela", o:"Olhe <b class='onde'>o canto de baixo à direita</b> (detalhe): antes a última coluna ('4 / 52'), a borda direita e a borda de baixo da tabela ficavam fora do verde; agora entram.", s:ZONAS_SIGNIFICA, i:["zonas/z-opus256.jpg"]},
+    {c:"Z18", t:"Rhetorica 18 - letras na borda", o:"Olhe <b class='onde'>o detalhe 1, lado direito</b>: antes uma faixa cinza larga ('não conta') cobria o fim das linhas ('fortaſſis', 'quæ', 'ex-'); agora o cinza é só o fio fino da moldura e o texto vai até encostar nele. No <b class='onde'>detalhe 2, embaixo à esquerda</b>: a nota de margem e o começo das linhas ficam inteiros.", s:ZONAS_SIGNIFICA, i:["zonas/z-rhetorica18.jpg"]},
+   ]},
+ { titulo:"2. Zonas que você pediu para confirmar",
+   sub:"Resposta às suas perguntas. Onde foi preciso, a zona também foi ajustada.",
+   cartoes:[
+    {c:"Z6", t:"Escola 7 - o vermelho pega todo o desenho?", o:"<b>Sim.</b> À direita, a zona de verdade: o <b class='onde'>contorno vermelho</b> passa em volta da gravura inteira (céu, figuras, leão). O que parecia faltar na conferência passada (à esquerda) era só a forma de mostrar: aquela imagem pintava só o risco escuro. Esta zona não mudou.", s:"Bom = concordo, a zona pega o desenho inteiro. Ruim = ainda falta alguma parte (diga qual).", i:["zonas/c-escola7.jpg"]},
+    {c:"Z7", t:"Escola 35 - o vermelho pega todo o desenho?", o:"<b>Sim</b>, com um ajuste pequeno: <b class='onde'>embaixo da gravura</b> ficava de fora uma tirinha do pé da pintura, em cima da legenda. Agora entra (segunda imagem, detalhe).", s:"Bom = concordo, a zona pega o desenho inteiro. Ruim = ainda falta alguma parte (diga qual).", i:["zonas/c-escola35-explica.jpg","zonas/c-escola35.jpg"]},
+    {c:"Z8", t:"Horas 11 - o pontilhado vermelho está em toda a gravura?", o:"<b>Sim.</b> A zona vermelha cobre a iluminura inteira (primeira imagem, à direita). O pontilhado da conferência passada era só o risco escuro da pintura. Ajustes pequenos (segunda imagem): o vermelho agora sobe até a <b class='onde'>ponta do enfeite de cima</b>, e o oval do meio (onde ficam os títulos) ficou um fio menor, para a moldura do oval ficar toda no vermelho.", s:"Bom = concordo. Ruim = ainda falta alguma parte (diga qual).", i:["zonas/c-horas11-explica.jpg","zonas/c-horas11.jpg"]},
+    {c:"Z16", t:"Opus Majus 165 - figuras 7 e 8", o:"Você tinha razão: nas <b class='onde'>figuras 7 e 8</b>, as caixas cinzas das letrinhas eram grandes e pegavam pedaços das linhas do desenho, e o 'd' de baixo da figura 7 saía pela metade. Agora cada letra tem uma caixinha justa, e as linhas do desenho ficam todas no vermelho.", s:ZONAS_SIGNIFICA, i:["zonas/c-opus165.jpg"]},
+    {c:"Z20", t:"Graduale 221 - o que faltava", o:"O que faltava: as caixas verdes eram justas demais e cortavam <b class='onde'>as hastes e as pernas das letras</b> (o alto do 'l', o pé do 'p', a rubrica vermelha). Agora cada caixa vai até pegar as letras inteiras, sem pegar as notas. A pauta e as notas continuam sem zona (veja a decisão D7).", s:ZONAS_SIGNIFICA, i:["zonas/c-graduale221.jpg"]},
+    {c:"Z21", t:"Graduale 222 - o que faltava", o:"O mesmo do Graduale 221: as caixas verdes agora pegam as letras inteiras. Olhe <b class='onde'>a linha 5</b> (detalhe): a palavra vermelha e a letra grande 'I' ficam inteiras.", s:ZONAS_SIGNIFICA, i:["zonas/c-graduale222.jpg"]},
+    {c:"Z22", t:"Graduale 223 - o que faltava", o:"O mesmo do Graduale 221. Olhe <b class='onde'>a linha 5</b> (detalhe): o começo 'mine. com' e a letra 'A' grande (em cinza, não conta).", s:ZONAS_SIGNIFICA, i:["zonas/c-graduale223.jpg"]},
+   ]},
+ { titulo:"3. As 7 decisões tomadas ao desenhar as zonas",
+   sub:"Cada decisão com a foto do lugar. Bom = concordo com a decisão. Ruim = não concordo (diga como quer).",
+   cartoes:[
+    {c:"D1", t:"Palatino 57 - floreios e laços", o:"Decidimos: <b class='onde'>os laços em volta do título</b> 'Lettera Notaresca' são figura (vermelho); <b class='onde'>o floreio no fim do texto</b> (setinha) faz parte do texto (verde).", s:"Bom = concordo. Ruim = não concordo.", i:["decisoes/d1-palatino57.jpg"]},
+    {c:"D2", t:"Capitulares", o:"Decidimos: a capitular <b class='onde'>gravada em madeira</b> (o Q do Palatino 9, com um cavaleiro dentro) é figura (vermelho); a capitular <b class='onde'>desenhada a pena</b> no Graduale (o A grande) não conta (cinza).", s:"Bom = concordo. Ruim = não concordo.", i:["decisoes/d2-capitulares.jpg"]},
+    {c:"D3", t:"Escola - endereço do site", o:"Decidimos: o endereço <b class='onde'>'http://alexandriacatolica...' no pé da página</b> conta como texto (verde), mesmo que depois o programa vá apagá-lo (item R8).", s:"Bom = concordo. Ruim = não concordo.", i:["decisoes/d3-escola7-site.jpg"]},
+    {c:"D4", t:"Opus Majus 3 - emblema", o:"Decidimos: o <b class='onde'>emblema da editora</b>, no meio da página, é figura (vermelho), mesmo tendo letras dentro ('UNIVERSITY', 'PRESS').", s:"Bom = concordo. Ruim = não concordo.", i:["decisoes/d4-opus3-emblema.jpg"]},
+    {c:"D5", t:"Opus Majus 165 - letrinhas dos diagramas", o:"Decidimos: <b class='onde'>as letrinhas dentro dos diagramas</b> (a, e, f, b, c, l, h, d) não contam (cinza): nem é erro o OCR achá-las, nem é erro perdê-las.", s:"Bom = concordo. Ruim = não concordo.", i:["decisoes/d5-opus165-letrinhas.jpg"]},
+    {c:"D6", t:"Rhetorica - filetes", o:"Decidimos: <b class='onde'>o fio fino ao lado do texto</b> (o filete da moldura) não conta (cinza); as letras que encostam nele contam como texto.", s:"Bom = concordo. Ruim = não concordo.", i:["decisoes/d6-rhetorica-filetes.jpg"]},
+    {c:"D7", t:"Graduale - pauta e notas", o:"Decidimos: <b class='onde'>a pauta e as notas</b> ficam sem zona (não contam). À direita, a outra opção, que NÃO foi aplicada: pauta e notas como figura, e aí qualquer linha do OCR em cima da música contaria como erro.", s:"Bom = concordo (como está, à esquerda). Ruim = prefiro a outra opção (à direita).", i:["decisoes/d7-graduale-pauta.jpg"]},
+   ]},
+ { titulo:"4. Fotos no Preto e branco: qual jeito você prefere?",
+   sub:"No filtro Preto e branco, a página inteira vira só preto e branco. A pergunta é como ficam as FOTOS e PINTURAS (a estátua do Opus Majus 20, o anjo da Escola 35). Cada cartão mostra um jeito, ampliado 3 vezes, ao lado do original. Nada disso está no programa ainda. Dica: abra a imagem em tamanho cheio (clique): reduzida, todo pontilhado parece cinza.",
+   cartoes:[
+    {c:"P1a", t:"Cinza (tons de cinza)", o:"A foto fica em tons de cinza, lisa, como uma foto em preto e branco comum. É o único que não é 'só preto e branco': a impressora imprime os cinzas.", s:"Bom = gosto desta. Ruim = não gosto.", i:["fotos-pb/p1-3-tons-de-cinza.png"]},
+    {c:"P1b", t:"Pontilhado espalhado (Floyd-Steinberg)", o:"O cinza é feito só com pontinhos pretos espalhados, sem desenho de grade. Fica só preto e branco, como o resto da página.", s:"Bom = gosto desta. Ruim = não gosto.", i:["fotos-pb/p1-4-pontilhado-floyd-steinberg.png"]},
+    {c:"P1c", t:"Pontilhado em grade (Bayer)", o:"O cinza é feito com pontinhos arrumados numa grade fixa (dá um xadrezinho regular).", s:"Bom = gosto desta. Ruim = não gosto.", i:["fotos-pb/p1-5-pontilhado-ordenado-bayer.png"]},
+    {c:"P1d", t:"Meio-tom de jornal (60 linhas)", o:"O cinza é feito com pontos redondos numa grade inclinada, como a foto de jornal. Os pontos ficam graúdos.", s:"Bom = gosto desta. Ruim = não gosto.", i:["fotos-pb/p1-6-meio-tom-jornal-60-linhas.png"]},
+   ]},
+ { titulo:"5. O Preto e branco novo (regra de 30/09 já aplicada)",
+   sub:"A regra que você deu: no Preto e branco, moldura, iluminura e gravura de traço também viram desenho preto e branco. Em cada cartão: ORIGINAL, ANTES (como saía antes da regra) e AGORA. Embaixo, o pedaço marcado em rosa, ampliado.",
+   cartoes:[
+    {c:"N1", t:"Horas 11 - a iluminura", o:"Olhe <b class='onde'>a iluminura em volta do oval</b>: antes ficava colorida; agora vira desenho preto e branco. O desenho sai inteiro? O título do meio continua legível?", s:"Bom = a iluminura sai como desenho, do jeito que eu quero. Ruim = não (diga o que falta).", i:["pb-novo/pb-horas011.jpg"]},
+    {c:"N2", t:"Horas 26 - moldura dourada", o:"Olhe <b class='onde'>a moldura dourada em volta do calendário</b>: antes ficava dourada; agora vira traço preto. Ela aparece como uma moldura inteira ou em pedaços?", s:"Bom = a moldura sai como desenho. Ruim = sai em pedaços ou feia.", i:["pb-novo/pb-horas026.jpg"]},
+    {c:"N3", t:"Horas 27 - moldura dourada", o:"O mesmo da Horas 26: olhe <b class='onde'>a moldura dourada</b>. Inteira ou em pedaços?", s:"Bom = a moldura sai como desenho. Ruim = sai em pedaços ou feia.", i:["pb-novo/pb-horas027.jpg"]},
+    {c:"N4", t:"Horas 13 - moldura dourada", o:"Olhe <b class='onde'>a moldura dourada</b> (no alto e à direita ela fica grossa e preta). Atenção: os títulos vermelhos 'TABLE' e 'CONTENU EN CE LIVRE.' somem; isso é a pergunta do cartão V1, logo abaixo. Aqui responda só sobre a moldura.", s:"Bom = a moldura sai como desenho. Ruim = sai feia (diga o quê).", i:["pb-novo/pb-horas013.jpg"]},
+    {c:"N5", t:"Graduale 222 - pauta e notas", o:"Olhe <b class='onde'>a pauta e as notas</b>: tudo sai preto. A música fica legível? As linhas da pauta aparecem inteiras?", s:"Bom = a música fica legível. Ruim = não fica.", i:["pb-novo/pb-graduale222.jpg"]},
+   ]},
+ { titulo:"6. Pergunta: o vermelho no Preto e branco",
+   sub:"",
+   cartoes:[
+    {c:"V1", t:"No Preto e branco, o que é vermelho (títulos, rubrica) sai preto?", o:"Hoje, no Preto e branco, <b class='onde'>os títulos vermelhos</b> da Horas 13 ('TABLE' e 'CONTENU EN CE LIVRE.') <b>somem</b> (primeira imagem). O conserto é fazer o vermelho sair preto, e a regra vale para todo vermelho de texto: também <b class='onde'>as palavras vermelhas no meio do canto do Graduale</b> (a rubrica) passam de quase sumidas para pretas (segunda imagem, embaixo). A pauta vermelha do Graduale <b>já sai preta hoje</b> (veja o cartão N5) e não muda. A segunda imagem é uma simulação feita pelo mesmo caminho do programa, sem mexer nele.", s:"Bom = sim, tudo o que é vermelho sai preto. Ruim = não, o vermelho continua sumindo. Se quiser exceção (por exemplo, títulos pretos mas rubrica do Graduale clara), escreva no comentário.", i:["vermelho/horas13-hoje.jpg","vermelho/vermelho-titulos-e-pauta.jpg"]},
+   ]},
+ { titulo:"7. Refazendo os cartões que ficaram sem explicação (F6, B4, B6)",
+   sub:"",
+   cartoes:[
+    {c:"F6", t:"O filtro \"Tirar o fundo\" na tela", o:"O que estamos perguntando: <b>o que você vê na tela, no filtro \"Tirar o fundo\", é o resultado de verdade?</b> Na aba Filtro, a mesma página aparece em cinco cartões; o <b class='onde'>quinto cartão (rosa)</b> é o \"Tirar o fundo\": o papel aparece branco e a letra fica. Embaixo, na tela de ver de perto, o botão <b class='onde'>'comparar'</b> põe o original à esquerda e o \"Tirar o fundo\" à direita. Se isso bate com o que você espera ver no PDF, é Bom.", s:"Bom = o 5º cartão e o 'comparar' mostram o que eu espero do Tirar o fundo. Ruim = mostram outra coisa (diga o quê).", i:["refazer/f6-cartao-tirar-o-fundo.jpg"]},
+    {c:"B4", t:"Marial 7 - a borda direita", o:"É a <b>página 7 inteira do Marial</b> no filtro Mágico pro. Olhe só <b class='onde'>a beirada direita da página</b> (retângulo rosa): num conserto do corte, de 28/09, passou a sobrar ali uma faixa cinza-escura, que é o fundo do scanner. Embaixo, o mesmo lugar ampliado: ANTES com a faixa escura (setinha), DEPOIS sem ela.", s:"Bom = a faixa escura sumiu e a beirada ficou boa. Ruim = ainda aparece faixa ou ficou pior.", i:["refazer/b4-marial7-borda-direita.jpg"]},
+    {c:"B6", t:"Prévia da tela igual ao PDF", o:"O que era o problema: <b>a tela mostrava um corte e o PDF saía com outro.</b> Na Escola 7, a tela de antes (vermelho) cortava a <b class='onde'>margem de cima</b>, com o título colado no alto, e o PDF saía com essa margem. Agora a tela (verde) mostra exatamente o mesmo corte do PDF (azul). Compare o verde com o azul: têm de ser iguais.", s:"Bom = agora a tela e o PDF mostram o mesmo corte. Ruim = ainda vejo diferença.", i:["refazer/b6-previa-igual-pdf.jpg"]},
+   ]},
+ { titulo:"8. Opções de gravuras e fotos (novas, na tela \"O que fazer\")",
+   sub:"O programa agora tem, por livro, as opções do detector de gravuras do ScanTailor. Nos cartões com vermelho por cima da página, o vermelho mostra onde o programa acha gravura (o que fica como no original, sem virar papel branco).",
+   cartoes:[
+    {c:"O1", t:"A tela \"O que fazer\": o grupo \"Gravuras e fotos\"", o:"Olhe <b class='onde'>o retângulo rosa</b>: é o grupo novo, com as caixinhas 'Achar gravuras e fotos', 'Este livro tem fotos', 'Sensibilidade', 'Procurar também imagens claras' e 'Igualar a luz da página antes', cada uma com uma frase ao lado. Embaixo, o grupo ampliado.", s:"Bom = os nomes e as frases estão claros. Ruim = alguma coisa não está clara (diga qual).", i:["gravuras/g1-o-que-fazer.jpg"]},
+    {c:"O2", t:"Opus Majus 20 com \"Este livro tem fotos\"", o:"Olhe <b class='onde'>a estátua</b> (retângulo rosa), no Mágico pro: sem 'tem fotos' (do jeito de fábrica) ela sai lavada e aparece um pontilhado no fundo escuro; com 'Este livro tem fotos' marcada ela fica quase igual ao original.", s:"Bom = a estátua ficou boa com 'tem fotos'. Ruim = ainda não ficou boa.", i:["gravuras/g2-opus20-tem-fotos.jpg"]},
+    {c:"O3", t:"Graduale 222: a pauta não é mais gravura", o:"Em cima, <b class='onde'>o vermelho</b>: antes o programa tomava pedaços da pauta por gravura; agora nenhum. Embaixo, <b class='onde'>o lado direito da página</b> no Mágico pro e no Preto e branco, antes e agora.", s:"Bom = a pauta sai certa agora. Ruim = ainda vejo diferença na pauta.", i:["gravuras/g3-graduale222-pauta.jpg"]},
+    {c:"O4", t:"Horas 13: a moldura pega inteira", o:"Olhe <b class='onde'>a moldura dourada</b>: antes o vermelho pegava só um fio dela; agora pega a faixa inteira. Sobra um triângulo pequeno sobre 'pag. 54' (<b class='onde'>canto de baixo à direita</b>, ampliado embaixo).", s:"Bom = a moldura é pega inteira. Ruim = ainda falta (diga onde).", i:["gravuras/g4-horas13-moldura.jpg"]},
+    {c:"O5", t:"\"Procurar também imagens claras\": desmarcada de fábrica?", o:"Essa opção ajuda na foto do Opus 20, mas estraga outras páginas: no <b class='onde'>Marial 153</b>, uma página só de texto, ela marca a faixa do meio e o pé da página como gravura; no <b class='onde'>Palatino 9</b>, marca a moldura e o papel. Por isso a recomendação é ela vir desmarcada e o Opus usar 'Este livro tem fotos'.", s:"Bom = concordo que venha desmarcada de fábrica. Ruim = quero marcada.", i:["gravuras/g5-imagens-claras.jpg"]},
+   ]},
+];
+
+const CHAVE = "conferir-2026-09-30-b";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const cod = k.c, tit = k.t;
+    todos.push({cod, tit});
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+cod;
+    c.innerHTML = `<h3>${cod} · ${tit}</h3>` +
+      (k.o ? `<p class="olhar"><b>O que olhar:</b> ${k.o}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${tit}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      `<div class="botoes">
+         <button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button>
+       </div>
+       <textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const e = estado[cod] || {};
+    const ta = c.querySelector("textarea"); ta.value = e.nota || "";
+    function pintar(){ const v=(estado[cod]||{}).voto; c.classList.remove("bom","ruim","naosei"); if(v) c.classList.add(v);
+      c.querySelectorAll(".botoes button").forEach(b=>b.classList.toggle("ativo", b.classList.contains("b-"+v))); }
+    c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[cod] = Object.assign({}, estado[cod], {voto: (estado[cod]||{}).voto===v ? undefined : v});
+      pintar(); guardar(); });
+    ta.oninput = () => { estado[cod] = Object.assign({}, estado[cod], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z=document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display="block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"),{textContent:"(imagem não encontrada: "+im.getAttribute("src")+")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const feitos = todos.filter(t => (estado[t.cod]||{}).voto).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${todos.length} marcados`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 2 de 30/09 (Editor de Impressão):"];
+  todos.forEach(t => { const e = estado[t.cod]||{};
+    if (!e.voto && !(e.nota||"").trim()) return;
+    linhas.push(`${t.cod} ${t.tit}: ${e.voto ? ROTULO[e.voto] : "sem marca"}${(e.nota||"").trim() ? " - " + e.nota.trim() : ""}`); });
+  const faltam = todos.filter(t => !(estado[t.cod]||{}).voto).map(t=>t.cod);
+  if (faltam.length) linhas.push(`(não marcados: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(()=>document.execCommand("copy")); } catch(e) { try{document.execCommand("copy");}catch(_){} }
+}
+</script>
+</body>
+</html>
