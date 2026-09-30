@@ -1741,7 +1741,7 @@ Nada foi instalado neste PC.
 
 ---
 
-## Tentativa 39 — "cancelar" a análise não desliga mais o salvamento (bug grave, 29/09/2026)
+## Tentativa 40 — "cancelar" a análise não desliga mais o salvamento (bug grave, 29/09/2026)
 
 **Data:** 29/09/2026
 **Situação:** consertado, a conferir (teste de máquina)
@@ -1783,3 +1783,37 @@ livro recém-aberto continua sem gravar por cima; trocar de livro no meio da
 análise não mistura os livros. A sonda do verificador (parte P1, numa cópia
 com pasta própria) agora mostra as mudanças no disco depois de trabalhar e de
 fechar.
+
+---
+
+## Tentativa 41 — os testes nunca gravam na pasta de dados real (29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** feito, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador, 2ª rodada): "Testes
+gravam na pasta de dados real quando rodados sem `LOCALAPPDATA` próprio"
+(`erros.log` a cada rodada; e, antes do `7bb3905`, as pastas-sombra
+`projetos\camadas` e `projetos\comum`).
+
+**O que mudou:** `tests/conftest.py` (novo). Antes de coletar os testes
+(`pytest_configure`), `LOCALAPPDATA` passa a apontar para
+`saida_teste\pytest_dados\<data-hora>-<processo>`, apagada no fim da rodada
+(`pytest_unconfigure`). Tudo o que o programa grava lê a variável na hora
+(`historico.pasta_de_dados`: projetos, `historico.json`,
+`configuracoes.json`, `erros.log`), então nada precisa ser trocado módulo por
+módulo. O valor verdadeiro fica em `EDITOR_IMPRESSAO_LOCALAPPDATA_REAL`.
+
+**Conferido:** lista de todos os arquivos da pasta de dados real
+(`%LOCALAPPDATA%\EditorImpressao`, 58 entradas, inclusive o `erros.log`), com
+tamanho e data em nanossegundos, antes e depois da bateria inteira (1131
+passaram, 1 pulado): **iguais**. A pasta da rodada em `saida_teste\` foi
+apagada no fim. Nada da pasta real foi apagado (as pastas `camadas` e
+`comum` continuam lá, para a gerente decidir com o Samuel).
+
+**Teste:** `tests/test_pasta_de_dados_dos_testes.py` (3): a pasta de dados é
+a dos testes; `erros.log`, projetos, `historico.json` e `configuracoes.json`
+ficam fora da pasta real; um erro registrado vai para o log de mentira.
+
+**Fica de fora:** a pasta Documentos\Editor de Impressão (saída padrão) não é
+trocada; nenhum teste grava nela hoje (conferido na mesma comparação: a lista
+não mudou). O TEMP do Windows continua sendo usado pelo `tmp_path` do pytest.
