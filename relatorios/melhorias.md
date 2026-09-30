@@ -1738,3 +1738,48 @@ Qt quebra o texto (falhava antes: uma linha "D:").
 - o notebook do Kaique.
 
 Nada foi instalado neste PC.
+
+---
+
+## Tentativa 39 — "cancelar" a análise não desliga mais o salvamento (bug grave, 29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador, 2ª rodada, prints q21
+a q23): nascido do conserto `4c01fa6` (Tentativa 36). Livro com trabalho, na
+conferência → "Voltar para as opções" → "Conferir" → "cancelar" em "Olhando o
+livro...": a janela voltava para a conferência, mas o marcador
+`trabalho_carregado` ficava falso e nada mais era gravado até fechar, sem
+aviso.
+
+**O que mudou (`ui/janela_principal.py`, `ui/tarefas.py`):**
+- `analisar` guarda o valor do marcador e analisa uma **cópia rasa** do
+  projeto (`copy.copy`): `analisar_projeto` só atribui listas novas
+  (`folhas`, `paginas`, `observacoes`, `tem_camadas`), então o projeto da
+  tela, com o trabalho, fica intacto até `_analise_pronta`. Antes, um cancelar
+  no instante em que a análise terminava podia deixar as páginas novas (em
+  branco) no projeto da tela.
+- `cancelar` e `_falhou_na_analise` devolvem o marcador ao valor de antes
+  (`_parar_a_analise`). Livro recém-aberto com trabalho salvo continua sem
+  gravar por cima; livro que veio da conferência volta a gravar.
+- `_analise_pronta` ignora resultado de análise cancelada ou que não é mais a
+  da vez (`TarefaAnalise.foi_cancelada`, remetente do sinal): antes, um
+  resultado que chegava depois do "cancelar" entrava mesmo assim.
+- `abrir_livro` marca como cancelada a análise do livro de antes (trocar de
+  livro no meio): o resultado dela não entra mais no livro novo.
+
+**Outros caminhos em que o marcador poderia ficar falso, conferidos:** erro na
+análise (coberto); trocar de livro no meio (coberto: o livro novo começa com
+o marcador falso e só o liga a análise dele); "voltar" do "O que fazer" para
+a tela inicial (não grava nada nesse intervalo, e o próximo livro reinicia o
+marcador); processar (não mexe no marcador); "começar de novo" (apaga o salvo
+antes, então grava).
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 5 (3 falhavam antes):
+cancelar com a análise de verdade volta à conferência e continua gravando
+(pelo relógio e ao fechar); cancelar quando a análise já tinha acabado não põe
+páginas em branco; erro na análise não desliga o salvamento; cancelar num
+livro recém-aberto continua sem gravar por cima; trocar de livro no meio da
+análise não mistura os livros. A sonda do verificador (parte P1, numa cópia
+com pasta própria) agora mostra as mudanças no disco depois de trabalhar e de
+fechar.

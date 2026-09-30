@@ -70,6 +70,9 @@ class JanelaPrincipal(QMainWindow):
         # esta vazio ou pela metade, e gravar por cima de um trabalho salvo o
         # apagaria (bug grave de 29/09/2026; ver _salvar_agora).
         self.trabalho_carregado = False
+        # O valor de trabalho_carregado quando a analise em curso comecou: e
+        # o que volta se ela for cancelada ou der erro (_parar_a_analise).
+        self._carregado_antes_da_analise = False
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -283,6 +286,12 @@ class JanelaPrincipal(QMainWindow):
             return
 
         nome = Path(caminho).stem
+        # Uma analise do livro de antes (trocar de livro no meio) e marcada
+        # como cancelada, rodando ou ja terminada com o resultado na fila: o
+        # resultado dela nao pode chegar no livro novo (_analise_pronta
+        # ignora resultado de analise cancelada).
+        if isinstance(self.tarefa, TarefaAnalise):
+            self.tarefa.cancelar()
         self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
         self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
         self.projeto.tem_camadas = tem_camadas
@@ -440,13 +449,28 @@ class JanelaPrincipal(QMainWindow):
         TarefaAnalise em QThread - a interface nunca congela (regra 3)."""
         if self.projeto is None:
             return
-        # A analise refaz folhas e paginas no proprio projeto: ate ela acabar,
-        # nada e gravado por cima do trabalho salvo (_salvar_agora).
+        # Ate a analise acabar, nada e gravado por cima do trabalho salvo
+        # (_salvar_agora). Se ela for cancelada ou der erro, o marcador volta
+        # ao valor de antes (_parar_a_analise): senao, depois de "cancelar"
+        # em "Olhando o livro..." nada mais era gravado ate fechar, sem aviso
+        # (bug grave do verificador, 29/09, prints q21-q23).
+        self._carregado_antes_da_analise = self.trabalho_carregado
         self.trabalho_carregado = False
         self.tela_progresso.comecar("Olhando o livro...")
         self.telas.setCurrentIndex(PROGRESSO)
 
-        self.tarefa = TarefaAnalise(self.projeto)
+        # A analise trabalha numa COPIA rasa do projeto: ela so troca
+        # tem_camadas, observacoes, folhas e paginas (atribui listas novas,
+        # nao mexe nas de antes - core.pipeline.analisar_projeto), entao o
+        # projeto da tela (com o trabalho) fica intacto ate _analise_pronta.
+        # E isso que torna seguro voltar o marcador ao cancelar: antes, um
+        # cancelar no instante em que a analise terminava podia deixar as
+        # paginas novas, em branco, no projeto da tela. Arriscado: passar
+        # self.projeto direto, ou analisar_projeto passar a mexer DENTRO das
+        # listas do projeto recebido.
+        import copy
+
+        self.tarefa = TarefaAnalise(copy.copy(self.projeto))
         self.tarefa.progresso.connect(self.tela_progresso.avancar)
         self.tarefa.concluida.connect(self._analise_pronta)
         self.tarefa.falhou.connect(self._falhou_na_analise)
@@ -454,6 +478,14 @@ class JanelaPrincipal(QMainWindow):
 
     def _analise_pronta(self, projeto: Projeto) -> None:
         assert self.acoes is not None
+        # Resultado de uma analise que nao e mais a da vez (cancelada, ou de
+        # um livro de antes: trocar de livro no meio) nao entra: traria as
+        # paginas de outro livro, ou de uma analise que a pessoa desistiu,
+        # para o projeto aberto. Chamada direta (testes) nao tem remetente.
+        origem = self.sender()
+        if isinstance(origem, TarefaAnalise) and (
+                origem is not self.tarefa or origem.foi_cancelada):
+            return
 
         # O trabalho da sessao passada volta AQUI, depois da analise: filtro de
         # cada pagina, corte, angulo, marcacao, apagadas, conferidas. Sem isto,
@@ -606,9 +638,31 @@ class JanelaPrincipal(QMainWindow):
         self.telas.setCurrentIndex(OPCOES)
 
     def _falhou_na_analise(self, mensagem: str) -> None:
-        """Analise deu erro: volta para Opções e mostra o aviso amigavel (regra 3.3)."""
+        """Analise deu erro: volta para Opções e mostra o aviso amigavel (regra 3.3).
+
+        O marcador trabalho_carregado volta ao valor de antes da analise
+        (_parar_a_analise): o projeto da tela nao foi tocado (a analise
+        trabalha numa copia), e o que se fizer depois tem de ser gravado.
+        """
+        origem = self.sender()
+        if isinstance(origem, TarefaAnalise) and origem is not self.tarefa:
+            return                        # erro de uma analise que nao e mais a da vez
+        self._parar_a_analise()
         self.telas.setCurrentIndex(OPCOES)
         self.avisar(mensagem)
+
+    def _parar_a_analise(self) -> None:
+        """A analise da vez acabou sem resultado (cancelada ou com erro): o
+        marcador trabalho_carregado volta ao que era quando ela comecou.
+
+        Seguro porque a analise trabalha numa copia (analisar): o projeto da
+        tela e o mesmo de antes. Se antes ele era o trabalho carregado (veio
+        da conferencia), continua sendo, e volta a ser gravado; se nao era
+        (livro recem-aberto com trabalho salvo), continua sem gravar por
+        cima. Bug grave de 29/09 (verificador, q21-q23).
+        """
+        if isinstance(self.tarefa, TarefaAnalise):
+            self.trabalho_carregado = self._carregado_antes_da_analise
 
     # --- processamento ----------------------------------------------------
 
@@ -727,9 +781,15 @@ class JanelaPrincipal(QMainWindow):
 
     def cancelar(self) -> None:
         """Botão "cancelar" da tela de progresso: pede pra thread parar e volta
-        para Conferir (se ja havia analise) ou Opções."""
+        para Conferir (se ja havia analise) ou Opções.
+
+        Cancelar a analise devolve o marcador trabalho_carregado ao valor de
+        antes (_parar_a_analise); sem isso, voltar a conferencia depois de
+        "cancelar" deixava de gravar tudo ate fechar (bug grave, 29/09).
+        """
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
+        self._parar_a_analise()
         destino = CONFERIR if self.projeto and self.projeto.paginas else OPCOES
         self.telas.setCurrentIndex(destino)
 

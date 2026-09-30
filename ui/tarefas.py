@@ -81,6 +81,13 @@ class TarefaAnalise(QThread):
         de uma pagina."""
         self._cancelar = True
 
+    @property
+    def foi_cancelada(self) -> bool:
+        """Alguem pediu para parar (cancelar)? A janela usa para ignorar um
+        resultado que chegue depois do cancelar (ui/janela_principal.py,
+        _analise_pronta)."""
+        return self._cancelar
+
     def run(self) -> None:
         """Ponto de entrada da QThread. Nunca deixa excecao escapar: registra
         no log e emite `falhou` com mensagem em portugues (regra 3.3)."""

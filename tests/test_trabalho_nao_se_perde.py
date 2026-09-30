@@ -770,3 +770,132 @@ def test_caminho_da_copia_nao_deixa_a_letra_da_unidade_sozinha(janela):
     # o caminho continua la, inteiro (tirando o sinal invisivel que segura a
     # letra da unidade junto do resto)
     assert str(copia) in frase.replace("\u2060", "")
+
+
+# --- "cancelar" a analise nao desliga o salvamento (parecer do verificador, 2a rodada) ---
+#
+# GRAVE, nascido do 4c01fa6: livro com trabalho, na conferencia -> "Voltar
+# para as opcoes" -> "Conferir" -> "cancelar" em "Olhando o livro...". A
+# janela voltava para a conferencia, mas trabalho_carregado ficava falso e
+# nada mais era gravado ate fechar, sem aviso (prints q21-q23;
+# reproducoes/sonda_cancelar_e_dois_projetos.py, parte P1).
+
+
+def _esperar_a_tarefa(janela) -> None:
+    from PySide6.QtWidgets import QApplication
+
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    for _ in range(5):
+        QApplication.processEvents()
+
+
+def _voltar_conferir_e_cancelar(janela, monkeypatch=None) -> None:
+    """Da conferencia para "O que fazer", "Conferir" e "cancelar"."""
+    janela._sair_da_conferencia()
+    janela.analisar()
+    janela.cancelar()
+
+
+def _mexer_e_conferir_que_gravou(janela) -> None:
+    janela.projeto.paginas[2].filtro = "melhorar"
+    janela._salvar_agora()
+    assert projetos.carregar_estado(janela.resumo).paginas[2].filtro == "melhorar", (
+        "depois do cancelar, o programa parou de gravar")
+    janela.projeto.paginas[3].filtro = "preto_e_branco"
+    janela.close()                                   # e ao fechar tambem
+    assert projetos.carregar_estado(janela.resumo).paginas[3].filtro == "preto_e_branco"
+
+
+def test_cancelar_a_analise_volta_a_conferencia_e_continua_gravando(janela, pasta):
+    """Com a analise de verdade (em segundo plano), cancelada logo."""
+    from ui.janela_principal import CONFERIR
+
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))          # trabalho carregado na tela
+    _voltar_conferir_e_cancelar(janela)
+    _esperar_a_tarefa(janela)
+
+    assert janela.telas.currentIndex() == CONFERIR
+    assert janela.projeto.paginas[1].filtro == MAGICO_PRO, "o trabalho sumiu da tela"
+    _mexer_e_conferir_que_gravou(janela)
+
+
+def test_cancelar_quando_a_analise_ja_tinha_acabado_nao_poe_paginas_em_branco(janela, pasta):
+    """O cancelar chega depois de a analise terminar (resultado na fila): o
+    resultado e ignorado e o projeto da tela continua com o trabalho."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    janela._sair_da_conferencia()
+    janela.analisar()
+    janela.tarefa.wait(60000)                        # acabou; o resultado esta na fila
+    janela.cancelar()
+    _esperar_a_tarefa(janela)
+    assert janela.projeto.paginas[1].filtro == MAGICO_PRO
+    assert [p.revisada for p in janela.projeto.paginas] == [True, True, True, False]
+    _mexer_e_conferir_que_gravou(janela)
+
+
+def test_erro_na_analise_nao_desliga_o_salvamento(janela, pasta, monkeypatch):
+    import ui.janela_principal as modulo
+
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+
+    class AnaliseQueFalha:
+        foi_cancelada = False
+
+        def __init__(self, projeto):
+            from unittest.mock import MagicMock
+            self.progresso = self.concluida = self.falhou = MagicMock()
+
+        def start(self):
+            pass
+
+        def isRunning(self):
+            return False
+
+        def cancelar(self):
+            pass
+
+    monkeypatch.setattr(modulo, "TarefaAnalise", AnaliseQueFalha)
+    janela._sair_da_conferencia()
+    janela.analisar()
+    janela._falhou_na_analise("Não consegui ler o livro.")
+    assert janela.avisos == ["Não consegui ler o livro."]
+    _mexer_e_conferir_que_gravou(janela)
+
+
+def test_cancelar_livro_recem_aberto_continua_sem_gravar_por_cima(janela, pasta):
+    """Livro com trabalho salvo recem-aberto (projeto vazio na tela): o
+    cancelar volta ao "O que fazer" e continua sem gravar por cima."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    antes = _estado(janela).read_bytes()
+    janela.abrir_livro(str(livro))
+    janela.analisar()
+    janela.cancelar()
+    _esperar_a_tarefa(janela)
+    janela.close()
+    assert _estado(janela).read_bytes() == antes
+
+
+def test_trocar_de_livro_no_meio_da_analise_nao_mistura_os_livros(janela, pasta):
+    """O resultado da analise do livro de antes, que chega depois de abrir
+    outro livro, e ignorado."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    pasta_um = Path(janela.resumo.pasta)
+    antes = (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes()
+    janela._sair_da_conferencia()
+    janela.analisar()
+    janela.tarefa.wait(60000)                        # resultado do livro 1 na fila
+
+    outro = _outro_livro_de_mesmo_nome(pasta, livro)
+    janela.abrir_livro(str(outro))                   # troca de livro
+    _esperar_a_tarefa(janela)                        # a fila anda
+
+    assert projetos.mesmo_arquivo(janela.projeto.caminho_entrada, str(outro))
+    assert janela.projeto.paginas == [], "o resultado do livro 1 entrou no livro 2"
+    janela.close()
+    assert (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes() == antes
