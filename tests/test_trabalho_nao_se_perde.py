@@ -1438,3 +1438,31 @@ def test_a_pergunta_de_tirar_da_lista_avisa_das_copias_e_esta_em_portugues(janel
     titulo, texto, sim, nao, padrao_sim = vistas[0]
     assert "cópia" in texto and "não são apagadas" in texto
     assert sim != "Yes" and nao != "No" and not padrao_sim
+
+
+# --- livro novo com camadas nao ganha copia de seguranca vazia (verificador, 30/09) -----
+
+
+@pytest.mark.parametrize("sim", [True, False])
+def test_livro_novo_com_camadas_nao_ganha_copia_vazia(janela, pasta, sim):
+    livro = _pdf_com_fundo(pasta)
+    janela.abrir_livro(str(livro))
+    _responder(janela, sim=sim)               # grava um projeto.json so com as opcoes
+    _analisar(janela)
+    assert not _copias(Path(janela.resumo.pasta), "projeto"), "copia de um projeto sem trabalho"
+    assert not janela.avisos
+
+
+def test_comecar_de_novo_pergunta_em_portugues(janela, pasta, monkeypatch):
+    import ui.perguntas as perguntas
+
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    vistas = []
+    monkeypatch.setattr(perguntas, "perguntar",
+                        lambda pai, titulo, texto, sim="Sim", nao="Não", padrao_sim=False:
+                        vistas.append((sim, nao, padrao_sim)) or False)
+    janela.tela_inicio.pedir_para_recomecar(projetos.listar()[0])
+    assert vistas and vistas[0][0] not in ("Yes", "Sim") and vistas[0][1] != "No"
+    assert vistas[0][2] is False                  # o "nao" no Enter
+    assert projetos.tem_trabalho_salvo(projetos.listar()[0])   # "nao": nada apagado

@@ -325,6 +325,15 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
         lambda *a, **k: ("Projeto de teste (renomeado)", True))
     QInputDialog.getInt = staticmethod(
         lambda self, titulo, rotulo, valor=1, minimo=0, maximo=100, passo=1, *a, **k: (valor, True))
+    # Desde 30/09 o programa pede texto e numero por ui/perguntas.py (botoes
+    # em portugues), que abre um QInputDialog modal: respostas fixas aqui
+    # tambem, senao o script trava esperando alguem digitar.
+    import ui.perguntas as perguntas_da_interface
+
+    perguntas_da_interface.pedir_texto = (
+        lambda *a, **k: ("Projeto de teste (renomeado)", True))
+    perguntas_da_interface.pedir_numero = (
+        lambda pai, titulo, rotulo, valor, minimo, maximo: (valor, True))
 
     def _abrir_pasta_falso(caminho) -> None:
         print(f"  (interceptado: abrir_pasta não abriu o Explorer de verdade - {caminho})")

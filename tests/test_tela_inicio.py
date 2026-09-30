@@ -191,8 +191,7 @@ def test_livro_trocado_nao_abre_o_projeto(app, raiz, tmp_path, monkeypatch):
     _livro(tmp_path / "a.pdf", b"Z")          # outro livro, mesmo nome
 
     avisos = []
-    monkeypatch.setattr("PySide6.QtWidgets.QMessageBox.warning",
-                        lambda *a, **k: avisos.append(a[2]))
+    monkeypatch.setattr("ui.perguntas.avisar", lambda *a, **k: avisos.append(a[2]))
 
     tela = TelaInicio()
     abertos = []
@@ -222,18 +221,16 @@ def test_livro_que_mudou_de_pasta_abre_sozinho(app, raiz, tmp_path, monkeypatch)
 
 
 def test_comecar_de_novo_pede_confirmacao(app, raiz, tmp_path, monkeypatch):
-    from PySide6.QtWidgets import QMessageBox
-
     resumo = _resumo(_livro(tmp_path / "a.pdf"), "Um")
     tela = TelaInicio()
 
-    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.No)
+    monkeypatch.setattr("ui.perguntas.perguntar", lambda *a, **k: False)
     pedidos = []
     tela.recomecar_projeto.connect(lambda r: pedidos.append(r))
     tela.pedir_para_recomecar(resumo)
     assert not pedidos, "recomeçou sem confirmação - é destrutivo"
 
-    monkeypatch.setattr(QMessageBox, "question", lambda *a, **k: QMessageBox.Yes)
+    monkeypatch.setattr("ui.perguntas.perguntar", lambda *a, **k: True)
     tela.pedir_para_recomecar(resumo)
     assert pedidos
 

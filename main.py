@@ -35,10 +35,14 @@ def main() -> int:
     # portugues e o programa continua aberto (regra 3.3).
     def tratar(tipo, valor, rastro) -> None:
         registrar_erro("não tratado", "".join(traceback.format_exception(tipo, valor, rastro)))
-        QMessageBox.information(
+        # Botao "entendi" (ui.perguntas): a funcao pronta do Qt punha "OK"
+        # sem traducao (tests/test_botoes_em_portugues.py).
+        from ui import perguntas
+
+        perguntas.avisar(
             None, "Um momento",
             "Aconteceu um problema inesperado, mas o programa continua funcionando.",
-        )
+            icone=QMessageBox.Information)
 
     sys.excepthook = tratar
 

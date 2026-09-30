@@ -214,17 +214,15 @@ class JanelaPrincipal(QMainWindow):
     def _escolher_nome_do_arquivo(self) -> None:
         """Item de menu "Nome do arquivo...": pede o nome e ja monta o caminho
         de saida completo com a pasta atual (ou a sugerida)."""
-        from PySide6.QtWidgets import QInputDialog, QLineEdit
-
         from modelos import nome_de_saida_sugerido
+        from ui import perguntas
 
         if self.projeto is None:
             return
         atual = Path(self.projeto.caminho_saida).name if self.projeto.caminho_saida \
             else nome_de_saida_sugerido(self.projeto)
-        novo, certo = QInputDialog.getText(
-            self, "Nome do arquivo", "Como o PDF pronto vai se chamar:",
-            QLineEdit.Normal, atual)
+        novo, certo = perguntas.pedir_texto(
+            self, "Nome do arquivo", "Como o PDF pronto vai se chamar:", atual)
         if certo and novo.strip():
             pasta = (Path(self.projeto.caminho_saida).parent
                      if self.projeto.caminho_saida
@@ -233,12 +231,12 @@ class JanelaPrincipal(QMainWindow):
 
     def _perguntar_a_pagina(self) -> None:
         """Item de menu "Ir para a página...": pede o número e pula direto."""
-        from PySide6.QtWidgets import QInputDialog
+        from ui import perguntas
 
         if self.projeto is None or not self.projeto.paginas:
             return
         total = len(self.projeto.paginas)
-        numero, certo = QInputDialog.getInt(
+        numero, certo = perguntas.pedir_numero(
             self, "Ir para a página", f"Página (1 a {total}):",
             self.tela_conferir.indice_pagina + 1, 1, total)
         if certo:
@@ -647,7 +645,13 @@ class JanelaPrincipal(QMainWindow):
                 # para o projeto.json que nao deu para ler (salvo None): ele
                 # seria regravado igual. Sem projeto salvo, nao faz nada.
                 # Arriscado: tirar isto, ou mover para depois do _salvar_agora.
-                self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
+                # So ha o que guardar se havia trabalho (paginas, ou um
+                # projeto.json ilegivel): um projeto so com as opcoes (livro
+                # novo; a resposta a pergunta do fundo grava assim) ganhava
+                # uma copia vazia inutil a cada livro novo com camadas
+                # (verificador, 30/09).
+                if projetos.tem_trabalho_salvo(self.resumo):
+                    self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 if salvo is not None:
                     paginas_perdidas = len(salvo.paginas)
                     motivo = projetos.motivo_para_nao_combinar(

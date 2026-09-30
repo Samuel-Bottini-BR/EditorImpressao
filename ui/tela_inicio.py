@@ -26,11 +26,9 @@ from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
     QHBoxLayout,
-    QInputDialog,
     QLabel,
     QLineEdit,
     QMenu,
-    QMessageBox,
     QProgressBar,
     QPushButton,
     QScrollArea,
@@ -41,6 +39,7 @@ from PySide6.QtWidgets import (
 
 import historico
 import projetos
+from ui import perguntas
 from ui.estilo import TEXTO_FRACO
 from ui.widgets.area_arrastar import AreaArrastar
 
@@ -196,7 +195,7 @@ class TelaInicio(QWidget):
         situacao, caminho = projetos.procurar_o_livro(resumo)
 
         if situacao == projetos.TROCADO:
-            QMessageBox.warning(
+            perguntas.avisar(
                 self, "Este não é o mesmo livro",
                 f"Existe um arquivo chamado {Path(caminho).name} nesse lugar, "
                 "mas ele não é o livro deste projeto - alguém o substituiu.\n\n"
@@ -226,7 +225,7 @@ class TelaInicio(QWidget):
             return
 
         if resumo.assinatura and projetos.assinatura_do_arquivo(caminho) != resumo.assinatura:
-            QMessageBox.warning(
+            perguntas.avisar(
                 self, "Este não é o mesmo livro",
                 "Esse arquivo não é o livro deste projeto. Os ajustes salvos "
                 "aqui foram feitos em outro livro, e aplicá-los neste "
@@ -241,19 +240,20 @@ class TelaInicio(QWidget):
     def pedir_para_recomecar(self, resumo: projetos.Resumo) -> None:
         """Confirma antes de jogar fora a conferência ja feita (o livro em si
         nunca e tocado - só o projeto salvo)."""
-        resposta = QMessageBox.question(
-            self, "Começar de novo?",
-            f"Isto joga fora todos os ajustes de {resumo.nome} e abre o livro "
-            "limpo.\n\nO livro em si não é tocado. O que se perde é a "
-            "conferência já feita.",
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if resposta == QMessageBox.Yes:
+        # Botoes em portugues, com o "nao" no Enter (ui.perguntas; antes
+        # saiam "Yes"/"No", print s25 do verificador, 30/09).
+        if perguntas.perguntar(
+                self, "Começar de novo?",
+                f"Isto joga fora todos os ajustes de {resumo.nome} e abre o livro "
+                "limpo.\n\nO livro em si não é tocado. O que se perde é a "
+                "conferência já feita.",
+                sim="Começar de novo", nao="Não, deixar"):
             self.recomecar_projeto.emit(resumo)
 
     def pedir_para_renomear(self, resumo: projetos.Resumo) -> None:
         """Renomeia so o projeto (para diferenciar livros de nome igual), nao o arquivo em disco."""
-        novo, certo = QInputDialog.getText(
-            self, "Renomear", "Nome deste projeto:", QLineEdit.Normal, resumo.nome)
+        novo, certo = perguntas.pedir_texto(
+            self, "Renomear", "Nome deste projeto:", resumo.nome)
         if certo and novo.strip():
             projetos.renomear(resumo, novo)
             self.recarregar()
@@ -266,8 +266,6 @@ class TelaInicio(QWidget):
         isso (decisao do Samuel, 29/09; projetos.remover_da_lista). Botoes
         em portugues, com o "nao" no Enter (ui.perguntas).
         """
-        from ui import perguntas
-
         texto = (f"{resumo.nome} sai desta tela e a conferência feita nele se "
                  "perde.\n\nO livro em PDF continua onde está - ele nunca esteve "
                  "guardado aqui dentro.")

@@ -98,7 +98,12 @@ class DialogoTamanhoDaFolha(QDialog):
         self.aviso.setWordWrap(True)
         camadas.addWidget(self.aviso)
 
-        botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        # Botoes escritos por nos: os padrao do Qt saem em ingles ("Cancel"),
+        # porque o programa nao carrega a traducao do Qt (tests/
+        # test_botoes_em_portugues.py). OK/Cancelar, como no Windows.
+        botoes = QDialogButtonBox()
+        botoes.addButton("OK", QDialogButtonBox.AcceptRole)
+        botoes.addButton("Cancelar", QDialogButtonBox.RejectRole)
         botoes.accepted.connect(self.accept)
         botoes.rejected.connect(self.reject)
         camadas.addWidget(botoes)

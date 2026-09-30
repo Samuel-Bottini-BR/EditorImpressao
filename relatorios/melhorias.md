@@ -2119,3 +2119,45 @@ as cópias vão para a pasta à parte, iguais byte a byte, com o resumo e o
 LEIA-ME, e não viram cartão; sem cópias não cria pasta; duas vezes no mesmo
 minuto não sobrescreve; se as cópias não puderem ser guardadas nada é
 apagado; a pergunta avisa das cópias, em português, com o "não" no Enter.
+
+---
+
+## Tentativa 49 — sem cópia vazia em livro novo, e todos os botões em português (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito, a conferir (teste de máquina)
+**Bugs:** Lista de bugs, 30/09 (parecer do verificador, 3ª rodada): "Livro novo
+com camadas ganha um `projeto.antigo-*.json` vazio" e "'Começar de novo?' com
+botões em inglês" (print s25).
+
+**Cópia vazia:** a resposta à pergunta do fundo grava um `projeto.json` só com
+as opções (0 páginas); o fim da análise o via como "trabalho que não combina"
+e guardava uma cópia inútil. Agora `_analise_pronta` só guarda cópia quando
+havia trabalho (`projetos.tem_trabalho_salvo`: páginas, ou um `projeto.json`
+que não dá para ler).
+
+**Botões em inglês:** o programa não carrega a tradução do Qt, então toda
+função pronta do Qt com botões padrão saía em inglês. Procurei em `ui/` e no
+`main.py` e troquei todas:
+- "Começar de novo?" ("Yes"/"No" → "Começar de novo" / "Não, deixar", com o
+  "não" no Enter);
+- os dois avisos "Este não é o mesmo livro" da tela inicial ("OK" →
+  "entendi");
+- "Renomear" (tela inicial), "Nome do arquivo..." e "Ir para a página..."
+  (menu): "Cancel" → "Cancelar";
+- "Tamanho da folha" (aba Bordas): "Cancel" → "Cancelar";
+- o aviso do erro inesperado (`main.py`, `sys.excepthook`): "OK" → "entendi".
+
+Tudo passa por `ui/perguntas.py` (`perguntar`, `avisar`, `pedir_texto`,
+`pedir_numero`). As caixas de arquivo e pasta ("Abrir", "Escolher pasta") são
+as do próprio Windows, já em português. O `teste_botoes.py` ganhou respostas
+fixas para `pedir_texto`/`pedir_numero` (senão travaria esperando digitar).
+
+**Testes:** `tests/test_botoes_em_portugues.py` (novo, 5): varre `ui/` e
+`main.py` atrás das funções prontas do Qt com botões padrão (falhava antes:
+achava as 9); confere os botões das caixas de `ui/perguntas.py` e do diálogo
+do tamanho da folha. `tests/test_trabalho_nao_se_perde.py`, mais 3: livro
+novo com camadas, com "Sim" e com "Não", não ganha cópia (falhavam antes); a
+pergunta de "Começar de novo" em português com o "não" no Enter.
+`tests/test_tela_inicio.py`: os dois testes que trocavam as funções prontas
+do Qt passaram a trocar as de `ui/perguntas.py`.
