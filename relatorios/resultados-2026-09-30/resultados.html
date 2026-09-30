@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editor de Impressão - resultados</title>
+<style>
+  :root { --fundo:#f4f1ea; --texto:#222; --fraco:#666; --verde:#2e7d32; --azul:#1565c0; --vermelho:#c62828; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { background:#1f2a36; color:#fff; padding:18px 20px; }
+  header h1 { margin:0 0 4px; font-size:24px; }
+  header p { margin:0; opacity:.85; }
+  main { max-width:1100px; margin:0 auto; padding:16px 16px 100px; }
+  h2 { margin:34px 0 4px; font-size:22px; }
+  h2.bom { color:var(--verde); } h2.andamento { color:var(--azul); } h2.ruim { color:var(--vermelho); }
+  .sub { color:var(--fraco); margin:0 0 14px; }
+  .cartao { background:#fff; border:1px solid #ddd; border-radius:10px; padding:14px; margin:0 0 18px; }
+  .cartao.bom { border-left:8px solid var(--verde); } .cartao.andamento { border-left:8px solid var(--azul); } .cartao.ruim { border-left:8px solid var(--vermelho); }
+  .cartao h3 { margin:0 0 4px; font-size:19px; }
+  .cartao p { margin:0 0 10px; }
+  .miniatura { display:block; width:100%; max-height:480px; object-fit:contain; background:#eee; border:1px solid #ccc; cursor:zoom-in; }
+  .dica { font-size:14px; color:var(--fraco); margin:4px 0 10px; }
+  .opiniao { background:#f7f7f7; border-radius:8px; padding:10px; }
+  .opiniao b { display:block; margin-bottom:6px; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  button.ativo.g { background:var(--verde); border-color:var(--verde); color:#fff; }
+  button.ativo.n { background:var(--vermelho); border-color:var(--vermelho); color:#fff; }
+  button.ativo.t { background:#8a6d00; border-color:#8a6d00; color:#fff; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:44px; }
+  .fim { background:#fff; border:2px solid var(--azul); border-radius:10px; padding:14px; margin-top:28px; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  #visor { display:none; position:fixed; inset:0; background:#111; z-index:10; overflow:hidden; cursor:grab; }
+  #visor img { position:absolute; transform-origin:0 0; user-select:none; -webkit-user-drag:none; }
+  #barra { position:fixed; top:10px; right:10px; z-index:11; display:none; gap:6px; }
+  #barra button { background:#fff; }
+  #aviso { position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:11; display:none; color:#fff; background:rgba(0,0,0,.7); padding:6px 12px; border-radius:6px; font-size:14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Editor de Impressão: o que já melhorou</h1>
+  <p>Resultados até 30/09/2026. Clique numa imagem para ver grande: a roda do mouse aproxima, arrastar move a imagem.</p>
+</header>
+<main id="conteudo"></main>
+
+<div id="visor"><img alt=""></div>
+<div id="barra"><button onclick="zoomBotao(1.25)">+ Aproximar</button><button onclick="zoomBotao(0.8)">- Afastar</button><button onclick="ajustar()">Tela inteira</button><button onclick="fechar()">Fechar (Esc)</button></div>
+<div id="aviso">Roda do mouse: aproximar/afastar. Arrastar: mover. Esc: fechar.</div>
+
+<script>
+const SECOES = [
+ { classe:"bom", titulo:"Já está bom", sub:"Resultados que o Samuel já conferiu e aprovou.", itens:[
+   ["1-papel-branco","Papel branco, desenho intacto","O papel amarelado vira branco e o retrato continua com todos os traços. (Palatino, página 5)"],
+   ["2-pintura-cor","A pintura mantém a cor","O anjo continua colorido; só o papel em volta fica branco. (Na escola de Jesus, página 35)"],
+   ["3-corte","O corte das bordas não come mais o texto","Antes o programa cortava o começo das linhas e o número da página (\"37\" virava \"3\"). Agora não corta mais."],
+   ["4-tirar-fundo","Tirar o fundo em PDF que já vem separado","Em livros baixados do Internet Archive, o programa tira o fundo e a foto fica igual ao original. (Opus Majus, página 20)"],
+   ["5-moldura","Moldura dourada inteira","A moldura dourada do calendário sai inteira (antes saía cheia de furinhos). (Livro de Horas, página 26)"],
+   ["7-partitura","Partitura inteira","A clave e as linhas da pauta ficam inteiras. (Graduale, página 222)"],
+   ["8-pergunta","O programa pergunta antes de tirar o fundo","Ao abrir um livro desse tipo, o programa pergunta se você quer tirar o fundo. Nada muda sem você dizer \"sim\"."],
+ ]},
+ { classe:"andamento", titulo:"Em andamento", sub:"Já foi feito, mas ainda não foi conferido.", itens:[
+   ["6-preto-e-branco","Preto e branco: a moldura vira desenho","No Preto e branco, a moldura dourada sai como desenho (traço preto, fundo branco) em vez de mancha preta. Ainda falha em alguns trechos da linha."],
+ ]},
+ { classe:"ruim", titulo:"Ainda não está bom", sub:"Problemas que ainda estão sendo resolvidos.", itens:[
+   ["n1-iluminura","A cor da iluminura muda","A página decorada perde a cor original (a cena azul de baixo fica lavada) e sobra sujeira na margem. (Livro de Horas, página 11)"],
+   ["n2-foto-pb","Foto no Preto e branco","A foto da estátua fica ruim no Preto e branco. Ainda vamos decidir se foto sai em tons de cinza ou em pontinhos, como jornal. (Opus Majus, página 20)"],
+   ["n3-titulo-vermelho-pb","Título vermelho some no Preto e branco","No Preto e branco, os títulos vermelhos (\"TABLE\", \"CONTENU EN CE LIVRE\") somem. (Livro de Horas, página 13)"],
+   ["n4-papel-atras-titulo","Papel atrás do título","O papel atrás das letras do título ainda não fica totalmente branco. (Marial, página 153)"],
+ ]},
+];
+
+const CHAVE = "resultados-kaique-2026-09-30";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) {}
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} }
+const ROT = { g:"GOSTEI", n:"NÃO GOSTEI", t:"TANTO FAZ" };
+const conteudo = document.getElementById("conteudo");
+const lista = [];
+
+SECOES.forEach(sec => {
+  conteudo.insertAdjacentHTML("beforeend", `<h2 class="${sec.classe}">${sec.titulo}</h2><p class="sub">${sec.sub}</p>`);
+  sec.itens.forEach(([img, tit, frase], i) => {
+    const cod = img; lista.push({cod, tit});
+    const c = document.createElement("div"); c.className = "cartao " + sec.classe;
+    c.innerHTML = `<h3>${tit}</h3><p>${frase}</p>
+      <img class="miniatura" loading="lazy" src="img/${img}.jpg" alt="${tit}">
+      <div class="dica">Clique na imagem para ver grande e aproximar.</div>
+      <div class="opiniao"><b>Kaique, o que você achou?</b>
+        <div class="botoes"><button class="g">Gostei</button><button class="n">Não gostei</button><button class="t">Tanto faz</button></div>
+        <textarea placeholder="Sua opinião (opcional)"></textarea></div>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[cod]||{}).nota || "";
+    const pintar = () => c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains((estado[cod]||{}).voto)));
+    c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.split(" ")[0];
+      estado[cod] = Object.assign({}, estado[cod], {voto: (estado[cod]||{}).voto === v ? undefined : v}); pintar(); guardar(); });
+    ta.oninput = () => { estado[cod] = Object.assign({}, estado[cod], {nota: ta.value}); guardar(); };
+    c.querySelector(".miniatura").onclick = e => abrir(e.target.src);
+    pintar();
+  });
+});
+
+conteudo.insertAdjacentHTML("beforeend", `<div class="fim">
+  <b>Kaique, no dia a dia, o que mais te atrapalha hoje no programa?</b>
+  <textarea id="geral" placeholder="Escreva aqui"></textarea>
+  <p style="margin:12px 0 6px">Quando terminar, aperte o botão e mande o texto para o Samuel.</p>
+  <button class="principal" onclick="copiar()">Copiar minhas respostas</button>
+  <textarea id="saida" readonly style="display:none;height:200px"></textarea></div>`);
+const geral = document.getElementById("geral"); geral.value = estado._geral || "";
+geral.oninput = () => { estado._geral = geral.value; guardar(); };
+
+function copiar(){
+  const l = ["Opinião do Kaique sobre os resultados de 30/09:"];
+  lista.forEach(t => { const e = estado[t.cod]||{}; if (!e.voto && !(e.nota||"").trim()) return;
+    l.push(`- ${t.tit}: ${e.voto ? ROT[e.voto] : "sem marca"}${(e.nota||"").trim() ? " - " + e.nota.trim() : ""}`); });
+  if ((estado._geral||"").trim()) l.push("O que mais atrapalha: " + estado._geral.trim());
+  const s = document.getElementById("saida"); s.value = l.join("\n"); s.style.display = "block"; s.select();
+  try { navigator.clipboard.writeText(s.value).catch(()=>document.execCommand("copy")); } catch(e) { try{document.execCommand("copy");}catch(_){} }
+}
+
+// Visor com zoom: roda do mouse aproxima no ponto do cursor, arrastar move, Esc fecha.
+const visor = document.getElementById("visor"), vimg = visor.querySelector("img"), barra = document.getElementById("barra"), aviso = document.getElementById("aviso");
+let esc = 1, x = 0, y = 0, arrastando = false, px = 0, py = 0;
+function aplicar(){ vimg.style.transform = `translate(${x}px,${y}px) scale(${esc})`; }
+function ajustar(){ const w = innerWidth, h = innerHeight; esc = Math.min(w / vimg.naturalWidth, h / vimg.naturalHeight);
+  x = (w - vimg.naturalWidth * esc) / 2; y = (h - vimg.naturalHeight * esc) / 2; aplicar(); }
+function abrir(src){ vimg.onload = ajustar; vimg.src = src; visor.style.display = "block"; barra.style.display = "flex";
+  aviso.style.display = "block"; setTimeout(()=>aviso.style.display="none", 3500); }
+function fechar(){ visor.style.display = "none"; barra.style.display = "none"; aviso.style.display = "none"; }
+function zoomEm(f, cx, cy){ const n = Math.min(12, Math.max(0.05, esc * f)); f = n / esc; x = cx - (cx - x) * f; y = cy - (cy - y) * f; esc = n; aplicar(); }
+function zoomBotao(f){ zoomEm(f, innerWidth / 2, innerHeight / 2); }
+visor.addEventListener("wheel", e => { e.preventDefault(); zoomEm(e.deltaY < 0 ? 1.2 : 1/1.2, e.clientX, e.clientY); }, {passive:false});
+visor.addEventListener("mousedown", e => { arrastando = true; px = e.clientX; py = e.clientY; visor.style.cursor = "grabbing"; });
+addEventListener("mouseup", () => { arrastando = false; visor.style.cursor = "grab"; });
+addEventListener("mousemove", e => { if (!arrastando) return; x += e.clientX - px; y += e.clientY - py; px = e.clientX; py = e.clientY; aplicar(); });
+visor.addEventListener("dblclick", e => zoomEm(2, e.clientX, e.clientY));
+addEventListener("keydown", e => { if (e.key === "Escape") fechar(); });
+</script>
+</body>
+</html>
