@@ -409,3 +409,110 @@ def test_mensagem_sem_copia_nao_promete_copia(janela, pasta, monkeypatch):
     assert len(janela.avisos) == 1
     assert "não foi apagado" not in janela.avisos[0]
     assert "Não consegui guardar uma cópia" in janela.avisos[0]
+
+
+# --- todo salvamento vai para a pasta do projeto aberto (parecer do verificador, bug 1) ---
+#
+# GRAVE, antigo (18/07): closeEvent, processar e _processamento_pronto
+# chamavam historico.salvar_projeto, que escolhia a pasta pelo NOME do livro.
+# Dois PDFs diferentes com o mesmo nome de arquivo: fechar o programa com o
+# segundo aberto gravava o estado dele por cima do trabalho do primeiro, sem
+# copia e sem aviso (e, depois do 3cfb682, o primeiro aceitava calado).
+# Reproducao do verificador: relatorios/conferir/fase1-2026-09-29-trabalho-
+# salvo/verificador/reproducoes/reproduz_mesmo_nome.py (prints p15-p17).
+
+
+def _outro_livro_de_mesmo_nome(pasta: Path, livro: Path) -> Path:
+    """Outro PDF (conteudo diferente), mesmo nome, mesmo numero de paginas."""
+    (pasta / "outro").mkdir(exist_ok=True)
+    outro = pasta / "outro" / livro.name
+    doc = fitz.open()
+    for i in range(4):
+        doc.new_page(width=400, height=560).insert_text((40, 60), f"OUTRO {i}", fontsize=14)
+    doc.save(str(outro))
+    doc.close()
+    return outro
+
+
+def _pastas_de_projeto() -> list[str]:
+    return sorted(p.name for p in projetos.pasta_dos_projetos().iterdir() if p.is_dir())
+
+
+def test_fechar_com_outro_livro_de_mesmo_nome_nao_apaga_o_primeiro(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    pasta_um = Path(janela.resumo.pasta)
+    antes = (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes()
+
+    outro = _outro_livro_de_mesmo_nome(pasta, livro)
+    janela.abrir_livro(str(outro))
+    _analisar(janela)
+    pasta_dois = Path(janela.resumo.pasta)
+    assert pasta_dois != pasta_um
+    janela.projeto.paginas[0].filtro = "melhorar"
+    janela.close()                                   # closeEvent de verdade
+
+    assert (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes() == antes, (
+        "fechar com o outro livro aberto gravou por cima do trabalho do primeiro")
+    # o trabalho do segundo foi para a pasta DELE
+    salvo_dois = projetos.carregar_estado(projetos.ler_resumo(pasta_dois))
+    assert salvo_dois.paginas[0].filtro == "melhorar"
+    assert projetos.mesmo_arquivo(salvo_dois.caminho_entrada, str(outro))
+    # e nenhuma pasta-sombra nasceu ao lado
+    assert _pastas_de_projeto() == sorted([pasta_um.name, pasta_dois.name])
+
+
+def test_primeiro_livro_reaberto_depois_de_fechar_o_outro_volta_com_o_trabalho(janela, pasta):
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    outro = _outro_livro_de_mesmo_nome(pasta, livro)
+    janela.abrir_livro(str(outro))
+    _analisar(janela)
+    janela.close()
+
+    janela.abrir_livro(str(livro))
+    _analisar(janela)
+    assert not janela.avisos, janela.avisos
+    assert janela.projeto.paginas[1].filtro == "magico_pro"
+    assert [p.revisada for p in janela.projeto.paginas] == [True, True, True, False]
+
+
+def test_processar_grava_na_pasta_do_projeto_e_nao_pelo_nome(janela, pasta, monkeypatch):
+    """"Confirmar e processar" e o fim do processamento gravavam pelo nome."""
+    livro = _pdf(pasta)
+    _trabalhar_e_fechar(janela, str(livro))
+    pasta_um = Path(janela.resumo.pasta)
+    antes = (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes()
+    outro = _outro_livro_de_mesmo_nome(pasta, livro)
+    janela.abrir_livro(str(outro))
+    _analisar(janela)
+    pasta_dois = Path(janela.resumo.pasta)
+
+    saida = pasta / "saida" / "pronto.pdf"
+    saida.parent.mkdir()
+    doc = fitz.open()
+    doc.new_page()
+    doc.save(str(saida))
+    doc.close()
+    monkeypatch.setattr(janela, "_resolver_destino", lambda: saida)
+
+    class TarefaQueNaoRoda:
+        def __init__(self, *_a):
+            from unittest.mock import MagicMock
+            self.progresso = self.concluida = self.falhou = self.cancelada = MagicMock()
+
+        def start(self):
+            pass
+
+        def isRunning(self):          # o closeEvent do fim do teste pergunta
+            return False
+
+    import ui.janela_principal as modulo
+    monkeypatch.setattr(modulo, "TarefaProcessar", TarefaQueNaoRoda)
+    janela.processar()
+    janela._processamento_pronto(str(saida))
+
+    assert (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes() == antes
+    salvo_dois = projetos.carregar_estado(projetos.ler_resumo(pasta_dois))
+    assert projetos.mesmo_arquivo(salvo_dois.caminho_saida, str(saida))
+    assert _pastas_de_projeto() == sorted([pasta_um.name, pasta_dois.name])

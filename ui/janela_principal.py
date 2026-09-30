@@ -566,7 +566,12 @@ class JanelaPrincipal(QMainWindow):
 
         self.projeto.caminho_saida = str(caminho)
         configuracoes.lembrar_pasta_de_saida(caminho.parent)
-        historico.salvar_projeto(self.projeto)
+        # Grava na pasta DO PROJETO aberto (resumo.pasta). Ate 29/09/2026
+        # chamava historico.salvar_projeto, que escolhia a pasta pelo NOME do
+        # livro e gravava por cima de outro projeto de mesmo nome (bug grave
+        # achado pelo verificador). Arriscado: gravar por qualquer outro
+        # caminho que nao seja _salvar_agora.
+        self._salvar_agora()
 
         self.tela_progresso.comecar("Processando o livro...")
         self.telas.setCurrentIndex(PROGRESSO)
@@ -650,7 +655,7 @@ class JanelaPrincipal(QMainWindow):
             paginas = folhas_de_saida or len(self.projeto.paginas_ativas)
 
         historico.registrar(self.projeto, paginas)
-        historico.salvar_projeto(self.projeto)
+        self._salvar_agora()          # na pasta do projeto, nao pelo nome (ver processar)
         self.tela_inicio.recarregar()
 
         self.tela_final.mostrar(self.projeto, caminho, paginas, folhas_de_saida)
@@ -706,6 +711,9 @@ class JanelaPrincipal(QMainWindow):
         if self.previas is not None:
             self.previas.parar()
         self.tela_conferir.tira.parar()
-        if self.projeto is not None:
-            historico.salvar_projeto(self.projeto)
+        # (Aqui havia um segundo salvamento, historico.salvar_projeto, que
+        # gravava na pasta escolhida pelo NOME do livro: com dois PDFs
+        # diferentes de mesmo nome, fechar com o segundo aberto apagava o
+        # trabalho do primeiro. Bug grave de 29/09/2026. O _salvar_agora, la
+        # em cima, ja grava tudo na pasta do projeto aberto.)
         evento.accept()

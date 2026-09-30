@@ -1496,3 +1496,51 @@ Kraken; Tesseract instalado mas desligado. **Nada foi ligado ao programa.**
 **Ressalva principal:** calibrado nas mesmas 22 páginas em que foi medido, e
 a folga é pequena (maior zona em página boa 1,13; menor em página com erro
 1,64; limite 1,4).
+
+---
+
+## Tentativa 35 — todo salvamento vai para a pasta do projeto aberto (bug grave, 29/09/2026)
+
+**Data:** 29/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 29/09 (parecer do verificador,
+`relatorios/conferir/fase1-2026-09-29-trabalho-salvo/verificador/`, prints
+p15 a p17): "fechar o programa com um livro aberto grava o trabalho dele
+também na pasta de outro projeto de mesmo nome".
+
+**O que acontecia:** o `closeEvent`, o "Confirmar e processar" e o fim do
+processamento chamavam `historico.salvar_projeto`, que escolhia a pasta pelo
+**nome** do livro (`historico.pasta_do_projeto`), e não pela pasta do projeto
+aberto (`resumo.pasta`). Com dois PDFs diferentes de mesmo nome, fechar com o
+segundo aberto gravava o estado dele por cima do trabalho do primeiro, sem
+cópia. Depois do `3cfb682`, o primeiro aceitava calado (assinatura bate com o
+arquivo, e o estado era do outro livro). E, como esse nome era limpo de outro
+jeito que o das pastas dos projetos (`nome_de_arquivo_seguro` × `_sem_acento`),
+nasciam pastas-sombra só com `projeto.json`.
+
+**O que mudou:** os três lugares chamam `_salvar_agora` (grava com
+`projetos.salvar_estado` na pasta do projeto aberto e atualiza o resumo). O
+`closeEvent` já chamava; o segundo salvamento saiu. `historico.salvar_projeto`
+e `historico.carregar_projeto` foram tirados (ninguém mais os chamava; um
+comentário no lugar explica por quê e pede para não recriar);
+`historico.pasta_do_projeto` ficou, com aviso de não usar para gravar.
+
+**A rede de segurança (`guardar_copia_do_trabalho`) não precisa cobrir este
+caminho:** agora cada projeto só grava na própria pasta, o estado do próprio
+livro; o que sobra de "gravar por cima" é o recomeço (já coberto) e o
+fechamento antes da análise (Tentativa 36).
+
+**As duas pastas-sombra da pasta real do Samuel** ("Giovambattista Palatino
+cittadino romano" e "Rhetorica Christiana -  Fray Diego Valadés", só com
+`projeto.json`): não foram tocadas. Depois do conserto o programa não grava
+mais nelas; como não têm `resumo.json`, continuam fora da tela inicial e fora
+da busca por assinatura (inertes). O único efeito que sobra: ocupam o nome, e
+um projeto novo desses livros ganha "(2)", "(3)" no nome da pasta e do cartão.
+
+**Testes:** `tests/test_trabalho_nao_se_perde.py`, mais 3 (falhavam antes):
+fechar com o outro livro de mesmo nome aberto não mexe no primeiro (bytes
+iguais) e grava o segundo na pasta dele, sem pasta-sombra; o primeiro,
+reaberto, volta com o trabalho; "Confirmar e processar" e o fim do
+processamento gravam na pasta do projeto. A reprodução do verificador
+(`reproduz_mesmo_nome.py`, rodada numa cópia com pasta própria) agora mostra o
+livro 1 intacto.

@@ -42,7 +42,13 @@ def pasta_de_projetos() -> Path:
 
 
 def pasta_do_projeto(nome: str) -> Path:
-    """A pasta de UM projeto (projeto.json, acoes.jsonl, posicao.json, thumbs/)."""
+    """Uma pasta de projeto escolhida pelo NOME (e criada, com thumbs/).
+
+    NAO usar para gravar o trabalho de um projeto: dois livros de mesmo nome
+    caem na mesma pasta (bug grave de 29/09/2026, ver o comentario onde
+    ficava salvar_projeto). A pasta de um projeto e a resumo.pasta
+    (projetos.criar). Ficou so porque algum script de fora pode usar.
+    """
     pasta = pasta_de_projetos() / nome_de_arquivo_seguro(nome)
     pasta.mkdir(parents=True, exist_ok=True)
     (pasta / "thumbs").mkdir(exist_ok=True)
@@ -169,27 +175,16 @@ def registrar(projeto: Projeto, num_paginas: int, miniatura: str = "") -> None:
     salvar([nova] + entradas)
 
 
-def salvar_projeto(projeto: Projeto) -> None:
-    """Grava projeto.json na pasta do projeto (o estado atual)."""
-    pasta = pasta_do_projeto(projeto.nome or Path(projeto.caminho_entrada).stem)
-    try:
-        (pasta / "projeto.json").write_text(
-            json.dumps(projeto.para_dicionario(), ensure_ascii=False, indent=1),
-            encoding="utf-8",
-        )
-    except OSError:
-        pass
-
-
-def carregar_projeto(nome: str) -> Projeto | None:
-    """Le o projeto.json salvo, ou None se nao existir ou estiver corrompido."""
-    caminho = pasta_do_projeto(nome) / "projeto.json"
-    if not caminho.exists():
-        return None
-    try:
-        return Projeto.de_dicionario(json.loads(caminho.read_text(encoding="utf-8")))
-    except (OSError, ValueError, TypeError):
-        return None
+# salvar_projeto(projeto) e carregar_projeto(nome) moravam aqui ate
+# 29/09/2026 e foram TIRADOS: escolhiam a pasta pelo NOME do livro
+# (pasta_do_projeto), e nao pela pasta do projeto aberto. Com dois PDFs
+# diferentes de mesmo nome, fechar o programa (ou processar) com o segundo
+# aberto gravava o estado dele por cima do trabalho do primeiro, sem copia e
+# sem aviso (bug grave achado pelo verificador, Lista de bugs de 29/09). E,
+# como o nome era limpo de outro jeito que o de projetos._pasta_livre, nasciam
+# pastas-sombra so com projeto.json. O trabalho de um projeto e gravado so
+# por projetos.salvar_estado(resumo, projeto), na pasta dele (resumo.pasta).
+# Nao recriar.
 
 
 def abrir_pasta(caminho: str | Path) -> None:
