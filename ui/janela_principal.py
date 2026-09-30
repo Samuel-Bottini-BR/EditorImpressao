@@ -694,6 +694,9 @@ class JanelaPrincipal(QMainWindow):
         if self.previas is not None:
             self.previas.parar()
         self.previas = GerenciadorPrevias(projeto.caminho_entrada, projeto, self)
+        # item 1.2: se o detector de gravuras falhar numa previa, a frase
+        # aparece uma vez (ver _avisar_da_gravura)
+        self.previas.pronta.connect(lambda *_: self._avisar_da_gravura())
 
         self.tela_conferir.carregar(projeto, self.acoes, self.previas)
         if self.resumo is not None:
@@ -983,10 +986,26 @@ class JanelaPrincipal(QMainWindow):
             return alternativo
         return None
 
+    def _avisar_da_gravura(self) -> None:
+        """Item 1.2 (bug de 30/09): o detector de gravuras do ScanTailor faltou
+        ou falhou nesta sessao? Mostra a frase em portugues, UMA vez (o
+        detalhe tecnico ja foi para o erros.log, em
+        core.detectar_regioes._avisar_uma_vez). Chamado quando chega uma
+        previa e quando o processar termina. Nunca levanta excecao."""
+        try:
+            from core.detectar_regioes import aviso_da_gravura_para_a_tela
+
+            frase = aviso_da_gravura_para_a_tela()
+        except Exception:  # noqa: BLE001
+            return
+        if frase:
+            self.avisar(frase, "Gravuras e fotos")
+
     def _processamento_pronto(self, caminho: str) -> None:
         """PDF gravado: registra no histórico e mostra a tela Pronto com o
         número certo de páginas DO LIVRO (ver comentário abaixo sobre cadernos)."""
         assert self.projeto is not None
+        self._avisar_da_gravura()      # item 1.2
         try:
             import fitz
 

@@ -1031,13 +1031,14 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
     opcoes: as do livro (OpcoesDaGravura), ou so a forma (texto), com o resto
     no padrao. A forma "desligada" nao chega aqui (detectar() nem procura).
 
-    Nunca levanta excecao: qualquer falha vira motivo (e o detalhe tecnico vai
-    para o log, em core/gravura_scantailor.py).
+    Nunca levanta excecao: qualquer falha vira motivo, e vai (uma vez por
+    sessao, com o detalhe tecnico) para o erros.log e para o aviso da tela
+    (_avisar_uma_vez).
     """
     try:
         if not dpi or dpi <= 0:
-            return None, ("O detector de gravura do ScanTailor precisa saber a resolução "
-                          "da página; usei o detector antigo.")
+            return _falhou("O detector de gravura do ScanTailor precisa saber a resolução "
+                           "da página; usei o detector antigo.", "garantir_selecao sem dpi")
         if isinstance(opcoes, str):
             opcoes = OpcoesDaGravura(forma=opcoes)
         if opcoes.forma not in FORMAS_DA_GRAVURA:
@@ -1057,7 +1058,8 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
             entrada, declarado, forma=opcoes.forma, sensibilidade=opcoes.sensibilidade,
             mais_sensivel=opcoes.mais_sensivel, normalizar_iluminacao=opcoes.normalizar)
         if not resultado.disponivel:
-            return None, f"{resultado.motivo} Usei o detector antigo nesta página."
+            return _falhou(f"{resultado.motivo} Usei o detector antigo nesta página.",
+                           resultado.detalhe_tecnico)
         mascara = resultado.mascara
         if mascara.shape[:2] != (altura, largura):
             # de volta ao tamanho da pagina, com a borda pela media (e nao em
@@ -1066,8 +1068,15 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
                                  interpolation=cv2.INTER_LINEAR) >= 128
         return _limpar_gravura_do_scantailor(mascara), None
     except Exception as erro:  # noqa: BLE001 - a gravura nunca derruba a pagina
-        _log.warning("gravura do ScanTailor falhou: %s: %s", type(erro).__name__, erro)
-        return None, "O detector de gravura do ScanTailor falhou nesta página; usei o detector antigo."
+        return _falhou("O detector de gravura do ScanTailor falhou nesta página; usei o "
+                       "detector antigo.", f"{type(erro).__name__}: {erro}")
+
+
+def _falhou(motivo: str, detalhe: str | None) -> tuple[None, str]:
+    """Anota a falha (erros.log e tela, uma vez: _avisar_uma_vez) e devolve
+    o (None, motivo) de _gravura_pelo_scantailor."""
+    _avisar_uma_vez(motivo, detalhe)
+    return None, motivo
 
 
 class _ProcuraNoScanTailor:
@@ -1095,14 +1104,54 @@ class _ProcuraNoScanTailor:
         return self._saida
 
 
+# Bug de 30/09/2026 (parecer do verificador do 1.2): o aviso de DLL faltando
+# ou falhando ia so para o `logging` do Python, que o programa nao grava em
+# arquivo nenhum: no programa instalado (sem console) se perdia, e a tela
+# nada dizia. Agora vai para o erros.log (registro.registrar_erro, o mesmo
+# de todo erro do programa), uma vez por motivo por sessao, e deixa UMA frase
+# para a tela, uma vez por sessao (aviso_da_gravura_para_a_tela; quem mostra
+# e ui/janela_principal.py). As falhas vem das linhas das previas e do
+# processar: a tranca protege as duas listas.
+AVISO_DA_GRAVURA_NA_TELA = ("O detector de gravuras não pôde ser usado; usei o antigo. "
+                            "As outras funções continuam funcionando.")
 _JA_AVISADOS: set[str] = set()
+_TRANCA_DOS_AVISOS = threading.Lock()
+_AVISO_DA_TELA = {"pendente": None, "ja_mostrado": False}
 
 
-def _avisar_uma_vez(motivo: str | None) -> None:
-    """Poe no log, uma vez por sessao, por que o ScanTailor nao foi usado."""
-    if motivo and motivo not in _JA_AVISADOS:
+def _avisar_uma_vez(motivo: str | None, detalhe: str | None = None) -> None:
+    """Anota, uma vez por sessao para cada motivo, por que o ScanTailor nao
+    foi usado: no erros.log (com o detalhe tecnico, nunca na tela) e no log
+    do Python; e deixa a frase da tela pendente, se ela ainda nao foi
+    mostrada nesta sessao. Nunca levanta excecao."""
+    if not motivo:
+        return
+    with _TRANCA_DOS_AVISOS:
+        if motivo in _JA_AVISADOS:
+            return
         _JA_AVISADOS.add(motivo)
-        _log.warning("gravura: %s", motivo)
+        if not _AVISO_DA_TELA["ja_mostrado"]:
+            _AVISO_DA_TELA["pendente"] = AVISO_DA_GRAVURA_NA_TELA
+    _log.warning("gravura: %s (%s)", motivo, detalhe)
+    try:
+        from registro import registrar_erro
+
+        registrar_erro("detector de gravura (item 1.2)",
+                       motivo + (f"\ndetalhe: {detalhe}" if detalhe else ""))
+    except Exception:  # noqa: BLE001 - anotar nunca derruba a pagina
+        pass
+
+
+def aviso_da_gravura_para_a_tela() -> str | None:
+    """A frase para a tela quando o detector de gravuras falhou nesta sessao,
+    UMA vez: devolve e esquece (a proxima chamada devolve None). Chamada por
+    ui/janela_principal.py quando chega uma previa ou termina o processar."""
+    with _TRANCA_DOS_AVISOS:
+        frase = _AVISO_DA_TELA["pendente"]
+        if frase is not None:
+            _AVISO_DA_TELA["pendente"] = None
+            _AVISO_DA_TELA["ja_mostrado"] = True
+        return frase
 
 
 def detectar(
@@ -1248,8 +1297,7 @@ def detectar(
             # modelo, que nao decidem mais a gravura: nao vale aqui.
             em_duvida = False
         else:
-            selecao.aviso_gravura = aviso
-            _avisar_uma_vez(aviso)
+            selecao.aviso_gravura = aviso      # ja anotado (_falhou)
 
     if gravura_st is not None:
         gravura = gravura_st

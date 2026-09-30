@@ -589,3 +589,59 @@ def test_deteccao_que_falha_ao_refazer_nao_perde_a_marcacao(monkeypatch):
     img, _g, _e = pagina_com_gravura()
     assert _garantir(projeto, pagina, img).para_lista() == marcada.para_lista()
     assert pagina.selecao == marcada.para_lista()
+
+
+# ------------------------------------------------------------- o aviso quando a DLL falta (bug de 30/09)
+
+@pytest.fixture(autouse=True)
+def avisos_limpos(monkeypatch):
+    """Os avisos de falha da gravura ficam só neste arquivo (são uma vez por
+    sessão): sem isto, uma falha de mentira daqui deixava a frase pendente, e
+    a primeira janela de outro teste abria a caixa "Gravuras e fotos"."""
+    monkeypatch.setattr(dr, "_JA_AVISADOS", set())
+    monkeypatch.setattr(dr, "_AVISO_DA_TELA", {"pendente": None, "ja_mostrado": False})
+
+
+def test_dll_ausente_vai_para_o_erros_log_e_para_a_tela_uma_vez(monkeypatch, tmp_path,
+                                                                 avisos_limpos):
+    from registro import caminho_do_log
+
+    monkeypatch.setattr(gs, "_padrao", gs.DetectorGravuraScanTailor(tmp_path / "nao_existe.dll"))
+    log = caminho_do_log()
+    antes = log.read_text(encoding="utf-8") if log.exists() else ""
+    img, _g, _e = pagina_com_gravura()
+    for _vez in range(3):
+        dr.detectar(img, usar_layout=False, detector_de_gravura=dr.GRAVURA_SCANTAILOR, dpi=150)
+
+    novo = log.read_text(encoding="utf-8")[len(antes):]
+    assert novo.count("| detector de gravura (item 1.2) =====") == 1, "no erros.log, uma vez"
+    assert "nao_existe.dll" in novo, "o detalhe técnico vai para o log"
+    frase = dr.aviso_da_gravura_para_a_tela()
+    assert frase == dr.AVISO_DA_GRAVURA_NA_TELA
+    assert "não pôde ser usado" in frase and "Traceback" not in frase and ".dll" not in frase
+    assert dr.aviso_da_gravura_para_a_tela() is None, "na tela, uma vez só"
+
+
+def test_sem_falha_nao_ha_aviso(avisos_limpos):
+    img, _g, _e = pagina_com_gravura()
+    dr.detectar(img, usar_layout=False)
+    assert dr.aviso_da_gravura_para_a_tela() is None
+
+
+def test_a_janela_mostra_o_aviso_da_gravura_uma_vez(monkeypatch, avisos_limpos):
+    from PySide6.QtWidgets import QApplication
+
+    QApplication.instance() or QApplication([])
+    from ui.janela_principal import JanelaPrincipal
+
+    janela = JanelaPrincipal()
+    try:
+        vistos = []
+        monkeypatch.setattr(janela, "avisar", lambda frase, titulo="": vistos.append(frase))
+        dr._avisar_uma_vez("motivo de teste", "detalhe de teste")
+        janela._avisar_da_gravura()
+        janela._avisar_da_gravura()
+        assert vistos == [dr.AVISO_DA_GRAVURA_NA_TELA]
+    finally:
+        janela.tela_opcoes.folhear.fechar()
+        janela.close()
