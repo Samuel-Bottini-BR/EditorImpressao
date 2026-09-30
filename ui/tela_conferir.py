@@ -838,6 +838,25 @@ class TelaConferir(QWidget):
         linha_detectar.addStretch()
         fora.addLayout(linha_detectar)
 
+        # Item 1.2 (decisao do Samuel, 30/09/2026): "Quero poder trocar
+        # tambem so numa pagina (ex.: so a pagina da estatua do Opus Majus),
+        # sem mudar o livro inteiro." Marcada = a gravura desta pagina e
+        # procurada em retangulo (pega a foto inteira); desmarcada = seguindo
+        # o contorno do desenho. Por cima do "Este livro tem fotos" da tela
+        # "O que fazer". Mesmo padrao dos outros controles de pagina ("usar em
+        # todas", "so nas proximas") e mesmo desfazer (ConfigPagina.gravura_forma).
+        linha_foto = QHBoxLayout()
+        self.caixa_tem_foto = QCheckBox("Esta página tem foto")
+        self.caixa_tem_foto.setToolTip(
+            "Procura a gravura desta página em retângulo, que pega a foto inteira. "
+            "Desmarcada, segue o contorno do desenho. O que você marcou à mão continua.")
+        self.caixa_tem_foto.toggled.connect(self._mudar_forma_da_pagina)
+        linha_foto.addWidget(self.caixa_tem_foto)
+        _botao("usar em todas", linha_foto, self._forma_em_todas)
+        _botao("só nas próximas", linha_foto, self._forma_nas_proximas)
+        linha_foto.addStretch()
+        fora.addLayout(linha_foto)
+
         self.aviso_marcacao = QLabel("")
         self.aviso_marcacao.setObjectName("dica")
         fora.addWidget(self.aviso_marcacao)
@@ -934,39 +953,133 @@ class TelaConferir(QWidget):
 
         E o ponto de as tres formas de marcar viverem na mesma lista: da para
         pedir a maquina de novo sem perder a correcao da pessoa.
+
+        Item 1.2 (30/09/2026): ate aqui este botao chamava o detector ANTIGO,
+        na imagem da previa ja filtrada - o que o Kaique via aqui nao era o
+        que ia para o PDF. Agora ele so tira o que a maquina marcou e pede a
+        previa de novo: quem procura e core/pipeline.garantir_selecao, o
+        MESMO caminho da previa e do PDF (o detector do ScanTailor, com as
+        opcoes do livro e da pagina, na pagina sem filtro, com o DPI certo).
+        A marcacao a mao volta por cima da nova (ver garantir_selecao). O
+        resultado aparece quando a previa chega (_atualizar_marcacao).
+        Arriscado: voltar a chamar detectar() daqui.
         """
-        from core.detectar_regioes import detectar
+        from core.pipeline import REFAZER_A_GRAVURA
 
         pagina = self._pagina_marcada()
         if pagina is None:
             return
 
-        quantas = self.editor_selecao.limpar_o_que_a_maquina_marcou()
-        img = self.previas.pegar(self.indice_pagina, self._dpi_atual) \
-            if self.previas is not None else None
-        if img is None:
-            self._mostrar_aviso_da_marcacao("Espere a página terminar de carregar.")
-            return
-
-        try:
-            nova = detectar(img)
-        except Exception:  # noqa: BLE001 - sem deteccao a marcacao a mao continua
-            self._mostrar_aviso_da_marcacao("Não consegui procurar nesta página.")
-            return
-
-        for regiao in nova.regioes:
-            self.editor_selecao.selecao.acrescentar(regiao)
+        self.editor_selecao.limpar_o_que_a_maquina_marcou()
         pagina.guardar_selecao(self.editor_selecao.selecao)
+        # com marcacao a mao sobrando, a assinatura que nao bate com nenhuma
+        # faz garantir_selecao procurar de novo (sem ela, a selecao nao vazia
+        # seria usada como esta)
+        pagina.gravura_feita_com = REFAZER_A_GRAVURA
         self.editor_selecao.update()
+        self._mostrar_aviso_da_marcacao(
+            "Procurando de novo, com as opções deste livro. O que você marcou à mão continua.")
+        self.trabalho_mudou.emit()
         if self.previas is not None:
             self.previas.invalidar(self.indice_pagina)
+            self._atualizar_previa()
 
-        achou = len(nova)
-        mantidas = "" if not quantas else f" Mantive as suas {quantas and ''}"
-        del mantidas
+    # --- item 1.2: "Esta pagina tem foto" ---------------------------------
+
+    def _forma_do_livro(self) -> str:
+        """A forma do contorno da gravura do livro (Projeto.gravura_forma)."""
+        return getattr(self.projeto, "gravura_forma", "livre") if self.projeto else "livre"
+
+    def _preparar_para_trocar_forma(self, paginas, valor) -> None:
+        """Pagina marcada antes do campo gravura_feita_com existir (assinatura
+        vazia) nao seria refeita sozinha: a que vai MESMO mudar de forma, e tem
+        alguma marcacao da maquina, ganha a assinatura "refazer". Fora do
+        desfazer de proposito: depois de refeita, a assinatura e a de verdade,
+        e o desfazer (que so devolve a forma) refaz com a forma de antes."""
+        from core.pipeline import REFAZER_A_GRAVURA, escolha_da_gravura
+        from core.selecao import MAO
+
+        assert self.projeto is not None
+        for pagina in paginas:
+            if pagina.gravura_feita_com or not pagina.selecao:
+                continue
+            if not any(isinstance(r, dict) and r.get("origem") != MAO for r in pagina.selecao):
+                continue
+            antes = escolha_da_gravura(self.projeto, pagina)[1].forma
+            guardado = pagina.gravura_forma
+            pagina.gravura_forma = valor
+            depois = escolha_da_gravura(self.projeto, pagina)[1].forma
+            pagina.gravura_forma = guardado
+            if antes != depois:
+                pagina.gravura_feita_com = REFAZER_A_GRAVURA
+
+    def _valor_da_forma(self, tem_foto: bool):
+        """O que vai em ConfigPagina.gravura_forma: None quando a pagina fica
+        igual ao livro (assim, mudar o livro depois muda ela tambem)."""
+        forma = "retangular" if tem_foto else "livre"
+        return None if forma == self._forma_do_livro() else forma
+
+    @protegido
+    def _mudar_forma_da_pagina(self, tem_foto: bool) -> None:
+        """A caixinha "Esta pagina tem foto": troca a forma so desta pagina."""
+        pagina = self._pagina_marcada()
+        if pagina is None or not self._pronta():
+            return
+        valor = self._valor_da_forma(tem_foto)
+        if valor == pagina.gravura_forma:
+            return
+        self._preparar_para_trocar_forma([pagina], valor)
+        self._registrar(
+            "mudar_forma_da_gravura", "pagina", [self.indice_pagina],
+            {"gravura_forma": valor},
+            f"Página {self.indice_pagina + 1}: "
+            + ("tem foto (gravura em retângulo)" if tem_foto else "gravura seguindo o desenho"),
+        )
         self._mostrar_aviso_da_marcacao(
-            f"Achei {achou} áreas. O que você marcou à mão continua aí."
-            if achou else "Não achei nada novo nesta página.")
+            "Procurando a gravura de novo nesta página. O que você marcou à mão continua.")
+
+    @protegido
+    def _forma_em_todas(self) -> None:
+        self._forma_nas(0, "em todas as páginas")
+
+    @protegido
+    def _forma_nas_proximas(self) -> None:
+        self._forma_nas(self.indice_pagina, "desta página em diante")
+
+    def _forma_nas(self, desde: int, onde: str) -> None:
+        """Leva a escolha "Esta pagina tem foto" da pagina atual para as
+        paginas a partir de `desde` (0 = todas), numa acao so (um desfazer)."""
+        pagina = self._pagina_marcada()
+        if pagina is None or self.projeto is None:
+            return
+        valor = pagina.gravura_forma
+        alvo = [p for p in self.projeto.paginas if p.indice >= desde]
+        self._preparar_para_trocar_forma(alvo, valor)
+        tem_foto = self.caixa_tem_foto.isChecked()
+        self._registrar(
+            "aplicar_em_todas", "pagina", [p.indice for p in alvo],
+            {"gravura_forma": valor},
+            ("Tem foto" if tem_foto else "Gravura seguindo o desenho") + f" {onde}",
+        )
+
+    def _mostrar_forma_da_pagina(self, pagina) -> None:
+        """Acerta a caixinha "Esta pagina tem foto" pela pagina, sem disparar
+        a troca. Livro em "nao procurar": a caixinha fica apagada."""
+        from core.pipeline import escolha_da_gravura
+
+        if not hasattr(self, "caixa_tem_foto") or self.projeto is None:
+            return
+        desligado = self._forma_do_livro() == "desligada"
+        self.caixa_tem_foto.blockSignals(True)
+        self.caixa_tem_foto.setChecked(
+            not desligado and escolha_da_gravura(self.projeto, pagina)[1].forma == "retangular")
+        self.caixa_tem_foto.blockSignals(False)
+        self.caixa_tem_foto.setEnabled(not desligado)
+        self.caixa_tem_foto.setToolTip(
+            "O livro está em \"não procurar\" gravuras e fotos (tela \"O que fazer\")."
+            if desligado else
+            "Procura a gravura desta página em retângulo, que pega a foto inteira. "
+            "Desmarcada, segue o contorno do desenho. O que você marcou à mão continua.")
 
     # Fase 3b do plano "corrigir bugs do teste do Boécio": faltava aqui o
     # "usar em todas / só nesta" que já existia para corte
@@ -1454,6 +1567,7 @@ class TelaConferir(QWidget):
         selecao = pagina.obter_selecao()
 
         self.editor_selecao.definir_selecao(selecao)
+        self._mostrar_forma_da_pagina(pagina)      # item 1.2
         self._mostrar_aviso_da_marcacao(
             selecao.resumo_em_portugues() if not selecao.vazia
             else 'Nada marcado ainda. Clique em "detectar automaticamente" '
