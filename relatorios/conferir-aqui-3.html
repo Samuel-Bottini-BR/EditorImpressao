@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 3 - Editor de Impressão</title>
+<style>
+  body { margin:0; background:#f4f1ea; color:#222; font:17px/1.5 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; }
+  header button { margin-left:auto; }
+  main { max-width:1100px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; }
+  .cartao { background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px; margin:0 0 22px; }
+  .cartao.feito { border-left:8px solid #2e7d32; }
+  .cartao h2 { margin:0 0 6px; font-size:20px; }
+  .explica { margin:0 0 10px; }
+  .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:6px auto 10px; border:1px solid #ccc; cursor:zoom-in; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  .opcoes button { text-align:left; font:inherit; font-size:16px; padding:10px 14px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button.ativo { background:#1565c0; border-color:#1565c0; color:#fff; }
+  textarea { width:100%; box-sizing:border-box; margin-top:10px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:40px; }
+  button.principal { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; background:#1565c0; border:2px solid #1565c0; color:#fff; font-weight:600; cursor:pointer; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid #1565c0; border-radius:10px; padding:12px; z-index:8; }
+  #saida textarea { height:180px; }
+</style>
+</head>
+<body>
+<header><h1>Conferir 3 - o que faltou responder</h1><button class="principal" onclick="copiar()">Copiar respostas</button></header>
+<main>
+  <div class="ajuda">São só 4 cartões. Em cada um, <b>escolha uma opção</b> (clique no botão) e, se quiser, escreva um comentário. Clique na imagem para ver em tamanho cheio. No fim, aperte <b>Copiar respostas</b> e cole no chat do Claude.</div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><img alt=""></div>
+<div id="saida"><b>Respostas copiadas.</b> Cole no chat (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo.
+  <textarea id="textoSaida" readonly></textarea><button onclick="document.getElementById('saida').style.display='none'">Fechar</button></div>
+<script>
+const CARTOES = [
+ { cod:"D2", titulo:"Capitulares (letra grande no começo)",
+   explica:"Nos livros há dois tipos de letra grande. À esquerda, o <b>Q gravado em madeira</b> do Palatino 9, com um desenho dentro: hoje ele conta como <b>figura</b> (vermelho). À direita, o <b>A desenhado à mão com pena</b> no Graduale 221: hoje ele <b>não conta</b> (cinza). Isto decide como o programa trata essa letra: como letra (fica preta e nítida, junto com o texto) ou como figura (fica intacta, como desenho).",
+   img:"conferencia-2-2026-09-30/decisoes/d2-capitulares.jpg",
+   pergunta:"A capitular desenhada à mão com pena (a do Graduale) deve ser tratada como:",
+   opcoes:["Letra (junto com o texto)","Figura (como desenho, intacta)","Tanto faz / deixar de fora"] },
+ { cod:"D7", titulo:"Graduale: pauta e notas",
+   explica:"Isto é só para a <b>régua que mede os OCRs</b>; não muda a aparência da página. Os OCRs só leem letras, não notas de música. À esquerda, como está: só as palavras cantadas contam (verde); a pauta e as notas ficam de fora. À direita, a outra opção: a pauta e as notas contam como figura (vermelho), e aí, se o OCR puser uma linha de texto em cima da música, conta como erro dele.",
+   img:"conferencia-2-2026-09-30/decisoes/d7-graduale-pauta.jpg",
+   pergunta:"Na régua dos OCRs, a pauta e as notas:",
+   opcoes:["Ficam de fora, como está (esquerda)","Contam como figura: OCR em cima da música é erro (direita)"] },
+ { cod:"N2", titulo:"Moldura dourada no Preto e branco",
+   explica:"Na imagem, a mesma página no filtro Preto e branco. No meio (<b>ANTES</b>), a moldura continua <b>dourada</b> e o texto sai em preto e branco. À direita (<b>AGORA</b>, a regra de hoje de manhã), a moldura vira <b>traço preto</b>, e perde parte do contorno. Você disse: \"não tem por que jogar preto e branco nela\", mas quer ter a opção. A pergunta é qual fica <b>de fábrica</b>; a outra continua disponível como opção.",
+   img:"conferencia-2-2026-09-30/pb-novo/pb-horas026.jpg",
+   pergunta:"No Preto e branco, de fábrica, a moldura dourada:",
+   opcoes:["Mantém a cor original (como o ANTES); traço preto só se eu escolher","Vira traço preto (como o AGORA); cor só se eu escolher \"Só as letras\""] },
+ { cod:"D1", titulo:"Palatino 57: o resultado final (você pediu para ver)",
+   explica:"Na conferência 2 você aprovou que o laço em volta do título seja tratado como gravura e as letras de dentro como texto, e pediu para ver o resultado final. À esquerda o original, à direita a página depois do programa (\"Tirar o fundo\"), inteira e com o detalhe ampliado.",
+   img:"conferencia-3-2026-09-30/d1-palatino57-resultado.jpg",
+   pergunta:"O resultado final do Palatino 57 está:",
+   opcoes:["Bom","Ruim","Não sei"] },
+];
+const CHAVE = "conferir-2026-09-30-c";
+let estado = {}; try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) {}
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} }
+const conteudo = document.getElementById("conteudo");
+CARTOES.forEach(c => {
+  const d = document.createElement("div"); d.className = "cartao";
+  d.innerHTML = `<h2>${c.cod} · ${c.titulo}</h2><p class="explica">${c.explica}</p>
+    <img loading="lazy" src="${c.img}" alt="${c.titulo}">
+    <div class="pergunta">${c.pergunta}</div>
+    <div class="opcoes">${c.opcoes.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>
+    <textarea placeholder="Comentário (opcional)"></textarea>`;
+  conteudo.appendChild(d);
+  const e = estado[c.cod] || {}; const ta = d.querySelector("textarea"); ta.value = e.nota || "";
+  const pintar = () => { const v = (estado[c.cod]||{}).escolha;
+    d.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(v) === b.dataset.i));
+    d.classList.toggle("feito", v !== undefined); };
+  d.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+    estado[c.cod] = Object.assign({}, estado[c.cod], {escolha: Number(b.dataset.i)}); pintar(); guardar(); });
+  ta.oninput = () => { estado[c.cod] = Object.assign({}, estado[c.cod], {nota: ta.value}); guardar(); };
+  d.querySelector("img").onclick = ev => { const z = document.getElementById("zoom"); z.querySelector("img").src = ev.target.src; z.style.display = "block"; };
+  pintar();
+});
+function copiar(){
+  const l = ["Conferência 3 de 30/09 (Editor de Impressão):"];
+  CARTOES.forEach(c => { const e = estado[c.cod] || {};
+    l.push(`${c.cod} ${c.titulo}: ${e.escolha !== undefined ? c.opcoes[e.escolha] : "sem resposta"}${(e.nota||"").trim() ? " - " + e.nota.trim() : ""}`); });
+  const t = document.getElementById("textoSaida"); t.value = l.join("\n");
+  document.getElementById("saida").style.display = "block"; t.select();
+  try { navigator.clipboard.writeText(t.value).catch(()=>document.execCommand("copy")); } catch(e) { try{document.execCommand("copy");}catch(_){} }
+}
+</script>
+</body>
+</html>
