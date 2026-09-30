@@ -162,6 +162,21 @@ def pagina_para_array(
     if not 0 <= indice < doc.page_count:
         raise ErroPDF(f"Essa página não existe (pedi a {indice + 1}).")
 
+    # Desenha num processo a parte quando da (core/paginas_em_outro_processo.
+    # py): o PyMuPDF segura o GIL enquanto desenha, e desenhar aqui dentro -
+    # mesmo numa thread de fundo - parava a janela (bug grave de 30/09: ~16 s
+    # sem responder ao terminar a analise de um livro de 80 paginas). O
+    # servidor roda esta mesma funcao, com a delegacao desligada: a imagem e
+    # a mesma, ponto por ponto. Documento sem arquivo (feito na memoria) ou
+    # servidor fora do ar: desenha aqui, como antes.
+    from core import paginas_em_outro_processo
+
+    caminho = getattr(doc, "name", "") or ""
+    if paginas_em_outro_processo.ligado() and caminho and Path(caminho).is_file():
+        imagem = paginas_em_outro_processo.pagina(caminho, indice, dpi, total=doc.page_count)
+        if imagem is not None:
+            return imagem
+
     with _TRANCA:
         pagina = doc[indice]
         dpi_usado = dpi_seguro(pagina, dpi)

@@ -2418,3 +2418,82 @@ para simular 100% e 150% num monitor a 125%).
 - `pipeline.aviso_das_opcoes_da_gravura`: título "Gravuras e fotos" e frase
   certa no "não procurar" (r09) — falta ligar em `ui/janela_principal.py`;
 - aba Marcar: linhas "Marcação:" e "Foto:", dicas nos botões (r06).
+
+---
+
+## Tentativa 55 — a janela não congela mais: as páginas do PDF são desenhadas num processo à parte (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** consertado, a conferir (teste de máquina)
+**Bug:** Lista de bugs, 30/09 (parecer do verificador, rodada geral,
+`reproducoes/sonda4_congela.py`): a janela ficava ~16 s sem responder ao
+terminar a análise de um livro de 40 folhas / 80 páginas. Regra técnica do
+`CLAUDE.md`: "Interface nunca congela".
+
+**Causa (medida, diferente da suposta):** o desenho das páginas já estava em
+segundo plano (QThread e QThreadPool). O problema é que o **PyMuPDF não solta
+o GIL do Python enquanto desenha**: numa thread de fundo, desenhar uma página
+do livro de teste (imagem JPEG 2000 de 3325 × 2568, como os do Internet
+Archive) segurou a thread principal parada 0,72 s. Com a análise, a tira de
+miniaturas e as prévias desenhando ao mesmo tempo, a thread da janela (e até
+uma thread de medição que só precisava do GIL) ficava sem vez por 2 a 9 s. O
+perfil do verificador (cProfile) apontava `paineis._botao → get_pixmap`
+porque, no Python 3.14, o cProfile mistura as threads: o `_botao` só estava na
+pilha da janela enquanto outra thread desenhava. O próprio PyMuPDF manda usar
+processos para trabalhar em paralelo (`pymupdf/_apply_pages.py`).
+
+**O que mudou:**
+- `core/paginas_em_outro_processo.py` (novo): dois "servidores de páginas"
+  (processos auxiliares). `pdf_io.pagina_para_array` pede a página a um deles e
+  espera pela resposta com o GIL solto; o servidor roda **a mesma função**
+  (com a delegação desligada), então a imagem é **igual ponto por ponto**
+  (conferido a 50, 150 e 300 DPI em três livros). A imagem volta por memória
+  compartilhada (pelo cano custava 25 ms por página a 300 DPI).
+- **Adiantamento:** quando se pede a página N, o outro servidor já desenha a
+  N+1 (a análise e o PDF final pedem em ordem). É o que deixou a análise mais
+  rápida que antes.
+- **Arquivo nunca preso:** o servidor fecha o PDF depois de meio segundo sem
+  pedido e na hora em que o livro é fechado ou trocado
+  (`GerenciadorPrevias.parar`, `TiraMiniaturas.parar` chamam `soltar_livro`).
+  A tira de miniaturas passou a abrir o PDF a cada folha (antes o deixava
+  aberto o tempo todo da tira). Achado pelo outro implementador: numa
+  primeira versão o servidor guardava o livro aberto e 5 testes quebraram
+  (arquivo preso).
+- **Robustez:** servidor que cai é trocado por outro e a página é pedida de
+  novo; se não subir outro, a página é desenhada aqui, como antes (anotado no
+  `erros.log`). Antes, uma queda do MuPDF derrubava o programa inteiro; agora
+  derruba só o servidor. `EDITOR_PAGINAS_AQUI=1` desliga tudo.
+- `main.py`: o programa empacotado atende `--servidor-de-paginas` antes de
+  abrir qualquer janela (o servidor é o próprio `.exe`), e sobe os servidores
+  quando a janela abre. Em desenvolvimento: `python -m
+  core.paginas_em_outro_processo`. Sem janela de console (`CREATE_NO_WINDOW`).
+
+**Medido (sonda sem janela, a mesma máquina, "antes" = `EDITOR_PAGINAS_AQUI=1`,
+que é o comportamento de antes; relógio de 20 ms na thread da janela):**
+
+| Livro | Maior tempo sem resposta | Análise até a conferência abrir | Primeira página, depois de a conferência abrir |
+|---|---|---|---|
+| 40 folhas / 80 páginas (JPEG 2000, a sonda do verificador) | 9,19 s → **0,07 s** | 28,3 s → **17,6 s** | 1,86 s → **0,51 s** |
+| Marial, 300 páginas (`gabarito/velocidade/marial_300.pdf`) | 0,41 a 0,67 s → **0,44 a 0,46 s** | 47,0 e 52,2 s → **42,6 e 43,5 s** | 0,05 s → **0,02 s** |
+
+No Marial, o que sobra (0,45 s, uma vez, quando a conferência abre) **não é
+desenho de página**: é o próprio `_analise_pronta` na thread da janela (0,42 s
+medidos, quase tudo dentro do `_salvar_agora`, enquanto as prévias começam a
+ser processadas; gravar sozinho leva 10 a 30 ms). Fica como ressalva.
+
+PDF final (`pipeline.processar`, melhor de 3, máquina dividida com outros
+agentes, variação de ±30% entre rodadas iguais): Marial 10 páginas 14,6 s →
+15,0 s; livro JPEG 2000 8 páginas 2,7 s → 2,0 s. Custo puro por página
+(medido isolado): +2 ms a 150 DPI, +8 ms a 300 DPI.
+
+**Testes:** `tests/test_paginas_em_outro_processo.py` (novo, 11): a página do
+servidor é igual à desenhada aqui (50, 150 e 300 DPI) e se pode alterar;
+**desenhar não prende as outras threads** (a thread principal fica no máximo
+0,15 s parada; antes do conserto, 0,33 s nesse teste); erro de PDF chega como
+`ErroPDF`; servidor que cai é trocado; desligado desenha aqui; documento sem
+arquivo desenha aqui; o PDF fica livre depois de meio segundo e na hora com
+`soltar_livro`; livro mudado no disco é relido. `tests/test_folhear_pdf.py`: o
+teste que espia o esvaziamento do armazém do MuPDF passou a desenhar aqui (é
+no servidor que ele acontece agora, com a mesma função).
+`tests/test_mesmo_livro_outro_caminho.py`: o ajudante que "fecha o livro" para
+também a tira, como o fechamento do programa.

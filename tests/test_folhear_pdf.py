@@ -148,6 +148,11 @@ def test_ler_uma_folha_esvazia_o_armazem_do_mupdf(app, livro, monkeypatch):
     armazém**. É uma verificação de dentro, e o número de verdade está medido
     aí em cima, no acervo, à mão.
     """
+    # Desde 30/09 as paginas sao desenhadas num processo a parte
+    # (core/paginas_em_outro_processo.py), que roda esta MESMA funcao
+    # (pdf_io.pagina_para_array) - e e la que o armazem e esvaziado. Para
+    # espiar a chamada aqui dentro, o desenho volta para este processo.
+    monkeypatch.setenv("EDITOR_PAGINAS_AQUI", "1")
     chamadas = []
     monkeypatch.setattr(fitz.TOOLS, "store_shrink",
                         lambda pct: chamadas.append(pct))

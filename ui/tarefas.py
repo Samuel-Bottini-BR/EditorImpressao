@@ -506,3 +506,9 @@ class GerenciadorPrevias(QObject):
         self._pool_cartoes.clear()
         self._pool.waitForDone(3000)
         self._pool_cartoes.waitForDone(3000)
+        # O servidor de paginas fecha este livro na hora (senao, em meio
+        # segundo): a pessoa pode mover ou renomear o PDF logo depois de
+        # fechar ou trocar de livro (core/paginas_em_outro_processo.py).
+        from core.paginas_em_outro_processo import soltar_livro
+
+        soltar_livro(self.caminho_pdf)

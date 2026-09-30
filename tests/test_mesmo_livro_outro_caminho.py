@@ -247,6 +247,9 @@ def _trabalhar_e_fechar(janela, caminho: str) -> None:
     janela._salvar_agora()
     janela.previas.parar()
     janela.previas = None
+    # Como ao fechar o programa (closeEvent): a tira de miniaturas para, e
+    # nada mais fica com o PDF aberto (o teste move e copia o arquivo).
+    janela.tela_conferir.tira.parar()
     janela.tela_opcoes.folhear.fechar()
 
 

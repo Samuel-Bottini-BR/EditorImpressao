@@ -51,17 +51,24 @@ class _TarefaMiniaturas(QRunnable):
     def run(self) -> None:
         """Le cada FOLHA uma vez (`self.indices` ja vem sem repeticao - ver
         montar()) em resolucao bem baixa (20 DPI) e emite conforme vai pronta.
-        `self.parar` permite interromper no meio de um livro grande."""
+        `self.parar` permite interromper no meio de um livro grande.
+
+        O PDF e aberto e fechado a CADA folha (1 a 4 ms), e nao uma vez para o
+        livro todo: com o desenho num processo a parte (core/
+        paginas_em_outro_processo.py, 30/09/2026) a tira de um livro de 300
+        folhas leva minutos, e o arquivo ficava preso esse tempo todo - no
+        Windows, arquivo aberto nao se move, renomeia nem apaga. Arriscado:
+        voltar a abrir uma vez so."""
         try:
-            doc = abrir_pdf(self.caminho_pdf)
-            try:
-                for indice in self.indices:
-                    if self.parar:
-                        return
+            for indice in self.indices:
+                if self.parar:
+                    return
+                doc = abrir_pdf(self.caminho_pdf)
+                try:
                     img = pagina_para_array(doc, indice, dpi=20)
-                    self.sinais.pronta.emit(indice, limitar_altura(img, ALTURA_MINIATURA))
-            finally:
-                doc.close()
+                finally:
+                    doc.close()
+                self.sinais.pronta.emit(indice, limitar_altura(img, ALTURA_MINIATURA))
         except Exception:  # noqa: BLE001
             registrar_erro("miniaturas", traceback.format_exc())
 
@@ -285,3 +292,8 @@ class TiraMiniaturas(QWidget):
         numa tira que ja nao existe mais."""
         self.limpar()
         self._pool.waitForDone(2000)
+        # O servidor de paginas fecha o livro na hora (senao, em meio segundo):
+        # a pessoa pode mover o PDF logo depois de fechar.
+        from core.paginas_em_outro_processo import soltar_livro
+
+        soltar_livro(None)

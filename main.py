@@ -31,6 +31,12 @@ def main() -> int:
 
     aquecer_em_segundo_plano()
 
+    # Sobe ja os servidores de paginas (core/paginas_em_outro_processo.py),
+    # para a primeira pagina nao esperar por eles.
+    from core.paginas_em_outro_processo import iniciar_em_segundo_plano
+
+    iniciar_em_segundo_plano()
+
     # Rede de seguranca final: qualquer erro nao tratado vira aviso em
     # portugues e o programa continua aberto (regra 3.3).
     def tratar(tipo, valor, rastro) -> None:
@@ -58,6 +64,16 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Servidor de paginas (30/09/2026): o programa desenha as paginas do PDF
+    # num processo a parte, para a janela nunca congelar - ver
+    # core/paginas_em_outro_processo.py. Empacotado, esse processo e este mesmo
+    # .exe com este argumento: tem de ser atendido AQUI, antes de qualquer
+    # janela (senao abriria uma segunda janela do programa).
+    if len(sys.argv) > 3 and sys.argv[1] == "--servidor-de-paginas":
+        from core.paginas_em_outro_processo import servir
+
+        servir(sys.argv[2], sys.argv[3])
+        raise SystemExit(0)
     # Conferência dos detectores de texto, sem janela (item 1.3): prova que o
     # programa EMPACOTADO acha o docTR, o Tesseract e o motor do Kraken. Ver
     # core/ocr_diagnostico.py. Não é usada pelo Kaique.
