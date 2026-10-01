@@ -12,8 +12,7 @@
     "pequeno": "true = item pequeno (numero de pagina, reclamo, assinatura de caderno, legenda, nota de margem): conta em 'itens pequenos perdidos'.",
     "fora_de_toda_zona": "nao conta (margem, mancha do verso, borda do scan, pauta musical do Graduale).",
     "paginas_extra": "graduale_p221 a p223 nao estao nas 19 da pesquisa: entraram para ver o comportamento em MANUSCRITO (pedido da gerente). No Graduale so as palavras cantadas sao texto; a pauta e as notas ficam fora de toda zona.",
-    "revisao_2026_09_30": "30/09/2026 (implementador, conferencia do Samuel): corrigidas as paginas que ele marcou RUIM (Horas 13, 26, 27, 47, Opus 256, Rhetorica 18) e revistas as que ele pediu para confirmar (Escola 7, Escola 35, Horas 11, Opus 165, Graduale 221-223). Molduras douradas viraram faixas em pedacos que abracam o ouro, medidas pela cor do ouro; filetes da Rhetorica viraram tiras finas que abracam so a linha. Copia do arquivo anterior: gabarito/ocr-zonas.antes-2026-09-30.json. Imagens antes x depois: relatorios/conferencia-2-2026-09-30/zonas/. Formulario: relatorios/conferir-aqui-2.html. Continua A CONFERIR PELO SAMUEL.",
-    "revisao_2026_10_01": "01/10/2026 (implementador): o Samuel aprovou as zonas na conferencia 2 (relatorios/conferencia-samuel-2026-09-30-b.md), com uma mudanca: D5, as letrinhas dos diagramas do Opus 165 sao TEXTO (antes neutro). D2 (capitular a pena do Graduale = figura, provisorio) e D7 (pauta e notas fora de toda zona) ficam como estavam. Copia do arquivo anterior: gabarito/ocr-zonas.antes-2026-10-01.json."
+    "revisao_2026_09_30": "30/09/2026 (implementador, conferencia do Samuel): corrigidas as paginas que ele marcou RUIM (Horas 13, 26, 27, 47, Opus 256, Rhetorica 18) e revistas as que ele pediu para confirmar (Escola 7, Escola 35, Horas 11, Opus 165, Graduale 221-223). Molduras douradas viraram faixas em pedacos que abracam o ouro, medidas pela cor do ouro; filetes da Rhetorica viraram tiras finas que abracam so a linha. Copia do arquivo anterior: gabarito/ocr-zonas.antes-2026-09-30.json. Imagens antes x depois: relatorios/conferencia-2-2026-09-30/zonas/. Formulario: relatorios/conferir-aqui-2.html. Continua A CONFERIR PELO SAMUEL."
   },
   "paginas": {
     "palatino_p005": {
@@ -456,25 +455,26 @@
         {"ret": [0.055, 0.655, 0.607, 0.862], "o_que": "coluna ao lado da Fig. 8"},
         {"ret": [0.705, 0.548, 0.78, 0.565], "o_que": "FIG. 7.", "pequeno": true},
         {"ret": [0.69, 0.846, 0.77, 0.862], "o_que": "FIG. 8.", "pequeno": true},
-        {"ret": [0.39, 0.866, 0.495, 0.89], "o_que": "numero [ 143 ]", "pequeno": true},
-        {"ret": [0.7345, 0.3705, 0.7515, 0.3825], "o_que": "letra a da Fig. 7", "pequeno": true},
-        {"ret": [0.7235, 0.3845, 0.7365, 0.396], "o_que": "letra e da Fig. 7", "pequeno": true},
-        {"ret": [0.75, 0.375, 0.7695, 0.3945], "o_que": "letra f da Fig. 7", "pequeno": true},
-        {"ret": [0.7375, 0.3925, 0.7515, 0.4075], "o_que": "letra b da Fig. 7", "pequeno": true},
-        {"ret": [0.741, 0.4845, 0.754, 0.499], "o_que": "letra c da Fig. 7", "pequeno": true},
-        {"ret": [0.728, 0.504, 0.739, 0.52], "o_que": "letra l da Fig. 7", "pequeno": true},
-        {"ret": [0.753, 0.504, 0.769, 0.52], "o_que": "letra h da Fig. 7", "pequeno": true},
-        {"ret": [0.735, 0.5245, 0.7565, 0.54], "o_que": "letra d da Fig. 7", "pequeno": true},
-        {"ret": [0.634, 0.677, 0.652, 0.688], "o_que": "letra a da Fig. 8", "pequeno": true},
-        {"ret": [0.804, 0.6735, 0.8185, 0.6875], "o_que": "letra b da Fig. 8", "pequeno": true},
-        {"ret": [0.637, 0.826, 0.651, 0.837], "o_que": "letra c da Fig. 8", "pequeno": true},
-        {"ret": [0.805, 0.8215, 0.824, 0.837], "o_que": "letra d da Fig. 8", "pequeno": true}
+        {"ret": [0.39, 0.866, 0.495, 0.89], "o_que": "numero [ 143 ]", "pequeno": true}
       ],
       "nao_pode": [
         {"ret": [0.648, 0.315, 0.832, 0.544], "o_que": "diagrama Fig. 7 (traco fino)"},
         {"ret": [0.626, 0.668, 0.832, 0.8445], "o_que": "diagrama Fig. 8 (traco fino)"}
       ],
-      "revisado_2026_10_01": "Decisao do Samuel (conferencia 2, D5, 30/09): \"nao podemos perde-las, acho que devem ser identificadas como letras.\" As 12 letrinhas dos diagramas das Fig. 7 e 8 passaram de neutro para texto (pequeno), com as mesmas caixinhas justas de 30/09. Dentro do diagrama vale texto (prioridade texto > nao_pode). Copia anterior: gabarito/ocr-zonas.antes-2026-10-01.json.",
+      "neutro": [
+        {"ret": [0.7345, 0.3705, 0.7515, 0.3825], "o_que": "rotulo a da Fig. 7"},
+        {"ret": [0.7235, 0.3845, 0.7365, 0.396], "o_que": "rotulo e da Fig. 7"},
+        {"ret": [0.75, 0.375, 0.7695, 0.3945], "o_que": "rotulo f da Fig. 7"},
+        {"ret": [0.7375, 0.3925, 0.7515, 0.4075], "o_que": "rotulo b da Fig. 7"},
+        {"ret": [0.741, 0.4845, 0.754, 0.499], "o_que": "rotulo c da Fig. 7"},
+        {"ret": [0.728, 0.504, 0.739, 0.52], "o_que": "rotulo l da Fig. 7"},
+        {"ret": [0.753, 0.504, 0.769, 0.52], "o_que": "rotulo h da Fig. 7"},
+        {"ret": [0.735, 0.5245, 0.7565, 0.54], "o_que": "rotulo d da Fig. 7"},
+        {"ret": [0.634, 0.677, 0.652, 0.688], "o_que": "rotulo a da Fig. 8"},
+        {"ret": [0.804, 0.6735, 0.8185, 0.6875], "o_que": "rotulo b da Fig. 8"},
+        {"ret": [0.637, 0.826, 0.651, 0.837], "o_que": "rotulo c da Fig. 8"},
+        {"ret": [0.805, 0.8215, 0.824, 0.837], "o_que": "rotulo d da Fig. 8"}
+      ],
       "revisado_2026_09_30": "rotulos dos diagramas: uma caixinha justa por letra (antes caixas grandes deixavam de fora o d de baixo e punham pedacos das linhas como 'nao conta'); figuras com um pouco mais de folga; fechada a fresta entre as duas zonas de texto na linha 'together equal...'."
     },
     "opusmajus_p256": {
