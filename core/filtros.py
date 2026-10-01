@@ -2113,8 +2113,21 @@ def _decoracao_com_a_cor_original(recorte: np.ndarray,
                                   referencia: tuple[float, float, float, float],
                                   fora: np.ndarray | None = None,
                                   area_grande: int = 0,
-                                  letra_max: int = 0) -> np.ndarray:
+                                  letra_max: int = 0,
+                                  letras_pretas: bool = False,
+                                  altura_da_pagina: int = 0,
+                                  lado_largo: int = 0) -> np.ndarray:
     """A decoracao com os pontos do original; so o papel vai a branco.
+
+    letras_pretas (so o Preto e branco, com letra_max): a letra solta no papel
+    da decoracao sai PRETA e cheia (decisao P4 do Samuel, conferencia 5:
+    titulos dentro da iluminura ou da moldura "saem pretos, como o resto do
+    texto"; M2, Horas 26: "as letras ainda estao saindo com alguns pedacos
+    cinzas dentro delas"). Letra = o que nao e papel num pedaco solto
+    (_pedacos_soltos; lado_largo: o da linha de letras presas por um fio),
+    contado depois da beirada; a sujeira menor que a letra (o tamanho do
+    _despeckle da pagina, pela altura_da_pagina) e a mancha clara
+    (_so_a_tinta_forte) nao entram.
 
     letra_max (pontos; 0 = nao procurar): o papel dentro de uma letra solta
     no papel branco (o miolo do "O") tambem vai a branco - ver
@@ -2162,6 +2175,25 @@ def _decoracao_com_a_cor_original(recorte: np.ndarray,
             if letra_max:
                 peso = _beirada_do_papel(peso, lab, (a_papel, b_papel), (cheio, zero), luz,
                                          faixa=max(2, int(np.ceil(1.5 / escala))))
+            # a letra solta: contada depois da beirada, que solta do festao a
+            # letra que so encostava nele pelo fio creme (o "H" de HEURES)
+            tinta = (_pedacos_soltos(cv2.compare(peso, 128, cv2.CMP_LT), letra_max,
+                                     lado_largo=lado_largo)
+                     if letras_pretas and letra_max else None)
+            if tinta is not None:
+                saida = cv2.add(recorte, cv2.multiply(cv2.bitwise_not(recorte),
+                                                      cv2.merge([peso, peso, peso]),
+                                                      scale=1.0 / 255.0))
+                # a tinta da letra (o que nao vai a branco), menos a sujeira
+                # miuda e a mancha clara
+                # (so na caixa das letras: a folha inteira custava o dobro)
+                bx, by, bw, bh = cv2.boundingRect(tinta)
+                caixa = (slice(by, by + bh), slice(bx, bx + bw))
+                pedaco = cv2.bitwise_not(_despeckle(cv2.bitwise_not(tinta[caixa]),
+                                                    altura_da_pagina or tinta.shape[0]))
+                pedaco = _so_a_tinta_forte(pedaco, lab[caixa], nivel, a_papel, b_papel)
+                saida[caixa][pedaco > 0] = 0
+                return saida
     return cv2.add(recorte, cv2.multiply(cv2.bitwise_not(recorte), cv2.merge([peso, peso, peso]),
                                          scale=1.0 / 255.0))
 
@@ -2179,34 +2211,107 @@ def _decoracao_com_a_cor_original(recorte: np.ndarray,
 LETRA_NA_DECORACAO_MAX = 1 / 10
 
 
+def _pedacos_soltos(resto: np.ndarray, letra_max: int, lado_largo: int = 0) -> np.ndarray | None:
+    """Os pedacos pequenos de `resto` (uint8, 255 = o que nao vai a branco):
+    os dois lados da caixa ate letra_max pontos, sem encostar na beirada do
+    recorte - uma letra (ou um enfeite pequeno) solta no papel branco da
+    decoracao. Devolve a mascara (uint8, 255) deles, ou None se nao ha.
+
+    lado_largo (pontos; 0 = nao usar): tambem entra a LINHA de letras presas
+    umas as outras por um fio impresso (o "LXXXVIII" da Horas 11, ligado pelo
+    risco de pauta embaixo): um lado ate letra_max e o outro maior, desde que
+    quase nada dela (ate LINHA_DE_LETRAS_LARGA) sobre de uma abertura com um
+    circulo de lado_largo pontos - o traco da letra e o fio sao finos; a
+    faixa dourada de uma moldura e larga e sobra inteira (fica de fora).
+
+    Os pedacos sao contados com o resto afinado de 1 ponto: a letra que so
+    encosta na decoracao por um fio se solta; depois cada pedaco volta 1
+    ponto, dentro do resto. Feito so na caixa de cada pedaco (a conta pela
+    folha inteira, rotulo a rotulo, custava ~0,2 s numa pagina das Horas).
+    """
+    nucleo = np.ones((3, 3), np.uint8)
+    quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(
+        cv2.erode(resto, nucleo), connectivity=8)
+    altura, largura = resto.shape
+    circulo = (cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado_largo, lado_largo))
+               if lado_largo >= 3 else None)
+    soltos = None
+    for i in range(1, quantos):
+        x, y, w, h = (int(v) for v in medidas[i, :4])
+        if x <= 1 or y <= 1 or x + w >= largura - 1 or y + h >= altura - 1:
+            continue
+        caixa = (slice(y, y + h), slice(x, x + w))
+        if max(w, h) > letra_max:
+            if circulo is None or min(w, h) > letra_max:
+                continue
+            pedaco = (marcas[caixa] == i).astype(np.uint8)
+            largo = cv2.morphologyEx(pedaco, cv2.MORPH_OPEN, circulo)
+            if cv2.countNonZero(largo) > LINHA_DE_LETRAS_LARGA * medidas[i, cv2.CC_STAT_AREA]:
+                continue
+        if soltos is None:
+            soltos = np.zeros(resto.shape, np.uint8)
+        soltos[caixa][marcas[caixa] == i] = 255
+    if soltos is None:
+        return None
+    return cv2.bitwise_and(cv2.dilate(soltos, nucleo), resto)
+
+
+# Ate que fracao uma linha de letras presas por um fio pode sobrar da
+# abertura (ver _pedacos_soltos). Letra fina: quase nada sobra; faixa de
+# moldura: quase tudo. Arriscado subir: um pedaco de moldura solto vira preto.
+LINHA_DE_LETRAS_LARGA = 0.25
+
+
 def _miolos_das_letras(ligado: np.ndarray, peso: np.ndarray, letra_max: int) -> None:
     """Devolve ao papel que vai a branco (`ligado`, peso 0 a 255 depois da
     regra da ligacao) o papel que fica DENTRO de uma letra cercada de papel
     branco. `peso`: o peso do papel antes da regra da ligacao.
 
     O que nao vai a branco (a letra, a pintura e o papel recusado) forma
-    pedacos; o pedaco pequeno (os dois lados da caixa ate letra_max pontos),
-    que nao encosta na beirada do recorte, e uma letra (ou um enfeite
-    pequeno) solta no papel branco - e o papel recusado dentro dele e o miolo
-    da letra: volta com o peso que tinha. Uma pintura e grande e o ceu dela
-    continua como esta. Muda `ligado` no lugar.
-
-    Feito pedaco a pedaco, so na caixa de cada letra (a conta pela folha
-    inteira, rotulo a rotulo, custava ~0,2 s numa pagina das Horas).
+    pedacos; o pedaco pequeno e solto (_pedacos_soltos) e uma letra (ou um
+    enfeite pequeno) no papel branco - e o papel recusado dentro dele e o
+    miolo da letra: volta com o peso que tinha. Uma pintura e grande e o ceu
+    dela continua como esta. Muda `ligado` no lugar.
     """
-    resto = cv2.compare(ligado, 0, cv2.CMP_EQ)
-    quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(resto, connectivity=8)
-    if quantos <= 1:
+    soltos = _pedacos_soltos(cv2.compare(ligado, 0, cv2.CMP_EQ), letra_max)
+    if soltos is None:
         return
-    altura, largura = ligado.shape
+    miolo = (soltos > 0) & (peso > 0)
+    if miolo.any():
+        ligado[miolo] = peso[miolo]
+
+
+# A mancha clara e o respingo cor-de-rosa no papel da decoracao (o oval da
+# Horas 11) tambem sao "pedacos pequenos" e virariam pontos pretos. Fica preto
+# so o pedaco cuja tinta se afasta do papel: a media da distancia de cor (a e
+# b do LAB) mais a media de quanto e mais escura que o papel (L do LAB, 0 a
+# 255), pelo menos LETRA_FORCA_MINIMA. Medido nas Horas 11 e 26: letras
+# vermelhas, azuis e douradas, e os pontos finais, de 86 a 125; manchas e
+# respingos de 46 a 64. Arriscado: subir (a letra dourada clara, ~95, fica em
+# cor) ou descer (a mancha vira ponto preto).
+LETRA_FORCA_MINIMA = 75.0
+
+
+def _so_a_tinta_forte(tinta: np.ndarray, lab: np.ndarray, nivel: float,
+                      a_papel: float, b_papel: float) -> np.ndarray:
+    """A mascara `tinta` (uint8, 255) so com os pedacos fortes - ver
+    LETRA_FORCA_MINIMA. lab: o mesmo pedaco em LAB (8 bits); nivel, a_papel
+    e b_papel: o papel da pagina (_referencia_do_papel). A cor de cada pedaco
+    e a media dele (cv2.mean na caixa do pedaco: barato, e a letra tem uma
+    cor so ou quase)."""
+    quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    if quantos <= 1:
+        return tinta
+    fica = np.zeros(tinta.shape, np.uint8)
     for i in range(1, quantos):
         x, y, w, h = (int(v) for v in medidas[i, :4])
-        if max(w, h) > letra_max or x == 0 or y == 0 or x + w >= largura or y + h >= altura:
-            continue
         caixa = (slice(y, y + h), slice(x, x + w))
-        miolo = (marcas[caixa] == i) & (peso[caixa] > 0)
-        if miolo.any():
-            ligado[caixa][miolo] = peso[caixa][miolo]
+        dentro = (marcas[caixa] == i).astype(np.uint8)
+        luz, a, b, _ = cv2.mean(lab[caixa], mask=dentro)
+        forca = float(np.hypot(a - 128.0 - a_papel, b - 128.0 - b_papel)) + (nivel - luz)
+        if forca >= LETRA_FORCA_MINIMA:
+            fica[caixa][dentro > 0] = 255
+    return fica
 
 
 def _beirada_do_papel(peso: np.ndarray, lab: np.ndarray, papel_ab: tuple[float, float],
@@ -2344,18 +2449,21 @@ def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: 
 
 
 def _com_a_decoracao(base: np.ndarray, img3: np.ndarray, peso_decoracao: np.ndarray,
-                     referencia) -> np.ndarray:
+                     referencia, letras_pretas: bool = False) -> np.ndarray:
     """base (BGR) com a decoracao de cor original por cima, pelo peso. O
     recorte e so a caixa das zonas de decoracao. O papel que vai a branco e o
     ligado ao papel de fora da zona, ou o grande (DECORACAO_PAPEL_GRANDE da
-    folha) - ver _decoracao_com_a_cor_original."""
+    folha) - ver _decoracao_com_a_cor_original. letras_pretas: so no Preto e
+    branco (a letra solta no papel da decoracao sai preta, decisao P4)."""
     bx, by, bw, bh = cv2.boundingRect((peso_decoracao > 0).astype(np.uint8))
     tratada = base.copy()
     fora = peso_decoracao[by:by + bh, bx:bx + bw] <= 0
     tratada[by:by + bh, bx:bx + bw] = _decoracao_com_a_cor_original(
         np.ascontiguousarray(img3[by:by + bh, bx:bx + bw]), referencia, fora=fora,
         area_grande=max(1, int(DECORACAO_PAPEL_GRANDE * img3.shape[0] * img3.shape[1])),
-        letra_max=max(1, int(LETRA_NA_DECORACAO_MAX * min(img3.shape[:2]))))
+        letra_max=max(1, int(LETRA_NA_DECORACAO_MAX * min(img3.shape[:2]))),
+        letras_pretas=letras_pretas, altura_da_pagina=img3.shape[0],
+        lado_largo=max(5, int(min(img3.shape[:2]) * DESENHO_FECHAMENTO) | 1))
     return _misturar(base, tratada, peso_decoracao)
 
 
@@ -2452,8 +2560,10 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
     if decoracao.any():
         # Moldura e iluminura com a cor original (emenda N2): a pagina passa
         # a ter cor, e a decoracao entra pela borda suave.
+        # (a letra solta no papel da decoracao sai preta: decisao P4 do
+        # Samuel, conferencia 5 - ver _decoracao_com_a_cor_original)
         saida = _com_a_decoracao(_tres_canais(saida).copy(), img3, so_das(decoracao),
-                                 referencia)
+                                 referencia, letras_pretas=True)
 
     if peso_papel.any():
         saida = _misturar(saida, np.full_like(saida, 255), peso_papel)

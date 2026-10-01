@@ -60,3 +60,37 @@ def test_a_letra_dourada_continua_com_a_cor_no_magico_pro():
     saida, _ = aplicar_filtro_com_selecao(img.copy(), "magico_pro", s)
     centro = saida[300:360, 523:527].astype(int)
     assert int(np.abs(centro - np.array(OURO)).max()) <= 3, "o dourado da letra mudou"
+
+
+# --- M2 / P4: a letra dentro da decoracao sai preta no Preto e branco --------
+# M2 (Horas 26): "As letras ainda estao saindo com alguns pedacos cinzas dentro
+# delas"; P4: titulos dentro da iluminura ou da moldura "saem pretos, como o
+# resto do texto". No Magico pro continuam com a cor.
+
+AZUL = (170, 90, 50)             # BGR de uma letra azul
+
+
+def _pagina_com_letra_azul_e_mancha():
+    img, s = _pagina_com_letra_dourada_na_decoracao()
+    img[290:370, 600:612] = AZUL                         # um "I" azul
+    img[300:312, 680:692] = (190, 205, 228)              # mancha clara rosada
+    return img, s
+
+
+def test_letra_colorida_na_decoracao_sai_preta_no_preto_e_branco():
+    img, s = _pagina_com_letra_azul_e_mancha()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), "preto_e_branco", s)
+    assert saida.ndim == 3, "a decoracao continua em cor"
+    assert int(saida[300:360, 602:610].max()) <= 10, "a letra azul nao saiu preta"
+    assert int(saida[300:360, 522:528].max()) <= 10, "a letra dourada nao saiu preta"
+    assert int(saida[315:345, 393:407].min()) >= 250, "o miolo do O nao ficou branco"
+    # a moldura continua dourada
+    assert int(np.abs(saida[40:80, 300:600].astype(int) - np.array(OURO)).max()) <= 3
+    # a mancha clara nao vira ponto preto
+    assert int(saida[300:312, 680:692].min()) >= 150, "a mancha virou ponto preto"
+
+
+def test_letra_colorida_na_decoracao_fica_com_a_cor_no_magico_pro():
+    img, s = _pagina_com_letra_azul_e_mancha()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), "magico_pro", s)
+    assert int(np.abs(saida[320:340, 603:609].astype(int) - np.array(AZUL)).max()) <= 3
