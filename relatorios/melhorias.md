@@ -2653,3 +2653,84 @@ AREA_MINIMA: o melhor é 19 de 22 **com** uma página boa para revisar (Opus 11)
 numa faixa estreita; sem revisar à toa, o máximo é 18, o de hoje. Os números
 ficaram como estavam. Os 4 erros são os que os dois OCRs cometem quase igual
 (`relatorios/fase1-1.3-recalibrar-comparacao-2026-10-01/`).
+
+---
+
+## Tentativa 60 — Preto e branco com as decisões do Samuel (fotos em cinza, vermelho preto, moldura e iluminura em cor) e a decoração intacta no Mágico pro (01/10/2026)
+
+**Situação:** feito, a conferir (teste de máquina + teste de olho do Samuel)
+**Pedidos (respostas literais em `relatorios/conferencia-samuel-2026-09-30-b.md` e no Registro de mudanças, conferência 3):**
+P1a "Cinza (tons de cinza): BOM"; V1 "No Preto e branco, o que é vermelho (títulos, rubrica) sai preto?: BOM";
+N2 "Mantém a cor original (como o ANTES); traço preto só se eu escolher" (a gerente estendeu à iluminura);
+Z9 Horas 13 "a borda dourada deveria sair sem alteração, ela ainda está saindo meio escurecido";
+Z12 Horas 47 "embaixo do 'pitie de nous' e do 'propre en amour divin' está cinza ... era para ser totalmente branco";
+Z8 Horas 11 "esbranquiçando algumas partes da imagem ... e criando sombras onde não existe";
+Z17 Opus 256 "ele acaba apagando um pouco esse detalhe"; Z20 Graduale 221 "ele apagou um detalhe que já estava meio apagado na folha original".
+
+**O que mudou (`core/filtros.py`; commits `0ec3883`, `8c29a7d`, `6827029`, `df9e3be`):**
+
+1. *Foto e pintura no Preto e branco em tons de cinza* (`_foto_em_tons_de_cinza`): o cinza
+   do ORIGINAL com desfoque gaussiano de 1 ponto (tira a retícula) e os níveis esticados
+   pela página (0,5% → preto, 99,5% → branco), como o exemplo aprovado. Diferença: o
+   branco não passa do nível do papel fora das gravuras ("papel em volta branco"; no
+   Marial 7 o detector marca um canto de papel como foto e a página tem branco puro do
+   preenchimento do corte). A página com foto sai em cinza, 1 canal.
+2. *Vermelho e letra colorida saem pretos* (`_cinza_para_binarizar`): o Preto e branco
+   binariza o brilho comum (BT.601). O maior canal (escolhido antes para a pauta
+   vermelha do Graduale) fazia o vermelho ler como claro. Graduale 221 e 222 idênticos
+   ponto a ponto (já usavam o brilho por terem mais de 25% de cor).
+3. *Decoração colorida (moldura dourada, iluminura) com a cor original no Preto e
+   branco*; traço preto só com a caixinha nova "No Preto e branco, molduras e
+   iluminuras também em preto e branco" (campo `Projeto.pb_decoracao_em_preto_e_branco`,
+   desmarcado de fábrica). Decoração = zona que não é foto e tem área colorida larga
+   (distância de cor ao papel > 18 em a,b do LAB, que sobra depois de uma abertura com o
+   elemento do desenho, cobrindo ≥ 8% da zona). Medido: Horas 11 34%, 13 45%, 26 22%,
+   27 54%, 47 49%; Palatino 5 0,7%.
+4. *A mesma decoração no Mágico pro e no Melhorar* sai com os pontos do original e só o
+   papel a branco (`_decoracao_com_a_cor_original`), no lugar do Melhorar do recorte, que
+   escurecia o dourado, lavava o ouro e deixava o papel da zona em 233–244. Papel = cor e
+   luz do papel da página, em rampa, alisado a 1/600 do menor lado (1/150 deixava halo
+   creme em volta das letras douradas da Horas 11) e ligado ao papel de fora da zona ou
+   grande (≥ 1% da folha: o centro da Horas 11).
+
+**Tentado e descartado:**
+- *Papel da decoração sem a regra da ligação*: o céu pálido e o horizonte creme das
+  paisagens pintadas da Horas 47 (cor e luz de papel) iam a branco.
+- *Alisamento da cor de 1/150* (o da gravura de traço): halo creme de ~10 pontos em volta
+  das letras douradas da Horas 11.
+- *Item 7 (Opus 256 e Graduale 221), não feito.* Achado: no Opus 256 quem apaga a última
+  coluna (números impressos fracos, "40 12 0") é a limpeza do papel do Mágico pro
+  (`_limpar_o_papel_de_verdade`) E o papel do bloco de letra (`refinar_para_tinta`): o
+  Sauvola parte cada número fraco em pedacinhos de 8 a 69 pontos, abaixo do tamanho de
+  peça de letra (98), e eles saem como mancha. Tentado: (a) histerese pelo fundo
+  (tinta fraca = abaixo de 0,8 do fundo, ligada à tinta forte): nada mudou à vista;
+  (b) um segundo Sauvola mais sensível (k × 0,5) juntando os pedacinhos, com corte de
+  0,4 × a peça: recuperou parte ("16", "40" da 4ª linha), mas a 1ª linha só volta
+  mexendo também no papel do bloco de letra; custa um Sauvola a mais por página (+5%
+  no Mágico pro, Marial 7 3,08 → 3,24 s), e mudou 1–2% dos pontos das páginas com mancha
+  do verso (Palatino 10, Marial 7). No Graduale 221 o detalhe (letras raspadas entre
+  "ſu" e "mus") tem o mesmo tom da mancha do verso: nem (a) nem (b) o trazem. Revertido;
+  separar tinta fraca de mancha do verso é o problema da Fase 6 (6.1).
+
+**Regra 6 (velocidade).** Medido com as mesmas funções do `teste_velocidade.py`
+(`marial_300.pdf`, uma rodada por processo, `df09c6f` contra o código novo, 3 passadas
+alternadas; a máquina pode ter estado dividida com o outro implementador): a primeira medida (código até
+`df9e3be`) deu Mágico pro 54,7 → 55,1 s e trocar de página 2,38 → 2,42 s; a causa era a
+medida das zonas (~37 ms por página com título marcado). Com a porta rápida (`8a9ff5d`,
+imagem igual ponto por ponto), a segunda medida: abrir 26,4 → 26,9 s (não muda código;
+é o ruído), trocar de página 2,35 → 2,40 s (média; a pior 2,87 → 2,94), Mágico pro de 10
+páginas 54,7 → 54,8 s, **Preto e branco de 10 páginas 26,7 → 25,3 s**, memória igual
+(~1.540 MB). Só o filtro, nas páginas do gabarito (300 DPI): Mágico pro Horas 11 12,2 →
+7,1 s, Horas 13 12,6 → 7,7, Horas 26 e 27 10,1 → 5,8, Horas 47 10,8 → 6,1, as outras
+iguais; Preto e branco Opus 20 3,8 → 1,8 s, Escola 35 4,1 → 1,6, Escola 7 3,3 → 1,0,
+Marial 7 1,6 → 1,1, **Horas 11 7,2 → 8,2 s** (a decoração em cor custa mais que o desenho
+de 1 bit; 5 dos 8 s são da escolha automática do binarizador, que já existia).
+
+**Rodada** (`relatorios/conferir/pb-mp-decoracao-2026-10-01/`, 13 páginas, antes =
+`df09c6f`, depois = `8a9ff5d`, com a coluna "rodada anterior"): no Preto e branco mudam
+Horas 11, 13, 26, 27, 47 (moldura e iluminura em cor), Opus 20 e Escola 35 (cinza),
+Graduale 223 e Palatino 9 (tinta colorida preta); iguais Graduale 221, 222, Opus 256,
+Palatino 5. No Mágico pro mudam só as cinco das Horas; as outras oito idênticas.
+
+**Testes:** `tests/test_decoracao_no_preto_e_branco.py` (12, novos);
+`tests/test_preto_e_branco_regra_30_09.py` refeito para as decisões novas (15).
