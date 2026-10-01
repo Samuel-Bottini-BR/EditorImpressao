@@ -2049,6 +2049,12 @@ DECORACAO_REDUCAO = 4
 # claro vai a branco).
 DECORACAO_ALISAMENTO = 1 / 600
 DECORACAO_LUZ_MIN, DECORACAO_LUZ_MAX = 0.80, 0.92
+# E so vai a branco o papel ligado ao papel de fora da zona, ou o pedaco de
+# papel com pelo menos esta fracao da folha (o centro da Horas 11, cercado
+# pela iluminura, tem ~10%; o horizonte creme das paisagens da Horas 47, que
+# tem cor e luz de papel mas e pintura, fica bem abaixo). Arriscado: baixar
+# demais (o ceu palido vai a branco) ou tirar a ligacao.
+DECORACAO_PAPEL_GRANDE = 0.01
 
 
 def _referencia_do_papel(img3: np.ndarray, gravura: np.ndarray) -> tuple[float, float, float, float]:
@@ -2104,7 +2110,9 @@ def _e_decoracao_colorida(img3: np.ndarray, zona: np.ndarray, caixa: tuple[int, 
 
 
 def _decoracao_com_a_cor_original(recorte: np.ndarray,
-                                  referencia: tuple[float, float, float, float]) -> np.ndarray:
+                                  referencia: tuple[float, float, float, float],
+                                  fora: np.ndarray | None = None,
+                                  area_grande: int = 0) -> np.ndarray:
     """A decoracao com os pontos do original; so o papel vai a branco.
 
     recorte: BGR do pedaco da pagina. Papel e o ponto com a cor e a luz do
@@ -2125,6 +2133,24 @@ def _decoracao_com_a_cor_original(recorte: np.ndarray,
     luz = cv2.LUT(np.ascontiguousarray(lab[:, :, 0]),
                   _rampa_8_bits(DECORACAO_LUZ_MIN, DECORACAO_LUZ_MAX, nivel))
     peso = cv2.multiply(cor, luz, scale=1.0 / 255.0)
+
+    # So vai a branco o papel que esta LIGADO ao papel de fora da decoracao
+    # (fora: mascara booleana dos pontos do recorte fora da zona), ou que e
+    # grande (area_grande pontos): o centro claro da Horas 11, cercado pela
+    # iluminura, tem ~10% da folha. Sem isso, o ceu palido e o horizonte creme
+    # das paisagens pintadas da Horas 47 (cor e luz de papel, mas pintura)
+    # iam a branco. Mesma ideia da pergunta 4 de _so_o_papel_da_gravura.
+    if fora is not None or area_grande:
+        quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(
+            (peso > 0).astype(np.uint8), connectivity=8)
+        if quantas > 1:
+            ligados = np.zeros(quantas, np.uint8)
+            if area_grande:
+                ligados[medidas[:, cv2.CC_STAT_AREA] >= area_grande] = 255
+            if fora is not None and fora.any():
+                ligados[rotulos[fora]] = 255
+            ligados[0] = 0
+            peso = cv2.bitwise_and(peso, ligados[rotulos])
     return cv2.add(recorte, cv2.multiply(cv2.bitwise_not(recorte), cv2.merge([peso, peso, peso]),
                                          scale=1.0 / 255.0))
 
@@ -2161,11 +2187,15 @@ def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: 
 def _com_a_decoracao(base: np.ndarray, img3: np.ndarray, peso_decoracao: np.ndarray,
                      referencia) -> np.ndarray:
     """base (BGR) com a decoracao de cor original por cima, pelo peso. O
-    recorte e so a caixa das zonas de decoracao."""
+    recorte e so a caixa das zonas de decoracao. O papel que vai a branco e o
+    ligado ao papel de fora da zona, ou o grande (DECORACAO_PAPEL_GRANDE da
+    folha) - ver _decoracao_com_a_cor_original."""
     bx, by, bw, bh = cv2.boundingRect((peso_decoracao > 0).astype(np.uint8))
     tratada = base.copy()
+    fora = peso_decoracao[by:by + bh, bx:bx + bw] <= 0
     tratada[by:by + bh, bx:bx + bw] = _decoracao_com_a_cor_original(
-        np.ascontiguousarray(img3[by:by + bh, bx:bx + bw]), referencia)
+        np.ascontiguousarray(img3[by:by + bh, bx:bx + bw]), referencia, fora=fora,
+        area_grande=max(1, int(DECORACAO_PAPEL_GRANDE * img3.shape[0] * img3.shape[1])))
     return _misturar(base, tratada, peso_decoracao)
 
 
@@ -2621,11 +2651,31 @@ def aplicar_filtro_com_selecao(
         # tom preservado. O Magico pro leva realce local e ganho de saturacao,
         # que numa xilogravura fecham a hachura e fabricam grao no papel de
         # dentro do desenho.
+        #
+        # Menos na DECORACAO COLORIDA - moldura dourada, iluminura (ver
+        # DECORACAO_CROMA): ali vale a regra da Fase 1, "moldura dourada ...
+        # mantida sem mudar a cor" e "iluminura sai intacta", e sai o original
+        # com so o papel a branco (_decoracao_com_a_cor_original). O Melhorar
+        # do recorte escurecia o dourado (Horas 13 e 26: "a borda dourada
+        # deveria sair sem alteracao"), lavava o ouro e o anjinho da Horas 11
+        # e deixava o papel da zona cinza (faixa embaixo de "pitie de nous" da
+        # Horas 47). Foto, pintura e gravura de traco: como sempre.
         if peso_gravura.any():
-            base = _misturar(base, _limpar_cada_gravura(img, peso_gravura > 0.5, clareza,
-                                                        onde_vale=peso_gravura > 0,
-                                                        fundo=base),
-                             peso_gravura)
+            img3 = _tres_canais(img)
+            rotulos, _foto, decoracao, referencia = _tipos_das_zonas(img3, peso_gravura)
+            if decoracao.any():
+                peso_decoracao = peso_gravura if decoracao[1:].all() else np.where(
+                    decoracao[rotulos], peso_gravura, 0.0).astype(np.float32)
+                peso_resto = np.where(decoracao[rotulos], 0.0, peso_gravura).astype(np.float32)
+            else:
+                peso_decoracao, peso_resto = None, peso_gravura
+            if peso_resto.any():
+                base = _misturar(base, _limpar_cada_gravura(img, peso_resto > 0.5, clareza,
+                                                            onde_vale=peso_resto > 0,
+                                                            fundo=base),
+                                 peso_resto)
+            if peso_decoracao is not None:
+                base = _com_a_decoracao(_tres_canais(base), img3, peso_decoracao, referencia)
 
         # Na letra, so nitidez - E SO EM CIMA DO TRACO. Um bloco de texto e
         # metade papel: as entrelinhas e as margens dentro do bloco. Tratar o

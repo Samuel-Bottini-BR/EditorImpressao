@@ -131,3 +131,47 @@ def test_janela_baixa_nao_espreme_a_caixinha(janela, pasta, largura, altura):
     caixa = tela.cx_decoracao_pb
     assert caixa.height() >= caixa.minimumSizeHint().height()
     janela.hide()
+
+
+# --- Magico pro e Melhorar: a decoracao sai com a cor original --------------
+# Regra da Fase 1: "moldura dourada ... mantida sem mudar a cor"; "iluminura
+# sai intacta". Conferencia 2 do Samuel (30/09): Horas 13 e 26 "a borda dourada
+# deveria sair sem alteracao, ela ainda esta saindo meio escurecido"; Horas 47
+# "embaixo do 'pitie de nous' ... tem uma faixa cinza ... era para ser
+# totalmente branco"; Horas 11 "esbranquicando algumas partes da imagem".
+
+def _pagina_com_iluminura():
+    """Moldura dourada larga e, dentro dela, uma "paisagem" pintada com um ceu
+    creme da cor do papel (cercado pela pintura) e uma faixa de papel da zona
+    ligada ao papel de fora."""
+    import cv2
+
+    from core.selecao import GRAVURA, Selecao, retangulo
+
+    papel = (200, 222, 232)
+    img = np.full((1200, 900, 3), papel, np.uint8)
+    for y in range(700, 1150, 30):                       # texto, fora da zona
+        img[y:y + 10, 120:780:14] = 40
+    cv2.rectangle(img, (60, 60), (840, 600), (70, 175, 215), 60)     # moldura dourada
+    img[150:500, 150:750] = (150, 210, 140)              # a pintura (verde claro)...
+    img[150:500, 150:750:6] = (30, 50, 20)               # ...com o traco fino do contorno
+    img[220:260, 350:550] = (195, 220, 231)              # o ceu creme (0,7% da folha), cercado pela pintura
+    s = Selecao()
+    s.acrescentar(retangulo(0.0, 0.0, 1.0, 0.56, tipo=GRAVURA))
+    return img, s
+
+
+@pytest.mark.parametrize("filtro", ["magico_pro", "melhorar"])
+def test_a_decoracao_sai_com_a_cor_original_e_o_papel_branco(filtro):
+    from core.filtros import aplicar_filtro_com_selecao
+
+    img, s = _pagina_com_iluminura()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), filtro, s)
+    dif = lambda y0, y1, x0, x1: int(np.abs(saida[y0:y1, x0:x1].astype(int)  # noqa: E731
+                                            - img[y0:y1, x0:x1].astype(int)).max())
+    assert dif(50, 70, 200, 700) <= 2, "o dourado da moldura mudou (escureceu ou lavou)"
+    assert dif(160, 190, 200, 700) <= 2, "a pintura mudou de cor"
+    # (a gravura tem traco: nao e foto - ver _e_foto_ou_pintura)
+    assert dif(225, 255, 360, 540) <= 2, "o ceu creme, cercado pela pintura, foi a branco"
+    # o papel da zona, ligado ao papel de fora (embaixo da moldura): branco
+    assert int(saida[640:660, 100:800].min()) >= 250, "faixa cinza no papel da zona"
