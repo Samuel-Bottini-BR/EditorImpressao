@@ -693,6 +693,14 @@ def _achatar_iluminacao(img: np.ndarray, nivel_papel: float) -> np.ndarray:
     peso = np.clip((razao - PESO_RAZAO_MIN) / (PESO_RAZAO_MAX - PESO_RAZAO_MIN), 0.0, 1.0)
     ganho = 1.0 + (ganho - 1.0) * peso
 
+    if ganho.dtype == np.float32 and img.ndim == 3:
+        # Regra 6 (30/09/2026): a mesma conta, no mesmo array (sem as copias
+        # intermediarias de 130 MB a 300 DPI). Em float32 o resultado de cada
+        # ponto e o mesmo.
+        saida = img.astype(np.float32)
+        saida *= ganho[:, :, None]
+        np.clip(saida, 0, 255, out=saida)
+        return saida.astype(np.uint8)
     saida = img.astype(np.float32) * ganho[:, :, None]
     return np.clip(saida, 0, 255).astype(np.uint8)
 
@@ -1148,10 +1156,17 @@ def tirar_o_amarelado_da_tinta(img: np.ndarray,
     if not peso.any():
         return img
 
-    ycc = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb).astype(np.float32)
-    ycc[:, :, 1] = 128.0 + (ycc[:, :, 1] - 128.0) * (1.0 - peso)
-    ycc[:, :, 2] = 128.0 + (ycc[:, :, 2] - 128.0) * (1.0 - peso)
-    return cv2.cvtColor(np.clip(ycc, 0, 255).astype(np.uint8), cv2.COLOR_YCrCb2BGR)
+    # Regra 6 (30/09/2026): so os canais de cor (Cr e Cb) vao para float; o
+    # brilho (Y) passava por float e voltava igual (inteiro de 0 a 255). A
+    # conta de cada canal e a mesma de antes, ponto por ponto.
+    ycc = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
+    fator = 1.0 - peso
+    for canal in (1, 2):
+        cor = 128.0 + (ycc[:, :, canal].astype(np.float32) - 128.0) * fator
+        # antes a conta ia para um array float32: o mesmo arredondamento aqui
+        cor = cor.astype(np.float32, copy=False)
+        ycc[:, :, canal] = np.clip(cor, 0, 255).astype(np.uint8)
+    return cv2.cvtColor(ycc, cv2.COLOR_YCrCb2BGR)
 
 
 def _nitidez(img: np.ndarray, peso: float = NITIDEZ_PESO) -> np.ndarray:
@@ -1199,7 +1214,7 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
         tinta, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))) > 0
 
     saida = img.copy()
-    saida[quase_branco & ~orla] = 255
+    _pintar_de_branco(saida, quase_branco & ~orla)     # saida[...] = 255
 
     # A orla fica, mas sem a cor do papel: mantida como veio, ela vira um halo
     # creme em volta de cada letra sobre o papel branco. Igualando os tres
@@ -1208,7 +1223,7 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
     if saida.ndim == 3:
         de_fora = orla & quase_branco
         if de_fora.any():
-            saida[de_fora] = cinza[de_fora][:, None]
+            _copiar_o_cinza(saida, de_fora, cinza)     # saida[de_fora] = cinza
     return saida
 
 
@@ -1323,7 +1338,7 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
     papel_limpo = ~perto_da_tinta & ~escuro & cor_de_papel
 
     limpa = saida.copy()
-    limpa[papel_limpo] = 255
+    _pintar_de_branco(limpa, papel_limpo)               # limpa[papel_limpo] = 255
     return limpa
 
 
@@ -1938,7 +1953,7 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
             pedaco[dentro] = feito[dentro]
 
     if peso_papel.any():
-        saida[peso_papel >= 0.5] = 255
+        _pintar_de_branco(saida, peso_papel >= 0.5)     # saida[...] = 255
 
     if not foto.any():
         return saida, True
@@ -2048,6 +2063,48 @@ def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.nda
     p = peso[:, :, None] if base.ndim == 3 else peso
     saida = base.astype(np.float32) * (1.0 - p) + tratada.astype(np.float32) * p
     return np.clip(saida, 0, 255).astype(base.dtype)
+
+
+def _mascara_0_255(mascara: np.ndarray, canais: int) -> np.ndarray:
+    """A mascara booleana como uint8 (0 ou 255), repetida em `canais` canais."""
+    k = mascara.view(np.uint8) * np.uint8(255)
+    return cv2.merge([k] * canais) if canais > 1 else k
+
+
+def _pode_no_lugar(img: np.ndarray, mascara: np.ndarray) -> bool:
+    """img e mascara servem para as contas no lugar de _pintar_de_branco e
+    _copiar_o_cinza (uint8 contigua, mascara booleana do mesmo tamanho)?"""
+    return (img.dtype == np.uint8 and img.flags.c_contiguous and img.ndim in (2, 3)
+            and mascara.dtype == np.bool_ and mascara.shape == img.shape[:2]
+            and (img.ndim == 2 or img.shape[2] in (3, 4)))
+
+
+def _pintar_de_branco(img: np.ndarray, mascara: np.ndarray) -> None:
+    """img[mascara] = 255, no lugar, ponto por ponto igual.
+
+    Regra 6 (30/09/2026): a atribuicao por mascara booleana numa imagem de tres
+    canais custa ~0,2 s a 300 DPI; o OU bit a bit com a mascara em 0/255 da o
+    mesmo (x | 255 = 255; x | 0 = x) em ~0,02 s."""
+    if not _pode_no_lugar(img, mascara):
+        img[mascara] = 255
+        return
+    canais = img.shape[2] if img.ndim == 3 else 1
+    cv2.bitwise_or(img, _mascara_0_255(mascara, canais), dst=img)
+
+
+def _copiar_o_cinza(img: np.ndarray, mascara: np.ndarray, cinza: np.ndarray) -> None:
+    """img[mascara] = cinza[mascara][:, None] (os canais iguais ao cinza), no
+    lugar, ponto por ponto igual: img ^ ((img ^ cinza) & mascara) troca so os
+    pontos da mascara. Regra 6 (30/09/2026): ~7x mais rapido que a mascara
+    booleana em tres canais."""
+    if (not _pode_no_lugar(img, mascara) or img.ndim != 3 or cinza.dtype != np.uint8
+            or cinza.shape != img.shape[:2]):
+        img[mascara] = cinza[mascara][:, None]
+        return
+    canais = img.shape[2]
+    diferenca = cv2.bitwise_and(cv2.bitwise_xor(img, cv2.merge([cinza] * canais)),
+                                _mascara_0_255(mascara, canais))
+    cv2.bitwise_xor(img, diferenca, dst=img)
 
 
 def _misturar_por_partes(base: np.ndarray, tratada: np.ndarray,
