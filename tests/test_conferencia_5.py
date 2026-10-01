@@ -123,3 +123,40 @@ def test_papel_entre_duas_gravuras_nao_e_emendado():
     nao_papel[50:60, 155:158] = 1               # uma letra no meio do papel
     emendada = _emendar_as_barras(gravura, nao_papel)
     assert not emendada[50:60, 150:170].any(), "o papel entre as duas virou gravura"
+
+
+
+# --- A1/I2: a letra colorida (dourada) nao some no Preto e branco -----------
+# Horas 47: "o 'JESUS' e o 'C' dourados quase somem" - "Eu preciso conseguir
+# enchergar todas as letras da folha".
+
+def _pagina_com_letra_dourada_clara():
+    """Papel creme, linhas de texto preto e um bloco de "letras" douradas
+    claras (o brilho delas e quase o do papel)."""
+    img = np.full((900, 700, 3), PAPEL, np.uint8)
+    for y in range(100, 800, 40):
+        img[y:y + 14, 60:640:9] = 40                      # texto preto
+    for x in range(80, 400, 40):
+        img[300:330, x:x + 8] = (120, 195, 225)          # hastes douradas claras
+    return img
+
+
+def test_letra_dourada_sai_preta_e_cheia():
+    from core.filtros import filtro_preto_e_branco
+
+    saida = filtro_preto_e_branco(_pagina_com_letra_dourada_clara())
+    for x in range(80, 400, 40):
+        assert float((saida[302:328, x + 1:x + 7] == 0).mean()) >= 0.9, "a letra dourada sumiu"
+
+
+def test_pagina_sem_cor_sai_igual():
+    """A porta (COR_DE_TINTA_NA_PAGINA): sem tinta colorida, o Preto e branco
+    e o mesmo de antes, ponto a ponto."""
+    from core.filtros import _com_a_tinta_colorida, filtro_preto_e_branco
+
+    img = _pagina_com_letra_dourada_clara()
+    cinza = cv2.cvtColor(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), cv2.COLOR_GRAY2BGR)
+    binaria = np.full(cinza.shape[:2], 255, np.uint8)
+    assert np.array_equal(_com_a_tinta_colorida(cinza, binaria), binaria)
+    assert np.array_equal(filtro_preto_e_branco(cinza),
+                          filtro_preto_e_branco(cv2.cvtColor(cinza, cv2.COLOR_BGR2GRAY)))

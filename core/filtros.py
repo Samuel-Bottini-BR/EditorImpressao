@@ -668,6 +668,59 @@ def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
     return limpa
 
 
+# --- a letra colorida no Preto e branco (conferencia 5, A1/I2) --------------
+#
+# Samuel, conferencia 5 (01/10/2026), Horas 47: "o 'JESUS' e o 'C' dourados
+# quase somem" - "Eu preciso conseguir enchergar todas as letras da folha";
+# "tem que reconhecer as letras mesmo em outras cores". O brilho comum
+# (_cinza_para_binarizar) ve o dourado quase da cor do papel (cinza 160 contra
+# 225, e o brilho do ouro varia dentro da letra): o binarizador o parte em
+# pedacos. A decisao V1 ("letra colorida sai preta") vale para o dourado.
+#
+# O ponto cuja COR fica longe da cor do papel (a distancia em a e b do LAB, a
+# mesma medida da decoracao, DECORACAO_CROMA) passa a preto, somado ao preto
+# do binarizador: e o limiar fixo sobre a distancia de cor ao fundo. Nada que
+# o binarizador ja punha preto sai. Medido: o dourado de JESUS fica a 33 do
+# papel; manchas e o papel ambar do retrato do Palatino 5, abaixo de 20.
+# Mudou 0 a 0,05% dos pontos nas paginas sem cor do gabarito (Palatino 9, 10,
+# 67, Marial 7, Graduale 222, Opus 20) - no Palatino 67, os numeros escritos a
+# mao em vermelho ("8", "28") saem mais cheios.
+# Arriscado: baixar COR_DE_TINTA (a mancha amarelada vira preto) ou tirar a
+# porta (a pagina sem cor pagaria a conta da cor: ~40 ms a 300 DPI).
+COR_DE_TINTA = 21.0
+# A porta: so faz a conta se pelo menos esta fracao da pagina (contada de 4
+# em 4 pontos) tem cor de tinta. Medido: Marial 7 0,003%, Palatino 10 0,002%
+# (ficam de fora); Palatino 67 0,04%, Horas 47 38%.
+COR_DE_TINTA_NA_PAGINA = 0.0002
+
+
+def _com_a_tinta_colorida(img: np.ndarray, binaria: np.ndarray) -> np.ndarray:
+    """binaria (0 = preto) com os pontos de cor de tinta tambem pretos - ver
+    COR_DE_TINTA. img: a pagina (BGR; em cinza, nada muda)."""
+    if img.ndim != 3:
+        return binaria
+    pequena = cv2.cvtColor(np.ascontiguousarray(img[::4, ::4]), cv2.COLOR_BGR2LAB)
+    luz = pequena[:, :, 0]
+    papel = luz >= _percentil(luz, BRANCO_PERCENTIL)
+    if not papel.any():
+        return binaria
+    a_papel = float(np.median(pequena[:, :, 1][papel]))
+    b_papel = float(np.median(pequena[:, :, 2][papel]))
+    longe = np.hypot(pequena[:, :, 1].astype(np.float32) - a_papel,
+                     pequena[:, :, 2].astype(np.float32) - b_papel) >= COR_DE_TINTA
+    if float(longe.mean()) < COR_DE_TINTA_NA_PAGINA:
+        return binaria
+    # a pagina inteira, em contas de 8 bits: |a - a do papel|^2/4 +
+    # |b - b do papel|^2/4 por tabela, contra COR_DE_TINTA^2/4
+    lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+    quarto = np.minimum(255, np.arange(256, dtype=np.float32) ** 2 / 4.0).astype(np.uint8)
+    da = cv2.absdiff(cv2.extractChannel(lab, 1), int(round(a_papel)))
+    db = cv2.absdiff(cv2.extractChannel(lab, 2), int(round(b_papel)))
+    soma = cv2.add(cv2.LUT(da, quarto), cv2.LUT(db, quarto))
+    tinta = cv2.compare(soma, COR_DE_TINTA * COR_DE_TINTA / 4.0, cv2.CMP_GE)
+    return cv2.bitwise_and(binaria, cv2.bitwise_not(tinta))
+
+
 def filtro_preto_e_branco(
     img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle: bool = True,
     algoritmo: str = "auto",
@@ -692,6 +745,7 @@ def filtro_preto_e_branco(
     binaria = binarizar(cinza, janela=janela,
                         k=k_do_sauvola(forca, k_para_a_letra(cinza)),
                         algoritmo=algoritmo_de_verdade)
+    binaria = _com_a_tinta_colorida(img, binaria)
     if despeckle:
         binaria = _despeckle(binaria, cinza.shape[0])
     return binaria
