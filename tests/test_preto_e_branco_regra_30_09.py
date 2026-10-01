@@ -252,3 +252,25 @@ def test_sem_foto_o_preto_e_branco_nao_roda_o_melhorar(monkeypatch):
     img, faixa = _moldura()
     F.aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, _gravura_so_na_moldura(faixa))
     assert not chamadas, "o Melhorar rodou no Preto e branco sem foto"
+
+
+# --- o vermelho fora da gravura sai preto (decisao V1, 30/09) ---------------
+
+@pytest.mark.parametrize("cor", [(50, 50, 200), (50, 130, 200)], ids=["vermelho", "dourado"])
+def test_titulo_colorido_fora_da_gravura_sai_preto(cor):
+    """Decisao V1 do Samuel ("o que e vermelho - titulos, rubrica - sai
+    preto"): o "TABLE" vermelho da Horas 13 e as letras "A" douradas da Horas
+    27 sumiam no Preto e branco (a conversao para cinza pelo maior canal lia a
+    tinta colorida como clara). Pagina sem marcacao nenhuma: o caminho de
+    sempre do Preto e branco."""
+    from core.filtros import aplicar_filtro
+
+    img = np.full((1400, 1000, 3), PAPEL, np.uint8)
+    letra = np.zeros(img.shape[:2], np.uint8)
+    _titulo(img, letra, 120, 200, cor)
+    for y in range(600, 1300, 40):          # texto preto comum no resto
+        img[y:y + 12, 100:900:16] = (30, 30, 30)
+    saida, mono = aplicar_filtro(img.copy(), PRETO_E_BRANCO)
+    assert mono is True
+    miolo = cv2.erode(letra, np.ones((3, 3), np.uint8)) > 0
+    assert float((saida[miolo] == 0).mean()) > 0.9, "o titulo colorido sumiu no Preto e branco"

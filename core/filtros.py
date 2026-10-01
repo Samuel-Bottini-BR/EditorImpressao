@@ -609,50 +609,37 @@ def _para_cinza(img: np.ndarray) -> np.ndarray:
     return img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
-# Acima desta fracao de pixels coloridos a pagina nao e "texto com rubricacao":
-# e iluminura ou estampa colorida de pagina cheia. Ali o Preto e branco ja e o
-# filtro errado - o programa avisa "Tem cor" e sugere o Magico pro - e a
-# conversao pelo maior canal so faz perder textura.
-FRACAO_COLORIDA_DE_ILUMINURA = 0.25
+# Saturacao (HSV, 0 a 255) a partir da qual a tinta e "colorida de proposito"
+# (rubricacao, iluminura), e nao o marrom da tinta velha. Usada pelo Melhorar e
+# pelo Magico pro (tirar_o_amarelado_da_tinta, _realcar_saturacao).
 SATURACAO_DE_RUBRICA = 60
 
 
 def _cinza_para_binarizar(img: np.ndarray) -> np.ndarray:
-    """Converte para cinza levando a COR em conta, so para o Preto e branco.
+    """O cinza que o Preto e branco binariza: o BRILHO comum (BT.601, o
+    cv2.COLOR_BGR2GRAY), em que a tinta colorida fica escura como a preta.
 
-    A conversao comum pesa os canais pelo brilho que o olho percebe, e nela
-    tinta vermelha fica tao escura quanto tinta preta. No Graduale, manuscrito
-    do seculo XIV cujas pautas sao vermelhas, isso transformava as linhas em
-    barras pretas grossas - e a rubricacao vermelha e parte do documento, nao
-    sujeira. Medido no acervo, o vermelho saia em 130 numa escala de 0 a 255,
-    quase colado nos 87 da tinta preta.
+    Decisao do Samuel (conferencia 2 de 30/09/2026, cartao V1: "No Preto e
+    branco, o que e vermelho (titulos, rubrica) sai preto?" - "BOM"): no Preto
+    e branco o vermelho, e qualquer letra colorida, sai PRETO.
 
-    Quando ha rubricacao, usamos o maior dos tres canais: tinta vermelha tem o
-    vermelho alto, entao o maior e alto e ela le como CLARA; tinta preta tem os
-    tres baixos e continua escura. No Graduale o vermelho sobe para 176, a
-    distancia ate o preto quase dobra, e os vazios das letras TRIPLICAM porque
-    as pautas param de engolir a notacao.
+    Historia: ate 30/09 esta funcao usava o MAIOR dos tres canais quando a cor
+    era minoria na pagina, escolhido em 2026 para a pauta vermelha do Graduale
+    nao virar barras pretas. Com isso a tinta vermelha lia como clara e sumia:
+    "TABLE" e "CONTENU EN CE LIVRE." da Horas 13 e as letras "A" douradas da
+    Horas 27 nao saiam (Lista de bugs, 30/09). Medido em 30/09 pelo caminho
+    inteiro do programa: a pauta do Graduale 222 ja saia preta (a pagina passa
+    de 25% de pontos coloridos, e ali ja valia o brilho comum); com o brilho
+    em toda pagina, o Graduale 221 e o 222 saem identicos ponto a ponto, e os
+    titulos vermelhos e as letras douradas voltam.
 
-    Mas numa pagina inteiramente colorida - uma iluminura do Livro de Horas -
-    a mesma conta so clareia tudo e a textura se perde. Medido: essas paginas
-    perdiam ate 2.900 vazios cada. Por isso a conversao especial vale so quando
-    a cor e MINORIA na pagina, que e o caso da rubricacao.
+    Arriscado mudar: voltar ao maior canal (os titulos vermelhos somem de novo).
+    Fica numa funcao so para o Preto e branco ter um lugar unico onde o cinza e
+    escolhido.
     """
     if img.ndim == 2:
         return img
-
-    saturacao = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
-    fracao_colorida = float((saturacao > SATURACAO_DE_RUBRICA).mean())
-    if fracao_colorida > FRACAO_COLORIDA_DE_ILUMINURA:
-        return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    try:
-        import doxapy
-
-        rgb = np.ascontiguousarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), dtype=np.uint8)
-        return doxapy.to_grayscale(doxapy.GrayscaleAlgorithms.VALUE, rgb)
-    except Exception:  # noqa: BLE001 - o plano B da a mesma conta
-        return img.max(axis=2)
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 
 def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
