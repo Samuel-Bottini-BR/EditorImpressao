@@ -533,9 +533,33 @@ def blocos_de_tinta(tinta: np.ndarray) -> np.ndarray:
         tinta.astype(np.uint8), cv2.MORPH_CLOSE,
         cv2.getStructuringElement(cv2.MORPH_RECT, (largo, alto)))
 
-    from scipy.ndimage import binary_fill_holes
+    return tapar_buracos(juntos > 0)     # = scipy binary_fill_holes, mais rapido
 
-    return binary_fill_holes(juntos > 0)
+
+def tapar_buracos(mascara: np.ndarray) -> np.ndarray:
+    """scipy.ndimage.binary_fill_holes(mascara), identico ponto por ponto.
+
+    Regra 6 (30/09/2026): o do scipy enche o fundo a partir da beirada uma
+    camada de pontos por vez (~0,25 s numa pagina a 300 DPI, em toda pagina do
+    detector). A definicao e a mesma: buraco e o pedaco de fundo, ligado pelos
+    4 vizinhos (a cruz, estrutura padrao do scipy), que nao encosta na beirada
+    da imagem. Os pedacos de fundo saem do connectedComponents do OpenCV
+    (vizinhanca 4), de uma vez so. Arriscado: trocar a vizinhanca do fundo
+    para 8 (o resultado deixaria de ser o do scipy).
+    """
+    mascara = np.asarray(mascara, dtype=bool)
+    if mascara.ndim != 2 or mascara.size == 0:
+        from scipy.ndimage import binary_fill_holes
+
+        return binary_fill_holes(mascara)
+    fundo = (~mascara).view(np.uint8)
+    quantos, rotulos = cv2.connectedComponents(fundo, connectivity=4, ltype=cv2.CV_32S)
+    na_beirada = np.zeros(quantos, bool)
+    for borda in (rotulos[0, :], rotulos[-1, :], rotulos[:, 0], rotulos[:, -1]):
+        na_beirada[borda] = True
+    fica = ~na_beirada            # fundo fechado (buraco) vira mascara
+    fica[0] = True                # o rotulo 0 e a propria mascara
+    return fica[rotulos]
 
 
 def _cor_que_a_caixa_de_texto_pode_engolir(

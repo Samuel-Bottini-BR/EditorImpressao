@@ -91,3 +91,40 @@ def test_achatar_iluminacao_igual_ao_de_antes():
     antigo = np.clip(img.astype(np.float32) * ganho[:, :, None], 0, 255).astype(np.uint8)
     assert cv2.norm(novo, antigo, cv2.NORM_INF) == 0
     assert np.array_equal(novo, antigo)
+
+
+def test_esqueleto_em_partes_igual_ao_skeletonize(monkeypatch):
+    """Pecas soltas, pecas que so se tocam na diagonal, uma faixa alta na
+    beirada e uma peca larga: o esqueleto em partes e o do skeletonize."""
+    import cv2
+    from skimage.morphology import skeletonize
+
+    monkeypatch.setattr(filtros, "PONTOS_PARA_DIVIDIR_O_ESQUELETO", 1000)
+    rng = _rng(6)
+    img = np.zeros((400, 300), np.uint8)
+    for _ in range(120):                           # "letras" grossas e finas
+        x, y = int(rng.integers(5, 290)), int(rng.integers(5, 390))
+        cv2.ellipse(img, (x, y), (int(rng.integers(2, 9)), int(rng.integers(2, 9))),
+                    float(rng.integers(0, 180)), 0, 360, 255, int(rng.integers(1, 4)))
+    img[:, :12] = 255                              # faixa escura da beirada (alta)
+    img[200:215, 30:290] = 255                     # fio largo
+    img[50, 50] = img[51, 51] = img[52, 52] = 255  # pecas ligadas so na diagonal
+    tinta = img > 0
+    assert np.array_equal(filtros._esqueleto(tinta), skeletonize(tinta))
+
+
+def test_tapar_buracos_igual_ao_scipy():
+    """core.detectar_regioes.tapar_buracos = scipy binary_fill_holes."""
+    from scipy.ndimage import binary_fill_holes
+
+    from core.detectar_regioes import tapar_buracos
+
+    rng = _rng(7)
+    for forma, p in [((1, 1), .5), ((1, 7), .5), ((5, 1), .5), ((3, 3), .7),
+                     ((60, 80), .3), ((60, 80), .6), ((60, 80), .8), ((200, 150), .55)]:
+        for _ in range(15):
+            m = rng.random(forma) < p
+            assert np.array_equal(tapar_buracos(m), binary_fill_holes(m)), forma
+    for valor in (False, True):
+        m = np.full((20, 30), valor)
+        assert np.array_equal(tapar_buracos(m), binary_fill_holes(m))

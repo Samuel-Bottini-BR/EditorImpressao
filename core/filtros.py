@@ -322,6 +322,82 @@ NOMES_DOS_ALGORITMOS_PB = {
 }
 
 
+# --- esqueleto do traco, em partes (regra 6, 30/09/2026) ---------------------
+#
+# O skeletonize (Zhang-Suen, scikit-image) e a conta mais cara do Preto e
+# branco: ~0,6 s na pagina a 300 DPI (escolher_algoritmo_automatico) e ~0,15 s
+# em cada medida do k (k_para_a_letra), so numa linha da maquina. Ele decide
+# cada ponto olhando so os 8 vizinhos, e repete ate nada mudar; duas pecas de
+# tinta que nao se encostam (nem na diagonal) nunca se influenciam. Entao a
+# pagina e dividida em grupos de pecas inteiras, cada grupo e esqueletizado
+# sozinho (no recorte dele, com as pecas dos outros grupos apagadas) e os
+# pedacos voltam para o lugar: o MESMO esqueleto, ponto por ponto, feito em
+# varias linhas ao mesmo tempo (o skeletonize solta o GIL). Pagina pequena, ou
+# com uma peca so, vai inteira, como antes.
+# Seguro mudar: PARTES_DO_ESQUELETO e o tamanho minimo. Arriscado: cortar uma
+# peca entre dois grupos (o esqueleto dela mudaria) - por isso o grupo e feito
+# de pecas inteiras (rotulos do connectedComponents com vizinhanca 8).
+PARTES_DO_ESQUELETO = 4
+PONTOS_PARA_DIVIDIR_O_ESQUELETO = 1_500_000
+
+
+def _esqueleto(tinta: np.ndarray) -> np.ndarray:
+    """skimage.morphology.skeletonize(tinta), identico, em partes paralelas."""
+    from skimage.morphology import skeletonize
+
+    tinta = np.asarray(tinta, dtype=bool)
+    if tinta.ndim != 2 or tinta.size < PONTOS_PARA_DIVIDIR_O_ESQUELETO:
+        return skeletonize(tinta)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(
+        tinta.view(np.uint8), connectivity=8)
+    if quantas <= 2:
+        return skeletonize(tinta)
+    # Grupos de pecas inteiras. A peca alta ou larga (faixa da beirada, fio
+    # de moldura) fica num grupo so dela, no recorte justo dela: junto das
+    # outras, o recorte do grupo viraria a pagina inteira. As demais vao em
+    # faixas de cima para baixo, com area parecida.
+    pecas = np.arange(1, quantas)
+    altura, largura = tinta.shape
+    grande = ((medidas[1:, cv2.CC_STAT_HEIGHT] > altura // 4)
+              | (medidas[1:, cv2.CC_STAT_WIDTH] > largura // 2))
+    grupo = np.zeros(quantas, np.int64)
+    comuns = pecas[~grande]
+    if comuns.size:
+        ordem = comuns[np.argsort(medidas[comuns, cv2.CC_STAT_TOP], kind="stable")]
+        acumulada = np.cumsum(medidas[ordem, cv2.CC_STAT_AREA])
+        total = float(acumulada[-1])
+        grupo[ordem] = np.minimum((acumulada - 1) * PARTES_DO_ESQUELETO // max(1.0, total),
+                                  PARTES_DO_ESQUELETO - 1).astype(np.int64)
+    grupo[pecas[grande]] = PARTES_DO_ESQUELETO + np.arange(int(grande.sum()))
+    tarefas = []
+    for g in range(PARTES_DO_ESQUELETO + int(grande.sum())):
+        membros = pecas[grupo[1:] == g]
+        if membros.size == 0:
+            continue
+        x0 = int(medidas[membros, cv2.CC_STAT_LEFT].min())
+        y0 = int(medidas[membros, cv2.CC_STAT_TOP].min())
+        x1 = int((medidas[membros, cv2.CC_STAT_LEFT] + medidas[membros, cv2.CC_STAT_WIDTH]).max())
+        y1 = int((medidas[membros, cv2.CC_STAT_TOP] + medidas[membros, cv2.CC_STAT_HEIGHT]).max())
+        do_grupo = np.zeros(quantas, bool)
+        do_grupo[membros] = True
+        tarefas.append((y0, y1, x0, x1, do_grupo))
+    if len(tarefas) <= 1:
+        return skeletonize(tinta)
+
+    def esqueletizar(tarefa):
+        y0, y1, x0, x1, do_grupo = tarefa
+        return skeletonize(do_grupo[rotulos[y0:y1, x0:x1]])
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(max_workers=min(len(tarefas), PARTES_DO_ESQUELETO)) as linhas:
+        pedacos = list(linhas.map(esqueletizar, tarefas))
+    saida = np.zeros(tinta.shape, bool)
+    for (y0, y1, x0, x1, _g), pedaco in zip(tarefas, pedacos):
+        saida[y0:y1, x0:x1] |= pedaco
+    return saida
+
+
 def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
     """Tenta adivinhar qual dos 3 fica melhor nesta página, pela espessura
     do traço - a mesma medida que `k_para_a_letra` já faz, mas independente
@@ -339,10 +415,8 @@ def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
         tinta = (tinta > 0).astype(np.uint8)
         if not (0.002 <= tinta.mean() <= 0.6):
             return ALGORITMO_SAUVOLA
-        from skimage.morphology import skeletonize
-
         distancia = cv2.distanceTransform(tinta, cv2.DIST_L2, 5)
-        esqueleto = skeletonize(tinta > 0)
+        esqueleto = _esqueleto(tinta > 0)     # = skeletonize, em partes
         if not esqueleto.any():
             return ALGORITMO_SAUVOLA
         espessura = float(2.0 * distancia[esqueleto].mean())
@@ -498,10 +572,8 @@ def _medir_k_para_a_letra(cinza: np.ndarray) -> float:
     if tinta.mean() < 0.002 or tinta.mean() > 0.6:
         return K_NORMAL
 
-    from skimage.morphology import skeletonize
-
     distancia = cv2.distanceTransform(tinta, cv2.DIST_L2, 5)
-    esqueleto = skeletonize(tinta > 0)
+    esqueleto = _esqueleto(tinta > 0)     # = skeletonize, em partes
     if not esqueleto.any():
         return K_NORMAL
     # De volta a escala da pagina: os limites de 5 e 10 pixels estao escritos
