@@ -661,7 +661,7 @@ def _estimar_fundo_cinza(cinza: np.ndarray) -> np.ndarray:
 
 def _nivel_do_papel(img: np.ndarray) -> float:
     """Quao claro esta o papel desta folha, em cinza de 0 a 255."""
-    return float(np.percentile(_para_cinza(img), BRANCO_PERCENTIL))
+    return _percentil(_para_cinza(img), BRANCO_PERCENTIL)
 
 
 def _achatar_iluminacao(img: np.ndarray, nivel_papel: float) -> np.ndarray:
@@ -710,7 +710,7 @@ def _balanco_de_branco(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndar
     cinza = _para_cinza(img)
     hsv_s = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
 
-    limiar_claro = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    limiar_claro = _percentil(cinza, BRANCO_PERCENTIL)
     papel = (cinza >= limiar_claro) & (hsv_s <= BRANCO_SATURACAO_MAX)
 
     if papel.mean() < BRANCO_FRACAO_MINIMA:
@@ -732,7 +732,7 @@ def _balanco_de_branco(img: np.ndarray, clareza: int = AJUSTE_PADRAO) -> np.ndar
     # multiplicacao. So os tons a partir de OMBRO_INICIO x o nivel do papel sao
     # empurrados; abaixo disso nada muda. E o que mantem uma capa azul escura
     # com a mesma cor de sempre enquanto o papel amarelado vira branco.
-    nivel_papel = float(np.percentile(_para_cinza(saida)[papel], 50))
+    nivel_papel = _percentil(_para_cinza(saida)[papel], 50)
     if nivel_papel < 1:
         return saida
     return _curva_de_ombro(saida, nivel_papel, clareza)
@@ -782,8 +782,8 @@ def _aprofundar_pretos(img: np.ndarray, percentil: float = 0.5) -> np.ndarray:
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     luz = lab[:, :, 0].astype(np.float32)
 
-    preto = float(np.percentile(luz, percentil))
-    papel = float(np.percentile(luz, BRANCO_PERCENTIL))
+    preto = _percentil(luz, percentil)
+    papel = _percentil(luz, BRANCO_PERCENTIL)
     if preto < 1 or papel - preto < 10:
         return img
 
@@ -819,8 +819,8 @@ def _recompor_a_rampa(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
     cinza_antes = _para_cinza(original)
     cinza_depois = _para_cinza(saida)
 
-    preto_antes = float(np.percentile(cinza_antes, 2))
-    papel_antes = float(np.percentile(cinza_antes, BRANCO_PERCENTIL))
+    preto_antes = _percentil(cinza_antes, 2)
+    papel_antes = _percentil(cinza_antes, BRANCO_PERCENTIL)
     if papel_antes - preto_antes < 20:
         return saida
 
@@ -834,8 +834,8 @@ def _recompor_a_rampa(original: np.ndarray, saida: np.ndarray) -> np.ndarray:
     if not orla.any():
         return saida
 
-    preto_depois = float(np.percentile(cinza_depois[tinta > 0], 20))
-    papel_depois = float(np.percentile(cinza_depois[tinta == 0], 80)) \
+    preto_depois = _percentil(cinza_depois[tinta > 0], 20)
+    papel_depois = _percentil(cinza_depois[tinta == 0], 80) \
         if (tinta == 0).any() else 255.0
     if papel_depois - preto_depois < 20:
         return saida
@@ -861,7 +861,7 @@ def _quase_sem_tinta(img: np.ndarray) -> bool:
     ruido de fundo subindo de 1,8 para 7,6.
     """
     cinza = _para_cinza(img)
-    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
     if nivel_papel < 1:
         return True
     return float((cinza < nivel_papel * TINTA_PARA_ORLA).mean()) < TINTA_DE_FOLHA_ESCRITA
@@ -896,7 +896,7 @@ def _so_o_amarelado_do_papel(img: np.ndarray) -> bool:
         return False
 
     cinza = _para_cinza(img)
-    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
     claro = cinza >= nivel_papel * 0.95
     if claro.sum() < 100:
         return False
@@ -920,7 +920,7 @@ def _alisar_o_papel(img: np.ndarray) -> np.ndarray:
     precisa continuar nitido.
     """
     cinza = _para_cinza(img)
-    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
     if nivel_papel < 1:
         return img
 
@@ -931,7 +931,10 @@ def _alisar_o_papel(img: np.ndarray) -> np.ndarray:
 
     alisada = cv2.medianBlur(img, 3)
     saida = img.copy()
-    saida[~perto_da_tinta] = alisada[~perto_da_tinta]
+    # copyto com "where" = saida[~perto] = alisada[~perto], sem montar as duas
+    # listas de pontos no meio (regra 6, 30/09/2026)
+    longe = ~perto_da_tinta
+    np.copyto(saida, alisada, where=longe[:, :, None] if saida.ndim == 3 else longe)
     return saida
 
 
@@ -1017,7 +1020,7 @@ def _contraste_local_no_conteudo(img: np.ndarray, intensidade: int) -> np.ndarra
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     luz = lab[:, :, 0]
 
-    nivel_papel = float(np.percentile(luz, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(luz, BRANCO_PERCENTIL)
     if nivel_papel < 1:
         return img
 
@@ -1089,7 +1092,7 @@ def _realcar_saturacao(img: np.ndarray, ganho: float = SATURACAO_GANHO) -> np.nd
     """
     cinza = _para_cinza(img)
     saturacao = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1].astype(np.float32)
-    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
 
     claro = cinza > nivel_papel * CLARO_COMO_PAPEL
     tem_cor = np.clip(
@@ -1188,7 +1191,7 @@ def _empurrar_branco(img: np.ndarray, limiar: int = BRANCO_LIMIAR) -> np.ndarray
     # mascara de branco nao serve: onde o papel tem grao ela fica furada, e cada
     # furo abriria um anel cinza no meio do papel aberto - medido, 80% do papel
     # do Boecio deixava de ir a branco.
-    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
     tinta = (cinza < nivel_papel * TINTA_PARA_ORLA).astype(np.uint8)
 
     lado = max(3, int(min(img.shape[:2]) / ORLA_DA_LETRA) | 1)
@@ -1283,9 +1286,12 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
     # Acento, pingo do i e serifa solta sao pecas pequenas, mas encostadas numa
     # grande. Elas voltam: peca pequena que toca a orla de uma grande conta como
     # letra. Peca pequena isolada no meio do papel e a mancha, e sai.
-    encostadas = set(np.unique(rotulos[perto & tinta]))
-    encostadas.discard(0)
-    de_letra = np.isin(rotulos, list(encostadas)) if encostadas else semente
+    # (regra 6, 30/09/2026: uma tabela por rotulo no lugar do np.isin da
+    # pagina inteira - a mesma resposta, ponto por ponto, umas 10x mais rapida)
+    encostadas = np.zeros(quantas, bool)
+    encostadas[rotulos[perto & tinta]] = True
+    encostadas[0] = False
+    de_letra = encostadas[rotulos] if encostadas.any() else semente
 
     perto_da_tinta = cv2.dilate(de_letra.astype(np.uint8), nucleo) > 0
 
@@ -1297,7 +1303,7 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
     # perguntado a saida dele, o proprio realce promovia a mancha a "escura
     # demais para ser mancha" e a protegia. Medido nesta pagina, era a unica
     # diferenca entre o Melhorar sair limpo e o Magico pro sair com fantasma.
-    escuro = cinza < float(np.percentile(cinza, BRANCO_PERCENTIL)) \
+    escuro = cinza < _percentil(cinza, BRANCO_PERCENTIL) \
         * ESCURO_DEMAIS_PARA_SER_MANCHA
 
     # E so entra onde a cor e a do PAPEL. A mancha do verso e amarelo-pardo,
@@ -1447,7 +1453,7 @@ def _fundo_e_nivel(lab: np.ndarray) -> tuple[np.ndarray, np.ndarray, float]:
     lado = max(9, int(min(luz.shape) * TRACO_FECHAMENTO) | 1)
     fundo = cv2.morphologyEx(
         luz, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
-    nivel = float(np.percentile(luz[::4, ::4], BRANCO_PERCENTIL))
+    nivel = _percentil(luz[::4, ::4], BRANCO_PERCENTIL)
     return luz, fundo, nivel
 
 
@@ -1523,7 +1529,7 @@ def _cor_parecida_com_o_papel(lab: np.ndarray, papel_certo: np.ndarray) -> np.nd
     b_papel = float(np.median(b[certo]))
     distancia = np.hypot(a - a_papel, b - b_papel)
     raio = max(COR_DO_PAPEL_RAIO_MIN,
-               float(np.percentile(distancia[certo], COR_DO_PAPEL_PERCENTIL)))
+               _percentil(distancia[certo], COR_DO_PAPEL_PERCENTIL))
     cheio, zero = raio * COR_DO_PAPEL_CHEIO, raio * COR_DO_PAPEL_ZERO
     cor = np.clip((zero - distancia) / (zero - cheio), 0.0, 1.0)
     return _voltar((cor * 255.0 + 0.5).astype(np.uint8), forma)
@@ -1916,7 +1922,7 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
             desenho[i] = True
 
     if desenho.any():
-        nivel_papel = float(np.percentile(_para_cinza(img3)[::4, ::4], BRANCO_PERCENTIL))
+        nivel_papel = _percentil(_para_cinza(img3)[::4, ::4], BRANCO_PERCENTIL)
         vale = desenho[rotulos] & (peso_gravura > 0.5)
         if vale.any():
             # o desenho e feito so na caixa das zonas, com folga para o
@@ -1979,13 +1985,114 @@ def _peso_do_papel_sem_tocar_a_tinta(img: np.ndarray, peso: np.ndarray) -> np.nd
     return limpo
 
 
+def _percentil(valores: np.ndarray, q: float) -> float:
+    """float(np.percentile(valores, q)), identico ate o ultimo bit, mais rapido
+    em imagem uint8 (regra 6, 30/09/2026).
+
+    O np.percentile ordena parcialmente a pagina inteira (~35 ms a 300 DPI, e
+    o Magico pro pede uns 15 por pagina). Em uint8 so ha 256 valores: o
+    histograma (cv2.calcHist, ~3 ms) diz qual valor esta em cada posicao da
+    fila ordenada, e a interpolacao e a MESMA do numpy (metodo "linear": indice
+    virtual (n - 1) x q / 100; a + (b - a) x g, ou b - (b - a) x (1 - g) quando
+    g >= 0,5 - numpy/lib/_function_base_impl.py, _quantile e _lerp), em
+    float64. Outro tipo, ou imagem vazia: o proprio np.percentile.
+    Arriscado: mudar a conta da interpolacao (o resultado deixaria de ser o do
+    numpy); tests/test_percentil_rapido.py compara com o numpy.
+    """
+    if not isinstance(valores, np.ndarray) or valores.dtype != np.uint8 or valores.size == 0:
+        return float(np.percentile(valores, q))
+    n = int(valores.size)
+    if n < (1 << 24):
+        # calcHist conta em float32: exato ate 2^24 pontos (16 milhoes)
+        plano = valores.reshape(-1, 1) if valores.ndim != 2 else valores
+        if not plano.flags.c_contiguous and plano.ndim == 2 and plano.strides[1] != 1:
+            plano = np.ascontiguousarray(plano)
+        contagem = cv2.calcHist([plano], [0], None, [256], [0, 256]).ravel().astype(np.int64)
+    else:
+        contagem = np.bincount(valores.ravel(), minlength=256)
+    acumulado = np.cumsum(contagem)
+    virtual = (n - 1) * (q / 100)
+    if virtual >= n - 1:
+        anterior = proximo = n - 1
+    elif virtual < 0:
+        anterior = proximo = 0
+    else:
+        anterior = int(np.floor(virtual))
+        proximo = anterior + 1
+    a = int(np.searchsorted(acumulado, anterior, side="right"))
+    b = int(np.searchsorted(acumulado, proximo, side="right"))
+    # Nas pontas a == b: a conta abaixo da o proprio valor, qualquer que seja g.
+    g = virtual - float(anterior)
+    d = float(b - a)
+    if g >= 0.5:
+        return float(b) - d * (1 - g)
+    return float(a) + d * g
+
+
 def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.ndarray:
-    """Mistura duas versoes da mesma imagem pelo peso, pixel a pixel."""
+    """Mistura duas versoes da mesma imagem pelo peso, pixel a pixel.
+
+    A conta e base x (1 - peso) + tratada x peso, em float32, cortada em 0..255.
+    Regra 6 (30/09/2026): quase todo peso e 0 ou 1 (a marcacao so tem borda
+    suave numa faixa estreita), e fazer a conta em float na pagina inteira
+    custava ~0,4 s por chamada a 300 DPI - tres ou quatro por pagina no Magico
+    pro. _misturar_por_partes da o MESMO resultado, ponto por ponto, fazendo a
+    conta so onde o peso fica entre 0 e 1. Arriscado mudar: a conta abaixo
+    (ordem e tipo das operacoes) e a referencia do caminho rapido.
+    """
     if not peso.any():
         return base
+    rapido = _misturar_por_partes(base, tratada, peso)
+    if rapido is not None:
+        return rapido
     p = peso[:, :, None] if base.ndim == 3 else peso
     saida = base.astype(np.float32) * (1.0 - p) + tratada.astype(np.float32) * p
     return np.clip(saida, 0, 255).astype(base.dtype)
+
+
+def _misturar_por_partes(base: np.ndarray, tratada: np.ndarray,
+                         peso: np.ndarray) -> np.ndarray | None:
+    """A mesma mistura de _misturar, identica ponto por ponto, mais rapida.
+
+    Onde o peso e exatamente 0 a conta de _misturar da a propria base (x 1,0
+    mais 0,0 e exato em ponto flutuante); onde e exatamente 1, da a tratada
+    (que, em uint8, ja esta dentro de 0..255). So os pontos com peso entre os
+    dois passam pela conta em float32 - a MESMA expressao, com os mesmos tipos,
+    so que num pedaco da imagem (a conta e ponto a ponto, entao o resultado de
+    cada ponto nao muda). Devolve None quando o caso foge do comum (tipos ou
+    formas diferentes, peso que nao e float): ai vale a conta inteira.
+    Arriscado: mudar a expressao do meio sem mudar a de _misturar (as duas
+    precisam dar o mesmo numero); tests/test_misturar_por_partes.py confere.
+    """
+    if (base.dtype != np.uint8 or tratada.dtype != np.uint8 or base.shape != tratada.shape
+            or peso.shape != base.shape[:2] or peso.dtype.kind != "f"):
+        return None
+    canais = base.shape[2] if base.ndim == 3 else 1
+    # Cada ponto (os canais juntos) vira um "item" de `canais` bytes: pegar e
+    # pôr pontos por posição na lista assim é bem mais rápido que a máscara
+    # booleana em três canais (medido: 0,49 s -> 0,19 s numa página a 300 DPI).
+    ponto = np.dtype((np.void, canais))
+    pf = peso.ravel()
+    um = pf == 1
+    no_um = np.flatnonzero(um)
+    no_meio = np.flatnonzero(~((pf == 0) | um))
+    saida = base.copy()                       # C-contígua
+    s = saida.view(ponto).reshape(-1)
+    b = np.ascontiguousarray(base).view(ponto).reshape(-1)
+    t = np.ascontiguousarray(tratada).view(ponto).reshape(-1)
+    s[no_um] = t[no_um]
+    if no_meio.size:
+        p = pf[no_meio]
+        bm = b[no_meio].view(np.uint8).reshape(-1, canais)
+        tm = t[no_meio].view(np.uint8).reshape(-1, canais)
+        if base.ndim == 3:
+            p = p[:, None]
+        else:
+            bm, tm = bm[:, 0], tm[:, 0]
+        conta = bm.astype(np.float32) * (1.0 - p) + tm.astype(np.float32) * p
+        pronto = np.ascontiguousarray(np.clip(conta, 0, 255).astype(base.dtype))
+        s[no_meio] = pronto.view(ponto).reshape(-1)
+    return saida
 
 
 def _tres_canais(img: np.ndarray) -> np.ndarray:
@@ -2024,7 +2131,7 @@ def _filtro_so_no_pedaco(
     # uma faixa cinza no pe da gravura, que foi o que o Samuel apontou. Papel e
     # papel em qualquer regiao; o filtro do pedaco vale para o CONTEUDO dele.
     cinza = _para_cinza(img)
-    nivel_papel = float(np.percentile(cinza, BRANCO_PERCENTIL))
+    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
     e_papel = cinza > nivel_papel * TINTA_PARA_ORLA
     lado = max(3, int(min(altura, largura) * ORLA_DA_TINTA_NO_PAPEL) | 1)
     nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
