@@ -44,3 +44,11 @@ def test_percentil_de_outro_tipo_usa_o_numpy():
     assert filtros._percentil(valores, 37) == float(np.percentile(valores, 37))
     with pytest.raises(IndexError):
         filtros._percentil(np.zeros(0, np.uint8), 50)
+
+
+def test_mediana_de_uint8_e_o_percentil_50():
+    """detectar_regioes._pagina_sem_conteudo troca np.median por percentil 50."""
+    rng = np.random.default_rng(13)
+    for n in (1, 2, 3, 10, 11, 1000, 1001):
+        valores = rng.integers(0, 256, n, dtype=np.uint8)
+        assert filtros.percentil_rapido(valores, 50) == float(np.median(valores))

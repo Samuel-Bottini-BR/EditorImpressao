@@ -80,7 +80,9 @@ def _perfil_de_tinta(cinza: np.ndarray) -> np.ndarray:
     fica de fora - e justamente por isso este perfil enxerga a lombada como um
     vazio, mesmo quando ela e escura.
     """
-    nivel_papel = float(np.percentile(cinza, 80))
+    from core.filtros import percentil_rapido   # = np.percentile, ate o ultimo bit
+
+    nivel_papel = percentil_rapido(cinza, 80)
     limiar = max(20.0, nivel_papel * 0.55)
     return _suavizar((cinza < limiar).mean(axis=0))
 

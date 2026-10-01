@@ -2116,6 +2116,11 @@ def _percentil(valores: np.ndarray, q: float) -> float:
     return float(a) + d * g
 
 
+# O mesmo _percentil, com nome publico, para os outros arquivos do core
+# (analise, dividir, detectar_regioes) - regra 6, 30/09/2026.
+percentil_rapido = _percentil
+
+
 def _misturar(base: np.ndarray, tratada: np.ndarray, peso: np.ndarray) -> np.ndarray:
     """Mistura duas versoes da mesma imagem pelo peso, pixel a pixel.
 

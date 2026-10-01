@@ -808,8 +808,12 @@ def _pagina_sem_conteudo(img: np.ndarray) -> bool:
     A pergunta nao e "tem meio-tom" - couro tem - e sim "tem alguma coisa
     escura de verdade". Ver ESCURO_QUE_CONTA.
     """
+    from core.filtros import percentil_rapido
+
     cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if img.ndim == 3 else img
-    mediana = float(np.median(cinza))
+    # = float(np.median(cinza)): em uint8 a mediana e o percentil 50 linear,
+    # ate o ultimo bit (regra 6, 30/09/2026; tests/test_percentil_rapido.py)
+    mediana = percentil_rapido(cinza, 50) if cinza.dtype == np.uint8         else float(np.median(cinza))
     escuros = float((cinza < mediana - ESCURO_QUE_CONTA).mean())
     return escuros < FRACAO_ESCURA_DE_PAGINA_VAZIA
 

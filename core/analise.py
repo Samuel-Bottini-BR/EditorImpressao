@@ -249,8 +249,10 @@ def _neutralizar_o_papel(img: np.ndarray) -> np.ndarray:
     A dominante e medida nos pixels claros (o papel) e descontada dos tres
     canais. O que sobrar de cor depois disso e tinta de verdade.
     """
+    from core.filtros import percentil_rapido   # = np.percentile, ate o ultimo bit
+
     cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    papel = cinza >= np.percentile(cinza, PERCENTIL_DO_PAPEL)
+    papel = cinza >= percentil_rapido(cinza, PERCENTIL_DO_PAPEL)
     if papel.sum() < 100:
         return img
 
@@ -259,6 +261,21 @@ def _neutralizar_o_papel(img: np.ndarray) -> np.ndarray:
     if geral < 1:
         return img
 
+    if img.dtype == np.uint8 and img.ndim == 3 and img.shape[2] == 3:
+        # Regra 6 (30/09/2026): a mesma conta por tabela. Cada canal sai so do
+        # valor do proprio ponto (0 a 255) vezes o fator, em float32, cortado e
+        # truncado - entao a tabela dos 256 valores, feita com as MESMAS
+        # operacoes, da o mesmo resultado ponto por ponto, sem levar a pagina
+        # inteira para float.
+        canais = []
+        for canal in range(3):
+            valores = np.arange(256, dtype=np.float32)
+            if medias[canal] >= 1:
+                fator = geral / medias[canal]
+                valores *= min(max(fator, 1 / CORRECAO_MAXIMA), CORRECAO_MAXIMA)
+            tabela = np.clip(valores, 0, 255).astype(np.uint8)
+            canais.append(cv2.LUT(np.ascontiguousarray(img[:, :, canal]), tabela))
+        return cv2.merge(canais)
     saida = img.astype(np.float32)
     for canal in range(3):
         if medias[canal] >= 1:

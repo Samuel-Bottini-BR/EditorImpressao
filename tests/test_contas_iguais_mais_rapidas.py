@@ -128,3 +128,33 @@ def test_tapar_buracos_igual_ao_scipy():
     for valor in (False, True):
         m = np.full((20, 30), valor)
         assert np.array_equal(tapar_buracos(m), binary_fill_holes(m))
+
+
+def test_neutralizar_o_papel_por_tabela_igual_ao_de_antes():
+    """core.analise._neutralizar_o_papel (tabela) = a conta em float de antes."""
+    import cv2
+
+    from core import analise
+
+    def antigo(img):
+        cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        papel = cinza >= np.percentile(cinza, analise.PERCENTIL_DO_PAPEL)
+        if papel.sum() < 100:
+            return img
+        medias = [float(img[:, :, c][papel].mean()) for c in range(3)]
+        geral = sum(medias) / 3.0
+        if geral < 1:
+            return img
+        saida = img.astype(np.float32)
+        for canal in range(3):
+            if medias[canal] >= 1:
+                fator = geral / medias[canal]
+                saida[:, :, canal] *= min(max(fator, 1 / analise.CORRECAO_MAXIMA),
+                                          analise.CORRECAO_MAXIMA)
+        return np.clip(saida, 0, 255).astype(np.uint8)
+
+    rng = _rng(8)
+    for amarelo in (0, 25, 60):
+        img = np.clip(rng.normal(170, 50, (120, 90, 3)), 0, 255).astype(np.uint8)
+        img[:, :, 0] = np.clip(img[:, :, 0].astype(int) - amarelo, 0, 255)  # papel amarelado
+        assert np.array_equal(analise._neutralizar_o_papel(img), antigo(img))
