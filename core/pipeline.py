@@ -124,7 +124,8 @@ def analisar_projeto(
 
             lombada = detectar_lombada(img) if projeto.dividir_folhas else Lombada(0.5, 0.0, False)
             inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
-            recorte = detectar_bordas(img) if projeto.cortar_bordas else Recorte.inteiro()
+            recorte = (detectar_bordas(img, dpi=DPI_ANALISE) if projeto.cortar_bordas
+                       else Recorte.inteiro())
 
             # DPI de verdade, tirado da imagem embutida no PDF. Medir na imagem
             # que acabamos de rasterizar devolveria sempre DPI_ANALISE.
@@ -227,7 +228,7 @@ def preparar_para_recorte(
 
 def preparar_metade(
     img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
-    geometria: tuple | None = None,
+    geometria: tuple | None = None, dpi: float | None = None,
 ) -> np.ndarray:
     """Aplica giro, divisão, recorte e endireitamento - nesta ordem.
 
@@ -252,6 +253,10 @@ def preparar_metade(
     com a geometria medida na folha COMO VEIO (_geometria_da_folha_como_veio),
     nunca medida nela mesma. None (o padrao) = como sempre.
 
+    dpi: a resolucao de `img_folha`, so para quando o corte ainda nao esta
+    guardado e e calculado aqui: a folga do corte sai em milimetros
+    (recortar.FOLGA_MM). None (a tela, que nao sabe) = folga em fracao do lado.
+
     Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
     avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md.
     """
@@ -260,7 +265,7 @@ def preparar_metade(
     if geometria is None:
         geometria = _geometria_guardada(folha, pagina, projeto)
     if geometria is None:
-        geometria = _geometria(inteira, pagina, projeto)
+        geometria = _geometria(inteira, pagina, projeto, dpi=dpi)
     recorte, angulo = geometria
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
@@ -278,9 +283,15 @@ def preparar_metade(
     return img
 
 
-def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto):
+def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
+               dpi: float | None = None):
     """(recorte, angulo) da pagina, medidos em `base` (a pagina ja girada de
     90 em 90 e dividida, antes de cortar).
+
+    dpi: a resolucao em que `base` foi desenhada, para a folga do corte sair
+    em milimetros (core/recortar.FOLGA_MM, conferencia 5, P2, 01/10/2026).
+    None quando quem chama nao sabe (a tela, sem o corte do PDF guardado): ai
+    a folga e uma fracao do lado (recortar.FOLGA).
 
     recorte: (x, y, largura, altura) em fracao, ou None quando nao corta. O
     manual (pagina.recorte) vale como esta; o automatico vem de
@@ -294,7 +305,7 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto):
         if pagina.recorte is None:
             # o recorte automatico e calculado na metade ja separada: cada
             # pagina tem sua propria sombra de lombada de um lado so
-            automatico = detectar_bordas(base)
+            automatico = detectar_bordas(base, dpi=dpi)
             recorte = automatico.tupla
         else:
             recorte = tuple(pagina.recorte)
@@ -384,7 +395,8 @@ def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projet
     with _TRANCA_GEOMETRIAS:
         if chave in _GEOMETRIAS:
             return
-    geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina), pagina, projeto)
+    geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina), pagina, projeto,
+                           dpi=projeto.qualidade_dpi)
     with _TRANCA_GEOMETRIAS:
         _GEOMETRIAS[chave] = geometria
         while len(_GEOMETRIAS) > MAX_GEOMETRIAS:
@@ -785,7 +797,8 @@ def _geometria_da_folha_como_veio(doc, folha: ConfigFolha, pagina: ConfigPagina,
     _guardar_geometria(folha, pagina, projeto, grande)
     geometria = _geometria_guardada(folha, pagina, projeto)
     if geometria is None:     # arquivo sem chave (nao existe no disco): so calcula
-        geometria = _geometria(preparar_para_recorte(grande, folha, pagina), pagina, projeto)
+        geometria = _geometria(preparar_para_recorte(grande, folha, pagina), pagina, projeto,
+                               dpi=projeto.qualidade_dpi)
     return geometria
 
 
@@ -833,7 +846,7 @@ def renderizar_pagina(
     if _vai_detectar(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
-    img = preparar_metade(img_folha, folha, pagina, projeto)
+    img = preparar_metade(img_folha, folha, pagina, projeto, dpi=dpi)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
 
 
@@ -1087,7 +1100,8 @@ def processar(
                     if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
                         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                         dpi_scan = _dpi_do_scan(doc, folha)
-                    img = preparar_metade(img_folha, folha, pagina, projeto)
+                    img = preparar_metade(img_folha, folha, pagina, projeto,
+                                          dpi=projeto.qualidade_dpi)
                     img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
 
                 # Item 2/4 do teste do Boecio (secao 3a do plano): cola o

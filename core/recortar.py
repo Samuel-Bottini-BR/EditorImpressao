@@ -30,10 +30,38 @@ from dataclasses import dataclass, field
 import cv2
 import numpy as np
 
-# Folga deixada em volta do conteudo, em fracao do lado. Sem folga nenhuma o
-# corte encosta na letra e o texto fica sufocado na impressao; com folga demais
-# sobra papel em branco, que foi a queixa em cinco das dezesseis paginas que o
-# Samuel conferiu. Meio por cento de uma pagina A4 e cerca de um milimetro.
+# Folga deixada em volta do conteudo: PELO MENOS 1 mm de papel entre a ultima
+# tinta e a borda do corte (decisao do Samuel, conferencia 5, P2, 01/10/2026:
+# "Sim, 1 mm"). Sem folga nenhuma o corte encosta na letra e o texto fica
+# sufocado na impressao; com folga demais sobra papel em branco, que foi a
+# queixa em cinco das dezesseis paginas que o Samuel conferiu.
+#
+# Ate 01/10 a folga era so FOLGA (meio por cento do lado), contada em pontos
+# INTEIROS da imagem reduzida (ALTURA_ANALISE) e arredondada para baixo: na
+# Escola 7 sobravam 0,6 mm dos lados, no Boecio (pagina de 9 cm) 0,4 mm. Agora
+# a folga de cada lado e a MAIOR entre FOLGA_MM e a de antes: o lado que ja
+# tinha 1 mm ou mais (de cima a baixo em quase toda pagina; tudo nas paginas
+# grandes, Horas e Graduale) fica exatamente como estava. Diminuir a folga das
+# paginas grandes para 1 mm foi medido em 01/10 e piorou o Graduale 223 (o
+# numero da folha, que a folga de 2,5 mm pegava inteiro, saia partido).
+#
+# Milimetro "da pagina" = do PDF que sai: o PDF e gravado no DPI do projeto
+# (projeto.qualidade_dpi), o mesmo em que o corte e calculado, entao 1 mm
+# aqui e 1 mm no PDF (11,8 pontos a 300 DPI) e a mesma fracao na previa.
+# Seguro mudar: FOLGA_MM. Arriscado: diminuir FOLGA (muda o corte das paginas
+# aprovadas) e tirar FOLGA_PONTOS_EXTRAS.
+FOLGA_MM = 1.0
+
+# Dois pontos a mais na folga em milimetros, na resolucao da imagem: um porque
+# quem corta de verdade (fatiar) converte a fracao em pontos arredondando para
+# baixo; outro porque a mascara de tinta, feita na imagem reduzida, perde a
+# beirada mais clara da letra (medido em 01/10: ate 1 ponto a 300 e a 600 DPI).
+# Sem eles a folga ficava em 0,93 mm.
+FOLGA_PONTOS_EXTRAS = 2
+
+# A folga de antes de 01/10, em fracao do lado, contada em pontos inteiros da
+# imagem reduzida (ver acima). E tambem a unica folga quando quem chama
+# detectar_bordas nao diz o DPI da imagem (ver _folga_em_fracao).
 FOLGA = 0.005
 
 # Nunca cortar mais que isso de cada lado. Protege contra o caso em que a
@@ -193,7 +221,7 @@ def _mascara_de_tinta_local(cinza: np.ndarray) -> np.ndarray:
         return (cinza < max(20.0, nivel_papel * 0.75)).astype(np.uint8)
 
 
-def detectar_bordas(img: np.ndarray) -> Recorte:
+def detectar_bordas(img: np.ndarray, dpi: float | None = None) -> Recorte:
     """Acha o retangulo que contem o conteúdo da página.
 
     Ideia: binarizar de forma bem tolerante, achar as linhas e colunas que tem
@@ -204,6 +232,11 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     Desde 28/09/2026 a borda da caixa nunca passa no meio de uma peca de
     tinta (ver _nao_partir_pecas). Quem vai endireitar depois chama
     alargar_para_o_giro com o angulo, para o giro nao levar os cantos.
+
+    `dpi`: a resolucao em que `img` foi desenhada. Com ele, a folga em volta
+    do conteudo e de pelo menos FOLGA_MM milimetros (desde 01/10/2026); sem
+    ele (None), e a folga de antes (FOLGA do lado). O programa passa o DPI
+    sempre que sabe (pipeline._geometria). Ver _folga_em_fracao.
     """
     # Capa de couro, guarda, foto da encadernacao: nao ha borda de scanner nem
     # margem de papel para tirar, e cortar so estraga. O Samuel apontou quatro
@@ -285,36 +318,147 @@ def detectar_bordas(img: np.ndarray) -> Recorte:
     x0, y0, x1, y1 = (int(v) for v in _nao_partir_pecas(respeitar, x0, y0, x1, y1,
                                                          esticar_x, esticar_y, pode_x, pode_y))
 
-    # folga
-    folga_x = int(largura * FOLGA)
-    folga_y = int(altura * FOLGA)
-    x0e, y0e = max(0, x0 - folga_x), max(0, y0 - folga_y)
-    x1e, y1e = min(largura, x1 + folga_x), min(altura, y1 + folga_y)
+    # Daqui em diante, tudo em FRACAO da pagina (conserto de 01/10/2026,
+    # conferencia 5, P2). A caixa justa acima e em pontos da imagem reduzida;
+    # a folga e somada em fracao, sem arredondar para pontos inteiros da
+    # imagem reduzida (era o que deixava 0,6 mm em vez de 1 mm). As pecas e o
+    # limite de esticar vao para fracao tambem, como em alargar_para_o_giro.
+    por_ponto = np.array([largura, altura, largura, altura], np.float64)
+    pecas_fracao = np.hstack([pecas[:, :4].astype(np.float64) / por_ponto,
+                              pecas[:, 4:].astype(np.float64)])
+    respeitar_fracao = respeitar.astype(np.float64) / por_ponto
+    x0e, y0e, x1e, y1e = x0 / largura, y0 / altura, x1 / largura, y1 / altura
+
+    # folga (FOLGA_MM ou a de antes, a maior; ver _folga_em_fracao)
+    folga_x, folga_y = _folga_em_fracao(largura, altura, largura_orig, altura_orig, dpi)
+    antes_x, antes_y = _folga_em_fracao(largura, altura, largura_orig, altura_orig, None)
+    justa = (x0e, y0e, x1e, y1e)
+    x0e, y0e, x1e, y1e = _com_folga(justa, folga_x, folga_y)
+    # A folga a mais (o que passa da folga de antes de 01/10) nunca traz o
+    # fundo escuro do scanner: no Siebmacher 7 e 9 a borda de baixo ja estava
+    # colada na faixa escura, e 1 mm a mais a trazia para dentro (medido em
+    # 01/10). Mesma regra da folga do giro (_parar_no_escuro).
+    if (folga_x, folga_y) != (antes_x, antes_y):
+        x0e, y0e, x1e, y1e = _parar_no_escuro(
+            img, _recorte_da_caixa(_com_folga(justa, antes_x, antes_y)), x0e, y0e, x1e, y1e)
 
     # limite de seguranca: nunca comer mais que CORTE_MAXIMO de um lado
-    max_x = int(largura * CORTE_MAXIMO)
-    max_y = int(altura * CORTE_MAXIMO)
-    x0e, y0e = min(x0e, max_x), min(y0e, max_y)
-    x1e, y1e = max(x1e, largura - max_x), max(y1e, altura - max_y)
+    x0e, y0e = min(x0e, CORTE_MAXIMO), min(y0e, CORTE_MAXIMO)
+    x1e, y1e = max(x1e, 1.0 - CORTE_MAXIMO), max(y1e, 1.0 - CORTE_MAXIMO)
 
     # A folga e o limite afastam a borda, e ela pode ter caido em cima de
-    # outra peca (um ponto, um acento logo depois do fim da linha).
-    x0e, y0e, x1e, y1e = (int(v) for v in _nao_partir_pecas(respeitar, x0e, y0e, x1e, y1e,
-                                                             esticar_x, esticar_y, pode_x, pode_y))
+    # outra peca (um ponto, um acento logo depois do fim da linha, o reclamo
+    # no pe da pagina que o descarte da tinta de fora deixou de fora). A borda
+    # vai ate o fim dessa peca e, desde 01/10/2026, se a peca e do tamanho de
+    # uma letra (_de_letra), ganha a folga de novo depois dela: antes o
+    # reclamo "A i" do pe do Palatino 7 ficava com 1 ponto de papel. Cisco
+    # nao ganha folga: no Palatino 7 os pontinhos da margem direita levavam a
+    # borda 3 mm para fora. Duas voltas bastam (a segunda so pega a peca que a
+    # folga nova alcancou). O limite de ESTICAR_NO_MAXIMO vale para as voltas
+    # JUNTAS, contado de onde a borda estava antes da primeira (`ate_onde`):
+    # se valesse para cada volta, o risco tracejado da beirada (Horas 14)
+    # voltava a arrastar a borda trecho por trecho
+    # (test_o_risco_tracejado_da_beirada_nao_arrasta_o_corte).
+    ate_onde = (x0e - ESTICAR_NO_MAXIMO, y0e - ESTICAR_NO_MAXIMO,
+                x1e + ESTICAR_NO_MAXIMO, y1e + ESTICAR_NO_MAXIMO)
+    letra = _de_letra(respeitar)
+    for volta in range(3):
+        antes = (x0e, y0e, x1e, y1e)
+        x0e, y0e, x1e, y1e = _dentro_da_pagina(_nao_partir_pecas(
+            respeitar_fracao, *antes, ESTICAR_NO_MAXIMO, ESTICAR_NO_MAXIMO,
+            pode_x, pode_y, ate_onde))
+        if volta == 2 or (x0e, y0e, x1e, y1e) == antes or not letra.any():
+            break
+        # so o lado que andou para pegar uma LETRA ganha a folga de novo
+        l0, m0, l1, m1 = _dentro_da_pagina(_nao_partir_pecas(
+            respeitar_fracao[letra], *antes, ESTICAR_NO_MAXIMO, ESTICAR_NO_MAXIMO,
+            pode_x[letra], pode_y[letra], ate_onde))
+        atual = (x0e, y0e, x1e, y1e)
+        x0e = max(0.0, x0e - folga_x) if l0 < antes[0] else x0e
+        y0e = max(0.0, y0e - folga_y) if m0 < antes[1] else y0e
+        x1e = min(1.0, x1e + folga_x) if l1 > antes[2] else x1e
+        y1e = min(1.0, y1e + folga_y) if m1 > antes[3] else y1e
+        if (x0e, y0e, x1e, y1e) == atual:
+            break
+        x0e, y0e, x1e, y1e = _parar_no_escuro(img, _recorte_da_caixa(atual), x0e, y0e, x1e, y1e)
 
-    encostou = _sobrou_conteudo_fora(tinta, x0e, y0e, x1e, y1e)
+    # o que sobrou fora, olhado na mascara (pontos inteiros, para fora)
+    encostou = _sobrou_conteudo_fora(
+        tinta, int(math.floor(x0e * largura)), int(math.floor(y0e * altura)),
+        int(math.ceil(x1e * largura)), int(math.ceil(y1e * altura)))
 
     return Recorte(
-        x=x0e / largura,
-        y=y0e / altura,
-        largura=(x1e - x0e) / largura,
-        altura=(y1e - y0e) / altura,
+        x=x0e,
+        y=y0e,
+        largura=x1e - x0e,
+        altura=y1e - y0e,
         encostou_no_conteudo=bool(encostou),
-        pecas=np.hstack([
-            pecas[:, :4].astype(np.float64) / np.array([largura, altura, largura, altura], np.float64),
-            pecas[:, 4:].astype(np.float64),
-        ]),
+        pecas=pecas_fracao,
     )
+
+
+def _com_folga(caixa, folga_x: float, folga_y: float):
+    """A caixa (x0, y0, x1, y1), em fracao, aumentada da folga, sem passar da pagina."""
+    x0, y0, x1, y1 = caixa
+    return _dentro_da_pagina((x0 - folga_x, y0 - folga_y, x1 + folga_x, y1 + folga_y))
+
+
+def _dentro_da_pagina(caixa):
+    """A caixa (x0, y0, x1, y1), em fracao, limitada a pagina (0 a 1), em float."""
+    x0, y0, x1, y1 = (float(v) for v in caixa)
+    return max(0.0, x0), max(0.0, y0), min(1.0, x1), min(1.0, y1)
+
+
+def _recorte_da_caixa(caixa) -> Recorte:
+    """Recorte de uma caixa (x0, y0, x1, y1) em fracao (para _parar_no_escuro)."""
+    x0, y0, x1, y1 = caixa
+    return Recorte(x0, y0, x1 - x0, y1 - y0)
+
+
+# Peca do tamanho de uma letra, em pontos da imagem reduzida (ALTURA_ANALISE):
+# pelo menos LETRA_MINIMA de um lado e LETRA_FINA do outro. Abaixo disso e
+# cisco (os pontinhos da margem do Palatino 7 tem 1 a 2 pontos). Uma letra de
+# texto comum tem 4 pontos ou mais de altura; um ponto final, 2 x 2, e passa
+# se estiver grudado na palavra (o fechamento 5 x 5 junta). Arriscado mudar:
+# descer faz cisco ganhar folga (a borda vai 3 mm para fora no Palatino 7);
+# subir faz letra pequena ficar sem a folga.
+LETRA_MINIMA = 4
+LETRA_FINA = 2
+
+
+def _de_letra(pecas: np.ndarray) -> np.ndarray:
+    """Quais pecas (caixas em pontos da imagem reduzida) tem tamanho de letra."""
+    if len(pecas) == 0:
+        return np.zeros(0, bool)
+    larg = pecas[:, 2] - pecas[:, 0]
+    alt = pecas[:, 3] - pecas[:, 1]
+    return (np.maximum(larg, alt) >= LETRA_MINIMA) & (np.minimum(larg, alt) >= LETRA_FINA)
+
+
+def _folga_em_fracao(largura: int, altura: int, largura_px: int, altura_px: int,
+                     dpi: float | None) -> tuple[float, float]:
+    """A folga do corte de cada lado, em fracao da largura e da altura.
+
+    `largura`, `altura`: o tamanho da imagem reduzida em que o corte e
+    calculado (a mascara de tinta). `largura_px`, `altura_px`: o tamanho da
+    imagem inteira, na resolucao `dpi`.
+
+    A folga e a maior entre FOLGA_MM milimetros (mais FOLGA_PONTOS_EXTRAS
+    pontos da imagem inteira) e a folga de antes de 01/10 (FOLGA do lado,
+    em pontos inteiros da imagem reduzida). Sem `dpi` (quem chamou nao sabe
+    a resolucao), so a de antes.
+
+    Arriscado mudar: contar a folga em milimetros so em pontos da imagem
+    reduzida traz de volta o arredondamento que comia a folga; tirar a
+    "de antes" encolhe a folga das paginas grandes e muda o corte delas.
+    """
+    antes_x = int(largura * FOLGA) / max(1, largura)
+    antes_y = int(altura * FOLGA) / max(1, altura)
+    if not dpi or dpi <= 0:
+        return antes_x, antes_y
+    pontos = FOLGA_MM * float(dpi) / 25.4 + FOLGA_PONTOS_EXTRAS
+    return (max(antes_x, pontos / max(1, largura_px)),
+            max(antes_y, pontos / max(1, altura_px)))
 
 
 def _pecas_de_tinta(tinta: np.ndarray) -> np.ndarray:
@@ -384,7 +528,7 @@ def _quem_empurra(pecas: np.ndarray, largura: float, altura: float):
 
 
 def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y,
-                      pode_x=None, pode_y=None):
+                      pode_x=None, pode_y=None, ate_onde=None):
     """Afasta cada borda da caixa ate o fim de toda peca que ela atravessa.
 
     `pecas` e a caixa (x0, y0, x1, y1) de cada peca, na MESMA unidade da caixa
@@ -407,6 +551,10 @@ def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y,
     dizem que peca pode empurrar as bordas da esquerda e da direita (pode_x) e
     as de cima e de baixo (pode_y). Ver _quem_empurra.
 
+    `ate_onde` (x0, y0, x1, y1), opcional: ate onde cada borda pode ir, no
+    lugar de "onde estava ao entrar mais o esticar" (detectar_bordas usa para
+    o limite valer para todas as voltas da folga, e nao para cada uma).
+
     Arriscado mudar: tirar o "esta na altura da caixa" faz uma peca do canto,
     fora da caixa, puxar a borda; tirar a repeticao deixa peca partida; tirar
     o limite deixa o risco tracejado arrastar a borda trecho por trecho.
@@ -420,6 +568,8 @@ def _nao_partir_pecas(pecas: np.ndarray, x0, y0, x1, y1, esticar_x, esticar_y,
     # ate onde cada borda pode ir
     x0_max, y0_max = x0 - esticar_x, y0 - esticar_y
     x1_max, y1_max = x1 + esticar_x, y1 + esticar_y
+    if ate_onde is not None:
+        x0_max, y0_max, x1_max, y1_max = ate_onde
     # Cada volta afasta pelo menos uma borda ate o fim de uma peca, entao o
     # numero de voltas e no maximo o de pecas; o limite so protege de laco.
     for _ in range(len(pecas) + 1):
@@ -547,31 +697,41 @@ def _parar_no_escuro(img: np.ndarray, velho: Recorte, x0, y0, x1, y1):
     X1, Y1 = int(np.ceil(x1 * largura)), int(np.ceil(y1 * altura))
     if X0 >= vx0 and Y0 >= vy0 and X1 <= vx1 and Y1 <= vy1:
         return x0, y0, x1, y1                    # nada cresceu
+    # A media de cada coluna (ou linha) nova, andando da borda velha para
+    # fora. Calculada ANTES do nivel do papel: se nenhuma passa perto do
+    # escuro (o limite nunca passa de ESCURO_DO_SCANNER x 255), nao ha o que
+    # recolher e o percentil da pagina nem e calculado - o caso de quase toda
+    # pagina, e o que deixou a folga de 1 mm (01/10/2026) sem custo de tempo.
+    medias = {}
+    if X0 < vx0:          # esquerda: da borda velha para fora
+        medias["esq"] = cinza_de(img[Y0:Y1, X0:vx0]).mean(axis=0)[::-1]
+    if X1 > vx1:          # direita
+        medias["dir"] = cinza_de(img[Y0:Y1, vx1:X1]).mean(axis=0)
+    if Y0 < vy0:          # topo
+        medias["topo"] = cinza_de(img[Y0:vy0, X0:X1]).mean(axis=1)[::-1]
+    if Y1 > vy1:          # pe
+        medias["pe"] = cinza_de(img[vy1:Y1, X0:X1]).mean(axis=1)
+    if not any(m.size and float(m.min()) < ESCURO_DO_SCANNER * 255.0 for m in medias.values()):
+        return x0, y0, x1, y1
     amostra = cinza_de(np.ascontiguousarray(img[vy0:vy1:8, vx0:vx1:8]))
     if amostra.size == 0:
         return x0, y0, x1, y1
     limite = ESCURO_DO_SCANNER * float(np.percentile(amostra, 90))
 
-    def primeira_escura(medias):
-        escuras = np.flatnonzero(medias < limite)
+    def primeira_escura(lado):
+        if lado not in medias:
+            return None
+        escuras = np.flatnonzero(medias[lado] < limite)
         return int(escuras[0]) if escuras.size else None
 
-    if X0 < vx0:          # esquerda: da borda velha para fora
-        k = primeira_escura(cinza_de(img[Y0:Y1, X0:vx0]).mean(axis=0)[::-1])
-        if k is not None:
-            x0 = (vx0 - k) / largura
-    if X1 > vx1:          # direita
-        k = primeira_escura(cinza_de(img[Y0:Y1, vx1:X1]).mean(axis=0))
-        if k is not None:
-            x1 = (vx1 + k) / largura
-    if Y0 < vy0:          # topo
-        k = primeira_escura(cinza_de(img[Y0:vy0, X0:X1]).mean(axis=1)[::-1])
-        if k is not None:
-            y0 = (vy0 - k) / altura
-    if Y1 > vy1:          # pe
-        k = primeira_escura(cinza_de(img[vy1:Y1, X0:X1]).mean(axis=1))
-        if k is not None:
-            y1 = (vy1 + k) / altura
+    if (k := primeira_escura("esq")) is not None:
+        x0 = (vx0 - k) / largura
+    if (k := primeira_escura("dir")) is not None:
+        x1 = (vx1 + k) / largura
+    if (k := primeira_escura("topo")) is not None:
+        y0 = (vy0 - k) / altura
+    if (k := primeira_escura("pe")) is not None:
+        y1 = (vy1 + k) / altura
     return x0, y0, x1, y1
 
 

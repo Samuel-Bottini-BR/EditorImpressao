@@ -2734,3 +2734,35 @@ Palatino 5. No Mágico pro mudam só as cinco das Horas; as outras oito idêntic
 
 **Testes:** `tests/test_decoracao_no_preto_e_branco.py` (12, novos);
 `tests/test_preto_e_branco_regra_30_09.py` refeito para as decisões novas (15).
+
+---
+
+## Tentativa 61 — o corte das bordas deixa 1 mm de papel depois da última letra (01/10/2026)
+
+**Pedido:** conferência 5 do Samuel, P2 — "O corte das bordas: 0,6 mm ou 1 mm de papel
+depois da última letra?" — "Sim, 1 mm (o corte das 32 páginas muda um pouco)".
+**Situação:** feito, aguardando conferência.
+**Número atacado:** a folga real entre a última tinta e a beirada da página pronta (PDF
+a 300 DPI), que era 0,2 a 0,9 mm dos lados nas páginas pequenas (Escola 7: 0,6 mm).
+
+**O que mudou** (`core/recortar.py`, `core/pipeline.py`): a folga passa a ser a maior
+entre 1 mm do PDF (`FOLGA_MM`, com o DPI passado por `pipeline._geometria`) e a de antes
+(meio por cento do lado, em pontos inteiros da imagem reduzida) — o lado que já tinha
+1 mm ou mais fica igual. A letra que a folga alcança ganha folga depois dela (o reclamo
+do Palatino 7); cisco não. A folga a mais nunca traz o fundo escuro do scanner.
+
+**Tentado e descartado:** só 1 mm em todo lado (diminuindo a folga das páginas grandes,
+que era 1,3 a 2,5 mm): o Graduale 223 passou de 1 para 3 peças partidas (o número da
+folha) e o Horas 13 ficou com 0,2 mm à esquerda. Folga depois de toda peça alcançada,
+cisco incluído: a borda direita do Palatino 7 ia 2,9 mm para fora por causa de
+pontinhos da margem. Folga sem a proteção do escuro: Siebmacher 7 e 9 ganhavam faixa
+escura embaixo.
+
+**Resultado nas 32 páginas** (tabela em `relatorios/corte-folga-1mm-2026-10-01/LEIA-ME.md`):
+22 páginas com corte maior (só para fora, até 15 pontos); páginas grandes iguais, menos
+Horas 11 em cima; peças partidas 0 → 0 em todas, menos Palatino 67 (1 → 0, a ponta do
+fio da moldura) e Boécio 3 (0 → 1, um traço da linha da beirada da folha, não é
+conteúdo); faixa escura: nenhuma página nova. Velocidade do corte: 3,08–3,21 s → 2,86–3,08 s
+(32 páginas, menor de 5).
+
+**Testes:** `tests/test_corte_folga_1mm.py` (6, novos; falhavam antes).
