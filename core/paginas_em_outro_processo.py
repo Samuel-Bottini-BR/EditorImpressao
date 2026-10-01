@@ -132,6 +132,11 @@ class _Servidor:
             vista = np.ndarray((altura, largura, canais), dtype=np.uint8, buffer=bloco.buf)
             imagem = vista.copy()
             del vista
+            # Regra 6 (30/09/2026): o bloco fica mapeado so durante a copia.
+            # Mantido aberto, cada servidor deixava ~40 MB (o bloco de uma
+            # pagina a 300 DPI) contando na memoria do programa, para sempre:
+            # +100 MB no teste de velocidade. Reabrir custa milissegundos.
+            self._fechar_bloco()
             return imagem
         _, classe, mensagem = resposta
         if classe == "ErroPDF":
