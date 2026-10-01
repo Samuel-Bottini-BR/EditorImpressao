@@ -2549,3 +2549,79 @@ conferência foi feita pelo tamanho da janela, não pela tela.
 **Teste:** `tests/test_janela_cabe_na_tela.py` (novo, 2; os 2 falhavam antes):
 a altura mínima (e a que os layouts exigem) cabe em 657; o tamanho inicial
 não passa da área útil de 1280 × 688, e numa tela grande continua 1220 × 800.
+
+---
+
+## Tentativa 58 — regra 6: quem deixou o programa mais lento, e o tempo devolvido (30/09/2026)
+
+**Data:** 30/09/2026
+**Situação:** feito (teste de máquina: velocidade e imagem igual ponto por ponto)
+**Pedido da gerente (30/09):** o teste oficial de 30/09 16:26 (`afe2421`) saiu
+mais lento que o de 29/09 18:09 (`db5a341`) em tudo; descobrir commit por
+commit quem custou quanto e devolver o tempo, sem mudar nenhuma imagem.
+
+**Como foi medido:** cópias do código (git worktree) de 9 commits (`db5a341`,
+`39a70d4` = antes do detector, `71e14be`, `2c6cb15` = antes do Preto e branco
+novo, `decca4a` = antes de `47cabac`, `47cabac`, `e1b78ba` = antes do servidor
+de páginas, `47bad86`, `afe2421`), cada um com as mesmas funções do
+`teste_velocidade.py` (uma rodada por processo, livro `marial_300.pdf`), em 4
+passadas alternadas (ida e volta). As passadas 1 e 2 pegaram o emulador
+Android do Samuel ligado (16:46 até ~18:00) e não valem; as 3 e 4 (máquina
+sem emulador) valem.
+
+**O que se achou (médias das passadas 3 e 4):**
+
+| commit | abrir | trocar (média) | Mágico pro 10 p. | P&B 10 p. | memória |
+|---|---|---|---|---|---|
+| db5a341 | 46,0 s | 2,9 s | 84,5 s | 39,0 s | 1.591 MB |
+| 39a70d4 | 46,7 | 3,2 | 91,6 | 38,9 | 1.590 |
+| 71e14be (detector ScanTailor) | 51,9 | 3,4 | 89,7 | 40,7 | 1.594 |
+| 2c6cb15 | 44,2 | 3,0 | 86,2 | 36,3 | 1.594 |
+| decca4a (P&B novo) | 43,2 | 3,0 | 81,3 | 34,4 | 1.617 |
+| 47cabac | 44,5 | 3,1 | 83,2 | 35,9 | 1.594 |
+| e1b78ba | 42,7 | 3,0 | 83,1 | 34,9 | 1.593 |
+| 47bad86 (servidor de páginas) | 39,4 | 3,0 | 84,2 | 35,9 | 1.694 |
+| afe2421 | 39,3 | 3,0 | 83,6 | 35,3 | 1.719 |
+
+Nas mesmas condições, `afe2421` não é mais lento que `db5a341` em tempo
+(abrir até mais rápido, pelo servidor de páginas); o único custo claro de um
+commit é a **memória do `47bad86`: +100 MB** (o bloco de memória compartilhada
+de cada servidor ficava mapeado no programa). O ruído entre rodadas iguais
+chega a 10 s no Mágico pro, maior que qualquer diferença entre commits. A
+própria `db5a341`, medida hoje, sai 10% a 20% mais lenta que no teste de
+29/09 18:09 (hoje à noite, lado a lado: abrir 41,1-41,9 s contra 37,9;
+Mágico pro 77,6 contra 69): a diferença de 29/09 para 30/09 16:26 foi
+principalmente o estado da máquina, não o código.
+
+**O que foi feito (5 commits, todos "mesma conta, mais depressa"):**
+1. `b9e8392` `_misturar` por partes (só onde o peso fica entre 0 e 1),
+   `_percentil` pelo histograma (igual ao `np.percentile` até o último bit),
+   tabela por rótulo no lugar do `np.isin`, `np.copyto` no `_alisar_o_papel`.
+2. `c8de4e9` servidor de páginas fecha o bloco depois de copiar a página
+   (memória).
+3. `ba42c11` `_pintar_de_branco` (OU bit a bit), `_copiar_o_cinza` (XOR),
+   amarelado só em Cr e Cb, `_achatar_iluminacao` no mesmo array.
+4. `f0fe5de` esqueleto do traço em partes paralelas (pedaços de tinta que não
+   se encostam não se influenciam no Zhang-Suen) e `tapar_buracos` com o
+   connectedComponents (mesma definição do `binary_fill_holes`).
+5. `3ba708d` análise: `_neutralizar_o_papel` por tabela de 256 valores,
+   percentil pelo histograma no `dividir` e mediana no detector.
+
+**Prova de imagem igual:** 308 imagens (32 páginas do gabarito + Marial
+146-155; os 4 filtros a 300 DPI; Preto e branco e Mágico pro a 110 DPI; e a
+marcação de cada página), sha256 idêntico ao de `afe2421` depois de cada
+commit; a análise do `marial_300` e das 32 páginas dá as mesmas folhas e
+páginas. Testes que comparam cada conta nova com a antiga:
+`test_misturar_por_partes.py`, `test_percentil_rapido.py`,
+`test_contas_iguais_mais_rapidas.py`.
+
+**Teste oficial final** (30/09 22:42, código `3ba708d`,
+`relatorios/velocidade/velocidade-SAMUEL-PC-2026-09-30-2242`), contra 29/09
+18:09: abrir 37,9 -> 25,5 s; trocar de página 2,1 -> 2,3 s em média (dentro
+dos +0,5 s aceitos pelo detector; a mais demorada 2,3 -> 3,0 s); Mágico pro
+69 -> 54,5 s; Preto e branco 30,1 -> 27,3 s; memória 1.600 -> 1.571 MB.
+
+**Tentado e não usado:** o esqueleto em grupos só por faixa de altura (a peça
+alta da beirada puxava o grupo para a página inteira; ficou 5,6 -> 4,1 s, contra
+3,0 s separando as peças grandes); `cv2.copyTo`, `cv2.max` e `bitwise_or` com
+máscara (mais lentos que o OU sem máscara).
