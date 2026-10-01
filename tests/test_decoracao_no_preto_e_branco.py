@@ -175,3 +175,22 @@ def test_a_decoracao_sai_com_a_cor_original_e_o_papel_branco(filtro):
     assert dif(225, 255, 360, 540) <= 2, "o ceu creme, cercado pela pintura, foi a branco"
     # o papel da zona, ligado ao papel de fora (embaixo da moldura): branco
     assert int(saida[640:660, 100:800].min()) >= 250, "faixa cinza no papel da zona"
+
+
+def test_a_pergunta_rapida_da_a_mesma_decoracao():
+    """Regra 6 (01/10/2026): no Magico pro a cor e perguntada antes da foto, e
+    uma porta rapida (_pode_ter_decoracao) pula a pagina sem cor. A
+    decoracao achada tem de ser a mesma da ordem completa."""
+    import core.filtros as F
+    from core.selecao import GRAVURA
+
+    img, s = _pagina_com_iluminura()
+    g = s.peso(1200, 900, GRAVURA)
+    _r, _f, completa, _ref = F._tipos_das_zonas(img, g)
+    _r2, _f2, rapida, _ref2 = F._tipos_das_zonas(img, g, so_a_decoracao=True)
+    assert completa.any() and np.array_equal(completa, rapida)
+    # pagina sem cor nenhuma: a porta fecha, e nada e decoracao
+    cinza = np.full((1200, 900, 3), 215, np.uint8)
+    cinza[200:400, 200:700:6] = 40
+    _r3, _f3, nenhuma, _ref3 = F._tipos_das_zonas(cinza, g, so_a_decoracao=True)
+    assert not nenhuma.any()

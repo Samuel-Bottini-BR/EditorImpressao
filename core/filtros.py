@@ -2155,7 +2155,38 @@ def _decoracao_com_a_cor_original(recorte: np.ndarray,
                                          scale=1.0 / 255.0))
 
 
-def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: bool = True):
+def _pode_ter_decoracao(img3: np.ndarray, peso_gravura: np.ndarray, menor_lado: int) -> bool:
+    """A gravura desta pagina pode ter decoracao colorida? Pergunta rapida, de
+    8 em 8 pontos, antes das contas da pagina inteira (regra 6, 01/10/2026):
+    na pagina de texto com um titulo marcado (o Marial) a resposta e nao, e o
+    Magico pro nao paga as zonas nem a medida do papel (~55 ms por pagina).
+    E a mesma pergunta de _e_decoracao_colorida (colorido largo dentro da
+    gravura), mais grosseira; ela so serve de porta: quem decide, zona a zona,
+    continua sendo _e_decoracao_colorida. Arriscado: deixa-la mais exigente
+    que a de verdade (decoracao de verdade passaria pelo Melhorar)."""
+    passo = 2 * DECORACAO_REDUCAO
+    g = peso_gravura[::passo, ::passo] > 0
+    if not g.any():
+        return False
+    lab = cv2.cvtColor(np.ascontiguousarray(img3[::passo, ::passo]),
+                       cv2.COLOR_BGR2LAB)
+    usar = ~g if float((~g).mean()) >= 0.05 else np.ones(g.shape, bool)
+    luz = lab[:, :, 0]
+    papel = usar & (luz >= _percentil(luz[usar], BRANCO_PERCENTIL))
+    if not papel.any():
+        return True
+    a = lab[:, :, 1].astype(np.float32) - 128.0
+    b = lab[:, :, 2].astype(np.float32) - 128.0
+    a_papel, b_papel = float(np.median(a[papel])), float(np.median(b[papel]))
+    colorido = (np.hypot(a - a_papel, b - b_papel) > DECORACAO_CROMA).astype(np.uint8)
+    lado = max(3, int(round(menor_lado * DESENHO_FECHAMENTO / passo)) | 1)
+    largo = cv2.morphologyEx(colorido, cv2.MORPH_OPEN,
+                             cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
+    return bool((largo.astype(bool) & g).any())
+
+
+def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: bool = True,
+                     so_a_decoracao: bool = False):
     """Separa as zonas de gravura (pedacos ligados de peso_gravura > 0).
 
     Devolve (rotulos, foto, decoracao, referencia): rotulos de cada ponto; foto
@@ -2164,9 +2195,20 @@ def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: 
     (_e_foto_ou_pintura); decoracao so e perguntada se com_decoracao
     (_e_decoracao_colorida). referencia: _referencia_do_papel, ou None quando
     nao foi preciso medir.
+
+    so_a_decoracao (Magico pro e Melhorar, que so precisam saber o que e
+    decoracao): a pergunta da cor vem antes, e a da foto so e feita na zona
+    colorida (a pintura colorida, como o anjo da Escola 35, e foto e nao
+    decoracao). A resposta e a mesma; o que muda e a ordem - a pergunta da
+    foto e a cara (~35 ms por pagina com titulo marcado, no Marial), e a zona
+    sem cor nem chega a ela (regra 6, 01/10/2026). Nesse modo, foto so vem
+    marcada nas zonas coloridas.
     """
     altura, largura = img3.shape[:2]
     menor_lado = min(altura, largura)
+    if so_a_decoracao and not _pode_ter_decoracao(img3, peso_gravura, menor_lado):
+        vazio = np.zeros(1, bool)
+        return None, vazio, vazio.copy(), None
     onde = (peso_gravura > 0).astype(np.uint8)
     quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(onde, connectivity=8)
     foto = np.zeros(quantas, bool)
@@ -2175,6 +2217,15 @@ def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: 
     for i in range(1, quantas):
         x, y, w, h = (int(v) for v in medidas[i, :4])
         zona = rotulos[y:y + h, x:x + w] == i
+        if so_a_decoracao:
+            if referencia is None:
+                referencia = _referencia_do_papel(img3, onde > 0)
+            if _e_decoracao_colorida(img3, zona, (x, y, w, h), menor_lado, referencia):
+                if _e_foto_ou_pintura(img3, zona, (x, y, w, h), menor_lado):
+                    foto[i] = True
+                else:
+                    decoracao[i] = True
+            continue
         if _e_foto_ou_pintura(img3, zona, (x, y, w, h), menor_lado):
             foto[i] = True
         elif com_decoracao:
@@ -2662,7 +2713,8 @@ def aplicar_filtro_com_selecao(
         # Horas 47). Foto, pintura e gravura de traco: como sempre.
         if peso_gravura.any():
             img3 = _tres_canais(img)
-            rotulos, _foto, decoracao, referencia = _tipos_das_zonas(img3, peso_gravura)
+            rotulos, _foto, decoracao, referencia = _tipos_das_zonas(
+                img3, peso_gravura, so_a_decoracao=True)
             if decoracao.any():
                 peso_decoracao = peso_gravura if decoracao[1:].all() else np.where(
                     decoracao[rotulos], peso_gravura, 0.0).astype(np.float32)
