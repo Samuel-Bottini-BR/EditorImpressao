@@ -1891,9 +1891,9 @@ DESENHO_MANCHA_PEQUENA = 1 / 12
 DESENHO_CROMA_DE_TINTA = 22.0
 
 # Foto e pintura de tom continuo (a estatua do Opus Majus 20, o anjo da Escola
-# 35): o Samuel ainda nao decidiu como ficam no Preto e branco (pergunta da
-# gerente, 30/09). Ate ele decidir, ficam como estavam (tom continuo, limpas
-# pelo Melhorar, e a pagina deixa de caber em 1 bit). E foto quem tem pouco
+# 35): no Preto e branco saem em TONS DE CINZA (decisao do Samuel, conferencia
+# 2 de 30/09, cartao P1a "Cinza (tons de cinza): BOM"; os tres pontilhados,
+# RUIM) - ver _foto_em_tons_de_cinza. E foto quem tem pouco
 # traco (_peso_de_traco abaixo de GRAVURA_DE_TRACO_MINIMA, a mesma medida do
 # Magico pro) E e "grossa": cabe dentro dela um circulo de FOTO_ESPESSURA_MINIMA
 # do menor lado da pagina. A espessura e o que separa uma foto de um pedaco
@@ -1902,6 +1902,53 @@ DESENHO_CROMA_DE_TINTA = 22.0
 # Horas 0,7% a 4%; pedacos de pauta do Graduale 4,5%; iluminura da Horas 11
 # 89%, mas com 22% de traco (sai desenho, como pede a regra).
 FOTO_ESPESSURA_MINIMA = 0.12
+
+# A foto em tons de cinza (decisao P1 do Samuel, 30/09/2026) e feita como no
+# exemplo que ele aprovou (relatorios/conferir/fotos-no-preto-e-branco-2026-
+# 09-30, versao "3-tons-de-cinza", script saida_teste/pb_30_09/fotos_exemplo.py):
+#   1. o cinza do ORIGINAL - nao o do Melhorar, que levava a estatua do Opus 20
+#      (da cor do papel, so 14 tons mais escura) quase a branco;
+#   2. um desfoque gaussiano leve (FOTO_DESFOQUE pontos), que tira a reticula
+#      da impressao antiga (o "descreen" consagrado; sem ele os pontinhos da
+#      reticula aparecem como chuvisco);
+#   3. os niveis esticados em linha reta pela pagina inteira: o FOTO_PRETO% mais
+#      escuro vira preto e o FOTO_BRANCO% mais claro vira branco.
+# Uma mudanca sobre o exemplo: o branco nunca fica acima do nivel do PAPEL da
+# pagina (o percentil BRANCO_PERCENTIL do cinza fora das gravuras). O Samuel
+# pediu "papel em volta branco": no Marial 7 o detector marca como foto um
+# canto de papel, e a pagina tem pontos brancos puros (o preenchimento do
+# corte), entao o percentil 99,5 dava 255 e o papel desse canto ficava cinza
+# 214. Nas fotos de verdade quase nao muda (Opus 20: 215 -> 210; Escola 35:
+# 255 -> 252).
+# Seguro mudar: os numeros, olhando o Opus 20 e a Escola 35. Arriscado: trocar
+# o original pelo Melhorar (a estatua some) ou tirar o desfoque (chuvisco).
+FOTO_DESFOQUE = 1.0
+FOTO_PRETO, FOTO_BRANCO = 0.5, 99.5
+
+
+def _niveis_da_foto(img3: np.ndarray, gravura: np.ndarray | None = None) -> tuple[float, float]:
+    """(preto, branco) do esticao da foto em cinza: os percentis FOTO_PRETO e
+    FOTO_BRANCO do cinza da PAGINA inteira (como no exemplo aprovado), com o
+    branco limitado ao nivel do papel fora das gravuras (gravura: mascara
+    booleana; None = sem esse limite). Ver FOTO_DESFOQUE."""
+    cinza = _para_cinza(img3)
+    preto, branco = _percentil(cinza, FOTO_PRETO), _percentil(cinza, FOTO_BRANCO)
+    if gravura is not None:
+        fora = cinza[::2, ::2][~gravura[::2, ::2]]
+        if fora.size >= 0.05 * cinza[::2, ::2].size:
+            branco = min(branco, _percentil(fora, BRANCO_PERCENTIL))
+    return preto, max(branco, preto + 1.0)
+
+
+def _foto_em_tons_de_cinza(recorte: np.ndarray, niveis: tuple[float, float]) -> np.ndarray:
+    """A foto (ou pintura) em tons de cinza, 1 canal: cinza do original, com o
+    desfoque que tira a reticula e os niveis esticados (ver FOTO_DESFOQUE).
+    recorte: BGR do pedaco da pagina; niveis: _niveis_da_foto da pagina."""
+    cinza = cv2.GaussianBlur(_para_cinza(recorte), (0, 0), FOTO_DESFOQUE)
+    preto, branco = niveis
+    escala = np.arange(256, dtype=np.float32)
+    tabela = np.clip((escala - preto) * 255.0 / max(1.0, branco - preto), 0, 255)
+    return cv2.LUT(cinza, tabela.astype(np.uint8))
 
 
 def _e_foto_ou_pintura(img3: np.ndarray, zona: np.ndarray, caixa: tuple[int, int, int, int],
@@ -1977,14 +2024,17 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
 
     - DESENHO em preto e branco (_desenho_em_preto_e_branco): moldura,
       iluminura, titulo colorido, gravura de traco - tudo o que nao e foto;
-    - ou fica COMO ESTAVA, se for foto ou pintura de tom continuo
-      (_e_foto_ou_pintura): limpa pelo Melhorar (_limpar_cada_gravura),
-      misturada pela borda suave. So nesse caso a pagina deixa de caber em 1
-      bit - enquanto o Samuel nao decide como a foto sai no Preto e branco.
+    - ou TONS DE CINZA, se for foto ou pintura de tom continuo
+      (_e_foto_ou_pintura; decisao P1 do Samuel, 30/09/2026): o cinza do
+      original sem a reticula (_foto_em_tons_de_cinza), misturado pela borda
+      suave. Nesse caso a pagina sai em cinza (1 canal), nao em 1 bit.
 
     Sem foto nenhuma, a pagina inteira sai em 1 bit (so 0 e 255) e
     monocromatica=True. Dentro da zona de desenho vale o desenho onde o peso
     passa de 0,5; na borda suave, a pagina.
+
+    clareza: nao e mais usado (era o do Melhorar na foto); fica na assinatura
+    para quem chama.
 
     Arriscado mudar: nao misturar desenho e pagina pelo peso (sairia cinza, e
     a pagina deixaria de caber em 1 bit); nao rodar o Melhorar sem foto (era o
@@ -2030,16 +2080,26 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
     if not foto.any():
         return saida, True
 
-    # so foto na pagina (o caso do Opus Majus 20): o peso e o da gravura
-    # inteira, sem a conta ponto a ponto
+    # Foto e pintura: em tons de cinza (decisao P1 do Samuel, 30/09/2026; ver
+    # FOTO_DESFOQUE). So na caixa das fotos, com folga para o desfoque; a
+    # borda suave mistura o cinza com o preto e branco da pagina, e o papel
+    # em volta continua o branco do Preto e branco. So foto na pagina (o caso
+    # do Opus Majus 20): o peso e o da gravura inteira, sem a conta ponto a
+    # ponto.
     peso_foto = peso_gravura if foto[1:].all() else \
         np.where(foto[rotulos], peso_gravura, 0.0).astype(np.float32)
-    limpa = _limpar_cada_gravura(img, peso_foto > 0.5, clareza,
-                                 onde_vale=peso_foto > 0, fundo=saida)
-    mistura = _misturar(_tres_canais(saida), limpa, peso_foto)
+    bx, by, bw, bh = cv2.boundingRect((peso_foto > 0).astype(np.uint8))
+    folga = 4
+    y0, y1 = max(0, by - folga), min(altura, by + bh + folga)
+    x0, x1 = max(0, bx - folga), min(largura, bx + bw + folga)
+    tons = saida.copy()
+    tons[y0:y1, x0:x1] = _foto_em_tons_de_cinza(
+        img3[y0:y1, x0:x1], _niveis_da_foto(img3, peso_gravura > 0))
+    mistura = _misturar(saida, tons, peso_foto)
     if peso_papel.any():
         mistura = _misturar(mistura, np.full_like(mistura, 255), peso_papel)
-    return mistura, False   # tem foto em tom continuo: nao cabe em 1 bit
+    # tem foto em tons de cinza: nao cabe em 1 bit, mas cabe em cinza (1 canal)
+    return mistura, False
 
 
 def _peso_do_papel_sem_tocar_a_tinta(img: np.ndarray, peso: np.ndarray) -> np.ndarray:
@@ -2359,8 +2419,8 @@ def aplicar_filtro_com_selecao(
         # --- Preto e branco -------------------------------------------------
         # Regra do Samuel (30/09/2026): no Preto e branco TUDO sai em preto e
         # branco - moldura dourada, iluminura, titulo colorido e gravura de
-        # traco viram desenho (traco em preto, fundo em branco). So a foto ou
-        # pintura de tom continuo fica como estava, ate o Samuel decidir. Ver
+        # traco viram desenho (traco em preto, fundo em branco). A foto ou
+        # pintura de tom continuo sai em tons de cinza (decisao P1). Ver
         # _preto_e_branco_com_gravura. Antes daqui, toda gravura ficava em
         # cor (o Melhorar rodava dentro dela).
         if filtro == PRETO_E_BRANCO:

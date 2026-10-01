@@ -7,8 +7,8 @@ branco, com os tracos e detalhes em preto e o fundo da faixa em branco, sem
 perder o desenho. O titulo 'NOVEMBRE.' da Horas 26 sai preto no Preto e branco.
 Nos outros filtros (Magico pro, Melhorar, Original), sai com a cor original."
 
-Foto e pintura de tom continuo: o Samuel ainda nao decidiu; ate la ficam como
-estavam (em tom continuo), e a pagina com foto nao cabe em 1 bit.
+Foto e pintura de tom continuo: saem em tons de cinza (decisao P1 do Samuel,
+conferencia 2 de 30/09); a pagina com foto sai em cinza (1 canal), nao em 1 bit.
 
 Quem faz: core/filtros.py, _preto_e_branco_com_gravura. Teste de maquina: as
 paginas sao desenhadas aqui, sem o acervo.
@@ -168,24 +168,67 @@ def test_a_nota_quadrada_larga_sai_cheia():
     assert float((saida[510:550, 110:150] == 0).mean()) > 0.95, "a nota saiu oca"
 
 
-# --- a foto de tom continuo fica como estava (o Samuel ainda nao decidiu) ---
+# --- a foto de tom continuo sai em tons de cinza (decisao P1, 30/09) ---------
 
-def test_foto_de_tom_continuo_fica_em_tons_e_a_moldura_vira_desenho():
+def _pagina_com_foto():
+    """Moldura dourada com uma "foto" colorida em degrade no miolo."""
     img, faixa = _moldura(altura=1200, largura=900)
-    # uma "foto" lisa em degrade no miolo da moldura
     degrade = np.linspace(60, 200, 400).astype(np.uint8)
-    img[400:800, 250:650] = np.dstack([degrade[None, :]] * 3).repeat(400, axis=0)
-
+    foto = np.dstack([degrade[None, :]] * 3).repeat(400, axis=0).astype(np.int16)
+    foto[:, :, 0] -= 30          # um pouco amarelada: a foto tem cor
+    img[400:800, 250:650] = np.clip(foto, 0, 255).astype(np.uint8)
     s = _gravura_so_na_moldura(faixa)
     s.acrescentar(retangulo(250 / 900, 400 / 1200, 650 / 900, 800 / 1200, tipo=GRAVURA))
+    return img, faixa, s
+
+
+def test_foto_sai_em_tons_de_cinza_e_a_moldura_vira_desenho():
+    """Decisao P1 do Samuel: a foto sai em tons de cinza (sem cor, sem
+    pontilhado); a pagina sai em cinza, 1 canal."""
+    img, faixa, s = _pagina_com_foto()
     saida, mono = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
 
     assert mono is False, "com foto a pagina nao cabe em 1 bit"
-    cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY)
-    assert len(np.unique(cinza[450:750, 300:600])) > 30, "a foto perdeu o tom continuo"
+    assert saida.ndim == 2, "a foto em tons de cinza: a pagina sai em 1 canal, sem cor"
+    miolo_da_foto = saida[450:750, 300:600]
+    assert len(np.unique(miolo_da_foto)) > 30, "a foto perdeu o tom continuo"
+    # escuro continua escuro e claro continua claro (o degrade nao virou outro)
+    assert int(miolo_da_foto[:, :20].mean()) < int(miolo_da_foto[:, -20:].mean()) - 60
+
+
+def test_foto_em_cinza_vem_do_original_e_nao_do_melhorar():
+    """A estatua do Opus 20 tem a cor do papel: o Melhorar a levava quase a
+    branco. O cinza vem do original (so o desfoque e o esticao dos niveis)."""
+    import core.filtros as F
+
+    img, faixa, s = _pagina_com_foto()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
+    esperado = F._foto_em_tons_de_cinza(
+        img, F._niveis_da_foto(img, s.peso(1200, 900, GRAVURA) > 0))
+    diferenca = np.abs(saida[450:750, 300:600].astype(int) - esperado[450:750, 300:600].astype(int))
+    assert int(diferenca.max()) <= 1
+
+
+def test_papel_dentro_da_zona_da_foto_sai_branco():
+    """"Papel em volta branco": um canto de papel que o detector marcou como
+    foto (o caso do Marial 7) nao pode ficar cinza, mesmo com pontos brancos
+    puros na pagina (o preenchimento do corte)."""
+    img = np.full((1200, 900, 3), (190, 210, 222), np.uint8)
+    img[:, :20] = 255                      # o branco do preenchimento do corte
+    for y in range(500, 1150, 30):          # texto no resto da pagina
+        img[y:y + 10, 100:800:14] = 40
+    s = Selecao()
+    s.acrescentar(retangulo(0.0, 0.0, 0.5, 0.35, tipo=GRAVURA))   # canto de papel liso
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
+    assert float(np.median(saida[50:350, 100:400])) >= 250, "o papel da zona ficou cinza"
+
+
+def test_moldura_ao_lado_da_foto_continua_desenho():
+    img, faixa, s = _pagina_com_foto()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
     miolo = cv2.erode(faixa.astype(np.uint8), np.ones((25, 25), np.uint8)) > 0
-    assert set(np.unique(cinza[miolo])) <= {0, 255}, "a moldura tinha de sair em preto e branco"
-    assert float((cinza[miolo] == 0).mean()) < 0.05
+    assert set(np.unique(saida[miolo])) <= {0, 255}, "a moldura tinha de sair em preto e branco"
+    assert float((saida[miolo] == 0).mean()) < 0.05
 
 
 def test_pagina_em_cinza_com_gravura_nao_quebra():

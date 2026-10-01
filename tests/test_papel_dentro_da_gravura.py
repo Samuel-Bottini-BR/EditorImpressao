@@ -95,8 +95,14 @@ def test_pano_quase_branco_com_sombreado_dentro_da_gravura_mantem_a_cor(filtro):
     img, pano, selecao = _pagina_com_pintura()
     saida = _filtrar(img, filtro, selecao)
 
-    chapado = float((saida[pano].min(axis=1) >= 254).mean())
-    assert chapado < 0.10, f"o pano virou branco chapado em {chapado:.0%} dele"
+    # No Preto e branco a pintura sai em tons de cinza desde a decisao P1 do
+    # Samuel (30/09/2026), com os niveis esticados pela pagina (o mais claro
+    # vira branco, como no exemplo que ele aprovou): aqui o pano e tao claro
+    # quanto o papel, e a parte mais clara dele vai a branco. O que tem de
+    # sobrar, nos tres filtros, sao as dobras (abaixo).
+    if filtro != PRETO_E_BRANCO:
+        chapado = float((saida[pano].min(axis=1) >= 254).mean())
+        assert chapado < 0.10, f"o pano virou branco chapado em {chapado:.0%} dele"
 
     luz = _luz(saida)[pano]
     dobras = float(np.percentile(luz, 90) - np.percentile(luz, 10))

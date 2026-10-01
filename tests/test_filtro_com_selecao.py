@@ -67,7 +67,10 @@ def test_preto_e_branco_preserva_tom_continuo_na_gravura(img):
 
     metade = saida.shape[0] // 2
     gravura = saida[: metade - 10]
-    tons = np.unique(cv2.cvtColor(gravura, cv2.COLOR_BGR2GRAY))
+    # (a foto em tom continuo sai em tons de cinza desde a decisao P1 do
+    # Samuel, 30/09/2026: a pagina pode vir em 1 canal)
+    cinza = gravura if gravura.ndim == 2 else cv2.cvtColor(gravura, cv2.COLOR_BGR2GRAY)
+    tons = np.unique(cinza)
     assert len(tons) > 8, "a gravura foi binarizada"
 
 
