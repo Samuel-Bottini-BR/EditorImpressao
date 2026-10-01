@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 5 - Editor de Impressão</title>
+<!--
+  Quinta conferencia do Samuel (01/10/2026): a quarta refeita "com mais fotos" (pedido dele),
+  com todos os cartoes da 4, fotos nos que nao tinham (P1, X1, X2) e as perguntas e achados do
+  verificador. Mesmo formato de conferir-aqui-2.html e
+  conferir-aqui-3.html: cartoes com Bom / Ruim / Nao sei (ou opcoes escritas por extenso),
+  comentario e "Copiar respostas". As marcacoes ficam no navegador com a chave NOVA
+  "conferir-2026-10-01-e" (nao mistura com as conferencias anteriores).
+  As imagens estao em relatorios/conferencia-5-2026-10-01/ e sao refeitas por
+  conferencia-5-2026-10-01/scripts/montar_imagens.py (so le imagens prontas da rodada
+  relatorios/conferir/pb-mp-decoracao-2026-10-01/ e do verificador dela; nenhuma pagina e processada).
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 5 - Editor de Impressão (01/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>Como usar:</b> em cada cartão, leia "O que olhar", olhe a imagem (clique para ver em tamanho cheio; clique de novo para fechar) e aperte <b>Bom</b>, <b>Ruim</b> ou <b>Não sei</b>. Nas perguntas (seção 8), escolha uma das frases. Embaixo de cada pergunta está escrito o que o Bom e o Ruim querem dizer naquele cartão.</p>
+    <p><b>Esta é a conferência 4 refeita com mais fotos</b> (seu pedido): todos os cartões da 4, agora todos com foto, mais as perguntas e os achados do verificador (seções 8, 9 e 10). Se já respondeu algo na 4, responda de novo aqui: as respostas ficam separadas.</p>
+    <p><b>Em todas as imagens:</b> em cima, a página inteira em partes, cada uma com o rótulo grande. Na maioria: <b>ORIGINAL</b> (como veio do livro), <b>ANTES</b> (o programa antes das mudanças de hoje) e <b>AGORA</b> (o programa de hoje, com as opções de fábrica). Nas perguntas, os rótulos dizem cada escolha (ex.: <b>MANTÉM A COR</b> · <b>EM PRETO E BRANCO</b>). Embaixo, o <b>detalhe ampliado</b>, o mesmo lugar em todas as partes.</p>
+    <p><b>O retângulo colorido</b> (rosa = detalhe 1, azul = detalhe 2) mostra de onde vem o detalhe. Desta vez ele fica <b>com folga, por fora</b> do lugar ampliado: nada do que está ampliado fica embaixo da linha, e os detalhes ampliados não têm nada desenhado por cima. (Na conferência 2, o retângulo foi desenhado por cima e escondeu a perna do "A" de "CRISTÃ"; o programa não tinha cortado nada.)</p>
+    <p>Suas marcações ficam guardadas neste computador. No fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que olhar (pode ter <b>), a: atencao (opcional),
+//   s: o que Bom/Ruim querem dizer, i: [imagens], tipo: "voto" (padrao) | "escolha" | "entendi",
+//   p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-5-2026-10-01/";
+const SECOES = [
+ { titulo:"1. Preto e branco: fotos e pinturas em tons de cinza",
+   sub:"Sua decisão da conferência 2 (P1): no Preto e branco, foto e pintura saem em tons de cinza, como o exemplo P1a que você aprovou.",
+   cartoes:[
+    {c:"F1", t:"Opus Majus 20: a estátua", i:["cartoes/pb1-opus20-estatua.jpg"],
+     o:`Olhe <b class='onde'>a estátua, no detalhe</b>. Da altura das mãos para baixo (a parte que o programa acha como foto), AGORA ela sai em <b>tons de cinza</b>, lisa, mais perto do original; ANTES essa parte saía mais lavada (clara demais).`,
+     a:`Atenção: <b>a cabeça, o ombro e a faixa clara à direita da estátua continuam brancos chapados</b>, ANTES e AGORA. Com a forma de fábrica ("livre"), o programa não pega essa parte de cima como foto (é o defeito do "degrau no alto da foto", já na lista). Com a caixinha "Este livro tem fotos" marcada (forma retangular), a foto inteira é pega: veja o cartão <b>A3</b>, mais abaixo.`,
+     s:"Bom = a parte que é foto sai em tons de cinza do jeito que eu quero. Ruim = não sai (diga o quê). Se a cabeça branca incomoda, escreva no comentário."},
+    {c:"F2", t:"Escola 35: o anjo", i:["cartoes/pb2-escola35-anjo.jpg"],
+     o:`Olhe <b class='onde'>o anjo, no detalhe</b>. ANTES a pintura saía <b>colorida</b> no Preto e branco; AGORA sai em <b>tons de cinza</b>, com os detalhes do rosto, das asas e da roupa. O texto embaixo continua preto.`,
+     s:"Bom = a pintura em tons de cinza ficou boa. Ruim = não ficou (diga o quê)."},
+   ]},
+ { titulo:"2. Preto e branco: o que é vermelho (ou colorido claro) sai preto",
+   sub:"Sua decisão da conferência 2 (V1): títulos e rubrica vermelhos saem pretos. Vale também para letra colorida clara, como os 'A' dourados.",
+   cartoes:[
+    {c:"V1", t:"Horas 13: 'TABLE' e 'CONTENU EN CE LIVRE.'", i:["cartoes/pb3-horas13-vermelho.jpg"],
+     o:`Olhe <b class='onde'>'TABLE' e 'CONTENU EN CE LIVRE.'</b> (detalhe). ANTES os dois títulos vermelhos <b>sumiam</b>; AGORA saem <b>pretos</b>, como 'DE CE QUI EST'.`,
+     s:"Bom = os títulos vermelhos agora saem pretos e inteiros. Ruim = ainda falta alguma coisa (diga onde)."},
+    {c:"V2", t:"Horas 27: as letras 'A' douradas", i:["cartoes/pb4-horas27-letras-A.jpg"],
+     o:`Olhe <b class='onde'>a coluna de letrinhas da esquerda</b>: o 'A' do dia 3 (detalhe 1, rosa) e o 'A' do dia 24 (detalhe 2, azul). ANTES os 'A' dourados <b>sumiam</b> (sobrava um tracinho); AGORA saem <b>pretos</b>, como as outras letras.`,
+     s:"Bom = os 'A' saem pretos e inteiros. Ruim = não (diga qual)."},
+    {c:"V3", t:"Graduale 223: as palavras vermelhas", i:["cartoes/pb5-graduale223-vermelho.jpg"],
+     o:`Olhe as palavras vermelhas no meio do canto: <b class='onde'>'cõm.'</b> (detalhe 1, rosa) e <b class='onde'>'qfix.'</b> (detalhe 2, azul). ANTES 'qfix.' saía picotado e fraco, e 'cõm.' mais fino; AGORA as duas saem pretas e inteiras. A pauta vermelha já saía preta e não mudou.`,
+     s:"Bom = as palavras vermelhas saem pretas e legíveis. Ruim = não (diga qual)."},
+   ]},
+ { titulo:"3. Preto e branco: a moldura dourada com a cor original",
+   sub:"Sua emenda da conferência 3 (N2): no Preto e branco, de fábrica, a moldura dourada mantém a cor original; o traço preto só se você marcar a caixinha nova (cartão T1).",
+   cartoes:[
+    {c:"M1", t:"Horas 13: a moldura", i:["cartoes/pb6-horas13-moldura.jpg"],
+     o:`Olhe <b class='onde'>a moldura dourada</b>: canto de baixo à direita (detalhe 1, rosa) e canto de cima à esquerda (detalhe 2, azul). ANTES ela virava um traço preto picotado; AGORA fica <b>dourada, como no original</b>, e o texto sai em preto e branco.`,
+     a:`Atenção, defeito conhecido (já na lista): no detalhe 1, na faixa de baixo, perto de 'pag. 54', continua <b>um quadradinho preto</b> que não existe no original (cartão <b>A4</b>, mais abaixo).`,
+     s:"Bom = a moldura sai com a cor original, inteira. Ruim = não (diga onde)."},
+    {c:"M2", t:"Horas 26: a moldura", i:["cartoes/pb7-horas26-moldura.jpg"],
+     o:`Olhe <b class='onde'>a moldura dourada</b>, canto de baixo à esquerda (detalhe 1, rosa): AGORA dourada como no original; ANTES era um tracejado preto.`,
+     a:`Atenção (detalhe 2, azul): o título <b>'NOVEMBRE.'</b> e a <b>coluna de letrinhas da esquerda</b> também ficam coloridos (azul e dourado) no Preto e branco, porque o programa ainda os acha dentro da moldura. Pela sua regra eles sairiam pretos. Isso é a pergunta <b>P4</b>, mais abaixo. Aqui responda só sobre a moldura.`,
+     s:"Bom = a moldura sai com a cor original, inteira. Ruim = não (diga onde)."},
+    {c:"M3", t:"Horas 27: a moldura", i:["cartoes/pb8-horas27-moldura.jpg"],
+     o:`Olhe <b class='onde'>a moldura dourada, canto de baixo à direita</b>: AGORA dourada como no original; ANTES era um tracejado preto.`,
+     s:"Bom = a moldura sai com a cor original, inteira. Ruim = não (diga onde)."},
+   ]},
+ { titulo:"4. Preto e branco: a iluminura com a cor original",
+   sub:"A gerente estendeu à iluminura a sua decisão da moldura (veja a pergunta P1, mais abaixo). Responda aqui como ficou; lá, se quer assim.",
+   cartoes:[
+    {c:"I1", t:"Horas 11: a iluminura", i:["cartoes/pb9-horas11-iluminura.jpg"],
+     o:`Olhe <b class='onde'>a iluminura, no detalhe</b> (o anjinho e a coluna de baixo à esquerda). ANTES ela virava desenho preto e branco e perdia muito detalhe; AGORA fica com <b>as cores do original</b>.`,
+     a:`Atenção: <b>as letras do título no meio do oval</b> ('HEURES DE LOUIS LE GRAND...') também ficaram coloridas (vermelho e azul), porque estão dentro da iluminura. Pela regra do vermelho, elas sairiam pretas. Isso é a pergunta <b>P4</b>, mais abaixo; aqui responda só sobre a iluminura.`,
+     s:"Bom = a iluminura sai com a cor original, sem perder nada. Ruim = não (diga o quê)."},
+    {c:"I2", t:"Horas 47: a iluminura", i:["cartoes/pb10-horas47-iluminura.jpg"],
+     o:`Olhe <b class='onde'>a iluminura, no detalhe</b> (a paisagem pequena da esquerda e o enfeite em volta). AGORA fica colorida como no original; o texto do meio sai em preto e branco.`,
+     a:`Atenção: o <b>'JESUS' dourado</b> do texto sai com o 'E' partido (parece 'J.SUS'), ANTES e AGORA: o dourado é claro demais. Veja o cartão <b>A1</b>, mais abaixo.`,
+     s:"Bom = a iluminura sai com a cor original, sem perder nada. Ruim = não (diga o quê)."},
+   ]},
+ { titulo:"5. Preto e branco: o que não podia piorar",
+   sub:"",
+   cartoes:[
+    {c:"G1", t:"Graduale 222: a pauta e as notas", i:["cartoes/pb11-graduale222-pauta.jpg"],
+     o:`Aqui nada devia mudar. O programa comparou ponto por ponto: <b>ANTES e AGORA são idênticos</b> (nenhum ponto diferente). Olhe se <b class='onde'>a pauta e as notas</b> continuam boas, como você já tinha visto.`,
+     s:"Bom = continua bom, nada piorou. Ruim = algo está ruim (diga onde)."},
+   ]},
+ { titulo:"6. Mágico pro: moldura e iluminura sem mudar a cor",
+   sub:"Regra da Fase 1: no Mágico pro, moldura e iluminura saem como no original; só o papel fica branco. (Vale também para o Melhorar.)",
+   cartoes:[
+    {c:"MP1", t:"Horas 13: o dourado da moldura", i:["cartoes/mp1-horas13-dourado.jpg"],
+     o:`Compare <b class='onde'>o dourado da moldura</b> (canto de cima à esquerda) com o ORIGINAL: ANTES ficava um pouco mais escuro e queimado; AGORA a cor fica como no original. A diferença é pequena: compare devagar, em tamanho cheio.`,
+     s:"Bom = o dourado sai sem escurecer. Ruim = ainda escurece (diga onde)."},
+    {c:"MP2", t:"Horas 26: o dourado da moldura", i:["cartoes/mp2-horas26-dourado.jpg"],
+     o:`Olhe <b class='onde'>a faixa dourada do canto de baixo à esquerda</b>: ANTES escurecida e manchada; AGORA clara, como no original. (O azul das letras também ficou mais perto do original; antes era azul-marinho quase preto.)`,
+     s:"Bom = o dourado sai sem escurecer. Ruim = ainda escurece (diga onde)."},
+    {c:"MP3", t:"Horas 47: a faixa cinza embaixo de 'pitié de nous'", i:["cartoes/mp3-horas47-faixa-cinza.jpg"],
+     o:`Olhe <b class='onde'>embaixo de 'amour propre en amour divin' e de 'ayez, pitié de nous'</b>: ANTES havia uma faixa cinza bem clara (difícil de ver; a linha de baixo, com o contraste aumentado só para enxergar, mostra); AGORA o papel fica <b>todo branco</b>.`,
+     s:"Bom = a faixa cinza sumiu. Ruim = ainda vejo faixa ou mancha (diga onde)."},
+    {c:"MP4", t:"Horas 11: a iluminura", i:["cartoes/mp4-horas11-iluminura.jpg"],
+     o:`Detalhe 1 (rosa), <b class='onde'>a cena azul de baixo</b>: ANTES as figuras saíam lavadas (brancas) e com sombras escuras; AGORA ficam como no original. Detalhe 2 (azul), <b class='onde'>a coluna da esquerda e a margem</b>: ANTES o anjinho e os enfeites azuis ficavam brancos e lavados; AGORA como no original.`,
+     a:`Na margem branca à esquerda ainda sobram <b>uns tracinhos escuros</b> (resto da beirada da folha), ANTES e AGORA. Diga se incomodam.`,
+     s:"Bom = a iluminura sai como no original, sem partes lavadas nem sombras. Ruim = não (diga onde)."},
+   ]},
+ { titulo:"7. A tela: a caixinha nova",
+   sub:"",
+   cartoes:[
+    {c:"T1", t:"A caixinha 'No Preto e branco, molduras e iluminuras também em preto e branco'", i:["tela/tela-caixinha.jpg"],
+     o:`Na tela <b>"O que fazer"</b>, embaixo dos filtros, está <b class='onde'>a caixinha nova</b>, com a frase explicando. Ela vale para o livro inteiro. De fábrica vem <b>desmarcada</b> (moldura e iluminura com a cor original); marcada, saem só com o traço em preto, como era o ANTES dos cartões acima. Embaixo, ampliada, a caixinha com a frase.`,
+     a:`A frase azul do resumo, embaixo, ainda diz "deixar tudo em preto e branco", o que não é mais verdade para moldura e iluminura. Já anotado para corrigir.`,
+     s:"Bom = o nome e a frase da caixinha estão claros. Ruim = não estão (diga como prefere)."},
+   ]},
+ { titulo:"8. Perguntas (escolha uma das frases)",
+   sub:"Cada pergunta tem a foto das escolhas lado a lado. Clique na foto para ver em tamanho cheio.",
+   cartoes:[
+    {c:"P1", t:"No Preto e branco, a iluminura também mantém a cor original?", tipo:"escolha",
+     i:["cartoes/q1-horas011-cor-ou-traco.jpg","cartoes/q1-horas047-cor-ou-traco.jpg"],
+     o:`Você decidiu (conferência 3, N2) que, no Preto e branco, a <b>moldura dourada</b> mantém a cor original. A gerente estendeu a mesma regra à <b>iluminura</b> (a página decorada), porque você disse que em preto e branco ela "perde um monte de detalhes". Nas fotos, a Horas 11 (em cima) e a Horas 47 (embaixo), em três partes: <b>ORIGINAL</b>; <b>MANTÉM A COR</b> (como o programa faz hoje); <b>EM PRETO E BRANCO</b> (a iluminura em traço preto, como saía antes e como sai hoje com a caixinha do cartão T1 marcada). Olhe o detalhe ampliado: <b class='onde'>o anjinho e a coluna</b> (Horas 11) e <b class='onde'>a paisagem pequena da esquerda</b> (Horas 47).`,
+     a:`Qualquer que seja a resposta, a caixinha da tela (T1) continua existindo para escolher o outro jeito num livro. A pergunta é qual vem <b>de fábrica</b>. Antes de responder, veja também a pergunta P3 (peso do arquivo): manter a cor deixa o PDF bem maior.`,
+     p:"No Preto e branco, a iluminura (a página decorada) também mantém a cor original, como a moldura?",
+     op:["Sim, mantém a cor","Não, iluminura sai em preto e branco"]},
+    {c:"P2", t:"O corte das bordas: 0,6 mm ou 1 mm de papel depois da última letra?", tipo:"escolha", i:["corte/corte-crista.jpg"],
+     o:`O corte das bordas deixa uns <b>0,6 mm</b> de papel depois da última letra; o programa prometia uns <b>1 mm</b> (a diferença vem de um arredondamento). Na imagem, a Escola 7: em cima, o alto da página (o triângulo rosa aponta o canto ampliado); embaixo, <b class='onde'>o fim do 'Ã' de "CRISTÃ"</b> ampliado 6 vezes, como está (verde) e como ficaria com 1 mm (azul). O cinza liso é o que o corte tira. Hoje o 'Ã' termina a 7 pontos da borda (0,6 mm); com 1 mm a borda iria 5 pontos (0,4 mm) mais para fora. <b>Nos dois casos nada é cortado</b>: o 'A' está inteiro.`,
+     a:`Mudar para 1 mm muda um pouco o corte das 32 páginas do gabarito que você já aprovou. Na Escola 7, com 1 mm entra também um pontinho de sujeira que está no papel ao lado do 'Ã' (veja no painel azul).`,
+     p:"O corte das bordas deixa ~0,6 mm de papel depois da última letra; o programa prometia ~1 mm. Quer 1 mm?",
+     op:["Sim, 1 mm (o corte das 32 páginas muda um pouco)","Não, deixa como está"]},
+    {c:"P3", t:"O PDF fica muito pesado no Preto e branco com moldura e iluminura em cor", tipo:"escolha", i:["cartoes/q2-pdf-pesado.jpg"],
+     o:`No Preto e branco, deixar a moldura e a iluminura em cor deixa o arquivo PDF muito pesado: a página da <b>Horas 11 vai de 0,4 MB para 25,6 MB</b>, e processar fica uns segundos mais lento (14,2 s contra 9,8 s); num livro decorado de 300 páginas daria vários GB. Na foto, a mesma página nas duas versões, com <b class='onde'>o tamanho escrito em cima de cada uma</b>: à esquerda a Horas 11 (iluminura), à direita a Horas 13 (só a moldura: 2,8 MB contra 0,11 MB). Medidas do verificador, com o PDF gravado pelo programa.`,
+     a:`Por que pesa: hoje, quando a página tem cor, o PDF guarda a página inteira como foto colorida, inclusive as letras e o papel branco. A opção (a) guarda as letras à parte, em preto e branco puro (leve), e só a decoração como foto comprimida, por baixo; é o item 1.6 do plano (PDF em duas camadas), que ainda não chegou na ordem. A opção (c) é mais rápida de fazer, mas pode deixar a decoração um pouco menos nítida. O botão da tela ainda diz "arquivo pequeno" para o Preto e branco.`,
+     p:"O que fazer com o peso do PDF no Preto e branco com decoração em cor?",
+     op:["(a) Adiantar o item 1.6 agora: PDF em duas camadas (letras em preto e branco puro, leve; só a decoração comprimida por baixo, como o Internet Archive faz)",
+         "(b) Deixar como está até o 1.6 chegar na ordem",
+         "(c) Agora, comprimir só a parte colorida (solução rápida; pode perder um pouco de nitidez na decoração)"]},
+    {c:"P4", t:"Títulos dentro da iluminura ou da moldura: pretos ou na cor original?", tipo:"escolha",
+     i:["cartoes/q3-horas011-titulo.jpg","cartoes/q3-horas026-titulo.jpg"],
+     o:`Na Horas 11 (em cima), o título <b class='onde'>"HEURES DE LOUIS LE GRAND…" dentro do oval</b> continua vermelho e azul no Preto e branco, porque está dentro da iluminura, que agora mantém a cor. O mesmo acontece na Horas 26 (embaixo) com <b class='onde'>"NOVEMBRE." e a coluna de letrinhas da esquerda</b>, que o programa acha dentro da moldura. Pela regra do vermelho ("título colorido sai preto"), eles sairiam pretos. Em cada foto: <b>ORIGINAL</b>; <b>FICAM NA COR</b> (como está hoje); <b>SAEM PRETOS</b> (como saíam antes; ali a iluminura também saía em traço, mas olhe só as letras).`,
+     a:`Se a resposta for "saem pretos", o programa precisa saber onde há texto dentro da decoração: isso depende do OCR (item 1.5). A iluminura e a moldura em volta continuam como você decidir na pergunta P1.`,
+     p:"No Preto e branco, títulos e letras dentro da iluminura ou da moldura:",
+     op:["Saem pretos, como o resto do texto","Ficam na cor original, junto com a iluminura"]},
+   ]},
+ { titulo:"9. Achados do verificador (diga se incomodam)",
+   sub:"O verificador olhou as 13 páginas e achou estas coisas. Algumas já existiam antes. Bom = não incomoda, pode ficar assim por enquanto. Ruim = incomoda, quero que conserte. Não sei = preciso ver melhor.",
+   cartoes:[
+    {c:"A1", t:"Horas 47 no Preto e branco: o 'JESUS' e o 'C' dourados quase somem", i:["cartoes/a1-horas47-jesus-dourado.jpg"],
+     o:`Olhe <b class='onde'>"JESUS" no começo da primeira linha e o "C" de "C'est" na terceira</b> (detalhe). No original são dourados; no Preto e branco saem <b>picotados, quase sumidos</b> ('J.SUS'; o 'C' vira dois tracinhos), ANTES e AGORA. A regra "letra colorida sai preta" pegou o vermelho e os 'A' da Horas 27, mas não este dourado, que é mais claro. Imagem do verificador com o mesmo achado: a8.`,
+     s:"Bom = não incomoda por enquanto. Ruim = incomoda, quero o dourado preto e inteiro como as outras letras."},
+    {c:"A2", t:"Horas 11: o papel dentro das letras douradas fica creme", i:["cartoes/a2-horas11-miolo-creme.jpg"],
+     o:`Olhe <b class='onde'>o miolo do "O" de LOUIS</b> e a volta das letras (detalhe): o papel dentro e em volta das letras douradas fica <b>creme</b>, não branco como o resto do oval. Acontece no Mágico pro e no Preto e branco. A regra pede o centro branco. (Antes era branco, mas as letras saíam lavadas e vazadas.) Imagem do verificador com o mesmo achado: a2.`,
+     s:"Bom = não incomoda. Ruim = incomoda, quero o papel branco também dentro das letras."},
+    {c:"A3", t:"Opus Majus 20 no Preto e branco: forma 'livre' × 'Este livro tem fotos'", i:["cartoes/a3-opus20-livre-ou-tem-fotos.jpg"],
+     o:`Três partes: <b>ORIGINAL</b>; <b>LIVRE</b> (como o programa faz de fábrica: <b class='onde'>a cabeça, o ombro e a faixa à direita</b> da estátua saem brancos chapados); <b>ESTE LIVRO TEM FOTOS</b> (com a caixinha marcada na tela, forma retangular: a foto inteira sai em tons de cinza, fiel). Você já tinha aprovado "Este livro tem fotos" para esta página na conferência 2 (O2).`,
+     a:`De onde vem cada imagem: LIVRE é da rodada de 01/10 (a mesma dos cartões acima). ESTE LIVRO TEM FOTOS é da rodada que o verificador fez pelo caminho do programa, no Preto e branco de hoje (imagem a5 dele); por isso está um pouco menos nítida no detalhe (a imagem pronta é menor).`,
+     s:"Bom = está bom: de fábrica 'livre', e marco 'tem fotos' nos livros com foto. Ruim = a forma 'livre' lavando a foto incomoda (diga o que quer)."},
+    {c:"A4", t:"Horas 13: o retângulo na barra de baixo da moldura", i:["cartoes/a4-horas13-barra-de-baixo.jpg"],
+     o:`Olhe <b class='onde'>a barra de baixo da moldura, embaixo de "pag. 54"</b> (detalhe). No Preto e branco aparece um <b>retângulo preto chapado</b> no meio do dourado; no Mágico pro, um retângulo avermelhado de bordas retas (no original há só uma mancha avermelhada clara ali). Já existia antes. Imagem do verificador com o mesmo achado: a1.`,
+     s:"Bom = não incomoda por enquanto. Ruim = incomoda, quero consertado."},
+    {c:"A5", t:"Horas 27: o buraco na barra de cima da moldura", i:["cartoes/a5-horas27-barra-de-cima.jpg"],
+     o:`Olhe <b class='onde'>a barra de cima da moldura, à esquerda, acima de "DE"</b> (detalhe). Falta um pedaço do dourado: fica <b>branco</b>, com pontinhos e um fio preto embaixo no Preto e branco, e um remendo claro no Mágico pro. Já existia antes, nos dois filtros. Imagem do verificador com o mesmo achado: a3.`,
+     s:"Bom = não incomoda por enquanto. Ruim = incomoda, quero consertado."},
+   ]},
+ { titulo:"10. Só para você saber (não precisa avaliar)",
+   sub:"Coisas que foram tentadas e não deram certo ainda, e um aviso errado na tela. Se quiser, aperte \"Entendi\" ou escreva um comentário.",
+   cartoes:[
+    {c:"X1", t:"Opus Majus 256: os números fracos da última coluna", tipo:"entendi", i:["cartoes/x1-opus256-ultima-coluna.jpg"],
+     o:`Olhe <b class='onde'>a última coluna da tabela, embaixo à direita</b> (as setas, numa faixa branca ao lado da imagem, apontam os blocos). No original esses números são impressos bem fracos ("40 12 0", "48 20 8", "40 28 16"...). No Preto e branco eles se partem em pedacinhos e alguns somem (o '40' vira '4', o '0' e o '8' somem); no Mágico pro ficam quase todos, mas o '0' do primeiro bloco fica muito fraco. Foi tentado um segundo jeito de separar a tinta: recuperava só parte, deixava o programa 5% mais lento e mudava páginas com mancha do verso. Foi desfeito. Depende do item 6.1 (separar a tinta fraca da mancha do verso).`},
+    {c:"X2", t:"Graduale 221: as letras raspadas", tipo:"entendi", i:["cartoes/x2-graduale221-letras-raspadas.jpg"],
+     o:`Olhe <b class='onde'>entre "ſu" e "mus"</b>, na linha do meio da página (detalhe). No original há letras raspadas, cinza bem claro, quase do tom da mancha do verso. No Preto e branco elas <b>somem</b> (fica só um pontinho); no Mágico pro sobram uns pontinhos. O programa ainda não consegue separar essa tinta raspada da mancha do verso. Também depende do item 6.1.`},
+    {c:"X3", t:"Aviso errado: \"o preto e branco vai perder a ilustração\"", tipo:"entendi", i:["cartoes/x3-aviso-falso.jpg"],
+     o:`Na tela de conferir, aba Filtro, com a Horas 11 no Preto e branco (caixinha desmarcada), aparece <b class='onde'>o aviso "Esta página tem cor - o preto e branco vai perder a ilustração."</b> (retângulo rosa). Não é mais verdade: no <b class='onde'>cartão do Preto e branco</b> (retângulo azul) a iluminura continua colorida. O aviso aparece à toa. Fica na lista para corrigir o texto. Print do verificador (p05), tirado numa cópia do programa só para teste.`},
+   ]},
+];
+
+const CHAVE = "conferir-2026-10-01-e";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>${tipo === "voto" ? "O que olhar:" : (tipo === "escolha" ? "O que é:" : "O que houve:")}</b> ${k.o}</p>` : "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${k.t}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 5 de 01/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
