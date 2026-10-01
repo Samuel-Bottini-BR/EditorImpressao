@@ -2625,3 +2625,31 @@ dos +0,5 s aceitos pelo detector; a mais demorada 2,3 -> 3,0 s); Mágico pro
 alta da beirada puxava o grupo para a página inteira; ficou 5,6 -> 4,1 s, contra
 3,0 s separando as peças grandes); `cv2.copyTo`, `cv2.max` e `bitwise_or` com
 máscara (mais lentos que o OU sem máscara).
+
+---
+
+## Tentativa 59 — o "A" de "CRISTÃ" e a comparação dos OCRs com as zonas aprovadas (01/10/2026)
+
+**Situação:** nada mudou no processamento (só investigação e medida)
+
+**1. Corte de bordas, "foi cortado o A de Crista" (conferência 2, cartão B6).**
+A página é a Escola 7. O corte de hoje **não** come o "A": no PDF (300 DPI) a
+última tinta do título fica a 7 pontos (0,6 mm) da borda; na prévia, a 2 pontos.
+Quem cobriu a perna do "A" foi o retângulo cor-de-rosa desenhado por cima do
+painel do cartão, justamente nos últimos pontos dele
+(`relatorios/corte-crista-2026-10-01/prova-cartao-b6.jpg`). Medida do corte nas 32
+páginas do gabarito na resolução cheia (`medir_corte_gabarito.py`): peças partidas
+só onde já se sabia (número da folha do Graduale 221, ponta do fio da moldura do
+Palatino 67, endereço do site da Escola 35, um ponto no Graduale 223).
+**Não tentado:** aumentar a folga do corte (hoje sai ~0,6 mm em vez do ~1 mm que o
+comentário de FOLGA promete, porque a folga é arredondada para baixo na imagem
+reduzida): mudaria o corte das 32 páginas, que o Samuel aprovou; fica como ideia.
+
+**2. Comparação automática dos OCRs (`core/ocr_comparar.py`), recalibração tentada
+e não usada.** Com as zonas aprovadas (e a D5: letrinhas do Opus 165 = texto), a
+decisão bate em 18 de 22, 0 revisar à toa, 4 erros não pegos (Horas 27, Graduale
+221-223). Busca em 8 × 7 × 57 combinações de TOLERANCIA, ESPESSURA_MINIMA e
+AREA_MINIMA: o melhor é 19 de 22 **com** uma página boa para revisar (Opus 11),
+numa faixa estreita; sem revisar à toa, o máximo é 18, o de hoje. Os números
+ficaram como estavam. Os 4 erros são os que os dois OCRs cometem quase igual
+(`relatorios/fase1-1.3-recalibrar-comparacao-2026-10-01/`).

@@ -1,0 +1,2101 @@
+{
+ "numeros_de_hoje": {
+  "TOLERANCIA": 0.35,
+  "ESPESSURA_MINIMA": 0.4,
+  "AREA_MINIMA": 1.4
+ },
+ "paginas": {
+  "palatino_p005": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9998087071982356,
+     "figura_tomada": 0.017282675223684162,
+     "figura_area": 0.00992484521702958,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9998987273402424,
+     "figura_tomada": 0.0034742245792544215,
+     "figura_area": 0.00599126594568247,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9998987273402424,
+     "figura_tomada": 0.0,
+     "figura_area": 1.5083351393661975e-05,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 88869,
+     "tinta_figura_px": 282653,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 2.1605744154287025,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "palatino_p007": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9989838758955452,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9977995420575827,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9993340267693775,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291303,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 9.354878648256149,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 3 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "palatino_p009": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9999879612834877,
+     "figura_tomada": 0.021240858614625387,
+     "figura_area": 0.016989384759871797,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.005754031771900868,
+     "figura_area": 0.007155481311207962,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.009695377234156664,
+     "figura_area": 0.011449707701948185,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 249196,
+     "tinta_figura_px": 240527,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 4.023431153388823,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto em 2 lugares e o Kraken não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "palatino_p010": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9999931282576353,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0009611831620659091,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007127263824375514,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.007907091672844082,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 291047,
+     "tinta_figura_px": 137822,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.5978546377376425,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "escola_p007": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9977962366502797,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    },
+    "K1": {
+     "texto_achado": 0.9966802282872803,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    },
+    "voto": {
+     "texto_achado": 0.9966802282872803,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 141576,
+     "tinta_figura_px": 95199,
+     "pequenos": 3,
+     "pequenos_perdidos": [
+      "numero da pagina 9"
+     ]
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.718848,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "horas_p011": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9998096325909004,
+     "figura_tomada": 0.00015783960626192765,
+     "figura_area": 0.0003696739857866726,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9686845612031221,
+     "figura_tomada": 0.007475857714769482,
+     "figura_area": 0.006423616643827613,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9999048162954502,
+     "figura_tomada": 0.00022958488183553113,
+     "figura_area": 0.0007605936029403954,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 10506,
+     "tinta_figura_px": 69691,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 1.9197826563059408,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "horas_p013": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9950856947262903,
+     "figura_tomada": 0.11560836737219952,
+     "figura_area": 0.10490952955367913,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9625681523679127,
+     "figura_tomada": 0.013924990716672856,
+     "figura_area": 0.041459589867310014,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9647441382851275,
+     "figura_tomada": 0.11758881049634856,
+     "figura_area": 0.11255729794933655,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 40901,
+     "tinta_figura_px": 16158,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 3.054369267896353,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "horas_p047": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9998258021809567,
+     "figura_tomada": 0.00998440682281059,
+     "figura_area": 0.010388200024472815,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0021400840122199594,
+     "figura_area": 0.009098278745360362,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.010748154276985743,
+     "figura_area": 0.013228066239752008,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 28703,
+     "tinta_figura_px": 125696,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 0.0,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "opusmajus_p011": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9854049819647277,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9933786275321612,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9935692563391525,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 335731,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 1.1294723180966788,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "opusmajus_p003": {
+   "regua": {
+    "D2": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.07600627286983795,
+     "figura_area": 0.022303282959874934,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.979635254620805,
+     "figura_tomada": 0.0,
+     "figura_area": 0.002575746296434155,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9903341244758168,
+     "figura_tomada": 0.0,
+     "figura_area": 0.002575746296434155,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 81317,
+     "tinta_figura_px": 19130,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 1.635562666325099,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "opusmajus_p020": {
+   "regua": {
+    "D2": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 1.0,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 6580,
+     "tinta_figura_px": 277855,
+     "pequenos": 2,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.0,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "opusmajus_p165": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9951535346558327,
+     "figura_tomada": 0.054307000800443324,
+     "figura_area": 0.021525342345025438,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 263491,
+     "tinta_figura_px": 16241,
+     "pequenos": 15,
+     "pequenos_perdidos": [
+      "letra f da Fig. 7",
+      "letra c da Fig. 7",
+      "letra d da Fig. 7",
+      "letra b da Fig. 8",
+      "letra c da Fig. 8"
+     ]
+    },
+    "K1": {
+     "texto_achado": 0.9936164802592878,
+     "figura_tomada": 0.09266670771504218,
+     "figura_area": 0.043965428166805445,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 263491,
+     "tinta_figura_px": 16241,
+     "pequenos": 15,
+     "pequenos_perdidos": [
+      "letra a da Fig. 7",
+      "letra e da Fig. 7",
+      "letra f da Fig. 7",
+      "letra b da Fig. 7",
+      "letra c da Fig. 7",
+      "letra a da Fig. 8",
+      "letra b da Fig. 8",
+      "letra c da Fig. 8"
+     ]
+    },
+    "voto": {
+     "texto_achado": 0.9925120782114,
+     "figura_tomada": 0.03811341666153562,
+     "figura_area": 0.020960085578658822,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 263491,
+     "tinta_figura_px": 16241,
+     "pequenos": 15,
+     "pequenos_perdidos": [
+      "letra a da Fig. 7",
+      "letra e da Fig. 7",
+      "letra f da Fig. 7",
+      "letra b da Fig. 7",
+      "letra c da Fig. 7",
+      "letra d da Fig. 7",
+      "letra a da Fig. 8",
+      "letra b da Fig. 8",
+      "letra c da Fig. 8"
+     ]
+    }
+   },
+   "erro": true,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 1.6476159999999995,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "opusmajus_p256": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.8691529266858886,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.332138958094225,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.36965680373988746,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 142892,
+     "tinta_figura_px": 0,
+     "pequenos": 4,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 73.56889917355372,
+    "perdidas": 8,
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken avisou que não conseguiu desenhar 8 linhas nesta página: confira se falta texto.",
+     "O docTR achou texto em 93 lugares e o Kraken não: confira se há texto ou mancha.",
+     "O Kraken achou texto em 5 lugares e o docTR não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "horas_p026": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9845180985608374,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9853176333769443,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0022866561426316276,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9905994088288026,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0022866561426316276,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41274,
+     "tinta_figura_px": 2445,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 1.113389291470712,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "horas_p027": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9964014877070956,
+     "figura_tomada": 0.012835472578763127,
+     "figura_area": 0.011349871602306313,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9876587934115829,
+     "figura_tomada": 0.0,
+     "figura_area": 0.00835796307960657,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9973675312756606,
+     "figura_tomada": 0.012835472578763127,
+     "figura_area": 0.01252483162943941,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 41406,
+     "tinta_figura_px": 857,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 0.4671851952852491,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "ERRO NAO PEGO"
+  },
+  "escola_p035": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9978251595580055,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.99966540916277,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0003837650690359988,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9996905034755623,
+     "figura_tomada": 0.0,
+     "figura_area": 0.0003837650690359988,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 119549,
+     "tinta_figura_px": 61780,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.7027890797732483,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "rhetorica_p018": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9991228763902769,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9998418301687384,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9999592592858871,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 417273,
+     "tinta_figura_px": 0,
+     "pequenos": 3,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": false,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.86048768,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "certo (concorda, sem erro)"
+  },
+  "siebmacher_p009": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9573143196672609,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9814854426619133,
+     "figura_tomada": 0.8300422459932202,
+     "figura_area": 0.7948285695886959,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9654664289958408,
+     "figura_tomada": 0.00038072645536348397,
+     "figura_area": 0.00038867372565614566,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 84150,
+     "tinta_figura_px": 136581,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 42.39402882029908,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O Kraken achou texto em 14 lugares e o docTR não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "palatino_p057": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9672075255319479,
+     "figura_tomada": 0.004014116226235789,
+     "figura_area": 0.00436226102530276,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9606598788104205,
+     "figura_tomada": 0.005538589466285878,
+     "figura_area": 0.020523608457931813,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9881290002634556,
+     "figura_tomada": 0.006196884729034781,
+     "figura_area": 0.020873302441412545,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 129054,
+     "tinta_figura_px": 202037,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 1.645669135802469,
+    "perdidas": 0,
+    "para_revisar": true,
+    "motivos": [
+     "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+    ]
+   },
+   "classificacao": "certo (revisar, tem erro)"
+  },
+  "graduale_p221": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9747423032288893,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9811932555123216,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9950167246911052,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 29298,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.9360468166314722,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "ERRO NAO PEGO"
+  },
+  "graduale_p222": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9751702550653526,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9647646038661647,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9806268770356584,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 23641,
+     "tinta_figura_px": 0,
+     "pequenos": 0,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": false,
+   "comparacao": {
+    "maior_zona": 0.0,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "ERRO NAO PEGO"
+  },
+  "graduale_p223": {
+   "regua": {
+    "D2": {
+     "texto_achado": 0.9564640011485177,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "K1": {
+     "texto_achado": 0.9106668580862823,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    },
+    "voto": {
+     "texto_achado": 0.9583303424018377,
+     "figura_tomada": null,
+     "figura_area": null,
+     "figura_tomada_sem_alargar": null,
+     "tinta_texto_px": 27862,
+     "tinta_figura_px": 0,
+     "pequenos": 1,
+     "pequenos_perdidos": []
+    }
+   },
+   "erro": true,
+   "erro_voto": true,
+   "comparacao": {
+    "maior_zona": 0.0,
+    "perdidas": 0,
+    "para_revisar": false,
+    "motivos": []
+   },
+   "classificacao": "ERRO NAO PEGO"
+  }
+ },
+ "grade": [
+  {
+   "TOLERANCIA": 0.15,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.6,
+   "certo": 19,
+   "a_toa": [
+    "opusmajus_p011"
+   ],
+   "nao_pego": [
+    "graduale_p222",
+    "graduale_p223"
+   ],
+   "maior_zona_boa": 1.7254404859409826,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.15,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.65,
+   "certo": 19,
+   "a_toa": [
+    "opusmajus_p011"
+   ],
+   "nao_pego": [
+    "graduale_p222",
+    "graduale_p223"
+   ],
+   "maior_zona_boa": 1.7254404859409826,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.15,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.7,
+   "certo": 19,
+   "a_toa": [
+    "opusmajus_p011"
+   ],
+   "nao_pego": [
+    "graduale_p222",
+    "graduale_p223"
+   ],
+   "maior_zona_boa": 1.7254404859409826,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.15,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.75,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027",
+    "opusmajus_p165"
+   ],
+   "maior_zona_boa": 1.7254404859409826,
+   "menor_zona_pega": 1.8775602139530654
+  },
+  {
+   "TOLERANCIA": 0.15,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.8,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027",
+    "opusmajus_p165"
+   ],
+   "maior_zona_boa": 1.7254404859409826,
+   "menor_zona_pega": 1.8775602139530654
+  },
+  {
+   "TOLERANCIA": 0.15,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.85,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027",
+    "opusmajus_p165"
+   ],
+   "maior_zona_boa": 1.7254404859409826,
+   "menor_zona_pega": 1.8775602139530654
+  },
+  {
+   "TOLERANCIA": 0.2,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.6281604585437166,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.2,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.7,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.6281604585437166,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.2,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.6199684562365784,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.2,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.6015364510455175,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.2,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.585152446431241,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.439744405479538,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.439744405479538,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.439744405479538,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.439744405479538,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.439744405479538,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.7,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.439744405479538,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.4315524031723998,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.4315524031723998,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.4315524031723998,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.4315524031723998,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.4315524031723998,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.413120397981339,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.413120397981339,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.413120397981339,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.413120397981339,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.413120397981339,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.4,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3967363933670625,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3967363933670625,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3967363933670625,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3967363933670625,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3967363933670625,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.5,
+   "AREA_MINIMA": 1.35,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.327104373756388,
+   "menor_zona_pega": 1.4710408898938712
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.5,
+   "AREA_MINIMA": 1.4,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.327104373756388,
+   "menor_zona_pega": 1.4710408898938712
+  },
+  {
+   "TOLERANCIA": 0.25,
+   "ESPESSURA_MINIMA": 0.5,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.327104373756388,
+   "menor_zona_pega": 1.4710408898938712
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.35,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.4,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.1,
+   "AREA_MINIMA": 1.7,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3486083798126256,
+   "menor_zona_pega": 1.7029119999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.35,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.4,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.2,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3404163775054874,
+   "menor_zona_pega": 1.6947199999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.35,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.4,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.5,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.55,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.6,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.3,
+   "AREA_MINIMA": 1.65,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.3219843723144264,
+   "menor_zona_pega": 1.6599039999999996
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.35,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.30560036770015,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.4,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.30560036770015,
+   "menor_zona_pega": 1.6476159999999995
+  },
+  {
+   "TOLERANCIA": 0.3,
+   "ESPESSURA_MINIMA": 0.4,
+   "AREA_MINIMA": 1.45,
+   "certo": 18,
+   "a_toa": [],
+   "nao_pego": [
+    "graduale_p221",
+    "graduale_p222",
+    "graduale_p223",
+    "horas_p027"
+   ],
+   "maior_zona_boa": 1.30560036770015,
+   "menor_zona_pega": 1.6476159999999995
+  }
+ ],
+ "folga": {
+  "zonas_boas": [
+   [
+    1.1294723180966788,
+    "opusmajus_p011"
+   ],
+   [
+    1.113389291470712,
+    "horas_p026"
+   ],
+   [
+    0.86048768,
+    "rhetorica_p018"
+   ],
+   [
+    0.718848,
+    "escola_p007"
+   ],
+   [
+    0.7027890797732483,
+    "escola_p035"
+   ],
+   [
+    0.5978546377376425,
+    "palatino_p010"
+   ],
+   [
+    0.0,
+    "opusmajus_p020"
+   ],
+   [
+    0.0,
+    "horas_p047"
+   ]
+  ],
+  "zonas_pegas": [
+   [
+    1.635562666325099,
+    "opusmajus_p003"
+   ],
+   [
+    1.645669135802469,
+    "palatino_p057"
+   ],
+   [
+    1.6476159999999995,
+    "opusmajus_p165"
+   ],
+   [
+    1.9197826563059408,
+    "horas_p011"
+   ],
+   [
+    2.1605744154287025,
+    "palatino_p005"
+   ],
+   [
+    3.054369267896353,
+    "horas_p013"
+   ],
+   [
+    4.023431153388823,
+    "palatino_p009"
+   ],
+   [
+    9.354878648256149,
+    "palatino_p007"
+   ],
+   [
+    42.39402882029908,
+    "siebmacher_p009"
+   ]
+  ],
+  "erros_nao_pegos": [
+   [
+    0.9360468166314722,
+    "graduale_p221"
+   ],
+   [
+    0.4671851952852491,
+    "horas_p027"
+   ],
+   [
+    0.0,
+    "graduale_p223"
+   ],
+   [
+    0.0,
+    "graduale_p222"
+   ]
+  ]
+ },
+ "opus165_d5": {
+  "antes": {
+   "D2": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.054307000800443324,
+    "figura_area": 0.021525342345025438,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 260605,
+    "tinta_figura_px": 16241,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "K1": {
+    "texto_achado": 0.9999462788511349,
+    "figura_tomada": 0.09266670771504218,
+    "figura_area": 0.043965428166805445,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 260605,
+    "tinta_figura_px": 16241,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   },
+   "voto": {
+    "texto_achado": 1.0,
+    "figura_tomada": 0.03811341666153562,
+    "figura_area": 0.020960085578658822,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 260605,
+    "tinta_figura_px": 16241,
+    "pequenos": 3,
+    "pequenos_perdidos": []
+   }
+  },
+  "depois": {
+   "D2": {
+    "texto_achado": 0.9951535346558327,
+    "figura_tomada": 0.054307000800443324,
+    "figura_area": 0.021525342345025438,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 263491,
+    "tinta_figura_px": 16241,
+    "pequenos": 15,
+    "pequenos_perdidos": [
+     "letra f da Fig. 7",
+     "letra c da Fig. 7",
+     "letra d da Fig. 7",
+     "letra b da Fig. 8",
+     "letra c da Fig. 8"
+    ]
+   },
+   "K1": {
+    "texto_achado": 0.9936164802592878,
+    "figura_tomada": 0.09266670771504218,
+    "figura_area": 0.043965428166805445,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 263491,
+    "tinta_figura_px": 16241,
+    "pequenos": 15,
+    "pequenos_perdidos": [
+     "letra a da Fig. 7",
+     "letra e da Fig. 7",
+     "letra f da Fig. 7",
+     "letra b da Fig. 7",
+     "letra c da Fig. 7",
+     "letra a da Fig. 8",
+     "letra b da Fig. 8",
+     "letra c da Fig. 8"
+    ]
+   },
+   "voto": {
+    "texto_achado": 0.9925120782114,
+    "figura_tomada": 0.03811341666153562,
+    "figura_area": 0.020960085578658822,
+    "figura_tomada_sem_alargar": null,
+    "tinta_texto_px": 263491,
+    "tinta_figura_px": 16241,
+    "pequenos": 15,
+    "pequenos_perdidos": [
+     "letra a da Fig. 7",
+     "letra e da Fig. 7",
+     "letra f da Fig. 7",
+     "letra b da Fig. 7",
+     "letra c da Fig. 7",
+     "letra d da Fig. 7",
+     "letra a da Fig. 8",
+     "letra b da Fig. 8",
+     "letra c da Fig. 8"
+    ]
+   }
+  }
+ },
+ "resumo_hoje": {
+  "certo": 18,
+  "a_toa": 0,
+  "nao_pego": 4
+ },
+ "grade_teto": 19,
+ "grade_teto_sem_a_toa": 18
+}

@@ -74,6 +74,17 @@ O QUE É ARRISCADO MUDAR
     página boa: 1,13; a menor numa página com erro: 1,64; o limite é 1,4).
     Mudou um, rode tests/test_ocr_comparar.py e
     relatorios/fase1-1.3-comparar-ocr-2026-09-29/scripts/calibrar.py.
+
+    Revisto em 01/10/2026 com as zonas aprovadas pelo Samuel (conferência 2,
+    gabarito/ocr-zonas.json): os números ficaram como estavam, porque nenhuma
+    combinação acerta mais páginas sem mandar página boa para revisar
+    (relatorios/fase1-1.3-recalibrar-comparacao-2026-10-01/, script
+    recalibrar.py). Pela régua nova a decisão bate em 18 das 22 páginas; as 4
+    que passam (Horas 27, Graduale 221, 222 e 223) são erros que os DOIS OCRs
+    cometem quase igual (no Graduale, perdem as mesmas palavras vermelhas do
+    começo da linha; na Horas 27, a caixa do docTR passa só um fio do
+    contorno do Kraken e encosta na moldura, uma lasca mais fina que as de
+    página boa), e comparar um com o outro não os enxerga.
 """
 
 from __future__ import annotations
