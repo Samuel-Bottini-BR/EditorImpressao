@@ -26,6 +26,12 @@ tambem imagens claras" e "Igualar a luz da pagina antes". So aparece com
 livro com trabalho so vale ao clicar "Conferir", como as outras opcoes; ai a
 gravura achada sozinha e refeita e a marcacao a mao fica
 (ui/janela_principal._analise_pronta, core.pipeline.trocar_opcoes_da_gravura).
+
+Emenda do Samuel a regra do Preto e branco (conferencia 3, 30/09/2026): no
+grupo dos filtros, a caixinha "No Preto e branco, molduras e iluminuras tambem
+em preto e branco" (Projeto.pb_decoracao_em_preto_e_branco), desmarcada de
+fabrica: a moldura dourada e a iluminura mantem a cor do original; "traco
+preto so se eu escolher". Ver _montar_filtros.
 """
 
 from __future__ import annotations
@@ -257,6 +263,33 @@ class TelaOpcoes(QWidget):
             self._rotulos_de_filtro[chave] = rotulo
         self.radios_de_filtro[TIRAR_FUNDO].setVisible(False)
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(False)
+
+        # Emenda do Samuel a regra do Preto e branco (conferencia 3, 30/09/2026,
+        # cartao N2): "Mantem a cor original (como o ANTES); traco preto so se
+        # eu escolher". A caixinha e esse "se eu escolher", por livro
+        # (Projeto.pb_decoracao_em_preto_e_branco): desmarcada de fabrica, a
+        # moldura dourada e a iluminura ficam com a cor do original nas paginas
+        # em Preto e branco; marcada, saem como desenho de traco preto. Fica
+        # embaixo dos filtros, numa linha inteira da grade, com o quadrado a
+        # vista (como as do grupo "Gravuras e fotos") e a frase embaixo,
+        # quebrando a linha. Seguro mudar: os textos.
+        self.cx_decoracao_pb = QCheckBox(
+            "No Preto e branco, molduras e iluminuras também em preto e branco")
+        self.cx_decoracao_pb.setStyleSheet(estilo_da_caixinha_com_quadrado(14))
+        self.cx_decoracao_pb.setChecked(False)
+        self.cx_decoracao_pb.toggled.connect(self._mudou)
+        frase = QLabel("desmarcada, a moldura dourada e a iluminura ficam com a cor do "
+                       "original; marcada, saem só com o traço em preto")
+        frase.setWordWrap(True)
+        frase.setContentsMargins(28, 0, 0, 2)
+        frase.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        bloco = QVBoxLayout()
+        bloco.setContentsMargins(0, 6, 0, 0)
+        bloco.setSpacing(2)
+        bloco.addWidget(self.cx_decoracao_pb)
+        bloco.addWidget(frase)
+        linhas = (len(FILTROS_NA_TELA) + 1) // 2
+        grade.addLayout(bloco, linhas, 0, 1, 4)
         return painel
 
     def _montar_gravuras(self) -> QWidget:
@@ -500,6 +533,8 @@ class TelaOpcoes(QWidget):
         self.deslizante_sensibilidade.setValue(sensibilidade)
         self.cx_imagens_claras.setChecked(bool(projeto.gravura_mais_sensivel))
         self.cx_igualar_luz.setChecked(bool(projeto.gravura_normalizar))
+        self.cx_decoracao_pb.setChecked(
+            bool(getattr(projeto, "pb_decoracao_em_preto_e_branco", False)))
         # "Mais opcoes" abre sozinho quando alguma das avancadas nao esta no
         # padrao: a pessoa ve o que foi mudado (fechado, ficaria escondido)
         fora_do_padrao = (sensibilidade != 100 or bool(projeto.gravura_mais_sensivel)
@@ -569,6 +604,8 @@ class TelaOpcoes(QWidget):
         self.projeto.gravura_mais_sensivel = self.cx_imagens_claras.isChecked()
         self.projeto.gravura_normalizar = self.cx_igualar_luz.isChecked()
         self.valor_sensibilidade.setText(str(self.projeto.gravura_sensibilidade))
+        # emenda N2 (30/09): moldura e iluminura tambem em preto e branco
+        self.projeto.pb_decoracao_em_preto_e_branco = self.cx_decoracao_pb.isChecked()
 
         # os painéis so aparecem quando fazem sentido; o filtro "Tirar o
         # fundo" (item 1.1), so em PDF com camadas - fora dele nao faria nada

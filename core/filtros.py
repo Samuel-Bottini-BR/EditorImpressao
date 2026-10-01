@@ -2001,31 +2001,209 @@ def _desenho_em_preto_e_branco(img3: np.ndarray, nivel_papel: float,
     return saida
 
 
+# --- decoracao colorida: moldura dourada e iluminura com a cor original ------
+#
+# Emenda do Samuel a regra do Preto e branco (conferencia 3, 30/09/2026, cartao
+# N2): "Mantem a cor original (como o ANTES); traco preto so se eu escolher". A
+# gerente estendeu a decisao a iluminura colorida (a Horas 11: "perde um monte
+# de detalhes" no Preto e branco). E a regra da Fase 1 para os outros filtros:
+# "moldura dourada ... mantida sem mudar a cor"; "iluminura sai intacta ... so
+# o papel em volta do texto que fica dentro dela e branqueado".
+#
+# O que e decoracao colorida: zona de gravura que nao e foto e tem AREAS
+# coloridas largas - a faixa dourada (39 a 44 pontos de largura nas Horas 13,
+# 26 e 27), o fundo verde e o ouro de uma iluminura. A medida: o ponto e
+# colorido quando a cor dele (a e b do LAB) fica a mais de DECORACAO_CROMA do
+# papel da pagina; "largo" e o que sobra de colorido depois de uma ABERTURA
+# morfologica com o mesmo elemento do desenho (DESENHO_FECHAMENTO): a letra
+# colorida fina (o titulo vermelho, a pauta) nao sobra, a faixa dourada sobra.
+# A zona e decoracao quando o colorido largo cobre DECORACAO_MINIMA dela.
+# Medido (30/09, despejo do programa): Horas 11 = 34%, Horas 13 = 45%, Horas
+# 26 = 22%, Horas 27 = 54%, Horas 47 = 49%; retrato do Palatino 5 (traco sobre
+# papel ambar) = 0,7%. A moldura e a iluminura nao sao separadas uma da outra:
+# as duas sao "decoracao colorida" (a gerente autorizou tratar juntas).
+#
+# A decoracao sai com os pontos do ORIGINAL, sem curva nenhuma - so o papel
+# vai a branco (_decoracao_com_a_cor_original). Era o Melhorar que rodava ali
+# (no Preto e branco antes de decca4a, e no Magico pro): o esticao do preto
+# escurecia o dourado ("a borda dourada ... saindo meio escurecida", Horas 13
+# e 26), a curva de ombro lavava o ouro e o anjinho da Horas 11
+# ("esbranquicando algumas partes"), e o papel dentro da zona, medido pela
+# zona, parava em 233 a 244 (a faixa cinza da Horas 47).
+DECORACAO_CROMA = 18.0
+DECORACAO_MINIMA = 0.08
+# A medida e feita numa copia reduzida a 1/DECORACAO_REDUCAO (so pergunta "tem
+# area colorida larga?").
+DECORACAO_REDUCAO = 4
+
+# Qual ponto da decoracao e PAPEL (vai a branco): a cor perto da do papel da
+# pagina (a mesma rampa de COR_DO_PAPEL_CHEIO a COR_DO_PAPEL_ZERO vezes o raio
+# do papel) E a luz perto da do papel (de DECORACAO_LUZ_MIN a DECORACAO_LUZ_MAX
+# do nivel dele, em rampa). A cor e alisada (DECORACAO_ALISAMENTO do menor
+# lado), para a grade do JPEG nao virar quadradinho; bem menos que o
+# COR_DO_PAPEL_ALISAMENTO da gravura de traco, porque o alisamento largo
+# espalhava a cor da letra dourada no papel em volta e deixava um halo creme
+# de uns 10 pontos em volta de cada letra (Horas 11, medido 1/150 contra
+# 1/600). Arriscado: alisamento maior (halo), DECORACAO_LUZ_MIN mais baixo
+# (clareia o ouro e a pele clara pintada), a cor fora da rampa (o dourado
+# claro vai a branco).
+DECORACAO_ALISAMENTO = 1 / 600
+DECORACAO_LUZ_MIN, DECORACAO_LUZ_MAX = 0.80, 0.92
+
+
+def _referencia_do_papel(img3: np.ndarray, gravura: np.ndarray) -> tuple[float, float, float, float]:
+    """(nivel da luz, a, b, raio) do papel da PAGINA, para a decoracao.
+
+    Medido fora das gravuras (gravura: mascara booleana), quando sobra pagina
+    que chegue (5%); senao, na pagina inteira. O nivel e o percentil
+    BRANCO_PERCENTIL da luz (L do LAB); a e b sao a mediana da cor dos pontos
+    no nivel do papel ou acima; o raio, o percentil COR_DO_PAPEL_PERCENTIL da
+    distancia deles a essa mediana (no minimo COR_DO_PAPEL_RAIO_MIN). Feito de
+    4 em 4 pontos: e uma medida da pagina, nao do ponto.
+    """
+    lab = cv2.cvtColor(np.ascontiguousarray(img3[::4, ::4]), cv2.COLOR_BGR2LAB)
+    g = gravura[::4, ::4]
+    usar = ~g if float((~g).mean()) >= 0.05 else np.ones(g.shape, bool)
+    luz = lab[:, :, 0]
+    nivel = _percentil(luz[usar], BRANCO_PERCENTIL)
+    papel = usar & (luz >= nivel)
+    a = lab[:, :, 1][papel].astype(np.float32) - 128.0
+    b = lab[:, :, 2][papel].astype(np.float32) - 128.0
+    if a.size == 0:
+        return nivel, 0.0, 0.0, COR_DO_PAPEL_RAIO_MIN
+    a_papel, b_papel = float(np.median(a)), float(np.median(b))
+    raio = max(COR_DO_PAPEL_RAIO_MIN,
+               float(np.percentile(np.hypot(a - a_papel, b - b_papel), COR_DO_PAPEL_PERCENTIL)))
+    return nivel, a_papel, b_papel, raio
+
+
+def _e_decoracao_colorida(img3: np.ndarray, zona: np.ndarray, caixa: tuple[int, int, int, int],
+                          menor_lado: int, referencia: tuple[float, float, float, float]) -> bool:
+    """Esta zona (que nao e foto) e decoracao colorida - moldura dourada ou
+    iluminura? Ver DECORACAO_CROMA. zona: mascara booleana do tamanho da caixa
+    (x, y, largura, altura). Arriscado mudar: e esta resposta que decide se a
+    zona mantem a cor no Preto e branco e sai sem curva no Magico pro."""
+    x, y, largura, altura = caixa
+    fator = 1.0 / DECORACAO_REDUCAO
+    tamanho = (max(1, round(largura * fator)), max(1, round(altura * fator)))
+    pequeno = cv2.resize(img3[y:y + altura, x:x + largura], tamanho, interpolation=cv2.INTER_AREA)
+    lab = cv2.cvtColor(pequeno, cv2.COLOR_BGR2LAB).astype(np.float32)
+    _nivel, a_papel, b_papel, _raio = referencia
+    distancia = np.hypot(lab[:, :, 1] - 128.0 - a_papel, lab[:, :, 2] - 128.0 - b_papel)
+    colorido = (distancia > DECORACAO_CROMA).astype(np.uint8)
+    # o elemento do desenho na copia reduzida, arredondado (com int, numa
+    # pagina pequena ele caia para 3 pontos e a letra vermelha de 7 pontos
+    # sobrava como "larga")
+    lado = max(3, int(round(menor_lado * DESENHO_FECHAMENTO * fator)) | 1)
+    largo = cv2.morphologyEx(colorido, cv2.MORPH_OPEN,
+                             cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
+    dentro = cv2.resize(zona.astype(np.uint8), tamanho, interpolation=cv2.INTER_NEAREST) > 0
+    if not dentro.any():
+        return False
+    return float(largo[dentro].mean()) >= DECORACAO_MINIMA
+
+
+def _decoracao_com_a_cor_original(recorte: np.ndarray,
+                                  referencia: tuple[float, float, float, float]) -> np.ndarray:
+    """A decoracao com os pontos do original; so o papel vai a branco.
+
+    recorte: BGR do pedaco da pagina. Papel e o ponto com a cor e a luz do
+    papel da pagina (ver DECORACAO_ALISAMENTO); o branco entra em rampa,
+    ponto a ponto, nunca por bloco: saida = original + (255 - original) x peso.
+    O ouro, o verde, o azul, a pele pintada e o contorno ficam como no
+    original - nem mais escuros, nem lavados.
+    """
+    nivel, a_papel, b_papel, raio = referencia
+    lab = cv2.cvtColor(recorte, cv2.COLOR_BGR2LAB)
+    forma = lab.shape
+    escala = _escala_dos_mapas(forma)
+    pequeno = _desfocar(_reduzir(lab, escala), forma, escala, DECORACAO_ALISAMENTO)
+    distancia = np.hypot(pequeno[:, :, 1] - 128.0 - a_papel, pequeno[:, :, 2] - 128.0 - b_papel)
+    cheio, zero = raio * COR_DO_PAPEL_CHEIO, raio * COR_DO_PAPEL_ZERO
+    cor = np.clip((zero - distancia) / (zero - cheio), 0.0, 1.0)
+    cor = _voltar((cor * 255.0 + 0.5).astype(np.uint8), forma)
+    luz = cv2.LUT(np.ascontiguousarray(lab[:, :, 0]),
+                  _rampa_8_bits(DECORACAO_LUZ_MIN, DECORACAO_LUZ_MAX, nivel))
+    peso = cv2.multiply(cor, luz, scale=1.0 / 255.0)
+    return cv2.add(recorte, cv2.multiply(cv2.bitwise_not(recorte), cv2.merge([peso, peso, peso]),
+                                         scale=1.0 / 255.0))
+
+
+def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: bool = True):
+    """Separa as zonas de gravura (pedacos ligados de peso_gravura > 0).
+
+    Devolve (rotulos, foto, decoracao, referencia): rotulos de cada ponto; foto
+    e decoracao sao listas booleanas por rotulo (o 0 e o fundo); o que nao e
+    nenhum dos dois e gravura de traco (desenho). A foto vem primeiro
+    (_e_foto_ou_pintura); decoracao so e perguntada se com_decoracao
+    (_e_decoracao_colorida). referencia: _referencia_do_papel, ou None quando
+    nao foi preciso medir.
+    """
+    altura, largura = img3.shape[:2]
+    menor_lado = min(altura, largura)
+    onde = (peso_gravura > 0).astype(np.uint8)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(onde, connectivity=8)
+    foto = np.zeros(quantas, bool)
+    decoracao = np.zeros(quantas, bool)
+    referencia = None
+    for i in range(1, quantas):
+        x, y, w, h = (int(v) for v in medidas[i, :4])
+        zona = rotulos[y:y + h, x:x + w] == i
+        if _e_foto_ou_pintura(img3, zona, (x, y, w, h), menor_lado):
+            foto[i] = True
+        elif com_decoracao:
+            if referencia is None:
+                referencia = _referencia_do_papel(img3, onde > 0)
+            decoracao[i] = _e_decoracao_colorida(img3, zona, (x, y, w, h), menor_lado, referencia)
+    return rotulos, foto, decoracao, referencia
+
+
+def _com_a_decoracao(base: np.ndarray, img3: np.ndarray, peso_decoracao: np.ndarray,
+                     referencia) -> np.ndarray:
+    """base (BGR) com a decoracao de cor original por cima, pelo peso. O
+    recorte e so a caixa das zonas de decoracao."""
+    bx, by, bw, bh = cv2.boundingRect((peso_decoracao > 0).astype(np.uint8))
+    tratada = base.copy()
+    tratada[by:by + bh, bx:bx + bw] = _decoracao_com_a_cor_original(
+        np.ascontiguousarray(img3[by:by + bh, bx:bx + bw]), referencia)
+    return _misturar(base, tratada, peso_decoracao)
+
+
 def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
                                 peso_gravura: np.ndarray, peso_papel: np.ndarray,
-                                clareza: int = AJUSTE_PADRAO) -> tuple[np.ndarray, bool]:
-    """O Preto e branco de uma pagina com gravura marcada (regra de 30/09/2026).
+                                clareza: int = AJUSTE_PADRAO,
+                                decoracao_em_preto_e_branco: bool = False
+                                ) -> tuple[np.ndarray, bool]:
+    """O Preto e branco de uma pagina com gravura marcada (regra de 30/09/2026,
+    com a emenda da conferencia 3).
 
     binaria e o Preto e branco da pagina inteira (filtro_preto_e_branco). Cada
     zona de gravura (pedaco ligado de peso_gravura > 0) vira:
 
-    - DESENHO em preto e branco (_desenho_em_preto_e_branco): moldura,
-      iluminura, titulo colorido, gravura de traco - tudo o que nao e foto;
-    - ou TONS DE CINZA, se for foto ou pintura de tom continuo
+    - TONS DE CINZA, se for foto ou pintura de tom continuo
       (_e_foto_ou_pintura; decisao P1 do Samuel, 30/09/2026): o cinza do
-      original sem a reticula (_foto_em_tons_de_cinza), misturado pela borda
-      suave. Nesse caso a pagina sai em cinza (1 canal), nao em 1 bit.
+      original sem a reticula (_foto_em_tons_de_cinza);
+    - COR ORIGINAL, se for decoracao colorida - moldura dourada, iluminura
+      (_e_decoracao_colorida; emenda N2 do Samuel, conferencia 3: "Mantem a cor
+      original (como o ANTES); traco preto so se eu escolher"): os pontos do
+      original, com o papel a branco (_decoracao_com_a_cor_original);
+    - DESENHO em preto e branco (_desenho_em_preto_e_branco): a gravura de
+      traco sem cor, e a decoracao colorida quando a pessoa marcou
+      decoracao_em_preto_e_branco (a caixinha da tela "O que fazer";
+      Projeto.pb_decoracao_em_preto_e_branco).
 
-    Sem foto nenhuma, a pagina inteira sai em 1 bit (so 0 e 255) e
-    monocromatica=True. Dentro da zona de desenho vale o desenho onde o peso
+    Misturadas pela borda suave do peso. Devolve (imagem, monocromatica):
+    so desenho -> 1 canal, so 0 e 255, monocromatica=True; com foto e sem
+    decoracao colorida -> cinza (1 canal), False; com decoracao colorida ->
+    cor (3 canais), False. Dentro da zona de desenho vale o desenho onde o peso
     passa de 0,5; na borda suave, a pagina.
 
     clareza: nao e mais usado (era o do Melhorar na foto); fica na assinatura
     para quem chama.
 
     Arriscado mudar: nao misturar desenho e pagina pelo peso (sairia cinza, e
-    a pagina deixaria de caber em 1 bit); nao rodar o Melhorar sem foto (era o
-    que deixava a moldura dourada e custava ~3 s por pagina).
+    a pagina deixaria de caber em 1 bit); rodar o Melhorar na decoracao (era o
+    que a escurecia e lavava, e custava ~3 s por pagina).
     """
     img3 = _tres_canais(img)
     altura, largura = img3.shape[:2]
@@ -2033,17 +2211,10 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
     saida = binaria if binaria.ndim == 2 else _para_cinza(binaria)
     saida = saida.copy()
 
-    onde = (peso_gravura > 0).astype(np.uint8)
-    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(onde, connectivity=8)
-    foto = np.zeros(quantas, bool)
-    desenho = np.zeros(quantas, bool)
-    for i in range(1, quantas):
-        x, y, w, h = (int(v) for v in medidas[i, :4])
-        zona = rotulos[y:y + h, x:x + w] == i
-        if _e_foto_ou_pintura(img3, zona, (x, y, w, h), menor_lado):
-            foto[i] = True
-        else:
-            desenho[i] = True
+    rotulos, foto, decoracao, referencia = _tipos_das_zonas(
+        img3, peso_gravura, com_decoracao=not decoracao_em_preto_e_branco)
+    desenho = ~(foto | decoracao)
+    desenho[0] = False
 
     if desenho.any():
         nivel_papel = _percentil(_para_cinza(img3)[::4, ::4], BRANCO_PERCENTIL)
@@ -2064,29 +2235,40 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
     if peso_papel.any():
         _pintar_de_branco(saida, peso_papel >= 0.5)     # saida[...] = 255
 
-    if not foto.any():
+    if not (foto.any() or decoracao.any()):
         return saida, True
 
-    # Foto e pintura: em tons de cinza (decisao P1 do Samuel, 30/09/2026; ver
-    # FOTO_DESFOQUE). So na caixa das fotos, com folga para o desfoque; a
-    # borda suave mistura o cinza com o preto e branco da pagina, e o papel
-    # em volta continua o branco do Preto e branco. So foto na pagina (o caso
-    # do Opus Majus 20): o peso e o da gravura inteira, sem a conta ponto a
-    # ponto.
-    peso_foto = peso_gravura if foto[1:].all() else \
-        np.where(foto[rotulos], peso_gravura, 0.0).astype(np.float32)
-    bx, by, bw, bh = cv2.boundingRect((peso_foto > 0).astype(np.uint8))
-    folga = 4
-    y0, y1 = max(0, by - folga), min(altura, by + bh + folga)
-    x0, x1 = max(0, bx - folga), min(largura, bx + bw + folga)
-    tons = saida.copy()
-    tons[y0:y1, x0:x1] = _foto_em_tons_de_cinza(
-        img3[y0:y1, x0:x1], _niveis_da_foto(img3, peso_gravura > 0))
-    mistura = _misturar(saida, tons, peso_foto)
+    def so_das(zonas: np.ndarray) -> np.ndarray:
+        # o peso so das zonas pedidas; se sao todas, o da gravura inteira,
+        # sem a conta ponto a ponto (o caso do Opus Majus 20, so foto)
+        if zonas[1:].all():
+            return peso_gravura
+        return np.where(zonas[rotulos], peso_gravura, 0.0).astype(np.float32)
+
+    if foto.any():
+        # Foto e pintura: em tons de cinza (decisao P1; ver FOTO_DESFOQUE). So
+        # na caixa das fotos, com folga para o desfoque; a borda suave mistura
+        # o cinza com o preto e branco da pagina.
+        peso_foto = so_das(foto)
+        bx, by, bw, bh = cv2.boundingRect((peso_foto > 0).astype(np.uint8))
+        folga = 4
+        y0, y1 = max(0, by - folga), min(altura, by + bh + folga)
+        x0, x1 = max(0, bx - folga), min(largura, bx + bw + folga)
+        tons = saida.copy()
+        tons[y0:y1, x0:x1] = _foto_em_tons_de_cinza(
+            img3[y0:y1, x0:x1], _niveis_da_foto(img3, peso_gravura > 0))
+        saida = _misturar(saida, tons, peso_foto)
+
+    if decoracao.any():
+        # Moldura e iluminura com a cor original (emenda N2): a pagina passa
+        # a ter cor, e a decoracao entra pela borda suave.
+        saida = _com_a_decoracao(_tres_canais(saida).copy(), img3, so_das(decoracao),
+                                 referencia)
+
     if peso_papel.any():
-        mistura = _misturar(mistura, np.full_like(mistura, 255), peso_papel)
-    # tem foto em tons de cinza: nao cabe em 1 bit, mas cabe em cinza (1 canal)
-    return mistura, False
+        saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
+    # tem foto em cinza ou decoracao em cor: nao cabe em 1 bit
+    return saida, False
 
 
 def _peso_do_papel_sem_tocar_a_tinta(img: np.ndarray, peso: np.ndarray) -> np.ndarray:
@@ -2344,8 +2526,15 @@ def aplicar_filtro_com_selecao(
     intensidade: int = AJUSTE_PADRAO,
     algoritmo_pb: str = "auto",
     despeckle: bool = True,
+    decoracao_em_preto_e_branco: bool = False,
 ) -> tuple[np.ndarray, bool]:
     """O filtro pedido, mas cada area da pagina tratada do seu jeito.
+
+    decoracao_em_preto_e_branco (so vale no Preto e branco): a moldura dourada
+    e a iluminura saem como desenho em preto e branco, em vez de manter a cor
+    original (o de fabrica). E a opcao do livro
+    Projeto.pb_decoracao_em_preto_e_branco (emenda N2 do Samuel, 30/09/2026:
+    "traco preto so se eu escolher"); ver _preto_e_branco_com_gravura.
 
     Ate aqui os filtros olhavam a folha inteira igual, e daí vinham os defeitos
     que medimos: o realce que servia a gravura pegava o papel e virava grao; o
@@ -2404,10 +2593,11 @@ def aplicar_filtro_com_selecao(
 
     try:
         # --- Preto e branco -------------------------------------------------
-        # Regra do Samuel (30/09/2026): no Preto e branco TUDO sai em preto e
-        # branco - moldura dourada, iluminura, titulo colorido e gravura de
-        # traco viram desenho (traco em preto, fundo em branco). A foto ou
-        # pintura de tom continuo sai em tons de cinza (decisao P1). Ver
+        # Regra do Samuel (30/09/2026), com a emenda da conferencia 3: titulo
+        # colorido e gravura de traco viram desenho (traco em preto, fundo em
+        # branco); moldura dourada e iluminura mantem a cor original (traco
+        # preto so com decoracao_em_preto_e_branco); a foto ou pintura de tom
+        # continuo sai em tons de cinza (decisao P1). Ver
         # _preto_e_branco_com_gravura. Antes daqui, toda gravura ficava em
         # cor (o Melhorar rodava dentro dela).
         if filtro == PRETO_E_BRANCO:
@@ -2419,8 +2609,9 @@ def aplicar_filtro_com_selecao(
                     saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
                 return saida, True
 
-            return _preto_e_branco_com_gravura(img, binaria, peso_gravura, peso_papel,
-                                               clareza)
+            return _preto_e_branco_com_gravura(
+                img, binaria, peso_gravura, peso_papel, clareza,
+                decoracao_em_preto_e_branco=decoracao_em_preto_e_branco)
 
         # --- Melhorar e Magico pro ------------------------------------------
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \

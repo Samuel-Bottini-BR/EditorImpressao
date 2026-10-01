@@ -10,6 +10,11 @@ Nos outros filtros (Magico pro, Melhorar, Original), sai com a cor original."
 Foto e pintura de tom continuo: saem em tons de cinza (decisao P1 do Samuel,
 conferencia 2 de 30/09); a pagina com foto sai em cinza (1 canal), nao em 1 bit.
 
+Emenda do Samuel (conferencia 3, 30/09, cartao N2): "Mantem a cor original
+(como o ANTES); traco preto so se eu escolher" - de fabrica a moldura dourada e
+a iluminura mantem a cor original; o desenho em preto e branco so com a opcao
+decoracao_em_preto_e_branco (Projeto.pb_decoracao_em_preto_e_branco).
+
 Quem faz: core/filtros.py, _preto_e_branco_com_gravura. Teste de maquina: as
 paginas sao desenhadas aqui, sem o acervo.
 """
@@ -65,11 +70,34 @@ def _gravura_so_na_moldura(faixa):
 
 # --- a moldura dourada vira desenho -----------------------------------------
 
-def test_a_moldura_dourada_sai_como_desenho_em_um_bit():
-    """Nem dourada nem preta chapada: contorno preto, miolo da faixa branco."""
+def test_de_fabrica_a_moldura_dourada_mantem_a_cor_original():
+    """Emenda N2 do Samuel (conferencia 3, 30/09): "Mantem a cor original
+    (como o ANTES); traco preto so se eu escolher". Sem curva nenhuma: o
+    dourado sai igual ao original (nem escurecido, nem lavado) e o papel em
+    volta, branco."""
     img, faixa = _moldura()
     saida, mono = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO,
                                              _gravura_so_na_moldura(faixa))
+    assert mono is False, "com a moldura em cor a pagina nao cabe em 1 bit"
+    assert saida.ndim == 3
+    miolo = cv2.erode(faixa.astype(np.uint8), np.ones((25, 25), np.uint8)) > 0
+    diferenca = np.abs(saida[miolo].astype(int) - img[miolo].astype(int))
+    assert int(np.percentile(diferenca, 99)) <= 2, "o dourado da moldura mudou de cor"
+    # o papel de dentro da moldura (fora da zona) e o de volta da faixa: brancos
+    assert float(saida[500:700, 300:600].min()) >= 250
+    perto = cv2.dilate(faixa.astype(np.uint8), np.ones((31, 31), np.uint8)) > 0
+    papel_da_zona = perto & ~cv2.dilate(faixa.astype(np.uint8), np.ones((9, 9), np.uint8)).astype(bool)
+    assert float(np.median(saida[papel_da_zona].min(axis=1))) >= 250, "o papel em volta da faixa ficou creme"
+
+
+def test_a_moldura_dourada_sai_como_desenho_em_um_bit_se_a_pessoa_escolher():
+    """Nem dourada nem preta chapada: contorno preto, miolo da faixa branco.
+    So com a opcao "No Preto e branco, molduras e iluminuras tambem em preto e
+    branco" (decoracao_em_preto_e_branco)."""
+    img, faixa = _moldura()
+    saida, mono = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO,
+                                             _gravura_so_na_moldura(faixa),
+                                             decoracao_em_preto_e_branco=True)
 
     assert mono is True, "sem foto, a pagina inteira tem de caber em 1 bit"
     assert saida.ndim == 2 and set(np.unique(saida)) <= {0, 255}
@@ -184,9 +212,11 @@ def _pagina_com_foto():
 
 def test_foto_sai_em_tons_de_cinza_e_a_moldura_vira_desenho():
     """Decisao P1 do Samuel: a foto sai em tons de cinza (sem cor, sem
-    pontilhado); a pagina sai em cinza, 1 canal."""
+    pontilhado); com a moldura em desenho (opcao marcada), a pagina sai em
+    cinza, 1 canal."""
     img, faixa, s = _pagina_com_foto()
-    saida, mono = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
+    saida, mono = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s,
+                                             decoracao_em_preto_e_branco=True)
 
     assert mono is False, "com foto a pagina nao cabe em 1 bit"
     assert saida.ndim == 2, "a foto em tons de cinza: a pagina sai em 1 canal, sem cor"
@@ -202,7 +232,8 @@ def test_foto_em_cinza_vem_do_original_e_nao_do_melhorar():
     import core.filtros as F
 
     img, faixa, s = _pagina_com_foto()
-    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s,
+                                          decoracao_em_preto_e_branco=True)
     esperado = F._foto_em_tons_de_cinza(
         img, F._niveis_da_foto(img, s.peso(1200, 900, GRAVURA) > 0))
     diferenca = np.abs(saida[450:750, 300:600].astype(int) - esperado[450:750, 300:600].astype(int))
@@ -223,9 +254,23 @@ def test_papel_dentro_da_zona_da_foto_sai_branco():
     assert float(np.median(saida[50:350, 100:400])) >= 250, "o papel da zona ficou cinza"
 
 
-def test_moldura_ao_lado_da_foto_continua_desenho():
+def test_de_fabrica_foto_em_cinza_e_moldura_em_cor_na_mesma_pagina():
+    """De fabrica: a foto em tons de cinza (sem cor) e a moldura com a cor
+    original, na mesma pagina (que sai em cor, 3 canais)."""
     img, faixa, s = _pagina_com_foto()
-    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
+    saida, mono = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
+    assert mono is False and saida.ndim == 3
+    foto = saida[450:750, 300:600].astype(int)
+    assert int(np.abs(foto[:, :, 0] - foto[:, :, 2]).max()) <= 1, "a foto ficou com cor"
+    miolo = cv2.erode(faixa.astype(np.uint8), np.ones((25, 25), np.uint8)) > 0
+    sat = cv2.cvtColor(saida, cv2.COLOR_BGR2HSV)[:, :, 1]
+    assert float(np.median(sat[miolo])) > 80, "a moldura perdeu o dourado"
+
+
+def test_moldura_ao_lado_da_foto_continua_desenho_se_a_pessoa_escolher():
+    img, faixa, s = _pagina_com_foto()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s,
+                                          decoracao_em_preto_e_branco=True)
     miolo = cv2.erode(faixa.astype(np.uint8), np.ones((25, 25), np.uint8)) > 0
     assert set(np.unique(saida[miolo])) <= {0, 255}, "a moldura tinha de sair em preto e branco"
     assert float((saida[miolo] == 0).mean()) < 0.05
@@ -250,8 +295,10 @@ def test_sem_foto_o_preto_e_branco_nao_roda_o_melhorar(monkeypatch):
     monkeypatch.setattr(F, "filtro_melhorar",
                         lambda *a, **k: chamadas.append(1) or original(*a, **k))
     img, faixa = _moldura()
-    F.aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, _gravura_so_na_moldura(faixa))
-    assert not chamadas, "o Melhorar rodou no Preto e branco sem foto"
+    for traco in (False, True):
+        F.aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, _gravura_so_na_moldura(faixa),
+                                     decoracao_em_preto_e_branco=traco)
+    assert not chamadas, "o Melhorar rodou no Preto e branco"
 
 
 # --- o vermelho fora da gravura sai preto (decisao V1, 30/09) ---------------

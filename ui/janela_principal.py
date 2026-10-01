@@ -566,6 +566,9 @@ class JanelaPrincipal(QMainWindow):
         # item 1.2: o grupo "Gravuras e fotos"
         for campo in CAMPOS_DA_GRAVURA:
             setattr(self.projeto, campo, getattr(salvo, campo))
+        # emenda N2 do Samuel (30/09): moldura e iluminura tambem no P&B
+        self.projeto.pb_decoracao_em_preto_e_branco = bool(
+            getattr(salvo, "pb_decoracao_em_preto_e_branco", False))
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
@@ -674,6 +677,12 @@ class JanelaPrincipal(QMainWindow):
                 # depois, o aviso. Arriscado: refazer sem a copia, ou sem
                 # avisar (pedido da gerente, 30/09).
                 gravuras_refeitas = trocar_opcoes_da_gravura(salvo, projeto)
+                # A caixinha "No Preto e branco, molduras e iluminuras tambem
+                # em preto e branco" (emenda N2 do Samuel, 30/09) tambem vem da
+                # tela: so muda a imagem do filtro, nao a marcacao, e as previas
+                # sao refeitas (GerenciadorPrevias novo, logo abaixo).
+                salvo.pb_decoracao_em_preto_e_branco = bool(
+                    getattr(projeto, "pb_decoracao_em_preto_e_branco", False))
                 if gravuras_refeitas:
                     self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 projeto = salvo
@@ -842,7 +851,9 @@ class JanelaPrincipal(QMainWindow):
     # nascem (ver _parar_a_analise).
     OPCOES_DO_LIVRO = ("dividir_folhas", "limpar", "filtro_padrao", "endireitar",
                        "cortar_bordas", "montar_cadernos", "paginas_por_caderno",
-                       *CAMPOS_DA_GRAVURA)      # item 1.2: "Gravuras e fotos"
+                       *CAMPOS_DA_GRAVURA,      # item 1.2: "Gravuras e fotos"
+                       # emenda N2 do Samuel (30/09): moldura e iluminura no P&B
+                       "pb_decoracao_em_preto_e_branco")
 
     def _sair_da_conferencia(self) -> None:
         """Voltar para as opcoes grava antes: sair nao pode custar trabalho.

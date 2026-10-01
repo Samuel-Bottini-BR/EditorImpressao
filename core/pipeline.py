@@ -919,6 +919,10 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     a pagina intacta, o PDF nao tem camadas ou deu erro - a pagina sai como
     veio, sem outro filtro por cima e sem procurar gravura e letra (a
     marcacao nao serviria para nada, e custa ~1 s).
+
+    A opcao do livro Projeto.pb_decoracao_em_preto_e_branco (moldura e
+    iluminura tambem em preto e branco; emenda N2 do Samuel, 30/09/2026) vai
+    para o filtro aqui; so vale no Preto e branco.
     """
     if not projeto.limpar or pagina.filtro == TIRAR_FUNDO:
         return img, False
@@ -926,6 +930,8 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         img, pagina.filtro, garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan),
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
+        decoracao_em_preto_e_branco=bool(
+            getattr(projeto, "pb_decoracao_em_preto_e_branco", False)),
     )
 
 

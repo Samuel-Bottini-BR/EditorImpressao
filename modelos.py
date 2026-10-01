@@ -243,6 +243,19 @@ class Projeto:
     gravura_mais_sensivel: bool = False
     gravura_normalizar: bool = True
 
+    # Preto e branco: a moldura dourada e a iluminura tambem em preto e branco
+    # (desenho de traco preto)? Emenda do Samuel a regra do Preto e branco
+    # (conferencia 3, 30/09/2026, cartao N2): "Mantem a cor original (como o
+    # ANTES); traco preto so se eu escolher" - e "gostaria de ter a opcao de
+    # fazer isso em outras ocasioes e em outros livros". De fabrica False (a
+    # cor original); projeto antigo, sem o campo, abre com False
+    # (de_dicionario). Campo novo por livro autorizado por essa decisao. Quem
+    # mostra e ui/tela_opcoes.py (caixinha no grupo dos filtros); quem usa e
+    # core/pipeline._filtrar -> core.filtros.aplicar_filtro_com_selecao
+    # (decoracao_em_preto_e_branco). So muda a imagem das paginas em Preto e
+    # branco com moldura ou iluminura marcada como gravura.
+    pb_decoracao_em_preto_e_branco: bool = False
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
