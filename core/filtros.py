@@ -2112,8 +2112,13 @@ def _e_decoracao_colorida(img3: np.ndarray, zona: np.ndarray, caixa: tuple[int, 
 def _decoracao_com_a_cor_original(recorte: np.ndarray,
                                   referencia: tuple[float, float, float, float],
                                   fora: np.ndarray | None = None,
-                                  area_grande: int = 0) -> np.ndarray:
+                                  area_grande: int = 0,
+                                  letra_max: int = 0) -> np.ndarray:
     """A decoracao com os pontos do original; so o papel vai a branco.
+
+    letra_max (pontos; 0 = nao procurar): o papel dentro de uma letra solta
+    no papel branco (o miolo do "O") tambem vai a branco - ver
+    _miolos_das_letras e LETRA_NA_DECORACAO_MAX.
 
     recorte: BGR do pedaco da pagina. Papel e o ponto com a cor e a luz do
     papel da pagina (ver DECORACAO_ALISAMENTO); o branco entra em rampa,
@@ -2150,9 +2155,112 @@ def _decoracao_com_a_cor_original(recorte: np.ndarray,
             if fora is not None and fora.any():
                 ligados[rotulos[fora]] = 255
             ligados[0] = 0
-            peso = cv2.bitwise_and(peso, ligados[rotulos])
+            ligado = cv2.bitwise_and(peso, ligados[rotulos])
+            if letra_max:
+                _miolos_das_letras(ligado, peso, letra_max)
+            peso = ligado
+            if letra_max:
+                peso = _beirada_do_papel(peso, lab, (a_papel, b_papel), (cheio, zero), luz,
+                                         faixa=max(2, int(np.ceil(1.5 / escala))))
     return cv2.add(recorte, cv2.multiply(cv2.bitwise_not(recorte), cv2.merge([peso, peso, peso]),
                                          scale=1.0 / 255.0))
+
+
+# O miolo de uma letra pintada dentro da decoracao (o "O" dourado de LOUIS da
+# Horas 11) e papel cercado pela letra: nao esta ligado ao papel de fora nem e
+# grande, e ficava creme. Conferencia 5 do Samuel (01/10/2026, A2): "eu nao
+# quero esses miolos de letras com a cor da pagina de tras, queremos a pagina
+# inteiramente branca". Ver _miolos_das_letras. O tamanho maximo da letra, em
+# fracao do menor lado da PAGINA: as letras grandes de LOUIS tem 230 a 240
+# pontos de altura numa pagina de 3684 (1/15); o miolo de uma pintura (o ceu
+# das paisagens da Horas 47) fica dentro de um pedaco pintado bem maior.
+# Arriscado: subir muito (o ceu palido de uma pintura pequena, cercada de
+# papel, iria a branco).
+LETRA_NA_DECORACAO_MAX = 1 / 10
+
+
+def _miolos_das_letras(ligado: np.ndarray, peso: np.ndarray, letra_max: int) -> None:
+    """Devolve ao papel que vai a branco (`ligado`, peso 0 a 255 depois da
+    regra da ligacao) o papel que fica DENTRO de uma letra cercada de papel
+    branco. `peso`: o peso do papel antes da regra da ligacao.
+
+    O que nao vai a branco (a letra, a pintura e o papel recusado) forma
+    pedacos; o pedaco pequeno (os dois lados da caixa ate letra_max pontos),
+    que nao encosta na beirada do recorte, e uma letra (ou um enfeite
+    pequeno) solta no papel branco - e o papel recusado dentro dele e o miolo
+    da letra: volta com o peso que tinha. Uma pintura e grande e o ceu dela
+    continua como esta. Muda `ligado` no lugar.
+
+    Feito pedaco a pedaco, so na caixa de cada letra (a conta pela folha
+    inteira, rotulo a rotulo, custava ~0,2 s numa pagina das Horas).
+    """
+    resto = cv2.compare(ligado, 0, cv2.CMP_EQ)
+    quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(resto, connectivity=8)
+    if quantos <= 1:
+        return
+    altura, largura = ligado.shape
+    for i in range(1, quantos):
+        x, y, w, h = (int(v) for v in medidas[i, :4])
+        if max(w, h) > letra_max or x == 0 or y == 0 or x + w >= largura or y + h >= altura:
+            continue
+        caixa = (slice(y, y + h), slice(x, x + w))
+        miolo = (marcas[caixa] == i) & (peso[caixa] > 0)
+        if miolo.any():
+            ligado[caixa][miolo] = peso[caixa][miolo]
+
+
+def _beirada_do_papel(peso: np.ndarray, lab: np.ndarray, papel_ab: tuple[float, float],
+                      rampa: tuple[float, float], luz: np.ndarray, faixa: int) -> np.ndarray:
+    """O fio creme em volta da letra dourada (Horas 11, conferencia 5 do
+    Samuel, A2: "queremos a pagina inteiramente branca") vai a branco.
+
+    A cor do papel e medida num mapa alisado e reduzido (ver
+    DECORACAO_ALISAMENTO): perto da letra, a cor dela se espalha no mapa, e
+    uma faixa de uns 10 pontos de papel de verdade (luz e cor de papel, ponto
+    a ponto: medido na Horas 11, luz 224 contra 228 do papel, distancia de cor
+    3 a 4) ficava creme. Aqui, SO nos pontos a ate `faixa` pontos do papel que
+    ja vai a branco, a cor e medida no proprio ponto, sem alisar, com a mesma
+    rampa (rampa = (cheio, zero), papel_ab = a e b do papel) e a mesma luz
+    (luz: a rampa de luz, 0 a 255); o peso so sobe, nunca desce.
+
+    Por que so na beirada: a cor ponto a ponto no papel inteiro traria de
+    volta os quadradinhos da grade do JPEG (o motivo do alisamento), e longe
+    do papel branco ligaria o ceu palido de uma pintura ao papel de fora.
+    Arriscado: faixa larga (clareia a beirada clara de um dourado).
+    """
+    # elemento quadrado: o OpenCV dilata em duas passadas (linha e coluna),
+    # bem mais barato que o redondo nesta folha inteira
+    elemento = cv2.getStructuringElement(cv2.MORPH_RECT, (2 * faixa + 1, 2 * faixa + 1))
+    perto = cv2.dilate(cv2.compare(peso, 128, cv2.CMP_GE), elemento)
+    perto = cv2.bitwise_and(perto, cv2.compare(peso, 255, cv2.CMP_LT))
+    if not cv2.countNonZero(perto):
+        return peso
+    # a distancia de cor ao papel, ponto a ponto, em contas de 8 bits do
+    # OpenCV na folha inteira (indexar so a faixa custava o dobro: ela tem
+    # milhoes de pontos; em float, o triplo): |a - a do papel| e |b - b do
+    # papel|, o quadrado de cada um por tabela (dividido por `escala_q` para
+    # caber em 8 bits ate o fim da rampa), somados, e a rampa por tabela.
+    cheio, zero = rampa
+    escala_q = max(1.0, zero * zero / 250.0)
+    quadrado = np.minimum(255.0, np.round(np.arange(256, dtype=np.float32) ** 2 / escala_q))
+    quadrado = quadrado.astype(np.uint8)
+    da = cv2.absdiff(cv2.extractChannel(lab, 1), int(round(128.0 + papel_ab[0])))
+    db = cv2.absdiff(cv2.extractChannel(lab, 2), int(round(128.0 + papel_ab[1])))
+    soma = cv2.add(cv2.LUT(da, quadrado), cv2.LUT(db, quadrado))
+    distancia = np.sqrt(np.arange(256, dtype=np.float32) * escala_q)
+    tabela = np.clip((zero - distancia) / max(zero - cheio, 1e-3), 0.0, 1.0)
+    tabela[255] = 0.0                                   # saturou: longe do papel
+    cor = cv2.LUT(soma, (tabela * 255.0 + 0.5).astype(np.uint8))
+    novo = cv2.bitwise_and(cv2.multiply(cor, luz, scale=1.0 / 255.0), perto)
+    return cv2.max(peso, novo)
+    a = lab[ys, xs, 1].astype(np.float32) - 128.0 - papel_ab[0]
+    b = lab[ys, xs, 2].astype(np.float32) - 128.0 - papel_ab[1]
+    cheio, zero = rampa
+    cor = np.clip((zero - np.hypot(a, b)) / (zero - cheio), 0.0, 1.0)
+    novo = (cor * luz[ys, xs].astype(np.float32) + 0.5).astype(np.uint8)
+    peso = peso.copy()
+    peso[ys, xs] = np.maximum(peso[ys, xs], novo)
+    return peso
 
 
 def _pode_ter_decoracao(img3: np.ndarray, peso_gravura: np.ndarray, menor_lado: int) -> bool:
@@ -2246,7 +2354,8 @@ def _com_a_decoracao(base: np.ndarray, img3: np.ndarray, peso_decoracao: np.ndar
     fora = peso_decoracao[by:by + bh, bx:bx + bw] <= 0
     tratada[by:by + bh, bx:bx + bw] = _decoracao_com_a_cor_original(
         np.ascontiguousarray(img3[by:by + bh, bx:bx + bw]), referencia, fora=fora,
-        area_grande=max(1, int(DECORACAO_PAPEL_GRANDE * img3.shape[0] * img3.shape[1])))
+        area_grande=max(1, int(DECORACAO_PAPEL_GRANDE * img3.shape[0] * img3.shape[1])),
+        letra_max=max(1, int(LETRA_NA_DECORACAO_MAX * min(img3.shape[:2]))))
     return _misturar(base, tratada, peso_decoracao)
 
 
