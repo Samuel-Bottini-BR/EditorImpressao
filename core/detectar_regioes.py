@@ -1103,8 +1103,14 @@ def _crescer_pela_moldura(mascara: np.ndarray, img: np.ndarray) -> np.ndarray:
     # a emenda so cobre as linhas em que as duas pontas tem gravura, e a barra
     # torta fica mais fina no vao - o resto da largura dela vem por aqui
     emendada = _emendar_as_barras(atual, pode)
-    if not np.array_equal(emendada, atual):
-        atual = _crescer_por(emendada, pode, passos)
+    novo = emendada & (1 - atual)
+    if novo.any():
+        # so na vizinhanca do que foi emendado (a folha inteira custava ~40 ms)
+        x, y, w, h = cv2.boundingRect(novo)
+        y0, y1 = max(0, y - passos - 1), min(novo.shape[0], y + h + passos + 1)
+        x0, x1 = max(0, x - passos - 1), min(novo.shape[1], x + w + passos + 1)
+        atual = emendada.copy()
+        atual[y0:y1, x0:x1] = _crescer_por(emendada[y0:y1, x0:x1], pode[y0:y1, x0:x1], passos)
     crescida = cv2.resize(atual, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
     return crescida | mascara
 
@@ -1150,17 +1156,21 @@ def _emendar_as_barras(mascara: np.ndarray, nao_papel: np.ndarray) -> np.ndarray
         return mascara
     comprimento = max(3, int(EMENDA_ATE * min(mascara.shape[:2])))
     saida = mascara.copy()
+    # so na caixa da gravura (o fechamento nao passa dela)
+    x, y, w, h = cv2.boundingRect(mascara)
+    caixa = (slice(y, y + h), slice(x, x + w))
+    m, np_ = mascara[caixa], nao_papel[caixa]
     for forma in ((comprimento, 1), (1, comprimento)):
         linha = cv2.getStructuringElement(cv2.MORPH_RECT, forma)
-        vao = cv2.morphologyEx(mascara, cv2.MORPH_CLOSE, linha) & (1 - mascara)
-        quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(vao, connectivity=8)
-        if quantos <= 1:
+        vao = cv2.morphologyEx(m, cv2.MORPH_CLOSE, linha) & (1 - m)
+        if not vao.any():
             continue
-        cheio = np.bincount(marcas[nao_papel > 0], minlength=quantos)
+        quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(vao, connectivity=8)
+        cheio = np.bincount(marcas[np_ > 0], minlength=quantos)
         entra = cheio >= EMENDA_NAO_PAPEL * medidas[:, cv2.CC_STAT_AREA]
         entra[0] = False
         if entra.any():
-            saida |= entra[marcas].astype(np.uint8)
+            saida[caixa] |= entra[marcas].astype(np.uint8)
     return saida
 
 
