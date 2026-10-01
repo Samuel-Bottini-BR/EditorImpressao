@@ -2013,6 +2013,52 @@ def _e_foto_ou_pintura(img3: np.ndarray, zona: np.ndarray, caixa: tuple[int, int
     return float(traco.mean()) < GRAVURA_DE_TRACO_MINIMA
 
 
+# Opus Majus 20 no Preto e branco, contorno "livre" (conferencia 5 do Samuel,
+# F1/A3): "nao gostei de como ficou esbranquicada, nao da mais para ver o rosto
+# direito da imagem" ("'Este livro tem fotos' e a melhor escolha ate agora").
+# O contorno livre do ScanTailor deixa de fora da foto o rosto e o lado da
+# estatua (claros, da cor do papel); ali o detector marca PAPEL, que vai a
+# branco. A foto (_e_foto_ou_pintura) que cobre pelo menos FOTO_CAIXA_CHEIA do
+# seu FECHO CONVEXO (o menor poligono convexo em volta dela) vale o fecho
+# inteiro: o buraco e a reentrancia dentro da foto voltam a ser foto, e o papel
+# marcado ali nao vai a branco. O fecho, e nao a caixa: a caixa levava junto a
+# margem de papel em volta do anjo da Escola 35 (a zona tem borda suave), que
+# ficava cinza. Medido: a zona do Opus 20 enche 81% do fecho (o rosto e o
+# lado da estatua voltam); o anjo da Escola 35, 100% (nada muda). Arriscado:
+# baixar muito (uma foto recortada em L levaria junto o texto do canto vazio,
+# que sairia em tons de cinza).
+FOTO_CAIXA_CHEIA = 0.75
+# Abaixo disto (fracao do fecho que falta na zona) a foto ja esta inteira.
+# Medido: anjo da Escola 35, 0%; Opus 20, 19%.
+FOTO_FALTA_MINIMA = 0.03
+
+
+def _fechos_de_foto(rotulos: np.ndarray, foto: np.ndarray,
+                    peso_gravura: np.ndarray) -> np.ndarray | None:
+    """A mascara (uint8, 255) dos fechos convexos das zonas de foto que enchem
+    o fecho delas (FOTO_CAIXA_CHEIA), ou None. rotulos e foto: os de
+    _tipos_das_zonas; a zona conta onde o peso passa de 0,5 (sem a borda
+    suave)."""
+    fechos = None
+    for i in np.flatnonzero(foto):
+        zona = ((rotulos == i) & (peso_gravura > 0.5)).astype(np.uint8)
+        contornos, _h = cv2.findContours(zona, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contornos:
+            continue
+        fecho = cv2.convexHull(np.vstack(contornos))
+        area = cv2.contourArea(fecho)
+        cheia = cv2.countNonZero(zona)
+        # o fecho tem de encher a foto (FOTO_CAIXA_CHEIA) e faltar alguma
+        # coisa de verdade (FOTO_FALTA_MINIMA): a foto inteira (o anjo da
+        # Escola 35) fica como estava, borda suave e tudo
+        if area <= 0 or not FOTO_FALTA_MINIMA * area <= area - cheia <= (1 - FOTO_CAIXA_CHEIA) * area:
+            continue
+        if fechos is None:
+            fechos = np.zeros(zona.shape, np.uint8)
+        cv2.fillConvexPoly(fechos, fecho, 255)
+    return fechos
+
+
 def _desenho_em_preto_e_branco(img3: np.ndarray, nivel_papel: float,
                                menor_lado: int) -> np.ndarray:
     """A gravura como desenho de 1 bit: 0 no traco e no detalhe, 255 no resto.
@@ -2602,6 +2648,15 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
         # na caixa das fotos, com folga para o desfoque; a borda suave mistura
         # o cinza com o preto e branco da pagina.
         peso_foto = so_das(foto)
+        # a foto que quase enche o fecho convexo dela vale o fecho inteiro
+        # (ver FOTO_CAIXA_CHEIA): o pedaco que o contorno livre deixou de fora
+        # (o rosto da estatua do Opus 20) nao vira papel branco
+        fechos = _fechos_de_foto(rotulos, foto, peso_gravura)
+        if fechos is not None:
+            # so o que falta dentro do fecho (a borda suave da zona fica)
+            dentro = (fechos > 0) & (peso_foto < 1.0)
+            peso_foto = np.where(dentro, 1.0, peso_foto).astype(np.float32)
+            peso_papel = np.where(dentro, 0.0, peso_papel).astype(np.float32)
         bx, by, bw, bh = cv2.boundingRect((peso_foto > 0).astype(np.uint8))
         folga = 4
         y0, y1 = max(0, by - folga), min(altura, by + bh + folga)

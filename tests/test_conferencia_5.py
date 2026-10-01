@@ -160,3 +160,49 @@ def test_pagina_sem_cor_sai_igual():
     assert np.array_equal(_com_a_tinta_colorida(cinza, binaria), binaria)
     assert np.array_equal(filtro_preto_e_branco(cinza),
                           filtro_preto_e_branco(cv2.cvtColor(cinza, cv2.COLOR_BGR2GRAY)))
+
+
+
+# --- F1/A3: a estatua do Opus 20 nao fica esbranquicada (contorno livre) -----
+# "nao gostei de como ficou esbranquicada, nao da mais para ver o rosto direito
+# da imagem". A zona da foto com um recorte (o rosto, claro, que o contorno
+# livre deixou de fora e marcou como papel) volta inteira em tons de cinza.
+
+def _pagina_com_foto_recortada():
+    from core.selecao import PAPEL as TIPO_PAPEL
+    from core.selecao import poligono
+
+    img = np.full((1000, 800, 3), PAPEL, np.uint8)
+    yy, xx = np.mgrid[0:500, 0:400]
+    tom = (60 + 120 * xx / 400 + 30 * np.sin(yy / 23.0)).astype(np.uint8)
+    img[100:600, 80:480] = np.dstack([tom, tom, tom])    # foto de tom continuo
+    img[100:300, 200:360] = (170, 188, 198)               # o "rosto", claro, de tom do papel
+    s = Selecao()
+    zona = [(0.10, 0.10), (0.25, 0.10), (0.25, 0.30), (0.45, 0.30), (0.45, 0.10),
+            (0.60, 0.10), (0.60, 0.60), (0.10, 0.60)]
+    s.acrescentar(poligono(zona, tipo=GRAVURA))
+    s.acrescentar(retangulo(0.25, 0.10, 0.45, 0.30, tipo=TIPO_PAPEL))
+    return img, s
+
+
+def test_o_rosto_fora_do_contorno_livre_volta_a_foto():
+    img, s = _pagina_com_foto_recortada()
+    saida, _ = aplicar_filtro_com_selecao(img.copy(), "preto_e_branco", s)
+    cinza = saida if saida.ndim == 2 else cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY)
+    rosto = cinza[140:280, 230:330]
+    assert float(rosto.mean()) < 235, "o rosto foi a branco (papel)"
+    assert float((rosto < 245).mean()) > 0.9
+
+
+def test_foto_inteira_fica_como_estava():
+    """A foto que ja enche o fecho dela (o anjo da Escola 35) nao muda."""
+    import core.filtros as F
+
+    img, _s = _pagina_com_foto_recortada()
+    s = Selecao()
+    s.acrescentar(retangulo(0.10, 0.10, 0.60, 0.60, tipo=GRAVURA))
+    h, w = img.shape[:2]
+    g = s.peso(h, w, GRAVURA)
+    rotulos, foto, _d, _r = F._tipos_das_zonas(img, g)
+    assert foto.any()
+    assert F._fechos_de_foto(rotulos, foto, g) is None
