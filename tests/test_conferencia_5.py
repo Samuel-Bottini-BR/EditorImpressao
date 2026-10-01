@@ -94,3 +94,32 @@ def test_letra_colorida_na_decoracao_fica_com_a_cor_no_magico_pro():
     img, s = _pagina_com_letra_azul_e_mancha()
     saida, _ = aplicar_filtro_com_selecao(img.copy(), "magico_pro", s)
     assert int(np.abs(saida[320:340, 603:609].astype(int) - np.array(AZUL)).max()) <= 3
+
+
+# --- M1/A4 (Horas 13) e M3/A5/V2 (Horas 27): a moldura sai inteira -----------
+# "ela apaga um pedaco da moldura dourada, ali perto do escrito pag. 54";
+# "Temos uma falha no canto superior esquerdo da imagem". O vao que o
+# ScanTailor deixa numa barra da moldura e emendado (_emendar_as_barras).
+
+def test_o_vao_dourado_da_barra_e_emendado():
+    from core.detectar_regioes import _emendar_as_barras
+
+    gravura = np.zeros((300, 400), np.uint8)
+    gravura[50:60, 20:150] = 1                  # barra, um pedaco...
+    gravura[50:60, 170:380] = 1                 # ...um vao de 20 pontos, e o resto
+    nao_papel = gravura.copy()
+    nao_papel[50:60, 150:170] = 1               # no vao, dourado (nao e papel)
+    emendada = _emendar_as_barras(gravura, nao_papel)
+    assert emendada[50:60, 150:170].all(), "o vao dourado ficou de fora"
+
+
+def test_papel_entre_duas_gravuras_nao_e_emendado():
+    from core.detectar_regioes import _emendar_as_barras
+
+    gravura = np.zeros((300, 400), np.uint8)
+    gravura[50:60, 20:150] = 1
+    gravura[50:60, 170:380] = 1
+    nao_papel = gravura.copy()
+    nao_papel[50:60, 155:158] = 1               # uma letra no meio do papel
+    emendada = _emendar_as_barras(gravura, nao_papel)
+    assert not emendada[50:60, 150:170].any(), "o papel entre as duas virou gravura"

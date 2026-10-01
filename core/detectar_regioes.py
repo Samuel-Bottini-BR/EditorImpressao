@@ -1097,15 +1097,71 @@ def _crescer_pela_moldura(mascara: np.ndarray, img: np.ndarray) -> np.ndarray:
     pequena = cv2.resize(mascara.astype(np.uint8), tamanho, interpolation=cv2.INTER_NEAREST)
     foto = cv2.resize(img, tamanho, interpolation=cv2.INTER_AREA) if escala < 1 else img
     pode = _nao_e_papel(foto).astype(np.uint8) | pequena
+    passos = max(1, int(CRESCER_ATE * min(tamanho)))
+    atual = _crescer_por(pequena, pode, passos)
+    # a emenda das barras (ver EMENDA_ATE) e, se emendou, mais um crescimento:
+    # a emenda so cobre as linhas em que as duas pontas tem gravura, e a barra
+    # torta fica mais fina no vao - o resto da largura dela vem por aqui
+    emendada = _emendar_as_barras(atual, pode)
+    if not np.array_equal(emendada, atual):
+        atual = _crescer_por(emendada, pode, passos)
+    crescida = cv2.resize(atual, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
+    return crescida | mascara
+
+
+def _crescer_por(mascara: np.ndarray, pode: np.ndarray, passos: int) -> np.ndarray:
+    """A mascara (uint8 0/1) cresce 1 ponto por passo (vizinhanca 3x3) so
+    onde `pode`, ate `passos` passos ou ate parar de mudar."""
     nucleo = np.ones((3, 3), np.uint8)
-    atual = pequena
-    for _passo in range(max(1, int(CRESCER_ATE * min(tamanho)))):
+    atual = mascara
+    for _passo in range(passos):
         nova = cv2.dilate(atual, nucleo) & pode
         if np.array_equal(nova, atual):
             break
         atual = nova
-    crescida = cv2.resize(atual, (largura, altura), interpolation=cv2.INTER_NEAREST) > 0
-    return crescida | mascara
+    return atual
+
+
+# Conferencia 5 do Samuel (01/10/2026): a moldura dourada saia com buracos -
+# M1/A4 Horas 13, "ela apaga um pedaco da moldura dourada, ali perto do escrito
+# pag. 54" (um vao de ~25 pontos na barra de baixo, que saia retangulo preto
+# no Preto e branco e avermelhado no Magico pro); M3/A5 Horas 27, "Temos uma
+# falha no canto superior esquerdo" (um vao de ~45 pontos na barra de cima,
+# que saia branco). O ScanTailor deixa um trecho comprido da barra de fora
+# (dourado claro ou manchado) e o crescimento, de CRESCER_ATE de cada ponta,
+# nao chega a fechar.
+#
+# A emenda: um FECHAMENTO morfologico com uma linha deitada e outra em pe, de
+# EMENDA_ATE do menor lado (o vao de uma barra com gravura dos dois lados, na
+# mesma direcao). Entra so o pedaco emendado que e quase todo "nao papel"
+# (EMENDA_NAO_PAPEL): o dourado do vao entra; o papel entre duas gravuras
+# (uma linha de texto entre duas pecas, o espaco entre a moldura e uma figura)
+# nao entra. Arriscado: emenda comprida demais liga pecas distantes por cima
+# de letra escura (a letra e "nao papel").
+EMENDA_ATE = 0.10
+EMENDA_NAO_PAPEL = 0.90
+
+
+def _emendar_as_barras(mascara: np.ndarray, nao_papel: np.ndarray) -> np.ndarray:
+    """mascara (uint8 0/1, a gravura na copia reduzida) com os vaos das
+    barras fechados - ver EMENDA_ATE. nao_papel: uint8 0/1 do mesmo tamanho
+    (o `pode` do crescimento)."""
+    if not mascara.any():
+        return mascara
+    comprimento = max(3, int(EMENDA_ATE * min(mascara.shape[:2])))
+    saida = mascara.copy()
+    for forma in ((comprimento, 1), (1, comprimento)):
+        linha = cv2.getStructuringElement(cv2.MORPH_RECT, forma)
+        vao = cv2.morphologyEx(mascara, cv2.MORPH_CLOSE, linha) & (1 - mascara)
+        quantos, marcas, medidas, _c = cv2.connectedComponentsWithStats(vao, connectivity=8)
+        if quantos <= 1:
+            continue
+        cheio = np.bincount(marcas[nao_papel > 0], minlength=quantos)
+        entra = cheio >= EMENDA_NAO_PAPEL * medidas[:, cv2.CC_STAT_AREA]
+        entra[0] = False
+        if entra.any():
+            saida |= entra[marcas].astype(np.uint8)
+    return saida
 
 
 def _e_tira_na_beirada(caixa, largura: int, altura: int) -> bool:
