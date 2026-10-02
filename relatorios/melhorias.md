@@ -3011,3 +3011,47 @@ Vale também no Melhorar (o mesmo caminho); não foi rodado no gabarito.
 **Testes:** `tests/test_conferencia_6.py` (foto com buraco no contorno livre sai igual à foto marcada
 inteira no Mágico pro: diferença média no buraco ~50 tons antes, 0 agora; o vão escuro não vira papel;
 a foto marcada inteira não muda).
+
+## Tentativa 66 — o medidor de força do Preto e branco nas páginas de letra grossa ficou incoerente (02/10/2026)
+
+**O defeito** (achado do verificador na conferência dos consertos da conferência 6, ressalva 1 do
+parecer): depois de `1b174e4` (A1, Horas 47), o medidor "mais fraco / mais escuro" passou a mexer nas
+páginas em que a escolha automática usa o Otsu (Horas, Graduale, Escola, Opus 20). Com o filtro só, no
+0 ("mais fraco") a letra voltava a ser a fina e falhada que o Samuel recusou; no 100 ("mais escuro"),
+na Horas 47, "nous" e "Prêchant" voltavam a falhar: o mais escuro deixava letras mais claras que o meio.
+
+**Causa.** O k do medidor ia direto para a escolha das peças do Sauvola que completam o Otsu. No 0
+(k 0,40) o Sauvola pega menos que o próprio Otsu e não sobra borda: é o Otsu sozinho. No 100 (k 0,06) a
+peça do Sauvola cresce, se junta à vizinha, a parte do Otsu dentro dela cai abaixo de 50% e a peça
+inteira é recusada.
+
+**O que mudou** (`core/filtros.py`, `_a_borda_no_medidor`, chamada em `filtro_preto_e_branco`): as
+peças são escolhidas sempre no k do meio (o resultado do 50, intocado), e o medidor anda a partir dele:
+- **mais fraco:** da borda escolhida no 50 fica só o que o Sauvola de um k um pouco mais alto ainda
+  marca (no 0, o k do meio + 0,04, `BORDA_K_MAIS_FRACO`); o Otsu fica todo. A letra afina pela beirada.
+- **mais escuro:** a letra do 50 cresce para dentro do Sauvola do k do medidor (até 0,06 no 100), no
+  máximo 1 ponto a cada 3000 de altura (2 na Horas 47 a 300 DPI): a dilatação geodésica, o passo da
+  reconstrução morfológica. Engrossa a letra e enche a falha curta, sem puxar risco solto.
+Como o Sauvola só marca mais tinta quando o k desce, o que é preto num valor do medidor continua preto
+em todo valor mais escuro.
+
+**Tentado e descartado:**
+- o 0 indo até k 0,40 como nas páginas Sauvola: no quadro de texto da Horas 47, 580 peças de letra com
+  k 0,25 (659 no Otsu sozinho, 435 no 50): a letra picota. Com 0,16 (meio + 0,04), 468 peças, as mesmas
+  falhas do 50 ("amour", o "t" de "Prêchant"): só afina. Medido também 0,18 e 0,20: começa a picotar.
+- (pensado, não rodado) o "mais escuro" com a escolha de peças refeita no k do medidor e semente no
+  resultado do 50: não perderia o que o 50 tem, mas não ficaria coerente entre 75 e 100 (a peça que
+  cresce demais seria recusada no 100 e aceita no 75). A dilatação geodésica é coerente por construção.
+- 3 passos de crescimento no 100 em vez de 2: tinta no texto da Horas 47 12,2% (contra 11,9% com 2 e
+  11,2% no 50), a letra já mais pesada que o original.
+
+**Rodada** (só o filtro, 32 páginas a 300 DPI, medidor 0/25/50/75/100, `relatorios/conferir/medidor-e-
+horas11-2026-10-02/medidor-32.json`): o 50 idêntico ponto a ponto ao de antes nas 32; nenhum ponto
+clareia ao subir o medidor em nenhuma página (antes, do 50 ao 100 clareavam 316 a 12 155 pontos nas
+10 páginas Otsu). Nas páginas Sauvola nada muda. Horas 47, tinta da página: 40,39 / 40,46 / 40,54 /
+40,67 / 40,78%. O alcance do medidor nas páginas Otsu é menor que nas Sauvola (só a beirada da letra
+mexe).
+
+**Testes:** `tests/test_medidor_nas_paginas_otsu.py` (folha sintética: coerente ponto a ponto, o 0 não
+volta ao Otsu picotado, o 50 igual ao conserto de `1b174e4`, o 100 não puxa risco solto, o Otsu
+escolhido à mão não muda; Horas 47 de verdade: coerente e sem picotar no 0).

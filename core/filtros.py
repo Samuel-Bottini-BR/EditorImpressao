@@ -867,12 +867,85 @@ def _so_a_tinta_de_borda_nitida(tinta: np.ndarray, soma: np.ndarray) -> np.ndarr
 # dentro da funcao).
 # A semente e vista de 2 em 2 pontos (como em _so_o_papel_da_gravura): a peca
 # que so tem 1 ou 2 pontos de Otsu pode ficar de fora, e ai fica so o Otsu.
-# Vale so na escolha automatica (quem escolhe "Otsu" a mao recebe o Otsu). O k
-# do Sauvola e o do medidor (k_do_sauvola): nas paginas Otsu, o medidor de
-# forca passa a mexer na beirada da letra.
+# Vale so na escolha automatica (quem escolhe "Otsu" a mao recebe o Otsu). As
+# pecas sao escolhidas sempre no k do MEIO do medidor (k_para_a_letra); o
+# medidor de forca so afina ou engrossa a letra ja escolhida - ver
+# _a_borda_no_medidor.
 # Arriscado: juntar sem a histerese (o Sauvola inteiro somado traz os riscos
 # de pauta do Graduale 221 e a mancha); tirar a semente de 2 em 2 (custa ~0,1 s
 # por pagina grande a mais).
+#
+# --- o medidor de forca nessas paginas (02/10/2026) -------------------------
+#
+# Achado do verificador depois de 1b174e4, na Horas 47: com o medidor no 0
+# ("mais fraco") a letra voltava a ser a fina e falhada que o Samuel recusou,
+# e no 100 ("mais escuro") algumas letras ("nous", "Prechant") voltavam a
+# falhar - o mais escuro saia mais claro que o meio. Causa: o k do medidor ia
+# direto para a escolha das pecas. No 0 (k 0,40) o Sauvola pega menos que o
+# proprio Otsu e nao sobra borda nenhuma: e o Otsu sozinho. No 100 (k 0,06) a
+# peca do Sauvola cresce, se junta a vizinha, a parte do Otsu dentro dela cai
+# abaixo de OTSU_NA_PECA_MINIMO e a peca inteira e recusada.
+#
+# Agora as pecas sao escolhidas no k do meio (o resultado do 50, intocado) e o
+# medidor anda a partir dele, sempre na mesma direcao:
+# - mais fraco: da borda escolhida no 50 fica so o que o Sauvola de um k um
+#   pouco mais alto (ate BORDA_K_MAIS_FRACO acima do meio, no 0) ainda marca;
+#   o Otsu fica todo. A letra afina pela beirada mais clara.
+# - mais escuro: a letra do 50 cresce para dentro do Sauvola do k do medidor
+#   (k_do_sauvola, ate 0,06 no 100), no maximo _passos_da_borda_escura pontos
+#   (a dilatacao geodesica, o passo da reconstrucao morfologica): engrossa a
+#   letra e enche a falha curta, sem puxar risco ou mancha soltos nem correr
+#   por uma pauta inteira.
+# Como o Sauvola so marca MAIS tinta quando o k desce (o limiar m*(1+k*(s/R-1))
+# sobe com k menor, porque o desvio s de um cinza de 8 bits nunca passa de
+# R=128), o que e preto num valor do medidor continua preto em todo valor mais
+# escuro: o medidor e coerente ponto a ponto
+# (tests/test_medidor_nas_paginas_otsu.py).
+#
+# O 0 a 0,40 (K_FRACO) foi tentado e descartado: na Horas 47, com k 0,25 no
+# quadro de texto, 580 pecas de letra contra 435 no 50 e 659 no Otsu sozinho
+# (a letra picota); com 0,16 (meio 0,12 + 0,04), 468: a letra so afina, as
+# mesmas falhas do 50 ("amour", o "t" de "Prechant"). Arriscado: subir
+# BORDA_K_MAIS_FRACO (a letra volta a picotar) ou PASSOS_DA_BORDA_ESCURA_3000 (o
+# "mais escuro" puxa pauta e mancha que encostam na letra).
+BORDA_K_MAIS_FRACO = 0.04
+# Os passos (de 1 ponto) que a letra pode crescer no 100, a 3000 pontos de
+# altura; acompanha a resolucao como _despeckle (a 300 DPI a Horas 47 tem
+# 6267 pontos: 2 passos). Medido na Horas 47: 2 passos no k 0,06 enchem o "m"
+# de "amour" e o "t" de "Prechant" (tinta no texto 11,2% -> 11,9%); 3 passos,
+# 12,2%, a letra ja mais pesada que o original.
+PASSOS_DA_BORDA_ESCURA_3000 = 1
+
+
+def _passos_da_borda_escura(altura: int) -> int:
+    """Quantos pontos a letra pode crescer no "mais escuro" - ver
+    PASSOS_DA_BORDA_ESCURA_3000."""
+    return max(1, int(round(PASSOS_DA_BORDA_ESCURA_3000 * altura / 3000.0)))
+
+
+def _a_borda_no_medidor(cinza: np.ndarray, otsu: np.ndarray, meio: np.ndarray,
+                        janela: int, k_meio: float, forca: int) -> np.ndarray:
+    """O resultado do 50 (meio, 0 = tinta, de _otsu_com_a_borda_do_sauvola no
+    k do meio) levado ao valor `forca` do medidor - ver o comentario acima.
+    otsu: o Otsu com a letra colorida (o piso do "mais fraco"). No 50 devolve
+    o proprio meio."""
+    forca = max(AJUSTE_MIN, min(AJUSTE_MAX, int(forca)))
+    if forca == AJUSTE_PADRAO:
+        return meio
+    if forca < AJUSTE_PADRAO:
+        k = k_meio + BORDA_K_MAIS_FRACO * (AJUSTE_PADRAO - forca) / AJUSTE_PADRAO
+        sauvola = binarizar(cinza, janela=janela, k=k, algoritmo=ALGORITMO_SAUVOLA)
+        # sai a borda (preto no meio, branco no Otsu) que o Sauvola mais
+        # fraco ja nao marca; nada do Otsu sai
+        sai = cv2.bitwise_and(cv2.bitwise_and(sauvola, otsu), cv2.bitwise_not(meio))
+        return cv2.bitwise_or(meio, sai)
+    k = k_do_sauvola(forca, k_meio)
+    cresce = cv2.bitwise_not(binarizar(cinza, janela=janela, k=k, algoritmo=ALGORITMO_SAUVOLA))
+    tinta = cv2.bitwise_not(meio)
+    vizinhos = np.ones((3, 3), np.uint8)   # os 8 vizinhos
+    for _ in range(_passos_da_borda_escura(cinza.shape[0])):
+        tinta = cv2.bitwise_or(tinta, cv2.bitwise_and(cv2.dilate(tinta, vizinhos), cresce))
+    return cv2.bitwise_not(tinta)
 
 
 # A peca do Sauvola entra so se o Otsu ja tem pelo menos isto dela: a letra
@@ -966,13 +1039,18 @@ def filtro_preto_e_branco(
     # medidor continua andando em volta dele, para mais fraco ou mais
     # escuro. Ver k_para_a_letra. So vale para Sauvola/Wolf - o Otsu nao usa k
     # (menos na borda do Sauvola, abaixo).
-    k = k_do_sauvola(forca, k_para_a_letra(cinza))
+    k_meio = k_para_a_letra(cinza)
+    k = k_do_sauvola(forca, k_meio)
     binaria = binarizar(cinza, janela=janela, k=k, algoritmo=algoritmo_de_verdade)
     binaria = _com_a_tinta_colorida(img, binaria)
     # a borda do Sauvola depois da letra colorida: o "JESUS" dourado da Horas
-    # 47, que o Otsu quase nao ve, entra como semente pela cor
+    # 47, que o Otsu quase nao ve, entra como semente pela cor. As pecas sao
+    # escolhidas no k do MEIO; o medidor so afina ou engrossa a letra que saiu
+    # (_a_borda_no_medidor). Arriscado: passar o k do medidor para a escolha
+    # das pecas (o 0 volta a ser o Otsu picotado e o 100 perde letras).
     if algoritmo == "auto" and algoritmo_de_verdade == ALGORITMO_OTSU:
-        binaria = _otsu_com_a_borda_do_sauvola(cinza, binaria, janela, k)
+        meio = _otsu_com_a_borda_do_sauvola(cinza, binaria, janela, k_meio)
+        binaria = _a_borda_no_medidor(cinza, binaria, meio, janela, k_meio, forca)
     if despeckle:
         binaria = _despeckle(binaria, cinza.shape[0])
     return binaria
