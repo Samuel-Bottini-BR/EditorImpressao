@@ -8,6 +8,13 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Atualização de 02/10/2026:** a seção 3 abaixo ("Onde o projeto está de verdade") é de 23/09 e
+> está desatualizada. O estado de hoje está no **Registro de mudanças** do `PLANO-DEFINITIVO.md`
+> e no resumo da **PARTE -9** do handoff (`historico/Editor de Impressao - resumo para o Claude.md`).
+> Em 01/10 o Samuel **adiantou a Fase 2** (ferramentas do ScanTailor); 1.4, 1.5, 1.6 e o botão da
+> moldura ficaram para depois. Há perguntas esperando por ele em `relatorios/decisoes-2026-10-01.html`
+> e `relatorios/conferir-aqui-6.html`.
+
 ---
 
 ## 1. O que é o programa

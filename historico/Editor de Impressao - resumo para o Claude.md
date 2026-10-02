@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 29/09/2026 (PARTE -8). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 02/10/2026 (PARTE -9). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,180 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -8 — Checkpoint de 25 a 29/09/2026 (leia isto primeiro, é o mais novo)
+# PARTE -9 — Checkpoint de 29/09 a 02/10/2026 (leia isto primeiro, é o mais novo)
+
+**O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md).
+O **Registro de mudanças** e a **Lista de bugs** do PLANO-DEFINITIVO têm, linha por linha e com
+commit, tudo o que está resumido aqui. Esta PARTE é o mapa para não se perder.
+
+## 1. Modo de trabalho (o que mudou nesta sessão)
+
+- **Conferências por formulário.** O Samuel não lê relatório longo. Ele confere em páginas HTML
+  com cartões (imagem ORIGINAL · ANTES · AGORA + detalhe ampliado, botões Bom/Ruim/Não sei,
+  comentário, botão "Copiar respostas") e **cola as respostas no chat**. Formulários feitos:
+  `relatorios/conferir-aqui.html`, `-2`, `-3`, `-4` (substituído pelo 5), `-5`, `-6` e
+  `relatorios/decisoes-2026-10-01.html`. Respostas literais guardadas em
+  `relatorios/conferencia-samuel-2026-09-30.md`, `-30-b.md` e `-10-01.md`.
+  **Exigências dele para os formulários:** toda pergunta com foto; dizer exatamente onde olhar;
+  mostrar o resultado processado ao lado do original; **nunca desenhar retângulo por cima do
+  conteúdo** (um retângulo escondeu a perna do "A" de "CRISTÃ" e ele achou que o programa
+  cortava a letra); perguntas de escolha com as opções escritas por extenso.
+- **Regra nova no CLAUDE.md (seção 10, item 9), pedida pelo Samuel em 29/09:** ninguém apaga
+  nada fora da pasta do projeto sem perguntar a ele; dentro, só o que criou na tarefa. Motivo:
+  um agente apagou `D:\d` sem conferir. (A pergunta "você tinha uma pasta `D:\d`?" nunca foi
+  respondida.)
+- **Verificador numa cópia limpa:** quando outro agente está mexendo no código, a gerente cria
+  `git worktree add --detach .claude/worktrees/verificador HEAD` + junção `modelos` →
+  `D:\programas\EditorImpressao\modelos`. **Para apagar: primeiro remover só a junção**
+  (`(Get-Item ...\modelos).Delete()` no PowerShell), conferir que `modelos\` real continua
+  inteira, e só então `git worktree remove --force`.
+- **Testes nunca abrem janela na tela do Samuel nem gravam na pasta de dados real dele:**
+  `tests/conftest.py` (commits `86725ee`, `c1c3cc2`) põe `QT_QPA_PLATFORM=offscreen`, troca o
+  `LOCALAPPDATA` e faz caixa sem resposta falhar em 20 s. `teste_botoes.py` também.
+- **Ferramenta Bash desta sessão corta barras invertidas dentro de heredoc** (`\f`, `\b` viraram
+  caracteres de controle no plano duas vezes). Ao editar o plano por script: caminhos com `/`, e
+  conferir "caracteres de controle = 0" depois. O plano no disco é CRLF.
+- **Teste de velocidade só vale com o PC parado de verdade.** Em 30/09 16:26 deu "tudo mais
+  lento" e era o emulador Android/OBS/Chrome do Samuel; o código antigo medido na mesma hora
+  também saiu lento. Para comparar versões: rodar **alternado** (A, B, A, B) em worktrees.
+
+## 2. Estado do git (02/10)
+
+- Tudo no ramo **`fase-1`** (GitHub). `master` continua em `44c86a4` (só o aprovado da Fase 0).
+- Os 48 MB de imagens no histórico do `fase-1` continuam; a forma de limpar está na pergunta O4
+  do formulário de decisões (recomendação: "juntar" num commit só ao levar ao master).
+- `git worktree list` mostra uma cópia antiga em `...\scratchpad\antes` (`f4d9a60`) criada por um
+  agente em 29/09; fica fora do projeto: só remover com autorização (e cuidado com junção).
+
+## 3. O que existe e foi validado (por teste + verificador; o Samuel conferiu o que está dito)
+
+- **1.1 "Tirar o fundo" virou um filtro** (decisão do Samuel: nada de automático escondido):
+  aparece só em livro com camadas; pergunta "Este livro tem fundo separado. Quer tirar o fundo?"
+  uma vez por livro, inclusive nos antigos; "Sim" troca só as páginas em Original; página
+  duvidosa sai "conferir". Commits `dfe3b89`, `4bca0fa`, `d4b0430`. Verificador: PRONTO.
+- **Perda de trabalho salvo: ~17 consertos** (caminho com `\`/`/`, livro movido de pasta, dois
+  PDFs de mesmo nome, fechar durante a análise, "cancelar", "continuar" errado, opções que
+  voltavam, cópia `projeto.antigo-*` antes de recomeçar, "Tirar da lista" guardando cópias em
+  `%LOCALAPPDATA%\EditorImpressao\copias-de-seguranca\`, botões em português). Verificador:
+  **nenhum caminho de perda sem cópia**, exceto "começar de novo" e "Tirar da lista" (perguntam).
+- **Janela não congela mais:** o PyMuPDF segura o GIL ao desenhar; as páginas são desenhadas em
+  2 processos à parte (`core/paginas_em_outro_processo.py`, `47bad86`), PDF nunca preso.
+  **O programa empacotado com isso não foi testado** (risco: segunda janela se o `.exe` não
+  atender `--servidor-de-paginas`).
+- **1.2 detector de gravura do ScanTailor ligado** (`71e14be`…`f65b0ac`), com opções na tela
+  "O que fazer" (grupo "Gravuras e fotos": "Achar gravuras e fotos", "Este livro tem fotos",
+  "Mais opções" com sensibilidade, imagens claras, igualar a luz) e "Esta página tem foto" na aba
+  Marcar. Samuel aprovou as opções e os resultados (conferências 2 e 5).
+- **1.3 OCRs:** Kraken como **motor à parte** (Python 3.12 embutível,
+  `D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken`, montado por
+  `montar_motor_kraken.py`), docTR (OnnxTR 0.9 dentro do programa), Tesseract (6 idiomas),
+  comparação automática (`core/ocr_comparar.py`, 18 de 22 páginas certas, 0 revisar à toa) e
+  **tudo no instalador** (561 MB; `vc_redist` oficial da Microsoft rodado só se faltar). Ainda
+  não aparece na tela. Instalador **nunca instalado de verdade** (entra no teste do notebook).
+- **Preto e branco (regra do Samuel + emendas):** foto/pintura em **tons de cinza**; vermelho e
+  letra colorida saem **pretos** (só peça de borda nítida — ferrugem não: `5953b0a`); **moldura e
+  iluminura mantêm a cor original** de fábrica, com a caixinha "No Preto e branco, molduras e
+  iluminuras também em preto e branco" (desmarcada); letra solta dentro da decoração sai preta.
+- **Mágico pro:** dourado igual ao original, sem faixa cinza (Horas 47), iluminura da Horas 11
+  sem lavar, miolo das letras douradas branco (`df9e3be`, `fbdc8de`).
+- **Corte com 1 mm de papel** depois da última letra (decisão P2, `d93625d`).
+- **Velocidade** (teste oficial 30/09 22:42, `relatorios/velocidade/velocidade-SAMUEL-PC-2026-09-30-2242`):
+  abrir 25,5 s; trocar de página 2,3 s (pior 3,0); Mágico pro 10 p. 54,5 s; Preto e branco 27,3 s;
+  memória 1.571 MB — melhor que 29/09 em tudo, menos a troca mais demorada (+0,7 s). O Samuel
+  aceitou +0,5 s na prévia pelo detector do 1.2. Depois disso entraram os consertos das
+  conferências 5 e o Palatino 66 (medidos alternados: iguais); **teste oficial não refeito**.
+- **Zonas do gabarito do OCR** corrigidas e aprovadas (`e3fb929`, `a0837a8`).
+- **Projetos antigos do Samuel** (Siebmacher, Boécio de agosto, Gradus Primus) voltaram à tela
+  inicial (só o `resumo.json` criado; cópia de segurança em
+  `EditorImpressao-arquivos\backups\projetos-antigos-antes-de-reconhecer-2026-09-29\`).
+- **Para o Kaique:** `relatorios/Editor-de-Impressao-resultados-2026-09-30.html` (arquivo único,
+  fotos embutidas, 12 MB, fora do git; refaz com `relatorios/resultados-2026-09-30/arquivo_unico_v2.py`).
+
+## 4. Decisões fechadas (as que mais pesam; detalhe e palavras dele no Registro de mudanças)
+
+- **Fase 2 adiantada** (01/10, exceção à regra 1): "c" (adiantar a Fase 2 inteira). Ficam para
+  depois, na Fase 1: 1.4, 1.5 (inclusive "Só as letras", filtro por zona automático, título da
+  Horas 26), 1.6 e o botão da moldura. Mapa: `docs/pesquisa/fase2-mapa-scantailor.md`.
+- Kraken: motor à parte (não o porte ONNX). Visual C++: instalador oficial da Microsoft.
+- Tesseract com 6 idiomas, desligado de fábrica na detecção.
+- Fotos no Preto e branco: tons de cinza (pontilhados reprovados). PDF: fica como está até o 1.6,
+  que entra **como opção** ("o tamanho do arquivo depois não importa").
+- "Imagens claras" desmarcada de fábrica; forma "livre" de fábrica + "Este livro tem fotos".
+- Regra 6: +0,5 s na primeira prévia aceito até a Fase 5.
+
+## 5. Tentado e descartado
+
+- Caixinha "Tirar o fundo sozinho" (automático): o Samuel trocou por filtro.
+- Moldura em traço preto no Preto e branco de fábrica: reprovado (N2/N3/N4); virou opção.
+- Pontilhados (Floyd–Steinberg, Bayer, meio-tom) para foto no PB: reprovados.
+- Segundo binarizador para os números fracos do Opus 256 e letras raspadas do Graduale 221:
+  revertido (custo +5% e muda páginas com mancha do verso; depende do 6.1).
+- Recalibrar a comparação dos OCRs para 19/22: só com página boa indo a revisar e faixa estreita
+  (seria calibrar demais). Os 4 erros não pegos são erros iguais dos dois OCRs.
+- "1 mm em todo lado" no corte: piorava o Graduale 223; ficou "máximo entre 1 mm e a folga antiga".
+
+## 6. Descobertas de comportamento real
+
+- PyMuPDF não solta o GIL ao desenhar (0,72 s de janela parada por página JPEG 2000); o cProfile
+  do Python 3.14 mistura threads (apontou o lugar errado).
+- O Kraken perde linhas no Python 3.14 **só na transcrição** (`np.cross` da NumPy 2.5); achar
+  linhas funciona.
+- PyInstaller marca `_internal` como pasta de DLLs (`SetDllDirectoryW`) e o processo filho
+  herda: o motor do Kraken carregava o Visual C++ errado (consertado em `ocr_comum.abrir_processo`).
+- Primeira abertura do motor do Kraken depois de instalar: 52–65 s (antivírus lendo arquivos novos).
+- Os PDFs do Graduale, Horas e Marial dizem 72 DPI; o detector precisa do DPI real do scan.
+- O resultado do detector varia ~0,1% a 3,9% dos pontos de uma rodada para outra (nas bordas).
+- Na janela real (escala 125% do PC do Samuel), caixinhas desmarcadas não mostram quadrado e os
+  filtros não mostram a bolinha (decisão O1 pendente). Foto "offscreen" engana sobre tamanho.
+- `conferencia.py` (`gravar_paineis`) desenha o retângulo rosa por cima da página: não usar
+  essas imagens em formulário sem refazer.
+
+## 7. Perguntas em aberto (as perguntas exatas estão nos formulários)
+
+1. **Formulário de decisões** `relatorios/decisoes-2026-10-01.html` (não respondido): D1 ordem
+   da Fase 2 (recomendado: começar pelo modo Misto com zonas à mão, depois geometria, 2.15, 2.10,
+   2.12, 2.16, 2.19); **D2 guardar as zonas da aba Marcar na folha original** (muda o formato do
+   projeto; necessário antes da geometria); D3 em que livro/página o endireitar/girar erra (nas
+   páginas de teste o nosso dá o mesmo ângulo do ScanTailor em 28 de 32); M1–M3 marcar 1.1, 1.2,
+   1.3 no plano; O1 quadrado visível em todas as caixinhas; O2 tirar ~6 linhas de teste do
+   `erros.log` real; O3 tirar a estátua do arquivo do Kaique; O4 como limpar os 48 MB.
+2. **Formulário 6** `relatorios/conferir-aqui-6.html` (não respondido): consertos da conferência 5
+   e corte de 1 mm. O conserto do Palatino 66 (`5953b0a`) veio depois e não está nele.
+3. Opinião do Kaique sobre o arquivo de resultados (não chegou).
+4. Mais tarde: usar todos os núcleos (2.16) bate com "uma página por vez na memória".
+
+## 8. Próximo passo recomendado
+
+Ler as respostas do formulário de decisões e do formulário 6; marcar no plano o que ele
+decidir; então começar a Fase 2 pelo que ele escolher em D1 (recomendado: modo Misto), e, se D2
+for "sim", converter o jeito de guardar as zonas antes da etapa de geometria.
+
+## 9. Como rodar e testar (02/10)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q        # 02/10: 1346 passed, 1 skipped, 0 falhas (7 min 16 s); roda sem janela e com pasta de dados própria
+.venv\Scripts\python.exe teste_velocidade.py       # ~12 min, SÓ com o PC parado (sem agentes, sem OBS/emulador)
+.venv\Scripts\python.exe conferencia.py fase1      # antes/depois do gabarito (ver gabarito\LEIA-ME.md)
+.venv\Scripts\python.exe montar_motor_kraken.py --destino <pasta>   # remonta o motor do Kraken
+.venv\Scripts\python.exe empacotar.py              # instalador (~21 min; trava se faltar motor/modelos/vc_redist)
+dist\EditorImpressao\EditorImpressao.exe --conferir-ocr <imagem> <saida.json>   # confere os 3 OCRs no empacotado
+```
+
+## 10. Ambiente instalado nesta sessão
+
+- `.venv`: `onnxtr==0.9.0`, `pyclipper==1.4.0` (+ ~20 dependências, sem conflito).
+- `modelos\doctr\rep_fast_base-1b89ebf9.onnx` (42 MB) e `modelos\tessdata\` (lat, ita, por, fra,
+  eng, script/Fraktur — tessdata_best), fora do git.
+- Motor do Kraken em `EditorImpressao-arquivos\ferramentas\motor-kraken` (Python 3.12.10 embutível,
+  Kraken 7.1.1, 73 versões travadas em `motor_kraken/requisitos-travados.txt`, sem o Visual C++
+  dentro). `vc_redist.x64.exe` 14.44 em `ferramentas\downloads`.
+- `ferramentas\pesquisa-fase2-2026-10-01\` (34 MB): protótipos do pesquisador da Fase 2 (as
+  bibliotecas de imagem do ScanTailor compiladas juntas) — ponto de partida para a Fase 2.
+
+---
+
+# PARTE -8 — Checkpoint de 25 a 29/09/2026
 
 **O que manda agora não é este arquivo.** Desde 24/09 o projeto segue
 `docs/plano/` (no git): `ESTADO-ATUAL.md` → `PLANO-DEFINITIVO.md` (fases, Lista
