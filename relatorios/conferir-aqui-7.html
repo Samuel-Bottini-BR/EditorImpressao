@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 6 - Editor de Impressão</title>
+<!--
+  Sexta conferencia do Samuel (01/10/2026): os consertos que ele pediu na conferencia 5
+  (respostas em relatorios/conferencia-samuel-2026-10-01.md), cada um com ORIGINAL, ANTES e AGORA.
+  Mesmo formato de conferir-aqui-5.html (aprovado por ele): cartoes com Bom / Ruim / Nao sei
+  (ou "Entendi"), comentario e "Copiar respostas". As marcacoes ficam no navegador com a chave
+  NOVA "conferir-2026-10-01-f" (nao mistura com as conferencias anteriores).
+  As imagens estao em relatorios/conferencia-6-2026-10-01/ e sao refeitas por
+  conferencia-6-2026-10-01/scripts/montar_imagens.py (so le imagens prontas; nenhuma pagina e
+  processada).
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 7 - Editor de Impressão (02/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>O que é:</b> os consertos que você pediu na conferência 6, e duas perguntas rápidas. Em cada cartão está escrito o que você respondeu, e a foto mostra o que mudou.</p>
+    <p><b>Como usar:</b> leia "O que olhar", olhe a imagem (clique para ver em tamanho cheio; clique de novo para fechar) e aperte <b>Bom</b>, <b>Ruim</b> ou <b>Não sei</b>. Embaixo de cada pergunta está escrito o que o Bom e o Ruim querem dizer naquele cartão.</p>
+    <p><b>Nas imagens:</b> em cima, a página inteira com o rótulo grande em cada parte: <b>ORIGINAL</b> (como veio do livro), <b>ANTES</b> (o que você viu na conferência 6) e <b>AGORA</b> (com os consertos). Embaixo, o <b>detalhe ampliado</b>, o mesmo lugar em todas.</p>
+    <p><b>O retângulo colorido</b> (rosa = detalhe 1, azul = detalhe 2) mostra de onde vem o detalhe. Ele fica <b>com folga, por fora</b> do lugar ampliado, e os detalhes ampliados não têm nada desenhado por cima.</p>
+    <p>Suas marcações ficam guardadas neste computador. No fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que olhar (pode ter <b>), a: atencao (opcional),
+//   s: o que Bom/Ruim querem dizer, i: [imagens], tipo: "voto" (padrao) | "escolha" | "entendi",
+//   p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-7-2026-10-02/";
+const SECOES = [
+ { titulo:"1. As letras da Horas 47 no Preto e branco",
+   sub:"Sua resposta no A1 da conferência 6: \"Ainda está apagando as letras, o original está muito melhor para ler\".",
+   cartoes:[
+    {c:"A1", t:"Horas 47 no Preto e branco: as letras da página inteira", i:["cartoes/a1-horas47-pb.jpg"],
+     o:`Leia <b class='onde'>o texto do AGORA nos dois detalhes</b> ("JESUS Changeant...", "C'eft aprefent...", "ayez, pitié de nous."). ANTES as letras saíam <b>finas e falhadas</b>; AGORA saem <b>cheias</b>, como no original. A causa: o programa usava uma régua só de preto para a folha inteira, e a moldura e a iluminura puxavam essa régua para o lado errado, comendo a beirada das letras.`,
+     s:"Bom = está tão fácil de ler quanto o original. Ruim = ainda falta letra ou alguma está falhada (diga qual)."},
+    {c:"A1b", t:"Horas 47 em tamanho real: alguma letra ficou grossa demais?", i:["cartoes/horas47-tamanho-real.jpg"],
+     o:`Em cima o ANTES, embaixo o DEPOIS (agora), em tamanho real, no meio da página ("au dedans de moy même...", "changer tout"). Veja se <b class='onde'>o buraco do e, do o e do a</b> continua aberto e se alguma letra <b>grudou</b> na vizinha.`,
+     a:`Outras páginas também mudaram, sempre só para mais preto (Horas 13 e 14, Escola 7 e 35, Graduale 221 a 223, Opus 20); nenhum papel escureceu e 22 páginas saíram iguais. A Escola 7 ficou com a letra mais encorpada que o original (que tem traço fino), mas limpa.`,
+     s:"Bom = as letras estão cheias e nenhuma fechou ou grudou. Ruim = alguma ficou grossa demais (diga qual)."},
+   ]},
+ { titulo:"2. A estátua do Opus Majus 20 no Mágico pro",
+   sub:"Sua resposta no X2 da conferência 6: \"não sei porque, agora ficou muito ruim, não consigo ver o rosto mais, esses pontos estão horriveis atras da estatua.\"",
+   cartoes:[
+    {c:"X2", t:"Opus Majus 20 no Mágico pro, forma 'livre' (de fábrica)", i:["cartoes/x2b-opus20-mp-com-referencia.jpg"],
+     o:`Quatro colunas: ORIGINAL, ANTES (o que você viu), AGORA, e REFERÊNCIA (com "Este livro tem fotos" marcada). Olhe <b class='onde'>o rosto e o vão escuro da porta atrás da estátua</b> (detalhe). AGORA o rosto aparece, o vão fica escuro e liso, sem os pontinhos e sem o retângulo branco. Sai quase igual à REFERÊNCIA, sem precisar marcar nada. O retângulo vinha do conserto das molduras de ontem; esse conserto ficou, porque é ele que arruma as molduras da Horas 13 e 27 que você aprovou.`,
+     s:"Bom = o rosto aparece e o fundo ficou limpo. Ruim = ainda está estranho (diga onde)."},
+    {c:"X2b", t:"O rosto ainda sai mais claro que no original", tipo:"escolha", i:[],
+     o:`No Mágico pro (e também com "Este livro tem fotos") o rosto da estátua sai <b>mais claro</b> que no original: o Mágico pro sempre clareia a foto assim. Deixar mais escuro seria um pedido novo.`,
+     p:"O que fazer com o rosto mais claro?",
+     op:["Fica assim", "Quero mais escuro (vai para a Lista de espera)"]},
+   ]},
+ { titulo:"3. Velocidade",
+   sub:"Regra 6 do plano: nenhum conserto pode deixar o programa mais lento.",
+   cartoes:[
+    {c:"V1", t:"Horas 11 no Preto e branco ficou 0,2 a 0,4 s mais lenta", tipo:"escolha", i:[],
+     o:`Com o conserto da Horas 47, o Preto e branco ficou <b>mais rápido</b> em quase tudo (Horas 47: de 10,1 para 4,7 segundos; as 32 páginas juntas: de 179 para 153 segundos). Só a <b>Horas 11</b> ficou um pouco mais lenta: de uns 13,1 para 13,4 segundos. Já se sabe onde está a demora e vamos tentar tirar.`,
+     p:"Se não der para tirar esses 0,3 segundos da Horas 11:",
+     op:["Aceito (o total ficou bem mais rápido)", "Não aceito: prefiro desfazer o conserto da Horas 47"]},
+   ]},
+ { titulo:"4. Para você saber",
+   cartoes:[
+    {c:"S1", t:"O botão \"salvar como … (2).pdf\" voltou a funcionar", tipo:"entendi", i:[],
+     o:`Quando já existia um PDF com o mesmo nome e se escolhia "salvar como … (2).pdf", aparecia "Aconteceu um problema inesperado" e <b>o PDF não era gerado</b>. Agora ele gera o "(2)" (ou o "(3)", se o "(2)" também existir) sem mexer no antigo. Foi testado sem abrir a janela; confira na próxima vez que salvar um livro duas vezes.`},
+    {c:"S2", t:"O medidor de força do Preto e branco vai ser acertado", tipo:"entendi", i:[],
+     o:`O verificador achou um efeito colateral: com o medidor de força no mínimo ("mais fraco"), as letras da Horas 47 voltam a sair finas e falhadas; no máximo ("mais escuro"), algumas letras também falham. No meio (o de fábrica) sai o resultado bom deste conserto. Está sendo consertado agora.`},
+    {c:"S3", t:"Pastas vazias que os testes deixaram", tipo:"escolha", i:[],
+     o:`Os testes do verificador deixaram 6 pastas <b>vazias</b> (0 bytes) em <b>C:\Users\fotog\AppData\Local\Temp\</b>, com nome começando por "verif_localappdata_". Estão fora da pasta do projeto, então só apago com a sua autorização.`,
+     p:"Posso apagar essas 6 pastas vazias?",
+     op:["Sim, pode apagar", "Não, deixe"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-02-g";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>${tipo === "voto" ? "O que olhar:" : (tipo === "escolha" ? "O que é:" : "O que houve:")}</b> ${k.o}</p>` : "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${k.t}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 7 de 02/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
