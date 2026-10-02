@@ -109,3 +109,67 @@ def test_o_k_continua_o_mesmo_com_a_espessura_guardada():
     cinza, _ = _pagina_com_moldura_escura_e_letra_clara()
     F._KS_GUARDADOS.clear()
     assert F.k_para_a_letra(cinza) == F._medir_k_para_a_letra(cinza)
+
+
+# --- X2: "nao consigo ver o rosto mais, esses pontos estao horriveis" --------
+
+
+def _foto_com_contorno_livre():
+    """Uma foto de tom continuo (sem traco) ocupando quase a folha toda, e uma
+    marcacao como a do contorno livre do Opus 20: a gravura com um buraco em
+    cima a direita (~10% do fecho), e no buraco um pedaco de meio-tom (o
+    rosto, marcado PAPEL) e um escuro (o vao da porta, marcado LETRA).
+    Devolve (img, selecao)."""
+    from core.selecao import GRAVURA, LETRA, Selecao, retangulo
+    from core.selecao import PAPEL as PAPEL_
+
+    altura, largura = 1500, 1000
+    yy, xx = np.mgrid[0:altura, 0:largura]
+    tom = (150 + 60 * np.sin(xx / 90.0) * np.cos(yy / 120.0)).astype(np.float32)
+    ruido = np.random.default_rng(3).normal(0, 4, tom.shape).astype(np.float32)
+    cinza = np.clip(tom + ruido, 0, 255).astype(np.uint8)
+    cinza[200:500, 600:780] = 175                 # o "rosto", meio-tom
+    cinza[200:500, 800:880] = 45                  # o "vao da porta", escuro
+    img = cv2.merge([cinza, cinza, cinza])
+    s = Selecao()
+    # a foto toda menos um buraco em cima a direita (x 0,57-0,90, y 0,10-0,36)
+    s.acrescentar(retangulo(0.05, 0.05, 0.95, 0.10, tipo=GRAVURA))
+    s.acrescentar(retangulo(0.05, 0.10, 0.57, 0.36, tipo=GRAVURA))
+    s.acrescentar(retangulo(0.90, 0.10, 0.95, 0.36, tipo=GRAVURA))
+    s.acrescentar(retangulo(0.05, 0.36, 0.95, 0.95, tipo=GRAVURA))
+    s.acrescentar(retangulo(0.58, 0.12, 0.79, 0.35, tipo=PAPEL_))
+    s.acrescentar(retangulo(0.79, 0.12, 0.89, 0.35, tipo=LETRA))
+    return img, s
+
+
+def test_a_foto_do_contorno_livre_sai_como_a_foto_inteira_no_magico_pro():
+    """O rosto (marcado papel) e o vao escuro (marcado letra) saem como com a
+    foto marcada inteira ("Este livro tem fotos"): sem ir a branco e sem
+    virar papel branco com pontinhos. Medido no exemplo: antes do conserto a
+    diferenca media no buraco era ~50 tons (rosto e vao brancos)."""
+    from core.filtros import aplicar_filtro_com_selecao
+    from core.selecao import GRAVURA, Selecao, retangulo
+
+    img, livre = _foto_com_contorno_livre()
+    inteira = Selecao()
+    inteira.acrescentar(retangulo(0.05, 0.05, 0.95, 0.95, tipo=GRAVURA))
+    a, _ = aplicar_filtro_com_selecao(img.copy(), "magico_pro", livre)
+    b, _ = aplicar_filtro_com_selecao(img.copy(), "magico_pro", inteira)
+    buraco = (slice(200, 500), slice(600, 880))
+    diferenca = cv2.absdiff(a[buraco], b[buraco])
+    assert float(diferenca.mean()) < 3.0
+    vao = cv2.cvtColor(a, cv2.COLOR_BGR2GRAY)[260:440, 815:865]
+    assert float((vao > 200).mean()) < 0.05, "o vao escuro virou papel branco"
+
+
+def test_a_foto_inteira_nao_mexe_na_foto_retangular():
+    """Com a foto marcada inteira ("Este livro tem fotos"), nada muda."""
+    from core.selecao import GRAVURA, Selecao, retangulo
+
+    img, _s = _foto_com_contorno_livre()
+    s = Selecao()
+    s.acrescentar(retangulo(0.05, 0.05, 0.95, 0.95, tipo=GRAVURA))
+    altura, largura = img.shape[:2]
+    pg = s.peso(altura, largura, GRAVURA)
+    zero = np.zeros_like(pg)
+    assert F._a_foto_inteira(img, pg, zero, zero) is None

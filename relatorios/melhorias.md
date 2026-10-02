@@ -2965,3 +2965,49 @@ hastes finas das notas do Graduale; alguns pedacinhos dos riscos de pauta do Gra
 **Testes:** `tests/test_conferencia_6.py` (letra clara numa folha com moldura escura: Otsu 61% do
 traço, agora 91%; risco fraco solto não entra; nada do Otsu sai; Otsu escolhido à mão igual; escolha
 automática na folha grande igual; k igual com a espessura guardada).
+
+## Tentativa 65 — Opus Majus 20 no Mágico pro, forma "livre": rosto lavado, pontinhos e o retângulo branco no vão (conferência 6, X2, 02/10/2026)
+
+**Pedido.** Samuel, conferência 6 (X2, era "para o 1.5"): "não sei porque, agora ficou muito ruim,
+não consigo ver o rosto mais, esses pontos estão horriveis atras da estatua." Critério da gerente: com
+a forma "livre" de fábrica, a foto sai como a do original, parecida com "Este livro tem fotos"; sem
+trocar a forma de fábrica nem pôr controle na tela.
+
+**Causa.** O contorno livre do ScanTailor deixa de fora da foto três pedaços, e o detector marca cada
+um como outra coisa: o rosto e o lado da estátua (claros, da cor do papel) como **PAPEL**, que vai a
+branco; o vão escuro da porta como **LETRA** (é tinta): no Mágico pro o traço da letra é a retícula da
+foto e o "papel entre as letras" vai a branco — o branco com pontinhos pretos. **O retângulo branco
+novo** veio da emenda das barras da moldura (commit `358d27e`, conferência 5, com `83ad915`): a emenda
+passou a ligar a gravura do lado direito do vão, e o pedaço que sobrou entre ela e o bloco de letra
+virou PAPEL (conferido rodando o detector com e sem `_emendar_as_barras` na mesma página: sem a
+emenda o retângulo de papel não existe).
+
+**O que mudou** (`core/filtros.py`, `_a_foto_inteira`, chamada no caminho do Mágico pro e do
+Melhorar): o mesmo conserto que o Preto e branco já tinha (F1, `_fechos_de_foto`): a zona de foto
+(`_e_foto_ou_pintura`) que enche o fecho convexo dela (75% a 97%) vale o fecho inteiro — dentro dele é
+gravura, sem papel nem letra. A marcação guardada e a forma de fábrica não mudam; só o filtro lê a foto
+inteira. A pergunta cara (`_e_foto_ou_pintura`) só é feita na zona larga o bastante e que enche o fecho.
+
+**Tentado e descartado:** desfazer a emenda das barras para o Opus 20 (tiraria só o retângulo; o rosto
+e os pontinhos já eram assim antes, e a emenda é o que conserta as molduras da Horas 13 e 27,
+aprovadas na conferência 6).
+
+**Regra 6.** A porta é barata: a zona de decoração colorida (já separada por `_tipos_das_zonas`) nem
+é perguntada, e a conta em tamanho cheio só é feita se numa cópia 4 vezes menor alguma zona larga
+encher o fecho como foto. Medido só `_a_foto_inteira`: Horas 11, 13, 47 0 ms; Marial 7 4 ms; Escola 35
+3 ms; Graduale 222 6 ms; Palatino 5 17 ms; Opus 20 87 ms (a página que muda). Na primeira versão a
+pergunta da foto era feita na iluminura inteira da Horas 11 (+0,5 s) e a conta cheia no canto de papel
+do Marial 7 (+46 ms): trocado pela porta. Filtro Mágico pro sozinho, ANTES × AGORA alternado (3 a 6
+voltas, mediana): Opus 20 3,12 → 3,02 s; Marial 7 4,56 → 4,51; Palatino 5 2,24 → 2,24; Escola 35 4,74
+→ 4,85 e Graduale 222 6,12 → 6,20 (dentro da variação: 4,62–5,39 e 5,74–6,12 antes); Horas 13 10,86 →
+10,76; Horas 47 9,19 → 9,07; Horas 11 10,49 → 10,48.
+
+**Rodada nas 32 páginas** (`antes-mp` × `depois-mp`): 31 idênticas ponto a ponto; só o Opus 20 mudou
+(12,6% dos pontos): o rosto e o lado da estátua com o tom da foto, o vão da porta escuro, sem pontinhos
+nem retângulo branco. Comparado com a mesma página no Mágico pro com a forma "retangular" ("Este livro
+tem fotos", `referencia/opusmajus_p020-mp-retangular.png`): 0,04% dos pontos diferem mais de 30 tons.
+Vale também no Melhorar (o mesmo caminho); não foi rodado no gabarito.
+
+**Testes:** `tests/test_conferencia_6.py` (foto com buraco no contorno livre sai igual à foto marcada
+inteira no Mágico pro: diferença média no buraco ~50 tons antes, 0 agora; o vão escuro não vira papel;
+a foto marcada inteira não muda).

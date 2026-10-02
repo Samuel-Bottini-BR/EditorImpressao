@@ -2286,6 +2286,104 @@ def _fechos_de_foto(rotulos: np.ndarray, foto: np.ndarray,
     return fechos
 
 
+# Opus Majus 20 no Magico pro, contorno "livre" (conferencia 6 do Samuel, X2,
+# 02/10/2026): "nao sei porque, agora ficou muito ruim, nao consigo ver o rosto
+# mais, esses pontos estao horriveis atras da estatua." O contorno livre do
+# ScanTailor deixa de fora da foto o rosto e o lado da estatua (claros, da cor
+# do papel: o detector marca PAPEL, que vai a branco) e o vao escuro da porta
+# atras dela (o detector marca LETRA, porque e tinta: o traco vira a reticula
+# da foto em pontinhos pretos, e o papel entre eles vai a branco). No AGORA da
+# conferencia 6 apareceu ainda um retangulo branco no vao: a emenda das barras
+# da moldura (commit 358d27e, conferencia 5) passou a ligar a gravura do lado
+# direito do vao, e o pedaco que sobrou entre ela e a letra virou PAPEL.
+# O mesmo conserto do Preto e branco (_fechos_de_foto, conferencia 5, F1): a
+# foto (_e_foto_ou_pintura) que enche o FECHO CONVEXO dela (FOTO_CAIXA_CHEIA)
+# vale o fecho inteiro, aqui no Magico pro e no Melhorar - dentro dele e
+# gravura (peso 1), sem papel nem letra: sai como a foto com "Este livro tem
+# fotos". A forma de fabrica ("livre") e a marcacao guardada nao mudam; so o
+# filtro le a foto inteira.
+# Regra 6: a pergunta cara (_e_foto_ou_pintura) so e feita na zona larga o
+# bastante para ser foto (a caixa passa de FOTO_ESPESSURA_MINIMA do menor lado)
+# e que enche o fecho dela - a pagina de texto com titulo marcado (o Marial)
+# nem chega a ela.
+# Arriscado: o mesmo de FOTO_CAIXA_CHEIA (baixar muito leva junto o texto do
+# canto vazio de uma foto em L).
+
+
+def _a_foto_inteira(img3: np.ndarray, peso_gravura: np.ndarray, peso_letra: np.ndarray,
+                    peso_papel: np.ndarray, decoracao: np.ndarray | None = None
+                    ) -> tuple[np.ndarray, np.ndarray, np.ndarray] | None:
+    """(peso_gravura, peso_letra, peso_papel) com o fecho de cada foto do
+    contorno livre dentro da gravura - ver o comentario acima -, ou None
+    quando nao ha foto assim (nada muda).
+
+    decoracao: a resposta de _tipos_das_zonas(so_a_decoracao=True) para estes
+    mesmos pesos (os rotulos sao os mesmos: o mesmo connectedComponents), ou
+    None. A zona de decoracao colorida nao e foto e nem e perguntada (regra 6:
+    a pergunta da foto custava ~0,5 s na iluminura da Horas 11)."""
+    if decoracao is not None and decoracao.size > 1 and decoracao[1:].all():
+        return None
+    altura, largura = img3.shape[:2]
+    menor_lado = min(altura, largura)
+    minimo = FOTO_ESPESSURA_MINIMA * menor_lado
+    area_minima = AREA_MINIMA_DE_GRAVURA * altura * largura
+    # porta barata (regra 6): numa copia 4 vezes menor, alguma zona e larga,
+    # grande e enche o fecho como uma foto do contorno livre? (o Marial, com
+    # titulos e o canto de papel marcados, para aqui; a conta de verdade, em
+    # tamanho cheio, vem depois so se passar)
+    peso_p = np.ascontiguousarray(peso_gravura[::4, ::4])
+    pequena = (peso_p > 0).view(np.uint8)
+    quantas_p, rotulos_p, medidas_p, _c = cv2.connectedComponentsWithStats(pequena, connectivity=8)
+    talvez = False
+    for i in range(1, quantas_p):
+        x, y, w, h = (int(v) for v in medidas_p[i, :4])
+        if min(w, h) < minimo / 4 - 1 or medidas_p[i, cv2.CC_STAT_AREA] * 16 < area_minima:
+            continue
+        zona = ((rotulos_p[y:y + h, x:x + w] == i) & (peso_p[y:y + h, x:x + w] > 0.5)
+                ).astype(np.uint8)
+        contornos, _h = cv2.findContours(zona, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        area = cv2.contourArea(cv2.convexHull(np.vstack(contornos))) if contornos else 0.0
+        # com folga (a copia pequena arredonda a beirada)
+        falta = area - cv2.countNonZero(zona)
+        if area > 0 and (0.5 * FOTO_FALTA_MINIMA * area <= falta
+                         <= 1.2 * (1 - FOTO_CAIXA_CHEIA) * area):
+            talvez = True
+            break
+    if not talvez:
+        return None
+    onde = (peso_gravura > 0).astype(np.uint8)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(onde, connectivity=8)
+    fechos = None
+    for i in range(1, quantas):
+        if decoracao is not None and i < decoracao.size and decoracao[i]:
+            continue
+        x, y, w, h = (int(v) for v in medidas[i, :4])
+        if min(w, h) < minimo or medidas[i, cv2.CC_STAT_AREA] < area_minima:
+            continue
+        zona = ((rotulos[y:y + h, x:x + w] == i) & (peso_gravura[y:y + h, x:x + w] > 0.5))
+        contornos, _h = cv2.findContours(zona.astype(np.uint8), cv2.RETR_EXTERNAL,
+                                         cv2.CHAIN_APPROX_SIMPLE)
+        if not contornos:
+            continue
+        fecho = cv2.convexHull(np.vstack(contornos))
+        area = cv2.contourArea(fecho)
+        falta = area - cv2.countNonZero(zona.view(np.uint8))
+        # as mesmas condicoes de _fechos_de_foto: enche o fecho e falta algo
+        if area <= 0 or not FOTO_FALTA_MINIMA * area <= falta <= (1 - FOTO_CAIXA_CHEIA) * area:
+            continue
+        if not _e_foto_ou_pintura(img3, rotulos[y:y + h, x:x + w] == i, (x, y, w, h), menor_lado):
+            continue
+        if fechos is None:
+            fechos = np.zeros((altura, largura), np.uint8)
+        cv2.fillConvexPoly(fechos, fecho + np.array([x, y], np.int32), 255)
+    if fechos is None:
+        return None
+    dentro = fechos > 0
+    return (np.where(dentro, 1.0, peso_gravura).astype(np.float32),
+            np.where(dentro, 0.0, peso_letra).astype(np.float32),
+            np.where(dentro, 0.0, peso_papel).astype(np.float32))
+
+
 def _desenho_em_preto_e_branco(img3: np.ndarray, nivel_papel: float,
                                menor_lado: int) -> np.ndarray:
     """A gravura como desenho de 1 bit: 0 no traco e no detalhe, 255 no resto.
@@ -3270,6 +3368,15 @@ def aplicar_filtro_com_selecao(
             img3 = _tres_canais(img)
             rotulos, _foto, decoracao, referencia = _tipos_das_zonas(
                 img3, peso_gravura, so_a_decoracao=True)
+            # a foto do contorno livre vale o fecho inteiro (conferencia 6,
+            # X2, Opus 20): sem papel nem letra dentro - ver _a_foto_inteira.
+            # Se mudou, as zonas sao separadas de novo (os rotulos mudam).
+            inteira = _a_foto_inteira(img3, peso_gravura, peso_letra, peso_papel,
+                                      decoracao if rotulos is not None else None)
+            if inteira is not None:
+                peso_gravura, peso_letra, peso_papel = inteira
+                rotulos, _foto, decoracao, referencia = _tipos_das_zonas(
+                    img3, peso_gravura, so_a_decoracao=True)
             if decoracao.any():
                 peso_decoracao = peso_gravura if decoracao[1:].all() else np.where(
                     decoracao[rotulos], peso_gravura, 0.0).astype(np.float32)
