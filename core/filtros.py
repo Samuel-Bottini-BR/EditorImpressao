@@ -688,9 +688,11 @@ def _despeckle(binaria: np.ndarray, altura: int) -> np.ndarray:
 # Arriscado: baixar COR_DE_TINTA (a mancha amarelada vira preto) ou tirar a
 # porta (a pagina sem cor pagaria a conta da cor: ~40 ms a 300 DPI).
 COR_DE_TINTA = 21.0
-# A porta: so faz a conta se pelo menos esta fracao da pagina (contada de 4
-# em 4 pontos) tem cor de tinta. Medido: Marial 7 0,003%, Palatino 10 0,002%
-# (ficam de fora); Palatino 67 0,04%, Horas 47 38%.
+# A porta: so faz a conta se pelo menos esta fracao da pagina (contada de 8
+# em 8 pontos: a porta custa ~4 ms, e de 4 em 4 custava ~15) tem cor de
+# tinta. Medido de 4 em 4: Marial 7 0,003%, Palatino 10 0,002%, as paginas do
+# meio do marial_300 (o livro do teste de velocidade) 0,006% a 0,013% (ficam
+# de fora); Palatino 67 0,04%, Horas 47 38%.
 COR_DE_TINTA_NA_PAGINA = 0.0002
 
 
@@ -699,7 +701,7 @@ def _com_a_tinta_colorida(img: np.ndarray, binaria: np.ndarray) -> np.ndarray:
     COR_DE_TINTA. img: a pagina (BGR; em cinza, nada muda)."""
     if img.ndim != 3:
         return binaria
-    pequena = cv2.cvtColor(np.ascontiguousarray(img[::4, ::4]), cv2.COLOR_BGR2LAB)
+    pequena = cv2.cvtColor(np.ascontiguousarray(img[::8, ::8]), cv2.COLOR_BGR2LAB)
     luz = pequena[:, :, 0]
     papel = luz >= _percentil(luz, BRANCO_PERCENTIL)
     if not papel.any():
