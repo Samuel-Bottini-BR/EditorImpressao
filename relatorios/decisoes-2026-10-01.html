@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decisões - Editor de Impressão</title>
+<style>
+  body { margin:0; background:#f4f1ea; color:#222; font:17px/1.5 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; }
+  #contagem { opacity:.85; font-size:15px; }
+  header button { margin-left:auto; }
+  main { max-width:1050px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; }
+  h2.secao { margin:30px 0 8px; font-size:21px; }
+  .cartao { background:#fff; border:1px solid #ddd; border-radius:10px; padding:16px; margin:0 0 20px; }
+  .cartao.feito { border-left:8px solid #2e7d32; }
+  .cartao h3 { margin:0 0 6px; font-size:19px; }
+  .explica { margin:0 0 8px; }
+  .explica li { margin:2px 0; }
+  .pergunta { font-weight:600; margin:12px 0 8px; font-size:17px; }
+  .cartao img { display:block; max-width:100%; margin:6px auto 10px; border:1px solid #ccc; cursor:zoom-in; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  .opcoes button { text-align:left; font:inherit; font-size:16px; padding:10px 14px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button.ativo { background:#1565c0; border-color:#1565c0; color:#fff; }
+  .rec { font-size:13px; font-weight:600; color:#2e7d32; margin-left:6px; }
+  .opcoes button.ativo .rec { color:#c8f0c8; }
+  textarea { width:100%; box-sizing:border-box; margin-top:10px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:42px; }
+  button.principal { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; background:#1565c0; border:2px solid #1565c0; color:#fff; font-weight:600; cursor:pointer; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid #1565c0; border-radius:10px; padding:12px; z-index:8; }
+  #saida textarea { height:200px; }
+</style>
+</head>
+<body>
+<header><h1>Decisões que eu preciso de você</h1><span id="contagem"></span><button class="principal" onclick="copiar()">Copiar respostas</button></header>
+<main>
+  <div class="ajuda">Em cada cartão, <b>escolha uma opção</b> e, se quiser, escreva um comentário. A opção marcada <b>"recomendado"</b> é a minha sugestão, mas a decisão é sua. Clique numa imagem para ver grande. No fim, aperte <b>Copiar respostas</b> e cole no chat.</div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><img alt=""></div>
+<div id="saida"><b>Respostas copiadas.</b> Cole no chat (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo.
+  <textarea id="textoSaida" readonly></textarea><button onclick="document.getElementById('saida').style.display='none'">Fechar</button></div>
+<script>
+// Cada cartão: secao, cod, titulo, explica (HTML), img (opcional), pergunta, opcoes [texto, recomendado?]
+const CARTOES = [
+ { secao:"Fase 2 (ferramentas do ScanTailor)", cod:"D1", titulo:"Por onde começar a Fase 2",
+   explica:"O pesquisador estudou o código do ScanTailor (documento <i>docs/pesquisa/fase2-mapa-scantailor.md</i>). A ordem que eu proponho:<ol><li><b>Modo Misto</b>: o Preto e branco só nas letras; gravuras e fotos ficam como estão; e você corrige à mão, marcando zonas, onde o automático errar. É o \"filtro onde eu escolher\" que você pediu. Entram junto: limpar pontinhos, mais tipos de preto e branco, claro no escuro e cores.</li><li><b>Geometria</b>: girar, dividir, endireitar, página dentro da borda preta, caixa da página, margens iguais em todas as páginas e tamanho final (aba Bordas).</li><li>Destacar páginas diferentes das outras.</li><li>PDF em duas camadas (junto do 1.6).</li><li>Desentortar a página curva perto da lombada (o maior e mais arriscado).</li><li>Usar todos os núcleos do processador.</li><li>Unidades, perfis e tema.</li></ol>",
+   pergunta:"A ordem está boa?",
+   opcoes:[["Sim, começar pelo modo Misto, nessa ordem", true],["Quero outra ordem (escreva no comentário qual)", false]] },
+ { secao:"Fase 2 (ferramentas do ScanTailor)", cod:"D2", titulo:"Onde guardar as zonas que você marca à mão",
+   explica:"Hoje, as zonas que você marca na aba Marcar (gravura, letra, \"só neste pedaço\") são guardadas em relação à página <b>já cortada e endireitada</b>. Na Fase 2 vamos mexer em dividir, endireitar e cortar. Quando o corte ou o ângulo mudar, as zonas que você já marcou nos projetos ficariam <b>fora do lugar</b>.<br>O ScanTailor guarda as zonas em relação à <b>folha original</b> (como veio do scanner), e assim elas continuam no lugar certo mesmo que o corte mude. Fazer igual muda o jeito de guardar o projeto: os projetos antigos seriam convertidos sozinhos, com cópia de segurança antes. Isso precisa ser feito antes da etapa de geometria.",
+   pergunta:"Posso mudar para guardar as zonas na folha original?",
+   opcoes:[["Sim, pode mudar (com cópia de segurança dos projetos)", true],["Não, deixe como está", false],["Não entendi, explique melhor", false]] },
+ { secao:"Fase 2 (ferramentas do ScanTailor)", cod:"D3", titulo:"Endireitar e girar: onde dá errado?",
+   explica:"O plano diz que o nosso \"endireitar\" e o nosso \"girar\" funcionam mal. Mas, nas 32 páginas de teste, o nosso dá o <b>mesmo ângulo</b> que o ScanTailor em 28 delas (a diferença é de até 0,2°). As que diferem: Livro de Horas 11 e 47 e Siebmacher 7 e 9. Para eu saber se vale trocar pelo do ScanTailor, preciso das páginas em que você viu dar errado.",
+   pergunta:"Você lembra em que livro e página viu o endireitar ou o girar errar?",
+   opcoes:[["Sim (escreva no comentário: livro e página, e o que aconteceu)", false],["Não lembro; teste nas páginas de teste e me mostre", true],["Era outra coisa (escreva no comentário)", false]] },
+ { secao:"Fase 1 (marcar no plano)", cod:"M1", titulo:"Item 1.1: \"Tirar o fundo\" (PDF que já vem com camadas)",
+   explica:"O que ficou pronto: o filtro \"Tirar o fundo\" (aparece só em livro com camadas, como Palatino, Opus Majus, Rhetorica, Siebmacher), a pergunta ao abrir o livro (\"Este livro tem fundo separado. Quer tirar o fundo?\"), o \"Sim\" troca só as páginas em Original, a página duvidosa sai marcada \"conferir\". Você aprovou a estátua do Opus 20 e o Palatino 57. Defeitos que continuam: faixa cinza no Palatino 10, véu na Rhetorica 38, ferrugem rosada na Pesel 2 (pequenos, vão para o item 1.5).",
+   pergunta:"Como fica o item 1.1 no plano?",
+   opcoes:[["[x] Aprovado", false],["[~] Melhorar (escreva o quê no comentário)", false],["[-] Descartado", false],["Ainda não sei, quero ver de novo", false]] },
+ { secao:"Fase 1 (marcar no plano)", cod:"M2", titulo:"Item 1.2: detector de gravura do ScanTailor",
+   explica:"O que ficou pronto: o detector original do ScanTailor achando gravura e foto em todas as páginas; o grupo \"Gravuras e fotos\" na tela \"O que fazer\" (\"Achar gravuras e fotos\", \"Este livro tem fotos\", \"Mais opções\"); \"Esta página tem foto\" na aba Marcar. Você aprovou: a moldura inteira da Horas 26, as caixas cinza que sumiram (Palatino 67, Marial 153), a pauta do Graduale, o Opus 20 com \"tem fotos\". Defeitos que continuam: pedaços das molduras da Horas 13 e 27 (sendo consertados agora).",
+   pergunta:"Como fica o item 1.2 no plano?",
+   opcoes:[["[x] Aprovado", false],["[~] Melhorar (escreva o quê no comentário)", false],["[-] Descartado", false],["Ainda não sei, espero os consertos de agora", false]] },
+ { secao:"Fase 1 (marcar no plano)", cod:"M3", titulo:"Item 1.3: os OCRs (só achar onde há texto)",
+   explica:"O que ficou pronto: Kraken (no Windows, sem WSL), docTR e Tesseract instalados e ligados ao programa por dentro; comparação automática (quando discordam, a página vai para \"Para revisar\"; acerta 18 de 22 páginas de teste, sem mandar página boa à toa); tudo no instalador. Você aprovou as zonas do gabarito. <b>Ainda não aparece na tela</b> (o ligar/desligar de cada OCR): isso fica para quando o 1.4/1.5 voltarem.",
+   pergunta:"Como fica o item 1.3 no plano?",
+   opcoes:[["[x] Aprovado", false],["[~] Melhorar (escreva o quê no comentário)", false],["[-] Descartado", false],["Ainda não sei", false]] },
+ { secao:"Outras decisões", cod:"O1", titulo:"Caixinhas que quase não aparecem",
+   img:"conferir/fase1-1.2-tela-2026-09-30/prints/125-1920x1080-notebook.png",
+   explica:"Na imagem, a tela \"O que fazer\". As caixinhas do grupo \"Gravuras e fotos\" (meio da tela) têm o <b>quadrado azul</b>, que mostra se está marcada ou não. As outras (\"Dividir folhas ao meio\", \"Limpar a folha\", os filtros Original, Preto e branco...) <b>quase não aparecem</b>: desmarcadas, não têm quadrado nenhum, e os filtros não mostram a bolinha. Hoje há dois jeitos de caixinha na mesma tela.",
+   pergunta:"Posso pôr o quadrado (e a bolinha dos filtros) visível em todas as caixinhas do programa?",
+   opcoes:[["Sim, todas iguais, com o quadrado visível", true],["Não, deixe como está até o layout (Fase 4)", false]] },
+ { secao:"Outras decisões", cod:"O2", titulo:"Linhas de erro dos testes no seu erros.log",
+   explica:"Em 30/09, por volta das 13h35, testes de um agente escreveram cerca de 6 linhas de erro (\"servidor de paginas falhou...\") no arquivo <b>erros.log</b> de verdade do programa, na sua pasta de dados. Não são erros do seu uso. Pela regra, eu só apago com a sua autorização.",
+   pergunta:"Posso tirar essas linhas do erros.log?",
+   opcoes:[["Sim, pode tirar só essas linhas dos testes", true],["Não, deixe como está", false]] },
+ { secao:"Outras decisões", cod:"O3", titulo:"Exemplo da estátua no arquivo do Kaique",
+   img:"resultados-2026-09-30/img2/opus20-fotos.jpg",
+   explica:"No arquivo de resultados para o Kaique há o exemplo da estátua do Opus Majus 20 com \"Este livro tem fotos\" (imagem). Você aprovou na conferência 2, mas olhando de perto a foto ainda tem manchas claras na parede e no rosto.",
+   pergunta:"Mantenho esse exemplo no arquivo do Kaique?",
+   opcoes:[["Manter", false],["Tirar até a foto ficar melhor", true]] },
+ { secao:"Outras decisões", cod:"O4", titulo:"As imagens que entraram por engano no histórico",
+   explica:"Em 28/09, 48 MB de imagens entraram por engano no histórico do ramo de trabalho (\"fase-1\") no GitHub. Já saíram dos arquivos, mas continuam guardadas no histórico, e isso deixa o repositório mais pesado para sempre. Antes de levar o trabalho para o ramo principal (\"master\"), dá para limpar:<ul><li><b>Juntar</b>: ao levar para o master, todo o trabalho aprovado entra como um commit só, sem as imagens. O histórico detalhado continua no ramo fase-1.</li><li><b>Reescrever</b>: refazer o ramo fase-1 tirando as imagens. Some de vez, mas muda o histórico que já está no GitHub.</li></ul>Isso só acontece quando você aprovar algum item para ir ao master.",
+   pergunta:"Como prefere limpar?",
+   opcoes:[["Juntar (um commit só no master)", true],["Reescrever o ramo fase-1", false],["Não entendi, explique melhor", false]] },
+];
+const CHAVE = "decisoes-2026-10-01";
+let estado = {}; try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) {}
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+const conteudo = document.getElementById("conteudo");
+let secaoAtual = "";
+CARTOES.forEach(c => {
+  if (c.secao !== secaoAtual) { secaoAtual = c.secao; conteudo.insertAdjacentHTML("beforeend", `<h2 class="secao">${c.secao}</h2>`); }
+  const d = document.createElement("div"); d.className = "cartao";
+  d.innerHTML = `<h3>${c.cod} · ${c.titulo}</h3><div class="explica">${c.explica}</div>
+    ${c.img ? `<img loading="lazy" src="${c.img}" alt="${c.titulo}">` : ""}
+    <div class="pergunta">${c.pergunta}</div>
+    <div class="opcoes">${c.opcoes.map((o,i)=>`<button data-i="${i}">${o[0]}${o[1] ? '<span class="rec">(recomendado)</span>' : ''}</button>`).join("")}</div>
+    <textarea placeholder="Comentário (opcional)"></textarea>`;
+  conteudo.appendChild(d);
+  const ta = d.querySelector("textarea"); ta.value = (estado[c.cod]||{}).nota || "";
+  const pintar = () => { const v = (estado[c.cod]||{}).escolha;
+    d.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(v) === b.dataset.i));
+    d.classList.toggle("feito", v !== undefined); };
+  d.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+    estado[c.cod] = Object.assign({}, estado[c.cod], {escolha: Number(b.dataset.i)}); pintar(); guardar(); });
+  ta.oninput = () => { estado[c.cod] = Object.assign({}, estado[c.cod], {nota: ta.value}); guardar(); };
+  const im = d.querySelector("img"); if (im) im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; };
+  pintar();
+});
+function contar(){ document.getElementById("contagem").textContent = `${CARTOES.filter(c => (estado[c.cod]||{}).escolha !== undefined).length} de ${CARTOES.length} respondidas`; }
+contar();
+function copiar(){
+  const l = ["Decisões de 01/10 (Editor de Impressão):"];
+  CARTOES.forEach(c => { const e = estado[c.cod] || {};
+    l.push(`${c.cod} ${c.titulo}: ${e.escolha !== undefined ? c.opcoes[e.escolha][0] : "sem resposta"}${(e.nota||"").trim() ? " - " + e.nota.trim() : ""}`); });
+  const t = document.getElementById("textoSaida"); t.value = l.join("\n");
+  document.getElementById("saida").style.display = "block"; t.select();
+  try { navigator.clipboard.writeText(t.value).catch(()=>document.execCommand("copy")); } catch(e) { try{document.execCommand("copy");}catch(_){} }
+}
+</script>
+</body>
+</html>
