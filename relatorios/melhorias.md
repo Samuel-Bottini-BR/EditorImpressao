@@ -2904,3 +2904,64 @@ livro dele não passa pela regra da cor.
 **Testes:** `tests/test_conferencia_5.py`, `test_mancha_de_ferrugem_esmaecida_nao_vira_preto`
 (falhava antes: 98% da mancha preta).
 
+
+## Tentativa 64 — Horas 47 no Preto e branco: as letras da página saíam finas e falhadas (conferência 6, A1, 02/10/2026)
+
+**Pedido.** Samuel, conferência 6 (A1, RUIM): "Ainda está apagando as letras, o original está muito
+melhor para ler". Os "JESUS" e o "C" dourados já saíam inteiros; o que falhava era a letra da página
+inteira ("Changeant", "un bien plus grand", "ayez pitié de nous"): fina, picotada.
+
+**Causa.** A escolha automática do binarizador põe o **Otsu** nas páginas de traço grosso (Horas 11,
+13, 14, 26, 47, Graduale 221–223, Escola 7 e 35, Opus 20 a 300 DPI — o scan é de baixa resolução e
+ampliado, a medida de espessura passa de 10 pontos). O Otsu é **um limiar só para a folha toda**; na
+Horas 47 a moldura e a iluminura puxam esse limiar para 161, no meio do tom da letra (papel 224, miolo
+da letra azul ou parda entre 90 e 140): a beirada macia da letra vira papel e o traço fino some aos
+pedaços. Não era a regra da letra colorida da conferência 5 (essa só acrescenta preto) nem o
+`_despeckle`.
+
+**O que mudou** (`core/filtros.py`): `_otsu_com_a_borda_do_sauvola`, por **histerese** (a ideia do
+limiar duplo do Canny): o Otsu (já com a letra colorida) diz onde há letra, o Sauvola (o k do
+medidor) diz até onde ela vai. Entra a peça de tinta do Sauvola que o Otsu já tem em pelo menos 50%
+(`OTSU_NA_PECA_MINIMO`); a peça enorme ou encostada na beirada da imagem não cresce nem faz crescer.
+Nada do Otsu sai. Só na escolha automática (Otsu escolhido à mão continua Otsu).
+
+**Tentado e descartado (medido nas páginas Otsu do gabarito):**
+- **Trocar o Otsu pelo Sauvola** nessas páginas: a letra da Horas 47 sai cheia, mas os riscos de
+  pauta a ponta seca do Graduale e a sombra das beiradas viram traço preto, e o Sauvola quebra a letra
+  gótica pesada (o motivo do Otsu).
+- **Somar o Sauvola inteiro ao Otsu**: mesmos riscos do Graduale 221 (0,15% da página de preto novo
+  longe de qualquer letra).
+- **Sauvola só até 4 pontos do Otsu** (dilatação): a letra continua falhada onde o Otsu perdeu um
+  pedaço maior que 8 pontos ("ayez", "Changeant").
+- **Histerese sem trava**: no Graduale 222 trazia um borrão do canto da lombada; na Horas 13 a sombra
+  da beirada da folha virava um fio preto de 400 pontos no canto de cima à esquerda e outro de 218 à
+  direita. Trava 1: a peça enorme ou encostada na beirada não cresce (resolveu o canto esquerdo).
+  Trava 2: o Otsu tem de ter parte da peça — com 10% ainda ficavam os riscos de pauta do Graduale mais
+  compridos (fração do Otsu nos riscos: mediana 0,24–0,32; nas letras das Horas 47 e 13, 0,63 e 0,76 no
+  percentil 10); 50% ficou.
+- **Limitar o alcance a 1/200 da altura** (cópia 4× menor): não tirava o fio da Horas 13 (o Otsu tem
+  ciscos ao longo dele) e falhava a letra clara da folha pequena. Descartado em favor da trava 2.
+- Na primeira versão o "JESUS" dourado voltava fino (a peça dele tem só 30–46% de Otsu): a borda do
+  Sauvola passou a vir **depois** da letra colorida, que entra como semente.
+
+**Regra 6.** A histerese custa ~0,3 s numa página de 20 a 25 milhões de pontos. Para pagar, a escolha
+automática passou a usar a medida de espessura **reduzida** (a do k, já paga e guardada) quando ela
+passa de 1,6× o limite (`FOLGA_DA_MEDIDA_REDUZIDA`): a reduzida mede 1,00–1,25× a cheia nas páginas
+perto do limite (1,56× no Opus 20, traço 20). As escolhas nas 32 páginas do gabarito ficaram iguais
+(conferido pela página desenhada a 300 DPI e pela entrada de verdade do filtro). Filtro sozinho, ANTES ×
+AGORA alternado, 3 a 8 voltas: Horas 47 10,1 → 4,7 s; Horas 13 5,1 → 4,1; Graduale 222 1,9 → 1,6;
+Graduale 223 2,5 → 2,1; Escola 35 2,4 → 1,5; Opus 20 1,3 → 0,8; Palatino 5 0,59 → 0,48; Marial 7 1,49
+→ 1,49 (igual); **Horas 11 13,0–13,2 → 13,2–13,6 s (+0,2 a 0,4 s, mais lenta)**: a medida reduzida
+dela dá 60,4% de tinta (passa da trava de 60%) e a cheia continua sendo feita; a histerese é paga sem
+mudar nada (o texto da Horas 11 está todo dentro da iluminura).
+
+**Rodada nas 32 páginas** (`relatorios/conferir/conferencia-6-consertos-2026-10-02/`, `antes-pb` ×
+`depois-pb`): 22 idênticas; Horas 11 com 0,000% (alguns pontos); mudaram, sempre para mais preto
+(nenhum ponto clareou): Horas 47 0,98% da página, Horas 13 0,49%, Horas 14 0,51%, Escola 7 1,42%,
+Escola 35 0,87%, Graduale 221 0,17%, 222 0,07%, 223 0,20%, Opus 20 0,10%. O preto novo longe de
+qualquer tinta de antes: 10 a 4.900 pontos por página (acentos e pingos que o Otsu tinha perdido;
+hastes finas das notas do Graduale; alguns pedacinhos dos riscos de pauta do Graduale 221 e 223).
+
+**Testes:** `tests/test_conferencia_6.py` (letra clara numa folha com moldura escura: Otsu 61% do
+traço, agora 91%; risco fraco solto não entra; nada do Otsu sai; Otsu escolhido à mão igual; escolha
+automática na folha grande igual; k igual com a espessura guardada).

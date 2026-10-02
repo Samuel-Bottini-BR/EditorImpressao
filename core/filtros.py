@@ -398,17 +398,52 @@ def _esqueleto(tinta: np.ndarray) -> np.ndarray:
     return saida
 
 
+# Regra 6 (02/10/2026): a escolha automatica media a espessura na pagina
+# INTEIRA (o esqueleto de 20 a 25 milhoes de pontos nas Horas e no Graduale a
+# 300 DPI): medido, 6,2 s na Horas 47 e 9,5 s na Horas 11 (a moldura enche
+# metade da folha), so para responder "passa de 10 pontos?". A medida reduzida
+# (a do k, ALTURA_PARA_MEDIR_TRACO, ja paga e guardada) sai sempre um pouco
+# MAIS grossa que a de tamanho cheio - medido nas 32 paginas do gabarito, de
+# 1,00 a 1,56 vez (Opus 20: 31,3 contra 20,1). Quando ela passa de
+# FOLGA_DA_MEDIDA_REDUZIDA vezes o limite, a resposta de tamanho cheio e Otsu
+# com certeza, e a medida cheia nao e feita: as mesmas escolhas nas 32 paginas.
+# Abaixo disso, a medida cheia continua decidindo (no Marial 7, 9,6 cheia e
+# 10,4 reduzida: a reduzida trocaria a escolha). As paginas perto do limite
+# medem de 1,00 a 1,25 vez (Marial 7 1,08; Horas 26 1,19; Horas 27 1,25); o
+# 1,56 do Opus 20 e de uma pagina de traco 20, longe dele. Com 1,6 a Horas 13
+# (16,9 reduzida) e o Graduale 222 (19,9) deixam de pagar a medida cheia
+# (1,5 s e 0,6 s). Arriscado: baixar de 1,6 (uma pagina perto do limite
+# poderia trocar de Sauvola para Otsu).
+FOLGA_DA_MEDIDA_REDUZIDA = 1.6
+
+
 def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
     """Tenta adivinhar qual dos 3 fica melhor nesta página, pela espessura
-    do traço - a mesma medida que `k_para_a_letra` já faz, mas independente
-    dela (não mexe no cache existente).
+    do traço - a mesma medida que `k_para_a_letra` já faz.
 
     Critério único por enquanto: traço muito grosso (letra gótica pesada,
-    tipo Palatino) tende a ir melhor com Otsu, que não quebra o traço como o
+    tipo Graduale) tende a ir melhor com Otsu, que não quebra o traço como o
     Sauvola. Sem uma medida de contraste local barata o bastante para rodar
     em toda página, o Wolf fica de fora da escolha automática por ora -
     continua disponível como escolha manual ou "usar em todas".
+
+    A medida reduzida (a do k, guardada) decide sozinha quando a pagina nao
+    foi reduzida para medir, ou quando o traco e grosso com folga - ver
+    FOLGA_DA_MEDIDA_REDUZIDA. Senao, a medida de tamanho cheio, como sempre.
+    Quem escolhe Otsu aqui ganha a borda do Sauvola (ver
+    _otsu_com_a_borda_do_sauvola, em filtro_preto_e_branco).
     """
+    try:
+        reduzida = _espessura_do_traco(cinza)
+        if reduzida is not None:
+            if cinza.shape[0] <= ALTURA_PARA_MEDIR_TRACO:
+                # nao reduziu: e a propria medida de tamanho cheio
+                return (ALGORITMO_OTSU if reduzida >= ESPESSURA_DE_LETRA_GROSSA
+                        else ALGORITMO_SAUVOLA)
+            if reduzida >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA:
+                return ALGORITMO_OTSU
+    except Exception:  # noqa: BLE001 - a medida cheia, abaixo, decide
+        pass
     try:
         _lim, tinta = cv2.threshold(
             cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
@@ -536,12 +571,19 @@ ALTURA_PARA_MEDIR_TRACO = 2500
 # acertaria. Somar o hash custa uns 10 ms contra os 319 ms da medicao.
 # Sao quatro entradas porque uma pagina passa por no maximo quatro versoes
 # diferentes de si mesma dentro de um filtro.
-_KS_GUARDADOS: dict[tuple, float] = {}
+# (02/10/2026) O que fica guardado e a ESPESSURA medida (ou None, quando a
+# pagina nao tem traco que se meca), e nao mais o k: a escolha automatica do
+# binarizador (escolher_algoritmo_automatico) usa a mesma medida, e assim a
+# pagina e medida uma vez so para as duas perguntas. O k sai igual.
+_KS_GUARDADOS: dict[tuple, float | None] = {}
 _KS_GUARDADOS_MAX = 4
 
 
-def k_para_a_letra(cinza: np.ndarray) -> float:
-    """O k que a letra desta pagina pede. Ver o comentario acima."""
+def _espessura_do_traco(cinza: np.ndarray) -> float | None:
+    """A espessura do traco desta pagina, em pontos do tamanho de verdade,
+    medida na copia reduzida (ALTURA_PARA_MEDIR_TRACO); None quando nao ha
+    traco que se meca (tinta de menos ou de mais, esqueleto vazio). Guardada
+    por conteudo (_KS_GUARDADOS). Ver k_para_a_letra."""
     from hashlib import blake2b
 
     chave = (cinza.shape, cinza.dtype.str,
@@ -549,15 +591,37 @@ def k_para_a_letra(cinza: np.ndarray) -> float:
     if chave in _KS_GUARDADOS:
         return _KS_GUARDADOS[chave]
 
-    k = _medir_k_para_a_letra(cinza)
+    espessura = _medir_espessura_do_traco(cinza)
     if len(_KS_GUARDADOS) >= _KS_GUARDADOS_MAX:
         _KS_GUARDADOS.pop(next(iter(_KS_GUARDADOS)))
-    _KS_GUARDADOS[chave] = k
-    return k
+    _KS_GUARDADOS[chave] = espessura
+    return espessura
+
+
+def k_para_a_letra(cinza: np.ndarray) -> float:
+    """O k que a letra desta pagina pede. Ver o comentario acima."""
+    return _k_da_espessura(_espessura_do_traco(cinza))
 
 
 def _medir_k_para_a_letra(cinza: np.ndarray) -> float:
-    """A medicao de verdade, sem o cache. Ver k_para_a_letra."""
+    """O k medido de verdade, sem o cache (core/aquecimento.py o chama para
+    carregar o skimage antes da primeira pagina). Ver k_para_a_letra."""
+    return _k_da_espessura(_medir_espessura_do_traco(cinza))
+
+
+def _k_da_espessura(espessura: float | None) -> float:
+    """A rampa do k entre letra fina e grossa (ver o comentario de
+    ESPESSURA_DE_LETRA_FINA); sem medida, K_NORMAL."""
+    if espessura is None:
+        return K_NORMAL
+    fatia = np.clip(
+        (espessura - ESPESSURA_DE_LETRA_FINA)
+        / (ESPESSURA_DE_LETRA_GROSSA - ESPESSURA_DE_LETRA_FINA), 0.0, 1.0)
+    return K_PARA_LETRA_FINA + (K_PARA_LETRA_GROSSA - K_PARA_LETRA_FINA) * fatia
+
+
+def _medir_espessura_do_traco(cinza: np.ndarray) -> float | None:
+    """A medicao de verdade, sem o cache. Ver _espessura_do_traco."""
     escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
     if escala < 1.0:
         cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
@@ -570,20 +634,15 @@ def _medir_k_para_a_letra(cinza: np.ndarray) -> float:
         cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     tinta = (tinta > 0).astype(np.uint8)
     if tinta.mean() < 0.002 or tinta.mean() > 0.6:
-        return K_NORMAL
+        return None
 
     distancia = cv2.distanceTransform(tinta, cv2.DIST_L2, 5)
     esqueleto = _esqueleto(tinta > 0)     # = skeletonize, em partes
     if not esqueleto.any():
-        return K_NORMAL
+        return None
     # De volta a escala da pagina: os limites de 5 e 10 pixels estao escritos
     # no tamanho de verdade, e nao no reduzido.
-    espessura = float(2.0 * distancia[esqueleto].mean()) / escala
-
-    fatia = np.clip(
-        (espessura - ESPESSURA_DE_LETRA_FINA)
-        / (ESPESSURA_DE_LETRA_GROSSA - ESPESSURA_DE_LETRA_FINA), 0.0, 1.0)
-    return K_PARA_LETRA_FINA + (K_PARA_LETRA_GROSSA - K_PARA_LETRA_FINA) * fatia
+    return float(2.0 * distancia[esqueleto].mean()) / escala
 
 
 def palavra_do_ajuste(valor: int) -> str:
@@ -783,6 +842,108 @@ def _so_a_tinta_de_borda_nitida(tinta: np.ndarray, soma: np.ndarray) -> np.ndarr
     return saida
 
 
+# --- a letra fina no Otsu (conferencia 6, A1, 02/10/2026) -------------------
+#
+# Samuel, Horas 47 no Preto e branco: "Ainda esta apagando as letras, o
+# original esta muito melhor para ler" - as letras da pagina inteira saiam
+# finas, falhadas e picotadas ("Changeant", "ayez pitie de nous"). Causa: a
+# escolha automatica poe o OTSU nas paginas de traco grosso (as Horas, o
+# Graduale, a Escola, o Opus 20 a 300 DPI); o Otsu e UM limiar para a folha
+# toda, e numa folha com moldura e iluminura ele cai no meio do tom da letra
+# (161, com papel em 224 e o miolo da letra azul ou parda entre 90 e 140): a
+# beirada da letra, macia porque o scan e de baixa resolucao, vira papel, e o
+# traco fino some aos pedacos. O Sauvola na mesma letra sai cheio, mas sozinho
+# ele quebra a letra gotica pesada (o motivo do Otsu, ver ESPESSURA_DE_LETRA_
+# GROSSA) e marca de preto o que o Otsu deixa de fora de proposito: os riscos
+# de pauta a ponta seca do Graduale, a mancha fraca.
+#
+# A juncao e por HISTERESE (a mesma ideia consagrada do limiar duplo do
+# Canny): o Otsu diz ONDE ha letra, o Sauvola diz ATE ONDE ela vai. Entra a
+# peca de tinta do Sauvola que o Otsu ja tem em parte (OTSU_NA_PECA_MINIMO) -
+# a letra inteira, com a beirada que o Otsu perdeu; a peca do Sauvola sem
+# ponto do Otsu (o risco de pauta solto, a mancha) fica de fora. Nada do Otsu sai. A peca
+# enorme ou encostada na beirada da imagem (a faixa escura do scan, a pauta
+# com as notas), do Otsu ou do Sauvola, nao cresce nem faz crescer (ver
+# dentro da funcao).
+# A semente e vista de 2 em 2 pontos (como em _so_o_papel_da_gravura): a peca
+# que so tem 1 ou 2 pontos de Otsu pode ficar de fora, e ai fica so o Otsu.
+# Vale so na escolha automatica (quem escolhe "Otsu" a mao recebe o Otsu). O k
+# do Sauvola e o do medidor (k_do_sauvola): nas paginas Otsu, o medidor de
+# forca passa a mexer na beirada da letra.
+# Arriscado: juntar sem a histerese (o Sauvola inteiro somado traz os riscos
+# de pauta do Graduale 221 e a mancha); tirar a semente de 2 em 2 (custa ~0,1 s
+# por pagina grande a mais).
+
+
+# A peca do Sauvola entra so se o Otsu ja tem pelo menos isto dela: a letra
+# falhada tem a maior parte no Otsu, e o Sauvola so completa a beirada e o
+# pedaco que faltou. Medido (fracao do Otsu em cada peca do Sauvola): letras
+# das Horas 47 e 13, 0,63 e 0,76 no percentil 10 (as abaixo de 0,5 na Horas 47
+# sao o "JESUS" e o "C" dourados, que a regra da cor ja enche, e acentos); os
+# riscos da pauta a ponta seca do Graduale 222 e 223, mediana 0,24 a 0,32; a
+# sombra da beirada da folha da Horas 13 (canto de cima a direita, um fio de
+# 238 pontos), 0,07. Com 0,10 os riscos do Graduale ainda ficavam mais
+# compridos. Arriscado: subir (a letra muito falhada no Otsu deixa de ser
+# completada) ou descer (os riscos e a sombra voltam).
+OTSU_NA_PECA_MINIMO = 0.50
+
+
+def _otsu_com_a_borda_do_sauvola(cinza: np.ndarray, otsu: np.ndarray,
+                                 janela: int, k: float) -> np.ndarray:
+    """otsu (0 = tinta: o Otsu, ja com a letra colorida de
+    _com_a_tinta_colorida) mais as pecas de tinta do Sauvola (janela, k) que
+    ele ja tem em boa parte - ver o comentario acima. Devolve 0/255 de um
+    canal."""
+    sauvola = binarizar(cinza, janela=janela, k=k, algoritmo=ALGORITMO_SAUVOLA)
+    tinta_s = cv2.bitwise_not(sauvola)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(tinta_s, connectivity=8)
+    if quantas <= 1:
+        return otsu
+    # A peca ENORME (mais alta que 1/4 da folha ou mais larga que metade, a
+    # mesma medida de _esqueleto: a pauta inteira com as notas) e a que
+    # ENCOSTA NA BEIRADA da imagem (a faixa escura do scan, a lombada) nao
+    # crescem nem fazem crescer: medido, na Horas 13 a faixa do scan puxava o
+    # fio da beirada da folha (uma sombra) e no Graduale 222 um borrao do
+    # canto da lombada. Ali vale so o Otsu.
+    altura, largura = cinza.shape[:2]
+
+    def enormes(medidas_: np.ndarray) -> np.ndarray:
+        x, y = medidas_[:, cv2.CC_STAT_LEFT], medidas_[:, cv2.CC_STAT_TOP]
+        w, h = medidas_[:, cv2.CC_STAT_WIDTH], medidas_[:, cv2.CC_STAT_HEIGHT]
+        e = ((h > altura // 4) | (w > largura // 2)
+             | (x <= 0) | (y <= 0) | (x + w >= largura) | (y + h >= altura))
+        e[0] = False
+        return e
+
+    _q, rotulos_o, medidas_o, _c = cv2.connectedComponentsWithStats(
+        cv2.bitwise_not(otsu), connectivity=8)
+    otsu_enorme = enormes(medidas_o)
+    nas_duas = cv2.bitwise_and(tinta_s[::2, ::2], cv2.bitwise_not(otsu[::2, ::2]))
+    ligada = np.zeros(quantas, bool)
+    pontos = cv2.findNonZero(nas_duas)
+    if pontos is not None:
+        pontos = pontos.reshape(-1, 2)
+        ys, xs = 2 * pontos[:, 1], 2 * pontos[:, 0]
+        semente = ~otsu_enorme[rotulos_o[ys, xs]]
+        # quanto da peca do Sauvola o Otsu ja tem (a semente de 2 em 2
+        # pontos vale 4): a peca em que o Otsu e so um cisco (menos de
+        # OTSU_NA_PECA_MINIMO) nao entra - ver o comentario dela
+        cheio = 4 * np.bincount(rotulos[ys[semente], xs[semente]], minlength=quantas)
+        ligada = cheio >= OTSU_NA_PECA_MINIMO * medidas[:, cv2.CC_STAT_AREA]
+    ligada[enormes(medidas)] = False
+    ligada[0] = False                      # o papel
+    # entra so a tinta do Sauvola que o Otsu nao tem, das pecas ligadas (os
+    # pontos sao poucos: contar so neles e ~3 vezes mais rapido que pintar
+    # peca por peca); nada do Otsu sai
+    saida = otsu.copy()
+    novos = cv2.findNonZero(cv2.bitwise_and(tinta_s, otsu))
+    if novos is not None:
+        novos = novos.reshape(-1, 2)
+        entra = ligada[rotulos[novos[:, 1], novos[:, 0]]]
+        saida[novos[entra, 1], novos[entra, 0]] = 0
+    return saida
+
+
 def filtro_preto_e_branco(
     img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle: bool = True,
     algoritmo: str = "auto",
@@ -803,11 +964,15 @@ def filtro_preto_e_branco(
     )
     # O meio do medidor passa a ser o k que a LETRA desta pagina pede; o
     # medidor continua andando em volta dele, para mais fraco ou mais
-    # escuro. Ver k_para_a_letra. So vale para Sauvola/Wolf - o Otsu nao usa k.
-    binaria = binarizar(cinza, janela=janela,
-                        k=k_do_sauvola(forca, k_para_a_letra(cinza)),
-                        algoritmo=algoritmo_de_verdade)
+    # escuro. Ver k_para_a_letra. So vale para Sauvola/Wolf - o Otsu nao usa k
+    # (menos na borda do Sauvola, abaixo).
+    k = k_do_sauvola(forca, k_para_a_letra(cinza))
+    binaria = binarizar(cinza, janela=janela, k=k, algoritmo=algoritmo_de_verdade)
     binaria = _com_a_tinta_colorida(img, binaria)
+    # a borda do Sauvola depois da letra colorida: o "JESUS" dourado da Horas
+    # 47, que o Otsu quase nao ve, entra como semente pela cor
+    if algoritmo == "auto" and algoritmo_de_verdade == ALGORITMO_OTSU:
+        binaria = _otsu_com_a_borda_do_sauvola(cinza, binaria, janela, k)
     if despeckle:
         binaria = _despeckle(binaria, cinza.shape[0])
     return binaria
