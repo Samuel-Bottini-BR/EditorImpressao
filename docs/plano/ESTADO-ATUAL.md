@@ -12,8 +12,9 @@ O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que val
 > está desatualizada. O estado de hoje está no **Registro de mudanças** do `PLANO-DEFINITIVO.md`
 > e no resumo da **PARTE -9** do handoff (`historico/Editor de Impressao - resumo para o Claude.md`).
 > Em 01/10 o Samuel **adiantou a Fase 2** (ferramentas do ScanTailor); 1.4, 1.5, 1.6 e o botão da
-> moldura ficaram para depois. Há perguntas esperando por ele em `relatorios/decisoes-2026-10-01.html`
-> e `relatorios/conferir-aqui-6.html`.
+> moldura ficaram para depois. Em 02/10 ele respondeu os dois formulários (`relatorios/decisoes-samuel-2026-10-02.md`
+> e `relatorios/conferencia-samuel-2026-10-02.md`): **1.1, 1.2 e 1.3 aprovados**; a Fase 2 começa pelo modo Misto;
+> A1 (Horas 47 no Preto e branco) e X2 (Opus 20 no Mágico pro) voltaram para conserto.
 
 ---
 
