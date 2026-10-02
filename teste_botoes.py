@@ -49,10 +49,16 @@ e conta), não por `try/except` ao redor do clique.
 
 **Não coberto de propósito, por enquanto:** "continuar" e "começar de novo" no
 cartão de projeto (reentram no fluxo principal, que já é testado pela
-abertura via área de arrastar); o aviso de "já existe arquivo com esse nome"
-em `_perguntar_sobre_substituir` (só dispara se o destino escolhido já tiver
-um arquivo com aquele nome - o destino de teste é sempre uma pasta nova);
-`teste_ampliar.py` continua sendo o teste mais detalhado do zoom/arrasto.
+abertura via área de arrastar); `teste_ampliar.py` continua sendo o teste
+mais detalhado do zoom/arrasto.
+
+**Coberto desde 02/10/2026:** a caixa "Já existe um arquivo com esse nome"
+(`_perguntar_sobre_substituir`). Antes de processar, o script deixa na pasta
+de destino um PDF com o mesmo nome; a resposta automática às caixas clica a
+opção de AcceptRole, que ali é "salvar como ... (2).pdf". Confere que o
+`(2)` foi gerado e o antigo ficou intacto. Bug que isso pega: esse botão
+chamava um seletor de destino que não existe mais na tela Conferir, e o PDF
+não era gerado (Lista de bugs, 02/10/2026).
 """
 
 from __future__ import annotations
@@ -808,6 +814,21 @@ def testar_processar_e_final(janela) -> tuple[int, int]:
         QTimer.singleShot(0, lambda: _interagir_com_confirmar(self))
         return exec_original(self)
 
+    # Ja existe um PDF com o nome que vai ser digitado: a caixa "Ja existe um
+    # arquivo com esse nome" aparece, e a resposta automatica (AcceptRole)
+    # escolhe "salvar como teste_botoes_saida (2).pdf". Ver o docstring.
+    import fitz
+
+    pasta_destino = PASTA_DE_SAIDA_DO_TESTE / "destino_escolhido"
+    antigo = pasta_destino / "teste_botoes_saida.pdf"
+    novo = pasta_destino / "teste_botoes_saida (2).pdf"
+    pasta_destino.mkdir(parents=True, exist_ok=True)
+    doc = fitz.open()
+    doc.new_page().insert_text((40, 60), "PDF antigo, nao pode ser mexido")
+    doc.save(str(antigo))
+    doc.close()
+    bytes_do_antigo = antigo.read_bytes()
+
     print("\n--- confirmar e processar ---")
     JanelaConfirmar.exec = exec_com_clique
     try:
@@ -824,6 +845,13 @@ def testar_processar_e_final(janela) -> tuple[int, int]:
         falhas += 1
         print("  FALHA o processamento não chegou à tela final")
         return ok, falhas
+
+    if novo.exists() and antigo.read_bytes() == bytes_do_antigo:
+        ok += 1
+        print(f"  ok    já existia: salvou como '{novo.name}' sem mexer no antigo")
+    else:
+        falhas += 1
+        print(f"  FALHA já existia: '{novo.name}' não foi gerado ou o antigo mudou")
 
     print("\n--- tela final ---")
     final = janela.tela_final

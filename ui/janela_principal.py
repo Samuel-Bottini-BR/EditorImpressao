@@ -986,7 +986,21 @@ class JanelaPrincipal(QMainWindow):
         return caminho
 
     def _perguntar_sobre_substituir(self, caminho: Path) -> Path | None:
-        """Já existe arquivo com esse nome: substituir, renomear ou desistir."""
+        """Já existe arquivo com esse nome: substituir, renomear ou desistir.
+
+        Devolve o caminho em que o PDF vai ser gravado (o mesmo, para
+        substituir; o `nome (2).pdf` livre, para renomear) ou None (cancelar).
+        Quem grava esse caminho em `projeto.caminho_saida` - de onde o
+        processamento (core/pipeline.py) e a proxima "Antes de processar"
+        leem - e o `processar`. Aqui nao se guarda o caminho em lugar nenhum.
+
+        Arriscado: voltar a mexer num seletor de destino daqui. Ate 02/10/2026
+        o "salvar como (2)" chamava `self.tela_conferir.destino.definir(...)`,
+        mas o seletor saiu da tela Conferir e foi para ui/janela_confirmar.py
+        (que ja esta fechada neste ponto); dava AttributeError, "Aconteceu um
+        problema inesperado" e o PDF nao era gerado. Teste:
+        tests/test_ja_existe_arquivo_com_esse_nome.py.
+        """
         alternativo = configuracoes.caminho_sem_repetir(caminho.parent, caminho.name)
 
         caixa = QMessageBox(self)
@@ -1008,7 +1022,8 @@ class JanelaPrincipal(QMainWindow):
         if escolhido is botao_substituir:
             return caminho
         if escolhido is botao_renomear:
-            self.tela_conferir.destino.definir(alternativo.parent, alternativo.name)
+            # So devolve: o processar grava em projeto.caminho_saida (ver o
+            # docstring - o seletor de destino nao mora mais na tela Conferir).
             return alternativo
         return None
 
