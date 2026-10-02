@@ -720,7 +720,67 @@ def _com_a_tinta_colorida(img: np.ndarray, binaria: np.ndarray) -> np.ndarray:
     db = cv2.absdiff(cv2.extractChannel(lab, 2), int(round(b_papel)))
     soma = cv2.add(cv2.LUT(da, quarto), cv2.LUT(db, quarto))
     tinta = cv2.compare(soma, COR_DE_TINTA * COR_DE_TINTA / 4.0, cv2.CMP_GE)
+    tinta = _so_a_tinta_de_borda_nitida(tinta, soma)
     return cv2.bitwise_and(binaria, cv2.bitwise_not(tinta))
+
+
+# Letra colorida ou mancha colorida? (verificador, 01/10/2026: no Palatino 66 a
+# mancha cor de ferrugem entre "D." e "Xlv" virava um borrao preto, e outra um
+# ponto preto no alto do "P" de "Palatinus"; antes sumiam - regra R4, "tirar
+# manchas sem mexer no titulo".) A tinta da letra (impressa ou pintada) tem a
+# BORDA NITIDA: a cor muda de uma vez entre a letra e o papel. A mancha de
+# ferrugem ou de umidade se espalha pela fibra do papel e a borda dela e
+# esmaecida. A medida e a nitidez da borda (a acutancia): a media do
+# gradiente de Sobel da distancia de cor ao papel nos pontos da beirada de
+# cada peca. Medido (Sobel 3x3, distancia de cor em unidades de a e b do LAB):
+# letras douradas da Horas 47 47 a 80; titulos vermelhos da Horas 13 52 a 64;
+# "A" dourados da Horas 27 36 a 48; douradas da Horas 14 61 a 71; numeros
+# vermelhos a mao do Palatino 67 29 a 50 (um pedaco, 13); pauta vermelha do
+# Graduale 223 20 a 30. Manchas: Palatino 66 5,9 e 6,2; Pesel 2 4,9 a 9,7;
+# pontos do papel ambar do Palatino 5 4,6 a 12. A peca abaixo de
+# BORDA_DE_TINTA nao entra (fica so o preto do binarizador, como antes da
+# regra da cor). Arriscado: subir (a pauta vermelha e a letra a mao clara
+# saem da regra) ou descer (a mancha volta a virar borrao). A letra colorida
+# grudada numa mancha fica com a borda media da mancha e tambem nao entra.
+BORDA_DE_TINTA = 16.0
+
+
+def _so_a_tinta_de_borda_nitida(tinta: np.ndarray, soma: np.ndarray) -> np.ndarray:
+    """tinta (uint8, 255 = cor de tinta) so com as pecas de borda nitida - ver
+    BORDA_DE_TINTA. soma: o quadrado/4 da distancia de cor ao papel, ponto a
+    ponto (8 bits, como em _com_a_tinta_colorida)."""
+    if not cv2.countNonZero(tinta):
+        return tinta
+    # so na caixa da tinta, com 1 ponto de folga para o Sobel
+    x, y, w, h = cv2.boundingRect(tinta)
+    y0, y1 = max(0, y - 1), min(tinta.shape[0], y + h + 1)
+    x0, x1 = max(0, x - 1), min(tinta.shape[1], x + w + 1)
+    pedaco, s = tinta[y0:y1, x0:x1], soma[y0:y1, x0:x1]
+    # a distancia de cor (a raiz de 4 x soma), em 8 bits
+    raiz = np.minimum(255.0, np.sqrt(4.0 * np.arange(256, dtype=np.float32)))
+    distancia = cv2.LUT(s, (raiz + 0.5).astype(np.uint8))
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(pedaco, connectivity=8)
+    beirada = cv2.subtract(pedaco, cv2.erode(pedaco, np.ones((3, 3), np.uint8)))
+    pontos_xy = cv2.findNonZero(beirada)          # bem mais rapido que np.flatnonzero
+    if pontos_xy is None:
+        return tinta
+    pontos_xy = pontos_xy.reshape(-1, 2)
+    onde = pontos_xy[:, 1].astype(np.int64) * beirada.shape[1] + pontos_xy[:, 0]
+    # o gradiente so nos pontos da beirada (na folha inteira, o dobro do tempo)
+    gx = cv2.Sobel(distancia, cv2.CV_16S, 1, 0).ravel()[onde].astype(np.float32)
+    gy = cv2.Sobel(distancia, cv2.CV_16S, 0, 1).ravel()[onde].astype(np.float32)
+    r = rotulos.ravel()[onde]
+    total = np.bincount(r, weights=np.hypot(gx, gy), minlength=quantas)
+    pontos = np.maximum(np.bincount(r, minlength=quantas), 1)
+    sai = np.flatnonzero((total / pontos) < BORDA_DE_TINTA)
+    sai = sai[sai > 0]
+    saida = tinta.copy()
+    # so as pecas de borda esmaecida saem, cada uma na caixa dela
+    for k in sai:
+        x, y, w, h = (int(v) for v in medidas[k, :4])
+        caixa = (slice(y0 + y, y0 + y + h), slice(x0 + x, x0 + x + w))
+        saida[caixa][rotulos[y:y + h, x:x + w] == k] = 0
+    return saida
 
 
 def filtro_preto_e_branco(

@@ -2851,3 +2851,56 @@ letra que encosta de verdade na moldura (mais que um fio) continua com a cor; o 
 "LXXXVIII." ficou azul. No Palatino 67, os números escritos à mão em vermelho saem mais cheios
 (eram contorno). A página com pouquíssima cor (menos de 0,02%) não passa pela regra da cor. O
 Mágico pro do Opus 20 continua com o rosto lavado no contorno livre (o item era o Preto e branco).
+
+---
+
+## Tentativa 63 — letra colorida × mancha colorida no Preto e branco (01/10/2026)
+
+**Pedido:** parecer do verificador dos consertos da conferência 5
+(`relatorios/conferir/conferencia-5-consertos-2026-10-01/verificador/`): "Palatino 66, Preto e
+branco: a mancha cor de ferrugem entre 'D.' e 'Xlv' vira um borrão preto, e outra vira um ponto
+preto no alto do 'P' de 'Palatinus' (antes sumiam)". Causa: a regra da letra colorida
+(`_com_a_tinta_colorida`, commit `84c031c`) pega todo ponto com cor longe da do papel, e a
+ferrugem tem cor. Regra R4: "tirar manchas sem mexer no título".
+**Situação:** feito, a conferir.
+
+**O que mudou** (`core/filtros.py`, `_so_a_tinta_de_borda_nitida`): das peças de "cor de tinta",
+só entra a de BORDA NÍTIDA — a média do gradiente de Sobel da distância de cor ao papel nos
+pontos da beirada da peça, a partir de 16 (`BORDA_DE_TINTA`). A tinta impressa ou pintada muda de
+cor de uma vez; a mancha se espalha pela fibra e tem a borda esmaecida. Medido: letras douradas
+da Horas 47 47–80, títulos vermelhos da Horas 13 52–64, "A" dourados da Horas 27 36–48,
+douradas da Horas 14 61–71, números vermelhos à mão do Palatino 67 29–50 (um pedaço 13), pauta
+vermelha do Graduale 223 20–30; manchas: Palatino 66 5,9 e 6,2, Pesel 2 4,9–9,7, pontos do papel
+âmbar do Palatino 5 4,6–12.
+
+**Tentado e descartado (só medido, não implementado):** separar pela escuridão (a mancha do
+Palatino 66 é 58 mais escura que o papel, o "JESUS" dourado 43 a 105: se cruzam) e pela forma
+(largura do traço: a mancha tem 28 pontos de largura, mas o ponto final colorido e a capitular
+grossa também são "borrões"). A cor sozinha também não separa: ferrugem e ouro têm o mesmo
+matiz.
+
+**Rodada nas 32 páginas do gabarito** (`relatorios/conferir/conferencia-5-mancha-2026-10-01/`,
+Preto e branco, as duas pelo caminho do botão "Confirmar e processar": `antes-pb` = código
+`8569a8c`, `depois-pb` = este; `ampliados/` = os lugares que mudaram, ANTES | AGORA, e
+`ampliados/lista.txt`). Em nenhuma página apareceu preto novo; só sumiu preto:
+- **Palatino 66:** o borrão preto entre "D." e "Xlv" e o ponto preto no alto do "P" de "Palatinus"
+  somem (1.395 pontos); sobram dois pontinhos onde a mancha é mais escura (o binarizador já os
+  punha antes da regra da cor).
+- **Escola 7, Escola 35, Siebmacher 7 e 9, Boécio 3, 8 e 22, Graduale 221–223, Horas 13 e 14:**
+  10 a 760 pontos de pontinhos soltos e da beirada escura do scan (Horas 13, Escola 35: a beirada da
+  pintura fica lisa em vez de serrilhada); as letras, a pauta e as notas iguais.
+- **Horas 11, 27, 47 e Palatino 67:** 6 a 39 pontos; "JESUS" e "C" da Horas 47, os títulos da
+  Horas 11, 13, 26 e 27 e os números vermelhos à mão do Palatino 67 iguais.
+- As outras 15 páginas: idênticas ponto a ponto. **Pesel 2** (fora do gabarito, rodada à parte):
+  785 pontos da faixa escura da lombada, a ferrugem do ex-libris já não virava preto.
+
+**Regra 6.** Só o filtro, alternando o código de antes e o de agora, 3 vezes cada: uma página do meio
+do `marial_300.pdf` (o livro do teste de velocidade) 0,94–0,96 s antes e 0,90–0,95 s agora (a
+página não tem cor de tinta e nem chega à conta nova — medido nas 6 páginas do meio do livro);
+Palatino 66 0,17–0,18 → 0,18–0,20 s; Horas 47 6,88–7,05 → 7,04–7,22 s (+~0,15 s, a medida da
+borda nas ~9 mil peças coloridas da iluminura). O teste de velocidade completo não foi rodado: o
+livro dele não passa pela regra da cor.
+
+**Testes:** `tests/test_conferencia_5.py`, `test_mancha_de_ferrugem_esmaecida_nao_vira_preto`
+(falhava antes: 98% da mancha preta).
+

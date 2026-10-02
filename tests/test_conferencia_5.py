@@ -206,3 +206,24 @@ def test_foto_inteira_fica_como_estava():
     rotulos, foto, _d, _r = F._tipos_das_zonas(img, g)
     assert foto.any()
     assert F._fechos_de_foto(rotulos, foto, g) is None
+
+
+# --- verificador, 01/10: a mancha cor de ferrugem nao vira borrao preto -------
+# Palatino 66: "a mancha cor de ferrugem entre 'D.' e 'Xlv' vira um borrao
+# preto" (regra R4: tirar manchas sem mexer no titulo). A letra colorida tem a
+# borda nitida; a mancha, esmaecida (_so_a_tinta_de_borda_nitida).
+
+def test_mancha_de_ferrugem_esmaecida_nao_vira_preto():
+    from core.filtros import filtro_preto_e_branco
+
+    img = _pagina_com_letra_dourada_clara()
+    mancha = np.zeros(img.shape[:2], np.float32)
+    cv2.circle(mancha, (550, 600), 22, 1.0, -1)
+    mancha = cv2.GaussianBlur(mancha, (0, 0), 9)[..., None]
+    ferrugem = np.array([60, 120, 200], np.float32)        # BGR: laranja-ferrugem
+    img = (img * (1 - mancha) + ferrugem * mancha).astype(np.uint8)
+    saida = filtro_preto_e_branco(img)
+    assert float((saida[585:615, 535:565] == 0).mean()) < 0.1, "a mancha virou borrao preto"
+    # e a letra dourada continua preta
+    for x in range(80, 400, 40):
+        assert float((saida[302:328, x + 1:x + 7] == 0).mean()) >= 0.9
