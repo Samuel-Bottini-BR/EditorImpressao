@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 6 - Editor de Impressão</title>
+<!--
+  Sexta conferencia do Samuel (01/10/2026): os consertos que ele pediu na conferencia 5
+  (respostas em relatorios/conferencia-samuel-2026-10-01.md), cada um com ORIGINAL, ANTES e AGORA.
+  Mesmo formato de conferir-aqui-5.html (aprovado por ele): cartoes com Bom / Ruim / Nao sei
+  (ou "Entendi"), comentario e "Copiar respostas". As marcacoes ficam no navegador com a chave
+  NOVA "conferir-2026-10-01-f" (nao mistura com as conferencias anteriores).
+  As imagens estao em relatorios/conferencia-6-2026-10-01/ e sao refeitas por
+  conferencia-6-2026-10-01/scripts/montar_imagens.py (so le imagens prontas; nenhuma pagina e
+  processada).
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 6 - Editor de Impressão (01/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>O que é:</b> os consertos que você pediu na conferência 5. Em cada cartão está escrito o que você respondeu, e a foto mostra o que mudou.</p>
+    <p><b>Como usar:</b> leia "O que olhar", olhe a imagem (clique para ver em tamanho cheio; clique de novo para fechar) e aperte <b>Bom</b>, <b>Ruim</b> ou <b>Não sei</b>. Embaixo de cada pergunta está escrito o que o Bom e o Ruim querem dizer naquele cartão.</p>
+    <p><b>Em todas as imagens:</b> em cima, a página inteira em três partes, cada uma com o rótulo grande: <b>ORIGINAL</b> (como veio do livro), <b>ANTES</b> (o que você viu na conferência 5) e <b>AGORA</b> (com os consertos). Embaixo, o <b>detalhe ampliado</b>, o mesmo lugar nas três. Nos cartões do corte (seção 6), cada linha tem ANTES à esquerda e DEPOIS à direita.</p>
+    <p><b>O retângulo colorido</b> (rosa = detalhe 1, azul = detalhe 2) mostra de onde vem o detalhe. Ele fica <b>com folga, por fora</b> do lugar ampliado, e os detalhes ampliados não têm nada desenhado por cima.</p>
+    <p>Suas marcações ficam guardadas neste computador. No fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que olhar (pode ter <b>), a: atencao (opcional),
+//   s: o que Bom/Ruim querem dizer, i: [imagens], tipo: "voto" (padrao) | "escolha" | "entendi",
+//   p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-6-2026-10-01/";
+const SECOES = [
+ { titulo:"1. O papel dentro e em volta das letras douradas (Horas 11)",
+   sub:"Você marcou RUIM no A2 da conferência 5: \"eu não quero esses miolos de letras com a cor da página de trás, queremos a página inteiramente branca\".",
+   cartoes:[
+    {c:"A2", t:"Horas 11: o miolo das letras douradas agora branco", i:["cartoes/a2-horas11-mp.jpg","cartoes/a2-horas11-pb.jpg"],
+     o:`Olhe <b class='onde'>o miolo do "O" de LOUIS e a volta das letras</b> (detalhe). Em cima o Mágico pro, embaixo o Preto e branco. ANTES o papel dentro e em volta das letras douradas ficava <b>creme</b>; AGORA fica <b>branco</b>, como o resto do oval. No Preto e branco as letras também passaram a sair pretas (cartão P4, logo abaixo).`,
+     s:"Bom = o papel ficou todo branco, dentro e em volta das letras. Ruim = ainda vejo creme (diga onde)."},
+   ]},
+ { titulo:"2. Letras dentro da decoração saem pretas no Preto e branco",
+   sub:"Sua resposta na P4 da conferência 5: \"Saem pretos, como o resto do texto - depende de qual filtro eu escolher usar nele, por isso o selecionador existe, para que eu possa escolher onde colocar cor e onde tirar.\" No M2 você também disse: \"as letras ainda estão saindo com alguns pedaços cinzas dentro delas\".",
+   cartoes:[
+    {c:"P4", t:"Horas 11: o título dentro do oval", i:["cartoes/p4-horas11-pb.jpg"],
+     o:`Olhe <b class='onde'>"HEURES DE LOUIS LE GRAND, FAITES DANS L'HOSTEL..."</b> dentro do oval (detalhe). ANTES as letras ficavam vermelhas e azuis; AGORA saem <b>pretas e cheias</b>, e a iluminura em volta continua com a cor original.`,
+     a:`Isto vale para o Preto e branco de fábrica. Escolher, num lugar só, se fica em cor ou sem cor (o "selecionador" que você citou) é outra coisa, que está anotada para o item 1.5.`,
+     s:"Bom = as letras saem pretas, cheias, e a iluminura continua colorida. Ruim = não (diga o quê)."},
+    {c:"M2", t:"Horas 26: 'NOVEMBRE.' e a coluna de letrinhas", i:["cartoes/m2-horas26-pb.jpg"],
+     o:`Olhe <b class='onde'>"NOVEMBRE." e as letrinhas da coluna da esquerda</b> (d, e, f, g, A...) no detalhe. ANTES ficavam azuis e douradas, com pedaços cinzas dentro; AGORA saem <b>pretas e cheias</b>, sem cinza dentro. A moldura dourada continua com a cor original.`,
+     s:"Bom = as letras saem pretas e cheias, sem cinza dentro. Ruim = ainda vejo cinza ou falha (diga onde)."},
+   ]},
+ { titulo:"3. Letras douradas que sumiam (Horas 47)",
+   sub:"Sua resposta no A1 da conferência 5: \"Eu preciso conseguir enxergar todas as letras da folha\". E no I2: \"tem que reconhecer as letras mesmo em outras cores\".",
+   cartoes:[
+    {c:"A1", t:"Horas 47: os dois 'JESUS' e o 'C' de 'C'est' agora inteiros", i:["cartoes/a1-horas47-pb.jpg"],
+     o:`Detalhe 1 (rosa): <b class='onde'>"JESUS" no começo da primeira linha e o "C" de "C'est" na terceira</b>. Detalhe 2 (azul): <b class='onde'>o segundo "JESUS", antes de "Prêchant"</b>. ANTES saíam picotados ('J.SUS'; o 'C' virava dois tracinhos); AGORA saem <b>inteiros e pretos</b>, como as outras letras.`,
+     s:"Bom = consigo ler todas as letras. Ruim = ainda falta alguma (diga qual)."},
+   ]},
+ { titulo:"4. As molduras das Horas 13 e 27",
+   sub:"Suas respostas: M1 \"ela apaga um pedaço da moldura dourada, ali perto do escrito pag. 54\"; A4 e A5 RUIM; M3 \"Temos uma falha no canto superior esquerdo da imagem\"; V2 \"ainda apaga um detalhe pequeno da moldura dourada\".",
+   cartoes:[
+    {c:"M1", t:"Horas 13: a barra de baixo da moldura, perto de 'pag. 54'", i:["cartoes/m1-horas13-mp.jpg","cartoes/m1-horas13-pb.jpg"],
+     o:`Olhe <b class='onde'>a barra dourada de baixo, embaixo de "pag. 54"</b> (detalhe). Em cima o Mágico pro, embaixo o Preto e branco. ANTES havia um <b>retângulo preto chapado</b> (Preto e branco) ou avermelhado de bordas retas (Mágico pro) no meio do dourado; AGORA a barra sai <b>inteira e dourada</b>, como no original.`,
+     s:"Bom = a barra ficou inteira, sem retângulo. Ruim = ainda vejo falha ou mancha (diga onde)."},
+    {c:"M3", t:"Horas 27: a barra de cima da moldura, perto do canto esquerdo", i:["cartoes/m3-horas27-mp.jpg","cartoes/m3-horas27-pb.jpg"],
+     o:`Olhe <b class='onde'>a barra dourada de cima, à esquerda, acima de "DE"</b> (detalhe). Em cima o Mágico pro, embaixo o Preto e branco. ANTES faltava um pedaço do dourado (um buraco branco, com pontinhos e um fio preto no Preto e branco, um remendo claro no Mágico pro); AGORA a barra sai <b>inteira</b>, como no original (com a mancha escura do canto, que também está no original).`,
+     s:"Bom = a barra ficou inteira. Ruim = ainda vejo falha (diga onde)."},
+   ]},
+ { titulo:"5. A estátua do Opus Majus 20 no Preto e branco",
+   sub:"Sua resposta no F1 da conferência 5: \"não gostei de como ficou esbranquiçada, não dá mais para ver o rosto direito da imagem\".",
+   cartoes:[
+    {c:"F1", t:"Opus Majus 20 no Preto e branco (forma 'livre', de fábrica): o rosto volta em cinza", i:["cartoes/f1-opus20-pb.jpg"],
+     o:`Olhe <b class='onde'>o rosto, o ombro e a faixa à direita da estátua</b> (detalhe). ANTES essa parte saía <b>branca chapada</b>, sem rosto; AGORA a foto inteira sai em <b>tons de cinza</b>, com o rosto, mesmo sem marcar "Este livro tem fotos".`,
+     a:`No Mágico pro, com a forma "livre", o rosto ainda sai lavado (cartão X2, no fim). Com "Este livro tem fotos" marcada, fica bom nos dois filtros.`,
+     s:"Bom = dá para ver o rosto, a foto ficou boa. Ruim = ainda está lavada ou estranha (diga onde)."},
+   ]},
+ { titulo:"6. O corte com 1 mm de papel",
+   sub:"Sua resposta na P2 da conferência 5: \"Sim, 1 mm\". Você também perguntou por que discutir isso: é porque o corte das bordas é automático em todas as páginas, e a folga que ele deixa depois da última letra vale para o livro inteiro; com pouca folga, a letra fica colada na beirada do papel impresso.",
+   cartoes:[
+    {c:"C1", t:"Escola 7 ('CRISTÃ'): a folga depois da última letra", i:["corte/corte-escola_p007.jpg"],
+     o:`Em cada linha, ANTES à esquerda e DEPOIS (com 1 mm) à direita, com quanto papel sobra entre a última tinta e a beirada. Embaixo de cada quadro, fora da página, a <b class='onde'>régua vermelha de 1 mm</b>. Olhe <b class='onde'>o fim de "CRISTÃ"</b> (direita: 0,6 → 1,1 mm) e o começo das linhas (esquerda: 0,8 → 1,4 mm).`,
+     s:"Bom = a folga ficou boa, nada colado na beirada. Ruim = não (diga onde)."},
+    {c:"C2", t:"Escola 35: a folga dos lados", i:["corte/corte-escola_p035.jpg"],
+     o:`Olhe <b class='onde'>o começo das linhas, à esquerda</b> (0,8 → 1,3 mm) e <b class='onde'>o número da página "37", à direita</b> (2,3 → 2,8 mm). A régua vermelha de 1 mm fica embaixo de cada quadro.`,
+     s:"Bom = a folga ficou boa. Ruim = não (diga onde)."},
+    {c:"C3", t:"Palatino 67: a moldura de fios", i:["corte/corte-palatino_p067.jpg"],
+     o:`Olhe <b class='onde'>os fios da moldura</b> nos quatro lados. À direita a ponta do fio de baixo era cortada ANTES (0,2 mm); DEPOIS ela fica inteira (0,6 mm). Em cima, 0,9 → 1,2 mm; à esquerda, 0,7 → 1,1 mm.`,
+     a:`Embaixo o número diz 0,8 → 0,1 mm, mas não é a moldura que ficou colada: é <b>um pontinho de sujeira</b> embaixo do fio (veja no quadro de baixo, à direita), que o corte ignora de propósito; se ele contasse, a borda iria vários milímetros para fora. A moldura embaixo continua com folga.`,
+     s:"Bom = os fios da moldura ficam inteiros e com folga. Ruim = não (diga onde)."},
+    {c:"C4", t:"Rhetorica 73: o fio da direita", i:["corte/corte-rhetorica_p073.jpg"],
+     o:`Olhe <b class='onde'>o fio vertical da direita</b>: ANTES ficavam 0,6 mm de papel depois dele; DEPOIS 1,2 mm.`,
+     s:"Bom = a folga ficou boa. Ruim = não."},
+   ]},
+ { titulo:"7. Nada piorou (rápido: um cartão por página e filtro)",
+   sub:"Páginas que não deviam mudar com estes consertos. Olhe só se continua como você já tinha aprovado; a única diferença esperada é a borda (a folga de 1 mm).",
+   cartoes:[
+    {c:"N1", t:"Palatino 5 no Preto e branco", i:["cartoes/n1-palatino5-pb.jpg"], o:`Olhe <b class='onde'>o título e o retrato</b> (detalhe): ANTES e AGORA iguais.`, s:"Bom = igual, nada piorou. Ruim = algo piorou (diga onde)."},
+    {c:"N2", t:"Palatino 5 no Mágico pro", i:["cartoes/n1-palatino5-mp.jpg"], o:`Olhe <b class='onde'>o título e o retrato</b> (detalhe): ANTES e AGORA iguais.`, s:"Bom = igual, nada piorou. Ruim = algo piorou (diga onde)."},
+    {c:"N3", t:"Escola 35 no Preto e branco", i:["cartoes/n2-escola35-pb.jpg"], o:`Olhe <b class='onde'>o anjo</b> (detalhe), em tons de cinza: ANTES e AGORA iguais.`, s:"Bom = igual, nada piorou. Ruim = algo piorou (diga onde)."},
+    {c:"N4", t:"Escola 35 no Mágico pro", i:["cartoes/n2-escola35-mp.jpg"], o:`Olhe <b class='onde'>o anjo</b> (detalhe), colorido: ANTES e AGORA iguais.`, s:"Bom = igual, nada piorou. Ruim = algo piorou (diga onde)."},
+    {c:"N5", t:"Graduale 222 no Preto e branco", i:["cartoes/n3-graduale222-pb.jpg"], o:`Olhe <b class='onde'>a pauta e as notas</b> (detalhe): ANTES e AGORA iguais.`, s:"Bom = igual, nada piorou. Ruim = algo piorou (diga onde)."},
+    {c:"N6", t:"Graduale 222 no Mágico pro", i:["cartoes/n3-graduale222-mp.jpg"], o:`Olhe <b class='onde'>a pauta vermelha e as notas</b> (detalhe): ANTES e AGORA iguais.`, s:"Bom = igual, nada piorou. Ruim = algo piorou (diga onde)."},
+   ]},
+ { titulo:"8. Só para você saber: o que ficou para o 1.4 e o 1.5",
+   sub:"Não precisa avaliar; se quiser, aperte \"Entendi\" ou escreva um comentário.",
+   cartoes:[
+    {c:"X1", t:"Horas 11: o ponto final azul de 'LXXXVIII.' encostado na moldura", tipo:"entendi", i:["cartoes/x1-horas11-ponto-azul.jpg"],
+     o:`Olhe <b class='onde'>o ponto final depois de "M. DC.LXXXVIII"</b>, no fim da linha (detalhe). No Preto e branco as letras saem pretas, mas esse ponto continua <b>azul</b>, porque encosta de verdade na moldura do oval e o programa ainda o toma por parte da iluminura. Separar letra que encosta na decoração depende do OCR (itens 1.4 e 1.5).`},
+    {c:"X2", t:"Opus Majus 20 no Mágico pro (forma 'livre'): o rosto ainda lavado", tipo:"entendi", i:["cartoes/x2-opus20-mp.jpg"],
+     o:`Olhe <b class='onde'>o rosto e a parte de cima da estátua</b> (detalhe). No Mágico pro, com a forma "livre" de fábrica, o rosto ainda sai <b>lavado</b> (branco), e o vão escuro da porta sai com pontinhos. Com "Este livro tem fotos" marcada fica bom (você já disse que é a melhor escolha). Fica para o item 1.5.`},
+   ]},
+];
+
+const CHAVE = "conferir-2026-10-01-f";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>${tipo === "voto" ? "O que olhar:" : (tipo === "escolha" ? "O que é:" : "O que houve:")}</b> ${k.o}</p>` : "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${k.t}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 6 de 01/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
