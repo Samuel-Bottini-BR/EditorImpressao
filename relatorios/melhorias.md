@@ -2766,3 +2766,88 @@ conteúdo); faixa escura: nenhuma página nova. Velocidade do corte: 3,08–3,21
 (32 páginas, menor de 5).
 
 **Testes:** `tests/test_corte_folga_1mm.py` (6, novos; falhavam antes).
+
+---
+
+## Tentativa 62 — conferência 5: miolo das letras douradas, letras dentro da decoração pretas, letra dourada no Preto e branco, moldura inteira e a estátua do Opus 20 (01/10/2026)
+
+**Pedidos** (respostas literais em `relatorios/conferencia-samuel-2026-10-01.md`): A2 Horas 11
+"eu não quero esses miolos de letras com a cor da pagina de trás, queremos a pagina inteiramente
+branca"; M2 Horas 26 "As letras ainda estão saindo com alguns pedaços cinzas dentro delas" e P4
+"Saem pretos, como o resto do texto"; A1/I2 Horas 47 "o 'JESUS' e o 'C' dourados quase somem" —
+"Eu preciso conseguir enchergar todas as letras da folha", "tem que reconhecer as letras mesmo em
+outras cores"; M1/A4 Horas 13 "ela apaga um pedaço da moldura dourada, ali perto do escrito pag.
+54"; M3/A5/V2 Horas 27 "Temos uma falha no canto superior esquerdo da imagem", "ainda apaga um
+detalhe pequeno da moldura dourada"; F1/A3 Opus 20 "não gostei de como ficou esbranquiçada, não
+da mais para ver o rosto direito da imagem".
+**Situação:** feito, a conferir (teste de máquina + teste de olho do Samuel).
+
+**O que mudou** (um commit por item):
+1. *A2* (`fbdc8de`, `core/filtros.py`): na decoração em cor (Mágico pro, Melhorar e Preto e
+   branco), o papel dentro de uma letra solta no papel branco (`_miolos_das_letras`) vai a
+   branco; e o fio creme de ~10 pontos em volta das letras douradas (o mapa de cor alisado a
+   400 pontos espalhava a cor da letra) some: perto do papel branco a cor é medida no próprio
+   ponto (`_beirada_do_papel`; o peso só sobe).
+2. *M2/P4* (`932fd9a`, `core/filtros.py`): no Preto e branco, a letra solta no papel da
+   decoração (`_pedacos_soltos`: pedaço pequeno, até 1/10 do menor lado, contado com o resto
+   afinado de 1 ponto e depois da beirada; ou a linha de letras presas por um fio fino, que
+   quase não sobra de uma abertura) sai preta e cheia; a sujeira miúda (`_despeckle`) e a
+   mancha clara (`_so_a_tinta_forte`: média da distância de cor + do escuro abaixo de 75) não.
+   Horas 26: NOVEMBRE. e a coluna de letras pretas; Horas 11: os títulos do oval pretos. O
+   Mágico pro fica idêntico.
+3. *M1/A4, M3/A5, V2* (`358d27e`, `core/detectar_regioes.py`): `_emendar_as_barras` — depois do
+   crescimento pela moldura, um fechamento com uma linha deitada e outra em pé (10% do menor
+   lado); entra só o pedaço emendado quase todo "não papel" (90%), e cresce de novo para a barra
+   torta ficar com a largura inteira. Horas 13: o vão de ~25 pontos da barra de baixo (o
+   retângulo preto/avermelhado) entra; Horas 27: o vão de ~45 pontos da barra de cima.
+4. *A1/I2* (`84c031c`, `core/filtros.py`): `_com_a_tinta_colorida` — no Preto e branco, o ponto
+   a 21 ou mais da cor do papel (a e b do LAB) é preto, somado ao preto do binarizador. Porta:
+   só se 0,02% da página (de 4 em 4 pontos) tem essa cor.
+5. *F1/A3* (`d38c95c`, `core/filtros.py`): `_fechos_de_foto` — no Preto e branco, a foto que
+   enche pelo menos 75% do seu fecho convexo (e onde falta pelo menos 3%) vale o fecho inteiro;
+   o papel marcado dentro dele não vai a branco. Opus 20: o rosto volta (zona = 81% do fecho);
+   Escola 35: idêntico.
+
+**Tentado e descartado:**
+- *A2 pela caixa da letra só com a componente original* (sem afinar): o "H" de HEURES da Horas 11
+  encostava no festão do oval por um fio e ficava de fora; afinar 1 ponto antes de contar e contar
+  depois da beirada resolveu.
+- *M2 sem o filtro da mancha*: o respingo rosado e a mancha clara do oval da Horas 11 viravam
+  pontos pretos (força 46 a 64 contra 86 a 125 das letras e dos pontos finais).
+- *M2 só com pedaços pequenos*: "LXXXVIII" da Horas 11 fica preso pelo risco de pauta embaixo
+  (626 pontos de largura) e ficava azul; entrou a regra da linha fina.
+- *A1 com um segundo binarizador sobre um cinza que escurece a cor* (o canal mais escuro onde a
+  cor se afasta do papel): o resultado era parecido, mas custava um Sauvola a mais por página e,
+  com o Otsu, mudava o limiar da página inteira (Graduale 222 perdia preto). Ficou o limiar fixo
+  sobre a distância de cor, somado ao preto de antes.
+- *A1 com a cor contando a partir de 12* (rampa de 12 a 24): o papel âmbar do retrato do Palatino 5
+  e a margem dele ganhavam pontos pretos; a partir de 14–16 já não, e o limiar ficou em 21.
+- *F1 pela caixa da foto* em vez do fecho: a margem de papel em volta do anjo da Escola 35 (borda
+  suave da zona) ficava cinza.
+- *Item 4 testado numa cópia do `core` fora do projeto*: o modelo de layout (`modelos/doclayout.onnx`)
+  é procurado ao lado do `core`; sem ele o detector não tirava o texto da gravura e a Horas 26
+  virava gravura inteira. Não é defeito do programa, só da cópia de teste (anotado para quem for
+  medir assim).
+
+**Regra 6 (velocidade).** Medido com as funções do `teste_velocidade.py` (`marial_300.pdf`,
+abrir + trocar de página + processar 10 páginas, uma rodada por processo, alternando o código de
+antes — `core/filtros.py` e `core/detectar_regioes.py` de `615f05b` — com o de agora; a máquina
+estava dividida com outras frentes e os números variam até 30% de uma rodada para outra). A
+primeira medida achou o detector mais lento: a emenda das barras e o crescimento depois dela
+custavam ~82 ms por página (Mágico pro 90,3 → 92,9 s, Preto e branco 42,5 → 43,6 s, medianas).
+Consertado em `83ad915` (a emenda só na caixa da gravura e o novo crescimento só em volta do que
+foi emendado: o crescimento passa de 127–129 ms para 139–141 ms no Marial 7) e em `8569a8c` (a
+porta da letra colorida de 8 em 8 pontos: ~15 → ~5 ms por página). Depois disso, nas rodadas com
+a máquina mais livre: abrir 32,7–38,8 s antes, 32,7–33,9 s agora; trocar de página 3,27 s antes e
+3,27 s agora (medianas); Mágico pro de 10 páginas 66,6–73,7 s antes, 67,0–73,3 s agora (mediana
+69,3 → 68,9); Preto e branco de 10 páginas 31,8–34,9 s antes, 31,8–35,6 s agora (mediana 32,1 →
+33,8, dentro da variação; a conta que sobrou nas páginas sem cor é ~5 ms da porta e ~12 ms do
+detector); memória igual (~1.538 MB). Nas páginas com decoração, só o filtro: Mágico pro +~0,13 s
+(A2), Preto e branco +~0,12 s (letras pretas) e +75 a 107 ms (letra colorida) numa página das
+Horas de ~7 a 10 s.
+
+**Ressalvas:** o Preto e branco das páginas com decoração passa a ter as letras pretas, mas a
+letra que encosta de verdade na moldura (mais que um fio) continua com a cor; o ponto final de
+"LXXXVIII." ficou azul. No Palatino 67, os números escritos à mão em vermelho saem mais cheios
+(eram contorno). A página com pouquíssima cor (menos de 0,02%) não passa pela regra da cor. O
+Mágico pro do Opus 20 continua com o rosto lavado no contorno livre (o item era o Preto e branco).
