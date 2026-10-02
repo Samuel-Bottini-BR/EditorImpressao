@@ -2339,6 +2339,167 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <li><strong>Telas e janelas:</strong> 5 telas da janela principal (inicial, "O que fazer", progresso, conferir, "Pronto"), com 5 abas e 4 painéis na de conferir; 6 janelas à parte ("Folhear o livro", "Ver de perto", "Tamanho da folha", "Confirmar e processar", "Configurações", "Lista de atalhos"); 14 caixas de pergunta ou aviso do programa; 4 caixas do Windows (abrir PDF, procurar o livro, duas de escolher pasta). <strong>Total: 29</strong>, sem contar abas e painéis.</li>
 <li><strong>Controles</strong> (botões, caixinhas, bolinhas, deslizantes, listas, campos, itens de menu, alças e áreas de arrastar), contados à mão: cerca de <strong>230</strong> — 31 itens de menu, 11 na tela inicial (contando um cartão), 23 em "O que fazer", 3 no "Folhear", 1 no progresso, cerca de 76 na conferência (com as 9 ferramentas e os 4 painéis), 13 em "Ver de perto", 4 em "Confirmar e processar", 7 em "Tamanho da folha", 32 em "Configurações" (30 campos de tecla), 3 em "Pronto" e cerca de 27 nas caixas. Mais cerca de 30 atalhos de teclado.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 02/10/2026 às 16:13</p>
+<hr />
+<h2>8. Perguntas do Samuel (02/10): dá para mexer nas peças sem reescrever a tela de conferir?</h2>
+<p>Respondido só lendo o código (ramo <code>fase-1</code>), sem abrir o programa. Linhas de <code>ui/tela_conferir.py</code>, salvo quando outro arquivo é dito.</p>
+<h3>8.1 As peças são separadas ou estão presas na tela de conferir?</h3>
+<p><strong>São peças separadas, cada uma num arquivo próprio, mas quem as monta, liga e alimenta é a tela de conferir.</strong> Ela é a "cola": põe cada peça no lugar (uma lista fixa, de cima para baixo, no <code>_montar</code>, l. 263–342), liga os sinais e, a cada mudança, chama um único <code>atualizar()</code> (l. 1495) que redesenha tudo. As peças não sabem nada do livro nem umas das outras (exceção: o painel "Marcar como", que a tela mexe por dentro, l. 886–890).</p>
+<table>
+<thead>
+<tr>
+<th>Peça</th>
+<th>Onde é criada</th>
+<th>Quanto da lógica dela mora na tela de conferir</th>
+<th>(a) recolher em ícones</th>
+<th>(b) mudar de lugar</th>
+<th>(c) esconder/mostrar por aba</th>
+<th>(d) destacável/arrastável como no Photoshop</th>
+<th>Referência</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Os 4 painéis da direita</td>
+<td><code>_montar</code>, l. 300 (a coluna inteira)</td>
+<td>Ligações em <code>_ligar_paineis</code> (l. 345–353); conteúdo refeito em <code>_atualizar_paineis</code> (l. 1518–1526) e quando chega um alerta; "Marcar como" mexido por dentro (l. 886–890)</td>
+<td><strong>médio</strong>: recolher até a barra de título <strong>já existe</strong> (clique no título); virar ícone pede ícone desenhado e um modo estreito, porque a coluna e os botões são travados em 172 px</td>
+<td><strong>barato</strong>: uma linha no <code>_montar</code> (ex.: à esquerda)</td>
+<td><strong>barato</strong>: já existe <code>mostrar_painel</code> (<code>paineis.py</code> l. 425) e o menu Ver já tem os itens, só falta ligar</td>
+<td><strong>médio</strong> se só encaixar nos lados da tela de conferir; <strong>caro</strong> se for espaço de trabalho livre com arranjo salvo</td>
+<td><code>ui/widgets/paineis.py</code></td>
+</tr>
+<tr>
+<td>Trilha de ferramentas</td>
+<td><code>_montar</code>, l. 288</td>
+<td>Ligações em <code>_ligar_ferramentas</code> (l. 364–384) e <code>escolher_ferramenta</code> (l. 386–390); só funciona se a aba Marcar existir</td>
+<td>já é de ícones</td>
+<td><strong>barato</strong> noutra coluna; <strong>médio</strong> para virar barra no alto (desenho e clique são contas de coluna vertical)</td>
+<td><strong>barato</strong>: mostrar/esconder na troca de aba (l. 1439)</td>
+<td><strong>médio</strong></td>
+<td><code>ui/widgets/trilha_ferramentas.py</code></td>
+</tr>
+<tr>
+<td>Barra de opções da ferramenta</td>
+<td><code>_montar</code>, l. 279</td>
+<td>Ligações em l. 371–381; o estado fica nela mesma</td>
+<td>não se aplica</td>
+<td><strong>barato</strong> em qualquer faixa horizontal; <strong>médio</strong> se ficar em pé</td>
+<td><strong>barato</strong></td>
+<td><strong>médio</strong></td>
+<td><code>ui/widgets/barra_opcoes.py</code></td>
+</tr>
+<tr>
+<td>Tira de miniaturas</td>
+<td><code>_montar</code>, l. 332 (junto com "Confirmar e processar")</td>
+<td>Montagem e decisão "folhas ou páginas" em <code>_montar_tira</code> (l. 1337–1373); molduras de alerta em <code>_atualizar_tira</code> (l. 1811–1818)</td>
+<td><strong>barato</strong> esconder; não tem ícone</td>
+<td><strong>barato</strong> mudar de faixa; <strong>médio</strong> virar coluna à esquerda como no UPDF (hoje é linha de altura fixa)</td>
+<td><strong>barato</strong></td>
+<td><strong>médio</strong></td>
+<td><code>ui/widgets/tira_miniaturas.py</code></td>
+</tr>
+<tr>
+<td>A página (prévia)</td>
+<td><strong>uma por aba</strong>, em <code>_area_de_visualizador</code> (l. 457–482), com "&lt;" e "&gt;" dos lados; a aba Marcar usa outra peça, o editor de marcação (l. 799); a aba Filtro não tem página, tem cartões (l. 1174–1181)</td>
+<td>O que cada aba mostra é decidido em <code>_atualizar_previa</code> (l. 1528–1571); o zoom fica dentro de cada peça</td>
+<td>não se aplica</td>
+<td><strong>barato</strong> tirar as setas dos lados e pôr navegação e zoom num canto</td>
+<td>já é por aba</td>
+<td>não se aplica</td>
+<td><code>ui/widgets/visualizador.py</code>, <code>ui/widgets/editor_selecao.py</code></td>
+</tr>
+<tr>
+<td>Faixa de explicação + botão laranja</td>
+<td><code>_montar</code>, l. 306–314</td>
+<td>Texto decidido por aba (l. 1742–1767) e pelos alertas</td>
+<td>—</td>
+<td><strong>barato</strong></td>
+<td><strong>barato</strong></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Linha de botões de cada aba</td>
+<td>cada <code>_montar_aba_...</code> (l. 492, 506, 757, 770, 1152)</td>
+<td>Os botões são da aba, mas o que fazem são funções da tela (l. 1913–2310)</td>
+<td>—</td>
+<td><strong>barato</strong> (ex.: virar barra no alto)</td>
+<td>já é por aba</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>As abas são separáveis?</strong> Em parte. Cada aba é <strong>montada</strong> por uma função própria (Onde cortar l. 492, Bordas l. 506, Endireitar l. 757, Marcar l. 770, Filtro l. 1152), e as peças de cada uma ficam guardadas em listas separadas. Mas <strong>dividem o mesmo estado e o mesmo "cérebro"</strong>: a página atual (Onde cortar conta folhas, as outras contam páginas, l. 1387–1399), a resolução da prévia, o desfazer, a faixa, a fila de botões, e um único <code>atualizar()</code> que pergunta "qual aba está na frente?" em vários lugares (l. 1528–1571, 1742–1767, 1790–1809, e o teclado em l. 2392–2461). Há ligações cruzadas: o editor da aba Marcar é usado pelo menu Marcar, pela trilha e pelos painéis; botões da aba Bordas são lidos pelo teclado e pela prévia; o medidor e o "apagar página" da aba Filtro são acertados em <code>_atualizar_botoes</code>. Separar cada aba num arquivo seria mudança de estrutura (média a cara; o <code>CLAUDE.md</code> pede para não reescrever módulos inteiros) e <strong>não é preciso para o desenho novo</strong>.</p>
+<p><strong>Barato no desenho novo:</strong> trocar ordem e lugar das faixas e colunas (painéis à esquerda, botões da aba em cima, tira em cima ou embaixo); esconder ou mostrar painéis, trilha e barra de opções conforme a aba (resolve "a trilha aparece onde não funciona"); recolher painéis até a barra de título (já existe); ligar os itens do menu Ver; pôr navegação e zoom num canto; trocar textos, cores e o quadrado das caixinhas.</p>
+<p><strong>Médio:</strong> painéis que recolhem em ícones; painéis destacáveis encaixados nos lados da tela de conferir; trilha em barra horizontal no alto; tira de miniaturas em coluna à esquerda (o layout do UPDF); uma só área de página para todas as abas (hoje cada aba tem a sua, a Marcar é outra peça e a Filtro mostra cartões).</p>
+<p><strong>Caro:</strong> espaço de trabalho livre como o do Photoshop, com painéis soltos em qualquer lugar e arranjo salvo; a grade "todas as páginas" do UPDF com seleção múltipla, girar, apagar, extrair, inserir e dividir (peça nova inteira); separar as abas em arquivos próprios.</p>
+<h3>8.2 Quais achados "a conferir" foram vistos na janela de verdade?</h3>
+<p><strong>Nenhum.</strong> Tudo foi só leitura do código; não abri o programa nem tirei print. Todos os achados da seção 4 continuam "a conferir na janela".</p>
+<p><strong>Cabeçalho escondido (observações do livro e contador de dúvidas):</strong></p>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Referência</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>É criado por <code>_montar_cabecalho</code>, chamado no <code>_montar</code></td>
+<td>l. 269 e l. 392–436</td>
+</tr>
+<tr>
+<td>A caixa nasce presa à tela, <strong>fora de qualquer arrumação</strong>, e é escondida</td>
+<td>l. 408–409</td>
+</tr>
+<tr>
+<td>Dentro dela: "Confira antes de processar", as observações do livro, o contador ("tudo certo" / "N páginas para você olhar"), "Desfazer" e "Refazer"</td>
+<td>l. 411–435</td>
+</tr>
+<tr>
+<td>Contador e observações são atualizados a cada mudança, mas dentro da caixa escondida (o "mostrar" das observações não adianta: a caixa de fora continua escondida)</td>
+<td>l. 1820–1839 (l. 1837)</td>
+</tr>
+<tr>
+<td>Algum caminho mostra a caixa? <strong>Não.</strong> Nenhum outro arquivo a usa; só o <code>teste_botoes.py</code> clica nesses botões por código</td>
+<td><code>teste_botoes.py</code> l. 624</td>
+</tr>
+</tbody>
+</table>
+<p>Consequência: as observações do livro inteiro, vindas da análise, <strong>não aparecem em lugar nenhum</strong>. O contador e o desfazer têm substitutos à vista (painel "Para revisar", menu Editar, painel "Histórico").</p>
+<p><strong>Conflito da tecla R:</strong></p>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Referência</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R da ferramenta Retângulo é <strong>registrada</strong> (aparece em Configurações e dá para trocar), junto com O L P B V C Z E</td>
+<td><code>ui/widgets/editor_selecao.py</code> l. 106–122</td>
+</tr>
+<tr>
+<td>"Girar a folha" com R <strong>não é registrado</strong>: está escrito direto no código e não aparece em Configurações</td>
+<td>l. 2449–2451</td>
+</tr>
+<tr>
+<td>O menu "Girar" não tem tecla</td>
+<td><code>ui/barra_de_menu.py</code> l. 133</td>
+</tr>
+<tr>
+<td>Caminho da tecla: o editor da aba Marcar (se tiver o foco) não trata R e passa adiante; a janela manda a tecla para a tela de conferir</td>
+<td><code>editor_selecao.py</code> l. 600–610; <code>ui/janela_principal.py</code> l. 1086–1093</td>
+</tr>
+<tr>
+<td>Ordem na tela de conferir: 1º Ctrl+Z / Ctrl+Y / Ctrl+Enter; <strong>2º letras das ferramentas</strong> (R = Retângulo, e para aí); 3º M e T da aba Bordas; 4º setas, Espaço, Tab; 5º Del; <strong>6º R = girar</strong>; 7º 1 a 4</td>
+<td>l. 2401–2459</td>
+</tr>
+</tbody>
+</table>
+<p>Quem ganha: <strong>em todas as abas, R escolhe a ferramenta Retângulo</strong>; o "girar" nunca é alcançado (só seria se a tecla do Retângulo fosse trocada em Configurações). Fora da aba Marcar, apertar R não faz nada visível (só troca a ferramenta na trilha). <strong>Se a aba Marcar não existir</strong> ("Limpar a folha" desmarcada), escolher a ferramenta procura o editor de marcação, que não foi criado (l. 386–390; ele só nasce em l. 799): pela leitura, cai no aviso geral "Aconteceu um problema inesperado..." (vale também para as outras letras de ferramenta e para Marcar &gt; "Limpar tudo" / "Deixar a folha em branco"). A conferir na janela.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 02/10/2026 às 16:27</p>
 </body>
 </html>
