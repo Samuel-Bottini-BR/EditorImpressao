@@ -3055,3 +3055,36 @@ mexe).
 **Testes:** `tests/test_medidor_nas_paginas_otsu.py` (folha sintética: coerente ponto a ponto, o 0 não
 volta ao Otsu picotado, o 50 igual ao conserto de `1b174e4`, o 100 não puxa risco solto, o Otsu
 escolhido à mão não muda; Horas 47 de verdade: coerente e sem picotar no 0).
+
+## Tentativa 67 — Horas 11 no Preto e branco: a medida cheia de ~9,5 s por causa de 0,4 ponto de tinta (regra 6, 02/10/2026)
+
+**O defeito** (ressalva 2 do verificador na conferência dos consertos da conferência 6): na Horas 11 o
+Preto e branco ficou 0,2 a 0,4 s mais lento com `1b174e4` (a borda do Sauvola é paga e não muda a
+imagem), ferindo a regra 6 nessa página.
+
+**Causa.** A escolha automática do binarizador só usa a medida reduzida da espessura (a do k, já
+paga) quando ela existe; na Horas 11, pelo caminho do programa (5633 × 3684 pontos), a reduzida acha
+60,4% de tinta contra a trava de 60% (a moldura e a iluminura enchem metade da folha) e desiste, e a
+escolha paga a medida de tamanho cheio (~9,5 s a 300 DPI) só para responder "passa de 10 pontos?".
+
+**O que mudou** (`core/filtros.py`, `escolher_algoritmo_automatico` e `_medir_espessura_do_traco`, com
+`trava_de_tinta`): quando a medida guardada desiste e a página foi reduzida para medir, a reduzida é
+refeita sem a trava (~0,3 s); se der Otsu com folga (≥ 16, a mesma `FOLGA_DA_MEDIDA_REDUZIDA`), a
+resposta sai com a mesma porta de tinta da medida cheia (folha inteira entre 0,2% e 60%: Otsu; fora,
+Sauvola). Senão, a medida cheia decide, como sempre. O k continua vendo a medida com a trava (na Horas
+11 o k segue 0,30), e por isso a imagem não muda. Na Horas 11: sem trava 44,0; a cheia 33,9.
+
+**Pensado e não feito:** subir a trava de 60% na medida guardada (mudaria o k da Horas 11 de 0,30
+para 0,12 e a imagem); tornar a borda do Sauvola mais barata (pagaria os 0,3 s, mas não os 9,5 s da
+medida cheia, que são o grosso do tempo).
+
+**Rodada** (32 páginas, caminho do botão "Confirmar e processar", `a10e592` × agora, com os dois
+consertos de 02/10): Preto e branco, Mágico pro e Melhorar, 96 de 96 idênticas ponto a ponto.
+**Tempo** (PC sem outro agente): pelo caminho do programa, alternado ANTES/AGORA três vezes, Horas 11
+16,1 / 15,9 / 16,3 s → 11,2 / 11,0 / 11,1 s; Horas 47 8,5–8,7 → 8,6–8,7; Graduale 222 4,1–4,3 →
+4,0–4,1; Palatino 5 1,8–1,9 → 1,8–1,9. Só o filtro (medidor no 50), na imagem que o programa entrega,
+mediana de 3 voltas alternadas: Horas 11 6,3 s antes do A1 (`4a9c0e4`), 6,5 s com o A1, 1,4 s agora.
+
+**Testes:** `tests/test_escolha_sem_a_trava_de_tinta.py` (traço grosso com folga não paga a medida
+cheia; folha com tinta demais continua Sauvola; traço fino continua indo à medida cheia; a trava
+continua valendo para o k).

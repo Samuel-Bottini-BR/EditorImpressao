@@ -415,6 +415,20 @@ def _esqueleto(tinta: np.ndarray) -> np.ndarray:
 # (1,5 s e 0,6 s). Arriscado: baixar de 1,6 (uma pagina perto do limite
 # poderia trocar de Sauvola para Otsu).
 FOLGA_DA_MEDIDA_REDUZIDA = 1.6
+# TINTA_DEMAIS_PARA_MEDIR (02/10/2026, regra 6): a medida guardada (a do k)
+# desiste quando a folha reduzida passa de 60% de tinta, e ai a escolha
+# pagava a medida cheia. Na Horas 11, pelo caminho do programa (5633 x 3684
+# pontos), a reduzida da 60,4% de tinta (a moldura e a iluminura enchem
+# metade da folha) e a cheia 59,7%: a medida cheia (~9,5 s) era feita so por
+# 0,4 ponto percentual. A mesma reduzida, sem a trava, mede 44,0 (a cheia
+# 33,9; o limite com folga e 16). Entao: quando a guardada desiste, a
+# reduzida e refeita sem a trava (~0,3 s), e se der Otsu com folga a
+# resposta sai com a mesma porta de tinta da medida cheia (folha inteira
+# entre 0,2% e 60%: Otsu; fora disso, Sauvola, como a cheia diria). Senao, a
+# medida cheia decide, como sempre. O k (k_para_a_letra) continua vendo a
+# medida COM a trava: na Horas 11 o k segue K_NORMAL e a imagem nao muda.
+# Arriscado: usar a medida sem trava para o k (muda o k e a imagem da Horas
+# 11) ou tirar a porta de tinta da folha inteira (a escolha poderia trocar).
 
 
 def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
@@ -442,6 +456,18 @@ def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
                         else ALGORITMO_SAUVOLA)
             if reduzida >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA:
                 return ALGORITMO_OTSU
+        elif cinza.shape[0] > ALTURA_PARA_MEDIR_TRACO:
+            # a medida guardada desistiu (ver TINTA_DEMAIS_PARA_MEDIR): a
+            # reduzida sem a trava responde "Otsu com folga" sem a cheia
+            sem_trava = _medir_espessura_do_traco(cinza, trava_de_tinta=False)
+            if (sem_trava is not None
+                    and sem_trava >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA):
+                # a mesma porta de tinta da medida cheia, abaixo
+                _lim, tinta = cv2.threshold(
+                    cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+                fracao = cv2.countNonZero(tinta) / float(tinta.size)
+                return (ALGORITMO_OTSU if 0.002 <= fracao <= 0.6
+                        else ALGORITMO_SAUVOLA)
     except Exception:  # noqa: BLE001 - a medida cheia, abaixo, decide
         pass
     try:
@@ -620,8 +646,12 @@ def _k_da_espessura(espessura: float | None) -> float:
     return K_PARA_LETRA_FINA + (K_PARA_LETRA_GROSSA - K_PARA_LETRA_FINA) * fatia
 
 
-def _medir_espessura_do_traco(cinza: np.ndarray) -> float | None:
-    """A medicao de verdade, sem o cache. Ver _espessura_do_traco."""
+def _medir_espessura_do_traco(cinza: np.ndarray,
+                              trava_de_tinta: bool = True) -> float | None:
+    """A medicao de verdade, sem o cache. Ver _espessura_do_traco.
+
+    trava_de_tinta=False: mede mesmo com mais de 60% de tinta - so para a
+    escolha automatica (ver TINTA_DEMAIS_PARA_MEDIR); o k usa sempre a trava."""
     escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
     if escala < 1.0:
         cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
@@ -633,7 +663,7 @@ def _medir_espessura_do_traco(cinza: np.ndarray) -> float | None:
     _lim, tinta = cv2.threshold(
         cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     tinta = (tinta > 0).astype(np.uint8)
-    if tinta.mean() < 0.002 or tinta.mean() > 0.6:
+    if tinta.mean() < 0.002 or (trava_de_tinta and tinta.mean() > 0.6):
         return None
 
     distancia = cv2.distanceTransform(tinta, cv2.DIST_L2, 5)
