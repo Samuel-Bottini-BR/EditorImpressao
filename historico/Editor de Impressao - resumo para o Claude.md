@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 02/10/2026 (PARTE -9). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 03/10/2026 (PARTE -10). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,180 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -9 — Checkpoint de 29/09 a 02/10/2026 (leia isto primeiro, é o mais novo)
+# PARTE -10 — Checkpoint de 02 a 03/10/2026 (leia isto primeiro, é o mais novo)
+
+**O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). Tudo o
+que está aqui tem linha própria, com commit, no **Registro de mudanças** e na **Lista de bugs** do
+PLANO-DEFINITIVO (as duas cópias do plano estão iguais no fim desta sessão).
+
+## 1. Estado atual (03/10)
+
+- Ramo **`fase-1`** no GitHub, último commit da sessão `05d5d72` + o commit deste checkpoint.
+  `master` continua em `44c86a4`. Testes: ver seção 8.
+- **Os dois formulários de 01/10 foram respondidos** (literais em `relatorios/conferencia-samuel-2026-10-02.md`
+  e `relatorios/decisoes-samuel-2026-10-02.md`):
+  - **Itens 1.1, 1.2 e 1.3 APROVADOS `[x]`** pelo Samuel (marcados no plano com a frase dele).
+  - Conferência 6: 17 BOM (molduras da Horas 13/26/27, miolo dourado da Horas 11, Opus 20 no PB, corte
+    de 1 mm nas 4 páginas, N1–N6 sem piora). **RUIM:** A1 (Horas 47 no PB, letras finas) e X2
+    (Opus 20 no Mágico pro, "livre": rosto lavado, pontinhos, retângulo branco novo).
+- **Consertado nesta sessão, verificado por verificador independente, A CONFERIR pelo Samuel no formulário 7:**
+  - **A1** (`1b174e4`): nas páginas de letra grossa o Otsu da folha inteira caía no meio do tom da letra
+    (moldura/iluminura puxavam) e comia a beirada; agora o Sauvola completa as peças que o Otsu já tem
+    pela metade (só na escolha automática). Horas 47 com texto cheio; outras páginas só mais pretas ou
+    idênticas. Pioras mínimas: pauta do Graduale 221/223, fio curto na Horas 13 (imperceptíveis).
+  - **X2** (`6748949`): o conserto do F1 (foto que enche o próprio contorno vale como foto inteira) passou
+    a valer no Mágico pro e no Melhorar. O retângulo branco vinha de `358d27e` (emenda das molduras,
+    mantida porque conserta as molduras aprovadas). Opus 20 quase igual a "Este livro tem fotos". O rosto
+    continua mais claro que o original (jeito do Mágico pro; pergunta X2b).
+  - **Medidor de força** (`bf9680f`): o A1 tinha desacertado o medidor (0 picotava, 100 falhava letras);
+    agora os pedaços do Sauvola são escolhidos sempre como no 50 e o medidor só afina pouco / engrossa até
+    2 pontos a 300 DPI; subir nunca clareia ponto; no 50 nada mudou. Custo fora do 50: +0,15–0,28 s por
+    página de letra grossa (pergunta S2).
+  - **Horas 11 mais rápida** (`7f50e70`): a medida pequena da grossura desistia pela trava de 60% de tinta
+    (a página tem 60,4%) e pagava a medida grande (~9,5 s); agora refaz sem a trava. Processar a Horas 11:
+    ~17 → ~12 s; **96/96 imagens idênticas**.
+  - **"salvar como … (2).pdf"** (`25d916e`): chamava `self.tela_conferir.destino`, que não existe mais; o
+    PDF não era gerado. Linha tirada; testes em `tests/test_ja_existe_arquivo_com_esse_nome.py`;
+    **confirmado funcionando na janela real** (rodada de prints).
+  - Pareceres: `relatorios/conferir/conferencia-6-consertos-2026-10-02/verificador/` e
+    `relatorios/conferir/medidor-e-horas11-2026-10-02/verificador/`.
+- **Inventário completo de telas, botões e funções** para o plano de layout do Samuel:
+  `relatorios/layout-inventario-2026-10-02/inventario-telas-e-funcoes.html` (29 telas/janelas/caixas,
+  ~230 controles, ~30 atalhos; o que AINDA NÃO EXISTE; seção 8: o que é barato/médio/caro mexer).
+  Resumo da seção 8: painéis, trilha, barra de opções, miniaturas e prévia são peças separadas; a
+  `tela_conferir.py` (2.514 linhas) só cola e redesenha tudo por um `atualizar()`; as 5 abas dividem o
+  mesmo estado. Barato: mudar lugar/ordem, esconder por aba, recolher até o título, ligar menu Ver. Médio:
+  painéis em ícones, encaixáveis, trilha no alto, miniaturas à esquerda. Caro: área livre tipo Photoshop
+  com arranjo salvo, grade "todas as páginas" do UPDF, separar abas em arquivos.
+- **Prints em 1280×657 tirados na janela real** (o Samuel autorizou abrir na tela dele):
+  `relatorios/prints-telas-2026-10-02/` (53 PNG + 21 em `menus-antes-depois/`, 57 MB, **fora do git**;
+  só o `.md` do relatório está no git). Relatório: `prints-e-conferencia-na-janela.html`.
+- **O Samuel está escrevendo o plano de layout** numa conversa do claude.ai, usando o inventário e os
+  prints. O agente de layout **não começou** (só começa com o plano entregue). Respostas já dadas a essa
+  conversa: ninguém mexe no layout; o que é barato/caro (acima); nenhum achado tinha sido visto na janela
+  (depois foram, na rodada de prints); a escala do Kaique é desconhecida.
+
+## 2. Decisões fechadas nesta sessão (palavras dele no Registro de mudanças, 02/10)
+
+- **D1:** Fase 2 começa pelo **modo Misto**, na ordem proposta (Misto com zonas à mão, limpar pontinhos,
+  tipos de PB, claro no escuro e cores → geometria → 2.15 → 2.10 com o 1.6 → 2.12 → 2.16 → 2.19).
+- **D2:** "Sim, pode mudar (com cópia de segurança dos projetos)": zonas da aba Marcar passam a ser
+  guardadas **em relação à folha original**, com conversão dos projetos antigos e cópia antes; **antes da
+  geometria**.
+- **D3:** "Não lembro; teste nas páginas de teste e me mostre - mas eu quero usar o do scantailor, pois o
+  nosso não é tão intuitivo de se usar." → 2.2/2.3 usam o do ScanTailor; antes, mostrar a ele o nosso ×
+  ScanTailor nas páginas de teste (diferem: Horas 11 e 47, Siebmacher 7 e 9).
+- **O1:** todas as caixinhas com o quadrado (e filtros com a bolinha) visíveis. **Ainda não feito.**
+- **O2:** deixar as 13 linhas de teste no `erros.log` real (vieram de um teste de 30/09 13:35 que simulava
+  falha do servidor de páginas, antes do conserto `c1c3cc2`; o arquivo não mudou mais desde então; o
+  programa só escreve nele, nunca lê).
+- **O3:** manter a estátua no arquivo do Kaique, "Mas precisa ser melhorado" (refazer o exemplo).
+- **O4:** limpar os 48 MB juntando o trabalho aprovado num commit só ao levar ao master.
+- **O Samuel autorizou consertar já** (exceção à regra de esperar a próxima fase) o "salvar como (2)",
+  porque o Kaique perdia o PDF.
+
+## 3. Tentado e descartado
+
+- A1: tentativas 64–65 em `relatorios/melhorias.md`; medidor e Horas 11: tentativas 66–67 (inclusive
+  "mais fraco" mais forte que 0,04 no k: 0,18/0,20/0,25 voltam a picotar a Horas 47).
+- X2: desfazer `358d27e` para tirar o retângulo — descartado (quebra as molduras aprovadas da Horas 13/27).
+- Trocar o valor de fábrica da forma para "retangular" — não feito (decisão do Samuel: "livre"; precisa
+  pergunta).
+
+## 4. Descobertas de comportamento real
+
+- **Disco C quase cheio** (14–21 GB livres, 96–98%): uma bateria de testes falhou por falta de espaço.
+  O empacotamento (instalador de 561 MB) precisa de bem mais.
+- **Escala do Windows deste PC: 125%** (1920×1080). Janela de 1600×821 px = 1280×657 pontos. A escala do
+  notebook do Kaique **nunca foi conferida** (registros dizem "125% ou 150%"); 1280×657 é o caso de 150%.
+- **Pilotar a janela real:** o mouse simulado não aciona item de menu suspenso do Qt (usar o teclado do
+  menu); para a janela contar como ativa sem roubar o foco do Samuel, `WM_SETFOCUS` só na janela de teste.
+  Scripts do piloto em `relatorios/prints-telas-2026-10-02/scripts/`.
+- O atalho da Horas 11: varridas 2903 folhas do acervo + 450 do Opus Majus; a trava de 60% age em 53, o
+  atalho só decide na Horas 11 (igual à medida grande). Numa folha artificial com retícula em 85% a escolha
+  troca (Sauvola → Otsu). **Sugestão do verificador (ainda não feita):** só usar o atalho quando a tinta da
+  cópia pequena e a da página inteira forem parecidas (Horas 11: 60,4% × 59,7%; Opus: 96,5% × 74%).
+  Nenhum teste usa a Horas 11 real.
+- **A ferramenta Bash estraga barra invertida** em strings Python dentro de heredoc (de novo: `%TEMP%\verif`
+  virou caractere de controle no plano; corrigido em `2ff2d90`), e um heredoc longo com aspas falhou. Para
+  texto com `\` ou longo: gravar com a ferramenta Write num arquivo e só então inserir por script;
+  conferir "caracteres de controle = 0".
+- Formulário HTML: depois de editar por script, **validar o JavaScript** (`node -e "new Function(...)"`)
+  e renderizar no Chrome sem tela (`"/c/Program Files/Google/Chrome/Application/chrome.exe" --headless=new
+  --dump-dom file:///...`); o formulário 7 ficou quebrado alguns minutos no GitHub por um `]},` a mais.
+- Em `&&` encadeado com quebra de linha, um passo que falha pula só o resto da MESMA linha: o commit da
+  linha seguinte saiu com o formulário quebrado. Conferir cada passo antes de commitar.
+
+## 5. Perguntas em aberto (exatas)
+
+1. **Formulário 7** `relatorios/conferir-aqui-7.html` (aberto no navegador dele, não respondido):
+   A1 "Horas 47 no Preto e branco: as letras da página inteira" (Bom/Ruim); A1b "alguma letra ficou grossa
+   demais?"; X2 "Opus Majus 20 no Mágico pro, forma 'livre'"; X2b "O que fazer com o rosto mais claro?"
+   (Fica assim / Quero mais escuro → Lista de espera); V1 aviso (Horas 11 resolvida); S1 aviso (salvar como
+   (2)); **S2 "Aceita esse 0,1 segundo a mais só quando o medidor sai do meio?"**; **S3 "Posso apagar essas
+   6 pastas vazias?"** (`C:\Users\fotog\AppData\Local\Temp\verif_localappdata_*`, 0 bytes).
+2. **"Os dois defeitos novos da janela: gerar o mesmo livro de novo trava, e o cartão nunca mostra 'PDF
+   gerado'. Posso mandar consertar? Junto iria a trava do atalho da Horas 11."** (sem resposta).
+   - Trava: `ui/janela_confirmar.py` l. 57 passa `projeto.caminho_saida` (arquivo, gravado em
+     `janela_principal.py` l. 944) onde `SeletorDestino.definir` (`ui/widgets/destino.py` l. 82) espera a
+     pasta → "Esse caminho não é uma pasta." e "Processar" apagado; só destrava com "Escolher pasta".
+   - Cartão: `pdf_gerado` nunca vira verdadeiro (só `janela_principal.py` l. 587 põe falso; lido em
+     `tela_inicio.py` l. 362–388).
+3. "Quer que eu levante o que mais ocupa o C? (só olhar, sem apagar)" (sem resposta).
+4. Escala do notebook do Kaique (125% ou 150%): perguntar ao Kaique (Configurações > Sistema > Tela > Escala).
+5. Antigas, continuam: opinião do Kaique sobre o arquivo de resultados; usar todos os núcleos (2.16) × "uma
+   página por vez na memória"; instalador nunca instalado de verdade; teste oficial de velocidade não
+   refeito desde 30/09.
+
+## 6. Lista de bugs nova desta sessão (detalhe no plano, seção 5)
+
+- Consertado: "salvar como (2)" (`25d916e`, confirmado na janela).
+- Confirmados na janela real (1280×657): observação do livro gravada e nunca mostrada (cabeçalho escondido,
+  `tela_conferir.py` l. 392–436); tecla R sempre vira Retângulo (R de girar fixo no código, l. 2449–2451,
+  nunca alcançado); livro sem a aba Marcar: letras de ferramenta e Marcar > "Limpar tudo"/"Deixar a folha
+  em branco"/"Procurar de novo" dão "Aconteceu um problema inesperado"; 11 itens de menu que não fazem nada
+  (+ Ctrl++/Ctrl+-/Ctrl+0); Ctrl+Enter e o menu pulam "Antes de processar"; deslizante do painel "Filtro da
+  página" volta a 50; menu Filtro não marca o filtro da página; nome repetido sem faixa laranja; "Show
+  Details..." no F1.
+- Só no código (não testados na janela): botões laranja "usar mais fraco/escuro" chamam `_escolher_forca`
+  inexistente (`tela_conferir.py` l. 2339); textos sem acento ("retangulo", "girar na mao", "Nao ha
+  paginas"...); jargão "Algoritmo: Sauvola / Otsu / Wolf"; "procurar de novo" com duas funções; aba
+  Endireitar sem pista visual; `teste_interface.py` l. 168 usa `conferir.destino`.
+- **Novos e graves (pergunta 2 acima):** gerar o mesmo livro de novo trava; cartão sem "PDF gerado".
+- Menores, da janela: bloco "AJUSTE" sumiu uma vez na aba Filtro; aviso "menor que o corte" com tamanho
+  igual; "Para revisar" diz "nada pendente" com 5 dúvidas; teclas em inglês (Left, Space, Ctrl+Return);
+  "1 cadernos"; faixa "será substituído" × caixa oferecendo "(2)"; trilha não cabe em 1280×657; caixa de
+  erro com fundo preto (tema escuro); menus desligados da mesma cor.
+- Imagem: medidor no 0 ainda picota letra fina (Horas 26/27; antigo, não destes commits); no Graduale,
+  75/100 trazem tracinhos da pauta.
+
+## 7. Próximo passo recomendado
+
+Ler as respostas do formulário 7 e marcar no plano; se ele disser sim, mandar o implementador consertar a
+trava de "gerar de novo", o `pdf_gerado` e a trava do atalho da Horas 11 (com verificador depois); em
+seguida, testar endireitar/girar nas páginas de teste (D3) e começar a Fase 2 pelo modo Misto, com a
+mudança das zonas para a folha original (D2) antes da geometria. Quando o Samuel entregar o plano de
+layout, gravar em `docs/plano/` e chamar o agente de layout (worktree `.claude/worktrees/layout`).
+
+## 8. Como rodar e testar (03/10)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q        # 03/10: 1369 passed, 1 skipped, 0 falhas (8 min 26 s); sem janela e com pasta de dados própria
+.venv\Scripts\python.exe teste_botoes.py           # 132 ações, 0 falhas (02/10); agora cobre "salvar como (2)"
+.venv\Scripts\python.exe teste_velocidade.py       # ~12 min, SÓ com o PC parado; teste oficial não refeito desde 30/09
+.venv\Scripts\python.exe conferencia.py fase1      # antes/depois do gabarito
+```
+
+## 9. Ambiente
+
+Nada novo instalado. Testes novos: `tests/test_conferencia_6.py`, `tests/test_ja_existe_arquivo_com_esse_nome.py`,
+`tests/test_medidor_nas_paginas_otsu.py`, `tests/test_escolha_sem_a_trava_de_tinta.py`. `git worktree prune`
+limpou o registro da cópia antiga `...\scratchpad\antes` (a pasta já não existia). Nenhuma worktree aberta.
+
+---
+
+# PARTE -9 — Checkpoint de 29/09 a 02/10/2026
 
 **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md).
 O **Registro de mudanças** e a **Lista de bugs** do PLANO-DEFINITIVO têm, linha por linha e com

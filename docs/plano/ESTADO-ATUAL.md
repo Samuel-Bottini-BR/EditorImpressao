@@ -14,7 +14,9 @@ O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que val
 > Em 01/10 o Samuel **adiantou a Fase 2** (ferramentas do ScanTailor); 1.4, 1.5, 1.6 e o botão da
 > moldura ficaram para depois. Em 02/10 ele respondeu os dois formulários (`relatorios/decisoes-samuel-2026-10-02.md`
 > e `relatorios/conferencia-samuel-2026-10-02.md`): **1.1, 1.2 e 1.3 aprovados**; a Fase 2 começa pelo modo Misto;
-> A1 (Horas 47 no Preto e branco) e X2 (Opus 20 no Mágico pro) voltaram para conserto.
+> A1 (Horas 47 no Preto e branco) e X2 (Opus 20 no Mágico pro) foram consertados e verificados, junto com
+> o medidor de força, a Horas 11 e o "salvar como (2)"; esperam o Samuel no `relatorios/conferir-aqui-7.html`.
+> Resumo da sessão de 02–03/10: **PARTE -10** do handoff.
 
 ---
 
