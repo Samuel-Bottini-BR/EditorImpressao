@@ -101,3 +101,100 @@ def test_o_botao_ajusta_e_o_desfazer_devolve(tela):
     assert _pedaco(pagina).pontos == [FOLGADO[:2], FOLGADO[2:]]
     tela.refazer()
     assert _pedaco(pagina).pontos == ajustado.pontos
+
+
+# --- conserto de 05/10/2026 (parecer do verificador, defeitos 1 e 2) ---------
+
+
+def _pagina_de_texto():
+    from tests.test_ajustar_pedaco_so_figura import _pagina_de_texto as texto
+
+    return texto()
+
+
+def test_pedaco_de_texto_botao_apagado_com_explicacao(conferir, monkeypatch):
+    """Defeito 2: num pedaço de TEXTO, nada de aviso de papel, e o botão fica
+    apagado com uma frase dizendo por quê (nunca botão apagado sem
+    explicação). A marcação não muda."""
+    from tests.test_ajustar_pedaco_so_figura import TEXTO
+
+    monkeypatch.setattr(conferir, "_pagina_sem_filtro_para_o_ajuste",
+                        lambda _p: _pagina_de_texto())
+    pagina = conferir.projeto.paginas[0]
+    _com_pedaco(pagina, TEXTO, filtro_do_pedaco=PRETO_E_BRANCO, filtro_da_pagina=ORIGINAL)
+    antes = [dict(r) for r in pagina.selecao]
+    conferir._avaliar_os_pedacos(pagina)
+    assert not conferir.linha_pedaco.isHidden()
+    assert not conferir.botao_ajustar_pedaco.isEnabled()
+    texto = conferir.aviso_pedaco.text()
+    assert "texto" in texto and "Sobrou papel" not in texto, texto
+    assert "texto" in conferir.aviso_pedaco.toolTip()
+    assert "texto" in conferir.botao_ajustar_pedaco.toolTip()
+    conferir._ajustar_pedaco_a_figura()            # mesmo chamado direto, nada muda
+    assert pagina.selecao == antes
+
+
+def test_o_botao_ajusta_so_o_pedaco_de_figura(tela):
+    """Defeito 2: com um pedaço de texto e outro de figura, o botão muda só
+    o de figura (o pedaço da vez)."""
+    from tests.test_ajustar_pedaco_so_figura import TEXTO_DE_CIMA, _pagina_mista
+
+    tela._pagina_sem_filtro_para_o_ajuste = lambda _p: _pagina_mista()
+    pagina = tela.projeto.paginas[0]
+    tela.indice_pagina = 0
+    s = Selecao()
+    s.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[FOLGADO[:2], FOLGADO[2:]],
+                         origem=MAO, filtro=ORIGINAL))
+    s.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO,
+                         pontos=[TEXTO_DE_CIMA[:2], TEXTO_DE_CIMA[2:]], origem=MAO,
+                         filtro=ORIGINAL))
+    pagina.guardar_selecao(s)
+    pagina.filtro = PRETO_E_BRANCO
+    tela._avaliar_os_pedacos(pagina)
+    assert tela.botao_ajustar_pedaco.isEnabled()
+    tela.botao_ajustar_pedaco.click()
+    depois = Selecao.de_lista(pagina.selecao).regioes
+    assert depois[1].pontos == [TEXTO_DE_CIMA[:2], TEXTO_DE_CIMA[2:]], "o texto mudou"
+    assert depois[0].pontos != [FOLGADO[:2], FOLGADO[2:]], "a figura nao foi ajustada"
+
+
+@pytest.mark.parametrize("tamanho", [(1280, 657), (1920, 1040)])
+def test_a_linha_pedaco_nao_espreme_os_botoes(tela, tamanho):
+    """Defeito 1: quando a linha "Pedaço:" aparece, a barra de botões cresce
+    e nenhum botão da aba Marcar fica mais baixo do que precisa (antes: 24
+    pontos de altura para 39, e o texto cortado ao meio, em qualquer tamanho
+    de janela)."""
+    from PySide6.QtWidgets import QApplication, QPushButton
+
+    from ui.tela_conferir import ABA_MARCAR
+
+    tela.resize(*tamanho)
+    tela.show()
+    QApplication.processEvents()
+    painel = tela.linhas_de_botoes[ABA_MARCAR]
+    altura_sem = tela.barra_botoes.height()
+
+    pagina = tela.projeto.paginas[0]
+    _com_pedaco(pagina, FOLGADO)
+    tela._avaliar_os_pedacos(pagina)
+    for _ in range(3):
+        QApplication.processEvents()
+    assert not tela.linha_pedaco.isHidden()
+    assert tela.barra_botoes.height() > altura_sem, "a barra nao cresceu com a linha nova"
+    assert tela.barra_botoes.height() >= painel.sizeHint().height()
+    botoes = [b for b in painel.findChildren(QPushButton) if b.isVisible()]
+    assert tela.botao_ajustar_pedaco in botoes
+    for botao in botoes:
+        assert botao.height() >= botao.sizeHint().height(), \
+            f"{botao.text()!r}: {botao.height()} de altura, precisa de {botao.sizeHint().height()}"
+
+    # e quando a linha some, a barra encolhe de novo (a pagina ganha a
+    # altura de volta), na medida das linhas que sobraram
+    com_a_linha = tela.barra_botoes.height()
+    _com_pedaco(pagina, FOLGADO, filtro_do_pedaco=PRETO_E_BRANCO)     # o mesmo da pagina
+    tela._avaliar_os_pedacos(pagina)
+    QApplication.processEvents()
+    assert tela.linha_pedaco.isHidden()
+    assert tela.barra_botoes.height() < com_a_linha
+    assert tela.barra_botoes.height() == painel.sizeHint().height()
+    tela.hide()

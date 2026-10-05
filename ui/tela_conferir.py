@@ -107,6 +107,20 @@ DPI_PREVIA = 110          # baixo de proposito: a tela precisa abrir em segundos
 # o tempo: ~0,05 s aqui contra ~0,2 s a 150 DPI, no fio da tela. Seguro mudar.
 LADO_DO_AJUSTE = 1000
 
+# A dica do mouse do botao "Ajustar o pedaco a figura" (conserto de
+# 05/10/2026: o botao ajusta UM pedaco, o da vez, e nunca o de texto).
+DICA_DO_AJUSTE = (
+    "Encolhe até a figura o último pedaço que você desenhou em volta de uma "
+    "figura (gravura, foto, pintura), para não sobrar papel em volta dela. Um "
+    "pedaço por clique; pedaço de texto fica como está. Dá para desfazer.")
+
+# O porque do botao apagado num pedaco de texto (regra: nunca botao apagado
+# sem explicacao). A frase curta vai ao lado do botao; esta, na dica.
+DICA_DO_TEXTO = (
+    "Este pedaço parece texto, e não uma figura. O ajuste só serve para pedaço "
+    "em volta de gravura, foto, pintura ou iluminura: no texto ele cortaria "
+    "linhas e letras. O pedaço fica como você desenhou.")
+
 # Qualidade da prévia, ajustável pelo Samuel (estilo After Effects) nas telas
 # de trabalho - troca a resolução usada para renderizar a página nas abas
 # Bordas/Endireitar/Marcar. "Rápida" é o valor de sempre (DPI_PREVIA); as
@@ -890,6 +904,17 @@ class TelaConferir(QWidget):
         # desfazer; (b) a frase avisa quando o papel em volta e muito
         # (core.ajustar_pedaco.PAPEL_DEMAIS). Os dois so sugerem: nada muda
         # sozinho. Ver _avaliar_os_pedacos e _ajustar_pedaco_a_figura.
+        #
+        # Conserto de 05/10/2026 (verificador, defeito 1): a linha espremia as
+        # outras. A barra de botoes tem a altura FIXA da aba da frente,
+        # medida na troca de aba (_encolher_a_barra_de_botoes), e esta linha
+        # aparece depois, ao desenhar o pedaco: as tres linhas eram
+        # espremidas na altura antiga e o texto dos botoes saia cortado ao
+        # meio, em qualquer tamanho de janela. Agora _avaliar_os_pedacos mede
+        # de novo quando a linha aparece ou some (a pagina da aba encolhe
+        # ~45 pontos), e a frase do aviso e curta e numa linha so (sem quebra:
+        # com quebra de linha a altura pedida dependia da largura e a conta
+        # errava), com a explicacao inteira na dica do mouse.
         self.linha_pedaco = QWidget()
         linha_pedaco = QHBoxLayout(self.linha_pedaco)
         linha_pedaco.setContentsMargins(0, 0, 0, 0)
@@ -899,12 +924,10 @@ class TelaConferir(QWidget):
         self.botao_ajustar_pedaco = _botao(
             "Ajustar o pedaço à figura", linha_pedaco, self._ajustar_pedaco_a_figura)
         self.botao_ajustar_pedaco.setIcon(_icone_de_ajustar_o_pedaco())
-        self.botao_ajustar_pedaco.setToolTip(
-            "Encolhe o retângulo do pedaço até a figura, para não sobrar papel em "
-            "volta dela. Dá para desfazer.")
+        self.botao_ajustar_pedaco.setToolTip(DICA_DO_AJUSTE)
         self.aviso_pedaco = QLabel("")
         self.aviso_pedaco.setObjectName("fraco")
-        self.aviso_pedaco.setWordWrap(True)
+        self.aviso_pedaco.setWordWrap(False)
         linha_pedaco.addWidget(self.aviso_pedaco, 1)
         self.linha_pedaco.setVisible(False)
         fora.addWidget(self.linha_pedaco)
@@ -1659,16 +1682,28 @@ class TelaConferir(QWidget):
         """Mostra ou esconde a linha "Pedaco:" da aba Marcar e acerta o aviso.
 
         A linha aparece so quando a pagina tem um pedaco em retangulo com
-        "so neste pedaco" num filtro diferente do da pagina, e com figura
-        dentro. O botao fica aceso quando o ajuste muda alguma coisa; a frase
-        aparece quando o papel em volta e muito (Folga.muito). Custa ~0,05 s
-        no fio da tela, e so em pagina com um pedaco assim. Nunca levanta
-        excecao: se a conta falhar, a linha some e o erro vai para o log."""
+        "so neste pedaco" num filtro diferente do da pagina, e com alguma
+        tinta dentro. Ela fala do PEDACO DA VEZ (core.ajustar_pedaco.
+        pedaco_da_vez): o ultimo desenhado em volta de uma figura que ainda
+        tem o que ajustar. O botao fica aceso quando o ajuste muda alguma
+        coisa nele; a frase avisa quando o papel em volta e muito
+        (Folga.muito) ou diz por que o botao esta apagado (ja justo, ou so ha
+        pedaco de TEXTO: conserto de 05/10/2026, o ajuste cortava o texto).
+        Quando a linha aparece ou some, a barra de botoes e medida de novo
+        (senao ela espreme as outras linhas: defeito 1 do verificador).
+        Custa ~0,1 s no fio da tela, e so em pagina com um pedaco assim.
+        Nunca levanta excecao: se a conta falhar, a linha some e o erro vai
+        para o log."""
         if not hasattr(self, "linha_pedaco"):
             return
         folgas = {}
+        da_vez = None
         try:
-            from core.ajustar_pedaco import avaliar_os_pedacos, pedacos_com_outro_filtro
+            from core.ajustar_pedaco import (
+                avaliar_os_pedacos,
+                pedaco_da_vez,
+                pedacos_com_outro_filtro,
+            )
 
             if pagina is not None:
                 selecao = pagina.obter_selecao()
@@ -1676,38 +1711,48 @@ class TelaConferir(QWidget):
                     img = self._pagina_sem_filtro_para_o_ajuste(pagina)
                     if img is not None:
                         folgas = avaliar_os_pedacos(img, selecao, pagina.filtro)
+                        da_vez = pedaco_da_vez(folgas)
         except Exception:  # noqa: BLE001 - o aviso nunca derruba a aba
             registrar_erro("avaliar o pedaco", traceback.format_exc())
-            folgas = {}
-        muda = any(f.muda for f in folgas.values())
-        muito = max((f.fracao_de_papel for f in folgas.values() if f.muito), default=0.0)
+            folgas, da_vez = {}, None
+        folga = folgas.get(da_vez) if da_vez is not None else None
+        estava_visivel = not self.linha_pedaco.isHidden()
         self.linha_pedaco.setVisible(bool(folgas))
-        self.botao_ajustar_pedaco.setEnabled(muda)
+        self.botao_ajustar_pedaco.setEnabled(bool(folga is not None and folga.muda))
+        self.botao_ajustar_pedaco.setToolTip(DICA_DO_AJUSTE)
         # A frase cabe numa linha (a aba tem pouca altura); a explicacao
         # inteira fica na dica do mouse.
-        if muito:
-            porcento = max(1, int(round(100 * muito)))
+        if folgas and folga is None:
+            # so pedaco de texto: o botao fica apagado, e a frase diz por que
+            self.aviso_pedaco.setText("Pedaço de texto: o ajuste é só para figura.")
+            self.aviso_pedaco.setToolTip(DICA_DO_TEXTO)
+            self.botao_ajustar_pedaco.setToolTip(DICA_DO_TEXTO)
+        elif folga is not None and folga.muito:
+            porcento = max(1, int(round(100 * folga.fracao_de_papel)))
             self.aviso_pedaco.setText(
-                f"Sobrou papel em volta da figura ({porcento}% do pedaço): "
-                f"pode sair uma faixa.")
+                f"Sobrou papel em volta da figura ({porcento}%): pode sair uma faixa.")
             self.aviso_pedaco.setToolTip(
                 "O papel que ficou dentro do retângulo sai com o filtro do pedaço, "
                 "e não com o da página, e pode aparecer como uma faixa em volta da "
                 "figura. Se quiser, clique em \"Ajustar o pedaço à figura\". "
                 "Se não quiser mudar, pode deixar como está.")
-        elif not muda:
+        elif folga is not None and not folga.muda:
             self.aviso_pedaco.setText("O pedaço já está justo na figura.")
             self.aviso_pedaco.setToolTip("")
         else:
             self.aviso_pedaco.setText("")
             self.aviso_pedaco.setToolTip("")
+        if estava_visivel != (not self.linha_pedaco.isHidden()):
+            self._encolher_a_barra_de_botoes()
 
     @protegido
     def _ajustar_pedaco_a_figura(self) -> None:
-        """O botao "Ajustar o pedaco a figura": encolhe cada pedaco com outro
-        filtro desta pagina ate a figura (core.ajustar_pedaco), numa acao so
-        do Historico - o Desfazer devolve o retangulo como estava. So muda o
-        tamanho dos retangulos: o tipo, o filtro e o resto da marcacao ficam.
+        """O botao "Ajustar o pedaco a figura": encolhe o PEDACO DA VEZ (o
+        ultimo desenhado em volta de uma figura, core.ajustar_pedaco.
+        pedaco_da_vez) ate a figura, numa acao do Historico - o Desfazer
+        devolve o retangulo como estava. Um pedaco por clique; pedaco de
+        texto nunca (conserto de 05/10/2026). So muda o tamanho do
+        retangulo: o tipo, o filtro e o resto da marcacao ficam.
         Arriscado: mudar a marcacao sem passar por _registrar (o desfazer nao
         a veria)."""
         from core.ajustar_pedaco import ajustar_os_pedacos
