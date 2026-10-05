@@ -3369,6 +3369,7 @@ def _tres_canais(img: np.ndarray) -> np.ndarray:
 def _filtro_so_no_pedaco(
     img: np.ndarray, base: np.ndarray, selecao, filtro: str,
     forca_preto: int, clareza: int, intensidade: int,
+    pedaco_inteiro: bool = False,
 ) -> np.ndarray:
     """Aplica, por cima do resultado, o filtro que a pessoa pediu para um pedaco.
 
@@ -3382,6 +3383,28 @@ def _filtro_so_no_pedaco(
     foi pedido. Calcular no recorte sairia diferente: todos os filtros aqui se
     ancoram no nivel do papel da folha, e um recorte de gravura escura teria
     outro nivel de papel - a mesma armadilha que ja custou as capas lavadas.
+
+    Devolve `base` (o MESMO objeto) quando nenhum pedaco vale em ponto
+    nenhum: o ramo do Preto e branco usa isso para saber se a pagina ainda
+    cabe em 1 bit. Arriscado: devolver uma copia nesse caso.
+
+    pedaco_inteiro (so o Preto e branco passa True; conserto de 05/10/2026,
+    P6 da conferencia 11, "do jeito completo"): a area marcada obedece
+    INTEIRA ao filtro escolhido para ela, inclusive as partes claras e o
+    papel que a pessoa pegou junto. Com False (Melhorar e Magico pro, como
+    sempre), o que for mais claro que TINTA_PARA_ORLA do nivel do papel segue
+    a pagina (ver o comentario abaixo). Por que o Preto e branco nao usa essa
+    regra: ela toma por papel tudo acima de 60% do papel, e na Escola 7 isso e
+    57% da pintura - o ceu, as nuvens e partes do leao saiam cinza e
+    manchados (simulacao da conferencia 11). Tentou-se, em 05/10, separar so
+    a margem do retangulo (claro como o papel e ligado ao papel de fora): na
+    Escola 7 ficava certo, mas na Opus Majus 20, foto que encosta na beirada,
+    a parede clara da foto se ligava ao papel de baixo e virava manchas
+    brancas recortadas (relatorios/conferir/so-neste-pedaco-2026-10-05/
+    descartado/). A borda do pedaco e a que a pessoa desenhou: o papel que
+    ela pegar junto sai no filtro do pedaco (no Original, creme).
+    Arriscado: passar True nos outros filtros (muda paginas que o Samuel ja
+    aprovou) ou voltar a separar o "papel" pelo claro no Preto e branco.
     """
     pedidos = [f for f in getattr(selecao, "filtros_pedidos", lambda: [])()
                if f in FILTROS_COMUNS and f != filtro]   # "Tirar o fundo" nao vale por pedaco
@@ -3395,18 +3418,23 @@ def _filtro_so_no_pedaco(
     # esse papel ficar no Original ele sai creme ao lado do branco do resto -
     # uma faixa cinza no pe da gravura, que foi o que o Samuel apontou. Papel e
     # papel em qualquer regiao; o filtro do pedaco vale para o CONTEUDO dele.
-    cinza = _para_cinza(img)
-    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
-    e_papel = cinza > nivel_papel * TINTA_PARA_ORLA
-    lado = max(3, int(min(altura, largura) * ORLA_DA_TINTA_NO_PAPEL) | 1)
-    nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
-    # a orla em volta do conteudo continua sendo do pedaco, para nao serrilhar
-    e_papel = cv2.erode(e_papel.astype(np.uint8), nucleo) > 0
-    so_conteudo = 1.0 - e_papel.astype(np.float32)
+    # (Menos no Preto e branco: ver pedaco_inteiro no docstring.)
+    so_conteudo = None
+    if not pedaco_inteiro:
+        cinza = _para_cinza(img)
+        nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
+        e_papel = cinza > nivel_papel * TINTA_PARA_ORLA
+        lado = max(3, int(min(altura, largura) * ORLA_DA_TINTA_NO_PAPEL) | 1)
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+        # a orla em volta do conteudo continua sendo do pedaco, para nao serrilhar
+        e_papel = cv2.erode(e_papel.astype(np.uint8), nucleo) > 0
+        so_conteudo = 1.0 - e_papel.astype(np.float32)
 
     saida = base
     for pedido in pedidos:
-        peso = selecao.peso_do_filtro(altura, largura, pedido) * so_conteudo
+        peso = selecao.peso_do_filtro(altura, largura, pedido)
+        if so_conteudo is not None:
+            peso = peso * so_conteudo
         if not peso.any():
             continue
         if pedido == ORIGINAL:
@@ -3502,6 +3530,15 @@ def aplicar_filtro_com_selecao(
         # continuo sai em tons de cinza (decisao P1). Ver
         # _preto_e_branco_com_gravura. Antes daqui, toda gravura ficava em
         # cor (o Melhorar rodava dentro dela).
+        #
+        # "So neste pedaco" (conserto de 05/10/2026, P6 da conferencia 11):
+        # ate ali este ramo saia antes de olhar o pedaco, e a pintura marcada
+        # em Original saia cinza, sem aviso. Agora o pedaco vale por cima,
+        # inteiro (pedaco_inteiro=True: o ceu e as nuvens da pintura, e o
+        # papel que a pessoa pegou junto, obedecem ao pedaco - ver
+        # _filtro_so_no_pedaco). Pagina sem pedaco
+        # (o normal) sai exatamente como antes: _filtro_so_no_pedaco devolve
+        # o mesmo objeto, e a pagina continua em 1 bit quando era.
         if filtro == PRETO_E_BRANCO:
             binaria = filtro_preto_e_branco(img, forca=forca_preto, algoritmo=algoritmo_pb,
                                             despeckle=despeckle)
@@ -3509,11 +3546,18 @@ def aplicar_filtro_com_selecao(
                 saida = binaria
                 if peso_papel.any():
                     saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
-                return saida, True
+                mono = True
+            else:
+                saida, mono = _preto_e_branco_com_gravura(
+                    img, binaria, peso_gravura, peso_papel, clareza,
+                    decoracao_em_preto_e_branco=decoracao_em_preto_e_branco)
 
-            return _preto_e_branco_com_gravura(
-                img, binaria, peso_gravura, peso_papel, clareza,
-                decoracao_em_preto_e_branco=decoracao_em_preto_e_branco)
+            com_pedaco = _filtro_so_no_pedaco(img, saida, selecao, filtro,
+                                              forca_preto, clareza, intensidade,
+                                              pedaco_inteiro=True)
+            if com_pedaco is saida:
+                return saida, mono
+            return com_pedaco, False    # o pedaco tem tom ou cor: nao cabe em 1 bit
 
         # --- Melhorar e Magico pro ------------------------------------------
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
