@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 11 - Editor de Impressão</title>
+<!--
+  Decima primeira conferencia do Samuel (05/10/2026). Pedido dele: "faça um novo html de conferencia,
+  com fotos e referencias e com explicações melhores para eu responder essas perguntas."
+  Volta as perguntas que ficaram em conversa no formulario 10 (P5, P6, P11, e o RISCO do Marial 7),
+  traz o defeito grave achado pelo verificador ("substituir o antigo" + cancelar apaga o PDF antigo),
+  a limpeza da pasta do verificador, e as P2, P3, P4 que ficaram sem resposta.
+  Respostas literais dele ao formulario 10: relatorios/conferencia-samuel-2026-10-05-b.md (pasta principal).
+  Mesmo formato do conferir-aqui-10.html (cartoes, escolha, comentario, "Copiar respostas"), com tres
+  campos a mais por cartao: m (o que muda para o Kaique), r (referencia, de onde vem) e legenda das
+  imagens. Marcacoes guardadas no navegador com a chave NOVA "conferir-2026-10-05-k" (a "-j" e do
+  formulario 10).
+  Imagens: relatorios/conferencia-11-2026-10-05/, feitas pelos scripts de PROTOTIPO em scripts/
+  (comum11.py, simular.py, tela.py, montar.py). O programa NAO foi mudado: as imagens "simulação"
+  sao variacoes feitas so nos scripts.
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .muda { margin:0 0 10px; background:#eef7ee; border-radius:6px; padding:6px 10px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .ref { margin:6px 0 8px; font-size:14px; color:#444; border-left:3px solid #bbb; padding:2px 10px; }
+  .cartao .ref small { display:block; font-size:12px; color:#666; font-family:Consolas, monospace; word-break:break-all; margin-top:2px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao figure { margin:0 0 14px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .cartao figcaption { font-size:15px; color:#333; margin:4px 2px 0; }
+  .cartao figcaption .sim { background:#ffe0b2; color:#7a3d00; font-weight:600; padding:0 5px; border-radius:4px; }
+  .cartao table { border-collapse:collapse; width:100%; margin:6px 0 12px; font-size:15px; }
+  .cartao th, .cartao td { border:1px solid #ccc; padding:5px 8px; text-align:left; vertical-align:top; }
+  .cartao th { background:#f1f1f1; }
+  .cartao td.novo { background:#fff4e5; }
+  .cartao ul { margin:4px 0 10px; padding-left:22px; }
+  .cartao svg { display:block; max-width:100%; height:auto; margin:4px auto 12px; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; color:#222; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 11 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>Para que serve:</b> você pediu explicações melhores, com fotos e referências, para responder as perguntas que ficaram em conversa no formulário 10: a caixinha das molduras com o Misto (P5), o "só neste pedaço" no Preto e branco (P6), os tipos de zona da aba Marcar (P11), com a sua pergunta sobre a mancha do Marial 7 e a sua ideia de apagar ou pintar de branco o que o programa marcou. Vêm junto um <b>defeito grave</b> achado na janela de verdade (o PDF antigo pode sumir), uma <b>pasta para limpar</b>, e as <b>P2, P3 e P4</b>, que ficaram sem resposta no formulário 10.</p>
+    <p><b>O programa não mudou.</b> As imagens marcadas <b>"simulação"</b> foram feitas por programinhas de teste, fora do programa, só para você ver como ficaria; as outras são o programa como está hoje (o Misto ainda só funciona por esses programinhas de teste, fora da janela do Kaique).</p>
+    <p>Os <b>formulários 8</b> (A, B ou C: a tinta fora do texto achado) e <b>9</b> (geometria) <b>continuam abertos</b>; nada deles se repete aqui.</p>
+    <p><b>Como responder:</b> cada pergunta tem: o que é; o que muda para o Kaique; as fotos (antes e depois); a recomendação, com o porquê; e a <b>referência</b> (de onde vem a informação, com o caminho do arquivo em letra pequena, para o Claude achar). Escolha uma opção e, se quiser, escreva um comentário. Clique numa imagem para ver em tamanho cheio (clique de novo para fechar). As marcações ficam guardadas neste computador; no fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que e (pode ter <b>), m: o que muda para o Kaique (opcional),
+//   a: atencao (opcional), i: [[imagem, legenda], ...], x: html a mais (tabela, desenho; opcional),
+//   s: recomendacao e o porque (opcional), r: referencia (html; o caminho vai em <small>),
+//   tipo: "escolha" | "entendi", p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-11-2026-10-05/";
+const SIM = "<span class='sim'>simulação</span>";
+
+// Desenho do caminho de gravar o PDF (cartao CANCELAR). Fundo proprio: legivel em qualquer tema.
+const DESENHO = `
+<svg viewBox="0 0 940 400" role="img" aria-label="Hoje: o PDF novo é escrito por cima do antigo; cancelar apaga. Proposto: o PDF novo é escrito num arquivo à parte e só troca no fim; cancelar deixa o antigo.">
+  <rect x="0" y="0" width="940" height="400" rx="10" fill="#ffffff" stroke="#cccccc"/>
+  <defs><marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333333"/></marker></defs>
+  <text x="20" y="34" font-size="20" font-weight="700" fill="#c62828">Hoje (sem "Montar cadernos")</text>
+  <rect x="20" y="52" width="190" height="64" rx="8" fill="#e3f2fd" stroke="#1565c0"/>
+  <text x="115" y="80" text-anchor="middle" font-size="16" fill="#111111">meu-livro.pdf</text>
+  <text x="115" y="102" text-anchor="middle" font-size="14" fill="#333333">(o antigo, pronto)</text>
+  <line x1="212" y1="84" x2="262" y2="84" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <rect x="266" y="52" width="250" height="64" rx="8" fill="#fff3e0" stroke="#e65100"/>
+  <text x="391" y="78" text-anchor="middle" font-size="15" fill="#111111">o programa escreve o novo</text>
+  <text x="391" y="100" text-anchor="middle" font-size="15" fill="#111111">POR CIMA do antigo</text>
+  <line x1="518" y1="84" x2="568" y2="84" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <rect x="572" y="52" width="150" height="64" rx="8" fill="#ffebee" stroke="#c62828"/>
+  <text x="647" y="80" text-anchor="middle" font-size="16" font-weight="700" fill="#c62828">cancelar</text>
+  <text x="647" y="102" text-anchor="middle" font-size="14" fill="#333333">no meio</text>
+  <line x1="724" y1="84" x2="770" y2="84" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <rect x="774" y="52" width="150" height="64" rx="8" fill="#ffcdd2" stroke="#c62828" stroke-width="2"/>
+  <text x="849" y="80" text-anchor="middle" font-size="15" font-weight="700" fill="#b71c1c">o arquivo é</text>
+  <text x="849" y="100" text-anchor="middle" font-size="15" font-weight="700" fill="#b71c1c">apagado</text>
+  <text x="20" y="150" font-size="15" fill="#333333">Resultado: não fica nem o PDF antigo nem o novo, e nenhuma mensagem avisa.</text>
+  <line x1="20" y1="176" x2="920" y2="176" stroke="#dddddd"/>
+  <text x="20" y="212" font-size="20" font-weight="700" fill="#2e7d32">Proposto</text>
+  <rect x="20" y="230" width="190" height="64" rx="8" fill="#e3f2fd" stroke="#1565c0"/>
+  <text x="115" y="258" text-anchor="middle" font-size="16" fill="#111111">meu-livro.pdf</text>
+  <text x="115" y="280" text-anchor="middle" font-size="14" fill="#333333">(o antigo: ninguém mexe)</text>
+  <rect x="266" y="230" width="250" height="64" rx="8" fill="#fff3e0" stroke="#e65100"/>
+  <text x="391" y="256" text-anchor="middle" font-size="15" fill="#111111">o novo é escrito num arquivo</text>
+  <text x="391" y="278" text-anchor="middle" font-size="15" fill="#111111">à parte, na mesma pasta</text>
+  <line x1="518" y1="248" x2="568" y2="226" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <line x1="518" y1="276" x2="568" y2="320" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <rect x="572" y="192" width="150" height="56" rx="8" fill="#e8f5e9" stroke="#2e7d32"/>
+  <text x="647" y="216" text-anchor="middle" font-size="15" font-weight="700" fill="#1b5e20">terminou bem</text>
+  <text x="647" y="236" text-anchor="middle" font-size="13" fill="#333333">o novo toma o lugar</text>
+  <rect x="572" y="300" width="150" height="56" rx="8" fill="#ffebee" stroke="#c62828"/>
+  <text x="647" y="324" text-anchor="middle" font-size="15" font-weight="700" fill="#c62828">cancelou</text>
+  <text x="647" y="344" text-anchor="middle" font-size="13" fill="#333333">apaga só o à parte</text>
+  <line x1="724" y1="220" x2="770" y2="220" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <line x1="724" y1="328" x2="770" y2="328" stroke="#333333" stroke-width="2" marker-end="url(#seta)"/>
+  <rect x="774" y="192" width="150" height="56" rx="8" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="849" y="216" text-anchor="middle" font-size="15" font-weight="700" fill="#1b5e20">meu-livro.pdf</text>
+  <text x="849" y="236" text-anchor="middle" font-size="13" fill="#1b5e20">(o novo)</text>
+  <rect x="774" y="300" width="150" height="56" rx="8" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="849" y="324" text-anchor="middle" font-size="15" font-weight="700" fill="#1b5e20">meu-livro.pdf</text>
+  <text x="849" y="344" text-anchor="middle" font-size="13" fill="#1b5e20">(o antigo, intacto)</text>
+  <text x="20" y="386" font-size="15" fill="#333333">É o mesmo jeito que o programa já usa quando "Montar cadernos" está ligado: lá o antigo nunca se perde.</text>
+</svg>`;
+
+const TABELA_ZONAS = `
+<table>
+ <tr><th>Na janela do ScanTailor (inglês)</th><th>Nome comum (proposta)</th><th>O que faz dentro da zona, no Misto</th><th>O que temos hoje na aba Marcar</th></tr>
+ <tr><td>Subtract from auto layer</td><td>"isto não é gravura"</td><td>apaga o que o detector achou ali: volta a ser texto, em preto e branco</td><td><b>já temos:</b> "gravura ou foto" + <b>tirar</b> (e, no Misto, "letra e traço" marcada à mão)</td></tr>
+ <tr><td>Add to auto layer</td><td>"isto é gravura"</td><td>fica tudo como no original</td><td><b>já temos:</b> "gravura ou foto" + <b>somar</b></td></tr>
+ <tr><td>Subtract from all layers</td><td>"tudo em preto e branco"</td><td>tudo vira preto e branco, ganha de qualquer outra zona</td><td><b>já temos</b> (no Misto): "só neste pedaço: Preto e branco"</td></tr>
+ <tr><td>Add to foreground</td><td>"tinta com a cor original, papel branco"</td><td>onde é tinta, a cor do original; o resto, branco</td><td class="novo"><b>quase:</b> "só neste pedaço: Original" faz parecido, mas separa a tinta do papel de outro jeito (veja as imagens)</td></tr>
+ <tr><td>Add to background</td><td>"tinta preta, fundo original"</td><td>a tinta vira preto puro; o fundo fica como no original (com a cor do papel)</td><td class="novo"><b>não temos</b></td></tr>
+ <tr><td>Fill zones (aba à parte)</td><td>"pintar com uma cor por cima"</td><td>pinta a zona inteira de uma cor (branco, ou a cor do papel tirada com conta-gotas): apaga carimbo, mancha, número de biblioteca</td><td class="novo"><b>não temos.</b> O mais perto é marcar como "papel", mas o papel poupa o que é escuro (veja o Marial 7)</td></tr>
+ <tr><td>arrastar, copiar e colar zona</td><td>mover, copiar, colar</td><td>Shift arrasta, Ctrl+Shift copia arrastando, Ctrl+Alt cola a última zona</td><td class="novo"><b>não temos</b> (temos retângulo, oval, laço, polígono, pincel, varinha e desfazer)</td></tr>
+</table>
+<p style="font-size:15px;margin:0 0 10px">E o que o nosso tem que o ScanTailor não tem: "letra e traço" e "papel" (dizem ao filtro o que a área é), e "só neste pedaço" com <b>qualquer</b> filtro (Melhorar, Mágico pro), não só preto e branco ou original. (Há ainda um quarto tipo, "fora da página", que existe por dentro do programa mas não aparece na tela.)</p>`;
+
+const PASTA = `
+<table>
+ <tr><th>Dentro de verif-consertos-saida</th><th>Tamanho</th><th>O que é</th></tr>
+ <tr><td>agora</td><td>506 MB</td><td>uma cópia do código do programa como ficou depois dos três consertos de 05/10 (com cópias dos relatórios e dos modelos), usada só para refazer as páginas do gabarito</td></tr>
+ <tr><td>antes</td><td>504 MB</td><td>a mesma cópia, do código de antes dos consertos, para comparar</td></tr>
+ <tr><td>rodadas</td><td>730 MB</td><td>as 32 páginas do gabarito feitas pelos dois códigos, nos três filtros (Preto e branco, Melhorar, Mágico pro), e os registros de cada rodada; o resultado (96 de 96 idênticas) já está no parecer</td></tr>
+ <tr><td>piloto</td><td>4,6 MB</td><td>o teste na janela de verdade: os programinhas que clicaram, uma pasta de dados de teste, o livro de teste, uma cópia do PDF de teste e os prints (todos já copiados no parecer, menos um print repetido da tela inicial)</td></tr>
+ <tr><td>arquivos soltos</td><td>1,6 MB</td><td>os programinhas da rodada, dois arquivinhos com o resultado da comparação (não copiados para os relatórios), e uma imagem da Horas 11 nos três filtros (já copiada no parecer)</td></tr>
+</table>`;
+
+const SECOES = [
+ { titulo:"1. As perguntas que ficaram em conversa",
+   cartoes:[
+    {c:"P5", t:"A caixinha das molduras quando \"Só as letras\" está ligada", tipo:"escolha",
+     i:[["q1-horas13-moldura.jpg", "Horas 13 (página inteira). No meio: Preto e branco de hoje com a caixinha das molduras <b>marcada</b> (a moldura dourada vira traço preto, picotado). À direita: o Misto (\"Só as letras\"): a moldura sai com a cor dela."],
+        ["q1-horas13-moldura-detalhe.jpg", "O canto de cima da mesma página, ampliado."],
+        ["q1-caixinha.jpg", "Em cima: a tela \"O que fazer\" de hoje (desenhada pelo próprio programa, fora da tela). Embaixo: " + SIM + " da opção (a): a caixinha \"Só as letras\" (que ainda não existe; o lugar e o texto finais não estão decididos) marcada, e a das molduras <b>apagada (cinza)</b>, guardando a marca que tinha."]],
+     o:`Você perguntou: <i>"acho que se eu ativar o misto a caixinha já desmarca né?"</i>. Hoje ela não desmarca sozinha, porque o Misto ainda não está no programa; é isso que se decide aqui. A caixinha <b>"No Preto e branco, molduras e iluminuras também em preto e branco"</b> é do livro, na tela "O que fazer". Marcada, a moldura dourada sai só com o traço preto; desmarcada, sai com a cor. Com <b>"Só as letras"</b> ligada, a moldura <b>sempre</b> fica com a cor (é para isso que o Misto existe), então a caixinha deixaria de fazer efeito. Nesta página, o Misto sai idêntico, ponto por ponto, ao Preto e branco com a caixinha desmarcada.`,
+     m:`Na opção (a), ao marcar "Só as letras" a caixinha das molduras fica cinza, sem poder clicar, e <b>guarda a marca</b>. Se o Kaique desmarcar "Só as letras", ela volta a valer como estava, sem ele precisar lembrar. Na (b), ela se desmarca sozinha, e ao desligar o Misto o Kaique tem de marcá-la de novo, se quiser. Na (c), a moldura sairia em traço preto também no Misto.`,
+     a:`Na simulação, a marca da caixinha apagada fica bem clarinha (é o desenho de hoje das caixinhas apagadas). Ao fazer de verdade, dá para deixá-la mais visível.`,
+     s:`Recomendação: (a). O Kaique não perde a escolha que fez: desligou o Misto, volta tudo como estava. E a caixinha cinza mostra que, com o Misto, ela não vale.`,
+     r:`De onde vem: a caixinha é a do Preto e branco de hoje (sua emenda N2 de 30/09, "traço preto só se eu escolher"); a regra do Misto é a sua de 30/09 ("só as letras viram preto e branco, e [...] molduras, iluminuras [...] ficam como no original"). As imagens da Horas 13 são o programa de hoje e o Misto, sem simulação; a tela foi desenhada pelo próprio programa, e só a caixinha nova e o cinza são simulação.<small>ui/tela_opcoes.py (_montar_filtros, cx_decoracao_pb) · core/misto.py · relatorios/conferencia-11-2026-10-05/scripts/simular.py (q1) e tela.py</small>`,
+     p:"Com \"Só as letras\" marcada, a caixinha das molduras:",
+     op:["(a) Fica apagada (cinza) enquanto \"Só as letras\" estiver marcada, e volta como estava ao desligar (recomendado)",
+         "(b) Desmarca sozinha",
+         "(c) Continua valendo (moldura em traço preto mesmo no Misto)"]},
+
+    {c:"P6", t:"Consertar já o \"só neste pedaço\" no Preto e branco", tipo:"escolha",
+     i:[["q2-aba-marcar.jpg", "A aba Marcar (print de 02/10, Palatino 5). À direita, \"Marcar como\" (gravura ou foto, letra e traço, papel) e, embaixo, \"Filtro da página\" e \"só neste pedaço\"."],
+        ["q2-so-neste-pedaco.jpg", "O painel da direita, de perto: \"só neste pedaço\" com \"o mesmo da página\" escolhido (print da janela de 05/10). Os outros botões são Original, Preto e branco, Melhorar e Mágico pro."],
+        ["q2-escola7-pedaco.jpg", "Escola de Jesus 7. Na primeira coluna, em laranja, o pedaço que um programinha de teste marcou (como o Kaique faria): \"gravura ou foto\", com \"só neste pedaço: Original\". Depois: (1) Preto e branco de hoje: o pedaço é <b>ignorado</b> e a pintura sai cinza; (2) " + SIM + " do conserto: o pedaço sai em Original; (3) a mesma página em Melhorar, como o programa faz hoje: o pedaço já vale."],
+        ["q2-escola7-pedaco-detalhe.jpg", "A pintura de perto. Repare, na " + SIM + ", <b class='onde'>o céu, as nuvens e manchas claras no leão</b>: ficaram cinza (veja a atenção, abaixo)."]],
+     o:`Na aba Marcar, o Kaique pode desenhar uma área e escolher, em <b>"só neste pedaço"</b>, outro filtro só para ela. Exemplo: numa página que vai em Preto e branco, deixar a foto em Original. Nos filtros Melhorar e Mágico pro isso funciona. <b>No Preto e branco, o programa de hoje ignora o pedaço</b>: o caminho do Preto e branco termina antes de chegar à parte que olha o pedaço. Por isso, no Preto e branco a pintura da Escola 7 sai cinza mesmo com o pedaço marcado em Original.`,
+     m:`Consertado, o Kaique marca a foto, escolhe "Original" em "só neste pedaço", e ela sai com a cor numa página em Preto e branco. Só mudam as páginas em que ele marcou um pedaço; todas as outras saem iguais, ponto por ponto. Se escolher (b), isso só vale quando "Só as letras" estiver ligada (no Misto o pedaço já vale).`,
+     a:`<b>Achado ao fazer a simulação:</b> só "ligar" a parte que olha o pedaço não basta. Ela trata o que é muito claro como papel, e o papel segue a página; na página em Preto e branco, o claro da pintura (o céu, as nuvens, partes do leão) fica cinza, e aparecem manchas. No Melhorar isso não se vê, porque lá o papel também fica colorido. O conserto de verdade precisa cuidar disso (dentro de uma área marcada como gravura ou foto, levar tudo), e viria com antes e depois para você aprovar.`,
+     s:`Recomendação: nenhuma por enquanto. As três opções são razoáveis, e a (a) mexe no Preto e branco de hoje, por isso precisa da sua licença. Se escolher (a), o conserto inclui o cuidado do achado acima.`,
+     r:`De onde vem: achado pelo implementador em 05/10, ao fazer o Misto, conferido numa página de teste. A Lista de espera de 01/10 dizia que "parte disso já existe na aba Marcar"; no Preto e branco, não funciona. A imagem "consertado" é simulação: o programinha de teste chama, depois do Preto e branco, a mesma parte que o Melhorar e o Misto já usam.<small>core/filtros.py: aplicar_filtro_com_selecao (ramo do Preto e branco, que retorna antes) e _filtro_so_no_pedaco · relatorios/fase2-misto-2026-10-05/relatorio-misto.md ("Achado") · relatorios/conferencia-11-2026-10-05/scripts/simular.py (q2) · relatorios/prints-telas-2026-10-02/conferir-marcar-1280x657.png</small>`,
+     p:"O que fazer com o \"só neste pedaço\" no Preto e branco?",
+     op:["(a) Consertar já (só mudam as páginas que têm pedaço marcado; as outras ficam iguais)",
+         "(b) Só valer no Misto",
+         "(c) Depois"]},
+
+    {c:"P11", t:"Novos tipos de zona na aba Marcar (e a mancha do Marial 7)", tipo:"escolha",
+     i:[["q3-marial7-pagina.jpg", "Marial 7. À esquerda, em laranja, a área que o detector de gravuras marcou sozinho (ele tomou a mancha por foto). No meio, o Misto de hoje: a mancha fica marrom. À direita, " + SIM + " de \"pintar de branco por cima\" dessa mesma área."],
+        ["q3-marial7-mancha.jpg", "O canto da mancha, de perto, com cada jeito de corrigir. \"Não é gravura\" (já existe): a mancha some, mas a beirada escura do livro, que estava dentro da área, vira uma <b class='onde'>faixa preta</b> à esquerda. \"Marcar como papel\" (já existe): some quase tudo, mas ficam <b class='onde'>pontinhos e a faixa marrom</b> da beirada, porque o papel poupa o que é escuro. \"Pintar de branco\" (" + SIM + "): limpo."],
+        ["q3-horas13-titulo-tipos.jpg", "Os dois tipos novos do ScanTailor, no título vermelho e azul da Horas 13 (zona = o retângulo do título). De cima para baixo: original; Misto de hoje (título preto); o que já temos, \"só neste pedaço: Original\" (algumas letras de \"CONTENU\" ficam meio pretas e há um contorno claro); " + SIM + " de \"tinta com a cor original, papel branco\"; " + SIM + " de \"tinta preta, fundo original\" (o papel creme e as linhas da pauta voltam, só dentro da zona)."],
+        ["q3-palatino5-retrato-tipos.jpg", "Os mesmos tipos no retrato do Palatino 5 (zona = a área do retrato que o programa achou). \"Tinta com a cor\" (" + SIM + ") perde os traços claros da barba e do cabelo; \"tinta preta\" (" + SIM + ") deixa o traço preto sobre o papel amarelado."],
+        ["q3-scantailor-janela-zona.png", "Referência: a janela de zona do ScanTailor (\"Zone Properties\"), com os cinco tipos. Desenhada aqui a partir do arquivo de tela do próprio ScanTailor; não é uma foto do ScanTailor rodando (não achei imagem dessa janela na documentação dele)."]],
+     o:`<b>Primeiro, a sua pergunta sobre o Marial 7</b> (<i>"não sei se o modo com o scantailor resolve isso"</i>): <b>não resolve sozinho</b>. O detector que confundiu a mancha com foto <b>é o do ScanTailor</b>, o mesmo que já usamos desde 30/09. No ScanTailor ele erraria igual, e lá também se corrige à mão: desenhando uma zona "isto não é gravura" ou uma zona pintada de branco. O remédio é o mesmo nos dois: corrigir à mão, na aba Marcar.<br><br>
+        <b>A diferença entre (a) e (b), que você pediu:</b> o ScanTailor tem cinco tipos de zona, mais a "pintura com cor por cima", numa aba à parte. A tabela abaixo mostra que <b>três dos cinco já temos</b>, com outro nome. A <b>(a)</b> traz só o que falta e mais serve: <b>pintar com uma cor por cima</b> (apagar mancha, carimbo, número de biblioteca) e <b>mover, copiar e colar zona</b>. A <b>(b)</b> traz os cinco com nomes comuns: o Kaique ganharia cinco botões, três repetindo os que ele já tem, e dois novos (<b>"tinta com a cor original, papel branco"</b> e <b>"tinta preta, fundo original"</b>), cujo efeito você vê pela primeira vez nas imagens abaixo.`,
+     m:`Com (a), na aba Marcar aparece "pintar de branco" (ou de outra cor), e o Kaique consegue mover, copiar e colar uma zona (útil quando a mesma mancha ou carimbo se repete em várias páginas). Com (b), mais dois tipos na lista "Marcar como". Com (c), (a) agora, e os dois novos só se você gostar do efeito deles nas imagens.`,
+     x: TABELA_ZONAS,
+     a:`O efeito exato dos dois tipos novos foi <b>deduzido</b> do código do ScanTailor e é a primeira vez que se vê; o preto e branco usado para decidir "o que é tinta" é o do nosso programa, não o dele. "Pintar de branco" também é simulação. As outras colunas ("não é gravura", "papel", "só neste pedaço") são o Misto de hoje com a zona desenhada por um programinha de teste, sem mudar nada.`,
+     s:`Recomendação: (c). O Kaique não ganha cinco botões quando três repetem os nossos; ganha já o que resolve o Marial 7 (pintar de branco) e o mover/copiar/colar, e os dois novos esperam você ver o efeito. Pelas imagens, "tinta com a cor" fica melhor que o nosso "só neste pedaço: Original" no título colorido, mas pior no retrato.`,
+     r:`De onde vem: o ScanTailor Advanced v1.2.1 (cópia do código no disco), a parte que aplica as zonas (cinco passadas, nesta ordem) e a aba das zonas de preenchimento; a pesquisa de 01/10 e o plano do Misto. As imagens: o Misto de hoje (core/misto.py) com zonas desenhadas pelo programinha de teste; "pintar de branco" e os dois tipos novos são simulação.<small>ScanTailor: D:\\programas\\EditorImpressao-arquivos\\ferramentas\\scantailor-advanced-v1.2.1\\src\\core\\filters\\output\\OutputGenerator.cpp (modifyBinarizationMask, l. 1975-2033) e PictureZonePropDialog.ui · docs/pesquisa/fase2-mapa-scantailor.md, seção 5 (passos 4 e 10) · core/selecao.py (TIPOS: gravura, letra, papel, fora; somar/tirar; Regiao.filtro) · ui/widgets/paineis.py ("Marcar como", "só neste pedaço") · relatorios/conferencia-11-2026-10-05/scripts/simular.py (q3_marial, q3_tipos_novos) e tela.py</small>`,
+     p:"Na aba Marcar:",
+     op:["(a) Só o que falta: \"pintar com uma cor por cima\" + copiar, colar e mover zona",
+         "(b) Os cinco tipos do ScanTailor, com nomes comuns",
+         "(c) A (a) agora, e os dois tipos novos depois de você ver o efeito (recomendado)"]},
+
+    {c:"P11b", t:"Clicar numa área que o programa já marcou e apagar ou pintar de branco", tipo:"escolha",
+     i:[["q3-marial7-pagina.jpg", "A mesma imagem de cima: a área laranja foi marcada pelo programa sozinho; a " + SIM + " da direita pintou de branco <b>exatamente essa área</b>, sem desenhar nada à mão."]],
+     o:`É a sua ideia do formulário 10: <i>"gostaria de poder usar as seleções que o proprio programa já fez, das gravuras e das coisas, porque as vezes ele consegue selecionar essas manchas e coisas como gravuras e eu poderia ir lá e apagar ou botar branco por cima"</i>. Na aba Marcar, as áreas que o programa achou já aparecem pintadas; a ideia é o Kaique <b>clicar numa delas</b> e escolher "apagar" (deixa de ser gravura: vira texto em preto e branco) ou "pintar de branco".`,
+     m:`Em vez de redesenhar a mancha à mão, o Kaique clica na área que o programa já marcou e escolhe o que fazer. Na simulação do Marial 7 isso deixou o canto limpo.`,
+     a:`Nesta página, pintar de branco a área do programa não apagou nenhuma letra do texto (conferido na imagem). Mas essa área encosta no começo das linhas; em outra página ela pode pegar letra. Por isso o Kaique precisaria poder ajustar a área antes de pintar (o mover e o apagar ponto da P11 ajudam nisso).`,
+     s:`Recomendação: nenhuma; é uma ideia sua, e depende da P11 (o "pintar de branco" é a peça que falta para ela).`,
+     r:`De onde vem: sua resposta à P6 no formulário 10. As áreas do programa já ficam guardadas na marcação da página, com as feitas à mão, numa lista só; a "simulação" usa a área de gravura que o detector guardou no Marial 7.<small>relatorios/conferencia-samuel-2026-10-05-b.md · core/selecao.py (Selecao.regioes, origem automática/rede/mão) · relatorios/conferencia-11-2026-10-05/scripts/simular.py (q3_marial)</small>`,
+     p:"Quer poder clicar numa área que o programa já marcou (gravura, mancha) e apagar ou pintar de branco?",
+     op:["Sim", "Não", "Depois"]},
+   ]},
+
+ { titulo:"2. Um defeito grave, achado na janela de verdade",
+   cartoes:[
+    {c:"CANCELAR", t:"\"Substituir o antigo\" e depois \"cancelar\" apaga o PDF antigo", tipo:"escolha",
+     i:[["q4-caixa-substituir.jpg", "Antes: o livro já tinha um PDF pronto (meu-livro-teste.pdf, 1,1 MB). Ao processar de novo, o programa pergunta, e o verificador escolheu \"substituir o antigo\"."],
+        ["q4-depois-de-cancelar.jpg", "Depois: ele apertou \"cancelar\" na tela de progresso. O programa voltou para esta tela, <b>sem nenhuma mensagem</b>, e o meu-livro-teste.pdf <b>não existia mais no disco</b> (conferido na pasta pelo verificador; o print mostra a tela, não a pasta)."]],
+     o:`Quando o Kaique gera de novo o PDF de um livro e escolhe "substituir o antigo", o programa (sem "Montar cadernos", que é o normal) escreve o PDF novo <b>direto por cima do arquivo final</b>, enquanto vai processando. Se ele cancela no meio, o programa apaga o que estava escrevendo, para não deixar um PDF pela metade. Só que esse arquivo é o mesmo nome do antigo: o antigo já foi sobrescrito e, no fim, apagado. Acontece mesmo se cancelar antes da primeira página.`,
+     m:`Hoje o Kaique pode perder o PDF que já tinha, sem saber. Consertado: o PDF novo é escrito num arquivo à parte, na mesma pasta, e só troca de lugar com o antigo quando termina bem. Cancelou, o antigo fica intacto. Nada muda nas páginas nem no PDF que sai.`,
+     x: DESENHO,
+     a:`Junto, o verificador viu um defeito menor: depois de cancelar, o cartão do livro na tela inicial continua verde dizendo "PDF gerado" até fechar e abrir o programa. É outro assunto, que a gerente leva à parte; não é desta pergunta.`,
+     s:`Recomendação: (a). O Kaique pode perder o PDF, e o conserto é pequeno: é o mesmo jeito que o programa já usa quando "Montar cadernos" está ligado.`,
+     r:`De onde vem: o parecer do verificador de 05/10, que testou na janela de verdade, com uma pasta de dados de teste (nunca a do Kaique). É antigo (não veio dos consertos de 05/10), mas esses consertos deixaram o caminho mais comum.<small>relatorios/conferir/consertos-janela-2026-10-05/verificador/parecer-verificador-consertos-janela.md ("Bug 1") e prints/16-caixa-antes-de-substituir.png, prints/17-depois-de-cancelar.png · core/pipeline.py l. ~1038 (destino = saida_final) e l. ~1133-1137 (ao cancelar: Path(destino).unlink)</small>`,
+     p:"Consertar o \"substituir o antigo\" + cancelar?",
+     op:["(a) Consertar já (recomendado)",
+         "(b) Depois"]},
+   ]},
+
+ { titulo:"3. Limpeza",
+   cartoes:[
+    {c:"PASTA", t:"A pasta que o verificador deixou (1,8 GB)", tipo:"escolha", i:[],
+     o:`O verificador deixou a pasta <b>verif-consertos-saida</b>, com 1,8 GB, dentro da pasta do projeto (mas fora do que vai para o histórico das versões). Pela sua regra de 29/09, o que um agente não criou na tarefa só se apaga com a sua licença. Eu só olhei o que tem dentro; não apaguei nada.`,
+     m:`Nada muda para o Kaique: a pasta não é usada pelo programa. Apagar libera 1,8 GB no disco D.`,
+     x: PASTA,
+     a:`O que importa do trabalho do verificador (o parecer e os prints) já está guardado em relatórios. Só dois arquivinhos com o resultado da comparação e um print repetido não foram copiados; se quiser guardá-los, diga no comentário que eu copio antes de apagar.`,
+     r:`De onde vem: a pasta foi criada pelo verificador em 05/10, para conferir os consertos da janela; o próprio parecer diz que "pode ser apagada".<small>D:\\programas\\EditorImpressao\\.claude\\worktrees\\verif-consertos-saida\\ · relatorios/conferir/consertos-janela-2026-10-05/verificador/parecer-verificador-consertos-janela.md (fim) · CLAUDE.md, seção 10, item 9</small>`,
+     p:"Posso apagar?",
+     op:["Sim", "Não"]},
+   ]},
+
+ { titulo:"4. Ainda sem resposta no formulário 10",
+   sub:"As mesmas perguntas e imagens do formulário 10, com a explicação mais completa. Todas valem só para o Misto (\"Só as letras\"); o Preto e branco comum não muda.",
+   cartoes:[
+    {c:"P2", t:"O papel de dentro da gravura", tipo:"escolha",
+     i:[["p2-palatino_p005.jpg", "Palatino 5, o retrato. À esquerda, o Misto de fábrica: o papel de dentro da gravura vai a branco. À direita, a variante: o papel de dentro fica creme, como no original (é o que o ScanTailor faz)."],
+        ["p2-palatino_p005-detalhe.jpg", "O rosto, ampliado. Com o creme, o retrato fica amarelado e aparece <b class='onde'>a mancha em volta do oval</b>, à esquerda (na imagem de cima)."]],
+     o:`Uma gravura de traço (xilogravura, retrato, desenho) é tinta sobre papel: entre um traço e outro, há o papel do livro, amarelado. No Misto, a gravura fica como no original; a dúvida é só esse papel de dentro dela: <b>vai a branco</b>, como o resto da página, ou <b>fica creme</b>, como no original.`,
+     m:`Com (a), a página inteira sai com o papel branco, também dentro do retrato; o traço fica com o tom do original (marrom). Com (b), o retrato sai num retângulo (ou oval) amarelado no meio da página branca, com as manchas do papel antigo.`,
+     s:`Recomendação: (a). É a sua regra "todo o papel totalmente branco, inclusive dentro da gravura".`,
+     r:`De onde vem: o Misto (core/misto.py) com e sem a parte que leva o papel da gravura a branco; o ScanTailor deixa o papel como está. As imagens são o Misto de hoje, sem simulação.<small>relatorios/fase2-misto-2026-10-05/variantes/palatino_p005.jpg · docs/plano/fase2-misto-plano.md (P2) · core/misto.py (papel_da_gravura_branco)</small>`,
+     p:"No Misto, o papel de dentro da gravura:",
+     op:["(a) Vai a branco; só o desenho fica como no original (recomendado)",
+         "(b) Fica creme, como no original (como no ScanTailor)"]},
+    {c:"P3", t:"A foto e a pintura", tipo:"escolha",
+     i:[["p3-escola_p007.jpg", "Escola de Jesus 7. À esquerda, o Misto de fábrica: a pintura do Paraíso com a cor do original. À direita, a variante: a pintura em tons de cinza, como no Preto e branco de hoje."],
+        ["p3-opusmajus_p020.jpg", "Opus Majus 20, a foto da estátua. No original ela já é quase sem cor, num tom creme; à direita, em tons de cinza."]],
+     o:`Foto e pintura de tom contínuo (não de traço). No Preto e branco de hoje elas saem em tons de cinza (sua decisão de 30/09). No Misto, podem ficar <b>como no original, com a cor</b>, ou em <b>tons de cinza</b>, como no Preto e branco.`,
+     m:`Com (a), a pintura sai colorida no PDF (e o PDF fica mais pesado). Com (b), ela sai cinza, como hoje, e o Misto só muda a gravura de traço e a moldura.`,
+     s:`Recomendação: (a). É a proposta que você aceitou em 02/10: "gravuras e fotos ficam como estão". Quem quiser a foto cinza tem o Preto e branco comum.`,
+     r:`De onde vem: o Misto (core/misto.py) com e sem a opção de foto em cinza. As imagens são o Misto de hoje, sem simulação.<small>relatorios/fase2-misto-2026-10-05/variantes/escola_p007.jpg e opusmajus_p020.jpg · docs/plano/fase2-misto-plano.md (P3) · core/misto.py (foto_em_cinza)</small>`,
+     p:"No Misto, a foto e a pintura:",
+     op:["(a) Ficam como no original, com a cor (recomendado)",
+         "(b) Ficam em tons de cinza, como no Preto e branco"]},
+    {c:"P4", t:"Letras dentro da moldura ou da iluminura", tipo:"escolha",
+     i:[["p4-horas_p011-detalhe.jpg", "Horas 11, o oval da iluminura: Original | Preto e branco de hoje | Misto. No original, as letras são vermelhas, azuis e douradas; hoje saem pretas, e o Misto faz igual."]],
+     o:`São títulos escritos dentro de uma moldura ou iluminura, como os do oval da Horas 11 ou o "NOVEMBRE." da Horas 26. A moldura em volta fica com a cor no Misto; a dúvida é se essas <b>letras</b> também ficam com a cor ou saem pretas.`,
+     m:`Com (a), o título sai preto, nítido e igual ao resto do texto, como no Preto e branco de hoje. Com (b), sai vermelho, azul e dourado, como no original (contra a sua regra "o vermelho sai preto").`,
+     s:`Recomendação: (a). É o que você decidiu para o Preto e branco em 01/10 (P4); o Misto só repete. Se um dia um livro precisar das letras coloridas, a P10 (letras com a cor delas, desligada de fábrica), que você já aprovou, cobre isso.`,
+     r:`De onde vem: o Misto (core/misto.py) usa, na moldura e na iluminura, a mesma conta do Preto e branco de hoje, que deixa a letra solta preta. A imagem é o programa de hoje e o Misto, sem simulação.<small>relatorios/fase2-misto-2026-10-05/paineis/horas_p011-detalhe.jpg · docs/plano/fase2-misto-plano.md (P4) · core/filtros.py (_com_a_decoracao, letras_pretas)</small>`,
+     p:"No Misto, as letras dentro da moldura ou da iluminura:",
+     op:["(a) Saem pretas, como no Preto e branco de hoje (recomendado)",
+         "(b) Saem com a cor original"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-k";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>O que é:</b> ${k.o}</p>` : "") +
+      (k.m ? `<p class="muda"><b>O que muda para o Kaique:</b> ${k.m}</p>` : "") +
+      (k.i||[]).map(([src, leg]) => `<figure><img loading="lazy" src="${P+src}" alt="${k.t}">${leg ? `<figcaption>${leg}</figcaption>` : ""}</figure>`).join("") +
+      (k.x || "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      (k.r ? `<p class="ref"><b>Referência.</b> ${k.r}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 11 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
