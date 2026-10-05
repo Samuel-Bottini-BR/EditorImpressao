@@ -258,8 +258,24 @@ def preparar_metade(
     (recortar.FOLGA_MM). None (a tela, que nao sabe) = folga em fracao do lado.
 
     Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
-    avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md.
+    avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md (e a de
+    core/zonas_na_folha._matriz_folha_para_pagina: mudou uma, muda a outra).
     """
+    return _preparar_metade_e_geometria(img_folha, folha, pagina, projeto,
+                                        geometria=geometria, dpi=dpi)[0]
+
+
+def _preparar_metade_e_geometria(
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+    geometria: tuple | None = None, dpi: float | None = None,
+) -> tuple[np.ndarray, dict]:
+    """preparar_metade, devolvendo tambem a geometria do desenho (decisao D2,
+    core/zonas_na_folha.geometria_do_desenho): o giro de 90, a divisao, o
+    corte e o angulo que foram MESMO aplicados, e a proporcao da folha. E o
+    que renderizar_pagina e processar passam a zonas_na_folha.acompanhar,
+    para as zonas da aba Marcar ficarem sobre o mesmo pedaco da folha."""
+    from core.zonas_na_folha import geometria_do_desenho
+
     inteira = preparar_para_recorte(img_folha, folha, pagina)
 
     if geometria is None:
@@ -275,12 +291,20 @@ def preparar_metade(
         # fatiar (sem copiar) quando vai girar: o rotacionar ja devolve uma
         # imagem nova. Sem giro, copia, como sempre.
         img = fatiar(inteira, recorte) if girar else aplicar_recorte(inteira, recorte)
+    # recorte absurdo (menos de 8 pontos) volta a pagina inteira: nao cortou
+    cortou = recorte is not None and (img is not inteira)
 
     # 3. endireitar
     if girar:
         img = rotacionar(img, angulo)
 
-    return img
+    dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
+    desenho = geometria_do_desenho(
+        img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
+        folha.posicao_corte if dividida else None,
+        pagina.metade if dividida else METADE_INTEIRA,
+        tuple(recorte) if cortou else None, float(angulo) if girar else 0.0)
+    return img, desenho
 
 
 def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
@@ -821,7 +845,9 @@ def renderizar_pagina(
         _anotar_conferir(pagina, bool(resultado.imagem is not None and resultado.conferir))
         if resultado.imagem is not None:
             geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, None)
-            img = preparar_metade(resultado.imagem, folha, pagina, projeto, geometria=geometria)
+            img, desenho = _preparar_metade_e_geometria(resultado.imagem, folha, pagina, projeto,
+                                                        geometria=geometria)
+            _acompanhar_as_zonas(pagina, desenho)
             return img, False
     else:
         _anotar_conferir(pagina, False)
@@ -846,8 +872,25 @@ def renderizar_pagina(
     if _vai_detectar(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
-    img = preparar_metade(img_folha, folha, pagina, projeto, dpi=dpi)
+    img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
+    _acompanhar_as_zonas(pagina, desenho)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
+
+
+def _acompanhar_as_zonas(pagina: ConfigPagina, desenho: dict) -> None:
+    """Decisao D2 (02/10/2026): as zonas da aba Marcar ficam sobre o mesmo
+    pedaco da folha quando o preparo da pagina muda (core/zonas_na_folha.
+    acompanhar). Chamado logo depois de preparar a pagina, ANTES de a selecao
+    ser usada (_filtrar) ou mostrada (a aba Marcar recebe esta mesma previa).
+    Um erro aqui nunca derruba a previa nem o PDF: as zonas ficam como
+    estavam (o comportamento de antes) e o erro vai para o log."""
+    from core import zonas_na_folha
+
+    try:
+        zonas_na_folha.acompanhar(pagina, desenho)
+    except Exception:  # noqa: BLE001 - zona que nao deu para levar fica como estava
+        _log.exception("nao consegui levar as zonas para o preparo novo da pagina %s",
+                       pagina.indice + 1)
 
 
 def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -1087,8 +1130,9 @@ def processar(
                     # dividir, cortar e endireitar a folha sem o fundo, com o
                     # corte da folha como veio; o filtro fica de fora
                     geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
-                    img = preparar_metade(imagem_sem_fundo, folha, pagina, projeto,
-                                          geometria=geometria)
+                    img, desenho = _preparar_metade_e_geometria(
+                        imagem_sem_fundo, folha, pagina, projeto, geometria=geometria)
+                    _acompanhar_as_zonas(pagina, desenho)
                     mono = False
                 else:
                     # o corte e calculado nesta mesma imagem (a do PDF) e
@@ -1100,8 +1144,9 @@ def processar(
                     if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
                         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                         dpi_scan = _dpi_do_scan(doc, folha)
-                    img = preparar_metade(img_folha, folha, pagina, projeto,
-                                          dpi=projeto.qualidade_dpi)
+                    img, desenho = _preparar_metade_e_geometria(
+                        img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+                    _acompanhar_as_zonas(pagina, desenho)
                     img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
 
                 # Item 2/4 do teste do Boecio (secao 3a do plano): cola o

@@ -306,16 +306,84 @@ def salvar_estado(resumo: Resumo, projeto) -> None:
     try:
         pasta = Path(resumo.pasta)
         pasta.mkdir(parents=True, exist_ok=True)
+        dados = projeto.para_dicionario()
+        # Decisao D2 (02/10/2026): "com copia de seguranca dos projetos". A
+        # primeira gravacao no formato novo (zonas na folha original) por cima
+        # de um projeto.json antigo com zonas guarda o antigo antes.
+        if not _copia_antes_das_zonas_na_folha(pasta, dados):
+            # Sem a copia (disco cheio, sem permissao), grava no formato de
+            # antes: so a "selecao" em fracao da pagina, que vale com a
+            # geometria anotada. O trabalho nao deixa de ser gravado; a
+            # conversao fica para a proxima gravacao que conseguir a copia.
+            from core.zonas_na_folha import CAMPO_NA_FOLHA
+
+            for pagina in dados.get("paginas", []):
+                pagina.pop(CAMPO_NA_FOLHA, None)
         temporario = pasta / (ARQUIVO_ESTADO + ".novo")
         # Grava num arquivo ao lado e so entao troca. Escrever por cima do bom
         # deixaria o projeto pela metade se a energia caisse no meio - e o
         # arquivo pela metade e justamente o que nao pode acontecer aqui.
         temporario.write_text(
-            json.dumps(projeto.para_dicionario(), ensure_ascii=False, indent=1),
+            json.dumps(dados, ensure_ascii=False, indent=1),
             encoding="utf-8")
         temporario.replace(pasta / ARQUIVO_ESTADO)
     except (OSError, ValueError, TypeError):
         pass
+
+
+# Pastas de projeto cujo projeto.json ja esta no formato novo (zonas na folha),
+# nesta sessao: nao precisam ser lidas de novo a cada gravacao. Seguro
+# esvaziar a qualquer hora (so custa ler o arquivo uma vez).
+_JA_NO_FORMATO_NOVO: set[str] = set()
+
+# Nome da copia: "projeto.antigo-zonas-na-folha-AAAA-MM-DD-HHMM.json". Tem o
+# ".antigo-" de proposito: copias_do_trabalho a acha, e o "Tirar da lista" a
+# guarda junto das outras copias (decisao do Samuel de 29/09).
+MOTIVO_DA_COPIA_DAS_ZONAS = "zonas-na-folha"
+
+
+def _copia_antes_das_zonas_na_folha(pasta: Path, dados: dict, agora: datetime | None = None) -> bool:
+    """Guarda o projeto.json antigo antes da primeira gravacao com as zonas na
+    folha original (decisao D2 do Samuel, 02/10/2026: "Sim, pode mudar (com
+    copia de seguranca dos projetos)").
+
+    So quando: o que vai ser gravado tem zonas no formato novo E o arquivo
+    em disco tem zonas so no formato antigo (core/zonas_na_folha). A copia e
+    feita uma vez (a gravacao seguinte ja encontra o formato novo), em modo
+    exclusivo, nunca por cima de outra, e nada no programa a apaga. Devolve
+    False se havia o que guardar e nao deu (ai quem chama grava no formato
+    de antes, sem converter: o trabalho e gravado e a conversao espera).
+    Arriscado: devolver True sem a copia feita.
+    """
+    from core.zonas_na_folha import tem_formato_novo, tem_zonas_no_formato_antigo
+
+    chave = str(pasta.resolve())
+    if chave in _JA_NO_FORMATO_NOVO or not tem_formato_novo(dados):
+        return True
+    estado = pasta / ARQUIVO_ESTADO
+    try:
+        antigo = json.loads(estado.read_text(encoding="utf-8")) if estado.is_file() else None
+    except (OSError, ValueError):
+        antigo = None                 # ilegivel: a copia abaixo guarda os bytes
+        if estado.is_file():
+            antigo = {"paginas": [{"selecao": ["?"]}]}
+    if antigo is None or tem_formato_novo(antigo) or not tem_zonas_no_formato_antigo(antigo):
+        _JA_NO_FORMATO_NOVO.add(chave)
+        return True
+    carimbo = (agora or datetime.now()).strftime("%Y-%m-%d-%H%M")
+    for numero in range(1, 1000):
+        sufixo = carimbo if numero == 1 else f"{carimbo}-{numero}"
+        destino = pasta / f"projeto.antigo-{MOTIVO_DA_COPIA_DAS_ZONAS}-{sufixo}.json"
+        try:
+            with destino.open("xb") as copia:
+                copia.write(estado.read_bytes())
+        except FileExistsError:
+            continue
+        except OSError:
+            return False
+        _JA_NO_FORMATO_NOVO.add(chave)
+        return True
+    return False
 
 
 def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> Path | None:
