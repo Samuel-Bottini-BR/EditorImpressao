@@ -72,6 +72,8 @@ fora: vira core.filtros.ErroFiltro, como os outros filtros.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import cv2
 import numpy as np
 
@@ -111,6 +113,96 @@ FORAS_DO_TEXTO = (FORA_TUDO, FORA_REDE, FORA_APAGAR)
 FOLGA_DAS_LINHAS = 0.15
 # a area minima de um pedaco guardado pela rede, em (altura da linha / isto)^2
 PEDACO_MINIMO_DA_REDE = 6.0
+
+
+# --- as escolhas do Misto no projeto (ligar ao programa, 05/10/2026) ----------
+#
+# Pedido do Samuel (conferencia 10, P1 (a)): a caixinha "So as letras" dentro
+# do Preto e branco, "para o livro (tela 'O que fazer') e para a pagina (aba
+# Filtro)". Regra geral (conferencia 12): "esse programa deve presar por dar
+# opcoes" - a escolha dele e o padrao de fabrica e as outras ficam disponiveis.
+#
+# fora_do_texto (conferencia 8: "Escolher dentro do programa: sim, e tem que
+#   ser algo bem visivel"; conferencia 14, PADRAO (1): A de fabrica, linhas
+#   achadas so com o leitor rapido):
+#     FORA_REDE   A "Guardar a tinta forte"     (de fabrica)
+#     FORA_TUDO   B "Tudo em preto e branco"
+#     FORA_APAGAR C "So o texto achado"
+# papel_da_gravura (conferencia 12, P2 (a)): o papel de dentro da gravura de
+#   traco vai a branco (de fabrica) ou fica como foi escaneado ("eu deixar
+#   todas as gravuras originais e nao mexer nelas").
+# letras_na_moldura (conferencia 12, P4 (a), com (b) e (c) disponiveis): as
+#   letras dentro da moldura dourada ou da iluminura (o oval da Horas 11,
+#   "NOVEMBRE."):
+#     LETRAS_COR_PAPEL_BRANCO    com a cor delas e o papel branco atras (de fabrica)
+#     LETRAS_COR_FUNDO_ORIGINAL  com a cor delas e o fundo como foi escaneado
+#                                (a moldura/iluminura inteira como no original)
+#     LETRAS_PRETAS              pretas, com o papel branco atras (o Preto e
+#                                branco de hoje, decisao P4 de 01/10)
+# Foto e pintura no Misto: sempre com a cor original (conferencia 11, P3 (a);
+#   em preto e branco so sem "So as letras", ou com "so neste pedaco").
+#
+# Os valores sao os gravados no projeto.json: mudar o TEXTO de um deles faz o
+# projeto salvo voltar ao padrao (opcoes_da_pagina corrige o desconhecido).
+# Seguro mudar: os padroes (sao decisao do Samuel). Arriscado: renomear.
+PAPEL_BRANCO = "branco"
+PAPEL_COMO_ESCANEADO = "como_escaneado"
+PAPEIS_DA_GRAVURA = (PAPEL_BRANCO, PAPEL_COMO_ESCANEADO)
+LETRAS_COR_PAPEL_BRANCO = "cor_papel_branco"
+LETRAS_COR_FUNDO_ORIGINAL = "cor_fundo_original"
+LETRAS_PRETAS = "pretas"
+LETRAS_NA_MOLDURA = (LETRAS_COR_PAPEL_BRANCO, LETRAS_COR_FUNDO_ORIGINAL, LETRAS_PRETAS)
+
+FORA_DO_TEXTO_PADRAO = FORA_REDE
+PAPEL_DA_GRAVURA_PADRAO = PAPEL_BRANCO
+LETRAS_NA_MOLDURA_PADRAO = LETRAS_COR_PAPEL_BRANCO
+
+# Os campos do Misto, com o MESMO nome no livro (modelos.Projeto, com o valor
+# de fabrica) e na pagina (modelos.ConfigPagina, None = segue o livro). Quem
+# copia as opcoes do livro de um projeto para outro (ui/janela_principal) e
+# quem os testa le esta lista.
+CAMPOS_DO_MISTO = ("misto_so_as_letras", "misto_fora_do_texto",
+                   "misto_papel_da_gravura", "misto_letras_na_moldura")
+
+
+@dataclass(frozen=True)
+class OpcoesDoMisto:
+    """As escolhas do Misto que valem numa pagina (ver opcoes_da_pagina)."""
+
+    fora_do_texto: str = FORA_DO_TEXTO_PADRAO
+    papel_da_gravura: str = PAPEL_DA_GRAVURA_PADRAO
+    letras_na_moldura: str = LETRAS_NA_MOLDURA_PADRAO
+
+    @property
+    def precisa_das_linhas(self) -> bool:
+        """A e C precisam saber onde esta o texto (o leitor de texto); B nao."""
+        return self.fora_do_texto != FORA_TUDO
+
+
+def _da_pagina_ou_do_livro(projeto, pagina, campo: str):
+    """O valor do campo na pagina; None (ou sem o campo) = o do livro."""
+    valor = getattr(pagina, campo, None)
+    return getattr(projeto, campo, None) if valor is None else valor
+
+
+def opcoes_da_pagina(projeto, pagina) -> OpcoesDoMisto | None:
+    """As escolhas do Misto desta pagina, ou None se o Misto nao vale nela.
+
+    A pagina herda cada campo do livro (modelos.Projeto) e pode trocar so nela
+    (modelos.ConfigPagina, None = segue o livro). Projeto de versao anterior,
+    sem os campos: None (o Misto desligado, a pagina sai como sempre saiu).
+    Valor desconhecido (arquivo mexido, versao futura): o padrao de fabrica.
+    Nao olha o filtro: quem chama so pergunta para pagina em Preto e branco
+    (core.pipeline._filtrar). Barato (so le campos)."""
+    if _da_pagina_ou_do_livro(projeto, pagina, "misto_so_as_letras") is not True:
+        return None
+    fora = _da_pagina_ou_do_livro(projeto, pagina, "misto_fora_do_texto")
+    papel = _da_pagina_ou_do_livro(projeto, pagina, "misto_papel_da_gravura")
+    letras = _da_pagina_ou_do_livro(projeto, pagina, "misto_letras_na_moldura")
+    return OpcoesDoMisto(
+        fora_do_texto=fora if fora in FORAS_DO_TEXTO else FORA_DO_TEXTO_PADRAO,
+        papel_da_gravura=papel if papel in PAPEIS_DA_GRAVURA else PAPEL_DA_GRAVURA_PADRAO,
+        letras_na_moldura=letras if letras in LETRAS_NA_MOLDURA else LETRAS_NA_MOLDURA_PADRAO)
 
 
 def mascara_das_linhas(resultados, forma: tuple[int, int]) -> tuple[np.ndarray, float]:
