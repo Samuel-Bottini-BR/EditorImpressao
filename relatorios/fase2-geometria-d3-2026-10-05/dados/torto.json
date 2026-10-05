@@ -1,0 +1,132 @@
+{
+ "horas_p011": {
+  "torto_no_original": -0.14,
+  "angulo_certo_estimado": -0.14,
+  "nosso_angulo": -0.5,
+  "st_angulo": 0.0,
+  "sobra_torta_nosso": 1.78,
+  "sobra_torta_st": -0.1,
+  "linhas_usadas": [
+   5,
+   3,
+   5
+  ]
+ },
+ "horas_p047": {
+  "torto_no_original": 1.06,
+  "angulo_certo_estimado": 1.06,
+  "nosso_angulo": -0.1,
+  "st_angulo": 0.56,
+  "sobra_torta_nosso": 0.98,
+  "sobra_torta_st": -0.07,
+  "linhas_usadas": [
+   4,
+   7,
+   11
+  ]
+ },
+ "horas_p027": {
+  "torto_no_original": 0.99,
+  "angulo_certo_estimado": 0.99,
+  "nosso_angulo": 0.5,
+  "st_angulo": 0.0,
+  "sobra_torta_nosso": 0.11,
+  "sobra_torta_st": 0.85,
+  "linhas_usadas": [
+   24,
+   20,
+   29
+  ]
+ },
+ "horas_p014": {
+  "torto_no_original": null,
+  "angulo_certo_estimado": null,
+  "nosso_angulo": -0.2,
+  "st_angulo": 0.0,
+  "sobra_torta_nosso": null,
+  "sobra_torta_st": -0.43,
+  "linhas_usadas": [
+   1,
+   0,
+   3
+  ]
+ },
+ "opusmajus_p020": {
+  "torto_no_original": null,
+  "angulo_certo_estimado": null,
+  "nosso_angulo": -0.4,
+  "st_angulo": 0.25,
+  "sobra_torta_nosso": null,
+  "sobra_torta_st": 0.44,
+  "linhas_usadas": [
+   2,
+   2,
+   4
+  ]
+ },
+ "palatino_p057": {
+  "torto_no_original": -0.44,
+  "angulo_certo_estimado": -0.44,
+  "nosso_angulo": -0.1,
+  "st_angulo": -0.5,
+  "sobra_torta_nosso": -0.04,
+  "sobra_torta_st": 0.55,
+  "linhas_usadas": [
+   5,
+   6,
+   8
+  ]
+ },
+ "siebmacher_p009": {
+  "torto_no_original": 0.21,
+  "angulo_certo_estimado": 0.21,
+  "nosso_angulo": 0.0,
+  "st_angulo": -0.25,
+  "sobra_torta_nosso": 0.21,
+  "sobra_torta_st": 0.46,
+  "linhas_usadas": [
+   20,
+   20,
+   18
+  ]
+ },
+ "escola_p007": {
+  "torto_no_original": 0.17,
+  "angulo_certo_estimado": 0.17,
+  "nosso_angulo": 0.0,
+  "st_angulo": 0.12,
+  "sobra_torta_nosso": 0.15,
+  "sobra_torta_st": 0.02,
+  "linhas_usadas": [
+   41,
+   43,
+   44
+  ]
+ },
+ "graduale_p221": {
+  "torto_no_original": 0.88,
+  "angulo_certo_estimado": 0.88,
+  "nosso_angulo": 0.7,
+  "st_angulo": 0.75,
+  "sobra_torta_nosso": -0.05,
+  "sobra_torta_st": -0.18,
+  "linhas_usadas": [
+   6,
+   8,
+   9
+  ]
+ },
+ "escola_p035": {
+  "torto_no_original": -0.77,
+  "angulo_certo_estimado": -0.77,
+  "nosso_angulo": -0.8,
+  "st_angulo": -0.81,
+  "sobra_torta_nosso": 0.05,
+  "sobra_torta_st": 0.11,
+  "linhas_usadas": [
+   23,
+   31,
+   34
+  ]
+ }
+}

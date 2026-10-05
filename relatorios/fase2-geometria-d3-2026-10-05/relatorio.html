@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3: endireitar, girar e dividir — o nosso × o do ScanTailor</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>D3: endireitar, girar e dividir — o nosso × o do ScanTailor</h1>
+<p><strong>05/10/2026 · implementador (frente de geometria, ramo <code>fase2-geometria</code>) · só mostra, nada no programa mudou por causa disto.</strong></p>
+<p>Pedido do Samuel (02/10, D3): <em>"Não lembro; teste nas páginas de teste e me mostre - mas eu quero usar o do scantailor, pois o nosso não é tão intuitivo de se usar."</em></p>
+<h2>Em poucas frases</h2>
+<ol>
+<li><strong>Girar de 90 em 90 graus: nenhum dos dois faz sozinho.</strong> No ScanTailor também é só botão (girar à esquerda, à direita, aplicar em todas / pares / ímpares). Não há o que comparar no automático; a diferença é a tela.</li>
+<li><strong>Endireitar: nas 32 páginas, em 24 os dois acham o mesmo ângulo</strong> (diferença de até 0,15 grau). <strong>Nas 7 em que discordam, o ScanTailor acerta 2 que o nosso erra (Horas 11 e Horas 47), o nosso acerta 2 que o ScanTailor erra (Horas 27 e Palatino 57), e 3 ficam quase empatadas</strong> (Horas 14, Siebmacher 9 e Opus 20).</li>
+<li><strong>Onde o nosso erra:</strong> nas páginas com muita pintura em volta do texto (Livro de Horas). Na Horas 11 ele <strong>entorta</strong> uma página que estava reta; na Horas 47 ele <strong>deixa torta</strong> uma página que estava torta. O motivo provável (suposição, não conferida no código): a moldura pintada pesa mais que as linhas de texto na conta do nosso; o ScanTailor tira antes as manchas compridas e mede com mais cuidado.</li>
+<li><strong>Onde o ScanTailor erra no endireitar:</strong> às vezes acha "quase zero" e não gira página torta (Horas 27); e muda de ideia conforme a resolução da imagem que recebe (na Horas 27, com a imagem no tamanho do escaneamento, ele acha o mesmo ângulo do nosso).</li>
+<li><strong>Dividir a folha: os dois erram, cada um de um jeito.</strong> O nosso parte a folha do Siebmacher (uma página só, deitada) <strong>no meio do poema</strong>. O ScanTailor divide a mesma folha <strong>na beirada do livro</strong>: a página de verdade fica inteira, mas sai uma segunda página só com a beirada. E o ScanTailor, sozinho, <strong>corta a tabela dobrável do Opus Majus 256 em duas</strong> e, nas páginas comuns, faz um "corte da sobra" que <strong>passa em cima de letra</strong> (Escola 7, Escola 35) e <strong>leva o número da folha e as guias de fim de pauta</strong> (Graduale 221). O nosso não faz nada disso nessas páginas.</li>
+<li><strong>Opinião (de implementador, não é decisão):</strong> trazer o endireitar do ScanTailor resolve as duas páginas do Livro de Horas que o nosso erra, mas piora duas outras; nas páginas comuns dá na mesma. O ganho grande que o Samuel pediu ("mais intuitivo de usar") está na <strong>tela</strong> (girar e corrigir à mão como no ScanTailor) e na <strong>escolha por livro/página</strong> de quantas páginas tem a folha — não na conta automática. Para o dividir, o automático do ScanTailor <strong>não</strong> deveria ser ligado de fábrica sem a pessoa conferir.</li>
+</ol>
+<h2>Como foi feito</h2>
+<ul>
+<li><strong>Nosso:</strong> o mesmo caminho do programa para o PDF final, com as opções de fábrica do livro (dividir, cortar e endireitar marcados): a análise decide se divide (a 150 DPI), a folha é desenhada a 300 DPI, e o corte e o ângulo são medidos como o programa mede (<code>core/pipeline._geometria</code>).</li>
+<li><strong>ScanTailor:</strong> a <strong>mesma imagem de 300 DPI</strong> passa pelo código original do ScanTailor Advanced v1.2.1 (o mesmo do item 1.2), compilado num programa de teste fora do projeto (<code>D:\programas\EditorImpressao-arquivos\ferramentas\geometria-d3-2026-10-05\</code>). Ele faz o que o ScanTailor faz sozinho, na ordem dele: dividir no modo automático e, em cada página, endireitar com a limpeza das sombras compridas, aceitando o ângulo só com a confiança mínima dele. <strong>Não é a janela do ScanTailor</strong>; é o cálculo dela, copiado sem mudança.</li>
+<li><strong>Sentido do ângulo:</strong> conferido numa folha de mentira girada 2 graus. Na tabela, os dois estão no mesmo sentido (positivo = gira no sentido anti-horário).</li>
+<li><strong>Quem acertou:</strong> onde discordam, a página endireitada por cada um foi <strong>esticada 5 vezes na altura</strong> (meio grau de torto vira dois graus e meio e aparece contra as linhas-guia) e olhada; e as linhas de texto foram medidas uma a uma (uma terceira medida, que não é de nenhum dos dois; boa só até uns 0,2 grau).</li>
+</ul>
+<p>Legenda das imagens: em cima, a folha com a divisão (azul) e o corte (verde) do nosso, e a divisão/corte do ScanTailor (vermelho). No meio, a página endireitada por cada um, com linhas-guia. Embaixo, a faixa do meio ampliada.</p>
+<h2>Página por página</h2>
+<h3>Livro de Horas 11 (frontispício iluminado)</h3>
+<p><img alt="Horas 11" src="imagens/horas_p011.jpg" /></p>
+<p><img alt="Horas 11 esticada" src="imagens/esticada_horas_p011.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso −0,50°; ScanTailor 0,00° (com a imagem no tamanho do escaneamento, +0,25°). Divisão: os dois deixam uma página; o ScanTailor corta 2% de sobra de cada lado, sem tocar na iluminura.</li>
+<li><strong>Onde cada um erra:</strong> <strong>o nosso entorta a página</strong> (na faixa esticada, "LE GRAND" e "DANS L'HOSTEL" descem para a direita); <strong>o ScanTailor deixa reta</strong>, que é como ela já estava.</li>
+</ul>
+<h3>Livro de Horas 47 (texto dentro de moldura pintada)</h3>
+<p><img alt="Horas 47" src="imagens/horas_p047.jpg" /></p>
+<p><img alt="Horas 47 esticada" src="imagens/esticada_horas_p047.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso −0,10°; ScanTailor +0,56° (no tamanho do escaneamento, +0,69°). Divisão: uma página nos dois; o ScanTailor corta 8% da esquerda (só papel e sombra da lombada).</li>
+<li><strong>Onde cada um erra:</strong> <strong>o nosso deixa a página torta</strong> (as linhas descem para a direita); <strong>o ScanTailor endireita</strong>.</li>
+</ul>
+<h3>Siebmacher 7 (uma página só, deitada, com a beirada do livro)</h3>
+<p><img alt="Siebmacher 7" src="imagens/siebmacher_p007.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso divide a 57% (confiança baixa, 0,24); ScanTailor divide a 80%. Ângulo 0° nos dois.</li>
+<li><strong>Onde cada um erra:</strong> <strong>o nosso parte a folha no meio do poema</strong> e da moldura; <strong>o ScanTailor parte na beirada do livro</strong>: a página de verdade fica inteira, mas sobra uma segunda "página" só com a beirada e o fundo preto. O certo seria uma página só.</li>
+</ul>
+<h3>Siebmacher 9</h3>
+<p><img alt="Siebmacher 9" src="imagens/siebmacher_p009.jpg" /></p>
+<p><img alt="Siebmacher 9: onde o ScanTailor divide" src="imagens/corte_st_siebmacher_p009_esq.jpg" /></p>
+<p><img alt="Siebmacher 9 esticada" src="imagens/esticada_siebmacher_p009.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso divide a 57% (0,22); ScanTailor a 82%. Ângulo: nosso 0°, ScanTailor −0,25° na página da esquerda.</li>
+<li><strong>Onde cada um erra:</strong> a divisão, igual à Siebmacher 7 (o nosso no meio do poema, o ScanTailor na beirada do livro). O ângulo é quase empate: a medida das linhas dá o nosso um pouco mais reto (0,2° contra 0,5° de sobra), mas a olho os dois parecem retos.</li>
+</ul>
+<h3>Graduale 221 (partitura torta, R5)</h3>
+<p><img alt="Graduale 221" src="imagens/graduale_p221.jpg" /></p>
+<p><img alt="Graduale 221: onde o ScanTailor corta a sobra" src="imagens/corte_st_graduale_p221_dir.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso +0,70°; ScanTailor +0,75°. Os dois endireitam bem.</li>
+<li><strong>Onde cada um erra:</strong> no ângulo, nenhum. <strong>O "corte da sobra" do ScanTailor leva o número da folha ("Cvij") e as guias no fim das pautas</strong> (os ganchinhos à direita). O nosso não corta ali.</li>
+</ul>
+<h3>Na escola de Jesus 7 (R5)</h3>
+<p><img alt="Escola 7" src="imagens/escola_p007.jpg" /></p>
+<p><img alt="Escola 7: onde o ScanTailor corta a sobra" src="imagens/corte_st_escola_p007_dir.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso 0,00°; ScanTailor +0,12°. Praticamente igual.</li>
+<li><strong>Onde cada um erra:</strong> no ângulo, nenhum. <strong>O corte da sobra do ScanTailor passa rente ao fim das linhas</strong> e lasca a última letra ("CRISTÃ", "parece", "existência.").</li>
+</ul>
+<h3>Na escola de Jesus 35 (controle: os dois acham o mesmo ângulo)</h3>
+<p><img alt="Escola 35" src="imagens/escola_p035.jpg" /></p>
+<p><img alt="Escola 35: corte da esquerda" src="imagens/corte_st_escola_p035_esq.jpg" /></p>
+<p><img alt="Escola 35: corte da direita" src="imagens/corte_st_escola_p035_dir.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso −0,80°; ScanTailor −0,81°.</li>
+<li><strong>Onde cada um erra:</strong> no ângulo, nenhum. <strong>O corte da sobra do ScanTailor atravessa o texto dos dois lados</strong> (come o começo e o fim das linhas). O nosso não divide nem corta ali.</li>
+</ul>
+<h3>Opus Majus 256 (tabela numa folha dobrável deitada)</h3>
+<p><img alt="Opus 256" src="imagens/opusmajus_p256.jpg" /></p>
+<p><img alt="Opus 256: onde o ScanTailor divide" src="imagens/corte_st_opusmajus_p256_esq.jpg" /></p>
+<ul>
+<li><strong>Números:</strong> nosso −0,20°; ScanTailor −0,25° e −0,19° (uma para cada metade).</li>
+<li><strong>Onde cada um erra:</strong> <strong>o ScanTailor divide a tabela em duas páginas</strong>, entre as colunas "Secunda" e "Tertia" (ele divide toda folha mais larga que alta). O nosso deixa a tabela inteira (a folha fica só um pouco abaixo da proporção em que o nosso divide).</li>
+</ul>
+<h3>As outras três em que discordam no ângulo</h3>
+<p><img alt="Horas 27 esticada" src="imagens/esticada_horas_p027.jpg" /></p>
+<ul>
+<li><strong>Horas 27</strong> (calendário): nosso +0,50°, ScanTailor 0,00°. <strong>O ScanTailor deixa torta</strong> (as linhas descem para a direita); o nosso endireita. Com a imagem no tamanho do escaneamento, o ScanTailor acha +0,50°, igual ao nosso.</li>
+</ul>
+<p><img alt="Palatino 57 esticada" src="imagens/esticada_palatino_p057.jpg" /></p>
+<ul>
+<li><strong>Palatino 57:</strong> nosso −0,10°, ScanTailor −0,50°. <strong>O ScanTailor entorta um pouco</strong>; o nosso fica reto.</li>
+</ul>
+<p><img alt="Horas 14 esticada" src="imagens/esticada_horas_p014.jpg" /></p>
+<ul>
+<li><strong>Horas 14</strong> (tabela): nosso −0,20°, ScanTailor 0,00°. Quase empate: a olho, os dois deixam a tabela praticamente reta.</li>
+</ul>
+<p><img alt="Opus 20 esticada" src="imagens/esticada_opusmajus_p020.jpg" /></p>
+<ul>
+<li><strong>Opus Majus 20</strong> (foto da estátua): nosso −0,40°, ScanTailor +0,25°, para lados opostos. <strong>Não deu para decidir</strong>: a página não tem linha de texto comprida, e esticar na altura não ajuda a ver linha em pé.</li>
+</ul>
+<h2>Todas as 32 páginas</h2>
+<p>Ângulo no mesmo sentido para os dois (positivo = gira no anti-horário). "300 DPI" é a mesma imagem que o nosso usa para o PDF; "DPI do scan" é o PNG do gabarito no tamanho em que foi escaneado (os PDFs do Livro de Horas, do Graduale e do Marial dizem 72 DPI).</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Nosso: dividir</th>
+<th>ScanTailor: dividir</th>
+<th>Nosso: ângulo</th>
+<th>ScanTailor: ângulo (300 DPI)</th>
+<th>ScanTailor: ângulo (DPI do scan)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>palatino_p005</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>+0.40°</td>
+<td>+0.50°</td>
+<td>+0.38° (400 DPI)</td>
+</tr>
+<tr>
+<td>palatino_p007</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 5%, 93%)</td>
+<td>+0.00°</td>
+<td>+0.00°</td>
+<td>+0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>palatino_p009</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 6%, 93%)</td>
+<td>-0.10°</td>
+<td>+0.00°</td>
+<td>+0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>palatino_p010</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 7%, 94%)</td>
+<td>-0.10°</td>
+<td>-0.12°</td>
+<td>-0.12° (400 DPI)</td>
+</tr>
+<tr>
+<td>palatino_p057</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 6%, 89%)</td>
+<td>-0.10°</td>
+<td>-0.50°</td>
+<td>-0.50° (400 DPI)</td>
+</tr>
+<tr>
+<td>palatino_p066</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 10%, 93%)</td>
+<td>-0.10°</td>
+<td>+0.00°</td>
+<td>+0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>palatino_p067</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 4%, 87%)</td>
+<td>-0.10°</td>
+<td>+0.00°</td>
+<td>+0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>marial_p007</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 4%, 99%)</td>
+<td>+1.20°</td>
+<td>+1.25°</td>
+<td>+1.25° (72 DPI)</td>
+</tr>
+<tr>
+<td>graduale_p221</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 2%, 89%)</td>
+<td>+0.70°</td>
+<td>+0.75°</td>
+<td>+0.69° (72 DPI)</td>
+</tr>
+<tr>
+<td>graduale_p222</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 0%, 98%)</td>
+<td>-1.00°</td>
+<td>-0.88°</td>
+<td>-1.06° (72 DPI)</td>
+</tr>
+<tr>
+<td>graduale_p223</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 3%, 88%)</td>
+<td>+0.80°</td>
+<td>+0.75°</td>
+<td>+0.75° (72 DPI)</td>
+</tr>
+<tr>
+<td>horas_p011</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 2%, 97%)</td>
+<td>-0.50°</td>
+<td>+0.00°</td>
+<td>+0.25° (72 DPI)</td>
+</tr>
+<tr>
+<td>horas_p013</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 3%, 98%)</td>
+<td>+0.70°</td>
+<td>+0.62°</td>
+<td>+0.62° (72 DPI)</td>
+</tr>
+<tr>
+<td>horas_p014</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 2%, 98%)</td>
+<td>-0.20°</td>
+<td>+0.00°</td>
+<td>-0.12° (72 DPI)</td>
+</tr>
+<tr>
+<td>horas_p026</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 3%, 98%)</td>
+<td>-0.10°</td>
+<td>+0.00°</td>
+<td>+0.00° (72 DPI)</td>
+</tr>
+<tr>
+<td>horas_p027</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 2%, 97%)</td>
+<td>+0.50°</td>
+<td>+0.00°</td>
+<td>+0.50° (72 DPI)</td>
+</tr>
+<tr>
+<td>horas_p047</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 8%, 98%)</td>
+<td>-0.10°</td>
+<td>+0.56°</td>
+<td>+0.69° (72 DPI)</td>
+</tr>
+<tr>
+<td>escola_p007</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 2%, 94%)</td>
+<td>+0.00°</td>
+<td>+0.12°</td>
+<td>+0.00° (200 DPI)</td>
+</tr>
+<tr>
+<td>escola_p035</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 12%, 86%)</td>
+<td>-0.80°</td>
+<td>-0.81°</td>
+<td>-0.81° (200 DPI)</td>
+</tr>
+<tr>
+<td>siebmacher_p007</td>
+<td>divide a 57%</td>
+<td>duas páginas (cortes a 80%)</td>
+<td>+0.00° / +0.00°</td>
+<td>+0.00° / -0.00°</td>
+<td>+0.00° / -0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>siebmacher_p009</td>
+<td>divide a 58%</td>
+<td>duas páginas (cortes a 82%)</td>
+<td>+0.00° / +0.00°</td>
+<td>-0.25° / -0.00°</td>
+<td>-0.19° / -0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>rhetorica_p018</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 11%, 97%)</td>
+<td>-0.10°</td>
+<td>+0.00°</td>
+<td>+0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>rhetorica_p073</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 14%, 90%)</td>
+<td>-0.10°</td>
+<td>-0.25°</td>
+<td>-0.25° (400 DPI)</td>
+</tr>
+<tr>
+<td>boecio_p003</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>+0.60°</td>
+<td>+0.75°</td>
+<td>+0.50° (150 DPI)</td>
+</tr>
+<tr>
+<td>boecio_p007</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>+0.00°</td>
+<td>+0.00°</td>
+<td>+0.00° (150 DPI)</td>
+</tr>
+<tr>
+<td>boecio_p008</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>-1.00°</td>
+<td>-1.12°</td>
+<td>-1.19° (150 DPI)</td>
+</tr>
+<tr>
+<td>boecio_p022</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 0%, 95%)</td>
+<td>-0.20°</td>
+<td>-0.12°</td>
+<td>+0.00° (150 DPI)</td>
+</tr>
+<tr>
+<td>opusmajus_p011</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>-0.30°</td>
+<td>-0.25°</td>
+<td>-0.25° (400 DPI)</td>
+</tr>
+<tr>
+<td>opusmajus_p003</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>-0.10°</td>
+<td>+0.00°</td>
+<td>+0.00° (400 DPI)</td>
+</tr>
+<tr>
+<td>opusmajus_p020</td>
+<td>não divide</td>
+<td>uma página + sobra (cortes a 19%, 89%)</td>
+<td>-0.40°</td>
+<td>+0.25°</td>
+<td>+0.31° (400 DPI)</td>
+</tr>
+<tr>
+<td>opusmajus_p165</td>
+<td>não divide</td>
+<td>uma página</td>
+<td>+0.30°</td>
+<td>+0.31°</td>
+<td>+0.25° (400 DPI)</td>
+</tr>
+<tr>
+<td>opusmajus_p256</td>
+<td>não divide</td>
+<td>duas páginas (cortes a 50%)</td>
+<td>-0.20°</td>
+<td>-0.25° / -0.19°</td>
+<td>-0.19° / -0.12° (400 DPI)</td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Não é a janela do ScanTailor.</strong> É o cálculo dele (o mesmo código da v1.2.1 do item 1.2), rodado na ordem em que ele roda. Na janela de verdade, a pessoa ainda pode mudar o ângulo e a divisão; aqui só o automático foi comparado.</li>
+<li><strong>O ScanTailor muda de ideia com a resolução.</strong> Nas páginas do Livro de Horas (escaneadas pequenas, desenhadas a 300 DPI pelo programa), o ângulo dele muda até 0,5° conforme a imagem que recebe (tabela, última coluna). Se o 2.2 trouxer o endireitar dele, a imagem e o DPI que ele recebe têm de ser escolhidos e testados.</li>
+<li><strong>O nosso corte é medido antes do ângulo; o do ScanTailor, não.</strong> O nosso mede o ângulo na página já cortada; o ScanTailor, na página dividida, sem corte (o corte dele é outra etapa, depois). Isso explica parte das diferenças.</li>
+<li><strong>A medida "linha a linha" é aproximada</strong> (boa até uns 0,2°) e não serve para página sem texto (Opus 20, Horas 14). O que decidiu foi a olho, nas faixas esticadas, que estão aqui para o Samuel conferir.</li>
+<li><strong>Girar não foi comparado no automático</strong> porque nenhum dos dois tem. A queixa "o nosso não é intuitivo" é da tela, que não foi testada aqui.</li>
+<li>O "corte da sobra" do ScanTailor (dividir no modo "uma página + sobra") é uma etapa que o nosso não tem: o nosso só divide ou não divide. As imagens dos cortes mostram onde a tesoura dele passaria.</li>
+</ul>
+<h2>Arquivos</h2>
+<ul>
+<li>Imagens: <code>imagens/</code> (lado a lado, faixas esticadas, ampliações dos cortes).</li>
+<li>Números: <code>dados/medidas.json</code> (as 32 páginas), <code>dados/torto.json</code> (a terceira medida), <code>dados/tabela.md</code>.</li>
+<li>Scripts: <code>scripts/comparar_d3.py</code>, <code>scripts/medir_torto.py</code>, <code>scripts/zoom_cortes.py</code>.</li>
+<li>O programa de teste do ScanTailor (fora do projeto, 1 pasta nova): <code>D:\programas\EditorImpressao-arquivos\ferramentas\geometria-d3-2026-10-05\</code> (<code>geometria_d3.cpp</code>, <code>CMakeLists.txt</code>, <code>compilar.bat</code>, a pasta <code>build\</code> e <code>tmp\</code> vazia). Fica lá até o Samuel dizer se pode apagar.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 13:13</p>
+</body>
+</html>

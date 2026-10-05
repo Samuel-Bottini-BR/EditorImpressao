@@ -1,0 +1,1392 @@
+{
+ "sentido": "Folha sintética girada 2° no sentido horário: o ScanTailor devolve -2.00 (e +2.00 para a girada ao contrário); o nosso devolve +2.00. Fator usado para pôr o ScanTailor no sentido do nosso: -1.",
+ "fator": -1.0,
+ "paginas": {
+  "palatino_p005": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.4
+   ],
+   "nosso_angulo_analise": 0.5,
+   "nosso_recortes": [
+    [
+     0.0706,
+     0.0325,
+     0.813,
+     0.9388
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    0.5
+   ],
+   "st_brutos": [
+    0.5
+   ],
+   "st_confiancas": [
+    6.53
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 1929,
+    "cortes": [],
+    "angulos": [
+     0.38
+    ]
+   },
+   "dpi_png": 400
+  },
+  "palatino_p007": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.0
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0611,
+     0.0562,
+     0.8244,
+     0.795
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    4.8,
+    93.2
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1929,
+    "cortes": [
+     4.8,
+     93.2
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "palatino_p009": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0267,
+     0.0262,
+     0.9199,
+     0.8388
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    6.1,
+    93.2
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1929,
+    "cortes": [
+     6.1,
+     93.3
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "palatino_p010": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0458,
+     0.0162,
+     0.9084,
+     0.8163
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    6.8,
+    94.2
+   ],
+   "st_angulos": [
+    -0.12
+   ],
+   "st_brutos": [
+    -0.12
+   ],
+   "st_confiancas": [
+    19.2
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1929,
+    "cortes": [
+     6.8,
+     94.3
+    ],
+    "angulos": [
+     -0.12
+    ]
+   },
+   "dpi_png": 400
+  },
+  "palatino_p057": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0305,
+     0.025,
+     0.8817,
+     0.8663
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    5.5,
+    89.4
+   ],
+   "st_angulos": [
+    -0.5
+   ],
+   "st_brutos": [
+    -0.5
+   ],
+   "st_confiancas": [
+    8.04
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1929,
+    "cortes": [
+     5.5,
+     89.4
+    ],
+    "angulos": [
+     -0.5
+    ]
+   },
+   "dpi_png": 400
+  },
+  "palatino_p066": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": 0.1,
+   "nosso_recortes": [
+    [
+     0.0821,
+     0.0262,
+     0.8645,
+     0.8332
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    10.3,
+    93.2
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1929,
+    "cortes": [
+     10.3,
+     93.2
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "palatino_p067": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0172,
+     0.0375,
+     0.869,
+     0.8324
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    4.0,
+    86.6
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1929,
+    "cortes": [
+     4.1,
+     86.7
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "marial_p007": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    1.2
+   ],
+   "nosso_angulo_analise": 1.2,
+   "nosso_recortes": [
+    [
+     0.0181,
+     0.0,
+     0.9735,
+     1.0
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    4.4,
+    98.7
+   ],
+   "st_angulos": [
+    1.25
+   ],
+   "st_brutos": [
+    1.25
+   ],
+   "st_confiancas": [
+    13.45
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 714,
+    "cortes": [
+     4.2,
+     98.7
+    ],
+    "angulos": [
+     1.25
+    ]
+   },
+   "dpi_png": 72
+  },
+  "graduale_p221": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.7
+   ],
+   "nosso_angulo_analise": 0.7,
+   "nosso_recortes": [
+    [
+     0.0,
+     0.0325,
+     0.9771,
+     0.9475
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    1.9,
+    88.6
+   ],
+   "st_angulos": [
+    0.75
+   ],
+   "st_brutos": [
+    0.75
+   ],
+   "st_confiancas": [
+    24.39
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 961,
+    "cortes": [
+     3.7,
+     88.9
+    ],
+    "angulos": [
+     0.69
+    ]
+   },
+   "dpi_png": 72
+  },
+  "graduale_p222": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -1.0
+   ],
+   "nosso_angulo_analise": -1.0,
+   "nosso_recortes": [
+    [
+     0.1927,
+     0.0625,
+     0.8043,
+     0.905
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    0.0,
+    97.9
+   ],
+   "st_angulos": [
+    -0.88
+   ],
+   "st_brutos": [
+    -0.88
+   ],
+   "st_confiancas": [
+    21.16
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 961,
+    "cortes": [
+     22.5,
+     97.8
+    ],
+    "angulos": [
+     -1.06
+    ]
+   },
+   "dpi_png": 72
+  },
+  "graduale_p223": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.8
+   ],
+   "nosso_angulo_analise": 0.9,
+   "nosso_recortes": [
+    [
+     0.0018,
+     0.0224,
+     0.9877,
+     0.9338
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    2.6,
+    88.0
+   ],
+   "st_angulos": [
+    0.75
+   ],
+   "st_brutos": [
+    0.75
+   ],
+   "st_confiancas": [
+    22.82
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 961,
+    "cortes": [
+     2.7,
+     88.3
+    ],
+    "angulos": [
+     0.75
+    ]
+   },
+   "dpi_png": 72
+  },
+  "horas_p011": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.5
+   ],
+   "nosso_angulo_analise": -0.8,
+   "nosso_recortes": [
+    [
+     0.0086,
+     0.0075,
+     0.8632,
+     0.935
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    2.0,
+    97.3
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1024,
+    "cortes": [
+     2.0,
+     97.3
+    ],
+    "angulos": [
+     0.25
+    ]
+   },
+   "dpi_png": 72
+  },
+  "horas_p013": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.7
+   ],
+   "nosso_angulo_analise": 0.7,
+   "nosso_recortes": [
+    [
+     0.0089,
+     0.02,
+     0.9734,
+     0.9587
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    3.3,
+    97.6
+   ],
+   "st_angulos": [
+    0.62
+   ],
+   "st_brutos": [
+    0.62
+   ],
+   "st_confiancas": [
+    10.52
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1024,
+    "cortes": [
+     3.3,
+     97.6
+    ],
+    "angulos": [
+     0.62
+    ]
+   },
+   "dpi_png": 72
+  },
+  "horas_p014": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.2
+   ],
+   "nosso_angulo_analise": -0.2,
+   "nosso_recortes": [
+    [
+     0.011,
+     0.035,
+     0.9767,
+     0.8938
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    1.7,
+    98.3
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1024,
+    "cortes": [
+     1.7,
+     98.3
+    ],
+    "angulos": [
+     -0.12
+    ]
+   },
+   "dpi_png": 72
+  },
+  "horas_p026": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.2191,
+     0.0187,
+     0.7678,
+     0.9012
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    2.7,
+    97.7
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1024,
+    "cortes": [
+     2.7,
+     97.7
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 72
+  },
+  "horas_p027": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.5
+   ],
+   "nosso_angulo_analise": 0.5,
+   "nosso_recortes": [
+    [
+     0.009,
+     0.005,
+     0.7734,
+     0.9463
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    2.0,
+    97.3
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1024,
+    "cortes": [
+     2.0,
+     97.3
+    ],
+    "angulos": [
+     0.5
+    ]
+   },
+   "dpi_png": 72
+  },
+  "horas_p047": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": 0.1,
+   "nosso_recortes": [
+    [
+     0.0717,
+     0.0338,
+     0.8033,
+     0.9125
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    7.9,
+    98.0
+   ],
+   "st_angulos": [
+    0.56
+   ],
+   "st_brutos": [
+    0.56
+   ],
+   "st_confiancas": [
+    12.59
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1024,
+    "cortes": [
+     7.9,
+     98.0
+    ],
+    "angulos": [
+     0.69
+    ]
+   },
+   "dpi_png": 72
+  },
+  "escola_p007": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.0
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0303,
+     0.005,
+     0.9172,
+     0.995
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    2.5,
+    93.8
+   ],
+   "st_angulos": [
+    0.12
+   ],
+   "st_brutos": [
+    0.12
+   ],
+   "st_confiancas": [
+    27.6
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1420,
+    "cortes": [
+     2.5,
+     93.8
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 200
+  },
+  "escola_p035": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.8
+   ],
+   "nosso_angulo_analise": -0.8,
+   "nosso_recortes": [
+    [
+     0.0545,
+     0.05,
+     0.8599,
+     0.945
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    12.3,
+    86.2
+   ],
+   "st_angulos": [
+    -0.81
+   ],
+   "st_brutos": [
+    -0.81
+   ],
+   "st_confiancas": [
+    34.66
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 1517,
+    "cortes": [
+     12.3,
+     86.2
+    ],
+    "angulos": [
+     -0.81
+    ]
+   },
+   "dpi_png": 200
+  },
+  "siebmacher_p007": {
+   "nosso_divide": true,
+   "nosso_posicao": 56.9,
+   "nosso_confianca": 0.24,
+   "e_paisagem": true,
+   "nosso_angulos": [
+    0.0,
+    0.0
+   ],
+   "nosso_angulo_analise": -0.0,
+   "nosso_recortes": [
+    [
+     0.0279,
+     0.0148,
+     0.9721,
+     0.9798
+    ],
+    [
+     0.0,
+     0.0,
+     1.0,
+     0.9798
+    ]
+   ],
+   "st_tipo": "duas_paginas",
+   "st_cortes": [
+    80.5
+   ],
+   "st_angulos": [
+    0.0,
+    -0.0
+   ],
+   "st_brutos": [
+    0.0,
+    -4.0
+   ],
+   "st_confiancas": [
+    2.0,
+    0.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "duas_paginas",
+    "w": 2217,
+    "cortes": [
+     80.5
+    ],
+    "angulos": [
+     0.0,
+     -0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "siebmacher_p009": {
+   "nosso_divide": true,
+   "nosso_posicao": 57.5,
+   "nosso_confianca": 0.22,
+   "e_paisagem": true,
+   "nosso_angulos": [
+    0.0,
+    0.0
+   ],
+   "nosso_angulo_analise": -0.0,
+   "nosso_recortes": [
+    [
+     0.0057,
+     0.0,
+     0.9943,
+     0.9844
+    ],
+    [
+     0.0,
+     0.0008,
+     1.0,
+     0.9766
+    ]
+   ],
+   "st_tipo": "duas_paginas",
+   "st_cortes": [
+    82.1
+   ],
+   "st_angulos": [
+    -0.25,
+    -0.0
+   ],
+   "st_brutos": [
+    -0.25,
+    -4.44
+   ],
+   "st_confiancas": [
+    6.91,
+    0.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "duas_paginas",
+    "w": 2212,
+    "cortes": [
+     82.1
+    ],
+    "angulos": [
+     -0.19,
+     -0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "rhetorica_p018": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0785,
+     0.0309,
+     0.9181,
+     0.853
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    10.9,
+    97.3
+   ],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 2350,
+    "cortes": [
+     10.6,
+     97.4
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "rhetorica_p073": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0,
+     0.045,
+     0.914,
+     0.879
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    14.4,
+    90.4
+   ],
+   "st_angulos": [
+    -0.25
+   ],
+   "st_brutos": [
+    -0.25
+   ],
+   "st_confiancas": [
+    10.66
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 2350,
+    "cortes": [
+     14.4,
+     90.4
+    ],
+    "angulos": [
+     -0.25
+    ]
+   },
+   "dpi_png": 400
+  },
+  "boecio_p003": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.6
+   ],
+   "nosso_angulo_analise": 0.7,
+   "nosso_recortes": [
+    [
+     0.0,
+     0.011,
+     1.0,
+     0.9446
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    0.75
+   ],
+   "st_brutos": [
+    0.75
+   ],
+   "st_confiancas": [
+    7.66
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 519,
+    "cortes": [],
+    "angulos": [
+     0.5
+    ]
+   },
+   "dpi_png": 150
+  },
+  "boecio_p007": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.0
+   ],
+   "nosso_angulo_analise": 0.1,
+   "nosso_recortes": [
+    [
+     0.0,
+     0.0111,
+     0.9801,
+     0.9441
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 526,
+    "cortes": [],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 150
+  },
+  "boecio_p008": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -1.0
+   ],
+   "nosso_angulo_analise": -1.0,
+   "nosso_recortes": [
+    [
+     0.0,
+     0.0072,
+     1.0,
+     0.9506
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    -1.12
+   ],
+   "st_brutos": [
+    -1.12
+   ],
+   "st_confiancas": [
+    7.1
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 517,
+    "cortes": [],
+    "angulos": [
+     -1.19
+    ]
+   },
+   "dpi_png": 150
+  },
+  "boecio_p022": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.2
+   ],
+   "nosso_angulo_analise": -0.2,
+   "nosso_recortes": [
+    [
+     0.0653,
+     0.0459,
+     0.9245,
+     0.922
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    0.0,
+    95.1
+   ],
+   "st_angulos": [
+    -0.12
+   ],
+   "st_brutos": [
+    -0.12
+   ],
+   "st_confiancas": [
+    6.89
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 529,
+    "cortes": [
+     0.0,
+     95.0
+    ],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 150
+  },
+  "opusmajus_p011": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.3
+   ],
+   "nosso_angulo_analise": -0.2,
+   "nosso_recortes": [
+    [
+     0.1107,
+     0.1187,
+     0.7343,
+     0.7612
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    -0.25
+   ],
+   "st_brutos": [
+    -0.25
+   ],
+   "st_confiancas": [
+    33.05
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 2300,
+    "cortes": [],
+    "angulos": [
+     -0.25
+    ]
+   },
+   "dpi_png": 400
+  },
+  "opusmajus_p003": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.1
+   ],
+   "nosso_angulo_analise": -0.1,
+   "nosso_recortes": [
+    [
+     0.0,
+     0.0,
+     1.0,
+     1.0
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    0.0
+   ],
+   "st_brutos": [
+    0.0
+   ],
+   "st_confiancas": [
+    2.0
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 2300,
+    "cortes": [],
+    "angulos": [
+     0.0
+    ]
+   },
+   "dpi_png": 400
+  },
+  "opusmajus_p020": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.4
+   ],
+   "nosso_angulo_analise": -0.6,
+   "nosso_recortes": [
+    [
+     0.1741,
+     0.0912,
+     0.7257,
+     0.7552
+    ]
+   ],
+   "st_tipo": "uma_pagina_com_sobra",
+   "st_cortes": [
+    19.1,
+    89.0
+   ],
+   "st_angulos": [
+    0.25
+   ],
+   "st_brutos": [
+    0.25
+   ],
+   "st_confiancas": [
+    8.13
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_com_sobra",
+    "w": 2212,
+    "cortes": [
+     19.1,
+     89.0
+    ],
+    "angulos": [
+     0.31
+    ]
+   },
+   "dpi_png": 400
+  },
+  "opusmajus_p165": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    0.3
+   ],
+   "nosso_angulo_analise": 0.3,
+   "nosso_recortes": [
+    [
+     0.0515,
+     0.0561,
+     0.7831,
+     0.8365
+    ]
+   ],
+   "st_tipo": "uma_pagina_sem_corte",
+   "st_cortes": [],
+   "st_angulos": [
+    0.31
+   ],
+   "st_brutos": [
+    0.31
+   ],
+   "st_confiancas": [
+    31.95
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "uma_pagina_sem_corte",
+    "w": 2160,
+    "cortes": [],
+    "angulos": [
+     0.25
+    ]
+   },
+   "dpi_png": 400
+  },
+  "opusmajus_p256": {
+   "nosso_divide": false,
+   "nosso_posicao": 50.0,
+   "nosso_confianca": 0.0,
+   "e_paisagem": false,
+   "nosso_angulos": [
+    -0.2
+   ],
+   "nosso_angulo_analise": -0.2,
+   "nosso_recortes": [
+    [
+     0.0608,
+     0.0783,
+     0.9332,
+     0.8351
+    ]
+   ],
+   "st_tipo": "duas_paginas",
+   "st_cortes": [
+    49.8
+   ],
+   "st_angulos": [
+    -0.25,
+    -0.19
+   ],
+   "st_brutos": [
+    -0.25,
+    -0.19
+   ],
+   "st_confiancas": [
+    32.33,
+    21.5
+   ],
+   "st_dpi_do_scan": {
+    "tipo": "duas_paginas",
+    "w": 3283,
+    "cortes": [
+     49.7
+    ],
+    "angulos": [
+     -0.19,
+     -0.12
+    ]
+   },
+   "dpi_png": 400
+  }
+ }
+}
