@@ -1024,14 +1024,22 @@ class ErroPDFSalvoComOutroNome(ErroPDF):
     """O PDF novo ficou pronto, mas o antigo nao pode ser substituido (aberto
     em outro programa); o novo foi gravado com outro nome, em `caminho`.
 
-    E um ErroPDF para chegar a tela como aviso em portugues pelo caminho que
-    ja existe (ui/tarefas.py::_mensagem_amigavel mostra o ErroPDF como ele e):
-    o Kaique fica sabendo o nome do arquivo novo. Nada na tela muda.
+    `antigo` e o arquivo que ficou preso (o destino pedido).
+
+    E um ErroPDF (quem chama processar sem tratar este caso ve o aviso em
+    portugues, como antes), mas NAO e falha: o PDF ficou pronto. A
+    TarefaProcessar (ui/tarefas.py) o entrega como `concluida`, com o caminho
+    do "(2)", e a tela "Ficou pronto!" mostra o nome novo e uma frase dizendo
+    que o antigo estava aberto noutro programa (conserto de 05/10/2026,
+    achado do verificador: antes a tela voltava para Conferir, o cartao nao
+    virava "PDF gerado" e o caso ia para o erros.log). Arriscado: deixar de
+    preencher `caminho` (a tela mostraria o nome errado).
     """
 
-    def __init__(self, mensagem: str, caminho: Path) -> None:
+    def __init__(self, mensagem: str, caminho: Path, antigo: Path | None = None) -> None:
         super().__init__(mensagem)
         self.caminho = caminho
+        self.antigo = antigo
 
 
 def _caminho_parcial(saida_final: Path) -> Path:
@@ -1107,6 +1115,7 @@ def _trocar_pelo_final(parcial: Path, saida_final: Path) -> Path:
         f"O arquivo antigo ficou como estava, e o PDF novo foi gravado ao lado "
         f"dele, na mesma pasta, com o nome \"{alternativo.name}\".",
         alternativo,
+        saida_final,
     )
 
 

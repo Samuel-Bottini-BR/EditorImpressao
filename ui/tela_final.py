@@ -145,6 +145,16 @@ class TelaFinal(QWidget):
         self.local.setAlignment(Qt.AlignCenter)
         camadas.addWidget(self.local)
 
+        # So aparece quando o PDF antigo estava aberto em outro programa e o
+        # novo foi gravado como "(2)" (conserto de 05/10/2026; ver mostrar).
+        # Mesmo estilo discreto da linha "Salvo em"; o resto da tela nao muda.
+        self.aviso = QLabel("")
+        self.aviso.setObjectName("fraco")
+        self.aviso.setAlignment(Qt.AlignCenter)
+        self.aviso.setWordWrap(True)
+        self.aviso.setVisible(False)
+        camadas.addWidget(self.aviso)
+
         self.cartao_impressao = QFrame()
         self.cartao_impressao.setObjectName("cartao")
         instrucoes = QVBoxLayout(self.cartao_impressao)
@@ -177,14 +187,28 @@ class TelaFinal(QWidget):
         camadas.addLayout(linha)
 
     def mostrar(self, projeto: Projeto, caminho: str, num_paginas: int,
-                folhas_de_saida: int | None = None) -> None:
+                folhas_de_saida: int | None = None, antigo_preso: str = "") -> None:
         """num_paginas e o total de PAGINAS DO LIVRO.
 
         Com cadernos, o PDF de saida tem menos páginas que o livro, porque cada
         folha carrega duas. Contar as folhas do arquivo como páginas do livro
         daria um número de cadernos errado - e o usuario separaria os grupos
         errados na hora de dobrar.
+
+        antigo_preso: o nome do PDF antigo que estava aberto em outro programa
+        e nao pode ser substituido (o novo, em `caminho`, e o "(2)"). Com ele,
+        aparece a frase explicando; vazio (o normal), a frase some - inclusive
+        a de um livro anterior.
         """
+        if antigo_preso:
+            self.aviso.setText(
+                f"O arquivo antigo, \"{antigo_preso}\", estava aberto em outro "
+                f"programa (o leitor de PDF, por exemplo) e não pôde ser "
+                f"substituído. Ele ficou como estava, e o PDF novo foi salvo ao "
+                f"lado dele com o nome acima.")
+        else:
+            self.aviso.setText("")
+        self.aviso.setVisible(bool(antigo_preso))
         self.caminho = caminho
         arquivo = Path(caminho)
 

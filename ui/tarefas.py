@@ -8,6 +8,7 @@ um cancelar que funciona de verdade.
 from __future__ import annotations
 
 import traceback
+from pathlib import Path
 
 import numpy as np
 import shiboken6
@@ -16,6 +17,7 @@ from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
+    ErroPDFSalvoComOutroNome,
     analisar_projeto,
     processar,
     renderizar_com_filtro,
@@ -107,7 +109,19 @@ class TarefaAnalise(QThread):
 
 
 class TarefaProcessar(QThread):
-    """Gera o PDF final."""
+    """Gera o PDF final.
+
+    `antigo_preso` (conserto de 05/10/2026, achado do verificador): quando o
+    PDF antigo estava aberto em outro programa e nao pode ser substituido, o
+    core grava o novo como "nome (2).pdf" e sobe ErroPDFSalvoComOutroNome. Isso
+    NAO e falha - o PDF ficou pronto: sai por `concluida`, com o caminho do
+    "(2)", e `antigo_preso` guarda o nome do arquivo antigo, para a tela
+    "Ficou pronto!" explicar (ui/janela_principal.py::_processamento_pronto).
+    Nada vai para o erros.log. Vazio no caso normal. E preenchido ANTES de
+    emitir `concluida`, entao quem recebe o sinal ja o ve. Arriscado: voltar a
+    tratar esse caso no `except Exception` (a tela voltava para Conferir, o
+    cartao nao virava "PDF gerado" e o destino guardado ficava o antigo).
+    """
 
     progresso = Signal(int, int, str)
     concluida = Signal(str)      # caminho gravado
@@ -118,6 +132,7 @@ class TarefaProcessar(QThread):
         super().__init__()
         self.projeto = projeto
         self._cancelar = False
+        self.antigo_preso = ""
 
     def cancelar(self) -> None:
         """Pede para o processamento parar entre uma página e outra (mesma
@@ -136,6 +151,11 @@ class TarefaProcessar(QThread):
             self.concluida.emit(caminho)
         except Cancelou:
             self.cancelada.emit()
+        except ErroPDFSalvoComOutroNome as salvo:
+            # pronto, com outro nome: e sucesso (ver o docstring da classe)
+            antigo = getattr(salvo, "antigo", None) or self.projeto.caminho_saida or "?"
+            self.antigo_preso = Path(antigo).name
+            self.concluida.emit(str(salvo.caminho))
         except Exception as erro:  # noqa: BLE001
             registrar_erro("processar", traceback.format_exc())
             self.falhou.emit(_mensagem_amigavel(erro))
