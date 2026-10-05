@@ -1,0 +1,264 @@
+{
+ "paginas": {
+  "1": {
+   "janela_info(n,cor,imagens,bytes)": [
+    3,
+    "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    1,
+    3836058
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    1306082
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    1301175
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": false,
+   "igual_044a7c1_pontos_diferentes": 2087064,
+   "igual_sem_pedaco": false,
+   "igual_sem_pedaco_pontos_diferentes": 2114552
+  },
+  "2": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    44648
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    44648
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    44648
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "3": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    21318
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    21318
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    21318
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "4": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    34315
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    34315
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    34315
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "5": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    29324
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    29324
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    29324
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "6": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    1406710
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    1406710
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    1406710
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "7": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    111893
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    111893
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    111893
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "8": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    66157
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    66157
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    66157
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "9": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    70587
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    70587
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    70587
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  },
+  "10": {
+   "janela_info(n,cor,imagens,bytes)": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    76856
+   ],
+   "044a7c1_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    76856
+   ],
+   "sem_pedaco_info": [
+    1,
+    "ICCBased(Gray,Artifex Software sGray ICC Profile)",
+    1,
+    76856
+   ],
+   "igual_sem_janela": true,
+   "igual_044a7c1": true,
+   "igual_sem_pedaco": true
+  }
+ },
+ "pagina1": {
+  "tamanho_janela": [
+   1954,
+   3119
+  ],
+  "tamanho_original": [
+   1954,
+   3119
+  ],
+  "pedaco_fracao": [
+   0.37423312883435583,
+   0.3793103448275862,
+   0.9938650306748467,
+   0.9310344827586207
+  ],
+  "dentro_igual_ao_original_fracao": 1.0,
+  "dentro_diferenca_max": 0,
+  "dentro_ate_2_niveis_fracao": 1.0,
+  "fora_pontos_diferentes_de_044a7c1": 0,
+  "fora_total_pontos": 4007462,
+  "borda_suave_pontos": 0,
+  "retangulo_px": [
+   731,
+   1183,
+   1942,
+   2903
+  ]
+ }
+}
