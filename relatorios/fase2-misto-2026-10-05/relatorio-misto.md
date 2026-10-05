@@ -63,3 +63,33 @@ Variantes (perguntas P2 e P3 do plano): com o **papel creme**, o retrato do Pala
 
 - Gravura de traço no Misto com o traço em preto (em vez do marrom do original), como opção.
 - Aviso na aba Marcar quando o detector marca como foto uma área com cor de mancha (o caso do Marial 7).
+
+## Parte C (acréscimo da gerente): as opções A, B e C lado a lado
+
+O que foi feito: em `core/misto.py`, a opção experimental `fora_do_texto` (de fábrica `"tudo"` = B, o Misto acima; nada muda para quem não pede): **A** `"rede"` (rede de segurança da pesquisa, seção 4: dentro das linhas, o preto e branco de sempre; fora delas e fora das gravuras, fica cada pedaço de tinta com um ponto tão escuro quanto a mediana da tinta de dentro das linhas e área de pelo menos (altura da linha / 6)²; o resto vai a branco), **C** `"apagar"` (só as linhas). Linhas = união do docTR `fast_base` e do Kraken, alargadas 15% da altura da linha (`mascara_das_linhas`). Sem linha nenhuma, A e C viram B. Detector de gravura do 1.2 ligado. 6 testes novos.
+
+Rodada: 7 páginas do gabarito, a 300 DPI (`relatorios/conferencia-8-2026-10-05/`, script `scripts/rodada_abc.py`). Formulário: **`relatorios/conferir-aqui-8.html`**.
+
+| Página | Tinta forte fora das linhas (guardada pelo A) | docTR | Kraken | A | B | C |
+|---|---|---|---|---|---|---|
+| Graduale 222 | 75,7% | 2,5 s | 80,9 s | 1,37 s | 1,12 s | 1,11 s |
+| Palatino 9 | 46,5% | 1,0 s | 13,8 s | 0,18 s | 0,15 s | 0,16 s |
+| Opus Majus 165 | 5,8% | 1,0 s | 15,9 s | 0,26 s | 0,20 s | 0,23 s |
+| Boécio 22 | 1,7% (de 3,1% fora) | 1,0 s | 18,2 s | 0,16 s | 0,14 s | 0,15 s |
+| Marial 7 | 5,1% (de 6,8% fora) | 1,2 s | 25,7 s | 1,65 s | 1,65 s | 1,67 s |
+| Horas 11 | 0,4% | 1,3 s | 11,2 s | 7,06 s | 6,44 s | 6,53 s |
+| Horas 13 | 4,0% | 1,2 s | 14,4 s | 4,36 s | 4,04 s | 4,07 s |
+
+(Tempos com a máquina dividida com outros agentes; o Kraken mediu ~10 s por página no 1.3.)
+
+Minha opinião (abri todas as imagens):
+
+- **Graduale 222:** A e B guardam todas as notas e pautas; A tira o pontilhado fino do alto que o B deixa. **C apaga a música inteira: inaceitável aqui.** O "Cvij" não aparece em nenhuma (já é cortado pelo corte das bordas, antes do filtro).
+- **Palatino 9:** o detector não marca a capitular nem a moldura. A guarda as duas, mas **perde hachuras claras do fundo do Q** (como a pesquisa previu); B guarda mais. C apaga capitular e moldura e deixa pedaços soltos da moldura. Aqui B ≥ A > C.
+- **Opus 165:** A ≈ B (no A some o pontinho do "f" da figura 7); C apaga as figuras.
+- **Boécio 22:** A e C tiram mais pontinhos do verso que o B; os colados ao fim das linhas ficam nas três. **C apaga a primeira capitular "Q"**; A a guarda. Aqui A é o melhor.
+- **Marial 7:** A tira as faixas pretas da beirada do livro e riscos da margem que o B deixa; C parecido com o A. A mancha do canto (tomada por foto) aparece nas três.
+- **Horas 11 e 13:** iluminura e moldura iguais nas três (protegidas pelo detector). Só a faixa preta da beirada esquerda do scan fica no A e no B e sai no C.
+- **Em resumo:** A nunca perdeu nada importante e limpou mais que o B em 4 das 7 páginas; o custo dele é perder hachura clara de capitular não detectada (Palatino 9). C perde música, capitular e desenho: não serve de fábrica. O custo grande de A e C é o leitor de texto (o Kraken), não a opção.
+
+Ressalvas da parte C: um limiar só (a mediana), não calibrado; as páginas são as do gabarito (o Boécio 22 tem escaneamento ruim); a "tinta forte fora das linhas" do aviso não foi calibrada (o 10% do formulário é exemplo); os rótulos das colunas dentro das imagens ficam pequenos no formulário (a ordem é sempre Original | A | B | C, dita no topo).

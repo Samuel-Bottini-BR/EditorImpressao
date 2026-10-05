@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fase 2, modo Misto (parte B)</title>
+<title>Fase 2, modo Misto (partes B e C)</title>
 <style>
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -122,6 +122,99 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <li>Gravura de traço no Misto com o traço em preto (em vez do marrom do original), como opção.</li>
 <li>Aviso na aba Marcar quando o detector marca como foto uma área com cor de mancha (o caso do Marial 7).</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 13:47</p>
+<h2>Parte C (acréscimo da gerente): as opções A, B e C lado a lado</h2>
+<p>O que foi feito: em <code>core/misto.py</code>, a opção experimental <code>fora_do_texto</code> (de fábrica <code>"tudo"</code> = B, o Misto acima; nada muda para quem não pede): <strong>A</strong> <code>"rede"</code> (rede de segurança da pesquisa, seção 4: dentro das linhas, o preto e branco de sempre; fora delas e fora das gravuras, fica cada pedaço de tinta com um ponto tão escuro quanto a mediana da tinta de dentro das linhas e área de pelo menos (altura da linha / 6)²; o resto vai a branco), <strong>C</strong> <code>"apagar"</code> (só as linhas). Linhas = união do docTR <code>fast_base</code> e do Kraken, alargadas 15% da altura da linha (<code>mascara_das_linhas</code>). Sem linha nenhuma, A e C viram B. Detector de gravura do 1.2 ligado. 6 testes novos.</p>
+<p>Rodada: 7 páginas do gabarito, a 300 DPI (<code>relatorios/conferencia-8-2026-10-05/</code>, script <code>scripts/rodada_abc.py</code>). Formulário: <strong><code>relatorios/conferir-aqui-8.html</code></strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Tinta forte fora das linhas (guardada pelo A)</th>
+<th>docTR</th>
+<th>Kraken</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graduale 222</td>
+<td>75,7%</td>
+<td>2,5 s</td>
+<td>80,9 s</td>
+<td>1,37 s</td>
+<td>1,12 s</td>
+<td>1,11 s</td>
+</tr>
+<tr>
+<td>Palatino 9</td>
+<td>46,5%</td>
+<td>1,0 s</td>
+<td>13,8 s</td>
+<td>0,18 s</td>
+<td>0,15 s</td>
+<td>0,16 s</td>
+</tr>
+<tr>
+<td>Opus Majus 165</td>
+<td>5,8%</td>
+<td>1,0 s</td>
+<td>15,9 s</td>
+<td>0,26 s</td>
+<td>0,20 s</td>
+<td>0,23 s</td>
+</tr>
+<tr>
+<td>Boécio 22</td>
+<td>1,7% (de 3,1% fora)</td>
+<td>1,0 s</td>
+<td>18,2 s</td>
+<td>0,16 s</td>
+<td>0,14 s</td>
+<td>0,15 s</td>
+</tr>
+<tr>
+<td>Marial 7</td>
+<td>5,1% (de 6,8% fora)</td>
+<td>1,2 s</td>
+<td>25,7 s</td>
+<td>1,65 s</td>
+<td>1,65 s</td>
+<td>1,67 s</td>
+</tr>
+<tr>
+<td>Horas 11</td>
+<td>0,4%</td>
+<td>1,3 s</td>
+<td>11,2 s</td>
+<td>7,06 s</td>
+<td>6,44 s</td>
+<td>6,53 s</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td>4,0%</td>
+<td>1,2 s</td>
+<td>14,4 s</td>
+<td>4,36 s</td>
+<td>4,04 s</td>
+<td>4,07 s</td>
+</tr>
+</tbody>
+</table>
+<p>(Tempos com a máquina dividida com outros agentes; o Kraken mediu ~10 s por página no 1.3.)</p>
+<p>Minha opinião (abri todas as imagens):</p>
+<ul>
+<li><strong>Graduale 222:</strong> A e B guardam todas as notas e pautas; A tira o pontilhado fino do alto que o B deixa. <strong>C apaga a música inteira: inaceitável aqui.</strong> O "Cvij" não aparece em nenhuma (já é cortado pelo corte das bordas, antes do filtro).</li>
+<li><strong>Palatino 9:</strong> o detector não marca a capitular nem a moldura. A guarda as duas, mas <strong>perde hachuras claras do fundo do Q</strong> (como a pesquisa previu); B guarda mais. C apaga capitular e moldura e deixa pedaços soltos da moldura. Aqui B ≥ A &gt; C.</li>
+<li><strong>Opus 165:</strong> A ≈ B (no A some o pontinho do "f" da figura 7); C apaga as figuras.</li>
+<li><strong>Boécio 22:</strong> A e C tiram mais pontinhos do verso que o B; os colados ao fim das linhas ficam nas três. <strong>C apaga a primeira capitular "Q"</strong>; A a guarda. Aqui A é o melhor.</li>
+<li><strong>Marial 7:</strong> A tira as faixas pretas da beirada do livro e riscos da margem que o B deixa; C parecido com o A. A mancha do canto (tomada por foto) aparece nas três.</li>
+<li><strong>Horas 11 e 13:</strong> iluminura e moldura iguais nas três (protegidas pelo detector). Só a faixa preta da beirada esquerda do scan fica no A e no B e sai no C.</li>
+<li><strong>Em resumo:</strong> A nunca perdeu nada importante e limpou mais que o B em 4 das 7 páginas; o custo dele é perder hachura clara de capitular não detectada (Palatino 9). C perde música, capitular e desenho: não serve de fábrica. O custo grande de A e C é o leitor de texto (o Kraken), não a opção.</li>
+</ul>
+<p>Ressalvas da parte C: um limiar só (a mediana), não calibrado; as páginas são as do gabarito (o Boécio 22 tem escaneamento ruim); a "tinta forte fora das linhas" do aviso não foi calibrada (o 10% do formulário é exemplo); os rótulos das colunas dentro das imagens ficam pequenos no formulário (a ordem é sempre Original | A | B | C, dita no topo).</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 13:56</p>
 </body>
 </html>
