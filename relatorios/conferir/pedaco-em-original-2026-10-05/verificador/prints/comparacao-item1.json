@@ -1,0 +1,93 @@
+{
+ "paginas": {
+  "1": {
+   "janela": {
+    "canais": 3,
+    "cor": "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    "imagens": 1,
+    "bytes": 5180190
+   },
+   "19c1ba7": {
+    "canais": 3,
+    "cor": "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    "imagens": 1,
+    "bytes": 6643706
+   },
+   "mesmo_tamanho": true,
+   "pontos_diferentes": 2143468
+  },
+  "2": {
+   "janela": {
+    "canais": 3,
+    "cor": "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    "imagens": 1,
+    "bytes": 3028543
+   },
+   "19c1ba7": {
+    "canais": 3,
+    "cor": "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    "imagens": 1,
+    "bytes": 3028543
+   },
+   "mesmo_tamanho": true,
+   "pontos_diferentes": 0
+  },
+  "3": {
+   "janela": {
+    "canais": 3,
+    "cor": "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    "imagens": 1,
+    "bytes": 5378211
+   },
+   "19c1ba7": {
+    "canais": 3,
+    "cor": "ICCBased(RGB,Artifex Software sRGB ICC Profile)",
+    "imagens": 1,
+    "bytes": 5378211
+   },
+   "mesmo_tamanho": true,
+   "pontos_diferentes": 0
+  }
+ },
+ "pagina1": {
+  "retangulo_fracoes": [
+   [
+    0.018404907975460124,
+    0.011494252873563218
+   ],
+   [
+    0.9938650306748467,
+    0.3716475095785441
+   ]
+  ],
+  "filtro_do_pedaco": "preto_e_branco",
+  "filtro_da_pagina": "original",
+  "retangulo_px": [
+   36,
+   36,
+   1942,
+   1159
+  ],
+  "imagem_px": [
+   1954,
+   3119
+  ],
+  "tons_dentro_(sem_3px_da_beira)": 2,
+  "exemplos_de_tons": [
+   [
+    0,
+    0,
+    0
+   ],
+   [
+    255,
+    255,
+    255
+   ]
+  ],
+  "fora_pontos_diferentes_do_original": 0,
+  "fora_inclusive_beira_3px": 3030,
+  "dentro_pontos_diferentes": 2140438,
+  "dentro_total": 2140438
+ }
+}
