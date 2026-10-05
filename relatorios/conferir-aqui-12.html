@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 12 - Editor de Impressão</title>
+<!--
+  Decima segunda conferencia do Samuel (05/10/2026). Pedido dele: "por favor refaça essa explicação
+  em um formulario". Explica melhor as 4 coisas que ficaram em conversa no formulario 11: P2 (papel
+  de dentro da gravura), P3 (ainda da para deixar a foto em preto e branco - so explicacao, botao
+  "Entendi"), P4 (letras com a cor original e branco atras) e P11 (que botoes novos na aba Marcar).
+  Respostas literais dele ao formulario 11: relatorios/conferencia-samuel-2026-10-05-c.md (pasta principal).
+  Mesmo formato do conferir-aqui-11.html (cartoes, escolha, comentario, "Copiar respostas"; campos
+  m, a, s, r e legenda das imagens). Marcacoes guardadas no navegador com a chave NOVA
+  "conferir-2026-10-05-l" (a "-k" e do formulario 11).
+  Imagens: relatorios/conferencia-12-2026-10-05/, feitas por scripts/simular12.py (PROTOTIPO, reaproveita
+  os scripts da conferencia 11); as do Marial 7 sao copias das do formulario 11. O programa NAO foi
+  mudado: as imagens "simulação" sao variacoes feitas so nos scripts.
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .muda { margin:0 0 10px; background:#eef7ee; border-radius:6px; padding:6px 10px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .ref { margin:6px 0 8px; font-size:14px; color:#444; border-left:3px solid #bbb; padding:2px 10px; }
+  .cartao .ref small { display:block; font-size:12px; color:#666; font-family:Consolas, monospace; word-break:break-all; margin-top:2px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao figure { margin:0 0 14px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .cartao figcaption { font-size:15px; color:#333; margin:4px 2px 0; }
+  .cartao figcaption .sim { background:#ffe0b2; color:#7a3d00; font-weight:600; padding:0 5px; border-radius:4px; }
+  .cartao table { border-collapse:collapse; width:100%; margin:6px 0 12px; font-size:15px; }
+  .cartao th, .cartao td { border:1px solid #ccc; padding:5px 8px; text-align:left; vertical-align:top; }
+  .cartao th { background:#f1f1f1; }
+  .cartao td.novo { background:#fff4e5; }
+  .cartao ul { margin:4px 0 10px; padding-left:22px; }
+  .cartao svg { display:block; max-width:100%; height:auto; margin:4px auto 12px; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; color:#222; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 12 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>Para que serve:</b> este formulário explica melhor as <b>4 coisas que você pediu na conferência 11</b>: o papel de dentro da gravura (P2, "explique melhor antes de eu decidir"), se ainda dá para deixar a foto em preto e branco (P3), as letras com a cor original e branco atrás (P4), e quais botões novos colocar na aba Marcar (P11, "explique melhor por favor").</p>
+    <p><b>O programa não mudou.</b> As imagens marcadas <b>"simulação"</b> foram feitas por programinhas de teste, fora do programa, só para você ver como ficaria; as outras são o programa como está hoje (o "Só as letras" ainda só funciona por esses programinhas de teste, fora da janela do Kaique).</p>
+    <p>Os <b>formulários 8</b> (A, B ou C: a tinta fora do texto achado) e <b>9</b> (geometria) <b>continuam abertos</b>; nada deles se repete aqui.</p>
+    <p><b>Como responder:</b> leia a explicação, veja as fotos e escolha uma opção (na P3, que é só explicação, aperte <b>Entendi</b>). Se quiser, escreva um comentário. Clique numa imagem para ver em tamanho cheio (clique de novo para fechar). A <b>referência</b>, em letra pequena, diz de onde vem cada coisa, para o Claude achar. As marcações ficam guardadas neste computador; no fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que e (pode ter <b>), m: o que muda para o Kaique (opcional),
+//   a: atencao (opcional), i: [[imagem, legenda], ...], x: html a mais (tabela; opcional),
+//   s: recomendacao e o porque (opcional), r: referencia (html; o caminho vai em <small>),
+//   tipo: "escolha" | "entendi", p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-12-2026-10-05/";
+const SIM = "<span class='sim'>simulação</span>";
+
+const TABELA_ZONAS = `
+<table>
+ <tr><th>Tipo de área no ScanTailor</th><th>O que faz</th><th>Na nossa aba Marcar</th></tr>
+ <tr><td>"isto é gravura"</td><td>fica como no original</td><td><b>já temos:</b> "gravura ou foto"</td></tr>
+ <tr><td>"isto não é gravura"</td><td>volta a ser texto, em preto e branco</td><td><b>já temos:</b> "gravura ou foto" + tirar (ou "letra")</td></tr>
+ <tr><td>"tudo em preto e branco"</td><td>tudo ali vira preto e branco</td><td><b>já temos:</b> "só neste pedaço: Preto e branco"</td></tr>
+ <tr><td>"pintar por cima"</td><td>pinta a área inteira de uma cor (normalmente branco)</td><td class="novo"><b>não temos</b> (novidade 1)</td></tr>
+ <tr><td>"tinta com a cor original, papel branco"</td><td>a tinta fica com a cor dela; o papel atrás vira branco</td><td class="novo"><b>não temos</b> (novidade 2, a da P4)</td></tr>
+ <tr><td>"tinta preta, fundo original"</td><td>a tinta vira preta; o papel fica como estava</td><td class="novo"><b>não temos</b> (novidade 3)</td></tr>
+ <tr><td>mover, copiar e colar uma área</td><td>reaproveitar a mesma área em outra página</td><td class="novo"><b>não temos</b></td></tr>
+</table>
+<p style="font-size:15px;margin:0 0 10px">E o que o nosso tem que o ScanTailor não tem: "papel" (vira branco, mas poupa o que é escuro) e "só neste pedaço" com <b>qualquer</b> filtro (Melhorar, Mágico pro).</p>`;
+
+const SECOES = [
+ { titulo:"As 4 coisas que você pediu na conferência 11",
+   sub:"Todas valem só para o \"Só as letras\" (o Misto). O Preto e branco normal não muda.",
+   cartoes:[
+    {c:"P2", t:"O papel de dentro da gravura", tipo:"escolha",
+     i:[["p2-palatino5-a-b.jpg", "Palatino 5, a página inteira, com \"Só as letras\". À esquerda, (a): os traços ficam marrons, como no original, e o papel entre eles fica branco como o resto da folha. À direita, (b): o retrato sai como foi escaneado, amarelado, e aparece <b class='onde'>a mancha à esquerda do oval</b>."],
+        ["p2-palatino5-rosto.jpg", "O rosto, ampliado: original | (a) | (b). Repare no risco da (a): <b class='onde'>a testa e a bochecha</b>, que no original têm um sombreado bem fraquinho, ficam brancas lisas; o rosto fica mais \"duro\" que no original."],
+        ["p2-palatino5-risco.jpg", "Outro pedaço do mesmo retrato (o fundo riscado, à esquerda do rosto, escolhido pelo programinha de teste como o lugar onde a (a) mais clareou traço fraco). Na (a), os riscos mais fracos ficam <b class='onde'>picotados, como tracejado</b>; os fortes ficam inteiros."],
+        ["p2-palatino9-capitular.jpg", "Palatino 9, a letra capitular \"Q\" com o cavaleiro. Sozinho, o programa não acha que ela é gravura: com \"Só as letras\" ela vai ao preto e branco (em cima, à direita). Marcada à mão como gravura (o retângulo laranja, desenhado pelo programinha de teste, como o Kaique faria), (a) e (b): na (a) os traços ficam inteiros e o papel branco; na (b), <b class='onde'>um retângulo creme</b> na folha branca, com as letras do verso aparecendo por trás."]],
+     o:`Pense no retrato do Palatino 5. A gravura tem duas coisas: os <b>traços do desenho</b> (tinta marrom) e o <b>papel entre os traços</b> (amarelado, como o resto da folha).<br>
+        <b>(a) Papel a branco:</b> o programa deixa os traços como no original e clareia o papel entre eles até o branco — a gravura fica "solta" na folha, e a folha inteira sai branca por igual.<br>
+        <b>(b) Papel creme:</b> a gravura sai exatamente como foi escaneada, com o papel amarelado — na folha branca aparece um retângulo creme em volta do desenho.<br>
+        O risco da (a): partes muito claras do próprio desenho (hachuras finas, céu, nuvens) podem clarear junto.`,
+     m:`Com (a), a página sai toda branca, também dentro do retrato, e a mancha do papel velho some. Com (b), o retrato fica com a cor do papel antigo, num retângulo (ou oval) creme no meio da folha branca, com as manchas.`,
+     a:`<b>O que eu vi nas fotos, honestamente:</b> no retrato do Palatino 5, a (a) deixa a folha limpa, mas o sombreado mais fraco do rosto (testa, bochecha) some, e alguns riscos fracos do fundo ficam picotados. Na capitular do Palatino 9 a (a) ficou bem: traço inteiro, papel branco (só a manchinha de ferrugem do cavalo continua, nas duas). Não há exemplo de céu ou nuvens: na Escola 7 e no Opus 20 a imagem é <b>pintura ou foto</b>, e nelas a P2 não mexe (ficam inteiras como no original, P3). Nas páginas de teste, o retrato do Palatino 5 é a única gravura de traço que o programa acha sozinho.`,
+     s:`Recomendação: (a). É a sua regra de 12/09: <i>"Eu quero que o papel saia branco, e o desenho também saia perfeito."</i> A (a) cumpre a primeira metade em toda gravura; a segunda, quase sempre — o que se perde é o sombreado mais fraquinho. Se num livro isso incomodar, dá para marcar aquela gravura com "só neste pedaço: Original", e ela sai como a (b), só ali.`,
+     r:`De onde vem: o "Só as letras" de hoje, com a chave que já existe dentro dele para o papel da gravura (ligada = a; desligada = b). As fotos do Palatino 5 são o programa de hoje, sem simulação; na do Palatino 9 só a área marcada à mão é simulação. Sua regra: CLAUDE.md, seção "o critério" (12/09).<small>core/misto.py (aplicar_misto, papel_da_gravura_branco; _gravura_de_traco_com_o_papel_branco) · core/filtros.py (_so_o_papel_da_gravura) · relatorios/conferencia-12-2026-10-05/scripts/simular12.py (p2, p2_risco) e simular12.json · relatorios/conferencia-samuel-2026-10-05-c.md (P2)</small>`,
+     p:"Com \"Só as letras\", o papel de dentro da gravura:",
+     op:["(a) Papel a branco (recomendado)",
+         "(b) Papel creme"]},
+
+    {c:"P3", t:"Ainda dá para deixar a foto em preto e branco?", tipo:"entendi",
+     i:[["p3-escola7.jpg", "Escola de Jesus 7: original | com \"Só as letras\" (a pintura fica com a cor) | Preto e branco normal (a pintura sai em tons de cinza). Nada aqui é simulação: é o programa de hoje."],
+        ["p3-opus20.jpg", "Opus Majus 20, a foto da estátua. Aqui a diferença é pequena, porque a foto já é quase sem cor: com \"Só as letras\" ela fica no tom creme do original; no Preto e branco normal, cinza neutro e um pouco mais contrastada."]],
+     o:`Sim, de dois jeitos:<br>
+        <b>No livro inteiro ou na página:</b> é só <b>não</b> marcar "Só as letras" — o Preto e branco normal deixa a foto em tons de cinza (como você decidiu em 30/09).<br>
+        <b>Numa foto só:</b> marque um pedaço em volta dela e escolha Preto e branco só para ele (o "só neste pedaço", que está sendo consertado agora).`,
+     m:`Nada a escolher: a sua resposta (a) da P3 vale para o "Só as letras", e o Preto e branco normal continua como está, com a foto em cinza.`,
+     r:`De onde vem: sua decisão de 30/09 (foto e pintura em tons de cinza no Preto e branco) e a P6 da conferência 11 (consertar o "só neste pedaço" no Preto e branco), que você aprovou.<small>core/filtros.py (aplicar_filtro_com_selecao, _foto_em_tons_de_cinza) · core/misto.py · relatorios/conferencia-12-2026-10-05/scripts/simular12.py (p3) · relatorios/conferencia-samuel-2026-10-05-c.md (P3, P6)</small>`},
+
+    {c:"P4", t:"Letras com a cor original e branco atrás", tipo:"escolha",
+     i:[["p4-horas11.jpg", "Horas 11, o oval: original | letras com a cor e o fundo como no original (" + SIM + ") | letras com a cor e o papel branco (" + SIM + ", a nova)."],
+        ["p4-horas11-dourado.jpg", "O \"LOUIS\" dourado, de perto. Na terceira faixa, a conta que imita o ScanTailor: o dourado de dentro das letras <b>fica</b>, mas a beirada das letras sai <b class='onde'>um pouco mais fina e áspera</b>, e o \"DE\" azul fica levemente falhado. Na quarta, a mesma ideia feita com a conta que o nosso programa já usa na moldura (só sem pôr a letra preta): <b>as letras ficam mais parecidas com o original</b>, de beirada lisa."],
+        ["p4-horas13.jpg", "Horas 13: original | letras com a cor e o fundo como no original (" + SIM + ") | letras com a cor e o papel branco (" + SIM + "). No fundo original voltam <b class='onde'>as linhas da pauta e as letras do verso</b> aparecendo por trás; no papel branco, somem."],
+        ["p4-horas13-detalhe.jpg", "Os títulos da Horas 13, de perto. Repare, na última: o texto comum (\"Un Exercice...\") também ficou com a cor da tinta, <b class='onde'>marrom-escuro, não preto</b> — porque aqui a área marcada foi o miolo inteiro da moldura (veja a atenção, abaixo)."]],
+     o:`Você escolheu (b) e perguntou: <i>"Tem como sair em cor original e atras delas branco?"</i><br>
+        <b>Sim.</b> É exatamente um dos tipos de área do ScanTailor: <b>"tinta com a cor original, papel branco"</b>. Nas letras douradas ou vermelhas dentro da moldura, a tinta fica com a cor dela e o papel atrás vira branco — a mesma ideia da P2, aplicada às letras.`,
+     m:`Com (a), o título do oval sai vermelho, azul e dourado, em papel branco como o resto da folha. Com (b), sai colorido, mas com o papel creme do original atrás (com a pauta e o verso aparecendo). Com (c), sai preto, como no Preto e branco de hoje.`,
+     a:`<b>O que eu vi nas fotos, honestamente:</b> o dourado claro <b>não</b> se perde; o que piora um pouco, com a conta copiada do ScanTailor, é a beirada das letras (mais fina e áspera). A conta que o nosso programa já tem para a moldura dá letras mais fiéis; a gerente usaria essa no oval. <b>Na Horas 13 há uma diferença:</b> o programa vê a moldura dourada como enfeite, mas o miolo como texto; ali os títulos só saem coloridos se o Kaique marcar a área (é o botão novo 2 da P11). Nesta simulação marquei o miolo inteiro, e por isso o texto comum também saiu marrom-escuro; marcando só os títulos, o texto comum continua preto.`,
+     s:`Recomendação: (a). Fica com a cor que você pediu e respeita a regra do papel branco, como na P2.`,
+     r:`De onde vem: o ScanTailor Advanced v1.2.1, a parte que aplica as áreas ("Add to foreground"); a conta foi <b>deduzida</b> do código dele, como no formulário 11, usando o preto e branco do nosso programa para decidir o que é tinta. A quarta faixa do LOUIS usa a conta da moldura do nosso programa sem pôr a letra preta. Tudo nesta pergunta é simulação, menos o original.<small>D:\\programas\\EditorImpressao-arquivos\\ferramentas\\scantailor-advanced-v1.2.1\\src\\core\\filters\\output\\OutputGenerator.cpp (modifyBinarizationMask) · core/filtros.py (_com_a_decoracao, letras_pretas) · relatorios/conferencia-12-2026-10-05/scripts/simular12.py (p4) · relatorios/conferencia-11-2026-10-05/scripts/simular.py (tinta_com_a_cor) · relatorios/conferencia-samuel-2026-10-05-c.md (P4)</small>`,
+     p:"Com \"Só as letras\", as letras coloridas dentro da moldura ou da iluminura:",
+     op:["(a) Letras com a cor original e papel branco atrás (recomendado)",
+         "(b) Letras com a cor original e o fundo como no original",
+         "(c) Pretas, como no Preto e branco de hoje"]},
+
+    {c:"P11", t:"Que botões novos colocar na aba Marcar", tipo:"escolha",
+     i:[["p11-marial7-pagina.jpg", "Novidade 1, \"pintar por cima\", no Marial 7. À esquerda, em laranja, a área que o programa marcou sozinho (ele tomou a mancha por foto). No meio, como sai hoje: a mancha fica marrom. À direita, " + SIM + " de pintar de branco essa mesma área."],
+        ["p11-marial7-mancha.jpg", "O canto da mancha, de perto, com cada jeito de corrigir. \"Não é gravura\" e \"papel\" (que já existem) deixam <b class='onde'>uma faixa preta ou pontinhos e a faixa marrom</b> da beirada do livro. \"Pintar de branco\" (" + SIM + "): limpo."],
+        ["p4-horas11.jpg", "Novidade 2, \"tinta com a cor original, papel branco\": é a mesma imagem da P4 (Horas 11), à direita (" + SIM + ")."],
+        ["p11-tipo3-horas13.jpg", "Novidade 3, \"tinta preta, fundo original\", no título da Horas 13 (" + SIM + ", como no formulário 11): a tinta vira preta, mas o papel creme, a pauta e as letras do verso continuam ali dentro, num retângulo."]],
+     o:`Hoje, na aba Marcar, você desenha uma área e diz o que ela é: <b>gravura</b> (fica como no original), <b>letra</b> (vai para o preto e branco), <b>papel</b> (vira branco, mas poupa o que é escuro), ou <b>"só neste pedaço"</b> (usa outro filtro ali). A pergunta é só <b>quais botões NOVOS</b> colocar. Há três novidades possíveis:<br>
+        <b>1. "Pintar por cima"</b> — você escolhe a cor (normalmente branco) e a área inteira é pintada; foi o único que deixou a mancha do Marial 7 limpa; serve para carimbo e número de biblioteca.<br>
+        <b>2. "Tinta com a cor original, papel branco"</b> — é o que você pediu na P4.<br>
+        <b>3. "Tinta preta, fundo original"</b> — o contrário: tinta preta e fundo como estava; serve pouco para os nossos livros.<br>
+        Os outros três tipos do ScanTailor fazem o mesmo que os nossos botões de hoje, com outro nome — não precisa trazer.`,
+     m:`Com (a), o Kaique ganha dois botões novos ("pintar por cima" e "tinta com a cor, papel branco") e passa a poder mover, copiar e colar uma área (útil quando a mesma mancha ou carimbo se repete em várias páginas). Com (b), só o "pintar por cima" e o mover/copiar/colar. Com (c), os três botões novos. Com (d), a aba Marcar fica como está.`,
+     x: TABELA_ZONAS,
+     a:`"Pintar por cima" e os botões 2 e 3 são <b>simulação</b>: o efeito foi feito pelo programinha de teste, a partir do que o código do ScanTailor faz. O "pintar por cima" também é o que a sua ideia da P11b (clicar numa área que o programa marcou e pintar de branco) precisa.`,
+     s:`Recomendação: (a). O "pintar por cima" resolve a mancha do Marial 7 e o carimbo; o botão 2 é o que você pediu na P4 (e é o que deixa os títulos da Horas 13 coloridos); o 3 deixa o papel creme, contra a sua regra do papel branco, e por isso fica de fora.`,
+     r:`De onde vem: o ScanTailor Advanced v1.2.1 (a janela de áreas e a aba de pintar por cima), a tabela do formulário 11 simplificada, e as imagens do Marial 7 do formulário 11.<small>D:\\programas\\EditorImpressao-arquivos\\ferramentas\\scantailor-advanced-v1.2.1\\src\\core\\filters\\output\\OutputGenerator.cpp (modifyBinarizationMask) e PictureZonePropDialog.ui · core/selecao.py (TIPOS) · ui/widgets/paineis.py ("Marcar como", "só neste pedaço") · relatorios/conferencia-11-2026-10-05/scripts/simular.py (q3_marial) · relatorios/conferencia-12-2026-10-05/scripts/simular12.py (p11) · relatorios/conferencia-samuel-2026-10-05-c.md (P11, P11b)</small>`,
+     p:"Na aba Marcar:",
+     op:["(a) Trazer agora 'Pintar por cima' e 'Tinta com a cor original, papel branco', mais copiar, colar e mover zona (recomendado)",
+         "(b) Só 'Pintar por cima', mais copiar, colar e mover zona",
+         "(c) Os três novos",
+         "(d) Nada por enquanto"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-l";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>O que é:</b> ${k.o}</p>` : "") +
+      (k.m ? `<p class="muda"><b>O que muda para o Kaique:</b> ${k.m}</p>` : "") +
+      (k.i||[]).map(([src, leg]) => `<figure><img loading="lazy" src="${P+src}" alt="${k.t}">${leg ? `<figcaption>${leg}</figcaption>` : ""}</figure>`).join("") +
+      (k.x || "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      (k.r ? `<p class="ref"><b>Referência.</b> ${k.r}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 12 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
