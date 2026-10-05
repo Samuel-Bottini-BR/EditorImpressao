@@ -3388,9 +3388,10 @@ def _filtro_so_no_pedaco(
     nenhum: o ramo do Preto e branco usa isso para saber se a pagina ainda
     cabe em 1 bit. Arriscado: devolver uma copia nesse caso.
 
-    pedaco_inteiro (o Preto e branco e o Original passam True; conserto de
-    05/10/2026, P6 da conferencia 11, "do jeito completo", e o Original pela
-    conferencia 13, S4: "Sim, do mesmo jeito"): a area marcada obedece
+    pedaco_inteiro (o Preto e branco, o Original e o Tirar o fundo passam
+    True; conserto de 05/10/2026, P6 da conferencia 11, "do jeito completo",
+    o Original pela conferencia 13, S4: "Sim, do mesmo jeito", e o Tirar o
+    fundo pela conferencia 14; ver aplicar_so_os_pedacos): a area marcada obedece
     INTEIRA ao filtro escolhido para ela, inclusive as partes claras e o
     papel que a pessoa pegou junto. Com False (Melhorar e Magico pro, como
     sempre), o que for mais claro que TINTA_PARA_ORLA do nivel do papel segue
@@ -3449,6 +3450,32 @@ def _filtro_so_no_pedaco(
     return saida
 
 
+def aplicar_so_os_pedacos(
+    img: np.ndarray, base: np.ndarray, selecao, filtro: str,
+    forca_preto: int = AJUSTE_PADRAO, clareza: int = AJUSTE_PADRAO,
+    intensidade: int = AJUSTE_PADRAO,
+) -> np.ndarray:
+    """Os pedacos de "so neste pedaco" por cima de `base`, e nada mais.
+
+    E o jeito do Original e do Tirar o fundo (conferencia 13, S4, e
+    conferencia 14, "FUNDO": "Sim, do mesmo jeito (só muda se alguém marcar
+    um pedaço)"): a pagina fica como esta (`base`), e cada pedaco marcado com
+    outro filtro obedece INTEIRO a ele (pedaco_inteiro=True), calculado em
+    `img` - a pagina como veio. No Original `img` e `base` sao a mesma
+    imagem; no Tirar o fundo `base` e a pagina sem o fundo e `img` a pagina
+    como veio, entao um pedaco em "Original" mostra o papel como ele e.
+
+    Sem pedaco (o normal), devolve `base` - o MESMO objeto, nada copiado -, e
+    a pagina sai exatamente como antes. Arriscado: devolver uma copia nesse
+    caso, ou trocar pedaco_inteiro (muda o que o Samuel aprovou na Escola 7).
+    """
+    try:
+        return _filtro_so_no_pedaco(img, base, selecao, filtro, forca_preto,
+                                    clareza, intensidade, pedaco_inteiro=True)
+    except cv2.error as exc:
+        raise ErroFiltro("Não consegui limpar esta página.") from exc
+
+
 def aplicar_filtro_com_selecao(
     img: np.ndarray,
     filtro: str,
@@ -3500,32 +3527,29 @@ def aplicar_filtro_com_selecao(
     if selecao is None or getattr(selecao, "vazia", True):
         return aplicar_filtro(img, filtro, forca_preto, clareza, intensidade)
 
-    # Tirar o fundo (item 1.1) chega aqui so quando core/camadas.py deixou a
-    # pagina intacta, ou o PDF nao tem camadas: sai como veio - nunca com
-    # outro filtro por cima (decisao do Samuel, 29/09). O "so neste pedaco"
-    # tambem NAO vale aqui, de proposito: em 05/10/2026 a gerente ainda esta
-    # perguntando ao Samuel se o "Tirar o fundo" deve obedecer ao pedaco
-    # como o Original (conferencia 13, S4). Nao mudar sem essa resposta.
-    if filtro == TIRAR_FUNDO:
-        return img, False
-
     # Original (conserto de 05/10/2026; conferencia 13, S4, Samuel: "Sim, do
-    # mesmo jeito"): ate ali este teste vinha junto com o de cima e o pedaco
+    # mesmo jeito"): ate ali este teste devolvia a pagina como veio e o pedaco
     # marcado com Preto e branco, Melhorar ou Magico pro era ignorado, sem
     # aviso. Agora vale "do mesmo jeito" do Preto e branco (conserto
     # 60d8c58): a area marcada obedece INTEIRA ao filtro escolhido para ela
     # (pedaco_inteiro=True; o papel pego junto tambem, e a borda e a que a
     # pessoa desenhou) e o resto da pagina fica como veio. Sem pedaco (o
-    # normal), _filtro_so_no_pedaco devolve `img` - o MESMO objeto -, entao a
-    # pagina sai exatamente como antes. Nunca 1 bit: o resto e o original.
+    # normal), devolve `img` - o MESMO objeto -, entao a pagina sai
+    # exatamente como antes. Nunca 1 bit: o resto e o original.
+    #
+    # Tirar o fundo (item 1.1) chega aqui so quando core/camadas.py deixou a
+    # pagina intacta, ou o PDF nao tem camadas: sai como veio, igual ao
+    # Original - nunca com outro filtro por cima (decisao do Samuel, 29/09) -
+    # e o "so neste pedaco" vale do mesmo jeito (conferencia 14, Samuel:
+    # "FUNDO: Sim, do mesmo jeito (só muda se alguém marcar um pedaço)"). A
+    # pagina de que o fundo FOI tirado nao passa por aqui: ver
+    # core.pipeline._pedacos_na_pagina_sem_fundo.
     # Arriscado: passar pela marcacao de gravura/letra/papel daqui para
-    # baixo (o Original nao mexe nelas) ou devolver uma copia sem pedaco.
-    if filtro == ORIGINAL:
-        try:
-            return _filtro_so_no_pedaco(img, img, selecao, filtro, forca_preto,
-                                        clareza, intensidade, pedaco_inteiro=True), False
-        except cv2.error as exc:
-            raise ErroFiltro("Não consegui limpar esta página.") from exc
+    # baixo (o Original e o Tirar o fundo nao mexem nelas) ou devolver uma
+    # copia sem pedaco.
+    if filtro in (ORIGINAL, TIRAR_FUNDO):
+        return aplicar_so_os_pedacos(img, img, selecao, filtro, forca_preto,
+                                     clareza, intensidade), False
 
     altura, largura = img.shape[:2]
     peso_gravura = selecao.peso(altura, largura, GRAVURA)

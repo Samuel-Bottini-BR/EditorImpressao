@@ -18,8 +18,9 @@ O que se cobra:
     - pagina em Original sem pedaco (com ou sem marcacao de gravura/letra/
       papel): a MESMA imagem de antes, o mesmo objeto (nada e copiado);
     - pedaco em "Original" numa pagina em Original: nada muda;
-    - "Tirar o fundo" NAO mudou: o pedaco continua sem valer ali (a gerente
-      ainda esta perguntando ao Samuel; ver o comentario no codigo);
+    - "Tirar o fundo" (pagina intacta ou PDF sem camadas): o pedaco vale do
+      mesmo jeito (conferencia 14, "FUNDO: Sim, do mesmo jeito"; a pagina de
+      que o fundo foi tirado: tests/test_so_neste_pedaco_no_tirar_o_fundo.py);
     - "Limpar a folha" desligado: o pedaco continua sem valer (outra causa,
       de proposito: ver o comentario em core/pipeline.py::_filtrar).
 """
@@ -128,11 +129,23 @@ def test_pedaco_em_original_numa_pagina_em_original_nao_muda_nada():
 
 
 @pytest.mark.parametrize("pedido", [PRETO_E_BRANCO, MELHORAR, MAGICO_PRO])
-def test_tirar_o_fundo_continua_sem_pedaco(pedido):
-    """Nao mudou (de proposito): o Samuel ainda nao decidiu se o "Tirar o
-    fundo" obedece ao pedaco."""
+def test_tirar_o_fundo_obedece_ao_pedaco_do_mesmo_jeito(pedido):
+    """Conferencia 14 (Samuel): "FUNDO: Sim, do mesmo jeito (só muda se
+    alguém marcar um pedaço)". Igual ao Original, ponto por ponto."""
     img = _pagina()
-    saida, mono = aplicar_filtro_com_selecao(img, TIRAR_FUNDO, _selecao(pedido))
+    no_fundo, mono = aplicar_filtro_com_selecao(img.copy(), TIRAR_FUNDO, _selecao(pedido))
+    no_original, _ = aplicar_filtro_com_selecao(img.copy(), ORIGINAL, _selecao(pedido))
+    assert mono is False
+    assert np.array_equal(no_fundo, no_original)
+    assert not np.array_equal(_tres(no_fundo), img)
+
+
+@pytest.mark.parametrize("marcacao", [GRAVURA, LETRA, PAPEL])
+def test_tirar_o_fundo_sem_pedaco_e_a_mesma_imagem(marcacao):
+    img = _pagina()
+    s = Selecao()
+    s.acrescentar(retangulo(0.1, 0.4, 0.9, 0.9, tipo=marcacao))
+    saida, mono = aplicar_filtro_com_selecao(img, TIRAR_FUNDO, s)
     assert saida is img and mono is False
 
 
