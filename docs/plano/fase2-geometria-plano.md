@@ -7,6 +7,7 @@ Base: `docs/pesquisa/fase2-mapa-scantailor.md` (seções 4 e 6.1–6.6), a compa
 
 - **D3:** comparação nosso × ScanTailor (girar, dividir, endireitar) nas páginas-gabarito. Resumo: girar não tem automático em nenhum dos dois; no endireitar empatam em 25 de 32 páginas, cada um ganha 2 das outras; no dividir os dois erram (o nosso parte a folha do Siebmacher no meio; o ScanTailor divide a tabela do Opus 256 e o "corte da sobra" dele come letra).
 - **D2:** as zonas da aba Marcar ficam presas à folha original (`core/zonas_na_folha.py`). **Pendência que trava os itens abaixo:** página de projeto antigo só é convertida quando é desenhada. Antes de qualquer item que mude o corte ou o ângulo **automático** (2.1, 2.2, 2.5, 2.13), as páginas ainda no formato antigo precisam ser convertidas com a conta de hoje (guardar uma cópia da conta atual, `pipeline._geometria`, só para isso), senão as zonas delas andam.
+- **Z1 (b), 05/10 (commits `47b30f9`, `b0c4f0b`, a conferir):** ao abrir o livro, a janela converte por trás as zonas de todas as páginas antigas (`pipeline.converter_zonas_do_livro`, `ui/tarefas.TarefaConverterZonas`), com o andamento na faixa azul. Boécio (50 páginas com zonas): ~3 s. **Resta da pendência acima:** livro que não for aberto antes da troca da conta automática continua precisando da cópia da conta de hoje (a conversão roda com a conta que estiver no programa).
 
 ## A ordem (a do ScanTailor; cada etapa usa a anterior)
 
