@@ -936,6 +936,17 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     A opcao do livro Projeto.pb_decoracao_em_preto_e_branco (moldura e
     iluminura tambem em preto e branco; emenda N2 do Samuel, 30/09/2026) vai
     para o filtro aqui; so vale no Preto e branco.
+
+    "Limpar a folha" desligado e o "so neste pedaco" (achado do verificador,
+    05/10/2026): o pedaco marcado na aba Marcar NAO vale aqui, e de proposito -
+    nao e a mesma causa da pagina em Original (consertada em
+    core.filtros.aplicar_filtro_com_selecao). Desligar "Limpar a folha" e a
+    escolha do LIVRO de nao passar filtro em pagina nenhuma, e com ela a tela
+    de conferir nem monta as abas Marcar e Filtro (ui/tela_conferir.py,
+    TelaConferir.carregar): o pedaco ficaria invisivel, sem como ver nem tirar, e mesmo
+    assim mudaria o PDF. Se o Samuel quiser o contrario, a mudanca e aqui (e
+    na tela, para o pedaco aparecer). Coberto por
+    tests/test_so_neste_pedaco_no_original.py.
     """
     if not projeto.limpar or pagina.filtro == TIRAR_FUNDO:
         return img, False
