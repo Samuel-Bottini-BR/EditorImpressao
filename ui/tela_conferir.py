@@ -101,6 +101,12 @@ from ui.widgets.visualizador import (
 
 DPI_PREVIA = 110          # baixo de proposito: a tela precisa abrir em segundos
 
+# O lado maior da pagina, em pontos, na conta do aviso e do botao "Ajustar o
+# pedaco a figura" (conferencia 13, S3). A conta e em fracoes, entao o tamanho
+# nao muda o resultado (medido na Escola 7: o mesmo a 150 DPI e na metade), so
+# o tempo: ~0,05 s aqui contra ~0,2 s a 150 DPI, no fio da tela. Seguro mudar.
+LADO_DO_AJUSTE = 1000
+
 # Qualidade da prévia, ajustável pelo Samuel (estilo After Effects) nas telas
 # de trabalho - troca a resolução usada para renderizar a página nas abas
 # Bordas/Endireitar/Marcar. "Rápida" é o valor de sempre (DPI_PREVIA); as
@@ -875,6 +881,34 @@ class TelaConferir(QWidget):
         linha_foto.addStretch()
         fora.addLayout(linha_foto)
 
+        # Conferencia 13, S3 (Samuel, 05/10/2026): "(b) e (c) juntas - Mas
+        # caso ele nao queira mudar, fica do jeito que esta." O pedaco com
+        # outro filtro obedece inteiro ao filtro dele, inclusive o papel pego
+        # junto em volta da figura (a faixa creme da Escola 7). Esta linha so
+        # aparece quando a pagina tem um pedaco assim: (c) o botao encolhe o
+        # retangulo ate a figura (core/ajustar_pedaco.py), numa acao do
+        # desfazer; (b) a frase avisa quando o papel em volta e muito
+        # (core.ajustar_pedaco.PAPEL_DEMAIS). Os dois so sugerem: nada muda
+        # sozinho. Ver _avaliar_os_pedacos e _ajustar_pedaco_a_figura.
+        self.linha_pedaco = QWidget()
+        linha_pedaco = QHBoxLayout(self.linha_pedaco)
+        linha_pedaco.setContentsMargins(0, 0, 0, 0)
+        rotulo_pedaco = QLabel("Pedaço:")
+        rotulo_pedaco.setMinimumWidth(90)
+        linha_pedaco.addWidget(rotulo_pedaco)
+        self.botao_ajustar_pedaco = _botao(
+            "Ajustar o pedaço à figura", linha_pedaco, self._ajustar_pedaco_a_figura)
+        self.botao_ajustar_pedaco.setIcon(_icone_de_ajustar_o_pedaco())
+        self.botao_ajustar_pedaco.setToolTip(
+            "Encolhe o retângulo do pedaço até a figura, para não sobrar papel em "
+            "volta dela. Dá para desfazer.")
+        self.aviso_pedaco = QLabel("")
+        self.aviso_pedaco.setObjectName("fraco")
+        self.aviso_pedaco.setWordWrap(True)
+        linha_pedaco.addWidget(self.aviso_pedaco, 1)
+        self.linha_pedaco.setVisible(False)
+        fora.addWidget(self.linha_pedaco)
+
         self.aviso_marcacao = QLabel("")
         self.aviso_marcacao.setObjectName("dica")
         fora.addWidget(self.aviso_marcacao)
@@ -925,6 +959,7 @@ class TelaConferir(QWidget):
         pagina.guardar_selecao(self.editor_selecao.selecao)
         self._mostrar_aviso_da_marcacao(
             self.editor_selecao.selecao.resumo_em_portugues())
+        self._avaliar_os_pedacos(pagina)        # conferencia 13, S3
         if self.previas is not None:
             self.previas.invalidar(self.indice_pagina)
         # A marcacao nao passa por `atualizar` - ela nao mexe na tira nem no
@@ -1591,6 +1626,110 @@ class TelaConferir(QWidget):
             else 'Nada marcado ainda. Clique em "detectar automaticamente" '
                  "ou marque à mão."
         )
+        self._avaliar_os_pedacos(pagina)        # conferencia 13, S3
+
+    # --- conferencia 13, S3: o pedaco que pegou papel em volta da figura ----
+
+    def _pagina_sem_filtro_para_o_ajuste(self, pagina) -> np.ndarray | None:
+        """A pagina como veio (sem filtro, ja girada, dividida, cortada e
+        endireitada), reduzida a LADO_DO_AJUSTE, para o aviso e o botao do
+        pedaco. Sem filtro de proposito: com o filtro, o papel de fora sai
+        branco e o de dentro do pedaco creme, e a conta erra (ver
+        core.ajustar_pedaco.caixa_justa). None enquanto a folha ainda nao
+        chegou: ela e pedida aqui, e quando chega (_previa_chegou ->
+        _atualizar_previa -> _atualizar_marcacao) a conta e refeita."""
+        import cv2
+
+        from core.pipeline import preparar_metade
+
+        if self.previas is None or self.projeto is None:
+            return None
+        bruta = self.previas.pegar_folha(pagina.folha, DPI_PREVIA)
+        if bruta is None:
+            return None
+        img = preparar_metade(bruta, self.projeto.folhas[pagina.folha], pagina,
+                              self.projeto, dpi=DPI_PREVIA)
+        lado = max(img.shape[:2])
+        if lado > LADO_DO_AJUSTE:
+            escala = LADO_DO_AJUSTE / lado
+            img = cv2.resize(img, None, fx=escala, fy=escala, interpolation=cv2.INTER_AREA)
+        return img
+
+    def _avaliar_os_pedacos(self, pagina) -> None:
+        """Mostra ou esconde a linha "Pedaco:" da aba Marcar e acerta o aviso.
+
+        A linha aparece so quando a pagina tem um pedaco em retangulo com
+        "so neste pedaco" num filtro diferente do da pagina, e com figura
+        dentro. O botao fica aceso quando o ajuste muda alguma coisa; a frase
+        aparece quando o papel em volta e muito (Folga.muito). Custa ~0,05 s
+        no fio da tela, e so em pagina com um pedaco assim. Nunca levanta
+        excecao: se a conta falhar, a linha some e o erro vai para o log."""
+        if not hasattr(self, "linha_pedaco"):
+            return
+        folgas = {}
+        try:
+            from core.ajustar_pedaco import avaliar_os_pedacos, pedacos_com_outro_filtro
+
+            if pagina is not None:
+                selecao = pagina.obter_selecao()
+                if pedacos_com_outro_filtro(selecao, pagina.filtro):
+                    img = self._pagina_sem_filtro_para_o_ajuste(pagina)
+                    if img is not None:
+                        folgas = avaliar_os_pedacos(img, selecao, pagina.filtro)
+        except Exception:  # noqa: BLE001 - o aviso nunca derruba a aba
+            registrar_erro("avaliar o pedaco", traceback.format_exc())
+            folgas = {}
+        muda = any(f.muda for f in folgas.values())
+        muito = max((f.fracao_de_papel for f in folgas.values() if f.muito), default=0.0)
+        self.linha_pedaco.setVisible(bool(folgas))
+        self.botao_ajustar_pedaco.setEnabled(muda)
+        # A frase cabe numa linha (a aba tem pouca altura); a explicacao
+        # inteira fica na dica do mouse.
+        if muito:
+            porcento = max(1, int(round(100 * muito)))
+            self.aviso_pedaco.setText(
+                f"Sobrou papel em volta da figura ({porcento}% do pedaço): "
+                f"pode sair uma faixa.")
+            self.aviso_pedaco.setToolTip(
+                "O papel que ficou dentro do retângulo sai com o filtro do pedaço, "
+                "e não com o da página, e pode aparecer como uma faixa em volta da "
+                "figura. Se quiser, clique em \"Ajustar o pedaço à figura\". "
+                "Se não quiser mudar, pode deixar como está.")
+        elif not muda:
+            self.aviso_pedaco.setText("O pedaço já está justo na figura.")
+            self.aviso_pedaco.setToolTip("")
+        else:
+            self.aviso_pedaco.setText("")
+            self.aviso_pedaco.setToolTip("")
+
+    @protegido
+    def _ajustar_pedaco_a_figura(self) -> None:
+        """O botao "Ajustar o pedaco a figura": encolhe cada pedaco com outro
+        filtro desta pagina ate a figura (core.ajustar_pedaco), numa acao so
+        do Historico - o Desfazer devolve o retangulo como estava. So muda o
+        tamanho dos retangulos: o tipo, o filtro e o resto da marcacao ficam.
+        Arriscado: mudar a marcacao sem passar por _registrar (o desfazer nao
+        a veria)."""
+        from core.ajustar_pedaco import ajustar_os_pedacos
+
+        pagina = self._pagina_marcada()
+        if pagina is None or not self._pronta():
+            return
+        img = self._pagina_sem_filtro_para_o_ajuste(pagina)
+        if img is None:
+            self.aviso_pedaco.setText("Ainda carregando a página. Tente de novo em um instante.")
+            return
+        nova, quantos = ajustar_os_pedacos(img, pagina.obter_selecao(), pagina.filtro)
+        if not quantos:
+            self.aviso_pedaco.setText("O pedaço já está justo na figura.")
+            return
+        self._registrar(
+            "ajustar_pedaco", "pagina", [self.indice_pagina],
+            {"selecao": nova.para_lista()},
+            f"Página {self.indice_pagina + 1}: pedaço ajustado à figura",
+        )
+        self._mostrar_aviso_da_marcacao(
+            "Pedaço ajustado à figura. Para voltar como estava, desfazer.")
 
     def _atualizar_cartoes(self, img: np.ndarray | None) -> None:
         """Os cartoes mostram a página de verdade, cada um com seu filtro.
@@ -2498,6 +2637,31 @@ class TelaConferir(QWidget):
                 self._ir_para_proximo_alerta()
                 return
         self.processar.emit()
+
+
+def _icone_de_ajustar_o_pedaco():
+    """A pista visual do botao "Ajustar o pedaco a figura": um retangulo
+    tracejado (o pedaco como esta) com um cheio menor dentro (a figura) e
+    quatro setinhas para dentro. Desenhado com QPainter - nunca emoji (regra
+    3). Seguro mudar o desenho."""
+    from PySide6.QtGui import QColor, QIcon, QPainter, QPen, QPixmap
+
+    lado = 32
+    figura = QPixmap(lado, lado)
+    figura.fill(Qt.transparent)
+    pintor = QPainter(figura)
+    pintor.setRenderHint(QPainter.Antialiasing)
+    pintor.setPen(QPen(QColor("#9ca3af"), 2, Qt.DashLine))
+    pintor.drawRect(2, 2, lado - 5, lado - 5)
+    pintor.setPen(QPen(QColor(AZUL), 2))
+    pintor.setBrush(QColor(AZUL_CLARO))
+    pintor.drawRect(10, 10, lado - 21, lado - 21)
+    meio = lado // 2
+    for (x0, y0, x1, y1) in ((meio, 4, meio, 8), (meio, lado - 5, meio, lado - 9),
+                             (4, meio, 8, meio), (lado - 5, meio, lado - 9, meio)):
+        pintor.drawLine(x0, y0, x1, y1)
+    pintor.end()
+    return QIcon(figura)
 
 
 def _ligar(botao: QPushButton, acao) -> None:
