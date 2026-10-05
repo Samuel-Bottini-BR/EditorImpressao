@@ -1,0 +1,56 @@
+{
+ "escola_p007": {
+  "pedaco": [
+   0.375,
+   0.378,
+   0.997,
+   0.932
+  ],
+  "processar_s": {
+   "antes": [
+    1.81,
+    1.44
+   ],
+   "depois": [
+    2.12,
+    2.11
+   ]
+  },
+  "pagina_em_1_bit": {
+   "antes": false,
+   "depois": false
+  },
+  "fracao_do_pedaco_igual_ao_original": {
+   "antes": 0.0,
+   "depois": 0.9985994037828947
+  },
+  "fora_do_pedaco_pontos_diferentes": 0
+ },
+ "opusmajus_p020": {
+  "pedaco": [
+   0.0014750830564784056,
+   0.0027804878048780495,
+   1.0,
+   0.9299024390243903
+  ],
+  "processar_s": {
+   "antes": [
+    2.17,
+    1.71
+   ],
+   "depois": [
+    2.1,
+    2.13
+   ]
+  },
+  "pagina_em_1_bit": {
+   "antes": false,
+   "depois": false
+  },
+  "fracao_do_pedaco_igual_ao_original": {
+   "antes": 0.0019764721109727873,
+   "depois": 0.9989658503224667
+  },
+  "fora_do_pedaco_pontos_diferentes": 0
+ }
+}
