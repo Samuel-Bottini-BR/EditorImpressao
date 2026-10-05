@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: so neste pedaco e cancelar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: "só neste pedaço" no Preto e branco e o cancelar que apagava o PDF antigo (05/10/2026)</h1>
+<p><strong>Em uma frase:</strong> <strong>PRONTO PARA CONFERIR, com ressalvas.</strong> Os dois consertos fazem o que prometem, conferido na janela de verdade: cancelar depois de "substituir o antigo" <strong>não apaga mais o PDF antigo</strong> (nem com "Montar cadernos"), e a pintura marcada com "só neste pedaço: Original" <strong>sai como o original</strong> numa página em Preto e branco, enquanto as outras páginas saem <strong>iguais ao <code>044a7c1</code>, ponto por ponto</strong>. As ressalvas: quando o PDF antigo está aberto noutro programa, o PDF novo é salvo como "(2)", mas a tela trata isso como erro (sem "Ficou pronto!"; o cartão não fica "PDF gerado"). A faixa creme em volta da pintura aparece de verdade. E a página com o pedaço deixa o PDF bem maior (3,0 → 5,4 MB por uma página).</p>
+<p>Ramo <code>consertos-cancelar-pedaco-2026-10-05</code> (commits <code>880bf70</code>, <code>60d8c58</code>, <code>d995208</code>, base <code>044a7c1</code>), worktree <code>consertos2</code>. <strong>Não mexi em nenhum código.</strong></p>
+<blockquote>
+<p><strong>Defeito conhecido (aviso obrigatório até a Fase 1 ficar pronta):</strong> moldura dourada e iluminura continuam sendo defeito conhecido (itens 1.4 e 1.5). Estes consertos não mexem nisso.</p>
+</blockquote>
+<hr />
+<h2>1. Como foi feito</h2>
+<ul>
+<li><strong>Máquina:</strong> <code>pytest</code> inteiro na worktree, <code>teste_botoes.py</code>, e comparação ponto a ponto das páginas dos PDFs gerados (janela × <code>044a7c1</code> × sem pedaço).</li>
+<li><strong>Olho, na janela real:</strong> uma instância minha do programa (código da worktree), <strong>fora da tela</strong> (não apareceu para o Samuel), com <strong>1600 × 821 pixels</strong>. Cliques e teclas foram mensagens nativas do Windows, sem mexer no mouse nem no teclado dele, e as caixas "abrir PDF" e "escolher pasta" foram respondidas por arquivo. Usei uma <strong>pasta de dados própria</strong> (<code>LOCALAPPDATA</code> e a pasta do usuário trocadas), nunca a do Samuel. Os scripts do piloto vieram do parecer anterior (<code>verif-consertos-saida</code>, só lidos).</li>
+<li><strong>Livro de teste:</strong> <code>livro-teste.pdf</code>, com 10 folhas copiadas das páginas-gabarito (Escola de Jesus 7, Boécio 3/7/8/22, Escola 35, Palatino 5/7/9/10). "Dividir folhas ao meio" desligado, filtro Preto e branco. Para "Montar cadernos", um segundo livro: <code>livro-cadernos2.pdf</code>, com as 9 primeiras folhas.</li>
+<li><strong>PDF antigo "aberto noutro programa":</strong> um processo Python meu segurou o arquivo aberto (como faz um leitor de PDF; conferi antes que a troca ficava mesmo bloqueada, <code>PermissionError</code> 5). Não usei o leitor de PDF do Samuel.</li>
+<li>No fim, fechei a minha janela com WM_CLOSE (fechou).</li>
+</ul>
+<hr />
+<h2>2. Testes de máquina</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pytest tests -q</code> na worktree</td>
+<td><strong>1410 passaram, 8 pularam, 0 falhas</strong> (6 min 48 s, PC com outros agentes)</td>
+</tr>
+<tr>
+<td>Os 3 arquivos de teste destes consertos (<code>test_substituir_e_cancelar</code>, <code>test_so_neste_pedaco_no_preto_e_branco</code>, <code>test_filtro_com_selecao</code>) com <code>-rs</code></td>
+<td><strong>51 passaram, nenhum pulou</strong> (o teste com o PDF aberto de verdade no Windows rodou)</td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code></td>
+<td><strong>132 ações, 0 falhas</strong></td>
+</tr>
+<tr>
+<td>Páginas 2 a 10 do PDF gerado na janela (com pedaço só na página 1) × o mesmo projeto processado pelo <code>044a7c1</code></td>
+<td><strong>9 de 9 idênticas, ponto a ponto</strong> (e iguais ao PDF gerado antes de marcar o pedaço)</td>
+</tr>
+<tr>
+<td>Página 1, dentro do pedaço × a página em Original</td>
+<td><strong>100% dos pontos iguais</strong> (diferença máxima 0)</td>
+</tr>
+<tr>
+<td>Página 1, fora do pedaço × <code>044a7c1</code></td>
+<td><strong>0 pontos diferentes</strong> (de 4 007 462)</td>
+</tr>
+<tr>
+<td>PDF da janela × o mesmo projeto processado sem janela, pelo código da worktree</td>
+<td><strong>10 de 10 páginas idênticas</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Os números estão em <code>comparacao-pdfs.json</code>. Não listei o motivo dos 8 que pularam. Na rodada anterior, os que continuavam pulando eram os do Kraken (o motor fica fora do git) e um que só roda com <code>OCR_22=1</code>.</p>
+<hr />
+<h2>3. Item por item</h2>
+<h3>(b) Cancelar depois de "substituir o antigo": <strong>funciona</strong> (olho, na janela, e máquina por sha256)</h3>
+<p>Gerei o PDF uma vez (<code>livro-teste - preto e branco.pdf</code>, 10 páginas, 3,0 MB). Voltei pelo "fazer outro" e reabri o livro pelo cartão. Em "Confirmar e processar" &gt; "Processar", apareceu a caixa "Já existe um arquivo com esse nome" (<code>10-subst-cancelar-a-caixa.png</code>). Um vigia lia a pasta a cada 50 ms e anotava todo arquivo que aparecesse.</p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>O que fiz</th>
+<th>Resultado no disco</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Cancelar no meio</td>
+<td>"substituir o antigo", "cancelar" na página 4 de 10</td>
+<td>Antigo <strong>intacto</strong>: mesmo sha256 (<code>02a997d8…</code>), mesma data (16:04:57). <strong>Nenhum <code>~*.parcial</code></strong> apareceu nem sobrou. A tela voltou para Conferir, sem mensagem.</td>
+</tr>
+<tr>
+<td>2. Deixar terminar</td>
+<td>"substituir o antigo" até o fim</td>
+<td>O PDF novo <strong>substituiu</strong> o antigo (sha256 <code>b3e8b826…</code>, 16:07:01, 10 páginas). O <code>~livro-teste - preto e branco.pdf.parcial</code> apareceu por um instante e sumiu. "Ficou pronto!"</td>
+</tr>
+<tr>
+<td>3. Antigo aberto noutro programa</td>
+<td>arquivo seguro por outro processo, "substituir o antigo" até o fim</td>
+<td>Aviso <strong>em português</strong>, na caixa "Um momento": <em>"Não consegui substituir o arquivo antigo "livro-teste - preto e branco.pdf": ele parece estar aberto em outro programa (o leitor de PDF, por exemplo). O arquivo antigo ficou como estava, e o PDF novo foi gravado ao lado dele, na mesma pasta, com o nome "livro-teste - preto e branco (2).pdf"."</em> Antigo <strong>intacto</strong> (<code>b3e8b826…</code>, 16:07:01); <strong>"(2).pdf" criado</strong> com 10 páginas; nenhuma sobra. <strong>Ver ressalva 1.</strong></td>
+</tr>
+<tr>
+<td>4. "Montar cadernos" ligado, cancelar no meio</td>
+<td>livro <code>livro-cadernos2</code>, PDF de cadernos já gerado; "substituir o antigo", "cancelar" na página 5 de 9</td>
+<td>Antigo <strong>intacto</strong> (<code>6ad8eb2e…</code>, 16:16:26, folhas de 939 × 749 pt, já impostas); nenhuma sobra.</td>
+</tr>
+<tr>
+<td>4b. Cadernos, deixar terminar</td>
+<td>idem, até o fim</td>
+<td>Novo PDF de cadernos <strong>substituiu</strong> o antigo (<code>ce1e58d6…</code>, 16:17:26).</td>
+</tr>
+</tbody>
+</table>
+<p>Também não sobrou nenhum PDF temporário na pasta temporária do Windows depois do cancelar com cadernos.</p>
+<p><img alt="A caixa: substituir o antigo" src="prints/10-subst-cancelar-a-caixa.png" /></p>
+<p><img alt="Processando, logo antes de cancelar" src="prints/10-subst-cancelar-b-processando.png" /></p>
+<p><img alt="Depois de cancelar: volta para Conferir; o antigo continua igual" src="prints/10-subst-cancelar-c-depois.png" /></p>
+<p><img alt="Deixando terminar: Ficou pronto!" src="prints/11-subst-terminar-c-depois.png" /></p>
+<p><img alt="PDF antigo aberto noutro programa: o aviso em português" src="prints/12-subst-aberto-d-QMessageBox.png" /></p>
+<p><img alt="Depois do aviso: a tela volta para Conferir, e não para &quot;Ficou pronto!&quot;" src="prints/12-subst-aberto-e-depois-do-aviso.png" /></p>
+<p><img alt="Livro com &quot;Montar cadernos&quot; ligado" src="prints/17-o-que-fazer-livro-cadernos.png" /></p>
+<p><img alt="Cadernos: processando, logo antes de cancelar" src="prints/20-cadernos-cancelar-b-processando.png" /></p>
+<p><img alt="Cadernos: depois de cancelar" src="prints/20-cadernos-cancelar-c-depois.png" /></p>
+<p><img alt="Cadernos: deixando terminar" src="prints/21-cadernos-terminar-c-depois.png" /></p>
+<h3>(c) "Só neste pedaço: Original" numa página em Preto e branco: <strong>funciona</strong> (olho, na janela, e máquina ponto a ponto)</h3>
+<ol>
+<li>Na aba <strong>Marcar</strong>, página 1 (Escola de Jesus 7), com a página em Preto e branco, cliquei <strong>"Original"</strong> em "só neste pedaço". Depois desenhei um <strong>retângulo em volta da pintura</strong>, arrastando o mouse de verdade, por mensagens nativas. O retângulo foi gravado como <code>gravura / retângulo / mão / filtro original</code>, de (0,374; 0,379) a (0,994; 0,931), praticamente o mesmo do implementador.</li>
+<li><strong>Prévia</strong> (aba Filtro e "Ver de perto"): o texto sai em preto e branco e a <strong>pintura sai colorida, como no original</strong>. Ao redor dela, dá para ver a <strong>faixa creme fina</strong> do papel que ficou dentro do retângulo (em cima e à esquerda).</li>
+<li><strong>PDF</strong> (Confirmar e processar &gt; substituir o antigo): pronto, 10 páginas, <strong>5,4 MB</strong> (antes 3,0 MB).</li>
+<li><strong>Conferido no PDF, ponto a ponto:</strong> dentro do pedaço, 100% igual ao Original. Fora dele, 0 pontos diferentes do <code>044a7c1</code>. As páginas 2 a 10, sem pedaço, são <strong>idênticas ao <code>044a7c1</code></strong> (e ao PDF de antes de marcar).</li>
+</ol>
+<p><img alt="Aba Marcar, logo depois de clicar &quot;Original&quot; (o botão aceso continua &quot;o mesmo da página&quot;; ver ressalva 3)" src="prints/23-so-neste-pedaco-original.png" /></p>
+<p><img alt="O retângulo desenhado em volta da pintura" src="prints/24-pedaco-desenhado.png" /></p>
+<p><img alt="O mesmo, de perto" src="prints/24b-pedaco-desenhado-zoom.png" /></p>
+<p><img alt="Prévia na aba Filtro: no cartão do Preto e branco, a pintura em cor" src="prints/25-previa-filtro.png" /></p>
+<p><img alt="Ver de perto: texto em preto e branco, pintura como no original" src="prints/26-ver-de-perto.png" /></p>
+<p><img alt="Ver de perto, na beirada de cima: a faixa creme" src="prints/26b-ver-de-perto-beirada.png" /></p>
+<p><img alt="Ficou pronto: 5,4 MB" src="prints/27-pedaco-gerar-c-depois.png" /></p>
+<p><strong>A página 1 do PDF gerado na janela:</strong> Original | <code>044a7c1</code> (o pedaço é ignorado, a pintura sai cinza) | este ramo (a pintura como no original):</p>
+<p><img alt="Página inteira" src="prints/janela-p1-pagina.jpg" /></p>
+<p><img alt="A pintura" src="prints/janela-p1-pedaco.jpg" /></p>
+<p><img alt="A beirada de cima: a faixa creme no da direita" src="prints/janela-p1-beirada.jpg" /></p>
+<h3>(d) Bug achado pelo implementador: numa página em <strong>Original</strong>, o "só neste pedaço" é ignorado. <strong>Confirmado, por leitura do código</strong> (não testei na janela)</h3>
+<p>Em <code>core/filtros.py::aplicar_filtro_com_selecao</code> (linha 3504), o teste abaixo vem <strong>antes</strong> de qualquer olhar para o pedaço:</p>
+<pre><code>if filtro in (ORIGINAL, TIRAR_FUNDO):
+    return img, False
+</code></pre>
+<p>Então, numa página em Original, um pedaço marcado como Preto e branco, Melhorar ou Mágico pro não vale. Sai a página como veio, sem aviso. O mesmo acontece no "Tirar o fundo" (que, pela decisão de 29/09, não aceita outro filtro). E também quando "Limpar a folha" está desmarcado: <code>core/pipeline.py</code>, linha 940, devolve a imagem antes de chamar o filtro. Vale para a lista de bugs, como o implementador disse. Não é efeito destes commits: o teste já estava no <code>044a7c1</code>.</p>
+<hr />
+<h2>4. As imagens do implementador (todas abertas)</h2>
+<table>
+<thead>
+<tr>
+<th>Imagem</th>
+<th>O que vi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>escola7-pagina.jpg</code></td>
+<td>Original | antes (pintura cinza) | depois (pintura colorida, como no original; texto em preto e branco). Confere com o que eu vi na janela.</td>
+</tr>
+<tr>
+<td><code>escola7-pedaco.jpg</code></td>
+<td>A pintura de perto: o depois é igual ao original. Há uma borda creme fina em volta.</td>
+</tr>
+<tr>
+<td><code>escola7-detalhe1.jpg</code></td>
+<td>Céu e nuvens: antes cinza, com uma mancha branca recortada à esquerda; depois igual ao original, sem manchas.</td>
+</tr>
+<tr>
+<td><code>escola7-detalhe2.jpg</code></td>
+<td>Leão e pé da pintura: depois igual ao original. Embaixo aparece a faixa creme e, depois de uma linha reta, o branco da página.</td>
+</tr>
+<tr>
+<td><code>escola7-detalhe3.jpg</code></td>
+<td><strong>Faixa creme:</strong> em cima e à direita da pintura, uma faixa creme (o papel dentro do retângulo), com o limite reto onde o retângulo termina. No original ela se confunde com a página creme; no Preto e branco, ao lado do branco, ela aparece. É pequena, mas se vê.</td>
+</tr>
+<tr>
+<td><code>opus20-pagina.jpg</code></td>
+<td>Foto de Roger Bacon: antes, manchas brancas recortadas na parede e no peito; depois igual ao original.</td>
+</tr>
+<tr>
+<td><code>opus20-pedaco.jpg</code></td>
+<td>Idem, de perto.</td>
+</tr>
+<tr>
+<td><code>opus20-detalhe1.jpg</code></td>
+<td>Rosto e peito: antes estourados de branco; depois como no original.</td>
+</tr>
+<tr>
+<td><code>opus20-detalhe2.jpg</code></td>
+<td>Parede clara e pé da foto: antes, branco recortado; depois como no original. A legenda "ROGER BACON" (fora do pedaço) sai em preto e branco.</td>
+</tr>
+<tr>
+<td><code>descartado/…-opus20-pagina.jpg</code></td>
+<td>A tentativa descartada: a parede vira manchas brancas recortadas. Descartar foi a escolha certa.</td>
+</tr>
+<tr>
+<td><code>descartado/…-escola7-pedaco.jpg</code></td>
+<td>A tentativa descartada na Escola 7: sem a faixa creme, e boa.</td>
+</tr>
+</tbody>
+</table>
+<p>Os meus prints (todos abertos, inclusive os que não entraram aqui) mostram o mesmo.</p>
+<hr />
+<h2>5. Velocidade</h2>
+<p>O teste oficial (<code>teste_velocidade.py</code>) <strong>não foi rodado</strong>, nem por mim nem pelo implementador: o PC tinha outros agentes. Só como indicação: na janela, o livro de 10 folhas foi processado em ~8 a 9 s antes e depois de marcar o pedaço. O mesmo projeto, sem janela: 13,9 s no <code>044a7c1</code> e 9,8 s neste ramo (os dois carregando os modelos, então é ruído). Nada indica lentidão nas páginas sem pedaço, que seguem o mesmo caminho e dão o mesmo resultado.</p>
+<hr />
+<h2>6. Ressalvas e defeitos achados</h2>
+<ol>
+<li><strong>PDF antigo aberto noutro programa: o PDF novo é salvo como "(2)", mas a tela trata isso como erro</strong> (novo neste conserto; menor). O aviso é bom, mas depois dele o programa volta para <strong>Conferir</strong>, e não para "Ficou pronto!": não aparece "abrir a pasta" nem "imprimir agora". O cartão do livro <strong>não fica "pronto, PDF gerado"</strong> (<code>pdf_gerado</code> ficou falso), e o destino guardado continua o nome antigo, então a próxima vez propõe o nome antigo de novo. O caso também vai para o <code>erros.log</code> como erro, com o rastro inteiro. Para quem consertar: o <code>ErroPDFSalvoComOutroNome</code> (um <code>ErroPDF</code>) passa pelo caminho de falha da <code>TarefaProcessar</code>. Talvez ele devesse chegar como sucesso, com o caminho do "(2)", e o aviso por cima. O título da caixa ("Um momento") é o de erro.</li>
+<li><strong>A faixa creme existe</strong> (vista na janela e nas imagens). O tamanho dela depende da folga que o Kaique deixar ao desenhar. É consequência direta de "obedece inteira", decisão do Samuel.</li>
+<li><strong>No painel "só neste pedaço", o botão aceso não muda ao clicar</strong> (antigo, só de tela). Na aba Marcar, cliquei "Original": a escolha valeu (o retângulo foi gravado com filtro original), mas o botão aceso continuou "o mesmo da página" até eu trocar de aba (print 23). Pelo código, <code>PainelFiltroDaPagina._escolher_pedaco</code> guarda a escolha mas não redesenha os botões. O Kaique pode achar que o clique não pegou. O painel Histórico também continuou "nada ainda" depois de desenhar o retângulo.</li>
+<li><strong>O PDF fica bem maior com o pedaço.</strong> A página 1 passou de 1,3 MB (cinza) para 3,8 MB (cor), e o livro de 3,0 para 5,4 MB por uma página só. É o esperado (a página deixa de caber em tons de cinza), mas o Samuel deve saber: num livro com muitas pinturas marcadas, o arquivo cresce.</li>
+<li><strong>Bug antigo que atrapalhou o teste de cadernos (registrado em 29/09, lembro aqui porque engana):</strong> com um livro já conferido, fui em Arquivo &gt; "Voltar para as opções", marquei "Montar cadernos para impressão" e cliquei "Conferir". A caixinha ficou marcada e o resumo dizia "e montar cadernos", <strong>mas o PDF saiu sem cadernos</strong>: o projeto salvo voltou por cima (<code>montar_cadernos</code> falso). O próprio código diz que isso é conhecido e ficou para depois. Por isso testei os cadernos com um livro novo. Em tempo: uma cópia <strong>idêntica</strong> do mesmo PDF noutra pasta é tratada como o mesmo livro (por decisão de 29/09).</li>
+<li><strong>(d) confirmado só por leitura de código</strong> (seção 3); não testei uma página em Original com pedaço na janela.</li>
+<li><strong>Rodas do mouse e o tamanho de 1280 × 657 pontos a 150%:</strong> não usei a roda. A janela "Ver de perto" abriu com 1600 × 1055 pixels, maior que a janela principal (este PC tem tela de 1080 de altura). Não conferi como ela fica no notebook do Kaique.</li>
+<li><strong>"Ainda tem 12 páginas que eu não tive certeza"</strong> num livro de 10 páginas (caixa "Antes de processar"). Parece contar avisos, e não páginas. Antigo, de texto.</li>
+<li>O <code>teste_botoes.py</code> grava a pasta de trabalho dele em <code>saida_teste\botoes</code>, que nesta worktree é atalho para a pasta original. Ele só apaga e recria a própria pasta <code>botoes\dados</code>, como sempre faz. Não tocou em mais nada.</li>
+</ol>
+<hr />
+<h2>7. Para a Lista de bugs (05/10/2026)</h2>
+<ul>
+<li><strong>Novo, menor:</strong> "salvo como (2)" porque o antigo está aberto: depois do aviso, a tela vai para Conferir em vez de "Ficou pronto!", o cartão não fica "PDF gerado" e o caso vai para o <code>erros.log</code> como erro (ressalva 1, prints <code>12-subst-aberto-d-QMessageBox.png</code> e <code>12-subst-aberto-e-depois-do-aviso.png</code>).</li>
+<li><strong>Confirmado (do implementador):</strong> numa página em Original (ou com "Limpar a folha" desmarcado), o "só neste pedaço" é ignorado (seção 3, item d).</li>
+<li><strong>Antigo, de tela:</strong> o botão aceso do "só neste pedaço" não acompanha o clique na aba Marcar (ressalva 3, print <code>23-so-neste-pedaco-original.png</code>).</li>
+</ul>
+<hr />
+<h2>8. Onde está</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/so-neste-pedaco-2026-10-05/verificador/parecer-verificador-so-neste-pedaco.html</code> (e <code>.md</code>, <code>.pdf</code>).</li>
+<li>Prints: <code>verificador/prints/</code>. Números: <code>verificador/comparacao-pdfs.json</code>. Scripts: <code>verificador/scripts/</code>.</li>
+<li>Os PDFs gerados no teste ficaram fora do git, na pasta temporária do verificador (<code>scratchpad\verif\piloto\dados\saida</code> e <code>piloto\comparar</code>).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 16:29</p>
+</body>
+</html>
