@@ -429,6 +429,30 @@ FOLGA_DA_MEDIDA_REDUZIDA = 1.6
 # medida COM a trava: na Horas 11 o k segue K_NORMAL e a imagem nao muda.
 # Arriscado: usar a medida sem trava para o k (muda o k e a imagem da Horas
 # 11) ou tirar a porta de tinta da folha inteira (a escolha poderia trocar).
+#
+# DIFERENCA_DE_TINTA_DO_ATALHO (05/10/2026, ressalva do verificador sobre o
+# atalho acima): o atalho confia que a copia reduzida e a pagina inteira
+# "enxergam" a mesma tinta. Numa foto em retícula fina (pontinhos de
+# impressao) isso falha: a copia reduzida ve cinza liso (muita tinta, traco
+# "grosso") e a pagina inteira ve pontinhos (pouca tinta, traco fino). Numa
+# folha artificial com retícula de 1 ponto em 85% da folha a copia reduzida
+# acha 86% de tinta e a inteira 44%, e o atalho trocava a escolha da medida
+# cheia (Sauvola) por Otsu. Agora o atalho so age quando as duas tintas
+# diferem no maximo DIFERENCA_DE_TINTA_DO_ATALHO (fracao da folha; 0,05 =
+# 5 pontos percentuais); senao, a medida cheia decide, como antes de 7f50e70.
+# Medido: Horas 11, 60,4% x 59,7% (0,65 ponto: o atalho age, com folga de
+# 7 vezes); nas 202 paginas de tinta alta do acervo varridas pelo verificador
+# (02/10), diferenca mediana de 0,4 ponto, 90% abaixo de 1 ponto, a maior
+# de pagina comum 1,4 ponto (Opus Majus 1); a unica pagina do acervo que
+# discorda de verdade e a ultima do Opus Majus (folha 450, foto: 96,5% x
+# 74,3%, 22 pontos; ela ja ficava fora do atalho por ter mais de 60% na
+# pagina inteira); as folhas de retícula, 30 a 45 pontos (nao age). No
+# acervo so a Horas 11 chega ao atalho. Seguro mudar: o valor entre ~2% e
+# ~10% (as mesmas escolhas no acervo). Arriscado: abaixo de ~1% (a Horas 11
+# voltaria a pagar a medida cheia, ~9,5 s) ou acima de ~20% (pagina de foto
+# como a do Opus Majus, com menos tinta, e a retícula entrariam no atalho).
+# Teste: tests/test_escolha_sem_a_trava_de_tinta.py.
+DIFERENCA_DE_TINTA_DO_ATALHO = 0.05
 
 
 def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
@@ -443,7 +467,11 @@ def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
 
     A medida reduzida (a do k, guardada) decide sozinha quando a pagina nao
     foi reduzida para medir, ou quando o traco e grosso com folga - ver
-    FOLGA_DA_MEDIDA_REDUZIDA. Senao, a medida de tamanho cheio, como sempre.
+    FOLGA_DA_MEDIDA_REDUZIDA. Quando a medida guardada desiste pela trava de
+    60% de tinta, a reduzida sem a trava ainda decide "Otsu com folga" - so se
+    a copia reduzida e a pagina inteira acham tinta parecida (ver
+    TINTA_DEMAIS_PARA_MEDIR e DIFERENCA_DE_TINTA_DO_ATALHO). Senao, a medida
+    de tamanho cheio, como sempre.
     Quem escolhe Otsu aqui ganha a borda do Sauvola (ver
     _otsu_com_a_borda_do_sauvola, em filtro_preto_e_branco).
     """
@@ -458,16 +486,24 @@ def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
                 return ALGORITMO_OTSU
         elif cinza.shape[0] > ALTURA_PARA_MEDIR_TRACO:
             # a medida guardada desistiu (ver TINTA_DEMAIS_PARA_MEDIR): a
-            # reduzida sem a trava responde "Otsu com folga" sem a cheia
-            sem_trava = _medir_espessura_do_traco(cinza, trava_de_tinta=False)
-            if (sem_trava is not None
-                    and sem_trava >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA):
-                # a mesma porta de tinta da medida cheia, abaixo
-                _lim, tinta = cv2.threshold(
-                    cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                fracao = cv2.countNonZero(tinta) / float(tinta.size)
-                return (ALGORITMO_OTSU if 0.002 <= fracao <= 0.6
-                        else ALGORITMO_SAUVOLA)
+            # reduzida sem a trava responde "Otsu com folga" sem a cheia -
+            # so quando a copia reduzida e a pagina inteira acham tinta
+            # parecida (ver DIFERENCA_DE_TINTA_DO_ATALHO)
+            _lim, tinta = cv2.threshold(
+                cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            fracao = cv2.countNonZero(tinta) / float(tinta.size)
+            del tinta
+            if (0.002 <= fracao <= 0.6
+                    and abs(_tinta_da_copia_reduzida(cinza) - fracao)
+                    <= DIFERENCA_DE_TINTA_DO_ATALHO):
+                sem_trava = _medir_espessura_do_traco(cinza, trava_de_tinta=False)
+                if (sem_trava is not None
+                        and sem_trava >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA):
+                    return ALGORITMO_OTSU
+            # fora da porta de tinta (abaixo de 0,2% ou acima de 60%), a
+            # medida cheia, abaixo, responde Sauvola sem medir o traco - como
+            # o atalho respondia; tintas diferentes, ou traco sem folga, ela
+            # mede e decide
     except Exception:  # noqa: BLE001 - a medida cheia, abaixo, decide
         pass
     try:
@@ -646,17 +682,41 @@ def _k_da_espessura(espessura: float | None) -> float:
     return K_PARA_LETRA_FINA + (K_PARA_LETRA_GROSSA - K_PARA_LETRA_FINA) * fatia
 
 
+def _copia_para_medir(cinza: np.ndarray) -> tuple[np.ndarray, float]:
+    """A copia reduzida em que a espessura do traco e medida (altura
+    ALTURA_PARA_MEDIR_TRACO, INTER_AREA) e a escala usada; a propria folha,
+    com escala 1, se ela ja e baixa. Usada pela medida do k
+    (_medir_espessura_do_traco) e pela trava do atalho da escolha automatica
+    (_tinta_da_copia_reduzida): as duas tem de ver a MESMA copia. Arriscado:
+    mudar a interpolacao ou a altura (muda o k de todas as paginas)."""
+    escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
+    if escala < 1.0:
+        cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
+                                   max(8, int(cinza.shape[0] * escala))),
+                           interpolation=cv2.INTER_AREA)
+    return cinza, escala
+
+
+def _tinta_da_copia_reduzida(cinza: np.ndarray) -> float:
+    """Fracao da copia reduzida (_copia_para_medir) que o Otsu chama de tinta
+    - a mesma conta da trava de 60% da medida do k. So a escolha automatica
+    usa, para comparar com a tinta da pagina inteira (ver
+    DIFERENCA_DE_TINTA_DO_ATALHO). Custa uma reducao da folha e um Otsu
+    pequeno (centesimos de segundo), e so roda nas paginas em que a trava de
+    60% age (53 de 3353 folhas no acervo, varredura do verificador, 02/10)."""
+    reduzida, _escala = _copia_para_medir(cinza)
+    _lim, tinta = cv2.threshold(
+        reduzida, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    return cv2.countNonZero(tinta) / float(tinta.size)
+
+
 def _medir_espessura_do_traco(cinza: np.ndarray,
                               trava_de_tinta: bool = True) -> float | None:
     """A medicao de verdade, sem o cache. Ver _espessura_do_traco.
 
     trava_de_tinta=False: mede mesmo com mais de 60% de tinta - so para a
     escolha automatica (ver TINTA_DEMAIS_PARA_MEDIR); o k usa sempre a trava."""
-    escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
-    if escala < 1.0:
-        cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
-                                   max(8, int(cinza.shape[0] * escala))),
-                           interpolation=cv2.INTER_AREA)
+    cinza, escala = _copia_para_medir(cinza)
 
     # A mesma mascara que a regua usa para medir espessura - Otsu -, para o
     # filtro e a regua nao discordarem sobre a grossura da mesma letra.
