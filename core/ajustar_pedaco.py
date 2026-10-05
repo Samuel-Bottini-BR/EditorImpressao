@@ -34,6 +34,16 @@ mancha grande colada na figura segura o ajuste (ele encolhe menos).
 Só retângulos: o pedaço desenhado com o oval, o laço, o polígono ou o pincel
 fica como está (ajustar mudaria a forma que a pessoa escolheu).
 
+Só FIGURA (conserto de 05/10/2026, achado do verificador): num pedaço de
+TEXTO o "maior grupo" são dois parágrafos, e o ajuste cortava o título, a
+primeira e a última linha e metade das palavras nas beiradas (Escola 7, bloco
+de cima: o aviso dizia 47%). Agora cada pedaço é medido (parece_figura,
+MANCHA_DA_FIGURA): o de texto não tem aviso nem ajuste, e a aba Marcar diz
+por quê. E o botão ajusta UM pedaço por clique, o "pedaço da vez"
+(pedaco_da_vez): o último desenhado em volta de uma figura - nunca todos de
+uma vez (numa página com um pedaço de texto e outro de pintura, ajustar a
+pintura estragava o texto).
+
 Não importa nada de ui/ (regra de arquitetura). As frações são as mesmas da
 core.selecao (0 a 1, relativas à página), então a imagem pode estar em
 qualquer resolução - a da prévia (150 DPI) basta e é rápida.
@@ -107,6 +117,36 @@ PAPEL_DEMAIS = 0.05
 # do papel ali; senão, vale a página inteira.
 MINIMO_DE_FORA = 0.02
 
+# Figura ou texto? (conserto de 05/10/2026.) A medida: que parte da tinta do
+# pedaço (o que tem cor bem diferente do papel, sem a sujeira solta) está no
+# MAIOR pedaço de tinta contínua. Figura é uma mancha só - a pintura, a foto,
+# a gravura com moldura e hachura emendadas -, e a maior mancha tem quase
+# toda a tinta. Texto é feito de centenas de letras soltas, e a maior delas
+# (uma palavra, uma capitular) tem uma parte pequena. Medido em 05/10/2026 em
+# 38 pedaços de 14 páginas do gabarito, na imagem que a aba Marcar usa (110
+# DPI, até 1000 pontos de lado; os números estão no relatório
+# relatorios/conferir/pedaco-em-original-2026-10-05/consertos-3/):
+#
+#     texto                                   figura
+#     blocos de texto (9 livros) 0,01 a 0,07  pinturas e fotos   0,96 a 1,00
+#     título da Escola 7         0,09         retrato Palatino 5 1,00
+#     partitura Graduale 221     0,11         gravura Boécio 3   0,95
+#     moldura + texto Palatino 9 0,07 a 0,15  Fig. 7 da Opus 165 0,83
+#     título do Boécio 3 (selo)  0,30         inicial Palatino 9 0,51
+#     título no oval Horas 11    0,39         ornamento Siebmacher 7  0,28 (!)
+#
+# 0,45 fica no vão entre 0,39 e 0,51. O ornamento do Siebmacher (cachos
+# soltos numa página pequena) e três ou mais desenhos soltos no mesmo pedaço
+# ficam como "texto": o botão fica apagado e explica - erra para o lado
+# seguro (o pedaço fica como foi desenhado). Por que não a medida do detector
+# de gravura (core.detectar_regioes, tinta em pedaços do tamanho de letra):
+# na resolução da aba Marcar ela erra para o lado perigoso - o título da
+# Escola 7 (uma faixa de uma linha) deu 1% de letras e passaria por figura -,
+# e a gravura do Boécio deu 42% (texto). Seguro mudar um pouco (0,40 a
+# 0,50). Mais baixo: título com selo ou moldura começa a passar por figura.
+# Mais alto: a inicial gravada do Palatino 9 vira texto.
+MANCHA_DA_FIGURA = 0.45
+
 
 @dataclass
 class Folga:
@@ -115,13 +155,17 @@ class Folga:
     caixa: o retângulo como está (x0, y0, x1, y1 em frações);
     justa: o retângulo ajustado à figura;
     fracao_de_papel: 0 a 1, a parte do retângulo que é papel na borda;
-    muito: fracao_de_papel >= PAPEL_DEMAIS (é quando a aba Marcar avisa).
+    muito: fracao_de_papel >= PAPEL_DEMAIS (é quando a aba Marcar avisa);
+    figura: o pedaço está em volta de uma figura (parece_figura). Pedaço de
+        texto não tem aviso nem ajuste: `muito` e `muda` são falsos nele, e a
+        `justa` é a própria caixa (nada muda).
     """
 
     caixa: tuple[float, float, float, float]
     justa: tuple[float, float, float, float]
     fracao_de_papel: float
     muito: bool
+    figura: bool = True
 
     @property
     def muda(self) -> bool:
@@ -162,8 +206,10 @@ def _cor_do_papel(lab: np.ndarray, x0: int, y0: int, x1: int, y1: int) -> np.nda
 
 
 def _caixa_justa_em_pontos(lab: np.ndarray, x0: int, y0: int, x1: int, y1: int
-                           ) -> tuple[int, int, int, int] | None:
-    """O retângulo justo, em pontos, ou None se dentro só há papel."""
+                           ) -> tuple[tuple[int, int, int, int], float] | None:
+    """(o retângulo justo em pontos, a fração da tinta na maior mancha), ou
+    None se dentro só há papel. A fração é a medida de parece_figura
+    (MANCHA_DA_FIGURA)."""
     altura, largura = lab.shape[:2]
     papel = _cor_do_papel(lab, x0, y0, x1, y1)
     distancia = np.linalg.norm(lab[y0:y1, x0:x1] - papel, axis=-1)
@@ -178,6 +224,9 @@ def _caixa_justa_em_pontos(lab: np.ndarray, x0: int, y0: int, x1: int, y1: int
     figura[pequenos[rotulos]] = 0
     if not figura.any():
         return None
+    # figura ou texto? a parte da tinta na maior mancha (ver MANCHA_DA_FIGURA)
+    areas_das_manchas = medidas[1:, cv2.CC_STAT_AREA][~pequenos[1:]].astype(np.float64)
+    maior_mancha = float(areas_das_manchas.max() / areas_das_manchas.sum())
     # 2. o que esta perto vira um grupo so (ver JUNTAR)...
     lado = max(3, int(round(JUNTAR * min(altura, largura))) | 1)
     juntos = cv2.dilate(figura, cv2.getStructuringElement(cv2.MORPH_RECT, (lado, lado)))
@@ -205,26 +254,29 @@ def _caixa_justa_em_pontos(lab: np.ndarray, x0: int, y0: int, x1: int, y1: int
     margem = int(np.ceil(MARGEM * min(altura, largura)))
     # so encolhe: nunca passa do retangulo desenhado
     return (max(x0, x0 + ex0 - margem), max(y0, y0 + ey0 - margem),
-            min(x1, x0 + ex1 + margem), min(y1, y0 + ey1 + margem))
+            min(x1, x0 + ex1 + margem), min(y1, y0 + ey1 + margem)), maior_mancha
 
 
-def _justa_e_fracao(lab: np.ndarray, caixa) -> tuple[tuple, float] | None:
-    """(retângulo justo em frações, fração de papel) ou None (só papel ou
-    retângulo vazio). Quando o ajuste não muda nenhum ponto, devolve a
-    PRÓPRIA caixa (as mesmas frações, sem arredondar)."""
+def _justa_e_fracao(lab: np.ndarray, caixa) -> tuple[tuple, float, bool] | None:
+    """(retângulo justo em frações, fração de papel, é figura) ou None (só
+    papel ou retângulo vazio). Quando o ajuste não muda nenhum ponto, ou o
+    pedaço é de TEXTO (não é figura: nada a ajustar), devolve a PRÓPRIA caixa
+    (as mesmas frações, sem arredondar) e fração 0."""
     altura, largura = lab.shape[:2]
     x0, y0, x1, y1 = _em_pontos(caixa, altura, largura)
     if x1 - x0 < 2 or y1 - y0 < 2:
         return None
-    justa = _caixa_justa_em_pontos(lab, x0, y0, x1, y1)
-    if justa is None:
+    achado = _caixa_justa_em_pontos(lab, x0, y0, x1, y1)
+    if achado is None:
         return None
-    if justa == (x0, y0, x1, y1):
-        return tuple(float(v) for v in caixa), 0.0
+    justa, maior_mancha = achado
+    figura = maior_mancha >= MANCHA_DA_FIGURA
+    if not figura or justa == (x0, y0, x1, y1):
+        return tuple(float(v) for v in caixa), 0.0, figura
     jx0, jy0, jx1, jy1 = justa
     fracao = 1.0 - ((jx1 - jx0) * (jy1 - jy0)) / float((x1 - x0) * (y1 - y0))
     return (float(jx0 / largura), float(jy0 / altura), float(jx1 / largura),
-            float(jy1 / altura)), float(fracao)
+            float(jy1 / altura)), float(fracao), True
 
 
 def caixa_justa(img: np.ndarray, caixa) -> tuple[float, float, float, float] | None:
@@ -239,6 +291,14 @@ def caixa_justa(img: np.ndarray, caixa) -> tuple[float, float, float, float] | N
     return None if resultado is None else resultado[0]
 
 
+def parece_figura(img: np.ndarray, caixa) -> bool | None:
+    """O retângulo `caixa` está em volta de uma figura (gravura, foto,
+    pintura, iluminura), e não de texto? None se dentro só há papel. Ver
+    MANCHA_DA_FIGURA (a medida e os números). Mesma `img` de caixa_justa."""
+    resultado = _justa_e_fracao(_lab(img), caixa)
+    return None if resultado is None else resultado[2]
+
+
 def medir_folga(img: np.ndarray, caixa) -> Folga | None:
     """Quanto do retângulo é papel em volta da figura (a medida do aviso).
     None se dentro só há papel (não há figura para ajustar). Mesma `img` de
@@ -246,8 +306,9 @@ def medir_folga(img: np.ndarray, caixa) -> Folga | None:
     resultado = _justa_e_fracao(_lab(img), caixa)
     if resultado is None:
         return None
-    justa, fracao = resultado
-    return Folga(tuple(float(v) for v in caixa), justa, fracao, bool(fracao >= PAPEL_DEMAIS))
+    justa, fracao, figura = resultado
+    return Folga(tuple(float(v) for v in caixa), justa, fracao,
+                 bool(fracao >= PAPEL_DEMAIS), figura)
 
 
 def pedacos_com_outro_filtro(selecao: Selecao, filtro_da_pagina: str) -> list[int]:
@@ -267,9 +328,10 @@ def _caixa_da_regiao(regiao) -> tuple[float, float, float, float]:
 
 def avaliar_os_pedacos(img: np.ndarray, selecao: Selecao,
                        filtro_da_pagina: str) -> dict[int, Folga]:
-    """A folga de cada pedaço com outro filtro ({índice: Folga}); os que só
-    têm papel dentro ficam de fora. É o que a aba Marcar usa para decidir o
-    aviso (algum .muito) e se o botão faz alguma coisa (algum .muda)."""
+    """A folga de cada pedaço com outro filtro ({índice: Folga}, na ordem em
+    que foram desenhados); os que só têm papel dentro ficam de fora. Os de
+    texto entram com .figura falso (e nada a ajustar). É o que a aba Marcar
+    usa para escolher o pedaço da vez (pedaco_da_vez), o aviso e o botão."""
     indices = pedacos_com_outro_filtro(selecao, filtro_da_pagina)
     if not indices:
         return {}
@@ -279,23 +341,39 @@ def avaliar_os_pedacos(img: np.ndarray, selecao: Selecao,
         caixa = _caixa_da_regiao(selecao.regioes[i])
         resultado = _justa_e_fracao(lab, caixa)
         if resultado is not None:
-            justa, fracao = resultado
-            folgas[i] = Folga(caixa, justa, fracao, bool(fracao >= PAPEL_DEMAIS))
+            justa, fracao, figura = resultado
+            folgas[i] = Folga(caixa, justa, fracao, bool(fracao >= PAPEL_DEMAIS), figura)
     return folgas
+
+
+def pedaco_da_vez(folgas: dict[int, Folga]) -> int | None:
+    """O pedaço de que a aba Marcar fala e que o botão ajusta: o ÚLTIMO
+    desenhado em volta de uma figura que ainda tem o que ajustar; se nenhum
+    tem, o último de figura (para a tela dizer "já está justo"). None se não
+    há pedaço de figura (só de texto, ou nenhum). Um clique ajusta só ele; se
+    houver outro pedaço de figura com folga, ele vira o da vez no clique
+    seguinte. Pedaço de texto nunca é o da vez."""
+    de_figura = [i for i, f in folgas.items() if f.figura]
+    if not de_figura:
+        return None
+    com_o_que_ajustar = [i for i in de_figura if folgas[i].muda]
+    return max(com_o_que_ajustar) if com_o_que_ajustar else max(de_figura)
 
 
 def ajustar_os_pedacos(img: np.ndarray, selecao: Selecao,
                        filtro_da_pagina: str) -> tuple[Selecao, int]:
-    """Uma CÓPIA da seleção com cada pedaço com outro filtro encolhido até a
-    figura, e quantos mudaram. A seleção de entrada não é tocada (quem chama
-    guarda a de antes para o desfazer). O resto - ordem, tipo, filtro,
-    origem - fica igual; só os dois cantos do retângulo mudam."""
+    """Uma CÓPIA da seleção com o pedaço da vez (pedaco_da_vez: o último
+    desenhado em volta de uma figura) encolhido até a figura, e quantos
+    mudaram (0 ou 1). Só ele: os outros pedaços - o de texto, sobretudo -
+    ficam como estão. A seleção de entrada não é tocada (quem chama guarda a
+    de antes para o desfazer). O resto - ordem, tipo, filtro, origem - fica
+    igual; só os dois cantos do retângulo mudam. Arriscado: voltar a ajustar
+    todos de uma vez (o pedaço de texto era cortado junto)."""
     nova = copy.deepcopy(selecao)
-    mudaram = 0
-    for i, folga in avaliar_os_pedacos(img, selecao, filtro_da_pagina).items():
-        if not folga.muda:
-            continue
-        x0, y0, x1, y1 = folga.justa
-        nova.regioes[i].pontos = [(x0, y0), (x1, y1)]
-        mudaram += 1
-    return nova, mudaram
+    folgas = avaliar_os_pedacos(img, selecao, filtro_da_pagina)
+    i = pedaco_da_vez(folgas)
+    if i is None or not folgas[i].muda:
+        return nova, 0
+    x0, y0, x1, y1 = folgas[i].justa
+    nova.regioes[i].pontos = [(x0, y0), (x1, y1)]
+    return nova, 1
