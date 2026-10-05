@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência 15</title>
+<style>
+  :root { --fundo:#f6f5f2; --cartao:#ffffff; --texto:#1f1f1f; --fraco:#666; --borda:#ddd; --azul:#2f6fe0; --azul-claro:#e6eefc; --laranja:#f0a55c; }
+  @media (prefers-color-scheme: dark) { :root { --fundo:#1e1f22; --cartao:#26282c; --texto:#eee; --fraco:#aaa; --borda:#3a3c41; --azul-claro:#22324f; } }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:16px/1.5 "Segoe UI", system-ui, sans-serif; }
+  main { max-width:1000px; margin:0 auto; padding:24px 16px 80px; }
+  h1 { font-size:24px; margin:0 0 8px; }
+  .topo { color:var(--fraco); margin-bottom:24px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:18px; margin:18px 0; }
+  .cartao h2 { font-size:18px; margin:0 0 8px; }
+  .cod { color:var(--azul); font-weight:600; margin-right:6px; }
+  figure { margin:12px 0; }
+  figure img { width:100%; height:auto; border:1px solid var(--borda); border-radius:6px; }
+  figcaption { font-size:14px; color:var(--fraco); margin-top:4px; }
+  .duas { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:700px) { .duas { grid-template-columns:1fr; } }
+  .rec { background:var(--azul-claro); border-radius:6px; padding:8px 10px; margin:10px 0; font-size:15px; }
+  .ref { font-size:12px; color:var(--fraco); margin-top:6px; }
+  .ops { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+  .ops button { font:inherit; padding:7px 12px; border-radius:6px; border:1px solid var(--borda); background:var(--cartao); color:var(--texto); cursor:pointer; }
+  .ops button.marcado { background:var(--azul); color:#fff; border-color:var(--azul); }
+  textarea { width:100%; box-sizing:border-box; min-height:44px; font:inherit; padding:6px; border-radius:6px; border:1px solid var(--borda); background:var(--cartao); color:var(--texto); }
+  .barra { position:fixed; left:0; right:0; bottom:0; background:var(--cartao); border-top:1px solid var(--borda); padding:10px 16px; display:flex; gap:12px; align-items:center; justify-content:center; }
+  .barra button { font:inherit; padding:9px 18px; border-radius:8px; border:0; background:var(--azul); color:#fff; cursor:pointer; }
+  #aviso { color:var(--fraco); font-size:14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Conferência 15 — a aba Marcar com o botão novo</h1>
+  <p class="topo">Estes três consertos você já aprovou: o "Ajustar o pedaço à figura" (conferência 13) e o "Tirar o fundo" obedecendo ao pedaço (conferência 14). Como mexem na tela, eu mostro antes de juntar ao programa. As imagens são do programa de verdade, na tela do Kaique (1280×657). A aparência final da aba Marcar ainda vai ser decidida com o agente de layout.</p>
+
+  <div class="cartao" data-cod="M1" data-titulo="A aba Marcar com a linha nova">
+    <h2><span class="cod">M1</span>A aba Marcar com a linha "Pedaço:"</h2>
+    <p>Quando há um pedaço com folga em volta de uma figura, aparece embaixo a linha <b>"Pedaço:"</b>, com o botão <b>"Ajustar o pedaço à figura"</b> e um aviso curto: "Sobrou papel em volta da figura (17%): pode sair uma faixa." Agora todos os botões aparecem inteiros. Para caber, a área da página fica um pouco menor enquanto a linha aparece.</p>
+    <div class="duas">
+      <figure><img src="conferencia-15-2026-10-05/1280x657-a-sem-pedaco.jpg" alt="Aba Marcar sem pedaço"><figcaption>Sem pedaço: como era.</figcaption></figure>
+      <figure><img src="conferencia-15-2026-10-05/1280x657-b-pintura-com-folga.jpg" alt="Aba Marcar com a linha Pedaço"><figcaption>Pedaço com folga em volta da pintura: a linha nova aparece.</figcaption></figure>
+    </div>
+    <div class="rec">Ressalva: na tela do Kaique, a área da página já era pequena, e encolhe mais um pouco quando a linha aparece. Isso se resolve no layout novo.</div>
+    <div class="ops" data-tipo="escolha"><button>Bom</button><button>Ruim</button><button>Bom por enquanto</button></div>
+    <textarea placeholder="Comentário (se quiser)"></textarea>
+  </div>
+
+  <div class="cartao" data-cod="M2" data-titulo="Pedaço de texto">
+    <h2><span class="cod">M2</span>Pedaço de texto: o botão fica apagado, com o porquê</h2>
+    <p>Antes, num pedaço de texto, o botão cortava linhas e palavras. Agora o programa percebe que é texto: <b>não avisa</b>, e o botão fica <b>apagado com a frase</b> "Pedaço de texto: o ajuste é só para figura." O botão também passou a ajustar <b>só um pedaço por clique</b> (o último desenhado em volta de uma figura), e não todos de uma vez.</p>
+    <figure><img src="conferencia-15-2026-10-05/1280x657-c-pedaco-de-texto.jpg" alt="Pedaço de texto com o botão apagado"><figcaption>O bloco de texto de cima marcado: o botão apagado, com a explicação ao lado.</figcaption></figure>
+    <div class="rec">Ressalva: separar figura de texto é uma medida, não certeza. Nas 14 páginas de teste ela errou 2 vezes, as duas sem estrago (no pior caso o botão fica apagado quando poderia ajudar).</div>
+    <div class="ops" data-tipo="escolha"><button>Bom</button><button>Ruim</button><button>Bom por enquanto</button></div>
+    <textarea placeholder="Comentário (se quiser)"></textarea>
+  </div>
+
+  <div class="cartao" data-cod="F1" data-titulo="Tirar o fundo com pedaço">
+    <h2><span class="cod">F1</span>"Tirar o fundo" obedecendo ao pedaço (Palatino 9)</h2>
+    <p>Como você pediu, um pedaço marcado numa página com o fundo tirado agora sai no filtro escolhido para ele. O pedaço é tirado da página <b>como veio do scanner</b>: por isso, um pedaço em <b>Original</b> mostra o papel amarelado de verdade (a capitular Q, à direita), e não o branco do fundo tirado. Um pedaço em <b>Preto e branco</b> sai em preto e branco.</p>
+    <div class="duas">
+      <figure><img src="conferencia-15-2026-10-05/fundo-palatino_p009-figura-em-original.jpg" alt="Palatino 9 com a capitular em Original"><figcaption>Esquerda: como era (pedaço ignorado). Direita: a capitular em Original, com o papel de verdade.</figcaption></figure>
+      <figure><img src="conferencia-15-2026-10-05/fundo-palatino_p009-texto-em-pb.jpg" alt="Palatino 9 com um pedaço de texto em preto e branco"><figcaption>Um pedaço de texto em Preto e branco na mesma página.</figcaption></figure>
+    </div>
+    <div class="rec">É o "do mesmo jeito" que você pediu. Se o papel amarelado dentro do pedaço incomodar, dá para usar outro filtro no pedaço (Melhorar ou Mágico pro clareiam o papel).</div>
+    <div class="ops" data-tipo="escolha"><button>Bom</button><button>Ruim</button><button>Bom por enquanto</button></div>
+    <textarea placeholder="Comentário (se quiser)"></textarea>
+    <p class="ref">Referência: ramo pedaco-e-salvo-2-2026-10-05 (commits 1088e6b, 479d4ad, 50b9319); relatório em .claude/worktrees/consertos3/relatorios/conferir/pedaco-em-original-2026-10-05/consertos-3/.</p>
+  </div>
+</main>
+<div class="barra"><span id="aviso"></span><button id="copiar">Copiar respostas</button></div>
+<script>
+(function () {
+  var CHAVE = "conferir-2026-10-05-o";
+  var estado = {};
+  try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch (e) { estado = {}; }
+  function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {} }
+  var cartoes = document.querySelectorAll(".cartao");
+  cartoes.forEach(function (c) {
+    var cod = c.getAttribute("data-cod");
+    var e = estado[cod] || {};
+    var botoes = c.querySelectorAll(".ops button");
+    var area = c.querySelector("textarea");
+    botoes.forEach(function (b) {
+      if (e.r === b.textContent) b.classList.add("marcado");
+      b.addEventListener("click", function () {
+        botoes.forEach(function (x) { x.classList.remove("marcado"); });
+        b.classList.add("marcado");
+        estado[cod] = estado[cod] || {};
+        estado[cod].r = b.textContent;
+        salvar(); contar();
+      });
+    });
+    if (e.c) area.value = e.c;
+    area.addEventListener("input", function () {
+      estado[cod] = estado[cod] || {};
+      estado[cod].c = area.value;
+      salvar();
+    });
+  });
+  function contar() {
+    var n = 0;
+    cartoes.forEach(function (c) { var e = estado[c.getAttribute("data-cod")]; if (e && e.r) n++; });
+    document.getElementById("aviso").textContent = n + " de " + cartoes.length + " respondidos";
+  }
+  contar();
+  document.getElementById("copiar").addEventListener("click", function () {
+    var linhas = ["Conferência 15 de 05/10 (Editor de Impressão):"];
+    var falta = [];
+    cartoes.forEach(function (c) {
+      var cod = c.getAttribute("data-cod"), tit = c.getAttribute("data-titulo");
+      var e = estado[cod] || {};
+      if (!e.r) falta.push(cod);
+      var l = cod + " " + tit + ": " + (e.r || "sem marca");
+      if (e.c && e.c.trim()) l += " - " + e.c.trim();
+      linhas.push(l);
+    });
+    if (falta.length) linhas.push("(não respondidos: " + falta.join(", ") + ")");
+    var texto = linhas.join("\n");
+    var feito = function () { document.getElementById("aviso").textContent = "Copiado. Cole no chat."; };
+    if (navigator.clipboard) navigator.clipboard.writeText(texto).then(feito, function () { prompt("Copie o texto:", texto); });
+    else prompt("Copie o texto:", texto);
+  });
+})();
+</script>
+</body>
+</html>
