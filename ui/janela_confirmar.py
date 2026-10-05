@@ -33,6 +33,50 @@ from ui.widgets.destino import SeletorDestino
 LARANJA, LARANJA_FUNDO = "#ef9f27", "#faeeda"
 
 
+def pasta_e_nome_do_destino(projeto, nome_sugerido: str) -> tuple[Path | None, str]:
+    """A pasta e o nome com que a janela abre, a partir do que o projeto guardou.
+
+    `projeto.caminho_saida` guarda o caminho do ARQUIVO PDF (gravado em
+    JanelaPrincipal.processar, ou pelo menu "Nome do arquivo..."), mas o
+    seletor de destino (SeletorDestino.definir) espera a PASTA. Ate 05/10/2026
+    o caminho do arquivo ia direto para la: gerar o mesmo livro de novo
+    mostrava "Esse caminho não é uma pasta." com "Processar" apagado (Lista
+    de bugs, 02/10); e se o PDF nao existia (processamento cancelado), a
+    verificacao da pasta (configuracoes.pode_gravar_em) CRIAVA uma pasta com o
+    nome do PDF. Agora:
+
+        nada guardado               -> (None, nome sugerido): a pasta
+                                       sugerida do seletor, como sempre
+        guardou uma pasta que existe -> (essa pasta, nome sugerido) - so por
+                                       garantia, para projeto antigo
+        guardou o arquivo            -> (a pasta dele, o nome dele): o mesmo
+                                       destino da vez anterior. Se o PDF
+                                       ainda esta la, a faixa "Ja existe..."
+                                       aparece e a caixa "substituir / salvar
+                                       como (2)" decide, como antes
+        a pasta do arquivo sumiu     -> (None, o nome dele): a pasta sugerida,
+                                       como configuracoes.pasta_de_saida_
+                                       sugerida faz com a ultima pasta que
+                                       sumiu (pendrive que saiu); a pasta
+                                       sumida nao e recriada
+
+    Seguro mudar: o que fazer quando a pasta sumiu. Arriscado: voltar a passar
+    o caminho do arquivo ao seletor (o bug acima), ou trocar o nome guardado
+    pelo sugerido (o nome escolhido pelo menu "Nome do arquivo..." voltaria a
+    ser ignorado). Teste: tests/test_gerar_o_mesmo_livro_de_novo.py.
+    """
+    guardado = (getattr(projeto, "caminho_saida", "") or "").strip()
+    if not guardado:
+        return None, nome_sugerido
+    caminho = Path(guardado)
+    if caminho.is_dir():
+        return caminho, nome_sugerido
+    nome = caminho.name or nome_sugerido
+    if caminho.parent.is_dir():
+        return caminho.parent, nome
+    return None, nome
+
+
 class JanelaConfirmar(QDialog):
     """Pasta, nome e os avisos. Devolve o caminho escolhido, ou None."""
 
@@ -54,7 +98,7 @@ class JanelaConfirmar(QDialog):
         camadas.addWidget(titulo)
 
         self.destino = SeletorDestino()
-        self.destino.definir(projeto.caminho_saida or None, nome_sugerido)
+        self.destino.definir(*pasta_e_nome_do_destino(projeto, nome_sugerido))
         self.destino.alterado.connect(self._reavaliar)
         camadas.addWidget(self.destino)
 
