@@ -181,13 +181,13 @@ def _caixa_justa_em_pontos(lab: np.ndarray, x0: int, y0: int, x1: int, y1: int
     # 2. o que esta perto vira um grupo so (ver JUNTAR)...
     lado = max(3, int(round(JUNTAR * min(altura, largura))) | 1)
     juntos = cv2.dilate(figura, cv2.getStructuringElement(cv2.MORPH_RECT, (lado, lado)))
-    quantos, _rotulos, grupos, _ = cv2.connectedComponentsWithStats(juntos, connectivity=8)
+    quantos, rotulos_dos_grupos, grupos, _ = cv2.connectedComponentsWithStats(juntos, connectivity=8)
     # ...e o dilatar nao pode alargar a caixa: cada grupo vale o que tem de
     # figura de verdade dentro dele (a caixa da figura, sem o dilatado)
     caixas = []
     for g in range(1, quantos):
         gx, gy, gl, ga = (int(v) for v in grupos[g, :4])
-        dentro = figura[gy:gy + ga, gx:gx + gl] & (_rotulos[gy:gy + ga, gx:gx + gl] == g)
+        dentro = figura[gy:gy + ga, gx:gx + gl] & (rotulos_dos_grupos[gy:gy + ga, gx:gx + gl] == g)
         ys, xs = np.nonzero(dentro)
         if xs.size:
             caixas.append((gx + xs.min(), gy + ys.min(), gx + xs.max() + 1, gy + ys.max() + 1))
