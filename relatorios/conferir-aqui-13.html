@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 13 - Editor de Impressão</title>
+<!--
+  Decima terceira conferencia do Samuel (05/10/2026). Mostra o conserto do "so neste pedaco" no
+  Preto e branco (P6 da conferencia 11, aprovado "consertar ja"), como a gerente prometeu: "antes de
+  juntar ao programa, eu te mostro a Escola 7 consertada para voce conferir".
+  Fonte: relatorios/conferir/so-neste-pedaco-2026-10-05/relatorio-so-neste-pedaco-e-cancelar.md e as
+  imagens dessa pasta (feitas por scripts/gerar_antes_depois.py: antes = filtro do 044a7c1, depois =
+  commit 60d8c58). O conserto do cancelar (commit 880bf70) nao tem pergunta aqui: o verificador confere
+  na janela de verdade.
+  Mesmo formato do conferir-aqui-11.html (cartoes, escolha, comentario, "Copiar respostas"); o tipo
+  "voto" (Bom / Ruim / Nao sei) ganhou a linha de pergunta (k.p). Marcacoes guardadas no navegador com
+  a chave NOVA "conferir-2026-10-05-m".
+  Imagens: relatorios/conferencia-13-2026-10-05/ (copias das da pasta de origem; as grandes reduzidas
+  a 1600 de largura; os detalhes em tamanho cheio; as da tentativa descartada renomeadas "descartada-").
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .muda { margin:0 0 10px; background:#eef7ee; border-radius:6px; padding:6px 10px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .ref { margin:6px 0 8px; font-size:14px; color:#444; border-left:3px solid #bbb; padding:2px 10px; }
+  .cartao .ref small { display:block; font-size:12px; color:#666; font-family:Consolas, monospace; word-break:break-all; margin-top:2px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao figure { margin:0 0 14px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .cartao figcaption { font-size:15px; color:#333; margin:4px 2px 0; }
+  .cartao figcaption .sim { background:#ffe0b2; color:#7a3d00; font-weight:600; padding:0 5px; border-radius:4px; }
+  .cartao table { border-collapse:collapse; width:100%; margin:6px 0 12px; font-size:15px; }
+  .cartao th, .cartao td { border:1px solid #ccc; padding:5px 8px; text-align:left; vertical-align:top; }
+  .cartao th { background:#f1f1f1; }
+  .cartao td.novo { background:#fff4e5; }
+  .cartao ul { margin:4px 0 10px; padding-left:22px; }
+  .cartao svg { display:block; max-width:100%; height:auto; margin:4px auto 12px; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; color:#222; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 13 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>Para que serve:</b> este formulário mostra o conserto do "só neste pedaço" no Preto e branco, que você aprovou na conferência 11 (P6), como prometido antes de juntar ao programa. O conserto do "substituir e cancelar" também está pronto e está sendo conferido na janela de verdade.</p>
+    <p><b>O que você vê nas imagens:</b> o programa de verdade, já consertado, sem simulação. Em cada imagem há três colunas: <b>Original</b> (com o pedaço marcado em laranja, como o Kaique desenharia na aba Marcar, escolhendo "só neste pedaço: Original"), <b>Preto e branco: ANTES</b> (o programa de antes do conserto) e <b>Preto e branco: DEPOIS</b> (o programa consertado). Nada foi juntado ao programa do Kaique ainda.</p>
+    <p><b>As outras páginas não mudaram:</b> as 32 páginas de teste de sempre, sem pedaço marcado, foram feitas de novo em Preto e branco, Melhorar e Mágico pro: as 96 saíram idênticas, ponto por ponto, às de antes do conserto.</p>
+    <p><b>Como responder:</b> cada pergunta tem: o que é; o que muda para o Kaique; as fotos (antes e depois); a recomendação, quando há, com o porquê; e a <b>referência</b> (de onde vem a informação, com o caminho do arquivo em letra pequena, para o Claude achar). Escolha uma opção e, se quiser, escreva um comentário. Clique numa imagem para ver em tamanho cheio (clique de novo para fechar). As marcações ficam guardadas neste computador; no fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que e (pode ter <b>), m: o que muda para o Kaique (opcional),
+//   a: atencao (opcional), i: [[imagem, legenda], ...], x: html a mais (tabela; opcional),
+//   s: recomendacao e o porque (opcional), r: referencia (html; o caminho vai em <small>),
+//   tipo: "voto" | "escolha" | "entendi", p: pergunta (no "voto" e opcional) e op: [opcoes] (so no "escolha")}
+const P = "conferencia-13-2026-10-05/";
+const ORIGEM = "relatorios/conferir/so-neste-pedaco-2026-10-05/";
+
+const NUMEROS = `
+<table>
+ <tr><th></th><th>Escola de Jesus 7</th><th>Opus Majus 20</th></tr>
+ <tr><td>parte do pedaço igual ao original, <b>antes</b></td><td>0%</td><td>0,2%</td></tr>
+ <tr><td>parte do pedaço igual ao original, <b>depois</b></td><td>99,9%</td><td>99,9%</td></tr>
+ <tr><td>pontos diferentes <b>fora</b> do pedaço</td><td>0</td><td>0</td></tr>
+ <tr><td>tempo para fazer a página, antes</td><td>1,8 e 1,4 segundo</td><td>2,2 e 1,7 segundos</td></tr>
+ <tr><td>tempo para fazer a página, depois</td><td>2,1 e 2,1 segundos</td><td>2,1 e 2,1 segundos</td></tr>
+</table>
+<p style="font-size:15px;margin:0 0 10px">O tempo foi medido com outros programas rodando no computador, por isso oscila. A página com pedaço em Original fica um pouco mais lenta (cerca de meio segundo), porque passa a ser gravada em cor; as páginas sem pedaço levam o mesmo tempo de antes.</p>`;
+
+const SECOES = [
+ { titulo:"1. O conserto, nas duas páginas de teste",
+   sub:"Nas duas, o pedaço foi marcado como o Kaique faria: um retângulo em volta da figura, \"só neste pedaço: Original\", numa página em Preto e branco.",
+   cartoes:[
+    {c:"S1", t:"Escola de Jesus 7: a pintura do Paraíso", tipo:"voto",
+     i:[["escola7-pagina.jpg", "A página inteira. Na primeira coluna, em laranja, o pedaço marcado em volta da pintura. <b>Antes</b>, o pedaço era ignorado e a pintura saía em tons de cinza. <b>Depois</b>, a pintura sai inteira como no original, com a cor; o texto em volta continua em preto e branco, igual ao de antes."],
+        ["escola7-pedaco.jpg", "A pintura de perto. Depois do conserto, o céu, as nuvens, as figuras e o leão saem como no original."],
+        ["escola7-detalhe1.jpg", "<b class='onde'>O céu e as nuvens</b>, quase em tamanho real. Antes: cinza, com uma mancha branca embaixo, à esquerda. Depois: como no original, limpos, sem os cinzas e as manchas da simulação da conferência 11."],
+        ["escola7-detalhe2.jpg", "<b class='onde'>O leão e o pé da pintura</b>: as flores, a grama e a juba voltam com a cor do original."]],
+     o:`Na conferência 11 (P6) você escolheu <b>consertar já</b>, do jeito completo: a área marcada obedece <b>inteira</b> ao filtro escolhido para ela, inclusive as partes claras (céu, nuvens), para não sair cinza e manchada como na simulação. Foi o que se fez. Esta é a mesma página da simulação, agora com o programa consertado.`,
+     m:`O Kaique marca a pintura na aba Marcar, escolhe "Original" em "só neste pedaço", e ela sai com a cor numa página em Preto e branco. Antes, o programa ignorava o pedaço sem avisar. Só mudam as páginas em que ele marcou um pedaço.`,
+     x: NUMEROS,
+     a:`Repare na beirada de cima e da direita da pintura: há uma <b>faixa creme fina</b>, que é o papel que ficou dentro do retângulo marcado. Ela tem uma pergunta só para ela, a <b>S3</b>, abaixo. Aqui, responda só se a pintura ficou como você queria.`,
+     r:`De onde vem: o relatório do implementador de 05/10 (conserto no commit 60d8c58). As imagens são o programa de verdade: "antes" com o filtro de antes do conserto (commit 044a7c1), "depois" com o consertado; os números vêm da mesma rodada.<small>${ORIGEM}relatorio-so-neste-pedaco-e-cancelar.md (seção 2) · ${ORIGEM}escola7-*.jpg e medidas.json · ${ORIGEM}scripts/gerar_antes_depois.py · core/filtros.py (aplicar_filtro_com_selecao, ramo do Preto e branco)</small>`,
+     p:"A pintura ficou como você queria?"},
+
+    {c:"S2", t:"Opus Majus 20: a foto da estátua", tipo:"voto",
+     i:[["opus20-pagina.jpg", "A página inteira. O pedaço (em laranja) pega a foto toda. <b>Antes</b>, o pedaço era ignorado: o rosto e o peito da estátua saíam <b>estourados de branco</b>, e a parede clara virava manchas brancas recortadas. <b>Depois</b>, a foto sai como veio no original; a legenda embaixo continua em preto e branco."],
+        ["opus20-pedaco.jpg", "A foto de perto."],
+        ["opus20-detalhe1.jpg", "<b class='onde'>O rosto e o peito da estátua</b>. Antes: o rosto quase sumia no branco. Depois: o rosto volta a aparecer, como no original."],
+        ["opus20-detalhe2.jpg", "<b class='onde'>A parede clara e o pé da foto</b>. Antes: recortes brancos no meio da parede. Depois: a parede inteira, como no original."]],
+     o:`A mesma coisa na segunda página de teste: uma foto (não uma pintura colorida), quase sem cor no original, num tom creme. Aqui o "antes" era pior que cinza: o Preto e branco tomava as partes claras da estátua e da parede por papel e as pintava de branco.`,
+     m:`O Kaique marca a foto, escolhe "Original" em "só neste pedaço", e ela sai como veio, sem o rosto estourado. Só muda esta página; as outras do livro não.`,
+     r:`De onde vem: o mesmo relatório e a mesma rodada da S1 (números na tabela da S1).<small>${ORIGEM}relatorio-so-neste-pedaco-e-cancelar.md (seção 2, "Opinião do implementador") · ${ORIGEM}opus20-*.jpg e medidas.json</small>`,
+     p:"A foto ficou como você queria?"},
+   ]},
+
+ { titulo:"2. Uma decisão sobre o conserto",
+   cartoes:[
+    {c:"S3", t:"A faixa creme dentro do pedaço", tipo:"escolha",
+     i:[["escola7-detalhe3.jpg", "Escola 7, <b class='onde'>a beirada de cima, à direita, da pintura</b>, ampliada. Depois do conserto: em cima e à direita da pintura, uma <b>faixa creme fina</b>. É o papel do livro que ficou dentro do retângulo que o Kaique desenhou (no original ele é creme). Fora do retângulo, o papel continua branco, e a borda é reta, exatamente onde foi desenhada."],
+        ["descartada-opus20-pagina.jpg", "A <b>tentativa descartada</b>: a terceira coluna (\"DEPOIS\") é a primeira tentativa de conserto, em que o papel dentro do pedaço seguia a página (ia a branco). Na Opus 20, a parede clara e partes da estátua viraram <b class='onde'>manchas brancas recortadas</b>, quase como no \"antes\"."],
+        ["descartada-escola7-pedaco.jpg", "A mesma tentativa descartada na Escola 7 (terceira coluna): aqui ela ficava boa, sem a faixa creme. Mas a mesma regra estragou a foto da Opus 20 (imagem de cima); por isso ela foi descartada."]],
+     o:`Como o pedaço agora obedece <b>inteiro</b> ao filtro escolhido (foi o que você aprovou), o papel que fica dentro do retângulo também sai como no original, creme. A faixa é <b>fina se o Kaique desenha justo</b> em volta da figura, e <b>maior se ele deixar folga</b>.<br><br>
+        <b>Por que não deixar esse papel branco?</b> Foi a primeira tentativa: o papel de dentro do pedaço seguia a página. Ela foi descartada porque o programa confunde o papel com as partes claras da figura: na Opus 20, a parede clara virou manchas brancas recortadas (segunda imagem). É o mesmo defeito que o conserto veio tirar.`,
+     m:`Com (a), nada muda: o Kaique aprende a desenhar o retângulo justo em volta da figura. Com (b), a aba Marcar avisa quando o pedaço pega muito papel em volta da figura, para ele ajustar. Com (c), um botão "ajustar o pedaço à figura" encolhe o retângulo sozinho até a borda da figura.`,
+     a:`Pela sua regra ("esse programa deve presar por dar opções"), <b>(b) e (c) podem ser feitas juntas</b>: o aviso diz que há papel demais, e o botão resolve com um clique.`,
+     s:`Recomendação da gerente: <b>(b) e (c) para a Lista de espera, e por enquanto (a)</b>. Por quê: assim o conserto, que já está pronto e conferido, entra no programa sem esperar; o aviso e o botão mexem na tela da aba Marcar e precisariam de outra rodada de conferência com você.`,
+     r:`De onde vem: o relatório do implementador ("O que pode incomodar é a faixa creme [...] Isso é consequência direta de 'obedece inteira'") e a pasta da tentativa descartada. A regra antiga "o papel de dentro da região segue a página" (07/08) deixa de valer no Preto e branco; no Melhorar e no Mágico pro continua igual.<small>${ORIGEM}relatorio-so-neste-pedaco-e-cancelar.md ("As imagens", "Opinião do implementador", "Ressalvas") · ${ORIGEM}escola7-detalhe3.jpg · ${ORIGEM}descartado/tentativa-margem-ligada-opus20-pagina.jpg e tentativa-margem-ligada-escola7-pedaco.jpg</small>`,
+     p:"O que fazer com a faixa creme?",
+     op:["(a) Fica assim, o Kaique desenha justo",
+         "(b) Fica assim, e o programa avisa na aba Marcar quando o pedaço pega muito papel em volta",
+         "(c) Fica assim, e um botão \"ajustar o pedaço à figura\" encolhe o retângulo até a figura",
+         "(b) e (c) juntas",
+         "(a) por enquanto, e (b) e (c) para a Lista de espera (recomendado)",
+         "(d) Quero outra solução (escreva no comentário)"]},
+   ]},
+
+ { titulo:"3. Um aviso",
+   cartoes:[
+    {c:"S4", t:"Página em Original com um pedaço em outro filtro: também é ignorado", tipo:"escolha", i:[],
+     o:`Achado ao ler o código, durante o conserto: numa página em <b>Original</b>, se o Kaique marcar um pedaço com outro filtro (por exemplo, "só neste pedaço: Preto e branco" num trecho de texto), o programa <b>também ignora o pedaço</b>, sem avisar, como fazia no Preto e branco. O mesmo acontece numa página em "Tirar o fundo". Não foi consertado agora porque não era o que você pediu na P6.`,
+     m:`Com "Sim", o pedaço passa a valer também numa página em Original: só a área marcada sai no filtro escolhido, e o resto da página continua como veio. Só mudam as páginas que têm pedaço marcado. Com "Depois", vai para a Lista de bugs e, por enquanto, nessas páginas o pedaço continua sem efeito.`,
+     a:`No código há uma nota de uma decisão sua de 29/09: a página em Original (e em "Tirar o fundo") sai como veio, "nunca com outro filtro por cima". Essa regra foi pensada para a página inteira; o pedaço é o Kaique pedindo, de propósito, outro filtro numa parte. Se você quiser que a regra de 29/09 valha também para os pedaços, escolha "Depois" e diga no comentário.`,
+     r:`De onde vem: as ressalvas do relatório do implementador ("Numa página em Original, o 'só neste pedaço' continua ignorado. Não foi pedido aqui e vai para a Lista de bugs"), conferido no código.<small>${ORIGEM}relatorio-so-neste-pedaco-e-cancelar.md ("Ressalvas") · core/filtros.py, aplicar_filtro_com_selecao: "if filtro in (ORIGINAL, TIRAR_FUNDO): return img, False" (l. ~3504), antes de olhar o pedaço</small>`,
+     p:"Consertar também?",
+     op:["Sim, do mesmo jeito", "Depois"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-m";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = (k.p ? `<div class="pergunta">${k.p}</div>` : "") + `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>O que é:</b> ${k.o}</p>` : "") +
+      (k.m ? `<p class="muda"><b>O que muda para o Kaique:</b> ${k.m}</p>` : "") +
+      (k.i||[]).map(([src, leg]) => `<figure><img loading="lazy" src="${P+src}" alt="${k.t}">${leg ? `<figcaption>${leg}</figcaption>` : ""}</figure>`).join("") +
+      (k.x || "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      (k.r ? `<p class="ref"><b>Referência.</b> ${k.r}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 13 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
