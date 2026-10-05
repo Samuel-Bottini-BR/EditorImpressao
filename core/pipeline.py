@@ -999,12 +999,134 @@ def renderizar_pagina_para_recorte(
 # Fase 3: processar o livro inteiro
 # ---------------------------------------------------------------------------
 
+# Quantas vezes a troca do arquivo a parte pelo PDF final e tentada, e quanto
+# se espera entre uma e outra, antes de concluir que o PDF antigo esta aberto
+# em outro programa (ver _trocar_pelo_final). O antivirus e o indexador do
+# Windows seguram um arquivo recem-fechado por uma fracao de segundo; o leitor
+# de PDF o segura enquanto estiver aberto. Seguro mudar: os dois numeros (mais
+# tentativas so atrasam o aviso). Os testes poem a espera em zero.
+TENTATIVAS_DA_TROCA = 5
+ESPERA_DA_TROCA_S = 0.25
+
+
+class ErroPDFSalvoComOutroNome(ErroPDF):
+    """O PDF novo ficou pronto, mas o antigo nao pode ser substituido (aberto
+    em outro programa); o novo foi gravado com outro nome, em `caminho`.
+
+    E um ErroPDF para chegar a tela como aviso em portugues pelo caminho que
+    ja existe (ui/tarefas.py::_mensagem_amigavel mostra o ErroPDF como ele e):
+    o Kaique fica sabendo o nome do arquivo novo. Nada na tela muda.
+    """
+
+    def __init__(self, mensagem: str, caminho: Path) -> None:
+        super().__init__(mensagem)
+        self.caminho = caminho
+
+
+def _caminho_parcial(saida_final: Path) -> Path:
+    """O arquivo a parte em que o PDF novo e gravado ate ficar pronto.
+
+    Fica na MESMA pasta do destino: so assim a troca pelo antigo (os.replace)
+    e uma operacao so, sem copiar nada, e nunca deixa o destino pela metade.
+    O nome comeca com "~" e termina em ".parcial" (nao em .pdf) para o Kaique
+    nao o confundir com o livro nem tentar abri-lo. Ex.: pronto.pdf ->
+    ~pronto.pdf.parcial.
+
+    Arriscado mudar: o nome e o que permite apagar a sobra de uma queda do
+    programa (ver processar), e so ele - mudar para algo que possa coincidir
+    com um arquivo do Kaique faria o programa apagar o que nao e dele.
+    """
+    return saida_final.with_name(f"~{saida_final.name}.parcial")
+
+
+def _nome_livre(caminho: Path) -> Path:
+    """`nome (2).pdf`, `nome (3).pdf`... o primeiro que ainda nao existe.
+    O mesmo jeito de configuracoes.caminho_sem_repetir (o "salvar como (2)"
+    da tela), repetido aqui porque core/ nao depende do que a tela usa."""
+    contador = 2
+    while True:
+        tentativa = caminho.with_name(f"{caminho.stem} ({contador}){caminho.suffix or '.pdf'}")
+        if not tentativa.exists():
+            return tentativa
+        contador += 1
+
+
+def _trocar_pelo_final(parcial: Path, saida_final: Path) -> Path:
+    """Poe o PDF novo (pronto, em `parcial`) no lugar do destino. Devolve onde
+    ele ficou.
+
+    os.replace troca de uma vez: ou o destino continua o antigo, inteiro, ou
+    ja e o novo, inteiro. No Windows ele falha (PermissionError) quando o
+    antigo esta aberto em outro programa; tenta-se de novo algumas vezes (ver
+    TENTATIVAS_DA_TROCA) e, se continuar preso, o novo vai para
+    `nome (2).pdf` e sobe ErroPDFSalvoComOutroNome, com o nome no aviso: o
+    antigo fica como estava e o trabalho de processar nao se perde.
+
+    Arriscado mudar: apagar o antigo antes de trocar (abre de novo o buraco
+    em que o antigo some e o novo nao chega), ou copiar em vez de trocar (um
+    disco cheio no meio da copia deixaria o destino pela metade).
+    """
+    for tentativa in range(TENTATIVAS_DA_TROCA):
+        try:
+            os.replace(parcial, saida_final)
+            return saida_final
+        except PermissionError:
+            if tentativa + 1 < TENTATIVAS_DA_TROCA and ESPERA_DA_TROCA_S > 0:
+                import time
+
+                time.sleep(ESPERA_DA_TROCA_S)
+        except OSError:
+            break       # outro motivo (destino virou pasta...): nao adianta esperar
+
+    alternativo = _nome_livre(saida_final)
+    try:
+        os.replace(parcial, alternativo)
+    except OSError as exc:
+        raise ErroPDF(
+            f"O livro ficou pronto, mas não consegui gravá-lo como "
+            f"\"{saida_final.name}\": o arquivo antigo pode estar aberto em outro "
+            f"programa. O arquivo antigo ficou como estava. Feche o PDF antigo "
+            f"e processe de novo."
+        ) from exc
+    _log.warning("PDF antigo preso (aberto em outro programa?): %s; o novo foi para %s",
+                 saida_final, alternativo)
+    raise ErroPDFSalvoComOutroNome(
+        f"Não consegui substituir o arquivo antigo \"{saida_final.name}\": ele "
+        f"parece estar aberto em outro programa (o leitor de PDF, por exemplo). "
+        f"O arquivo antigo ficou como estava, e o PDF novo foi gravado ao lado "
+        f"dele, na mesma pasta, com o nome \"{alternativo.name}\".",
+        alternativo,
+    )
+
+
 def processar(
     projeto: Projeto, progresso: Progresso = None, cancelado: Cancelado = None
 ) -> str:
     """Gera o PDF final. Devolve o caminho gravado.
 
     Levanta Cancelou se o usuario cancelar - e a única excecao esperada.
+
+    O PDF ANTIGO NUNCA E TOCADO ANTES DO FIM (conserto de 05/10/2026, bug
+    grave da Lista de bugs; o Samuel mandou consertar na conferencia 11). Ate
+    ali, sem "Montar cadernos", o PDF era gravado direto no arquivo final:
+    com "substituir o antigo" + "cancelar", o antigo era sobrescrito pelas
+    paginas feitas ate ali e depois apagado - sumia, sem aviso. Agora:
+
+    - o PDF novo e gravado num arquivo a parte, na mesma pasta
+      (_caminho_parcial: `~nome.pdf.parcial`), e so troca de lugar com o
+      antigo quando terminou (_trocar_pelo_final, os.replace);
+    - cancelou ou deu erro (inclusive disco cheio ao gravar): apaga so o
+      arquivo a parte (e o temporario dos cadernos); o antigo fica intacto;
+    - o mesmo vale com "Montar cadernos" e no caminho rapido "so cadernos"
+      (a imposicao tambem gravava direto no final);
+    - a sobra do arquivo a parte de uma vez que o programa caiu e apagada no
+      comeco (so a deste destino, pelo nome exato);
+    - o antigo aberto em outro programa: o novo vai para `nome (2).pdf` e
+      sobe ErroPDFSalvoComOutroNome, com aviso em portugues.
+
+    Arriscado mudar: voltar a abrir o EscritorPDF no arquivo final, ou apagar
+    o final em qualquer caminho de erro/cancelamento. Testes:
+    tests/test_substituir_e_cancelar.py.
     """
     saida_final = Path(projeto.caminho_saida)
     # Pendrive arrancado, unidade de rede caida, pasta apagada entre escolher e
@@ -1018,24 +1140,37 @@ def processar(
             "Escolha outra pasta e tente de novo."
         ) from exc
 
+    # O PDF novo nasce num arquivo a parte, ao lado do destino (ver o
+    # docstring). Uma sobra dele - o programa caiu ou faltou luz no meio de
+    # uma gravacao anterior deste mesmo destino - sai antes de comecar.
+    parcial = _caminho_parcial(saida_final)
+    try:
+        parcial.unlink(missing_ok=True)
+    except OSError:
+        pass            # presa por outro programa: a gravacao abaixo avisa
+
     # Caminho rapido: so reordenar, sem tocar em imagem nenhuma.
     if projeto.so_cadernos:
         _avisar(progresso, 0, 1, "Montando os cadernos")
-        impor_pdf(
-            projeto.caminho_entrada, saida_final, projeto.paginas_por_caderno,
-            progresso=lambda f, t: _avisar(progresso, f, t, f"Montando a folha {f} de {t}"),
-        )
-        return str(saida_final)
+        try:
+            impor_pdf(
+                projeto.caminho_entrada, parcial, projeto.paginas_por_caderno,
+                progresso=lambda f, t: _avisar(progresso, f, t, f"Montando a folha {f} de {t}"),
+            )
+            return str(_trocar_pelo_final(parcial, saida_final))
+        finally:
+            parcial.unlink(missing_ok=True)     # ja trocado, nao existe mais
 
     # Quando vamos montar cadernos, primeiro gravamos as paginas em ordem
     # normal num arquivo temporario e so depois reordenamos. Assim a imposicao
-    # trabalha com um PDF em disco e nao precisa de nada na memoria.
+    # trabalha com um PDF em disco e nao precisa de nada na memoria. A
+    # imposicao grava no arquivo a parte, como sem cadernos.
     temporario: Path | None = None
     if projeto.montar_cadernos:
         temporario = Path(tempfile.gettempdir()) / f"_editor_impressao_{saida_final.stem}.pdf"
         destino = temporario
     else:
-        destino = saida_final
+        destino = parcial
 
     ativas = projeto.paginas_ativas
     total = len(ativas)
@@ -1045,99 +1180,127 @@ def processar(
     doc = abrir_pdf(projeto.caminho_entrada)
     try:
         with EscritorPDF(destino) as escritor:
-            # A folha da vez, uma so na memoria (as duas metades vem dela):
-            # o desenho normal e, se alguma metade usa o item 1.1, a folha sem
-            # o fundo. Os dois sao feitos so quando alguem precisa.
-            folha_atual: int | None = None
-            img_folha: np.ndarray | None = None
-            sem_fundo = None          # core.camadas.PaginaSemFundo da folha da vez
-
-            for feito, pagina in enumerate(ativas):
-                _checar(cancelado)
-                _avisar(progresso, feito, total, f"Página {feito + 1} de {total}")
-
-                folha = projeto.folhas[pagina.folha]
-                if folha.apagada:
-                    continue
-
-                if folha_atual != folha.indice:
-                    img_folha, sem_fundo = None, None
-                    folha_atual = folha.indice
-
-                # Item 1.1: esta pagina sai sem o fundo? (ver usa_tirar_fundo)
-                imagem_sem_fundo = None
-                if usa_tirar_fundo(projeto, pagina):
-                    if sem_fundo is None:
-                        sem_fundo = _sem_fundo_da_folha(doc, folha, projeto.qualidade_dpi)
-                    imagem_sem_fundo = sem_fundo.imagem
-                    _anotar_conferir(pagina, bool(imagem_sem_fundo is not None
-                                                  and sem_fundo.conferir))
-                else:
-                    _anotar_conferir(pagina, False)
-
-                # O desenho normal da folha: para o filtro e para medir o corte
-                # (que e sempre medido nele, mesmo quando sai sem o fundo).
-                precisa_do_desenho = imagem_sem_fundo is None or (
-                    _precisa_de_geometria(pagina, projeto)
-                    and _geometria_guardada(folha, pagina, projeto) is None)
-                if precisa_do_desenho and img_folha is None:
-                    img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
-
-                if imagem_sem_fundo is not None:
-                    # dividir, cortar e endireitar a folha sem o fundo, com o
-                    # corte da folha como veio; o filtro fica de fora
-                    geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
-                    img = preparar_metade(imagem_sem_fundo, folha, pagina, projeto,
-                                          geometria=geometria)
-                    mono = False
-                else:
-                    # o corte e calculado nesta mesma imagem (a do PDF) e
-                    # guardado: a previa, se vier depois, mostra este (ver
-                    # _GEOMETRIAS)
-                    if _precisa_de_geometria(pagina, projeto):
-                        _guardar_geometria(folha, pagina, projeto, img_folha)
-                    dpi_desenho = dpi_scan = None
-                    if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
-                        dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
-                        dpi_scan = _dpi_do_scan(doc, folha)
-                    img = preparar_metade(img_folha, folha, pagina, projeto,
-                                          dpi=projeto.qualidade_dpi)
-                    img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
-
-                # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
-                # conteudo (ja filtrado) dentro do tamanho de folha escolhido,
-                # com a margem branca ao redor - nunca antes daqui, porque
-                # `preparar_metade` tambem alimenta `avaliar.py` (a regua de
-                # qualidade dos filtros) e padding ali contaminaria as
-                # metricas. Sem `tamanho_folha_cm` (None, o padrao) devolve
-                # `img` sem nenhuma alteracao - comportamento de sempre.
-                img = compor_na_folha(
-                    img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
-                    escala=pagina.conteudo_escala,
-                    deslocamento=pagina.conteudo_deslocamento,
-                )
-
-                escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
-                del img
-
-            _checar(cancelado)
+            try:
+                _escrever_as_paginas(projeto, doc, ativas, escritor, progresso, cancelado)
+            except BaseException:
+                # cancelou ou deu erro: nada vai para o disco (antes o
+                # __exit__ gravava as paginas feitas ate ali - no PDF antigo,
+                # quando era ele o destino)
+                escritor.descartar()
+                raise
 
         if projeto.montar_cadernos and temporario is not None:
             _avisar(progresso, total, total, "Montando os cadernos")
-            impor_pdf(temporario, saida_final, projeto.paginas_por_caderno)
-            temporario.unlink(missing_ok=True)
+            impor_pdf(temporario, parcial, projeto.paginas_por_caderno)
 
+        # O livro de entrada e solto antes da troca: se o Kaique escolheu
+        # gravar por cima do proprio PDF de entrada, o Windows nao deixa
+        # trocar um arquivo aberto.
+        doc.close()
+        final = _trocar_pelo_final(parcial, saida_final)
         _avisar(progresso, total, total, "Pronto")
-        return str(saida_final)
+        return str(final)
 
-    except Cancelou:
-        # deixa o disco limpo: nada de PDF pela metade
+    finally:
+        # Cancelou, deu erro ou terminou: o temporario dos cadernos e o
+        # arquivo a parte saem (depois da troca, o arquivo a parte ja nao
+        # existe). O PDF final nunca e apagado aqui.
         if temporario is not None:
             temporario.unlink(missing_ok=True)
-        Path(destino).unlink(missing_ok=True)
-        raise
-    finally:
-        doc.close()
+        parcial.unlink(missing_ok=True)
+        if not doc.is_closed:
+            doc.close()
+
+
+def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
+                         escritor: EscritorPDF, progresso: Progresso,
+                         cancelado: Cancelado) -> None:
+    """O laco do processar: cada pagina ativa, uma por vez, ate o escritor.
+
+    Separado do processar em 05/10/2026 so para o tratamento de cancelar e
+    erro caber em volta dele (ver processar); o conteudo e o mesmo de antes.
+    Levanta Cancelou entre uma pagina e outra, e depois da ultima.
+
+    Arriscado: guardar aqui qualquer lista de paginas processadas (regra
+    "uma pagina por vez na memoria"): cada imagem vai para o escritor e sai.
+    """
+    total = len(ativas)
+    # A folha da vez, uma so na memoria (as duas metades vem dela):
+    # o desenho normal e, se alguma metade usa o item 1.1, a folha sem
+    # o fundo. Os dois sao feitos so quando alguem precisa.
+    folha_atual: int | None = None
+    img_folha: np.ndarray | None = None
+    sem_fundo = None          # core.camadas.PaginaSemFundo da folha da vez
+
+    for feito, pagina in enumerate(ativas):
+        _checar(cancelado)
+        _avisar(progresso, feito, total, f"Página {feito + 1} de {total}")
+
+        folha = projeto.folhas[pagina.folha]
+        if folha.apagada:
+            continue
+
+        if folha_atual != folha.indice:
+            img_folha, sem_fundo = None, None
+            folha_atual = folha.indice
+
+        # Item 1.1: esta pagina sai sem o fundo? (ver usa_tirar_fundo)
+        imagem_sem_fundo = None
+        if usa_tirar_fundo(projeto, pagina):
+            if sem_fundo is None:
+                sem_fundo = _sem_fundo_da_folha(doc, folha, projeto.qualidade_dpi)
+            imagem_sem_fundo = sem_fundo.imagem
+            _anotar_conferir(pagina, bool(imagem_sem_fundo is not None
+                                          and sem_fundo.conferir))
+        else:
+            _anotar_conferir(pagina, False)
+
+        # O desenho normal da folha: para o filtro e para medir o corte
+        # (que e sempre medido nele, mesmo quando sai sem o fundo).
+        precisa_do_desenho = imagem_sem_fundo is None or (
+            _precisa_de_geometria(pagina, projeto)
+            and _geometria_guardada(folha, pagina, projeto) is None)
+        if precisa_do_desenho and img_folha is None:
+            img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+
+        if imagem_sem_fundo is not None:
+            # dividir, cortar e endireitar a folha sem o fundo, com o
+            # corte da folha como veio; o filtro fica de fora
+            geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
+            img = preparar_metade(imagem_sem_fundo, folha, pagina, projeto,
+                                  geometria=geometria)
+            mono = False
+        else:
+            # o corte e calculado nesta mesma imagem (a do PDF) e
+            # guardado: a previa, se vier depois, mostra este (ver
+            # _GEOMETRIAS)
+            if _precisa_de_geometria(pagina, projeto):
+                _guardar_geometria(folha, pagina, projeto, img_folha)
+            dpi_desenho = dpi_scan = None
+            if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
+                dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
+                dpi_scan = _dpi_do_scan(doc, folha)
+            img = preparar_metade(img_folha, folha, pagina, projeto,
+                                  dpi=projeto.qualidade_dpi)
+            img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
+
+        # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
+        # conteudo (ja filtrado) dentro do tamanho de folha escolhido,
+        # com a margem branca ao redor - nunca antes daqui, porque
+        # `preparar_metade` tambem alimenta `avaliar.py` (a regua de
+        # qualidade dos filtros) e padding ali contaminaria as
+        # metricas. Sem `tamanho_folha_cm` (None, o padrao) devolve
+        # `img` sem nenhuma alteracao - comportamento de sempre.
+        img = compor_na_folha(
+            img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
+            escala=pagina.conteudo_escala,
+            deslocamento=pagina.conteudo_deslocamento,
+        )
+
+        escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
+        del img
+
+    _checar(cancelado)
 
 
 def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:

@@ -297,12 +297,21 @@ def test_o_amarelado_da_tinta_sai_e_a_cor_de_verdade_fica():
         "a rubricacao vermelha nao pode desbotar"
 
 
-def test_o_papel_dentro_da_regiao_segue_a_pagina():
+@pytest.mark.parametrize("filtro_da_pagina", ["melhorar", "magico_pro"])
+def test_o_papel_dentro_da_regiao_segue_a_pagina(filtro_da_pagina):
     """Marcar um retangulo em volta da gravura pega papel junto.
 
     Esse papel nao pode ficar no filtro da regiao: sai creme ao lado do branco
     do resto, e vira uma faixa cinza no pe da gravura. Foi o que o Samuel
     apontou circulando de vermelho.
+
+    Ate 05/10/2026 este teste usava uma pagina em Preto e branco e passava
+    sem testar nada: o Preto e branco ignorava o pedaco inteiro (bug da P6).
+    Consertado do jeito completo que o Samuel escolheu na conferencia 11 ("a
+    area que voce marcou obedece inteira ao filtro escolhido para ela"), no
+    Preto e branco o papel pego junto obedece ao pedaco
+    (tests/test_so_neste_pedaco_no_preto_e_branco.py). A regra deste teste
+    continua valendo para o Melhorar e o Magico pro, como sempre.
     """
     import cv2
     import numpy as np
@@ -321,7 +330,7 @@ def test_o_papel_dentro_da_regiao_segue_a_pagina():
         origem=MAO, filtro=ORIGINAL))
 
     saida, _mono = aplicar_filtro_com_selecao(
-        pagina.copy(), PRETO_E_BRANCO, selecao)
+        pagina.copy(), filtro_da_pagina, selecao)
     cinza = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY) if saida.ndim == 3 else saida
 
     # Antes do conserto o pe ficava no filtro da regiao - Original -, ou

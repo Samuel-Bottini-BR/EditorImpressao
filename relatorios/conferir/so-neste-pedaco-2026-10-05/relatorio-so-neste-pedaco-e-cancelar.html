@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consertos de 05/10: só neste pedaço e cancelar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Consertos de 05/10: "só neste pedaço" no Preto e branco e o cancelar que apagava o PDF antigo</h1>
+<p>Ramo <code>consertos-cancelar-pedaco-2026-10-05</code> (criado do <code>fase-1</code> em <code>044a7c1</code>). Dois consertos autorizados pelo Samuel na conferência 11. Teste de <strong>máquina</strong> nos dois; o "só neste pedaço" também precisa do teste de <strong>olho</strong> do Samuel (as imagens abaixo). Nada foi juntado ao <code>fase-1</code>.</p>
+<h2>1. Cancelar depois de "substituir o antigo" não apaga mais o PDF antigo (commit <code>880bf70</code>)</h2>
+<p><strong>O que estava errado:</strong> sem "Montar cadernos", o programa gravava direto no arquivo final. Com "substituir o antigo" e depois "cancelar", o PDF antigo era sobrescrito pelas páginas feitas até ali e depois apagado. Sumia, sem aviso.</p>
+<p><strong>O que mudou:</strong> o PDF novo é gravado num arquivo à parte, na mesma pasta (<code>~nome.pdf.parcial</code>, que não parece PDF), e só troca de lugar com o antigo quando termina. Cancelou ou deu erro: some só o arquivo à parte, e o antigo fica igual, byte a byte. Vale também com "Montar cadernos" e no caminho rápido "só cadernos". Se o programa cair no meio, a sobra é apagada na próxima vez que o mesmo PDF for gerado.</p>
+<p><strong>PDF antigo aberto em outro programa</strong> (no Windows a troca falha): o programa tenta de novo por cerca de 1 segundo. Se continuar preso, o PDF novo vai para <code>nome (2).pdf</code> e aparece o aviso: <em>"Não consegui substituir o arquivo antigo "X.pdf": ele parece estar aberto em outro programa (o leitor de PDF, por exemplo). O arquivo antigo ficou como estava, e o PDF novo foi gravado ao lado dele, na mesma pasta, com o nome "X (2).pdf"."</em> Nada mudou na tela: o aviso usa a caixa que já existia.</p>
+<p><strong>Testes:</strong> 21 novos (<code>tests/test_substituir_e_cancelar.py</code>): cancelar em vários pontos, terminar, erro numa página, disco cheio ao gravar, com cadernos, só cadernos, sobra de queda, arquivo parecido de outro livro (não é apagado), e o PDF antigo aberto de verdade no Windows.</p>
+<h2>2. "Só neste pedaço" passa a valer no Preto e branco (commit <code>60d8c58</code>)</h2>
+<p><strong>O que estava errado:</strong> numa página em Preto e branco, a pintura marcada com "só neste pedaço: Original" saía cinza. O programa ignorava o pedaço sem avisar.</p>
+<p><strong>O que mudou:</strong> a área marcada obedece <strong>inteira</strong> ao filtro escolhido para ela (Original, Melhorar ou Mágico pro), inclusive as partes claras, como o céu e as nuvens. Isso inclui o papel que a pessoa pegar junto ao desenhar o retângulo: no Original, esse papel sai creme, e a borda é exatamente a que foi desenhada. Só mudam as páginas que têm pedaço marcado.</p>
+<p><strong>Prova de que as outras páginas não mudaram:</strong> as 32 páginas do gabarito, processadas pelo mesmo caminho do botão "Confirmar e processar", em Preto e branco, Melhorar e Mágico pro: <strong>96 de 96 imagens idênticas</strong> ao <code>044a7c1</code>, ponto por ponto (<code>comparacao-32-paginas.json</code>). Essa rodada também passa pelo conserto do cancelar.</p>
+<h3>As imagens (abrir para conferir)</h3>
+<ul>
+<li><code>escola7-pagina.jpg</code>: a página inteira. Original (em laranja, o pedaço marcado), Preto e branco antes, Preto e branco depois.</li>
+<li><code>escola7-pedaco.jpg</code>: a pintura de perto.</li>
+<li><code>escola7-detalhe1.jpg</code>: o céu e as nuvens. Antes saíam cinza; agora saem como no original, sem manchas.</li>
+<li><code>escola7-detalhe2.jpg</code>: o leão e o pé da pintura.</li>
+<li><code>escola7-detalhe3.jpg</code>: a beirada do pedaço. Repare na <strong>faixa creme fina</strong> em cima da pintura: é o papel que ficou dentro do retângulo marcado.</li>
+<li><code>opus20-pagina.jpg</code>, <code>opus20-pedaco.jpg</code>, <code>opus20-detalhe1.jpg</code> (rosto) e <code>opus20-detalhe2.jpg</code> (parede e pé da foto): a foto da Opus Majus 20, com um retângulo em volta dela.</li>
+<li><code>descartado/</code>: a primeira tentativa, que deixava a margem do retângulo seguir a página. Na Escola 7 ficava bom, mas na Opus 20 a parede clara da foto virava <strong>manchas brancas recortadas</strong> (<code>tentativa-margem-ligada-opus20-pagina.jpg</code>). Por isso foi descartada.</li>
+</ul>
+<h3>Números (<code>medidas.json</code>)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Escola 7</th>
+<th>Opus 20</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>parte do pedaço igual ao original, antes</td>
+<td>0%</td>
+<td>0,2%</td>
+</tr>
+<tr>
+<td>parte do pedaço igual ao original, depois</td>
+<td>99,9%</td>
+<td>99,9%</td>
+</tr>
+<tr>
+<td>pontos diferentes fora do pedaço</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>processar a página, antes (s)</td>
+<td>1,8 e 1,4</td>
+<td>2,2 e 1,7</td>
+</tr>
+<tr>
+<td>processar a página, depois (s)</td>
+<td>2,1 e 2,1</td>
+<td>2,1 e 2,1</td>
+</tr>
+</tbody>
+</table>
+<h2>Opinião do implementador</h2>
+<p>O conserto faz o que foi pedido. Na Escola 7, a pintura sai inteira como no original, com o céu, as nuvens e o leão limpos, sem os cinzas e as manchas da simulação. A borda é reta, no lugar desenhado. Na Opus 20 a foto sai como veio, e o rosto da estátua volta a aparecer, quando antes ficava estourado de branco. O que pode incomodar é a faixa creme do papel que fica dentro do retângulo. Ela é fina quando o Kaique desenha justo em volta da foto, e fica maior se ele deixar folga. Isso é consequência direta de "obedece inteira". PRONTO PARA CONFERIR, a decidir pelo Samuel.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Velocidade:</strong> havia outros agentes rodando no PC, então os tempos oscilam. Nas 32 páginas sem pedaço, o caminho do código é o mesmo, e as diferenças medidas estão dentro do ruído: Preto e branco 144,8 → 134,3 s, Melhorar 215,9 → 224,6 s, Mágico pro 244,2 → 249,6 s. Numa página <strong>com</strong> pedaço em Original, o processar ficou cerca de 0,3 a 0,6 s mais lento na Escola 7 (pouco nítido na Opus 20), porque a página passa a ser gravada em cor. O teste oficial de velocidade (<code>teste_velocidade.py</code>) não foi rodado.</li>
+<li>A regra antiga "o papel de dentro da região segue a página" (07/08) <strong>deixa de valer no Preto e branco</strong>, que agora obedece ao pedaço inteiro. No Melhorar e no Mágico pro ela continua como sempre. O teste que a cobria usava o Preto e branco e passava sem testar nada, porque o pedaço era ignorado. Ele agora roda no Melhorar e no Mágico pro.</li>
+<li>Numa página em <strong>Original</strong>, o "só neste pedaço" continua ignorado. Não foi pedido aqui e vai para a Lista de bugs.</li>
+<li>As imagens foram geradas com o filtro do <code>044a7c1</code> posto no lugar do de hoje, dentro do programa de hoje, e não com uma cópia inteira do código antigo. A prova das 32 páginas, essa sim, usou uma cópia inteira do <code>044a7c1</code>.</li>
+<li>Cancelar: o arquivo à parte de uma queda só é apagado quando o <strong>mesmo</strong> PDF é gerado de novo. Se o Kaique nunca mais gerar aquele livro, a sobra <code>~nome.pdf.parcial</code> fica na pasta.</li>
+<li>Cancelar com cadernos: o arquivo temporário em ordem normal continua indo para a pasta temporária do Windows (disco C). Isso não mudou.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 15:59</p>
+</body>
+</html>

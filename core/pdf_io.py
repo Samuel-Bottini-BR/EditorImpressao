@@ -274,6 +274,23 @@ class EscritorPDF:
             self.doc.insert_pdf(origem, from_page=indice, to_page=indice)
         self._paginas += 1
 
+    def descartar(self) -> None:
+        """Solta o documento SEM gravar nada no disco.
+
+        Para cancelar e erro no meio (core/pipeline.py::processar, conserto de
+        05/10/2026): sem isto, o __exit__ do `with` gravava as paginas feitas
+        ate ali, o que so gastava tempo (o arquivo pela metade era apagado
+        logo depois) e, quando o destino era o PDF antigo, o destruia. Depois
+        de descartar, fechar() (e o __exit__) nao fazem nada.
+        """
+        if self.doc is None:
+            return
+        try:
+            with _TRANCA:
+                self.doc.close()
+        finally:
+            self.doc = None  # type: ignore[assignment]
+
     def fechar(self) -> None:
         """Grava o PDF no disco (se alguma página foi escrita) e solta o documento.
 
