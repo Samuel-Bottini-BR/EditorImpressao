@@ -20,7 +20,7 @@ import numpy as np
 import pytest
 
 from core.filtros import ORIGINAL, PRETO_E_BRANCO, aplicar_filtro_com_selecao
-from core.misto import aplicar_misto
+from core.misto import LETRAS_PRETAS, aplicar_misto
 from core.selecao import GRAVURA, LETRA, MAO, PAPEL, SUBTRAIR, Selecao, retangulo
 
 PAPEL_CREME = (200, 222, 232)       # BGR
@@ -167,9 +167,76 @@ def test_so_moldura_da_o_mesmo_que_o_preto_e_branco_de_hoje():
     img, faixa = _moldura()
     _texto(img, 300, 900, x0=250, x1=650)
     s = _so_na_moldura(faixa)
-    saida, _ = aplicar_misto(img.copy(), s)
+    saida, _ = aplicar_misto(img.copy(), s, letras_na_moldura=LETRAS_PRETAS)
     esperado, _ = aplicar_filtro_com_selecao(img.copy(), PRETO_E_BRANCO, s)
     assert np.array_equal(saida, esperado)
+
+
+# --- letras dentro da moldura ou da iluminura (conferencia 12, P4) -------------
+
+VERMELHO = (40, 40, 190)
+
+
+def _iluminura():
+    """Um quadro dourado largo em volta de um centro de papel creme com uma
+    linha de letras vermelhas (como o oval da Horas 11), tudo marcado como
+    gravura."""
+    img = np.full((1200, 900, 3), PAPEL_CREME, np.uint8)
+    img[300:900, 150:750] = DOURADO
+    for x in range(150, 750, 14):            # o desenho do ouro (sem ele, e "foto")
+        img[300:900, x:x + 3] = CONTORNO
+    img[420:780, 270:630] = PAPEL_CREME
+    cv2.rectangle(img, (268, 418), (632, 782), CONTORNO, 3)
+    _texto(img, 560, 600, x0=300, x1=600, cor=VERMELHO)
+    s = Selecao()
+    s.acrescentar(retangulo(140 / 900, 290 / 1200, 760 / 900, 910 / 1200, tipo=GRAVURA))
+    return img, s
+
+
+def _letras_e_papel(saida):
+    letra = saida[562:570, 301:600:16]
+    papel = saida[470:540, 300:600]
+    return letra, papel
+
+
+def test_letras_da_moldura_de_fabrica_com_a_cor_e_o_papel_branco():
+    from core.misto import LETRAS_COR_PAPEL_BRANCO, LETRAS_NA_MOLDURA_PADRAO
+
+    assert LETRAS_NA_MOLDURA_PADRAO == LETRAS_COR_PAPEL_BRANCO
+    img, s = _iluminura()
+    saida, _ = aplicar_misto(img.copy(), s)
+    letra, papel = _letras_e_papel(saida)
+    assert float(np.median(papel)) >= 250, "o papel atras das letras tinha de ir a branco"
+    vermelho = letra[:, :, 2].astype(int) - letra[:, :, 0].astype(int)
+    assert float(np.median(vermelho)) > 80, "a letra perdeu a cor dela"
+    ouro = (slice(330, 390), slice(180, 720))
+    assert int(np.percentile(np.abs(saida[ouro].astype(int) - img[ouro].astype(int)), 99)) <= 2,         "o ouro mudou de cor"
+
+
+def test_letras_da_moldura_pretas_quando_pedido():
+    img, s = _iluminura()
+    saida, _ = aplicar_misto(img.copy(), s, letras_na_moldura=LETRAS_PRETAS)
+    letra, papel = _letras_e_papel(saida)
+    assert float(np.median(papel)) >= 250
+    assert int(np.median(letra)) == 0, "a letra tinha de sair preta"
+
+
+def test_letras_da_moldura_com_o_fundo_como_foi_escaneado():
+    from core.misto import LETRAS_COR_FUNDO_ORIGINAL
+
+    img, s = _iluminura()
+    saida, _ = aplicar_misto(img.copy(), s, letras_na_moldura=LETRAS_COR_FUNDO_ORIGINAL)
+    miolo = (slice(420, 780), slice(270, 630))
+    assert int(np.abs(saida[miolo].astype(int) - img[miolo].astype(int)).max()) <= 1,         "a iluminura tinha de ficar inteira como foi escaneada"
+
+
+def test_papel_da_gravura_nao_mexe_mais_na_moldura():
+    """As duas escolhas sao independentes: papel da gravura como escaneado
+    nao deixa a iluminura como escaneada (isso e a escolha das letras)."""
+    img, s = _iluminura()
+    a, _ = aplicar_misto(img.copy(), s)
+    b, _ = aplicar_misto(img.copy(), s, papel_da_gravura_branco=False)
+    assert np.array_equal(a, b)
 
 
 # --- gravura de traco: o desenho fica como esta, o papel dela vai a branco -----
@@ -343,6 +410,21 @@ def test_so_as_linhas_apaga_o_que_esta_fora():
                              altura_linha=12.0)
     assert int(saida[410:430, 310:330].min()) == 255, "fora das linhas tinha de ir a branco"
     assert int(saida[100:112, 100:104].max()) == 0, "o texto das linhas sumiu"
+
+
+def test_so_as_linhas_mede_a_tinta_forte_que_apagou():
+    """O aviso "Para revisar" (conferencia 8) vale tambem no C: a nota escura
+    apagada conta como tinta forte fora do texto; nada ficou la fora."""
+    img, linhas = _pagina_com_nota_e_mancha()
+    medidas: dict = {}
+    aplicar_misto(img.copy(), Selecao(), fora_do_texto=FORA_APAGAR, linhas=linhas,
+                  altura_linha=12.0, medidas=medidas)
+    rede: dict = {}
+    aplicar_misto(img.copy(), Selecao(), fora_do_texto=FORA_REDE, linhas=linhas,
+                  altura_linha=12.0, medidas=rede)
+    assert medidas["guardada_fora"] == 0.0
+    assert medidas["forte_fora"] == pytest.approx(rede["forte_fora"])
+    assert rede["forte_fora"] == pytest.approx(rede["guardada_fora"]) and rede["forte_fora"] > 0
 
 
 def test_rede_guarda_a_nota_escura_e_tira_a_mancha_clara():

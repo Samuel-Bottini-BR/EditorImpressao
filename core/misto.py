@@ -42,12 +42,15 @@ processWithoutDewarping; ver docs/pesquisa/fase2-mapa-scantailor.md, secao 5)
     Pagina sem nenhuma zona de imagem (e sem "so neste pedaco"): sai
     IDENTICA ao Preto e branco de hoje, em 1 bit.
 
-AINDA NAO ESTA LIGADO AO PROGRAMA
-    Nem a tela nem o projeto salvo sabem do Misto: ligar exige um campo novo
-    no projeto (livro e pagina) e uma caixinha na tela, e isso e decisao do
-    Samuel (CLAUDE.md, secao 6). Por enquanto roda por linha de comando
-    (montar_misto.py). O caminho de hoje (core.filtros.aplicar_filtro_com_selecao)
-    nao foi tocado.
+LIGADO AO PROGRAMA (05/10/2026)
+    A caixinha "So as letras" e as escolhas moram no projeto (modelos.Projeto
+    e ConfigPagina, CAMPOS_DO_MISTO; o que vale numa pagina: opcoes_da_pagina).
+    core.pipeline._filtrar chama aplicar_misto na pagina em Preto e branco com
+    "So as letras" ligada - a previa e o PDF pelo mesmo caminho -, com as
+    linhas do leitor de texto (core/linhas_do_texto.py) quando a opcao e A ou
+    C. Sem "So as letras", o caminho de sempre
+    (core.filtros.aplicar_filtro_com_selecao) nao foi tocado. Tambem roda por
+    linha de comando (montar_misto.py, so a opcao B).
 
 O QUE E SEGURO MUDAR
     Os padroes de papel_da_gravura_branco e foto_em_cinza (sao a pergunta ao
@@ -81,7 +84,7 @@ from core import filtros as F
 from core.selecao import GRAVURA, LETRA, MAO, PAPEL, SOMAR, SUBTRAIR, _desenhar
 
 
-# --- parte C (EXPERIMENTAL, 05/10/2026): a tinta fora das linhas do leitor ----
+# --- A, B e C: a tinta fora das linhas do leitor (05/10/2026) --------------
 #
 # Pedido do Samuel (05/10): "Quero ver o lado a lado antes de decidir: A, B e
 # C, com o detector de gravura ligado [...] A opcao D fica de fora, porque o
@@ -91,10 +94,11 @@ from core.selecao import GRAVURA, LETRA, MAO, PAPEL, SOMAR, SUBTRAIR, _desenhar
 # dao o Misto de sempre (o leitor nao achou texto: nao ha como saber o escuro
 # da letra, e apagar tudo seria perder a pagina).
 #   B, FORA_TUDO   - tudo o que nao e gravura vira preto e branco (o Misto do
-#                    ScanTailor). De fabrica.
-#   A, FORA_REDE   - "rede de seguranca": dentro das linhas, o preto e branco
-#                    de sempre; fora delas, cada pedaco de tinta (pedaco ligado
-#                    do preto e branco) fica se tem pelo menos um ponto tao
+#                    ScanTailor). O padrao da FUNCAO aplicar_misto (sem linhas).
+#   A, FORA_REDE   - "rede de seguranca" (DE FABRICA no programa, conferencia
+#                    14): dentro das linhas, o preto e branco de sempre;
+#                    fora delas, cada pedaco de tinta (pedaco ligado do
+#                    preto e branco) fica se tem pelo menos um ponto tao
 #                    escuro quanto as letras desta pagina (a mediana do cinza
 #                    da tinta DENTRO das linhas) e area de pelo menos
 #                    (altura da linha / 6)^2; o resto (a mancha clara) vai a
@@ -185,24 +189,31 @@ def _da_pagina_ou_do_livro(projeto, pagina, campo: str):
     return getattr(projeto, campo, None) if valor is None else valor
 
 
-def opcoes_da_pagina(projeto, pagina) -> OpcoesDoMisto | None:
-    """As escolhas do Misto desta pagina, ou None se o Misto nao vale nela.
+def escolhas_da_pagina(projeto, pagina) -> tuple[bool, OpcoesDoMisto]:
+    """(so_as_letras, escolhas) que valem nesta pagina, com "So as letras"
+    ligada ou nao (a tela mostra os tres botoes com a escolha de agora, para
+    quando a caixinha for marcada).
 
     A pagina herda cada campo do livro (modelos.Projeto) e pode trocar so nela
     (modelos.ConfigPagina, None = segue o livro). Projeto de versao anterior,
-    sem os campos: None (o Misto desligado, a pagina sai como sempre saiu).
-    Valor desconhecido (arquivo mexido, versao futura): o padrao de fabrica.
-    Nao olha o filtro: quem chama so pergunta para pagina em Preto e branco
-    (core.pipeline._filtrar). Barato (so le campos)."""
-    if _da_pagina_ou_do_livro(projeto, pagina, "misto_so_as_letras") is not True:
-        return None
+    sem os campos: desligado, com os padroes. Valor desconhecido (arquivo
+    mexido, versao futura): o padrao de fabrica. Barato (so le campos)."""
+    ligado = _da_pagina_ou_do_livro(projeto, pagina, "misto_so_as_letras") is True
     fora = _da_pagina_ou_do_livro(projeto, pagina, "misto_fora_do_texto")
     papel = _da_pagina_ou_do_livro(projeto, pagina, "misto_papel_da_gravura")
     letras = _da_pagina_ou_do_livro(projeto, pagina, "misto_letras_na_moldura")
-    return OpcoesDoMisto(
+    return ligado, OpcoesDoMisto(
         fora_do_texto=fora if fora in FORAS_DO_TEXTO else FORA_DO_TEXTO_PADRAO,
         papel_da_gravura=papel if papel in PAPEIS_DA_GRAVURA else PAPEL_DA_GRAVURA_PADRAO,
         letras_na_moldura=letras if letras in LETRAS_NA_MOLDURA else LETRAS_NA_MOLDURA_PADRAO)
+
+
+def opcoes_da_pagina(projeto, pagina) -> OpcoesDoMisto | None:
+    """As escolhas do Misto desta pagina, ou None se o Misto nao vale nela
+    (ver escolhas_da_pagina). Nao olha o filtro: quem chama so pergunta para
+    pagina em Preto e branco (core.pipeline._filtrar)."""
+    ligado, opcoes = escolhas_da_pagina(projeto, pagina)
+    return opcoes if ligado else None
 
 
 def mascara_das_linhas(resultados, forma: tuple[int, int]) -> tuple[np.ndarray, float]:
@@ -241,30 +252,35 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
     linhas e fora da imagem (ver o comentario de FORA_TUDO). binaria: 0 =
     tinta. Nunca muda a tinta de dentro das linhas. medidas recebe:
     tinta_fora (fracao da tinta da pagina fora das linhas e da imagem),
-    guardada_fora (fracao guardada la fora: a "tinta forte fora das linhas"
-    do aviso proposto) e escuro_da_letra."""
+    forte_fora (fracao dela que e "tinta forte": os pedacos que a rede
+    guarda, medidos tambem no C, onde vao a branco - e o que manda a pagina
+    para "Para revisar", core.pipeline), guardada_fora (fracao que ficou la
+    fora: = forte_fora no A, 0 no C) e escuro_da_letra."""
     tinta = binaria == 0
     total = int(np.count_nonzero(tinta)) or 1
     fora = tinta & ~linhas & fora_da_imagem
     saida = binaria.copy()
-    guardar = np.zeros_like(fora)
+    forte = np.zeros_like(fora)
     escuro = None
-    if modo == FORA_REDE:
-        dentro = tinta & linhas
-        if dentro.any():
-            escuro = float(np.median(cinza[dentro]))
-            quantos, rotulos, stats, _c = cv2.connectedComponentsWithStats(
-                fora.view(np.uint8), connectivity=8)
-            if quantos > 1:
-                fica = np.zeros(quantos, bool)
-                fica[np.unique(rotulos[fora & (cinza <= escuro)])] = True
-                minimo = (max(altura_linha, 1.0) / PEDACO_MINIMO_DA_REDE) ** 2
-                fica &= stats[:, cv2.CC_STAT_AREA] >= minimo
-                fica[0] = False
-                guardar = fica[rotulos]
+    dentro = tinta & linhas
+    if modo in (FORA_REDE, FORA_APAGAR) and dentro.any() and fora.any():
+        escuro = float(np.median(cinza[dentro]))
+        quantos, rotulos, stats, _c = cv2.connectedComponentsWithStats(
+            fora.view(np.uint8), connectivity=8)
+        if quantos > 1:
+            fica = np.zeros(quantos, bool)
+            fica[np.unique(rotulos[fora & (cinza <= escuro)])] = True
+            minimo = (max(altura_linha, 1.0) / PEDACO_MINIMO_DA_REDE) ** 2
+            fica &= stats[:, cv2.CC_STAT_AREA] >= minimo
+            fica[0] = False
+            forte = fica[rotulos]
+    elif dentro.any():
+        escuro = float(np.median(cinza[dentro]))
+    guardar = forte if modo == FORA_REDE else np.zeros_like(fora)
     saida[fora & ~guardar] = 255
     if medidas is not None:
         medidas.update({"tinta_fora": float(np.count_nonzero(fora)) / total,
+                        "forte_fora": float(np.count_nonzero(forte)) / total,
                         "guardada_fora": float(np.count_nonzero(guardar)) / total,
                         "escuro_da_letra": escuro})
     return saida
@@ -372,6 +388,7 @@ def aplicar_misto(
     *,
     papel_da_gravura_branco: bool = True,
     foto_em_cinza: bool = False,
+    letras_na_moldura: str = LETRAS_NA_MOLDURA_PADRAO,
     fora_do_texto: str = "tudo",
     linhas: np.ndarray | None = None,
     altura_linha: float = 0.0,
@@ -394,6 +411,17 @@ def aplicar_misto(
     clareza, intensidade: so para o "so neste pedaco" em Melhorar ou Magico
     pro. Devolve (imagem, monocromatica), como aplicar_filtro_com_selecao:
     monocromatica=True quando tudo saiu em preto e branco (1 canal, 0 e 255).
+
+    papel_da_gravura_branco: o papel de dentro da GRAVURA DE TRACO vai a
+    branco (P2 (a), de fabrica) ou fica como foi escaneado (False).
+    letras_na_moldura: o que acontece na DECORACAO COLORIDA (moldura dourada,
+    iluminura) e nas letras dentro dela (P4; ver LETRAS_NA_MOLDURA no topo):
+    a cor delas com o papel branco (de fabrica), a decoracao inteira como foi
+    escaneada, ou letras pretas com o papel branco. As duas escolhas sao
+    independentes (ate 05/10 o papel_da_gravura_branco=False tambem deixava a
+    decoracao como escaneada; agora isso e letras_na_moldura =
+    LETRAS_COR_FUNDO_ORIGINAL). foto_em_cinza: so para o script de comparacao
+    (no programa a foto fica sempre com a cor, P3 (a)).
     """
     usa_linhas = fora_do_texto != FORA_TUDO and linhas is not None and bool(np.any(linhas))
     if (selecao is None or getattr(selecao, "vazia", True)) and not usa_linhas:
@@ -406,14 +434,16 @@ def aplicar_misto(
     try:
         return _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensidade,
                       papel_da_gravura_branco, foto_em_cinza,
-                      fora_do_texto if usa_linhas else FORA_TUDO, linhas, altura_linha, medidas)
+                      fora_do_texto if usa_linhas else FORA_TUDO, linhas, altura_linha, medidas,
+                      letras_na_moldura)
     except cv2.error as exc:
         raise F.ErroFiltro("Não consegui limpar esta página.") from exc
 
 
 def _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensidade,
            papel_da_gravura_branco, foto_em_cinza, fora_do_texto=None, linhas=None,
-           altura_linha=0.0, medidas=None) -> tuple[np.ndarray, bool]:
+           altura_linha=0.0, medidas=None,
+           letras_na_moldura=LETRAS_NA_MOLDURA_PADRAO) -> tuple[np.ndarray, bool]:
     altura, largura = img.shape[:2]
     peso_imagem = _peso_da_imagem(selecao, altura, largura)
     peso_papel = selecao.peso(altura, largura, PAPEL)
@@ -495,11 +525,14 @@ def _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensid
         if decoracao.any():
             peso_decoracao = _so_das(rotulos, decoracao, peso_imagem)
             base = F._tres_canais(saida).copy()
-            if papel_da_gravura_branco:
-                saida = F._com_a_decoracao(base, img3, peso_decoracao, referencia,
-                                           letras_pretas=True)
-            else:
+            if letras_na_moldura == LETRAS_COR_FUNDO_ORIGINAL:
+                # P4 (b): a moldura/iluminura inteira como foi escaneada
                 saida = F._misturar(base, img3, peso_decoracao)
+            else:
+                # P4 (a) a cor das letras com o papel branco atras; (c) as
+                # letras soltas pretas - a mesma conta do Preto e branco
+                saida = F._com_a_decoracao(base, img3, peso_decoracao, referencia,
+                                           letras_pretas=letras_na_moldura == LETRAS_PRETAS)
 
     if pedidos:
         # "so neste pedaco" com outro filtro: por cima, so no conteudo do
