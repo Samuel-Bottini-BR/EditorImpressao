@@ -45,6 +45,11 @@ COMO FICOU (o que muda e o que NAO muda)
   ganha uma copia de seguranca antes da primeira gravacao no formato novo
   (projetos.salvar_estado, copia "projeto.antigo-zonas-na-folha-*.json",
   nunca apagada).
+- Desde 05/10/2026 (decisao Z1 (b)), ao abrir o livro uma tarefa de fundo
+  converte TODAS as paginas antigas, uma folha por vez
+  (core/pipeline.converter_zonas_do_livro, usando paginas_por_converter e
+  anotar_se_ainda_antiga, abaixo). A pagina desenhada antes de a tarefa
+  chegar nela continua sendo convertida na hora, pelo acompanhar().
 
 FORMAS
 ------
@@ -397,6 +402,49 @@ def acompanhar(pagina, geometria: dict | None) -> bool:
             return False
         if pagina.selecao:
             pagina.selecao = trocar_de_geometria(pagina.selecao, antiga, geometria)
+        pagina.geometria_das_zonas = dict(geometria)
+        return True
+
+
+# ---------------------------------------------------------------------------
+# O livro inteiro, por tras, ao abrir (decisao Z1 (b) do Samuel, 05/10/2026)
+# ---------------------------------------------------------------------------
+#
+# "O livro inteiro, por tras, ao abrir - ele poderia fazer isso quando abre o
+# livro e fica carregando dai né?" (conferencia 9). Converter uma pagina =
+# anotar nela o preparo de HOJE (geometria_das_zonas), sem mexer nas zonas:
+# e exatamente o que acompanhar() faz da primeira vez que a pagina e
+# desenhada. Quem percorre o livro e core/pipeline.converter_zonas_do_livro
+# (precisa desenhar a folha para saber o corte e o angulo automaticos);
+# aqui ficam so as duas pecas sem desenho.
+
+def paginas_por_converter(projeto) -> list:
+    """As paginas que ainda tem zonas no formato antigo: com zonas e sem a
+    geometria anotada. Pagina sem zonas nao precisa (a geometria e anotada
+    quando ela for desenhada, e no disco ela nao muda nada)."""
+    folhas = len(getattr(projeto, "folhas", None) or [])
+    return [p for p in (getattr(projeto, "paginas", None) or [])
+            if p.selecao and not geometria_valida(getattr(p, "geometria_das_zonas", None))
+            and 0 <= int(p.folha) < folhas]
+
+
+def anotar_se_ainda_antiga(pagina, geometria: dict, ainda_vale=None) -> bool:
+    """Anota `geometria` na pagina SO se ela ainda nao tem geometria (a previa
+    pode ter chegado antes, no outro fio) e se `ainda_vale()` (o que a
+    geometria usou - corte, angulo, divisao - continua igual). Nunca mexe
+    nas zonas. Devolve True se anotou.
+
+    Arriscado: anotar por cima de uma geometria ja anotada, ou sem conferir
+    `ainda_vale` - se o Kaique mudou o corte no meio, a previa seguinte
+    levaria as zonas de um preparo que nunca foi o delas.
+    """
+    if not geometria_valida(geometria):
+        return False
+    with TRANCA_DAS_ZONAS:
+        if geometria_valida(getattr(pagina, "geometria_das_zonas", None)):
+            return False
+        if ainda_vale is not None and not ainda_vale():
+            return False
         pagina.geometria_das_zonas = dict(geometria)
         return True
 
