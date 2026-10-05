@@ -176,6 +176,42 @@ def linhas_da_pagina(img: np.ndarray, chave=None, cancelar=None) -> list:
     return certos
 
 
+def aquecer_em_segundo_plano() -> None:
+    """Abre o docTR numa thread a parte, para a primeira previa no Misto A ou
+    C nao esperar por ele.
+
+    Medido em 05/10/2026 neste PC: so importar a biblioteca do docTR leva
+    ~7 s com o disco frio (20 s na rodada das 32 paginas, com o PC ocupado),
+    e conferir o arquivo do modelo ~1 s - tudo isso caia na primeira previa.
+    A tela chama isto quando o Misto A ou C passa a valer (ao abrir a
+    conferencia, ao marcar "So as letras", ao escolher A ou C). Nunca na
+    abertura do programa: quem nao usa o Misto nao paga os ~200 MB. Se ja
+    estiver aberto (ou abrindo), nao faz nada. Erro aqui so vai para o log:
+    a previa abre o leitor de novo, sob demanda."""
+    global _AQUECENDO
+    with _TRANCA:
+        if _AQUECENDO or (_DETECTOR is not None and _DETECTOR.aberto):
+            return
+        _AQUECENDO = True
+
+    def abrir() -> None:
+        global _AQUECENDO
+        try:
+            detector = _detector()
+            with detector._tranca:          # a mesma tranca do segmentar
+                detector._abrir()
+        except Exception:  # noqa: BLE001 - aquecer e so uma otimizacao
+            _log.exception("linhas_do_texto: aquecer o leitor falhou")
+        finally:
+            with _TRANCA:
+                _AQUECENDO = False
+
+    threading.Thread(target=abrir, name="aquecer-leitor-de-texto", daemon=True).start()
+
+
+_AQUECENDO = False
+
+
 def esquecer() -> None:
     """Esvazia as linhas guardadas (seguro a qualquer hora; so custa tempo)."""
     with _TRANCA:

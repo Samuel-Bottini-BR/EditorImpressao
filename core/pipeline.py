@@ -983,11 +983,24 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
 # Palatino 9 47% (a capitular e as molduras), Opus 165 6%, Marial 7 5%, Horas
 # 13 4%, Boecio 22 2%, Horas 11 menos de 1%. Com 10%, vao para revisar as
 # paginas em que o leitor deixou de fora uma parte grande do que esta impresso
-# - nao as que tem so umas letrinhas de diagrama ou pontos. Medido de novo, so
-# com o docTR, nas 32 paginas do gabarito: relatorios/conferir/misto-no-
-# programa-2026-10-05/. Seguro mudar: o numero (so muda quem vai para revisar).
-# Arriscado: baixar muito (quase toda pagina com gravura ou sujeira na beirada
-# iria para revisar, e o aviso deixaria de ser lido).
+# - nao as que tem so umas letrinhas de diagrama ou pontos.
+# Medido de novo em 05/10, SO com o docTR (como no programa), nas 34 paginas
+# das 32 folhas do gabarito (relatorios/conferir/misto-no-programa-2026-10-05/
+# dados/medidas-misto.json, imagens em tinta-forte/): 19 passam de 10%, e
+# quase todas tem MUITO impresso fora do texto que o detector de gravura nao
+# marcou - moldura de filetes e floreios (Palatino 9, 10, 57, 66, 67;
+# Siebmacher 7 e 9; Rhetorica 18), tabela com regua (Horas 14, Opus 256),
+# chaves de diagrama (Rhetorica 73), musica (Graduale 221-223), gravura e
+# carimbo nao marcados (Boecio 3), pagina so de desenho (Siebmacher, lado
+# direito). Texto corrido fica abaixo de 4% (Boecio 7, 8, 22; Escola 7 e 35;
+# Palatino 5 e 7; Opus 11; Horas 11, 13, 26, 27, 47), e as de diagrama
+# pequeno entre 5% e 9% (Opus 20, 165; Marial 7). Nao ha um vao claro entre
+# as duas turmas acima de 10%: subir para 30% tiraria do aviso so 3 das 19.
+# No A, essa tinta e guardada (a moldura e a tabela saem); no C ela vai a
+# branco - e ai que o aviso mais importa. Seguro mudar: o numero (so muda
+# quem vai para revisar). Arriscado: baixar muito (quase toda pagina com
+# gravura ou sujeira na beirada iria para revisar, e o aviso deixaria de ser
+# lido).
 LIMITE_DA_TINTA_FORTE_FORA = 0.10
 
 

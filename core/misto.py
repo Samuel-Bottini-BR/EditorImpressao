@@ -208,6 +208,22 @@ def escolhas_da_pagina(projeto, pagina) -> tuple[bool, OpcoesDoMisto]:
         letras_na_moldura=letras if letras in LETRAS_NA_MOLDURA else LETRAS_NA_MOLDURA_PADRAO)
 
 
+def alguma_precisa_das_linhas(projeto) -> bool:
+    """Alguma pagina em Preto e branco esta no Misto A ou C (precisa do leitor
+    de texto)? Para a tela aquecer o leitor antes da primeira previa
+    (core.linhas_do_texto.aquecer_em_segundo_plano). Sem "Limpar a folha",
+    nenhum filtro vale: False. Barato (so le campos)."""
+    if not getattr(projeto, "limpar", True):
+        return False
+    for pagina in getattr(projeto, "paginas", []):
+        if getattr(pagina, "filtro", None) != F.PRETO_E_BRANCO or getattr(pagina, "apagada", False):
+            continue
+        opcoes = opcoes_da_pagina(projeto, pagina)
+        if opcoes is not None and opcoes.precisa_das_linhas:
+            return True
+    return False
+
+
 def opcoes_da_pagina(projeto, pagina) -> OpcoesDoMisto | None:
     """As escolhas do Misto desta pagina, ou None se o Misto nao vale nela
     (ver escolhas_da_pagina). Nao olha o filtro: quem chama so pergunta para

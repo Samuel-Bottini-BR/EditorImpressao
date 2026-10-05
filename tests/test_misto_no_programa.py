@@ -397,3 +397,49 @@ def test_a_chave_das_linhas_muda_com_o_corte_e_nao_com_o_filtro(tmp_path):
     assert P._chave_das_linhas(p, pagina) != antes
     p.caminho_entrada = str(tmp_path / "nao-existe.pdf")
     assert P._chave_das_linhas(p, pagina) is None
+
+
+def test_alguma_precisa_das_linhas():
+    img, s = _pagina_sintetica()
+    p = _projeto(s)
+    assert not misto.alguma_precisa_das_linhas(p)
+    p.misto_so_as_letras = True
+    assert misto.alguma_precisa_das_linhas(p)
+    p.misto_fora_do_texto = misto.FORA_TUDO
+    assert not misto.alguma_precisa_das_linhas(p), "a B nao usa o leitor"
+    p.paginas[0].misto_fora_do_texto = misto.FORA_APAGAR
+    assert misto.alguma_precisa_das_linhas(p)
+    p.limpar = False
+    assert not misto.alguma_precisa_das_linhas(p)
+
+
+def test_aquecer_abre_o_leitor_uma_vez_numa_thread(monkeypatch):
+    import threading
+    import time
+
+    class Falso:
+        def __init__(self):
+            self.aberto = False
+            self.vezes = 0
+            self._tranca = threading.RLock()
+            self.thread = None
+
+        def _abrir(self):
+            self.vezes += 1
+            self.thread = threading.current_thread().name
+            time.sleep(0.05)
+            self.aberto = True
+
+    falso = Falso()
+    monkeypatch.setattr(linhas_do_texto, "_DETECTOR", falso)
+    monkeypatch.setattr(linhas_do_texto, "_detector", lambda: falso)
+    linhas_do_texto.aquecer_em_segundo_plano()
+    linhas_do_texto.aquecer_em_segundo_plano()          # ja abrindo: nada
+    for _ in range(100):
+        if falso.aberto and not linhas_do_texto._AQUECENDO:
+            break
+        time.sleep(0.02)
+    assert falso.vezes == 1 and falso.thread == "aquecer-leitor-de-texto"
+    linhas_do_texto.aquecer_em_segundo_plano()          # ja aberto: nada
+    time.sleep(0.05)
+    assert falso.vezes == 1

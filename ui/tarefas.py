@@ -13,6 +13,7 @@ import numpy as np
 import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
+from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -337,13 +338,17 @@ class GerenciadorPrevias(QObject):
             return f"{indice}:invalida"
         p = self.projeto.paginas[indice]
         f = self.projeto.folhas[p.folha]
+        # modo Misto (05/10/2026): o que vale nesta pagina (dela ou do livro)
+        ligado, escolhas = escolhas_do_misto(self.projeto, p)
+        mist = (f"{escolhas.fora_do_texto}/{escolhas.papel_da_gravura}/"
+                f"{escolhas.letras_na_moldura}" if ligado else "-")
         return (
             f"{indice}:{dpi}:{filtro or p.filtro}:{p.forca_preto}:"
             f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
             f"{self.projeto.limpar}:{self.projeto.endireitar}:"
-            f"{self.projeto.cortar_bordas}"
+            f"{self.projeto.cortar_bordas}:{mist}"
         )
 
     # --- uso --------------------------------------------------------------

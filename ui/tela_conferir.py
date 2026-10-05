@@ -36,6 +36,16 @@ verdade do core/camadas.py (core.pipeline.renderizar_com_filtro, pedido ao
 GerenciadorPrevias como qualquer prévia), e não um filtro comum. O alerta
 "Conferir o fundo tirado" é acertado a cada atualização da tela
 (core.pipeline.acertar_alertas_do_fundo) e quando a prévia chega.
+
+Modo Misto (05/10/2026; provisório até o layout, exceção da gerente para o
+implementador mexer aqui): no bloco AJUSTE da aba Filtro, só com o Preto e
+branco escolhido, a caixinha "Só as letras" desta página, os três botões
+("Guardar a tinta forte" / "Tudo em preto e branco" / "Só o texto achado") e o
+"Mais opções" (ui/widgets/escolhas_do_misto.py). A página herda do livro e
+troca só nela (ConfigPagina.misto_*); cada mudança é uma ação do desfazer,
+como o algoritmo e a limpeza de poeirinha. "todas" e "só nas próximas" levam
+junto as escolhas do Misto desta página. O aviso "Tinta forte fora do texto"
+é acertado como o do fundo tirado.
 """
 
 from __future__ import annotations
@@ -62,7 +72,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core import analise
+from core import analise, linhas_do_texto, misto
 from core.pipeline import acertar_alertas_do_fundo
 from core.filtros import (
     ALGORITMOS_PB,
@@ -83,6 +93,7 @@ from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixin
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
+from ui.widgets.escolhas_do_misto import BOTOES_DO_TEXTO, EscolhasDoMisto
 from ui.widgets.editor_selecao import (
     FERRAMENTA_RETANGULO,
     ferramenta_da_tecla,
@@ -1232,6 +1243,16 @@ class TelaConferir(QWidget):
         linha_algoritmo.addWidget(self.caixa_despeckle)
         dentro.addLayout(linha_algoritmo)
 
+        # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
+        # e branco escolhido (ver _configurar_medidor). Compacto: a altura da
+        # aba é pouca (a janela de 1280 x 657 tem de caber).
+        self.escolhas_misto = EscolhasDoMisto(compacto=True)
+        self.escolhas_misto.so_as_letras_mudou.connect(self._mudar_so_as_letras)
+        self.escolhas_misto.fora_do_texto_escolhido.connect(self._mudar_fora_do_texto)
+        self.escolhas_misto.papel_escolhido.connect(self._mudar_papel_da_gravura)
+        self.escolhas_misto.letras_escolhidas.connect(self._mudar_letras_na_moldura)
+        dentro.addWidget(self.escolhas_misto)
+
         fora.addWidget(self.bloco_ajuste)
 
         linha_botoes = QHBoxLayout()
@@ -1314,6 +1335,7 @@ class TelaConferir(QWidget):
             self._carregando = False
 
         self._montar_tira()
+        self._aquecer_o_leitor_se_precisar()
         self.atualizar()
 
     def _limpar_abas(self) -> None:
@@ -2073,6 +2095,7 @@ class TelaConferir(QWidget):
             {"filtro": filtro, "revisada": True},
             f"Filtro da página {self.indice_pagina + 1}: {nome_antes} para {nome_depois}",
         )
+        self._aquecer_o_leitor_se_precisar()      # modo Misto (05/10/2026)
 
     @protegido
     def _mudar_algoritmo_pb(self, indice: int) -> None:
@@ -2108,6 +2131,58 @@ class TelaConferir(QWidget):
             + ("ligado" if ligado else "desligado"),
         )
 
+    # --- modo Misto ("Só as letras", 05/10/2026) ---------------------------
+
+    def _mudar_misto(self, campo: str, valor, descricao: str) -> None:
+        """Uma escolha do Misto SO desta página, como ação do desfazer. Nada
+        acontece se o que vale nela (dela ou do livro) já é esse valor."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        ligado, escolhas = misto.escolhas_da_pagina(self.projeto, pagina)
+        agora = {"misto_so_as_letras": ligado,
+                 "misto_fora_do_texto": escolhas.fora_do_texto,
+                 "misto_papel_da_gravura": escolhas.papel_da_gravura,
+                 "misto_letras_na_moldura": escolhas.letras_na_moldura}[campo]
+        if agora == valor:
+            return
+        self._registrar("mudar_misto", "pagina", [self.indice_pagina], {campo: valor},
+                        f"Só as letras na página {self.indice_pagina + 1}: {descricao}")
+        self._aquecer_o_leitor_se_precisar()
+
+    def _aquecer_o_leitor_se_precisar(self) -> None:
+        """Se alguma página está no Misto A ou C, abre o leitor de texto numa
+        thread à parte (core.linhas_do_texto.aquecer_em_segundo_plano): a
+        primeira prévia não espera os ~7 a 20 s de abrir. Nunca levanta."""
+        try:
+            if self.projeto is not None and misto.alguma_precisa_das_linhas(self.projeto):
+                linhas_do_texto.aquecer_em_segundo_plano()
+        except Exception:  # noqa: BLE001 - aquecer e so uma otimizacao
+            registrar_erro("aquecer o leitor de texto", traceback.format_exc())
+
+    @protegido
+    def _mudar_so_as_letras(self, ligado: bool) -> None:
+        self._mudar_misto("misto_so_as_letras", bool(ligado),
+                          "ligado" if ligado else "desligado")
+
+    @protegido
+    def _mudar_fora_do_texto(self, valor: str) -> None:
+        nomes = {v: texto for v, texto, _frase in BOTOES_DO_TEXTO}
+        self._mudar_misto("misto_fora_do_texto", valor, nomes.get(valor, valor))
+
+    @protegido
+    def _mudar_papel_da_gravura(self, valor: str) -> None:
+        texto = "branco" if valor == misto.PAPEL_BRANCO else "como foi escaneado"
+        self._mudar_misto("misto_papel_da_gravura", valor, f"papel das gravuras {texto}")
+
+    @protegido
+    def _mudar_letras_na_moldura(self, valor: str) -> None:
+        textos = {misto.LETRAS_COR_PAPEL_BRANCO: "com a cor delas e papel branco",
+                  misto.LETRAS_COR_FUNDO_ORIGINAL: "com a cor delas e o fundo original",
+                  misto.LETRAS_PRETAS: "pretas"}
+        self._mudar_misto("misto_letras_na_moldura", valor,
+                          f"letras da moldura {textos.get(valor, valor)}")
+
     # --- medidor de ajuste ------------------------------------------------
 
     def _campo_do_ajuste(self, filtro: str | None = None) -> str | None:
@@ -2138,6 +2213,13 @@ class TelaConferir(QWidget):
         eh_preto_e_branco = pagina.filtro == PRETO_E_BRANCO
         self.seletor_algoritmo_pb.setVisible(eh_preto_e_branco)
         self.caixa_despeckle.setVisible(eh_preto_e_branco)
+        # modo Misto: so no Preto e branco; mostra o que vale nesta pagina
+        # (dela ou do livro), sem virar acao no desfazer
+        self.escolhas_misto.setVisible(eh_preto_e_branco)
+        if eh_preto_e_branco:
+            ligado, escolhas = misto.escolhas_da_pagina(self.projeto, pagina)
+            self.escolhas_misto.mostrar(ligado, escolhas.fora_do_texto,
+                                        escolhas.papel_da_gravura, escolhas.letras_na_moldura)
         if eh_preto_e_branco:
             indice = self.seletor_algoritmo_pb.findData(pagina.algoritmo_preto_branco)
             self.seletor_algoritmo_pb.blockSignals(True)
@@ -2274,7 +2356,9 @@ class TelaConferir(QWidget):
              "clareza_melhorar": pagina.clareza_melhorar,
              "intensidade_magico": pagina.intensidade_magico,
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             "despeckle": pagina.despeckle},
+             "despeckle": pagina.despeckle,
+             # modo Misto: as escolhas DESTA pagina (None = segue o livro)
+             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} em todas as {len(indices)} páginas",
         )
 
@@ -2290,7 +2374,9 @@ class TelaConferir(QWidget):
              "clareza_melhorar": pagina.clareza_melhorar,
              "intensidade_magico": pagina.intensidade_magico,
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             "despeckle": pagina.despeckle},
+             "despeckle": pagina.despeckle,
+             # modo Misto: as escolhas DESTA pagina (None = segue o livro)
+             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 
