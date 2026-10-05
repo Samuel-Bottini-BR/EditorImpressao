@@ -429,6 +429,30 @@ FOLGA_DA_MEDIDA_REDUZIDA = 1.6
 # medida COM a trava: na Horas 11 o k segue K_NORMAL e a imagem nao muda.
 # Arriscado: usar a medida sem trava para o k (muda o k e a imagem da Horas
 # 11) ou tirar a porta de tinta da folha inteira (a escolha poderia trocar).
+#
+# DIFERENCA_DE_TINTA_DO_ATALHO (05/10/2026, ressalva do verificador sobre o
+# atalho acima): o atalho confia que a copia reduzida e a pagina inteira
+# "enxergam" a mesma tinta. Numa foto em retícula fina (pontinhos de
+# impressao) isso falha: a copia reduzida ve cinza liso (muita tinta, traco
+# "grosso") e a pagina inteira ve pontinhos (pouca tinta, traco fino). Numa
+# folha artificial com retícula de 1 ponto em 85% da folha a copia reduzida
+# acha 86% de tinta e a inteira 44%, e o atalho trocava a escolha da medida
+# cheia (Sauvola) por Otsu. Agora o atalho so age quando as duas tintas
+# diferem no maximo DIFERENCA_DE_TINTA_DO_ATALHO (fracao da folha; 0,05 =
+# 5 pontos percentuais); senao, a medida cheia decide, como antes de 7f50e70.
+# Medido: Horas 11, 60,4% x 59,7% (0,65 ponto: o atalho age, com folga de
+# 7 vezes); nas 202 paginas de tinta alta do acervo varridas pelo verificador
+# (02/10), diferenca mediana de 0,4 ponto, 90% abaixo de 1 ponto, a maior
+# de pagina comum 1,4 ponto (Opus Majus 1); a unica pagina do acervo que
+# discorda de verdade e a ultima do Opus Majus (folha 450, foto: 96,5% x
+# 74,3%, 22 pontos; ela ja ficava fora do atalho por ter mais de 60% na
+# pagina inteira); as folhas de retícula, 30 a 45 pontos (nao age). No
+# acervo so a Horas 11 chega ao atalho. Seguro mudar: o valor entre ~2% e
+# ~10% (as mesmas escolhas no acervo). Arriscado: abaixo de ~1% (a Horas 11
+# voltaria a pagar a medida cheia, ~9,5 s) ou acima de ~20% (pagina de foto
+# como a do Opus Majus, com menos tinta, e a retícula entrariam no atalho).
+# Teste: tests/test_escolha_sem_a_trava_de_tinta.py.
+DIFERENCA_DE_TINTA_DO_ATALHO = 0.05
 
 
 def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
@@ -443,7 +467,11 @@ def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
 
     A medida reduzida (a do k, guardada) decide sozinha quando a pagina nao
     foi reduzida para medir, ou quando o traco e grosso com folga - ver
-    FOLGA_DA_MEDIDA_REDUZIDA. Senao, a medida de tamanho cheio, como sempre.
+    FOLGA_DA_MEDIDA_REDUZIDA. Quando a medida guardada desiste pela trava de
+    60% de tinta, a reduzida sem a trava ainda decide "Otsu com folga" - so se
+    a copia reduzida e a pagina inteira acham tinta parecida (ver
+    TINTA_DEMAIS_PARA_MEDIR e DIFERENCA_DE_TINTA_DO_ATALHO). Senao, a medida
+    de tamanho cheio, como sempre.
     Quem escolhe Otsu aqui ganha a borda do Sauvola (ver
     _otsu_com_a_borda_do_sauvola, em filtro_preto_e_branco).
     """
@@ -458,16 +486,24 @@ def escolher_algoritmo_automatico(cinza: np.ndarray) -> str:
                 return ALGORITMO_OTSU
         elif cinza.shape[0] > ALTURA_PARA_MEDIR_TRACO:
             # a medida guardada desistiu (ver TINTA_DEMAIS_PARA_MEDIR): a
-            # reduzida sem a trava responde "Otsu com folga" sem a cheia
-            sem_trava = _medir_espessura_do_traco(cinza, trava_de_tinta=False)
-            if (sem_trava is not None
-                    and sem_trava >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA):
-                # a mesma porta de tinta da medida cheia, abaixo
-                _lim, tinta = cv2.threshold(
-                    cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                fracao = cv2.countNonZero(tinta) / float(tinta.size)
-                return (ALGORITMO_OTSU if 0.002 <= fracao <= 0.6
-                        else ALGORITMO_SAUVOLA)
+            # reduzida sem a trava responde "Otsu com folga" sem a cheia -
+            # so quando a copia reduzida e a pagina inteira acham tinta
+            # parecida (ver DIFERENCA_DE_TINTA_DO_ATALHO)
+            _lim, tinta = cv2.threshold(
+                cinza, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            fracao = cv2.countNonZero(tinta) / float(tinta.size)
+            del tinta
+            if (0.002 <= fracao <= 0.6
+                    and abs(_tinta_da_copia_reduzida(cinza) - fracao)
+                    <= DIFERENCA_DE_TINTA_DO_ATALHO):
+                sem_trava = _medir_espessura_do_traco(cinza, trava_de_tinta=False)
+                if (sem_trava is not None
+                        and sem_trava >= ESPESSURA_DE_LETRA_GROSSA * FOLGA_DA_MEDIDA_REDUZIDA):
+                    return ALGORITMO_OTSU
+            # fora da porta de tinta (abaixo de 0,2% ou acima de 60%), a
+            # medida cheia, abaixo, responde Sauvola sem medir o traco - como
+            # o atalho respondia; tintas diferentes, ou traco sem folga, ela
+            # mede e decide
     except Exception:  # noqa: BLE001 - a medida cheia, abaixo, decide
         pass
     try:
@@ -646,17 +682,41 @@ def _k_da_espessura(espessura: float | None) -> float:
     return K_PARA_LETRA_FINA + (K_PARA_LETRA_GROSSA - K_PARA_LETRA_FINA) * fatia
 
 
+def _copia_para_medir(cinza: np.ndarray) -> tuple[np.ndarray, float]:
+    """A copia reduzida em que a espessura do traco e medida (altura
+    ALTURA_PARA_MEDIR_TRACO, INTER_AREA) e a escala usada; a propria folha,
+    com escala 1, se ela ja e baixa. Usada pela medida do k
+    (_medir_espessura_do_traco) e pela trava do atalho da escolha automatica
+    (_tinta_da_copia_reduzida): as duas tem de ver a MESMA copia. Arriscado:
+    mudar a interpolacao ou a altura (muda o k de todas as paginas)."""
+    escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
+    if escala < 1.0:
+        cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
+                                   max(8, int(cinza.shape[0] * escala))),
+                           interpolation=cv2.INTER_AREA)
+    return cinza, escala
+
+
+def _tinta_da_copia_reduzida(cinza: np.ndarray) -> float:
+    """Fracao da copia reduzida (_copia_para_medir) que o Otsu chama de tinta
+    - a mesma conta da trava de 60% da medida do k. So a escolha automatica
+    usa, para comparar com a tinta da pagina inteira (ver
+    DIFERENCA_DE_TINTA_DO_ATALHO). Custa uma reducao da folha e um Otsu
+    pequeno (centesimos de segundo), e so roda nas paginas em que a trava de
+    60% age (53 de 3353 folhas no acervo, varredura do verificador, 02/10)."""
+    reduzida, _escala = _copia_para_medir(cinza)
+    _lim, tinta = cv2.threshold(
+        reduzida, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    return cv2.countNonZero(tinta) / float(tinta.size)
+
+
 def _medir_espessura_do_traco(cinza: np.ndarray,
                               trava_de_tinta: bool = True) -> float | None:
     """A medicao de verdade, sem o cache. Ver _espessura_do_traco.
 
     trava_de_tinta=False: mede mesmo com mais de 60% de tinta - so para a
     escolha automatica (ver TINTA_DEMAIS_PARA_MEDIR); o k usa sempre a trava."""
-    escala = min(1.0, ALTURA_PARA_MEDIR_TRACO / max(1, cinza.shape[0]))
-    if escala < 1.0:
-        cinza = cv2.resize(cinza, (max(8, int(cinza.shape[1] * escala)),
-                                   max(8, int(cinza.shape[0] * escala))),
-                           interpolation=cv2.INTER_AREA)
+    cinza, escala = _copia_para_medir(cinza)
 
     # A mesma mascara que a regua usa para medir espessura - Otsu -, para o
     # filtro e a regua nao discordarem sobre a grossura da mesma letra.
@@ -3309,6 +3369,7 @@ def _tres_canais(img: np.ndarray) -> np.ndarray:
 def _filtro_so_no_pedaco(
     img: np.ndarray, base: np.ndarray, selecao, filtro: str,
     forca_preto: int, clareza: int, intensidade: int,
+    pedaco_inteiro: bool = False,
 ) -> np.ndarray:
     """Aplica, por cima do resultado, o filtro que a pessoa pediu para um pedaco.
 
@@ -3322,6 +3383,28 @@ def _filtro_so_no_pedaco(
     foi pedido. Calcular no recorte sairia diferente: todos os filtros aqui se
     ancoram no nivel do papel da folha, e um recorte de gravura escura teria
     outro nivel de papel - a mesma armadilha que ja custou as capas lavadas.
+
+    Devolve `base` (o MESMO objeto) quando nenhum pedaco vale em ponto
+    nenhum: o ramo do Preto e branco usa isso para saber se a pagina ainda
+    cabe em 1 bit. Arriscado: devolver uma copia nesse caso.
+
+    pedaco_inteiro (so o Preto e branco passa True; conserto de 05/10/2026,
+    P6 da conferencia 11, "do jeito completo"): a area marcada obedece
+    INTEIRA ao filtro escolhido para ela, inclusive as partes claras e o
+    papel que a pessoa pegou junto. Com False (Melhorar e Magico pro, como
+    sempre), o que for mais claro que TINTA_PARA_ORLA do nivel do papel segue
+    a pagina (ver o comentario abaixo). Por que o Preto e branco nao usa essa
+    regra: ela toma por papel tudo acima de 60% do papel, e na Escola 7 isso e
+    57% da pintura - o ceu, as nuvens e partes do leao saiam cinza e
+    manchados (simulacao da conferencia 11). Tentou-se, em 05/10, separar so
+    a margem do retangulo (claro como o papel e ligado ao papel de fora): na
+    Escola 7 ficava certo, mas na Opus Majus 20, foto que encosta na beirada,
+    a parede clara da foto se ligava ao papel de baixo e virava manchas
+    brancas recortadas (relatorios/conferir/so-neste-pedaco-2026-10-05/
+    descartado/). A borda do pedaco e a que a pessoa desenhou: o papel que
+    ela pegar junto sai no filtro do pedaco (no Original, creme).
+    Arriscado: passar True nos outros filtros (muda paginas que o Samuel ja
+    aprovou) ou voltar a separar o "papel" pelo claro no Preto e branco.
     """
     pedidos = [f for f in getattr(selecao, "filtros_pedidos", lambda: [])()
                if f in FILTROS_COMUNS and f != filtro]   # "Tirar o fundo" nao vale por pedaco
@@ -3335,18 +3418,23 @@ def _filtro_so_no_pedaco(
     # esse papel ficar no Original ele sai creme ao lado do branco do resto -
     # uma faixa cinza no pe da gravura, que foi o que o Samuel apontou. Papel e
     # papel em qualquer regiao; o filtro do pedaco vale para o CONTEUDO dele.
-    cinza = _para_cinza(img)
-    nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
-    e_papel = cinza > nivel_papel * TINTA_PARA_ORLA
-    lado = max(3, int(min(altura, largura) * ORLA_DA_TINTA_NO_PAPEL) | 1)
-    nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
-    # a orla em volta do conteudo continua sendo do pedaco, para nao serrilhar
-    e_papel = cv2.erode(e_papel.astype(np.uint8), nucleo) > 0
-    so_conteudo = 1.0 - e_papel.astype(np.float32)
+    # (Menos no Preto e branco: ver pedaco_inteiro no docstring.)
+    so_conteudo = None
+    if not pedaco_inteiro:
+        cinza = _para_cinza(img)
+        nivel_papel = _percentil(cinza, BRANCO_PERCENTIL)
+        e_papel = cinza > nivel_papel * TINTA_PARA_ORLA
+        lado = max(3, int(min(altura, largura) * ORLA_DA_TINTA_NO_PAPEL) | 1)
+        nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+        # a orla em volta do conteudo continua sendo do pedaco, para nao serrilhar
+        e_papel = cv2.erode(e_papel.astype(np.uint8), nucleo) > 0
+        so_conteudo = 1.0 - e_papel.astype(np.float32)
 
     saida = base
     for pedido in pedidos:
-        peso = selecao.peso_do_filtro(altura, largura, pedido) * so_conteudo
+        peso = selecao.peso_do_filtro(altura, largura, pedido)
+        if so_conteudo is not None:
+            peso = peso * so_conteudo
         if not peso.any():
             continue
         if pedido == ORIGINAL:
@@ -3442,6 +3530,15 @@ def aplicar_filtro_com_selecao(
         # continuo sai em tons de cinza (decisao P1). Ver
         # _preto_e_branco_com_gravura. Antes daqui, toda gravura ficava em
         # cor (o Melhorar rodava dentro dela).
+        #
+        # "So neste pedaco" (conserto de 05/10/2026, P6 da conferencia 11):
+        # ate ali este ramo saia antes de olhar o pedaco, e a pintura marcada
+        # em Original saia cinza, sem aviso. Agora o pedaco vale por cima,
+        # inteiro (pedaco_inteiro=True: o ceu e as nuvens da pintura, e o
+        # papel que a pessoa pegou junto, obedecem ao pedaco - ver
+        # _filtro_so_no_pedaco). Pagina sem pedaco
+        # (o normal) sai exatamente como antes: _filtro_so_no_pedaco devolve
+        # o mesmo objeto, e a pagina continua em 1 bit quando era.
         if filtro == PRETO_E_BRANCO:
             binaria = filtro_preto_e_branco(img, forca=forca_preto, algoritmo=algoritmo_pb,
                                             despeckle=despeckle)
@@ -3449,11 +3546,18 @@ def aplicar_filtro_com_selecao(
                 saida = binaria
                 if peso_papel.any():
                     saida = _misturar(saida, np.full_like(saida, 255), peso_papel)
-                return saida, True
+                mono = True
+            else:
+                saida, mono = _preto_e_branco_com_gravura(
+                    img, binaria, peso_gravura, peso_papel, clareza,
+                    decoracao_em_preto_e_branco=decoracao_em_preto_e_branco)
 
-            return _preto_e_branco_com_gravura(
-                img, binaria, peso_gravura, peso_papel, clareza,
-                decoracao_em_preto_e_branco=decoracao_em_preto_e_branco)
+            com_pedaco = _filtro_so_no_pedaco(img, saida, selecao, filtro,
+                                              forca_preto, clareza, intensidade,
+                                              pedaco_inteiro=True)
+            if com_pedaco is saida:
+                return saida, mono
+            return com_pedaco, False    # o pedaco tem tom ou cor: nao cabe em 1 bit
 
         # --- Melhorar e Magico pro ------------------------------------------
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \

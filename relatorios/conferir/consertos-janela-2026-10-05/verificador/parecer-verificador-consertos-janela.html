@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: consertos da janela (05/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: consertos da janela (05/10/2026)</h1>
+<p><strong>Em uma frase:</strong> <strong>PRONTO PARA CONFERIR, com ressalvas.</strong> Os três consertos fazem o que prometem, conferido na janela de verdade: gerar o mesmo livro de novo não trava mais; o cartão mostra "pronto, PDF gerado"; e a trava do atalho da Horas 11 não mudou nenhuma imagem (96 de 96 idênticas). Mas os <strong>dois bugs que o implementador deduziu existem de verdade</strong> (vistos na janela), e o primeiro é grave: <strong>"substituir o antigo" e depois "cancelar" apaga o PDF antigo</strong>, sem aviso. E apareceu um terceiro, menor: depois de cancelar, o cartão continua verde dizendo "PDF gerado", até fechar e abrir o programa.</p>
+<p>Ramo <code>consertos-janela-2026-10-05</code> (3 commits sobre <code>aab746f</code>: <code>8081335</code>, <code>5e68098</code>, <code>120e46b</code>). Nenhum código foi mexido por mim.</p>
+<blockquote>
+<p><strong>Defeito conhecido (aviso obrigatório até a Fase 1 ficar pronta):</strong> moldura dourada e iluminura ainda são defeito conhecido (itens 1.4 e 1.5). Nada destes consertos mexe nisso.</p>
+</blockquote>
+<hr />
+<h2>1. Como foi feito</h2>
+<ul>
+<li><strong>Máquina:</strong> <code>pytest</code> inteiro na worktree, <code>teste_botoes.py</code>, e as 32 páginas-gabarito × 3 filtros comparadas ponto a ponto entre <code>aab746f</code> e <code>120e46b</code> (cópias limpas do código, feitas com <code>git archive</code>, com a pasta <code>modelos/</code> copiada nas duas).</li>
+<li><strong>Olho, na janela real:</strong> instância minha do programa (código igual ao <code>120e46b</code>), <strong>fora da tela</strong> (não apareceu para o Samuel), em <strong>1600 × 821 pixels = 1280 × 657 pontos</strong> como na rodada de 02/10. Cliques e teclas por mensagens nativas do Windows; menus pelo teclado (setas + Enter); <code>WM_SETFOCUS</code> só na janela de teste. As caixas do Windows "abrir PDF" e "escolher pasta" foram respondidas por arquivo. <strong>Pasta de dados própria</strong> (<code>LOCALAPPDATA</code> e a pasta do usuário trocadas), nunca a do Samuel.</li>
+<li><strong>Livro de teste:</strong> <code>livro-teste.pdf</code>, 4 folhas copiadas das páginas-gabarito do Boécio (p. 3, 7, 8, 22), "Dividir folhas ao meio" desligado, filtro Preto e branco, "Montar cadernos" desligado (o normal do programa).</li>
+<li>No fim, fechei a minha janela com WM_CLOSE (fechou nas 4 vezes). Nenhuma linha no <code>erros.log</code> da pasta de teste.</li>
+</ul>
+<hr />
+<h2>2. Testes de máquina</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pytest tests -q</code> na worktree, com <code>EDITOR_IMPRESSAO_GABARITO</code></td>
+<td><strong>1301 passaram, 87 pularam, 0 falhas</strong> (8 min 8 s, PC ocupado)</td>
+</tr>
+<tr>
+<td>Os que pularam, rodados de novo numa cópia limpa com o gabarito e <code>saida_teste</code> ligados (só leitura)</td>
+<td><strong>273 passaram, 7 pularam, 0 falhas</strong></td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code></td>
+<td><strong>132 ações, 0 falhas</strong> (inclui "salvar como (2)")</td>
+</tr>
+<tr>
+<td>32 páginas-gabarito × 3 filtros, <code>aab746f</code> × <code>120e46b</code></td>
+<td><strong>96 de 96 idênticas, ponto a ponto</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por que pularam os 87 na worktree:</strong></p>
+<ul>
+<li><strong>28</strong> (<code>test_camadas</code>, <code>test_gravura_scantailor</code>, <code>test_medidor_nas_paginas_otsu</code>): "pasta gabarito/ ausente". Esses testes procuram o gabarito <strong>dentro da pasta do código</strong> e <strong>não leem</strong> a variável <code>EDITOR_IMPRESSAO_GABARITO</code> (só o teste novo da Horas 11 lê). Rodados de novo com o gabarito ligado: passaram.</li>
+<li><strong>52</strong> de OCR: os resultados guardados em <code>saida_teste/ocr-1.3</code> e <code>saida_teste/ocr-comparar</code> ficam fora do git. Rodados de novo com <code>saida_teste</code> ligado: passaram.</li>
+<li><strong>7</strong> continuam pulando: 6 porque o motor do Kraken não está montado na cópia (fica fora do git), 1 que só roda com <code>OCR_22=1</code> (~5 min, de propósito).</li>
+<li>O teste novo <strong><code>test_horas_11_de_verdade_continua_no_atalho</code> rodou e passou</strong> (a variável do gabarito funcionou para ele).</li>
+</ul>
+<hr />
+<h2>3. Item por item</h2>
+<h3>Conserto 1 (<code>8081335</code>): gerar o mesmo livro de novo — <strong>funciona</strong> (olho, na janela)</h3>
+<ol>
+<li>Abri o livro, processei até o PDF (<code>livro-teste - preto e branco.pdf</code>, 4 páginas).</li>
+<li>Fechei o programa, abri de novo, reabri o livro (duplo clique no cartão) e cliquei "Confirmar e processar".</li>
+<li>A janela abriu <strong>com a pasta do PDF anterior e o mesmo nome</strong>, <strong>"Processar" aceso (azul)</strong>, a frase "Já existe um arquivo com esse nome - eu pergunto antes de substituir." e a <strong>faixa laranja "Já existe um arquivo chamado livro-teste - preto e branco.pdf nessa pasta"</strong>. Antes deste conserto aparecia "Esse caminho não é uma pasta." com "Processar" apagado.</li>
+</ol>
+<p><img alt="Reabrir o mesmo livro: pasta, nome, Processar aceso e a faixa &quot;Já existe&quot;" src="prints/08-confirmar-gerar-de-novo.png" /></p>
+<ol start="4">
+<li>Cliquei "Processar": veio a caixa "substituir o antigo / salvar como … (2).pdf / cancelar".</li>
+</ol>
+<p><img alt="A caixa" src="prints/09-caixa-substituir-ou-salvar-como.png" /></p>
+<ol start="5">
+<li><strong>"salvar como (2)" (S1 do Samuel, conferido de verdade):</strong> escolhi "salvar como livro-teste - preto e branco (2).pdf". Chegou em "Ficou pronto!" com o nome (2). No disco: o <strong>(2).pdf existe, com 4 páginas</strong>, e as 4 páginas são <strong>iguais ponto a ponto</strong> às do primeiro; o <strong>antigo ficou intacto</strong> (mesma impressão digital sha256 <code>ebd46667…</code> e mesma data, 13:47:32). Abri a página 1 do (2): é a capa do Boécio, filtrada.</li>
+</ol>
+<p><img alt="Ficou pronto com o (2)" src="prints/10-pronto-salvar-como-2.png" /></p>
+<p><img alt="Página 1 do PDF (2)" src="prints/11-pdf-2-pagina-1.png" /></p>
+<ol start="6">
+<li><strong>Menu "Nome do arquivo…":</strong> escolhi Arquivo &gt; "Nome do arquivo…", digitei <code>meu-livro-teste.pdf</code> e dei OK. "Confirmar e processar" abriu <strong>com esse nome</strong>, na mesma pasta, sem faixa "Já existe" (o arquivo não existia). Processei e o <code>meu-livro-teste.pdf</code> foi gerado.</li>
+</ol>
+<p><img alt="O nome escolhido no menu" src="prints/14-menu-nome-do-arquivo.png" /></p>
+<p><img alt="Confirmar e processar usa o nome do menu" src="prints/15-confirmar-com-o-nome-do-menu.png" /></p>
+<ol start="7">
+<li><strong>Pasta sumiu (pendrive tirado):</strong> gerei o PDF numa pasta <code>pendrive</code>, fechei o programa e apaguei a pasta. Ao reabrir, "Confirmar e processar" veio com a <strong>pasta sugerida</strong> (<code>…\home\Editor de Impressão</code>), o nome guardado e "Processar" aceso, e <strong>a pasta <code>pendrive</code> não foi recriada</strong> (conferido no disco).</li>
+</ol>
+<p><img alt="Pasta do PDF sumiu: volta para a sugerida" src="prints/20-confirmar-pasta-do-pdf-sumiu.png" /></p>
+<h3>Conserto 2 (<code>5e68098</code>): cartão "pronto, PDF gerado" — <strong>funciona</strong> (olho, na janela), com um buraco (ver bug 3)</h3>
+<p>Depois de gerar o PDF e clicar "fazer outro", o cartão ficou com a <strong>barra verde cheia, "pronto, PDF gerado" e o botão "abrir a pasta"</strong>. Continuou assim depois de fechar e abrir o programa. No disco, <code>resumo.json</code> com <code>"pdf_gerado": true</code>. Não cliquei "abrir a pasta" (abriria o Explorer na tela do Samuel); o <code>teste_botoes.py</code> clica nele por máquina.</p>
+<p><img alt="Cartão com &quot;pronto, PDF gerado&quot;" src="prints/06-inicio-cartao-pdf-gerado.png" /></p>
+<h3>Conserto 3 (<code>120e46b</code>): trava do atalho da Horas 11 — <strong>nenhuma imagem mudou</strong> (máquina)</h3>
+<ul>
+<li><strong>96 de 96 imagens idênticas</strong> ponto a ponto ao <code>aab746f</code> (32 páginas-gabarito × Preto e branco, Mágico pro, Melhorar).</li>
+<li>Olhei a Horas 11 nos 3 filtros (a única página do gabarito que passa pelo atalho): página inteira, iluminura com as cores, texto preto no Preto e branco e colorido nos outros dois. Igual ao antes.</li>
+<li><strong>Tempo, só como indicação (PC ocupado com outros dois agentes):</strong> Horas 11 no Preto e branco <strong>15,3 s antes × 15,3 s agora</strong>; Mágico pro 20,2 × 20,0 s; Melhorar 20,8 × 19,1 s. Soma das 32 páginas: 132 × 135 s, 240 × 236 s, 236 × 234 s. Sem diferença além do ruído: <strong>o atalho continua agindo na Horas 11</strong> (se não agisse, ela pagaria a medida grande, ~9,5 s a mais). O teste com a Horas 11 de verdade também passou.</li>
+</ul>
+<p><img alt="Horas 11 agora: Preto e branco, Mágico pro, Melhorar" src="prints/horas11-agora-3-filtros.png" /></p>
+<hr />
+<h2>4. Os dois bugs que o implementador deduziu: <strong>os dois existem</strong> (vistos na janela)</h2>
+<h3>Bug 1 (GRAVE): "substituir o antigo" + "cancelar" apaga o PDF antigo — <strong>CONFIRMADO</strong></h3>
+<p><strong>Como testei:</strong> com <code>meu-livro-teste.pdf</code> gerado (1,1 MB), reabri o livro, "Confirmar e processar" &gt; "Processar" &gt; <strong>"substituir o antigo"</strong> e, logo em seguida, <strong>"cancelar"</strong> na tela de progresso. Resultado: o programa voltou para a tela Conferir <strong>sem nenhuma mensagem</strong>, e o <strong><code>meu-livro-teste.pdf</code> sumiu do disco</strong>. O Kaique perde o PDF que já tinha, e não fica sabendo.</p>
+<p><img alt="A escolha &quot;substituir o antigo&quot;" src="prints/16-caixa-antes-de-substituir.png" /></p>
+<p><img alt="Depois de cancelar: volta para Conferir, sem aviso; o PDF antigo não existe mais" src="prints/17-depois-de-cancelar.png" /></p>
+<p><strong>Por que acontece (leitura do código, <code>core/pipeline.py</code>):</strong> sem "Montar cadernos" (o normal), o PDF é gravado <strong>direto no lugar do arquivo final</strong> (l. 1038, <code>destino = saida_final</code>). Ao cancelar, o <code>EscritorPDF</code> grava por cima o que já tinha (<code>__exit__</code> → <code>fechar</code> → <code>save</code>), e depois o tratamento do cancelamento apaga o destino (l. 1133–1137, <code>Path(destino).unlink(missing_ok=True)</code>). Mesmo cancelando antes da primeira página, o <code>unlink</code> apaga o antigo. <strong>Com "Montar cadernos" ligado o antigo escapa</strong>, porque aí se grava num arquivo temporário e só no fim no lugar certo.</p>
+<p><strong>É antigo</strong> (não foi criado por estes commits), mas o conserto 1 deixa o caminho mais comum: agora reabrir o livro leva direto à caixa "substituir / salvar como". Fica a sugestão para quem consertar: gravar sempre num arquivo temporário ao lado e só trocar pelo final quando terminar bem (como já se faz com os cadernos).</p>
+<h3>Bug 2: o cartão continua "PDF gerado" depois de mudar páginas sem gerar de novo — <strong>CONFIRMADO</strong></h3>
+<p><strong>Como testei:</strong> com o PDF gerado, reabri o livro, troquei o filtro da página 1 para Melhorar (menu Filtro), voltei ao início <strong>sem processar</strong>. O cartão continuou <strong>verde, "pronto, PDF gerado"</strong>; no disco, <code>pdf_gerado: true</code> e <code>conferidas: 1</code>. O PDF não tem mais a página 1 como ela está no trabalho.</p>
+<p><img alt="Página 1 trocada para Melhorar" src="prints/12-conferir-pagina-1-trocada-para-melhorar.png" /></p>
+<p><img alt="De volta ao início sem gerar: o cartão ainda diz &quot;pronto, PDF gerado&quot;" src="prints/13-inicio-depois-de-mudar-sem-gerar.png" /></p>
+<p>Nada põe <code>pdf_gerado</code> em falso quando o trabalho muda (só ao começar a processar e no "começar de novo"). É menos grave que o bug 1, e é uma decisão de como o cartão deve falar ("pronto" × "mudou depois do PDF").</p>
+<h3>Bug 3 (novo, menor): depois de cancelar, o cartão continua verde até fechar o programa</h3>
+<p>No teste do bug 1, depois de cancelar fui ao início por Arquivo &gt; "Voltar para as opções" &gt; "voltar". O disco e a memória do programa já diziam <code>pdf_gerado: false</code>, mas o <strong>cartão ainda mostrava "pronto, PDF gerado" e "abrir a pasta"</strong>, para um PDF que não existe mais. Só ficou certo ("1 de 4 conferidas", "continuar") depois de <strong>fechar e abrir o programa</strong>.</p>
+<p><img alt="Depois de cancelar: o cartão ainda verde" src="prints/18-inicio-depois-de-cancelar.png" /></p>
+<p><img alt="Depois de fechar e abrir: o cartão certo" src="prints/19-inicio-sessao-nova-depois-de-cancelar.png" /></p>
+<p><strong>Por que:</strong> o botão "voltar" da tela "O que fazer" vai para o início sem recarregar os cartões (<code>ui/janela_principal.py</code> l. 132, <code>setCurrentIndex(INICIO)</code> sem <code>tela_inicio.recarregar()</code>). O <code>processar</code> põe <code>pdf_gerado</code> em falso, mas o cartão na tela é o de antes. Antigo (a contagem "X de Y conferidas" também fica velha nesse caminho), mas agora aparece como uma promessa errada em verde.</p>
+<hr />
+<h2>5. Ressalvas e coisas estranhas (nenhuma impede os três consertos)</h2>
+<ul>
+<li><strong>Velocidade:</strong> o teste oficial (<code>teste_velocidade.py</code>, ~12 min, só com o PC parado) <strong>não foi rodado</strong>: o PC estava com outros dois agentes. Os tempos acima são indicação.</li>
+<li><strong>Três frases sobre o mesmo arquivo</strong> (N9 de 02/10, antigo): a janela diz "eu pergunto antes de substituir" <strong>e</strong> "Se continuar, ele será substituído", e a caixa seguinte vem com "salvar como (2)" de padrão. Com o conserto 1, o Kaique vai ver isso <strong>toda vez</strong> que gerar o mesmo livro de novo.</li>
+<li><strong>Depois de um "salvar como (2)", a próxima vez propõe o nome "(2)"</strong> (e a caixa oferece "(3)"). É o comportamento pedido ("o mesmo destino da vez anterior"), mas pode juntar (2), (3), (4)… na pasta. Pergunta para o Samuel, não defeito.</li>
+<li><strong>Pasta do PDF sumiu:</strong> a janela de confirmar faz a coisa certa, mas o cartão continua dizendo "pronto, PDF gerado" com "abrir a pasta" para uma pasta que não existe (o menu do botão direito já apaga "abrir a pasta de saída" nesse caso; o botão do cartão não).</li>
+<li><strong>Os 28 testes que procuram o gabarito dentro da pasta do código</strong> não leem <code>EDITOR_IMPRESSAO_GABARITO</code>: numa worktree eles pulam sem avisar. Rodados por mim numa cópia com o gabarito ligado: passaram.</li>
+<li><strong>Caixinhas e bolinhas sem o quadrado/círculo</strong> na tela "O que fazer" (O1 de 02/10, ainda não feito) — visto no print abaixo, antigo.</li>
+<li><strong>Nos prints 07 e 19</strong> há uma faixa preta à direita: é o primeiro desenho da janela logo depois de eu a mover para fora da tela (no print seguinte some), não é defeito do programa.</li>
+<li>Não testei "cancelar" com "Montar cadernos" ligado na janela; a leitura do código diz que aí o antigo escapa.</li>
+</ul>
+<p><img alt="Tela &quot;O que fazer&quot; (caixinhas sem o quadrado, antigo)" src="prints/02-o-que-fazer.png" /></p>
+<hr />
+<h2>6. O que eu vi em cada print (todos abertos)</h2>
+<table>
+<thead>
+<tr>
+<th>Print</th>
+<th>O que mostra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01b-inicio-vazia</td>
+<td>Tela inicial vazia, 1600 × 821</td>
+</tr>
+<tr>
+<td>02-o-que-fazer</td>
+<td>Opções do livro de teste (Preto e branco escolhido depois)</td>
+</tr>
+<tr>
+<td>03-conferir</td>
+<td>Conferir, página 1, "Confirmar e processar"</td>
+</tr>
+<tr>
+<td>04-confirmar-primeira-vez</td>
+<td>Primeira vez: pasta escolhida, nome sugerido, Processar aceso</td>
+</tr>
+<tr>
+<td>05-pronto</td>
+<td>"Ficou pronto!", 4 páginas, 0,1 MB</td>
+</tr>
+<tr>
+<td>06-inicio-cartao-pdf-gerado</td>
+<td>Cartão verde, "pronto, PDF gerado", "abrir a pasta"</td>
+</tr>
+<tr>
+<td>07-inicio-sessao-nova</td>
+<td>O mesmo cartão depois de fechar e abrir</td>
+</tr>
+<tr>
+<td>08-confirmar-gerar-de-novo</td>
+<td>Mesma pasta e nome, Processar aceso, faixa "Já existe"</td>
+</tr>
+<tr>
+<td>09-caixa-substituir-ou-salvar-como</td>
+<td>substituir / salvar como (2) / cancelar</td>
+</tr>
+<tr>
+<td>10-pronto-salvar-como-2</td>
+<td>"Ficou pronto!" com o (2)</td>
+</tr>
+<tr>
+<td>11-pdf-2-pagina-1</td>
+<td>Página 1 do (2), capa do Boécio filtrada</td>
+</tr>
+<tr>
+<td>12-conferir-pagina-1-trocada-para-melhorar</td>
+<td>Filtro da página 1 = Melhorar</td>
+</tr>
+<tr>
+<td>13-inicio-depois-de-mudar-sem-gerar</td>
+<td>Cartão ainda "pronto, PDF gerado" (bug 2)</td>
+</tr>
+<tr>
+<td>14-menu-nome-do-arquivo</td>
+<td>Caixa "Nome do arquivo" com <code>meu-livro-teste.pdf</code></td>
+</tr>
+<tr>
+<td>15-confirmar-com-o-nome-do-menu</td>
+<td>Confirmar com <code>meu-livro-teste.pdf</code></td>
+</tr>
+<tr>
+<td>16-caixa-antes-de-substituir</td>
+<td>Caixa para <code>meu-livro-teste.pdf</code> (escolhido "substituir")</td>
+</tr>
+<tr>
+<td>17-depois-de-cancelar</td>
+<td>Volta para Conferir sem aviso; PDF antigo apagado (bug 1)</td>
+</tr>
+<tr>
+<td>18-inicio-depois-de-cancelar</td>
+<td>Cartão ainda verde (bug 3)</td>
+</tr>
+<tr>
+<td>19-inicio-sessao-nova-depois-de-cancelar</td>
+<td>Depois de reabrir: "1 de 4 conferidas", "continuar"</td>
+</tr>
+<tr>
+<td>20-confirmar-pasta-do-pdf-sumiu</td>
+<td>Pasta sumida: volta à sugerida, nome guardado, Processar aceso</td>
+</tr>
+<tr>
+<td>horas11-agora-3-filtros</td>
+<td>Horas 11 nos 3 filtros (idêntica ao antes)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. Para a Lista de bugs (05/10/2026)</h2>
+<ol>
+<li><strong>Grave:</strong> "substituir o antigo" + "cancelar" apaga o PDF antigo, sem aviso (sem "Montar cadernos"). <code>core/pipeline.py</code> l. 1038 e 1133–1137. Prints 16 e 17.</li>
+<li>"pronto, PDF gerado" continua depois de mudar páginas sem gerar de novo. Prints 12 e 13.</li>
+<li>Depois de cancelar e voltar pelo "voltar" da tela "O que fazer", o cartão continua verde até fechar o programa (<code>ui/janela_principal.py</code> l. 132 não recarrega os cartões). Prints 18 e 19.</li>
+<li>Os testes de <code>test_camadas</code>, <code>test_gravura_scantailor</code> e <code>test_medidor_nas_paginas_otsu</code> não leem <code>EDITOR_IMPRESSAO_GABARITO</code> e pulam calados em worktree.</li>
+</ol>
+<hr />
+<h2>8. Onde está</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/consertos-janela-2026-10-05/verificador/parecer-verificador-consertos-janela.html</code> (e <code>.md</code>, <code>.pdf</code>), na worktree <code>consertos</code>.</li>
+<li>Prints: <code>prints/</code> ao lado (2,4 MB, no git). O <code>.pdf</code> tem 26 MB (as imagens entram sem compressão) e fica <strong>fora do git</strong>, só nesta pasta.</li>
+<li>Scripts usados: <code>passo.py</code> e <code>lancador.py</code> (piloto da janela, a partir dos de 02/10), <code>montar_livro.py</code>, <code>rodar_tudo.sh</code> e <code>comparar.py</code> (a comparação usa o <code>rodar_verificador.py</code> de 02/10).</li>
+<li>Rodadas, cópias do código e pasta de dados de teste: <code>D:\programas\EditorImpressao\.claude\worktrees\verif-consertos-saida\</code> (fora do git; pode ser apagada).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 14:23</p>
+</body>
+</html>

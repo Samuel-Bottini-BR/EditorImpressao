@@ -943,6 +943,14 @@ class JanelaPrincipal(QMainWindow):
 
         self.projeto.caminho_saida = str(caminho)
         configuracoes.lembrar_pasta_de_saida(caminho.parent)
+        # O cartao da tela inicial deixa de dizer "pronto, PDF gerado" enquanto
+        # o PDF esta sendo gravado: o destino pode ser outro nome, ou o mesmo
+        # arquivo sendo substituido. So _processamento_pronto (PDF gravado com
+        # sucesso) o poe de volta em verdadeiro; cancelado ou com erro, fica
+        # falso. Gravado no disco pelo _salvar_agora logo abaixo
+        # (projetos.atualizar -> gravar_resumo). Ver _anotar_pdf_gerado.
+        if self.resumo is not None:
+            self.resumo.pdf_gerado = False
         # Grava na pasta DO PROJETO aberto (resumo.pasta). Ate 29/09/2026
         # chamava historico.salvar_projeto, que escolhia a pasta pelo NOME do
         # livro e gravava por cima de outro projeto de mesmo nome (bug grave
@@ -1063,11 +1071,35 @@ class JanelaPrincipal(QMainWindow):
             paginas = folhas_de_saida or len(self.projeto.paginas_ativas)
 
         historico.registrar(self.projeto, paginas)
+        self._anotar_pdf_gerado(caminho)
         self._salvar_agora()          # na pasta do projeto, nao pelo nome (ver processar)
         self.tela_inicio.recarregar()
 
         self.tela_final.mostrar(self.projeto, caminho, paginas, folhas_de_saida)
         self.telas.setCurrentIndex(FINAL)
+
+    def _anotar_pdf_gerado(self, caminho: str) -> None:
+        """O PDF foi gravado com sucesso: o cartao do livro na tela inicial
+        passa a mostrar "pronto, PDF gerado" e o botao "abrir a pasta".
+
+        Bug da Lista de bugs (02/10/2026, achado na janela real): o campo
+        `pdf_gerado` do resumo (projetos.Resumo, lido em ui/tela_inicio.py)
+        nunca virava verdadeiro - so o "comecar de novo" o punha em falso -, e
+        o cartao nunca dizia que o livro estava pronto.
+
+        So e chamado por _processamento_pronto (o sinal `concluida` da
+        TarefaProcessar, emitido depois de o PDF ser gravado). Cancelado ou
+        com erro nao passa aqui, e o processar ja o pos em falso ao comecar.
+        Quem grava no disco e o _salvar_agora, logo depois
+        (projetos.atualizar -> gravar_resumo). Arriscado: marcar em outro
+        lugar (ex.: ao comecar o processamento), o que faria o cartao
+        prometer um PDF que pode nao existir. Teste:
+        tests/test_cartao_pdf_gerado.py.
+        """
+        if self.resumo is None:
+            return
+        self.resumo.pdf_gerado = True
+        self.resumo.caminho_saida = str(caminho)
 
     def _falhou_no_processamento(self, mensagem: str) -> None:
         """Processamento deu erro: volta para Conferir (o projeto continua
