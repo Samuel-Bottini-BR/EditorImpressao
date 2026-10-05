@@ -141,6 +141,65 @@ class TarefaProcessar(QThread):
             self.falhou.emit(_mensagem_amigavel(erro))
 
 
+class TarefaConverterZonas(QThread):
+    """Converte as zonas do livro inteiro para o formato novo, por tras, ao
+    abrir (decisao Z1 (b) do Samuel, 05/10/2026: "O livro inteiro, por tras,
+    ao abrir"). O trabalho e de core.pipeline.converter_zonas_do_livro; aqui
+    so o fio, o andamento e o cancelar.
+
+    Mexe no projeto da tela (anota ConfigPagina.geometria_das_zonas, sem
+    mexer nas zonas), por isso NAO trabalha numa copia: a gravacao seguinte
+    da janela leva o que foi convertido. A conta e protegida pela trava das
+    zonas (core/zonas_na_folha.TRANCA_DAS_ZONAS), a mesma da gravacao.
+
+    Prioridade NORMAL, de proposito (medido em 05/10/2026): com
+    QThread.LowPriority, num computador ocupado, o Windows deixava o fio de
+    prioridade baixa parado SEGURANDO o GIL do Python, e a janela inteira
+    ficava 2 a 3 s sem responder (inversao de prioridade). Arriscado: baixar
+    a prioridade de novo.
+    """
+
+    # Cada sinal leva a propria tarefa: a janela confere se e a da vez (um
+    # sinal atrasado de uma tarefa ja parada nao entra), sem depender do
+    # QObject.sender().
+    andamento = Signal(object, int, int)    # tarefa, feitas, total
+    terminou = Signal(object, int)          # tarefa, quantas paginas ela converteu
+
+    def __init__(self, projeto: Projeto) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self.feitas = 0
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        """Pede para parar antes da proxima pagina (so uma bandeira). O que ja
+        foi convertido fica; o resto e convertido da proxima vez."""
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        """Alguem pediu para parar?"""
+        return self._cancelar
+
+    def _avancar(self, feitas: int, total: int) -> None:
+        self.feitas = feitas
+        self.andamento.emit(self, feitas, total)
+
+    def run(self) -> None:
+        """Ponto de entrada da QThread. Nunca deixa excecao escapar: so vai
+        para o log (as paginas que faltarem convertem quando forem
+        desenhadas, como antes)."""
+        from core.pipeline import converter_zonas_do_livro
+
+        convertidas = 0
+        try:
+            convertidas = converter_zonas_do_livro(
+                self.projeto, progresso=self._avancar, cancelado=lambda: self._cancelar)
+        except Exception:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("converter_zonas", traceback.format_exc())
+        self.terminou.emit(self, convertidas)
+
+
 class _SinaisPrevia(QObject):
     """Sinais de uma tarefa de prévia. Existe separado de _TarefaPrevia porque
     QRunnable nao e QObject e nao pode emitir sinal Qt sozinho."""

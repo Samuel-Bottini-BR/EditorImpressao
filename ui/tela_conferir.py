@@ -222,6 +222,10 @@ class TelaConferir(QWidget):
 
         self._abas_ativas: list[str] = []
         self._carregando = False
+        # Decisao Z1 (b), 05/10/2026: "Preparando as marcações do livro...
+        # 12 de 50" enquanto a janela converte as zonas do livro por tras
+        # (mostrar_andamento_das_marcacoes); "" quando nao ha.
+        self._andamento_das_marcacoes = ""
 
         # estado do medidor de ajuste
         self._valor_ao_pegar: int | None = None
@@ -1731,13 +1735,40 @@ class TelaConferir(QWidget):
         alerta = analise.descrever(item.alertas[0]) if item.alertas else None
 
         if alerta is not None and not item.revisada:
-            self.texto_faixa.setText(alerta.mensagem)
+            self.texto_faixa.setText(self._com_andamento(alerta.mensagem))
             self._pintar_faixa(alerta=True)
             self._mostrar_sugestao(aba, alerta.acao)
         else:
-            self.texto_faixa.setText(self._texto_tranquilo(aba))
+            self.texto_faixa.setText(self._com_andamento(self._texto_tranquilo(aba)))
             self._pintar_faixa(alerta=False)
             self._mostrar_sugestao(aba, None)
+
+    def _com_andamento(self, texto: str) -> str:
+        """O texto da faixa, com o andamento da conversao das marcacoes no
+        fim enquanto ela roda (decisao Z1 (b)). Sem conversao, o texto como
+        sempre."""
+        if not self._andamento_das_marcacoes:
+            return texto
+        return f"{texto}  -  {self._andamento_das_marcacoes}"
+
+    def mostrar_andamento_das_marcacoes(self, feitas: int, total: int) -> None:
+        """Decisao Z1 (b) do Samuel (05/10/2026): enquanto a janela converte
+        por tras as zonas do livro para o formato novo, a faixa azul (o aviso
+        que ja existe nesta tela) diz "Preparando as marcações do livro...
+        12 de 50". Sem tela nova e sem botao: o Kaique continua trabalhando.
+        total 0, ou feitas >= total, tira o andamento. Seguro mudar: a frase.
+        """
+        texto = ""
+        if total > 0 and feitas < total:
+            texto = f"Preparando as marcações do livro... {feitas} de {total}"
+        if texto == self._andamento_das_marcacoes:
+            return
+        self._andamento_das_marcacoes = texto
+        if self.projeto is not None and self.projeto.paginas and not self._carregando:
+            try:
+                self._atualizar_faixa()
+            except Exception:  # noqa: BLE001 - o andamento nunca derruba a tela
+                registrar_erro("andamento_das_marcacoes", traceback.format_exc())
 
     def _texto_tranquilo(self, aba: str) -> str:
         assert self.projeto is not None

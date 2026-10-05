@@ -30,7 +30,7 @@ from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
 from ui.estilo import FOLHA_DE_ESTILO
-from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaProcessar
+from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaConverterZonas, TarefaProcessar
 from ui.tela_conferir import TelaConferir
 from ui.tela_final import TelaFinal, TelaProgresso
 from ui.tela_inicio import TelaInicio
@@ -104,6 +104,10 @@ class JanelaPrincipal(QMainWindow):
         # carregar (projeto antigo, ou pelo "continuar"): a pasta do projeto
         # que espera o livro inteiro ir para o filtro em _analise_pronta.
         self._fundo_pendente: str | None = None
+        # Decisao Z1 (b) do Samuel (05/10/2026): a tarefa que converte por
+        # tras as zonas do livro aberto para o formato novo (zonas na folha
+        # original). None quando nao ha. Ver _comecar_a_converter_as_zonas.
+        self.conversao_das_zonas: TarefaConverterZonas | None = None
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -340,6 +344,9 @@ class JanelaPrincipal(QMainWindow):
         # ignora resultado de analise cancelada).
         if isinstance(self.tarefa, TarefaAnalise):
             self.tarefa.cancelar()
+        # A conversao das zonas do livro de antes para: o que ela ja fez foi
+        # gravado com o trabalho dele; o resto continua da proxima vez.
+        self._parar_a_conversao_das_zonas(gravar=True)
         self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
         self._fundo_pendente = None
         self._opcoes_do_trabalho = None
@@ -744,6 +751,9 @@ class JanelaPrincipal(QMainWindow):
             self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
         self._salvar_agora()
+        # Decisao Z1 (b): as zonas de projeto antigo sao convertidas por
+        # tras, o livro inteiro, enquanto o Kaique ja trabalha.
+        self._comecar_a_converter_as_zonas()
 
         if self.acoes.linhas_perdidas:
             self.avisar(
@@ -760,6 +770,81 @@ class JanelaPrincipal(QMainWindow):
             titulo, frase = aviso_das_opcoes_da_gravura(
                 self.projeto, gravuras_refeitas, self.copia_do_trabalho)
             self.avisar(frase, titulo)
+
+    # --- zonas do livro inteiro, por tras (decisao Z1 (b), 05/10/2026) ----
+
+    def _comecar_a_converter_as_zonas(self) -> None:
+        """Pedido do Samuel (conferencia 9, Z1 (b)): "O livro inteiro, por
+        tras, ao abrir - ele poderia fazer isso quando abre o livro e fica
+        carregando dai né?".
+
+        Se o trabalho que acabou de voltar tem zonas no formato antigo
+        (core/zonas_na_folha.paginas_por_converter), uma TarefaConverterZonas
+        converte todas, uma folha por vez. A tela de
+        conferir ja esta aberta: o Kaique trabalha enquanto isso, e o
+        andamento aparece na faixa azul ("Preparando as marcações do
+        livro... 12 de 50"; TelaConferir.mostrar_andamento_das_marcacoes).
+        Pagina que ele abrir antes e convertida pela previa, como antes. No
+        fim, grava (com a copia de seguranca do projeto.json antigo antes,
+        projetos.salvar_estado).
+
+        Arriscado: rodar a conversao numa copia do projeto (o que ela anota
+        nao chegaria ao disco), ou esquecer de parar a tarefa ao trocar de
+        livro e ao fechar (_parar_a_conversao_das_zonas, closeEvent).
+        """
+        from core.zonas_na_folha import paginas_por_converter
+
+        self._parar_a_conversao_das_zonas()
+        if self.projeto is None or not paginas_por_converter(self.projeto):
+            return
+        tarefa = TarefaConverterZonas(self.projeto)
+        tarefa.andamento.connect(self._andamento_da_conversao)
+        tarefa.terminou.connect(self._conversao_terminou)
+        self.conversao_das_zonas = tarefa
+        self.tela_conferir.mostrar_andamento_das_marcacoes(
+            0, len(paginas_por_converter(self.projeto)))
+        tarefa.start()          # prioridade normal: ver ui/tarefas.TarefaConverterZonas
+
+    def _parar_a_conversao_das_zonas(self, gravar: bool = False) -> None:
+        """Para a conversao da vez (trocar de livro, nova conferencia, fechar).
+
+        Parar no meio nao estraga nada: o que foi convertido esta na memoria
+        e vai para o disco na proxima gravacao (com gravar=True, agora,
+        antes de o projeto aberto mudar); o resto continua no formato antigo
+        e e convertido da proxima vez que o livro abrir. A tarefa que ainda
+        termina a pagina dela vai para self._tarefas_saindo (o Qt derrubaria
+        o programa se a QThread fosse destruida rodando; ver _trocar_tarefa).
+        """
+        tarefa = self.conversao_das_zonas
+        self.conversao_das_zonas = None
+        if tarefa is None:
+            return
+        tarefa.cancelar()
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)
+        self.tela_conferir.mostrar_andamento_das_marcacoes(0, 0)
+        if gravar and tarefa.feitas:
+            self._salvar_agora()
+
+    def _andamento_da_conversao(self, tarefa, feitas: int, total: int) -> None:
+        """Uma pagina a mais convertida: atualiza a faixa (so a da vez; um
+        sinal atrasado de uma tarefa parada nao entra)."""
+        if tarefa is None or tarefa is not self.conversao_das_zonas:
+            return
+        self.tela_conferir.mostrar_andamento_das_marcacoes(feitas, total)
+
+    def _conversao_terminou(self, tarefa, convertidas: int) -> None:
+        """A conversao chegou ao fim: tira o andamento da faixa e grava logo
+        (o relogio de salvar), para o formato novo ir para o disco mesmo se
+        o Kaique nao mexer em mais nada."""
+        if tarefa is None or tarefa is not self.conversao_das_zonas:
+            return
+        self.conversao_das_zonas = None
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)   # ainda saindo do run()
+        self.tela_conferir.mostrar_andamento_das_marcacoes(0, 0)
+        if convertidas:
+            self._marcar_para_salvar()
 
     @staticmethod
     def _frase_do_recomeco(motivo: str, copia) -> str:
@@ -1149,7 +1234,17 @@ class JanelaPrincipal(QMainWindow):
         E não pergunta nada. A pergunta "quer salvar?" é o que este programa
         não faz - um "não" por engano apagaria um dia de trabalho do Kaique.
         """
+        # Decisao Z1 (b): a conversao das zonas para ANTES de gravar (so a
+        # bandeira; a pagina em curso termina logo abaixo): o que ja foi
+        # convertido vai para o disco agora, e o resto continua da proxima
+        # vez que o livro abrir. Nada fica pela metade: a gravacao e inteira
+        # (projetos.salvar_estado) e a pagina convertida e trocada sob a
+        # trava das zonas.
+        conversao = self.conversao_das_zonas
+        self._parar_a_conversao_das_zonas()
         self._salvar_agora()
+        if conversao is not None:
+            conversao.wait(3000)
 
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
