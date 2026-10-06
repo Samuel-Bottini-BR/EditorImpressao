@@ -16,6 +16,7 @@ de largura ao trocar de tela.
 from __future__ import annotations
 
 import atalhos
+from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import QMenuBar
 
@@ -26,6 +27,10 @@ MENUS_DA_TELA_INICIAL = ("Arquivo", "Ver", "Ajuda")
 
 class BarraDeMenu(QMenuBar):
     """Monta os menus e guarda as acoes pelo nome, para a janela ligar depois."""
+
+    # Emitido no fim de reaplicar_atalhos: quem mostra uma tecla fora do menu
+    # (o balao dos botoes de girar, item 2.3) se acerta por aqui.
+    atalhos_mudaram = Signal()
 
     def __init__(self, janela) -> None:
         """Monta os sete menus de uma vez. Ligar cada acao a um metodo de
@@ -85,6 +90,7 @@ class BarraDeMenu(QMenuBar):
         for chave, item in self.acoes.items():
             tecla = atalhos.tecla_atual(chave)
             item.setShortcut(QKeySequence(tecla) if tecla else QKeySequence())
+        self.atalhos_mudaram.emit()
 
     def _montar_arquivo(self) -> None:
         menu = self._menu("Arquivo")
@@ -127,10 +133,35 @@ class BarraDeMenu(QMenuBar):
             item.setCheckable(True)
 
     def _montar_pagina(self) -> None:
+        """Menu Pagina. Item 2.3 (girar, conferencia 14, G1 (c) "Os dois"): os
+        tres giros, com tecla, e o "Aplicar o giro em", que e o MESMO da
+        barrinha de girar em cima da pagina (ui/widgets/barra_girar.py; a
+        janela mantem os dois iguais). "girar" continua sendo o 1/4 a direita
+        de sempre (mesma chave, para nada que ja ligava nela quebrar).
+
+        Teclas: Ctrl+Esquerda e Ctrl+Direita (sugeridas no formulario 14;
+        livres - conferido contra todo o registro de atalhos.py e o
+        tratar_tecla da tela de conferir). A meia volta fica sem tecla de
+        fabrica (Ctrl+Direita duas vezes); o nome das teclas e o do Qt."""
+        from core.girar import ALCANCES, NOMES_DOS_ALCANCES
+        from PySide6.QtGui import QActionGroup
+
         menu = self._menu("Página")
         self._acao(menu, "ir_para_pagina", "Ir para a página...", "Ctrl+G")
         menu.addSeparator()
-        self._acao(menu, "girar", "Girar")
+        self._acao(menu, "girar_esquerda", "Girar ¼ à esquerda", "Ctrl+Left")
+        self._acao(menu, "girar", "Girar ¼ à direita", "Ctrl+Right")
+        self._acao(menu, "girar_meia_volta", "Girar meia volta")
+        alcance = menu.addMenu("Aplicar o giro em")
+        self.menus_do_giro = alcance
+        grupo = QActionGroup(self)
+        grupo.setExclusive(True)
+        for chave in ALCANCES:
+            item = self._acao(alcance, f"giro_em_{chave}", NOMES_DOS_ALCANCES[chave])
+            item.setCheckable(True)
+            grupo.addAction(item)
+        self.acoes[f"giro_em_{ALCANCES[0]}"].setChecked(True)
+        menu.addSeparator()
         self._acao(menu, "apagar", "Apagar esta página", "Del")
         self._acao(menu, "restaurar", "Restaurar página apagada")
 

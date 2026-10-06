@@ -272,6 +272,21 @@ def preparar_metade(
                                         geometria=geometria, dpi=dpi)[0]
 
 
+def preparar_metade_e_geometria(
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+    dpi: float | None = None,
+) -> tuple[np.ndarray, dict]:
+    """preparar_metade, devolvendo tambem a geometria do desenho (o giro de
+    90, a divisao, o corte e o angulo aplicados; core/zonas_na_folha).
+
+    Para a tela saber se as zonas da pagina valem nesta imagem
+    (zonas_na_folha.zonas_valem_no_desenho) sem leva-las: e o que o
+    "Ajustar o pedaco a figura" usa (junção do girar ao fase-1, 06/10/2026).
+    `img_folha` e a folha COMO VEIO no PDF (sem o giro: quem gira e esta
+    funcao). Nao mexe na pagina."""
+    return _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
+
+
 def _preparar_metade_e_geometria(
     img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
     geometria: tuple | None = None, dpi: float | None = None,
@@ -594,12 +609,24 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     A imagem tem de ser a JA PREPARADA - depois de dividir, cortar e endireitar
     - porque a selecao guarda fracoes daquele recorte. Detectar antes deixaria a
     marcacao deslocada na hora de aplicar.
+
+    Corrida com a tela (achada na juncao do girar ao fase-1, 06/10/2026):
+    isto roda no fio da previa e a deteccao leva quase um segundo. Se a
+    pessoa marca alguma coisa na aba Marcar nesse meio-tempo, a marcacao
+    dela vale: o resultado da deteccao e jogado fora em vez de gravado por
+    cima (antes a marcacao a mao sumia; tests/test_ajustar_pedaco_na_aba_
+    marcar.py falhava de vez em quando por isso). Quem grava a marcacao
+    sempre poe uma lista NOVA em pagina.selecao (guardar_selecao), entao
+    basta ver se a lista ainda e a mesma que foi lida. Arriscado: comparar
+    por igualdade em vez de identidade (uma marcacao igual de outra origem
+    passaria) ou gravar sem conferir.
     """
     from core.selecao import MAO, Selecao
 
     if not projeto.detectar_regioes:
         return Selecao()
 
+    lida = pagina.selecao          # a lista de agora (ver a corrida, acima)
     antiga = pagina.obter_selecao()
     refazer = _gravura_a_refazer(projeto, pagina)
     if not antiga.vazia and not refazer:
@@ -625,6 +652,9 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         for regiao in antiga.regioes:
             if regiao.origem == MAO:
                 selecao.acrescentar(regiao)
+    if pagina.selecao is not lida:
+        # a pessoa marcou durante a deteccao: vale a marcacao dela
+        return pagina.obter_selecao()
     pagina.gravura_feita_com = assinatura_da_gravura(detector, opcoes)
 
     # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.

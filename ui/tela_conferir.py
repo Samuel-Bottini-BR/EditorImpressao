@@ -52,6 +52,16 @@ desligada, a cada atualização, em todas as páginas
 Com "Só as letras" valendo na página, o cartão "Preto e branco" mostra a
 página como vai sair, com o Misto, desenhada numa tarefa de prévia
 (_cartao_do_misto; bug Misto 2).
+
+Girar a folha (item 2.3, 06/10/2026; provisório até o layout, exceção da
+gerente para o implementador mexer aqui): a barrinha de girar
+(ui/widgets/barra_girar.py) fica na linha das abas, à direita, em todas as
+abas: 1/4 à esquerda, 1/4 à direita, meia volta e "aplicar em" (só esta /
+todas / daqui em diante / só as pares / só as ímpares). Cada clique é UMA
+ação do desfazer, com a rotação nova de cada folha (_girar_folhas; contas em
+core/girar.py). O menu Página tem os mesmos giros (Ctrl+Esquerda,
+Ctrl+Direita) e o mesmo "aplicar em". A tecla R deixou de girar (era fixa
+aqui e nunca alcançada: a R do Retângulo ganhava).
 """
 
 from __future__ import annotations
@@ -78,7 +88,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core import analise, linhas_do_texto, misto
+from core import analise, girar, linhas_do_texto, misto
 from core.pipeline import acertar_alertas_de_cor, acertar_alertas_do_fundo
 from core.filtros import (
     ALGORITMOS_PB,
@@ -97,6 +107,7 @@ from modelos import Projeto
 from registro import registrar_erro
 from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
+from ui.widgets.barra_girar import BarraGirar
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.escolhas_do_misto import BOTOES_DO_TEXTO, EscolhasDoMisto
@@ -210,6 +221,12 @@ CARTOES = [
     (TIRAR_FUNDO, "Tirar o fundo", "só o que está impresso"),
 ]
 
+# Resolucao da amostra dos cartoes de filtro (_imagem_sem_filtro): a folha
+# como veio no PDF, desenhada pequena, e preparada na tela. Era o 70 escrito
+# direto no codigo; virou nome em 06/10/2026 (D1) porque entra tambem na
+# chave dos cartoes (_chave_dos_cartoes). Seguro mudar (so tempo e nitidez).
+DPI_AMOSTRA_DOS_CARTOES = 70
+
 # Item 1.1: resolucao do cartao "Tirar o fundo". A mesma da amostra dos outros
 # cartoes (_imagem_sem_filtro). Ele e desenhado pelo caminho do programa
 # (core/camadas.py, na folha inteira), numa tarefa de previa; a decisao do
@@ -258,6 +275,10 @@ class TelaConferir(QWidget):
     # espalhado por vinte metodos e um sinal que alguem esquece de emitir no
     # vigesimo primeiro, e o trabalho da pessoa some sem ninguem notar.
     trabalho_mudou = Signal()
+
+    # Item 2.3: o giro pegou folhas com zonas ainda no formato antigo; a
+    # janela comeca a conversao por tras se ela nao estiver andando.
+    marcacoes_por_converter = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -323,7 +344,24 @@ class TelaConferir(QWidget):
         self.barra_abas = QTabBar()
         self.barra_abas.setExpanding(False)
         self.barra_abas.currentChanged.connect(self._trocou_de_aba)
-        camadas.addWidget(self.barra_abas)                   # 2
+
+        # Item 2.3 (girar; provisorio ate o layout): a barrinha de girar a
+        # folha mora na MESMA linha das abas, a direita - a unica faixa em
+        # cima da pagina com sobra de largura, sem custar altura da pagina.
+        # Vale em todas as abas (ui/widgets/barra_girar.py).
+        self.barra_girar = BarraGirar()
+        self.barra_girar.girar_pedido.connect(self._girar_folhas)
+        # A altura da linha e acertada em _acertar_a_barra_girar: as abas sao
+        # criadas com a tela ainda escondida (carregar), e o QTabBar escondido
+        # nao avisa o layout que mudou de tamanho - dentro desta linha ele
+        # ficava com altura 0 (achado ao tirar os prints, 06/10).
+        self.linha_das_abas = QWidget()
+        linha_das_abas = QHBoxLayout(self.linha_das_abas)
+        linha_das_abas.setContentsMargins(0, 0, 0, 0)
+        linha_das_abas.setSpacing(8)
+        linha_das_abas.addWidget(self.barra_abas, 1)
+        linha_das_abas.addWidget(self.barra_girar, 0, Qt.AlignBottom)
+        camadas.addWidget(self.linha_das_abas)               # 2
 
         # A barra de opcoes: faixa fina que muda conforme a ferramenta na mao.
         # E o que deixa a tela ter nove ferramentas sem entulhar - so os
@@ -407,6 +445,14 @@ class TelaConferir(QWidget):
     def _voltar_no_historico(self, posicao: int) -> None:
         """Volta o trabalho ate a acao clicada no painel Historico."""
         if self.acoes is None or self.projeto is None:
+            return
+        # pendencia da D2: nao muda o preparo de pagina com zonas antigas
+        feitas = self.acoes.feitas
+        if posicao < len(feitas):
+            if self._acoes_esperam_pelas_marcacoes(feitas[posicao:], para_tras=True):
+                return
+        elif self._acoes_esperam_pelas_marcacoes(
+                list(reversed(self.acoes.desfeitas))[:posicao - len(feitas)], para_tras=False):
             return
         self.acoes.voltar_para(self.projeto, posicao)
         if self.previas is not None:
@@ -675,7 +721,7 @@ class TelaConferir(QWidget):
         cada vez. Ver `core.pipeline.preparar_para_recorte`.
         """
         img = self.previas.pegar_para_recorte(self.indice_pagina, self._dpi_atual)
-        vis.definir_imagem(img)
+        vis.definir_imagem(img, dono=("pagina", self.indice_pagina))   # D4
         if img is not None:
             vis.definir_composicao((0.0, 0.0, 1.0, 1.0), (img.shape[1], img.shape[0]))
 
@@ -699,14 +745,14 @@ class TelaConferir(QWidget):
         from core.folha import compor_na_folha, conteudo_como_retangulo
 
         if img is None:
-            vis.definir_imagem(None)
+            vis.definir_imagem(None, dono=("pagina", self.indice_pagina))   # D4
             return
 
         composto = compor_na_folha(
             img, pagina.tamanho_folha_cm, self._dpi_atual,
             escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
         )
-        vis.definir_imagem(composto)
+        vis.definir_imagem(composto, dono=("pagina", self.indice_pagina))
 
         tamanho_conteudo_px = (img.shape[1], img.shape[0])
         if composto.shape[:2] == img.shape[:2]:
@@ -1414,12 +1460,32 @@ class TelaConferir(QWidget):
 
             self.barra_abas.setCurrentIndex(0)
             self._encolher_a_barra_de_botoes()
+            self._acertar_a_barra_girar()
         finally:
             self._carregando = False
 
         self._montar_tira()
         self._aquecer_o_leitor_se_precisar()
         self.atualizar()
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """A barrinha de girar (item 2.3) cabe ao lado das abas?"""
+        super().resizeEvent(evento)
+        self._acertar_a_barra_girar()
+
+    def _acertar_a_barra_girar(self) -> None:
+        """Acerta a linha das abas depois de montar as abas e a cada mudanca
+        de tamanho: a altura das abas (ver _montar) e, em janela estreita, a
+        barrinha de girar so com os icones (o nome fica no balao), para nunca
+        empurrar as abas nem passar da janela. A conta e a largura da tela
+        menos as margens e as abas. Seguro mudar a
+        folga; arriscado tirar (na janela minima de 1000 px as abas e a barra
+        com texto nao cabem juntas)."""
+        self.barra_abas.setMinimumHeight(self.barra_abas.sizeHint().height())
+        margens = self.layout().contentsMargins()
+        sobra = (self.width() - margens.left() - margens.right()
+                 - self.barra_abas.sizeHint().width() - 8)
+        self.barra_girar.definir_compacta(sobra < self.barra_girar.largura_com_texto())
 
     def _limpar_abas(self) -> None:
         """Descarta as abas de um projeto anterior antes de montar as novas."""
@@ -1475,7 +1541,17 @@ class TelaConferir(QWidget):
         if assinatura == self._tira_assinatura:
             return
         self._tira_assinatura = assinatura
-        self.tira.montar(quantidade, self.projeto.caminho_entrada, folha_de, corte_de)
+        self.tira.montar(quantidade, self.projeto.caminho_entrada, folha_de, corte_de,
+                         giros=self._giros_das_folhas())
+
+    def _giros_das_folhas(self) -> dict[int, int]:
+        """O giro de cada folha, para a tira de miniaturas (D2, 06/10/2026).
+        O giro NAO entra na assinatura da tira: girar so redesenha os quadros
+        das folhas giradas (TiraMiniaturas.definir_giros), sem ler o livro de
+        novo. Arriscado: por o giro na assinatura (remontaria a tira inteira
+        a cada giro)."""
+        assert self.projeto is not None
+        return {f.indice: int(f.rotacao) % 360 for f in self.projeto.folhas}
 
     # ------------------------------------------------------------------
     # estado
@@ -1643,7 +1719,7 @@ class TelaConferir(QWidget):
         if aba == ABA_CORTE:
             img = self.previas.pegar_folha(self.indice_folha, DPI_PREVIA)
             vis = self.visualizadores[ABA_CORTE]
-            vis.definir_imagem(img)
+            vis.definir_imagem(img, dono=("folha", self.indice_folha))   # D4
             vis.definir_corte(self.projeto.folhas[self.indice_folha].posicao_corte)
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             return
@@ -1674,7 +1750,7 @@ class TelaConferir(QWidget):
                 vis.definir_modo(MODO_RECORTE)
         elif aba == ABA_ANGULO:
             vis = self.visualizadores[ABA_ANGULO]
-            vis.definir_imagem(img)
+            vis.definir_imagem(img, dono=("pagina", self.indice_pagina))   # D4
             vis.definir_angulo(pagina.angulo_manual or 0.0)
         elif aba == ABA_MARCAR:
             self._atualizar_marcacao(img, pagina)
@@ -1713,18 +1789,32 @@ class TelaConferir(QWidget):
         branco e o de dentro do pedaco creme, e a conta erra (ver
         core.ajustar_pedaco.caixa_justa). None enquanto a folha ainda nao
         chegou: ela e pedida aqui, e quando chega (_previa_chegou ->
-        _atualizar_previa -> _atualizar_marcacao) a conta e refeita."""
+        _atualizar_previa -> _atualizar_marcacao) a conta e refeita.
+
+        Juncao do girar ao fase-1 (06/10/2026), dois cuidados:
+        - a folha e pedida COMO VEIO no PDF (girada=False): quem gira e o
+          preparar_metade. Com a folha ja girada, a pagina saia girada duas
+          vezes numa folha girada (o mesmo defeito D1 dos cartoes);
+        - None tambem enquanto as zonas da pagina ainda estao no preparo de
+          ANTES (logo depois de girar, cortar ou mudar o angulo, ate a previa
+          nova chegar e leva-las: zonas_na_folha.zonas_valem_no_desenho).
+          Senao o retangulo velho era medido na pagina nova, e o botao o
+          gravava no lugar errado do papel. Quando a previa chega, a conta e
+          refeita (o caminho de cima)."""
         import cv2
 
-        from core.pipeline import preparar_metade
+        from core.pipeline import preparar_metade_e_geometria
+        from core.zonas_na_folha import zonas_valem_no_desenho
 
         if self.previas is None or self.projeto is None:
             return None
-        bruta = self.previas.pegar_folha(pagina.folha, DPI_PREVIA)
+        bruta = self.previas.pegar_folha(pagina.folha, DPI_PREVIA, girada=False)
         if bruta is None:
             return None
-        img = preparar_metade(bruta, self.projeto.folhas[pagina.folha], pagina,
-                              self.projeto, dpi=DPI_PREVIA)
+        img, desenho = preparar_metade_e_geometria(
+            bruta, self.projeto.folhas[pagina.folha], pagina, self.projeto, dpi=DPI_PREVIA)
+        if not zonas_valem_no_desenho(pagina, desenho):
+            return None
         lado = max(img.shape[:2])
         if lado > LADO_DO_AJUSTE:
             escala = LADO_DO_AJUSTE / lado
@@ -1763,6 +1853,9 @@ class TelaConferir(QWidget):
                 if pedacos_com_outro_filtro(selecao, pagina.filtro):
                     img = self._pagina_sem_filtro_para_o_ajuste(pagina)
                     if img is not None:
+                        # lida de novo DEPOIS da imagem: a previa pode ter
+                        # levado as zonas para o preparo novo no meio
+                        selecao = pagina.obter_selecao()
                         folgas = avaliar_os_pedacos(img, selecao, pagina.filtro)
                         da_vez = pedaco_da_vez(folgas)
         except Exception:  # noqa: BLE001 - o aviso nunca derruba a aba
@@ -1885,20 +1978,35 @@ class TelaConferir(QWidget):
                 self.cartoes[chave].definir_amostra(None)
             return
 
-        chave_cache = (self.indice_pagina, pagina.forca_preto,
-                       pagina.clareza_melhorar, pagina.intensidade_magico)
-        if chave_cache == self._cartoes_cache_chave:
-            for chave in self._cartoes_a_pintar(outros, pagina):
+        chave_cache = self._chave_dos_cartoes()
+        a_pintar = self._cartoes_a_pintar(outros, pagina)
+        if (chave_cache == self._cartoes_cache_chave
+                and all(c in self._cartoes_cache for c in a_pintar)):
+            for chave in a_pintar:
                 self.cartoes[chave].definir_amostra(self._cartoes_cache.get(chave))
             return
 
-        for chave in self._cartoes_a_pintar(outros, pagina):
+        for chave in a_pintar:
             self.cartoes[chave].definir_amostra(None)
         assert self.previas is not None
         self.previas.pedir_cartoes(
             self.indice_pagina, base, outros,
             pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
+            chave=chave_cache,
         )
+
+    def _chave_dos_cartoes(self) -> str:
+        """Tudo de que os cartoes da pagina da vez dependem: o giro, a divisao,
+        o corte, o angulo, as opcoes do livro e os tres ajustes - a mesma
+        chave das previas (GerenciadorPrevias.chave), com um filtro fixo no
+        lugar do da pagina (os cartoes sao os OUTROS filtros).
+
+        D1 do verificador (06/10/2026): a chave de antes era so a pagina e os
+        tres ajustes; girar a folha com a aba Filtro aberta reaproveitava os
+        cartoes do giro de antes. Arriscado: tirar daqui o que muda a amostra
+        (o cartao fica com a imagem de antes)."""
+        assert self.previas is not None
+        return self.previas.chave(self.indice_pagina, DPI_AMOSTRA_DOS_CARTOES, "cartoes")
 
     def _cartao_sem_fundo(self, img: np.ndarray | None = None) -> None:
         """Item 1.1: poe no cartão "Tirar o fundo" a página sem o fundo.
@@ -1956,17 +2064,25 @@ class TelaConferir(QWidget):
         cartao.definir_amostra(None if img is None else limitar_altura(img, 260))
 
     @protegido
-    def _cartoes_prontos(self, indice: int, resultados: dict) -> None:
+    def _cartoes_prontos(self, indice: int, resultados: dict, chave=None) -> None:
         """Os cartões calculados em segundo plano chegaram.
 
         Se o usuário já virou a página nesse meio tempo, descarta - senão
         pinta e guarda no cache, para não recalcular ao voltar para cá.
+
+        chave: a de _chave_dos_cartoes no momento do pedido. Se a página
+        mudou desde então (girou, mudou o corte ou um ajuste), o resultado é
+        de um estado que já passou e é descartado: o pedido do estado novo
+        já foi feito (D1, 06/10/2026). None (quem chama sem chave): vale
+        para o estado de agora, como antes.
         """
-        if self.projeto is None or indice != self.indice_pagina:
+        if self.projeto is None or indice != self.indice_pagina or self.previas is None:
+            return
+        atual = self._chave_dos_cartoes()
+        if chave is not None and chave != atual:
             return
         pagina = self.projeto.paginas[self.indice_pagina]
-        self._cartoes_cache_chave = (indice, pagina.forca_preto,
-                                      pagina.clareza_melhorar, pagina.intensidade_magico)
+        self._cartoes_cache_chave = atual
         self._cartoes_cache = resultados
         # o "Preto e branco" puro nao vai para o cartao quando ele vem do
         # Misto (_cartao_do_misto); continua no cache e no aviso abaixo
@@ -2000,10 +2116,16 @@ class TelaConferir(QWidget):
             self._atualizar_contador()
 
     def _imagem_sem_filtro(self) -> np.ndarray | None:
-        """Versao pequena e sem filtro da página atual, para os outros cartoes."""
+        """Versao pequena e sem filtro da página atual, para os outros cartoes.
+
+        A folha vem COMO VEIO NO PDF (girada=False): o preparar_metade é que
+        a gira, divide, corta e endireita. D1 do verificador (06/10/2026):
+        vinha a folha já girada, e os cartões mostravam a folha girada duas
+        vezes. Arriscado: pedir a folha girada aqui."""
         assert self.projeto is not None and self.previas is not None
         pagina = self.projeto.paginas[self.indice_pagina]
-        img_folha = self.previas.pegar_folha(pagina.folha, 70)
+        img_folha = self.previas.pegar_folha(pagina.folha, DPI_AMOSTRA_DOS_CARTOES,
+                                             girada=False)
         if img_folha is None:
             return None
 
@@ -2133,6 +2255,7 @@ class TelaConferir(QWidget):
         for i, item in enumerate(itens):
             self.tira.marcar(i, em_alerta=item.precisa_revisao,
                              apagada=getattr(item, "apagada", False))
+        self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
         self.tira.selecionar(self.indice_atual)
 
     def _atualizar_contador(self) -> None:
@@ -2220,8 +2343,15 @@ class TelaConferir(QWidget):
 
     def _registrar(self, tipo: str, alvo: str, indices: list[int],
                    campos: dict, descricao: str) -> None:
-        """Aplica a mudanca e guarda no histórico, numa acao só."""
+        """Aplica a mudanca e guarda no histórico, numa acao só.
+
+        Pendencia da D2 (06/10/2026): se a mudanca mexe no preparo (giro,
+        divisao, linha de corte, borda, angulo) de alguma pagina com zonas
+        ainda no formato antigo, nao aplica: espera a conversao e avisa
+        (_espera_pelas_marcacoes)."""
         assert self.projeto is not None and self.acoes is not None
+        if self._espera_pelas_marcacoes(alvo, indices, campos):
+            return
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
@@ -2271,13 +2401,139 @@ class TelaConferir(QWidget):
 
     @protegido
     def _girar(self) -> None:
+        """O botao "girar" da aba Onde cortar e o menu Pagina > "Girar 1/4 a
+        direita": o mesmo giro de sempre (90 graus no sentido do relogio),
+        agora obedecendo o "aplicar em" da barrinha de girar (item 2.3)."""
+        self._girar_folhas(girar.GIRO_DIREITA)
+
+    def _girar_esquerda(self) -> None:
+        """Menu Pagina > "Girar 1/4 a esquerda"."""
+        self._girar_folhas(girar.GIRO_ESQUERDA)
+
+    def _girar_meia_volta(self) -> None:
+        """Menu Pagina > "Girar meia volta"."""
+        self._girar_folhas(girar.GIRO_MEIA_VOLTA)
+
+    @protegido
+    def _girar_folhas(self, giro: int) -> None:
+        """Gira as folhas do "aplicar em" (item 2.3; core/girar.py).
+
+        Uma acao so do desfazer para todas as folhas, com a rotacao nova de
+        CADA uma (cada folha gira a partir de onde esta; o Ctrl+Z devolve o
+        giro que cada uma tinha). O resto vem sozinho: a previa e refeita (a
+        rotacao entra na chave), e o corte, a divisao e o endireitar sao
+        recalculados na folha girada (core/pipeline); as zonas da aba Marcar
+        sao levadas para o mesmo pedaco do papel quando a pagina e desenhada
+        (core/zonas_na_folha.acompanhar).
+
+        A folha da vez e a da pagina na tela (indice_folha acompanha a
+        pagina em todas as abas).
+        """
+        if not self._pronta():
+            return
         assert self.projeto is not None
-        folha = self.projeto.folhas[self.indice_folha]
+        alcance = self.barra_girar.alcance()
+        indices = girar.folhas_do_alcance(len(self.projeto.folhas), self.indice_folha, alcance)
+        if not indices or self._marcacoes_ainda_no_formato_antigo(indices):
+            return
         self._registrar(
-            "girar", "folha", [self.indice_folha],
-            {"rotacao": (folha.rotacao + 90) % 360},
-            f"Girar a folha {self.indice_folha + 1}",
+            "girar", "folha", indices,
+            girar.campos_do_giro(self.projeto.folhas, indices, giro),
+            girar.descricao_do_giro(giro, alcance, self.indice_folha, len(indices)),
         )
+
+    def _marcacoes_ainda_no_formato_antigo(self, folhas: list[int]) -> bool:
+        """Alguma pagina destas folhas tem zonas da aba Marcar que ainda nao
+        foram convertidas para a folha original (projeto de antes de 05/10,
+        com a conversao por tras ainda andando - a faixa azul "Preparando as
+        marcações do livro")? Entao o giro espera: girar antes levaria as
+        zonas dessas paginas para o lugar errado do papel (a conta precisa do
+        preparo de ANTES do giro, que so a conversao anota).
+
+        Avisa (janela.avisar) e pede a conversao, se ela nao estiver
+        andando (sinal marcacoes_por_converter). Devolve True se o giro deve
+        esperar. Seguro mudar: a frase. Arriscado: girar mesmo assim.
+        """
+        from core.zonas_na_folha import paginas_por_converter
+
+        assert self.projeto is not None
+        alvo = set(folhas)
+        if not any(p.folha in alvo for p in paginas_por_converter(self.projeto)):
+            return False
+        self._avisar_que_as_marcacoes_estao_sendo_preparadas(
+            "Ainda estou preparando as marcações destas folhas (a faixa azul "
+            "mostra o andamento). Quando terminar, gire de novo: assim as "
+            "marcações acompanham o giro.")
+        return True
+
+    # O que muda o preparo de uma pagina (girar 90 -> dividir -> cortar ->
+    # endireitar), e portanto o lugar das zonas da aba Marcar na pagina
+    # desenhada: os campos de core/pipeline._entradas_do_preparo que uma acao
+    # da tela pode mudar. Seguro: acrescentar campo. Arriscado: tirar algum.
+    CAMPOS_DO_PREPARO = frozenset({"rotacao", "dividir", "posicao_corte",
+                                   "recorte", "angulo_manual"})
+
+    def _espera_pelas_marcacoes(self, alvo: str, indices: list[int], campos: dict) -> bool:
+        """A pendencia da D2 (anotada pelo implementador do girar, 06/10/2026):
+        mudar o corte, a borda, a divisao ou o angulo de uma pagina cujas
+        zonas ainda estao no formato antigo (projeto de antes de 05/10, com a
+        conversao por tras ainda andando) deslocava as zonas - a conta que as
+        leva para o preparo novo precisa do preparo de ANTES, que so a
+        conversao anota. Recebe a mesma protecao do giro (9f8d4e5): a mudanca
+        espera, a tela avisa e pede a conversao (se ela tiver parado).
+
+        Escolhido em vez de converter a pagina na hora: converter precisa
+        desenhar a folha na resolucao do PDF para medir o corte e o angulo
+        automaticos (0,5 a 2 s), o que pararia a janela; e a conversao do
+        livro inteiro ja esta andando (Boecio, 50 paginas: ~3 s).
+
+        Vale para tudo que passa por _registrar e para desfazer, refazer e o
+        Historico (o historico de acoes volta ao abrir o livro: um Ctrl+Z de
+        outra sessao tambem mudaria o preparo). Devolve True se deve esperar.
+        Seguro mudar: a frase. Arriscado: aplicar mesmo assim.
+        """
+        if self.projeto is None or not (self.CAMPOS_DO_PREPARO & set(campos)):
+            return False
+        from core.zonas_na_folha import paginas_por_converter
+
+        pendentes = paginas_por_converter(self.projeto)
+        if not pendentes:
+            return False
+        alvo_indices = set(indices)
+        if alvo == "folha":
+            atingidas = [p for p in pendentes if p.folha in alvo_indices]
+        else:
+            atingidas = [p for p in pendentes if p.indice in alvo_indices]
+        if not atingidas:
+            return False
+        if "rotacao" in campos:
+            frase = ("Ainda estou preparando as marcações destas folhas (a faixa azul "
+                     "mostra o andamento). Quando terminar, gire de novo: assim as "
+                     "marcações acompanham o giro.")
+        else:
+            frase = ("Ainda estou preparando as marcações desta página (a faixa azul "
+                     "mostra o andamento). Quando terminar, faça a mudança de novo: "
+                     "assim as marcações acompanham o corte e o ângulo.")
+        self._avisar_que_as_marcacoes_estao_sendo_preparadas(frase)
+        return True
+
+    def _acoes_esperam_pelas_marcacoes(self, acoes, para_tras: bool) -> bool:
+        """Desfazer/refazer/Historico: alguma destas acoes mudaria o preparo
+        de uma pagina com zonas antigas (_espera_pelas_marcacoes)? para_tras:
+        desfazendo (aplica o `antes` de cada uma) ou refazendo (o `depois`)."""
+        for acao in acoes:
+            campos = acao.antes if para_tras else acao.depois
+            if self._espera_pelas_marcacoes(acao.alvo, acao.indices, campos):
+                return True
+        return False
+
+    def _avisar_que_as_marcacoes_estao_sendo_preparadas(self, frase: str) -> None:
+        """Pede a conversao das zonas (sinal marcacoes_por_converter; a janela
+        recomeca a tarefa se ela tiver parado) e mostra `frase`."""
+        self.marcacoes_por_converter.emit()
+        janela = self.window()
+        if janela is not self and hasattr(janela, "avisar"):
+            janela.avisar(frase, titulo="Um momento")
 
     # --- bordas -----------------------------------------------------------
 
@@ -2764,6 +3020,9 @@ class TelaConferir(QWidget):
     def desfazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
+        if self.acoes.feitas and self._acoes_esperam_pelas_marcacoes(
+                [self.acoes.feitas[-1]], para_tras=True):
+            return                       # pendencia da D2 (_espera_pelas_marcacoes)
         if self.acoes.desfazer(self.projeto) is not None:
             if self.previas is not None:
                 self.previas.invalidar()
@@ -2774,6 +3033,9 @@ class TelaConferir(QWidget):
     def refazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
+        if self.acoes.desfeitas and self._acoes_esperam_pelas_marcacoes(
+                [self.acoes.desfeitas[-1]], para_tras=False):
+            return                       # pendencia da D2 (_espera_pelas_marcacoes)
         if self.acoes.refazer(self.projeto) is not None:
             if self.previas is not None:
                 self.previas.invalidar()
@@ -2858,9 +3120,10 @@ class TelaConferir(QWidget):
             if not self.trabalha_com_folhas:
                 self.apagar_pagina()
             return True
-        if tecla == Qt.Key_R and ABA_CORTE in self._abas_ativas:
-            self._girar()
-            return True
+        # A tecla R de "girar" (fixa aqui, fora das Configuracoes) nunca era
+        # alcancada: a R do Retangulo ganha antes (Lista de bugs, 02/10).
+        # Saiu no item 2.3: girar agora e Ctrl+Seta (menu Pagina) e a R fica
+        # so para o Retangulo, como o desenho da conferencia 14 dizia.
 
         atalhos_de_filtro = {
             Qt.Key_1: ORIGINAL, Qt.Key_2: PRETO_E_BRANCO,

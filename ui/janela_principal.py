@@ -13,6 +13,7 @@ import traceback
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QStackedWidget
 
 import configuracoes
@@ -109,6 +110,11 @@ class JanelaPrincipal(QMainWindow):
         # tras as zonas do livro aberto para o formato novo (zonas na folha
         # original). None quando nao ha. Ver _comecar_a_converter_as_zonas.
         self.conversao_das_zonas: TarefaConverterZonas | None = None
+        # D2 do girar (06/10/2026): o giro da primeira folha com que a capa do
+        # cartao (capa.png) foi desenhada por ultimo, nesta sessao. A capa
+        # nasce como veio no PDF (projetos.garantir_miniatura): 0. Ver
+        # _acertar_a_capa.
+        self._giro_da_capa = 0
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -209,11 +215,57 @@ class JanelaPrincipal(QMainWindow):
                             lambda _marcado=False, f=chave: conferir._escolher_filtro(f))
 
         self.menu.ligar("ir_para_pagina", self._perguntar_a_pagina)
+        # Item 2.3 (girar): os tres giros e o "Aplicar o giro em", que e o
+        # mesmo da barrinha em cima da pagina - os dois ficam sempre iguais.
         self.menu.ligar("girar", conferir._girar)
+        self.menu.ligar("girar_esquerda", conferir._girar_esquerda)
+        self.menu.ligar("girar_meia_volta", conferir._girar_meia_volta)
+        from core.girar import ALCANCES
+
+        for alcance in ALCANCES:
+            self.menu.ligar(f"giro_em_{alcance}",
+                            lambda _marcado=False, a=alcance: conferir.barra_girar.definir_alcance(a))
+        conferir.barra_girar.alcance_mudou.connect(self._alcance_do_giro_mudou)
+        conferir.marcacoes_por_converter.connect(self._converter_as_zonas_se_parado)
+        self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
         self.menu.ligar("apagar", conferir.apagar_pagina)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
+
+    def _converter_as_zonas_se_parado(self) -> None:
+        """O giro (item 2.3) achou zonas ainda no formato antigo: se a
+        conversao por tras nao estiver andando (parou, ou falhou numa folha),
+        comeca de novo. Andando, deixa como esta."""
+        tarefa = self.conversao_das_zonas
+        if tarefa is None or not tarefa.isRunning():
+            self._comecar_a_converter_as_zonas()
+
+    def _alcance_do_giro_mudou(self, alcance: str) -> None:
+        """A lista "aplicar em" da barrinha mudou: o menu Pagina acompanha."""
+        item = self.menu.acoes.get(f"giro_em_{alcance}")
+        if item is not None and not item.isChecked():
+            item.setChecked(True)
+
+    def _mostrar_teclas_do_giro(self) -> None:
+        """Escreve a tecla de cada giro no balao dos botoes da barrinha
+        (a tecla de verdade e a do menu, que pode ter sido trocada nas
+        Configuracoes)."""
+        from core.girar import GIRO_DIREITA, GIRO_ESQUERDA, GIRO_MEIA_VOLTA
+
+        teclas = {}
+        for giro, chave in ((GIRO_ESQUERDA, "girar_esquerda"), (GIRO_DIREITA, "girar"),
+                            (GIRO_MEIA_VOLTA, "girar_meia_volta")):
+            atalho = self.menu.acoes[chave].shortcut()
+            if not atalho.isEmpty():
+                texto = atalho.toString(QKeySequence.NativeText)
+                # no balao, em portugues (o menu mostra como o Qt escreve)
+                for ingles, portugues in (("Left", "seta para a esquerda"),
+                                          ("Right", "seta para a direita"),
+                                          ("Up", "seta para cima"), ("Down", "seta para baixo")):
+                    texto = texto.replace(ingles, portugues)
+                teclas[giro] = texto
+        self.tela_conferir.barra_girar.definir_teclas(teclas)
 
     def _tela_mudou(self, indice: int) -> None:
         """So a tela de Conferir usa o menu completo; nas outras ele fica apagado."""
@@ -388,6 +440,7 @@ class JanelaPrincipal(QMainWindow):
             salvo = projetos.carregar_estado(self.resumo)
             self._trazer_opcoes_salvas(salvo)
         self.acoes = HistoricoAcoes(Path(self.resumo.pasta))
+        self._giro_da_capa = 0           # a capa nasce como veio no PDF (D2)
 
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.telas.setCurrentIndex(OPCOES)
@@ -958,6 +1011,25 @@ class JanelaPrincipal(QMainWindow):
         """Alguma coisa mudou. Grava daqui a pouco, quando a mao parar."""
         if self.resumo is not None and self.projeto is not None:
             self._relogio_de_salvar.start()
+            self._acertar_a_capa()
+
+    def _acertar_a_capa(self) -> None:
+        """A capa do cartao na tela inicial acompanha o giro da primeira folha
+        (D2 do verificador, 06/10/2026). So compara um numero; quando o giro
+        mudou (girar, desfazer, ou um projeto girado antes deste conserto),
+        a capa e desenhada de novo POR TRAS (projetos.refazer_miniatura_por_
+        tras): nada e desenhado no fio da janela. Num projeto ja girado, a
+        capa e refeita uma vez por sessao, mesmo que ja estivesse certa
+        (barato, e o arquivo nao diz com que giro foi feito).
+        Arriscado: desenhar a capa aqui, no fio da janela."""
+        if (self.resumo is None or self.projeto is None or not self.trabalho_carregado
+                or not self.projeto.folhas):
+            return
+        giro = int(self.projeto.folhas[0].rotacao) % 360
+        if giro == self._giro_da_capa:
+            return
+        self._giro_da_capa = giro
+        projetos.refazer_miniatura_por_tras(self.resumo, giro)
 
     def _salvar_por_tras(self) -> None:
         """O que o relogio de salvar chama: o mesmo que _salvar_agora, mas o
