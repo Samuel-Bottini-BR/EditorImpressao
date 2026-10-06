@@ -257,11 +257,22 @@ class EscritorPDF:
         largura_pt = largura / dpi * 72.0
         altura_pt = altura / dpi * 72.0
 
-        dados = _codificar_png(img, monocromatico=monocromatico)
+        # Item 5 (06/10/2026): a imagem entra no PDF JA comprimida (zlib do
+        # Python, que solta o GIL - a janela continua andando). Antes ia como
+        # PNG: o MuPDF desfazia o PNG, guardava a imagem crua e so a
+        # comprimia no doc.save(deflate) do fim - o livro inteiro de uma vez,
+        # em C, com o GIL preso: a janela parava 4,3 s num livro de 10
+        # folhas (o verificador mediu 4,56 s). Os pixels guardados sao os
+        # mesmos (tests/test_gravar_pdf_sem_parar_a_janela.py).
+        dicionario, dados = _imagem_comprimida(img, monocromatico=monocromatico)
 
         with _TRANCA:
+            xref = self.doc.get_new_xref()
+            self.doc.update_object(xref, dicionario)
+            self.doc.update_stream(xref, dados, compress=0)
+            self.doc.xref_set_key(xref, "Filter", "/FlateDecode")
             pagina = self.doc.new_page(width=largura_pt, height=altura_pt)
-            pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), stream=dados)
+            pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), xref=xref)
         self._paginas += 1
 
     def copiar_pagina(self, origem: fitz.Document, indice: int) -> None:
@@ -321,8 +332,44 @@ class EscritorPDF:
             self.doc = None  # type: ignore[assignment]
 
 
+# Nivel do zlib das imagens do PDF (_imagem_comprimida). Medido em 06/10/2026
+# no livro de 10 folhas do verificador: 6 da um PDF 3,7% maior que o de antes
+# (o MuPDF comprimia um pouco melhor), 9 da 4,3% MENOR e custa ~0,2 s a mais
+# por pagina - no fio de processar, sem parar a janela. Seguro mudar (so
+# tamanho do arquivo e tempo; os pixels sao sempre os mesmos).
+NIVEL_DO_ZLIB = 9
+
+
+def _imagem_comprimida(img: np.ndarray, monocromatico: bool = False) -> tuple[str, bytes]:
+    """A imagem como um objeto de imagem do PDF ja comprimido (FlateDecode):
+    (dicionario sem o /Filter, dados comprimidos). Item 5 (06/10/2026): ver
+    EscritorPDF.escrever_imagem. Os mesmos pixels do PNG de antes
+    (_codificar_png): cor em RGB 8 bits, cinza em 8 bits, e o Preto e branco
+    em 1 bit (o "1" do Pillow: 1 = branco, linha completada ate o byte, como
+    o PDF quer). zlib.compress solta o GIL. Arriscado: mudar a conversao de
+    cor ou o limiar do 1 bit (mudaria a pagina)."""
+    import zlib
+
+    altura, largura = img.shape[:2]
+    if monocromatico:
+        cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        brutos = Image.fromarray(cinza).convert("1", dither=Image.Dither.NONE).tobytes()
+        cor, bits = "DeviceGray", 1
+    elif img.ndim == 2:
+        brutos = np.ascontiguousarray(img).tobytes()
+        cor, bits = "DeviceGray", 8
+    else:
+        brutos = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).tobytes()
+        cor, bits = "DeviceRGB", 8
+    dicionario = (f"<</Type/XObject/Subtype/Image/Width {largura}/Height {altura}"
+                  f"/ColorSpace/{cor}/BitsPerComponent {bits}>>")
+    return dicionario, zlib.compress(brutos, NIVEL_DO_ZLIB)
+
+
 def _codificar_png(img: np.ndarray, monocromatico: bool = False) -> bytes:
-    """Converte o array em bytes PNG prontos para entrar no PDF."""
+    """Converte o array em bytes PNG. Era como as paginas entravam no PDF ate
+    06/10/2026 (item 5: agora _imagem_comprimida); fica para os testes que
+    comparam com o jeito de antes."""
     if monocromatico:
         cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # mode "1" = 1 bit por pixel. O ponto do filtro Eco.
