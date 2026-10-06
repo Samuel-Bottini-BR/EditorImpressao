@@ -20,11 +20,13 @@ distribuído, vai com o código-fonte aberto.
 
 | Pasta | O que é | Mudou? |
 |---|---|---|
-| `src/` | 72 arquivos do ScanTailor (24 `.cpp`, 48 `.h`), nos mesmos caminhos do repositório: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*` | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
+| `src/` | 78 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
+| `somas-v1.2.1.txt` | A soma SHA-256 de cada arquivo de `src/` como está no ScanTailor v1.2.1 (tirada do git do ScanTailor, fim de linha LF). O teste `tests/test_st_ferramentas.py` confere todos, a cada rodada | Nosso (a lista) |
 | `referencia/OutputGenerator.cpp` | O arquivo do ScanTailor onde mora o detector. **Não é compilado**: serve para o teste conferir que as funções copiadas não mudaram | Não |
 | `ligacao/st_gravura.cpp` | A "cola": copia as funções do detector de `OutputGenerator.cpp` **letra por letra** (entre as marcas `COPIADO SEM MUDANCA (linhas X-Y)`) e troca só o que ligava o detector à janela do ScanTailor | Só a ligação (ver abaixo) |
 | `ligacao/st_gravura.h` | As funções em C que o Python chama por `ctypes` | Nosso |
 | `ligacao/CMakeLists.txt` | Compila `src/` como biblioteca estática e `st_gravura.cpp` como DLL | Nosso |
+| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
 
 Foram trazidos só os arquivos que o detector usa: o fecho dos `#include` a
 partir das funções copiadas (os `.cpp` de `ImageTransformation`,
@@ -69,6 +71,46 @@ confere, a cada rodada, que esses 7 blocos continuam idênticos ao original.
 5. A função em C `st_gravura_detectar()`, que recebe os pontos da página do
    Python e devolve a máscara (255 = gravura).
 
+## Duas DLLs (desde 06/10/2026)
+
+| DLL | O que tem | Compila com | Python |
+|---|---|---|---|
+| `core/nativo/st_gravura.dll` | O detector de gravura (item 1.2, aprovado) | `compilar_detector_gravura.py` (pasta `ligacao/`) | `core/gravura_scantailor.py` |
+| `core/nativo/st_ferramentas.dll` | A DLL **comum** das outras ferramentas. Hoje: limpar pontinhos (`Despeckle`) | `compilar_st_ferramentas.py` (pasta `ligacao-ferramentas/`) | `core/st_ferramentas.py` (abre a DLL) + um módulo por ferramenta (`core/pontinhos_scantailor.py`) |
+
+**Por que a comum fica AO LADO da do 1.2, e não no lugar dela:** a do 1.2 foi
+aprovada pelo Samuel, está ligada ao programa e foi conferida contra as
+máscaras do próprio ScanTailor. Trocar de DLL é mexer no que funciona sem
+ganho para ele. As duas usam o mesmo `src/` e o mesmo Qt do PySide6, e não
+brigam (cada DLL tem a sua cópia do código; nada é compartilhado entre elas).
+Conferido em 06/10/2026: com os 6 arquivos novos em `src/`, a `st_gravura`
+recompilada numa pasta de rascunho dá as **mesmas 64 máscaras** (32 páginas do
+gabarito, forma livre e retangular) que a DLL guardada no projeto; a DLL
+guardada não foi tocada (o teste `test_a_dll_do_1_2_nao_mudou` confere a soma).
+
+**Quando juntar:** quando alguém quiser uma DLL só, a cola do detector
+(`ligacao/st_gravura.cpp`) vira mais um `.cpp` de `ligacao-ferramentas/`, e o
+`core/gravura_scantailor.py` passa a abrir a comum - **só depois** de a comum
+dar as mesmas 64 máscaras (o roteiro está em
+`tests/test_gravura_scantailor.py` e na conferência do 1.2).
+
+**Como acrescentar uma ferramenta à comum** (dividir `estimatePageLayout`,
+endireitar `SkewFinder`, `PageFinder`, `ContentBoxFinder`, os binarizadores de
+`Binarize.cpp`, a segmentação de cor `ColorSegmenter`): ver o topo de
+`ligacao-ferramentas/st_ferramentas.h`. Em resumo: os arquivos do ScanTailor
+entram em `src/` sem mudança, com a soma em `somas-v1.2.1.txt`; a cola vira um
+`.cpp` novo em `ligacao-ferramentas/`; a função em C entra no `.h` e em
+`ASSINATURAS` do `core/st_ferramentas.py` (o teste confere que batem), e a
+versão sobe. Cuidado ao trazer os filtros de geometria: cada um tem
+`Settings.h`, `Task.h` etc. com o mesmo nome (ver o `CMakeLists.txt`).
+
+**O `ligacao/CMakeLists.txt` do 1.2 compila `src/core/*.cpp` e
+`src/imageproc/*.cpp` inteiros.** Arquivo novo nessas pastas entra na
+biblioteca do 1.2 também (não muda a DLL: o vinculador só puxa o que o
+detector usa), mas, se um dia o arquivo novo precisar de uma pasta de
+cabeçalhos que o 1.2 não tem, a recompilação da `st_gravura` quebra. Aí, ou
+se lista os arquivos do 1.2 um a um, ou se faz a junção acima.
+
 ## Como conferir que nada mudou
 
 **Não use `cmp` direto na pasta do PC.** O git deste PC está com
@@ -102,6 +144,10 @@ O teste `tests/test_gravura_scantailor.py` guarda a soma SHA-256 da
 `referencia/OutputGenerator.cpp` do GitHub (sem o CR) e confere a cada rodada.
 
 ## Como recompilar
+
+A DLL comum: `.venv\Scripts\python.exe compilar_st_ferramentas.py` (mesmas
+ferramentas; sai em `core/nativo/st_ferramentas.dll`, ~43 KB). A do 1.2:
+
 
     .venv\Scripts\python.exe compilar_detector_gravura.py            # compila
     .venv\Scripts\python.exe compilar_detector_gravura.py --baixar   # baixa Qt/Boost que faltarem e compila
