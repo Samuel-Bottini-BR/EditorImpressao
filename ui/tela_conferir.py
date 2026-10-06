@@ -1789,18 +1789,32 @@ class TelaConferir(QWidget):
         branco e o de dentro do pedaco creme, e a conta erra (ver
         core.ajustar_pedaco.caixa_justa). None enquanto a folha ainda nao
         chegou: ela e pedida aqui, e quando chega (_previa_chegou ->
-        _atualizar_previa -> _atualizar_marcacao) a conta e refeita."""
+        _atualizar_previa -> _atualizar_marcacao) a conta e refeita.
+
+        Juncao do girar ao fase-1 (06/10/2026), dois cuidados:
+        - a folha e pedida COMO VEIO no PDF (girada=False): quem gira e o
+          preparar_metade. Com a folha ja girada, a pagina saia girada duas
+          vezes numa folha girada (o mesmo defeito D1 dos cartoes);
+        - None tambem enquanto as zonas da pagina ainda estao no preparo de
+          ANTES (logo depois de girar, cortar ou mudar o angulo, ate a previa
+          nova chegar e leva-las: zonas_na_folha.zonas_valem_no_desenho).
+          Senao o retangulo velho era medido na pagina nova, e o botao o
+          gravava no lugar errado do papel. Quando a previa chega, a conta e
+          refeita (o caminho de cima)."""
         import cv2
 
-        from core.pipeline import preparar_metade
+        from core.pipeline import preparar_metade_e_geometria
+        from core.zonas_na_folha import zonas_valem_no_desenho
 
         if self.previas is None or self.projeto is None:
             return None
-        bruta = self.previas.pegar_folha(pagina.folha, DPI_PREVIA)
+        bruta = self.previas.pegar_folha(pagina.folha, DPI_PREVIA, girada=False)
         if bruta is None:
             return None
-        img = preparar_metade(bruta, self.projeto.folhas[pagina.folha], pagina,
-                              self.projeto, dpi=DPI_PREVIA)
+        img, desenho = preparar_metade_e_geometria(
+            bruta, self.projeto.folhas[pagina.folha], pagina, self.projeto, dpi=DPI_PREVIA)
+        if not zonas_valem_no_desenho(pagina, desenho):
+            return None
         lado = max(img.shape[:2])
         if lado > LADO_DO_AJUSTE:
             escala = LADO_DO_AJUSTE / lado
@@ -1839,6 +1853,9 @@ class TelaConferir(QWidget):
                 if pedacos_com_outro_filtro(selecao, pagina.filtro):
                     img = self._pagina_sem_filtro_para_o_ajuste(pagina)
                     if img is not None:
+                        # lida de novo DEPOIS da imagem: a previa pode ter
+                        # levado as zonas para o preparo novo no meio
+                        selecao = pagina.obter_selecao()
                         folgas = avaliar_os_pedacos(img, selecao, pagina.filtro)
                         da_vez = pedaco_da_vez(folgas)
         except Exception:  # noqa: BLE001 - o aviso nunca derruba a aba

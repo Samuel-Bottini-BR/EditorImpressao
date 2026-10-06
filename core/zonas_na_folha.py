@@ -428,6 +428,27 @@ def paginas_por_converter(projeto) -> list:
             and 0 <= int(p.folha) < folhas]
 
 
+def zonas_valem_no_desenho(pagina, geometria: dict | None) -> bool:
+    """As zonas da pagina (pagina.selecao) estao no preparo `geometria`?
+
+    Para quem le as zonas sobre uma imagem preparada FORA do pipeline (o
+    "Ajustar o pedaco a figura" da aba Marcar, ui/tela_conferir), sem leva-las
+    (so a previa leva, ao desenhar - acompanhar). True quando a geometria
+    anotada e a mesma, ou quando nao ha geometria anotada (pagina antiga ou
+    nunca desenhada: as fracoes valem na pagina de agora, como sempre).
+    False logo depois de um giro, de um corte ou de um angulo novo, ate a
+    previa nova chegar (junção do girar ao fase-1, 06/10/2026). Nunca muda
+    nada. Arriscado: devolver True com geometrias diferentes (o retangulo
+    velho seria medido na pagina nova).
+    """
+    if geometria is None:
+        return True
+    antiga = getattr(pagina, "geometria_das_zonas", None)
+    if not geometria_valida(antiga):
+        return True
+    return mesma_geometria(antiga, geometria)
+
+
 def anotar_se_ainda_antiga(pagina, geometria: dict, ainda_vale=None) -> bool:
     """Anota `geometria` na pagina SO se ela ainda nao tem geometria (a previa
     pode ter chegado antes, no outro fio) e se `ainda_vale()` (o que a

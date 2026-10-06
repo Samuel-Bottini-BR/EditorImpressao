@@ -272,6 +272,21 @@ def preparar_metade(
                                         geometria=geometria, dpi=dpi)[0]
 
 
+def preparar_metade_e_geometria(
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+    dpi: float | None = None,
+) -> tuple[np.ndarray, dict]:
+    """preparar_metade, devolvendo tambem a geometria do desenho (o giro de
+    90, a divisao, o corte e o angulo aplicados; core/zonas_na_folha).
+
+    Para a tela saber se as zonas da pagina valem nesta imagem
+    (zonas_na_folha.zonas_valem_no_desenho) sem leva-las: e o que o
+    "Ajustar o pedaco a figura" usa (junção do girar ao fase-1, 06/10/2026).
+    `img_folha` e a folha COMO VEIO no PDF (sem o giro: quem gira e esta
+    funcao). Nao mexe na pagina."""
+    return _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
+
+
 def _preparar_metade_e_geometria(
     img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
     geometria: tuple | None = None, dpi: float | None = None,
