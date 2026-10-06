@@ -2418,9 +2418,11 @@ class TelaConferir(QWidget):
     def _girar_folhas(self, giro: int) -> None:
         """Gira as folhas do "aplicar em" (item 2.3; core/girar.py).
 
-        Uma acao so do desfazer para todas as folhas, com a rotacao nova de
-        CADA uma (cada folha gira a partir de onde esta; o Ctrl+Z devolve o
-        giro que cada uma tinha). O resto vem sozinho: a previa e refeita (a
+        Uma acao so do desfazer para todas as folhas. Todas terminam viradas
+        como a folha da vez (decisao do Samuel, 06/10/2026: a da vez gira a
+        partir de onde esta e as outras copiam o giro final dela -
+        core/girar.campos_do_giro); o Ctrl+Z devolve a cada uma o giro que
+        ela tinha. O resto vem sozinho: a previa e refeita (a
         rotacao entra na chave), e o corte, a divisao e o endireitar sao
         recalculados na folha girada (core/pipeline); as zonas da aba Marcar
         sao levadas para o mesmo pedaco do papel quando a pagina e desenhada
@@ -2438,7 +2440,7 @@ class TelaConferir(QWidget):
             return
         self._registrar(
             "girar", "folha", indices,
-            girar.campos_do_giro(self.projeto.folhas, indices, giro),
+            girar.campos_do_giro(self.projeto.folhas, indices, giro, self.indice_folha),
             girar.descricao_do_giro(giro, alcance, self.indice_folha, len(indices)),
         )
 

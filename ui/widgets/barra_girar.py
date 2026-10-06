@@ -159,7 +159,10 @@ class BarraGirar(QWidget):
         self.combo_alcance.setCursor(Qt.PointingHandCursor)
         for alcance in ALCANCES:
             self.combo_alcance.addItem(NOMES_DOS_ALCANCES[alcance], alcance)
-        self.combo_alcance.setToolTip("Em quais folhas o giro vale")
+        # a dica explica a regra do "aplicar em" (decisao do Samuel,
+        # 06/10/2026: as escolhidas copiam o giro da folha da vez)
+        self.combo_alcance.setToolTip(
+            "Em quais folhas o giro vale. Todas ficam viradas como esta folha.")
         self.combo_alcance.currentIndexChanged.connect(
             lambda *_: self.alcance_mudou.emit(self.alcance()))
         linha.addWidget(self.combo_alcance)

@@ -92,7 +92,7 @@ def test_os_textos_sao_em_portugues_e_sem_emoji():
     for texto in textos:
         assert all(ord(c) < 0x2000 for c in texto), texto
     assert girar.descricao_do_giro(girar.GIRO_DIREITA, girar.ALCANCE_TODAS, 0, 12) \
-        == "Girar ¼ à direita: todas as 12 folhas"
+        == "Girar ¼ à direita: todas as 12 folhas, viradas como a folha 1"
     assert girar.descricao_do_giro(girar.GIRO_ESQUERDA, girar.ALCANCE_ESTA, 4, 1) \
         == "Girar ¼ à esquerda: a folha 5"
 
@@ -110,7 +110,7 @@ def _livro(rotacoes) -> Projeto:
 
 def _girar(projeto, historico, giro, alcance, atual=0):
     indices = girar.folhas_do_alcance(len(projeto.folhas), atual, alcance)
-    campos = girar.campos_do_giro(projeto.folhas, indices, giro)
+    campos = girar.campos_do_giro(projeto.folhas, indices, giro, atual)
     acao = montar_acao(projeto, "girar", "folha", indices, campos,
                        girar.descricao_do_giro(giro, alcance, atual, len(indices)))
     aplicar(projeto, acao, acao.depois)
@@ -118,20 +118,65 @@ def _girar(projeto, historico, giro, alcance, atual=0):
 
 
 def test_girar_todas_desfaz_cada_folha_para_o_giro_que_tinha(tmp_path):
+    """Decisao do Samuel (06/10/2026): no "aplicar em", todas as folhas
+    escolhidas ficam viradas como a folha da vez (antes cada uma girava a
+    partir de onde estava). O desfazer devolve a cada uma o giro dela."""
     projeto = _livro([0, 90, 180, 270, 0])
     historico = HistoricoAcoes(tmp_path / "proj")
     _girar(projeto, historico, girar.GIRO_DIREITA, girar.ALCANCE_TODAS)
-    assert [f.rotacao for f in projeto.folhas] == [90, 180, 270, 0, 90]
-    _girar(projeto, historico, girar.GIRO_MEIA_VOLTA, girar.ALCANCE_PARES)
-    assert [f.rotacao for f in projeto.folhas] == [90, 0, 270, 180, 90]
-    assert historico.descricao_desfazer() == "Desfazer: Girar meia volta: as 2 folhas pares"
+    assert [f.rotacao for f in projeto.folhas] == [90, 90, 90, 90, 90]
+    _girar(projeto, historico, girar.GIRO_MEIA_VOLTA, girar.ALCANCE_PARES, atual=1)
+    assert [f.rotacao for f in projeto.folhas] == [90, 270, 90, 270, 90]
+    assert historico.descricao_desfazer() == \
+        "Desfazer: Girar meia volta: as 2 folhas pares, viradas como a folha 2"
 
     historico.desfazer(projeto)
-    assert [f.rotacao for f in projeto.folhas] == [90, 180, 270, 0, 90]
+    assert [f.rotacao for f in projeto.folhas] == [90, 90, 90, 90, 90]
     historico.desfazer(projeto)
     assert [f.rotacao for f in projeto.folhas] == [0, 90, 180, 270, 0]
     historico.refazer(projeto)
-    assert [f.rotacao for f in projeto.folhas] == [90, 180, 270, 0, 90]
+    assert [f.rotacao for f in projeto.folhas] == [90, 90, 90, 90, 90]
+
+
+# Decisao do Samuel (06/10/2026), pergunta "Aplicar em todas: como as outras
+# folhas giram?", resposta "Todas ficam viradas como a folha da vez" (como o
+# ScanTailor). Folhas com giros diferentes antes; a folha da vez e a 3
+# (indice 2, de cabeca para baixo), girada 1/4 a direita: ela vai a 270 e
+# todas as escolhidas terminam em 270. As de fora nao mudam.
+ANTES = [0, 90, 180, 270, 0, 90]
+
+
+@pytest.mark.parametrize("alcance, esperado", [
+    (girar.ALCANCE_TODAS, [270, 270, 270, 270, 270, 270]),
+    (girar.ALCANCE_DAQUI, [0, 90, 270, 270, 270, 270]),
+    (girar.ALCANCE_IMPARES, [270, 90, 270, 270, 270, 90]),
+    (girar.ALCANCE_PARES, [0, 270, 180, 270, 0, 270]),
+    (girar.ALCANCE_ESTA, [0, 90, 270, 270, 0, 90]),
+])
+def test_aplicar_em_copia_o_giro_final_da_folha_da_vez(tmp_path, alcance, esperado):
+    projeto = _livro(ANTES)
+    historico = HistoricoAcoes(tmp_path / "proj")
+    _girar(projeto, historico, girar.GIRO_DIREITA, alcance, atual=2)
+    assert [f.rotacao for f in projeto.folhas] == esperado
+    historico.desfazer(projeto)
+    assert [f.rotacao for f in projeto.folhas] == ANTES, "o desfazer devolve o giro de cada uma"
+
+
+def test_so_esta_continua_girando_a_partir_de_onde_esta(tmp_path):
+    projeto = _livro(ANTES)
+    historico = HistoricoAcoes(tmp_path / "proj")
+    _girar(projeto, historico, girar.GIRO_ESQUERDA, girar.ALCANCE_ESTA, atual=1)
+    assert [f.rotacao for f in projeto.folhas] == [0, 0, 180, 270, 0, 90]
+    _girar(projeto, historico, girar.GIRO_MEIA_VOLTA, girar.ALCANCE_ESTA, atual=1)
+    assert [f.rotacao for f in projeto.folhas] == [0, 180, 180, 270, 0, 90]
+
+
+def test_campos_do_giro_um_valor_igual_para_cada_folha_escolhida():
+    projeto = _livro(ANTES)
+    campos = girar.campos_do_giro(projeto.folhas, [0, 1, 3, 9], girar.GIRO_MEIA_VOLTA, 3)
+    # a folha da vez (indice 3) esta em 270; meia volta = 90. A 9 nao existe.
+    assert campos == {"rotacao": {"0": 90, "1": 90, "3": 90}}
+    assert girar.rotacao_final(projeto.folhas, girar.GIRO_MEIA_VOLTA, 3) == 90
 
 
 def test_o_giro_e_o_desfazer_sobrevivem_a_fechar_e_abrir(tmp_path):
@@ -300,7 +345,7 @@ def test_pagina_que_ninguem_girou_nao_muda(pdf):
     indices = girar.folhas_do_alcance(2, 1, girar.ALCANCE_ESTA)
     assert indices == [1]
     acao = montar_acao(projeto, "girar", "folha", indices,
-                       girar.campos_do_giro(projeto.folhas, indices, girar.GIRO_DIREITA), "x")
+                       girar.campos_do_giro(projeto.folhas, indices, girar.GIRO_DIREITA, 1), "x")
     aplicar(projeto, acao, acao.depois)
     assert projeto.folhas[0].rotacao == 0 and projeto.folhas[1].rotacao == 90
     depois = _desenhar(pdf, projeto)
