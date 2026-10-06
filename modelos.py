@@ -324,14 +324,32 @@ class Projeto:
         instalado de antes (ver core/zonas_na_folha.py). A conta e so na hora
         de gravar: a memoria nao muda.
         """
-        from core.zonas_na_folha import TRANCA_DAS_ZONAS, para_o_disco
+        return Projeto.para_o_disco(self.fotografar())
+
+    def fotografar(self) -> dict[str, Any]:
+        """A primeira metade de para_dicionario: uma COPIA do projeto como
+        esta agora (dataclasses.asdict), sem as zonas na folha. E a parte que
+        tem de ser feita no fio que mexe no projeto (a janela); a segunda
+        (para_o_disco) pode ir para o fio de gravar
+        (projetos.salvar_estado_por_tras, R1 de 05/10/2026). Arriscado:
+        devolver algo que nao seja copia (o fio de gravar leria o projeto
+        enquanto a janela o muda)."""
+        from core.zonas_na_folha import TRANCA_DAS_ZONAS
 
         # A trava das zonas: a previa (outro fio) pode estar levando as zonas
         # de uma pagina para o preparo novo (zonas_na_folha.acompanhar troca a
         # selecao E a geometria juntas). Sem a trava, o arquivo poderia sair
         # com a selecao de antes e a geometria de depois.
         with TRANCA_DAS_ZONAS:
-            dados = asdict(self)
+            return asdict(self)
+
+    @staticmethod
+    def para_o_disco(dados: dict[str, Any]) -> dict[str, Any]:
+        """A segunda metade de para_dicionario: acrescenta "zonas_na_folha"
+        a cada pagina de uma fotografia (fotografar). Mexe so na fotografia,
+        que e uma copia: pode rodar em qualquer fio. Devolve a mesma."""
+        from core.zonas_na_folha import para_o_disco
+
         # tuplas viram listas no JSON; guardamos assim mesmo e convertemos na volta
         for pagina in dados.get("paginas", []):
             try:

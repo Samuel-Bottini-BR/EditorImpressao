@@ -29,12 +29,15 @@ trabalho. Toda acao grava na hora.
 
 from __future__ import annotations
 
+import atexit
 import json
 import os
+import threading
 import unicodedata
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Callable
 
 import historico
 
@@ -198,23 +201,39 @@ def _caminho_do_resumo(pasta: Path) -> Path:
     return Path(pasta) / ARQUIVO_RESUMO
 
 
-def gravar_resumo(resumo: Resumo) -> None:
-    """Grava o resumo. Nunca levanta: perder o resumo nao pode travar nada."""
+def gravar_resumo(resumo: Resumo, por_tras: bool = False) -> None:
+    """Grava o resumo. Nunca levanta: perder o resumo nao pode travar nada.
+
+    por_tras=True (o relogio de salvar, via atualizar; R1 de 05/10/2026): a
+    escrita vai para o fio de gravar (_Gravador), como o projeto.json - criar
+    um arquivo no disco USB das conferencias chegou a parar a janela 0,4 s.
+    Sem por_tras, espera antes a fila (a ordem no disco nao muda)."""
+    pasta = Path(resumo.pasta)
+    resumo.mexido_em = datetime.now().isoformat(timespec="seconds")
+    if not resumo.criado_em:
+        resumo.criado_em = resumo.mexido_em
+    dados = asdict(resumo)
+    if por_tras:
+        _GRAVADOR.pedir(("resumo", str(pasta)), lambda: _escrever_resumo(pasta, dados))
+        return
+    esperar_gravacoes()
+    _escrever_resumo(pasta, dados)
+
+
+def _escrever_resumo(pasta: Path, dados: dict) -> None:
+    """A parte de disco de gravar_resumo. Nunca levanta."""
     try:
-        pasta = Path(resumo.pasta)
         pasta.mkdir(parents=True, exist_ok=True)
-        resumo.mexido_em = datetime.now().isoformat(timespec="seconds")
-        if not resumo.criado_em:
-            resumo.criado_em = resumo.mexido_em
         _caminho_do_resumo(pasta).write_text(
-            json.dumps(asdict(resumo), ensure_ascii=False, indent=1),
-            encoding="utf-8")
+            json.dumps(dados, ensure_ascii=False, indent=1), encoding="utf-8")
     except OSError:
         pass
 
 
 def ler_resumo(pasta: str | Path) -> Resumo | None:
-    """Le o resumo.json de uma pasta de projeto, ou None se faltar/estiver corrompido."""
+    """Le o resumo.json de uma pasta de projeto, ou None se faltar/estiver
+    corrompido. Espera antes as gravacoes por tras."""
+    esperar_gravacoes()
     caminho = _caminho_do_resumo(Path(pasta))
     if not caminho.is_file():
         return None
@@ -280,14 +299,16 @@ def criar(projeto, total_paginas: int = 0) -> Resumo:
     return resumo
 
 
-def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None) -> Resumo:
-    """Anota o andamento. Chamado a cada acao - e por isso tem de ser barato."""
+def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None,
+              por_tras: bool = False) -> Resumo:
+    """Anota o andamento. Chamado a cada acao - e por isso tem de ser barato.
+    por_tras: ver gravar_resumo."""
     resumo.caminho_saida = projeto.caminho_saida or resumo.caminho_saida
     resumo.total_paginas = len(projeto.paginas) or resumo.total_paginas
     resumo.conferidas = sum(1 for p in projeto.paginas if p.revisada)
     if pagina_atual is not None:
         resumo.pagina_atual = int(pagina_atual)
-    gravar_resumo(resumo)
+    gravar_resumo(resumo, por_tras=por_tras)
     return resumo
 
 
@@ -298,6 +319,11 @@ ARQUIVO_ESTADO = "projeto.json"
 
 def salvar_estado(resumo: Resumo, projeto) -> None:
     """Grava o trabalho da pagina: filtro, corte, angulo, marcacao, tudo.
+    Quando volta, o projeto.json ja esta no disco (fechar o programa, trocar
+    de livro, processar e os testes dependem disso).
+
+    Antes de gravar, espera as gravacoes por tras que ainda estejam na fila
+    (salvar_estado_por_tras): a ordem no disco e sempre a ordem dos pedidos.
 
     Nunca levanta. Falhar ao gravar nao pode derrubar a tela em que a pessoa
     esta trabalhando - o pior caso aceitavel e perder a ultima acao, e nao a
@@ -305,30 +331,153 @@ def salvar_estado(resumo: Resumo, projeto) -> None:
     """
     try:
         pasta = Path(resumo.pasta)
-        pasta.mkdir(parents=True, exist_ok=True)
         dados = projeto.para_dicionario()
-        # Decisao D2 (02/10/2026): "com copia de seguranca dos projetos". A
-        # primeira gravacao no formato novo (zonas na folha original) por cima
-        # de um projeto.json antigo com zonas guarda o antigo antes.
-        if not _copia_antes_das_zonas_na_folha(pasta, dados):
-            # Sem a copia (disco cheio, sem permissao), grava no formato de
-            # antes: so a "selecao" em fracao da pagina, que vale com a
-            # geometria anotada. O trabalho nao deixa de ser gravado; a
-            # conversao fica para a proxima gravacao que conseguir a copia.
-            from core.zonas_na_folha import CAMPO_NA_FOLHA
+    except (ValueError, TypeError):
+        return
+    esperar_gravacoes()
+    _gravar_no_disco(pasta, dados)
 
-            for pagina in dados.get("paginas", []):
-                pagina.pop(CAMPO_NA_FOLHA, None)
-        temporario = pasta / (ARQUIVO_ESTADO + ".novo")
-        # Grava num arquivo ao lado e so entao troca. Escrever por cima do bom
-        # deixaria o projeto pela metade se a energia caisse no meio - e o
-        # arquivo pela metade e justamente o que nao pode acontecer aqui.
-        temporario.write_text(
-            json.dumps(dados, ensure_ascii=False, indent=1),
-            encoding="utf-8")
-        temporario.replace(pasta / ARQUIVO_ESTADO)
-    except (OSError, ValueError, TypeError):
-        pass
+
+def salvar_estado_por_tras(resumo: Resumo, projeto) -> None:
+    """Como salvar_estado, mas a parte de DISCO (as zonas na folha, o texto
+    do JSON, a copia de seguranca, escrever e trocar o arquivo) fica para um
+    fio de fundo (_Gravador): volta em centesimos de segundo.
+
+    POR QUE EXISTE (R1 do verificador, 05/10/2026): o relogio de salvar da
+    janela (ui/janela_principal._salvar_por_tras) grava o projeto inteiro a
+    cada pagina folheada. Num livro de 268 paginas sao 3 a 6 MB: medido,
+    0,25 a 0,37 s com a janela parada a cada pagina (o fio da janela ficava
+    dentro do write), e mais quando o disco demora (o D: das conferencias e
+    um disco USB; disco ocupado ou computador sem memoria livre seguram a
+    escrita). Aqui o fio da janela so tira a fotografia do projeto
+    (Projeto.fotografar, ~0,03 s) - o que tem de ser no fio da janela,
+    porque e ele que mexe no projeto.
+
+    Pedidos seguidos para a mesma pasta se juntam: so o ultimo e gravado
+    (cada um e o projeto inteiro). Nunca levanta. Arriscado: gravar no fio de
+    fundo um dicionario que a janela ainda mexe (por isso a fotografia e
+    uma copia), ou esquecer de esperar_gravacoes() antes de ler ou mexer no
+    projeto.json.
+    """
+    try:
+        pasta = Path(resumo.pasta)
+        fotografia = projeto.fotografar()
+    except (ValueError, TypeError):
+        return
+
+    def gravar() -> None:
+        from modelos import Projeto
+
+        _gravar_no_disco(pasta, Projeto.para_o_disco(fotografia))
+
+    _GRAVADOR.pedir(("estado", str(pasta)), gravar)
+
+
+def esperar_gravacoes(limite_s: float | None = None) -> bool:
+    """Espera as gravacoes por tras (salvar_estado_por_tras) chegarem ao
+    disco. True se nao ficou nenhuma. Quem le ou mexe no projeto.json chama
+    antes; o fechar do programa tambem (via salvar_estado)."""
+    return _GRAVADOR.esperar(limite_s)
+
+
+def _gravar_no_disco(pasta: Path, dados: dict) -> None:
+    """A parte de disco de uma gravacao (no fio de quem chamou: a janela em
+    salvar_estado, o _Gravador em salvar_estado_por_tras). Uma de cada vez
+    (_TRAVA_DO_DISCO). Nunca levanta."""
+    with _TRAVA_DO_DISCO:
+        try:
+            pasta.mkdir(parents=True, exist_ok=True)
+            # Decisao D2 (02/10/2026): "com copia de seguranca dos projetos". A
+            # primeira gravacao no formato novo (zonas na folha original) por
+            # cima de um projeto.json antigo com zonas guarda o antigo antes.
+            if not _copia_antes_das_zonas_na_folha(pasta, dados):
+                # Sem a copia (disco cheio, sem permissao), grava no formato de
+                # antes: so a "selecao" em fracao da pagina, que vale com a
+                # geometria anotada. O trabalho nao deixa de ser gravado; a
+                # conversao fica para a proxima gravacao que conseguir a copia.
+                from core.zonas_na_folha import CAMPO_NA_FOLHA
+
+                for pagina in dados.get("paginas", []):
+                    pagina.pop(CAMPO_NA_FOLHA, None)
+            _escrever_estado(pasta, json.dumps(dados, ensure_ascii=False, indent=1))
+        except (OSError, ValueError, TypeError):
+            pass
+
+
+def _escrever_estado(pasta: Path, texto: str) -> None:
+    """Escreve o projeto.json. Grava num arquivo ao lado e so entao troca.
+    Escrever por cima do bom deixaria o projeto pela metade se a energia
+    caisse no meio - e o arquivo pela metade e justamente o que nao pode
+    acontecer aqui. (Separado para os testes simularem um disco lento.)"""
+    temporario = pasta / (ARQUIVO_ESTADO + ".novo")
+    temporario.write_text(texto, encoding="utf-8")
+    temporario.replace(pasta / ARQUIVO_ESTADO)
+
+
+# Uma gravacao no disco por vez, venha da janela ou do fio de fundo.
+_TRAVA_DO_DISCO = threading.Lock()
+
+
+class _Gravador:
+    """O fio que grava por tras (salvar_estado_por_tras e atualizar com
+    por_tras=True). Um so, criado na primeira gravacao; guarda so o ULTIMO
+    pedido de cada arquivo (chave: o que e + a pasta).
+
+    O fio e daemon (nao segura o programa aberto), por isso o fechar da
+    janela grava com salvar_estado, que espera a fila antes; e ha um atexit
+    que espera ate 10 s, para o caso de o programa sair por outro caminho.
+    Seguro mudar: o limite do atexit. Arriscado: mais de um fio (a ordem das
+    gravacoes de uma pasta deixaria de ser garantida).
+    """
+
+    def __init__(self) -> None:
+        self._condicao = threading.Condition()
+        self._fila: dict[tuple, Callable[[], None]] = {}
+        self._gravando = False
+        self._fio: threading.Thread | None = None
+
+    def pedir(self, chave: tuple, trabalho: Callable[[], None]) -> None:
+        """Poe `trabalho` (uma gravacao inteira, que nunca levanta) na fila,
+        no lugar do pedido anterior com a mesma chave, se ele ainda nao
+        comecou."""
+        with self._condicao:
+            self._fila[chave] = trabalho           # o mais novo substitui
+            if self._fio is None or not self._fio.is_alive():
+                self._fio = threading.Thread(target=self._rodar, daemon=True,
+                                             name="gravar o projeto")
+                self._fio.start()
+            self._condicao.notify_all()
+
+    def esperar(self, limite_s: float | None = None) -> bool:
+        if threading.current_thread() is self._fio:
+            return True                    # o proprio fio de gravar: nao espera a si mesmo
+        with self._condicao:
+            return self._condicao.wait_for(
+                lambda: not self._fila and not self._gravando, timeout=limite_s)
+
+    def _rodar(self) -> None:
+        while True:
+            with self._condicao:
+                while not self._fila:
+                    self._condicao.wait()
+                trabalho = self._fila.pop(next(iter(self._fila)))
+                self._gravando = True
+            try:
+                trabalho()
+            except Exception:  # noqa: BLE001 - o fio de gravar nunca morre
+                pass
+            finally:
+                with self._condicao:
+                    self._gravando = False
+                    self._condicao.notify_all()
+
+
+_GRAVADOR = _Gravador()
+
+
+@atexit.register
+def _esperar_ao_sair() -> None:
+    esperar_gravacoes(10.0)
 
 
 # Pastas de projeto cujo projeto.json ja esta no formato novo (zonas na folha),
@@ -413,6 +562,7 @@ def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> 
     """
     from historico_acoes import ARQUIVO_ACOES, ARQUIVO_POSICAO
 
+    esperar_gravacoes()                   # copia o que ja chegou ao disco
     pasta = Path(resumo.pasta)
     estado = pasta / ARQUIVO_ESTADO
     if not estado.is_file():
@@ -456,6 +606,7 @@ def tem_trabalho_salvo(resumo: Resumo) -> bool:
     trabalho. Le o arquivo inteiro: so e chamado antes de a analise acabar.
     Arriscado: devolver False para arquivo ilegivel.
     """
+    esperar_gravacoes()                   # le o que esta na fila de gravar
     caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
     if not caminho.is_file():
         return False
@@ -478,6 +629,7 @@ def anotar_no_estado(resumo: Resumo, **campos) -> bool:
     como salvar_estado. Nunca levanta. Arriscado: usar para mudar paginas ou
     folhas (e trabalho de salvar_estado, com o projeto inteiro).
     """
+    esperar_gravacoes()                   # na ordem das gravacoes por tras
     caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
     try:
         dados = json.loads(caminho.read_text(encoding="utf-8"))
@@ -494,9 +646,11 @@ def anotar_no_estado(resumo: Resumo, **campos) -> bool:
 
 
 def carregar_estado(resumo: Resumo):
-    """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler."""
+    """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler.
+    Espera antes as gravacoes por tras (salvar_estado_por_tras)."""
     from modelos import Projeto
 
+    esperar_gravacoes()
     caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
     if not caminho.is_file():
         return None
@@ -715,6 +869,7 @@ def copias_do_trabalho(resumo: Resumo) -> list[Path]:
     """As copias de seguranca que estao na pasta do projeto
     (projeto.antigo-*, acoes.antigo-*, posicao.antigo-*; ver
     guardar_copia_do_trabalho)."""
+    esperar_gravacoes()                   # a copia das zonas sai pelo fio de gravar
     pasta = Path(resumo.pasta)
     if not pasta.is_dir():
         return []
@@ -752,6 +907,7 @@ def remover_da_lista(resumo: Resumo, agora: datetime | None = None) -> Path | No
     """
     import shutil
 
+    esperar_gravacoes()                   # nada gravando na pasta que vai embora
     pasta = Path(resumo.pasta)
     raiz = pasta_dos_projetos()
     # trava de seguranca: so apaga dentro da pasta de projetos

@@ -117,10 +117,15 @@ class JanelaPrincipal(QMainWindow):
         # NAO existe botao de salvar e nunca se pergunta "quer salvar?". Essa
         # pergunta e uma armadilha para quem nao e tecnico: um "nao" por engano
         # apaga um dia de trabalho.
+        #
+        # O relogio grava POR TRAS (_salvar_por_tras, R1 de 05/10/2026): ele
+        # dispara a cada pagina folheada, e gravar o projeto inteiro no fio da
+        # janela a deixava 0,25 a 0,37 s parada a cada pagina num livro de 268
+        # paginas (mais com o disco lento ou o computador sem memoria livre).
         self._relogio_de_salvar = QTimer(self)
         self._relogio_de_salvar.setSingleShot(True)
         self._relogio_de_salvar.setInterval(600)
-        self._relogio_de_salvar.timeout.connect(self._salvar_agora)
+        self._relogio_de_salvar.timeout.connect(self._salvar_por_tras)
 
         self.telas = QStackedWidget()
         self.setCentralWidget(self.telas)
@@ -884,9 +889,27 @@ class JanelaPrincipal(QMainWindow):
         if self.resumo is not None and self.projeto is not None:
             self._relogio_de_salvar.start()
 
-    def _salvar_agora(self) -> None:
-        """Grava de verdade. Chamado pelo relogio, ao sair da tela, ao
-        processar e ao fechar o programa - sempre na pasta do projeto aberto.
+    def _salvar_por_tras(self) -> None:
+        """O que o relogio de salvar chama: o mesmo que _salvar_agora, mas o
+        projeto.json vai para o disco num fio de fundo
+        (projetos.salvar_estado_por_tras), e a janela so tira a fotografia
+        do projeto (centesimos de segundo).
+
+        Por que (R1 do verificador, 05/10/2026): o relogio dispara a cada
+        pagina folheada, e a gravacao inteira no fio da janela (3 a 6 MB num
+        livro de 268 paginas) a deixava 0,25 a 0,37 s parada a cada pagina -
+        mais com disco lento ou computador sem memoria livre. Fechar, trocar
+        de livro e processar continuam gravando na hora (_salvar_agora), e
+        essa gravacao espera a fila antes: a ordem no disco nao muda.
+        Arriscado: chamar isto no closeEvent (o programa sairia antes de o
+        arquivo chegar ao disco).
+        """
+        self._salvar_agora(por_tras=True)
+
+    def _salvar_agora(self, por_tras: bool = False) -> None:
+        """Grava de verdade. Chamado ao sair da tela, ao processar e ao
+        fechar o programa (e pelo relogio, com por_tras=True: ver
+        _salvar_por_tras) - sempre na pasta do projeto aberto.
 
         Nunca grava por cima de um trabalho salvo com um projeto que ainda
         nao foi analisado (self.trabalho_carregado False: entre abrir o livro
@@ -902,9 +925,12 @@ class JanelaPrincipal(QMainWindow):
             return
         if not self.trabalho_carregado and projetos.tem_trabalho_salvo(self.resumo):
             return
-        projetos.salvar_estado(self.resumo, self._o_que_gravar())
+        if por_tras:
+            projetos.salvar_estado_por_tras(self.resumo, self._o_que_gravar())
+        else:
+            projetos.salvar_estado(self.resumo, self._o_que_gravar())
         projetos.atualizar(self.resumo, self.projeto,
-                           pagina_atual=self.tela_conferir.indice_pagina)
+                           pagina_atual=self.tela_conferir.indice_pagina, por_tras=por_tras)
 
     def _o_que_gravar(self) -> Projeto:
         """O projeto como deve ir para o disco.
