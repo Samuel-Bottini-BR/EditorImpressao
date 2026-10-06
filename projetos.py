@@ -221,30 +221,101 @@ def gravar_resumo(resumo: Resumo, por_tras: bool = False) -> None:
 
 
 def _escrever_resumo(pasta: Path, dados: dict) -> None:
-    """A parte de disco de gravar_resumo. Nunca levanta."""
+    """A parte de disco de gravar_resumo. Nunca levanta.
+
+    Escreve num arquivo ao lado e troca, como o projeto.json (O1 do
+    verificador-2, 06/10/2026): antes era write_text direto por cima, e um
+    resumo.json pela metade fazia o projeto SUMIR da lista (listar pula a
+    pasta) com o projeto.json intacto ao lado. Arriscado: voltar a escrever
+    direto por cima."""
     try:
         pasta.mkdir(parents=True, exist_ok=True)
-        _caminho_do_resumo(pasta).write_text(
-            json.dumps(dados, ensure_ascii=False, indent=1), encoding="utf-8")
+        _escrever_e_trocar(_caminho_do_resumo(pasta),
+                           json.dumps(dados, ensure_ascii=False, indent=1))
     except OSError:
         pass
 
 
 def ler_resumo(pasta: str | Path) -> Resumo | None:
-    """Le o resumo.json de uma pasta de projeto, ou None se faltar/estiver
-    corrompido. Espera antes as gravacoes por tras."""
+    """Le o resumo.json de uma pasta de projeto. Espera antes as gravacoes
+    por tras.
+
+    None se o resumo.json nao existe (pasta que nao e projeto, ou o que
+    sobrou de um "Tirar da lista" que nao conseguiu apagar tudo: nao pode
+    voltar para a lista) ou nao da para ler o arquivo (sem permissao).
+    Se ele existe mas esta estragado (pela metade, vazio, nao e JSON), e
+    refeito a partir do projeto.json (_refazer_resumo; O1 do verificador-2,
+    06/10/2026) - antes devolvia None, e o projeto sumia da lista."""
     esperar_gravacoes()
-    caminho = _caminho_do_resumo(Path(pasta))
+    pasta = Path(pasta)
+    caminho = _caminho_do_resumo(pasta)
     if not caminho.is_file():
         return None
     try:
         dados = json.loads(caminho.read_text(encoding="utf-8"))
+        if not isinstance(dados, dict):
+            raise ValueError("o resumo nao e um dicionario")
+        conhecidos = {campo for campo in Resumo().__dict__}
+        resumo = Resumo(**{c: v for c, v in dados.items() if c in conhecidos})
+    except OSError:
+        return None
+    except (ValueError, TypeError):
+        return _refazer_resumo(pasta)
+    resumo.pasta = str(pasta)          # a pasta manda, e nao o que estava escrito
+    return resumo
+
+
+def _refazer_resumo(pasta: Path) -> Resumo | None:
+    """Monta de novo o resumo de um projeto cujo resumo.json estragou, a
+    partir do projeto.json ao lado, e o grava. None se nao ha projeto.json
+    legivel com o caminho do livro (ai nao ha o que mostrar no cartao).
+
+    O que volta: o livro (caminho_entrada), o nome (o do projeto, com o
+    "(2)" da pasta quando houver), o PDF de saida, o total de paginas e as
+    conferidas, a capa (capa.png, se existir) e as datas (a do projeto.json).
+    O que se perde: um nome trocado pelo "Renomear", a pagina em que
+    parou (volta na 1a), o "pronto, PDF gerado".
+
+    A assinatura e recalculada do PDF que esta no caminho do livro, se ele
+    existir; sem o PDF, fica vazia (o cartao oferece "procurar de novo").
+    Ressalva: se o PDF desse caminho tiver sido TROCADO por outro, a
+    assinatura nova seria a do outro - mas o resumo vazio tambem aceitaria
+    qualquer arquivo nesse caminho (procurar_o_livro), e a conferencia so
+    volta se o numero de folhas e de paginas bater (combina_com). Arriscado:
+    refazer sem projeto.json (o cartao apontaria para lugar nenhum), ou
+    refazer quando o resumo.json NAO existe (traria de volta o projeto
+    tirado da lista).
+    """
+    import re
+
+    estado = pasta / ARQUIVO_ESTADO
+    try:
+        dados = json.loads(estado.read_text(encoding="utf-8"))
+        quando = datetime.fromtimestamp(estado.stat().st_mtime).isoformat(timespec="seconds")
     except (OSError, ValueError):
         return None
-    conhecidos = {campo for campo in Resumo().__dict__}
-    limpo = {c: v for c, v in dados.items() if c in conhecidos}
-    resumo = Resumo(**limpo)
-    resumo.pasta = str(pasta)          # a pasta manda, e nao o que estava escrito
+    if not isinstance(dados, dict) or not dados.get("caminho_entrada"):
+        return None
+    caminho = str(dados["caminho_entrada"])
+    paginas = [p for p in (dados.get("paginas") or []) if isinstance(p, dict)]
+    nome = str(dados.get("nome") or Path(caminho).stem or pasta.name)
+    numero = re.search(r" \(\d+\)$", pasta.name)
+    if numero and not nome.endswith(numero.group(0)):
+        nome += numero.group(0)
+    capa = pasta / ARQUIVO_MINIATURA
+    resumo = Resumo(
+        pasta=str(pasta),
+        nome=nome,
+        caminho_entrada=caminho,
+        assinatura=assinatura_do_arquivo(caminho) if Path(caminho).is_file() else "",
+        caminho_saida=str(dados.get("caminho_saida") or ""),
+        total_paginas=len(paginas),
+        conferidas=sum(1 for p in paginas if p.get("revisada")),
+        criado_em=quando,
+        mexido_em=quando,
+        miniatura=str(capa) if capa.is_file() else "",
+    )
+    _escrever_resumo(pasta, asdict(resumo))
     return resumo
 
 
@@ -409,9 +480,20 @@ def _escrever_estado(pasta: Path, texto: str) -> None:
     Escrever por cima do bom deixaria o projeto pela metade se a energia
     caisse no meio - e o arquivo pela metade e justamente o que nao pode
     acontecer aqui. (Separado para os testes simularem um disco lento.)"""
-    temporario = pasta / (ARQUIVO_ESTADO + ".novo")
+    _escrever_e_trocar(pasta / ARQUIVO_ESTADO, texto)
+
+
+def _escrever_e_trocar(destino: Path, texto: str) -> None:
+    """Escreve `texto` em `destino` sem nunca deixar `destino` pela metade:
+    grava tudo num arquivo ao lado ("<nome>.novo") e so entao o troca pelo
+    de antes (os.replace, que no mesmo disco e uma troca so: ou fica o
+    arquivo velho inteiro, ou o novo inteiro). Usado pelo projeto.json e
+    pelo resumo.json. Levanta OSError (quem chama decide). Arriscado:
+    escrever direto em `destino`; o ".novo" em outro disco (a troca deixa de
+    ser uma so)."""
+    temporario = destino.with_name(destino.name + ".novo")
     temporario.write_text(texto, encoding="utf-8")
-    temporario.replace(pasta / ARQUIVO_ESTADO)
+    os.replace(temporario, destino)
 
 
 # Uma gravacao no disco por vez, venha da janela ou do fio de fundo.
