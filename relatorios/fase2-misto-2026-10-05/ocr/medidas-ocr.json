@@ -1,0 +1,384 @@
+{
+ "palatino_p005": {
+  "tamanho": [
+   1176,
+   2073
+  ],
+  "tinta_pontos": 378253,
+  "tinta_na_gravura_pct": 76.16,
+  "doctr_s": 23.98,
+  "kraken_s": 159.89,
+  "linhas": {
+   "doctr": 19,
+   "kraken": 18
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 50.6,
+  "motivos_revisar": [
+   "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha.",
+   "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+  ],
+  "voto": {
+   "fora_das_linhas_pct": 76.4,
+   "fora_e_fora_da_gravura_pct": 0.25,
+   "fora_mas_na_gravura_pct": 76.16
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 76.4,
+   "fora_e_fora_da_gravura_pct": 0.25,
+   "fora_mas_na_gravura_pct": 76.15
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 74.05,
+   "fora_e_fora_da_gravura_pct": 0.25,
+   "fora_mas_na_gravura_pct": 73.8
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 70.8,
+   "fora_e_fora_da_gravura_pct": 0.24,
+   "fora_mas_na_gravura_pct": 70.56
+  }
+ },
+ "palatino_p009": {
+  "tamanho": [
+   1331,
+   1852
+  ],
+  "tinta_pontos": 488963,
+  "tinta_na_gravura_pct": 0.0,
+  "doctr_s": 1.06,
+  "kraken_s": 15.52,
+  "linhas": {
+   "doctr": 32,
+   "kraken": 28
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 61.2,
+  "motivos_revisar": [
+   "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+  ],
+  "voto": {
+   "fora_das_linhas_pct": 48.1,
+   "fora_e_fora_da_gravura_pct": 48.1,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 46.25,
+   "fora_e_fora_da_gravura_pct": 46.25,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 48.09,
+   "fora_e_fora_da_gravura_pct": 48.09,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 46.0,
+   "fora_e_fora_da_gravura_pct": 46.0,
+   "fora_mas_na_gravura_pct": 0.0
+  }
+ },
+ "escola_p007": {
+  "tamanho": [
+   1954,
+   3119
+  ],
+  "tinta_pontos": 1713154,
+  "tinta_na_gravura_pct": 74.56,
+  "doctr_s": 1.13,
+  "kraken_s": 45.41,
+  "linhas": {
+   "doctr": 50,
+   "kraken": 46
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 61.2,
+  "motivos_revisar": [],
+  "voto": {
+   "fora_das_linhas_pct": 75.88,
+   "fora_e_fora_da_gravura_pct": 1.32,
+   "fora_mas_na_gravura_pct": 74.56
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 75.88,
+   "fora_e_fora_da_gravura_pct": 1.32,
+   "fora_mas_na_gravura_pct": 74.56
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 75.84,
+   "fora_e_fora_da_gravura_pct": 1.29,
+   "fora_mas_na_gravura_pct": 74.56
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 75.84,
+   "fora_e_fora_da_gravura_pct": 1.28,
+   "fora_mas_na_gravura_pct": 74.56
+  }
+ },
+ "horas_p011": {
+  "tamanho": [
+   3684,
+   5633
+  ],
+  "tinta_pontos": 13109765,
+  "tinta_na_gravura_pct": 99.5,
+  "doctr_s": 1.78,
+  "kraken_s": 18.27,
+  "linhas": {
+   "doctr": 10,
+   "kraken": 19
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 148.2,
+  "motivos_revisar": [
+   "O Kraken achou texto em 3 lugares e o docTR não: confira se há texto ou mancha.",
+   "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+  ],
+  "voto": {
+   "fora_das_linhas_pct": 98.09,
+   "fora_e_fora_da_gravura_pct": 0.5,
+   "fora_mas_na_gravura_pct": 97.59
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 97.73,
+   "fora_e_fora_da_gravura_pct": 0.5,
+   "fora_mas_na_gravura_pct": 97.23
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 96.91,
+   "fora_e_fora_da_gravura_pct": 0.49,
+   "fora_mas_na_gravura_pct": 96.42
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 94.56,
+   "fora_e_fora_da_gravura_pct": 0.49,
+   "fora_mas_na_gravura_pct": 94.07
+  }
+ },
+ "horas_p013": {
+  "tamanho": [
+   4154,
+   5805
+  ],
+  "tinta_pontos": 2193494,
+  "tinta_na_gravura_pct": 49.28,
+  "doctr_s": 12.54,
+  "kraken_s": 90.21,
+  "linhas": {
+   "doctr": 23,
+   "kraken": 22
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 209.6,
+  "motivos_revisar": [],
+  "voto": {
+   "fora_das_linhas_pct": 54.25,
+   "fora_e_fora_da_gravura_pct": 4.97,
+   "fora_mas_na_gravura_pct": 49.27
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 40.24,
+   "fora_e_fora_da_gravura_pct": 4.86,
+   "fora_mas_na_gravura_pct": 35.38
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 54.2,
+   "fora_e_fora_da_gravura_pct": 4.93,
+   "fora_mas_na_gravura_pct": 49.27
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 40.19,
+   "fora_e_fora_da_gravura_pct": 4.81,
+   "fora_mas_na_gravura_pct": 35.38
+  }
+ },
+ "horas_p047": {
+  "tamanho": [
+   3428,
+   5719
+  ],
+  "tinta_pontos": 10809387,
+  "tinta_na_gravura_pct": 93.22,
+  "doctr_s": 2.18,
+  "kraken_s": 30.37,
+  "linhas": {
+   "doctr": 21,
+   "kraken": 23
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 153.6,
+  "motivos_revisar": [],
+  "voto": {
+   "fora_das_linhas_pct": 93.24,
+   "fora_e_fora_da_gravura_pct": 0.08,
+   "fora_mas_na_gravura_pct": 93.16
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 91.34,
+   "fora_e_fora_da_gravura_pct": 0.05,
+   "fora_mas_na_gravura_pct": 91.28
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 93.08,
+   "fora_e_fora_da_gravura_pct": 0.08,
+   "fora_mas_na_gravura_pct": 93.0
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 90.58,
+   "fora_e_fora_da_gravura_pct": 0.05,
+   "fora_mas_na_gravura_pct": 90.53
+  }
+ },
+ "opusmajus_p020": {
+  "tamanho": [
+   1204,
+   2050
+  ],
+  "tinta_pontos": 820584,
+  "tinta_na_gravura_pct": 89.33,
+  "doctr_s": 1.08,
+  "kraken_s": 12.81,
+  "linhas": {
+   "doctr": 2,
+   "kraken": 5
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 40.8,
+  "motivos_revisar": [
+   "O Kraken achou texto nesta área e o docTR não: confira se há texto ou mancha."
+  ],
+  "voto": {
+   "fora_das_linhas_pct": 99.12,
+   "fora_e_fora_da_gravura_pct": 9.79,
+   "fora_mas_na_gravura_pct": 89.33
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 99.12,
+   "fora_e_fora_da_gravura_pct": 9.79,
+   "fora_mas_na_gravura_pct": 89.33
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 99.06,
+   "fora_e_fora_da_gravura_pct": 9.77,
+   "fora_mas_na_gravura_pct": 89.29
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 99.02,
+   "fora_e_fora_da_gravura_pct": 9.76,
+   "fora_mas_na_gravura_pct": 89.26
+  }
+ },
+ "graduale_p221": {
+  "tamanho": [
+   3911,
+   5335
+  ],
+  "tinta_pontos": 3774495,
+  "tinta_na_gravura_pct": 0.0,
+  "doctr_s": 2.41,
+  "kraken_s": 37.12,
+  "linhas": {
+   "doctr": 15,
+   "kraken": 9
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 200.6,
+  "motivos_revisar": [],
+  "voto": {
+   "fora_das_linhas_pct": 74.26,
+   "fora_e_fora_da_gravura_pct": 74.26,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 62.6,
+   "fora_e_fora_da_gravura_pct": 62.6,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 73.78,
+   "fora_e_fora_da_gravura_pct": 73.78,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 61.96,
+   "fora_e_fora_da_gravura_pct": 61.96,
+   "fora_mas_na_gravura_pct": 0.0
+  }
+ },
+ "graduale_p222": {
+  "tamanho": [
+   3219,
+   5264
+  ],
+  "tinta_pontos": 3060570,
+  "tinta_na_gravura_pct": 0.0,
+  "doctr_s": 2.23,
+  "kraken_s": 29.88,
+  "linhas": {
+   "doctr": 20,
+   "kraken": 14
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 169.6,
+  "motivos_revisar": [],
+  "voto": {
+   "fora_das_linhas_pct": 77.34,
+   "fora_e_fora_da_gravura_pct": 77.34,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 68.93,
+   "fora_e_fora_da_gravura_pct": 68.93,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 77.33,
+   "fora_e_fora_da_gravura_pct": 77.33,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 68.88,
+   "fora_e_fora_da_gravura_pct": 68.88,
+   "fora_mas_na_gravura_pct": 0.0
+  }
+ },
+ "opusmajus_p165": {
+  "tamanho": [
+   1269,
+   2244
+  ],
+  "tinta_pontos": 287170,
+  "tinta_na_gravura_pct": 0.0,
+  "doctr_s": 2.14,
+  "kraken_s": 71.98,
+  "linhas": {
+   "doctr": 45,
+   "kraken": 46
+  },
+  "kraken_perdidas": 0,
+  "altura_linha": 49.8,
+  "motivos_revisar": [
+   "O docTR achou texto nesta área e o Kraken não: confira se há texto ou mancha."
+  ],
+  "voto": {
+   "fora_das_linhas_pct": 6.57,
+   "fora_e_fora_da_gravura_pct": 6.57,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "voto_com_folga": {
+   "fora_das_linhas_pct": 6.45,
+   "fora_e_fora_da_gravura_pct": 6.45,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao": {
+   "fora_das_linhas_pct": 5.96,
+   "fora_e_fora_da_gravura_pct": 5.96,
+   "fora_mas_na_gravura_pct": 0.0
+  },
+  "uniao_com_folga": {
+   "fora_das_linhas_pct": 5.61,
+   "fora_e_fora_da_gravura_pct": 5.61,
+   "fora_mas_na_gravura_pct": 0.0
+  }
+ }
+}

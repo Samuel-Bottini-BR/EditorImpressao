@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 8 - Editor de Impressão</title>
+<!--
+  Oitava conferencia do Samuel (05/10/2026): o modo Misto (preto e branco so nas letras) com as tres
+  opcoes para a tinta que fica FORA do texto que o leitor de texto achou: A (guardar a tinta forte),
+  B (tudo em preto e branco, o Misto do ScanTailor) e C (so o texto achado). Pedido dele: "Quero ver o
+  lado a lado antes de decidir: A, B e C, com o detector de gravura ligado, no Graduale 222, Palatino
+  9, Opus 165, Boecio 22 e Marial 7. Inclua tambem uma pagina com iluminura (Horas 11) e uma com
+  moldura dourada (Horas 13)". Mesmo formato do conferir-aqui-7.html (cartoes, escolha, comentario,
+  "Copiar respostas", marcacoes guardadas no navegador com a chave NOVA "conferir-2026-10-05-h").
+  Imagens: relatorios/conferencia-8-2026-10-05/, feitas por
+  relatorios/fase2-misto-2026-10-05/scripts/rodada_abc.py (ramo fase2-misto).
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 8 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>O que é:</b> o modo Misto, que você pediu: <b>o preto e branco só nas letras</b>; gravuras, fotos, molduras e iluminuras ficam como no original, com o papel branco. A dúvida é o que fazer com a tinta que fica <b>fora do texto que o leitor de texto achou</b> (e fora das gravuras): nota de música, capitular, letrinha de desenho, escrita do verso, sujeira.</p>
+    <p><b>As três opções</b> (o detector de gravuras está ligado nas três):</p>
+    <p>&bull; <b>A - Guardar a tinta forte:</b> fora do texto achado, fica em preto o que é tão escuro quanto as letras da página; o que é cinza claro (a escrita do verso, sujeira) vai para o branco.<br>
+       &bull; <b>B - Tudo em preto e branco:</b> tudo o que não é gravura vira preto e branco, sem olhar o leitor de texto (como o ScanTailor faz).<br>
+       &bull; <b>C - Só o texto achado:</b> só o que o leitor de texto achou fica; todo o resto fora das gravuras vira papel branco.</p>
+    <p><b>Nas imagens:</b> quatro colunas, <b>Original | A | B | C</b>. Embaixo, o mesmo lugar ampliado. Clique na imagem para ver em tamanho cheio (clique de novo para fechar).</p>
+    <p>Em cada página, escolha a que ficou melhor (ou "Nenhuma") e, se quiser, escreva um comentário. No fim há duas perguntas gerais. Suas marcações ficam guardadas neste computador; no fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que olhar (pode ter <b>), a: atencao (opcional),
+//   s: o que reparar (opcional), i: [imagens], tipo: "escolha" | "entendi",
+//   p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-8-2026-10-05/";
+const OPCOES = ["A - Guardar a tinta forte", "B - Tudo em preto e branco", "C - Só o texto achado", "Nenhuma"];
+const MELHOR = "Qual ficou melhor nesta página?";
+const SECOES = [
+ { titulo:"1. Páginas com letra que o leitor de texto não enxerga",
+   sub:"As cinco páginas que você pediu. Em todas, o que muda entre A, B e C é só o que está fora do texto e fora das gravuras.",
+   cartoes:[
+    {c:"G222", t:"Graduale 222: notas e pautas", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["graduale_p222.jpg", "graduale_p222-detalhe-1.jpg", "graduale_p222-detalhe-2.jpg"],
+     o:`Olhe <b class='onde'>as notas e as quatro linhas de cada pauta</b>. O leitor de texto não enxerga música. <b>A</b> e <b>B</b> guardam todas as notas e pautas; <b>A</b> tira o pontilhado fino do alto da página que o B deixa. <b>C</b> apaga a música inteira.`,
+     a:`O número da folha "Cvij" (no alto, à direita, no original) não aparece em nenhuma das três: ele já é cortado antes, pelo corte das bordas (defeito conhecido, que vai para o corte do ScanTailor), e no original é tão claro que nem o preto e branco o pega.`},
+    {c:"P9", t:"Palatino 9: a capitular Q e as hachuras dela", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["palatino_p009.jpg", "palatino_p009-detalhe-1.jpg"],
+     o:`O detector de gravuras <b>não marca</b> a capitular nem a moldura desta página, então elas passam pelo preto e branco. Olhe <b class='onde'>o desenho dentro do Q</b>. <b>A</b> guarda a capitular e a moldura, mas perde algumas hachuras claras do fundo do Q; <b>B</b> guarda mais hachura; <b>C</b> apaga a capitular e a moldura inteiras e deixa pedaços soltos da moldura.`},
+    {c:"O165", t:"Opus Majus 165: as letrinhas dos desenhos", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["opusmajus_p165.jpg", "opusmajus_p165-detalhe-1.jpg", "opusmajus_p165-detalhe-2.jpg"],
+     o:`Olhe <b class='onde'>as linhas das figuras 7 e 8 e as letras a, b, c, d, e, f, h, l</b>. <b>A</b> e <b>B</b> guardam tudo (no A, o pontinho do "f" da figura 7 some); <b>C</b> apaga as linhas das figuras e deixa só algumas letras soltas.`},
+    {c:"B22", t:"Boécio 22: a escrita do verso na margem direita", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["boecio_p022.jpg", "boecio_p022-detalhe-1.jpg"],
+     o:`Olhe <b class='onde'>a margem da direita</b>, onde aparece a escrita da página de trás. <b>B</b> deixa mais pontinhos do verso; <b>A</b> e <b>C</b> tiram mais. Nenhuma tira tudo: os pontinhos colados no fim das linhas ficam nas três (o leitor de texto os junta à linha). <b>C</b> apaga quase toda a primeira capitular "Q" (no alto, à esquerda); <b>A</b> e <b>B</b> a guardam.`,
+     a:`Esta página foi escaneada em resolução baixa (defeito do escaneamento, já conhecido): as letras saem serrilhadas em qualquer opção.`},
+    {c:"M7", t:"Marial 7: a margem direita e as beiradas", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["marial_p007.jpg", "marial_p007-detalhe-1.jpg"],
+     o:`Olhe <b class='onde'>a margem direita e as beiradas da página</b>. <b>A</b> tira as faixas pretas da beirada do livro (à esquerda e embaixo) e os riscos da margem que o <b>B</b> deixa. As letrinhas do verso no fim das linhas ("b", "3") ficam nas três. <b>C</b> sai parecido com o A.`,
+     a:`A mancha marrom no canto de cima, à esquerda, aparece nas três: o detector de gravuras a toma por foto, e o Misto deixa a foto como no original. Isso se corrige tirando a zona na aba Marcar.`},
+   ]},
+ { titulo:"2. A gravura fica protegida?",
+   sub:"Uma página com iluminura e uma com moldura dourada, como você pediu.",
+   cartoes:[
+    {c:"H11", t:"Horas 11: a iluminura", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["horas_p011.jpg", "horas_p011-detalhe-1.jpg"],
+     o:`<b class='onde'>A iluminura sai igual nas três</b>, como no original, e as letras do oval saem pretas. A única diferença é a faixa preta da beirada esquerda do escaneamento: fica no A e no B, sai no C.`},
+    {c:"H13", t:"Horas 13: a moldura dourada", tipo:"escolha", p:MELHOR, op:OPCOES,
+     i:["horas_p013.jpg", "horas_p013-detalhe-1.jpg"],
+     o:`<b class='onde'>A moldura dourada sai igual nas três</b>, com a cor original, e o "pag. 54" inteiro. De novo, só a faixa preta da beirada esquerda muda (fica no A e no B, sai no C).`},
+   ]},
+ { titulo:"3. Para decidir",
+   cartoes:[
+    {c:"T1", t:"Quanto cada opção custa de tempo", tipo:"entendi", i:[],
+     o:`<b>A</b> e <b>C</b> precisam do leitor de texto. Nesta rodada, com o computador ocupado por outros trabalhos, ele levou de 1 a 2,5 segundos por página (o rápido) mais <b>11 a 81 segundos</b> (o de manuscrito); num livro de 300 páginas, isso dá de uma a várias horas a mais. Com o leitor já pronto, a própria opção A ou C custa quase nada (de 0,03 a 0,6 segundo a mais que o B). <b>B</b> não usa o leitor de texto.`},
+    {c:"PADRAO", t:"Qual deve ser o padrão de fábrica?", tipo:"escolha", i:[],
+     o:`É a opção com que todo livro novo começa no modo Misto. Você poderá trocar por livro e por página depois.`,
+     p:"Qual deve ser o padrão de fábrica?",
+     op:["A - Guardar a tinta forte", "B - Tudo em preto e branco", "C - Só o texto achado"]},
+    {c:"REVISAR", t:"Mandar para \"Para revisar\" sozinho?", tipo:"escolha", i:[],
+     o:`O programa pode medir quanta <b>tinta forte</b> ficou fora do texto achado e, se for muita, mandar a página para "Para revisar" com o lugar marcado (música, capitular, anotação). Nesta rodada: Graduale 222, 76% da tinta; Palatino 9, 47%; Opus 165, 6%; Marial 7, 5%; Horas 13, 4%; Boécio 22, 2%; Horas 11, menos de 1%. Um limite de uns 10% mandaria para revisar só o Graduale e o Palatino 9 (o limite certo ainda seria medido nas páginas de teste).`,
+     p:"O programa deve mandar para \"Para revisar\" sozinho a página com muita tinta forte fora das linhas?",
+     op:["Sim", "Não"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-h";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>${tipo === "voto" ? "O que olhar:" : (tipo === "escolha" ? "O que é:" : "O que houve:")}</b> ${k.o}</p>` : "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${k.t}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 8 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 14 - Editor de Impressão</title>
+<!--
+  Decima quarta conferencia do Samuel (05/10/2026). Explica, com exemplos, as perguntas que ficaram
+  em aberto nos formularios 8 (PADRAO do Misto, tempo de cada opcao) e 9 (G1 girar, G2 dividir,
+  G5 tela do endireitar, G6 ordem endireitar/cortar, Z1/Z2 zonas e converter, S1/S2 corte configuravel),
+  mais duas perguntas que sairam das conferencias 12 e 13 (terceiro botao novo da aba Marcar;
+  "Tirar o fundo" com pedaco marcado).
+  Respostas literais dele: relatorios/conferencia-samuel-2026-10-05-g.md (form. 9), -f.md (form. 8),
+  -d.md (form. 12), -e.md (form. 13).
+  Mesmo formato do conferir-aqui-12.html (cartoes, escolha/entendi, comentario, "Copiar respostas").
+  Marcacoes guardadas no navegador com a chave NOVA "conferir-2026-10-05-n" (a "-m" e do formulario 13).
+  Imagens: relatorios/conferencia-14-2026-10-05/ (copias reduzidas/recortadas dos prints de 02/10, do
+  formulario 9 (ramo fase2-geometria), dos formularios 8 e 12 (ramo fase2-misto)). Os desenhos
+  (botoes, telas, esquemas) sao HTML/SVG dentro deste arquivo, marcados com o selo "desenho".
+  O programa NAO foi mudado.
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .muda { margin:0 0 10px; background:#eef7ee; border-radius:6px; padding:6px 10px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .ref { margin:6px 0 8px; font-size:14px; color:#444; border-left:3px solid #bbb; padding:2px 10px; }
+  .cartao .ref small { display:block; font-size:12px; color:#666; font-family:Consolas, monospace; word-break:break-all; margin-top:2px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao figure { margin:0 0 14px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .cartao figcaption { font-size:15px; color:#333; margin:4px 2px 0; }
+  .cartao figcaption .sim, .cartao figcaption .des { font-weight:600; padding:0 5px; border-radius:4px; }
+  .cartao figcaption .sim { background:#ffe0b2; color:#7a3d00; }
+  .cartao figcaption .des { background:#e1d5f7; color:#3d1a78; }
+  .cartao table { border-collapse:collapse; width:100%; margin:6px 0 12px; font-size:15px; }
+  .cartao th, .cartao td { border:1px solid #ccc; padding:5px 8px; text-align:left; vertical-align:top; }
+  .cartao th { background:#f1f1f1; }
+  .cartao ul { margin:4px 0 10px; padding-left:22px; }
+  .cartao svg { display:block; max-width:100%; height:auto; margin:0 auto; }
+  .lado { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; margin:0 0 14px; }
+  .lado > figure { flex:1 1 300px; margin:0; }
+  .lado img { max-height:620px; width:auto; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; color:#222; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+
+  /* desenhos da tela (tema escuro, so ilustracao) */
+  .mock { background:#1E1F22; color:#E6E6E6; border-radius:8px; padding:12px; font-size:14px; line-height:1.3; border:1px solid #444; }
+  .mock .barra { background:#26282C; border-radius:6px; padding:8px 10px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:8px; }
+  .mock .rot { color:#AEB4BD; margin-right:2px; }
+  .mock .bt { display:inline-block; border:1px solid #4A4D53; background:#2B2D31; color:#E6E6E6; border-radius:6px; padding:5px 10px; white-space:nowrap; }
+  .mock .bt.on { background:#2F6FE0; border-color:#2F6FE0; color:#fff; font-weight:600; }
+  .mock .bt.grande { padding:8px 14px; font-size:15px; }
+  .mock .tecla { font-family:Consolas, monospace; font-size:12px; color:#AEB4BD; border:1px solid #4A4D53; border-radius:4px; padding:1px 5px; margin-left:4px; }
+  .mock .sep { width:1px; align-self:stretch; background:#4A4D53; margin:0 6px; }
+  .mock .area { background:#26282C; border-radius:6px; padding:10px; display:flex; justify-content:center; }
+  .mock .nota { color:#AEB4BD; font-size:13px; margin-top:6px; }
+  .mock .faixa { background:#203252; border:1px solid #2F6FE0; border-radius:6px; padding:6px 10px; margin-top:8px; color:#DCE6F7; }
+  .mock .caixa { display:inline-block; width:14px; height:14px; border:2px solid #AEB4BD; border-radius:3px; vertical-align:-2px; margin-right:6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 14 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>Este formulário explica as perguntas que ficaram em aberto nos formulários 8 e 9, com exemplos.</b> A Rodada 4 da tela inicial continua aberta no ABRA-AQUI do layout.</p>
+    <p><b>A sua regra vale em todas as perguntas:</b> <i>"esse programa deve presar por dar opções"</i>. Por isso, em cada pergunta, <b>a opção que você escolher vira o padrão de fábrica</b> (o jeito com que o programa começa), e <b>as outras continuam disponíveis</b> dentro do programa, para trocar no livro ou na página.</p>
+    <p><b>O programa não mudou.</b> As figuras com o selo <span style="background:#e1d5f7;color:#3d1a78;font-weight:600;padding:0 5px;border-radius:4px">desenho</span> são esboços feitos à mão, só para mostrar a ideia (as cores escuras são só ilustração; o tamanho, a posição e os nomes dos botões ainda podem mudar). As com o selo <span style="background:#ffe0b2;color:#7a3d00;font-weight:600;padding:0 5px;border-radius:4px">simulação</span> foram feitas por programinhas de teste, fora do programa. As outras são o programa de hoje (prints da tela de 02/10) ou o teste de comparação.</p>
+    <p><b>Como responder:</b> leia, veja as figuras e escolha uma opção (no cartão que é só explicação, aperte <b>Entendi</b>). Se quiser, escreva um comentário. Clique numa foto para ver em tamanho cheio (clique de novo para fechar). A <b>referência</b>, em letra pequena, diz de onde vem cada coisa, para o Claude achar. As marcações ficam guardadas neste computador; no fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que e, m: o que muda (opcional), a: atencao (opcional),
+//   i: [[imagem ou desenho, legenda], ...] (se o primeiro item comeca com "<" e um desenho em HTML/SVG;
+//   um item {lado:[...]} poe varios lado a lado), x: html a mais (opcional), s: recomendacao e o porque,
+//   r: referencia (o caminho vai em <small>), tipo: "escolha" | "entendi", p: pergunta, op: [opcoes]}
+const P = "conferencia-14-2026-10-05/";
+const SIM = "<span class='sim'>simulação</span>";
+const DES = "<span class='des'>desenho</span>";
+const REC = " (recomendado)";
+
+// ---------- desenhos ----------
+const MOCK_GIRAR = `
+<div class="mock">
+  <div class="barra">
+    <span class="rot">Girar:</span>
+    <span class="bt">&#x21BA; &frac14; à esquerda<span class="tecla">Ctrl+&larr;</span></span>
+    <span class="bt">&#x21BB; &frac14; à direita<span class="tecla">Ctrl+&rarr;</span></span>
+    <span class="bt">&#x21C5; meia volta</span>
+    <span class="sep"></span>
+    <span class="rot">Aplicar em:</span>
+    <span class="bt on">só esta</span><span class="bt">todas</span><span class="bt">daqui em diante</span><span class="bt">só as pares</span><span class="bt">só as ímpares</span>
+  </div>
+  <div class="area">
+    <svg viewBox="0 0 520 190" width="520" role="img" aria-label="Livro escaneado de lado, antes e depois de girar">
+      <rect x="0" y="0" width="520" height="190" fill="#26282C"/>
+      <text x="95" y="18" fill="#AEB4BD" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial">antes: a página veio deitada</text>
+      <g transform="translate(20,35)">
+        <rect x="0" y="0" width="150" height="110" fill="#EFE6D2" stroke="#8a7a5a"/>
+        <g fill="#5a4a32">
+          <rect x="12" y="35" width="10" height="40"/>
+          <rect x="30" y="15" width="8" height="80"/><rect x="48" y="15" width="8" height="80"/><rect x="66" y="25" width="8" height="70"/>
+          <rect x="84" y="15" width="8" height="80"/><rect x="102" y="35" width="8" height="60"/><rect x="120" y="15" width="8" height="80"/>
+        </g>
+      </g>
+      <text x="260" y="98" fill="#2F6FE0" font-size="30" text-anchor="middle" font-family="Segoe UI, Arial">&#x21BB;</text>
+      <text x="260" y="125" fill="#AEB4BD" font-size="12" text-anchor="middle" font-family="Segoe UI, Arial">um clique</text>
+      <text x="415" y="18" fill="#AEB4BD" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial">depois: em pé</text>
+      <g transform="translate(360,28)">
+        <rect x="0" y="0" width="110" height="150" fill="#EFE6D2" stroke="#8a7a5a"/>
+        <g fill="#5a4a32">
+          <rect x="35" y="12" width="40" height="10"/>
+          <rect x="15" y="30" width="80" height="8"/><rect x="15" y="48" width="80" height="8"/><rect x="15" y="66" width="70" height="8"/>
+          <rect x="15" y="84" width="80" height="8"/><rect x="15" y="102" width="60" height="8"/><rect x="15" y="120" width="80" height="8"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <div class="nota">O que já existe e continua: Página &gt; Girar, no menu. A tecla R deixa de girar e fica só para o Retângulo (hoje as duas brigam e o Retângulo ganha). As teclas Ctrl+&larr; e Ctrl+&rarr; são sugestão; dá para trocar em Configurações.</div>
+</div>`;
+
+const MOCK_DIVIDIR = `
+<div class="mock">
+  <div class="barra">
+    <span class="rot">Este livro:</span>
+    <span class="bt on">uma página por folha</span>
+    <span class="bt">duas páginas por folha</span>
+    <span class="nota" style="margin:0 0 0 6px">&larr; de fábrica, nada é dividido</span>
+  </div>
+  <div class="barra">
+    <span class="rot">Se for duas por folha, dividir com:</span>
+    <span class="bt on">o jeito do programa</span>
+    <span class="bt">o jeito do ScanTailor</span>
+  </div>
+  <div class="barra">
+    <span class="rot">Só nesta folha:</span>
+    <span class="bt">não dividir esta</span>
+    <span class="bt">usar o outro jeito nesta</span>
+    <span class="bt">arrastar a linha</span>
+    <span class="bt">usar em todas</span>
+  </div>
+  <div class="faixa">Exemplo: num livro de folhas duplas, o jeito do programa erra a folha 40. O Kaique aperta "usar o outro jeito nesta" e só a folha 40 é dividida pelo ScanTailor. Se nenhum dos dois acertar, arrasta a linha à mão (como hoje).</div>
+</div>`;
+
+// pagina torta (texto) para os desenhos do endireitar; cx,cy = centro
+function paginaTorta(cx, cy, ang){
+  let s = `<g transform="rotate(${ang} ${cx} ${cy})"><rect x="${cx-80}" y="${cy-105}" width="160" height="210" fill="#EFE6D2" stroke="#8a7a5a"/>`;
+  s += `<rect x="${cx-35}" y="${cy-90}" width="70" height="9" fill="#5a4a32"/>`;
+  for (let k=0;k<9;k++){ const w = (k%3===2)?100:124; s += `<rect x="${cx-62}" y="${cy-68+k*18}" width="${w}" height="7" fill="#5a4a32"/>`; }
+  return s + `</g>`;
+}
+function grade(x0,y0,x1,y1,passo){
+  let s = `<g stroke="#2F6FE0" stroke-width="1" opacity=".75">`;
+  for (let y=y0;y<=y1;y+=passo) s += `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}"/>`;
+  for (let x=x0;x<=x1;x+=passo) s += `<line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}"/>`;
+  return s + `</g>`;
+}
+const CONTROLE_ANGULO = (y) => `
+  <g font-family="Segoe UI, Arial" font-size="13">
+    <rect x="18" y="${y}" width="40" height="28" rx="5" fill="#2B2D31" stroke="#4A4D53"/><text x="38" y="${y+19}" fill="#E6E6E6" text-anchor="middle">&#9664;</text>
+    <rect x="64" y="${y}" width="100" height="28" rx="5" fill="#1E1F22" stroke="#2F6FE0"/><text x="114" y="${y+19}" fill="#fff" text-anchor="middle" font-weight="600">&#8722;2,0 graus</text>
+    <rect x="170" y="${y}" width="40" height="28" rx="5" fill="#2B2D31" stroke="#4A4D53"/><text x="190" y="${y+19}" fill="#E6E6E6" text-anchor="middle">&#9654;</text>
+    <text x="218" y="${y+12}" fill="#AEB4BD" font-size="11">cada clique:</text>
+    <text x="218" y="${y+26}" fill="#AEB4BD" font-size="11">0,1 grau</text>
+  </g>`;
+const ALCA = (x,y) => `<g><circle cx="${x}" cy="${y}" r="13" fill="#2F6FE0"/><text x="${x}" y="${y+6}" fill="#fff" font-size="17" text-anchor="middle" font-family="Segoe UI, Arial">&#x21BB;</text></g>`;
+const LINHA_GUIA = (x1,y1,x2,y2) => `<g><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#FF8A1F" stroke-width="3"/><circle cx="${x1}" cy="${y1}" r="6" fill="#FF8A1F"/><circle cx="${x2}" cy="${y2}" r="6" fill="#FF8A1F"/></g>`;
+function svgEndireitar(tipo){
+  const cx=170, cy=135, ang=-2;
+  let s = `<svg viewBox="0 0 340 330" width="340" role="img" aria-label="desenho da aba Endireitar"><rect width="340" height="330" rx="8" fill="#1E1F22"/><rect x="10" y="10" width="320" height="250" rx="6" fill="#26282C"/>`;
+  s += paginaTorta(cx, cy, ang);
+  if (tipo !== "b") s += grade(70, 25, 270, 245, 20);
+  if (tipo !== "a") {
+    // linha-guia em cima da 3a linha do texto (ja torta, como a pagina)
+    const yl = cy-68+2*18+3; const xa = cx-62, xb = cx+62;
+    const r = ang*Math.PI/180, rot = (x,y)=>[cx+(x-cx)*Math.cos(r)-(y-cy)*Math.sin(r), cy+(x-cx)*Math.sin(r)+(y-cy)*Math.cos(r)];
+    const [p1x,p1y]=rot(xa-14,yl), [p2x,p2y]=rot(xb+14,yl);
+    s += LINHA_GUIA(p1x.toFixed(1),p1y.toFixed(1),p2x.toFixed(1),p2y.toFixed(1));
+    const [hx,hy]=rot(cx+80,cy-105); s += ALCA(hx.toFixed(1),hy.toFixed(1));
+  }
+  if (tipo === "b") s += `<text x="170" y="290" fill="#AEB4BD" font-size="12" text-anchor="middle" font-family="Segoe UI, Arial">arraste a linha laranja até ela ficar em cima de uma</text><text x="170" y="306" fill="#AEB4BD" font-size="12" text-anchor="middle" font-family="Segoe UI, Arial">linha do texto; ou gire pela bolinha azul do canto</text>`;
+  else s += CONTROLE_ANGULO(275);
+  return s + `</svg>`;
+}
+
+// G6: cortar antes x endireitar antes
+function conteudo(cx,cy,ang,cor){ // bloco de texto 120x110 girado
+  let s = `<g transform="rotate(${ang} ${cx} ${cy})">`;
+  for (let k=0;k<6;k++) s += `<rect x="${cx-60}" y="${cy-55+k*20}" width="${k===5?80:120}" height="9" fill="${cor||'#5a4a32'}"/>`;
+  return s + `</g>`;
+}
+function passo(tx, titulo, corpo){
+  return `<g transform="translate(${tx},0)"><text x="100" y="22" fill="#E6E6E6" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial" font-weight="600">${titulo}</text><g transform="translate(0,30)">${corpo}</g></g>`;
+}
+const SETA = (x,y) => `<text x="${x}" y="${y}" fill="#2F6FE0" font-size="26" text-anchor="middle" font-family="Segoe UI, Arial">&#10142;</text>`;
+const FOLHA = `<rect x="20" y="15" width="160" height="160" fill="#EFE6D2" stroke="#8a7a5a"/>`;
+const SVG_ORDEM = `
+<svg viewBox="0 0 700 580" width="700" role="img" aria-label="cortar antes ou depois de endireitar">
+ <rect width="700" height="580" rx="8" fill="#1E1F22"/>
+ <text x="16" y="24" fill="#FFB86B" font-size="15" font-family="Segoe UI, Arial" font-weight="700">HOJE: primeiro corta, depois endireita</text>
+ <g transform="translate(0,30)">
+  ${passo(0, "1. a folha veio torta", FOLHA + conteudo(100,95,6))}
+  ${SETA(222,130)}
+  ${passo(240, "2. corta reto em volta", FOLHA + conteudo(100,95,6) + `<rect x="33" y="32" width="134" height="126" fill="none" stroke="#3FBF6F" stroke-width="3"/>`)}
+  ${SETA(462,130)}
+  ${passo(480, "3. endireita o pedaço", `
+    <rect x="20" y="15" width="160" height="160" fill="#ffffff" stroke="#8a7a5a"/>
+    <g transform="rotate(-6 100 95)"><rect x="33" y="32" width="134" height="126" fill="#EFE6D2"/></g>
+    ${conteudo(100,95,0)}
+    <rect x="40" y="38" width="120" height="114" fill="none" stroke="#FF5A5A" stroke-width="2" stroke-dasharray="5 4"/>
+    <circle cx="160" cy="150" r="13" fill="none" stroke="#FF5A5A" stroke-width="2.5"/>`)}
+ </g>
+ <text x="16" y="254" fill="#E6E6E6" font-size="13" font-family="Segoe UI, Arial">Sobram <tspan fill="#FFFFFF" font-weight="700">cantos brancos</tspan> (os triângulos em volta).</text>
+ <text x="16" y="272" fill="#E6E6E6" font-size="13" font-family="Segoe UI, Arial">Se apertar o corte (vermelho) para tirar o branco, ele pode <tspan fill="#FF8A8A" font-weight="700">comer a letra do canto</tspan>.</text>
+ <line x1="10" y1="286" x2="690" y2="286" stroke="#4A4D53"/>
+ <text x="16" y="310" fill="#7FB0FF" font-size="15" font-family="Segoe UI, Arial" font-weight="700">SCANTAILOR: primeiro endireita, depois corta</text>
+ <g transform="translate(0,316)">
+  ${passo(0, "1. a folha veio torta", FOLHA + conteudo(100,95,6))}
+  ${SETA(222,130)}
+  ${passo(240, "2. endireita a folha toda", `<g transform="rotate(-6 100 95)"><rect x="20" y="15" width="160" height="160" fill="#EFE6D2" stroke="#8a7a5a"/></g>` + conteudo(100,95,0))}
+  ${SETA(462,130)}
+  ${passo(480, "3. corta reto em volta", `<g transform="rotate(-6 100 95)"><rect x="20" y="15" width="160" height="160" fill="#EFE6D2" stroke="#8a7a5a"/></g>` + conteudo(100,95,0) + `<rect x="35" y="35" width="130" height="120" fill="none" stroke="#3FBF6F" stroke-width="3"/>`)}
+ </g>
+ <text x="16" y="548" fill="#E6E6E6" font-size="13" font-family="Segoe UI, Arial">O corte fica justo em volta do texto já reto: sem canto branco e sem comer letra.</text>
+ <text x="16" y="568" fill="#AEB4BD" font-size="12" font-family="Segoe UI, Arial">(A inclinação está exagerada, para dar para ver.)</text>
+</svg>`;
+
+// Z: zona presa a pagina cortada x presa a folha
+function folhaZ(corteX, zonaX, zonaOk, titulo, sub, sub2){
+  return `<g>
+   <text x="110" y="18" fill="#E6E6E6" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial" font-weight="600">${titulo}</text>
+   <text x="110" y="33" fill="#AEB4BD" font-size="11.5" text-anchor="middle" font-family="Segoe UI, Arial">${sub}</text>
+   <text x="110" y="46" fill="#AEB4BD" font-size="11.5" text-anchor="middle" font-family="Segoe UI, Arial">${sub2}</text>
+   <rect x="15" y="54" width="190" height="206" fill="#EFE6D2" stroke="#8a7a5a"/>
+   <rect x="15" y="54" width="22" height="206" fill="#7a6a4f" opacity=".55"/>
+   <ellipse cx="125" cy="120" rx="38" ry="44" fill="#9b7a50"/><text x="125" y="125" fill="#fff" font-size="11" text-anchor="middle" font-family="Segoe UI, Arial">gravura</text>
+   <g fill="#5a4a32"><rect x="65" y="180" width="120" height="7"/><rect x="65" y="196" width="120" height="7"/><rect x="65" y="212" width="100" height="7"/><rect x="65" y="228" width="120" height="7"/></g>
+   <rect x="${corteX}" y="60" width="${200-corteX}" height="190" fill="none" stroke="#3FBF6F" stroke-width="2.5" stroke-dasharray="6 4"/>
+   <rect x="${zonaX}" y="72" width="86" height="96" fill="${zonaOk?'#FF8A1F':'#FF5A5A'}" fill-opacity=".35" stroke="${zonaOk?'#FF8A1F':'#FF5A5A'}" stroke-width="2.5"/>
+  </g>`;
+}
+const SVG_ZONAS = `
+<svg viewBox="0 0 690 300" width="690" role="img" aria-label="zona antes e depois de mudar o corte">
+ <rect width="690" height="300" rx="8" fill="#1E1F22"/>
+ <g transform="translate(5,0)">${folhaZ(45, 82, true, "1. Hoje", "o corte (verde) e a zona", "(laranja) em cima da gravura")}</g>
+ <g transform="translate(235,0)">${folhaZ(25, 62, false, "2. Corte mudou: jeito antigo", "a zona estava presa à página", "cortada: ela anda junto")}</g>
+ <g transform="translate(465,0)">${folhaZ(25, 82, true, "3. Corte mudou: jeito novo", "a zona está presa à folha:", "fica em cima da gravura")}</g>
+ <text x="345" y="288" fill="#AEB4BD" font-size="12" text-anchor="middle" font-family="Segoe UI, Arial">Na 2 e na 3, o corte passou a pegar a beirada escura da esquerda (o corte começou mais à esquerda).</text>
+</svg>`;
+
+// corte: folga + aviso
+const SVG_CORTE = `
+<svg viewBox="0 0 690 300" width="690" role="img" aria-label="folga do corte e aviso de corte em cima da tinta">
+ <rect width="690" height="300" rx="8" fill="#1E1F22"/>
+ <rect x="12" y="12" width="666" height="44" rx="6" fill="#26282C"/>
+ <g font-family="Segoe UI, Arial" font-size="14">
+  <text x="26" y="40" fill="#AEB4BD">Folga do corte, depois da última tinta:</text>
+  <rect x="288" y="20" width="30" height="28" rx="5" fill="#2B2D31" stroke="#4A4D53"/><text x="303" y="40" fill="#E6E6E6" text-anchor="middle">&#8722;</text>
+  <rect x="322" y="20" width="62" height="28" rx="5" fill="#1E1F22" stroke="#2F6FE0"/><text x="353" y="40" fill="#fff" text-anchor="middle" font-weight="600">1 mm</text>
+  <rect x="388" y="20" width="30" height="28" rx="5" fill="#2B2D31" stroke="#4A4D53"/><text x="403" y="40" fill="#E6E6E6" text-anchor="middle">+</text>
+  <rect x="430" y="20" width="160" height="28" rx="5" fill="#2F6FE0"/><text x="510" y="40" fill="#fff" text-anchor="middle" font-weight="600">usar no livro inteiro</text>
+ </g>
+ <g transform="translate(20,72)">
+  <rect x="0" y="0" width="300" height="190" fill="#EFE6D2" stroke="#8a7a5a"/>
+  <g fill="#5a4a32"><rect x="30" y="25" width="200" height="9"/><rect x="30" y="45" width="230" height="9"/><rect x="30" y="65" width="230" height="9"/><rect x="30" y="85" width="246" height="9"/><rect x="30" y="105" width="230" height="9"/><rect x="30" y="125" width="180" height="9"/><rect x="262" y="155" width="26" height="12"/></g>
+  <rect x="20" y="15" width="250" height="165" fill="none" stroke="#3FBF6F" stroke-width="3"/>
+  <circle cx="270" cy="89" r="15" fill="none" stroke="#FF8A1F" stroke-width="3"/>
+  <circle cx="275" cy="161" r="17" fill="none" stroke="#FF8A1F" stroke-width="3"/>
+ </g>
+ <g font-family="Segoe UI, Arial" font-size="13">
+  <rect x="340" y="80" width="336" height="64" rx="6" fill="#4A2E10" stroke="#FF8A1F"/>
+  <text x="352" y="104" fill="#FFD3A1" font-weight="700">O corte pode ter comido tinta aqui (2 lugares).</text>
+  <text x="352" y="126" fill="#FFD3A1">Confira: a linha 4 e o número da folha.</text>
+  <text x="340" y="172" fill="#E6E6E6">Na tira de baixo, as páginas com esse aviso</text>
+  <text x="340" y="190" fill="#E6E6E6">ficam com a moldura laranja, como as outras dúvidas,</text>
+  <text x="340" y="208" fill="#E6E6E6">e a tecla Tab pula de uma para a outra.</text>
+  <text x="340" y="244" fill="#AEB4BD">Verde: o corte. Laranja: onde o corte</text>
+  <text x="340" y="262" fill="#AEB4BD">passa em cima de tinta (letra, número, traço).</text>
+ </g>
+</svg>`;
+
+const MOCK_MISTO = `
+<div class="mock">
+  <div class="barra" style="flex-direction:column;align-items:flex-start;gap:8px">
+    <span class="rot" style="font-size:15px;color:#E6E6E6"><b>Só as letras</b> &middot; tinta fora do texto:</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="bt grande on">Guardar a tinta forte</span>
+      <span class="bt grande">Tudo em preto e branco</span>
+      <span class="bt grande">Só o texto achado</span>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span class="rot">Aplicar em:</span><span class="bt on">só esta página</span><span class="bt">o livro todo</span>
+    </div>
+    <div><span class="caixa"></span>Segunda opinião: o leitor de manuscrito também lê (mais lento)</div>
+  </div>
+  <div class="nota">Aparece na aba Filtro (e em "Ver de perto") sempre que a página estiver em "Só as letras". O botão azul é o que vale para a página.</div>
+</div>`;
+
+function svgFundo(obedece){
+  return `<svg viewBox="0 0 300 314" width="300" role="img" aria-label="página em Tirar o fundo com um pedaço marcado">
+   <rect width="300" height="314" rx="8" fill="#1E1F22"/>
+   <text x="150" y="24" fill="#E6E6E6" font-size="13" text-anchor="middle" font-family="Segoe UI, Arial" font-weight="600">${obedece?'Com "Sim": o pedaço obedece':'Hoje: o pedaço é ignorado'}</text>
+   <rect x="40" y="36" width="220" height="250" fill="#ffffff" stroke="#8a7a5a"/>
+   <g fill="#4a3a2a"><rect x="60" y="56" width="180" height="7"/><rect x="60" y="72" width="180" height="7"/><rect x="60" y="88" width="150" height="7"/></g>
+   <ellipse cx="150" cy="150" rx="55" ry="40" fill="#b08a5a"/><text x="150" y="155" fill="#fff" font-size="11" text-anchor="middle" font-family="Segoe UI, Arial">gravura</text>
+   <g transform="translate(0,0)">
+    <rect x="55" y="205" width="190" height="66" fill="#ffffff"/>
+    ${[0,1,2].map(k=>`<rect x="62" y="${214+k*18}" width="${k===2?120:176}" height="7" fill="${obedece?'#000':'#4a3a2a'}"/>`).join("")}
+    <rect x="55" y="205" width="190" height="66" fill="none" stroke="#2F6FE0" stroke-width="2.5" stroke-dasharray="6 4"/>
+   </g>
+   <text x="150" y="304" fill="#9CC0FF" font-size="11" text-anchor="middle" font-family="Segoe UI, Arial">azul: "só neste pedaço: Preto e branco"</text>
+  </svg>`;
+}
+
+// ---------- cartoes ----------
+const SECOES = [
+ { titulo:"1 · Girar as páginas (G1)",
+   cartoes:[
+    {c:"G1", t:"Girar: como fica dentro do programa", tipo:"escolha",
+     i:[["g1-hoje-onde-cortar.jpg", "Hoje (print de 02/10): o único botão de girar fica na aba <b>Onde cortar</b>, embaixo, <b class='onde'>\"girar\"</b>, e gira só a folha que está na tela, 90 graus. Também há Página &gt; Girar no menu. A tecla R deveria girar, mas o Retângulo ganha."],
+        [MOCK_GIRAR, DES + " Como ficaria a opção (a): os botões numa barra logo acima da página, em todas as abas, e o \"aplicar em\" ao lado. Você escolhe primeiro onde vale (\"só esta\", \"todas\"...) e depois clica no giro."]],
+     o:`Girar é virar a página de quarto em quarto de volta (90 graus), para quando o livro foi escaneado de lado ou de cabeça para baixo. Nenhum dos dois programas faz isso sozinho; é sempre a pessoa que manda (R1, que você entendeu).<br>
+        O ScanTailor tem três botões (<b>¼ à esquerda</b>, <b>¼ à direita</b>, <b>meia volta</b>) e um <b>"aplicar em"</b>: <b>só esta / todas / daqui em diante / só as pares / só as ímpares</b>. Exemplos:<br>
+        &bull; Livro inteiro escaneado de lado: "todas" + um clique em ¼ à direita, e o livro todo fica em pé.<br>
+        &bull; Livro em que o scanner virou só as páginas de trás de cabeça para baixo: "só as pares" + meia volta.<br>
+        &bull; Uma prancha dobrável deitada no meio do livro: "só esta" + ¼ de volta.`,
+     m:`Com (a), o Kaique vê os botões de girar sempre, em cima da página, em qualquer aba. Com (b), girar fica escondido no menu Página e nas teclas (o "aplicar em" iria para dentro do menu). Com (c), as duas coisas.`,
+     s:`Recomendação: (a). Girar vira <b>um clique</b>, sempre à vista, e o "aplicar em" resolve o livro escaneado de lado de uma vez só, sem girar página por página. O menu Página &gt; Girar continua existindo de qualquer jeito (não sai nada do que já existe).`,
+     r:`De onde vem: o ScanTailor (etapa "Fix Orientation": girar 90 graus para os dois lados, 180, e "aplicar a" esta página, todas, daqui em diante, alternadas); o inventário de telas de 02/10 (onde está o girar hoje, e o conflito da tecla R); a comparação D3 (R1: nenhum dos dois gira sozinho).<small>docs/pesquisa/fase2-mapa-scantailor.md (seção 6.3) · relatorios/layout-inventario-2026-10-02/inventario-telas-e-funcoes.md (aba Onde cortar; atalhos; achados l. 769-774) · .claude/worktrees/geometria/relatorios/conferir-aqui-9.html (R1, G1) · relatorios/conferencia-samuel-2026-10-05-g.md (G1)</small>`,
+     p:"Como girar as páginas?",
+     op:["(a) Botões numa barra em cima da página, com o \"aplicar em\"" + REC,
+         "(b) Só no menu e nas teclas",
+         "(c) Os dois"]},
+   ]},
+
+ { titulo:"2 · Dividir a folha em duas páginas (G2)",
+   cartoes:[
+    {c:"G2", t:"Dividir: quando e com qual jeito", tipo:"escolha",
+     i:[["g2-folha-dupla-palatino.jpg", "Uma <b>folha dupla de verdade</b> (Palatino, print da aba Onde cortar de hoje): o retrato à esquerda e o texto à direita são duas páginas, escaneadas juntas. Aqui dividir é o certo, na <b class='onde'>linha azul</b>."],
+        ["divisao_siebmacher_p007.jpg", "Uma <b>página só, deitada</b> (Siebmacher 7, do formulário 9): o poema com a moldura é uma página; à direita só sobra a beirada do livro. O nosso divide <b class='onde'>no meio do poema</b> (a 57%); o ScanTailor divide <b class='onde'>na beirada do livro</b> (linha vermelha). Aqui o certo é <b>não dividir</b>."],
+        ["divisao_opusmajus_p256.jpg", "Outra página só (Opus Majus 256, tabela dobrável): o nosso deixa a tabela inteira; o ScanTailor <b class='onde'>parte a tabela em duas</b>. Os dois programas decidem só pelo formato (\"folha mais larga que alta = duas páginas\"), não pelo que está impresso."],
+        [MOCK_DIVIDIR, DES + " Como ficaria a opção (a), na aba Onde cortar."]],
+     o:`Você escreveu: <i>"Tem livros que não tem que dividir folha, e ai como faz? o automatico só entra quando o livro tiver duas folhas né, no caso o usario solicitar isso, ai ele tem que escolher qual metodo vai ultilizar se um ficar ruim, ele usa o outro."</i><br>
+        <b>É isso.</b> Num livro como o Siebmacher (uma página por folha), nada é dividido: a folha sai inteira. Só quando o Kaique diz <b>"este livro tem duas páginas por folha"</b> é que o programa divide, e aí ele escolhe com qual jeito: <b>o do programa</b> ou <b>o do ScanTailor</b>. Se numa folha um jeito ficar ruim, ele troca para o outro <b>só naquela folha</b>; e ainda pode arrastar a linha à mão, como hoje.<br>
+        No Siebmacher, o que você viu de bom no ScanTailor (<i>"respeitou a moldura, só teria que cortar em cima e embaixo e do lado esquerdo para tirar a lombada"</i>) é trabalho do <b>corte</b>, não do dividir: é o "seguir a moldura / o papel" (G8) e o "achar a página dentro da borda preta" (G7), que você já aprovou como opções.`,
+     m:`Com (a), num livro novo nada é dividido até o Kaique pedir. Com (b), o programa tenta adivinhar folha a folha e marca "conferir" quando não tiver certeza: hoje nenhum dos dois jeitos sabe adivinhar pelo conteúdo (no teste, os dois erraram o Siebmacher), então muitas folhas iriam para "conferir". Com (c), o programa pergunta uma vez, ao abrir o livro, "Este livro tem duas páginas por folha?" (como já pergunta do fundo separado).`,
+     a:`A tabela dobrável do Opus 256 mostra o caso contrário: num livro de folhas duplas, aparece uma folha que é uma página só. Para isso já existe hoje o botão <b>"não dividir esta"</b>, que continua.`,
+     s:`Recomendação: (a). É exatamente o que você descreveu, e é o mais seguro: o erro que o teste mostrou (partir uma página no meio) não acontece sozinho, porque nada se divide sem o Kaique pedir. A (c) pode vir junto, se você quiser a pergunta ao abrir: diga no comentário.`,
+     r:`De onde vem: a comparação D3 (F1, F2, F3, com que você concordou); como o ScanTailor decide (folha mais larga que alta = duas páginas, igual ao nosso); a aba Onde cortar de hoje ("não dividir esta", "usar em todas", linha arrastável).<small>.claude/worktrees/geometria/relatorios/fase2-geometria-d3-2026-10-05/relatorio.md (Siebmacher 7 e 9, Opus 256) · docs/pesquisa/fase2-mapa-scantailor.md (seção 6.1) · relatorios/prints-telas-2026-10-02/conferir-onde-cortar-1280x657.png · relatorios/conferencia-samuel-2026-10-05-g.md (F1, G2)</small>`,
+     p:"Como o programa divide as folhas?",
+     op:["(a) Só quando o Kaique pedir, livro a livro, escolhendo \"o do programa\" ou \"o do ScanTailor\", e trocando numa folha se um ficar ruim" + REC,
+         "(b) O programa decide sozinho se cada folha tem uma ou duas páginas, e marca \"conferir\" quando não tiver certeza",
+         "(c) Perguntar ao abrir o livro"]},
+   ]},
+
+ { titulo:"3 · A tela do endireitar (G5)",
+   cartoes:[
+    {c:"G5", t:"Endireitar: como deve ser a tela", tipo:"escolha",
+     i:[["g5-hoje-endireitar.jpg", "Hoje (print de 02/10): a aba Endireitar mostra <b class='onde'>linhas laranja tracejadas</b> sobre a página. Para girar, arrasta-se o mouse para os lados <b>em qualquer lugar</b>; não há alça, o cursor é a seta comum, e nada diz \"pegue aqui\"."],
+        {lado:[[svgEndireitar("a"), DES + " (a) <b>Grade + número</b>, como o ScanTailor: a grade azul fica reta, então se vê na hora que o texto está torto; o ângulo aparece escrito, e as setas mudam 0,1 grau por clique."],
+               [svgEndireitar("b"), DES + " (b) <b>Alça + linha-guia</b>: uma bolinha azul no canto para girar arrastando, e uma linha laranja que o Kaique arrasta e deita em cima de uma linha do texto; o programa gira a página até essa linha ficar reta."],
+               [svgEndireitar("c"), DES + " (c) <b>Os dois juntos</b>: grade, número com setas, alça e linha-guia."]]}],
+     o:`Você pediu exemplos visuais. São três jeitos de mostrar "quanto a página está torta" e de corrigir à mão (o automático continua fazendo a maior parte; isto é para quando ele erra, como na Horas 11 e na Horas 47).<br>
+        <b>Grade + número (ScanTailor):</b> bom para o ajuste fino; o Kaique clica nas setas até as linhas do texto ficarem paralelas à grade.<br>
+        <b>Alça + linha-guia:</b> o mais fácil de entender para quem nunca usou: "deite a linha laranja em cima de uma linha do texto" é um gesto só.<br>
+        Nos três, ficam os botões de hoje ("está certo", "não endireitar esta", "voltar ao automático") e entra o "aplicar em" (só esta / todas / daqui em diante...).`,
+     m:`Com qualquer um, o Kaique passa a ver o ângulo escrito (hoje é um texto pequeno, sem acento: "inclinacao") e sabe onde pegar para girar. Com (c), ele escolhe o jeito que preferir na hora.`,
+     s:`Recomendação: (c), os dois juntos. A grade e o número são o jeito do ScanTailor, que você pediu ("o nosso não é tão intuitivo"); a linha-guia é o jeito mais fácil para o Kaique, que é leigo. Juntos não atrapalham: a grade é fina e a linha-guia só aparece quando ele a pega. É também a sua regra de dar opções.`,
+     r:`De onde vem: o ScanTailor (etapa "Deskew": grade sobre a página, ângulo em número com setas de 0,1 grau, "aplicar a"); a Lista de bugs de 02/10 ("aba Endireitar sem pista visual"); a linha-guia é ideia da gerente, não existe no ScanTailor.<small>docs/pesquisa/fase2-mapa-scantailor.md (seção 6.2) · relatorios/layout-inventario-2026-10-02/inventario-telas-e-funcoes.md (aba Endireitar; problemas 10 e 12) · relatorios/prints-telas-2026-10-02/conferir-endireitar-1280x657.png · relatorios/conferencia-samuel-2026-10-05-g.md (G5)</small>`,
+     p:"Como quer a aba Endireitar?",
+     op:["(a) Grade + número com setas (como o ScanTailor)",
+         "(b) Alça no canto + linha-guia",
+         "(c) Os dois juntos" + REC,
+         "(d) Outra coisa (diga o quê no comentário)"]},
+   ]},
+
+ { titulo:"4 · Endireitar antes ou depois de cortar (G6)",
+   cartoes:[
+    {c:"G6", t:"Endireitar antes ou depois de cortar", tipo:"escolha",
+     i:[[SVG_ORDEM, DES + " As duas ordens, passo a passo. Em cima, a ordem de hoje do nosso programa; embaixo, a do ScanTailor."]],
+     o:`Você perguntou: <i>"Qual a diferença que isso pode dar? explique melhor os prós e contras."</i><br>
+        <b>Hoje (cortar e depois endireitar):</b> o programa corta reto em volta do texto <b>ainda torto</b>; o corte pega um pouco de papel a mais nos cantos. Depois, ao endireitar, esse pedaço gira e sobram <b>cantos brancos</b>; se o corte for apertado para tirar o branco, pode <b>comer a letra do canto</b>. Já existe um defeito na Lista de bugs ligado a isso: "páginas endireitadas ficam com menos de 1 mm nos cantos".<br>
+        <b>ScanTailor (endireitar e depois cortar):</b> primeiro deixa a página reta, depois acha o corte em volta do texto <b>já reto</b>. O corte fica justo, sem canto branco e sem comer letra. No teste de comparação, parte das diferenças entre os dois vem daí: o nosso mede o ângulo na página já cortada, o ScanTailor na folha sem corte.`,
+     m:`<b>Prós de mudar (a):</b> cantos limpos; corte justo no texto reto; é a ordem em que o endireitar do ScanTailor (que você escolheu no G4) foi feito para trabalhar.<br>
+        <b>Contras de mudar:</b> muda uma regra antiga do programa ("cortar antes de endireitar"); o corte de <b>todas</b> as páginas muda um pouco e precisa ser conferido de novo (inclusive o 1 mm de folga que você aprovou em 01/10); nos projetos já trabalhados, o corte das páginas já cortadas tem de ser refeito.<br>
+        <b>Tempo:</b> parecido nas duas ordens; o programa faz as mesmas contas, só em outra sequência.`,
+     a:`As zonas da aba Marcar não sofrem com a mudança: elas agora ficam presas à folha original (veja o cartão Z1).`,
+     s:`Recomendação: (a), porque você ficou com o endireitar do ScanTailor (G4). Ele foi feito para olhar a folha antes do corte; deixar a ordem de hoje com ele é misturar as duas coisas. A (c) é o caminho prudente se você quiser ver antes: dá para rodar as duas ordens nas 32 páginas de teste e mostrar lado a lado.`,
+     r:`De onde vem: a ordem do ScanTailor (girar, dividir, endireitar, caixa do conteúdo, margens, saída); a ressalva da comparação D3 ("O nosso corte é medido antes do ângulo; o do ScanTailor, não. Isso explica parte das diferenças"); a Lista de bugs de 01/10 (cantos com menos de 1 mm).<small>docs/pesquisa/fase2-mapa-scantailor.md (seção 4.1) · .claude/worktrees/geometria/relatorios/fase2-geometria-d3-2026-10-05/relatorio.md (Ressalvas) · .claude/worktrees/geometria/docs/plano/fase2-geometria-plano.md (G6) · docs/plano/PLANO-DEFINITIVO.md (bug 01/10, recortar.alargar_para_o_giro) · relatorios/conferencia-samuel-2026-10-05-g.md (G4, G6)</small>`,
+     p:"Muda a ordem?",
+     op:["(a) Sim: endireitar antes de cortar, como o ScanTailor" + REC,
+         "(b) Não: manter como hoje (cortar e depois endireitar)",
+         "(c) Testar as duas nas páginas de teste e me mostrar antes"]},
+   ]},
+
+ { titulo:"5 · O que é zona e o que é converter (Z1 e Z2)",
+   cartoes:[
+    {c:"Z1", t:"O que é zona, e o que é converter", tipo:"entendi",
+     i:[["z-hoje-marcar.jpg", "Hoje (print de 02/10), aba <b>Marcar</b>: o retrato pintado em <b class='onde'>laranja</b> é uma zona de gravura; o texto, em azul, zonas de letra; o papel, em verde. Cada uma dessas manchas coloridas é uma zona. À esquerda, as ferramentas com que se desenha uma zona (retângulo, oval, laço...)."],
+        [SVG_ZONAS, DES + " Por que converter: uma zona de gravura (laranja) e o corte da página (verde tracejado). Quando o corte muda, a zona do jeito antigo anda e sai de cima da gravura (vermelho); a do jeito novo fica no lugar."]],
+     o:`<b>Zona</b> é cada desenho que se faz na aba Marcar (retângulo, oval, laço, pincel...) dizendo ao programa <b>"isto é gravura"</b>, <b>"isto é letra"</b>, <b>"isto é papel"</b> ou <b>"só neste pedaço, use outro filtro"</b>. O programa também faz zonas sozinho, e o Kaique corrige.<br>
+        <b>Converter</b> é mudar <b>o jeito de anotar ONDE a zona está</b>, dentro do <b>mesmo</b> arquivo do projeto. Não muda o tipo de arquivo, nem o PDF, nem a cara da página.<br>
+        &bull; <b>Antes:</b> a zona era anotada "em relação à página <b>já cortada e endireitada</b>" (por exemplo: "começa a 30% da largura da página cortada").<br>
+        &bull; <b>Agora:</b> é anotada "em relação à <b>folha como veio do scanner</b>".<br>
+        <b>Por quê:</b> o corte e o ângulo vão mudar (o endireitar do ScanTailor, o dividir novo, talvez a ordem do G6). Com o jeito antigo, quando o corte de uma página muda, "30% da página cortada" passa a ser outro lugar, e a zona <b>sai de cima da gravura</b>. Com o jeito novo, ela fica presa ao papel e continua no lugar certo.<br>
+        Você escolheu (Z1 do formulário 9) que o programa converta <b>o livro inteiro ao abrir</b>, por trás, mostrando que está carregando. É isso mesmo: <i>"ele poderia fazer isso quando abre o livro e fica carregando"</i>.`,
+     r:`De onde vem: a mudança D2 (zonas presas à folha original), já feita no ramo da geometria e ainda não conferida por você no programa; o cuidado que o mapa do ScanTailor apontou (o ScanTailor também guarda as zonas na folha original).<small>docs/pesquisa/fase2-mapa-scantailor.md (seção 4.3) · .claude/worktrees/geometria/docs/plano/fase2-geometria-plano.md (D2; core/zonas_na_folha.py) · .claude/worktrees/geometria/relatorios/conferir-aqui-9.html (Z0, Z1) · relatorios/prints-telas-2026-10-02/conferir-marcar-1280x657.png · relatorios/conferencia-samuel-2026-10-05-g.md (Z1, Z2)</small>`},
+
+    {c:"Z2", t:"Quando tirar a cópia no formato antigo", tipo:"escolha",
+     i:[],
+     o:`Você escolheu (Z2 do formulário 9) <b>manter</b> a segunda cópia das zonas, e perguntou: <i>"mas isso vai ser tirado depois?"</i><br>
+        A cópia no jeito antigo existe <b>só por um motivo</b>: o programa que <b>já está instalado</b> no seu PC e no notebook do Kaique só sabe ler o jeito antigo. Se um desses computadores abrir um projeto gravado pelo programa novo, sem a cópia, ele <b>não veria as zonas feitas à mão</b>. O custo da cópia: o arquivo do projeto fica com o dobro do tamanho e gravar leva o dobro do tempo (você aceitou, no V).<br>
+        Quando os dois computadores tiverem o programa novo, a cópia não serve para mais nada.`,
+     m:`Com (a), a cópia sai sozinha quando o programa novo estiver instalado no seu PC e no notebook do Kaique (a gerente avisa antes); daí gravar volta a ser mais rápido. Com (b), fica para sempre (sempre o dobro do tamanho). Com (c), sai já: o programa antigo deixa de ver as zonas dos projetos novos até ser atualizado.`,
+     s:`Recomendação: (a). Ninguém perde zona no meio do caminho, e o custo (o arquivo maior e a gravação mais lenta) acaba assim que não for mais preciso. Isso também ajuda no que você pediu no V: rever depois o que deixou o programa mais lento.`,
+     r:`De onde vem: a pergunta Z2 e o custo medido no V do formulário 9 (livro de 50 páginas com 700 zonas: gravar de uns 0,05 para uns 0,115 segundo; arquivo de 945 KB para 1891 KB).<small>.claude/worktrees/geometria/relatorios/conferir-aqui-9.html (Z2, V) · relatorios/conferencia-samuel-2026-10-05-g.md (Z2, V)</small>`,
+     p:"Quando tirar a cópia das zonas no formato antigo?",
+     op:["(a) Quando os dois computadores tiverem o programa novo instalado" + REC,
+         "(b) Nunca",
+         "(c) Agora"]},
+   ]},
+
+ { titulo:"6 · Configurar o corte e ser avisado (S1 e S2)",
+   cartoes:[
+    {c:"CORTE", t:"Configurar o corte para o livro todo e ser avisado onde ficou ruim", tipo:"escolha",
+     i:[{lado:[["corte_st_escola_p007_dir.jpg", "S1, Escola 7: este corte que come a última letra (linha vermelha) é o <b>\"corte da sobra\" do ScanTailor</b>, que vem como opção <b>desligada</b> (G3)."],
+               ["corte_st_graduale_p221_dir.jpg", "S2, Graduale 221: o mesmo corte do ScanTailor leva <b class='onde'>o \"Cvij\"</b> e os ganchinhos das pautas. O nosso corte também perde o \"Cvij\" nesta página (defeito já na Lista de bugs)."]]},
+        ["s-hoje-bordas.jpg", "Hoje (print de 02/10), aba <b>Bordas</b>: o retângulo verde com as alças é o corte da página; embaixo, \"não cortar esta\", \"voltar ao automático\" e <b class='onde'>\"usar em todas\"</b>."],
+        [SVG_CORTE, DES + " O que falta, na opção (a): a folga ajustável para o livro inteiro (em cima) e o aviso automático (embaixo) marcando onde o corte passa em cima de tinta."]],
+     o:`Você perguntou: <i>"eu consigo configurar isso né?"</i> e <i>"eu tenho como configurar esse corte para todas as paginas e o programa me avisar onde o corte pode ter ficado ruim"</i>.<br>
+        <b>O que já existe hoje:</b><br>
+        &bull; O corte automático vai <b>pela tinta</b> e deixa <b>1 mm de papel</b> depois da última letra (você aprovou em 01/10). Esse 1 mm é fixo: não dá para mudar pela tela.<br>
+        &bull; Na aba <b>Bordas</b>: arrastar o retângulo numa página; "não cortar esta"; "voltar ao automático"; e <b>"usar em todas"</b>, que leva <b>o mesmo retângulo</b> para todas as páginas (bom quando todas as folhas foram escaneadas no mesmo lugar).<br>
+        &bull; Já existe um aviso, "O corte da borda pode ter pegado parte do texto", mas ele é calculado numa imagem menor e pode não bater com o corte de verdade (está na Lista de bugs desde 28/09).<br>
+        &bull; Vêm aí as margens em milímetros (G9), que você vai poder mudar.<br>
+        <b>O que falta:</b> (1) a <b>folga do corte ajustável</b> para o livro inteiro (por exemplo 2 mm em vez de 1 mm, em todas as páginas, de uma vez); (2) um <b>aviso automático de verdade</b> em cada página onde o corte passa em cima de tinta, mostrando o lugar. A ideia do aviso já está na Lista de espera desde 28/09 ("nenhuma peça de tinta partida pelo corte"): o programa confere se alguma letra, número ou traço foi partido pela linha do corte.`,
+     m:`Com (a), você muda a folga uma vez para o livro, e as páginas em que o corte encosta em tinta ficam com a moldura laranja na tira, com o lugar marcado; o Kaique pula de uma para outra com a tecla Tab. Com (b), só a folga (sem aviso, é preciso olhar página por página). Com (c), só o aviso (a folga continua 1 mm).`,
+     s:`Recomendação: (a). A folga resolve o "está cortando em cima demais" no livro todo de uma vez; o aviso resolve o "me avisar onde o corte pode ter ficado ruim" sem o Kaique precisar olhar as 300 páginas. Um sem o outro resolve só metade do que você pediu.`,
+     r:`De onde vem: o inventário de telas (aba Bordas; alerta "Corte encostou no texto"); o registro de 01/10 do corte com 1 mm; a Lista de espera de 28/09 (teste "nenhuma peça de tinta partida pelo corte"; o medidor ficou numa pasta temporária e precisa ser trazido); o formulário 8 ("Cvij" do Graduale cortado pelo nosso corte).<small>relatorios/layout-inventario-2026-10-02/inventario-telas-e-funcoes.md (aba Bordas; alertas; problema de 28/09) · docs/pesquisa/fase2-mapa-scantailor.md (seção 6.5: "Cvii" do Graduale 221 cortado) · docs/plano/PLANO-DEFINITIVO.md (Lista de espera 28/09; registro 01/10 "Corte com 1 mm") · .claude/worktrees/geometria/relatorios/conferencia-9-2026-10-05/cartoes/corte_st_*.jpg · .claude/worktrees/misto/relatorios/conferir-aqui-8.html (G222) · relatorios/conferencia-samuel-2026-10-05-g.md (S1, S2, G3, G9)</small>`,
+     p:"O que fazer com o corte?",
+     op:["(a) Folga do corte ajustável para o livro inteiro + aviso automático nas páginas onde o corte encosta em tinta" + REC,
+         "(b) Só a folga ajustável",
+         "(c) Só o aviso automático"]},
+   ]},
+
+ { titulo:"7 · \"Só as letras\": o padrão de fábrica (PADRAO, do formulário 8)",
+   cartoes:[
+    {c:"PADRAO", t:"Qual deve ser o padrão de fábrica do \"Só as letras\"", tipo:"escolha",
+     i:[["m-graduale222.jpg", "Graduale 222 (formulário 8): Original | <b>A</b> | <b>B</b> | C. Aqui você escolheu <b>A</b>: guarda as notas e as pautas e tira <b class='onde'>o pontilhado fino do alto</b> que o B deixa. O C apaga a música."],
+        ["m-palatino9-capitular.jpg", "Palatino 9, a capitular Q (formulário 8): Original | A | <b>B</b> | C. Aqui você escolheu <b>B</b>: guarda <b class='onde'>mais hachura dentro do Q</b>. O C apaga a capitular inteira."],
+        [MOCK_MISTO, DES + " Os três botões, bem visíveis, na aba Filtro de uma página em \"Só as letras\". O azul é o que vale; um clique troca, na página ou no livro todo."]],
+     o:`Você perguntou: <i>"Mas usada quando essa opção de fabrica e como vou ter a opção de escolher? tem que ser algo bem visivel para eu poder escolher."</i><br>
+        <b>Quando o padrão vale:</b> só quando você (ou o Kaique) escolhe <b>"Só as letras"</b> para um livro. Todas as páginas desse livro começam com a opção de fábrica. Os outros filtros (Preto e branco, Melhorar...) não mudam.<br>
+        <b>Como trocar:</b> três botões grandes, sempre à vista quando a página está em "Só as letras": <b>[Guardar a tinta forte] [Tudo em preto e branco] [Só o texto achado]</b>, com "aplicar em: só esta página / o livro todo". No Graduale, o Kaique deixa A; no Palatino 9, clica B só naquela página.<br>
+        <b>Tempo de cada uma</b> (num livro de 300 páginas):<br>
+        &bull; <b>B - Tudo em preto e branco:</b> não custa nada a mais; não usa o leitor de texto.<br>
+        &bull; <b>A - Guardar a tinta forte:</b> precisa do leitor de texto, para saber onde estão as linhas. Com só o leitor rápido (docTR), cerca de <b>1 segundo por página: uns 5 minutos a mais</b> no livro. Com o leitor de manuscrito (Kraken) junto, mais uns 10 segundos por página; somando os dois, <b>uns 55 minutos a mais</b> no livro.<br>
+        &bull; <b>C - Só o texto achado:</b> o mesmo tempo da A (usa o mesmo leitor).`,
+     m:`Com (1), todo livro em "Só as letras" começa em A, usando só o leitor rápido (uns 5 minutos a mais em 300 páginas); a "segunda opinião" do leitor de manuscrito fica numa caixinha, desligada, para ligar num livro difícil. Com (2), A com os dois leitores sempre (uns 55 minutos a mais). Com (3), B (nenhum minuto a mais, mas o pontilhado e a sujeira fora do texto ficam, como no Graduale).`,
+     a:`Os tempos são aproximados. No formulário 8, com o computador ocupado por outros trabalhos, o leitor de manuscrito chegou a levar bem mais (11 a 81 segundos por página); o número certo será medido de novo antes de ligar. Na Boécio 22 e na Marial 7 nenhuma das três ganhou do original; isso continua em teste, como você pediu, sem prender o resto.`,
+     s:`Recomendação: (1). A ganhou em 4 das 5 páginas em que você escolheu uma (Graduale 222, Opus 165, Horas 11, Horas 13); o leitor rápido sozinho já acha as linhas, e custa só uns minutos por livro. O leitor de manuscrito fica como segunda opinião, para quando você quiser. B continua a um clique, como no Palatino 9.`,
+     r:`De onde vem: as suas respostas ao formulário 8 (A no Graduale 222, Opus 165, Horas 11, Horas 13; B no Palatino 9; nenhuma no Boécio 22 e no Marial 7); o T1 do formulário 8 (tempos); os tempos por página do leitor rápido e do de manuscrito vêm da gerente (aproximados, a medir de novo). As imagens são as do formulário 8, reduzidas.<small>.claude/worktrees/misto/relatorios/conferir-aqui-8.html (T1, PADRAO) · .claude/worktrees/misto/relatorios/conferencia-8-2026-10-05/graduale_p222.jpg e palatino_p009-detalhe-1.jpg · relatorios/conferencia-samuel-2026-10-05-f.md</small>`,
+     p:"Com que opção o \"Só as letras\" começa?",
+     op:["(1) A - Guardar a tinta forte, achando as linhas só com o leitor rápido (docTR); o leitor de manuscrito (Kraken) como segunda opinião, que você liga quando quiser" + REC,
+         "(2) A - Guardar a tinta forte, com os dois leitores sempre",
+         "(3) B - Tudo em preto e branco"]},
+   ]},
+
+ { titulo:"8 · O terceiro botão novo da aba Marcar",
+   cartoes:[
+    {c:"TINTA3", t:"Trazer também \"tinta preta, fundo original\"?", tipo:"escolha",
+     i:[["p11-marial7-pagina.jpg", "Botão novo 1, <b>\"pintar por cima\"</b> (Marial 7, do formulário 12): à direita, " + SIM + " de pintar de branco a mancha do canto."],
+        ["p4-horas11.jpg", "Botão novo 2, <b>\"tinta com a cor original, papel branco\"</b> (Horas 11, do formulário 12): à direita, " + SIM + " (as letras coloridas no papel branco)."],
+        ["p11-tipo3-horas13.jpg", "Botão novo 3, <b>\"tinta preta, fundo original\"</b> (Horas 13, do formulário 12, " + SIM + "): a tinta vira preta, mas <b class='onde'>o papel creme, a pauta e as letras do verso</b> continuam ali dentro."]],
+     o:`No formulário 12 você escolheu trazer os dois primeiros e perguntou o que eram os três. Relembrando:<br>
+        <b>1. Pintar por cima:</b> a área marcada é pintada inteira de uma cor (normalmente branco). Serve para mancha, carimbo, número de biblioteca.<br>
+        <b>2. Tinta com a cor original, papel branco:</b> a tinta fica com a cor dela (vermelho, azul, dourado) e o papel atrás vira branco.<br>
+        <b>3. Tinta preta, fundo original:</b> o contrário do 2: a tinta vira preta e o papel fica como estava (creme, com manchas).<br>
+        O 3 ficou de fora na recomendação do formulário 12 porque deixa o papel creme, contra a sua regra do papel branco. Mas pela sua regra de dar opções, ele pode vir como mais um botão, que só faz efeito se alguém escolher.`,
+     m:`Com "Sim", a aba Marcar ganha três botões novos em vez de dois. O 3 nunca é usado sozinho pelo programa; só se o Kaique marcar uma área com ele. Com "Não", ficam só os dois que você escolheu.`,
+     s:`Recomendação: Sim, como opção. Custa pouco (é o mesmo tipo de conta dos outros dois), não muda nada para quem não usar, e segue a sua regra de dar opções. Pode servir num livro em que você queira manter o papel antigo e só escurecer o texto.`,
+     r:`De onde vem: o formulário 12 (P11) e a sua resposta "(a) ... - o que são os tres novos?"; os três tipos de área do ScanTailor (janela de áreas). As imagens são as do formulário 12.<small>.claude/worktrees/misto/relatorios/conferir-aqui-12.html (P11) · .claude/worktrees/misto/relatorios/conferencia-12-2026-10-05/ (p11-marial7-pagina.jpg, p4-horas11.jpg, p11-tipo3-horas13.jpg) · relatorios/conferencia-samuel-2026-10-05-d.md (P11)</small>`,
+     p:"Trazer também o terceiro botão?",
+     op:["Sim, como opção" + REC,
+         "Não"]},
+   ]},
+
+ { titulo:"9 · \"Tirar o fundo\" com um pedaço marcado",
+   cartoes:[
+    {c:"FUNDO", t:"\"Tirar o fundo\" também obedece ao \"só neste pedaço\"?", tipo:"escolha",
+     i:[{lado:[[svgFundo(false), DES + " Hoje: a página está em \"Tirar o fundo\" e o Kaique marcou um pedaço (azul) com \"Preto e branco\". O programa <b>ignora</b> o pedaço, sem avisar: ali dentro a tinta continua com a cor dela, igual ao resto da página."],
+               [svgFundo(true), DES + " Com \"Sim\": só o pedaço marcado sai em Preto e branco; o resto da página continua só sem o fundo, sem filtro nenhum."]]}],
+     o:`Em 29/09 você decidiu que o "Tirar o fundo" vale <b>sem outro filtro por cima</b>: <i>"eu quero poder escolher tirar o fundo sem colocar nenhum filtro."</i><br>
+        No formulário 13 (S4) você disse "Sim": uma página em <b>Original</b> vai passar a obedecer ao "só neste pedaço". A mesma coisa acontece hoje numa página em "Tirar o fundo": se o Kaique marcar um pedaço com outro filtro, o programa ignora.<br>
+        A pergunta é se o "Tirar o fundo" segue o mesmo caminho. A sua regra de 29/09 continua valendo para a <b>página inteira</b> (nenhum filtro escondido); só muda quando alguém <b>marca um pedaço de propósito</b>.`,
+     m:`Com "Sim", só mudam as páginas em "Tirar o fundo" que tiverem um pedaço marcado com outro filtro; nas outras, nada muda. Com "Não", nessas páginas o pedaço continua sem efeito, como decidido em 29/09.`,
+     s:`Recomendação: Sim, do mesmo jeito que no Original. Marcar um pedaço já é o Kaique pedindo outro filtro ali; ignorar sem avisar faz ele achar que marcou e não funcionou. E a página sem pedaço marcado continua exatamente como você decidiu em 29/09.`,
+     r:`De onde vem: a sua decisão de 29/09 (Registro de mudanças do plano, item 1.1); o formulário 13 (S4) e a sua resposta; o código de hoje, que sai antes de olhar o pedaço quando a página está em Original ou em "Tirar o fundo".<small>docs/plano/PLANO-DEFINITIVO.md (item 1.1, decisão de 29/09) · relatorios/conferir-aqui-13.html (S4) · relatorios/conferencia-samuel-2026-10-05-e.md (S4) · core/filtros.py, aplicar_filtro_com_selecao ("if filtro in (ORIGINAL, TIRAR_FUNDO): return img, False")</small>`,
+     p:"Vale também para o \"Tirar o fundo\"?",
+     op:["Sim, do mesmo jeito (só muda se alguém marcar um pedaço)" + REC,
+         "Não, fica como decidido em 29/09"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-n";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const conteudoEl = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){
+  const e = estado[k.c] || {};
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+function figura([src, leg]){
+  const corpo = src.trim().startsWith("<") ? src : `<img loading="lazy" src="${P+src}" alt="">`;
+  return `<figure>${corpo}${leg ? `<figcaption>${leg}</figcaption>` : ""}</figure>`;
+}
+function figuras(lista){
+  return (lista||[]).map(f => f.lado ? `<div class="lado">${f.lado.map(figura).join("")}</div>` : figura(f)).join("");
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudoEl.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudoEl.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    const botoes = k.tipo === "escolha"
+      ? `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`
+      : `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>O que é:</b> ${k.o}</p>` : "") +
+      (k.m ? `<p class="muda"><b>O que muda para o Kaique:</b> ${k.m}</p>` : "") +
+      figuras(k.i) + (k.x || "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      (k.r ? `<p class="ref"><b>Referência.</b> ${k.r}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudoEl.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("feito");
+      if (k.tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (k.tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => k.tipo !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 14 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => k.tipo !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>

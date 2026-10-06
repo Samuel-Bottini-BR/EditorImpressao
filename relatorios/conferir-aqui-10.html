@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 10 - Editor de Impressão</title>
+<!--
+  Decima conferencia do Samuel (05/10/2026): as decisoes do modo Misto (perguntas P1 a P11 do
+  docs/plano/fase2-misto-plano.md, secao 3). A P12 e a escolha A/B/C estao no conferir-aqui-8.html
+  (separado, ja com o Samuel; nao repetir aqui). Fonte das imagens e do texto: o plano e
+  relatorios/fase2-misto-2026-10-05/relatorio-misto.md (ramo fase2-misto).
+  Mesmo formato do conferir-aqui-8.html (cartoes, escolha, comentario, "Copiar respostas"),
+  marcacoes guardadas no navegador com a chave NOVA "conferir-2026-10-05-j" (a "-i" e do formulario 9,
+  do ramo fase2-geometria).
+  Imagens: relatorios/conferencia-10-2026-10-05/, feitas por scripts/montar_imagens.py (so recorta e
+  reduz imagens prontas; nenhuma pagina e processada).
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 10 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>O que é:</b> as decisões do <b>modo Misto</b>, que você pediu: <b>o preto e branco só nas letras</b>; gravuras, fotos, molduras e iluminuras ficam como no original, com o papel branco.</p>
+    <p><b>Onde está:</b> o Misto já funciona, mas só num programinha de teste, fora da janela (por linha de comando). Ainda <b>não está na janela do Kaique</b>: nem na prévia, nem no PDF. <b>O programa de hoje não mudou:</b> refiz as páginas do gabarito (34 páginas de saída) nos três filtros (Preto e branco, Melhorar e Mágico pro), antes e depois, e as <b>102 imagens saíram idênticas</b>, ponto por ponto. Nas 32 páginas do gabarito, o Misto sai igual ao Preto e branco de hoje em 27; muda só nas 5 que têm foto, pintura ou gravura (exemplos logo abaixo). E o Misto levou o mesmo tempo que o Preto e branco.</p>
+    <p><b>A pergunta P1 decide onde o Kaique liga o Misto.</b> Para isso preciso criar <b>campos novos no projeto salvo</b> (um para o livro, um para a página); é para criar esses campos que eu peço licença na P1. Projeto antigo abriria com o Misto desligado.</p>
+    <p><b>O que não muda:</b> a letra do Misto é a do Preto e branco de hoje. Então o <b>A1</b> (pontos apagados no meio das letras da Horas 47) <b>continua</b> no Misto, até ser consertado no Preto e branco.</p>
+    <p>A escolha <b>A, B ou C</b> (o que fazer com a tinta fora do texto achado) e a pergunta sobre usar o leitor de texto estão no <b>formulário 8</b>, que você já tem; não se repetem aqui.</p>
+    <p><b>Como responder:</b> em cada pergunta, escolha uma opção e, se quiser, escreva um comentário. Onde há "(recomendado)", embaixo vem o porquê, em uma frase. Clique numa imagem para ver em tamanho cheio (clique de novo para fechar). Suas marcações ficam guardadas neste computador; no fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que e (pode ter <b>), a: atencao (opcional),
+//   s: por que a recomendacao (opcional), i: [imagens], tipo: "escolha" | "entendi",
+//   p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-10-2026-10-05/";
+const SECOES = [
+ { titulo:"1. Primeiro, veja o Misto",
+   sub:"Nas imagens: três colunas, Original | Preto e branco de hoje | Misto. Aqui não há o que escolher: só aperte \"Entendi\" (e comente, se quiser).",
+   cartoes:[
+    {c:"EX1", t:"Escola de Jesus 7 e 35: a pintura com a cor", tipo:"entendi",
+     i:["ex-escola_p007.jpg", "ex-escola_p035.jpg"],
+     o:`É o seu pedido. <b class='onde'>O texto sai preto e nítido, com o papel branco</b>, e <b class='onde'>a pintura</b> (o Paraíso; Adão e Eva com o anjo) sai com a cor do original, em vez do cinza do Preto e branco de hoje.`},
+    {c:"EX2", t:"Palatino 5: o retrato", tipo:"entendi",
+     i:["ex-palatino_p005.jpg"],
+     o:`No Preto e branco de hoje o retrato vira um desenho só de preto e branco. No Misto <b class='onde'>ele sai com o traço do original e o fundo branco</b>, sem a mancha amarela do papel.`,
+     a:`O traço do retrato fica <b>marrom</b>, como no original, e não preto. Se quiser o traço preto, diga no comentário: é outra pergunta, que ficaria para depois.`},
+    {c:"RISCO", t:"Marial 7: o Misto mostra o erro do detector de gravuras", tipo:"entendi",
+     i:["risco-marial_p007-canto.jpg", "risco-marial_p007-mapa.jpg"],
+     o:`O Misto deixa como no original tudo o que o detector de gravuras acha. Quando ele erra, o erro aparece. Aqui ele tomou <b class='onde'>a mancha do canto de cima, à esquerda</b>, por foto: o Preto e branco de hoje a deixava cinza; o Misto a deixa marrom, como no original (primeira imagem). Na segunda imagem, em laranja, o lugar que o Misto deixa como no original.`,
+     a:`O remédio é o Kaique tirar essa zona à mão, na aba Marcar. Dentro do Misto isso já funciona, mas só foi testado em páginas de teste, não nas do acervo. O contrário também acontece: onde o detector não marca nada (a capitular e as molduras do Palatino 9), a página sai em preto e branco, como hoje.`},
+    {c:"A1", t:"O que o Misto não resolve", tipo:"entendi", i:[],
+     o:`A letra do Misto é a do Preto e branco de hoje, com os mesmos defeitos: o <b>A1</b> (pontos apagados no meio das letras da Horas 47, de volta à Lista de bugs na conferência 7) <b>continua no Misto</b>; quando for consertado no Preto e branco, o Misto ganha o conserto junto. E toda página com gravura sai em cor, então <b>o PDF fica mais pesado</b> (já está na Lista de bugs).`},
+   ]},
+ { titulo:"2. Onde o Kaique liga o Misto",
+   cartoes:[
+    {c:"P1", t:"Onde o Kaique liga o Misto", tipo:"escolha",
+     i:["p1-tela-o-que-fazer.jpg"],
+     o:`Hoje o Kaique escolhe um de quatro filtros (Original, Melhorar, Preto e branco, Mágico pro), na tela "O que fazer" (para o livro) e na aba Filtro (para uma página). A imagem é a tela "O que fazer" como estava em 01/10; o retângulo rosa é a caixinha das molduras (pergunta P5). Ligar o Misto pede <b>campos novos no projeto salvo</b> (na opção (a), um no livro e um na página); escolher (a), (b) ou (c) é a licença para criá-los. Projeto antigo abre com o Misto desligado.`,
+     s:`Por que a (a): é o que você já decidiu em 30/09 ("Só as letras" marcada: só as letras viram preto e branco), e é só um campo a mais no livro e um na página.`,
+     p:"Onde o Kaique liga o Misto?",
+     op:["(a) Uma caixinha \"Só as letras\" dentro do Preto e branco, para o livro (tela \"O que fazer\") e para a página (aba Filtro) (recomendado)",
+         "(b) Um quinto filtro, \"Misto\", ao lado dos outros quatro",
+         "(c) Duas listas, \"Texto em: [filtro]\" e \"Gravuras em: [filtro]\" (mais completo, mais difícil para o Kaique)",
+         "Ainda não: não criar os campos novos agora"]},
+   ]},
+ { titulo:"3. Como o Misto trata as imagens",
+   cartoes:[
+    {c:"P2", t:"O papel de dentro da gravura", tipo:"escolha",
+     i:["p2-palatino_p005.jpg", "p2-palatino_p005-detalhe.jpg"],
+     o:`Dentro de uma gravura de traço (como o retrato do Palatino 5), o papel pode ir a branco ou ficar creme, como no original (é o que o ScanTailor faz). Nas imagens: <b>à esquerda, papel branco</b>; <b>à direita, papel creme</b>. Repare que, com o creme, o retrato fica amarelado e aparece <b class='onde'>a mancha em volta do oval</b>, à esquerda.`,
+     s:`Por que a (a): é a sua regra "todo o papel totalmente branco, inclusive dentro da gravura".`,
+     p:"No Misto, o papel de dentro da gravura:",
+     op:["(a) Vai a branco; só o desenho fica como no original (recomendado)",
+         "(b) Fica creme, como no original (como no ScanTailor)"]},
+    {c:"P3", t:"A foto e a pintura", tipo:"escolha",
+     i:["p3-escola_p007.jpg", "p3-opusmajus_p020.jpg"],
+     o:`Nas imagens: <b>à esquerda, a foto como no original, com a cor</b>; <b>à direita, a foto em tons de cinza</b>, como no Preto e branco de hoje. Na Escola 7 é a pintura do Paraíso; no Opus Majus 20, a foto da estátua (que no original já é quase sem cor, num tom creme).`,
+     s:`Por que a (a): é a proposta que você aceitou em 02/10: "gravuras e fotos ficam como estão".`,
+     p:"No Misto, a foto e a pintura:",
+     op:["(a) Ficam como no original, com a cor (recomendado)",
+         "(b) Ficam em tons de cinza, como no Preto e branco"]},
+    {c:"P4", t:"Letras dentro da moldura ou da iluminura", tipo:"escolha",
+     i:["p4-horas_p011-detalhe.jpg"],
+     o:`Títulos escritos dentro de uma moldura ou iluminura, como os do oval da Horas 11 ou o "NOVEMBRE." da Horas 26. Na imagem (Original | Preto e branco de hoje | Misto): no original eles são <b class='onde'>vermelhos, azuis e dourados</b>; hoje, no Preto e branco, saem pretos, e o Misto faz igual.`,
+     s:`Por que a (a): é o que você decidiu para o Preto e branco em 01/10 (P4); o Misto só repete.`,
+     p:"No Misto, as letras dentro da moldura ou da iluminura:",
+     op:["(a) Saem pretas, como no Preto e branco de hoje (recomendado)",
+         "(b) Saem com a cor original"]},
+    {c:"P5", t:"A caixinha das molduras com o Misto ligado", tipo:"escolha",
+     i:["p5-horas_p013-moldura.jpg"],
+     o:`No Preto e branco há a caixinha do livro <b>"No Preto e branco, molduras e iluminuras também em preto e branco"</b> (está na imagem da P1). Marcada, a moldura sai só com o traço em preto (coluna do meio); desmarcada, sai com a cor original (coluna da direita, que é também como o Misto a deixa). A dúvida: com o Misto ligado, a caixinha marcada ainda vale? (Os retângulos azul e rosa são de uma conferência antiga; pode ignorar.)`,
+     s:`Por que a (a): o Misto existe para deixar a imagem como no original; a caixinha continua valendo no Preto e branco comum.`,
+     p:"Com o Misto ligado, a caixinha das molduras:",
+     op:["(a) Não vale: o Misto deixa a moldura e a iluminura em cor (recomendado)",
+         "(b) Vale: marcada, a moldura sai com o traço preto também no Misto"]},
+   ]},
+ { titulo:"4. Um defeito achado",
+   cartoes:[
+    {c:"P6", t:"O \"só neste pedaço\" é ignorado no Preto e branco", tipo:"escolha", i:[],
+     o:`Achei um defeito no programa de hoje: <b>no Preto e branco, o "só neste pedaço" da aba Marcar é ignorado</b>. Se o Kaique marca uma foto e põe "só neste pedaço: Original", ela sai em preto e branco (ou em cinza) mesmo assim; no Mágico pro, sai com a cor certa. A Lista de espera de 01/10, sobre "foto em Original dentro de uma página em Preto e branco", diz que "parte disso já existe" na aba Marcar; mas hoje não funciona. No Misto, ele já vale.`,
+     a:`Aqui não há recomendação: a (a) mexe no Preto e branco de hoje, e por isso precisa da sua licença.`,
+     p:"O que fazer com o \"só neste pedaço\" no Preto e branco?",
+     op:["(a) Consertar já no Preto e branco (muda só as páginas que têm pedaço marcado)",
+         "(b) Deixar valer só no Misto (o Preto e branco fica exatamente como hoje)"]},
+   ]},
+ { titulo:"5. Para depois: ferramentas a mais, vindas do ScanTailor",
+   sub:"Nenhuma destas foi feita; cada uma muda a tela e só entra se você disser que sim.",
+   cartoes:[
+    {c:"P7", t:"Limpar pontinhos", tipo:"escolha", i:[],
+     o:`Hoje o programa apaga as manchinhas olhando só o tamanho delas. O do ScanTailor poupa o pingo do "i" e o ponto perto da letra, e tem uma força que se regula.`,
+     s:`Por que a (a): nada muda de fábrica até você ver os dois lado a lado.`,
+     p:"Limpar pontinhos:",
+     op:["(a) Trazer o do ScanTailor como opção, com a escolha \"pouco / normal / muito\" na aba Filtro; o nosso continua de fábrica até você comparar (recomendado)",
+         "(b) Trocar o nosso pelo do ScanTailor",
+         "(c) Deixar para depois"]},
+    {c:"P8", t:"Os jeitos de fazer o preto e branco", tipo:"escolha", i:[],
+     o:`Há vários jeitos de o programa decidir o que é tinta e o que é papel. De fábrica ele escolhe sozinho ("automático"). Hoje a aba Filtro mostra uma lista "Algoritmo" com três nomes estrangeiros de métodos, o que já está na Lista de bugs como palavra difícil. O ScanTailor tem dez jeitos.`,
+     s:`Por que a (a): tira as palavras difíceis da frente do Kaique sem perder nada.`,
+     p:"Os jeitos de fazer o preto e branco:",
+     op:["(a) Deixar só \"automático\" à vista, e os três de hoje em \"mais opções\", com nomes comuns (recomendado)",
+         "(b) Trazer os dez do ScanTailor como opções a mais"]},
+    {c:"P9", t:"Letra clara em fundo escuro", tipo:"escolha", i:[],
+     o:`Para páginas (ou pedaços) com letra clara sobre fundo escuro: o programa inverte a página, faz o preto e branco e desinverte. A dúvida é se o programa deve descobrir isso sozinho.`,
+     s:`Por que a (a): a Lista de espera de 28/09 já sugere não trazer a descoberta automática.`,
+     p:"Letra clara em fundo escuro:",
+     op:["(a) Uma caixinha por página, \"Letra clara em fundo escuro\", que o Kaique marca à mão (recomendado)",
+         "(b) Com descoberta automática"]},
+    {c:"P10", t:"Letras com a cor delas", tipo:"escolha", i:[],
+     o:`O ScanTailor pode deixar cada letra com a cor dela (por exemplo, o título vermelho continua vermelho). Isso contraria a sua regra "o vermelho sai preto".`,
+     s:`Por que a (a): de fábrica a sua regra continua valendo, e a opção fica à mão para um livro que precise.`,
+     p:"Letras com a cor delas, no Misto:",
+     op:["(a) Trazer como opção, desligada de fábrica (recomendado)",
+         "(b) Não trazer"]},
+    {c:"P11", t:"Novos tipos de zona na aba Marcar", tipo:"escolha", i:[],
+     o:`Hoje, na aba Marcar, o Kaique marca um pedaço como gravura, letra, papel ou fora, e pode pôr "só neste pedaço" outro filtro. O ScanTailor tem cinco tipos de zona.`,
+     s:`Por que a (a): são os que o nosso não tem; o "tinta com a cor original" do ScanTailor já é o nosso "só neste pedaço: Original".`,
+     p:"Na aba Marcar:",
+     op:["(a) Acrescentar \"preencher com uma cor\" (para apagar carimbo e mancha) e copiar, colar e mover zona (recomendado)",
+         "(b) Trazer os cinco tipos do ScanTailor, com nomes comuns",
+         "(c) Nada por enquanto"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-j";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"BOM", ruim:"RUIM", naosei:"NÃO SEI" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="botoes"><button class="b-bom">Bom</button><button class="b-ruim">Ruim</button><button class="b-naosei">Não sei</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>${tipo === "voto" ? "O que olhar:" : "O que é:"}</b> ${k.o}</p>` : "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${k.t}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 10 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>

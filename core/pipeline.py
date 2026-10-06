@@ -39,7 +39,9 @@ from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
-from core.filtros import ORIGINAL, TIRAR_FUNDO, aplicar_filtro, aplicar_filtro_com_selecao
+from core import linhas_do_texto, misto
+from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
+                          aplicar_filtro_com_selecao)
 from core.folha import compor_na_folha
 from core.pdf_io import (
     DPI_PREVIA,
@@ -183,6 +185,11 @@ def analisar_projeto(
         projeto.observacoes = observacoes
         projeto.folhas = folhas
         projeto.paginas = paginas
+        # Modo Misto (bug Misto 1, 05/10/2026): com "So as letras" ligada no
+        # livro, o "Tem cor" nao vale (a ilustracao sai em cor). Depois das
+        # observacoes de proposito: o "livro inteiro e colorido" continua
+        # sendo contado como antes.
+        acertar_alertas_de_cor(projeto)
         _avisar(progresso, total, total, "Pronto")
         return projeto
     finally:
@@ -796,6 +803,11 @@ def acertar_alertas_do_fundo(projeto: Projeto,
     aparece na hora em que se escolhe o filtro, e some quando se sai dele.
     """
     for pagina in projeto.paginas if paginas is None else paginas:
+        # Modo Misto (05/10/2026): o "Tinta forte fora do texto" sai na hora
+        # em que a pagina deixa o Misto A ou C (mesmo jeito, mesmo momento)
+        _acertar_alerta_do_misto(projeto, pagina)
+        # e o "Tem cor" segue o "So as letras" (bug Misto 1, 05/10/2026)
+        acertar_alertas_de_cor(projeto, [pagina])
         if not usa_tirar_fundo(projeto, pagina):
             _anotar_conferir(pagina, False)
             continue
@@ -1105,16 +1117,203 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     A opcao do livro Projeto.pb_decoracao_em_preto_e_branco (moldura e
     iluminura tambem em preto e branco; emenda N2 do Samuel, 30/09/2026) vai
     para o filtro aqui; so vale no Preto e branco.
+
+    Modo Misto (05/10/2026): pagina em Preto e branco com "So as letras"
+    ligada (core.misto.opcoes_da_pagina) vai para _filtrar_no_misto; ali a
+    caixinha das molduras nao vale (decisao P5 do Samuel: fica apagada na
+    tela enquanto "So as letras" estiver marcada). Sem "So as letras", o
+    caminho de sempre, sem nenhuma conta a mais (provado: as 32 paginas do
+    gabarito nos 4 filtros saem identicas ao ace15b2).
     """
     if not projeto.limpar or pagina.filtro == TIRAR_FUNDO:
+        _anotar_tinta_forte_fora(pagina, False)
         return img, False
+    selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
+    if pagina.filtro == PRETO_E_BRANCO:
+        opcoes = misto.opcoes_da_pagina(projeto, pagina)
+        if opcoes is not None:
+            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes)
+    _anotar_tinta_forte_fora(pagina, False)
     return aplicar_filtro_com_selecao(
-        img, pagina.filtro, garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan),
+        img, pagina.filtro, selecao,
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
         decoracao_em_preto_e_branco=bool(
             getattr(projeto, "pb_decoracao_em_preto_e_branco", False)),
     )
+
+
+# ---------------------------------------------------------------------------
+# Modo Misto ("So as letras" no Preto e branco), ligado em 05/10/2026
+#
+# Pedidos do Samuel: a caixinha "So as letras" por livro e por pagina
+# (conferencia 10, P1 (a)); A "Guardar a tinta forte" de fabrica, achando as
+# linhas so com o docTR (conferencia 14); "Para revisar" sozinho quando sobra
+# muita tinta forte fora das linhas (conferencia 8, REVISAR: "Sim").
+# ---------------------------------------------------------------------------
+
+# A pagina vai para "Para revisar" (analise.TINTA_FORTE_FORA_DO_TEXTO) quando
+# a tinta forte fora das linhas de texto e fora das gravuras passa desta
+# fracao de toda a tinta da pagina. Medido na rodada da conferencia 8 (docTR +
+# Kraken; o formulario sugeria "uns 10%"): Graduale 222 76% (a musica),
+# Palatino 9 47% (a capitular e as molduras), Opus 165 6%, Marial 7 5%, Horas
+# 13 4%, Boecio 22 2%, Horas 11 menos de 1%. Com 10%, vao para revisar as
+# paginas em que o leitor deixou de fora uma parte grande do que esta impresso
+# - nao as que tem so umas letrinhas de diagrama ou pontos.
+# Medido de novo em 05/10, SO com o docTR (como no programa), nas 34 paginas
+# das 32 folhas do gabarito (relatorios/conferir/misto-no-programa-2026-10-05/
+# dados/medidas-misto.json, imagens em tinta-forte/): 19 passam de 10%, e
+# quase todas tem MUITO impresso fora do texto que o detector de gravura nao
+# marcou - moldura de filetes e floreios (Palatino 9, 10, 57, 66, 67;
+# Siebmacher 7 e 9; Rhetorica 18), tabela com regua (Horas 14, Opus 256),
+# chaves de diagrama (Rhetorica 73), musica (Graduale 221-223), gravura e
+# carimbo nao marcados (Boecio 3), pagina so de desenho (Siebmacher, lado
+# direito). Texto corrido fica abaixo de 4% (Boecio 7, 8, 22; Escola 7 e 35;
+# Palatino 5 e 7; Opus 11; Horas 11, 13, 26, 27, 47), e as de diagrama
+# pequeno entre 5% e 9% (Opus 20, 165; Marial 7). Nao ha um vao claro entre
+# as duas turmas acima de 10%: subir para 30% tiraria do aviso so 3 das 19.
+# No A, essa tinta e guardada (a moldura e a tabela saem); no C ela vai a
+# branco - e ai que o aviso mais importa. Seguro mudar: o numero (so muda
+# quem vai para revisar). Arriscado: baixar muito (quase toda pagina com
+# gravura ou sujeira na beirada iria para revisar, e o aviso deixaria de ser
+# lido).
+LIMITE_DA_TINTA_FORTE_FORA = 0.10
+
+
+def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
+    """O que identifica a pagina PREPARADA (para guardar as linhas de texto
+    achadas nela; core.linhas_do_texto): o arquivo, a folha, a metade e tudo
+    que muda o corte e o giro. O filtro e os ajustes nao entram (nao mudam
+    onde esta o texto). None (nao guarda) se o arquivo nao esta no disco.
+    Arriscado: tirar daqui algo que muda a imagem preparada (as linhas
+    guardadas ficariam deslocadas)."""
+    if not 0 <= pagina.folha < len(projeto.folhas):
+        return None
+    folha = projeto.folhas[pagina.folha]
+    arquivo = _chave_do_arquivo(projeto.caminho_entrada, folha)
+    if arquivo is None:
+        return None
+    recorte = tuple(round(float(v), 4) for v in pagina.recorte) if pagina.recorte else None
+    return (arquivo, pagina.metade, folha.rotacao, folha.dividir,
+            round(float(folha.posicao_corte), 4), recorte, pagina.angulo_manual,
+            projeto.dividir_folhas, projeto.cortar_bordas, projeto.endireitar)
+
+
+def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
+                      opcoes) -> tuple[np.ndarray, bool]:
+    """O Preto e branco so nas letras (core.misto.aplicar_misto) com as
+    escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto).
+
+    A e C precisam das linhas de texto: core.linhas_do_texto (o docTR, uma
+    vez por pagina; guardadas por _chave_das_linhas, a previa e o PDF usam as
+    mesmas). Quem chama esta numa QThread (previa e PDF): o leitor bloqueia
+    1 a 2,5 s na primeira vez da pagina, nunca a tela. Se o leitor nao estiver
+    disponivel, sai o Misto B (o motivo vai para o erros.log).
+
+    O aviso "Tinta forte fora do texto" e acertado aqui (A e C, com linhas);
+    na B ele sai (sem as linhas, nao ha o que medir)."""
+    linhas, altura_linha = None, 0.0
+    if opcoes.precisa_das_linhas:
+        resultados = linhas_do_texto.linhas_da_pagina(img, _chave_das_linhas(projeto, pagina))
+        if resultados:
+            linhas, altura_linha = misto.mascara_das_linhas(resultados, img.shape)
+    medidas: dict = {}
+    saida = misto.aplicar_misto(
+        img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pagina.despeckle,
+        pagina.clareza_melhorar, pagina.intensidade_magico,
+        papel_da_gravura_branco=opcoes.papel_da_gravura == misto.PAPEL_BRANCO,
+        letras_na_moldura=opcoes.letras_na_moldura,
+        fora_do_texto=opcoes.fora_do_texto, linhas=linhas, altura_linha=altura_linha,
+        medidas=medidas)
+    if "forte_fora" in medidas:
+        _anotar_tinta_forte_fora(pagina, medidas["forte_fora"] > LIMITE_DA_TINTA_FORTE_FORA)
+    elif not opcoes.precisa_das_linhas:
+        _anotar_tinta_forte_fora(pagina, False)
+    return saida
+
+
+def _anotar_tinta_forte_fora(pagina: ConfigPagina, sobrou: bool) -> None:
+    """Poe ou tira o alerta analise.TINTA_FORTE_FORA_DO_TEXTO, do mesmo jeito
+    que _anotar_conferir: ao POR, a pagina volta a "nao conferida" e o alerta
+    vai para a frente; o "esta bom assim" depois disso continua valendo (o
+    alerta ja posto nao mexe mais em `revisada`). Barato: so olha a lista."""
+    tem = analise.TINTA_FORTE_FORA_DO_TEXTO in pagina.alertas
+    if sobrou and not tem:
+        pagina.alertas.insert(0, analise.TINTA_FORTE_FORA_DO_TEXTO)
+        pagina.revisada = False
+    elif not sobrou and tem:
+        pagina.alertas = [a for a in pagina.alertas if a != analise.TINTA_FORTE_FORA_DO_TEXTO]
+
+
+def _acertar_alerta_do_misto(projeto: Projeto, pagina: ConfigPagina) -> None:
+    """Tira o "Tinta forte fora do texto" da pagina que nao esta mais no
+    Misto A ou C (mudou de filtro, desligou "So as letras", escolheu B), sem
+    desenhar nada. Se ainda esta, fica como esta (a previa acerta)."""
+    if analise.TINTA_FORTE_FORA_DO_TEXTO not in pagina.alertas:
+        return
+    opcoes = (misto.opcoes_da_pagina(projeto, pagina)
+              if projeto.limpar and pagina.filtro == PRETO_E_BRANCO else None)
+    if opcoes is None or not opcoes.precisa_das_linhas:
+        _anotar_tinta_forte_fora(pagina, False)
+
+
+def _misto_vale(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A pagina vai sair pelo Misto ("So as letras")? A MESMA conta de
+    _filtrar: "Limpar a folha" ligado, filtro Preto e branco e "So as letras"
+    valendo nela (dela ou do livro). Barato (so le campos)."""
+    return bool(getattr(projeto, "limpar", True) and pagina.filtro == PRETO_E_BRANCO
+                and misto.opcoes_da_pagina(projeto, pagina) is not None)
+
+
+def _cor_valeria_sem_o_misto(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A analise (analise.analisar_pagina + separar_observacoes) teria posto o
+    alerta "Tem cor" nesta pagina? Sim quando ela tem cor, o filtro dela e o
+    do livro sao o Preto e branco, ela nao e pagina em branco, e o "Tem cor"
+    nao virou observacao do livro ("o livro inteiro e colorido") - nem o "em
+    branco" (que tira o alerta das paginas em branco). Le so campos."""
+    observacoes = getattr(projeto, "observacoes", None) or []
+    return bool(pagina.tem_cor and pagina.filtro == PRETO_E_BRANCO
+                and projeto.filtro_padrao == PRETO_E_BRANCO
+                and analise.EM_BRANCO not in pagina.alertas
+                and analise.OBSERVACOES[analise.COR] not in observacoes
+                and analise.OBSERVACOES[analise.EM_BRANCO] not in observacoes)
+
+
+def acertar_alertas_de_cor(projeto: Projeto,
+                           paginas: list[ConfigPagina] | None = None) -> None:
+    """O alerta "Tem cor" ("o preto e branco vai perder a ilustracao", com o
+    botao "usar Mágico pro nesta") segue o "So as letras". Sem desenhar nada.
+
+    Bug Misto 1 do verificador (05/10/2026, print 14): com "So as letras"
+    ligada, a ilustracao sai EM COR (core.misto), e o alerta era falso - ele
+    e decidido uma vez, na analise (analise.analisar_pagina), sem olhar o
+    Misto, e mandava paginas certas para o "Para revisar". Agora:
+      - pagina que vai sair pelo Misto (_misto_vale): o alerta sai;
+      - pagina que deixou o Misto ("So as letras" desligada, no livro ou so
+        nela): o alerta volta, se a analise o teria posto
+        (_cor_valeria_sem_o_misto). `revisada` nao muda: o alerta volta como
+        estava (se a pessoa ja tinha conferido a pagina, continua conferida).
+    Pagina que nunca passou pelo Misto nao muda: o alerta so volta onde a
+    analise o poria, e nessa pagina ele ja esta.
+
+    Chamado pela analise (no fim), por acertar_alertas_do_fundo (ao abrir a
+    conferencia) e pela tela de conferir a cada atualizacao, em TODAS as
+    paginas (o "So as letras" do livro e o "todas" mudam muitas de uma vez,
+    e o "Para revisar" conta todas). Barato: pagina sem cor e sem o alerta
+    e pulada sem conta nenhuma.
+
+    Arriscado: tirar o alerta sem a mesma conta de _filtrar (_misto_vale) - a
+    pagina que sai em preto e branco de verdade ficaria sem o aviso.
+    """
+    for pagina in projeto.paginas if paginas is None else paginas:
+        tem = analise.COR in pagina.alertas
+        if not tem and not pagina.tem_cor:
+            continue
+        if _misto_vale(projeto, pagina):
+            if tem:
+                pagina.alertas = [a for a in pagina.alertas if a != analise.COR]
+        elif not tem and _cor_valeria_sem_o_misto(projeto, pagina):
+            pagina.alertas.append(analise.COR)
 
 
 def renderizar_com_filtro(
@@ -1474,6 +1673,36 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
     _checar(cancelado)
 
 
+def _so_as_letras_no_livro(projeto: Projeto) -> bool:
+    """"So as letras" vale no livro: "Limpar a folha", o Preto e branco como
+    filtro do livro e a caixinha marcada (Projeto.misto_so_as_letras)."""
+    return bool(projeto.limpar and projeto.filtro_padrao == PRETO_E_BRANCO
+                and getattr(projeto, "misto_so_as_letras", False) is True)
+
+
+def _frase_do_so_as_letras(projeto: Projeto) -> str:
+    """O que o Preto e branco com "So as letras" vai fazer de verdade, em
+    portugues simples, para o resumo da tela "O que fazer" (ressalva 4 do
+    verificador do Misto, 05/10/2026: a frase dizia "deixar tudo em preto e
+    branco" com a caixinha marcada). Muda com o botao escolhido (A, B ou C,
+    core.misto.FORAS_DO_TEXTO) e com "Achar as gravuras" desligado (ai so
+    fica como no original o que a pessoa marcar a mao). Seguro mudar: os
+    textos (sem jargao: nada de "OCR", "mascara", "Misto")."""
+    _ligado, escolhas = misto.escolhas_da_pagina(projeto, None)
+    if getattr(projeto, "gravura_forma", "livre") == "desligada":
+        imagens = "as gravuras que você marcar à mão"
+    else:
+        imagens = "gravuras, fotos, molduras e iluminuras"
+    if escolhas.fora_do_texto == misto.FORA_TUDO:
+        return (f"deixar tudo em preto e branco menos {imagens} "
+                f"(essas ficam como no original)")
+    if escolhas.fora_do_texto == misto.FORA_APAGAR:
+        return (f"deixar só o texto que eu achar, em preto e branco ({imagens} "
+                f"ficam como no original; o resto vai a branco)")
+    return (f"deixar só as letras em preto e branco ({imagens} ficam como no "
+            f"original; fora do texto, só fica a tinta escura)")
+
+
 def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     """A caixa (i) da tela 2, atualizada ao vivo. Sem jargao nenhum.
 
@@ -1481,6 +1710,10 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     com camadas), diz que tira o fundo de todas as paginas e que, onde nao
     der, a pagina fica como veio (ver usa_tirar_fundo e _filtrar). Num PDF
     sem camadas esse filtro nao faz nada, e o resumo nao fala dele.
+
+    Modo Misto (05/10/2026): com "So as letras" marcada no Preto e branco, a
+    frase do filtro diz o que vai acontecer de verdade
+    (_frase_do_so_as_letras), e nao "deixar tudo em preto e branco".
     """
     from core.filtros import NOMES_AMIGAVEIS
 
@@ -1500,7 +1733,10 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
                           "fica como veio)")
     elif projeto.limpar and projeto.filtro_padrao != ORIGINAL:
         nome = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
-        partes.append(f"deixar tudo em {nome}")
+        if _so_as_letras_no_livro(projeto):
+            partes.append(_frase_do_so_as_letras(projeto))
+        else:
+            partes.append(f"deixar tudo em {nome}")
     if comum:
         # item 1.2: o grupo "Gravuras e fotos" (ui/tela_opcoes.py)
         forma = getattr(projeto, "gravura_forma", "livre")
@@ -1508,7 +1744,9 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
             partes.append("não procurar gravuras e fotos")
         elif forma == "retangular":
             partes.append("achar as fotos em retângulo")
-        else:
+        elif not _so_as_letras_no_livro(projeto):
+            # com "So as letras", separar a gravura do texto ja esta dito
+            # na frase dela (_frase_do_so_as_letras)
             partes.append("separar as gravuras do texto")
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")

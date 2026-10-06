@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador (2): os quatro consertos do Misto (06/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador (2): os quatro consertos do Misto (06/10/2026)</h1>
+<p>Ramo <code>fase2-misto</code>, worktree <code>misto</code>, commits <code>3e68f58</code>, <code>14d721a</code>, <code>c9b5d9b</code> e <code>ccdbf87</code>, comparados com o <code>9b00960</code> (antes dos consertos). Isto não é aprovação: quem marca é o Samuel.</p>
+<h2>Veredito em uma frase</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> Os quatro consertos funcionam na janela real (1600 × 821 px, que é 1280 × 657 pontos, o tamanho do notebook do Kaique a 150%), e a janela nunca ficou parada mais de 0,12 s. Ficam três ressalvas pequenas, que já existiam antes destes commits e não são deles: um cartão que fica em "preparando..." para sempre, o aviso "Tinta forte fora do texto" que demora a sair das outras páginas, e os botões "Aplicar em" encostando na tira de miniaturas com o "Mais opções" aberto.</p>
+<h2>Máquina ou olho, item por item</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como foi conferido</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) pytest</td>
+<td>máquina, um arquivo por vez (75 arquivos), numa cópia <code>git archive</code> do <code>ccdbf87</code></td>
+<td><strong>1464 passaram, 59 pularam, 0 falhas.</strong> O <code>test_camadas</code> pulou 26 testes na primeira passada (a cópia ainda não tinha as páginas do gabarito); repetido sozinho com elas: 90 de 90. Os outros pulados são dos leitores de texto (OCR), que se pulam sozinhos</td>
+</tr>
+<tr>
+<td>(a) os 5 arquivos do Misto, de novo</td>
+<td>máquina, por mim, numa cópia nova do <code>ccdbf87</code></td>
+<td><strong>105 de 105 passaram</strong></td>
+</tr>
+<tr>
+<td>(a) <code>teste_botoes.py</code></td>
+<td>máquina, numa cópia <code>git archive</code> com <code>saida_teste</code> e pasta de dados próprias</td>
+<td><strong>132 ações, 0 falhas</strong> (ele não clica em nada do Misto)</td>
+</tr>
+<tr>
+<td>(b1) alerta "Tem cor" some com "Só as letras"</td>
+<td>olho, janela real, mouse nativo</td>
+<td><strong>funciona</strong>, e o "Para revisar" acompanha</td>
+</tr>
+<tr>
+<td>(b2) cartão "Preto e branco" com o Misto</td>
+<td>olho, janela real; tempo medido</td>
+<td><strong>funciona</strong>; o cartão chega em 1,6 a 2,1 s e a janela não trava</td>
+</tr>
+<tr>
+<td>(b3) bloco AJUSTE inteiro em 1280 × 657</td>
+<td>olho e máquina (altura do bloco e da barra)</td>
+<td><strong>funciona</strong>; o defeito antigo foi reproduzido no <code>9b00960</code> e não acontece mais</td>
+</tr>
+<tr>
+<td>(b4) "Só as letras" só com o Preto e branco, e a frase-resumo</td>
+<td>olho, janela real</td>
+<td><strong>funciona</strong>, guardando a escolha; as três frases (A, B, C) conferem</td>
+</tr>
+<tr>
+<td>(c) páginas sem "Só as letras" iguais ao <code>9b00960</code></td>
+<td>máquina (pixel a pixel) e olho</td>
+<td><strong>10 de 10 páginas idênticas</strong> (5 páginas × 2 projetos)</td>
+</tr>
+<tr>
+<td>(d) a janela nunca fica mais de 1 s sem responder</td>
+<td>máquina (mensagem nativa à janela a cada 100 ms, a sessão inteira)</td>
+<td><strong>maior parada: 0,119 s</strong> (na análise, depois de "Conferir"); nos quatro consertos, no máximo 0,096 s; nenhuma acima de 0,25 s</td>
+</tr>
+<tr>
+<td>velocidade (<code>teste_velocidade.py</code>)</td>
+<td>não rodei</td>
+<td>ver Ressalvas</td>
+</tr>
+</tbody>
+</table>
+<h2>Defeitos conhecidos (lembrete obrigatório)</h2>
+<p>Moldura dourada e iluminura continuam como <strong>defeito conhecido</strong> até o Samuel fechar a Fase 1. Nada aqui muda isso.</p>
+<h2>Como foi feito</h2>
+<ul>
+<li><strong>Livro de teste</strong> (<code>livro-misto2.pdf</code>, 5 folhas): Escola de Jesus 7, Opus Majus 20, Horas 11, Palatino 9 e Graduale 222, copiadas de <code>gabarito\paginas</code> (só lidas). "Dividir folhas ao meio" desligado, Preto e branco, "Só as letras" ligada no livro, botão "Guardar a tinta forte".</li>
+<li><strong>Antes:</strong> cópia <code>git archive</code> do <code>9b00960</code>. <strong>Depois:</strong> cópia <code>git archive</code> do <code>ccdbf87</code> (conferi com <code>diff</code> que as cópias são iguais aos commits). Cada uma com a sua pasta de dados (<code>LOCALAPPDATA</code> e <code>USERPROFILE</code> no scratchpad), nunca a pasta real.</li>
+<li><strong>Janela real</strong> fora da tela, sem tomar o foco do Samuel; cliques por mensagem nativa do Windows; prints com <code>PrintWindow</code>. Aproveitei o piloto do primeiro parecer e o do verificador anterior (que foi interrompido), já com o conserto do laço de espera (olha a resposta uma última vez antes de desistir). Nenhuma espera deu "sem resposta".</li>
+<li>O verificador anterior tinha deixado o pytest completo (no mesmo código) e prints do "depois" dos itens 1 e 4. Usei o resultado do pytest; os prints e as medidas, refiz todos.</li>
+</ul>
+<h2>(b1) O alerta "Tem cor" some com "Só as letras" (commit <code>3e68f58</code>)</h2>
+<p><strong>Antes (<code>9b00960</code>):</strong> com "Só as letras" ligada, a página 1 (Escola 7) mostrava a faixa laranja "Esta página tem cor - o preto e branco vai perder a ilustração", o botão "usar Mágico pro nesta" e o "Para revisar" contava 4 (Tem cor 3).</p>
+<p><img alt="Antes: o alerta aparece mesmo com Só as letras ligada" src="prints/01-antes-alerta-tem-cor-com-so-as-letras.jpg" /></p>
+<p><strong>Depois (<code>ccdbf87</code>):</strong> com "Só as letras" ligada, a faixa diz "Esta página vai sair em Preto e branco", sem botão laranja; o "Para revisar" conta 1 (só a "Tinta forte fora do texto" da Palatino); as miniaturas 1 e 3 deixam de ficar laranja.</p>
+<p><img alt="Depois: sem alerta com Só as letras ligada" src="prints/02-depois-sem-alerta-com-so-as-letras.jpg" /></p>
+<ul>
+<li><strong>Desliguei "Só as letras" só nesta página:</strong> a faixa laranja volta na hora, o "Para revisar" vai a 2 ("Tem cor (1)"), a miniatura 1 fica laranja, e o cartão "Preto e branco" passa a mostrar a gravura cinza.</li>
+</ul>
+<p><img alt="Desligou: o alerta volta" src="prints/03-depois-desligou-alerta-volta.jpg" /></p>
+<ul>
+<li><strong>Liguei de novo:</strong> o alerta some, "Para revisar" volta a 1.</li>
+</ul>
+<p><img alt="Religou: o alerta some" src="prints/04-depois-religou-alerta-some.jpg" /></p>
+<ul>
+<li><strong>Desfazer e Refazer (menu Editar):</strong> o alerta volta com o Desfazer (Para revisar 2) e some com o Refazer (Para revisar 1).</li>
+</ul>
+<p><img alt="Desfazer: o alerta volta" src="prints/05-depois-desfazer-alerta-volta.jpg" /></p>
+<ul>
+<li><strong>"todas" sem "Só as letras":</strong> "Tem cor (3)", "Para revisar" 4, miniaturas 1, 3 e 4 laranja. <strong>"todas" com "Só as letras":</strong> "nada pendente".</li>
+</ul>
+<p><img alt="Todas sem Só as letras: Tem cor 3" src="prints/06-depois-todas-sem-so-as-letras-tem-cor-3.jpg" /></p>
+<p><img alt="Todas com Só as letras: nada pendente de cor" src="prints/07-depois-todas-com-so-as-letras-nada-pendente.jpg" /></p>
+<p>O que vi no print 07: "nada pendente", mas a Palatino (página 4) já tinha de volta, gravado na página, o aviso "Tinta forte fora do texto"; o painel só mostrou isso depois de eu trocar de página. É a ressalva 2, abaixo (não é o "Tem cor").</p>
+<h2>(b2) O cartão "Preto e branco" mostra a página como vai sair (commit <code>14d721a</code>)</h2>
+<p><strong>Antes:</strong> numa página posta em Original (Opus 20), o cartão "Preto e branco" ficou em <strong>"preparando..."</strong> e não saiu disso em 32 s. (No primeiro parecer, por outro caminho, ele mostrava a estátua estourada em preto e branco puro, sem o Misto.)</p>
+<p><img alt="Antes: cartão Preto e branco em preparando" src="prints/08-antes-cartao-pb-preparando-opus20.jpg" /></p>
+<p><strong>Depois:</strong> o cartão mostra a estátua <strong>no tom do original</strong> (cinza-sépia, como no cartão "Original") e a legenda de baixo em preto e branco: é o que sai escolhendo o Preto e branco com "Só as letras". Chegou em <strong>2,1 s</strong>; a janela respondeu o tempo todo (pior resposta nesse trecho: 0,096 s).</p>
+<p><img alt="Depois: cartão Preto e branco com o Misto, Opus 20" src="prints/09-depois-cartao-pb-com-misto-opus20.jpg" /></p>
+<p>Fiz também o caso "frio" na Horas 11: troquei para o botão "Tudo em preto e branco" e, logo em seguida, cliquei em Original. O cartão "Preto e branco" chegou em <strong>1,8 s</strong> com a moldura iluminada em cor (a página inteira é gravura), e a janela não travou.</p>
+<p><img alt="Depois: cartão Preto e branco com Misto B, Horas 11" src="prints/10-depois-cartao-pb-misto-B-horas11.jpg" /></p>
+<h2>(b3) O bloco AJUSTE não fica espremido (commit <code>c9b5d9b</code>)</h2>
+<p>O defeito só aparece num caminho certo: a página já está em Original <strong>quando se entra na aba Filtro</strong> (eu troquei para a aba Marcar e voltei), e aí se escolhe o cartão "Preto e branco".</p>
+<p><strong>Antes:</strong> o bloco AJUSTE virou uma faixa vazia de 17 px, sem "Força do preto", sem "Só as letras" e sem os três botões, e os botões "Aplicar em" ficaram sem texto.</p>
+<p><img alt="Antes: página Original com a aba trocada" src="prints/11-antes-pag2-original-aba-trocada.jpg" /></p>
+<p><img alt="Antes: o bloco AJUSTE espremido" src="prints/12-antes-ajuste-espremido.jpg" /></p>
+<p><strong>Depois, no mesmo caminho:</strong> o bloco aparece inteiro (146 px, a altura que ele pede): "Força do preto", "Algoritmo", "Só as letras" marcada, os três botões e o "Mais opções"; os "Aplicar em" com texto. Abrindo o "Mais opções", a barra cresce (195 px) e mostra "Papel de dentro das gravuras" e "Letras dentro de molduras e iluminuras". Voltando ao Original, a barra encolhe (39 px) e não deixa buraco.</p>
+<p><img alt="Depois: o bloco AJUSTE inteiro" src="prints/13-depois-ajuste-inteiro.jpg" /></p>
+<p><img alt="Depois: Mais opções aberto" src="prints/14-depois-mais-opcoes-aberto.jpg" /></p>
+<p><img alt="Depois: voltou ao Original, a barra encolhe" src="prints/15-depois-voltou-original-barra-encolhe.jpg" /></p>
+<p>O que vi no print 14: com o "Mais opções" aberto, os botões "só nesta", "todas", "só nas próximas" e "apagar página" ficam com a borda de baixo encostada (um pouco coberta) na tira de miniaturas. Dá para clicar; é a ressalva 3.</p>
+<h2>(b4) "Só as letras" só com o Preto e branco, e a frase-resumo (commit <code>ccdbf87</code>)</h2>
+<p><strong>Antes:</strong> com o Original escolhido, "Só as letras" e os três botões continuavam à vista; e o resumo dizia "deixar tudo em preto e branco e separar as gravuras do texto" mesmo com "Só as letras" marcada.</p>
+<p><img alt="Antes: Só as letras à vista com o Original" src="prints/17-antes-original-so-as-letras-a-vista.jpg" /></p>
+<p><img alt="Antes: a frase antiga" src="prints/18-antes-resumo-antigo.jpg" /></p>
+<p><strong>Depois:</strong></p>
+<ul>
+<li><strong>Original:</strong> "Só as letras" e os botões não aparecem; o resumo diz "Vou endireitar as tortas e cortar as bordas."</li>
+</ul>
+<p><img alt="Depois: Original sem Só as letras" src="prints/19-depois-original-sem-so-as-letras.jpg" /></p>
+<ul>
+<li><strong>Preto e branco:</strong> "Só as letras" aparece (desmarcada na primeira vez); a caixinha das molduras fica ativa enquanto "Só as letras" está desmarcada e cinza quando ela é marcada.</li>
+</ul>
+<p><img alt="Depois: Preto e branco, Só as letras aparece" src="prints/20-depois-pb-so-as-letras-aparece.jpg" /></p>
+<ul>
+<li><strong>As três frases</strong>, conforme o botão:</li>
+<li>A, "Guardar a tinta forte": "...deixar só as letras em preto e branco (gravuras, fotos, molduras e iluminuras ficam como no original; fora do texto, só fica a tinta escura)."</li>
+<li>B, "Tudo em preto e branco": "...deixar tudo em preto e branco menos gravuras, fotos, molduras e iluminuras (essas ficam como no original)."</li>
+<li>C, "Só o texto achado": "...deixar só o texto que eu achar, em preto e branco (gravuras, fotos, molduras e iluminuras ficam como no original; o resto vai a branco)."</li>
+</ul>
+<p><img alt="Depois: frase A" src="prints/21-depois-resumo-A.jpg" /></p>
+<p><img alt="Depois: frase B" src="prints/22-depois-resumo-B.jpg" /></p>
+<p><img alt="Depois: frase C" src="prints/23-depois-resumo-C.jpg" /></p>
+<ul>
+<li><strong>Guarda a escolha:</strong> com C escolhido, troquei para o Original (sumiu tudo) e voltei para o Preto e branco: "Só as letras" continuou marcada, com C, e a frase de C.</li>
+</ul>
+<p><img alt="Depois: de volta ao Preto e branco, guardou C" src="prints/24-depois-pb-de-novo-guardou-C.jpg" /></p>
+<p>A frase com "Achar gravuras e fotos" desligado ("as gravuras que você marcar à mão") <strong>não foi conferida na janela</strong>: o clique na caixinha não a desmarcou (ela estava fora da parte visível da lista). Ela está coberta por um teste de máquina (<code>test_misto_consertos.py</code>).</p>
+<h2>(c) Páginas sem "Só as letras" iguais ao <code>9b00960</code></h2>
+<p>Gravei dois projetos pela janela e processei cada um com o código do <code>9b00960</code> e com o do <code>ccdbf87</code> (sem janela), comparando as imagens das páginas do PDF ponto por ponto:</p>
+<ul>
+<li>Projeto 1: Escola 7 em Preto e branco <strong>sem</strong> "Só as letras"; Opus 20 e Horas 11 em Original; Palatino 9 e Graduale 222 com "Só as letras" (A).</li>
+<li>Projeto 2: as cinco em Preto e branco, todas <strong>sem</strong> "Só as letras".</li>
+</ul>
+<p><strong>Resultado: as 10 páginas são idênticas</strong> (diferença zero em todos os pontos), inclusive as que passam pelo Misto. Olhei as 10 lado a lado:</p>
+<p><img alt="Linha de cima: projeto 1; de baixo: projeto 2 (iguais no 9b00960 e no ccdbf87)" src="prints/26-pdf-sem-so-as-letras-9b00960-igual-ccdbf87.jpg" /></p>
+<p>O que vi, página por página: Escola 7 com a gravura em cinza (sem "Só as letras"); Opus 20 em sépia no Original e em cinza no projeto 2; Horas 11 em cor nos dois projetos (a página inteira é gravura e moldura: defeito conhecido); Palatino 9 com o texto preto e a inicial ornada; Graduale 222 com as notas pretas e limpas.</p>
+<h2>(d) A janela nunca ficou mais de 1 s sem responder</h2>
+<p>Um vigia mandou uma mensagem nativa (<code>WM_NULL</code>, com 30 s de limite) à janela a cada 100 ms, a sessão inteira (5754 medidas em 9,7 min no <code>ccdbf87</code>):</p>
+<ul>
+<li><strong>Maior parada: 0,119 s</strong>, durante a análise logo depois de "Conferir".</li>
+<li>Nos quatro consertos: 0,096 s no cartão "Preto e branco" com o Misto; 0,041 s ao escolher o cartão "Preto e branco" (bloco AJUSTE); 0,037 s no "todas"; 0,030 s no Refazer.</li>
+<li>Nenhuma resposta acima de 0,25 s; nenhuma sem resposta.</li>
+<li>No <code>9b00960</code>, no mesmo roteiro, a maior foi 0,333 s (ao entrar na aba Filtro).</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Um cartão fica em "preparando..." para sempre</strong> depois de trocar o filtro da página pelo cartão. No <code>ccdbf87</code>: a Opus 20 em Original e, ao escolher o cartão "Preto e branco", o cartão <strong>Original</strong> ficou em "preparando..." (esperei 33 s; voltou ao clicar de novo no Original). No <code>9b00960</code> acontecia o mesmo com o cartão "Preto e branco" (print 08). A causa provável é a lista de cartões guardada por página e força, que não muda quando só o filtro da página muda; com isso, o cartão do filtro que a página tinha nunca é calculado. <strong>Já existia antes; o <code>14d721a</code> resolveu o caso do "Preto e branco" com o Misto, não este.</strong> Para a Lista de bugs.</li>
+</ol>
+<p><img alt="O cartão Original em preparando 33 s depois" src="prints/16-cartao-original-preparando-33s.jpg" /></p>
+<ol start="2">
+<li><strong>O aviso "Tinta forte fora do texto" demora a acompanhar</strong> nas outras páginas. Depois de "todas" sem "Só as letras", a Graduale (página 5) continuou com o aviso gravado até eu abrir a página; depois de "todas" com "Só as letras", o aviso da Palatino voltou na página, mas o painel disse "nada pendente" até eu trocar de página. Em outro momento, duas páginas tinham o aviso e o "Para revisar" contava 1. O "Tem cor" (que é o conserto <code>3e68f58</code>) acompanhou sempre na hora; a demora é só do aviso de tinta forte, que é de antes destes commits.</li>
+</ol>
+<p><img alt="Duas páginas com o aviso, o Para revisar conta 1" src="prints/25-tinta-forte-pag5-atrasada.jpg" /></p>
+<ol start="3">
+<li><strong>Com o "Mais opções" aberto, em 1280 × 657,</strong> os botões "Aplicar em" ficam com a borda de baixo encostada na tira de miniaturas (print 14). Pequeno.</li>
+<li><strong>O ponto dos botões de escolha</strong> (Original, Preto e branco...) não aparece em nenhum print, nem no <code>9b00960</code>: pode ser só a captura fora da tela. Vale olhar no PC de verdade.</li>
+<li><strong>Velocidade:</strong> não rodei o <code>teste_velocidade.py</code> (12 min, só com o PC parado). Os consertos mexem na tela e na contagem de alertas, e o PDF saiu idêntico, ponto por ponto, nos dois projetos; o tempo de processar foi parecido (11,5 s × 10,9 s; 13,0 s × 12,9 s), mas isso não substitui o teste oficial.</li>
+<li><strong>pytest:</strong> o resultado completo é do verificador anterior (interrompido), no mesmo código (conferido com <code>diff</code>); eu repeti os 5 arquivos do Misto.</li>
+<li>Um print do "depois" (tela "O que fazer" logo ao abrir o livro) saiu com a tela anterior: o Windows ainda não tinha redesenhado a janela, que estava fora da tela. Joguei esse print fora; o estado Original está no print 19.</li>
+<li><strong>Roda do mouse:</strong> não usada (não funciona sem foco).</li>
+</ol>
+<h2>Bugs para a Lista de bugs</h2>
+<ul>
+<li><strong>06/10, cartão preso em "preparando...":</strong> na aba Filtro, ao trocar o filtro de uma página clicando num cartão, o cartão do filtro antigo fica em "preparando..." para sempre (prints 08 e 16). Já existia no <code>9b00960</code>.</li>
+<li><strong>06/10, "Tinta forte fora do texto" atrasado nas outras páginas</strong> depois de "todas" (print 25). Já existia.</li>
+</ul>
+<h2>Arquivos</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/misto-no-programa-2026-10-05/verificador-2/parecer-verificador-2-consertos-misto.html</code></li>
+<li>Prints: <code>verificador-2/prints/</code> (26 arquivos, cerca de 150 KB cada)</li>
+<li>Scripts do piloto, logs do vigia, projetos e PDFs da comparação (fora do git): scratchpad da sessão, pasta <code>vm3</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 03:25</p>
+</body>
+</html>

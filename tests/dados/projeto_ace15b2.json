@@ -1,0 +1,160 @@
+{
+ "caminho_entrada": "C:/livros/teste.pdf",
+ "caminho_saida": "",
+ "nome": "teste",
+ "dividir_folhas": true,
+ "limpar": true,
+ "filtro_padrao": "preto_e_branco",
+ "endireitar": true,
+ "cortar_bordas": true,
+ "montar_cadernos": false,
+ "paginas_por_caderno": 20,
+ "qualidade_dpi": 300,
+ "detectar_regioes": true,
+ "tem_camadas": false,
+ "perguntou_fundo": false,
+ "gravura_forma": "livre",
+ "gravura_sensibilidade": 100,
+ "gravura_mais_sensivel": false,
+ "gravura_normalizar": true,
+ "pb_decoracao_em_preto_e_branco": true,
+ "folhas": [
+  {
+   "indice": 0,
+   "dividir": true,
+   "posicao_corte": 0.51,
+   "confianca_corte": 0.0,
+   "rotacao": 0,
+   "angulo_detectado": 0.0,
+   "confianca_angulo": 0.0,
+   "apagada": false,
+   "e_paisagem": true,
+   "alertas": [],
+   "revisada": false
+  },
+  {
+   "indice": 1,
+   "dividir": false,
+   "posicao_corte": 0.5,
+   "confianca_corte": 0.0,
+   "rotacao": 0,
+   "angulo_detectado": 0.0,
+   "confianca_angulo": 0.0,
+   "apagada": false,
+   "e_paisagem": true,
+   "alertas": [],
+   "revisada": false
+  }
+ ],
+ "paginas": [
+  {
+   "indice": 0,
+   "folha": 0,
+   "metade": "esquerda",
+   "recorte": [
+    0.01,
+    0.02,
+    0.98,
+    0.97
+   ],
+   "angulo_manual": null,
+   "filtro": "preto_e_branco",
+   "algoritmo_preto_branco": "auto",
+   "despeckle": true,
+   "forca_preto": 60,
+   "clareza_melhorar": 50,
+   "intensidade_magico": 50,
+   "apagada": false,
+   "tem_cor": false,
+   "alertas": [],
+   "revisada": false,
+   "selecao": [],
+   "gravura_forma": null,
+   "gravura_feita_com": "",
+   "conteudo_escala": 1.0,
+   "conteudo_deslocamento": [
+    0.0,
+    0.0
+   ],
+   "tamanho_folha_cm": null
+  },
+  {
+   "indice": 1,
+   "folha": 0,
+   "metade": "direita",
+   "recorte": null,
+   "angulo_manual": null,
+   "filtro": "preto_e_branco",
+   "algoritmo_preto_branco": "auto",
+   "despeckle": true,
+   "forca_preto": 50,
+   "clareza_melhorar": 50,
+   "intensidade_magico": 50,
+   "apagada": false,
+   "tem_cor": false,
+   "alertas": [],
+   "revisada": false,
+   "selecao": [
+    {
+     "tipo": "gravura",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.1,
+       0.1
+      ],
+      [
+       0.5,
+       0.5
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0
+    }
+   ],
+   "gravura_forma": "retangular",
+   "gravura_feita_com": "",
+   "conteudo_escala": 1.0,
+   "conteudo_deslocamento": [
+    0.0,
+    0.0
+   ],
+   "tamanho_folha_cm": null
+  },
+  {
+   "indice": 2,
+   "folha": 1,
+   "metade": "inteira",
+   "recorte": null,
+   "angulo_manual": null,
+   "filtro": "original",
+   "algoritmo_preto_branco": "auto",
+   "despeckle": true,
+   "forca_preto": 50,
+   "clareza_melhorar": 50,
+   "intensidade_magico": 50,
+   "apagada": false,
+   "tem_cor": false,
+   "alertas": [
+    "cor"
+   ],
+   "revisada": true,
+   "selecao": [],
+   "gravura_forma": null,
+   "gravura_feita_com": "",
+   "conteudo_escala": 1.0,
+   "conteudo_deslocamento": [
+    0.0,
+    0.0
+   ],
+   "tamanho_folha_cm": null
+  }
+ ],
+ "criado_em": "2026-10-05T12:00:00",
+ "observacoes": []
+}

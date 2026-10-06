@@ -1,0 +1,247 @@
+{
+ "graduale_p222": {
+  "tamanho": [
+   3219,
+   5264
+  ],
+  "gravura_pct": 0.0,
+  "preparar_s": 7.5,
+  "doctr_s": 2.5,
+  "kraken_s": 80.9,
+  "linhas_s": 0.1,
+  "linhas": {
+   "doctr": 20,
+   "kraken": 14
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 1.37,
+   "B": 1.12,
+   "C": 1.11
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.7612,
+    "guardada_fora": 0.7567,
+    "escuro_da_letra": 121.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.7612,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ },
+ "palatino_p009": {
+  "tamanho": [
+   1331,
+   1852
+  ],
+  "gravura_pct": 0.0,
+  "preparar_s": 1.7,
+  "doctr_s": 1.0,
+  "kraken_s": 13.8,
+  "linhas_s": 0.01,
+  "linhas": {
+   "doctr": 32,
+   "kraken": 28
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 0.18,
+   "B": 0.15,
+   "C": 0.16
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.4739,
+    "guardada_fora": 0.4651,
+    "escuro_da_letra": 69.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.4739,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ },
+ "opusmajus_p165": {
+  "tamanho": [
+   1269,
+   2244
+  ],
+  "gravura_pct": 0.0,
+  "preparar_s": 1.7,
+  "doctr_s": 1.0,
+  "kraken_s": 15.9,
+  "linhas_s": 0.01,
+  "linhas": {
+   "doctr": 45,
+   "kraken": 46
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 0.26,
+   "B": 0.2,
+   "C": 0.23
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.0577,
+    "guardada_fora": 0.0576,
+    "escuro_da_letra": 91.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.0577,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ },
+ "boecio_p022": {
+  "tamanho": [
+   977,
+   1393
+  ],
+  "gravura_pct": 0.0,
+  "preparar_s": 1.1,
+  "doctr_s": 1.0,
+  "kraken_s": 18.2,
+  "linhas_s": 0.01,
+  "linhas": {
+   "doctr": 40,
+   "kraken": 32
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 0.16,
+   "B": 0.14,
+   "C": 0.15
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.0313,
+    "guardada_fora": 0.0167,
+    "escuro_da_letra": 73.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.0313,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ },
+ "marial_p007": {
+  "tamanho": [
+   2897,
+   3905
+  ],
+  "gravura_pct": 1.9,
+  "preparar_s": 2.7,
+  "doctr_s": 1.2,
+  "kraken_s": 25.7,
+  "linhas_s": 0.04,
+  "linhas": {
+   "doctr": 48,
+   "kraken": 42
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 1.65,
+   "B": 1.65,
+   "C": 1.67
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.0683,
+    "guardada_fora": 0.0506,
+    "escuro_da_letra": 102.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.0683,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ },
+ "horas_p011": {
+  "tamanho": [
+   3684,
+   5633
+  ],
+  "gravura_pct": 80.7,
+  "preparar_s": 4.1,
+  "doctr_s": 1.3,
+  "kraken_s": 11.2,
+  "linhas_s": 0.11,
+  "linhas": {
+   "doctr": 10,
+   "kraken": 19
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 7.06,
+   "B": 6.44,
+   "C": 6.53
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.0046,
+    "guardada_fora": 0.0042,
+    "escuro_da_letra": 126.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.0046,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ },
+ "horas_p013": {
+  "tamanho": [
+   4154,
+   5805
+  ],
+  "gravura_pct": 5.2,
+  "preparar_s": 4.2,
+  "doctr_s": 1.2,
+  "kraken_s": 14.4,
+  "linhas_s": 0.23,
+  "linhas": {
+   "doctr": 23,
+   "kraken": 22
+  },
+  "kraken_disponivel": true,
+  "opcao_s": {
+   "A": 4.36,
+   "B": 4.04,
+   "C": 4.07
+  },
+  "medidas": {
+   "A": {
+    "tinta_fora": 0.0445,
+    "guardada_fora": 0.0397,
+    "escuro_da_letra": 129.0
+   },
+   "B": {},
+   "C": {
+    "tinta_fora": 0.0445,
+    "guardada_fora": 0.0,
+    "escuro_da_letra": null
+   }
+  },
+  "a_igual_b": false
+ }
+}

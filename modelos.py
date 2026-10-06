@@ -23,6 +23,7 @@ from datetime import datetime
 from typing import Any
 
 from core.filtros import FILTROS, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO
+from core.misto import FORA_DO_TEXTO_PADRAO, LETRAS_NA_MOLDURA_PADRAO, PAPEL_DA_GRAVURA_PADRAO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -133,6 +134,19 @@ class ConfigPagina:
     # folha original; ver Projeto.para_dicionario). Seguro mudar: nada aqui;
     # e interno. Arriscado: apagar este campo sem apagar a selecao junto.
     geometria_das_zonas: dict[str, Any] | None = None
+
+    # Modo Misto ("So as letras" no Preto e branco), SO desta pagina, por cima
+    # do livro (os campos de mesmo nome em Projeto; None = segue o livro).
+    # Pedido do Samuel (conferencia 10, P1 (a)): "para o livro (tela 'O que
+    # fazer') e para a pagina (aba Filtro)". Os valores e o que cada um faz:
+    # core/misto.py (CAMPOS_DO_MISTO, opcoes_da_pagina). So mudam a imagem da
+    # pagina em Preto e branco. Projeto antigo, sem os campos: None (segue o
+    # livro, que tambem vem desligado). Seguro mudar: nada aqui (o padrao
+    # None e o que faz a pagina seguir o livro).
+    misto_so_as_letras: bool | None = None
+    misto_fora_do_texto: str | None = None
+    misto_papel_da_gravura: str | None = None
+    misto_letras_na_moldura: str | None = None
 
     # Problema 1, opcoes B e C do plano: depois que `recorte` decide o
     # tamanho da FOLHA final, estes dois decidem o tamanho e a posicao do
@@ -269,6 +283,24 @@ class Projeto:
     # (decoracao_em_preto_e_branco). So muda a imagem das paginas em Preto e
     # branco com moldura ou iluminura marcada como gravura.
     pb_decoracao_em_preto_e_branco: bool = False
+
+    # Modo Misto, por livro: a caixinha "So as letras" do Preto e branco
+    # (conferencia 10, P1 (a): "para o livro (tela 'O que fazer') e para a
+    # pagina (aba Filtro)") e as tres escolhas dele, com os padroes de fabrica
+    # que o Samuel escolheu: A "Guardar a tinta forte" (conferencia 14), o
+    # papel de dentro da gravura branco (conferencia 12, P2 (a)) e as letras da
+    # moldura com a cor delas e o papel branco atras (conferencia 12, P4 (a)).
+    # Cada pagina pode trocar so nela (os campos de mesmo nome em ConfigPagina).
+    # Os valores possiveis e o que fazem: core/misto.py. Projeto antigo, sem
+    # os campos, abre com o Misto desligado (de_dicionario; regra do Samuel,
+    # conferencia 14: "o programa [...] vai ter que ser capaz de abrir arquivos
+    # de versoes anteriores"). Quem mostra: ui/tela_opcoes.py (grupo dos
+    # filtros); quem usa: core/pipeline._filtrar. Seguro mudar: os padroes
+    # (sao decisao do Samuel; os de fabrica moram em core/misto.py).
+    misto_so_as_letras: bool = False
+    misto_fora_do_texto: str = FORA_DO_TEXTO_PADRAO
+    misto_papel_da_gravura: str = PAPEL_DA_GRAVURA_PADRAO
+    misto_letras_na_moldura: str = LETRAS_NA_MOLDURA_PADRAO
 
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)

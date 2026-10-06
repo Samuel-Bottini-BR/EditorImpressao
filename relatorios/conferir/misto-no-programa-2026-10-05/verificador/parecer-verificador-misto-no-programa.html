@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: modo Misto no programa</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: modo Misto ligado ao programa (05/10/2026)</h1>
+<p>Ramo <code>fase2-misto</code>, worktree <code>misto</code>, commits <code>06d6678</code> (campos), <code>ee56ba4</code> (processamento), <code>618cb1d</code> (tela), base <code>ace15b2</code>. Não é aprovação: quem marca é o Samuel.</p>
+<h2>Veredito em uma frase</h2>
+<p><strong>PRONTO PARA CONFERIR, com dois defeitos do próprio Misto para consertar antes de chegar ao Kaique</strong> (o alerta "Esta página tem cor" continua com "Só as letras" ligada, e o cartão "Preto e branco" da aba Filtro mostra o Preto e branco sem Misto). O que a tela promete funciona: os três botões, a caixinha das molduras cinza, o "Mais opções", o "só nesta página" com desfazer e refazer, a prévia que muda, o PDF igual à prévia do programa, as páginas sem "Só as letras" idênticas ao <code>ace15b2</code> e o projeto antigo abrindo com o Misto desligado.</p>
+<h2>Máquina ou olho, item por item</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como foi conferido</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) pytest</td>
+<td>máquina, arquivo por arquivo (74 arquivos), numa cópia <code>git archive</code> do <code>618cb1d</code></td>
+<td><strong>1439 passaram, 59 pularam, 0 falhas.</strong> Nada precisou ser repetido. Os 59 pulados são dos testes de leitores de texto (OCR), que se pulam sozinhos</td>
+</tr>
+<tr>
+<td>(a) <code>teste_botoes.py</code></td>
+<td>máquina, na mesma cópia, com <code>saida_teste</code> própria</td>
+<td><strong>132 ações, 0 falhas.</strong> Ressalva: ele não clica em nada do Misto (nenhuma ação com "Só as letras")</td>
+</tr>
+<tr>
+<td>(b) tela "O que fazer"</td>
+<td>olho, janela real 1600 × 821 px (1280 × 657 pontos), mouse nativo</td>
+<td>funciona (detalhes abaixo)</td>
+</tr>
+<tr>
+<td>(b) aba Filtro, "só nesta", desfazer/refazer</td>
+<td>olho e máquina (valor gravado na página, chave da prévia)</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>(b) janela não congela</td>
+<td>máquina (mensagem nativa à janela a cada 100 ms)</td>
+<td>não congelou nas medidas com o PC parado; uma vez, com o PC carregado, ficou 6,2 s parada ao abrir o projeto (ver Tempos)</td>
+</tr>
+<tr>
+<td>(b) PDF = prévia</td>
+<td>máquina (pixel a pixel) e olho</td>
+<td>o PDF da janela é <strong>idêntico, ponto por ponto</strong>, ao mesmo projeto processado sem janela; a prévia de 110 DPI segue o PDF, com a perda de detalhe que a prévia "Rápida" já tinha antes</td>
+</tr>
+<tr>
+<td>(b) páginas sem "Só as letras" = <code>ace15b2</code></td>
+<td>máquina</td>
+<td><strong>4 de 4 idênticas</strong> (pixel a pixel)</td>
+</tr>
+<tr>
+<td>(c) dois bugs anotados</td>
+<td>olho, janela real</td>
+<td><strong>os dois confirmados</strong></td>
+</tr>
+<tr>
+<td>(d) "Para revisar"</td>
+<td>máquina e olho</td>
+<td>0 de 4 no livro 1; 3 de 8 no livro 2</td>
+</tr>
+<tr>
+<td>(e) projeto gravado pelo <code>ace15b2</code></td>
+<td>olho e máquina</td>
+<td>abre com o Misto desligado; PDF idêntico ao do <code>ace15b2</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Defeitos conhecidos (lembrete obrigatório)</h2>
+<p>Moldura dourada e iluminura continuam como <strong>defeito conhecido</strong> até a Fase 1 ser fechada pelo Samuel. Nada aqui muda isso.</p>
+<h2>Como foi feito</h2>
+<ul>
+<li>Livro 1 (<code>livro-misto.pdf</code>): Escola de Jesus 7, Opus Majus 20, Horas 11, Palatino 5, copiadas de <code>gabarito\paginas</code> (só lidas). "Dividir folhas ao meio" desligado, Preto e branco, "Só as letras" ligada no livro.</li>
+<li>Livro 2 (<code>livro-revisar.pdf</code>), para os itens (c) e (d): Escola 7, Palatino 9, Graduale 222, Boécio 7 e 8, Palatino 7, Opus 11, Rhetorica 73. Foi preciso porque, no livro 1, 3 das 4 páginas têm cor, e o programa transforma o alerta de cor em "observação do livro" (que nunca aparece na tela, bug antigo); com a cor só em algumas páginas, o alerta aparece.</li>
+<li>Instância própria do programa (cópia <code>git archive</code> do <code>618cb1d</code>), pasta de dados própria na minha pasta temporária, janela fora da tela, cliques e teclas por mensagem nativa, prints com <code>PrintWindow</code>. Fechada com <code>WM_CLOSE</code> todas as vezes. Uma segunda cópia, do <code>ace15b2</code>, para o item (e) e para comparar.</li>
+<li><strong>Problema meu, já resolvido:</strong> o meu lançador (que põe as caixas fora da tela) gerou 9 caixas "Aconteceu um problema inesperado" na primeira sessão, por mexer num botão que o Qt já tinha apagado. Não é do programa: os 9 registros do <code>erros.log</code> apontam para o meu <code>lancador.py</code>. Consertei o lançador, reabri, e nas outras sessões o <code>erros.log</code> ficou vazio.</li>
+</ul>
+<h2>(b) O que vi em cada passo (prints em <code>prints/</code>)</h2>
+<ol>
+<li><strong>01</strong> Preto e branco escolhido na tela "O que fazer". A bolinha do filtro escolhido continua invisível (é o O1, antigo e ainda não feito).</li>
+<li><strong>02</strong> "Só as letras" marcada: aparecem os três botões, <strong>"Guardar a tinta forte" escolhido (azul)</strong>, a frase do que ele faz e "Mais opções". A caixinha "No Preto e branco, molduras e iluminuras também em preto e branco" fica <strong>cinza</strong>, ela e a frase.</li>
+<li><strong>03</strong> Teste do "volta como estava": desmarquei "Só as letras", marquei a caixinha das molduras, marquei "Só as letras" (a caixinha fica cinza <strong>com o visto aparecendo</strong>), desmarquei "Só as letras": a caixinha volta ativa <strong>e marcada</strong>. Depois a desmarquei. Certo, como a decisão P5.</li>
+<li><strong>04</strong> "Mais opções" abre "Papel de dentro das gravuras: branco" e "Letras dentro de molduras e iluminuras: com a cor delas e papel branco atrás" (os padrões que o Samuel escolheu). "Menos opções" fecha. Nada cortado. Para ver os botões é preciso rolar a coluna; a rolagem funciona.</li>
+<li><strong>05</strong> Aba Filtro, página 1: "Só as letras" marcada (herdada do livro), "Guardar a tinta forte" escolhido. Cabe em 1280 × 657.</li>
+<li><strong>06 a 08</strong> "Tudo em preto e branco" <strong>só na página 1</strong>: o valor vai só para a página 1 (as outras continuam seguindo o livro), o Histórico ganha "Só as letras na pági…", a prévia nova chega em 0,9 s. <strong>Desfazer</strong> (menu Editar) volta para "Guardar a tinta forte" e a página volta a seguir o livro; <strong>Refazer</strong> volta para B. A prévia de B depois do refazer é igual, ponto por ponto, à de B de antes.
+   - Na Escola 7, A e B quase não diferem (9 pontos na prévia): fora do texto quase só há tinta forte. A diferença entre os botões aparece nas páginas com moldura de filetes, música e diagramas.</li>
+<li><strong>12</strong> "Mais opções" da aba Filtro: as duas listas ficam na linha da caixinha, à direita. Cabe, nada cortado.</li>
+<li><strong>13</strong> PDF gerado: "Ficou pronto!", 4 páginas, <strong>32 MB</strong> (sem Misto: 26,5 MB; a Horas 11 sozinha é grande nos dois).</li>
+<li><strong>16</strong> Projeto do <code>ace15b2</code> aberto pelo programa novo: "Só as letras" desmarcada, sem os botões.</li>
+</ol>
+<h2>(b) As páginas do PDF (uma linha por página; imagens 20 a 23: sem Misto | PDF com Misto | prévia)</h2>
+<ul>
+<li><strong>Escola 7 (B só nesta página):</strong> a pintura sai <strong>com a cor</strong>, o texto em preto e branco, com a pontuação toda. No Preto e branco sem Misto a pintura sai cinza. Bom.</li>
+<li><strong>Opus Majus 20 (A):</strong> a foto da estátua sai com o tom creme do original, a legenda em preto e branco e inteira. Bom.</li>
+<li><strong>Horas 11 (A):</strong> o oval sai com as letras na cor delas (vermelho e azul) e papel branco atrás; a moldura em cor. Sem Misto, as letras do oval saem pretas. Sobram uns tracinhos pretos na beirada esquerda (bem menos que sem Misto).</li>
+<li><strong>Palatino 5 (A):</strong> o retrato com o traço marrom e o papel branco dentro da gravura (P2). Fica mais claro e "sujo" que o Preto e branco puro, como o implementador avisou.</li>
+</ul>
+<p><strong>Prévia × PDF:</strong> o PDF da janela é idêntico ao do mesmo projeto processado sem janela. A prévia "Rápida" (110 DPI) perde detalhe pequeno: some vírgula e pingo de "i" na Escola 7, e <strong>na Opus 20 a legenda "ROGER BACON / The Hope-Pinker Statue…" quase some na prévia</strong> (imagem 24), enquanto sai inteira no PDF. Conferi que isso <strong>já acontecia</strong> no Preto e branco sem Misto, com o código novo e com a mesma resolução (imagem 25): não é do Misto. Mas é ruim para o Kaique escolher entre A, B e C olhando a prévia, porque ele pode trocar de botão por um defeito que o PDF não tem.</p>
+<h2>(c) Os dois bugs anotados pelo implementador</h2>
+<ol>
+<li><strong>Confirmado.</strong> No livro 2, a Escola 7 com "Só as letras" ligada mostra a faixa "<strong>Esta página tem cor - o preto e branco vai perder a ilustração.</strong>" e o botão laranja "usar Mágico pro nesta" (imagem 14). No Misto a ilustração <strong>não</strong> se perde (imagem 20). O "Para revisar" conta 3 "Tem cor" que, com o Misto, são alarmes falsos; as três páginas ficam laranjas na tira. O alerta é decidido uma vez, ao analisar o livro (<code>core/analise.py</code>, <code>analisar_pagina</code>), sem olhar o "Só as letras".</li>
+<li><strong>Confirmado.</strong> Página 2 (Opus 20) com o filtro Original: o cartão "Preto e branco" mostra a estátua em <strong>preto e branco duro, sem a foto</strong> (imagem 09). Ao clicar nele, a página sai com a <strong>foto em cor</strong> (Misto A; imagem 10). Quem olha o cartão escolhe às cegas. Os cartões são feitos por <code>aplicar_filtro</code> puro (<code>ui/tarefas.py</code>, <code>_TarefaCartoes</code>), sem gravura nem Misto. (Os cartões Melhorar e Mágico pro da Opus 20 também saem estourados pelo mesmo motivo; isso é antigo.)</li>
+</ol>
+<h2>(d) "Para revisar" com "Tinta forte fora do texto"</h2>
+<ul>
+<li><strong>Livro 1: 0 de 4.</strong> <strong>Livro 2: 3 de 8</strong> (Palatino 9, Graduale 222, Rhetorica 73), como a lista do implementador previa. A faixa diz "Sobrou bastante tinta forte fora do texto que eu achei (pode ser música, letra grande, desenho ou mancha escura). Confira se ficou certo." e o botão é "está bom assim" (imagem 15).</li>
+<li>Somado ao alerta de cor falso, o livro 2 ficou com <strong>4 de 8 páginas laranjas e 6 avisos</strong> no "Para revisar".</li>
+<li><strong>Minha opinião:</strong> com o A (padrão), a tinta forte é <strong>guardada</strong>; o aviso, nessas páginas, quase sempre vai mandar o Kaique olhar uma página que saiu certa (moldura de filetes, pauta, chaves). Num livro de 300 páginas com molduras em todas, seriam centenas de "está bom assim", e o aviso deixaria de ser lido (o próprio comentário no código diz isso). Onde ele importa é no <strong>C</strong> ("Só o texto achado"), que joga essa tinta fora. Sugiro, para o Samuel decidir: deixar o aviso só no C; ou, no A, só quando passar de um número bem maior; ou transformar em "observação do livro" quando cair em quase todas as páginas, como já acontece com a cor. E consertar o alerta de cor antes, porque os dois juntos dobram a lista.</li>
+</ul>
+<h2>(e) Projeto antigo</h2>
+<ul>
+<li>Projeto gravado na janela pelo <code>ace15b2</code> (livro 1, Preto e branco) aberto pelo programa novo: "Só as letras" desmarcada no livro e nas páginas, o leitor de texto <strong>não</strong> é aberto (não gasta memória), prévia em 2,9 s, janela sem travar.</li>
+<li>PDF gerado pela janela nova com esse projeto: <strong>4 de 4 páginas idênticas</strong> ao <code>ace15b2</code> processando o mesmo projeto.</li>
+<li>Também: o mesmo projeto com os campos novos do Misto (desligados), lido pelo <code>ace15b2</code>, sai idêntico (o programa antigo ignora os campos que não conhece).</li>
+</ul>
+<h2>Tempos</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Tempo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Conferir" na tela "O que fazer" até a 1ª prévia do Misto A (PC carregado, pytest rodando)</td>
+<td><strong>17,4 s</strong> (o leitor abriu aos 16 s); pior resposta da janela 0,16 s</td>
+</tr>
+<tr>
+<td>"continuar" o projeto com Misto, PC carregado (outro verificador rodando, pouca memória)</td>
+<td>34,8 s até a prévia A; <strong>uma parada de 6,2 s da janela</strong> logo no começo</td>
+</tr>
+<tr>
+<td>"continuar" o projeto com Misto, PC parado, rodada 1 / 2</td>
+<td><strong>10,8 s / 6,0 s</strong>; pior resposta 0,16 s (não travou)</td>
+</tr>
+<tr>
+<td><code>ace15b2</code>, "continuar" (sem Misto)</td>
+<td>2,4 s; pior resposta 0,10 s</td>
+</tr>
+<tr>
+<td>Programa novo abrindo o projeto do <code>ace15b2</code> (sem Misto)</td>
+<td>2,9 s; pior resposta 0,13 s</td>
+</tr>
+<tr>
+<td>Trocar A → B só na página</td>
+<td>0,9 s</td>
+</tr>
+<tr>
+<td>Desfazer / Refazer pelo menu (inclui andar no menu pelo teclado)</td>
+<td>3,8 s / 4,2 s</td>
+</tr>
+<tr>
+<td>Gerar o PDF de 4 páginas com Misto (janela)</td>
+<td>17,1 s</td>
+</tr>
+<tr>
+<td>Processar sem janela, mesmo livro: sem Misto 21,6 s (novo) × 18,5 s (<code>ace15b2</code>); com Misto 29,4 s</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A parada de 6,2 s apareceu uma vez, com o PC carregado pelo outro verificador; nas duas medidas com o PC parado não houve parada. Não consigo dizer se foi o leitor abrindo (ele abre numa linha à parte, mas carregar a biblioteca pode segurar o Python inteiro) ou só o PC sem memória. Fica como ressalva.</p>
+<h2>Ressalvas e coisas estranhas</h2>
+<ol>
+<li><strong>Bloco AJUSTE espremido</strong> (imagens 10 e 11): entrando na aba Filtro numa página Original e escolhendo o cartão Preto e branco, o bloco AJUSTE (com "Só as letras" e os três botões) vira uma faixa vazia e os botões "Aplicar em" ficam sem texto, até trocar de aba. <strong>Acontece igual no <code>ace15b2</code></strong> (imagem 17): é o bug antigo "bloco AJUSTE sumiu", não é do Misto. Mas agora ele também esconde os botões do Misto.</li>
+<li><strong>Cartão que fica "preparando…" para sempre</strong> depois de trocar o filtro na mesma página: também acontece no <code>ace15b2</code> (antigo; o cache dos cartões não guarda o filtro que estava escolhido).</li>
+<li>Na tela "O que fazer", "Só as letras" aparece <strong>mesmo com o filtro Original</strong> escolhido (só vale no Preto e branco). Pode confundir; o agente de layout decide.</li>
+<li>A frase-resumo continua dizendo "<strong>deixar tudo em preto e branco</strong> e separar as gravuras do texto" com "Só as letras" ligada.</li>
+<li>Clicar num cartão de filtro escolhe o filtro <strong>e abre "Ver de perto"</strong> (é de propósito, já era assim). Para quem pilota, é preciso fechar a janela antes do próximo clique.</li>
+<li>Na aba Bordas, com uma faixa de alerta, os botões de baixo saem <strong>cortados</strong> em 1280 × 657 ("ão cortar esta", "Mágico pro n", "stá bom assin"; imagem 14 e 15). Antigo (a linha não cabe), mas o aviso novo faz aparecer em mais páginas.</li>
+<li>Antes de processar: "Ainda tem 3 páginas que eu não tive certeza" enquanto o "Para revisar" dizia "nada pendente" (bug antigo, já na lista).</li>
+<li>Prévia "Rápida" perde letra miúda (legenda da Opus 20): antigo, mas atrapalha escolher entre A, B e C.</li>
+<li>A prévia do A da Escola 7 da primeira vez e a de depois do desfazer não são iguais ponto por ponto (vírgulas e manchinhas claras dentro da gravura); a diferença não se vê a olho. Não investiguei a causa.</li>
+<li>Não testei: a roda do mouse; o C ("Só o texto achado") na janela; as listas de "Mais opções" trocadas (só abri e fechei); o Kraken; o caso de o leitor não abrir. O <code>teste_botoes.py</code> não cobre o Misto.</li>
+<li>O PC estava com pouca memória no começo (1,8 GB livres, outro verificador e o pytest rodando). Os tempos com o PC carregado valem pouco; os com o PC parado estão marcados.</li>
+</ol>
+<h2>Bugs para a Lista de bugs (05/10, com print)</h2>
+<ul>
+<li><strong>Misto 1:</strong> alerta "Esta página tem cor - o preto e branco vai perder a ilustração" (e o botão "usar Mágico pro nesta") com "Só as letras" ligada. Print 14.</li>
+<li><strong>Misto 2:</strong> cartão "Preto e branco" da aba Filtro mostra o Preto e branco sem Misto. Print 09 × 10.</li>
+<li><strong>Antigo, agora mais visível:</strong> bloco AJUSTE espremido depois de escolher Preto e branco numa página Original (também no <code>ace15b2</code>). Prints 10, 11, 17.</li>
+<li><strong>Antigo:</strong> prévia "Rápida" apaga a legenda miúda da Opus 20 (PDF inteiro). Prints 24, 25.</li>
+</ul>
+<h2>Onde está</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/misto-no-programa-2026-10-05/verificador/parecer-verificador-misto-no-programa.html</code></li>
+<li>Prints: <code>verificador/prints/</code> (23 imagens, 4 MB). Scripts e medidas: <code>verificador/scripts/</code> (não vão para o git).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 20:23</p>
+</body>
+</html>

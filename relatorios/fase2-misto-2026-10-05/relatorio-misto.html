@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fase 2, modo Misto (partes B e C)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Fase 2, modo Misto: o núcleo, por linha de comando (05/10/2026)</h1>
+<p><strong>Implementador, ramo <code>fase2-misto</code>.</strong> Não é "aprovado" nem "pronto para conferir": é o relatório do implementador, para a gerente e o verificador.</p>
+<h2>Em uma frase</h2>
+<p>O modo Misto já monta a página por linha de comando: <strong>as letras saem em preto e branco, e a gravura, a foto, a moldura e a iluminura ficam como no original, com o papel branco</strong>. Ele ainda não está na tela nem no projeto salvo (isso é pergunta ao Samuel), e <strong>o programa de hoje não mudou em nada</strong>: 102 de 102 imagens idênticas.</p>
+<h2>O que foi feito</h2>
+<ul>
+<li><code>core/misto.py</code>, função <code>aplicar_misto</code>: a página inteira passa pelo Preto e branco de sempre (com todas as regras aprovadas); onde o detector de gravura do 1.2 (ou a zona marcada à mão) diz que é imagem, volta o original:</li>
+<li><strong>foto e pintura</strong>: os pontos do original, sem mudar nada;</li>
+<li><strong>moldura dourada e iluminura</strong>: a cor original, só o papel a branco, e a letra solta dentro dela preta (exatamente como o Preto e branco de hoje já faz);</li>
+<li><strong>gravura de traço</strong> (retrato, xilogravura): o traço com o tom do original, <strong>o papel de dentro dela a branco</strong> (a conta do papel da própria gravura, feita para o retrato do Palatino 5).</li>
+<li>As <strong>zonas feitas à mão</strong> mandam: "letra" marcada à mão ganha da gravura achada sozinha; gravura tirada à mão vira preto e branco; gravura marcada à mão fica como está; "só neste pedaço" com outro filtro vale (no Preto e branco de hoje ele é ignorado: ver o achado); papel marcado vai a branco.</li>
+<li><code>montar_misto.py</code>: o Misto de qualquer PDF por linha de comando, pelo mesmo caminho do programa (analisar, preparar a página, achar gravura e letra, Misto). Opções <code>--papel-creme</code> e <code>--foto-cinza</code> (as variantes das perguntas).</li>
+<li>26 testes novos em <code>tests/test_misto.py</code> (os 20 do Misto mais 6 das opções experimentais da parte C).</li>
+<li>Plano: <code>docs/plano/fase2-misto-plano.md</code> (parte A).</li>
+</ul>
+<h2>O caminho de hoje não mudou</h2>
+<ul>
+<li>Nenhum arquivo do programa de hoje foi tocado (<code>core/filtros.py</code>, <code>core/pipeline.py</code>, <code>core/selecao.py</code>, <code>core/detectar_regioes.py</code>: sem diferença desde <code>aab746f</code>), e nada do programa importa o <code>core/misto.py</code>.</li>
+<li><strong>Imagens idênticas:</strong> as 32 páginas do gabarito (34 páginas de saída) desenhadas pelo <code>renderizar_pagina</code> do programa, a 300 DPI, nos filtros Preto e branco, Melhorar e Mágico pro, antes e depois: <strong>102 de 102 com a mesma soma sha256</strong> (<code>dados/caminho-atual-antes.json</code> e <code>-depois.json</code>, script <code>scripts/caminho_atual.py</code>).</li>
+<li><strong>Tempo:</strong> a rodada "depois" saiu 29% a 37% mais lenta nos três filtros. <strong>Não é o código</strong> (o código dessas contas é o mesmo arquivo, byte a byte): a máquina estava mais ocupada (os meus próprios testes e outros agentes rodando ao mesmo tempo; a máquina tem 15 GB e chegou a ter 3 livres). É a ressalva de sempre das medidas com agentes rodando.</li>
+</ul>
+<h2>O que o Misto fez nas 32 páginas (<code>dados/rodada-misto.json</code>)</h2>
+<ul>
+<li><strong>27 páginas saem idênticas ao Preto e branco de hoje.</strong> É o esperado: nelas o detector não marcou gravura (texto, Graduale, Palatino 9, Opus 165, Opus 256...) ou só marcou moldura e iluminura, que o Preto e branco de hoje já deixa em cor (Horas 11, 13, 26, 27, 47).</li>
+<li><strong>5 páginas mudam</strong>, todas onde há foto, pintura ou gravura de traço: Escola 7 e 35, Opus Majus 20, Palatino 5 e Marial 7.</li>
+<li>Tempo do Misto contra o Preto e branco de hoje na mesma página, mesma imagem e mesma marcação: igual dentro da variação (de -0,7 a +1,0 s; Horas 47 +1,0 s e Horas 11 +0,7 s, mas a imagem dessas duas é idêntica à do Preto e branco, então é variação da máquina).</li>
+</ul>
+<h2>Minha opinião, página por página (abri as imagens)</h2>
+<p>Imagens: <code>paineis/&lt;página&gt;.jpg</code> (Original | Preto e branco hoje | Misto) e <code>-detalhe.jpg</code>; <code>variantes/</code> (Misto | papel da gravura creme | foto em cinza); <code>mascaras/</code> (onde o Misto deixa o original, em laranja).</p>
+<ul>
+<li><strong>Escola 7 e Escola 35:</strong> é o pedido do Samuel. Texto preto e nítido, papel branco, e a pintura colorida (o Paraíso, Adão e Eva com o anjo) como no original, em vez do cinza do Preto e branco.</li>
+<li><strong>Opus Majus 20:</strong> a estátua sai como no original (tom creme da foto), o rosto e o vão da porta inteiros (a conta do "fecho da foto" da conferência 5 vale no Misto). A legenda sai preta.</li>
+<li><strong>Palatino 5:</strong> o retrato sai com o traço marrom do original e o fundo <strong>branco</strong>, sem a mancha amarela; o Preto e branco de hoje tinha virado o retrato em desenho de 1 bit. <strong>Na primeira versão</strong> o fundo do retrato ficava amarelo e a mancha de fora do oval aparecia (usei a conta da moldura, que mede o papel da página); troquei pela conta do papel da própria gravura (teste em <code>teste-papel/</code>). Ressalva: o traço fica marrom, não preto; se o Samuel quiser traço preto no retrato, isso é outra pergunta.</li>
+<li><strong>Marial 7:</strong> <strong>piora visível</strong>: o detector marca a mancha do canto de cima à esquerda como foto, e o Misto a deixa marrom, como no original (o Preto e branco de hoje a deixava cinza). É o risco 1 do plano: o Misto mostra direto cada erro do detector. Remédio: tirar a zona à mão na aba Marcar (já funciona no núcleo).</li>
+<li><strong>Horas 11, 13, 26, 47:</strong> idênticas ao Preto e branco de hoje (iluminura e moldura em cor, letras pretas). Na Horas 26 continua a faixa preta da beirada direita do scan (já existia).</li>
+<li><strong>Palatino 9:</strong> idêntica ao Preto e branco: o detector não marca a capitular Q nem as molduras, então elas saem em preto e branco (como no teste do ScanTailor de 24/09).</li>
+<li><strong>Graduale 221 e 222, Opus 165:</strong> idênticas ao Preto e branco: sem gravura marcada; notas, pautas e diagramas em preto e branco.</li>
+</ul>
+<p>Variantes (perguntas P2 e P3 do plano): com o <strong>papel creme</strong>, o retrato do Palatino 5 fica amarelo com a mancha em volta e o miolo da Horas 47 fica com blocos cinza-claros; com a <strong>foto em cinza</strong>, a estátua do Opus 20 sai em cinza como no Preto e branco. A minha recomendação continua: papel branco e foto como no original.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li>O Misto <strong>não está ligado</strong> ao programa: nem prévia, nem PDF, nem tela. Não foi testado na janela.</li>
+<li>Rodei com a marcação que o programa acha sozinho; <strong>as zonas à mão foram testadas só em páginas sintéticas</strong> (testes), não em página do acervo.</li>
+<li>A letra do Misto é a do Preto e branco de hoje: o defeito A1 da Horas 47 (pontos apagados no meio das letras) continua.</li>
+<li>Página com gravura sai em cor: PDF pesado (já na Lista de bugs; o remédio é o 1.6/2.10).</li>
+<li>A gravura de traço sai com o tom do original (marrom), não em preto.</li>
+<li>Tempos medidos com a máquina dividida com outros agentes.</li>
+<li>Numa rodada de medida, a detecção de gravura da Horas 13 <strong>falhou por falta de memória</strong> (a máquina estava com 3 GB livres) e a página saiu <strong>sem gravura, sem aviso</strong> (o <code>garantir_selecao</code> engole o erro e devolve a marcação vazia). Refiz a página e saiu certa. No programa de verdade isso faria a moldura sair em preto e branco naquela página, calado.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<ul>
+<li>05/10: <strong>No filtro Preto e branco, o "só neste pedaço" da aba Marcar é ignorado</strong> (<code>core/filtros.aplicar_filtro_com_selecao</code> sai pelo ramo do Preto e branco antes de chamar <code>_filtro_so_no_pedaco</code>). Conferido numa página sintética: zona "só neste pedaço = Original" sai preta (letra) ou cinza (gravura); no Mágico pro sai em cor. Contradiz a Lista de espera de 01/10 ("Parte disso já existe na aba Marcar").</li>
+<li>05/10: <strong>Falta de memória na detecção de gravura vira "página sem gravura", sem aviso</strong> (<code>core/pipeline.garantir_selecao</code> registra no log e devolve a marcação vazia; a moldura sai no tratamento de letra). Visto na Horas 13 com a máquina sem memória livre.</li>
+<li>05/10 (só para agentes): numa worktree em <code>.claude/worktrees/</code>, o <code>core/ocr_kraken.lugares_do_motor</code> não acha o motor (procura em <code>.claude/worktrees/EditorImpressao-arquivos/...</code>). Não afeta o programa instalado nem a pasta principal.</li>
+</ul>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>Gravura de traço no Misto com o traço em preto (em vez do marrom do original), como opção.</li>
+<li>Aviso na aba Marcar quando o detector marca como foto uma área com cor de mancha (o caso do Marial 7).</li>
+</ul>
+<h2>Parte C (acréscimo da gerente): as opções A, B e C lado a lado</h2>
+<p>O que foi feito: em <code>core/misto.py</code>, a opção experimental <code>fora_do_texto</code> (de fábrica <code>"tudo"</code> = B, o Misto acima; nada muda para quem não pede): <strong>A</strong> <code>"rede"</code> (rede de segurança da pesquisa, seção 4: dentro das linhas, o preto e branco de sempre; fora delas e fora das gravuras, fica cada pedaço de tinta com um ponto tão escuro quanto a mediana da tinta de dentro das linhas e área de pelo menos (altura da linha / 6)²; o resto vai a branco), <strong>C</strong> <code>"apagar"</code> (só as linhas). Linhas = união do docTR <code>fast_base</code> e do Kraken, alargadas 15% da altura da linha (<code>mascara_das_linhas</code>). Sem linha nenhuma, A e C viram B. Detector de gravura do 1.2 ligado. 6 testes novos.</p>
+<p>Rodada: 7 páginas do gabarito, a 300 DPI (<code>relatorios/conferencia-8-2026-10-05/</code>, script <code>scripts/rodada_abc.py</code>). Formulário: <strong><code>relatorios/conferir-aqui-8.html</code></strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Tinta forte fora das linhas (guardada pelo A)</th>
+<th>docTR</th>
+<th>Kraken</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graduale 222</td>
+<td>75,7%</td>
+<td>2,5 s</td>
+<td>80,9 s</td>
+<td>1,37 s</td>
+<td>1,12 s</td>
+<td>1,11 s</td>
+</tr>
+<tr>
+<td>Palatino 9</td>
+<td>46,5%</td>
+<td>1,0 s</td>
+<td>13,8 s</td>
+<td>0,18 s</td>
+<td>0,15 s</td>
+<td>0,16 s</td>
+</tr>
+<tr>
+<td>Opus Majus 165</td>
+<td>5,8%</td>
+<td>1,0 s</td>
+<td>15,9 s</td>
+<td>0,26 s</td>
+<td>0,20 s</td>
+<td>0,23 s</td>
+</tr>
+<tr>
+<td>Boécio 22</td>
+<td>1,7% (de 3,1% fora)</td>
+<td>1,0 s</td>
+<td>18,2 s</td>
+<td>0,16 s</td>
+<td>0,14 s</td>
+<td>0,15 s</td>
+</tr>
+<tr>
+<td>Marial 7</td>
+<td>5,1% (de 6,8% fora)</td>
+<td>1,2 s</td>
+<td>25,7 s</td>
+<td>1,65 s</td>
+<td>1,65 s</td>
+<td>1,67 s</td>
+</tr>
+<tr>
+<td>Horas 11</td>
+<td>0,4%</td>
+<td>1,3 s</td>
+<td>11,2 s</td>
+<td>7,06 s</td>
+<td>6,44 s</td>
+<td>6,53 s</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td>4,0%</td>
+<td>1,2 s</td>
+<td>14,4 s</td>
+<td>4,36 s</td>
+<td>4,04 s</td>
+<td>4,07 s</td>
+</tr>
+</tbody>
+</table>
+<p>(Tempos com a máquina dividida com outros agentes; o Kraken mediu ~10 s por página no 1.3.)</p>
+<p>Minha opinião (abri todas as imagens):</p>
+<ul>
+<li><strong>Graduale 222:</strong> A e B guardam todas as notas e pautas; A tira o pontilhado fino do alto que o B deixa. <strong>C apaga a música inteira: inaceitável aqui.</strong> O "Cvij" não aparece em nenhuma (já é cortado pelo corte das bordas, antes do filtro).</li>
+<li><strong>Palatino 9:</strong> o detector não marca a capitular nem a moldura. A guarda as duas, mas <strong>perde hachuras claras do fundo do Q</strong> (como a pesquisa previu); B guarda mais. C apaga capitular e moldura e deixa pedaços soltos da moldura. Aqui B ≥ A &gt; C.</li>
+<li><strong>Opus 165:</strong> A ≈ B (no A some o pontinho do "f" da figura 7); C apaga as figuras.</li>
+<li><strong>Boécio 22:</strong> A e C tiram mais pontinhos do verso que o B; os colados ao fim das linhas ficam nas três. <strong>C apaga a primeira capitular "Q"</strong>; A a guarda. Aqui A é o melhor.</li>
+<li><strong>Marial 7:</strong> A tira as faixas pretas da beirada do livro e riscos da margem que o B deixa; C parecido com o A. A mancha do canto (tomada por foto) aparece nas três.</li>
+<li><strong>Horas 11 e 13:</strong> iluminura e moldura iguais nas três (protegidas pelo detector). Só a faixa preta da beirada esquerda do scan fica no A e no B e sai no C.</li>
+<li><strong>Em resumo:</strong> A nunca perdeu nada importante e limpou mais que o B em 4 das 7 páginas; o custo dele é perder hachura clara de capitular não detectada (Palatino 9). C perde música, capitular e desenho: não serve de fábrica. O custo grande de A e C é o leitor de texto (o Kraken), não a opção.</li>
+</ul>
+<p>Ressalvas da parte C: um limiar só (a mediana), não calibrado; as páginas são as do gabarito (o Boécio 22 tem escaneamento ruim); a "tinta forte fora das linhas" do aviso não foi calibrada (o 10% do formulário é exemplo); os rótulos das colunas dentro das imagens ficam pequenos no formulário (a ordem é sempre Original | A | B | C, dita no topo).</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 13:56</p>
+</body>
+</html>

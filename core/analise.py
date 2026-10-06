@@ -41,6 +41,13 @@ FOLHA_MENOR_QUE_O_RECORTE = "folha_menor_que_o_recorte"
 # DESENHO_OU_ESCRITA. Decisao do Samuel: "pagina duvidosa sai marcada
 # 'conferir'."
 CONFERIR_FUNDO_TIRADO = "conferir_fundo_tirado"
+# Modo Misto, opcoes A e C (05/10/2026): sobrou muita tinta forte fora das
+# linhas de texto que o leitor achou (musica, capitular, desenho, anotacao ou
+# mancha escura). Conferencia 8 do Samuel, REVISAR: mandar para "Para revisar"
+# sozinho? "Sim". Como o CONFERIR_FUNDO_TIRADO, quem poe e tira e
+# core.pipeline (_anotar_tinta_forte_fora), quando a pagina e desenhada; o
+# limite e core.pipeline.LIMITE_DA_TINTA_FORTE_FORA.
+TINTA_FORTE_FORA_DO_TEXTO = "tinta_forte_fora_do_texto"
 
 
 @dataclass(frozen=True)
@@ -72,6 +79,15 @@ ALERTAS: dict[str, Alerta] = {
         CONFERIR_FUNDO_TIRADO, "Conferir o fundo tirado",
         "Tirei o fundo desta página, e pode ter sumido escrita fraca ou "
         "traço fino junto: confira.",
+        "está bom assim", "revisar",
+    ),
+    # Modo Misto (05/10/2026). "esta bom assim" so marca a pagina como
+    # conferida: o conserto e escolher outra opcao do "So as letras" (os tres
+    # botoes da aba Filtro) ou marcar a area na aba Marcar.
+    TINTA_FORTE_FORA_DO_TEXTO: Alerta(
+        TINTA_FORTE_FORA_DO_TEXTO, "Tinta forte fora do texto",
+        "Sobrou bastante tinta forte fora do texto que eu achei (pode ser "
+        "música, letra grande, desenho ou mancha escura). Confira se ficou certo.",
         "está bom assim", "revisar",
     ),
     LOMBADA_INCERTA: Alerta(
