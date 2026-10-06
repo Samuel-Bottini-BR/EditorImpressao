@@ -201,6 +201,12 @@ CARTOES = [
     (TIRAR_FUNDO, "Tirar o fundo", "só o que está impresso"),
 ]
 
+# Resolucao da amostra dos cartoes de filtro (_imagem_sem_filtro): a folha
+# como veio no PDF, desenhada pequena, e preparada na tela. Era o 70 escrito
+# direto no codigo; virou nome em 06/10/2026 (D1) porque entra tambem na
+# chave dos cartoes (_chave_dos_cartoes). Seguro mudar (so tempo e nitidez).
+DPI_AMOSTRA_DOS_CARTOES = 70
+
 # Item 1.1: resolucao do cartao "Tirar o fundo". A mesma da amostra dos outros
 # cartoes (_imagem_sem_filtro). Ele e desenhado pelo caminho do programa
 # (core/camadas.py, na folha inteira), numa tarefa de previa; a decisao do
@@ -1753,20 +1759,35 @@ class TelaConferir(QWidget):
                 self.cartoes[chave].definir_amostra(None)
             return
 
-        chave_cache = (self.indice_pagina, pagina.forca_preto,
-                       pagina.clareza_melhorar, pagina.intensidade_magico)
-        if chave_cache == self._cartoes_cache_chave:
-            for chave in self._cartoes_a_pintar(outros, pagina):
+        chave_cache = self._chave_dos_cartoes()
+        a_pintar = self._cartoes_a_pintar(outros, pagina)
+        if (chave_cache == self._cartoes_cache_chave
+                and all(c in self._cartoes_cache for c in a_pintar)):
+            for chave in a_pintar:
                 self.cartoes[chave].definir_amostra(self._cartoes_cache.get(chave))
             return
 
-        for chave in self._cartoes_a_pintar(outros, pagina):
+        for chave in a_pintar:
             self.cartoes[chave].definir_amostra(None)
         assert self.previas is not None
         self.previas.pedir_cartoes(
             self.indice_pagina, base, outros,
             pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
+            chave=chave_cache,
         )
+
+    def _chave_dos_cartoes(self) -> str:
+        """Tudo de que os cartoes da pagina da vez dependem: o giro, a divisao,
+        o corte, o angulo, as opcoes do livro e os tres ajustes - a mesma
+        chave das previas (GerenciadorPrevias.chave), com um filtro fixo no
+        lugar do da pagina (os cartoes sao os OUTROS filtros).
+
+        D1 do verificador (06/10/2026): a chave de antes era so a pagina e os
+        tres ajustes; girar a folha com a aba Filtro aberta reaproveitava os
+        cartoes do giro de antes. Arriscado: tirar daqui o que muda a amostra
+        (o cartao fica com a imagem de antes)."""
+        assert self.previas is not None
+        return self.previas.chave(self.indice_pagina, DPI_AMOSTRA_DOS_CARTOES, "cartoes")
 
     def _cartao_sem_fundo(self, img: np.ndarray | None = None) -> None:
         """Item 1.1: poe no cartão "Tirar o fundo" a página sem o fundo.
@@ -1824,17 +1845,25 @@ class TelaConferir(QWidget):
         cartao.definir_amostra(None if img is None else limitar_altura(img, 260))
 
     @protegido
-    def _cartoes_prontos(self, indice: int, resultados: dict) -> None:
+    def _cartoes_prontos(self, indice: int, resultados: dict, chave=None) -> None:
         """Os cartões calculados em segundo plano chegaram.
 
         Se o usuário já virou a página nesse meio tempo, descarta - senão
         pinta e guarda no cache, para não recalcular ao voltar para cá.
+
+        chave: a de _chave_dos_cartoes no momento do pedido. Se a página
+        mudou desde então (girou, mudou o corte ou um ajuste), o resultado é
+        de um estado que já passou e é descartado: o pedido do estado novo
+        já foi feito (D1, 06/10/2026). None (quem chama sem chave): vale
+        para o estado de agora, como antes.
         """
-        if self.projeto is None or indice != self.indice_pagina:
+        if self.projeto is None or indice != self.indice_pagina or self.previas is None:
+            return
+        atual = self._chave_dos_cartoes()
+        if chave is not None and chave != atual:
             return
         pagina = self.projeto.paginas[self.indice_pagina]
-        self._cartoes_cache_chave = (indice, pagina.forca_preto,
-                                      pagina.clareza_melhorar, pagina.intensidade_magico)
+        self._cartoes_cache_chave = atual
         self._cartoes_cache = resultados
         # o "Preto e branco" puro nao vai para o cartao quando ele vem do
         # Misto (_cartao_do_misto); continua no cache e no aviso abaixo
@@ -1868,10 +1897,16 @@ class TelaConferir(QWidget):
             self._atualizar_contador()
 
     def _imagem_sem_filtro(self) -> np.ndarray | None:
-        """Versao pequena e sem filtro da página atual, para os outros cartoes."""
+        """Versao pequena e sem filtro da página atual, para os outros cartoes.
+
+        A folha vem COMO VEIO NO PDF (girada=False): o preparar_metade é que
+        a gira, divide, corta e endireita. D1 do verificador (06/10/2026):
+        vinha a folha já girada, e os cartões mostravam a folha girada duas
+        vezes. Arriscado: pedir a folha girada aqui."""
         assert self.projeto is not None and self.previas is not None
         pagina = self.projeto.paginas[self.indice_pagina]
-        img_folha = self.previas.pegar_folha(pagina.folha, 70)
+        img_folha = self.previas.pegar_folha(pagina.folha, DPI_AMOSTRA_DOS_CARTOES,
+                                             girada=False)
         if img_folha is None:
             return None
 

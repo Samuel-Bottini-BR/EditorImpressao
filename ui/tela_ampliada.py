@@ -320,7 +320,9 @@ class TelaAmpliada(QDialog):
             return self.conferir.previas.pegar_com_filtro(
                 self.conferir.indice_pagina, DPI_AMPLIADA, TIRAR_FUNDO)
 
-        bruta = self.conferir.previas.pegar_folha(pagina.folha, DPI_AMPLIADA)
+        # como veio no PDF: quem gira e o preparar_metade (D1, 06/10/2026 -
+        # a folha ja girada saia girada duas vezes no "comparar")
+        bruta = self.conferir.previas.pegar_folha(pagina.folha, DPI_AMPLIADA, girada=False)
         if bruta is None:
             return None
         preparada = preparar_metade(bruta, folha, pagina, self.projeto)

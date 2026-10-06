@@ -212,7 +212,7 @@ class _SinaisPrevia(QObject):
 class _SinaisCartoes(QObject):
     """Mesma ideia de _SinaisPrevia, para as tarefas de cartao de filtro."""
 
-    prontos = Signal(int, dict)   # indice_pagina, {chave_filtro: imagem}
+    prontos = Signal(int, dict, object)   # indice_pagina, {chave_filtro: imagem}, chave
 
 
 class _TarefaCartoes(QRunnable):
@@ -226,8 +226,9 @@ class _TarefaCartoes(QRunnable):
 
     def __init__(self, indice_pagina: int, base: np.ndarray, filtros: list[str],
                  forca_preto: int, clareza: int, intensidade: int,
-                 sinais: _SinaisCartoes) -> None:
+                 sinais: _SinaisCartoes, chave: object = None) -> None:
         super().__init__()
+        self.chave = chave             # volta como veio (GerenciadorPrevias.pedir_cartoes)
         self.indice_pagina = indice_pagina
         self.base = base
         self.filtros = filtros
@@ -251,7 +252,8 @@ class _TarefaCartoes(QRunnable):
                 resultados[chave] = amostra
         except Exception:  # noqa: BLE001 - cartao que falha so fica "preparando..."
             registrar_erro("cartoes", traceback.format_exc())
-        _emitir_se_vivo(self.sinais, self.sinais.prontos, self.indice_pagina, resultados)
+        _emitir_se_vivo(self.sinais, self.sinais.prontos, self.indice_pagina, resultados,
+                        self.chave)
 
 
 class _TarefaPrevia(QRunnable):
@@ -266,7 +268,7 @@ class _TarefaPrevia(QRunnable):
 
     def __init__(self, chave: str, caminho_pdf: str, projeto: Projeto,
                  indice_pagina: int, dpi: int, sinais: _SinaisPrevia,
-                 filtro: str | None = None) -> None:
+                 filtro: str | None = None, rotacao: int | None = None) -> None:
         super().__init__()
         self.chave = chave
         self.caminho_pdf = caminho_pdf
@@ -275,6 +277,11 @@ class _TarefaPrevia(QRunnable):
         self.dpi = dpi
         self.sinais = sinais
         self.filtro = filtro
+        # So para a folha crua: o giro que a CHAVE promete, anotado na hora
+        # do pedido (GerenciadorPrevias.pegar_folha). Ler folha.rotacao aqui,
+        # no outro fio, guardaria sob a chave do giro de antes uma folha
+        # girada depois (a pessoa girou enquanto a tarefa esperava na fila).
+        self.rotacao = rotacao
 
     def run(self) -> None:
         """Renderiza a pagina (ou a folha crua) e emite o resultado pelo
@@ -322,10 +329,14 @@ class _TarefaPrevia(QRunnable):
         _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
 
     def _folha_crua(self) -> None:
-        """A folha inteira, sem nenhum processamento.
+        """A folha inteira, sem nenhum processamento alem do giro de 90 em 90
+        (self.rotacao; 0 = como veio no PDF).
 
         E o que a aba 'Onde cortar' precisa: o usuario tem que ver a lombada
-        como ela veio para saber onde a linha deve ficar.
+        como ela veio para saber onde a linha deve ficar. Sem o giro
+        (rotacao 0), e a base dos cartoes da aba Filtro e do "comparar" da
+        tela ampliada, que passam por core.pipeline.preparar_metade - e e
+        ele que gira (D1, 06/10/2026).
         """
         from core.endireitar import girar_90
         from core.pdf_io import pagina_para_array
@@ -335,9 +346,11 @@ class _TarefaPrevia(QRunnable):
             img = pagina_para_array(doc, self.indice_pagina, dpi=self.dpi)
         finally:
             doc.close()
-        folha = self.projeto.folhas[self.indice_pagina]
-        if folha.rotacao:
-            img = girar_90(img, folha.rotacao)
+        rotacao = self.rotacao
+        if rotacao is None:            # pedido sem o giro anotado: o de agora
+            rotacao = self.projeto.folhas[self.indice_pagina].rotacao
+        if rotacao:
+            img = girar_90(img, rotacao)
         _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
 
 
@@ -350,7 +363,7 @@ class GerenciadorPrevias(QObject):
     """
 
     pronta = Signal(str, object)
-    cartoes_prontos = Signal(int, dict)
+    cartoes_prontos = Signal(int, dict, object)   # indice, {filtro: imagem}, chave do pedido
 
     def __init__(self, caminho_pdf: str, projeto: Projeto, parent=None) -> None:
         """Cria os dois pools (prévias e cartões, separados de propósito -
@@ -487,33 +500,57 @@ class GerenciadorPrevias(QObject):
         return None
 
     def pedir_cartoes(self, indice: int, base: np.ndarray, filtros: list[str],
-                       forca_preto: int, clareza: int, intensidade: int) -> None:
-        """Pede os cartoes que faltam para uma pagina, fora da thread da tela."""
+                       forca_preto: int, clareza: int, intensidade: int,
+                       chave: object = None) -> None:
+        """Pede os cartoes que faltam para uma pagina, fora da thread da tela.
+
+        chave: volta junto no sinal cartoes_prontos, para quem pediu saber de
+        que estado da pagina e o resultado. A tela de conferir passa a chave
+        dos cartoes (giro, corte, ajustes...) e descarta o que chegar de um
+        estado que ja passou (D1, 06/10/2026)."""
         self._pool_cartoes.start(
             _TarefaCartoes(indice, base, filtros, forca_preto, clareza, intensidade,
-                            self._sinais_cartoes)
+                            self._sinais_cartoes, chave=chave)
         )
 
     # --- folha crua (aba "Onde cortar") -----------------------------------
 
-    def chave_folha(self, indice: int, dpi: int) -> str:
-        """Chave de cache da folha crua (aba "Onde cortar"): so muda com o giro manual."""
-        rotacao = (
-            self.projeto.folhas[indice].rotacao
-            if 0 <= indice < len(self.projeto.folhas) else 0
-        )
+    def _giro_da_folha(self, indice: int) -> int:
+        """O giro de 90 em 90 da folha agora (0 se o indice nao existe)."""
+        if 0 <= indice < len(self.projeto.folhas):
+            return int(self.projeto.folhas[indice].rotacao) % 360
+        return 0
+
+    def chave_folha(self, indice: int, dpi: int, girada: bool = True) -> str:
+        """Chave de cache da folha crua (aba "Onde cortar"): so muda com o giro
+        manual. girada=False: a folha como veio no PDF (giro 0), qualquer que
+        seja o giro dela - a mesma chave de uma folha nao girada."""
+        rotacao = self._giro_da_folha(indice) if girada else 0
         return f"folha:{indice}:{dpi}:{rotacao}"
 
-    def pegar_folha(self, indice: int, dpi: int) -> np.ndarray | None:
-        """Equivalente a `pegar`, mas para a folha crua (sem processamento)."""
-        chave = self.chave_folha(indice, dpi)
+    def pegar_folha(self, indice: int, dpi: int, girada: bool = True) -> np.ndarray | None:
+        """Equivalente a `pegar`, mas para a folha crua (sem processamento).
+
+        girada=True (a aba Onde cortar e a tela ampliada no modo cortar): com
+        o giro da folha. girada=False: como veio no PDF - e o que
+        core.pipeline.preparar_metade espera receber, porque e ELE que gira
+        (D1 do verificador, 06/10/2026: os cartoes da aba Filtro passavam a
+        folha ja girada ao preparar_metade, e ela saia girada duas vezes).
+        Arriscado: passar uma folha girada=True ao preparar_metade.
+
+        O giro vai anotado no pedido (_TarefaPrevia.rotacao), o mesmo da
+        chave: a imagem guardada sob uma chave e sempre a do giro que ela diz.
+        """
+        rotacao = self._giro_da_folha(indice) if girada else 0
+        chave = self.chave_folha(indice, dpi, girada)
         if chave in self._cache:
             self._promover(chave)
             return self._cache[chave]
         if chave not in self._pedidas and 0 <= indice < len(self.projeto.folhas):
             self._pedidas.add(chave)
             self._pool.start(
-                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
+                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
+                              rotacao=rotacao)
             )
         return None
 
