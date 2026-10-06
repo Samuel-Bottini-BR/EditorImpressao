@@ -404,4 +404,9 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Pasta de dados propria: o teste nunca grava no erros.log, nos
+    # projetos nem nas configuracoes de verdade (regra de 29/09/2026;
+    # ver pasta_de_dados_dos_scripts.py).
+    from pasta_de_dados_dos_scripts import isolar_pasta_de_dados
+    isolar_pasta_de_dados("teste_robustez_completo")
     raise SystemExit(main())

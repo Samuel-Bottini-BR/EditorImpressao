@@ -1477,3 +1477,66 @@ def test_ctrl_c_fora_da_medicao_despede_como_interrompido(monkeypatch):
 
     assert tv.executar([]) == 130
     assert codigos == [130]
+
+
+# ---------------------------------------------------------------------------
+# o teste nunca grava na pasta de dados de verdade (regra de 29/09/2026)
+# ---------------------------------------------------------------------------
+# Lista de bugs, 06/10/2026: o teste_velocidade gravava no erros.log de
+# verdade do Samuel (%LOCALAPPDATA%\EditorImpressao\erros.log). Agora a
+# medicao roda com uma pasta de dados propria, dentro da pasta temporaria do
+# teste; o erros.log dela, se houver, vai para o lado dos resultados.
+
+
+def _medir_anotando_o_erro(estado: dict, problema=None):
+    """rodar_medicao de mentira que faz o que o programa faz quando algo da
+    errado: anota no erros.log (registro.registrar_erro)."""
+    import os
+
+    import registro
+
+    def medir(*_args, **_kwargs):
+        estado["dados"] = os.environ.get("LOCALAPPDATA")
+        registro.registrar_erro("teste de velocidade (teste)", "detalhe tecnico de teste")
+        if problema is not None:
+            raise problema
+        return _resultado(rapido=True, rodadas=1)
+
+    return medir
+
+
+@pytest.mark.parametrize("problema", [None, "parou"], ids=["terminou", "parou"])
+def test_a_medicao_nao_grava_na_pasta_de_dados_de_verdade(tmp_path, monkeypatch, problema):
+    import os
+
+    real = tmp_path / "pasta_de_dados_de_verdade"
+    real.mkdir()
+    monkeypatch.setenv("LOCALAPPDATA", str(real))
+    eventos: list = []
+    argumentos = _preparar_main_sem_medir(tmp_path, monkeypatch, eventos)
+    estado: dict = {}
+    erro = tv.ErroNaMedicao("a análise não terminou") if problema else None
+    monkeypatch.setattr(tv, "rodar_medicao", _medir_anotando_o_erro(estado, erro))
+
+    codigo = tv.main(argumentos)
+
+    assert codigo == (1 if problema else 0)
+    assert not (real / "EditorImpressao" / "erros.log").exists(), \
+        "nada no erros.log de verdade"
+    assert estado["dados"] and Path(estado["dados"]) != real
+    assert not Path(estado["dados"]).exists(), "a pasta propria e apagada no fim"
+    assert os.environ["LOCALAPPDATA"] == str(real), "a pasta de verdade volta no fim"
+    # o detalhe tecnico nao se perde: vai para o lado dos resultados
+    guardados = list((tmp_path / "saida").glob("*-erros.log"))
+    assert len(guardados) == 1
+    assert "detalhe tecnico de teste" in guardados[0].read_text(encoding="utf-8")
+
+
+def test_sem_erro_nenhum_nao_sobra_erros_log(tmp_path, monkeypatch):
+    real = tmp_path / "pasta_de_dados_de_verdade"
+    real.mkdir()
+    monkeypatch.setenv("LOCALAPPDATA", str(real))
+    argumentos = _preparar_main_sem_medir(tmp_path, monkeypatch, [])
+    assert tv.main(argumentos) == 0
+    assert not list((tmp_path / "saida").glob("*-erros.log"))
+    assert not (real / "EditorImpressao").exists()

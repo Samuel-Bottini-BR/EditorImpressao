@@ -811,7 +811,7 @@ def medir_abrir(caminho: Path, avisar: Avisar) -> tuple[dict, object]:
         raise ErroNaMedicao(
             "A análise do livro não terminou: "
             f"{saida.get('erro', 'o programa não disse por quê')} "
-            "(o detalhe técnico fica no erros.log do programa).")
+            "(o detalhe técnico fica no erros.log do teste, ao lado dos resultados).")
     analisado = saida["projeto"]
     return {"arquivo_s": arquivo_s, "analise_s": analise_s,
             "total_s": arquivo_s + analise_s,
@@ -911,7 +911,7 @@ def medir_trocas(projeto, indices: list[int], dpi: int, avisar: Avisar) -> dict:
                         f"{segundos_por_extenso(LIMITE_DA_PREVIA_S)}.")
                 raise ErroNaMedicao(
                     f"A prévia da página {indice + 1} deu erro no programa (o detalhe "
-                    "técnico fica no erros.log do programa).")
+                    "técnico fica no erros.log do teste, ao lado dos resultados).")
             tempos.append(chegadas[alvo] - inicio)
 
             # O Kaique olha a página: o programa termina de adiantar as seguintes.
@@ -976,7 +976,7 @@ def medir_processar(projeto_analisado, indices: list[int], filtro: str,
         raise ErroNaMedicao(
             f"O processamento em {nome} não terminou: "
             f"{saida.get('erro', 'o programa não disse por quê')} "
-            "(o detalhe técnico fica no erros.log do programa).")
+            "(o detalhe técnico fica no erros.log do teste, ao lado dos resultados).")
     arquivo = Path(saida["caminho"])
     with fitz.open(arquivo) as pronto:
         paginas = pronto.page_count
@@ -1581,6 +1581,66 @@ def _resumo_para_o_terminal(resultado: dict) -> str:
     return "\n".join(linhas).strip()
 
 
+# ---------------------------------------------------------------------------
+# pasta de dados propria: o teste nunca grava na do programa de verdade
+# ---------------------------------------------------------------------------
+#
+# Regra de 29/09/2026 (Lista de bugs): teste nunca grava na pasta de dados de
+# verdade (%LOCALAPPDATA%\EditorImpressao: erros.log, projetos, historico,
+# configuracoes). O teste de velocidade gravava no erros.log do Samuel (Lista
+# de bugs, 06/10/2026): o programa anota ali o que da errado por dentro (o
+# detector de gravura que nao carregou, o servidor de paginas que caiu...), e
+# a medicao roda esse mesmo codigo. Mesmo jeito do tests/conftest.py: trocar
+# a variavel LOCALAPPDATA, que o programa le na hora de gravar
+# (historico.pasta_de_dados); os processos filhos (servidor de paginas) herdam
+# a troca. Nao muda o que e medido: a medicao nao le nada dessa pasta (as
+# opcoes sao as de fabrica do modelos.Projeto, ver medir_abrir).
+
+def pasta_de_dados_propria(temporaria: Path) -> str | None:
+    """Troca LOCALAPPDATA por uma pasta dentro de `temporaria` (apagada no
+    fim do teste). Devolve o valor de antes, para devolver_a_pasta_de_dados
+    (None se nao havia). Arriscado: trocar depois de a medicao comecar (o
+    servidor de paginas ja teria nascido com a pasta de verdade)."""
+    antes = os.environ.get("LOCALAPPDATA")
+    dados = Path(temporaria) / "dados"
+    dados.mkdir(parents=True, exist_ok=True)
+    os.environ["LOCALAPPDATA"] = str(dados)
+    return antes
+
+
+def devolver_a_pasta_de_dados(antes: str | None) -> None:
+    """Devolve LOCALAPPDATA como estava (importa quando o main roda dentro de
+    outro programa, como o pytest)."""
+    if antes is None:
+        os.environ.pop("LOCALAPPDATA", None)
+    else:
+        os.environ["LOCALAPPDATA"] = antes
+
+
+def guardar_o_erros_log(temporaria: Path, base: Path) -> Path | None:
+    """Se o programa anotou algo no erros.log da pasta propria, copia para o
+    lado dos resultados ("<nome do relatorio>-erros.log"; se la nao der, para
+    Documentos, como o _gravar_erro), antes de a pasta temporaria ser
+    apagada: o detalhe tecnico nao pode se perder. Devolve onde ficou, ou
+    None (nada anotado, ou nao deu para copiar). Nunca levanta."""
+    origem = Path(temporaria) / "dados" / "EditorImpressao" / "erros.log"
+    try:
+        if not origem.is_file() or origem.stat().st_size == 0:
+            return None
+        conteudo = origem.read_bytes()
+    except OSError:
+        return None
+    for destino in (base.with_name(base.name + "-erros.log"),
+                    Path.home() / "Documents" / (base.name + "-erros.log")):
+        try:
+            destino.parent.mkdir(parents=True, exist_ok=True)
+            destino.write_bytes(conteudo)
+            return destino
+        except OSError:
+            continue
+    return None
+
+
 def _gravar_erro(base: Path, mensagem: str, detalhe: str, maquina: dict | None) -> Path | None:
     """Quando o teste para no meio, deixa um arquivo dizendo por quê. No
     notebook do Kaique ninguém técnico está olhando o terminal."""
@@ -2072,6 +2132,9 @@ def main(argv: list[str] | None = None) -> int:
     janela = janela_do_teste()
 
     temporaria = Path(tempfile.mkdtemp(prefix="editor_velocidade_"))
+    # Pasta de dados propria (ver pasta_de_dados_propria): o teste nunca grava
+    # no erros.log, nos projetos nem nas configuracoes de verdade.
+    dados_de_verdade = pasta_de_dados_propria(temporaria)
     try:
         # Sem ninguém mexer no computador por meia hora: o Windows não pode
         # suspender no meio (ver computador_acordado), e um clique dentro da
@@ -2106,6 +2169,10 @@ def main(argv: list[str] | None = None) -> int:
             progresso.dizer(f"O detalhe ficou anotado em: {onde}")
         return 1
     finally:
+        devolver_a_pasta_de_dados(dados_de_verdade)
+        log = guardar_o_erros_log(temporaria, base)
+        if log is not None:
+            progresso.dizer(f"O programa anotou erros técnicos durante o teste: {log}")
         shutil.rmtree(temporaria, ignore_errors=True)
 
     progresso.dizer("")
