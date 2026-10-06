@@ -52,6 +52,16 @@ desligada, a cada atualização, em todas as páginas
 Com "Só as letras" valendo na página, o cartão "Preto e branco" mostra a
 página como vai sair, com o Misto, desenhada numa tarefa de prévia
 (_cartao_do_misto; bug Misto 2).
+
+Girar a folha (item 2.3, 06/10/2026; provisório até o layout, exceção da
+gerente para o implementador mexer aqui): a barrinha de girar
+(ui/widgets/barra_girar.py) fica na linha das abas, à direita, em todas as
+abas: 1/4 à esquerda, 1/4 à direita, meia volta e "aplicar em" (só esta /
+todas / daqui em diante / só as pares / só as ímpares). Cada clique é UMA
+ação do desfazer, com a rotação nova de cada folha (_girar_folhas; contas em
+core/girar.py). O menu Página tem os mesmos giros (Ctrl+Esquerda,
+Ctrl+Direita) e o mesmo "aplicar em". A tecla R deixou de girar (era fixa
+aqui e nunca alcançada: a R do Retângulo ganhava).
 """
 
 from __future__ import annotations
@@ -78,7 +88,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core import analise, linhas_do_texto, misto
+from core import analise, girar, linhas_do_texto, misto
 from core.pipeline import acertar_alertas_de_cor, acertar_alertas_do_fundo
 from core.filtros import (
     ALGORITMOS_PB,
@@ -97,6 +107,7 @@ from modelos import Projeto
 from registro import registrar_erro
 from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
+from ui.widgets.barra_girar import BarraGirar
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.escolhas_do_misto import BOTOES_DO_TEXTO, EscolhasDoMisto
@@ -303,7 +314,24 @@ class TelaConferir(QWidget):
         self.barra_abas = QTabBar()
         self.barra_abas.setExpanding(False)
         self.barra_abas.currentChanged.connect(self._trocou_de_aba)
-        camadas.addWidget(self.barra_abas)                   # 2
+
+        # Item 2.3 (girar; provisorio ate o layout): a barrinha de girar a
+        # folha mora na MESMA linha das abas, a direita - a unica faixa em
+        # cima da pagina com sobra de largura, sem custar altura da pagina.
+        # Vale em todas as abas (ui/widgets/barra_girar.py).
+        self.barra_girar = BarraGirar()
+        self.barra_girar.girar_pedido.connect(self._girar_folhas)
+        # A altura da linha e acertada em _acertar_a_barra_girar: as abas sao
+        # criadas com a tela ainda escondida (carregar), e o QTabBar escondido
+        # nao avisa o layout que mudou de tamanho - dentro desta linha ele
+        # ficava com altura 0 (achado ao tirar os prints, 06/10).
+        self.linha_das_abas = QWidget()
+        linha_das_abas = QHBoxLayout(self.linha_das_abas)
+        linha_das_abas.setContentsMargins(0, 0, 0, 0)
+        linha_das_abas.setSpacing(8)
+        linha_das_abas.addWidget(self.barra_abas, 1)
+        linha_das_abas.addWidget(self.barra_girar, 0, Qt.AlignBottom)
+        camadas.addWidget(self.linha_das_abas)               # 2
 
         # A barra de opcoes: faixa fina que muda conforme a ferramenta na mao.
         # E o que deixa a tela ter nove ferramentas sem entulhar - so os
@@ -1356,12 +1384,32 @@ class TelaConferir(QWidget):
 
             self.barra_abas.setCurrentIndex(0)
             self._encolher_a_barra_de_botoes()
+            self._acertar_a_barra_girar()
         finally:
             self._carregando = False
 
         self._montar_tira()
         self._aquecer_o_leitor_se_precisar()
         self.atualizar()
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """A barrinha de girar (item 2.3) cabe ao lado das abas?"""
+        super().resizeEvent(evento)
+        self._acertar_a_barra_girar()
+
+    def _acertar_a_barra_girar(self) -> None:
+        """Acerta a linha das abas depois de montar as abas e a cada mudanca
+        de tamanho: a altura das abas (ver _montar) e, em janela estreita, a
+        barrinha de girar so com os icones (o nome fica no balao), para nunca
+        empurrar as abas nem passar da janela. A conta e a largura da tela
+        menos as margens e as abas. Seguro mudar a
+        folga; arriscado tirar (na janela minima de 1000 px as abas e a barra
+        com texto nao cabem juntas)."""
+        self.barra_abas.setMinimumHeight(self.barra_abas.sizeHint().height())
+        margens = self.layout().contentsMargins()
+        sobra = (self.width() - margens.left() - margens.right()
+                 - self.barra_abas.sizeHint().width() - 8)
+        self.barra_girar.definir_compacta(sobra < self.barra_girar.largura_com_texto())
 
     def _limpar_abas(self) -> None:
         """Descarta as abas de um projeto anterior antes de montar as novas."""
@@ -2087,12 +2135,45 @@ class TelaConferir(QWidget):
 
     @protegido
     def _girar(self) -> None:
+        """O botao "girar" da aba Onde cortar e o menu Pagina > "Girar 1/4 a
+        direita": o mesmo giro de sempre (90 graus no sentido do relogio),
+        agora obedecendo o "aplicar em" da barrinha de girar (item 2.3)."""
+        self._girar_folhas(girar.GIRO_DIREITA)
+
+    def _girar_esquerda(self) -> None:
+        """Menu Pagina > "Girar 1/4 a esquerda"."""
+        self._girar_folhas(girar.GIRO_ESQUERDA)
+
+    def _girar_meia_volta(self) -> None:
+        """Menu Pagina > "Girar meia volta"."""
+        self._girar_folhas(girar.GIRO_MEIA_VOLTA)
+
+    @protegido
+    def _girar_folhas(self, giro: int) -> None:
+        """Gira as folhas do "aplicar em" (item 2.3; core/girar.py).
+
+        Uma acao so do desfazer para todas as folhas, com a rotacao nova de
+        CADA uma (cada folha gira a partir de onde esta; o Ctrl+Z devolve o
+        giro que cada uma tinha). O resto vem sozinho: a previa e refeita (a
+        rotacao entra na chave), e o corte, a divisao e o endireitar sao
+        recalculados na folha girada (core/pipeline); as zonas da aba Marcar
+        sao levadas para o mesmo pedaco do papel quando a pagina e desenhada
+        (core/zonas_na_folha.acompanhar).
+
+        A folha da vez e a da pagina na tela (indice_folha acompanha a
+        pagina em todas as abas).
+        """
+        if not self._pronta():
+            return
         assert self.projeto is not None
-        folha = self.projeto.folhas[self.indice_folha]
+        alcance = self.barra_girar.alcance()
+        indices = girar.folhas_do_alcance(len(self.projeto.folhas), self.indice_folha, alcance)
+        if not indices:
+            return
         self._registrar(
-            "girar", "folha", [self.indice_folha],
-            {"rotacao": (folha.rotacao + 90) % 360},
-            f"Girar a folha {self.indice_folha + 1}",
+            "girar", "folha", indices,
+            girar.campos_do_giro(self.projeto.folhas, indices, giro),
+            girar.descricao_do_giro(giro, alcance, self.indice_folha, len(indices)),
         )
 
     # --- bordas -----------------------------------------------------------
@@ -2674,9 +2755,10 @@ class TelaConferir(QWidget):
             if not self.trabalha_com_folhas:
                 self.apagar_pagina()
             return True
-        if tecla == Qt.Key_R and ABA_CORTE in self._abas_ativas:
-            self._girar()
-            return True
+        # A tecla R de "girar" (fixa aqui, fora das Configuracoes) nunca era
+        # alcancada: a R do Retangulo ganha antes (Lista de bugs, 02/10).
+        # Saiu no item 2.3: girar agora e Ctrl+Seta (menu Pagina) e a R fica
+        # so para o Retangulo, como o desenho da conferencia 14 dizia.
 
         atalhos_de_filtro = {
             Qt.Key_1: ORIGINAL, Qt.Key_2: PRETO_E_BRANCO,

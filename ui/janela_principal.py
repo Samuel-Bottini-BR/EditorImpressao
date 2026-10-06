@@ -13,6 +13,7 @@ import traceback
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import QMainWindow, QMessageBox, QStackedWidget
 
 import configuracoes
@@ -209,11 +210,48 @@ class JanelaPrincipal(QMainWindow):
                             lambda _marcado=False, f=chave: conferir._escolher_filtro(f))
 
         self.menu.ligar("ir_para_pagina", self._perguntar_a_pagina)
+        # Item 2.3 (girar): os tres giros e o "Aplicar o giro em", que e o
+        # mesmo da barrinha em cima da pagina - os dois ficam sempre iguais.
         self.menu.ligar("girar", conferir._girar)
+        self.menu.ligar("girar_esquerda", conferir._girar_esquerda)
+        self.menu.ligar("girar_meia_volta", conferir._girar_meia_volta)
+        from core.girar import ALCANCES
+
+        for alcance in ALCANCES:
+            self.menu.ligar(f"giro_em_{alcance}",
+                            lambda _marcado=False, a=alcance: conferir.barra_girar.definir_alcance(a))
+        conferir.barra_girar.alcance_mudou.connect(self._alcance_do_giro_mudou)
+        self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
         self.menu.ligar("apagar", conferir.apagar_pagina)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
+
+    def _alcance_do_giro_mudou(self, alcance: str) -> None:
+        """A lista "aplicar em" da barrinha mudou: o menu Pagina acompanha."""
+        item = self.menu.acoes.get(f"giro_em_{alcance}")
+        if item is not None and not item.isChecked():
+            item.setChecked(True)
+
+    def _mostrar_teclas_do_giro(self) -> None:
+        """Escreve a tecla de cada giro no balao dos botoes da barrinha
+        (a tecla de verdade e a do menu, que pode ter sido trocada nas
+        Configuracoes)."""
+        from core.girar import GIRO_DIREITA, GIRO_ESQUERDA, GIRO_MEIA_VOLTA
+
+        teclas = {}
+        for giro, chave in ((GIRO_ESQUERDA, "girar_esquerda"), (GIRO_DIREITA, "girar"),
+                            (GIRO_MEIA_VOLTA, "girar_meia_volta")):
+            atalho = self.menu.acoes[chave].shortcut()
+            if not atalho.isEmpty():
+                texto = atalho.toString(QKeySequence.NativeText)
+                # no balao, em portugues (o menu mostra como o Qt escreve)
+                for ingles, portugues in (("Left", "seta para a esquerda"),
+                                          ("Right", "seta para a direita"),
+                                          ("Up", "seta para cima"), ("Down", "seta para baixo")):
+                    texto = texto.replace(ingles, portugues)
+                teclas[giro] = texto
+        self.tela_conferir.barra_girar.definir_teclas(teclas)
 
     def _tela_mudou(self, indice: int) -> None:
         """So a tela de Conferir usa o menu completo; nas outras ele fica apagado."""
