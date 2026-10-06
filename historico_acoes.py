@@ -187,6 +187,8 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
     "livro." em campo que nao existe no Projeto (o setattr criaria um).
     """
     itens = projeto.folhas if acao.alvo == "folha" else projeto.paginas
+    if acao.alvo == "pagina" and "despeckle" in valores:
+        valores = _despeckle_antigo_traduzido(valores)
 
     for campo, valor in valores.items():
         if campo.startswith("livro."):
@@ -206,6 +208,27 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
                     setattr(item, campo, _restaurar_tipo(campo, valor[str(indice)]))
             else:
                 setattr(item, campo, _restaurar_tipo(campo, valor))
+
+
+def _despeckle_antigo_traduzido(valores: dict[str, Any]) -> dict[str, Any]:
+    """Acao gravada antes de 06/10/2026 com a caixinha "limpar poeirinha"
+    (campo `despeckle` da pagina, True/False), desfeita ou refeita depois que
+    ela virou a escolha "Limpar pontinhos" (ConfigPagina.limpar_pontinhos):
+    True vira "nosso" (o que a caixinha ligada fazia), False vira
+    "desligado". Sem isto, o Ctrl+Z dessa acao nao mudaria nada (o setattr
+    criaria um campo solto). Devolve uma copia; o arquivo de acoes nao muda."""
+    from core.pontinhos_scantailor import DESLIGADO, NOSSO
+
+    def traduzir(v):
+        return NOSSO if v else DESLIGADO
+
+    novos = dict(valores)
+    antigo = novos.pop("despeckle")
+    if isinstance(antigo, dict):
+        novos["limpar_pontinhos"] = {k: traduzir(v) for k, v in antigo.items()}
+    else:
+        novos["limpar_pontinhos"] = traduzir(antigo)
+    return novos
 
 
 # Campos que sao tupla em modelos.py mas o JSON grava como lista - o

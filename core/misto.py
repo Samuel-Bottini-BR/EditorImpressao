@@ -398,7 +398,7 @@ def aplicar_misto(
     selecao,
     forca_preto: int = F.AJUSTE_PADRAO,
     algoritmo_pb: str = "auto",
-    despeckle: bool = True,
+    despeckle=True,
     clareza: int = F.AJUSTE_PADRAO,
     intensidade: int = F.AJUSTE_PADRAO,
     *,
@@ -423,7 +423,10 @@ def aplicar_misto(
     img: a pagina ja preparada (dividida, cortada, endireitada), BGR ou cinza.
     selecao: a marcacao da pagina (core.selecao.Selecao; None = nenhuma).
     forca_preto, algoritmo_pb, despeckle: os do Preto e branco da pagina
-    (ConfigPagina.forca_preto, algoritmo_preto_branco, despeckle).
+    (ConfigPagina.forca_preto, algoritmo_preto_branco; despeckle e o "Limpar
+    pontinhos" - um core.pontinhos_scantailor.Pontinhos vindo de
+    core.pipeline.pontinhos_da_pagina, ou True/False como antes; ver
+    core.filtros.filtro_preto_e_branco).
     clareza, intensidade: so para o "so neste pedaco" em Melhorar ou Magico
     pro. Devolve (imagem, monocromatica), como aplicar_filtro_com_selecao:
     monocromatica=True quando tudo saiu em preto e branco (1 canal, 0 e 255).

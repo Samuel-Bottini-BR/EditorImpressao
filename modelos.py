@@ -24,6 +24,9 @@ from typing import Any
 
 from core.filtros import FILTROS, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO
 from core.misto import FORA_DO_TEXTO_PADRAO, LETRAS_NA_MOLDURA_PADRAO, PAPEL_DA_GRAVURA_PADRAO
+from core.pontinhos_scantailor import DESLIGADO as PONTINHOS_DESLIGADO
+from core.pontinhos_scantailor import DO_PROJETO_ANTIGO as PONTINHOS_DO_PROJETO_ANTIGO
+from core.pontinhos_scantailor import PADRAO as PONTINHOS_PADRAO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -79,10 +82,22 @@ class ConfigPagina:
     # "usar em todas". Só importa quando `filtro` é Preto e branco.
     algoritmo_preto_branco: str = "auto"
 
-    # Problema 5 do plano: a limpeza de poeirinha (manchas pretas pequenas
-    # demais pra ser letra) rodava sempre, escondida - agora é um controle
-    # visível. True mantém o comportamento de sempre.
-    despeckle: bool = True
+    # "Limpar pontinhos" SO desta pagina, por cima do livro
+    # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
+    # (06/10/2026, P7): "Eu vou poder ligar e desligar esse apagador de
+    # pingos? e selecionar o pouco, normal ou muito, ou selecionar o nosso".
+    # Valores: core.pontinhos_scantailor.ESCOLHAS ("desligado", "nosso",
+    # "pouco", "normal", "muito"). So muda a imagem da pagina em Preto e
+    # branco (com ou sem "So as letras").
+    #
+    # Substitui a caixinha "limpar poeirinha" (Problema 5 do plano, campo
+    # `despeckle`: True = o nosso, False = nada). Projeto antigo abre como
+    # estava (_migrar): a pagina com a caixinha desligada vira "desligado"; a
+    # ligada segue o livro, que no projeto antigo e "nosso"
+    # (Projeto.de_dicionario). O "despeckle" do arquivo antigo e descartado
+    # depois de traduzido. Seguro mudar: nada aqui (None e o que faz a
+    # pagina seguir o livro).
+    limpar_pontinhos: str | None = None
 
     # Os tres ajustes de filtro, cada um de 0 a 100 com 50 no meio. Ficam
     # separados de proposito: trocar de filtro e voltar tem que devolver o
@@ -302,6 +317,18 @@ class Projeto:
     misto_papel_da_gravura: str = PAPEL_DA_GRAVURA_PADRAO
     misto_letras_na_moldura: str = LETRAS_NA_MOLDURA_PADRAO
 
+    # "Limpar pontinhos" do livro, no Preto e branco e no "So as letras".
+    # Decisao do Samuel (06/10/2026, P7): de fabrica o do ScanTailor "pouco"
+    # (PONTINHOS_PADRAO); as outras escolhas continuam: desligado, o nosso,
+    # normal, muito (core/pontinhos_scantailor.py, ESCOLHAS). Cada pagina pode
+    # trocar so nela (ConfigPagina.limpar_pontinhos). Projeto salvo antes
+    # deste campo abre com "nosso" (de_dicionario): era o que ele usava, e um
+    # livro ja conferido nao muda sem o Samuel saber. Quem mostra:
+    # ui/tela_opcoes.py (grupo dos filtros) e ui/tela_conferir.py (aba
+    # Filtro); quem usa: core/pipeline._filtrar. Seguro mudar: nada aqui (o
+    # de fabrica mora em core/pontinhos_scantailor.PADRAO).
+    limpar_pontinhos: str = PONTINHOS_PADRAO
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
@@ -411,6 +438,10 @@ class Projeto:
         # projeto antigo (sem o campo) passa como sempre.
         paginas = [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(do_disco(p))))
                    for p in dados.pop("paginas", [])]
+        # "Limpar pontinhos" (06/10/2026): projeto gravado antes deste campo
+        # usava o nosso - continua com ele (a pagina que tinha a caixinha
+        # "limpar poeirinha" desligada ja voltou "desligado", em _migrar).
+        dados.setdefault("limpar_pontinhos", PONTINHOS_DO_PROJETO_ANTIGO)
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas
@@ -445,6 +476,13 @@ def _migrar(dados: dict[str, Any]) -> dict[str, Any]:
     # campos que nao existiam na versao anterior
     for campo in ("clareza_melhorar", "intensidade_magico"):
         dados.setdefault(campo, 50)
+
+    # A caixinha "limpar poeirinha" (despeckle) virou a escolha "Limpar
+    # pontinhos" (06/10/2026). Pagina gravada antes, com a caixinha
+    # desligada, continua sem limpar; ligada, segue o livro (que no projeto
+    # antigo e "nosso", ver Projeto.de_dicionario) - sai igual a antes.
+    if "limpar_pontinhos" not in dados and dados.get("despeckle") is False:
+        dados["limpar_pontinhos"] = PONTINHOS_DESLIGADO
 
     return dados
 

@@ -39,7 +39,7 @@ from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
-from core import linhas_do_texto, misto
+from core import linhas_do_texto, misto, pontinhos_scantailor
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
@@ -925,8 +925,10 @@ def renderizar_pagina(
             _guardar_geometria(folha, pagina, projeto, img_folha)
     # item 1.2: o DPI de verdade desta imagem e o do scan, para o detector de
     # gravura (so custam alguma coisa quando a pagina ainda nao tem marcacao)
+    # e para o limpar pontinhos do ScanTailor (06/10/2026; milissegundos: a
+    # conta do desenho e pela area, o do scan fica guardado por folha)
     dpi_desenho = dpi_scan = None
-    if _vai_detectar(projeto, pagina):
+    if _vai_detectar(projeto, pagina) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
@@ -1076,6 +1078,34 @@ def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
                 and (not pagina.selecao or _gravura_a_refazer(projeto, pagina)))
 
 
+def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """_filtrar vai usar o limpar pontinhos do ScanTailor nesta pagina (o
+    Preto e branco com "pouco", "normal" ou "muito")? So serve para medir o
+    DPI de verdade so quando precisa. Errar para "sim" so custa milissegundos."""
+    return bool(projeto.limpar and pagina.filtro == PRETO_E_BRANCO
+                and pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
+                in pontinhos_scantailor.DO_SCANTAILOR)
+
+
+def pontinhos_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                        dpi: float | None = None,
+                        dpi_do_scan: float | None = None) -> "pontinhos_scantailor.Pontinhos":
+    """O "Limpar pontinhos" desta pagina pronto para o filtro (decisao do
+    Samuel, 06/10/2026, P7): a escolha que vale nela (dela ou do livro;
+    pontinhos_scantailor.escolha_da_pagina) e o DPI de verdade de `img` (a
+    pagina ja preparada) - dpi e o do desenho (_dpi_do_desenho) e dpi_do_scan
+    o que o PDF diz (_dpi_do_scan); nos PDFs de "72 DPI" o DPI e acertado
+    como no detector de gravura (pontinhos_scantailor.dpi_para_os_pontinhos).
+    Sem dpi, o filtro estima pela altura. Publica: a tela ampliada e o
+    montar_misto.py tambem usam."""
+    escolha = pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
+    dpi_certo = None
+    if escolha in pontinhos_scantailor.DO_SCANTAILOR and dpi:
+        dpi_certo = pontinhos_scantailor.dpi_para_os_pontinhos(
+            img.shape[1], img.shape[0], dpi, dpi_do_scan)
+    return pontinhos_scantailor.Pontinhos(escolha, dpi_certo)
+
+
 def _dpi_do_desenho(doc, indice: int, img_folha: np.ndarray) -> float | None:
     """O DPI em que a folha `indice` foi desenhada em img_folha (a folha
     inteira, antes de girar, dividir e cortar).
@@ -1137,7 +1167,9 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
 
     dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
-    ScanTailor precisa deles; item 1.2).
+    ScanTailor precisa deles; item 1.2) e para o "Limpar pontinhos" do
+    Preto e branco e do "So as letras" (pontinhos_da_pagina; decisao do
+    Samuel de 06/10/2026, P7: de fabrica o do ScanTailor "pouco").
 
     O MESMO para a previa (renderizar_pagina) e o PDF (processar): antes era
     escrito duas vezes, igual. Devolve (imagem, monocromatica); sem "Limpar a
@@ -1184,15 +1216,17 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         _anotar_tinta_forte_fora(pagina, False)
         return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, img), False
     selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
+    # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
+    pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)
     if pagina.filtro == PRETO_E_BRANCO:
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
         if opcoes is not None:
-            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes)
+            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes, pontinhos)
     _anotar_tinta_forte_fora(pagina, False)
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, selecao,
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
-        algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
+        algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pontinhos,
         decoracao_em_preto_e_branco=bool(
             getattr(projeto, "pb_decoracao_em_preto_e_branco", False)),
     )
@@ -1255,9 +1289,10 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
-                      opcoes) -> tuple[np.ndarray, bool]:
+                      opcoes, pontinhos=True) -> tuple[np.ndarray, bool]:
     """O Preto e branco so nas letras (core.misto.aplicar_misto) com as
-    escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto).
+    escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto) e o "Limpar
+    pontinhos" dela (`pontinhos`, de pontinhos_da_pagina).
 
     A e C precisam das linhas de texto: core.linhas_do_texto (o docTR, uma
     vez por pagina; guardadas por _chave_das_linhas, a previa e o PDF usam as
@@ -1274,7 +1309,7 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
             linhas, altura_linha = misto.mascara_das_linhas(resultados, img.shape)
     medidas: dict = {}
     saida = misto.aplicar_misto(
-        img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pagina.despeckle,
+        img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pontinhos,
         pagina.clareza_melhorar, pagina.intensidade_magico,
         papel_da_gravura_branco=opcoes.papel_da_gravura == misto.PAPEL_BRANCO,
         letras_na_moldura=opcoes.letras_na_moldura,
@@ -1792,7 +1827,8 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             if _precisa_de_geometria(pagina, projeto):
                 _guardar_geometria(folha, pagina, projeto, img_folha)
             dpi_desenho = dpi_scan = None
-            if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
+            if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
+                    or _vai_limpar_pelo_scantailor(projeto, pagina)):
                 dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                 dpi_scan = _dpi_do_scan(doc, folha)
             img, desenho = _preparar_metade_e_geometria(

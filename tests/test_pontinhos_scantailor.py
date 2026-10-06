@@ -10,7 +10,9 @@ Testes de máquina (o "fica melhor ou pior" é teste de olho, do Samuel):
 - entrada ruim não chega à DLL;
 - sem a DLL, o Preto e branco com o do ScanTailor cai no de hoje, igual
   ponto a ponto;
-- não está ligado ao programa: o Preto e branco de hoje não mudou.
+- chamado sem escolha (despeckle=True, o padrão da função, que os scripts e
+  testes antigos usam), o Preto e branco continua com o nosso. A ligação ao
+  programa (06/10/2026) é testada em tests/test_limpar_pontinhos_no_programa.py.
 """
 
 from __future__ import annotations
@@ -122,8 +124,10 @@ def test_sem_a_dll_o_preto_e_branco_e_o_de_hoje(tmp_path):
 
 
 def test_o_preto_e_branco_de_hoje_nao_mudou():
-    """O módulo novo não está ligado a nada: o Preto e branco de fábrica continua
-    com o nosso limpar pontinhos (a mesma conta, ponto a ponto)."""
+    """Chamado sem escolha (despeckle=True, o padrão da função), o Preto e
+    branco continua com o nosso limpar pontinhos (a mesma conta, ponto a
+    ponto). No programa, quem escolhe é a página (ver
+    tests/test_limpar_pontinhos_no_programa.py)."""
     img = _pagina_de_letras()
     hoje = F.filtro_preto_e_branco(img)
     sem_limpar = F.filtro_preto_e_branco(img, despeckle=False)

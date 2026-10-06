@@ -1108,7 +1108,7 @@ def _otsu_com_a_borda_do_sauvola(cinza: np.ndarray, otsu: np.ndarray,
 
 
 def filtro_preto_e_branco(
-    img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle: bool = True,
+    img: np.ndarray, forca: int = AJUSTE_PADRAO, despeckle=True,
     algoritmo: str = "auto",
 ) -> np.ndarray:
     """Preto e branco (Eco). Devolve imagem de 1 canal, só 0 e 255.
@@ -1119,6 +1119,14 @@ def filtro_preto_e_branco(
     `algoritmo`: "auto" (o programa escolhe pela espessura do traço desta
     página, ver `escolher_algoritmo_automatico`), ou um de `ALGORITMOS_PB`
     escolhido à mão / vindo de "usar em todas" (Problema 5 do plano).
+
+    `despeckle`: o "Limpar pontinhos" (decisão do Samuel, 06/10/2026, P7).
+    True = o nosso (_despeckle), False = nada - os dois de sempre, que os
+    scripts e testes antigos passam, com o resultado de sempre. O programa
+    passa um core.pontinhos_scantailor.Pontinhos (a escolha da página e o DPI
+    de verdade; core.pipeline.pontinhos_da_pagina), ou o texto de uma das
+    escolhas ("desligado", "nosso", "pouco", "normal", "muito"). Ver
+    _limpar_os_pontinhos.
     """
     cinza = _cinza_para_binarizar(img)
     janela = janela_para_altura(cinza.shape[0])
@@ -1141,9 +1149,25 @@ def filtro_preto_e_branco(
     if algoritmo == "auto" and algoritmo_de_verdade == ALGORITMO_OTSU:
         meio = _otsu_com_a_borda_do_sauvola(cinza, binaria, janela, k_meio)
         binaria = _a_borda_no_medidor(cinza, binaria, meio, janela, k_meio, forca)
-    if despeckle:
-        binaria = _despeckle(binaria, cinza.shape[0])
-    return binaria
+    return _limpar_os_pontinhos(binaria, despeckle, cinza.shape[0])
+
+
+def _limpar_os_pontinhos(binaria: np.ndarray, despeckle, altura: int) -> np.ndarray:
+    """O ultimo passo do Preto e branco das letras: o "Limpar pontinhos".
+
+    True e False (bool) fazem exatamente o de antes (o nosso, ou nada): e o
+    que garante que projeto antigo com a caixinha "limpar poeirinha" ligada
+    saia igual ponto a ponto. Qualquer outra coisa (Pontinhos ou o texto de
+    uma escolha) vai para core.pontinhos_scantailor.limpar_conforme_a_escolha
+    (importado so aqui: o filtro nao carrega a DLL se ninguem pedir).
+    Arriscado: tratar Pontinhos pela verdade (`if despeckle:`) - todo
+    Pontinhos e "verdadeiro", ate o "desligado".
+    """
+    if despeckle is None or isinstance(despeckle, (bool, np.bool_)):
+        return _despeckle(binaria, altura) if despeckle else binaria
+    from core import pontinhos_scantailor
+
+    return pontinhos_scantailor.limpar_conforme_a_escolha(binaria, despeckle)
 
 
 def _estimar_fundo_cinza(cinza: np.ndarray) -> np.ndarray:
@@ -3484,7 +3508,7 @@ def aplicar_filtro_com_selecao(
     clareza: int = AJUSTE_PADRAO,
     intensidade: int = AJUSTE_PADRAO,
     algoritmo_pb: str = "auto",
-    despeckle: bool = True,
+    despeckle=True,
     decoracao_em_preto_e_branco: bool = False,
 ) -> tuple[np.ndarray, bool]:
     """O filtro pedido, mas cada area da pagina tratada do seu jeito.
@@ -3525,7 +3549,13 @@ def aplicar_filtro_com_selecao(
     from core.selecao import GRAVURA, LETRA, PAPEL
 
     if selecao is None or getattr(selecao, "vazia", True):
-        return aplicar_filtro(img, filtro, forca_preto, clareza, intensidade)
+        # o "Limpar pontinhos" da pagina vale tambem sem marcacao (06/10/2026:
+        # ate aqui a pagina sem marcacao - "Achar gravuras" desligado, pagina
+        # em branco - ficava sempre com o nosso, sem ver a escolha). O
+        # algoritmo continua de fora, como estava (ver o relatorio da ligacao
+        # do limpar pontinhos, Lista de bugs).
+        return aplicar_filtro(img, filtro, forca_preto, clareza, intensidade,
+                              despeckle=despeckle)
 
     # Original (conserto de 05/10/2026; conferencia 13, S4, Samuel: "Sim, do
     # mesmo jeito"): ate ali este teste devolvia a pagina como veio e o pedaco
@@ -3691,7 +3721,7 @@ def aplicar_filtro(
     clareza: int = AJUSTE_PADRAO,
     intensidade: int = AJUSTE_PADRAO,
     algoritmo_pb: str = "auto",
-    despeckle: bool = True,
+    despeckle=True,
 ) -> tuple[np.ndarray, bool]:
     """Aplica o filtro pedido na página inteira, do mesmo jeito.
 
@@ -3699,7 +3729,8 @@ def aplicar_filtro(
     Devolve (imagem, monocromatica). monocromatica=True avisa o EscritorPDF
     para salvar a página em 1 bit.
 
-    `algoritmo_pb` e `despeckle` só valem para o Preto e branco.
+    `algoritmo_pb` e `despeckle` só valem para o Preto e branco
+    (`despeckle`: o "Limpar pontinhos", ver filtro_preto_e_branco).
 
     Quando a página tem marcação, quem manda e aplicar_filtro_com_selecao.
     """
