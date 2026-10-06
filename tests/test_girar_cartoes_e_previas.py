@@ -527,9 +527,31 @@ def test_pendencia_d2_desfazer_de_outra_sessao_tambem_espera(janela, pasta, monk
     janela.acoes.feitas.append(Acao.nova("ajustar_angulo", "pagina", [0],
                                          {"angulo_manual": None}, {"angulo_manual": 3.0},
                                          "Angulo da página 1"))
+    tela.ir_para_pagina(2)                     # a pagina atingida NAO e a da tela
     tela.desfazer()
     assert janela.projeto.paginas[0].angulo_manual == 3.0
     assert janela.avisos and pedidos == [1]
+    # ressalva 3 do verificador-3: o aviso nao fala "desta pagina" nem manda
+    # "fazer a mudanca de novo" (o que se repete e o Ctrl+Z)
+    aviso = janela.avisos[-1]
+    assert aviso == tela.FRASE_DO_DESFAZER_ESPERA
+    assert "desta página" not in aviso and "mudança de novo" not in aviso
+    assert "tente de novo" in aviso
+
+
+def test_pendencia_d2_refazer_um_giro_tambem_avisa_sem_mandar_girar(janela, pasta,
+                                                                    monkeypatch):
+    """Refazer um giro que pega uma pagina ainda nao convertida espera, com o
+    aviso do desfazer (antes dizia "gire de novo")."""
+    from modelos import Acao
+
+    tela, _pagina, pedidos = _livro_com_zona_antiga(janela, pasta, monkeypatch)
+    janela.acoes.desfeitas.append(Acao.nova("girar", "folha", [0], {"rotacao": 0},
+                                            {"rotacao": 90}, "Girar ¼ à direita: a folha 1"))
+    tela.refazer()
+    assert janela.projeto.folhas[0].rotacao == 0
+    assert janela.avisos and janela.avisos[-1] == tela.FRASE_DO_DESFAZER_ESPERA
+    assert pedidos == [1]
 
 
 def _canto_da_capa_no_cartao(janela, resumo) -> str | None:
