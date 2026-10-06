@@ -229,3 +229,37 @@ def test_girar_grava_no_projeto(janela, pasta):
     assert arquivos
     dados = json.loads(arquivos[0].read_text(encoding="utf-8"))
     assert [f["rotacao"] for f in dados["folhas"]] == [180, 0, 180, 0, 180]
+
+
+def test_com_zonas_ainda_no_formato_antigo_o_giro_espera(janela, pasta, monkeypatch):
+    """Projeto de antes de 05/10 com a conversao das zonas ainda andando: girar
+    antes de a pagina ser convertida levaria a zona para o lugar errado do
+    papel. O giro espera, avisa, e pede a conversao; convertida, gira."""
+    from core import zonas_na_folha as zf
+    from core.selecao import GRAVURA, MAO, RETANGULO, Regiao
+
+    # a previa (outro fio) nao converte a pagina no meio do teste
+    monkeypatch.setattr(zf, "acompanhar", lambda pagina, geometria: False)
+    tela = _aberta(janela, pasta)
+    pagina = janela.projeto.paginas[0]
+    pagina.selecao = [Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.1, 0.1), (0.4, 0.3)],
+                             origem=MAO).para_dicionario()]
+    pagina.geometria_das_zonas = None              # formato antigo
+    pedidos = []
+    monkeypatch.setattr(janela, "_comecar_a_converter_as_zonas", lambda: pedidos.append(1))
+    tela.ir_para_pagina(0)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert _rotacoes(janela) == [0, 0, 0, 0, 0]
+    assert janela.avisos and "preparando as marcações" in janela.avisos[-1]
+    assert pedidos == [1]
+
+    # outra folha (sem zonas antigas) gira normalmente
+    tela.ir_para_pagina(3)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert _rotacoes(janela) == [0, 0, 0, 90, 0]
+
+    # convertida (a geometria anotada), a folha 1 gira
+    pagina.geometria_das_zonas = zf.geometria_do_desenho(400 / 560, 0, None, "inteira", None, 0.0)
+    tela.ir_para_pagina(0)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert _rotacoes(janela) == [90, 0, 0, 90, 0]

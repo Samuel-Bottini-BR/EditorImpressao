@@ -250,6 +250,10 @@ class TelaConferir(QWidget):
     # vigesimo primeiro, e o trabalho da pessoa some sem ninguem notar.
     trabalho_mudou = Signal()
 
+    # Item 2.3: o giro pegou folhas com zonas ainda no formato antigo; a
+    # janela comeca a conversao por tras se ela nao estiver andando.
+    marcacoes_por_converter = Signal()
+
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.projeto: Projeto | None = None
@@ -2168,13 +2172,40 @@ class TelaConferir(QWidget):
         assert self.projeto is not None
         alcance = self.barra_girar.alcance()
         indices = girar.folhas_do_alcance(len(self.projeto.folhas), self.indice_folha, alcance)
-        if not indices:
+        if not indices or self._marcacoes_ainda_no_formato_antigo(indices):
             return
         self._registrar(
             "girar", "folha", indices,
             girar.campos_do_giro(self.projeto.folhas, indices, giro),
             girar.descricao_do_giro(giro, alcance, self.indice_folha, len(indices)),
         )
+
+    def _marcacoes_ainda_no_formato_antigo(self, folhas: list[int]) -> bool:
+        """Alguma pagina destas folhas tem zonas da aba Marcar que ainda nao
+        foram convertidas para a folha original (projeto de antes de 05/10,
+        com a conversao por tras ainda andando - a faixa azul "Preparando as
+        marcações do livro")? Entao o giro espera: girar antes levaria as
+        zonas dessas paginas para o lugar errado do papel (a conta precisa do
+        preparo de ANTES do giro, que so a conversao anota).
+
+        Avisa (janela.avisar) e pede a conversao, se ela nao estiver
+        andando (sinal marcacoes_por_converter). Devolve True se o giro deve
+        esperar. Seguro mudar: a frase. Arriscado: girar mesmo assim.
+        """
+        from core.zonas_na_folha import paginas_por_converter
+
+        assert self.projeto is not None
+        alvo = set(folhas)
+        if not any(p.folha in alvo for p in paginas_por_converter(self.projeto)):
+            return False
+        self.marcacoes_por_converter.emit()
+        janela = self.window()
+        if janela is not self and hasattr(janela, "avisar"):
+            janela.avisar(
+                "Ainda estou preparando as marcações destas folhas (a faixa azul "
+                "mostra o andamento). Quando terminar, gire de novo: assim as "
+                "marcações acompanham o giro.", titulo="Um momento")
+        return True
 
     # --- bordas -----------------------------------------------------------
 

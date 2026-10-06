@@ -221,11 +221,20 @@ class JanelaPrincipal(QMainWindow):
             self.menu.ligar(f"giro_em_{alcance}",
                             lambda _marcado=False, a=alcance: conferir.barra_girar.definir_alcance(a))
         conferir.barra_girar.alcance_mudou.connect(self._alcance_do_giro_mudou)
+        conferir.marcacoes_por_converter.connect(self._converter_as_zonas_se_parado)
         self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
         self.menu.ligar("apagar", conferir.apagar_pagina)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
+
+    def _converter_as_zonas_se_parado(self) -> None:
+        """O giro (item 2.3) achou zonas ainda no formato antigo: se a
+        conversao por tras nao estiver andando (parou, ou falhou numa folha),
+        comeca de novo. Andando, deixa como esta."""
+        tarefa = self.conversao_das_zonas
+        if tarefa is None or not tarefa.isRunning():
+            self._comecar_a_converter_as_zonas()
 
     def _alcance_do_giro_mudou(self, alcance: str) -> None:
         """A lista "aplicar em" da barrinha mudou: o menu Pagina acompanha."""
