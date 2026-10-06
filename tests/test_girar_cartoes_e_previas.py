@@ -347,11 +347,13 @@ def test_d2_a_tira_mostra_cada_folha_no_giro_dela(janela, pasta, app, monkeypatc
     assert depois[0] == antes[0] and depois[2] == antes[2], "redesenhou folha que nao girou"
     assert depois[1] != antes[1]
 
-    # "todas", meia volta; e desfazer
+    # "todas", meia volta; e desfazer. Desde 06/10/2026 (decisao do Samuel)
+    # todas ficam viradas como a folha da vez: a folha 2 estava em 90, vai a
+    # 270, e as tres terminam em 270
     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
     tela.barra_girar.botoes_de_giro[girar.GIRO_MEIA_VOLTA].click()
     app.processEvents()
-    assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[180], CANTO_DO_GIRO[270], CANTO_DO_GIRO[180]]
+    assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[270]] * 3
     tela.desfazer()
     app.processEvents()
     assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[0], CANTO_DO_GIRO[90], CANTO_DO_GIRO[0]]
@@ -528,3 +530,53 @@ def test_pendencia_d2_desfazer_de_outra_sessao_tambem_espera(janela, pasta, monk
     tela.desfazer()
     assert janela.projeto.paginas[0].angulo_manual == 3.0
     assert janela.avisos and pedidos == [1]
+
+
+def _canto_da_capa_no_cartao(janela, resumo) -> str | None:
+    """Em que canto esta o bloco preto na capa que o cartao do livro MOSTRA
+    na tela inicial (o QLabel com a imagem), ou None sem cartao/capa."""
+    from PySide6.QtWidgets import QLabel
+
+    from ui.tela_inicio import CartaoDeProjeto
+
+    for cartao in janela.tela_inicio.findChildren(CartaoDeProjeto):
+        if cartao.parent() is None or str(cartao.resumo.pasta) != str(resumo.pasta):
+            continue
+        for rotulo in cartao.findChildren(QLabel):
+            imagem = rotulo.pixmap()
+            if imagem is not None and not imagem.isNull():
+                return _canto(_imagem_do_pixmap(imagem))
+    return None
+
+
+def test_voltar_pelas_opcoes_mostra_a_capa_nova_no_cartao(janela, pasta, app):
+    """Ressalva 1 do verificador-3 (06/10/2026): o "voltar" da tela de opcoes
+    so trocava de tela e nao remontava os cartoes; o cartao continuava com a
+    capa velha (sem o giro) ate o programa ser aberto de novo, embora a
+    capa.png ja estivesse certa no disco. Agora o voltar espera a capa nova
+    chegar ao disco e remonta os cartoes."""
+    import projetos
+    from ui.janela_principal import CONFERIR, INICIO
+
+    tela = _aberta_na_aba_filtro(janela, pasta, folhas=3)
+    resumo = janela.resumo
+    # a tela inicial ja mostrada uma vez neste tamanho de janela (senao a
+    # primeira vez que ela aparece muda de tamanho, e o resizeEvent remonta
+    # os cartoes por acaso - no programa de verdade o tamanho nao muda)
+    janela.telas.setCurrentIndex(INICIO)
+    for _ in range(5):
+        app.processEvents()
+    janela.tela_inicio.recarregar()             # a tela inicial como estava ao abrir
+    assert _canto_da_capa_no_cartao(janela, resumo) == CANTO_DO_GIRO[0]
+    janela.telas.setCurrentIndex(CONFERIR)
+    for _ in range(5):
+        app.processEvents()
+
+    tela.ir_para_pagina(0)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    janela._sair_da_conferencia()               # o "voltar" da conferencia: opcoes
+    janela.tela_opcoes._sair()                  # o "voltar" das opcoes: inicio
+    app.processEvents()
+    assert janela.telas.currentIndex() == INICIO
+    assert projetos.esperar_gravacoes(10)
+    assert _canto_da_capa_no_cartao(janela, resumo) == CANTO_DO_GIRO[90]
