@@ -46,6 +46,9 @@ GRUPOS = {
     "11": (11, "Rodada 5: tela inicial"),
     "12": (12, "Rodada 6: tela inicial"),
     "13": (13, "Rodada 7"),
+    "14": (14, "Rodada 8"),
+    "15": (15, "Rodada 9"),
+    "16": (16, "Rodada 10"),
     "tela": (-1, "O programa antigo"),
 }
 

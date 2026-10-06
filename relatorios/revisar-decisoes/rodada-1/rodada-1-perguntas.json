@@ -1,0 +1,622 @@
+[
+ {
+  "id": "rv1-palatino076",
+  "ordem": 1,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Palatino, p. 76: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a letra S grande no alto, à esquerda. No jeito de fábrica sobraram só a moldura dela e um arco; no Preto e branco de sempre o desenho fica. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/palatino076.jpg",
+    "legenda": "Palatino, p. 76. A letra S grande do alto da página."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-graduale222",
+  "ordem": 2,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Graduale, p. 222: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe as notas e as pautas. No jeito de fábrica a música sai preta, como no Preto e branco de sempre; ela conta como 'tinta fora do texto', e é isso que manda a página para a lista hoje. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/graduale222.jpg",
+    "legenda": "Graduale, p. 222. A música do alto da página."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv1-marial454",
+  "ordem": 3,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Marial, p. 454: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a mancha marrom à esquerda (um remendo de papel) e a faixa marrom à direita (a mancha do verso). O programa achou que eram gravuras e elas saem impressas em cor; no Preto e branco de sempre o remendo também sai, em cinza. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/marial454.jpg",
+    "legenda": "Marial, p. 454. O meio da página, com as duas manchas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-horas014",
+  "ordem": 4,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Livro de Horas, p. 14: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a moldura dourada da tabela. O programa não a reconheceu como desenho: ela sai preta e grossa, igual ao Preto e branco de sempre. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/horas014.jpg",
+    "legenda": "Livro de Horas, p. 14. O canto de cima da tabela."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": false,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv1-palatino067",
+  "ordem": 5,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Palatino, p. 67: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe dentro do quadrado da letra M. No jeito de fábrica o fundo desenhado (folhas e figuras) sumiu quase todo; no Preto e branco de sempre ele fica. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/palatino067.jpg",
+    "legenda": "Palatino, p. 67. A letra M grande no meio da página."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-matematica032",
+  "ordem": 6,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Matemática para vencer, p. 32: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a faixa escura embaixo: é a beirada do scanner, e sai igual no Preto e branco de sempre. O texto saiu bem; é a faixa que manda a página para a lista hoje. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/matematica032.jpg",
+    "legenda": "Matemática para vencer, p. 32. A parte de baixo da página."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv1-siebmacher007",
+  "ordem": 7,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Siebmacher, folha 7 (página da esquerda): esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a moldura de ornamentos, principalmente a faixa de baixo. Ela sai em preto e branco, mas o jeito de fábrica apagou pedaços que o Preto e branco de sempre guarda. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/siebmacher007.jpg",
+    "legenda": "Siebmacher, folha 7 (página da esquerda). O canto de baixo da moldura de ornamentos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv1-antiphon260",
+  "ordem": 8,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Antiphonarium, p. 260: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe as notas à direita da iluminura. As que ficam na zona que o programa achou como gravura saem marrons e desbotadas, como no original; as de fora saem pretas. No Preto e branco de sempre acontece o mesmo. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/antiphon260.jpg",
+    "legenda": "Antiphonarium, p. 260. A música à direita da iluminura."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-boecio007",
+  "ordem": 9,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Boécio, p. 7: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a letra Q grande e os sinais pequenos (- - v v) em cima do poema. No jeito de fábrica eles ficaram, como no Preto e branco de sempre. (Hoje: não vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/boecio007.jpg",
+    "legenda": "Boécio, p. 7. O alto da página, com a letra Q."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "opcao1": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv1-palatino066",
+  "ordem": 10,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Palatino, p. 66: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a letra enfeitada 'M.' no pé da página. No jeito de fábrica ela ficou pela metade; no Preto e branco de sempre fica inteira. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/palatino066.jpg",
+    "legenda": "Palatino, p. 66. As letras enfeitadas do pé da página."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-graduale588",
+  "ordem": 11,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Graduale, p. 588: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a letra S azul grande. O programa não a reconheceu como desenho: ela sai preta, igual ao Preto e branco de sempre; a música e o texto saem bem. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/graduale588.jpg",
+    "legenda": "Graduale, p. 588. A letra S azul grande."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": false,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv1-pesel021",
+  "ordem": 12,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Points (Pesel), p. 21: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a legenda miúda embaixo, impressa no papel escuro. Ela vira duas tarjas pretas, no jeito de fábrica e também no Preto e branco de sempre; no jeito de fábrica o papel escuro em volta ainda sai marrom. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/pesel021.jpg",
+    "legenda": "Points (Pesel), p. 21. A parte de baixo, com a legenda."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-palatino010",
+  "ordem": 13,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Palatino, p. 10: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a moldura de fios em volta do texto. No jeito de fábrica ela sai preta, igual ao Preto e branco de sempre; é ela que manda a página para a lista hoje. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/palatino010.jpg",
+    "legenda": "Palatino, p. 10. O canto de cima, com a moldura."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv1-ljs47-103",
+  "ordem": 14,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Manuscrito ljs47, p. 103: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe o desenho de linhas e arcos vermelhos embaixo. No jeito de fábrica as linhas compridas ficaram picotadas; no Preto e branco de sempre ficam mais inteiras, mas também falhadas, porque o traço é muito claro. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/ljs47-103.jpg",
+    "legenda": "Manuscrito ljs47, p. 103. O desenho de linhas e arcos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "opcao1": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv1-horas175",
+  "ordem": 15,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Livro de Horas, p. 175: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a letra S colorida (azul e vermelha) no começo do parágrafo. O programa não a reconheceu como desenho e ela sai como um bloco preto, igual ao Preto e branco de sempre. (Hoje: não vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/horas175.jpg",
+    "legenda": "Livro de Horas, p. 175. A letra S colorida do começo do parágrafo."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "opcao1": false,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv1-rhetorica034",
+  "ordem": 16,
+  "parte": "Rodada 1 · página por página",
+  "pergunta": "Rhetorica Christiana, p. 34: esta página deveria ir para 'Para revisar'?",
+  "explicacao": "Olhe a gravura do anjo. O programa a reconheceu como gravura e ela fica como no original, enquanto o Preto e branco de sempre a deixa manchada. (Hoje: não vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/rhetorica034.jpg",
+    "legenda": "Rhetorica Christiana, p. 34. A gravura do anjo."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, deveria ir",
+    "texto": "Quero que esta página apareça na lista 'Para revisar', para alguém olhar antes de imprimir.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não precisa",
+    "texto": "Do jeito que saiu, pode imprimir; não precisa ir para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "marca",
+    "nome": "Só uma marca discreta",
+    "texto": "Não vai para a lista, mas a página ganha um aviso pequeno, para quem quiser olhar.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "opcao1": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv1-fecho-so-texto",
+  "ordem": 17,
+  "parte": "Rodada 1 · fechamento: o jeito 'Só o texto achado'",
+  "pergunta": "No jeito 'Só o texto achado', toda página com algo além de texto corrido deve ir para 'Para revisar'?",
+  "explicacao": "Esse jeito apaga tudo o que não é linha de texto. Nos exemplos, olhe o vermelho: a música do Graduale some, a letra Q do Boécio some, os números da margem da Escola somem (nas 59 páginas testadas, ele estragou 43).",
+  "exemplos": [
+   {
+    "src": "img/fecho-graduale222.jpg",
+    "legenda": "Graduale, p. 222: a música some."
+   },
+   {
+    "src": "img/fecho-boecio007.jpg",
+    "legenda": "Boécio, p. 7: a letra Q e os sinais de métrica somem."
+   },
+   {
+    "src": "img/fecho-escola197.jpg",
+    "legenda": "Na escola de Jesus, p. 197: os números da margem somem."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "todas",
+    "nome": "Sim, todas",
+    "texto": "Toda página em que esse jeito apagar alguma coisa vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "grande",
+    "nome": "Só quando sumir algo grande",
+    "texto": "Vai para a lista quando some capitular, música, moldura ou desenho; pedacinho pequeno, não.",
+    "imgs": []
+   },
+   {
+    "id": "livro",
+    "nome": "Avisar uma vez no livro, não página por página",
+    "texto": "Ao escolher esse jeito, o programa avisa uma vez que ele apaga o que não é texto; as páginas não vão uma a uma para a lista.",
+    "imgs": []
+   }
+  ],
+  "hoje": null,
+  "opcao1": null,
+  "veredito_agente": "errada"
+ }
+]

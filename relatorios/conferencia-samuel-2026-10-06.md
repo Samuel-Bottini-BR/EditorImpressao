@@ -31,3 +31,18 @@ Lida da coleção `respostas` em 06/10/2026:
 
 - **M2** (`m2-pedaco-de-texto`): **Está bom assim** (mesmo comentário de antes).
 - **"Para revisar"** (`misto-para-revisar`): **Como está hoje (a partir de 10%)**, comentário novo: "gostaria de saber qual é o criterio para um pagina entrar em revisão, por exemplo tu mostrou ai paginas que selecionam pequenos pedações de figuras, capitulares e bordas como texto, isso é uma razão para ir para revisão."
+
+## Limpar pontinhos (P7), página de escolhas, 06/10/2026 (literais)
+
+- 14h58: sem escolha, comentário: "Não entendi se estou vendo o que o programa tirou ou o que ele deixou, tem lugares que mostra só os pontinhos, e outros que mostra só as letras." (imagens refeitas: preto = fica, vermelho = tirou)
+- 15h09: sem escolha, comentário: "eu quero ter uma visão geral da folha original, ficou muito pequeno. com a mesma explicação que fez agora." (imagens refeitas com a folha inteira)
+- 15h18–15h21: comentário "Eu vou poder ligar e desligar esse apagador de pingos? e selecionar o pouco, normal ou muito, ou selecionar o nosso - e o nosso da onde a gente tirou?" e escolha **ScanTailor "pouco"**.
+- No chat: "E o nosso muitas vezes acaba comendo muito as letras."
+
+## "Para revisar", rodada 1 (página do estudo)
+
+Respostas literais em `relatorios/revisar-decisoes/rodada-1/respostas-samuel.md`.
+
+## Layout, rodadas 7 e 8 (página "Layout do Editor de Impressão")
+
+Respostas literais no `Plano de layout (rascunho).md` (seções "Rodada 7 — respostas do Samuel" e "Rodada 8 — respostas do Samuel").

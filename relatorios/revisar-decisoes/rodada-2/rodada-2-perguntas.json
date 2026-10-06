@@ -1,0 +1,476 @@
+[
+ {
+  "id": "rv2-criterio",
+  "ordem": 1,
+  "parte": "Rodada 2 · o critério que saiu das suas respostas",
+  "pergunta": "Este é o critério que saiu das suas respostas. Fica assim?",
+  "explicacao": "No jeito de fábrica ('Guardar a tinta forte'), a página vai para 'Para revisar' quando: (1) o programa apagou parte de um desenho que não reconheceu como figura (a letra S do Palatino 76); (2) uma figura passou da beirada da gravura achada, ou uma mancha virou 'gravura' (Marial 454, Antiphon 260); (3) sobrou uma faixa escura encostada na beirada da página (o fundo do scanner da Matemática 32); se essa faixa aparece em quase todas as páginas do livro (70% ou mais), ela vira UM aviso no livro, e não manda cada página. Moldura, música ou letra grande que sai em preto e branco, igual ao Preto e branco de sempre, NÃO manda mais a página para a lista. Com esta regra, as 16 páginas da rodada 1 saem exatamente como você respondeu (tabela na imagem).",
+  "exemplos": [
+   {
+    "src": "img/criterio-tabela.jpg",
+    "legenda": "As 16 páginas da rodada 1: o que você respondeu, o que o programa faz hoje e com o critério novo."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim, fica assim",
+    "texto": "Pode usar este critério como padrão de fábrica.",
+    "imgs": []
+   },
+   {
+    "id": "quase",
+    "nome": "Quase: quero mudar",
+    "texto": "Diga no comentário o que mudar.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não",
+    "texto": "Não é isso que eu quero (diga no comentário por quê).",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-resp-graduale222",
+  "ordem": 2,
+  "parte": "Rodada 2 · respostas às suas perguntas",
+  "pergunta": "Graduale 222: é um caso isolado? Não ir para a lista pode afetar outros livros?",
+  "explicacao": "Não afeta. O critério novo não olha se a página tem música: olha se o programa APAGOU algum desenho. No Graduale a música fica inteira (no jeito de fábrica ela sai preta), então nada foi apagado e a página não precisa ir. Num livro sem música vale a mesma coisa: se o programa apagar a letra grande, a moldura ou o desenho, a página vai; se não apagar, não vai. Na imagem: em vermelho, o que foi apagado.",
+  "exemplos": [
+   {
+    "src": "img/resp-graduale222.jpg",
+    "legenda": "Graduale 222 (quase nada apagado) e Palatino 76 (a letra S apagada)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi",
+    "texto": "Ficou claro.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-resp-horas014",
+  "ordem": 3,
+  "parte": "Rodada 2 · respostas às suas perguntas",
+  "pergunta": "Horas 14: a página só vai se eu tiver marcado a opção que deixa as figuras fora do preto e branco?",
+  "explicacao": "Sim. Este aviso só existe quando a caixinha 'Só as letras' do Preto e branco está marcada (é ela que deixa gravuras e molduras como no original e passa só as letras para preto e branco). Sem ela, a página nunca vai para a lista por este motivo. E com o critério novo a Horas 14 também não vai, mesmo com a caixinha marcada, porque nada foi apagado: a moldura sai preta, igual ao Preto e branco de sempre. (Conferido no código: core/pipeline.py, o aviso só é posto pelo 'Só as letras'.)",
+  "exemplos": [
+   {
+    "src": "img/resp-horas014.jpg",
+    "legenda": "Horas 14: sem 'Só as letras' e com 'Só as letras'."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi",
+    "texto": "Ficou claro.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-resp-marial454",
+  "ordem": 4,
+  "parte": "Rodada 2 · respostas às suas perguntas",
+  "pergunta": "Marial 454: o programa deveria mostrar onde ele achou 'gravura', para eu clicar e apagar.",
+  "explicacao": "Esse pedido já está anotado na Lista de espera do plano (05/10, 'Mostrar as áreas que o programa achou sozinho', para a Fase 2, item 2.18, junto com o desenho da tela). Hoje já dá para consertar à mão: na aba Marcar, escolher 'gravura ou foto', o botão 'tirar' e desenhar um retângulo sobre o remendo; ele deixa de ser gravura e vai para o branco. Testei pelo caminho do programa: a imagem mostra o resultado.",
+  "exemplos": [
+   {
+    "src": "img/resp-marial454-marcar.jpg",
+    "legenda": "Marial 454: hoje, e com o remendo 'tirado' da gravura na aba Marcar."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi",
+    "texto": "Ficou claro.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-resp-graduale588",
+  "ordem": 5,
+  "parte": "Rodada 2 · respostas às suas perguntas",
+  "pergunta": "Graduale 588: se eu quiser deixar a letra S colorida, como figura, consigo?",
+  "explicacao": "Consegue, hoje. Na aba Marcar: escolher 'gravura ou foto' e desenhar um retângulo em volta da letra. Com 'Só as letras' marcada, a letra sai colorida como no original. Mas, no teste, tudo o que ficou dentro do retângulo saiu como no original, inclusive o papel amarelado e as pautas vermelhas em volta da letra; por isso o retângulo deve ficar bem justo na letra. Sem 'Só as letras', o Preto e branco transforma a gravura em desenho preto e branco; aí é preciso 'só neste pedaço' com o filtro Original. Testei pelo caminho do programa: a imagem mostra o resultado.",
+  "exemplos": [
+   {
+    "src": "img/resp-graduale588-marcar.jpg",
+    "legenda": "Graduale 588: hoje e com a letra marcada como 'gravura ou foto'."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi",
+    "texto": "Ficou claro.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-resp-matematica032",
+  "ordem": 6,
+  "parte": "Rodada 2 · respostas às suas perguntas",
+  "pergunta": "Matemática 32: a faixa escura embaixo deveria sair branca.",
+  "explicacao": "Concordo, e ela entra no critério novo (item 3: faixa escura encostada na beirada). Mas quem deve tirar a faixa é o corte das bordas, não o 'Só as letras': ela sai igual no Preto e branco de sempre. Isso é o item 2.13 do plano ('Detectar a página dentro da borda preta do scanner'), e a Matemática já está na lista de livros de teste da borda preta. Até lá, a página vai para a lista para alguém cortar à mão (ou, se o livro inteiro tiver a faixa, um aviso só no livro).",
+  "exemplos": [
+   {
+    "src": "img/resp-matematica032.jpg",
+    "legenda": "Matemática 32: a faixa sai igual nos dois jeitos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi",
+    "texto": "Ficou claro.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-so-texto-palatino010",
+  "ordem": 7,
+  "parte": "Rodada 2 · o jeito 'Só o texto achado'",
+  "pergunta": "Palatino 10: no 'Só o texto achado', a página deveria vir para a lista. E o aviso uma vez no livro?",
+  "explicacao": "Na rodada 1 você escolheu 'avisar uma vez no livro, não página por página'. No Palatino 10 você disse que, pedindo só texto, a página 'teria que vir, pois selecionou algo que não é texto'. As duas coisas podem valer juntas. Qual você quer?",
+  "exemplos": [
+   {
+    "src": "img/resp-palatino010-so-texto.jpg",
+    "legenda": "Palatino 10: a moldura fica no jeito de fábrica e some no 'Só o texto achado'."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "os-dois",
+    "nome": "Os dois",
+    "texto": "Aviso uma vez no livro E a página vai para a lista quando some algo grande (moldura, capitular, música, desenho).",
+    "imgs": []
+   },
+   {
+    "id": "so-livro",
+    "nome": "Só o aviso no livro",
+    "texto": "Nenhuma página vai sozinha para a lista; o aviso do livro basta.",
+    "imgs": []
+   },
+   {
+    "id": "so-paginas",
+    "nome": "Só página por página",
+    "texto": "Sem aviso no livro; cada página em que some algo vai para a lista.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-so-texto-aviso",
+  "ordem": 8,
+  "parte": "Rodada 2 · o jeito 'Só o texto achado'",
+  "pergunta": "O aviso do 'Só o texto achado' pode ser este?",
+  "explicacao": "Proposta de texto, mostrado uma vez quando você escolhe 'Só o texto achado' (na tela 'O que fazer' ou na aba Filtro) e guardado nas observações do livro: \"Neste jeito, só fica o texto que eu achei. Tudo o que não é texto nem gravura vai para o branco: letra grande, moldura, música, números da margem, tabelas e desenhos que eu não reconheci. Confira o livro antes de imprimir.\"",
+  "exemplos": [
+   {
+    "src": "img/fecho-palatino010.jpg",
+    "legenda": "Exemplo: no Palatino 10 a moldura some."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "fica",
+    "nome": "Fica assim",
+    "texto": "O texto está bom.",
+    "imgs": []
+   },
+   {
+    "id": "mudar",
+    "nome": "Quero mudar o texto",
+    "texto": "Escreva no comentário como prefere.",
+    "imgs": []
+   },
+   {
+    "id": "nao-precisa",
+    "nome": "Não precisa de aviso",
+    "texto": "Quem escolhe esse jeito já sabe o que ele faz.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv2-righetti052d",
+  "ordem": 9,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 52, página da direita (p. 365): pelo critério novo, esta página vai para a lista. Você concorda?",
+  "explicacao": "Olhe o meio do mosaico (as figuras debaixo do arco). O programa achou só pedaços do mosaico como gravura; o resto saiu pelo 'Só as letras' e muita parte clara foi apagada: o meio ficou ralo, com buracos brancos. O Preto e branco de sempre guarda mais. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti052d.jpg",
+    "legenda": "Righetti, folha 52, página da direita (p. 365). O mosaico de Ravena."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv2-righetti050d",
+  "ordem": 10,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 50, página da direita (p. 361): pelo critério novo, esta página vai para a lista. Você concorda?",
+  "explicacao": "Olhe o céu e as figuras de cima do mosaico: no jeito de fábrica ficaram manchas brancas onde o Preto e branco de sempre tem desenho. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti050d.jpg",
+    "legenda": "Righetti, folha 50, página da direita (p. 361). O mosaico de Abel e Melquisedec."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv2-righetti006d",
+  "ordem": 11,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 6, página da direita (p. 273): pelo critério novo, esta página vai para a lista. Você concorda?",
+  "explicacao": "Olhe o fundo da foto do manuscrito: o jeito de fábrica apagou o fundo cinza (o que é bom) e alguns tracinhos claros das letras pequenas de cima; as letras grandes ficam. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti006d.jpg",
+    "legenda": "Righetti, folha 6, página da direita (p. 273). A foto do manuscrito."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": true,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv2-righetti094d",
+  "ordem": 12,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 94, página da direita (p. 449): pelo critério novo, esta página não vai para a lista. Você concorda?",
+  "explicacao": "Olhe o cálice: o desenho fica inteiro, e o fundo pontilhado em volta vai para o branco. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti094d.jpg",
+    "legenda": "Righetti, folha 94, página da direita (p. 449). O cálice de Antioquia."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página não vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv2-righetti054e",
+  "ordem": 13,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 54, página da esquerda (p. 368): pelo critério novo, esta página não vai para a lista. Você concorda?",
+  "explicacao": "Olhe o mosaico da abóbada: o jeito de fábrica sai parecido com o Preto e branco de sempre; o pouco que foi apagado está espalhado, em pontinhos. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti054e.jpg",
+    "legenda": "Righetti, folha 54, página da esquerda (p. 368). O mosaico da abóbada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página não vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv2-righetti062e",
+  "ordem": 14,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 62, página da esquerda (p. 384): pelo critério novo, esta página não vai para a lista. Você concorda?",
+  "explicacao": "Olhe o fundo da pintura, entre as duas figuras: o jeito de fábrica tirou os pontinhos claros do fundo e manteve as figuras em tom de cinza; o Preto e branco de sempre sai mais sujo. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti062e.jpg",
+    "legenda": "Righetti, folha 62, página da esquerda (p. 384). A pintura das catacumbas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página não vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv2-righetti030e",
+  "ordem": 15,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 30, página da esquerda (p. 320): pelo critério novo, esta página não vai para a lista. Você concorda?",
+  "explicacao": "Olhe o ornamento e as letras do manuscrito: saem como no Preto e branco de sempre, com o fundo mais limpo. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti030e.jpg",
+    "legenda": "Righetti, folha 30, página da esquerda (p. 320). O 'VD' ornamentado do manuscrito."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página não vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv2-righetti041e",
+  "ordem": 16,
+  "parte": "Rodada 2 · um livro novo (Righetti, História da Liturgia)",
+  "pergunta": "Righetti, folha 41, página da esquerda (p. 342): pelo critério novo, esta página não vai para a lista. Você concorda?",
+  "explicacao": "Olhe a faixa escura em cima e à esquerda: é o fundo do scanner. Ela aparece em TODAS as páginas deste livro, então pelo critério novo vira um aviso só, no livro ('este livro tem a borda escura do scanner em quase todas as páginas'), e não manda cada página para a lista. O texto saiu bem. (Hoje: vai para a lista.)",
+  "exemplos": [
+   {
+    "src": "img/righetti041e.jpg",
+    "legenda": "Righetti, folha 41, página da esquerda (p. 342). A página de texto, com a faixa do scanner."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: a página não vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "criterio_novo": false,
+  "veredito_agente": "certa"
+ }
+]
