@@ -321,6 +321,9 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 05/10 | Achado pelo verificador (antigo, só tela): na aba Marcar, o botão aceso de "só neste pedaço" continua em "o mesmo da página" depois de clicar em Original, até trocar de aba (a escolha é gravada); o painel Histórico fica "nada ainda" depois de desenhar. | aba Marcar | idem |
 | 05/10 | Achado pelo verificador (antigo, de 29/09, anotado no código): depois de "Voltar para as opções" num livro já trabalhado, marcar "Montar cadernos" é ignorado sem aviso (a caixinha fica marcada e o PDF sai sem cadernos). | tela "O que fazer" / processar | idem |
 | 05/10 | Achado pelo verificador: a caixa "Antes de processar" diz "12 páginas" para um livro de 10. | janela "Antes de processar" | idem |
+| 05/10 | Achado pelo implementador (medido): a tela "O que fazer" desenha a página no fio da janela e espera o servidor de páginas — 1,35 s de janela parada ao clicar "continuar" no Siebmacher (regra: a interface nunca congela). | `ui/widgets/folhear_pdf.py` l. ~126 | `fase2-geometria`: `saida_teste/r1/` |
+| 05/10 | Achado pelo implementador: ao abrir o programa, a janela fica até ~10 s sem responder ainda na tela inicial (QScrollArea), junto com o aquecimento em segundo plano. Visto em duas rodadas; não investigado. | tela inicial / aquecimento | idem |
+| 05/10 | Achado pelo implementador: o D: é um disco USB giratório (WD easystore); gravar o projeto no fio da janela parava a janela 0,25–0,37 s por gravação (e muito mais com o disco disputado). Consertado no ramo `fase2-geometria` (`9a367de`, gravação por trás), a conferir. | `projetos.py` | idem |
 
 ## 6. Lista de espera (ideias novas)
 
