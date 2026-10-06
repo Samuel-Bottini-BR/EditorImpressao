@@ -43,7 +43,7 @@ branco escolhido, a caixinha "Só as letras" desta página, os três botões
 ("Guardar a tinta forte" / "Tudo em preto e branco" / "Só o texto achado") e o
 "Mais opções" (ui/widgets/escolhas_do_misto.py). A página herda do livro e
 troca só nela (ConfigPagina.misto_*); cada mudança é uma ação do desfazer,
-como o algoritmo e a limpeza de poeirinha. "todas" e "só nas próximas" levam
+como o algoritmo e o "Limpar pontinhos". "todas" e "só nas próximas" levam
 junto as escolhas do Misto desta página. O aviso "Tinta forte fora do texto"
 é acertado como o do fundo tirado. O alerta "Tem cor" some das páginas que
 saem pelo "Só as letras" (a ilustração fica em cor) e volta quando ela é
@@ -52,6 +52,14 @@ desligada, a cada atualização, em todas as páginas
 Com "Só as letras" valendo na página, o cartão "Preto e branco" mostra a
 página como vai sair, com o Misto, desenhada numa tarefa de prévia
 (_cartao_do_misto; bug Misto 2).
+
+Limpar pontinhos (decisão do Samuel de 06/10/2026, P7; provisório até o
+layout, exceção da gerente para o implementador mexer aqui): no bloco AJUSTE,
+só com o Preto e branco, a lista "Limpar pontinhos:" (desligado · o nosso ·
+pouco · normal · muito) no lugar da caixinha "limpar poeirinha". Mostra o que
+vale na página (dela ou do livro: core.pontinhos_scantailor.escolha_da_pagina);
+trocar é uma ação do desfazer só desta página (ConfigPagina.limpar_pontinhos);
+"todas" e "só nas próximas" levam a escolha junto.
 
 Girar a folha (item 2.3, 06/10/2026; provisório até o layout, exceção da
 gerente para o implementador mexer aqui): a barrinha de girar
@@ -89,6 +97,7 @@ from PySide6.QtWidgets import (
 )
 
 from core import analise, girar, linhas_do_texto, misto
+from core import pontinhos_scantailor as pontinhos
 from core.pipeline import acertar_alertas_de_cor, acertar_alertas_do_fundo
 from core.filtros import (
     ALGORITMOS_PB,
@@ -1359,13 +1368,20 @@ class TelaConferir(QWidget):
             self.seletor_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
         self.seletor_algoritmo_pb.currentIndexChanged.connect(self._mudar_algoritmo_pb)
         linha_algoritmo.addWidget(self.seletor_algoritmo_pb, 1)
-        self.caixa_despeckle = QCheckBox("limpar poeirinha")
-        self.caixa_despeckle.setToolTip(
-            "Remove manchas pretas pequenas demais pra ser letra. "
-            "Ligado é o comportamento de sempre."
-        )
-        self.caixa_despeckle.toggled.connect(self._mudar_despeckle)
-        linha_algoritmo.addWidget(self.caixa_despeckle)
+        # "Limpar pontinhos" (decisão do Samuel, 06/10/2026, P7), no lugar
+        # da caixinha "limpar poeirinha": desligado, o nosso, e o do
+        # ScanTailor em pouco/normal/muito. Só aparece com o Preto e branco
+        # (ver _configurar_medidor). Provisório até o layout. Seguro mudar:
+        # os textos (moram em core/pontinhos_scantailor.py).
+        self.rotulo_pontinhos = QLabel(pontinhos.ROTULO_NA_TELA)
+        linha_algoritmo.addWidget(self.rotulo_pontinhos)
+        self.seletor_pontinhos = QComboBox()
+        for chave in pontinhos.ESCOLHAS:
+            self.seletor_pontinhos.addItem(pontinhos.NOMES_NA_TELA[chave], chave)
+        self.seletor_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.rotulo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.seletor_pontinhos.currentIndexChanged.connect(self._mudar_pontinhos)
+        linha_algoritmo.addWidget(self.seletor_pontinhos)
         dentro.addLayout(linha_algoritmo)
 
         # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
@@ -2678,18 +2694,24 @@ class TelaConferir(QWidget):
         )
 
     @protegido
-    def _mudar_despeckle(self, ligado: bool) -> None:
-        """Problema 5 do plano: limpar poeirinha vira controle visível."""
+    def _mudar_pontinhos(self, indice: int) -> None:
+        """A lista "Limpar pontinhos" da aba Filtro (decisão do Samuel,
+        06/10/2026, P7): a escolha SÓ desta página, como ação do desfazer.
+        Nada acontece se o que já vale nela (dela ou do livro) é esse valor -
+        assim mostrar o valor do livro nunca grava na página."""
         if not self._pronta() or self.projeto is None:
             return
+        novo = self.seletor_pontinhos.itemData(indice)
+        if novo not in pontinhos.ESCOLHAS:
+            return
         pagina = self.projeto.paginas[self.indice_pagina]
-        if ligado == pagina.despeckle:
+        if novo == pontinhos.escolha_da_pagina(self.projeto, pagina):
             return
         self._registrar(
-            "mudar_despeckle", "pagina", [self.indice_pagina],
-            {"despeckle": ligado},
-            f"Limpar poeirinha na página {self.indice_pagina + 1}: "
-            + ("ligado" if ligado else "desligado"),
+            "mudar_pontinhos", "pagina", [self.indice_pagina],
+            {"limpar_pontinhos": novo},
+            f"Limpar pontinhos na página {self.indice_pagina + 1}: "
+            + pontinhos.NOMES_NA_TELA[novo],
         )
 
     # --- modo Misto ("Só as letras", 05/10/2026) ---------------------------
@@ -2774,7 +2796,8 @@ class TelaConferir(QWidget):
         # não binarizam.
         eh_preto_e_branco = pagina.filtro == PRETO_E_BRANCO
         self.seletor_algoritmo_pb.setVisible(eh_preto_e_branco)
-        self.caixa_despeckle.setVisible(eh_preto_e_branco)
+        self.rotulo_pontinhos.setVisible(eh_preto_e_branco)
+        self.seletor_pontinhos.setVisible(eh_preto_e_branco)
         # modo Misto: so no Preto e branco; mostra o que vale nesta pagina
         # (dela ou do livro), sem virar acao no desfazer
         self.escolhas_misto.setVisible(eh_preto_e_branco)
@@ -2787,9 +2810,12 @@ class TelaConferir(QWidget):
             self.seletor_algoritmo_pb.blockSignals(True)
             self.seletor_algoritmo_pb.setCurrentIndex(max(0, indice))
             self.seletor_algoritmo_pb.blockSignals(False)
-            self.caixa_despeckle.blockSignals(True)
-            self.caixa_despeckle.setChecked(pagina.despeckle)
-            self.caixa_despeckle.blockSignals(False)
+            # o que vale nesta página (dela ou do livro), sem virar ação
+            escolha = pontinhos.escolha_da_pagina(self.projeto, pagina)
+            self.seletor_pontinhos.blockSignals(True)
+            self.seletor_pontinhos.setCurrentIndex(
+                max(0, self.seletor_pontinhos.findData(escolha)))
+            self.seletor_pontinhos.blockSignals(False)
         self._medir_de_novo_a_barra()
 
     def _medir_de_novo_a_barra(self) -> None:
@@ -2938,7 +2964,8 @@ class TelaConferir(QWidget):
              "clareza_melhorar": pagina.clareza_melhorar,
              "intensidade_magico": pagina.intensidade_magico,
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             "despeckle": pagina.despeckle,
+             # "Limpar pontinhos" DESTA pagina (None = segue o livro)
+             "limpar_pontinhos": pagina.limpar_pontinhos,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} em todas as {len(indices)} páginas",
@@ -2956,7 +2983,8 @@ class TelaConferir(QWidget):
              "clareza_melhorar": pagina.clareza_melhorar,
              "intensidade_magico": pagina.intensidade_magico,
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             "despeckle": pagina.despeckle,
+             # "Limpar pontinhos" DESTA pagina (None = segue o livro)
+             "limpar_pontinhos": pagina.limpar_pontinhos,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",

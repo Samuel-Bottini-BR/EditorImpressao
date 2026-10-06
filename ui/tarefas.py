@@ -15,6 +15,7 @@ import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
 from core.misto import escolhas_da_pagina as escolhas_do_misto
+from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -459,13 +460,16 @@ class GerenciadorPrevias(QObject):
         ligado, escolhas = escolhas_do_misto(self.projeto, p)
         mist = (f"{escolhas.fora_do_texto}/{escolhas.papel_da_gravura}/"
                 f"{escolhas.letras_na_moldura}" if ligado else "-")
+        # "Limpar pontinhos" (06/10/2026): o que vale nesta pagina (dela ou do
+        # livro) - trocar no livro tambem refaz a previa
         return (
             f"{indice}:{dpi}:{filtro or p.filtro}:{p.forca_preto}:"
             f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
             f"{self.projeto.limpar}:{self.projeto.endireitar}:"
-            f"{self.projeto.cortar_bordas}:{mist}"
+            f"{self.projeto.cortar_bordas}:{mist}:"
+            f"{pontinhos_da_pagina(self.projeto, p)}"
         )
 
     # --- uso --------------------------------------------------------------

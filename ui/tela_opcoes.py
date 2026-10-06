@@ -46,6 +46,15 @@ outras opcoes desta tela, vale ao clicar "Conferir" e nao entra no desfazer
 (05/10): "So as letras" e os botoes so aparecem com o Preto e branco escolhido
 (a escolha fica guardada quando some), e o resumo diz o que o "So as letras"
 vai fazer (core.pipeline._frase_do_so_as_letras).
+
+Limpar pontinhos (decisao do Samuel de 06/10/2026, P7; provisorio ate o
+layout, excecao da gerente para o implementador mexer aqui): no grupo dos
+filtros, embaixo da caixinha das molduras, a lista "Limpar pontinhos:"
+(desligado · o nosso · pouco · normal · muito) do livro
+(Projeto.limpar_pontinhos; de fabrica "pouco", o do ScanTailor). Como o "So
+as letras", so aparece com o Preto e branco escolhido (a escolha fica
+guardada quando some), vale ao clicar "Conferir" e nao entra no desfazer.
+Cada pagina pode trocar so nela, na aba Filtro (ui/tela_conferir.py).
 """
 
 from __future__ import annotations
@@ -68,6 +77,7 @@ from PySide6.QtWidgets import (
 )
 
 from core import misto
+from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
 from core.filtros import (
     MAGICO_PRO,
@@ -323,9 +333,31 @@ class TelaOpcoes(QWidget):
         self.escolhas_misto.botao_mais.toggled.connect(
             lambda _v: self._acertar_altura_da_rolagem())
 
+        # "Limpar pontinhos" do livro (decisao do Samuel, 06/10/2026, P7):
+        # de fabrica o do ScanTailor "pouco"; desligado, o nosso, normal e
+        # muito continuam como opcao. Numa linha inteira da grade, embaixo
+        # da caixinha das molduras, so com o Preto e branco escolhido (ver
+        # _mudou). Seguro mudar: os textos (core/pontinhos_scantailor.py).
+        self.linha_pontinhos = QWidget()
+        linha = QHBoxLayout(self.linha_pontinhos)
+        linha.setContentsMargins(0, 6, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_pontinhos = QLabel(pontinhos.ROTULO_NA_TELA)
+        self.combo_pontinhos = QComboBox()
+        for chave in pontinhos.ESCOLHAS:
+            self.combo_pontinhos.addItem(pontinhos.NOMES_NA_TELA[chave], chave)
+        self.combo_pontinhos.setCurrentIndex(self.combo_pontinhos.findData(pontinhos.PADRAO))
+        self.combo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.rotulo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.combo_pontinhos.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_pontinhos)
+        linha.addWidget(self.combo_pontinhos)
+        linha.addStretch()
+
         linhas = (len(FILTROS_NA_TELA) + 1) // 2
         grade.addWidget(self.escolhas_misto, linhas, 0, 1, 4)
         grade.addLayout(bloco, linhas + 1, 0, 1, 4)
+        grade.addWidget(self.linha_pontinhos, linhas + 2, 0, 1, 4)
         return painel
 
     def _montar_gravuras(self) -> QWidget:
@@ -577,6 +609,13 @@ class TelaOpcoes(QWidget):
             getattr(projeto, "misto_fora_do_texto", misto.FORA_DO_TEXTO_PADRAO),
             getattr(projeto, "misto_papel_da_gravura", misto.PAPEL_DA_GRAVURA_PADRAO),
             getattr(projeto, "misto_letras_na_moldura", misto.LETRAS_NA_MOLDURA_PADRAO))
+        # "Limpar pontinhos" do livro (projeto em memoria sem o campo: o de
+        # fabrica). Sem sinal: quem grava no projeto e o _mudou logo abaixo,
+        # ja com self.projeto certo.
+        self.combo_pontinhos.blockSignals(True)
+        self.combo_pontinhos.setCurrentIndex(self.combo_pontinhos.findData(
+            pontinhos.escolha_valida(getattr(projeto, "limpar_pontinhos", pontinhos.PADRAO))))
+        self.combo_pontinhos.blockSignals(False)
         # "Mais opcoes" abre sozinho quando alguma das avancadas nao esta no
         # padrao: a pessoa ve o que foi mudado (fechado, ficaria escondido)
         fora_do_padrao = (sensibilidade != 100 or bool(projeto.gravura_mais_sensivel)
@@ -663,6 +702,11 @@ class TelaOpcoes(QWidget):
         # a escolha fica guardada e volta ao escolher o Preto e branco de novo.
         no_preto_e_branco = self.projeto.filtro_padrao == PRETO_E_BRANCO
         self.escolhas_misto.setVisible(no_preto_e_branco)
+        # "Limpar pontinhos" do livro (06/10): como o "So as letras", so a
+        # vista com o Preto e branco; escondida, a escolha fica guardada
+        self.projeto.limpar_pontinhos = pontinhos.escolha_valida(
+            self.combo_pontinhos.currentData())
+        self.linha_pontinhos.setVisible(no_preto_e_branco)
         # P5 (conferencia 11): a caixinha das molduras fica apagada (cinza)
         # enquanto "So as letras" estiver marcada (e a vista), e volta como
         # estava ao desligar - o valor dela nao muda, so nao vale no Misto
