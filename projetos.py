@@ -480,9 +480,11 @@ def _esperar_ao_sair() -> None:
     esperar_gravacoes(10.0)
 
 
-# Pastas de projeto cujo projeto.json ja esta no formato novo (zonas na folha),
-# nesta sessao: nao precisam ser lidas de novo a cada gravacao. Seguro
-# esvaziar a qualquer hora (so custa ler o arquivo uma vez).
+# Pastas de projeto que ja nao precisam da copia das zonas nesta sessao: o
+# projeto.json ja estava no formato novo, nao tinha zonas, ou a copia ja foi
+# feita (_copia_antes_das_zonas_na_folha). Nao precisam ser lidas de novo a
+# cada gravacao. Seguro esvaziar a qualquer hora (so custa ler o arquivo uma
+# vez; com o arquivo ja regravado pelo programa novo, pode sair mais uma copia).
 _JA_NO_FORMATO_NOVO: set[str] = set()
 
 # Nome da copia: "projeto.antigo-zonas-na-folha-AAAA-MM-DD-HHMM.json". Tem o
@@ -491,32 +493,49 @@ _JA_NO_FORMATO_NOVO: set[str] = set()
 MOTIVO_DA_COPIA_DAS_ZONAS = "zonas-na-folha"
 
 
-def _copia_antes_das_zonas_na_folha(pasta: Path, dados: dict, agora: datetime | None = None) -> bool:
-    """Guarda o projeto.json antigo antes da primeira gravacao com as zonas na
-    folha original (decisao D2 do Samuel, 02/10/2026: "Sim, pode mudar (com
-    copia de seguranca dos projetos)").
+def _copia_antes_das_zonas_na_folha(pasta: Path, dados: dict | None = None,
+                                    agora: datetime | None = None) -> bool:
+    """Guarda o projeto.json antigo antes de o programa novo gravar por cima
+    dele (decisao D2 do Samuel, 02/10/2026: "Sim, pode mudar (com copia de
+    seguranca dos projetos)").
 
-    So quando: o que vai ser gravado tem zonas no formato novo E o arquivo
-    em disco tem zonas so no formato antigo (core/zonas_na_folha). A copia e
-    feita uma vez (a gravacao seguinte ja encontra o formato novo), em modo
-    exclusivo, nunca por cima de outra, e nada no programa a apaga. Devolve
+    A copia e o arquivo EXATAMENTE como estava, byte a byte (ressalva R2 do
+    verificador, 05/10/2026): por isso ela e feita antes de QUALQUER gravacao
+    do programa novo por cima de um projeto.json com zonas so no formato
+    antigo (core/zonas_na_folha) - inclusive a primeira, que ainda vai no
+    formato antigo (a que a janela faz ao abrir, ui/janela_principal.
+    _analise_pronta, antes de converter) e que ja mudaria o arquivo (acrescenta
+    "geometria_das_zonas": null em cada pagina). Antes do R2 a copia so era
+    feita na primeira gravacao com zonas no formato novo, e guardava o arquivo
+    ja regravado. `dados` (o que vai ser gravado) nao decide mais nada; fica
+    na assinatura so por compatibilidade.
+
+    Uma vez por pasta nesta sessao (_JA_NO_FORMATO_NOVO), em modo exclusivo,
+    nunca por cima de outra, e nada no programa a apaga. Os bytes copiados
+    sao os mesmos que foram lidos para decidir (uma leitura so). Devolve
     False se havia o que guardar e nao deu (ai quem chama grava no formato
     de antes, sem converter: o trabalho e gravado e a conversao espera).
-    Arriscado: devolver True sem a copia feita.
+    Arriscado: devolver True sem a copia feita; voltar a exigir que `dados`
+    esteja no formato novo (a copia voltaria a ser do arquivo ja regravado).
     """
     from core.zonas_na_folha import tem_formato_novo, tem_zonas_no_formato_antigo
 
     chave = str(pasta.resolve())
-    if chave in _JA_NO_FORMATO_NOVO or not tem_formato_novo(dados):
+    if chave in _JA_NO_FORMATO_NOVO:
         return True
     estado = pasta / ARQUIVO_ESTADO
     try:
-        antigo = json.loads(estado.read_text(encoding="utf-8")) if estado.is_file() else None
-    except (OSError, ValueError):
-        antigo = None                 # ilegivel: a copia abaixo guarda os bytes
-        if estado.is_file():
-            antigo = {"paginas": [{"selecao": ["?"]}]}
-    if antigo is None or tem_formato_novo(antigo) or not tem_zonas_no_formato_antigo(antigo):
+        bytes_antigos = estado.read_bytes() if estado.is_file() else None
+    except OSError:
+        return False                  # existe e nao deu para ler: tenta na proxima
+    if bytes_antigos is None:
+        _JA_NO_FORMATO_NOVO.add(chave)
+        return True
+    try:
+        antigo = json.loads(bytes_antigos.decode("utf-8"))
+    except ValueError:
+        antigo = {"paginas": [{"selecao": ["?"]}]}   # ilegivel: a copia guarda os bytes
+    if tem_formato_novo(antigo) or not tem_zonas_no_formato_antigo(antigo):
         _JA_NO_FORMATO_NOVO.add(chave)
         return True
     carimbo = (agora or datetime.now()).strftime("%Y-%m-%d-%H%M")
@@ -525,7 +544,7 @@ def _copia_antes_das_zonas_na_folha(pasta: Path, dados: dict, agora: datetime | 
         destino = pasta / f"projeto.antigo-{MOTIVO_DA_COPIA_DAS_ZONAS}-{sufixo}.json"
         try:
             with destino.open("xb") as copia:
-                copia.write(estado.read_bytes())
+                copia.write(bytes_antigos)
         except FileExistsError:
             continue
         except OSError:
@@ -636,6 +655,9 @@ def anotar_no_estado(resumo: Resumo, **campos) -> bool:
         if not isinstance(dados, dict):
             return False
         dados.update(campos)
+        # R2 (05/10/2026): a copia de seguranca do projeto.json antigo com
+        # zonas vem antes de QUALQUER gravacao do programa novo, esta tambem.
+        _copia_antes_das_zonas_na_folha(caminho.parent)
         temporario = caminho.with_name(ARQUIVO_ESTADO + ".novo")
         temporario.write_text(json.dumps(dados, ensure_ascii=False, indent=1),
                               encoding="utf-8")

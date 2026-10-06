@@ -494,6 +494,37 @@ def test_janela_converte_por_tras_sem_congelar_e_mostra_o_andamento(janela, app,
     assert projetos.carregar_estado(janela.resumo) is not None
 
 
+def test_a_copia_e_o_projeto_de_antes_byte_a_byte(janela, app, pdf):
+    """R2 do verificador (05/10/2026): abrir um projeto antigo pela janela
+    grava logo (no formato antigo, acrescentando "geometria_das_zonas":
+    null) e so depois converte. A copia de seguranca tem de ser o arquivo
+    como estava antes de o programa novo tocar nele, byte a byte."""
+    import projetos
+
+    original = projetos.salvar_estado
+    lidos = []
+
+    def anotar_antes(resumo, projeto):
+        caminho = __import__("pathlib").Path(resumo.pasta) / projetos.ARQUIVO_ESTADO
+        if caminho.is_file() and not lidos:
+            lidos.append(caminho.read_bytes())         # o arquivo antes da 1a gravacao
+        original(resumo, projeto)
+
+    projetos.salvar_estado = anotar_antes
+    try:
+        arquivo = _abrir_projeto_antigo(janela, pdf)
+        tarefa = janela.conversao_das_zonas
+        _esperar(app, lambda: not tarefa.isRunning() and janela.conversao_das_zonas is None)
+        janela._salvar_agora()
+    finally:
+        projetos.salvar_estado = original
+    copias = list(arquivo.parent.glob("projeto.antigo-zonas-na-folha-*.json"))
+    assert len(copias) == 1
+    assert lidos and copias[0].read_bytes() == lidos[0]
+    assert b"geometria_das_zonas" not in copias[0].read_bytes()
+    assert zf.tem_formato_novo(json.loads(arquivo.read_text(encoding="utf-8")))
+
+
 def test_fechar_a_janela_no_meio_nao_estraga_e_continua(janela, app, pdf, monkeypatch):
     import projetos
 

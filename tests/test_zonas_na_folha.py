@@ -434,11 +434,15 @@ def test_copia_de_seguranca_antes_de_converter(pdf, tmp_path):
 
     projeto = Projeto.de_dicionario(copy.deepcopy(antigo))
     resumo = _resumo(pasta)
-    projetos.salvar_estado(resumo, projeto)          # ainda nada convertido: sem copia
-    assert not list(pasta.glob("projeto.antigo-zonas-na-folha-*"))
+    # R2 (05/10/2026): a copia vem antes de QUALQUER gravacao do programa
+    # novo, mesmo a que ainda sai no formato antigo (a que a janela faz ao
+    # abrir), e e o arquivo de antes byte a byte.
+    projetos.salvar_estado(resumo, projeto)          # ainda nada convertido
+    copias = list(pasta.glob("projeto.antigo-zonas-na-folha-*.json"))
+    assert len(copias) == 1 and copias[0].read_bytes() == bytes_antigos
     assert not zf.tem_formato_novo(json.loads(arquivo.read_text(encoding="utf-8")))
     assert json.loads(arquivo.read_text(encoding="utf-8"))["paginas"][0]["selecao"] == zonas
-    bytes_antigos = arquivo.read_bytes()             # o antigo como esta antes de converter
+    assert arquivo.read_bytes() != bytes_antigos     # o programa novo ja mexeu no arquivo
 
     _desenhar(pdf, projeto)                           # a previa converte a pagina
     projetos.salvar_estado(resumo, projeto)
@@ -451,6 +455,26 @@ def test_copia_de_seguranca_antes_de_converter(pdf, tmp_path):
     projetos.salvar_estado(resumo, projeto)          # gravar de novo nao faz outra
     assert len(list(pasta.glob("projeto.antigo-zonas-na-folha-*"))) == 1
     assert copias[0].read_bytes() == bytes_antigos
+
+
+def test_anotar_no_estado_tambem_copia_antes(pdf, tmp_path):
+    """R2: a gravacao de so alguns campos (a pergunta do fundo, antes de o
+    trabalho carregar) tambem e do programa novo: a copia vem antes, igual
+    ao arquivo de antes, e uma vez so."""
+    import projetos
+
+    pasta = tmp_path / "projeto"
+    pasta.mkdir()
+    antigo = _dicionario_antigo(pdf, _zona_sobre_o_vermelho(pdf))
+    arquivo = pasta / projetos.ARQUIVO_ESTADO
+    arquivo.write_text(json.dumps(antigo, ensure_ascii=False, indent=2), encoding="utf-8")
+    bytes_antigos = arquivo.read_bytes()
+    resumo = _resumo(pasta)
+    assert projetos.anotar_no_estado(resumo, perguntou_fundo=True)
+    copias = list(pasta.glob("projeto.antigo-zonas-na-folha-*.json"))
+    assert len(copias) == 1 and copias[0].read_bytes() == bytes_antigos
+    projetos.salvar_estado(resumo, Projeto.de_dicionario(copy.deepcopy(antigo)))
+    assert len(list(pasta.glob("projeto.antigo-zonas-na-folha-*"))) == 1
 
 
 def test_sem_zonas_nao_ha_copia(pdf, tmp_path):
