@@ -1,0 +1,274 @@
+{
+ "boecio_p003": {
+  "pb_s": 0.35,
+  "misto_s": 0.24,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "boecio_p007": {
+  "pb_s": 0.24,
+  "misto_s": 0.21,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "boecio_p008": {
+  "pb_s": 0.23,
+  "misto_s": 0.2,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "boecio_p022": {
+  "pb_s": 0.3,
+  "misto_s": 0.21,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "escola_p007": {
+  "pb_s": 1.22,
+  "misto_s": 1.44,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 32.65,
+  "misto_igual_ao_pb": false
+ },
+ "escola_p035": {
+  "pb_s": 0.91,
+  "misto_s": 1.0,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 35.05,
+  "misto_igual_ao_pb": false
+ },
+ "graduale_p221": {
+  "pb_s": 2.24,
+  "misto_s": 2.11,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "graduale_p222": {
+  "pb_s": 2.57,
+  "misto_s": 2.16,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "graduale_p223": {
+  "pb_s": 2.42,
+  "misto_s": 2.22,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "horas_p011": {
+  "pb_s": 7.39,
+  "misto_s": 8.06,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 80.65,
+  "misto_igual_ao_pb": true
+ },
+ "horas_p013": {
+  "pb_s": 4.64,
+  "misto_s": 4.66,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 5.25,
+  "misto_igual_ao_pb": true
+ },
+ "horas_p014": {
+  "pb_s": 5.82,
+  "misto_s": 5.56,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "horas_p026": {
+  "pb_s": 5.81,
+  "misto_s": 5.9,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 23.49,
+  "misto_igual_ao_pb": true
+ },
+ "horas_p027": {
+  "pb_s": 5.63,
+  "misto_s": 4.97,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 6.78,
+  "misto_igual_ao_pb": true
+ },
+ "horas_p047": {
+  "pb_s": 5.51,
+  "misto_s": 6.53,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 58.75,
+  "misto_igual_ao_pb": true
+ },
+ "marial_p007": {
+  "pb_s": 2.03,
+  "misto_s": 2.36,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 1.93,
+  "misto_igual_ao_pb": false
+ },
+ "opusmajus_p003": {
+  "pb_s": 0.3,
+  "misto_s": 0.41,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "opusmajus_p011": {
+  "pb_s": 0.23,
+  "misto_s": 0.2,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "opusmajus_p020": {
+  "pb_s": 0.45,
+  "misto_s": 0.45,
+  "pb_1bit": false,
+  "misto_1bit": false,
+  "gravura_pct": 74.04,
+  "misto_igual_ao_pb": false
+ },
+ "opusmajus_p165": {
+  "pb_s": 0.25,
+  "misto_s": 0.24,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "opusmajus_p256": {
+  "pb_s": 0.33,
+  "misto_s": 0.32,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "palatino_p005": {
+  "pb_s": 0.41,
+  "misto_s": 0.52,
+  "pb_1bit": true,
+  "misto_1bit": false,
+  "gravura_pct": 50.49,
+  "misto_igual_ao_pb": false
+ },
+ "palatino_p007": {
+  "pb_s": 0.21,
+  "misto_s": 0.21,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "palatino_p009": {
+  "pb_s": 0.27,
+  "misto_s": 0.25,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "palatino_p010": {
+  "pb_s": 0.19,
+  "misto_s": 0.19,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "palatino_p057": {
+  "pb_s": 0.2,
+  "misto_s": 0.17,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "palatino_p066": {
+  "pb_s": 0.23,
+  "misto_s": 0.26,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "palatino_p067": {
+  "pb_s": 0.39,
+  "misto_s": 0.31,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "rhetorica_p018": {
+  "pb_s": 0.42,
+  "misto_s": 0.38,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "rhetorica_p073": {
+  "pb_s": 0.37,
+  "misto_s": 0.37,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "siebmacher_p007-1": {
+  "pb_s": 0.14,
+  "misto_s": 0.13,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "siebmacher_p007-2": {
+  "pb_s": 0.1,
+  "misto_s": 0.1,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "siebmacher_p009-1": {
+  "pb_s": 0.1,
+  "misto_s": 0.11,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ },
+ "siebmacher_p009-2": {
+  "pb_s": 0.08,
+  "misto_s": 0.09,
+  "pb_1bit": true,
+  "misto_1bit": true,
+  "gravura_pct": 0.0,
+  "misto_igual_ao_pb": true
+ }
+}

@@ -19,6 +19,7 @@ import configuracoes
 import historico
 import projetos
 from core.camadas import pdf_tem_camadas
+from core.misto import CAMPOS_DO_MISTO
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
 from core.pipeline import (
     CAMPOS_DA_GRAVURA,
@@ -569,6 +570,10 @@ class JanelaPrincipal(QMainWindow):
         # emenda N2 do Samuel (30/09): moldura e iluminura tambem no P&B
         self.projeto.pb_decoracao_em_preto_e_branco = bool(
             getattr(salvo, "pb_decoracao_em_preto_e_branco", False))
+        # modo Misto (05/10): "So as letras" e as escolhas do livro (projeto
+        # antigo, sem os campos, volta com os padroes: Misto desligado)
+        for campo in CAMPOS_DO_MISTO:
+            setattr(self.projeto, campo, getattr(salvo, campo, getattr(self.projeto, campo)))
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
@@ -683,6 +688,10 @@ class JanelaPrincipal(QMainWindow):
                 # sao refeitas (GerenciadorPrevias novo, logo abaixo).
                 salvo.pb_decoracao_em_preto_e_branco = bool(
                     getattr(projeto, "pb_decoracao_em_preto_e_branco", False))
+                # Modo Misto (05/10): as escolhas do livro tambem vem da tela
+                # (so mudam a imagem do filtro; as da pagina ficam no salvo)
+                for campo in CAMPOS_DO_MISTO:
+                    setattr(salvo, campo, getattr(projeto, campo))
                 if gravuras_refeitas:
                     self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 projeto = salvo
@@ -853,7 +862,9 @@ class JanelaPrincipal(QMainWindow):
                        "cortar_bordas", "montar_cadernos", "paginas_por_caderno",
                        *CAMPOS_DA_GRAVURA,      # item 1.2: "Gravuras e fotos"
                        # emenda N2 do Samuel (30/09): moldura e iluminura no P&B
-                       "pb_decoracao_em_preto_e_branco")
+                       "pb_decoracao_em_preto_e_branco",
+                       # modo Misto (05/10): "So as letras" e as escolhas dela
+                       *CAMPOS_DO_MISTO)
 
     def _sair_da_conferencia(self) -> None:
         """Voltar para as opcoes grava antes: sair nao pode custar trabalho.

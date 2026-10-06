@@ -32,6 +32,20 @@ grupo dos filtros, a caixinha "No Preto e branco, molduras e iluminuras tambem
 em preto e branco" (Projeto.pb_decoracao_em_preto_e_branco), desmarcada de
 fabrica: a moldura dourada e a iluminura mantem a cor do original; "traco
 preto so se eu escolher". Ver _montar_filtros.
+
+Modo Misto (05/10/2026; provisorio ate o layout, excecao da gerente para o
+implementador mexer aqui): no grupo dos filtros, a caixinha "So as letras" do
+Preto e branco, com os tres botoes ("Guardar a tinta forte" / "Tudo em preto
+e branco" / "So o texto achado") e o "Mais opcoes" (papel de dentro das
+gravuras, letras dentro de molduras e iluminuras) - ui/widgets/
+escolhas_do_misto.py, gravado no livro (Projeto.misto_*, conferencia 10,
+P1 (a)). Com "So as letras" marcada, a caixinha das molduras fica apagada
+(cinza) e volta como estava ao desmarcar (conferencia 11, P5 (a)). Como as
+outras opcoes desta tela, vale ao clicar "Conferir" e nao entra no desfazer
+(o desfazer e das acoes na conferencia). Consertos do parecer do verificador
+(05/10): "So as letras" e os botoes so aparecem com o Preto e branco escolhido
+(a escolha fica guardada quando some), e o resumo diz o que o "So as letras"
+vai fazer (core.pipeline._frase_do_so_as_letras).
 """
 
 from __future__ import annotations
@@ -53,6 +67,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import misto
 from core.cadernos import paginas_por_caderno_valido
 from core.filtros import (
     MAGICO_PRO,
@@ -65,6 +80,7 @@ from core.filtros import (
 from core.pipeline import resumo_em_portugues
 from modelos import Projeto
 from ui.estilo import TEXTO_FRACO, estilo_da_caixinha_com_quadrado
+from ui.widgets.escolhas_do_misto import EscolhasDoMisto
 from ui.widgets.folhear_pdf import FolhearPDF
 
 FILTROS_NA_TELA = [
@@ -275,21 +291,41 @@ class TelaOpcoes(QWidget):
         # quebrando a linha. Seguro mudar: os textos.
         self.cx_decoracao_pb = QCheckBox(
             "No Preto e branco, molduras e iluminuras também em preto e branco")
-        self.cx_decoracao_pb.setStyleSheet(estilo_da_caixinha_com_quadrado(14))
+        # apagada (cinza) por inteiro quando "So as letras" esta marcada (P5):
+        # a folha de estilo do programa pinta todo texto da mesma cor, entao o
+        # cinza do texto desabilitado tem de ser dito aqui
+        self.cx_decoracao_pb.setStyleSheet(estilo_da_caixinha_com_quadrado(14)
+                                           + " QCheckBox:disabled { color: #9ca3af; }")
         self.cx_decoracao_pb.setChecked(False)
         self.cx_decoracao_pb.toggled.connect(self._mudou)
         frase = QLabel("desmarcada, a moldura dourada e a iluminura ficam com a cor do "
                        "original; marcada, saem só com o traço em preto")
         frase.setWordWrap(True)
         frase.setContentsMargins(28, 0, 0, 2)
-        frase.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        frase.setStyleSheet(f"QLabel {{ color: {TEXTO_FRACO}; font-size: 12px; }}"
+                            " QLabel:disabled { color: #c4c8ce; }")
+        self._frase_decoracao_pb = frase
         bloco = QVBoxLayout()
         bloco.setContentsMargins(0, 6, 0, 0)
         bloco.setSpacing(2)
         bloco.addWidget(self.cx_decoracao_pb)
         bloco.addWidget(frase)
+
+        # Modo Misto (05/10/2026): "So as letras" e as escolhas dela, logo
+        # abaixo dos filtros e acima da caixinha das molduras (que fica
+        # apagada enquanto "So as letras" estiver marcada: ver _mudou)
+        self.escolhas_misto = EscolhasDoMisto()
+        self.escolhas_misto.setContentsMargins(0, 6, 0, 0)
+        self.escolhas_misto.so_as_letras_mudou.connect(lambda _v: self._mudou())
+        self.escolhas_misto.fora_do_texto_escolhido.connect(lambda _v: self._mudou())
+        self.escolhas_misto.papel_escolhido.connect(lambda _v: self._mudou())
+        self.escolhas_misto.letras_escolhidas.connect(lambda _v: self._mudou())
+        self.escolhas_misto.botao_mais.toggled.connect(
+            lambda _v: self._acertar_altura_da_rolagem())
+
         linhas = (len(FILTROS_NA_TELA) + 1) // 2
-        grade.addLayout(bloco, linhas, 0, 1, 4)
+        grade.addWidget(self.escolhas_misto, linhas, 0, 1, 4)
+        grade.addLayout(bloco, linhas + 1, 0, 1, 4)
         return painel
 
     def _montar_gravuras(self) -> QWidget:
@@ -535,6 +571,12 @@ class TelaOpcoes(QWidget):
         self.cx_igualar_luz.setChecked(bool(projeto.gravura_normalizar))
         self.cx_decoracao_pb.setChecked(
             bool(getattr(projeto, "pb_decoracao_em_preto_e_branco", False)))
+        # modo Misto (projeto antigo em memoria, sem os campos: os padroes)
+        self.escolhas_misto.mostrar(
+            bool(getattr(projeto, "misto_so_as_letras", False)),
+            getattr(projeto, "misto_fora_do_texto", misto.FORA_DO_TEXTO_PADRAO),
+            getattr(projeto, "misto_papel_da_gravura", misto.PAPEL_DA_GRAVURA_PADRAO),
+            getattr(projeto, "misto_letras_na_moldura", misto.LETRAS_NA_MOLDURA_PADRAO))
         # "Mais opcoes" abre sozinho quando alguma das avancadas nao esta no
         # padrao: a pessoa ve o que foi mudado (fechado, ficaria escondido)
         fora_do_padrao = (sensibilidade != 100 or bool(projeto.gravura_mais_sensivel)
@@ -606,6 +648,27 @@ class TelaOpcoes(QWidget):
         self.valor_sensibilidade.setText(str(self.projeto.gravura_sensibilidade))
         # emenda N2 (30/09): moldura e iluminura tambem em preto e branco
         self.projeto.pb_decoracao_em_preto_e_branco = self.cx_decoracao_pb.isChecked()
+        # modo Misto (05/10): "So as letras" e as escolhas dela
+        escolhas = self.escolhas_misto
+        so_as_letras = escolhas.caixa.isChecked()
+        self.projeto.misto_so_as_letras = so_as_letras
+        self.projeto.misto_fora_do_texto = escolhas.fora_do_texto()
+        self.projeto.misto_papel_da_gravura = (escolhas.combo_papel.currentData()
+                                               or misto.PAPEL_DA_GRAVURA_PADRAO)
+        self.projeto.misto_letras_na_moldura = (escolhas.combo_letras.currentData()
+                                                or misto.LETRAS_NA_MOLDURA_PADRAO)
+        # "So as letras" (e os tres botoes) so aparecem com o Preto e branco
+        # escolhido: so nele o Misto vale (core.pipeline._filtrar). Ressalva 3
+        # do verificador (05/10): com o Original aparecia e confundia. Escondida,
+        # a escolha fica guardada e volta ao escolher o Preto e branco de novo.
+        no_preto_e_branco = self.projeto.filtro_padrao == PRETO_E_BRANCO
+        self.escolhas_misto.setVisible(no_preto_e_branco)
+        # P5 (conferencia 11): a caixinha das molduras fica apagada (cinza)
+        # enquanto "So as letras" estiver marcada (e a vista), e volta como
+        # estava ao desligar - o valor dela nao muda, so nao vale no Misto
+        misto_vale = so_as_letras and no_preto_e_branco
+        self.cx_decoracao_pb.setEnabled(not misto_vale)
+        self._frase_decoracao_pb.setEnabled(not misto_vale)
 
         # os painéis so aparecem quando fazem sentido; o filtro "Tirar o
         # fundo" (item 1.1), so em PDF com camadas - fora dele nao faria nada
