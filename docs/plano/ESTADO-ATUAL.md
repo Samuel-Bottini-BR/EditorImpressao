@@ -17,6 +17,8 @@ O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que val
 > A1 (Horas 47 no Preto e branco) e X2 (Opus 20 no Mágico pro) foram consertados e verificados, junto com
 > o medidor de força, a Horas 11 e o "salvar como (2)"; esperam o Samuel no `relatorios/conferir-aqui-7.html`.
 > Resumo da sessão de 02–03/10: **PARTE -10** do handoff.
+>
+> **Atualização de 06/10/2026:** juntados ao `fase-1` o modo Misto ("Só as letras"), as zonas presas à folha original com conversão por trás, a gravação do projeto por trás e os consertos de 05/10. Prontos em ramos: o item 2.3 girar (`fase2-geometria`, falta refazer a verificação dos consertos) e os consertos do pedaço (`pedaco-e-salvo-2-2026-10-05`, esperando o formulário 15). Decisões do Samuel em 05–06/10 no Registro de mudanças. Resumo da sessão: **PARTE -11** do handoff.
 
 ---
 

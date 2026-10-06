@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 03/10/2026 (PARTE -10). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 06/10/2026 (PARTE -11). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,204 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -10 — Checkpoint de 02 a 03/10/2026 (leia isto primeiro, é o mais novo)
+# PARTE -11 — Checkpoint de 05 a 06/10/2026 (leia isto primeiro, é o mais novo)
+
+**O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). Tudo o que está aqui
+tem linha própria, com commit, no **Registro de mudanças**, na **Lista de bugs** e na **Lista de espera** do
+PLANO-DEFINITIVO (as duas cópias do plano estão iguais no fim desta sessão). Respostas literais do Samuel desta
+sessão: `relatorios/conferencia-samuel-2026-10-05.md` (conf. 7), `-b` (10), `-c` (11), `-d` (12), `-e` (13),
+`-f` (8), `-g` (9), `-h` (14).
+
+## 1. Estado atual (06/10, fim da sessão)
+
+**Ramo `fase-1` no GitHub em `9d1b7c0`** (tudo abaixo "juntado" está nele). `master` continua em `44c86a4`.
+
+Juntado ao `fase-1` e conferido na janela real por verificador (PRONTO PARA CONFERIR, nunca "aprovado"):
+- **Consertos da janela (05/10):** gerar o mesmo livro de novo não trava; cartão mostra "pronto, PDF gerado";
+  trava do atalho da Horas 11 (merge `1e35a6a`).
+- **"Substituir o antigo" + cancelar não apaga mais o PDF antigo** (grava em `~nome.pdf.parcial` e troca no fim);
+  **"só neste pedaço" vale no Preto e branco** (Samuel: Escola 7 e Opus 20 BOM, conf. 13) (merge `a61b505`).
+- **Modo Misto ligado ao programa** (merge `2efc409`): caixinha **"Só as letras"** no Preto e branco, por livro
+  (tela "O que fazer") e por página (aba Filtro); três botões **Guardar a tinta forte** (padrão; linhas achadas só
+  com o docTR) / **Tudo em preto e branco** / **Só o texto achado**; "Mais opções" com papel da gravura (branco de
+  fábrica / como escaneado) e letras da moldura (cor + papel branco de fábrica / cor + fundo original / pretas);
+  caixinha das molduras cinza enquanto "Só as letras" marcada; "Só as letras" só aparece com o Preto e branco;
+  alerta de cor some com o Misto; cartão "Preto e branco" mostra a página com o Misto; "Para revisar" sozinho
+  quando há tinta forte fora do texto (limite 10% **provisório**, ver perguntas). Código: `core/misto.py`,
+  `core/linhas_do_texto.py`, `ui/widgets/escolhas_do_misto.py`. Aparência provisória até o layout.
+- **Geometria — zonas presas à folha original (D2) e conversão por trás ao abrir (Z1 b)** (merge `cd69179`):
+  `core/zonas_na_folha.py`; cópia `projeto.antigo-zonas-na-folha-*.json` idêntica byte a byte; cópia das zonas no
+  formato antigo dentro do projeto (Z2 a) para o programa já instalado; **gravação do projeto por trás**
+  (`projetos._Gravador`, a janela não espera o disco D:, que é USB giratório); `resumo.json` gravado com segurança e
+  refeito do `projeto.json` se estragar; `fsync` antes da troca; trocar de livro grava a mudança na hora;
+  "Tirar da lista" não volta. Verificado: zonas e PDF idênticos ao código antigo (Boécio 50 + Siebmacher 268),
+  16 mortes do processo no meio da gravação sem estragar nada, maior parada da janela 0,66 s.
+
+**Prontos em ramos, ainda NÃO juntados** (ambos no GitHub como cópia, `git push` feito):
+- **`fase2-geometria` em `89fae91`** (= `fase-1` + item 2.3 girar + consertos):
+  - **2.3 Girar** (`1a5745d`, `c54692c`, `9f8d4e5`, `0e59502`): ¼ esquerda, ¼ direita, meia volta + "aplicar em:
+    só esta / todas / daqui em diante / pares / ímpares", na linha das abas e no menu Página (Ctrl+← / Ctrl+→);
+    tecla R fica só no Retângulo; zonas acompanham o giro; desfazer; giro espera as zonas antigas serem convertidas.
+    **Verificado na janela: bom**, com defeitos que geraram os consertos abaixo.
+  - **Consertos do girar** (`ee84f80` cartões da aba Filtro não giram duas vezes; `695cc30` a folha da vez nunca
+    mostra a imagem de outra, pedidos velhos descartados; `edd5db7` miniaturas e capa acompanham o giro; `5b4598a`
+    mudar corte/ângulo espera as zonas antigas; `89fae91` PDF comprimido ao escrever cada página — janela parada no
+    fim do Processar caiu de 3,5 s para 0,76 s; teste de velocidade oficial: nada mais lento, Mágico pro 74→71 s,
+    memória 1574→1385 MB). pytest 1616 passaram, 0 falhas; `teste_botoes.py` 159/0. **O verificador desses
+    consertos foi interrompido no meio (o Samuel precisou reiniciar o PC) — refazer a verificação antes de juntar.**
+    Parecer parcial (se gravou algo): `relatorios/conferir/girar-2026-10-06/verificador-2/` na worktree.
+- **`pedaco-e-salvo-2-2026-10-05` em `3cf1500`** (consertos aprovados pelo Samuel, esperando o **formulário 15**):
+  página em **Original** obedece ao "só neste pedaço" (`294cb91`); o **"(2)"** com o PDF antigo aberto noutro
+  programa vira "Ficou pronto!" (`f058452`); aviso **"Sobrou papel em volta da figura"** + botão **"Ajustar o
+  pedaço à figura"** na aba Marcar, só para pedaço de figura, um pedaço por clique, sem espremer os botões
+  (`30fc7c0`, `17d705b`, `479d4ad`, `50b9319`); **"Tirar o fundo" obedece ao pedaço** (`1088e6b`). Verificado na
+  janela (itens 1–2) e prints conferidos pela gerente (item 3). Juntar ao `fase-1` **depois** da resposta do
+  formulário 15. Atenção: esse ramo nasceu do `fase-1` em `19c1ba7` — juntar com cuidado (conflitos prováveis em
+  `ui/tela_conferir.py`, `core/filtros.py`, `core/pipeline.py`).
+
+Worktrees em `.claude/worktrees/`: `geometria` (fase2-geometria), `misto` (já juntado), `consertos`, `consertos2`
+(já juntados), `consertos3` (pedaco-e-salvo-2). Nelas, `modelos\`, `gabarito\paginas\`, `gabarito\scantailor-24-09\`
+e às vezes `saida_teste\` são **junctions para as pastas originais (somente leitura)**. `teste_botoes.py` apaga e
+recria `saida_teste\botoes\dados` — numa worktree, rodar só numa cópia `git archive` com `saida_teste` própria.
+
+## 2. Decisões fechadas nesta sessão (palavras dele no Registro de mudanças, 05–06/10)
+
+- **Regra geral:** "esse programa deve presar por dar opções, pois nunca teremos sempre os mesmos casos" — a escolha
+  dele é o **padrão de fábrica** e as outras opções continuam disponíveis (memória `editor-impressao-dar-opcoes`).
+- **Regra:** "o programa quando estiver pronto, ele vai ter que ser capaz de abrir arquivos de versões anteriores."
+- **Fase 2 em frentes paralelas** (Misto, geometria, consertos), uma cópia (worktree) e um ramo cada.
+- **Misto:** P1 (a) caixinha "Só as letras" no Preto e branco (livro + página); P2 (a) papel da gravura branco de
+  fábrica, com a outra opção; P3 (a) foto e pintura em cor; P4 (a) letras da moldura em cor com papel branco, (b) e
+  (c) como opções; P5 (a) caixinha das molduras cinza; P6 (a) consertar o "só neste pedaço" (feito); P7 (a) limpar
+  pontinhos do ScanTailor como opção — **quer ver lado a lado**; P8 (b) trazer os dez jeitos de preto e branco do
+  ScanTailor; P9 (a) caixinha por página "Letra clara em fundo escuro"; P10 (a) "letras com a cor delas" desligada
+  de fábrica; P11 (a) + TINTA3 sim: botões novos na aba Marcar "Pintar por cima", "Tinta com a cor original, papel
+  branco", "Tinta preta, fundo original", mais copiar/colar/mover zona; P11b sim: clicar numa área já marcada e
+  apagar/pintar; **padrão do "Só as letras": A com o docTR**, Kraken como segunda opinião que se liga; opção D
+  (papel não branco) **descartada**; "Para revisar" sozinho: sim (o limite está em aberto).
+- **Geometria:** G1 (c) girar com botões + menu/teclas (feito; aparência com o layout); G2 (a) dividir só quando o
+  Kaique pedir, escolhendo "o do programa / o do ScanTailor", trocando numa folha; G3 (b) corte da sobra do
+  ScanTailor como opção desligada; G4 (b) endireitar do ScanTailor de fábrica + C1 "conferir" quando as duas contas
+  discordarem > 0,3°, com a escolha da conta; G5 (c) tela do endireitar com grade + ângulo em número e alça com
+  linha-guia; **G6 (a) endireitar ANTES de cortar** (muda a "Ordem obrigatória" do `CLAUDE.md` — atualizar quando
+  implementar); G7 (a) borda preta desligada de fábrica (5 livros com borda preta copiados para os testes, ver §4);
+  G8 (a) "seguir a moldura / o papel" como opção; G9 (a) margens do ScanTailor (10 mm lados, 5 mm cima/baixo),
+  alteráveis; G9b todas as páginas do tamanho da maior; G10 (b) avisar e não reduzir, com "passar para todas", sem
+  interferir nas folhas de 4 páginas da encadernação do Kaique; CORTE (a) folga ajustável para o livro + aviso onde
+  o corte encosta em tinta; Z1 (b), Z2 (a) (tirar a cópia antiga quando os dois PCs tiverem o programa novo);
+  V aceito ("o principal agora e ter um bom resultado nos pdf's"; rever velocidade depois — Lista de espera).
+- **Layout:** o planejamento passou para o Claude Code (handoff do Samuel em
+  `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\layout\HANDOFF para o Claude Code - layout (05-10-2026).md`;
+  o agente de layout só desenha opções, não mexe no programa). "C — tudo livre como o Photoshop" confirmado como
+  última parte da Fase 4. Tela inicial: **livro aberto em tela cheia** (painel da tela 7 ampliado, "Voltar para os
+  livros"/Esc), **folhear com páginas rolando + coluna de miniaturas**, cartões da tela 1, página vazia da tela 6,
+  sem barra de menus. Tudo no `Plano de layout (rascunho).md` da pasta `layout\`.
+- **Novo jeito de decidir (pedido do Samuel na Rodada 6):** página **"Escolhas do Editor de Impressão"**
+  (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV, artifact privado com banco de dados): abas "Para escolher" e
+  "Já decidido"; opções como imagens grandes, "Ver funcionando", "Escolho esta"; respostas salvas sozinhas na
+  coleção `respostas` (ler com ArtifactData), perguntas na coleção `decisoes`. Fonte da página:
+  `...\scratchpad\escolhas\index.html` da sessão (republicar com o mesmo `url`; imagens em `img/`, telas em
+  `telas/`). O `ABRA-AQUI.html` do layout virou arquivo. Memória: `editor-impressao-escolhas-visuais`.
+
+## 3. Tentado e descartado
+
+- **Usar só as linhas do OCR no Misto (opção C como padrão):** apaga a música do Graduale (75% da tinta fora das
+  linhas), capitulares, molduras e figuras do Opus 165 — medido em 13 páginas (`docs/pesquisa/fase2-misto-letras-fora-do-ocr.md`).
+- **Opção D (papel fora do texto como no original):** descartada pelo Samuel ("o papel tem que sair branco").
+- **"Só neste pedaço" com o papel claro seguindo a página:** ficou bom na Escola 7, mas na Opus 20 a parede clara
+  virou manchas brancas recortadas → ficou "o pedaço obedece inteiro" (faixa creme; daí o botão "Ajustar o pedaço").
+- **Medida do detector de gravura para separar figura de texto no "Ajustar o pedaço":** na resolução da aba Marcar o
+  título da Escola 7 passava por figura → ficou a medida "maior mancha contínua" (`MANCHA_DA_FIGURA = 0,45`).
+- **Converter as zonas na hora ao mudar o corte:** desenhar a folha a 300 DPI pararia a janela → ficou "espera e avisa".
+- **Isolamento automático de worktree do Agent (`isolation: "worktree"`):** criou cópias a partir do `master` antigo
+  misturadas com arquivos soltos — **não usar**; criar as worktrees à mão a partir do `fase-1`.
+- **Tarefa de conversão das zonas com prioridade baixa:** o Windows a deixava parada segurando o GIL e a janela
+  travava 2–3 s → prioridade normal.
+
+## 4. Descobertas de comportamento real
+
+- **O D: é um disco USB giratório (WD easystore).** Qualquer escrita no fio da janela pode pará-la por segundos com o
+  disco disputado; por isso a gravação do projeto foi para trás.
+- **O MuPDF segura o GIL ao gravar o PDF** (`doc.save` comprimia todas as imagens no fim) → compressão por zlib ao
+  escrever cada página (solta o GIL). Ainda sobra ~0,7 s no `save` de 10 folhas (cresce com o livro).
+- **A janela ainda para ~10–16 s ao abrir o programa** (montando a tela inicial, junto com o aquecimento) e ~1,4 s ao
+  clicar "continuar" (`ui/widgets/folhear_pdf.py` desenha no fio da janela) — na Lista de bugs.
+- **PC com pouca memória com vários agentes:** testes falharam por falta de memória/tempo e passaram sozinhos;
+  rodar o pytest **arquivo por arquivo** e no máximo 2 agentes ao mesmo tempo.
+- **31 processos `grep.exe` órfãos** de sessões antigas (de 29/09 a 06/10) gastam ~¼ de núcleo. A ferramenta de
+  segurança **não deixa a gerente encerrar processos** ("Interfere With Workloads"): pedir ao Samuel (Gerenciador
+  de Tarefas). Após reiniciar o PC eles somem. **Agentes devem fechar as próprias janelas e vigias** ao terminar
+  (verificadores interrompidos deixaram 14 processos abertos; o Samuel fechou à mão).
+- **Limite de uso da sessão** interrompeu dois verificadores no meio (05/10 ~21h40); voltaram depois.
+- **Prints de janela fora da tela pelo Windows** às vezes devolvem pintura antiga → usar o desenho do próprio Qt.
+- **Piloto do verificador:** o laço de espera antigo desistia em 6,0 s sem olhar a resposta uma última vez (falso
+  "sem resposta") — o piloto corrigido está em `.claude/worktrees/geometria/relatorios/conferir/zonas-na-folha-2026-10-05/verificador-3/scripts/` (fora do git).
+- **Livros com borda preta de scanner são raros:** ~20 em 1.030 PDFs triados de `D:\Livros para editar` (10.551 PDFs,
+  ~254 GB, somente leitura). Copiados 5 para `...\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE\` (ljs47,
+  Antiphon_25, Matemática Para vencer, Mario Righetti 02-2, Cursus philosophicus Tomo 2) com
+  `LEIA-ME borda preta (05-10-2026).txt`; folha de contato em `relatorios/borda-preta-2026-10-05/`. O Siebmacher tem
+  fundo escuro estreito de estúdio, não borda preta.
+- **Endireitar automático numa folha em pé girada para deitada** acha inclinação falsa (Palatino 5: 0,4° → 4,3°) —
+  resolver junto com o endireitar do ScanTailor (G4).
+
+## 5. Perguntas em aberto (exatas)
+
+1. **Formulário 15** `relatorios/conferir-aqui-15.html` (aberto no navegador dele, não respondido): M1 "A aba Marcar
+   com a linha 'Pedaço:'" (Bom / Ruim / Bom por enquanto); M2 "Pedaço de texto: o botão fica apagado, com o porquê";
+   F1 "'Tirar o fundo' obedecendo ao pedaço (Palatino 9)" — o pedaço em Original mostra o papel amarelado de verdade.
+   Depois disso, juntar o ramo `pedaco-e-salvo-2-2026-10-05`.
+2. **Página de escolhas** (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV), 3 abertas: "Como abrir um livro
+   novo?" (cartão "+" / botão azul no alto / faixa fina); "O livro aberto fica assim?" (Sim / Quase: quero mudar);
+   "Quando mandar a página para 'Para revisar'?" (só em "Só o texto achado" — recomendado / também em "Guardar a
+   tinta forte" acima de 30% / como está, 10% / só uma observação no livro). Ler `respostas` com ArtifactData; marcar
+   a decisão como "decidida" e registrar no plano e no rascunho de layout.
+3. **"Aplicar em" do girar:** relativo (cada folha gira a partir de onde está — como está feito) ou copiar o giro
+   final da folha da vez (como o ScanTailor)? Ainda não perguntado — pôr na página de escolhas com exemplo.
+4. **Antigas, continuam:** escala do notebook do Kaique (125% ou 150%) — "pode ser resolvido depois"; o "aviso que o
+   Kaique pediu" (sem descrição em nenhuma fonte); apagar a pasta `.claude/worktrees/verif-consertos-saida` (1,8 GB) —
+   "Vamos apagar mais para frente" (Lista de espera).
+
+## 6. Lista de bugs nova (detalhe no plano, seção 5)
+
+A1/H13 (letras com pontos apagados no Preto e branco — também no Misto); classe `abandon` do DocLayout não conta como
+letra; falta de memória vira "página sem gravura" sem aviso; cartão de filtro preso em "preparando..." depois de
+trocar o filtro; aviso "Tinta forte fora do texto" atrasado nas outras páginas; "Aplicar em" encostando nas
+miniaturas com "Mais opções" aberto; janela parada ao abrir (~10–16 s) e ao clicar "continuar" (~1,4 s); filtro do
+livro mudado na tela de opções volta ao salvo depois de "Conferir" (29/09); "1 páginas"; "12 páginas" num livro de 10;
+"Montar cadernos" ignorado depois de "Voltar para as opções" (29/09).
+
+## 7. Próximo passo recomendado
+
+**Refazer a verificação dos consertos do girar** (ramo `fase2-geometria`, `ee84f80`…`89fae91`) e, se bom, juntar ao
+`fase-1`; depois **2.1 dividir** (G2) e **2.2 endireitar do ScanTailor** (G4 + C1 + G6, atualizando a "Ordem
+obrigatória" do `CLAUDE.md`), um item por vez, com verificador; em paralelo (no máximo 2 agentes), as opções do
+Misto já decididas (P7 lado a lado, P8, P9, P10, P11 + mostrar as áreas achadas). Ler as respostas do formulário 15
+e da página de escolhas quando o Samuel responder.
+
+## 8. Como rodar e testar (06/10)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q        # 06/10 no ramo fase2-geometria: 1616 passaram, 59 pulados (OCR), 0 falhas (por partes, arquivo por arquivo)
+.venv\Scripts\python.exe -m pytest tests/test_misto.py tests/test_misto_no_projeto.py tests/test_misto_no_programa.py tests/test_misto_na_tela.py tests/test_misto_consertos.py tests/test_substituir_e_cancelar.py tests/test_so_neste_pedaco_no_preto_e_branco.py -q   # no fase-1: 134 passaram
+.venv\Scripts\python.exe -m pytest tests/test_tirar_da_lista_nao_volta.py tests/test_gravar_por_tras.py tests/test_zonas_na_folha.py tests/test_converter_zonas_ao_abrir.py tests/test_misto_no_projeto.py tests/test_misto_consertos.py tests/test_resumo_seguro.py tests/test_trocar_de_livro_grava.py -q   # no fase-1 (9d1b7c0): 107 passaram
+.venv\Scripts\python.exe teste_botoes.py           # fase-1: 132 ações; fase2-geometria: 159 ações, 0 falhas
+.venv\Scripts\python.exe teste_velocidade.py       # rodado em 06/10 pelo implementador (cc00d5c × 89fae91): nada mais lento
+```
+
+## 9. Ambiente
+
+Nada novo instalado. Testes novos desta sessão (entre outros): `test_gerar_o_mesmo_livro_de_novo.py`,
+`test_cartao_pdf_gerado.py`, `test_substituir_e_cancelar.py`, `test_so_neste_pedaco_no_preto_e_branco.py`,
+`test_misto*.py`, `test_zonas_na_folha.py`, `test_converter_zonas_ao_abrir.py`, `test_gravar_por_tras.py`,
+`test_trocar_de_livro_grava.py`, `test_resumo_seguro.py`, `test_gravacao_aguenta_queda_de_energia.py`,
+`test_tirar_da_lista_nao_volta.py`, `test_girar*.py`, `test_gravar_pdf_sem_parar_a_janela.py`. Variável
+`EDITOR_IMPRESSAO_GABARITO` só é lida por `tests/test_escolha_sem_a_trava_de_tinta.py`. Memórias da gerente em
+`C:\Users\fotog\.claude\projects\d--programas\memory\` (dar opções; escolhas visuais; responder em português).
+
+---
+
+# PARTE -10 — Checkpoint de 02 a 03/10/2026
 
 **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). Tudo o
 que está aqui tem linha própria, com commit, no **Registro de mudanças** e na **Lista de bugs** do
