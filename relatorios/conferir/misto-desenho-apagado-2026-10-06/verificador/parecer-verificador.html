@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: Misto, o desenho claro</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: Misto, o desenho claro não some mais</h1>
+<p><strong>06/10/2026 · ramo <code>misto-desenho-apagado</code> (<code>5fde0a8</code>, <code>68d6c09</code>, <code>2404d26</code>, sobre <code>b6e0a0e</code>) · verificador independente.</strong></p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA JUNTAR, com ressalvas.</strong> No PDF processado o conserto faz exatamente o que o implementador disse: refiz a medida do zero, por outro caminho, e cheguei aos <strong>mesmos números, ponto por ponto</strong>, nas 59 páginas. Nada que o Misto existe para tirar voltou nessas 59 (nenhuma mancha do verso, nenhum fundo cinza), e o Preto e branco sem "Só as letras" não mudou um ponto. Mas três coisas precisam ser ditas ao Samuel antes de juntar:</p>
+<ol>
+<li><strong>A prévia na tela não mostra o conserto.</strong> No PDF a capitular S do Palatino 76 sai inteira; na prévia (o "Ver de perto" e os cartões) ela sai quebrada, só com a moldura e pedaços. A prévia é feita em resolução menor (150 pontos por polegada, contra 300 do PDF) e, nela, o conserto quase não age. O Kaique vai ver a capitular comida na tela e ela vai sair boa no papel. O erro é "para o lado seguro" (o PDF sai melhor do que a tela promete), mas prévia e PDF <strong>não são iguais</strong>.</li>
+<li><strong>No livro novo (Righetti), duas fotos ganharam de volta o grão cinza do fundo</strong> da foto: troca de "fundo limpo com letras comidas" por "letras inteiras com fundo granulado". É o mesmo tipo de coisa que o Samuel apontou na beirada da folha do Siebmacher.</li>
+<li><strong>O Misto ficou 3,4% mais lento</strong> na minha medida (o implementador mediu 1,2%). Pouco (no máximo 0,4 s numa página), mas a regra 6 do plano diz que nenhum item pode deixar o programa mais lento.</li>
+</ol>
+<p>E continuam valendo as duas queixas do Samuel ("Bom por enquanto"): no ljs47 p. 103 <strong>as linhas vermelhas compridas do diagrama continuam picotadas</strong>, e no Siebmacher p. 9 (direita) <strong>voltaram linhas da beirada da folha</strong>. Conferi as duas: são exatamente como ele descreveu.</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> moldura dourada e iluminura são defeito conhecido até o fim da Fase 1 (itens 1.2, 1.4 e 1.5). Nada aqui muda isso.</p>
+</blockquote>
+<h2>O que conferi, e como</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. As 59 páginas do estudo, Misto de hoje × ramo</td>
+<td><strong>máquina + olho.</strong> Cada página por processo separado, uma por vez, pelo caminho do programa inteiro (análise, detecção de gravura, leitor de texto, Misto): um processo com o <code>core/misto.py</code> de hoje e outro com o do ramo, cada um com sua pasta de dados (nada dividido entre os dois). Olhei as 17 que mudaram, inteiras e de perto.</td>
+<td><strong>Igual ao implementador, ponto por ponto:</strong> as mesmas 17 páginas mudam, com o mesmo número de pontos em cada uma; 42 idênticas. Nenhum ponto sumiu em nenhuma página; todo ponto que voltou também existe no Preto e branco puro. O aviso "Para revisar" e o "Tem cor" saíram iguais nas 59.</td>
+</tr>
+<tr>
+<td>2. Na janela real</td>
+<td><strong>olho</strong>, janela de verdade fora da tela, cliques por mensagem nativa do Windows, prints com <code>PrintWindow</code>. Livro de 2 páginas (Palatino 76 + Palatino 66); "Só as letras" ligado só na página 1, "Guardar a tinta forte"; processado até o PDF.</td>
+<td><strong>PDF:</strong> página 1 ponto a ponto igual à minha medida do ramo (capitular inteira); página 2 (sem "Só as letras") ponto a ponto igual ao Preto e branco puro. <strong>Prévia: não mostra a capitular inteira</strong> (ressalva 1). Nenhum erro no <code>erros.log</code>.</td>
+</tr>
+<tr>
+<td>3. Livro fora do estudo</td>
+<td><strong>máquina + olho.</strong> Righetti (10 folhas = 20 páginas, girado e dividido como na rodada 2) mais 10 páginas de desenho do Palatino e da Rhetorica que <strong>não</strong> estavam nas 59.</td>
+<td>30 páginas: 18 melhoraram, 2 trocaram fundo limpo por grão cinza (ressalva 2), 10 idênticas.</td>
+</tr>
+<tr>
+<td>4. Testes de máquina</td>
+<td><strong>máquina</strong>, arquivo por arquivo.</td>
+<td><strong>1615 passaram, 0 falharam</strong> (59 pulados, do OCR). <code>teste_botoes.py</code> numa cópia <code>git archive</code>: <strong>132 ações, 0 falhas.</strong></td>
+</tr>
+<tr>
+<td>5. Tempo do Misto</td>
+<td><strong>máquina</strong>, as 59 páginas, antes e depois alternados no mesmo processo, mediana de 3 voltas.</td>
+<td>94,5 s → 97,6 s (<strong>+3,4%</strong>). Mediana +0,025 s por página.</td>
+</tr>
+</tbody>
+</table>
+<p>Uma página do Antiphon (a maior, 38 milhões de pontos) falhou por falta de memória na primeira volta, enquanto os testes rodavam junto; refeita sozinha, passou. Não é deste conserto (a falta de memória foi numa conta comum do Misto), mas registro.</p>
+<h2>1. As 59 páginas (hoje × ramo)</h2>
+<p>As palavras são minhas; os números batem com os do implementador em todas.</p>
+<table>
+<thead>
+<tr>
+<th>Resultado</th>
+<th>Páginas</th>
+<th>O que vi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Melhorou bem</strong> (10)</td>
+<td>Palatino 76, 67, 66, 9 e 113; Boécio 3; Opus majus 3; Rhetorica 129; Siebmacher 7 (esq.) e 9 (esq.)</td>
+<td>A capitular S do Palatino 76 voltou inteira, com a paisagem; o fundo do M do 67 voltou; o "M." do rodapé do 66 voltou inteiro; o cavaleiro do Q (9) e o rolo de pergaminho (113) ganharam os traços claros; o escudo do carimbo e os raios do sol (Boécio 3), a hachura do selo (Opus 3), o pontilhado impresso do fundo (Rhetorica 129) e os arabescos do Siebmacher voltaram. Em todas, fica igual ao Preto e branco puro.</td>
+</tr>
+<tr>
+<td><strong>Melhorou em parte</strong> (1)</td>
+<td>ljs47 103</td>
+<td>Os arcos do diagrama vermelho voltaram; <strong>as linhas horizontais compridas continuam picotadas</strong> (o que o Samuel viu).</td>
+</tr>
+<tr>
+<td><strong>Melhorou pouco</strong> (2)</td>
+<td>Antiphon 88; Rhetorica 73</td>
+<td>Uma linha de pauta que faltava; a falha no fio da moldura fechou.</td>
+</tr>
+<tr>
+<td><strong>Diferença mínima</strong> (2)</td>
+<td>Palatino 104; Rhetorica 160</td>
+<td>Poucos pontos num fio da tabela e no fio de baixo; na prática não se vê (se algo, é melhora).</td>
+</tr>
+<tr>
+<td><strong>Piorou de leve</strong> (2)</td>
+<td>ljs47 26; Siebmacher 9 (dir.)</td>
+<td>Pedaços da sombra da dobra (ljs47 26) e <strong>linhas da beirada da folha</strong> (Siebmacher 9 dir., o que o Samuel viu) voltaram, como no Preto e branco puro.</td>
+</tr>
+<tr>
+<td><strong>Idêntica, ponto a ponto</strong> (42)</td>
+<td>as outras</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>Procurei de propósito piora que o implementador não tivesse visto: mancha do verso, sujeira, papel cinza voltando. <strong>Não achei nenhuma nas 59.</strong> O "pontilhado" que volta na moldura do Palatino 66 e no fundo da Rhetorica 129 é impresso (está no original), não sujeira.</p>
+<p><img alt="Palatino 76: original, Misto de hoje, Misto do ramo, Preto e branco puro, onde mudou (azul)" src="imagens/palatino76.jpg" /></p>
+<p><img alt="Palatino 67" src="imagens/palatino67.jpg" /></p>
+<p><img alt="Palatino 66, o &quot;M.&quot; do rodapé" src="imagens/palatino66-letra-M.jpg" /></p>
+<p><img alt="ljs47 103: os arcos voltam, as linhas horizontais continuam picotadas" src="imagens/ljs47-103.jpg" /></p>
+<p><img alt="Rhetorica 129: o pontilhado impresso do fundo volta" src="imagens/rhetorica129.jpg" /></p>
+<p><img alt="Siebmacher 9 direita: linhas da beirada da folha voltam (piora leve)" src="imagens/siebmacher9d-piora.jpg" /></p>
+<p><img alt="ljs47 26: pedaços da sombra da dobra voltam (piora leve)" src="imagens/ljs47-26-piora.jpg" /></p>
+<h2>2. Na janela real</h2>
+<p>Abri uma instância nova do programa (a do ramo), fora da tela, sem tomar o mouse nem o teclado. Escolhi Preto e branco, entrei em Conferir, na aba Filtro liguei "Só as letras" <strong>só na página 1</strong> (Palatino 76), com "Guardar a tinta forte"; a página 2 (Palatino 66) ficou sem "Só as letras". Processei até o PDF. Fechei a janela no fim (<code>WM_CLOSE</code>); nenhum processo ficou aberto.</p>
+<ul>
+<li><strong>PDF, página 1:</strong> ponto a ponto igual ao que medi para o ramo: a capitular S inteira.</li>
+<li><strong>PDF, página 2:</strong> ponto a ponto igual ao Preto e branco puro. E o Preto e branco puro do ramo é ponto a ponto igual ao de hoje (conferido em 5 páginas: Palatino 76 e 66, Siebmacher 9 dos dois lados, Rhetorica 129). <strong>A página sem "Só as letras" não mudou.</strong></li>
+<li><strong>Prévia:</strong> o cartão "Preto e branco" e o "Ver de perto" mostram a capitular <strong>quebrada</strong>: a moldura, o alto do S e alguns traços.</li>
+</ul>
+<p><img alt="Prévia (&quot;Ver de perto&quot;, à esquerda) e PDF processado (à direita), a mesma capitular" src="imagens/previa-x-pdf-palatino76.jpg" /></p>
+<p><img alt="A janela: cartões com &quot;Só as letras&quot; ligado na página 1" src="imagens/janela-04-cartoes-com-so-as-letras.jpg" /></p>
+<p><img alt="A janela: &quot;Ver de perto&quot; da página 1" src="imagens/janela-06-ver-de-perto-pagina1.jpg" /></p>
+<p><img alt="A janela: &quot;Ver de perto&quot; da página 2, sem &quot;Só as letras&quot;" src="imagens/janela-07-ver-de-perto-pagina2-sem-so-as-letras.jpg" /></p>
+<p><strong>Por que a prévia é diferente.</strong> Refiz as 17 páginas que mudaram na resolução da prévia (150 pontos por polegada). Medi quanto da tinta que o Preto e branco puro tem a mais que o Misto de hoje o ramo devolve:</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>No PDF (300)</th>
+<th>Na prévia (150)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Palatino 76</td>
+<td>99%</td>
+<td>4%</td>
+</tr>
+<tr>
+<td>Rhetorica 129</td>
+<td>88%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>Palatino 9</td>
+<td>95%</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>Opus majus 3</td>
+<td>98%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Palatino 66</td>
+<td>96%</td>
+<td>23%</td>
+</tr>
+<tr>
+<td>Boécio 3</td>
+<td>90%</td>
+<td>28%</td>
+</tr>
+<tr>
+<td>Palatino 67</td>
+<td>81%</td>
+<td>37%</td>
+</tr>
+</tbody>
+</table>
+<p>Na prévia, o conserto quase não age. Parte disso já existia antes: na prévia, até o Preto e branco puro perde boa parte da hachura fina (a imagem tem a metade dos pontos). Mas, com o conserto, a diferença entre a tela e o papel ficou grande no Misto: o que o Kaique vê não é o que sai. No Palatino 76, a 150 pontos, só 2.450 pontos de tinta são "tinta de fora apagada" (o que a regra nova olha), contra uns 11 mil pontos de diferença para o Preto e branco puro: a maior parte do que falta na prévia nem chega à regra nova. <strong>Sugestão para a Lista de bugs</strong> (não é para este ramo): a prévia do Misto deveria mostrar o que o PDF vai mostrar.</p>
+<p><img alt="Palatino 76 na resolução da prévia: original, hoje, ramo, Preto e branco puro, onde mudou" src="imagens/previa-150dpi-palatino76.jpg" /></p>
+<h2>3. Páginas fora do estudo (os limites "decoraram" as 59?)</h2>
+<p>O Righetti (Historia de la Liturgia) é o único livro do acervo que não entrou no estudo. Peguei as 8 folhas com figura (6, 30, 50, 52, 54, 62, 64, 94) e 2 só de texto (27, 114): 20 páginas, giradas e divididas como na rodada 2. Como o Righetti tem fotos (meio-tom), e não gravura em madeira, peguei também 10 páginas de desenho do Palatino (31, 51, 59, 117, 126) e da Rhetorica (15, 38, 72, 112, 157) que não estavam nas 59. Olhei as 20 que mudaram.</p>
+<table>
+<thead>
+<tr>
+<th>Resultado</th>
+<th>Páginas</th>
+<th>O que vi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Melhorou bem</strong> (10)</td>
+<td>Palatino 31, 51, 59, 126; Rhetorica 15, 38, 72, 157; Righetti 50 e 52 (direita)</td>
+<td>Capitulares gravadas inteiras (L, P, P, C, S, C), o céu e os raios da gravura da Rhetorica 38, a cártula do Palatino 31. <strong>Os dois mosaicos do Righetti</strong> (que a rodada 2 tinha dado como "errada": o meio do mosaico ralo, com buracos) <strong>voltaram iguais ao Preto e branco puro.</strong></td>
+</tr>
+<tr>
+<td><strong>Melhorou</strong> (1)</td>
+<td>Righetti 94 (direita)</td>
+<td>O cálice ganhou traços; o pontilhado em volta continua indo para o branco.</td>
+</tr>
+<tr>
+<td><strong>Melhorou pouco</strong> (7)</td>
+<td>Righetti 50 (esq.), 54 (os dois lados), 62 (os dois lados), 64 (dir.), 94 (esq.)</td>
+<td>O fio fino debaixo do cabeçalho ficou inteiro.</td>
+</tr>
+<tr>
+<td><strong>Trocou: mais inteiro, mas com grão</strong> (2)</td>
+<td>Righetti 6 (direita), 30 (esquerda)</td>
+<td>Nas fotos de manuscrito, <strong>o grão cinza do fundo da foto voltou</strong> (como no Preto e branco puro). Em troca, no Righetti 6 voltaram pedaços de letras que o Misto de hoje comia. Eu chamaria de piora leve no 30 e de troca no 6.</td>
+</tr>
+<tr>
+<td><strong>Idêntica</strong> (10)</td>
+<td>Palatino 117 e Rhetorica 112 (a gravura já é achada pelo detector), Righetti 6 (esq.), 27, 30 (dir.), 52 (esq.), 64 (esq.), 114</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>Conclusão: <strong>não parece decorado</strong> para o que o conserto quer pegar (capitular e gravura de traço: todas as dez páginas novas de desenho melhoraram, e a regra não errou nenhuma). Onde aparece o lado ruim é em <strong>foto de meio-tom</strong> (o grão da foto conta como "tinta clara colada na tinta forte"), um tipo de imagem que não estava nas 59.</p>
+<p><img alt="Righetti 52 direita: o mosaico volta como no Preto e branco puro" src="imagens/novo-righetti52d-mosaico.jpg" /></p>
+<p><img alt="Righetti 6 direita: o grão do fundo da foto volta (e pedaços de letra também)" src="imagens/novo-righetti6d-grao-volta.jpg" /></p>
+<p><img alt="Righetti 30 esquerda: o grão volta na margem da foto" src="imagens/novo-righetti30e-grao-volta.jpg" /></p>
+<p><img alt="Palatino 51: a capitular L volta" src="imagens/novo-palatino51-capitular.jpg" /></p>
+<p><img alt="Rhetorica 38: o céu e os raios voltam" src="imagens/novo-rhetorica38.jpg" /></p>
+<p><img alt="Righetti: o fio fino do cabeçalho fica inteiro (cinco páginas)" src="imagens/novo-righetti-fios-do-cabecalho.jpg" /></p>
+<h2>4. Testes de máquina</h2>
+<p>Arquivo por arquivo, no worktree do ramo (a máquina tem pouca memória; outro implementador trabalhava ao mesmo tempo).</p>
+<ul>
+<li><strong>Misto e Preto e branco</strong> (12 arquivos: <code>test_misto.py</code> 31, <code>test_misto_desenho_claro.py</code> 10, <code>test_misto_consertos.py</code> 25, <code>test_misto_na_tela.py</code> 14, <code>test_misto_no_programa.py</code> 23, <code>test_misto_no_projeto.py</code> 12, <code>test_alerta_pb.py</code> 5, <code>test_preto_e_branco_regra_30_09.py</code> 15, <code>test_so_neste_pedaco_no_preto_e_branco.py</code> 8, <code>test_decoracao_no_preto_e_branco.py</code> 12, <code>test_filtros_algoritmos.py</code> 10, <code>test_filtro_com_selecao.py</code> 22): <strong>187 passaram.</strong></li>
+<li><strong>O resto da pasta <code>tests/</code></strong> (78 arquivos): <strong>1428 passaram</strong>, 59 pulados (OCR sem o motor), nenhum falhou.</li>
+<li><strong>Total: 1615 passaram, 0 falharam.</strong></li>
+<li><strong><code>teste_botoes.py</code></strong>, numa cópia <code>git archive</code> do ramo, com a própria <code>saida_teste</code>: <strong>132 ações, 0 falhas.</strong> (Sem a pasta <code>modelos/</code> na cópia: ele testa a fiação dos botões, não o detector.)</li>
+<li>O teste de velocidade do plano (<code>teste_velocidade.py</code>) <strong>não</strong> foi rodado: ele mede abrir o livro, trocar de página e processar em Mágico pro e Preto e branco <strong>sem</strong> "Só as letras", e nada disso passa pelo código mudado. O tempo do Misto foi medido à parte (abaixo).</li>
+</ul>
+<h2>5. Tempo do Misto</h2>
+<p>As 59 páginas, o Misto de fábrica com as mesmas entradas, hoje e ramo <strong>alternados</strong> no mesmo processo, mediana de 3 voltas, máquina sem outra medida rodando:</p>
+<ul>
+<li><strong>Total: 94,5 s antes, 97,6 s depois (+3,4%).</strong> O implementador mediu +1,2%.</li>
+<li>Mediana: <strong>+0,025 s por página.</strong> As que mais subiram: Graduale 223 (2,52 → 2,93 s), Horas 14 (4,08 → 4,43 s), Graduale 221 (2,82 → 3,11 s), justamente páginas grandes <strong>onde o conserto não muda nada</strong> (a conta é feita e descartada).</li>
+<li>É pouco perto do resto da página (a análise e o leitor de texto levam de 5 a 20 s na primeira vez), mas é mais lento, e a regra 6 do plano não abre exceção. Fica para o Samuel decidir.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Prévia ≠ PDF no Misto</strong> (seção 2). O PDF sai certo; a tela mostra a capitular quebrada. Sugiro registrar na Lista de bugs.</li>
+<li><strong>Foto de meio-tom ganha o grão do fundo</strong> (Righetti 6 e 30). Não estava nas 59; os limites não foram pensados para foto.</li>
+<li><strong>As queixas do Samuel continuam:</strong> linhas vermelhas do ljs47 103 picotadas; beirada da folha no Siebmacher 9 (dir.) e sombra da dobra no ljs47 26.</li>
+<li><strong>+3,4% de tempo no Misto</strong> (regra 6).</li>
+<li><strong>O que não testei:</strong> a roda do mouse na prévia (não funciona por mensagem nativa sem foco; não foi preciso: usei o "Ver de perto" a 100%); outros livros de foto além do Righetti; "Tudo em preto e branco" e "Só o texto achado" página por página (o código deles não mudou; os testes de máquina cobrem).</li>
+<li>O veredito de cada página é o meu olho, em imagens reduzidas e recortes ampliados; defeito muito pequeno pode ter escapado.</li>
+</ol>
+<h2>Bugs para a Lista de bugs</h2>
+<ul>
+<li><strong>06/10/2026 - Misto: a prévia não mostra o desenho claro que o PDF vai ter.</strong> Palatino 76 com "Só as letras" e "Guardar a tinta forte": no PDF a capitular S sai inteira; no cartão e no "Ver de perto" sai só a moldura e pedaços (print: <code>imagens/previa-x-pdf-palatino76.jpg</code>). Causa provável: a prévia é feita a 150 pontos por polegada e o PDF a 300; na prévia a regra nova quase não age, e até o Preto e branco puro perde hachura fina.</li>
+</ul>
+<h2>Onde está</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/misto-desenho-apagado-2026-10-06/verificador/parecer-verificador.html</code> (e <code>.md</code>, <code>.pdf</code>), imagens em <code>verificador/imagens/</code>.</li>
+<li>Meus scripts e as imagens grandes ficaram fora do projeto, na pasta de rascunho desta sessão (não vão para o git).</li>
+<li>Não juntei ramos, não fiz push, não apaguei nada que não criei.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 17:19</p>
+</body>
+</html>

@@ -103,7 +103,9 @@ from core.selecao import GRAVURA, LETRA, MAO, PAPEL, SOMAR, SUBTRAIR, _desenhar
 #                    da tinta DENTRO das linhas) e area de pelo menos
 #                    (altura da linha / 6)^2; o resto (a mancha clara) vai a
 #                    branco. Guarda nota de musica, capitular, letrinha de
-#                    diagrama; tira a escrita clara do verso.
+#                    diagrama; tira a escrita clara do verso. Desde 06/10,
+#                    tambem a tinta clara amontoada junto da tinta forte (o
+#                    desenho de traco claro; ver RAIO_DO_DESENHO).
 #   C, FORA_APAGAR - so o que esta dentro das linhas fica; o resto vai a branco.
 #                    Apaga a musica do Graduale: nunca de fabrica.
 # Arriscado: usar a rede para decidir gravura (a moldura dourada clara iria a
@@ -117,6 +119,52 @@ FORAS_DO_TEXTO = (FORA_TUDO, FORA_REDE, FORA_APAGAR)
 FOLGA_DAS_LINHAS = 0.15
 # a area minima de um pedaco guardado pela rede, em (altura da linha / isto)^2
 PEDACO_MINIMO_DA_REDE = 6.0
+
+# --- o desenho claro colado a tinta forte (conserto de 06/10/2026) ----------
+#
+# O defeito (estudo relatorios/revisar-criterios-2026-10-06, secao 2.1): na
+# rede, a capitular gravada que o detector de gravura nao reconhece (S do
+# Palatino 76, fundo do M do Palatino 67, letra ornamental do rodape do
+# Palatino 66, diagrama vermelho do ljs47 p. 103) perdia a parte clara: a
+# hachura e feita de tracinhos mais claros que a letra e menores que o pedaco
+# minimo, e cada tracinho, sozinho, ia a branco. O Preto e branco puro os
+# guarda. Samuel: "o papel saia branco, e o desenho tambem saia perfeito".
+#
+# O conserto (_desenho_colado_a_tinta_forte): a tinta de fora e "juntada"
+# (alargada RAIO_DO_DESENHO da altura da linha). Um amontoado e DESENHO
+# COMIDO, e toda a tinta dele fica como no Preto e branco puro, quando:
+#   1. tem tinta forte guardada (a semente: a moldura da capitular, um traco
+#      escuro do desenho) - a tinta clara SOLTA (escrita do verso na margem,
+#      sujeira longe da tinta forte) nao tem semente e continua indo a branco;
+#   2. e grande: pelo menos DESENHO_MINIMO * altura da linha^2 de tinta
+#      (forte + apagada) - um pontinho ao lado de um numero de pagina e pouco
+#      demais (uma letra fica em 0,1-0,2 altura^2; a letra ornamental "M" do
+#      rodape do Palatino 66, 0,49);
+#   3. a rede apagava uma fatia de verdade dele: pelo menos FATIA_APAGADA da
+#      tinta do amontoado - na pauta do Graduale (221 a 223), a tinta apagada
+#      colada as linhas e a mancha do verso, e e no maximo 2,4% da pauta; nos
+#      desenhos comidos, de 6% (gravura do Boecio 3) a 80% (S do Palatino 76).
+# Nao conta como desenho a FAIXA FINA ENCOSTADA NA BORDA DA IMAGEM (a menos
+# de 1/4 de altura de linha da borda, e com espessura media - tinta dividida
+# pelo comprimento - menor que 1/4 de altura de linha): e a sombra da lombada
+# ou a beirada da folha (Horas 11, 14 e 27, Graduale 269; espessura de 0,04 a
+# 0,09 altura), assunto do corte, nao do Misto. Os desenhos que encostam na
+# borda (Boecio 3, Siebmacher, moldura do Palatino 66) tem de 0,5 a 2,7.
+# E nunca na pagina SEM TONS DE CINZA (o scan ja veio em preto e branco: a
+# letra e preta pura, LETRA_SEM_TONS): ali o escuro nao separa desenho de
+# sujeira, e a sujeira granulada do Cursus p. 3 voltava.
+# Medido nas 59 paginas do estudo (relatorios/conferir/misto-desenho-
+# apagado-2026-10-06, scripts e numeros la).
+# Arriscado: subir RAIO_DO_DESENHO (a escrita do verso perto de uma moldura
+# guardada passa a "colar" nela); baixar DESENHO_MINIMO (a sujeira em volta
+# de numero de pagina volta); baixar FATIA_APAGADA (a mancha do verso colada
+# na pauta volta, Graduale 223); subir FATIA_APAGADA acima de 0,05 (a
+# gravura do Boecio 3 deixa de ser consertada); tirar a regra da faixa fina
+# na borda (a sombra da lombada e a beirada voltam como tarja preta).
+RAIO_DO_DESENHO = 0.08
+DESENHO_MINIMO = 0.3
+FATIA_APAGADA = 0.04
+LETRA_SEM_TONS = 5.0
 
 
 # --- as escolhas do Misto no projeto (ligar ao programa, 05/10/2026) ----------
@@ -261,6 +309,61 @@ def mascara_das_linhas(resultados, forma: tuple[int, int]) -> tuple[np.ndarray, 
     return tela > 0, altura_linha
 
 
+def _desenho_colado_a_tinta_forte(fora: np.ndarray, forte: np.ndarray,
+                                  altura_linha: float) -> np.ndarray:
+    """A tinta de fora (fora: booleano, a tinta fora das linhas e da imagem)
+    que faz parte de um DESENHO junto da tinta forte guardada (forte), mesmo
+    sendo clara ou pequena (ver RAIO_DO_DESENHO no topo). Devolve so os pontos
+    que voltam (nunca inclui `forte`).
+
+    Conta: alarga `fora` um raio de RAIO_DO_DESENHO * altura da linha, rotula
+    os amontoados, e fica com os que tem algum ponto forte, pelo menos
+    DESENHO_MINIMO * altura_linha^2 pontos de tinta (forte + apagada) e pelo
+    menos FATIA_APAGADA dessa tinta apagada, menos a faixa fina encostada na
+    borda da imagem (lombada, beirada). Quem chama nao chama em pagina
+    sem tons de cinza (LETRA_SEM_TONS). Custa uma dilatacao e uma rotulacao
+    da pagina (tempo medido no relatorio).
+    Arriscado: trocar a semente por "qualquer tinta" (a mancha do verso,
+    sozinha num canto, viraria desenho)."""
+    h = max(float(altura_linha), 1.0)
+    apagada = fora & ~forte
+    if not forte.any() or not apagada.any():
+        return np.zeros_like(fora)
+    raio = max(1, int(round(RAIO_DO_DESENHO * h)))
+    # quadrado, nao circulo: o OpenCV alarga com quadrado em tempo que nao
+    # depende do raio; com circulo, na pagina de linha alta (Antiphon 260,
+    # raio 42) custava 0,58 s contra 0,016 s (medido em 06/10)
+    elem = cv2.getStructuringElement(cv2.MORPH_RECT, (2 * raio + 1, 2 * raio + 1))
+    junto = cv2.dilate(fora.view(np.uint8), elem)
+    quantos, rotulos, caixas, _c = cv2.connectedComponentsWithStats(junto, connectivity=8)
+    if quantos <= 1:
+        return np.zeros_like(fora)
+    semente = np.zeros(quantos, bool)
+    semente[np.unique(rotulos[forte])] = True
+    tinta = np.bincount(rotulos[fora], minlength=quantos)
+    apagados = np.bincount(rotulos[apagada], minlength=quantos)
+    desenho = semente & (tinta >= DESENHO_MINIMO * h * h) & (apagados >= FATIA_APAGADA * tinta)
+    # a faixa fina encostada na borda da imagem (lombada, beirada) nao e desenho
+    altura, largura = fora.shape
+    x, y = caixas[:, cv2.CC_STAT_LEFT], caixas[:, cv2.CC_STAT_TOP]
+    w, a = caixas[:, cv2.CC_STAT_WIDTH], caixas[:, cv2.CC_STAT_HEIGHT]
+    perto = h / 4.0
+    na_borda = (x <= perto) | (y <= perto) | (x + w >= largura - perto) | (y + a >= altura - perto)
+    # espessura media da faixa = tinta / comprimento (a sombra da borda do
+    # alto da Horas 27 e inclinada: a caixa e alta, mas a faixa e fina)
+    fina = tinta < (h / 4.0) * np.maximum(w, a)
+    desenho &= ~(na_borda & fina)
+    desenho[0] = False
+    volta = np.zeros_like(fora)
+    if not desenho.any():
+        return volta
+    # so nos pontos apagados (poucos), nao na pagina inteira: na Antiphon 88
+    # (38 milhoes de pontos) "apagada & desenho[rotulos]" custava 0,15 s
+    onde = np.flatnonzero(apagada)
+    volta.ravel()[onde[desenho[rotulos.ravel()[onde]]]] = True
+    return volta
+
+
 def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
                    altura_linha: float, modo: str, fora_da_imagem: np.ndarray,
                    medidas: dict | None = None) -> np.ndarray:
@@ -271,7 +374,11 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
     forte_fora (fracao dela que e "tinta forte": os pedacos que a rede
     guarda, medidos tambem no C, onde vao a branco - e o que manda a pagina
     para "Para revisar", core.pipeline), guardada_fora (fracao que ficou la
-    fora: = forte_fora no A, 0 no C) e escuro_da_letra."""
+    fora: forte_fora + desenho_fora no A, 0 no C), desenho_fora (a tinta
+    clara ou pequena que ficou por ser parte de um desenho colado a tinta
+    forte, so no A: _desenho_colado_a_tinta_forte, conserto de 06/10) e
+    escuro_da_letra. O aviso "Para revisar" continua olhando so forte_fora
+    (o conserto nao muda quem vai para revisar)."""
     tinta = binaria == 0
     total = int(np.count_nonzero(tinta)) or 1
     fora = tinta & ~linhas & fora_da_imagem
@@ -292,12 +399,18 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
             forte = fica[rotulos]
     elif dentro.any():
         escuro = float(np.median(cinza[dentro]))
-    guardar = forte if modo == FORA_REDE else np.zeros_like(fora)
+    desenho = np.zeros_like(fora)
+    if modo == FORA_REDE and escuro is not None and escuro > LETRA_SEM_TONS:
+        # o desenho claro colado a tinta forte fica (conserto de 06/10; ver
+        # RAIO_DO_DESENHO no topo); nunca em scan ja em preto e branco
+        desenho = _desenho_colado_a_tinta_forte(fora, forte, altura_linha)
+    guardar = (forte | desenho) if modo == FORA_REDE else np.zeros_like(fora)
     saida[fora & ~guardar] = 255
     if medidas is not None:
         medidas.update({"tinta_fora": float(np.count_nonzero(fora)) / total,
                         "forte_fora": float(np.count_nonzero(forte)) / total,
                         "guardada_fora": float(np.count_nonzero(guardar)) / total,
+                        "desenho_fora": float(np.count_nonzero(desenho)) / total,
                         "escuro_da_letra": escuro})
     return saida
 
