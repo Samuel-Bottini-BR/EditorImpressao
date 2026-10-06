@@ -330,7 +330,10 @@ def _desenho_colado_a_tinta_forte(fora: np.ndarray, forte: np.ndarray,
     if not forte.any() or not apagada.any():
         return np.zeros_like(fora)
     raio = max(1, int(round(RAIO_DO_DESENHO * h)))
-    elem = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * raio + 1, 2 * raio + 1))
+    # quadrado, nao circulo: o OpenCV alarga com quadrado em tempo que nao
+    # depende do raio; com circulo, na pagina de linha alta (Antiphon 260,
+    # raio 42) custava 0,58 s contra 0,016 s (medido em 06/10)
+    elem = cv2.getStructuringElement(cv2.MORPH_RECT, (2 * raio + 1, 2 * raio + 1))
     junto = cv2.dilate(fora.view(np.uint8), elem)
     quantos, rotulos, caixas, _c = cv2.connectedComponentsWithStats(junto, connectivity=8)
     if quantos <= 1:
@@ -351,9 +354,14 @@ def _desenho_colado_a_tinta_forte(fora: np.ndarray, forte: np.ndarray,
     fina = tinta < (h / 4.0) * np.maximum(w, a)
     desenho &= ~(na_borda & fina)
     desenho[0] = False
+    volta = np.zeros_like(fora)
     if not desenho.any():
-        return np.zeros_like(fora)
-    return apagada & desenho[rotulos]
+        return volta
+    # so nos pontos apagados (poucos), nao na pagina inteira: na Antiphon 88
+    # (38 milhoes de pontos) "apagada & desenho[rotulos]" custava 0,15 s
+    onde = np.flatnonzero(apagada)
+    volta.ravel()[onde[desenho[rotulos.ravel()[onde]]]] = True
+    return volta
 
 
 def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
