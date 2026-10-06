@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: &quot;aplicar em&quot; copia o giro da folha da vez, 06/10/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: "aplicar em" copia o giro da folha da vez, 06/10/2026</h1>
+<p><strong>PRONTO PARA JUNTAR, com ressalvas.</strong> Os quatro commits fazem o que prometem. Pilotei a janela real, e em todos os casos as folhas escolhidas ficaram viradas como a folha da vez. O Ctrl+Z devolveu cada folha ao giro que ela tinha. A capa do cartão agora aparece girada ao "voltar". O aviso "Um momento" tem o texto novo, em português certo. O PDF saiu idêntico ao do <code>fase-1</code>.</p>
+<p>Fica <strong>uma pergunta para o Samuel</strong> sobre um caso de canto ("só as pares" com uma folha ímpar na tela). Ela vem com imagem, mais abaixo. E também uma frase do histórico que, nesse caso, fica enganosa.</p>
+<p><strong>Não é "aprovado":</strong> só o Samuel marca.</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> moldura dourada e iluminura continuam sendo defeito conhecido da Fase 1. Estes commits não mexem na imagem das páginas: o PDF saiu igual, pixel a pixel, ao do <code>fase-1</code>.</p>
+</blockquote>
+<p><strong>O que foi conferido:</strong></p>
+<ul>
+<li>ramo <code>girar-aplicar-copia</code>, no commit <code>9cdc3da</code>;</li>
+<li>os commits <code>3046cc4</code>, <code>6e0866d</code>, <code>e971253</code> e <code>9cdc3da</code>;</li>
+<li>a comparação foi feita com o <code>fase-1</code> em <code>5eee3d8</code>. O <code>fase-1</code> de hoje (<code>5a90db5</code>) só mudou documentos depois disso.</li>
+</ul>
+<p><strong>Como foi conferido:</strong></p>
+<ul>
+<li>a janela real foi aberta fora da tela, em 1600×821 px, numa cópia <code>git archive</code> do ramo;</li>
+<li>ela foi pilotada só com mouse e teclado nativos (mensagens do Windows mandadas para a janela de teste);</li>
+<li>a pasta de dados era só de teste, com cópias do "Livro de girar" (10 páginas-gabarito, já com giros diferentes: 90 180 270 180 90 180 0 180 0 180) e do Boécio antigo (zonas de antes de 05/10).</li>
+</ul>
+<h2>Veredito por item</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. "Aplicar em" copia o giro da folha da vez</td>
+<td>janela real + máquina + olho</td>
+<td><strong>Bom.</strong> Testei 11 giros e 10 desfazer/refazer. Em todos, as folhas escolhidas terminaram no giro final da folha da vez, e as outras não mexeram. Também acompanharam o giro: o disco, as 10 miniaturas, a capa, as 124 zonas marcadas (mesmo pedaço do papel) e os cartões da aba Filtro. São 22 conferências, sem nenhum erro</td>
+</tr>
+<tr>
+<td>2. Capa do cartão ao "voltar"</td>
+<td>janela real + máquina + olho</td>
+<td><strong>Bom.</strong> Girei a folha 1 e voltei pelo "voltar" das opções. O cartão mostrou a capa nova na hora. O "continuar" depois disso funcionou</td>
+</tr>
+<tr>
+<td>3. Texto novo do aviso "Um momento"</td>
+<td>janela real + olho</td>
+<td><strong>Bom.</strong> O Desfazer, o Refazer e o clique no painel Histórico, feitos durante a conversão das zonas do Boécio, mostraram o texto novo. Nas três vezes, nada mudou no livro. Depois da conversão, o desfazer funcionou</td>
+</tr>
+<tr>
+<td>4. PDF</td>
+<td>janela real + máquina + olho</td>
+<td><strong>Bom.</strong> As 10 páginas saíram na ordem certa e no giro pedido. O PDF ficou idêntico, pixel a pixel, ao do <code>fase-1</code> nas 10 páginas, giradas ou não, e as prévias também ficaram iguais</td>
+</tr>
+<tr>
+<td>5. Testes de máquina</td>
+<td>máquina</td>
+<td><strong>Bom.</strong> 95 arquivos de teste, um por vez: 1705 passaram, 59 pularam e 0 falharam. O <code>teste_botoes.py</code> fez 159 ações, com 0 falhas</td>
+</tr>
+</tbody>
+</table>
+<h2>1. "Aplicar em": o que foi feito na janela</h2>
+<p>Cada linha abaixo é um clique de verdade no botão da barra "Girar a folha", seguido da conferência completa:</p>
+<ul>
+<li>o giro de cada folha na memória e no <code>projeto.json</code> do disco;</li>
+<li>cada miniatura da tira, comparada com a folha do livro de entrada no giro esperado;</li>
+<li>a <code>capa.png</code>;</li>
+<li>as zonas de cada página, levadas para a folha original. Elas têm de cair no mesmo lugar do papel que no começo;</li>
+<li>o texto do "Desfazer" no menu.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Na folha (giro dela)</th>
+<th>Aplicar em</th>
+<th>Botão</th>
+<th>Giros depois (folhas 1 a 10)</th>
+<th>Certo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3 (270)</td>
+<td>todas</td>
+<td>¼ à direita</td>
+<td>0 0 0 0 0 0 0 0 0 0</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>5 (90)</td>
+<td>daqui em diante</td>
+<td>¼ à esquerda</td>
+<td>90 180 270 180 <strong>0 0 0 0 0 0</strong></td>
+<td>sim</td>
+</tr>
+<tr>
+<td>4 (180)</td>
+<td>só as pares</td>
+<td>¼ à direita</td>
+<td>90 <strong>270</strong> 270 <strong>270</strong> 90 <strong>270</strong> 0 <strong>270</strong> 0 <strong>270</strong></td>
+<td>sim</td>
+</tr>
+<tr>
+<td>3 (270)</td>
+<td>só as ímpares</td>
+<td>meia volta</td>
+<td><strong>90</strong> 180 <strong>90</strong> 180 <strong>90</strong> 180 <strong>90</strong> 180 <strong>90</strong> 180</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>7 (0)</td>
+<td>só esta</td>
+<td>¼ à direita</td>
+<td>90 180 270 180 90 180 <strong>90</strong> 180 0 180</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>3 (270)</td>
+<td>só as pares (caso de canto)</td>
+<td>¼ à direita</td>
+<td>90 <strong>0</strong> 270 <strong>0</strong> 90 <strong>0</strong> 90 <strong>0</strong> 0 <strong>0</strong></td>
+<td>como o implementador descreveu, a perguntar</td>
+</tr>
+<tr>
+<td>2 (180)</td>
+<td>todas</td>
+<td>¼ à esquerda</td>
+<td>90 em todas</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>5 (90)</td>
+<td>só esta, depois do "todas"</td>
+<td>meia volta</td>
+<td>90 90 90 90 <strong>270</strong> 90 90 90 90 90</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>1 (90)</td>
+<td>só esta</td>
+<td>meia volta</td>
+<td><strong>270</strong> 90 … (capa.png refeita a 270)</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado dos testes:</strong></p>
+<ul>
+<li><strong>Desfazer:</strong> depois de cada um dos 6 primeiros giros, o Ctrl+Z devolveu as 10 folhas exatamente a 90 180 270 180 90 180 0 180 0 180, que era o giro de cada uma antes.</li>
+<li><strong>Dois giros seguidos:</strong> fiz "todas" e depois "só esta". Dois Ctrl+Z voltaram a cada estado anterior, na ordem certa. Dois Ctrl+Y refizeram tudo, também na ordem.</li>
+<li><strong>Velocidade:</strong> o giro mudou de 0,14 a 0,25 s depois do clique.</li>
+<li><strong>Zonas:</strong> as 124 zonas marcadas ficaram sempre no mesmo pedaço do papel. A diferença foi 0,0 em todas as 22 conferências. Na aba Marcar, com a folha 2 deitada, as zonas azuis (letra) e a vermelha (gravura) estão em cima do texto e da gravura certos (imagem 3).</li>
+<li><strong>Capa:</strong> a <code>capa.png</code> só mudou quando a folha 1 mudou de giro: no "todas" (a 0), no desfazer (de volta a 90) e no "só esta" da folha 1 (a 270). Quando outras folhas giraram, ela não mudou.</li>
+<li><strong>Menu e histórico:</strong> as frases novas aparecem como deviam. Exemplos: "Girar ¼ à direita: todas as 10 folhas, viradas como a folha 3" e "Girar ¼ à esquerda: da folha 5 em diante (6 folhas), viradas como a folha 5".</li>
+<li><strong>Dica do "aplicar em":</strong> "Em quais folhas o giro vale. Todas ficam viradas como esta folha."</li>
+</ul>
+<p><img alt="Tira de miniaturas em cada caso" src="imagens/i1-tira-aplicar-em.jpg" /></p>
+<p><strong>Olhando a tira, linha por linha:</strong></p>
+<ul>
+<li>no começo, as folhas estão em giros misturados;</li>
+<li>depois do "todas" na folha 3, as dez ficam em pé, como a 3;</li>
+<li>o Ctrl+Z devolve a tira exatamente ao que era;</li>
+<li>no "daqui em diante" na 5, só as folhas 5 a 10 mudam;</li>
+<li>no "pares" na 4, só as folhas 2, 4, 6, 8 e 10 mudam e ficam deitadas como a 4;</li>
+<li>no "ímpares" na 3, as folhas 1, 3, 5, 7 e 9 ficam deitadas como a 3;</li>
+<li>no "só esta" na 7, só a 7 muda.</li>
+</ul>
+<p><img alt="Cartões da aba Filtro e zonas da aba Marcar" src="imagens/i3-cartoes-e-zonas.jpg" /></p>
+<p><strong>Cartões da aba Filtro:</strong></p>
+<ul>
+<li>nas folhas 2 e 4, os 5 cartões estão no giro da folha;</li>
+<li>na folha 5, a medida por número apontou 3 cartões "errados" (Preto e branco, Melhorar e Mágico pro). <strong>Olhando a imagem, os cinco cartões estão no mesmo giro</strong>, com o título "PAULUS PAPA III" do mesmo lado. O erro foi da medida: ela se confunde com as páginas já filtradas, que viram quase só pontos pretos. Não é defeito do programa.</li>
+</ul>
+<h3>Pergunta para o Samuel: "só as pares" com uma folha ímpar na tela</h3>
+<p><img alt="O caso de canto: só as pares com a folha 3 na tela" src="imagens/i2-caso-pares-numa-folha-impar.jpg" /></p>
+<p><strong>O que acontece hoje:</strong></p>
+<ul>
+<li>a pessoa está na folha 3, que está deitada, escolhe "só as pares" e clica "¼ à direita";</li>
+<li><strong>a folha 3, que está na tela, não se mexe.</strong> A imagem grande continua igual;</li>
+<li>todas as pares (2, 4, 6, 8 e 10), que estavam de cabeça para baixo, <strong>ficam em pé</strong>. É o giro que a folha 3 teria se tivesse girado ¼ à direita;</li>
+<li>o único sinal na tela é a tira de miniaturas lá embaixo.</li>
+</ul>
+<p><strong>Uma frase fica enganosa:</strong> o histórico e o menu dizem "Girar ¼ à direita: as 5 folhas pares, viradas como a folha 3". Mas as pares <strong>não</strong> ficaram como a folha 3: ela continua deitada e elas ficaram em pé. A dica do "aplicar em" ("Todas ficam viradas como esta folha") também não vale neste caso.</p>
+<p><strong>Pergunta sugerida ao Samuel:</strong> "Se você está numa folha ímpar e escolhe 'só as pares', o que o botão de girar deve fazer?"</p>
+<ul>
+<li><strong>(a)</strong> como está hoje: a folha da tela não mexe, e as pares ficam como ela ficaria;</li>
+<li><strong>(b)</strong> a folha da tela também gira, junto com as pares;</li>
+<li><strong>(c)</strong> as pares giram ¼ cada uma, a partir de onde estão;</li>
+<li><strong>(d)</strong> o programa avisa: "você está numa folha ímpar; vá a uma folha par para girar as pares".</li>
+</ul>
+<h2>2. Capa do cartão ao "voltar"</h2>
+<p><img alt="Cartão antes e depois do voltar" src="imagens/i4-capa-no-voltar.jpg" /></p>
+<p><strong>O caminho testado:</strong></p>
+<ol>
+<li>entrei no livro;</li>
+<li>girei a folha 1 meia volta (de 90 para 270);</li>
+<li>saí pelo menu Arquivo, "Voltar para as opções";</li>
+<li>cliquei no "voltar" das opções.</li>
+</ol>
+<p><strong>O resultado:</strong></p>
+<ul>
+<li>a tela inicial apareceu em 0,03 s;</li>
+<li>a capa no cartão foi medida na própria janela e está no giro 270, igual à folha 1;</li>
+<li>antes, o cartão mostrava a capa guardada, sem giro. No código antigo, ele continuaria com essa capa até o programa ser aberto de novo;</li>
+<li>depois, o "continuar" abriu o livro normalmente, com os giros guardados.</li>
+</ul>
+<h2>3. Aviso "Um momento"</h2>
+<p><img alt="O aviso novo" src="imagens/i5-aviso-um-momento.jpg" /></p>
+<p><strong>O teste:</strong> usei o Boécio antigo (50 páginas, zonas de antes de 05/10) com um histórico de "outra sessão": duas ações feitas e uma desfeita, todas no ângulo da página 46. Fiz três rodadas, cada uma com uma cópia nova do Boécio, e agi logo ao entrar, com 48 páginas ainda por converter:</p>
+<table>
+<thead>
+<tr>
+<th>O que foi feito</th>
+<th>Aviso</th>
+<th>O livro mudou?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editar → Desfazer</td>
+<td>"Um momento", texto novo</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Editar → Refazer</td>
+<td>"Um momento", texto novo</td>
+<td>não</td>
+</tr>
+<tr>
+<td>clique no 1º item do painel Histórico</td>
+<td>"Um momento", texto novo</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Desfazer depois da conversão (cerca de 20 s)</td>
+<td>nenhum</td>
+<td>sim, desfez (ângulo 1,5 → 0)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O texto, conferido no print:</strong> "Ainda estou preparando as marcações do livro (a faixa azul mostra o andamento). O que você pediu mexe numa página que ainda não está pronta, por isso nada mudou. Quando terminar, tente de novo."</p>
+<ul>
+<li>Os acentos estão certos e o português está certo.</li>
+<li>Não fala mais "desta página" nem "faça a mudança de novo".</li>
+<li>Tem um botão só, "entendi".</li>
+</ul>
+<h2>4. O PDF</h2>
+<p><strong>Como foi feito:</strong> girei as folhas para 270 90 180 90 270 90 0 90 90 90 e processei pela janela (Confirmar e processar → "processar assim mesmo" → Processar). A tela final apareceu em 8,5 s. A maior parada da janela foi de 0,59 s.</p>
+<p><strong>O que foi conferido:</strong></p>
+<ul>
+<li><strong>Páginas, ordem e giro:</strong></li>
+<li>são 10 páginas;</li>
+<li>procurei cada página do PDF entre as folhas do livro de entrada, nos 4 giros possíveis;</li>
+<li>nas 10, ela é a folha certa, na ordem certa e no giro pedido;</li>
+<li>a folha certa ganhou sempre com folga: de 0,15 a 0,58 acima da segunda melhor.</li>
+<li><strong>Igual ao <code>fase-1</code>:</strong></li>
+<li>o mesmo projeto foi processado sem janela com o código do <code>fase-1</code> (<code>5eee3d8</code>);</li>
+<li>o PDF da janela tem os mesmos pixels nas 10 páginas, com o mesmo tamanho de página e o mesmo tamanho de arquivo (43.676.887 bytes);</li>
+<li>isso vale para a página 7, que não foi girada, e para as giradas;</li>
+<li>o leitor do Chrome (PDFium) desenha os dois igual;</li>
+<li>as 10 prévias também são idênticas.</li>
+</ul>
+<p><img alt="As 10 páginas do PDF feito na janela" src="imagens/pdf_janela.jpg" /></p>
+<ul>
+<li><strong>Olhando:</strong> cada página está em pé ou no giro pedido. A folha 7 (giro 0) está igual à original. A folha 3 (meia volta) está de cabeça para baixo, como foi pedido.</li>
+</ul>
+<h2>Velocidade</h2>
+<p><strong>Não ficou mais lento.</strong></p>
+<ul>
+<li>Estes commits não mexem no processamento: <code>core/pipeline</code> e os filtros não usam <code>core/girar.py</code>. O PDF saiu idêntico.</li>
+<li>Processei o mesmo projeto sem janela, alternando os dois códigos, 5 vezes cada:</li>
+<li><code>fase-1</code>: mediana de 10,3 s;</li>
+<li>este ramo: mediana de 10,2 s;</li>
+<li>as rodadas variaram de 9,1 a 13,7 s nos dois, por causa de outros programas no PC.</li>
+<li>Não rodei o <code>teste_velocidade.py</code> oficial: com o processamento idêntico, ele mediria só a variação do PC.</li>
+</ul>
+<h2>Testes de máquina</h2>
+<p><strong>pytest, um arquivo por vez (95 arquivos): 1705 passaram, 59 pularam, 0 falharam.</strong></p>
+<ul>
+<li><code>test_girar.py</code>: 41 passaram;</li>
+<li><code>test_girar_cartoes_e_previas.py</code>: 24 passaram;</li>
+<li><code>test_girar_na_tela.py</code>: 20 passaram;</li>
+<li><code>test_misto_na_tela.py</code>: rodou <strong>6 vezes</strong> (o arquivo em que o implementador viu a queda), com 14 passaram nas 6. Nenhum "access violation".</li>
+</ul>
+<p><strong><code>teste_botoes.py</code>: 159 ações, 0 falhas.</strong></p>
+<ul>
+<li>Rodou numa cópia <code>git archive</code> do <code>9cdc3da</code>, com <code>saida_teste</code> própria.</li>
+<li>Os 5 itens "Aplicar o giro em" do menu e os 3 giros estão entre as ações.</li>
+</ul>
+<h2>"Access violation" ao fechar</h2>
+<table>
+<thead>
+<tr>
+<th>Onde</th>
+<th>Vezes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pytest (100 rodadas de arquivo, contando as 6 do <code>test_misto_na_tela.py</code>)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>janela real (7 sessões abertas e fechadas)</td>
+<td><strong>2</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>As 2 vezes na janela real:</strong></p>
+<ul>
+<li><strong>1ª vez:</strong> foi no fechamento da sessão do Boécio em que testei o Refazer. É a mesma sessão em que liguei e desliguei o painel Histórico.</li>
+<li><strong>2ª vez:</strong> ficou anotada uns 12 s antes do fechamento de outra sessão do Boécio, com a janela parada. A janela continuou respondendo e fechou normalmente pelo WM_CLOSE. A falha foi anotada pelo registrador de falhas do Python, num momento em que nenhum código do programa estava rodando (só a linha de gravação do projeto, esperando).</li>
+</ul>
+<p><strong>Nos dois casos:</strong></p>
+<ul>
+<li>nada apareceu na tela;</li>
+<li>o projeto estava gravado;</li>
+<li>o <code>erros.log</code> ficou vazio.</li>
+</ul>
+<p><strong>Já existia antes:</strong> é o mesmo problema que o verificador-3 registrou no <code>89fae91</code>: 2 em 11 fechamentos, e 33 registros desde 05/10. Não vi nada que ligue isto ao <code>lambda</code> do <code>9cdc3da</code>. As duas vezes foram no Boécio, e não no livro em que usei o "voltar" das opções.</p>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Caso de canto "só as pares" numa folha ímpar</strong> (e "só as ímpares" numa folha par): precisa de decisão do Samuel (pergunta acima). Neste caso, a frase do histórico ("viradas como a folha 3") e a dica do "aplicar em" ficam enganosas.</li>
+<li><strong>Access violation:</strong> 2 em 7 sessões da janela, sem efeito visível. O defeito já existia antes destes commits (veja acima).</li>
+<li><strong>A medida dos cartões da aba Filtro por número erra nas páginas filtradas</strong> (quase só pontos pretos). Por isso conferi a folha 5 de olho.</li>
+<li><strong>O histórico do Livro de girar (cópia do verificador-1) já vem com o defeito de reabrir</strong> (<code>posicao.json</code> diz 21 ações feitas, mas o arquivo tem 30). É o defeito do <code>fase-1</code> já anotado pelo verificador-3. Ele não atrapalhou os testes, porque todo Ctrl+Z foi feito logo depois do meu próprio giro.
+   - A primeira tentativa de Ctrl+Z da sessão não chegou ao programa: a lista do "aplicar em" tinha ficado aberta e pegou a tecla. Nada mudou no livro. Mesmo assim, recomecei do zero, só por cuidado.</li>
+<li><strong>Não testado:</strong>
+   - a roda do mouse (não funciona sem foco);
+   - a escala real do notebook do Kaique;
+   - folha dividida (o Livro de girar não tem nenhuma);
+   - o Refazer e o Histórico durante a conversão: cada um só uma vez.</li>
+</ol>
+<h2>Onde está tudo</h2>
+<ul>
+<li><strong>Este parecer:</strong> <code>relatorios/conferir/girar-aplicar-copia-2026-10-06/parecer-girar-aplicar-copia.html</code> (também em <code>.md</code> e <code>.pdf</code>).</li>
+<li><strong>Imagens do parecer:</strong> <code>imagens/</code>.</li>
+<li><strong>Prints inteiros da janela:</strong> <code>prints/</code> (fora do git).</li>
+<li><strong>Registros passo a passo:</strong></li>
+<li>janela: <code>trabalho/girar.log</code>;</li>
+<li>pytest: <code>trabalho/pytest_girar.log</code> e <code>trabalho/pytest_resto.log</code>;</li>
+<li>teste de botões: <code>trabalho/teste_botoes.log</code>;</li>
+<li>velocidade: <code>trabalho/velocidade_intercalada.txt</code>.</li>
+<li><strong>Scripts</strong> (em <code>scripts/</code>):</li>
+<li><code>cenario.py</code>: girar, desfazer e refazer, com a conferência completa;</li>
+<li><code>cartoes.py</code>: cartões e aba Marcar;</li>
+<li><code>boecio_aviso.py</code> e <code>boecio_um.py</code>: o aviso;</li>
+<li><code>pdf_conferir.py</code> e <code>comparar_pdfs.py</code>: o PDF;</li>
+<li><code>imagens_parecer.py</code>: as imagens do parecer.</li>
+<li><strong>Ao terminar:</strong> todas as janelas de teste foram fechadas com WM_CLOSE, e nenhum processo meu ficou aberto.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 15:52</p>
+</body>
+</html>
