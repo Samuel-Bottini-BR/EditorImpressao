@@ -426,6 +426,14 @@ class TelaConferir(QWidget):
         """Volta o trabalho ate a acao clicada no painel Historico."""
         if self.acoes is None or self.projeto is None:
             return
+        # pendencia da D2: nao muda o preparo de pagina com zonas antigas
+        feitas = self.acoes.feitas
+        if posicao < len(feitas):
+            if self._acoes_esperam_pelas_marcacoes(feitas[posicao:], para_tras=True):
+                return
+        elif self._acoes_esperam_pelas_marcacoes(
+                list(reversed(self.acoes.desfeitas))[:posicao - len(feitas)], para_tras=False):
+            return
         self.acoes.voltar_para(self.projeto, posicao)
         if self.previas is not None:
             self.previas.invalidar()
@@ -2134,8 +2142,15 @@ class TelaConferir(QWidget):
 
     def _registrar(self, tipo: str, alvo: str, indices: list[int],
                    campos: dict, descricao: str) -> None:
-        """Aplica a mudanca e guarda no histórico, numa acao só."""
+        """Aplica a mudanca e guarda no histórico, numa acao só.
+
+        Pendencia da D2 (06/10/2026): se a mudanca mexe no preparo (giro,
+        divisao, linha de corte, borda, angulo) de alguma pagina com zonas
+        ainda no formato antigo, nao aplica: espera a conversao e avisa
+        (_espera_pelas_marcacoes)."""
         assert self.projeto is not None and self.acoes is not None
+        if self._espera_pelas_marcacoes(alvo, indices, campos):
+            return
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
@@ -2244,14 +2259,80 @@ class TelaConferir(QWidget):
         alvo = set(folhas)
         if not any(p.folha in alvo for p in paginas_por_converter(self.projeto)):
             return False
+        self._avisar_que_as_marcacoes_estao_sendo_preparadas(
+            "Ainda estou preparando as marcações destas folhas (a faixa azul "
+            "mostra o andamento). Quando terminar, gire de novo: assim as "
+            "marcações acompanham o giro.")
+        return True
+
+    # O que muda o preparo de uma pagina (girar 90 -> dividir -> cortar ->
+    # endireitar), e portanto o lugar das zonas da aba Marcar na pagina
+    # desenhada: os campos de core/pipeline._entradas_do_preparo que uma acao
+    # da tela pode mudar. Seguro: acrescentar campo. Arriscado: tirar algum.
+    CAMPOS_DO_PREPARO = frozenset({"rotacao", "dividir", "posicao_corte",
+                                   "recorte", "angulo_manual"})
+
+    def _espera_pelas_marcacoes(self, alvo: str, indices: list[int], campos: dict) -> bool:
+        """A pendencia da D2 (anotada pelo implementador do girar, 06/10/2026):
+        mudar o corte, a borda, a divisao ou o angulo de uma pagina cujas
+        zonas ainda estao no formato antigo (projeto de antes de 05/10, com a
+        conversao por tras ainda andando) deslocava as zonas - a conta que as
+        leva para o preparo novo precisa do preparo de ANTES, que so a
+        conversao anota. Recebe a mesma protecao do giro (9f8d4e5): a mudanca
+        espera, a tela avisa e pede a conversao (se ela tiver parado).
+
+        Escolhido em vez de converter a pagina na hora: converter precisa
+        desenhar a folha na resolucao do PDF para medir o corte e o angulo
+        automaticos (0,5 a 2 s), o que pararia a janela; e a conversao do
+        livro inteiro ja esta andando (Boecio, 50 paginas: ~3 s).
+
+        Vale para tudo que passa por _registrar e para desfazer, refazer e o
+        Historico (o historico de acoes volta ao abrir o livro: um Ctrl+Z de
+        outra sessao tambem mudaria o preparo). Devolve True se deve esperar.
+        Seguro mudar: a frase. Arriscado: aplicar mesmo assim.
+        """
+        if self.projeto is None or not (self.CAMPOS_DO_PREPARO & set(campos)):
+            return False
+        from core.zonas_na_folha import paginas_por_converter
+
+        pendentes = paginas_por_converter(self.projeto)
+        if not pendentes:
+            return False
+        alvo_indices = set(indices)
+        if alvo == "folha":
+            atingidas = [p for p in pendentes if p.folha in alvo_indices]
+        else:
+            atingidas = [p for p in pendentes if p.indice in alvo_indices]
+        if not atingidas:
+            return False
+        if "rotacao" in campos:
+            frase = ("Ainda estou preparando as marcações destas folhas (a faixa azul "
+                     "mostra o andamento). Quando terminar, gire de novo: assim as "
+                     "marcações acompanham o giro.")
+        else:
+            frase = ("Ainda estou preparando as marcações desta página (a faixa azul "
+                     "mostra o andamento). Quando terminar, faça a mudança de novo: "
+                     "assim as marcações acompanham o corte e o ângulo.")
+        self._avisar_que_as_marcacoes_estao_sendo_preparadas(frase)
+        return True
+
+    def _acoes_esperam_pelas_marcacoes(self, acoes, para_tras: bool) -> bool:
+        """Desfazer/refazer/Historico: alguma destas acoes mudaria o preparo
+        de uma pagina com zonas antigas (_espera_pelas_marcacoes)? para_tras:
+        desfazendo (aplica o `antes` de cada uma) ou refazendo (o `depois`)."""
+        for acao in acoes:
+            campos = acao.antes if para_tras else acao.depois
+            if self._espera_pelas_marcacoes(acao.alvo, acao.indices, campos):
+                return True
+        return False
+
+    def _avisar_que_as_marcacoes_estao_sendo_preparadas(self, frase: str) -> None:
+        """Pede a conversao das zonas (sinal marcacoes_por_converter; a janela
+        recomeca a tarefa se ela tiver parado) e mostra `frase`."""
         self.marcacoes_por_converter.emit()
         janela = self.window()
         if janela is not self and hasattr(janela, "avisar"):
-            janela.avisar(
-                "Ainda estou preparando as marcações destas folhas (a faixa azul "
-                "mostra o andamento). Quando terminar, gire de novo: assim as "
-                "marcações acompanham o giro.", titulo="Um momento")
-        return True
+            janela.avisar(frase, titulo="Um momento")
 
     # --- bordas -----------------------------------------------------------
 
@@ -2738,6 +2819,9 @@ class TelaConferir(QWidget):
     def desfazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
+        if self.acoes.feitas and self._acoes_esperam_pelas_marcacoes(
+                [self.acoes.feitas[-1]], para_tras=True):
+            return                       # pendencia da D2 (_espera_pelas_marcacoes)
         if self.acoes.desfazer(self.projeto) is not None:
             if self.previas is not None:
                 self.previas.invalidar()
@@ -2748,6 +2832,9 @@ class TelaConferir(QWidget):
     def refazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
+        if self.acoes.desfeitas and self._acoes_esperam_pelas_marcacoes(
+                [self.acoes.desfeitas[-1]], para_tras=False):
+            return                       # pendencia da D2 (_espera_pelas_marcacoes)
         if self.acoes.refazer(self.projeto) is not None:
             if self.previas is not None:
                 self.previas.invalidar()

@@ -435,3 +435,96 @@ def test_d2_a_capa_e_desenhada_fora_do_fio_da_janela(pasta, monkeypatch):
     projetos.refazer_miniatura_por_tras(sumida, 90)
     assert projetos.esperar_gravacoes(10)
     assert not (pasta / "sumiu").exists()
+
+
+# ---------------------------------------------------------------------------
+# A pendencia da D2 (anotada pelo implementador do girar, 06/10/2026): mudar o
+# corte ou o angulo de uma pagina com zonas ainda no formato antigo, antes de
+# a conversao chegar nela, deslocava as zonas. Ganha a mesma protecao do giro
+# (9f8d4e5): espera, avisa e pede a conversao.
+# ---------------------------------------------------------------------------
+
+
+def _livro_com_zona_antiga(janela, pasta, monkeypatch):
+    from core import zonas_na_folha as zf
+    from core.selecao import GRAVURA, MAO, RETANGULO, Regiao
+
+    # a previa (outro fio) nao converte a pagina no meio do teste
+    monkeypatch.setattr(zf, "acompanhar", lambda pagina, geometria: False)
+    janela.abrir_livro(str(_pdf_com_canto(pasta, 4)))
+    janela.projeto.detectar_regioes = False
+    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
+    tela = janela.tela_conferir
+    pagina = janela.projeto.paginas[0]
+    pagina.selecao = [Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.1, 0.1), (0.4, 0.3)],
+                             origem=MAO).para_dicionario()]
+    pagina.geometria_das_zonas = None              # formato antigo
+    pedidos = []
+    monkeypatch.setattr(janela, "_comecar_a_converter_as_zonas", lambda: pedidos.append(1))
+    return tela, pagina, pedidos
+
+
+def _preparo(janela, indice):
+    p = janela.projeto.paginas[indice]
+    f = janela.projeto.folhas[p.folha]
+    return (f.rotacao, f.dividir, f.posicao_corte, p.recorte, p.angulo_manual)
+
+
+@pytest.mark.parametrize("mudanca", [
+    "mover_corte", "corte_em_todas", "alternar_dividir", "mover_recorte", "sem_recorte",
+    "recorte_em_todas", "mover_angulo", "angulo_zero",
+])
+def test_pendencia_d2_corte_e_angulo_esperam_as_zonas_antigas(janela, pasta, monkeypatch,
+                                                              mudanca):
+    from core import zonas_na_folha as zf
+
+    tela, pagina, pedidos = _livro_com_zona_antiga(janela, pasta, monkeypatch)
+    acoes = {
+        "mover_corte": lambda: tela._mover_corte(0.42),
+        "corte_em_todas": tela._corte_em_todas,
+        "alternar_dividir": tela._alternar_dividir,
+        "mover_recorte": lambda: tela._mover_recorte((0.1, 0.1, 0.8, 0.8)),
+        "sem_recorte": tela._sem_recorte,
+        "recorte_em_todas": tela._recorte_em_todas,
+        "mover_angulo": lambda: tela._mover_angulo(2.5),
+        "angulo_zero": tela._angulo_zero,
+    }
+    tela.ir_para_pagina(0)
+    if mudanca == "recorte_em_todas":
+        janela.projeto.paginas[0].recorte = [0.05, 0.05, 0.9, 0.9]
+    antes = _preparo(janela, 0)
+    feitas = len(janela.acoes.feitas)
+    acoes[mudanca]()
+    assert _preparo(janela, 0) == antes, "mudou o preparo da pagina com zonas antigas"
+    assert len(janela.acoes.feitas) == feitas
+    assert janela.avisos and "preparando as marcações" in janela.avisos[-1]
+    assert pedidos == [1]
+
+    # convertida (a geometria anotada), a mudanca vale
+    pagina.geometria_das_zonas = zf.geometria_do_desenho(400 / 560, 0, None, "inteira", None, 0.0)
+    acoes[mudanca]()
+    assert len(janela.acoes.feitas) == feitas + 1
+
+
+def test_pendencia_d2_outra_pagina_sem_zonas_antigas_muda_normalmente(janela, pasta,
+                                                                       monkeypatch):
+    tela, _pagina, pedidos = _livro_com_zona_antiga(janela, pasta, monkeypatch)
+    tela.ir_para_pagina(2)
+    tela._mover_angulo(1.5)
+    assert janela.projeto.paginas[2].angulo_manual == 1.5
+    assert not janela.avisos and not pedidos
+
+
+def test_pendencia_d2_desfazer_de_outra_sessao_tambem_espera(janela, pasta, monkeypatch):
+    """O historico de acoes volta ao abrir o livro: um Ctrl+Z que mudaria o
+    corte de uma pagina ainda nao convertida espera tambem."""
+    from modelos import Acao
+
+    tela, _pagina, pedidos = _livro_com_zona_antiga(janela, pasta, monkeypatch)
+    janela.projeto.paginas[0].angulo_manual = 3.0
+    janela.acoes.feitas.append(Acao.nova("ajustar_angulo", "pagina", [0],
+                                         {"angulo_manual": None}, {"angulo_manual": 3.0},
+                                         "Angulo da página 1"))
+    tela.desfazer()
+    assert janela.projeto.paginas[0].angulo_manual == 3.0
+    assert janela.avisos and pedidos == [1]
