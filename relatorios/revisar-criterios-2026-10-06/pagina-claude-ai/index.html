@@ -1,0 +1,371 @@
+<title>Quando revisar uma página</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+  /* Layout: leitura em coluna; cada opção é um cartão com a grade das 59 páginas (um quadrinho por página). Cores: vermelho = saiu errada, âmbar = defeito leve, verde = saiu certa. */
+  :root {
+    --papel: #f1f2f4;
+    --folha: #ffffff;
+    --tinta: #1a1f27;
+    --fraco: #5a6372;
+    --fio: #d5dae1;
+    --azul: #2f6fe0;
+    --azul-suave: #e3ecfc;
+    --errada: #c4322b;
+    --errada-suave: #fbe3e1;
+    --leve: #b7791f;
+    --leve-suave: #fbefd9;
+    --certa: #2e8a55;
+    --certa-suave: #e1f2e8;
+    --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --fonte-texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --papel: #171b21; --folha: #20262e; --tinta: #e9edf2; --fraco: #a2acb9; --fio: #36404c;
+      --azul: #6b9bf2; --azul-suave: #1f2f4a;
+      --errada: #f07a72; --errada-suave: #3d1f1d; --leve: #f0b45c; --leve-suave: #3a2c14; --certa: #62cf91; --certa-suave: #183121;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --papel: #171b21; --folha: #20262e; --tinta: #e9edf2; --fraco: #a2acb9; --fio: #36404c;
+    --azul: #6b9bf2; --azul-suave: #1f2f4a;
+    --errada: #f07a72; --errada-suave: #3d1f1d; --leve: #f0b45c; --leve-suave: #3a2c14; --certa: #62cf91; --certa-suave: #183121;
+  }
+  body { background: var(--papel); color: var(--tinta); font: 17px/1.55 var(--fonte-texto); padding-inline: 16px; padding-block: 0 64px; }
+  .miolo { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+  header.topo { padding-block: 30px 0; display: grid; gap: 8px; }
+  .marca { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--azul); font-weight: 700; }
+  h1 { margin: 0; font: 800 34px/1.1 var(--fonte-titulo); text-wrap: balance; }
+  .lead { margin: 0; font-size: 19px; max-width: 66ch; }
+  .meta { margin: 0; color: var(--fraco); font-size: 15px; }
+  h2 { margin: 0 0 6px; font: 600 26px/1.2 var(--fonte-titulo); text-wrap: balance; }
+  h3 { margin: 0; font: 600 20px/1.25 var(--fonte-titulo); }
+  section > p, .texto p { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  .fraco { color: var(--fraco); }
+  .jeitos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+  .jeito { background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+  .jeito .tag { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--azul); }
+  .jeito p { margin: 6px 0 0; font-size: 16px; }
+  ol.tres { margin: 10px 0 0; padding-left: 0; list-style: none; counter-reset: n; display: grid; gap: 12px; }
+  ol.tres li { counter-increment: n; display: grid; grid-template-columns: 34px 1fr; gap: 12px; max-width: 76ch; }
+  ol.tres li::before { content: counter(n); width: 34px; height: 34px; border-radius: 50%; background: var(--azul-suave); color: var(--azul);
+    font: 800 17px/34px var(--fonte-titulo); text-align: center; }
+  .legenda-grade { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: var(--fraco); margin: 6px 0 4px; align-items: center; }
+  .legenda-grade span { display: inline-flex; align-items: center; gap: 6px; }
+  .q { width: 16px; height: 16px; border-radius: 3px; display: inline-block; flex: none; }
+  .q.errada.vai { background: var(--errada); }
+  .q.leve.vai { background: var(--leve); }
+  .q.certa.vai { background: var(--certa); }
+  .q.fica { background: transparent; border: 2px solid var(--fio); }
+  .q.errada.fica { border-color: var(--errada); }
+  .opcoes { display: grid; gap: 18px; }
+  .opcao { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 20px; display: grid; gap: 12px; min-width: 0; }
+  .opcao.recomendada { border: 2px solid var(--azul); }
+  .opcao .cab { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+  .selo { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 99px; background: var(--azul); color: var(--folha); letter-spacing: .03em; }
+  .selo.nao { background: var(--fio); color: var(--tinta); }
+  .faz { margin: 0; max-width: 72ch; }
+  .numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .num { border-radius: 8px; padding: 10px 12px; background: var(--papel); }
+  .num b { display: block; font: 800 28px/1.1 var(--fonte-titulo); font-variant-numeric: tabular-nums; }
+  .num span { font-size: 14px; color: var(--fraco); }
+  .num.ruim b { color: var(--errada); }
+  .num.bom b { color: var(--certa); }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(26px, 1fr)); gap: 5px; max-width: 760px; }
+  .grade button { aspect-ratio: 1; width: 100%; max-width: 100%; border-radius: 4px; padding: 0; cursor: pointer; border: 2px solid transparent; }
+  .grade button.vai.errada { background: var(--errada); }
+  .grade button.vai.leve { background: var(--leve); }
+  .grade button.vai.certa { background: var(--certa); }
+  .grade button.fica { background: transparent; border-color: var(--fio); }
+  .grade button.fica.errada { border-color: var(--errada); border-style: dashed; }
+  .grade button.marca-fraca { background: transparent; border: 2px dotted var(--fraco); }
+  .grade button[aria-pressed="true"] { outline: 3px solid var(--azul); outline-offset: 1px; }
+  .detalhe { font-size: 15px; min-height: 1.5em; color: var(--fraco); max-width: 72ch; }
+  .detalhe b { color: var(--tinta); }
+  .ganha-perde { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .ganha-perde div { border-radius: 8px; padding: 10px 12px; font-size: 15px; }
+  .ganha { background: var(--certa-suave); }
+  .perde { background: var(--errada-suave); }
+  .ganha-perde h4 { margin: 0 0 4px; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
+  .ganha-perde ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  .so-texto { font-size: 15px; border-left: 3px solid var(--fio); padding-left: 12px; color: var(--fraco); max-width: 72ch; }
+  .chamada { background: var(--azul-suave); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; }
+  .chamada a { color: var(--azul); font-weight: 700; }
+  .figuras { display: grid; gap: 22px; }
+  figure { margin: 0; display: grid; gap: 6px; }
+  figure button { padding: 0; border: 1px solid var(--fio); border-radius: 8px; overflow: hidden; cursor: zoom-in; background: #ffffff; display: block; width: 100%; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { font-size: 15px; color: var(--fraco); max-width: 80ch; }
+  figcaption b { color: var(--tinta); }
+  .tabela { overflow-x: auto; background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; }
+  table { border-collapse: collapse; font-size: 14px; min-width: 760px; width: 100%; }
+  th, td { padding: 7px 10px; border-bottom: 1px solid var(--fio); text-align: left; vertical-align: top; }
+  th { position: sticky; top: 0; background: var(--folha); font-size: 13px; letter-spacing: .03em; }
+  td.v { white-space: nowrap; font-weight: 700; }
+  td.v.errada { color: var(--errada); }
+  td.v.leve { color: var(--leve); }
+  td.v.certa { color: var(--certa); }
+  td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  ul.ressalvas { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 76ch; }
+  .guardado { background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; font-size: 15px; }
+  .guardado code { font-size: 14px; overflow-wrap: anywhere; }
+  dialog.zoom { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh; }
+  dialog.zoom::backdrop { background: rgba(0, 0, 0, .82); }
+  dialog.zoom img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 6px; background: #ffffff; }
+  dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 8px; color: #ffffff; }
+  dialog.zoom button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+</style>
+
+<div class="miolo">
+  <header class="topo">
+    <div class="marca">Editor de Impressão · estudo de 06/10/2026</div>
+    <h1>Quando uma página deve ir para "Para revisar"</h1>
+    <p class="lead">Você perguntou qual é o critério e se o leitor de texto pegar pedaço de figura é motivo para revisar. Um agente testou 59 páginas e olhou cada uma. Aqui estão o resultado e as opções, explicadas uma por uma.</p>
+    <p class="meta">Vale para o "Só as letras" (o modo Misto, dentro do Preto e branco). Nada do programa foi mudado pelo estudo.</p>
+  </header>
+
+  <section>
+    <h2>Primeiro, o básico</h2>
+    <p><b>"Para revisar"</b> é a lista de páginas que o programa pede para o Kaique olhar com atenção antes de imprimir. Ela só é útil se tiver as páginas que <b>podem ter saído erradas</b>. Se tiver página certa demais, o Kaique cansa e para de olhar. Se faltar uma página errada, ela vai para a impressão.</p>
+    <p>No "Só as letras", o programa procura as <b>linhas de texto</b> e as <b>gravuras</b>. O que sobra fora das duas (moldura, capitular, música, tabela, desenho que ele não reconheceu) é tratado de um destes três jeitos:</p>
+    <div class="jeitos">
+      <div class="jeito"><div class="tag">De fábrica</div><h3>Guardar a tinta forte</h3><p>Guarda em preto o que é tão escuro quanto as letras. O que é mais claro vai para o branco.</p></div>
+      <div class="jeito"><div class="tag">Opção</div><h3>Tudo em preto e branco</h3><p>Passa tudo para preto e branco, como o Preto e branco de sempre. Não usa o leitor de texto.</p></div>
+      <div class="jeito"><div class="tag">Opção</div><h3>Só o texto achado</h3><p>Apaga tudo o que está fora das linhas de texto. Só as linhas ficam.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>O que o estudo descobriu</h2>
+    <ol class="tres">
+      <li><div><b>O aviso de hoje enche a lista à toa.</b> Hoje a página vai para revisar quando sobra muita tinta escura fora do texto (mais de 10%). Toda página com moldura, música ou tabela tem isso, mesmo saindo certa. No jeito de fábrica, 35 das 59 páginas iriam para a lista, e só 7 estavam erradas.</div></li>
+      <li><div><b>A sua pergunta: o leitor pegar pedaço de figura como texto não estraga nada no jeito de fábrica.</b> A tinta forte fica de qualquer jeito. Só no "Só o texto achado" sobra um pedacinho solto, e ali a página já está errada por outro motivo. Como critério, isso mandaria 35 páginas, 23 delas certas.</div></li>
+      <li><div><b>O erro de verdade é outro: o programa apaga a parte clara de um desenho que não reconheceu como gravura.</b> A capitular S do Palatino 76 sumiu quase inteira. Esse defeito já está na Lista de bugs para ser consertado. O aviso precisa pegar <i>isso</i>.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>As opções, uma por uma</h2>
+    <p>Cada quadrinho é uma das 59 páginas testadas, no jeito de fábrica. <b>Quadrinho cheio</b> = vai para "Para revisar". <b>Quadrinho vazio</b> = não vai. A cor diz como a página saiu. Clique num quadrinho para ver qual página é e o que aconteceu nela.</p>
+    <div class="legenda-grade">
+      <span><i class="q errada vai"></i>saiu errada</span>
+      <span><i class="q leve vai"></i>defeito leve (o mesmo do Preto e branco de sempre)</span>
+      <span><i class="q certa vai"></i>saiu certa</span>
+      <span><i class="q fica"></i>não vai para a lista</span>
+      <span><i class="q errada fica" style="border-style:dashed"></i>errada e NÃO vai (o pior caso)</span>
+    </div>
+    <div class="opcoes" id="opcoes"></div>
+    <div class="chamada">
+      <b>Para escolher:</b>
+      <span>A escolha está na página de escolhas, na pergunta "Depois do estudo: qual critério manda a página para 'Para revisar'?". Clique em "Escolho esta" na opção que quiser. Se tiver dúvida, escreva no comentário dela.</span>
+      <a href="https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV" target="_blank" rel="noopener">Abrir a página de escolhas</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>O erro de verdade: desenho que some</h2>
+    <p>Em cada imagem: à esquerda o original, no meio o resultado do jeito de fábrica, à direita onde olhar (em vermelho, o que foi apagado). Clique para ver grande.</p>
+    <div class="figuras" id="fig-erros"></div>
+  </section>
+
+  <section>
+    <h2>A sua pergunta: pedaço de figura pego como texto</h2>
+    <p>Em azul, à direita, as linhas que o leitor de texto achou.</p>
+    <div class="figuras" id="fig-pergunta"></div>
+  </section>
+
+  <section>
+    <h2>Página que vai para revisar à toa, hoje</h2>
+    <div class="figuras" id="fig-atoa"></div>
+  </section>
+
+  <section>
+    <h2>O que o "Só o texto achado" apaga</h2>
+    <p>Esse jeito errou em 43 das 59 páginas. Por isso, nele, o aviso precisa ser bem mais sensível.</p>
+    <div class="figuras" id="fig-c"></div>
+  </section>
+
+  <section>
+    <h2>Página por página</h2>
+    <p class="fraco">"Hoje" = o aviso de hoje (entre parênteses, quanto da tinta escura ficou fora do texto). "Opção 1" = a recomendada, no jeito de fábrica.</p>
+    <div class="tabela"><table><thead><tr><th>Página</th><th>Jeito de fábrica</th><th>Só o texto achado</th><th>Hoje</th><th>Opção 1</th><th>O que o agente viu</th></tr></thead><tbody id="tabela"></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Ressalvas</h2>
+    <ul class="ressalvas">
+      <li><b>Os limites da opção 1 foram acertados nestas mesmas 59 páginas.</b> Antes de virar padrão, eles são conferidos num livro que não entrou no teste.</li>
+      <li><b>As páginas foram escolhidas de propósito com desenho.</b> Num livro de texto corrido quase nenhuma página vai para revisar, em nenhuma opção.</li>
+      <li><b>O "certa / leve / errada" de cada página é o olho do agente</b>, em imagens reduzidas e alguns detalhes ampliados. Defeito muito pequeno pode ter escapado.</li>
+      <li><b>Gravura achada onde não tem</b> (mancha ou remendo impresso em marrom, como no Marial 454) não depende do leitor de texto, e nenhum sinal pega bem esse erro. Um aviso só para isso seria outro estudo.</li>
+      <li>Defeito pequeno achado no código: quando o leitor não acha nenhuma linha, a página sai como "Tudo em preto e branco" sem aviso, e um aviso antigo fica parado. Nada é apagado. Está na Lista de bugs.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Onde o estudo está guardado</h2>
+    <div class="guardado">
+      <span>No seu computador, a versão completa (abre com dois cliques): <code>D:\programas\EditorImpressao\relatorios\revisar-criterios-2026-10-06\revisar-criterios.html</code> (também em .pdf e .md).</span>
+      <span>No GitHub, no ramo <code>fase-1</code>, commit <code>764b5f4</code>: o relatório, as 15 imagens, os números e vereditos de cada página e os programas usados no teste.</span>
+      <span>No plano (Registro de mudanças, 06/10) e na Lista de bugs.</span>
+    </div>
+  </section>
+</div>
+
+<dialog class="zoom" id="zoom">
+  <img id="zoom-img" alt="">
+  <div class="barra"><span id="zoom-legenda"></span><button id="zoom-fechar" type="button">Fechar</button></div>
+</dialog>
+
+<script>
+(function () {
+  var PAGINAS = [{"nome": "Antiphon p. 088", "a": "leve", "c": "errada", "hoje": true, "pct": 60, "op1": false, "nota": "A: a capitular B colorida pega um pedaço da pauta vermelha (fica em cor ao lado da pauta preta). C: a música fora das linhas some."}, {"nome": "Antiphon p. 260", "a": "errada", "c": "errada", "hoje": true, "pct": 12, "op1": true, "nota": "A: a zona de gravura cobre pautas inteiras: a música fica desbotada, como no original, e a borda de folhas sai picotada."}, {"nome": "Boécio p. 003", "a": "certa", "c": "errada", "hoje": true, "pct": 64, "op1": true, "nota": "C: a xilogravura e o carimbo somem; só o 'IHS' (que o leitor achou como texto) fica boiando."}, {"nome": "Boécio p. 007", "a": "certa", "c": "errada", "hoje": false, "pct": 3, "op1": false, "nota": "C: a capitular Q e os sinais de métrica somem."}, {"nome": "Boécio p. 008", "a": "certa", "c": "errada", "hoje": false, "pct": 4, "op1": false, "nota": "C: a capitular O e uma linha de sinais de métrica somem."}, {"nome": "Boécio p. 022", "a": "certa", "c": "errada", "hoje": false, "pct": 2, "op1": false, "nota": "C: as duas capitulares Q e sinais de métrica somem."}, {"nome": "Cursus p. 003", "a": "certa", "c": "errada", "hoje": true, "pct": 17, "op1": false, "nota": "C: a capitular xilográfica e o 'AD' do título somem."}, {"nome": "Cursus p. 314", "a": "certa", "c": "certa", "hoje": true, "pct": 15, "op1": false, "nota": "So a beirada preta do scanner (corte)."}, {"nome": "Escola p. 007", "a": "certa", "c": "certa", "hoje": false, "pct": 1, "op1": false, "nota": "-"}, {"nome": "Escola p. 035", "a": "certa", "c": "certa", "hoje": false, "pct": 0, "op1": false, "nota": "-"}, {"nome": "Escola p. 113", "a": "certa", "c": "errada", "hoje": false, "pct": 0, "op1": false, "nota": "C: o 'O' inicial de duas linhas some."}, {"nome": "Escola p. 197", "a": "certa", "c": "errada", "hoje": false, "pct": 0, "op1": false, "nota": "C: os números '1 -', '2 -', '3 -' perdem pedaços."}, {"nome": "Graduale p. 221", "a": "certa", "c": "errada", "hoje": true, "pct": 72, "op1": false, "nota": "C: a música some."}, {"nome": "Graduale p. 222", "a": "certa", "c": "errada", "hoje": true, "pct": 76, "op1": false, "nota": "C: a música some."}, {"nome": "Graduale p. 223", "a": "certa", "c": "errada", "hoje": true, "pct": 75, "op1": false, "nota": "C: a música some."}, {"nome": "Graduale p. 269", "a": "leve", "c": "errada", "hoje": true, "pct": 29, "op1": true, "nota": "A: a borda de ramos sai meio em cor, meio preta. C: pedaços de pauta e notas somem."}, {"nome": "Graduale p. 588", "a": "leve", "c": "errada", "hoje": true, "pct": 66, "op1": false, "nota": "A: a capitular azul não achada sai preta (igual ao Preto e branco). C: música e capitulares somem."}, {"nome": "Horas p. 011", "a": "certa", "c": "certa", "hoje": false, "pct": 0, "op1": false, "nota": "-"}, {"nome": "Horas p. 013", "a": "certa", "c": "certa", "hoje": false, "pct": 4, "op1": false, "nota": "-"}, {"nome": "Horas p. 014", "a": "leve", "c": "errada", "hoje": true, "pct": 55, "op1": false, "nota": "A: a moldura dourada não achada sai preta e grossa (igual ao Preto e branco). C: moldura e réguas da tabela somem ou ficam picotadas."}, {"nome": "Horas p. 016", "a": "certa", "c": "certa", "hoje": false, "pct": 1, "op1": false, "nota": "-"}, {"nome": "Horas p. 026", "a": "certa", "c": "certa", "hoje": false, "pct": 5, "op1": false, "nota": "-"}, {"nome": "Horas p. 027", "a": "certa", "c": "errada", "hoje": false, "pct": 3, "op1": false, "nota": "C: letras douradas do começo das linhas somem."}, {"nome": "Horas p. 047", "a": "certa", "c": "certa", "hoje": false, "pct": 0, "op1": false, "nota": "-"}, {"nome": "Horas p. 175", "a": "leve", "c": "errada", "hoje": false, "pct": 2, "op1": false, "nota": "A: a capitular S decorada não achada sai como bloco preto (igual ao Preto e branco). C: a capitular some, fica um quadrado vazio."}, {"nome": "ljs47 p. 026", "a": "certa", "c": "errada", "hoje": true, "pct": 55, "op1": true, "nota": "C: as iniciais azuis e vermelhas somem."}, {"nome": "ljs47 p. 049", "a": "leve", "c": "leve", "hoje": false, "pct": 0, "op1": false, "nota": "A página inteira virou gravura: manchas impressas em cor."}, {"nome": "ljs47 p. 064", "a": "leve", "c": "leve", "hoje": false, "pct": 1, "op1": false, "nota": "Quase toda a página virou gravura: manchas da margem em cor."}, {"nome": "ljs47 p. 103", "a": "errada", "c": "errada", "hoje": true, "pct": 65, "op1": true, "nota": "A: o diagrama vermelho de traços finos (não achado como gravura) fica picotado - somem traços que o Preto e branco guarda. C: o diagrama some."}, {"nome": "Marial p. 007", "a": "leve", "c": "errada", "hoje": false, "pct": 5, "op1": false, "nota": "A: o canto manchado foi marcado como gravura (mancha em cor). C: '& o' somem numa linha."}, {"nome": "Marial p. 454", "a": "errada", "c": "errada", "hoje": true, "pct": 13, "op1": true, "nota": "A: um remendo de papel e a mancha do verso foram marcados como gravura: saem impressos em marrom."}, {"nome": "Marial p. 840", "a": "certa", "c": "certa", "hoje": true, "pct": 15, "op1": false, "nota": "-"}, {"nome": "Matemática p. 032", "a": "certa", "c": "certa", "hoje": true, "pct": 24, "op1": true, "nota": "As faixas pretas do scanner (assunto do corte, não do Misto)."}, {"nome": "Matemática p. 072", "a": "certa", "c": "certa", "hoje": true, "pct": 34, "op1": true, "nota": "As faixas pretas do scanner (assunto do corte, não do Misto)."}, {"nome": "Opus majus p. 003", "a": "certa", "c": "errada", "hoje": true, "pct": 13, "op1": false, "nota": "C: o selo da editora some; sobra 'PRESS' picotado."}, {"nome": "Opus majus p. 011", "a": "certa", "c": "errada", "hoje": false, "pct": 1, "op1": false, "nota": "C: a capitular C some."}, {"nome": "Opus majus p. 020", "a": "certa", "c": "certa", "hoje": false, "pct": 8, "op1": false, "nota": "-"}, {"nome": "Opus majus p. 165", "a": "certa", "c": "errada", "hoje": false, "pct": 6, "op1": false, "nota": "C: as linhas dos dois diagramas somem; sobram as letrinhas."}, {"nome": "Opus majus p. 256", "a": "certa", "c": "errada", "hoje": true, "pct": 37, "op1": false, "nota": "C: réguas e números da tabela picotados."}, {"nome": "Palatino p. 005", "a": "certa", "c": "certa", "hoje": false, "pct": 0, "op1": false, "nota": "-"}, {"nome": "Palatino p. 007", "a": "certa", "c": "errada", "hoje": false, "pct": 1, "op1": false, "nota": "C: a capitular V e letras do título somem."}, {"nome": "Palatino p. 009", "a": "certa", "c": "errada", "hoje": true, "pct": 46, "op1": false, "nota": "C: a capitular Q e a moldura somem; sobra um pedaço de fio."}, {"nome": "Palatino p. 010", "a": "certa", "c": "errada", "hoje": true, "pct": 31, "op1": false, "nota": "C: a moldura some."}, {"nome": "Palatino p. 057", "a": "certa", "c": "errada", "hoje": true, "pct": 61, "op1": false, "nota": "C: moldura, floreios e capitulares somem; sobram pedaços soltos."}, {"nome": "Palatino p. 066", "a": "errada", "c": "errada", "hoje": true, "pct": 42, "op1": true, "nota": "A: a letra ornamental 'M' do rodapé, de contorno claro, fica pela metade (o Preto e branco guarda inteira)."}, {"nome": "Palatino p. 067", "a": "errada", "c": "errada", "hoje": true, "pct": 42, "op1": true, "nota": "A: a capitular xilográfica M perde quase todo o desenho de dentro (o Preto e branco guarda)."}, {"nome": "Palatino p. 076", "a": "errada", "c": "errada", "hoje": true, "pct": 37, "op1": true, "nota": "A: a capitular xilográfica S some quase inteira; fica só a moldura dela."}, {"nome": "Palatino p. 104", "a": "certa", "c": "errada", "hoje": true, "pct": 20, "op1": false, "nota": "C: réguas da tabela picotadas."}, {"nome": "Palatino p. 113", "a": "certa", "c": "errada", "hoje": true, "pct": 42, "op1": true, "nota": "C: a moldura em pergaminho some."}, {"nome": "Pesel p. 021", "a": "errada", "c": "errada", "hoje": true, "pct": 21, "op1": true, "nota": "A e C: a legenda no papel escuro vira tarja preta (o Preto e branco faz o mesmo; não é do Misto)."}, {"nome": "Rhetorica p. 018", "a": "certa", "c": "errada", "hoje": true, "pct": 10, "op1": false, "nota": "C: fios da moldura picotados."}, {"nome": "Rhetorica p. 034", "a": "certa", "c": "certa", "hoje": false, "pct": 6, "op1": false, "nota": "-"}, {"nome": "Rhetorica p. 073", "a": "certa", "c": "errada", "hoje": true, "pct": 26, "op1": false, "nota": "C: chaves e ornamentos somem."}, {"nome": "Rhetorica p. 129", "a": "certa", "c": "errada", "hoje": true, "pct": 91, "op1": true, "nota": "C: a gravura de página inteira some; sobram 4 letras."}, {"nome": "Rhetorica p. 160", "a": "certa", "c": "errada", "hoje": false, "pct": 9, "op1": false, "nota": "C: fios da moldura somem."}, {"nome": "Siebmacher p. 007 (direita)", "a": "leve", "c": "errada", "hoje": true, "pct": 92, "op1": true, "nota": "A: moldura de floreios não achada sai em preto e branco. C: a moldura some."}, {"nome": "Siebmacher p. 007 (esquerda)", "a": "leve", "c": "errada", "hoje": true, "pct": 45, "op1": true, "nota": "A: idem. C: moldura e capitular somem."}, {"nome": "Siebmacher p. 009 (direita)", "a": "leve", "c": "errada", "hoje": true, "pct": 91, "op1": true, "nota": "A: idem. C: a moldura some."}, {"nome": "Siebmacher p. 009 (esquerda)", "a": "leve", "c": "errada", "hoje": true, "pct": 53, "op1": true, "nota": "A: idem. C: moldura e capitular somem; a assinatura fica picotada."}];
+
+  var OPCOES = [
+    { id: "op1", nome: "Opção 1: olhar o que o programa apagou", recomendada: true,
+      faz: "Em vez de contar a tinta que sobrou fora do texto, o programa conta o que ele mesmo APAGOU. A página vai para revisar quando ele apagou parte de um desenho, quando uma figura passou da beirada da gravura que ele achou, ou quando apagou muita tinta. A frase da lista diz o que olhar: \"Apaguei parte de um desenho que não reconheci como figura. Confira.\"",
+      vai: function (p) { return p.op1; },
+      ganha: ["O Kaique abre 18 páginas em vez de 35.", "As 7 páginas erradas continuam todas na lista.", "A frase diz o que olhar na página."],
+      perde: ["Os limites foram acertados nestas 59 páginas; precisam ser conferidos num livro novo.", "6 páginas certas ainda vão (faixa preta do scanner, gravura de página inteira)."],
+      soTexto: "No \"Só o texto achado\": vai para revisar toda página em que sumiu um pedaço escuro do tamanho de uma letra e meia ou maior. Pega as 43 páginas erradas desse jeito (hoje 12 ficam de fora), mas manda 55 das 59 — nesse jeito quase toda página com desenho precisa mesmo ser olhada." },
+    { id: "op3", nome: "Opção 1 + uma marca fraca para o resto",
+      faz: "Igual à opção 1. Além disso, as páginas que hoje iriam para a lista só por ter moldura, música ou tabela ganham uma marca discreta (\"tem desenho que saiu em preto e branco\"), que NÃO entra em \"Para revisar\". Os quadrinhos pontilhados abaixo são essas páginas.",
+      vai: function (p) { return p.op1; },
+      fraca: function (p) { return p.hoje && !p.op1; },
+      ganha: ["Tudo o que a opção 1 ganha.", "Nenhuma informação se perde: o aviso de hoje continua, só que mais fraco."],
+      perde: ["É uma mudança de tela (um tipo novo de marca). A aparência fica para o layout."],
+      soTexto: "No \"Só o texto achado\": igual à opção 1." },
+    { id: "op2", nome: "Opção 2: deixar como está (10%)",
+      faz: "Continua como hoje: a página vai para revisar quando mais de 10% da tinta escura fica fora das linhas de texto e das gravuras.",
+      vai: function (p) { return p.hoje; },
+      ganha: ["Nada a mudar no programa.", "Pega as 7 páginas erradas do jeito de fábrica."],
+      perde: ["35 páginas na lista, 20 delas certas: o Kaique tende a parar de olhar.", "Pega as erradas quase por acaso (porque elas têm desenho, não porque o programa viu o erro)."],
+      soTexto: "No \"Só o texto achado\": 12 páginas erradas ficam de fora (capitular, número, letra dourada apagados)." },
+    { id: "op4", nome: "Opção 4: subir o limite para 30%", nao: true,
+      faz: "O mesmo aviso de hoje, mas só quando mais de 30% da tinta escura fica fora do texto.",
+      vai: function (p) { return p.pct >= 30; },
+      ganha: ["23 páginas na lista em vez de 35."],
+      perde: ["3 das 7 páginas erradas ficam de fora (Antiphon 260, Marial 454, Pesel 21).", "Continua contando a tinta que sobrou, não o erro."],
+      soTexto: "No \"Só o texto achado\": 21 páginas erradas ficam de fora." }
+  ];
+
+  var FIG = {
+    "fig-erros": [
+      ["hoje-com-razao-palatino076.jpg", "Palatino 76", "a capitular S gravada sumiu quase inteira; ficou só a moldura dela e um arco. Olhe o quadro do meio."],
+      ["a-palatino067.jpg", "Palatino 67", "o fundo desenhado dentro da capitular M sumiu quase todo. O Preto e branco de sempre o guarda."],
+      ["a-palatino066.jpg", "Palatino 66", "a letra ornamental M do rodapé, de contorno claro, ficou pela metade."],
+      ["a-ljs47-103.jpg", "Manuscrito ljs47, p. 103", "o diagrama de traço vermelho fino ficou picotado."],
+      ["gravura-errada-marial454.jpg", "Marial 454 (outro erro)", "o detector achou que um remendo e a mancha do verso eram gravura (verde, à direita): saem impressos em marrom."],
+      ["gravura-errada-antiphon260.jpg", "Antiphon 260 (outro erro)", "a gravura da iluminura pegou as pautas ao lado: as notas dentro dela saem marrons, as de fora pretas."]
+    ],
+    "fig-pergunta": [
+      ["linha-na-figura-boecio003-a.jpg", "Boécio 3, jeito de fábrica", "o leitor achou o \"IHS\" no meio da gravura como se fosse texto (azul). Nada de errado aparece no resultado."],
+      ["linha-na-figura-boecio003-c.jpg", "Boécio 3, Só o texto achado", "a gravura some inteira e o \"IHS\" fica boiando sozinho. O erro é a gravura sumir."],
+      ["linha-na-figura-palatino057-c.jpg", "Palatino 57, Só o texto achado", "sobra um pedaço do floreio solto no alto, à esquerda; o resto da moldura some."]
+    ],
+    "fig-atoa": [
+      ["hoje-a-toa-graduale222.jpg", "Graduale 222", "a música inteira está fora das linhas de texto (76% da tinta), mas no jeito de fábrica ela é guardada: a página saiu certa."],
+      ["hoje-a-toa-palatino010.jpg", "Palatino 10", "a moldura conta como tinta fora do texto (31%), mas sai igual ao Preto e branco de sempre: a página saiu certa."]
+    ],
+    "fig-c": [
+      ["c-boecio007.jpg", "Boécio 7", "a capitular Q e os sinais de métrica do alto somem."],
+      ["c-escola197.jpg", "Na escola de Jesus, 197", "os números da margem esquerda perdem pedaços."],
+      ["c-graduale222.jpg", "Graduale 222", "a música inteira some."],
+      ["c-rhetorica129.jpg", "Rhetorica 129", "a gravura de página inteira some; sobram quatro letras."]
+    ]
+  };
+
+  function el(tag, cls, texto) { var e = document.createElement(tag); if (cls) e.className = cls; if (texto != null) e.textContent = texto; return e; }
+
+  var zoom = document.getElementById("zoom");
+  document.getElementById("zoom-fechar").addEventListener("click", function () { zoom.close(); });
+  zoom.addEventListener("click", function (ev) { if (ev.target === zoom) zoom.close(); });
+  function abrirZoom(src, legenda) {
+    var i = document.getElementById("zoom-img"); i.src = src; i.alt = legenda;
+    document.getElementById("zoom-legenda").textContent = legenda;
+    if (zoom.showModal) zoom.showModal(); else zoom.setAttribute("open", "");
+  }
+
+  Object.keys(FIG).forEach(function (alvo) {
+    var caixa = document.getElementById(alvo);
+    FIG[alvo].forEach(function (f) {
+      var fig = el("figure");
+      var b = el("button"); b.type = "button"; b.setAttribute("aria-label", "Ver grande: " + f[1]);
+      var img = el("img"); img.src = "img/" + f[0]; img.alt = f[1] + ": " + f[2]; img.loading = "lazy";
+      b.appendChild(img);
+      b.addEventListener("click", function () { abrirZoom("img/" + f[0], f[1] + ": " + f[2]); });
+      fig.appendChild(b);
+      var cap = el("figcaption"); cap.appendChild(el("b", null, f[1] + ": ")); cap.appendChild(document.createTextNode(f[2]));
+      fig.appendChild(cap);
+      caixa.appendChild(fig);
+    });
+  });
+
+  var NOME_V = { errada: "saiu errada", leve: "defeito leve", certa: "saiu certa" };
+  var caixaOp = document.getElementById("opcoes");
+  OPCOES.forEach(function (op) {
+    var c = el("article", "opcao" + (op.recomendada ? " recomendada" : ""));
+    var cab = el("div", "cab");
+    cab.appendChild(el("h3", null, op.nome));
+    if (op.recomendada) cab.appendChild(el("span", "selo", "Recomendada"));
+    if (op.nao) cab.appendChild(el("span", "selo nao", "Não recomendada"));
+    c.appendChild(cab);
+    c.appendChild(el("p", "faz", op.faz));
+    var vao = PAGINAS.filter(op.vai);
+    var erradas = PAGINAS.filter(function (p) { return p.a === "errada"; });
+    var nums = el("div", "numeros");
+    function num(valor, texto, cls) { var d = el("div", "num" + (cls ? " " + cls : "")); d.appendChild(el("b", null, String(valor))); d.appendChild(el("span", null, texto)); nums.appendChild(d); }
+    num(vao.length, "páginas o Kaique abre (de 59)");
+    num(vao.filter(function (p) { return p.a === "errada"; }).length + " de " + erradas.length, "erradas que ele vê", "bom");
+    num(vao.filter(function (p) { return p.a === "certa"; }).length, "certas abertas à toa", "");
+    var fora = erradas.filter(function (p) { return !op.vai(p); }).length;
+    num(fora, "erradas que ele NÃO vê", fora ? "ruim" : "bom");
+    c.appendChild(nums);
+    var grade = el("div", "grade");
+    var det = el("p", "detalhe", "Clique num quadrinho para ver a página.");
+    PAGINAS.forEach(function (p) {
+      var vai = op.vai(p);
+      var fraca = op.fraca && op.fraca(p);
+      var b = el("button", (vai ? "vai " : (fraca ? "marca-fraca " : "fica ")) + p.a);
+      b.type = "button";
+      var rotulo = p.nome + ": " + NOME_V[p.a] + (vai ? ", vai para revisar" : (fraca ? ", só a marca fraca" : ", não vai"));
+      b.title = rotulo; b.setAttribute("aria-label", rotulo); b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        grade.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        det.textContent = "";
+        det.appendChild(el("b", null, rotulo + ". "));
+        det.appendChild(document.createTextNode(p.nota));
+      });
+      grade.appendChild(b);
+    });
+    c.appendChild(grade);
+    c.appendChild(det);
+    var gp = el("div", "ganha-perde");
+    [["ganha", "Ganha", op.ganha], ["perde", "Perde", op.perde]].forEach(function (x) {
+      var d = el("div", x[0]); d.appendChild(el("h4", null, x[1]));
+      var ul = el("ul"); x[2].forEach(function (t) { ul.appendChild(el("li", null, t)); }); d.appendChild(ul); gp.appendChild(d);
+    });
+    c.appendChild(gp);
+    c.appendChild(el("p", "so-texto", op.soTexto));
+    caixaOp.appendChild(c);
+  });
+
+  var tb = document.getElementById("tabela");
+  PAGINAS.forEach(function (p) {
+    var tr = el("tr");
+    tr.appendChild(el("td", null, p.nome));
+    tr.appendChild(el("td", "v " + p.a, p.a));
+    tr.appendChild(el("td", "v " + p.c, p.c));
+    tr.appendChild(el("td", "n", (p.hoje ? "sim" : "não") + " (" + p.pct + "%)"));
+    tr.appendChild(el("td", "n", p.op1 ? "sim" : "não"));
+    tr.appendChild(el("td", null, p.nota));
+    tb.appendChild(tr);
+  });
+})();
+</script>

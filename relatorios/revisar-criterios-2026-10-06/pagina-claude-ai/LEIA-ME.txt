@@ -1,0 +1,5 @@
+Fonte da pagina "Quando revisar uma pagina" no claude.ai:
+https://claude.ai/artifact/NeCgyTotRfqsdXntn9vMUc
+
+As imagens que ela usa (img/) sao as da pasta ../imagens/.
+Para republicar: publicar este index.html com files img/<nome>.jpg tirados de ../imagens/.
