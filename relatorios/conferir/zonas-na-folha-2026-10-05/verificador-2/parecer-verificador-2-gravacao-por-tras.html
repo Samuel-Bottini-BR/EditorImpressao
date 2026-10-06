@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: gravação por trás (R1, R2, R5)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: gravação por trás, cópia byte a byte e reticências (R1, R2, R5), 05 a 06/10/2026</h1>
+<p><strong>PRONTO PARA CONFERIR, com uma ressalva que vale a pena consertar antes de levar ao Kaique.</strong></p>
+<p>A gravação por trás fez o que prometia:</p>
+<ul>
+<li>folheando sem parar durante a conversão inteira do Siebmacher, a janela respondeu a todos os 1413 cliques em no máximo 0,24 s;</li>
+<li>em 13 mortes do programa no meio da gravação, o <code>projeto.json</code> nunca ficou estragado nem pela metade;</li>
+<li>a cópia de segurança agora é o arquivo de antes, byte a byte.</li>
+</ul>
+<p><strong>A ressalva (R-A):</strong> trocar de livro pelo Ctrl+O menos de ~0,6 s depois de uma mudança <strong>perde essa mudança</strong>. Isso não é do conserto novo: o código de antes (<code>fee743b</code>) faz o mesmo. Mas a mensagem do commit <code>9a367de</code> diz que "trocar de livro continua gravando na hora", e isso não é verdade pelo Ctrl+O.</p>
+<p><strong>Não é "aprovado":</strong> só o Samuel marca.</p>
+<p>O que foi conferido:</p>
+<ul>
+<li>o ramo <code>fase2-geometria</code> (worktree <code>geometria</code>) em <code>858f314</code>, com os commits <code>9a367de</code> (R1), <code>29f01ea</code> (R2) e <code>858f314</code> (R5);</li>
+<li>nenhum código do programa foi mudado;</li>
+<li>os projetos reais em <code>%LOCALAPPDATA%</code> não foram abertos.</li>
+</ul>
+<p>Tudo rodou numa pasta de dados de teste própria (<code>verificador-2/dados/</code>), com cópias dos projetos e cópias do programa feitas por <code>git archive</code>:</p>
+<ul>
+<li><strong>novo:</strong> <code>858f314</code>;</li>
+<li><strong>antes do conserto:</strong> <code>fee743b</code>;</li>
+<li><strong>antigo:</strong> <code>aab746f</code>.</li>
+</ul>
+<p>Os dois projetos de teste vieram do verificador anterior e foram criados pelo programa antigo (<code>aab746f</code>):</p>
+<ul>
+<li>o Siebmacher, 268 páginas em 134 folhas divididas, <code>projeto.json</code> de 3.009.926 bytes;</li>
+<li>o Boécio, 50 páginas.</li>
+</ul>
+<p>A janela de teste é uma instância minha de 1600×821 px (1280×657 pontos), fora da tela. Foi pilotada só com mensagens nativas e fechada com WM_CLOSE (ou morta de propósito com TerminateProcess, no item c2).</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> a moldura dourada e a iluminura continuam sendo defeito conhecido da Fase 1. Este item não mexe em imagem.</p>
+</blockquote>
+<p><strong>Este parecer continua o trabalho de um verificador interrompido.</strong> Aproveitei os scripts dele e as duas rodadas de folhear que ele completou (sieb1 e sieb2, mesmo código). Refiz os testes de máquina e duas rodadas de folhear (sieb3 e sieb4). Todos os testes de integridade são meus (<code>scripts/integridade3.py</code>, <code>scripts/processar_logo_v3.py</code>, <code>scripts/folhear_v3.py</code>).</p>
+<p><strong>O laço de espera do piloto:</strong> ele olha a resposta uma última vez depois do tempo-limite, e o tempo-limite passou para 60 s. Não houve nenhum "sem resposta". O clique também ganhou limite (30 s), e nenhum clique se perdeu.</p>
+<h2>1. Veredito por item</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) pytest, um arquivo por vez</td>
+<td>máquina</td>
+<td><strong>1406 passaram, 59 pularam, 0 falhas</strong> (73 arquivos, ~10,5 min somados). Os 59 pulados são de OCR (dados fora do git). <code>test_gravar_por_tras.py</code>: 8 de 8. Nada precisou ser repetido.</td>
+</tr>
+<tr>
+<td>(a) <code>teste_botoes.py</code></td>
+<td>máquina</td>
+<td><strong>132 ações, 0 falhas.</strong> Rodou numa cópia <code>git archive</code> (<code>trabalho/novo</code>), com a <code>saida_teste</code> dela.</td>
+</tr>
+<tr>
+<td>(a) o teste novo pega o defeito?</td>
+<td>máquina</td>
+<td>Rodei <code>test_gravar_por_tras.py</code> contra o código de antes (<code>fee743b</code>): 2 falham e 6 dão erro. Os erros são funções que ainda não existiam, então isso só mostra que o teste não passa sem o conserto.</td>
+</tr>
+<tr>
+<td>(b) janela respondendo durante a conversão</td>
+<td>máquina + olho</td>
+<td><strong>Responde.</strong> São 2 rodadas minhas no Siebmacher, folheando sem parar do "0 de 268" ao fim: <br>• sieb3: 702 cliques; <br>• sieb4: 711 cliques. <br>Cada clique foi atendido em no máximo <strong>0,235 s</strong> (mediana 0,13 s), e a página andou em todos. <strong>Maior parada da janela durante a conversão: 0,74 s.</strong> Foi uma vez só, no instante em que a tela de conferir aparece, antes do primeiro clique. Depois disso, nenhuma parada de 0,25 s ou mais até o fim. Detalhe na seção 2.</td>
+</tr>
+<tr>
+<td>(c1) mudar zona, corte e filtro e fechar logo</td>
+<td>máquina + olho</td>
+<td><strong>Tudo lá.</strong> Fiz 3 vezes, cada vez numa página diferente (p160, p170, p180), com o fechamento (WM_CLOSE) a 0,18 s, 0,65 s e 1,0 s da última mudança. Nas 3 vezes, o disco ficou igual à memória (filtro, corte e zonas). Ao reabrir, as 3 páginas estavam como antes de fechar.</td>
+</tr>
+<tr>
+<td>(c2) matar o processo no meio da gravação</td>
+<td>máquina + olho</td>
+<td><strong>O <code>projeto.json</code> nunca estragou.</strong> Foram 13 mortes, em momentos diferentes: <br>• antes de a gravação começar; <br>• com o <code>.novo</code> vazio; <br>• com o <code>.novo</code> inteiro mas ainda não trocado; <br>• logo depois da troca. <br>Nas 13, o arquivo é JSON inteiro, com 268 páginas e todas no formato novo. A mudança anterior estava sempre lá. A última mudança ficou em 3 e se perdeu em 10. Nenhuma outra página mudou. O <code>resumo.json</code> sempre legível, e não sobrou nenhum processo auxiliar.</td>
+</tr>
+<tr>
+<td>(c2) matar durante a conversão de um projeto antigo</td>
+<td>máquina</td>
+<td><strong>Nada estragou.</strong> Foram 6 mortes: <br>• 2 quando a cópia de segurança aparece; <br>• 2 folheando, no meio de uma gravação por trás; <br>• 2 em momentos quaisquer. <br>O <code>projeto.json</code> ficou sempre inteiro. No fim, depois de deixar terminar, ele é <strong>byte a byte igual</strong> ao de uma conversão sem interrupção (sha256 <code>28e46ed…</code>).</td>
+</tr>
+<tr>
+<td>(c3) trocar de livro logo depois de mudar</td>
+<td>máquina + olho</td>
+<td><strong>Perde a mudança se a troca vier antes de ~0,6 s (ressalva R-A).</strong> Com o Ctrl+O 0,05 s e 0,54 s depois, o filtro mudado não chegou ao disco, nem depois de fechar. Com 0,63 s, 1,23 s, 1,55 s e 1,78 s, chegou. O código de antes do conserto faz o mesmo (perdeu com 0,05 s e guardou com 0,75 s).</td>
+</tr>
+<tr>
+<td>(c4) processar logo depois de mudar</td>
+<td>máquina + olho</td>
+<td><strong>O PDF sai com a mudança.</strong> No Boécio p.16, mudei o corte para "não cortar esta", acrescentei uma zona de gravura e escolhi Preto e branco. Cliquei "Confirmar e processar" <strong>0,12 s</strong> depois. No PDF, a página 16 saiu em preto e branco (cor média 0,0, contra 37 a 39 nas vizinhas) e sem corte (251×369 pt, contra 228 a 234×348). O <code>projeto.json</code> ficou com as 3 mudanças.</td>
+</tr>
+<tr>
+<td>(c5) o programa antigo abre o projeto convertido</td>
+<td>máquina + olho</td>
+<td><strong>Abre.</strong> Testei o <code>aab746f</code> com o Siebmacher depois de todas as mudanças e mortes acima. As 268 páginas têm zonas, e a contagem de zonas e o filtro são iguais aos do disco em todas. Na p160, a zona de gravura feita no programa novo aparece no mesmo lugar, com o Preto e branco e sem corte. O <code>erros.log</code> ficou vazio.</td>
+</tr>
+<tr>
+<td>(d) cópia de segurança = o <code>projeto.json</code> de antes</td>
+<td>máquina</td>
+<td><strong>Idêntica byte a byte.</strong> O sha256 é <code>781f61b7…</code> nas 4 rodadas de folhear (sieb1 a sieb4) e nas 3 cópias do teste de mortes: igual ao arquivo antigo.</td>
+</tr>
+<tr>
+<td>R5, reticências na faixa</td>
+<td>máquina</td>
+<td>O texto da faixa, lido direto da janela, é "Preparando as marcações do livro… 0 de 268", com o caractere "…". No print, a fonte desenha as reticências como três pontos.</td>
+</tr>
+<tr>
+<td>Velocidade (<code>teste_velocidade.py</code>)</td>
+<td>—</td>
+<td><strong>Não rodado</strong> (~12 min, só com o PC parado). Ver a observação O4 sobre o tempo da conversão.</td>
+</tr>
+</tbody>
+</table>
+<h2>2. A janela durante a conversão (b): números</h2>
+<p>As 4 rodadas usam o mesmo código e o mesmo projeto antigo, e folheiam sem parar durante toda a conversão. O vigia anota toda vez que a janela fica 0,25 s ou mais sem atender (um relógio de 25 ms dentro do programa).</p>
+<table>
+<thead>
+<tr>
+<th>Rodada</th>
+<th>Conversão</th>
+<th>Cliques</th>
+<th>Clique mais lento</th>
+<th>Paradas ≥ 0,25 s durante a conversão</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sieb3 (minha)</td>
+<td>187 s</td>
+<td>702</td>
+<td>0,235 s</td>
+<td>1: <strong>0,57 s</strong>, no início</td>
+</tr>
+<tr>
+<td>sieb4 (minha)</td>
+<td>190 s</td>
+<td>711</td>
+<td>0,232 s</td>
+<td>1: <strong>0,74 s</strong>, no início</td>
+</tr>
+<tr>
+<td>sieb1 (verificador anterior)</td>
+<td>150 s</td>
+<td>581</td>
+<td>0,229 s</td>
+<td>2: 1,11 s no início (a tira de miniaturas pintando) e 0,36 s</td>
+</tr>
+<tr>
+<td>sieb2 (verificador anterior)</td>
+<td>159 s</td>
+<td>604</td>
+<td>0,233 s</td>
+<td>1: 0,40 s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A travada de 6 s ou mais (R1) não voltou em nenhuma das 4 rodadas.</strong></p>
+<p>A parada do início vem quando a análise termina e a tela de conferir se monta. É a mesma hora em que o programa grava o projeto e a cópia de segurança na hora, de propósito. É uma vez só, antes de a pessoa começar a folhear.</p>
+<p>Fora da conversão, ao abrir:</p>
+<ul>
+<li>o programa fica 13,7 a 13,8 s sem responder ao iniciar (carregando o próprio programa);</li>
+<li>ao abrir o livro, fica 1,6 a 2,0 s sem responder (desenhando a primeira folha).</li>
+</ul>
+<p>As duas coisas são de antes e não mudaram com estes commits.</p>
+<p><img alt="A faixa durante a conversão" src="imagens/v3_faixa_durante_conversao.jpg" /></p>
+<p><em>Siebmacher (sieb3), durante a conversão, folheando: "Preparando as marcações do livro… 2 de 268". A prévia e as miniaturas ainda não chegaram porque troco de página a cada 0,27 s.</em></p>
+<p><img alt="Depois da conversão" src="imagens/v3_depois_da_conversao.jpg" /></p>
+<p><em>Depois da conversão: a faixa volta ao texto normal, e as miniaturas e a prévia aparecem.</em></p>
+<h2>3. O que vi nas imagens</h2>
+<p>Abri um por um todos os prints da pasta <code>prints/</code>, os meus e os do verificador anterior. Os meus somam 38 arquivos:</p>
+<ul>
+<li>2 rodadas de folhear (8);</li>
+<li>os testes c1 a c5 (21, com a versão desenhada pelo Qt);</li>
+<li>as páginas do PDF processado (5);</li>
+<li>os prints de depuração (4).</li>
+</ul>
+<p><strong>Achado sobre os prints:</strong> o print pelo Windows (PrintWindow) da janela fora da tela devolveu, em quase todos os testes de integridade, <strong>a tela inicial antiga</strong>, e não o que a janela mostrava. Exemplos: <code>v3_c1_*</code>, <code>v3_c2_reaberto_marcar.png</code>, <code>v3_c3_*</code> e <code>v3_c5_antigo_marcar_p160.png</code>. A mesma coisa acontece com os <code>*_faixa_1.png</code>, que são todos o mesmo arquivo.</p>
+<p>É atraso de pintura da janela fora da tela, não defeito do programa: o estado foi conferido lendo a janela, e não pelo print. Por isso, nos testes de integridade gravei também o desenho que o próprio Qt faz da janela (<code>*_qt.png</code>). São esses que estão abaixo.</p>
+<p><img alt="Reaberto depois das mortes" src="imagens/v3_reaberto_depois_das_mortes.jpg" /></p>
+<p><em>Siebmacher reaberto depois das 13 mortes (p.126, a última mudança que chegou ao disco): Preto e branco, e a zona de gravura (o quadrado roxo) no lugar.</em></p>
+<p><img alt="Programa antigo, p160" src="imagens/v3_programa_antigo_p160.jpg" /></p>
+<p><em>O programa ANTIGO (<code>aab746f</code>) abrindo o projeto convertido e mexido pelo novo, p.160 (mudada no c1). A zona de gravura está no mesmo lugar em que foi desenhada no programa novo, com o Preto e branco e sem corte. "Marcado: 3 de letra e traço, 3 de papel e 1 de gravura ou foto."</em></p>
+<p><img alt="PDF páginas 15 e 16" src="imagens/v3_pdf_pag15_e_16.jpg" /></p>
+<p><em>O PDF processado 0,12 s depois da mudança. À esquerda, a p.15 (sem mudança, Original e cortada). À direita, a p.16 (mudada): preto e branco e sem corte (as marcas da borda aparecem). Não consegui medir a diferença da zona de gravura no PDF: a conta de meio-tom não separa uma da outra nesta resolução. A zona está gravada no projeto.</em></p>
+<p><img alt="Troca de livro" src="imagens/v3_troca_de_livro.jpg" /></p>
+<p><em>A troca de livro pelo Ctrl+O: a janela vai para o Boécio. O Siebmacher fica com o que estava no disco nessa hora.</em></p>
+<h2>4. Ressalvas</h2>
+<h3>R-A: trocar de livro pelo Ctrl+O logo depois de mudar perde a última mudança (média, já existia)</h3>
+<p><strong>Medido:</strong></p>
+<ul>
+<li>o novo perdeu com o Ctrl+O 0,05 s e 0,54 s depois da mudança;</li>
+<li>no c3, rodada 1, a tecla saiu por volta de 0,6 s depois (estimativa): o corte e a zona chegaram ao disco, o filtro (a última mudança) não;</li>
+<li>com 0,63 s, 1,23 s, 1,55 s e 1,78 s, guardou. Perto de 0,6 s o resultado varia: é o relógio de salvar (600 ms);</li>
+<li><code>fee743b</code> (antes do conserto): perdeu com 0,05 s e guardou com 0,75 s, 0,89 s e 1,24 s.</li>
+</ul>
+<p><strong>Pelo código</strong> (<code>ui/janela_principal.abrir_livro</code>): ao trocar de livro, o programa só grava o livro de antes se a conversão das zonas ainda estiver rodando (<code>_parar_a_conversao_das_zonas(gravar=True)</code>). Nos outros casos não grava. O relógio de salvar (600 ms) que estava para disparar dispara depois da troca, já para o livro novo. Então a mudança feita no livro de antes, nos últimos 0,6 s, não vai para o disco nunca.</p>
+<p>O fechar e o processar gravam na hora; o Ctrl+O, não. A mensagem do <code>9a367de</code> diz "Fechar, trocar de livro e processar continuam gravando na hora", e isso não é verdade para o Ctrl+O.</p>
+<p><strong>Sugestão:</strong> gravar na hora (<code>_salvar_agora</code>) o livro aberto no começo de <code>abrir_livro</code>, antes de trocar <code>self.projeto</code>.</p>
+<h3>O1: o <code>resumo.json</code> pela metade faz o projeto sumir da lista (baixa, já existia)</h3>
+<p>O <code>resumo.json</code> é escrito direto por cima (<code>write_text</code>), sem o arquivo ao lado e a troca que o <code>projeto.json</code> usa. Agora essa escrita é feita no fio de fundo (<code>_escrever_resumo</code>).</p>
+<p>Num teste sem janela, cortei o <code>resumo.json</code> de uma cópia ao meio. O projeto <strong>sumiu da lista</strong> (<code>projetos.listar()</code> devolveu vazio), com o <code>projeto.json</code> intacto ao lado. Abrir o mesmo PDF também não o acharia, porque <code>achar_por_assinatura</code> usa a mesma lista.</p>
+<p>Nas 13 mortes, o <code>resumo.json</code> nunca ficou pela metade, porque o arquivo é pequeno (~700 bytes) e a janela de risco é minúscula. Mesmo assim, o efeito é "o projeto do Kaique sumiu".</p>
+<h3>O2: queda de energia não foi testada</h3>
+<p>TerminateProcess mata o programa, mas o Windows termina de gravar o que já recebeu. Uma queda de energia ou um disco USB puxado é outra coisa: o <code>projeto.json.novo</code> é trocado sem antes forçar a gravação no disco (<code>fsync</code>), e isso não dá para testar aqui. Já era assim antes destes commits.</p>
+<h3>O3: cópias de segurança a mais quando o programa morre antes da primeira gravação (baixa)</h3>
+<p>Se o programa morre depois de fazer a cópia e antes de gravar o <code>projeto.json</code> no formato novo, a próxima abertura faz outra cópia. Com 6 mortes, ficaram 3 cópias, todas inteiras e iguais ao arquivo de antes. Nenhuma ficou pela metade, mesmo morrendo no instante em que a cópia aparece. Nada se perde; é só arquivo a mais.</p>
+<h3>O4: a conversão do Siebmacher levou 187 a 190 s nas minhas rodadas</h3>
+<p>As rodadas do verificador anterior, com este mesmo código, levaram 150 a 159 s. No primeiro parecer, antes do conserto, ~112 s, também folheando.</p>
+<p>Não sei se é o conserto, a carga do PC ou o folhear contínuo. Folheando a cada 0,27 s, o relógio de salvar quase não chega a disparar, então a gravação por trás não deve ser a causa. Isso só se resolve com o <code>teste_velocidade.py</code> com o PC parado, que não rodei.</p>
+<h3>Outras observações</h3>
+<ul>
+<li><strong>O5, fechar demorou mais de 5 s uma vez</strong> (6,5 s, c1, rodada 3; o verificador anterior viu 6,3 s). Nas outras vezes levou 2 a 3 s. O que foi mexido estava no disco depois.</li>
+<li><strong>O6, o andamento da conversão só vai para o disco quando há uma gravação.</strong> Morrer no meio de uma conversão sem mexer em nada perde a parte convertida desde a última gravação (no teste, 31 s de conversão). Não perde trabalho do Kaique: a conversão recomeça dali na próxima abertura.</li>
+<li><strong>Não testado:</strong> a roda do mouse (não funciona sem foco); a escala real do notebook do Kaique; trocar de livro por outros caminhos (pela tela inicial a janela passa por <code>_sair_da_conferencia</code>, que grava na hora pelo código, mas não testei).</li>
+</ul>
+<h2>5. Para a Lista de bugs (proposta)</h2>
+<ul>
+<li><strong>06/10, R-A:</strong> trocar de livro pelo Ctrl+O menos de ~0,6 s depois de uma mudança perde essa mudança. Também acontece em <code>fee743b</code>. A mensagem do <code>9a367de</code> diz o contrário. Registro: <code>trabalho/c3b_v3.out</code>, <code>trabalho/c3b_antes_v3.out</code> e <code>trabalho/c3_v3.out</code>.</li>
+<li><strong>06/10, O1:</strong> o <code>resumo.json</code> é escrito sem arquivo ao lado e troca. Se ficar pela metade, o projeto some da lista. Demonstrado numa cópia sem janela.</li>
+</ul>
+<h2>6. Arquivos</h2>
+<ul>
+<li>Scripts: <code>scripts/integridade3.py</code> (c1, c2, c2conv, c3, c3b, c5), <code>scripts/processar_logo_v3.py</code> (c4), <code>scripts/folhear_v3.py</code> (b), <code>scripts/pytest_por_partes_v3.sh</code>. Ficam fora do git.</li>
+<li>Registros: <code>trabalho/pytest_partes_v3.log</code>, <code>trabalho/teste_botoes_v3.log</code>, <code>trabalho/folhear_sieb3.log</code>, <code>trabalho/folhear_sieb4.log</code>, <code>trabalho/c1_v3.out</code>, <code>trabalho/c2_v3.out</code>, <code>trabalho/c2conv_v3.out</code>, <code>trabalho/c3_v3.out</code>, <code>trabalho/c3b*_v3.out</code>, <code>trabalho/c4_v3.out</code>, <code>trabalho/c5_v3.out</code>, <code>trabalho/integridade_c2_v3.json</code>. Ficam fora do git.</li>
+<li>No git: este parecer (<code>.md</code> e <code>.html</code>) e as imagens pequenas em <code>imagens/</code>. O <code>.pdf</code> fica na pasta.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 01:34</p>
+</body>
+</html>

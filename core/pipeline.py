@@ -265,8 +265,32 @@ def preparar_metade(
     (recortar.FOLGA_MM). None (a tela, que nao sabe) = folga em fracao do lado.
 
     Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
-    avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md.
+    avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md (e a de
+    core/zonas_na_folha._matriz_folha_para_pagina: mudou uma, muda a outra).
     """
+    return _preparar_metade_e_geometria(img_folha, folha, pagina, projeto,
+                                        geometria=geometria, dpi=dpi)[0]
+
+
+def _preparar_metade_e_geometria(
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+    geometria: tuple | None = None, dpi: float | None = None,
+    so_a_geometria: bool = False,
+) -> tuple[np.ndarray | None, dict]:
+    """preparar_metade, devolvendo tambem a geometria do desenho (decisao D2,
+    core/zonas_na_folha.geometria_do_desenho): o giro de 90, a divisao, o
+    corte e o angulo que foram MESMO aplicados, e a proporcao da folha. E o
+    que renderizar_pagina e processar passam a zonas_na_folha.acompanhar,
+    para as zonas da aba Marcar ficarem sobre o mesmo pedaco da folha.
+
+    so_a_geometria=True (converter_zonas_do_livro, decisao Z1): devolve
+    (None, geometria) sem copiar o corte nem girar a imagem - a MESMA conta
+    de sempre (inclusive o "recorte absurdo nao corta"), sem o custo do
+    desenho. Arriscado: separar as duas contas em funcoes diferentes (a
+    geometria anotada ao abrir deixaria de ser a da previa e a do PDF).
+    """
+    from core.zonas_na_folha import geometria_do_desenho
+
     inteira = preparar_para_recorte(img_folha, folha, pagina)
 
     if geometria is None:
@@ -281,13 +305,24 @@ def preparar_metade(
     if recorte is not None:
         # fatiar (sem copiar) quando vai girar: o rotacionar ja devolve uma
         # imagem nova. Sem giro, copia, como sempre.
-        img = fatiar(inteira, recorte) if girar else aplicar_recorte(inteira, recorte)
+        img = (fatiar(inteira, recorte) if girar or so_a_geometria
+               else aplicar_recorte(inteira, recorte))
+    # recorte absurdo (menos de 8 pontos) volta a pagina inteira: nao cortou
+    cortou = recorte is not None and (img is not inteira)
 
     # 3. endireitar
-    if girar:
+    if girar and not so_a_geometria:
         img = rotacionar(img, angulo)
+    if so_a_geometria:
+        img = None
 
-    return img
+    dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
+    desenho = geometria_do_desenho(
+        img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
+        folha.posicao_corte if dividida else None,
+        pagina.metade if dividida else METADE_INTEIRA,
+        tuple(recorte) if cortou else None, float(angulo) if girar else 0.0)
+    return img, desenho
 
 
 def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
@@ -833,7 +868,9 @@ def renderizar_pagina(
         _anotar_conferir(pagina, bool(resultado.imagem is not None and resultado.conferir))
         if resultado.imagem is not None:
             geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, None)
-            img = preparar_metade(resultado.imagem, folha, pagina, projeto, geometria=geometria)
+            img, desenho = _preparar_metade_e_geometria(resultado.imagem, folha, pagina, projeto,
+                                                        geometria=geometria)
+            _acompanhar_as_zonas(pagina, desenho)
             return img, False
     else:
         _anotar_conferir(pagina, False)
@@ -858,8 +895,140 @@ def renderizar_pagina(
     if _vai_detectar(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
-    img = preparar_metade(img_folha, folha, pagina, projeto, dpi=dpi)
+    img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
+    _acompanhar_as_zonas(pagina, desenho)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
+
+
+def _acompanhar_as_zonas(pagina: ConfigPagina, desenho: dict) -> None:
+    """Decisao D2 (02/10/2026): as zonas da aba Marcar ficam sobre o mesmo
+    pedaco da folha quando o preparo da pagina muda (core/zonas_na_folha.
+    acompanhar). Chamado logo depois de preparar a pagina, ANTES de a selecao
+    ser usada (_filtrar) ou mostrada (a aba Marcar recebe esta mesma previa).
+    Um erro aqui nunca derruba a previa nem o PDF: as zonas ficam como
+    estavam (o comportamento de antes) e o erro vai para o log."""
+    from core import zonas_na_folha
+
+    try:
+        zonas_na_folha.acompanhar(pagina, desenho)
+    except Exception:  # noqa: BLE001 - zona que nao deu para levar fica como estava
+        _log.exception("nao consegui levar as zonas para o preparo novo da pagina %s",
+                       pagina.indice + 1)
+
+
+# ---------------------------------------------------------------------------
+# Converter as zonas do livro inteiro, por tras, ao abrir (decisao Z1 (b) do
+# Samuel, conferencia 9, 05/10/2026: "O livro inteiro, por tras, ao abrir -
+# ele poderia fazer isso quando abre o livro e fica carregando dai né?").
+#
+# Converter uma pagina de projeto antigo = anotar nela o preparo de HOJE
+# (ConfigPagina.geometria_das_zonas), sem mexer nas zonas - o mesmo que
+# _acompanhar_as_zonas faz da primeira vez que ela e desenhada. Feito isso, a
+# gravacao seguinte poe as zonas na folha original no projeto.json (com a
+# copia de seguranca do arquivo antigo antes, projetos.salvar_estado), e
+# mudar o corte ou o angulo depois leva as zonas junto, mesmo numa pagina que
+# nunca foi aberta.
+#
+# Quem chama: ui/tarefas.TarefaConverterZonas (QThread), quando o trabalho
+# salvo volta (ui/janela_principal._analise_pronta). A pessoa trabalha
+# enquanto isso: pagina que a previa desenhar antes e convertida por ela, e a
+# tarefa so pula.
+# ---------------------------------------------------------------------------
+
+def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto) -> tuple:
+    """Tudo de que a geometria das zonas de uma pagina depende (o giro, a
+    divisao, o corte e o angulo, a mao ou automaticos). Se mudar enquanto a
+    tarefa calcula, a geometria calculada ja nao vale (converter_zonas_do_livro).
+    Seguro: acrescentar campos. Arriscado: tirar algum."""
+    recorte = None if pagina.recorte is None else tuple(float(v) for v in pagina.recorte)
+    return (int(folha.rotacao) % 360, bool(folha.dividir), float(folha.posicao_corte),
+            pagina.metade, int(pagina.folha), recorte, pagina.angulo_manual,
+            bool(projeto.cortar_bordas), bool(projeto.endireitar), int(projeto.qualidade_dpi))
+
+
+def converter_zonas_do_livro(
+    projeto: Projeto,
+    progresso: Callable[[int, int], None] | None = None,
+    cancelado: Callable[[], bool] | None = None,
+) -> int:
+    """Converte para o formato novo as zonas de todas as paginas que ainda
+    estao no antigo (core/zonas_na_folha.paginas_por_converter). Devolve
+    quantas paginas ESTA chamada converteu.
+
+    Uma folha por vez na memoria (regra 3 do CLAUDE.md): a folha e desenhada
+    na resolucao do PDF (projeto.qualidade_dpi) - o mesmo desenho em que o
+    corte e o angulo automaticos sao sempre medidos (_guardar_geometria) -, e
+    a folha dividida e desenhada uma vez so para as duas metades. De quebra,
+    o corte e o angulo ficam guardados (_GEOMETRIAS): a primeira previa de
+    cada pagina sai mais rapida depois.
+
+    progresso(feitas, total): depois de cada pagina (inclusive as que a
+    previa ja tinha convertido, que so sao puladas). cancelado(): olhado
+    antes de cada pagina; parar no meio nao estraga nada - o que foi feito
+    fica na memoria e vai para o disco na proxima gravacao; o resto continua
+    no formato antigo e e convertido da proxima vez que o livro abrir.
+
+    Nunca levanta: PDF que sumiu ou folha que nao desenha so ficam para
+    depois (o erro vai para o log), e a pagina continua sendo convertida
+    quando for desenhada, como antes.
+
+    Arriscado: anotar sem anotar_se_ainda_antiga (por cima do que a previa
+    anotou, ou com o corte de antes de a pessoa mexer); medir o corte em
+    outra resolucao que nao projeto.qualidade_dpi (a geometria anotada nao
+    seria a da previa nem a do PDF, e as zonas andariam ao desenhar).
+    """
+    from core import zonas_na_folha
+
+    pendentes = zonas_na_folha.paginas_por_converter(projeto)
+    total = len(pendentes)
+    if not total:
+        return 0
+    # Na ordem do livro, agrupadas por folha: as duas metades de uma folha
+    # dividida usam o mesmo desenho.
+    grupos: "OrderedDict[int, list[ConfigPagina]]" = OrderedDict()
+    for pagina in pendentes:
+        grupos.setdefault(int(pagina.folha), []).append(pagina)
+
+    try:
+        doc = abrir_pdf(projeto.caminho_entrada)
+    except Exception:  # noqa: BLE001 - sem o PDF, cada pagina converte ao ser desenhada
+        _log.exception("nao consegui abrir o PDF para converter as zonas do livro")
+        return 0
+
+    feitas = convertidas = 0
+    try:
+        for indice_folha, paginas in grupos.items():
+            folha = projeto.folhas[indice_folha]
+            img_folha = None
+            for pagina in paginas:
+                if cancelado is not None and cancelado():
+                    return convertidas
+                if not zonas_na_folha.geometria_valida(pagina.geometria_das_zonas):
+                    antes = _entradas_do_preparo(folha, pagina, projeto)
+                    try:
+                        if img_folha is None:
+                            img_folha = pagina_para_array(doc, folha.indice,
+                                                          dpi=projeto.qualidade_dpi)
+                        if _precisa_de_geometria(pagina, projeto):
+                            _guardar_geometria(folha, pagina, projeto, img_folha)
+                        _, desenho = _preparar_metade_e_geometria(
+                            img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi,
+                            so_a_geometria=True)
+                        if zonas_na_folha.anotar_se_ainda_antiga(
+                                pagina, desenho,
+                                ainda_vale=lambda f=folha, p=pagina, a=antes:
+                                    _entradas_do_preparo(f, p, projeto) == a):
+                            convertidas += 1
+                    except Exception:  # noqa: BLE001 - fica para quando for desenhada
+                        _log.exception("nao consegui converter as zonas da pagina %s",
+                                       pagina.indice + 1)
+                feitas += 1
+                if progresso is not None:
+                    progresso(feitas, total)
+            del img_folha                 # uma folha por vez na memoria
+    finally:
+        doc.close()
+    return convertidas
 
 
 def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -1466,8 +1635,9 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             # dividir, cortar e endireitar a folha sem o fundo, com o
             # corte da folha como veio; o filtro fica de fora
             geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
-            img = preparar_metade(imagem_sem_fundo, folha, pagina, projeto,
-                                  geometria=geometria)
+            img, desenho = _preparar_metade_e_geometria(
+                imagem_sem_fundo, folha, pagina, projeto, geometria=geometria)
+            _acompanhar_as_zonas(pagina, desenho)
             mono = False
         else:
             # o corte e calculado nesta mesma imagem (a do PDF) e
@@ -1479,8 +1649,9 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
                 dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                 dpi_scan = _dpi_do_scan(doc, folha)
-            img = preparar_metade(img_folha, folha, pagina, projeto,
-                                  dpi=projeto.qualidade_dpi)
+            img, desenho = _preparar_metade_e_geometria(
+                img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+            _acompanhar_as_zonas(pagina, desenho)
             img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
 
         # Item 2/4 do teste do Boecio (secao 3a do plano): cola o

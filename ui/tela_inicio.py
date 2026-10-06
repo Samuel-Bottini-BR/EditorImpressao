@@ -68,6 +68,11 @@ class TelaInicio(QWidget):
     abrir_pdf = Signal(str)
     continuar_projeto = Signal(object)      # projetos.Resumo
     recomecar_projeto = Signal(object)      # projetos.Resumo
+    # Emitido depois do "Tirar da lista" confirmado e ANTES de apagar a pasta
+    # (pedir_para_remover): a janela solta o livro, se for o aberto, para
+    # nada mais grava-lo (R-B do verificador-3, 06/10/2026). Ligacao direta
+    # (mesmo fio): quando o emit volta, a janela ja soltou.
+    vai_tirar_da_lista = Signal(object)     # projetos.Resumo
 
     # Mantido por compatibilidade com a janela, que ainda escuta o nome antigo.
     reabrir_projeto = Signal(object)
@@ -265,6 +270,13 @@ class TelaInicio(QWidget):
         apagadas: vao para a pasta copias-de-seguranca, e a pergunta diz
         isso (decisao do Samuel, 29/09; projetos.remover_da_lista). Botoes
         em portugues, com o "nao" no Enter (ui.perguntas).
+
+        Antes de apagar, avisa a janela (vai_tirar_da_lista): se o livro
+        tirado e o que esta aberto, ela o solta e para a conversao das zonas
+        dele, sem gravar. Sem isso, fechar o programa, o relogio de salvar ou
+        o fim da conversao gravavam o livro de novo, a pasta voltava e o
+        cartao tambem (R-B do verificador-3, 06/10/2026). Arriscado: emitir
+        depois do remover_da_lista (uma gravacao poderia chegar no meio).
         """
         texto = (f"{resumo.nome} sai desta tela e a conferência feita nele se "
                  "perde.\n\nO livro em PDF continua onde está - ele nunca esteve "
@@ -277,6 +289,7 @@ class TelaInicio(QWidget):
                       f"{projetos.pasta_das_copias_guardadas()}.")
         if perguntas.perguntar(self, "Tirar da lista?", texto,
                                sim="Tirar da lista", nao="Não, deixar"):
+            self.vai_tirar_da_lista.emit(resumo)
             projetos.remover_da_lista(resumo)
             self.recarregar()
 

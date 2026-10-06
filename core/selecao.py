@@ -141,12 +141,38 @@ def _pixels(pontos, largura: int, altura: int) -> np.ndarray:
     )
 
 
+def _oval_no_quadrilatero(pontos, largura: int, altura: int, n: int = 96) -> np.ndarray:
+    """A oval inscrita no quadrilatero de 4 cantos (fracao), como poligono em
+    pixels. Os cantos vem na ordem (x0,y0) (x1,y0) (x1,y1) (x0,y1) de um
+    retangulo que passou por um giro (core/zonas_na_folha.py): a oval
+    inscrita num retangulo girado e a oval girada."""
+    (a, b, _, d) = (np.asarray(p, dtype=np.float64) for p in pontos[:4])
+    centro = (np.asarray(pontos[0], dtype=np.float64) + np.asarray(pontos[2], dtype=np.float64)) / 2.0
+    meio_x, meio_y = (b - a) / 2.0, (d - a) / 2.0
+    t = np.linspace(0.0, 2.0 * np.pi, n, endpoint=False)
+    contorno = centro + np.outer(np.cos(t), meio_x) + np.outer(np.sin(t), meio_y)
+    return _pixels(contorno.tolist(), largura, altura)
+
+
 def _desenhar(tela: np.ndarray, regiao: Regiao) -> None:
-    """Pinta a regiao de 255 na tela dada."""
+    """Pinta a regiao de 255 na tela dada.
+
+    RETANGULO e ELIPSE normalmente tem 2 pontos (cantos opostos). Com 4
+    pontos, sao o retangulo (e a oval dentro dele) depois de um giro: a zona
+    foi levada para uma pagina endireitada com outro angulo
+    (core/zonas_na_folha.py, decisao D2 de 02/10/2026). Ai o retangulo e
+    desenhado como quadrilatero, e a oval como poligono inscrito nele.
+    """
     altura, largura = tela.shape[:2]
     pts = _pixels(regiao.pontos, largura, altura)
 
-    if regiao.forma == RETANGULO and len(pts) >= 2:
+    if regiao.forma == RETANGULO and len(pts) >= 4:
+        cv2.fillPoly(tela, [pts[:4]], 255)
+
+    elif regiao.forma == ELIPSE and len(pts) >= 4:
+        cv2.fillPoly(tela, [_oval_no_quadrilatero(regiao.pontos, largura, altura)], 255)
+
+    elif regiao.forma == RETANGULO and len(pts) >= 2:
         x0, y0 = pts[0]
         x1, y1 = pts[1]
         cv2.rectangle(tela, (min(x0, x1), min(y0, y1)), (max(x0, x1), max(y0, y1)),

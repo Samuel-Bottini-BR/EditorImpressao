@@ -31,7 +31,7 @@ from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
 from ui.estilo import FOLHA_DE_ESTILO
-from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaProcessar
+from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaConverterZonas, TarefaProcessar
 from ui.tela_conferir import TelaConferir
 from ui.tela_final import TelaFinal, TelaProgresso
 from ui.tela_inicio import TelaInicio
@@ -105,6 +105,10 @@ class JanelaPrincipal(QMainWindow):
         # carregar (projeto antigo, ou pelo "continuar"): a pasta do projeto
         # que espera o livro inteiro ir para o filtro em _analise_pronta.
         self._fundo_pendente: str | None = None
+        # Decisao Z1 (b) do Samuel (05/10/2026): a tarefa que converte por
+        # tras as zonas do livro aberto para o formato novo (zonas na folha
+        # original). None quando nao ha. Ver _comecar_a_converter_as_zonas.
+        self.conversao_das_zonas: TarefaConverterZonas | None = None
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -114,10 +118,15 @@ class JanelaPrincipal(QMainWindow):
         # NAO existe botao de salvar e nunca se pergunta "quer salvar?". Essa
         # pergunta e uma armadilha para quem nao e tecnico: um "nao" por engano
         # apaga um dia de trabalho.
+        #
+        # O relogio grava POR TRAS (_salvar_por_tras, R1 de 05/10/2026): ele
+        # dispara a cada pagina folheada, e gravar o projeto inteiro no fio da
+        # janela a deixava 0,25 a 0,37 s parada a cada pagina num livro de 268
+        # paginas (mais com o disco lento ou o computador sem memoria livre).
         self._relogio_de_salvar = QTimer(self)
         self._relogio_de_salvar.setSingleShot(True)
         self._relogio_de_salvar.setInterval(600)
-        self._relogio_de_salvar.timeout.connect(self._salvar_agora)
+        self._relogio_de_salvar.timeout.connect(self._salvar_por_tras)
 
         self.telas = QStackedWidget()
         self.setCentralWidget(self.telas)
@@ -127,6 +136,7 @@ class JanelaPrincipal(QMainWindow):
         self.tela_inicio.abrir_pdf.connect(self.abrir_livro)
         self.tela_inicio.continuar_projeto.connect(self._continuar_projeto)
         self.tela_inicio.recomecar_projeto.connect(self._recomecar_projeto)
+        self.tela_inicio.vai_tirar_da_lista.connect(self._soltar_o_livro_tirado_da_lista)
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
@@ -313,7 +323,15 @@ class JanelaPrincipal(QMainWindow):
         passava pela assinatura, e o "continuar" do cartao mais antigo abria
         o mais recente (verificador, 29/09, q24-q25). Arriscado: voltar a
         procurar pela assinatura quando o cartao ja disse qual e.
+
+        Antes de tudo, a mudanca do livro aberto que ainda esperava o relogio
+        de salvar vai para o disco NA HORA (_guardar_o_livro_aberto; R-A do
+        verificador-2, 06/10/2026): trocar de livro pelo Ctrl+O menos de
+        0,6 s depois de uma mudanca a perdia.
+        Arriscado: mover essa gravacao para depois de self.projeto/self.resumo
+        mudarem (gravaria o livro novo, ou nada).
         """
+        self._guardar_o_livro_aberto()
         try:
             doc = abrir_pdf(caminho)
             try:
@@ -341,6 +359,9 @@ class JanelaPrincipal(QMainWindow):
         # ignora resultado de analise cancelada).
         if isinstance(self.tarefa, TarefaAnalise):
             self.tarefa.cancelar()
+        # A conversao das zonas do livro de antes para: o que ela ja fez foi
+        # gravado com o trabalho dele; o resto continua da proxima vez.
+        self._parar_a_conversao_das_zonas(gravar=True)
         self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
         self._fundo_pendente = None
         self._opcoes_do_trabalho = None
@@ -577,11 +598,27 @@ class JanelaPrincipal(QMainWindow):
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
-        """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado."""
-        import shutil
+        """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado.
+
+        Antes de apagar (R-A do verificador-2, 06/10/2026): o livro aberto
+        vai para o disco (_guardar_o_livro_aberto) - se for OUTRO livro, a
+        ultima mudanca dele nao se perde. Se for ESTE mesmo, o trabalho dele e
+        justamente o que vai ser jogado fora: depois de gravado, a janela o
+        solta (self.resumo = None), para o abrir_livro logo abaixo nao o
+        gravar de novo por cima dos arquivos apagados. E espera a fila do
+        fio de gravar, para nenhuma gravacao por tras chegar depois do
+        apagar. Arriscado: apagar antes de gravar o livro aberto, ou deixar
+        self.resumo apontando para a pasta apagada.
+        """
         from historico_acoes import ARQUIVO_ACOES, ARQUIVO_POSICAO
 
         pasta = Path(resumo.pasta)
+        self._guardar_o_livro_aberto()
+        if self.resumo is not None and projetos.mesmo_arquivo(self.resumo.pasta, pasta):
+            self._parar_a_conversao_das_zonas()
+            self.resumo = None
+            self.trabalho_carregado = False
+        projetos.esperar_gravacoes()
         for arquivo in (projetos.ARQUIVO_ESTADO, ARQUIVO_ACOES, ARQUIVO_POSICAO):
             try:
                 (pasta / arquivo).unlink(missing_ok=True)
@@ -593,6 +630,42 @@ class JanelaPrincipal(QMainWindow):
         projetos.gravar_resumo(resumo)
         self.tela_inicio.recarregar()
         self.abrir_livro(resumo.caminho_entrada, resumo=resumo)   # ESTE projeto, limpo
+
+    def _soltar_o_livro_tirado_da_lista(self, resumo: projetos.Resumo) -> None:
+        """O "Tirar da lista" foi confirmado na tela inicial e a pasta do
+        projeto vai ser apagada (TelaInicio.vai_tirar_da_lista, emitido ANTES
+        de apagar). Se e o livro aberto, a janela o solta AGORA: para o
+        relogio de salvar, para a conversao das zonas dele SEM gravar, e fica
+        sem livro aberto (self.resumo = None, como o "comecar de novo" do
+        proprio livro). Livro que nao e o aberto: nada muda.
+
+        R-B do verificador-3 (06/10/2026): a janela continuava com o livro
+        tirado em self.resumo, e o fechar (closeEvent -> _salvar_agora), o
+        relogio de salvar (_salvar_por_tras, que o fim da conversao das zonas
+        liga em _conversao_terminou) e o parar da conversao ao trocar de
+        livro (abrir_livro, gravar=True) gravavam o livro de novo: a pasta
+        voltava, e o cartao tambem (Siebmacher: 69,6 s depois, quando a
+        conversao terminou). Com self.resumo None, _salvar_agora e
+        _marcar_para_salvar nao fazem nada, e o sinal atrasado da conversao
+        parada nao entra (_conversao_terminou confere a tarefa da vez). A
+        segunda camada fica em projetos (o gravador nao recria pasta de
+        projeto que sumiu).
+
+        Nao grava nada antes: a pessoa confirmou que a conferencia desse
+        livro se perde, e o que a conversao fez e refeito na proxima vez (se
+        o "Tirar da lista" falhar e o cartao ficar). Arriscado: gravar aqui
+        (recriaria o que vai ser apagado, se viesse depois), ou deixar
+        self.resumo apontando para a pasta apagada.
+        Teste: tests/test_tirar_da_lista_nao_volta.py.
+        """
+        if self.resumo is None or not projetos.mesmo_arquivo(self.resumo.pasta, resumo.pasta):
+            return
+        self._relogio_de_salvar.stop()
+        self._parar_a_conversao_das_zonas(gravar=False)
+        self.resumo = None
+        self.trabalho_carregado = False
+        self._fundo_pendente = None
+        self._opcoes_do_trabalho = None
 
     # --- analise ----------------------------------------------------------
 
@@ -753,6 +826,9 @@ class JanelaPrincipal(QMainWindow):
             self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
         self._salvar_agora()
+        # Decisao Z1 (b): as zonas de projeto antigo sao convertidas por
+        # tras, o livro inteiro, enquanto o Kaique ja trabalha.
+        self._comecar_a_converter_as_zonas()
 
         if self.acoes.linhas_perdidas:
             self.avisar(
@@ -769,6 +845,81 @@ class JanelaPrincipal(QMainWindow):
             titulo, frase = aviso_das_opcoes_da_gravura(
                 self.projeto, gravuras_refeitas, self.copia_do_trabalho)
             self.avisar(frase, titulo)
+
+    # --- zonas do livro inteiro, por tras (decisao Z1 (b), 05/10/2026) ----
+
+    def _comecar_a_converter_as_zonas(self) -> None:
+        """Pedido do Samuel (conferencia 9, Z1 (b)): "O livro inteiro, por
+        tras, ao abrir - ele poderia fazer isso quando abre o livro e fica
+        carregando dai né?".
+
+        Se o trabalho que acabou de voltar tem zonas no formato antigo
+        (core/zonas_na_folha.paginas_por_converter), uma TarefaConverterZonas
+        converte todas, uma folha por vez. A tela de
+        conferir ja esta aberta: o Kaique trabalha enquanto isso, e o
+        andamento aparece na faixa azul ("Preparando as marcações do
+        livro… 12 de 50"; TelaConferir.mostrar_andamento_das_marcacoes).
+        Pagina que ele abrir antes e convertida pela previa, como antes. No
+        fim, grava (com a copia de seguranca do projeto.json antigo antes,
+        projetos.salvar_estado).
+
+        Arriscado: rodar a conversao numa copia do projeto (o que ela anota
+        nao chegaria ao disco), ou esquecer de parar a tarefa ao trocar de
+        livro e ao fechar (_parar_a_conversao_das_zonas, closeEvent).
+        """
+        from core.zonas_na_folha import paginas_por_converter
+
+        self._parar_a_conversao_das_zonas()
+        if self.projeto is None or not paginas_por_converter(self.projeto):
+            return
+        tarefa = TarefaConverterZonas(self.projeto)
+        tarefa.andamento.connect(self._andamento_da_conversao)
+        tarefa.terminou.connect(self._conversao_terminou)
+        self.conversao_das_zonas = tarefa
+        self.tela_conferir.mostrar_andamento_das_marcacoes(
+            0, len(paginas_por_converter(self.projeto)))
+        tarefa.start()          # prioridade normal: ver ui/tarefas.TarefaConverterZonas
+
+    def _parar_a_conversao_das_zonas(self, gravar: bool = False) -> None:
+        """Para a conversao da vez (trocar de livro, nova conferencia, fechar).
+
+        Parar no meio nao estraga nada: o que foi convertido esta na memoria
+        e vai para o disco na proxima gravacao (com gravar=True, agora,
+        antes de o projeto aberto mudar); o resto continua no formato antigo
+        e e convertido da proxima vez que o livro abrir. A tarefa que ainda
+        termina a pagina dela vai para self._tarefas_saindo (o Qt derrubaria
+        o programa se a QThread fosse destruida rodando; ver _trocar_tarefa).
+        """
+        tarefa = self.conversao_das_zonas
+        self.conversao_das_zonas = None
+        if tarefa is None:
+            return
+        tarefa.cancelar()
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)
+        self.tela_conferir.mostrar_andamento_das_marcacoes(0, 0)
+        if gravar and tarefa.feitas:
+            self._salvar_agora()
+
+    def _andamento_da_conversao(self, tarefa, feitas: int, total: int) -> None:
+        """Uma pagina a mais convertida: atualiza a faixa (so a da vez; um
+        sinal atrasado de uma tarefa parada nao entra)."""
+        if tarefa is None or tarefa is not self.conversao_das_zonas:
+            return
+        self.tela_conferir.mostrar_andamento_das_marcacoes(feitas, total)
+
+    def _conversao_terminou(self, tarefa, convertidas: int) -> None:
+        """A conversao chegou ao fim: tira o andamento da faixa e grava logo
+        (o relogio de salvar), para o formato novo ir para o disco mesmo se
+        o Kaique nao mexer em mais nada."""
+        if tarefa is None or tarefa is not self.conversao_das_zonas:
+            return
+        self.conversao_das_zonas = None
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)   # ainda saindo do run()
+        self.tela_conferir.mostrar_andamento_das_marcacoes(0, 0)
+        if convertidas:
+            self._marcar_para_salvar()
 
     @staticmethod
     def _frase_do_recomeco(motivo: str, copia) -> str:
@@ -808,9 +959,27 @@ class JanelaPrincipal(QMainWindow):
         if self.resumo is not None and self.projeto is not None:
             self._relogio_de_salvar.start()
 
-    def _salvar_agora(self) -> None:
-        """Grava de verdade. Chamado pelo relogio, ao sair da tela, ao
-        processar e ao fechar o programa - sempre na pasta do projeto aberto.
+    def _salvar_por_tras(self) -> None:
+        """O que o relogio de salvar chama: o mesmo que _salvar_agora, mas o
+        projeto.json vai para o disco num fio de fundo
+        (projetos.salvar_estado_por_tras), e a janela so tira a fotografia
+        do projeto (centesimos de segundo).
+
+        Por que (R1 do verificador, 05/10/2026): o relogio dispara a cada
+        pagina folheada, e a gravacao inteira no fio da janela (3 a 6 MB num
+        livro de 268 paginas) a deixava 0,25 a 0,37 s parada a cada pagina -
+        mais com disco lento ou computador sem memoria livre. Fechar, trocar
+        de livro e processar continuam gravando na hora (_salvar_agora), e
+        essa gravacao espera a fila antes: a ordem no disco nao muda.
+        Arriscado: chamar isto no closeEvent (o programa sairia antes de o
+        arquivo chegar ao disco).
+        """
+        self._salvar_agora(por_tras=True)
+
+    def _salvar_agora(self, por_tras: bool = False) -> None:
+        """Grava de verdade. Chamado ao sair da tela, ao processar e ao
+        fechar o programa (e pelo relogio, com por_tras=True: ver
+        _salvar_por_tras) - sempre na pasta do projeto aberto.
 
         Nunca grava por cima de um trabalho salvo com um projeto que ainda
         nao foi analisado (self.trabalho_carregado False: entre abrir o livro
@@ -826,9 +995,51 @@ class JanelaPrincipal(QMainWindow):
             return
         if not self.trabalho_carregado and projetos.tem_trabalho_salvo(self.resumo):
             return
-        projetos.salvar_estado(self.resumo, self._o_que_gravar())
+        if por_tras:
+            projetos.salvar_estado_por_tras(self.resumo, self._o_que_gravar())
+        else:
+            projetos.salvar_estado(self.resumo, self._o_que_gravar())
         projetos.atualizar(self.resumo, self.projeto,
-                           pagina_atual=self.tela_conferir.indice_pagina)
+                           pagina_atual=self.tela_conferir.indice_pagina, por_tras=por_tras)
+
+    def _guardar_o_livro_aberto(self) -> None:
+        """Grava NA HORA o livro aberto, antes de a janela trocar de livro
+        (abrir_livro: Ctrl+O, menu Arquivo > Abrir, arrastar, o "continuar"
+        do cartao; e o "comecar de novo", _recomecar_projeto).
+
+        R-A do verificador-2 (06/10/2026): mudar alguma coisa e abrir outro
+        livro menos de ~0,6 s depois perdia a mudanca. O relogio de salvar
+        (600 ms) ainda nao tinha disparado; quando disparava, self.projeto
+        ja era o livro novo, e a mudanca do livro de antes nunca ia para o
+        disco. Agora, se o relogio esta contando (ha mudanca ainda nao
+        gravada), grava ja: e o _salvar_agora (espera a fila do fio de
+        gravar, grava e para o relogio), com as mesmas travas dele - nada e
+        gravado por cima de um trabalho salvo que ainda nao foi carregado.
+
+        Com o relogio parado nao ha o que gravar: tudo ja foi para o disco
+        ou esta na fila do fio de gravar (que quem le o projeto espera). Nao
+        regravar a toa importa: regravar mudaria o "mexido em" do projeto
+        (o "Abrir" acha o projeto MAIS RECENTE do mesmo PDF) e custaria o
+        projeto inteiro de novo (3 a 6 MB num livro grande).
+
+        Nao grava se a pasta do projeto ja nao existe: e o projeto que a
+        pessoa tirou da lista na tela inicial ("Tirar da lista" apaga a
+        pasta). Grava-lo recriaria a pasta, e o cartao voltaria para a lista.
+        So o relogio e parado.
+
+        Arriscado: tirar essa conferencia da pasta; chamar isto depois de
+        self.projeto ou self.resumo mudarem (gravaria o livro novo, e o de
+        antes perderia a ultima mudanca); um caminho novo que mude o
+        trabalho sem passar pelo relogio de salvar (trabalho_mudou) nem
+        gravar na hora - aqui ele nao seria visto.
+        Teste: tests/test_trocar_de_livro_grava.py.
+        """
+        pendente = self._relogio_de_salvar.isActive()
+        if self.resumo is None or not Path(self.resumo.pasta).is_dir():
+            self._relogio_de_salvar.stop()
+            return
+        if pendente:
+            self._salvar_agora()
 
     def _o_que_gravar(self) -> Projeto:
         """O projeto como deve ir para o disco.
@@ -1160,7 +1371,17 @@ class JanelaPrincipal(QMainWindow):
         E não pergunta nada. A pergunta "quer salvar?" é o que este programa
         não faz - um "não" por engano apagaria um dia de trabalho do Kaique.
         """
+        # Decisao Z1 (b): a conversao das zonas para ANTES de gravar (so a
+        # bandeira; a pagina em curso termina logo abaixo): o que ja foi
+        # convertido vai para o disco agora, e o resto continua da proxima
+        # vez que o livro abrir. Nada fica pela metade: a gravacao e inteira
+        # (projetos.salvar_estado) e a pagina convertida e trocada sob a
+        # trava das zonas.
+        conversao = self.conversao_das_zonas
+        self._parar_a_conversao_das_zonas()
         self._salvar_agora()
+        if conversao is not None:
+            conversao.wait(3000)
 
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: zonas presas à folha (D2) e conversão ao abrir (Z1 b), 05/10/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: zonas presas à folha (D2) e conversão ao abrir (Z1 b), 05/10/2026</h1>
+<p><strong>PRONTO PARA CONFERIR.</strong> As zonas de um projeto antigo aparecem no mesmo lugar, a conversão roda por trás com o andamento na faixa e some no fim, o PDF sai idêntico e o programa antigo continua vendo as zonas. <strong>Não é "aprovado":</strong> só o Samuel marca. Há três ressalvas: uma travada de 6 s na janela durante a conversão de um livro grande, a cópia de segurança que não é idêntica bit a bit, e uma cópia de segurança a mais quando se alterna com o programa antigo.</p>
+<p>O que foi conferido: o ramo <code>fase2-geometria</code> (worktree <code>geometria</code>), <code>bdeb31c</code>, com o D2 (<code>7cb56c1</code>) e o Z1 (b) (<code>47b30f9</code>, <code>b0c4f0b</code>, <code>bdeb31c</code>), por cima do <code>fase-1</code> juntado em <code>87430dd</code>. Nenhum código foi mudado. Os projetos reais em <code>%LOCALAPPDATA%</code> não foram abertos. Tudo rodou numa pasta de dados de teste própria (<code>verificador/dados/</code>), com cópias feitas por <code>git archive</code>:</p>
+<ul>
+<li><strong>novo:</strong> <code>bdeb31c</code></li>
+<li><strong>antigo:</strong> <code>aab746f</code>, o que a tarefa pediu</li>
+<li><strong>fase1:</strong> <code>7e1ee21</code>, o fase-1 sem D2, que entra no <code>87430dd</code></li>
+</ul>
+<p>Para a janela, uma instância minha de 1600×821 px (1280×657 pontos), fora da tela, pilotada só com mensagens nativas e fechada com WM_CLOSE.</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> a moldura dourada e a iluminura continuam sendo defeito conhecido da Fase 1. Este item não mexe em imagem.</p>
+</blockquote>
+<h2>1. Veredito por item</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pytest (por partes, um arquivo por vez)</td>
+<td>máquina</td>
+<td><strong>1396 passaram, 59 pularam, 0 falhas</strong> (~22 min somados). Os 59 que pularam são de OCR e precisam de dados fora do git (<code>saida_teste/ocr-*</code>, motor do Kraken); não têm a ver com este item. Os testes novos <code>test_zonas_na_folha.py</code> + <code>test_converter_zonas_ao_abrir.py</code> deram 37 de 37.</td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code> (numa cópia <code>git archive</code>, com <code>saida_teste</code> própria)</td>
+<td>máquina</td>
+<td><strong>132 ações, 0 falhas</strong></td>
+</tr>
+<tr>
+<td>Faixa "Preparando as marcações do livro... N de M" e ela sumir no fim</td>
+<td>olho + máquina</td>
+<td><strong>Funciona.</strong> No Boécio (50 páginas) aparece "0 de 50 … 45 de 50" e some em ~9 s. No Siebmacher (268 páginas, folhas divididas) aparece "0 de 268 … 266 de 268" e some em ~112 s.</td>
+</tr>
+<tr>
+<td>A janela responde durante a conversão (clique, troca de página)</td>
+<td>máquina + olho</td>
+<td><strong>Responde, com uma ressalva.</strong> Cliquei "&gt;" a cada leitura e a página andou sempre (Boécio: páginas 15 a 23; Siebmacher: folhas 21 a 134). Resposta típica de 0,1 a 0,5 s. <strong>Mas</strong> no Siebmacher a janela ficou <strong>6 s ou mais sem responder uma vez</strong>, e isso se repetiu nas duas rodadas (ver ressalva R1).</td>
+</tr>
+<tr>
+<td>As zonas no mesmo lugar (antigo × novo)</td>
+<td>olho + máquina</td>
+<td><strong>Sim.</strong> As zonas lidas pelo código novo são <strong>idênticas (diferença 0,0)</strong> às do projeto antigo, nas 50 páginas do Boécio e nas 268 do Siebmacher. Nos prints, as bordas das zonas coincidem. A única diferença nos prints é o desenho das letras, que vem dos consertos da fase-1 (a p.4 é Mágico pro), e não das zonas.</td>
+</tr>
+<tr>
+<td>Cópia de segurança <code>projeto.antigo-zonas-na-folha-*.json</code> feita uma vez</td>
+<td>máquina</td>
+<td><strong>Uma vez por conversão.</strong> O Boécio ganhou 1 cópia e, depois de fechar no meio e reabrir, <strong>não</strong> ganhou outra. Ganha mais uma se o programa antigo regravar o projeto entre uma abertura e outra (ver ressalva R3).</td>
+</tr>
+<tr>
+<td>A cópia é idêntica ao antigo</td>
+<td>máquina</td>
+<td><strong>Idêntica no conteúdo, não bit a bit</strong> (ressalva R2). As zonas, os cortes e os filtros são iguais. A única diferença é a linha <code>"geometria_das_zonas": null</code> acrescentada em cada página.</td>
+</tr>
+<tr>
+<td>PDF gerado idêntico ao do código antigo</td>
+<td>máquina</td>
+<td><strong>Idêntico.</strong> Boécio: as imagens das 50 páginas são iguais byte a byte entre o antigo (<code>aab746f</code>), o fase1 (<code>7e1ee21</code>), o novo a partir do projeto antigo e o novo a partir do projeto convertido. Siebmacher: 268 de 268 iguais (fase1 × novo convertido). O md5 do arquivo inteiro muda por causa da data gravada no PDF.</td>
+</tr>
+<tr>
+<td>Fechar no meio da conversão e reabrir: continua e termina</td>
+<td>máquina</td>
+<td><strong>Sim.</strong> Mandei WM_CLOSE com a faixa em "18 de 50" e o programa fechou em ~2 s. No disco ficaram 30 páginas convertidas e 20 por converter. Ao reabrir apareceu "0 de <strong>20</strong>", depois "10 de 20", e terminou com 50 de 50. Nenhuma cópia de segurança nova.</td>
+</tr>
+<tr>
+<td>Mudar corte e ângulo de uma página com zona</td>
+<td>olho</td>
+<td><strong>A zona continua sobre o mesmo pedaço da folha.</strong> No Boécio p.5, puxei a borda de cima para baixo (aba Bordas) e depois girei +3,2° (aba Endireitar). As zonas azuis continuam nas mesmas linhas de verso, inclinadas junto com o texto (imagem abaixo).</td>
+</tr>
+<tr>
+<td>Desfazer / refazer</td>
+<td>máquina + olho</td>
+<td><strong>Funciona.</strong> Com 4× Ctrl+Z a página volta ao corte e ângulo automáticos, e as zonas voltam ao lugar de antes (diferença de 8 milionésimos da página, ~0,02 ponto a 300 DPI). Com 4× Ctrl+Y tudo volta exato.</td>
+</tr>
+<tr>
+<td>Abrir o projeto convertido no programa antigo (<code>aab746f</code>, Z2)</td>
+<td>olho + máquina</td>
+<td><strong>As zonas aparecem</strong>, inclusive na p.5 com corte e +3,2° feitos no programa novo: as zonas estão nas linhas certas. Quando o antigo grava, volta ao formato antigo com as mesmas zonas (diferença 0,0).</td>
+</tr>
+<tr>
+<td>Faixa azul em 1280×657</td>
+<td>olho</td>
+<td><strong>Cabe em uma linha.</strong> O texto mais longo de verdade, "Achei a lombada e vou cortar na linha azul. Se estiver errado, arraste a linha.  -  Preparando as marcações do livro... 6 de 268", ocupa ~2/3 da faixa e não empurra nada. Também testei o maior aviso que existe (122 letras) mais o andamento "123 de 1010", colocado por mim na faixa só para ver o tamanho: coube em uma linha e chegou a ~90% da largura.</td>
+</tr>
+</tbody>
+</table>
+<h2>2. O que vi nas imagens</h2>
+<p><img alt="A faixa durante a conversão do Boécio (1280×657)" src="imagens/boecio1_faixa_2.jpg" /></p>
+<p><em>Boécio, a faixa durante a conversão: "Esta folha não vai ser dividida.  -  Preparando as marcações do livro... 13 de 50".</em></p>
+<p><img alt="A faixa depois da conversão" src="imagens/boecio1_faixa_depois.jpg" /></p>
+<p><em>Depois da conversão: a faixa volta ao texto normal.</em></p>
+<p><img alt="Siebmacher, texto longo na faixa" src="imagens/sieb1_faixa_2.jpg" /></p>
+<p><em>Siebmacher em 1280×657: o texto mais longo de verdade, em uma linha só.</em></p>
+<p><img alt="O maior aviso + andamento" src="imagens/faixa_texto_mais_longo_1280x657.jpg" /></p>
+<p><em>O maior aviso que existe mais o andamento, colocado por mim na faixa: ainda em uma linha.</em></p>
+<p><img alt="Boécio, antigo × novo" src="imagens/boecio_antigo_x_novo.jpg" /></p>
+<p><em>Boécio, aba Marcar, programa antigo × programa novo (p.2, 3, 4, 5, 15): as zonas no mesmo lugar em todas.</em></p>
+<p><img alt="Siebmacher, antigo × novo" src="imagens/sieb_antigo_x_novo.jpg" /></p>
+<p><em>Siebmacher (folhas divididas), p.8, 20 e 41: as zonas no mesmo lugar. Diferença de pixels na p.8: 0. Na p.20 e na p.41 só há diferenças fracas (até 20 níveis) dentro da textura, nenhuma na borda das zonas.</em></p>
+<p><img alt="p.5: antes, corte mudado, corte + 3,2 graus" src="imagens/zoom_p05_antes_corte_angulo.jpg" /></p>
+<p><em>Boécio p.5, da esquerda para a direita: antes, com o corte mudado, e com corte mais 3,2°. As zonas azuis continuam nas mesmas linhas de verso. A faixa de baixo que entrou com o corte novo fica fora da zona, como deve, porque não fazia parte dela.</em></p>
+<p><img alt="Programa antigo abrindo o projeto convertido" src="imagens/antigo_reaberto_marcar_p05.jpg" /></p>
+<p><em>O programa ANTIGO abrindo o projeto convertido, p.5 com corte e ângulo feitos no novo: as zonas estão nas linhas certas.</em></p>
+<p>Abri um por um os 60 prints da pasta <code>prints/</code>, alguns em folhas-resumo de 6. Sete prints saíram com a tela inicial em vez da conferência, todos tirados logo depois de trocar de tela (<code>boecio1_faixa_1</code>, <code>fechar_no_meio_faixa_1</code>, <code>reabrir_continua_faixa_1</code>, <code>sieb1/2_faixa_1</code>, <code>antigo_01_aberto</code>, <code>sieb_sem_conversao_miniaturas</code>). É um atraso de pintura da janela fora da tela, não defeito do programa. Nesses casos o andamento foi conferido pelo texto da faixa, lido direto da janela (<code>trabalho/vigia_*.log</code>).</p>
+<h2>3. Ressalvas</h2>
+<ul>
+<li><strong>R1 — travada de 6 s ou mais durante a conversão de um livro grande (média, não explicada).</strong> No Siebmacher (268 páginas), nas <strong>duas</strong> rodadas, a janela ficou 6 s ou mais sem responder uma vez:</li>
+<li>rodada 1: entre "94 de 268" e "114 de 268";</li>
+<li>rodada 2: entre "78" e "100".</li>
+</ul>
+<p>A conversão continuou no ritmo normal durante a travada (20 a 22 páginas em ~6,5 s), então quem parou foi a janela, não a conversão.</p>
+<p>O que <strong>não</strong> explica a travada:
+  - folheando as mesmas folhas com o livro já convertido (sem conversão), a resposta nunca passou de 0,6 s;
+  - rodando a conversão sem janela, nenhuma página passou de 1,2 s e o fio vigia nunca ficou preso mais de 0,01 s (sem GIL preso);
+  - a primeira gravação com a cópia de segurança leva 0,29 s e foi feita antes (aos ~55 s);
+  - a gravação na janela leva 0,27 s.</p>
+<p>A causa não foi achada. O PC estava com pouca memória (0,8 a 1,7 GB livres, com outros 2 agentes rodando). Pode ser só isso, mas se repetiu no mesmo ponto. No Boécio (50 páginas) não houve travada. <strong>Sugestão:</strong> o implementador medir onde a janela para nessa hora, de preferência com o PC livre.</p>
+<ul>
+<li>
+<p><strong>R2 — a cópia de segurança não é bit a bit o arquivo antigo (baixa).</strong> Antes de converter, o programa novo já grava uma vez no formato antigo (em <code>_analise_pronta</code>), e essa gravação acrescenta <code>"geometria_das_zonas": null</code> em cada página. É esse arquivo regravado que vira a cópia. O conteúdo é o mesmo e o programa antigo abre a cópia sem problema, porque ignora o campo. Mas os bytes do arquivo original do Kaique não ficam guardados. Se o pedido "com cópia de segurança dos projetos" for entendido como guardar o arquivo exatamente como era, a cópia teria de ser feita antes dessa primeira gravação.</p>
+</li>
+<li>
+<p><strong>R3 — uma cópia de segurança a mais a cada volta pelo programa antigo (baixa, esperado).</strong> Se o programa antigo abre e grava o projeto, ele volta ao formato antigo. Na próxima abertura no programa novo, a conversão roda de novo e faz <strong>outra</strong> cópia (o Boécio ficou com 2: <code>...-1904.json</code> e <code>...-1916.json</code>). Nada se perde. É só um arquivo a mais por volta enquanto os dois computadores tiverem versões diferentes, que é o caso Z2.</p>
+</li>
+<li>
+<p><strong>R4 — cache de "já está no formato novo" vale pela sessão (baixa, só caso de laboratório).</strong> Troquei o <code>projeto.json</code> por um antigo com o programa aberto. Na gravação seguinte o programa gravou por cima <strong>sem</strong> cópia, porque <code>_JA_NO_FORMATO_NOVO</code> lembrava a pasta. Na vida real, isso só aconteceria se alguém trocasse o arquivo com o programa aberto.</p>
+</li>
+<li>
+<p><strong>R5 — texto da faixa com "..." (três pontos) em vez de "…"</strong> (o pedido escrevia "…"). É só a forma, e não há letra sem acento.</p>
+</li>
+<li>
+<p><strong>Não testado:</strong> a roda do mouse (não funciona sem foco); a escala real do notebook do Kaique (continua desconhecida).</p>
+</li>
+<li><strong>Não conferido de propósito:</strong> a conversão de projeto com página dividida e girada em 90° na janela (os testes de máquina cobrem esse caso). O Siebmacher cobriu as folhas divididas.</li>
+<li><strong>Observação não confirmada:</strong> no Siebmacher, as miniaturas da tira ficaram em branco nos primeiros segundos da conversão e apareceram depois. Não consegui um print limpo sem a conversão para comparar (atraso de pintura da janela fora da tela).</li>
+<li><strong>Velocidade:</strong> não rodei <code>teste_velocidade.py</code> (PC ocupado). Abrir e gravar mais lento já foi aceito pelo Samuel (V). Para referência:</li>
+<li>converter 50 páginas na janela: ~9 s;</li>
+<li>converter 268 páginas: ~112 s na janela e ~75 s sem janela;</li>
+<li>gravar o Siebmacher convertido (6 MB): 0,27 s.</li>
+</ul>
+<h2>4. Para a Lista de bugs (proposta)</h2>
+<ul>
+<li><strong>05/10, R1:</strong> a janela fica ≥6 s sem responder uma vez durante a conversão das zonas de um livro de 268 páginas (Siebmacher), reproduzido 2×. A causa não foi achada. Registros em <code>trabalho/vigia_sieb1.log</code> e <code>trabalho/vigia_sieb2.log</code> (fora do git).</li>
+<li><strong>05/10, R2:</strong> a cópia <code>projeto.antigo-zonas-na-folha-*.json</code> é feita depois de uma gravação do programa novo, e não do arquivo original (o conteúdo é igual).</li>
+</ul>
+<h2>5. Arquivos</h2>
+<ul>
+<li>Scripts do piloto e das contas: <code>scripts/</code> (fora do git, ficam na pasta).</li>
+<li>Projetos, PDFs, prints grandes e registros: <code>trabalho/</code>, <code>dados/</code>, <code>prints/</code> (fora do git).</li>
+<li>No git: este parecer (<code>.md</code>, <code>.html</code>) e as imagens pequenas em <code>imagens/</code>. O <code>.pdf</code> fica na pasta, fora do git (regra do <code>.gitignore</code>).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 20:05</p>
+</body>
+</html>

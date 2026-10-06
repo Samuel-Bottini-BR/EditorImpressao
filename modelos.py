@@ -121,6 +121,20 @@ class ConfigPagina:
     gravura_forma: str | None = None
     gravura_feita_com: str = ""
 
+    # Decisao D2 do Samuel (02/10/2026): "Sim, pode mudar (com copia de
+    # seguranca dos projetos)" - as zonas ficam presas a FOLHA ORIGINAL.
+    # `selecao` continua, na memoria, em fracao da pagina preparada (a tela e
+    # o pipeline nao mudam); geometria_das_zonas diz em que preparo da pagina
+    # (giro de 90, divisao, corte, angulo, proporcao da folha) essas fracoes
+    # valem. None = ainda nao anotada (projeto de antes de 05/10/2026, ou
+    # pagina nunca desenhada): as fracoes valem na pagina de agora, como
+    # sempre. Quem anota e leva as zonas quando o preparo muda:
+    # core/zonas_na_folha.acompanhar, chamado por core/pipeline ao desenhar.
+    # No projeto.json a pagina ganha tambem "zonas_na_folha" (as zonas na
+    # folha original; ver Projeto.para_dicionario). Seguro mudar: nada aqui;
+    # e interno. Arriscado: apagar este campo sem apagar a selecao junto.
+    geometria_das_zonas: dict[str, Any] | None = None
+
     # Modo Misto ("So as letras" no Preto e branco), SO desta pagina, por cima
     # do livro (os campos de mesmo nome em Projeto; None = segue o livro).
     # Pedido do Samuel (conferencia 10, P1 (a)): "para o livro (tela 'O que
@@ -334,8 +348,46 @@ class Projeto:
     # --- serializacao -----------------------------------------------------
 
     def para_dicionario(self) -> dict[str, Any]:
-        dados = asdict(self)
+        """O projeto pronto para o projeto.json.
+
+        Decisao D2 (02/10/2026): cada pagina com zonas e geometria anotada
+        ganha "zonas_na_folha" (as zonas na folha original, a verdade); a
+        "selecao" em fracao da pagina fica junto, como copia para o programa
+        instalado de antes (ver core/zonas_na_folha.py). A conta e so na hora
+        de gravar: a memoria nao muda.
+        """
+        return Projeto.para_o_disco(self.fotografar())
+
+    def fotografar(self) -> dict[str, Any]:
+        """A primeira metade de para_dicionario: uma COPIA do projeto como
+        esta agora (dataclasses.asdict), sem as zonas na folha. E a parte que
+        tem de ser feita no fio que mexe no projeto (a janela); a segunda
+        (para_o_disco) pode ir para o fio de gravar
+        (projetos.salvar_estado_por_tras, R1 de 05/10/2026). Arriscado:
+        devolver algo que nao seja copia (o fio de gravar leria o projeto
+        enquanto a janela o muda)."""
+        from core.zonas_na_folha import TRANCA_DAS_ZONAS
+
+        # A trava das zonas: a previa (outro fio) pode estar levando as zonas
+        # de uma pagina para o preparo novo (zonas_na_folha.acompanhar troca a
+        # selecao E a geometria juntas). Sem a trava, o arquivo poderia sair
+        # com a selecao de antes e a geometria de depois.
+        with TRANCA_DAS_ZONAS:
+            return asdict(self)
+
+    @staticmethod
+    def para_o_disco(dados: dict[str, Any]) -> dict[str, Any]:
+        """A segunda metade de para_dicionario: acrescenta "zonas_na_folha"
+        a cada pagina de uma fotografia (fotografar). Mexe so na fotografia,
+        que e uma copia: pode rodar em qualquer fio. Devolve a mesma."""
+        from core.zonas_na_folha import para_o_disco
+
         # tuplas viram listas no JSON; guardamos assim mesmo e convertemos na volta
+        for pagina in dados.get("paginas", []):
+            try:
+                para_o_disco(pagina)
+            except Exception:  # noqa: BLE001 - sem a copia na folha, grava como antes
+                pagina.pop("zonas_na_folha", None)
         return dados
 
     @staticmethod
@@ -350,9 +402,14 @@ class Projeto:
         ligacao do 1.1, que saiu) sobra nos projetos dessa rodada e e
         descartado (testado em tests/test_tirar_fundo_no_programa.py).
         """
+        from core.zonas_na_folha import do_disco
+
         folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, f))
                   for f in dados.pop("folhas", [])]
-        paginas = [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(p)))
+        # D2 (02/10/2026): "zonas_na_folha" volta para fracao da pagina aqui,
+        # com a geometria anotada (core/zonas_na_folha.do_disco). Pagina de
+        # projeto antigo (sem o campo) passa como sempre.
+        paginas = [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(do_disco(p))))
                    for p in dados.pop("paginas", [])]
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas

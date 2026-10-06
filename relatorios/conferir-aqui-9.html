@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferir 9 - Editor de Impressão</title>
+<!--
+  Nona conferencia do Samuel (05/10/2026): a frente de geometria da Fase 2.
+  Parte 1: o que o teste D3 mostrou (endireitar, dividir, "corte da sobra"; nosso x ScanTailor),
+  com "Concordo / Nao concordo". Parte 2: as decisoes G1-G10 do plano
+  (docs/plano/fase2-geometria-plano.md), Z1 e Z2 (zonas do D2), C1 (aviso quando as duas contas
+  discordam) e V (custo de velocidade do D2).
+  Mesmo formato de conferir-aqui-7.html. As marcacoes ficam no navegador com a chave NOVA
+  "conferir-2026-10-05-i" (nao mistura com as conferencias anteriores).
+  As imagens estao em relatorios/conferencia-9-2026-10-05/cartoes/ e sao refeitas por
+  conferencia-9-2026-10-05/scripts/montar_imagens.py (so reduz/recorta as imagens prontas do D3).
+  Seguro mudar: textos e a lista SECOES. Arriscado: a CHAVE (apagaria o que o Samuel ja marcou)
+  e os codigos dos cartoes (c:), que sao a chave de cada resposta guardada.
+-->
+<style>
+  :root { --fundo:#f4f1ea; --cartao:#fff; --texto:#222; --bom:#2e7d32; --ruim:#c62828; --talvez:#8a6d00; --borda:#ddd; --azul:#1565c0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--fundo); color:var(--texto); font:17px/1.45 "Segoe UI", Arial, sans-serif; }
+  header { position:sticky; top:0; z-index:5; background:#1f2a36; color:#fff; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:19px; margin:0; font-weight:600; }
+  #contagem { font-size:15px; opacity:.9; }
+  header button { margin-left:auto; }
+  main { max-width:1150px; margin:0 auto; padding:16px 16px 120px; }
+  .ajuda { background:#fff8e1; border:1px solid #f0d98a; border-radius:8px; padding:12px 16px; margin:8px 0 20px; font-size:16px; }
+  .ajuda p { margin:4px 0; }
+  h2 { margin:34px 0 6px; font-size:23px; }
+  .sub { color:#444; margin:0 0 14px; font-size:16px; }
+  .cartao { background:var(--cartao); border:1px solid var(--borda); border-radius:10px; padding:14px; margin:0 0 20px; }
+  .cartao.bom { border-left:8px solid var(--bom); }
+  .cartao.ruim { border-left:8px solid var(--ruim); }
+  .cartao.naosei { border-left:8px solid var(--talvez); }
+  .cartao.feito { border-left:8px solid var(--azul); }
+  .cartao h3 { margin:0 0 6px; font-size:20px; }
+  .cartao .olhar { margin:0 0 10px; }
+  .cartao .olhar b.onde { background:#fde7f6; padding:0 4px; border-radius:4px; }
+  .cartao .atencao { margin:6px 0 10px; background:#fff1c2; border:1px solid #e0b400; border-radius:6px; padding:6px 10px; font-size:16px; }
+  .cartao .significa { margin:6px 0 8px; font-size:15px; color:#333; background:#f1f5fb; border-radius:6px; padding:6px 10px; }
+  .cartao .pergunta { font-weight:600; margin:12px 0 8px; font-size:18px; }
+  .cartao img { display:block; max-width:100%; margin:0 auto 12px; border:1px solid #ccc; cursor:zoom-in; background:#eee; }
+  .botoes { display:flex; gap:8px; flex-wrap:wrap; }
+  .opcoes { display:flex; flex-direction:column; gap:8px; }
+  button { font:inherit; font-size:16px; padding:8px 16px; border-radius:8px; border:2px solid #999; background:#fff; cursor:pointer; }
+  .opcoes button { text-align:left; padding:10px 14px; }
+  button.b-bom.ativo { background:var(--bom); border-color:var(--bom); color:#fff; }
+  button.b-ruim.ativo { background:var(--ruim); border-color:var(--ruim); color:#fff; }
+  button.b-naosei.ativo { background:var(--talvez); border-color:var(--talvez); color:#fff; }
+  .opcoes button.ativo, button.b-entendi.ativo { background:var(--azul); border-color:var(--azul); color:#fff; }
+  button.principal { background:var(--azul); border-color:var(--azul); color:#fff; font-weight:600; }
+  textarea { width:100%; margin-top:8px; font:inherit; font-size:15px; padding:6px 8px; border:1px solid #bbb; border-radius:6px; min-height:38px; }
+  #zoom { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:10; overflow:auto; cursor:zoom-out; }
+  #zoom img { display:block; margin:0 auto; max-width:none; }
+  #zoom .dica { position:fixed; top:8px; right:12px; color:#fff; font-size:14px; background:rgba(0,0,0,.6); padding:4px 8px; border-radius:6px; }
+  #saida { display:none; position:fixed; left:50%; bottom:16px; transform:translateX(-50%); width:min(900px,94vw); background:#fff; border:2px solid var(--azul); border-radius:10px; padding:12px; z-index:8; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+  #saida textarea { height:220px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conferir 9 - Editor de Impressão (05/10)</h1>
+  <span id="contagem"></span>
+  <button class="principal" onclick="copiar()">Copiar respostas</button>
+</header>
+<main>
+  <div class="ajuda">
+    <p><b>O que é:</b> a parte de <b>girar, dividir a folha, endireitar e cortar</b> da Fase 2. Você pediu (02/10): <i>"teste nas páginas de teste e me mostre - mas eu quero usar o do scantailor, pois o nosso não é tão intuitivo de se usar."</i> Testei o nosso e o do ScanTailor nas 32 páginas de teste. Nada no programa mudou por causa deste teste.</p>
+    <p><b>Parte 1 (O que eu testei):</b> olhe a imagem (clique para ver em tamanho cheio; clique de novo para fechar) e diga se <b>concorda com o que eu vi</b>.</p>
+    <p><b>Parte 2 (Decisões):</b> escolha uma opção em cada pergunta. Se nenhuma servir, escreva no comentário.</p>
+    <p><b>Nas imagens:</b> <b style="color:#1565c0">NOSSO</b> em azul/verde, <b style="color:#c62828">SCANTAILOR</b> em vermelho. Nas páginas de endireitar, a página foi <b>esticada 5 vezes na altura</b>: assim meio grau de torto aparece bem contra as <b>linhas azuis</b>, que são retas. O número "ficou torto" no rótulo é uma medida aproximada de quanto a página ainda ficou torta depois de endireitada: perto de zero = reta.</p>
+    <p>Suas marcações ficam guardadas neste computador. No fim, aperte <b>Copiar respostas</b> (no alto) e cole no chat do Claude.</p>
+  </div>
+  <div id="conteudo"></div>
+</main>
+<div id="zoom" onclick="this.style.display='none'"><span class="dica">clique para fechar</span><img alt=""></div>
+<div id="saida">
+  <b>Respostas copiadas.</b> Cole no chat do Claude (Ctrl+V). Se não copiou sozinho, selecione o texto abaixo e copie.
+  <textarea id="textoSaida" readonly></textarea>
+  <button onclick="document.getElementById('saida').style.display='none'">Fechar</button>
+</div>
+<script>
+// Cada cartao: {c: codigo, t: titulo, o: o que olhar (pode ter <b>), a: atencao (opcional),
+//   s: o que Concordo/Nao concordo querem dizer, i: [imagens], tipo: "voto" (padrao: Concordo /
+//   Nao concordo) | "escolha" | "entendi", p: pergunta e op: [opcoes] (so no tipo "escolha")}
+const P = "conferencia-9-2026-10-05/cartoes/";
+const CONCORDA = "Concordo = vi o mesmo. Não concordo = vi outra coisa (diga o quê no comentário).";
+const SECOES = [
+ { titulo:"Parte 1 · O que eu testei: endireitar",
+   sub:"Nas 32 páginas, em 25 os dois acham o mesmo ângulo (diferença de até 0,15 grau). Nas 7 em que discordam: o ScanTailor acerta 2 que o nosso erra (Horas 11 e 47), o nosso acerta 2 que o ScanTailor erra (Horas 27 e Palatino 57), e 3 ficam quase empatadas (Horas 14, Siebmacher 9 e Opus Majus 20). Abaixo, as 4 que contam.",
+   cartoes:[
+    {c:"E1", t:"Horas 11: o nosso entorta uma página que estava reta", i:["esticada_horas_p011.jpg"],
+     o:`Em cima o NOSSO, embaixo o SCANTAILOR. Compare <b class='onde'>"LE GRAND" e "DANS L'HOSTEL"</b> com as linhas azuis: no NOSSO as letras <b>descem para a direita</b> (o nosso girou a página meio grau, −0,5°, sem precisar); no SCANTAILOR ficam <b>paralelas</b> às linhas, como a página já estava.`,
+     s:CONCORDA},
+    {c:"E2", t:"Horas 47: o nosso deixa torta uma página torta", i:["esticada_horas_p047.jpg"],
+     o:`Em cima o NOSSO, embaixo o SCANTAILOR. Olhe <b class='onde'>"changement, qui eft de changer tout mon"</b> e as linhas de baixo: no NOSSO as linhas <b>descem para a direita</b> (ele quase não girou, −0,1°); no SCANTAILOR elas ficam <b>paralelas</b> às linhas azuis (ele girou +0,56°).`,
+     a:`Por que o nosso erra no Livro de Horas (suposição, não conferida no código): a moldura pintada pesa mais que as linhas de texto na conta do nosso; o ScanTailor tira antes as manchas compridas.`,
+     s:CONCORDA},
+    {c:"E3", t:"Horas 27: aqui é o ScanTailor que deixa torta", i:["esticada_horas_p027.jpg"],
+     o:`Em cima o NOSSO, embaixo o SCANTAILOR. Olhe <b class='onde'>"Sainte Begue Veuve, fille de S. Pepin, Duc de Brabant"</b>: no NOSSO a linha fica <b>paralela</b> às linhas azuis (ele girou +0,5°); no SCANTAILOR ela <b>desce para a direita</b> (ele não girou, achou zero).`,
+     a:`O ScanTailor muda de ideia conforme o tamanho da imagem que recebe: com a imagem no tamanho em que foi escaneada, ele acha +0,5°, igual ao nosso. Se trouxermos o endireitar dele, isso tem de ser acertado e testado.`,
+     s:CONCORDA},
+    {c:"E4", t:"Palatino 57: o ScanTailor entorta um pouco", i:["esticada_palatino_p057.jpg"],
+     o:`Em cima o NOSSO, embaixo o SCANTAILOR. Compare <b class='onde'>as duas linhas de alfabeto</b> ("Aa b8 cc dd...") com as linhas azuis: no NOSSO ficam <b>paralelas</b> (ele girou só −0,1°); no SCANTAILOR ficam <b>levemente inclinadas</b> (ele girou −0,5°).`,
+     s:CONCORDA},
+   ]},
+ { titulo:"Parte 1 · O que eu testei: dividir a folha",
+   sub:"Os dois erram, cada um de um jeito. Em cima de cada imagem: NOSSO à esquerda (o traço do meio é onde ele divide), SCANTAILOR à direita (a linha vermelha é onde ele divide).",
+   cartoes:[
+    {c:"F1", t:"Siebmacher 7: uma página só, deitada; os dois dividem", i:["divisao_siebmacher_p007.jpg"],
+     o:`A folha tem <b>uma página só</b> (com a beirada do livro e o fundo preto à direita). O NOSSO divide a 57% da largura, <b class='onde'>no meio do poema e da moldura</b>. O SCANTAILOR divide a 80%, <b class='onde'>na beirada do livro</b>: a página de verdade fica inteira, mas sobra uma segunda "página" só com a beirada e o fundo preto. O certo seria uma página só.`,
+     s:CONCORDA},
+    {c:"F2", t:"Siebmacher 9: o mesmo erro", i:["divisao_siebmacher_p009.jpg"],
+     o:`Igual à Siebmacher 7: o NOSSO divide a 57%, <b class='onde'>passando no meio do "J. Sibmacher"</b> e da moldura; o SCANTAILOR divide a 82%, <b class='onde'>na beirada do livro</b>, e sobra uma "página" só com a beirada.`,
+     a:`No endireitar, esta página é quase empate: o ScanTailor gira −0,25° a página da esquerda, o nosso não gira; a olho, as duas parecem retas.`,
+     s:CONCORDA},
+    {c:"F3", t:"Opus Majus 256: o ScanTailor parte a tabela dobrável em duas", i:["divisao_opusmajus_p256.jpg","corte_st_opusmajus_p256_esq.jpg"],
+     o:`É uma tabela numa folha dobrável, deitada: <b>uma página só</b>. O NOSSO deixa a tabela <b>inteira</b> (retângulo verde). O SCANTAILOR <b class='onde'>parte a tabela em duas páginas</b>, entre as colunas "Secunda" e "Tertia" (na segunda imagem, a ampliação de onde a linha vermelha passa). Ele divide sozinho toda folha mais larga que alta.`,
+     s:CONCORDA},
+   ]},
+ { titulo:"Parte 1 · O que eu testei: o \"corte da sobra\" do ScanTailor",
+   sub:"O ScanTailor tem um modo \"uma página + sobra\": além de não dividir, ele corta a beirada da folha. O nosso não tem esse corte. As imagens mostram onde a tesoura dele passaria (linha vermelha).",
+   cartoes:[
+    {c:"S1", t:"Escola 7: o corte come a última letra das linhas", i:["corte_st_escola_p007_dir.jpg"],
+     o:`A linha vermelha passa <b class='onde'>rente ao fim das linhas</b> e lasca a última letra: "CRISTÃ", "parece", "existência.".`,
+     a:`Na Escola 35 é pior: o corte atravessa o texto dos dois lados (come o começo e o fim das linhas).`,
+     s:CONCORDA},
+    {c:"S2", t:"Graduale 221: o corte leva o número da folha e as guias das pautas", i:["corte_st_graduale_p221_dir.jpg"],
+     o:`Tudo o que fica à direita da linha vermelha seria cortado: <b class='onde'>o número da folha "Cvij"</b> (em cima) e <b class='onde'>os ganchinhos no fim das pautas</b> (as guias que mostram a primeira nota da linha seguinte). No ângulo, os dois acertam esta página.`,
+     s:CONCORDA},
+   ]},
+ { titulo:"Parte 1 · O que eu testei: girar",
+   cartoes:[
+    {c:"R1", t:"Girar de 90 em 90 graus: nenhum dos dois faz sozinho", tipo:"entendi", i:[],
+     o:`No ScanTailor também é <b>só botão</b> (girar à esquerda, à direita, e aplicar em todas / pares / ímpares). Não há o que comparar no automático; a diferença está na tela, e ela é a pergunta G1 abaixo.`},
+   ]},
+ { titulo:"Parte 2 · Decisões: girar, dividir, endireitar",
+   sub:"As perguntas do plano da frente de geometria. Opinião de quem fez o teste (não é decisão): trazer o endireitar do ScanTailor resolve as duas páginas do Livro de Horas que o nosso erra, mas piora outras duas; nas páginas comuns dá na mesma. O ganho grande que você pediu (\"mais intuitivo de usar\") está na tela (girar e corrigir à mão como no ScanTailor) e em escolher por livro e por página quantas páginas tem a folha, não na conta automática.",
+   cartoes:[
+    {c:"G1", t:"Girar: como devem ser os botões", tipo:"escolha", i:[],
+     o:`No ScanTailor, girar é botão: girar à esquerda, girar à direita, e "aplicar em: só esta / todas / daqui em diante / pares / ímpares". Hoje, no nosso, a tecla R serve para girar e também para o Retângulo, e o Retângulo ganha (está na Lista de bugs de 02/10).`,
+     p:"Como você quer girar as páginas?",
+     op:["(a) Igual ao ScanTailor", "(b) O botão de hoje, e só acrescentar \"pares / ímpares\"", "(c) Outra coisa (diga o quê no comentário)"]},
+    {c:"G2", t:"Dividir: o que o programa faz num livro novo", tipo:"escolha", i:[],
+     o:`No teste, o automático do ScanTailor dividiu toda folha deitada: partiu a tabela do Opus Majus 256 em duas e, no Siebmacher, deixou uma "página" só com a beirada do livro (F1 a F3). O nosso partiu o Siebmacher no meio do poema.`,
+     p:"Num livro novo, como o programa divide as folhas?",
+     op:["(a) Uma página por folha; a pessoa marca \"este livro tem duas páginas por folha\"", "(b) O automático do ScanTailor, e toda folha que ele dividir fica marcada \"conferir\"", "(c) O nosso de hoje (procura o meio do livro nas folhas deitadas)"]},
+    {c:"G3", t:"O \"corte da sobra\" do ScanTailor", tipo:"escolha", i:[],
+     o:`É o modo "uma página + sobra", que corta a beirada da folha. No teste ele cortou letra na Escola 7 e na Escola 35 e levou o "Cvij" e as guias das pautas do Graduale 221 (S1 e S2).`,
+     p:"Trazer o \"corte da sobra\"?",
+     op:["(a) Não trazer", "(b) Trazer como opção, desligada", "(c) Trazer ligado"]},
+    {c:"G4", t:"Endireitar: qual conta usar", tipo:"escolha", i:[],
+     o:`No teste, o do ScanTailor acertou a Horas 11 e a Horas 47, que o nosso erra, mas errou a Horas 27 e a Palatino 57, que o nosso acerta; nas outras 25 páginas dá igual (E1 a E4). Você disse "quero usar o do scantailor".`,
+     p:"Confirma o endireitar do ScanTailor?",
+     op:["(a) Só o do ScanTailor", "(b) O do ScanTailor de fábrica; quando os dois discordarem mais de 0,3 grau, a página fica marcada \"conferir\"", "(c) Manter o nosso e só mudar a tela"]},
+    {c:"G5", t:"Endireitar: como deve ser a tela", tipo:"escolha", i:[],
+     o:`Hoje a aba Endireitar gira arrastando em qualquer lugar da página, sem nada que mostre o que está acontecendo (está na Lista de bugs de 02/10). No ScanTailor há uma grade sobre a página, o ângulo escrito em número com setinhas que mudam 0,1 grau por vez, e "aplicar em".`,
+     p:"Como quer a aba Endireitar?",
+     op:["(a) Como o ScanTailor", "(b) O arrastar de hoje, mais o número com setinhas", "(c) Outra coisa (diga o quê no comentário)"]},
+    {c:"G6", t:"Endireitar antes ou depois de cortar", tipo:"escolha", i:[],
+     o:`Hoje a regra do programa é <b>cortar primeiro e endireitar depois</b>. O ScanTailor faz o contrário: endireita e só depois acha o corte (no teste, isso explica parte das diferenças). Trazer o endireitar dele pode mudar essa regra. Se mudar, o corte de <b>todas</b> as páginas muda um pouco e vai ter de ser conferido de novo.`,
+     p:"Muda a ordem?",
+     op:["(a) Sim: girar, dividir, endireitar, cortar (como o ScanTailor)", "(b) Não: manter cortar e depois endireitar"]},
+   ]},
+ { titulo:"Parte 2 · Decisões: borda preta, corte, margens, tamanho da folha",
+   cartoes:[
+    {c:"G7", t:"Achar a página dentro da borda preta do scanner", tipo:"escolha", i:[],
+     o:`O ScanTailor tem uma opção, desligada de fábrica, que acha a página dentro da borda preta que alguns scanners deixam em volta. Para testar, precisamos de páginas com borda preta: o Siebmacher tem fundo preto à direita. Se souber de outros livros do acervo com borda preta, escreva no comentário.`,
+     p:"Quer essa opção, por livro?",
+     op:["(a) Sim, desligada de fábrica; testar com o Siebmacher e os livros que eu indicar", "(b) Não trazer agora"]},
+    {c:"G8", t:"O corte que segue a moldura ou o papel", tipo:"escolha", i:[],
+     o:`O corte de hoje (rente ao que está impresso, com 1 mm de folga) foi aprovado por você em 01/10. O do ScanTailor segue a moldura e o papel, mas num teste anterior deixou de fora a moldura dourada da Horas 13.`,
+     p:"O que fazer com o corte do ScanTailor?",
+     op:["(a) Trazer como opção \"seguir a moldura / o papel\", desligada", "(b) Trocar o corte de hoje pelo dele", "(c) Não trazer"]},
+    {c:"G9", t:"Margens de fábrica", tipo:"escolha", i:[],
+     o:`No ScanTailor, cada página ganha margens em milímetros: de fábrica, 10 mm dos lados e 5 mm em cima e embaixo. Dá para pôr margens diferentes nas páginas pares e ímpares (para a costura).`,
+     p:"Quais margens de fábrica?",
+     op:["(a) As do ScanTailor (10 mm dos lados, 5 mm em cima e embaixo)", "(b) Outras (escreva no comentário: dentro / fora / cima / baixo)"]},
+    {c:"G9b", t:"Todas as páginas do tamanho da maior", tipo:"escolha", i:[],
+     o:`No ScanTailor, todas as páginas do livro ficam do tamanho da maior, para o livro sair uniforme.`,
+     p:"Igualar todas as páginas ao tamanho da maior do livro?",
+     op:["Sim", "Não"]},
+    {c:"G10", t:"Quando o conteúdo não cabe na folha", tipo:"escolha", i:[],
+     o:`Se a página mais as margens passarem do tamanho da folha (A4), hoje o programa não reduz.`,
+     p:"O que fazer quando não cabe?",
+     op:["(a) Reduzir até caber", "(b) Avisar e não reduzir", "(c) Diminuir as margens até caber"]},
+   ]},
+ { titulo:"Parte 2 · Decisões: as zonas da aba Marcar e a velocidade",
+   sub:"Já está feito neste ramo (falta você conferir no programa): as zonas que você desenha na aba Marcar agora ficam presas à folha original. Se o corte ou o ângulo da página mudar, a zona continua no mesmo lugar do livro, em vez de \"andar\".",
+   cartoes:[
+    {c:"Z0", t:"O que mudou nas zonas", tipo:"entendi", i:[],
+     o:`As zonas agora são guardadas <b>na folha original</b>, não na página já cortada e endireitada. Projeto antigo <b>abre igual</b>; antes de gravar pela primeira vez no formato novo, o programa faz uma <b>cópia de segurança</b> do projeto. Isso é necessário antes de mexer no dividir e no endireitar: sem isso, quando o corte ou o ângulo de uma página mudasse, as zonas dela andariam.`},
+    {c:"Z1", t:"Quando converter as zonas dos projetos antigos", tipo:"escolha", i:[],
+     o:`Num projeto antigo, hoje cada página é convertida para o formato novo <b>só quando aparece na tela</b>. Antes de mudar o dividir ou o endireitar automático, as páginas ainda não convertidas precisam ser convertidas com a conta de hoje, senão as zonas delas andam. Duas maneiras:`,
+     a:`(a) Como está: uma página por vez, quando ela aparece. Para continuar seguro depois que o endireitar mudar, o programa guarda uma cópia da conta de hoje só para converter as páginas antigas.<br>(b) Converter o livro inteiro por trás, logo ao abrir, enquanto você trabalha: cerca de 1 segundo por página com zonas (um livro com 100 páginas marcadas levaria quase 2 minutos). <b>Mexe na tela</b>: o programa precisa mostrar que está convertendo.`,
+     p:"Como converter?",
+     op:["(a) Uma página por vez, quando ela aparece (como está)", "(b) O livro inteiro, por trás, ao abrir"]},
+    {c:"Z2", t:"Segunda cópia das zonas para o programa antigo", tipo:"escolha", i:[],
+     o:`O projeto gravado agora leva <b>duas cópias</b> das zonas: a nova e uma no formato antigo. A antiga serve para que o programa <b>já instalado</b> (no seu PC e no notebook do Kaique) não perca as zonas feitas à mão se abrir um projeto gravado pelo programa novo. Custo: o arquivo do projeto fica com <b>o dobro do tamanho</b> e gravar leva <b>o dobro do tempo</b>.`,
+     p:"Manter a segunda cópia?",
+     op:["(a) Manter (o programa antigo continua vendo as zonas; arquivo maior e gravação mais lenta)", "(b) Tirar (mais rápido; mas antes de usar projetos novos, é preciso atualizar o programa no seu PC e no notebook do Kaique)"]},
+    {c:"V", t:"Gravar e abrir o projeto ficou mais lento", tipo:"escolha", i:[],
+     o:`A regra 6 do plano diz que <b>nenhuma mudança pode deixar o programa mais lento</b>. Esta deixa: <b>gravar e abrir o projeto leva mais ou menos o dobro do tempo</b>. Num livro pequeno não se nota; num livro de 300 páginas com zonas em todas, <b>cada gravação automática leva uns 0,3 segundo a mais</b>.`,
+     a:`Medido num livro de 50 páginas com 700 zonas: gravar passou de 0,045 a 0,065 segundo para uns 0,115 segundo; abrir, de 0,025 a 0,035 para uns 0,08 segundo; o arquivo do projeto passou de 945 KB para 1891 KB. A segunda cópia da pergunta Z2 é o que dobra o tamanho do arquivo; tirá-la deixa a gravação mais rápida.`,
+     p:"Aceita esse custo?",
+     op:["Aceito", "Quero mais rápido antes de juntar ao programa principal"]},
+    {c:"C1", t:"Aviso \"conferir\" quando as duas contas de endireitar discordam", tipo:"escolha", i:[],
+     o:`Ideia de quem fez o teste: o programa faz as <b>duas</b> contas de endireitar (a nossa e a do ScanTailor) e, quando elas discordarem mais de 0,3 grau, marca a página como <b>"conferir"</b>. Nas 32 páginas de teste, isso marcaria 5: as 4 em que um dos dois erra (Horas 11, 47, 27 e Palatino 57) e a Opus Majus 20, que não deu para decidir. As 2 quase empatadas (Horas 14 e Siebmacher 9) ficariam de fora, sem prejuízo.`,
+     a:`É o mesmo que a opção (b) do G4. Se você escolheu (a) ou (c) no G4, esta pergunta é se quer o aviso mesmo assim. Custo: fazer as duas contas leva mais tempo por página; quanto, ainda não foi medido (regra 6).`,
+     p:"Quer o aviso?",
+     op:["Sim", "Não", "Depois"]},
+   ]},
+];
+const CHAVE = "conferir-2026-10-05-i";
+let estado = {};
+try { estado = JSON.parse(localStorage.getItem(CHAVE) || "{}"); } catch(e) { estado = {}; }
+function guardar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} contar(); }
+
+const ROTULO = { bom:"CONCORDO", ruim:"NÃO CONCORDO" };
+const conteudo = document.getElementById("conteudo");
+const todos = [];
+
+function resposta(k){ // texto da resposta de um cartao, ou "" se nao respondeu
+  const e = estado[k.c] || {};
+  if ((k.tipo||"voto") === "voto") return e.voto ? ROTULO[e.voto] : "";
+  if (k.tipo === "escolha") return e.escolha !== undefined ? k.op[e.escolha] : "";
+  return e.entendi ? "entendi" : "";
+}
+
+SECOES.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.titulo; conteudo.appendChild(h);
+  if (sec.sub) { const p = document.createElement("p"); p.className="sub"; p.textContent = sec.sub; conteudo.appendChild(p); }
+  sec.cartoes.forEach(k => {
+    const tipo = k.tipo || "voto";
+    todos.push(k);
+    const c = document.createElement("div"); c.className = "cartao"; c.id = "c-"+k.c;
+    let botoes;
+    if (tipo === "voto") botoes = `<div class="pergunta">Você concorda com o que eu vi?</div><div class="botoes"><button class="b-bom">Concordo</button><button class="b-ruim">Não concordo</button></div>`;
+    else if (tipo === "escolha") botoes = `<div class="pergunta">${k.p}</div><div class="opcoes">${k.op.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>`;
+    else botoes = `<div class="botoes"><button class="b-entendi">Entendi</button></div>`;
+    c.innerHTML = `<h3>${k.c} · ${k.t}</h3>` +
+      (k.o ? `<p class="olhar"><b>${tipo === "voto" ? "O que olhar:" : (tipo === "escolha" ? "O que é:" : "O que houve:")}</b> ${k.o}</p>` : "") +
+      (k.a ? `<p class="atencao">${k.a}</p>` : "") +
+      (k.i||[]).map(src => `<img loading="lazy" src="${P+src}" alt="${k.t}">`).join("") +
+      (k.s ? `<p class="significa">${k.s}</p>` : "") +
+      botoes + `<textarea placeholder="Comentário (opcional)"></textarea>`;
+    conteudo.appendChild(c);
+    const ta = c.querySelector("textarea"); ta.value = (estado[k.c]||{}).nota || "";
+    function pintar(){
+      const e = estado[k.c] || {};
+      c.classList.remove("bom","ruim","naosei","feito");
+      if (tipo === "voto") {
+        if (e.voto) c.classList.add(e.voto);
+        c.querySelectorAll(".botoes button").forEach(b => b.classList.toggle("ativo", b.classList.contains("b-"+e.voto)));
+      } else if (tipo === "escolha") {
+        if (e.escolha !== undefined) c.classList.add("feito");
+        c.querySelectorAll(".opcoes button").forEach(b => b.classList.toggle("ativo", String(e.escolha) === b.dataset.i));
+      } else {
+        if (e.entendi) c.classList.add("feito");
+        c.querySelector(".b-entendi").classList.toggle("ativo", !!e.entendi);
+      }
+    }
+    if (tipo === "voto") c.querySelectorAll(".botoes button").forEach(b => b.onclick = () => {
+      const v = b.className.match(/b-(\w+)/)[1];
+      estado[k.c] = Object.assign({}, estado[k.c], {voto: (estado[k.c]||{}).voto === v ? undefined : v});
+      pintar(); guardar(); });
+    else if (tipo === "escolha") c.querySelectorAll(".opcoes button").forEach(b => b.onclick = () => {
+      const i = Number(b.dataset.i);
+      estado[k.c] = Object.assign({}, estado[k.c], {escolha: (estado[k.c]||{}).escolha === i ? undefined : i});
+      pintar(); guardar(); });
+    else c.querySelector(".b-entendi").onclick = () => {
+      estado[k.c] = Object.assign({}, estado[k.c], {entendi: !(estado[k.c]||{}).entendi});
+      pintar(); guardar(); };
+    ta.oninput = () => { estado[k.c] = Object.assign({}, estado[k.c], {nota: ta.value}); guardar(); };
+    c.querySelectorAll("img").forEach(im => {
+      im.onclick = () => { const z = document.getElementById("zoom"); z.querySelector("img").src = im.src; z.style.display = "block"; z.scrollTop = 0; };
+      im.onerror = () => { im.replaceWith(Object.assign(document.createElement("p"), {textContent:"(imagem não encontrada: " + im.getAttribute("src") + ")"})); };
+    });
+    pintar();
+  });
+});
+
+function contar(){
+  const precisam = todos.filter(k => (k.tipo||"voto") !== "entendi");
+  const feitos = precisam.filter(k => resposta(k)).length;
+  document.getElementById("contagem").textContent = `${feitos} de ${precisam.length} respondidos`;
+}
+contar();
+
+function copiar(){
+  const linhas = ["Conferência 9 de 05/10 (Editor de Impressão):"];
+  todos.forEach(k => {
+    const r = resposta(k), nota = ((estado[k.c]||{}).nota || "").trim();
+    if (!r && !nota) return;
+    linhas.push(`${k.c} ${k.t}: ${r || "sem marca"}${nota ? " - " + nota : ""}`);
+  });
+  const faltam = todos.filter(k => (k.tipo||"voto") !== "entendi" && !resposta(k)).map(k => k.c);
+  if (faltam.length) linhas.push(`(não respondidos: ${faltam.join(", ")})`);
+  const texto = linhas.join("\n");
+  const ta = document.getElementById("textoSaida"); ta.value = texto;
+  document.getElementById("saida").style.display = "block"; ta.select();
+  try { navigator.clipboard.writeText(texto).catch(() => document.execCommand("copy")); } catch(e) { try { document.execCommand("copy"); } catch(_) {} }
+}
+</script>
+</body>
+</html>
