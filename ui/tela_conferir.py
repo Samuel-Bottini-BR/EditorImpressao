@@ -1268,6 +1268,10 @@ class TelaConferir(QWidget):
         self.escolhas_misto.fora_do_texto_escolhido.connect(self._mudar_fora_do_texto)
         self.escolhas_misto.papel_escolhido.connect(self._mudar_papel_da_gravura)
         self.escolhas_misto.letras_escolhidas.connect(self._mudar_letras_na_moldura)
+        # o "Mais opcoes" abre e fecha sem passar pelo projeto: a barra de
+        # botoes e medida de novo (_medir_de_novo_a_barra)
+        self.escolhas_misto.botao_mais.toggled.connect(
+            lambda _aberto: self._medir_de_novo_a_barra())
         dentro.addWidget(self.escolhas_misto)
 
         fora.addWidget(self.bloco_ajuste)
@@ -2288,6 +2292,7 @@ class TelaConferir(QWidget):
         # Original não tem o que ajustar: o bloco inteiro some.
         self.bloco_ajuste.setVisible(campo is not None)
         if campo is None:
+            self._medir_de_novo_a_barra()
             return
 
         rotulo, esquerda, direita = ROTULOS_DO_AJUSTE[pagina.filtro]
@@ -2314,6 +2319,26 @@ class TelaConferir(QWidget):
             self.caixa_despeckle.blockSignals(True)
             self.caixa_despeckle.setChecked(pagina.despeckle)
             self.caixa_despeckle.blockSignals(False)
+        self._medir_de_novo_a_barra()
+
+    def _medir_de_novo_a_barra(self) -> None:
+        """Mede de novo a barra de botões se a altura que a aba da frente
+        pede mudou (o bloco AJUSTE apareceu ou sumiu, o "Só as letras" abriu
+        ou fechou os três botões, o "Mais opções").
+
+        Conserto de 05/10/2026 (ressalva 1 do verificador do Misto, prints
+        10, 11 e 17; antigo, também no ace15b2): a barra tem a altura FIXA
+        medida na troca de aba (_encolher_a_barra_de_botoes). Numa página
+        Original, escolher o cartão "Preto e branco" fazia o bloco AJUSTE
+        aparecer DEPOIS, espremido numa faixa vazia (com os botões do Misto
+        escondidos e os "Aplicar em" sem texto) até trocar de aba. O mesmo
+        conserto do 50b9319 na aba Marcar. Barato: só mede quando muda.
+        Arriscado: medir sempre pelo maior (o buraco da aba alta volta)."""
+        atual = self.barra_botoes.currentWidget()
+        if atual is None:
+            return
+        if self.barra_botoes.maximumHeight() != max(0, atual.sizeHint().height()):
+            self._encolher_a_barra_de_botoes()
 
     @protegido
     def _medidor_pegou(self) -> None:

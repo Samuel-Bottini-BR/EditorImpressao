@@ -419,3 +419,81 @@ def test_cartao_pb_do_misto_chega_de_uma_tarefa_de_fundo(conferir_original):
 
     assert np.array_equal(postas[-1], limitar_altura(esperado, 260))
     assert projeto.paginas[0].filtro == ORIGINAL, "o cartao nao pode mudar a pagina"
+
+
+# --- 3. o bloco AJUSTE nao fica espremido ---------------------------------------
+#
+# Ressalva 1 do verificador (05/10, prints 10, 11 e 17; antigo, tambem no
+# ace15b2): na aba Filtro de uma pagina Original, escolher o cartao "Preto e
+# branco" fazia o bloco AJUSTE (com o "So as letras" e os tres botoes) virar
+# uma faixa vazia e os botoes "Aplicar em" ficarem sem texto, ate trocar de
+# aba. A barra de botoes tem a altura FIXA medida na troca de aba
+# (_encolher_a_barra_de_botoes); o bloco aparece depois. O mesmo conserto do
+# 50b9319 (aba Marcar): medir de novo quando os controles mudam.
+
+def _nada_espremido(tela):
+    from PySide6.QtWidgets import QPushButton
+
+    from ui.tela_conferir import ABA_FILTRO
+
+    painel = tela.linhas_de_botoes[ABA_FILTRO]
+    assert tela.barra_botoes.height() >= painel.sizeHint().height(), \
+        f"barra {tela.barra_botoes.height()} < {painel.sizeHint().height()}"
+    botoes = [b for b in painel.findChildren(QPushButton) if b.isVisible()]
+    assert botoes
+    for botao in botoes:
+        assert botao.height() >= botao.sizeHint().height(), \
+            f"{botao.text()!r}: {botao.height()} de altura, precisa de {botao.sizeHint().height()}"
+
+
+@pytest.mark.parametrize("tamanho", [(1280, 657), (1920, 1040)])
+@pytest.mark.parametrize("so_as_letras", [False, True])
+def test_escolher_preto_e_branco_numa_pagina_original_nao_espreme(
+        conferir_original, tamanho, so_as_letras):
+    from PySide6.QtWidgets import QApplication
+
+    tela = conferir_original
+    tela.projeto.misto_so_as_letras = so_as_letras
+    tela.resize(*tamanho)
+    tela.show()
+    QApplication.processEvents()
+    assert tela.bloco_ajuste.isHidden(), "no Original o bloco AJUSTE some"
+    altura_sem = tela.barra_botoes.height()
+
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    for _ in range(3):
+        QApplication.processEvents()
+    assert not tela.bloco_ajuste.isHidden()
+    assert tela.barra_botoes.height() > altura_sem, "a barra nao cresceu com o bloco"
+    _nada_espremido(tela)
+    if so_as_letras:
+        e = tela.escolhas_misto
+        assert e.caixa.isChecked() and e.botoes[misto.FORA_REDE].isVisible()
+
+    # e ao voltar para o Original, a barra encolhe de novo (a pagina ganha a
+    # altura de volta)
+    tela._escolher_filtro(ORIGINAL)
+    QApplication.processEvents()
+    assert tela.barra_botoes.height() < altura_sem + 1
+    tela.hide()
+
+
+def test_ligar_so_as_letras_na_pagina_nao_espreme(conferir_original):
+    """Os tres botoes aparecem ao marcar "So as letras": a barra cresce."""
+    from PySide6.QtWidgets import QApplication
+
+    tela = conferir_original
+    tela.projeto.paginas[0].filtro = PRETO_E_BRANCO
+    tela.resize(1280, 657)
+    tela.show()
+    tela.atualizar()
+    QApplication.processEvents()
+    tela.escolhas_misto.caixa.setChecked(True)
+    for _ in range(3):
+        QApplication.processEvents()
+    _nada_espremido(tela)
+    tela.escolhas_misto.botao_mais.click()
+    for _ in range(3):
+        QApplication.processEvents()
+    _nada_espremido(tela)
+    tela.hide()
