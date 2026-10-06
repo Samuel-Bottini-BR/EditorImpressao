@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consertos de 05/10 (2): pedaço em Original, o (2) e o ajuste do pedaço</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Consertos de 05/10 (2): página em Original com "só neste pedaço", o "(2)" que virava erro, e o aviso e o botão do pedaço na aba Marcar</h1>
+<p>Ramo <code>pedaco-e-salvo-2-2026-10-05</code> (criado do <code>fase-1</code> em <code>19c1ba7</code>). Três itens, um commit cada. O implementador não junta nada ao <code>fase-1</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Commit</th>
+<th>Tipo de teste</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Página em Original obedece ao "só neste pedaço"</td>
+<td><code>294cb91</code></td>
+<td>máquina + olho (Escola 7)</td>
+</tr>
+<tr>
+<td>2. O "(2)" com o PDF antigo aberto vira "Ficou pronto!"</td>
+<td><code>f058452</code></td>
+<td>máquina + print da tela</td>
+</tr>
+<tr>
+<td>3. Aviso e botão "Ajustar o pedaço à figura" na aba Marcar</td>
+<td><code>30fc7c0</code></td>
+<td>máquina + prints da aba Marcar</td>
+</tr>
+</tbody>
+</table>
+<h2>1. Página em Original obedece ao "só neste pedaço" (commit <code>294cb91</code>)</h2>
+<p><strong>O que estava errado:</strong> numa página em Original, um pedaço marcado na aba Marcar com Preto e branco, Melhorar ou Mágico pro era ignorado, sem aviso. A página saía toda como veio.</p>
+<p><strong>O que mudou (Samuel, conferência 13: "Sim, do mesmo jeito"):</strong> do mesmo jeito do conserto do Preto e branco (<code>60d8c58</code>). O pedaço obedece inteiro ao filtro escolhido para ele, inclusive o papel pego junto, com a borda que foi desenhada. O resto da página fica Original, ponto por ponto. Página em Original sem pedaço: sai exatamente como antes.</p>
+<p><strong>O que não mudou, de propósito:</strong></p>
+<ul>
+<li><strong>"Tirar o fundo":</strong> continua sem obedecer ao pedaço. A gerente ainda está perguntando ao Samuel. Há um comentário no código dizendo isso.</li>
+<li><strong>"Limpar a folha" desligado:</strong> o pedaço continua sem valer. <strong>Não é a mesma causa.</strong> Desligar "Limpar a folha" é a escolha do livro de não passar filtro em página nenhuma. Com ela desligada, a tela de conferir nem monta as abas Marcar e Filtro. O pedaço ficaria invisível, sem como ver nem tirar, e mesmo assim mudaria o PDF. Está explicado em <code>core/pipeline.py::_filtrar</code>. Se o Samuel quiser o contrário, a mudança é ali, e na tela, para o pedaço aparecer.</li>
+</ul>
+<p><strong>O antes e depois (abrir para conferir):</strong> a Escola de Jesus 7 com a página em Original e o bloco de texto de cima marcado com "só neste pedaço: Preto e branco". O livro foi processado de verdade e a página foi lida de volta do PDF.</p>
+<ul>
+<li><code>escola7-pagina.jpg</code>: Original (o pedaço em laranja) | antes (o pedaço é ignorado) | depois (o bloco de texto em preto e branco; o resto, incluindo a pintura, como veio).</li>
+<li><code>escola7-pedaco.jpg</code>: o bloco de texto de perto.</li>
+<li><code>escola7-detalhe1.jpg</code>: o título e as primeiras linhas, perto do tamanho real.</li>
+<li><code>escola7-detalhe2.jpg</code>: a beirada de baixo do pedaço. O preto e branco acaba numa linha reta, e o papel creme do Original começa logo abaixo.</li>
+</ul>
+<p>Números (<code>medidas.json</code>): antes, a página saía igual ao Original em todos os pontos. Depois, dentro do pedaço só há dois tons (preto e branco). Fora do pedaço há 0 pontos diferentes do Original. Processar a página levou 1,9 e 1,9 s antes, e 1,8 e 2,0 s depois. O PDF dessa página caiu de 6,6 para 5,3 MB, porque o branco comprime melhor que o papel creme.</p>
+<p><strong>Prova de que as páginas sem pedaço não mudaram:</strong> as 32 páginas do gabarito em Original, Preto e branco, Melhorar e Mágico pro, pelo mesmo caminho do botão "Confirmar e processar", comparadas ponto a ponto com uma cópia inteira do <code>19c1ba7</code>: <strong>128 de 128 imagens idênticas</strong> (32 em cada filtro). O tempo de processar as 32 páginas ficou dentro do ruído: Original 145,2 → 151,0 s, Preto e branco 142,6 → 134,5 s, Melhorar 246,9 → 227,5 s, Mágico pro 260,5 → 230,2 s. O caminho dessas páginas é o mesmo de antes (<code>comparacao-32-paginas.json</code>).</p>
+<h2>2. PDF antigo aberto em outro programa: o "(2)" passa a ser "Ficou pronto!" (commit <code>f058452</code>)</h2>
+<p><strong>O que estava errado (achado do verificador):</strong> com "substituir o antigo" e o PDF antigo aberto no leitor de PDF, o programa gravava o novo como "nome (2).pdf", o que estava certo. Mas a tela tratava o caso como erro. Aparecia a caixa "Um momento", e a tela voltava para Conferir em vez de "Ficou pronto!". O cartão não virava "PDF gerado", o destino guardado continuava com o nome antigo e o <code>erros.log</code> ganhava o rastro técnico.</p>
+<p><strong>O que mudou (exceção da gerente para mexer em <code>ui/</code>):</strong> o caso agora conta como sucesso.</p>
+<ul>
+<li>Aparece a tela "Ficou pronto!", com o nome "(2)". Embaixo de "Salvo em" vem uma frase: <em>"O arquivo antigo, "X.pdf", estava aberto em outro programa (o leitor de PDF, por exemplo) e não pôde ser substituído. Ele ficou como estava, e o PDF novo foi salvo ao lado dele com o nome acima."</em> "Abrir a pasta" e "imprimir agora" usam o "(2)".</li>
+<li>Nenhuma caixa de erro aparece. O cartão vira "PDF gerado", e o destino guardado, no projeto e no cartão, passa a ser o "(2)".</li>
+<li>Nada vai para o <code>erros.log</code>.</li>
+<li>Sem o antigo preso, a tela fica como sempre, sem frase nenhuma. A frase de um livro anterior também não sobra.</li>
+</ul>
+<p>Prints (tela sozinha, sem janela à vista, 1280 × 657): <code>pronto-com-2.png</code> (com a frase) e <code>pronto-normal.png</code> (como sempre).</p>
+<h2>3. Aba Marcar: aviso de papel em volta do pedaço e o botão "Ajustar o pedaço à figura" (commit <code>30fc7c0</code>)</h2>
+<p><strong>O pedido (Samuel, conferência 13):</strong> "(b) e (c) juntas - Mas caso ele não queira mudar, fica do jeito que está."</p>
+<p><strong>O que aparece na tela:</strong> só numa página que tem um pedaço em retângulo com "só neste pedaço" num filtro diferente do da página, surge uma linha nova na aba Marcar, embaixo de "Foto:":</p>
+<p><code>Pedaço:  [ícone] Ajustar o pedaço à figura   Sobrou papel em volta da figura (17% do pedaço): pode sair uma faixa.</code></p>
+<ul>
+<li><strong>(c) O botão</strong> encolhe o retângulo até a figura. Ele só encolhe: nunca cresce, nunca anda, e não mexe em tipo, filtro nem no resto da marcação. O ajuste entra no Histórico ("Página N: pedaço ajustado à figura"), e o Desfazer devolve o retângulo de antes. O ícone é desenhado (um retângulo tracejado com um menor cheio dentro e quatro setinhas para dentro), sem emoji. A dica do mouse explica o que o botão faz e que dá para desfazer.</li>
+<li><strong>(b) O aviso</strong> é uma frase discreta, em cinza, que aparece só quando sobra muito papel. A dica do mouse traz a explicação inteira e diz que, se o Kaique não quiser mudar, pode deixar como está. Com o pedaço já justo, a frase é "O pedaço já está justo na figura." e o botão fica apagado.</li>
+<li>Nada muda sozinho. O cálculo fica em <code>core/ajustar_pedaco.py</code>, sem nenhum <code>import</code> de <code>ui/</code>.</li>
+</ul>
+<p><strong>Como o programa acha "a figura", em palavras simples:</strong> a cor do papel é tirada das partes claras da página fora do retângulo. Dentro dele, o que tem cor bem diferente do papel é tinta. Pontinhos soltos de sujeira são ignorados. A tinta que está perto uma da outra forma um grupo, e a figura é o maior grupo. Legenda e linha de texto soltas, bem menores, ficam de fora. A conta é feita na página <strong>sem filtro</strong>, reduzida a 1000 pontos no lado maior, e leva uns 0,05 s.</p>
+<p><strong>O "muito", calibrado na Escola 7 e na Opus 20 (<code>calibracao.json</code>, <code>cal-*.jpg</code>):</strong> a medida é a parte do retângulo que é papel em volta da figura. O aviso aparece a partir de <strong>5%</strong>, que numa figura do tamanho da da Escola 7 é uma faixa de uns 2 mm em volta toda.</p>
+<table>
+<thead>
+<tr>
+<th>Página e retângulo</th>
+<th>Papel em volta</th>
+<th>Avisa?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Escola 7, retângulo da conferência 13</td>
+<td>2,2% (faixa de ~1,5 mm em cima e à esquerda)</td>
+<td>não, mas o botão tira a faixa</td>
+</tr>
+<tr>
+<td>Escola 7, o do verificador</td>
+<td>2,1%</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Escola 7, folga larga (pega a linha de texto de cima e a legenda)</td>
+<td>17,8%</td>
+<td>sim; o ajuste fica justo na pintura, sem o texto nem a legenda</td>
+</tr>
+<tr>
+<td>Escola 7, retângulo por dentro da pintura</td>
+<td>0%</td>
+<td>não; nada a ajustar</td>
+</tr>
+<tr>
+<td>Opus 20, retângulo da conferência 13</td>
+<td>0,6%</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Opus 20, retângulo da página quase inteira</td>
+<td>1,2% na prévia, 8,1% no PDF</td>
+<td>ver ressalva</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Prints da aba Marcar</strong> (a tela de conferir de verdade com a Escola 7 em Preto e branco e a pintura em "só neste pedaço: Original", com folga larga; sem janela à vista, 1280 × 760):</p>
+<ul>
+<li><code>marcar-1-aviso.png</code>: a linha "Pedaço:" com o aviso de 17%. O retângulo marcado pega o papel e o texto em volta da pintura.</li>
+<li><code>marcar-2-ajustado.png</code>: depois de clicar. O retângulo ficou justo na pintura, a faixa sumiu da prévia e a frase diz "O pedaço já está justo na figura."</li>
+<li><code>marcar-3-desfeito.png</code>: depois do Desfazer. O retângulo voltou como estava.</li>
+</ul>
+<h2>Testes de máquina</h2>
+<ul>
+<li>Novos: <code>tests/test_so_neste_pedaco_no_original.py</code> (16), <code>tests/test_antigo_aberto_vira_pronto.py</code> (5), <code>tests/test_ajustar_pedaco.py</code> (13) e <code>tests/test_ajustar_pedaco_na_aba_marcar.py</code> (4). Os 10 dos itens 1 e 2 que cobram o conserto <strong>falham no <code>19c1ba7</code></strong>; os outros cobram o que não pode mudar.</li>
+<li><code>pytest tests</code> inteiro: <strong>1449 passaram, 7 pularam, 0 falhas</strong> (7 min 32 s). Os 7 que pularam: 6 do Kraken ("motor do Kraken não montado": o motor fica fora do git e não existe nesta cópia) e 1 que só roda com <code>OCR_22=1</code> (roda o Kraken, ~5 min). Nenhum é destes itens.</li>
+<li><code>teste_botoes.py</code>: <strong>132 ações, 0 falhas</strong>. Rodou por um embrulho que troca a pasta de trabalho dele (<code>saida_teste\botoes</code>, que nesta cópia é atalho para a pasta original e que o script apaga e recria) por uma pasta no scratchpad. O código do script não mudou. Ele não clica no botão novo da aba Marcar, porque a linha só aparece com um pedaço com outro filtro. Quem cobre o botão é <code>tests/test_ajustar_pedaco_na_aba_marcar.py</code>.</li>
+</ul>
+<h2>Opinião do implementador</h2>
+<p>Os três fazem o que foi pedido. Na Escola 7 em Original, o bloco de texto sai em preto e branco e a pintura fica como veio. O "(2)" deixa de assustar: o Kaique vê "Ficou pronto!" e lê por que o nome mudou. O botão da aba Marcar acerta a pintura da Escola 7 mesmo com folga larga, deixando de fora o texto e a legenda. O ponto que mais merece a decisão do Samuel é o limiar do aviso. Com 5%, o retângulo da conferência 13 (a faixa fina que ele viu) não avisa, embora o botão a tire. Se ele quiser o aviso também aí, é baixar para 2%, mas então quase todo retângulo desenhado à mão vai avisar. PRONTO PARA CONFERIR, a decidir pelo Samuel.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Nada foi pilotado na janela de verdade com mouse nativo.</strong> Os prints são da tela sozinha (TelaFinal, TelaConferir), sem janela à vista. O "(2)" foi testado com a troca do arquivo simulada (<code>os.replace</code> recusando o antigo) e o processamento de verdade, mas não com um leitor de PDF de verdade segurando o arquivo. Fica para o verificador.</li>
+<li><strong>Item 1, o pedaço em Preto e branco numa página em Original</strong> usa a força do preto guardada na página (50 se ninguém mexeu) e as opções de fábrica do Preto e branco (escolha automática do jeito, "limpar poeirinha" ligado). O pedaço não tem medidor próprio, e no Melhorar e no Mágico pro sempre foi assim também.</li>
+<li><strong>Item 1, faixa branca:</strong> com o pedaço em Preto e branco numa página em Original, o papel de dentro do retângulo sai branco ao lado do creme. É o inverso da faixa creme (<code>escola7-detalhe2.jpg</code>). O botão "Ajustar o pedaço à figura" também vale aí: ele encolhe até o bloco de texto.</li>
+<li><strong>Item 1:</strong> no Preto e branco do pedaço, a pintinha laranja perto de "antes" (linha 2) vira um ponto preto (<code>escola7-detalhe1.jpg</code>). É o próprio Preto e branco, igual ao da página inteira nesse filtro.</li>
+<li><strong>Item 3, o limiar do aviso (5%) é uma decisão a confirmar.</strong> Ele foi calibrado em duas páginas só (Escola 7 e Opus 20). Com 5%, a faixa fina do retângulo da conferência 13 não avisa (o botão a tira).</li>
+<li><strong>Item 3, a conta pode errar para os dois lados</strong>, e por isso só sugere. (a) Um pedaço da figura de verdade que esteja longe do resto (mais de ~1,5 mm) e seja pequeno (menos de 1/4 do maior) fica de fora do retângulo. O Kaique vê na hora e desfaz. (b) Uma mancha grande colada na figura, ou a borda escura da página encostando na figura e na legenda, segura o ajuste e ele encolhe menos. Foi o caso da Opus 20 com o retângulo pegando a página quase inteira: na prévia a legenda ficou dentro (1,2%, sem aviso); a 300 DPI ela saiu (8,1%). A aba Marcar faz a conta na página reduzida a 1000 pontos.</li>
+<li><strong>Item 3, só retângulos:</strong> pedaço feito com oval, laço, polígono ou pincel não ganha aviso nem botão. Ajustar mudaria a forma escolhida.</li>
+<li><strong>Item 3, céu muito claro:</strong> uma figura com a beira quase da cor do papel (céu desbotado sem moldura) pode perder essa beira no ajuste. Na Escola 7 isso não aconteceu.</li>
+<li><strong>Item 3, altura da aba Marcar:</strong> quando aparece, a linha "Pedaço:" ocupa mais uma linha numa aba que já é apertada. No print de 760 de altura, os textos dos botões já aparecem um pouco cortados, inclusive os que já existiam.</li>
+<li><strong>Item 3, desfazer:</strong> o ajuste entra no Histórico, mas desenhar o retângulo continua fora dele (antigo, achado do verificador). Desfazer depois do ajuste devolve o retângulo de antes do ajuste. Um segundo Desfazer não apaga o retângulo desenhado: ele desfaz a ação registrada anterior.</li>
+<li><strong>Velocidade:</strong> o teste oficial (<code>teste_velocidade.py</code>) não foi rodado. A indicação está nas 32 páginas acima, iguais e sem lentidão. Na aba Marcar, a conta custa ~0,05 s por mudança na marcação, e só em página com pedaço de outro filtro.</li>
+<li><strong>Pasta <code>saida_teste</code> (atalho para a original):</strong> o <code>pytest</code> grava ali pastas próprias de cada rodada (com data e número) e as apaga no fim, como sempre fez. Ele não apaga nada que não tenha criado. O <code>teste_botoes.py</code> foi desviado para o scratchpad (ver acima).</li>
+<li>As imagens do antes e depois do item 1 foram geradas com o filtro do <code>19c1ba7</code> posto no lugar do de hoje, dentro do programa de hoje. A prova das 32 páginas, essa sim, usou uma cópia inteira do <code>19c1ba7</code>.</li>
+</ul>
+<h2>Bugs para a Lista de bugs (05/10/2026)</h2>
+<ul>
+<li>Nenhum novo de verdade. Lembrete do que se viu: os textos dos botões da aba Marcar aparecem cortados em altura com a janela baixa (print <code>marcar-1-aviso.png</code>, 1280 × 760, nas linhas "Marcação:" e "Foto:", que já existiam).</li>
+</ul>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>Pôr o "desenhar um pedaço" no Histórico, para o Desfazer valer igual para tudo na aba Marcar.</li>
+<li>Aviso e botão também para pedaço feito com laço ou polígono (ajustar sem mudar a forma, só cortando o papel da beira).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 17:16</p>
+</body>
+</html>

@@ -1274,9 +1274,24 @@ class JanelaPrincipal(QMainWindow):
 
     def _processamento_pronto(self, caminho: str) -> None:
         """PDF gravado: registra no histórico e mostra a tela Pronto com o
-        número certo de páginas DO LIVRO (ver comentário abaixo sobre cadernos)."""
+        número certo de páginas DO LIVRO (ver comentário abaixo sobre cadernos).
+
+        PDF antigo aberto em outro programa (conserto de 05/10/2026, achado do
+        verificador): o PDF novo foi gravado como "nome (2).pdf" e chega aqui
+        como sucesso, com `caminho` = o "(2)" e o nome do antigo em
+        TarefaProcessar.antigo_preso. O destino guardado passa a ser o "(2)"
+        (projeto.caminho_saida, e o resumo do cartao por _anotar_pdf_gerado),
+        e a tela "Ficou pronto!" ganha uma frase explicando. Nenhuma caixa de
+        aviso e nada no erros.log. Arriscado: guardar o destino depois do
+        historico.registrar/_salvar_agora (gravariam o nome antigo).
+        """
         assert self.projeto is not None
         self._avisar_da_gravura()      # item 1.2
+        antigo_preso = getattr(self.tarefa, "antigo_preso", "") or ""
+        if not isinstance(antigo_preso, str):
+            antigo_preso = ""
+        if antigo_preso:
+            self.projeto.caminho_saida = str(caminho)
         try:
             import fitz
 
@@ -1297,7 +1312,8 @@ class JanelaPrincipal(QMainWindow):
         self._salvar_agora()          # na pasta do projeto, nao pelo nome (ver processar)
         self.tela_inicio.recarregar()
 
-        self.tela_final.mostrar(self.projeto, caminho, paginas, folhas_de_saida)
+        self.tela_final.mostrar(self.projeto, caminho, paginas, folhas_de_saida,
+                                antigo_preso=antigo_preso)
         self.telas.setCurrentIndex(FINAL)
 
     def _anotar_pdf_gerado(self, caminho: str) -> None:

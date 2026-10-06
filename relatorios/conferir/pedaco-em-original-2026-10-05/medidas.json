@@ -1,0 +1,27 @@
+{
+ "escola_p007": {
+  "pedaco": [
+   0.005,
+   0.07,
+   0.995,
+   0.365
+  ],
+  "processar_s": {
+   "antes": [
+    1.91,
+    1.91
+   ],
+   "depois": [
+    1.81,
+    2.03
+   ]
+  },
+  "tamanho_do_pdf_bytes": {
+   "antes": 6647090,
+   "depois": 5251277
+  },
+  "antes_igual_ao_original_em_tudo": true,
+  "depois_dentro_do_pedaco_cores_distintas": 2,
+  "depois_fora_do_pedaco_pontos_diferentes_do_original": 0
+ }
+}

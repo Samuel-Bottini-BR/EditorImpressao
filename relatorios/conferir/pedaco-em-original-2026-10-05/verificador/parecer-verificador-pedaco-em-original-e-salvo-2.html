@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador: página em Original com &quot;só neste pedaço&quot;, o &quot;(2)&quot; e o &quot;Ajustar o pedaço à figura&quot; (05/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: página em Original com "só neste pedaço", o "(2)" e o "Ajustar o pedaço à figura" (05/10/2026)</h1>
+<p><strong>Em uma frase:</strong> os itens 1 e 2 funcionam na janela de verdade e estão <strong>PRONTOS PARA CONFERIR</strong>. O item 3 <strong>NÃO ESTÁ PRONTO</strong>, por dois defeitos. Primeiro: quando a linha nova "Pedaço:" aparece, ela <strong>espreme as linhas de botões da aba Marcar, em qualquer tamanho de janela</strong>, e o texto de todos os botões fica cortado ao meio, inclusive o do botão novo. Segundo: num <strong>pedaço de texto</strong> (justamente o caso do item 1), o aviso diz "47%" e o botão <strong>corta o título, a primeira pergunta, a última linha e metade de palavras nas beiradas</strong>. Na pintura da Escola 7, o aviso e o botão fazem o que prometem.</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> moldura dourada e iluminura continuam sendo defeito conhecido até a Fase 1 ficar pronta (itens 1.2, 1.4 e 1.5). Nada disto mexe nelas.</p>
+</blockquote>
+<p>Ramo <code>pedaco-e-salvo-2-2026-10-05</code> (worktree <code>consertos3</code>, último commit <code>17d705b</code>), comparado com <code>19c1ba7</code>. Eu não mudei código nenhum.</p>
+<h2>Como conferi</h2>
+<ul>
+<li><strong>Máquina:</strong> <code>pytest</code> inteiro na worktree e <code>teste_botoes.py</code> numa cópia do <code>17d705b</code> (ver abaixo). Comparação ponto a ponto dos PDFs gerados na janela com o mesmo projeto processado pelo <code>19c1ba7</code>. Uma conferência própria de 6 páginas × 4 filtros contra o <code>19c1ba7</code>.</li>
+<li><strong>Olho, na janela real:</strong> uma instância minha do programa, com o código da worktree, <strong>fora da tela</strong>, com <strong>1600 × 821 pixels</strong> (1280 × 657 pontos, o notebook do Kaique a 150%). Cliques, arrastos e teclas foram mensagens nativas do Windows, sem mexer no mouse nem no teclado do Samuel. As caixas "abrir PDF" e "escolher pasta" foram respondidas por arquivo. A pasta de dados foi minha (<code>LOCALAPPDATA</code> e a pasta do usuário trocadas), nunca a real. Os scripts do piloto vieram dos pareceres anteriores (só lidos lá) e estão em <code>scripts/</code>.</li>
+<li><strong>Livro de teste:</strong> <code>livro-teste.pdf</code>, com 3 folhas copiadas do gabarito (Escola de Jesus 7, Boécio 3, Palatino 5), "Dividir folhas ao meio" desligado. Para o "(2)" num livro novo, um segundo livro, <code>livro-dois.pdf</code> (Boécio 3).</li>
+<li>No fim, fechei a minha janela com WM_CLOSE (fechou). O <code>erros.log</code> da pasta de dados de teste <strong>nunca chegou a existir</strong>.</li>
+<li><strong>O PC estava muito carregado:</strong> outros agentes rodavam ao mesmo tempo (um <code>triagem.py</code> com 7 processos e mais dois <code>pytest</code>). A memória virtual livre chegou a 0,4 GB de 41 GB, e a primeira tentativa de abrir a janela falhou por "arquivo de paginação muito pequeno". Isso explica as falhas do <code>pytest</code> (abaixo) e torna os tempos medidos pouco confiáveis.</li>
+</ul>
+<h2>Testes de máquina</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pytest tests</code> inteiro (65 min, PC carregado)</td>
+<td><strong>1442 passaram, 7 falharam, 1 erro, 7 pularam</strong></td>
+</tr>
+<tr>
+<td>As 7 falhas e o erro, rodados de novo sozinhos (<code>test_cartoes_e_previas</code>, <code>test_paginas_em_outro_processo</code>, <code>test_sem_janela_na_tela</code>, <code>test_teste_velocidade::test_enter_guardado_some_de_verdade</code>)</td>
+<td><strong>22 de 22 passaram</strong> (21 s). Eram tempo esgotado e servidor de páginas que caiu por falta de memória. Nenhum é destes itens</td>
+</tr>
+<tr>
+<td>Os 4 arquivos de teste novos (<code>test_so_neste_pedaco_no_original</code>, <code>test_antigo_aberto_vira_pronto</code>, <code>test_ajustar_pedaco</code>, <code>test_ajustar_pedaco_na_aba_marcar</code>)</td>
+<td><strong>38 de 38 passaram</strong></td>
+</tr>
+<tr>
+<td>Os 7 que pularam</td>
+<td>6 do Kraken ("motor do Kraken não montado": o motor fica fora do git) e 1 que só roda com <code>OCR_22=1</code>. Iguais aos do implementador</td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code></td>
+<td><strong>132 ações, 0 falhas.</strong> Rodei numa cópia do <code>17d705b</code> (<code>git archive</code>) na minha pasta temporária, com a pasta <code>saida_teste</code> própria e <code>modelos</code> só lido. O <code>saida_teste\botoes</code> de verdade não foi tocado (última mudança 16:25, antes desta conferência)</td>
+</tr>
+<tr>
+<td>6 páginas × 4 filtros, <code>19c1ba7</code> × <code>17d705b</code>, pelo caminho do "Confirmar e processar"</td>
+<td><strong>24 de 24 idênticas, ponto a ponto</strong> (ver item 4)</td>
+</tr>
+</tbody>
+</table>
+<h2>1. Página em Original com um pedaço em Preto e branco: <strong>funciona</strong> (olho, na janela, e máquina)</h2>
+<p>Na aba Marcar, página 1 (Escola 7) <strong>em Original</strong>, cliquei "só neste pedaço: Preto e branco" e desenhei, com o mouse nativo, um retângulo em volta do <strong>bloco de texto de cima</strong>, do título até "E Deus disse: Faça-se tudo" (de 0,018 × 0,011 a 0,994 × 0,372 da página).</p>
+<ul>
+<li><strong>Prévia</strong> (aba Filtro, cartão "Original"): o bloco de texto aparece em preto e branco, sobre papel branco, e o resto da página fica creme, como veio.</li>
+</ul>
+<p><img alt="O cartão Original na aba Filtro, ampliado" src="prints/07b-cartao-original-zoom.jpg" /></p>
+<ul>
+<li><strong>PDF gerado na janela</strong>, comparado com o mesmo projeto processado pelo <code>19c1ba7</code>, que ignora o pedaço e por isso dá o Original puro:</li>
+<li><strong>dentro do retângulo: só 2 tons</strong> (preto e branco puros);</li>
+<li><strong>fora do retângulo: 0 pontos diferentes do Original</strong> (deixei de fora uma faixa de 3 pontos na beira, por causa do meu arredondamento da posição do retângulo);</li>
+<li><strong>páginas 2 e 3: idênticas</strong> ao <code>19c1ba7</code>, ponto a ponto;</li>
+<li>a imagem da página 1 caiu de 6,6 para 5,2 MB (o branco comprime melhor que o creme), como o implementador disse.</li>
+</ul>
+<p>À esquerda o Original (<code>19c1ba7</code>), à direita o PDF da janela:</p>
+<p><img alt="Página inteira" src="prints/item1-pagina-antes-x-janela.jpg" /></p>
+<p><img alt="Título: em cima o Original, embaixo o PDF" src="prints/item1-titulo.jpg" /></p>
+<p><img alt="A beirada de baixo do retângulo" src="prints/item1-beirada-baixo.jpg" /></p>
+<p><strong>O que eu vi:</strong> o título, a pergunta e os dois parágrafos saem pretos e nítidos sobre papel branco. A pintura, a coluna da esquerda e a legenda ficam iguais ao Original. Na beirada de baixo, <strong>o meu retângulo passou no meio da linha "Tudo o que vês, tanto"</strong>: a metade de cima dela saiu em preto e branco, e a de baixo creme. Não é defeito do programa: a borda é a que eu desenhei, como o Samuel decidiu ("do mesmo jeito"). Mas mostra que, num texto, um retângulo desenhado à mão corta linha com facilidade.</p>
+<h2>2. PDF antigo aberto em outro programa: o "(2)" agora é "Ficou pronto!" (olho, na janela, e máquina)</h2>
+<p>Fiz duas vezes, com o arquivo antigo seguro de verdade por <strong>outro processo</strong> (um <code>open()</code> do Python, que no Windows impede trocar ou apagar o arquivo, como um leitor de PDF faria; não usei o leitor do Samuel). Antes de clicar, conferi que o arquivo estava mesmo preso ("O arquivo já está sendo usado por outro processo").</p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>O que aconteceu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Livro que já tinha PDF</strong> (<code>livro-teste</code>): "Confirmar e processar" &gt; "Processar" &gt; caixa "Já existe" &gt; <strong>"substituir o antigo"</strong></td>
+<td><strong>"Ficou pronto!"</strong> com o nome <strong>"livro-teste - original (2).pdf"</strong> e a frase <em>"O arquivo antigo, "livro-teste - original.pdf", estava aberto em outro programa (o leitor de PDF, por exemplo) e não pôde ser substituído. Ele ficou como estava, e o PDF novo foi salvo ao lado dele com o nome acima."</em> Nenhuma caixa de erro. O antigo ficou <strong>intacto</strong> (mesmo sha256 <code>66ae5eff…</code>, 17:38:11). O "(2)" tem 3 páginas e as <strong>mesmas imagens</strong> do PDF anterior</td>
+</tr>
+<tr>
+<td><strong>Livro novo</strong> (<code>livro-dois</code>, primeiro PDF dele; um arquivo com o nome padrão já existia e estava preso)</td>
+<td>Igual: "Ficou pronto!", nome "(2)" e a frase. O cartão novo apareceu como <strong>"pronto, PDF gerado"</strong>. Este é o teste que importa para o cartão, porque o <code>livro-teste</code> já estava "PDF gerado" de antes</td>
+</tr>
+<tr>
+<td><strong>Reabrir</strong> o <code>livro-teste</code> pelo cartão &gt; "Confirmar e processar"</td>
+<td>O nome do arquivo veio <strong>"livro-teste - original (2).pdf"</strong>. O destino guardado no <code>projeto.json</code>, no <code>resumo.json</code> e no <code>historico.json</code> também é o "(2)"</td>
+</tr>
+<tr>
+<td><strong>Processar de novo</strong>, sem nada preso (substituindo o "(2)")</td>
+<td>"Ficou pronto!" <strong>sem a frase</strong>: a do livro anterior não sobrou</td>
+</tr>
+<tr>
+<td><code>erros.log</code> da pasta de dados de teste</td>
+<td><strong>Não existe</strong> (nada foi gravado em nenhum momento)</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Ficou pronto! com o &quot;(2)&quot; e a frase" src="prints/11-preso-c-depois.png" /></p>
+<p><img alt="A caixa &quot;Já existe&quot;, antes de clicar &quot;substituir o antigo&quot;" src="prints/11-preso-a-caixa.png" /></p>
+<p><img alt="Livro novo: o &quot;(2)&quot; no primeiro PDF" src="prints/14-preso-livro-novo-c-depois.png" /></p>
+<p><img alt="Os cartões: os dois &quot;pronto, PDF gerado&quot;" src="prints/15-cartoes-livro-novo.png" /></p>
+<p><img alt="Reaberto: o nome guardado é o &quot;(2)&quot;" src="prints/13-confirmar-reaberto.png" /></p>
+<p>A frase é clara e está em português correto. Pequeno, antigo e fora deste item: no livro de uma página, a tela diz "1 páginas" (no "Ficou pronto!" e no cartão).</p>
+<h2>3. Aba Marcar: o aviso e o botão "Ajustar o pedaço à figura"</h2>
+<h3>3a. Na pintura da Escola 7: <strong>funciona</strong> (olho, na janela, e máquina)</h3>
+<p>Página 1 em <strong>Preto e branco</strong>, "só neste pedaço: <strong>Original</strong>", e um retângulo com <strong>bastante folga</strong> em volta da pintura, pegando a linha de texto de cima, a beira da coluna da esquerda e as duas legendas (de 0,344 × 0,345 a 0,994 × 0,966).</p>
+<ul>
+<li><strong>O aviso aparece:</strong> "Sobrou papel em volta da figura (17% do pedaço): pode sair uma faixa." A dica do mouse explica e diz que pode deixar como está.</li>
+<li><strong>"Ajustar o pedaço à figura":</strong> o retângulo foi para <strong>0,380 × 0,383 a 0,994 × 0,931</strong>, justo na pintura, <strong>sem a linha de texto e sem as legendas</strong>. A frase passou a "O pedaço já está justo na figura." e o botão apagou. O Histórico ganhou "Página 1: pedaço aj…".</li>
+<li><strong>Desfazer (Ctrl+Z):</strong> voltou exatamente ao retângulo com folga, e o aviso de 17% voltou. <strong>Refazer (Ctrl+Shift+Z):</strong> voltou ao justo.</li>
+<li><strong>Um retângulo justo desenhado à mão</strong> (0,380 × 0,379 a 0,994 × 0,939): 2,1% de papel, <strong>não avisa</strong>. A linha "Pedaço:" fica com o botão aceso e sem frase nenhuma.</li>
+<li><strong>No PDF</strong> (página em Preto e branco, pintura em Original depois do ajuste): <strong>dentro do retângulo, a pintura é idêntica ao Original ponto a ponto</strong> (0 diferentes em 2.027.592). Em volta dela, o papel sai branco. A faixa creme sumiu; sobra só a margenzinha de propósito (~0,3 mm), quase invisível embaixo da pintura.</li>
+</ul>
+<p><img alt="Antes e depois do ajuste (a área laranja é o pedaço)" src="prints/cmp-pintura-antes-depois-ajuste.jpg" /></p>
+<p><img alt="O PDF: à esquerda o Original, à direita a página em Preto e branco com a pintura ajustada" src="prints/item3-pagina.jpg" /></p>
+<p><img alt="Canto de baixo da pintura no PDF" src="prints/item3-canto-inf-dir.jpg" /></p>
+<p><img alt="Canto de cima da pintura no PDF" src="prints/item3-canto-sup-esq.jpg" /></p>
+<p>Prints da tela: <code>prints/18-marcar-folga-aviso.png</code> (aviso), <code>19-marcar-ajustado.png</code>, <code>20-marcar-desfeito.png</code>, <code>21-marcar-refeito.png</code>, <code>22-marcar-justo-a-mao.png</code>.</p>
+<h3>3b. <strong>Defeito 1: a linha nova espreme os botões da aba Marcar</strong> (olho, na janela)</h3>
+<p>Em 1280 × 657 pontos, <strong>sem</strong> a linha "Pedaço:", os botões de "Marcação:" e "Foto:" aparecem inteiros. <strong>Quando a linha aparece, as três linhas de botões ficam achatadas e o texto de todos eles sai cortado ao meio</strong>: "detectar automaticamente", "usar em todas", "só nas próximas" e o próprio <strong>"Ajustar o pedaço à figura"</strong>, que fica ilegível. O botão novo tem 24 pontos de altura, mas precisa de 39.</p>
+<p><img alt="Em cima: sem a linha nova. Embaixo: com ela (mesma janela de 1280 × 657)" src="prints/cmp-linhas-04-vs-05.png" /></p>
+<p><strong>Não é a janela baixa.</strong> Abri a mesma tela em <strong>1920 × 1040 pixels</strong>: com a linha "Pedaço:" os botões continuam cortados, e a área da página cresce sozinha. Na página 2 (sem pedaço), no mesmo tamanho, os botões ficam inteiros. Então a culpa é da linha nova, que não ganha espaço próprio. O implementador viu o corte no print de 760 de altura e achou que fosse a janela baixa, mas o corte vem da linha.</p>
+<p><img alt="1920 × 1040, com a linha &quot;Pedaço:&quot;: botões cortados" src="prints/23-marcar-aviso-janela-grande.png" /></p>
+<p><img alt="1920 × 1040, página sem pedaço: botões inteiros" src="prints/24-marcar-pag2-janela-grande.png" /></p>
+<h3>3c. <strong>Defeito 2: num pedaço de texto, o aviso exagera e o botão corta o texto</strong> (olho, na janela, e máquina)</h3>
+<p>É o caso do item 1: página em Original, bloco de texto de cima em "só neste pedaço: Preto e branco". O retângulo pegava o bloco inteiro, com pouca folga.</p>
+<ul>
+<li><strong>O aviso:</strong> "Sobrou papel em volta da figura (<strong>47%</strong> do pedaço): pode sair uma faixa." Isso convida o Kaique a clicar.</li>
+<li><strong>Clicando "Ajustar o pedaço à figura"</strong>, o retângulo foi de 0,018 × 0,011 – 0,994 × 0,372 para <strong>0,061 × 0,127 – 0,951 × 0,335</strong>. O programa achou que "a figura" é o maior grupo de tinta, os dois parágrafos, e deixou de fora como se fosse legenda:</li>
+<li>o <strong>título</strong> "PRINCIPAIS VERDADES DA RELIGIÃO CRISTÃ";</li>
+<li>a <strong>primeira pergunta e a resposta</strong> ("1. Quem nos criou? / Foi Deus que nos criou.");</li>
+<li>a <strong>última linha</strong> ("E Deus disse: Faça-se tudo. E tudo foi feito.");</li>
+<li>e <strong>as beiradas das linhas</strong>: o pedaço começa e termina no meio das palavras ("ho|mens", "par|ece", "passarin|hos").</li>
+<li><strong>No PDF</strong> (processei esse projeto ajustado com o código do ramo), sai <strong>meio texto em preto e branco e meio no creme original, com palavras partidas ao meio</strong>:</li>
+</ul>
+<p><img alt="Antes e depois do ajuste no bloco de texto (a área laranja é o pedaço)" src="prints/cmp-texto-antes-depois-ajuste.jpg" /></p>
+<p><img alt="O PDF com o pedaço de texto ajustado: título e beiradas de fora, palavras partidas" src="prints/item3b-texto-ajustado-no-pdf.jpg" /></p>
+<p>O relatório do implementador diz que, na faixa branca do item 1, "o botão também vale aí: ele encolhe até o bloco de texto". Na janela, não foi isso o que aconteceu. Ele corta o texto. Dá para desfazer (testei: Ctrl+Z devolveu o retângulo), mas o aviso de 47% faz o Kaique clicar. O resultado só se percebe olhando de perto.</p>
+<p>Mais duas coisas que vi:</p>
+<ul>
+<li>O botão ajusta <strong>todos</strong> os pedaços com outro filtro da página de uma vez. Não dá para escolher só um. Numa página com um pedaço de texto e outro de pintura, ajustar a pintura estragaria o texto.</li>
+<li>O tipo marcado não importa: o aviso e o botão valem para qualquer retângulo com outro filtro. Desenhei o de texto com "gravura ou foto", que é o padrão, como o Kaique faria.</li>
+</ul>
+<p><strong>O que fazer não é decisão minha.</strong> Ideias para o Samuel escolher: mostrar a linha só para pedaço marcado como "gravura ou foto" e pedir "letra e traço" para texto; ou não sugerir nada quando a tinta forma muitos grupos parecidos (linhas de texto); ou ajustar só o pedaço selecionado.</p>
+<h2>4. As páginas sem pedaço não mudaram (máquina, e olho na folha de contato)</h2>
+<p>Usei o <code>comparacao-32-paginas.json</code> do implementador (128 de 128 idênticas) só como referência. Fiz a minha conferência, menor: <strong>6 páginas-gabarito × 4 filtros</strong> (Escola 7, Opus Majus 20, Horas 11, Palatino 57, Graduale 221, Siebmacher 7), pelo caminho do "Confirmar e processar" (o <code>rodar_32.py</code> do implementador, sem mudança). Uma cópia inteira do <code>19c1ba7</code> contra uma cópia do <code>17d705b</code>, uma de cada vez.</p>
+<table>
+<thead>
+<tr>
+<th>Filtro</th>
+<th>Idênticas</th>
+<th>Tempo de processar as 6 (antes → agora)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original</td>
+<td><strong>6 de 6</strong></td>
+<td>47,0 → 27,7 s</td>
+</tr>
+<tr>
+<td>Preto e branco</td>
+<td><strong>6 de 6</strong></td>
+<td>46,4 → 33,2 s</td>
+</tr>
+<tr>
+<td>Melhorar</td>
+<td><strong>6 de 6</strong></td>
+<td>56,9 → 51,8 s</td>
+</tr>
+<tr>
+<td>Mágico pro</td>
+<td><strong>6 de 6</strong></td>
+<td>55,1 → 66,9 s</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="As 24 páginas do ramo (em cada linha um filtro, de cima para baixo: Original, Preto e branco, Melhorar, Mágico pro)" src="prints/folha-de-contato-agora.jpg" /></p>
+<p><strong>O que eu vi nas 24:</strong> todas saíram e estão como o filtro manda. Original igual ao scan, Preto e branco em preto puro, Melhorar e Mágico pro com papel branco e cor. A Horas 11 no Preto e branco mantém a iluminura colorida, que é o defeito conhecido e a opção desmarcada. <strong>Os tempos não valem como medida:</strong> o PC estava sem memória e com outros agentes. O Mágico pro "agora" saiu 21% mais lento, e os outros três mais rápidos, o que é ruído. As imagens são idênticas, então o caminho é o mesmo.</p>
+<h2>5. Velocidade</h2>
+<p>O teste oficial (<code>teste_velocidade.py</code>) <strong>não foi rodado</strong>: ele pede o PC parado, e o PC estava com outros agentes e sem memória. Indicação só: as 24 páginas acima são idênticas antes e depois. Na janela, um livro de 3 folhas foi processado em 5 a 14 s, conforme a carga do PC.</p>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Defeito 1 (3b)</strong> e <strong>defeito 2 (3c)</strong>: ver acima. São os dois motivos do "não está pronto" do item 3.</li>
+<li><strong>Antigo, visto de novo:</strong> no painel "só neste pedaço", o botão aceso não muda ao clicar (print 18: o retângulo novo ficou com filtro Original, mas o botão aceso continuava "Preto e branco"). O Kaique pode achar que o clique não pegou.</li>
+<li><strong>Antigo, fora deste ramo:</strong> na aba <strong>Filtro</strong>, com a página em Preto e branco e a janela em 1280 × 657, o bloco "AJUSTE" (força do preto, algoritmo, limpar poeirinha) fica espremido numa faixa vazia, e os botões "Aplicar em" ficam sem texto (<code>prints/17-filtro-pb-ajuste-espremido.png</code>). O código da aba Filtro não mudou neste ramo.</li>
+<li><strong>Clicar no cartão já escolhido da aba Filtro abre o "Ver de perto"</strong> (janela modal). Na janela fora da tela, isso travou meus cliques até eu fechá-la. Só aconteceu no meu piloto: na tela de verdade, ela aparece.</li>
+<li><strong>O "(2)" foi testado com um processo Python segurando o arquivo</strong>, não com o Acrobat ou outro leitor de verdade. O efeito no Windows é o mesmo: troca recusada, "arquivo em uso".</li>
+<li><strong>Roda do mouse:</strong> não usei. Nada destes itens depende dela.</li>
+<li><strong>Pytest:</strong> as 7 falhas e o erro foram de ambiente (memória esgotada, tempo esgotado) e passaram rodados de novo. O PC estava carregado durante a rodada inteira.</li>
+<li>Os PDFs gerados no teste ficaram fora do git, na minha pasta temporária (<code>scratchpad\v\piloto\dados\saida</code> e <code>piloto\comparar</code>).</li>
+</ol>
+<h2>Bugs para a Lista de bugs (05/10/2026)</h2>
+<ul>
+<li><strong>Aba Marcar: a linha "Pedaço:" espreme as linhas de botões</strong> e corta o texto de todos eles, inclusive do botão novo, em qualquer tamanho de janela (prints <code>cmp-linhas-04-vs-05.png</code>, <code>23-…</code>, <code>24-…</code>).</li>
+<li><strong>"Ajustar o pedaço à figura" num pedaço de texto corta o texto:</strong> tira o título, a primeira pergunta e a última linha, e parte palavras nas beiradas. O aviso diz 47% e convida a clicar (prints <code>cmp-texto-antes-depois-ajuste.jpg</code>, <code>item3b-texto-ajustado-no-pdf.jpg</code>).</li>
+<li>(Antigo) Botão aceso de "só neste pedaço" não acompanha o clique (print <code>18-marcar-folga-aviso.png</code>).</li>
+<li>(Antigo) Aba Filtro, Preto e branco, 1280 × 657: o bloco AJUSTE e "Aplicar em" espremidos (print <code>17-filtro-pb-ajuste-espremido.png</code>).</li>
+<li>(Antigo, pequeno) "1 páginas" no "Ficou pronto!" e no cartão.</li>
+</ul>
+<h2>Onde está</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/pedaco-em-original-2026-10-05/verificador/parecer-verificador-pedaco-em-original-e-salvo-2.html</code> (e <code>.md</code>, <code>.pdf</code>).</li>
+<li>Prints e imagens: <code>verificador/prints/</code>. Números: <code>verificador/comparacao-6x4.json</code> e <code>prints/comparacao-item1.json</code>. Scripts do piloto e das comparações: <code>verificador/scripts/</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/10/2026 às 18:32</p>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+ "antes": "19c1ba7",
+ "agora": "17d705b (pedaco-e-salvo-2-2026-10-05)",
+ "filtros": {
+  "original": {
+   "identicas": 6,
+   "de": 6,
+   "processar_6_s": {
+    "antes": 47.0,
+    "agora": 27.7
+   },
+   "paginas": {
+    "escola_p007": "identica",
+    "opusmajus_p020": "identica",
+    "horas_p011": "identica",
+    "palatino_p057": "identica",
+    "graduale_p221": "identica",
+    "siebmacher_p007": "identica"
+   }
+  },
+  "preto_e_branco": {
+   "identicas": 6,
+   "de": 6,
+   "processar_6_s": {
+    "antes": 46.4,
+    "agora": 33.2
+   },
+   "paginas": {
+    "escola_p007": "identica",
+    "opusmajus_p020": "identica",
+    "horas_p011": "identica",
+    "palatino_p057": "identica",
+    "graduale_p221": "identica",
+    "siebmacher_p007": "identica"
+   }
+  },
+  "melhorar": {
+   "identicas": 6,
+   "de": 6,
+   "processar_6_s": {
+    "antes": 56.9,
+    "agora": 51.8
+   },
+   "paginas": {
+    "escola_p007": "identica",
+    "opusmajus_p020": "identica",
+    "horas_p011": "identica",
+    "palatino_p057": "identica",
+    "graduale_p221": "identica",
+    "siebmacher_p007": "identica"
+   }
+  },
+  "magico_pro": {
+   "identicas": 6,
+   "de": 6,
+   "processar_6_s": {
+    "antes": 55.1,
+    "agora": 66.9
+   },
+   "paginas": {
+    "escola_p007": "identica",
+    "opusmajus_p020": "identica",
+    "horas_p011": "identica",
+    "palatino_p057": "identica",
+    "graduale_p221": "identica",
+    "siebmacher_p007": "identica"
+   }
+  }
+ }
+}

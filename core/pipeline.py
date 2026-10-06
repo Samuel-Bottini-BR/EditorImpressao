@@ -41,7 +41,7 @@ from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
 from core import linhas_do_texto, misto
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
-                          aplicar_filtro_com_selecao)
+                          aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
 from core.pdf_io import (
     DPI_PREVIA,
@@ -870,8 +870,12 @@ def renderizar_pagina(
             geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, None)
             img, desenho = _preparar_metade_e_geometria(resultado.imagem, folha, pagina, projeto,
                                                         geometria=geometria)
+            # as zonas sao levadas para o preparo de agora ANTES de os
+            # pedacos de "so neste pedaco" serem lidos (decisao D2)
             _acompanhar_as_zonas(pagina, desenho)
-            return img, False
+            return _pedacos_na_pagina_sem_fundo(
+                doc, projeto, folha, pagina, img, resultado.imagem.shape, geometria,
+                dpi, None), False
     else:
         _anotar_conferir(pagina, False)
 
@@ -1112,7 +1116,9 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     Filtro "Tirar o fundo" (item 1.1) que chega aqui: core/camadas.py deixou
     a pagina intacta, o PDF nao tem camadas ou deu erro - a pagina sai como
     veio, sem outro filtro por cima e sem procurar gravura e letra (a
-    marcacao nao serviria para nada, e custa ~1 s).
+    marcacao nao serviria para nada, e custa ~1 s). So o "so neste pedaco"
+    marcado a mao vale por cima, como no Original (conferencia 14, "FUNDO";
+    ver _so_os_pedacos_no_tirar_o_fundo).
 
     A opcao do livro Projeto.pb_decoracao_em_preto_e_branco (moldura e
     iluminura tambem em preto e branco; emenda N2 do Samuel, 30/09/2026) vai
@@ -1124,10 +1130,29 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     tela enquanto "So as letras" estiver marcada). Sem "So as letras", o
     caminho de sempre, sem nenhuma conta a mais (provado: as 32 paginas do
     gabarito nos 4 filtros saem identicas ao ace15b2).
+
+    "Limpar a folha" desligado e o "so neste pedaco" (achado do verificador,
+    05/10/2026): o pedaco marcado na aba Marcar NAO vale aqui, e de proposito -
+    nao e a mesma causa da pagina em Original (consertada em
+    core.filtros.aplicar_filtro_com_selecao). Desligar "Limpar a folha" e a
+    escolha do LIVRO de nao passar filtro em pagina nenhuma, e com ela a tela
+    de conferir nem monta as abas Marcar e Filtro (ui/tela_conferir.py,
+    TelaConferir.carregar): o pedaco ficaria invisivel, sem como ver nem tirar, e mesmo
+    assim mudaria o PDF. Se o Samuel quiser o contrario, a mudanca e aqui (e
+    na tela, para o pedaco aparecer). Coberto por
+    tests/test_so_neste_pedaco_no_original.py.
     """
-    if not projeto.limpar or pagina.filtro == TIRAR_FUNDO:
+    if not projeto.limpar:
         _anotar_tinta_forte_fora(pagina, False)
         return img, False
+    if pagina.filtro == TIRAR_FUNDO:
+        # Conferencia 14 (Samuel, "FUNDO: Sim, do mesmo jeito (só muda se
+        # alguém marcar um pedaço)"): o pedaco vale aqui como no Original. A
+        # marcacao usada e a GUARDADA (pagina.obter_selecao), sem chamar o
+        # detector: o pedaco e desenhado a mao, e a pagina sem pedaco nao
+        # paga o ~1 s da deteccao (e sai o mesmo objeto, como antes).
+        _anotar_tinta_forte_fora(pagina, False)
+        return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, img), False
     selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
     if pagina.filtro == PRETO_E_BRANCO:
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
@@ -1316,6 +1341,79 @@ def acertar_alertas_de_cor(projeto: Projeto,
             pagina.alertas.append(analise.COR)
 
 
+def _tem_pedaco_com_filtro(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A pagina tem algum pedaco com "so neste pedaco" (um filtro proprio)?
+    Barato: le so a marcacao guardada, sem detector e sem imagem.
+
+    Sem "Procurar gravura e letra" (projeto.detectar_regioes) a resposta e
+    nao, como no Original (garantir_selecao devolve a marcacao vazia): sem
+    ele a aba Marcar nem aparece, e um pedaco que ficou guardado mudaria o
+    PDF sem poder ser visto. Arriscado: tirar esta condicao."""
+    if not projeto.detectar_regioes or not pagina.selecao:
+        return False
+    return bool(pagina.obter_selecao().filtros_pedidos())
+
+
+def _so_os_pedacos_no_tirar_o_fundo(projeto: Projeto, pagina: ConfigPagina,
+                                    base: np.ndarray, como_veio: np.ndarray) -> np.ndarray:
+    """Os pedacos de "so neste pedaco" de uma pagina no filtro "Tirar o
+    fundo", por cima de `base` (a pagina sem o fundo, ou como veio quando
+    core/camadas.py a deixou intacta), calculados em `como_veio` (a pagina
+    como veio, ja dividida, cortada e endireitada igual a `base`).
+
+    Conferencia 14 (Samuel): "FUNDO: Sim, do mesmo jeito (só muda se alguém
+    marcar um pedaço)" - o mesmo jeito do Original (conferencia 13, S4,
+    core.filtros.aplicar_so_os_pedacos). Sem pedaco devolve `base`, o MESMO
+    objeto: a pagina sai exatamente como antes. Usa a marcacao guardada, sem
+    detector (o pedaco e desenhado a mao). Os ajustes do pedaco (forca do
+    preto etc.) sao os da pagina, como no Original."""
+    if not _tem_pedaco_com_filtro(projeto, pagina):
+        return base
+    return aplicar_so_os_pedacos(
+        como_veio, base, pagina.obter_selecao(), TIRAR_FUNDO, pagina.forca_preto,
+        pagina.clareza_melhorar, pagina.intensidade_magico)
+
+
+def _pedacos_na_pagina_sem_fundo(doc, projeto: Projeto, folha: ConfigFolha,
+                                 pagina: ConfigPagina, img: np.ndarray,
+                                 forma_da_folha: tuple, geometria, dpi: float,
+                                 img_folha: np.ndarray | None) -> np.ndarray:
+    """A pagina de que o fundo FOI tirado (`img`, ja dividida, cortada e
+    endireitada) com os pedacos de "so neste pedaco" por cima (conferencia
+    14, "FUNDO"). O mesmo para a previa (renderizar_pagina) e o PDF
+    (processar): previa = PDF.
+
+    Para o pedaco sair do filtro dele a partir da pagina COMO VEIO (um pedaco
+    em "Original" mostra o papel de verdade, e nao o branco do fundo tirado),
+    a folha e desenhada normalmente - `img_folha`, se quem chamou ja a tem,
+    ou desenhada aqui em `dpi` - e passa pelo MESMO giro, divisao, corte e
+    endireitamento (`geometria`, a medida na folha como veio). Se o tamanho
+    dela nao bater com o da folha sem o fundo (`forma_da_folha`; o MuPDF e o
+    core/camadas.py arredondam diferente, 1 ponto), ela e reduzida a ele
+    antes, para as duas coincidirem ponto a ponto.
+
+    Sem pedaco (o normal), devolve `img`, o MESMO objeto, sem desenhar nada
+    a mais: a pagina sai exatamente como antes e o tempo nao muda. Com
+    pedaco, custa um desenho a mais da folha (so nessa pagina). Sem "Limpar
+    a folha" o fundo nem e tirado (usa_tirar_fundo), entao nao chega aqui.
+    """
+    if not _tem_pedaco_com_filtro(projeto, pagina):
+        return img
+    if img_folha is None:
+        img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
+    altura, largura = forma_da_folha[:2]
+    if img_folha.shape[:2] != (altura, largura):
+        img_folha = cv2.resize(img_folha, (largura, altura), interpolation=cv2.INTER_AREA)
+    como_veio = preparar_metade(img_folha, folha, pagina, projeto, geometria=geometria)
+    if como_veio.shape[:2] != img.shape[:2]:     # nunca visto; so por seguranca
+        como_veio = cv2.resize(como_veio, (img.shape[1], img.shape[0]),
+                               interpolation=cv2.INTER_AREA)
+    if como_veio.ndim != img.ndim:
+        como_veio = (cv2.cvtColor(como_veio, cv2.COLOR_GRAY2BGR) if como_veio.ndim == 2
+                     else cv2.cvtColor(como_veio, cv2.COLOR_BGR2GRAY))
+    return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, como_veio)
+
+
 def renderizar_com_filtro(
     doc, projeto: Projeto, pagina: ConfigPagina, filtro: str, dpi: int = DPI_PREVIA
 ) -> tuple[np.ndarray, bool]:
@@ -1381,14 +1479,22 @@ class ErroPDFSalvoComOutroNome(ErroPDF):
     """O PDF novo ficou pronto, mas o antigo nao pode ser substituido (aberto
     em outro programa); o novo foi gravado com outro nome, em `caminho`.
 
-    E um ErroPDF para chegar a tela como aviso em portugues pelo caminho que
-    ja existe (ui/tarefas.py::_mensagem_amigavel mostra o ErroPDF como ele e):
-    o Kaique fica sabendo o nome do arquivo novo. Nada na tela muda.
+    `antigo` e o arquivo que ficou preso (o destino pedido).
+
+    E um ErroPDF (quem chama processar sem tratar este caso ve o aviso em
+    portugues, como antes), mas NAO e falha: o PDF ficou pronto. A
+    TarefaProcessar (ui/tarefas.py) o entrega como `concluida`, com o caminho
+    do "(2)", e a tela "Ficou pronto!" mostra o nome novo e uma frase dizendo
+    que o antigo estava aberto noutro programa (conserto de 05/10/2026,
+    achado do verificador: antes a tela voltava para Conferir, o cartao nao
+    virava "PDF gerado" e o caso ia para o erros.log). Arriscado: deixar de
+    preencher `caminho` (a tela mostraria o nome errado).
     """
 
-    def __init__(self, mensagem: str, caminho: Path) -> None:
+    def __init__(self, mensagem: str, caminho: Path, antigo: Path | None = None) -> None:
         super().__init__(mensagem)
         self.caminho = caminho
+        self.antigo = antigo
 
 
 def _caminho_parcial(saida_final: Path) -> Path:
@@ -1464,6 +1570,7 @@ def _trocar_pelo_final(parcial: Path, saida_final: Path) -> Path:
         f"O arquivo antigo ficou como estava, e o PDF novo foi gravado ao lado "
         f"dele, na mesma pasta, com o nome \"{alternativo.name}\".",
         alternativo,
+        saida_final,
     )
 
 
@@ -1637,7 +1744,16 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
             img, desenho = _preparar_metade_e_geometria(
                 imagem_sem_fundo, folha, pagina, projeto, geometria=geometria)
+            # as zonas sao levadas para o preparo de agora ANTES de os
+            # pedacos de "so neste pedaco" serem lidos (decisao D2)
             _acompanhar_as_zonas(pagina, desenho)
+            # conferencia 14 ("FUNDO"): o "so neste pedaco" vale aqui tambem.
+            # Sem pedaco, `img` volta como esta e nada mais e desenhado.
+            if _tem_pedaco_com_filtro(projeto, pagina) and img_folha is None:
+                img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+            img = _pedacos_na_pagina_sem_fundo(
+                doc, projeto, folha, pagina, img, imagem_sem_fundo.shape, geometria,
+                projeto.qualidade_dpi, img_folha)
             mono = False
         else:
             # o corte e calculado nesta mesma imagem (a do PDF) e
