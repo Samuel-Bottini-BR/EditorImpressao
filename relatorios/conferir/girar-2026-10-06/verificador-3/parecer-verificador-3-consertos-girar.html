@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador-3: consertos do girar (2.3)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador-3: consertos do item 2.3 (girar a folha), 06/10/2026</h1>
+<p><strong>PRONTO PARA JUNTAR, com ressalvas. Os cinco consertos fazem o que prometem.</strong></p>
+<p>Ficou uma falha pequena no conserto das miniaturas e da capa. A capa nova é gravada certa. Mas, se a pessoa volta para a tela inicial pelo botão "voltar" das opções, o cartão continua mostrando a capa velha até o programa ser aberto de novo.</p>
+<p>Achei também dois defeitos que <strong>não vêm destes consertos</strong>: eles já existem no <code>fase-1</code>. Estão no fim, para a Lista de bugs.</p>
+<p><strong>Não é "aprovado":</strong> só o Samuel marca.</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> moldura dourada e iluminura continuam sendo defeito conhecido da Fase 1. Estes consertos não mexem na imagem das páginas. O PDF saiu <strong>idêntico, pixel a pixel, ao do <code>fase-1</code></strong> nas 10 páginas do livro de teste, giradas ou não. Também saiu idêntico em cadernos e em Mágico pro.</p>
+</blockquote>
+<p><strong>O que foi conferido:</strong></p>
+<ul>
+<li>ramo <code>fase2-geometria</code>, commit <code>89fae91</code>, com os consertos <code>ee84f80</code>, <code>695cc30</code>, <code>edd5db7</code>, <code>5b4598a</code> e <code>89fae91</code>;</li>
+<li>comparação com o <code>cc00d5c</code> (antes dos consertos) e com o <code>fase-1</code> (<code>14c4829</code>).</li>
+</ul>
+<p><strong>Como foi conferido:</strong></p>
+<ul>
+<li>a janela real foi pilotada fora da tela, em 1600×821 px, só com mouse e teclado nativos (mensagens do Windows mandadas para a janela de teste);</li>
+<li>pasta de dados só de teste, com cópias do "Livro de girar" (10 páginas-gabarito) e do Boécio antigo (50 páginas, zonas no formato de antes de 05/10);</li>
+<li>o parecer parcial do verificador-2 (interrompido pela reinicialização) foi usado só como ponto de partida. Tudo abaixo foi refeito nesta sessão.</li>
+</ul>
+<h2>Veredito por conserto</h2>
+<table>
+<thead>
+<tr>
+<th>Conserto</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ee84f80</code>: cartões da aba Filtro giram uma vez só</td>
+<td>janela real + máquina + olho</td>
+<td><strong>Bom.</strong> Nas folhas 1 a 6 (giros de 90, 180 e 270), os 30 cartões ficaram no mesmo giro da página. Girar ¼ com a aba Filtro aberta refez os cinco cartões em 2,4 s, sem sair da folha. O "comparar" da tela ampliada ficou no giro certo nas 8 comparações (folha 1, giro 90; folha 3, giro 270)</td>
+</tr>
+<tr>
+<td><code>695cc30</code>: a folha da vez nunca mostra a imagem de outra folha</td>
+<td>janela real + máquina</td>
+<td><strong>Bom.</strong> Foram 30 rodadas nas abas Bordas, Endireitar e Onde cortar, andando rápido e girando "todas" no meio, com 3.567 amostras da tela. Em nenhuma apareceu a imagem de outra folha, e as 30 terminaram na imagem certa. Depois de girar e desfazer, as 30 folhas (3 abas × 10) voltaram com a imagem do giro certo: nenhuma prévia velha voltou da memória</td>
+</tr>
+<tr>
+<td><code>edd5db7</code>: miniaturas e capa acompanham o giro</td>
+<td>janela real + máquina + olho</td>
+<td><strong>Bom, com uma falha pequena.</strong> As 10 miniaturas ficaram no giro certo em 6 situações seguidas: ao abrir, girar uma folha, girar todas ¼ à esquerda, reabrir o livro, girar todas ¼ à direita e desfazer. A <code>capa.png</code> foi gravada com o giro da folha 1 nas 8 conferências, e não mudou quando outra folha girou. <strong>A falha:</strong> voltando pelo "voltar" das opções, o cartão da tela inicial continua com a capa velha. Ela só aparece girada quando o programa é aberto de novo (imagem 5)</td>
+</tr>
+<tr>
+<td><code>5b4598a</code>: mudar corte, borda ou ângulo espera as zonas antigas</td>
+<td>janela real + máquina</td>
+<td><strong>Bom.</strong> No Boécio antigo, durante "Preparando as marcações…", três coisas foram barradas: o "usar em todas" da linha de corte, o "usar em todas" da borda e um Ctrl+Z de outra sessão. Nas três, apareceu o aviso "Um momento" e nada mudou. Depois da conversão, as três funcionaram. Nas cinco rodadas, as 698 zonas das 50 páginas ficaram no mesmo lugar do papel que na rodada sem mudança (diferença ≤ 0,002 da folha)</td>
+</tr>
+<tr>
+<td><code>89fae91</code>: PDF comprimido ao escrever cada página</td>
+<td>janela real + máquina</td>
+<td><strong>Bom.</strong> No fim do "Processar", a janela parou 0,80 s e 0,61 s, contra 4,22 s e 4,16 s no código antigo (vigia de 25 ms dentro do programa). Os pixels do PDF são os mesmos do <code>fase-1</code>. Na janela, o processar inteiro ficou mais rápido: 11,2 s e 9,4 s, contra 14,7 s e 13,3 s. Sem janela, o tempo ficou igual (veja Velocidade)</td>
+</tr>
+</tbody>
+</table>
+<h2>Testes de máquina</h2>
+<ul>
+<li><strong>pytest, arquivo por arquivo (86 arquivos): 1616 passaram, 59 pularam, 0 falharam.</strong> Tempo somado: 733 s. Nenhum arquivo precisou ser repetido.</li>
+<li><code>test_girar.py</code>: 34 passaram;</li>
+<li><code>test_girar_cartoes_e_previas.py</code>: 22 passaram;</li>
+<li><code>test_girar_na_tela.py</code>: 16 passaram;</li>
+<li><code>test_gravar_pdf_sem_parar_a_janela.py</code>: 5 passaram.</li>
+<li><strong><code>teste_botoes.py</code>: 159 ações, 0 falhas.</strong> Rodou numa cópia <code>git archive</code> do <code>89fae91</code>, com <code>saida_teste</code> própria. Os botões de girar e o "Aplicar o giro em" estão no meio das ações.</li>
+</ul>
+<h2>O PDF gerado</h2>
+<ul>
+<li><strong>Ordem, páginas faltando e giro.</strong> O PDF feito na janela tem as 10 páginas. Para cada página, procurei a folha do livro de entrada (em qualquer dos 4 giros) que tem aquele pedaço de papel. Nas 10, a página é a folha certa, na ordem certa e no giro pedido (90, 180, 270, 180, 90, 180, 0, 180, 0, 180). A folha certa ganhou sempre com folga: de 0,17 a 0,62 acima da segunda melhor.</li>
+<li><strong>Igual ao <code>fase-1</code>:</strong></li>
+<li>o PDF da janela e o feito sem janela com o <code>fase-1</code> têm os mesmos pixels nas 10 páginas, giradas ou não, com o mesmo tamanho de página. O desenho a 100 DPI também é igual;</li>
+<li>o mesmo vale para o livro todo em <strong>cadernos</strong> (8 folhas de impressão) e todo em <strong>Mágico pro</strong> (10 páginas);</li>
+<li>as 10 prévias também são idênticas.</li>
+<li><strong>O leitor do Chrome (PDFium)</strong> abre o PDF novo e o desenha exatamente igual ao PDF antigo.</li>
+<li><strong>Tamanho:</strong></li>
+<li>livro de teste: 46,7 → 44,6 MB;</li>
+<li>Mágico pro: 28,1 → 25,9 MB;</li>
+<li>cadernos: 46,7 → 44,6 MB.</li>
+</ul>
+<p><img alt="As 10 páginas do PDF feito na janela, com a folha e o giro de cada uma" src="imagens/p06-pdf-da-janela-10-paginas.jpg" /></p>
+<ul>
+<li><strong>Olhando:</strong> a página 1 está deitada para a direita, as páginas 2, 4, 6, 8 e 10 de cabeça para baixo, a 3 deitada para a esquerda, a 5 deitada para a direita, e a 7 e a 9 em pé. É o que foi pedido.</li>
+</ul>
+<p><img alt="O mesmo livro em cadernos de 8 páginas" src="imagens/p07-pdf-em-cadernos.jpg" /></p>
+<ul>
+<li><strong>Cadernos:</strong> a primeira folha tem as páginas 8 e 1, depois vêm 2 e 7, 6 e 3, 4 e 5. O segundo caderno tem as páginas 9 e 10, e o resto em branco. Cada página está no giro dela.</li>
+</ul>
+<h2>O que se vê nas imagens</h2>
+<p><img alt="Aba Filtro, folhas 2 e 3" src="imagens/p01-d1-cartoes-folhas-2-e-3.jpg" /></p>
+<ul>
+<li><strong>Folha 2 (meia volta) e folha 3 (¼ à esquerda):</strong> os cinco cartões estão no mesmo giro, e é o giro do PDF. Antes do conserto, três deles apareciam em pé na folha 2.</li>
+</ul>
+<p><img alt="Girando com a aba Filtro aberta" src="imagens/p02-d1-girar-com-a-aba-aberta.jpg" /></p>
+<ul>
+<li><strong>Folha 5 girada mais ¼ com a aba Filtro aberta:</strong> os cinco cartões mudaram juntos, em 2,4 s, sem sair da folha.</li>
+</ul>
+<p><img alt="Ver de perto, comparar: Original e Melhorar na folha 3" src="imagens/p03-d1-comparar-folha3.jpg" /></p>
+<ul>
+<li><strong>Comparar da tela ampliada:</strong> os dois lados estão no mesmo giro. A folha aparece um pouco torta, uns 4°. É a observação D3, que já era conhecida e não é destes consertos.</li>
+</ul>
+<p><img alt="Tira de miniaturas antes e depois de girar todas ¼ à esquerda" src="imagens/p04-d2-tira-antes-depois.jpg" /></p>
+<ul>
+<li><strong>Tira:</strong> depois do "todas ¼ à esquerda", todas as dez miniaturas giraram.</li>
+</ul>
+<p><img alt="Capa do cartão: antes de abrir, depois de abrir e voltar, e com o programa reaberto" src="imagens/p05-d2-capa.jpg" /></p>
+<ul>
+<li><strong>Capa:</strong>
+  1. o livro foi girado antes do conserto, então a capa velha está sem o giro;
+  2. depois de abrir o livro e voltar pelo "voltar" das opções, o cartão <strong>ainda mostra a capa velha</strong>, embora a <code>capa.png</code> no disco já esteja girada;
+  3. com o programa aberto de novo, a capa aparece girada.</li>
+</ul>
+<p><img alt="O aviso &quot;Um momento&quot;" src="imagens/p08-aviso-um-momento.jpg" /></p>
+<ul>
+<li><strong>Aviso do conserto 5b4598a:</strong> em português, com um botão só. No caso do Ctrl+Z, ele diz "desta página" e "faça a mudança de novo", mas a página atingida não era a que estava na tela.</li>
+</ul>
+<h2>Velocidade</h2>
+<p><strong>O processar não ficou mais lento de um jeito que dê para medir, e gasta menos memória.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th><code>89fae91</code> (novo)</th>
+<th><code>cc00d5c</code> (antes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Teste oficial, Mágico pro, 10 páginas (de costume)</td>
+<td>1 min 9 s</td>
+<td>1 min 21 s</td>
+</tr>
+<tr>
+<td>Teste oficial, Preto e branco, 10 páginas (de costume)</td>
+<td>30,7 s</td>
+<td>36,0 s</td>
+</tr>
+<tr>
+<td>Teste oficial, memória máxima</td>
+<td>1.378 MB</td>
+<td>1.575 MB</td>
+</tr>
+<tr>
+<td>Sem janela, intercalado, Mágico pro, 10 páginas (3 rodadas, mediana)</td>
+<td>21,8 s</td>
+<td>21,0 s (<code>fase-1</code>)</td>
+</tr>
+<tr>
+<td>Sem janela, intercalado, Preto e branco, 10 páginas (3 rodadas, mediana)</td>
+<td>8,1 s</td>
+<td>8,2 s (<code>fase-1</code>)</td>
+</tr>
+<tr>
+<td>Na janela, do clique em Processar até a tela final (2 rodadas)</td>
+<td>11,2 s e 9,4 s</td>
+<td>14,7 s e 13,3 s</td>
+</tr>
+<tr>
+<td>Na janela, maior parada no fim do Processar</td>
+<td>0,80 s e 0,61 s</td>
+<td>4,22 s e 4,16 s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ressalva da medida:</strong> o PC estava sendo usado por outros agentes ao mesmo tempo, e o teste oficial variou muito de uma rodada para outra. No código antigo, a 3ª rodada de Mágico pro levou 59 s e a 2ª, 81 s. Por isso:</p>
+<ul>
+<li>a comparação que vale para o tempo é a intercalada, sem janela. Nela, o Mágico pro ficou 0,8 s mais lento em 10 páginas (4%), dentro da variação normal, e o Preto e branco ficou igual;</li>
+<li>a memória menor se repetiu nas 3 rodadas (1.349 a 1.378 MB, contra 1.541 a 1.575 MB). Ela bate com o que o implementador mediu (1574 → 1385 MB).</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Capa do cartão (conserto <code>edd5db7</code>, pequena):</strong>
+   - o "voltar" da tela de opções só troca de tela e não remonta os cartões. Por isso a capa (e também o andamento) do cartão fica como estava quando a tela inicial foi montada;
+   - a <code>capa.png</code> é gravada certa, e o "fazer outro", o processar e reabrir o programa remontam o cartão;
+   - um livro girado antes do conserto só tem a capa refeita quando é aberto.</li>
+<li><strong>Logo depois de girar, a mesma página fica até 2,9 s no giro de antes, com "atualizando…".</strong> É de propósito: a imagem anterior <strong>da mesma página</strong> fica na tela para não piscar. Nunca foi imagem de outra folha. Quando muitas prévias estão na fila, isso dura de 1,2 a 2,9 s.</li>
+<li><strong>O aviso "Um momento" no Ctrl+Z diz "desta página"</strong>, mas a página atingida pode não ser a da tela. Também diz "faça a mudança de novo", quando a pessoa precisa apertar Ctrl+Z de novo. É só o texto.</li>
+<li><strong>O ângulo de uma página antiga mudado logo ao chegar nela</strong> (página 46 do Boécio, 2 vezes) não mostrou o aviso. A página já tinha a geometria anotada no momento do clique, e as zonas ficaram no lugar. Não achei um caso em que a mudança passasse sem aviso numa página sem geometria.</li>
+<li><strong>Uma vez, um clique de girar não valeu.</strong> Foi no começo de uma sessão do Boécio, na aba Onde cortar. Não se repetiu em 8 cliques seguidos feitos para isso, nem nos mais de 60 giros do resto da sessão. Não sei a causa.</li>
+<li><strong>Não testado:</strong>
+   - a roda do mouse (não funciona sem foco);
+   - a escala real do notebook do Kaique;
+   - a tira de miniaturas com folha dividida na janela: o Livro de girar não tem folha dividida, e o Boécio não divide. A divisão está coberta pelo teste de máquina <code>test_d2_a_tira_divide_a_folha_girada</code>.</li>
+<li><strong>Teclas em inglês no menu</strong> ("Ctrl+Left"): já está na Lista de bugs.</li>
+</ol>
+<h2>Defeitos achados que NÃO são destes consertos (para a Lista de bugs)</h2>
+<ul>
+<li><strong>06/10/2026, histórico depois de reabrir o livro (sério, já existe no <code>fase-1</code>).</strong> Quando a pessoa desfaz uma ação, faz outra e reabre o livro, o Ctrl+Z passa a desfazer a ação errada. Ele desfaz a que já tinha sido desfeita, e a última ação vira "refazer".</li>
+<li>Causa: <code>historico_acoes.registrar</code> limpa o "refazer" só na memória, e o arquivo <code>acoes.jsonl</code> continua com a ação desfeita no meio.</li>
+<li>Reproduzido sem janela com o código do <code>fase-1</code>. Fiz A, fiz B, desfiz B e fiz C. Na memória ficou [A, C]. Depois de reabrir, ficou [A, B], com C no "refazer".</li>
+<li>Na janela: depois de reabrir o Livro de girar, o Ctrl+Z não desfez o "girar todas" que eu tinha acabado de fazer.</li>
+<li><strong>06/10/2026, erro de memória ao fechar (já existe desde 05/10).</strong> Em 2 das 11 vezes que fechei o programa, o Windows anotou "access violation" no fechamento. Foi depois de a janela fechar, sem aviso na tela, e o projeto já estava gravado. Nos arquivos dos verificadores desde 05/10, antes do girar, há 33 registros iguais.</li>
+</ul>
+<h2>Onde está tudo</h2>
+<ul>
+<li>Este parecer: <code>relatorios/conferir/girar-2026-10-06/verificador-3/parecer-verificador-3-consertos-girar.html</code> (também <code>.md</code> e <code>.pdf</code>).</li>
+<li>Imagens do parecer: <code>.../verificador-3/imagens/</code>. Prints inteiros (fora do git): <code>.../verificador-3/prints/</code>.</li>
+<li>Registro passo a passo: <code>.../verificador-3/trabalho/girar.log</code>.</li>
+<li>pytest: <code>trabalho/pytest_partes.log</code>. teste_botoes: <code>trabalho/teste_botoes.log</code>.</li>
+<li>Velocidade: <code>trabalho/velocidade_novo/</code>, <code>trabalho/velocidade_antigo/</code> e <code>trabalho/ab_tempos.txt</code>.</li>
+<li>Comparações de PDF: <code>trabalho/comparacao_*.json</code> e <code>trabalho/pdf_conferir_*.json</code>.</li>
+<li>Scripts: <code>.../verificador-3/scripts/</code>. Os principais:</li>
+<li><code>d1.py</code>: cartões;</li>
+<li><code>d2.py</code>: tira e capa;</li>
+<li><code>d4.py</code>: 40 referências por aba, as variantes e o desfazer;</li>
+<li><code>s5_boecio.py</code> e <code>comparar_zonas.py</code>: zonas antigas;</li>
+<li><code>pdf_conferir.py</code>: ordem e giro do PDF;</li>
+<li><code>vel.py</code>: velocidade.</li>
+<li>Ao terminar, todas as janelas de teste foram fechadas com WM_CLOSE. Nenhum processo Python meu ficou aberto (conferido na lista de processos do Windows).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 13:39</p>
+</body>
+</html>
