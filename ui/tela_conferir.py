@@ -45,7 +45,10 @@ branco escolhido, a caixinha "Só as letras" desta página, os três botões
 troca só nela (ConfigPagina.misto_*); cada mudança é uma ação do desfazer,
 como o algoritmo e a limpeza de poeirinha. "todas" e "só nas próximas" levam
 junto as escolhas do Misto desta página. O aviso "Tinta forte fora do texto"
-é acertado como o do fundo tirado.
+é acertado como o do fundo tirado. O alerta "Tem cor" some das páginas que
+saem pelo "Só as letras" (a ilustração fica em cor) e volta quando ela é
+desligada, a cada atualização, em todas as páginas
+(core.pipeline.acertar_alertas_de_cor; bug Misto 1 do verificador, 05/10).
 """
 
 from __future__ import annotations
@@ -73,7 +76,7 @@ from PySide6.QtWidgets import (
 )
 
 from core import analise, linhas_do_texto, misto
-from core.pipeline import acertar_alertas_do_fundo
+from core.pipeline import acertar_alertas_de_cor, acertar_alertas_do_fundo
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -1529,6 +1532,12 @@ class TelaConferir(QWidget):
             return
         if self.projeto is not None and 0 <= self.indice_pagina < len(self.projeto.paginas):
             acertar_alertas_do_fundo(self.projeto, [self.projeto.paginas[self.indice_pagina]])
+        if self.projeto is not None:
+            # Bug Misto 1 (05/10/2026): o "Tem cor" segue o "So as letras" em
+            # TODAS as paginas (o "So as letras" do livro e o "todas" mudam
+            # muitas de uma vez, e o "Para revisar" e o contador contam
+            # todas). Barato: so le campos (core.pipeline.acertar_alertas_de_cor).
+            acertar_alertas_de_cor(self.projeto)
         self._atualizar_previa()
         self._atualizar_faixa()
         self._atualizar_botoes()

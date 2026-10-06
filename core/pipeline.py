@@ -185,6 +185,11 @@ def analisar_projeto(
         projeto.observacoes = observacoes
         projeto.folhas = folhas
         projeto.paginas = paginas
+        # Modo Misto (bug Misto 1, 05/10/2026): com "So as letras" ligada no
+        # livro, o "Tem cor" nao vale (a ilustracao sai em cor). Depois das
+        # observacoes de proposito: o "livro inteiro e colorido" continua
+        # sendo contado como antes.
+        acertar_alertas_de_cor(projeto)
         _avisar(progresso, total, total, "Pronto")
         return projeto
     finally:
@@ -766,6 +771,8 @@ def acertar_alertas_do_fundo(projeto: Projeto,
         # Modo Misto (05/10/2026): o "Tinta forte fora do texto" sai na hora
         # em que a pagina deixa o Misto A ou C (mesmo jeito, mesmo momento)
         _acertar_alerta_do_misto(projeto, pagina)
+        # e o "Tem cor" segue o "So as letras" (bug Misto 1, 05/10/2026)
+        acertar_alertas_de_cor(projeto, [pagina])
         if not usa_tirar_fundo(projeto, pagina):
             _anotar_conferir(pagina, False)
             continue
@@ -1079,6 +1086,65 @@ def _acertar_alerta_do_misto(projeto: Projeto, pagina: ConfigPagina) -> None:
               if projeto.limpar and pagina.filtro == PRETO_E_BRANCO else None)
     if opcoes is None or not opcoes.precisa_das_linhas:
         _anotar_tinta_forte_fora(pagina, False)
+
+
+def _misto_vale(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A pagina vai sair pelo Misto ("So as letras")? A MESMA conta de
+    _filtrar: "Limpar a folha" ligado, filtro Preto e branco e "So as letras"
+    valendo nela (dela ou do livro). Barato (so le campos)."""
+    return bool(getattr(projeto, "limpar", True) and pagina.filtro == PRETO_E_BRANCO
+                and misto.opcoes_da_pagina(projeto, pagina) is not None)
+
+
+def _cor_valeria_sem_o_misto(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A analise (analise.analisar_pagina + separar_observacoes) teria posto o
+    alerta "Tem cor" nesta pagina? Sim quando ela tem cor, o filtro dela e o
+    do livro sao o Preto e branco, ela nao e pagina em branco, e o "Tem cor"
+    nao virou observacao do livro ("o livro inteiro e colorido") - nem o "em
+    branco" (que tira o alerta das paginas em branco). Le so campos."""
+    observacoes = getattr(projeto, "observacoes", None) or []
+    return bool(pagina.tem_cor and pagina.filtro == PRETO_E_BRANCO
+                and projeto.filtro_padrao == PRETO_E_BRANCO
+                and analise.EM_BRANCO not in pagina.alertas
+                and analise.OBSERVACOES[analise.COR] not in observacoes
+                and analise.OBSERVACOES[analise.EM_BRANCO] not in observacoes)
+
+
+def acertar_alertas_de_cor(projeto: Projeto,
+                           paginas: list[ConfigPagina] | None = None) -> None:
+    """O alerta "Tem cor" ("o preto e branco vai perder a ilustracao", com o
+    botao "usar Mágico pro nesta") segue o "So as letras". Sem desenhar nada.
+
+    Bug Misto 1 do verificador (05/10/2026, print 14): com "So as letras"
+    ligada, a ilustracao sai EM COR (core.misto), e o alerta era falso - ele
+    e decidido uma vez, na analise (analise.analisar_pagina), sem olhar o
+    Misto, e mandava paginas certas para o "Para revisar". Agora:
+      - pagina que vai sair pelo Misto (_misto_vale): o alerta sai;
+      - pagina que deixou o Misto ("So as letras" desligada, no livro ou so
+        nela): o alerta volta, se a analise o teria posto
+        (_cor_valeria_sem_o_misto). `revisada` nao muda: o alerta volta como
+        estava (se a pessoa ja tinha conferido a pagina, continua conferida).
+    Pagina que nunca passou pelo Misto nao muda: o alerta so volta onde a
+    analise o poria, e nessa pagina ele ja esta.
+
+    Chamado pela analise (no fim), por acertar_alertas_do_fundo (ao abrir a
+    conferencia) e pela tela de conferir a cada atualizacao, em TODAS as
+    paginas (o "So as letras" do livro e o "todas" mudam muitas de uma vez,
+    e o "Para revisar" conta todas). Barato: pagina sem cor e sem o alerta
+    e pulada sem conta nenhuma.
+
+    Arriscado: tirar o alerta sem a mesma conta de _filtrar (_misto_vale) - a
+    pagina que sai em preto e branco de verdade ficaria sem o aviso.
+    """
+    for pagina in projeto.paginas if paginas is None else paginas:
+        tem = analise.COR in pagina.alertas
+        if not tem and not pagina.tem_cor:
+            continue
+        if _misto_vale(projeto, pagina):
+            if tem:
+                pagina.alertas = [a for a in pagina.alertas if a != analise.COR]
+        elif not tem and _cor_valeria_sem_o_misto(projeto, pagina):
+            pagina.alertas.append(analise.COR)
 
 
 def renderizar_com_filtro(
