@@ -47,13 +47,16 @@ fosse o giro de cada uma antes. "So esta" e o mesmo caso com uma folha so
 giro que ela tinha (historico_acoes guarda o "antes" por folha).
 Ate 06/10 era relativo (cada folha girava a partir de onde estava); para o
 caso comum (nenhuma folha girada ainda) os dois dao o mesmo resultado.
-Caso de canto (decisao do implementador, a conferir): com "so as pares"
-numa folha impar (ou o contrario), a folha da vez fica fora do alcance e
-NAO gira; as escolhidas ficam viradas como ela ficaria com este giro.
+Caso de canto, decisao do Samuel (06/10/2026): com "so as pares" numa folha
+impar (ou "so as impares" numa folha par) o programa AVISA ("va a uma folha
+par") e nao gira nada (aviso_fora_do_alcance; quem pergunta e a tela,
+ui/tela_conferir._girar_folhas). Ate 06/10 a folha da vez ficava parada e as
+escolhidas ficavam viradas como ela ficaria (decisao provisoria do
+implementador): confuso, porque o giro que se copiava nao aparecia na tela.
 
 O QUE E SEGURO E O QUE E ARRISCADO MUDAR
 ----------------------------------------
-Seguro: os textos (NOMES_*), a ordem das listas.
+Seguro: os textos (NOMES_*, AVISO_*), a ordem das listas.
 Arriscado: o sentido dos giros (GIRO_DIREITA = +90 e o sentido do relogio do
 cv2.ROTATE_90_CLOCKWISE em core/endireitar.girar_90 e da matriz de
 core/zonas_na_folha._matriz_folha_para_pagina); "pares/impares" contam o
@@ -91,6 +94,33 @@ NOMES_DOS_ALCANCES = {
     ALCANCE_PARES: "só as pares",
     ALCANCE_IMPARES: "só as ímpares",
 }
+
+
+# O aviso quando a folha da vez nao entra no "so as pares"/"so as impares"
+# (decisao do Samuel, 06/10/2026: "O programa avisa: 'va a uma folha par'").
+AVISO_PARES_NA_IMPAR = ("Você está numa folha ímpar. Para girar só as pares, "
+                        "vá a uma folha par e gire de lá.")
+AVISO_IMPARES_NA_PAR = ("Você está numa folha par. Para girar só as ímpares, "
+                        "vá a uma folha ímpar e gire de lá.")
+
+
+def aviso_fora_do_alcance(atual: int, alcance: str) -> str:
+    """A frase para avisar, se a folha da vez fica FORA do "aplicar em"; ""
+    se pode girar.
+
+    So acontece com "so as pares" numa folha impar e "so as impares" numa
+    folha par (as outras escolhas sempre incluem a folha da vez). Nesse caso
+    a tela avisa e nao gira nada: o giro de todas copia o giro final da
+    folha da vez, e girar sem ela copiaria um giro que a pessoa nao ve.
+    atual: o indice da folha na tela; par/impar conta o numero que a tela
+    mostra (indice + 1), como em folhas_do_alcance. Seguro mudar: a frase.
+    """
+    numero = int(atual) + 1
+    if alcance == ALCANCE_PARES and numero % 2 == 1:
+        return AVISO_PARES_NA_IMPAR
+    if alcance == ALCANCE_IMPARES and numero % 2 == 0:
+        return AVISO_IMPARES_NA_PAR
+    return ""
 
 
 def folhas_do_alcance(total: int, atual: int, alcance: str) -> list[int]:

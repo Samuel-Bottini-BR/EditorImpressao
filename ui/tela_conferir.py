@@ -2430,11 +2430,23 @@ class TelaConferir(QWidget):
 
         A folha da vez e a da pagina na tela (indice_folha acompanha a
         pagina em todas as abas).
+
+        "So as pares" numa folha impar (ou "so as impares" numa par): avisa
+        e nao gira nada, nem entra no historico (decisao do Samuel,
+        06/10/2026: "O programa avisa: 'va a uma folha par'"; a frase vem de
+        core/girar.aviso_fora_do_alcance). Vale para o botao, o menu Pagina
+        e as teclas, que passam todos por aqui.
         """
         if not self._pronta():
             return
         assert self.projeto is not None
         alcance = self.barra_girar.alcance()
+        aviso = girar.aviso_fora_do_alcance(self.indice_folha, alcance)
+        if aviso:
+            janela = self.window()
+            if janela is not self and hasattr(janela, "avisar"):
+                janela.avisar(aviso)
+            return
         indices = girar.folhas_do_alcance(len(self.projeto.folhas), self.indice_folha, alcance)
         if not indices or self._marcacoes_ainda_no_formato_antigo(indices):
             return
