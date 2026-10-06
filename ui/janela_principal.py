@@ -146,7 +146,12 @@ class JanelaPrincipal(QMainWindow):
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
-        self.tela_opcoes.voltar.connect(self._voltar_das_opcoes)   # remonta os cartoes
+        # o voltar das opcoes remonta os cartoes (_voltar_das_opcoes). Ligado
+        # por lambda DE PROPOSITO: ligado direto ao metodo, o
+        # tests/test_misto_na_tela.py caia com "access violation" em 5 de 6
+        # rodadas (06/10/2026, PySide6 6.11; com lambda, 0 de 6). Causa nao
+        # achada. Arriscado: trocar pelo metodo sem repetir aquele teste.
+        self.tela_opcoes.voltar.connect(lambda: self._voltar_das_opcoes())
         self.tela_opcoes.conferir.connect(self.analisar)
         self.telas.addWidget(self.tela_opcoes)
 
