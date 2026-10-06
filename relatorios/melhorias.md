@@ -3088,3 +3088,45 @@ mediana de 3 voltas alternadas: Horas 11 6,3 s antes do A1 (`4a9c0e4`), 6,5 s co
 **Testes:** `tests/test_escolha_sem_a_trava_de_tinta.py` (traço grosso com folga não paga a medida
 cheia; folha com tinta demais continua Sauvola; traço fino continua indo à medida cheia; a trava
 continua valendo para o k).
+
+---
+
+## 06/10/2026 - Misto "Guardar a tinta forte": o desenho de traço claro não some mais (ramo `misto-desenho-apagado`)
+
+**O defeito** (estudo `relatorios/revisar-criterios-2026-10-06`, seção 2.1): fora das linhas do leitor e
+fora das gravuras achadas, a rede (`core/misto.py`, `_fora_do_texto`, `FORA_REDE`) só guardava o pedaço
+de tinta que, **sozinho**, tivesse um ponto tão escuro quanto a mediana da letra e área de pelo menos
+(altura da linha / 6)². A hachura de uma capitular gravada que o detector não reconhece é feita de
+tracinhos claros e miúdos: no Palatino 76, dos ~23 mil pontos apagados da capitular S, ~9 mil eram
+escuros mas pequenos e ~13 mil claros e pequenos. Sumiam a S (Palatino 76), o fundo do M (67), a letra
+"M" do rodapé (66) e parte do diagrama do ljs47 p. 103.
+
+**O que ficou** (`_desenho_colado_a_tinta_forte`): a tinta de fora é alargada 0,08 altura de linha e
+rotulada; o amontoado volta inteiro (como no Preto e branco puro) quando tem tinta forte (semente), tem
+pelo menos 0,3 linha² de tinta, a rede apagava pelo menos 4% dela, e não é faixa fina (espessura média
+< 1/4 de linha) a menos de 1/4 de linha da borda da imagem. Nunca em página sem tons de cinza (mediana
+da letra ≤ 5). O aviso "Para revisar" continua olhando só `forte_fora`.
+
+**O que foi tentado e não ficou** (59 páginas do estudo, olhadas uma a uma):
+- semente + 1 linha² de tinta **apagada**: conserta Palatino 76 e 67, mas o "M" do 66 (só 0,15 linha²
+  apagada) fica pela metade;
+- semente + 0,3 linha² de tinta, sem fatia mínima: 43 páginas mudam; volta a mancha do verso colada na
+  pauta do Graduale 222 e 223 (a pauta é enorme e a mancha é 0,4% a 2,4% dela) e a sujeira granulada do
+  Cursus p. 3 (scan já em preto e branco, colada na faixa do scanner);
+- escuro de cada pedaço comparado ao preto das letras (percentil 10 da tinta das linhas) e ao papel,
+  limite 0,4: no Graduale metade da mancha continua voltando; no ljs47 103 parte do diagrama deixa de
+  voltar;
+- forma do pedaço (traço comprido × grão): os números da hachura, da mancha e da sujeira se cruzam;
+- faixa na borda pela caixa (lado menor < 1 linha): a sombra inclinada do alto da Horas 27 escapa
+  (caixa de 157 pontos de altura); ficou a espessura média;
+- amontoado encostado na borda da imagem, sem olhar a espessura: tiraria o conserto do Boécio 3 e dos
+  Siebmacher (os desenhos encostam na borda).
+
+**Tempo:** alargar com círculo custava 0,58 s na Antiphon 260 (linha de 520 pontos, raio 42); com
+quadrado, 0,016 s (muda poucos pontos, só nas páginas que já mudavam). Marcar só os pontos apagados, e
+não a página inteira, tirou mais 0,15 s da Antiphon 88. Custo da conta nova nas 59 páginas: no máximo
+0,18 s, mediana 0,016 s.
+
+**Resultado:** 17 páginas mudam (13 melhoram, 2 iguais à vista, 2 pioram de leve: linhas finas da
+beirada da folha no ljs47 26 e no Siebmacher 9 direita); 42 saem idênticas ponto a ponto. Relatório:
+`relatorios/conferir/misto-desenho-apagado-2026-10-06/`.
