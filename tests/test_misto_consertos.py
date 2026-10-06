@@ -269,3 +269,153 @@ def test_misto_desligado_a_tela_mostra_o_alerta_como_antes(conferir_cor):
     assert tela.texto_faixa.text() == _mensagem_de_cor()
     assert tela.projeto.paginas[0].alertas == [analise.COR]
     assert misto.opcoes_da_pagina(tela.projeto, tela.projeto.paginas[0]) is None
+
+
+# --- 2. o cartao "Preto e branco" da aba Filtro mostra o Misto -----------------
+#
+# Bug Misto 2 do verificador (05/10, prints 09 e 10): numa pagina Original, o
+# cartao "Preto e branco" mostrava a gravura em preto e branco (o filtro puro
+# na amostra, ui/tarefas._TarefaCartoes) e, escolhido, a pagina saia com ela
+# em cor (o Misto). Agora o cartao e a pagina desenhada pelo programa com o
+# Misto (core.pipeline.renderizar_com_filtro), numa tarefa de previa.
+
+@pytest.fixture
+def conferir_original(app, pasta):
+    """Aba Filtro com 3 paginas no Original; o livro em Preto e branco."""
+    from historico_acoes import HistoricoAcoes
+    from ui.tarefas import GerenciadorPrevias
+    from ui.tela_conferir import TelaConferir
+
+    caminho = _pdf(pasta, folhas=3)
+    projeto = Projeto(caminho_entrada=str(caminho), filtro_padrao=PRETO_E_BRANCO,
+                      dividir_folhas=False, detectar_regioes=False)
+    projeto.folhas = [ConfigFolha(indice=i, dividir=False) for i in range(3)]
+    projeto.paginas = [ConfigPagina(indice=i, folha=i, filtro=ORIGINAL) for i in range(3)]
+    tela = TelaConferir()
+    previas = GerenciadorPrevias(projeto.caminho_entrada, projeto, tela)
+    tela.carregar(projeto, HistoricoAcoes(), previas)
+    tela.barra_abas.setCurrentIndex(tela._abas_ativas.index("filtro"))
+    tela.ir_para_pagina(0)
+    yield tela
+    previas.parar()
+
+
+def _espiar_o_cartao(tela, chave=PRETO_E_BRANCO):
+    """Anota cada imagem posta no cartao (a ultima e a que ele mostra)."""
+    postas: list = []
+    cartao = tela.cartoes[chave]
+    original = cartao.definir_amostra
+
+    def definir(img):
+        postas.append(img)
+        original(img)
+
+    cartao.definir_amostra = definir
+    return postas
+
+
+def _esperar(condicao, segundos: float = 30.0) -> bool:
+    import time
+
+    from PySide6.QtWidgets import QApplication
+
+    fim = time.monotonic() + segundos
+    while time.monotonic() < fim:
+        QApplication.processEvents()
+        if condicao():
+            return True
+        time.sleep(0.02)
+    return False
+
+
+def test_cartao_pb_com_so_as_letras_vem_do_programa(conferir_original, monkeypatch):
+    import numpy as np
+
+    from ui.tela_conferir import DPI_CARTAO_DO_MISTO
+
+    tela = conferir_original
+    pedidos: list = []
+    do_programa = np.full((40, 30, 3), 7, np.uint8)
+
+    def pegar_com_filtro(indice, dpi, filtro):
+        pedidos.append((indice, dpi, filtro))
+        return do_programa
+
+    monkeypatch.setattr(tela.previas, "pegar_com_filtro", pegar_com_filtro)
+    # a previa da pagina ja chegou (o cartao e pedido depois dela, como o
+    # "Tirar o fundo": para nao disputar a maquina com ela)
+    monkeypatch.setattr(tela.previas, "pegar",
+                        lambda i, d: np.full((40, 30, 3), 128, np.uint8))
+    postas = _espiar_o_cartao(tela)
+    tela.projeto.misto_so_as_letras = True
+    tela.atualizar()
+    assert (0, DPI_CARTAO_DO_MISTO, PRETO_E_BRANCO) in pedidos
+    assert postas and postas[-1] is not None and int(postas[-1].max()) == 7
+
+    # a amostra pura que chega depois (_TarefaCartoes) nao passa por cima
+    puro = np.full((40, 30, 3), 200, np.uint8)
+    tela._cartoes_prontos(0, {PRETO_E_BRANCO: puro, ORIGINAL: puro, MELHORAR: puro})
+    assert int(postas[-1].max()) == 7, "o filtro puro apagou o Misto no cartao"
+
+
+def test_cartao_pb_sem_so_as_letras_continua_o_filtro_puro(conferir_original, monkeypatch):
+    import numpy as np
+
+    tela = conferir_original
+    pedidos: list = []
+    monkeypatch.setattr(tela.previas, "pegar_com_filtro",
+                        lambda i, d, f: pedidos.append(f) or None)
+    monkeypatch.setattr(tela.previas, "pegar",
+                        lambda i, d: __import__("numpy").full((40, 30, 3), 128, "uint8"))
+    postas = _espiar_o_cartao(tela)
+    tela.atualizar()
+    assert PRETO_E_BRANCO not in pedidos
+    puro = np.full((40, 30, 3), 200, np.uint8)
+    tela._cartoes_prontos(0, {PRETO_E_BRANCO: puro})
+    assert postas[-1] is puro
+
+
+def test_cartao_pb_com_a_pagina_ja_no_preto_e_branco_e_a_previa(conferir_original, monkeypatch):
+    """No Preto e branco, o cartao dele e a propria previa (que ja passa pelo
+    Misto): nada de desenhar a pagina duas vezes."""
+    tela = conferir_original
+    pedidos: list = []
+    monkeypatch.setattr(tela.previas, "pegar_com_filtro",
+                        lambda i, d, f: pedidos.append(f) or None)
+    monkeypatch.setattr(tela.previas, "pegar",
+                        lambda i, d: __import__("numpy").full((40, 30, 3), 128, "uint8"))
+    tela.projeto.misto_so_as_letras = True
+    tela.projeto.paginas[0].filtro = PRETO_E_BRANCO
+    tela.atualizar()
+    assert PRETO_E_BRANCO not in pedidos
+
+
+def test_cartao_pb_do_misto_chega_de_uma_tarefa_de_fundo(conferir_original):
+    """De ponta a ponta, com o GerenciadorPrevias de verdade: o pedido nao
+    trava a tela (volta na hora, sem imagem) e a imagem chega pelo sinal;
+    e e a mesma que core.pipeline.renderizar_com_filtro da com o Misto."""
+    import time
+
+    from core.pdf_io import abrir_pdf, limitar_altura
+    from ui.tela_conferir import DPI_CARTAO_DO_MISTO
+
+    tela = conferir_original
+    projeto = tela.projeto
+    projeto.misto_so_as_letras = True
+    projeto.misto_fora_do_texto = misto.FORA_TUDO       # sem o leitor de texto
+    postas = _espiar_o_cartao(tela)
+    inicio = time.monotonic()
+    tela.atualizar()
+    assert time.monotonic() - inicio < 2.0
+    assert _esperar(lambda: postas and postas[-1] is not None), "o cartao nao chegou"
+
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        esperado, _ = pipeline.renderizar_com_filtro(doc, projeto, projeto.paginas[0],
+                                                     PRETO_E_BRANCO, dpi=DPI_CARTAO_DO_MISTO)
+    finally:
+        doc.close()
+    import numpy as np
+
+    assert np.array_equal(postas[-1], limitar_altura(esperado, 260))
+    assert projeto.paginas[0].filtro == ORIGINAL, "o cartao nao pode mudar a pagina"

@@ -49,6 +49,9 @@ junto as escolhas do Misto desta página. O aviso "Tinta forte fora do texto"
 saem pelo "Só as letras" (a ilustração fica em cor) e volta quando ela é
 desligada, a cada atualização, em todas as páginas
 (core.pipeline.acertar_alertas_de_cor; bug Misto 1 do verificador, 05/10).
+Com "Só as letras" valendo na página, o cartão "Preto e branco" mostra a
+página como vai sair, com o Misto, desenhada numa tarefa de prévia
+(_cartao_do_misto; bug Misto 2).
 """
 
 from __future__ import annotations
@@ -193,6 +196,17 @@ CARTOES = [
 # core/camadas.py nao depende da resolucao, entao o cartao mostra o mesmo que
 # a pagina vai ter. Seguro mudar (so tempo e nitidez do cartao).
 DPI_CARTAO_SEM_FUNDO = 70
+
+# Modo Misto (bug Misto 2 do verificador, 05/10/2026): com "Só as letras"
+# valendo na página, o cartão "Preto e branco" é a página desenhada pelo
+# caminho do programa (core.pipeline.renderizar_com_filtro, com o Misto), e
+# não o filtro puro na amostra - senão ele mostra a gravura em preto e branco
+# e a página sai com ela em cor. Na resolução da prévia "Rápida", e não na
+# dos outros cartões: o leitor de texto (opções A e C) guarda as linhas por
+# nitidez (core.linhas_do_texto._serve), e achadas aqui servem para a prévia
+# e o PDF (a 70 DPI a prévia acharia de novo, mais 1 a 2,5 s). Seguro mudar
+# (só tempo e nitidez do cartão).
+DPI_CARTAO_DO_MISTO = DPI_PREVIA
 
 
 def protegido(metodo):
@@ -1637,6 +1651,13 @@ class TelaConferir(QWidget):
         programa (core/camadas.py na folha inteira), pedida ao
         GerenciadorPrevias depois que a prévia principal chegou (para não
         disputar a máquina com ela) - ver _cartao_sem_fundo.
+
+        Modo Misto (bug Misto 2, 05/10/2026): com "Só as letras" valendo na
+        página, o cartão "Preto e branco" também é desenhado pelo caminho do
+        programa, com o Misto (_cartao_do_misto), e não pelo filtro puro.
+        Arriscado: pintar nele a amostra pura (o Kaique escolheria às cegas:
+        o cartão mostrava a gravura em preto e branco e a página saía com ela
+        em cor - prints 09 e 10 do verificador).
         """
         from core.pdf_io import limitar_altura
 
@@ -1659,20 +1680,27 @@ class TelaConferir(QWidget):
         if TIRAR_FUNDO in outros:
             outros.remove(TIRAR_FUNDO)
             self._cartao_sem_fundo()
+        # Modo Misto (bug Misto 2): o cartao "Preto e branco" vem do caminho
+        # do programa (_cartao_do_misto). O filtro puro continua sendo
+        # calculado na amostra (para o aviso "ficou escura / texto quase
+        # sumiu", _conferir_qualidade_do_preto_e_branco), so nao vai para o
+        # cartao (_cartoes_a_pintar).
+        if self._cartao_pb_pelo_misto(pagina):
+            self._cartao_do_misto()
         base = self._imagem_sem_filtro()
         if base is None:
-            for chave in outros:
+            for chave in self._cartoes_a_pintar(outros, pagina):
                 self.cartoes[chave].definir_amostra(None)
             return
 
         chave_cache = (self.indice_pagina, pagina.forca_preto,
                        pagina.clareza_melhorar, pagina.intensidade_magico)
         if chave_cache == self._cartoes_cache_chave:
-            for chave in outros:
+            for chave in self._cartoes_a_pintar(outros, pagina):
                 self.cartoes[chave].definir_amostra(self._cartoes_cache.get(chave))
             return
 
-        for chave in outros:
+        for chave in self._cartoes_a_pintar(outros, pagina):
             self.cartoes[chave].definir_amostra(None)
         assert self.previas is not None
         self.previas.pedir_cartoes(
@@ -1698,6 +1726,43 @@ class TelaConferir(QWidget):
                 self.indice_pagina, DPI_CARTAO_SEM_FUNDO, TIRAR_FUNDO)
         cartao.definir_amostra(None if img is None else limitar_altura(img, 260))
 
+    def _cartao_pb_pelo_misto(self, pagina) -> bool:
+        """O cartão "Preto e branco" desta página tem de mostrar o Misto?
+        Sim quando ela NÃO está no Preto e branco (no Preto e branco, o cartão
+        dele é a própria prévia, que já passa pelo Misto) e, escolhendo-o, ela
+        sairia pelo "Só as letras" (dela ou do livro, com "Limpar a folha"):
+        a mesma conta de core.pipeline._filtrar. Barato (só lê campos)."""
+        assert self.projeto is not None
+        return bool(PRETO_E_BRANCO in self.cartoes
+                    and pagina.filtro != PRETO_E_BRANCO
+                    and self.projeto.limpar
+                    and misto.opcoes_da_pagina(self.projeto, pagina) is not None)
+
+    def _cartoes_a_pintar(self, chaves: list[str], pagina) -> list[str]:
+        """Os cartões que recebem a amostra com o filtro puro: todos menos o
+        "Preto e branco" quando ele vem do Misto (_cartao_pb_pelo_misto)."""
+        if self._cartao_pb_pelo_misto(pagina):
+            return [c for c in chaves if c != PRETO_E_BRANCO]
+        return list(chaves)
+
+    def _cartao_do_misto(self, img: np.ndarray | None = None) -> None:
+        """Bug Misto 2 (05/10/2026): põe no cartão "Preto e branco" a página
+        como ela vai sair escolhendo o Preto e branco, com o "Só as letras"
+        (core.pipeline.renderizar_com_filtro numa cópia da página: o Misto,
+        a gravura e o leitor de texto, numa tarefa de prévia - a tela não
+        espera). `img` é a que acabou de chegar (_previa_chegou); sem ela,
+        pega do cache do GerenciadorPrevias ou pede (e o cartão fica em
+        "preparando..." até chegar). Mesmo jeito do _cartao_sem_fundo."""
+        from core.pdf_io import limitar_altura
+
+        cartao = self.cartoes.get(PRETO_E_BRANCO)
+        if cartao is None or self.previas is None:
+            return
+        if img is None:
+            img = self.previas.pegar_com_filtro(
+                self.indice_pagina, DPI_CARTAO_DO_MISTO, PRETO_E_BRANCO)
+        cartao.definir_amostra(None if img is None else limitar_altura(img, 260))
+
     @protegido
     def _cartoes_prontos(self, indice: int, resultados: dict) -> None:
         """Os cartões calculados em segundo plano chegaram.
@@ -1711,8 +1776,11 @@ class TelaConferir(QWidget):
         self._cartoes_cache_chave = (indice, pagina.forca_preto,
                                       pagina.clareza_melhorar, pagina.intensidade_magico)
         self._cartoes_cache = resultados
+        # o "Preto e branco" puro nao vai para o cartao quando ele vem do
+        # Misto (_cartao_do_misto); continua no cache e no aviso abaixo
+        a_pintar = self._cartoes_a_pintar(list(resultados), pagina)
         for chave, amostra in resultados.items():
-            if chave in self.cartoes:
+            if chave in self.cartoes and chave in a_pintar:
                 self.cartoes[chave].definir_amostra(amostra)
 
         self._conferir_qualidade_do_preto_e_branco(pagina, resultados)
@@ -1889,6 +1957,15 @@ class TelaConferir(QWidget):
                 and chave == self.previas.chave_com_filtro(
                     self.indice_pagina, DPI_CARTAO_SEM_FUNDO, TIRAR_FUNDO)):
             self._cartao_sem_fundo(_img)
+        # Modo Misto (bug Misto 2): chegou o cartao "Preto e branco" com o
+        # "So as letras" da pagina da vez (a chave inclui as escolhas do
+        # Misto: uma que chegue atrasada, de antes de uma mudanca, nao serve)
+        if (self.aba_atual == ABA_FILTRO and self.projeto is not None
+                and 0 <= self.indice_pagina < len(self.projeto.paginas)
+                and self._cartao_pb_pelo_misto(self.projeto.paginas[self.indice_pagina])
+                and chave == self.previas.chave_com_filtro(
+                    self.indice_pagina, DPI_CARTAO_DO_MISTO, PRETO_E_BRANCO)):
+            self._cartao_do_misto(_img)
 
     def _alertas_da_previa(self) -> None:
         """A prévia da página que está na tela pode ter mudado os alertas dela.
