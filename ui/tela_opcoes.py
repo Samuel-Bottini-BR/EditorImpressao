@@ -42,7 +42,10 @@ escolhas_do_misto.py, gravado no livro (Projeto.misto_*, conferencia 10,
 P1 (a)). Com "So as letras" marcada, a caixinha das molduras fica apagada
 (cinza) e volta como estava ao desmarcar (conferencia 11, P5 (a)). Como as
 outras opcoes desta tela, vale ao clicar "Conferir" e nao entra no desfazer
-(o desfazer e das acoes na conferencia).
+(o desfazer e das acoes na conferencia). Consertos do parecer do verificador
+(05/10): "So as letras" e os botoes so aparecem com o Preto e branco escolhido
+(a escolha fica guardada quando some), e o resumo diz o que o "So as letras"
+vai fazer (core.pipeline._frase_do_so_as_letras).
 """
 
 from __future__ import annotations
@@ -654,11 +657,18 @@ class TelaOpcoes(QWidget):
                                                or misto.PAPEL_DA_GRAVURA_PADRAO)
         self.projeto.misto_letras_na_moldura = (escolhas.combo_letras.currentData()
                                                 or misto.LETRAS_NA_MOLDURA_PADRAO)
+        # "So as letras" (e os tres botoes) so aparecem com o Preto e branco
+        # escolhido: so nele o Misto vale (core.pipeline._filtrar). Ressalva 3
+        # do verificador (05/10): com o Original aparecia e confundia. Escondida,
+        # a escolha fica guardada e volta ao escolher o Preto e branco de novo.
+        no_preto_e_branco = self.projeto.filtro_padrao == PRETO_E_BRANCO
+        self.escolhas_misto.setVisible(no_preto_e_branco)
         # P5 (conferencia 11): a caixinha das molduras fica apagada (cinza)
-        # enquanto "So as letras" estiver marcada, e volta como estava ao
-        # desligar - o valor dela nao muda, so nao vale no Misto
-        self.cx_decoracao_pb.setEnabled(not so_as_letras)
-        self._frase_decoracao_pb.setEnabled(not so_as_letras)
+        # enquanto "So as letras" estiver marcada (e a vista), e volta como
+        # estava ao desligar - o valor dela nao muda, so nao vale no Misto
+        misto_vale = so_as_letras and no_preto_e_branco
+        self.cx_decoracao_pb.setEnabled(not misto_vale)
+        self._frase_decoracao_pb.setEnabled(not misto_vale)
 
         # os painéis so aparecem quando fazem sentido; o filtro "Tirar o
         # fundo" (item 1.1), so em PDF com camadas - fora dele nao faria nada

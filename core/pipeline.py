@@ -1502,6 +1502,36 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
     _checar(cancelado)
 
 
+def _so_as_letras_no_livro(projeto: Projeto) -> bool:
+    """"So as letras" vale no livro: "Limpar a folha", o Preto e branco como
+    filtro do livro e a caixinha marcada (Projeto.misto_so_as_letras)."""
+    return bool(projeto.limpar and projeto.filtro_padrao == PRETO_E_BRANCO
+                and getattr(projeto, "misto_so_as_letras", False) is True)
+
+
+def _frase_do_so_as_letras(projeto: Projeto) -> str:
+    """O que o Preto e branco com "So as letras" vai fazer de verdade, em
+    portugues simples, para o resumo da tela "O que fazer" (ressalva 4 do
+    verificador do Misto, 05/10/2026: a frase dizia "deixar tudo em preto e
+    branco" com a caixinha marcada). Muda com o botao escolhido (A, B ou C,
+    core.misto.FORAS_DO_TEXTO) e com "Achar as gravuras" desligado (ai so
+    fica como no original o que a pessoa marcar a mao). Seguro mudar: os
+    textos (sem jargao: nada de "OCR", "mascara", "Misto")."""
+    _ligado, escolhas = misto.escolhas_da_pagina(projeto, None)
+    if getattr(projeto, "gravura_forma", "livre") == "desligada":
+        imagens = "as gravuras que você marcar à mão"
+    else:
+        imagens = "gravuras, fotos, molduras e iluminuras"
+    if escolhas.fora_do_texto == misto.FORA_TUDO:
+        return (f"deixar tudo em preto e branco menos {imagens} "
+                f"(essas ficam como no original)")
+    if escolhas.fora_do_texto == misto.FORA_APAGAR:
+        return (f"deixar só o texto que eu achar, em preto e branco ({imagens} "
+                f"ficam como no original; o resto vai a branco)")
+    return (f"deixar só as letras em preto e branco ({imagens} ficam como no "
+            f"original; fora do texto, só fica a tinta escura)")
+
+
 def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     """A caixa (i) da tela 2, atualizada ao vivo. Sem jargao nenhum.
 
@@ -1509,6 +1539,10 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     com camadas), diz que tira o fundo de todas as paginas e que, onde nao
     der, a pagina fica como veio (ver usa_tirar_fundo e _filtrar). Num PDF
     sem camadas esse filtro nao faz nada, e o resumo nao fala dele.
+
+    Modo Misto (05/10/2026): com "So as letras" marcada no Preto e branco, a
+    frase do filtro diz o que vai acontecer de verdade
+    (_frase_do_so_as_letras), e nao "deixar tudo em preto e branco".
     """
     from core.filtros import NOMES_AMIGAVEIS
 
@@ -1528,7 +1562,10 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
                           "fica como veio)")
     elif projeto.limpar and projeto.filtro_padrao != ORIGINAL:
         nome = NOMES_AMIGAVEIS.get(projeto.filtro_padrao, projeto.filtro_padrao).lower()
-        partes.append(f"deixar tudo em {nome}")
+        if _so_as_letras_no_livro(projeto):
+            partes.append(_frase_do_so_as_letras(projeto))
+        else:
+            partes.append(f"deixar tudo em {nome}")
     if comum:
         # item 1.2: o grupo "Gravuras e fotos" (ui/tela_opcoes.py)
         forma = getattr(projeto, "gravura_forma", "livre")
@@ -1536,7 +1573,9 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
             partes.append("não procurar gravuras e fotos")
         elif forma == "retangular":
             partes.append("achar as fotos em retângulo")
-        else:
+        elif not _so_as_letras_no_livro(projeto):
+            # com "So as letras", separar a gravura do texto ja esta dito
+            # na frase dela (_frase_do_so_as_letras)
             partes.append("separar as gravuras do texto")
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")

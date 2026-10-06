@@ -90,6 +90,9 @@ def test_cada_controle_do_livro_grava_no_projeto(janela, pasta):
 def test_a_caixinha_das_molduras_apaga_e_volta_como_estava(janela, pasta, molduras_antes):
     janela.abrir_livro(str(_pdf(pasta)))
     tela, projeto = janela.tela_opcoes, janela.projeto
+    # "So as letras" so aparece (e so apaga a caixinha) com o Preto e branco
+    # escolhido no livro (conserto de 05/10, ressalva 3 do verificador)
+    tela.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
     tela.cx_decoracao_pb.setChecked(molduras_antes)
     tela.escolhas_misto.caixa.setChecked(True)
     assert not tela.cx_decoracao_pb.isEnabled(), "tinha de ficar apagada (cinza)"

@@ -23,6 +23,7 @@ from modelos import ConfigFolha, ConfigPagina, Projeto  # noqa: E402
 from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixtures
     _pdf,
     app,
+    janela,
     pasta,
 )
 
@@ -497,3 +498,81 @@ def test_ligar_so_as_letras_na_pagina_nao_espreme(conferir_original):
         QApplication.processEvents()
     _nada_espremido(tela)
     tela.hide()
+
+
+# --- 4. "So as letras" so com o Preto e branco; o resumo diz o que acontece -----
+#
+# Ressalvas 3 e 4 do verificador (05/10): na tela "O que fazer", "So as
+# letras" aparecia mesmo com o Original escolhido, e o resumo dizia "deixar
+# tudo em preto e branco" com ela marcada.
+
+def _escolher_no_livro(tela, filtro):
+    tela.radios_de_filtro[filtro].setChecked(True)
+    tela._mudou()
+
+
+def test_so_as_letras_so_aparece_com_o_preto_e_branco_no_livro(janela, pasta):
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela, projeto = janela.tela_opcoes, janela.projeto
+    e = tela.escolhas_misto
+    _escolher_no_livro(tela, PRETO_E_BRANCO)
+    assert not e.isHidden()
+    e.caixa.setChecked(True)
+    assert not tela.cx_decoracao_pb.isEnabled()
+    for filtro in (ORIGINAL, MELHORAR, MAGICO_PRO):
+        _escolher_no_livro(tela, filtro)
+        assert e.isHidden(), f"'So as letras' a vista com {filtro}"
+        # a caixinha das molduras volta a valer (o Misto nao vale fora do P&B)
+        assert tela.cx_decoracao_pb.isEnabled()
+        assert projeto.misto_so_as_letras is True, "esconder nao esquece a escolha"
+    _escolher_no_livro(tela, PRETO_E_BRANCO)
+    assert not e.isHidden() and e.caixa.isChecked() and not e.painel.isHidden()
+    assert not tela.cx_decoracao_pb.isEnabled()
+
+
+def test_o_resumo_da_tela_diz_o_que_o_so_as_letras_faz(janela, pasta):
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela = janela.tela_opcoes
+    _escolher_no_livro(tela, PRETO_E_BRANCO)
+    assert "deixar tudo em preto e branco" in tela.resumo.text()
+    tela.escolhas_misto.caixa.setChecked(True)
+    texto = tela.resumo.text()
+    assert "deixar tudo em preto e branco" not in texto
+    assert "só as letras em preto e branco" in texto
+    assert "gravuras, fotos, molduras e iluminuras ficam como no original" in texto
+    tela.escolhas_misto.caixa.setChecked(False)
+    assert "deixar tudo em preto e branco" in tela.resumo.text()
+
+
+def _resumo(**campos) -> str:
+    projeto = Projeto(caminho_entrada="x.pdf", filtro_padrao=PRETO_E_BRANCO,
+                      dividir_folhas=False, endireitar=False, cortar_bordas=False,
+                      montar_cadernos=False, **campos)
+    return pipeline.resumo_em_portugues(projeto, 10)
+
+
+def test_resumo_em_portugues_com_so_as_letras():
+    sem = _resumo()
+    assert sem == "Vou deixar tudo em preto e branco e separar as gravuras do texto."
+    a = _resumo(misto_so_as_letras=True)
+    assert a == ("Vou deixar só as letras em preto e branco (gravuras, fotos, molduras "
+                 "e iluminuras ficam como no original; fora do texto, só fica a tinta "
+                 "escura).")
+    b = _resumo(misto_so_as_letras=True, misto_fora_do_texto=misto.FORA_TUDO)
+    assert b.startswith("Vou deixar tudo em preto e branco menos gravuras, fotos")
+    c = _resumo(misto_so_as_letras=True, misto_fora_do_texto=misto.FORA_APAGAR)
+    assert "só o texto que eu achar" in c and "o resto vai a branco" in c
+    sem_gravuras = _resumo(misto_so_as_letras=True, gravura_forma="desligada")
+    assert "as gravuras que você marcar à mão ficam como no original" in sem_gravuras
+    assert "não procurar gravuras e fotos" in sem_gravuras
+    for frase in (a, b, c, sem_gravuras):
+        for jargao in ("ocr", "misto", "máscara", "binari", "docTR"):
+            assert jargao not in frase.lower(), jargao
+
+
+def test_resumo_fora_do_preto_e_branco_nao_fala_das_letras():
+    projeto = Projeto(caminho_entrada="x.pdf", filtro_padrao=MELHORAR,
+                      misto_so_as_letras=True, dividir_folhas=False, endireitar=False,
+                      cortar_bordas=False, montar_cadernos=False)
+    assert pipeline.resumo_em_portugues(projeto, 10) == (
+        "Vou deixar tudo em melhorar e separar as gravuras do texto.")
