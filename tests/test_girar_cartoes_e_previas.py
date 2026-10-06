@@ -182,3 +182,126 @@ def test_d1_o_comparar_da_tela_ampliada_tambem_gira_uma_vez(janela, pasta, app):
     assert _bombear_ate(app, lambda: ampliada._imagem_do_outro_filtro() is not None)
     assert _canto(ampliada._imagem_do_outro_filtro()) == CANTO_DO_GIRO[90]
     ampliada.close()
+
+
+# ---------------------------------------------------------------------------
+# D4: uma vez, logo depois de girar "todas", a folha 4 mostrou a imagem da
+# folha 2 (print p14 do verificador: aba Bordas, "atualizando...").
+# ---------------------------------------------------------------------------
+
+
+def _livro_e_projeto(pasta: Path, folhas: int = 4):
+    from modelos import ConfigFolha, ConfigPagina, Projeto
+
+    caminho = _pdf_com_canto(pasta, folhas)
+    projeto = Projeto(caminho_entrada=str(caminho), nome="canto")
+    projeto.folhas = [ConfigFolha(indice=i) for i in range(folhas)]
+    projeto.paginas = [ConfigPagina(indice=i, folha=i) for i in range(folhas)]
+    return caminho, projeto
+
+
+def test_d4_a_previa_que_chega_depois_do_giro_nao_entra_no_cache(pasta, app, monkeypatch):
+    """Corrida: a previa da pagina 1 foi pedida no giro 0 e so foi desenhada
+    depois de a pessoa girar (a tarefa le o projeto quando roda). Ela chegava
+    e era guardada sob a chave do giro 0 - com a folha girada dentro. Ao
+    desfazer o giro, a tela mostrava essa imagem errada, de graca, do cache.
+    Agora o que chega de antes do invalidar e jogado fora (e pedido de novo).
+    """
+    import threading
+
+    from ui import tarefas as mod_tarefas
+
+    caminho, projeto = _livro_e_projeto(pasta)
+    soltar = threading.Event()
+
+    def renderizar_que_espera(doc, projeto_, pagina, dpi):
+        soltar.wait(5)
+        giro = projeto_.folhas[pagina.folha].rotacao       # lido na hora, como o de verdade
+        return np.full((10, 10, 3), giro % 250, np.uint8), False
+
+    monkeypatch.setattr(mod_tarefas, "renderizar_pagina", renderizar_que_espera)
+    previas = mod_tarefas.GerenciadorPrevias(str(caminho), projeto, None)
+    chegadas: list = []
+    previas.pronta.connect(lambda chave, img: chegadas.append(chave))
+    try:
+        assert previas.pegar(1, 110) is None                  # pedida no giro 0
+        chave_do_giro_0 = previas.chave(1, 110)
+        projeto.folhas[1].rotacao = 90                        # a pessoa gira...
+        previas.invalidar(1)                                  # ...e a tela invalida
+        soltar.set()
+        _bombear_ate(app, lambda: not previas._pool.activeThreadCount(), 5)
+        for _ in range(5):
+            app.processEvents()
+        assert chave_do_giro_0 not in chegadas, "a previa velha foi entregue como nova"
+        projeto.folhas[1].rotacao = 0                         # desfazer
+        previas.invalidar(1)
+        assert previas.pegar(1, 110) is None, "o cache devolveu a folha girada no giro 0"
+        assert _bombear_ate(app, lambda: previas.pegar(1, 110) is not None, 5)
+        assert int(previas.pegar(1, 110).max()) == 0, "e a de agora chega certa"
+    finally:
+        soltar.set()
+        previas.parar()
+
+
+def test_d4_a_folha_crua_leva_o_giro_do_pedido(pasta, app, monkeypatch):
+    """A folha crua (aba Onde cortar) pedida no giro 0 e desenhada depois do
+    giro sai no giro 0, que e o que a chave dela diz."""
+    import threading
+
+    from ui import tarefas as mod_tarefas
+
+    caminho, projeto = _livro_e_projeto(pasta)
+    soltar = threading.Event()
+    original = mod_tarefas.abrir_pdf
+
+    def abrir_que_espera(c):
+        soltar.wait(5)
+        return original(c)
+
+    monkeypatch.setattr(mod_tarefas, "abrir_pdf", abrir_que_espera)
+    previas = mod_tarefas.GerenciadorPrevias(str(caminho), projeto, None)
+    try:
+        assert previas.pegar_folha(2, 40) is None
+        projeto.folhas[2].rotacao = 90
+        soltar.set()
+        projeto.folhas[2].rotacao = 0
+        assert _bombear_ate(app, lambda: previas.pegar_folha(2, 40) is not None, 10)
+        assert _canto(previas.pegar_folha(2, 40)) == CANTO_DO_GIRO[0]
+    finally:
+        soltar.set()
+        previas.parar()
+
+
+@pytest.mark.parametrize("aba", ["bordas", "angulo"])
+def test_d4_trocar_de_pagina_nao_deixa_a_imagem_da_outra_pagina(janela, pasta, app,
+                                                                monkeypatch, aba):
+    """Andando para uma pagina cuja previa ainda nao chegou, a tela mostrava a
+    imagem da pagina de antes com "atualizando..." (o visualizador guarda a
+    imagem anterior para nao piscar ao ajustar a MESMA pagina). Agora, de
+    outra pagina, mostra "Preparando a previa..." ate a certa chegar."""
+    janela.abrir_livro(str(_pdf_com_canto(pasta, 4)))
+    projeto = janela.projeto
+    projeto.dividir_folhas = False
+    projeto.detectar_regioes = False
+    janela._analise_pronta(pipeline.analisar_projeto(projeto))
+    tela = janela.tela_conferir
+    tela.barra_abas.setCurrentIndex(tela._abas_ativas.index(aba))
+    vis = tela.visualizadores[aba]
+    imagem = np.full((50, 40, 3), 200, np.uint8)
+    prontas = {0}
+    monkeypatch.setattr(tela.previas, "pegar",
+                        lambda i, d: imagem if i in prontas else None)
+    monkeypatch.setattr(tela.previas, "pegar_para_recorte",
+                        lambda i, d: imagem if i in prontas else None)
+    tela.ir_para_pagina(0)
+    assert vis._pixmap is not None
+    tela.ir_para_pagina(1)
+    assert vis.carregando
+    assert vis._pixmap is None, "a imagem da pagina 1 ficou na tela da pagina 2"
+    # na MESMA pagina, enquanto a nova nao chega, a de antes continua (nao pisca)
+    prontas.add(1)
+    tela.ir_para_pagina(1)
+    assert vis._pixmap is not None
+    prontas.discard(1)
+    tela.atualizar()
+    assert vis._pixmap is not None and vis.carregando

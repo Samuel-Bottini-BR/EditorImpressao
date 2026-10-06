@@ -193,6 +193,7 @@ class Visualizador(QWidget):
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self._pixmap: QPixmap | None = None
+        self._dono = None            # de que pagina/folha e a imagem (definir_imagem)
         self._area = QRect()          # onde a imagem foi desenhada
         self.modo = MODO_NENHUM
         self.carregando = True
@@ -310,19 +311,30 @@ class Visualizador(QWidget):
 
     # --- conteudo ---------------------------------------------------------
 
-    def definir_imagem(self, img: np.ndarray | None) -> None:
+    def definir_imagem(self, img: np.ndarray | None, dono=None) -> None:
         """Troca a imagem. None quer dizer "ainda vem".
 
         Quando a nova ainda não chegou, a anterior CONTINUA na tela em vez de
         apagar tudo. Sem isso, mexer na linha de corte ou no medidor faz a
         página piscar em branco a cada ajuste - e justamente no momento em que
         o usuário está olhando o detalhe.
+
+        dono: de que página (ou folha) é a imagem - qualquer valor que se
+        compare, ex. ("pagina", 3). A anterior só continua na tela se for do
+        MESMO dono; de outra página, a tela mostra "Preparando a prévia..."
+        até a certa chegar. D4 do verificador (06/10/2026, print p14): andando
+        rápido e girando "todas", a folha 4 mostrou a imagem da folha 2 com
+        "atualizando...". None (quem não diz): como antes, a anterior fica.
         """
         if img is None:
             self.carregando = True
+            if dono is not None and dono != self._dono:
+                self._pixmap = None
         else:
             self._pixmap = QPixmap.fromImage(numpy_para_qimage(img))
             self.carregando = False
+        if dono is not None:
+            self._dono = dono
         self.update()
 
     def definir_modo(self, modo: str) -> None:

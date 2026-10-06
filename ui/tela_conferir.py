@@ -693,7 +693,7 @@ class TelaConferir(QWidget):
         cada vez. Ver `core.pipeline.preparar_para_recorte`.
         """
         img = self.previas.pegar_para_recorte(self.indice_pagina, self._dpi_atual)
-        vis.definir_imagem(img)
+        vis.definir_imagem(img, dono=("pagina", self.indice_pagina))   # D4
         if img is not None:
             vis.definir_composicao((0.0, 0.0, 1.0, 1.0), (img.shape[1], img.shape[0]))
 
@@ -717,14 +717,14 @@ class TelaConferir(QWidget):
         from core.folha import compor_na_folha, conteudo_como_retangulo
 
         if img is None:
-            vis.definir_imagem(None)
+            vis.definir_imagem(None, dono=("pagina", self.indice_pagina))   # D4
             return
 
         composto = compor_na_folha(
             img, pagina.tamanho_folha_cm, self._dpi_atual,
             escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
         )
-        vis.definir_imagem(composto)
+        vis.definir_imagem(composto, dono=("pagina", self.indice_pagina))
 
         tamanho_conteudo_px = (img.shape[1], img.shape[0])
         if composto.shape[:2] == img.shape[:2]:
@@ -1643,7 +1643,7 @@ class TelaConferir(QWidget):
         if aba == ABA_CORTE:
             img = self.previas.pegar_folha(self.indice_folha, DPI_PREVIA)
             vis = self.visualizadores[ABA_CORTE]
-            vis.definir_imagem(img)
+            vis.definir_imagem(img, dono=("folha", self.indice_folha))   # D4
             vis.definir_corte(self.projeto.folhas[self.indice_folha].posicao_corte)
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             return
@@ -1674,7 +1674,7 @@ class TelaConferir(QWidget):
                 vis.definir_modo(MODO_RECORTE)
         elif aba == ABA_ANGULO:
             vis = self.visualizadores[ABA_ANGULO]
-            vis.definir_imagem(img)
+            vis.definir_imagem(img, dono=("pagina", self.indice_pagina))   # D4
             vis.definir_angulo(pagina.angulo_manual or 0.0)
         elif aba == ABA_MARCAR:
             self._atualizar_marcacao(img, pagina)

@@ -282,7 +282,8 @@ class TelaAmpliada(QDialog):
 
         if self.modo == MODO_CORTAR:
             img = previas.pegar_folha(self.conferir.indice_folha, DPI_AMPLIADA)
-            self.vista.definir_imagem(img)
+            # D4: de outra folha, a imagem anterior nao fica na tela
+            self.vista.definir_imagem(img, dono=("folha", self.conferir.indice_folha))
             folha = self.projeto.folhas[self.conferir.indice_folha]
             self.vista.definir_corte(folha.posicao_corte)
             return
@@ -291,12 +292,13 @@ class TelaAmpliada(QDialog):
         pagina = self.projeto.paginas[indice]
 
         img = previas.pegar(indice, DPI_AMPLIADA)
-        self.vista.definir_imagem(img)
+        self.vista.definir_imagem(img, dono=("pagina", indice))      # D4
         if self.modo == MODO_BORDAS:
             self.vista.definir_recorte(pagina.recorte or (0.0, 0.0, 1.0, 1.0))
 
         if self.comparando:
-            self.vista_b.definir_imagem(self._imagem_do_outro_filtro())
+            self.vista_b.definir_imagem(self._imagem_do_outro_filtro(),
+                                        dono=("pagina", indice, self.combo_comparar.currentData()))
 
     def _imagem_do_outro_filtro(self) -> np.ndarray | None:
         """A mesma página com o filtro escolhido no seletor do comparar.

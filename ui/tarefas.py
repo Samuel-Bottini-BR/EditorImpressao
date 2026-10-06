@@ -25,6 +25,14 @@ from core.pipeline import (
 from modelos import Projeto
 from registro import registrar_erro
 
+# Ordem da fila de previas (QThreadPool.start: maior sai primeiro). D4,
+# 06/10/2026: a pagina que esta na tela passa na frente das adiantadas
+# (pre_carregar) - depois de girar "todas", a fila estava cheia de pedidos
+# adiantados do giro de antes, e a pagina da vez esperava atras deles.
+# Seguro mudar: os numeros, mantendo a da vez maior.
+PRIORIDADE_DA_VEZ = 1
+PRIORIDADE_ADIANTADA = 0
+
 # Quantas previas ficam guardadas na memoria. Cada uma tem ~900 px de altura;
 # 30 delas cabem folgado e cobrem a navegacao para frente e para tras.
 TAMANHO_CACHE = 30
@@ -205,8 +213,10 @@ class _SinaisPrevia(QObject):
     """Sinais de uma tarefa de prévia. Existe separado de _TarefaPrevia porque
     QRunnable nao e QObject e nao pode emitir sinal Qt sozinho."""
 
-    pronta = Signal(str, object)   # chave, imagem numpy
-    falhou = Signal(str)
+    # chave, imagem numpy, geracao do pedido (GerenciadorPrevias._geracao_de;
+    # None = folha crua, que nunca fica velha: o giro vai na chave e no pedido)
+    pronta = Signal(str, object, object)
+    falhou = Signal(str, object)              # chave, geracao do pedido
 
 
 class _SinaisCartoes(QObject):
@@ -268,9 +278,14 @@ class _TarefaPrevia(QRunnable):
 
     def __init__(self, chave: str, caminho_pdf: str, projeto: Projeto,
                  indice_pagina: int, dpi: int, sinais: _SinaisPrevia,
-                 filtro: str | None = None, rotacao: int | None = None) -> None:
+                 filtro: str | None = None, rotacao: int | None = None,
+                 geracao: tuple | None = None) -> None:
         super().__init__()
         self.chave = chave
+        # De que "geracao" da pagina e o pedido (GerenciadorPrevias._geracao_de):
+        # volta junto com a imagem, e o gerenciador joga fora a que chegar de
+        # antes de um invalidar (D4, 06/10/2026). None: sempre vale.
+        self.geracao = geracao
         self.caminho_pdf = caminho_pdf
         self.projeto = projeto
         self.indice_pagina = indice_pagina
@@ -307,10 +322,10 @@ class _TarefaPrevia(QRunnable):
                                                    self.filtro, dpi=self.dpi)
             finally:
                 doc.close()
-            _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
+            _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img, self.geracao)
         except Exception:  # noqa: BLE001 - previa que falha nao derruba a tela
             registrar_erro("previa", traceback.format_exc())
-            _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave)
+            _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave, self.geracao)
 
     def _para_recorte(self) -> None:
         """Girada e dividida, mas nunca cortada - o que a aba Bordas mostra
@@ -326,7 +341,7 @@ class _TarefaPrevia(QRunnable):
             img = renderizar_pagina_para_recorte(doc, self.projeto, pagina, dpi=self.dpi)
         finally:
             doc.close()
-        _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
+        _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img, self.geracao)
 
     def _folha_crua(self) -> None:
         """A folha inteira, sem nenhum processamento alem do giro de 90 em 90
@@ -351,7 +366,7 @@ class _TarefaPrevia(QRunnable):
             rotacao = self.projeto.folhas[self.indice_pagina].rotacao
         if rotacao:
             img = girar_90(img, rotacao)
-        _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img)
+        _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img, self.geracao)
 
 
 class GerenciadorPrevias(QObject):
@@ -373,7 +388,17 @@ class GerenciadorPrevias(QObject):
         self.projeto = projeto
         self._cache: dict[str, np.ndarray] = {}
         self._ordem: list[str] = []
-        self._pedidas: set[str] = set()
+        # chave pedida -> geracao do pedido (None para a folha crua)
+        self._pedidas: dict[str, tuple | None] = {}
+        # D4 (06/10/2026): quantas vezes cada pagina (e o livro todo) foi
+        # invalidada. A tarefa de previa le o projeto quando RODA, nao quando
+        # e pedida: uma previa pedida antes de um giro e desenhada depois
+        # dele era guardada sob a chave de antes, com a folha girada dentro
+        # (e voltava do cache, errada, ao desfazer o giro). Cada pedido leva
+        # a geracao em que foi feito; o que chega de uma geracao que ja
+        # passou nao entra no cache nem na tela (_guardar).
+        self._geracoes: dict[int, int] = {}
+        self._geracao_do_livro = 0
 
         self._pool = QThreadPool(self)
         # Duas ao mesmo tempo: uma para a pagina que o usuario esta olhando e
@@ -434,16 +459,38 @@ class GerenciadorPrevias(QObject):
         self.pedir(indice, dpi)
         return None
 
-    def pedir(self, indice: int, dpi: int) -> None:
-        """Poe na fila do pool, se ainda nao estiver no cache nem ja pedida."""
+    def pedir(self, indice: int, dpi: int, prioridade: int | None = None) -> None:
+        """Poe na fila do pool, se ainda nao estiver no cache nem ja pedida.
+
+        prioridade: PRIORIDADE_DA_VEZ (o padrao; a pagina na tela) ou
+        PRIORIDADE_ADIANTADA (pre_carregar)."""
         chave = self.chave(indice, dpi)
         if chave in self._cache or chave in self._pedidas:
             return
         if not 0 <= indice < len(self.projeto.paginas):
             return
-        self._pedidas.add(chave)
+        self._comecar(chave, indice, dpi,
+                      PRIORIDADE_DA_VEZ if prioridade is None else prioridade)
+
+    # --- pedidos e geracoes (D4) ---------------------------------------------
+
+    def _geracao_de(self, indice: int) -> tuple:
+        """A geracao de agora da pagina `indice`: muda a cada invalidar dela
+        ou do livro todo."""
+        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0))
+
+    def _comecar(self, chave: str, indice: int, dpi: int, prioridade: int,
+                 filtro: str | None = None, rotacao: int | None = None,
+                 folha: bool = False) -> None:
+        """Anota o pedido e poe a tarefa no pool. A folha crua (folha=True)
+        nao leva geracao: o giro dela vai no pedido e na chave, e nada mais
+        a muda. Prioridade maior sai primeiro (QThreadPool.start)."""
+        geracao = None if folha else self._geracao_de(indice)
+        self._pedidas[chave] = geracao
         self._pool.start(
-            _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
+            _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
+                          filtro=filtro, rotacao=rotacao, geracao=geracao),
+            prioridade,
         )
 
     # --- a pagina com outro filtro (item 1.1) --------------------------------
@@ -468,11 +515,7 @@ class GerenciadorPrevias(QObject):
             self._promover(chave)
             return self._cache[chave]
         if chave not in self._pedidas and 0 <= indice < len(self.projeto.paginas):
-            self._pedidas.add(chave)
-            self._pool.start(
-                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi,
-                              self._sinais, filtro=filtro)
-            )
+            self._comecar(chave, indice, dpi, PRIORIDADE_ADIANTADA, filtro=filtro)
         return None
 
     # --- imagem para ajustar o recorte (aba Bordas) ------------------------
@@ -493,10 +536,7 @@ class GerenciadorPrevias(QObject):
             self._promover(chave)
             return self._cache[chave]
         if chave not in self._pedidas and 0 <= indice < len(self.projeto.paginas):
-            self._pedidas.add(chave)
-            self._pool.start(
-                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais)
-            )
+            self._comecar(chave, indice, dpi, PRIORIDADE_DA_VEZ)
         return None
 
     def pedir_cartoes(self, indice: int, base: np.ndarray, filtros: list[str],
@@ -528,7 +568,8 @@ class GerenciadorPrevias(QObject):
         rotacao = self._giro_da_folha(indice) if girada else 0
         return f"folha:{indice}:{dpi}:{rotacao}"
 
-    def pegar_folha(self, indice: int, dpi: int, girada: bool = True) -> np.ndarray | None:
+    def pegar_folha(self, indice: int, dpi: int, girada: bool = True,
+                    prioridade: int | None = None) -> np.ndarray | None:
         """Equivalente a `pegar`, mas para a folha crua (sem processamento).
 
         girada=True (a aba Onde cortar e a tela ampliada no modo cortar): com
@@ -547,30 +588,41 @@ class GerenciadorPrevias(QObject):
             self._promover(chave)
             return self._cache[chave]
         if chave not in self._pedidas and 0 <= indice < len(self.projeto.folhas):
-            self._pedidas.add(chave)
-            self._pool.start(
-                _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
-                              rotacao=rotacao)
-            )
+            self._comecar(chave, indice, dpi,
+                          PRIORIDADE_DA_VEZ if prioridade is None else prioridade,
+                          rotacao=rotacao, folha=True)
         return None
 
     def pre_carregar_folhas(self, indice: int, dpi: int, quantas: int = 3) -> None:
         """Adianta as próximas folhas cruas enquanto a pessoa olha a atual."""
         for salto in range(1, quantas + 1):
             if indice + salto < len(self.projeto.folhas):
-                self.pegar_folha(indice + salto, dpi)
+                self.pegar_folha(indice + salto, dpi, prioridade=PRIORIDADE_ADIANTADA)
 
     def pre_carregar(self, indice: int, dpi: int, quantas: int = 3) -> None:
         """Adianta as próximas páginas enquanto o usuario olha a atual."""
         for salto in range(1, quantas + 1):
-            self.pedir(indice + salto, dpi)
+            self.pedir(indice + salto, dpi, prioridade=PRIORIDADE_ADIANTADA)
 
     def invalidar(self, indice: int | None = None) -> None:
-        """Some com o cache (de uma página ou de tudo)."""
+        """Some com o cache (de uma página ou de tudo).
+
+        D4 (06/10/2026): passa tambem a geracao da pagina (ou do livro) para
+        a frente. O que ainda esta sendo desenhado foi pedido antes desta
+        mudanca: quando chegar, e jogado fora (_guardar), e o pedido sai da
+        lista de "ja pedidas" agora - o proximo pegar pede de novo, ja com o
+        estado novo. A folha crua nao muda com nada disso (o giro vai na
+        chave) e fica. Arriscado: guardar o que chega de uma geracao velha."""
         if indice is None:
             self._cache.clear()
             self._ordem.clear()
+            self._geracao_do_livro += 1
+            for chave in [c for c, g in self._pedidas.items() if g is not None]:
+                del self._pedidas[chave]
             return
+        self._geracoes[indice] = self._geracoes.get(indice, 0) + 1
+        for chave in [c for c, g in self._pedidas.items() if g is not None and g[0] == indice]:
+            del self._pedidas[chave]
         prefixo = f"{indice}:"
         for chave in [c for c in self._ordem if c.startswith(prefixo)]:
             self._cache.pop(chave, None)
@@ -578,9 +630,17 @@ class GerenciadorPrevias(QObject):
 
     # --- interno ----------------------------------------------------------
 
-    def _guardar(self, chave: str, img: np.ndarray) -> None:
-        """Poe no cache e descarta a mais antiga se passar de TAMANHO_CACHE (LRU simples)."""
-        self._pedidas.discard(chave)
+    def _guardar(self, chave: str, img: np.ndarray, geracao: tuple | None = None) -> None:
+        """Poe no cache e descarta a mais antiga se passar de TAMANHO_CACHE (LRU simples).
+
+        geracao: a do pedido (_comecar). Se a pagina foi invalidada depois do
+        pedido, a imagem e de um estado que ja passou: nao entra no cache nem
+        e anunciada (D4, 06/10/2026)."""
+        if geracao is not None and tuple(geracao) != self._geracao_de(geracao[0]):
+            if self._pedidas.get(chave) == geracao:
+                del self._pedidas[chave]
+            return
+        self._pedidas.pop(chave, None)
         self._cache[chave] = img
         self._ordem.append(chave)
         while len(self._ordem) > TAMANHO_CACHE:
@@ -588,9 +648,11 @@ class GerenciadorPrevias(QObject):
             self._cache.pop(velha, None)
         self.pronta.emit(chave, img)
 
-    def _esquecer_pedido(self, chave: str) -> None:
-        """Tira da lista de 'ja pedidas' quando uma previa falha, para poder pedir de novo."""
-        self._pedidas.discard(chave)
+    def _esquecer_pedido(self, chave: str, geracao: tuple | None = None) -> None:
+        """Tira da lista de 'ja pedidas' quando uma previa falha, para poder
+        pedir de novo (so se o pedido anotado e o mesmo que falhou)."""
+        if chave in self._pedidas and (geracao is None or self._pedidas[chave] == geracao):
+            del self._pedidas[chave]
 
     def _promover(self, chave: str) -> None:
         """Move a chave para o fim da fila de LRU (foi usada agora, entao e a
