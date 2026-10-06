@@ -788,7 +788,7 @@ class JanelaPrincipal(QMainWindow):
         converte todas, uma folha por vez. A tela de
         conferir ja esta aberta: o Kaique trabalha enquanto isso, e o
         andamento aparece na faixa azul ("Preparando as marcações do
-        livro... 12 de 50"; TelaConferir.mostrar_andamento_das_marcacoes).
+        livro… 12 de 50"; TelaConferir.mostrar_andamento_das_marcacoes).
         Pagina que ele abrir antes e convertida pela previa, como antes. No
         fim, grava (com a copia de seguranca do projeto.json antigo antes,
         projetos.salvar_estado).

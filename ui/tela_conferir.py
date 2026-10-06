@@ -222,7 +222,7 @@ class TelaConferir(QWidget):
 
         self._abas_ativas: list[str] = []
         self._carregando = False
-        # Decisao Z1 (b), 05/10/2026: "Preparando as marcações do livro...
+        # Decisao Z1 (b), 05/10/2026: "Preparando as marcações do livro…
         # 12 de 50" enquanto a janela converte as zonas do livro por tras
         # (mostrar_andamento_das_marcacoes); "" quando nao ha.
         self._andamento_das_marcacoes = ""
@@ -1754,13 +1754,13 @@ class TelaConferir(QWidget):
     def mostrar_andamento_das_marcacoes(self, feitas: int, total: int) -> None:
         """Decisao Z1 (b) do Samuel (05/10/2026): enquanto a janela converte
         por tras as zonas do livro para o formato novo, a faixa azul (o aviso
-        que ja existe nesta tela) diz "Preparando as marcações do livro...
+        que ja existe nesta tela) diz "Preparando as marcações do livro…
         12 de 50". Sem tela nova e sem botao: o Kaique continua trabalhando.
         total 0, ou feitas >= total, tira o andamento. Seguro mudar: a frase.
         """
         texto = ""
         if total > 0 and feitas < total:
-            texto = f"Preparando as marcações do livro... {feitas} de {total}"
+            texto = f"Preparando as marcações do livro… {feitas} de {total}"
         if texto == self._andamento_das_marcacoes:
             return
         self._andamento_das_marcacoes = texto

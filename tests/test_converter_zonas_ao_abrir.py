@@ -482,8 +482,9 @@ def test_janela_converte_por_tras_sem_congelar_e_mostra_o_andamento(janela, app,
 
     assert not zf.paginas_por_converter(janela.projeto)
     assert _selecoes(janela.projeto) == zonas
-    assert any("Preparando as marcações do livro..." in t and f"de {COM_ZONAS}" in t
+    assert any("Preparando as marcações do livro…" in t and f"de {COM_ZONAS}" in t
                for t in textos), textos
+    assert not any("..." in t for t in textos), textos     # reticencias de verdade (R5)
     assert "Preparando as marcações" not in janela.tela_conferir.texto_faixa.text()
     assert pior < 1.0, f"a janela ficou {pior:.2f} s sem responder"
 
