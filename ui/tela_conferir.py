@@ -2418,9 +2418,11 @@ class TelaConferir(QWidget):
     def _girar_folhas(self, giro: int) -> None:
         """Gira as folhas do "aplicar em" (item 2.3; core/girar.py).
 
-        Uma acao so do desfazer para todas as folhas, com a rotacao nova de
-        CADA uma (cada folha gira a partir de onde esta; o Ctrl+Z devolve o
-        giro que cada uma tinha). O resto vem sozinho: a previa e refeita (a
+        Uma acao so do desfazer para todas as folhas. Todas terminam viradas
+        como a folha da vez (decisao do Samuel, 06/10/2026: a da vez gira a
+        partir de onde esta e as outras copiam o giro final dela -
+        core/girar.campos_do_giro); o Ctrl+Z devolve a cada uma o giro que
+        ela tinha. O resto vem sozinho: a previa e refeita (a
         rotacao entra na chave), e o corte, a divisao e o endireitar sao
         recalculados na folha girada (core/pipeline); as zonas da aba Marcar
         sao levadas para o mesmo pedaco do papel quando a pagina e desenhada
@@ -2438,7 +2440,7 @@ class TelaConferir(QWidget):
             return
         self._registrar(
             "girar", "folha", indices,
-            girar.campos_do_giro(self.projeto.folhas, indices, giro),
+            girar.campos_do_giro(self.projeto.folhas, indices, giro, self.indice_folha),
             girar.descricao_do_giro(giro, alcance, self.indice_folha, len(indices)),
         )
 
@@ -2473,7 +2475,18 @@ class TelaConferir(QWidget):
     CAMPOS_DO_PREPARO = frozenset({"rotacao", "dividir", "posicao_corte",
                                    "recorte", "angulo_manual"})
 
-    def _espera_pelas_marcacoes(self, alvo: str, indices: list[int], campos: dict) -> bool:
+    # O aviso "Um momento" do desfazer, do refazer e do Historico. Ressalva 3
+    # do verificador-3 (06/10/2026): eles usavam a frase da mudanca feita na
+    # tela ("desta pagina", "faca a mudanca de novo"), mas a pagina atingida
+    # pode nao ser a da tela, e o que a pessoa refaz e o Ctrl+Z, nao a
+    # mudanca. Seguro mudar: o texto.
+    FRASE_DO_DESFAZER_ESPERA = (
+        "Ainda estou preparando as marcações do livro (a faixa azul mostra o "
+        "andamento). O que você pediu mexe numa página que ainda não está "
+        "pronta, por isso nada mudou. Quando terminar, tente de novo.")
+
+    def _espera_pelas_marcacoes(self, alvo: str, indices: list[int], campos: dict,
+                                frase: str | None = None) -> bool:
         """A pendencia da D2 (anotada pelo implementador do girar, 06/10/2026):
         mudar o corte, a borda, a divisao ou o angulo de uma pagina cujas
         zonas ainda estao no formato antigo (projeto de antes de 05/10, com a
@@ -2490,7 +2503,9 @@ class TelaConferir(QWidget):
         Vale para tudo que passa por _registrar e para desfazer, refazer e o
         Historico (o historico de acoes volta ao abrir o livro: um Ctrl+Z de
         outra sessao tambem mudaria o preparo). Devolve True se deve esperar.
-        Seguro mudar: a frase. Arriscado: aplicar mesmo assim.
+        frase: o aviso, no lugar do da mudanca feita na tela (o desfazer usa
+        FRASE_DO_DESFAZER_ESPERA). Seguro mudar: a frase. Arriscado:
+        aplicar mesmo assim.
         """
         if self.projeto is None or not (self.CAMPOS_DO_PREPARO & set(campos)):
             return False
@@ -2506,11 +2521,11 @@ class TelaConferir(QWidget):
             atingidas = [p for p in pendentes if p.indice in alvo_indices]
         if not atingidas:
             return False
-        if "rotacao" in campos:
+        if frase is None and "rotacao" in campos:
             frase = ("Ainda estou preparando as marcações destas folhas (a faixa azul "
                      "mostra o andamento). Quando terminar, gire de novo: assim as "
                      "marcações acompanham o giro.")
-        else:
+        elif frase is None:
             frase = ("Ainda estou preparando as marcações desta página (a faixa azul "
                      "mostra o andamento). Quando terminar, faça a mudança de novo: "
                      "assim as marcações acompanham o corte e o ângulo.")
@@ -2520,10 +2535,13 @@ class TelaConferir(QWidget):
     def _acoes_esperam_pelas_marcacoes(self, acoes, para_tras: bool) -> bool:
         """Desfazer/refazer/Historico: alguma destas acoes mudaria o preparo
         de uma pagina com zonas antigas (_espera_pelas_marcacoes)? para_tras:
-        desfazendo (aplica o `antes` de cada uma) ou refazendo (o `depois`)."""
+        desfazendo (aplica o `antes` de cada uma) ou refazendo (o `depois`).
+        O aviso e o do desfazer (FRASE_DO_DESFAZER_ESPERA): nao fala "desta
+        pagina", que pode nao ser a da tela."""
         for acao in acoes:
             campos = acao.antes if para_tras else acao.depois
-            if self._espera_pelas_marcacoes(acao.alvo, acao.indices, campos):
+            if self._espera_pelas_marcacoes(acao.alvo, acao.indices, campos,
+                                            frase=self.FRASE_DO_DESFAZER_ESPERA):
                 return True
         return False
 

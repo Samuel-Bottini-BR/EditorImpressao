@@ -263,3 +263,38 @@ def test_com_zonas_ainda_no_formato_antigo_o_giro_espera(janela, pasta, monkeypa
     tela.ir_para_pagina(0)
     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
     assert _rotacoes(janela) == [90, 0, 0, 90, 0]
+
+
+@pytest.mark.parametrize("alcance, esperado", [
+    (girar.ALCANCE_TODAS, [270, 270, 270, 270, 270]),
+    (girar.ALCANCE_DAQUI, [0, 90, 270, 270, 270]),
+    (girar.ALCANCE_PARES, [0, 270, 180, 270, 0]),
+    (girar.ALCANCE_IMPARES, [270, 90, 270, 270, 270]),
+])
+def test_aplicar_em_deixa_as_folhas_viradas_como_a_folha_da_vez(janela, pasta, alcance, esperado):
+    """Decisao do Samuel (06/10/2026): "Todas ficam viradas como a folha da
+    vez" (como o ScanTailor). Folhas com giros diferentes antes (feitos com
+    "so esta"); na folha 3 (de cabeca para baixo), 1/4 a direita com o
+    "aplicar em": a folha 3 vai a 270 e as escolhidas terminam em 270. Um
+    Ctrl+Z devolve cada folha ao giro que ela tinha."""
+    tela = _aberta(janela, pasta)
+    barra = tela.barra_girar
+    barra.definir_alcance(girar.ALCANCE_ESTA)
+    for folha, giro in ((1, girar.GIRO_DIREITA), (2, girar.GIRO_MEIA_VOLTA),
+                        (3, girar.GIRO_ESQUERDA)):
+        tela.ir_para_pagina(folha)
+        barra.botoes_de_giro[giro].click()
+    antes = [0, 90, 180, 270, 0]
+    assert _rotacoes(janela) == antes
+
+    tela.ir_para_pagina(2)
+    barra.definir_alcance(alcance)
+    feitas = len(janela.acoes.feitas)
+    barra.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert _rotacoes(janela) == esperado
+    assert len(janela.acoes.feitas) == feitas + 1, "uma ação só do desfazer"
+    assert "viradas como a folha 3" in janela.acoes.feitas[-1].descricao
+    tela.desfazer()
+    assert _rotacoes(janela) == antes, "o desfazer devolve o giro de cada folha"
+    tela.refazer()
+    assert _rotacoes(janela) == esperado

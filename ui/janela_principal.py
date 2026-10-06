@@ -146,7 +146,12 @@ class JanelaPrincipal(QMainWindow):
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
-        self.tela_opcoes.voltar.connect(lambda: self.telas.setCurrentIndex(INICIO))
+        # o voltar das opcoes remonta os cartoes (_voltar_das_opcoes). Ligado
+        # por lambda DE PROPOSITO: ligado direto ao metodo, o
+        # tests/test_misto_na_tela.py caia com "access violation" em 5 de 6
+        # rodadas (06/10/2026, PySide6 6.11; com lambda, 0 de 6). Causa nao
+        # achada. Arriscado: trocar pelo metodo sem repetir aquele teste.
+        self.tela_opcoes.voltar.connect(lambda: self._voltar_das_opcoes())
         self.tela_opcoes.conferir.connect(self.analisar)
         self.telas.addWidget(self.tela_opcoes)
 
@@ -1433,6 +1438,23 @@ class JanelaPrincipal(QMainWindow):
 
     def _recomecar(self) -> None:
         """Botão "fazer outro" da tela final: volta para o inicio."""
+        self.tela_inicio.recarregar()
+        self.telas.setCurrentIndex(INICIO)
+
+    def _voltar_das_opcoes(self) -> None:
+        """Botao "voltar" da tela de opcoes: volta para o inicio com os
+        cartoes remontados.
+
+        Ressalva 1 do verificador-3 (06/10/2026): antes o voltar so trocava
+        de tela, e o cartao continuava com a capa (e o andamento) de quando a
+        tela inicial foi montada - um livro girado mostrava a capa sem o giro
+        ate o programa ser aberto de novo, embora a capa.png ja estivesse
+        certa no disco. A capa nova e gravada por tras
+        (projetos.refazer_miniatura_por_tras): espera-se ela chegar ao disco
+        (no maximo 2 s; costuma ser centesimos) antes de ler os resumos, como
+        o "fazer outro" (_recomecar) ja faz. Arriscado: tirar a espera (o
+        cartao poderia ler a capa velha de novo)."""
+        projetos.esperar_gravacoes(2.0)
         self.tela_inicio.recarregar()
         self.telas.setCurrentIndex(INICIO)
 
