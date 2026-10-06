@@ -488,11 +488,28 @@ def _escrever_e_trocar(destino: Path, texto: str) -> None:
     grava tudo num arquivo ao lado ("<nome>.novo") e so entao o troca pelo
     de antes (os.replace, que no mesmo disco e uma troca so: ou fica o
     arquivo velho inteiro, ou o novo inteiro). Usado pelo projeto.json e
-    pelo resumo.json. Levanta OSError (quem chama decide). Arriscado:
-    escrever direto em `destino`; o ".novo" em outro disco (a troca deixa de
-    ser uma so)."""
+    pelo resumo.json. Levanta OSError (quem chama decide).
+
+    Antes da troca, o arquivo novo e forcado ate o disco (os.fsync; O2 do
+    verificador-2, 06/10/2026). Sem isso, numa queda de energia (ou disco
+    USB puxado) logo depois, a TROCA podia ficar registrada no disco e o
+    CONTEUDO novo ainda na memoria do Windows: o projeto.json ficaria vazio
+    ou com lixo. Custo medido em 06/10/2026 (projeto.json de 5,7 MB do
+    Siebmacher, 10 vezes): no D: (disco USB giratorio) nada a mais - 182 ms
+    com e sem, o Windows ja grava direto nesse disco; no C: (NVMe) +14 ms
+    (18 -> 32 ms), e +12 ms no resumo.json. O relogio de salvar grava por
+    tras, entao a janela nao espera; fechar, trocar de livro e processar
+    esperam esses milissegundos a mais.
+
+    Arriscado: escrever direto em `destino`; tirar o fsync ou po-lo depois
+    da troca; o ".novo" em outro disco (a troca deixa de ser uma so).
+    Texto em modo texto (fim de linha do Windows), como o write_text de
+    antes: os bytes gravados nao mudam."""
     temporario = destino.with_name(destino.name + ".novo")
-    temporario.write_text(texto, encoding="utf-8")
+    with open(temporario, "w", encoding="utf-8") as arquivo:
+        arquivo.write(texto)
+        arquivo.flush()
+        os.fsync(arquivo.fileno())
     os.replace(temporario, destino)
 
 
@@ -627,6 +644,7 @@ def _copia_antes_das_zonas_na_folha(pasta: Path, dados: dict | None = None,
         try:
             with destino.open("xb") as copia:
                 copia.write(bytes_antigos)
+                _forcar_ao_disco(copia)
         except FileExistsError:
             continue
         except OSError:
@@ -634,6 +652,16 @@ def _copia_antes_das_zonas_na_folha(pasta: Path, dados: dict | None = None,
         _JA_NO_FORMATO_NOVO.add(chave)
         return True
     return False
+
+
+def _forcar_ao_disco(arquivo) -> None:
+    """Forca o que foi escrito em `arquivo` (aberto) ate o disco (os.fsync).
+    Para as copias de seguranca (O2 do verificador-2, 06/10/2026): elas tem
+    de estar no disco ANTES de o projeto.json de antes ser trocado, senao
+    uma queda de energia logo depois poderia deixar o projeto.json novo e a
+    copia vazia. Uma vez por copia (raro), entao o custo nao pesa."""
+    arquivo.flush()
+    os.fsync(arquivo.fileno())
 
 
 def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> Path | None:
@@ -684,6 +712,7 @@ def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> 
                     continue
                 with destino(origem, sufixo).open("xb") as copia:
                     copia.write(origem.read_bytes())
+                    _forcar_ao_disco(copia)          # O2: no disco antes do regravar
         except FileExistsError:
             continue                 # outra copia nasceu no mesmo instante
         except OSError:
@@ -740,10 +769,8 @@ def anotar_no_estado(resumo: Resumo, **campos) -> bool:
         # R2 (05/10/2026): a copia de seguranca do projeto.json antigo com
         # zonas vem antes de QUALQUER gravacao do programa novo, esta tambem.
         _copia_antes_das_zonas_na_folha(caminho.parent)
-        temporario = caminho.with_name(ARQUIVO_ESTADO + ".novo")
-        temporario.write_text(json.dumps(dados, ensure_ascii=False, indent=1),
-                              encoding="utf-8")
-        temporario.replace(caminho)
+        # ao lado, forcado ao disco e trocado (O2, 06/10/2026)
+        _escrever_e_trocar(caminho, json.dumps(dados, ensure_ascii=False, indent=1))
         return True
     except (OSError, ValueError, TypeError):
         return False
