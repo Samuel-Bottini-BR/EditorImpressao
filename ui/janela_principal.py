@@ -321,7 +321,15 @@ class JanelaPrincipal(QMainWindow):
         passava pela assinatura, e o "continuar" do cartao mais antigo abria
         o mais recente (verificador, 29/09, q24-q25). Arriscado: voltar a
         procurar pela assinatura quando o cartao ja disse qual e.
+
+        Antes de tudo, a mudanca do livro aberto que ainda esperava o relogio
+        de salvar vai para o disco NA HORA (_guardar_o_livro_aberto; R-A do
+        verificador-2, 06/10/2026): trocar de livro pelo Ctrl+O menos de
+        0,6 s depois de uma mudanca a perdia.
+        Arriscado: mover essa gravacao para depois de self.projeto/self.resumo
+        mudarem (gravaria o livro novo, ou nada).
         """
+        self._guardar_o_livro_aberto()
         try:
             doc = abrir_pdf(caminho)
             try:
@@ -584,11 +592,27 @@ class JanelaPrincipal(QMainWindow):
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
-        """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado."""
-        import shutil
+        """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado.
+
+        Antes de apagar (R-A do verificador-2, 06/10/2026): o livro aberto
+        vai para o disco (_guardar_o_livro_aberto) - se for OUTRO livro, a
+        ultima mudanca dele nao se perde. Se for ESTE mesmo, o trabalho dele e
+        justamente o que vai ser jogado fora: depois de gravado, a janela o
+        solta (self.resumo = None), para o abrir_livro logo abaixo nao o
+        gravar de novo por cima dos arquivos apagados. E espera a fila do
+        fio de gravar, para nenhuma gravacao por tras chegar depois do
+        apagar. Arriscado: apagar antes de gravar o livro aberto, ou deixar
+        self.resumo apontando para a pasta apagada.
+        """
         from historico_acoes import ARQUIVO_ACOES, ARQUIVO_POSICAO
 
         pasta = Path(resumo.pasta)
+        self._guardar_o_livro_aberto()
+        if self.resumo is not None and projetos.mesmo_arquivo(self.resumo.pasta, pasta):
+            self._parar_a_conversao_das_zonas()
+            self.resumo = None
+            self.trabalho_carregado = False
+        projetos.esperar_gravacoes()
         for arquivo in (projetos.ARQUIVO_ESTADO, ARQUIVO_ACOES, ARQUIVO_POSICAO):
             try:
                 (pasta / arquivo).unlink(missing_ok=True)
@@ -931,6 +955,45 @@ class JanelaPrincipal(QMainWindow):
             projetos.salvar_estado(self.resumo, self._o_que_gravar())
         projetos.atualizar(self.resumo, self.projeto,
                            pagina_atual=self.tela_conferir.indice_pagina, por_tras=por_tras)
+
+    def _guardar_o_livro_aberto(self) -> None:
+        """Grava NA HORA o livro aberto, antes de a janela trocar de livro
+        (abrir_livro: Ctrl+O, menu Arquivo > Abrir, arrastar, o "continuar"
+        do cartao; e o "comecar de novo", _recomecar_projeto).
+
+        R-A do verificador-2 (06/10/2026): mudar alguma coisa e abrir outro
+        livro menos de ~0,6 s depois perdia a mudanca. O relogio de salvar
+        (600 ms) ainda nao tinha disparado; quando disparava, self.projeto
+        ja era o livro novo, e a mudanca do livro de antes nunca ia para o
+        disco. Agora, se o relogio esta contando (ha mudanca ainda nao
+        gravada), grava ja: e o _salvar_agora (espera a fila do fio de
+        gravar, grava e para o relogio), com as mesmas travas dele - nada e
+        gravado por cima de um trabalho salvo que ainda nao foi carregado.
+
+        Com o relogio parado nao ha o que gravar: tudo ja foi para o disco
+        ou esta na fila do fio de gravar (que quem le o projeto espera). Nao
+        regravar a toa importa: regravar mudaria o "mexido em" do projeto
+        (o "Abrir" acha o projeto MAIS RECENTE do mesmo PDF) e custaria o
+        projeto inteiro de novo (3 a 6 MB num livro grande).
+
+        Nao grava se a pasta do projeto ja nao existe: e o projeto que a
+        pessoa tirou da lista na tela inicial ("Tirar da lista" apaga a
+        pasta). Grava-lo recriaria a pasta, e o cartao voltaria para a lista.
+        So o relogio e parado.
+
+        Arriscado: tirar essa conferencia da pasta; chamar isto depois de
+        self.projeto ou self.resumo mudarem (gravaria o livro novo, e o de
+        antes perderia a ultima mudanca); um caminho novo que mude o
+        trabalho sem passar pelo relogio de salvar (trabalho_mudou) nem
+        gravar na hora - aqui ele nao seria visto.
+        Teste: tests/test_trocar_de_livro_grava.py.
+        """
+        pendente = self._relogio_de_salvar.isActive()
+        if self.resumo is None or not Path(self.resumo.pasta).is_dir():
+            self._relogio_de_salvar.stop()
+            return
+        if pendente:
+            self._salvar_agora()
 
     def _o_que_gravar(self) -> Projeto:
         """O projeto como deve ir para o disco.
