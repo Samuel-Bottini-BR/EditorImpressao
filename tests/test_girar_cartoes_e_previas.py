@@ -305,3 +305,133 @@ def test_d4_trocar_de_pagina_nao_deixa_a_imagem_da_outra_pagina(janela, pasta, a
     prontas.discard(1)
     tela.atualizar()
     assert vis._pixmap is not None and vis.carregando
+
+
+# ---------------------------------------------------------------------------
+# D2: as miniaturas da tira e a capa do cartao da tela inicial acompanham o
+# giro, sem ler o livro de novo quando gira uma folha so.
+# ---------------------------------------------------------------------------
+
+
+def _imagem_do_pixmap(pixmap) -> np.ndarray:
+    imagem = pixmap.toImage().convertToFormat(pixmap.toImage().Format.Format_RGB888)
+    largura, altura = imagem.width(), imagem.height()
+    linha = imagem.bytesPerLine()
+    dados = np.frombuffer(imagem.constBits(), np.uint8).reshape(altura, linha)
+    return dados[:, :largura * 3].reshape(altura, largura, 3).copy()
+
+
+def _cantos_da_tira(tela) -> list:
+    return [None if m._pixmap is None else _canto(_imagem_do_pixmap(m._pixmap))
+            for m in tela.tira._miniaturas]
+
+
+def test_d2_a_tira_mostra_cada_folha_no_giro_dela(janela, pasta, app, monkeypatch):
+    tela = _aberta_na_aba_filtro(janela, pasta, folhas=3)
+    assert _bombear_ate(app, lambda: None not in _cantos_da_tira(tela))
+    assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[0]] * 3
+
+    # girar uma folha so: so o quadro dela muda, e o PDF nao e lido de novo
+    from ui.widgets import tira_miniaturas
+
+    lidas = []
+    original = tira_miniaturas.pagina_para_array
+    monkeypatch.setattr(tira_miniaturas, "pagina_para_array",
+                        lambda *a, **k: lidas.append(a) or original(*a, **k))
+    antes = [m._pixmap.cacheKey() for m in tela.tira._miniaturas]
+    tela.ir_para_pagina(1)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    app.processEvents()
+    assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[0], CANTO_DO_GIRO[90], CANTO_DO_GIRO[0]]
+    depois = [m._pixmap.cacheKey() for m in tela.tira._miniaturas]
+    assert depois[0] == antes[0] and depois[2] == antes[2], "redesenhou folha que nao girou"
+    assert depois[1] != antes[1]
+
+    # "todas", meia volta; e desfazer
+    tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_MEIA_VOLTA].click()
+    app.processEvents()
+    assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[180], CANTO_DO_GIRO[270], CANTO_DO_GIRO[180]]
+    tela.desfazer()
+    app.processEvents()
+    assert _cantos_da_tira(tela) == [CANTO_DO_GIRO[0], CANTO_DO_GIRO[90], CANTO_DO_GIRO[0]]
+    for _ in range(10):
+        app.processEvents()
+    assert not lidas, "girar leu o livro de novo para a tira"
+
+
+def test_d2_a_tira_divide_a_folha_girada(app, pasta):
+    """Folha dividida e girada: cada metade sai da folha JA girada (a ordem
+    do programa: girar, depois dividir)."""
+    from ui.widgets.tira_miniaturas import TiraMiniaturas
+
+    tira = TiraMiniaturas("x")
+    try:
+        larga = np.full((40, 60, 3), 255, np.uint8)
+        larga[:, :30] = 0                                  # metade esquerda preta
+        tira.montar(2, "", {0: 0, 1: 0}, {0: ("esquerda", 0.5), 1: ("direita", 0.5)},
+                    giros={0: 180})
+        if tira._tarefa is not None:
+            tira._tarefa.parar = True
+        tira._receber(0, larga)
+        esquerda = _imagem_do_pixmap(tira._miniaturas[0]._pixmap)
+        direita = _imagem_do_pixmap(tira._miniaturas[1]._pixmap)
+        # meia volta: o preto foi para a direita - a metade esquerda e branca
+        assert esquerda.mean() > 200 and direita.mean() < 60
+        assert tira.definir_giros({0: 0}) == 1
+        assert _imagem_do_pixmap(tira._miniaturas[0]._pixmap).mean() < 60
+        assert tira.definir_giros({0: 0}) == 0, "giro igual nao redesenha"
+    finally:
+        tira.parar()
+
+
+def test_d2_a_capa_do_cartao_acompanha_o_giro_da_primeira_folha(janela, pasta, app):
+    import cv2
+
+    import projetos
+
+    tela = _aberta_na_aba_filtro(janela, pasta, folhas=3)
+    capa = projetos.garantir_miniatura(janela.resumo)
+    assert capa and _canto(cv2.imread(capa)) == CANTO_DO_GIRO[0]
+    hora = Path(capa).stat().st_mtime_ns
+
+    # girar outra folha nao mexe na capa
+    tela.ir_para_pagina(2)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    projetos.esperar_gravacoes(10)
+    assert Path(capa).stat().st_mtime_ns == hora
+
+    tela.ir_para_pagina(0)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert projetos.esperar_gravacoes(10)
+    assert _canto(cv2.imread(capa)) == CANTO_DO_GIRO[90]
+    tela.desfazer()
+    assert projetos.esperar_gravacoes(10)
+    assert _canto(cv2.imread(capa)) == CANTO_DO_GIRO[0]
+
+
+def test_d2_a_capa_e_desenhada_fora_do_fio_da_janela(pasta, monkeypatch):
+    """projetos.refazer_miniatura_por_tras volta na hora: quem desenha e o
+    fio de gravar."""
+    import threading
+
+    import projetos
+
+    caminho = _pdf_com_canto(pasta, 1)
+    resumo = projetos.Resumo(pasta=str(pasta / "proj"), caminho_entrada=str(caminho))
+    Path(resumo.pasta).mkdir()
+    fios = []
+    original = projetos._escrever_miniatura
+    monkeypatch.setattr(projetos, "_escrever_miniatura",
+                        lambda *a: fios.append(threading.current_thread()) or original(*a))
+    projetos.refazer_miniatura_por_tras(resumo, 270)
+    assert projetos.esperar_gravacoes(10)
+    assert fios and fios[0] is not threading.main_thread()
+    import cv2
+
+    assert _canto(cv2.imread(str(Path(resumo.pasta) / "capa.png"))) == CANTO_DO_GIRO[270]
+    # pasta que nao existe mais (tirado da lista): nao recria
+    sumida = projetos.Resumo(pasta=str(pasta / "sumiu"), caminho_entrada=str(caminho))
+    projetos.refazer_miniatura_por_tras(sumida, 90)
+    assert projetos.esperar_gravacoes(10)
+    assert not (pasta / "sumiu").exists()

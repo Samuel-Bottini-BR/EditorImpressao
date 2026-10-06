@@ -2,6 +2,12 @@
 
 As miniaturas são geradas em segundo plano e bem pequenas (~90 px). Enquanto
 não chegam, o quadro fica cinza com o número - a tela nunca espera por elas.
+
+Girar a folha (D2 do verificador, 06/10/2026): a tira guarda a folha como
+veio no PDF (uma imagem minuscula por folha) e mostra cada uma no giro dela
+(definir_giros). Girar uma folha so redesenha os quadros dela, a partir da
+imagem guardada - nada e lido do PDF de novo. Arriscado: remontar a tira
+(montar) por causa de um giro - refaria a leitura do livro inteiro.
 """
 
 from __future__ import annotations
@@ -20,6 +26,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core.endireitar import girar_90
 from core.pdf_io import abrir_pdf, limitar_altura, pagina_para_array
 from registro import registrar_erro
 from ui.estilo import AZUL, BORDA, LARANJA, TEXTO_FRACO
@@ -30,6 +37,12 @@ from ui.widgets.visualizador import numpy_para_qimage
 # para achar a pagina, e para isso a miniatura nao precisa ser grande.
 ALTURA_MINIATURA = 40
 LARGURA_MAXIMA = 62
+
+# Altura da folha guardada (como veio no PDF). Maior que o quadro de
+# proposito: a folha em pe, girada 1/4, fica deitada, e a altura guardada
+# vira a largura - com 40 ela ficaria esticada e borrada no quadro. A 20 DPI
+# uma folha A4 tem ~230 pontos; aqui fica com 62 (cada uma, ~8 KB).
+ALTURA_GUARDADA = LARGURA_MAXIMA
 
 
 class _Sinais(QObject):
@@ -68,7 +81,7 @@ class _TarefaMiniaturas(QRunnable):
                     img = pagina_para_array(doc, indice, dpi=20)
                 finally:
                     doc.close()
-                self.sinais.pronta.emit(indice, limitar_altura(img, ALTURA_MINIATURA))
+                self.sinais.pronta.emit(indice, limitar_altura(img, ALTURA_GUARDADA))
         except Exception:  # noqa: BLE001
             registrar_erro("miniaturas", traceback.format_exc())
 
@@ -178,6 +191,10 @@ class TiraMiniaturas(QWidget):
         self._sinais.pronta.connect(self._receber)
         self._mapa_folha: dict[int, list[int]] = {}
         self._cortes: dict[int, tuple[str, float]] = {}
+        # D2 (06/10/2026): a folha como veio no PDF, por folha, e o giro com
+        # que cada uma esta sendo mostrada (definir_giros)
+        self._cruas: dict[int, np.ndarray] = {}
+        self._giros: dict[int, int] = {}
 
         fora = QVBoxLayout(self)
         fora.setContentsMargins(0, 0, 0, 0)
@@ -205,7 +222,8 @@ class TiraMiniaturas(QWidget):
         fora.addWidget(self.rolagem)
 
     def montar(self, quantidade: int, caminho_pdf: str, folha_de: dict[int, int],
-               corte_de: dict[int, tuple[str, float]] | None = None) -> None:
+               corte_de: dict[int, tuple[str, float]] | None = None,
+               giros: dict[int, int] | None = None) -> None:
         """Cria os quadros e dispara a geracao das imagens.
 
         folha_de mapeia o indice do item (página ou folha) para a folha do PDF
@@ -215,9 +233,13 @@ class TiraMiniaturas(QWidget):
         corte_de diz, para cada página, qual metade da folha ela e. Sem isso a
         miniatura de uma página mostraria a folha dupla inteira, e o usuario
         veria a mesma imagem em duas páginas seguidas.
+
+        giros: o giro de cada folha (indice da folha -> 0/90/180/270); o
+        mesmo de definir_giros.
         """
         self.limpar()
         self._cortes = corte_de or {}
+        self._giros = {int(k): int(v) % 360 for k, v in (giros or {}).items()}
 
         for i in range(quantidade):
             mini = Miniatura(i + 1)
@@ -240,13 +262,47 @@ class TiraMiniaturas(QWidget):
             mini.deleteLater()
         self._miniaturas.clear()
         self._mapa_folha.clear()
+        self._cruas.clear()
 
     def _receber(self, indice_folha: int, img: np.ndarray) -> None:
-        """Uma folha chegou pronta: distribui (recortada pela metade certa)
-        para TODAS as páginas que vieram dela (ver _mapa_folha em montar())."""
+        """Uma folha chegou pronta: guarda como veio e distribui (girada e
+        recortada pela metade certa) para TODAS as páginas que vieram dela
+        (ver _mapa_folha em montar())."""
+        if indice_folha not in self._mapa_folha:
+            return                    # de uma tira que ja foi remontada
+        self._cruas[indice_folha] = img
+        self._mostrar_folha(indice_folha)
+
+    def _mostrar_folha(self, indice_folha: int) -> None:
+        """Poe a folha guardada, no giro dela, nos quadros que vem dela. A
+        ordem e a do programa (core/pipeline.preparar_metade): girar, depois
+        dividir."""
+        img = self._cruas.get(indice_folha)
+        if img is None:
+            return
+        giro = self._giros.get(indice_folha, 0)
+        if giro:
+            img = girar_90(img, giro)
         for indice in self._mapa_folha.get(indice_folha, []):
             if 0 <= indice < len(self._miniaturas):
                 self._miniaturas[indice].definir_imagem(self._metade(indice, img))
+
+    def definir_giros(self, giros: dict[int, int]) -> int:
+        """O giro de cada folha (indice da folha -> 0/90/180/270). Redesenha
+        so as folhas cujo giro mudou, a partir da imagem guardada (sem ler o
+        PDF, no fio da tela: girar uma imagem de 62 pontos leva microssegundos).
+        Devolve quantas folhas foram redesenhadas. Folha que ainda nao chegou
+        so anota o giro (sai certa quando chegar)."""
+        mudaram = 0
+        for indice_folha, giro in giros.items():
+            giro = int(giro) % 360
+            if self._giros.get(indice_folha, 0) == giro:
+                continue
+            self._giros[indice_folha] = giro
+            if indice_folha in self._cruas:
+                self._mostrar_folha(indice_folha)
+                mudaram += 1
+        return mudaram
 
     def _metade(self, indice: int, img: np.ndarray) -> np.ndarray:
         """Recorta a metade que esta página representa."""

@@ -110,6 +110,11 @@ class JanelaPrincipal(QMainWindow):
         # tras as zonas do livro aberto para o formato novo (zonas na folha
         # original). None quando nao ha. Ver _comecar_a_converter_as_zonas.
         self.conversao_das_zonas: TarefaConverterZonas | None = None
+        # D2 do girar (06/10/2026): o giro da primeira folha com que a capa do
+        # cartao (capa.png) foi desenhada por ultimo, nesta sessao. A capa
+        # nasce como veio no PDF (projetos.garantir_miniatura): 0. Ver
+        # _acertar_a_capa.
+        self._giro_da_capa = 0
 
         # Salvar sozinho, com um respiro. Gravar a cada mudanca travaria a tela
         # ao arrastar o medidor - sao dezenas de mudancas por segundo, e o
@@ -435,6 +440,7 @@ class JanelaPrincipal(QMainWindow):
             salvo = projetos.carregar_estado(self.resumo)
             self._trazer_opcoes_salvas(salvo)
         self.acoes = HistoricoAcoes(Path(self.resumo.pasta))
+        self._giro_da_capa = 0           # a capa nasce como veio no PDF (D2)
 
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
         self.telas.setCurrentIndex(OPCOES)
@@ -1005,6 +1011,25 @@ class JanelaPrincipal(QMainWindow):
         """Alguma coisa mudou. Grava daqui a pouco, quando a mao parar."""
         if self.resumo is not None and self.projeto is not None:
             self._relogio_de_salvar.start()
+            self._acertar_a_capa()
+
+    def _acertar_a_capa(self) -> None:
+        """A capa do cartao na tela inicial acompanha o giro da primeira folha
+        (D2 do verificador, 06/10/2026). So compara um numero; quando o giro
+        mudou (girar, desfazer, ou um projeto girado antes deste conserto),
+        a capa e desenhada de novo POR TRAS (projetos.refazer_miniatura_por_
+        tras): nada e desenhado no fio da janela. Num projeto ja girado, a
+        capa e refeita uma vez por sessao, mesmo que ja estivesse certa
+        (barato, e o arquivo nao diz com que giro foi feito).
+        Arriscado: desenhar a capa aqui, no fio da janela."""
+        if (self.resumo is None or self.projeto is None or not self.trabalho_carregado
+                or not self.projeto.folhas):
+            return
+        giro = int(self.projeto.folhas[0].rotacao) % 360
+        if giro == self._giro_da_capa:
+            return
+        self._giro_da_capa = giro
+        projetos.refazer_miniatura_por_tras(self.resumo, giro)
 
     def _salvar_por_tras(self) -> None:
         """O que o relogio de salvar chama: o mesmo que _salvar_agora, mas o

@@ -1475,7 +1475,17 @@ class TelaConferir(QWidget):
         if assinatura == self._tira_assinatura:
             return
         self._tira_assinatura = assinatura
-        self.tira.montar(quantidade, self.projeto.caminho_entrada, folha_de, corte_de)
+        self.tira.montar(quantidade, self.projeto.caminho_entrada, folha_de, corte_de,
+                         giros=self._giros_das_folhas())
+
+    def _giros_das_folhas(self) -> dict[int, int]:
+        """O giro de cada folha, para a tira de miniaturas (D2, 06/10/2026).
+        O giro NAO entra na assinatura da tira: girar so redesenha os quadros
+        das folhas giradas (TiraMiniaturas.definir_giros), sem ler o livro de
+        novo. Arriscado: por o giro na assinatura (remontaria a tira inteira
+        a cada giro)."""
+        assert self.projeto is not None
+        return {f.indice: int(f.rotacao) % 360 for f in self.projeto.folhas}
 
     # ------------------------------------------------------------------
     # estado
@@ -2036,6 +2046,7 @@ class TelaConferir(QWidget):
         for i, item in enumerate(itens):
             self.tira.marcar(i, em_alerta=item.precisa_revisao,
                              apagada=getattr(item, "apagada", False))
+        self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
         self.tira.selecionar(self.indice_atual)
 
     def _atualizar_contador(self) -> None:

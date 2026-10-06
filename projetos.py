@@ -1026,6 +1026,62 @@ def garantir_miniatura(resumo: Resumo, caminho_pdf: str = "") -> str:
     return str(destino)
 
 
+def refazer_miniatura_por_tras(resumo: Resumo, rotacao: int) -> None:
+    """Refaz a capa.png com a primeira folha no giro `rotacao` (0/90/180/270),
+    num fio de fundo (o mesmo _GRAVADOR do projeto.json).
+
+    D2 do verificador (06/10/2026): a capa do cartao da tela inicial e a
+    primeira folha do livro, desenhada uma vez como veio no PDF, e nao
+    acompanhava o giro. Quem chama e a janela, quando o giro da primeira
+    folha muda (ui/janela_principal._acertar_a_capa). Desenhar a folha (40
+    DPI, centesimos de segundo) fica fora do fio da janela.
+
+    Pedidos seguidos do mesmo projeto se juntam (so o ultimo vale). Nao
+    grava em pasta que nao existe mais (o projeto tirado da lista nao volta,
+    R-B). Nunca levanta: sem capa nova, o cartao continua com a de antes.
+    Seguro mudar: a resolucao. Arriscado: desenhar no fio da janela.
+    """
+    pasta = Path(resumo.pasta)
+    origem = resumo.caminho_entrada
+    giro = int(rotacao) % 360
+
+    def gravar() -> None:
+        _escrever_miniatura(pasta, origem, giro)
+
+    _GRAVADOR.pedir(("capa", str(pasta)), gravar)
+
+
+def _escrever_miniatura(pasta: Path, origem: str, rotacao: int) -> bool:
+    """Desenha a primeira folha de `origem` (como garantir_miniatura), gira e
+    grava em pasta/capa.png sem nunca deixar o arquivo pela metade (arquivo
+    ao lado e troca). True se gravou."""
+    try:
+        if not _pasta_existe(pasta) or not origem or not Path(origem).is_file():
+            return False
+        import cv2
+
+        from core.endireitar import girar_90
+        from core.pdf_io import abrir_pdf, limitar_altura, pagina_para_array
+
+        doc = abrir_pdf(origem)
+        try:
+            img = pagina_para_array(doc, 0, dpi=40)
+        finally:
+            doc.close()
+        if rotacao:
+            img = girar_90(img, rotacao)
+        certo, dados = cv2.imencode(".png", limitar_altura(img, ALTURA_DA_MINIATURA))
+        if not certo:
+            return False
+        destino = pasta / ARQUIVO_MINIATURA
+        temporario = destino.with_name(destino.name + ".novo")
+        temporario.write_bytes(dados.tobytes())
+        os.replace(temporario, destino)
+        return True
+    except Exception:  # noqa: BLE001 - sem capa nova o cartao ainda serve
+        return False
+
+
 PASTA_DAS_COPIAS = "copias-de-seguranca"
 
 
