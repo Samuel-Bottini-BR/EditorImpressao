@@ -1,0 +1,1311 @@
+[
+ {
+  "id": "rv3-para-revisar",
+  "ordem": 1,
+  "parte": "Rodada 3 · como o programa vai resolver",
+  "pergunta": "Antes de tudo: o que é 'Para revisar'?",
+  "explicacao": "'Para revisar' é o painel no alto, à direita, da tela de conferir. Nele aparecem as páginas que o programa acha que alguém deve olhar antes de imprimir, com o motivo; clicar leva até a página. Quando dissemos 'vai para a lista', era isto: a página aparece em 'Para revisar'. O Kaique olha, conserta se precisar e marca 'está bom assim'.",
+  "exemplos": [
+   {
+    "src": "img/tela-para-revisar.jpg",
+    "legenda": "A tela de conferir; à direita, em laranja, o painel 'Para revisar'."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi",
+    "texto": "Ficou claro.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-conserto-desenho",
+  "ordem": 2,
+  "parte": "Rodada 3 · como o programa vai resolver",
+  "pergunta": "Erro 1, desenho claro apagado (letra grande, desenho de traço fino): como vai ser resolvido?",
+  "explicacao": "O programa vai deixar de apagar. Um conserto já foi feito e está em conferência: quando os traços claros estão juntos de um traço escuro (a moldura da letra, o contorno do desenho), eles ficam, como no Preto e branco de sempre. Nas 59 páginas do estudo, 13 melhoraram (Palatino 76, 67, 66, Siebmacher 7, Rhetorica 129...), 42 saíram idênticas e 2 pioraram de leve (voltaram linhas finas da beirada). Custa no máximo 0,18 s por página. Depois dele, quase nada mais é apagado nessas páginas, então elas também deixam de ir para 'Para revisar'. Se ainda sobrar alguma, ela vai para 'Para revisar', e o Kaique pode marcar o desenho à mão na aba Marcar como 'gravura ou foto'.",
+  "exemplos": [
+   {
+    "src": "img/conserto-desenho-apagado.jpg",
+    "legenda": "Palatino 76 e Siebmacher 7: como sai hoje e com o conserto."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "seguir",
+    "nome": "Entendi, pode seguir",
+    "texto": "Concordo com o caminho.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   },
+   {
+    "id": "outro-jeito",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário como prefere.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-conserto-gravura",
+  "ordem": 3,
+  "parte": "Rodada 3 · como o programa vai resolver",
+  "pergunta": "Erro 2, mancha que vira 'gravura' ou figura que passa da gravura achada: como vai ser resolvido?",
+  "explicacao": "Hoje já dá à mão: na aba Marcar, 'gravura ou foto', botão 'tirar', e um retângulo sobre a mancha; ela vai para o branco (foi o que fizemos no Marial 454). Para a figura maior que a zona, o contrário: 'gravura ou foto' com 'somar' em volta do pedaço que faltou. O que está planejado (Lista de espera, Fase 2, item 2.18, e o seu pedido P11b): o programa MOSTRAR as áreas que achou sozinho, para você clicar numa delas e apagar, deixar branco ou pintar. Até lá, a página vai para 'Para revisar'.",
+  "exemplos": [
+   {
+    "src": "img/marial454-tirar.jpg",
+    "legenda": "Marial 454: hoje, e com o remendo 'tirado' da gravura na aba Marcar."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "seguir",
+    "nome": "Entendi, pode seguir",
+    "texto": "Concordo com o caminho.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   },
+   {
+    "id": "outro-jeito",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário como prefere.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-conserto-faixa",
+  "ordem": 4,
+  "parte": "Rodada 3 · como o programa vai resolver",
+  "pergunta": "Erro 3, faixa escura do scanner: como vai ser resolvido?",
+  "explicacao": "Quem resolve é o corte das bordas, não o 'Só as letras': a faixa sai igual no Preto e branco de sempre. Está no plano como item 2.13, 'achar a página dentro da borda preta do scanner' (sua decisão G7: uma opção, desligada de fábrica). Até lá: se a faixa está em quase todas as páginas (70% ou mais), aparece um aviso só, no livro; se está em poucas, essas páginas vão para 'Para revisar', e o Kaique corta à mão na aba Bordas.",
+  "exemplos": [
+   {
+    "src": "img/faixa-matematica032.jpg",
+    "legenda": "Matemática 32: a faixa sai igual nos dois jeitos."
+   },
+   {
+    "src": "img/faixa-righetti041e.jpg",
+    "legenda": "Righetti: a faixa em todas as páginas vira um aviso só, no livro."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "seguir",
+    "nome": "Entendi, pode seguir",
+    "texto": "Concordo com o caminho.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   },
+   {
+    "id": "outro-jeito",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário como prefere.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-conserto-graduale588",
+  "ordem": 5,
+  "parte": "Rodada 3 · como o programa vai resolver",
+  "pergunta": "Graduale 588 (a letra colorida): o que daria um resultado bom?",
+  "explicacao": "Você disse que o resultado de hoje (marcar como 'gravura ou foto') não é bom: o retângulo inteiro fica como no original, com o papel amarelado. O que daria certo é um tipo de zona que você já decidiu em 05/10 (P11): 'Tinta com a cor original, papel branco'. A letra fica azul e vermelha e o papel em volta vai a branco. A imagem da direita é uma SIMULAÇÃO, feita com a conta que o programa já usa para molduras douradas. Ressalva: as notas dentro do retângulo também ficam com a cor delas (marrom); o retângulo precisa ficar justo na letra. Esse tipo de zona ainda não existe na aba Marcar: é trabalho da Fase 2.",
+  "exemplos": [
+   {
+    "src": "img/graduale588-proposta.jpg",
+    "legenda": "Graduale 588: original, o que dá hoje e a proposta (simulação)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "seguir",
+    "nome": "Entendi, pode seguir",
+    "texto": "Concordo com o caminho.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   },
+   {
+    "id": "outro-jeito",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário como prefere.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-conserto-so-texto",
+  "ordem": 6,
+  "parte": "Rodada 3 · como o programa vai resolver",
+  "pergunta": "Erro 4, o que some no 'Só o texto achado': como vai ser resolvido?",
+  "explicacao": "Nesse jeito, apagar o que não é texto é o próprio objetivo; o risco é apagar o que você queria guardar. O conserto, página por página, é do Kaique: trocar a página para 'Guardar a tinta forte' (aba Filtro) ou marcar na aba Marcar a moldura ou a letra como 'gravura ou foto'. O programa ajuda com o aviso do livro e mandando para 'Para revisar' as páginas em que sumiu algo grande (próxima pergunta).",
+  "exemplos": [
+   {
+    "src": "img/so-texto-graduale222.jpg",
+    "legenda": "Graduale 222: no 'Só o texto achado' a música some."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "seguir",
+    "nome": "Entendi, pode seguir",
+    "texto": "Concordo com o caminho.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   },
+   {
+    "id": "outro-jeito",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário como prefere.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-aviso-so-texto",
+  "ordem": 7,
+  "parte": "Rodada 3 · o aviso do 'Só o texto achado'",
+  "pergunta": "O aviso do 'Só o texto achado': quando, onde e por quê. Fica assim?",
+  "explicacao": "Quando: só quando você escolhe 'Só o texto achado'. Onde: aparece uma vez, numa caixa, na hora em que você escolhe, e fica escrito nas observações do livro; além disso, as páginas em que sumiu algo grande vão para 'Para revisar' (você escolheu 'os dois'). Por quê: esse jeito apaga tudo fora das linhas de texto, e nas 59 páginas testadas estragou 43. O aviso não aparece em cada página.",
+  "exemplos": [
+   {
+    "src": "img/aviso-so-texto.jpg",
+    "legenda": "Como vai funcionar (desenho da proposta) e o exemplo do Palatino 10."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "seguir",
+    "nome": "Entendi, pode seguir",
+    "texto": "Concordo com o caminho.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito (diga no comentário o que ficou confuso).",
+    "imgs": []
+   },
+   {
+    "id": "outro-jeito",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário como prefere.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv3-pag-antiphonal1547-006",
+  "ordem": 8,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Antiphonal 1547 (música impressa, vermelho e preto)",
+  "pergunta": "Antiphonal 1547, p. 6: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe as pautas (linhas da música) que eram vermelhas: no jeito de fábrica saem com falhas; no Preto e branco de sempre, mais inteiras. A letra E grande ficou. Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-006.jpg",
+    "legenda": "Antiphonal 1547, p. 6. Onde olhar: em vermelho, o que o jeito de fábrica apagou: pedaços das pautas vermelhas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv3-pag-antiphonal1547-031",
+  "ordem": 9,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Antiphonal 1547 (música impressa, vermelho e preto)",
+  "pergunta": "Antiphonal 1547, p. 31: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe as pautas vermelhas: saem com falhas no jeito de fábrica. A letra O vermelha grande ficou (preta). Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-031.jpg",
+    "legenda": "Antiphonal 1547, p. 31. Onde olhar: em vermelho, o que o jeito de fábrica apagou: pedaços das pautas vermelhas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv3-pag-antiphonal1547-046",
+  "ordem": 10,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Antiphonal 1547 (música impressa, vermelho e preto)",
+  "pergunta": "Antiphonal 1547, p. 46: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a letra T vermelha grande à esquerda ('Tunc invoca'): no jeito de fábrica ela sumiu; no Preto e branco de sempre ela fica. Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-046.jpg",
+    "legenda": "Antiphonal 1547, p. 46. Onde olhar: em vermelho, o que o jeito de fábrica apagou: a letra T vermelha e as pautas vermelhas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv3-pag-antiphonal1547-076",
+  "ordem": 11,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Antiphonal 1547 (música impressa, vermelho e preto)",
+  "pergunta": "Antiphonal 1547, p. 76: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a letra L vermelha grande ('Loquere'): no jeito de fábrica ela sumiu; no Preto e branco de sempre ela fica. Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-076.jpg",
+    "legenda": "Antiphonal 1547, p. 76. Onde olhar: em vermelho, o que o jeito de fábrica apagou: a letra L vermelha e pedaços das pautas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv3-pag-antiphonal1547-192",
+  "ordem": 12,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Antiphonal 1547 (música impressa, vermelho e preto)",
+  "pergunta": "Antiphonal 1547, p. 192: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página escrita à mão, com manchas de umidade: a música e o texto ficam, e as manchas vão para o branco. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-192.jpg",
+    "legenda": "Antiphonal 1547, p. 192. Onde olhar: em vermelho, o que o jeito de fábrica apagou: quase nada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-antiphonal1547-252",
+  "ordem": 13,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Antiphonal 1547 (música impressa, vermelho e preto)",
+  "pergunta": "Antiphonal 1547, p. 252: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe as pautas vermelhas embaixo e as letras vermelhas do começo do hino: no jeito de fábrica as pautas saem com falhas. Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-252.jpg",
+    "legenda": "Antiphonal 1547, p. 252. Onde olhar: em vermelho, o que o jeito de fábrica apagou: as pautas vermelhas e letras vermelhas pequenas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv3-pag-rariora-008",
+  "ordem": 14,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Rariora Musei Besleriani (gravuras de animais e conchas)",
+  "pergunta": "Rariora, p. 8 (folha de rosto): pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe o papel: o programa achou que a página toda era gravura, e ela sai como no original, com o papel bege e a escrita do verso aparecendo. O Preto e branco de sempre sai cinza escuro. A regra nova não pega este caso (não há nada 'fora' da gravura). Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-008.jpg",
+    "legenda": "Rariora, p. 8 (folha de rosto). Onde olhar: em verde, o que o programa achou como gravura: a página quase inteira."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "leve"
+ },
+ {
+  "id": "rv3-pag-rariora-099",
+  "ordem": 15,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Rariora Musei Besleriani (gravuras de animais e conchas)",
+  "pergunta": "Rariora, p. 99: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página de texto com a letra D grande: tudo sai como no Preto e branco de sempre. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-099.jpg",
+    "legenda": "Rariora, p. 99. Onde olhar: nada a marcar: página só de texto."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-rariora-155",
+  "ordem": 16,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Rariora Musei Besleriani (gravuras de animais e conchas)",
+  "pergunta": "Rariora, p. 155: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a gravura dos caranguejos: fica em tons, como no original, com o papel branco. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-155.jpg",
+    "legenda": "Rariora, p. 155. Onde olhar: em verde, o que o programa achou como gravura: os caranguejos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-rariora-169",
+  "ordem": 17,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Rariora Musei Besleriani (gravuras de animais e conchas)",
+  "pergunta": "Rariora, p. 169: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a concha oval à direita (Fig. 8): o programa não a achou como gravura e o jeito de fábrica apagou boa parte do pontilhado de dentro; o Preto e branco de sempre guarda. As outras figuras saem bem. Pela regra nova, esta página NÃO vai para 'Para revisar': o apagado ficou logo abaixo do limite (2,4% da tinta; o limite é 2,5%). Hoje ela vai, por outro motivo. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-169.jpg",
+    "legenda": "Rariora, p. 169. Onde olhar: em vermelho, o que o jeito de fábrica apagou: o pontilhado da concha (Fig. 8)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv3-pag-rariora-211",
+  "ordem": 18,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Rariora Musei Besleriani (gravuras de animais e conchas)",
+  "pergunta": "Rariora, p. 211: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe as pedras e os fósseis: saem em tons, como no original, com o papel branco. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-211.jpg",
+    "legenda": "Rariora, p. 211. Onde olhar: em verde, o que o programa achou como gravura."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-rariora-365",
+  "ordem": 19,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Rariora Musei Besleriani (gravuras de animais e conchas)",
+  "pergunta": "Rariora, p. 365: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Quadro com chaves: tudo fica, como no Preto e branco de sempre. Hoje esta página vai para 'Para revisar' por causa das chaves. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-365.jpg",
+    "legenda": "Rariora, p. 365. Onde olhar: em laranja, as chaves do quadro: é a tinta que faz a página ir para 'Para revisar' hoje."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-egenloff-003",
+  "ordem": 20,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Egenloff, Modelbuch 1527 (ornamentos; fundo do scanner em todas)",
+  "pergunta": "Egenloff, p. 3 (folha de rosto): pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Os ornamentos e o título saem bem. A faixa escura em volta está em TODAS as páginas deste livro, então vira um aviso só, no livro, e não manda cada página para 'Para revisar'. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. (A faixa do scanner vira aviso do livro, não manda a página.) Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-003.jpg",
+    "legenda": "Egenloff, p. 3 (folha de rosto). Onde olhar: em laranja, a faixa escura do scanner (e a tarja da biblioteca embaixo)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-egenloff-007",
+  "ordem": 21,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Egenloff, Modelbuch 1527 (ornamentos; fundo do scanner em todas)",
+  "pergunta": "Egenloff, p. 7: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe os dois ornamentos: saem inteiros. A faixa escura em volta vira aviso do livro. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. (A faixa do scanner vira aviso do livro, não manda a página.) Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-007.jpg",
+    "legenda": "Egenloff, p. 7. Onde olhar: em laranja, a faixa escura do scanner."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-egenloff-012",
+  "ordem": 22,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Egenloff, Modelbuch 1527 (ornamentos; fundo do scanner em todas)",
+  "pergunta": "Egenloff, p. 12 (verso em branco): pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página em branco (verso de uma prancha): sai branca, com a faixa do scanner em volta. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. (A faixa do scanner vira aviso do livro, não manda a página.) Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-012.jpg",
+    "legenda": "Egenloff, p. 12 (verso em branco). Onde olhar: em laranja, a faixa escura do scanner."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-egenloff-047",
+  "ordem": 23,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Egenloff, Modelbuch 1527 (ornamentos; fundo do scanner em todas)",
+  "pergunta": "Egenloff, p. 47: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe o ornamento de traço fino: sai inteiro, como no Preto e branco de sempre. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. (A faixa do scanner vira aviso do livro, não manda a página.) Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-047.jpg",
+    "legenda": "Egenloff, p. 47. Onde olhar: em vermelho, o que o jeito de fábrica apagou: quase nada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-egenloff-121",
+  "ordem": 24,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Egenloff, Modelbuch 1527 (ornamentos; fundo do scanner em todas)",
+  "pergunta": "Egenloff, p. 121: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe as quatro faixas de ornamento (com o grifo): saem inteiras. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. (A faixa do scanner vira aviso do livro, não manda a página.) Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-121.jpg",
+    "legenda": "Egenloff, p. 121. Onde olhar: em vermelho, o que o jeito de fábrica apagou: quase nada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-egenloff-131",
+  "ordem": 25,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Egenloff, Modelbuch 1527 (ornamentos; fundo do scanner em todas)",
+  "pergunta": "Egenloff, p. 131: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe o quadrado escuro de renda e as faixas: saem como no Preto e branco de sempre. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. (A faixa do scanner vira aviso do livro, não manda a página.) Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-131.jpg",
+    "legenda": "Egenloff, p. 131. Onde olhar: em vermelho, o que o jeito de fábrica apagou: quase nada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-gladstone-005",
+  "ordem": 26,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Gladstone, Manual de Análise Sintática 1954 (livro moderno)",
+  "pergunta": "Gladstone, p. 5: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página só de texto, moderna: sai igual ao Preto e branco de sempre. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-gladstone-005.jpg",
+    "legenda": "Gladstone, p. 5. Onde olhar: nada a marcar: página só de texto."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-gladstone-018",
+  "ordem": 27,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Gladstone, Manual de Análise Sintática 1954 (livro moderno)",
+  "pergunta": "Gladstone, p. 18: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página com uma linha só ('DA ORAÇÃO'): sai certa. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-gladstone-018.jpg",
+    "legenda": "Gladstone, p. 18. Onde olhar: nada a marcar: página quase em branco (título de parte)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-gladstone-055",
+  "ordem": 28,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Gladstone, Manual de Análise Sintática 1954 (livro moderno)",
+  "pergunta": "Gladstone, p. 55: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página de texto com nota: sai igual ao Preto e branco de sempre. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-gladstone-055.jpg",
+    "legenda": "Gladstone, p. 55. Onde olhar: nada a marcar: texto com nota de rodapé."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-gladstone-096",
+  "ordem": 29,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Gladstone, Manual de Análise Sintática 1954 (livro moderno)",
+  "pergunta": "Gladstone, p. 96: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe o quadro com chaves: as chaves ficam. Não vai para 'Para revisar', nem hoje nem pela regra nova. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-gladstone-096.jpg",
+    "legenda": "Gladstone, p. 96. Onde olhar: em laranja, as chaves do quadro (tinta fora das linhas de texto)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-gladstone-116",
+  "ordem": 30,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Gladstone, Manual de Análise Sintática 1954 (livro moderno)",
+  "pergunta": "Gladstone, p. 116: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página de texto: sai certa. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-gladstone-116.jpg",
+    "legenda": "Gladstone, p. 116. Onde olhar: nada a marcar: página só de texto."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-gladstone-136",
+  "ordem": 31,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Gladstone, Manual de Análise Sintática 1954 (livro moderno)",
+  "pergunta": "Gladstone, p. 136: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página de texto em negrito e itálico: sai certa. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-gladstone-136.jpg",
+    "legenda": "Gladstone, p. 136. Onde olhar: nada a marcar: página só de texto (negrito e itálico)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": false,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-camoes-006",
+  "ordem": 32,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Camões, A Historia de Portugal (séc. XIX; gravuras e letras ornamentadas)",
+  "pergunta": "Camões, p. 6: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a gravura do monumento: o programa não a reconheceu como gravura e o jeito de fábrica apagou boa parte dela (a estátua sai pela metade). O Preto e branco de sempre guarda mais. Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-006.jpg",
+    "legenda": "Camões, p. 6. Onde olhar: em vermelho, o que o jeito de fábrica apagou: boa parte da estátua."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv3-pag-camoes-009",
+  "ordem": 33,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Camões, A Historia de Portugal (séc. XIX; gravuras e letras ornamentadas)",
+  "pergunta": "Camões, p. 9: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a letra A grande ornamentada no começo do texto: no jeito de fábrica ela quase sumiu; no Preto e branco de sempre fica (manchada). Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-009.jpg",
+    "legenda": "Camões, p. 9. Onde olhar: em vermelho, o que o jeito de fábrica apagou: a letra A ornamentada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv3-pag-camoes-011",
+  "ordem": 34,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Camões, A Historia de Portugal (séc. XIX; gravuras e letras ornamentadas)",
+  "pergunta": "Camões, p. 11: pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe a letra grande ornamentada do começo ('Tratando'): no jeito de fábrica ficou só um contorno; no Preto e branco de sempre fica. Pela regra nova ela vai porque o programa apagou parte de um desenho. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-011.jpg",
+    "legenda": "Camões, p. 11. Onde olhar: em vermelho, o que o jeito de fábrica apagou: a letra ornamentada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "errada"
+ },
+ {
+  "id": "rv3-pag-camoes-027",
+  "ordem": 35,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Camões, A Historia de Portugal (séc. XIX; gravuras e letras ornamentadas)",
+  "pergunta": "Camões, p. 27: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página de texto com nota: sai certa. Hoje vai para 'Para revisar' por causa da sombra da beirada e dos fios. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-027.jpg",
+    "legenda": "Camões, p. 27. Onde olhar: em laranja, a tinta que faz a página ir para 'Para revisar' hoje."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-camoes-066",
+  "ordem": 36,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Camões, A Historia de Portugal (séc. XIX; gravuras e letras ornamentadas)",
+  "pergunta": "Camões, p. 66: pela regra nova, esta página NÃO VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Página de versos: sai certa. Hoje vai para 'Para revisar' por causa da sombra da beirada. Pela regra nova ela não vai: nada importante foi apagado e nenhuma figura passou da gravura. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-066.jpg",
+    "legenda": "Camões, p. 66. Onde olhar: em laranja, a tinta que faz a página ir para 'Para revisar' hoje."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": false,
+  "veredito_agente": "certa"
+ },
+ {
+  "id": "rv3-pag-camoes-104",
+  "ordem": 37,
+  "parte": "Rodada 3 · 30 páginas de 5 livros novos · Camões, A Historia de Portugal (séc. XIX; gravuras e letras ornamentadas)",
+  "pergunta": "Camões, p. 104 (contracapa): pela regra nova, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "Olhe o retrato: fica em tons, com o papel branco. Mas a zona de gravura (verde) escorre pela beirada esquerda e de baixo, e ali as dobras do papel saem em marrom. É isso que faz a regra nova mandar a página (sinal 'figura passou da beirada da gravura achada'). Pela regra nova ela vai porque uma figura passou da beirada da gravura achada. Hoje ela vai.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-104.jpg",
+    "legenda": "Camões, p. 104 (contracapa). Onde olhar: em verde, o que o programa achou como gravura: o retrato, e também uma faixa da beirada e da moldura."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "hoje": true,
+  "regra_nova": true,
+  "veredito_agente": "leve"
+ }
+]
