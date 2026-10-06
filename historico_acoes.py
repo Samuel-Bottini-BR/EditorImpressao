@@ -12,6 +12,7 @@ inesperado no meio da escrita perde no máximo a última linha.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -56,10 +57,23 @@ class HistoricoAcoes:
 
         Uma acao nova depois de um desfazer limpa a pilha de refazer - e o
         comportamento que todo mundo espera de qualquer editor.
+
+        A pilha de refazer e limpa no ARQUIVO tambem (Lista de bugs,
+        06/10/2026): antes ela so era limpa na memoria, a acao nova ia para
+        o fim do acoes.jsonl, depois das desfeitas, e ao reabrir o livro o
+        Ctrl+Z desfazia a acao errada. Agora, se havia algo para refazer, o
+        arquivo e regravado inteiro so com o historico que vale
+        (_regravar_tudo); sem nada para refazer (o caso comum), a acao
+        continua so indo para o fim do arquivo, que e barato. Arriscado:
+        voltar a so acrescentar quando havia refazer.
         """
+        havia_refazer = bool(self.desfeitas)
         self.feitas.append(acao)
         self.desfeitas.clear()
-        self._gravar(acao)
+        if havia_refazer:
+            self._regravar_tudo()
+        else:
+            self._gravar(acao)
 
     # --- desfazer / refazer -----------------------------------------------
 
@@ -103,6 +117,82 @@ class HistoricoAcoes:
             # Nao poder gravar o historico nao pode derrubar o programa:
             # o desfazer continua funcionando na memoria.
             pass
+
+    def _regravar_tudo(self) -> None:
+        """Regrava o acoes.jsonl inteiro com o historico que vale agora
+        (feitas e, depois, as desfeitas na ordem em que seriam refeitas) e o
+        posicao.json.
+
+        Grava do jeito seguro do projeto.json (projetos._escrever_e_trocar):
+        tudo num arquivo ao lado, forcado ate o disco (fsync) e so entao
+        trocado pelo de antes. Uma queda de energia no meio deixa o arquivo
+        velho inteiro ou o novo inteiro, nunca pela metade. E feito na hora
+        (nao pelo fio que grava por tras) de proposito: a proxima acao vai
+        para o fim DESTE arquivo, e uma regravacao atrasada poderia apagar
+        essa acao. So acontece numa acao feita logo depois de um desfazer
+        (e ao abrir um livro com o arquivo errado), e o arquivo e pequeno
+        (umas centenas de bytes por acao).
+
+        Nao poder gravar nao derruba o programa (o desfazer continua na
+        memoria), como no _gravar. Arriscado: escrever direto por cima do
+        acoes.jsonl (uma queda no meio perderia o historico inteiro, nao so
+        a ultima linha).
+        """
+        if self.pasta is None:
+            return
+        from projetos import _escrever_e_trocar   # aqui dentro: projetos e pesado
+
+        historico = self.feitas + list(reversed(self.desfeitas))
+        texto = "".join(
+            json.dumps(acao.para_dicionario(), ensure_ascii=False) + "\n"
+            for acao in historico)
+        try:
+            self.pasta.mkdir(parents=True, exist_ok=True)
+            _escrever_e_trocar(self.pasta / ARQUIVO_ACOES, texto)
+            self._gravar_posicao()
+        except OSError:
+            pass
+
+    def _guardar_arquivo_errado(self) -> bool:
+        """Guarda ao lado o acoes.jsonl e o posicao.json como estavam, antes
+        de o carregar() acertar um arquivo errado (ver la).
+
+        Nomes "acoes.antigo-historico-AAAA-MM-DD-HHMM.jsonl" e
+        "posicao.antigo-historico-....json": tem o ".antigo-" de proposito,
+        como as outras copias de seguranca (projetos.guardar_copia_do_
+        trabalho), para o "Tirar da lista" as guardar junto (projetos.
+        copias_do_trabalho). Nunca por cima de outra copia (modo "x", e
+        "-2", "-3"... no mesmo minuto), e forcada ate o disco antes de o
+        arquivo ser regravado. Devolve False se nao deu para copiar: ai o
+        arquivo errado NAO e regravado (nada se perde; so o historico desta
+        vez fica com a acao certa na memoria).
+        """
+        from datetime import datetime
+
+        carimbo = datetime.now().strftime("%Y-%m-%d-%H%M")
+        origens = [self.pasta / ARQUIVO_ACOES, self.pasta / ARQUIVO_POSICAO]
+
+        def destino(origem: Path, sufixo: str) -> Path:
+            return origem.with_name(f"{origem.stem}.antigo-historico-{sufixo}{origem.suffix}")
+
+        for numero in range(1, 1000):
+            sufixo = carimbo if numero == 1 else f"{carimbo}-{numero}"
+            if any(destino(o, sufixo).exists() for o in origens):
+                continue
+            try:
+                for origem in origens:
+                    if not origem.is_file():
+                        continue
+                    with destino(origem, sufixo).open("xb") as copia:
+                        copia.write(origem.read_bytes())
+                        copia.flush()
+                        os.fsync(copia.fileno())
+            except FileExistsError:
+                continue
+            except OSError:
+                return False
+            return True
+        return False
 
     def _gravar_posicao(self) -> None:
         if self.pasta is None:
@@ -152,11 +242,43 @@ class HistoricoAcoes:
                 self.linhas_perdidas += 1
 
         aplicadas = len(acoes)
+        total = len(acoes)
         try:
             dados = json.loads((self.pasta / ARQUIVO_POSICAO).read_text(encoding="utf-8"))
             aplicadas = int(dados.get("aplicadas", aplicadas))
+            total = int(dados.get("total", total))
         except (OSError, ValueError, TypeError):
             pass
+
+        if 0 <= total < len(acoes):
+            # Arquivo errado, deixado pelo programa de antes de 06/10/2026
+            # (Lista de bugs): uma acao feita depois de um desfazer ia para o
+            # fim do arquivo SEM tirar as desfeitas, entao o arquivo tem mais
+            # linhas que o historico (o "total" do posicao.json). As linhas
+            # a mais sao acoes desfeitas, mas o arquivo nao diz QUAIS (o
+            # desfazer nao deixa marca nele): depois de A, B, desfazer B, C,
+            # o arquivo e [A, B, C] e o historico de verdade e [A, C]. Ler
+            # as primeiras linhas (como antes) da [A, B] - o defeito.
+            #
+            # O que se sabe com certeza: a ULTIMA linha e a ultima acao
+            # registrada, e ela foi a ultima do historico. Se o posicao.json
+            # diz que tudo estava feito (aplicadas == total), ela esta
+            # aplicada e o Ctrl+Z dela devolve exatamente o que havia antes
+            # (o "antes" foi fotografado na hora). Fica so ela. Se a ultima
+            # coisa foi um desfazer, nao se sabe o que esta feito: o
+            # historico fica vazio - melhor nao oferecer o Ctrl+Z do que
+            # desfazer a acao errada. O livro em si (projeto.json) nao muda
+            # nada: so o que o Ctrl+Z alcanca.
+            #
+            # O arquivo e acertado (regravado so com o que ficou), para a
+            # proxima acao ir para o fim certo, mas ANTES o de antes e
+            # guardado ao lado, sem apagar nada. Arriscado: "adivinhar" as
+            # outras linhas; regravar sem a copia.
+            self.feitas = acoes[-1:] if aplicadas == total else []
+            self.desfeitas = []
+            if self._guardar_arquivo_errado():
+                self._regravar_tudo()
+            return
 
         aplicadas = max(0, min(aplicadas, len(acoes)))
         self.feitas = acoes[:aplicadas]
