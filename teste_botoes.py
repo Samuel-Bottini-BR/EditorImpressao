@@ -585,6 +585,10 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
 
         alvos = list(botoes_de(conferir.area_imagem.currentWidget()))
         alvos += list(botoes_de(conferir.barra_botoes.currentWidget()))
+        # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
+        # (ui/widgets/barra_girar.py), valem em todas as abas.
+        if hasattr(conferir, "barra_girar"):
+            alvos += list(botoes_de(conferir.barra_girar))
         for botao in alvos:
             rotulo = botao.text() or "(sem texto)"
 
