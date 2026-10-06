@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador (3): troca de livro, resumo seguro, Misto com gravação por trás, 06/10/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador (3): troca de livro, resumo seguro, Misto com gravação por trás, 06/10/2026</h1>
+<p><strong>PRONTO PARA CONFERIR, com uma ressalva nova (R-B) que vale consertar antes de levar ao Kaique.</strong></p>
+<p>Os três consertos fizeram o que prometiam:</p>
+<ul>
+<li><strong>R-A:</strong> trocar de livro logo depois de mudar não perde mais a mudança. Com o Ctrl+O 0,15 s depois, o código novo guardou as 3 mudanças; o código de antes do conserto perdeu as 3, no mesmo teste.</li>
+<li><strong>O1:</strong> com o <code>resumo.json</code> vazio, pela metade ou com lixo, o livro continua na lista, com páginas e andamento, e abre.</li>
+<li><strong>O2 e as mortes:</strong> em 3 mortes do programa no meio da gravação, o <code>projeto.json</code> e o <code>resumo.json</code> ficaram sempre inteiros.</li>
+</ul>
+<p>O modo Misto e a gravação por trás convivem: as escolhas do Misto vão para o disco, voltam ao reabrir, e o programa antigo abre o mesmo projeto com as zonas no lugar.</p>
+<p><strong>A ressalva (R-B):</strong> "Tirar da lista" o livro que está aberto e depois <strong>fechar o programa</strong> recria a pasta, e o cartão volta para a lista. Com a conversão das zonas rodando, a pasta volta sozinha, sem fechar, quando a conversão termina. O caminho do fechar já acontecia no programa antigo (<code>aab746f</code>) e antes do conserto (<code>5f245d5</code>); o da conversão é desta frente.</p>
+<p><strong>Não é "aprovado":</strong> só o Samuel marca.</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> a moldura dourada e a iluminura continuam sendo defeito conhecido da Fase 1. Este item não mexe em imagem.</p>
+</blockquote>
+<p>O que foi conferido:</p>
+<ul>
+<li>o ramo <code>fase2-geometria</code> (worktree <code>geometria</code>) em <code>7cb4234</code>, com <code>1abdcdd</code> (R-A), <code>9764983</code> (O1), <code>9d733a5</code> (O2) e o merge <code>7cb4234</code> (Misto);</li>
+<li>nenhum código do programa foi mudado;</li>
+<li>os projetos reais em <code>%LOCALAPPDATA%</code> não foram abertos. Tudo rodou numa pasta de dados de teste própria (<code>verificador-3/dados/</code>), com cópias dos projetos do verificador-2 (Siebmacher de 268 páginas e Boécio de 50, os dois no formato antigo, e o Siebmacher já convertido);</li>
+<li>cópias do programa por <code>git archive</code>: <strong>novo</strong> <code>7cb4234</code>, <strong>antigo</strong> <code>aab746f</code>, <strong>antes do R-A</strong> <code>5f245d5</code>;</li>
+<li>a janela de teste é uma instância minha de 1600×821 px (1280×657 pontos), fora da tela, pilotada só com mensagens nativas e fechada com WM_CLOSE (ou morta de propósito com TerminateProcess, no item e).</li>
+</ul>
+<h2>1. Veredito por item</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) pytest, um arquivo por vez</td>
+<td>máquina</td>
+<td><strong>1529 passaram, 59 pularam, 0 falhas</strong> (81 arquivos, ~8,5 min somados). Os 59 pulados são de OCR (dados fora do git). Os testes novos: <code>test_trocar_de_livro_grava</code> 6/6, <code>test_resumo_seguro</code> 7/7, <code>test_gravacao_aguenta_queda_de_energia</code> 5/5, os 5 do Misto 105/105. Nada precisou ser repetido.</td>
+</tr>
+<tr>
+<td>(a) <code>teste_botoes.py</code></td>
+<td>máquina</td>
+<td><strong>132 ações, 0 falhas.</strong> Numa cópia <code>git archive</code> (<code>trabalho/botoes</code>), com a <code>saida_teste</code> dela.</td>
+</tr>
+<tr>
+<td>(b) R-A pelo Ctrl+O, caixa Abrir <strong>de verdade</strong></td>
+<td>máquina + olho</td>
+<td><strong>A mudança fica no disco nas 4 vezes</strong> (filtro com Ctrl+O 0,09 / 0,32 / 0,63 s depois; zona com 0,12 s). Ressalva do teste: a caixa do Windows leva 0,5 a 1,9 s para aparecer. Só na 4ª vez o "Abrir" foi apertado antes de 0,6 s (0,56 s), e aí foi o conserto que gravou. Nas outras, o relógio de salvar pode ter gravado enquanto a caixa estava aberta.</td>
+</tr>
+<tr>
+<td>(b) R-A pelo Ctrl+O, caixa instantânea (o caso mais apertado)</td>
+<td>máquina</td>
+<td><strong>Fica no disco nas 3 vezes</strong> (filtro 0,15 s, zona 0,15 s, filtro 0,32 s), logo depois da troca e depois de fechar. <strong>Controle:</strong> o mesmo teste no código de antes do conserto (<code>5f245d5</code>) <strong>perdeu as 3</strong>. O teste separa o certo do errado.</td>
+</tr>
+<tr>
+<td>(b) R-A pelo cartão da tela inicial</td>
+<td>máquina + olho</td>
+<td><strong>Fica no disco nas 4 vezes</strong> (Voltar 0,11 / 0,30 / 0,60 s depois do filtro; 0,14 s depois da zona; o "continuar" do Boécio 1,5 a 2,4 s depois). Para chegar ao cartão é preciso passar pelo "Voltar para as opções", que já grava na hora.</td>
+</tr>
+<tr>
+<td>(b) "começar de novo" logo depois de mudar</td>
+<td>máquina + olho</td>
+<td><strong>O trabalho jogado fora não volta.</strong> Mudei o filtro e desenhei uma zona na p139 do Siebmacher, e 3,2 s depois "começar de novo" nele. O <code>projeto.json</code> antigo sumiu; a conferência nova veio do zero (p139 em Original, sem a zona desenhada), na memória e no disco depois de fechar. "Começar de novo" de <strong>outro</strong> livro (o Boécio) com o Siebmacher mudado: a mudança do Siebmacher ficou no disco.</td>
+</tr>
+<tr>
+<td>(b) "Tirar da lista" e trocar de livro</td>
+<td>máquina + olho</td>
+<td><strong>Não recria a pasta</strong> quando, depois de tirar, se abre outro livro pelo Ctrl+O (nem depois de fechar).</td>
+</tr>
+<tr>
+<td>(b) "Tirar da lista" e <strong>fechar</strong></td>
+<td>máquina + olho</td>
+<td><strong>Recria a pasta (R-B).</strong> O cartão "siebmacher, 1 de 268 conferidas" volta na próxima abertura. Também em <code>5f245d5</code> e em <code>aab746f</code>.</td>
+</tr>
+<tr>
+<td>(b) "Tirar da lista" com a <strong>conversão rodando</strong></td>
+<td>máquina</td>
+<td><strong>Recria a pasta sozinha (R-B).</strong> Siebmacher antigo: tirei da lista com a conversão no meio; a pasta ficou fora por 69,6 s e voltou quando a conversão terminou, sem fechar nada. O mesmo com o Boécio.</td>
+</tr>
+<tr>
+<td>(c) O1: <code>resumo.json</code> estragado</td>
+<td>máquina + olho</td>
+<td><strong>O livro continua na lista</strong> nos 4 casos (vazio, metade, lixo, e metade nos dois livros de uma vez): "50 páginas · hoje", "2 de 50 conferidas"; "268 páginas", "0 de 268". O <code>resumo.json</code> foi refeito e ficou legível. O "continuar" abre o livro certo, com as 2 conferidas. O Ctrl+O do mesmo PDF acha o projeto (não cria outro). Volta com o nome do projeto ("Sobre a Consolação da Filosofia…"), e não com o nome dado pelo "Renomear" ("Boecio (copia do verificador)"), como o commit avisa.</td>
+</tr>
+<tr>
+<td>(d) Misto + gravação por trás</td>
+<td>máquina + olho</td>
+<td><strong>As escolhas ficam.</strong> Boécio no formato antigo, com a conversão rodando: <br>• "Só as letras" no livro; <br>• p21: "Tudo em preto e branco" só nela; <br>• p22: "Só as letras" desligada só nela. <br>Depois folheei 10 páginas (10 gravações por trás vistas) e fechei. No disco: livro <code>misto_so_as_letras=true</code>; p21 <code>misto_fora_do_texto="tudo"</code>; p22 <code>misto_so_as_letras=false</code>; 50 páginas no formato novo, com as mesmas zonas de antes. Ao reabrir, a tela mostra exatamente isso (caixinha e botão marcados).</td>
+</tr>
+<tr>
+<td>(d) o programa antigo (<code>aab746f</code>) abre esse projeto</td>
+<td>máquina + olho</td>
+<td><strong>Abre.</strong> 50 páginas, a contagem de zonas e os filtros iguais aos do disco em todas, e as zonas aparecem na aba Marcar. O <code>erros.log</code> ficou vazio. Ao fechar, o antigo regrava o arquivo <strong>sem</strong> os campos do Misto e sem as zonas na folha (ver O-b).</td>
+</tr>
+<tr>
+<td>(e) Siebmacher 268 folheando na conversão</td>
+<td>máquina + olho</td>
+<td><strong>Responde.</strong> 637 cliques, mediana 0,13 s, o mais lento 0,23 s; a página andou em todos. <strong>Maior parada da janela durante a conversão: 0,66 s</strong>, uma vez, no instante em que a tela de conferir se monta ("0 de 268"), antes do primeiro clique. A conversão levou 164 s. A cópia de segurança é byte a byte igual ao arquivo de antes (sha256 <code>781f61b7…</code>).</td>
+</tr>
+<tr>
+<td>(e) 3 mortes no meio da gravação</td>
+<td>máquina</td>
+<td><strong><code>projeto.json</code> e <code>resumo.json</code> sempre inteiros.</strong> <br>1. Filtro, morto 0,02 s depois de o <code>.novo</code> aparecer (0 bytes nele): o projeto ficou o de antes, inteiro. <br>2. Zona, morto 0,51 s depois da troca do <code>projeto.json</code>: inteiros. <br>3. Durante a conversão, folheando, morto 0,05 s depois de o <code>.novo</code> aparecer: inteiro, com 22 de 268 já convertidas e uma cópia de segurança. <br>Nenhum processo auxiliar ficou órfão, e o livro reabriu (268 páginas, <code>erros.log</code> vazio).</td>
+</tr>
+<tr>
+<td>Velocidade (<code>teste_velocidade.py</code>)</td>
+<td>—</td>
+<td><strong>Não rodado</strong> (~12 min, só com o PC parado).</td>
+</tr>
+</tbody>
+</table>
+<h2>2. R-B: "Tirar da lista" o livro aberto, e ele volta</h2>
+<p><strong>O que acontece:</strong></p>
+<ol>
+<li>O Siebmacher está aberto na conferência. A pessoa volta à tela inicial (Arquivo &gt; Voltar para as opções &gt; voltar).</li>
+<li>Clique direito no cartão &gt; "remover da lista" &gt; "Tirar da lista". A pasta some e o cartão sai.</li>
+<li>A pessoa fecha o programa. A pasta volta (<code>projeto.json</code> e <code>resumo.json</code>), e na próxima abertura o cartão está lá, com "1 de 268 conferidas".</li>
+</ol>
+<p><strong>Pelo código:</strong> o conserto do R-A (<code>_guardar_o_livro_aberto</code>) olha se a pasta ainda existe antes de gravar, mas só é chamado ao trocar de livro e no "começar de novo". O fechar (<code>closeEvent</code> → <code>_salvar_agora</code>) e o relógio de salvar (<code>_salvar_por_tras</code>, que a conversão chama ao terminar em <code>_conversao_terminou</code>) não olham. Como a janela continua com o livro tirado em <code>self.resumo</code>, a gravação faz <code>mkdir</code> e escreve tudo de novo.</p>
+<p><strong>Efeito para o Kaique:</strong> "tirei o livro da lista e ele voltou". Nada se perde; é o contrário. Mas o cartão que volta tem a conferência que a pergunta disse que ia se perder, e as cópias de segurança já foram para a pasta de cópias guardadas.</p>
+<p><strong>Sugestão:</strong> soltar o livro aberto (<code>self.resumo = None</code>, como o "começar de novo" do próprio livro já faz) quando ele é tirado da lista, ou pôr a mesma conferência da pasta em <code>_salvar_agora</code>.</p>
+<p><img alt="Antes de fechar: só o Boécio na lista" src="imagens/ra_tirar_fechar_antes.jpg" /></p>
+<p><em>Depois do "Tirar da lista" do Siebmacher (que estava aberto): só o Boécio na tela inicial.</em></p>
+<p><img alt="Depois de fechar e abrir de novo" src="imagens/ra_tirar_fechar_reaberto.jpg" /></p>
+<p><em>Fechei com WM_CLOSE e abri de novo: o cartão do Siebmacher voltou, com "1 de 268 conferidas".</em></p>
+<h2>3. O que vi nas imagens</h2>
+<p>Abri todos os prints da pasta <code>prints/</code> (60 arquivos, 33 imagens diferentes) e os 10 JPG de <code>imagens/</code>. Como no parecer anterior, o print pelo Windows da janela fora da tela devolve muitas vezes uma pintura antiga: 11 deles são a mesma imagem da tela inicial. O estado foi conferido lendo a janela; por isso gravei também o desenho que o próprio Qt faz da janela (<code>*_qt.png</code>), que é o que vale abaixo.</p>
+<ul>
+<li><strong>R-A, Ctrl+O</strong> (<code>ra_ctrlo_*_qt</code>): a tela "Marque o que você quer fazer" do <strong>boecio.pdf</strong> (o livro novo abriu).</li>
+<li><strong>R-A, cartão</strong> (<code>ra_cartao_*_qt</code>): o Boécio na conferência, com a faixa "Preparando as marcações do livro… 37 a 42 de 50" (a conversão do Boécio rodando por trás).</li>
+<li><strong>"Começar de novo"</strong> (<code>ra_recomecar_proprio_qt</code>): o Siebmacher na conferência nova, com "Achei a lombada e vou cortar na linha azul", miniaturas ainda chegando. Não é o trabalho antigo.</li>
+<li><strong>O1</strong> (<code>o1_*_qt</code>): os dois cartões com páginas e andamento certos. O Boécio aparece com o nome "Sobre a Consolação da Filosofia - Seve…" em vez do nome dado pelo "Renomear".</li>
+<li><strong>Misto</strong> (<code>d_*_qt</code>): <br>• a tela de opções com "Só as letras" marcada e "Guardar a tinta forte" em azul; <br>• a p21 com "Tudo em preto e branco" em azul, antes e depois de reabrir; <br>• a p22 com "Só as letras" desmarcada, antes e depois de reabrir.</li>
+<li><strong>Programa antigo</strong> (<code>d_antigo_marcar_qt</code>): a p1 do Boécio na aba Marcar, com as zonas desenhadas ("Marcado: 2 de letra e traço e 1 de papel").</li>
+<li><strong>Siebmacher</strong> (<code>sieb5_*</code>): a faixa "Preparando as marcações do livro… 2 de 268" e "4 de 268" durante a conversão. Depois dela, as miniaturas e a página 126 (bordado) com "atualizando…".</li>
+</ul>
+<p><img alt="Tela de opções com Só as letras" src="imagens/d_opcoes_so_as_letras.jpg" /></p>
+<p><em>Boécio, tela "Marque o que você quer fazer": Preto e branco e "Só as letras" no livro, com os três botões.</em></p>
+<p><img alt="p21 reaberta" src="imagens/d_reaberto_p21.jpg" /></p>
+<p><em>Depois de fechar e reabrir: a p21 continua em Preto e branco, com "Só as letras" e "Tudo em preto e branco" escolhido só nela.</em></p>
+<p><img alt="p22 reaberta" src="imagens/d_reaberto_p22.jpg" /></p>
+<p><em>A p22, com "Só as letras" desligada só nela, também voltou assim.</em></p>
+<p><img alt="Programa antigo" src="imagens/d_programa_antigo.jpg" /></p>
+<p><em>O programa ANTIGO (<code>aab746f</code>) abrindo o mesmo projeto: as zonas aparecem na aba Marcar.</em></p>
+<p><img alt="O1: resumo vazio" src="imagens/o1_resumo_vazio.jpg" /></p>
+<p><em>O <code>resumo.json</code> do Boécio zerado: o cartão continua lá, com "50 páginas" e "2 de 50 conferidas", agora com o nome do projeto.</em></p>
+<p><img alt="Siebmacher durante a conversão" src="imagens/e_faixa_durante_conversao.jpg" /></p>
+<p><em>Siebmacher, folheando durante a conversão: "Preparando as marcações do livro… 4 de 268".</em></p>
+<h2>4. A janela durante a conversão (e): comparação</h2>
+<table>
+<thead>
+<tr>
+<th>Rodada</th>
+<th>Conversão</th>
+<th>Cliques</th>
+<th>Clique mais lento</th>
+<th>Maior parada durante a conversão</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sieb5 (esta, <code>7cb4234</code>)</td>
+<td>164 s</td>
+<td>637</td>
+<td>0,228 s</td>
+<td><strong>0,66 s</strong>, no início (tela de conferir se montando)</td>
+</tr>
+<tr>
+<td>sieb3 (verificador-2, <code>858f314</code>)</td>
+<td>187 s</td>
+<td>702</td>
+<td>0,235 s</td>
+<td>0,57 s, no início</td>
+</tr>
+<tr>
+<td>sieb4 (verificador-2, <code>858f314</code>)</td>
+<td>190 s</td>
+<td>711</td>
+<td>0,232 s</td>
+<td>0,74 s, no início</td>
+</tr>
+</tbody>
+</table>
+<p>Fora da conversão: o programa fica 10,6 s sem responder ao iniciar (carregando o próprio programa) e 1,6 s ao abrir o livro. As duas coisas são de antes. O <code>fsync</code> do O2 não apareceu como parada: depois do início, nenhuma parada de 0,25 s ou mais até o fim da conversão.</p>
+<h2>5. Ressalvas e observações</h2>
+<h3>R-B: "Tirar da lista" o livro aberto, e ele volta (média)</h3>
+<p>Ver a seção 2. Pelo fechar, já existia (<code>aab746f</code>, <code>5f245d5</code>). Pelo fim da conversão, é desta frente.</p>
+<h3>O-a: o filtro do livro mudado na tela de opções volta ao salvo (baixa, já registrado em 29/09)</h3>
+<p>Marquei "Preto e branco" e "Só as letras" no livro e cliquei Conferir. O Misto do livro ficou ligado, mas o filtro do livro voltou a "original": o projeto salvo volta por cima, e só o Misto (e as gravuras e a moldura) é copiado da tela. É o bug anotado no código ("As caixinhas continuam perdendo o que se muda na volta…", 29/09).</p>
+<p>Com o Misto, isso dá uma situação estranha: o livro fica com "Só as letras" ligada e o filtro em Original. Na tela de opções, a caixinha só aparece no Preto e branco, então ela some, mas continua valendo nas páginas em Preto e branco.</p>
+<h3>O-b: o programa antigo apaga as escolhas do Misto ao gravar (esperado, vale saber)</h3>
+<p>O <code>aab746f</code> abre o projeto e mostra as zonas, mas ao fechar regrava o <code>projeto.json</code> sem os campos do Misto e sem as zonas na folha. Se o Kaique abrir um livro no programa antigo, as escolhas do Misto daquele livro se perdem, e na próxima vez o programa novo converte as zonas de novo (com outra cópia de segurança).</p>
+<h3>O-c: o <code>resumo.json</code> refeito perde o nome do "Renomear" e muda a ordem dos cartões (baixa, documentado no commit)</h3>
+<p>As datas viram a do <code>projeto.json</code>, então o cartão pode mudar de lugar. A página em que parou volta para a 1ª.</p>
+<h3>O-d: os testes que não pegaram a janela exata</h3>
+<ul>
+<li><strong>A morte durante a escrita do <code>resumo.json</code> não foi pega:</strong> a morte 2 veio 0,51 s depois da troca do <code>projeto.json</code>, e o <code>resumo.json.novo</code> não foi visto nesse intervalo. O resumo estragado foi testado à parte (item c).</li>
+<li><strong>A queda de energia de verdade não dá para testar aqui.</strong> O <code>fsync</code> está coberto só pelos 5 testes de máquina.</li>
+</ul>
+<h3>Outras observações</h3>
+<ul>
+<li><strong>"Começar de novo" num livro com camadas faz a pergunta "Fundo separado" de novo.</strong> É a decisão de 29/09. O piloto ficou parado nela na primeira tentativa, porque não a respondia; a pergunta é modal e segura o fechar até ser respondida. Refiz respondendo "Não".</li>
+<li><strong>Não testado:</strong> a roda do mouse (não funciona sem foco); trocar de livro por "Livros recentes" e por arrastar (passam pelo mesmo <code>abrir_livro</code>); a escala real do notebook do Kaique; o <code>teste_velocidade.py</code>.</li>
+</ul>
+<h2>6. Para a Lista de bugs (proposta)</h2>
+<ul>
+<li><strong>06/10, R-B:</strong> "Tirar da lista" o livro aberto e depois fechar o programa recria a pasta e o cartão volta. Com a conversão das zonas rodando, volta sozinho quando ela termina. Já acontecia em <code>aab746f</code> pelo fechar. Registro: <code>trabalho/ra_tirar_fechar.log</code>, <code>trabalho/ra_tirar_conversao_sieb.log</code>, <code>trabalho/ra_tirar_conversao.log</code>; prints <code>imagens/ra_tirar_fechar_*.jpg</code>.</li>
+</ul>
+<h2>7. Arquivos</h2>
+<ul>
+<li><strong>Scripts</strong> (fora do git): <code>scripts/ra.py</code> (b), <code>scripts/o1.py</code> (c), <code>scripts/misto.py</code> (d), <code>scripts/folhear_v3.py</code> e <code>scripts/mortes.py</code> (e), <code>scripts/pytest_por_partes_v4.sh</code>, <code>scripts/v3.py</code>. O piloto do verificador-2 foi copiado com duas mudanças:</li>
+<li>o canal <code>canal3</code>;</li>
+<li>a opção <code>VERIF_CAIXA_REAL=1</code>, para usar a caixa Abrir do Windows.</li>
+<li><strong>Registros</strong> (fora do git): <code>trabalho/pytest_partes_v4.log</code>, <code>trabalho/teste_botoes_v4.log</code>, <code>trabalho/ra_*.log</code>, <code>trabalho/o1.log</code>, <code>trabalho/misto.log</code>, <code>trabalho/folhear_sieb5.log</code>, <code>trabalho/mortes.log</code>.</li>
+<li><strong>No git:</strong> este parecer (<code>.md</code> e <code>.html</code>) e as imagens pequenas em <code>imagens/</code>. O <code>.pdf</code> fica na pasta.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 04:57</p>
+</body>
+</html>
