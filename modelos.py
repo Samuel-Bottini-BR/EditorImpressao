@@ -86,9 +86,10 @@ class ConfigPagina:
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
     # (06/10/2026, P7): "Eu vou poder ligar e desligar esse apagador de
     # pingos? e selecionar o pouco, normal ou muito, ou selecionar o nosso".
-    # Valores: core.pontinhos_scantailor.ESCOLHAS ("desligado", "nosso",
-    # "pouco", "normal", "muito"). So muda a imagem da pagina em Preto e
-    # branco (com ou sem "So as letras").
+    # Valores: os codigos internos de core.pontinhos_scantailor.ESCOLHAS
+    # ("desligado", "nosso", "st_pouco", "st_normal", "st_muito"; nunca o
+    # texto da tela, que e provisorio). So muda a imagem da pagina em Preto
+    # e branco (com ou sem "So as letras").
     #
     # Substitui a caixinha "limpar poeirinha" (Problema 5 do plano, campo
     # `despeckle`: True = o nosso, False = nada). Projeto antigo abre como
@@ -319,8 +320,9 @@ class Projeto:
 
     # "Limpar pontinhos" do livro, no Preto e branco e no "So as letras".
     # Decisao do Samuel (06/10/2026, P7): de fabrica o do ScanTailor "pouco"
-    # (PONTINHOS_PADRAO); as outras escolhas continuam: desligado, o nosso,
-    # normal, muito (core/pontinhos_scantailor.py, ESCOLHAS). Cada pagina pode
+    # (PONTINHOS_PADRAO, codigo "st_pouco"); as outras escolhas continuam:
+    # desligado, o nosso, normal, muito (core/pontinhos_scantailor.py,
+    # ESCOLHAS: codigos internos, nunca o texto da tela). Cada pagina pode
     # trocar so nela (ConfigPagina.limpar_pontinhos). Projeto salvo antes
     # deste campo abre com "nosso" (de_dicionario): era o que ele usava, e um
     # livro ja conferido nao muda sem o Samuel saber. Quem mostra:

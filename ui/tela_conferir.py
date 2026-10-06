@@ -2710,8 +2710,8 @@ class TelaConferir(QWidget):
         self._registrar(
             "mudar_pontinhos", "pagina", [self.indice_pagina],
             {"limpar_pontinhos": novo},
-            f"Limpar pontinhos na página {self.indice_pagina + 1}: "
-            + pontinhos.NOMES_NA_TELA[novo],
+            pontinhos.FRASE_DO_DESFAZER.format(pagina=self.indice_pagina + 1,
+                                               nome=pontinhos.NOMES_NA_TELA[novo]),
         )
 
     # --- modo Misto ("Só as letras", 05/10/2026) ---------------------------

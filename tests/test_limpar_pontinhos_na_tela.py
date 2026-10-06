@@ -43,9 +43,9 @@ def test_o_livro_comeca_em_pouco(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta)))
     tela = janela.tela_opcoes
     assert _itens(tela.combo_pontinhos) == NA_TELA
-    assert tela.combo_pontinhos.currentData() == "pouco"
+    assert tela.combo_pontinhos.currentData() == ps.POUCO
     assert tela.rotulo_pontinhos.text() == "Limpar pontinhos:"
-    assert janela.projeto.limpar_pontinhos == "pouco"
+    assert janela.projeto.limpar_pontinhos == ps.POUCO
 
 
 def test_so_aparece_com_o_preto_e_branco_e_guarda_a_escolha(janela, pasta):
@@ -55,10 +55,10 @@ def test_so_aparece_com_o_preto_e_branco_e_guarda_a_escolha(janela, pasta):
     assert tela.linha_pontinhos.isHidden()
     tela.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
     assert not tela.linha_pontinhos.isHidden()
-    tela.combo_pontinhos.setCurrentIndex(tela.combo_pontinhos.findData("muito"))
+    tela.combo_pontinhos.setCurrentIndex(tela.combo_pontinhos.findData(ps.MUITO))
     tela.radios_de_filtro[MELHORAR].setChecked(True)
     assert tela.linha_pontinhos.isHidden()
-    assert projeto.limpar_pontinhos == "muito", "esconder não esquece a escolha"
+    assert projeto.limpar_pontinhos == ps.MUITO, "esconder não esquece a escolha"
 
 
 @pytest.mark.parametrize("escolha", ps.ESCOLHAS)
@@ -73,9 +73,9 @@ def test_cada_valor_do_livro_grava_no_projeto(janela, pasta, escolha):
 def test_projeto_salvo_volta_para_a_tela(janela, pasta):
     caminho = str(_pdf(pasta))
     janela.abrir_livro(caminho)
-    janela._trazer_opcoes_salvas(Projeto(caminho_entrada=caminho, limpar_pontinhos="normal"))
-    assert janela.tela_opcoes.combo_pontinhos.currentData() == "normal"
-    assert janela.projeto.limpar_pontinhos == "normal"
+    janela._trazer_opcoes_salvas(Projeto(caminho_entrada=caminho, limpar_pontinhos=ps.NORMAL))
+    assert janela.tela_opcoes.combo_pontinhos.currentData() == ps.NORMAL
+    assert janela.projeto.limpar_pontinhos == ps.NORMAL
 
 
 def test_projeto_antigo_aparece_o_nosso(janela, pasta):
@@ -95,7 +95,7 @@ def test_objeto_sem_o_campo_fica_com_o_de_agora(janela, pasta):
     salvo = Projeto(caminho_entrada=caminho)
     delattr(salvo, "limpar_pontinhos")          # vale o da classe
     janela._trazer_opcoes_salvas(salvo)
-    assert janela.projeto.limpar_pontinhos == "pouco"
+    assert janela.projeto.limpar_pontinhos == ps.POUCO
 
 
 def test_a_escolha_do_livro_esta_nas_opcoes_do_trabalho(janela):
@@ -139,7 +139,7 @@ def test_so_aparece_no_preto_e_branco(conferir):
 
 
 def test_a_pagina_mostra_o_que_vem_do_livro_sem_gravar(conferir):
-    assert conferir.seletor_pontinhos.currentData() == "pouco"
+    assert conferir.seletor_pontinhos.currentData() == ps.POUCO
     conferir.projeto.limpar_pontinhos = "nosso"
     conferir.atualizar()
     assert conferir.seletor_pontinhos.currentText() == "o nosso"
@@ -155,22 +155,22 @@ def test_trocar_na_pagina_e_acao_do_desfazer(conferir):
     assert pagina.limpar_pontinhos == "desligado" and outra.limpar_pontinhos is None
     assert conferir.previas.chave(0, 110) != chave_antes, "a prévia tinha de ser refeita"
     assert conferir.acoes.descricao_desfazer().endswith("Limpar pontinhos na página 1: desligado")
-    seletor.setCurrentIndex(seletor.findData("muito"))
-    assert pagina.limpar_pontinhos == "muito"
+    seletor.setCurrentIndex(seletor.findData(ps.MUITO))
+    assert pagina.limpar_pontinhos == ps.MUITO
     conferir.desfazer()
     assert pagina.limpar_pontinhos == "desligado"
     assert seletor.currentData() == "desligado", "a tela volta junto com o desfazer"
     conferir.desfazer()
-    assert pagina.limpar_pontinhos is None and seletor.currentData() == "pouco"
+    assert pagina.limpar_pontinhos is None and seletor.currentData() == ps.POUCO
     conferir.refazer()
     assert pagina.limpar_pontinhos == "desligado"
 
 
 def test_escolher_o_que_ja_vale_nao_vira_acao(conferir):
     seletor = conferir.seletor_pontinhos
-    seletor.setCurrentIndex(seletor.findData("normal"))
-    seletor.setCurrentIndex(seletor.findData("pouco"))   # o do livro, que já valia antes
-    assert conferir.projeto.paginas[0].limpar_pontinhos == "pouco"
+    seletor.setCurrentIndex(seletor.findData(ps.NORMAL))
+    seletor.setCurrentIndex(seletor.findData(ps.POUCO))   # o do livro, que já valia antes
+    assert conferir.projeto.paginas[0].limpar_pontinhos == ps.POUCO
     conferir.desfazer()
     conferir.desfazer()
     assert not conferir.acoes.pode_desfazer
@@ -187,7 +187,7 @@ def test_todas_leva_a_escolha_junto(conferir):
 
 def test_mudar_no_livro_tambem_refaz_a_previa(conferir):
     chave_antes = conferir.previas.chave(1, 110)
-    conferir.projeto.limpar_pontinhos = "muito"
+    conferir.projeto.limpar_pontinhos = ps.MUITO
     assert conferir.previas.chave(1, 110) != chave_antes
 
 

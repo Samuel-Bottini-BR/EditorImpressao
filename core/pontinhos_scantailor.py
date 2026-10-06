@@ -159,36 +159,45 @@ def preto_e_branco_com_pontinhos_do_scantailor(
 # =============================================================================
 # A ESCOLHA NO PROGRAMA: "Limpar pontinhos" (decisão do Samuel, 06/10/2026, P7)
 #
-# Cinco valores, por livro (Projeto.limpar_pontinhos) e por página
+# Cinco valores (CÓDIGOS INTERNOS, que vão para o projeto.json; nunca o
+# texto da tela), por livro (Projeto.limpar_pontinhos) e por página
 # (ConfigPagina.limpar_pontinhos; None = segue o livro), valendo no Preto e
 # branco e no "Só as letras" (core.pipeline._filtrar):
 #   DESLIGADO  nenhum limpar pontinhos;
 #   NOSSO      o de antes (core.filtros._despeckle: tira toda mancha pequena,
 #              pelo tamanho; "muitas vezes acaba comendo muito as letras");
 #   POUCO, NORMAL, MUITO  o do ScanTailor (limpar_pontinhos, acima), nas
-#              três forças dele. POUCO é o de fábrica (livro novo).
+#              três forças dele ("st_" = ScanTailor). POUCO é o de fábrica
+#              (livro novo).
 # Projeto salvo antes desta escolha abre como estava: a caixinha antiga
 # "limpar poeirinha" (ConfigPagina.despeckle) ligada vira NOSSO, desligada
 # vira DESLIGADO (modelos.Projeto.de_dicionario). Assim um livro já
 # conferido não muda sem o Samuel saber.
 #
-# Seguro mudar: ROTULO_NA_TELA, NOMES_NA_TELA e EXPLICACAO_NA_TELA (textos).
-# Arriscado: os valores das constantes (vão para o projeto.json; mudar um
-# quebra os livros salvos com ele - escolha_valida faria o livro cair no de
-# fábrica) e PADRAO (é a decisão do Samuel).
+# Seguro mudar: ROTULO_NA_TELA, NOMES_NA_TELA e EXPLICACAO_NA_TELA (os
+# textos; só a tela os lê). Arriscado: os códigos (vão para o projeto.json;
+# mudar um quebra os livros salvos com ele - escolha_valida faria o livro
+# cair no de fábrica) e PADRAO (é a decisão do Samuel).
 # =============================================================================
 
 DESLIGADO = "desligado"
 NOSSO = "nosso"
-POUCO, NORMAL, MUITO = "pouco", "normal", "muito"
+POUCO, NORMAL, MUITO = "st_pouco", "st_normal", "st_muito"
 ESCOLHAS = (DESLIGADO, NOSSO, POUCO, NORMAL, MUITO)   # a ordem da tela
 DO_SCANTAILOR = (POUCO, NORMAL, MUITO)
+# a força do ScanTailor (FORCAS, acima) de cada código
+FORCA_DA_ESCOLHA = {POUCO: "pouco", NORMAL: "normal", MUITO: "muito"}
 PADRAO = POUCO                    # livro novo (decisão do Samuel, 06/10)
 DO_PROJETO_ANTIGO = NOSSO         # livro salvo antes da escolha existir
 
-# Os textos da tela (provisórios até o layout; regra do Samuel de 06/10: o
-# controle entra com aparência provisória e vai para a lista do agente de
-# layout).
+# TODOS os textos da tela desta escolha moram aqui, e só aqui (a tela "O
+# que fazer", a aba Filtro e a frase do desfazer leem daqui).
+# NOMES PROVISÓRIOS, A ESCOLHER PELO SAMUEL: ele disse, vendo o desenho da
+# tela (06/10/2026), que "o nosso" e "limpar pontinhos" não servem para o
+# Kaique ("como o Kaique vai diferenciar qual é qual [...] como ele vai
+# saber o que é isso, precisa de opções para esses nomes de botão"). Os
+# nomes saem de uma rodada de layout; trocar aqui não mexe em nada da
+# lógica nem nos projetos salvos (que guardam os códigos, acima).
 ROTULO_NA_TELA = "Limpar pontinhos:"
 NOMES_NA_TELA = {DESLIGADO: "desligado", NOSSO: "o nosso", POUCO: "pouco",
                  NORMAL: "normal", MUITO: "muito"}
@@ -199,6 +208,8 @@ EXPLICACAO_NA_TELA = (
     "o nosso: o jeito de antes, que tira toda mancha pequena e às vezes come "
     "pedaço de letra.\n"
     "desligado: não tira nada.")
+# a frase da ação no menu Editar (Desfazer/Refazer) da aba Filtro
+FRASE_DO_DESFAZER = "Limpar pontinhos na página {pagina}: {nome}"
 
 
 def escolha_valida(valor, padrao: str = PADRAO) -> str:
@@ -334,7 +345,7 @@ def limpar_conforme_a_escolha(binaria: np.ndarray, escolha, *,
         return F._despeckle(binaria, binaria.shape[0])
     if not dpi or dpi <= 0:
         dpi = dpi_pela_altura(binaria.shape[0])
-    resultado = limpar_pontinhos(binaria, dpi, nome, biblioteca=biblioteca)
+    resultado = limpar_pontinhos(binaria, dpi, FORCA_DA_ESCOLHA[nome], biblioteca=biblioteca)
     if resultado.disponivel:
         return resultado.imagem
     _avisar_uma_vez(resultado.motivo, resultado.detalhe_tecnico)

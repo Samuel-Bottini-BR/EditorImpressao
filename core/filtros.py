@@ -1124,9 +1124,9 @@ def filtro_preto_e_branco(
     True = o nosso (_despeckle), False = nada - os dois de sempre, que os
     scripts e testes antigos passam, com o resultado de sempre. O programa
     passa um core.pontinhos_scantailor.Pontinhos (a escolha da página e o DPI
-    de verdade; core.pipeline.pontinhos_da_pagina), ou o texto de uma das
-    escolhas ("desligado", "nosso", "pouco", "normal", "muito"). Ver
-    _limpar_os_pontinhos.
+    de verdade; core.pipeline.pontinhos_da_pagina), ou o codigo de uma das
+    escolhas (core.pontinhos_scantailor.ESCOLHAS: "desligado", "nosso",
+    "st_pouco", "st_normal", "st_muito"). Ver _limpar_os_pontinhos.
     """
     cinza = _cinza_para_binarizar(img)
     janela = janela_para_altura(cinza.shape[0])

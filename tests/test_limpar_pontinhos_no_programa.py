@@ -46,46 +46,62 @@ precisa_da_dll = pytest.mark.skipif(not st.disponivel(), reason="st_ferramentas.
 # --- os padrões e o projeto ----------------------------------------------------
 
 def test_as_cinco_escolhas_na_ordem_da_tela():
-    assert ps.ESCOLHAS == ("desligado", "nosso", "pouco", "normal", "muito")
+    assert ps.ESCOLHAS == ("desligado", "nosso", "st_pouco", "st_normal", "st_muito")
     assert [ps.NOMES_NA_TELA[e] for e in ps.ESCOLHAS] == [
         "desligado", "o nosso", "pouco", "normal", "muito"]
     assert ps.ROTULO_NA_TELA == "Limpar pontinhos:"
 
 
+def test_o_projeto_grava_o_codigo_e_nunca_o_texto_da_tela():
+    """Pedido da gerente (06/10): os nomes da tela são provisórios (o Samuel
+    vai escolher outros); o projeto.json guarda só o código interno."""
+    assert ps.PADRAO == ps.POUCO == "st_pouco"
+    assert set(ps.NOMES_NA_TELA) == set(ps.ESCOLHAS)
+    projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos=ps.NOSSO)
+    projeto.folhas = [ConfigFolha(indice=0)]
+    projeto.paginas = [ConfigPagina(indice=0, folha=0, limpar_pontinhos=ps.MUITO)]
+    texto = json.dumps(projeto.para_dicionario(), ensure_ascii=False)
+    assert '"limpar_pontinhos": "nosso"' in texto and '"limpar_pontinhos": "st_muito"' in texto
+    assert "o nosso" not in texto
+    # e o texto da tela não vale como escolha
+    assert ps.escolha_valida("o nosso") == ps.PADRAO
+    assert ps.escolha_valida("pouco") == ps.PADRAO
+
+
 def test_livro_novo_comeca_em_pouco_e_a_pagina_segue_o_livro():
     projeto = Projeto(caminho_entrada="x.pdf")
     pagina = ConfigPagina(indice=0, folha=0)
-    assert projeto.limpar_pontinhos == "pouco"
+    assert projeto.limpar_pontinhos == ps.POUCO
     assert pagina.limpar_pontinhos is None
-    assert ps.escolha_da_pagina(projeto, pagina) == "pouco"
+    assert ps.escolha_da_pagina(projeto, pagina) == ps.POUCO
     assert not hasattr(pagina, "despeckle"), "a caixinha antiga saiu do modelo"
 
 
 def test_a_pagina_troca_so_nela():
-    projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos="normal")
+    projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos=ps.NORMAL)
     a, b = ConfigPagina(indice=0, folha=0), ConfigPagina(indice=1, folha=0)
     b.limpar_pontinhos = "desligado"
-    assert ps.escolha_da_pagina(projeto, a) == "normal"
+    assert ps.escolha_da_pagina(projeto, a) == ps.NORMAL
     assert ps.escolha_da_pagina(projeto, b) == "desligado"
 
 
 def test_valor_estranho_nao_derruba_nada():
     projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos="forte")
     pagina = ConfigPagina(indice=0, folha=0, limpar_pontinhos="enorme")
-    assert ps.escolha_da_pagina(projeto, pagina) == "pouco"
-    projeto.limpar_pontinhos = "muito"
-    assert ps.escolha_da_pagina(projeto, pagina) == "muito"
+    assert ps.escolha_da_pagina(projeto, pagina) == ps.POUCO
+    projeto.limpar_pontinhos = ps.MUITO
+    assert ps.escolha_da_pagina(projeto, pagina) == ps.MUITO
     # objeto sem os campos (projeto em memória de antes): o de fábrica
-    assert ps.escolha_da_pagina(object(), object()) == "pouco"
+    assert ps.escolha_da_pagina(object(), object()) == ps.POUCO
 
 
 def test_ida_e_volta_pelo_json():
-    projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos="normal")
+    projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos=ps.NORMAL)
     projeto.folhas = [ConfigFolha(indice=0)]
     projeto.paginas = [ConfigPagina(indice=0, folha=0),
                        ConfigPagina(indice=1, folha=0, limpar_pontinhos="desligado")]
     volta = Projeto.de_dicionario(json.loads(json.dumps(projeto.para_dicionario())))
-    assert volta.limpar_pontinhos == "normal"
+    assert volta.limpar_pontinhos == ps.NORMAL
     assert [p.limpar_pontinhos for p in volta.paginas] == [None, "desligado"]
     assert "despeckle" not in json.dumps(projeto.para_dicionario())
 
@@ -141,7 +157,7 @@ def _pagina_com_poeira() -> np.ndarray:
     return cv2.GaussianBlur(img, (3, 3), 0)
 
 
-def _livro(escolha_do_livro="pouco", escolha_da_pagina=None, **opcoes):
+def _livro(escolha_do_livro=ps.POUCO, escolha_da_pagina=None, **opcoes):
     projeto = Projeto(caminho_entrada="x.pdf", detectar_regioes=False,
                       limpar_pontinhos=escolha_do_livro, **opcoes)
     projeto.folhas = [ConfigFolha(indice=0)]
@@ -177,7 +193,7 @@ def _esperado(img, escolha, dpi=300):
         return sem
     if escolha == "nosso":
         return F._despeckle(sem, sem.shape[0])
-    return ps.limpar_pontinhos(sem, dpi, escolha).imagem
+    return ps.limpar_pontinhos(sem, dpi, ps.FORCA_DA_ESCOLHA[escolha]).imagem
 
 
 # --- cada valor chega ao filtro ------------------------------------------------
@@ -191,7 +207,7 @@ def test_cada_escolha_do_livro_chega_ao_preto_e_branco(escolha, espiao):
     assert mono
     usadas = [c for c in espiao if c[0] == "scantailor"]
     if escolha in ps.DO_SCANTAILOR:
-        assert usadas and {c[1] for c in usadas} == {escolha}
+        assert usadas and {c[1] for c in usadas} == {ps.FORCA_DA_ESCOLHA[escolha]}
         assert {round(c[2]) for c in usadas} == {300}
     else:
         assert not usadas
@@ -212,14 +228,14 @@ def test_as_cinco_saem_diferentes_nesta_pagina():
     # e o desligado é o que tem mais preto; o do ScanTailor só tira, nunca põe
     pretos = {e: int((s == 0).sum()) for e, s in saidas.items()}
     assert pretos["desligado"] == max(pretos.values())
-    assert pretos["pouco"] >= pretos["normal"] >= pretos["muito"]
+    assert pretos[ps.POUCO] >= pretos[ps.NORMAL] >= pretos[ps.MUITO]
 
 
 @precisa_da_dll
 @pytest.mark.parametrize("escolha", ps.ESCOLHAS)
 def test_a_escolha_da_pagina_vale_por_cima_do_livro(escolha, espiao):
     img = _pagina_com_poeira()
-    outra = "desligado" if escolha != "desligado" else "muito"
+    outra = "desligado" if escolha != "desligado" else ps.MUITO
     projeto = _livro(outra, escolha)
     saida, _ = pipeline._filtrar(projeto, projeto.paginas[0], img, 300.0, 300.0)
     assert np.array_equal(saida, _esperado(img, escolha))
@@ -243,7 +259,7 @@ def test_cada_escolha_chega_com_marcacao(escolha, espiao, monkeypatch):
         {"desligado": False, "nosso": True}[escolha])
     assert np.array_equal(saida, esperado)
     usadas = {c[1] for c in espiao if c[0] == "scantailor"}
-    assert usadas == ({escolha} if escolha in ps.DO_SCANTAILOR else set())
+    assert usadas == ({ps.FORCA_DA_ESCOLHA[escolha]} if escolha in ps.DO_SCANTAILOR else set())
 
 
 @precisa_da_dll
@@ -261,14 +277,14 @@ def test_cada_escolha_chega_ao_so_as_letras(escolha, espiao, monkeypatch):
         else {"desligado": False, "nosso": True}[escolha], fora_do_texto=misto.FORA_TUDO)
     assert np.array_equal(saida, esperado)
     usadas = {c[1] for c in espiao if c[0] == "scantailor"}
-    assert usadas == ({escolha} if escolha in ps.DO_SCANTAILOR else set())
+    assert usadas == ({ps.FORCA_DA_ESCOLHA[escolha]} if escolha in ps.DO_SCANTAILOR else set())
 
 
 def test_nos_outros_filtros_nao_muda_nada():
     img = _pagina_com_poeira()
     for filtro in (F.MELHORAR, F.ORIGINAL):
         saidas = []
-        for escolha in ("desligado", "muito"):
+        for escolha in ("desligado", ps.MUITO):
             projeto = _livro(escolha)
             projeto.paginas[0].filtro = filtro
             saidas.append(pipeline._filtrar(projeto, projeto.paginas[0], img, 300.0, 300.0)[0])
@@ -364,11 +380,11 @@ def test_sem_dpi_o_filtro_estima_pela_altura():
 
 
 def test_o_pipeline_passa_o_dpi_certo():
-    projeto = _livro("pouco")
+    projeto = _livro(ps.POUCO)
     pagina = projeto.paginas[0]
     grande = np.zeros((5633, 3684), np.uint8)
     pontinhos = pipeline.pontinhos_da_pagina(projeto, pagina, grande, 300.0, 72.0)
-    assert pontinhos.escolha == "pouco" and 510 < pontinhos.dpi < 525
+    assert pontinhos.escolha == ps.POUCO and 510 < pontinhos.dpi < 525
     # o nosso e o desligado nao precisam de DPI
     pagina.limpar_pontinhos = "nosso"
     assert pipeline.pontinhos_da_pagina(projeto, pagina, grande, 300.0, 72.0) == ps.Pontinhos("nosso")
@@ -378,13 +394,13 @@ def test_o_pipeline_passa_o_dpi_certo():
 
 
 def test_so_mede_o_dpi_quando_o_scantailor_vai_limpar():
-    projeto = _livro("pouco")
+    projeto = _livro(ps.POUCO)
     pagina = projeto.paginas[0]
     assert pipeline._vai_limpar_pelo_scantailor(projeto, pagina)
     for escolha in ("nosso", "desligado"):
         pagina.limpar_pontinhos = escolha
         assert not pipeline._vai_limpar_pelo_scantailor(projeto, pagina)
-    pagina.limpar_pontinhos = "muito"
+    pagina.limpar_pontinhos = ps.MUITO
     pagina.filtro = F.MELHORAR
     assert not pipeline._vai_limpar_pelo_scantailor(projeto, pagina)
     pagina.filtro = F.PRETO_E_BRANCO
@@ -398,7 +414,7 @@ def test_sem_a_dll_cai_no_nosso(tmp_path):
     sem_dll = st.BibliotecaScanTailor(tmp_path / "nao_existe.dll")
     img = _pagina_com_poeira()
     binaria = F.filtro_preto_e_branco(img, despeckle=False)
-    saida = ps.limpar_conforme_a_escolha(binaria, ps.Pontinhos("pouco", 300.0), biblioteca=sem_dll)
+    saida = ps.limpar_conforme_a_escolha(binaria, ps.Pontinhos(ps.POUCO, 300.0), biblioteca=sem_dll)
     assert np.array_equal(saida, F._despeckle(binaria, binaria.shape[0]))
 
 
