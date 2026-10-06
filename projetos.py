@@ -227,13 +227,40 @@ def _escrever_resumo(pasta: Path, dados: dict) -> None:
     verificador-2, 06/10/2026): antes era write_text direto por cima, e um
     resumo.json pela metade fazia o projeto SUMIR da lista (listar pula a
     pasta) com o projeto.json intacto ao lado. Arriscado: voltar a escrever
-    direto por cima."""
+    direto por cima.
+
+    Pasta que nao existe mais nao e recriada (R-B do verificador-3,
+    06/10/2026; ver _pasta_existe): o resumo.json e o que poe o cartao na
+    tela inicial, e um projeto tirado da lista voltava por aqui."""
     try:
-        pasta.mkdir(parents=True, exist_ok=True)
+        if not _pasta_existe(pasta):
+            return
         _escrever_e_trocar(_caminho_do_resumo(pasta),
                            json.dumps(dados, ensure_ascii=False, indent=1))
     except OSError:
         pass
+
+
+def _pasta_existe(pasta: Path) -> bool:
+    """A pasta do projeto ainda esta no disco? As gravacoes do projeto
+    (_escrever_resumo, _gravar_no_disco) so escrevem se estiver.
+
+    R-B do verificador-3 (06/10/2026): "Tirar da lista" o livro aberto e
+    depois fechar o programa (ou o relogio de salvar disparar, ou a
+    conversao das zonas terminar) recriava a pasta com mkdir, e o cartao
+    voltava para a lista. A janela ja solta o livro tirado
+    (ui/janela_principal._soltar_o_livro_tirado_da_lista); isto e a segunda
+    camada, para qualquer caminho que ainda pedir uma gravacao depois (uma
+    gravacao por tras que ja estava na fila, um caminho novo da janela).
+
+    Ressalva: se a pasta sumir por outro motivo com o livro aberto (alguem
+    apagou a pasta de dados), o trabalho deixa de ser gravado em vez de
+    recriar a pasta. Arriscado: recriar a pasta aqui (o projeto tirado da
+    lista volta)."""
+    try:
+        return pasta.is_dir()
+    except OSError:
+        return False
 
 
 def ler_resumo(pasta: str | Path) -> Resumo | None:
@@ -454,10 +481,16 @@ def esperar_gravacoes(limite_s: float | None = None) -> bool:
 def _gravar_no_disco(pasta: Path, dados: dict) -> None:
     """A parte de disco de uma gravacao (no fio de quem chamou: a janela em
     salvar_estado, o _Gravador em salvar_estado_por_tras). Uma de cada vez
-    (_TRAVA_DO_DISCO). Nunca levanta."""
+    (_TRAVA_DO_DISCO). Nunca levanta.
+
+    Nao grava numa pasta de projeto que nao existe mais, e nunca a recria
+    (R-B do verificador-3, 06/10/2026): e o projeto que a pessoa tirou da
+    lista ("Tirar da lista" apaga a pasta), e recria-la trazia o cartao de
+    volta. Quem cria a pasta e criar(). Arriscado: voltar o mkdir aqui."""
     with _TRAVA_DO_DISCO:
         try:
-            pasta.mkdir(parents=True, exist_ok=True)
+            if not _pasta_existe(pasta):
+                return
             # Decisao D2 (02/10/2026): "com copia de seguranca dos projetos". A
             # primeira gravacao no formato novo (zonas na folha original) por
             # cima de um projeto.json antigo com zonas guarda o antigo antes.

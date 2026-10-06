@@ -136,6 +136,7 @@ class JanelaPrincipal(QMainWindow):
         self.tela_inicio.abrir_pdf.connect(self.abrir_livro)
         self.tela_inicio.continuar_projeto.connect(self._continuar_projeto)
         self.tela_inicio.recomecar_projeto.connect(self._recomecar_projeto)
+        self.tela_inicio.vai_tirar_da_lista.connect(self._soltar_o_livro_tirado_da_lista)
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
@@ -629,6 +630,42 @@ class JanelaPrincipal(QMainWindow):
         projetos.gravar_resumo(resumo)
         self.tela_inicio.recarregar()
         self.abrir_livro(resumo.caminho_entrada, resumo=resumo)   # ESTE projeto, limpo
+
+    def _soltar_o_livro_tirado_da_lista(self, resumo: projetos.Resumo) -> None:
+        """O "Tirar da lista" foi confirmado na tela inicial e a pasta do
+        projeto vai ser apagada (TelaInicio.vai_tirar_da_lista, emitido ANTES
+        de apagar). Se e o livro aberto, a janela o solta AGORA: para o
+        relogio de salvar, para a conversao das zonas dele SEM gravar, e fica
+        sem livro aberto (self.resumo = None, como o "comecar de novo" do
+        proprio livro). Livro que nao e o aberto: nada muda.
+
+        R-B do verificador-3 (06/10/2026): a janela continuava com o livro
+        tirado em self.resumo, e o fechar (closeEvent -> _salvar_agora), o
+        relogio de salvar (_salvar_por_tras, que o fim da conversao das zonas
+        liga em _conversao_terminou) e o parar da conversao ao trocar de
+        livro (abrir_livro, gravar=True) gravavam o livro de novo: a pasta
+        voltava, e o cartao tambem (Siebmacher: 69,6 s depois, quando a
+        conversao terminou). Com self.resumo None, _salvar_agora e
+        _marcar_para_salvar nao fazem nada, e o sinal atrasado da conversao
+        parada nao entra (_conversao_terminou confere a tarefa da vez). A
+        segunda camada fica em projetos (o gravador nao recria pasta de
+        projeto que sumiu).
+
+        Nao grava nada antes: a pessoa confirmou que a conferencia desse
+        livro se perde, e o que a conversao fez e refeito na proxima vez (se
+        o "Tirar da lista" falhar e o cartao ficar). Arriscado: gravar aqui
+        (recriaria o que vai ser apagado, se viesse depois), ou deixar
+        self.resumo apontando para a pasta apagada.
+        Teste: tests/test_tirar_da_lista_nao_volta.py.
+        """
+        if self.resumo is None or not projetos.mesmo_arquivo(self.resumo.pasta, resumo.pasta):
+            return
+        self._relogio_de_salvar.stop()
+        self._parar_a_conversao_das_zonas(gravar=False)
+        self.resumo = None
+        self.trabalho_carregado = False
+        self._fundo_pendente = None
+        self._opcoes_do_trabalho = None
 
     # --- analise ----------------------------------------------------------
 
