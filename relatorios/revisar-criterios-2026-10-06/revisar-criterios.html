@@ -1,0 +1,1056 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quando uma página vai para Para revisar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quando uma página deve ir para "Para revisar" no Misto</h1>
+<p><strong>06/10/2026 · estudo pedido pelo Samuel · feito pelo agente pesquisador/verificador.</strong>
+Nada do programa foi mudado. Tudo o que está aqui foi rodado pelo mesmo caminho do programa e <strong>olhado
+página por página</strong> (máquina para medir, olho para dizer se a página saiu certa).</p>
+<p>A sua pergunta (06/10): <em>"gostaria de saber qual é o critério para uma página entrar em revisão, por exemplo
+tu mostrou aí páginas que selecionam pequenos pedaços de figuras, capitulares e bordas como texto, isso é uma
+razão para ir para revisão?"</em></p>
+<h2>Em poucas palavras</h2>
+<ol>
+<li><strong>Hoje a regra é uma só:</strong> se sobra muita "tinta forte" (tão escura quanto as letras) fora das linhas que o
+   leitor de texto achou e fora das gravuras, a página vai para "Para revisar". O limite é 10% da tinta da página.</li>
+<li><strong>No jeito de fábrica ("Guardar a tinta forte") essa regra manda páginas demais.</strong> Das 59 páginas que testei,
+   35 iriam para revisar, e só 7 estavam erradas de verdade; 20 estavam certas e 8 tinham só o mesmo defeito
+   que o Preto e branco de hoje já tem. Ela pegou as 7 erradas, mas quase por acaso: página com desenho tem
+   muita tinta fora do texto, esteja certa ou não.</li>
+<li><strong>Pedaço de figura, capitular ou borda pego como texto, sozinho, não é razão para revisar.</strong> No jeito de
+   fábrica isso não estragou nenhuma página (a tinta forte fica de qualquer jeito). No "Tudo em preto e branco"
+   o leitor de texto nem é usado. Só no "Só o texto achado" sobra um pedacinho solto, e ali a página já está
+   errada por outro motivo.</li>
+<li><strong>O que estraga de verdade no jeito de fábrica é outra coisa:</strong> o programa apaga a parte clara de um desenho
+   que o detector de gravura não reconheceu (capitular gravada, letra ornamental, diagrama de traço fino), ou
+   reconhece como gravura uma mancha ou um remendo, que sai impresso em marrom.</li>
+<li><strong>"Só o texto achado" errou em 43 das 59 páginas:</strong> apaga capitular, moldura, música, tabela,
+   números. Nesse jeito, toda página que tem qualquer coisa além de texto corrido precisa ser olhada.</li>
+<li><strong>Minha recomendação (opção 1):</strong> medir o que foi apagado em vez de medir o que sobrou. No jeito de fábrica,
+   18 páginas em vez de 35, e as 7 erradas continuam lá. No "Só o texto achado", revisar toda página em que
+   sumiu um pedaço forte do tamanho de uma letra e meia.</li>
+</ol>
+<hr />
+<h2>1. Como funciona hoje</h2>
+<p>O Misto ("Só as letras", dentro do Preto e branco) faz assim: o leitor de texto marca as linhas de texto; o
+detector de gravura marca as figuras (essas ficam como no original). O que sobra <strong>fora das duas</strong> é tratado por
+um dos três jeitos:</p>
+<table>
+<thead>
+<tr>
+<th>Jeito</th>
+<th>O que faz com a tinta fora do texto e fora das gravuras</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Guardar a tinta forte</strong> (de fábrica)</td>
+<td>guarda, em preto, o que é tão escuro quanto as letras; o que é mais claro vai para o branco</td>
+</tr>
+<tr>
+<td><strong>Tudo em preto e branco</strong></td>
+<td>passa tudo para preto e branco (não usa o leitor de texto)</td>
+</tr>
+<tr>
+<td><strong>Só o texto achado</strong></td>
+<td>apaga tudo (só as linhas achadas ficam)</td>
+</tr>
+</tbody>
+</table>
+<p>O aviso de hoje conta a tinta forte que ficou fora do texto e das gravuras. Passou de 10% da tinta da página,
+a página vai para "Para revisar" com a frase "Sobrou bastante tinta forte fora do texto que eu achei".</p>
+<p><strong>Exemplo de página que vai para revisar à toa.</strong> Graduale, p. 222: a música inteira está fora das linhas de
+texto, então conta como "tinta forte fora do texto" (76% da tinta). Mas no jeito de fábrica a música é
+guardada: a página saiu certa. Olhe o quadro do meio: as notas e as pautas estão todas lá.</p>
+<p><img alt="Graduale 222: vai para revisar, mas saiu certa" src="imagens/hoje-a-toa-graduale222.jpg" /></p>
+<p>O mesmo com a moldura do Palatino, p. 10 (31%): a moldura é guardada em preto, igual ao Preto e branco de hoje.</p>
+<p><img alt="Palatino 10: vai para revisar, mas saiu certa" src="imagens/hoje-a-toa-palatino010.jpg" /></p>
+<p><strong>Exemplo de página que vai para revisar com razão.</strong> Palatino, p. 76: a capitular "S" gravada em madeira não foi
+reconhecida como gravura. O desenho dela é cinza claro, mais claro que as letras, e o jeito de fábrica o mandou
+para o branco. <strong>Olhe o quadro do meio, no alto à esquerda: da letra S só sobrou a moldura e um arco.</strong> No
+terceiro quadro, em vermelho, tudo o que sumiu. Ela foi para revisar hoje, mas porque a página tem moldura
+(37% de tinta forte), não por causa da letra.</p>
+<p><img alt="Palatino 76: a capitular S sumiu" src="imagens/hoje-com-razao-palatino076.jpg" /></p>
+<hr />
+<h2>2. Os jeitos de a página sair errada</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que acontece</th>
+<th>Em qual jeito</th>
+<th>O que sai na folha impressa</th>
+<th>Grave?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>O detector de gravura <strong>não acha um desenho de traço claro</strong> (capitular gravada, letra ornamental, diagrama fino)</td>
+<td>Guardar a tinta forte</td>
+<td><strong>a parte clara some</strong>; o desenho sai comido</td>
+<td><strong>grave</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Tudo em preto e branco</td>
+<td>o desenho sai em preto e branco, como hoje</td>
+<td>leve</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Só o texto achado</td>
+<td>o desenho some inteiro</td>
+<td><strong>grave</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>O detector não acha um desenho <strong>escuro</strong> (moldura, xilogravura, capitular escura)</td>
+<td>Guardar a tinta forte e Tudo em preto e branco</td>
+<td>sai em preto e branco, igual ao Preto e branco de hoje</td>
+<td>leve</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Só o texto achado</td>
+<td>some</td>
+<td><strong>grave</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>O detector <strong>acha gravura onde não tem</strong> (mancha, remendo de papel) ou pega demais (pautas ao lado da iluminura)</td>
+<td>os três</td>
+<td>a mancha sai impressa em marrom; a música dentro da zona sai marrom em vez de preta</td>
+<td><strong>grave</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>O leitor de texto <strong>pega um pedaço de figura, capitular ou borda como se fosse texto</strong> (a sua pergunta)</td>
+<td>Guardar a tinta forte</td>
+<td>nada que se veja (testado)</td>
+<td>nenhum</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Tudo em preto e branco</td>
+<td>nada (o leitor não é usado)</td>
+<td>nenhum</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Só o texto achado</td>
+<td>sobra um pedaço solto no meio do branco</td>
+<td>a página já está errada pelo #1, #2 ou #5</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Fora das linhas há <strong>música, tabela, moldura, capitular, número, letra colorida</strong></td>
+<td>Só o texto achado</td>
+<td><strong>some</strong></td>
+<td><strong>grave</strong></td>
+</tr>
+<tr>
+<td>6</td>
+<td>O leitor <strong>não acha uma linha de texto</strong></td>
+<td>Guardar a tinta forte</td>
+<td>fica, se as letras são escuras; some, se são mais claras que as outras letras da página</td>
+<td>grave (não aconteceu nas 59 páginas)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Só o texto achado</td>
+<td>some</td>
+<td><strong>grave</strong></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Papel escuro ou beirada preta do scanner</td>
+<td>os três (e o Preto e branco de hoje)</td>
+<td>tarja ou faixa preta</td>
+<td>é assunto do corte e do Preto e branco, não do Misto - mas hoje faz a página ir para revisar pelo aviso do Misto</td>
+</tr>
+</tbody>
+</table>
+<h3>2.1 Desenho de traço claro comido (o erro grave do jeito de fábrica)</h3>
+<p>Palatino, p. 67: a capitular "M" não foi reconhecida como gravura. <strong>Olhe dentro do quadrado da letra, no quadro do
+meio:</strong> o fundo desenhado (folhas, figuras) sumiu quase todo; o Preto e branco de hoje o guarda.</p>
+<p><img alt="Palatino 67: o fundo da capitular M sumiu" src="imagens/a-palatino067.jpg" /></p>
+<p>Palatino, p. 66, rodapé: as letras ornamentais "M." e "D." são de contorno claro. <strong>Olhe o "M" à esquerda, no
+quadro do meio:</strong> ficou pela metade.</p>
+<p><img alt="Palatino 66: a letra M ficou pela metade" src="imagens/a-palatino066.jpg" /></p>
+<p>Manuscrito ljs47, p. 103: o diagrama de traço vermelho fino não foi reconhecido como gravura. <strong>Olhe as linhas
+horizontais e os arcos, no quadro do meio:</strong> ficaram picotados (no vermelho, o que o Preto e branco guardaria).
+Aqui o próprio Preto e branco de hoje também perde muito, porque o traço é muito claro.</p>
+<p><img alt="ljs47 103: o diagrama picotado" src="imagens/a-ljs47-103.jpg" /></p>
+<h3>2.2 Gravura achada onde não tem</h3>
+<p>Marial, p. 454: um remendo de papel à esquerda e a mancha do verso à direita foram marcados como gravura
+(em verde, no terceiro quadro). <strong>No quadro do meio, as duas manchas marrons saem impressas.</strong> Isso não tem
+nada a ver com o leitor de texto: é o detector de gravura. O aviso de hoje pegou a página por outro motivo (a
+beirada escura).</p>
+<p><img alt="Marial 454: remendo e mancha impressos em marrom" src="imagens/gravura-errada-marial454.jpg" /></p>
+<p>Antiphon, p. 260: a zona de gravura da iluminura se estende pelas pautas ao lado (verde). <strong>No quadro do meio, as
+notas dentro dessa zona saem marrons, como no original, e as de fora saem pretas.</strong></p>
+<p><img alt="Antiphon 260: a gravura pega as pautas" src="imagens/gravura-errada-antiphon260.jpg" /></p>
+<h3>2.3 A sua pergunta: pedaço de figura pego como texto</h3>
+<p>Boécio, p. 3 (folha de rosto): o leitor de texto achou o "IHS" no meio da gravura como se fosse uma linha de
+texto (azul, no terceiro quadro). <strong>No jeito de fábrica, nada de errado aparece</strong> (quadro do meio): a gravura
+inteira sai em preto e branco, igual ao Preto e branco de hoje.</p>
+<p><img alt="Boécio 3, jeito de fábrica: a linha falsa não estraga nada" src="imagens/linha-na-figura-boecio003-a.jpg" /></p>
+<p>No "Só o texto achado", a mesma página: a gravura some inteira (vermelho) e <strong>o "IHS" fica boiando sozinho</strong>
+no meio da folha. O erro aqui é a gravura sumir; o "IHS" solto é só a parte mais visível dele.</p>
+<p><img alt="Boécio 3, Só o texto achado: a gravura some, o IHS fica solto" src="imagens/linha-na-figura-boecio003-c.jpg" /></p>
+<p>Palatino, p. 57: o leitor pegou um pedaço do floreio como texto (azul). No "Só o texto achado" <strong>sobra esse
+pedaço ("+P") solto no alto, à esquerda</strong>, e todo o resto da moldura some.</p>
+<p><img alt="Palatino 57, Só o texto achado: sobra um pedaço do floreio" src="imagens/linha-na-figura-palatino057-c.jpg" /></p>
+<p><strong>Conclusão sobre a sua pergunta:</strong> medi isso nas 59 páginas (linhas do leitor que um traço comprido de
+desenho atravessa). No jeito de fábrica, esse sinal mandaria 35 páginas para revisar, e 23 delas estavam certas.
+Não vale como critério sozinho.</p>
+<h3>2.4 O que o "Só o texto achado" apaga</h3>
+<p>Boécio, p. 7: <strong>a capitular "Q" e os sinais de métrica ("- - v v") do alto somem.</strong> (O vermelho na margem
+direita é a mancha do verso, que sumir é bom.)</p>
+<p><img alt="Boécio 7, Só o texto achado: capitular e sinais somem" src="imagens/c-boecio007.jpg" /></p>
+<p>Na escola de Jesus, p. 197: <strong>somem os números "1 -", "2 -", "3 -" da margem esquerda</strong> (fica "2" e "3" sem
+o traço, e o "1" some inteiro). Página que parece só de texto, e mesmo assim perdeu algo.</p>
+<p><img alt="Escola 197, Só o texto achado: a numeração some" src="imagens/c-escola197.jpg" /></p>
+<p>Graduale, p. 222: <strong>a música inteira some.</strong></p>
+<p><img alt="Graduale 222, Só o texto achado: a música some" src="imagens/c-graduale222.jpg" /></p>
+<p>Rhetorica, p. 129: <strong>a gravura de página inteira some</strong>; sobram quatro letras que o leitor achou.</p>
+<p><img alt="Rhetorica 129, Só o texto achado: a gravura some" src="imagens/c-rhetorica129.jpg" /></p>
+<hr />
+<h2>3. O que eu testei</h2>
+<ul>
+<li><strong>59 páginas</strong>: as 34 do gabarito do Misto (32 folhas; o Siebmacher 7 e 9 dão duas páginas cada) e mais 25
+  páginas de 13 livros do acervo (somente leitura), escolhidas olhando miniaturas para ter de tudo: música com
+  iluminura, manuscrito com diagrama, tabela, capitular gravada, moldura, gravura com texto, texto puro,
+  livro moderno, papel escuro.</li>
+<li>Cada página rodou <strong>pelo mesmo caminho do programa</strong> (a página preparada, a marcação de gravura, o leitor de
+  texto rápido, os três jeitos do Misto e o Preto e branco de hoje), <strong>uma de cada vez</strong>.</li>
+<li><strong>Olhei todas as 59 páginas</strong>, cada uma com o original, o "Guardar a tinta forte", o "Só o texto achado" e um
+  mapa do que ficou e do que sumiu, e dei um veredito para cada jeito: <strong>certa</strong>, <strong>leve</strong> (defeito pequeno, ou o
+  mesmo que o Preto e branco de hoje já tem, como uma moldura não achada que sai em preto e branco) ou
+  <strong>errada</strong> (algo impresso sumiu, foi comido pela metade, ou entrou sujeira em cor). Os detalhes estão no fim.</li>
+<li>No jeito de fábrica: 7 erradas, 12 leves. No "Só o texto achado": 43 erradas.</li>
+</ul>
+<p><strong>Os sinais que medi</strong> (todos só fora das gravuras achadas):</p>
+<table>
+<thead>
+<tr>
+<th>Sinal</th>
+<th>Em uma frase</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O de hoje</td>
+<td>quanta tinta forte sobrou fora do texto achado</td>
+</tr>
+<tr>
+<td>Linha atravessada (a sua pergunta)</td>
+<td>o leitor achou uma linha de texto que um traço comprido de desenho atravessa</td>
+</tr>
+<tr>
+<td>Linha encostada na gravura</td>
+<td>uma linha de texto achada encosta numa gravura achada</td>
+</tr>
+<tr>
+<td><strong>(1) Desenho comido</strong></td>
+<td>o jeito de fábrica apagou tinta, e ela estava <strong>amontoada</strong> num lugar (um desenho, não um pontinho solto da mancha)</td>
+</tr>
+<tr>
+<td><strong>(2) Figura passou da beirada</strong></td>
+<td>um pedaço grande de tinta encosta na gravura achada pelo lado de fora: a figura é maior do que o detector marcou</td>
+</tr>
+<tr>
+<td><strong>(3) Muita tinta apagada</strong></td>
+<td>o jeito de fábrica apagou mais de 2,5% da tinta da página</td>
+</tr>
+<tr>
+<td>Pedaço forte grande</td>
+<td>sumiu (no "Só o texto achado") um pedaço forte do tamanho de uma letra e meia ou maior</td>
+</tr>
+</tbody>
+</table>
+<h2>4. A tabela</h2>
+<p><strong>No jeito de fábrica, "Guardar a tinta forte"</strong> (7 páginas erradas de 59):</p>
+<table>
+<thead>
+<tr>
+<th>Critério (no jeito de fábrica, "Guardar a tinta forte")</th>
+<th>Vão para revisar</th>
+<th>Erradas de verdade entre elas</th>
+<th>Com defeito leve</th>
+<th>Certas (à toa)</th>
+<th>Erradas que ficam de fora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hoje:</strong> tinta forte fora do texto acima de 10%</td>
+<td>35</td>
+<td>7</td>
+<td>8</td>
+<td>20</td>
+<td>0 de 7</td>
+</tr>
+<tr>
+<td>O de hoje, com 30%</td>
+<td>23</td>
+<td>4</td>
+<td>7</td>
+<td>12</td>
+<td>3 de 7</td>
+</tr>
+<tr>
+<td>O de hoje só no "Só o texto achado" (no de fábrica, nunca)</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>7 de 7</td>
+</tr>
+<tr>
+<td>Sua pergunta: o leitor pegou pedaço de figura, capitular ou borda como texto</td>
+<td>35</td>
+<td>6</td>
+<td>6</td>
+<td>23</td>
+<td>1 de 7</td>
+</tr>
+<tr>
+<td>Linha de texto encostada numa gravura achada</td>
+<td>21</td>
+<td>3</td>
+<td>6</td>
+<td>12</td>
+<td>4 de 7</td>
+</tr>
+<tr>
+<td>Novo (1): desenho comido - tinta apagada amontoada (2% ou mais)</td>
+<td>6</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>4 de 7</td>
+</tr>
+<tr>
+<td>Novo (2): figura passou da beirada da gravura achada (10% ou mais)</td>
+<td>7</td>
+<td>3</td>
+<td>1</td>
+<td>3</td>
+<td>4 de 7</td>
+</tr>
+<tr>
+<td>Novo (3): muita tinta apagada fora do texto (2,5% ou mais)</td>
+<td>11</td>
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>3 de 7</td>
+</tr>
+<tr>
+<td>Novos (1) ou (2)</td>
+<td>13</td>
+<td>6</td>
+<td>3</td>
+<td>4</td>
+<td>1 de 7</td>
+</tr>
+<tr>
+<td><strong>Novos (1), (2) ou (3) - a opção 1</strong></td>
+<td>18</td>
+<td>7</td>
+<td>5</td>
+<td>6</td>
+<td>0 de 7</td>
+</tr>
+<tr>
+<td>Todas as páginas</td>
+<td>59</td>
+<td>7</td>
+<td>12</td>
+<td>40</td>
+<td>0 de 7</td>
+</tr>
+</tbody>
+</table>
+<p><strong>No "Só o texto achado"</strong> (43 páginas erradas de 59):</p>
+<table>
+<thead>
+<tr>
+<th>Critério (no "Só o texto achado")</th>
+<th>Vão para revisar</th>
+<th>Erradas de verdade entre elas</th>
+<th>Com defeito leve</th>
+<th>Certas (à toa)</th>
+<th>Erradas que ficam de fora</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hoje:</strong> tinta forte fora do texto acima de 10%</td>
+<td>35</td>
+<td>31</td>
+<td>0</td>
+<td>4</td>
+<td>12 de 43</td>
+</tr>
+<tr>
+<td>O de hoje, com 30%</td>
+<td>23</td>
+<td>22</td>
+<td>0</td>
+<td>1</td>
+<td>21 de 43</td>
+</tr>
+<tr>
+<td>Sua pergunta: o leitor pegou pedaço de figura como texto</td>
+<td>35</td>
+<td>30</td>
+<td>1</td>
+<td>4</td>
+<td>13 de 43</td>
+</tr>
+<tr>
+<td>Novos (1), (2) ou (3) (os do jeito de fábrica)</td>
+<td>18</td>
+<td>16</td>
+<td>0</td>
+<td>2</td>
+<td>27 de 43</td>
+</tr>
+<tr>
+<td><strong>Sumiu um pedaço forte do tamanho de uma letra e meia ou maior - a opção 1</strong></td>
+<td>55</td>
+<td>43</td>
+<td>1</td>
+<td>11</td>
+<td>0 de 43</td>
+</tr>
+<tr>
+<td>Todas as páginas</td>
+<td>59</td>
+<td>43</td>
+<td>2</td>
+<td>14</td>
+<td>0 de 43</td>
+</tr>
+</tbody>
+</table>
+<p>Só nas 34 páginas do gabarito: hoje vão 18 para revisar (o comentário no programa diz 19; nesta rodada foram 18),
+e só 2 estavam erradas no jeito de fábrica (Palatino 66 e 67). Com a opção 1 iriam 7, com as mesmas 2 erradas.</p>
+<p><strong>Tempo:</strong> os sinais (1), (2) e (3) usam o que o Misto já calcula, mais uma conta de "janela" e uma de "pedaços
+encostados". Todos os sinais juntos, inclusive os que não recomendo, levaram 0,55 s na página do Palatino e
+2,1 s na página maior do Livro de Horas, num script meu, não otimizado. Os três da opção 1 devem custar uma
+fração disso (estimado, não medido isolado).</p>
+<hr />
+<h2>5. O que você escolhe</h2>
+<p>Pela sua regra, a escolha vira o padrão de fábrica e as outras podem continuar como opção.</p>
+<p><strong>Opção 1 - medir o que foi apagado (recomendada).</strong>
+- <em>Guardar a tinta forte:</em> vai para revisar quando o programa <strong>apagou parte de um desenho</strong> (sinais 1 ou 3) ou
+  quando <strong>uma figura passou da beirada da gravura achada</strong> (sinal 2). Frase sugerida: <em>"Apaguei parte de um
+  desenho que não reconheci como figura (ou uma figura passou da beirada). Confira."</em>
+- <em>Só o texto achado:</em> vai para revisar sempre que <strong>sumiu um pedaço forte do tamanho de uma letra e meia ou
+  maior</strong>. Frase sugerida: <em>"Apaguei coisas fora do texto (capitular, moldura, música, número). Confira."</em>
+- <em>Tudo em preto e branco:</em> nada muda.
+- Ganha: no jeito de fábrica, 18 páginas em vez de 35, com as 7 erradas; a frase diz o que olhar. No "Só o texto
+  achado", nenhuma página errada fica de fora (hoje ficam 12).
+- Perde: os números foram acertados nestas 59 páginas (pode ter "decorado" estes livros); 6 páginas certas ainda
+  vão (beirada preta do scanner, gravura de página inteira). As páginas em que uma moldura ou capitular escura sai
+  em preto e branco (igual ao Preto e branco de hoje) deixam de ir.</p>
+<p><strong>Opção 2 - deixar como está (10%).</strong>
+- Ganha: nada a mudar; pegou as 7 erradas do jeito de fábrica.
+- Perde: 35 de 59 páginas para revisar, 20 delas à toa; o Kaique tende a deixar de olhar. No "Só o texto achado",
+  12 páginas erradas ficam de fora (capitular, número, letra dourada).</p>
+<p><strong>Opção 3 - opção 1, e o aviso de hoje vira uma observação mais fraca.</strong>
+- Igual à opção 1, mais: a página com muito desenho fora do texto (que sai em preto e branco) ganha uma marca
+  "tem desenho que saiu em preto e branco", que <strong>não</strong> entra em "Para revisar".
+- Ganha: nada se perde de informação. Perde: é uma mudança de tela (um tipo de marca novo); precisa da sua
+  aprovação antes.</p>
+<p><strong>Opção 4 - subir o limite para 30%.</strong>
+- Ganha: 23 páginas em vez de 35.
+- Perde: 3 páginas erradas do jeito de fábrica ficam de fora (Antiphon 260, Marial 454, Pesel 21) e 21 do "Só o
+  texto achado". <strong>Não recomendo.</strong></p>
+<p>Se quiser manter as outras como opção, o lugar natural é uma escolha "Quanto o programa avisa: o essencial
+(opção 1) / como antes (opção 2)" nas opções do livro. Isso é mudança de tela; só com a sua aprovação.</p>
+<hr />
+<h2>6. Ressalvas</h2>
+<ul>
+<li><strong>Os limites (2%, 2,5%, 10%) foram acertados nestas mesmas 59 páginas.</strong> Antes de virar padrão, o certo é
+  conferir num livro que não entrou aqui.</li>
+<li><strong>Escolhi de propósito páginas com desenho.</strong> Num livro de texto corrido, quase nenhuma página vai para revisar
+  em nenhuma das opções; a diferença entre elas aparece nos livros decorados.</li>
+<li><strong>O veredito de cada página é o meu olho</strong>, em imagens reduzidas e em alguns detalhes ampliados. Defeito muito
+  pequeno pode ter escapado.</li>
+<li>O erro do tipo 3 (<strong>gravura achada onde não tem</strong>) não depende do leitor de texto e nenhum sinal o pega bem:
+  o sinal (2) pegou o Marial 454 e o Antiphon 260 por causa da beirada, não pela mancha. Um aviso próprio para
+  isso é outro estudo.</li>
+<li><strong>Página em que o leitor não acha nenhuma linha</strong> (li no código, <code>core/pipeline.py</code>, <code>_filtrar_no_misto</code>): o
+  Misto sai como "Tudo em preto e branco", sem aviso, e se a página já tinha o aviso de antes, ele fica como estava
+  (não é tirado nem posto). Não é perigoso (nada é apagado), mas o aviso pode ficar velho.</li>
+<li>Usei só o leitor de texto rápido, como o programa faz de fábrica; o segundo leitor (manuscrito) não foi ligado.</li>
+<li>Não testei o "Tudo em preto e branco" página por página: nele só acontecem os erros 2 e 3, que também aparecem
+  no jeito de fábrica.</li>
+<li>As imagens grandes da rodada ficaram fora do projeto (pasta temporária); refazem-se pelos scripts em
+  <code>scripts/</code> (<code>rodar.py</code>, <code>medir.py</code>, <code>tabela.py</code>, <code>figuras.py</code>). Os números e vereditos estão em
+  <code>dados/sinais-e-vereditos.json</code>.</li>
+</ul>
+<hr />
+<h2>7. Página por página</h2>
+<p>"Vai hoje?" = o aviso de hoje (entre parênteses, a tinta forte fora do texto). "Vai na opção 1" = no jeito de
+fábrica.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Guardar a tinta forte</th>
+<th>Só o texto achado</th>
+<th>Vai hoje?</th>
+<th>Vai na opção 1 (no jeito de fábrica)?</th>
+<th>O que eu vi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antiphon p. 088</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (60%)</td>
+<td>não</td>
+<td>A: a capitular B colorida pega um pedaco da pauta vermelha (fica em cor ao lado da pauta preta). C: a musica fora das linhas some.</td>
+</tr>
+<tr>
+<td>Antiphon p. 260</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (12%)</td>
+<td>sim</td>
+<td>A: a zona de gravura cobre pautas inteiras: a musica fica desbotada, como no original, e a borda de folhas sai picotada.</td>
+</tr>
+<tr>
+<td>Boecio p. 003</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (64%)</td>
+<td>sim</td>
+<td>C: a xilogravura e o carimbo somem; so o 'IHS' (que o leitor achou como texto) fica boiando.</td>
+</tr>
+<tr>
+<td>Boecio p. 007</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (3%)</td>
+<td>não</td>
+<td>C: a capitular Q e os sinais de metrica somem.</td>
+</tr>
+<tr>
+<td>Boecio p. 008</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (4%)</td>
+<td>não</td>
+<td>C: a capitular O e uma linha de sinais de metrica somem.</td>
+</tr>
+<tr>
+<td>Boecio p. 022</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (2%)</td>
+<td>não</td>
+<td>C: as duas capitulares Q e sinais de metrica somem.</td>
+</tr>
+<tr>
+<td>Cursus p. 003</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (17%)</td>
+<td>não</td>
+<td>C: a capitular xilografica e o 'AD' do titulo somem.</td>
+</tr>
+<tr>
+<td>Cursus p. 314</td>
+<td>certa</td>
+<td>certa</td>
+<td>sim (15%)</td>
+<td>não</td>
+<td>So a beirada preta do scanner (corte).</td>
+</tr>
+<tr>
+<td>Escola p. 007</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (1%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Escola p. 035</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (0%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Escola p. 113</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (0%)</td>
+<td>não</td>
+<td>C: o 'O' inicial de duas linhas some.</td>
+</tr>
+<tr>
+<td>Escola p. 197</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (0%)</td>
+<td>não</td>
+<td>C: os numeros '1 -', '2 -', '3 -' perdem pedacos.</td>
+</tr>
+<tr>
+<td>Graduale p. 221</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (72%)</td>
+<td>não</td>
+<td>C: a musica some.</td>
+</tr>
+<tr>
+<td>Graduale p. 222</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (76%)</td>
+<td>não</td>
+<td>C: a musica some.</td>
+</tr>
+<tr>
+<td>Graduale p. 223</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (75%)</td>
+<td>não</td>
+<td>C: a musica some.</td>
+</tr>
+<tr>
+<td>Graduale p. 269</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (29%)</td>
+<td>sim</td>
+<td>A: a borda de ramos sai meio em cor, meio preta. C: pedacos de pauta e notas somem.</td>
+</tr>
+<tr>
+<td>Graduale p. 588</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (66%)</td>
+<td>não</td>
+<td>A: a capitular azul nao achada sai preta (igual ao Preto e branco). C: musica e capitulares somem.</td>
+</tr>
+<tr>
+<td>Horas p. 011</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (0%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Horas p. 013</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (4%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Horas p. 014</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (55%)</td>
+<td>não</td>
+<td>A: a moldura dourada nao achada sai preta e grossa (igual ao Preto e branco). C: moldura e reguas da tabela somem ou ficam picotadas.</td>
+</tr>
+<tr>
+<td>Horas p. 016</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (1%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Horas p. 026</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (5%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Horas p. 027</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (3%)</td>
+<td>não</td>
+<td>C: letras douradas do comeco das linhas somem.</td>
+</tr>
+<tr>
+<td>Horas p. 047</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (0%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Horas p. 175</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>não (2%)</td>
+<td>não</td>
+<td>A: a capitular S decorada nao achada sai como bloco preto (igual ao Preto e branco). C: a capitular some, fica um quadrado vazio.</td>
+</tr>
+<tr>
+<td>Ljs47 p. 026</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (55%)</td>
+<td>sim</td>
+<td>C: as iniciais azuis e vermelhas somem.</td>
+</tr>
+<tr>
+<td>Ljs47 p. 049</td>
+<td>leve</td>
+<td>leve</td>
+<td>não (0%)</td>
+<td>não</td>
+<td>A pagina inteira virou gravura: manchas impressas em cor.</td>
+</tr>
+<tr>
+<td>Ljs47 p. 064</td>
+<td>leve</td>
+<td>leve</td>
+<td>não (1%)</td>
+<td>não</td>
+<td>Quase toda a pagina virou gravura: manchas da margem em cor.</td>
+</tr>
+<tr>
+<td>Ljs47 p. 103</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (65%)</td>
+<td>sim</td>
+<td>A: o diagrama vermelho de tracos finos (nao achado como gravura) fica picotado - somem tracos que o Preto e branco guarda. C: o diagrama some.</td>
+</tr>
+<tr>
+<td>Marial p. 007</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>não (5%)</td>
+<td>não</td>
+<td>A: o canto manchado foi marcado como gravura (mancha em cor). C: '&amp; o' somem numa linha.</td>
+</tr>
+<tr>
+<td>Marial p. 454</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (13%)</td>
+<td>sim</td>
+<td>A: um remendo de papel e a mancha do verso foram marcados como gravura: saem impressos em marrom.</td>
+</tr>
+<tr>
+<td>Marial p. 840</td>
+<td>certa</td>
+<td>certa</td>
+<td>sim (15%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Matematica p. 032</td>
+<td>certa</td>
+<td>certa</td>
+<td>sim (24%)</td>
+<td>sim</td>
+<td>As faixas pretas do scanner (assunto do corte, nao do Misto).</td>
+</tr>
+<tr>
+<td>Matematica p. 072</td>
+<td>certa</td>
+<td>certa</td>
+<td>sim (34%)</td>
+<td>sim</td>
+<td>As faixas pretas do scanner (assunto do corte, nao do Misto).</td>
+</tr>
+<tr>
+<td>Opus majus p. 003</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (13%)</td>
+<td>não</td>
+<td>C: o selo da editora some; sobra 'PRESS' picotado.</td>
+</tr>
+<tr>
+<td>Opus majus p. 011</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (1%)</td>
+<td>não</td>
+<td>C: a capitular C some.</td>
+</tr>
+<tr>
+<td>Opus majus p. 020</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (8%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Opus majus p. 165</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (6%)</td>
+<td>não</td>
+<td>C: as linhas dos dois diagramas somem; sobram as letrinhas.</td>
+</tr>
+<tr>
+<td>Opus majus p. 256</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (37%)</td>
+<td>não</td>
+<td>C: reguas e numeros da tabela picotados.</td>
+</tr>
+<tr>
+<td>Palatino p. 005</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (0%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Palatino p. 007</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (1%)</td>
+<td>não</td>
+<td>C: a capitular V e letras do titulo somem.</td>
+</tr>
+<tr>
+<td>Palatino p. 009</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (46%)</td>
+<td>não</td>
+<td>C: a capitular Q e a moldura somem; sobra um pedaco de fio.</td>
+</tr>
+<tr>
+<td>Palatino p. 010</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (31%)</td>
+<td>não</td>
+<td>C: a moldura some.</td>
+</tr>
+<tr>
+<td>Palatino p. 057</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (61%)</td>
+<td>não</td>
+<td>C: moldura, floreios e capitulares somem; sobram pedacos soltos.</td>
+</tr>
+<tr>
+<td>Palatino p. 066</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (42%)</td>
+<td>sim</td>
+<td>A: a letra ornamental 'M' do rodape, de contorno claro, fica pela metade (o Preto e branco guarda inteira).</td>
+</tr>
+<tr>
+<td>Palatino p. 067</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (42%)</td>
+<td>sim</td>
+<td>A: a capitular xilografica M perde quase todo o desenho de dentro (o Preto e branco guarda).</td>
+</tr>
+<tr>
+<td>Palatino p. 076</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (37%)</td>
+<td>sim</td>
+<td>A: a capitular xilografica S some quase inteira; fica so a moldura dela.</td>
+</tr>
+<tr>
+<td>Palatino p. 104</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (20%)</td>
+<td>não</td>
+<td>C: reguas da tabela picotadas.</td>
+</tr>
+<tr>
+<td>Palatino p. 113</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (42%)</td>
+<td>sim</td>
+<td>C: a moldura em pergaminho some.</td>
+</tr>
+<tr>
+<td>Pesel p. 021</td>
+<td><strong>errada</strong></td>
+<td><strong>errada</strong></td>
+<td>sim (21%)</td>
+<td>sim</td>
+<td>A e C: a legenda no papel escuro vira tarja preta (o Preto e branco faz o mesmo; nao e do Misto).</td>
+</tr>
+<tr>
+<td>Rhetorica p. 018</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (10%)</td>
+<td>não</td>
+<td>C: fios da moldura picotados.</td>
+</tr>
+<tr>
+<td>Rhetorica p. 034</td>
+<td>certa</td>
+<td>certa</td>
+<td>não (6%)</td>
+<td>não</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Rhetorica p. 073</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (26%)</td>
+<td>não</td>
+<td>C: chaves e ornamentos somem.</td>
+</tr>
+<tr>
+<td>Rhetorica p. 129</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>sim (91%)</td>
+<td>sim</td>
+<td>C: a gravura de pagina inteira some; sobram 4 letras.</td>
+</tr>
+<tr>
+<td>Rhetorica p. 160</td>
+<td>certa</td>
+<td><strong>errada</strong></td>
+<td>não (9%)</td>
+<td>não</td>
+<td>C: fios da moldura somem.</td>
+</tr>
+<tr>
+<td>Siebmacher p. 007 (direita)</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (92%)</td>
+<td>sim</td>
+<td>A: moldura de floreios nao achada sai em preto e branco. C: a moldura some.</td>
+</tr>
+<tr>
+<td>Siebmacher p. 007 (esquerda)</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (45%)</td>
+<td>sim</td>
+<td>A: idem. C: moldura e capitular somem.</td>
+</tr>
+<tr>
+<td>Siebmacher p. 009 (direita)</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (91%)</td>
+<td>sim</td>
+<td>A: idem. C: a moldura some.</td>
+</tr>
+<tr>
+<td>Siebmacher p. 009 (esquerda)</td>
+<td>leve</td>
+<td><strong>errada</strong></td>
+<td>sim (53%)</td>
+<td>sim</td>
+<td>A: idem. C: moldura e capitular somem; a assinatura fica picotada.</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 13:16</p>
+</body>
+</html>
