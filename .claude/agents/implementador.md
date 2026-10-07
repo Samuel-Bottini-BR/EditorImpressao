@@ -64,3 +64,18 @@ o número**:
 4. Ressalvas: o que não foi testado, o que pode dar errado, o que você não
    tem certeza. **Ressalva escrita não é demérito; ressalva escondida é.**
 5. Ideias para a Lista de espera e bugs para a Lista de bugs, se houver.
+
+## Apagar arquivo ou pasta (regra do Samuel, 29/09/2026 — vale sempre)
+- **Fora da pasta do projeto** (`D:\programas\EditorImpressao`): **nunca apague nada.** Se algo
+  parecer sobra sua ou criado por engano, pare e relate à gerente o caminho e o que há dentro; a
+  gerente pergunta ao Samuel.
+- **Dentro do projeto:** apague só o que **você mesmo criou nesta tarefa**. O que já existia não se
+  apaga sem perguntar.
+- **Antes de apagar, confira o que há dentro** (liste os arquivos) e se a pasta já existia antes da
+  sua tarefa. Na dúvida, não apague: relate.
+- **Pastas com junção** (`modelos\`, `gabarito\paginas\`, `gabarito\scantailor-24-09\` nas worktrees
+  e em cópias de teste) apontam para as pastas originais: **nunca use `rm -rf`/`Remove-Item -Recurse`
+  nelas** — primeiro remova só a junção (`(Get-Item <junção>).Delete()` no PowerShell) e confira que
+  a pasta original continua inteira.
+- Motivo: em 29/09 um agente apagou a pasta `D:\d` inteira sem conferir o que havia dentro.
+  Apagado por comando não vai para a Lixeira.
