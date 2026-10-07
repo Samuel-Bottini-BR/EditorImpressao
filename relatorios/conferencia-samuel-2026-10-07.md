@@ -46,3 +46,4 @@ Pedido do Samuel no chat (07/10): "não me responda no chat quando tiver questio
 - **"A página branca no lugar da apagada entra quando?"** (`apagar-quando`): ainda sem resposta.
 
 Pedido do Samuel no chat (07/10), com print da página: "hoje quando eu faço o comentario e a questão volta para mim, meu comentario continua lá, eu acho que ele devia subir e virar um comentario fixado junto quando voltasse, para que dai eu colocasse outro e tivesse referencia do que foi colocado antes." — feito nas páginas de Escolhas e de Layout: campo `historico` na pergunta (lista de {quem, em, texto}), mostrado no alto como "Comentários anteriores desta pergunta (fixados)"; a caixa fica vazia para o comentário novo.
+- **"A página branca no lugar da apagada entra quando?"** (`apagar-quando`, respondida às 19:03): **Lista de espera (Fase 6, o resto do resultado final)**, sem comentário.
