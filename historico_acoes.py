@@ -194,6 +194,112 @@ class HistoricoAcoes:
             return True
         return False
 
+    def recomecar(self, copia_do_trabalho: Path | None = None) -> bool:
+        """A conferencia recomecou: o desfazer e o refazer comecam vazios, e o
+        historico antigo sai do acoes.jsonl SEM se perder.
+
+        Lista de bugs, 06/10/2026 (parecer do verificador dos consertos de
+        06/10, item 5): quando o trabalho salvo nao combina com o livro (a
+        pessoa mudou "Dividir folhas ao meio", o PDF foi trocado, o
+        projeto.json nao da para ler), ui/janela_principal.py
+        (_analise_pronta) recomeca a conferencia e guarda o trabalho antigo
+        (projetos.guardar_copia_do_trabalho), mas o historico continuava o
+        da conferencia anterior: num PDF de 12 paginas que ficou com 6, o
+        primeiro Ctrl+Z pos a pagina 1 em Preto e branco, uma acao feita na
+        metade esquerda da folha 1 (outra pagina). Agora a janela chama isto
+        em vez de carregar().
+
+        `copia_do_trabalho`: o projeto.antigo-<data>.json que a janela acabou
+        de guardar (ou None). Essa copia ja leva o acoes.jsonl e o
+        posicao.json do mesmo momento (acoes.antigo-<data>.jsonl,
+        posicao.antigo-<data>.json). Se as copias deles estao la e iguais,
+        byte a byte, aos de agora, os de agora sao apagados (o historico
+        antigo fica so junto da copia do trabalho, como pedido). Senao (sem
+        copia do trabalho, ou ela nao bate), eles sao RENOMEADOS para
+        acoes.antigo-historico-<data>.jsonl e posicao.antigo-historico-....
+        json, os nomes do conserto do arquivo errado (_guardar_arquivo_errado;
+        o ".antigo-" faz o "Tirar da lista" guarda-los junto). Renomear nao
+        precisa de espaco no disco e nunca escreve por cima (nome ja usado:
+        "-2", "-3"...).
+
+        Devolve False so se o acoes.jsonl antigo nao pode sair do caminho
+        (arquivo preso, sem permissao): ai NADA e apagado, e o historico
+        desta conferencia fica so na memoria (self.pasta = None), para as
+        acoes novas nao irem para o fim do arquivo antigo, misturadas com as
+        da conferencia anterior. Ressalva: nesse caso raro, ao reabrir o
+        livro, o historico antigo volta (o defeito de antes, so nesse caso).
+
+        Arriscado: apagar o acoes.jsonl sem conferir que a copia bate (o
+        historico antigo se perderia); chamar isto quando o trabalho combina
+        (o Ctrl+Z de um trabalho que continua se perderia).
+        """
+        self.feitas = []
+        self.desfeitas = []
+        self.linhas_perdidas = 0
+        if self.pasta is None:
+            return True
+        acoes = self.pasta / ARQUIVO_ACOES
+        posicao = self.pasta / ARQUIVO_POSICAO
+        origens = [arquivo for arquivo in (acoes, posicao) if arquivo.is_file()]
+        if not origens:
+            return True
+        if self._ja_estao_na_copia(origens, copia_do_trabalho):
+            for origem in origens:
+                try:
+                    origem.unlink()
+                except OSError:
+                    pass          # tenta renomear logo abaixo
+            origens = [arquivo for arquivo in origens if arquivo.is_file()]
+            if not origens:
+                return True
+        if self._renomear_para_antigo_historico(origens) or not acoes.is_file():
+            return True
+        self.pasta = None         # nada saiu do caminho: so na memoria (ver acima)
+        return False
+
+    def _ja_estao_na_copia(self, origens: list[Path], copia_do_trabalho: Path | None) -> bool:
+        """Os arquivos `origens` (acoes.jsonl, posicao.json) estao, iguais
+        byte a byte, na copia do trabalho (projetos.guardar_copia_do_trabalho,
+        mesmo <data> no nome: projeto.antigo-<data>.json leva
+        acoes.antigo-<data>.jsonl e posicao.antigo-<data>.json)? Copia de
+        outra pasta, ou de nome que nao segue o padrao: nao."""
+        if copia_do_trabalho is None:
+            return False
+        copia = Path(copia_do_trabalho)
+        if ".antigo-" not in copia.stem or copia.parent.resolve() != self.pasta.resolve():
+            return False
+        sufixo = copia.stem.split(".antigo-", 1)[1]
+        try:
+            for origem in origens:
+                guardada = origem.with_name(f"{origem.stem}.antigo-{sufixo}{origem.suffix}")
+                if not guardada.is_file() or guardada.read_bytes() != origem.read_bytes():
+                    return False
+        except OSError:
+            return False
+        return True
+
+    def _renomear_para_antigo_historico(self, origens: list[Path]) -> bool:
+        """Renomeia `origens` para <nome>.antigo-historico-AAAA-MM-DD-HHMM,
+        todos com o mesmo <data> (com "-2", "-3"... se algum nome ja existe;
+        e o rename do Windows falha em vez de escrever por cima). Devolve
+        True se o acoes.jsonl saiu do caminho (ou nao estava la)."""
+        from datetime import datetime
+
+        carimbo = datetime.now().strftime("%Y-%m-%d-%H%M")
+        for numero in range(1, 1000):
+            sufixo = carimbo if numero == 1 else f"{carimbo}-{numero}"
+            destinos = {origem: origem.with_name(
+                f"{origem.stem}.antigo-historico-{sufixo}{origem.suffix}") for origem in origens}
+            if any(destino.exists() for destino in destinos.values()):
+                continue
+            for origem, destino in destinos.items():
+                try:
+                    origem.rename(destino)
+                except OSError:
+                    pass          # quem chama confere se o acoes.jsonl saiu
+            break
+        return not (self.pasta / ARQUIVO_ACOES).is_file()
+
     def _gravar_posicao(self) -> None:
         if self.pasta is None:
             return
