@@ -199,6 +199,10 @@ class Visualizador(QWidget):
         self.carregando = True
 
         self.posicao_corte = 0.5
+        # A linha de corte so aparece (e so se arrasta) quando a folha vai ser
+        # dividida (definir_corte). Parecer do verificador do item 2.1,
+        # 06/10/2026: depois de "nao dividir esta" ela continuava desenhada.
+        self.corte_visivel = True
         self.recorte = (0.0, 0.0, 1.0, 1.0)
         self.angulo = 0.0
         self.modo_arraste_recorte = RECORTE_LIVRE
@@ -342,8 +346,11 @@ class Visualizador(QWidget):
         self.setCursor(QCursor(Qt.SizeHorCursor if modo == MODO_CORTE else Qt.ArrowCursor))
         self.update()
 
-    def definir_corte(self, posicao: float) -> None:
+    def definir_corte(self, posicao: float, visivel: bool = True) -> None:
+        """A linha de corte (aba Onde cortar). visivel=False: a folha nao vai
+        ser dividida - nada de linha nem de "arraste", e arrastar nao move."""
         self.posicao_corte = float(min(max(posicao, 0.02), 0.98))
+        self.corte_visivel = bool(visivel)
         self.update()
 
     def definir_recorte(self, recorte: tuple) -> None:
@@ -448,7 +455,8 @@ class Visualizador(QWidget):
             self._desenhar_aviso_de_espera(pintor)
 
         if self.modo == MODO_CORTE:
-            self._desenhar_corte(pintor)
+            if self.corte_visivel:
+                self._desenhar_corte(pintor)
         elif self.modo == MODO_RECORTE:
             self._desenhar_recorte(pintor)
         elif self.modo == MODO_ANGULO:
@@ -677,6 +685,8 @@ class Visualizador(QWidget):
         self._ponto_inicial = ponto
 
         if self.modo == MODO_CORTE:
+            if not self.corte_visivel:
+                return                    # folha nao dividida: nada a arrastar
             self._arrastando = "corte"
             self._mover_corte(ponto)
         elif self.modo == MODO_RECORTE:

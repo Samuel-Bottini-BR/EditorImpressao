@@ -1762,7 +1762,9 @@ class TelaConferir(QWidget):
             img = self.previas.pegar_folha(self.indice_folha, DPI_PREVIA)
             vis = self.visualizadores[ABA_CORTE]
             vis.definir_imagem(img, dono=("folha", self.indice_folha))   # D4
-            vis.definir_corte(self.projeto.folhas[self.indice_folha].posicao_corte)
+            folha = self.projeto.folhas[self.indice_folha]
+            # a linha so aparece em folha dividida (parecer do verificador, 06/10)
+            vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             return
 

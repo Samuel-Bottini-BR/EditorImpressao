@@ -185,3 +185,15 @@ def test_esquerda_apagada_e_nao_dividir_a_folha_continua_no_pdf(janela, pasta):
     assert [p.folha for p in projeto.paginas_ativas].count(0) == 1
     tela._alternar_dividir()                       # "dividir esta": a esquerda continua apagada
     assert projeto.folhas[0].dividir and projeto.paginas[0].apagada and not projeto.paginas[1].apagada
+
+
+def test_linha_azul_some_quando_a_folha_nao_e_dividida(janela, pasta):
+    """Parecer do verificador (06/10/2026; ja existia no fase-1): depois de
+    "nao dividir esta", a linha azul "arraste" continuava desenhada."""
+    tela = _conferir_dividido(janela, pasta)
+    vis = tela.visualizadores["corte"]
+    assert vis.corte_visivel
+    tela._alternar_dividir()
+    assert not vis.corte_visivel
+    tela._alternar_dividir()
+    assert vis.corte_visivel

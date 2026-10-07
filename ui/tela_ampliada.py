@@ -285,7 +285,8 @@ class TelaAmpliada(QDialog):
             # D4: de outra folha, a imagem anterior nao fica na tela
             self.vista.definir_imagem(img, dono=("folha", self.conferir.indice_folha))
             folha = self.projeto.folhas[self.conferir.indice_folha]
-            self.vista.definir_corte(folha.posicao_corte)
+            # so em folha dividida (parecer do verificador do 2.1, 06/10)
+            self.vista.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
             return
 
         indice = self.conferir.indice_pagina
