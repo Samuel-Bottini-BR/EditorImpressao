@@ -150,6 +150,8 @@ ANTES = [0, 90, 180, 270, 0, 90]
     (girar.ALCANCE_TODAS, [270, 270, 270, 270, 270, 270]),
     (girar.ALCANCE_DAQUI, [0, 90, 270, 270, 270, 270]),
     (girar.ALCANCE_IMPARES, [270, 90, 270, 270, 270, 90]),
+    # so a conta: na tela, "so as pares" na folha 3 (impar) avisa e nao gira
+    # (decisao do Samuel, 06/10/2026; testes no fim deste arquivo)
     (girar.ALCANCE_PARES, [0, 270, 180, 270, 0, 270]),
     (girar.ALCANCE_ESTA, [0, 90, 270, 270, 0, 90]),
 ])
@@ -350,3 +352,39 @@ def test_pagina_que_ninguem_girou_nao_muda(pdf):
     assert projeto.folhas[0].rotacao == 0 and projeto.folhas[1].rotacao == 90
     depois = _desenhar(pdf, projeto)
     assert np.array_equal(antes, depois)
+
+
+# ---------------------------------------------------------------------------
+# "So as pares" numa folha impar (e o contrario): avisa e nao gira
+# ---------------------------------------------------------------------------
+# Decisao do Samuel (06/10/2026): "O programa avisa: 'va a uma folha par'".
+# Antes (decisao provisoria do implementador) a folha da vez nao girava e as
+# escolhidas ficavam viradas como ela ficaria - confuso. Agora a tela pergunta
+# a girar.aviso_fora_do_alcance e, se vier frase, so avisa.
+
+@pytest.mark.parametrize("atual, alcance", [
+    (0, girar.ALCANCE_PARES),        # folha 1 (impar), "so as pares"
+    (2, girar.ALCANCE_PARES),        # folha 3
+    (1, girar.ALCANCE_IMPARES),      # folha 2 (par), "so as impares"
+    (5, girar.ALCANCE_IMPARES),      # folha 6
+])
+def test_folha_fora_do_alcance_tem_aviso(atual, alcance):
+    frase = girar.aviso_fora_do_alcance(atual, alcance)
+    assert frase
+    if alcance == girar.ALCANCE_PARES:
+        assert frase == ("Você está numa folha ímpar. Para girar só as pares, "
+                         "vá a uma folha par e gire de lá.")
+    else:
+        assert frase == ("Você está numa folha par. Para girar só as ímpares, "
+                         "vá a uma folha ímpar e gire de lá.")
+    assert all(ord(c) < 0x2000 for c in frase), "sem emoji"
+
+
+@pytest.mark.parametrize("atual, alcance", [
+    (1, girar.ALCANCE_PARES), (3, girar.ALCANCE_PARES),
+    (0, girar.ALCANCE_IMPARES), (2, girar.ALCANCE_IMPARES),
+    (0, girar.ALCANCE_ESTA), (1, girar.ALCANCE_TODAS), (2, girar.ALCANCE_DAQUI),
+    (3, "nao existe"),
+])
+def test_folha_dentro_do_alcance_nao_tem_aviso(atual, alcance):
+    assert girar.aviso_fora_do_alcance(atual, alcance) == ""

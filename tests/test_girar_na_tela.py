@@ -99,17 +99,18 @@ def test_na_janela_minima_so_os_icones(janela, pasta, app):
     assert not tela.barra_girar.rotulo.isVisible()
 
 
-@pytest.mark.parametrize("alcance, giro, esperado", [
-    (girar.ALCANCE_ESTA, girar.GIRO_DIREITA, [0, 0, 90, 0, 0]),
-    (girar.ALCANCE_TODAS, girar.GIRO_ESQUERDA, [270, 270, 270, 270, 270]),
-    (girar.ALCANCE_DAQUI, girar.GIRO_MEIA_VOLTA, [0, 0, 180, 180, 180]),
-    (girar.ALCANCE_PARES, girar.GIRO_DIREITA, [0, 90, 0, 90, 0]),
-    (girar.ALCANCE_IMPARES, girar.GIRO_DIREITA, [90, 0, 90, 0, 90]),
+@pytest.mark.parametrize("alcance, giro, atual, esperado", [
+    (girar.ALCANCE_ESTA, girar.GIRO_DIREITA, 2, [0, 0, 90, 0, 0]),
+    (girar.ALCANCE_TODAS, girar.GIRO_ESQUERDA, 2, [270, 270, 270, 270, 270]),
+    (girar.ALCANCE_DAQUI, girar.GIRO_MEIA_VOLTA, 2, [0, 0, 180, 180, 180]),
+    # "so as pares" de uma folha par (folha 4): na impar ela avisa (abaixo)
+    (girar.ALCANCE_PARES, girar.GIRO_DIREITA, 3, [0, 90, 0, 90, 0]),
+    (girar.ALCANCE_IMPARES, girar.GIRO_DIREITA, 2, [90, 0, 90, 0, 90]),
 ])
-def test_cada_botao_gira_as_folhas_do_aplicar_em(janela, pasta, alcance, giro, esperado):
+def test_cada_botao_gira_as_folhas_do_aplicar_em(janela, pasta, alcance, giro, atual, esperado):
     tela = _aberta(janela, pasta)
-    tela.ir_para_pagina(2)
-    assert tela.indice_folha == 2
+    tela.ir_para_pagina(atual)
+    assert tela.indice_folha == atual
     tela.barra_girar.definir_alcance(alcance)
     feitas = len(janela.acoes.feitas)
     tela.barra_girar.botoes_de_giro[giro].click()
@@ -141,6 +142,7 @@ def test_o_menu_pagina_tem_os_tres_giros_e_o_aplicar_em(janela, pasta):
     tela.barra_girar.definir_alcance(girar.ALCANCE_PARES)
     assert acoes["giro_em_pares"].isChecked(), "a barrinha muda o menu"
     assert not acoes["giro_em_todas"].isChecked()
+    tela.ir_para_pagina(1)                     # folha 2: "so as pares" vale daqui
     acoes["girar"].trigger()
     assert _rotacoes(janela) == [90, 180, 90, 180, 90]
 
@@ -268,7 +270,6 @@ def test_com_zonas_ainda_no_formato_antigo_o_giro_espera(janela, pasta, monkeypa
 @pytest.mark.parametrize("alcance, esperado", [
     (girar.ALCANCE_TODAS, [270, 270, 270, 270, 270]),
     (girar.ALCANCE_DAQUI, [0, 90, 270, 270, 270]),
-    (girar.ALCANCE_PARES, [0, 270, 180, 270, 0]),
     (girar.ALCANCE_IMPARES, [270, 90, 270, 270, 270]),
 ])
 def test_aplicar_em_deixa_as_folhas_viradas_como_a_folha_da_vez(janela, pasta, alcance, esperado):
@@ -298,3 +299,54 @@ def test_aplicar_em_deixa_as_folhas_viradas_como_a_folha_da_vez(janela, pasta, a
     assert _rotacoes(janela) == antes, "o desfazer devolve o giro de cada folha"
     tela.refazer()
     assert _rotacoes(janela) == esperado
+
+
+def _com_giros_diferentes(janela, pasta):
+    """Folhas 2, 3 e 4 ja giradas com "so esta": [0, 90, 180, 270, 0]."""
+    tela = _aberta(janela, pasta)
+    barra = tela.barra_girar
+    barra.definir_alcance(girar.ALCANCE_ESTA)
+    for folha, giro in ((1, girar.GIRO_DIREITA), (2, girar.GIRO_MEIA_VOLTA),
+                        (3, girar.GIRO_ESQUERDA)):
+        tela.ir_para_pagina(folha)
+        barra.botoes_de_giro[giro].click()
+    assert _rotacoes(janela) == [0, 90, 180, 270, 0]
+    return tela
+
+
+def test_so_as_pares_de_uma_folha_par_copia_o_giro_dela(janela, pasta):
+    """Na folha 2 (a 90), 1/4 a direita com "so as pares": a folha 2 vai a
+    180 e a outra par (folha 4) tambem; as impares nao mudam."""
+    tela = _com_giros_diferentes(janela, pasta)
+    tela.ir_para_pagina(1)
+    tela.barra_girar.definir_alcance(girar.ALCANCE_PARES)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert _rotacoes(janela) == [0, 180, 180, 180, 0]
+    assert "viradas como a folha 2" in janela.acoes.feitas[-1].descricao
+    assert not janela.avisos
+
+
+@pytest.mark.parametrize("alcance, folha, frase", [
+    (girar.ALCANCE_PARES, 2, "Você está numa folha ímpar. Para girar só as pares, "
+                             "vá a uma folha par e gire de lá."),
+    (girar.ALCANCE_IMPARES, 1, "Você está numa folha par. Para girar só as ímpares, "
+                              "vá a uma folha ímpar e gire de lá."),
+], ids=["pares_na_impar", "impares_na_par"])
+def test_folha_fora_do_aplicar_em_avisa_e_nao_gira(janela, pasta, alcance, folha, frase):
+    """Decisao do Samuel (06/10/2026): "O programa avisa: 'va a uma folha
+    par'". Nada muda no livro e nada entra no historico - pelo botao, pelo
+    menu Pagina e pela tecla (os tres passam por _girar_folhas)."""
+    tela = _com_giros_diferentes(janela, pasta)
+    tela.ir_para_pagina(folha)
+    tela.barra_girar.definir_alcance(alcance)
+    feitas = len(janela.acoes.feitas)
+    descricao = janela.acoes.descricao_desfazer()
+
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+    janela.menu.acoes["girar_meia_volta"].trigger()
+    tela._girar_esquerda()
+
+    assert _rotacoes(janela) == [0, 90, 180, 270, 0], "nada mudou no livro"
+    assert len(janela.acoes.feitas) == feitas, "nada entrou no historico"
+    assert janela.acoes.descricao_desfazer() == descricao
+    assert janela.avisos == [frase] * 3
