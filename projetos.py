@@ -943,7 +943,9 @@ def motivo_para_nao_combinar(salvo, recem_analisado, assinatura: str = "") -> st
       1. nao e o mesmo livro (_mesmo_livro: nem o mesmo arquivo, nem a mesma
          assinatura);
       2. o arquivo tem outro numero de folhas (o PDF mudou);
-      3. outro numero de paginas (mudou "Dividir folhas ao meio").
+      3. outro numero de paginas (mudou "Dividir folhas ao meio");
+      4. o mesmo numero, mas outras folhas divididas (item 2.1: mudou o
+         jeito de dividir).
 
     Frase em portugues comum, comecando em minuscula, sem ponto final (a
     janela a encaixa no meio da mensagem). Seguro mudar: o texto. Arriscado:
@@ -960,7 +962,22 @@ def motivo_para_nao_combinar(salvo, recem_analisado, assinatura: str = "") -> st
         return (f"o trabalho salvo tinha {_quantas(antes, 'página', 'páginas')} e "
                 f"agora o livro tem {agora}. Isso acontece quando se muda a opção "
                 "“Dividir folhas ao meio”")
+    # Item 2.1 (06/10/2026): com dois jeitos de dividir, o total pode bater e
+    # as folhas divididas serem outras (uma folha a mais dividida num lugar,
+    # uma a menos noutro): a pagina 40 salva ja nao seria a 40 de agora. Por
+    # isso, alem do total, cada folha tem de ter as mesmas paginas.
+    if _paginas_por_folha(salvo) != _paginas_por_folha(recem_analisado):
+        return ("as folhas divididas em duas páginas não são as mesmas do trabalho "
+                "salvo. Isso acontece quando se muda a opção “Dividir folhas ao meio” "
+                "ou o jeito de dividir")
     return ""
+
+
+def _paginas_por_folha(projeto) -> list[tuple[int, str]]:
+    """(folha, metade) de cada pagina, na ordem: a "forma" da divisao do
+    livro, que o trabalho salvo tem de repetir para voltar (motivo 4 de
+    motivo_para_nao_combinar)."""
+    return [(int(p.folha), str(p.metade)) for p in getattr(projeto, "paginas", [])]
 
 
 def achar_por_assinatura(caminho_pdf: str) -> Resumo | None:

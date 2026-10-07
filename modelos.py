@@ -27,6 +27,8 @@ from core.misto import FORA_DO_TEXTO_PADRAO, LETRAS_NA_MOLDURA_PADRAO, PAPEL_DA_
 from core.pontinhos_scantailor import DESLIGADO as PONTINHOS_DESLIGADO
 from core.pontinhos_scantailor import DO_PROJETO_ANTIGO as PONTINHOS_DO_PROJETO_ANTIGO
 from core.pontinhos_scantailor import PADRAO as PONTINHOS_PADRAO
+from core.dividir_scantailor import JEITO_DO_PROJETO_ANTIGO as DIVIDIR_DO_PROJETO_ANTIGO
+from core.dividir_scantailor import JEITO_PROGRAMA as DIVIDIR_PROGRAMA
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -48,6 +50,26 @@ class ConfigFolha:
     e_paisagem: bool = True
     alertas: list[str] = field(default_factory=list)
     revisada: bool = False
+
+    # Item 2.1 (decisao G2 (a) do Samuel, 05/10/2026: "trocando numa folha se
+    # um ficar ruim"): o jeito de dividir SO desta folha, por cima do livro
+    # (Projeto.dividir_como). None = segue o livro. Valores: os codigos de
+    # core/dividir_scantailor.JEITOS ("programa", "scantailor"); nunca o
+    # texto da tela. Quem troca: a aba "Onde cortar" (ui/tela_conferir.py),
+    # que recalcula posicao_corte com o jeito novo
+    # (core.pipeline.recalcular_divisao). Projeto antigo nao tem o campo:
+    # volta None (segue o livro, que no projeto antigo e "programa").
+    dividir_como: str | None = None
+
+    # Item 2.1 (decisao G3 (b) do Samuel, 05/10/2026: o "corte da sobra" do
+    # ScanTailor como opcao, desligada): (esquerda, direita) = a parte da
+    # folha que FICA, em fracao da largura, achada pelo automatico do
+    # ScanTailor quando ele ve "uma pagina + sobra" (core.pipeline.achar_sobra,
+    # core/dividir_scantailor.sobra_da_folha). So vale
+    # com Projeto.cortar_sobra ligado, em folha NAO dividida e sem giro de 90
+    # (core.pipeline.faixa_da_sobra). None = nada a cortar. Calculada na
+    # analise; nao ha como mexer a mao (ainda). Seguro mudar: nada aqui.
+    sobra: tuple[float, float] | None = None
 
     @property
     def precisa_revisao(self) -> bool:
@@ -223,7 +245,23 @@ class Projeto:
     caminho_saida: str = ""
     nome: str = ""
 
-    dividir_folhas: bool = True
+    # Dividir as folhas em duas paginas. Decisao do Samuel G2 (a),
+    # 05/10/2026: "So quando o Kaique pedir, livro a livro" - livro NOVO nao
+    # divide (False de fabrica; ate o item 2.1 era True). Projeto salvo antes
+    # sempre tem o campo e volta como estava (de_dicionario).
+    dividir_folhas: bool = False
+    # Item 2.1: COMO dividir, quando dividir_folhas esta ligado: "o do
+    # programa" (core/dividir.py, procura a lombada nas folhas deitadas) ou
+    # "o do ScanTailor" (core/dividir_scantailor.py, o automatico dele).
+    # Codigos de core/dividir_scantailor.JEITOS. Cada folha pode trocar so
+    # nela (ConfigFolha.dividir_como). Projeto salvo antes do campo volta com
+    # "programa" (era o unico jeito). De fabrica "programa": o que o programa
+    # ja fazia quando a pessoa marcava dividir.
+    dividir_como: str = DIVIDIR_PROGRAMA
+    # Item 2.1, decisao G3 (b): o "corte da sobra" do ScanTailor (tira a
+    # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
+    # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.
+    cortar_sobra: bool = False
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
@@ -344,7 +382,24 @@ class Projeto:
 
     @property
     def paginas_ativas(self) -> list[ConfigPagina]:
-        return [p for p in self.paginas if not p.apagada]
+        """As paginas que vao para o PDF: nao apagadas, e sem a metade da
+        direita de uma folha que deixou de ser dividida.
+
+        Conserto junto do item 2.1 (06/10/2026): o "nao dividir esta" da aba
+        Onde cortar so desligava ConfigFolha.dividir, e as DUAS paginas da
+        folha continuavam na lista - cada uma desenhava a folha inteira, e o
+        PDF saia com a folha repetida. A lista de paginas nao muda (o desfazer
+        e as acoes guardam paginas pela posicao); a da esquerda vira a folha
+        inteira (pipeline: metade so vale com a folha dividida) e a da direita
+        fica de fora aqui. Ver metade_sobrando."""
+        return [p for p in self.paginas if not p.apagada and not self.metade_sobrando(p)]
+
+    def metade_sobrando(self, pagina: ConfigPagina) -> bool:
+        """A pagina e a metade da DIREITA de uma folha que nao esta mais
+        dividida? (ela nao existe no PDF: a da esquerda ja e a folha inteira)"""
+        if pagina.metade != METADE_DIREITA or not 0 <= pagina.folha < len(self.folhas):
+            return False
+        return not self.folhas[pagina.folha].dividir
 
     @property
     def total_apagadas(self) -> int:
@@ -433,7 +488,7 @@ class Projeto:
         """
         from core.zonas_na_folha import do_disco
 
-        folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, f))
+        folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, _migrar_folha(f)))
                   for f in dados.pop("folhas", [])]
         # D2 (02/10/2026): "zonas_na_folha" volta para fracao da pagina aqui,
         # com a geometria anotada (core/zonas_na_folha.do_disco). Pagina de
@@ -444,6 +499,14 @@ class Projeto:
         # usava o nosso - continua com ele (a pagina que tinha a caixinha
         # "limpar poeirinha" desligada ja voltou "desligado", em _migrar).
         dados.setdefault("limpar_pontinhos", PONTINHOS_DO_PROJETO_ANTIGO)
+        # Item 2.1 (06/10/2026): o livro novo nao divide mais (dividir_folhas
+        # de fabrica virou False), mas o projeto salvo SEM o campo (nao
+        # deveria existir: asdict sempre grava) era de quando o de fabrica
+        # dividia - continua dividindo. E o jeito de dividir de quem nao tem
+        # o campo e o do programa (era o unico). "O programa vai ter que ser
+        # capaz de abrir arquivos de versoes anteriores" (Samuel, 05/10).
+        dados.setdefault("dividir_folhas", True)
+        dados.setdefault("dividir_como", DIVIDIR_DO_PROJETO_ANTIGO)
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas
@@ -453,6 +516,16 @@ class Projeto:
 def _so_campos_conhecidos(classe, dados: dict[str, Any]) -> dict[str, Any]:
     validos = {c.name for c in fields(classe)}
     return {k: v for k, v in dados.items() if k in validos}
+
+
+def _migrar_folha(dados: dict[str, Any]) -> dict[str, Any]:
+    """Uma folha do projeto.json de volta ao formato da memoria: a sobra
+    (item 2.1) e tupla, e o JSON grava lista. Folha de projeto antigo (sem
+    os campos do item 2.1) passa como esta: os campos ganham o padrao."""
+    sobra = dados.get("sobra")
+    if isinstance(sobra, list):
+        dados["sobra"] = tuple(sobra) if len(sobra) == 2 else None
+    return dados
 
 
 def _migrar(dados: dict[str, Any]) -> dict[str, Any]:

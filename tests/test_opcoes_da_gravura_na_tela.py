@@ -124,6 +124,7 @@ def _marcar_paginas(janela):
     return s0.para_lista(), s1.para_lista()
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_mudar_as_opcoes_num_livro_com_trabalho_refaz_so_a_gravura_automatica(janela, pasta):
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))

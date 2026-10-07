@@ -35,8 +35,12 @@ from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixture
 )
 
 
-def _aberta(janela, pasta, folhas=5):
+def _aberta(janela, pasta, folhas=5, dividir=False):
     janela.abrir_livro(str(_pdf(pasta, folhas=folhas)))
+    if dividir:
+        # a aba "Onde cortar" so aparece com o livro dividido; desde o item
+        # 2.1 (G2 (a)) o livro novo nao divide sozinho
+        janela.tela_opcoes.cx_dividir.setChecked(True)
     _analisar(janela)
     tela = janela.tela_conferir
     janela.resize(1280, 657)
@@ -205,7 +209,7 @@ def test_a_tecla_r_ficou_so_para_o_retangulo(janela, pasta):
 
 
 def test_o_botao_girar_de_sempre_continua_um_quarto_a_direita(janela, pasta):
-    tela = _aberta(janela, pasta)
+    tela = _aberta(janela, pasta, dividir=True)
     tela.barra_abas.setCurrentIndex(tela._abas_ativas.index("corte"))
     linha = tela.linhas_de_botoes["corte"]
     from PySide6.QtWidgets import QPushButton
