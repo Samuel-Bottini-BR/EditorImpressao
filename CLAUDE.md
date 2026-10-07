@@ -456,7 +456,8 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
       https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy
 
     **Quando uma página de conferência nova ficar pronta, a gerente abre sozinha no navegador do
-    Samuel, sem perguntar — desde que ele já tenha feito a conferência anterior e dado ok no chat.**
+    Samuel (com `start "" "<endereço>"`, que abre no navegador padrão do Windows; a ação `open` da
+    ferramenta Artifact não chega ao navegador dele), sem perguntar — desde que ele já tenha feito a conferência anterior e dado ok no chat.**
     Se ainda houver conferência sem resposta, a gerente só avisa no chat que há outra pronta (e
     abre se ele pedir). Palavras dele: "sempre que tiver paginas de conferencia prontas, pode abrir
     automaticamente no meu pc, caso eu já tenha feito a ultima pagina de conferencia e te dado ok."
