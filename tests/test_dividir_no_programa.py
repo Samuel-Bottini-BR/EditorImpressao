@@ -340,3 +340,26 @@ def test_folha_nao_some_com_a_esquerda_apagada_e_nao_dividir(tmp_path):
     # as duas apagadas: ai sim a folha sai (a pessoa apagou)
     projeto.paginas[3].apagada = True
     assert [p.indice for p in projeto.paginas_ativas] == [0, 1, 4, 5]
+
+
+def test_janela_confirmar_conta_o_mesmo_que_vai_para_o_pdf(tmp_path):
+    """Parecer do verificador (06/10/2026): a janela "Confirmar e processar"
+    dizia "139 paginas vao para o PDF" e o PDF saia com 138 - ela contava as
+    nao apagadas, e o PDF sai de Projeto.paginas_ativas."""
+    from PySide6.QtWidgets import QApplication
+
+    from ui.janela_confirmar import JanelaConfirmar
+
+    QApplication.instance() or QApplication([])
+    caminho = _pdf_deitado(tmp_path, dobra=0.5, folhas=3)
+    projeto = Projeto(caminho_entrada=caminho, dividir_folhas=True, endireitar=False,
+                      cortar_bordas=False)
+    pipeline.analisar_projeto(projeto)
+    projeto.folhas[0].dividir = False          # folha repetida antes: sai uma vez
+    projeto.paginas[5].apagada = True
+    janela = JanelaConfirmar(projeto, "x.pdf")
+    try:
+        assert janela._frase_do_livro() == "4 páginas vão para o PDF, e 1 foram apagadas."
+        assert len(projeto.paginas_ativas) == 4
+    finally:
+        janela.close()

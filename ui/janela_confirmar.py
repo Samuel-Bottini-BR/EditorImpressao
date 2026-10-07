@@ -142,9 +142,15 @@ class JanelaConfirmar(QDialog):
         return faixa
 
     def _frase_do_livro(self) -> str:
-        """Frase-resumo: quantas páginas vão pro PDF e quantas foram apagadas."""
-        paginas = [p for p in self.projeto.paginas if not p.apagada]
-        apagadas = len(self.projeto.paginas) - len(paginas)
+        """Frase-resumo: quantas páginas vão pro PDF e quantas foram apagadas.
+
+        Conta pelo MESMO que o PDF usa (Projeto.paginas_ativas): a folha que
+        deixou de ser dividida sai uma vez só, e a outra metade dela não é
+        página do PDF nem "apagada" pela pessoa. Antes contava as não
+        apagadas e o número ficava maior que o PDF (parecer do verificador,
+        06/10/2026: "139 páginas" e o PDF com 138)."""
+        paginas = self.projeto.paginas_ativas
+        apagadas = sum(1 for p in self.projeto.paginas if p.apagada)
         frase = f"{len(paginas)} páginas vão para o PDF"
         if apagadas:
             frase += f", e {apagadas} foram apagadas"
@@ -153,9 +159,9 @@ class JanelaConfirmar(QDialog):
     # --- avisos -----------------------------------------------------------
 
     def _nao_conferidas(self) -> int:
-        """Quantas páginas (nao apagadas) a pessoa ainda nao olhou na tela de conferir."""
-        return sum(1 for p in self.projeto.paginas
-                   if not p.apagada and not p.revisada)
+        """Quantas páginas que vão para o PDF (Projeto.paginas_ativas) a
+        pessoa ainda nao olhou na tela de conferir."""
+        return sum(1 for p in self.projeto.paginas_ativas if not p.revisada)
 
     def _reavaliar(self) -> None:
         """Reconstroi os dois avisos e liga/desliga o botão Processar.
