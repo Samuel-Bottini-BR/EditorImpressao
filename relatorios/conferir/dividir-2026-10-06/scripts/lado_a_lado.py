@@ -20,6 +20,18 @@ Nada aqui muda o programa nem os livros (somente leitura).
 
 from __future__ import annotations
 
+# Pasta de dados PROPRIA (nunca a %LOCALAPPDATA%\EditorImpressao do Samuel):
+# o programa le LOCALAPPDATA na hora de gravar (historico.pasta_de_dados), e
+# os processos filhos herdam. Fica em trabalho\dados-scripts, ao lado deste
+# relatorio (fora do git). Pedido da gerente, 06/10/2026.
+import os as _os
+from pathlib import Path as _Path
+
+_DADOS = _Path(__file__).resolve().parents[1] / "trabalho" / "dados-scripts"
+_DADOS.mkdir(parents=True, exist_ok=True)
+_os.environ.setdefault("EDITOR_IMPRESSAO_LOCALAPPDATA_REAL", _os.environ.get("LOCALAPPDATA", ""))
+_os.environ["LOCALAPPDATA"] = str(_DADOS)
+
 import json
 import sys
 import time

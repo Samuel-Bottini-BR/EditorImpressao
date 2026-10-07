@@ -9,11 +9,23 @@ como o programa de antes fazia: dividir marcado, sem os campos novos),
 "nao", "programa", "scantailor" ou "scantailor_sobra". Mede pelas MESMAS
 funcoes que a janela usa: core.pipeline.analisar_projeto (abrir o livro,
 150 DPI) e core.pipeline.processar (10 paginas, Original, 300 DPI, sem
-cadernos). Grava os segundos em <saida.json>. Rodar com LOCALAPPDATA
-apontando para uma pasta de rascunho (nunca a do Samuel).
+cadernos). Grava os segundos em <saida.json>. A pasta de dados e propria
+(ver o bloco logo abaixo).
 """
 
 from __future__ import annotations
+
+# Pasta de dados PROPRIA (nunca a %LOCALAPPDATA%\EditorImpressao do Samuel):
+# o programa le LOCALAPPDATA na hora de gravar (historico.pasta_de_dados), e
+# os processos filhos herdam. Fica em trabalho\dados-scripts, ao lado deste
+# relatorio (fora do git). Pedido da gerente, 06/10/2026.
+import os as _os
+from pathlib import Path as _Path
+
+_DADOS = _Path(__file__).resolve().parents[1] / "trabalho" / "dados-scripts"
+_DADOS.mkdir(parents=True, exist_ok=True)
+_os.environ.setdefault("EDITOR_IMPRESSAO_LOCALAPPDATA_REAL", _os.environ.get("LOCALAPPDATA", ""))
+_os.environ["LOCALAPPDATA"] = str(_DADOS)
 
 import json
 import os

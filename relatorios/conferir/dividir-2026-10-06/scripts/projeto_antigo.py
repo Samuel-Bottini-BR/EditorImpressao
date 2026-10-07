@@ -10,10 +10,22 @@ folhas do Hugon, livro aberto, e as 6 primeiras do Siebmacher, folhas
 deitadas), analisa, desenha cada pagina como a previa (preparar_metade, com
 corte e endireitar ligados) e gera o PDF final. Grava a soma SHA-256 de cada
 pagina desenhada e de cada pagina do PDF (desenhada de volta a 72 DPI), para
-comparar o codigo de antes com o de agora. Rodar com LOCALAPPDATA de rascunho.
+comparar o codigo de antes com o de agora. A pasta de dados e propria (ver o bloco logo abaixo).
 """
 
 from __future__ import annotations
+
+# Pasta de dados PROPRIA (nunca a %LOCALAPPDATA%\EditorImpressao do Samuel):
+# o programa le LOCALAPPDATA na hora de gravar (historico.pasta_de_dados), e
+# os processos filhos herdam. Fica em trabalho\dados-scripts, ao lado deste
+# relatorio (fora do git). Pedido da gerente, 06/10/2026.
+import os as _os
+from pathlib import Path as _Path
+
+_DADOS = _Path(__file__).resolve().parents[1] / "trabalho" / "dados-scripts"
+_DADOS.mkdir(parents=True, exist_ok=True)
+_os.environ.setdefault("EDITOR_IMPRESSAO_LOCALAPPDATA_REAL", _os.environ.get("LOCALAPPDATA", ""))
+_os.environ["LOCALAPPDATA"] = str(_DADOS)
 
 import hashlib
 import json
