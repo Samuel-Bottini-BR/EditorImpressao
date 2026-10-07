@@ -6,7 +6,8 @@
 //
 // Funcoes em C puro (sem classes C++ na fronteira) para a DLL nao depender da
 // versao do Python. Quem chama: core/st_ferramentas.py (carrega a DLL) e um
-// modulo por ferramenta (core/pontinhos_scantailor.py, core/dividir_scantailor.py).
+// modulo por ferramenta (core/pontinhos_scantailor.py, core/dividir_scantailor.py,
+// core/endireitar_scantailor.py).
 //
 // COMO ACRESCENTAR UMA FERRAMENTA (dividir, endireitar, caixa do conteudo,
 // binarizadores, segmentacao de cor...)
@@ -36,7 +37,9 @@
 
 // Versao desta interface. 1 = 06/10/2026: so os pontinhos.
 // 2 = 06/10/2026: + dividir (st_ferramentas_dividir); os pontinhos nao mudaram.
-#define ST_FERRAMENTAS_VERSAO_API 2
+// 3 = 06/10/2026: + endireitar (st_ferramentas_endireitar, item 2.2); os
+//     pontinhos e o dividir nao mudaram.
+#define ST_FERRAMENTAS_VERSAO_API 3
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -120,6 +123,38 @@ ST_FERRAMENTAS_API int st_ferramentas_dividir(const unsigned char* pixels,
                                               double* cortes,
                                               char* erro,
                                               int tamanhoErro);
+
+// ENDIREITAR A PAGINA (SkewFinder do ScanTailor, src/imageproc/SkewFinder.cpp,
+// com a limpeza das sombras horizontais de src/core/filters/deskew/Task.cpp;
+// tudo sem mudanca; a cola esta em endireitar.cpp).
+//
+// pixels, largura, altura, passo, canais: a pagina, como no dividir (1 = cinza,
+//   3 = azul, verde, vermelho, a ordem do OpenCV).
+// dpiX, dpiY: o DPI da imagem (so muda a limpeza das sombras compridas).
+// angulo (saida): o angulo que o ScanTailor aplicaria, em graus, no sentido
+//   DELE (o "post rotation"); 0 quando a confianca fica abaixo de 2,0
+//   (Skew::GOOD_CONFIDENCE).
+// anguloBruto (saida): o angulo achado, mesmo com confianca baixa.
+// confianca (saida): a confianca do SkewFinder (2,0 ou mais = boa).
+// pretoNoBranco (saida): 1 se a pagina foi vista como preto no branco, 0 se
+//   "claro no escuro" (medida invertida, como o ScanTailor faz).
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// So le a imagem. Devolve ST_FERRAMENTAS_OK ou um codigo de erro.
+// Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_endireitar(const unsigned char* pixels,
+                                                 int largura,
+                                                 int altura,
+                                                 int passo,
+                                                 int canais,
+                                                 int dpiX,
+                                                 int dpiY,
+                                                 double* angulo,
+                                                 double* anguloBruto,
+                                                 double* confianca,
+                                                 int* pretoNoBranco,
+                                                 char* erro,
+                                                 int tamanhoErro);
 
 #ifdef __cplusplus
 }
