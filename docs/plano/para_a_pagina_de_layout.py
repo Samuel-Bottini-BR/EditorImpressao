@@ -49,6 +49,7 @@ GRUPOS = {
     "14": (14, "Rodada 8"),
     "15": (15, "Rodada 9"),
     "16": (16, "Rodada 10"),
+    "17": (17, "Rodada 11"),
     "tela": (-1, "O programa antigo"),
 }
 
