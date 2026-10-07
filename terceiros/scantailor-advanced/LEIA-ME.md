@@ -20,13 +20,14 @@ distribuído, vai com o código-fonte aberto.
 
 | Pasta | O que é | Mudou? |
 |---|---|---|
-| `src/` | 78 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
+| `src/` | 128 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) e os 50 do dividir (item 2.1; lista em "O dividir", abaixo) | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
 | `somas-v1.2.1.txt` | A soma SHA-256 de cada arquivo de `src/` como está no ScanTailor v1.2.1 (tirada do git do ScanTailor, fim de linha LF). O teste `tests/test_st_ferramentas.py` confere todos, a cada rodada | Nosso (a lista) |
+| `referencia/ProjectPages.cpp` | O arquivo do ScanTailor de onde veio a única função copiada como "cola" no dividir (`adviseNumberOfLogicalPages`, linhas 205-214). **Não é compilado**: o teste `tests/test_dividir_scantailor.py` confere a soma dele e que o trecho em `ligacao-ferramentas/dividir.cpp` é igual | Não |
 | `referencia/OutputGenerator.cpp` | O arquivo do ScanTailor onde mora o detector. **Não é compilado**: serve para o teste conferir que as funções copiadas não mudaram | Não |
 | `ligacao/st_gravura.cpp` | A "cola": copia as funções do detector de `OutputGenerator.cpp` **letra por letra** (entre as marcas `COPIADO SEM MUDANCA (linhas X-Y)`) e troca só o que ligava o detector à janela do ScanTailor | Só a ligação (ver abaixo) |
 | `ligacao/st_gravura.h` | As funções em C que o Python chama por `ctypes` | Nosso |
 | `ligacao/CMakeLists.txt` | Compila `src/` como biblioteca estática e `st_gravura.cpp` como DLL | Nosso |
-| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
+| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4), `dividir.cpp` (dividir a folha, item 2.1) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
 
 Foram trazidos só os arquivos que o detector usa: o fecho dos `#include` a
 partir das funções copiadas (os `.cpp` de `ImageTransformation`,
@@ -76,7 +77,7 @@ confere, a cada rodada, que esses 7 blocos continuam idênticos ao original.
 | DLL | O que tem | Compila com | Python |
 |---|---|---|---|
 | `core/nativo/st_gravura.dll` | O detector de gravura (item 1.2, aprovado) | `compilar_detector_gravura.py` (pasta `ligacao/`) | `core/gravura_scantailor.py` |
-| `core/nativo/st_ferramentas.dll` | A DLL **comum** das outras ferramentas. Hoje: limpar pontinhos (`Despeckle`) | `compilar_st_ferramentas.py` (pasta `ligacao-ferramentas/`) | `core/st_ferramentas.py` (abre a DLL) + um módulo por ferramenta (`core/pontinhos_scantailor.py`) |
+| `core/nativo/st_ferramentas.dll` | A DLL **comum** das outras ferramentas. Hoje: limpar pontinhos (`Despeckle`) e dividir a folha (`PageLayoutEstimator`) | `compilar_st_ferramentas.py` (pasta `ligacao-ferramentas/`) | `core/st_ferramentas.py` (abre a DLL) + um módulo por ferramenta (`core/pontinhos_scantailor.py`, `core/dividir_scantailor.py`) |
 
 **Por que a comum fica AO LADO da do 1.2, e não no lugar dela:** a do 1.2 foi
 aprovada pelo Samuel, está ligada ao programa e foi conferida contra as
@@ -110,6 +111,51 @@ biblioteca do 1.2 também (não muda a DLL: o vinculador só puxa o que o
 detector usa), mas, se um dia o arquivo novo precisar de uma pasta de
 cabeçalhos que o 1.2 não tem, a recompilação da `st_gravura` quebra. Aí, ou
 se lista os arquivos do 1.2 um a um, ou se faz a junção acima.
+
+## O dividir (item 2.1, desde 06/10/2026)
+
+Decisões do Samuel G2 (a) e G3 (b), 05/10/2026: dividir só quando o Kaique
+pedir, livro a livro, "o do programa" ou "o do ScanTailor", trocando numa
+folha; o "corte da sobra" do ScanTailor como opção desligada.
+
+**Função em C:** `st_ferramentas_dividir` (`ligacao-ferramentas/dividir.cpp`),
+a mesma chamada do `page_split::Task` do ScanTailor:
+`PageLayoutEstimator::estimatePageLayout(modo, cinza, geometria, limiar)`.
+A cola monta o que o Task recebe com as linhas do construtor de `FilterData`
+(`toGrayscale`, `ImageTransformation(image.rect(), Dpm(image))`) e o limiar
+Otsu do `fix_orientation::Task` (linha 87); `FilterData.cpp` e
+`ImageSettings.cpp` **não** vieram (puxariam o projeto e as miniaturas do
+ScanTailor). Uma função de `ProjectPages.cpp` (`adviseNumberOfLogicalPages`,
+10 linhas) está copiada sem mudança na cola, entre marcas; o original está em
+`referencia/ProjectPages.cpp`.
+
+**Os 50 arquivos trazidos** (todos sem mudança, com a soma em
+`somas-v1.2.1.txt`, conferida três vezes: a soma do `git show v1.2.1`, a do
+arquivo aqui e o `git hash-object --path` contra o `rev-parse` do ScanTailor):
+`core/filters/page_split/` (`PageLayoutEstimator.*`, `VertLineFinder.*`,
+`PageLayout.*`, `LayoutType.h`); `core/` (`ContentSpanFinder.*`,
+`ImageMetadata.*`, `ImageTransformation.cpp`, `OrthogonalRotation.cpp`,
+`ProjectPages.h`, `PageId.h`, `PageInfo.h`, `PageView.h`, `ImageId.h`,
+`BeforeOrAfter.h`); `imageproc/` (`ConnComp.h`, `ConnCompEraser.*`,
+`ConnCompEraserExt.*`, `HoughLineDetector.*`, `MorphGradientDetect.*`,
+`OrthogonalRotation.*`, `ReduceThreshold.*`, `Shear.*`, `SkewFinder.*`,
+`SlicedHistogram.*`); `foundation/` (`XmlMarshaller.*`, `XmlUnmarshaller.*`,
+`Utils.*`, `Hashes.h`, `NumericTraits.h`, `Span.h`, `VirtualFunction.h`);
+`math/ToLineProjector.*`. É o fecho dos `#include` a partir dos três `.cpp`
+do `page_split`, mais os `.cpp` que o vinculador pediu.
+
+**Conferido em 06/10/2026, com os 50 arquivos novos em `src/`:**
+- a `st_gravura` (item 1.2), recompilada numa pasta de rascunho (fora do
+  projeto; a DLL guardada não foi tocada), dá as **mesmas 64 máscaras** (32
+  páginas do gabarito, forma livre e retangular) que a DLL do projeto;
+- o limpar pontinhos da DLL comum nova dá **o mesmo, ponto a ponto**, que a
+  DLL comum anterior (versão 1) nas 32 páginas do gabarito, nas forças
+  pouco, normal e muito (96 de 96 iguais);
+- o dividir dá, no Siebmacher 9 e no Opus Majus 256, a mesma divisão do
+  programa de teste do D3 (82% e 50%).
+
+A versão da interface subiu para 2 (`ST_FERRAMENTAS_VERSAO_API`); a função
+dos pontinhos não mudou.
 
 ## Como conferir que nada mudou
 

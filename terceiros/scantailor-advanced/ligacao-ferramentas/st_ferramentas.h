@@ -6,7 +6,7 @@
 //
 // Funcoes em C puro (sem classes C++ na fronteira) para a DLL nao depender da
 // versao do Python. Quem chama: core/st_ferramentas.py (carrega a DLL) e um
-// modulo por ferramenta (hoje so core/pontinhos_scantailor.py).
+// modulo por ferramenta (core/pontinhos_scantailor.py, core/dividir_scantailor.py).
 //
 // COMO ACRESCENTAR UMA FERRAMENTA (dividir, endireitar, caixa do conteudo,
 // binarizadores, segmentacao de cor...)
@@ -35,7 +35,8 @@
 #endif
 
 // Versao desta interface. 1 = 06/10/2026: so os pontinhos.
-#define ST_FERRAMENTAS_VERSAO_API 1
+// 2 = 06/10/2026: + dividir (st_ferramentas_dividir); os pontinhos nao mudaram.
+#define ST_FERRAMENTAS_VERSAO_API 2
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -85,6 +86,40 @@ ST_FERRAMENTAS_API int st_ferramentas_pontinhos(const unsigned char* entrada,
                                                 int passoSaida,
                                                 char* erro,
                                                 int tamanhoErro);
+
+// DIVIDIR A FOLHA (PageLayoutEstimator do ScanTailor,
+// src/core/filters/page_split/PageLayoutEstimator.cpp, sem mudanca; a cola esta
+// em dividir.cpp).
+//
+// pixels, largura, altura, passo: a folha, linha a linha (passo = bytes por
+//   linha). canais = 1 (cinza) ou 3 (azul, verde, vermelho: a ordem do OpenCV).
+// dpiX, dpiY: o DPI da imagem (o ScanTailor reduz a 300 e a 150 DPI por ele).
+// modo: o page_split::LayoutType do ScanTailor: 0 automatico, 1 uma pagina sem
+//   corte, 2 uma pagina + sobra, 3 duas paginas.
+// tipo (saida): o que o ScanTailor achou (PageLayout::Type): 0 uma pagina sem
+//   corte, 1 uma pagina com sobra (2 cortes: o da esquerda e o da direita),
+//   2 duas paginas (1 corte: a divisao).
+// numCortes (saida): 0, 1 ou 2.
+// cortes (saida, 8 numeros): x1, y1, x2, y2 de cada corte, em pontos da folha,
+//   com as pontas nas bordas de cima e de baixo. A linha pode ser inclinada.
+//   O que sobra (corte que nao existe) fica 0.
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// So le a imagem. Devolve ST_FERRAMENTAS_OK ou um codigo de erro.
+// Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_dividir(const unsigned char* pixels,
+                                              int largura,
+                                              int altura,
+                                              int passo,
+                                              int canais,
+                                              int dpiX,
+                                              int dpiY,
+                                              int modo,
+                                              int* tipo,
+                                              int* numCortes,
+                                              double* cortes,
+                                              char* erro,
+                                              int tamanhoErro);
 
 #ifdef __cplusplus
 }

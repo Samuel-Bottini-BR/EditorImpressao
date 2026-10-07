@@ -15,8 +15,9 @@ peças (ferramentas, Qt, Boost, somas oficiais):
    Release) na pasta de rascunho <ferramentas>\\build-st-ferramentas;
 4. copia a DLL para core/nativo/st_ferramentas.dll e grava, ao lado,
    core/nativo/st_ferramentas.txt (origem e soma SHA-256);
-5. abre a DLL pelo core/st_ferramentas.py e limpa uma imagem sintética, para
-   garantir que ela abre com o Qt do PySide6.
+5. abre a DLL pelo core/st_ferramentas.py, limpa uma imagem sintética e
+   pede o dividir de uma folha em branco, para garantir que ela abre com o Qt
+   do PySide6.
 
 NADA AQUI PEDE ADMINISTRADOR. Nada é instalado no Windows nem no .venv.
 O Kaique não precisa rodar isto: a DLL pronta vai no programa.
@@ -95,7 +96,7 @@ def instalar_no_programa(dll: Path) -> Path:
     compilador = base.versao_do_compilador(dll.parent.parent)
     (PASTA_NATIVO / "st_ferramentas.txt").write_text(
         "st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)\n"
-        "Tem: limpar pontinhos (Despeckle).\n"
+        "Tem: limpar pontinhos (Despeckle) e dividir a folha (PageLayoutEstimator, item 2.1).\n"
         "\n"
         f"Código:      {base.REPOSITORIO}\n"
         f"Versão:      {base.VERSAO_SCANTAILOR} (commit {base.COMMIT_SCANTAILOR})\n"
@@ -129,6 +130,13 @@ def testar_a_dll() -> str:
         raise ErroDeCompilacao(f"A DLL abriu, mas falhou: {resultado.motivo} ({resultado.detalhe_tecnico})")
     if resultado.imagem[20, 20] != 255 or resultado.imagem[150, 150] != 0:
         raise ErroDeCompilacao("A DLL abriu, mas o resultado da imagem de prova está errado.")
+    # Item 2.1: o dividir responde (folha em branco: uma página, sem erro).
+    from core import dividir_scantailor as ds
+
+    dividido = ds.achar(np.full((400, 300), 255, np.uint8), 150, biblioteca=biblioteca)
+    if not dividido.disponivel:
+        raise ErroDeCompilacao(f"A DLL abriu, mas o dividir falhou: {dividido.motivo} "
+                               f"({dividido.detalhe_tecnico})")
     return biblioteca.origem or "?"
 
 

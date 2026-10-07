@@ -11,8 +11,9 @@ O QUE FAZ
     É o mesmo jeito do detector de gravura do item 1.2
     (core/gravura_scantailor.py + st_gravura.dll), feito para receber as
     outras ferramentas sem refazer nada: cada ferramenta é um módulo em core/
-    que pede a função aqui (hoje: core/pontinhos_scantailor.py, limpar
-    pontinhos). Ver "Duas DLLs" em terceiros/scantailor-advanced/LEIA-ME.md.
+    que pede a função aqui (core/pontinhos_scantailor.py, limpar
+    pontinhos; core/dividir_scantailor.py, dividir a folha). Ver "Duas
+    DLLs" em terceiros/scantailor-advanced/LEIA-ME.md.
 
     Recompilar: .venv\\Scripts\\python.exe compilar_st_ferramentas.py
 
@@ -51,7 +52,8 @@ _log = logging.getLogger(__name__)
 CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 
 # Tem de bater com ST_FERRAMENTAS_VERSAO_API em st_ferramentas.h.
-VERSAO_API = 1
+# 1 = so os pontinhos; 2 (06/10/2026) = + dividir (st_ferramentas_dividir).
+VERSAO_API = 2
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -71,6 +73,16 @@ ASSINATURAS = {
         ctypes.c_int, ctypes.c_int,                                  # dpi x, y
         ctypes.c_double,                                             # força
         ctypes.c_void_p, ctypes.c_int,                               # saída, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.1 (06/10/2026): dividir a folha (core/dividir_scantailor.py).
+    "st_ferramentas_dividir": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int,                                                # modo (LayoutType)
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int),  # tipo, numero de cortes
+        ctypes.POINTER(ctypes.c_double),                             # cortes (8 numeros)
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
 }
