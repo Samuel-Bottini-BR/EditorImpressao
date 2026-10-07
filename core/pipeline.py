@@ -39,7 +39,7 @@ from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
-from core import linhas_do_texto, misto
+from core import dividir_scantailor, linhas_do_texto, misto, pontinhos_scantailor
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
@@ -124,7 +124,15 @@ def analisar_projeto(
 
             img = pagina_para_array(doc, indice, dpi=DPI_ANALISE)
 
-            lombada = detectar_lombada(img) if projeto.dividir_folhas else Lombada(0.5, 0.0, False)
+            # Item 2.1: dividir so com o livro marcado (G2 (a)), pelo jeito
+            # escolhido; o corte da sobra so na folha que nao vai ser dividida
+            # (G3 (b), desligado de fabrica).
+            lombada = (achar_divisao(img, projeto.dividir_como, DPI_ANALISE)
+                       if projeto.dividir_folhas else Lombada(0.5, 0.0, False))
+            vai_dividir_esta = projeto.dividir_folhas and lombada.e_paisagem
+            sobra = (achar_sobra(img, DPI_ANALISE)
+                     if getattr(projeto, "cortar_sobra", False) and not vai_dividir_esta
+                     else None)
             inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
             recorte = (detectar_bordas(img, dpi=DPI_ANALISE) if projeto.cortar_bordas
                        else Recorte.inteiro())
@@ -135,12 +143,13 @@ def analisar_projeto(
 
             folha = ConfigFolha(
                 indice=indice,
-                dividir=projeto.dividir_folhas and lombada.e_paisagem,
+                dividir=vai_dividir_esta,
                 posicao_corte=lombada.posicao,
                 confianca_corte=lombada.confianca,
                 angulo_detectado=inclinacao.angulo,
                 confianca_angulo=inclinacao.confianca,
                 e_paisagem=lombada.e_paisagem,
+                sobra=sobra,
             )
             folha.alertas = analise.analisar_folha(
                 img, lombada, inclinacao, recorte,
@@ -196,6 +205,175 @@ def analisar_projeto(
         doc.close()
 
 
+# ---------------------------------------------------------------------------
+# Item 2.1: dividir pelo jeito escolhido, e o corte da sobra do ScanTailor
+# ---------------------------------------------------------------------------
+
+def jeito_de_dividir(projeto: Projeto, folha: ConfigFolha) -> str:
+    """O jeito que vale nesta folha: o dela (ConfigFolha.dividir_como) ou o
+    do livro (Projeto.dividir_como). Codigos de core/dividir_scantailor."""
+    return dividir_scantailor.jeito_valido(
+        folha.dividir_como or getattr(projeto, "dividir_como", None))
+
+
+def achar_divisao(img: np.ndarray, jeito: str, dpi: float,
+                  forcar: bool = False) -> Lombada:
+    """Onde dividir a folha `img` (ja girada como vai ser usada), pelo jeito
+    pedido. Devolve uma core.dividir.Lombada: `e_paisagem` diz se a folha
+    deve ser dividida, `posicao` onde.
+
+    "programa": core.dividir.detectar_lombada (como sempre: folha deitada,
+        mais larga que 1,2 x a altura, dividida na lombada).
+    "scantailor": o automatico do ScanTailor (core/dividir_scantailor.py):
+        folha mais larga que alta = duas paginas, no lugar que ele acha. A
+        confianca fica 1,0 (o ScanTailor nao da uma); o alerta "conferir"
+        sai quando a divisao fica longe do meio (analise.LOMBADA_INCERTA,
+        core.dividir.FAIXA_CONFIAVEL). Sem a DLL, cai no jeito do programa
+        (o motivo vai para o log).
+    forcar=True (a pessoa mandou dividir ESTA folha): o ScanTailor divide
+        mesmo a folha em pe (modo "duas paginas"); o do programa procura a
+        lombada perto do meio como se a folha fosse deitada.
+
+    Arriscado: o dpi tem de ser o da imagem (o ScanTailor mede em pontos a
+    300 e a 150 DPI)."""
+    if dividir_scantailor.jeito_valido(jeito) == dividir_scantailor.JEITO_SCANTAILOR:
+        modo = (dividir_scantailor.MODO_DUAS_PAGINAS if forcar
+                else dividir_scantailor.MODO_AUTOMATICO)
+        resultado = dividir_scantailor.achar(img, dpi, modo)
+        if resultado.disponivel:
+            posicao = dividir_scantailor.posicao_da_divisao(resultado)
+            if posicao is None:
+                return Lombada(0.5, 0.0, False)
+            return Lombada(float(posicao), 1.0, True)
+        _log.warning("dividir do ScanTailor indisponivel, usando o do programa: %s (%s)",
+                     resultado.motivo, resultado.detalhe_tecnico)
+    lombada = detectar_lombada(img)
+    if forcar and not lombada.e_paisagem:
+        # folha em pe que a pessoa mandou dividir: a mesma busca, numa copia
+        # esticada para parecer deitada (so a posicao, em fracao, interessa)
+        altura, largura = img.shape[:2]
+        esticada = cv2.resize(img, (max(largura, int(altura * 1.5)), altura),
+                              interpolation=cv2.INTER_AREA)
+        achada = detectar_lombada(esticada)
+        lombada = Lombada(achada.posicao, achada.confianca, True)
+    return lombada
+
+
+def achar_sobra(img: np.ndarray, dpi: float) -> tuple[float, float] | None:
+    """O corte da sobra do ScanTailor na folha `img`: (esquerda, direita) em
+    fracao da largura, ou None (nada a cortar, ou a DLL indisponivel - ai a
+    folha sai sem esse corte, como antes).
+
+    Pelo AUTOMATICO do ScanTailor (o que ele faz sozinho num projeto novo, e o
+    que o Samuel viu no D3 antes de decidir G3 (b)): so ha sobra quando ele
+    acha que a folha e UMA pagina com a beirada da vizinha ("uma pagina +
+    sobra"). Escolhido em vez do modo "uma pagina + sobra" FORCADO porque, no
+    teste de 06/10 (relatorios/conferir/dividir-2026-10-06), o forcado, numa
+    folha de livro aberto, tomou a dobra do meio por beirada e cortou fora
+    uma pagina inteira, e na tabela do Opus Majus 256 cortou colunas. Custo:
+    folha deitada de uma pagina so (Siebmacher) nao ganha corte da sobra (o
+    automatico a toma por duas paginas). Arriscado: trocar o modo sem refazer
+    esse teste."""
+    resultado = dividir_scantailor.achar(img, dpi, dividir_scantailor.MODO_AUTOMATICO)
+    if not resultado.disponivel:
+        _log.warning("corte da sobra do ScanTailor indisponivel: %s (%s)",
+                     resultado.motivo, resultado.detalhe_tecnico)
+        return None
+    return dividir_scantailor.sobra_da_folha(resultado)
+
+
+def faixa_da_sobra(folha: ConfigFolha, pagina: ConfigPagina,
+                   projeto: Projeto | None) -> tuple[float, float] | None:
+    """A parte da folha (esquerda, direita, em fracao da largura) que fica
+    depois do corte da sobra NESTA pagina, ou None quando nao corta.
+
+    So corta com o livro marcado (Projeto.cortar_sobra), em pagina que nao
+    vem de folha dividida, com a sobra achada na analise e a folha sem giro
+    de 90 graus (a sobra foi medida na folha como veio; girada, ela ja nao
+    vale - o giro desliga o corte da sobra nessa folha). Arriscado: mudar
+    esta regra sem mudar as chaves das previas (ela entra em
+    _chave_da_geometria, _entradas_do_preparo, _chave_das_linhas e
+    ui/tarefas.py)."""
+    if projeto is None or not getattr(projeto, "cortar_sobra", False):
+        return None
+    if getattr(folha, "sobra", None) is None:
+        return None
+    if folha.dividir and pagina.metade != METADE_INTEIRA:
+        return None
+    if int(folha.rotacao) % 360 != 0:
+        return None
+    try:
+        a, b = (float(v) for v in folha.sobra)
+    except (TypeError, ValueError):
+        return None
+    if not 0.0 <= a < b <= 1.0 or b - a < 0.2:
+        return None
+    return (a, b)
+
+
+def _cortar_a_sobra(img: np.ndarray, faixa: tuple[float, float] | None) -> np.ndarray:
+    """Fica so a faixa de colunas (fatia, sem copiar). Sem faixa, a imagem
+    como veio. A conta das colunas e a de core/zonas_na_folha (fracao vezes
+    largura); arredondar muda menos de um ponto."""
+    if faixa is None:
+        return img
+    largura = img.shape[1]
+    x0 = max(0, min(largura - 1, int(round(faixa[0] * largura))))
+    x1 = max(x0 + 1, min(largura, int(round(faixa[1] * largura))))
+    return img[:, x0:x1]
+
+
+def recalcular_divisao(projeto: Projeto, indice_folha: int, jeito: str,
+                       forcar: bool = False) -> Lombada:
+    """A divisao da folha `indice_folha` por outro jeito, na hora (a aba
+    "Onde cortar", quando a pessoa troca o jeito so desta folha). Abre o PDF,
+    desenha a folha a DPI_ANALISE (como a analise), gira como a folha esta
+    girada e acha a divisao. Leva uns decimos de segundo. Levanta ErroPDF se
+    o livro nao abre."""
+    folha = projeto.folhas[indice_folha]
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        img = pagina_para_array(doc, indice_folha, dpi=DPI_ANALISE)
+    finally:
+        doc.close()
+    if folha.rotacao:
+        img = girar_90(img, folha.rotacao)
+    return achar_divisao(img, jeito, DPI_ANALISE, forcar=forcar)
+
+
+def trazer_divisao_da_analise(salvo: Projeto, fresco: Projeto) -> int:
+    """O trabalho salvo volta por cima da analise nova (ui/janela_principal.
+    _analise_pronta). Se a pessoa mudou, na tela "O que fazer", o JEITO de
+    dividir do livro ou o corte da sobra, o salvo traria as posicoes velhas.
+    Aqui vem da analise nova:
+      - o corte da sobra do livro e a sobra de cada folha (nao ha sobra feita
+        a mao);
+      - com o jeito do livro trocado: a posicao da divisao das folhas que
+        seguem o livro (ConfigFolha.dividir_como None) e que continuam
+        divididas do mesmo jeito (uma folha com "nao dividir esta" fica como
+        a pessoa deixou).
+    Devolve quantas folhas tiveram a divisao trocada. So chamar quando o
+    salvo combina com o fresco (projetos.combina_com: as mesmas folhas e as
+    mesmas paginas em cada folha)."""
+    salvo.cortar_sobra = bool(getattr(fresco, "cortar_sobra", False))
+    for f_salva, f_nova in zip(salvo.folhas, fresco.folhas):
+        f_salva.sobra = f_nova.sobra
+    jeito_antes = dividir_scantailor.jeito_valido(getattr(salvo, "dividir_como", None))
+    jeito_agora = dividir_scantailor.jeito_valido(getattr(fresco, "dividir_como", None))
+    salvo.dividir_como = jeito_agora
+    if jeito_antes == jeito_agora:
+        return 0
+    trocadas = 0
+    for f_salva, f_nova in zip(salvo.folhas, fresco.folhas):
+        if f_salva.dividir_como is not None or f_salva.dividir != f_nova.dividir:
+            continue
+        f_salva.posicao_corte = f_nova.posicao_corte
+        f_salva.confianca_corte = f_nova.confianca_corte
+        f_salva.e_paisagem = f_nova.e_paisagem
+        trocadas += 1
+    return trocadas
+
+
 def _partes_da_folha(img: np.ndarray, folha: ConfigFolha) -> list[tuple[str, np.ndarray]]:
     """Divide a folha se for o caso. Não aplica filtro nem recorte."""
     if not folha.dividir:
@@ -209,7 +387,8 @@ def _partes_da_folha(img: np.ndarray, folha: ConfigFolha) -> list[tuple[str, np.
 # ---------------------------------------------------------------------------
 
 def preparar_para_recorte(
-    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina
+    img_folha: np.ndarray, folha: ConfigFolha, pagina: ConfigPagina,
+    projeto: Projeto | None = None,
 ) -> np.ndarray:
     """Gira e divide a folha, mas NUNCA corta bordas nem endireita.
 
@@ -230,7 +409,10 @@ def preparar_para_recorte(
     if folha.dividir and pagina.metade != METADE_INTEIRA:
         esq, dir_ = dividir_imagem(img, folha.posicao_corte)
         img = esq if pagina.metade == METADE_ESQUERDA else dir_
-    return img
+    # Item 2.1 (G3 (b)): o corte da sobra do ScanTailor, ainda na etapa
+    # "dividir" (onde o ScanTailor o faz), antes de cortar as bordas. Sem o
+    # projeto (quem chama de fora), nada muda.
+    return _cortar_a_sobra(img, faixa_da_sobra(folha, pagina, projeto))
 
 
 def preparar_metade(
@@ -306,7 +488,7 @@ def _preparar_metade_e_geometria(
     """
     from core.zonas_na_folha import geometria_do_desenho
 
-    inteira = preparar_para_recorte(img_folha, folha, pagina)
+    inteira = preparar_para_recorte(img_folha, folha, pagina, projeto)
 
     if geometria is None:
         geometria = _geometria_guardada(folha, pagina, projeto)
@@ -336,7 +518,8 @@ def _preparar_metade_e_geometria(
         img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
         folha.posicao_corte if dividida else None,
         pagina.metade if dividida else METADE_INTEIRA,
-        tuple(recorte) if cortou else None, float(angulo) if girar else 0.0)
+        tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
+        sobra=faixa_da_sobra(folha, pagina, projeto))
     return img, desenho
 
 
@@ -426,6 +609,7 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
         dividir, round(float(folha.posicao_corte), 6) if dividir else None,
         pagina.metade if dividir else None, bool(projeto.cortar_bordas),
         bool(projeto.endireitar), recorte, pagina.angulo_manual,
+        faixa_da_sobra(folha, pagina, projeto),        # item 2.1
     )
 
 
@@ -452,7 +636,7 @@ def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projet
     with _TRANCA_GEOMETRIAS:
         if chave in _GEOMETRIAS:
             return
-    geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina), pagina, projeto,
+    geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina, projeto), pagina, projeto,
                            dpi=projeto.qualidade_dpi)
     with _TRANCA_GEOMETRIAS:
         _GEOMETRIAS[chave] = geometria
@@ -874,7 +1058,7 @@ def _geometria_da_folha_como_veio(doc, folha: ConfigFolha, pagina: ConfigPagina,
     _guardar_geometria(folha, pagina, projeto, grande)
     geometria = _geometria_guardada(folha, pagina, projeto)
     if geometria is None:     # arquivo sem chave (nao existe no disco): so calcula
-        geometria = _geometria(preparar_para_recorte(grande, folha, pagina), pagina, projeto,
+        geometria = _geometria(preparar_para_recorte(grande, folha, pagina, projeto), pagina, projeto,
                                dpi=projeto.qualidade_dpi)
     return geometria
 
@@ -925,8 +1109,10 @@ def renderizar_pagina(
             _guardar_geometria(folha, pagina, projeto, img_folha)
     # item 1.2: o DPI de verdade desta imagem e o do scan, para o detector de
     # gravura (so custam alguma coisa quando a pagina ainda nao tem marcacao)
+    # e para o limpar pontinhos do ScanTailor (06/10/2026; milissegundos: a
+    # conta do desenho e pela area, o do scan fica guardado por folha)
     dpi_desenho = dpi_scan = None
-    if _vai_detectar(projeto, pagina):
+    if _vai_detectar(projeto, pagina) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
@@ -977,7 +1163,8 @@ def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proj
     recorte = None if pagina.recorte is None else tuple(float(v) for v in pagina.recorte)
     return (int(folha.rotacao) % 360, bool(folha.dividir), float(folha.posicao_corte),
             pagina.metade, int(pagina.folha), recorte, pagina.angulo_manual,
-            bool(projeto.cortar_bordas), bool(projeto.endireitar), int(projeto.qualidade_dpi))
+            bool(projeto.cortar_bordas), bool(projeto.endireitar), int(projeto.qualidade_dpi),
+            faixa_da_sobra(folha, pagina, projeto))       # item 2.1
 
 
 def converter_zonas_do_livro(
@@ -1076,6 +1263,34 @@ def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
                 and (not pagina.selecao or _gravura_a_refazer(projeto, pagina)))
 
 
+def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """_filtrar vai usar o limpar pontinhos do ScanTailor nesta pagina (o
+    Preto e branco com "pouco", "normal" ou "muito")? So serve para medir o
+    DPI de verdade so quando precisa. Errar para "sim" so custa milissegundos."""
+    return bool(projeto.limpar and pagina.filtro == PRETO_E_BRANCO
+                and pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
+                in pontinhos_scantailor.DO_SCANTAILOR)
+
+
+def pontinhos_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                        dpi: float | None = None,
+                        dpi_do_scan: float | None = None) -> "pontinhos_scantailor.Pontinhos":
+    """O "Limpar pontinhos" desta pagina pronto para o filtro (decisao do
+    Samuel, 06/10/2026, P7): a escolha que vale nela (dela ou do livro;
+    pontinhos_scantailor.escolha_da_pagina) e o DPI de verdade de `img` (a
+    pagina ja preparada) - dpi e o do desenho (_dpi_do_desenho) e dpi_do_scan
+    o que o PDF diz (_dpi_do_scan); nos PDFs de "72 DPI" o DPI e acertado
+    como no detector de gravura (pontinhos_scantailor.dpi_para_os_pontinhos).
+    Sem dpi, o filtro estima pela altura. Publica: a tela ampliada e o
+    montar_misto.py tambem usam."""
+    escolha = pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
+    dpi_certo = None
+    if escolha in pontinhos_scantailor.DO_SCANTAILOR and dpi:
+        dpi_certo = pontinhos_scantailor.dpi_para_os_pontinhos(
+            img.shape[1], img.shape[0], dpi, dpi_do_scan)
+    return pontinhos_scantailor.Pontinhos(escolha, dpi_certo)
+
+
 def _dpi_do_desenho(doc, indice: int, img_folha: np.ndarray) -> float | None:
     """O DPI em que a folha `indice` foi desenhada em img_folha (a folha
     inteira, antes de girar, dividir e cortar).
@@ -1137,7 +1352,10 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
 
     dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
-    ScanTailor precisa deles; item 1.2).
+    ScanTailor precisa deles; item 1.2) e para o "Limpar pontinhos" do
+    Preto e branco e do "So as letras" (pontinhos_da_pagina; decisao do
+    Samuel de 06/10/2026, P7; de fabrica core/pontinhos_scantailor.PADRAO,
+    que desde 07/10 nunca e o do ScanTailor).
 
     O MESMO para a previa (renderizar_pagina) e o PDF (processar): antes era
     escrito duas vezes, igual. Devolve (imagem, monocromatica); sem "Limpar a
@@ -1184,15 +1402,17 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         _anotar_tinta_forte_fora(pagina, False)
         return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, img), False
     selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
+    # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
+    pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)
     if pagina.filtro == PRETO_E_BRANCO:
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
         if opcoes is not None:
-            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes)
+            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes, pontinhos)
     _anotar_tinta_forte_fora(pagina, False)
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, selecao,
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
-        algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
+        algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pontinhos,
         decoracao_em_preto_e_branco=bool(
             getattr(projeto, "pb_decoracao_em_preto_e_branco", False)),
     )
@@ -1251,13 +1471,15 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
     recorte = tuple(round(float(v), 4) for v in pagina.recorte) if pagina.recorte else None
     return (arquivo, pagina.metade, folha.rotacao, folha.dividir,
             round(float(folha.posicao_corte), 4), recorte, pagina.angulo_manual,
-            projeto.dividir_folhas, projeto.cortar_bordas, projeto.endireitar)
+            projeto.dividir_folhas, projeto.cortar_bordas, projeto.endireitar,
+            faixa_da_sobra(folha, pagina, projeto))       # item 2.1
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
-                      opcoes) -> tuple[np.ndarray, bool]:
+                      opcoes, pontinhos=True) -> tuple[np.ndarray, bool]:
     """O Preto e branco so nas letras (core.misto.aplicar_misto) com as
-    escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto).
+    escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto) e o "Limpar
+    pontinhos" dela (`pontinhos`, de pontinhos_da_pagina).
 
     A e C precisam das linhas de texto: core.linhas_do_texto (o docTR, uma
     vez por pagina; guardadas por _chave_das_linhas, a previa e o PDF usam as
@@ -1274,7 +1496,7 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
             linhas, altura_linha = misto.mascara_das_linhas(resultados, img.shape)
     medidas: dict = {}
     saida = misto.aplicar_misto(
-        img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pagina.despeckle,
+        img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pontinhos,
         pagina.clareza_melhorar, pagina.intensidade_magico,
         papel_da_gravura_branco=opcoes.papel_da_gravura == misto.PAPEL_BRANCO,
         letras_na_moldura=opcoes.letras_na_moldura,
@@ -1488,7 +1710,7 @@ def renderizar_pagina_para_recorte(
     ajustado - girada e dividida, nunca cortada. Ver `preparar_para_recorte`."""
     folha = projeto.folhas[pagina.folha]
     img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
-    return preparar_para_recorte(img_folha, folha, pagina)
+    return preparar_para_recorte(img_folha, folha, pagina, projeto)
 
 
 # ---------------------------------------------------------------------------
@@ -1792,7 +2014,8 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             if _precisa_de_geometria(pagina, projeto):
                 _guardar_geometria(folha, pagina, projeto, img_folha)
             dpi_desenho = dpi_scan = None
-            if _vai_detectar(projeto, pagina):     # item 1.2 (ver renderizar_pagina)
+            if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
+                    or _vai_limpar_pelo_scantailor(projeto, pagina)):
                 dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                 dpi_scan = _dpi_do_scan(doc, folha)
             img, desenho = _preparar_metade_e_geometria(
@@ -1866,7 +2089,13 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     partes: list[str] = []
 
     if projeto.dividir_folhas:
-        partes.append(f"dividir as {total_folhas} folhas em {total_folhas * 2} páginas")
+        # item 2.1: diz o jeito (o texto mora em core/dividir_scantailor)
+        jeito = dividir_scantailor.NOMES_DOS_JEITOS[
+            dividir_scantailor.jeito_valido(getattr(projeto, "dividir_como", None))]
+        partes.append(f"dividir as {total_folhas} folhas em {total_folhas * 2} páginas "
+                      f"(jeito: {jeito})")
+    if getattr(projeto, "cortar_sobra", False):
+        partes.append("cortar a beirada da folha vizinha (o corte da sobra do ScanTailor)")
     if projeto.endireitar:
         partes.append("endireitar as tortas")
     if projeto.cortar_bordas:

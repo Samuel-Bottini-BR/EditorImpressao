@@ -53,10 +53,11 @@ def misto_da_pagina(doc, projeto, pagina, **opcoes):
     """(misto, monocromatica, preparada, selecao, segundos_do_misto) de uma
     pagina do projeto ja analisado. opcoes: as de core.misto.aplicar_misto
     (papel_da_gravura_branco, foto_em_cinza). O ajuste do Preto e branco e o
-    da pagina (forca_preto, algoritmo_preto_branco, despeckle)."""
+    da pagina (forca_preto, algoritmo_preto_branco) e o "Limpar pontinhos"
+    dela (core.pipeline.pontinhos_da_pagina, com o DPI pedido; 06/10/2026)."""
     from core.filtros import ORIGINAL
     from core.misto import aplicar_misto
-    from core.pipeline import renderizar_pagina
+    from core.pipeline import pontinhos_da_pagina, renderizar_pagina
 
     antes = pagina.filtro
     pagina.filtro = ORIGINAL
@@ -68,7 +69,8 @@ def misto_da_pagina(doc, projeto, pagina, **opcoes):
     inicio = time.perf_counter()
     misto, mono = aplicar_misto(
         preparada, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco,
-        pagina.despeckle, pagina.clareza_melhorar, pagina.intensidade_magico, **opcoes)
+        pontinhos_da_pagina(projeto, pagina, preparada, projeto.qualidade_dpi),
+        pagina.clareza_melhorar, pagina.intensidade_magico, **opcoes)
     return misto, mono, preparada, selecao, time.perf_counter() - inicio
 
 

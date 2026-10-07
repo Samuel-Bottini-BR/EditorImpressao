@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer do verificador, 2a rodada: dividir (2.1)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador, 2ª rodada: consertos do item 2.1 (dividir), 06/10/2026</h1>
+<p><strong>PRONTO PARA JUNTAR, com duas ressalvas pequenas de tela. Os cinco consertos fazem o que prometem.</strong></p>
+<ol>
+<li><strong>Nenhuma folha some mais.</strong> O Gradus Primus do Samuel (cópia) sai com <strong>139 páginas, iguais ponto a ponto às do <code>fase-1</code></strong>, e a página de rosto voltou. No livro novo, quem apaga a página da esquerda e aperta "não dividir esta" fica com a folha inteira no PDF, uma vez só.</li>
+<li><strong>O contador</strong> da janela "Confirmar e processar" bate com o PDF.</li>
+<li><strong>A dica e o aviso</strong> dizem a coisa certa.</li>
+<li><strong>A linha azul</strong> some na folha não dividida, na tela normal e na ampliada.</li>
+</ol>
+<p><strong>Não é "aprovado":</strong> só o Samuel marca.</p>
+<p><strong>O que foi conferido:</strong> ramo <code>fase2-dividir</code>, commit <code>5b7ac75</code> (consertos <code>e93c085</code>, <code>b2fd46d</code>, <code>ad66613</code>, <code>2da12de</code>, <code>11c3f10</code>, <code>21724a4</code>, <code>5b7ac75</code>). Comparei com o <code>fase-1</code> (<code>a5ac122</code>), em cópias <code>git archive</code>.</p>
+<p><strong>Pasta de dados:</strong> todos os scripts e o programa pilotado rodaram com pasta de dados e TEMP próprios, em <code>verificador-2\dados_teste</code> e <code>verificador-2\trabalho\tmp</code>. O canal do piloto também ficou dentro do projeto. Conferi no fim:</p>
+<ul>
+<li>o <code>erros.log</code> do Samuel continua com 7989 linhas e a mesma soma do começo desta rodada;</li>
+<li>o <code>projeto.json</code> do Gradus dele continua com a data de 18/07.</li>
+</ul>
+<p>Nada foi apagado fora do projeto.</p>
+<h2>Item por item</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gradus Primus do Samuel (cópia), 139 páginas</td>
+<td>máquina + janela</td>
+<td><strong>Bom.</strong> Sem janela: a divisão é a mesma, e as 139 prévias e as 139 páginas do PDF são iguais às do <code>fase-1</code>. Na janela: o programa abriu a cópia e processou 139 páginas. Elas são iguais, a 72 e a 150 DPI, às 139 do <code>fase-1</code> processado na janela na rodada anterior. A página 3 é a página de rosto, "Curso Básico de Latim, Gradus Primus" (c7). A janela de confirmar dizia "139 páginas vão para o PDF, e 1 foram apagadas"</td>
+</tr>
+<tr>
+<td>Caso b3: livro novo, apagar a esquerda + "não dividir esta"</td>
+<td>janela</td>
+<td><strong>Bom.</strong> Na folha 4 (Hugon 241), apaguei a página da esquerda na aba Filtro e apertei "não dividir esta". A página da direita <strong>continua viva</strong> e leva a folha inteira; as 8 folhas estão no PDF (c1). No PDF, a página 7 é a folha 4 inteira (0,07 a 1,0 da largura), uma vez só</td>
+</tr>
+<tr>
+<td>"dividir esta" de volta</td>
+<td>janela</td>
+<td><strong>Bom.</strong> Na mesma folha, volta a dividir. A esquerda continua apagada e sai a metade da direita. Ctrl+Z, Ctrl+Z e Ctrl+Y trocaram dividida e não dividida certo, sem mexer nas páginas apagadas</td>
+</tr>
+<tr>
+<td>Restaurar a metade escondida não repete a folha</td>
+<td>janela + PDF</td>
+<td><strong>Bom no PDF, com ressalva na tela.</strong> No Opus 256, "não dividir esta" apagou a metade da direita (esquerda viva). Depois, "restaurar página" na aba Filtro trouxe a da direita de volta. O PDF continuou com o Opus <strong>uma vez só</strong> (13 páginas). A ressalva está abaixo</td>
+</tr>
+<tr>
+<td>Contador da janela Confirmar = PDF</td>
+<td>janela</td>
+<td><strong>Bom.</strong> Livro de dividir: "13 páginas vão para o PDF, e 1 foram apagadas", e o PDF saiu com <strong>13</strong> (c6). Gradus: 139 e 139. Casei cada página do PDF com a folha de onde veio: nenhuma repetida, nenhuma faltando</td>
+</tr>
+<tr>
+<td>Textos novos</td>
+<td>janela</td>
+<td><strong>Bom.</strong> Dica do "dividir esta" na folha que entrou inteira: "Esta folha entrou como uma página só: o jeito de dividir do livro não achou duas páginas nela, e aqui não dá para dividi-la." Aviso ao trocar só o jeito: "…Você trocou o jeito de dividir do livro (de “o do ScanTailor” para “o do programa”), e o jeito novo divide outras folhas." (c5). Ao desmarcar a caixinha, continua "Isso acontece quando se muda a opção “Dividir folhas ao meio”"</td>
+</tr>
+<tr>
+<td>Linha azul</td>
+<td>janela</td>
+<td><strong>Bom.</strong> Na folha não dividida, nada de linha nem de "arraste", na aba Onde cortar (c1, c2) e na tela ampliada ("Ver de perto", c3). Na folha dividida, a linha aparece. Arrastei sobre o Opus não dividido e a posição do corte não mudou (0,4975 antes e depois)</td>
+</tr>
+<tr>
+<td>Projetos antigos montados pelo <code>fase-1</code> (Hugon, Siebmacher)</td>
+<td>máquina</td>
+<td><strong>Bom.</strong> A divisão é a mesma, e as 50 + 22 prévias e páginas do PDF são iguais às do <code>fase-1</code>. A única diferença é a de propósito: a folha com "não dividir esta" do programa de antes sai uma vez, e não duas</td>
+</tr>
+<tr>
+<td>Testes</td>
+<td>máquina</td>
+<td><strong>pytest arquivo por arquivo (102 arquivos): 1830 passaram, 59 pularam, 0 falharam.</strong> Destes, <code>test_dividir_na_tela</code> deu 8, <code>test_dividir_no_programa</code> 18, <code>test_dividir_scantailor</code> 13, <code>test_projetos</code> 24, <code>test_modelos</code> 4 e <code>test_visualizador</code> 70. <strong><code>teste_botoes.py</code></strong>, numa cópia <code>git archive</code> do <code>5b7ac75</code> com <code>saida_teste</code> própria: <strong>166 ações, 0 falhas</strong></td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>A metade restaurada aparece na tela, mas não no PDF.</strong> Depois de "não dividir esta" e "restaurar página" na metade da direita, a tira de miniaturas mostra a folha <strong>duas vezes</strong> (páginas 13 e 14). A aba Filtro, nessa página, diz "Esta página vai sair em Original.", mas ela não vai para o PDF (c4). O PDF e o contador estão certos. Só a tela promete uma página a mais. É raro: a pessoa tem de restaurar de propósito a metade que o "não dividir" escondeu.</li>
+<li><strong>"dividir esta" desfaz uma página apagada à mão.</strong> Se a pessoa apagou a metade da direita <strong>antes</strong> de "não dividir esta", o "dividir esta" a traz de volta, porque devolve a da direita quando a esquerda está viva. Já estava assim na rodada anterior. O Ctrl+Z resolve.</li>
+<li><strong>Não refiz nesta rodada</strong> a "volta ao dividir esta" com a esquerda viva. Esse caso foi testado na rodada anterior (Opus: não dividir, Ctrl+Z e Ctrl+Y) e está nos testes novos do implementador. O conserto só acrescentou a condição "esquerda viva".</li>
+<li><strong>Pergunta que o implementador deixou para o Samuel:</strong> numa folha que deixou de ser dividida, com uma metade apagada, sai a folha <strong>inteira</strong>. É o que o <code>fase-1</code> fazia, e nada some. Concordo que é o mais seguro.</li>
+<li><strong>Continua valendo, da rodada anterior, para a pergunta do jeito de fábrica:</strong> no livro aberto (Hugon e Penido), "o do programa" corta letras em muitas folhas, e "o do ScanTailor" ficou na dobra. O "abrir" com o do ScanTailor fica uns 50% mais lento.</li>
+</ol>
+<h2>Imagens</h2>
+<p><img alt="A esquerda apagada + não dividir esta: a folha fica, sem linha azul" src="imagens/c1-esquerda-apagada-e-nao-dividir-a-folha-fica.jpg" /></p>
+<p><img alt="Não dividir esta no Opus: sem linha azul" src="imagens/c2-nao-dividir-sem-linha-azul.jpg" /></p>
+<p><img alt="Ver de perto numa folha não dividida: sem linha" src="imagens/c3-tela-ampliada-sem-linha.jpg" /></p>
+<p><img alt="Metade restaurada: a tira mostra o Opus duas vezes, o PDF só uma" src="imagens/c4-metade-restaurada-aparece-na-tira.jpg" /></p>
+<p><img alt="O aviso diz que o jeito mudou" src="imagens/c5-aviso-diz-o-jeito.jpg" /></p>
+<p><img alt="Confirmar: 13 páginas, e o PDF saiu com 13" src="imagens/c6-confirmar-13-paginas.jpg" /></p>
+<p><img alt="Gradus Primus: a página de rosto voltou ao PDF" src="imagens/c7-gradus-pagina-de-rosto-de-volta.jpg" /></p>
+<h2>Arquivos</h2>
+<ul>
+<li><strong>Parecer:</strong> <code>parecer-verificador-2-dividir.html</code> (<code>.md</code>, <code>.pdf</code>).</li>
+<li><strong>Dados</strong> (<code>dados/</code>):</li>
+<li>projetos antigos, <code>fase-1</code> × novo: <code>antigo/</code>;</li>
+<li>pytest: <code>pytest_partes.log</code>;</li>
+<li>fim do <code>teste_botoes.py</code>: <code>teste_botoes_fim.txt</code>;</li>
+<li>de que folha veio cada página do PDF da janela: <code>pdf_gui1.json</code>.</li>
+<li><strong>Scripts:</strong> <code>scripts/</code>. O <code>py.sh</code> roda tudo com a pasta de dados própria.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 23:21</p>
+</body>
+</html>

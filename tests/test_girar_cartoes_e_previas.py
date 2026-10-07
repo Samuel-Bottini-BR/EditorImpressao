@@ -472,8 +472,12 @@ def _preparo(janela, indice):
     return (f.rotacao, f.dividir, f.posicao_corte, p.recorte, p.angulo_manual)
 
 
+# "alternar_dividir" saiu daqui no item 2.1 (06/10/2026): este livro e de
+# folhas em pe, cada uma uma pagina so, e nelas o "nao dividir esta" agora so
+# marca a folha como conferida (nao ha metade para apagar). O mesmo teste,
+# num livro dividido, esta em tests/test_dividir_na_tela.py.
 @pytest.mark.parametrize("mudanca", [
-    "mover_corte", "corte_em_todas", "alternar_dividir", "mover_recorte", "sem_recorte",
+    "mover_corte", "corte_em_todas", "mover_recorte", "sem_recorte",
     "recorte_em_todas", "mover_angulo", "angulo_zero",
 ])
 def test_pendencia_d2_corte_e_angulo_esperam_as_zonas_antigas(janela, pasta, monkeypatch,

@@ -24,6 +24,11 @@ from typing import Any
 
 from core.filtros import FILTROS, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO
 from core.misto import FORA_DO_TEXTO_PADRAO, LETRAS_NA_MOLDURA_PADRAO, PAPEL_DA_GRAVURA_PADRAO
+from core.pontinhos_scantailor import DESLIGADO as PONTINHOS_DESLIGADO
+from core.pontinhos_scantailor import DO_PROJETO_ANTIGO as PONTINHOS_DO_PROJETO_ANTIGO
+from core.pontinhos_scantailor import PADRAO as PONTINHOS_PADRAO
+from core.dividir_scantailor import JEITO_DO_PROJETO_ANTIGO as DIVIDIR_DO_PROJETO_ANTIGO
+from core.dividir_scantailor import JEITO_DO_LIVRO_NOVO as DIVIDIR_DO_LIVRO_NOVO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -45,6 +50,26 @@ class ConfigFolha:
     e_paisagem: bool = True
     alertas: list[str] = field(default_factory=list)
     revisada: bool = False
+
+    # Item 2.1 (decisao G2 (a) do Samuel, 05/10/2026: "trocando numa folha se
+    # um ficar ruim"): o jeito de dividir SO desta folha, por cima do livro
+    # (Projeto.dividir_como). None = segue o livro. Valores: os codigos de
+    # core/dividir_scantailor.JEITOS ("programa", "scantailor"); nunca o
+    # texto da tela. Quem troca: a aba "Onde cortar" (ui/tela_conferir.py),
+    # que recalcula posicao_corte com o jeito novo
+    # (core.pipeline.recalcular_divisao). Projeto antigo nao tem o campo:
+    # volta None (segue o livro, que no projeto antigo e "programa").
+    dividir_como: str | None = None
+
+    # Item 2.1 (decisao G3 (b) do Samuel, 05/10/2026: o "corte da sobra" do
+    # ScanTailor como opcao, desligada): (esquerda, direita) = a parte da
+    # folha que FICA, em fracao da largura, achada pelo automatico do
+    # ScanTailor quando ele ve "uma pagina + sobra" (core.pipeline.achar_sobra,
+    # core/dividir_scantailor.sobra_da_folha). So vale
+    # com Projeto.cortar_sobra ligado, em folha NAO dividida e sem giro de 90
+    # (core.pipeline.faixa_da_sobra). None = nada a cortar. Calculada na
+    # analise; nao ha como mexer a mao (ainda). Seguro mudar: nada aqui.
+    sobra: tuple[float, float] | None = None
 
     @property
     def precisa_revisao(self) -> bool:
@@ -79,10 +104,23 @@ class ConfigPagina:
     # "usar em todas". Só importa quando `filtro` é Preto e branco.
     algoritmo_preto_branco: str = "auto"
 
-    # Problema 5 do plano: a limpeza de poeirinha (manchas pretas pequenas
-    # demais pra ser letra) rodava sempre, escondida - agora é um controle
-    # visível. True mantém o comportamento de sempre.
-    despeckle: bool = True
+    # "Limpar pontinhos" SO desta pagina, por cima do livro
+    # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
+    # (06/10/2026, P7): "Eu vou poder ligar e desligar esse apagador de
+    # pingos? e selecionar o pouco, normal ou muito, ou selecionar o nosso".
+    # Valores: os codigos internos de core.pontinhos_scantailor.ESCOLHAS
+    # ("desligado", "nosso", "st_pouco", "st_normal", "st_muito"; nunca o
+    # texto da tela, que e provisorio). So muda a imagem da pagina em Preto
+    # e branco (com ou sem "So as letras").
+    #
+    # Substitui a caixinha "limpar poeirinha" (Problema 5 do plano, campo
+    # `despeckle`: True = o nosso, False = nada). Projeto antigo abre como
+    # estava (_migrar): a pagina com a caixinha desligada vira "desligado"; a
+    # ligada segue o livro, que no projeto antigo e "nosso"
+    # (Projeto.de_dicionario). O "despeckle" do arquivo antigo e descartado
+    # depois de traduzido. Seguro mudar: nada aqui (None e o que faz a
+    # pagina seguir o livro).
+    limpar_pontinhos: str | None = None
 
     # Os tres ajustes de filtro, cada um de 0 a 100 com 50 no meio. Ficam
     # separados de proposito: trocar de filtro e voltar tem que devolver o
@@ -207,7 +245,27 @@ class Projeto:
     caminho_saida: str = ""
     nome: str = ""
 
-    dividir_folhas: bool = True
+    # Dividir as folhas em duas paginas. Decisao do Samuel G2 (a),
+    # 05/10/2026: "So quando o Kaique pedir, livro a livro" - livro NOVO nao
+    # divide (False de fabrica; ate o item 2.1 era True). Projeto salvo antes
+    # sempre tem o campo e volta como estava (de_dicionario).
+    dividir_folhas: bool = False
+    # Item 2.1: COMO dividir, quando dividir_folhas esta ligado: "o do
+    # programa" (core/dividir.py, procura a lombada nas folhas deitadas) ou
+    # "o do ScanTailor" (core/dividir_scantailor.py, o automatico dele).
+    # Codigos de core/dividir_scantailor.JEITOS. Cada folha pode trocar so
+    # nela (ConfigFolha.dividir_como). Projeto salvo antes do campo volta com
+    # "programa" (era o unico jeito; de_dicionario). De fabrica, no livro
+    # NOVO: "o do ScanTailor" - decisao do Samuel de 07/10/2026 ("Ao marcar
+    # 'Dividir folhas ao meio', qual jeito vem escolhido?" -> "O do
+    # ScanTailor"); ate entao era "programa". O do programa continua opcao.
+    # Arriscado: trocar o setdefault de de_dicionario junto (o projeto
+    # antigo reaberto mudaria de jeito).
+    dividir_como: str = DIVIDIR_DO_LIVRO_NOVO
+    # Item 2.1, decisao G3 (b): o "corte da sobra" do ScanTailor (tira a
+    # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
+    # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.
+    cortar_sobra: bool = False
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
@@ -302,6 +360,23 @@ class Projeto:
     misto_papel_da_gravura: str = PAPEL_DA_GRAVURA_PADRAO
     misto_letras_na_moldura: str = LETRAS_NA_MOLDURA_PADRAO
 
+    # "Limpar pontinhos" do livro, no Preto e branco e no "So as letras".
+    # De fabrica: PONTINHOS_PADRAO (core/pontinhos_scantailor.PADRAO). Em
+    # 06/10 (P7) era o do ScanTailor "pouco"; desde 07/10 o do ScanTailor so
+    # vale quando a pessoa escolhe ("so deve ser usado se for selecionado
+    # junto, e nao como automatico junto do preto e branco", Samuel), e o de
+    # fabrica e "nosso" ou "desligado" (falta o Samuel dizer qual; a troca e
+    # uma linha la). Escolhas: desligado, o nosso, pouco, normal, muito
+    # (core/pontinhos_scantailor.py,
+    # ESCOLHAS: codigos internos, nunca o texto da tela). Cada pagina pode
+    # trocar so nela (ConfigPagina.limpar_pontinhos). Projeto salvo antes
+    # deste campo abre com "nosso" (de_dicionario): era o que ele usava, e um
+    # livro ja conferido nao muda sem o Samuel saber. Quem mostra:
+    # ui/tela_opcoes.py (grupo dos filtros) e ui/tela_conferir.py (aba
+    # Filtro); quem usa: core/pipeline._filtrar. Seguro mudar: nada aqui (o
+    # de fabrica mora em core/pontinhos_scantailor.PADRAO).
+    limpar_pontinhos: str = PONTINHOS_PADRAO
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
@@ -315,7 +390,56 @@ class Projeto:
 
     @property
     def paginas_ativas(self) -> list[ConfigPagina]:
-        return [p for p in self.paginas if not p.apagada]
+        """As paginas que vao para o PDF.
+
+        Uma folha NAO dividida sai UMA vez, inteira, se alguma das paginas
+        dela nao estiver apagada; so some do PDF se a pessoa apagou TODAS as
+        paginas da folha. As outras paginas saem se nao estiverem apagadas.
+
+        Historia (item 2.1, 06/10/2026): o "nao dividir esta" da aba Onde
+        cortar so desligava ConfigFolha.dividir, e as DUAS paginas da folha
+        continuavam na lista - cada uma desenhava a folha inteira, e o PDF
+        saia com a folha repetida. O primeiro conserto tirava sempre a metade
+        da direita, e uma folha com a ESQUERDA apagada sumia inteira do PDF
+        (parecer do verificador, 06/10: a pagina de rosto do Gradus Primus do
+        Samuel). Agora fica a primeira pagina NAO apagada da folha (que o
+        pipeline desenha inteira: a metade so vale com a folha dividida), e e
+        o mesmo que o fase-1 fazia quando so uma das duas estava viva. A
+        lista de paginas nao muda (o desfazer e as acoes guardam paginas pela
+        posicao). Ver metade_sobrando. Arriscado: voltar a escolher sempre a
+        mesma metade (a folha some quando ela esta apagada)."""
+        ativas: list[ConfigPagina] = []
+        folhas_que_ja_sairam: set[int] = set()
+        for pagina in self.paginas:
+            if pagina.apagada:
+                continue
+            if self._de_folha_nao_dividida(pagina):
+                if pagina.folha in folhas_que_ja_sairam:
+                    continue
+                folhas_que_ja_sairam.add(pagina.folha)
+            ativas.append(pagina)
+        return ativas
+
+    def _de_folha_nao_dividida(self, pagina: ConfigPagina) -> bool:
+        """A pagina e uma das metades (esquerda/direita) de uma folha que nao
+        esta dividida? (ela desenha a folha inteira)"""
+        if pagina.metade == METADE_INTEIRA or not 0 <= pagina.folha < len(self.folhas):
+            return False
+        return not self.folhas[pagina.folha].dividir
+
+    def metade_sobrando(self, pagina: ConfigPagina) -> bool:
+        """A pagina fica fora do PDF por repetir a folha? (folha nao
+        dividida, e outra pagina nao apagada da mesma folha, antes dela, ja
+        leva a folha inteira). Pagina apagada nao conta como sobrando: ela
+        esta fora por ter sido apagada."""
+        if pagina.apagada or not self._de_folha_nao_dividida(pagina):
+            return False
+        for outra in self.paginas:
+            if outra is pagina:
+                return False
+            if outra.folha == pagina.folha and not outra.apagada:
+                return True
+        return False
 
     @property
     def total_apagadas(self) -> int:
@@ -404,13 +528,25 @@ class Projeto:
         """
         from core.zonas_na_folha import do_disco
 
-        folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, f))
+        folhas = [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, _migrar_folha(f)))
                   for f in dados.pop("folhas", [])]
         # D2 (02/10/2026): "zonas_na_folha" volta para fracao da pagina aqui,
         # com a geometria anotada (core/zonas_na_folha.do_disco). Pagina de
         # projeto antigo (sem o campo) passa como sempre.
         paginas = [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(do_disco(p))))
                    for p in dados.pop("paginas", [])]
+        # "Limpar pontinhos" (06/10/2026): projeto gravado antes deste campo
+        # usava o nosso - continua com ele (a pagina que tinha a caixinha
+        # "limpar poeirinha" desligada ja voltou "desligado", em _migrar).
+        dados.setdefault("limpar_pontinhos", PONTINHOS_DO_PROJETO_ANTIGO)
+        # Item 2.1 (06/10/2026): o livro novo nao divide mais (dividir_folhas
+        # de fabrica virou False), mas o projeto salvo SEM o campo (nao
+        # deveria existir: asdict sempre grava) era de quando o de fabrica
+        # dividia - continua dividindo. E o jeito de dividir de quem nao tem
+        # o campo e o do programa (era o unico). "O programa vai ter que ser
+        # capaz de abrir arquivos de versoes anteriores" (Samuel, 05/10).
+        dados.setdefault("dividir_folhas", True)
+        dados.setdefault("dividir_como", DIVIDIR_DO_PROJETO_ANTIGO)
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas
@@ -420,6 +556,16 @@ class Projeto:
 def _so_campos_conhecidos(classe, dados: dict[str, Any]) -> dict[str, Any]:
     validos = {c.name for c in fields(classe)}
     return {k: v for k, v in dados.items() if k in validos}
+
+
+def _migrar_folha(dados: dict[str, Any]) -> dict[str, Any]:
+    """Uma folha do projeto.json de volta ao formato da memoria: a sobra
+    (item 2.1) e tupla, e o JSON grava lista. Folha de projeto antigo (sem
+    os campos do item 2.1) passa como esta: os campos ganham o padrao."""
+    sobra = dados.get("sobra")
+    if isinstance(sobra, list):
+        dados["sobra"] = tuple(sobra) if len(sobra) == 2 else None
+    return dados
 
 
 def _migrar(dados: dict[str, Any]) -> dict[str, Any]:
@@ -445,6 +591,13 @@ def _migrar(dados: dict[str, Any]) -> dict[str, Any]:
     # campos que nao existiam na versao anterior
     for campo in ("clareza_melhorar", "intensidade_magico"):
         dados.setdefault(campo, 50)
+
+    # A caixinha "limpar poeirinha" (despeckle) virou a escolha "Limpar
+    # pontinhos" (06/10/2026). Pagina gravada antes, com a caixinha
+    # desligada, continua sem limpar; ligada, segue o livro (que no projeto
+    # antigo e "nosso", ver Projeto.de_dicionario) - sai igual a antes.
+    if "limpar_pontinhos" not in dados and dados.get("despeckle") is False:
+        dados["limpar_pontinhos"] = PONTINHOS_DESLIGADO
 
     return dados
 

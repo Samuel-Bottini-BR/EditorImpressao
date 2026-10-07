@@ -1,0 +1,12 @@
+st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)
+Tem: limpar pontinhos (Despeckle) e dividir a folha (PageLayoutEstimator, item 2.1).
+
+Código:      https://github.com/ScanTailor-Advanced/scantailor-advanced
+Versão:      v1.2.1 (commit 5eaac1884cdcabb6514bd632114f688631bd8dbc)
+Fontes:      terceiros/scantailor-advanced/src (licença GPL-3, ver LEIA-ME.md lá)
+Ligação:     terceiros/scantailor-advanced/ligacao-ferramentas
+Qt:          6.11.1 (o do PySide6; a DLL usa as DLLs do Qt da pasta do PySide6)
+Compilador:  MSVC 19.44.35229.0
+Compilada:   06/10/2026 20:10 por compilar_st_ferramentas.py
+Tamanho:     178176 bytes
+SHA-256:     6f734df93bdd6d3005139909596b80821d3e232a3872d8e9628bfff9f493b728

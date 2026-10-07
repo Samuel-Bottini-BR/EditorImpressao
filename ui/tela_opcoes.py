@@ -46,6 +46,27 @@ outras opcoes desta tela, vale ao clicar "Conferir" e nao entra no desfazer
 (05/10): "So as letras" e os botoes so aparecem com o Preto e branco escolhido
 (a escolha fica guardada quando some), e o resumo diz o que o "So as letras"
 vai fazer (core.pipeline._frase_do_so_as_letras).
+
+Limpar pontinhos (decisao do Samuel de 06/10/2026, P7; provisorio ate o
+layout, excecao da gerente para o implementador mexer aqui): no grupo dos
+filtros, embaixo da caixinha das molduras, a lista "Limpar pontinhos:"
+(desligado · o nosso · pouco · normal · muito) do livro
+(Projeto.limpar_pontinhos; de fabrica core/pontinhos_scantailor.PADRAO -
+"o nosso" ou "desligado"; o do ScanTailor so quando escolhido, decisao
+do Samuel de 07/10/2026). Como o "So
+as letras", so aparece com o Preto e branco escolhido (a escolha fica
+guardada quando some), vale ao clicar "Conferir" e nao entra no desfazer.
+Cada pagina pode trocar so nela, na aba Filtro (ui/tela_conferir.py).
+
+Dividir (item 2.1, decisoes do Samuel G2 (a) e G3 (b) de 05/10/2026;
+provisorio ate o layout, pedido da gerente): "Dividir folhas ao meio" vem
+DESMARCADA no livro novo ("So quando o Kaique pedir, livro a livro"). Marcada,
+aparece embaixo dela a lista "Jeito de dividir:" (o do programa · o do
+ScanTailor; Projeto.dividir_como). Logo depois, a caixinha "Cortar a beirada
+da folha vizinha" (o corte da sobra do ScanTailor, Projeto.cortar_sobra),
+desmarcada de fabrica, que vale nas folhas que nao forem divididas. Como as
+outras opcoes, vale ao clicar "Conferir" e nao entra no desfazer. Cada folha
+pode trocar o jeito so nela, na aba Onde cortar (ui/tela_conferir.py).
 """
 
 from __future__ import annotations
@@ -67,7 +88,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import dividir_scantailor
 from core import misto
+from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
 from core.filtros import (
     MAGICO_PRO,
@@ -142,6 +165,30 @@ class TelaOpcoes(QWidget):
 
         self.cx_dividir = self._caixa(
             "Dividir folhas ao meio", "esta folha tem 2 páginas do livro", opcoes
+        )
+        # Item 2.1 (G2 (a)): o jeito de dividir do livro, so a vista com a
+        # caixinha marcada (ver _mudou). Textos em core/dividir_scantailor.
+        self.linha_jeito_dividir = QWidget()
+        linha = QHBoxLayout(self.linha_jeito_dividir)
+        linha.setContentsMargins(26, 2, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_jeito_dividir = QLabel("Jeito de dividir:")
+        self.combo_jeito_dividir = QComboBox()
+        for jeito in dividir_scantailor.JEITOS:
+            self.combo_jeito_dividir.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+        self.combo_jeito_dividir.setToolTip(
+            "Onde a folha é dividida: o do programa procura a lombada no meio das "
+            "folhas deitadas; o do ScanTailor divide toda folha mais larga que alta, "
+            "na dobra que ele acha. Dá para trocar numa folha só, na aba Onde cortar.")
+        self.combo_jeito_dividir.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_jeito_dividir)
+        linha.addWidget(self.combo_jeito_dividir)
+        linha.addStretch()
+        opcoes.addWidget(self.linha_jeito_dividir)
+        # Item 2.1 (G3 (b)): o corte da sobra do ScanTailor, desligado de fabrica
+        self.cx_cortar_sobra = self._caixa(
+            "Cortar a beirada da folha vizinha",
+            "o corte da sobra do ScanTailor, nas folhas que não forem divididas", opcoes
         )
         opcoes.addWidget(_separador())
 
@@ -225,8 +272,8 @@ class TelaOpcoes(QWidget):
         rodape.addWidget(self.botao_conferir)
         camadas.addLayout(rodape)
 
-        for caixa in (self.cx_dividir, self.cx_limpar, self.cx_endireitar,
-                      self.cx_cortar, self.cx_cadernos):
+        for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
+                      self.cx_endireitar, self.cx_cortar, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -323,9 +370,32 @@ class TelaOpcoes(QWidget):
         self.escolhas_misto.botao_mais.toggled.connect(
             lambda _v: self._acertar_altura_da_rolagem())
 
+        # "Limpar pontinhos" do livro (decisao do Samuel, 06/10/2026, P7):
+        # de fabrica pontinhos.PADRAO (desde 07/10/2026 nunca o do
+        # ScanTailor, que so vale quando escolhido; ver la); opcoes:
+        # desligado, o nosso, pouco, normal, muito. Numa linha inteira da
+        # grade, embaixo da caixinha das molduras, so com o Preto e branco escolhido (ver
+        # _mudou). Seguro mudar: os textos (core/pontinhos_scantailor.py).
+        self.linha_pontinhos = QWidget()
+        linha = QHBoxLayout(self.linha_pontinhos)
+        linha.setContentsMargins(0, 6, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_pontinhos = QLabel(pontinhos.ROTULO_NA_TELA)
+        self.combo_pontinhos = QComboBox()
+        for chave in pontinhos.ESCOLHAS:
+            self.combo_pontinhos.addItem(pontinhos.NOMES_NA_TELA[chave], chave)
+        self.combo_pontinhos.setCurrentIndex(self.combo_pontinhos.findData(pontinhos.PADRAO))
+        self.combo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.rotulo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.combo_pontinhos.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_pontinhos)
+        linha.addWidget(self.combo_pontinhos)
+        linha.addStretch()
+
         linhas = (len(FILTROS_NA_TELA) + 1) // 2
         grade.addWidget(self.escolhas_misto, linhas, 0, 1, 4)
         grade.addLayout(bloco, linhas + 1, 0, 1, 4)
+        grade.addWidget(self.linha_pontinhos, linhas + 2, 0, 1, 4)
         return painel
 
     def _montar_gravuras(self) -> QWidget:
@@ -548,6 +618,11 @@ class TelaOpcoes(QWidget):
         filtro_do_livro = projeto.filtro_padrao
 
         self.cx_dividir.setChecked(projeto.dividir_folhas)
+        # item 2.1: o jeito de dividir e o corte da sobra (projeto em memoria
+        # sem os campos: os de fabrica)
+        self.combo_jeito_dividir.setCurrentIndex(self.combo_jeito_dividir.findData(
+            dividir_scantailor.jeito_valido(getattr(projeto, "dividir_como", None))))
+        self.cx_cortar_sobra.setChecked(bool(getattr(projeto, "cortar_sobra", False)))
         self.cx_limpar.setChecked(projeto.limpar)
         self.cx_endireitar.setChecked(projeto.endireitar)
         self.cx_cortar.setChecked(projeto.cortar_bordas)
@@ -577,6 +652,13 @@ class TelaOpcoes(QWidget):
             getattr(projeto, "misto_fora_do_texto", misto.FORA_DO_TEXTO_PADRAO),
             getattr(projeto, "misto_papel_da_gravura", misto.PAPEL_DA_GRAVURA_PADRAO),
             getattr(projeto, "misto_letras_na_moldura", misto.LETRAS_NA_MOLDURA_PADRAO))
+        # "Limpar pontinhos" do livro (projeto em memoria sem o campo: o de
+        # fabrica). Sem sinal: quem grava no projeto e o _mudou logo abaixo,
+        # ja com self.projeto certo.
+        self.combo_pontinhos.blockSignals(True)
+        self.combo_pontinhos.setCurrentIndex(self.combo_pontinhos.findData(
+            pontinhos.escolha_valida(getattr(projeto, "limpar_pontinhos", pontinhos.PADRAO))))
+        self.combo_pontinhos.blockSignals(False)
         # "Mais opcoes" abre sozinho quando alguma das avancadas nao esta no
         # padrao: a pessoa ve o que foi mudado (fechado, ficaria escondido)
         fora_do_padrao = (sensibilidade != 100 or bool(projeto.gravura_mais_sensivel)
@@ -626,6 +708,12 @@ class TelaOpcoes(QWidget):
             return
 
         self.projeto.dividir_folhas = self.cx_dividir.isChecked()
+        # item 2.1: o jeito so aparece com "Dividir" marcada (escondido, fica
+        # guardado); o corte da sobra e independente
+        self.projeto.dividir_como = dividir_scantailor.jeito_valido(
+            self.combo_jeito_dividir.currentData())
+        self.linha_jeito_dividir.setVisible(self.projeto.dividir_folhas)
+        self.projeto.cortar_sobra = self.cx_cortar_sobra.isChecked()
         self.projeto.limpar = self.cx_limpar.isChecked()
         self.projeto.endireitar = self.cx_endireitar.isChecked()
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
@@ -663,6 +751,11 @@ class TelaOpcoes(QWidget):
         # a escolha fica guardada e volta ao escolher o Preto e branco de novo.
         no_preto_e_branco = self.projeto.filtro_padrao == PRETO_E_BRANCO
         self.escolhas_misto.setVisible(no_preto_e_branco)
+        # "Limpar pontinhos" do livro (06/10): como o "So as letras", so a
+        # vista com o Preto e branco; escondida, a escolha fica guardada
+        self.projeto.limpar_pontinhos = pontinhos.escolha_valida(
+            self.combo_pontinhos.currentData())
+        self.linha_pontinhos.setVisible(no_preto_e_branco)
         # P5 (conferencia 11): a caixinha das molduras fica apagada (cinza)
         # enquanto "So as letras" estiver marcada (e a vista), e volta como
         # estava ao desligar - o valor dela nao muda, so nao vale no Misto

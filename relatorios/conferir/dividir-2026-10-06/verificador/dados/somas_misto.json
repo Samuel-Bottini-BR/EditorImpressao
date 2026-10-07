@@ -1,0 +1,899 @@
+{
+"dll": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\geometria\\relatorios\\conferir\\dividir-2026-10-06\\verificador\\trabalho\\misto\\core\\nativo\\st_ferramentas.dll",
+"boecio_p003|pouco|150": [
+true,
+"5f2125883c67a3c04a6e"
+],
+"boecio_p003|pouco|300": [
+true,
+"af85a498c1d8b1b2d293"
+],
+"boecio_p003|normal|150": [
+true,
+"55fa0197c9bb42b5db0f"
+],
+"boecio_p003|normal|300": [
+true,
+"1ded1f005597a229cc25"
+],
+"boecio_p003|muito|150": [
+true,
+"7d25626b7d8ee006cb4a"
+],
+"boecio_p003|muito|300": [
+true,
+"e165e3088a7a558a3b2d"
+],
+"boecio_p003|gravura": [
+true,
+"0301878f8cd43bad3661"
+],
+"boecio_p007|pouco|150": [
+true,
+"af4486fd6e2e434d754d"
+],
+"boecio_p007|pouco|300": [
+true,
+"8e5ac237af0c08a90550"
+],
+"boecio_p007|normal|150": [
+true,
+"544baeb7fb4cb3861af8"
+],
+"boecio_p007|normal|300": [
+true,
+"93f2158e460f6bad2910"
+],
+"boecio_p007|muito|150": [
+true,
+"48e82a9ad1cd37b640ea"
+],
+"boecio_p007|muito|300": [
+true,
+"d6986bc2ac8af48756f4"
+],
+"boecio_p007|gravura": [
+true,
+"854e6937cb336aa41394"
+],
+"boecio_p008|pouco|150": [
+true,
+"82245879ce30850ebf53"
+],
+"boecio_p008|pouco|300": [
+true,
+"66e597cad2a27c6c277e"
+],
+"boecio_p008|normal|150": [
+true,
+"01af9bf44f246371d7f8"
+],
+"boecio_p008|normal|300": [
+true,
+"c42d33a0b7780f3cfe99"
+],
+"boecio_p008|muito|150": [
+true,
+"be100bb8a1114d494292"
+],
+"boecio_p008|muito|300": [
+true,
+"a09a4151d69f43daabd6"
+],
+"boecio_p008|gravura": [
+true,
+"5b43769acd07b3095a30"
+],
+"boecio_p022|pouco|150": [
+true,
+"4418804e6bae1aebfd62"
+],
+"boecio_p022|pouco|300": [
+true,
+"f0517e1b1aac3e07ead4"
+],
+"boecio_p022|normal|150": [
+true,
+"074b14be48f2138350e6"
+],
+"boecio_p022|normal|300": [
+true,
+"e16b3fe8031fa0b93dbb"
+],
+"boecio_p022|muito|150": [
+true,
+"eab41ecdab4ad42df478"
+],
+"boecio_p022|muito|300": [
+true,
+"63e2733503ce136e3c41"
+],
+"boecio_p022|gravura": [
+true,
+"23638f7293a7df9010af"
+],
+"escola_p007|pouco|150": [
+true,
+"9e1af245df66d4dc22ee"
+],
+"escola_p007|pouco|300": [
+true,
+"39b84b65bb8a3d029a7a"
+],
+"escola_p007|normal|150": [
+true,
+"3bf3b696b48f88b47ac8"
+],
+"escola_p007|normal|300": [
+true,
+"108b68698f0d9b77e6d8"
+],
+"escola_p007|muito|150": [
+true,
+"c2efef490acb466bc519"
+],
+"escola_p007|muito|300": [
+true,
+"63d60e1b9694a711fba0"
+],
+"escola_p007|gravura": [
+true,
+"4eb0f18d8cbd275b92f6"
+],
+"escola_p035|pouco|150": [
+true,
+"96ba988cf2cac5cbf9f6"
+],
+"escola_p035|pouco|300": [
+true,
+"96ba988cf2cac5cbf9f6"
+],
+"escola_p035|normal|150": [
+true,
+"edee5f1543b6a51ec78c"
+],
+"escola_p035|normal|300": [
+true,
+"edee5f1543b6a51ec78c"
+],
+"escola_p035|muito|150": [
+true,
+"a24f51b592dd56d827fd"
+],
+"escola_p035|muito|300": [
+true,
+"a24f51b592dd56d827fd"
+],
+"escola_p035|gravura": [
+true,
+"c179f5834713fab1932b"
+],
+"graduale_p221|pouco|150": [
+true,
+"64f014243d6a69a436b5"
+],
+"graduale_p221|pouco|300": [
+true,
+"a0f04ab05df11e1a845e"
+],
+"graduale_p221|normal|150": [
+true,
+"705888f759491a7f2c57"
+],
+"graduale_p221|normal|300": [
+true,
+"5f9ca4c3cff4582a46b3"
+],
+"graduale_p221|muito|150": [
+true,
+"e1eb2f396f47910feaf3"
+],
+"graduale_p221|muito|300": [
+true,
+"72034d72c9af80ce4478"
+],
+"graduale_p221|gravura": [
+true,
+"82ec6a85094be2573612"
+],
+"graduale_p222|pouco|150": [
+true,
+"40cd8f1288ea02ea410b"
+],
+"graduale_p222|pouco|300": [
+true,
+"40cd8f1288ea02ea410b"
+],
+"graduale_p222|normal|150": [
+true,
+"f194f1ed09adc761dd76"
+],
+"graduale_p222|normal|300": [
+true,
+"3a22e6df8fcd6111ee16"
+],
+"graduale_p222|muito|150": [
+true,
+"6e5e3e56e516e3cdc8a5"
+],
+"graduale_p222|muito|300": [
+true,
+"ba4f2f5b39fd5ca768e9"
+],
+"graduale_p222|gravura": [
+true,
+"1b3c97e7b3adbd681791"
+],
+"graduale_p223|pouco|150": [
+true,
+"9c4549c298edce4ef4af"
+],
+"graduale_p223|pouco|300": [
+true,
+"8d801ebdc6d4930779c8"
+],
+"graduale_p223|normal|150": [
+true,
+"7bd8e7f6da659dde236d"
+],
+"graduale_p223|normal|300": [
+true,
+"0e652f696cfdb4ee3875"
+],
+"graduale_p223|muito|150": [
+true,
+"6a7a8686da662347be3a"
+],
+"graduale_p223|muito|300": [
+true,
+"47f7e5ae6351822f85b1"
+],
+"graduale_p223|gravura": [
+true,
+"82ec6a85094be2573612"
+],
+"horas_p011|pouco|150": [
+true,
+"d14a416842512d87a53b"
+],
+"horas_p011|pouco|300": [
+true,
+"882665ded5fcd31e48cf"
+],
+"horas_p011|normal|150": [
+true,
+"e03b0413b7f88a0fbd16"
+],
+"horas_p011|normal|300": [
+true,
+"2a515817eddc8a596ccb"
+],
+"horas_p011|muito|150": [
+true,
+"ce3fa384e4c804caf14c"
+],
+"horas_p011|muito|300": [
+true,
+"cb2abdaea4264a20d5de"
+],
+"horas_p011|gravura": [
+true,
+"223e3f40f797e0041c59"
+],
+"horas_p013|pouco|150": [
+true,
+"eb14ab09094ab2cbc8f8"
+],
+"horas_p013|pouco|300": [
+true,
+"c8dc556e188e33bce768"
+],
+"horas_p013|normal|150": [
+true,
+"107a3161e13ce6d74b70"
+],
+"horas_p013|normal|300": [
+true,
+"fb63932cc34e7feb6d86"
+],
+"horas_p013|muito|150": [
+true,
+"21c7d9eaa064a9395921"
+],
+"horas_p013|muito|300": [
+true,
+"771452d8ace511e40d6d"
+],
+"horas_p013|gravura": [
+true,
+"93650517014cb9ce3b9a"
+],
+"horas_p014|pouco|150": [
+true,
+"f57ea0199e4894c930d6"
+],
+"horas_p014|pouco|300": [
+true,
+"c47f51b2f732354ac88e"
+],
+"horas_p014|normal|150": [
+true,
+"454c11ca77223edf95a2"
+],
+"horas_p014|normal|300": [
+true,
+"aed843450fb4360fefa1"
+],
+"horas_p014|muito|150": [
+true,
+"563d2884296c5680904c"
+],
+"horas_p014|muito|300": [
+true,
+"ba8ae28d03279ebabd2b"
+],
+"horas_p014|gravura": [
+true,
+"958f4062364154fa3b5e"
+],
+"horas_p026|pouco|150": [
+true,
+"f723cbf9fed12cb75b89"
+],
+"horas_p026|pouco|300": [
+true,
+"64df42475e4b64325ea0"
+],
+"horas_p026|normal|150": [
+true,
+"1e0cf84b9f5a756920be"
+],
+"horas_p026|normal|300": [
+true,
+"84c33a1671478658155b"
+],
+"horas_p026|muito|150": [
+true,
+"a020c9eac9e666c7ab37"
+],
+"horas_p026|muito|300": [
+true,
+"d48e682620199e9278f9"
+],
+"horas_p026|gravura": [
+true,
+"bf36139ae0d0c56ebc86"
+],
+"horas_p027|pouco|150": [
+true,
+"5ffb13a6b4bc42ba89fa"
+],
+"horas_p027|pouco|300": [
+true,
+"bd1c591ec36dae042962"
+],
+"horas_p027|normal|150": [
+true,
+"529caf3a3fe84b726cd7"
+],
+"horas_p027|normal|300": [
+true,
+"dbdae181389b519e1715"
+],
+"horas_p027|muito|150": [
+true,
+"0afa0907ab901b9487bb"
+],
+"horas_p027|muito|300": [
+true,
+"70ee93fb273cb1088d31"
+],
+"horas_p027|gravura": [
+true,
+"267fd91a90ba928f49b2"
+],
+"horas_p047|pouco|150": [
+true,
+"74df62045e98b35af9be"
+],
+"horas_p047|pouco|300": [
+true,
+"dd2a73c22a5a7519d52f"
+],
+"horas_p047|normal|150": [
+true,
+"cb2c03ca674320f710ad"
+],
+"horas_p047|normal|300": [
+true,
+"baed7ed5dcbd91204d8b"
+],
+"horas_p047|muito|150": [
+true,
+"fb698154f1128b328426"
+],
+"horas_p047|muito|300": [
+true,
+"fad3c625f107022a020f"
+],
+"horas_p047|gravura": [
+true,
+"788699bdbf68dd27a909"
+],
+"marial_p007|pouco|150": [
+true,
+"d13feab1a86f4c85d8b5"
+],
+"marial_p007|pouco|300": [
+true,
+"d0de1e2eb950a0c7dc7f"
+],
+"marial_p007|normal|150": [
+true,
+"905ec0c734589efa52e3"
+],
+"marial_p007|normal|300": [
+true,
+"1cebd3549fd336df93fa"
+],
+"marial_p007|muito|150": [
+true,
+"cc4aa3f8a91de300185c"
+],
+"marial_p007|muito|300": [
+true,
+"f7aa511a0138724c51ba"
+],
+"marial_p007|gravura": [
+true,
+"cfcbaeec78e8d7c38ad6"
+],
+"opusmajus_p003|pouco|150": [
+true,
+"16c0491bd69f200cdc54"
+],
+"opusmajus_p003|pouco|300": [
+true,
+"0023bd03da36a2cac6e3"
+],
+"opusmajus_p003|normal|150": [
+true,
+"b35daa9fa1bdd817659b"
+],
+"opusmajus_p003|normal|300": [
+true,
+"36590a5ce093a12d8692"
+],
+"opusmajus_p003|muito|150": [
+true,
+"d2e47690f4346036e9f7"
+],
+"opusmajus_p003|muito|300": [
+true,
+"66fb8b75cfd6e1d8a84b"
+],
+"opusmajus_p003|gravura": [
+true,
+"d5517073a5b00669c704"
+],
+"opusmajus_p011|pouco|150": [
+true,
+"064691f8a9abdbdfd008"
+],
+"opusmajus_p011|pouco|300": [
+true,
+"ac718855c5921998b39e"
+],
+"opusmajus_p011|normal|150": [
+true,
+"064691f8a9abdbdfd008"
+],
+"opusmajus_p011|normal|300": [
+true,
+"ac718855c5921998b39e"
+],
+"opusmajus_p011|muito|150": [
+true,
+"68bee8293b5c786af674"
+],
+"opusmajus_p011|muito|300": [
+true,
+"2e06beea9247e1af81df"
+],
+"opusmajus_p011|gravura": [
+true,
+"68748358e253a0008dea"
+],
+"opusmajus_p020|pouco|150": [
+true,
+"40d8d1332258d5adfe01"
+],
+"opusmajus_p020|pouco|300": [
+true,
+"7686d518507ec785d461"
+],
+"opusmajus_p020|normal|150": [
+true,
+"56980a07d5f8a3ceb5ab"
+],
+"opusmajus_p020|normal|300": [
+true,
+"ea7087aad3ec4222ec75"
+],
+"opusmajus_p020|muito|150": [
+true,
+"636d2e81ede624202b07"
+],
+"opusmajus_p020|muito|300": [
+true,
+"8aa951293433cebf679f"
+],
+"opusmajus_p020|gravura": [
+true,
+"57c7b57e7884f63bf767"
+],
+"opusmajus_p165|pouco|150": [
+true,
+"49411a606c483e38121c"
+],
+"opusmajus_p165|pouco|300": [
+true,
+"567741e6afa014d9ba31"
+],
+"opusmajus_p165|normal|150": [
+true,
+"4973710fba7cb33ce826"
+],
+"opusmajus_p165|normal|300": [
+true,
+"4973710fba7cb33ce826"
+],
+"opusmajus_p165|muito|150": [
+true,
+"7c811c4c0f4fd8db16e0"
+],
+"opusmajus_p165|muito|300": [
+true,
+"7c811c4c0f4fd8db16e0"
+],
+"opusmajus_p165|gravura": [
+true,
+"fd510e1ac51a2f6ae1bd"
+],
+"opusmajus_p256|pouco|150": [
+true,
+"25fef92d929dc23845f8"
+],
+"opusmajus_p256|pouco|300": [
+true,
+"67183f7eaecada3f445f"
+],
+"opusmajus_p256|normal|150": [
+true,
+"e3025ed194d0a91892cc"
+],
+"opusmajus_p256|normal|300": [
+true,
+"254dd52cd3cab6795936"
+],
+"opusmajus_p256|muito|150": [
+true,
+"c50a1331b213a4dd75ef"
+],
+"opusmajus_p256|muito|300": [
+true,
+"9a40a5d316dcb22d6e79"
+],
+"opusmajus_p256|gravura": [
+true,
+"19724901d2bf696bb200"
+],
+"palatino_p005|pouco|150": [
+true,
+"53fb208a27692feef42b"
+],
+"palatino_p005|pouco|300": [
+true,
+"090194040e6847f5bc04"
+],
+"palatino_p005|normal|150": [
+true,
+"244b155f9842af714de5"
+],
+"palatino_p005|normal|300": [
+true,
+"7527c88007e4436591e1"
+],
+"palatino_p005|muito|150": [
+true,
+"693db00162f91f267a1c"
+],
+"palatino_p005|muito|300": [
+true,
+"035ad4114feeaab3426c"
+],
+"palatino_p005|gravura": [
+true,
+"fe3c56ef3be606cde5b5"
+],
+"palatino_p007|pouco|150": [
+true,
+"d51416d1aa06188cae34"
+],
+"palatino_p007|pouco|300": [
+true,
+"6aef12f8243ee513dfad"
+],
+"palatino_p007|normal|150": [
+true,
+"3da3a2ac1a3a1c3bf63a"
+],
+"palatino_p007|normal|300": [
+true,
+"8e8952fcd4e979166cd5"
+],
+"palatino_p007|muito|150": [
+true,
+"38efd2c8e726bffca9b6"
+],
+"palatino_p007|muito|300": [
+true,
+"1b480d925bcdb471e43a"
+],
+"palatino_p007|gravura": [
+true,
+"6cd465d51e152c20c55a"
+],
+"palatino_p009|pouco|150": [
+true,
+"961e71fb3fe8f10e1fd0"
+],
+"palatino_p009|pouco|300": [
+true,
+"ff7d3170e06afaeb321b"
+],
+"palatino_p009|normal|150": [
+true,
+"66990e9343bedb830d59"
+],
+"palatino_p009|normal|300": [
+true,
+"c8a2c93614ce9b0be421"
+],
+"palatino_p009|muito|150": [
+true,
+"1f1fab7ffb4e402b4103"
+],
+"palatino_p009|muito|300": [
+true,
+"5ae6e9d162177c48ff51"
+],
+"palatino_p009|gravura": [
+true,
+"6cd465d51e152c20c55a"
+],
+"palatino_p010|pouco|150": [
+true,
+"ee6886788dbeb4463031"
+],
+"palatino_p010|pouco|300": [
+true,
+"ee6886788dbeb4463031"
+],
+"palatino_p010|normal|150": [
+true,
+"b34d6c540d686b405780"
+],
+"palatino_p010|normal|300": [
+true,
+"7d94800ed28b5840328d"
+],
+"palatino_p010|muito|150": [
+true,
+"98657290dda453f7eb4f"
+],
+"palatino_p010|muito|300": [
+true,
+"62fc9f4e42347082508f"
+],
+"palatino_p010|gravura": [
+true,
+"6cd465d51e152c20c55a"
+],
+"palatino_p057|pouco|150": [
+true,
+"ca45e555a959b6ea1a5c"
+],
+"palatino_p057|pouco|300": [
+true,
+"f8be95cf585c739d9e43"
+],
+"palatino_p057|normal|150": [
+true,
+"3074ca8a83e0e0529f6e"
+],
+"palatino_p057|normal|300": [
+true,
+"56188abc157c00a4dd3e"
+],
+"palatino_p057|muito|150": [
+true,
+"0573455fe2b1490ab40b"
+],
+"palatino_p057|muito|300": [
+true,
+"6711813923391299da9e"
+],
+"palatino_p057|gravura": [
+true,
+"6cd465d51e152c20c55a"
+],
+"palatino_p066|pouco|150": [
+true,
+"1cfb8d7e6934cbc6b0c6"
+],
+"palatino_p066|pouco|300": [
+true,
+"99712e6eff4a9c6c45aa"
+],
+"palatino_p066|normal|150": [
+true,
+"3f096657e36f4d6f596b"
+],
+"palatino_p066|normal|300": [
+true,
+"44d445f4bb5323208b68"
+],
+"palatino_p066|muito|150": [
+true,
+"a51c64a6c830e76729c1"
+],
+"palatino_p066|muito|300": [
+true,
+"6631335b5d6710f9fc08"
+],
+"palatino_p066|gravura": [
+true,
+"578192562ac317bc637b"
+],
+"palatino_p067|pouco|150": [
+true,
+"f23d229c12f9a9fbff63"
+],
+"palatino_p067|pouco|300": [
+true,
+"f55e22946c31b4efa29d"
+],
+"palatino_p067|normal|150": [
+true,
+"0ff21d2f8a5bf45c7f0a"
+],
+"palatino_p067|normal|300": [
+true,
+"9edee075e236cfbe46f5"
+],
+"palatino_p067|muito|150": [
+true,
+"d582a69834e578c71304"
+],
+"palatino_p067|muito|300": [
+true,
+"725a2fd5149d1891b735"
+],
+"palatino_p067|gravura": [
+true,
+"6cd465d51e152c20c55a"
+],
+"rhetorica_p018|pouco|150": [
+true,
+"50d528a7bece87f992e4"
+],
+"rhetorica_p018|pouco|300": [
+true,
+"50d528a7bece87f992e4"
+],
+"rhetorica_p018|normal|150": [
+true,
+"50d528a7bece87f992e4"
+],
+"rhetorica_p018|normal|300": [
+true,
+"484d8272a7bdb75a6590"
+],
+"rhetorica_p018|muito|150": [
+true,
+"ce2f4b3f40179858485c"
+],
+"rhetorica_p018|muito|300": [
+true,
+"6c760ce64413d7641d87"
+],
+"rhetorica_p018|gravura": [
+true,
+"a2d6ee7e21dbed294791"
+],
+"rhetorica_p073|pouco|150": [
+true,
+"ef2456312b2a0b1e46fc"
+],
+"rhetorica_p073|pouco|300": [
+true,
+"06be5c6cb6c044dd5bc3"
+],
+"rhetorica_p073|normal|150": [
+true,
+"56b3354dac80d3917915"
+],
+"rhetorica_p073|normal|300": [
+true,
+"69128929d153c6c8639c"
+],
+"rhetorica_p073|muito|150": [
+true,
+"3a5b1e9ffccd2057cb86"
+],
+"rhetorica_p073|muito|300": [
+true,
+"54041545ea4a3ef95e29"
+],
+"rhetorica_p073|gravura": [
+true,
+"a2d6ee7e21dbed294791"
+],
+"siebmacher_p007|pouco|150": [
+true,
+"6f9cc092cc8d5d4bf87b"
+],
+"siebmacher_p007|pouco|300": [
+true,
+"4fc9f74608d4794d60cc"
+],
+"siebmacher_p007|normal|150": [
+true,
+"208df404749476e138bd"
+],
+"siebmacher_p007|normal|300": [
+true,
+"851bc03111365b467ca5"
+],
+"siebmacher_p007|muito|150": [
+true,
+"60cb4e489e61f6f814a7"
+],
+"siebmacher_p007|muito|300": [
+true,
+"d63b44b12ca0ed516a34"
+],
+"siebmacher_p007|gravura": [
+true,
+"223e3b364502d6b4ef72"
+],
+"siebmacher_p009|pouco|150": [
+true,
+"1cdd99f38153c951b3cd"
+],
+"siebmacher_p009|pouco|300": [
+true,
+"320c36e87974cea0e4ce"
+],
+"siebmacher_p009|normal|150": [
+true,
+"320c36e87974cea0e4ce"
+],
+"siebmacher_p009|normal|300": [
+true,
+"eff8d52a7c14e9796e19"
+],
+"siebmacher_p009|muito|150": [
+true,
+"f94e0ec416fb439dcc14"
+],
+"siebmacher_p009|muito|300": [
+true,
+"5ff9ce1e7089da739d13"
+],
+"siebmacher_p009|gravura": [
+true,
+"5b45436693b92bc7cc41"
+]
+}

@@ -43,7 +43,7 @@ branco escolhido, a caixinha "Só as letras" desta página, os três botões
 ("Guardar a tinta forte" / "Tudo em preto e branco" / "Só o texto achado") e o
 "Mais opções" (ui/widgets/escolhas_do_misto.py). A página herda do livro e
 troca só nela (ConfigPagina.misto_*); cada mudança é uma ação do desfazer,
-como o algoritmo e a limpeza de poeirinha. "todas" e "só nas próximas" levam
+como o algoritmo e o "Limpar pontinhos". "todas" e "só nas próximas" levam
 junto as escolhas do Misto desta página. O aviso "Tinta forte fora do texto"
 é acertado como o do fundo tirado. O alerta "Tem cor" some das páginas que
 saem pelo "Só as letras" (a ilustração fica em cor) e volta quando ela é
@@ -52,6 +52,14 @@ desligada, a cada atualização, em todas as páginas
 Com "Só as letras" valendo na página, o cartão "Preto e branco" mostra a
 página como vai sair, com o Misto, desenhada numa tarefa de prévia
 (_cartao_do_misto; bug Misto 2).
+
+Limpar pontinhos (decisão do Samuel de 06/10/2026, P7; provisório até o
+layout, exceção da gerente para o implementador mexer aqui): no bloco AJUSTE,
+só com o Preto e branco, a lista "Limpar pontinhos:" (desligado · o nosso ·
+pouco · normal · muito) no lugar da caixinha "limpar poeirinha". Mostra o que
+vale na página (dela ou do livro: core.pontinhos_scantailor.escolha_da_pagina);
+trocar é uma ação do desfazer só desta página (ConfigPagina.limpar_pontinhos);
+"todas" e "só nas próximas" levam a escolha junto.
 
 Girar a folha (item 2.3, 06/10/2026; provisório até o layout, exceção da
 gerente para o implementador mexer aqui): a barrinha de girar
@@ -62,6 +70,16 @@ ação do desfazer, com a rotação nova de cada folha (_girar_folhas; contas em
 core/girar.py). O menu Página tem os mesmos giros (Ctrl+Esquerda,
 Ctrl+Direita) e o mesmo "aplicar em". A tecla R deixou de girar (era fixa
 aqui e nunca alcançada: a R do Retângulo ganhava).
+
+Dividir (item 2.1, 06/10/2026, decisão G2 (a) do Samuel: "trocando numa
+folha se um ficar ruim"; provisório até o layout, pedido da gerente): na
+linha de botões da aba Onde cortar, a lista "jeito:" (o do programa · o do
+ScanTailor) troca o jeito SÓ desta folha e recalcula a linha azul
+(_trocar_jeito_da_folha; ConfigFolha.dividir_como), numa ação do desfazer;
+só habilitada em folha dividida. Conserto junto: "não dividir esta" apaga na
+mesma ação a metade da direita (antes o PDF saía com a folha repetida); a
+folha que entrou como uma página só não oferece "dividir esta"
+(_alternar_dividir).
 """
 
 from __future__ import annotations
@@ -88,8 +106,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core import analise, girar, linhas_do_texto, misto
-from core.pipeline import acertar_alertas_de_cor, acertar_alertas_do_fundo
+from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
+from core import pontinhos_scantailor as pontinhos
+from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, jeito_de_dividir,
+                           recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -102,8 +122,8 @@ from core.filtros import (
     filtros_do_livro,
     palavra_do_ajuste,
 )
-from historico_acoes import HistoricoAcoes, aplicar, montar_acao
-from modelos import Projeto
+from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
+from modelos import METADE_DIREITA, Projeto
 from registro import registrar_erro
 from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
@@ -594,6 +614,21 @@ class TelaConferir(QWidget):
         linha = self._linha_de_botoes(ABA_CORTE)
         _botao("está certo", linha, self._marcar_revisada)
         self.botao_nao_dividir = _botao("não dividir esta", linha, self._alternar_dividir)
+        # Item 2.1 (G2 (a), "trocando numa folha se um ficar ruim"; provisorio
+        # ate o layout): o jeito de dividir SO desta folha. Trocar recalcula a
+        # linha azul pelo outro jeito (core.pipeline.recalcular_divisao). So
+        # habilitada em folha dividida (_atualizar_botoes).
+        self.rotulo_jeito_da_folha = QLabel("jeito:")
+        linha.addWidget(self.rotulo_jeito_da_folha)
+        self.combo_jeito_da_folha = QComboBox()
+        for jeito in dividir_scantailor.JEITOS:
+            self.combo_jeito_da_folha.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+        self.combo_jeito_da_folha.setToolTip(
+            "Divide esta folha de outro jeito: o do programa ou o do ScanTailor. "
+            "A linha azul vai para onde o outro jeito acha a divisão.")
+        self.combo_jeito_da_folha.currentIndexChanged.connect(
+            lambda _i: self._trocar_jeito_da_folha())
+        linha.addWidget(self.combo_jeito_da_folha)
         _botao("girar", linha, self._girar)
         _botao("usar em todas", linha, self._corte_em_todas)
         linha.addStretch()
@@ -1359,13 +1394,20 @@ class TelaConferir(QWidget):
             self.seletor_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
         self.seletor_algoritmo_pb.currentIndexChanged.connect(self._mudar_algoritmo_pb)
         linha_algoritmo.addWidget(self.seletor_algoritmo_pb, 1)
-        self.caixa_despeckle = QCheckBox("limpar poeirinha")
-        self.caixa_despeckle.setToolTip(
-            "Remove manchas pretas pequenas demais pra ser letra. "
-            "Ligado é o comportamento de sempre."
-        )
-        self.caixa_despeckle.toggled.connect(self._mudar_despeckle)
-        linha_algoritmo.addWidget(self.caixa_despeckle)
+        # "Limpar pontinhos" (decisão do Samuel, 06/10/2026, P7), no lugar
+        # da caixinha "limpar poeirinha": desligado, o nosso, e o do
+        # ScanTailor em pouco/normal/muito. Só aparece com o Preto e branco
+        # (ver _configurar_medidor). Provisório até o layout. Seguro mudar:
+        # os textos (moram em core/pontinhos_scantailor.py).
+        self.rotulo_pontinhos = QLabel(pontinhos.ROTULO_NA_TELA)
+        linha_algoritmo.addWidget(self.rotulo_pontinhos)
+        self.seletor_pontinhos = QComboBox()
+        for chave in pontinhos.ESCOLHAS:
+            self.seletor_pontinhos.addItem(pontinhos.NOMES_NA_TELA[chave], chave)
+        self.seletor_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.rotulo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.seletor_pontinhos.currentIndexChanged.connect(self._mudar_pontinhos)
+        linha_algoritmo.addWidget(self.seletor_pontinhos)
         dentro.addLayout(linha_algoritmo)
 
         # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
@@ -1720,7 +1762,9 @@ class TelaConferir(QWidget):
             img = self.previas.pegar_folha(self.indice_folha, DPI_PREVIA)
             vis = self.visualizadores[ABA_CORTE]
             vis.definir_imagem(img, dono=("folha", self.indice_folha))   # D4
-            vis.definir_corte(self.projeto.folhas[self.indice_folha].posicao_corte)
+            folha = self.projeto.folhas[self.indice_folha]
+            # a linha so aparece em folha dividida (parecer do verificador, 06/10)
+            vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             return
 
@@ -2240,6 +2284,25 @@ class TelaConferir(QWidget):
             self.botao_nao_dividir.setText(
                 "dividir esta" if not folha.dividir else "não dividir esta"
             )
+            # Item 2.1: folha que entrou como uma pagina so (a lista de
+            # paginas nao muda na conferencia) nao tem como ser dividida aqui
+            duas = self._tem_duas_paginas(self.indice_folha)
+            self.botao_nao_dividir.setEnabled(duas)
+            # A aba Onde cortar so existe com "Dividir folhas ao meio" marcada:
+            # a dica nao manda marcar (parecer do verificador, 06/10). Ela diz
+            # por que nao da: o jeito de dividir do livro nao achou duas
+            # paginas nesta folha.
+            self.botao_nao_dividir.setToolTip(
+                "" if duas else "Esta folha entrou como uma página só: o jeito de "
+                "dividir do livro não achou duas páginas nela, e aqui não dá para "
+                "dividi-la.")
+            # o jeito desta folha (sem sinal: so mostrar nao e trocar)
+            self.combo_jeito_da_folha.blockSignals(True)
+            self.combo_jeito_da_folha.setCurrentIndex(self.combo_jeito_da_folha.findData(
+                jeito_de_dividir(self.projeto, folha)))
+            self.combo_jeito_da_folha.blockSignals(False)
+            self.combo_jeito_da_folha.setEnabled(bool(folha.dividir))
+            self.rotulo_jeito_da_folha.setEnabled(bool(folha.dividir))
 
         if ABA_FILTRO in self._abas_ativas:
             pagina = self.projeto.paginas[self.indice_pagina]
@@ -2388,15 +2451,77 @@ class TelaConferir(QWidget):
             f"Linha de corte de todas as {len(indices)} folhas",
         )
 
+    def _tem_duas_paginas(self, indice_folha: int) -> bool:
+        """A folha tem as duas metades na lista de paginas? (so assim ela pode
+        ser dividida ou deixar de ser na conferencia)"""
+        assert self.projeto is not None
+        return sum(1 for p in self.projeto.paginas if p.folha == indice_folha) >= 2
+
     @protegido
     def _alternar_dividir(self) -> None:
+        """"nao dividir esta" / "dividir esta".
+
+        Conserto junto do item 2.1 (06/10/2026): antes so trocava
+        ConfigFolha.dividir, e as duas paginas da folha saiam no PDF, cada uma
+        com a folha inteira (a folha repetida). Hoje quem garante que a folha
+        sai UMA vez e modelos.Projeto.paginas_ativas. Aqui, para a tira de
+        miniaturas nao mostrar a folha duas vezes, a metade da direita e
+        apagada na mesma acao - mas SO quando a da esquerda esta viva (ela
+        leva a folha inteira). Com a esquerda ja apagada, a da direita fica e
+        leva a folha: antes ela era apagada junto e a folha SUMIA do PDF
+        (parecer do verificador, 06/10, imagem b3). "dividir esta" devolve a
+        da direita nas mesmas condicoes (esquerda viva). A lista de paginas
+        nao muda (o desfazer guarda paginas pela posicao). Arriscado: apagar a
+        direita sem olhar a esquerda.
+        Folha que entrou como uma pagina so: nao ha metade para criar; so
+        marca como conferida (e o que a sugestao "nao dividir esta" do alerta
+        "parece ter uma pagina so" quer dizer: ela ja nao e dividida)."""
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
+        if not self._tem_duas_paginas(self.indice_folha):
+            self._marcar_revisada()
+            return
+        dividir = not folha.dividir
+        campos = {"dividir": dividir, "revisada": True}
+        da_folha = [p for p in self.projeto.paginas if p.folha == self.indice_folha]
+        direita = next((p for p in da_folha if p.metade == METADE_DIREITA), None)
+        esquerda_viva = any(not p.apagada for p in da_folha if p is not direita)
+        if direita is not None and esquerda_viva:
+            campos[campo_de_pagina(direita.indice, "apagada")] = not dividir
         self._registrar(
-            "nao_dividir", "folha", [self.indice_folha],
-            {"dividir": not folha.dividir, "revisada": True},
+            "nao_dividir", "folha", [self.indice_folha], campos,
             f"Folha {self.indice_folha + 1}: "
-            + ("dividir" if not folha.dividir else "não dividir"),
+            + ("dividir" if dividir else "não dividir"),
+        )
+
+    @protegido
+    def _trocar_jeito_da_folha(self) -> None:
+        """Item 2.1: a lista "jeito:" da aba Onde cortar. Recalcula a divisao
+        DESTA folha pelo jeito escolhido (uns decimos de segundo: abre a folha
+        a 150 DPI) e grava numa acao so (o desfazer devolve o jeito e a linha
+        de antes). A folha continua dividida (o ScanTailor e chamado no modo
+        "duas paginas"). Escolher o jeito do livro volta a "seguir o livro"
+        (ConfigFolha.dividir_como None)."""
+        assert self.projeto is not None
+        folha = self.projeto.folhas[self.indice_folha]
+        jeito = dividir_scantailor.jeito_valido(self.combo_jeito_da_folha.currentData())
+        if not folha.dividir or jeito == jeito_de_dividir(self.projeto, folha):
+            return
+        from PySide6.QtWidgets import QApplication
+
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            lombada = recalcular_divisao(self.projeto, self.indice_folha, jeito, forcar=True)
+        finally:
+            QApplication.restoreOverrideCursor()
+        do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
+        self._registrar(
+            "jeito_de_dividir", "folha", [self.indice_folha],
+            {"dividir_como": None if jeito == do_livro else jeito,
+             "posicao_corte": round(float(lombada.posicao), 4),
+             "confianca_corte": float(lombada.confianca), "revisada": True},
+            f"Folha {self.indice_folha + 1}: dividir pelo jeito "
+            f"“{dividir_scantailor.NOMES_DOS_JEITOS[jeito]}”",
         )
 
     @protegido
@@ -2708,18 +2833,24 @@ class TelaConferir(QWidget):
         )
 
     @protegido
-    def _mudar_despeckle(self, ligado: bool) -> None:
-        """Problema 5 do plano: limpar poeirinha vira controle visível."""
+    def _mudar_pontinhos(self, indice: int) -> None:
+        """A lista "Limpar pontinhos" da aba Filtro (decisão do Samuel,
+        06/10/2026, P7): a escolha SÓ desta página, como ação do desfazer.
+        Nada acontece se o que já vale nela (dela ou do livro) é esse valor -
+        assim mostrar o valor do livro nunca grava na página."""
         if not self._pronta() or self.projeto is None:
             return
+        novo = self.seletor_pontinhos.itemData(indice)
+        if novo not in pontinhos.ESCOLHAS:
+            return
         pagina = self.projeto.paginas[self.indice_pagina]
-        if ligado == pagina.despeckle:
+        if novo == pontinhos.escolha_da_pagina(self.projeto, pagina):
             return
         self._registrar(
-            "mudar_despeckle", "pagina", [self.indice_pagina],
-            {"despeckle": ligado},
-            f"Limpar poeirinha na página {self.indice_pagina + 1}: "
-            + ("ligado" if ligado else "desligado"),
+            "mudar_pontinhos", "pagina", [self.indice_pagina],
+            {"limpar_pontinhos": novo},
+            pontinhos.FRASE_DO_DESFAZER.format(pagina=self.indice_pagina + 1,
+                                               nome=pontinhos.NOMES_NA_TELA[novo]),
         )
 
     # --- modo Misto ("Só as letras", 05/10/2026) ---------------------------
@@ -2804,7 +2935,8 @@ class TelaConferir(QWidget):
         # não binarizam.
         eh_preto_e_branco = pagina.filtro == PRETO_E_BRANCO
         self.seletor_algoritmo_pb.setVisible(eh_preto_e_branco)
-        self.caixa_despeckle.setVisible(eh_preto_e_branco)
+        self.rotulo_pontinhos.setVisible(eh_preto_e_branco)
+        self.seletor_pontinhos.setVisible(eh_preto_e_branco)
         # modo Misto: so no Preto e branco; mostra o que vale nesta pagina
         # (dela ou do livro), sem virar acao no desfazer
         self.escolhas_misto.setVisible(eh_preto_e_branco)
@@ -2817,9 +2949,12 @@ class TelaConferir(QWidget):
             self.seletor_algoritmo_pb.blockSignals(True)
             self.seletor_algoritmo_pb.setCurrentIndex(max(0, indice))
             self.seletor_algoritmo_pb.blockSignals(False)
-            self.caixa_despeckle.blockSignals(True)
-            self.caixa_despeckle.setChecked(pagina.despeckle)
-            self.caixa_despeckle.blockSignals(False)
+            # o que vale nesta página (dela ou do livro), sem virar ação
+            escolha = pontinhos.escolha_da_pagina(self.projeto, pagina)
+            self.seletor_pontinhos.blockSignals(True)
+            self.seletor_pontinhos.setCurrentIndex(
+                max(0, self.seletor_pontinhos.findData(escolha)))
+            self.seletor_pontinhos.blockSignals(False)
         self._medir_de_novo_a_barra()
 
     def _medir_de_novo_a_barra(self) -> None:
@@ -2968,7 +3103,8 @@ class TelaConferir(QWidget):
              "clareza_melhorar": pagina.clareza_melhorar,
              "intensidade_magico": pagina.intensidade_magico,
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             "despeckle": pagina.despeckle,
+             # "Limpar pontinhos" DESTA pagina (None = segue o livro)
+             "limpar_pontinhos": pagina.limpar_pontinhos,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} em todas as {len(indices)} páginas",
@@ -2986,7 +3122,8 @@ class TelaConferir(QWidget):
              "clareza_melhorar": pagina.clareza_melhorar,
              "intensidade_magico": pagina.intensidade_magico,
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             "despeckle": pagina.despeckle,
+             # "Limpar pontinhos" DESTA pagina (None = segue o livro)
+             "limpar_pontinhos": pagina.limpar_pontinhos,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",

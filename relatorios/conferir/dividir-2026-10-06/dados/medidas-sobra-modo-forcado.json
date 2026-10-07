@@ -1,0 +1,1128 @@
+[
+ {
+  "nome": "siebmacher_p007",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.5685,
+    "sobra": null,
+    "segundos": 0.015,
+    "paginas_px": [
+     [
+      347,
+      471
+     ],
+     [
+      263,
+      471
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.735,
+    "sobra": null,
+    "segundos": 0.09,
+    "paginas_px": [
+     [
+      448,
+      471
+     ],
+     [
+      162,
+      471
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.735,
+    "sobra": null,
+    "segundos": 0.032,
+    "paginas_px": [
+     [
+      448,
+      471
+     ],
+     [
+      162,
+      471
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.033524,
+     0.956361
+    ],
+    "segundos": 0.033,
+    "paginas_px": [
+     [
+      563,
+      471
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/siebmacher_p007.jpg"
+ },
+ {
+  "nome": "siebmacher_p009",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.5747,
+    "sobra": null,
+    "segundos": 0.005,
+    "paginas_px": [
+     [
+      350,
+      471
+     ],
+     [
+      259,
+      471
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.7442,
+    "sobra": null,
+    "segundos": 0.03,
+    "paginas_px": [
+     [
+      453,
+      471
+     ],
+     [
+      156,
+      471
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.7442,
+    "sobra": null,
+    "segundos": 0.032,
+    "paginas_px": [
+     [
+      453,
+      471
+     ],
+     [
+      156,
+      471
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.047225,
+     0.958702
+    ],
+    "segundos": 0.035,
+    "paginas_px": [
+     [
+      555,
+      471
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/siebmacher_p009.jpg"
+ },
+ {
+  "nome": "opusmajus_p256",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      903,
+      761
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.4975,
+    "sobra": null,
+    "segundos": 0.088,
+    "paginas_px": [
+     [
+      449,
+      761
+     ],
+     [
+      454,
+      761
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.4975,
+    "sobra": null,
+    "segundos": 0.087,
+    "paginas_px": [
+     [
+      449,
+      761
+     ],
+     [
+      454,
+      761
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.223343,
+     0.837618
+    ],
+    "segundos": 0.087,
+    "paginas_px": [
+     [
+      554,
+      761
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/opusmajus_p256.jpg"
+ },
+ {
+  "nome": "escola_p007",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      781,
+      1149
+     ]
+    ]
+   },
+   "B": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.1,
+    "paginas_px": [
+     [
+      781,
+      1149
+     ]
+    ]
+   },
+   "C": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.022127,
+     0.944076
+    ],
+    "segundos": 0.164,
+    "paginas_px": [
+     [
+      720,
+      1149
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.022127,
+     0.944076
+    ],
+    "segundos": 0.074,
+    "paginas_px": [
+     [
+      720,
+      1149
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/escola_p007.jpg"
+ },
+ {
+  "nome": "escola_p035",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      835,
+      1154
+     ]
+    ]
+   },
+   "B": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.083,
+    "paginas_px": [
+     [
+      835,
+      1154
+     ]
+    ]
+   },
+   "C": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.098615,
+     0.874144
+    ],
+    "segundos": 0.172,
+    "paginas_px": [
+     [
+      648,
+      1154
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.098615,
+     0.874144
+    ],
+    "segundos": 0.104,
+    "paginas_px": [
+     [
+      648,
+      1154
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/escola_p035.jpg"
+ },
+ {
+  "nome": "graduale_p221",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      1468,
+      2065
+     ]
+    ]
+   },
+   "B": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.324,
+    "paginas_px": [
+     [
+      1468,
+      2065
+     ]
+    ]
+   },
+   "C": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.034227,
+     0.898393
+    ],
+    "segundos": 0.61,
+    "paginas_px": [
+     [
+      1269,
+      2065
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.034227,
+     0.898393
+    ],
+    "segundos": 0.339,
+    "paginas_px": [
+     [
+      1269,
+      2065
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/graduale_p221.jpg"
+ },
+ {
+  "nome": "graduale_p222",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      1468,
+      2133
+     ]
+    ]
+   },
+   "B": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.312,
+    "paginas_px": [
+     [
+      1468,
+      2133
+     ]
+    ]
+   },
+   "C": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.218387,
+     0.981853
+    ],
+    "segundos": 0.572,
+    "paginas_px": [
+     [
+      1120,
+      2133
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.218387,
+     0.981853
+    ],
+    "segundos": 0.28,
+    "paginas_px": [
+     [
+      1120,
+      2133
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/graduale_p222.jpg"
+ },
+ {
+  "nome": "horas_p011",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      1565,
+      2210
+     ]
+    ]
+   },
+   "B": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.405,
+    "paginas_px": [
+     [
+      1565,
+      2210
+     ]
+    ]
+   },
+   "C": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.019531,
+     0.979034
+    ],
+    "segundos": 0.817,
+    "paginas_px": [
+     [
+      1501,
+      2210
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.019531,
+     0.979034
+    ],
+    "segundos": 0.405,
+    "paginas_px": [
+     [
+      1501,
+      2210
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/horas_p011.jpg"
+ },
+ {
+  "nome": "palatino_p005",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.0,
+    "paginas_px": [
+     [
+      531,
+      810
+     ]
+    ]
+   },
+   "B": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.038,
+    "paginas_px": [
+     [
+      531,
+      810
+     ]
+    ]
+   },
+   "C": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.077,
+    "paginas_px": [
+     [
+      531,
+      810
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": null,
+    "segundos": 0.066,
+    "paginas_px": [
+     [
+      531,
+      810
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/palatino_p005.jpg"
+ },
+ {
+  "nome": "hugon_f001",
+  "folha": 1,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.4433,
+    "sobra": null,
+    "segundos": 0.016,
+    "paginas_px": [
+     [
+      502,
+      880
+     ],
+     [
+      631,
+      880
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.473,
+    "sobra": null,
+    "segundos": 0.136,
+    "paginas_px": [
+     [
+      536,
+      880
+     ],
+     [
+      597,
+      880
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.473,
+    "sobra": null,
+    "segundos": 0.124,
+    "paginas_px": [
+     [
+      536,
+      880
+     ],
+     [
+      597,
+      880
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.471306,
+     1.0
+    ],
+    "segundos": 0.106,
+    "paginas_px": [
+     [
+      599,
+      880
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/hugon_f001.jpg"
+ },
+ {
+  "nome": "hugon_f041",
+  "folha": 41,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.4633,
+    "sobra": null,
+    "segundos": 0.01,
+    "paginas_px": [
+     [
+      525,
+      880
+     ],
+     [
+      608,
+      880
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.4861,
+    "sobra": null,
+    "segundos": 0.1,
+    "paginas_px": [
+     [
+      551,
+      880
+     ],
+     [
+      582,
+      880
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.4861,
+    "sobra": null,
+    "segundos": 0.106,
+    "paginas_px": [
+     [
+      551,
+      880
+     ],
+     [
+      582,
+      880
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.481058,
+     1.0
+    ],
+    "segundos": 0.109,
+    "paginas_px": [
+     [
+      588,
+      880
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/hugon_f041.jpg"
+ },
+ {
+  "nome": "hugon_f121",
+  "folha": 121,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.465,
+    "sobra": null,
+    "segundos": 0.009,
+    "paginas_px": [
+     [
+      527,
+      880
+     ],
+     [
+      606,
+      880
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.5258,
+    "sobra": null,
+    "segundos": 0.083,
+    "paginas_px": [
+     [
+      596,
+      880
+     ],
+     [
+      537,
+      880
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.5258,
+    "sobra": null,
+    "segundos": 0.097,
+    "paginas_px": [
+     [
+      596,
+      880
+     ],
+     [
+      537,
+      880
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.0,
+     0.541092
+    ],
+    "segundos": 0.108,
+    "paginas_px": [
+     [
+      613,
+      880
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/hugon_f121.jpg"
+ },
+ {
+  "nome": "hugon_f241",
+  "folha": 241,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.4625,
+    "sobra": null,
+    "segundos": 0.011,
+    "paginas_px": [
+     [
+      524,
+      880
+     ],
+     [
+      609,
+      880
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.5188,
+    "sobra": null,
+    "segundos": 0.107,
+    "paginas_px": [
+     [
+      588,
+      880
+     ],
+     [
+      545,
+      880
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.5188,
+    "sobra": null,
+    "segundos": 0.086,
+    "paginas_px": [
+     [
+      588,
+      880
+     ],
+     [
+      545,
+      880
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.0,
+     0.527242
+    ],
+    "segundos": 0.113,
+    "paginas_px": [
+     [
+      597,
+      880
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/hugon_f241.jpg"
+ },
+ {
+  "nome": "hugon_f361",
+  "folha": 361,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.4642,
+    "sobra": null,
+    "segundos": 0.013,
+    "paginas_px": [
+     [
+      526,
+      880
+     ],
+     [
+      607,
+      880
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.5021,
+    "sobra": null,
+    "segundos": 0.123,
+    "paginas_px": [
+     [
+      569,
+      880
+     ],
+     [
+      564,
+      880
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.5021,
+    "sobra": null,
+    "segundos": 0.124,
+    "paginas_px": [
+     [
+      569,
+      880
+     ],
+     [
+      564,
+      880
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.0,
+     0.503843
+    ],
+    "segundos": 0.123,
+    "paginas_px": [
+     [
+      571,
+      880
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/hugon_f361.jpg"
+ },
+ {
+  "nome": "hugon_f471",
+  "folha": 471,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.46,
+    "sobra": null,
+    "segundos": 0.01,
+    "paginas_px": [
+     [
+      521,
+      880
+     ],
+     [
+      612,
+      880
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.4876,
+    "sobra": null,
+    "segundos": 0.105,
+    "paginas_px": [
+     [
+      552,
+      880
+     ],
+     [
+      581,
+      880
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.4876,
+    "sobra": null,
+    "segundos": 0.092,
+    "paginas_px": [
+     [
+      552,
+      880
+     ],
+     [
+      581,
+      880
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.485879,
+     1.0
+    ],
+    "segundos": 0.089,
+    "paginas_px": [
+     [
+      582,
+      880
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/hugon_f471.jpg"
+ },
+ {
+  "nome": "penido_f003",
+  "folha": 3,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.5483,
+    "sobra": null,
+    "segundos": 0.009,
+    "paginas_px": [
+     [
+      705,
+      910
+     ],
+     [
+      581,
+      910
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.5174,
+    "sobra": null,
+    "segundos": 0.092,
+    "paginas_px": [
+     [
+      665,
+      910
+     ],
+     [
+      621,
+      910
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.5174,
+    "sobra": null,
+    "segundos": 0.106,
+    "paginas_px": [
+     [
+      665,
+      910
+     ],
+     [
+      621,
+      910
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.018675,
+     0.518964
+    ],
+    "segundos": 0.123,
+    "paginas_px": [
+     [
+      643,
+      910
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/penido_f003.jpg"
+ },
+ {
+  "nome": "penido_f091",
+  "folha": 91,
+  "jeitos": {
+   "A": {
+    "divide": true,
+    "posicao": 0.5267,
+    "sobra": null,
+    "segundos": 0.013,
+    "paginas_px": [
+     [
+      677,
+      910
+     ],
+     [
+      609,
+      910
+     ]
+    ]
+   },
+   "B": {
+    "divide": true,
+    "posicao": 0.5116,
+    "sobra": null,
+    "segundos": 0.128,
+    "paginas_px": [
+     [
+      658,
+      910
+     ],
+     [
+      628,
+      910
+     ]
+    ]
+   },
+   "C": {
+    "divide": true,
+    "posicao": 0.5116,
+    "sobra": null,
+    "segundos": 0.114,
+    "paginas_px": [
+     [
+      658,
+      910
+     ],
+     [
+      628,
+      910
+     ]
+    ]
+   },
+   "D": {
+    "divide": false,
+    "posicao": null,
+    "sobra": [
+     0.025832,
+     0.98813
+    ],
+    "segundos": 0.112,
+    "paginas_px": [
+     [
+      1238,
+      910
+     ]
+    ]
+   }
+  },
+  "imagem": "imagens/penido_f091.jpg"
+ }
+]

@@ -1,0 +1,3 @@
+  ok    clique em 'remover da lista (limpeza)'
+
+166 ações realizadas, 0 falhas
