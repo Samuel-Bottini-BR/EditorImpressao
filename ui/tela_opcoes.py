@@ -51,7 +51,9 @@ Limpar pontinhos (decisao do Samuel de 06/10/2026, P7; provisorio ate o
 layout, excecao da gerente para o implementador mexer aqui): no grupo dos
 filtros, embaixo da caixinha das molduras, a lista "Limpar pontinhos:"
 (desligado · o nosso · pouco · normal · muito) do livro
-(Projeto.limpar_pontinhos; de fabrica "pouco", o do ScanTailor). Como o "So
+(Projeto.limpar_pontinhos; de fabrica core/pontinhos_scantailor.PADRAO -
+"o nosso" ou "desligado"; o do ScanTailor so quando escolhido, decisao
+do Samuel de 07/10/2026). Como o "So
 as letras", so aparece com o Preto e branco escolhido (a escolha fica
 guardada quando some), vale ao clicar "Conferir" e nao entra no desfazer.
 Cada pagina pode trocar so nela, na aba Filtro (ui/tela_conferir.py).
@@ -369,9 +371,10 @@ class TelaOpcoes(QWidget):
             lambda _v: self._acertar_altura_da_rolagem())
 
         # "Limpar pontinhos" do livro (decisao do Samuel, 06/10/2026, P7):
-        # de fabrica o do ScanTailor "pouco"; desligado, o nosso, normal e
-        # muito continuam como opcao. Numa linha inteira da grade, embaixo
-        # da caixinha das molduras, so com o Preto e branco escolhido (ver
+        # de fabrica pontinhos.PADRAO (desde 07/10/2026 nunca o do
+        # ScanTailor, que so vale quando escolhido; ver la); opcoes:
+        # desligado, o nosso, pouco, normal, muito. Numa linha inteira da
+        # grade, embaixo da caixinha das molduras, so com o Preto e branco escolhido (ver
         # _mudou). Seguro mudar: os textos (core/pontinhos_scantailor.py).
         self.linha_pontinhos = QWidget()
         linha = QHBoxLayout(self.linha_pontinhos)

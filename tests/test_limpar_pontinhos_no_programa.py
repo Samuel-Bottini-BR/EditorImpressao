@@ -1,15 +1,19 @@
 """O "Limpar pontinhos" ligado ao programa (decisão do Samuel, 06/10/2026, P7).
 
 O pedido: "Limpar pontinhos: desligado · o nosso · pouco · normal · muito",
-de fábrica o do ScanTailor "pouco", por livro e por página, valendo no Preto e
-branco e no "Só as letras". "Eu vou poder ligar e desligar esse apagador de
+por livro e por página, valendo no Preto e branco e no "Só as letras". De
+fábrica, em 06/10, o do ScanTailor "pouco"; desde 07/10 ele só vale quando
+escolhido ("só deve ser usado se for selecionado junto, e não como automatico
+junto do preto e branco", Samuel), e o de fábrica é "o nosso" ou "desligado"
+(core/pontinhos_scantailor.PADRAO; os testes valem para os dois). "Eu vou poder ligar e desligar esse apagador de
 pingos? e selecionar o pouco, normal ou muito, ou selecionar o nosso" - "o
 nosso muitas vezes acaba comendo muito as letras". E a regra de sempre: o
 programa abre os arquivos de versões anteriores; o livro já conferido com a
 caixinha "limpar poeirinha" ligada vira "o nosso" e sai igual ponto a ponto.
 
 Testes de máquina (o "ficou melhor" é teste de olho, do Samuel):
-    - os padrões: livro novo em "pouco", página nova segue o livro;
+    - os padrões: livro novo no de fábrica (nunca o do ScanTailor), página
+      nova segue o livro;
     - a página troca só nela; valor estranho não derruba nada;
     - ida e volta pelo projeto.json;
     - projeto antigo (tests/dados/projeto_ace15b2.json, gravado pelo programa
@@ -55,7 +59,6 @@ def test_as_cinco_escolhas_na_ordem_da_tela():
 def test_o_projeto_grava_o_codigo_e_nunca_o_texto_da_tela():
     """Pedido da gerente (06/10): os nomes da tela são provisórios (o Samuel
     vai escolher outros); o projeto.json guarda só o código interno."""
-    assert ps.PADRAO == ps.POUCO == "st_pouco"
     assert set(ps.NOMES_NA_TELA) == set(ps.ESCOLHAS)
     projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos=ps.NOSSO)
     projeto.folhas = [ConfigFolha(indice=0)]
@@ -68,12 +71,27 @@ def test_o_projeto_grava_o_codigo_e_nunca_o_texto_da_tela():
     assert ps.escolha_valida("pouco") == ps.PADRAO
 
 
-def test_livro_novo_comeca_em_pouco_e_a_pagina_segue_o_livro():
+def test_o_do_scantailor_nunca_vem_de_fabrica():
+    """Decisão do Samuel, 07/10/2026 (página de escolhas, "Limpar pontinhos do
+    ScanTailor: aceita o Preto e branco um pouco mais lento?" -> "Aceito, pode
+    entrar"): "o limpar pontinhos, só deve ser usado se for selecionado junto,
+    e não como automatico junto do preto e branco [...] eu quero poder usar o
+    pouco o o medio e muito". O de fábrica é "o nosso" ou "desligado" (falta
+    ele dizer qual; a troca é uma linha em core/pontinhos_scantailor.PADRAO),
+    e as três forças do ScanTailor continuam como escolha."""
+    assert ps.PADRAO in (ps.NOSSO, ps.DESLIGADO)
+    assert ps.PADRAO not in ps.DO_SCANTAILOR
+    assert Projeto(caminho_entrada="x.pdf").limpar_pontinhos not in ps.DO_SCANTAILOR
+    assert set(ps.DO_SCANTAILOR) <= set(ps.ESCOLHAS)
+    assert [ps.FORCA_DA_ESCOLHA[e] for e in ps.DO_SCANTAILOR] == ["pouco", "normal", "muito"]
+
+
+def test_livro_novo_comeca_no_de_fabrica_e_a_pagina_segue_o_livro():
     projeto = Projeto(caminho_entrada="x.pdf")
     pagina = ConfigPagina(indice=0, folha=0)
-    assert projeto.limpar_pontinhos == ps.POUCO
+    assert projeto.limpar_pontinhos == ps.PADRAO
     assert pagina.limpar_pontinhos is None
-    assert ps.escolha_da_pagina(projeto, pagina) == ps.POUCO
+    assert ps.escolha_da_pagina(projeto, pagina) == ps.PADRAO
     assert not hasattr(pagina, "despeckle"), "a caixinha antiga saiu do modelo"
 
 
@@ -88,11 +106,11 @@ def test_a_pagina_troca_so_nela():
 def test_valor_estranho_nao_derruba_nada():
     projeto = Projeto(caminho_entrada="x.pdf", limpar_pontinhos="forte")
     pagina = ConfigPagina(indice=0, folha=0, limpar_pontinhos="enorme")
-    assert ps.escolha_da_pagina(projeto, pagina) == ps.POUCO
+    assert ps.escolha_da_pagina(projeto, pagina) == ps.PADRAO
     projeto.limpar_pontinhos = ps.MUITO
     assert ps.escolha_da_pagina(projeto, pagina) == ps.MUITO
     # objeto sem os campos (projeto em memória de antes): o de fábrica
-    assert ps.escolha_da_pagina(object(), object()) == ps.POUCO
+    assert ps.escolha_da_pagina(object(), object()) == ps.PADRAO
 
 
 def test_ida_e_volta_pelo_json():

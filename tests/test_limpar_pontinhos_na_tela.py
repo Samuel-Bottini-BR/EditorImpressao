@@ -1,11 +1,12 @@
 """O "Limpar pontinhos" na tela (decisão do Samuel, 06/10/2026, P7; provisório até o layout).
 
 "Limpar pontinhos: desligado · o nosso · pouco · normal · muito", de fábrica
-"pouco" (o do ScanTailor), no livro (tela "O que fazer") e na página (aba
+core/pontinhos_scantailor.PADRAO ("o nosso" ou "desligado"; desde 07/10/2026
+nunca o do ScanTailor, que só vale quando escolhido), no livro (tela "O que fazer") e na página (aba
 Filtro, no lugar da caixinha "limpar poeirinha"), só com o Preto e branco.
 
 Testes de máquina (sem janela na tela, tests/conftest.py):
-    - livro: começa em "pouco"; cada valor grava no projeto; só aparece com
+    - livro: começa no de fábrica; cada valor grava no projeto; só aparece com
       o Preto e branco; projeto salvo volta para a tela; projeto antigo
       ("nosso") aparece "o nosso";
     - página: mostra o que vale (do livro ou dela) sem gravar; trocar é ação
@@ -39,13 +40,16 @@ def _itens(combo) -> list[str]:
 
 # --- a tela "O que fazer" (o livro) ------------------------------------------
 
-def test_o_livro_comeca_em_pouco(janela, pasta):
+def test_o_livro_comeca_no_de_fabrica_e_nunca_no_do_scantailor(janela, pasta):
+    """Decisão do Samuel de 07/10/2026: o do ScanTailor "só deve ser usado se
+    for selecionado junto, e não como automatico junto do preto e branco"."""
     janela.abrir_livro(str(_pdf(pasta)))
     tela = janela.tela_opcoes
     assert _itens(tela.combo_pontinhos) == NA_TELA
-    assert tela.combo_pontinhos.currentData() == ps.POUCO
+    assert tela.combo_pontinhos.currentData() == ps.PADRAO
+    assert tela.combo_pontinhos.currentData() not in ps.DO_SCANTAILOR
     assert tela.rotulo_pontinhos.text() == "Limpar pontinhos:"
-    assert janela.projeto.limpar_pontinhos == ps.POUCO
+    assert janela.projeto.limpar_pontinhos == ps.PADRAO
 
 
 def test_so_aparece_com_o_preto_e_branco_e_guarda_a_escolha(janela, pasta):
@@ -95,7 +99,7 @@ def test_objeto_sem_o_campo_fica_com_o_de_agora(janela, pasta):
     salvo = Projeto(caminho_entrada=caminho)
     delattr(salvo, "limpar_pontinhos")          # vale o da classe
     janela._trazer_opcoes_salvas(salvo)
-    assert janela.projeto.limpar_pontinhos == ps.POUCO
+    assert janela.projeto.limpar_pontinhos == ps.PADRAO
 
 
 def test_a_escolha_do_livro_esta_nas_opcoes_do_trabalho(janela):
@@ -139,10 +143,10 @@ def test_so_aparece_no_preto_e_branco(conferir):
 
 
 def test_a_pagina_mostra_o_que_vem_do_livro_sem_gravar(conferir):
-    assert conferir.seletor_pontinhos.currentData() == ps.POUCO
-    conferir.projeto.limpar_pontinhos = "nosso"
+    assert conferir.seletor_pontinhos.currentData() == ps.PADRAO
+    conferir.projeto.limpar_pontinhos = ps.NORMAL     # nunca o de fabrica (07/10)
     conferir.atualizar()
-    assert conferir.seletor_pontinhos.currentText() == "o nosso"
+    assert conferir.seletor_pontinhos.currentText() == "normal"
     assert conferir.projeto.paginas[0].limpar_pontinhos is None
     assert not conferir.acoes.pode_desfazer, "mostrar não pode virar ação"
 
@@ -151,26 +155,28 @@ def test_trocar_na_pagina_e_acao_do_desfazer(conferir):
     projeto, seletor = conferir.projeto, conferir.seletor_pontinhos
     pagina, outra = projeto.paginas[0], projeto.paginas[1]
     chave_antes = conferir.previas.chave(0, 110)
-    seletor.setCurrentIndex(seletor.findData("desligado"))
-    assert pagina.limpar_pontinhos == "desligado" and outra.limpar_pontinhos is None
+    # (o valor escolhido nunca e o de fabrica, que pode ser "desligado" ou
+    # "nosso": escolher o que ja vale nao vira acao)
+    seletor.setCurrentIndex(seletor.findData(ps.NORMAL))
+    assert pagina.limpar_pontinhos == ps.NORMAL and outra.limpar_pontinhos is None
     assert conferir.previas.chave(0, 110) != chave_antes, "a prévia tinha de ser refeita"
-    assert conferir.acoes.descricao_desfazer().endswith("Limpar pontinhos na página 1: desligado")
+    assert conferir.acoes.descricao_desfazer().endswith("Limpar pontinhos na página 1: normal")
     seletor.setCurrentIndex(seletor.findData(ps.MUITO))
     assert pagina.limpar_pontinhos == ps.MUITO
     conferir.desfazer()
-    assert pagina.limpar_pontinhos == "desligado"
-    assert seletor.currentData() == "desligado", "a tela volta junto com o desfazer"
+    assert pagina.limpar_pontinhos == ps.NORMAL
+    assert seletor.currentData() == ps.NORMAL, "a tela volta junto com o desfazer"
     conferir.desfazer()
-    assert pagina.limpar_pontinhos is None and seletor.currentData() == ps.POUCO
+    assert pagina.limpar_pontinhos is None and seletor.currentData() == ps.PADRAO
     conferir.refazer()
-    assert pagina.limpar_pontinhos == "desligado"
+    assert pagina.limpar_pontinhos == ps.NORMAL
 
 
 def test_escolher_o_que_ja_vale_nao_vira_acao(conferir):
     seletor = conferir.seletor_pontinhos
     seletor.setCurrentIndex(seletor.findData(ps.NORMAL))
-    seletor.setCurrentIndex(seletor.findData(ps.POUCO))   # o do livro, que já valia antes
-    assert conferir.projeto.paginas[0].limpar_pontinhos == ps.POUCO
+    seletor.setCurrentIndex(seletor.findData(ps.PADRAO))  # o do livro, que já valia antes
+    assert conferir.projeto.paginas[0].limpar_pontinhos == ps.PADRAO
     conferir.desfazer()
     conferir.desfazer()
     assert not conferir.acoes.pode_desfazer
@@ -178,9 +184,9 @@ def test_escolher_o_que_ja_vale_nao_vira_acao(conferir):
 
 def test_todas_leva_a_escolha_junto(conferir):
     projeto, seletor = conferir.projeto, conferir.seletor_pontinhos
-    seletor.setCurrentIndex(seletor.findData("nosso"))
+    seletor.setCurrentIndex(seletor.findData(ps.MUITO))   # nunca o de fabrica
     conferir._filtro_em_todas()
-    assert [p.limpar_pontinhos for p in projeto.paginas] == ["nosso"] * 3
+    assert [p.limpar_pontinhos for p in projeto.paginas] == [ps.MUITO] * 3
     conferir.desfazer()
     assert projeto.paginas[1].limpar_pontinhos is None
 

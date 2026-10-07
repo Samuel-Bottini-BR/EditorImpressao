@@ -1354,7 +1354,8 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
     ScanTailor precisa deles; item 1.2) e para o "Limpar pontinhos" do
     Preto e branco e do "So as letras" (pontinhos_da_pagina; decisao do
-    Samuel de 06/10/2026, P7: de fabrica o do ScanTailor "pouco").
+    Samuel de 06/10/2026, P7; de fabrica core/pontinhos_scantailor.PADRAO,
+    que desde 07/10 nunca e o do ScanTailor).
 
     O MESMO para a previa (renderizar_pagina) e o PDF (processar): antes era
     escrito duas vezes, igual. Devolve (imagem, monocromatica); sem "Limpar a

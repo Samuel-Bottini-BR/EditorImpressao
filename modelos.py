@@ -361,9 +361,13 @@ class Projeto:
     misto_letras_na_moldura: str = LETRAS_NA_MOLDURA_PADRAO
 
     # "Limpar pontinhos" do livro, no Preto e branco e no "So as letras".
-    # Decisao do Samuel (06/10/2026, P7): de fabrica o do ScanTailor "pouco"
-    # (PONTINHOS_PADRAO, codigo "st_pouco"); as outras escolhas continuam:
-    # desligado, o nosso, normal, muito (core/pontinhos_scantailor.py,
+    # De fabrica: PONTINHOS_PADRAO (core/pontinhos_scantailor.PADRAO). Em
+    # 06/10 (P7) era o do ScanTailor "pouco"; desde 07/10 o do ScanTailor so
+    # vale quando a pessoa escolhe ("so deve ser usado se for selecionado
+    # junto, e nao como automatico junto do preto e branco", Samuel), e o de
+    # fabrica e "nosso" ou "desligado" (falta o Samuel dizer qual; a troca e
+    # uma linha la). Escolhas: desligado, o nosso, pouco, normal, muito
+    # (core/pontinhos_scantailor.py,
     # ESCOLHAS: codigos internos, nunca o texto da tela). Cada pagina pode
     # trocar so nela (ConfigPagina.limpar_pontinhos). Projeto salvo antes
     # deste campo abre com "nosso" (de_dicionario): era o que ele usava, e um

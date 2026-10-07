@@ -167,8 +167,8 @@ def preto_e_branco_com_pontinhos_do_scantailor(
 #   NOSSO      o de antes (core.filtros._despeckle: tira toda mancha pequena,
 #              pelo tamanho; "muitas vezes acaba comendo muito as letras");
 #   POUCO, NORMAL, MUITO  o do ScanTailor (limpar_pontinhos, acima), nas
-#              três forças dele ("st_" = ScanTailor). POUCO é o de fábrica
-#              (livro novo).
+#              três forças dele ("st_" = ScanTailor). Só quando a pessoa
+#              escolhe (decisão do Samuel de 07/10/2026; ver PADRAO, abaixo).
 # Projeto salvo antes desta escolha abre como estava: a caixinha antiga
 # "limpar poeirinha" (ConfigPagina.despeckle) ligada vira NOSSO, desligada
 # vira DESLIGADO (modelos.Projeto.de_dicionario). Assim um livro já
@@ -187,7 +187,19 @@ ESCOLHAS = (DESLIGADO, NOSSO, POUCO, NORMAL, MUITO)   # a ordem da tela
 DO_SCANTAILOR = (POUCO, NORMAL, MUITO)
 # a força do ScanTailor (FORCAS, acima) de cada código
 FORCA_DA_ESCOLHA = {POUCO: "pouco", NORMAL: "normal", MUITO: "muito"}
-PADRAO = POUCO                    # livro novo (decisão do Samuel, 06/10)
+# O de fábrica (livro novo, sem ninguém escolher nada). Em 06/10 (P7) era o
+# do ScanTailor "pouco"; em 07/10 o Samuel aceitou o do ScanTailor com uma
+# ressalva: "o limpar pontinhos, só deve ser usado se for selecionado junto,
+# e não como automatico junto do preto e branco. e ele já entra hoje, com
+# essa ressalva, além disso eu quero poder usar o pouco o o medio e muito"
+# (relatorios/conferencia-samuel-2026-10-07.md). Então o do ScanTailor NUNCA
+# vem de fábrica (tests/test_limpar_pontinhos_no_programa.py cobra isso).
+# Falta o Samuel dizer qual dos dois (pergunta "pontinhos-de-fabrica" na
+# página de escolhas): NOSSO (o que o programa sempre fez, fica até ele
+# responder) ou DESLIGADO. A TROCA É SÓ ESTA LINHA: "PADRAO = DESLIGADO".
+# Os testes valem para os dois. Seguro mudar: entre NOSSO e DESLIGADO.
+# Arriscado: pôr POUCO, NORMAL ou MUITO (contra a decisão de 07/10).
+PADRAO = NOSSO
 DO_PROJETO_ANTIGO = NOSSO         # livro salvo antes da escolha existir
 
 # TODOS os textos da tela desta escolha moram aqui, e só aqui (a tela "O
