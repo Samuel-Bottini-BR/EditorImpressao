@@ -363,3 +363,24 @@ def test_janela_confirmar_conta_o_mesmo_que_vai_para_o_pdf(tmp_path):
         assert len(projeto.paginas_ativas) == 4
     finally:
         janela.close()
+
+
+def test_aviso_diz_o_que_mudou_na_divisao():
+    """Parecer do verificador (06/10/2026): trocar o JEITO de dividir do
+    livro pode mudar o numero de paginas, e o aviso falava em "Dividir folhas
+    ao meio". Agora diz o que mudou de verdade."""
+    salvo = _projeto_com_folhas(ds.JEITO_PROGRAMA, [True, False, True], [0.5, 0.5, 0.5])
+    # o jeito mudou e uma folha a menos e dividida
+    fresco = _projeto_com_folhas(ds.JEITO_SCANTAILOR, [True, False, False], [0.5, 0.5, 0.5])
+    motivo = projetos.motivo_para_nao_combinar(salvo, fresco)
+    assert "o jeito de dividir do livro" in motivo
+    assert "“o do programa” para “o do ScanTailor”" in motivo
+    assert "Dividir folhas ao meio" not in motivo
+    # o jeito mudou, o total bate mas as folhas divididas nao
+    fresco = _projeto_com_folhas(ds.JEITO_SCANTAILOR, [False, True, True], [0.5, 0.5, 0.5])
+    motivo = projetos.motivo_para_nao_combinar(salvo, fresco)
+    assert "o jeito de dividir do livro" in motivo and "Dividir folhas ao meio" not in motivo
+    # a caixinha mudou: continua falando dela
+    fresco = _projeto_com_folhas(ds.JEITO_PROGRAMA, [False, False, False], [0.5, 0.5, 0.5])
+    fresco.dividir_folhas = False
+    assert "Dividir folhas ao meio" in projetos.motivo_para_nao_combinar(salvo, fresco)
