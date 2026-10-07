@@ -471,3 +471,8 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
     página. No chat, só um aviso curto de que a página mudou. Palavras dele: "não me responda no chat
     quando tiver questionamentos nas conferencias, responda nas conferencias." e "o meu comentario
     serve como resposta, porque você não responde ele e me mostra a questão de novo?"
+    Quando a pergunta volta, o comentário dele **sobe e fica fixado** (pedido de 07/10: "eu acho que ele
+    devia subir e virar um comentario fixado junto quando voltasse, para que dai eu colocasse outro e
+    tivesse referencia do que foi colocado antes"): a gerente copia o comentário para o campo
+    `historico` da pergunta (`[{quem: "samuel"|"gerente", em, texto}]`, mostrado no alto como
+    "Comentários anteriores desta pergunta (fixados)") e esvazia o `comentario` da resposta.

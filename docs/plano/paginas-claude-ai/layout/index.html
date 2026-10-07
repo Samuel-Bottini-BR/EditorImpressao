@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Layout do Editor de Impressão</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
@@ -106,6 +107,12 @@
   dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 8px; color: #fff; font-size: 15px; }
   dialog.zoom button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 0; cursor: pointer; }
   :focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+  .historico { display: grid; gap: 8px; padding: 12px 14px; border-radius: 10px; background: var(--azul-suave); border-left: 4px solid var(--azul); }
+  .historico-titulo { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--fraco); font-weight: 700; }
+  .msg { display: grid; gap: 2px; }
+  .msg-cab { font-size: 13px; font-weight: 700; color: var(--azul); }
+  .msg.msg-gerente .msg-cab { color: var(--verde); }
+  .msg p { margin: 0; font-size: 15px; white-space: pre-wrap; overflow-wrap: anywhere; }
 </style>
 
 <div class="miolo">
@@ -237,6 +244,17 @@
     var s = el("section", "decisao");
     s.appendChild(el("div", "parte", d.parte || ""));
     s.appendChild(el("h2", null, d.pergunta || ""));
+    if (d.historico && d.historico.length) {
+      var hist = el("div", "historico");
+      hist.appendChild(el("div", "historico-titulo", "Comentários anteriores desta pergunta (fixados)"));
+      d.historico.forEach(function (m) {
+        var b = el("div", "msg " + (m.quem === "gerente" ? "msg-gerente" : "msg-samuel"));
+        b.appendChild(el("div", "msg-cab", (m.quem === "gerente" ? "Resposta da gerente" : "Seu comentário") + (m.em ? " · " + hora(m.em) : "")));
+        b.appendChild(el("p", null, m.texto || ""));
+        hist.appendChild(b);
+      });
+      s.appendChild(hist);
+    }
     if (d.explicacao) s.appendChild(el("p", "explica", d.explicacao));
     if (d.exemplos && d.exemplos.length) {
       var ex = el("div", "exemplos");
@@ -252,7 +270,7 @@
     s.appendChild(grade);
     var com = el("div", "comentario");
     var idc = "com-" + d.id;
-    var lab = el("label", null, "Quer explicar ou pedir alguma mudança? (não é obrigatório)"); lab.setAttribute("for", idc);
+    var lab = el("label", null, d.historico && d.historico.length ? "Seu comentário novo (o anterior está fixado lá em cima; não é obrigatório)" : "Quer explicar ou pedir alguma mudança? (não é obrigatório)"); lab.setAttribute("for", idc);
     var ta = el("textarea"); ta.id = idc;
     ta.value = rascunhos[d.id] != null ? rascunhos[d.id] : (resp && resp.comentario) || "";
     ta.disabled = !db;
@@ -356,3 +374,5 @@
   desenhar();
 })();
 </script>
+
+</body></html>

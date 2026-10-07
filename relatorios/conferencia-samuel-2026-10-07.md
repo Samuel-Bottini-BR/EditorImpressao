@@ -39,3 +39,10 @@ O que a gerente fez: `pontinhos-tempo` marcada como decidida; pergunta nova `pon
 - **"Livro novo, sem ninguém escolher nada: o Preto e branco limpa pontinhos?"** (`pontinhos-de-fabrica`): **Não limpa nada (desligado)**, sem comentário. Aplicado no `fase-1` (`1de8e47`, `core/pontinhos_scantailor.py`, `PADRAO = DESLIGADO`).
 
 Pedido do Samuel no chat (07/10): "não me responda no chat quando tiver questionamentos nas conferencias, responda nas conferencias." e "e tem o meu comentario lá também, a pergunta continua lá, o meu comentario serve como resposta, porque você não responde ele e me mostra a questão de novo?" — a pergunta `dividir-metade-apagada` foi refeita na página como resposta ao comentário da encadernação ("Apagar uma página sem estragar a encadernação: como fica?": dois botões com Delete = deixar em branco · dois botões com Delete = tirar do livro · um botão que sempre põe página branca · como hoje com aviso), com a foto do Gradus girada (folha 2 = livro aberto: verso em branco da capa + rosto) e o desenho da encadernação; pergunta nova `apagar-quando` (agora ou Lista de espera).
+
+### Quarta leitura (07/10/2026, 19:01, horário de Brasília)
+
+- **"Apagar uma página sem estragar a encadernação: como fica?"** (`dividir-metade-apagada`, refeita): **Dois botões; a tecla Delete deixa em branco**, sem comentário novo.
+- **"A página branca no lugar da apagada entra quando?"** (`apagar-quando`): ainda sem resposta.
+
+Pedido do Samuel no chat (07/10), com print da página: "hoje quando eu faço o comentario e a questão volta para mim, meu comentario continua lá, eu acho que ele devia subir e virar um comentario fixado junto quando voltasse, para que dai eu colocasse outro e tivesse referencia do que foi colocado antes." — feito nas páginas de Escolhas e de Layout: campo `historico` na pergunta (lista de {quem, em, texto}), mostrado no alto como "Comentários anteriores desta pergunta (fixados)"; a caixa fica vazia para o comentário novo.
