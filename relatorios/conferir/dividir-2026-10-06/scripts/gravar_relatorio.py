@@ -21,6 +21,20 @@ Decisões do Samuel que este item cumpre (conferências 9 e 14, 05/10):
 **G3 (b)** o "corte da sobra" do ScanTailor como opção, desligada.
 E a regra: *"o programa vai ter que ser capaz de abrir arquivos de versões anteriores."*
 
+## Consertos depois do parecer do verificador (06/10, noite)
+
+O verificador deu "NÃO ESTÁ PRONTO" (parecer em `verificador/`). Consertado, um commit por item, cada um com teste que falhava antes:
+
+1. **Grave: uma folha sumia do PDF** com a página da esquerda apagada e "não dividir esta" (a página de rosto do Gradus Primus do Samuel; 139 → 138). Agora a folha não dividida sai **uma vez, inteira**, pela primeira página dela que não foi apagada; **só some se a pessoa apagou todas as páginas da folha**. É o que o programa de antes fazia nesse caso. O "não dividir esta" só apaga a metade da direita quando a da esquerda está viva. Gradus refeito: 139 páginas, iguais ponto a ponto ao programa de antes do 2.1, rodado na mesma hora.
+2. **O contador da janela "Confirmar e processar"** conta pelo mesmo que o PDF usa.
+3. **A dica do botão "dividir esta"** não manda mais marcar o que já está marcado: "Esta folha entrou como uma página só: o jeito de dividir do livro não achou duas páginas nela, e aqui não dá para dividi-la."
+4. **O aviso de conferência recomeçada** diz o que mudou de verdade: a caixinha "Dividir folhas ao meio", ou "Você trocou o jeito de dividir do livro (de “o do programa” para “o do ScanTailor”), e o jeito novo divide outras folhas".
+5. **A linha azul "arraste"** some (e não se arrasta) em folha não dividida, na aba Onde cortar e na tela ampliada.
+
+**Pergunta para o Samuel (item 1):** numa folha que deixou de ser dividida, com uma das metades apagada, o programa põe **a folha inteira** no PDF (o mais seguro: nada some). Se ele preferir que saia **só a metade que não foi apagada**, é uma mudança pequena.
+
+**Correção minha, vinda do verificador:** no livro aberto inteiro (471 folhas do Hugon, 180 do Penido), **o do programa corta letras em muitas folhas** (fim das linhas da esquerda ou começo das da direita; no Penido 109, no meio do texto), e o do ScanTailor ficou na dobra em todas as que ele conferiu. Eu tinha olhado só 6 + 2 folhas e escrevi que nenhum dos dois cortava letra: vale só para essas. Isso pesa na pergunta do jeito de fábrica (hoje "o do programa"). E no Hugon 1 o do programa corta a 44%, não a 46%.
+
 ## Em poucas frases
 
 1. **Livro novo não divide mais sozinho.** A caixinha "Dividir folhas ao meio" vem desmarcada. Marcada, aparece a escolha "Jeito de dividir: o do programa / o do ScanTailor".
