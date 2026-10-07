@@ -445,3 +445,20 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
      tarefa. O que já existia não se apaga sem perguntar.
    - Motivo: em 29/09 um agente apagou uma pasta inteira `D:\d` sem conferir o que havia
      nela, achando que era só um download dele. Apagado por comando não vai para a Lixeira.
+10. **Conferências do Samuel: páginas que salvam sozinhas e abrem sozinhas (regra do Samuel,
+    06/10/2026).** Tudo o que ele precisa ver ou responder vai numa página do claude.ai com banco
+    de dados (imagens grandes, "Escolho esta", caixa de comentário; a resposta fica salva na hora):
+    - "Escolhas do Editor de Impressão" (comportamento do programa):
+      https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV
+    - "Layout do Editor de Impressão" (telas): https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu
+    - "Quando revisar uma página" (o "Para revisar"): https://claude.ai/artifact/NeCgyTotRfqsdXntn9vMUc
+    - "Andamento do programa" (o que cada agente faz, o que falta, o plano completo, recados):
+      https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy
+
+    **Quando uma página de conferência nova ficar pronta, a gerente abre sozinha no navegador do
+    Samuel, sem perguntar — desde que ele já tenha feito a conferência anterior e dado ok no chat.**
+    Se ainda houver conferência sem resposta, a gerente só avisa no chat que há outra pronta (e
+    abre se ele pedir). Palavras dele: "sempre que tiver paginas de conferencia prontas, pode abrir
+    automaticamente no meu pc, caso eu já tenha feito a ultima pagina de conferencia e te dado ok."
+    A gerente não vê as respostas sozinha: lê o banco da página quando ele avisa ("respondi") e
+    copia as respostas, palavra por palavra, para `relatorios/` e para o Registro de mudanças.
