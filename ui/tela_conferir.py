@@ -70,6 +70,16 @@ ação do desfazer, com a rotação nova de cada folha (_girar_folhas; contas em
 core/girar.py). O menu Página tem os mesmos giros (Ctrl+Esquerda,
 Ctrl+Direita) e o mesmo "aplicar em". A tecla R deixou de girar (era fixa
 aqui e nunca alcançada: a R do Retângulo ganhava).
+
+Dividir (item 2.1, 06/10/2026, decisão G2 (a) do Samuel: "trocando numa
+folha se um ficar ruim"; provisório até o layout, pedido da gerente): na
+linha de botões da aba Onde cortar, a lista "jeito:" (o do programa · o do
+ScanTailor) troca o jeito SÓ desta folha e recalcula a linha azul
+(_trocar_jeito_da_folha; ConfigFolha.dividir_como), numa ação do desfazer;
+só habilitada em folha dividida. Conserto junto: "não dividir esta" apaga na
+mesma ação a metade da direita (antes o PDF saía com a folha repetida); a
+folha que entrou como uma página só não oferece "dividir esta"
+(_alternar_dividir).
 """
 
 from __future__ import annotations
@@ -96,9 +106,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core import analise, girar, linhas_do_texto, misto
+from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import pontinhos_scantailor as pontinhos
-from core.pipeline import acertar_alertas_de_cor, acertar_alertas_do_fundo
+from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, jeito_de_dividir,
+                           recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -111,8 +122,8 @@ from core.filtros import (
     filtros_do_livro,
     palavra_do_ajuste,
 )
-from historico_acoes import HistoricoAcoes, aplicar, montar_acao
-from modelos import Projeto
+from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
+from modelos import METADE_DIREITA, Projeto
 from registro import registrar_erro
 from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
@@ -603,6 +614,21 @@ class TelaConferir(QWidget):
         linha = self._linha_de_botoes(ABA_CORTE)
         _botao("está certo", linha, self._marcar_revisada)
         self.botao_nao_dividir = _botao("não dividir esta", linha, self._alternar_dividir)
+        # Item 2.1 (G2 (a), "trocando numa folha se um ficar ruim"; provisorio
+        # ate o layout): o jeito de dividir SO desta folha. Trocar recalcula a
+        # linha azul pelo outro jeito (core.pipeline.recalcular_divisao). So
+        # habilitada em folha dividida (_atualizar_botoes).
+        self.rotulo_jeito_da_folha = QLabel("jeito:")
+        linha.addWidget(self.rotulo_jeito_da_folha)
+        self.combo_jeito_da_folha = QComboBox()
+        for jeito in dividir_scantailor.JEITOS:
+            self.combo_jeito_da_folha.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+        self.combo_jeito_da_folha.setToolTip(
+            "Divide esta folha de outro jeito: o do programa ou o do ScanTailor. "
+            "A linha azul vai para onde o outro jeito acha a divisão.")
+        self.combo_jeito_da_folha.currentIndexChanged.connect(
+            lambda _i: self._trocar_jeito_da_folha())
+        linha.addWidget(self.combo_jeito_da_folha)
         _botao("girar", linha, self._girar)
         _botao("usar em todas", linha, self._corte_em_todas)
         linha.addStretch()
@@ -2256,6 +2282,20 @@ class TelaConferir(QWidget):
             self.botao_nao_dividir.setText(
                 "dividir esta" if not folha.dividir else "não dividir esta"
             )
+            # Item 2.1: folha que entrou como uma pagina so (a lista de
+            # paginas nao muda na conferencia) nao tem como ser dividida aqui
+            duas = self._tem_duas_paginas(self.indice_folha)
+            self.botao_nao_dividir.setEnabled(duas)
+            self.botao_nao_dividir.setToolTip(
+                "" if duas else "Esta folha entrou como uma página só. Para dividir, "
+                "volte e marque “Dividir folhas ao meio” no livro.")
+            # o jeito desta folha (sem sinal: so mostrar nao e trocar)
+            self.combo_jeito_da_folha.blockSignals(True)
+            self.combo_jeito_da_folha.setCurrentIndex(self.combo_jeito_da_folha.findData(
+                jeito_de_dividir(self.projeto, folha)))
+            self.combo_jeito_da_folha.blockSignals(False)
+            self.combo_jeito_da_folha.setEnabled(bool(folha.dividir))
+            self.rotulo_jeito_da_folha.setEnabled(bool(folha.dividir))
 
         if ABA_FILTRO in self._abas_ativas:
             pagina = self.projeto.paginas[self.indice_pagina]
@@ -2404,15 +2444,70 @@ class TelaConferir(QWidget):
             f"Linha de corte de todas as {len(indices)} folhas",
         )
 
+    def _tem_duas_paginas(self, indice_folha: int) -> bool:
+        """A folha tem as duas metades na lista de paginas? (so assim ela pode
+        ser dividida ou deixar de ser na conferencia)"""
+        assert self.projeto is not None
+        return sum(1 for p in self.projeto.paginas if p.folha == indice_folha) >= 2
+
     @protegido
     def _alternar_dividir(self) -> None:
+        """"nao dividir esta" / "dividir esta".
+
+        Conserto junto do item 2.1 (06/10/2026): antes so trocava
+        ConfigFolha.dividir, e as duas paginas da folha saiam no PDF, cada uma
+        com a folha inteira (a folha repetida). Agora, na mesma acao, a metade
+        da direita e apagada (ou volta, ao dividir de novo) - a da esquerda
+        vira a folha inteira (core/pipeline, modelos.Projeto.paginas_ativas).
+        A lista de paginas nao muda (o desfazer guarda paginas pela posicao).
+        Folha que entrou como uma pagina so: nao ha metade para criar; so
+        marca como conferida (e o que a sugestao "nao dividir esta" do alerta
+        "parece ter uma pagina so" quer dizer: ela ja nao e dividida)."""
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
+        if not self._tem_duas_paginas(self.indice_folha):
+            self._marcar_revisada()
+            return
+        dividir = not folha.dividir
+        campos = {"dividir": dividir, "revisada": True}
+        direita = next((p for p in self.projeto.paginas
+                        if p.folha == self.indice_folha and p.metade == METADE_DIREITA), None)
+        if direita is not None:
+            campos[campo_de_pagina(direita.indice, "apagada")] = not dividir
         self._registrar(
-            "nao_dividir", "folha", [self.indice_folha],
-            {"dividir": not folha.dividir, "revisada": True},
+            "nao_dividir", "folha", [self.indice_folha], campos,
             f"Folha {self.indice_folha + 1}: "
-            + ("dividir" if not folha.dividir else "não dividir"),
+            + ("dividir" if dividir else "não dividir"),
+        )
+
+    @protegido
+    def _trocar_jeito_da_folha(self) -> None:
+        """Item 2.1: a lista "jeito:" da aba Onde cortar. Recalcula a divisao
+        DESTA folha pelo jeito escolhido (uns decimos de segundo: abre a folha
+        a 150 DPI) e grava numa acao so (o desfazer devolve o jeito e a linha
+        de antes). A folha continua dividida (o ScanTailor e chamado no modo
+        "duas paginas"). Escolher o jeito do livro volta a "seguir o livro"
+        (ConfigFolha.dividir_como None)."""
+        assert self.projeto is not None
+        folha = self.projeto.folhas[self.indice_folha]
+        jeito = dividir_scantailor.jeito_valido(self.combo_jeito_da_folha.currentData())
+        if not folha.dividir or jeito == jeito_de_dividir(self.projeto, folha):
+            return
+        from PySide6.QtWidgets import QApplication
+
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            lombada = recalcular_divisao(self.projeto, self.indice_folha, jeito, forcar=True)
+        finally:
+            QApplication.restoreOverrideCursor()
+        do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
+        self._registrar(
+            "jeito_de_dividir", "folha", [self.indice_folha],
+            {"dividir_como": None if jeito == do_livro else jeito,
+             "posicao_corte": round(float(lombada.posicao), 4),
+             "confianca_corte": float(lombada.confianca), "revisada": True},
+            f"Folha {self.indice_folha + 1}: dividir pelo jeito "
+            f"“{dividir_scantailor.NOMES_DOS_JEITOS[jeito]}”",
         )
 
     @protegido

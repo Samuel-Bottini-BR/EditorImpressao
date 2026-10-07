@@ -16,6 +16,7 @@ from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
+from core.pipeline import faixa_da_sobra
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -469,7 +470,9 @@ class GerenciadorPrevias(QObject):
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
             f"{self.projeto.limpar}:{self.projeto.endireitar}:"
             f"{self.projeto.cortar_bordas}:{mist}:"
-            f"{pontinhos_da_pagina(self.projeto, p)}"
+            f"{pontinhos_da_pagina(self.projeto, p)}:"
+            # item 2.1: o corte da sobra muda a pagina desenhada
+            f"{faixa_da_sobra(f, p, self.projeto)}"
         )
 
     # --- uso --------------------------------------------------------------
@@ -552,7 +555,8 @@ class GerenciadorPrevias(QObject):
             return f"{indice}:recorte:invalida"
         p = self.projeto.paginas[indice]
         f = self.projeto.folhas[p.folha]
-        return f"{indice}:recorte:{dpi}:{p.metade}:{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}"
+        return (f"{indice}:recorte:{dpi}:{p.metade}:{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
+                f"{faixa_da_sobra(f, p, self.projeto)}")      # item 2.1
 
     def pegar_para_recorte(self, indice: int, dpi: int) -> np.ndarray | None:
         chave = self.chave_para_recorte(indice, dpi)

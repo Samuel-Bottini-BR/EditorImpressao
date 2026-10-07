@@ -55,6 +55,16 @@ filtros, embaixo da caixinha das molduras, a lista "Limpar pontinhos:"
 as letras", so aparece com o Preto e branco escolhido (a escolha fica
 guardada quando some), vale ao clicar "Conferir" e nao entra no desfazer.
 Cada pagina pode trocar so nela, na aba Filtro (ui/tela_conferir.py).
+
+Dividir (item 2.1, decisoes do Samuel G2 (a) e G3 (b) de 05/10/2026;
+provisorio ate o layout, pedido da gerente): "Dividir folhas ao meio" vem
+DESMARCADA no livro novo ("So quando o Kaique pedir, livro a livro"). Marcada,
+aparece embaixo dela a lista "Jeito de dividir:" (o do programa · o do
+ScanTailor; Projeto.dividir_como). Logo depois, a caixinha "Cortar a beirada
+da folha vizinha" (o corte da sobra do ScanTailor, Projeto.cortar_sobra),
+desmarcada de fabrica, que vale nas folhas que nao forem divididas. Como as
+outras opcoes, vale ao clicar "Conferir" e nao entra no desfazer. Cada folha
+pode trocar o jeito so nela, na aba Onde cortar (ui/tela_conferir.py).
 """
 
 from __future__ import annotations
@@ -76,6 +86,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import dividir_scantailor
 from core import misto
 from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
@@ -152,6 +163,30 @@ class TelaOpcoes(QWidget):
 
         self.cx_dividir = self._caixa(
             "Dividir folhas ao meio", "esta folha tem 2 páginas do livro", opcoes
+        )
+        # Item 2.1 (G2 (a)): o jeito de dividir do livro, so a vista com a
+        # caixinha marcada (ver _mudou). Textos em core/dividir_scantailor.
+        self.linha_jeito_dividir = QWidget()
+        linha = QHBoxLayout(self.linha_jeito_dividir)
+        linha.setContentsMargins(26, 2, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_jeito_dividir = QLabel("Jeito de dividir:")
+        self.combo_jeito_dividir = QComboBox()
+        for jeito in dividir_scantailor.JEITOS:
+            self.combo_jeito_dividir.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+        self.combo_jeito_dividir.setToolTip(
+            "Onde a folha é dividida: o do programa procura a lombada no meio das "
+            "folhas deitadas; o do ScanTailor divide toda folha mais larga que alta, "
+            "na dobra que ele acha. Dá para trocar numa folha só, na aba Onde cortar.")
+        self.combo_jeito_dividir.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_jeito_dividir)
+        linha.addWidget(self.combo_jeito_dividir)
+        linha.addStretch()
+        opcoes.addWidget(self.linha_jeito_dividir)
+        # Item 2.1 (G3 (b)): o corte da sobra do ScanTailor, desligado de fabrica
+        self.cx_cortar_sobra = self._caixa(
+            "Cortar a beirada da folha vizinha",
+            "o corte da sobra do ScanTailor, nas folhas que não forem divididas", opcoes
         )
         opcoes.addWidget(_separador())
 
@@ -235,8 +270,8 @@ class TelaOpcoes(QWidget):
         rodape.addWidget(self.botao_conferir)
         camadas.addLayout(rodape)
 
-        for caixa in (self.cx_dividir, self.cx_limpar, self.cx_endireitar,
-                      self.cx_cortar, self.cx_cadernos):
+        for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
+                      self.cx_endireitar, self.cx_cortar, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -580,6 +615,11 @@ class TelaOpcoes(QWidget):
         filtro_do_livro = projeto.filtro_padrao
 
         self.cx_dividir.setChecked(projeto.dividir_folhas)
+        # item 2.1: o jeito de dividir e o corte da sobra (projeto em memoria
+        # sem os campos: os de fabrica)
+        self.combo_jeito_dividir.setCurrentIndex(self.combo_jeito_dividir.findData(
+            dividir_scantailor.jeito_valido(getattr(projeto, "dividir_como", None))))
+        self.cx_cortar_sobra.setChecked(bool(getattr(projeto, "cortar_sobra", False)))
         self.cx_limpar.setChecked(projeto.limpar)
         self.cx_endireitar.setChecked(projeto.endireitar)
         self.cx_cortar.setChecked(projeto.cortar_bordas)
@@ -665,6 +705,12 @@ class TelaOpcoes(QWidget):
             return
 
         self.projeto.dividir_folhas = self.cx_dividir.isChecked()
+        # item 2.1: o jeito so aparece com "Dividir" marcada (escondido, fica
+        # guardado); o corte da sobra e independente
+        self.projeto.dividir_como = dividir_scantailor.jeito_valido(
+            self.combo_jeito_dividir.currentData())
+        self.linha_jeito_dividir.setVisible(self.projeto.dividir_folhas)
+        self.projeto.cortar_sobra = self.cx_cortar_sobra.isChecked()
         self.projeto.limpar = self.cx_limpar.isChecked()
         self.projeto.endireitar = self.cx_endireitar.isChecked()
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()

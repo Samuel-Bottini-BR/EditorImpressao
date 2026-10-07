@@ -26,6 +26,7 @@ from core.pipeline import (
     CAMPOS_DA_GRAVURA,
     acertar_alertas_do_fundo,
     aviso_das_opcoes_da_gravura,
+    trazer_divisao_da_analise,
     trocar_opcoes_da_gravura,
 )
 from historico_acoes import HistoricoAcoes
@@ -631,6 +632,10 @@ class JanelaPrincipal(QMainWindow):
         if salvo is None or self.projeto is None:
             return
         self.projeto.dividir_folhas = salvo.dividir_folhas
+        # item 2.1: o jeito de dividir e o corte da sobra (o salvo de antes
+        # do 2.1 ja volta "programa" e sem sobra: modelos.Projeto.de_dicionario)
+        self.projeto.dividir_como = getattr(salvo, "dividir_como", self.projeto.dividir_como)
+        self.projeto.cortar_sobra = bool(getattr(salvo, "cortar_sobra", False))
         self.projeto.limpar = salvo.limpar
         self.projeto.filtro_padrao = salvo.filtro_padrao
         self.projeto.endireitar = salvo.endireitar
@@ -824,6 +829,10 @@ class JanelaPrincipal(QMainWindow):
                     setattr(salvo, campo, getattr(projeto, campo))
                 # "Limpar pontinhos" do livro (06/10): tambem vem da tela
                 salvo.limpar_pontinhos = projeto.limpar_pontinhos
+                # Item 2.1: o jeito de dividir e o corte da sobra vem da tela;
+                # com o jeito trocado, as folhas que seguem o livro ganham a
+                # divisao da analise nova (a que a pessoa mexeu fica)
+                trazer_divisao_da_analise(salvo, projeto)
                 if gravuras_refeitas:
                     self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 projeto = salvo
@@ -1155,7 +1164,9 @@ class JanelaPrincipal(QMainWindow):
                        # modo Misto (05/10): "So as letras" e as escolhas dela
                        *CAMPOS_DO_MISTO,
                        # "Limpar pontinhos" do livro (06/10)
-                       "limpar_pontinhos")
+                       "limpar_pontinhos",
+                       # item 2.1: o jeito de dividir e o corte da sobra
+                       "dividir_como", "cortar_sobra")
 
     def _sair_da_conferencia(self) -> None:
         """Voltar para as opcoes grava antes: sair nao pode custar trabalho.
