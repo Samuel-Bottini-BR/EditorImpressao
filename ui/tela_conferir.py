@@ -2286,9 +2286,14 @@ class TelaConferir(QWidget):
             # paginas nao muda na conferencia) nao tem como ser dividida aqui
             duas = self._tem_duas_paginas(self.indice_folha)
             self.botao_nao_dividir.setEnabled(duas)
+            # A aba Onde cortar so existe com "Dividir folhas ao meio" marcada:
+            # a dica nao manda marcar (parecer do verificador, 06/10). Ela diz
+            # por que nao da: o jeito de dividir do livro nao achou duas
+            # paginas nesta folha.
             self.botao_nao_dividir.setToolTip(
-                "" if duas else "Esta folha entrou como uma página só. Para dividir, "
-                "volte e marque “Dividir folhas ao meio” no livro.")
+                "" if duas else "Esta folha entrou como uma página só: o jeito de "
+                "dividir do livro não achou duas páginas nela, e aqui não dá para "
+                "dividi-la.")
             # o jeito desta folha (sem sinal: so mostrar nao e trocar)
             self.combo_jeito_da_folha.blockSignals(True)
             self.combo_jeito_da_folha.setCurrentIndex(self.combo_jeito_da_folha.findData(

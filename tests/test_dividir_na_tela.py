@@ -140,6 +140,10 @@ def test_folha_de_uma_pagina_nao_oferece_dividir(janela, pasta):
     tela.indice_folha = 0
     tela.atualizar()
     assert not tela.botao_nao_dividir.isEnabled()
+    # parecer do verificador (06/10): a dica mandava "marcar Dividir folhas ao
+    # meio", que ja esta marcada (a aba Onde cortar so existe com ela marcada)
+    dica = tela.botao_nao_dividir.toolTip()
+    assert "uma página só" in dica and "marque" not in dica
     tela._alternar_dividir()              # a sugestao do alerta: so confere
     assert not projeto.folhas[0].dividir and projeto.folhas[0].revisada
     assert len(projeto.paginas) == 5
