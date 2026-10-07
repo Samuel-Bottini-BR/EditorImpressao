@@ -3,7 +3,9 @@
 Decisões do Samuel G2 (a) e G3 (b) (05/10/2026). Testes de máquina, sem
 janela na tela (tests/conftest.py):
 - tela "O que fazer": livro novo com "Dividir folhas ao meio" desmarcada; a
-  lista "Jeito de dividir:" só aparece com ela marcada; a escolha e a caixinha
+  lista "Jeito de dividir:" só aparece com ela marcada, com "o do ScanTailor"
+  escolhido (decisão do Samuel de 07/10/2026; projeto antigo reaberto continua
+  com "o do programa"); a escolha e a caixinha
   "Cortar a beirada da folha vizinha" vão para o projeto e voltam ao reabrir;
 - aba "Onde cortar": a lista "jeito:" troca o jeito SÓ desta folha, numa ação
   do desfazer; "não dividir esta" apaga a metade da direita junto (o PDF não
@@ -12,6 +14,9 @@ janela na tela (tests/conftest.py):
 """
 
 from __future__ import annotations
+
+import json
+from pathlib import Path
 
 import pytest
 
@@ -69,6 +74,11 @@ def test_livro_novo_nao_divide_e_o_jeito_so_aparece_marcado(janela, pasta):
     assert not opcoes.linha_jeito_dividir.isHidden()
     assert [opcoes.combo_jeito_dividir.itemText(i) for i in range(opcoes.combo_jeito_dividir.count())] \
         == ["o do programa", "o do ScanTailor"]
+    # decisao do Samuel, 07/10/2026: ao marcar, vem escolhido "o do ScanTailor"
+    assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_SCANTAILOR
+    assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
+    opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(ds.JEITO_PROGRAMA))
+    assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA     # o do programa continua opção
     opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(ds.JEITO_SCANTAILOR))
     opcoes.cx_cortar_sobra.setChecked(True)
     assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
@@ -89,6 +99,37 @@ def test_as_escolhas_voltam_ao_reabrir(janela, pasta):
     assert janela.projeto.dividir_folhas
     assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
     assert janela.tela_opcoes.combo_jeito_dividir.currentData() == ds.JEITO_SCANTAILOR
+
+
+def test_projeto_antigo_reaberto_continua_com_o_do_programa(janela, pasta):
+    """A decisao do Samuel de 07/10/2026 (o de fabrica virou o do ScanTailor)
+    so vale para livro NOVO: "o programa vai ter que ser capaz de abrir
+    arquivos de versoes anteriores" (Samuel, 05/10). Um projeto.json de antes
+    (sem o campo dividir_como, como o fase-1 grava) reabre com "o do
+    programa", e marcar "Dividir" nele continua mostrando o do programa."""
+    import projetos
+
+    janela.abrir_livro(_pdf_deitado(pasta))
+    _analisar(janela)
+    janela._salvar_agora()
+    assert projetos.esperar_gravacoes(10)
+    caminho = janela.projeto.caminho_entrada
+    estado = Path(janela.resumo.pasta) / projetos.ARQUIVO_ESTADO
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    dados.pop("dividir_como")                  # como o programa de antes gravava
+    dados.pop("cortar_sobra")
+    estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
+    janela.previas.parar()
+    janela.previas = None
+    janela.tela_opcoes.folhear.fechar()
+
+    janela.abrir_livro(caminho)
+    opcoes = janela.tela_opcoes
+    assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA
+    assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_PROGRAMA
+    opcoes.cx_dividir.setChecked(True)
+    assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_PROGRAMA
+    assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA
 
 
 # ------------------------------------------------------------------ "Onde cortar"

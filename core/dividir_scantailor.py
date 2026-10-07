@@ -61,6 +61,15 @@ JEITO_SCANTAILOR = "scantailor"
 JEITOS = (JEITO_PROGRAMA, JEITO_SCANTAILOR)
 # Projeto salvo antes do item 2.1 dividia pelo nosso (core/dividir.py).
 JEITO_DO_PROJETO_ANTIGO = JEITO_PROGRAMA
+# O jeito que vem escolhido num livro NOVO ao marcar "Dividir folhas ao meio"
+# (modelos.Projeto.dividir_como). Decisão do Samuel de 07/10/2026, na página
+# de escolhas, pergunta "Ao marcar 'Dividir folhas ao meio', qual jeito vem
+# escolhido?": "O do ScanTailor" (relatorios/conferencia-samuel-2026-10-07.md).
+# Até então era o do programa, que continua como opção (JEITOS).
+# Seguro mudar: trocar de volta para JEITO_PROGRAMA (só muda o livro novo).
+# Arriscado: usar isto no lugar de JEITO_DO_PROJETO_ANTIGO (o projeto salvo
+# antes, sem o campo, passaria a dividir de outro jeito ao ser reaberto).
+JEITO_DO_LIVRO_NOVO = JEITO_SCANTAILOR
 
 # Textos da tela (provisórios até o layout; ver ui/tela_opcoes.py e
 # ui/tela_conferir.py). Seguro mudar.

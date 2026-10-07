@@ -28,7 +28,7 @@ from core.pontinhos_scantailor import DESLIGADO as PONTINHOS_DESLIGADO
 from core.pontinhos_scantailor import DO_PROJETO_ANTIGO as PONTINHOS_DO_PROJETO_ANTIGO
 from core.pontinhos_scantailor import PADRAO as PONTINHOS_PADRAO
 from core.dividir_scantailor import JEITO_DO_PROJETO_ANTIGO as DIVIDIR_DO_PROJETO_ANTIGO
-from core.dividir_scantailor import JEITO_PROGRAMA as DIVIDIR_PROGRAMA
+from core.dividir_scantailor import JEITO_DO_LIVRO_NOVO as DIVIDIR_DO_LIVRO_NOVO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -255,9 +255,13 @@ class Projeto:
     # "o do ScanTailor" (core/dividir_scantailor.py, o automatico dele).
     # Codigos de core/dividir_scantailor.JEITOS. Cada folha pode trocar so
     # nela (ConfigFolha.dividir_como). Projeto salvo antes do campo volta com
-    # "programa" (era o unico jeito). De fabrica "programa": o que o programa
-    # ja fazia quando a pessoa marcava dividir.
-    dividir_como: str = DIVIDIR_PROGRAMA
+    # "programa" (era o unico jeito; de_dicionario). De fabrica, no livro
+    # NOVO: "o do ScanTailor" - decisao do Samuel de 07/10/2026 ("Ao marcar
+    # 'Dividir folhas ao meio', qual jeito vem escolhido?" -> "O do
+    # ScanTailor"); ate entao era "programa". O do programa continua opcao.
+    # Arriscado: trocar o setdefault de de_dicionario junto (o projeto
+    # antigo reaberto mudaria de jeito).
+    dividir_como: str = DIVIDIR_DO_LIVRO_NOVO
     # Item 2.1, decisao G3 (b): o "corte da sobra" do ScanTailor (tira a
     # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
     # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.

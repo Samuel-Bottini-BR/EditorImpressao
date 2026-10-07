@@ -6,7 +6,8 @@ ficar ruim"; G3 (b) o "corte da sobra" do ScanTailor como opção, desligada;
 e "o programa vai ter que ser capaz de abrir arquivos de versões anteriores".
 
 Testes de máquina:
-- livro novo não divide; o jeito de fábrica é o do programa; sobra desligada;
+- livro novo não divide; o jeito de fábrica é o do ScanTailor (decisão do
+  Samuel de 07/10/2026; até então era o do programa); sobra desligada;
 - projeto antigo (sem os campos novos) abre como estava: o que dividia
   continua dividindo, pelo jeito do programa;
 - a análise pelo jeito do programa é a de sempre; pelo do ScanTailor divide
@@ -77,10 +78,14 @@ def _pdf_em_pe_com_sobra(pasta: Path) -> str:
 
 # ------------------------------------------------------------------ o modelo
 
-def test_livro_novo_nao_divide_e_o_jeito_e_o_do_programa():
+def test_livro_novo_nao_divide_e_o_jeito_e_o_do_scantailor():
+    """Decisão do Samuel, 07/10/2026 (página de escolhas, pergunta "Ao marcar
+    'Dividir folhas ao meio', qual jeito vem escolhido?"): "O do ScanTailor".
+    Até então o livro novo vinha com o do programa, que continua como opção."""
     projeto = Projeto(caminho_entrada="x.pdf")
     assert projeto.dividir_folhas is False
-    assert projeto.dividir_como == ds.JEITO_PROGRAMA
+    assert projeto.dividir_como == ds.JEITO_SCANTAILOR == ds.JEITO_DO_LIVRO_NOVO
+    assert ds.JEITO_PROGRAMA in ds.JEITOS          # o do programa continua opção
     assert projeto.cortar_sobra is False
     folha = ConfigFolha(indice=0)
     assert folha.dividir_como is None and folha.sobra is None
@@ -104,6 +109,19 @@ def test_projeto_antigo_abre_como_estava():
     # sem o campo dividir_folhas (nao deveria existir, mas era o de fabrica)
     sem = Projeto.de_dicionario({"caminho_entrada": "x.pdf"})
     assert sem.dividir_folhas is True
+    # a troca do de fabrica para o ScanTailor (07/10/2026) nao alcanca o
+    # projeto antigo: sem o campo, continua o do programa
+    assert sem.dividir_como == ds.JEITO_PROGRAMA
+
+
+def test_projeto_gravado_com_o_do_programa_continua_com_ele():
+    """Projeto gravado entre o item 2.1 e 07/10/2026 (de fabrica "programa",
+    gravado no projeto.json): abre com o do programa, nao com o novo de
+    fabrica."""
+    gravado = Projeto(caminho_entrada="x.pdf", dividir_folhas=True,
+                      dividir_como=ds.JEITO_PROGRAMA).para_dicionario()
+    volta = Projeto.de_dicionario(json.loads(json.dumps(gravado)))
+    assert volta.dividir_como == ds.JEITO_PROGRAMA
 
 
 def test_ida_e_volta_pelo_disco():
@@ -123,6 +141,7 @@ def test_ida_e_volta_pelo_disco():
 def test_jeito_do_programa_e_o_de_sempre(tmp_path):
     caminho = _pdf_deitado(tmp_path, dobra=0.6)
     projeto = Projeto(caminho_entrada=caminho, dividir_folhas=True,
+                      dividir_como=ds.JEITO_PROGRAMA,   # o de fabrica e o do ScanTailor (07/10)
                       endireitar=False, cortar_bordas=False)
     pipeline.analisar_projeto(projeto)
     doc = abrir_pdf(caminho)
@@ -175,6 +194,7 @@ def test_sem_a_dll_o_scantailor_cai_no_do_programa(tmp_path, monkeypatch):
 def test_recalcular_divisao_de_uma_folha(tmp_path):
     caminho = _pdf_deitado(tmp_path, dobra=0.6)
     projeto = Projeto(caminho_entrada=caminho, dividir_folhas=True,
+                      dividir_como=ds.JEITO_PROGRAMA,   # o de fabrica e o do ScanTailor (07/10)
                       endireitar=False, cortar_bordas=False)
     pipeline.analisar_projeto(projeto)
     lombada = pipeline.recalcular_divisao(projeto, 1, ds.JEITO_SCANTAILOR)
