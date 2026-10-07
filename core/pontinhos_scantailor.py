@@ -194,12 +194,12 @@ FORCA_DA_ESCOLHA = {POUCO: "pouco", NORMAL: "normal", MUITO: "muito"}
 # essa ressalva, além disso eu quero poder usar o pouco o o medio e muito"
 # (relatorios/conferencia-samuel-2026-10-07.md). Então o do ScanTailor NUNCA
 # vem de fábrica (tests/test_limpar_pontinhos_no_programa.py cobra isso).
-# Falta o Samuel dizer qual dos dois (pergunta "pontinhos-de-fabrica" na
-# página de escolhas): NOSSO (o que o programa sempre fez, fica até ele
-# responder) ou DESLIGADO. A TROCA É SÓ ESTA LINHA: "PADRAO = DESLIGADO".
+# Na pergunta "pontinhos-de-fabrica" da página de escolhas (07/10), entre
+# NOSSO (o que o programa sempre fez) e DESLIGADO, o Samuel escolheu
+# "Não limpa nada (desligado)". A troca entre os dois é só esta linha.
 # Os testes valem para os dois. Seguro mudar: entre NOSSO e DESLIGADO.
 # Arriscado: pôr POUCO, NORMAL ou MUITO (contra a decisão de 07/10).
-PADRAO = NOSSO
+PADRAO = DESLIGADO   # Samuel, 07/10, pergunta "pontinhos-de-fabrica": "Não limpa nada (desligado)"
 DO_PROJETO_ANTIGO = NOSSO         # livro salvo antes da escolha existir
 
 # TODOS os textos da tela desta escolha moram aqui, e só aqui (a tela "O
