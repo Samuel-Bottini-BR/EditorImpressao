@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 06/10/2026 (PARTE -11). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 06/10/2026, noite (PARTE -12). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,207 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -11 — Checkpoint de 05 a 06/10/2026 (leia isto primeiro, é o mais novo)
+# PARTE -12 — Checkpoint de 06/10/2026, tarde e noite (leia isto primeiro, é o mais novo)
+
+**O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). Tudo o que está aqui tem
+linha própria, com commit, no **Registro de mudanças**, na **Lista de bugs** e na **Lista de espera** do
+PLANO-DEFINITIVO (as duas cópias estão iguais no fim da sessão). Respostas literais do Samuel desta sessão:
+`relatorios/conferencia-samuel-2026-10-06.md`, `relatorios/revisar-decisoes/rodada-1/respostas-samuel.md`,
+`relatorios/revisar-decisoes/rodada-2/respostas-samuel.md`; as de layout no `Plano de layout (rascunho).md`
+(seções "Rodada 7/8/9 — respostas do Samuel").
+
+## 0. O jeito de trabalhar mudou nesta sessão (regras novas — ler antes de tudo)
+
+- **Conferências em páginas do claude.ai com banco de dados** (o Samuel clica "Escolho esta" e comenta; fica salvo
+  sozinho na coleção `respostas`; a gerente lê com a ferramenta ArtifactData quando ele avisa "respondi"/"feito",
+  copia **palavra por palavra** para `relatorios/` e para o Registro de mudanças, e marca a pergunta `status:
+  "decidida"` na coleção `decisoes`). As quatro páginas (e o que vai em cada uma) estão no `CLAUDE.md`, seção 10,
+  item 10, e as fontes em `docs/plano/paginas-claude-ai/` (LEIA-ME explica como republicar):
+  - Escolhas (comportamento do programa): https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV
+  - Layout (telas; abas Para escolher / Já decidido / Botões e funções / Plano de layout / Todas as telas):
+    https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu — conteúdo gerado por `docs/plano/para_a_pagina_de_layout.py`
+  - "Quando revisar uma página" (estudo + rodadas do "Para revisar"): https://claude.ai/artifact/NeCgyTotRfqsdXntn9vMUc
+  - Andamento do programa (agentes, esperando você, próximos, feito, **plano completo**, recados):
+    https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy — o plano entra por `docs/plano/para_a_pagina_de_andamento.py`
+    (rodar e enviar as partes que mudaram **toda vez que o plano mudar**); coleção `recados` = recados do Samuel.
+- **Abrir as conferências no navegador dele com `start "" "<endereço>"`** (a ação `open` da ferramenta Artifact
+  responde "Opened" mas **não chega ao navegador dele** — ele reclamou). Abrir sozinha **quando ele já tiver
+  respondido a anterior e dado ok**; se houver conferência sem resposta, só avisar no chat (`CLAUDE.md` §10 item 10).
+- **Botão/função já decidida entra com aparência provisória** e vai para
+  `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\layout\Botoes e funcoes para o layout.md` (pedido dele
+  na conferência 15, M1).
+- **Formato de imagem que ele entende** (limpar pontinhos): uma linha de quadros lado a lado, **preto = fica no
+  papel, vermelho = o programa tirou**, com a **folha inteira em cima** e a parte ampliada pintada de amarelo
+  transparente; legenda fixa embaixo; nunca retângulo por cima do resultado. A grade 3×3 confundiu.
+- **"Para revisar" tem um agente só dele** (pedido: "cria um agente só para decidirmos as questões das revisões");
+  ele trabalha em rodadas: `relatorios/revisar-decisoes/rodada-N/` (`rodada-N-perguntas.json` no formato da
+  coleção `decisoes`, `img\`, `LEIA-ME.md`, `scripts\`; imagens fora do git; dados pesados em
+  `%TEMP%\revisar_decisoes_rodada1`). Um agente novo retoma lendo os LEIA-ME das rodadas 1–3.
+- **Regra de apagar** agora também nos 4 arquivos de `.claude/agents/` (conferir antes; nada fora do projeto;
+  cuidado com junções). O que aconteceu com `D:\d` (29/09): o agente criou a pasta sem querer (caminho do Git Bash
+  `/d/programas` virou `D:\d\programas`), moveu o download e apagou a pasta sem olhar; provavelmente só tinha o
+  download, mas não dá para provar (`docs/pesquisa/treinar-ocr-e-detector.md`, seção 8).
+
+## 1. Estado do git (06/10, fim da sessão)
+
+**`fase-1` no GitHub** (último commit = o deste checkpoint). `master` continua em `44c86a4`.
+Juntados ao `fase-1` nesta sessão, todos com verificador ("PRONTO PARA JUNTAR"):
+- **Ramo do pedaço** (`5588022`): "Ajustar o pedaço à figura", "Tirar o fundo" e Original obedecem ao "só neste
+  pedaço", "(2)" com PDF aberto vira "Ficou pronto!". Conserto junto: pedaço de 4 cantos.
+- **Girar 2.3** (`b7b42be`, com `36864b1` e `5eee3d8`: pedaço em folha girada; detecção de gravura não apaga
+  marcação feita durante ela).
+- **"Aplicar em" copia o giro da folha da vez** (`92fae02`; escolha dele; capa ao "voltar"; texto do "Um momento").
+- **Desenho claro que sumia no "Só as letras"** (`04b225d`; "Bom por enquanto").
+- **Três consertos** (`7445b9d`): Ctrl+Z certo depois de reabrir o livro; aviso "vá a uma folha par"; testes com
+  pasta de dados própria (`pasta_de_dados_dos_scripts.py`).
+
+**Prontos em ramo, NÃO juntados** (todos no GitHub):
+- **`fase2-misto-opcoes` em `a755087`** — DLL comum `core/nativo/st_ferramentas.dll` com o código ORIGINAL do
+  ScanTailor v1.2.1 (somas em `terceiros/scantailor-advanced/somas-v1.2.1.txt`, conferidas contra o git oficial
+  `5eaac18`) + **limpar pontinhos ligado** (escolha "desligado · o nosso · pouco · normal · muito", nomes
+  provisórios em `core/pontinhos_scantailor.py`, projeto guarda códigos internos `desligado/nosso/st_pouco/
+  st_normal/st_muito`; livro novo "pouco"; livro antigo idêntico). Verificador: **NÃO ESTÁ PRONTO só pela
+  velocidade** (regra 6): +0,08 s por página comum, +0,5–0,9 s nas grandes de "72 DPI". **Espera o Samuel** (§2).
+- **`fase2-dividir` em `eebe358`** (em cima do `fase2-misto-opcoes`) — item 2.1 do jeito G2/G3; verificador-2:
+  **PRONTO PARA JUNTAR** (depois de consertar a folha que sumia do PDF). **Entra junto** com o de cima: juntar
+  `fase2-dividir` traz os dois.
+- **`recomeco-historico` em `52ef2b0`** (sobre `fase-1` `33ec7aa`) — o Ctrl+Z não desfaz mais ações da
+  conferência anterior quando ela recomeça sozinha (histórico antigo guardado com a cópia do trabalho). pytest
+  1769/0. **O verificador foi interrompido no começo pelo checkpoint: refazer a verificação** (janela real, mouse
+  nativo, sequência do item 5 de `relatorios/conferir/consertos-06-10/parecer-consertos-06-10.md`).
+- **`fase2-endireitar` em `9a9b2d0`** (sobre `fase2-dividir`) — **EM ANDAMENTO, interrompido**: só o começo
+  (função do endireitar na DLL, `core/endireitar_scantailor.py`, `tests/test_endireitar_scantailor.py`, arquivos
+  `BlackOnWhiteEstimator`, `UpscaleIntegerTimes`, `referencia/deskew/`). **Nada conferido** (nem testes nem somas);
+  nada ligado à tela nem à ordem nova. Retomar daqui com a tarefa completa (§5).
+
+Worktrees: `.claude/worktrees/geometria` (`fase2-endireitar`), `consertos` (`recomeco-historico`), `misto`
+(`fase2-misto-opcoes`); `modelos\`, `gabarito\paginas\`, `gabarito\scantailor-24-09\` nelas são **junções
+somente leitura** (nunca `rm -rf`).
+
+## 2. Esperando o Samuel (perguntas exatas e onde estão)
+
+**Página de escolhas** (3 abertas, nenhuma respondida):
+1. `pontinhos-tempo`: *"Limpar pontinhos do ScanTailor: aceita o Preto e branco um pouco mais lento?"* —
+   "Aceito, pode entrar" (recomendado) / "Aceito, mas quero que fique mais rápido logo" / "Não aceito: não entra
+   ainda". **É a que segura mais trabalho** (pontinhos + dividir + endireitar estão empilhados em cima).
+2. `dividir-jeito-fabrica`: *"Ao marcar 'Dividir folhas ao meio', qual jeito vem escolhido?"* — "O do ScanTailor"
+   (recomendado: o do programa cortou letra em 58 das 471 folhas do Hugon; o do ScanTailor ficou na dobra em todas;
+   abrir o livro ~0,07 s/folha mais lento) / "O do programa". Hoje o código vem com "o do programa".
+3. `dividir-metade-apagada`: *"Folha que deixou de ser dividida, com uma metade apagada: o que vai para o PDF?"* —
+   "Sai a folha inteira" (recomendado, como está) / "Sai só a metade que não foi apagada".
+
+**Estudo do "Para revisar"** — rodada 3 (37 perguntas: 7 cartões "como cada problema vai ser resolvido" + 30 páginas
+de 5 livros novos do `D:\Livros para editar`: Antiphonal 1547, Rariora, Egenloff, Gladstone, Camões; "pela regra nova
+vai/não vai para 'Para revisar'. Você concorda?"). Pela regra nova vão 9 das 30 (hoje 20); escapa a Rariora 169.
+As 30 rodaram **sem** o conserto do desenho.
+
+**Layout** — rodada 10 (`r10-nomes`: 3 conjuntos de nomes para o limpar pontinhos e o "Só as letras" — o agente
+recomenda o conjunto 3 "Apagar pontos de sujeira / Não apagar / Apagar todos os pequenos / Apagar só longe das
+letras: pouco/normal/muito" e "Fica o escuro / Fica tudo / Não fica nada"; `r10-escolhas-como`;
+`r10-filtros-tela-cheia`; `r10-para-revisar-troca`).
+
+**No chat, sem resposta:**
+- *"Posso apagar a pasta de rascunho `D:\programas\EditorImpressao-arquivos\ferramentas\build-st-ferramentas-dividir`?"*
+  (criada pelo implementador do dividir, fora do projeto; há também `build-st-ferramentas` do M9).
+- Para depois (com imagem): num livro dividido, a página "2" fica na folha 1; com "só as pares" o aviso diz "Você
+  está numa folha ímpar" — certo, mas pode confundir o Kaique.
+- Antigas: "você tinha uma pasta `D:\d`?"; escala do notebook do Kaique; o "aviso que o Kaique pediu".
+
+## 3. Decisões fechadas nesta sessão (todas com as palavras dele no Registro de mudanças)
+
+- Conferência 15: M1 Bom, F1 Bom, M2 "Está bom assim" (depois de explicada de novo).
+- Regras novas: botões já, layout depois; páginas que salvam e abrem sozinhas; agente só das revisões.
+- Girar: "aplicar em" = todas viradas como a folha da vez; "só as pares" numa folha ímpar → avisar e não girar.
+- Limpar pontinhos (P7): de fábrica o do ScanTailor "pouco"; opções desligado · o nosso · pouco · normal · muito
+  ("o nosso muitas vezes acaba comendo muito as letras").
+- Conserto do desenho que sumia: "Bom por enquanto" (falta: linhas vermelhas finas do ljs47 103; borda de folha no
+  Siebmacher 9).
+- "Para revisar", rodadas 1–2: regra tirada das respostas = vai quando o programa **apagou parte de um desenho**,
+  quando **uma figura passou da beirada da gravura / mancha virou gravura**, ou quando sobrou **faixa escura do
+  scanner** (que vira aviso único no livro se aparecer em 70% das páginas); acerta 16/16 (a de hoje, 12). "Só o
+  texto achado": aviso uma vez no livro **e** páginas em "Para revisar". O programa **ainda usa a regra de hoje
+  (10%)**: a nova só entra depois da rodada 3.
+- Layout (rodadas 6–9): tela inicial com cartão "+"; livro aberto em tela cheia com páginas rolando + botão "Ver
+  lado a lado" (sobre as páginas, à direita, pares rolando); ao abrir: ícones na borda, tudo fechado, com seta
+  (área de trabalho 1 como opção); miniaturas sem botões esquerda/direita, arrastáveis, cabeçalho "PÁGINAS" com
+  seta e três pontinhos; três temas, **cinza de fábrica**; ferramentas agrupadas como no Photoshop com a letra do
+  atalho ao passar o mouse; barra de opções na linha dos menus; painel da direita empurra a página; Propriedades
+  conforme a ferramenta; Filtro em fila + partes + botão "ver os filtros em tela cheia"; Histórico = botões + lista;
+  "Para revisar" com as duas listas e botão para trocar; **nomes que o Kaique entenda** (rodada 10).
+- Misto 3,4% mais lento com o conserto do desenho: entrou pela decisão V de 05/10 ("o principal agora e ter um bom
+  resultado nos pdf's") — registrado como "a rever pelo Samuel".
+
+## 4. Tentado e descartado
+
+- Aviso "Para revisar" por "tinta forte fora do texto > 10%": manda 35 de 59 páginas, 20 certas à toa.
+- "Pedaço de figura pego como texto" como critério de revisar: 35 páginas, 23 certas — não serve.
+- Imagens do limpar pontinhos em grade 3×3: ele não entendeu o que foi tirado e o que ficou.
+- Corte da sobra do ScanTailor no modo "forçado": jogou fora uma página inteira do Hugon 121 e cortou colunas do
+  Opus 256 → usar o automático.
+- Nomes "o nosso" e "limpar pontinhos": o Kaique não entende.
+- Ação `open` da ferramenta Artifact para abrir no navegador dele: não chega.
+- Juntar o `fase2-dividir` no estado da 1ª entrega: folha sumia do PDF (página de rosto do Gradus).
+
+## 5. Descobertas de comportamento real
+
+- **DLL comum `st_ferramentas`** fica ao lado da `st_gravura.dll` do 1.2 (não a substitui); compilação por
+  `compilar_st_ferramentas.py` (VS 2022 Build Tools + CMake já instalados); rascunhos de build fora do projeto em
+  `EditorImpressao-arquivos\ferramentas\build-st-ferramentas*`. Um teste confere as somas SHA-256 de `src/`.
+- **PDFs que dizem "72 DPI"** (Horas, Marial) e o Graduale (diz 112 na largura e 93 na altura, imagem esticada):
+  o DPI real vem da mesma conta do detector de gravura, com trava abaixo de 140 DPI (Boécio diz 150 e Escola 199,9
+  e são de verdade).
+- **Prévia ≠ PDF** em duas coisas novas: a prévia (150 DPI) quase não mostra o conserto do desenho do Misto; no
+  "muito" do limpar pontinhos a prévia (110 DPI) apaga o dois-pontos que o PDF guarda.
+- **"O do programa" corta letra** no livro aberto (Hugon 58/471 folhas; Penido 109 no meio do texto); o do
+  ScanTailor fica na dobra. No Siebmacher os dois erram (o certo é não dividir).
+- **Três livros reais do Samuel** já tinham o histórico errado (Consolação sem acento 291 linhas/289 ações; com
+  acento 17/11; gradus-primus 230/212): na próxima abertura o Ctrl+Z só alcança a última ação; o livro não perde
+  nada; cópia `acoes.antigo-historico-*` ao lado.
+- **Limite de uso da conta** interrompeu um verificador ("session limit"); retomar com SendMessage para o mesmo
+  agente (ele continua do ponto).
+- Um verificador rodou 2 scripts sem pasta própria e deixou **2 linhas no `erros.log` real** (21:39:59 e
+  21:40:34 de 06/10, a partir da linha 7945); não apagadas (o arquivo é dele). Desde então todo prompt de agente
+  exige pasta de dados própria e conferir o `erros.log` antes/depois.
+- O `teste_interface.py` quebra no meio (`TelaConferir` não tem `destino`), já no `fase-1` (Lista de bugs de 02/10).
+
+## 6. Próximo passo recomendado
+
+Ler as respostas das três páginas. **Se o Samuel aceitar o tempo do limpar pontinhos:** juntar `fase2-dividir`
+(traz o `fase2-misto-opcoes`) ao `fase-1`, rodar os testes, aplicar a escolha do jeito de fábrica do dividir e a da
+metade apagada; levar os nomes escolhidos na rodada 10 aos textos provisórios (`core/pontinhos_scantailor.py`);
+**refazer a verificação do `recomeco-historico`** e juntar; **retomar o `fase2-endireitar`** (depois de rebasear
+sobre o `fase-1` novo) com a tarefa completa: G4 (ScanTailor de fábrica + C1 discordância > 0,3° → "Para revisar"
+com a escolha da conta), G5 (grade + ângulo em número + alça), G6 (endireitar antes de cortar, atualizando a "Ordem
+obrigatória" do `CLAUDE.md`; livro antigo continua idêntico). Com as respostas da rodada 3 do "Para revisar",
+chamar um agente novo das revisões (contexto nos LEIA-ME) para a rodada 4 e, quando a regra fechar, um implementador
+para trocar o aviso de 10% pela regra nova.
+
+## 7. Como rodar e testar (06/10, fim)
+
+```
+cd D:\programas\EditorImpressao
+.venv\Scripts\python.exe -m pytest tests -q        # rodar ARQUIVO POR ARQUIVO (pouca memória); fase-1 em 06/10: 0 falhas nos rodados no checkpoint
+.venv\Scripts\python.exe -m pytest tests/test_historico_depois_de_reabrir.py tests/test_girar.py tests/test_girar_cartoes_e_previas.py tests/test_misto.py tests/test_misto_desenho_claro.py tests/test_misto_consertos.py tests/test_zonas_na_folha.py tests/test_ajustar_pedaco_na_folha_girada.py tests/test_teste_velocidade.py tests/test_pasta_de_dados_dos_scripts.py -q   # checkpoint 06/10: 11+53+24+31+10+25+25+8+147+14 passaram, 0 falhas
+.venv\Scripts\python.exe teste_botoes.py           # numa worktree: só numa cópia `git archive` com saida_teste própria; 159 ações no fase-1, 166 no fase2-dividir
+.venv\Scripts\python.exe teste_velocidade.py       # agora com pasta de dados própria; SÓ com o PC parado
+.venv\Scripts\python.exe docs\plano\para_a_pagina_de_andamento.py <pasta>   # partes do plano para a página de andamento
+.venv\Scripts\python.exe docs\plano\para_a_pagina_de_layout.py <pasta>      # imagens e textos para a página do layout
+```
+Números das baterias completas dos agentes (arquivo por arquivo): `fase-1` com os consertos 1757/0; `fase2-dividir`
+1830/0; `recomeco-historico` 1769/0 (59 pulados = OCR).
+
+## 8. Ambiente
+
+Nada instalado pela gerente. Novos no projeto: `pasta_de_dados_dos_scripts.py` (raiz); `docs/plano/para_a_pagina_de_*.py`;
+`docs/plano/paginas-claude-ai/` (fontes das páginas). Memórias da gerente em
+`C:\Users\fotog\.claude\projects\d--programas\memory\` (responder em português; dar opções; escolhas visuais com as
+URLs; botões já, layout depois; página de andamento; abrir conferências com `start`). Pasta temporária desta sessão
+(`C:\Users\fotog\AppData\Local\Temp\claude\d--programas\5c0a83a2-...\scratchpad`, ~600 MB, no disco C, que está com
+~14 GB livres) pode ser apagada quando o Samuel autorizar; as fontes importantes já foram copiadas para o projeto.
+
+---
+
+# PARTE -11 — Checkpoint de 05 a 06/10/2026
 
 **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). Tudo o que está aqui
 tem linha própria, com commit, no **Registro de mudanças**, na **Lista de bugs** e na **Lista de espera** do

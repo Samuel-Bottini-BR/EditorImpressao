@@ -19,6 +19,8 @@ O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que val
 > Resumo da sessão de 02–03/10: **PARTE -10** do handoff.
 >
 > **Atualização de 06/10/2026:** juntados ao `fase-1` o modo Misto ("Só as letras"), as zonas presas à folha original com conversão por trás, a gravação do projeto por trás e os consertos de 05/10. Prontos em ramos: o item 2.3 girar (`fase2-geometria`, falta refazer a verificação dos consertos) e os consertos do pedaço (`pedaco-e-salvo-2-2026-10-05`, esperando o formulário 15). Decisões do Samuel em 05–06/10 no Registro de mudanças. Resumo da sessão: **PARTE -11** do handoff.
+>
+> **Atualização de 06/10/2026, noite:** juntados ao `fase-1` o ramo do pedaço, o girar com o "aplicar em", o conserto do desenho que sumia no "Só as letras" e três consertos (Ctrl+Z depois de reabrir; aviso das pares; testes sem a pasta de dados real). Prontos em ramo, esperando o Samuel: `fase2-misto-opcoes` (DLL comum do ScanTailor + limpar pontinhos; falta ele aceitar o tempo) e `fase2-dividir` (2.1, conferido). Em verificação: `recomeco-historico`. Em andamento: `fase2-endireitar`. As conferências agora são feitas em páginas do claude.ai (`CLAUDE.md` §10 item 10). Resumo da sessão: **PARTE -12** do handoff.
 
 ---
 

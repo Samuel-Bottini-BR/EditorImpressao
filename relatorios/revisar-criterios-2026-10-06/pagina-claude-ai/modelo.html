@@ -1,0 +1,510 @@
+<title>Quando revisar uma página</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+  /* Layout: leitura em coluna; cada opção é um cartão com a grade das 59 páginas (um quadrinho por página). Cores: vermelho = saiu errada, âmbar = defeito leve, verde = saiu certa. */
+  :root {
+    --papel: #f1f2f4;
+    --folha: #ffffff;
+    --tinta: #1a1f27;
+    --fraco: #5a6372;
+    --fio: #d5dae1;
+    --azul: #2f6fe0;
+    --azul-suave: #e3ecfc;
+    --errada: #c4322b;
+    --errada-suave: #fbe3e1;
+    --leve: #b7791f;
+    --leve-suave: #fbefd9;
+    --certa: #2e8a55;
+    --certa-suave: #e1f2e8;
+    --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --fonte-texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --papel: #171b21; --folha: #20262e; --tinta: #e9edf2; --fraco: #a2acb9; --fio: #36404c;
+      --azul: #6b9bf2; --azul-suave: #1f2f4a;
+      --errada: #f07a72; --errada-suave: #3d1f1d; --leve: #f0b45c; --leve-suave: #3a2c14; --certa: #62cf91; --certa-suave: #183121;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --papel: #171b21; --folha: #20262e; --tinta: #e9edf2; --fraco: #a2acb9; --fio: #36404c;
+    --azul: #6b9bf2; --azul-suave: #1f2f4a;
+    --errada: #f07a72; --errada-suave: #3d1f1d; --leve: #f0b45c; --leve-suave: #3a2c14; --certa: #62cf91; --certa-suave: #183121;
+  }
+  body { background: var(--papel); color: var(--tinta); font: 17px/1.55 var(--fonte-texto); padding-inline: 16px; padding-block: 0 64px; }
+  .miolo { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+  header.topo { padding-block: 30px 0; display: grid; gap: 8px; }
+  .marca { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--azul); font-weight: 700; }
+  h1 { margin: 0; font: 800 34px/1.1 var(--fonte-titulo); text-wrap: balance; }
+  .lead { margin: 0; font-size: 19px; max-width: 66ch; }
+  .meta { margin: 0; color: var(--fraco); font-size: 15px; }
+  h2 { margin: 0 0 6px; font: 600 26px/1.2 var(--fonte-titulo); text-wrap: balance; }
+  h3 { margin: 0; font: 600 20px/1.25 var(--fonte-titulo); }
+  section > p, .texto p { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  .fraco { color: var(--fraco); }
+  .jeitos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 12px; }
+  .jeito { background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+  .jeito .tag { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--azul); }
+  .jeito p { margin: 6px 0 0; font-size: 16px; }
+  ol.tres { margin: 10px 0 0; padding-left: 0; list-style: none; counter-reset: n; display: grid; gap: 12px; }
+  ol.tres li { counter-increment: n; display: grid; grid-template-columns: 34px 1fr; gap: 12px; max-width: 76ch; }
+  ol.tres li::before { content: counter(n); width: 34px; height: 34px; border-radius: 50%; background: var(--azul-suave); color: var(--azul);
+    font: 800 17px/34px var(--fonte-titulo); text-align: center; }
+  .legenda-grade { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: var(--fraco); margin: 6px 0 4px; align-items: center; }
+  .legenda-grade span { display: inline-flex; align-items: center; gap: 6px; }
+  .q { width: 16px; height: 16px; border-radius: 3px; display: inline-block; flex: none; }
+  .q.errada.vai { background: var(--errada); }
+  .q.leve.vai { background: var(--leve); }
+  .q.certa.vai { background: var(--certa); }
+  .q.fica { background: transparent; border: 2px solid var(--fio); }
+  .q.errada.fica { border-color: var(--errada); }
+  .opcoes { display: grid; gap: 18px; }
+  .opcao { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 20px; display: grid; gap: 12px; min-width: 0; }
+  .opcao.recomendada { border: 2px solid var(--azul); }
+  .opcao .cab { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; }
+  .selo { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 99px; background: var(--azul); color: var(--folha); letter-spacing: .03em; }
+  .selo.nao { background: var(--fio); color: var(--tinta); }
+  .faz { margin: 0; max-width: 72ch; }
+  .numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .num { border-radius: 8px; padding: 10px 12px; background: var(--papel); }
+  .num b { display: block; font: 800 28px/1.1 var(--fonte-titulo); font-variant-numeric: tabular-nums; }
+  .num span { font-size: 14px; color: var(--fraco); }
+  .num.ruim b { color: var(--errada); }
+  .num.bom b { color: var(--certa); }
+  .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(26px, 1fr)); gap: 5px; max-width: 760px; }
+  .grade button { aspect-ratio: 1; width: 100%; max-width: 100%; border-radius: 4px; padding: 0; cursor: pointer; border: 2px solid transparent; }
+  .grade button.vai.errada { background: var(--errada); }
+  .grade button.vai.leve { background: var(--leve); }
+  .grade button.vai.certa { background: var(--certa); }
+  .grade button.fica { background: transparent; border-color: var(--fio); }
+  .grade button.fica.errada { border-color: var(--errada); border-style: dashed; }
+  .grade button.marca-fraca { background: transparent; border: 2px dotted var(--fraco); }
+  .grade button[aria-pressed="true"] { outline: 3px solid var(--azul); outline-offset: 1px; }
+  .detalhe { font-size: 15px; min-height: 1.5em; color: var(--fraco); max-width: 72ch; }
+  .detalhe b { color: var(--tinta); }
+  .ganha-perde { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .ganha-perde div { border-radius: 8px; padding: 10px 12px; font-size: 15px; }
+  .ganha { background: var(--certa-suave); }
+  .perde { background: var(--errada-suave); }
+  .ganha-perde h4 { margin: 0 0 4px; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
+  .ganha-perde ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+  .so-texto { font-size: 15px; border-left: 3px solid var(--fio); padding-left: 12px; color: var(--fraco); max-width: 72ch; }
+  .chamada { background: var(--azul-suave); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; }
+  .chamada a { color: var(--azul); font-weight: 700; }
+  .figuras { display: grid; gap: 22px; }
+  figure { margin: 0; display: grid; gap: 6px; }
+  figure button { padding: 0; border: 1px solid var(--fio); border-radius: 8px; overflow: hidden; cursor: zoom-in; background: #ffffff; display: block; width: 100%; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { font-size: 15px; color: var(--fraco); max-width: 80ch; }
+  figcaption b { color: var(--tinta); }
+  .tabela { overflow-x: auto; background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; }
+  table { border-collapse: collapse; font-size: 14px; min-width: 760px; width: 100%; }
+  th, td { padding: 7px 10px; border-bottom: 1px solid var(--fio); text-align: left; vertical-align: top; }
+  th { position: sticky; top: 0; background: var(--folha); font-size: 13px; letter-spacing: .03em; }
+  td.v { white-space: nowrap; font-weight: 700; }
+  td.v.errada { color: var(--errada); }
+  td.v.leve { color: var(--leve); }
+  td.v.certa { color: var(--certa); }
+  td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  ul.ressalvas { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 76ch; }
+  .guardado { background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; font-size: 15px; }
+  .guardado code { font-size: 14px; overflow-wrap: anywhere; }
+  dialog.zoom { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh; }
+  dialog.zoom::backdrop { background: rgba(0, 0, 0, .82); }
+  dialog.zoom img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 6px; background: #ffffff; }
+  dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 8px; color: #ffffff; }
+  dialog.zoom button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 0; cursor: pointer; }
+  .perg { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 20px; margin-top: 16px; display: grid; gap: 12px; min-width: 0; }
+  .perg.feita { border-color: var(--certa); }
+  .perg .parte { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--fraco); }
+  .perg h3 { font-size: 21px; text-wrap: balance; }
+  .perg .explica { margin: 0; color: var(--fraco); max-width: 72ch; }
+  .perg-ex { display: grid; gap: 10px; }
+  .perg-ops { display: flex; flex-wrap: wrap; gap: 10px; }
+  .perg-op { font: inherit; text-align: left; border: 2px solid var(--fio); background: var(--folha); color: var(--tinta);
+    border-radius: 10px; padding: 10px 14px; cursor: pointer; display: grid; gap: 2px; flex: 1 1 200px; min-width: 0; }
+  .perg-op b { font-size: 16px; }
+  .perg-op span { font-size: 14px; color: var(--fraco); }
+  .perg-op:hover { border-color: var(--azul); }
+  .perg-op[aria-pressed="true"] { border-color: var(--certa); background: var(--certa-suave); }
+  .perg-com { display: grid; gap: 6px; }
+  .perg-com label { font-size: 15px; color: var(--fraco); }
+  .perg-com textarea { font: inherit; font-size: 16px; min-height: 60px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--fio);
+    background: var(--papel); color: var(--tinta); resize: vertical; }
+  .perg-linha { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .perg-botao { font: inherit; font-size: 15px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--azul); background: transparent; color: var(--azul); cursor: pointer; }
+  .perg-botao:disabled { opacity: .5; cursor: default; }
+  .perg-estado { font-size: 14px; color: var(--fraco); }
+  .perg-estado.ok { color: var(--certa); }
+  .perg-estado.erro { color: var(--errada); }
+  .progresso { font-size: 15px; color: var(--fraco); margin: 0; }
+  details.respondidas { margin-top: 18px; }
+  details.respondidas > summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+  .vazio-perg { padding: 22px; border: 1px dashed var(--fio); border-radius: 10px; color: var(--fraco); text-align: center; }
+  :focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+</style>
+
+<div class="miolo">
+  <header class="topo">
+    <div class="marca">Editor de Impressão · estudo de 06/10/2026</div>
+    <h1>Quando uma página deve ir para "Para revisar"</h1>
+    <p class="lead">Você perguntou qual é o critério e se o leitor de texto pegar pedaço de figura é motivo para revisar. Um agente testou 59 páginas e olhou cada uma. Aqui estão o resultado e as opções, explicadas uma por uma.</p>
+    <p class="meta">Vale para o "Só as letras" (o modo Misto, dentro do Preto e branco). Nada do programa foi mudado pelo estudo.</p>
+  </header>
+
+  <section id="responder">
+    <h2>Para você responder</h2>
+    <p class="fraco" id="aviso-db">Carregando as perguntas...</p>
+    <div id="perguntas"></div>
+    <details class="respondidas" id="respondidas-caixa" hidden>
+      <summary>Já respondidas (<span id="conta-respondidas">0</span>)</summary>
+      <div id="respondidas"></div>
+    </details>
+  </section>
+
+  <section>
+    <h2>Primeiro, o básico</h2>
+    <p><b>"Para revisar"</b> é a lista de páginas que o programa pede para o Kaique olhar com atenção antes de imprimir. Ela só é útil se tiver as páginas que <b>podem ter saído erradas</b>. Se tiver página certa demais, o Kaique cansa e para de olhar. Se faltar uma página errada, ela vai para a impressão.</p>
+    <p>No "Só as letras", o programa procura as <b>linhas de texto</b> e as <b>gravuras</b>. O que sobra fora das duas (moldura, capitular, música, tabela, desenho que ele não reconheceu) é tratado de um destes três jeitos:</p>
+    <div class="jeitos">
+      <div class="jeito"><div class="tag">De fábrica</div><h3>Guardar a tinta forte</h3><p>Guarda em preto o que é tão escuro quanto as letras. O que é mais claro vai para o branco.</p></div>
+      <div class="jeito"><div class="tag">Opção</div><h3>Tudo em preto e branco</h3><p>Passa tudo para preto e branco, como o Preto e branco de sempre. Não usa o leitor de texto.</p></div>
+      <div class="jeito"><div class="tag">Opção</div><h3>Só o texto achado</h3><p>Apaga tudo o que está fora das linhas de texto. Só as linhas ficam.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>O que o estudo descobriu</h2>
+    <ol class="tres">
+      <li><div><b>O aviso de hoje enche a lista à toa.</b> Hoje a página vai para revisar quando sobra muita tinta escura fora do texto (mais de 10%). Toda página com moldura, música ou tabela tem isso, mesmo saindo certa. No jeito de fábrica, 35 das 59 páginas iriam para a lista, e só 7 estavam erradas.</div></li>
+      <li><div><b>A sua pergunta: o leitor pegar pedaço de figura como texto não estraga nada no jeito de fábrica.</b> A tinta forte fica de qualquer jeito. Só no "Só o texto achado" sobra um pedacinho solto, e ali a página já está errada por outro motivo. Como critério, isso mandaria 35 páginas, 23 delas certas.</div></li>
+      <li><div><b>O erro de verdade é outro: o programa apaga a parte clara de um desenho que não reconheceu como gravura.</b> A capitular S do Palatino 76 sumiu quase inteira. Esse defeito já está na Lista de bugs para ser consertado. O aviso precisa pegar <i>isso</i>.</div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>As opções, uma por uma</h2>
+    <p>Cada quadrinho é uma das 59 páginas testadas, no jeito de fábrica. <b>Quadrinho cheio</b> = vai para "Para revisar". <b>Quadrinho vazio</b> = não vai. A cor diz como a página saiu. Clique num quadrinho para ver qual página é e o que aconteceu nela.</p>
+    <div class="legenda-grade">
+      <span><i class="q errada vai"></i>saiu errada</span>
+      <span><i class="q leve vai"></i>defeito leve (o mesmo do Preto e branco de sempre)</span>
+      <span><i class="q certa vai"></i>saiu certa</span>
+      <span><i class="q fica"></i>não vai para a lista</span>
+      <span><i class="q errada fica" style="border-style:dashed"></i>errada e NÃO vai (o pior caso)</span>
+    </div>
+    <div class="opcoes" id="opcoes"></div>
+    <div class="chamada">
+      <b>Para escolher:</b>
+      <span>Não precisa escolher a opção agora. Primeiro, responda as perguntas página por página, no alto desta página ("Para você responder"). Com as suas respostas, o agente das revisões acerta o critério pelo seu olho e traz a escolha final.</span>
+      <a href="#responder">Ir para as perguntas</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>O erro de verdade: desenho que some</h2>
+    <p>Em cada imagem: à esquerda o original, no meio o resultado do jeito de fábrica, à direita onde olhar (em vermelho, o que foi apagado). Clique para ver grande.</p>
+    <div class="figuras" id="fig-erros"></div>
+  </section>
+
+  <section>
+    <h2>A sua pergunta: pedaço de figura pego como texto</h2>
+    <p>Em azul, à direita, as linhas que o leitor de texto achou.</p>
+    <div class="figuras" id="fig-pergunta"></div>
+  </section>
+
+  <section>
+    <h2>Página que vai para revisar à toa, hoje</h2>
+    <div class="figuras" id="fig-atoa"></div>
+  </section>
+
+  <section>
+    <h2>O que o "Só o texto achado" apaga</h2>
+    <p>Esse jeito errou em 43 das 59 páginas. Por isso, nele, o aviso precisa ser bem mais sensível.</p>
+    <div class="figuras" id="fig-c"></div>
+  </section>
+
+  <section>
+    <h2>Página por página</h2>
+    <p class="fraco">"Hoje" = o aviso de hoje (entre parênteses, quanto da tinta escura ficou fora do texto). "Opção 1" = a recomendada, no jeito de fábrica.</p>
+    <div class="tabela"><table><thead><tr><th>Página</th><th>Jeito de fábrica</th><th>Só o texto achado</th><th>Hoje</th><th>Opção 1</th><th>O que o agente viu</th></tr></thead><tbody id="tabela"></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Ressalvas</h2>
+    <ul class="ressalvas">
+      <li><b>Os limites da opção 1 foram acertados nestas mesmas 59 páginas.</b> Antes de virar padrão, eles são conferidos num livro que não entrou no teste.</li>
+      <li><b>As páginas foram escolhidas de propósito com desenho.</b> Num livro de texto corrido quase nenhuma página vai para revisar, em nenhuma opção.</li>
+      <li><b>O "certa / leve / errada" de cada página é o olho do agente</b>, em imagens reduzidas e alguns detalhes ampliados. Defeito muito pequeno pode ter escapado.</li>
+      <li><b>Gravura achada onde não tem</b> (mancha ou remendo impresso em marrom, como no Marial 454) não depende do leitor de texto, e nenhum sinal pega bem esse erro. Um aviso só para isso seria outro estudo.</li>
+      <li>Defeito pequeno achado no código: quando o leitor não acha nenhuma linha, a página sai como "Tudo em preto e branco" sem aviso, e um aviso antigo fica parado. Nada é apagado. Está na Lista de bugs.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Onde o estudo está guardado</h2>
+    <div class="guardado">
+      <span>No seu computador, a versão completa (abre com dois cliques): <code>D:\programas\EditorImpressao\relatorios\revisar-criterios-2026-10-06\revisar-criterios.html</code> (também em .pdf e .md).</span>
+      <span>No GitHub, no ramo <code>fase-1</code>, commit <code>764b5f4</code>: o relatório, as 15 imagens, os números e vereditos de cada página e os programas usados no teste.</span>
+      <span>No plano (Registro de mudanças, 06/10) e na Lista de bugs.</span>
+    </div>
+  </section>
+</div>
+
+<dialog class="zoom" id="zoom">
+  <img id="zoom-img" alt="">
+  <div class="barra"><span id="zoom-legenda"></span><button id="zoom-fechar" type="button">Fechar</button></div>
+</dialog>
+
+<script>
+(function () {
+  var PAGINAS = __DADOS__;
+
+  var OPCOES = [
+    { id: "op1", nome: "Opção 1: olhar o que o programa apagou", recomendada: true,
+      faz: "Em vez de contar a tinta que sobrou fora do texto, o programa conta o que ele mesmo APAGOU. A página vai para revisar quando ele apagou parte de um desenho, quando uma figura passou da beirada da gravura que ele achou, ou quando apagou muita tinta. A frase da lista diz o que olhar: \"Apaguei parte de um desenho que não reconheci como figura. Confira.\"",
+      vai: function (p) { return p.op1; },
+      ganha: ["O Kaique abre 18 páginas em vez de 35.", "As 7 páginas erradas continuam todas na lista.", "A frase diz o que olhar na página."],
+      perde: ["Os limites foram acertados nestas 59 páginas; precisam ser conferidos num livro novo.", "6 páginas certas ainda vão (faixa preta do scanner, gravura de página inteira)."],
+      soTexto: "No \"Só o texto achado\": vai para revisar toda página em que sumiu um pedaço escuro do tamanho de uma letra e meia ou maior. Pega as 43 páginas erradas desse jeito (hoje 12 ficam de fora), mas manda 55 das 59 — nesse jeito quase toda página com desenho precisa mesmo ser olhada." },
+    { id: "op3", nome: "Opção 1 + uma marca fraca para o resto",
+      faz: "Igual à opção 1. Além disso, as páginas que hoje iriam para a lista só por ter moldura, música ou tabela ganham uma marca discreta (\"tem desenho que saiu em preto e branco\"), que NÃO entra em \"Para revisar\". Os quadrinhos pontilhados abaixo são essas páginas.",
+      vai: function (p) { return p.op1; },
+      fraca: function (p) { return p.hoje && !p.op1; },
+      ganha: ["Tudo o que a opção 1 ganha.", "Nenhuma informação se perde: o aviso de hoje continua, só que mais fraco."],
+      perde: ["É uma mudança de tela (um tipo novo de marca). A aparência fica para o layout."],
+      soTexto: "No \"Só o texto achado\": igual à opção 1." },
+    { id: "op2", nome: "Opção 2: deixar como está (10%)",
+      faz: "Continua como hoje: a página vai para revisar quando mais de 10% da tinta escura fica fora das linhas de texto e das gravuras.",
+      vai: function (p) { return p.hoje; },
+      ganha: ["Nada a mudar no programa.", "Pega as 7 páginas erradas do jeito de fábrica."],
+      perde: ["35 páginas na lista, 20 delas certas: o Kaique tende a parar de olhar.", "Pega as erradas quase por acaso (porque elas têm desenho, não porque o programa viu o erro)."],
+      soTexto: "No \"Só o texto achado\": 12 páginas erradas ficam de fora (capitular, número, letra dourada apagados)." },
+    { id: "op4", nome: "Opção 4: subir o limite para 30%", nao: true,
+      faz: "O mesmo aviso de hoje, mas só quando mais de 30% da tinta escura fica fora do texto.",
+      vai: function (p) { return p.pct >= 30; },
+      ganha: ["23 páginas na lista em vez de 35."],
+      perde: ["3 das 7 páginas erradas ficam de fora (Antiphon 260, Marial 454, Pesel 21).", "Continua contando a tinta que sobrou, não o erro."],
+      soTexto: "No \"Só o texto achado\": 21 páginas erradas ficam de fora." }
+  ];
+
+  var FIG = {
+    "fig-erros": [
+      ["hoje-com-razao-palatino076.jpg", "Palatino 76", "a capitular S gravada sumiu quase inteira; ficou só a moldura dela e um arco. Olhe o quadro do meio."],
+      ["a-palatino067.jpg", "Palatino 67", "o fundo desenhado dentro da capitular M sumiu quase todo. O Preto e branco de sempre o guarda."],
+      ["a-palatino066.jpg", "Palatino 66", "a letra ornamental M do rodapé, de contorno claro, ficou pela metade."],
+      ["a-ljs47-103.jpg", "Manuscrito ljs47, p. 103", "o diagrama de traço vermelho fino ficou picotado."],
+      ["gravura-errada-marial454.jpg", "Marial 454 (outro erro)", "o detector achou que um remendo e a mancha do verso eram gravura (verde, à direita): saem impressos em marrom."],
+      ["gravura-errada-antiphon260.jpg", "Antiphon 260 (outro erro)", "a gravura da iluminura pegou as pautas ao lado: as notas dentro dela saem marrons, as de fora pretas."]
+    ],
+    "fig-pergunta": [
+      ["linha-na-figura-boecio003-a.jpg", "Boécio 3, jeito de fábrica", "o leitor achou o \"IHS\" no meio da gravura como se fosse texto (azul). Nada de errado aparece no resultado."],
+      ["linha-na-figura-boecio003-c.jpg", "Boécio 3, Só o texto achado", "a gravura some inteira e o \"IHS\" fica boiando sozinho. O erro é a gravura sumir."],
+      ["linha-na-figura-palatino057-c.jpg", "Palatino 57, Só o texto achado", "sobra um pedaço do floreio solto no alto, à esquerda; o resto da moldura some."]
+    ],
+    "fig-atoa": [
+      ["hoje-a-toa-graduale222.jpg", "Graduale 222", "a música inteira está fora das linhas de texto (76% da tinta), mas no jeito de fábrica ela é guardada: a página saiu certa."],
+      ["hoje-a-toa-palatino010.jpg", "Palatino 10", "a moldura conta como tinta fora do texto (31%), mas sai igual ao Preto e branco de sempre: a página saiu certa."]
+    ],
+    "fig-c": [
+      ["c-boecio007.jpg", "Boécio 7", "a capitular Q e os sinais de métrica do alto somem."],
+      ["c-escola197.jpg", "Na escola de Jesus, 197", "os números da margem esquerda perdem pedaços."],
+      ["c-graduale222.jpg", "Graduale 222", "a música inteira some."],
+      ["c-rhetorica129.jpg", "Rhetorica 129", "a gravura de página inteira some; sobram quatro letras."]
+    ]
+  };
+
+  function el(tag, cls, texto) { var e = document.createElement(tag); if (cls) e.className = cls; if (texto != null) e.textContent = texto; return e; }
+
+  var zoom = document.getElementById("zoom");
+  document.getElementById("zoom-fechar").addEventListener("click", function () { zoom.close(); });
+  zoom.addEventListener("click", function (ev) { if (ev.target === zoom) zoom.close(); });
+  function abrirZoom(src, legenda) {
+    var i = document.getElementById("zoom-img"); i.src = src; i.alt = legenda;
+    document.getElementById("zoom-legenda").textContent = legenda;
+    if (zoom.showModal) zoom.showModal(); else zoom.setAttribute("open", "");
+  }
+
+  Object.keys(FIG).forEach(function (alvo) {
+    var caixa = document.getElementById(alvo);
+    FIG[alvo].forEach(function (f) {
+      var fig = el("figure");
+      var b = el("button"); b.type = "button"; b.setAttribute("aria-label", "Ver grande: " + f[1]);
+      var img = el("img"); img.src = "img/" + f[0]; img.alt = f[1] + ": " + f[2]; img.loading = "lazy";
+      b.appendChild(img);
+      b.addEventListener("click", function () { abrirZoom("img/" + f[0], f[1] + ": " + f[2]); });
+      fig.appendChild(b);
+      var cap = el("figcaption"); cap.appendChild(el("b", null, f[1] + ": ")); cap.appendChild(document.createTextNode(f[2]));
+      fig.appendChild(cap);
+      caixa.appendChild(fig);
+    });
+  });
+
+  var NOME_V = { errada: "saiu errada", leve: "defeito leve", certa: "saiu certa" };
+  var caixaOp = document.getElementById("opcoes");
+  OPCOES.forEach(function (op) {
+    var c = el("article", "opcao" + (op.recomendada ? " recomendada" : ""));
+    var cab = el("div", "cab");
+    cab.appendChild(el("h3", null, op.nome));
+    if (op.recomendada) cab.appendChild(el("span", "selo", "Recomendada"));
+    if (op.nao) cab.appendChild(el("span", "selo nao", "Não recomendada"));
+    c.appendChild(cab);
+    c.appendChild(el("p", "faz", op.faz));
+    var vao = PAGINAS.filter(op.vai);
+    var erradas = PAGINAS.filter(function (p) { return p.a === "errada"; });
+    var nums = el("div", "numeros");
+    function num(valor, texto, cls) { var d = el("div", "num" + (cls ? " " + cls : "")); d.appendChild(el("b", null, String(valor))); d.appendChild(el("span", null, texto)); nums.appendChild(d); }
+    num(vao.length, "páginas o Kaique abre (de 59)");
+    num(vao.filter(function (p) { return p.a === "errada"; }).length + " de " + erradas.length, "erradas que ele vê", "bom");
+    num(vao.filter(function (p) { return p.a === "certa"; }).length, "certas abertas à toa", "");
+    var fora = erradas.filter(function (p) { return !op.vai(p); }).length;
+    num(fora, "erradas que ele NÃO vê", fora ? "ruim" : "bom");
+    c.appendChild(nums);
+    var grade = el("div", "grade");
+    var det = el("p", "detalhe", "Clique num quadrinho para ver a página.");
+    PAGINAS.forEach(function (p) {
+      var vai = op.vai(p);
+      var fraca = op.fraca && op.fraca(p);
+      var b = el("button", (vai ? "vai " : (fraca ? "marca-fraca " : "fica ")) + p.a);
+      b.type = "button";
+      var rotulo = p.nome + ": " + NOME_V[p.a] + (vai ? ", vai para revisar" : (fraca ? ", só a marca fraca" : ", não vai"));
+      b.title = rotulo; b.setAttribute("aria-label", rotulo); b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        grade.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        det.textContent = "";
+        det.appendChild(el("b", null, rotulo + ". "));
+        det.appendChild(document.createTextNode(p.nota));
+      });
+      grade.appendChild(b);
+    });
+    c.appendChild(grade);
+    c.appendChild(det);
+    var gp = el("div", "ganha-perde");
+    [["ganha", "Ganha", op.ganha], ["perde", "Perde", op.perde]].forEach(function (x) {
+      var d = el("div", x[0]); d.appendChild(el("h4", null, x[1]));
+      var ul = el("ul"); x[2].forEach(function (t) { ul.appendChild(el("li", null, t)); }); d.appendChild(ul); gp.appendChild(d);
+    });
+    c.appendChild(gp);
+    c.appendChild(el("p", "so-texto", op.soTexto));
+    caixaOp.appendChild(c);
+  });
+
+  // --- perguntas com resposta salva (coleções "decisoes" e "respostas" do banco da página)
+  var perguntas = [], respostas = {}, rascunhos = {}, avisos = {}, db = null;
+  var avisoDb = document.getElementById("aviso-db");
+  function hora(iso) {
+    try { return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return ""; }
+  }
+  async function gravarResposta(p, corpo, okTexto) {
+    avisos[p.id] = { texto: "Salvando...", tipo: "" }; desenharPerguntas();
+    try { await db.doc("respostas/" + p.id).set(corpo); avisos[p.id] = { texto: okTexto, tipo: "ok" }; }
+    catch (e) { avisos[p.id] = { texto: "Não consegui salvar (" + (e && e.code || "erro") + "). Tente de novo.", tipo: "erro" }; }
+    desenharPerguntas();
+  }
+  function cartaoPergunta(p) {
+    var r = respostas[p.id];
+    var s = el("article", "perg" + (r && r.opcao ? " feita" : ""));
+    if (p.parte) s.appendChild(el("div", "parte", p.parte));
+    s.appendChild(el("h3", null, p.pergunta || ""));
+    if (p.explicacao) s.appendChild(el("p", "explica", p.explicacao));
+    if (p.exemplos && p.exemplos.length) {
+      var ex = el("div", "perg-ex");
+      p.exemplos.forEach(function (im) {
+        var fig = el("figure");
+        var b = el("button"); b.type = "button"; b.setAttribute("aria-label", "Ver grande: " + (im.legenda || "imagem"));
+        var img = el("img"); img.src = im.src; img.alt = im.legenda || ""; img.loading = "lazy";
+        b.appendChild(img);
+        b.addEventListener("click", function () { abrirZoom(im.src, im.legenda || ""); });
+        fig.appendChild(b);
+        if (im.legenda) fig.appendChild(el("figcaption", null, im.legenda));
+        ex.appendChild(fig);
+      });
+      s.appendChild(ex);
+    }
+    var ops = el("div", "perg-ops");
+    (p.opcoes || []).forEach(function (op) {
+      var b = el("button", "perg-op"); b.type = "button";
+      b.setAttribute("aria-pressed", String(!!(r && r.opcao === op.id)));
+      b.appendChild(el("b", null, op.nome));
+      if (op.texto) b.appendChild(el("span", null, op.texto));
+      b.disabled = !db;
+      b.addEventListener("click", function () {
+        var atual = respostas[p.id] || {};
+        gravarResposta(p, { opcao: op.id, opcaoNome: op.nome,
+          comentario: rascunhos[p.id] != null ? rascunhos[p.id] : (atual.comentario || ""), em: new Date().toISOString() },
+          "Resposta salva: " + op.nome + ".");
+      });
+      ops.appendChild(b);
+    });
+    s.appendChild(ops);
+    var com = el("div", "perg-com");
+    var idc = "com-" + p.id;
+    var lab = el("label", null, "Quer explicar ou comentar? (não é obrigatório)"); lab.setAttribute("for", idc);
+    var ta = el("textarea"); ta.id = idc;
+    ta.value = rascunhos[p.id] != null ? rascunhos[p.id] : (r && r.comentario) || "";
+    ta.disabled = !db;
+    ta.addEventListener("input", function () { rascunhos[p.id] = ta.value; });
+    var linha = el("div", "perg-linha");
+    var bs = el("button", "perg-botao", "Salvar comentário"); bs.type = "button"; bs.disabled = !db;
+    bs.addEventListener("click", function () {
+      var atual = respostas[p.id] || {};
+      var texto = rascunhos[p.id] != null ? rascunhos[p.id] : (atual.comentario || "");
+      gravarResposta(p, { opcao: atual.opcao || "", opcaoNome: atual.opcaoNome || "", comentario: texto, em: new Date().toISOString() }, "Comentário salvo.");
+      delete rascunhos[p.id];
+    });
+    linha.appendChild(bs);
+    var av = avisos[p.id];
+    var est = el("span", "perg-estado" + (av && av.tipo ? " " + av.tipo : ""), av ? av.texto : (r && r.em ? "Salvo em " + hora(r.em) + "." : ""));
+    est.setAttribute("role", "status");
+    linha.appendChild(est);
+    com.appendChild(lab); com.appendChild(ta); com.appendChild(linha);
+    s.appendChild(com);
+    return s;
+  }
+  function desenharPerguntas() {
+    var foco = document.activeElement && document.activeElement.id;
+    var lista = perguntas.filter(function (p) { return p.status !== "decidida"; }).sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+    var abertas = lista.filter(function (p) { return !(respostas[p.id] && respostas[p.id].opcao); });
+    var feitas = lista.filter(function (p) { return respostas[p.id] && respostas[p.id].opcao; });
+    var caixa = document.getElementById("perguntas"); caixa.textContent = "";
+    if (db) {
+      if (!lista.length) caixa.appendChild(el("p", "vazio-perg", "Nenhuma pergunta agora. Quando o agente das revisões trouxer a próxima rodada, ela aparece aqui."));
+      else caixa.appendChild(el("p", "progresso", feitas.length + " de " + lista.length + " respondidas. Clique na resposta; ela fica salva na hora."));
+    }
+    abertas.forEach(function (p) { caixa.appendChild(cartaoPergunta(p)); });
+    var rc = document.getElementById("respondidas"); rc.textContent = "";
+    feitas.forEach(function (p) { rc.appendChild(cartaoPergunta(p)); });
+    document.getElementById("conta-respondidas").textContent = String(feitas.length);
+    document.getElementById("respondidas-caixa").hidden = !feitas.length;
+    if (foco) { var f = document.getElementById(foco); if (f) f.focus(); }
+  }
+  (async function () {
+    try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
+    if (!db) { avisoDb.textContent = "Para responder, abra esta página pelo claude.ai, com a sua conta."; return; }
+    avisoDb.textContent = "As respostas ficam salvas aqui mesmo. Avise a gerente no chat quando responder.";
+    db.collection("decisoes").onSnapshot(function (snap) {
+      perguntas = snap.docs.map(function (d) { var x = Object.assign({}, d.data()); x.id = d.id; return x; }); desenharPerguntas();
+    }, function () { avisoDb.textContent = "Perdi a ligação com as perguntas. Recarregue a página."; });
+    db.collection("respostas").onSnapshot(function (snap) {
+      var r = {}; snap.docs.forEach(function (d) { r[d.id] = d.data(); }); respostas = r; desenharPerguntas();
+    }, function () {});
+  })();
+
+  var tb = document.getElementById("tabela");
+  PAGINAS.forEach(function (p) {
+    var tr = el("tr");
+    tr.appendChild(el("td", null, p.nome));
+    tr.appendChild(el("td", "v " + p.a, p.a));
+    tr.appendChild(el("td", "v " + p.c, p.c));
+    tr.appendChild(el("td", "n", (p.hoje ? "sim" : "não") + " (" + p.pct + "%)"));
+    tr.appendChild(el("td", "n", p.op1 ? "sim" : "não"));
+    tr.appendChild(el("td", null, p.nota));
+    tb.appendChild(tr);
+  });
+})();
+</script>

@@ -1,0 +1,358 @@
+<title>Layout do Editor de Impressão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+  /* Layout: abas no alto; cada escolha é uma folha com as opções em grade de imagens grandes. Mesmas cores do programa (painel escuro, azul, laranja de aviso). */
+  :root {
+    --fundo: #eef0f3;
+    --cartao: #ffffff;
+    --tinta: #1b1e24;
+    --fraco: #5b6371;
+    --linha: #d6dae1;
+    --azul: #2f6fe0;
+    --azul-suave: #e3ecfc;
+    --verde: #1f8a4c;
+    --verde-suave: #e2f3e8;
+    --laranja: #c66a12;
+    --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --fonte-texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --fundo: #1e1f22; --cartao: #26282c; --tinta: #eceef2; --fraco: #a3a9b4;
+      --linha: #3a3d43; --azul: #5b8ef0; --azul-suave: #22324f;
+      --verde: #4cc37f; --verde-suave: #1d3428; --laranja: #f0a55c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --fundo: #1e1f22; --cartao: #26282c; --tinta: #eceef2; --fraco: #a3a9b4;
+    --linha: #3a3d43; --azul: #5b8ef0; --azul-suave: #22324f;
+    --verde: #4cc37f; --verde-suave: #1d3428; --laranja: #f0a55c;
+  }
+  body { background: var(--fundo); color: var(--tinta); font: 17px/1.5 var(--fonte-texto);
+    padding-inline: 16px; padding-block: 0 48px; }
+  .miolo { max-width: 1180px; margin: 0 auto; }
+  header.topo { display: grid; gap: 10px; padding-block: 26px 14px; border-bottom: 1px solid var(--linha); }
+  h1 { margin: 0; font: 800 30px/1.1 var(--fonte-titulo); text-wrap: balance; }
+  .sub { margin: 0; color: var(--fraco); max-width: 75ch; }
+  nav.abas { display: flex; flex-wrap: wrap; gap: 6px; }
+  nav.abas button { font: inherit; font-size: 16px; padding: 8px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--linha); background: var(--cartao); color: var(--tinta); }
+  nav.abas button[aria-selected="true"] { background: var(--azul); border-color: var(--azul); color: #fff; }
+  .conta { font-variant-numeric: tabular-nums; opacity: .8; margin-left: 4px; }
+  .aviso-geral { margin: 18px 0 0; padding: 12px 14px; border-radius: 8px; background: var(--azul-suave); font-size: 15px; }
+  section.decisao { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px;
+    padding: 22px; margin-top: 22px; display: grid; gap: 14px; }
+  .parte { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--fraco); }
+  section.decisao h2 { margin: 0; font: 600 24px/1.2 var(--fonte-titulo); text-wrap: balance; }
+  .explica { margin: 0; color: var(--fraco); max-width: 72ch; }
+  .opcoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .opcao { display: grid; grid-template-rows: auto 1fr auto; gap: 10px; border: 2px solid var(--linha);
+    border-radius: 10px; padding: 10px; min-width: 0; }
+  .opcao.escolhida { border-color: var(--verde); background: var(--verde-suave); }
+  .foto { display: block; padding: 0; border: 1px solid var(--linha); border-radius: 6px; overflow: hidden;
+    cursor: zoom-in; background: #111; width: 100%; }
+  .foto img { display: block; width: 100%; height: auto; }
+  .fotos2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .opcao h3 { margin: 0; font-size: 19px; }
+  .opcao p { margin: 4px 0 0; font-size: 15px; color: var(--fraco); }
+  .acoes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .botao { font: inherit; font-size: 16px; font-weight: 700; padding: 9px 16px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--azul); background: var(--azul); color: #fff; }
+  .botao.secundario { background: transparent; color: var(--azul); font-weight: 400; }
+  .botao:disabled { opacity: .5; cursor: default; }
+  .opcao.escolhida .botao { background: var(--verde); border-color: var(--verde); }
+  a.ver { color: var(--azul); font-size: 15px; }
+  .selo { display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--verde); color: #fff; }
+  .exemplos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .exemplos figure, .galeria figure { margin: 0; display: grid; gap: 4px; align-content: start; }
+  figcaption { font-size: 14px; color: var(--fraco); }
+  .comentario { display: grid; gap: 6px; }
+  .comentario label { font-size: 15px; color: var(--fraco); }
+  .comentario textarea { font: inherit; font-size: 16px; min-height: 64px; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--linha); background: var(--fundo); color: var(--tinta); resize: vertical; }
+  .estado { font-size: 14px; color: var(--fraco); }
+  .estado.ok { color: var(--verde); }
+  .estado.erro { color: var(--laranja); }
+  .decididas { display: grid; gap: 12px; margin-top: 22px; }
+  .decidido { background: var(--cartao); border: 1px solid var(--linha); border-radius: 10px; padding: 14px 16px;
+    display: grid; grid-template-columns: minmax(130px, 200px) 1fr; gap: 8px 18px; }
+  .decidido strong { display: block; }
+  .decidido .quando { color: var(--fraco); font-size: 15px; }
+  .decidido .fotos-dec { grid-column: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  @media (max-width: 640px) { .decidido { grid-template-columns: 1fr; } .decidido .fotos-dec { grid-column: 1; } }
+  .texto-longo { background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px; padding: 18px 22px; margin-top: 22px; }
+  .md { max-width: 80ch; min-width: 0; font-size: 16px; }
+  .md h1, .md h2, .md h3, .md h4 { font: 600 20px/1.3 var(--fonte-titulo); margin: 18px 0 6px; }
+  .md h1 { font-size: 24px; margin-top: 0; }
+  .md p, .md ul, .md ol, .md blockquote, .md pre { margin: 0 0 10px; }
+  .md ul, .md ol { padding-left: 22px; }
+  .md code { font-size: 14px; background: var(--fundo); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+  .md pre { background: var(--fundo); padding: 10px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; }
+  .md pre code { background: transparent; padding: 0; }
+  .md table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 14px; max-width: 100%; }
+  .md th, .md td { border: 1px solid var(--linha); padding: 6px 8px; vertical-align: top; min-width: 100px; }
+  .md th { background: var(--fundo); text-align: left; }
+  .md blockquote { border-left: 3px solid var(--linha); padding-left: 12px; color: var(--fraco); }
+  .galeria-grupo { margin-top: 26px; }
+  .galeria-grupo h2 { font: 600 20px/1.2 var(--fonte-titulo); margin: 0 0 10px; }
+  .galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .vazio { margin-top: 28px; padding: 28px; text-align: center; color: var(--fraco); border: 1px dashed var(--linha); border-radius: 12px; }
+  dialog.zoom { border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh; }
+  dialog.zoom::backdrop { background: rgba(0, 0, 0, .8); }
+  dialog.zoom img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 6px; }
+  dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 8px; color: #fff; font-size: 15px; }
+  dialog.zoom button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+</style>
+
+<div class="miolo">
+  <header class="topo">
+    <h1>Layout do Editor de Impressão</h1>
+    <p class="sub">Tudo sobre a aparência do programa num lugar só: o que falta escolher, o que já foi decidido, os botões que vão existir, o plano de layout e todas as telas já mostradas. Clique numa imagem para ver grande; "Escolho esta" guarda a escolha na hora.</p>
+    <nav class="abas" role="tablist">
+      <button id="aba-escolher" role="tab" aria-selected="true">Para escolher <span class="conta" id="conta-escolher"></span></button>
+      <button id="aba-decidido" role="tab" aria-selected="false">Já decidido <span class="conta" id="conta-decidido"></span></button>
+      <button id="aba-botoes" role="tab" aria-selected="false">Botões e funções</button>
+      <button id="aba-plano" role="tab" aria-selected="false">Plano de layout</button>
+      <button id="aba-telas" role="tab" aria-selected="false">Todas as telas mostradas <span class="conta" id="conta-telas"></span></button>
+    </nav>
+  </header>
+  <p class="aviso-geral" id="aviso">Carregando...</p>
+  <div id="p-escolher"></div>
+  <div id="p-decidido" hidden></div>
+  <div id="p-botoes" hidden></div>
+  <div id="p-plano" hidden></div>
+  <div id="p-telas" hidden></div>
+</div>
+
+<dialog class="zoom" id="zoom">
+  <img id="zoom-img" alt="">
+  <div class="barra"><span id="zoom-legenda"></span><button id="zoom-fechar" type="button">Fechar</button></div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+(function () {
+  var decisoes = [], respostas = {}, textos = {}, telas = [];
+  var db = null, rascunhos = {}, avisos = {};
+  var aviso = document.getElementById("aviso");
+
+  function el(tag, cls, texto) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texto != null) e.textContent = texto;
+    return e;
+  }
+  function hora(iso) {
+    try { return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return ""; }
+  }
+
+  // --- abas
+  var ABAS = ["escolher", "decidido", "botoes", "plano", "telas"];
+  function mostrarAba(qual) {
+    ABAS.forEach(function (a) {
+      document.getElementById("aba-" + a).setAttribute("aria-selected", String(a === qual));
+      document.getElementById("p-" + a).hidden = a !== qual;
+    });
+    try { localStorage.setItem("layout-aba", qual); } catch (e) {}
+  }
+  ABAS.forEach(function (a) { document.getElementById("aba-" + a).addEventListener("click", function () { mostrarAba(a); }); });
+  try { var salva = localStorage.getItem("layout-aba"); if (ABAS.indexOf(salva) >= 0) mostrarAba(salva); } catch (e) {}
+
+  // --- imagem grande
+  var zoom = document.getElementById("zoom");
+  document.getElementById("zoom-fechar").addEventListener("click", function () { zoom.close(); });
+  zoom.addEventListener("click", function (ev) { if (ev.target === zoom) zoom.close(); });
+  function abrirZoom(src, legenda) {
+    var i = document.getElementById("zoom-img"); i.src = src; i.alt = legenda || "";
+    document.getElementById("zoom-legenda").textContent = legenda || "";
+    if (zoom.showModal) zoom.showModal(); else zoom.setAttribute("open", "");
+  }
+  function botaoFoto(src, legenda) {
+    var b = el("button", "foto"); b.type = "button";
+    b.setAttribute("aria-label", "Ver grande: " + (legenda || "imagem"));
+    var i = el("img"); i.src = src; i.alt = legenda || ""; i.loading = "lazy";
+    b.appendChild(i);
+    b.addEventListener("click", function () { abrirZoom(src, legenda); });
+    return b;
+  }
+
+  // --- gravar escolhas
+  async function gravar(d, corpo, okTexto) {
+    avisos[d.id] = { texto: "Salvando...", tipo: "" }; desenhar();
+    try { await db.doc("respostas/" + d.id).set(corpo); avisos[d.id] = { texto: okTexto, tipo: "ok" }; }
+    catch (e) { avisos[d.id] = { texto: "Não consegui salvar (" + (e && e.code || "erro") + "). Tente de novo em instantes.", tipo: "erro" }; }
+    desenhar();
+  }
+  function escolher(d, op) {
+    if (!db) return;
+    var atual = respostas[d.id] || {};
+    gravar(d, { opcao: op.id, opcaoNome: op.nome,
+      comentario: rascunhos[d.id] != null ? rascunhos[d.id] : (atual.comentario || ""), em: new Date().toISOString() },
+      "Escolha salva: " + op.nome + ".");
+  }
+  function salvarComentario(d) {
+    if (!db) return;
+    var atual = respostas[d.id] || {};
+    var texto = rascunhos[d.id] || "";
+    gravar(d, { opcao: atual.opcao || "", opcaoNome: atual.opcaoNome || "", comentario: texto, em: new Date().toISOString() },
+      "Comentário salvo.");
+    delete rascunhos[d.id];
+  }
+
+  function cartaoOpcao(d, op, resp) {
+    var marcada = resp && resp.opcao === op.id;
+    var c = el("article", "opcao" + (marcada ? " escolhida" : ""));
+    var imgs = op.imgs || [];
+    var caixa = el("div", imgs.length > 1 ? "fotos2" : "");
+    imgs.forEach(function (im) { caixa.appendChild(botaoFoto(im.src, op.nome + (im.legenda ? " - " + im.legenda : ""))); });
+    c.appendChild(caixa);
+    var txt = el("div");
+    var h = el("h3", null, op.nome);
+    if (marcada) { h.appendChild(document.createTextNode(" ")); h.appendChild(el("span", "selo", "sua escolha")); }
+    txt.appendChild(h);
+    if (op.texto) txt.appendChild(el("p", null, op.texto));
+    c.appendChild(txt);
+    var acoes = el("div", "acoes");
+    var b = el("button", "botao", marcada ? "Escolhida" : "Escolho esta"); b.type = "button";
+    b.disabled = !db || marcada;
+    b.addEventListener("click", function () { escolher(d, op); });
+    acoes.appendChild(b);
+    if (op.tela) {
+      var a = el("a", "ver", "Ver funcionando (abre e dá para clicar)");
+      a.href = op.tela; a.target = "_blank"; a.rel = "noopener";
+      acoes.appendChild(a);
+    }
+    c.appendChild(acoes);
+    return c;
+  }
+
+  function secaoDecisao(d) {
+    var resp = respostas[d.id];
+    var s = el("section", "decisao");
+    s.appendChild(el("div", "parte", d.parte || ""));
+    s.appendChild(el("h2", null, d.pergunta || ""));
+    if (d.explicacao) s.appendChild(el("p", "explica", d.explicacao));
+    if (d.exemplos && d.exemplos.length) {
+      var ex = el("div", "exemplos");
+      d.exemplos.forEach(function (im) {
+        var f = el("figure"); f.appendChild(botaoFoto(im.src, im.legenda));
+        if (im.legenda) f.appendChild(el("figcaption", null, im.legenda));
+        ex.appendChild(f);
+      });
+      s.appendChild(ex);
+    }
+    var grade = el("div", "opcoes");
+    (d.opcoes || []).forEach(function (op) { grade.appendChild(cartaoOpcao(d, op, resp)); });
+    s.appendChild(grade);
+    var com = el("div", "comentario");
+    var idc = "com-" + d.id;
+    var lab = el("label", null, "Quer explicar ou pedir alguma mudança? (não é obrigatório)"); lab.setAttribute("for", idc);
+    var ta = el("textarea"); ta.id = idc;
+    ta.value = rascunhos[d.id] != null ? rascunhos[d.id] : (resp && resp.comentario) || "";
+    ta.disabled = !db;
+    ta.addEventListener("input", function () { rascunhos[d.id] = ta.value; });
+    var linha = el("div", "acoes");
+    var bs = el("button", "botao secundario", "Salvar comentário"); bs.type = "button"; bs.disabled = !db;
+    bs.addEventListener("click", function () { salvarComentario(d); });
+    linha.appendChild(bs);
+    var av = avisos[d.id];
+    var est = el("span", "estado" + (av && av.tipo ? " " + av.tipo : ""), av ? av.texto : (resp && resp.em ? "Salvo em " + hora(resp.em) + "." : ""));
+    est.setAttribute("role", "status");
+    linha.appendChild(est);
+    com.appendChild(lab); com.appendChild(ta); com.appendChild(linha);
+    s.appendChild(com);
+    return s;
+  }
+
+  function mdHtml(md) {
+    if (window.marked && window.DOMPurify) return window.DOMPurify.sanitize(window.marked.parse(String(md || "")));
+    return null;
+  }
+  function blocoTexto(alvo, doc, vazio) {
+    alvo.textContent = "";
+    var caixa = el("div", "texto-longo");
+    if (!doc || !doc.md) { caixa.appendChild(el("p", "vazio", vazio)); alvo.appendChild(caixa); return; }
+    if (doc.atualizado) caixa.appendChild(el("p", "estado", "Copiado do arquivo em " + hora(doc.atualizado) + (doc.arquivo ? " · " + doc.arquivo : "")));
+    var md = el("div", "md");
+    var html = mdHtml(doc.md);
+    if (html == null) { md.style.whiteSpace = "pre-wrap"; md.textContent = doc.md; } else md.innerHTML = html;
+    caixa.appendChild(md);
+    alvo.appendChild(caixa);
+  }
+
+  var desenhado = { botoes: null, plano: null, telas: null };
+  function desenhar() {
+    var foco = document.activeElement && document.activeElement.id;
+    var abertas = decisoes.filter(function (d) { return d.status !== "decidida"; }).sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+    var decididas = decisoes.filter(function (d) { return d.status === "decidida"; }).sort(function (a, b) { return (b.ordem || 0) - (a.ordem || 0); });
+    document.getElementById("conta-escolher").textContent = "(" + abertas.length + ")";
+    document.getElementById("conta-decidido").textContent = "(" + decididas.length + ")";
+    var totalTelas = telas.reduce(function (n, g) { return n + ((g.imagens || []).length); }, 0);
+    document.getElementById("conta-telas").textContent = totalTelas ? "(" + totalTelas + ")" : "";
+
+    var pe = document.getElementById("p-escolher"); pe.textContent = "";
+    if (!abertas.length) pe.appendChild(el("p", "vazio", "Nada para escolher agora. Quando o agente de layout trouxer opções novas, elas aparecem aqui."));
+    abertas.forEach(function (d) { pe.appendChild(secaoDecisao(d)); });
+
+    var pd = document.getElementById("p-decidido"); pd.textContent = "";
+    var box = el("div", "decididas");
+    if (!decididas.length) box.appendChild(el("p", "vazio", "Nada decidido ainda."));
+    decididas.forEach(function (d) {
+      var r = el("div", "decidido");
+      r.appendChild(el("div", "parte", d.parte || ""));
+      var t = el("div");
+      t.appendChild(el("strong", null, d.decisao || d.pergunta || ""));
+      if (d.quando) t.appendChild(el("span", "quando", d.quando));
+      r.appendChild(t);
+      if (d.imgsDecisao && d.imgsDecisao.length) {
+        var fd = el("div", "fotos-dec");
+        d.imgsDecisao.forEach(function (im) { fd.appendChild(botaoFoto(im.src, im.legenda)); });
+        r.appendChild(fd);
+      }
+      box.appendChild(r);
+    });
+    pd.appendChild(box);
+
+    if (desenhado.botoes !== textos.botoes) { blocoTexto(document.getElementById("p-botoes"), textos.botoes, "A lista ainda não foi copiada para cá."); desenhado.botoes = textos.botoes; }
+    if (desenhado.plano !== textos.rascunho) { blocoTexto(document.getElementById("p-plano"), textos.rascunho, "O plano de layout ainda não foi copiado para cá."); desenhado.plano = textos.rascunho; }
+    if (desenhado.telas !== telas) {
+      var pt = document.getElementById("p-telas"); pt.textContent = "";
+      if (!telas.length) pt.appendChild(el("p", "vazio", "As telas ainda não foram copiadas para cá."));
+      telas.slice().sort(function (a, b) { return (b.ordem || 0) - (a.ordem || 0); }).forEach(function (g) {
+        var sec = el("div", "galeria-grupo");
+        sec.appendChild(el("h2", null, g.grupo || ""));
+        var gal = el("div", "galeria");
+        (g.imagens || []).forEach(function (t) {
+          var f = el("figure"); f.appendChild(botaoFoto(t.src, t.legenda));
+          f.appendChild(el("figcaption", null, t.legenda || ""));
+          gal.appendChild(f);
+        });
+        sec.appendChild(gal);
+        pt.appendChild(sec);
+      });
+      desenhado.telas = telas;
+    }
+    if (foco) { var f = document.getElementById(foco); if (f) f.focus(); }
+  }
+
+  function lista(snap) { return snap.docs.map(function (s) { var x = Object.assign({}, s.data()); x.id = s.id; return x; }); }
+
+  (async function () {
+    try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
+    if (!db) { aviso.textContent = "Para ver e salvar as escolhas, abra esta página pelo claude.ai, com a sua conta."; return; }
+    aviso.textContent = "As escolhas e comentários ficam salvos aqui mesmo. Avise a gerente no chat quando responder.";
+    var erro = function () { aviso.textContent = "Perdi a ligação com a página. Recarregue."; };
+    db.collection("decisoes").onSnapshot(function (s) { decisoes = lista(s); desenhar(); }, erro);
+    db.collection("respostas").onSnapshot(function (s) { var r = {}; s.docs.forEach(function (d) { r[d.id] = d.data(); }); respostas = r; desenhar(); }, function () {});
+    db.collection("textos").onSnapshot(function (s) { var t = {}; s.docs.forEach(function (d) { t[d.id] = d.data(); }); textos = t; desenhar(); }, function () {});
+    db.collection("telas").onSnapshot(function (s) { telas = lista(s); desenhar(); }, function () {});
+  })();
+  desenhar();
+})();
+</script>

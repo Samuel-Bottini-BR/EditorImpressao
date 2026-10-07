@@ -1,0 +1,365 @@
+<title>Escolhas do Editor de Impressão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+  :root {
+    --fundo: #eef0f3;
+    --cartao: #ffffff;
+    --tinta: #1b1e24;
+    --fraco: #5b6371;
+    --linha: #d6dae1;
+    --azul: #2f6fe0;
+    --azul-suave: #e3ecfc;
+    --verde: #1f8a4c;
+    --verde-suave: #e2f3e8;
+    --laranja: #c66a12;
+    --sombra: 0 1px 2px rgba(20, 30, 50, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --fundo: #1e1f22; --cartao: #26282c; --tinta: #eceef2; --fraco: #a3a9b4;
+      --linha: #3a3d43; --azul: #5b8ef0; --azul-suave: #22324f;
+      --verde: #4cc37f; --verde-suave: #1d3428; --laranja: #f0a55c;
+      --sombra: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --fundo: #1e1f22; --cartao: #26282c; --tinta: #eceef2; --fraco: #a3a9b4;
+    --linha: #3a3d43; --azul: #5b8ef0; --azul-suave: #22324f;
+    --verde: #4cc37f; --verde-suave: #1d3428; --laranja: #f0a55c;
+    --sombra: none;
+  }
+  body {
+    background: var(--fundo); color: var(--tinta);
+    font: 17px/1.5 "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+    padding-inline: 16px; padding-block: 0 48px;
+  }
+  .miolo { max-width: 1180px; margin: 0 auto; }
+  header.topo {
+    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: 12px 24px; padding-block: 28px 18px; border-bottom: 1px solid var(--linha);
+  }
+  h1 { margin: 0; font-size: 28px; line-height: 1.15; text-wrap: balance; }
+  .sub { margin: 4px 0 0; color: var(--fraco); }
+  nav.abas { display: flex; gap: 6px; }
+  nav.abas button {
+    font: inherit; font-size: 16px; padding: 8px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--linha); background: var(--cartao); color: var(--tinta);
+  }
+  nav.abas button[aria-selected="true"] { background: var(--azul); border-color: var(--azul); color: #fff; }
+  nav.abas .conta { font-variant-numeric: tabular-nums; opacity: .8; margin-left: 4px; }
+  .aviso-geral {
+    margin: 18px 0 0; padding: 12px 14px; border-radius: 8px;
+    background: var(--azul-suave); color: var(--tinta); font-size: 15px;
+  }
+  section.decisao {
+    background: var(--cartao); border: 1px solid var(--linha); border-radius: 12px;
+    box-shadow: var(--sombra); padding: 22px; margin-top: 22px;
+    display: grid; gap: 14px;
+  }
+  .parte { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--fraco); }
+  section.decisao h2 { margin: 0; font-size: 24px; line-height: 1.2; text-wrap: balance; }
+  .explica { margin: 0; color: var(--fraco); max-width: 70ch; }
+  .opcoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .opcao {
+    display: grid; grid-template-rows: auto 1fr auto; gap: 10px;
+    border: 2px solid var(--linha); border-radius: 10px; padding: 10px; background: var(--cartao);
+  }
+  .opcao.escolhida { border-color: var(--verde); background: var(--verde-suave); }
+  .opcao .foto {
+    display: block; padding: 0; border: 1px solid var(--linha); border-radius: 6px; overflow: hidden;
+    cursor: zoom-in; background: #111; width: 100%;
+  }
+  .opcao .foto img { display: block; width: 100%; height: auto; }
+  .opcao .fotos2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .opcao h3 { margin: 0; font-size: 19px; }
+  .opcao p { margin: 4px 0 0; font-size: 15px; color: var(--fraco); }
+  .acoes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .botao {
+    font: inherit; font-size: 16px; font-weight: 700; padding: 9px 16px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--azul); background: var(--azul); color: #fff;
+  }
+  .botao.secundario { background: transparent; color: var(--azul); font-weight: 400; }
+  .botao:disabled { opacity: .5; cursor: default; }
+  .opcao.escolhida .botao { background: var(--verde); border-color: var(--verde); }
+  a.ver { color: var(--azul); font-size: 15px; }
+  .selo {
+    display: inline-block; font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+    background: var(--verde); color: #fff;
+  }
+  .exemplos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .exemplos figure { margin: 0; display: grid; gap: 4px; }
+  .exemplos .foto { display: block; padding: 0; border: 1px solid var(--linha); border-radius: 6px;
+    overflow: hidden; cursor: zoom-in; background: #fff; width: 100%; }
+  .exemplos img { display: block; width: 100%; height: 220px; object-fit: cover; object-position: top; }
+  .exemplos figcaption { font-size: 14px; color: var(--fraco); }
+  .comentario { display: grid; gap: 6px; }
+  .comentario label { font-size: 15px; color: var(--fraco); }
+  .comentario textarea {
+    font: inherit; font-size: 16px; min-height: 64px; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--linha); background: var(--fundo); color: var(--tinta); resize: vertical;
+  }
+  .estado { font-size: 14px; color: var(--fraco); min-height: 1.4em; }
+  .estado.ok { color: var(--verde); }
+  .estado.erro { color: var(--laranja); }
+  .decidido-lista { display: grid; gap: 10px; margin-top: 22px; }
+  .decidido {
+    background: var(--cartao); border: 1px solid var(--linha); border-radius: 10px; padding: 14px 16px;
+    display: grid; grid-template-columns: minmax(140px, 220px) 1fr; gap: 6px 18px;
+  }
+  .decidido .parte { align-self: start; padding-top: 3px; }
+  .decidido strong { display: block; }
+  .decidido span { color: var(--fraco); font-size: 15px; }
+  @media (max-width: 640px) { .decidido { grid-template-columns: 1fr; } }
+  .vazio { margin-top: 28px; padding: 28px; text-align: center; color: var(--fraco);
+    border: 1px dashed var(--linha); border-radius: 12px; }
+  dialog.zoom {
+    border: 0; padding: 0; background: transparent; max-width: 96vw; max-height: 94vh;
+  }
+  dialog.zoom::backdrop { background: rgba(0, 0, 0, .78); }
+  dialog.zoom img { display: block; max-width: 96vw; max-height: 86vh; border-radius: 6px; }
+  dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center;
+    margin-top: 8px; color: #fff; font-size: 15px; }
+  dialog.zoom button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--azul); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) { .opcao { transition: border-color .15s, background .15s; } }
+</style>
+
+<div class="miolo">
+  <header class="topo">
+    <div>
+      <h1>Escolhas do Editor de Impressão</h1>
+      <p class="sub">Clique na imagem para ver grande. Clique em "Escolho esta" e pronto: a escolha fica salva sozinha.</p>
+    </div>
+    <nav class="abas" role="tablist">
+      <button id="aba-abertas" role="tab" aria-selected="true">Para escolher <span class="conta" id="conta-abertas"></span></button>
+      <button id="aba-decididas" role="tab" aria-selected="false">Já decidido <span class="conta" id="conta-decididas"></span></button>
+    </nav>
+  </header>
+  <p class="aviso-geral" id="aviso-geral">Carregando as escolhas...</p>
+  <div id="lista-abertas"></div>
+  <div id="lista-decididas" hidden></div>
+</div>
+
+<dialog class="zoom" id="zoom">
+  <img id="zoom-img" alt="">
+  <div class="barra"><span id="zoom-legenda"></span><button id="zoom-fechar">Fechar</button></div>
+</dialog>
+
+<script>
+(function () {
+  var decisoes = [];
+  var respostas = {};
+  var db = null;
+  var rascunhos = {};
+  var avisos = {};
+  var aviso = document.getElementById("aviso-geral");
+
+  function el(tag, cls, texto) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texto != null) e.textContent = texto;
+    return e;
+  }
+  function hora(iso) {
+    try { return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+    catch (e) { return ""; }
+  }
+
+  // --- abas
+  var abaA = document.getElementById("aba-abertas"), abaD = document.getElementById("aba-decididas");
+  var listaA = document.getElementById("lista-abertas"), listaD = document.getElementById("lista-decididas");
+  function mostrarAba(qual) {
+    var abertas = qual === "abertas";
+    abaA.setAttribute("aria-selected", String(abertas));
+    abaD.setAttribute("aria-selected", String(!abertas));
+    listaA.hidden = !abertas; listaD.hidden = abertas;
+    try { localStorage.setItem("escolhas-aba", qual); } catch (e) {}
+  }
+  abaA.addEventListener("click", function () { mostrarAba("abertas"); });
+  abaD.addEventListener("click", function () { mostrarAba("decididas"); });
+  try { if (localStorage.getItem("escolhas-aba") === "decididas") mostrarAba("decididas"); } catch (e) {}
+
+  // --- ver a imagem grande
+  var zoom = document.getElementById("zoom");
+  document.getElementById("zoom-fechar").addEventListener("click", function () { zoom.close(); });
+  zoom.addEventListener("click", function (ev) { if (ev.target === zoom) zoom.close(); });
+  function abrirZoom(src, legenda) {
+    document.getElementById("zoom-img").src = src;
+    document.getElementById("zoom-img").alt = legenda;
+    document.getElementById("zoom-legenda").textContent = legenda;
+    if (zoom.showModal) zoom.showModal(); else zoom.setAttribute("open", "");
+  }
+
+  // --- gravar
+  async function escolher(d, op) {
+    if (!db) return;
+    var atual = respostas[d.id] || {};
+    var corpo = {
+      opcao: op.id, opcaoNome: op.nome,
+      comentario: rascunhos[d.id] != null ? rascunhos[d.id] : (atual.comentario || ""),
+      em: new Date().toISOString()
+    };
+    avisos[d.id] = { texto: "Salvando...", tipo: "" };
+    desenhar();
+    try {
+      await db.doc("respostas/" + d.id).set(corpo);
+      avisos[d.id] = { texto: "Escolha salva: " + op.nome + ".", tipo: "ok" };
+    } catch (e) {
+      avisos[d.id] = { texto: "Não consegui salvar (" + (e && e.code || "erro") + "). Tente de novo em instantes.", tipo: "erro" };
+    }
+    desenhar();
+  }
+  async function salvarComentario(d) {
+    if (!db) return;
+    var atual = respostas[d.id] || {};
+    var corpo = {
+      opcao: atual.opcao || "", opcaoNome: atual.opcaoNome || "",
+      comentario: rascunhos[d.id] || "", em: new Date().toISOString()
+    };
+    avisos[d.id] = { texto: "Salvando o comentário...", tipo: "" };
+    desenhar();
+    try {
+      await db.doc("respostas/" + d.id).set(corpo);
+      delete rascunhos[d.id];
+      avisos[d.id] = { texto: "Comentário salvo.", tipo: "ok" };
+    } catch (e) {
+      avisos[d.id] = { texto: "Não consegui salvar o comentário (" + (e && e.code || "erro") + ").", tipo: "erro" };
+    }
+    desenhar();
+  }
+
+  // --- desenhar
+  function cartaoOpcao(d, op, resp) {
+    var c = el("article", "opcao" + (resp && resp.opcao === op.id ? " escolhida" : ""));
+    var imgs = op.imgs || [];
+    var caixa = el("div", imgs.length > 1 ? "fotos2" : "");
+    imgs.forEach(function (im) {
+      var b = el("button", "foto");
+      b.type = "button";
+      b.setAttribute("aria-label", "Ver grande: " + op.nome + (im.legenda ? " - " + im.legenda : ""));
+      var i = el("img"); i.src = im.src; i.alt = op.nome + (im.legenda ? " - " + im.legenda : ""); i.loading = "lazy";
+      b.appendChild(i);
+      b.addEventListener("click", function () { abrirZoom(im.src, op.nome + (im.legenda ? " - " + im.legenda : "")); });
+      caixa.appendChild(b);
+    });
+    c.appendChild(caixa);
+    var txt = el("div");
+    var h = el("h3", null, op.nome);
+    if (resp && resp.opcao === op.id) { h.appendChild(document.createTextNode(" ")); h.appendChild(el("span", "selo", "sua escolha")); }
+    txt.appendChild(h);
+    if (op.texto) txt.appendChild(el("p", null, op.texto));
+    c.appendChild(txt);
+    var acoes = el("div", "acoes");
+    var b = el("button", "botao", resp && resp.opcao === op.id ? "Escolhida" : "Escolho esta");
+    b.type = "button";
+    b.disabled = !db || (resp && resp.opcao === op.id);
+    b.addEventListener("click", function () { escolher(d, op); });
+    acoes.appendChild(b);
+    if (op.tela) {
+      var a = el("a", "ver", "Ver funcionando (abre e dá para clicar)");
+      a.href = op.tela; a.target = "_blank"; a.rel = "noopener";
+      acoes.appendChild(a);
+    }
+    c.appendChild(acoes);
+    return c;
+  }
+
+  function secaoDecisao(d) {
+    var resp = respostas[d.id];
+    var s = el("section", "decisao");
+    s.appendChild(el("div", "parte", d.parte || ""));
+    s.appendChild(el("h2", null, d.pergunta || ""));
+    if (d.explicacao) s.appendChild(el("p", "explica", d.explicacao));
+    if (d.exemplos && d.exemplos.length) {
+      var ex = el("div", "exemplos");
+      d.exemplos.forEach(function (im) {
+        var f = el("figure");
+        var b = el("button", "foto"); b.type = "button";
+        b.setAttribute("aria-label", "Ver grande: " + (im.legenda || "exemplo"));
+        var i = el("img"); i.src = im.src; i.alt = im.legenda || "exemplo"; i.loading = "lazy";
+        b.appendChild(i);
+        b.addEventListener("click", function () { abrirZoom(im.src, im.legenda || ""); });
+        f.appendChild(b);
+        if (im.legenda) f.appendChild(el("figcaption", null, im.legenda));
+        ex.appendChild(f);
+      });
+      s.appendChild(ex);
+    }
+    var grade = el("div", "opcoes");
+    (d.opcoes || []).forEach(function (op) { grade.appendChild(cartaoOpcao(d, op, resp)); });
+    s.appendChild(grade);
+    var com = el("div", "comentario");
+    var lab = el("label", null, "Quer explicar ou pedir alguma mudança? (não é obrigatório)");
+    var idc = "com-" + d.id; lab.setAttribute("for", idc);
+    var ta = el("textarea"); ta.id = idc;
+    ta.value = rascunhos[d.id] != null ? rascunhos[d.id] : (resp && resp.comentario) || "";
+    ta.disabled = !db;
+    ta.addEventListener("input", function () { rascunhos[d.id] = ta.value; });
+    var linha = el("div", "acoes");
+    var bs = el("button", "botao secundario", "Salvar comentário"); bs.type = "button"; bs.disabled = !db;
+    bs.addEventListener("click", function () { salvarComentario(d); });
+    linha.appendChild(bs);
+    var av = avisos[d.id];
+    var est = el("span", "estado" + (av && av.tipo ? " " + av.tipo : ""),
+      av ? av.texto : (resp && resp.em ? "Salvo em " + hora(resp.em) + "." : ""));
+    est.setAttribute("role", "status");
+    linha.appendChild(est);
+    com.appendChild(lab); com.appendChild(ta); com.appendChild(linha);
+    s.appendChild(com);
+    return s;
+  }
+
+  function desenhar() {
+    var foco = document.activeElement && document.activeElement.id;
+    var abertas = decisoes.filter(function (d) { return d.status !== "decidida"; })
+      .sort(function (a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+    var decididas = decisoes.filter(function (d) { return d.status === "decidida"; })
+      .sort(function (a, b) { return (b.ordem || 0) - (a.ordem || 0); });
+    document.getElementById("conta-abertas").textContent = "(" + abertas.length + ")";
+    document.getElementById("conta-decididas").textContent = "(" + decididas.length + ")";
+
+    listaA.textContent = "";
+    if (!abertas.length) listaA.appendChild(el("p", "vazio", "Nada para escolher agora. Quando houver, aparece aqui."));
+    abertas.forEach(function (d) { listaA.appendChild(secaoDecisao(d)); });
+
+    listaD.textContent = "";
+    var box = el("div", "decidido-lista");
+    if (!decididas.length) box.appendChild(el("p", "vazio", "Nada decidido ainda."));
+    decididas.forEach(function (d) {
+      var r = el("div", "decidido");
+      r.appendChild(el("div", "parte", d.parte || ""));
+      var t = el("div");
+      t.appendChild(el("strong", null, d.decisao || d.pergunta || ""));
+      if (d.quando) t.appendChild(el("span", null, d.quando));
+      r.appendChild(t);
+      box.appendChild(r);
+    });
+    listaD.appendChild(box);
+    if (foco) { var f = document.getElementById(foco); if (f) f.focus(); }
+  }
+
+  // --- ligar ao banco de dados da página
+  (async function () {
+    try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
+    if (!db) {
+      aviso.textContent = "Para ver e salvar as escolhas, abra esta página pelo claude.ai, com a sua conta.";
+      return;
+    }
+    aviso.textContent = "As escolhas ficam salvas aqui mesmo. A gerente (Claude Code) lê e registra no plano.";
+    db.collection("decisoes").onSnapshot(function (snap) {
+      decisoes = snap.docs.map(function (s) { var x = Object.assign({}, s.data()); x.id = s.id; return x; });
+      desenhar();
+    }, function () { aviso.textContent = "Perdi a ligação com as escolhas. Recarregue a página."; });
+    db.collection("respostas").onSnapshot(function (snap) {
+      var r = {};
+      snap.docs.forEach(function (s) { r[s.id] = s.data(); });
+      respostas = r;
+      desenhar();
+    }, function () {});
+  })();
+  desenhar();
+})();
+</script>
