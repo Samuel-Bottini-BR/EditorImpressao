@@ -463,3 +463,11 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
     automaticamente no meu pc, caso eu já tenha feito a ultima pagina de conferencia e te dado ok."
     A gerente não vê as respostas sozinha: lê o banco da página quando ele avisa ("respondi") e
     copia as respostas, palavra por palavra, para `relatorios/` e para o Registro de mudanças.
+
+    **Comentário com dúvida ou questionamento se responde NA página, não no chat (regra do Samuel,
+    07/10/2026).** O comentário dele vale como resposta: a gerente refaz a explicação da pergunta
+    respondendo ao que ele escreveu (com desenho ou imagem quando ajudar), mostra a questão de novo
+    com opções novas tiradas do comentário e, se surgir outra decisão, cria pergunta nova na mesma
+    página. No chat, só um aviso curto de que a página mudou. Palavras dele: "não me responda no chat
+    quando tiver questionamentos nas conferencias, responda nas conferencias." e "o meu comentario
+    serve como resposta, porque você não responde ele e me mostra a questão de novo?"

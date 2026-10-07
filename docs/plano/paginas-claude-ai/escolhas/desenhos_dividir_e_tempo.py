@@ -133,7 +133,55 @@ def historia(nome, titulo, final, legenda_final, cor_final):
     (SAIDA / nome).write_text("".join(p), encoding="utf-8")
 
 
+# ---------------------------------------------------------------- encadernação
+def encadernacao():
+    """Por que apagar uma página do livro estraga a encadernação (pedido do Samuel, 07/10).
+
+    Cada folha impressa tem frente e verso; os cadernos são montados com as páginas
+    que sobram, na ordem. Tirar uma página empurra todas as seguintes um lado.
+    """
+    W, H = 1200, 520
+    LW, LH = 92, 120  # tamanho de cada lado da folha
+
+    def lado(x, y, rot, cor="#fbf8f1", borda=CINZA, texto_cor="#1f1f1f"):
+        g = [f'<rect x="{x}" y="{y}" width="{LW}" height="{LH}" rx="3" fill="{cor}" stroke="{borda}" stroke-width="2"/>']
+        for i, linha in enumerate(rot.split("|")):
+            g.append(texto(x + LW / 2, y + LH / 2 - 6 + i * 20, linha, 16, texto_cor, 700, "middle"))
+        return "".join(g)
+
+    def fileira(y, titulo, cor_titulo, folhas, nota, cor_nota):
+        p = [texto(24, y, titulo, 20, cor_titulo, 700)]
+        x = 24
+        for n, (frente, verso, destaque) in enumerate(folhas):
+            p.append(texto(x + LW, y + 30, f"folha {n + 1}", 15, CINZA, 600, "middle"))
+            for k, (rot, nome) in enumerate(((frente, "frente"), (verso, "verso"))):
+                cor, borda = "#fbf8f1", CINZA
+                if rot == "branca":
+                    cor, rot = "#ffffff", "página|branca"
+                if destaque == k:
+                    borda = cor_nota
+                p.append(lado(x + k * LW, y + 40, rot, cor, borda))
+                p.append(texto(x + k * LW + LW / 2, y + 40 + LH + 20, nome, 14, CINZA, 400, "middle"))
+            x += 2 * LW + 40
+        p.append(texto(x + 10, y + 40 + LH / 2, nota[0], 18, cor_nota, 700))
+        p.append(texto(x + 10, y + 40 + LH / 2 + 24, nota[1], 18, cor_nota, 700))
+        return "".join(p)
+
+    p = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
+         f'<rect width="{W}" height="{H}" fill="#fff"/>',
+         texto(24, 36, "Exemplo: o Kaique apaga o verso em branco da capa (a página 2)", 22, peso=700)]
+    p.append(fileira(84, "Como está hoje: a página apagada sai da fila", VERMELHO,
+                     [("1|capa", "3|rosto", 1), ("4", "5", None), ("6", "7", None)],
+                     ("o rosto foi parar no verso,", "e todas as seguintes trocam de lado"), VERMELHO))
+    p.append(fileira(314, "Com página branca no lugar da apagada", VERDE,
+                     [("1|capa", "branca", 1), ("3|rosto", "4", None), ("5", "6", None)],
+                     ("cada página continua", "no seu lado, como no livro"), VERDE))
+    p.append("</svg>")
+    (SAIDA / "encadernacao-pagina-apagada.svg").write_text("".join(p), encoding="utf-8")
+
+
 if __name__ == "__main__":
+    encadernacao()
     tempo()
     historia("metade-antes-do-conserto.svg", "Antes do conserto (o defeito que o verificador achou)",
              lambda x, y: folha(x, y, vazia=True), "a folha inteira sumia do PDF", VERMELHO)
