@@ -2456,10 +2456,16 @@ class TelaConferir(QWidget):
 
         Conserto junto do item 2.1 (06/10/2026): antes so trocava
         ConfigFolha.dividir, e as duas paginas da folha saiam no PDF, cada uma
-        com a folha inteira (a folha repetida). Agora, na mesma acao, a metade
-        da direita e apagada (ou volta, ao dividir de novo) - a da esquerda
-        vira a folha inteira (core/pipeline, modelos.Projeto.paginas_ativas).
-        A lista de paginas nao muda (o desfazer guarda paginas pela posicao).
+        com a folha inteira (a folha repetida). Hoje quem garante que a folha
+        sai UMA vez e modelos.Projeto.paginas_ativas. Aqui, para a tira de
+        miniaturas nao mostrar a folha duas vezes, a metade da direita e
+        apagada na mesma acao - mas SO quando a da esquerda esta viva (ela
+        leva a folha inteira). Com a esquerda ja apagada, a da direita fica e
+        leva a folha: antes ela era apagada junto e a folha SUMIA do PDF
+        (parecer do verificador, 06/10, imagem b3). "dividir esta" devolve a
+        da direita nas mesmas condicoes (esquerda viva). A lista de paginas
+        nao muda (o desfazer guarda paginas pela posicao). Arriscado: apagar a
+        direita sem olhar a esquerda.
         Folha que entrou como uma pagina so: nao ha metade para criar; so
         marca como conferida (e o que a sugestao "nao dividir esta" do alerta
         "parece ter uma pagina so" quer dizer: ela ja nao e dividida)."""
@@ -2470,9 +2476,10 @@ class TelaConferir(QWidget):
             return
         dividir = not folha.dividir
         campos = {"dividir": dividir, "revisada": True}
-        direita = next((p for p in self.projeto.paginas
-                        if p.folha == self.indice_folha and p.metade == METADE_DIREITA), None)
-        if direita is not None:
+        da_folha = [p for p in self.projeto.paginas if p.folha == self.indice_folha]
+        direita = next((p for p in da_folha if p.metade == METADE_DIREITA), None)
+        esquerda_viva = any(not p.apagada for p in da_folha if p is not direita)
+        if direita is not None and esquerda_viva:
             campos[campo_de_pagina(direita.indice, "apagada")] = not dividir
         self._registrar(
             "nao_dividir", "folha", [self.indice_folha], campos,

@@ -382,24 +382,56 @@ class Projeto:
 
     @property
     def paginas_ativas(self) -> list[ConfigPagina]:
-        """As paginas que vao para o PDF: nao apagadas, e sem a metade da
-        direita de uma folha que deixou de ser dividida.
+        """As paginas que vao para o PDF.
 
-        Conserto junto do item 2.1 (06/10/2026): o "nao dividir esta" da aba
-        Onde cortar so desligava ConfigFolha.dividir, e as DUAS paginas da
-        folha continuavam na lista - cada uma desenhava a folha inteira, e o
-        PDF saia com a folha repetida. A lista de paginas nao muda (o desfazer
-        e as acoes guardam paginas pela posicao); a da esquerda vira a folha
-        inteira (pipeline: metade so vale com a folha dividida) e a da direita
-        fica de fora aqui. Ver metade_sobrando."""
-        return [p for p in self.paginas if not p.apagada and not self.metade_sobrando(p)]
+        Uma folha NAO dividida sai UMA vez, inteira, se alguma das paginas
+        dela nao estiver apagada; so some do PDF se a pessoa apagou TODAS as
+        paginas da folha. As outras paginas saem se nao estiverem apagadas.
 
-    def metade_sobrando(self, pagina: ConfigPagina) -> bool:
-        """A pagina e a metade da DIREITA de uma folha que nao esta mais
-        dividida? (ela nao existe no PDF: a da esquerda ja e a folha inteira)"""
-        if pagina.metade != METADE_DIREITA or not 0 <= pagina.folha < len(self.folhas):
+        Historia (item 2.1, 06/10/2026): o "nao dividir esta" da aba Onde
+        cortar so desligava ConfigFolha.dividir, e as DUAS paginas da folha
+        continuavam na lista - cada uma desenhava a folha inteira, e o PDF
+        saia com a folha repetida. O primeiro conserto tirava sempre a metade
+        da direita, e uma folha com a ESQUERDA apagada sumia inteira do PDF
+        (parecer do verificador, 06/10: a pagina de rosto do Gradus Primus do
+        Samuel). Agora fica a primeira pagina NAO apagada da folha (que o
+        pipeline desenha inteira: a metade so vale com a folha dividida), e e
+        o mesmo que o fase-1 fazia quando so uma das duas estava viva. A
+        lista de paginas nao muda (o desfazer e as acoes guardam paginas pela
+        posicao). Ver metade_sobrando. Arriscado: voltar a escolher sempre a
+        mesma metade (a folha some quando ela esta apagada)."""
+        ativas: list[ConfigPagina] = []
+        folhas_que_ja_sairam: set[int] = set()
+        for pagina in self.paginas:
+            if pagina.apagada:
+                continue
+            if self._de_folha_nao_dividida(pagina):
+                if pagina.folha in folhas_que_ja_sairam:
+                    continue
+                folhas_que_ja_sairam.add(pagina.folha)
+            ativas.append(pagina)
+        return ativas
+
+    def _de_folha_nao_dividida(self, pagina: ConfigPagina) -> bool:
+        """A pagina e uma das metades (esquerda/direita) de uma folha que nao
+        esta dividida? (ela desenha a folha inteira)"""
+        if pagina.metade == METADE_INTEIRA or not 0 <= pagina.folha < len(self.folhas):
             return False
         return not self.folhas[pagina.folha].dividir
+
+    def metade_sobrando(self, pagina: ConfigPagina) -> bool:
+        """A pagina fica fora do PDF por repetir a folha? (folha nao
+        dividida, e outra pagina nao apagada da mesma folha, antes dela, ja
+        leva a folha inteira). Pagina apagada nao conta como sobrando: ela
+        esta fora por ter sido apagada."""
+        if pagina.apagada or not self._de_folha_nao_dividida(pagina):
+            return False
+        for outra in self.paginas:
+            if outra is pagina:
+                return False
+            if outra.folha == pagina.folha and not outra.apagada:
+                return True
+        return False
 
     @property
     def total_apagadas(self) -> int:

@@ -314,3 +314,29 @@ def test_outras_folhas_divididas_nao_combinam():
     assert "jeito de dividir" in motivo
     assert projetos.motivo_para_nao_combinar(salvo, _projeto_com_folhas(
         ds.JEITO_SCANTAILOR, [True, False], [0.6, 0.5])) == ""
+
+
+# ------------------------------------------------------------------ parecer do verificador (06/10)
+
+def test_folha_nao_some_com_a_esquerda_apagada_e_nao_dividir(tmp_path):
+    """Bug grave do parecer do verificador (06/10/2026, Gradus Primus do
+    Samuel, folha 2): a pagina da ESQUERDA apagada e a folha como "nao
+    dividir esta" - a da direita era a unica que sobrava da folha e saia da
+    lista: a folha sumia do PDF. Nenhuma folha pode sumir sem a pessoa ter
+    apagado: aqui a folha inteira sai, uma vez (como no fase-1)."""
+    caminho = _pdf_deitado(tmp_path, dobra=0.5, folhas=3)
+    projeto = Projeto(caminho_entrada=caminho, dividir_folhas=True, endireitar=False,
+                      cortar_bordas=False)
+    pipeline.analisar_projeto(projeto)
+    projeto.paginas[2].apagada = True            # a esquerda da folha 2
+    projeto.folhas[1].dividir = False             # "nao dividir esta"
+    assert [p.indice for p in projeto.paginas_ativas] == [0, 1, 3, 4, 5]
+    projeto.caminho_saida = str(tmp_path / "saida.pdf")
+    doc = fitz.open(pipeline.processar(projeto))
+    larguras = [round(p.rect.width) for p in doc]
+    doc.close()
+    assert len(larguras) == 5
+    assert larguras[2] > larguras[0]              # a folha 2 saiu inteira
+    # as duas apagadas: ai sim a folha sai (a pessoa apagou)
+    projeto.paginas[3].apagada = True
+    assert [p.indice for p in projeto.paginas_ativas] == [0, 1, 4, 5]

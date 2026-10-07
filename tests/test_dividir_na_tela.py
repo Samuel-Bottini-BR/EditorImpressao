@@ -165,3 +165,19 @@ def test_nao_dividir_espera_as_zonas_antigas(janela, pasta, monkeypatch):
     assert janela.projeto.folhas[0].dividir and not janela.projeto.paginas[1].apagada
     assert len(janela.acoes.feitas) == feitas
     assert janela.avisos and "preparando as marcações" in janela.avisos[-1]
+
+
+def test_esquerda_apagada_e_nao_dividir_a_folha_continua_no_pdf(janela, pasta):
+    """Parecer do verificador (06/10/2026, imagem b3): apagar a pagina da
+    esquerda e depois "nao dividir esta" fazia a folha inteira sumir do PDF
+    (a acao apagava tambem a da direita). Agora a da direita fica e leva a
+    folha inteira; o desfazer devolve tudo."""
+    tela = _conferir_dividido(janela, pasta)
+    projeto = janela.projeto
+    projeto.paginas[0].apagada = True              # a esquerda da folha 1
+    tela._alternar_dividir()
+    assert not projeto.folhas[0].dividir
+    assert not projeto.paginas[1].apagada
+    assert [p.folha for p in projeto.paginas_ativas].count(0) == 1
+    tela._alternar_dividir()                       # "dividir esta": a esquerda continua apagada
+    assert projeto.folhas[0].dividir and projeto.paginas[0].apagada and not projeto.paginas[1].apagada
