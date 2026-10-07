@@ -20,14 +20,15 @@ distribuído, vai com o código-fonte aberto.
 
 | Pasta | O que é | Mudou? |
 |---|---|---|
-| `src/` | 128 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) e os 50 do dividir (item 2.1; lista em "O dividir", abaixo) | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
+| `src/` | 132 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) os 50 do dividir (item 2.1; lista em "O dividir", abaixo) e os 4 do endireitar (item 2.2; ver "O endireitar") | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
 | `somas-v1.2.1.txt` | A soma SHA-256 de cada arquivo de `src/` como está no ScanTailor v1.2.1 (tirada do git do ScanTailor, fim de linha LF). O teste `tests/test_st_ferramentas.py` confere todos, a cada rodada | Nosso (a lista) |
 | `referencia/ProjectPages.cpp` | O arquivo do ScanTailor de onde veio a única função copiada como "cola" no dividir (`adviseNumberOfLogicalPages`, linhas 205-214). **Não é compilado**: o teste `tests/test_dividir_scantailor.py` confere a soma dele e que o trecho em `ligacao-ferramentas/dividir.cpp` é igual | Não |
+| `referencia/deskew/Task.cpp` | O arquivo do ScanTailor de onde veio a limpeza das sombras do endireitar (`cleanup` e `from150dpi`, linhas 222-271). **Não é compilado**: o teste `tests/test_endireitar_scantailor.py` confere a soma dele e que o trecho em `ligacao-ferramentas/endireitar.cpp` é igual | Não |
 | `referencia/OutputGenerator.cpp` | O arquivo do ScanTailor onde mora o detector. **Não é compilado**: serve para o teste conferir que as funções copiadas não mudaram | Não |
 | `ligacao/st_gravura.cpp` | A "cola": copia as funções do detector de `OutputGenerator.cpp` **letra por letra** (entre as marcas `COPIADO SEM MUDANCA (linhas X-Y)`) e troca só o que ligava o detector à janela do ScanTailor | Só a ligação (ver abaixo) |
 | `ligacao/st_gravura.h` | As funções em C que o Python chama por `ctypes` | Nosso |
 | `ligacao/CMakeLists.txt` | Compila `src/` como biblioteca estática e `st_gravura.cpp` como DLL | Nosso |
-| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4), `dividir.cpp` (dividir a folha, item 2.1) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
+| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4), `dividir.cpp` (dividir a folha, item 2.1), `endireitar.cpp` (endireitar a página, item 2.2) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
 
 Foram trazidos só os arquivos que o detector usa: o fecho dos `#include` a
 partir das funções copiadas (os `.cpp` de `ImageTransformation`,
@@ -156,6 +157,40 @@ do `page_split`, mais os `.cpp` que o vinculador pediu.
 
 A versão da interface subiu para 2 (`ST_FERRAMENTAS_VERSAO_API`); a função
 dos pontinhos não mudou.
+
+## O endireitar (item 2.2, desde 06/10/2026)
+
+Decisões do Samuel G4 (b) e G6 (a), 05/10/2026: o endireitar do ScanTailor de
+fábrica, a conta do programa continua como escolha (por livro e por página), a
+página vai para "Para revisar" quando as duas discordam mais de 0,3°, e o
+endireitar passa a vir ANTES do corte (como no ScanTailor).
+
+**Função em C:** `st_ferramentas_endireitar` (`ligacao-ferramentas/endireitar.cpp`),
+o que o `deskew::Task` do ScanTailor faz numa página nova: o cinza e a
+geometria do `FilterData`, o limiar Otsu e a detecção "claro no escuro"
+(`BlackOnWhiteEstimator`, ligada de fábrica no ScanTailor) do
+`Task::updateFilterData`, a **limpeza das sombras horizontais compridas**
+(`Task::cleanup`, copiada sem mudança entre marcas, com uma classe `deskew::Task`
+de mesmo nome só com as três funções `static`) e o `SkewFinder::findSkew`, que
+só vale com confiança 2,0 ou mais. A correção "oblíqua" vem desligada de
+fábrica no ScanTailor e não foi trazida. O original do `Task.cpp` está em
+`referencia/deskew/Task.cpp` (não compilado).
+
+**Os 4 arquivos trazidos** (sem mudança, soma em `somas-v1.2.1.txt`, tirada do
+`git show v1.2.1:` do ScanTailor): `imageproc/UpscaleIntegerTimes.*` (a
+limpeza usa) e `core/BlackOnWhiteEstimator.*` (a detecção "claro no escuro").
+O `SkewFinder` já tinha vindo com o dividir.
+
+**Conferido em 06/10/2026, com a DLL nova (versão 3 da interface):**
+- o limpar pontinhos dá o mesmo, ponto a ponto, que a DLL anterior (versão 2)
+  nas 32 páginas do gabarito, nas forças pouco, normal e muito (96 de 96);
+- o dividir dá o mesmo que a versão 2 nas 32 páginas, nos modos automático,
+  "uma página + sobra" e "duas páginas" (96 de 96);
+- o endireitar dá, nas páginas do D3 em que o ScanTailor não cortou sobra
+  (Palatino 5, Boécio 3, 7, 8, Opus Majus 3, 11, 165), o mesmo ângulo e a
+  mesma confiança do programa de teste do D3;
+- a `st_gravura` (item 1.2), recompilada numa pasta de rascunho com os 4
+  arquivos novos em `src/`, ver a seção "Duas DLLs".
 
 ## Como conferir que nada mudou
 

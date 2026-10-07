@@ -1,5 +1,5 @@
 # Compila st_ferramentas.dll: as ferramentas de imagem do ScanTailor Advanced
-# numa DLL so (item M9 da Fase 2). Hoje: limpar pontinhos.
+# numa DLL so (item M9 da Fase 2). Hoje: limpar pontinhos, dividir e endireitar.
 #
 # Nao rode direto: use  .venv\Scripts\python.exe compilar_st_ferramentas.py
 # (ele acha o Qt, o Boost e o Visual Studio e passa as variaveis abaixo).
