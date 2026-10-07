@@ -27,7 +27,10 @@ argumento `checked` que o `clicked` manda junto - escapa do `teste_interface.py`
 (que chama métodos internos direto, para validar resultado de ação, não a
 fiação do botão) e é pego aqui.
 
-Cobre: tela_inicio (busca, área de arrastar, cartão de projeto e seu menu de
+Cobre (desde 06/10/2026 também as escolhas do dividir, item 2.1: "Dividir folhas
+ao meio" marcada para a aba Onde cortar aparecer, a lista "Jeito de dividir:",
+a caixinha do corte da sobra e a lista "jeito:" da aba Onde cortar):
+tela_inicio (busca, área de arrastar, cartão de projeto e seu menu de
 contexto), tela_opcoes (checkboxes, filtros, combo de caderno), tela_conferir
 (como antes: layout e botões de cada aba, cabeçalho/rodapé, redimensionar),
 tela_ampliada (zoom, navegação, comparar, filtros), janela_confirmar (escolher
@@ -160,6 +163,22 @@ def acionar(controle, rotulo: str) -> bool:
     ok = len(_falhas) == antes
     if ok:
         print(f"  ok    {_contexto_atual}")
+    return ok
+
+
+def trocar_combo(combo, rotulo: str) -> bool:
+    """Escolhe o proximo item de uma lista (QComboBox), como a pessoa faria,
+    e diz se passou (nenhuma excecao nova no sys.excepthook). Item 2.1
+    (06/10/2026): as listas do dividir."""
+    global _contexto_atual
+    _contexto_atual = f"trocar a lista '{rotulo}'"
+    antes = len(_falhas)
+    combo.setCurrentIndex((combo.currentIndex() + 1) % combo.count())
+    QApplication.processEvents()
+    esperar(0.3)
+    ok = len(_falhas) == antes
+    if ok:
+        print(f"  ok    {_contexto_atual} -> '{combo.currentText()}'")
     return ok
 
 
@@ -498,6 +517,26 @@ def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
         else:
             falhas += 1
 
+    # Item 2.1 (06/10/2026, decisao G2 (a)): o livro novo nao divide mais
+    # sozinho. Marca "Dividir folhas ao meio" (assim a aba Onde cortar aparece
+    # na conferencia, como antes) e mexe nas escolhas novas: a lista "Jeito
+    # de dividir:" (ida e volta) e a caixinha do corte da sobra (ida e volta).
+    if not opcoes.cx_dividir.isChecked():
+        if acionar(opcoes.cx_dividir, opcoes.cx_dividir.text() + " (para a aba Onde cortar)"):
+            ok += 1
+        else:
+            falhas += 1
+    for _ in range(opcoes.combo_jeito_dividir.count()):
+        if trocar_combo(opcoes.combo_jeito_dividir, "Jeito de dividir"):
+            ok += 1
+        else:
+            falhas += 1
+    for sufixo in ("", " (de volta)"):
+        if acionar(opcoes.cx_cortar_sobra, opcoes.cx_cortar_sobra.text() + sufixo):
+            ok += 1
+        else:
+            falhas += 1
+
     # Item 1.1: o filtro "Tirar o fundo" so aparece em PDF com camadas (o PDF
     # gerado por este script nao tem; rode com um PDF do Internet Archive,
     # COPIADO para fora do acervo, para cobri-lo - ver o topo do arquivo). O
@@ -550,6 +589,15 @@ def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
             if not esperar(20, lambda: janela.telas.currentIndex() == OPCOES):
                 falhas += 1
                 print("  FALHA reabrir o PDF depois de 'voltar'")
+            elif not janela.tela_opcoes.cx_dividir.isChecked():
+                # item 2.1: reaberto sem ter conferido, o livro volta com as
+                # opcoes de fabrica (sem dividir); marca de novo, para a aba
+                # Onde cortar ser clicada na conferencia, como antes
+                if acionar(janela.tela_opcoes.cx_dividir,
+                           "Dividir folhas ao meio (de novo, depois de reabrir)"):
+                    ok += 1
+                else:
+                    falhas += 1
         else:
             falhas += 1
             print("  FALHA 'voltar' não retornou à tela inicial")
@@ -589,6 +637,14 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
             alvos += list(botoes_de(conferir.barra_girar))
+        # Item 2.1: a lista "jeito:" da aba Onde cortar (ida e volta; numa
+        # folha em pe ela fica apagada e trocar nao faz nada - so nao pode quebrar)
+        if aba == "corte" and hasattr(conferir, "combo_jeito_da_folha"):
+            for _ in range(conferir.combo_jeito_da_folha.count()):
+                if trocar_combo(conferir.combo_jeito_da_folha, "jeito (desta folha)"):
+                    ok += 1
+                else:
+                    falhas += 1
         for botao in alvos:
             rotulo = botao.text() or "(sem texto)"
 

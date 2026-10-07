@@ -309,25 +309,81 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
     "livro." em campo que nao existe no Projeto (o setattr criaria um).
     """
     itens = projeto.folhas if acao.alvo == "folha" else projeto.paginas
+    if acao.alvo == "pagina" and "despeckle" in valores:
+        valores = _despeckle_antigo_traduzido(valores)
 
     for campo, valor in valores.items():
         if campo.startswith("livro."):
             nome = campo[len("livro."):]
             if hasattr(projeto, nome):
                 setattr(projeto, nome, valor)
+        elif campo.startswith(PREFIXO_PAGINA):
+            _aplicar_numa_pagina(projeto, campo, valor)
 
     for indice in acao.indices:
         if not 0 <= indice < len(itens):
             continue
         item = itens[indice]
         for campo, valor in valores.items():
-            if campo.startswith("livro."):
+            if campo.startswith("livro.") or campo.startswith(PREFIXO_PAGINA):
                 continue
             if isinstance(valor, dict):
                 if str(indice) in valor:
                     setattr(item, campo, _restaurar_tipo(campo, valor[str(indice)]))
             else:
                 setattr(item, campo, _restaurar_tipo(campo, valor))
+
+
+# Campo "pagina:<indice>.<campo>" numa acao de FOLHA: muda uma pagina junto
+# (item 2.1, 06/10/2026: o "nao dividir esta" apaga a metade da direita da
+# folha na mesma acao, e o desfazer devolve as duas coisas). O valor e
+# simples (nao o dicionario por indice). Arquivo de acoes antigo nao tem
+# esses campos. Arriscado: usar com campo que a pagina nao tem (o setattr
+# criaria um) - por isso _aplicar_numa_pagina confere.
+PREFIXO_PAGINA = "pagina:"
+
+
+def campo_de_pagina(indice: int, campo: str) -> str:
+    """O nome do campo de uma acao de folha que muda a pagina `indice`."""
+    return f"{PREFIXO_PAGINA}{int(indice)}.{campo}"
+
+
+def _separar_campo_de_pagina(campo: str) -> tuple[int, str] | None:
+    try:
+        indice, nome = campo[len(PREFIXO_PAGINA):].split(".", 1)
+        return int(indice), nome
+    except ValueError:
+        return None
+
+
+def _aplicar_numa_pagina(projeto: Projeto, campo: str, valor: Any) -> None:
+    partes = _separar_campo_de_pagina(campo)
+    if partes is None:
+        return
+    indice, nome = partes
+    if 0 <= indice < len(projeto.paginas) and hasattr(projeto.paginas[indice], nome):
+        setattr(projeto.paginas[indice], nome, _restaurar_tipo(nome, valor))
+
+
+def _despeckle_antigo_traduzido(valores: dict[str, Any]) -> dict[str, Any]:
+    """Acao gravada antes de 06/10/2026 com a caixinha "limpar poeirinha"
+    (campo `despeckle` da pagina, True/False), desfeita ou refeita depois que
+    ela virou a escolha "Limpar pontinhos" (ConfigPagina.limpar_pontinhos):
+    True vira "nosso" (o que a caixinha ligada fazia), False vira
+    "desligado". Sem isto, o Ctrl+Z dessa acao nao mudaria nada (o setattr
+    criaria um campo solto). Devolve uma copia; o arquivo de acoes nao muda."""
+    from core.pontinhos_scantailor import DESLIGADO, NOSSO
+
+    def traduzir(v):
+        return NOSSO if v else DESLIGADO
+
+    novos = dict(valores)
+    antigo = novos.pop("despeckle")
+    if isinstance(antigo, dict):
+        novos["limpar_pontinhos"] = {k: traduzir(v) for k, v in antigo.items()}
+    else:
+        novos["limpar_pontinhos"] = traduzir(antigo)
+    return novos
 
 
 # Campos que sao tupla em modelos.py mas o JSON grava como lista - o
@@ -358,6 +414,11 @@ def montar_acao(
 
     antes: dict[str, Any] = {}
     for campo in campos:
+        if campo.startswith(PREFIXO_PAGINA):          # item 2.1 (ver PREFIXO_PAGINA)
+            partes = _separar_campo_de_pagina(campo)
+            if partes is not None and 0 <= partes[0] < len(projeto.paginas):
+                antes[campo] = _serializavel(getattr(projeto.paginas[partes[0]], partes[1]))
+            continue
         antes[campo] = {
             str(i): _serializavel(getattr(itens[i], campo))
             for i in indices

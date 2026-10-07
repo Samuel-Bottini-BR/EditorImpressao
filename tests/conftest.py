@@ -163,3 +163,22 @@ def pytest_unconfigure(config) -> None:
             PASTA_DE_DADOS_DOS_TESTES.rmdir()          # so se ficou vazia
         except OSError:
             pass
+
+
+@pytest.fixture
+def livro_novo_divide(monkeypatch):
+    """O livro novo abre com "Dividir folhas ao meio" marcada, como era ate o
+    item 2.1. Desde a decisao G2 (a) do Samuel (05/10/2026) o livro novo NAO
+    divide; os testes marcados com esta fixture foram escritos com o livro
+    deitado dividido (6 paginas) e mudam a opcao a partir dali - o cenario
+    deles continua o mesmo, so o ponto de partida e posto a mao."""
+    from dataclasses import dataclass
+
+    import ui.janela_principal as jp
+    from modelos import Projeto
+
+    @dataclass
+    class ProjetoQueDivide(Projeto):
+        dividir_folhas: bool = True
+
+    monkeypatch.setattr(jp, "Projeto", ProjetoQueDivide)

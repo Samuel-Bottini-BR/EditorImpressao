@@ -1,0 +1,104 @@
+HEAD c936d81 21:28:18
+tests/test_ajustar_pedaco.py | 1s | 13 passed in 0.65s
+tests/test_ajustar_pedaco_na_aba_marcar.py | 4s | 8 passed in 2.75s
+tests/test_ajustar_pedaco_na_folha_girada.py | 3s | 8 passed in 2.37s
+tests/test_ajustar_pedaco_quatro_cantos.py | 1s | 3 passed in 0.32s
+tests/test_ajustar_pedaco_so_figura.py | 2s | 11 passed in 1.81s
+tests/test_alerta_pb.py | 1s | 5 passed in 0.17s
+tests/test_antigo_aberto_vira_pronto.py | 4s | 5 passed in 3.26s
+tests/test_aquecimento.py | 2s | 3 passed in 1.68s
+tests/test_atalhos.py | 1s | 15 passed in 0.06s
+tests/test_barra_de_menu.py | 2s | 20 passed in 1.25s
+tests/test_botoes_em_portugues.py | 1s | 5 passed in 0.22s
+tests/test_cadernos.py | 1s | 16 passed in 0.15s
+tests/test_camadas.py | 94s | 90 passed in 93.38s (0:01:33)
+tests/test_cancelar_e_conferir_rapido.py | 9s | 1 passed in 8.84s
+tests/test_cartao_pdf_gerado.py | 5s | 4 passed in 3.60s
+tests/test_cartoes_e_previas.py | 2s | 2 passed in 1.72s
+tests/test_conferencia.py | 8s | 55 passed in 7.36s
+tests/test_conferencia_5.py | 3s | 13 passed in 2.29s
+tests/test_conferencia_6.py | 4s | 9 passed in 3.32s
+tests/test_contas_iguais_mais_rapidas.py | 1s | 12 passed in 0.63s
+tests/test_converter_zonas_ao_abrir.py | 17s | 14 passed in 15.60s
+tests/test_core.py | 4s | 62 passed in 3.16s
+tests/test_corte_folga_1mm.py | 3s | 6 passed in 1.79s
+tests/test_corte_nao_come_conteudo.py | 1s | 8 passed in 0.48s
+tests/test_corte_previa_igual_pdf.py | 3s | 4 passed in 2.09s
+tests/test_decoracao_no_preto_e_branco.py | 6s | 12 passed in 4.67s
+tests/test_detectar_regioes.py | 2s | 9 passed in 1.23s
+tests/test_dialogo_tamanho_da_folha.py | 0s | 5 passed in 0.18s
+tests/test_dividir_na_tela.py | 6s | 6 passed in 4.93s
+tests/test_dividir_no_programa.py | 9s | 15 passed in 7.89s
+tests/test_dividir_scantailor.py | 2s | 13 passed in 1.11s
+tests/test_editor_selecao.py | 1s | 17 passed, 85 warnings in 0.40s
+tests/test_empacotar.py | 4s | 40 passed in 2.77s
+tests/test_empacotar_teste_velocidade.py | 1s | 28 passed in 1.13s
+tests/test_escolha_sem_a_trava_de_tinta.py | 6s | 12 passed in 5.11s
+tests/test_filtro_com_selecao.py | 3s | 22 passed in 1.69s
+tests/test_filtros_algoritmos.py | 2s | 10 passed in 0.75s
+tests/test_folha.py | 0s | 20 passed in 0.23s
+tests/test_folhear_pdf.py | 2s | 8 passed in 1.40s
+tests/test_garantir_selecao_corrida.py | 1s | 2 passed in 0.28s
+tests/test_gerar_o_mesmo_livro_de_novo.py | 3s | 6 passed in 2.60s
+tests/test_girar.py | 9s | 34 passed in 7.41s
+tests/test_girar_cartoes_e_previas.py | 13s | 21 passed in 12.27s
+tests/test_girar_na_tela.py | 13s | 16 passed in 11.39s
+tests/test_gravacao_aguenta_queda_de_energia.py | 1s | 5 passed in 0.27s
+tests/test_gravar_pdf_sem_parar_a_janela.py | 11s | 5 passed in 10.31s
+tests/test_gravar_por_tras.py | 26s | 8 passed in 24.87s
+tests/test_gravura_na_aba_marcar.py | 3s | 8 passed in 2.05s
+tests/test_gravura_no_processamento.py | 16s | 43 passed in 15.05s
+tests/test_gravura_scantailor.py | 7s | 24 passed in 6.68s
+tests/test_ja_existe_arquivo_com_esse_nome.py | 5s | 4 passed in 3.57s
+tests/test_janela_cabe_na_tela.py | 1s | 2 passed in 0.51s
+tests/test_limpar_papel.py | 1s | 5 passed in 0.73s
+tests/test_limpar_pontinhos_na_tela.py | 4s | 19 passed in 3.34s
+tests/test_limpar_pontinhos_no_programa.py | 4s | 41 passed in 2.45s
+tests/test_marcacao_em_todas.py | 1s | 4 passed in 1.10s
+tests/test_medidor_nas_paginas_otsu.py | 8s | 6 passed in 7.14s
+tests/test_melhorar_em_volta_da_gravura.py | 9s | 12 passed in 8.17s
+tests/test_mesmo_livro_outro_caminho.py | 8s | 17 passed in 6.86s
+tests/test_misto.py | 4s | 31 passed in 3.46s
+tests/test_misto_consertos.py | 6s | 25 passed in 4.56s
+tests/test_misto_na_tela.py | 4s | 14 passed in 2.91s
+tests/test_misto_no_programa.py | 5s | 23 passed in 4.42s
+tests/test_misto_no_projeto.py | 1s | 12 passed in 0.24s
+tests/test_misturar_por_partes.py | 1s | 7 passed in 0.18s
+tests/test_modelos.py | 1s | 4 passed in 0.17s
+tests/test_ocr_comparar.py | 1s | 16 passed, 23 skipped in 0.57s
+tests/test_ocr_diagnostico.py | 1s | 6 passed in 0.45s
+tests/test_ocr_doctr.py | 18s | 17 passed, 23 skipped in 16.65s
+tests/test_ocr_kraken.py | 6s | 27 passed, 6 skipped in 5.49s
+tests/test_ocr_tesseract.py | 6s | 29 passed, 7 skipped in 5.57s
+tests/test_opcoes_da_gravura_na_tela.py | 8s | 15 passed in 7.15s
+tests/test_paginas_em_outro_processo.py | 12s | 11 passed in 11.52s
+tests/test_paineis.py | 1s | 16 passed in 0.34s
+tests/test_papel_dentro_da_gravura.py | 6s | 12 passed in 5.69s
+tests/test_pasta_de_dados_dos_testes.py | 0s | 3 passed in 0.21s
+tests/test_percentil_rapido.py | 2s | 9 passed in 0.44s
+tests/test_pipeline_folha.py | 4s | 7 passed in 3.20s
+tests/test_pontinhos_scantailor.py | 2s | 30 passed in 1.32s
+tests/test_preto_e_branco_regra_30_09.py | 4s | 15 passed in 3.05s
+tests/test_previa_composta.py | 3s | 12 passed in 1.91s
+tests/test_projetos.py | 1s | 24 passed in 0.72s
+tests/test_relatorio.py | 3s | 18 passed in 2.20s
+tests/test_requirements.py | 1s | 2 passed in 0.05s
+tests/test_resumo_seguro.py | 1s | 7 passed in 0.63s
+tests/test_salva_sozinho.py | 3s | 11 passed in 2.08s
+tests/test_selecao.py | 1s | 24 passed in 0.23s
+tests/test_sem_janela_na_tela.py | 2s | 8 passed in 0.77s
+tests/test_so_neste_pedaco_no_original.py | 3s | 19 passed in 2.20s
+tests/test_so_neste_pedaco_no_preto_e_branco.py | 2s | 8 passed in 1.40s
+tests/test_so_neste_pedaco_no_tirar_o_fundo.py | 5s | 7 passed in 4.15s
+tests/test_st_ferramentas.py | 2s | 10 passed in 1.06s
+tests/test_substituir_e_cancelar.py | 3s | 21 passed in 2.57s
+tests/test_tela_inicio.py | 2s | 14 passed in 0.93s
+tests/test_teste_velocidade.py | 7s | 144 passed in 6.04s
+tests/test_tirar_da_lista_nao_volta.py | 15s | 10 passed in 14.13s
+tests/test_tirar_fundo_no_programa.py | 15s | 54 passed in 13.59s
+tests/test_trabalho_nao_se_perde.py | 80s | 82 passed in 77.05s (0:01:17)
+tests/test_trilha_e_opcoes.py | 1s | 29 passed, 1 warning in 0.23s
+tests/test_trocar_de_livro_grava.py | 11s | 6 passed in 10.61s
+tests/test_visualizador.py | 1s | 70 passed, 9 warnings in 0.38s
+tests/test_zonas_na_folha.py | 10s | 25 passed in 8.61s
+FIM 21:38:51

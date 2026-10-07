@@ -285,7 +285,8 @@ class TelaAmpliada(QDialog):
             # D4: de outra folha, a imagem anterior nao fica na tela
             self.vista.definir_imagem(img, dono=("folha", self.conferir.indice_folha))
             folha = self.projeto.folhas[self.conferir.indice_folha]
-            self.vista.definir_corte(folha.posicao_corte)
+            # so em folha dividida (parecer do verificador do 2.1, 06/10)
+            self.vista.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
             return
 
         indice = self.conferir.indice_pagina
@@ -312,7 +313,7 @@ class TelaAmpliada(QDialog):
         pagina que esta em "Tirar o fundo".
         """
         from core.filtros import aplicar_filtro
-        from core.pipeline import preparar_metade
+        from core.pipeline import pontinhos_da_pagina, preparar_metade
 
         outro = self.combo_comparar.currentData()
         pagina = self.projeto.paginas[self.conferir.indice_pagina]
@@ -330,10 +331,15 @@ class TelaAmpliada(QDialog):
         preparada = preparar_metade(bruta, folha, pagina, self.projeto)
         if not self.projeto.limpar or outro == ORIGINAL:
             return preparada
+        # "Limpar pontinhos" da pagina (06/10/2026): a escolha dela, com o DPI
+        # desta imagem (o pedido; o DPI do scan nao e lido aqui, entao o
+        # acerto dos PDFs de "72 DPI" vale pelo tamanho da pagina - ver
+        # core.pontinhos_scantailor.dpi_para_os_pontinhos)
         saida, _ = aplicar_filtro(
             preparada, outro, pagina.forca_preto,
             pagina.clareza_melhorar, pagina.intensidade_magico,
-            algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pagina.despeckle,
+            algoritmo_pb=pagina.algoritmo_preto_branco,
+            despeckle=pontinhos_da_pagina(self.projeto, pagina, preparada, DPI_AMPLIADA),
         )
         return saida
 

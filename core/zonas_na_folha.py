@@ -123,7 +123,8 @@ TRANCA_DAS_ZONAS = threading.Lock()
 # ---------------------------------------------------------------------------
 
 def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | None,
-                         metade: str, recorte, angulo: float) -> dict[str, Any]:
+                         metade: str, recorte, angulo: float,
+                         sobra=None) -> dict[str, Any]:
     """O preparo da pagina, num dicionario simples (vai para o projeto.json).
 
     proporcao_folha: largura / altura da folha COMO VEIO do PDF (antes do giro
@@ -136,8 +137,13 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
         quando nao corta (o corte que foi MESMO aplicado).
     angulo: o angulo que foi MESMO aplicado, em graus, no sentido do OpenCV
         (0.0 quando nao gira).
+    sobra: (esquerda, direita) em fracao da largura da folha girada: o corte
+        da sobra do ScanTailor (item 2.1, core.pipeline.faixa_da_sobra), so em
+        pagina "inteira"; None quando nao corta. So entra no dicionario quando
+        existe: a geometria gravada antes do item 2.1 (sem a chave) e a de
+        uma pagina sem sobra sao iguais.
     """
-    return {
+    desenho = {
         "proporcao": float(proporcao_folha),
         "rotacao": int(rotacao) % 360,
         "corte": None if corte is None else float(corte),
@@ -145,6 +151,9 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
         "recorte": None if recorte is None else [float(v) for v in recorte],
         "angulo": float(angulo or 0.0),
     }
+    if sobra is not None:
+        desenho["sobra"] = [float(v) for v in sobra]
+    return desenho
 
 
 def geometria_valida(g: Any) -> bool:
@@ -161,6 +170,10 @@ def geometria_valida(g: Any) -> bool:
         if g.get("recorte") is not None:
             x, y, w, h = (float(v) for v in g["recorte"])
             if w <= 0 or h <= 0:
+                return False
+        if g.get("sobra") is not None:          # item 2.1
+            a, b = (float(v) for v in g["sobra"])
+            if not 0.0 <= a < b <= 1.0:
                 return False
         float(g.get("angulo", 0.0))
     except (KeyError, TypeError, ValueError):
@@ -187,6 +200,11 @@ def mesma_geometria(a: dict | None, b: dict | None) -> bool:
         return False
     if ra is not None and not all(perto(x, y) for x, y in zip(ra, rb)):
         return False
+    sa, sb = a.get("sobra"), b.get("sobra")     # item 2.1: o corte da sobra
+    if (sa is None) != (sb is None):
+        return False
+    if sa is not None and not all(perto(x, y) for x, y in zip(sa, sb)):
+        return False
     if not perto(a.get("angulo", 0.0), b.get("angulo", 0.0)):
         return False
     if abs(float(a.get("angulo", 0.0))) > 0:
@@ -210,6 +228,9 @@ def _tamanhos(g: dict) -> tuple[tuple[float, float], tuple[float, float], tuple[
     if g["metade"] != "inteira":
         corte = _corte_efetivo(g)
         largura *= corte if g["metade"] == "esquerda" else (1.0 - corte)
+    elif g.get("sobra") is not None:            # item 2.1: o corte da sobra
+        a, b = (float(v) for v in g["sobra"])
+        largura *= b - a
     if g.get("recorte") is not None:
         _, _, w, h = (float(v) for v in g["recorte"])
         largura *= w
@@ -226,8 +247,9 @@ def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
     """Matriz 3x3 que leva (u, v) em fracao da FOLHA para fracao da PAGINA.
 
     As etapas na ordem de core/pipeline.preparar_metade: girar 90 (cv2.rotate)
-    -> dividir (dividir_imagem) -> cortar (fatiar) -> endireitar (rotacionar,
-    em volta do centro, mesmo tamanho). Conta continua (sem o arredondamento
+    -> dividir (dividir_imagem; ou, em pagina inteira, o corte da sobra do
+    item 2.1, pipeline._cortar_a_sobra) -> cortar (fatiar) -> endireitar
+    (rotacionar, em volta do centro, mesmo tamanho). Conta continua (sem o arredondamento
     para pontos inteiros, que muda menos de um ponto).
     """
     m = np.eye(3)
@@ -246,6 +268,10 @@ def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
         else:
             m = np.array([[1.0 / (1.0 - c), 0.0, -c / (1.0 - c)], [0.0, 1.0, 0.0],
                           [0.0, 0.0, 1.0]]) @ m
+    elif g.get("sobra") is not None:            # item 2.1: o corte da sobra
+        a, b = (float(v) for v in g["sobra"])
+        m = np.array([[1.0 / (b - a), 0.0, -a / (b - a)], [0.0, 1.0, 0.0],
+                      [0.0, 0.0, 1.0]]) @ m
 
     if g.get("recorte") is not None:
         x, y, w, h = (float(v) for v in g["recorte"])

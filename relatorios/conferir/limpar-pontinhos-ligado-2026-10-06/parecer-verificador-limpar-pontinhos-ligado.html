@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parecer: limpar pontinhos ligado</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Parecer do verificador: limpar pontinhos ligado ao programa (06/10/2026)</h1>
+<p>Ramo <code>fase2-misto-opcoes</code> (HEAD <code>890f214</code>), cópia de trabalho <code>.claude/worktrees/misto</code>. Comparado com o <code>fase-1</code> em que o ramo se apoia (<code>5a90db5</code>).</p>
+<blockquote>
+<p><strong>Defeito conhecido (decisão do Samuel, 28/09):</strong> moldura dourada e iluminura ainda são defeito conhecido (itens 1.4 e 1.5). As imagens abaixo mostram molduras coloridas no Preto e branco; isso não é deste item.</p>
+</blockquote>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO PARA JUNTAR, por uma razão só: ficou mais lento.</strong> No resto, está pronto. O código do ScanTailor está igual ao original, e um projeto antigo sai idêntico ao do fase-1. A lista funciona na janela de verdade, e o PDF sai com a escolha de cada página. O "pouco" não apagou pingo, vírgula nem acento em nenhuma das seis páginas de 72 DPI. A razão é a regra 6 do plano: nenhum item pode deixar o programa mais lento. Com a máquina parada, o Preto e branco ficou de 0,04 a 0,14 s mais lento por página comum (de 10 a 35%). Nas páginas grandes de "72 DPI", ficou de 0,5 a 0,9 s mais lento (de 17 a 53%). Quem decide se aceita esse custo é o Samuel. Há também ressalvas sobre o "muito" e a prévia (ver abaixo).</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que foi conferido</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Código do ScanTailor sem mudança</td>
+<td>máquina</td>
+<td>Os 78 arquivos de <code>src/</code> são iguais aos do GitHub do ScanTailor v1.2.1 (commit <code>5eaac18</code>), baixados um por um agora. As somas do <code>somas-v1.2.1.txt</code> batem. O teste passou (10 de 10). A <code>st_gravura.dll</code> e o detector do 1.2 não mudaram no ramo.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Projeto antigo sai idêntico</td>
+<td>máquina</td>
+<td>O Palatino antigo (cópia, 134 páginas) foi processado <strong>na janela real</strong>. O PDF saiu igual ao do fase-1 ponto a ponto, nas 134 páginas, com o mesmo tamanho em bytes. O livro abriu com "o nosso". Um livro novo começa em "pouco".</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Na janela real</td>
+<td>máquina (pilotada)</td>
+<td>A lista aparece só com o Preto e branco, na tela "O que fazer" e na aba Filtro. Trocar o valor, desfazer, refazer (pelo menu e por Ctrl+Z), "todas" e "só nas próximas" funcionam. A prévia muda. O PDF saiu com a escolha certa nas 6 páginas. <code>teste_botoes.py</code>: 159 ações, 0 falhas.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A olho, nas 6 páginas de "72 DPI"</td>
+<td>olho (o Samuel decide)</td>
+<td>O DPI foi acertado (de 381 a 518, em vez de 300). O "normal" e o "muito" tiram mais, como esperado. O "pouco" não tirou pingo, vírgula nem acento. Tirou pontinhos de 1 a 5 pontos do pautado fino do Graduale, que a olho não se veem. O "muito" não comeu corpo de letra, mas <strong>tirou a vírgula da Horas 47</strong> e pedaços de traço fino no Graduale.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Velocidade</td>
+<td>máquina</td>
+<td><strong>Mais lento</strong> (ver números)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Testes</td>
+<td>máquina</td>
+<td>99 arquivos, um por um: 1792 passaram, 59 pulados, 0 falhas.</td>
+</tr>
+</tbody>
+</table>
+<h2>1. O código do ScanTailor veio sem mudança</h2>
+<ul>
+<li><code>tests/test_st_ferramentas.py</code>: 10 passaram.</li>
+<li><strong>Conferido por mim, fora do teste:</strong> baixei do GitHub, um por um, os 78 arquivos de <code>terceiros/scantailor-advanced/src</code>, no commit <code>5eaac1884cdcabb6514bd632114f688631bd8dbc</code>. A etiqueta <code>v1.2.1</code> aponta para esse commit (<code>git ls-remote</code>). Comparei cada um com a nossa cópia, sem considerar o fim de linha: <strong>78 de 78 iguais</strong>. Todas as somas do <code>somas-v1.2.1.txt</code> batem com o original. Os 6 arquivos novos (<code>Despeckle.*</code>, <code>ConnectivityMap.*</code>, <code>InfluenceMap.*</code>) estão entre eles.</li>
+<li>As forças "pouco/normal/muito" (1, 2 e 3) dão exatamente os números dos botões antigos do ScanTailor ("cauteloso/normal/agressivo"). Conferi a conta no <code>Despeckle.cpp</code>. O padrão do próprio ScanTailor é o 1,0 (<code>Params.cpp</code>), que é o "pouco".</li>
+<li>A soma da <code>st_ferramentas.dll</code> é a mesma anotada no <code>.txt</code> dela. <strong>Não recompilei a DLL.</strong> Não provei que ela saiu exatamente desse código; a ligação (<code>pontinhos.cpp</code>) só converte a imagem e chama a função do ScanTailor.</li>
+<li>Detector de gravura do 1.2: no ramo não mudou nem a <code>st_gravura.dll</code> nem o código Python do detector (<code>git diff</code>). O PDF do projeto antigo saiu idêntico (item 2), e esse PDF passa pelo detector.</li>
+</ul>
+<h2>2. Projeto antigo sai idêntico</h2>
+<p>Usei uma <strong>cópia</strong> do projeto real "Giovambattista Palatino" (<code>projeto.json</code> de 17/09). São 134 páginas em Preto e branco, 16 com marcação. O original do Samuel não foi tocado (mesma soma SHA-256 antes e depois).</p>
+<table>
+<thead>
+<tr>
+<th>Como foi processado</th>
+<th>Resultado contra o fase-1 (<code>5a90db5</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ramo, <strong>na janela real</strong> (Continuar → "Não, deixar como está" → Confirmar e processar)</td>
+<td>134 páginas, imagens iguais ponto a ponto, desenho igual, mesmo tamanho (24.271.635 bytes): <strong>TUDO IGUAL</strong></td>
+</tr>
+<tr>
+<td>Ramo, sem janela</td>
+<td><strong>TUDO IGUAL</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>O projeto antigo abriu com o livro em "o nosso", e as páginas seguem o livro. O <code>projeto.json</code> gravado pela janela ficou com <code>"limpar_pontinhos": "nosso"</code> e sem o campo velho <code>despeckle</code>.</li>
+<li><strong>Livro novo começa em "pouco".</strong> Conferi na janela (livro de teste aberto pelo menu Arquivo) e sem janela, nas 6 páginas do lado a lado.</li>
+<li>Caso que <strong>muda de propósito:</strong> projeto antigo com a caixinha "limpar poeirinha" desligada numa página em que o programa não marcou nada (por exemplo, com "Achar gravuras" desligado). Antes, o programa ignorava a caixinha e limpava assim mesmo. Agora obedece: a página sai sem limpar, com 9.966 pontos pretos a mais num teste com o Palatino. Esse é o conserto descrito no commit <code>117734f</code>. <strong>Nenhum dos 8 projetos do Samuel</strong> tem a caixinha desligada em alguma página (conferi os <code>projeto.json</code>, sem mexer neles). Com marcação, a página com a caixinha desligada saiu idêntica.</li>
+</ul>
+<h2>3. Na janela real</h2>
+<p>A janela foi pilotada por mensagens do Windows, fora da tela, com pasta de dados própria. Usei um livro de teste de 6 páginas do gabarito: Palatino 57, 5 e 67, Horas 47, Marial 7 e Graduale 222.</p>
+<p><img alt="A lista na tela &quot;O que fazer&quot;" src="imagens-parecer/t03_o_que_fazer_lista.jpg" /></p>
+<ul>
+<li><strong>Tela "O que fazer":</strong> a lista "Limpar pontinhos:" fica escondida com o Original e o Melhorar. Aparece só com o Preto e branco, já em "pouco", com as cinco opções na ordem: desligado, o nosso, pouco, normal, muito. Troquei para "normal"; ao clicar em Conferir, o livro ficou com <code>st_normal</code>.</li>
+<li><strong>Aba Filtro:</strong> a lista fica no bloco AJUSTE, no lugar da caixinha "limpar poeirinha", e só aparece com o Preto e branco. Ela mostra o valor do livro quando a página segue o livro.</li>
+<li><strong>Trocar valor (página 4 → muito):</strong> só a página 4 mudou. O menu Editar ficou com "Desfazer: Limpar pontinhos na página 4: muito".</li>
+<li><strong>Desfazer:</strong> pelo menu Editar e por Ctrl+Z, a página voltou a seguir o livro ("normal"). <strong>Refazer</strong> pelo menu Editar: voltou para "muito".</li>
+<li><strong>"todas"</strong> (página 4 em "pouco"): as 6 páginas ficaram em "pouco". Desfazer devolveu como estava.</li>
+<li><strong>"só nas próximas"</strong> (página 4 em "muito"): páginas 4, 5 e 6 em "muito", as 1 a 3 sem mudar.</li>
+<li><strong>A prévia muda:</strong> a prévia da página 4 com "normal" e com "muito" diferem em 108 pontos (só preto que virou branco).</li>
+</ul>
+<p><img alt="Prévia da página 4 ao trocar para muito" src="imagens-parecer/previa-p4-normal-x-muito.jpg" /></p>
+<ul>
+<li><strong>O PDF sai com o valor escolhido:</strong> processei pela janela com a página 1 seguindo o livro ("normal"), a 2 "desligado", a 3 "o nosso" e as 4 a 6 "muito". Depois desenhei cada página com as cinco escolhas, sem janela, e comparei com o PDF ponto a ponto. <strong>Nas 6 páginas, o PDF é idêntico ao da escolha certa</strong> e diferente de todas as outras.</li>
+<li><code>teste_botoes.py</code> (numa cópia <code>git archive</code>, com <code>saida_teste</code> própria): <strong>159 ações, 0 falhas</strong>.</li>
+</ul>
+<h2>4. A olho: as seis páginas de "72 DPI"</h2>
+<p>Formato aprovado pelo Samuel hoje: a folha inteira em cima, com a parte ampliada em amarelo. Embaixo, uma linha: Original · o nosso · pouco · normal · muito. Preto = fica no papel. Vermelho = o programa tirou. As imagens saíram <strong>pelo caminho do programa</strong> (analisar, desenhar a página a 300 DPI, mesma marcação), trocando só a escolha do livro.</p>
+<p>Fiz também uma folha de conferência por página e por escolha. Ela mostra <strong>cada pedaço tirado a até 1,5 mm de uma letra</strong>, do maior para o menor, com um anel azul em volta. Olhei todas.</p>
+<p><strong>O DPI foi acertado.</strong> O DPI que chegou ao ScanTailor foi: Horas 11 = 517, Horas 26 = 493, Horas 47 = 502, Graduale 221 = 518, Graduale 222 = 467, Marial 7 = 381 (antes, 300). Pontos que cada força tira, sem o acerto → com o acerto:</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>pouco</th>
+<th>normal</th>
+<th>muito</th>
+<th>o nosso (para comparar)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Horas 11</td>
+<td>0 → 41</td>
+<td>41 → 41</td>
+<td>122 → 122</td>
+<td>448</td>
+</tr>
+<tr>
+<td>Horas 26</td>
+<td>38 → 239</td>
+<td>362 → 574</td>
+<td>765 → 1204</td>
+<td>7101</td>
+</tr>
+<tr>
+<td>Horas 47</td>
+<td>0 → 0</td>
+<td>0 → 0</td>
+<td>372 → 372</td>
+<td>352</td>
+</tr>
+<tr>
+<td>Graduale 221</td>
+<td>236 → 523</td>
+<td>838 → 1873</td>
+<td>2347 → 3856</td>
+<td>2611</td>
+</tr>
+<tr>
+<td>Graduale 222</td>
+<td>127 → 322</td>
+<td>523 → 587</td>
+<td>1091 → 2151</td>
+<td>2217</td>
+</tr>
+<tr>
+<td>Marial 7</td>
+<td>671 → 1331</td>
+<td>2479 → 2798</td>
+<td>6740 → 9223</td>
+<td>14830</td>
+</tr>
+</tbody>
+</table>
+<p>Na Horas 11 e na Horas 47, o "normal" e o "muito" não mudaram com o acerto.</p>
+<p><strong>O que eu vi, página por página:</strong></p>
+<ul>
+<li><strong>Horas 11</strong> (capa colorida): o "pouco" tira 2 pedaços na dobra da margem e nada perto de letra. O "muito" tira 4 pedaços, todos sujeira da dobra. O nosso tira 136 pedaços, quase todos lascas da borda da moldura colorida.</li>
+<li><strong>Horas 26</strong> (calendário): o "pouco" tira 15 pedaços; o único perto de algo é um risco de 4 pontos na beira de cima. O "muito" tira 43; os 13 perto de letras são pontinhos marrons do papel, e o acento "^" de "vê" fica. Nenhuma letra comida. O nosso tira 1967 pedaços colados nas letras, lascas das bordas: confirma o que o Samuel disse.</li>
+<li><strong>Horas 47</strong> (texto com moldura): o "pouco" e o "normal" não tiram nada. <strong>O "muito" tira a vírgula de "changement, qui"</strong> (46 pontos) e, ao lado dela, pontinhos dourados soltos no papel. Na prévia da janela, o "muito" tira também o dois-pontos de "precieux : mais"; no PDF, esse dois-pontos fica.</li>
+</ul>
+<p><img alt="O que o muito tira na Horas 47, no PDF" src="imagens-parecer/horas47-muito-pecas-no-pdf.jpg" /></p>
+<ul>
+<li><strong>Graduale 221</strong> (pauta): o "pouco" tira 66 pedaços. Os 14 perto de traço são pedacinhos de 1 a 5 pontos do pautado fino (a linha vertical da margem e as guias) e a ponta de um floreio fino (4 pontos), invisíveis na folha. O "normal" tira também uma mancha de 273 pontos no pé da página. <strong>O "muito" corta mais pedaços do pautado fino</strong> (as linhas verticais ficam mais tracejadas) <strong>e um trecho do traço-cabelo de uma capitular</strong> (15 pontos). Letras e notas ficam.</li>
+<li><strong>Graduale 222:</strong> o "pouco" tira 47 pedaços, os de perto com 1 a 4 pontos no pautado. O "muito" tira 129 pedaços: <strong>trechos da linha fina horizontal do pautado de cima</strong> (um de 124 pontos) e das verticais. Letras e notas ficam.</li>
+<li><strong>Marial 7</strong> (texto com o verso aparecendo): o "pouco" tira 190 pedaços; os 58 perto de letra têm de 1 a 27 pontos (o maior está na dobra). Não vi letra mexida. O "muito" tira 765 pedaços, quase todos restos do texto do verso entre as linhas, o que ajuda. Nos 60 maiores, não vi letra da frente comida. O nosso tira 4597 pedaços colados nas letras.</li>
+</ul>
+<p><strong>Respostas às duas perguntas:</strong></p>
+<ul>
+<li><strong>O "pouco" apaga pingo, vírgula, acento ou tracinho de desenho?</strong> Pingo, vírgula e acento, não, em nenhuma das seis. Tracinho: no Graduale, ele tira pedacinhos de 1 a 5 pontos do pautado fino e a ponta de um floreio. Esse pautado já sai tracejado no Preto e branco, e a olho não se nota.</li>
+<li><strong>O "muito" come letra?</strong> Corpo de letra, não. Mas ele <strong>tira pontuação</strong>: a vírgula da Horas 47 no PDF, e o dois-pontos na prévia. Também <strong>tira pedaços de traço fino</strong> no Graduale: o pautado e o cabelo de uma capitular.</li>
+</ul>
+<p>Imagens do lado a lado (com cópias pequenas em <code>imagens-parecer/</code>):</p>
+<p><img alt="Horas 11 (1)" src="imagens-parecer/horas_p011-1.jpg" />
+<img alt="Horas 11 (2)" src="imagens-parecer/horas_p011-2.jpg" />
+<img alt="Horas 26 (1)" src="imagens-parecer/horas_p026-1.jpg" />
+<img alt="Horas 26 (2)" src="imagens-parecer/horas_p026-2.jpg" />
+<img alt="Horas 26 (3)" src="imagens-parecer/horas_p026-3.jpg" />
+<img alt="Horas 47" src="imagens-parecer/horas_p047-1.jpg" />
+<img alt="Graduale 221 (1)" src="imagens-parecer/graduale_p221-1.jpg" />
+<img alt="Graduale 221 (2)" src="imagens-parecer/graduale_p221-2.jpg" />
+<img alt="Graduale 221 (3)" src="imagens-parecer/graduale_p221-3.jpg" />
+<img alt="Graduale 222 (1)" src="imagens-parecer/graduale_p222-1.jpg" />
+<img alt="Graduale 222 (2)" src="imagens-parecer/graduale_p222-2.jpg" />
+<img alt="Graduale 222 (3)" src="imagens-parecer/graduale_p222-3.jpg" />
+<img alt="Marial 7 (1)" src="imagens-parecer/marial_p007-1.jpg" />
+<img alt="Marial 7 (2)" src="imagens-parecer/marial_p007-2.jpg" />
+<img alt="Marial 7 (3)" src="imagens-parecer/marial_p007-3.jpg" /></p>
+<p>Folhas de conferência de cada pedaço tirado perto de letra: <code>imagens-parecer/candidatos-&lt;página&gt;-st_pouco.jpg</code>, <code>-st_muito.jpg</code> e <code>-nosso.jpg</code>. A Horas 11 e a Horas 47 não têm a do "pouco", porque nelas ele não tirou nada perto de letra.</p>
+<h2>5. Velocidade do Preto e branco</h2>
+<p>Medido com script meu, com pasta de dados própria (o <code>erros.log</code> real não foi tocado: mesmo tamanho e mesma hora, 440.660 bytes, 16:18). A máquina estava parada (CPU em 1%). Foram três rodadas, alternando fase-1 e ramo. Em cada página: 1 desenho de aquecimento e 3 medidos a 300 DPI. O número é a mediana. O fase-1 usa o nosso; o ramo, o de fábrica novo ("pouco").</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>fase-1</th>
+<th>ramo</th>
+<th>a mais</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Palatino 5</td>
+<td>0,76 s</td>
+<td>0,84 s</td>
+<td>+0,08 s</td>
+</tr>
+<tr>
+<td>Palatino 57</td>
+<td>0,44 s</td>
+<td>0,51 s</td>
+<td>+0,07 s</td>
+</tr>
+<tr>
+<td>Palatino 67</td>
+<td>0,48 s</td>
+<td>0,55 s</td>
+<td>+0,07 s</td>
+</tr>
+<tr>
+<td>Escola 7</td>
+<td>0,74 s</td>
+<td>0,88 s</td>
+<td>+0,14 s</td>
+</tr>
+<tr>
+<td>Boécio 22</td>
+<td>0,11 s</td>
+<td>0,15 s</td>
+<td>+0,04 s</td>
+</tr>
+<tr>
+<td>Opus Majus 11</td>
+<td>0,81 s</td>
+<td>0,90 s</td>
+<td>+0,08 s</td>
+</tr>
+<tr>
+<td><strong>Horas 11</strong> (grande)</td>
+<td>4,56 s</td>
+<td>5,29 s</td>
+<td><strong>+0,73 s</strong></td>
+</tr>
+<tr>
+<td><strong>Horas 47</strong> (grande)</td>
+<td>3,02 s</td>
+<td>3,52 s</td>
+<td><strong>+0,50 s</strong></td>
+</tr>
+<tr>
+<td><strong>Graduale 221</strong> (grande)</td>
+<td>1,71 s</td>
+<td>2,61 s</td>
+<td><strong>+0,90 s</strong></td>
+</tr>
+<tr>
+<td><strong>Graduale 222</strong> (grande)</td>
+<td>1,46 s</td>
+<td>2,13 s</td>
+<td><strong>+0,67 s</strong></td>
+</tr>
+<tr>
+<td><strong>Marial 7</strong> (grande)</td>
+<td>1,06 s</td>
+<td>1,60 s</td>
+<td><strong>+0,54 s</strong></td>
+</tr>
+</tbody>
+</table>
+<p>As três rodadas deram números muito próximos; por exemplo, Graduale 221: fase-1 1,69 / 1,78 / 1,71 s, ramo 2,60 / 2,61 / 2,63 s. <strong>Páginas comuns: em média +0,08 s</strong> (dentro do que o implementador mediu, de +0,1 a 0,2 s). <strong>Grandes: em média +0,67 s</strong> (o implementador mediu de +0,5 a 1,8 s com a máquina ocupada; com ela parada, deu de 0,5 a 0,9 s). Num livro de 300 páginas comuns, isso dá uns 25 s a mais. No Graduale inteiro, uns 0,7 s por página.</p>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Mais lento (regra 6 do plano).</strong> Ressalva grave pelas regras do projeto. A decisão é do Samuel.</li>
+<li><strong>O "muito" tira pontuação.</strong> Tira a vírgula da Horas 47 no PDF e pedaços de traço fino (pautado e cabelo de capitular) no Graduale. A explicação que aparece na tela, ao parar o mouse sobre a lista, diz que "pouco, normal e muito ... deixam o que está perto da letra (pingo do i, acento, vírgula)". Para o "muito", isso não é verdade na Horas 47.</li>
+<li><strong>A prévia nem sempre mostra o mesmo que o PDF no "muito".</strong> Na Horas 47, a prévia (110 DPI) mostra o dois-pontos de "precieux : mais" sumindo; no PDF (300 DPI) ele fica. A vírgula some nos dois. Quem decidir olhando a prévia pode achar que o "muito" tira mais do que tira, ou coisa diferente.</li>
+<li><strong>Projeto antigo com a caixinha "limpar poeirinha" desligada, em página sem marcação, muda</strong> (conserto de propósito, ver item 2). Nenhum projeto do Samuel tem esse caso.</li>
+<li><strong>O "desligado" não desliga tudo.</strong> Dentro de gravura de traço no Preto e branco, o programa continua usando o nosso limpar pontinhos por dentro (<code>core/filtros.py</code>, parte do desenho da gravura). Isso já era assim antes e não é desta mudança. Fica o aviso, porque "desligado" pode dar a ideia de que nada é limpo.</li>
+<li><strong>Não recompilei a DLL</strong> (ver item 1).</li>
+<li><strong>Não usei a roda do mouse</strong> (não funciona com a janela fora da tela). Para rolar a tela "O que fazer", arrastei a barra.</li>
+<li>Os nomes na tela ("o nosso", "Limpar pontinhos") continuam provisórios, como combinado. Vão para a rodada 10 do layout.</li>
+</ol>
+<h2>Achados fora deste item (para a Lista de bugs, se a gerente achar que vale)</h2>
+<ul>
+<li><strong>O primeiro desenho de uma página ainda sem marcação sai diferente dos seguintes.</strong> Na Horas 47 a 110 DPI, são 64.953 pontos de diferença; o primeiro é o desenho em que o programa acha as gravuras. <strong>Acontece igual no fase-1</strong> (mesmo número), então não é deste item. Atrapalha quem compara prévias.</li>
+<li>Na tela "O que fazer", ao voltar de Conferir e trocar o filtro do livro de Melhorar para Preto e branco, as páginas continuaram em Melhorar; tive de usar "todas" na aba Filtro. Não conferi se o fase-1 faz igual; pode ser de propósito, para não desfazer o que já foi conferido.</li>
+<li>Nos prints, a bolinha dos filtros (Original / Preto e branco...) não aparece, e não se vê qual está marcado. O O1 do Samuel pediu a bolinha visível. Pode ser só do print feito com a janela fora da tela; não conferi na tela.</li>
+</ul>
+<h2>Onde estão as coisas</h2>
+<ul>
+<li>Imagens do lado a lado em tamanho cheio: <code>imagens/</code> (fora do git). Cópias pequenas: <code>imagens-parecer/</code>. Prints da janela: <code>prints/</code>.</li>
+<li>Scripts do verificador: <code>scripts/</code>. Dados de trabalho: <code>trabalho/</code>. Nada disso vai para o git.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/10/2026 às 19:29</p>
+</body>
+</html>

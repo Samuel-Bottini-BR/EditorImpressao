@@ -716,7 +716,10 @@ def test_continuar_continua_trazendo_as_opcoes_salvas(janela, pasta, monkeypatch
 
 def test_livro_novo_abre_com_as_opcoes_de_fabrica(janela, pasta):
     janela.abrir_livro(str(_pdf_deitado(pasta)))
-    assert janela.tela_opcoes.cx_dividir.isChecked()
+    # Item 2.1, decisao G2 (a) do Samuel (05/10/2026): "So quando o Kaique
+    # pedir, livro a livro" - o livro novo NAO divide (ate o 2.1, dividia).
+    assert not janela.tela_opcoes.cx_dividir.isChecked()
+    assert not janela.projeto.dividir_folhas
     assert janela.projeto.filtro_padrao == "original"
 
 
@@ -880,6 +883,7 @@ def test_cancelar_livro_recem_aberto_continua_sem_gravar_por_cima(janela, pasta)
     assert _estado(janela).read_bytes() == antes
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_trocar_de_livro_no_meio_da_analise_nao_mistura_os_livros(janela, pasta):
     """O resultado da analise do livro de antes, que chega depois de abrir
     outro livro, e ignorado."""
@@ -1073,6 +1077,7 @@ def test_projeto_antigo_pelo_continuar_tambem_pergunta(janela, pasta, monkeypatc
     assert janela.aviso_do_fundo is None
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 @pytest.mark.parametrize("como", ["nao", "esc", "x"])
 def test_projeto_antigo_nao_esc_e_x_nao_mudam_nada(janela, pasta, como):
     livro = _pdf_com_fundo(pasta)
@@ -1284,6 +1289,7 @@ def _deitado_conferido(janela, pasta: Path) -> Path:
     return livro
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_cancelar_depois_de_mudar_uma_opcao_devolve_as_opcoes_de_antes(janela, pasta):
     from ui.janela_principal import CONFERIR
 
@@ -1310,6 +1316,7 @@ def test_cancelar_depois_de_mudar_uma_opcao_devolve_as_opcoes_de_antes(janela, p
     assert [janela.projeto.paginas[i].filtro for i in (1, 2)] == [MAGICO_PRO, "melhorar"]
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_erro_na_analise_depois_de_mudar_uma_opcao_devolve_as_opcoes(janela, pasta,
                                                                     monkeypatch):
     import ui.janela_principal as modulo
@@ -1341,6 +1348,7 @@ def test_erro_na_analise_depois_de_mudar_uma_opcao_devolve_as_opcoes(janela, pas
     assert janela.tela_opcoes.cx_dividir.isChecked()
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_mudar_uma_opcao_e_conferir_ate_o_fim_continua_valendo(janela, pasta):
     """Sem cancelar, a opcao nova vale (recomeco com copia e aviso, como antes)."""
     _deitado_conferido(janela, pasta)
@@ -1477,6 +1485,7 @@ def test_comecar_de_novo_pergunta_em_portugues(janela, pasta, monkeypatch):
 # abertura seguinte recomecava a conferencia (com copia e aviso).
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 @pytest.mark.parametrize("como", ["fechar", "voltar_e_fechar", "voltar_e_relogio"])
 def test_opcao_mudada_sem_conferir_nao_vai_para_o_disco(janela, pasta, como):
     livro = _deitado_conferido(janela, pasta)
@@ -1505,6 +1514,7 @@ def test_opcao_mudada_sem_conferir_nao_vai_para_o_disco(janela, pasta, como):
     assert len(janela.projeto.paginas) == 6
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_livro_recem_aberto_com_trabalho_opcao_mudada_e_voltar_nao_grava(janela, pasta):
     livro = _deitado_conferido(janela, pasta)
     _fechar_a_conferencia(janela)
@@ -1517,6 +1527,7 @@ def test_livro_recem_aberto_com_trabalho_opcao_mudada_e_voltar_nao_grava(janela,
     assert _estado(janela).read_bytes() == antes
 
 
+@pytest.mark.usefixtures("livro_novo_divide")
 def test_trabalho_feito_depois_de_voltar_da_conferencia_continua_sendo_gravado(janela, pasta):
     """So as OPCOES nao conferidas ficam fora do disco: o trabalho das
     paginas (feito antes de sair para "O que fazer") continua gravado."""
