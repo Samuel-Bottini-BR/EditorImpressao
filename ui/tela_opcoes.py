@@ -35,8 +35,9 @@ preto so se eu escolher". Ver _montar_filtros.
 
 Modo Misto (05/10/2026; provisorio ate o layout, excecao da gerente para o
 implementador mexer aqui): no grupo dos filtros, a caixinha "So as letras" do
-Preto e branco, com os tres botoes ("Guardar a tinta forte" / "Tudo em preto
-e branco" / "So o texto achado") e o "Mais opcoes" (papel de dentro das
+Preto e branco, com os tres botoes ("Guardar a tinta forte" / "Guardar
+tudo" / "Guardar so o texto"; nomes da Rodada 10 do layout, 07/10/2026) e o
+"Mais opcoes" (papel de dentro das
 gravuras, letras dentro de molduras e iluminuras) - ui/widgets/
 escolhas_do_misto.py, gravado no livro (Projeto.misto_*, conferencia 10,
 P1 (a)). Com "So as letras" marcada, a caixinha das molduras fica apagada
@@ -49,9 +50,11 @@ vai fazer (core.pipeline._frase_do_so_as_letras).
 
 Limpar pontinhos (decisao do Samuel de 06/10/2026, P7; provisorio ate o
 layout, excecao da gerente para o implementador mexer aqui): no grupo dos
-filtros, embaixo da caixinha das molduras, a lista "Limpar pontinhos:"
-(desligado · o nosso · pouco · normal · muito) do livro
-(Projeto.limpar_pontinhos; de fabrica core/pontinhos_scantailor.PADRAO -
+filtros, embaixo da caixinha das molduras, a lista "Limpar a sujeira:"
+(Sem limpeza · Limpeza bruta · Limpeza cuidadosa leve, media e forte; nomes
+escolhidos pelo Samuel em 07/10/2026, Rodada 10 do layout, pergunta 501;
+antes "Limpar pontinhos:" desligado · o nosso · pouco · normal · muito) do
+livro (Projeto.limpar_pontinhos; de fabrica core/pontinhos_scantailor.PADRAO -
 "o nosso" ou "desligado"; o do ScanTailor so quando escolhido, decisao
 do Samuel de 07/10/2026). Como o "So
 as letras", so aparece com o Preto e branco escolhido (a escolha fica

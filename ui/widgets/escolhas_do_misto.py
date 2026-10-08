@@ -11,8 +11,9 @@ Filtro, para a página)
     - logo abaixo, só com ela marcada, três botões lado a lado, bem visíveis,
       o escolhido destacado em azul (conferência 8: "tem que ser algo bem
       visivel para eu poder escolher"): "Guardar a tinta forte" (A, de
-      fábrica), "Tudo em preto e branco" (B), "Só o texto achado" (C), e uma
-      frase curta dizendo o que o escolhido faz;
+      fábrica), "Guardar tudo" (B), "Guardar só o texto" (C) (nomes da
+      Rodada 10 do layout, 07/10/2026), e uma frase curta dizendo o que o
+      escolhido faz;
     - num "Mais opções" recolhido: o papel de dentro das gravuras (P2) e as
       letras dentro de molduras e iluminuras (P4).
     Português sem jargão, sem emoji.
@@ -46,14 +47,20 @@ from core import misto
 from ui.estilo import AZUL, AZUL_ESCURO, BORDA, TEXTO_FRACO, estilo_da_caixinha_com_quadrado
 
 # (valor, texto do botão, o que ele faz em uma frase)
+# Nomes e frases do conjunto 2 do layout (Rodada 10, pergunta 501, escolhidos
+# pelo Samuel em 07/10/2026, com o A trocado por ele: "guardar tinta forte
+# estava bom ao invez de guardar o que é escuro, mude esse."). Antes: "Tudo em
+# preto e branco" (B) e "Só o texto achado" (C).
 BOTOES_DO_TEXTO = [
     (misto.FORA_REDE, "Guardar a tinta forte",
-     "fora do texto achado, só fica a tinta tão escura quanto as letras "
+     "fora do texto achado, guarda a tinta tão escura quanto as letras "
      "(música, letra grande, desenho); a mancha clara sai"),
-    (misto.FORA_TUDO, "Tudo em preto e branco",
-     "tudo o que não é gravura vira preto e branco, como no Preto e branco de sempre"),
-    (misto.FORA_APAGAR, "Só o texto achado",
-     "só fica o texto que o programa achou; o resto que não é gravura vai a branco"),
+    (misto.FORA_TUDO, "Guardar tudo",
+     "nada sai: tudo o que não é gravura vira preto e branco, como no Preto e "
+     "branco de sempre"),
+    (misto.FORA_APAGAR, "Guardar só o texto",
+     "guarda só o texto que o programa achou; o resto que não é gravura vira "
+     "papel branco"),
 ]
 
 ESCOLHAS_DO_PAPEL = [

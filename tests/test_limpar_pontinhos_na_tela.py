@@ -1,6 +1,8 @@
 """O "Limpar pontinhos" na tela (decisão do Samuel, 06/10/2026, P7; provisório até o layout).
 
-"Limpar pontinhos: desligado · o nosso · pouco · normal · muito", de fábrica
+"Limpar a sujeira: Sem limpeza · Limpeza bruta · Limpeza cuidadosa (leve,
+média, forte)" (nomes da Rodada 10 do layout, 07/10/2026; antes "Limpar
+pontinhos: desligado · o nosso · pouco · normal · muito"), de fábrica
 core/pontinhos_scantailor.PADRAO ("o nosso" ou "desligado"; desde 07/10/2026
 nunca o do ScanTailor, que só vale quando escolhido), no livro (tela "O que fazer") e na página (aba
 Filtro, no lugar da caixinha "limpar poeirinha"), só com o Preto e branco.
@@ -8,7 +10,7 @@ Filtro, no lugar da caixinha "limpar poeirinha"), só com o Preto e branco.
 Testes de máquina (sem janela na tela, tests/conftest.py):
     - livro: começa no de fábrica; cada valor grava no projeto; só aparece com
       o Preto e branco; projeto salvo volta para a tela; projeto antigo
-      ("nosso") aparece "o nosso";
+      ("nosso") aparece "Limpeza bruta";
     - página: mostra o que vale (do livro ou dela) sem gravar; trocar é ação
       do desfazer só dela; "todas" leva junto; só no Preto e branco; a
       prévia é refeita (a chave muda), também quando muda no livro;
@@ -31,7 +33,8 @@ from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixture
     pasta,
 )
 
-NA_TELA = ["desligado", "o nosso", "pouco", "normal", "muito"]
+NA_TELA = ["Sem limpeza", "Limpeza bruta", "Limpeza cuidadosa (leve)",
+           "Limpeza cuidadosa (média)", "Limpeza cuidadosa (forte)"]
 
 
 def _itens(combo) -> list[str]:
@@ -48,7 +51,7 @@ def test_o_livro_comeca_no_de_fabrica_e_nunca_no_do_scantailor(janela, pasta):
     assert _itens(tela.combo_pontinhos) == NA_TELA
     assert tela.combo_pontinhos.currentData() == ps.PADRAO
     assert tela.combo_pontinhos.currentData() not in ps.DO_SCANTAILOR
-    assert tela.rotulo_pontinhos.text() == "Limpar pontinhos:"
+    assert tela.rotulo_pontinhos.text() == "Limpar a sujeira:"
     assert janela.projeto.limpar_pontinhos == ps.PADRAO
 
 
@@ -82,14 +85,14 @@ def test_projeto_salvo_volta_para_a_tela(janela, pasta):
     assert janela.projeto.limpar_pontinhos == ps.NORMAL
 
 
-def test_projeto_antigo_aparece_o_nosso(janela, pasta):
+def test_projeto_antigo_aparece_a_limpeza_bruta(janela, pasta):
     """projeto.json de antes: modelos.Projeto.de_dicionario devolve "nosso"."""
     caminho = str(_pdf(pasta))
     janela.abrir_livro(caminho)
     salvo = Projeto.de_dicionario({"caminho_entrada": caminho})
     assert salvo.limpar_pontinhos == "nosso"
     janela._trazer_opcoes_salvas(salvo)
-    assert janela.tela_opcoes.combo_pontinhos.currentText() == "o nosso"
+    assert janela.tela_opcoes.combo_pontinhos.currentText() == "Limpeza bruta"
     assert janela.projeto.limpar_pontinhos == "nosso"
 
 
@@ -131,7 +134,7 @@ def conferir(app, pasta):
 def test_a_caixinha_antiga_saiu(conferir):
     assert not hasattr(conferir, "caixa_despeckle")
     assert _itens(conferir.seletor_pontinhos) == NA_TELA
-    assert conferir.rotulo_pontinhos.text() == "Limpar pontinhos:"
+    assert conferir.rotulo_pontinhos.text() == "Limpar a sujeira:"
 
 
 def test_so_aparece_no_preto_e_branco(conferir):
@@ -146,7 +149,7 @@ def test_a_pagina_mostra_o_que_vem_do_livro_sem_gravar(conferir):
     assert conferir.seletor_pontinhos.currentData() == ps.PADRAO
     conferir.projeto.limpar_pontinhos = ps.NORMAL     # nunca o de fabrica (07/10)
     conferir.atualizar()
-    assert conferir.seletor_pontinhos.currentText() == "normal"
+    assert conferir.seletor_pontinhos.currentText() == "Limpeza cuidadosa (média)"
     assert conferir.projeto.paginas[0].limpar_pontinhos is None
     assert not conferir.acoes.pode_desfazer, "mostrar não pode virar ação"
 
@@ -160,7 +163,7 @@ def test_trocar_na_pagina_e_acao_do_desfazer(conferir):
     seletor.setCurrentIndex(seletor.findData(ps.NORMAL))
     assert pagina.limpar_pontinhos == ps.NORMAL and outra.limpar_pontinhos is None
     assert conferir.previas.chave(0, 110) != chave_antes, "a prévia tinha de ser refeita"
-    assert conferir.acoes.descricao_desfazer().endswith("Limpar pontinhos na página 1: normal")
+    assert conferir.acoes.descricao_desfazer().endswith("Limpar a sujeira na página 1: Limpeza cuidadosa (média)")
     seletor.setCurrentIndex(seletor.findData(ps.MUITO))
     assert pagina.limpar_pontinhos == ps.MUITO
     conferir.desfazer()
@@ -204,4 +207,4 @@ def test_textos_com_acento_sem_jargao_e_sem_emoji(conferir):
     for jargao in ("despeckle", "scantailor", "dpi", "binari", "pixel"):
         assert jargao not in junto.lower(), jargao
     assert all(ord(c) < 0x2000 for c in junto), "emoji ou símbolo estranho"
-    assert "não" in junto and "vírgula" in junto, "texto sem acento"
+    assert "está" in junto and "vírgula" in junto, "texto sem acento"

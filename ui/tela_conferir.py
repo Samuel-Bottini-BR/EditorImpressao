@@ -40,7 +40,7 @@ GerenciadorPrevias como qualquer prévia), e não um filtro comum. O alerta
 Modo Misto (05/10/2026; provisório até o layout, exceção da gerente para o
 implementador mexer aqui): no bloco AJUSTE da aba Filtro, só com o Preto e
 branco escolhido, a caixinha "Só as letras" desta página, os três botões
-("Guardar a tinta forte" / "Tudo em preto e branco" / "Só o texto achado") e o
+("Guardar a tinta forte" / "Guardar tudo" / "Guardar só o texto") e o
 "Mais opções" (ui/widgets/escolhas_do_misto.py). A página herda do livro e
 troca só nela (ConfigPagina.misto_*); cada mudança é uma ação do desfazer,
 como o algoritmo e o "Limpar pontinhos". "todas" e "só nas próximas" levam
@@ -55,8 +55,11 @@ página como vai sair, com o Misto, desenhada numa tarefa de prévia
 
 Limpar pontinhos (decisão do Samuel de 06/10/2026, P7; provisório até o
 layout, exceção da gerente para o implementador mexer aqui): no bloco AJUSTE,
-só com o Preto e branco, a lista "Limpar pontinhos:" (desligado · o nosso ·
-pouco · normal · muito) no lugar da caixinha "limpar poeirinha". Mostra o que
+só com o Preto e branco, a lista "Limpar a sujeira:" (Sem limpeza · Limpeza
+bruta · Limpeza cuidadosa leve, média e forte; nomes escolhidos pelo Samuel
+em 07/10/2026, Rodada 10 do layout, pergunta 501; antes "Limpar pontinhos:"
+desligado · o nosso · pouco · normal · muito; os textos moram em
+core/pontinhos_scantailor.py) no lugar da caixinha "limpar poeirinha". Mostra o que
 vale na página (dela ou do livro: core.pontinhos_scantailor.escolha_da_pagina);
 trocar é uma ação do desfazer só desta página (ConfigPagina.limpar_pontinhos);
 "todas" e "só nas próximas" levam a escolha junto.

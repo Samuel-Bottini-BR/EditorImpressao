@@ -142,7 +142,7 @@ def test_textos_sem_jargao_e_sem_emoji(janela, pasta):
         assert jargao not in junto.lower(), jargao
     assert all(ord(c) < 0x2000 for c in junto), "emoji ou simbolo estranho"
     assert [b.text() for b in e.botoes.values()] == [
-        "Guardar a tinta forte", "Tudo em preto e branco", "Só o texto achado"]
+        "Guardar a tinta forte", "Guardar tudo", "Guardar só o texto"]
     assert e.caixa.text() == "Só as letras"
 
 
@@ -202,7 +202,7 @@ def test_mudar_na_pagina_e_acao_do_desfazer(conferir):
     assert "Só as letras" in conferir.acoes.descricao_desfazer()
     e.botoes[misto.FORA_APAGAR].click()
     assert pagina.misto_fora_do_texto == misto.FORA_APAGAR
-    assert "Só o texto achado" in conferir.acoes.descricao_desfazer()
+    assert "Guardar só o texto" in conferir.acoes.descricao_desfazer()
     e.combo_letras.setCurrentIndex(e.combo_letras.findData(misto.LETRAS_PRETAS))
     assert pagina.misto_letras_na_moldura == misto.LETRAS_PRETAS
     e.combo_papel.setCurrentIndex(e.combo_papel.findData(misto.PAPEL_COMO_ESCANEADO))

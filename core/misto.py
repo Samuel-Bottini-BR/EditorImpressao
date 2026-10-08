@@ -178,8 +178,10 @@ LETRA_SEM_TONS = 5.0
 #   ser algo bem visivel"; conferencia 14, PADRAO (1): A de fabrica, linhas
 #   achadas so com o leitor rapido):
 #     FORA_REDE   A "Guardar a tinta forte"     (de fabrica)
-#     FORA_TUDO   B "Tudo em preto e branco"
-#     FORA_APAGAR C "So o texto achado"
+#     FORA_TUDO   B "Guardar tudo"              (antes "Tudo em preto e branco")
+#     FORA_APAGAR C "Guardar so o texto"        (antes "So o texto achado")
+#   (nomes da tela: Rodada 10 do layout, 07/10/2026; os textos moram em
+#   ui/widgets/escolhas_do_misto.py)
 # papel_da_gravura (conferencia 12, P2 (a)): o papel de dentro da gravura de
 #   traco vai a branco (de fabrica) ou fica como foi escaneado ("eu deixar
 #   todas as gravuras originais e nao mexer nelas").
