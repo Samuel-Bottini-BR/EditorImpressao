@@ -710,10 +710,15 @@ def guardar_copia_do_trabalho(resumo: Resumo, agora: datetime | None = None) -> 
         acoes.antigo-2026-09-29-1930.jsonl      (o Historico de acoes)
         posicao.antigo-2026-09-29-1930.json     (onde o desfazer estava)
 
-    O acoes.jsonl e o posicao.json nao sao descartados pelo recomeco (as
-    acoes novas vao para o fim do mesmo arquivo e a posicao e regravada), mas
-    vao junto para a copia ficar inteira: e com os tres que se remonta o
-    trabalho de antes.
+    O acoes.jsonl e o posicao.json vao junto para a copia ficar inteira: e
+    com os tres que se remonta o trabalho de antes. Desde 06/10/2026 (Lista
+    de bugs: o Ctrl+Z da conferencia recomecada desfazia acoes da anterior),
+    a janela, logo depois desta copia, tira os dois do caminho
+    (historico_acoes.HistoricoAcoes.recomecar): o historico antigo fica so
+    aqui, na copia, e o da conferencia nova comeca vazio. Arriscado: mudar
+    os nomes da copia sem mudar HistoricoAcoes._ja_estao_na_copia (que acha
+    o acoes.antigo-<data>.jsonl pelo nome do projeto.antigo-<data>.json; se
+    nao achar, o historico e guardado de novo, a parte, e nada se perde).
 
     Nunca sobrescreve copia anterior: se ja ha copia naquele minuto, a nova
     ganha "-2", "-3"... e cada arquivo e criado em modo exclusivo ("x"), que
