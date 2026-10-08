@@ -93,7 +93,13 @@ def _conferir_com_o_livro_dividido_e_mexer(janela, livro: Path) -> None:
     """Passo 1 do verificador: livro de 12 paginas, gira a folha 1 e poe a
     pagina 1 em Preto e branco e depois em Melhorar."""
     janela.abrir_livro(str(livro))
-    assert janela.projeto.dividir_folhas, "o padrao de fabrica divide as folhas"
+    # Desde o item 2.1 (decisao G2 (a) do Samuel, 05/10/2026: "So quando o
+    # Kaique pedir, livro a livro") o livro novo NAO divide de fabrica
+    # (modelos.Projeto.dividir_folhas = False). Marca "Dividir folhas ao
+    # meio" como o Kaique faria (conserto sugerido pelo verificador na
+    # junção com o fase-1, 07/10/2026).
+    janela.tela_opcoes.cx_dividir.setChecked(True)
+    assert janela.projeto.dividir_folhas
     _analisar(janela)
     assert len(janela.projeto.paginas) == 12
     conferir = janela.tela_conferir
