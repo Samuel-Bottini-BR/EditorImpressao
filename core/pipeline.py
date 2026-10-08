@@ -742,6 +742,31 @@ def angulos_medidos(projeto: Projeto, pagina: ConfigPagina) -> dict | None:
         return None if medidas is None else dict(medidas)
 
 
+def angulo_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> float | None:
+    """O angulo que vale nesta pagina agora, em graus (sentido do OpenCV):
+    0 com o endireitar desligado, o a mao (ConfigPagina.angulo_manual), ou o
+    automatico ja medido nesta sessao (_GEOMETRIAS). None quando o automatico
+    ainda nao foi medido (a previa mede). Item 2.2 (G5): e o numero da aba
+    Endireitar e a base dos ajustes a mao (setas, alca, linha-guia). Abaixo
+    de ANGULO_MINIMO a pagina nao gira (angulo_aplicado)."""
+    if not projeto.endireitar:
+        return 0.0
+    if pagina.angulo_manual is not None:
+        return float(pagina.angulo_manual)
+    if not 0 <= pagina.folha < len(projeto.folhas):
+        return None
+    geometria = _geometria_guardada(projeto.folhas[pagina.folha], pagina, projeto)
+    return None if geometria is None else float(geometria[1])
+
+
+def angulo_aplicado(angulo: float | None) -> float:
+    """O giro que a pagina desenhada MESMO tem com este angulo: a regra de
+    _preparar_metade_e_geometria (abaixo de ANGULO_MINIMO nao gira)."""
+    if angulo is None or abs(float(angulo)) < ANGULO_MINIMO:
+        return 0.0
+    return float(angulo)
+
+
 def _usa_o_endireitar_do_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
     """A conta do ScanTailor entra nesta pagina (a dela ou a do livro, para o
     C1)? So com o endireitar ligado e o angulo automatico."""

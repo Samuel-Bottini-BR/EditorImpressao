@@ -3,21 +3,42 @@
 Tres modos, conforme a aba:
   - CORTE:  linha tracejada azul que o usuario arrasta para mover a lombada
   - RECORTE: retangulo com alcas nos cantos e nos lados
-  - ANGULO: arrastar gira a página, com linhas-guia para alinhar pelo texto
+  - ANGULO: grade azul reta sobre a página, alça (bolinha azul no canto) para
+    girar arrastando e linha-guia laranja (item 2.2, decisão G5 (c) do
+    Samuel, conferência 14: "Os dois juntos"). Ver "A ABA ENDIREITAR" abaixo.
 
-Nada de campo numerico: o usuario ve a página e mexe na página.
+A ABA ENDIREITAR (MODO_ANGULO; provisório até o layout)
+    A imagem é a página como vai sair, já com o ângulo de agora
+    (angulo_da_imagem). Enquanto a pessoa ajusta (alça, setas ou número da
+    tela), a imagem gira AO VIVO pela diferença (angulo - angulo_da_imagem),
+    e a grade fica parada e reta: dá para ver na hora se as linhas do texto
+    ficaram paralelas a ela. O ângulo novo só vai para o projeto ao soltar
+    (angulo_movido), numa ação do desfazer.
+      - alça: arrastar a bolinha azul gira a página em volta do centro, como
+        se a pegasse pelo canto;
+      - linha-guia: arrastar em qualquer outro lugar da página desenha a
+        linha laranja; ao soltar, a página gira até essa linha ficar reta
+        (deitada, ou em pé se foi desenhada mais em pé que deitada). Basta
+        deitá-la em cima de uma linha do texto.
+    Sentido: o do programa (OpenCV), positivo = sentido anti-horário na tela.
+    O QPainter gira no sentido do relógio para ângulo positivo: por isso a
+    imagem é desenhada girada de -(diferença). Arriscado: trocar esse sinal
+    (a prévia ao vivo giraria para o lado contrário do PDF).
 """
 
 from __future__ import annotations
 
+import math
+
 import numpy as np
-from PySide6.QtCore import QPoint, QRect, Qt, Signal
+from PySide6.QtCore import QPoint, QPointF, QRect, QRectF, Qt, Signal
 from PySide6.QtGui import (
     QColor,
     QCursor,
     QImage,
     QMouseEvent,
     QPainter,
+    QPainterPath,
     QPaintEvent,
     QPen,
     QPixmap,
@@ -68,7 +89,17 @@ RECORTE_PROPORCAO = "proporcao"
 
 TAMANHO_ALCA = 12
 DISTANCIA_PEGA = 14
-GRAUS_POR_PIXEL = 0.02  # sensibilidade do giro ao arrastar
+GRAUS_POR_PIXEL = 0.02  # sensibilidade do giro ao arrastar (nao usado desde o G5)
+
+# Aba Endireitar (item 2.2, G5 (c)). Seguro mudar: cores, tamanhos, o passo
+# da grade. ANGULO_MAXIMO: o maximo que a mao gira (o automatico nunca passa
+# de uns poucos graus; a pagina deitada se acerta pelo girar de 90).
+RAIO_DA_ALCA = 13
+FOLGA_DA_ALCA = 24            # da beira da pagina ate o centro da bolinha
+PASSO_DA_GRADE = 40           # pixels de tela entre as linhas da grade
+COR_DA_GRADE = QColor(37, 99, 235, 120)
+LINHA_GUIA_MINIMA = 16        # pixels: menos que isso e um clique, nao uma linha
+ANGULO_MAXIMO = 45.0
 
 # Zoom: 1,0 e "ajustado a tela". Nao passa de 8x porque acima disso a previa
 # ja mostraria o pixel, e nao mais detalhe.
@@ -205,6 +236,13 @@ class Visualizador(QWidget):
         self.corte_visivel = True
         self.recorte = (0.0, 0.0, 1.0, 1.0)
         self.angulo = 0.0
+        # Item 2.2 (G5): o angulo que a imagem na tela JA tem (ver o topo, "A
+        # ABA ENDIREITAR"), e se o angulo de agora e conhecido (o automatico
+        # ainda nao medido nao serve de base para a alca nem para a linha).
+        self.angulo_da_imagem = 0.0
+        self.angulo_conhecido = True
+        self._linha_guia: tuple[QPointF, QPointF] | None = None
+        self._direcao_inicial = 0.0
         self.modo_arraste_recorte = RECORTE_LIVRE
         self._dpi = 300.0
 
@@ -337,6 +375,7 @@ class Visualizador(QWidget):
         else:
             self._pixmap = QPixmap.fromImage(numpy_para_qimage(img))
             self.carregando = False
+            self._linha_guia = None       # a linha ja virou o angulo desta imagem
         if dono is not None:
             self._dono = dono
         self.update()
@@ -345,6 +384,31 @@ class Visualizador(QWidget):
         self.modo = modo
         self.setCursor(QCursor(Qt.SizeHorCursor if modo == MODO_CORTE else Qt.ArrowCursor))
         self.update()
+
+    # --- aba Endireitar (item 2.2, G5) ------------------------------------
+
+    def centro_da_alca(self) -> QPointF:
+        """Onde fica a bolinha azul: no canto de cima, a direita, da parte
+        da pagina que esta a vista (com zoom, a pagina passa da tela)."""
+        vista = self._area.intersected(self.rect())
+        if vista.isEmpty():
+            vista = self._area
+        return QPointF(vista.right() - FOLGA_DA_ALCA, vista.top() + FOLGA_DA_ALCA)
+
+    def _sobre_a_alca(self, ponto: QPoint) -> bool:
+        centro = self.centro_da_alca()
+        return (ponto.x() - centro.x()) ** 2 + (ponto.y() - centro.y()) ** 2 \
+            <= (RAIO_DA_ALCA + 6) ** 2
+
+    def _direcao(self, ponto: QPoint) -> float:
+        """A direcao do ponto visto do centro da pagina, em graus de tela
+        (y para baixo: cresce no sentido do relogio)."""
+        centro = QPointF(self._area.center())
+        return math.degrees(math.atan2(ponto.y() - centro.y(), ponto.x() - centro.x()))
+
+    def linha_guia(self) -> tuple[QPointF, QPointF] | None:
+        """A linha-guia sendo desenhada (pontos de tela), ou None."""
+        return self._linha_guia
 
     def definir_corte(self, posicao: float, visivel: bool = True) -> None:
         """A linha de corte (aba Onde cortar). visivel=False: a folha nao vai
@@ -357,9 +421,22 @@ class Visualizador(QWidget):
         self.recorte = tuple(recorte)
         self.update()
 
-    def definir_angulo(self, angulo: float) -> None:
-        self.angulo = float(angulo)
+    def definir_angulo(self, angulo: float | None, da_imagem: float | None = None) -> None:
+        """O angulo de agora (o numero da aba Endireitar). None = ainda nao
+        medido: fica 0 e a alca e a linha-guia nao giram nada
+        (angulo_conhecido). da_imagem: o giro que a imagem na tela ja tem
+        (core.pipeline.angulo_aplicado); None = nao mudou."""
+        self.angulo_conhecido = angulo is not None
+        self.angulo = max(-ANGULO_MAXIMO, min(ANGULO_MAXIMO, float(angulo or 0.0)))
+        if da_imagem is not None:
+            self.angulo_da_imagem = float(da_imagem)
         self.update()
+
+    def giro_ao_vivo(self) -> float:
+        """Quanto a imagem e girada na tela agora (angulo - angulo_da_imagem)."""
+        if self.modo != MODO_ANGULO:
+            return 0.0
+        return self.angulo - self.angulo_da_imagem
 
     def definir_modo_arraste_recorte(self, modo: str) -> None:
         self.modo_arraste_recorte = modo
@@ -447,7 +524,19 @@ class Visualizador(QWidget):
         # Com zoom alto, escalar o pixmap inteiro custaria caro; desenhamos
         # direto no retangulo e deixamos o Qt cuidar do recorte.
         pintor.setRenderHint(QPainter.SmoothPixmapTransform, self.zoom <= 4.0)
-        pintor.drawPixmap(self._area, self._pixmap)
+        giro = self.giro_ao_vivo()
+        if abs(giro) > 1e-6:
+            # item 2.2 (G5): a pagina gira ao vivo em volta do centro; o
+            # QPainter gira no sentido do relogio para positivo (ver o topo)
+            centro = QPointF(self._area.center())
+            pintor.save()
+            pintor.translate(centro)
+            pintor.rotate(-giro)
+            pintor.translate(-centro)
+            pintor.drawPixmap(self._area, self._pixmap)
+            pintor.restore()
+        else:
+            pintor.drawPixmap(self._area, self._pixmap)
         pintor.setPen(QPen(QColor("#e5e7eb"), 1))
         pintor.drawRect(self._area.adjusted(0, 0, -1, -1))
 
@@ -570,20 +659,61 @@ class Visualizador(QWidget):
         )
 
     def _desenhar_guias(self, pintor: QPainter) -> None:
-        """Linhas horizontais para o usuario comparar com as linhas de texto."""
-        pintor.setPen(QPen(QColor(LARANJA), 1, Qt.DashLine))
-        passo = max(30, self._area.height() // 10)
-        y = self._area.top() + passo
-        while y < self._area.bottom():
-            pintor.drawLine(self._area.left(), y, self._area.right(), y)
-            y += passo
+        """Aba Endireitar (item 2.2, G5 (c)): a grade azul reta, a alca e a
+        linha-guia. A grade nao gira: e a regua contra a qual se ve a pagina
+        torta."""
+        vista = self._area.intersected(self.rect())
+        pintor.setPen(QPen(COR_DA_GRADE, 1))
+        y = vista.top() + PASSO_DA_GRADE // 2
+        while y < vista.bottom():
+            pintor.drawLine(vista.left(), y, vista.right(), y)
+            y += PASSO_DA_GRADE
+        x = vista.left() + PASSO_DA_GRADE // 2
+        while x < vista.right():
+            pintor.drawLine(x, vista.top(), x, vista.bottom())
+            x += PASSO_DA_GRADE
 
-        pintor.setPen(QColor(TEXTO_FRACO))
-        pintor.drawText(
-            QRect(self._area.left() + 8, self._area.top() + 6, 240, 22),
-            Qt.AlignLeft | Qt.AlignVCenter,
-            f"inclinacao: {self.angulo:+.1f} graus",
-        )
+        if self._linha_guia is not None:
+            a, b = self._linha_guia
+            caneta = QPen(QColor(LARANJA), 3)
+            caneta.setCapStyle(Qt.RoundCap)
+            pintor.setPen(caneta)
+            pintor.drawLine(a, b)
+            pintor.setPen(Qt.NoPen)
+            pintor.setBrush(QColor(LARANJA))
+            for ponta in (a, b):
+                pintor.drawEllipse(ponta, 5.5, 5.5)
+
+        if self.angulo_conhecido:
+            self._desenhar_alca(pintor)
+
+    def _desenhar_alca(self, pintor: QPainter) -> None:
+        """A bolinha azul com uma seta curva desenhada a mao (nunca simbolo
+        de fonte: regra do projeto, ver ui/widgets/barra_girar.py)."""
+        centro = self.centro_da_alca()
+        pintor.setPen(QPen(QColor("white"), 2))
+        pintor.setBrush(QColor(AZUL))
+        pintor.drawEllipse(centro, RAIO_DA_ALCA, RAIO_DA_ALCA)
+        raio = RAIO_DA_ALCA * 0.55
+        caixa = QRectF(centro.x() - raio, centro.y() - raio, 2 * raio, 2 * raio)
+        caminho = QPainterPath()
+        caminho.arcMoveTo(caixa, 120.0)
+        caminho.arcTo(caixa, 120.0, -270.0)       # a favor do relogio
+        caneta = QPen(QColor("white"), 2)
+        caneta.setCapStyle(Qt.RoundCap)
+        pintor.setPen(caneta)
+        pintor.setBrush(Qt.NoBrush)
+        pintor.drawPath(caminho)
+        fim = math.radians(120.0 - 270.0)
+        ponta = QPointF(centro.x() + raio * math.cos(fim), centro.y() - raio * math.sin(fim))
+        seta = QPainterPath()
+        seta.moveTo(ponta.x() - 3.5, ponta.y() - 2.5)
+        seta.lineTo(ponta.x() + 1.5, ponta.y() + 3.5)
+        seta.lineTo(ponta.x() + 3.5, ponta.y() - 3.0)
+        seta.closeSubpath()
+        pintor.setPen(Qt.NoPen)
+        pintor.setBrush(QColor("white"))
+        pintor.drawPath(seta)
 
     def _desenhar_conteudo(self, pintor: QPainter) -> None:
         """MODO_CONTEUDO (Fase 2+3): contorno do conteúdo arrastável, alças
@@ -695,8 +825,19 @@ class Visualizador(QWidget):
             )
             self._recorte_inicial = self.recorte
         elif self.modo == MODO_ANGULO:
-            self._arrastando = "angulo"
-            self._angulo_inicial = self.angulo
+            # item 2.2 (G5): a alca gira; no resto da pagina, desenha a
+            # linha-guia. Sem o angulo de agora (automatico ainda nao
+            # medido), nada a fazer: a base estaria errada.
+            if not self.angulo_conhecido:
+                return
+            if self._sobre_a_alca(ponto):
+                self._arrastando = "alca"
+                self._angulo_inicial = self.angulo
+                self._direcao_inicial = self._direcao(ponto)
+                self.setCursor(QCursor(Qt.ClosedHandCursor))
+            elif self._area.contains(ponto):
+                self._arrastando = "linha"
+                self._linha_guia = (QPointF(ponto), QPointF(ponto))
         elif self.modo == MODO_CONTEUDO:
             alca = self._alca_conteudo_sob(ponto)
             if alca is not None:
@@ -731,13 +872,23 @@ class Visualizador(QWidget):
                 self._atualizar_cursor(ponto)
             elif self.modo == MODO_CONTEUDO:
                 self._atualizar_cursor_conteudo(ponto)
+            elif self.modo == MODO_ANGULO:
+                self.setCursor(QCursor(
+                    Qt.OpenHandCursor if self.angulo_conhecido and self._sobre_a_alca(ponto)
+                    else Qt.CrossCursor if self._area.contains(ponto) else Qt.ArrowCursor))
             return
 
         if self._arrastando == "corte":
             self._mover_corte(ponto)
-        elif self._arrastando == "angulo":
-            delta = ponto.x() - self._ponto_inicial.x()
-            self.definir_angulo(self._angulo_inicial + delta * GRAUS_POR_PIXEL)
+        elif self._arrastando == "alca":
+            # girar a direcao no sentido do relogio (tela) = angulo negativo
+            # no sentido do programa; a volta de 180 graus nao pula
+            giro = self._direcao(ponto) - self._direcao_inicial
+            giro = (giro + 180.0) % 360.0 - 180.0
+            self.definir_angulo(self._angulo_inicial - giro)
+        elif self._arrastando == "linha":
+            self._linha_guia = (self._linha_guia[0], QPointF(ponto))
+            self.update()
         elif self._arrastando == "conteudo":
             self._mover_conteudo(ponto)
         elif self._arrastando.startswith("conteudo_"):
@@ -762,7 +913,19 @@ class Visualizador(QWidget):
         # desfazer, e nao uma acao por pixel percorrido.
         if arrastava == "corte":
             self.corte_movido.emit(self.posicao_corte)
-        elif arrastava == "angulo":
+        elif arrastava == "alca":
+            self.setCursor(QCursor(Qt.OpenHandCursor))
+            self.angulo_movido.emit(self.angulo)
+        elif arrastava == "linha":
+            correcao = correcao_da_linha_guia(*self._linha_guia)
+            if correcao is None:                  # foi um clique: nada muda
+                self._linha_guia = None
+                self.update()
+                return
+            # a pagina gira ao vivo ate a linha ficar reta; a linha sai (ficaria
+            # torta sobre o texto ja endireitado)
+            self._linha_guia = None
+            self.definir_angulo(self.angulo + correcao)
             self.angulo_movido.emit(self.angulo)
         elif arrastava == "conteudo" or arrastava.startswith("conteudo_"):
             self._guias_ativas_agora = []
@@ -1009,3 +1172,20 @@ class Visualizador(QWidget):
         self._retangulo_conteudo = (
             centro_x - novo_w / 2, centro_y - novo_h / 2, novo_w, novo_h)
         self.update()
+
+
+def correcao_da_linha_guia(a: QPointF, b: QPointF) -> float | None:
+    """Quanto girar a pagina (graus, sentido do programa) para a linha de
+    `a` a `b`, desenhada na tela, ficar reta: deitada, ou em pe quando foi
+    desenhada mais em pe que deitada. None se e curta demais (um clique).
+
+    Na tela o y cresce para baixo: uma linha que desce para a direita tem
+    direcao positiva e esta girada no sentido do relogio; endireita-la e
+    girar a pagina no sentido anti-horario, que e positivo no programa. Por
+    isso a correcao e a propria direcao, trazida para -45..45 graus (tanto
+    faz o lado de onde a linha comecou)."""
+    dx, dy = b.x() - a.x(), b.y() - a.y()
+    if math.hypot(dx, dy) < LINHA_GUIA_MINIMA:
+        return None
+    direcao = math.degrees(math.atan2(dy, dx))
+    return (direcao + 45.0) % 90.0 - 45.0

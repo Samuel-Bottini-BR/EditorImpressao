@@ -89,6 +89,15 @@ página (_trocar_conta_do_endireitar; ConfigPagina.endireitar_como), numa
 ação do desfazer; ao lado, os dois ângulos que as contas acharam
 (core.pipeline.angulos_medidos), para escolher olhando. A página em que
 elas discordam mais de 0,3° chega em "Para revisar" (aviso C1).
+
+Tela do endireitar (item 2.2, decisão G5 (c) do Samuel, conferência 14: "Os
+dois juntos"; provisório até o layout): grade azul reta, alça e linha-guia
+no visualizador (ui/widgets/visualizador.py, "A ABA ENDIREITAR"); na linha
+de botões, o ângulo em número com as setas de 0,1 grau (_ajustar_angulo; a
+imagem gira ao vivo e o ângulo vai para o projeto numa ação só, um instante
+depois do último clique) e o "aplicar em" (só esta / todas / daqui em diante
+/ só as pares / só as ímpares; core/girar.paginas_do_alcance), que vale para
+o ângulo a mão, "não endireitar" e "voltar ao automático".
 """
 
 from __future__ import annotations
@@ -100,9 +109,12 @@ import numpy as np
 
 import atalhos
 from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtCore import QLocale, QSize
 from PySide6.QtWidgets import (
+    QAbstractSpinBox,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -118,8 +130,9 @@ from PySide6.QtWidgets import (
 from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
-from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulos_medidos,
-                           jeito_de_dividir, recalcular_divisao)
+from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
+                           angulo_da_pagina, angulos_medidos, jeito_de_dividir,
+                           recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -342,6 +355,16 @@ class TelaConferir(QWidget):
         self._commit = QTimer(self)
         self._commit.setSingleShot(True)
         self._commit.timeout.connect(lambda: self._medidor_soltou(None))
+
+        # Item 2.2 (G5): as setas de 0,1 grau giram a imagem na hora e gravam
+        # o angulo um instante depois do ultimo clique (uma acao so do
+        # desfazer para varios cliques). (indice da pagina, angulo) ainda nao
+        # gravado.
+        self._angulo_pendente: tuple[int, float] | None = None
+        self._gravar_angulo_timer = QTimer(self)
+        self._gravar_angulo_timer.setSingleShot(True)
+        self._gravar_angulo_timer.setInterval(ESPERA_PARA_GRAVAR_O_ANGULO_MS)
+        self._gravar_angulo_timer.timeout.connect(self._gravar_angulo_pendente)
 
         # Referencias diretas em Python, uma por aba. A versao anterior
         # guardava o widget dentro de setProperty() e o buscava de volta a cada
@@ -905,6 +928,65 @@ class TelaConferir(QWidget):
         _botao("está certo", linha, self._marcar_revisada)
         _botao("não endireitar esta", linha, self._angulo_zero)
         _botao("voltar ao automático", linha, self._angulo_automatico)
+        # Item 2.2 (G5 (c)): o angulo em numero com as setas de 0,1 grau
+        # (icones desenhados a mao, os da barra de girar) e o "aplicar em".
+        # Numa SEGUNDA linha, embaixo dos botoes: numa so, em 1280 px, os
+        # textos ficavam cortados (print de 07/10/2026). O painel tem as duas.
+        from ui.widgets.barra_girar import LADO_DO_ICONE, icone_de_giro
+
+        primeira = self.linhas_de_botoes[ABA_ANGULO]
+        painel = QWidget()
+        coluna = QVBoxLayout(painel)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(6)
+        coluna.addWidget(primeira)
+        segunda = QWidget()
+        linha2 = QHBoxLayout(segunda)
+        linha2.setContentsMargins(0, 0, 0, 0)
+        linha2.setSpacing(8)
+        coluna.addWidget(segunda)
+        self.linhas_de_botoes[ABA_ANGULO] = painel
+        linha2.addWidget(QLabel("inclinação:"))
+
+        self.botao_angulo_anti_horario = _botao(
+            "0,1°", linha2, lambda: self._ajustar_angulo(+PASSO_DO_ANGULO))
+        self.botao_angulo_anti_horario.setIcon(icone_de_giro(girar.GIRO_ESQUERDA))
+        self.botao_angulo_anti_horario.setToolTip(
+            "Gira a página 0,1 grau no sentido anti-horário")
+        self.campo_angulo = QDoubleSpinBox()
+        self.campo_angulo.setLocale(QLocale(QLocale.Portuguese, QLocale.Brazil))   # virgula
+        self.campo_angulo.setRange(-45.0, 45.0)
+        self.campo_angulo.setDecimals(2)
+        self.campo_angulo.setSingleStep(PASSO_DO_ANGULO)
+        self.campo_angulo.setSuffix(" graus")
+        self.campo_angulo.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.campo_angulo.setKeyboardTracking(False)
+        self.campo_angulo.setAlignment(Qt.AlignRight)
+        self.campo_angulo.setToolTip(
+            "A inclinação desta página, em graus (positivo = sentido anti-horário). "
+            "Digite um número e aperte Enter, ou use as setas ao lado.")
+        self.campo_angulo.valueChanged.connect(self._angulo_digitado)
+        self.campo_angulo.editingFinished.connect(self._angulo_digitado_acabou)
+        linha2.addWidget(self.campo_angulo)
+        self.botao_angulo_horario = _botao(
+            "0,1°", linha2, lambda: self._ajustar_angulo(-PASSO_DO_ANGULO))
+        self.botao_angulo_horario.setIcon(icone_de_giro(girar.GIRO_DIREITA))
+        self.botao_angulo_horario.setToolTip("Gira a página 0,1 grau no sentido horário")
+        for botao in (self.botao_angulo_anti_horario, self.botao_angulo_horario):
+            botao.setIconSize(QSize(LADO_DO_ICONE, LADO_DO_ICONE))
+            botao.setFocusPolicy(Qt.NoFocus)       # nao rouba as setas do teclado
+        self.rotulo_alcance_do_angulo = QLabel("aplicar em:")
+        linha2.addSpacing(10)
+        linha2.addWidget(self.rotulo_alcance_do_angulo)
+        self.combo_alcance_do_angulo = QComboBox()
+        self.combo_alcance_do_angulo.setFocusPolicy(Qt.NoFocus)
+        for alcance in girar.ALCANCES:
+            self.combo_alcance_do_angulo.addItem(girar.NOMES_DOS_ALCANCES[alcance], alcance)
+        self.combo_alcance_do_angulo.setToolTip(
+            "Em quais páginas o ângulo vale: o que você fizer aqui (girar, "
+            "não endireitar, voltar ao automático) vale para todas as escolhidas.")
+        linha2.addWidget(self.combo_alcance_do_angulo)
+        linha2.addStretch()
         # Item 2.2 (G4 (b): "eu vou ter a opção de escolher"; provisorio ate o
         # layout): a conta do endireitar automatico SO desta pagina, e os dois
         # angulos que as contas acharam (_atualizar_botoes).
@@ -1821,8 +1903,17 @@ class TelaConferir(QWidget):
                 vis.definir_modo(MODO_RECORTE)
         elif aba == ABA_ANGULO:
             vis = self.visualizadores[ABA_ANGULO]
+            # item 2.2 (G5): o angulo de agora (o a mao ou o automatico ja
+            # medido) e o giro que a imagem nova JA tem; a imagem velha que
+            # fica na tela enquanto a nova nao chega gira ao vivo ate ele
+            agora = angulo_da_pagina(self.projeto, pagina)
+            pendente = self._angulo_pendente
+            if pendente is not None and pendente[0] == self.indice_pagina:
+                agora = pendente[1]               # setas ainda nao gravadas
             vis.definir_imagem(img, dono=("pagina", self.indice_pagina))   # D4
-            vis.definir_angulo(pagina.angulo_manual or 0.0)
+            vis.definir_angulo(agora, da_imagem=None if img is None
+                               else angulo_aplicado(angulo_da_pagina(self.projeto, pagina)))
+            self._mostrar_angulo(agora)
         elif aba == ABA_MARCAR:
             self._atualizar_marcacao(img, pagina)
         else:
@@ -2266,8 +2357,9 @@ class TelaConferir(QWidget):
         if aba == ABA_ANGULO:
             pagina = self.projeto.paginas[self.indice_pagina]
             if pagina.angulo_manual is None:
-                return "Vou endireitar sozinho. Arraste sobre a página para girar na mao."
-            return f"Você girou esta página em {pagina.angulo_manual:+.1f} graus."
+                return ("Vou endireitar sozinho. Para acertar à mão: arraste a bolinha "
+                        "azul, ou desenhe a linha laranja em cima de uma linha do texto.")
+            return f"Você girou esta página em {_graus(pagina.angulo_manual)}."
         pagina = self.projeto.paginas[self.indice_pagina]
         if pagina.filtro == TIRAR_FUNDO:
             # item 1.1: "vai sair em Tirar o fundo" nao se le bem; e se o
@@ -2809,21 +2901,112 @@ class TelaConferir(QWidget):
 
     # --- angulo -----------------------------------------------------------
 
+    def _paginas_do_alcance_do_angulo(self, atual: int) -> list[int] | None:
+        """As paginas do "aplicar em" da aba Endireitar (item 2.2, G5), ou
+        None quando a pagina da vez fica fora dele ("so as pares" numa
+        impar): ai avisa e nada muda, como no girar (core/girar)."""
+        assert self.projeto is not None
+        alcance = self.combo_alcance_do_angulo.currentData() if hasattr(
+            self, "combo_alcance_do_angulo") else girar.ALCANCE_ESTA
+        aviso = girar.aviso_fora_do_alcance(atual, alcance, "página")
+        if aviso:
+            janela = self.window()
+            if janela is not self and hasattr(janela, "avisar"):
+                janela.avisar(aviso)
+            return None
+        return girar.folhas_do_alcance(len(self.projeto.paginas), atual, alcance)
+
+    def _mudar_o_angulo(self, atual: int, campos: dict, descricao_de_uma: str,
+                        descricao_de_varias: str) -> None:
+        """Grava o angulo (campos) na pagina `atual` e nas do "aplicar em",
+        numa acao so. So a pagina da vez fica "conferida"."""
+        indices = self._paginas_do_alcance_do_angulo(atual)
+        if not indices:
+            return
+        if indices == [atual]:
+            self._registrar("ajustar_angulo", "pagina", indices,
+                            {**campos, "revisada": True}, descricao_de_uma)
+        else:
+            self._registrar("ajustar_angulo", "pagina", indices, campos,
+                            descricao_de_varias.format(n=len(indices)))
+
     @protegido
     def _mover_angulo(self, angulo: float) -> None:
-        self._registrar(
-            "ajustar_angulo", "pagina", [self.indice_pagina],
-            {"angulo_manual": round(angulo, 2), "revisada": True},
-            f"Angulo da página {self.indice_pagina + 1}: {angulo:+.1f} graus",
-        )
+        self._gravar_angulo(self.indice_pagina, angulo)
+
+    def _gravar_angulo(self, indice: int, angulo: float) -> None:
+        """O angulo a mao (alca, linha-guia, setas, numero) vai para o projeto."""
+        self._gravar_angulo_timer.stop()
+        self._angulo_pendente = None
+        angulo = max(-45.0, min(45.0, round(float(angulo), 2)))
+        texto = f"{angulo:+.2f}".replace(".", ",")
+        self._mudar_o_angulo(
+            indice, {"angulo_manual": angulo},
+            f"Ângulo da página {indice + 1}: {texto} graus",
+            f"Ângulo de {{n}} páginas: {texto} graus")
+
+    def _ajustar_angulo(self, passo: float) -> None:
+        """As setas de 0,1 grau: a imagem gira na hora; o angulo e gravado
+        um instante depois do ultimo clique (ESPERA_PARA_GRAVAR_O_ANGULO_MS),
+        numa acao so."""
+        if not self._pronta() or ABA_ANGULO not in self.visualizadores:
+            return
+        vis = self.visualizadores[ABA_ANGULO]
+        if not vis.angulo_conhecido:
+            return
+        self._angulo_ao_vivo(round(vis.angulo + passo, 2))
+
+    def _angulo_ao_vivo(self, angulo: float) -> None:
+        vis = self.visualizadores[ABA_ANGULO]
+        vis.definir_angulo(max(-45.0, min(45.0, angulo)))
+        self._angulo_pendente = (self.indice_pagina, vis.angulo)
+        self._mostrar_angulo(vis.angulo)
+        self._gravar_angulo_timer.start()
+
+    @protegido
+    def _gravar_angulo_pendente(self) -> None:
+        """O instante depois do ultimo clique nas setas (ou no numero)."""
+        pendente, self._angulo_pendente = self._angulo_pendente, None
+        if pendente is not None and self.projeto is not None \
+                and 0 <= pendente[0] < len(self.projeto.paginas):
+            self._gravar_angulo(*pendente)
+
+    def _mostrar_angulo(self, angulo: float | None) -> None:
+        """O numero da aba Endireitar (sem sinal: mostrar nao e mudar)."""
+        if not hasattr(self, "campo_angulo"):
+            return
+        conhecido = angulo is not None
+        self.campo_angulo.blockSignals(True)
+        if conhecido:
+            self.campo_angulo.setValue(float(angulo))
+        self.campo_angulo.blockSignals(False)
+        for widget in (self.campo_angulo, self.botao_angulo_anti_horario,
+                       self.botao_angulo_horario):
+            widget.setEnabled(conhecido)
+        self.campo_angulo.setToolTip(
+            self.campo_angulo.toolTip() if conhecido
+            else "Ainda estou medindo a inclinação desta página.")
+
+    def _angulo_digitado(self, valor: float) -> None:
+        """Seta do teclado ou Enter no numero: como as setas da tela."""
+        if not self._pronta() or ABA_ANGULO not in self.visualizadores:
+            return
+        if self.visualizadores[ABA_ANGULO].angulo_conhecido:
+            self._angulo_ao_vivo(round(float(valor), 2))
+
+    def _angulo_digitado_acabou(self) -> None:
+        """Enter ou sair do numero: grava ja e devolve o teclado a tela (as
+        setas voltam a trocar de pagina)."""
+        if self._angulo_pendente is not None:
+            self._gravar_angulo_pendente()
+        self.campo_angulo.clearFocus()
 
     @protegido
     def _angulo_zero(self) -> None:
-        self._registrar(
-            "ajustar_angulo", "pagina", [self.indice_pagina],
-            {"angulo_manual": 0.0, "revisada": True},
+        self._mudar_o_angulo(
+            self.indice_pagina, {"angulo_manual": 0.0},
             f"Não endireitar a página {self.indice_pagina + 1}",
-        )
+            "Não endireitar {n} páginas")
 
     def _atualizar_conta_do_endireitar(self) -> None:
         """Item 2.2: mostra a conta desta pagina e os dois angulos medidos
@@ -2864,9 +3047,14 @@ class TelaConferir(QWidget):
 
     @protegido
     def _angulo_automatico(self) -> None:
+        indices = self._paginas_do_alcance_do_angulo(self.indice_pagina)
+        if not indices:
+            return
         self._registrar(
-            "ajustar_angulo", "pagina", [self.indice_pagina], {"angulo_manual": None},
-            f"Voltar ao endireitar automático na página {self.indice_pagina + 1}",
+            "ajustar_angulo", "pagina", indices, {"angulo_manual": None},
+            f"Voltar ao endireitar automático na página {self.indice_pagina + 1}"
+            if indices == [self.indice_pagina]
+            else f"Voltar ao endireitar automático em {len(indices)} páginas",
         )
 
     # --- filtro -----------------------------------------------------------
@@ -3450,6 +3638,13 @@ def _botao(texto: str, destino: QHBoxLayout, acao, objeto: str = "") -> QPushBut
     _ligar(botao, acao)
     destino.addWidget(botao)
     return botao
+
+
+# Item 2.2 (G5): cada clique nas setas da aba Endireitar, em graus, e quanto
+# se espera depois do ultimo clique para gravar (uma acao so do desfazer).
+# Seguro mudar.
+PASSO_DO_ANGULO = 0.1
+ESPERA_PARA_GRAVAR_O_ANGULO_MS = 700
 
 
 def _graus(angulo: float) -> str:
