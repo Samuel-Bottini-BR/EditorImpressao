@@ -11,7 +11,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
 
-from ui.estilo import AZUL, BORDA, TEXTO_FRACO
+from ui import estilo
 from ui.widgets.visualizador import numpy_para_qimage
 
 ALTURA_AMOSTRA = 150
@@ -48,7 +48,7 @@ class CartaoFiltro(QFrame):
         rotulo_explicacao = QLabel(explicacao)
         rotulo_explicacao.setAlignment(Qt.AlignCenter)
         rotulo_explicacao.setWordWrap(True)
-        rotulo_explicacao.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        estilo.estilizar(rotulo_explicacao, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         camadas.addWidget(rotulo_explicacao)
 
         self._aplicar_borda()
@@ -68,16 +68,15 @@ class CartaoFiltro(QFrame):
 
     def _aplicar_borda(self) -> None:
         """Redesenha o estilo do cartão (borda + cor do nome) conforme selecionado."""
-        cor = AZUL if self.selecionado else BORDA
-        espessura = 3 if self.selecionado else 1
-        self.setStyleSheet(
-            f"QFrame#cartao {{ background: white; border: {espessura}px solid {cor};"
-            f" border-radius: 10px; }}"
-        )
-        self.rotulo_nome.setStyleSheet(
-            "font-weight: 600; font-size: 15px;"
-            + (f" color: {AZUL};" if self.selecionado else "")
-        )
+        selecionado = self.selecionado
+        espessura = 3 if selecionado else 1
+        estilo.estilizar(self, lambda: (
+            f"QFrame#cartao {{ background: {estilo.cor('painel')};"
+            f" border: {espessura}px solid {estilo.AZUL if selecionado else estilo.BORDA};"
+            f" border-radius: 10px; }}"))
+        estilo.estilizar(self.rotulo_nome, lambda: (
+            "font-weight: 600; font-size: 15px; background: transparent;"
+            + (f" color: {estilo.cor('forte')};" if selecionado else "")))
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802
         """Clicar escolhe o filtro E abre a página ampliada.
@@ -109,10 +108,10 @@ class _Amostra(QWidget):
         ainda nao chegou."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.SmoothPixmapTransform)
-        pintor.fillRect(self.rect(), QColor("#f9fafb"))
+        pintor.fillRect(self.rect(), QColor(estilo.cor("painel")))
 
         if self._pixmap is None:
-            pintor.setPen(QColor(TEXTO_FRACO))
+            pintor.setPen(QColor(estilo.TEXTO_FRACO))
             pintor.drawText(self.rect(), Qt.AlignCenter, "preparando...")
             return
 

@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
 from core.endireitar import girar_90
 from core.pdf_io import abrir_pdf, limitar_altura, pagina_para_array
 from registro import registrar_erro
-from ui.estilo import AZUL, BORDA, LARANJA, TEXTO_FRACO
+from ui import estilo
 from ui.widgets.visualizador import numpy_para_qimage
 
 # A tira toda ocupa 58 px no desenho aprovado - contra os 144 de antes. Cada
@@ -112,7 +112,7 @@ class Miniatura(QFrame):
         pintor.setRenderHint(QPainter.Antialiasing)
 
         area = self.rect().adjusted(3, 3, -3, -3)
-        pintor.fillRect(area, QColor("#ffffff"))
+        pintor.fillRect(area, QColor(estilo.cor("bar2")))
 
         if self._pixmap is not None:
             escalado = self._pixmap.scaled(
@@ -124,18 +124,18 @@ class Miniatura(QFrame):
                 area.top() + 2, escalado,
             )
         else:
-            pintor.fillRect(area.adjusted(0, 0, 0, -20), QColor("#f3f4f6"))
+            pintor.fillRect(area.adjusted(0, 0, 0, -20), QColor(estilo.cor("cabeca")))
 
         if self.apagada:
             pintor.fillRect(area, QColor(255, 255, 255, 165))
 
         # moldura: laranja quando ha alerta, azul quando selecionada
         if self.selecionada:
-            cor, espessura = QColor(AZUL), 3
+            cor, espessura = QColor(estilo.AZUL), 3
         elif self.em_alerta:
-            cor, espessura = QColor(LARANJA), 2
+            cor, espessura = QColor(estilo.LARANJA), 2
         else:
-            cor, espessura = QColor(BORDA), 1
+            cor, espessura = QColor(estilo.BORDA), 1
         caneta = pintor.pen()
         caneta.setColor(cor)
         caneta.setWidth(espessura)
@@ -143,7 +143,7 @@ class Miniatura(QFrame):
         pintor.drawRect(area)
 
         rodape = area.adjusted(0, area.height() - 18, 0, 0)
-        pintor.setPen(QColor(LARANJA) if self.em_alerta else QColor(TEXTO_FRACO))
+        pintor.setPen(QColor(estilo.LARANJA) if self.em_alerta else QColor(estilo.TEXTO_FRACO))
         rotulo = str(self.numero)
         if self.em_alerta:
             rotulo += "  !"

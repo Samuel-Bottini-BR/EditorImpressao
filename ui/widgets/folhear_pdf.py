@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
 
 from core.pdf_io import ErroPDF, abrir_pdf, limitar_altura, pagina_para_array
 from registro import registrar_erro
-from ui.estilo import FOLHA_DE_ESTILO
+from ui import estilo
 from ui.widgets.visualizador import Visualizador
 
 # Baixo de proposito: aqui a folha serve para RECONHECER a página, e nao para
@@ -174,7 +174,7 @@ class TelaCheiaDoPDF(QDialog):
         outro descritor do mesmo PDF)."""
         super().__init__(parent)
         self.setWindowTitle("Folhear o livro")
-        self.setStyleSheet(FOLHA_DE_ESTILO)
+        estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
         self.setSizeGripEnabled(True)
 
         self._doc = doc

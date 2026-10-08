@@ -48,28 +48,32 @@ from core.girar import (
     NOMES_DOS_ALCANCES,
     NOMES_DOS_GIROS,
 )
-from ui.estilo import AZUL, BORDA, FUNDO_CARTAO, TEXTO, TEXTO_FRACO
+from ui import estilo
 
 LADO_DO_ICONE = 18
 
-_ESTILO = f"""
+def _estilo() -> str:
+    """A folha da barrinha, com as cores do tema da vez (ui/estilo.py)."""
+    return f"""
 QPushButton {{
-    background: {FUNDO_CARTAO};
-    border: 1px solid {BORDA};
+    background: {estilo.FUNDO_CARTAO};
+    border: 1px solid {estilo.BORDA};
     border-radius: 6px;
     padding: 4px 9px;
     font-size: 13px;
 }}
-QPushButton:hover {{ border-color: {AZUL}; }}
-QPushButton:pressed {{ background: #dbeafe; }}
+QPushButton:hover {{ border-color: {estilo.AZUL}; }}
+QPushButton:pressed {{ background: {estilo.AZUL_CLARO}; }}
 QComboBox {{ padding: 3px 8px; font-size: 13px; }}
-QLabel {{ color: {TEXTO_FRACO}; font-size: 13px; background: transparent; }}
+QLabel {{ color: {estilo.TEXTO_FRACO}; font-size: 13px; background: transparent; }}
 """
 
 
-def icone_de_giro(giro: int, cor: str = TEXTO) -> QIcon:
+def icone_de_giro(giro: int, cor: str | None = None) -> QIcon:
     """Seta curva desenhada à mão: 3/4 de círculo para os quartos de volta
-    (a ponta mostra o sentido) e meio círculo com ponta para a meia volta."""
+    (a ponta mostra o sentido) e meio círculo com ponta para a meia volta.
+    Sem `cor`, usa a cor do texto do tema da vez."""
+    cor = cor or estilo.TEXTO
     escala = 3
     lado = LADO_DO_ICONE * escala
     pixmap = QPixmap(lado, lado)
@@ -127,7 +131,8 @@ class BarraGirar(QWidget):
         """Monta a barra com "só esta" escolhido."""
         super().__init__(parent)
         self.setObjectName("barraGirar")
-        self.setStyleSheet(_ESTILO)
+        # a troca de tema refaz a folha e, por ela, os ícones (changeEvent)
+        estilo.estilizar(self, _estilo)
         # do tamanho do que tem dentro, nunca mais: a sobra da linha e das abas
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         linha = QHBoxLayout(self)
@@ -168,6 +173,15 @@ class BarraGirar(QWidget):
         linha.addWidget(self.combo_alcance)
         self._compacta = False
         self.definir_teclas({})
+
+    def changeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Troca de tema (folha nova): os ícones desenhados à mão ganham a cor
+        do texto do tema novo."""
+        super().changeEvent(evento)
+        from PySide6.QtCore import QEvent
+        if evento.type() == QEvent.StyleChange and hasattr(self, "botoes_de_giro"):
+            for giro, botao in self.botoes_de_giro.items():
+                botao.setIcon(icone_de_giro(giro))
 
     # --- estado -----------------------------------------------------------
 

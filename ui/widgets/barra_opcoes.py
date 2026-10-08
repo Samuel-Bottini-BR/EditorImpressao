@@ -24,7 +24,7 @@ from PySide6.QtWidgets import (
 )
 
 from core.selecao import SOMAR, SUBTRAIR
-from ui.estilo import TEXTO_FRACO
+from ui import estilo
 from ui.widgets.editor_selecao import (
     ESPESSURA_MAX,
     ESPESSURA_MIN,
@@ -65,8 +65,8 @@ class BarraOpcoes(QFrame):
         somar/tirar) e comeca ja no estado da ferramenta "retangulo"."""
         super().__init__(parent)
         self.setFixedHeight(ALTURA)
-        self.setStyleSheet(
-            "QFrame { background: #fdfdfc; border-bottom: 1px solid #e6e4e0; }")
+        estilo.estilizar(self, lambda: (
+            f"QFrame {{ background: {estilo.cor('bar')}; border-bottom: 1px solid {estilo.cor('linha')}; }}"))
 
         self.linha = QHBoxLayout(self)
         self.linha.setContentsMargins(12, 0, 12, 0)
@@ -84,7 +84,7 @@ class BarraOpcoes(QFrame):
         self.linha.addWidget(self.controles)
 
         self.dica = QLabel("")
-        self.dica.setStyleSheet(f"color: {TEXTO_FRACO}; border: none;")
+        estilo.estilizar(self.dica, lambda: f"color: {estilo.TEXTO_FRACO}; border: none;")
         self.linha.addStretch()
         self.linha.addWidget(self.dica)
         self.linha.addStretch()
@@ -112,10 +112,10 @@ class BarraOpcoes(QFrame):
         self.operacao = modo
         for chave, botao in self.botoes_modo.items():
             escolhido = chave == modo
-            botao.setStyleSheet(BOTAO_DE_MODO.format(
-                borda="#378add" if escolhido else "#d3d1c7",
-                fundo="#e6f1fb" if escolhido else "#ffffff",
-                cor="#185fa5" if escolhido else "#5f5e5a"))
+            estilo.estilizar(botao, lambda escolhido=escolhido: BOTAO_DE_MODO.format(
+                borda=estilo.cor("azul") if escolhido else estilo.cor("sep"),
+                fundo=estilo.cor("azul") if escolhido else estilo.cor("botao"),
+                cor="#ffffff" if escolhido else estilo.cor("texto")))
         if avisar:
             self.operacao_mudou.emit(modo)
 
@@ -177,7 +177,7 @@ class BarraOpcoes(QFrame):
                     aviso, sufixo: str = "") -> QSlider:
         """Monta rotulo + slider (+ sufixo opcional), ligando o slider ao callback `aviso`."""
         rotulo = QLabel(nome)
-        rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; border: none;")
+        estilo.estilizar(rotulo, lambda: f"color: {estilo.TEXTO_FRACO}; border: none;")
         self.dentro.addWidget(rotulo)
 
         deslizante = QSlider(Qt.Horizontal)
@@ -189,7 +189,7 @@ class BarraOpcoes(QFrame):
 
         if sufixo:
             fim = QLabel(sufixo)
-            fim.setStyleSheet(f"color: {TEXTO_FRACO}; border: none;")
+            estilo.estilizar(fim, lambda: f"color: {estilo.TEXTO_FRACO}; border: none;")
             self.dentro.addWidget(fim)
         return deslizante
 
@@ -197,8 +197,8 @@ class BarraOpcoes(QFrame):
         """Um botão simples na faixa de controles, com o estilo neutro de BOTAO_DE_MODO."""
         botao = QPushButton(texto)
         botao.setCursor(Qt.PointingHandCursor)
-        botao.setStyleSheet(BOTAO_DE_MODO.format(
-            borda="#d3d1c7", fundo="#ffffff", cor="#5f5e5a"))
+        estilo.estilizar(botao, lambda: BOTAO_DE_MODO.format(
+            borda=estilo.cor("sep"), fundo=estilo.cor("botao"), cor=estilo.cor("texto")))
         botao.clicked.connect(acao)
         self.dentro.addWidget(botao)
         return botao

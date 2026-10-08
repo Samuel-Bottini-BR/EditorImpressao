@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 import configuracoes
-from ui.estilo import TEXTO_FRACO, VERMELHO
+from ui import estilo
 
 LARGURA_MAXIMA_CAMINHO = 62
 
@@ -48,7 +48,7 @@ class SeletorDestino(QFrame):
         linha_pasta.addWidget(rotulo)
 
         self.rotulo_pasta = QLabel("")
-        self.rotulo_pasta.setStyleSheet(f"color: {TEXTO_FRACO};")
+        estilo.estilizar(self.rotulo_pasta, lambda: f"color: {estilo.TEXTO_FRACO};")
         linha_pasta.addWidget(self.rotulo_pasta, 1)
 
         botao = QPushButton("Escolher pasta")
@@ -71,7 +71,7 @@ class SeletorDestino(QFrame):
 
         self.aviso = QLabel("")
         self.aviso.setWordWrap(True)
-        self.aviso.setStyleSheet(f"color: {VERMELHO}; font-size: 12px;")
+        estilo.estilizar(self.aviso, lambda: f"color: {estilo.VERMELHO}; font-size: 12px;")
         self.aviso.setVisible(False)
         camadas.addWidget(self.aviso)
 
@@ -159,11 +159,11 @@ class SeletorDestino(QFrame):
             return
         if self.caminho.exists():
             self._avisar("")
-            self.aviso.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+            estilo.estilizar(self.aviso, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
             self.aviso.setText("Já existe um arquivo com esse nome - eu pergunto antes de substituir.")
             self.aviso.setVisible(True)
             return
-        self.aviso.setStyleSheet(f"color: {VERMELHO}; font-size: 12px;")
+        estilo.estilizar(self.aviso, lambda: f"color: {estilo.VERMELHO}; font-size: 12px;")
         self._avisar("")
 
     def pronto_para_gravar(self) -> tuple[bool, str]:

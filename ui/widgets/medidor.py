@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
 )
 
 from core.filtros import AJUSTE_MAX, AJUSTE_MIN, AJUSTE_PADRAO, palavra_do_ajuste
-from ui.estilo import AZUL, TEXTO_FRACO
+from ui import estilo
 
 
 class Medidor(QFrame):
@@ -47,7 +47,7 @@ class Medidor(QFrame):
         linha.addWidget(self.rotulo)
 
         esquerda = QLabel(ponta_esquerda)
-        esquerda.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        estilo.estilizar(esquerda, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         linha.addWidget(esquerda)
 
         self.barra = QSlider(Qt.Horizontal)
@@ -64,13 +64,13 @@ class Medidor(QFrame):
         linha.addWidget(self.barra, 1)
 
         direita = QLabel(ponta_direita)
-        direita.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        estilo.estilizar(direita, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         linha.addWidget(direita)
 
         self.palavra = QLabel(palavra_do_ajuste(AJUSTE_PADRAO))
         self.palavra.setMinimumWidth(72)
         self.palavra.setAlignment(Qt.AlignCenter)
-        self.palavra.setStyleSheet(f"color: {AZUL}; font-weight: 600;")
+        estilo.estilizar(self.palavra, lambda: f"color: {estilo.AZUL}; font-weight: 600;")
         linha.addWidget(self.palavra)
 
         camadas.addLayout(linha)

@@ -40,7 +40,7 @@ from PySide6.QtWidgets import (
 import historico
 import projetos
 from ui import perguntas
-from ui.estilo import TEXTO_FRACO
+from ui import estilo
 from ui.widgets.area_arrastar import AreaArrastar
 
 LARGURA_DO_CARTAO = 304
@@ -48,8 +48,8 @@ ALTURA_DO_CARTAO = 220
 ALTURA_DA_CAPA = 112
 ESPACO_ENTRE_CARTOES = 24
 
-LARANJA, LARANJA_FUNDO = "#ef9f27", "#faeeda"
-VERDE = "#1d9e75"
+# Etapa 1 do layout (temas): as cores dos cartões vêm do tema da vez
+# (ui/estilo.py), lidas na hora em que cada peça é estilizada.
 
 # O botao do cartao NAO usa o #primario da folha de estilo: aquele tem 13 px de
 # recheio e fonte 16, feito para o "Confirmar e processar" do rodape. Dentro de
@@ -183,7 +183,7 @@ class TelaInicio(QWidget):
                  else "Nenhum livro ainda. Arraste o primeiro PDF ali em cima "
                       "para começar.")
         recado = QLabel(texto)
-        recado.setStyleSheet(f"color: {TEXTO_FRACO}; padding: 14px;")
+        estilo.estilizar(recado, lambda: f"color: {estilo.TEXTO_FRACO}; padding: 14px;")
         return recado
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
@@ -330,8 +330,8 @@ class CartaoDeProjeto(QFrame):
         corpo.addWidget(self.rotulo_nome)
 
         detalhe = QLabel(f"{resumo.total_paginas} páginas · {resumo.data_amigavel}")
-        detalhe.setStyleSheet(
-            f"color: {TEXTO_FRACO}; font-size: 12px; background: transparent;")
+        estilo.estilizar(detalhe, lambda: (
+            f"color: {estilo.TEXTO_FRACO}; font-size: 12px; background: transparent;"))
         corpo.addWidget(detalhe)
 
         if self.perdido:
@@ -351,14 +351,15 @@ class CartaoDeProjeto(QFrame):
         capa = QLabel()
         capa.setFixedHeight(ALTURA_DA_CAPA)
         capa.setAlignment(Qt.AlignCenter)
-        capa.setStyleSheet(
-            f"background: {LARANJA_FUNDO if self.perdido else '#f1efe8'};")
+        perdido = self.perdido
+        estilo.estilizar(capa, lambda: (
+            f"background: {estilo.cor('aviso_f') if perdido else estilo.cor('tela')};"
+            f" color: {estilo.TEXTO_FRACO};"))
 
         caminho = projetos.garantir_miniatura(self.resumo)
         imagem = QPixmap(caminho) if caminho else QPixmap()
         if imagem.isNull():
             capa.setText("sem capa")
-            capa.setStyleSheet(capa.styleSheet() + f"color: {TEXTO_FRACO};")
         else:
             capa.setPixmap(imagem.scaled(
                 QSize(LARGURA_DO_CARTAO, ALTURA_DA_CAPA - 16),
@@ -378,10 +379,10 @@ class CartaoDeProjeto(QFrame):
         barra.setFixedHeight(6)
         barra.setRange(0, 100)
         barra.setValue(100 if pronto else int(self.resumo.progresso * 100))
-        cor = VERDE if pronto else "#378add"
-        barra.setStyleSheet(
-            "QProgressBar { background: #e6e4e0; border: none; border-radius: 3px; }"
-            f"QProgressBar::chunk {{ background: {cor}; border-radius: 3px; }}")
+        estilo.estilizar(barra, lambda: (
+            f"QProgressBar {{ background: {estilo.cor('sep')}; border: none; border-radius: 3px; }}"
+            f"QProgressBar::chunk {{ background: {estilo.cor('ok') if pronto else estilo.cor('azul')};"
+            " border-radius: 3px; }"))
         dentro.addWidget(barra)
         return caixa
 
@@ -392,23 +393,25 @@ class CartaoDeProjeto(QFrame):
         linha.setContentsMargins(0, 0, 0, 0)
 
         frase = QLabel(self.resumo.frase_do_progresso)
-        frase.setStyleSheet(
-            f"color: {'#0f6e56' if self.resumo.pdf_gerado else '#185fa5'}; "
-            "font-size: 12px; background: transparent;")
+        gerado = self.resumo.pdf_gerado
+        estilo.estilizar(frase, lambda: (
+            f"color: {estilo.cor('ok') if gerado else estilo.cor('link')}; "
+            "font-size: 12px; background: transparent;"))
         linha.addWidget(frase)
         linha.addStretch()
 
         if self.resumo.pdf_gerado:
             botao = QPushButton("abrir a pasta")
-            botao.setStyleSheet(BOTAO_DO_CARTAO.format(
-                fundo="#ffffff", cor="#5f5e5a", borda="1px solid #d3d1c7",
-                aceso="#f7f5f2"))
+            estilo.estilizar(botao, lambda: BOTAO_DO_CARTAO.format(
+                fundo=estilo.cor("botao"), cor=estilo.cor("texto"),
+                borda=f"1px solid {estilo.cor('sep')}", aceso=estilo.cor("botao_h")))
             botao.clicked.connect(
                 lambda: historico.abrir_pasta(self.resumo.caminho_saida))
         else:
             botao = QPushButton("continuar")
-            botao.setStyleSheet(BOTAO_DO_CARTAO.format(
-                fundo="#378add", cor="#ffffff", borda="none", aceso="#2f76bd"))
+            estilo.estilizar(botao, lambda: BOTAO_DO_CARTAO.format(
+                fundo=estilo.cor("azul"), cor="#ffffff", borda="none",
+                aceso=estilo.cor("azul_e")))
             botao.clicked.connect(lambda: self.tela.pedir_para_continuar(self.resumo))
         botao.setFixedHeight(26)
         botao.setCursor(Qt.PointingHandCursor)
@@ -424,15 +427,15 @@ class CartaoDeProjeto(QFrame):
         dentro.setSpacing(2)
 
         aviso = QLabel("o PDF saiu do lugar")
-        aviso.setStyleSheet("color: #8a5a10; font-size: 12px;")
+        aviso.setObjectName("avisoFraco")   # cor do tema (ui/estilo.py)
         dentro.addWidget(aviso)
 
         procurar = QPushButton("procurar de novo")
         procurar.setFlat(True)
         procurar.setCursor(Qt.PointingHandCursor)
-        procurar.setStyleSheet(
-            "QPushButton { border: none; color: #185fa5; font-size: 12px; "
-            "text-align: left; padding: 0; }")
+        estilo.estilizar(procurar, lambda: (
+            f"QPushButton {{ border: none; color: {estilo.cor('link')}; font-size: 12px; "
+            "text-align: left; padding: 0; background: transparent; }"))
         procurar.clicked.connect(
             lambda: self.tela.procurar_o_livro_a_mao(self.resumo))
         dentro.addWidget(procurar)
@@ -445,10 +448,10 @@ class CartaoDeProjeto(QFrame):
         # O seletor precisa ser QFrame#cartao e nao so o widget: sem ele, o Qt
         # aplica o fundo aos FILHOS tambem, e cada rotulo do cartao ganha uma
         # caixinha branca atras - foi o que apareceu no primeiro print.
-        self.setStyleSheet(
-            f"QFrame#cartao {{ border: 2px solid {LARANJA}; "
-            f"background: {LARANJA_FUNDO}; border-radius: 10px; }}"
-            "QLabel, QPushButton { background: transparent; }")
+        estilo.estilizar(self, lambda: (
+            f"QFrame#cartao {{ border: 2px solid {estilo.cor('aviso')}; "
+            f"background: {estilo.cor('aviso_f')}; border-radius: 10px; }}"
+            "QLabel, QPushButton { background: transparent; }"))
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         super().resizeEvent(evento)

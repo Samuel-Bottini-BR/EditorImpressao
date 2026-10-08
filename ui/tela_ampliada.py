@@ -43,7 +43,7 @@ from core.filtros import (
     filtros_do_livro,
 )
 from registro import registrar_erro
-from ui.estilo import FOLHA_DE_ESTILO, TEXTO_FRACO
+from ui import estilo
 from ui.widgets.visualizador import (
     MODO_CORTE,
     MODO_NENHUM,
@@ -84,7 +84,7 @@ class TelaAmpliada(QDialog):
             if conferir.projeto is not None else list(ORDEM_DOS_FILTROS)
 
         self.setWindowTitle("Ver de perto")
-        self.setStyleSheet(FOLHA_DE_ESTILO)
+        estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
         self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         self.resize(1280, 860)
 
@@ -139,10 +139,10 @@ class TelaAmpliada(QDialog):
 
         self.rotulo_filtro = QLabel("")
         self.rotulo_filtro.setObjectName("contadorAlerta")
-        self.rotulo_filtro.setStyleSheet(
-            "background: #dbeafe; color: #1d4ed8; border: 1px solid #2563eb;"
-            " border-radius: 8px; padding: 4px 12px; font-weight: 600;"
-        )
+        estilo.estilizar(self.rotulo_filtro, lambda: (
+            f"background: {estilo.cor('sel')}; color: {estilo.cor('forte')};"
+            f" border: 1px solid {estilo.cor('azul')};"
+            " border-radius: 8px; padding: 4px 12px; font-weight: 600;"))
         barra.addWidget(self.rotulo_filtro)
 
         barra.addStretch()
@@ -156,7 +156,7 @@ class TelaAmpliada(QDialog):
         self.rotulo_zoom = QLabel("100%")
         self.rotulo_zoom.setMinimumWidth(56)
         self.rotulo_zoom.setAlignment(Qt.AlignCenter)
-        self.rotulo_zoom.setStyleSheet(f"color: {TEXTO_FRACO};")
+        estilo.estilizar(self.rotulo_zoom, lambda: f"color: {estilo.TEXTO_FRACO};")
         barra.addWidget(self.rotulo_zoom)
 
         botao_mais = QPushButton("+")

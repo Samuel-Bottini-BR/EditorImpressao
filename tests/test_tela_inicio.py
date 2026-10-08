@@ -152,7 +152,9 @@ def test_cartao_de_pdf_perdido_fica_laranja_e_explica(app, raiz, tmp_path):
 
     cartao = CartaoDeProjeto(resumo, TelaInicio())
     assert cartao.perdido
-    assert "ef9f27" in cartao.styleSheet().lower(), "o cartão perdido não ficou laranja"
+    # Etapa 1 do layout (temas): o laranja é o de aviso do tema da vez
+    from ui import estilo
+    assert estilo.cor("aviso").lower() in cartao.styleSheet().lower(),         "o cartão perdido não ficou laranja"
 
     textos = _todos_os_textos(cartao)
     assert any("saiu do lugar" in t for t in textos)

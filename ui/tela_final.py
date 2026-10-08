@@ -31,7 +31,7 @@ from core.cadernos import (
     instrucoes_de_impressao,
 )
 from modelos import Projeto
-from ui.estilo import TEXTO_FRACO, VERDE, VERMELHO
+from ui import estilo
 
 
 class TelaProgresso(QWidget):
@@ -242,10 +242,9 @@ class TelaFinal(QWidget):
                 num_paginas, projeto.paginas_por_caderno)
             aviso = QLabel(recado)
             aviso.setWordWrap(True)
-            aviso.setStyleSheet(
-                f"color: {VERDE if certo else VERMELHO}; "
-                "margin-top: 8px;"
-            )
+            estilo.estilizar(aviso, lambda certo=certo: (
+                f"color: {estilo.VERDE if certo else estilo.VERMELHO}; "
+                "margin-top: 8px;"))
             self.passos.addWidget(aviso)
 
 
@@ -260,9 +259,9 @@ class _Certo(QWidget):
         """Desenha o circulo e o visto a mao, com QPainter - nunca emoji (regra 3)."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
-        pintor.setPen(QPen(QColor(VERDE), 4))
+        pintor.setPen(QPen(QColor(estilo.VERDE), 4))
         pintor.drawEllipse(4, 4, 68, 68)
-        caneta = QPen(QColor(VERDE), 6)
+        caneta = QPen(QColor(estilo.VERDE), 6)
         caneta.setCapStyle(Qt.RoundCap)
         pintor.setPen(caneta)
         pintor.drawLine(23, 39, 34, 50)

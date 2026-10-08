@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ui.estilo import TEXTO_FRACO
+from ui import estilo
 
 
 class TelaConfiguracoes(QDialog):
@@ -47,7 +47,7 @@ class TelaConfiguracoes(QDialog):
         explicacao = QLabel(
             "Clique numa tecla e aperte a combinação que você quer usar no lugar."
         )
-        explicacao.setStyleSheet(f"color: {TEXTO_FRACO};")
+        estilo.estilizar(explicacao, lambda: f"color: {estilo.TEXTO_FRACO};")
         explicacao.setWordWrap(True)
         raiz.addWidget(explicacao)
 
@@ -71,7 +71,7 @@ class TelaConfiguracoes(QDialog):
             self._campos[atalho.chave] = campo
 
         self.aviso = QLabel("")
-        self.aviso.setStyleSheet("color: #b91c1c;")
+        self.aviso.setObjectName("avisoErro")   # cor do tema (ui/estilo.py)
         self.aviso.setWordWrap(True)
         raiz.addWidget(self.aviso)
 

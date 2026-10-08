@@ -102,7 +102,8 @@ from core.filtros import (
 )
 from core.pipeline import resumo_em_portugues
 from modelos import Projeto
-from ui.estilo import TEXTO_FRACO, estilo_da_caixinha_com_quadrado
+from ui import estilo
+from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.escolhas_do_misto import EscolhasDoMisto
 from ui.widgets.folhear_pdf import FolhearPDF
 
@@ -255,7 +256,7 @@ class TelaOpcoes(QWidget):
         direita = QVBoxLayout()
         direita.setSpacing(6)
         rotulo_livro = QLabel("O livro, como está agora")
-        rotulo_livro.setStyleSheet(f"color: {TEXTO_FRACO};")
+        estilo.estilizar(rotulo_livro, lambda: f"color: {estilo.TEXTO_FRACO};")
         direita.addWidget(rotulo_livro)
         self.folhear = FolhearPDF()
         direita.addWidget(self.folhear, 1)
@@ -286,7 +287,7 @@ class TelaOpcoes(QWidget):
         caixa.setChecked(True)
         bloco.addWidget(caixa)
         rotulo = QLabel("        " + explicacao)
-        rotulo.setStyleSheet(f"color: {TEXTO_FRACO};")
+        estilo.estilizar(rotulo, lambda: f"color: {estilo.TEXTO_FRACO};")
         bloco.addWidget(rotulo)
         destino.addLayout(bloco)
         return caixa
@@ -318,7 +319,7 @@ class TelaOpcoes(QWidget):
             grade.addWidget(radio, i // 2, (i % 2) * 2)
 
             rotulo = QLabel(explicacao)
-            rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+            estilo.estilizar(rotulo, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
             # quebra a linha numa janela estreita (antes saia cortada: r02)
             rotulo.setWordWrap(True)
             grade.addWidget(rotulo, i // 2, (i % 2) * 2 + 1)
@@ -341,16 +342,18 @@ class TelaOpcoes(QWidget):
         # apagada (cinza) por inteiro quando "So as letras" esta marcada (P5):
         # a folha de estilo do programa pinta todo texto da mesma cor, entao o
         # cinza do texto desabilitado tem de ser dito aqui
-        self.cx_decoracao_pb.setStyleSheet(estilo_da_caixinha_com_quadrado(14)
-                                           + " QCheckBox:disabled { color: #9ca3af; }")
+        estilo.estilizar(self.cx_decoracao_pb, lambda: (
+            estilo_da_caixinha_com_quadrado(14)
+            + f" QCheckBox:disabled {{ color: {estilo.cor('desligado')}; }}"))
         self.cx_decoracao_pb.setChecked(False)
         self.cx_decoracao_pb.toggled.connect(self._mudou)
         frase = QLabel("desmarcada, a moldura dourada e a iluminura ficam com a cor do "
                        "original; marcada, saem só com o traço em preto")
         frase.setWordWrap(True)
         frase.setContentsMargins(28, 0, 0, 2)
-        frase.setStyleSheet(f"QLabel {{ color: {TEXTO_FRACO}; font-size: 12px; }}"
-                            " QLabel:disabled { color: #c4c8ce; }")
+        estilo.estilizar(frase, lambda: (
+            f"QLabel {{ color: {estilo.TEXTO_FRACO}; font-size: 12px; }}"
+            f" QLabel:disabled {{ color: {estilo.cor('desligado')}; }}"))
         self._frase_decoracao_pb = frase
         bloco = QVBoxLayout()
         bloco.setContentsMargins(0, 6, 0, 0)
@@ -429,7 +432,7 @@ class TelaOpcoes(QWidget):
 
         def caixa(texto: str, explicacao: str, destino: QVBoxLayout, marcada: bool) -> QCheckBox:
             c = QCheckBox(texto)
-            c.setStyleSheet(estilo_da_caixinha_com_quadrado(14))   # com quadrado (ui/estilo.py)
+            estilo.estilizar(c, lambda: estilo_da_caixinha_com_quadrado(14))   # com quadrado (ui/estilo.py)
             c.setChecked(marcada)
             destino.addWidget(c)
             destino.addWidget(self._frase(explicacao))
@@ -478,9 +481,9 @@ class TelaOpcoes(QWidget):
         self.deslizante_sensibilidade.setMaximumWidth(260)
         # desabilitado (sem "Este livro tem fotos") fica cinza: a folha de
         # estilo do programa pinta o deslizante de azul sempre
-        self.deslizante_sensibilidade.setStyleSheet(
-            "QSlider::sub-page:horizontal:disabled { background: #d1d5db; }"
-            "QSlider::handle:horizontal:disabled { border-color: #d1d5db; }")
+        estilo.estilizar(self.deslizante_sensibilidade, lambda: (
+            f"QSlider::sub-page:horizontal:disabled {{ background: {estilo.cor('sep')}; }}"
+            f"QSlider::handle:horizontal:disabled {{ border-color: {estilo.cor('sep')}; }}"))
         linha.addWidget(self.deslizante_sensibilidade, 1)
         self.valor_sensibilidade = QLabel("100")
         self.valor_sensibilidade.setMinimumWidth(32)
@@ -516,7 +519,7 @@ class TelaOpcoes(QWidget):
         # o recuo pela margem do widget (e nao pela folha de estilo): assim o
         # Qt conta o recuo ao quebrar a linha, e a frase nunca sai cortada
         rotulo.setContentsMargins(28, 0, 0, 2)
-        rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        estilo.estilizar(rotulo, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         self._frases_da_gravura.append(rotulo)
         return rotulo
 
@@ -774,9 +777,9 @@ class TelaOpcoes(QWidget):
         for controle in (self.rotulo_sensibilidade, self.deslizante_sensibilidade,
                          self.valor_sensibilidade, self.explicacao_sensibilidade):
             controle.setEnabled(com_fotos)
-        cor = "" if com_fotos else f"color: {TEXTO_FRACO};"
-        self.rotulo_sensibilidade.setStyleSheet(cor)
-        self.valor_sensibilidade.setStyleSheet(cor)
+        for rotulo in (self.rotulo_sensibilidade, self.valor_sensibilidade):
+            estilo.estilizar(rotulo, (lambda: "") if com_fotos
+                             else (lambda: f"color: {estilo.TEXTO_FRACO};"))
         mostrar_fundo = TIRAR_FUNDO in filtros_do_livro(self.projeto)
         self.radios_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
@@ -791,5 +794,5 @@ def _separador() -> QFrame:
     """Uma linha horizontal fina, para separar os blocos de opcao."""
     linha = QFrame()
     linha.setFrameShape(QFrame.HLine)
-    linha.setStyleSheet("color: #e5e7eb; margin: 4px 0;")
+    estilo.estilizar(linha, lambda: f"color: {estilo.cor('linha')}; margin: 4px 0;")
     return linha

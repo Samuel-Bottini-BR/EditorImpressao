@@ -30,7 +30,7 @@ from core.folha import (  # noqa: F401 - reexportados, ver comentario abaixo
     recorte_cabe_na_pagina,
     recorte_para_tamanho_cm,
 )
-from ui.estilo import AZUL, LARANJA, TEXTO_FRACO, VERDE
+from ui import estilo
 
 # Mesmo tom da área de marcar (ui/widgets/editor_selecao.py) - um cinza-creme
 # claro, para sempre sobrar uma faixa visível ao redor da página, mesmo no
@@ -430,10 +430,12 @@ class Visualizador(QWidget):
     def paintEvent(self, evento: QPaintEvent) -> None:  # noqa: N802 (nome do Qt)
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
-        pintor.fillRect(self.rect(), FUNDO_DA_AREA)
+        # Etapa 1 do layout (temas): o fundo atrás da página é o do tema da
+        # vez (FUNDO_DA_AREA fica só para quem ainda o importa)
+        pintor.fillRect(self.rect(), QColor(estilo.cor("tela")))
 
         if self._pixmap is None:
-            pintor.setPen(QColor(TEXTO_FRACO))
+            pintor.setPen(QColor(estilo.TEXTO_FRACO))
             texto = "Preparando a prévia..." if self.carregando else "Sem prévia"
             pintor.drawText(self.rect(), Qt.AlignCenter, texto)
             return
@@ -448,7 +450,7 @@ class Visualizador(QWidget):
         # direto no retangulo e deixamos o Qt cuidar do recorte.
         pintor.setRenderHint(QPainter.SmoothPixmapTransform, self.zoom <= 4.0)
         pintor.drawPixmap(self._area, self._pixmap)
-        pintor.setPen(QPen(QColor("#e5e7eb"), 1))
+        pintor.setPen(QPen(QColor(estilo.cor("linha")), 1))
         pintor.drawRect(self._area.adjusted(0, 0, -1, -1))
 
         if self.carregando:
@@ -480,12 +482,12 @@ class Visualizador(QWidget):
     def _desenhar_corte(self, pintor: QPainter) -> None:
         x = self._area.left() + int(self.posicao_corte * self._area.width())
 
-        caneta = QPen(QColor(AZUL), 3, Qt.DashLine)
+        caneta = QPen(QColor(estilo.AZUL), 3, Qt.DashLine)
         pintor.setPen(caneta)
         pintor.drawLine(x, self._area.top(), x, self._area.bottom())
 
         # pega larga no topo, para o usuario saber que da para arrastar
-        pintor.setBrush(QColor(AZUL))
+        pintor.setBrush(QColor(estilo.AZUL))
         pintor.setPen(Qt.NoPen)
         pintor.drawRoundedRect(x - 26, self._area.top() - 2, 52, 20, 5, 5)
         pintor.setPen(QColor("white"))
@@ -522,10 +524,10 @@ class Visualizador(QWidget):
         pintor.drawRect(QRect(r.right(), r.top(), area.right() - r.right(), r.height()))
 
         pintor.setBrush(Qt.NoBrush)
-        pintor.setPen(QPen(QColor(VERDE), 2))
+        pintor.setPen(QPen(QColor(estilo.VERDE), 2))
         pintor.drawRect(r)
 
-        pintor.setBrush(QColor(VERDE))
+        pintor.setBrush(QColor(estilo.VERDE))
         pintor.setPen(Qt.NoPen)
         for ponto in self._alcas(r).values():
             pintor.drawRoundedRect(
@@ -571,14 +573,14 @@ class Visualizador(QWidget):
 
     def _desenhar_guias(self, pintor: QPainter) -> None:
         """Linhas horizontais para o usuario comparar com as linhas de texto."""
-        pintor.setPen(QPen(QColor(LARANJA), 1, Qt.DashLine))
+        pintor.setPen(QPen(QColor(estilo.LARANJA), 1, Qt.DashLine))
         passo = max(30, self._area.height() // 10)
         y = self._area.top() + passo
         while y < self._area.bottom():
             pintor.drawLine(self._area.left(), y, self._area.right(), y)
             y += passo
 
-        pintor.setPen(QColor(TEXTO_FRACO))
+        pintor.setPen(QColor(estilo.TEXTO_FRACO))
         pintor.drawText(
             QRect(self._area.left() + 8, self._area.top() + 6, 240, 22),
             Qt.AlignLeft | Qt.AlignVCenter,
@@ -597,10 +599,10 @@ class Visualizador(QWidget):
         r = self._area_do_conteudo()
 
         pintor.setBrush(Qt.NoBrush)
-        pintor.setPen(QPen(QColor(AZUL), 2))
+        pintor.setPen(QPen(QColor(estilo.AZUL), 2))
         pintor.drawRect(r)
 
-        pintor.setBrush(QColor(AZUL))
+        pintor.setBrush(QColor(estilo.AZUL))
         pintor.setPen(Qt.NoPen)
         for nome, ponto in self._alcas(r).items():
             if nome not in ("no", "ne", "so", "se"):
@@ -612,7 +614,7 @@ class Visualizador(QWidget):
 
         if not self._guias_ativas_agora:
             return
-        caneta = QPen(QColor(LARANJA), 1, Qt.DashLine)
+        caneta = QPen(QColor(estilo.LARANJA), 1, Qt.DashLine)
         pintor.setPen(caneta)
         area = self._area
         if GUIA_CENTRO_H in self._guias_ativas_agora:

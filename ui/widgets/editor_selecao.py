@@ -414,7 +414,9 @@ class EditorSelecao(QWidget):
         """Desenha o fundo, a pagina, a marcacao ja feita e o que esta sendo
         desenhado no momento (arrasto em andamento, ou poligono ponto a ponto)."""
         pintor = QPainter(self)
-        pintor.fillRect(self.rect(), self.FUNDO_DA_AREA)
+        # Etapa 1 do layout (temas): o fundo é o do tema da vez, lido na hora
+        from ui import estilo
+        pintor.fillRect(self.rect(), QColor(estilo.cor("tela")))
         if self._pixmap is None or self._pixmap.isNull():
             return
 
