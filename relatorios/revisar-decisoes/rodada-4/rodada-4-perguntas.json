@@ -1,0 +1,907 @@
+[
+ {
+  "id": "rv4-resumo",
+  "ordem": 1,
+  "parte": "Rodada 4 · a regra ajustada",
+  "pergunta": "A regra ajustada pelas suas respostas da rodada 3: fica assim?",
+  "explicacao": "Refiz tudo com o programa de hoje, que já tem o conserto do desenho claro (entrou em 06/10). Mudanças na regra: (1) 'desenho apagado' agora é medido no resultado de verdade, e pega também uma letra grande que some inteira (a T vermelha do Antiphonal 46); (4) NOVO: texto que sai falhado nos dois jeitos (Camões 27, Camões 104, Egenloff 3); (5) NOVO: página sem conteúdo, em branco ou só com a mancha do verso (Egenloff 12, Rariora 8). Nas 89 páginas (as 59 do estudo e as 30 da rodada 3): hoje o programa manda 55 e acerta 52; a regra da rodada 3 manda 15 e acerta 72; a regra ajustada manda 21 e acerta 78. Nas 30 da rodada 3: de 19 para 25 certas. Ainda escapam 5: Antiphonal 6 e 31 (pautas vermelhas com falhas pequenas), Camões 9 (a letra A enfeitada sai lavada nos dois jeitos), Camões 66 e Egenloff 47 (não sei o motivo do seu 'Não concordo': perguntas abaixo). Vão sem precisar 6, todas de leve (beirada escura, figura que passa um pouco da gravura). Ressalva: as contas novas foram acertadas em poucas páginas; o texto falhado pega, no Egenloff 3, uma linha vermelha e um carimbo da biblioteca.",
+  "exemplos": [
+   {
+    "src": "img/resumo-regra4.jpg",
+    "legenda": "A regra ajustada e as contas nas 89 páginas."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "fica",
+    "nome": "Fica assim",
+    "texto": "Pode seguir com a regra ajustada.",
+    "imgs": []
+   },
+   {
+    "id": "quase",
+    "nome": "Quase: quero mudar",
+    "texto": "Diga no comentário o que muda.",
+    "imgs": []
+   },
+   {
+    "id": "nao",
+    "nome": "Não",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-conserto-desenho",
+  "ordem": 2,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Para cada erro que manda uma página para 'Para revisar': o jeito mais rápido e o manual. Como você quer o 'mais rápido'?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fiz um cartão para cada tipo de erro (os 6 cartões seguintes), cada um com o jeito mais rápido de resolver, o jeito manual e uma imagem. Em quase todos o mais rápido é UM clique numa escolha que já existe (trocar o jeito do 'Só as letras', a força do preto, o corte). A pergunta aqui é onde fica esse clique: (a) um botão dentro do próprio aviso do 'Para revisar' (ex.: 'Guardar tudo nesta página'), o Kaique olha e clica; (b) o programa já faz o jeito rápido sozinho e só avisa o que fez (o Kaique desfaz se não gostar); (c) sem botão novo: o aviso diz o que fazer e o Kaique faz na aba certa.",
+  "exemplos": [
+   {
+    "src": "img/c1-desenho-antiphonal046.jpg",
+    "legenda": "Exemplo do jeito rápido: Antiphonal 46 com 'Guardar tudo'."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "botao",
+    "nome": "(a) Botão no aviso",
+    "texto": "O aviso traz o botão do jeito rápido; o Kaique decide.",
+    "imgs": []
+   },
+   {
+    "id": "sozinho",
+    "nome": "(b) O programa faz sozinho",
+    "texto": "Faz o jeito rápido e avisa; dá para desfazer.",
+    "imgs": []
+   },
+   {
+    "id": "so-aviso",
+    "nome": "(c) Só o aviso",
+    "texto": "O aviso diz o que fazer; o Kaique faz na aba.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "Quero mais opções de como vai ser concertado esses erros, na verdade, temos que pensar em cada hipotese que pode acontecer dentro do arquivo que o programa vá pedir para fazer revisão, como resolver da forma mais rapida possivel, e qual seria a forma manual de resolver."
+   }
+  ]
+ },
+ {
+  "id": "rv4-erro-1-desenho",
+  "ordem": 3,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Erro 1, o jeito de fábrica apagou parte de um desenho (letra grande, desenho claro): o rápido e o manual.",
+  "explicacao": "Quando acontece: um desenho que o programa não achou como gravura e que é mais claro que as letras (a letra T vermelha do Antiphonal 46). O conserto de 06/10 já trouxe de volta os desenhos colados em tinta escura (Palatino 76, Siebmacher 7, Rariora 169); sobra o desenho solto, como a T. JEITO MAIS RÁPIDO: trocar a página para 'Guardar tudo' (aba Filtro, um clique): tudo que não é gravura sai como no Preto e branco de sempre, e a letra volta. JEITO MANUAL: aba Marcar, 'gravura ou foto' (fica como no original) ou 'letra e traço' (fica em preto), num retângulo em volta da letra.",
+  "exemplos": [
+   {
+    "src": "img/c1-desenho-antiphonal046.jpg",
+    "legenda": "Antiphonal 46: o jeito de fábrica, 'Guardar tudo' e o Preto e branco."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "ok",
+    "nome": "Os dois jeitos estão bons",
+    "texto": "Pode seguir assim.",
+    "imgs": []
+   },
+   {
+    "id": "guardar-tudo-sozinho",
+    "nome": "Trocar sozinho",
+    "texto": "Quando o programa perceber que apagou desenho, ele mesmo troca a página para 'Guardar tudo' e avisa.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-erro-2-gravura",
+  "ordem": 4,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Erro 2, mancha que virou 'gravura' ou figura que passou da gravura achada: o rápido e o manual.",
+  "explicacao": "Quando acontece: o programa marca como gravura um remendo ou a mancha do verso (Marial 454, Rariora 8), ou a gravura achada é menor ou maior que a figura (Camões 104, Antiphon 260). JEITO MAIS RÁPIDO (planejado, item 2.18 do plano, com o seu pedido do 'delineado'): o programa desenha um contorno em volta de cada área achada, e o Kaique clica nela para manter, apagar (deixar branco) ou tratar como texto. Ver a pergunta do delineado, mais abaixo. JEITO MANUAL (já existe hoje): aba Marcar, 'gravura ou foto', botão 'tirar', e um retângulo sobre a mancha: ela vai para o branco. Para a figura maior que a área: 'somar' em volta do pedaço que faltou.",
+  "exemplos": [
+   {
+    "src": "img/marial454-tirar.jpg",
+    "legenda": "Marial 454: o jeito manual que já existe (remendo 'tirado' da gravura)."
+   },
+   {
+    "src": "img/gravura-delineado-1.jpg",
+    "legenda": "Como ficaria o delineado (jeito rápido planejado)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "ok",
+    "nome": "Os dois jeitos estão bons",
+    "texto": "Pode seguir assim.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-erro-3-faixa",
+  "ordem": 5,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Erro 3, faixa escura na beirada (fundo do scanner, sombra da beirada): o rápido e o manual.",
+  "explicacao": "Quando acontece: sobra a borda preta do scanner ou a sombra da beirada da folha (Matemática 32, Egenloff, Camões). Se ela está em quase todas as páginas do livro (70% ou mais), vira um aviso só, no livro. JEITO MAIS RÁPIDO (a decidir na pergunta da faixa, mais abaixo): o programa sugere um corte e o Kaique aceita com um clique, nesta página ou em todas. JEITO MANUAL (já existe): aba Bordas, arrastar a linha do corte; ou aba Marcar, 'papel', um retângulo sobre a faixa, que fica branca.",
+  "exemplos": [
+   {
+    "src": "img/faixa-cortes.jpg",
+    "legenda": "Onde o nosso corte e o do ScanTailor cortam, e como sai hoje."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "ok",
+    "nome": "Os dois jeitos estão bons",
+    "texto": "Pode seguir assim.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-erro-4-texto-falhado",
+  "ordem": 6,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Erro 4 (NOVO), texto que sai falhado nos dois jeitos (letra clara, gasta ou vermelha): o rápido e o manual.",
+  "explicacao": "Quando acontece: a letra é clara demais e o preto e branco perde os traços finos ('que' vira 'qne', 'DE' vira 'DI'). Acontece igual no jeito de fábrica e no Preto e branco de sempre (Camões 27, Camões 104, Egenloff 3). JEITO MAIS RÁPIDO: puxar a 'Força do preto' para o lado do escuro (aba Filtro). Testei: no Camões 27 e no Camões 104 as letras se fecham (85 em vez de 50). No Egenloff 3 (texto vermelho) NÃO resolve, nem a 85. JEITO MANUAL: para o texto colorido, marcar a linha na aba Marcar e pôr nela o 'Melhorar' ou o 'Mágico pro' ('só neste pedaço'), que guardam a cor; ou a zona 'Tinta com a cor original, papel branco' (P11, decidida, ainda não feita).",
+  "exemplos": [
+   {
+    "src": "img/c4-texto-camoes027.jpg",
+    "legenda": "Camões 27: o texto nos dois jeitos e com a força do preto mais forte."
+   },
+   {
+    "src": "img/p-egenloff-003.jpg",
+    "legenda": "Egenloff 3: o texto vermelho, que a força do preto não conserta."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "ok",
+    "nome": "Os dois jeitos estão bons",
+    "texto": "Pode seguir assim.",
+    "imgs": []
+   },
+   {
+    "id": "forca-sozinho",
+    "nome": "Força sozinha",
+    "texto": "Quando o programa perceber texto falhado, ele mesmo escurece a força nessa página e avisa.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-erro-5-sem-conteudo",
+  "ordem": 7,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Erro 5 (NOVO), página sem conteúdo (em branco, ou só a mancha do verso): o rápido e o manual.",
+  "explicacao": "Quando acontece: folha de guarda, verso em branco de uma prancha, folha de rosto vista por trás (Egenloff 12, Rariora 8). JEITO MAIS RÁPIDO (depende da sua decisão sobre a página branca, que está na página de escolhas): um botão 'trocar por página branca', que mantém a página no lugar e não estraga a encadernação. JEITO MANUAL (já existe hoje): aba Marcar, 'papel', e um retângulo na folha inteira: a página sai branca. Cuidado com o que existe hoje: o aviso 'Parece em branco' oferece APAGAR a página, e ele errou na Gladstone 18, que tem um título (pergunta própria, mais abaixo).",
+  "exemplos": [
+   {
+    "src": "img/c5-sem-conteudo.jpg",
+    "legenda": "Egenloff 12, Rariora 8 e Gladstone 18: original, como sai e o que cada regra faz."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "ok",
+    "nome": "Os dois jeitos estão bons",
+    "texto": "Pode seguir assim.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-erro-6-so-texto",
+  "ordem": 8,
+  "parte": "Rodada 4 · cada erro: o jeito mais rápido e o manual",
+  "pergunta": "Erro 6, o que some no 'Só o texto achado' (Guardar só o texto): o rápido e o manual.",
+  "explicacao": "Quando acontece: nesse jeito, tudo que não é linha de texto vai para o branco, e às vezes vai junto o que você queria (a música do Graduale 222). JEITO MAIS RÁPIDO: trocar a página para 'Guardar a tinta forte' ou 'Guardar tudo' (aba Filtro, um clique). JEITO MANUAL: aba Marcar, 'gravura ou foto' ou 'letra e traço' em volta do que deve ficar.",
+  "exemplos": [
+   {
+    "src": "img/so-texto-graduale222.jpg",
+    "legenda": "Graduale 222: no 'Só o texto achado' a música some."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "ok",
+    "nome": "Os dois jeitos estão bons",
+    "texto": "Pode seguir assim.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-conserto-gravura",
+  "ordem": 9,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "O delineado em volta das áreas achadas como gravura: onde ele deve aparecer?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fiz como ficaria: uma linha tracejada em volta de cada área que o programa achou como gravura, com um número. Clicando no número, o Kaique escolhe: manter, apagar (deixar branco) ou tratar como texto. Pintei de LARANJA as áreas suspeitas (só mancha, sem desenho dentro; ou tiras finas na beirada) e de VERDE as que parecem gravura. TESTE em 8 livros (as 89 páginas): o programa achou gravura em 29 páginas (39 áreas). A conta de 'suspeita' marcou 6 páginas: acertou 4 (o remendo e a mancha do Marial 454, a beirada do Camões 104, a sombra da Matemática 72, a página só de mancha da Rariora 8) e errou 2 (a moldura dourada da Horas 16 e 27, que é certa). Não pega as áreas que engolem pautas de música (Antiphon 260, Graduale 269) nem a legenda do Pesel 21: o contorno mostra, mas fica verde. Por isso o delineado ajuda o Kaique a VER; a decisão continua sendo dele.",
+  "exemplos": [
+   {
+    "src": "img/gravura-delineado-1.jpg",
+    "legenda": "Marial 454, Camões 104, Antiphon 260 e Rariora 8: como ficaria o delineado."
+   },
+   {
+    "src": "img/gravura-delineado-2.jpg",
+    "legenda": "Pesel 21, Graduale 269, Rariora 155 e Opus Majus 20: mais casos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "todas",
+    "nome": "Em todas as áreas",
+    "texto": "Contorno em toda área achada, laranja nas suspeitas.",
+    "imgs": []
+   },
+   {
+    "id": "suspeitas",
+    "nome": "Só nas suspeitas",
+    "texto": "Contorno só nas áreas laranja.",
+    "imgs": []
+   },
+   {
+    "id": "para-revisar",
+    "nome": "Só nas páginas do 'Para revisar'",
+    "texto": "Contorno só quando a página foi para a lista por causa da gravura.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "Entendi, mas o que eu quero, é que apareça um delineado em volta, como um selecionar em volta da parte que vai ser escolhida se vai ser apagada ou não para eu decidir, ai nesse caso, certamente é um erro, e seria apagado, precisamos fazer testes para entender melhor isso e com varios livros diferentes e casos diferentes."
+   }
+  ]
+ },
+ {
+  "id": "rv4-conserto-faixa",
+  "ordem": 10,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "A borda preta do scanner: como o programa deve cortar?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Hoje: o NOSSO programa já tem um corte de bordas ligado de fábrica ('Cortar bordas'). Ele corta pela tinta e para no escuro do scanner; tira a borda preta quando ela está separada do conteúdo (na Matemática 32 tirou o lado direito), mas NÃO tira a moldura preta do Egenloff nem as linhas pretas da beirada do Camões. O ScanTailor tem uma 'caixa da página' que procura a página dentro da borda preta (é o item 2.13 do plano, a sua decisão G7: uma opção, desligada de fábrica). Ela ainda NÃO está no programa; rodei o código dele num programa de teste: na Matemática 32 tira também a faixa de baixo, mas no Egenloff e no Camões também não tira a moldura. Então: hoje nenhum dos dois resolve sozinho esses livros; dá para fazer, juntando a caixa do ScanTailor com o aviso. A proposta: quando sobra faixa, o programa mostra o corte que sugere e o Kaique aceita ou não, nesta página ou em todas.",
+  "exemplos": [
+   {
+    "src": "img/faixa-cortes.jpg",
+    "legenda": "Egenloff 3, Matemática 32 e Camões 66: onde cada um corta, e como sai hoje."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sugere",
+    "nome": "O programa sugere, o Kaique aceita",
+    "texto": "Mostra o corte sugerido; botão 'aceitar o corte' nesta página ou em todas.",
+    "imgs": []
+   },
+   {
+    "id": "sozinho",
+    "nome": "Corta sozinho e avisa",
+    "texto": "Corta sem perguntar; o aviso diz onde cortou e dá para desfazer.",
+    "imgs": []
+   },
+   {
+    "id": "pintar",
+    "nome": "Pintar de branco, sem cortar",
+    "texto": "A faixa fica branca (item 2.14), o tamanho da página não muda.",
+    "imgs": []
+   },
+   {
+    "id": "manual",
+    "nome": "Deixar como hoje",
+    "texto": "O Kaique corta à mão na aba Bordas.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "o programa consegue identificar essas bordas pretas sobrando hoje? para que seja cortado automaticamente, no caso o programa avisa e o kaique diz se vai ou não aceitar? o scantailor faz isso hoje? ou o nosso programa, se não faz deveriamos poder fazer."
+   }
+  ]
+ },
+ {
+  "id": "rv4-aviso-so-texto",
+  "ordem": 11,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "Um jeito de apagar todos os avisos de uma vez: qual?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Sim. Proposta: no painel 'Para revisar', na aba 'Por motivo' (que você já escolheu no layout), um botão 'está bom assim: todas' que marca como vistas, de uma vez, todas as páginas daquele motivo (A) ou todas da lista (B). O botão não muda nada nas páginas: só tira da lista. Outra forma (C): uma caixinha 'não avisar mais isso neste livro', que além de limpar a lista não deixa o aviso voltar quando o Kaique mexe nas páginas. A imagem é um desenho da proposta, não a tela de verdade.",
+  "exemplos": [
+   {
+    "src": "img/aviso-todos.jpg",
+    "legenda": "Desenho da proposta: um botão por motivo (A) ou um botão para tudo (B)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "a",
+    "nome": "(A) Um botão por motivo",
+    "texto": "Marca como vistas todas as páginas daquele motivo.",
+    "imgs": []
+   },
+   {
+    "id": "b",
+    "nome": "(B) Um botão para tudo",
+    "texto": "Marca como vistas todas as páginas da lista.",
+    "imgs": []
+   },
+   {
+    "id": "a-b",
+    "nome": "Os dois",
+    "texto": "Um por motivo e um para tudo.",
+    "imgs": []
+   },
+   {
+    "id": "c",
+    "nome": "(C) Caixinha 'não avisar mais neste livro'",
+    "texto": "Limpa e não deixa voltar.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "entendi, mas quando a pessoa querer mesmo apagar as coisas, ela pode ter um jeito de simplismente apagar todos os avisos."
+   }
+  ]
+ },
+ {
+  "id": "rv4-pag-antiphonal1547-006",
+  "ordem": 12,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "Antiphonal 6: por que o jeito de fábrica apagou as pautas vermelhas? E o que fazer?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: O programa decide tudo no cinza. A tinta vermelha vira um cinza CLARO, mais claro que as letras pretas. Fora das linhas de texto, o jeito de fábrica ('Guardar a tinta forte') só guarda o que é tão escuro quanto as letras, ou o que está colado nelas. Os pedaços de pauta vermelha que ficam soltos entre as notas pretas não são escuros o bastante e vão para o branco; os pedaços que encostam numa nota ficam (por isso a pauta sai em pedaços). A gravura de baixo à esquerda também perde pedaços, porque o programa não a achou como gravura. Com o programa de hoje sobra pouca falha, e pela regra ajustada esta página NÃO iria mais para 'Para revisar'. O conserto rápido é 'Guardar tudo': as pautas saem inteiras.",
+  "exemplos": [
+   {
+    "src": "img/p-antiphonal1547-006.jpg",
+    "legenda": "Antiphonal 6: original, como o programa vê (cinza), jeito de fábrica e 'Guardar tudo'."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "entendi",
+    "nome": "Entendi; a página não precisa ir",
+    "texto": "Pouca falha: o Kaique usa 'Guardar tudo' se quiser.",
+    "imgs": []
+   },
+   {
+    "id": "deve-ir",
+    "nome": "Entendi, mas deve ir",
+    "texto": "Pauta com falha, mesmo pequena, deve ir para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "cor-forte",
+    "nome": "A tinta colorida deve contar como forte",
+    "texto": "Estudar: no jeito de fábrica, tinta vermelha (ou de outra cor) fica, como a preta.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Não entendi",
+    "texto": "Explique de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "porque o jeito de fabrica apagou?"
+   }
+  ],
+  "hoje": true,
+  "regra4": false,
+  "gabarito": true,
+  "motivos4": []
+ },
+ {
+  "id": "rv4-pag-rariora-008",
+  "ordem": 13,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "Rariora 8 e as folhas sem conteúdo (rosto, guardas): o que o programa deve fazer com elas?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Você tem razão: não é gravura. A regra ajustada tem um motivo novo, 'página sem conteúdo': quase nenhuma tinta forte e só escrita fraca (a mancha do verso). Ela pega a Rariora 8 e o Egenloff 12, e nenhuma outra das 89 páginas; não pega a Gladstone 18 (que tem um título). Agora a página vai para 'Para revisar' por esse motivo, não pela gravura. O que fazer com ela depende da sua decisão sobre a página branca (na página de escolhas); estas opções não decidem aquela, só dizem como avisar.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-008.jpg",
+    "legenda": "Rariora 8: só a mancha do verso."
+   },
+   {
+    "src": "img/c5-sem-conteudo.jpg",
+    "legenda": "As três páginas quase vazias e o que cada regra faz."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "lista-botao",
+    "nome": "Vai para a lista, com botão",
+    "texto": "Motivo 'página sem conteúdo' e o botão 'trocar por página branca'.",
+    "imgs": []
+   },
+   {
+    "id": "sozinho",
+    "nome": "Troca sozinho e avisa no livro",
+    "texto": "Vira página branca e o aviso do livro lista quais (ex.: 'folhas de rosto e guardas: 1, 2, 211, 212').",
+    "imgs": []
+   },
+   {
+    "id": "aviso-livro",
+    "nome": "Só um aviso no livro",
+    "texto": "Lista as folhas sem conteúdo; o Kaique decide cada uma.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "Essa pagina deveria se tornar branca, porque unica coisa que ela tem é mancha de outra folha, devia ter um aviso de folhas de rostos, que as vezes tem tanto no final quanto no começo, alguns livros tem até 4 folhas de rosto. o programa está errado, pois não é uma gravura. ele vai para revisão, mas não pelo motivo da gravura, mas porque errou o que tinha uma gravura."
+   }
+  ],
+  "hoje": false,
+  "regra4": true,
+  "gabarito": true,
+  "motivos4": [
+   "página sem conteúdo"
+  ]
+ },
+ {
+  "id": "rv4-pag-egenloff-012",
+  "ordem": 14,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "Egenloff 12 (verso em branco): pela regra ajustada, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Agora vai, com o motivo 'página sem conteúdo' (o mesmo da Rariora 8), para o Kaique trocar por página branca. Antes ela não ia porque a moldura preta do scanner está em todas as páginas do livro e vira um aviso só, no livro. (Hoje o programa a manda para a lista, mas pelo motivo errado: a moldura conta como 'tinta forte fora do texto'.)",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-012.jpg",
+    "legenda": "Egenloff 12: original e como sai."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "é uma pagina que deveria ir para revisar, porque não tem nada nela, deve ser trocada por uma pagina branca"
+   }
+  ],
+  "hoje": true,
+  "regra4": true,
+  "gabarito": true,
+  "motivos4": [
+   "página sem conteúdo"
+  ]
+ },
+ {
+  "id": "rv4-em-branco",
+  "ordem": 15,
+  "parte": "Rodada 4 · respostas aos seus comentários",
+  "pergunta": "O aviso de hoje 'Parece em branco. Quer apagar?': o que fazer com ele?",
+  "explicacao": "Achado nesta rodada. O programa já tem um aviso 'Parece em branco', com o botão 'apagar esta página'. Nas 89 páginas ele apareceu só na Gladstone 18, que NÃO está em branco: tem o título 'DA ORAÇÃO' (com o botão, o Kaique apagaria o título da parte). E ele não apareceu no Egenloff 12 nem na Rariora 8, que não têm conteúdo (a moldura e a mancha enganam a conta). Além disso, apagar tira a página da fila e troca frente e verso das seguintes na encadernação (o que você levantou em 07/10). As opções não decidem a página branca, que está na página de escolhas.",
+  "exemplos": [
+   {
+    "src": "img/c5-sem-conteudo.jpg",
+    "legenda": "Gladstone 18 (à direita): o aviso 'Parece em branco' numa página com título."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "juntar",
+    "nome": "Juntar ao 'página sem conteúdo'",
+    "texto": "Um aviso só, com a conta nova (que não pega a Gladstone 18).",
+    "imgs": []
+   },
+   {
+    "id": "trocar-botao",
+    "nome": "Manter, mas trocar o botão",
+    "texto": "O botão passa a ser 'trocar por página branca' em vez de 'apagar'.",
+    "imgs": []
+   },
+   {
+    "id": "esperar",
+    "nome": "Esperar a decisão da página branca",
+    "texto": "Fica como está até lá.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ]
+ },
+ {
+  "id": "rv4-pag-camoes-027",
+  "ordem": 16,
+  "parte": "Rodada 4 · os seus 'Não concordo' da rodada 3",
+  "pergunta": "Camões 27: pela regra ajustada, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Você tem razão: os dois jeitos estragam a letra. O papel é escuro e a letra é clara; o preto e branco perde os traços finos ('que' vira 'qne', 'e' vira 'c'), mais ainda na nota de rodapé. A regra da rodada 3 só olhava o que o jeito de fábrica apaga A MAIS que o Preto e branco, e aqui os dois falham igual. Ajuste: motivo novo 'texto falhado nos dois jeitos' (duas ou mais linhas em que o preto e branco guarda menos de 62% da tinta clara da letra). Com ele a página vai. Conserto rápido: a força do preto mais forte (ver o cartão do erro 4).",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-027.jpg",
+    "legenda": "Camões 27: a nota de rodapé nos dois jeitos e as linhas que mandam a página."
+   },
+   {
+    "src": "img/c4-texto-camoes027.jpg",
+    "legenda": "O texto de cima e a força do preto mais forte."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "tanto no jeito de fabrica quanto no petro e branco, estamos lendo de maneira melhor no original, basicamente os dois filtros estragaram o conteúdo."
+   }
+  ],
+  "hoje": true,
+  "regra4": true,
+  "gabarito": true,
+  "motivos4": [
+   "texto falhado nos dois jeitos"
+  ]
+ },
+ {
+  "id": "rv4-pag-camoes-066",
+  "ordem": 17,
+  "parte": "Rodada 4 · os seus 'Não concordo' da rodada 3",
+  "pergunta": "Camões 66: você não concordou, sem comentário. O que está errado nela?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: No meu olho, com o programa de hoje: o texto sai legível (com os traços finos um pouco mais fracos, como no Camões 27, mas a regra não acha falha suficiente); o que destoa são as linhas pretas da beirada (à direita, em cima e nos cantos de baixo) e um borrão no canto de baixo à esquerda. Essas linhas estão nas 6 páginas do Camões; pela regra, faixa que está no livro inteiro vira um aviso só, no livro, e não manda cada página. Por isso ela não vai. Escolha o que acontece:",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-066.jpg",
+    "legenda": "Camões 66: a página inteira, original e os dois jeitos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "beirada-pagina",
+    "nome": "São as linhas pretas: deve ir",
+    "texto": "Mesmo estando no livro todo, cada página com linha preta vai para a lista.",
+    "imgs": []
+   },
+   {
+    "id": "beirada-livro",
+    "nome": "São as linhas pretas: aviso no livro basta",
+    "texto": "Desde que o corte (pergunta da faixa) resolva.",
+    "imgs": []
+   },
+   {
+    "id": "letra",
+    "nome": "É a letra fraca",
+    "texto": "Deve ir pelo texto falhado, mesmo sendo pouco.",
+    "imgs": []
+   },
+   {
+    "id": "agora-ok",
+    "nome": "Agora está bom",
+    "texto": "Com o programa de hoje, não precisa ir.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Outra coisa",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "(Não concordo, sem comentário)"
+   }
+  ],
+  "hoje": true,
+  "regra4": false,
+  "gabarito": true,
+  "motivos4": []
+ },
+ {
+  "id": "rv4-pag-camoes-104",
+  "ordem": 18,
+  "parte": "Rodada 4 · os seus 'Não concordo' da rodada 3",
+  "pergunta": "Camões 104 (contracapa): pela regra ajustada, esta página VAI, agora pelo título falhado. Você concorda?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Entendi assim: ela deve ir, mas pelo título, não pela imagem. O título 'LUIZ DE CAMÕES' sai 'LUIZ DI CAMÕUS' nos dois jeitos. A regra ajustada agora dá os dois motivos: 'texto falhado nos dois jeitos' (o título) e 'figura além da gravura achada' (a área de gravura escorre pela beirada; o retrato em si sai bem, como você disse). Conserto rápido do título: força do preto mais forte (com 85 o 'DE' volta). Se você preferir que a beirada NÃO conte como motivo aqui, diga no comentário.",
+  "exemplos": [
+   {
+    "src": "img/p-camoes-104.jpg",
+    "legenda": "Camões 104: o título nos quatro jeitos e a gravura achada."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "por apagar o titulo do altor embaixo, mas imagem em si, não está tão ruim"
+   }
+  ],
+  "hoje": true,
+  "regra4": true,
+  "gabarito": true,
+  "motivos4": [
+   "figura além da gravura achada",
+   "texto falhado nos dois jeitos"
+  ]
+ },
+ {
+  "id": "rv4-pag-egenloff-003",
+  "ordem": 19,
+  "parte": "Rodada 4 · os seus 'Não concordo' da rodada 3",
+  "pergunta": "Egenloff 3 (folha de rosto): pela regra ajustada, esta página VAI para 'Para revisar'. Você concorda?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Sim: as duas linhas vermelhas do pé ('1880 neu aufgelegt von / George Gilbers, Königl. Hofbuchhändler zu Dresden') saem falhadas nos dois jeitos: o vermelho vira um cinza claro e o preto e branco o quebra. A regra da rodada 3 não via isso; com o motivo novo 'texto falhado nos dois jeitos' a página vai. A força do preto mais forte NÃO conserta este caso; o conserto é marcar a linha com o 'Melhorar' ou o 'Mágico pro' ('só neste pedaço'), que guardam a cor. Ressalva: das duas linhas que a regra conta aqui, uma é a vermelha e a outra é o carimbo da biblioteca.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-003.jpg",
+    "legenda": "Egenloff 3: as linhas vermelhas do pé nos dois jeitos."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "Ele apaga o titulo em vermelho em baixo."
+   }
+  ],
+  "hoje": true,
+  "regra4": true,
+  "gabarito": true,
+  "motivos4": [
+   "texto falhado nos dois jeitos"
+  ]
+ },
+ {
+  "id": "rv4-pag-egenloff-047",
+  "ordem": 20,
+  "parte": "Rodada 4 · os seus 'Não concordo' da rodada 3",
+  "pergunta": "Egenloff 47: você não concordou, sem comentário. O que está errado nela?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: No meu olho, com o programa de hoje: o ornamento sai inteiro nos dois jeitos (o jeito de fábrica apaga só pontinhos). O que sobra é da página inteira: a moldura preta do scanner e a tarja da biblioteca embaixo (SLUB), que estão em todas as páginas do livro e viram um aviso só, no livro; e restos dos carimbos e da anotação a lápis. Por isso ela não vai. Escolha o que acontece:",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-047.jpg",
+    "legenda": "Egenloff 47: como sai inteira, e o ornamento ampliado."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "moldura",
+    "nome": "É a moldura preta / a tarja",
+    "texto": "A página deve ir mesmo que o livro inteiro tenha.",
+    "imgs": []
+   },
+   {
+    "id": "carimbos",
+    "nome": "São os carimbos e anotações",
+    "texto": "O que sobra deles deve mandar a página.",
+    "imgs": []
+   },
+   {
+    "id": "ornamento",
+    "nome": "É o ornamento",
+    "texto": "Os traços finos falham; deve ir.",
+    "imgs": []
+   },
+   {
+    "id": "agora-ok",
+    "nome": "Agora está bom",
+    "texto": "Com o programa de hoje, não precisa ir.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Outra coisa",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "(Não concordo, sem comentário)"
+   }
+  ],
+  "hoje": true,
+  "regra4": false,
+  "gabarito": true,
+  "motivos4": []
+ },
+ {
+  "id": "rv4-pag-rariora-169",
+  "ordem": 21,
+  "parte": "Rodada 4 · os seus 'Não concordo' da rodada 3",
+  "pergunta": "Rariora 169: com o programa de hoje, esta página NÃO VAI, porque agora sai certa. Você concorda?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Você tinha razão: na rodada 3 o pontilhado da concha (Fig. 8) sumia e a regra não pegava (ficou logo abaixo do limite). Desde 06/10 o programa tem o conserto do desenho claro, e a concha sai inteira, como no Preto e branco. Agora não há o que revisar, e ela não vai.",
+  "exemplos": [
+   {
+    "src": "img/p-rariora-169.jpg",
+    "legenda": "Rariora 169: rodada 3 (sem o conserto) e hoje (com o conserto)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "concordo",
+    "nome": "Concordo",
+    "texto": "Está certo: ela não vai para 'Para revisar'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-concordo",
+    "nome": "Não concordo",
+    "texto": "Diga no comentário por quê.",
+    "imgs": []
+   },
+   {
+    "id": "nao-sei",
+    "nome": "Não sei",
+    "texto": "Preciso ver de outro jeito.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "",
+    "texto": "(Não concordo, sem comentário)"
+   }
+  ],
+  "hoje": true,
+  "regra4": false,
+  "gabarito": false,
+  "motivos4": []
+ }
+]
