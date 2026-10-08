@@ -102,9 +102,15 @@ AVISO_PARES_NA_IMPAR = ("Você está numa folha ímpar. Para girar só as pares,
                         "vá a uma folha par e gire de lá.")
 AVISO_IMPARES_NA_PAR = ("Você está numa folha par. Para girar só as ímpares, "
                         "vá a uma folha ímpar e gire de lá.")
+# O mesmo aviso no "aplicar em" da aba Endireitar (item 2.2, G5), que conta
+# PAGINAS e nao folhas. Seguro mudar: a frase.
+AVISO_PARES_NA_IMPAR_PAGINA = ("Você está numa página ímpar. Para mudar só as pares, "
+                               "vá a uma página par e mude de lá.")
+AVISO_IMPARES_NA_PAR_PAGINA = ("Você está numa página par. Para mudar só as ímpares, "
+                               "vá a uma página ímpar e mude de lá.")
 
 
-def aviso_fora_do_alcance(atual: int, alcance: str) -> str:
+def aviso_fora_do_alcance(atual: int, alcance: str, coisa: str = "folha") -> str:
     """A frase para avisar, se a folha da vez fica FORA do "aplicar em"; ""
     se pode girar.
 
@@ -114,12 +120,15 @@ def aviso_fora_do_alcance(atual: int, alcance: str) -> str:
     folha da vez, e girar sem ela copiaria um giro que a pessoa nao ve.
     atual: o indice da folha na tela; par/impar conta o numero que a tela
     mostra (indice + 1), como em folhas_do_alcance. Seguro mudar: a frase.
+    coisa: "folha" (o girar) ou "página" (o "aplicar em" da aba Endireitar,
+    item 2.2: a mesma conta, sobre o indice da pagina).
     """
     numero = int(atual) + 1
+    pagina = coisa == "página"
     if alcance == ALCANCE_PARES and numero % 2 == 1:
-        return AVISO_PARES_NA_IMPAR
+        return AVISO_PARES_NA_IMPAR_PAGINA if pagina else AVISO_PARES_NA_IMPAR
     if alcance == ALCANCE_IMPARES and numero % 2 == 0:
-        return AVISO_IMPARES_NA_PAR
+        return AVISO_IMPARES_NA_PAR_PAGINA if pagina else AVISO_IMPARES_NA_PAR
     return ""
 
 

@@ -66,9 +66,14 @@ def pasta_de_ferramentas_padrao() -> Path:
     return base.PASTA_FERRAMENTAS_PADRAO
 
 
-def compilar(ferramentas: Path, cmake: Path, qt: Path, boost: Path) -> Path:
-    """Configura e compila; devolve o caminho da DLL gerada (na pasta de rascunho)."""
-    rascunho = ferramentas / NOME_RASCUNHO
+def compilar(ferramentas: Path, cmake: Path, qt: Path, boost: Path,
+             nome_rascunho: str = NOME_RASCUNHO) -> Path:
+    """Configura e compila; devolve o caminho da DLL gerada (na pasta de rascunho).
+
+    nome_rascunho: a pasta de rascunho dentro de `ferramentas` (opcao
+    --rascunho). Duas copias de trabalho compilando ao mesmo tempo precisam
+    de rascunhos diferentes (o CMake de uma estragaria o da outra)."""
+    rascunho = ferramentas / nome_rascunho
     configurar = [
         str(cmake), "-S", str(PASTA_LIGACAO), "-B", str(rascunho),
         "-G", "Visual Studio 17 2022", "-A", "x64",
@@ -96,7 +101,8 @@ def instalar_no_programa(dll: Path) -> Path:
     compilador = base.versao_do_compilador(dll.parent.parent)
     (PASTA_NATIVO / "st_ferramentas.txt").write_text(
         "st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)\n"
-        "Tem: limpar pontinhos (Despeckle) e dividir a folha (PageLayoutEstimator, item 2.1).\n"
+        "Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1)\n"
+        "e endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2).\n"
         "\n"
         f"Código:      {base.REPOSITORIO}\n"
         f"Versão:      {base.VERSAO_SCANTAILOR} (commit {base.COMMIT_SCANTAILOR})\n"
@@ -137,6 +143,13 @@ def testar_a_dll() -> str:
     if not dividido.disponivel:
         raise ErroDeCompilacao(f"A DLL abriu, mas o dividir falhou: {dividido.motivo} "
                                f"({dividido.detalhe_tecnico})")
+    # Item 2.2: o endireitar responde (pagina em branco: angulo zero, sem erro).
+    from core import endireitar_scantailor as es
+
+    medido = es.medir(np.full((400, 300), 255, np.uint8), 150, biblioteca=biblioteca)
+    if not medido.disponivel:
+        raise ErroDeCompilacao(f"A DLL abriu, mas o endireitar falhou: {medido.motivo} "
+                               f"({medido.detalhe_tecnico})")
     return biblioteca.origem or "?"
 
 
@@ -147,6 +160,9 @@ def main(argumentos: list[str] | None = None) -> int:
                             help="baixa o Qt e o Boost que faltarem (fora do git)")
     analisador.add_argument("--ferramentas", type=Path, default=pasta_de_ferramentas_padrao(),
                             help="pasta do Qt, do Boost e do rascunho da compilação")
+    analisador.add_argument("--rascunho", default=NOME_RASCUNHO,
+                            help="nome da pasta de rascunho dentro de --ferramentas "
+                                 f"(padrão {NOME_RASCUNHO}; use outro em cada cópia de trabalho)")
     opcoes = analisador.parse_args(argumentos)
 
     inicio = time.perf_counter()
@@ -167,7 +183,7 @@ def main(argumentos: list[str] | None = None) -> int:
         boost = base.garantir_boost(opcoes.ferramentas, cmake, opcoes.baixar)
         dizer(f"  Qt:    {qt}\n  Boost: {boost}")
         dizer("3/5 compilação")
-        dll = compilar(opcoes.ferramentas, cmake, qt, boost)
+        dll = compilar(opcoes.ferramentas, cmake, qt, boost, opcoes.rascunho)
         dizer("4/5 copiando para core/nativo/")
         destino = instalar_no_programa(dll)
         dizer("5/5 testando a DLL com o Qt do PySide6")

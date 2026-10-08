@@ -48,6 +48,14 @@ CONFERIR_FUNDO_TIRADO = "conferir_fundo_tirado"
 # core.pipeline (_anotar_tinta_forte_fora), quando a pagina e desenhada; o
 # limite e core.pipeline.LIMITE_DA_TINTA_FORTE_FORA.
 TINTA_FORTE_FORA_DO_TEXTO = "tinta_forte_fora_do_texto"
+# Item 2.2 (decisoes G4 (b) e C1 do Samuel, 05/10/2026): a conta do endireitar
+# do ScanTailor e a do programa discordam mais de 0,3 grau nesta pagina
+# (core/endireitar_scantailor.discordam). Quem poe: a analise (na imagem de
+# 150 DPI, para a pagina ja abrir em "Para revisar") e core.pipeline quando a
+# pagina e desenhada na resolucao do PDF (a medida que vale: poe ou tira,
+# como o TINTA_FORTE_FORA_DO_TEXTO). So em livro cuja conta e a do
+# ScanTailor, e so com o angulo automatico (o a mao ja foi conferido).
+CONTAS_DO_ENDIREITAR_DISCORDAM = "contas_do_endireitar_discordam"
 
 
 @dataclass(frozen=True)
@@ -88,6 +96,16 @@ ALERTAS: dict[str, Alerta] = {
         TINTA_FORTE_FORA_DO_TEXTO, "Tinta forte fora do texto",
         "Sobrou bastante tinta forte fora do texto que eu achei (pode ser "
         "música, letra grande, desenho ou mancha escura). Confira se ficou certo.",
+        "está bom assim", "revisar",
+    ),
+    # Item 2.2, C1. "está bom assim" so marca a pagina como conferida; a
+    # escolha da conta (a do ScanTailor ou a do programa) fica na aba
+    # Endireitar, com os dois angulos escritos. Seguro mudar: os textos.
+    CONTAS_DO_ENDIREITAR_DISCORDAM: Alerta(
+        CONTAS_DO_ENDIREITAR_DISCORDAM, "Endireitar: as contas discordam",
+        "A conta do ScanTailor e a do programa acharam inclinações diferentes "
+        "nesta página. Confira na aba Endireitar e escolha a conta que deixou "
+        "o texto reto.",
         "está bom assim", "revisar",
     ),
     LOMBADA_INCERTA: Alerta(

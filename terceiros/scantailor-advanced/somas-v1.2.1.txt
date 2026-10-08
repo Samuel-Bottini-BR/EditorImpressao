@@ -6,6 +6,8 @@
 # para 'consertar' o teste: se ela nao bate, o arquivo deixou de ser o original.
 # Ao trazer um arquivo novo do ScanTailor, acrescente a linha dele (mesma conta).
 268aa0f8117d3b88ee38a4f6df38ce66c09ad4d2e4b3c4615d3cc621654a042f  src/core/BeforeOrAfter.h
+0cf4df6c0db4d541ac9bc13fc6460a3857666929f1164701cd7b9a0f15209b99  src/core/BlackOnWhiteEstimator.cpp
+8b9283dceb6f5a9a92cbb07d4048f697184de9fbd793155aa520ab495c5d5a1b  src/core/BlackOnWhiteEstimator.h
 c56bba1449241375a27b0f183c86e5c6ca7192873a1491b7625535ca49741fd4  src/core/ContentSpanFinder.cpp
 5f2d264642861f239d64099e90128562069a152465a210dca6da7dee201fdf96  src/core/ContentSpanFinder.h
 fee169ab56ddb1c99e58a301db6a788eaec21fc3ef01a1d1214560f23d9cf36c  src/core/Despeckle.cpp
@@ -128,6 +130,8 @@ ecb7688858480b5fceb09f4366ea46b1699be72facfed56cb4e4246cbdde5ca5  src/imageproc/
 a0e6c21c75222dc6a0cee15159261b0509b6b4a98982b286282e9afa2e4eba2f  src/imageproc/SlicedHistogram.h
 c51d26f116b90f5511e4b91f8dd65ed7555b6ada3fdb982652838bf2c1c440cc  src/imageproc/Transform.cpp
 e954ff3755a7eac82c65d588ddae1778d7a5b1c124d6567d27eaaef1ce473c3f  src/imageproc/Transform.h
+8c0a635a09ffc3438df70362f0de0dd73a431bfc045f92cd5fd10c460093fa14  src/imageproc/UpscaleIntegerTimes.cpp
+85f5558e649f5aa23670ac453a083e974d1e219dee6f7cdefa81958cc650bb85  src/imageproc/UpscaleIntegerTimes.h
 736050f8c346e00875f906bc22cfee0b055c37575c527cb45ef2dbcf9ce65c9f  src/math/LinearSolver.cpp
 59c4b928356301189c6b2809e6afe8c51c4f7268f52bc4de514443d23f697c09  src/math/LinearSolver.h
 48dcc004debbf4294d272188ea8da1ccb7df370c5324abad3c8eea1054508c09  src/math/MatrixCalc.h
