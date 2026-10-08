@@ -644,6 +644,9 @@ class JanelaPrincipal(QMainWindow):
         self.projeto.limpar = salvo.limpar
         self.projeto.filtro_padrao = salvo.filtro_padrao
         self.projeto.endireitar = salvo.endireitar
+        # item 2.2: a conta do endireitar (o salvo de antes do 2.2 ja volta
+        # "programa": modelos.Projeto.de_dicionario)
+        self.projeto.endireitar_como = getattr(salvo, "endireitar_como", self.projeto.endireitar_como)
         self.projeto.cortar_bordas = salvo.cortar_bordas
         self.projeto.montar_cadernos = salvo.montar_cadernos
         self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
@@ -1171,7 +1174,9 @@ class JanelaPrincipal(QMainWindow):
                        # "Limpar pontinhos" do livro (06/10)
                        "limpar_pontinhos",
                        # item 2.1: o jeito de dividir e o corte da sobra
-                       "dividir_como", "cortar_sobra")
+                       "dividir_como", "cortar_sobra",
+                       # item 2.2: a conta do endireitar
+                       "endireitar_como")
 
     def _sair_da_conferencia(self) -> None:
         """Voltar para as opcoes grava antes: sair nao pode custar trabalho.

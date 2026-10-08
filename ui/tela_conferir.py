@@ -80,6 +80,15 @@ só habilitada em folha dividida. Conserto junto: "não dividir esta" apaga na
 mesma ação a metade da direita (antes o PDF saía com a folha repetida); a
 folha que entrou como uma página só não oferece "dividir esta"
 (_alternar_dividir).
+
+Endireitar (item 2.2, 07/10/2026, decisão G4 (b) do Samuel: "O do ScanTailor
+de fábrica [...] mas eu vou ter a opção de escolher"; provisório até o
+layout): na linha de botões da aba Endireitar, a lista "conta:" (a do
+ScanTailor · a do programa) troca a conta do endireitar automático SÓ desta
+página (_trocar_conta_do_endireitar; ConfigPagina.endireitar_como), numa
+ação do desfazer; ao lado, os dois ângulos que as contas acharam
+(core.pipeline.angulos_medidos), para escolher olhando. A página em que
+elas discordam mais de 0,3° chega em "Para revisar" (aviso C1).
 """
 
 from __future__ import annotations
@@ -107,9 +116,10 @@ from PySide6.QtWidgets import (
 )
 
 from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
+from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
-from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, jeito_de_dividir,
-                           recalcular_divisao)
+from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulos_medidos,
+                           jeito_de_dividir, recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -895,6 +905,23 @@ class TelaConferir(QWidget):
         _botao("está certo", linha, self._marcar_revisada)
         _botao("não endireitar esta", linha, self._angulo_zero)
         _botao("voltar ao automático", linha, self._angulo_automatico)
+        # Item 2.2 (G4 (b): "eu vou ter a opção de escolher"; provisorio ate o
+        # layout): a conta do endireitar automatico SO desta pagina, e os dois
+        # angulos que as contas acharam (_atualizar_botoes).
+        self.rotulo_conta_do_endireitar = QLabel("conta:")
+        linha.addWidget(self.rotulo_conta_do_endireitar)
+        self.combo_conta_do_endireitar = QComboBox()
+        for jeito in endireitar_scantailor.JEITOS:
+            self.combo_conta_do_endireitar.addItem(
+                endireitar_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+        self.combo_conta_do_endireitar.setToolTip(
+            "Endireita esta página por outra conta: a do ScanTailor ou a do programa. "
+            "Os números ao lado são os ângulos que cada uma achou.")
+        self.combo_conta_do_endireitar.currentIndexChanged.connect(
+            lambda _i: self._trocar_conta_do_endireitar())
+        linha.addWidget(self.combo_conta_do_endireitar)
+        self.rotulo_angulos_medidos = QLabel("")
+        linha.addWidget(self.rotulo_angulos_medidos)
         linha.addStretch()
         self.botoes_de_sugestao[ABA_ANGULO] = _botao(
             "", linha, self._aplicar_sugestao, "sugestao"
@@ -2304,6 +2331,9 @@ class TelaConferir(QWidget):
             self.combo_jeito_da_folha.setEnabled(bool(folha.dividir))
             self.rotulo_jeito_da_folha.setEnabled(bool(folha.dividir))
 
+        if ABA_ANGULO in self._abas_ativas:
+            self._atualizar_conta_do_endireitar()
+
         if ABA_FILTRO in self._abas_ativas:
             pagina = self.projeto.paginas[self.indice_pagina]
             self._configurar_medidor()
@@ -2357,6 +2387,9 @@ class TelaConferir(QWidget):
             self._atualizar_previa()
         if chave == esperadas[0] and not self.trabalha_com_folhas:
             self._alertas_da_previa()
+            # item 2.2: a previa mediu as duas contas do endireitar
+            if ABA_ANGULO in self._abas_ativas:
+                self._atualizar_conta_do_endireitar()
         # Item 1.1: chegou o cartao "Tirar o fundo" da pagina da vez.
         if (self.aba_atual == ABA_FILTRO and TIRAR_FUNDO in self.cartoes
                 and chave == self.previas.chave_com_filtro(
@@ -2610,7 +2643,8 @@ class TelaConferir(QWidget):
     # desenhada: os campos de core/pipeline._entradas_do_preparo que uma acao
     # da tela pode mudar. Seguro: acrescentar campo. Arriscado: tirar algum.
     CAMPOS_DO_PREPARO = frozenset({"rotacao", "dividir", "posicao_corte",
-                                   "recorte", "angulo_manual"})
+                                   "recorte", "angulo_manual",
+                                   "endireitar_como"})        # item 2.2
 
     # O aviso "Um momento" do desfazer, do refazer e do Historico. Ressalva 3
     # do verificador-3 (06/10/2026): eles usavam a frase da mudanca feita na
@@ -2789,6 +2823,43 @@ class TelaConferir(QWidget):
             "ajustar_angulo", "pagina", [self.indice_pagina],
             {"angulo_manual": 0.0, "revisada": True},
             f"Não endireitar a página {self.indice_pagina + 1}",
+        )
+
+    def _atualizar_conta_do_endireitar(self) -> None:
+        """Item 2.2: mostra a conta desta pagina e os dois angulos medidos
+        (sem sinal: so mostrar nao e trocar). So vale com o angulo
+        automatico: com o angulo a mao, a lista fica apagada."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        es = endireitar_scantailor
+        automatico = bool(self.projeto.endireitar) and pagina.angulo_manual is None
+        self.combo_conta_do_endireitar.blockSignals(True)
+        self.combo_conta_do_endireitar.setCurrentIndex(self.combo_conta_do_endireitar.findData(
+            es.jeito_da_pagina(self.projeto, pagina)))
+        self.combo_conta_do_endireitar.blockSignals(False)
+        self.combo_conta_do_endireitar.setEnabled(automatico)
+        self.rotulo_conta_do_endireitar.setEnabled(automatico)
+        self.rotulo_angulos_medidos.setText(
+            texto_dos_angulos_medidos(angulos_medidos(self.projeto, pagina)) if automatico else "")
+
+    @protegido
+    def _trocar_conta_do_endireitar(self) -> None:
+        """Item 2.2: a lista "conta:" da aba Endireitar. Troca a conta do
+        endireitar automatico SO desta pagina, numa acao do desfazer (a previa
+        refaz o angulo). Escolher a conta do livro volta a "seguir o livro"
+        (ConfigPagina.endireitar_como None)."""
+        assert self.projeto is not None
+        es = endireitar_scantailor
+        pagina = self.projeto.paginas[self.indice_pagina]
+        jeito = es.jeito_valido(self.combo_conta_do_endireitar.currentData())
+        if pagina.angulo_manual is not None or jeito == es.jeito_da_pagina(self.projeto, pagina):
+            return
+        self._registrar(
+            "conta_do_endireitar", "pagina", [self.indice_pagina],
+            {"endireitar_como": None if jeito == es.jeito_do_livro(self.projeto) else jeito,
+             "revisada": True},
+            f"Página {self.indice_pagina + 1}: endireitar pela conta "
+            f"“{es.NOMES_DOS_JEITOS[jeito]}”",
         )
 
     @protegido
@@ -3379,3 +3450,24 @@ def _botao(texto: str, destino: QHBoxLayout, acao, objeto: str = "") -> QPushBut
     _ligar(botao, acao)
     destino.addWidget(botao)
     return botao
+
+
+def _graus(angulo: float) -> str:
+    """-1.5 -> "-1,5°" (virgula, como o Samuel le)."""
+    return f"{angulo:+.1f}°".replace(".", ",")
+
+
+def texto_dos_angulos_medidos(medidas: dict | None) -> str:
+    """O texto ao lado da lista "conta:" da aba Endireitar (item 2.2). Seguro
+    mudar: o texto."""
+    if not medidas:
+        return "(medindo...)"
+    partes = []
+    if medidas.get("scantailor") is not None:
+        partes.append(f"ScanTailor {_graus(medidas['scantailor'])}")
+    if medidas.get("programa") is not None:
+        partes.append(f"programa {_graus(medidas['programa'])}")
+    texto = " · ".join(partes)
+    if medidas.get("discordam"):
+        texto += "  (discordam)"
+    return texto

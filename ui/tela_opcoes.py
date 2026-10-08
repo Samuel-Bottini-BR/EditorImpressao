@@ -67,6 +67,14 @@ da folha vizinha" (o corte da sobra do ScanTailor, Projeto.cortar_sobra),
 desmarcada de fabrica, que vale nas folhas que nao forem divididas. Como as
 outras opcoes, vale ao clicar "Conferir" e nao entra no desfazer. Cada folha
 pode trocar o jeito so nela, na aba Onde cortar (ui/tela_conferir.py).
+
+Endireitar (item 2.2, decisao G4 (b) do Samuel de 05/10/2026: "O do
+ScanTailor de fabrica [...] mas eu vou ter a opcao de escolher"; provisorio
+ate o layout): com "Endireitar folhas tortas" marcada, aparece embaixo dela a
+lista "Conta do endireitar:" (a do ScanTailor · a do programa;
+Projeto.endireitar_como). De fabrica, a do ScanTailor; o livro de antes do
+2.2 volta com a do programa. Vale ao clicar "Conferir" e nao entra no
+desfazer. Cada pagina pode trocar so nela, na aba Endireitar.
 """
 
 from __future__ import annotations
@@ -89,6 +97,7 @@ from PySide6.QtWidgets import (
 )
 
 from core import dividir_scantailor
+from core import endireitar_scantailor
 from core import misto
 from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
@@ -202,6 +211,25 @@ class TelaOpcoes(QWidget):
         self.cx_endireitar = self._caixa(
             "Endireitar folhas tortas", "corrige páginas inclinadas", opcoes
         )
+        # Item 2.2 (G4 (b)): a conta do endireitar do livro, so a vista com a
+        # caixinha marcada (ver _mudou). Textos em core/endireitar_scantailor.
+        self.linha_conta_endireitar = QWidget()
+        linha = QHBoxLayout(self.linha_conta_endireitar)
+        linha.setContentsMargins(26, 2, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_conta_endireitar = QLabel("Conta do endireitar:")
+        self.combo_conta_endireitar = QComboBox()
+        for jeito in endireitar_scantailor.JEITOS:
+            self.combo_conta_endireitar.addItem(endireitar_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+        self.combo_conta_endireitar.setToolTip(
+            "Como a inclinação da página é medida: a conta do ScanTailor ou a do "
+            "programa. Quando as duas discordam mais de 0,3 grau, a página vai para "
+            "\"Para revisar\". Dá para trocar numa página só, na aba Endireitar.")
+        self.combo_conta_endireitar.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_conta_endireitar)
+        linha.addWidget(self.combo_conta_endireitar)
+        linha.addStretch()
+        opcoes.addWidget(self.linha_conta_endireitar)
         opcoes.addWidget(_separador())
 
         self.cx_cortar = self._caixa(
@@ -625,6 +653,10 @@ class TelaOpcoes(QWidget):
         self.cx_cortar_sobra.setChecked(bool(getattr(projeto, "cortar_sobra", False)))
         self.cx_limpar.setChecked(projeto.limpar)
         self.cx_endireitar.setChecked(projeto.endireitar)
+        # item 2.2: a conta do endireitar (projeto em memoria sem o campo: a
+        # de fabrica)
+        self.combo_conta_endireitar.setCurrentIndex(self.combo_conta_endireitar.findData(
+            endireitar_scantailor.jeito_do_livro(projeto)))
         self.cx_cortar.setChecked(projeto.cortar_bordas)
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
@@ -716,6 +748,11 @@ class TelaOpcoes(QWidget):
         self.projeto.cortar_sobra = self.cx_cortar_sobra.isChecked()
         self.projeto.limpar = self.cx_limpar.isChecked()
         self.projeto.endireitar = self.cx_endireitar.isChecked()
+        # item 2.2: a conta so aparece com "Endireitar" marcada (escondida,
+        # fica guardada)
+        self.projeto.endireitar_como = endireitar_scantailor.jeito_valido(
+            self.combo_conta_endireitar.currentData())
+        self.linha_conta_endireitar.setVisible(self.projeto.endireitar)
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()

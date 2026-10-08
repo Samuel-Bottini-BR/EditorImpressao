@@ -29,6 +29,8 @@ from core.pontinhos_scantailor import DO_PROJETO_ANTIGO as PONTINHOS_DO_PROJETO_
 from core.pontinhos_scantailor import PADRAO as PONTINHOS_PADRAO
 from core.dividir_scantailor import JEITO_DO_PROJETO_ANTIGO as DIVIDIR_DO_PROJETO_ANTIGO
 from core.dividir_scantailor import JEITO_DO_LIVRO_NOVO as DIVIDIR_DO_LIVRO_NOVO
+from core.endireitar_scantailor import JEITO_DO_PROJETO_ANTIGO as ENDIREITAR_DO_PROJETO_ANTIGO
+from core.endireitar_scantailor import PADRAO as ENDIREITAR_DO_LIVRO_NOVO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -89,6 +91,16 @@ class ConfigPagina:
     # lado so, e pode estar torta de um jeito diferente da outra.
     recorte: tuple[float, float, float, float] | None = None  # None = automatico
     angulo_manual: float | None = None                        # None = automatico
+
+    # Item 2.2 (decisao G4 (b) do Samuel, 05/10/2026: "O do ScanTailor de
+    # fabrica; [...] mas eu vou ter a opcao de escolher"): a conta do
+    # endireitar AUTOMATICO so desta pagina, por cima do livro
+    # (Projeto.endireitar_como). None = segue o livro. Valores: os codigos de
+    # core/endireitar_scantailor.JEITOS ("scantailor", "programa"); nunca o
+    # texto da tela. So vale quando angulo_manual e None (o angulo a mao
+    # ganha de qualquer conta). Projeto antigo nao tem o campo: volta None.
+    # Seguro mudar: nada aqui.
+    endireitar_como: str | None = None
 
     # Problema 2 do plano (redesenho do fluxo): a página nasce em Original,
     # nunca com um filtro já aplicado sozinho - o Samuel decide quando
@@ -269,6 +281,17 @@ class Projeto:
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
+    # Item 2.2, decisao G4 (b) do Samuel (05/10/2026): a conta do endireitar
+    # automatico do livro. De fabrica, no livro NOVO, "a do ScanTailor"
+    # (core/endireitar_scantailor.py, o SkewFinder original); "a do
+    # programa" (core/endireitar.detectar_angulo) continua opcao, e cada
+    # pagina pode trocar so nela (ConfigPagina.endireitar_como). Projeto
+    # salvo antes do campo volta com "programa" (de_dicionario): era a unica
+    # conta, e o livro antigo tem de sair identico ("o programa [...] vai ter
+    # que ser capaz de abrir arquivos de versoes anteriores", Samuel,
+    # 05/10/2026). Arriscado: trocar o setdefault de de_dicionario (o projeto
+    # antigo reaberto mudaria de angulo).
+    endireitar_como: str = ENDIREITAR_DO_LIVRO_NOVO
     cortar_bordas: bool = True
     montar_cadernos: bool = False
     paginas_por_caderno: int = 20
@@ -547,6 +570,9 @@ class Projeto:
         # capaz de abrir arquivos de versoes anteriores" (Samuel, 05/10).
         dados.setdefault("dividir_folhas", True)
         dados.setdefault("dividir_como", DIVIDIR_DO_PROJETO_ANTIGO)
+        # Item 2.2 (07/10/2026): o projeto gravado antes do endireitar do
+        # ScanTailor endireitava pela conta do programa - continua com ela.
+        dados.setdefault("endireitar_como", ENDIREITAR_DO_PROJETO_ANTIGO)
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas

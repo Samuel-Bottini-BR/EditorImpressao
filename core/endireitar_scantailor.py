@@ -19,8 +19,12 @@ O QUE FAZ
         (core/endireitar.py, JEITO_PROGRAMA), cada página pode trocar só nela
         (modelos.ConfigPagina.endireitar_como) e discordam() decide o
         "conferir" (LIMITE_DA_DISCORDANCIA).
-      G6 (a), 05/10/2026: endireitar ANTES de cortar, como o ScanTailor (ver
-        core/pipeline._geometria e o CLAUDE.md, seção 7).
+      G6 (a), 05/10/2026: endireitar ANTES de cortar, como o ScanTailor.
+        AINDA NÃO LIGADO (07/10/2026): o programa continua cortar ->
+        endireitar (CLAUDE.md, seção 7); só a medida do ScanTailor já é feita
+        na página ANTES do corte (core/pipeline._angulo_automatico), como ele
+        faz. A ordem nova muda o corte, as zonas da aba Marcar
+        (core/zonas_na_folha) e o recorte a mão: é o próximo passo do 2.2.
 
 O SENTIDO DO ÂNGULO
     O ScanTailor devolve o ângulo que ele aplica (QTransform.rotate: positivo
@@ -227,6 +231,25 @@ def medir(img: np.ndarray, dpi=None,
                   SINAL_DO_SCANTAILOR * float(bruto.value) + 0.0,
                   float(confianca.value), bool(preto_no_branco.value),
                   float(dpi_x), segundos=segundos)
+
+
+def medir_na_pagina(base: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None,
+                    biblioteca: st_ferramentas.BibliotecaScanTailor | None = None) -> Medida:
+    """O ângulo do ScanTailor numa página do programa (core/pipeline.
+    _geometria): `base` é a página já girada de 90 em 90 e dividida, ANTES de
+    cortar, desenhada a `dpi_do_desenho` (o DPI do desenho; None = não se
+    sabe); dpi_do_scan é o que o PDF diz do escaneamento (None = não se sabe).
+
+    O DPI dito à DLL é o da conta do limpar pontinhos (dpi_para_o_endireitar,
+    ver "O DPI" no topo). Nunca levanta exceção (como medir).
+    Arriscado: mudar a imagem que vai à DLL (o ângulo do ScanTailor muda com
+    o tamanho da imagem; ver o relatório relatorios/conferir/
+    endireitar-2026-10-07)."""
+    if base is None or base.ndim < 2:
+        return medir(base, None, biblioteca=biblioteca)
+    altura, largura = base.shape[:2]
+    dpi = dpi_para_o_endireitar(largura, altura, dpi_do_desenho, dpi_do_scan)
+    return medir(base, dpi, biblioteca=biblioteca)
 
 
 _AVISADOS: set[str] = set()
