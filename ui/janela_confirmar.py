@@ -27,10 +27,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from ui.estilo import FOLHA_DE_ESTILO, TEXTO_FRACO
+from ui import estilo
 from ui.widgets.destino import SeletorDestino
 
-LARANJA, LARANJA_FUNDO = "#ef9f27", "#faeeda"
 
 
 def pasta_e_nome_do_destino(projeto, nome_sugerido: str) -> tuple[Path | None, str]:
@@ -85,7 +84,7 @@ class JanelaConfirmar(QDialog):
         ate _reavaliar decidir se aparecem) e o resumo do livro."""
         super().__init__(parent)
         self.setWindowTitle("Confirmar e processar")
-        self.setStyleSheet(FOLHA_DE_ESTILO)
+        estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
         self.setMinimumWidth(620)
         self.projeto = projeto
 
@@ -109,7 +108,7 @@ class JanelaConfirmar(QDialog):
         camadas.addWidget(self.aviso_conferir)
 
         resumo = QLabel(self._frase_do_livro())
-        resumo.setStyleSheet(f"color: {TEXTO_FRACO};")
+        estilo.estilizar(resumo, lambda: f"color: {estilo.TEXTO_FRACO};")
         camadas.addWidget(resumo)
 
         botoes = QDialogButtonBox()
@@ -129,9 +128,9 @@ class JanelaConfirmar(QDialog):
         """Cria uma faixa laranja de aviso, ja comecando escondida.
         O rotulo fica pendurado em faixa.rotulo para _reavaliar preencher."""
         faixa = QFrame()
-        faixa.setStyleSheet(
-            f"QFrame {{ background: {LARANJA_FUNDO}; border: 1px solid {LARANJA}; "
-            "border-radius: 8px; }} QLabel { background: transparent; }")
+        estilo.estilizar(faixa, lambda: (
+            f"QFrame {{ background: {estilo.cor('aviso_f')}; border: 1px solid {estilo.cor('aviso_b')}; "
+            "border-radius: 8px; } QLabel { background: transparent; border: none; }"))
         linha = QHBoxLayout(faixa)
         linha.setContentsMargins(14, 10, 14, 10)
         rotulo = QLabel("")

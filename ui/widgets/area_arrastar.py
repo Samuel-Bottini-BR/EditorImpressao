@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QFileDialog, QWidget
 
-from ui.estilo import AZUL, AZUL_CLARO, BORDA, TEXTO, TEXTO_FRACO
+from ui import estilo
 
 
 class AreaArrastar(QWidget):
@@ -35,8 +35,8 @@ class AreaArrastar(QWidget):
         pintor.setRenderHint(QPainter.Antialiasing)
 
         area = self.rect().adjusted(2, 2, -2, -2)
-        pintor.setBrush(QColor(AZUL_CLARO if self._por_cima else "#ffffff"))
-        pintor.setPen(QPen(QColor(AZUL if self._por_cima else BORDA), 2, Qt.DashLine))
+        pintor.setBrush(QColor(estilo.AZUL_CLARO if self._por_cima else estilo.cor("bar2")))
+        pintor.setPen(QPen(QColor(estilo.AZUL if self._por_cima else estilo.BORDA), 2, Qt.DashLine))
         pintor.drawRoundedRect(area, 14, 14)
 
         # Icone a esquerda e as duas linhas ao lado dele, como no desenho
@@ -48,7 +48,7 @@ class AreaArrastar(QWidget):
         texto_x = margem + 44
         meio = self.height() // 2
 
-        pintor.setPen(QColor(TEXTO))
+        pintor.setPen(QColor(estilo.TEXTO))
         fonte = pintor.font()
         fonte.setPointSize(11)
         fonte.setBold(True)
@@ -58,15 +58,15 @@ class AreaArrastar(QWidget):
         fonte.setBold(False)
         fonte.setPointSize(9)
         pintor.setFont(fonte)
-        pintor.setPen(QColor(TEXTO_FRACO))
+        pintor.setPen(QColor(estilo.TEXTO_FRACO))
         pintor.drawText(texto_x, meio + 16, "ou clique para procurar no computador")
 
     def _desenhar_icone_arquivo(self, pintor: QPainter, x: int, y: int) -> None:
         """Um icone de folha com a quina dobrada, desenhado a mao com QPainterPath."""
         largura, altura, dobra = 26, 32, 8
 
-        pintor.setPen(QPen(QColor(AZUL), 2))
-        pintor.setBrush(QColor("#ffffff"))
+        pintor.setPen(QPen(QColor(estilo.AZUL), 2))
+        pintor.setBrush(QColor(estilo.cor("bar2")))
 
         from PySide6.QtGui import QPainterPath
 
@@ -82,7 +82,7 @@ class AreaArrastar(QWidget):
         pintor.drawLine(x + largura - dobra, y, x + largura - dobra, y + dobra)
         pintor.drawLine(x + largura - dobra, y + dobra, x + largura, y + dobra)
 
-        pintor.setPen(QPen(QColor(AZUL), 1))
+        pintor.setPen(QPen(QColor(estilo.AZUL), 1))
         for i in range(3):
             linha_y = y + 14 + i * 6
             fim = x + largura - (10 if i == 2 else 6)

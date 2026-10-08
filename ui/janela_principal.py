@@ -32,7 +32,7 @@ from core.pipeline import (
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
-from ui.estilo import FOLHA_DE_ESTILO
+from ui import estilo
 from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaConverterZonas, TarefaProcessar
 from ui.tela_conferir import TelaConferir
 from ui.tela_final import TelaFinal, TelaProgresso
@@ -67,7 +67,11 @@ class JanelaPrincipal(QMainWindow):
         # subir o minimo de novo acima de ~650.
         self.setMinimumSize(*LARGURA_E_ALTURA_MINIMAS)
         self.resize(*self.tamanho_que_cabe(self.screen().availableGeometry()))
-        self.setStyleSheet(FOLHA_DE_ESTILO)
+        # Etapa 1 do layout (temas): o tema que a pessoa escolheu da última
+        # vez (cinza de fábrica) vale desde o começo; a folha acompanha a
+        # troca pelo menu Ver > Tema (_trocar_tema).
+        estilo.carregar_o_tema_guardado()
+        estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
 
         self.projeto: Projeto | None = None
         self.acoes: HistoricoAcoes | None = None
@@ -238,6 +242,17 @@ class JanelaPrincipal(QMainWindow):
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
+
+        for nome in estilo.TEMAS:
+            self.menu.ligar(f"tema_{nome}", lambda _marcado=False, t=nome: self._trocar_tema(t))
+        self.menu.marcar_tema(estilo.tema_atual())
+
+    def _trocar_tema(self, nome: str) -> None:
+        """Menu Ver > Tema (etapa 1 do layout): põe o tema para valer na hora,
+        em tudo o que está aberto, e guarda a escolha para a próxima vez."""
+        estilo.definir_tema(nome)
+        estilo.reaplicar_em_tudo()
+        self.menu.marcar_tema(nome)
 
     def _converter_as_zonas_se_parado(self) -> None:
         """O giro (item 2.3) achou zonas ainda no formato antigo: se a

@@ -31,13 +31,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ui.estilo import TEXTO_FRACO
+from ui import estilo
 
 LARGURA = 172          # do desenho aprovado
-LARANJA, LARANJA_FUNDO = "#ef9f27", "#faeeda"
-FUNDO = "#f7f5f2"
-BORDA = "#e6e4e0"
-AZUL, AZUL_FUNDO = "#378add", "#e6f1fb"
+# Etapa 1 do layout (temas): as cores dos painéis vêm do tema da vez
+# (ui/estilo.py), lidas a cada estilização.
 
 BOTAO_DO_PAINEL = """
 QPushButton {{
@@ -107,9 +105,9 @@ class Painel(QFrame):
         # coluna inteira para o dobro da largura, cortando os OUTROS paineis
         # pela metade sem aviso nenhum.
         self.setMaximumWidth(LARGURA)
-        self.setStyleSheet(
-            f"QFrame {{ background: {FUNDO}; border: none; "
-            f"border-bottom: 1px solid {BORDA}; }}")
+        estilo.estilizar(self, lambda: (
+            f"QFrame {{ background: {estilo.cor('painel')}; border: none; "
+            f"border-bottom: 1px solid {estilo.cor('linha')}; }}"))
 
         camadas = QVBoxLayout(self)
         camadas.setContentsMargins(0, 0, 0, 0)
@@ -156,9 +154,9 @@ class Painel(QFrame):
         """Rotulo simples de texto fraco, ja adicionado ao corpo do painel."""
         rotulo = QLabel(texto)
         rotulo.setWordWrap(True)
-        rotulo.setStyleSheet(
-            f"color: {cor or TEXTO_FRACO}; font-size: {tamanho}px; "
-            "background: transparent; border: none;")
+        estilo.estilizar(rotulo, lambda: (
+            f"color: {cor or estilo.TEXTO_FRACO}; font-size: {tamanho}px; "
+            "background: transparent; border: none;"))
         self.dentro.addWidget(rotulo)
         return rotulo
 
@@ -167,11 +165,11 @@ class Painel(QFrame):
         escolhido=True destaca em azul (usado para o item atualmente selecionado)."""
         botao = _BotaoDoPainel(texto)
         botao.setCursor(Qt.PointingHandCursor)
-        botao.setStyleSheet(BOTAO_DO_PAINEL.format(
-            borda=AZUL if escolhido else "#d3d1c7",
-            fundo=AZUL_FUNDO if escolhido else "#ffffff",
-            cor="#185fa5" if escolhido else "#5f5e5a",
-            azul=AZUL))
+        estilo.estilizar(botao, lambda: BOTAO_DO_PAINEL.format(
+            borda=estilo.cor("azul") if escolhido else estilo.cor("sep"),
+            fundo=estilo.cor("sel") if escolhido else estilo.cor("botao"),
+            cor=estilo.cor("forte") if escolhido else estilo.cor("texto"),
+            azul=estilo.cor("azul")))
         botao.clicked.connect(acao)
         self.dentro.addWidget(botao)
         return botao
@@ -189,10 +187,10 @@ class PainelParaRevisar(Painel):
 
     def __init__(self, parent=None) -> None:
         super().__init__("Para revisar", parent)
-        self.cabecalho.setStyleSheet(
+        estilo.estilizar(self.cabecalho, lambda: (
             "QPushButton { border: none; text-align: left; padding: 7px 12px; "
-            f"font-size: 13px; background: {LARANJA_FUNDO}; "
-            f"border-bottom: 1px solid {LARANJA}; }}")
+            f"font-size: 13px; background: {estilo.cor('aviso_f')}; "
+            f"border-bottom: 1px solid {estilo.cor('aviso_b')}; }}"))
 
     def atualizar(self, projeto) -> None:
         """Reconstroi a lista agrupada por tipo de alerta, dos maiores grupos
@@ -312,9 +310,9 @@ class PainelFiltroDaPagina(Painel):
         if pagina.filtro in teclas:
             tecla = QLabel(f"tecla {teclas[pagina.filtro]}")
             tecla.setWordWrap(True)
-            tecla.setStyleSheet(
-                f"color: {TEXTO_FRACO}; font-size: 11px; background: transparent; "
-                "border: none;")
+            estilo.estilizar(tecla, lambda: (
+                f"color: {estilo.TEXTO_FRACO}; font-size: 11px; background: transparent; "
+                "border: none;"))
             dentro.addWidget(tecla)
         self.dentro.addWidget(linha)
 
@@ -399,7 +397,7 @@ class ColunaDePaineis(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         dentro = QWidget()
-        dentro.setStyleSheet(f"background: {FUNDO};")
+        estilo.estilizar(dentro, lambda: f"background: {estilo.cor('painel')};")
         self.camadas = QVBoxLayout(dentro)
         self.camadas.setContentsMargins(0, 0, 0, 0)
         self.camadas.setSpacing(0)

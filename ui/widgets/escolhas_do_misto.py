@@ -44,7 +44,8 @@ from PySide6.QtWidgets import (
 )
 
 from core import misto
-from ui.estilo import AZUL, AZUL_ESCURO, BORDA, TEXTO_FRACO, estilo_da_caixinha_com_quadrado
+from ui import estilo
+from ui.estilo import estilo_da_caixinha_com_quadrado
 
 # (valor, texto do botão, o que ele faz em uma frase)
 # Nomes e frases do conjunto 2 do layout (Rodada 10, pergunta 501, escolhidos
@@ -77,12 +78,14 @@ ESCOLHAS_DAS_LETRAS = [
 EXPLICACAO_DA_CAIXINHA = ("no Preto e branco, só as letras viram preto e branco; "
                           "gravuras, fotos, molduras e iluminuras ficam como no original")
 
-ESTILO_DOS_BOTOES = (
-    f"QPushButton#escolhaDoMisto {{ padding: 6px 12px; border: 2px solid {BORDA};"
-    " border-radius: 8px; background: white; font-weight: 600; }"
-    f" QPushButton#escolhaDoMisto:hover {{ border-color: {AZUL}; }}"
-    f" QPushButton#escolhaDoMisto:checked {{ background: {AZUL}; color: white;"
-    f" border-color: {AZUL_ESCURO}; }}")
+def estilo_dos_botoes() -> str:
+    """A folha dos três botões, com as cores do tema da vez (ui/estilo.py)."""
+    return (
+        f"QPushButton#escolhaDoMisto {{ padding: 6px 12px; border: 2px solid {estilo.BORDA};"
+        f" border-radius: 8px; background: {estilo.cor('botao')}; font-weight: 600; }}"
+        f" QPushButton#escolhaDoMisto:hover {{ border-color: {estilo.AZUL}; }}"
+        f" QPushButton#escolhaDoMisto:checked {{ background: {estilo.AZUL}; color: white;"
+        f" border-color: {estilo.AZUL_ESCURO}; }}")
 
 
 class EscolhasDoMisto(QWidget):
@@ -113,7 +116,7 @@ class EscolhasDoMisto(QWidget):
         fora.setSpacing(3 if compacto else 4)
 
         self.caixa = QCheckBox("Só as letras")
-        self.caixa.setStyleSheet(estilo_da_caixinha_com_quadrado(14))
+        estilo.estilizar(self.caixa, lambda: estilo_da_caixinha_com_quadrado(14))
         self.caixa.setToolTip(EXPLICACAO_DA_CAIXINHA[0].upper() + EXPLICACAO_DA_CAIXINHA[1:] + ".")
         self.caixa.toggled.connect(self._caixa_mudou)
         self._compacto = compacto
@@ -141,8 +144,9 @@ class EscolhasDoMisto(QWidget):
             botao = QPushButton(texto)
             botao.setObjectName("escolhaDoMisto")
             # compacto: um pouco mais baixos, para a linha caber a 1280 x 657
-            botao.setStyleSheet(ESTILO_DOS_BOTOES.replace("padding: 6px 12px", "padding: 3px 10px")
-                                if compacto else ESTILO_DOS_BOTOES)
+            estilo.estilizar(botao, lambda: (
+                estilo_dos_botoes().replace("padding: 6px 12px", "padding: 3px 10px")
+                if compacto else estilo_dos_botoes()))
             botao.setCheckable(True)
             botao.setCursor(Qt.PointingHandCursor)
             botao.setToolTip(frase[0].upper() + frase[1:] + ".")
@@ -217,7 +221,7 @@ class EscolhasDoMisto(QWidget):
         rotulo = QLabel(texto)
         rotulo.setWordWrap(True)
         rotulo.setContentsMargins(28, 0, 0, 2)
-        rotulo.setStyleSheet(f"color: {TEXTO_FRACO}; font-size: 12px;")
+        estilo.estilizar(rotulo, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         return rotulo
 
     @staticmethod

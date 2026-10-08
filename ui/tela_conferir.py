@@ -151,7 +151,8 @@ from core.filtros import (
 from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
 from modelos import METADE_DIREITA, Projeto
 from registro import registrar_erro
-from ui.estilo import AZUL, AZUL_CLARO, LARANJA, LARANJA_CLARO, estilo_da_caixinha_com_quadrado
+from ui import estilo
+from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
 from ui.widgets.barra_girar import BarraGirar
 from ui.widgets.barra_opcoes import BarraOpcoes
@@ -1107,7 +1108,7 @@ class TelaConferir(QWidget):
         self.caixa_tem_foto = QCheckBox("Esta página tem foto")
         # com quadrado tambem desmarcada (na janela de verdade saia so o
         # texto: verificador, 30/09, r06); ver ui/estilo.py
-        self.caixa_tem_foto.setStyleSheet(estilo_da_caixinha_com_quadrado(15))
+        estilo.estilizar(self.caixa_tem_foto, lambda: estilo_da_caixinha_com_quadrado(15))
         self.caixa_tem_foto.setToolTip(
             "Procura a gravura desta página em retângulo, que pega a foto inteira. "
             "Desmarcada, segue o contorno do desenho. O que você marcou à mão continua.")
@@ -1552,7 +1553,7 @@ class TelaConferir(QWidget):
         # acertar nele querendo clicar em "só nas próximas".
         separador = QFrame()
         separador.setFrameShape(QFrame.VLine)
-        separador.setStyleSheet("color: #d1d5db; margin: 0 8px;")
+        separador.setObjectName("separador")   # cor do tema (ui/estilo.py)
         linha_botoes.addWidget(separador)
         self.botao_apagar = _botao(
             "apagar página", linha_botoes, self.apagar_pagina, "destrutivo"
@@ -2378,12 +2379,14 @@ class TelaConferir(QWidget):
         A folha de estilo e aplicada direto no widget, sem buscar ninguem por
         propriedade do Qt e sem repolir a arvore inteira.
         """
-        borda = LARANJA if alerta else AZUL
-        fundo = LARANJA_CLARO if alerta else AZUL_CLARO
-        self.faixa.setStyleSheet(
-            f"QFrame {{ background: {fundo}; border: 1px solid {borda};"
-            f" border-radius: 8px; }}"
-        )
+        # Etapa 1 do layout (temas): as cores saem do tema da vez, e a troca
+        # de tema repinta a faixa sem esperar a próxima atualização.
+        def montar() -> str:
+            borda = estilo.cor("aviso_b") if alerta else estilo.cor("sep")
+            fundo = estilo.cor("aviso_f") if alerta else estilo.cor("bar2")
+            return (f"QFrame#faixaInfo {{ background: {fundo}; border: 1px solid {borda};"
+                    f" border-radius: 8px; }} QLabel {{ background: transparent; border: none; }}")
+        estilo.estilizar(self.faixa, montar)
 
     def _mostrar_sugestao(self, aba: str, rotulo: str | None) -> None:
         botao = self.botoes_de_sugestao.get(aba)
@@ -3616,10 +3619,10 @@ def _icone_de_ajustar_o_pedaco():
     figura.fill(Qt.transparent)
     pintor = QPainter(figura)
     pintor.setRenderHint(QPainter.Antialiasing)
-    pintor.setPen(QPen(QColor("#9ca3af"), 2, Qt.DashLine))
+    pintor.setPen(QPen(QColor(estilo.cor("fraco")), 2, Qt.DashLine))
     pintor.drawRect(2, 2, lado - 5, lado - 5)
-    pintor.setPen(QPen(QColor(AZUL), 2))
-    pintor.setBrush(QColor(AZUL_CLARO))
+    pintor.setPen(QPen(QColor(estilo.AZUL), 2))
+    pintor.setBrush(QColor(estilo.AZUL_CLARO))
     pintor.drawRect(10, 10, lado - 21, lado - 21)
     meio = lado // 2
     for (x0, y0, x1, y1) in ((meio, 4, meio, 8), (meio, lado - 5, meio, lado - 9),

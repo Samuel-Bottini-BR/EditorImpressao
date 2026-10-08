@@ -18,6 +18,8 @@ from PySide6.QtCore import QPoint, QRect, Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget
 
+from ui import estilo
+
 from ui.widgets.editor_selecao import (
     FERRAMENTA_COR,
     FERRAMENTA_ELIPSE,
@@ -42,12 +44,19 @@ ALTURA_MINIMA_DO_ITEM = 30
 LADO_DO_ICONE = 26
 LADO_MINIMO_DO_ICONE = 18
 
-FUNDO = "#f7f5f2"
-BORDA = "#e6e4e0"
-TRACO = "#5f5e5a"
-ESCOLHIDO_FUNDO = "#e6f1fb"
-ESCOLHIDO_BORDA = "#378add"
-LETRA_FRACA = "#86827c"
+# Etapa 1 do layout (temas): as cores saem do tema da vez (ui/estilo.py),
+# lidas na hora de pintar - ver _cores().
+
+
+def _cores() -> dict[str, str]:
+    """As cores da trilha no tema da vez: fundo, risco, traço do ícone, o
+    escolhido (fundo azul, ícone branco) e a letra do atalho."""
+    return {
+        "fundo": estilo.cor("bar"), "borda": estilo.cor("linha"),
+        "traco": estilo.cor("icone"), "escolhido_fundo": estilo.cor("azul"),
+        "escolhido_borda": estilo.cor("azul_e"), "escolhido_traco": "#FFFFFF",
+        "letra": estilo.cor("apagado"), "aceso": estilo.cor("botao_h"),
+    }
 
 # Depois de qual posicao vai o traco que separa marcar de navegar.
 SEPARA_DEPOIS_DE = 7
@@ -125,14 +134,15 @@ class TrilhaFerramentas(QWidget):
         separador antes do item SEPARA_DEPOIS_DE)."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
-        pintor.fillRect(self.rect(), QColor(FUNDO))
-        pintor.setPen(QPen(QColor(BORDA), 1))
+        c = _cores()
+        pintor.fillRect(self.rect(), QColor(c["fundo"]))
+        pintor.setPen(QPen(QColor(c["borda"]), 1))
         pintor.drawLine(self.width() - 1, 0, self.width() - 1, self.height())
 
         for indice, ferramenta in enumerate(ORDEM_DA_TRILHA):
             topo = self._posicao_de(indice)
             if indice == SEPARA_DEPOIS_DE:
-                pintor.setPen(QPen(QColor(BORDA), 1))
+                pintor.setPen(QPen(QColor(c["borda"]), 1))
                 pintor.drawLine(8, topo - 6, LARGURA - 8, topo - 6)
             self._desenhar_item(pintor, ferramenta, topo)
 
@@ -141,20 +151,21 @@ class TrilhaFerramentas(QWidget):
         escolhida = ferramenta == self.ferramenta
         altura = self._altura_do_item()
         lado = self._lado_do_icone()
+        c = _cores()
 
         if escolhida:
-            pintor.fillRect(QRect(0, topo, LARGURA, altura), QColor(ESCOLHIDO_FUNDO))
-            pintor.fillRect(QRect(0, topo, 3, altura), QColor(ESCOLHIDO_BORDA))
+            pintor.fillRect(QRect(0, topo, LARGURA, altura), QColor(c["escolhido_fundo"]))
+            pintor.fillRect(QRect(0, topo, 3, altura), QColor(c["escolhido_borda"]))
         elif ferramenta == self._sob_o_mouse:
-            pintor.fillRect(QRect(0, topo, LARGURA, altura), QColor("#efece6"))
+            pintor.fillRect(QRect(0, topo, LARGURA, altura), QColor(c["aceso"]))
 
-        cor = QColor(ESCOLHIDO_BORDA if escolhida else TRACO)
+        cor = QColor(c["escolhido_traco"] if escolhida else c["traco"])
         pintor.setPen(QPen(cor, 1.4))
         pintor.setBrush(Qt.NoBrush)
         x = (LARGURA - lado) // 2
         self._desenhar_icone(pintor, ferramenta, x, topo + 3, lado)
 
-        pintor.setPen(QColor(ESCOLHIDO_BORDA if escolhida else LETRA_FRACA))
+        pintor.setPen(QColor(c["escolhido_traco"] if escolhida else c["letra"]))
         fonte = pintor.font()
         fonte.setPointSize(7)
         pintor.setFont(fonte)
@@ -200,7 +211,7 @@ class TrilhaFerramentas(QWidget):
 
         elif ferramenta == FERRAMENTA_COR:
             pintor.drawLine(x + 2, y + lado - 2, x + lado - 8, y + 6)
-            pintor.setBrush(QColor(ESCOLHIDO_BORDA))
+            pintor.setBrush(QColor(estilo.cor("azul")))
             pintor.drawEllipse(QPoint(x + lado - 6, y + 6), 5, 5)
             pintor.setBrush(Qt.NoBrush)
 

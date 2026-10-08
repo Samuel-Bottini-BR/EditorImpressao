@@ -29,7 +29,7 @@ from PySide6.QtWidgets import (
 )
 
 from core.folha import TAMANHOS_DE_PAPEL_CM, tamanho_da_folha_cabe
-from ui.estilo import FOLHA_DE_ESTILO
+from ui import estilo
 
 
 class DialogoTamanhoDaFolha(QDialog):
@@ -53,7 +53,7 @@ class DialogoTamanhoDaFolha(QDialog):
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Tamanho da folha")
-        self.setStyleSheet(FOLHA_DE_ESTILO)
+        estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
         self.setMinimumWidth(340)
 
         self._largura_recorte_cm = largura_recorte_cm
@@ -94,7 +94,7 @@ class DialogoTamanhoDaFolha(QDialog):
         camadas.addLayout(papeis)
 
         self.aviso = QLabel("")
-        self.aviso.setStyleSheet("color: #b45309;")
+        estilo.estilizar(self.aviso, lambda: f"color: {estilo.cor('aviso')};")
         self.aviso.setWordWrap(True)
         camadas.addWidget(self.aviso)
 

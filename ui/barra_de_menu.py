@@ -181,6 +181,26 @@ class BarraDeMenu(QMenuBar):
         menu.addSeparator()
         item = self._acao(menu, "comparar", "Modo comparar")
         item.setCheckable(True)
+        # Etapa 1 do layout (temas, rodada 7: os três ficam, cinza de
+        # fábrica). Lugar provisório: onde a troca de tema mora ainda não foi
+        # decidido (pode ir para as Configurações).
+        from PySide6.QtGui import QActionGroup
+
+        from ui.estilo import NOMES_DOS_TEMAS, TEMAS
+        menu.addSeparator()
+        submenu = menu.addMenu("Tema")
+        self.grupo_de_temas = QActionGroup(self.janela)
+        self.grupo_de_temas.setExclusive(True)
+        for nome in TEMAS:
+            item = self._acao(submenu, f"tema_{nome}", NOMES_DOS_TEMAS[nome])
+            item.setCheckable(True)
+            self.grupo_de_temas.addAction(item)
+
+    def marcar_tema(self, nome: str) -> None:
+        """Deixa marcado, no menu Ver > Tema, o tema que está valendo."""
+        item = self.acoes.get(f"tema_{nome}")
+        if item is not None:
+            item.setChecked(True)
 
     def _montar_ajuda(self) -> None:
         menu = self._menu("Ajuda")
