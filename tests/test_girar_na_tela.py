@@ -56,6 +56,10 @@ def test_a_barrinha_existe_na_linha_das_abas_e_sem_emoji(janela, pasta):
     tela = _aberta(janela, pasta)
     barra = tela.barra_girar
     assert barra.parentWidget() is tela.linha_das_abas
+    # Etapa 2 do layout (sem abas): a "linha das abas", com a barrinha, mora
+    # agora na linha dos menus, ao lado da barra de opcoes (R8 303 B)
+    assert tela.linha_das_abas.parentWidget() is janela.linha_dos_menus
+    assert tela.linha_das_abas.isVisible()
     # o nome de cada botao (na janela estreita o botao mostra so o icone)
     textos = [barra._textos[g] for g in barra.botoes_de_giro]
     assert textos == ["¼ à esquerda", "¼ à direita", "meia volta"]
@@ -70,24 +74,21 @@ def test_a_barrinha_existe_na_linha_das_abas_e_sem_emoji(janela, pasta):
 
 @pytest.mark.parametrize("largura, altura", [(1280, 657), (1000, 680)])
 def test_a_barrinha_cabe_sem_espremer_as_abas(janela, pasta, app, largura, altura):
-    """A barrinha nunca passa da janela nem espreme as abas; quando o nome
-    escrito nao cabe, fica so o icone (com o nome no balao). Em 1280 x 657
-    com as fontes do Windows cabe com o nome (conferido nos prints do
-    relatorio); aqui, sem fontes de verdade (offscreen), so a regra."""
+    """A barrinha nunca passa da janela nem espreme os menus (etapa 2 do
+    layout: as abas sairam da tela e a barrinha mora na linha dos menus);
+    quando o nome escrito nao cabe, fica so o icone (com o nome no balao).
+    Aqui, sem fontes de verdade (offscreen), so a regra."""
     tela = _aberta(janela, pasta)
     janela.resize(largura, altura)
     for _ in range(5):
         app.processEvents()
-    barra, abas = tela.barra_girar, tela.barra_abas
+    tela._acertar_a_barra_girar()
+    barra, menus = tela.barra_girar, janela.menu
     direita = barra.mapTo(janela, barra.rect().topRight()).x()
     assert direita <= janela.width(), "a barrinha nao passa da janela"
-    disponivel = janela.width() - 40
-    if abas.sizeHint().width() + 8 + barra.sizeHint().width() <= disponivel:
-        # (sem fontes de verdade as abas ficam bem mais largas que no Windows)
-        assert abas.width() >= abas.sizeHint().width(), "as abas nao sao espremidas"
-    assert abas.height() >= abas.sizeHint().height() > 0, "as abas tem altura"
-    margens = tela.layout().contentsMargins()
-    sobra = tela.width() - margens.left() - margens.right() - abas.sizeHint().width() - 8
+    assert menus.width() >= menus.sizeHint().width(), "os menus nao sao espremidos"
+    assert not tela.barra_abas.isVisible(), "sem abas na tela"
+    sobra = tela.sobra_para_a_barra_girar()
     assert barra._compacta is (sobra < barra.largura_com_texto())
     if barra._compacta:
         assert all(b.text() == "" for b in barra.botoes_de_giro.values())

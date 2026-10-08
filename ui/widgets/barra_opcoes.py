@@ -65,8 +65,11 @@ class BarraOpcoes(QFrame):
         somar/tirar) e comeca ja no estado da ferramenta "retangulo"."""
         super().__init__(parent)
         self.setFixedHeight(ALTURA)
+        # Etapa 2 do layout: a barra mora na linha dos menus (R8 303 B), sem
+        # fundo nem risco próprios - a linha dos menus já tem os dela.
         estilo.estilizar(self, lambda: (
-            f"QFrame {{ background: {estilo.cor('bar')}; border-bottom: 1px solid {estilo.cor('linha')}; }}"))
+            "QFrame { background: transparent; border: none; }"
+            f" QLabel {{ color: {estilo.cor('forte')}; }}"))
 
         self.linha = QHBoxLayout(self)
         self.linha.setContentsMargins(12, 0, 12, 0)
@@ -85,8 +88,15 @@ class BarraOpcoes(QFrame):
 
         self.dica = QLabel("")
         estilo.estilizar(self.dica, lambda: f"color: {estilo.TEXTO_FRACO}; border: none;")
+        # na linha dos menus (etapa 2 do layout) a dica cede lugar: em janela
+        # estreita ela é cortada, em vez de empurrar os menus para o "..."
+        from PySide6.QtWidgets import QSizePolicy
+        self.dica.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        self.dica.setMinimumWidth(0)
         self.linha.addStretch()
-        self.linha.addWidget(self.dica)
+        # com a largura "ignorada" (ver acima), a dica só ganha espaço se tiver
+        # peso: sem isto as duas molas ficavam com tudo e a dica sumia
+        self.linha.addWidget(self.dica, 8)
         self.linha.addStretch()
 
         self._montar_modos()
@@ -163,6 +173,24 @@ class BarraOpcoes(QFrame):
         de_marcar = ferramenta not in FERRAMENTAS_DE_NAVEGACAO
         for botao in self.botoes_modo.values():
             botao.setVisible(de_marcar)
+
+    def largura_desejada(self) -> int:
+        """A largura para mostrar tudo, com a dica inteira (a dica cede lugar
+        quando falta espaço, mas é ela que diz o que fazer: a barrinha de
+        girar, na mesma linha, fica só com os ícones antes de cortar a dica)."""
+        return self.sizeHint().width() + self.dica.fontMetrics().horizontalAdvance(self.dica.text()) + 20
+
+    def definir_ferramenta_da_pagina(self, nome: str, dica: str) -> None:
+        """Etapa 2 do layout: as ferramentas que eram abas (Dividir, Cortar,
+        Endireitar e, até a etapa 4, Os quatro filtros) não têm controles
+        aqui: a barra diz o nome e o que fazer. Somar e tirar somem. A
+        ferramenta de marcar guardada (self.ferramenta) não muda, para voltar
+        a ela ao voltar a marcar."""
+        self._limpar()
+        self.rotulo.setText(f"{nome}:")
+        self.dica.setText(dica)
+        for botao in self.botoes_modo.values():
+            botao.setVisible(False)
 
     def _limpar(self) -> None:
         """Remove os controles da ferramenta anterior antes de montar a nova faixa."""

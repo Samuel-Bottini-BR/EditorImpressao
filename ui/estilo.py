@@ -376,6 +376,25 @@ QToolTip {{
 }}
 
 QMessageBox, QDialog {{ background: {c["app"]}; }}
+
+/* Etapa 2 do layout: a linha dos menus (menus + barra de opções + girar), a
+   barra de baixo da tela de trabalho e o fundo atrás da página. */
+QWidget#linhaDosMenus {{ background: {c["bar"]}; border-bottom: 1px solid {c["linha"]}; }}
+QWidget#linhaDosMenus QMenuBar {{ border: none; }}
+QFrame#separadorDosMenus {{ background: {c["sep"]}; }}
+QFrame#barraDeBaixo {{ background: {c["bar"]}; border-top: 1px solid {c["linha"]}; }}
+QLabel#rotuloDaBarraDeBaixo {{ color: {c["fraco"]}; font-size: 12px; }}
+QPushButton#botaoDaBarraDeBaixo {{ background: transparent; border: 1px solid transparent;
+    border-radius: 4px; padding: 0px 7px; min-height: 22px; font-size: 16px; color: {c["fraco"]}; }}
+QPushButton#botaoDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
+QPushButton#botaoDaBarraDeBaixo:disabled {{ color: {c["desligado"]}; background: transparent; }}
+QStackedWidget#areaDaPagina {{ background: {c["tela"]}; }}
+/* os botões da ferramenta embaixo da página (provisório até a etapa 4): mais
+   enxutos, para caber a fila inteira entre a trilha e os painéis */
+QStackedWidget#barraDeBotoes QPushButton {{ padding: 5px 10px; font-size: 13px; border-radius: 6px; }}
+QStackedWidget#barraDeBotoes QComboBox {{ padding: 4px 8px; font-size: 13px; }}
+QStackedWidget#barraDeBotoes QLabel {{ font-size: 13px; }}
+QStackedWidget#barraDeBotoes QCheckBox {{ font-size: 13px; }}
 """
 
 

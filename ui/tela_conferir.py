@@ -86,6 +86,7 @@ from __future__ import annotations
 
 import functools
 import traceback
+from pathlib import Path
 
 import numpy as np
 
@@ -137,7 +138,16 @@ from ui.widgets.editor_selecao import (
     ferramenta_da_tecla,
 )
 from ui.widgets.paineis import ColunaDePaineis
-from ui.widgets.trilha_ferramentas import TrilhaFerramentas
+from ui.widgets.trilha_agrupada import (
+    FERRAMENTA_CORTAR,
+    FERRAMENTA_DIVIDIR,
+    FERRAMENTA_ENDIREITAR,
+    FERRAMENTA_FILTROS,
+    FERRAMENTAS_DA_PAGINA,
+    NOMES as NOMES_DA_TRILHA,
+    USOS as USOS_DA_TRILHA,
+    TrilhaAgrupada,
+)
 
 from ui.widgets.medidor import Medidor
 from ui.widgets.tira_miniaturas import TiraMiniaturas
@@ -301,6 +311,10 @@ class TelaConferir(QWidget):
     # janela comeca a conversao por tras se ela nao estiver andando.
     marcacoes_por_converter = Signal()
 
+    # Etapa 2 do layout: o botao do Historico da barra de baixo foi apertado
+    # (a janela marca o "Painel: Historico" do menu Ver).
+    historico_pedido = Signal()
+
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.projeto: Projeto | None = None
@@ -355,9 +369,26 @@ class TelaConferir(QWidget):
     # ------------------------------------------------------------------
 
     def _montar(self) -> None:
+        """Etapa 2 do layout (08/10/2026): a tela de trabalho sem abas, como
+        o Samuel decidiu (estilo Photoshop, 25/09; rodadas 7 a 9):
+
+            linha dos menus  (a janela põe ali a barra de opções da
+                              ferramenta e a barrinha de girar: R8 303 B)
+            trilha | página                         | painéis
+                   | faixa fina do conferir         |
+                   | botões da ferramenta (provisório até a etapa 4)
+                   | miniaturas + Confirmar e processar
+                   | barra de baixo: página N de M, desfazer, refazer,
+                   |   histórico, o livro e quantas faltam
+
+        As abas continuam por dentro (barra_abas, escondida): cada ferramenta
+        de página da trilha escolhe a "aba" dela, e tudo o que já dependia da
+        aba da vez (a tira em folhas ou páginas, a prévia, os botões) segue
+        igual. Assim nenhum botão sumiu: só mudaram de lugar.
+        """
         camadas = QVBoxLayout(self)
-        camadas.setContentsMargins(20, 10, 20, 8)
-        camadas.setSpacing(6)
+        camadas.setContentsMargins(0, 0, 0, 0)
+        camadas.setSpacing(0)
 
         # O cabecalho e criado mas NAO entra na tela: ver _montar_cabecalho.
         self._cabecalho_escondido = self._montar_cabecalho()
@@ -365,6 +396,9 @@ class TelaConferir(QWidget):
         self.barra_abas = QTabBar()
         self.barra_abas.setExpanding(False)
         self.barra_abas.currentChanged.connect(self._trocou_de_aba)
+        # Etapa 2 do layout: sem abas na tela. A barra fica por dentro, só
+        # para guardar qual é a "aba" da vez (quem troca é a trilha).
+        self.barra_abas.setVisible(False)
 
         # Item 2.3 (girar; provisorio ate o layout): a barrinha de girar a
         # folha mora na MESMA linha das abas, a direita - a unica faixa em
@@ -376,53 +410,63 @@ class TelaConferir(QWidget):
         # criadas com a tela ainda escondida (carregar), e o QTabBar escondido
         # nao avisa o layout que mudou de tamanho - dentro desta linha ele
         # ficava com altura 0 (achado ao tirar os prints, 06/10).
-        self.linha_das_abas = QWidget()
+        # Etapa 2 do layout: a barrinha de girar e a barra de opções moram na
+        # LINHA DOS MENUS (R8 303 B: "Na mesma linha dos menus"); quem as põe
+        # lá é a janela (JanelaPrincipal._montar_a_linha_dos_menus). Onde o
+        # girar fica de vez ainda não foi decidido (rodada futura).
+        self.linha_das_abas = QWidget(self)
         linha_das_abas = QHBoxLayout(self.linha_das_abas)
-        linha_das_abas.setContentsMargins(0, 0, 0, 0)
+        linha_das_abas.setContentsMargins(0, 0, 6, 0)
         linha_das_abas.setSpacing(8)
-        linha_das_abas.addWidget(self.barra_abas, 1)
-        linha_das_abas.addWidget(self.barra_girar, 0, Qt.AlignBottom)
-        camadas.addWidget(self.linha_das_abas)               # 2
+        linha_das_abas.addWidget(self.barra_abas)
+        linha_das_abas.addWidget(self.barra_girar, 0, Qt.AlignVCenter)
+        self.linha_das_abas.setVisible(False)
 
         # A barra de opcoes: faixa fina que muda conforme a ferramenta na mao.
         # E o que deixa a tela ter nove ferramentas sem entulhar - so os
         # controles da ferramenta ativa aparecem.
-        self.barra_opcoes = BarraOpcoes()
-        camadas.addWidget(self.barra_opcoes)
+        self.barra_opcoes = BarraOpcoes(self)
+        self.barra_opcoes.setVisible(False)
 
-        # 3 - a pagina, com a trilha de ferramentas ao lado. E a unica linha
-        # com stretch, entao fica com todo o espaco que sobrar.
-        meio = QHBoxLayout()
-        meio.setContentsMargins(0, 0, 0, 0)
-        meio.setSpacing(0)
+        # 3 - a trilha, o meio (pagina, faixa, botoes, tira, barra de baixo)
+        # e os paineis. O meio e o unico que cresce.
+        corpo = QHBoxLayout()
+        corpo.setContentsMargins(0, 0, 0, 0)
+        corpo.setSpacing(0)
 
-        self.trilha = TrilhaFerramentas()
-        meio.addWidget(self.trilha)
+        self.trilha = TrilhaAgrupada()
+        self.trilha.escolhida.connect(self._ferramenta_da_trilha)
+        corpo.addWidget(self.trilha)
+
+        centro = QVBoxLayout()
+        centro.setContentsMargins(0, 0, 0, 0)
+        centro.setSpacing(0)
 
         self.area_imagem = QStackedWidget()
+        self.area_imagem.setObjectName("areaDaPagina")
         self.area_imagem.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Minimo pequeno para que a soma de todas as linhas caiba na janela
         # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
         self.area_imagem.setMinimumHeight(112)
-        meio.addWidget(self.area_imagem, 1)
+        centro.addWidget(self.area_imagem, 1)
 
         # Os quatro paineis, na coluna de 172 px do desenho. Eles recebem o que
         # eram linhas de botoes atravessando a tela.
         self.paineis = ColunaDePaineis()
-        meio.addWidget(self.paineis)
-        camadas.addLayout(meio, 1)
 
         self._ligar_paineis()
 
-        self.faixa = QFrame()                                # 4
+        # 4 - a faixa fina do conferir, colada embaixo da pagina (decidido em
+        # 05/10: "faixa fina embaixo da página").
+        self.faixa = QFrame()
         self.faixa.setObjectName("faixaInfo")
         self.faixa.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         faixa_camadas = QHBoxLayout(self.faixa)
-        faixa_camadas.setContentsMargins(14, 9, 14, 9)
+        faixa_camadas.setContentsMargins(14, 6, 14, 6)
         self.texto_faixa = QLabel("")
         self.texto_faixa.setWordWrap(True)
         faixa_camadas.addWidget(self.texto_faixa, 1)
-        camadas.addWidget(self.faixa)
+        centro.addWidget(self.faixa)
 
         # A fila de botoes de cada aba. O QStackedWidget reserva, por padrao, a
         # altura da MAIOR pagina dele - entao a aba de Marcar, que agora tem uma
@@ -432,9 +476,15 @@ class TelaConferir(QWidget):
         # A conta e feita a mao em _encolher_a_barra_de_botoes: as paginas que
         # nao estao na frente passam a ser ignoradas no calculo, e a pilha
         # ganha a altura da atual. A troca de aba reavalia.
+        # Etapa 2 do layout: PROVISORIO ate a etapa 4, quando estes botoes
+        # vao para o painel Propriedades (R9 402 C: muda conforme a ferramenta).
         self.barra_botoes = QStackedWidget()                 # 5
+        self.barra_botoes.setObjectName("barraDeBotoes")
         self.barra_botoes.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        camadas.addWidget(self.barra_botoes)
+        caixa_dos_botoes = QVBoxLayout()
+        caixa_dos_botoes.setContentsMargins(10, 6, 10, 4)
+        caixa_dos_botoes.addWidget(self.barra_botoes)
+        centro.addLayout(caixa_dos_botoes)
 
         # A tira e o botao de processar dividem UMA faixa, como no desenho: a
         # tira a esquerda, "Confirmar e processar" no canto direito. Eram duas
@@ -445,12 +495,114 @@ class TelaConferir(QWidget):
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
 
         faixa_da_tira = QHBoxLayout()
-        faixa_da_tira.setContentsMargins(0, 0, 0, 0)
+        faixa_da_tira.setContentsMargins(6, 2, 10, 4)
         faixa_da_tira.setSpacing(10)
         faixa_da_tira.addWidget(self.tira, 1)
         self._montar_rodape()
         faixa_da_tira.addWidget(self.botao_processar)
-        camadas.addLayout(faixa_da_tira)
+        centro.addLayout(faixa_da_tira)
+
+        # 7 - a barra de baixo (etapa 2 do layout, R9 405 C: desfazer e refazer
+        # sempre a mao, mais o painel Historico).
+        centro.addWidget(self._montar_barra_de_baixo())
+
+        corpo.addLayout(centro, 1)
+        corpo.addWidget(self.paineis)
+        camadas.addLayout(corpo, 1)
+
+    def _montar_barra_de_baixo(self) -> QWidget:
+        """A barra fina de baixo, como no prototipo das rodadas 9 a 11:
+        "< pagina N de M >", desfazer, refazer e o Historico, o nome do livro
+        e quantas foram conferidas e quantas tem duvida. As setas "<" e ">"
+        que ficavam dos lados da pagina moraram aqui (as dos lados ficam
+        escondidas: a roda do mouse e as setas do teclado continuam)."""
+        barra = QFrame()
+        barra.setObjectName("barraDeBaixo")
+        barra.setFixedHeight(30)
+        linha = QHBoxLayout(barra)
+        linha.setContentsMargins(10, 0, 10, 0)
+        linha.setSpacing(6)
+
+        def botao_pequeno(texto: str, dica: str, acao) -> QPushButton:
+            botao = QPushButton(texto)
+            botao.setObjectName("botaoDaBarraDeBaixo")
+            botao.setToolTip(dica)
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)
+            _ligar(botao, acao)
+            linha.addWidget(botao)
+            return botao
+
+        self.botao_anterior = botao_pequeno("‹", "página anterior (seta para a esquerda)",
+                                            lambda: self._navegar(-1))
+        self.rotulo_da_pagina = QLabel("")
+        self.rotulo_da_pagina.setObjectName("rotuloDaBarraDeBaixo")
+        linha.addWidget(self.rotulo_da_pagina)
+        self.botao_proxima = botao_pequeno("›", "próxima página (seta para a direita)",
+                                           lambda: self._navegar(1))
+        linha.addSpacing(8)
+        self.botao_desfazer_embaixo = botao_pequeno(
+            "", "Desfazer (Ctrl+Z)", self.desfazer)
+        self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
+        self.botao_refazer_embaixo = botao_pequeno(
+            "", "Refazer (Ctrl+Shift+Z)", self.refazer)
+        self.botao_refazer_embaixo.setIcon(_icone_da_barra("refazer"))
+        self.botao_historico_embaixo = botao_pequeno(
+            "", "Mostrar o painel Histórico (a lista do que foi feito)",
+            self._mostrar_o_historico)
+        self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
+        linha.addSpacing(8)
+        self.rotulo_do_livro = QLabel("")
+        self.rotulo_do_livro.setObjectName("rotuloDaBarraDeBaixo")
+        linha.addWidget(self.rotulo_do_livro, 1)
+        # os icones desenhados a mao acompanham a troca de tema
+        estilo.estilizar(barra, self._icones_da_barra_de_baixo)
+        return barra
+
+    def _icones_da_barra_de_baixo(self) -> str:
+        """(Re)desenha os icones da barra de baixo na cor do tema da vez; a
+        folha dela mora em ui/estilo.py (QFrame#barraDeBaixo)."""
+        self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
+        self.botao_refazer_embaixo.setIcon(_icone_da_barra("refazer"))
+        self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
+        return ""
+
+    def _mostrar_o_historico(self) -> None:
+        """Botao do Historico na barra de baixo: abre o painel Historico (na
+        etapa 3 ele vira um icone da coluna da direita)."""
+        painel = self.paineis.historico
+        self.paineis.mostrar_painel("historico", True)
+        painel.definir_recolhido(False)
+        self.paineis.ensureWidgetVisible(painel)
+        self.historico_pedido.emit()
+
+    def _atualizar_barra_de_baixo(self) -> None:
+        """Pagina (ou folha, no Dividir), desfazer/refazer acesos so quando ha
+        o que fazer, e o andamento do livro."""
+        if self.projeto is None or not hasattr(self, "rotulo_da_pagina"):
+            return
+        if self.trabalha_com_folhas:
+            texto = f"folha {self.indice_folha + 1} de {len(self.projeto.folhas)}"
+        else:
+            texto = f"página {self.indice_pagina + 1} de {len(self.projeto.paginas)}"
+        self.rotulo_da_pagina.setText(texto)
+        total = self._total()
+        self.botao_anterior.setEnabled(self.indice_atual > 0)
+        self.botao_proxima.setEnabled(self.indice_atual < total - 1)
+        feitas = bool(self.acoes and self.acoes.feitas)
+        desfeitas = bool(self.acoes and self.acoes.desfeitas)
+        self.botao_desfazer_embaixo.setEnabled(feitas)
+        self.botao_refazer_embaixo.setEnabled(desfeitas)
+        if feitas:
+            self.botao_desfazer_embaixo.setToolTip(
+                f"Desfazer: {self.acoes.feitas[-1].descricao} (Ctrl+Z)")
+        paginas = self.projeto.paginas
+        conferidas = sum(1 for p in paginas if p.revisada)
+        duvidas = sum(1 for p in paginas if p.precisa_revisao)
+        nome = Path(self.projeto.caminho_entrada).stem if self.projeto.caminho_entrada else ""
+        self.rotulo_do_livro.setText(
+            f"{nome} · {conferidas} de {len(paginas)} conferidas · "
+            f"{duvidas} com dúvida")
 
 
     def _ligar_paineis(self) -> None:
@@ -487,9 +639,8 @@ class TelaConferir(QWidget):
         botoes que sabia disso e o editor que sabia de novo, e os dois saiam do
         ar quando alguem esquecia de avisar o outro.
         """
-        self.trilha.escolhida.connect(self.barra_opcoes.definir_ferramenta)
-        self.trilha.escolhida.connect(self.editor_selecao.definir_ferramenta)
-
+        # Etapa 2 do layout: a trilha agrupada avisa a tela
+        # (_ferramenta_da_trilha), e a tela avisa a barra e o editor.
         opcoes, editor = self.barra_opcoes, self.editor_selecao
         opcoes.operacao_mudou.connect(editor.definir_operacao)
         opcoes.tolerancia_mudou.connect(
@@ -503,10 +654,49 @@ class TelaConferir(QWidget):
         self.barra_opcoes.definir_ferramenta(FERRAMENTA_RETANGULO)
 
     def escolher_ferramenta(self, ferramenta: str) -> None:
-        """Ponto unico de troca - usado tambem pelos atalhos de letra."""
+        """Ponto unico de troca - usado tambem pelos atalhos de letra.
+
+        Etapa 2 do layout (sem abas): as ferramentas de marcar so trabalham
+        na pagina de marcar, entao escolher uma delas (na trilha ou pela
+        letra) leva a tela para la, como no Photoshop."""
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
         self.editor_selecao.definir_ferramenta(ferramenta)
+        if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
+            self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
+
+    def _ferramenta_da_trilha(self, ferramenta: str) -> None:
+        """Clique na trilha. As de pagina (Dividir, Cortar, Endireitar e, ate a
+        etapa 4, Os quatro filtros) escolhem a "aba" delas; as de marcar e de
+        navegar vao para a pagina de marcar."""
+        aba = ABA_DA_FERRAMENTA.get(ferramenta)
+        if aba is not None:
+            if aba in self._abas_ativas:
+                self.barra_abas.setCurrentIndex(self._abas_ativas.index(aba))
+            return
+        if hasattr(self, "editor_selecao") and ABA_MARCAR in self._abas_ativas:
+            self.escolher_ferramenta(ferramenta)
+
+    def _acertar_a_trilha(self) -> None:
+        """A trilha mostra so as ferramentas deste livro e marca a da vez."""
+        disponiveis = {f for f, aba in ABA_DA_FERRAMENTA.items() if aba in self._abas_ativas}
+        if ABA_MARCAR in self._abas_ativas:
+            from ui.widgets.editor_selecao import ORDEM_DA_TRILHA
+            disponiveis.update(ORDEM_DA_TRILHA)
+        self.trilha.definir_disponiveis(disponiveis)
+        aba = self.aba_atual
+        if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            ferramenta = self.barra_opcoes.ferramenta
+        else:
+            ferramenta = FERRAMENTA_DA_ABA.get(aba)
+        self.trilha.definir_ferramenta(ferramenta)
+        # a barra de opcoes, na linha dos menus, diz a ferramenta de pagina
+        if aba != ABA_MARCAR and ferramenta in FERRAMENTAS_DA_PAGINA:
+            self.barra_opcoes.definir_ferramenta_da_pagina(
+                NOMES_DA_TRILHA[ferramenta], USOS_DA_TRILHA[ferramenta])
+        elif aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            self.barra_opcoes.definir_ferramenta(self.barra_opcoes.ferramenta)
+        self._acertar_a_barra_girar()   # a dica mudou de tamanho
 
     def _montar_cabecalho(self) -> QWidget:
         """Os controles do antigo cabecalho, que agora vivem em outros lugares.
@@ -1504,31 +1694,48 @@ class TelaConferir(QWidget):
             self.barra_abas.setCurrentIndex(0)
             self._encolher_a_barra_de_botoes()
             self._acertar_a_barra_girar()
+            self._esconder_as_setas_dos_lados()
         finally:
             self._carregando = False
+        self._acertar_a_trilha()
 
         self._montar_tira()
         self._aquecer_o_leitor_se_precisar()
         self.atualizar()
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
-        """A barrinha de girar (item 2.3) cabe ao lado das abas?"""
+        """A barrinha de girar (item 2.3) cabe com o nome escrito?"""
         super().resizeEvent(evento)
         self._acertar_a_barra_girar()
 
+    def sobra_para_a_barra_girar(self) -> int:
+        """Quanto sobra na linha dos menus para a barrinha de girar (etapa 2
+        do layout: ela mora la, depois dos menus e da barra de opcoes). Sem a
+        janela (tela solta, nos testes), conta a largura da propria tela."""
+        linha = self.linha_das_abas.parentWidget()
+        if linha is None or linha is self:
+            return self.width()
+        ocupado = sum(w.largura_desejada() if hasattr(w, "largura_desejada") else w.sizeHint().width()
+                      for w in getattr(linha, "pecas_fixas", ()))
+        return linha.width() - ocupado - 24
+
     def _acertar_a_barra_girar(self) -> None:
-        """Acerta a linha das abas depois de montar as abas e a cada mudanca
-        de tamanho: a altura das abas (ver _montar) e, em janela estreita, a
-        barrinha de girar so com os icones (o nome fica no balao), para nunca
-        empurrar as abas nem passar da janela. A conta e a largura da tela
-        menos as margens e as abas. Seguro mudar a
-        folga; arriscado tirar (na janela minima de 1000 px as abas e a barra
-        com texto nao cabem juntas)."""
-        self.barra_abas.setMinimumHeight(self.barra_abas.sizeHint().height())
-        margens = self.layout().contentsMargins()
-        sobra = (self.width() - margens.left() - margens.right()
-                 - self.barra_abas.sizeHint().width() - 8)
-        self.barra_girar.definir_compacta(sobra < self.barra_girar.largura_com_texto())
+        """Em janela estreita, a barrinha de girar so com os icones (o nome
+        fica no balao), para nunca empurrar a barra de opcoes nem passar da
+        janela. Seguro mudar a folga; arriscado tirar (na janela minima de
+        1000 px os menus, a barra de opcoes e o girar com texto nao cabem
+        juntos)."""
+        self.barra_girar.definir_compacta(
+            self.sobra_para_a_barra_girar() < self.barra_girar.largura_com_texto())
+
+    def _esconder_as_setas_dos_lados(self) -> None:
+        """Etapa 2 do layout: as setas "<" e ">" dos lados da pagina viraram
+        as da barra de baixo ("< pagina N de M >"), como no prototipo. As dos
+        lados ficam escondidas (nao apagadas: cada aba ainda as cria)."""
+        for pagina in self.paginas_de_imagem.values():
+            for botao in pagina.findChildren(QPushButton):
+                if botao.text() in ("<", ">"):
+                    botao.setVisible(False)
 
     def _limpar_abas(self) -> None:
         """Descarta as abas de um projeto anterior antes de montar as novas."""
@@ -1669,6 +1876,7 @@ class TelaConferir(QWidget):
         # da aba mais alta pelo resto da sessao, e o buraco voltaria.
         self._encolher_a_barra_de_botoes()
         self._montar_tira()
+        self._acertar_a_trilha()
         self.atualizar()
 
     def _encolher_a_barra_de_botoes(self) -> None:
@@ -1743,6 +1951,7 @@ class TelaConferir(QWidget):
         self._atualizar_tira()
         self._atualizar_contador()
         self._atualizar_paineis()
+        self._atualizar_barra_de_baixo()
         self.trabalho_mudou.emit()
 
     def _atualizar_paineis(self) -> None:
@@ -3382,3 +3591,53 @@ def _botao(texto: str, destino: QHBoxLayout, acao, objeto: str = "") -> QPushBut
     _ligar(botao, acao)
     destino.addWidget(botao)
     return botao
+
+
+# --- etapa 2 do layout: a trilha no lugar das abas -------------------------
+# Cada ferramenta de pagina da trilha escolhe a "aba" dela (as abas ficam por
+# dentro, escondidas). "Os quatro filtros" e provisorio ate a etapa 4.
+ABA_DA_FERRAMENTA = {
+    FERRAMENTA_DIVIDIR: ABA_CORTE,
+    FERRAMENTA_CORTAR: ABA_BORDAS,
+    FERRAMENTA_ENDIREITAR: ABA_ANGULO,
+    FERRAMENTA_FILTROS: ABA_FILTRO,
+}
+FERRAMENTA_DA_ABA = {aba: ferramenta for ferramenta, aba in ABA_DA_FERRAMENTA.items()}
+
+
+def _icone_da_barra(qual: str):
+    """Os icones da barra de baixo (desfazer, refazer, historico), desenhados a
+    mao na cor do texto do tema (nada de emoji em rotulo)."""
+    from PySide6.QtCore import QPointF, QRectF
+    from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
+
+    escala, lado = 3, 16
+    imagem = QPixmap(lado * escala, lado * escala)
+    imagem.fill(Qt.transparent)
+    p = QPainter(imagem)
+    p.setRenderHint(QPainter.Antialiasing)
+    p.scale(escala, escala)
+    p.setPen(QPen(QColor(estilo.cor("texto")), 1.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+    caminho = QPainterPath()
+    if qual in ("desfazer", "refazer"):
+        caminho.moveTo(3, 6)
+        caminho.lineTo(10, 6)
+        caminho.arcTo(QRectF(6, 6, 8, 8), 90, -180)
+        caminho.lineTo(7, 14)
+        p.drawPath(caminho)
+        p.drawLine(QPointF(3, 6), QPointF(6, 3))
+        p.drawLine(QPointF(3, 6), QPointF(6, 9))
+        if qual == "refazer":
+            p.end()
+            from PySide6.QtGui import QTransform
+            # espelhado pela transformação (o QImage.mirrored saiu de uso no Qt 6)
+            imagem = imagem.transformed(QTransform().scale(-1, 1))
+            imagem.setDevicePixelRatio(escala)
+            return QIcon(imagem)
+    else:
+        p.drawEllipse(QRectF(2.5, 2.5, 11, 11))
+        p.drawLine(QPointF(8, 5), QPointF(8, 8))
+        p.drawLine(QPointF(8, 8), QPointF(10.5, 9.5))
+    p.end()
+    imagem.setDevicePixelRatio(escala)
+    return QIcon(imagem)
