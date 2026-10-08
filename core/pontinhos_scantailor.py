@@ -47,7 +47,10 @@ O DPI
     jeito que o detector de gravura do item 1.2.
 
 O QUE É SEGURO MUDAR
-    Os textos da tela (NOMES_NA_TELA, EXPLICACAO_NA_TELA).
+    Os textos da tela (ROTULO_NA_TELA, NOMES_NA_TELA, EXPLICACAO_NA_TELA,
+    FRASE_DO_DESFAZER). Desde 07/10/2026 são os nomes que o Samuel escolheu
+    na Rodada 10 do layout ("Limpar a sujeira": Sem limpeza · Limpeza bruta ·
+    Limpeza cuidadosa leve/média/forte); ver "A ESCOLHA NO PROGRAMA".
 
 O QUE É ARRISCADO
     - FORCAS: mudar o número muda o que o Samuel vai ver lado a lado.
@@ -174,8 +177,12 @@ def preto_e_branco_com_pontinhos_do_scantailor(
 # vira DESLIGADO (modelos.Projeto.de_dicionario). Assim um livro já
 # conferido não muda sem o Samuel saber.
 #
-# Seguro mudar: ROTULO_NA_TELA, NOMES_NA_TELA e EXPLICACAO_NA_TELA (os
-# textos; só a tela os lê). Arriscado: os códigos (vão para o projeto.json;
+# Na tela, desde 07/10/2026, a escolha chama "Limpar a sujeira" (nomes da
+# Rodada 10 do layout; ver ROTULO_NA_TELA, abaixo). No código e no
+# projeto.json continua "limpar_pontinhos".
+#
+# Seguro mudar: ROTULO_NA_TELA, NOMES_NA_TELA, EXPLICACAO_NA_TELA e
+# FRASE_DO_DESFAZER (os textos; só a tela os lê). Arriscado: os códigos (vão para o projeto.json;
 # mudar um quebra os livros salvos com ele - escolha_valida faria o livro
 # cair no de fábrica) e PADRAO (é a decisão do Samuel).
 # =============================================================================
@@ -204,24 +211,36 @@ DO_PROJETO_ANTIGO = NOSSO         # livro salvo antes da escolha existir
 
 # TODOS os textos da tela desta escolha moram aqui, e só aqui (a tela "O
 # que fazer", a aba Filtro e a frase do desfazer leem daqui).
-# NOMES PROVISÓRIOS, A ESCOLHER PELO SAMUEL: ele disse, vendo o desenho da
-# tela (06/10/2026), que "o nosso" e "limpar pontinhos" não servem para o
-# Kaique ("como o Kaique vai diferenciar qual é qual [...] como ele vai
-# saber o que é isso, precisa de opções para esses nomes de botão"). Os
-# nomes saem de uma rodada de layout; trocar aqui não mexe em nada da
-# lógica nem nos projetos salvos (que guardam os códigos, acima).
-ROTULO_NA_TELA = "Limpar pontinhos:"
-NOMES_NA_TELA = {DESLIGADO: "desligado", NOSSO: "o nosso", POUCO: "pouco",
-                 NORMAL: "normal", MUITO: "muito"}
+# Os nomes de 06/10 ("Limpar pontinhos:" desligado · o nosso · pouco ·
+# normal · muito) eram provisórios: o Samuel disse, vendo o desenho da tela
+# (06/10/2026), que "o nosso" e "limpar pontinhos" não servem para o Kaique
+# ("como o Kaique vai diferenciar qual é qual [...] como ele vai saber o que
+# é isso, precisa de opções para esses nomes de botão").
+# NOMES ESCOLHIDOS (layout, Rodada 10, pergunta 501, respondida em
+# 07/10/2026 na página "Layout do Editor de Impressão"): "B — Conjunto 2:
+# tipos de limpeza ("Limpeza…", "Guardar…")". Função "Limpar a sujeira";
+# desligado = "Sem limpeza"; o nosso = "Limpeza bruta"; o do ScanTailor =
+# "Limpeza cuidadosa" com a força leve · média · forte (pouco · normal ·
+# muito). As frases são as do conjunto 2 da tabela da Rodada 10 (Plano de
+# layout). Enquanto a tela é provisória (uma lista só, Fase 4 desenha o
+# "menu com amostra" da pergunta 502), a força vai entre parênteses no nome.
+# Trocar aqui não mexe em nada da lógica nem nos projetos salvos (que
+# guardam os códigos, acima).
+ROTULO_NA_TELA = "Limpar a sujeira:"
+NOMES_NA_TELA = {DESLIGADO: "Sem limpeza", NOSSO: "Limpeza bruta",
+                 POUCO: "Limpeza cuidadosa (leve)", NORMAL: "Limpeza cuidadosa (média)",
+                 MUITO: "Limpeza cuidadosa (forte)"}
 EXPLICACAO_NA_TELA = (
-    "Tira os pontinhos pretos soltos no papel (poeira, sujeira do scanner).\n"
-    "pouco, normal e muito: tiram o pontinho solto e deixam o que está perto "
-    "da letra (pingo do i, acento, vírgula); \"muito\" tira mais.\n"
-    "o nosso: o jeito de antes, que tira toda mancha pequena e às vezes come "
-    "pedaço de letra.\n"
-    "desligado: não tira nada.")
-# a frase da ação no menu Editar (Desfazer/Refazer) da aba Filtro
-FRASE_DO_DESFAZER = "Limpar pontinhos na página {pagina}: {nome}"
+    "Limpa a sujeira do papel (pontinhos e poeira) que aparece no preto e branco.\n"
+    "Sem limpeza: a sujeira fica como está.\n"
+    "Limpeza bruta: apaga todo ponto pequeno, sem olhar onde ele está: a borda "
+    "da letra fica lisa, mas some pingo do i, vírgula e tracinho de desenho.\n"
+    "Limpeza cuidadosa: só apaga o que está longe das letras: pingo do i e "
+    "pontuação ficam. Leve, média e forte é a força.")
+# a frase da ação no menu Editar (Desfazer/Refazer) e no Histórico da aba
+# Filtro. Ações gravadas antes de 07/10 guardam a frase velha ("Limpar
+# pontinhos na página N: ...") no acoes.jsonl e continuam aparecendo assim.
+FRASE_DO_DESFAZER = "Limpar a sujeira na página {pagina}: {nome}"
 
 
 def escolha_valida(valor, padrao: str = PADRAO) -> str:
