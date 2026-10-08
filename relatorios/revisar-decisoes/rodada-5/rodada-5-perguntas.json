@@ -1,0 +1,558 @@
+[
+ {
+  "id": "rv5-erro-1-desenho",
+  "ordem": 1,
+  "parte": "Rodada 5 · as três que ficaram confusas, de novo",
+  "pergunta": "Quando o programa apaga uma letra grande: o que o aviso do 'Para revisar' oferece?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Refiz do zero. O que acontece: no Antiphonal 46, a letra T vermelha grande some no Preto e branco com 'Só as letras' de fábrica, e a página vai para 'Para revisar'. A pergunta é só uma: o que o Kaique vê no aviso dessa página? Cada opção tem a imagem do que ele veria e faria. Marcar à mão na aba Marcar continua existindo em qualquer opção.",
+  "exemplos": [
+   {
+    "src": "img/r5-desenho-o-que-acontece.jpg",
+    "legenda": "O que acontece: a letra T vermelha some."
+   },
+   {
+    "src": "img/r5-desenho-op-botao.jpg",
+    "legenda": "Opção 'Botão 'Trazer de volta nesta página'': o Kaique clica no botão do aviso e a letra volta."
+   },
+   {
+    "src": "img/r5-desenho-op-sozinho.jpg",
+    "legenda": "Opção 'O programa traz de volta sozinho': a letra já volta; o aviso diz o que foi feito."
+   },
+   {
+    "src": "img/r5-desenho-op-mao.jpg",
+    "legenda": "Opção 'Sem botão: o Kaique marca à mão': o Kaique desenha o retângulo na aba Marcar."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "botao",
+    "nome": "Botão 'Trazer de volta nesta página'",
+    "texto": "O aviso tem o botão; um clique e a letra volta (só nesta página).",
+    "imgs": [
+     {
+      "src": "img/r5-desenho-op-botao.jpg",
+      "legenda": "o Kaique clica no botão do aviso e a letra volta."
+     }
+    ]
+   },
+   {
+    "id": "sozinho",
+    "nome": "O programa traz de volta sozinho",
+    "texto": "A página já sai com a letra; o aviso conta o que foi feito e tem 'Desfazer'.",
+    "imgs": [
+     {
+      "src": "img/r5-desenho-op-sozinho.jpg",
+      "legenda": "a letra já volta; o aviso diz o que foi feito."
+     }
+    ]
+   },
+   {
+    "id": "mao",
+    "nome": "Sem botão: o Kaique marca à mão",
+    "texto": "O aviso só avisa; ele desenha um retângulo na aba Marcar ('letra e traço').",
+    "imgs": [
+     {
+      "src": "img/r5-desenho-op-mao.jpg",
+      "legenda": "o Kaique desenha o retângulo na aba Marcar."
+     }
+    ]
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Ainda não entendi",
+    "texto": "Diga no comentário o que ficou confuso.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T02:54:58.432Z",
+    "texto": "não entendi",
+    "resposta": "Quero de outro jeito"
+   }
+  ]
+ },
+ {
+  "id": "rv5-erro-5-sem-conteudo",
+  "ordem": 2,
+  "parte": "Rodada 5 · as três que ficaram confusas, de novo",
+  "pergunta": "Página sem conteúdo (em branco, ou só a mancha da página de trás): que botões o aviso mostra?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Refiz do zero. O que você está respondendo: quando o programa acha uma página sem nada do livro (o verso em branco do Egenloff 12, a Rariora 8 que só tem a mancha da página de trás), ela vai para 'Para revisar' com o motivo 'página sem conteúdo'. Pergunto só quais botões aparecem nesse aviso. 'Deixar em branco' põe uma folha branca no lugar (a encadernação não muda); 'Tirar do livro' tira a página de vez (as seguintes andam uma casa). Você já pediu os dois botões separados no outro cartão ('Parece em branco'); aqui é para esta página.",
+  "exemplos": [
+   {
+    "src": "img/r5-vazia-o-que-acontece.jpg",
+    "legenda": "O que acontece: a página não tem nada do livro."
+   },
+   {
+    "src": "img/r5-vazia-op-branco.jpg",
+    "legenda": "Opção 'Os dois botões: 'Deixar em branco' e 'Tirar do livro'': 'Deixar em branco': folha branca no lugar."
+   },
+   {
+    "src": "img/r5-vazia-op-tirar.jpg",
+    "legenda": "Opção 'Os dois botões: 'Deixar em branco' e 'Tirar do livro'': 'Tirar do livro': a página sai e as outras andam."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "os-dois",
+    "nome": "Os dois botões: 'Deixar em branco' e 'Tirar do livro'",
+    "texto": "O Kaique escolhe em cada página.",
+    "imgs": [
+     {
+      "src": "img/r5-vazia-op-branco.jpg",
+      "legenda": "'Deixar em branco': folha branca no lugar."
+     },
+     {
+      "src": "img/r5-vazia-op-tirar.jpg",
+      "legenda": "'Tirar do livro': a página sai e as outras andam."
+     }
+    ]
+   },
+   {
+    "id": "so-branco",
+    "nome": "Só 'Deixar em branco'",
+    "texto": "O aviso só oferece a folha branca; tirar do livro, só pelo menu da página.",
+    "imgs": [
+     {
+      "src": "img/r5-vazia-op-branco.jpg",
+      "legenda": "o único botão: folha branca no lugar."
+     }
+    ]
+   },
+   {
+    "id": "sozinho",
+    "nome": "O programa deixa em branco sozinho e avisa",
+    "texto": "A página já sai branca; o aviso diz qual foi e tem 'Desfazer'.",
+    "imgs": []
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Ainda não entendi",
+    "texto": "Diga no comentário o que ficou confuso.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:02:31.732Z",
+    "texto": "o que eu estour espondendo?",
+    "resposta": "Quero de outro jeito"
+   }
+  ]
+ },
+ {
+  "id": "rv5-erro-6-so-texto",
+  "ordem": 3,
+  "parte": "Rodada 5 · as três que ficaram confusas, de novo",
+  "pergunta": "Com 'Guardar só o texto', sumiu a música: o que o aviso do 'Para revisar' oferece?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Refiz do zero, sem falar em 'dois jeitos'. O que acontece: 'Guardar só o texto' (antes 'Só o texto achado') é uma escolha que o Kaique faz quando quer só as letras; ela apaga tudo que não é linha de texto. No Graduale 222 a música inteira some, e a página vai para 'Para revisar'. Pergunto só o que o aviso oferece. Marcar à mão na aba Marcar continua existindo em qualquer opção.",
+  "exemplos": [
+   {
+    "src": "img/r5-sotexto-o-que-acontece.jpg",
+    "legenda": "O que acontece: a música some."
+   },
+   {
+    "src": "img/r5-sotexto-op-botao.jpg",
+    "legenda": "Opção 'Botão 'Trazer de volta nesta página'': o Kaique clica no botão do aviso e a música volta."
+   },
+   {
+    "src": "img/r5-sotexto-op-mao.jpg",
+    "legenda": "Opção 'Sem botão: o Kaique marca à mão': o Kaique marca uma pauta; só ela volta."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "botao",
+    "nome": "Botão 'Trazer de volta nesta página'",
+    "texto": "Um clique e esta página passa a guardar a tinta forte (a música volta); as outras continuam só com o texto.",
+    "imgs": [
+     {
+      "src": "img/r5-sotexto-op-botao.jpg",
+      "legenda": "o Kaique clica no botão do aviso e a música volta."
+     }
+    ]
+   },
+   {
+    "id": "mao",
+    "nome": "Sem botão: o Kaique marca à mão",
+    "texto": "O aviso só avisa; ele desenha um retângulo em volta do que quer de volta.",
+    "imgs": [
+     {
+      "src": "img/r5-sotexto-op-mao.jpg",
+      "legenda": "o Kaique marca uma pauta; só ela volta."
+     }
+    ]
+   },
+   {
+    "id": "nao-entendi",
+    "nome": "Ainda não entendi",
+    "texto": "Diga no comentário o que ficou confuso.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:03:27.477Z",
+    "texto": "não entendi o que estou respondendo, que dois jeitos?",
+    "resposta": "Quero de outro jeito"
+   }
+  ]
+ },
+ {
+  "id": "rv5-erro-2-gravura",
+  "ordem": 4,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "Achar as figuras com mais acerto: quando fazer?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Concordo: hoje o programa erra para os dois lados. Nas 89 páginas testadas ele deixou de achar figuras (a letra T do Antiphonal 46, a letra A do Camões 9, a estátua do Camões 6) e achou 'figura' onde não há (o remendo do Marial 454, a página de mancha da Rariora 8, as pautas do Antiphon 260). Melhorar o detector já está no plano: item 1.5 (o filtro por zona automático, Fase 1, adiado) e item 2.18 (editar as áreas à mão, com o delineado). Entendi 'selecionar coisas que não foram apagadas' como: o programa marcar sozinho, para o Kaique ver, o que sobrou na página e não devia (mancha, carimbo). Se não for isso, diga no comentário.",
+  "exemplos": [
+   {
+    "src": "img/gravura-delineado-1.jpg",
+    "legenda": "Acertos e erros do detector de hoje (contorno laranja = suspeita)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "agora",
+    "nome": "Estudar o detector agora",
+    "texto": "Um agente mede os erros nos 8 livros e propõe o conserto, antes do 2.18.",
+    "imgs": []
+   },
+   {
+    "id": "no-plano",
+    "nome": "Fica no plano (1.5 e 2.18)",
+    "texto": "Segue a ordem do plano; até lá, o delineado e a mão.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Entendeu errado / outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T02:57:53.949Z",
+    "texto": "Ficou bom, mas podemos melhorar, mas o programa já pode ir assim, ele tem que ser mais acertivo para achar as figuras e para selecionar coisas que não foram apagadas.",
+    "resposta": "Os dois jeitos estão bons"
+   }
+  ]
+ },
+ {
+  "id": "rv5-erro-4-tintas",
+  "ordem": 5,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "Reconhecer melhor a tinta (para a letra clara ou colorida não sair falhada): quando fazer?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fica anotado: a 'força sozinha' é o remendo; o certo é o programa reconhecer a tinta. Isso já está no plano: item 1.4, 'máscara de tinta como o Internet Archive: achar a tinta dentro das linhas de texto guardando a cor original', que resolve o texto vermelho do Egenloff 3 (onde a força não adianta). É o mesmo pedido seu de 01/10: 'tem que reconhecer as letras mesmo em outras cores'. O 1.4 está na Fase 1, adiado quando a Fase 2 foi adiantada.",
+  "exemplos": [
+   {
+    "src": "img/p-egenloff-003.jpg",
+    "legenda": "Egenloff 3: o texto vermelho que a força do preto não conserta."
+   },
+   {
+    "src": "img/c4-texto-camoes027.jpg",
+    "legenda": "Camões 27: a letra clara que a força conserta."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "adiantar",
+    "nome": "Adiantar o 1.4 para agora",
+    "texto": "A tinta colorida e clara passa na frente.",
+    "imgs": []
+   },
+   {
+    "id": "no-plano",
+    "nome": "Fica no plano; até lá, a força sozinha",
+    "texto": "O programa escurece a força quando acha texto falhado.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:00:51.513Z",
+    "texto": "mas temos que melhorar o reconhecimento de tintas, para não sair falhado assim, não precisar usar sempre o reforço.",
+    "resposta": "Força sozinha"
+   }
+  ]
+ },
+ {
+  "id": "rv5-conserto-gravura",
+  "ordem": 6,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "O delineado das áreas achadas: como aumentar ou diminuir uma área?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fica assim: um botão (ou aba) 'Mostrar as áreas achadas' desenha o contorno de todas as áreas; nas páginas do 'Para revisar' elas já aparecem em laranja; e dá para aumentar ou diminuir cada área. Entra no item 2.18 do plano (edição manual das zonas), junto com o seu pedido de clicar numa área para apagar ou pintar (P11b). A aparência fica com o agente de layout. Falta só uma escolha: como mudar o tamanho.",
+  "exemplos": [
+   {
+    "src": "img/r5-delineado-ajustar.jpg",
+    "legenda": "Opção 'Puxar pelos quadradinhos': A, à esquerda: quadradinhos nos cantos e lados."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "alcas",
+    "nome": "Puxar pelos quadradinhos",
+    "texto": "Cantos e lados da área; bom para retângulo.",
+    "imgs": [
+     {
+      "src": "img/r5-delineado-ajustar.jpg",
+      "legenda": "A, à esquerda: quadradinhos nos cantos e lados."
+     }
+    ]
+   },
+   {
+    "id": "pincel",
+    "nome": "Pincel 'somar' / 'tirar'",
+    "texto": "Passa o pincel na beirada; bom para forma solta.",
+    "imgs": [
+     {
+      "src": "img/r5-delineado-ajustar.jpg",
+      "legenda": "B, à direita: o pincel redondo."
+     }
+    ]
+   },
+   {
+    "id": "os-dois",
+    "nome": "Os dois",
+    "texto": "Quadradinhos e pincel.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-07T19:03:39.254Z",
+    "texto": "Entendi, mas o que eu quero, é que apareça um delineado em volta, como um selecionar em volta da parte que vai ser escolhida se vai ser apagada ou não para eu decidir, ai nesse caso, certamente é um erro, e seria apagado, precisamos fazer testes para entender melhor isso e com varios livros diferentes e casos diferentes."
+   },
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:11:33.340Z",
+    "texto": "mas quando eu quiser ver as areas achadas, deve ter um botão ou aba para eu fazer isso, apertar nele e mostrar as areas achadas delineadas, no para revisar, elas já vão aparecer laranjas e nós vamos conseguir modificar essas areas, aumentar ou diminuir elas.",
+    "resposta": "Só nas páginas do 'Para revisar'"
+   }
+  ]
+ },
+ {
+  "id": "rv5-conserto-faixa",
+  "ordem": 7,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "O corte da borda preta: o seletor de páginas.",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fica assim: o programa sugere o corte (item 2.13); o Kaique pode mudar o corte sugerido; pode aplicar um corte em todas as páginas e depois mudar só algumas (essas viram exceção e não mexem nas outras); e escolhe as páginas num seletor grande, com 'Selecionar todas'. O que já existe hoje: na aba Bordas, o corte feito à mão fica só naquela página, e 'usar em todas' copia para todas, mas apaga as exceções. Muda: as exceções ficam, e entra o seletor. A aparência fica com o agente de layout. Pergunta: que botões rápidos o seletor tem?",
+  "exemplos": [
+   {
+    "src": "img/faixa-cortes.jpg",
+    "legenda": "Onde o nosso corte e o do ScanTailor cortam hoje."
+   },
+   {
+    "src": "img/r5-seletor-2.jpg",
+    "legenda": "Opção ''Selecionar todas' e 'Nenhuma'': o seletor com os dois botões."
+   },
+   {
+    "src": "img/r5-seletor.jpg",
+    "legenda": "Opção 'Também 'Só as pares' e 'Só as ímpares'': o seletor com os quatro botões."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "todas-nenhuma",
+    "nome": "'Selecionar todas' e 'Nenhuma'",
+    "texto": "Só os dois.",
+    "imgs": [
+     {
+      "src": "img/r5-seletor-2.jpg",
+      "legenda": "o seletor com os dois botões."
+     }
+    ]
+   },
+   {
+    "id": "pares-impares",
+    "nome": "Também 'Só as pares' e 'Só as ímpares'",
+    "texto": "Útil porque a borda do scanner costuma ficar de um lado nas pares e do outro nas ímpares.",
+    "imgs": [
+     {
+      "src": "img/r5-seletor.jpg",
+      "legenda": "o seletor com os quatro botões."
+     }
+    ]
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-07T19:05:51.626Z",
+    "texto": "o programa consegue identificar essas bordas pretas sobrando hoje? para que seja cortado automaticamente, no caso o programa avisa e o kaique diz se vai ou não aceitar? o scantailor faz isso hoje? ou o nosso programa, se não faz deveriamos poder fazer."
+   },
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:18:16.791Z",
+    "texto": "Sim, mas nós podemos alterar o corte sugerido, ou fazer um corte e mandar para todas as paginas e alterar em algumas paginas só o corte quando cortamos alguma, assim quando mudar de um não muda de todas, eu devo conseguir abrir uma aba para selecionar as que eu quero ( as paginas) ou também simplismente apertar num botão e selecionar todas.",
+    "resposta": "O programa sugere, o Kaique aceita"
+   }
+  ]
+ },
+ {
+  "id": "rv5-aviso-so-texto",
+  "ordem": 8,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "Os avisos: dar 'está bom' em uma página, num motivo ou em tudo; e o que acontece ao processar.",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fica assim, como você pediu: dar 'está bom assim' numa página, num motivo de uma página, em todas as páginas de um motivo, ou em tudo; e um seletor grande com as páginas daquele problema, para desmarcar ou dar ok em todas (o mesmo seletor do corte). Sua pergunta: 'quando eu resolver, o programa percebe sozinho?' Sim, na maior parte: os avisos do 'Só as letras' são refeitos toda vez que a página é desenhada, e somem quando o motivo some (ex.: trocar a página para 'Guardar tudo'); e quando o Kaique conserta pela própria aba (corte, ângulo, filtro), a página já fica marcada como conferida. A regra nova vai seguir isso. Ao processar com avisos: o programa JÁ para e pergunta ('Ainda tem 12 páginas... conferir ou processar assim mesmo?'). Funcionalidade comigo, aparência com o agente de layout, como você disse. Pergunta: o que essa janela mostra?",
+  "exemplos": [
+   {
+    "src": "img/r5-seletor.jpg",
+    "legenda": "O seletor grande (desenho da proposta)."
+   },
+   {
+    "src": "img/r5-antes-de-processar.jpg",
+    "legenda": "Opção 'Como hoje': a janela que já existe."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "como-hoje",
+    "nome": "Como hoje",
+    "texto": "Diz quantas páginas e tem 'conferir' e 'processar assim mesmo'.",
+    "imgs": [
+     {
+      "src": "img/r5-antes-de-processar.jpg",
+      "legenda": "a janela que já existe."
+     }
+    ]
+   },
+   {
+    "id": "lista",
+    "nome": "Lista as páginas e os motivos",
+    "texto": "A janela mostra a lista (página e motivo), com 'ver' e 'continuar assim mesmo'.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-07T19:29:41.944Z",
+    "texto": "entendi, mas quando a pessoa querer mesmo apagar as coisas, ela pode ter um jeito de simplismente apagar todos os avisos."
+   },
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:15:47.979Z",
+    "texto": "Eu tenho que conseguir fazer isso com uma pagina individual, com um motivo individual de uma pagina e com todas as paginas ou com todos os motivos de todas as paginas, e eu devo conseguir abrir um selecionador em aba grande mostrando todas as paginas com aquele problema e deselecionar ou dar ok em todas, mas quando eu resolver aquele problema, o programa já vai automaticamente ver que eu resolvi? porque se não eu sempre vou ter que ficar desselecionando coisas. quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas e a pessoa diz se quer ver ou continuar - a questão das funcionalidades eu acho que é contigo, mas a questão visual é com o agente de layout, deve ser feito as funcionalidades e depois passado relatorio para ele né.",
+    "resposta": "Quero de outro jeito"
+   }
+  ]
+ },
+ {
+  "id": "rv5-em-branco",
+  "ordem": 9,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "Um aviso para cada coisa, com os botões 'Deixar em branco' e 'Tirar do livro' separados: fica assim?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Fica assim: 'Parece em branco' e 'Página sem conteúdo' viram dois avisos diferentes, e cada um tem os dois botões separados: 'Deixar em branco' (troca por folha branca, a encadernação não muda) e 'Tirar do livro' (apaga a página de vez). É o que você decidiu na página de escolhas em 07/10 (dois botões; a tecla Delete deixa em branco), que está na Lista de espera, Fase 6. Também fica anotado que a conta do 'Parece em branco' precisa melhorar: na Gladstone 18 ela avisou numa página que tem título. A aparência fica com o agente de layout.",
+  "exemplos": [
+   {
+    "src": "img/r5-avisos-separados.jpg",
+    "legenda": "Os dois avisos, cada um com os dois botões (desenho da proposta)."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "fica",
+    "nome": "Fica assim",
+    "texto": "Pode seguir.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:09:26.984Z",
+    "texto": "Tem que ter um tipo de aviso para cada coisa, e um botão de apagar folha e outro realmente de só mudar para um folha branca.",
+    "resposta": "Quero de outro jeito"
+   }
+  ]
+ },
+ {
+  "id": "rv5-pag-egenloff-047",
+  "ordem": 10,
+  "parte": "Rodada 5 · respostas aos seus comentários",
+  "pergunta": "Egenloff 47: a moldura do scanner e a tarja da biblioteca saem do livro. Cortar fora ou pintar de branco?",
+  "explicacao": "RESPOSTA AO SEU COMENTÁRIO: Sim: a moldura preta e a tarja 'SLUB' do pé não são do livro e deveriam sair. Hoje nem o nosso corte nem o do ScanTailor tiram (rodada 4). Como estão em todas as páginas, vira um aviso só, no livro, com o corte sugerido para todas as páginas (o seletor do cartão da borda preta). Os dois quadros da direita na imagem são simulações.",
+  "exemplos": [
+   {
+    "src": "img/r5-egenloff047-tarja.jpg",
+    "legenda": "Egenloff 47: o que não é do livro, como sai hoje e as duas simulações."
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "cortar",
+    "nome": "Cortar fora",
+    "texto": "A página fica do tamanho do papel do livro (item 2.13).",
+    "imgs": []
+   },
+   {
+    "id": "pintar",
+    "nome": "Pintar de branco",
+    "texto": "A folha mantém o tamanho; o que não é do livro fica branco (item 2.14).",
+    "imgs": []
+   },
+   {
+    "id": "escolher",
+    "nome": "O Kaique escolhe por livro",
+    "texto": "As duas formas, com uma escolha por livro.",
+    "imgs": []
+   },
+   {
+    "id": "outro",
+    "nome": "Quero de outro jeito",
+    "texto": "Diga no comentário.",
+    "imgs": []
+   }
+  ],
+  "historico": [
+   {
+    "quem": "samuel",
+    "em": "2026-10-07T21:37:52.152Z",
+    "texto": "(Não concordo, sem comentário)"
+   },
+   {
+    "quem": "samuel",
+    "em": "2026-10-08T03:05:11.080Z",
+    "texto": "ela deveria tirar essa tarja do livro né?",
+    "resposta": "É a moldura preta / a tarja"
+   }
+  ]
+ }
+]
