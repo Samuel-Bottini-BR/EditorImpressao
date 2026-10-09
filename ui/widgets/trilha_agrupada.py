@@ -72,7 +72,9 @@ NOMES.update({
 USOS = {
     FERRAMENTA_DIVIDIR: "Arraste a linha azul para mudar onde a folha divide.",
     FERRAMENTA_CORTAR: "Arraste o retângulo para mudar o corte da borda.",
-    FERRAMENTA_ENDIREITAR: "Arraste sobre a página para girar à mão.",
+    # Desde o G5 (item 2.2, 07/10/2026) o giro à mão é pela bolinha azul
+    # (alça) ou pela linha laranja (linha-guia), no visualizador.
+    FERRAMENTA_ENDIREITAR: "Arraste a bolinha azul, ou desenhe a linha laranja sobre uma linha do texto.",
     FERRAMENTA_FILTROS: "A mesma página nos quatro filtros: clique no que preferir.",
     FERRAMENTA_RETANGULO: "Arraste de um canto ao outro.",
     FERRAMENTA_ELIPSE: "Arraste para desenhar um oval.",
