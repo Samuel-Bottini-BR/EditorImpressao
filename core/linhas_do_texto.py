@@ -4,7 +4,7 @@ O PEDIDO
     Samuel, conferencia 14 (PADRAO do "So as letras"): "(1) A - Guardar a
     tinta forte, achando as linhas so com o leitor rapido (docTR); o leitor
     de manuscrito (Kraken) como segunda opiniao, que voce liga quando quiser".
-    As opcoes A ("Guardar a tinta forte") e C ("So o texto achado") do Misto
+    As opcoes A ("Guardar a tinta forte") e C ("Guardar so o texto") do Misto
     (core/misto.py) precisam saber onde estao as linhas de texto; a B nao.
 
 O QUE FAZ (linhas_da_pagina)

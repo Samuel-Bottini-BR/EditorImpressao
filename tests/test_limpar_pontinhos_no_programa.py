@@ -51,9 +51,12 @@ precisa_da_dll = pytest.mark.skipif(not st.disponivel(), reason="st_ferramentas.
 
 def test_as_cinco_escolhas_na_ordem_da_tela():
     assert ps.ESCOLHAS == ("desligado", "nosso", "st_pouco", "st_normal", "st_muito")
+    # nomes da Rodada 10 do layout (07/10/2026); antes "Limpar pontinhos:"
+    # desligado · o nosso · pouco · normal · muito
     assert [ps.NOMES_NA_TELA[e] for e in ps.ESCOLHAS] == [
-        "desligado", "o nosso", "pouco", "normal", "muito"]
-    assert ps.ROTULO_NA_TELA == "Limpar pontinhos:"
+        "Sem limpeza", "Limpeza bruta", "Limpeza cuidadosa (leve)",
+        "Limpeza cuidadosa (média)", "Limpeza cuidadosa (forte)"]
+    assert ps.ROTULO_NA_TELA == "Limpar a sujeira:"
 
 
 def test_o_projeto_grava_o_codigo_e_nunca_o_texto_da_tela():
@@ -66,9 +69,11 @@ def test_o_projeto_grava_o_codigo_e_nunca_o_texto_da_tela():
     texto = json.dumps(projeto.para_dicionario(), ensure_ascii=False)
     assert '"limpar_pontinhos": "nosso"' in texto and '"limpar_pontinhos": "st_muito"' in texto
     assert "o nosso" not in texto
-    # e o texto da tela não vale como escolha
-    assert ps.escolha_valida("o nosso") == ps.PADRAO
-    assert ps.escolha_valida("pouco") == ps.PADRAO
+    for nome in ps.NOMES_NA_TELA.values():          # os nomes de 07/10 também
+        assert nome not in texto, nome
+    # e o texto da tela (o de hoje e o de antes de 07/10) não vale como escolha
+    for nome in ["o nosso", "pouco", *ps.NOMES_NA_TELA.values()]:
+        assert ps.escolha_valida(nome) == ps.PADRAO, nome
 
 
 def test_o_do_scantailor_nunca_vem_de_fabrica():

@@ -20,6 +20,14 @@ PADROES: dict[str, Any] = {
     "ultima_pasta_de_entrada": "",
     "atalhos": {},
     "qualidade_previa": "rapida",
+    # O tema da tela (layout, etapa 1, 08/10/2026): "escuro", "cinza" ou
+    # "claro"; de fabrica "cinza" (o mesmo de ui/estilo.TEMA_DE_FABRICA, que
+    # nao e importado aqui para este arquivo nao depender de ui/). Por
+    # enquanto a tela ainda guarda a escolha no tema.json dela (ui/estilo.py);
+    # o agente de layout passa a usar esta chave na etapa seguinte. Seguro
+    # mudar: nada aqui sem mudar ui/estilo.py junto. Arriscado: outro valor de
+    # fabrica que nao seja um dos tres temas.
+    "tema": "cinza",
 }
 
 

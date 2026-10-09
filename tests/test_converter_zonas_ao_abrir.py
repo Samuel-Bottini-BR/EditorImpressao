@@ -344,8 +344,8 @@ def test_pagina_mexida_no_meio_nao_e_anotada_com_o_preparo_velho(pdf, monkeypatc
     alvo = projeto.paginas[0]
     original = pipeline._guardar_geometria
 
-    def no_meio(folha, pagina, projeto_, img):
-        original(folha, pagina, projeto_, img)
+    def no_meio(folha, pagina, projeto_, img, *resto):     # resto: o doc (item 2.2)
+        original(folha, pagina, projeto_, img, *resto)
         if pagina is alvo:
             alvo.recorte = (0.1, 0.1, 0.8, 0.8)        # a mao da pessoa, no meio
 

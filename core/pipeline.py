@@ -39,7 +39,7 @@ from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
-from core import dividir_scantailor, linhas_do_texto, misto, pontinhos_scantailor
+from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
@@ -117,6 +117,13 @@ def analisar_projeto(
 
         folhas: list[ConfigFolha] = []
         paginas: list[ConfigPagina] = []
+        # Item 2.2, C1: as paginas em que as duas contas do endireitar
+        # discordam (so no livro pela conta do ScanTailor). O aviso entra
+        # DEPOIS das observacoes: e por pagina, nunca vira caracteristica do
+        # livro (a previa o poria de volta em cada pagina).
+        discordam: list[ConfigPagina] = []
+        medir_as_duas = (projeto.endireitar and endireitar_scantailor.jeito_do_livro(projeto)
+                         == endireitar_scantailor.JEITO_SCANTAILOR)
 
         for indice, info in enumerate(infos):
             _checar(cancelado)
@@ -174,6 +181,12 @@ def analisar_projeto(
                 pagina.alertas = alertas
                 pagina.tem_cor = tem_cor
                 paginas.append(pagina)
+                if medir_as_duas:
+                    medidas: dict = {}
+                    _geometria(pedaco, pagina, projeto, dpi=DPI_ANALISE, dpi_do_scan=dpi_real,
+                               medidas=medidas)
+                    if medidas.get("discordam"):
+                        discordam.append(pagina)
 
             del img
 
@@ -190,6 +203,9 @@ def analisar_projeto(
             if remover:
                 for item in itens:
                     item.alertas = [a for a in item.alertas if a not in remover]
+
+        for pagina in discordam:
+            _anotar_contas_discordam(pagina, True)
 
         projeto.observacoes = observacoes
         projeto.folhas = folhas
@@ -524,7 +540,8 @@ def _preparar_metade_e_geometria(
 
 
 def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
-               dpi: float | None = None):
+               dpi: float | None = None, dpi_do_scan: float | None = None,
+               medidas: dict | None = None):
     """(recorte, angulo) da pagina, medidos em `base` (a pagina ja girada de
     90 em 90 e dividida, antes de cortar).
 
@@ -532,12 +549,17 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
     em milimetros (core/recortar.FOLGA_MM, conferencia 5, P2, 01/10/2026).
     None quando quem chama nao sabe (a tela, sem o corte do PDF guardado): ai
     a folga e uma fracao do lado (recortar.FOLGA).
+    dpi_do_scan: o que o PDF diz do escaneamento (_dpi_do_scan), so para o
+    DPI dito ao endireitar do ScanTailor (item 2.2); None = nao se sabe.
+    medidas: dicionario que, se vier, recebe as duas contas do angulo
+    automatico (_angulo_automatico) - e o que _guardar_geometria guarda para
+    a aba Endireitar e para o aviso C1.
 
     recorte: (x, y, largura, altura) em fracao, ou None quando nao corta. O
     manual (pagina.recorte) vale como esta; o automatico vem de
     detectar_bordas e ganha a folga do giro (alargar_para_o_giro).
     angulo: em graus; 0.0 quando nao endireita. O manual (pagina.angulo_manual)
-    vale como esta; o automatico e medido na pagina ja cortada.
+    vale como esta; o automatico vem da conta da pagina (_angulo_automatico).
     """
     recorte = None
     automatico = None
@@ -555,12 +577,51 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
         angulo = pagina.angulo_manual
         if angulo is None:
             cortada = base if recorte is None else fatiar(base, recorte)
-            angulo = detectar_angulo(cortada).angulo
+            angulo = _angulo_automatico(base, cortada, pagina, projeto, dpi, dpi_do_scan, medidas)
         angulo = float(angulo or 0.0)
         if automatico is not None and abs(angulo) >= ANGULO_MINIMO:
             # mesma regra do rotacionar: abaixo de ANGULO_MINIMO nao gira
             recorte = alargar_para_o_giro(automatico, angulo, base).tupla
     return recorte, angulo
+
+
+def _angulo_automatico(base: np.ndarray, cortada: np.ndarray, pagina: ConfigPagina,
+                       projeto: Projeto, dpi: float | None, dpi_do_scan: float | None,
+                       medidas: dict | None = None) -> float:
+    """O angulo automatico da pagina, pela conta que vale nela (item 2.2,
+    decisao G4 (b) do Samuel, 05/10/2026: "O do ScanTailor de fabrica [...]
+    mas eu vou ter a opcao de escolher").
+
+    "programa": core.endireitar.detectar_angulo na pagina ja cortada
+        (`cortada`), como sempre - o livro antigo sai identico.
+    "scantailor": o SkewFinder do ScanTailor na pagina ANTES do corte
+        (`base`), como o ScanTailor faz (core/endireitar_scantailor.py). Sem
+        a DLL, cai na conta do programa (o motivo vai uma vez para o log).
+
+    As duas contas so sao feitas juntas quando a do ScanTailor entra (a do
+    livro ou a da pagina): o livro antigo nao fica mais lento. `medidas`
+    recebe "programa", "scantailor" (None se indisponivel ou nao medido),
+    "jeito" (a conta que valeu) e "discordam" (C1: so em livro cuja conta e a
+    do ScanTailor; endireitar_scantailor.discordam). Arriscado: medir a do
+    programa em `base` (sem o corte) - mudaria o angulo do livro antigo."""
+    es = endireitar_scantailor
+    jeito = es.jeito_da_pagina(projeto, pagina)
+    do_livro = es.jeito_do_livro(projeto)
+    nosso = detectar_angulo(cortada).angulo
+    do_scantailor = None
+    if es.JEITO_SCANTAILOR in (jeito, do_livro):
+        medida = es.medir_na_pagina(base, dpi, dpi_do_scan)
+        if medida.disponivel:
+            do_scantailor = float(medida.angulo)
+        else:
+            es.avisar_uma_vez(medida)
+    valeu = es.JEITO_SCANTAILOR if (jeito == es.JEITO_SCANTAILOR and do_scantailor is not None) \
+        else es.JEITO_PROGRAMA
+    if medidas is not None:
+        medidas.update(
+            programa=float(nosso), scantailor=do_scantailor, jeito=valeu,
+            discordam=bool(do_livro == es.JEITO_SCANTAILOR and es.discordam(nosso, do_scantailor)))
+    return do_scantailor if valeu == es.JEITO_SCANTAILOR else nosso
 
 
 # ---------------------------------------------------------------------------
@@ -610,6 +671,7 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
         pagina.metade if dividir else None, bool(projeto.cortar_bordas),
         bool(projeto.endireitar), recorte, pagina.angulo_manual,
         faixa_da_sobra(folha, pagina, projeto),        # item 2.1
+        endireitar_scantailor.jeito_da_pagina(projeto, pagina),   # item 2.2
     )
 
 
@@ -626,22 +688,116 @@ def _geometria_guardada(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
 
 
 def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
-                       img_folha_do_pdf: np.ndarray) -> None:
+                       img_folha_do_pdf: np.ndarray, doc=None) -> None:
     """Calcula e guarda o (recorte, angulo) da pagina, a partir da folha JA
     desenhada na resolucao do PDF (projeto.qualidade_dpi). Arriscado: passar
-    aqui uma imagem de outra resolucao guardaria um corte diferente do PDF."""
+    aqui uma imagem de outra resolucao guardaria um corte diferente do PDF.
+
+    Item 2.2: guarda tambem as duas contas do angulo automatico
+    (_ANGULOS_MEDIDOS, para a aba Endireitar) e poe ou tira o aviso C1
+    (_anotar_contas_discordam): e a medida que vale, na resolucao do PDF.
+    doc: o PDF aberto, so para o DPI do escaneamento dito ao ScanTailor
+    (_dpi_do_scan); None = nao se sabe (a conta do limpar pontinhos supoe)."""
     chave = _chave_da_geometria(folha, pagina, projeto)
     if chave is None:
         return
     with _TRANCA_GEOMETRIAS:
         if chave in _GEOMETRIAS:
             return
+    dpi_do_scan = (_dpi_do_scan(doc, folha)
+                   if doc is not None and _usa_o_endireitar_do_scantailor(projeto, pagina) else None)
+    medidas: dict = {}
     geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina, projeto), pagina, projeto,
-                           dpi=projeto.qualidade_dpi)
+                           dpi=projeto.qualidade_dpi, dpi_do_scan=dpi_do_scan, medidas=medidas)
     with _TRANCA_GEOMETRIAS:
         _GEOMETRIAS[chave] = geometria
         while len(_GEOMETRIAS) > MAX_GEOMETRIAS:
             _GEOMETRIAS.popitem(last=False)
+        if medidas:
+            _ANGULOS_MEDIDOS[chave] = dict(medidas)
+            while len(_ANGULOS_MEDIDOS) > MAX_GEOMETRIAS:
+                _ANGULOS_MEDIDOS.popitem(last=False)
+    _anotar_contas_discordam(pagina, bool(medidas.get("discordam")))
+
+
+# Item 2.2: as duas contas do angulo automatico de cada pagina (ver
+# _angulo_automatico), na mesma chave de _GEOMETRIAS - e o que a aba
+# Endireitar mostra (angulos_medidos). Seguro esvaziar a qualquer hora (a
+# proxima previa mede de novo).
+_ANGULOS_MEDIDOS: "OrderedDict[tuple, dict]" = OrderedDict()
+
+
+def angulos_medidos(projeto: Projeto, pagina: ConfigPagina) -> dict | None:
+    """As duas contas do angulo automatico desta pagina, como medidas na
+    resolucao do PDF: {"programa": graus, "scantailor": graus ou None,
+    "jeito": a conta que valeu, "discordam": bool}. None quando ainda nao foi
+    medida nesta sessao (a previa mede) ou quando o angulo e a mao."""
+    if not 0 <= pagina.folha < len(projeto.folhas):
+        return None
+    chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto)
+    if chave is None:
+        return None
+    with _TRANCA_GEOMETRIAS:
+        medidas = _ANGULOS_MEDIDOS.get(chave)
+        return None if medidas is None else dict(medidas)
+
+
+def angulo_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> float | None:
+    """O angulo que vale nesta pagina agora, em graus (sentido do OpenCV):
+    0 com o endireitar desligado, o a mao (ConfigPagina.angulo_manual), ou o
+    automatico ja medido nesta sessao (_GEOMETRIAS). None quando o automatico
+    ainda nao foi medido (a previa mede). Item 2.2 (G5): e o numero da aba
+    Endireitar e a base dos ajustes a mao (setas, alca, linha-guia). Abaixo
+    de ANGULO_MINIMO a pagina nao gira (angulo_aplicado)."""
+    if not projeto.endireitar:
+        return 0.0
+    if pagina.angulo_manual is not None:
+        return float(pagina.angulo_manual)
+    if not 0 <= pagina.folha < len(projeto.folhas):
+        return None
+    geometria = _geometria_guardada(projeto.folhas[pagina.folha], pagina, projeto)
+    return None if geometria is None else float(geometria[1])
+
+
+def angulo_aplicado(angulo: float | None) -> float:
+    """O giro que a pagina desenhada MESMO tem com este angulo: a regra de
+    _preparar_metade_e_geometria (abaixo de ANGULO_MINIMO nao gira)."""
+    if angulo is None or abs(float(angulo)) < ANGULO_MINIMO:
+        return 0.0
+    return float(angulo)
+
+
+def _usa_o_endireitar_do_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A conta do ScanTailor entra nesta pagina (a dela ou a do livro, para o
+    C1)? So com o endireitar ligado e o angulo automatico."""
+    es = endireitar_scantailor
+    return (bool(projeto.endireitar) and pagina.angulo_manual is None
+            and es.JEITO_SCANTAILOR in (es.jeito_da_pagina(projeto, pagina), es.jeito_do_livro(projeto)))
+
+
+def _anotar_contas_discordam(pagina: ConfigPagina, discordam: bool) -> None:
+    """Poe ou tira o aviso C1 (analise.CONTAS_DO_ENDIREITAR_DISCORDAM), do
+    mesmo jeito que _anotar_tinta_forte_fora: ao POR, a pagina volta a "nao
+    conferida"; o "esta bom assim" depois disso continua valendo."""
+    codigo = analise.CONTAS_DO_ENDIREITAR_DISCORDAM
+    tem = codigo in pagina.alertas
+    if discordam and not tem:
+        pagina.alertas.insert(0, codigo)
+        pagina.revisada = False
+    elif not discordam and tem:
+        pagina.alertas = [a for a in pagina.alertas if a != codigo]
+
+
+def acertar_alerta_do_endireitar(projeto: Projeto, pagina: ConfigPagina) -> None:
+    """Tira o aviso C1 da pagina onde ele nao vale mais (angulo a mao,
+    endireitar desligado, livro na conta do programa), sem desenhar nada.
+    Onde ainda pode valer, fica como esta (a previa acerta)."""
+    es = endireitar_scantailor
+    if analise.CONTAS_DO_ENDIREITAR_DISCORDAM not in pagina.alertas:
+        return
+    if (not projeto.endireitar or pagina.angulo_manual is not None
+            or es.jeito_do_livro(projeto) != es.JEITO_SCANTAILOR):
+        _anotar_contas_discordam(pagina, False)
 
 
 def _precisa_de_geometria(pagina: ConfigPagina, projeto: Projeto) -> bool:
@@ -1022,6 +1178,8 @@ def acertar_alertas_do_fundo(projeto: Projeto,
         _acertar_alerta_do_misto(projeto, pagina)
         # e o "Tem cor" segue o "So as letras" (bug Misto 1, 05/10/2026)
         acertar_alertas_de_cor(projeto, [pagina])
+        # e o C1 do endireitar sai onde nao vale mais (item 2.2)
+        acertar_alerta_do_endireitar(projeto, pagina)
         if not usa_tirar_fundo(projeto, pagina):
             _anotar_conferir(pagina, False)
             continue
@@ -1055,7 +1213,7 @@ def _geometria_da_folha_como_veio(doc, folha: ConfigFolha, pagina: ConfigPagina,
     grande = img_folha_do_pdf
     if grande is None:
         grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
-    _guardar_geometria(folha, pagina, projeto, grande)
+    _guardar_geometria(folha, pagina, projeto, grande, doc)
     geometria = _geometria_guardada(folha, pagina, projeto)
     if geometria is None:     # arquivo sem chave (nao existe no disco): so calcula
         geometria = _geometria(preparar_para_recorte(grande, folha, pagina, projeto), pagina, projeto,
@@ -1100,13 +1258,13 @@ def renderizar_pagina(
         # essa mesma imagem para a previa, em vez de desenhar de novo. Da
         # segunda vez em diante, desenha so na resolucao da previa.
         grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
-        _guardar_geometria(folha, pagina, projeto, grande)
+        _guardar_geometria(folha, pagina, projeto, grande, doc)
         img_folha = _reduzir_para_o_dpi(doc, folha.indice, grande, dpi)
         del grande
     else:
         img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
         if dpi == projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto):
-            _guardar_geometria(folha, pagina, projeto, img_folha)
+            _guardar_geometria(folha, pagina, projeto, img_folha, doc)
     # item 1.2: o DPI de verdade desta imagem e o do scan, para o detector de
     # gravura (so custam alguma coisa quando a pagina ainda nao tem marcacao)
     # e para o limpar pontinhos do ScanTailor (06/10/2026; milissegundos: a
@@ -1164,7 +1322,8 @@ def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proj
     return (int(folha.rotacao) % 360, bool(folha.dividir), float(folha.posicao_corte),
             pagina.metade, int(pagina.folha), recorte, pagina.angulo_manual,
             bool(projeto.cortar_bordas), bool(projeto.endireitar), int(projeto.qualidade_dpi),
-            faixa_da_sobra(folha, pagina, projeto))       # item 2.1
+            faixa_da_sobra(folha, pagina, projeto),       # item 2.1
+            endireitar_scantailor.jeito_da_pagina(projeto, pagina))   # item 2.2
 
 
 def converter_zonas_do_livro(
@@ -1231,7 +1390,7 @@ def converter_zonas_do_livro(
                             img_folha = pagina_para_array(doc, folha.indice,
                                                           dpi=projeto.qualidade_dpi)
                         if _precisa_de_geometria(pagina, projeto):
-                            _guardar_geometria(folha, pagina, projeto, img_folha)
+                            _guardar_geometria(folha, pagina, projeto, img_folha, doc)
                         _, desenho = _preparar_metade_e_geometria(
                             img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi,
                             so_a_geometria=True)
@@ -2012,7 +2171,7 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             # guardado: a previa, se vier depois, mostra este (ver
             # _GEOMETRIAS)
             if _precisa_de_geometria(pagina, projeto):
-                _guardar_geometria(folha, pagina, projeto, img_folha)
+                _guardar_geometria(folha, pagina, projeto, img_folha, doc)
             dpi_desenho = dpi_scan = None
             if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
                     or _vai_limpar_pelo_scantailor(projeto, pagina)):

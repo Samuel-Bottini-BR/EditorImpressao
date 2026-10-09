@@ -708,6 +708,9 @@ class JanelaPrincipal(QMainWindow):
         self.projeto.limpar = salvo.limpar
         self.projeto.filtro_padrao = salvo.filtro_padrao
         self.projeto.endireitar = salvo.endireitar
+        # item 2.2: a conta do endireitar (o salvo de antes do 2.2 ja volta
+        # "programa": modelos.Projeto.de_dicionario)
+        self.projeto.endireitar_como = getattr(salvo, "endireitar_como", self.projeto.endireitar_como)
         self.projeto.cortar_bordas = salvo.cortar_bordas
         self.projeto.montar_cadernos = salvo.montar_cadernos
         self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
@@ -855,6 +858,7 @@ class JanelaPrincipal(QMainWindow):
         paginas_perdidas = 0
         motivo = ""
         gravuras_refeitas = 0
+        recomecou = False         # o trabalho salvo nao serviu (ver o else abaixo)
         self.copia_do_trabalho = None
         if self.resumo is not None:
             salvo = projetos.carregar_estado(self.resumo)
@@ -919,6 +923,7 @@ class JanelaPrincipal(QMainWindow):
                 # novo; a resposta a pergunta do fundo grava assim) ganhava
                 # uma copia vazia inutil a cada livro novo com camadas
                 # (verificador, 30/09).
+                recomecou = True
                 if projetos.tem_trabalho_salvo(self.resumo):
                     self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
                 if salvo is not None:
@@ -942,8 +947,22 @@ class JanelaPrincipal(QMainWindow):
         # conferir, pagina a pagina.
         acertar_alertas_do_fundo(projeto)
 
-        # O desfazer de um projeto ja trabalhado tambem volta do disco.
-        self.acoes.carregar()
+        # O desfazer de um projeto ja trabalhado tambem volta do disco - so
+        # quando o trabalho voltou. Se a conferencia recomecou (o else acima:
+        # trabalho que nao combina, projeto.json ilegivel, livro novo), o
+        # desfazer recomeca vazio, e o historico antigo fica junto da copia
+        # do trabalho (HistoricoAcoes.recomecar). Lista de bugs, 06/10/2026
+        # (parecer do verificador, item 5): antes carregava sempre, e depois
+        # de mudar "Dividir folhas ao meio" o primeiro Ctrl+Z pos a pagina 1
+        # do livro recomecado em Preto e branco, uma acao da conferencia
+        # anterior feita em outra pagina. Na mesma sessao, o historico da
+        # memoria nem era trocado (sem acoes.jsonl, carregar() nao mexe).
+        # Arriscado: voltar a carregar() no recomeco, ou chamar recomecar()
+        # antes de guardar a copia do trabalho (logo acima).
+        if recomecou:
+            self.acoes.recomecar(self.copia_do_trabalho)
+        else:
+            self.acoes.carregar()
 
         if self.previas is not None:
             self.previas.parar()
@@ -1235,7 +1254,9 @@ class JanelaPrincipal(QMainWindow):
                        # "Limpar pontinhos" do livro (06/10)
                        "limpar_pontinhos",
                        # item 2.1: o jeito de dividir e o corte da sobra
-                       "dividir_como", "cortar_sobra")
+                       "dividir_como", "cortar_sobra",
+                       # item 2.2: a conta do endireitar
+                       "endireitar_como")
 
     def _sair_da_conferencia(self) -> None:
         """Voltar para as opcoes grava antes: sair nao pode custar trabalho.
