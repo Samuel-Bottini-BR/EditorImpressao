@@ -90,7 +90,12 @@ def main() -> int:
             txt = parte / f"{nome}.txt"
             if txt.is_file():
                 linhas.append(f"\n--- {nome}.txt (fim, {parte.name}) ---")
-                linhas += txt.read_text(encoding="utf-8", errors="replace").splitlines()[-45:]
+                # so as linhas que dizem o que falhou (o pytest imprime tambem
+                # matrizes inteiras, que enchem o log sem dizer nada)
+                import re
+                uteis = [l for l in txt.read_text(encoding="utf-8", errors="replace").splitlines()
+                         if re.match(r"^(E |>|FAILED|ERROR|tests[\\/]|\s+assert )", l)]
+                linhas += uteis[-30:]
     linhas.append("\n--- pulados, por motivo ---")
     for motivo, arquivos in sorted(pulados.items(), key=lambda kv: -len(kv[1])):
         linhas.append(f"{len(arquivos):4d}  {motivo}  [{', '.join(sorted(set(arquivos)))}]")
@@ -112,6 +117,8 @@ def main() -> int:
     linhas += [f"{p.name}  {p.stat().st_size} bytes  {tamanho_png(p)}" for p in prints] or ["(nenhum)"]
     linhas.append("\n--- tempos por arquivo (s) ---")
     linhas.append(json.dumps(dict(sorted(tempos.items())), ensure_ascii=False))
+    # o total de novo no fim: quem le so o fim do log (tail) ve o principal
+    linhas.append("\n" + [l for l in linhas if l.startswith("TOTAL:")][0])
     texto = "\n".join(linhas)
     print(texto)
     (raiz / "resumo-geral.txt").write_text(texto + "\n", encoding="utf-8")
