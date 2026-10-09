@@ -1,0 +1,189 @@
+# Testes do Editor de Impressao num Windows de verdade (maquinas gratuitas do GitHub).
+#
+# O QUE FAZ
+#   - "suite": a suite inteira (tests/test_*.py) dividida em 5 maquinas em paralelo.
+#     Cada maquina roda a sua parte ARQUIVO POR ARQUIVO, como o Samuel roda no PC
+#     (historico/..., PARTE -13): -p no:cacheprovider, --basetemp proprio, TEMP/TMP
+#     e a pasta de dados (LOCALAPPDATA) dentro da pasta de trabalho. Quem divide e
+#     roda e o .github/scripts/rodar_parte.py. Relatorio de cada parte (junit .xml,
+#     texto por arquivo, resumo.txt, tempos.json) sai como "artifact".
+#   - "janela": o teste_botoes.py (clica em todos os botoes) e os prints da janela
+#     real, aberta na tela do Windows (nao offscreen), nos tres temas
+#     (.github/scripts/fotografar_janela.py). Prints como "artifact".
+#   Os arquivos pesados que ficam fora do git do programa (gabarito/ e modelos/)
+#   vem do ramo "dados-de-teste" deste mesmo repositorio (ver o LEIA-ME.md de la).
+#   As versoes das bibliotecas sao as da .venv do Samuel (.github/requisitos-windows.txt).
+#
+# QUANDO RODA
+#   A cada push no ramo claude/list-server-files-gkos8v, e a mao (Actions >
+#   "Testes no Windows" > Run workflow). Testa o codigo do proprio commit.
+#
+# SEGURO MUDAR: o numero de partes (mude "parte" e o "--de" juntos), os limites de
+#   tempo, a resolucao da tela, o que o roteiro de prints fotografa.
+# ARRISCADO MUDAR:
+#   - pular, desligar ou marcar xfail qualquer teste para "ficar verde": proibido
+#     (o objetivo e ver o mesmo resultado do PC do Samuel, nao um verde de mentira);
+#   - soltar as versoes travadas (o resultado deixa de ser comparavel com o PC dele);
+#   - tirar o LOCALAPPDATA/TEMP/TMP da pasta de trabalho (os testes passariam a
+#     escrever na pasta do usuario do runner, e uma parte poderia ver o lixo da outra);
+#   - trocar o ramo de dados por download de outro lugar (o HD do Samuel nao e
+#     acessivel do GitHub, e o ramo e a unica copia publicada que ele autorizou);
+#   - "fail-fast: true" (uma parte que falha cancelaria as outras e esconderia o resto).
+
+name: Testes no Windows
+
+on:
+  push:
+    branches: [claude/list-server-files-gkos8v]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.14.3"          # a mesma do PC do Samuel (.venv/pyvenv.cfg)
+  PYTHONUTF8: "1"                   # acentos na saida do pytest e nos .txt
+  PYTHONIOENCODING: "utf-8"
+
+jobs:
+  suite:
+    name: Suite (parte ${{ matrix.parte }} de 5)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        parte: [1, 2, 3, 4, 5]
+    steps:
+      - name: Codigo do programa (este commit)
+        uses: actions/checkout@v4
+
+      - name: Arquivos pesados (ramo dados-de-teste)
+        uses: actions/checkout@v4
+        with:
+          ref: dados-de-teste
+          path: _dados_de_teste
+
+      - name: Copiar gabarito/ e modelos/ para onde o codigo espera
+        shell: pwsh
+        run: |
+          # robocopy /E junta com o que ja existe (gabarito/lista.json e o LEIA-ME
+          # vem do proprio programa e nao estao no ramo de dados). Codigo < 8 = ok.
+          robocopy _dados_de_teste\gabarito gabarito /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          robocopy _dados_de_teste\modelos modelos /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          Remove-Item -Recurse -Force _dados_de_teste
+          exit 0
+
+      - name: Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: .github/requisitos-windows.txt
+
+      - name: Bibliotecas (versoes da .venv do Samuel)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .github/requisitos-windows.txt
+          python -m pip list
+
+      - name: Pastas temporarias e de dados dentro da pasta de trabalho
+        shell: pwsh
+        run: |
+          $t = Join-Path $env:GITHUB_WORKSPACE "_temp_testes"
+          New-Item -ItemType Directory -Force -Path $t, "$t\tmp", "$t\localappdata", "$t\appdata" | Out-Null
+          "PASTA_TEMP_DOS_TESTES=$t" >> $env:GITHUB_ENV
+          "TEMP=$t\tmp" >> $env:GITHUB_ENV
+          "TMP=$t\tmp" >> $env:GITHUB_ENV
+          "LOCALAPPDATA=$t\localappdata" >> $env:GITHUB_ENV
+          "APPDATA=$t\appdata" >> $env:GITHUB_ENV
+
+      - name: Rodar a parte ${{ matrix.parte }}
+        run: python .github/scripts/rodar_parte.py --parte ${{ matrix.parte }} --de 5 --saida relatorio-parte-${{ matrix.parte }}
+
+      - name: Guardar o relatorio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-parte-${{ matrix.parte }}
+          path: relatorio-parte-${{ matrix.parte }}
+          if-no-files-found: warn
+
+  janela:
+    name: Botoes e prints da janela real
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Arquivos pesados (ramo dados-de-teste)
+        uses: actions/checkout@v4
+        with:
+          ref: dados-de-teste
+          path: _dados_de_teste
+
+      - name: Copiar gabarito/ e modelos/ para onde o codigo espera
+        shell: pwsh
+        run: |
+          robocopy _dados_de_teste\gabarito gabarito /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          robocopy _dados_de_teste\modelos modelos /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          Remove-Item -Recurse -Force _dados_de_teste
+          exit 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: .github/requisitos-windows.txt
+
+      - name: Bibliotecas (versoes da .venv do Samuel)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .github/requisitos-windows.txt
+
+      - name: Pastas temporarias e de dados dentro da pasta de trabalho
+        shell: pwsh
+        run: |
+          $t = Join-Path $env:GITHUB_WORKSPACE "_temp_testes"
+          New-Item -ItemType Directory -Force -Path $t, "$t\tmp", "$t\localappdata", "$t\appdata" | Out-Null
+          "TEMP=$t\tmp" >> $env:GITHUB_ENV
+          "TMP=$t\tmp" >> $env:GITHUB_ENV
+          "LOCALAPPDATA=$t\localappdata" >> $env:GITHUB_ENV
+          "APPDATA=$t\appdata" >> $env:GITHUB_ENV
+
+      - name: Tela em 1920x1080 (se o Windows do GitHub deixar)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          # Set-DisplayResolution existe no Windows Server; se falhar, o roteiro
+          # de prints anota a resolucao que ficou (roteiro.txt).
+          Set-DisplayResolution -Width 1920 -Height 1080 -Force
+          Get-CimInstance Win32_VideoController | Select-Object CurrentHorizontalResolution, CurrentVerticalResolution
+
+      - name: teste_botoes.py (clica em todos os botoes, como no PC)
+        run: |
+          python teste_botoes.py > teste_botoes.txt 2>&1
+          $codigo = $LASTEXITCODE
+          Get-Content teste_botoes.txt -Tail 60
+          exit $codigo
+
+      - name: Prints da janela real (tres temas)
+        if: always()
+        run: python .github/scripts/fotografar_janela.py --saida prints
+
+      - name: Guardar prints e relatorio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: janela-prints
+          path: |
+            prints
+            teste_botoes.txt
+            saida_teste/botoes/falhas.log
+          if-no-files-found: warn
