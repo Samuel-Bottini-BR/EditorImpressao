@@ -187,3 +187,19 @@ jobs:
             teste_botoes.txt
             saida_teste/botoes/falhas.log
           if-no-files-found: warn
+
+  resumo:
+    # Junta os relatorios das partes e da janela num texto so, no log deste job
+    # (.github/scripts/resumir.py). Existe porque os "artifacts" nao baixam de
+    # todo lugar; o log sempre se le. Roda mesmo se alguma parte falhou.
+    name: Resumo
+    needs: [suite, janela]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: _relatorios
+      - name: Resumo geral
+        run: python3 .github/scripts/resumir.py _relatorios
