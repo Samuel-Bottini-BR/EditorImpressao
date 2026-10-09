@@ -1,6 +1,6 @@
 """Resume os .json do teste_velocidade.py num texto curto, para ler no log.
 
-Usado pelo .github/workflows/velocidade-windows.yml. Nao e parte do programa.
+Usado pelos jobs de velocidade do .github/workflows/testes-windows.yml (input "velocidade"). Nao e parte do programa.
 
     python .github/scripts/resumir_velocidade.py <pasta>            (um resultado)
     python .github/scripts/resumir_velocidade.py --comparar <pasta> (todos, lado a lado)
