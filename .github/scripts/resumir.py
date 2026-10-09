@@ -84,26 +84,34 @@ def main() -> int:
                   " 0 falharam, 59 pulados)")
     linhas.append("\n--- falhas e erros ---")
     linhas += falhas or ["(nenhum)"]
+    arquivos_com_falha = sorted({f.split("::")[0].split()[-1].split(".")[-1] for f in falhas})
+    for parte in sorted(raiz.glob("relatorio-parte-*")):
+        for nome in arquivos_com_falha:
+            txt = parte / f"{nome}.txt"
+            if txt.is_file():
+                linhas.append(f"\n--- {nome}.txt (fim, {parte.name}) ---")
+                linhas += txt.read_text(encoding="utf-8", errors="replace").splitlines()[-45:]
     linhas.append("\n--- pulados, por motivo ---")
     for motivo, arquivos in sorted(pulados.items(), key=lambda kv: -len(kv[1])):
         linhas.append(f"{len(arquivos):4d}  {motivo}  [{', '.join(sorted(set(arquivos)))}]")
-    linhas.append("\n--- tempos por arquivo (s) ---")
-    linhas.append(json.dumps(dict(sorted(tempos.items())), ensure_ascii=False))
     for parte in sorted(raiz.glob("relatorio-parte-*")):
         f = parte / "dados-reais.txt"
         if f.is_file():
             texto = f.read_text(encoding="utf-8-sig", errors="replace").splitlines()
             linhas.append(f"\n--- {parte.name}/dados-reais.txt (pasta de dados fora do basetemp) ---")
-            linhas += texto[:40]
+            linhas += [l for l in texto[:40] if not l.startswith("pasta de dados")]
     for nome in ("janela-prints/prints/roteiro.txt", "janela-prints/teste_botoes.txt"):
         f = raiz / nome
         if f.is_file():
             texto = f.read_text(encoding="utf-8", errors="replace").splitlines()
             linhas.append(f"\n--- {nome} (fim) ---")
-            linhas += texto[-40:]
+            linhas += texto[-40:] if nome.endswith("roteiro.txt") else (
+                [l for l in texto if l.lstrip().startswith(("FALHA", "SOBREPOS", "ORDEM", "ERRO"))] + texto[-1:])
     prints = sorted((raiz / "janela-prints" / "prints").glob("*.png"))
     linhas.append("\n--- prints ---")
     linhas += [f"{p.name}  {p.stat().st_size} bytes  {tamanho_png(p)}" for p in prints] or ["(nenhum)"]
+    linhas.append("\n--- tempos por arquivo (s) ---")
+    linhas.append(json.dumps(dict(sorted(tempos.items())), ensure_ascii=False))
     texto = "\n".join(linhas)
     print(texto)
     (raiz / "resumo-geral.txt").write_text(texto + "\n", encoding="utf-8")
