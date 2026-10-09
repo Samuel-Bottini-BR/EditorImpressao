@@ -331,6 +331,12 @@ class JanelaPrincipal(QMainWindow):
         conferir = self.tela_conferir
         caixa.addWidget(conferir.barra_opcoes, 1)
         caixa.addWidget(conferir.linha_das_abas, 0, Qt.AlignVCenter)
+        # Mola de peso zero no fim: com a barra de opções à vista (peso 1) ela
+        # não ganha nada; nas telas sem ela (inicial, "O que fazer") é ela que
+        # fica com a sobra, e os menus continuam à esquerda (sem ela, o Qt
+        # centralizava os menus: prints do Windows de 09/10/2026). Arriscado:
+        # dar peso a ela (tiraria a largura da dica da barra de opções).
+        caixa.addStretch(0)
         # o que a conta da barrinha de girar desconta da largura da linha
         linha.pecas_fixas = (self.menu, traco, conferir.barra_opcoes)
         self._pecas_da_tela_de_trabalho = (traco, conferir.barra_opcoes,

@@ -255,3 +255,21 @@ def test_as_setinhas_do_angulo_mudam_de_cor_com_o_tema(janela, pasta):
         assert escura < clara - 60, (clara, escura)
     finally:
         janela._trocar_tema(antes)
+
+
+def test_os_menus_ficam_a_esquerda_em_todas_as_telas(janela, pasta):
+    """Na tela inicial e no "O que fazer" a barra de opções fica escondida;
+    os menus continuam à esquerda (prints do Windows de 09/10/2026: estavam
+    centralizados no alto)."""
+    from PySide6.QtWidgets import QApplication
+
+    janela.resize(1920, 1009)
+    janela.show()
+    QApplication.processEvents()
+    assert janela.menu.geometry().x() == 0, "tela inicial"
+    janela.abrir_livro(str(_pdf(pasta, folhas=2)))
+    QApplication.processEvents()
+    assert janela.menu.geometry().x() == 0, "O que fazer"
+    _analisar(janela)
+    QApplication.processEvents()
+    assert janela.menu.geometry().x() == 0, "conferir"
