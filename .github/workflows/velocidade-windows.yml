@@ -1,0 +1,143 @@
+# Teste de velocidade (teste_velocidade.py) num Windows de verdade do GitHub.
+#
+# O QUE FAZ
+#   So roda a mao (Actions > "Velocidade no Windows" > Run workflow, ou pela API),
+#   e nunca atrasa os testes normais (.github/workflows/testes-windows.yml, que e
+#   outro arquivo). Mede os ramos pedidos, cada um em varias repeticoes, todas ao
+#   mesmo tempo em maquinas do mesmo tipo (windows-latest), para:
+#     - comparar dois ramos entre si (ex.: fase-1 e fase2-endireitar-2, antes e
+#       depois do G6) na MESMA rodada;
+#     - saber a margem de ruido: a variacao entre repeticoes do mesmo ramo.
+#   O codigo do programa vem do ramo pedido; a .github/ continua a deste ramo
+#   (.github/scripts/trocar_codigo.sh). Nada e gravado no ramo testado.
+#   O livro medido e o gabarito/velocidade/marial_300.pdf do ramo dados-de-teste
+#   (autorizado pelo Samuel em 09/10/2026). Cada medicao sai como "artifact"
+#   (velocidade-<ramo>-<repeticao>) e o job "Comparar" poe tudo lado a lado no
+#   log (.github/scripts/resumir_velocidade.py).
+#
+# ARRISCADO MUDAR:
+#   - comparar numeros desta maquina com os do PC do Samuel: sao maquinas
+#     diferentes; so vale comparar ramos medidos aqui, na mesma rodada;
+#   - mudar os argumentos do teste_velocidade.py (o --rapido nao vale como medicao);
+#   - "fail-fast: true" (uma medicao que falha cancelaria as outras).
+# SEGURO MUDAR: os ramos e o numero de repeticoes (inputs), o limite de tempo.
+
+name: Velocidade no Windows
+run-name: Velocidade no Windows (${{ inputs.ramos }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      ramos:
+        description: 'Lista JSON dos ramos a medir, ex.: ["fase-1","fase2-endireitar-2"]'
+        required: true
+        default: '["fase-1"]'
+      repeticoes:
+        description: 'Lista JSON das repeticoes de cada ramo, ex.: [1,2]'
+        required: true
+        default: '[1,2]'
+      rapido:
+        description: "Teste rapido (so confere que roda; numeros NAO valem)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.14.3"
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: "utf-8"
+
+jobs:
+  medir:
+    name: Velocidade ${{ matrix.ramo }} (repeticao ${{ matrix.rep }})
+    runs-on: windows-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        ramo: ${{ fromJSON(inputs.ramos) }}
+        rep: ${{ fromJSON(inputs.repeticoes) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trocar o codigo pelo do ramo pedido
+        shell: bash
+        env:
+          RAMO_PEDIDO: ${{ matrix.ramo }}     # por variavel, nunca colado no comando
+        run: bash .github/scripts/trocar_codigo.sh "$RAMO_PEDIDO"
+
+      - name: Arquivos pesados (ramo dados-de-teste)
+        uses: actions/checkout@v4
+        with:
+          ref: dados-de-teste
+          path: _dados_de_teste
+
+      - name: Copiar gabarito/ e modelos/ para onde o codigo espera
+        shell: pwsh
+        run: |
+          robocopy _dados_de_teste\gabarito gabarito /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          robocopy _dados_de_teste\modelos modelos /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          Remove-Item -Recurse -Force _dados_de_teste
+          if (-not (Test-Path gabarito\velocidade\marial_300.pdf)) { "falta o marial_300.pdf"; exit 1 }
+          exit 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: .github/requisitos-windows.txt
+
+      - name: Bibliotecas (versoes da .venv do Samuel)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .github/requisitos-windows.txt
+
+      - name: Pastas temporarias e de dados dentro da pasta de trabalho
+        shell: pwsh
+        run: |
+          $t = Join-Path $env:GITHUB_WORKSPACE "_temp_testes"
+          New-Item -ItemType Directory -Force -Path $t, "$t\tmp", "$t\localappdata", "$t\appdata" | Out-Null
+          "TEMP=$t\tmp" >> $env:GITHUB_ENV
+          "TMP=$t\tmp" >> $env:GITHUB_ENV
+          "LOCALAPPDATA=$t\localappdata" >> $env:GITHUB_ENV
+          "APPDATA=$t\appdata" >> $env:GITHUB_ENV
+
+      - name: teste_velocidade.py
+        shell: pwsh
+        env:
+          RAPIDO: ${{ inputs.rapido }}
+        run: |
+          $saida = "velocidade-${{ matrix.ramo }}-${{ matrix.rep }}" -replace '[^A-Za-z0-9._-]', '-'
+          "SAIDA_VELOCIDADE=$saida" >> $env:GITHUB_ENV
+          $extra = @()
+          if ($env:RAPIDO -eq "true") { $extra += "--rapido" }
+          python teste_velocidade.py @extra --saida $saida
+          $codigo = $LASTEXITCODE
+          python .github/scripts/resumir_velocidade.py $saida
+          exit $codigo
+
+      - name: Guardar a medicao
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SAIDA_VELOCIDADE }}
+          path: ${{ env.SAIDA_VELOCIDADE }}
+          if-no-files-found: warn
+
+  comparar:
+    name: Comparar
+    needs: [medir]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: _velocidade
+      - name: Lado a lado
+        run: python3 .github/scripts/resumir_velocidade.py --comparar _velocidade
