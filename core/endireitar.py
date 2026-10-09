@@ -134,6 +134,36 @@ def rotacionar(img: np.ndarray, angulo: float, fundo: int = 255) -> np.ndarray:
     )
 
 
+def rotacionar_e_cortar(img: np.ndarray, angulo: float, caixa: tuple[int, int, int, int],
+                        fundo: int = 255) -> np.ndarray:
+    """O mesmo que rotacionar(img, angulo)[y0:y1, x0:x1], sem girar a pagina
+    inteira: so os pontos da caixa (x0, y0, x1, y1) sao calculados.
+
+    Para o endireitar antes de cortar (item 2.2, G6, core/pipeline): a pagina
+    inteira e girada em volta do centro DELA (como rotacionar) e so a parte
+    do corte e desenhada - o custo cai para o da area cortada, como era na
+    ordem antiga (regra 6: nenhum item pode deixar o programa mais lento).
+    Medido em 09/10/2026: igual ao "girar tudo e cortar" a menos de 1 nivel
+    de cinza em ~0,1% dos pontos (arredondamento do warpAffine). Abaixo de
+    ANGULO_MINIMO nao gira (so corta, devolvendo copia).
+
+    Arriscado: girar em volta do centro da CAIXA (seria a ordem antiga) ou
+    mudar a interpolacao/borda (a imagem deixaria de ser a do rotacionar).
+    """
+    x0, y0, x1, y1 = caixa
+    if abs(angulo) < ANGULO_MINIMO:
+        return img[y0:y1, x0:x1].copy()
+    altura, largura = img.shape[:2]
+    matriz = cv2.getRotationMatrix2D((largura / 2.0, altura / 2.0), angulo, 1.0)
+    matriz[0, 2] -= x0
+    matriz[1, 2] -= y0
+    borda = fundo if img.ndim == 2 else (fundo, fundo, fundo)
+    return cv2.warpAffine(
+        img, matriz, (x1 - x0, y1 - y0),
+        flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=borda,
+    )
+
+
 def endireitar(img: np.ndarray) -> tuple[np.ndarray, Inclinacao]:
     """Detecta e corrige de uma vez. Devolve a imagem e o que foi detectado."""
     inclinacao = detectar_angulo(img)

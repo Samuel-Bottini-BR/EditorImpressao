@@ -44,7 +44,8 @@ import numpy as np
 from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
-from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
+from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
+                             rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
@@ -60,7 +61,8 @@ from core.pdf_io import (
     pagina_para_array,
     tamanho_da_pagina_pt,
 )
-from core.recortar import Recorte, alargar_para_o_giro, aplicar_recorte, detectar_bordas, fatiar
+from core.recortar import (Recorte, alargar_para_o_giro, aplicar_recorte, caixa_em_pontos,
+                           detectar_bordas, fatiar)
 from modelos import (
     METADE_DIREITA,
     METADE_ESQUERDA,
@@ -579,18 +581,25 @@ def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
     (o endireitar nao muda o tamanho, entao o "recorte absurdo nao corta" e
     decidido na mesma conta).
 
+    Velocidade (regra 6): com corte, so a parte cortada da pagina reta e
+    desenhada (core/endireitar.rotacionar_e_cortar), nunca a pagina inteira.
+
     Arriscado: cortar antes de girar aqui (seria a ordem antiga com o
     recorte da nova); girar em volta de outro centro ou com outro tamanho
     (core/zonas_na_folha._matriz_folha_para_pagina supoe o rotacionar).
     """
     girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
-    reta = rotacionar(inteira, angulo) if girar and not so_a_geometria else inteira
-    img = reta
-    if recorte is not None:
-        img = fatiar(reta, recorte) if so_a_geometria else aplicar_recorte(reta, recorte)
-    # recorte absurdo (menos de 8 pontos) volta a pagina inteira: nao cortou
-    cortou = recorte is not None and (img is not reta)
-    return (None if so_a_geometria else img), cortou, girar
+    # o endireitar nao muda o tamanho: a caixa do corte e a mesma na pagina
+    # inteira e na reta (None = sem corte, ou recorte absurdo: nao corta)
+    caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
+    cortou = caixa is not None
+    if so_a_geometria:
+        return None, cortou, girar
+    if caixa is not None:
+        img = rotacionar_e_cortar(inteira, angulo if girar else 0.0, caixa)
+    else:
+        img = rotacionar(inteira, angulo) if girar else inteira
+    return img, cortou, girar
 
 
 def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
@@ -707,9 +716,13 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
        giro (alargar_para_o_giro): o giro ja aconteceu.
 
     Custo: o corte automatico e medido duas vezes (uma para a conta do
-    programa, outra na pagina reta) e a pagina inteira e girada uma vez a
-    mais - so na hora de guardar a geometria (_guardar_geometria, uma vez
-    por pagina). A folga do giro, que era cara, saiu.
+    programa, outra na pagina reta) - so na hora de guardar a geometria
+    (_guardar_geometria, uma vez por pagina). Para pesar menos, as duas
+    medidas sao feitas na pagina em CINZA (detectar_bordas so olha o cinza;
+    a primeira da exatamente o mesmo corte que na pagina colorida) e e o
+    cinza que e girado para a segunda (girar o cinza custa 1/4 de girar a
+    cor; a diferenca para "girar a cor e passar para cinza" e de 1 nivel de
+    cinza no arredondamento).
 
     ESPERANDO g6-retangulo: o que acontece com o corte a mao quando o angulo
     muda DEPOIS (o Samuel ainda nao respondeu). Hoje os numeros do corte a
@@ -722,8 +735,18 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
     angulo = 0.0
     if projeto.endireitar:
         angulo = pagina.angulo_manual
+    cinza = None
+
+    def em_cinza():
+        nonlocal cinza
+        if cinza is None:
+            cinza = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+        return cinza
+
+    if projeto.endireitar:
+        angulo = pagina.angulo_manual
         if angulo is None:
-            provisorio = detectar_bordas(base, dpi=dpi).tupla if projeto.cortar_bordas else None
+            provisorio = detectar_bordas(em_cinza(), dpi=dpi).tupla if projeto.cortar_bordas else None
             cortada = base if provisorio is None else fatiar(base, provisorio)
             angulo = _angulo_automatico(base, cortada, pagina, projeto, dpi, dpi_do_scan, medidas)
         angulo = float(angulo or 0.0)
@@ -734,7 +757,7 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
             recorte = tuple(pagina.recorte)
         elif com_o_corte:
             girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
-            reta = rotacionar(base, angulo) if girar else base
+            reta = rotacionar(em_cinza(), angulo) if girar else em_cinza()
             recorte = detectar_bordas(reta, dpi=dpi).tupla
     return recorte, angulo
 

@@ -247,6 +247,24 @@ def test_projeto_antigo_sai_identico_ponto_por_ponto(tmp_path, scantailor_fixo,
 
 # ------------------------------------------------------------------ a ordem nova
 
+def _quase_igual(a: np.ndarray, b: np.ndarray) -> bool:
+    """Mesma forma, e no maximo 1 nivel de cinza de diferenca em menos de 1%
+    dos pontos: girar so a parte cortada (core/endireitar.rotacionar_e_cortar)
+    contra girar a pagina inteira e depois cortar (arredondamento do
+    warpAffine; medido em 09/10/2026)."""
+    if a.shape != b.shape:
+        return False
+    diferenca = np.abs(a.astype(np.int16) - b.astype(np.int16))
+    return int(diferenca.max(initial=0)) <= 1 and float((diferenca > 0).mean()) < 0.01
+
+
+def _corte_na_reta(base: np.ndarray, angulo: float):
+    """O corte automatico do livro novo: detectar_bordas na pagina em cinza
+    endireitada (pipeline._geometria_endireitando_antes)."""
+    cinza = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI).tupla
+
+
 def _margens_da_tinta(img: np.ndarray) -> tuple[int, int, int, int]:
     """Pontos de papel entre a tinta e cada borda (esquerda, cima, direita, baixo)."""
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -287,13 +305,18 @@ def test_ordem_nova_corta_a_pagina_reta(tmp_path):
     saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, f, p, novo, dpi=DPI)
     base = pipeline.preparar_para_recorte(img_folha, f, p, novo)
     reta = rotacionar(base, desenho["angulo"])
-    assert np.array_equal(saida, aplicar_recorte(reta, detectar_bordas(reta, dpi=DPI)))
+    corte = _corte_na_reta(base, desenho["angulo"])
+    assert tuple(desenho["recorte"]) == corte
+    # o mesmo corte achado na pagina colorida endireitada (o que a simulacao
+    # mostrou ao Samuel) - o cinza e so para pesar menos
+    assert np.allclose(corte, detectar_bordas(reta, dpi=DPI).tupla, atol=2e-3)
+    assert _quase_igual(saida, aplicar_recorte(reta, corte))
 
     pipeline._GEOMETRIAS.clear()
     p.recorte = (0.1, 0.1, 0.8, 0.8)
     saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, f, p, novo, dpi=DPI)
     assert desenho["recorte"] == [0.1, 0.1, 0.8, 0.8]
-    assert np.array_equal(saida, aplicar_recorte(reta, (0.1, 0.1, 0.8, 0.8)))
+    assert _quase_igual(saida, aplicar_recorte(reta, (0.1, 0.1, 0.8, 0.8)))
 
 
 def test_ordem_nova_angulo_a_mao_e_endireitar_desligado(tmp_path):
@@ -305,7 +328,7 @@ def test_ordem_nova_angulo_a_mao_e_endireitar_desligado(tmp_path):
     base = pipeline.preparar_para_recorte(img_folha, f, p, novo)
     reta = rotacionar(base, 2.0)
     assert desenho["angulo"] == 2.0
-    assert np.array_equal(saida, aplicar_recorte(reta, detectar_bordas(reta, dpi=DPI)))
+    assert _quase_igual(saida, aplicar_recorte(reta, _corte_na_reta(base, 2.0)))
 
     sem = _novo(caminho, endireitar=False)
     f, p = _com_folha(sem, {"dividir": False}, {})
@@ -531,3 +554,25 @@ def test_janela_livro_novo_e_reabrir(janela, pasta):
     estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
     reabrir()
     assert janela.projeto.ordem_do_preparo == op.CORTAR_ANTES
+
+
+# ------------------------------------------------------------------ a velocidade
+
+def test_girar_so_a_parte_cortada_e_o_mesmo_que_girar_tudo_e_cortar():
+    """core/endireitar.rotacionar_e_cortar (regra 6: o livro novo nao gira a
+    pagina inteira a toa) = rotacionar + fatiar, a menos do arredondamento;
+    e a caixa e a mesma conta de pontos do fatiar (recortar.caixa_em_pontos)."""
+    from core.endireitar import rotacionar_e_cortar
+    from core.recortar import caixa_em_pontos
+
+    rng = np.random.default_rng(7)
+    img = cv2.GaussianBlur((rng.random((900, 640, 3)) * 255).astype(np.uint8), (5, 5), 0)
+    recorte = (0.07, 0.11, 0.81, 0.77)
+    caixa = caixa_em_pontos(img.shape, recorte)
+    x0, y0, x1, y1 = caixa
+    assert np.shares_memory(fatiar(img, recorte), img)
+    assert fatiar(img, recorte).shape[:2] == (y1 - y0, x1 - x0)
+    for angulo in (-2.7, -0.4, 0.0, 0.05, 1.3):
+        assert _quase_igual(rotacionar_e_cortar(img, angulo, caixa),
+                            fatiar(rotacionar(img, angulo), recorte))
+    assert caixa_em_pontos(img.shape, (0.5, 0.5, 0.001, 0.4)) is None     # absurdo: nao corta
