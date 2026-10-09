@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência: endireitar antes de cortar e tela sem abas</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conferência de 09/10/2026: endireitar antes de cortar (G6) e tela de trabalho sem abas</h1>
+<p>Verificador. Dois trabalhos prontos que ainda não entraram no programa (<code>fase-1</code>). <strong>Nenhum dos dois está aprovado: só o Samuel marca.</strong></p>
+<p>Página de conferência (imagens grandes, Aprovado / Melhorar / Descartar e comentário, resposta salva na hora):</p>
+<p>https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX</p>
+<p>Defeito conhecido, não é destes trabalhos: moldura dourada e iluminura ainda não saem certas nos filtros (itens 1.4 e 1.5). Aqui todas as páginas estão no filtro Original.</p>
+<h2>1. Endireitar antes de cortar (item 2.2, G6), ramo <code>fase2-endireitar-2</code> (44cbf21)</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> Minha opinião: melhora os cantos na maioria das páginas, mas piora a margem de cima em duas e ainda deixa cunha branca quando o corte vai até a beirada da folha.</p>
+<h3>Máquina</h3>
+<table><thead><tr><th>O que</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>Testes automáticos, Windows do GitHub (rodada 37986736160)</td><td>1991 passaram, 0 falharam, 72 pulados</td></tr>
+<tr><td>teste_botoes.py (mesma rodada)</td><td>passou</td></tr>
+<tr><td>Velocidade (rodada 37987258208, 3 repetições de cada)</td><td>inconclusiva (ver abaixo)</td></tr>
+<tr><td>Palatino 66 e Horas 27 (sem giro)</td><td>idênticas ao fase-1, diferença zero em todos os pontos</td></tr>
+</tbody></table>
+<p>Velocidade: as máquinas do GitHub variam até 70% na mesma versão. Em máquinas iguais (EPYC 7763), igual: abrir o livro 64 s antes, 60 e 65 s depois; Mágico pro 77 s antes, 72 e 75 s depois. Em outro par de máquinas iguais (EPYC 9V74), mais lento depois: abrir o livro 53 s antes e 71 s depois; Mágico pro 64 s antes e 80 s depois. O implementador mediu cerca de 0,05 s a mais por página. <strong>Ressalva grave pela regra 6 até medir no PC do Samuel.</strong></p>
+<h3>Olho (12 páginas, livro novo, filtro Original; abri as 37 imagens)</h3>
+<p>Como foi feito: script novo <code>.github/scripts/antes_depois_endireitar.py</code>, job <code>antes_depois</code> do workflow (rodada 37991590406). Antes = fase-1 (d04bd11). Depois = fase2-endireitar-2 (44cbf21). Imagens no ramo <code>prints-testes</code>, pastas <code>2026-10-09_2111_*_antes-depois</code>.</p>
+<table><thead><tr><th>Página</th><th>O que vi</th><th>Opinião</th></tr></thead><tbody>
+<tr><td>Graduale 221 (item 2.2)</td><td>Antes: tiras brancas em cima à esquerda, na direita e embaixo à direita. Depois: quase todas somem; sobra fio branco embaixo à esquerda. Pautas retas nas duas.</td><td>melhor</td></tr>
+<tr><td>Graduale 222</td><td>Antes: tiras brancas à esquerda e embaixo; primeira pauta quase no alto. Depois: sem tiras e com papel acima. Sombra da lombada continua à direita nas duas.</td><td>melhor</td></tr>
+<tr><td>Escola 7 (item 2.2)</td><td>Depois tira a faixa e a linha escura do alto, mas o título fica colado na borda de cima e as letras encostam nos lados.</td><td>pior em cima</td></tr>
+<tr><td>Escola 35</td><td>Fio branco no alto some; o resto igual.</td><td>um pouco melhor</td></tr>
+<tr><td>Siebmacher 7</td><td>Praticamente igual; fundo preto do scanner nos cantos da direita nas duas.</td><td>igual</td></tr>
+<tr><td>Siebmacher 9</td><td>Some a tira branca embaixo à esquerda, mas a moldura de cima fica colada na borda. Fundo preto nos cantos da direita nas duas.</td><td>um pouco pior em cima</td></tr>
+<tr><td>Palatino 66</td><td>Idênticas (ângulo zero).</td><td>igual</td></tr>
+<tr><td>Horas 11</td><td>Tiras brancas da direita somem; margem à direita da iluminura um pouco mais estreita. As duas contas do ângulo discordam (-0,5 e +0,6 graus).</td><td>melhor</td></tr>
+<tr><td>Horas 27</td><td>Idênticas (ângulo zero).</td><td>igual</td></tr>
+<tr><td>Opus Majus 20</td><td>Fio branco à direita e embaixo some.</td><td>um pouco melhor</td></tr>
+<tr><td>Boécio 8</td><td>Somem as tiras de antes, mas aparecem cunhas brancas na beirada esquerda em cima e direita embaixo.</td><td>troca um defeito por outro</td></tr>
+<tr><td>Marial 7</td><td>Tiras menores, mas ainda cunha branca em cima à esquerda e embaixo à direita.</td><td>melhor, não resolvido</td></tr>
+</tbody></table>
+<h3>Ressalvas</h3>
+<p>1. <strong>Achado novo:</strong> quando o corte automático vai até a beirada da folha (Boécio 8, Marial 7, Graduale 221 embaixo à esquerda), o giro ainda deixa cunha branca. No log, o corte dessas páginas começa ou termina em 0 ou 1 (por exemplo Boécio: esquerda 0 e direita 1; Marial: cima 0 e baixo 1).</p>
+<p>2. Escola 7 e Siebmacher 9: o corte novo encosta no que está impresso no alto (título e moldura). Escola 7 já era ressalva conhecida.</p>
+<p>3. Cunhas brancas nos cantos da ferramenta Cortar (conhecida); Graduale 222 com a sombra da lombada (conhecida).</p>
+<p>4. Não conferi por olho: projeto antigo sair igual ao de hoje, e o retângulo do corte à mão ficar no mesmo lugar quando o ângulo muda. Só existe o teste de máquina do implementador (<code>tests/test_ordem_do_preparo.py</code>).</p>
+<p>5. Velocidade sem veredito (ver acima).</p>
+<h2>2. Tela de trabalho sem abas (layout, etapa 2), ramo <code>layout-impl-2026-10-08</code> (a783bd9)</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> Minha opinião: a tela ficou mais limpa e a página ganhou espaço; as ressalvas são de acabamento.</p>
+<h3>Máquina</h3>
+<table><thead><tr><th>O que</th><th>Resultado</th></tr></thead><tbody>
+<tr><td>Testes automáticos, Windows do GitHub (rodada 37986429190, código e306e1c; a783bd9 só muda o ONDE-PAREI)</td><td>1965 passaram, 0 falharam</td></tr>
+<tr><td>teste_botoes.py (rodada 37991595697, a783bd9)</td><td>166 ações, 0 falhas</td></tr>
+<tr><td>Velocidade</td><td>não medida (trabalho só de tela)</td></tr>
+</tbody></table>
+<h3>Olho (13 telas, prints da janela real, Windows do GitHub 1920 x 1080; abri as 25 imagens)</h3>
+<p>Antes: rodada 37991592793 (fase-1, d04bd11). Depois: rodada 37991595697 (a783bd9). Pastas <code>2026-10-09_2114_*</code> do ramo <code>prints-testes</code>. Acrescentei ao roteiro de prints as telas Dividir, Filtro, Marcar e o grupo Contornar aberto.</p>
+<table><thead><tr><th>Tela</th><th>O que vi</th></tr></thead><tbody>
+<tr><td>Inicial (três temas) e O que fazer</td><td>iguais; menus à esquerda</td></tr>
+<tr><td>Conferir ao chegar</td><td>sem abas; Dividir aceso na fila; nome e frase na linha dos menus; página maior; barra de baixo com folha 1 de 6, desfazer, refazer, histórico, contagem</td></tr>
+<tr><td>Cortar, tela cheia</td><td>página maior, fila de botões cabe</td></tr>
+<tr><td>Endireitar, tela cheia</td><td>mesmos controles em duas linhas; frase curta na linha dos menus</td></tr>
+<tr><td>Cortar, 1280 x 657</td><td>voltar ao automático e Proporção travada cortados; girar vira só ícones</td></tr>
+<tr><td>Endireitar, 1280 x 657</td><td>cabe</td></tr>
+<tr><td>Dividir, tela cheia</td><td>igual, página maior</td></tr>
+<tr><td>Os quatro filtros</td><td>páginas maiores; a frase A mesma página nos quatro filtros aparece duas vezes</td></tr>
+<tr><td>Marcar retângulo</td><td>somar/tirar na linha dos menus; página encosta no alto da área</td></tr>
+<tr><td>Grupo Contornar aberto</td><td>lista ao lado do ícone com Laço (L) e Ponto a ponto (P)</td></tr>
+</tbody></table>
+<h3>Ressalvas</h3>
+<p>1. Cortar em 1280 x 657 não cabe (conhecida; pergunta de layout à parte).</p>
+<p>2. Frase repetida no Filtro.</p>
+<p>3. Ícones da fila menores e sem a letra do atalho embaixo; a letra só no balão do mouse.</p>
+<p>4. Setas de página na barra de baixo pequenas e apagadas; as setas grandes dos lados da página sumiram.</p>
+<p>5. Não testado: mouse de verdade (segurar ícone, roda), PC do Samuel em 125%, 1000 x 600, temas escuro e claro na tela de conferir.</p>
+<h2>O que mudei para conseguir rodar</h2>
+<p>No ramo <code>claude/list-server-files-gkos8v</code> (commit 060b615, com push): input <code>antes_depois</code> e job novo no workflow, input <code>so_janela</code>, script <code>.github/scripts/antes_depois_endireitar.py</code>, e mais 4 telas em <code>.github/scripts/fotografar_janela.py</code>. Nenhum outro ramo foi alterado; as imagens foram gravadas pelo workflow em <code>prints-testes</code>.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 09/10/2026 às 21:23</p>
+</body>
+</html>
