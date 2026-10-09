@@ -147,6 +147,41 @@ def test_trocar_de_aba_por_dentro_acerta_a_trilha(janela, pasta):
         assert tela.barra_opcoes.rotulo.text().startswith("Cortar as bordas")
 
 
+def test_escolher_ferramenta_de_pagina_pelo_ponto_unico_troca_a_tela(janela, pasta):
+    """O ponto unico de troca (escolher_ferramenta) com uma ferramenta de
+    pagina leva a tela para ela, e nao so acende o icone (achado em 09/10/2026:
+    a trilha marcava Endireitar e a tela ficava na de marcar)."""
+    tela = _aberta(janela, pasta)
+    for ferramenta, aba in ((FERRAMENTA_ENDIREITAR, "angulo"), (FERRAMENTA_CORTAR, "bordas"),
+                            (FERRAMENTA_DIVIDIR, "corte"), (FERRAMENTA_FILTROS, "filtro")):
+        if "marcar" in tela._abas_ativas:
+            tela.escolher_ferramenta("laco")
+        if aba in tela._abas_ativas:
+            tela.escolher_ferramenta(ferramenta)
+            assert tela.aba_atual == aba
+            assert tela.trilha.ferramenta == ferramenta
+
+
+def test_os_controles_do_endireitar_g5_moram_na_ferramenta_endireitar(janela, pasta):
+    """Etapa 2: os controles novos do endireitar (item 2.2, G5: o angulo em
+    numero com as setas de 0,1 grau e o "aplicar em"; a "conta:" do G4)
+    aparecem na fila de botoes embaixo da faixa quando a ferramenta e o
+    Endireitar, e somem com as outras ferramentas (lugar PROVISORIO ate o
+    painel Propriedades, etapa 4)."""
+    tela = _aberta(janela, pasta)
+    if "angulo" not in tela._abas_ativas:
+        pytest.skip("este livro nao endireita")
+    tela.trilha.escolher(FERRAMENTA_ENDIREITAR)
+    assert tela.aba_atual == "angulo"
+    for controle in (tela.campo_angulo, tela.botao_angulo_anti_horario,
+                     tela.botao_angulo_horario, tela.combo_alcance_do_angulo,
+                     tela.combo_conta_do_endireitar):
+        assert controle.isVisible(), controle
+        assert tela.barra_botoes.currentWidget().isAncestorOf(controle)
+    tela.trilha.escolher(FERRAMENTA_CORTAR)
+    assert not tela.campo_angulo.isVisible()
+
+
 def test_a_barra_de_opcoes_mora_na_linha_dos_menus(janela, pasta):
     tela = _aberta(janela, pasta)
     assert tela.barra_opcoes.parentWidget() is janela.linha_dos_menus

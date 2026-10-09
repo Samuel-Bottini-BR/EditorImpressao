@@ -694,7 +694,15 @@ class TelaConferir(QWidget):
 
         Etapa 2 do layout (sem abas): as ferramentas de marcar so trabalham
         na pagina de marcar, entao escolher uma delas (na trilha ou pela
-        letra) leva a tela para la, como no Photoshop."""
+        letra) leva a tela para la, como no Photoshop.
+
+        As ferramentas de pagina (Dividir, Cortar, Endireitar, Os quatro
+        filtros) nao sao do editor de marcar: vao pelo mesmo caminho do clique
+        na trilha, que escolhe a "aba" delas. Sem isto, a trilha acendia a
+        ferramenta e a tela continuava na de marcar (achado em 09/10/2026)."""
+        if ferramenta in ABA_DA_FERRAMENTA:
+            self._ferramenta_da_trilha(ferramenta)
+            return
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
         self.editor_selecao.definir_ferramenta(ferramenta)
