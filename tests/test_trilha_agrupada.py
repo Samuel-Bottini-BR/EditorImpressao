@@ -227,3 +227,31 @@ def test_o_botao_do_historico_abre_o_painel(janela, pasta):
     tela.paineis.historico.definir_recolhido(True)
     tela.botao_historico_embaixo.click()
     assert not tela.paineis.historico.recolhido
+
+
+def test_as_setinhas_do_angulo_mudam_de_cor_com_o_tema(janela, pasta):
+    """As setinhas dos botoes de 0,1 grau (Endireitar) sao desenhadas a mao:
+    na troca de tema elas sao redesenhadas na cor do tema novo (no tema claro
+    ficavam na cor clara do cinza e sumiam: print de 09/10/2026)."""
+    from ui import estilo
+
+    tela = _aberta(janela, pasta)
+    if "angulo" not in tela._abas_ativas:
+        pytest.skip("este livro nao endireita")
+
+    def cor_da_seta():
+        imagem = tela.botao_angulo_horario.icon().pixmap(48, 48).toImage()
+        opacos = [imagem.pixelColor(x, y) for x in range(imagem.width())
+                  for y in range(imagem.height()) if imagem.pixelColor(x, y).alpha() > 200]
+        assert opacos, "a seta nao foi desenhada"
+        return sum(c.lightness() for c in opacos) / len(opacos)
+
+    antes = estilo.tema_atual()
+    try:
+        janela._trocar_tema("escuro")
+        clara = cor_da_seta()
+        janela._trocar_tema("claro")
+        escura = cor_da_seta()
+        assert escura < clara - 60, (clara, escura)
+    finally:
+        janela._trocar_tema(antes)

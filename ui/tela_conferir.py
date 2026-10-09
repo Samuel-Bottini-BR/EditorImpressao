@@ -594,6 +594,16 @@ class TelaConferir(QWidget):
         estilo.estilizar(barra, self._icones_da_barra_de_baixo)
         return barra
 
+    def _icones_das_setas_do_angulo(self) -> str:
+        """(Re)desenha as setinhas dos botoes de 0,1 grau da ferramenta
+        Endireitar na cor do tema da vez. Devolve a folha (vazia) para
+        estilo.estilizar, que chama isto de novo a cada troca de tema."""
+        from ui.widgets.barra_girar import icone_de_giro
+
+        self.botao_angulo_anti_horario.setIcon(icone_de_giro(girar.GIRO_ESQUERDA))
+        self.botao_angulo_horario.setIcon(icone_de_giro(girar.GIRO_DIREITA))
+        return ""
+
     def _icones_da_barra_de_baixo(self) -> str:
         """(Re)desenha os icones da barra de baixo na cor do tema da vez; a
         folha dela mora em ui/estilo.py (QFrame#barraDeBaixo)."""
@@ -1179,6 +1189,9 @@ class TelaConferir(QWidget):
         for botao in (self.botao_angulo_anti_horario, self.botao_angulo_horario):
             botao.setIconSize(QSize(LADO_DO_ICONE, LADO_DO_ICONE))
             botao.setFocusPolicy(Qt.NoFocus)       # nao rouba as setas do teclado
+        # as setinhas desenhadas a mao acompanham a troca de tema (etapa 2 do
+        # layout: no tema claro elas ficavam na cor clara do tema de antes)
+        estilo.estilizar(segunda, self._icones_das_setas_do_angulo)
         self.rotulo_alcance_do_angulo = QLabel("aplicar em:")
         linha2.addSpacing(10)
         linha2.addWidget(self.rotulo_alcance_do_angulo)
