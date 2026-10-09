@@ -34,3 +34,12 @@ Lida da coleção `respostas` em 09/10/2026 (respondidas às 15:47 e 15:49, hor�
 
 - `g6-retangulo`: marcada `decidida`, com a decisão "Fica no mesmo lugar (como no ScanTailor) é o padrão". O comentário subiu para o `historico` (fixado) e saiu da caixa de comentário; a escolha dele continua gravada na resposta.
 - Pergunta nova, respondendo ao comentário (`g6-retangulo-onde`, parte "Endireitar", ordem 118): "Sim, dá para ter as duas, com a do ScanTailor de fábrica. Onde você quer trocar?" Opções, cada uma com um esquema da tela (`img/g6/retangulo-onde-livro.svg`, `retangulo-onde-configuracoes.svg`, `retangulo-onde-pagina.svg`, feitos por `docs/plano/paginas-claude-ai/escolhas/desenhos_g6_retangulo_onde.py`): (a) na tela "O que fazer", por livro, abaixo da "Conta do endireitar:"; (b) nas Configurações, para todos os livros; (c) na ferramenta Endireitar, por página, junto do "aplicar em"; (d) "Ainda não entendi". Aberta.
+
+## Terceira leitura (09/10, 17:51): `g6-retangulo-onde`
+
+Pergunta: "As duas opções do retângulo, com a do ScanTailor de fábrica: onde o Kaique troca?"
+
+- Opção marcada: **"Na ferramenta Endireitar, por página"**
+- Comentário, literal: **"quero a b e c juntas."**
+
+Decisão registrada pela gerente (pergunta marcada `decidida` na página): a troca fica nos **três lugares juntos** — nas Configurações (vale para todos os livros), na tela "O que fazer" (só aquele livro) e na ferramenta Endireitar (só aquela página). De fábrica: "Fica no mesmo lugar (como no ScanTailor)". A função por dentro já existe no ramo `fase2-endireitar-2` (`pipeline.recorte_depois_de_mudar_o_angulo`); os três controles são de tela e entram depois da etapa 2 do layout, para não chocar com ela.
