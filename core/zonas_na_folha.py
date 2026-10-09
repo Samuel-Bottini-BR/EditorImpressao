@@ -72,10 +72,14 @@ O QUE E SEGURO E O QUE E ARRISCADO MUDAR
 Seguro: as tolerancias (TOLERANCIA_*), o numero de pontos da oval desenhada.
 Arriscado:
   - a ordem das etapas em _matriz_folha_para_pagina tem de ser a MESMA de
-    core/pipeline.preparar_metade (girar 90 -> dividir -> cortar ->
-    endireitar). Se o pipeline mudar de ordem (Fase 2: o ScanTailor endireita
-    antes de cortar), esta conta muda junto - e os projetos ja gravados
-    continuam certos, porque a verdade no disco e a folha;
+    core/pipeline._preparar_metade_e_geometria. Desde o G6 (09/10/2026) ha
+    duas, e a ordem vem COMO DADO na geometria (chave "ordem",
+    core/ordem_do_preparo): sem a chave = "cortar_antes" (girar 90 ->
+    dividir -> cortar -> endireitar, a de sempre: a geometria gravada antes
+    do G6 continua valendo igual); "endireitar_antes" = girar 90 -> dividir
+    -> endireitar a pagina inteira -> cortar (livro novo, como o
+    ScanTailor). Os projetos ja gravados continuam certos, porque a verdade
+    no disco e a folha;
   - o sentido do angulo e o do OpenCV (core/endireitar.rotacionar:
     getRotationMatrix2D em volta do centro, mesmo tamanho);
   - gravar "zonas_na_folha" sem "geometria_das_zonas" (nao daria para voltar).
@@ -88,6 +92,8 @@ import threading
 from typing import Any
 
 import numpy as np
+
+from core.ordem_do_preparo import CORTAR_ANTES, ENDIREITAR_ANTES, ORDENS
 
 # Duas geometrias sao "a mesma" se o corte, a divisao e o angulo batem ate
 # aqui. Os valores vem do mesmo calculo guardado (pipeline._GEOMETRIAS), entao
@@ -124,7 +130,7 @@ TRANCA_DAS_ZONAS = threading.Lock()
 
 def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | None,
                          metade: str, recorte, angulo: float,
-                         sobra=None) -> dict[str, Any]:
+                         sobra=None, ordem: str | None = None) -> dict[str, Any]:
     """O preparo da pagina, num dicionario simples (vai para o projeto.json).
 
     proporcao_folha: largura / altura da folha COMO VEIO do PDF (antes do giro
@@ -142,6 +148,10 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
         pagina "inteira"; None quando nao corta. So entra no dicionario quando
         existe: a geometria gravada antes do item 2.1 (sem a chave) e a de
         uma pagina sem sobra sao iguais.
+    ordem: a ordem do preparo (core/ordem_do_preparo; item 2.2, G6). So
+        entra no dicionario quando e "endireitar_antes" (o recorte esta em
+        fracao da pagina JA RETA): a geometria gravada antes do G6 (sem a
+        chave) e a de um projeto "cortar_antes" sao iguais. None = a de sempre.
     """
     desenho = {
         "proporcao": float(proporcao_folha),
@@ -153,7 +163,14 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
     }
     if sobra is not None:
         desenho["sobra"] = [float(v) for v in sobra]
+    if ordem == ENDIREITAR_ANTES:
+        desenho["ordem"] = ENDIREITAR_ANTES
     return desenho
+
+
+def _ordem(g: dict) -> str:
+    """A ordem do preparo desta geometria (sem a chave = a de sempre)."""
+    return g.get("ordem") or CORTAR_ANTES
 
 
 def geometria_valida(g: Any) -> bool:
@@ -176,6 +193,8 @@ def geometria_valida(g: Any) -> bool:
             if not 0.0 <= a < b <= 1.0:
                 return False
         float(g.get("angulo", 0.0))
+        if g.get("ordem") is not None and g["ordem"] not in ORDENS:   # G6
+            return False
     except (KeyError, TypeError, ValueError):
         return False
     return True
@@ -186,6 +205,8 @@ def mesma_geometria(a: dict | None, b: dict | None) -> bool:
     if a is None or b is None:
         return a is b
     if int(a["rotacao"]) % 360 != int(b["rotacao"]) % 360 or a["metade"] != b["metade"]:
+        return False
+    if _ordem(a) != _ordem(b):                  # G6: o recorte esta em outra pagina
         return False
 
     def perto(x, y, tol=TOLERANCIA_GEOMETRIA):
@@ -220,7 +241,8 @@ def mesma_geometria(a: dict | None, b: dict | None) -> bool:
 
 def _tamanhos(g: dict) -> tuple[tuple[float, float], tuple[float, float], tuple[float, float]]:
     """(folha, folha girada, pagina final), cada um (largura, altura), na
-    unidade "altura da folha como veio = 1"."""
+    unidade "altura da folha como veio = 1". O endireitar nao muda o tamanho
+    (core/endireitar.rotacionar: mesmo tamanho), em nenhuma das duas ordens."""
     proporcao = float(g["proporcao"])
     folha = (proporcao, 1.0)
     girada = folha if int(g["rotacao"]) % 180 == 0 else (1.0, proporcao)
@@ -238,6 +260,35 @@ def _tamanhos(g: dict) -> tuple[tuple[float, float], tuple[float, float], tuple[
     return folha, girada, (largura, altura)
 
 
+def _antes_do_corte(g: dict) -> tuple[float, float]:
+    """(largura, altura) da pagina depois de girar 90 e dividir, ANTES do
+    corte - a pagina que a ordem "endireitar_antes" gira (G6)."""
+    largura, altura = _tamanhos(g)[2]
+    if g.get("recorte") is not None:
+        _, _, w, h = (float(v) for v in g["recorte"])
+        largura /= w
+        altura /= h
+    return largura, altura
+
+
+def _giro_em_fracao(angulo: float, proporcao: float) -> np.ndarray:
+    """Matriz 3x3 do endireitar (core/endireitar.rotacionar: em volta do
+    centro, mesmo tamanho, sentido do OpenCV) em fracao de uma imagem de
+    proporcao largura/altura `proporcao`."""
+    a = proporcao
+    cos, sen = math.cos(math.radians(angulo)), math.sin(math.radians(angulo))
+    # em unidades (X = u * a, Y = v), girar em volta do centro como o
+    # cv2.getRotationMatrix2D: X' - cx = cos (X - cx) + sen (Y - cy);
+    # Y' - cy = -sen (X - cx) + cos (Y - cy)
+    escala = np.diag([a, 1.0, 1.0])
+    volta = np.diag([1.0 / a, 1.0, 1.0])
+    cx, cy = a / 2.0, 0.5
+    giro = np.array([[cos, sen, cx - cos * cx - sen * cy],
+                     [-sen, cos, cy + sen * cx - cos * cy],
+                     [0.0, 0.0, 1.0]])
+    return volta @ giro @ escala
+
+
 def _corte_efetivo(g: dict) -> float:
     """A posicao da divisao como core/dividir.dividir_imagem usa (0,02 a 0,98)."""
     return float(np.clip(float(g["corte"]), 0.02, 0.98))
@@ -251,6 +302,10 @@ def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
     item 2.1, pipeline._cortar_a_sobra) -> cortar (fatiar) -> endireitar
     (rotacionar, em volta do centro, mesmo tamanho). Conta continua (sem o arredondamento
     para pontos inteiros, que muda menos de um ponto).
+
+    G6 (09/10/2026): com g["ordem"] == "endireitar_antes", o endireitar vem
+    ANTES do corte, girando a pagina inteira (dividida, ainda sem corte) em
+    volta do centro dela; o corte e depois, em fracao da pagina reta.
     """
     m = np.eye(3)
     rotacao = int(g["rotacao"]) % 360
@@ -273,25 +328,18 @@ def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
         m = np.array([[1.0 / (b - a), 0.0, -a / (b - a)], [0.0, 1.0, 0.0],
                       [0.0, 0.0, 1.0]]) @ m
 
+    angulo = float(g.get("angulo", 0.0))
+    if angulo and _ordem(g) == ENDIREITAR_ANTES:
+        largura, altura = _antes_do_corte(g)          # a pagina inteira, sem corte
+        m = _giro_em_fracao(angulo, largura / altura) @ m
+
     if g.get("recorte") is not None:
         x, y, w, h = (float(v) for v in g["recorte"])
         m = np.array([[1.0 / w, 0.0, -x / w], [0.0, 1.0 / h, -y / h], [0.0, 0.0, 1.0]]) @ m
 
-    angulo = float(g.get("angulo", 0.0))
-    if angulo:
-        largura, altura = _tamanhos(g)[2]
-        a = largura / altura                          # proporcao da pagina cortada
-        cos, sen = math.cos(math.radians(angulo)), math.sin(math.radians(angulo))
-        # em unidades (X = u * a, Y = v), girar em volta do centro como o
-        # cv2.getRotationMatrix2D: X' - cx = cos (X - cx) + sen (Y - cy);
-        # Y' - cy = -sen (X - cx) + cos (Y - cy)
-        escala = np.diag([a, 1.0, 1.0])
-        volta = np.diag([1.0 / a, 1.0, 1.0])
-        cx, cy = a / 2.0, 0.5
-        giro = np.array([[cos, sen, cx - cos * cx - sen * cy],
-                         [-sen, cos, cy + sen * cx - cos * cy],
-                         [0.0, 0.0, 1.0]])
-        m = volta @ giro @ escala @ m
+    if angulo and _ordem(g) == CORTAR_ANTES:
+        largura, altura = _tamanhos(g)[2]             # a pagina ja cortada
+        m = _giro_em_fracao(angulo, largura / altura) @ m
     return m
 
 

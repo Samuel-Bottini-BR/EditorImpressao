@@ -662,6 +662,13 @@ class JanelaPrincipal(QMainWindow):
         # item 2.2: a conta do endireitar (o salvo de antes do 2.2 ja volta
         # "programa": modelos.Projeto.de_dicionario)
         self.projeto.endireitar_como = getattr(salvo, "endireitar_como", self.projeto.endireitar_como)
+        # item 2.2, G6 (09/10/2026): a ordem do preparo acompanha o projeto
+        # (o salvo de antes do G6 ja volta "cortar_antes": modelos.Projeto.
+        # de_dicionario). Nao e opcao da tela. Arriscado: tirar esta linha -
+        # o projeto antigo reaberto nasceria "endireitar_antes" e mudaria de
+        # corte (as zonas da aba Marcar andariam).
+        self.projeto.ordem_do_preparo = getattr(salvo, "ordem_do_preparo",
+                                                self.projeto.ordem_do_preparo)
         self.projeto.cortar_bordas = salvo.cortar_bordas
         self.projeto.montar_cadernos = salvo.montar_cadernos
         self.projeto.paginas_por_caderno = salvo.paginas_por_caderno

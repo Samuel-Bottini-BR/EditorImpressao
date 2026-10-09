@@ -31,6 +31,7 @@ from core.dividir_scantailor import JEITO_DO_PROJETO_ANTIGO as DIVIDIR_DO_PROJET
 from core.dividir_scantailor import JEITO_DO_LIVRO_NOVO as DIVIDIR_DO_LIVRO_NOVO
 from core.endireitar_scantailor import JEITO_DO_PROJETO_ANTIGO as ENDIREITAR_DO_PROJETO_ANTIGO
 from core.endireitar_scantailor import PADRAO as ENDIREITAR_DO_LIVRO_NOVO
+from core.ordem_do_preparo import ORDEM_DO_LIVRO_NOVO, ORDEM_DO_PROJETO_ANTIGO
 
 METADE_INTEIRA = "inteira"
 METADE_ESQUERDA = "esquerda"
@@ -292,6 +293,16 @@ class Projeto:
     # 05/10/2026). Arriscado: trocar o setdefault de de_dicionario (o projeto
     # antigo reaberto mudaria de angulo).
     endireitar_como: str = ENDIREITAR_DO_LIVRO_NOVO
+    # Item 2.2, G6 (Samuel, 09/10/2026, "Endireitar antes de cortar (como o
+    # ScanTailor): pode comecar?" -> "Pode comecar"): a ordem do preparo
+    # (core/ordem_do_preparo.py). Livro NOVO: "endireitar_antes" (girar 90 ->
+    # dividir -> endireitar a pagina inteira -> achar o corte na pagina reta
+    # -> cortar). Projeto salvo antes do campo volta "cortar_antes"
+    # (de_dicionario) e sai IDENTICO ao de antes. Nao e opcao da tela: nasce
+    # com o livro e acompanha o projeto (ui/janela_principal.
+    # _trazer_opcoes_salvas). Arriscado: trocar o setdefault de de_dicionario
+    # (o projeto antigo mudaria de corte e as zonas dele andariam).
+    ordem_do_preparo: str = ORDEM_DO_LIVRO_NOVO
     cortar_bordas: bool = True
     montar_cadernos: bool = False
     paginas_por_caderno: int = 20
@@ -573,6 +584,9 @@ class Projeto:
         # Item 2.2 (07/10/2026): o projeto gravado antes do endireitar do
         # ScanTailor endireitava pela conta do programa - continua com ela.
         dados.setdefault("endireitar_como", ENDIREITAR_DO_PROJETO_ANTIGO)
+        # Item 2.2, G6 (09/10/2026): o projeto gravado antes da ordem nova
+        # cortava antes de endireitar - continua assim, ponto por ponto.
+        dados.setdefault("ordem_do_preparo", ORDEM_DO_PROJETO_ANTIGO)
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas
