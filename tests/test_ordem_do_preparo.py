@@ -518,6 +518,8 @@ def test_geometria_sem_a_chave_e_a_de_sempre_e_as_ordens_nao_se_confundem():
     sem_giro = zf.geometria_do_desenho(0.7, 0, None, "inteira", (0.1, 0.1, 0.8, 0.8), 0.0)
     sem_giro_nova = zf.geometria_do_desenho(0.7, 0, None, "inteira", (0.1, 0.1, 0.8, 0.8), 0.0,
                                             ordem=op.ENDIREITAR_ANTES)
+    # e a geometria e a mesma: sem giro a zona nao tem por que andar
+    assert sem_giro == sem_giro_nova and zf.mesma_geometria(sem_giro, sem_giro_nova)
     assert np.allclose(zf.folha_para_pagina(zona, sem_giro)[0]["pontos"],
                        zf.folha_para_pagina(zona, sem_giro_nova)[0]["pontos"])
 

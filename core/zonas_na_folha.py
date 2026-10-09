@@ -149,9 +149,11 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
         existe: a geometria gravada antes do item 2.1 (sem a chave) e a de
         uma pagina sem sobra sao iguais.
     ordem: a ordem do preparo (core/ordem_do_preparo; item 2.2, G6). So
-        entra no dicionario quando e "endireitar_antes" (o recorte esta em
-        fracao da pagina JA RETA): a geometria gravada antes do G6 (sem a
-        chave) e a de um projeto "cortar_antes" sao iguais. None = a de sempre.
+        entra no dicionario quando e "endireitar_antes" E a pagina gira
+        (angulo diferente de zero): a geometria gravada antes do G6 (sem a
+        chave) e a de um projeto "cortar_antes" sao iguais, e sem giro as
+        duas ordens dao exatamente o mesmo preparo (a zona nao tem por que
+        andar). None = a de sempre.
     """
     desenho = {
         "proporcao": float(proporcao_folha),
@@ -163,7 +165,7 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
     }
     if sobra is not None:
         desenho["sobra"] = [float(v) for v in sobra]
-    if ordem == ENDIREITAR_ANTES:
+    if ordem == ENDIREITAR_ANTES and desenho["angulo"]:
         desenho["ordem"] = ENDIREITAR_ANTES
     return desenho
 
@@ -206,7 +208,9 @@ def mesma_geometria(a: dict | None, b: dict | None) -> bool:
         return a is b
     if int(a["rotacao"]) % 360 != int(b["rotacao"]) % 360 or a["metade"] != b["metade"]:
         return False
-    if _ordem(a) != _ordem(b):                  # G6: o recorte esta em outra pagina
+    # G6: com giro, o recorte de uma ordem esta em outra pagina que o da
+    # outra; sem giro as duas sao o mesmo preparo
+    if (float(a.get("angulo", 0.0)) or float(b.get("angulo", 0.0))) and _ordem(a) != _ordem(b):
         return False
 
     def perto(x, y, tol=TOLERANCIA_GEOMETRIA):
