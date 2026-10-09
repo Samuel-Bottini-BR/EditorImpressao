@@ -115,7 +115,6 @@ import atalhos
 from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtCore import QLocale, QSize
 from PySide6.QtWidgets import (
-    QAbstractSpinBox,
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
@@ -1161,7 +1160,10 @@ class TelaConferir(QWidget):
         self.campo_angulo.setDecimals(2)
         self.campo_angulo.setSingleStep(PASSO_DO_ANGULO)
         self.campo_angulo.setSuffix(" graus")
-        self.campo_angulo.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        # Sem as setinhas proprias (as de 0,1 grau ficam ao lado): elas
+        # existem com largura zero pela folha de estilo (ui/estilo.py,
+        # "campo_angulo"). NoButtons deixava o numero invisivel no Qt 6.12.
+        self.campo_angulo.setObjectName("campo_angulo")
         self.campo_angulo.setKeyboardTracking(False)
         self.campo_angulo.setAlignment(Qt.AlignRight)
         self.campo_angulo.setToolTip(

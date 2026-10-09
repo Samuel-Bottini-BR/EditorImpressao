@@ -398,6 +398,19 @@ QComboBox, QSpinBox, QLineEdit, QDoubleSpinBox {{
     border-radius: 6px;
     padding: 6px 10px;
 }}
+/* A caixa do angulo do Endireitar (item 2.2, G5; objectName "campo_angulo"),
+   que nao mostra as setinhas proprias (as setas de 0,1 grau ficam ao lado).
+   Antes era setButtonSymbols(NoButtons), mas no Qt 6.12, com esta folha de
+   estilo, o campo de digitar ficava com 1 pixel e o numero sumia (achado em
+   09/10/2026, na nuvem). Agora as setinhas existem com largura zero, e o
+   campo de dentro (um QLineEdit, que pegaria o espaco interno da regra de
+   cima) fica sem borda e com pouco espaco. Seguro mudar: o espaco. Arriscado:
+   voltar ao NoButtons sem conferir que o numero aparece. */
+QDoubleSpinBox#campo_angulo::up-button, QDoubleSpinBox#campo_angulo::down-button {{
+    width: 0px; border: none; }}
+QDoubleSpinBox#campo_angulo::up-arrow, QDoubleSpinBox#campo_angulo::down-arrow {{
+    width: 0px; height: 0px; }}
+QDoubleSpinBox#campo_angulo QLineEdit {{ padding: 0px 8px; border: none; background: transparent; }}
 QComboBox QAbstractItemView {{ background: {c["painel"]}; color: {c["texto"]};
     selection-background-color: {c["sel"]}; border: 1px solid {c["sep"]}; }}
 

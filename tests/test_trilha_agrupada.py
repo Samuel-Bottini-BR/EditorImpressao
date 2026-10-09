@@ -178,6 +178,10 @@ def test_os_controles_do_endireitar_g5_moram_na_ferramenta_endireitar(janela, pa
                      tela.combo_conta_do_endireitar):
         assert controle.isVisible(), controle
         assert tela.barra_botoes.currentWidget().isAncestorOf(controle)
+    # o numero cabe no campo de digitar (no Qt 6.12, com a folha de estilo e
+    # sem as setinhas proprias, o campo ficava com 1 pixel: 09/10/2026)
+    campo = tela.campo_angulo.lineEdit()
+    assert campo.width() >= campo.fontMetrics().horizontalAdvance("-45,00 graus"), campo.width()
     tela.trilha.escolher(FERRAMENTA_CORTAR)
     assert not tela.campo_angulo.isVisible()
 
