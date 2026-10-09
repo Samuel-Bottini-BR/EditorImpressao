@@ -43,6 +43,8 @@ import time
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
+# Segundos por arquivo medidos no Windows do GitHub (execucao 37977429818, 09/10/2026),
+# copiados do job "Resumo". JSON puro, sem comentario. Atualizar quando a suite mudar muito.
 TEMPOS = RAIZ / ".github" / "tempos-dos-testes.json"
 
 # Teste que abre a JanelaPrincipal ou mexe nas telas pesa mais que o tamanho
