@@ -724,10 +724,10 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
     cor; a diferenca para "girar a cor e passar para cinza" e de 1 nivel de
     cinza no arredondamento).
 
-    ESPERANDO g6-retangulo: o que acontece com o corte a mao quando o angulo
-    muda DEPOIS (o Samuel ainda nao respondeu). Hoje os numeros do corte a
-    mao nao mudam: ele fica no mesmo lugar da pagina reta. Ver
-    recorte_depois_de_mudar_o_angulo, abaixo.
+    g6-retangulo (Samuel, 09/10/2026, "Fica no mesmo lugar da pagina (como
+    no ScanTailor)"): quando o angulo muda DEPOIS, os numeros do corte a mao
+    nao mudam - ele fica no mesmo lugar da pagina reta. A outra opcao
+    ("acompanha o texto") esta pronta, sem tela: recorte_depois_de_mudar_o_angulo.
 
     Arriscado: medir a conta do programa em outro lugar (o C1 mudaria);
     alargar o corte para o giro aqui (a pagina ja esta reta: so cresceria).
@@ -762,25 +762,64 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
     return recorte, angulo
 
 
-def recorte_depois_de_mudar_o_angulo(projeto: Projeto, pagina: ConfigPagina,
-                                     angulo_antes: float | None, angulo_depois: float | None):
-    """ESPERANDO g6-retangulo (pergunta ao Samuel, ainda sem resposta em
-    09/10/2026): "Num livro novo, se voce mudar o angulo depois de ajustar o
-    corte a mao, o retangulo do corte fica no mesmo lugar da pagina reta
-    (como no ScanTailor) ou acompanha o texto?" - ele respondeu "Ainda nao
-    entendi"; a pergunta vai ser refeita.
+# Decisao do Samuel, g6-retangulo (09/10/2026): o que acontece com o corte a
+# mao (pagina.recorte) quando o angulo muda DEPOIS, no livro novo. Codigos
+# internos (nunca texto de tela).
+RETANGULO_FICA = "fica"            # de fabrica: fica no mesmo lugar da pagina reta
+RETANGULO_ACOMPANHA = "acompanha"  # a outra opcao: cresce para o texto continuar dentro
+RETANGULO_PADRAO = RETANGULO_FICA
 
-    Este e o UNICO lugar para por a resposta. Hoje devolve o corte a mao
-    como esta (pagina.recorte, sem mudar nada) - o comportamento de antes
-    do G6, em que nenhum giro mexia nos numeros do corte. Na ordem nova isso
-    quer dizer que o retangulo fica no mesmo lugar da pagina reta; NAO e a
-    decisao, e so nao mexer enquanto ela nao vem. Ninguem chama ainda: quem
-    muda o angulo (aba Endireitar, ui/tela_conferir) passa a chamar quando a
-    decisao chegar. Na ordem antiga ("cortar_antes") devolve sempre como
-    esta. Nunca muda a pagina.
+
+def recorte_depois_de_mudar_o_angulo(projeto: Projeto, pagina: ConfigPagina,
+                                     angulo_antes: float | None, angulo_depois: float | None,
+                                     jeito: str = RETANGULO_PADRAO,
+                                     proporcao: float | None = None):
+    """O corte a mao da pagina depois de o angulo mudar de `angulo_antes`
+    para `angulo_depois` (graus, sentido do OpenCV). Nunca muda a pagina:
+    devolve o recorte (x, y, largura, altura) ou None.
+
+    Decisao do Samuel, pergunta g6-retangulo, 09/10/2026: "Fica no mesmo
+    lugar da pagina (como no ScanTailor)" e o de FABRICA (RETANGULO_FICA): o
+    retangulo nao se mexe, os numeros do corte ficam como estao - por isso
+    ninguem precisa chamar esta funcao no caminho de fabrica. Ele pediu
+    tambem a outra opcao, "Acompanha o texto" (RETANGULO_ACOMPANHA), mas ONDE
+    a pessoa troca ainda vai ser perguntado: NAO ha controle na tela nem
+    campo no projeto; quando houver, quem muda o angulo (aba Endireitar,
+    ui/tela_conferir) chama esta funcao com o jeito escolhido e grava o
+    recorte devolvido na mesma acao do desfazer.
+
+    "Acompanha": o retangulo (em fracao da pagina reta com angulo_antes) e
+    levado de volta a pagina sem endireitar, girado pelo angulo novo, e o
+    corte vira a caixa em volta dos quatro cantos (cresce um pouco; nunca
+    passa da pagina). Precisa de `proporcao` (largura / altura da pagina
+    girada de 90 e dividida, antes do corte; o endireitar nao muda o
+    tamanho); sem ela, ou na ordem antiga ("cortar_antes", em que o giro
+    acontece dentro do corte e o texto ja acompanha), devolve como esta.
+
+    Arriscado: trocar RETANGULO_PADRAO (decisao do Samuel); girar em volta
+    de outro centro que nao o da pagina inteira (rotacionar).
     """
-    del angulo_antes, angulo_depois      # usados quando a decisao chegar
-    return None if pagina.recorte is None else tuple(pagina.recorte)
+    if pagina.recorte is None:
+        return None
+    recorte = tuple(float(v) for v in pagina.recorte)
+    if (jeito != RETANGULO_ACOMPANHA or not endireita_antes(projeto) or not proporcao
+            or angulo_antes is None or angulo_depois is None):
+        return recorte
+    giro = angulo_aplicado(angulo_depois) - angulo_aplicado(angulo_antes)
+    if abs(giro) < 1e-9:
+        return recorte
+    from core.zonas_na_folha import _giro_em_fracao
+
+    x, y, w, h = recorte
+    cantos = np.array([[x, y, 1.0], [x + w, y, 1.0], [x + w, y + h, 1.0], [x, y + h, 1.0]]).T
+    # da pagina reta antiga para a nova: desfaz o giro antigo e faz o novo,
+    # em volta do centro da pagina inteira (o mesmo do rotacionar)
+    m = (_giro_em_fracao(angulo_aplicado(angulo_depois), proporcao)
+         @ np.linalg.inv(_giro_em_fracao(angulo_aplicado(angulo_antes), proporcao)))
+    q = m @ cantos
+    x0, y0 = max(0.0, float(q[0].min())), max(0.0, float(q[1].min()))
+    x1, y1 = min(1.0, float(q[0].max())), min(1.0, float(q[1].max()))
+    return (x0, y0, x1 - x0, y1 - y0)
 
 
 # ---------------------------------------------------------------------------

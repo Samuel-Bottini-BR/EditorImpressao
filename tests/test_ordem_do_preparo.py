@@ -26,9 +26,10 @@ ScanTailor, quando entra, é trocada por um número fixo):
 - a janela: livro novo nasce "endireitar_antes", a ordem volta ao reabrir, e
   projeto sem o campo reabre "cortar_antes".
 
-ESPERANDO g6-retangulo: o que acontece com o corte à mão quando o ângulo muda
-DEPOIS não é testado como decisão (não há decisão); só que, por enquanto,
-nada muda (pipeline.recorte_depois_de_mudar_o_angulo).
+- g6-retangulo (Samuel, 09/10/2026, "Fica no mesmo lugar da página (como no
+  ScanTailor)"): mudar o ângulo depois não mexe no corte à mão (de fábrica);
+  a outra opção, "acompanha o texto", está pronta sem tela
+  (pipeline.recorte_depois_de_mudar_o_angulo) e é conferida no pixel.
 """
 
 from __future__ import annotations
@@ -392,14 +393,57 @@ def test_analise_mede_o_mesmo_angulo_nas_duas_ordens(tmp_path, scantailor_fixo):
     assert resultados[0] == resultados[1]
 
 
-def test_retangulo_a_mao_esperando_a_decisao(tmp_path):
-    """ESPERANDO g6-retangulo: enquanto o Samuel não decide, mudar o ângulo
-    não mexe no corte à mão (nos dois tipos de projeto)."""
+def test_retangulo_a_mao_fica_no_mesmo_lugar_de_fabrica():
+    """g6-retangulo, decisão do Samuel (09/10/2026): "Fica no mesmo lugar da
+    página (como no ScanTailor)" é o de fábrica - mudar o ângulo depois não
+    mexe nos números do corte à mão (nos dois tipos de projeto)."""
+    assert pipeline.RETANGULO_PADRAO == pipeline.RETANGULO_FICA
     for projeto in (_novo("x.pdf"), _antigo("x.pdf")):
         _, p = _com_folha(projeto, {"dividir": False}, {"recorte": (0.1, 0.2, 0.7, 0.6)})
-        assert pipeline.recorte_depois_de_mudar_o_angulo(projeto, p, 0.5, -1.0) == (0.1, 0.2, 0.7, 0.6)
+        assert pipeline.recorte_depois_de_mudar_o_angulo(
+            projeto, p, 0.5, -1.0, proporcao=0.7) == (0.1, 0.2, 0.7, 0.6)
         p.recorte = None
         assert pipeline.recorte_depois_de_mudar_o_angulo(projeto, p, 0.5, -1.0) is None
+
+
+def test_retangulo_a_mao_acompanha_o_texto_a_outra_opcao(tmp_path):
+    """A outra opção pedida pelo Samuel ("Acompanha o texto"; onde trocar
+    ainda vai ser perguntado, sem tela): o retângulo cresce para o mesmo
+    pedaço do papel continuar dentro. Conferido no pixel: um ponto vermelho
+    perto do canto do corte à mão continua na página depois de mudar o
+    ângulo. Na ordem antiga, e sem a proporção, fica como está."""
+    caminho = _pdf(tmp_path, "ponto", 0.0, ponto=(0.232, 0.262))
+    img_folha = _desenhar(caminho)
+    novo = _novo(caminho, endireitar_como=es.JEITO_PROGRAMA)
+    recorte = (0.22, 0.25, 0.5, 0.5)                   # o ponto bem no canto de cima, a esquerda
+    f, p = _com_folha(novo, {"dividir": False}, {"recorte": recorte, "angulo_manual": 0.0})
+    base = pipeline.preparar_para_recorte(img_folha, f, p, novo)
+    proporcao = base.shape[1] / base.shape[0]
+    assert _onde_esta_o_vermelho(pipeline.preparar_metade(img_folha, f, p, novo, dpi=DPI))
+
+    acompanha = pipeline.recorte_depois_de_mudar_o_angulo(
+        novo, p, 0.0, 4.0, jeito=pipeline.RETANGULO_ACOMPANHA, proporcao=proporcao)
+    x, y, w, h = acompanha
+    assert x <= recorte[0] and y <= recorte[1]
+    assert x + w >= recorte[0] + recorte[2] and y + h >= recorte[1] + recorte[3]
+    assert w * h < recorte[2] * recorte[3] * 1.25           # cresce so um pouco
+
+    pipeline._GEOMETRIAS.clear()
+    p.angulo_manual = 4.0
+    p.recorte = acompanha
+    _onde_esta_o_vermelho(pipeline.preparar_metade(img_folha, f, p, novo, dpi=DPI))
+    # o de fabrica (fica): com o mesmo giro, o ponto do canto sai do corte
+    pipeline._GEOMETRIAS.clear()
+    p.recorte = recorte
+    with pytest.raises(AssertionError):
+        _onde_esta_o_vermelho(pipeline.preparar_metade(img_folha, f, p, novo, dpi=DPI))
+
+    antigo = _antigo(caminho)
+    _, pa = _com_folha(antigo, {"dividir": False}, {"recorte": recorte})
+    assert pipeline.recorte_depois_de_mudar_o_angulo(
+        antigo, pa, 0.0, 4.0, jeito=pipeline.RETANGULO_ACOMPANHA, proporcao=proporcao) == recorte
+    assert pipeline.recorte_depois_de_mudar_o_angulo(
+        novo, pa, 0.0, 4.0, jeito=pipeline.RETANGULO_ACOMPANHA) == recorte
 
 
 # ------------------------------------------------------------------ as zonas
