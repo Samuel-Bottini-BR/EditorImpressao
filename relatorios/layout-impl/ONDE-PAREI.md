@@ -100,6 +100,11 @@ Ficam em `relatorios/layout-impl/etapa2/` (janela de verdade, cópia do Boécio,
    - `test_dialogo_tamanho_da_folha`: os 5 passam, mas o Python cai ao fechar (erro de memória do Qt no Linux). Acontece igual no `fase-1` puro, sem o layout.
 6. **Prints da nuvem** em `/tmp/claude-0/prints-layout/` (fora do repositório, livro inventado; a letra do Linux é mais larga que a do Windows).
 
+### Windows do GitHub (09/10, à noite)
+
+- Rodada de cbc432a (da gerente): tudo passou, mas os prints mostraram os menus centralizados na tela inicial e no "O que fazer". Consertado em e306e1c (mola de peso zero no fim da linha dos menus) e conferido na rodada https://github.com/Samuel-Bottini-BR/EditorImpressao/actions/runs/37986429190: os 7 trabalhos terminaram com sucesso; nos prints, os menus ficam à esquerda nas telas 01 a 04 e no conferir.
+- **Cortar em 1280 x 657, no Windows a 100%:** faltam uns 45 a 50 px. No fase-1 a fila ia de lado a lado da janela. Na etapa 2 ela fica entre a trilha (44 px) e o painel da direita (172 px), que vão de cima a baixo, como na base decidida (área de trabalho 2; "o painel empurra a página"). Em 08/10 só "cabia" porque o PC do Samuel amplia a tela em 125%. Sem decisão não há folga segura; as opções foram levadas à gerente: apertar espaços, segunda linha, fila passando por baixo do painel, letra menor nessa fila ou esperar a etapa 4.
+
 ### Ainda falta na etapa 2
 
 1. **Conferir no Windows** (GitHub ou PC do Samuel): a bateria de tela e a janela de verdade.
