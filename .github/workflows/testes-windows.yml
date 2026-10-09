@@ -116,6 +116,11 @@ jobs:
     name: Botoes e prints da janela real
     runs-on: windows-latest
     timeout-minutes: 45
+    # Escrita SO neste job, e so para o passo que grava os prints no ramo
+    # prints-testes (autorizado pelo Samuel em 09/10/2026). Arriscado: dar
+    # "contents: write" aos outros jobs, ou no topo do arquivo.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -187,6 +192,48 @@ jobs:
             teste_botoes.txt
             saida_teste/botoes/falhas.log
           if-no-files-found: warn
+
+      - name: Gravar os prints no ramo prints-testes
+        # O QUE FAZ: copia os prints/*.png desta rodada para uma pasta nova
+        # AAAA-MM-DD_HHMM_<sha7>/ (hora UTC, sha do commit testado) no ramo
+        # orfao prints-testes, que so tem imagens e o LEIA-ME
+        # (.github/prints-testes-LEIA-ME.md). Se o ramo nao existe, nasce aqui.
+        # Corrida entre rodadas: a cada tentativa busca o ramo de novo, poe a
+        # pasta por cima e tenta o push; se outra rodada empurrou antes, o push
+        # e recusado e tenta de novo (ate 5 vezes). Cada rodada so ACRESCENTA
+        # uma pasta, entao nao ha conflito de conteudo.
+        # ARRISCADO MUDAR: empurrar para outro ramo (so este foi autorizado);
+        # usar --force (apagaria os prints de outra rodada); gravar aqui texto
+        # ou dado do programa (o ramo e so de imagens).
+        if: always()
+        shell: bash
+        run: |
+          set -u
+          shopt -s nullglob
+          imagens=(prints/*.png)
+          if [ ${#imagens[@]} -eq 0 ]; then echo "nenhum print para gravar"; exit 0; fi
+          PASTA="$(date -u +%Y-%m-%d_%H%M)_${GITHUB_SHA::7}"
+          W="$(cygpath -u "$RUNNER_TEMP")/prints-testes"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for tentativa in 1 2 3 4 5; do
+            rm -rf "$W"; git worktree prune
+            if git fetch --depth=1 origin prints-testes; then
+              git worktree add --detach "$W" FETCH_HEAD
+            else
+              git worktree add --orphan -b "prints-testes-$tentativa" "$W"
+            fi
+            mkdir -p "$W/$PASTA"
+            cp "${imagens[@]}" "$W/$PASTA/"
+            cp .github/prints-testes-LEIA-ME.md "$W/LEIA-ME.md"
+            git -C "$W" add -A
+            git -C "$W" commit -q -m "Prints da janela real: $PASTA (rodada ${GITHUB_RUN_ID})"
+            if git -C "$W" push origin HEAD:refs/heads/prints-testes; then
+              echo "gravado em prints-testes/$PASTA"; exit 0
+            fi
+            echo "push recusado (outra rodada gravou antes?), tentativa $tentativa"; sleep $((tentativa * 5))
+          done
+          echo "nao consegui gravar os prints no ramo prints-testes"; exit 1
 
   resumo:
     # Junta os relatorios das partes e da janela num texto so, no log deste job
