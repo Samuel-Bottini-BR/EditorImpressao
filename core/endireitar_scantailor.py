@@ -20,11 +20,11 @@ O QUE FAZ
         (modelos.ConfigPagina.endireitar_como) e discordam() decide o
         "conferir" (LIMITE_DA_DISCORDANCIA).
       G6 (a), 05/10/2026: endireitar ANTES de cortar, como o ScanTailor.
-        AINDA NÃO LIGADO (07/10/2026): o programa continua cortar ->
-        endireitar (CLAUDE.md, seção 7); só a medida do ScanTailor já é feita
-        na página ANTES do corte (core/pipeline._angulo_automatico), como ele
-        faz. A ordem nova muda o corte, as zonas da aba Marcar
-        (core/zonas_na_folha) e o recorte a mão: é o próximo passo do 2.2.
+        LIGADO em 09/10/2026 ("Pode começar", pergunta g6-endireitar-antes)
+        só para o livro novo (core/ordem_do_preparo.py,
+        Projeto.ordem_do_preparo); o projeto de antes continua cortar ->
+        endireitar. Nas duas ordens a medida do ScanTailor é feita na página
+        ANTES do corte (core/pipeline._angulo_automatico), como ele faz.
 
 O SENTIDO DO ÂNGULO
     O ScanTailor devolve o ângulo que ele aplica (QTransform.rotate: positivo

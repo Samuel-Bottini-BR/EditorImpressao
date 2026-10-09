@@ -6,8 +6,11 @@ fora, para a sujeira da margem nao segurar o corte), da uma folga e, desde
 28/09/2026, nunca deixa a borda da caixa passar no meio de uma peca de tinta.
 
 Quem chama: core/pipeline.py (preparar_metade, na hora de gravar e na previa;
-analisar_projeto, so para os avisos). Depois do corte vem o endireitar, e
-`alargar_para_o_giro` da ao corte a folga que o giro vai precisar.
+analisar_projeto, so para os avisos). No projeto de antes de 09/10/2026
+("cortar_antes"), depois do corte vem o endireitar, e `alargar_para_o_giro`
+da ao corte a folga que o giro vai precisar. No livro novo
+("endireitar_antes", item 2.2, G6) o corte e achado na pagina ja endireitada
+e nao ha folga do giro (core/ordem_do_preparo.py).
 
 "Seguir a beirada do papel" (o que o Samuel espera no Livro de Horas) NAO e
 feito aqui: fica para a caixa da pagina do ScanTailor (itens 2.5 e 2.13 do
