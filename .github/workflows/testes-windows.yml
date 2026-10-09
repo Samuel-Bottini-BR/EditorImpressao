@@ -32,10 +32,20 @@
 
 name: Testes no Windows
 
+# Com "ramo" preenchido (so pelo workflow_dispatch), o CODIGO DO PROGRAMA vem
+# daquele ramo e a .github/ (este workflow e os scripts) continua a deste
+# (.github/scripts/trocar_codigo.sh). Nada e gravado no ramo testado.
+run-name: Testes no Windows (${{ inputs.ramo || github.ref_name }})
+
 on:
   push:
     branches: [claude/list-server-files-gkos8v]
   workflow_dispatch:
+    inputs:
+      ramo:
+        description: "Ramo (ou commit) cujo programa sera testado; vazio = este commit"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -57,6 +67,12 @@ jobs:
     steps:
       - name: Codigo do programa (este commit)
         uses: actions/checkout@v4
+
+      - name: Trocar o codigo pelo do ramo pedido (se houver)
+        shell: bash
+        env:
+          RAMO_PEDIDO: ${{ inputs.ramo }}     # por variavel, nunca colado no comando
+        run: bash .github/scripts/trocar_codigo.sh "$RAMO_PEDIDO"
 
       - name: Arquivos pesados (ramo dados-de-teste)
         uses: actions/checkout@v4
@@ -104,6 +120,26 @@ jobs:
       - name: Rodar a parte ${{ matrix.parte }}
         run: python .github/scripts/rodar_parte.py --parte ${{ matrix.parte }} --de 5 --saida relatorio-parte-${{ matrix.parte }}
 
+      - name: O que ficou na pasta de dados de verdade (fora do basetemp)
+        # Os testes trocam o LOCALAPPDATA por uma pasta deles (tests/conftest.py).
+        # Se alguma coisa escreveu na pasta "de verdade" desta maquina (a que o
+        # job definiu), ela aparece aqui, com o erros.log inteiro se existir.
+        if: always()
+        shell: pwsh
+        run: |
+          $saida = "relatorio-parte-${{ matrix.parte }}"
+          New-Item -ItemType Directory -Force -Path $saida | Out-Null
+          $f = "$saida/dados-reais.txt"
+          "testado: $env:TESTADO_RAMO $env:TESTADO_SHA" | Out-File -Encoding utf8 $f
+          "pasta de dados de verdade: $env:LOCALAPPDATA" | Out-File -Encoding utf8 -Append $f
+          Get-ChildItem -Recurse -Force $env:LOCALAPPDATA -ErrorAction SilentlyContinue |
+            ForEach-Object { "{0,10}  {1}" -f $_.Length, $_.FullName } | Out-File -Encoding utf8 -Append $f
+          $log = Join-Path $env:LOCALAPPDATA "EditorImpressao\erros.log"
+          if (Test-Path $log) { "=== erros.log ===" | Out-File -Encoding utf8 -Append $f; Get-Content $log | Out-File -Encoding utf8 -Append $f }
+          else { "erros.log: nao existe" | Out-File -Encoding utf8 -Append $f }
+          Get-Content $f
+          exit 0
+
       - name: Guardar o relatorio
         if: always()
         uses: actions/upload-artifact@v4
@@ -123,6 +159,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Trocar o codigo pelo do ramo pedido (se houver)
+        shell: bash
+        env:
+          RAMO_PEDIDO: ${{ inputs.ramo }}     # por variavel, nunca colado no comando
+        run: bash .github/scripts/trocar_codigo.sh "$RAMO_PEDIDO"
 
       - name: Arquivos pesados (ramo dados-de-teste)
         uses: actions/checkout@v4
@@ -207,12 +249,17 @@ jobs:
         # ou dado do programa (o ramo e so de imagens).
         if: always()
         shell: bash
+        env:
+          RAMO_PEDIDO: ${{ inputs.ramo }}
         run: |
           set -u
           shopt -s nullglob
           imagens=(prints/*.png)
           if [ ${#imagens[@]} -eq 0 ]; then echo "nenhum print para gravar"; exit 0; fi
-          PASTA="$(date -u +%Y-%m-%d_%H%M)_${GITHUB_SHA::7}"
+          # pasta: data-hora UTC, sha do PROGRAMA testado e, se veio de outro
+          # ramo, o nome dele (barras viram hifen)
+          PASTA="$(date -u +%Y-%m-%d_%H%M)_${TESTADO_SHA::7}"
+          if [ -n "$RAMO_PEDIDO" ]; then PASTA="${PASTA}_$(printf '%s' "$RAMO_PEDIDO" | tr -c 'A-Za-z0-9._-' '-')"; fi
           W="$(cygpath -u "$RUNNER_TEMP")/prints-testes"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -227,7 +274,7 @@ jobs:
             cp "${imagens[@]}" "$W/$PASTA/"
             cp .github/prints-testes-LEIA-ME.md "$W/LEIA-ME.md"
             git -C "$W" add -A
-            git -C "$W" commit -q -m "Prints da janela real: $PASTA (rodada ${GITHUB_RUN_ID})"
+            git -C "$W" commit -q -m "Prints da janela real: $PASTA (rodada ${GITHUB_RUN_ID}, programa de ${TESTADO_RAMO})"
             if git -C "$W" push origin HEAD:refs/heads/prints-testes; then
               echo "gravado em prints-testes/$PASTA"; exit 0
             fi

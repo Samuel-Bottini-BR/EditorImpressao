@@ -12,6 +12,7 @@ O que imprime (e grava em resumo-geral.txt na mesma pasta):
   - cada teste que falhou ou deu erro, com a primeira linha da mensagem;
   - os pulados, agrupados pelo motivo (com quantos e quais arquivos);
   - os tempos de cada arquivo em JSON (para afinar .github/tempos-dos-testes.json);
+  - o que ficou na pasta de dados de verdade de cada parte (dados-reais.txt);
   - o roteiro.txt dos prints e o fim do teste_botoes.txt, se existirem.
 Existe porque os "artifacts" do GitHub nao baixam de todo lugar: o log do job
 sempre se le.
@@ -88,6 +89,12 @@ def main() -> int:
         linhas.append(f"{len(arquivos):4d}  {motivo}  [{', '.join(sorted(set(arquivos)))}]")
     linhas.append("\n--- tempos por arquivo (s) ---")
     linhas.append(json.dumps(dict(sorted(tempos.items())), ensure_ascii=False))
+    for parte in sorted(raiz.glob("relatorio-parte-*")):
+        f = parte / "dados-reais.txt"
+        if f.is_file():
+            texto = f.read_text(encoding="utf-8-sig", errors="replace").splitlines()
+            linhas.append(f"\n--- {parte.name}/dados-reais.txt (pasta de dados fora do basetemp) ---")
+            linhas += texto[:40]
     for nome in ("janela-prints/prints/roteiro.txt", "janela-prints/teste_botoes.txt"):
         f = raiz / nome
         if f.is_file():

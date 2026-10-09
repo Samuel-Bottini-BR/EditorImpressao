@@ -18,7 +18,15 @@ O que fotografa:
   01..03  a tela inicial nos tres temas (escuro, cinza, claro), trocados pelo
           menu Ver > Tema, como o Kaique trocaria;
   04      a tela "O que fazer" com um livro sintetico de folhas duplas (cinza);
-  05      a tela de conferir depois da analise (cinza).
+  05      a tela de conferir depois da analise (cinza);
+  06..07  a tela de conferir com a ferramenta Cortar (antiga aba Bordas) e com
+          Endireitar escolhidas, com a janela maximizada;
+  08..09  as mesmas duas com a janela em 1280x657 (pedido da gerente em
+          09/10/2026), para ver se as filas de botoes cabem.
+  O livro sintetico tem folhas duplas e "Dividir folhas ao meio" e marcado
+  antes de analisar (desde 09/10/2026), como o Kaique faria com esse livro.
+  Funciona com as abas (fase-1) e sem elas (layout etapa 2, trilha de
+  ferramentas): ver escolher_ferramenta_da_pagina.
 Caixas de aviso que aparecerem sao fotografadas (aviso-N.png) e respondidas no
 primeiro botao, para o roteiro nao parar esperando clique.
 
@@ -80,6 +88,7 @@ def main() -> int:
 
     tela = app.primaryScreen()
     geo = tela.geometry()
+    anotar(f"programa testado: {os.environ.get('TESTADO_RAMO', '?')} {os.environ.get('TESTADO_SHA', '?')}")
     anotar(f"plataforma do Qt: {app.platformName()}")
     anotar(f"tela: {geo.width()}x{geo.height()} (escala {tela.devicePixelRatio()}, "
            f"{tela.logicalDotsPerInch():.0f} dpi logicos)")
@@ -139,6 +148,10 @@ def main() -> int:
         doc.close()
         janela.abrir_livro(str(livro))
         esperar(2.0)
+        opcoes = janela.tela_opcoes
+        if hasattr(opcoes, "cx_dividir"):
+            opcoes.cx_dividir.setChecked(True)
+            esperar(0.5)
         fotografar("04-o-que-fazer-tema-cinza")
 
         from ui.janela_principal import CONFERIR
@@ -152,6 +165,43 @@ def main() -> int:
     except Exception:
         erros += 1
         anotar(f"ERRO no livro/conferir:\n{traceback.format_exc()}")
+
+    def escolher_ferramenta_da_pagina(aba: str, ferramenta: str) -> None:
+        """Leva a tela de conferir para Cortar ("bordas") ou Endireitar
+        ("angulo"). Sem abas (layout etapa 2) vai pela trilha, como o clique
+        do Kaique; com abas, pela barra de abas. Espera a previa chegar."""
+        import ui.tela_conferir as tc
+        conferir = janela.tela_conferir
+        if hasattr(tc, "ABA_DA_FERRAMENTA"):
+            conferir.escolher_ferramenta(ferramenta)
+        else:
+            conferir.barra_abas.setCurrentIndex(conferir._abas_ativas.index(aba))
+        vis = getattr(conferir, "visualizadores", {}).get(aba)
+        fim = time.time() + 30
+        while time.time() < fim and vis is not None and (
+                getattr(vis, "_pixmap", None) is None or getattr(vis, "carregando", False)):
+            esperar(0.3)
+        esperar(1.0)
+        anotar(f"ferramenta {ferramenta}: aba atual {getattr(conferir, 'aba_atual', '?')}")
+
+    for numero, (aba, ferramenta) in ((6, ("bordas", "cortar")), (7, ("angulo", "endireitar"))):
+        try:
+            escolher_ferramenta_da_pagina(aba, ferramenta)
+            fotografar(f"0{numero}-conferir-{ferramenta}-maximizada")
+        except Exception:
+            erros += 1
+            anotar(f"ERRO na ferramenta {ferramenta}:\n{traceback.format_exc()}")
+    try:
+        janela.showNormal()
+        esperar(0.5)
+        janela.resize(1280, 657)
+        esperar(1.0)
+        for numero, (aba, ferramenta) in ((8, ("bordas", "cortar")), (9, ("angulo", "endireitar"))):
+            escolher_ferramenta_da_pagina(aba, ferramenta)
+            fotografar(f"0{numero}-conferir-{ferramenta}-1280x657")
+    except Exception:
+        erros += 1
+        anotar(f"ERRO em 1280x657:\n{traceback.format_exc()}")
 
     if getattr(janela, "previas", None) is not None:
         janela.previas.parar()
