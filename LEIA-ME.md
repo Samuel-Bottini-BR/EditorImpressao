@@ -26,13 +26,13 @@ no PC do Samuel (pela cópia do HD acessível à sessão do Claude na nuvem).
 | `gabarito/camscanner/` | `gabarito\camscanner\` | As 6 fotos do CamScanner do Kaique. |
 | `gabarito/scantailor-24-09/` | `gabarito\scantailor-24-09\` | O teste do ScanTailor de 24/09 (entrada, `out/`, `comparacoes/`). **Faltando um arquivo:** `out/horas_p047.tif` (154 MB) passa do limite de 95 MB por arquivo e ficou de fora; nenhum teste o lê. |
 | `gabarito/ocr-zonas.antes-*.json` | `gabarito\` | Versões antigas das zonas do OCR (o `ocr-zonas.json` atual já está no git do programa). |
+| `gabarito/velocidade/marial_300.pdf` | `gabarito\velocidade\` | O livro do teste de velocidade (`teste_velocidade.py`): as 300 primeiras páginas do Marial de sermoens do acervo, copiadas como estão (71 MB). Acrescentado em 09/10/2026 com a autorização do Samuel ("2- pode"). |
 | `modelos/doclayout.onnx` | `modelos\` | O detector de gravura e letra (`core/detectar_regioes.py`). |
 | `modelos/doctr/` | `modelos\doctr\` | O detector de texto docTR (`core/ocr_doctr.py`). |
 | `modelos/mobile_sam/` | `modelos\mobile_sam\` | A seleção por clique (`core/rede_selecao.py`). |
 | `modelos/tessdata/` | `modelos\tessdata\` | Os idiomas do Tesseract (`core/ocr_tesseract.py`). O `tesseract.exe` em si não está aqui. |
 
-Ficaram de fora, porque nenhum teste lê: `gabarito\velocidade\` (o livro do
-teste de velocidade), `gabarito\conferir-samuel\`, `gabarito\opusmajus-candidatas.png`,
+Ficaram de fora, porque nenhum teste lê: `gabarito\conferir-samuel\`, `gabarito\opusmajus-candidatas.png`,
 `modelos\mobile_sam.zip`, `modelos\doclayout_inference_referencia.py` e
 `__pycache__`. A `gabarito/lista.json` e o `gabarito/LEIA-ME.md` também não
 estão aqui: moram no git do programa.
