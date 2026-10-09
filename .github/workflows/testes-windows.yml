@@ -35,7 +35,7 @@ name: Testes no Windows
 # Com "ramo" preenchido (so pelo workflow_dispatch), o CODIGO DO PROGRAMA vem
 # daquele ramo e a .github/ (este workflow e os scripts) continua a deste
 # (.github/scripts/trocar_codigo.sh). Nada e gravado no ramo testado.
-run-name: ${{ inputs.velocidade && format('Velocidade no Windows ({0})', inputs.ramos_velocidade) || format('Testes no Windows ({0})', inputs.ramo || github.ref_name) }}
+run-name: ${{ inputs.antes_depois && format('Antes/depois do endireitar ({0})', inputs.ramos_antes_depois) || inputs.velocidade && format('Velocidade no Windows ({0})', inputs.ramos_velocidade) || format('Testes no Windows ({0})', inputs.ramo || github.ref_name) }}
 
 on:
   push:
@@ -62,6 +62,18 @@ on:
         description: "Velocidade: teste rapido (so confere que roda; numeros NAO valem)"
         type: boolean
         default: false
+      so_janela:
+        description: "So os botoes e os prints da janela (sem a suite), no programa de 'ramo'"
+        type: boolean
+        default: false
+      antes_depois:
+        description: "Rodar SO o antes/depois do endireitar (item 2.2) nos ramos de ramos_antes_depois"
+        type: boolean
+        default: false
+      ramos_antes_depois:
+        description: 'Antes/depois: lista JSON dos ramos, ex.: ["fase-1","fase2-endireitar-2"]'
+        required: false
+        default: '["fase-1","fase2-endireitar-2"]'
 
 permissions:
   contents: read
@@ -74,7 +86,7 @@ env:
 jobs:
   suite:
     name: Suite (parte ${{ matrix.parte }} de 5)
-    if: ${{ !inputs.velocidade }}
+    if: ${{ !inputs.velocidade && !inputs.antes_depois && !inputs.so_janela }}
     runs-on: windows-latest
     timeout-minutes: 60
     strategy:
@@ -167,7 +179,7 @@ jobs:
 
   janela:
     name: Botoes e prints da janela real
-    if: ${{ !inputs.velocidade }}
+    if: ${{ !inputs.velocidade && !inputs.antes_depois }}
     runs-on: windows-latest
     timeout-minutes: 45
     # Escrita SO neste job, e so para o passo que grava os prints no ramo
@@ -306,7 +318,7 @@ jobs:
     # todo lugar; o log sempre se le. Roda mesmo se alguma parte falhou.
     name: Resumo
     needs: [suite, janela]
-    if: ${{ always() && !inputs.velocidade }}
+    if: ${{ always() && !inputs.velocidade && !inputs.antes_depois }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -329,7 +341,7 @@ jobs:
   # ---------------------------------------------------------------------------
   velocidade:
     name: Velocidade ${{ matrix.ramo }} (repeticao ${{ matrix.rep }})
-    if: ${{ inputs.velocidade }}
+    if: ${{ inputs.velocidade && !inputs.antes_depois }}
     runs-on: windows-latest
     timeout-minutes: 120
     strategy:
@@ -419,3 +431,109 @@ jobs:
           path: _velocidade
       - name: Lado a lado
         run: python3 .github/scripts/resumir_velocidade.py --comparar _velocidade
+
+  # ---------------------------------------------------------------------------
+  # ANTES/DEPOIS DO ENDIREITAR (item 2.2, G6), so com workflow_dispatch e
+  # "antes_depois" marcado (a suite, a janela e a velocidade NAO rodam). Para
+  # cada ramo de "ramos_antes_depois", em maquinas separadas, prepara as
+  # paginas-gabarito como livro novo (.github/scripts/antes_depois_endireitar.py)
+  # e grava as imagens no ramo prints-testes, numa pasta
+  # AAAA-MM-DD_HHMM_<sha7>_<ramo>_antes-depois/. Os numeros (angulo, corte)
+  # ficam no log do job. Pedido da gerente em 09/10/2026 (conferencia do G6).
+  # ARRISCADO: dar "contents: write" a outro job; empurrar para outro ramo.
+  # ---------------------------------------------------------------------------
+  antes_depois:
+    name: Antes/depois ${{ matrix.ramo }}
+    if: ${{ inputs.antes_depois }}
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        ramo: ${{ fromJSON(inputs.ramos_antes_depois || '["fase-1"]') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Trocar o codigo pelo do ramo pedido
+        shell: bash
+        env:
+          RAMO_PEDIDO: ${{ matrix.ramo }}     # por variavel, nunca colado no comando
+        run: bash .github/scripts/trocar_codigo.sh "$RAMO_PEDIDO"
+
+      - name: Arquivos pesados (ramo dados-de-teste)
+        uses: actions/checkout@v4
+        with:
+          ref: dados-de-teste
+          path: _dados_de_teste
+
+      - name: Copiar gabarito/ e modelos/ para onde o codigo espera
+        shell: pwsh
+        run: |
+          robocopy _dados_de_teste\gabarito gabarito /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          robocopy _dados_de_teste\modelos modelos /E /NFL /NDL /NJH /NP
+          if ($LASTEXITCODE -ge 8) { exit 1 }
+          Remove-Item -Recurse -Force _dados_de_teste
+          exit 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: .github/requisitos-windows.txt
+
+      - name: Bibliotecas (versoes da .venv do Samuel)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .github/requisitos-windows.txt
+
+      - name: Pastas temporarias e de dados dentro da pasta de trabalho
+        shell: pwsh
+        run: |
+          $t = Join-Path $env:GITHUB_WORKSPACE "_temp_testes"
+          New-Item -ItemType Directory -Force -Path $t, "$t\tmp", "$t\localappdata", "$t\appdata" | Out-Null
+          "TEMP=$t\tmp" >> $env:GITHUB_ENV
+          "TMP=$t\tmp" >> $env:GITHUB_ENV
+          "LOCALAPPDATA=$t\localappdata" >> $env:GITHUB_ENV
+          "APPDATA=$t\appdata" >> $env:GITHUB_ENV
+
+      - name: Preparar as paginas-gabarito
+        run: python .github/scripts/antes_depois_endireitar.py --saida prints
+
+      - name: Gravar as imagens no ramo prints-testes
+        # Mesma conta do passo do job "janela" (sem force, tenta de novo se
+        # outra rodada gravou antes); a pasta leva "_antes-depois" no fim.
+        if: always()
+        shell: bash
+        env:
+          RAMO_PEDIDO: ${{ matrix.ramo }}
+        run: |
+          set -u
+          shopt -s nullglob
+          imagens=(prints/*.png)
+          if [ ${#imagens[@]} -eq 0 ]; then echo "nenhuma imagem para gravar"; exit 0; fi
+          PASTA="$(date -u +%Y-%m-%d_%H%M)_${TESTADO_SHA::7}_$(printf '%s' "$RAMO_PEDIDO" | tr -c 'A-Za-z0-9._-' '-')_antes-depois"
+          W="$(cygpath -u "$RUNNER_TEMP")/prints-testes"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for tentativa in 1 2 3 4 5; do
+            rm -rf "$W"; git worktree prune
+            if git fetch --depth=1 origin prints-testes; then
+              git worktree add --detach "$W" FETCH_HEAD
+            else
+              git worktree add --orphan -b "prints-testes-$tentativa" "$W"
+            fi
+            mkdir -p "$W/$PASTA"
+            cp "${imagens[@]}" "$W/$PASTA/"
+            cp .github/prints-testes-LEIA-ME.md "$W/LEIA-ME.md"
+            git -C "$W" add -A
+            git -C "$W" commit -q -m "Antes/depois do endireitar: $PASTA (rodada ${GITHUB_RUN_ID}, programa de ${TESTADO_RAMO})"
+            if git -C "$W" push origin HEAD:refs/heads/prints-testes; then
+              echo "gravado em prints-testes/$PASTA"; exit 0
+            fi
+            echo "push recusado (outra rodada gravou antes?), tentativa $tentativa"; sleep $((tentativa * 5))
+          done
+          echo "nao consegui gravar as imagens no ramo prints-testes"; exit 1

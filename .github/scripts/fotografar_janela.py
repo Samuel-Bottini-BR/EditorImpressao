@@ -191,6 +191,35 @@ def main() -> int:
         except Exception:
             erros += 1
             anotar(f"ERRO na ferramenta {ferramenta}:\n{traceback.format_exc()}")
+    # 10..12 (verificador, 09/10/2026, conferencia da etapa 2 do layout): as
+    # outras ferramentas de pagina, Dividir, Filtro e Marcar (retangulo), com a
+    # janela maximizada. Livro sem a aba (ex.: Marcar no fase-1 com este livro)
+    # vira ERRO anotado e o roteiro segue.
+    for numero, (aba, ferramenta) in ((10, ("corte", "dividir")), (11, ("filtro", "filtros")),
+                                      (12, ("marcar", "retangulo"))):
+        try:
+            escolher_ferramenta_da_pagina(aba, ferramenta)
+            fotografar(f"{numero}-conferir-{ferramenta}-maximizada")
+        except Exception:
+            erros += 1
+            anotar(f"ERRO na ferramenta {ferramenta}:\n{traceback.format_exc()}")
+    # 13: o grupo "Contornar" da trilha aberto (so existe sem abas, layout
+    # etapa 2); a lista aparece na tela inteira, nao no print so da janela.
+    try:
+        trilha = getattr(janela.tela_conferir, "trilha", None)
+        if trilha is not None and hasattr(trilha, "abrir_o_grupo"):
+            from ui.widgets.trilha_agrupada import GRUPOS
+            indice = next(i for i, g in enumerate(GRUPOS) if "laco" in g)
+            trilha.abrir_o_grupo(indice)
+            fotografar("13-grupo-contornar-aberto-maximizada")
+            menu = getattr(trilha, "menu_do_grupo", None)
+            if menu is not None:
+                menu.close()
+        else:
+            anotar("13: sem trilha agrupada neste programa (com abas)")
+    except Exception:
+        erros += 1
+        anotar(f"ERRO no grupo aberto:\n{traceback.format_exc()}")
     try:
         janela.showNormal()
         esperar(0.5)
