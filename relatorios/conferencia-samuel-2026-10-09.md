@@ -23,3 +23,14 @@ Lida da coleção `respostas` em 09/10/2026 (respondidas às 15:47 e 15:49, hor�
     3. texto encostado na faixa escura da lombada (2°): "Fica no mesmo lugar" corta um canto e deixa entrar 1 mm da faixa; "Acompanha o texto" guarda o texto, mas deixa entrar uns 4 mm da faixa; nos dois é preciso ajustar.
   - as mesmas três opções ("Fica no mesmo lugar da página (como no ScanTailor)", "Acompanha o texto", "Ainda não entendi"), com o bom e o ruim de cada uma.
   - Desenhos: `img/g6/retangulo-passo-a-passo.svg`, `retangulo-ex1-pouco.svg`, `retangulo-ex2-muito.svg` e `retangulo-ex3-beirada.svg`, feitos por `docs/plano/paginas-claude-ai/escolhas/desenhos_g6_retangulo.py` (as contas de quanto o canto anda são feitas no script). A página ganhou um jeito de mostrar um desenho largo na linha inteira, sem cortar (campo `largo` do exemplo); as outras perguntas não mudam.
+
+### Segunda leitura (09/10/2026, respondida às 16:09, horário de Brasília)
+
+- **"Se o Kaique mudar o ângulo depois de ajustar o corte à mão, o retângulo verde do corte fica parado ou se mexe junto com o texto?"** (`g6-retangulo`, pergunta refeita): **Fica no mesmo lugar da página (como no ScanTailor)**, com o comentário:
+
+  > Posso ter as duas opções mas a opção do scantailor ficar como padrão?
+
+### O que a gerente fez (09/10, segunda leitura)
+
+- `g6-retangulo`: marcada `decidida`, com a decisão "Fica no mesmo lugar (como no ScanTailor) é o padrão". O comentário subiu para o `historico` (fixado) e saiu da caixa de comentário; a escolha dele continua gravada na resposta.
+- Pergunta nova, respondendo ao comentário (`g6-retangulo-onde`, parte "Endireitar", ordem 118): "Sim, dá para ter as duas, com a do ScanTailor de fábrica. Onde você quer trocar?" Opções, cada uma com um esquema da tela (`img/g6/retangulo-onde-livro.svg`, `retangulo-onde-configuracoes.svg`, `retangulo-onde-pagina.svg`, feitos por `docs/plano/paginas-claude-ai/escolhas/desenhos_g6_retangulo_onde.py`): (a) na tela "O que fazer", por livro, abaixo da "Conta do endireitar:"; (b) nas Configurações, para todos os livros; (c) na ferramenta Endireitar, por página, junto do "aplicar em"; (d) "Ainda não entendi". Aberta.
