@@ -20,10 +20,11 @@ Como as cores chegam às telas:
   - quem põe cor num setStyleSheet próprio deve preferir um objectName com a
     regra aqui na folha, para a troca de tema pegar sem nada a mais.
 
-O tema escolhido fica num arquivo pequeno na pasta de dados do programa
-(tema.json, ao lado do configuracoes.json): o configuracoes.py só guarda as
-chaves que ele conhece, e ele não é da tela (pedido para a gerente: pôr
-"tema" nos PADROES dele, e então este arquivo pode sair).
+O tema escolhido fica na chave "tema" do configuracoes.json (configuracoes.py,
+PADROES), junto das outras preferências. Na etapa 1 ele ficava num arquivo
+próprio (tema.json); desde a etapa 2 (09/10/2026) o tema.json só é lido uma
+vez, para quem já tinha escolhido um tema não voltar ao de fábrica, e nunca
+mais é gravado nem apagado.
 
 Seguro mudar: as cores de cada tema. Arriscado: tirar um dos nomes antigos
 (alguma tela ainda usa) ou o tamanho das letras (as telas foram medidas para
@@ -148,34 +149,75 @@ def folha() -> str:
     return FOLHA_DE_ESTILO
 
 
-def _arquivo_do_tema():
-    """Onde a escolha do tema fica guardada (pasta de dados do programa)."""
+def _arquivo_do_tema_antigo():
+    """O tema.json da etapa 1 do layout (08/10/2026), na pasta de dados. Só
+    é lido, para trazer a escolha antiga para o configuracoes.json."""
     from historico import pasta_de_dados
 
     return pasta_de_dados() / "tema.json"
 
 
-def tema_guardado() -> str:
-    """O tema que a pessoa escolheu da última vez, ou o de fábrica. Nunca
-    quebra: arquivo sumido ou estragado vira o de fábrica."""
+def _tema_do_arquivo_antigo() -> str | None:
+    """O tema guardado no tema.json antigo, ou None se não há (ou estragou)."""
     try:
-        arquivo = _arquivo_do_tema()
+        arquivo = _arquivo_do_tema_antigo()
         if arquivo.is_file():
             nome = json.loads(arquivo.read_text(encoding="utf-8")).get("tema")
             if nome in TEMAS:
                 return nome
     except (OSError, ValueError, TypeError, AttributeError):
         pass
+    return None
+
+
+def tema_guardado() -> str:
+    """O tema que a pessoa escolheu da última vez, ou o de fábrica. Nunca
+    quebra: configuração sumida ou estragada vira o de fábrica.
+
+    Lê a chave "tema" do configuracoes.json. Se ela ainda não foi gravada lá
+    e existe o tema.json da etapa 1, usa o dele e já o passa para a
+    configuração (uma vez só; o tema.json fica como está). Seguro mudar: a
+    ordem de procura. Arriscado: gravar o tema.json de novo (seriam dois
+    lugares para a mesma escolha)."""
+    import configuracoes
+
+    try:
+        if not _tema_ja_gravado_na_configuracao():
+            antigo = _tema_do_arquivo_antigo()
+            if antigo is not None:
+                configuracoes.escrever("tema", antigo)
+                return antigo
+        nome = configuracoes.ler("tema")
+        if nome in TEMAS:
+            return nome
+    except Exception:  # noqa: BLE001 - tema nunca pode impedir a janela de abrir
+        pass
     return TEMA_DE_FABRICA
 
 
-def _gravar_o_tema(nome: str) -> None:
-    """Grava a escolha do tema. Falha em silêncio (não é essencial)."""
+def _tema_ja_gravado_na_configuracao() -> bool:
+    """O configuracoes.json já tem a chave "tema" gravada (e não só o valor
+    de fábrica que configuracoes.carregar completa)? Lê o arquivo cru."""
+    import configuracoes
+
     try:
-        arquivo = _arquivo_do_tema()
-        arquivo.parent.mkdir(parents=True, exist_ok=True)
-        arquivo.write_text(json.dumps({"tema": nome}), encoding="utf-8")
-    except OSError:
+        arquivo = configuracoes._caminho()
+        if not arquivo.is_file():
+            return False
+        dados = json.loads(arquivo.read_text(encoding="utf-8"))
+        return isinstance(dados, dict) and "tema" in dados
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _gravar_o_tema(nome: str) -> None:
+    """Grava a escolha do tema na configuração. Falha em silêncio (não é
+    essencial: configuracoes.escrever já engole erro de disco)."""
+    import configuracoes
+
+    try:
+        configuracoes.escrever("tema", nome)
+    except Exception:  # noqa: BLE001 - tema nao e essencial
         pass
 
 
