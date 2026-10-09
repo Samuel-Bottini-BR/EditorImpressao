@@ -95,6 +95,9 @@ def rodar(arquivos: list[Path], saida: Path) -> int:
     """Roda cada arquivo num pytest proprio e grava os relatorios em `saida`."""
     saida.mkdir(parents=True, exist_ok=True)
     base = Path(os.environ.get("PASTA_TEMP_DOS_TESTES", RAIZ / "_temp_testes"))
+    # O pytest cria a pasta do --basetemp, mas nao as pastas acima dela (no
+    # Windows do GitHub, sem isto, todo teste com tmp_path dava FileNotFoundError).
+    (base / "pytest").mkdir(parents=True, exist_ok=True)
     resumo, tempos, falhou = [], {}, False
     for arquivo in arquivos:
         nome = arquivo.stem
