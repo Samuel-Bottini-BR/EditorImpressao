@@ -1,6 +1,6 @@
-# Onde parei: o layout no programa (08/10/2026)
+# Onde parei: o layout no programa (atualizado em 09/10/2026)
 
-O Samuel parou o trabalho em 08/10 para continuar depois, numa sessão do Claude na nuvem.
+O Samuel parou o trabalho em 08/10. Em 09/10 a etapa 2 foi retomada numa sessão do Claude na nuvem (Linux, sem Windows, sem DLLs do ScanTailor, sem gabarito, sem acervo). Ver "Retomada de 09/10" abaixo.
 
 - Ramo: `layout-impl-2026-10-08`, criado a partir do `fase-1`.
 - Worktree: `.claude/worktrees/layout-impl`.
@@ -12,13 +12,11 @@ Fontes das decisões:
 
 ## Etapa 1: temas (pronta, commit 7ebbc04)
 
-Os três temas, com o cinza de fábrica. A troca fica no menu Ver > Tema e vale na hora. A escolha fica guardada em `tema.json`, na pasta de dados.
+Os três temas, com o cinza de fábrica. A troca fica no menu Ver > Tema e vale na hora.
 
-A gerente vai juntar esta etapa ao `fase-1` e pôr a chave "tema" nos PADROES do `configuracoes.py`. Quando isso chegar ao `fase-1`:
-- trocar o `tema.json` pela configuração (em `ui/estilo.py`: `tema_guardado` e `_gravar_o_tema`);
-- apagar o arquivo extra.
+**Feito em 09/10 (commit 5280490):** a escolha passou do `tema.json` para a chave "tema" do `configuracoes.json` (`ui/estilo.py`: `tema_guardado` e `_gravar_o_tema`). O `tema.json` antigo é lido uma vez só, para quem já tinha escolhido um tema não voltar ao cinza; nunca mais é gravado, e não é apagado. **Para a gerente:** o comentário da chave "tema" em `configuracoes.py` (raiz, fora de `ui/`) ainda diz "a tela ainda guarda a escolha no tema.json"; ficou desatualizado.
 
-## Etapa 2: tela de trabalho sem abas (EM ANDAMENTO)
+## Etapa 2: tela de trabalho sem abas (PRONTA PARA CONFERIR, falta a conferência no Windows)
 
 ### O que já faz
 
@@ -55,7 +53,7 @@ A gerente vai juntar esta etapa ao `fase-1` e pôr a chave "tema" nos PADROES do
 - **Depois da bateria vieram dois ajustes pequenos:**
   - a dica da barra de opções ganhou espaço (`ui/widgets/barra_opcoes.py`);
   - o ícone de refazer passou a ser desenhado sem a função velha do Qt (`ui/tela_conferir.py`).
-- **FALTA:** rodar de novo pelo menos estes, um por vez:
+- **(feito em 09/10, na nuvem; ver "Retomada de 09/10")** rodar de novo pelo menos estes, um por vez:
   - `test_trilha_agrupada.py`
   - `test_girar_na_tela.py`
   - `test_trilha_e_opcoes.py`
@@ -85,18 +83,29 @@ Ficam em `relatorios/layout-impl/etapa2/` (janela de verdade, cópia do Boécio,
 - `8-marcar-laco-claro.png`
 - `9-janela-minima-1000x600.png`
 
+### Retomada de 09/10 (nuvem): o que foi feito
+
+1. **O `fase-1` (4bf3888) foi juntado** (merge e8dd1fe). Um conflito só, no fim de `ui/tela_conferir.py` (os dois lados acrescentaram um bloco); ficaram os dois.
+2. **Os controles do endireitar G5 estão na ferramenta Endireitar.** Como a junção trouxe tudo dentro de `_montar_aba_angulo`, eles caíram sozinhos no lugar provisório (a fila de botões embaixo da faixa): primeira linha "está certo · não endireitar esta · voltar ao automático · conta: [lista] [os dois ângulos]"; segunda linha "inclinação: [0,1°] [número] [0,1°] aplicar em: [lista]". A alça, a grade e a linha-guia aparecem na página. Testes novos em `tests/test_trilha_agrupada.py` conferem que eles aparecem só com a ferramenta Endireitar.
+3. **Tema no `configuracoes.json`** (ver Etapa 1).
+4. **Consertos achados nos prints:**
+   - `escolher_ferramenta` com Dividir/Cortar/Endireitar/Filtros acendia o ícone e deixava a tela em Marcar (nenhum caminho do programa fazia isso, só o roteiro de prints; consertado e testado, f544f42);
+   - a caixa do número do ângulo ficava com o número invisível (o campo de dentro tinha 1 pixel) no Qt 6.12 com a folha dos temas; agora a caixa tem as setinhas próprias com largura zero pela folha (`ui/estilo.py`, `campo_angulo`) em vez do `NoButtons` (5cc3737). No Qt 6.11 do PC do Samuel pode ser que o defeito nem aconteça; o contorno vale nos dois;
+   - as setinhas dos botões de 0,1° não mudavam de cor ao trocar de tema (no claro sumiam); agora são redesenhadas (a079970);
+   - a frase do Endireitar na linha dos menus ainda falava do jeito antigo ("Arraste sobre a página") e depois ficou longa demais; agora é "Gire pela bolinha azul ou pela linha laranja." A frase inteira continua na faixa.
+5. **Testes (nuvem, Python 3.13, PySide6 6.12, offscreen, um arquivo por vez):** os 47 arquivos de teste que usam a tela. 43 passaram inteiros. Os outros 4, por ambiente:
+   - `test_mesmo_livro_outro_caminho` (8 falhas): caminhos com barra invertida, só no Windows;
+   - `test_gravura_no_processamento` (3 falhas): a DLL do detector de gravura, só no Windows;
+   - `test_ocr_kraken` (1 falha): leitor de DLL, só no Windows;
+   - `test_dialogo_tamanho_da_folha`: os 5 passam, mas o Python cai ao fechar (erro de memória do Qt no Linux). Acontece igual no `fase-1` puro, sem o layout.
+6. **Prints da nuvem** em `/tmp/claude-0/prints-layout/` (fora do repositório, livro inventado; a letra do Linux é mais larga que a do Windows).
+
 ### Ainda falta na etapa 2
 
-1. Rodar os testes acima.
-2. Trazer o `fase-1` novo, quando a junção do Ctrl+Z, do endireitar (commit a742bf4) e dos nomes entrar. A aba Endireitar nova chega com:
-   - a segunda linha: "inclinação:" com setas de 0,1°, o número em graus e "aplicar em";
-   - "não endireitar esta" e "voltar ao automático", que seguem o "aplicar em";
-   - "conta:" com os dois ângulos;
-   - a alça, a grade e a linha-guia na página.
-
-   Eles ficam na ferramenta Endireitar, na fila de botões embaixo da faixa, até a etapa 4. Atenção: a lista "aplicar em" do girar conta folhas e a do endireitar conta páginas, e as duas vão estar na mesma tela.
-3. Conferir na janela de verdade, em 1000 x 600, que a fila de botões da ferramenta Cortar cabe. Em 1280 x 657 cabe; a etapa 4 resolve de vez.
-4. Relatório da etapa 2 para a gerente, com os prints, e o commit final da etapa (este é um commit "EM ANDAMENTO").
+1. **Conferir no Windows** (GitHub ou PC do Samuel): a bateria de tela e a janela de verdade.
+2. **A fila de botões do Cortar não cabe** nos prints da nuvem, nem em 1280 x 657 ("voltar ao automático", "proporção travada" e "Mover conteúdo" cortados; em 1000 x 600 quase todos). No Windows, em 08/10, cabia em 1280 x 657. Conferir lá em 1000 x 600; a etapa 4 (painel Propriedades) resolve de vez. Se não couber, o provisório mais simples é a mesma segunda linha que o Endireitar já tem.
+3. **As frases de Dividir e Cortar na linha dos menus** são cortadas sem reticências na nuvem ("...onde a folha di", "...corte da b"). Conferir no Windows; se cortarem lá também, encurtar como a do Endireitar.
+4. Relatório da etapa 2 para a gerente e o commit final da etapa.
 
 ## Etapas seguintes (o plano aprovado pela gerente)
 
@@ -130,3 +139,5 @@ Ficam em `relatorios/layout-impl/etapa2/` (janela de verdade, cópia do Boécio,
 6. Endireitar: onde ficam a segunda linha ("inclinação" e "aplicar em"), o "conta:" com os dois ângulos, e o "Conta do endireitar:" da tela "O que fazer"? Como diferenciar as duas listas "aplicar em" (a do girar conta folhas, a do endireitar conta páginas)?
 7. As telas "O que fazer", "Ficou pronto!" e Configurações no layout novo.
 8. Fundo atrás da página: o Samuel confere nos prints da etapa 1 se o fundo escuro do cinza está bom.
+9. (09/10) A segunda linha do Endireitar custa uns 45 px de altura da página, e a fila do Cortar não cabe: a etapa 4 resolve, mas até lá vale a segunda linha também no Cortar?
+10. (09/10) A frase da ferramenta na linha dos menus é cortada quando falta espaço: cortar com "…", encurtar as frases, ou deixar só o nome da ferramenta (a frase inteira já está na faixa do conferir)?
