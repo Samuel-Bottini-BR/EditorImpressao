@@ -66,6 +66,12 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p>Verificador. Dois trabalhos prontos que ainda não entraram no programa (<code>fase-1</code>). <strong>Nenhum dos dois está aprovado: só o Samuel marca.</strong></p>
 <p>Página de conferência (imagens grandes, Aprovado / Melhorar / Descartar e comentário, resposta salva na hora):</p>
 <p>https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX</p>
+<p>Em cada quadro (cada página do G6, o quadro das cunhas brancas e cada tela do layout) há a pergunta &quot;Está bom / Melhorar / Está pior&quot; e uma caixa de comentário; no fim de cada trabalho, &quot;Aprovado / Melhorar / Descartar&quot; e comentário. São 28 perguntas, cada uma gravada em <code>respostas/&lt;id&gt;</code> no banco da página:</p>
+<ul>
+<li>G6 (13 quadros): <code>g6-graduale221</code>, <code>g6-graduale222</code>, <code>g6-escola7</code>, <code>g6-escola35</code>, <code>g6-siebmacher7</code>, <code>g6-siebmacher9</code>, <code>g6-palatino66</code>, <code>g6-horas11</code>, <code>g6-horas27</code>, <code>g6-opusmajus20</code>, <code>g6-boecio8</code>, <code>g6-marial7</code>, <code>g6-cunhas-brancas</code>; pergunta final <code>g6</code>.</li>
+<li>Layout (13 quadros): <code>layout2-inicio-escuro</code>, <code>layout2-inicio-cinza</code>, <code>layout2-inicio-claro</code>, <code>layout2-o-que-fazer</code>, <code>layout2-conferir-chegada</code>, <code>layout2-cortar-maximizada</code>, <code>layout2-endireitar-maximizada</code>, <code>layout2-cortar-1280</code>, <code>layout2-endireitar-1280</code>, <code>layout2-dividir-maximizada</code>, <code>layout2-filtros-maximizada</code>, <code>layout2-marcar-retangulo</code>, <code>layout2-grupo-contornar</code>; pergunta final <code>layout2</code>.</li>
+<li>Cada resposta: <code>{opcao, opcaoNome, comentario, em}</code>. Opções dos quadros: <code>bom</code>, <code>melhorar</code>, <code>pior</code>. Opções finais: <code>aprovado</code>, <code>melhorar</code>, <code>descartar</code>.</li>
+</ul>
 <p>Defeito conhecido, não é destes trabalhos: moldura dourada e iluminura ainda não saem certas nos filtros (itens 1.4 e 1.5). Aqui todas as páginas estão no filtro Original.</p>
 <h2>1. Endireitar antes de cortar (item 2.2, G6), ramo <code>fase2-endireitar-2</code> (44cbf21)</h2>
 <p><strong>PRONTO PARA CONFERIR.</strong> Minha opinião: melhora os cantos na maioria das páginas, mas piora a margem de cima em duas e ainda deixa cunha branca quando o corte vai até a beirada da folha.</p>
@@ -129,6 +135,6 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p>5. Não testado: mouse de verdade (segurar ícone, roda), PC do Samuel em 125%, 1000 x 600, temas escuro e claro na tela de conferir.</p>
 <h2>O que mudei para conseguir rodar</h2>
 <p>No ramo <code>claude/list-server-files-gkos8v</code> (commit 060b615, com push): input <code>antes_depois</code> e job novo no workflow, input <code>so_janela</code>, script <code>.github/scripts/antes_depois_endireitar.py</code>, e mais 4 telas em <code>.github/scripts/fotografar_janela.py</code>. Nenhum outro ramo foi alterado; as imagens foram gravadas pelo workflow em <code>prints-testes</code>.</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 09/10/2026 às 21:23</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 09/10/2026 às 22:04</p>
 </body>
 </html>

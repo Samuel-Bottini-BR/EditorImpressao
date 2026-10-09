@@ -5,6 +5,12 @@ Verificador. Dois trabalhos prontos que ainda não entraram no programa (`fase-1
 Página de conferência (imagens grandes, Aprovado / Melhorar / Descartar e comentário, resposta salva na hora):
 https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX
 
+Em cada quadro (cada página do G6, o quadro das cunhas brancas e cada tela do layout) há a pergunta "Está bom / Melhorar / Está pior" e uma caixa de comentário; no fim de cada trabalho, "Aprovado / Melhorar / Descartar" e comentário. São 28 perguntas, cada uma gravada em `respostas/<id>` no banco da página:
+
+- G6 (13 quadros): `g6-graduale221`, `g6-graduale222`, `g6-escola7`, `g6-escola35`, `g6-siebmacher7`, `g6-siebmacher9`, `g6-palatino66`, `g6-horas11`, `g6-horas27`, `g6-opusmajus20`, `g6-boecio8`, `g6-marial7`, `g6-cunhas-brancas`; pergunta final `g6`.
+- Layout (13 quadros): `layout2-inicio-escuro`, `layout2-inicio-cinza`, `layout2-inicio-claro`, `layout2-o-que-fazer`, `layout2-conferir-chegada`, `layout2-cortar-maximizada`, `layout2-endireitar-maximizada`, `layout2-cortar-1280`, `layout2-endireitar-1280`, `layout2-dividir-maximizada`, `layout2-filtros-maximizada`, `layout2-marcar-retangulo`, `layout2-grupo-contornar`; pergunta final `layout2`.
+- Cada resposta: `{opcao, opcaoNome, comentario, em}`. Opções dos quadros: `bom`, `melhorar`, `pior`. Opções finais: `aprovado`, `melhorar`, `descartar`.
+
 Defeito conhecido, não é destes trabalhos: moldura dourada e iluminura ainda não saem certas nos filtros (itens 1.4 e 1.5). Aqui todas as páginas estão no filtro Original.
 
 ## 1. Endireitar antes de cortar (item 2.2, G6), ramo `fase2-endireitar-2` (44cbf21)
