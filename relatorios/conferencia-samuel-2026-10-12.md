@@ -61,3 +61,23 @@ Lida da coleção `respostas` em 12/10/2026. Ele respondeu **só o trabalho 1 (e
   rever os cinco quadros com as respostas, porque dois estão marcados "Está pior"; (2) medir a velocidade no PC
   dele, como o próprio relatório da conferência pedia (regra 6 do plano: as máquinas do GitHub variaram demais para
   dar veredito).
+
+### Segunda leitura (12/10/2026, depois de ele avisar "feito, respondi")
+
+Ele reviu os cinco quadros, já com o comentário fixado e a resposta no alto de cada um, e marcou **"Está bom" nos
+cinco**, sem comentário novo (horário de Brasília):
+
+| Quadro (id) | Antes | Agora | Quando |
+|---|---|---|---|
+| Siebmacher 7 (`g6-siebmacher7`) | Está pior | **Está bom** | 19:43 |
+| Siebmacher 9 (`g6-siebmacher9`) | Está pior | **Está bom** | 19:43 |
+| Livro de Horas 27 (`g6-horas27`) | (não marcou) | **Está bom** | 19:44 |
+| Marial 7 (`g6-marial7`) | Melhorar | **Está bom** | 19:44 |
+| Cunhas brancas que sobram (`g6-cunhas-brancas`) | (não marcou) | **Está bom** | 19:44 |
+
+Com isso a conferência do G6 fica: **13 quadros "Está bom" e o trabalho inteiro "Aprovado"** ("Pode entrar no
+programa."). As ressalvas do verificador continuam valendo como coisas a consertar depois, não como impedimento:
+a moldura de cima colada na borda no Siebmacher 9, o título colado na borda na Escola 7 e as cunhas brancas quando o
+corte vai até a beirada da folha (Boécio 8, Marial 7, Graduale 221). As bordas pretas do Siebmacher são do item 2.13.
+
+**Falta só, antes de juntar ao `fase-1`:** medir a velocidade no PC dele (regra 6 do plano).
