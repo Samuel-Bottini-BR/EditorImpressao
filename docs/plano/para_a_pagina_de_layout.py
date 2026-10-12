@@ -50,6 +50,10 @@ GRUPOS = {
     "15": (15, "Rodada 9"),
     "16": (16, "Rodada 10"),
     "17": (17, "Rodada 11"),
+    # A rodada 12 de 09/10 foi desenhada sobre fotos do programa no meio da obra
+    # (sem os painéis decididos); em 12/10 foi refeita na tela decidida (prefixo 19).
+    "18": (18, "Rodada 12 de 09/10 (no meio da obra; substituída)"),
+    "19": (19, "Rodada 12 refeita na tela decidida"),
     "tela": (-1, "O programa antigo"),
 }
 
