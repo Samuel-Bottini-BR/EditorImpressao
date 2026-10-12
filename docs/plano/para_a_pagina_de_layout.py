@@ -54,6 +54,8 @@ GRUPOS = {
     # (sem os painéis decididos); em 12/10 foi refeita na tela decidida (prefixo 19).
     "18": (18, "Rodada 12 de 09/10 (no meio da obra; substituída)"),
     "19": (19, "Rodada 12 refeita na tela decidida"),
+    # Recortes ampliados dos prints 19, para as três perguntas que o Samuel não entendeu (12/10).
+    "20": (20, "Rodada 12: explicações refeitas, com a parte que muda ampliada"),
     "tela": (-1, "O programa antigo"),
 }
 
