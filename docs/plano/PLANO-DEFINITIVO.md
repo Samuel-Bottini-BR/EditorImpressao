@@ -365,6 +365,12 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 08/10 | No `fase-1` de hoje (`5ecc4dc`), o Siebmacher 7 e 9 não são mais divididos (dividir do ScanTailor de fábrica). | dividir (2.1) | idem |
 | 08/10 | Os avisos de "limpar pontinhos indisponível" no `erros.log` ainda usam o nome velho (antes da rodada 10 dos nomes). | limpar pontinhos / `erros.log` | idem |
 
+**Achados de 09/10/2026 (sessão na nuvem, testes e prints no Windows do GitHub):**
+- [ ] Texto sem acento na faixa do Cortar: "Vou cortar a borda sozinho. Arraste o retangulo se quiser mudar." (`ui/tela_conferir.py`, linha ~2359). Print: ramo `prints-testes`, pasta `2026-10-09_1942_8c07656_fase-1`, `06-conferir-cortar-maximizada-janela.png`.
+- [ ] Teste instável: `tests/test_gravura_na_aba_marcar.py::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita` falhou 1 vez em ~7 rodadas do mesmo código no Windows do GitHub (`'scantailor|retangular|100|0|1' == 'refazer'`); parece depender do tempo de algo que roda por trás.
+- [ ] Aviso "Endireitar: as contas discordam" em página reta, com só 0,2° de diferença (limite 0,3°): a análise mede a 150 DPI e a tela mostra a medida de 300 DPI. Consertar exige escolha do Samuel (pergunta a montar).
+- [ ] `tests/test_trilha_e_opcoes.py` ainda testa a trilha antiga, que não aparece mais na tela depois da etapa 2 do layout.
+
 ## 6. Lista de espera (ideias novas)
 
 | Data | Ideia | Quem pediu | Fase sugerida |
