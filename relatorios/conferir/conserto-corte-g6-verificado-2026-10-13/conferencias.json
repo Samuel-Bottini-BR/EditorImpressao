@@ -1,0 +1,20 @@
+{
+ "projeto_antigo": {
+  "total": 40,
+  "identicas": 40,
+  "diferentes": [],
+  "ordem_ao_abrir": [
+   "cortar_antes"
+  ],
+  "programa": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\verif-conserto-corte-g6"
+ },
+ "testes": {
+  "passaram": 70,
+  "falharam": 0,
+  "pulados_de_proposito": 1,
+  "arquivos": "ordem do preparo, folga de 1 mm, corte não come conteúdo, corte da prévia igual ao do PDF; o teste que abre a janela ficou de fora",
+  "comando": "python -m pytest tests/test_ordem_do_preparo.py tests/test_corte_folga_1mm.py tests/test_corte_nao_come_conteudo.py tests/test_corte_previa_igual_pdf.py -q -k \"not janela\"",
+  "onde": "worktree verif-conserto-corte-g6 (d97b937)"
+ },
+ "nota_da_velocidade": "Como ler: a rodada antes-1 foi atrapalhada (outro agente começou a medir tempo no meio dela; ela saiu com 70,8 s para abrir o livro e 77,5 s no Mágico pro) e não entra na conta; por isso rodei uma terceira do programa de hoje (antes-3). A antes-3 pegou o PC mais folgado (6 GB livres, processador a 2%) e foi a mais rápida em tudo. Só confiro o outro agente no começo e no fim de cada rodada: se ele rodou alguma coisa no meio das outras, eu não vi. Em 12/10, no mesmo teste, rodadas iguais variaram de 4,7 a 6,3 s para abrir o livro, de 0,2 a 0,3 s para trocar de página, de 3,0 a 16,6 s no Mágico pro e de 2,1 a 5,7 s no Preto e branco. Medida direta nas 10 páginas que o teste processa (Marial 146 a 155): 4 delas giram; o conserto soma 0,05 s nas dez e muda o corte de uma só (a 153, 4 pontos mais estreita). O PDF de saída em Mágico pro tem 70,68 MB hoje e 70,69 MB com o conserto."
+}

@@ -1,0 +1,302 @@
+{
+ "total": {
+  "a_mais_nas_10_ms": 52.0,
+  "geometria_sem_nas_10_ms": 2554.2,
+  "paginas_que_giram": 4,
+  "paginas_com_corte_diferente": [
+   153
+  ]
+ },
+ "paginas": [
+  {
+   "pagina": 146,
+   "angulo": 0.0,
+   "com_ms": 246.2,
+   "sem_ms": 247.1,
+   "recorte_com": [
+    0.05418,
+    0.0525,
+    0.89837,
+    0.93875
+   ],
+   "recorte_sem": [
+    0.05418,
+    0.0525,
+    0.89837,
+    0.93875
+   ],
+   "tamanho_com_px": [
+    2617,
+    3677
+   ],
+   "tamanho_sem_px": [
+    2617,
+    3677
+   ],
+   "a_mais_ms": -0.9,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 147,
+   "angulo": 0.0,
+   "com_ms": 245.9,
+   "sem_ms": 244.0,
+   "recorte_com": [
+    0.04047,
+    0.0,
+    0.95609,
+    0.99489
+   ],
+   "recorte_sem": [
+    0.04047,
+    0.0,
+    0.95609,
+    0.99489
+   ],
+   "tamanho_com_px": [
+    2777,
+    3897
+   ],
+   "tamanho_sem_px": [
+    2777,
+    3897
+   ],
+   "a_mais_ms": 1.9,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 148,
+   "angulo": -0.938,
+   "com_ms": 277.7,
+   "sem_ms": 262.1,
+   "recorte_com": [
+    0.0,
+    0.0,
+    0.99456,
+    1.0
+   ],
+   "recorte_sem": [
+    0.0,
+    0.0,
+    0.99456,
+    1.0
+   ],
+   "tamanho_com_px": [
+    2884,
+    3942
+   ],
+   "tamanho_sem_px": [
+    2884,
+    3942
+   ],
+   "a_mais_ms": 15.6,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 149,
+   "angulo": 0.0,
+   "com_ms": 249.7,
+   "sem_ms": 252.9,
+   "recorte_com": [
+    0.01549,
+    0.0,
+    0.98279,
+    0.9949
+   ],
+   "recorte_sem": [
+    0.01549,
+    0.0,
+    0.98279,
+    0.9949
+   ],
+   "tamanho_com_px": [
+    2859,
+    3901
+   ],
+   "tamanho_sem_px": [
+    2859,
+    3901
+   ],
+   "a_mais_ms": -3.2,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 150,
+   "angulo": 0.688,
+   "com_ms": 282.6,
+   "sem_ms": 266.5,
+   "recorte_com": [
+    0.00998,
+    0.0025,
+    0.98796,
+    0.98739
+   ],
+   "recorte_sem": [
+    0.00998,
+    0.0025,
+    0.98796,
+    0.98739
+   ],
+   "tamanho_com_px": [
+    2870,
+    3905
+   ],
+   "tamanho_sem_px": [
+    2870,
+    3905
+   ],
+   "a_mais_ms": 16.1,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 151,
+   "angulo": 0.75,
+   "com_ms": 278.6,
+   "sem_ms": 264.2,
+   "recorte_com": [
+    0.02725,
+    0.0,
+    0.96589,
+    0.99362
+   ],
+   "recorte_sem": [
+    0.02725,
+    0.0,
+    0.96589,
+    0.99362
+   ],
+   "tamanho_com_px": [
+    2814,
+    3896
+   ],
+   "tamanho_sem_px": [
+    2814,
+    3896
+   ],
+   "a_mais_ms": 14.4,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 152,
+   "angulo": 0.0,
+   "com_ms": 250.5,
+   "sem_ms": 256.9,
+   "recorte_com": [
+    0.0031,
+    0.005,
+    0.97951,
+    0.995
+   ],
+   "recorte_sem": [
+    0.0031,
+    0.005,
+    0.97951,
+    0.995
+   ],
+   "tamanho_com_px": [
+    2845,
+    3935
+   ],
+   "tamanho_sem_px": [
+    2845,
+    3935
+   ],
+   "a_mais_ms": -6.4,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 153,
+   "angulo": -0.75,
+   "com_ms": 281.6,
+   "sem_ms": 268.7,
+   "recorte_com": [
+    0.03361,
+    0.0,
+    0.96639,
+    0.99617
+   ],
+   "recorte_sem": [
+    0.03223,
+    0.0,
+    0.96777,
+    0.99617
+   ],
+   "tamanho_com_px": [
+    2815,
+    3898
+   ],
+   "tamanho_sem_px": [
+    2819,
+    3898
+   ],
+   "a_mais_ms": 12.9,
+   "corte_mudou": true,
+   "area_pct": -0.14
+  },
+  {
+   "pagina": 154,
+   "angulo": 0.0,
+   "com_ms": 247.9,
+   "sem_ms": 246.4,
+   "recorte_com": [
+    0.00138,
+    0.0025,
+    0.98134,
+    0.9975
+   ],
+   "recorte_sem": [
+    0.00138,
+    0.0025,
+    0.98134,
+    0.9975
+   ],
+   "tamanho_com_px": [
+    2855,
+    3932
+   ],
+   "tamanho_sem_px": [
+    2855,
+    3932
+   ],
+   "a_mais_ms": 1.5,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  },
+  {
+   "pagina": 155,
+   "angulo": 0.0,
+   "com_ms": 245.5,
+   "sem_ms": 245.4,
+   "recorte_com": [
+    0.02219,
+    0.0,
+    0.90847,
+    0.99489
+   ],
+   "recorte_sem": [
+    0.02219,
+    0.0,
+    0.90847,
+    0.99489
+   ],
+   "tamanho_com_px": [
+    2646,
+    3897
+   ],
+   "tamanho_sem_px": [
+    2646,
+    3897
+   ],
+   "a_mais_ms": 0.1,
+   "corte_mudou": false,
+   "area_pct": 0.0
+  }
+ ]
+}

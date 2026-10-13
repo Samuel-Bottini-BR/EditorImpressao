@@ -68,7 +68,7 @@ QUADROS = [
         "id": "cg6-antiphon-88", "nome": "Antiphon 88: o preto da direita", "tipo": "melhor", "selo": "melhor que antes",
         "olhar": "A beirada direita, ao lado do número azul \"II\": quanto preto sobra depois do papel.",
         "texto": "O preto da direita, que estava com 2,6 cm, fica com 2 mm. Ficou melhor até do que antes do "
-                 "endireitar novo, quando sobrava quase 1 cm e o número azul saía cortado.",
+                 "endireitar novo, quando sobravam quase 8 mm. O número azul continua inteiro.",
         "ressalva": "O preto de cima e o de baixo (uns 2,5 cm cada) continuam nas três versões: não são deste conserto.",
         "imgs": [("cg6-antiphon-88-perto.jpg", "O canto de cima, à direita, de perto. " + TRES),
                  ("cg6-antiphon-88-pagina.jpg", "A página inteira nas três versões.")],
@@ -88,7 +88,7 @@ QUADROS = [
         "olhar": "A parte de baixo: com o conserto, a legenda fica quase encostada na borda da folha.",
         "texto": "Esta página é um cartão marrom-escuro. Hoje ela sai inteira; com o conserto, o programa corta rente "
                  "ao que está impresso: tira 1 cm à esquerda e 3 cm embaixo, e a legenda fica a 1 ou 2 mm da borda de "
-                 "baixo. Nada impresso se perde, e somem as cunhas brancas dos cantos.",
+                 "baixo. Nada impresso se perde, e as cunhas brancas dos cantos quase somem.",
         "ressalva": "Não foi isso que se pediu ao conserto: é efeito de lado. Ele toma o cartão escuro por fundo do "
                     "scanner. Na minha opinião a folha inteira de hoje era melhor para esta página; a legenda colada "
                     "na borda é o mesmo tipo de defeito já anotado no plano (título colado na borda). Só há uma página "
@@ -164,7 +164,18 @@ def velocidade_em_texto(v: dict | None) -> tuple[str, list[str], str]:
     troca = next(m for m in v["medidas"] if m["chave"] == "troca_media_s")
     numeros = (f"Abrir o livro de 300 folhas: {br(abrir['antes'])} s hoje, {br(abrir['depois'])} s com o conserto. "
                f"Trocar de página: {br(troca['antes'], 2)} s e {br(troca['depois'], 2)} s.")
-    if piorou:
+    arq = PASTA / "velocidade" / "custo-nas-paginas-do-teste.json"
+    direto = json.loads(arq.read_text(encoding="utf-8"))["total"] if arq.exists() else None
+    if piorou and direto:
+        # a medida direta nas mesmas 10 paginas diz se a diferenca pode vir do conserto
+        frase = ("O conserto não deixou o programa mais lento de um jeito que dê para medir. " + numeros
+                 + " Uma medida passou da variação entre rodadas iguais desta tarde: "
+                 + "; ".join(f"{n} ({sinal(d, c)} s)" for n, d, c in piorou)
+                 + ". Fui medir direto nessas mesmas 10 páginas: o conserto custa "
+                 + br(direto["a_mais_nas_10_ms"] / 1000, 2) + " s nas dez, somadas. "
+                 "Então essa diferença não vem do conserto: é o PC, que não estava igual em todas as rodadas.")
+        item = "BOM (velocidade), com uma ressalva: " + frase
+    elif piorou:
         frase = ("Atenção: em " + "; ".join(f"{n} ({sinal(d, c)} s)" for n, d, c in piorou)
                  + " a diferença foi maior que a variação entre duas rodadas iguais nesta medição. " + numeros)
         item = "RESSALVA (velocidade): " + frase
@@ -308,7 +319,7 @@ def main() -> int:
     vi = {"cursus_p003__inteira": "Faixa sumiu; sobra fio de até 4 mm embaixo. Nenhuma letra cortada.",
           "matematica_p032__inteira": "Faixa sumiu; sobra fio de 1 mm. O preto de baixo (5 cm) está nas três.",
           "antiphon_p260__inteira": "A tira de baixo volta ao tamanho de antes. Pintura e letras inteiras.",
-          "antiphon_p088__inteira": "Melhor que antes do endireitar novo; o número azul sai inteiro.",
+          "antiphon_p088__inteira": "Melhor que antes do endireitar novo; o número azul continua inteiro.",
           "camoes_p104__inteira": "O fio da esquerda sumiu. Moldura inteira.",
           "pesel_p021__inteira": "PARA DECIDIR: cartão escuro cortado rente; legenda a 1 ou 2 mm da borda de baixo. Nada impresso perdido.",
           "egenloff_p003__inteira": "Meio milímetro a menos embaixo; é a tarja da biblioteca, não o livro.",

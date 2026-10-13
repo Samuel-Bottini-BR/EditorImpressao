@@ -1,0 +1,303 @@
+{
+ "conferencia": "conserto-corte-g6-verificado-2026-10-13",
+ "ramo": "conserto-corte-g6-2026-10-13",
+ "commit": "d97b937",
+ "resumo": {
+  "paragrafos": [
+   "Desde 12/10 o programa endireita a página antes de cortar. Em página torta com borda preta do scanner, isso deixava a borda preta dentro da folha: uma faixa preta de até 4 cm, que antes era cortada. Aconteceu em 5 das 89 páginas conferidas.",
+   "O conserto ensina o corte a reconhecer a borda preta mesmo depois de a página ser endireitada. Nas cinco páginas a faixa larga sumiu; sobra, no máximo, um fio preto de 1 a 4 mm na beirada. Nada impresso foi cortado em nenhuma delas.",
+   "O resto ficou como estava: das 89 páginas, 79 saem idênticas às de hoje, ponto por ponto, entre elas todas as do gabarito e 7 das 8 que tinham melhorado com o endireitar novo. Uma página muda de um jeito que precisa do seu olho: o Pesel 21, um cartão escuro, que passa a sair cortado rente ao que está impresso."
+  ],
+  "veredito": "PRONTO PARA CONFERIR. Na minha opinião o conserto resolve a faixa preta sem estragar o que estava bom; a dúvida que fica é o Pesel 21, que eu preferia como sai hoje.",
+  "itens": [
+   "BOM: nas cinco páginas (Cursus 3, Matemática 32, Antiphon 260, Antiphon 88 e Camões 104) a faixa preta larga sumiu. Olhei as cinco de perto e na página inteira.",
+   "BOM: nada impresso foi cortado nas cinco (Matemática 32, Antiphon 88 e Camões 104, que o implementador não tinha aberto, incluídas).",
+   "BOM: 79 das 89 páginas saem idênticas às de hoje, ponto por ponto; as 34 páginas do gabarito estão entre elas. Medi de novo por minha conta e bateu com o implementador.",
+   "BOM: 7 das 8 páginas que tinham melhorado com o endireitar novo saem idênticas (o número da folha do Graduale 221 e 223 continua inteiro); a oitava, Egenloff 3, muda meio milímetro.",
+   "BOM: livro começado antes do endireitar novo continua igual: 40 de 40 casos saem idênticos, ponto por ponto, com o conserto.",
+   "BOM: os testes de máquina do corte e da ordem do preparo passam no ramo do conserto (70 passaram, 0 falharam).",
+   "BOM (velocidade), com uma ressalva: O conserto não deixou o programa mais lento de um jeito que dê para medir. Abrir o livro de 300 folhas: 57,5 s hoje, 59,0 s com o conserto. Trocar de página: 2,52 s e 2,59 s. Uma medida passou da variação entre rodadas iguais desta tarde: Processar 10 páginas em Preto e branco (+2,0 s). Fui medir direto nessas mesmas 10 páginas: o conserto custa 0,05 s nas dez, somadas. Então essa diferença não vem do conserto: é o PC, que não estava igual em todas as rodadas.",
+   "PARA DECIDIR: Pesel 21 (cartão escuro) passa a sair cortado rente ao conteúdo, com a legenda a 1 ou 2 mm da borda de baixo. Nada impresso se perde, mas eu preferia a folha inteira de hoje.",
+   "RESSALVA: no Cursus 3 sobra um fio preto à direita, de quase nada em cima a uns 4 mm embaixo. Antes do endireitar novo esse fio tinha menos de 1 mm.",
+   "RESSALVA: o conserto só tira o preto que o endireitar novo tinha trazido. O preto que já sobrava antes (embaixo na Matemática 32, em volta nos Antiphon) continua: é outro trabalho, que está no plano.",
+   "RESSALVA: o corte que come os números da margem na Escola 197 (a outra causa, achada na mesma conferência) não é deste conserto e continua igual.",
+   "RESSALVA: são 89 páginas soltas, nenhum livro inteiro, e tudo foi medido sem abrir a janela do programa.",
+   "CORREÇÃO do meu relatório de antes: eu tinha escrito que no Cursus 3 havia também uma faixa preta de 0,6 cm embaixo que a ordem antiga cortava. Medindo direto, embaixo há um fio preto de até 2 ou 3 mm nas três versões; a diferença de verdade é só a faixa da direita."
+  ],
+  "tabela": {
+   "cab": [
+    "O que foi conferido",
+    "Como",
+    "Resultado"
+   ],
+   "linhas": [
+    [
+     "A faixa preta nas cinco páginas",
+     "olho + máquina",
+     "Sumiu nas cinco. Sobra um fio de 1 a 4 mm (Cursus 3: até 4 mm; Matemática 32: 1 mm; Antiphon 88: 2 mm; Camões 104: meio milímetro; Antiphon 260: volta aos 2 cm de antes)."
+    ],
+    [
+     "Se algo impresso foi cortado nas cinco",
+     "olho",
+     "Nada foi cortado."
+    ],
+    [
+     "As 89 páginas, hoje contra o conserto",
+     "máquina",
+     "79 idênticas ponto por ponto; 10 mudam (as mesmas dez do implementador)."
+    ],
+    [
+     "As dez que mudam",
+     "olho",
+     "Cinco melhoram, quatro quase não mudam (menos de 1 mm), uma muda muito (Pesel 21)."
+    ],
+    [
+     "As páginas do gabarito",
+     "máquina + olho",
+     "As 34 saem idênticas. Abri as 14 do gabarito do endireitar novo nas três versões."
+    ],
+    [
+     "As 8 que tinham melhorado",
+     "máquina + olho",
+     "7 idênticas; Egenloff 3 muda meio milímetro embaixo."
+    ],
+    [
+     "Livro começado antes",
+     "máquina",
+     "40 de 40 idênticos com o conserto."
+    ],
+    [
+     "Testes de máquina no ramo",
+     "máquina",
+     "70 passaram, 0 falharam (ordem do preparo, folga de 1 mm, corte não come conteúdo, corte da prévia igual ao do PDF; o teste que abre a janela ficou de fora)."
+    ],
+    [
+     "Velocidade (Marial, 300 folhas)",
+     "máquina",
+     "O conserto não deixou o programa mais lento de um jeito que dê para medir. Abrir o livro de 300 folhas: 57,5 s hoje, 59,0 s com o conserto. Trocar de página: 2,52 s e 2,59 s. Uma medida passou da variação entre rodadas iguais desta tarde: Processar 10 páginas em Preto e branco (+2,0 s). Fui medir direto nessas mesmas 10 páginas: o conserto custa 0,05 s nas dez, somadas. Então essa diferença não vem do conserto: é o PC, que não estava igual em todas as rodadas."
+    ],
+    [
+     "Custo da busca do corte",
+     "máquina",
+     "20 milésimos de segundo a mais por página que gira (valor do meio de 43 páginas)."
+    ]
+   ]
+  }
+ },
+ "quadros": [
+  {
+   "id": "cg6-cursus-3",
+   "nome": "Cursus 3: a faixa preta da direita",
+   "olhar": "A beirada direita da página: a faixa preta larga do meio some na imagem da direita.",
+   "texto": "A faixa preta de 1,5 cm que aparecia à direita sumiu. No lugar dela sobra um fio preto fino, que vai de quase nada em cima a uns 4 mm embaixo. Nenhuma letra foi cortada.",
+   "tipo": "melhor",
+   "selo": "faixa sumiu",
+   "ressalva": "O fio que sobra é maior que antes do endireitar novo (ali era menos de 1 mm). O risco preto em pé perto da beirada esquerda e o fio preto de até 2 mm embaixo existem nas três versões: não são deste conserto.",
+   "imgs": [
+    {
+     "src": "img/cg6-cursus-3-perto.jpg",
+     "legenda": "O canto de cima, à direita, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-cursus-3-perto2.jpg",
+     "legenda": "O canto de baixo, à direita, de perto: é onde o fio que sobra é mais largo (uns 4 mm)."
+    },
+    {
+     "src": "img/cg6-cursus-3-pagina.jpg",
+     "legenda": "A página inteira nas três versões."
+    }
+   ]
+  },
+  {
+   "id": "cg6-matematica-32",
+   "nome": "Matemática 32: a faixa preta mais larga",
+   "olhar": "O lado direito da folha: hoje há uma faixa preta de quase 4 cm; com o conserto, só o papel.",
+   "texto": "A faixa preta de quase 4 cm à direita sumiu; sobra um fio de 1 mm. A folha volta a ter a largura do papel (16,7 cm em vez de 20,9 cm). Nada impresso foi cortado.",
+   "tipo": "melhor",
+   "selo": "faixa sumiu",
+   "ressalva": "O preto de baixo (uns 5 cm) continua: ele já existia antes do endireitar novo e aparece nas três versões. Em cima fica um fio preto de 1,5 mm (antes do endireitar novo era uma tira de 7 mm).",
+   "imgs": [
+    {
+     "src": "img/cg6-matematica-32-perto.jpg",
+     "legenda": "O canto de cima, à direita, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-matematica-32-pagina.jpg",
+     "legenda": "A página inteira nas três versões: o preto de baixo está nas três."
+    }
+   ]
+  },
+  {
+   "id": "cg6-antiphon-260",
+   "nome": "Antiphon 260: o preto de baixo",
+   "olhar": "A parte de baixo da folha: a tira preta do meio é bem mais alta que as outras duas.",
+   "texto": "A tira preta de baixo, que tinha passado para quase 5 cm, volta para 2 cm, como era antes do endireitar novo. A pintura e as letras continuam inteiras.",
+   "tipo": "melhor",
+   "selo": "voltou ao de antes",
+   "ressalva": "Os 2 cm de preto que sobram embaixo já existiam antes: tirar isso é outro trabalho (seguir a beirada do papel), que está no plano.",
+   "imgs": [
+    {
+     "src": "img/cg6-antiphon-260-perto.jpg",
+     "legenda": "O canto de baixo, à esquerda, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-antiphon-260-pagina.jpg",
+     "legenda": "A página inteira nas três versões."
+    }
+   ]
+  },
+  {
+   "id": "cg6-antiphon-88",
+   "nome": "Antiphon 88: o preto da direita",
+   "olhar": "A beirada direita, ao lado do número azul \"II\": quanto preto sobra depois do papel.",
+   "texto": "O preto da direita, que estava com 2,6 cm, fica com 2 mm. Ficou melhor até do que antes do endireitar novo, quando sobravam quase 8 mm. O número azul continua inteiro.",
+   "tipo": "melhor",
+   "selo": "melhor que antes",
+   "ressalva": "O preto de cima e o de baixo (uns 2,5 cm cada) continuam nas três versões: não são deste conserto.",
+   "imgs": [
+    {
+     "src": "img/cg6-antiphon-88-perto.jpg",
+     "legenda": "O canto de cima, à direita, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-antiphon-88-pagina.jpg",
+     "legenda": "A página inteira nas três versões."
+    }
+   ]
+  },
+  {
+   "id": "cg6-camoes-104",
+   "nome": "Camões 104: o fio escuro da esquerda",
+   "olhar": "A beirada esquerda: na imagem do meio há um fio escuro colado na borda.",
+   "texto": "O fio escuro de 2 mm que aparecia à esquerda sumiu; fica como era antes do endireitar novo. A moldura do desenho continua inteira.",
+   "tipo": "melhor",
+   "selo": "fio sumiu",
+   "ressalva": "",
+   "imgs": [
+    {
+     "src": "img/cg6-camoes-104-perto.jpg",
+     "legenda": "O canto de cima, à esquerda, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-camoes-104-pagina.jpg",
+     "legenda": "A página inteira nas três versões."
+    }
+   ]
+  },
+  {
+   "id": "cg6-pesel-21",
+   "nome": "Pesel 21: o cartão escuro passa a sair cortado rente",
+   "olhar": "A parte de baixo: com o conserto, a legenda fica quase encostada na borda da folha.",
+   "texto": "Esta página é um cartão marrom-escuro. Hoje ela sai inteira; com o conserto, o programa corta rente ao que está impresso: tira 1 cm à esquerda e 3 cm embaixo, e a legenda fica a 1 ou 2 mm da borda de baixo. Nada impresso se perde, e as cunhas brancas dos cantos quase somem.",
+   "tipo": "misto",
+   "selo": "para você decidir",
+   "ressalva": "Não foi isso que se pediu ao conserto: é efeito de lado. Ele toma o cartão escuro por fundo do scanner. Na minha opinião a folha inteira de hoje era melhor para esta página; a legenda colada na borda é o mesmo tipo de defeito já anotado no plano (título colado na borda). Só há uma página de cartão escuro entre as 89, então não sei como ficam as outras páginas desse livro.",
+   "imgs": [
+    {
+     "src": "img/cg6-pesel-21-perto.jpg",
+     "legenda": "A parte de baixo, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-pesel-21-pagina.jpg",
+     "legenda": "A página inteira nas três versões: as duas primeiras são iguais."
+    }
+   ]
+  },
+  {
+   "id": "cg6-egenloff-3",
+   "nome": "Egenloff 3: meio milímetro a menos embaixo",
+   "olhar": "A tarja cinza de baixo, com o nome da biblioteca: a segunda linha de letras miúdas, à direita.",
+   "texto": "A folha fica meio milímetro mais curta embaixo. O que fica um pouco mais cortado é a tarja cinza que a biblioteca pôs no pé da imagem, não o livro.",
+   "tipo": "igual",
+   "selo": "quase nada",
+   "ressalva": "A tarja da biblioteca já saía cortada nas três versões.",
+   "imgs": [
+    {
+     "src": "img/cg6-egenloff-3-perto2.jpg",
+     "legenda": "O pé da página, lado direito, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-egenloff-3-perto.jpg",
+     "legenda": "O pé da página, lado esquerdo."
+    },
+    {
+     "src": "img/cg6-egenloff-3-pagina.jpg",
+     "legenda": "A página inteira nas três versões."
+    }
+   ]
+  },
+  {
+   "id": "cg6-outras-tres",
+   "nome": "Camões 66, Antiphonal 252 e Rariora 155: menos de 1 mm",
+   "olhar": "A beirada de cima do Camões 66: o fio escuro do meio some. Nas outras duas, só papel em branco.",
+   "texto": "Nestas três o corte anda menos de 1 mm. No Camões 66 some o fio escuro de cima. No Antiphonal 252 sai um pouco de papel em branco embaixo, e no Rariora 155 entra um pouco em cima. Nada impresso muda.",
+   "tipo": "igual",
+   "selo": "quase nada",
+   "ressalva": "No Rariora 155 a folha continua 3,5 cm mais curta do que era antes do endireitar novo (o papel em branco de baixo é cortado). Isso já acontece hoje e o conserto não mexe.",
+   "imgs": [
+    {
+     "src": "img/cg6-camoes-66-perto.jpg",
+     "legenda": "Camões 66, o canto de cima, à esquerda. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-antiphonal1547-252-perto.jpg",
+     "legenda": "Antiphonal 252, a parte de baixo."
+    },
+    {
+     "src": "img/cg6-rariora-155-perto.jpg",
+     "legenda": "Rariora 155, a parte de cima."
+    },
+    {
+     "src": "img/cg6-camoes-66-pagina.jpg",
+     "legenda": "Camões 66, a página inteira."
+    },
+    {
+     "src": "img/cg6-antiphonal1547-252-pagina.jpg",
+     "legenda": "Antiphonal 252, a página inteira."
+    },
+    {
+     "src": "img/cg6-rariora-155-pagina.jpg",
+     "legenda": "Rariora 155, a página inteira: a folha mais curta já vem de hoje."
+    }
+   ]
+  },
+  {
+   "id": "cg6-graduale-221",
+   "nome": "Graduale 221: o que tinha melhorado continua bom",
+   "olhar": "O número da folha, no alto à direita (\"Cvij\"): inteiro nas duas imagens da direita.",
+   "texto": "Com o endireitar novo o número da folha passou a sair inteiro (antes saía cortado). Com o conserto a página sai idêntica à de hoje, ponto por ponto: a melhora foi mantida.",
+   "tipo": "igual",
+   "selo": "idêntica",
+   "ressalva": "O implementador avisa que esta melhora depende de a página estar torta para aquele lado; o conserto foi feito de modo a não desfazê-la, e nas páginas conferidas não desfez.",
+   "imgs": [
+    {
+     "src": "img/cg6-graduale-221-perto.jpg",
+     "legenda": "O canto de cima, à direita, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-graduale-221-pagina.jpg",
+     "legenda": "A página inteira nas três versões: as duas da direita são idênticas."
+    }
+   ]
+  },
+  {
+   "id": "cg6-marial-7",
+   "nome": "Marial 7: página do gabarito, idêntica",
+   "olhar": "As duas imagens da direita: são a mesma, ponto por ponto.",
+   "texto": "Esta é uma das páginas que você aprovou em 12/10. Com o conserto ela sai idêntica à de hoje, ponto por ponto. O mesmo vale para todas as páginas do gabarito.",
+   "tipo": "igual",
+   "selo": "idêntica",
+   "ressalva": "",
+   "imgs": [
+    {
+     "src": "img/cg6-marial-7-perto.jpg",
+     "legenda": "O canto de baixo, à direita, de perto. Sempre nesta ordem: como era antes do endireitar novo, como sai hoje, como sai com o conserto."
+    },
+    {
+     "src": "img/cg6-marial-7-pagina.jpg",
+     "legenda": "A página inteira nas três versões."
+    }
+   ]
+  }
+ ]
+}
