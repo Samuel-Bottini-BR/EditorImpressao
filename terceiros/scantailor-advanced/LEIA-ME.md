@@ -241,7 +241,10 @@ devolve); o `PageFinder` calcula cinco preto e branco e usa um.
   folha inteira e as duas com "ajustar os cantos"): a maior diferença é 0,04
   ponto, o arredondamento da casa decimal que ele imprimiu;
 - o limpar pontinhos, o dividir e o endireitar dão **o mesmo que a DLL
-  anterior** (versão 3): ver `relatorios/caixa-conteudo-impl/ONDE-PAREI.md`;
+  anterior** (versão 3, a do `fase-1` em `4b19a9b`) nas 32 páginas do
+  gabarito: pontinhos nas três forças, ponto a ponto (96 de 96), dividir nos
+  três modos (96 de 96) e endireitar (32 de 32). Script:
+  `relatorios/caixa-conteudo-impl/scripts/comparar_dll_anterior.py`;
 - a `st_gravura.dll` (item 1.2) **não foi tocada** nem recompilada (o teste
   `test_a_dll_do_1_2_nao_mudou` confere a soma). Ressalva: a recompilação dela
   com os 18 arquivos novos em `src/` (ver "Duas DLLs") **não foi refeita** em
