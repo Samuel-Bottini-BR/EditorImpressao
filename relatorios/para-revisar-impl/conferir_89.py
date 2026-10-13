@@ -25,6 +25,8 @@ Dois jeitos de conferir, do mais leve para o mais pesado:
       preto sozinha" fica desligada (a regra pura, como no estudo).
       --preparo-do-estudo: prepara a pagina como o programa de 07/10 (corta
       antes de endireitar, conta do endireitar do programa).
+      --ordem-da-janela: a previa de 110 DPI primeiro, depois o desenho de
+      300 DPI (como na janela); grava em ...-ordem-da-janela.json.
       --completo: mede sem os atalhos de tempo e guarda tambem as "guardas" de
       cada linha (para reacertar_limites.py); grava em ...-completo.json.
 
@@ -209,7 +211,7 @@ def _dividir_a_mao(doc, projeto, filtro) -> None:
 
 
 def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False,
-                   completo: bool = False) -> int:
+                   completo: bool = False, ordem_da_janela: bool = False) -> int:
     """O programa de verdade, pagina por pagina, no "Só as letras" de fabrica.
 
     como_no_estudo: prepara a pagina como o programa de 07/10/2026 (o do
@@ -220,7 +222,13 @@ def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False,
 
     completo: mede sem os atalhos de tempo (core.revisar.medir, completo=True),
     para os NUMEROS de cada sinal sairem inteiros mesmo abaixo dos limites - e o
-    que reacertar_limites.py le. As decisoes sao as mesmas."""
+    que reacertar_limites.py le. As decisoes sao as mesmas.
+
+    ordem_da_janela: desenha primeiro a previa da tela (110 DPI) e so depois o
+    desenho do tamanho do PDF, no mesmo projeto - como acontece na janela
+    (achado do verificador, 13/10/2026: a marcacao de gravura era procurada no
+    primeiro desenho, e a medida mudava com a ordem). Tem de dar o mesmo que
+    direto."""
     from pasta_de_dados_dos_scripts import isolar_pasta_de_dados
 
     isolar_pasta_de_dados("conferir-89")
@@ -234,7 +242,8 @@ def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False,
 
     gab = _gabarito()
     saida = AQUI / (f"conferir-89-programa-dpi{dpi}{'-preparo-do-estudo' if como_no_estudo else ''}"
-                    f"{'-completo' if completo else ''}.json")
+                    f"{'-completo' if completo else ''}"
+                    f"{'-ordem-da-janela' if ordem_da_janela else ''}.json")
     feitas = json.loads(saida.read_text(encoding="utf-8")) if saida.exists() else {}
 
     vistos: list = []
@@ -285,6 +294,11 @@ def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False,
             projeto.reforcar_texto_falhado = False
             for pagina in projeto.paginas:
                 pagina.filtro = PRETO_E_BRANCO
+                if ordem_da_janela:
+                    de_antes = P.MEDIR_SO_NA_RESOLUCAO_DO_PDF
+                    P.MEDIR_SO_NA_RESOLUCAO_DO_PDF = True          # a previa nao mede, como na janela
+                    P.renderizar_pagina(doc, projeto, pagina, dpi=110)
+                    P.MEDIR_SO_NA_RESOLUCAO_DO_PDF = de_antes
                 vistos.clear()
                 t1 = time.perf_counter()
                 P.renderizar_pagina(doc, projeto, pagina, dpi=dpi if dpi else projeto.qualidade_dpi)
@@ -345,7 +359,8 @@ def main() -> int:
     so = [a for a in args if not a.startswith("--") and not a.isdigit()]
     return com_o_programa(dpi, so[0].split(",") if so else None,
                           como_no_estudo="--preparo-do-estudo" in args,
-                          completo="--completo" in args)
+                          completo="--completo" in args,
+                          ordem_da_janela="--ordem-da-janela" in args)
 
 
 if __name__ == "__main__":

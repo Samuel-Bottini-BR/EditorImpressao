@@ -1429,9 +1429,17 @@ def _geometria_da_folha_como_veio(doc, folha: ConfigFolha, pagina: ConfigPagina,
 
 
 def renderizar_pagina(
-    doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA
+    doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA,
+    marcar_na_resolucao_do_pdf: bool = True,
 ) -> tuple[np.ndarray, bool]:
     """Imagem final de uma página de saida, do jeito que ela vai sair.
+
+    marcar_na_resolucao_do_pdf (13/10/2026): pagina que ainda nao tem a
+    marcacao de gravura, letra e papel ganha a marcacao procurada na
+    resolucao do PDF, mesmo neste desenho menor (_detectar_na_resolucao_do_pdf:
+    a previa e o PDF passam a usar as mesmas areas, tenha a pagina sido vista
+    na tela antes ou nao). False so para a copia da pagina que os cartoes de
+    filtro desenham (renderizar_com_filtro): a marcacao dela e jogada fora.
 
     Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
 
@@ -1466,9 +1474,15 @@ def renderizar_pagina(
         # segunda vez em diante, desenha so na resolucao da previa.
         grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
         _guardar_geometria(folha, pagina, projeto, grande, doc)
+        if (marcar_na_resolucao_do_pdf and dpi < projeto.qualidade_dpi
+                and _vai_detectar(projeto, pagina)):
+            _detectar_na_resolucao_do_pdf(doc, projeto, folha, pagina, grande)
         img_folha = _reduzir_para_o_dpi(doc, folha.indice, grande, dpi)
         del grande
     else:
+        if (marcar_na_resolucao_do_pdf and dpi < projeto.qualidade_dpi
+                and _vai_detectar(projeto, pagina)):
+            _detectar_na_resolucao_do_pdf(doc, projeto, folha, pagina, None)
         img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
         if dpi == projeto.qualidade_dpi and _precisa_de_geometria(pagina, projeto):
             _guardar_geometria(folha, pagina, projeto, img_folha, doc)
@@ -1483,6 +1497,55 @@ def renderizar_pagina(
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
     _acompanhar_as_zonas(pagina, desenho)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+
+def _detectar_na_resolucao_do_pdf(doc, projeto: Projeto, folha: ConfigFolha, pagina: ConfigPagina,
+                                  img_folha_do_pdf: np.ndarray | None) -> None:
+    """Procura gravura, letra e papel na pagina preparada NA RESOLUCAO DO PDF,
+    mesmo quando o desenho pedido e o da previa (menor), e guarda a marcacao
+    na pagina (garantir_selecao). Depois disto a pagina ja tem marcacao, e o
+    desenho da previa usa essa mesma.
+
+    O defeito (verificador, 13/10/2026): a marcacao e procurada uma vez so, no
+    primeiro desenho da pagina, e fica guardada. Na janela o primeiro desenho
+    e a previa (110 DPI); gerando o PDF direto, e o de 300 DPI. O detector
+    acha areas diferentes nas duas resolucoes (Graduale 221: 9 areas na
+    previa, 18 no PDF), entao a MESMA pagina saia diferente no PDF - e era
+    medida diferente pela regra do "Para revisar" - conforme tinha sido vista
+    na tela antes ou nao. Nas 89 paginas do estudo, na ordem da janela: 24
+    iam e 73 estavam certas, contra 22 e 75 direto a 300 DPI. Agora a
+    marcacao automatica e sempre a da resolucao do PDF, nos dois caminhos.
+
+    img_folha_do_pdf: a folha ja desenhada na resolucao do PDF, se quem chama
+    a tem (a primeira previa da pagina tem, por causa do corte); None =
+    desenha aqui. Custa preparar e procurar na pagina grande em vez de na
+    pequena, uma vez por pagina (tempo medido em relatorios/para-revisar-impl/
+    ONDE-PAREI.md). Um erro aqui nunca derruba a previa: a marcacao fica para
+    o desenho da previa procurar, como antes (garantir_selecao em _filtrar).
+    Arriscado: procurar numa resolucao que nao seja a do PDF (a previa e o
+    PDF voltam a discordar)."""
+    try:
+        grande = img_folha_do_pdf
+        if grande is None:
+            grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+        dpi_desenho = _dpi_do_desenho(doc, folha.indice, grande)
+        dpi_scan = _dpi_do_scan(doc, folha)
+        img, desenho = _preparar_metade_e_geometria(grande, folha, pagina, projeto,
+                                                    dpi=projeto.qualidade_dpi)
+        _acompanhar_as_zonas(pagina, desenho)
+        garantir_selecao(projeto, pagina, img, dpi_desenho, dpi_scan)
+        # As linhas do leitor de texto tambem saem desta pagina grande (so se
+        # a pagina vai usa-las): elas ficam guardadas, e a previa, a medida e
+        # o PDF usam as mesmas. Sem isto as linhas vinham da previa pequena, e
+        # a medida saia um pouco diferente da de quem gera o PDF direto
+        # (Graduale 221: 0,99% contra 1,08% de tinta apagada). O leitor roda
+        # uma vez so, como antes.
+        chave = _chave_das_linhas(projeto, pagina)
+        if chave is not None and precisa_medir_para_revisar(projeto, pagina):
+            linhas_do_texto.linhas_da_pagina(img, chave)
+    except Exception:  # noqa: BLE001 - sem isto, a previa procura na resolucao dela
+        _log.exception("nao consegui procurar a marcacao da pagina %s na resolucao do PDF",
+                       pagina.indice + 1)
 
 
 def _acompanhar_as_zonas(pagina: ConfigPagina, desenho: dict) -> None:
@@ -2373,7 +2436,7 @@ def renderizar_com_filtro(
     from dataclasses import replace
 
     copia = replace(pagina, filtro=filtro, alertas=list(pagina.alertas))
-    return renderizar_pagina(doc, projeto, copia, dpi=dpi)
+    return renderizar_pagina(doc, projeto, copia, dpi=dpi, marcar_na_resolucao_do_pdf=False)
 
 
 def _reduzir_para_o_dpi(doc, indice: int, img: np.ndarray, dpi: int) -> np.ndarray:
