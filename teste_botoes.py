@@ -89,6 +89,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import (
     QApplication,
+    QCheckBox,
     QFileDialog,
     QInputDialog,
     QLayout,
@@ -633,10 +634,31 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
 
         alvos = list(botoes_de(conferir.area_imagem.currentWidget()))
         alvos += list(botoes_de(conferir.barra_botoes.currentWidget()))
+        # Etapa 3 do layout (12/10/2026): os botoes de Dividir, Cortar e
+        # Endireitar sairam da fila embaixo da pagina e moram no painel
+        # Propriedades, que vem fechado de fabrica: abre o painel e clica nos
+        # botoes e nas caixinhas dele (Espelhado, Proporcao travada). Fica de
+        # fora so o "mudar nas opções do livro...", que sai desta tela (o
+        # "voltar" ja e conferido na tela "O que fazer"). Por ultimo, os tres
+        # botoes da faixa do conferir ("próxima dúvida" troca de pagina).
+        if hasattr(conferir, "paineis") and hasattr(conferir.paineis, "abrir"):
+            conferir.paineis.abrir("props")
+            esperar(0.4)
+            corpo = conferir.paineis.propriedades.corpo
+            alvos += [b for b in botoes_de(corpo)
+                      if not (b.text() or "").startswith("mudar nas opções")]
+            alvos += [c for c in corpo.findChildren(QCheckBox)
+                      if c.isVisible() and c.isEnabled()]
+        if hasattr(conferir, "faixa"):
+            alvos += list(botoes_de(conferir.faixa))
         # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
             alvos += list(botoes_de(conferir.barra_girar))
+        # Etapa 3 do layout: os tres botoes pequenos de girar do canto da
+        # area da pagina (giram so esta folha).
+        if hasattr(conferir, "girar_do_canto"):
+            alvos += list(botoes_de(conferir.girar_do_canto))
         # Item 2.1: a lista "jeito:" da aba Onde cortar (ida e volta; numa
         # folha em pe ela fica apagada e trocar nao faz nada - so nao pode quebrar)
         if aba == "corte" and hasattr(conferir, "combo_jeito_da_folha"):
@@ -695,6 +717,10 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
         else:
             falhas += 1
 
+    o, f = testar_paineis_da_direita(conferir)
+    ok += o
+    falhas += f
+
     print("\n--- redimensionando (conferir) ---")
     for largura, altura in TAMANHOS_GRANDES:
         janela.resize(largura, altura)
@@ -724,6 +750,78 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     ok += o
     falhas += f
 
+    return ok, falhas
+
+
+def testar_paineis_da_direita(conferir) -> tuple[int, int]:
+    """Etapa 3 do layout (12/10/2026): a coluna de icones da direita e os
+    paineis que ela abre. Clica de verdade (mouse do Qt em cima do desenho) em
+    cada icone, confere que o painel dele abriu ao lado da pagina, clica nos
+    botoes do painel (as abas do "Para revisar", desfazer e refazer do
+    Historico, o "x") e, por fim, na seta que esconde e mostra os icones.
+    Ficam de fora os dois botoes que saem desta tela ("Voltar para as opções"
+    e "mudar nas opções do livro...") e as acoes da lista do Historico (cada
+    uma desfaria o trabalho ate ali, mudando o que o resto da bateria ve)."""
+    global _contexto_atual
+    if not hasattr(conferir, "paineis") or not hasattr(conferir.paineis, "icones"):
+        return 0, 0
+    print("\n--- paineis da direita (conferir) ---")
+    ok = falhas = 0
+    paineis, icones = conferir.paineis, conferir.paineis.icones
+    paineis.fechar()
+    esperar(0.2)
+
+    def clicar_no_icone(item: str) -> bool:
+        global _contexto_atual
+        _contexto_atual = f"clique no icone '{item}' da coluna da direita"
+        antes = len(_falhas)
+        QTest.mouseClick(icones, Qt.LeftButton, Qt.NoModifier,
+                         icones.retangulos()[item].center())
+        QApplication.processEvents()
+        esperar(0.3)
+        return len(_falhas) == antes
+
+    for chave, painel in list(paineis.paineis.items()):
+        largura_antes = conferir.area_imagem.width()
+        if not clicar_no_icone(chave) or paineis.aberto != chave or not painel.isVisible():
+            falhas += 1
+            print(f"  FALHA o icone '{chave}' nao abriu o painel dele")
+            continue
+        if conferir.area_imagem.width() >= largura_antes:
+            falhas += 1
+            print(f"  FALHA o painel '{chave}' nao empurrou a pagina "
+                  f"({largura_antes} -> {conferir.area_imagem.width()})")
+            continue
+        ok += 1
+        print(f"  ok    icone '{chave}': painel aberto ao lado da pagina "
+              f"({largura_antes} -> {conferir.area_imagem.width()} de largura)")
+        itens_do_historico = set(getattr(painel, "itens", [])) | set(
+            getattr(painel, "itens_desfeitos", [])) if chave == "historico" else set()
+        fechar = painel.cabecalho.botao_fechar
+        for botao in botoes_de(painel):
+            texto = botao.text() or botao.toolTip() or "(sem texto)"
+            if botao is fechar or botao in itens_do_historico:
+                continue
+            if texto.startswith(("Voltar para as opções", "mudar nas opções")):
+                continue
+            if acionar(botao, f"{texto} (painel {chave})"):
+                ok += 1
+            else:
+                falhas += 1
+        if acionar(fechar, f"x do painel {chave}") and paineis.aberto is None:
+            ok += 1
+        else:
+            falhas += 1
+            print(f"  FALHA o 'x' nao fechou o painel '{chave}'")
+
+    # a seta: esconde os icones, e mostra de novo
+    for esperado in (False, True):
+        if clicar_no_icone("seta") and paineis.icones_a_vista is esperado:
+            ok += 1
+            print(f"  ok    seta: icones {'a vista' if esperado else 'escondidos'}")
+        else:
+            falhas += 1
+            print(f"  FALHA a seta nao {'mostrou' if esperado else 'escondeu'} os icones")
     return ok, falhas
 
 

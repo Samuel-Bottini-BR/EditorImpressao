@@ -1,29 +1,37 @@
-"""A barrinha de girar a folha, na linha das abas, em cima da página (item 2.3).
+"""Girar a folha: o bloco do painel Propriedades e os botões do canto da página.
 
-PROVISÓRIA até o layout. Pedido do Samuel (conferência 14, G1): "(c) Os dois -
-Os botões tem que existir, mas o que vai decidir como vai ser para clicar e
-como vai ficar é o agente de layout comigo, mas por enquanto pode ser assim."
-Exceção explícita da gerente (06/10/2026) para o implementador mexer em ui/
-só para isto.
+Pedido do Samuel (conferência 14, G1): "(c) Os dois - Os botões tem que
+existir, mas o que vai decidir como vai ser para clicar e como vai ficar é o
+agente de layout comigo". O lugar foi decidido no layout:
 
-O que tem, da esquerda para a direita:
+  - rodada 12, 703 ("Quero a opção B e D"): girar em DOIS lugares, um bloco
+    "Girar a folha" no alto do painel Propriedades e botões pequenos no canto
+    de cima da área da página;
+  - rodada 13, 803 B ("Só no painel"): a lista "aplicar em" fica só no bloco
+    do painel; os botões do canto giram sempre SÓ ESTA folha.
 
-    Girar a folha:  [seta] ¼ à esquerda  [seta] ¼ à direita  [seta] meia volta
-    aplicar em: [só esta  v]
+Antes (etapa 2 do layout) a barrinha morava na ponta da linha dos menus, um
+lugar provisório. As duas peças:
 
-- Os três botões mandam `girar_pedido(giro)` (giro em graus no sentido do
-  relógio, core/girar.GIRO_*). Quem decide QUAIS folhas giram é a tela
-  (ui/tela_conferir._girar_folhas), lendo `alcance()`.
-- "aplicar em" é uma lista (só esta / todas / daqui em diante / só as pares /
-  só as ímpares), com a setinha da lista como pista visual. Vale até a pessoa
-  trocar (nesta sessão do programa); começa em "só esta", o mais seguro.
+    BarraGirar (no painel Propriedades, em todas as ferramentas)
+        Girar a folha
+        [seta] ¼ à esquerda   [seta] ¼ à direita
+        [seta] meia volta     aplicar em: [só esta folha  v]
+
+    GirarDoCanto (por cima do canto direito de cima da área da página)
+        [seta] [seta] [seta]          <- só esta folha, sempre
+
+- Os botões mandam `girar_pedido(giro)` (giro em graus no sentido do relógio,
+  core/girar.GIRO_*). Quem decide QUAIS folhas giram é a tela
+  (ui/tela_conferir._girar_folhas): as do `alcance()` para o bloco do painel
+  e para o menu Página; só a da vez para os botões do canto.
+- "aplicar em" é uma lista (só esta folha / todas as folhas / daqui em diante
+  / só as pares / só as ímpares; as palavras dizem "folha" desde a rodada 12
+  do layout, 709 B: ver nomes_dos_alcances), com a setinha da lista como
+  pista visual. Vale até a pessoa trocar (nesta sessão do programa); começa
+  em "só esta folha", o mais seguro.
 - Ícones desenhados à mão (QPainter), nunca emoji nem símbolo de fonte (regra
   do projeto: emoji quebrou no Windows; a seta de fonte depende da fonte).
-
-Por que na linha das abas: é a única faixa em cima da página com sobra de
-largura em 1280 x 657 (as abas ocupam uns 520 px de 1240) e não custa altura
-nenhuma da página. Em janela estreita (a mínima é 1000 px) a barra mostra só
-os ícones, com o nome no balão, em vez de empurrar as abas (definir_compacta).
 
 Seguro mudar: textos, cores, tamanhos, a ordem dos botões.
 Arriscado: o valor de `giro` de cada botão (o sentido tem de bater com
@@ -37,10 +45,20 @@ import math
 
 from PySide6.QtCore import QPointF, QRectF, QSize, Qt, Signal
 from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
-from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QWidget
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
 
 from core.girar import (
     ALCANCE_ESTA,
+    ALCANCE_TODAS,
     ALCANCES,
     GIRO_DIREITA,
     GIRO_ESQUERDA,
@@ -51,6 +69,25 @@ from core.girar import (
 from ui import estilo
 
 LADO_DO_ICONE = 18
+
+
+def nomes_dos_alcances(coisa: str) -> dict[str, str]:
+    """As palavras de uma lista "aplicar em", dizendo o que ela conta.
+
+    Decisão do Samuel (rodada 12 do layout, 709 B, 12/10/2026): "As palavras
+    dentro da lista dizem folha ou página". Há duas listas com o mesmo nome:
+    a do girar conta FOLHAS e a do endireitar conta PÁGINAS. `coisa` é
+    "folha" ou "página": "só esta folha", "todas as folhas"... As outras
+    três palavras ("daqui em diante", "só as pares", "só as ímpares") ficam
+    como estavam (a rodada 13 ainda pergunta sobre elas).
+
+    Só muda o texto na tela: os códigos (core/girar.ALCANCES), que são o que
+    o programa usa e grava, são os mesmos. Seguro mudar: as palavras.
+    """
+    nomes = dict(NOMES_DOS_ALCANCES)
+    nomes[ALCANCE_ESTA] = f"só esta {coisa}"
+    nomes[ALCANCE_TODAS] = f"todas as {coisa}s"
+    return nomes
 
 def _estilo() -> str:
     """A folha da barrinha, com as cores do tema da vez (ui/estilo.py)."""
@@ -66,6 +103,27 @@ QPushButton:hover {{ border-color: {estilo.AZUL}; }}
 QPushButton:pressed {{ background: {estilo.AZUL_CLARO}; }}
 QComboBox {{ padding: 3px 8px; font-size: 13px; }}
 QLabel {{ color: {estilo.TEXTO_FRACO}; font-size: 13px; background: transparent; }}
+QLabel#secaoDoPainel {{ font-size: 12px; font-weight: 600; }}
+"""
+
+
+def _estilo_do_canto() -> str:
+    """A folha dos botões do canto da página: uma caixinha com a cor do
+    painel e três botões só com o ícone."""
+    return f"""
+QFrame#girarDoCanto {{
+    background: {estilo.cor("painel")};
+    border: 1px solid {estilo.BORDA};
+    border-radius: 8px;
+}}
+QPushButton {{
+    background: {estilo.FUNDO_CARTAO};
+    border: 1px solid {estilo.BORDA};
+    border-radius: 5px;
+    padding: 0px;
+}}
+QPushButton:hover {{ border-color: {estilo.AZUL}; }}
+QPushButton:pressed {{ background: {estilo.AZUL_CLARO}; }}
 """
 
 
@@ -122,29 +180,37 @@ def icone_de_giro(giro: int, cor: str | None = None) -> QIcon:
 
 
 class BarraGirar(QWidget):
-    """Três botões de girar e o "aplicar em". Só avisa; quem gira é a tela."""
+    """O bloco "Girar a folha" do painel Propriedades: os três botões com o
+    nome e o "aplicar em". Só avisa; quem gira é a tela."""
 
     girar_pedido = Signal(int)        # giro em graus, sentido do relogio
     alcance_mudou = Signal(str)       # core/girar.ALCANCE_*
 
     def __init__(self, parent=None) -> None:
-        """Monta a barra com "só esta" escolhido."""
+        """Monta o bloco com "só esta folha" escolhido."""
         super().__init__(parent)
         self.setObjectName("barraGirar")
         # a troca de tema refaz a folha e, por ela, os ícones (changeEvent)
         estilo.estilizar(self, _estilo)
-        # do tamanho do que tem dentro, nunca mais: a sobra da linha e das abas
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        linha = QHBoxLayout(self)
-        linha.setContentsMargins(0, 0, 0, 2)
-        linha.setSpacing(5)
+        coluna = QVBoxLayout(self)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(6)
 
-        self.rotulo = QLabel("Girar a folha:")
-        linha.addWidget(self.rotulo)
+        self.rotulo = QLabel("Girar a folha")
+        self.rotulo.setObjectName("secaoDoPainel")
+        coluna.addWidget(self.rotulo)
+
+        primeira = QHBoxLayout()
+        primeira.setSpacing(6)
+        segunda = QHBoxLayout()
+        segunda.setSpacing(6)
+        coluna.addLayout(primeira)
+        coluna.addLayout(segunda)
 
         self.botoes_de_giro: dict[int, QPushButton] = {}
         self._textos: dict[int, str] = {}
-        for giro in (GIRO_ESQUERDA, GIRO_DIREITA, GIRO_MEIA_VOLTA):
+        for giro, linha in ((GIRO_ESQUERDA, primeira), (GIRO_DIREITA, primeira),
+                            (GIRO_MEIA_VOLTA, segunda)):
             texto = NOMES_DOS_GIROS[giro]
             botao = QPushButton(texto)
             botao.setIcon(icone_de_giro(giro))
@@ -152,26 +218,27 @@ class BarraGirar(QWidget):
             botao.setCursor(Qt.PointingHandCursor)
             botao.setFocusPolicy(Qt.NoFocus)      # nao rouba as setas do teclado
             botao.clicked.connect(lambda *_, g=giro: self.girar_pedido.emit(g))
-            linha.addWidget(botao)
+            linha.addWidget(botao, 0 if giro == GIRO_MEIA_VOLTA else 1)
             self.botoes_de_giro[giro] = botao
             self._textos[giro] = texto
 
         self.rotulo_alcance = QLabel("aplicar em:")
-        linha.addSpacing(4)
-        linha.addWidget(self.rotulo_alcance)
+        segunda.addSpacing(4)
+        segunda.addWidget(self.rotulo_alcance)
         self.combo_alcance = QComboBox()
         self.combo_alcance.setFocusPolicy(Qt.NoFocus)
         self.combo_alcance.setCursor(Qt.PointingHandCursor)
+        # rodada 12 do layout, 709 B: a lista do girar diz FOLHA
+        nomes = nomes_dos_alcances("folha")
         for alcance in ALCANCES:
-            self.combo_alcance.addItem(NOMES_DOS_ALCANCES[alcance], alcance)
+            self.combo_alcance.addItem(nomes[alcance], alcance)
         # a dica explica a regra do "aplicar em" (decisao do Samuel,
         # 06/10/2026: as escolhidas copiam o giro da folha da vez)
         self.combo_alcance.setToolTip(
             "Em quais folhas o giro vale. Todas ficam viradas como esta folha.")
         self.combo_alcance.currentIndexChanged.connect(
             lambda *_: self.alcance_mudou.emit(self.alcance()))
-        linha.addWidget(self.combo_alcance)
-        self._compacta = False
+        segunda.addWidget(self.combo_alcance, 1)
         self.definir_teclas({})
 
     def changeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
@@ -204,21 +271,50 @@ class BarraGirar(QWidget):
             dica = f"Girar {self._textos[giro]}"
             botao.setToolTip(f"{dica}  ({tecla})" if tecla else dica)
 
-    # --- tamanho ----------------------------------------------------------
 
-    def largura_com_texto(self) -> int:
-        """A largura que a barra pede com o nome escrito nos botões."""
-        compacta = self._compacta
-        self.definir_compacta(False)
-        largura = self.sizeHint().width()
-        self.definir_compacta(compacta)
-        return largura
+class GirarDoCanto(QFrame):
+    """Os três botões pequenos de girar, por cima do canto direito de cima da
+    área da página (rodada 12, 703 D). Giram sempre SÓ ESTA folha (rodada 13,
+    803 B: a lista "aplicar em" fica só no painel Propriedades). Só avisa
+    (`girar_pedido`); quem gira e quem põe a peça no canto é a tela."""
 
-    def definir_compacta(self, compacta: bool) -> None:
-        """Janela estreita: só os ícones (o nome continua no balão). Quem
-        decide é a tela (ui/tela_conferir._acertar_a_barra_girar), que sabe
-        quanto sobra ao lado das abas."""
-        self._compacta = bool(compacta)
+    girar_pedido = Signal(int)        # giro em graus, sentido do relogio
+
+    LADO_DO_BOTAO = (30, 24)
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setObjectName("girarDoCanto")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        estilo.estilizar(self, _estilo_do_canto)
+        linha = QHBoxLayout(self)
+        linha.setContentsMargins(7, 6, 7, 6)
+        linha.setSpacing(3)
+        self.botoes_de_giro: dict[int, QPushButton] = {}
+        for giro in (GIRO_ESQUERDA, GIRO_DIREITA, GIRO_MEIA_VOLTA):
+            botao = QPushButton()
+            botao.setFixedSize(*self.LADO_DO_BOTAO)
+            botao.setIcon(icone_de_giro(giro))
+            botao.setIconSize(QSize(LADO_DO_ICONE - 2, LADO_DO_ICONE - 2))
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)      # nao rouba as setas do teclado
+            botao.clicked.connect(lambda *_, g=giro: self.girar_pedido.emit(g))
+            linha.addWidget(botao)
+            self.botoes_de_giro[giro] = botao
+        self.definir_teclas({})
+        self.adjustSize()
+
+    def changeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Troca de tema: os ícones ganham a cor do texto do tema novo."""
+        super().changeEvent(evento)
+        from PySide6.QtCore import QEvent
+        if evento.type() == QEvent.StyleChange and hasattr(self, "botoes_de_giro"):
+            for giro, botao in self.botoes_de_giro.items():
+                botao.setIcon(icone_de_giro(giro))
+
+    def definir_teclas(self, teclas: dict[int, str]) -> None:
+        """O balão de cada botão: o que faz, que é só nesta folha, e a tecla."""
         for giro, botao in self.botoes_de_giro.items():
-            botao.setText("" if compacta else self._textos[giro])
-        self.rotulo.setVisible(not compacta)
+            tecla = teclas.get(giro, "")
+            dica = f"Girar {NOMES_DOS_GIROS[giro]} (só esta folha)"
+            botao.setToolTip(f"{dica}  ({tecla})" if tecla else dica)

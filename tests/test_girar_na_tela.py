@@ -52,56 +52,77 @@ def _rotacoes(janela):
     return [f.rotacao for f in janela.projeto.folhas]
 
 
-def test_a_barrinha_existe_na_linha_das_abas_e_sem_emoji(janela, pasta):
+def test_o_girar_mora_no_propriedades_e_no_canto_da_pagina_sem_emoji(janela, pasta):
+    """Rodada 12 do layout, 703 ("Quero a opção B e D"): o bloco "Girar a
+    folha" no alto do painel Propriedades e botoes pequenos no canto de cima
+    da area da pagina. Na etapa 2 a barrinha ficava na linha dos menus."""
     tela = _aberta(janela, pasta)
-    barra = tela.barra_girar
-    assert barra.parentWidget() is tela.linha_das_abas
-    # Etapa 2 do layout (sem abas): a "linha das abas", com a barrinha, mora
-    # agora na linha dos menus, ao lado da barra de opcoes (R8 303 B)
-    assert tela.linha_das_abas.parentWidget() is janela.linha_dos_menus
-    assert tela.linha_das_abas.isVisible()
-    # o nome de cada botao (na janela estreita o botao mostra so o icone)
+    barra, canto = tela.barra_girar, tela.girar_do_canto
+    assert tela.paineis.propriedades.isAncestorOf(barra)
+    assert not janela.linha_dos_menus.isAncestorOf(barra), "saiu da linha dos menus"
+    assert canto.parentWidget() is tela.area_imagem
+    assert not tela.barra_abas.isVisible(), "sem abas na tela"
+    # o nome de cada botao
     textos = [barra._textos[g] for g in barra.botoes_de_giro]
     assert textos == ["¼ à esquerda", "¼ à direita", "meia volta"]
+    assert [b.text() for b in barra.botoes_de_giro.values()] == textos
     itens = [barra.combo_alcance.itemText(i) for i in range(barra.combo_alcance.count())]
-    assert itens == ["só esta", "todas", "daqui em diante", "só as pares", "só as ímpares"]
+    # rodada 12 do layout, 709 B: as palavras da lista do girar dizem "folha"
+    # (a do endireitar diz "página"); os codigos de dentro nao mudaram
+    assert itens == ["só esta folha", "todas as folhas", "daqui em diante", "só as pares",
+                     "só as ímpares"]
+    dados = [barra.combo_alcance.itemData(i) for i in range(barra.combo_alcance.count())]
+    assert dados == list(girar.ALCANCES)
     assert barra.alcance() == girar.ALCANCE_ESTA, "começa no mais seguro"
     for texto in textos + itens + [barra.rotulo.text(), barra.rotulo_alcance.text()]:
         assert all(ord(c) < 0x2000 for c in texto), texto
-    for botao in barra.botoes_de_giro.values():
+    for botao in list(barra.botoes_de_giro.values()) + list(canto.botoes_de_giro.values()):
         assert not botao.icon().isNull(), "pista visual: a seta desenhada"
+    assert all(b.text() == "" for b in canto.botoes_de_giro.values()), "no canto, so o icone"
+    assert all("só esta folha" in b.toolTip() for b in canto.botoes_de_giro.values())
 
 
 @pytest.mark.parametrize("largura, altura", [(1280, 657), (1000, 680)])
-def test_a_barrinha_cabe_sem_espremer_as_abas(janela, pasta, app, largura, altura):
-    """A barrinha nunca passa da janela nem espreme os menus (etapa 2 do
-    layout: as abas sairam da tela e a barrinha mora na linha dos menus);
-    quando o nome escrito nao cabe, fica so o icone (com o nome no balao).
-    Aqui, sem fontes de verdade (offscreen), so a regra."""
+def test_os_botoes_do_canto_ficam_dentro_da_area_da_pagina(janela, pasta, app, largura, altura):
+    """Os tres botoes pequenos ficam no canto direito de cima da area da
+    pagina, inteiros dentro dela, com o painel fechado ou aberto (a area
+    encolhe e eles acompanham)."""
     tela = _aberta(janela, pasta)
     janela.resize(largura, altura)
-    for _ in range(5):
-        app.processEvents()
-    tela._acertar_a_barra_girar()
-    barra, menus = tela.barra_girar, janela.menu
-    direita = barra.mapTo(janela, barra.rect().topRight()).x()
-    assert direita <= janela.width(), "a barrinha nao passa da janela"
-    assert menus.width() >= menus.sizeHint().width(), "os menus nao sao espremidos"
-    assert not tela.barra_abas.isVisible(), "sem abas na tela"
-    sobra = tela.sobra_para_a_barra_girar()
-    assert barra._compacta is (sobra < barra.largura_com_texto())
-    if barra._compacta:
-        assert all(b.text() == "" for b in barra.botoes_de_giro.values())
-    assert all("Girar" in b.toolTip() for b in barra.botoes_de_giro.values())
+    canto, area = tela.girar_do_canto, tela.area_imagem
+    for painel in (None, "props"):
+        if painel:
+            tela.paineis.abrir(painel)
+        for _ in range(5):
+            app.processEvents()
+        assert canto.isVisible()
+        assert canto.geometry().right() <= area.width() - 1
+        assert area.width() - canto.geometry().right() <= 16, "encostado no canto direito"
+        assert 0 <= canto.geometry().top() <= 12
+        assert menus_inteiros(janela)
 
 
-def test_na_janela_minima_so_os_icones(janela, pasta, app):
+def menus_inteiros(janela) -> bool:
+    """Os menus nunca sao espremidos (o Qt os esconderia atras de um "...")."""
+    return janela.menu.width() >= janela.menu.sizeHint().width()
+
+
+def test_os_botoes_do_canto_giram_so_esta_folha(janela, pasta):
+    """Rodada 13 do layout, 803 B ("Só no painel"): a lista "aplicar em" fica
+    so no painel; os botoes do canto giram sempre so a folha da vez, mesmo
+    com "todas as folhas" escolhido no painel."""
     tela = _aberta(janela, pasta)
-    janela.resize(1000, 680)
-    for _ in range(5):
-        app.processEvents()
-    assert tela.barra_girar._compacta
-    assert not tela.barra_girar.rotulo.isVisible()
+    tela.ir_para_pagina(2)
+    tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+    feitas = len(janela.acoes.feitas)
+    tela.girar_do_canto.botoes_de_giro[girar.GIRO_DIREITA].click()
+    assert _rotacoes(janela) == [0, 0, 90, 0, 0]
+    assert len(janela.acoes.feitas) == feitas + 1
+    tela.girar_do_canto.botoes_de_giro[girar.GIRO_MEIA_VOLTA].click()
+    assert _rotacoes(janela) == [0, 0, 270, 0, 0]
+    # o do painel continua obedecendo ao "aplicar em"
+    tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+    assert _rotacoes(janela) == [180] * 5
 
 
 @pytest.mark.parametrize("alcance, giro, atual, esperado", [

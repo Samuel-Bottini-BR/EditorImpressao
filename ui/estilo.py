@@ -450,6 +450,58 @@ QStackedWidget#barraDeBotoes QPushButton {{ padding: 5px 10px; font-size: 13px; 
 QStackedWidget#barraDeBotoes QComboBox {{ padding: 4px 8px; font-size: 13px; }}
 QStackedWidget#barraDeBotoes QLabel {{ font-size: 13px; }}
 QStackedWidget#barraDeBotoes QCheckBox {{ font-size: 13px; }}
+
+/* Etapa 3 do layout: a faixa do conferir com os botões dentro (aceitar a
+   sugestão, está certo, próxima dúvida) e os painéis da direita, que abrem
+   pela coluna de ícones (ui/widgets/paineis.py). As regras usam o nome de
+   cada peça, e não "QWidget", de propósito: uma regra geral dentro do painel
+   tiraria o fundo dos botões e das listas. */
+QFrame#faixaInfo QPushButton {{ padding: 4px 12px; font-size: 13px; border-radius: 6px; }}
+QFrame#painelDaDireita {{ background: {c["painel"]}; border: none; }}
+QWidget#fundoDoPainel {{ background: {c["painel"]}; }}
+QStackedWidget#pilhaDoPainel {{ background: {c["painel"]}; border: none; }}
+QFrame#cabecalhoDoPainel {{ background: {c["painel"]}; border: none;
+    border-bottom: 1px solid {c["linha"]}; }}
+QFrame#topoDoPainel {{ background: {c["painel"]}; border: none;
+    border-bottom: 1px solid {c["linha"]}; }}
+QFrame#peDoPainel {{ background: {c["painel"]}; border: none;
+    border-top: 1px solid {c["linha"]}; }}
+QLabel#tituloDoPainel {{ color: {c["forte"]}; font-size: 14px; font-weight: 600; }}
+QLabel#subtituloDoPainel {{ color: {c["apagado"]}; font-size: 12px; }}
+QLabel#contagemDoPainel {{ background: {c["aviso"]}; color: #2A1808; font-size: 11px;
+    font-weight: 700; border-radius: 8px; padding: 1px 6px; }}
+QPushButton#fecharPainel {{ background: transparent; border: none; border-radius: 5px;
+    padding: 0px; }}
+QPushButton#fecharPainel:hover {{ background: {c["botao_h"]}; }}
+QLabel#parteDoPainel {{ color: {c["fraco"]}; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; }}
+QLabel#secaoDoPainel {{ color: {c["fraco"]}; font-size: 12px; font-weight: 600; }}
+QLabel#fraseDoPainel {{ color: {c["apagado"]}; font-size: 12px; }}
+QLabel#escolhaDoLivro {{ color: {c["link"]}; font-size: 12px; }}
+QLabel#etapaLigada {{ color: {c["forte"]}; font-size: 13px; font-weight: 600; }}
+QLabel#etapaDesligada {{ color: {c["apagado"]}; font-size: 13px; }}
+QFrame#riscoDoPainel {{ background: {c["linha"]}; border: none; }}
+QFrame#etapaDoPainel {{ background: {c["linha_f"]}; border: 1px solid {c["linha_b"]};
+    border-radius: 7px; }}
+QFrame#parteDoLivro {{ background: {c["aviso_f"]}; border: 1px solid {c["aviso_b"]};
+    border-radius: 8px; }}
+QFrame#parteDoLivro QLabel#parteDoPainel {{ color: {c["aviso"]}; }}
+QListWidget#listaDoPainel {{ background: {c["painel"]}; border: none; outline: none; }}
+QListWidget#listaDoPainel::item {{ border: none; background: transparent; }}
+QPushButton#abaDoPainel {{ background: {c["botao"]}; border: 1px solid {c["sep"]};
+    border-radius: 0px; padding: 5px 8px; font-size: 13px; }}
+QPushButton#abaDoPainel:hover {{ background: {c["botao_h"]}; }}
+QPushButton#abaDoPainel:checked {{ background: {c["azul"]}; border-color: {c["azul"]};
+    color: white; font-weight: 600; }}
+/* os botões, listas e caixinhas da ferramenta, dentro do painel Propriedades:
+   mais enxutos que os das outras telas, para caberem nos 300 px */
+QWidget#corpoDoPainel QPushButton {{ padding: 5px 8px; font-size: 13px; border-radius: 6px; }}
+QFrame#peDoPainel QPushButton, QFrame#topoDoPainel QPushButton {{ padding: 5px 8px;
+    font-size: 13px; border-radius: 6px; }}
+QWidget#corpoDoPainel QComboBox, QWidget#corpoDoPainel QDoubleSpinBox {{ padding: 4px 8px;
+    font-size: 13px; }}
+QWidget#corpoDoPainel QCheckBox {{ font-size: 13px; font-weight: normal; }}
+QLabel#rotuloDoPainel {{ color: {c["texto"]}; font-size: 13px; }}
 """
 
 

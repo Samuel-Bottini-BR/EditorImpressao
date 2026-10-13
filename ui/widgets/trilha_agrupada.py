@@ -68,23 +68,28 @@ NOMES.update({
     FERRAMENTA_FILTROS: "Os quatro filtros",
 })
 
-# O que cada uma faz, numa frase curta (o balão do mouse).
+# O que cada uma faz, numa frase curta (o balão do mouse). Desde a rodada 12
+# do layout (702 C, 12/10/2026: "Mostrar só o nome da ferramenta" na linha dos
+# menus) este balão é o ÚNICO lugar onde a frase do que fazer aparece; por
+# isso as dicas que a barra de opções mostrava (a roda do mouse) vieram
+# para cá.
 USOS = {
     FERRAMENTA_DIVIDIR: "Arraste a linha azul para mudar onde a folha divide.",
     FERRAMENTA_CORTAR: "Arraste o retângulo para mudar o corte da borda.",
     # Desde o G5 (item 2.2, 07/10/2026) o giro à mão é pela bolinha azul
-    # (alça) ou pela linha laranja (linha-guia), no visualizador. Curta de
-    # propósito: na linha dos menus a dica cede lugar e é cortada; a frase
-    # inteira está na faixa do conferir.
-    FERRAMENTA_ENDIREITAR: "Gire pela bolinha azul ou pela linha laranja.",
+    # (alça) ou pela linha laranja (linha-guia), no visualizador.
+    FERRAMENTA_ENDIREITAR: ("Gire pela bolinha azul, ou desenhe a linha laranja em "
+                            "cima de uma linha do texto."),
     FERRAMENTA_FILTROS: "A mesma página nos quatro filtros: clique no que preferir.",
     FERRAMENTA_RETANGULO: "Arraste de um canto ao outro.",
     FERRAMENTA_ELIPSE: "Arraste para desenhar um oval.",
     FERRAMENTA_LACO: "Contorne a área com o botão apertado.",
     FERRAMENTA_POLIGONO: "Clique ponto a ponto. Duplo clique fecha.",
     FERRAMENTA_PINCEL: "Pinte por cima. A roda do mouse muda a espessura.",
-    FERRAMENTA_VARINHA: "Clique numa cor e ela pega a mancha inteira.",
-    FERRAMENTA_COR: "Clique numa cor e ela pega tudo daquela cor na página.",
+    FERRAMENTA_VARINHA: ("Clique numa cor e ela pega a mancha inteira. "
+                         "A roda do mouse muda a tolerância."),
+    FERRAMENTA_COR: ("Clique numa cor e ela pega tudo daquela cor na página. "
+                     "A roda do mouse muda a variação."),
     FERRAMENTA_ZOOM: "Clique para aproximar. Com Alt, afasta.",
     FERRAMENTA_MAO: "Arraste para andar pela página aproximada.",
 }

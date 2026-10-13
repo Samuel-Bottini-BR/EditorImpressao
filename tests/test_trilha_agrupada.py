@@ -163,21 +163,26 @@ def test_escolher_ferramenta_de_pagina_pelo_ponto_unico_troca_a_tela(janela, pas
 
 
 def test_os_controles_do_endireitar_g5_moram_na_ferramenta_endireitar(janela, pasta):
-    """Etapa 2: os controles novos do endireitar (item 2.2, G5: o angulo em
-    numero com as setas de 0,1 grau e o "aplicar em"; a "conta:" do G4)
-    aparecem na fila de botoes embaixo da faixa quando a ferramenta e o
-    Endireitar, e somem com as outras ferramentas (lugar PROVISORIO ate o
-    painel Propriedades, etapa 4)."""
+    """Os controles do endireitar (item 2.2, G5: o angulo em numero com as
+    setas de 0,1 grau e o "aplicar em"; a "conta:" do G4) aparecem quando a
+    ferramenta e o Endireitar, e somem com as outras ferramentas. Desde a
+    etapa 3 do layout eles moram no painel Propriedades (rodada 9, 402 C), e
+    nao mais na fila de botoes embaixo da faixa."""
+    from PySide6.QtWidgets import QApplication
+
     tela = _aberta(janela, pasta)
     if "angulo" not in tela._abas_ativas:
         pytest.skip("este livro nao endireita")
     tela.trilha.escolher(FERRAMENTA_ENDIREITAR)
     assert tela.aba_atual == "angulo"
+    tela.paineis.abrir("props")
+    QApplication.processEvents()
     for controle in (tela.campo_angulo, tela.botao_angulo_anti_horario,
                      tela.botao_angulo_horario, tela.combo_alcance_do_angulo,
                      tela.combo_conta_do_endireitar):
         assert controle.isVisible(), controle
-        assert tela.barra_botoes.currentWidget().isAncestorOf(controle)
+        assert tela.paineis.propriedades.isAncestorOf(controle)
+        assert not tela.barra_botoes.isAncestorOf(controle)
     # o numero cabe no campo de digitar (no Qt 6.12, com a folha de estilo e
     # sem as setinhas proprias, o campo ficava com 1 pixel: 09/10/2026)
     campo = tela.campo_angulo.lineEdit()
@@ -223,10 +228,16 @@ def test_as_setas_dos_lados_viraram_as_da_barra_de_baixo(janela, pasta):
 
 
 def test_o_botao_do_historico_abre_o_painel(janela, pasta):
+    """Rodada 9, 405 C: desfazer e refazer sempre a mao na barra de baixo, e o
+    botao do relogio abre o painel Historico (etapa 3 do layout: e o mesmo
+    painel do icone da coluna da direita; clicar de novo fecha)."""
     tela = _aberta(janela, pasta)
-    tela.paineis.historico.definir_recolhido(True)
+    assert tela.paineis.aberto is None, "de fabrica, tudo fechado"
     tela.botao_historico_embaixo.click()
-    assert not tela.paineis.historico.recolhido
+    assert tela.paineis.aberto == "historico"
+    assert tela.paineis.historico.isVisible()
+    tela.botao_historico_embaixo.click()
+    assert tela.paineis.aberto is None
 
 
 def test_as_setinhas_do_angulo_mudam_de_cor_com_o_tema(janela, pasta):
