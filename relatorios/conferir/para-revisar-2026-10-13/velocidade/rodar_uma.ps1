@@ -13,13 +13,13 @@ param(
 $ErrorActionPreference = 'Stop'
 $raiz = 'D:\programas\EditorImpressao'
 $copias = @{
-    antes  = "$raiz\.claude\worktrees\velocidade-antes"
+    antes  = "$raiz\.claude\worktrees\velocidade-antes-pr"
     depois = "$raiz\.claude\worktrees\verif-para-revisar"
 }
 $copia = $copias[$braco]
 $python = "$raiz\.venv\Scripts\python.exe"
 $livro = "$raiz\gabarito\velocidade\marial_300.pdf"
-$saida = "$raiz\.claude\worktrees\verif-para-revisar\relatorios\conferir\para-revisar-2026-10-13\velocidade\rodadas\$nome"
+$saida = "$raiz\.claude\worktrees\verif-para-revisar\relatorios\conferir\para-revisar-2026-10-13\velocidade\rodadas-2\$nome"
 $temp = "$copia\saida_teste\tmp-velocidade"
 
 if (Test-Path $saida) { Write-Output "A pasta $saida ja existe: parei para nao misturar rodadas."; exit 4 }

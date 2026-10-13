@@ -114,6 +114,7 @@ def estado_da_pagina():
              "revisada=p.revisada, filtro=p.filtro, "
              "b1=(tc.botoes_de_sugestao['filtro'].text() if tc.botoes_de_sugestao['filtro'].isVisible() else None), "
              "b2=(tc.botoes_de_sugestao_2['filtro'].text() if tc.botoes_de_sugestao_2['filtro'].isVisible() else None), "
+             "b3=((lambda d: d['filtro'].text() if d and d['filtro'].isVisible() else None)(getattr(tc, 'botoes_de_sugestao_3', None))), prov=getattr(p, 'marcacao_provisoria', None), "
              "contador=tc.botao_alertas.text(), painel=tc.coluna_paineis.para_revisar.cabecalho.text() if hasattr(tc,'coluna_paineis') else None"
              "))(tc.projeto.paginas[tc.indice_pagina])")
 
@@ -186,7 +187,12 @@ def novo_livro(pdf, so_as_letras=True, jeito=None, limite=900):
     clicar("Preto e branco", classe="QRadioButton", espera=1.5)
     # a tela "O que fazer" lembra a escolha do livro anterior da sessao: so
     # clica na caixinha se ela nao estiver do jeito pedido (le o estado, clica nativo)
-    marcada = [x[4] for x in itens(classes=("QCheckBox",)) if x[2] == "Só as letras"][0]
+    for _ in range(20):          # a caixinha so aparece depois que o Preto e branco e escolhido
+        achadas = [x[4] for x in itens(classes=("QCheckBox",)) if x[2] == "Só as letras"]
+        if achadas:
+            break
+        time.sleep(0.5)
+    marcada = achadas[0]
     if bool(marcada) != bool(so_as_letras):
         clicar("Só as letras", classe="QCheckBox", espera=1.5)
     if so_as_letras:
@@ -207,7 +213,7 @@ def curto():
     e = eval(estado_da_pagina())
     return (f"p{e['pagina']} pend={e['pendentes']} aceitos={e['aceitos']} forca={e['forca']} antes={e['antes']} "
             f"fora={e['fora']} branco={e['em_branco']} apagada={e['apagada']} rev={e['revisada']} "
-            f"b1={e['b1']!r} b2={e['b2']!r} | {e['contador']}")
+            f"b1={e['b1']!r} b2={e['b2']!r} b3={e.get('b3')!r} prov={e.get('prov')} | {e['contador']}")
 
 
 def faixa():
@@ -335,6 +341,71 @@ def escolher_motivo_na_lista(parte):
         P.tecla(0x28 if alvo[0] > atual else 0x26, h); time.sleep(0.3)
     P.tecla(0x0D, h); time.sleep(1)
     return s(f"{JA}.combo_motivo.currentText()")
+
+
+_OCIOSO = ("(not tc.previas._pedidas and not getattr(tc.previas, '_medidas_a_espera', None) "
+           "and tc.previas._pool.activeThreadCount() == 0)")
+
+
+def esperar_ocioso(limite=600):
+    """Espera o programa parar de trabalhar por tras (nenhuma previa nem medida
+    pedida, nenhum fio ocupado), visto duas vezes seguidas. Devolve os segundos."""
+    t0 = time.time(); seguidas = 0
+    while time.time() - t0 < limite:
+        if s(_OCIOSO) == "True":
+            seguidas += 1
+            if seguidas >= 2:
+                return round(time.time() - t0, 1)
+        else:
+            seguidas = 0
+        time.sleep(0.25)
+    return None
+
+
+def folhear(quantas, pausa):
+    """Folheia como a pessoa: seta para a direita (tecla nativa) e mede quanto a
+    previa da pagina nova demora para estar pronta. `pausa` = segundos parado
+    em cada pagina (0 = troca assim que a previa aparece). A medida e por
+    perguntas ao programa (cada uma leva uns 0,05 s): nao enxerga menos que isso.
+    Devolve (tempos, segundos de trabalho por tras depois da ultima pagina)."""
+    tempos = []
+    h = P.principal()
+    j = [x for x in P.mapa() if x["classe"] == "JanelaPrincipal"][0]
+    it = [i for i in j["itens"] if i["classe"] == "QPushButton" and i["texto"] == ">" and i["x"] > 0][0]
+    bx, by = int(it["x"] + it["w"] / 2), int(it["y"] + it["h"] / 2)
+    for _ in range(quantas):
+        alvo = int(s("tc.indice_pagina")) + 1
+        t0 = time.time()
+        # clique nativo no botao ">" (na janela de teste a seta do teclado fica presa na tira; ver q2_setas.py)
+        P.u32.PostMessageW(h, 0x200, 0, P.lp(bx, by)); P.u32.PostMessageW(h, 0x201, 1, P.lp(bx, by)); P.u32.PostMessageW(h, 0x202, 0, P.lp(bx, by))
+        while time.time() - t0 < 120:
+            if s(f"tc.indice_pagina == {alvo} and tc.previas.chave({alvo}, tc._dpi_atual) in tc.previas._cache") == "True":
+                break
+        tempos.append(round(time.time() - t0, 2))
+        if pausa:
+            time.sleep(pausa)
+    return tempos, esperar_ocioso()
+
+
+def marcado():
+    """So leitura: quantas areas a pagina da vez tem, por origem, e se ainda e a provisoria."""
+    return s("(lambda p: (len(p.selecao), "
+             "dict(__import__('collections').Counter(str(r.get('origem')) + '/' + str(r.get('tipo')) for r in p.selecao)), "
+             "getattr(p, 'marcacao_provisoria', None)))(tc.projeto.paginas[tc.indice_pagina])")
+
+
+def fechar():
+    """Fecha a janela de teste (so a minha, a do pid que este piloto abriu):
+    primeiro as janelas filhas que estiverem abertas ("Ver de perto", caixas),
+    depois a principal. WM_CLOSE, nunca a forca."""
+    try:
+        for h, t, c, _ in P.janelas():
+            if t != "Editor de Impressão":
+                P.u32.PostMessageW(h, 0x10, 0, 0)
+        time.sleep(1.0)
+        return P.fechar()
+    except Exception as e:  # noqa: BLE001 - nada aberto
+        return repr(e)[:60]
 
 
 def erros_log():

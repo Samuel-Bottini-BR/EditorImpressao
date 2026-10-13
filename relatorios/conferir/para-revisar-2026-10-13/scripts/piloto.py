@@ -20,7 +20,7 @@ AQUI = Path(__file__).parent
 BASE = AQUI.parent
 RAIZ = Path(r"D:\programas\EditorImpressao")
 PYW = RAIZ / ".venv" / "Scripts" / "pythonw.exe"
-DADOS = BASE / "trabalho" / "dados_teste"
+DADOS = Path(os.environ.get("VERIF_DADOS", str(BASE / "trabalho" / "dados_teste2")))  # 2a conferencia: pasta de dados nova (a da 1a ficou em dados_teste)
 ESTADO = AQUI / "estado.json"
 # verificador-2: o canal de comandos fica no C: (pasta de rascunho), longe do
 # disco USB; quem le o canal dentro do programa e um fio de fundo (lancador2)
