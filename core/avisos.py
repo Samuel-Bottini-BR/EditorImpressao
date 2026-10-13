@@ -125,10 +125,43 @@ def campos_para_aceitar(projeto, avisos: list[Aviso]) -> dict[str, tuple[list[in
     return mudancas
 
 
-def frase_de_quantos(avisos: list[Aviso]) -> str:
-    """"Ainda tem 3 páginas com aviso." - para o alto da janela "Antes de
-    processar" (conta folhas e paginas, nao motivos)."""
-    itens = len(por_item(avisos))
-    if itens == 1:
-        return "Ainda tem 1 página que eu não tive certeza."
-    return f"Ainda tem {itens} páginas que eu não tive certeza."
+def paginas_com_aviso(avisos: list[Aviso], projeto=None) -> int:
+    """Quantas PAGINAS do livro tem algum dos `avisos`. O aviso de uma folha
+    (qualidade baixa, tamanho diferente, corte) conta para as paginas que
+    sairam dela: a folha 4 e a pagina 4 sao a mesma pagina do livro, uma vez
+    so. Sem `projeto` (ou folha sem pagina nenhuma), a folha conta como uma.
+
+    O defeito (verificador, 13/10/2026): a frase da janela contava folhas e
+    paginas como coisas separadas - no Camoes dizia "100 páginas" num livro
+    em que as paginas com aviso eram menos, porque a folha com "Qualidade
+    baixa" e a pagina dela com "Endireitar" entravam como duas."""
+    paginas_da_folha: dict[int, list[int]] = {}
+    if projeto is not None:
+        for pagina in projeto.paginas:
+            if not pagina.apagada:
+                paginas_da_folha.setdefault(pagina.folha, []).append(pagina.indice)
+    vistas: set = set()
+    for aviso in avisos:
+        if aviso.alvo == PAGINA:
+            vistas.add((PAGINA, aviso.indice))
+            continue
+        delas = paginas_da_folha.get(aviso.indice)
+        if delas:
+            vistas.update((PAGINA, indice) for indice in delas)
+        else:
+            vistas.add((FOLHA, aviso.indice))
+    return len(vistas)
+
+
+def frase_de_quantos(avisos: list[Aviso], projeto=None) -> str:
+    """"Ainda tem 3 páginas que eu não tive certeza (4 avisos na lista)." -
+    para o alto da janela "Antes de processar". As PAGINAS sao contadas por
+    paginas_com_aviso (folha e pagina da mesma folha, uma vez so); os avisos
+    sao as linhas da lista (um por motivo). Os dois numeros aparecem com o
+    nome de cada um, para nao parecerem a mesma conta."""
+    paginas = paginas_com_aviso(avisos, projeto)
+    frase = ("Ainda tem 1 página que eu não tive certeza" if paginas == 1
+             else f"Ainda tem {paginas} páginas que eu não tive certeza")
+    if len(avisos) != paginas:
+        frase += f" ({len(avisos)} avisos na lista)"
+    return frase + "."

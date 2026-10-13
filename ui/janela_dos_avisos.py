@@ -59,9 +59,14 @@ TODOS_OS_MOTIVOS = ""
 class JanelaDosAvisos(QDialog):
     """A lista das páginas com aviso e os motivos (ver o topo do arquivo)."""
 
-    def __init__(self, avisos: list, antes_de_processar: bool = False, parent=None) -> None:
+    def __init__(self, avisos: list, antes_de_processar: bool = False, parent=None,
+                 projeto=None) -> None:
+        """projeto: o livro, so para a frase de cima contar as PAGINAS certo
+        (o aviso de uma folha e o da pagina dela sao a mesma pagina:
+        core.avisos.paginas_com_aviso). Sem ele, cada folha conta como uma."""
         super().__init__(parent)
         self.avisos = list(avisos)
+        self.projeto = projeto
         self.antes_de_processar = bool(antes_de_processar)
         self.escolha = FECHAR
         self.aviso_para_ver = None
@@ -126,7 +131,7 @@ class JanelaDosAvisos(QDialog):
 
     def _frase(self) -> str:
         if self.antes_de_processar:
-            return (avisos_do_livro.frase_de_quantos(self.avisos)
+            return (avisos_do_livro.frase_de_quantos(self.avisos, self.projeto)
                     + " Quer ver antes ou continuar assim mesmo?")
         return ("As páginas com aviso e o motivo de cada uma. Marque as que estão boas "
                 "e clique em \"está bom nas marcadas\", ou escolha uma e clique em \"ver\".")

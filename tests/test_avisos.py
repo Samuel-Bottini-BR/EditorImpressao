@@ -45,8 +45,21 @@ def _livro(n: int = 5) -> Projeto:
 
 @pytest.mark.parametrize("codigo", [analise.EM_BRANCO, analise.PAGINA_SEM_CONTEUDO])
 def test_em_branco_e_sem_conteudo_tem_os_dois_botoes_separados(codigo):
+    """E, desde 13/10/2026, o "está bom assim" (verificador: os dois avisos so
+    ofereciam saidas que mexem na pagina, e o "Parece em branco" erra na
+    Gladstone 18, que tem titulo)."""
     botoes = analise.descrever(codigo).botoes
-    assert botoes == [("Deixar em branco", "em_branco"), ("Tirar do livro", "apagar")]
+    assert botoes == [("Deixar em branco", "em_branco"), ("Tirar do livro", "apagar"),
+                      ("está bom assim", "revisar")]
+
+
+def test_todo_aviso_com_botao_tem_o_esta_bom():
+    """Samuel, rodada 4: "com um motivo individual de uma pagina" - todo aviso
+    do "Para revisar" novo (os da regra, o "Parece em branco" e o da forca
+    escurecida) tem o botao de dizer que esta bom, alem do conserto."""
+    for codigo in (*analise.AVISOS_DO_SO_AS_LETRAS, analise.EM_BRANCO, analise.FORCA_REFORCADA):
+        correcoes = [correcao for _rotulo, correcao in analise.descrever(codigo).botoes]
+        assert "revisar" in correcoes, codigo
 
 
 def test_parece_em_branco_e_pagina_sem_conteudo_sao_dois_avisos():
@@ -112,8 +125,24 @@ def test_a_lista_do_livro_vem_na_ordem_e_sem_as_apagadas():
     ]
     assert lista[0].onde == "Página 1" and lista[1].onde == "Folha 2"
     assert lista[2].titulo == "Desenho apagado"
-    assert avisos.frase_de_quantos(lista) == "Ainda tem 3 páginas que eu não tive certeza."
-    assert avisos.frase_de_quantos(lista[:1]) == "Ainda tem 1 página que eu não tive certeza."
+    # a folha 2 e a pagina 2 sao a mesma pagina do livro: 2 paginas, 4 avisos
+    assert avisos.paginas_com_aviso(lista, p) == 2
+    assert avisos.frase_de_quantos(lista, p) == (
+        "Ainda tem 2 páginas que eu não tive certeza (4 avisos na lista).")
+    assert avisos.frase_de_quantos(lista[:1], p) == "Ainda tem 1 página que eu não tive certeza."
+    # sem o livro, cada folha conta como uma
+    assert avisos.paginas_com_aviso(lista) == 3
+
+
+def test_a_folha_dividida_conta_as_duas_paginas_dela():
+    p = _livro(2)
+    p.folhas[0].dividir = True
+    p.paginas[0].metade, p.paginas[1].metade, p.paginas[1].folha = "esquerda", "direita", 0
+    p.folhas[0].alertas = [analise.RESOLUCAO_BAIXA]
+    lista = avisos.pendentes_do_livro(p)
+    assert avisos.paginas_com_aviso(lista, p) == 2
+    p.paginas[1].apagada = True
+    assert avisos.paginas_com_aviso(avisos.pendentes_do_livro(p), p) == 1
 
 
 def test_por_motivo_poe_primeiro_o_motivo_com_mais_paginas():

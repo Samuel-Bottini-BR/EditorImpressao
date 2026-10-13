@@ -101,6 +101,14 @@ class Alerta:
     # branca." None = o aviso so tem um botao, como sempre.
     outra_acao: str | None = None
     outra_correcao: str | None = None
+    # O TERCEIRO botao (13/10/2026): o "está bom assim" dos avisos que ja tem
+    # dois botoes de conserto. O verificador achou que "Parece em branco" e
+    # "Página sem conteúdo" so ofereciam "Deixar em branco" e "Tirar do livro",
+    # os dois destrutivos - e o "Parece em branco" erra (Gladstone 18, que tem
+    # titulo). O Samuel pediu "está bom" em todo aviso ("com um motivo
+    # individual de uma pagina").
+    terceira_acao: str | None = None
+    terceira_correcao: str | None = None
 
     @property
     def botoes(self) -> list[tuple[str, str]]:
@@ -111,7 +119,8 @@ class Alerta:
         livro), "misto_fora:<jeito>" (trocar o jeito do "So as letras" nesta
         pagina), "desfazer_reforco", e os de sempre ("filtro:", "forca:",
         "nao_dividir", "angulo_zero", "sem_recorte")."""
-        pares = [(self.acao, self.correcao), (self.outra_acao, self.outra_correcao)]
+        pares = [(self.acao, self.correcao), (self.outra_acao, self.outra_correcao),
+                 (self.terceira_acao, self.terceira_correcao)]
         return [(rotulo, correcao or "revisar") for rotulo, correcao in pares if rotulo]
 
 
@@ -192,6 +201,7 @@ ALERTAS: dict[str, Alerta] = {
         "Desfazer", "desfazer_reforco",
         "está bom assim", "revisar",
     ),
+    # (desde 13/10/2026 os dois tem tambem o "está bom assim", como os outros)
     # Um aviso para cada coisa, cada um com os dois botoes (Samuel, rodada 5,
     # `rv5-erro-5-sem-conteudo` e `rv5-em-branco`: "Fica assim"): "Deixar em
     # branco" poe uma folha branca no lugar (a encadernacao nao muda); "Tirar
@@ -202,6 +212,7 @@ ALERTAS: dict[str, Alerta] = {
         "trás, ou quase nada). Quer deixar em branco ou tirar do livro?",
         "Deixar em branco", "em_branco",
         "Tirar do livro", "apagar",
+        "está bom assim", "revisar",
     ),
     FIGURA_ALEM_DA_GRAVURA: Alerta(
         FIGURA_ALEM_DA_GRAVURA, "Figura além da gravura achada",
@@ -254,6 +265,7 @@ ALERTAS: dict[str, Alerta] = {
         "Esta página parece estar em branco. Quer deixar em branco ou tirar do livro?",
         "Deixar em branco", "em_branco",
         "Tirar do livro", "apagar",
+        "está bom assim", "revisar",
     ),
     ESCURA_DEMAIS: Alerta(
         ESCURA_DEMAIS, "Ficou escura",
