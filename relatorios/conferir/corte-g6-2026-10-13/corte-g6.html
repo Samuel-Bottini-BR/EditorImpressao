@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O corte depois do G6: onde piorou</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>O corte depois do "endireitar antes de cortar" (G6): onde piorou</h1>
+<p>Conferência do verificador, 13/10/2026. Investigação: <strong>nada do programa foi mudado.</strong> Quem decide o que fazer é o Samuel.</p>
+<h2>Em uma frase</h2>
+<p><strong>No livro novo o corte ficou pior em 6 das 89 páginas conferidas: em 4 sobra uma faixa preta larga do scanner que antes era cortada (de 1,6 a 4,4 cm a mais), em 1 o corte come os números dos itens na margem, e em 1 sobra um fio escuro de 2 mm.</strong> As 5 graves estão todas fora das páginas-gabarito, por isso não apareceram na aprovação de 12/10.</p>
+<p>Das 89 páginas, 46 saem idênticas nas duas ordens (o programa não gira a página, então a ordem não muda nada). Das 43 que giram: 5 pioraram de verdade, 1 piorou pouco, 1 piorou num ponto já anotado no plano (Escola 7), 8 melhoraram, 1 mudou muito sem perder nada (Rariora 155) e as outras 27 ficaram iguais ou quase iguais.</p>
+<p><strong>Projeto antigo: não tem o defeito.</strong> Em 40 de 40 casos conferidos, o projeto gravado pelo programa de antes do G6 sai, no programa de hoje, idêntico ponto por ponto.</p>
+<h2>As páginas em que piorou</h2>
+<p>"Faixa escura" é quanto da página é mancha escura encostada na beirada (a mesma conta do aviso "Faixa escura na beirada"). "Tinta de fora" é quanto do que está impresso fica fora do corte. Sempre ordem antiga → ordem nova. Tamanho em milímetros.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Veredito (olho)</th>
+<th>O que mudou</th>
+<th>Faixa escura</th>
+<th>Tinta de fora</th>
+<th>Tamanho da folha</th>
+<th>No gabarito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Matemática 32</td>
+<td>PIOROU</td>
+<td>Faixa preta larga do scanner à direita, que a ordem antiga cortava. A folha fica 4,4 cm mais larga só de preto. (O preto de baixo sobra nas duas ordens.)</td>
+<td>18,4% → 31,5%</td>
+<td>0,01% → 0,01%</td>
+<td>165 × 297 → 209 × 290</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Cursus 3</td>
+<td>PIOROU</td>
+<td>Faixa preta de 1,6 cm à direita e de 0,6 cm embaixo, que a ordem antiga cortava. A linha preta da esquerda fica nas duas.</td>
+<td>0,5% → 7,5%</td>
+<td>0,12% → 0,03%</td>
+<td>201 × 268 → 212 × 279</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphon 260</td>
+<td>PIOROU</td>
+<td>A faixa preta de baixo passa de 2,1 cm para 4,9 cm.</td>
+<td>3,2% → 7,6%</td>
+<td>0,00% → 0,00%</td>
+<td>464 × 590 → 463 × 618</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphon 88</td>
+<td>PIOROU</td>
+<td>A faixa preta da direita passa de 0,9 cm para 2,8 cm. (Há preto em volta nas duas ordens.)</td>
+<td>8,5% → 12,6%</td>
+<td>0,00% → 0,00%</td>
+<td>438 × 621 → 456 × 624</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Escola 197</td>
+<td>PIOROU</td>
+<td>O corte come os números 1, 2 e 3 dos itens, na margem esquerda. Na ordem antiga eles saíam inteiros.</td>
+<td>0,0% → 0,0%</td>
+<td>0,03% → 0,28%</td>
+<td>160 × 243 → 155 × 243</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Camões 104</td>
+<td>piorou pouco</td>
+<td>Aparece um fio escuro de 2 mm à esquerda e de menos de 1 mm à direita, que a ordem antiga não deixava.</td>
+<td>0,5% → 2,7%</td>
+<td>0,01% → 0,01%</td>
+<td>93 × 132 → 95 × 131</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Escola 7</td>
+<td>piorou (já conhecido)</td>
+<td>O título fica a 1 mm da borda de cima (na ordem antiga sobravam 18 mm de papel, com um risco do scanner no alto). Nada impresso se perde. Já está anotado no plano (12/10) como "título colado na borda de cima".</td>
+<td>0,0% → 0,0%</td>
+<td>0,12% → 1,81%</td>
+<td>165 × 264 → 165 × 246</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Camões 6</td>
+<td>quase igual</td>
+<td>Quase igual. Aparece um fio escuro de 1,3 mm em cima; o da esquerda já existia.</td>
+<td>1,0% → 1,9%</td>
+<td>0,00% → 0,00%</td>
+<td>92 × 130 → 92 × 130</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Camões 66</td>
+<td>quase igual</td>
+<td>Troca: somem as cunhas brancas dos cantos e o fio escuro de baixo; aparece um fio escuro de 1,4 mm à esquerda.</td>
+<td>0,2% → 0,9%</td>
+<td>0,12% → 0,04%</td>
+<td>91 × 131 → 92 × 130</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Horas 11</td>
+<td>igual (a conta errou)</td>
+<td>Ao olho as duas são iguais (na nova somem as cunhas brancas). A conta contou como "faixa" a pintura da moldura, que chega perto da beirada.</td>
+<td>4,8% → 8,2%</td>
+<td>0,07% → 0,07%</td>
+<td>313 × 477 → 311 × 477</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Rariora 155</td>
+<td>mudou muito</td>
+<td>A folha fica 3,5 cm mais curta: o papel em branco de baixo foi cortado e a moldura da gravura fica a 1 mm da borda. Nada impresso se perde. Para o Samuel olhar.</td>
+<td>0,0% → 0,0%</td>
+<td>0,04% → 0,03%</td>
+<td>133 × 148 → 133 × 113</td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<p>Como ler: as seis primeiras linhas são as que pioraram. A Escola 7 já está anotada no plano. Camões 6 e 66 a conta acusou, mas ao olho é troca de um defeito pequeno por outro. Horas 11 a conta errou. Rariora 155 a conta deu "igual", mas a folha mudou muito de tamanho.</p>
+<h2>As imagens das que pioraram</h2>
+<p>Todas sem filtro (só o corte e o giro), a 300 DPI, na mesma escala dos dois lados.</p>
+<h3>Matemática 32</h3>
+<p><strong>O que olhar:</strong> A faixa preta à direita, que só existe na ordem nova.</p>
+<p><img alt="Matemática 32: ordem antiga à esquerda, ordem nova à direita" src="img/lado-matematica_p032__inteira.jpg" /></p>
+<p><em>Matemática 32: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Cursus 3</h3>
+<p><strong>O que olhar:</strong> A faixa preta à direita e a de baixo, que só existem na ordem nova. É a página do achado.</p>
+<p><img alt="Cursus 3: ordem antiga à esquerda, ordem nova à direita" src="img/lado-cursus_p003__inteira.jpg" /></p>
+<p><em>Cursus 3: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Antiphon 260</h3>
+<p><strong>O que olhar:</strong> A faixa preta de baixo, bem mais alta na ordem nova.</p>
+<p><img alt="Antiphon 260: ordem antiga à esquerda, ordem nova à direita" src="img/lado-antiphon_p260__inteira.jpg" /></p>
+<p><em>Antiphon 260: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Antiphon 88</h3>
+<p><strong>O que olhar:</strong> A faixa preta da direita, mais larga na ordem nova.</p>
+<p><img alt="Antiphon 88: ordem antiga à esquerda, ordem nova à direita" src="img/lado-antiphon_p088__inteira.jpg" /></p>
+<p><em>Antiphon 88: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Escola 197</h3>
+<p><strong>O que olhar:</strong> A margem esquerda: os números 1, 2 e 3 somem na ordem nova (só fica o travessão).</p>
+<p><img alt="Escola 197: ordem antiga à esquerda, ordem nova à direita" src="img/lado-escola_p197__inteira.jpg" /></p>
+<p><em>Escola 197: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<p><img alt="Escola 197, margem esquerda de perto: antiga à esquerda, nova à direita" src="img/zoom-escola_p197-margem-esquerda.jpg" /></p>
+<p><em>Escola 197, a margem esquerda de perto. À esquerda a ordem antiga (com os números); à direita a nova (sem eles).</em></p>
+<h3>Camões 104</h3>
+<p><strong>O que olhar:</strong> O fio escuro colado na borda esquerda, só na ordem nova.</p>
+<p><img alt="Camões 104: ordem antiga à esquerda, ordem nova à direita" src="img/lado-camoes_p104__inteira.jpg" /></p>
+<p><em>Camões 104: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h2>As outras cinco que a conta ou o olho separaram</h2>
+<h3>Escola 7</h3>
+<p><strong>O que olhar:</strong> O título no alto: colado na borda na ordem nova.</p>
+<p><img alt="Escola 7: ordem antiga à esquerda, ordem nova à direita" src="img/lado-escola_p007__inteira.jpg" /></p>
+<p><em>Escola 7: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Camões 6</h3>
+<p><strong>O que olhar:</strong> O fio escuro no alto, só na ordem nova. O resto é igual.</p>
+<p><img alt="Camões 6: ordem antiga à esquerda, ordem nova à direita" src="img/lado-camoes_p006__inteira.jpg" /></p>
+<p><em>Camões 6: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Camões 66</h3>
+<p><strong>O que olhar:</strong> Os cantos: cunha branca na antiga, fio escuro à esquerda na nova.</p>
+<p><img alt="Camões 66: ordem antiga à esquerda, ordem nova à direita" src="img/lado-camoes_p066__inteira.jpg" /></p>
+<p><em>Camões 66: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Horas 11</h3>
+<p><strong>O que olhar:</strong> As duas são iguais ao olho; a conta errou aqui.</p>
+<p><img alt="Horas 11: ordem antiga à esquerda, ordem nova à direita" src="img/lado-horas_p011__inteira.jpg" /></p>
+<p><em>Horas 11: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Rariora 155</h3>
+<p><strong>O que olhar:</strong> A parte de baixo: na ordem nova o papel em branco foi cortado.</p>
+<p><img alt="Rariora 155: ordem antiga à esquerda, ordem nova à direita" src="img/lado-rariora_p155__inteira.jpg" /></p>
+<p><em>Rariora 155: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h2>As que mais melhoraram (para comparar)</h2>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>O que melhorou</th>
+<th>Tinta de fora</th>
+<th>Tamanho da folha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Boécio 22</td>
+<td>O título deixa de ficar colado na borda de cima.</td>
+<td>0,13% → 0,01%</td>
+<td>83 × 118 → 83 × 122</td>
+</tr>
+<tr>
+<td>Egenloff 3</td>
+<td>Um pouco menos de preto e de cunha branca à esquerda. Quase igual.</td>
+<td>0,26% → 0,30%</td>
+<td>346 × 454 → 338 × 454</td>
+</tr>
+<tr>
+<td>Graduale 221</td>
+<td>O número da folha ("Cvij") sai inteiro; na antiga o giro cortava o fim dele. Somem as cunhas brancas de cima e de baixo.</td>
+<td>0,20% → 0,03%</td>
+<td>331 × 452 → 337 × 463</td>
+</tr>
+<tr>
+<td>Graduale 223</td>
+<td>O número da folha ("Cviij") sai inteiro; na antiga saía cortado.</td>
+<td>0,01% → 0,00%</td>
+<td>335 × 445 → 337 × 462</td>
+</tr>
+<tr>
+<td>Graduale 588</td>
+<td>Mais margem em volta; os enfeites de pena da inicial saem inteiros. Fica uma cunha branca fina à direita.</td>
+<td>0,24% → 0,12%</td>
+<td>306 × 451 → 312 × 472</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td>Somem as cunhas brancas; mais papel embaixo.</td>
+<td>0,08% → 0,02%</td>
+<td>352 × 492 → 351 × 501</td>
+</tr>
+<tr>
+<td>Rhetorica 73</td>
+<td>O fio da moldura, à esquerda e embaixo, sai inteiro (na antiga saía cortado).</td>
+<td>0,63% → 0,00%</td>
+<td>136 × 197 → 137 × 199</td>
+</tr>
+<tr>
+<td>Siebmacher 9 (direita)</td>
+<td>Um pouco menos de preto em cima. Fica uma cunha branca fina à direita.</td>
+<td>0,01% → 0,01%</td>
+<td>60 × 106 → 60 × 105</td>
+</tr>
+</tbody>
+</table>
+<h3>Rhetorica 73</h3>
+<p><strong>O que olhar:</strong> O fio da moldura, à esquerda e embaixo, sai inteiro (na antiga saía cortado).</p>
+<p><img alt="Rhetorica 73: ordem antiga à esquerda, ordem nova à direita" src="img/lado-rhetorica_p073__inteira.jpg" /></p>
+<p><em>Rhetorica 73: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Graduale 221</h3>
+<p><strong>O que olhar:</strong> O número da folha ("Cvij") sai inteiro; na antiga o giro cortava o fim dele. Somem as cunhas brancas de cima e de baixo.</p>
+<p><img alt="Graduale 221: ordem antiga à esquerda, ordem nova à direita" src="img/lado-graduale_p221__inteira.jpg" /></p>
+<p><em>Graduale 221: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Graduale 588</h3>
+<p><strong>O que olhar:</strong> Mais margem em volta; os enfeites de pena da inicial saem inteiros. Fica uma cunha branca fina à direita.</p>
+<p><img alt="Graduale 588: ordem antiga à esquerda, ordem nova à direita" src="img/lado-graduale_p588__inteira.jpg" /></p>
+<p><em>Graduale 588: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Boécio 22</h3>
+<p><strong>O que olhar:</strong> O título deixa de ficar colado na borda de cima.</p>
+<p><img alt="Boécio 22: ordem antiga à esquerda, ordem nova à direita" src="img/lado-boecio_p022__inteira.jpg" /></p>
+<p><em>Boécio 22: ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h3>Siebmacher 9 (direita)</h3>
+<p><strong>O que olhar:</strong> Um pouco menos de preto em cima. Fica uma cunha branca fina à direita.</p>
+<p><img alt="Siebmacher 9 (direita): ordem antiga à esquerda, ordem nova à direita" src="img/lado-siebmacher_p009__direita.jpg" /></p>
+<p><em>Siebmacher 9 (direita): ordem antiga à esquerda, ordem nova (livro novo) à direita; embaixo, os quatro cantos ampliados.</em></p>
+<h2>A causa</h2>
+<p>São duas causas diferentes. Nenhuma foi consertada.</p>
+<h3>Causa 1: o branco do giro esconde a borda preta do scanner (Cursus 3, Matemática 32, Antiphon 88 e 260, Camões 104)</h3>
+<p>Na ordem nova o programa gira a página inteira e <strong>só depois</strong> procura o corte nela. O giro mantém o tamanho da folha e pinta de <strong>branco</strong> as cunhas que sobram nos cantos e nas beiradas. Esse branco fica entre a beirada da imagem e a borda preta do scanner. A busca do corte foi feita para a borda preta <strong>encostada</strong> na beirada, e deixa de reconhecê-la:</p>
+<ul>
+<li><code>core/pipeline.py</code>, função <code>_geometria_endireitando_antes</code>, linhas 759 a 761: <code>reta = rotacionar(em_cinza(), angulo)</code> e logo <code>recorte = detectar_bordas(reta, dpi=dpi).tupla</code>.</li>
+<li><code>core/endireitar.py</code>, função <code>rotacionar</code>, linhas 120 a 134: <code>borderMode=cv2.BORDER_CONSTANT, borderValue=borda</code> (branco, 255).</li>
+<li><code>core/recortar.py</code>, função <code>_apagar_bordas_solidas</code>, linhas 745 a 779: anda <strong>a partir da coluna de fora</strong> enquanto a coluna for 80% escura ou mais (<code>while x &lt; limite_x and limpa[:, x].mean() &gt;= FRACAO_BORDA_SOLIDA</code>). Com a cunha branca, a coluna de fora já não chega a 80% e o laço para na primeira: a faixa preta não é apagada e passa a contar como conteúdo.</li>
+<li><code>core/recortar.py</code>, <code>_faixa_com_a_tinta</code>, linhas 198 a 212: onde o fundo preto é liso (Antiphon), a cunha branca em cima do preto cria "tinta" nova bem na beirada, e a caixa do corte vai até o fim da folha.</li>
+<li>Na ordem antiga havia ainda uma trava que a nova não usa: <code>alargar_para_o_giro</code> com <code>_parar_no_escuro</code> (<code>core/recortar.py</code>, linhas 602 e 685), que nunca deixava a folga do giro trazer o fundo escuro.</li>
+</ul>
+<p>Os números, medidos na máscara de tinta que o próprio corte usa (<code>causa.json</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Lado</th>
+<th>Página como veio</th>
+<th>Página já endireitada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cursus 3</td>
+<td>direita</td>
+<td>coluna de fora 100% escura; 45 colunas apagadas como borda</td>
+<td>coluna de fora 73%; nenhuma apagada</td>
+</tr>
+<tr>
+<td>Matemática 32</td>
+<td>direita</td>
+<td>coluna de fora 100% escura; 100 colunas apagadas</td>
+<td>coluna de fora 71%; nenhuma apagada</td>
+</tr>
+<tr>
+<td>Camões 104</td>
+<td>esquerda</td>
+<td>coluna de fora 89%; 12 colunas apagadas</td>
+<td>coluna de fora 76%; nenhuma apagada</td>
+</tr>
+<tr>
+<td>Antiphon 260</td>
+<td>embaixo</td>
+<td>0% de tinta nas 8 linhas de fora</td>
+<td>cerca de 40% de tinta nas 8 linhas de fora</td>
+</tr>
+<tr>
+<td>Antiphon 88</td>
+<td>direita</td>
+<td>0% de tinta nas 8 colunas de fora</td>
+<td>cerca de 40% de tinta nas 8 colunas de fora</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Cursus 3: a máscara de tinta do corte, como veio e já endireitada" src="img/causa-cursus_p003__inteira.jpg" /></p>
+<p><em>Cursus 3, o que o corte enxerga. Preto = tinta que conta; cinza = o que ele jogou fora; vermelho = o corte. À esquerda (página como veio) a faixa da direita está cinza, jogada fora. À direita (já endireitada) ela está preta, contando como conteúdo, e o corte vai até a beirada.</em></p>
+<p><img alt="Antiphon 260: a máscara de tinta do corte" src="img/causa-antiphon_p260__inteira.jpg" /></p>
+<p><em>Antiphon 260. Na página já endireitada aparece um risco de tinta na beirada de baixo (o encontro do preto com a cunha branca), e o corte desce até o fim.</em></p>
+<p><img alt="Matemática 32: a máscara de tinta do corte" src="img/causa-matematica_p032__inteira.jpg" /></p>
+<p><em>Matemática 32. A faixa da direita: cinza (jogada fora) na página como veio, preta (conteúdo) na endireitada.</em></p>
+<p>Achado ao lado, na mesma imagem do Cursus 3: com a faixa preta contando como tinta, várias <strong>linhas de texto</strong> passam a ser apagadas da máscara como se fossem "risca de dobra" (as tiras cinza em cima do texto, à direita). Nesta página isso não mudou o corte, mas é um risco: <code>_apagar_riscas_de_dobra</code>, <code>core/recortar.py</code>, linhas 782 a 826. Não vi isso cortar texto em nenhuma das páginas conferidas.</p>
+<p><strong>Prova de que a causa é essa (experiência, não é conserto):</strong> medi o corte de novo girando a página com a cunha preenchida pela própria beirada, em vez de branco, só para a medida. A faixa some nas cinco páginas: Cursus 3 de 7,4% para 1,0% (antiga 0,5%); Matemática 32 de 31,5% para 18,7% (antiga 18,4%); Antiphon 260 de 7,6% para 3,5% (antiga 3,2%); Antiphon 88 de 12,6% para 8,7% (antiga 8,5%); Camões 104 de 2,7% para 1,1% (antiga 0,5%). <strong>Mas essa troca simples piora outras páginas</strong> (Camões 66, Boécio 3 e Graduale 221 perdem mais tinta; Egenloff 3 ganha preto; Graduale 222 muda muito de largura), então não serve como está. Números em <code>experiencia-cunha.json</code>; não abri imagens dessa experiência.</p>
+<h3>Causa 2: a página reta faz o corte jogar fora os números da margem (Escola 197)</h3>
+<p>Aqui não há borda preta. O corte descarta, de cada lado, os primeiros 0,2% da tinta da página, para a sujeira da margem não segurar o corte (<code>core/recortar.py</code>, <code>SOBRA_DE_TINTA = 0.002</code>, linha 175, usada em <code>_faixa_com_a_tinta</code>, linhas 198 a 212). Os três números ("1", "2", "3") somam <strong>0,197%</strong> da tinta da página, logo abaixo do limite. Na página torta eles se espalham por 8 colunas e o limite cai no meio deles; aí a regra de "não partir peça" (<code>_nao_partir_pecas</code>, linha 537) puxa o corte e eles entram. Na página reta eles ficam alinhados em 7 colunas, cabem inteiros nos 0,2% descartados, e a peça que está inteira do lado de fora não puxa o corte. A fraqueza é da regra dos 0,2%, e existe nas duas ordens; a ordem antiga escapava por um triz.</p>
+<p>A Escola 7 (título a 1 mm do alto) é parecida: na página reta o risco do scanner do alto é apagado inteiro, e o corte encosta no título com a folga mínima de 1 mm (<code>FOLGA_MM</code>).</p>
+<h2>Projeto antigo</h2>
+<p><strong>Não aparece.</strong> Conferido por máquina de dois jeitos:</p>
+<ol>
+<li>Rodei o programa de <strong>antes</strong> do G6 (commit <code>7485e1b</code>, tirado do git para uma pasta temporária) em 20 páginas, incluindo todas as que pioraram, de duas formas (endireitar pela conta do ScanTailor e pela conta do programa), e gravei cada projeto como aquele programa gravava, sem o campo <code>ordem_do_preparo</code>. Abri esses projetos no programa de hoje: a ordem volta "cortar_antes" e a página sai <strong>idêntica ponto por ponto em 40 de 40</strong> (<code>projeto-antigo.json</code>).</li>
+<li>Nas 89 páginas, o preparo antigo (colunas A e B do <code>dados.json</code>) não tem a faixa: Cursus 3 fica em 0,5%.</li>
+</ol>
+<p>Ressalva: conferi pela conta do programa (<code>Projeto.de_dicionario</code> e <code>renderizar_pagina</code>), não abrindo o projeto pela janela.</p>
+<h2>O que sugiro (sem fazer)</h2>
+<ol>
+<li><strong>Não desfazer o G6 inteiro.</strong> Ele conserta coisas de verdade (números de folha do Graduale inteiros, cunhas brancas que somem, fio de moldura inteiro). O defeito é só em página torta <strong>com borda preta de scanner</strong>, e num caso de número pequeno na margem.</li>
+<li><strong>Passar a causa 1 ao implementador como bug que impede</strong>: livro novo com borda preta sai com faixa preta larga. O conserto é dele; a experiência acima mostra onde está o problema e que a troca mais simples não basta.</li>
+<li><strong>Causa 2 (números da margem):</strong> pôr na Lista de bugs. É da regra dos 0,2%, não da ordem; pode ser o caso de esperar a caixa do conteúdo do ScanTailor (itens 2.5 e 2.13), que substitui essa busca.</li>
+<li><strong>Teste de máquina que falta:</strong> página torta com borda preta, na ordem nova. Hoje <code>tests/test_ordem_do_preparo.py</code> não tem nenhum caso com borda preta.</li>
+<li><strong>Gabarito do corte:</strong> as 5 páginas graves estão fora das 32. Sugiro incluir Cursus 3, Matemática 32, Antiphon 260 e Escola 197.</li>
+<li><strong>Enquanto não consertar:</strong> o aviso "Faixa escura na beirada" do "Para revisar" pega esses casos (pegou o Cursus 3), e o corte à mão na aba Bordas resolve página a página.</li>
+</ol>
+<h2>Como foi conferido</h2>
+<table>
+<thead>
+<tr>
+<th>O quê</th>
+<th>Máquina ou olho</th>
+<th>Como</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Medidas das 89 páginas nas duas ordens</td>
+<td>máquina</td>
+<td>O programa de verdade (<code>renderizar_pagina</code>), 300 DPI, sem filtro, três preparos: A = antigo (corta antes, conta do programa), B = corta antes com o ângulo do livro novo, C = livro novo. A comparação B → C isola a ordem.</td>
+</tr>
+<tr>
+<td>Separar em melhorou, igual, piorou</td>
+<td>máquina, depois olho</td>
+<td>A conta separou 10 pioras e 7 melhoras; o olho corrigiu (ver tabela).</td>
+</tr>
+<tr>
+<td>Imagens lado a lado</td>
+<td>olho</td>
+<td>Abri as 23: as 10 que a conta acusou, as 7 que ela deu como melhora e mais 6 que as folhas de contato mostraram diferentes.</td>
+</tr>
+<tr>
+<td>As 43 páginas que giram, todas</td>
+<td>olho</td>
+<td>11 folhas de contato (antiga e nova lado a lado, pequenas): abri todas.</td>
+</tr>
+<tr>
+<td>Causa</td>
+<td>máquina + olho</td>
+<td>Passo a passo do corte na página como veio e na endireitada (<code>causa.py</code>), em 8 páginas; abri 3 das imagens.</td>
+</tr>
+<tr>
+<td>Projeto antigo</td>
+<td>máquina</td>
+<td>Programa de antes do G6 contra o de hoje, 40 casos.</td>
+</tr>
+</tbody>
+</table>
+<h2>O que não conferi</h2>
+<ul>
+<li><strong>Só 89 páginas soltas</strong> (de 1 a 10 por livro, 19 livros). Não rodei nenhum livro inteiro, então não sei em quantas páginas de um livro com borda preta o defeito aparece. Pelo que vi, toda página torta com borda preta larga encostada na beirada está sujeita.</li>
+<li><strong>Não abri a janela do programa.</strong> Tudo foi por linha de comando, a 300 DPI (a resolução do PDF). A prévia da tela usa o mesmo corte guardado, mas não conferi na tela.</li>
+<li><strong>Não rodei a suíte de testes nem o teste de velocidade:</strong> não mudei código.</li>
+<li><strong>Os outros filtros.</strong> Medi sem filtro. A conta "faixa no Preto e branco" do <code>dados.json</code> usa o Preto e branco de fábrica direto, sem a marcação de gravura do programa.</li>
+<li><strong>A conta de "tinta de fora" é minha</strong>, feita na página reduzida a 2000 pontos (erro de uns 0,2 mm). Conta como conteúdo qualquer tinta que não encosta na beirada, inclusive risco de scanner (foi o que fez a Escola 7 parecer perder 1,7%: era o risco do alto, não texto).</li>
+<li><strong>Rariora 155:</strong> não investiguei por que a ordem antiga guardava o papel em branco de baixo.</li>
+<li><strong>Diferenças que vêm da conta do ângulo, e não da ordem</strong> (colunas A → C: Horas 16 e Egenloff 3 mudam porque o ScanTailor mede outro ângulo): fora desta tarefa, não olhei.</li>
+<li><strong>A experiência da cunha</strong> foi medida em cópias JPEG das páginas, só por número.</li>
+<li>Das imagens de causa, abri Cursus 3, Antiphon 260 e Matemática 32; as outras cinco estão na pasta sem eu ter aberto.</li>
+</ul>
+<h2>As 43 páginas que giram no livro novo, uma por uma</h2>
+<p>As outras 46 páginas não giram e saem idênticas. "Conta" é o que a máquina separou; "olho" é o que vi.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Giro</th>
+<th>Conta</th>
+<th>Olho</th>
+<th>Faixa escura</th>
+<th>Tinta de fora</th>
+<th>Tamanho (mm)</th>
+<th>Gabarito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antiphon 88</td>
+<td>-0,25°</td>
+<td>piorou</td>
+<td>PIOROU</td>
+<td>8,5% → 12,6%</td>
+<td>0,00% → 0,00%</td>
+<td>438 × 621 → 456 × 624</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphon 260</td>
+<td>0,50°</td>
+<td>piorou</td>
+<td>PIOROU</td>
+<td>3,2% → 7,6%</td>
+<td>0,00% → 0,00%</td>
+<td>464 × 590 → 463 × 618</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphonal 1547 6</td>
+<td>0,12°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,3% → 0,6%</td>
+<td>0,00% → 0,00%</td>
+<td>65 × 105 → 65 × 106</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphonal 1547 46</td>
+<td>1,50°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,08% → 0,07%</td>
+<td>63 × 88 → 63 × 91</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphonal 1547 76</td>
+<td>0,25°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,4% → 0,6%</td>
+<td>0,05% → 0,05%</td>
+<td>64 × 96 → 64 × 96</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphonal 1547 192</td>
+<td>0,19°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,02% → 0,02%</td>
+<td>74 × 88 → 74 × 89</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Antiphonal 1547 252</td>
+<td>-1,00°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,3% → 0,4%</td>
+<td>0,04% → 0,02%</td>
+<td>65 × 96 → 65 × 100</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Boécio 3</td>
+<td>0,75°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,05% → 0,05%</td>
+<td>88 × 123 → 88 × 128</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Boécio 8</td>
+<td>-1,12°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,06% → 0,07%</td>
+<td>88 × 123 → 88 × 124</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Boécio 22</td>
+<td>-0,19°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>0,0% → 0,0%</td>
+<td>0,13% → 0,01%</td>
+<td>83 × 118 → 83 × 122</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Camões 6</td>
+<td>-0,50°</td>
+<td>piorou</td>
+<td>quase igual</td>
+<td>1,0% → 1,9%</td>
+<td>0,00% → 0,00%</td>
+<td>92 × 130 → 92 × 130</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Camões 9</td>
+<td>0,38°</td>
+<td>igual</td>
+<td>igual</td>
+<td>2,7% → 3,0%</td>
+<td>0,01% → 0,01%</td>
+<td>94 × 131 → 94 × 131</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Camões 66</td>
+<td>1,44°</td>
+<td>piorou</td>
+<td>quase igual</td>
+<td>0,2% → 0,9%</td>
+<td>0,12% → 0,04%</td>
+<td>91 × 131 → 92 × 130</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Camões 104</td>
+<td>-0,50°</td>
+<td>piorou</td>
+<td>piorou pouco</td>
+<td>0,5% → 2,7%</td>
+<td>0,01% → 0,01%</td>
+<td>93 × 132 → 95 × 131</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Cursus 3</td>
+<td>-0,69°</td>
+<td>piorou</td>
+<td>PIOROU</td>
+<td>0,5% → 7,5%</td>
+<td>0,12% → 0,03%</td>
+<td>201 × 268 → 212 × 279</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Egenloff 3</td>
+<td>-1,56°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>3,2% → 1,9%</td>
+<td>0,26% → 0,30%</td>
+<td>346 × 454 → 338 × 454</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Escola 7</td>
+<td>0,12°</td>
+<td>piorou</td>
+<td>piorou (já conhecido)</td>
+<td>0,0% → 0,0%</td>
+<td>0,12% → 1,81%</td>
+<td>165 × 264 → 165 × 246</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Escola 35</td>
+<td>-0,81°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,01% → 0,01%</td>
+<td>166 × 252 → 164 × 251</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Escola 197</td>
+<td>0,50°</td>
+<td>piorou</td>
+<td>PIOROU</td>
+<td>0,0% → 0,0%</td>
+<td>0,03% → 0,28%</td>
+<td>160 × 243 → 155 × 243</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Graduale 221</td>
+<td>0,75°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>0,0% → 0,0%</td>
+<td>0,20% → 0,03%</td>
+<td>331 × 452 → 337 × 463</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Graduale 222</td>
+<td>-0,88°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,02% → 0,02%</td>
+<td>272 × 446 → 266 × 466</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Graduale 223</td>
+<td>0,75°</td>
+<td>igual</td>
+<td>melhorou</td>
+<td>0,0% → 0,0%</td>
+<td>0,01% → 0,00%</td>
+<td>335 × 445 → 337 × 462</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Graduale 269</td>
+<td>1,00°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,2% → 0,4%</td>
+<td>0,02% → 0,01%</td>
+<td>338 × 477 → 338 × 476</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Graduale 588</td>
+<td>1,06°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>0,0% → 0,0%</td>
+<td>0,24% → 0,12%</td>
+<td>306 × 451 → 312 × 472</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Horas 11</td>
+<td>0,62°</td>
+<td>piorou</td>
+<td>igual (a conta errou)</td>
+<td>4,8% → 8,2%</td>
+<td>0,07% → 0,07%</td>
+<td>313 × 477 → 311 × 477</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Horas 13</td>
+<td>0,62°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>0,0% → 0,0%</td>
+<td>0,08% → 0,02%</td>
+<td>352 × 492 → 351 × 501</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Marial 7</td>
+<td>1,19°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,1% → 0,1%</td>
+<td>0,04% → 0,03%</td>
+<td>245 × 331 → 245 × 331</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Matemática 32</td>
+<td>0,75°</td>
+<td>piorou</td>
+<td>PIOROU</td>
+<td>18,4% → 31,5%</td>
+<td>0,01% → 0,01%</td>
+<td>165 × 297 → 209 × 290</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Matemática 72</td>
+<td>-0,62°</td>
+<td>igual</td>
+<td>igual</td>
+<td>32,3% → 32,0%</td>
+<td>0,01% → 0,01%</td>
+<td>210 × 297 → 210 × 295</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Opus Majus 11</td>
+<td>-0,25°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,00% → 0,00%</td>
+<td>107 × 179 → 108 × 179</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Opus Majus 20</td>
+<td>0,31°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,00% → 0,00%</td>
+<td>102 × 174 → 102 × 174</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Opus Majus 165</td>
+<td>0,31°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,00% → 0,01%</td>
+<td>107 × 190 → 107 × 190</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Opus Majus 256</td>
+<td>-0,19°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,00% → 0,00%</td>
+<td>195 × 147 → 194 × 146</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Palatino 5</td>
+<td>0,50°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,05% → 0,05%</td>
+<td>100 × 176 → 100 × 175</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Palatino 10</td>
+<td>-0,12°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,05% → 0,05%</td>
+<td>111 × 153 → 112 × 152</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Palatino 104</td>
+<td>0,50°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,01% → 0,02%</td>
+<td>108 × 177 → 107 × 177</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Palatino 113</td>
+<td>-0,75°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,01% → 0,01%</td>
+<td>106 × 154 → 107 × 153</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Pesel 21</td>
+<td>-2,00°</td>
+<td>igual</td>
+<td>igual</td>
+<td>47,3% → 47,3%</td>
+<td>0,03% → 0,03%</td>
+<td>157 × 241 → 157 × 241</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Rariora 8</td>
+<td>0,88°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,01% → 0,01%</td>
+<td>121 × 209 → 121 × 209</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Rariora 155</td>
+<td>-1,19°</td>
+<td>igual</td>
+<td>mudou muito</td>
+<td>0,0% → 0,0%</td>
+<td>0,04% → 0,03%</td>
+<td>133 × 148 → 133 × 113</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Rariora 365</td>
+<td>-0,19°</td>
+<td>igual</td>
+<td>igual</td>
+<td>0,0% → 0,0%</td>
+<td>0,00% → 0,02%</td>
+<td>120 × 214 → 120 × 213</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Rhetorica 73</td>
+<td>-0,25°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>0,1% → 0,0%</td>
+<td>0,63% → 0,00%</td>
+<td>136 × 197 → 137 × 199</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Siebmacher 9 (direita)</td>
+<td>0,75°</td>
+<td>melhorou</td>
+<td>melhorou</td>
+<td>7,6% → 6,6%</td>
+<td>0,01% → 0,01%</td>
+<td>60 × 106 → 60 × 105</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p>Das 34 páginas do gabarito (32 folhas; o Siebmacher 7 e 9 contam duas cada), 19 giram no livro novo; em nenhuma delas a faixa preta cresceu (o Siebmacher 9 tem preto em volta nas duas ordens; a Horas 11 a conta acusou e o olho não confirmou).</p>
+<p>As folhas de contato com todas elas: <code>img/contato-01.jpg</code> a <code>img/contato-11.jpg</code>.</p>
+<h2>Arquivos</h2>
+<ul>
+<li><code>dados.json</code>: as medidas dos três preparos (A, B, C) de cada página.</li>
+<li><code>classificacao.json</code>: a separação pela conta (B → C e A → C).</li>
+<li><code>causa.json</code>: o passo a passo do corte em 8 páginas.</li>
+<li><code>projeto-antigo.json</code>: o programa de antes do G6 contra o de hoje.</li>
+<li><code>experiencia-cunha.json</code>: a experiência da cunha repetida.</li>
+<li><code>img/</code>: <code>lado-*.jpg</code> (lado a lado), <code>contato-*.jpg</code>, <code>causa-*.jpg</code>, <code>zoom-*.jpg</code>.</li>
+<li><code>scripts/</code>: <code>medir.py</code>, <code>classificar.py</code>, <code>montar.py</code>, <code>folhas_de_contato.py</code>, <code>causa.py</code>, <code>projeto_antigo.py</code>, <code>experiencia_cunha.py</code>, <code>relatorio_final.py</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 13/10/2026 às 11:57</p>
+</body>
+</html>
