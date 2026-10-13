@@ -1132,8 +1132,28 @@ def aviso_das_opcoes_da_gravura(projeto: Projeto, quantas: int, copia) -> tuple[
 
 
 def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
-                     dpi: float | None = None, dpi_do_scan: float | None = None):
+                     dpi: float | None = None, dpi_do_scan: float | None = None,
+                     no_tamanho_do_pdf: bool = True, _de_novo: bool = False):
     """Descobre onde estao gravura, letra e papel - uma vez por pagina.
+
+    PROVISORIA E DEFINITIVA (13/10/2026). O defeito (verificador): a marcacao
+    era procurada no primeiro desenho da pagina e guardada; na janela esse
+    desenho e a previa (110 DPI), e o detector acha areas diferentes das de
+    300 DPI (Graduale 221: 9 areas contra 18). A mesma pagina saia no PDF - e
+    era medida pela regra do "Para revisar" - diferente conforme tinha sido
+    vista na tela antes ou nao (nas 89 paginas do estudo: 24 iam e 73 certas
+    na ordem da janela, 22 e 75 direto). Agora:
+      - no_tamanho_do_pdf=False (a previa): a marcacao achada fica guardada
+        como PROVISORIA (ConfigPagina.marcacao_provisoria = True). A previa
+        aparece no tempo de sempre.
+      - no_tamanho_do_pdf=True (o PDF e os desenhos que a tela pede por tras):
+        a marcacao provisoria e procurada DE NOVO nesta imagem e trocada - o
+        que a MAQUINA marcou sai, o que a pessoa marcou a mao volta por cima,
+        como quando as opcoes de gravura mudam - e passa a ser a definitiva.
+        A regra do "Para revisar" so mede com a definitiva.
+    Pagina de projeto antigo, com marcacao e sem o campo, e definitiva (fica
+    como esta). Arriscado: medir a regra com a provisoria; trocar a
+    definitiva pela achada numa imagem pequena.
 
     Item 1.2: a gravura vem do detector escolhido em escolha_da_gravura (de
     fabrica, o ScanTailor). dpi = o DPI em que `img` foi desenhada; sem ele
@@ -1168,7 +1188,9 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
 
     lida = pagina.selecao          # a lista de agora (ver a corrida, acima)
     antiga = pagina.obter_selecao()
-    refazer = _gravura_a_refazer(projeto, pagina)
+    # a provisoria (achada na previa) e trocada no desenho do tamanho do PDF
+    trocar_a_provisoria = bool(no_tamanho_do_pdf and getattr(pagina, "marcacao_provisoria", False))
+    refazer = _gravura_a_refazer(projeto, pagina) or (trocar_a_provisoria and not antiga.vazia)
     if not antiga.vazia and not refazer:
         return antiga
 
@@ -1193,7 +1215,13 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
             if regiao.origem == MAO:
                 selecao.acrescentar(regiao)
     if pagina.selecao is not lida:
-        # a pessoa marcou durante a deteccao: vale a marcacao dela
+        # a marcacao mudou durante a deteccao (a pessoa marcou a mao, ou a
+        # previa guardou a provisoria dela): vale a que esta la. No desenho
+        # do tamanho do PDF tenta mais UMA vez, por cima da de agora, para a
+        # definitiva nao se perder (a marcacao a mao volta por cima).
+        if no_tamanho_do_pdf and not _de_novo and getattr(pagina, "marcacao_provisoria", False):
+            return garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan,
+                                    no_tamanho_do_pdf=True, _de_novo=True)
         return pagina.obter_selecao()
     pagina.gravura_feita_com = assinatura_da_gravura(detector, opcoes)
 
@@ -1206,7 +1234,10 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         if analise.DESENHO_OU_ESCRITA not in pagina.alertas:
             pagina.alertas.append(analise.DESENHO_OU_ESCRITA)
 
-    pagina.guardar_selecao(selecao)
+    # o campo "provisoria" vai junto com a lista (ConfigPagina.guardar_selecao
+    # grava o campo antes dela): o outro fio nunca ve a lista nova com o
+    # campo de antes
+    pagina.guardar_selecao(selecao, provisoria=not no_tamanho_do_pdf)
     return selecao
 
 
@@ -1433,6 +1464,14 @@ def renderizar_pagina(
 ) -> tuple[np.ndarray, bool]:
     """Imagem final de uma página de saida, do jeito que ela vai sair.
 
+    A marcacao de gravura, letra e papel (13/10/2026): no desenho menor que o
+    do PDF (a previa), a pagina sem marcacao ganha a que o detector acha
+    nessa imagem pequena, PROVISORIA (ConfigPagina.marcacao_provisoria), para
+    a previa aparecer no tempo de sempre. No desenho do tamanho do PDF (o
+    PDF, e o que a tela pede por tras: marcar_na_resolucao_do_pdf e a medida
+    do "Para revisar"), a provisoria e trocada pela achada nessa imagem
+    grande, que e a que vale. Ver garantir_selecao.
+
     Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
 
     Item 1.1: se a pagina esta no filtro "Tirar o fundo" (usa_tirar_fundo)
@@ -1477,12 +1516,60 @@ def renderizar_pagina(
     # e para o limpar pontinhos do ScanTailor (06/10/2026; milissegundos: a
     # conta do desenho e pela area, o do scan fica guardado por folha)
     dpi_desenho = dpi_scan = None
-    if _vai_detectar(projeto, pagina) or _vai_limpar_pelo_scantailor(projeto, pagina):
+    if _vai_detectar(projeto, pagina, dpi) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
     _acompanhar_as_zonas(pagina, desenho)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+
+def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A tela precisa pedir, por tras, um desenho desta pagina no tamanho do
+    PDF? Sim quando a marcacao dela ainda e a provisoria (a achada na previa)
+    ou quando a regra do "Para revisar" vale nela (precisa_medir_para_revisar).
+    Para ui/tarefas.GerenciadorPrevias.pedir_medida. Barato: so le campos."""
+    if pagina.apagada or getattr(pagina, "em_branco", False):
+        return False
+    provisoria = bool(getattr(pagina, "marcacao_provisoria", False) and projeto.limpar
+                      and projeto.detectar_regioes and pagina.filtro != TIRAR_FUNDO)
+    return provisoria or precisa_medir_para_revisar(projeto, pagina)
+
+
+def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O que a tela pede POR TRAS para a pagina da vez (ui/tarefas, numa
+    QThread; decisao da gerente, 13/10/2026): troca a marcacao provisoria (a
+    da previa) pela achada na pagina do tamanho do PDF e, se a regra do "Para
+    revisar" vale na pagina, mede a regra. Devolve True se a marcacao da
+    pagina mudou (a tela desenha a previa de novo).
+
+    Por tras, e nao na frente: procurar na pagina grande antes de mostrar a
+    previa custava 0,8 s a mais na primeira previa de cada pagina (medido em
+    8 paginas do gabarito: de 1,14 para 1,92 s), e trocar de pagina e o que o
+    Kaique mais faz (regra 6 do plano).
+
+    Pagina em que a regra vale: o desenho inteiro no tamanho do PDF
+    (renderizar_pagina), que troca a marcacao, acha as linhas do leitor de
+    texto nessa imagem e mede. Nas outras: so desenhar a folha, preparar e
+    procurar a marcacao (sem passar o filtro, que seria tempo jogado fora).
+    Nunca levanta excecao para fora de quem chama por causa da marcacao: se a
+    procura falhar, a pagina continua com a provisoria (e a regra nao mede).
+    Arriscado: chamar isto no fio da tela (leva segundos)."""
+    lida = pagina.selecao
+    if precisa_medir_para_revisar(projeto, pagina):
+        renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
+    elif getattr(pagina, "marcacao_provisoria", False):
+        folha = projeto.folhas[pagina.folha]
+        grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+        if _precisa_de_geometria(pagina, projeto):
+            _guardar_geometria(folha, pagina, projeto, grande, doc)
+        dpi_desenho = _dpi_do_desenho(doc, folha.indice, grande)
+        dpi_scan = _dpi_do_scan(doc, folha)
+        img, desenho = _preparar_metade_e_geometria(grande, folha, pagina, projeto,
+                                                    dpi=projeto.qualidade_dpi)
+        _acompanhar_as_zonas(pagina, desenho)
+        garantir_selecao(projeto, pagina, img, dpi_desenho, dpi_scan, no_tamanho_do_pdf=True)
+    return pagina.selecao is not lida
 
 
 def _acompanhar_as_zonas(pagina: ConfigPagina, desenho: dict) -> None:
@@ -1618,15 +1705,29 @@ def converter_zonas_do_livro(
     return convertidas
 
 
-def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
+def _vai_detectar(projeto: Projeto, pagina: ConfigPagina, dpi_pedido: float | None = None) -> bool:
     """_filtrar vai chamar a deteccao de gravura e letra nesta pagina? (a
     mesma conta de _filtrar + garantir_selecao; so serve para nao medir DPI a
     toa). Errar para "sim" so custa milissegundos. Atencao: no filtro
     Original a deteccao roda do mesmo jeito (_filtrar chama garantir_selecao
     antes de saber o filtro), e a marcacao fica guardada para quando a pessoa
-    trocar de filtro - por isso o Original NAO fica de fora aqui."""
-    return bool(projeto.limpar and pagina.filtro != TIRAR_FUNDO and projeto.detectar_regioes
-                and (not pagina.selecao or _gravura_a_refazer(projeto, pagina)))
+    trocar de filtro - por isso o Original NAO fica de fora aqui.
+    dpi_pedido: a resolucao do desenho; no do tamanho do PDF a marcacao
+    provisoria (a da previa) tambem e procurada de novo (13/10/2026)."""
+    if not (projeto.limpar and pagina.filtro != TIRAR_FUNDO and projeto.detectar_regioes):
+        return False
+    if not pagina.selecao or _gravura_a_refazer(projeto, pagina):
+        return True
+    return bool(getattr(pagina, "marcacao_provisoria", False)
+                and _e_o_desenho_do_pdf(projeto, dpi_pedido))
+
+
+def _e_o_desenho_do_pdf(projeto: Projeto, dpi_pedido: float | None) -> bool:
+    """Este desenho e do tamanho do PDF (ou maior)? Sem a resolucao (testes e
+    scripts que chamam _filtrar direto), conta como sendo: e o jeito de quem
+    gera o resultado de verdade. A previa da tela (110 DPI) e o arrasto (55)
+    dizem a resolucao e nao sao."""
+    return dpi_pedido is None or dpi_pedido >= projeto.qualidade_dpi
 
 
 def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -1796,14 +1897,19 @@ def _filtrar_a_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         # paga o ~1 s da deteccao (e sai o mesmo objeto, como antes).
         _tirar_avisos_do_so_as_letras(projeto, pagina)
         return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, img), False
-    selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
+    # a marcacao provisoria (da previa) e trocada no desenho do tamanho do PDF
+    no_pdf = _e_o_desenho_do_pdf(projeto, dpi_pedido)
+    selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan, no_tamanho_do_pdf=no_pdf)
     # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
     pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)
     if pagina.filtro == PRETO_E_BRANCO:
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
         if opcoes is not None:
+            # a regra so mede com a marcacao definitiva (a do tamanho do PDF)
+            medir = (_da_para_medir(img, dpi_pedido, projeto)
+                     and not getattr(pagina, "marcacao_provisoria", False))
             return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes, pontinhos,
-                                     medir=_da_para_medir(img, dpi_pedido, projeto))
+                                     medir=medir, linhas_definitivas=no_pdf)
     _tirar_avisos_do_so_as_letras(projeto, pagina)
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, selecao,
@@ -1899,7 +2005,8 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
-                      opcoes, pontinhos=True, medir: bool = True) -> tuple[np.ndarray, bool]:
+                      opcoes, pontinhos=True, medir: bool = True,
+                      linhas_definitivas: bool = True) -> tuple[np.ndarray, bool]:
     """O Preto e branco so nas letras (core.misto.aplicar_misto) com as
     escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto) e o "Limpar
     pontinhos" dela (`pontinhos`, de pontinhos_da_pagina).
@@ -1921,7 +2028,11 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
     sai. Custa um filtro a mais, so nessas paginas e so na primeira vez."""
     linhas, altura_linha, resultados = None, 0.0, []
     if opcoes.precisa_das_linhas:
-        resultados = linhas_do_texto.linhas_da_pagina(img, _chave_das_linhas(projeto, pagina))
+        # linhas_definitivas: no desenho do tamanho do PDF as linhas do leitor
+        # sao as achadas NESSA imagem (as da previa, achadas na pagina
+        # pequena, sao provisorias como a marcacao: core.linhas_do_texto)
+        resultados = linhas_do_texto.linhas_da_pagina(img, _chave_das_linhas(projeto, pagina),
+                                                      definitivas=linhas_definitivas)
         if resultados:
             linhas, altura_linha = misto.mascara_das_linhas(resultados, img.shape)
 
@@ -1951,7 +2062,16 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
 
     saida, sinais = uma_vez()
     if _reforcar_se_o_texto_falhou(projeto, pagina, sinais):
-        saida, _sinais = uma_vez()
+        saida, depois = uma_vez()
+        if not _o_reforco_resolveu(sinais, depois):
+            # escureceu e as linhas falhadas nao cairam (o texto vermelho do
+            # Egenloff 3, o Antiphonal 252): a forca volta a de antes, o
+            # programa nao tenta de novo nesta pagina, e ela fica so com o
+            # aviso "Texto falhado" e o botao "usar mais escuro"
+            pagina.forca_preto = int(pagina.forca_antes_do_reforco)
+            pagina.forca_antes_do_reforco = None
+            pagina.reforco_desfeito = True
+            saida, _sinais = uma_vez()
     return saida
 
 
@@ -1967,9 +2087,38 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
 #
 # A forca do reforco: medido na rodada 4 (LEIA-ME, "Forca do preto"), 85 em
 # vez de 50 fecha as letras do Camoes 27 e 104; nao resolve o vermelho do
-# Egenloff 3 (ali o aviso "Texto falhado" continua junto). E o mesmo valor do
-# botao "usar mais escuro". Seguro mudar: o numero (so muda o quanto escurece).
+# Egenloff 3. E o mesmo valor do botao "usar mais escuro". Seguro mudar: o
+# numero (so muda o quanto escurece).
 FORCA_DO_REFORCO = 85
+
+# QUANDO a forca age sozinha (decisao da gerente, 13/10/2026, a "P3"): o aviso
+# "Texto falhado" continua valendo com 2 linhas falhadas, mas a forca so e
+# escurecida sozinha com LINHAS_PARA_REFORCAR ou mais linhas falhadas, ou com
+# todas as linhas contadas falhadas; e, depois de escurecer, a pagina e medida
+# de novo e o reforco so fica se as linhas falhadas CAIREM
+# (_o_reforco_resolveu). Um aviso a mais custa pouco; uma pagina boa
+# escurecida sozinha custa caro.
+# O defeito que isto conserta (verificador, 13/10): no Palatino 66, pagina de
+# caligrafia de traco fino, a regra achava 3 linhas falhadas, a forca era
+# escurecida e sujava a moldura. Medido nas 89 paginas, livro novo, 300 DPI
+# (relatorios/para-revisar-impl/ONDE-PAREI.md, "Investigacao 8"): com 2
+# linhas a forca agia em 7 paginas - Camoes 27 (5 linhas falhadas de 28) e
+# 104 (1 de 1), onde precisa e resolve; Camoes 11, ljs47 103 e Palatino 66 (3
+# linhas cada: nenhum numero separa o Palatino, que nao precisava, dos outros
+# dois); Antiphonal 252 (2, e a 85 continuam 2) e Egenloff 3 (2, e a 85 viram
+# 5). Com 4 linhas ou todas, age so no Camoes 27 e no 104; as outras ficam
+# com o aviso e o botao "usar mais escuro" (um clique).
+# Seguro mudar: o numero, olhando essa tabela. Arriscado: baixar para 3 (o
+# Palatino 66 volta a ser escurecido sozinho).
+LINHAS_PARA_REFORCAR = 4
+
+
+def _o_reforco_resolveu(antes, depois) -> bool:
+    """Depois de escurecer a forca, as linhas falhadas cairam? `antes` e
+    `depois` sao os sinais (core.revisar.Sinais) da pagina com a forca dela e
+    com a do reforco; sem a medida de depois (None), nao da para dizer que
+    resolveu: nao."""
+    return depois is not None and depois.falhadas < antes.falhadas
 
 
 def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) -> bool:
@@ -1977,7 +2126,10 @@ def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) 
     falhado (`sinais`, de core.revisar; None = nao foi medida). Devolve True
     se escureceu (quem chama filtra a pagina de novo).
 
-    So quando: o livro tem o reforco ligado (Projeto.reforcar_texto_falhado,
+    So quando: a pagina tem LINHAS_PARA_REFORCAR ou mais linhas falhadas, ou
+    todas as linhas contadas falhadas (com menos, fica so o aviso; ver
+    LINHAS_PARA_REFORCAR); o livro tem o reforco ligado
+    (Projeto.reforcar_texto_falhado,
     o botao de desligar da regra 8 do plano); o programa ainda nao reforcou
     esta pagina; a pessoa nao desfez o reforco nem mexeu na forca depois dele
     (ConfigPagina.reforco_desfeito); e a forca dela esta abaixo da do
@@ -1986,6 +2138,9 @@ def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) 
     a copia muda. Arriscado: reforcar sem guardar a forca de antes (o
     "Desfazer" nao teria para onde voltar)."""
     if sinais is None or not sinais.texto_falhado:
+        return False
+    todas = sinais.linhas_contadas > 0 and sinais.falhadas == sinais.linhas_contadas
+    if sinais.falhadas < LINHAS_PARA_REFORCAR and not todas:
         return False
     if not getattr(projeto, "reforcar_texto_falhado", False):
         return False
@@ -2720,7 +2875,7 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             if _precisa_de_geometria(pagina, projeto):
                 _guardar_geometria(folha, pagina, projeto, img_folha, doc)
             dpi_desenho = dpi_scan = None
-            if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
+            if (_vai_detectar(projeto, pagina, projeto.qualidade_dpi)     # item 1.2
                     or _vai_limpar_pelo_scantailor(projeto, pagina)):
                 dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                 dpi_scan = _dpi_do_scan(doc, folha)

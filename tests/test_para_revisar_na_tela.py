@@ -77,8 +77,11 @@ def test_deixar_em_branco_pelo_botao_do_aviso(tela, codigo):
     assert tela.texto_faixa.text() == analise.descrever(codigo).mensagem
     assert not primeiro.isHidden() and primeiro.text() == "Deixar em branco"
     assert not segundo.isHidden() and segundo.text() == "Tirar do livro"
+    terceiro = tela.botoes_de_sugestao_3["filtro"]
+    assert not terceiro.isHidden() and terceiro.text() == "está bom assim"
 
     primeiro.click()
+    assert terceiro.isHidden()
     assert pagina.em_branco is True and pagina.apagada is False and pagina.revisada is True
     assert tela.botao_alertas.text() == "tudo certo"
     # a pagina fica no livro (a encadernacao nao muda)
@@ -103,6 +106,67 @@ def test_tirar_do_livro_pelo_botao_do_aviso(tela, codigo):
     assert pagina not in tela.projeto.paginas_ativas
     tela.desfazer()
     assert pagina.apagada is False
+
+
+@pytest.mark.parametrize("codigo", [analise.EM_BRANCO, analise.PAGINA_SEM_CONTEUDO])
+def test_esta_bom_assim_no_aviso_de_pagina_em_branco(tela, codigo):
+    """O "Parece em branco" erra (Gladstone 18, que tem titulo): tem de dar para
+    dizer "está bom" sem deixar em branco nem tirar do livro (verificador, 13/10)."""
+    pagina = _por_aviso(tela, 1, [codigo])
+    tela.botoes_de_sugestao_3["filtro"].click()
+    assert pagina.alertas_pendentes == [] and tela.botao_alertas.text() == "tudo certo"
+    assert pagina.em_branco is False and pagina.apagada is False, "a pagina nao muda"
+    assert all(b.isHidden() for b in (*_botoes(tela), tela.botoes_de_sugestao_3["filtro"]))
+    tela.desfazer()
+    assert pagina.alertas_pendentes == [codigo]
+
+
+def test_os_botoes_do_aviso_nao_ficam_com_o_teclado(tela):
+    """Verificador, 13/10: depois de clicar num botao do aviso o foco ficava
+    nele - a seta para a direita pulava de botao em vez de trocar de pagina e a
+    barra de espaco apertava o botao (ate escondido)."""
+    from PySide6.QtCore import Qt
+
+    assert tela.botoes_de_sugestao and "filtro" in tela.botoes_de_sugestao
+    assert set(tela.botoes_de_sugestao) == set(tela.botoes_de_sugestao_2) == set(
+        tela.botoes_de_sugestao_3)
+    for botoes in (tela.botoes_de_sugestao, tela.botoes_de_sugestao_2, tela.botoes_de_sugestao_3):
+        for aba, botao in botoes.items():
+            assert botao.focusPolicy() == Qt.NoFocus, aba
+
+
+def test_dois_cliques_no_cartao_do_filtro_nao_dao_a_pagina_por_conferida(tela):
+    """Verificador, 13/10: dois cliques no cartao (o jeito de abrir o "Ver de
+    perto") gravavam "Preto e branco para Preto e branco", a pagina ficava
+    conferida e o aviso sumia."""
+    from core.filtros import MELHORAR
+
+    pagina = _por_aviso(tela, 0, [analise.DESENHO_APAGADO])
+    feitas = len(tela.acoes.feitas)
+    tela._escolher_filtro(PRETO_E_BRANCO)              # o filtro que ja esta (o clique no cartao)
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    assert len(tela.acoes.feitas) == feitas, "nenhuma acao gravada"
+    assert pagina.revisada is False and pagina.alertas_pendentes == [analise.DESENHO_APAGADO]
+    assert "1 página" in tela.botao_alertas.text()
+    # trocar de verdade continua gravando (e dando a pagina por conferida, como sempre)
+    tela._escolher_filtro(MELHORAR)
+    assert len(tela.acoes.feitas) == feitas + 1 and pagina.filtro == MELHORAR and pagina.revisada
+
+
+def test_usar_mais_escuro_nao_aparece_com_a_forca_ja_no_mais_escuro(tela):
+    """Verificador, 13/10 (Egenloff 3): o aviso "Texto falhado" oferecia "usar
+    mais escuro" com a forca ja em 85."""
+    from core.pipeline import FORCA_DO_REFORCO
+
+    pagina = tela.projeto.paginas[0]
+    pagina.forca_preto = FORCA_DO_REFORCO
+    pagina.reforco_desfeito = True
+    _por_aviso(tela, 0, [analise.TEXTO_FALHADO])
+    primeiro, segundo = _botoes(tela)
+    assert primeiro.text() == "está bom assim" and not primeiro.isHidden()
+    assert segundo.isHidden()
+    primeiro.click()                                   # o botao que aparece e o que age
+    assert pagina.alertas_pendentes == [] and pagina.forca_preto == FORCA_DO_REFORCO
 
 
 # --- o conserto rapido e um botao do aviso ---------------------------------------
@@ -403,20 +467,36 @@ def test_a_tela_pede_a_medida_da_pagina_da_vez_na_resolucao_do_pdf(tela):
     """A regra so vale na resolucao do PDF (a 110 DPI, a previa, 13 das 89
     paginas do estudo decidem diferente): a previa nao mede, e a tela pede por
     tras a medida da pagina que esta na frente - so dela, e so uma vez por
-    estado da pagina."""
+    estado da pagina. Desde 13/10/2026 so DEPOIS de a previa dela aparecer: e
+    a previa que guarda a marcacao provisoria, que o desenho de tras troca
+    pela do tamanho do PDF (tests/test_marcacao_por_tras.py)."""
+    import time
+
+    from PySide6.QtCore import QCoreApplication
+
     from ui.tarefas import MARCA_DA_MEDIDA
+
+    def esperar(condicao, segundos=30.0):
+        fim = time.monotonic() + segundos
+        while time.monotonic() < fim and not condicao():
+            QCoreApplication.processEvents()
+            time.sleep(0.01)
+        return condicao()
 
     previas = tela.previas
     chave = previas.chave_da_medida(0)
     assert chave.startswith(f"0{MARCA_DA_MEDIDA}") and f":{tela.projeto.qualidade_dpi}:" in chave
-    # a pagina da vez (0) ja foi pedida ao abrir; pedir de novo nao repete
-    assert chave in previas._pedidas or chave in previas._cache
+    # ao abrir, so a previa e pedida; a medida espera a previa aparecer
+    assert chave not in previas._pedidas and chave not in previas._cache
+    assert esperar(lambda: chave in previas._pedidas or chave in previas._cache), \
+        "a prévia chegou e a tela não pediu a medida"
+    # pedir de novo nao repete
     assert previas.pedir_medida(0) is False
     # as vizinhas nao sao medidas sozinhas (so quando a pessoa chega nelas)
     chave_3 = previas.chave_da_medida(3)
     assert chave_3 not in previas._pedidas and chave_3 not in previas._cache
     tela.ir_para_pagina(3)
-    assert chave_3 in previas._pedidas or chave_3 in previas._cache
+    assert esperar(lambda: chave_3 in previas._pedidas or chave_3 in previas._cache)
     # pagina fora do "So as letras" (aqui: "Guardar tudo") nao tem o que medir
     tela.projeto.paginas[2].misto_fora_do_texto = misto.FORA_TUDO
     assert previas.pedir_medida(2) is False

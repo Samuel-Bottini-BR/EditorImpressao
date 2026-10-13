@@ -12,11 +12,11 @@ from pathlib import Path
 
 import numpy as np
 import shiboken6
-from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
+from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
-from core.pipeline import faixa_da_sobra, precisa_medir_para_revisar
+from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -41,6 +41,10 @@ PRIORIDADE_ADIANTADA = 0
 # GerenciadorPrevias.pedir_medida): "<indice>:medida:<chave da previa na
 # resolucao do PDF>". Nao muda nada no disco: e so nome de pedido desta sessao.
 MARCA_DA_MEDIDA = ":medida:"
+# O que a tarefa do acerto devolve no lugar da imagem: um ponto so. A forma
+# diz se a marcacao da pagina mudou (a previa guardada dela ficou velha).
+FORMA_SEM_MUDANCA = (1, 1)
+FORMA_MARCACAO_MUDOU = (1, 2)
 
 # Quantas previas ficam guardadas na memoria. Cada uma tem ~900 px de altura;
 # 30 delas cabem folgado e cobrem a navegacao para frente e para tras.
@@ -333,6 +337,10 @@ class _TarefaPrevia(QRunnable):
                 self._folha_crua()
                 return
             if not 0 <= self.indice_pagina < len(self.projeto.paginas):
+                if MARCA_DA_MEDIDA in self.chave:
+                    # a pagina deixou de existir: avisa, para a fila dos
+                    # desenhos do tamanho do PDF nao ficar parada atras deste
+                    _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave, self.geracao)
                 return
             if ":recorte:" in self.chave:
                 self._para_recorte()
@@ -343,13 +351,15 @@ class _TarefaPrevia(QRunnable):
             doc = abrir_pdf(self.caminho_pdf)
             try:
                 if MARCA_DA_MEDIDA in self.chave:
-                    # A medida do "Para revisar" (12/10/2026): a pagina e
-                    # desenhada na resolucao do PDF so para a regra ser medida
-                    # (os avisos e a forca sozinha sao acertados la dentro,
-                    # core.pipeline._filtrar_no_misto). A imagem grande e
-                    # jogada fora: so um aviso de "medida pronta" volta.
-                    renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
-                    img = np.zeros((1, 1), np.uint8)
+                    # O acerto no tamanho do PDF (12 e 13/10/2026): por
+                    # tras, a marcacao provisoria (a da previa) e trocada pela
+                    # achada na pagina do tamanho do PDF e, onde a regra do
+                    # "Para revisar" vale, a pagina e medida (os avisos e a
+                    # forca sozinha sao acertados la dentro). Nenhuma imagem
+                    # grande volta: so um aviso de "pronto", que diz se a
+                    # marcacao mudou (ai a previa tem de ser desenhada de novo).
+                    mudou = acertar_no_tamanho_do_pdf(doc, self.projeto, pagina)
+                    img = np.zeros(FORMA_MARCACAO_MUDOU if mudou else FORMA_SEM_MUDANCA, np.uint8)
                 elif self.filtro is None:
                     img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
                 else:
@@ -434,6 +444,30 @@ class GerenciadorPrevias(QObject):
         # passou nao entra no cache nem na tela (_guardar).
         self._geracoes: dict[int, int] = {}
         self._geracao_do_livro = 0
+        # 13/10/2026: quantas vezes a marcacao de cada pagina foi trocada por
+        # tras (a provisoria pela do tamanho do PDF), e como cada chave
+        # guardada ou pedida foi pedida (indice, dpi, filtro), para pedir de
+        # novo sem tirar do cache: ver refazer_previas.
+        self._trocas: dict[int, int] = {}
+        self._como_pedir: dict[str, tuple[int, int, str | None]] = {}
+        # Os desenhos do tamanho do PDF (pedir_medida) esperam aqui, (chave,
+        # indice), e so comecam quando o pool de previas esta PARADO, um de
+        # cada vez. Sao pesados (de 1 a 4 s, as vezes mais), e desde
+        # 13/10/2026 toda pagina visitada pede um (para trocar a marcacao
+        # provisoria). Medido na tela de verdade, num pedaco do Antiphonal
+        # 1547 (relatorios/para-revisar-impl/tempo_de_trocar_de_pagina.py):
+        # comecando logo, eles disputavam os fios e o processador com as
+        # previas adiantadas das paginas seguintes, e trocar de pagina ficava
+        # 0,3 s mais lento (regra 6 do plano: nao pode). Assim as previas vem
+        # sempre primeiro, e este trabalho so usa o tempo em que a pessoa esta
+        # olhando a pagina. Quem folheia sem parar so tem as paginas acertadas
+        # quando parar (ou ao gerar o PDF, que acerta todas).
+        # Arriscado: comecar um destes com previa na fila, ou dois juntos.
+        self._medidas_a_espera: list[tuple[str, int]] = []
+        self._relogio_das_medidas = QTimer(self)
+        self._relogio_das_medidas.setSingleShot(True)
+        self._relogio_das_medidas.setInterval(150)
+        self._relogio_das_medidas.timeout.connect(self._soltar_a_medida_a_espera)
 
         self._pool = QThreadPool(self)
         # Duas ao mesmo tempo: uma para a pagina que o usuario esta olhando e
@@ -542,20 +576,105 @@ class GerenciadorPrevias(QObject):
         chave_da_medida (a imagem que vem junto e um ponto so)."""
         if not 0 <= indice < len(self.projeto.paginas):
             return False
-        if not precisa_medir_para_revisar(self.projeto, self.projeto.paginas[indice]):
+        if not precisa_do_desenho_do_pdf(self.projeto, self.projeto.paginas[indice]):
             return False
         chave = self.chave_da_medida(indice)
         if chave in self._cache or chave in self._pedidas:
             return False
-        self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
+        if any(c == chave for c, _i in self._medidas_a_espera):
+            return False
+        # entra na fila e so comeca com o pool parado (ver _medidas_a_espera)
+        self._medidas_a_espera.append((chave, indice))
+        self._soltar_a_medida_a_espera()
         return True
+
+    def _soltar_a_medida_a_espera(self) -> None:
+        """Comeca o proximo desenho do tamanho do PDF da fila, se o pool de
+        previas esta PARADO (nenhuma previa sendo desenhada nem outro desenho
+        destes); senao, olha de novo daqui a pouco (_relogio_das_medidas).
+        O pedido MAIS NOVO primeiro: e o da pagina que esta na tela, ou perto
+        dela. Pula o que nao serve mais: a pagina mudou de estado (a chave e
+        outra; a tela pede de novo quando a previa nova chegar), ja foi feito,
+        ou a pagina nao precisa mais. Chamado a cada pedido, a cada previa que
+        chega e pelo relogio."""
+        if not self._medidas_a_espera:
+            return
+        if self._pool.activeThreadCount() > 0:
+            if not self._relogio_das_medidas.isActive():
+                self._relogio_das_medidas.start()
+            return
+        while self._medidas_a_espera:
+            chave, indice = self._medidas_a_espera.pop()
+            if not 0 <= indice < len(self.projeto.paginas):
+                continue
+            if chave in self._cache or chave in self._pedidas:
+                continue
+            if chave != self.chave_da_medida(indice):
+                continue
+            if not precisa_do_desenho_do_pdf(self.projeto, self.projeto.paginas[indice]):
+                continue
+            self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
+            break
+        if self._medidas_a_espera and not self._relogio_das_medidas.isActive():
+            self._relogio_das_medidas.start()
+
+    def refazer_previas(self, indice: int) -> None:
+        """A marcacao da pagina `indice` foi trocada por tras (a provisoria,
+        da previa, pela do tamanho do PDF): as previas e os cartoes dela foram
+        desenhados com a marcacao de antes. Manda desenhar de novo os do
+        estado de agora, SEM tirar do cache os que ja estao la: a tela
+        continua mostrando a imagem de antes ate a nova chegar (nada pisca
+        nem volta para "preparando..."), e ai sai o sinal `pronta` com a
+        mesma chave e a tela redesenha.
+
+        O que ainda esta sendo desenhado foi pedido antes da troca e pode ter
+        lido a marcacao de antes: e pedido de novo, e o que chegar do pedido
+        velho e jogado fora (a geracao da pagina anda; _guardar). Previa de um
+        estado que ja passou (outra forca, outro filtro) so sai do cache.
+        A imagem da aba Bordas (":recorte:") nao depende da marcacao: a que
+        esta guardada fica.
+        Diferente de invalidar(indice): nao esquece que o acerto no tamanho do
+        PDF ja foi feito (chave_da_medida) - a tela o pediria de novo, sem fim.
+        Arriscado: tirar do cache a previa do estado de agora (a tela piscaria
+        a cada pagina visitada)."""
+        self._trocas[indice] = self._trocas.get(indice, 0) + 1
+        prefixo = f"{indice}:"
+        chaves = [c for c in dict.fromkeys(list(self._ordem) + list(self._pedidas))
+                  if c.startswith(prefixo) and MARCA_DA_MEDIDA not in c]
+        for chave in chaves:
+            pendente = chave in self._pedidas
+            if ":recorte:" in chave and not pendente:
+                continue
+            como = self._como_pedir.get(chave)
+            if como is None or not self._e_do_estado_de_agora(chave, *como):
+                self._pedidas.pop(chave, None)
+                if chave in self._cache:
+                    del self._cache[chave]
+                    self._ordem.remove(chave)
+                continue
+            _indice, dpi, filtro = como
+            self._comecar(chave, indice, dpi,
+                          PRIORIDADE_DA_VEZ if filtro is None else PRIORIDADE_ADIANTADA,
+                          filtro=filtro)
+
+    def _e_do_estado_de_agora(self, chave: str, indice: int, dpi: int,
+                              filtro: str | None) -> bool:
+        """A chave (de previa, de cartao ou da aba Bordas) ainda e a que a
+        pagina teria agora, pedida do mesmo jeito?"""
+        if ":recorte:" in chave:
+            return chave == self.chave_para_recorte(indice, dpi)
+        if filtro is not None:
+            return chave == self.chave_com_filtro(indice, dpi, filtro)
+        return chave == self.chave(indice, dpi)
 
     # --- pedidos e geracoes (D4) ---------------------------------------------
 
     def _geracao_de(self, indice: int) -> tuple:
         """A geracao de agora da pagina `indice`: muda a cada invalidar dela
-        ou do livro todo."""
-        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0))
+        ou do livro todo, e a cada troca da marcacao dela por tras
+        (refazer_previas)."""
+        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0),
+                self._trocas.get(indice, 0))
 
     def _comecar(self, chave: str, indice: int, dpi: int, prioridade: int,
                  filtro: str | None = None, rotacao: int | None = None,
@@ -564,7 +683,14 @@ class GerenciadorPrevias(QObject):
         nao leva geracao: o giro dela vai no pedido e na chave, e nada mais
         a muda. Prioridade maior sai primeiro (QThreadPool.start)."""
         geracao = None if folha else self._geracao_de(indice)
+        if MARCA_DA_MEDIDA in chave:
+            # o acerto no tamanho do PDF nao fica velho com a troca da
+            # marcacao (e ele que a faz): a geracao dele vai sem essa parte
+            geracao = geracao[:3]
         self._pedidas[chave] = geracao
+        if not folha and MARCA_DA_MEDIDA not in chave:
+            # como pedir de novo esta mesma chave (refazer_previas)
+            self._como_pedir[chave] = (indice, dpi, filtro)
         self._pool.start(
             _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
                           filtro=filtro, rotacao=rotacao, geracao=geracao),
@@ -715,16 +841,35 @@ class GerenciadorPrevias(QObject):
         geracao: a do pedido (_comecar). Se a pagina foi invalidada depois do
         pedido, a imagem e de um estado que ja passou: nao entra no cache nem
         e anunciada (D4, 06/10/2026)."""
-        if geracao is not None and tuple(geracao) != self._geracao_de(geracao[0]):
+        # o acerto por tras trocou a marcacao da pagina? (ver _TarefaPrevia.run)
+        trocou = MARCA_DA_MEDIDA in chave and tuple(img.shape[:2]) == FORMA_MARCACAO_MUDOU
+        if (geracao is not None
+                and tuple(geracao) != self._geracao_de(geracao[0])[:len(geracao)]):
             if self._pedidas.get(chave) == geracao:
                 del self._pedidas[chave]
+            if trocou:
+                # o pedido ficou velho (a pessoa mexeu na pagina no meio), mas
+                # a marcacao da pagina FOI trocada: o que foi desenhado com a
+                # de antes tambem tem de ser refeito
+                self.refazer_previas(geracao[0])
+            self._soltar_a_medida_a_espera()
             return
         self._pedidas.pop(chave, None)
+        if trocou:
+            # as previas guardadas da pagina foram desenhadas com a marcacao
+            # de antes: desenha de novo, sem tirar da tela a que esta la
+            self.refazer_previas(int(chave.split(":", 1)[0]))
         self._cache[chave] = img
+        if chave in self._ordem:       # previa refeita: a chave ja estava guardada
+            self._ordem.remove(chave)
         self._ordem.append(chave)
         while len(self._ordem) > TAMANHO_CACHE:
             velha = self._ordem.pop(0)
             self._cache.pop(velha, None)
+        # so se lembra de como pedir o que ainda esta guardado ou a caminho
+        self._como_pedir = {c: como for c, como in self._como_pedir.items()
+                            if c in self._cache or c in self._pedidas}
+        self._soltar_a_medida_a_espera()
         self.pronta.emit(chave, img)
 
     def _esquecer_pedido(self, chave: str, geracao: tuple | None = None) -> None:
@@ -732,6 +877,7 @@ class GerenciadorPrevias(QObject):
         pedir de novo (so se o pedido anotado e o mesmo que falhou)."""
         if chave in self._pedidas and (geracao is None or self._pedidas[chave] == geracao):
             del self._pedidas[chave]
+        self._soltar_a_medida_a_espera()
 
     def _promover(self, chave: str) -> None:
         """Move a chave para o fim da fila de LRU (foi usada agora, entao e a
@@ -744,6 +890,8 @@ class GerenciadorPrevias(QObject):
         """Esvazia as filas e espera as tarefas em andamento (ate 3s cada).
         Chamar ao trocar de livro ou fechar, para nao deixar thread orfa
         escrevendo num projeto que ja foi trocado."""
+        self._relogio_das_medidas.stop()
+        self._medidas_a_espera.clear()
         self._pool.clear()
         self._pool_cartoes.clear()
         self._pool.waitForDone(3000)

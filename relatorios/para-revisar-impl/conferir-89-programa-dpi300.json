@@ -40,7 +40,11 @@
     0.152
    ]
   ],
-  "segundos_do_desenho": 30.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 20.7
  },
  "antiphon_p260__inteira": {
   "alertas": [
@@ -71,7 +75,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 13.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 16.9
  },
  "antiphonal1547_p006__inteira": {
   "alertas": [
@@ -111,7 +119,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 1.8
  },
  "antiphonal1547_p031__inteira": {
   "alertas": [
@@ -145,7 +157,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.5
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 1.9
  },
  "antiphonal1547_p046__inteira": {
   "alertas": [
@@ -193,7 +209,11 @@
     0.363
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 1.9
  },
  "antiphonal1547_p076__inteira": {
   "alertas": [
@@ -260,7 +280,11 @@
     0.436
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "antiphonal1547_p192__inteira": {
   "alertas": [
@@ -293,7 +317,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.3
  },
  "antiphonal1547_p252__inteira": {
   "alertas": [
@@ -357,7 +385,11 @@
     0.48854961832061067
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.1
  },
  "boecio_p003__inteira": {
   "alertas": [],
@@ -386,7 +418,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "boecio_p007__inteira": {
   "alertas": [],
@@ -432,7 +468,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.5
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "boecio_p008__inteira": {
   "alertas": [],
@@ -479,7 +519,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.5
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "boecio_p022__inteira": {
   "alertas": [],
@@ -525,7 +569,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "camoes_p006__inteira": {
   "alertas": [
@@ -563,7 +611,11 @@
     0.715
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.2
  },
  "camoes_p009__inteira": {
   "alertas": [
@@ -610,7 +662,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.2
  },
  "camoes_p011__inteira": {
   "alertas": [
@@ -675,7 +731,11 @@
     0.5067873303167421
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "camoes_p027__inteira": {
   "alertas": [
@@ -758,7 +818,11 @@
     0.8161812297734627
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  },
  "camoes_p066__inteira": {
   "alertas": [
@@ -806,7 +870,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.1
  },
  "camoes_p104__inteira": {
   "alertas": [
@@ -839,7 +907,11 @@
     0.8230719377835386
    ]
   ],
-  "segundos_do_desenho": 2.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.6
  },
  "cursus_p003__inteira": {
   "alertas": [
@@ -920,7 +992,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.1
  },
  "cursus_p314__inteira": {
   "alertas": [],
@@ -1077,7 +1153,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.1
  },
  "egenloff_p003__inteira": {
   "alertas": [
@@ -1129,7 +1209,11 @@
     0.8819690471750886
    ]
   ],
-  "segundos_do_desenho": 5.2
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.8
  },
  "egenloff_p007__inteira": {
   "alertas": [
@@ -1155,7 +1239,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.8
  },
  "egenloff_p012__inteira": {
   "alertas": [
@@ -1181,7 +1269,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.5
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 5.9
  },
  "egenloff_p047__inteira": {
   "alertas": [
@@ -1207,7 +1299,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 5.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.7
  },
  "egenloff_p121__inteira": {
   "alertas": [
@@ -1233,7 +1329,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.6
  },
  "egenloff_p131__inteira": {
   "alertas": [
@@ -1260,7 +1360,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.6
  },
  "escola_p007__inteira": {
   "alertas": [
@@ -1322,7 +1426,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.7
  },
  "escola_p035__inteira": {
   "alertas": [
@@ -1365,7 +1473,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.1
  },
  "escola_p113__inteira": {
   "alertas": [
@@ -1408,7 +1520,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.3
  },
  "escola_p197__inteira": {
   "alertas": [],
@@ -1454,7 +1570,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.3
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.9
  },
  "gladstone_p005__inteira": {
   "alertas": [],
@@ -1501,7 +1621,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.1
  },
  "gladstone_p018__inteira": {
   "alertas": [
@@ -1526,7 +1650,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 1.6
  },
  "gladstone_p055__inteira": {
   "alertas": [],
@@ -1565,7 +1693,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.0
  },
  "gladstone_p096__inteira": {
   "alertas": [],
@@ -1598,7 +1730,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.3
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.4
  },
  "gladstone_p116__inteira": {
   "alertas": [],
@@ -1636,7 +1772,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.9
  },
  "gladstone_p136__inteira": {
   "alertas": [],
@@ -1690,7 +1830,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "graduale_p221__inteira": {
   "alertas": [
@@ -1723,7 +1867,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 5.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 7.7
  },
  "graduale_p222__inteira": {
   "alertas": [],
@@ -1756,7 +1904,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.4
  },
  "graduale_p223__inteira": {
   "alertas": [],
@@ -1786,7 +1938,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.2
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.1
  },
  "graduale_p269__inteira": {
   "alertas": [
@@ -1818,7 +1974,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 9.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 11.4
  },
  "graduale_p588__inteira": {
   "alertas": [
@@ -1850,7 +2010,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.8
  },
  "horas_p011__inteira": {
   "alertas": [
@@ -1882,7 +2046,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 9.1
  },
  "horas_p013__inteira": {
   "alertas": [
@@ -1921,7 +2089,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.9
  },
  "horas_p014__inteira": {
   "alertas": [
@@ -1979,7 +2151,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 7.4
  },
  "horas_p016__inteira": {
   "alertas": [
@@ -2034,7 +2210,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.6
  },
  "horas_p026__inteira": {
   "alertas": [
@@ -2088,7 +2268,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.4
  },
  "horas_p027__inteira": {
   "alertas": [
@@ -2144,7 +2328,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.6
  },
  "horas_p047__inteira": {
   "alertas": [
@@ -2186,7 +2374,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.1
  },
  "horas_p175__inteira": {
   "alertas": [
@@ -2220,7 +2412,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 10.0
  },
  "ljs47_p026__inteira": {
   "alertas": [
@@ -2314,7 +2510,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.2
  },
  "ljs47_p049__inteira": {
   "alertas": [],
@@ -2339,7 +2539,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 8.7
  },
  "ljs47_p064__inteira": {
   "alertas": [],
@@ -2423,7 +2627,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 9.3
  },
  "ljs47_p103__inteira": {
   "alertas": [
@@ -2513,7 +2721,11 @@
     0.25311203319502074
    ]
   ],
-  "segundos_do_desenho": 5.3
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.1
  },
  "marial_p007__inteira": {
   "alertas": [],
@@ -2573,7 +2785,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.7
  },
  "marial_p454__inteira": {
   "alertas": [
@@ -2668,7 +2884,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 5.4
  },
  "marial_p840__inteira": {
   "alertas": [],
@@ -2722,7 +2942,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.3
  },
  "matematica_p032__inteira": {
   "alertas": [
@@ -2776,7 +3000,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.3
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 5.2
  },
  "matematica_p072__inteira": {
   "alertas": [
@@ -2819,7 +3047,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.6
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 5.6
  },
  "opusmajus_p003__inteira": {
   "alertas": [],
@@ -2852,7 +3084,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "opusmajus_p011__inteira": {
   "alertas": [],
@@ -2909,7 +3145,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.3
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "opusmajus_p020__inteira": {
   "alertas": [
@@ -2932,7 +3172,11 @@
    "guardas": []
   },
   "marcas": [],
-  "segundos_do_desenho": 2.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.2
  },
  "opusmajus_p165__inteira": {
   "alertas": [],
@@ -2988,7 +3232,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.2
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.5
  },
  "opusmajus_p256__inteira": {
   "alertas": [],
@@ -3081,7 +3329,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.3
  },
  "palatino_p005__inteira": {
   "alertas": [
@@ -3112,7 +3364,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "palatino_p007__inteira": {
   "alertas": [],
@@ -3167,7 +3423,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.6
  },
  "palatino_p009__inteira": {
   "alertas": [
@@ -3219,7 +3479,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.3
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.6
  },
  "palatino_p010__inteira": {
   "alertas": [
@@ -3271,7 +3535,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.2
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "palatino_p057__inteira": {
   "alertas": [
@@ -3306,7 +3574,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.5
  },
  "palatino_p066__inteira": {
   "alertas": [
@@ -3361,7 +3633,11 @@
     0.9309407286568787
    ]
   ],
-  "segundos_do_desenho": 2.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "palatino_p067__inteira": {
   "alertas": [],
@@ -3396,7 +3672,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.6
  },
  "palatino_p076__inteira": {
   "alertas": [],
@@ -3436,7 +3716,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.6
  },
  "palatino_p104__inteira": {
   "alertas": [
@@ -3469,7 +3753,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.7
  },
  "palatino_p113__inteira": {
   "alertas": [],
@@ -3500,7 +3788,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.8
  },
  "pesel_p021__inteira": {
   "alertas": [
@@ -3546,7 +3838,11 @@
     0.38
    ]
   ],
-  "segundos_do_desenho": 4.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 6.3
  },
  "rariora_p008__inteira": {
   "alertas": [
@@ -3588,7 +3884,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.6
  },
  "rariora_p099__inteira": {
   "alertas": [],
@@ -3655,7 +3955,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.1
  },
  "rariora_p155__inteira": {
   "alertas": [
@@ -3683,7 +3987,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.1
  },
  "rariora_p169__inteira": {
   "alertas": [
@@ -3705,7 +4013,11 @@
    "guardas": []
   },
   "marcas": [],
-  "segundos_do_desenho": 3.2
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.0
  },
  "rariora_p211__inteira": {
   "alertas": [],
@@ -3735,7 +4047,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.1
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 4.0
  },
  "rariora_p365__inteira": {
   "alertas": [],
@@ -3772,7 +4088,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.2
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.1
  },
  "rhetorica_p018__inteira": {
   "alertas": [],
@@ -3828,7 +4148,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.2
  },
  "rhetorica_p034__inteira": {
   "alertas": [
@@ -3866,7 +4190,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.8
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.4
  },
  "rhetorica_p073__inteira": {
   "alertas": [
@@ -3926,7 +4254,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.1
  },
  "rhetorica_p129__inteira": {
   "alertas": [
@@ -3948,7 +4280,11 @@
    "guardas": []
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 3.2
  },
  "rhetorica_p160__inteira": {
   "alertas": [
@@ -4011,7 +4347,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.5
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.9
  },
  "siebmacher_p007__esquerda": {
   "alertas": [],
@@ -4052,7 +4392,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.3
  },
  "siebmacher_p007__direita": {
   "alertas": [
@@ -4081,7 +4425,11 @@
     0.976
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.1
  },
  "siebmacher_p009__esquerda": {
   "alertas": [],
@@ -4120,7 +4468,11 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.3
  },
  "siebmacher_p009__direita": {
   "alertas": [
@@ -4162,6 +4514,10 @@
     0.93
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "forca_preto": 50,
+  "forca_antes_do_reforco": null,
+  "reforco_desfeito": false,
+  "sinais_antes_do_reforco": null,
+  "segundos_do_desenho": 2.0
  }
 }

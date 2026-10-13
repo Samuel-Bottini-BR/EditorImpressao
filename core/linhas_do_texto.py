@@ -127,18 +127,35 @@ def _lado_para_o_leitor(img: np.ndarray) -> int:
     return min(max(img.shape[:2]), LADO_DO_LEITOR)
 
 
-def _serve(guardada, img: np.ndarray) -> bool:
+def _serve(guardada, img: np.ndarray, definitivas: bool | None = None) -> bool:
     """As linhas guardadas servem para esta imagem? Sim se foram achadas numa
     imagem pelo menos tao nitida (para o leitor) quanto esta. Assim o arrasto
     do medidor (55 DPI) usa as da previa, e o PDF de uma pagina pequena
-    (menos de LADO_DO_LEITOR pontos na previa) acha de novo, melhor."""
-    lado, _resultados = guardada
+    (menos de LADO_DO_LEITOR pontos na previa) acha de novo, melhor.
+    definitivas=True: so servem as achadas na pagina do tamanho do PDF (ver
+    linhas_da_pagina)."""
+    lado, _resultados, definitiva = guardada
+    if definitivas and not definitiva:
+        return False
     return lado >= _lado_para_o_leitor(img)
 
 
-def linhas_da_pagina(img: np.ndarray, chave=None, cancelar=None) -> list:
+def linhas_da_pagina(img: np.ndarray, chave=None, cancelar=None,
+                     definitivas: bool | None = None) -> list:
     """As linhas de texto da pagina `img` (ver o topo): lista de
     core.ocr_comum.ResultadoOCR que deram certo (vazia = nao deu).
+
+    definitivas (13/10/2026): True quando `img` e a pagina do tamanho do PDF
+    - as linhas achadas nela sao as que valem (para o PDF e para a regra do
+    "Para revisar"), e as guardadas de uma imagem menor (a previa) nao
+    servem: o leitor roda de novo, uma vez, e guarda as definitivas. False
+    quando `img` e a previa: serve qualquer uma guardada, e as achadas agora
+    ficam como provisorias. None (o de antes): so a regra da nitidez.
+    O defeito que isto conserta (verificador, 13/10): as linhas da previa
+    eram usadas na medida do tamanho do PDF, e a pagina era medida um pouco
+    diferente de quem gera o PDF direto (Graduale 221: 0,99% contra 1,08% de
+    tinta apagada). Custa o leitor rodar uma segunda vez (1 a 2,5 s) na
+    pagina que foi vista na previa antes, no desenho feito por tras.
 
     chave: o que identifica esta pagina preparada (None = nao guardar).
     cancelar: funcao sem argumentos, consultada antes de comecar.
@@ -146,7 +163,7 @@ def linhas_da_pagina(img: np.ndarray, chave=None, cancelar=None) -> list:
     if chave is not None:
         with _TRANCA:
             guardada = _GUARDADAS.get(chave)
-            if guardada is not None and _serve(guardada, img):
+            if guardada is not None and _serve(guardada, img, definitivas):
                 _GUARDADAS.move_to_end(chave)
                 return list(guardada[1])
     try:
@@ -168,8 +185,11 @@ def linhas_da_pagina(img: np.ndarray, chave=None, cancelar=None) -> list:
         lado = _lado_para_o_leitor(img)
         with _TRANCA:
             antes = _GUARDADAS.get(chave)
-            if antes is None or antes[0] <= lado:
-                _GUARDADAS[chave] = (lado, tuple(certos))
+            # nunca por cima de uma mais nitida, nem de uma definitiva por uma
+            # provisoria; a definitiva entra por cima da provisoria
+            melhora = antes is None or antes[0] <= lado or (definitivas and not antes[2])
+            if melhora and not (antes is not None and antes[2] and not definitivas):
+                _GUARDADAS[chave] = (lado, tuple(certos), bool(definitivas))
                 _GUARDADAS.move_to_end(chave)
             while len(_GUARDADAS) > GUARDAR_NO_MAXIMO:
                 _GUARDADAS.popitem(last=False)
