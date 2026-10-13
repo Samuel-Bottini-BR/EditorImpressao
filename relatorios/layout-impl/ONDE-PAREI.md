@@ -17,6 +17,29 @@ Fontes das decisões: a página "Layout do Editor de Impressão" (rodadas 7 a 13
 5. A **linha dos menus** mostra só o nome da ferramenta e os ajustes dela.
 6. **Nomes novos:** "deixar como veio", "usar o ângulo do programa", "usar o corte do programa", "só esta folha / todas as folhas", "só esta página / todas as páginas", "daqui em diante" (no lugar de "só nas próximas"), "Editor" na linha da conta do Endireitar.
 
+## Acertos de 13/10, antes da conferência do Samuel (pedidos pela gerente)
+
+1. **Palavras antigas nos avisos (`core/analise.py`, exceção autorizada pela gerente; só texto).** Linhas mudadas, e mais nenhuma:
+   - **linha 106:** "A conta do ScanTailor e a do programa acharam…" → "A conta do ScanTailor e **a do Editor** acharam…" (805 C);
+   - **linha 107:** "…nesta página. Confira na aba Endireitar e escolha a conta que deixou " → "…nesta página. **Confira com a ferramenta Endireitar** e escolha a conta que deixou ";
+   - **linha 129:** a sugestão laranja "não endireitar esta" → "**deixar como veio**" (710 B).
+   Os códigos (`"angulo_zero"`, `CONTAS_DO_ENDIREITAR_DISCORDAM`) não mudaram. Outro agente mexe neste arquivo no ramo `fase2-para-revisar`: na junção, só estas três linhas vêm daqui.
+   **Textos com "aba" ou nome antigo que achei em `core/analise.py` e NÃO troquei:**
+   - **linhas 80-81 (aparece na tela):** "Não tenho certeza se esta página é desenho ou escrita. Confira na aba Marcar - se for escrita, marque como letra." Não é a mesma troca: não existe uma ferramenta chamada "Marcar" (são Retângulo, Oval, Laço, Ponto a ponto, Pincel, Varinha mágica e Pegar tudo desta cor; "Marcar" hoje é o nome de um menu). Precisa de frase nova, a decidir.
+   - **linhas 93-94 (comentário, não aparece):** "os três botões da aba Filtro" e "marcar a área na aba Marcar".
+   - **linhas 102-103 (comentário, não aparece):** "a escolha da conta (a do ScanTailor ou a do programa) fica na aba Endireitar".
+2. **Uma palavra só para a conta do Endireitar: "a do Editor".** A lista "Conta" do painel dizia "a do programa" e a linha logo abaixo, "Editor". Agora dizem "a do Editor": a lista "Conta" do Propriedades, a parte "Para o livro todo", o painel Automático, a frase que vai para o Histórico ao trocar de conta e a lista "Conta do endireitar" da tela "O que fazer" (com a dica dela). **ISTO É LEITURA DA GERENTE, PARA O SAMUEL CONFIRMAR:** a escolha dele (805 C) foi sobre a linha dos dois ângulos. A lista da tela "O que fazer" fui eu que incluí, pelo mesmo motivo (senão o painel Automático diria "a do Editor" e a tela "O que fazer", "a do programa"). O código gravado no projeto continua `"programa"`; o texto de `core/endireitar_scantailor.NOMES_DOS_JEITOS` não foi mexido (a tela usa `ui/widgets/paineis.nome_da_conta`). **O Dividir ("o do programa / o do ScanTailor") não foi mexido** (não decidido).
+3. **Um girar só no Dividir.** O botão "girar" antigo fazia exatamente o mesmo que o "¼ à direita" do bloco "Girar a folha" (os dois chamavam o mesmo giro, com o mesmo "aplicar em"). Saiu o antigo.
+4. **Duas coisas olhadas, nenhuma é efeito do layout novo (não consertei):**
+   - **Zoom: o "%" sem número** (`1-fechado-zoom.png`). Já era assim antes do layout: a barra de opções do Zoom sempre teve o deslizante "aproximar" seguido de um "%" fixo, sem número (`ui/widgets/barra_opcoes.py`, o mesmo código no `fase-1`). Para a Lista de bugs.
+   - **Endireitar: a linha "ScanTailor … · Editor …" some depois de girar à mão** (`7-endireitar-0,2-grau.png`). É de propósito e já era assim: com o ângulo à mão a conta não vale, a lista "Conta" fica apagada e a linha dos dois ângulos fica vazia (`_atualizar_conta_do_endireitar`; o teste `test_com_o_angulo_a_mao_a_lista_fica_apagada` cobra isso). O que dá para melhorar, e é escolha de tela: a lista apagada quase não se distingue da acesa, e nada diz por que a linha sumiu.
+5. **Também troquei** (em `ui/tela_opcoes.py`, minha área): duas dicas do mouse da tela "O que fazer" diziam "na aba Onde cortar" e "na aba Endireitar"; agora "com a ferramenta Dividir a folha" e "com a ferramenta Endireitar".
+
+**Prints refeitos (mesmos nomes):** `1-ao-abrir-o-livro` (agora é o livro como abre, na folha 1, sem mexer em nada; antes saía igual ao `1-fechado-dividir`), `2-painel-revisar`, `2-painel-revisar-por-motivo`, `2-painel-revisar-pagina-20`, `9-maximizada-painel-revisar`, `10-para-revisar-escuro`, `10-para-revisar-claro` (a sugestão "deixar como veio" e o aviso com "a do Editor"), `3-propriedades-dividir` e `9-maximizada-propriedades-dividir` (sem o "girar" repetido).
+**Prints novos:** `11-lista-aplicar-em-do-girar-aberta`, `11-lista-conta-aberta`, `11-lista-aplicar-em-do-endireitar-aberta`, `11-balao-da-trilha-cortar` (ferramenta sem letra de atalho: só o nome e a frase) e `11-balao-da-trilha-varinha` (a letra "[V]", a frase, e a outra ferramenta do mesmo botão com a letra "[C]"). **Como foram feitos:** a lista aberta e o balão são janelinhas à parte do Windows, que o print da janela fora da tela não pega; cada um foi fotografado de verdade (a peça do próprio programa, aberta na hora) e colado no print no lugar onde aparece. Não é desenho, mas é colagem: dizer isso ao Samuel.
+**`1-fechado-dividir.png` não mudou:** mostra o Dividir escolhido (o primeiro ícone da trilha aceso, "Dividir a folha" na linha dos menus), na folha 5, com o painel fechado pela pessoa.
+**Testes dos acertos (um arquivo por vez):** `test_paineis.py` 33, `test_paineis_na_tela.py` 22, `test_girar_na_tela.py` 22, `test_endireitar_na_tela.py` 5, `test_trilha_agrupada.py` 18, `test_dividir_na_tela.py` 9, `test_opcoes_da_gravura_na_tela.py` 15: todos passaram. Roteiro da janela de verdade: 51 de 51. `teste_botoes.py`: ver a ressalva 1. A bateria inteira de tela (43 arquivos) é a de antes destes acertos; não a rodei de novo.
+
 ## Etapa 1: temas (pronta, commit 7ebbc04)
 
 Os três temas, cinza de fábrica; a troca fica no menu Ver > Tema. A escolha fica na chave "tema" do `configuracoes.json` (5280490).
@@ -65,7 +88,7 @@ As abas sumiram (continuam por dentro, escondidas); trilha agrupada à esquerda;
 
 ## Prints (janela de verdade, tema cinza salvo onde dito)
 
-Pasta `relatorios/layout-impl/etapa3/`. Os de 1280 x 657 saem com 1600 x 821 pontos porque este PC amplia a tela em 125%. "Maximizada" é a janela no tamanho que teria maximizada nesta tela (1536 x 785), sem maximizar de verdade na tela do Samuel.
+Pasta `relatorios/layout-impl/etapa3/` (59 prints de depois, contando os 5 novos de 13/10, e 10 de antes). Os de 1280 x 657 saem com 1600 x 821 pontos porque este PC amplia a tela em 125%. "Maximizada" é a janela no tamanho que teria maximizada nesta tela (1536 x 785), sem maximizar de verdade na tela do Samuel.
 
 ### Antes e depois, nas mesmas telas
 
@@ -94,7 +117,7 @@ Pasta `relatorios/layout-impl/etapa3/`. Os de 1280 x 657 saem com 1600 x 821 pon
 - `2-painel-automatico.png`: **só o que existe hoje** (as etapas do livro e "Voltar para as opções"). Falta do desenho: receita, ordem arrastando, "ajustar ›", "Rodar N etapas", "escolher páginas…", janela grande (não existem no programa).
 - `2-painel-props.png`, `3-propriedades-cortar.png`, `3-propriedades-cortar-rolado.png`, `4-cortar-nao-cortar-esta.png`, `4-cortar-arrastado-com-o-painel-aberto.png`: decidido (as duas partes, os nomes novos, as caixinhas, girar no alto). **Diferente do desenho:** "meia volta" e "aplicar em" ficam em linhas separadas (com a letra do programa não cabem juntas em 300 px), e por isso o Cortar precisa de rolagem em 1280 x 657 (72 pontos); "Para o livro todo" só mostra e leva às opções; falta "Folga do corte" (não existe no programa).
 - `3-propriedades-endireitar.png`, `7-endireitar-0,2-grau.png`: decidido (nomes novos, "só esta página", "Editor"). Falta do desenho: "Retângulo do corte, nesta página" (o G6 juntado ao `fase-1` mudou a ordem do preparo, mas não traz essa escolha por página para a tela).
-- `3-propriedades-dividir.png`: decidido (duas partes). Diferente: "Onde dividir" é a lista "jeito:" de antes, e não as duas bolinhas; o botão "girar" de antes continua.
+- `3-propriedades-dividir.png`: decidido (duas partes). Diferente: "Onde dividir" é a lista "jeito:" de antes, e não as duas bolinhas.
 - `3-propriedades-marcar.png`: decidido (Propriedades com o "Marcar como", com a cor de cada um). **Antigo:** três jeitos em vez de cinco (705 A depende do processamento); os botões "Na área marcada" e os de marcar ainda embaixo da página.
 - `3-propriedades-zoom.png`, `3-propriedades-filtros-provisorio.png`: a frase de "sem propriedades" (decidido para Zoom e Mão; provisório nos filtros).
 - `4b-girado-pelo-canto.png`: decidido (canto gira só esta folha).
@@ -109,16 +132,18 @@ Pasta `relatorios/layout-impl/etapa3/`. Os de 1280 x 657 saem com 1600 x 821 pon
 
 ## Ressalvas e achados
 
-1. **`teste_botoes.py` (raiz):** precisei mexer nele (único arquivo fora de `ui/` e `tests/`), porque os botões de Dividir, Cortar e Endireitar saíram de onde ele os procurava. Ele agora abre o Propriedades, clica nos botões e caixinhas, na faixa, em cada ícone da direita e nos botões de girar do canto. **Última rodada (13/10, 02:51): 221 ações, 0 falhas** (no `fase-1`, no mesmo dia: 174 ações, 0 falhas). Foram precisas seis rodadas até chegar a zero, e todos os erros eram do roteiro, não do programa: a bateria clica em "apagar" e "restaurar" em vários lugares e dependia da ordem antiga dos cliques; com os botões em lugar novo, o livro de teste (duas páginas) chegava ao "Processar" sem página nenhuma. O último culpado era o próprio roteiro clicar só o "Desfazer" do painel Histórico, sem o "Refazer". O roteiro agora escreve, em cada parte, quais páginas estão apagadas. **Não conferi** se o `teste_botoes.py` passava no fim da etapa 2 (commit a783bd9); desconfio que não, porque as setas "<" e ">" dos lados da página, de que a ordem dependia, foram escondidas ali.
+1. **`teste_botoes.py` (raiz):** precisei mexer nele (único arquivo fora de `ui/` e `tests/`), porque os botões de Dividir, Cortar e Endireitar saíram de onde ele os procurava. Ele agora abre o Propriedades, clica nos botões e caixinhas, na faixa, em cada ícone da direita e nos botões de girar do canto. **Última rodada (13/10, 03:27, já com os acertos de 13/10): 221 ações, 0 falhas** (no `fase-1`, no mesmo dia: 174 ações, 0 falhas). Foram precisas seis rodadas até chegar a zero, e todos os erros eram do roteiro, não do programa: a bateria clica em "apagar" e "restaurar" em vários lugares e dependia da ordem antiga dos cliques; com os botões em lugar novo, o livro de teste (duas páginas) chegava ao "Processar" sem página nenhuma. O último culpado era o próprio roteiro clicar só o "Desfazer" do painel Histórico, sem o "Refazer". O roteiro agora escreve, em cada parte, quais páginas estão apagadas. **Não conferi** se o `teste_botoes.py` passava no fim da etapa 2 (commit a783bd9); desconfio que não, porque as setas "<" e ">" dos lados da página, de que a ordem dependia, foram escondidas ali.
 1b. **No "Para revisar", aba "Por página", a frase comprida de um aviso é cortada na segunda linha** (print `2-painel-revisar.png`: "…Confira na"). A frase inteira aparece no balão do mouse e na faixa embaixo da página.
 2. **Com os painéis fechados, os botões de Dividir, Cortar e Endireitar não aparecem** (só depois de escolher a ferramenta ou clicar no ícone do Propriedades). É o decidido (203 D + 802 A), mas é a mudança que o Kaique mais vai sentir.
-3. **A sugestão laranja do aviso ainda diz "não endireitar esta"** (print `2-painel-revisar.png`), e o botão novo se chama "deixar como veio". O texto vem de `core/analise.py` (fora de `ui/`): pedir ao implementador.
+3. (resolvido em 13/10: a sugestão laranja diz "deixar como veio"; ver "Acertos de 13/10".)
 4. **Botões de girar no canto** ficam por cima do canto da área da página (decidido na 703 D sabendo disso). Com a página larga ou com zoom podem cobrir um pedaço dela; no Endireitar ficam perto da bolinha azul.
 5. **No tema claro,** a bolinha da contagem tem letra escura sobre laranja escuro (lê-se mal).
 6. **Na janela mínima com um painel aberto,** os quatro cartões dos filtros ficam apertados (tela provisória).
 7. **A contagem do "Para revisar"** passou a contar páginas (como a barra de baixo), e não mais avisos (uma página com dois avisos contava duas vezes).
 
 ### Bugs que já existiam (não consertados; para a Lista de bugs, 13/10/2026)
+
+- **Zoom: "%" sem número** na linha dos menus (print `1-fechado-zoom.png`); já era assim no `fase-1`.
 
 - **Menu Ver > "Painel: Para revisar / Marcar como / Filtro da página / Histórico": os quatro itens não fazem nada** (nunca foram ligados a nada; `ui/janela_principal.py` não tem `ligar("painel_…")`). A lista dos painéis no menu Ver está na rodada 14.
 - **Histórico: "Conferir a pagina 5", sem acento** (print `5-historico-com-uma-desfeita.png`; a frase nasce em `ui/tela_conferir._marcar_revisada` e fica gravada no histórico de ações).

@@ -61,7 +61,7 @@ def test_livro_novo_pela_conta_do_scantailor_e_a_lista_so_com_endireitar(janela,
     assert not opcoes.linha_conta_endireitar.isHidden()
     assert [opcoes.combo_conta_endireitar.itemText(i)
             for i in range(opcoes.combo_conta_endireitar.count())] \
-        == ["a do ScanTailor", "a do programa"]
+        == ["a do ScanTailor", "a do Editor"]      # layout, rodada 13, 805 C (so o texto)
     assert opcoes.combo_conta_endireitar.currentData() == es.JEITO_SCANTAILOR
     assert janela.projeto.endireitar_como == es.JEITO_SCANTAILOR
     opcoes.combo_conta_endireitar.setCurrentIndex(

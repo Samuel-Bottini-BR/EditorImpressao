@@ -118,6 +118,7 @@ from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.escolhas_do_misto import EscolhasDoMisto
 from ui.widgets.folhear_pdf import FolhearPDF
+from ui.widgets.paineis import nome_da_conta
 
 FILTROS_NA_TELA = [
     (ORIGINAL, "Original", "não mexe na página"),
@@ -224,10 +225,12 @@ class TelaOpcoes(QWidget):
         self.rotulo_conta_endireitar = QLabel("Conta do endireitar:")
         self.combo_conta_endireitar = QComboBox()
         for jeito in endireitar_scantailor.JEITOS:
-            self.combo_conta_endireitar.addItem(endireitar_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            # a mesma palavra dos paineis da tela de trabalho ("a do Editor":
+            # ui/widgets/paineis.nome_da_conta; o codigo gravado nao muda)
+            self.combo_conta_endireitar.addItem(nome_da_conta(jeito), jeito)
         self.combo_conta_endireitar.setToolTip(
             "Como a inclinação da página é medida: a conta do ScanTailor ou a do "
-            "programa. Quando as duas discordam mais de 0,3 grau, a página vai para "
+            "Editor. Quando as duas discordam mais de 0,3 grau, a página vai para "
             "\"Para revisar\". Dá para trocar numa página só, com a ferramenta Endireitar.")
         self.combo_conta_endireitar.currentIndexChanged.connect(lambda _i: self._mudou())
         linha.addWidget(self.rotulo_conta_endireitar)
