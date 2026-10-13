@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 12/10/2026 (PARTE -14; a anterior, PARTE -13, é de 08/10). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 13/10/2026 (PARTE -15; a anterior, PARTE -14, é de 12/10). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,170 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -14 — Checkpoint da sessão na nuvem, 09 a 12/10/2026 (leia isto primeiro, é o mais novo)
+# PARTE -15 — Checkpoint de 12 a 13/10/2026, no Claude Code local (leia isto primeiro, é o mais novo)
+
+Sessão longa no PC do Samuel, aberta com `/projeto` e fechada com o checkpoint a pedido dele ("vamos salvar tudo e parar
+os trabalhos para poder dar check point"). **Todos os agentes foram parados.** Tudo o que eles fizeram está em ramos no
+GitHub. **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md); o Registro de
+mudanças tem entradas de 12 e 13/10 para quase tudo (o que falta registrar está no §4).
+
+## 0. Para recomeçar (primeira coisa a fazer)
+
+1. `git -C D:\programas\EditorImpressao status -sb` e `git fetch origin`. A pasta principal está no `fase-1`, igual ao
+   GitHub. As duas cópias do plano (`docs/plano/` e `...-arquivos\plano-24-09-2026\`) estavam iguais ao fechar.
+2. Ler `relatorios/conferencia-samuel-2026-10-13.md`: são as respostas literais dele de 13/10 que **ainda não foram
+   todas processadas** (§4).
+3. Os arquivos-fonte das páginas do claude.ai e os scripts desta sessão estavam numa pasta temporária; há cópia em
+   `D:\programas\EditorImpressao-arquivos\sessao-2026-10-13\` (`paginas\pub-conf`, `pub-layout`, `pub-escolhas`,
+   `scripts\`, `banco-das-paginas\`). Para republicar uma página, parta do arquivo de `paginas\` (ver §6).
+
+## 1. O que está no programa (ramo `fase-1`, a pasta que o atalho abre)
+
+- **G6, endireitar antes de cortar** (item 2.2): juntado em 12/10 (`4a7f288`). Aprovado pelo Samuel na página de
+  conferência (13 quadros "Está bom", "Aprovado"). Velocidade medida no PC: sem diferença. Suíte no Windows do GitHub:
+  1992 passaram, 0 falharam.
+- **Defeito conhecido do G6, ainda no programa:** em página torta com borda preta de scanner o corte piorou (6 de 89
+  páginas; faixa preta de 1,5 a 4 cm em Cursus 3, Matemática 32, Antiphon 88 e 260). Só livro novo; projeto antigo sai
+  idêntico. Causa: a cunha branca do giro esconde a borda preta em `core/recortar.py` (`_apagar_bordas_solidas`,
+  `_faixa_com_a_tinta`). Conserto pronto num ramo, não aprovado (§2).
+- Nada mais entrou no programa nesta sessão.
+
+## 2. Prontos em ramos, NÃO juntados (todos no GitHub)
+
+| Ramo (commit) | O que é | Situação |
+|---|---|---|
+| `juntar-layout3-2026-10-13` (`f35bcaf`) | `fase-1` + layout (etapas 2 e 3, painel Propriedades, textos das rodadas 12 e 13) | **Aprovado pelo Samuel em 13/10** (14 quadros "Está bom", `layout3` "Aprovado"). Junção sem conflito. Falta: ler a rodada 38469423649 do GitHub, medir a velocidade no PC e avançar o `fase-1` (`git merge --ff-only origin/juntar-layout3-2026-10-13`, se o `fase-1` não tiver andado; senão refazer a junção) |
+| `layout-impl-2026-10-08` (`e94fe8c`) | o ramo do agente de layout | suíte GitHub: 2049 passaram, 0 falharam; `teste_botoes` 221 ações, 0 falhas. `ONDE-PAREI` em `relatorios/layout-impl/` |
+| `fase2-para-revisar` (`ce2b835`) | o bloco "Para revisar" (6 pedaços) + consertos + a busca da marcação por trás + força sozinha cautelosa | suíte GitHub: 2101 passaram, 0 falharam. **Segunda conferência do verificador interrompida.** `ONDE-PAREI` em `relatorios/para-revisar-impl/` |
+| `verif-para-revisar-2026-10-13` (`f506ec3`) | parecer do verificador, 2ª conferência feita no `ce2b835` | **Os 8 pontos conferidos na janela** (7 valem; o teclado "em parte": a seta não troca de página na janela de teste, igual ao programa de hoje; não conferido com a janela ativa). `conferencia.json` com 18 quadros e as três perguntas escritas. Velocidade (2 rodadas de cada): abrir, trocar de página e Preto e branco sem diferença; **Mágico pro 54,6 → 55,2 s em 10 páginas (+1,1%), pouco acima do ruído, os dois pares para o mesmo lado: decidir antes de juntar** (regra 6). Folheando com "Só as letras", o trabalho por trás depois de parar foi de 8 a 9 s para 44 a 47 s. Falta: abrir 19 imagens novas uma a uma; reabrir Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66. **A velocidade do layout não foi medida** (nenhuma rodada). `ONDE-PAREI.md` em `relatorios/conferir/para-revisar-2026-10-13/` |
+| `conserto-corte-g6-2026-10-13` (`d97b937`) | conserto do defeito do G6 | verificado; Samuel marcou **"Melhorar"** (§4). Falta acertar o Pesel 21 |
+| `verif-corte-g6-2026-10-13` (`d9bc9c6`) | investigação das 89 páginas e conferência do conserto | relatórios em `relatorios/conferir/corte-g6-2026-10-13/` e `.../conserto-corte-g6-verificado-2026-10-13/` |
+| `fase2-caixa-conteudo` (`19e8e56`) | `PageFinder` e `ContentBoxFinder` do ScanTailor na `st_ferramentas.dll` + `core/caixas_scantailor.py` | testado por máquina (76 testes), **não ligado a nada**. `ONDE-PAREI` em `relatorios/caixa-conteudo-impl/` diz o que falta por resposta do Samuel |
+| `fase2-geometria-perguntas` (`0701e8b`) | as seis perguntas de geometria e a pesquisa do ScanTailor | publicadas na página de escolhas |
+
+Worktrees em `.claude\worktrees\`: `para-revisar`, `verif-para-revisar`, `layout-impl`, `juntar-layout3`, `juntar-g6`,
+`conserto-corte-g6`, `verif-corte-g6`, `verif-conserto-corte-g6`, `caixa-conteudo`, `geometria-perguntas`,
+`velocidade-antes` (e as antigas). Várias têm **junções** (`modelos`, `gabarito\paginas`, `gabarito\scantailor-24-09`):
+nunca `Remove-Item -Recurse`; desfazer só com `(Get-Item <junção>).Delete()`.
+
+## 3. Decisões do Samuel nesta sessão (literais onde indicado)
+
+- **Layout, rodada 12** (10 de 10) e **rodada 13** (8 de 8): literais no fim do `Plano de layout (rascunho).md`. A
+  rodada 12 foi refeita porque ele reclamou: "as perguntas do layout estão usando o layout antigo" (as imagens eram
+  fotos do programa no meio da obra). Tela-base decidida mais nova: `prototipo\21-rodada13-base.html`.
+- **G6:** "Aprovado" (12/10). **Layout no programa:** "Aprovado" (13/10).
+- **Conserto do corte:** "Melhorar" (13/10).
+- **Geometria (página de escolhas, 13/10):** quatro respondidas e duas que não cheguei a ler (`g10-papel-ou-pagina`,
+  `g10-ajustar-todas`); tudo literal em `relatorios/conferencia-samuel-2026-10-13.md`.
+- **Decisões da gerente** (alçada técnica, registradas no plano): reacertar só os limites da regra do "Para revisar"
+  no preparo novo (1,5 → 1,2 e 0,20 → 0,13; resultado 22 vão / 75 certas, contra 21 / 78 aprovados); força do preto
+  sozinha só com 4 ou mais linhas falhadas e só fica se resolver; a marcação que vale é a do tamanho do PDF, procurada
+  por trás; conserto do corte para a frente, sem desfazer o G6; lista "Conta" passou a dizer "a do Editor" (leitura da
+  gerente; ele viu na conferência e não contestou).
+
+## 4. O que ficou por fazer (em ordem)
+
+1. **Juntar o layout aprovado ao `fase-1`:** ler a rodada do GitHub (`gh run view 38469423649 -R
+   Samuel-Bottini-BR/EditorImpressao`), medir a velocidade no PC (`fase-1` × `juntar-layout3`; ver §7) e avançar o
+   `fase-1`. Depois: Registro de mudanças, página de andamento.
+2. **Registrar no PLANO-DEFINITIVO (as duas cópias) as respostas de 13/10** que só estão no relatório de respostas:
+   o "Melhorar" do conserto do corte com os comentários, e as respostas de geometria. (O "Aprovado" do layout e a
+   ideia do horário no Histórico já foram registrados neste checkpoint.)
+3. **Página de conferência** (https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX, 3 abas): os 12 comentários dele de
+   13/10 já estão **fixados com resposta** na página (versão 10). Falta **esvaziar o campo `comentario`** das respostas
+   correspondentes no banco (ids `layout3-filtros`, `-historico`, `-para-revisar`, `-janela-pequena-e-temas`, e os
+   `cg6-*` com comentário), mantendo a opção, e **esvaziar a opção da `cg6`** para ele decidir de novo depois do
+   conserto do Pesel 21.
+4. **Conserto do corte:** mandar o implementador acertar o Pesel 21 (cartão escuro confundido com fundo de scanner;
+   tem de sair como sai hoje) no ramo `conserto-corte-g6-2026-10-13`; verificar; pedir a decisão de novo. Ele perguntou,
+   na decisão final: "Só não sei se vamos fazer esse concerto agora ou deixar para depois e o corte de borda continua
+   assim e segue para o aplicativo e depois arrumamos." Sugestão dada na página: fazer agora.
+5. **Página de escolhas** (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV): marcar `decidida` as que têm opção
+   (com `decisao` por extenso, incluindo o comentário); responder **na página** a `g7-borda-ate-onde`, que ele não
+   marcou: "Vai depender do livro, mas se tivessemos maneira de embranquecer esse preto depois poderia ser usa a busca
+   do scantailor, hoje no programa temos o motor de busca só do scantailor?" (resposta: hoje o corte é o nosso; a busca
+   do ScanTailor está pronta no ramo `fase2-caixa-conteudo`, não ligada; "embranquecer" é o 2.14; oferecer "escolher
+   por livro"). Perguntas novas que nasceram: o que fazer com a folha muito maior ("precisamos de alternativa do que
+   fazer com ela."); o aviso do corte que segue a moldura com "opção de mudar o corte e mostrar ele alargado".
+6. **"Para revisar":** a segunda conferência do verificador está feita (ramo `verif-para-revisar-2026-10-13`,
+   `f506ec3`). Falta: decidir o que fazer com o Mágico pro 1,1% mais lento (pedir ao implementador a causa, ou medir
+   de novo com mais rodadas); abrir as 19 imagens que o verificador não abriu; e montar a conferência do Samuel como
+   aba 4 da página de conferência, a partir do `conferencia.json` dele (18 quadros `pr-*` e as três perguntas: medir
+   o livro inteiro; as três contagens que não batem; mostrar na tela o mesmo que o PDF). O formato é o das abas 2 e 3
+   (ver §6); as perguntas com opções precisam de um desenho novo na página (as abas de hoje só têm "Está bom /
+   Melhorar / Está pior").
+7. **Ligar a caixa do conteúdo** (2.13 / 2.5) conforme as respostas de geometria; antes, olhar com os olhos os livros
+   de folha grande (ljs47, Antiphon, Egenloff), onde a caixa encolhe muito com o DPI do programa.
+8. **Layout:** rodada 14 (qual vista de "Todas as páginas" vem de fábrica; onde se escolhe a "área de trabalho 1";
+   menus; nome "o mesmo da página"; frase nova para o aviso "Confira na aba Marcar"); etapas 4 a 7 no programa.
+9. Perguntas soltas no chat, sem resposta dele: apagar a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW ?;
+   apagar `C:\Users\fotog\AppData\Local\Temp\p2.py` (arquivo vazio deixado por um agente)?
+
+## 5. Tentado e descartado
+
+- **Corte do G6:** girar preenchendo a cunha com a própria beirada (some a faixa, piora Camões 66, Boécio 3, Graduale
+  221); máscara da cunha em todas as contas (desfaz o que o G6 melhorou). Dez variantes em `relatorios/melhorias.md`
+  do ramo do conserto.
+- **"Para revisar":** procurar a marcação do tamanho do PDF na frente da prévia (primeira prévia de 1,14 para 1,92 s:
+  recusado pela regra 6; virou busca por trás, numa fila, depois que o pool de prévias para).
+- **Imagens das perguntas a 72 DPI** (Horas, Graduale, Marial): a caixa do conteúdo muda com o DPI; refeitas com
+  `core.caixas_scantailor.achar_na_pagina`.
+- **Pedir conferência ao Samuel sem comparar as fotos com as escolhas dele antes:** ele recebeu a aba do layout
+  desatualizada e reclamou. Agora um conferente abre todas as fotos contra as decisões antes de publicar.
+- **Juntar ao `fase-1` com poucas páginas-gabarito:** o G6 passou em 12 páginas e piorou 6 de outras 77. Incluir no
+  gabarito do corte: Cursus 3, Matemática 32, Antiphon 260, Escola 197.
+
+## 6. Descobertas de comportamento real
+
+- **Limite de uso da conta derruba os agentes** (três vezes nesta sessão). Mandar cada agente fazer commit e push a
+  cada passo e manter um `ONDE-PAREI.md`; retomar com SendMessage para o mesmo agente.
+- **Publicar numa página do claude.ai feita em outra sessão:** a primeira tentativa é recusada e devolve a versão
+  atual; reenviar o mesmo conteúdo passa. O arquivo local é só o miolo (de `<title>` até o fim do `<script>`), sem o
+  esqueleto que o serviço acrescenta. Sem passar `contract`, o contrato da página é mantido (0.2.69 / 0.2.70, em que
+  as fotos aparecem). Imagens vão em `files`, com `root`.
+- **Página de conferência:** os quadros ficam dentro do HTML (`G6`, `LAYOUT`, `CORTE`, `FIXADOS`); só as respostas vão
+  para o banco (coleção `respostas`). Montadores: `scripts\montar_conferencia_layout3.py`,
+  `montar_conferencia_corte.py`, `respostas_na_conferencia.py` (na cópia do HD).
+- **Como o Samuel entende uma pergunta:** começa por "O que você está escolhendo: …", no máximo 3 parágrafos curtos,
+  a primeira imagem é só a parte que muda, ampliada, depois a tela inteira; sempre "Ainda não entendi". As páginas de
+  layout e de escolhas respeitam quebra de linha na explicação.
+- **Testes no Windows do GitHub em qualquer ramo:** `gh workflow run "Testes no Windows" -R
+  Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>` (com `-f so_janela=true`
+  roda só os botões). 6 a 12 minutos; `gh run watch <id> --exit-status`.
+- **PowerShell 5.1:** mensagem de commit com aspas quebra em `-m`; usar `git commit -F arquivo`. `Set-Content -Encoding
+  utf8` põe BOM (o título do commit `7485e1b` ficou com um).
+- **O relógio do PC está em UTC-4** (America/Cuiaba); as horas das respostas nas páginas são UTC.
+- **`teste_botoes.py` clica também em botões escondidos**; com botões novos de apagar, pode chegar ao "Processar" sem
+  página nenhuma.
+- **A tela mostra o que o PDF não tem** no "Só as letras": a prévia de 110 DPI decide diferente do PDF de 300 (letra T
+  do Antiphonal 46). Mostrar o desenho do tamanho do PDF na página da vez custa quase nada no "Só as letras".
+- **Abrir o Marial de 300 folhas leva 50 a 60 s** neste PC; em setembro, 25 a 44 s. Não é do G6. Na Lista de bugs.
+- **Memória:** com 3 ou 4 agentes o PC ficou entre 3,4 e 5,8 GB livres; uma medição de velocidade leva uns 13 minutos
+  por rodada e é atrapalhada por outro agente rodando testes.
+
+## 7. Como rodar e conferir
+
+```
+.venv\Scripts\python.exe main.py                         o programa (pasta principal, ramo fase-1)
+.venv\Scripts\python.exe -m pytest tests\<arquivo> -q    um arquivo por vez (a suíte inteira: usar o GitHub)
+.venv\Scripts\python.exe teste_botoes.py                 clica nos botões de verdade
+.venv\Scripts\python.exe teste_velocidade.py "gabarito\velocidade\marial_300.pdf" --saida <pasta>
+```
+Medição de velocidade alternada: `relatorios\velocidade-g6-2026-10-12\rodar_uma.ps1` e `juntar.py` (TEMP na worktree,
+espera 3 GB livres). Última suíte completa do `fase-1` no GitHub: rodada 38326255291, 1992 passaram, 0 falharam.
+**Neste checkpoint a suíte não foi rodada no PC**; valem as rodadas do GitHub citadas na tabela do §2.
+
+## 8. Páginas do claude.ai
+
+- Escolhas: https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV
+- Layout: https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu (rodadas 12 e 13 decididas; nada aberto)
+- Quando revisar uma página: https://claude.ai/artifact/NeCgyTotRfqsdXntn9vMUc
+- Andamento: https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy (atualizar: todos os agentes parados)
+- Conferência (G6, layout, conserto do corte): https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX
+
+---
+
+# PARTE -14 — Checkpoint da sessão na nuvem, 09 a 12/10/2026
 
 O Samuel trabalhou de 09 a 12/10 numa sessão do Claude Code **na nuvem** e pediu, em 12/10, para salvar tudo e voltar ao
 Claude Code local. **Nada ficou sem gravar:** todos os ramos estão no GitHub, sem mudança fora de commit. O plano está nas
