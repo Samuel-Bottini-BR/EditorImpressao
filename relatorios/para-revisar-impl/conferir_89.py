@@ -308,7 +308,15 @@ def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False,
                     P.MEDIR_SO_NA_RESOLUCAO_DO_PDF = de_antes
                 vistos.clear()
                 t1 = time.perf_counter()
-                P.renderizar_pagina(doc, projeto, pagina, dpi=dpi if dpi else projeto.qualidade_dpi)
+                if ordem_da_janela and dpi in (0, projeto.qualidade_dpi):
+                    # o que a janela faz por tras depois da previa (13/10/2026):
+                    # troca a marcacao provisoria pela do tamanho do PDF e mede
+                    assert pagina.marcacao_provisoria or not pagina.selecao
+                    P.acertar_no_tamanho_do_pdf(doc, projeto, pagina)
+                    assert not pagina.marcacao_provisoria
+                else:
+                    P.renderizar_pagina(doc, projeto, pagina,
+                                        dpi=dpi if dpi else projeto.qualidade_dpi)
                 base = f"{pid}__{pagina.metade}"
                 s = vistos[-1] if vistos else None
                 feitas[base] = {

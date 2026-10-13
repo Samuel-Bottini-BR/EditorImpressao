@@ -21,6 +21,7 @@ A conta da troca em si (sem fios) esta em tests/test_misto_no_programa.py.
 
 from __future__ import annotations
 
+import threading
 import time
 
 import numpy as np
@@ -86,6 +87,14 @@ def _livro(pasta) -> Projeto:
     return projeto
 
 
+class _Chamadas(list):
+    """As chamadas do detector falso, e quantas procuras na pagina grande
+    chegaram a rodar ao mesmo tempo."""
+
+    grandes_agora = 0
+    grandes_juntas = 0
+
+
 @pytest.fixture
 def detector(monkeypatch):
     """O detector falso. Devolve a lista das chamadas: (pagina que a imagem
@@ -93,14 +102,20 @@ def detector(monkeypatch):
     largura, depois de DEMORA_NA_GRANDE; pequena: ate 60%, na hora."""
     import core.detectar_regioes as D
 
-    chamadas = []
+    chamadas = _Chamadas()
+    tranca = threading.Lock()
 
     def falso(img, **_opcoes):
         grande = img.shape[0] > 1500
         qual, y0, y1 = _qual_pagina(img)
         chamadas.append((qual, grande))
         if grande:
+            with tranca:
+                chamadas.grandes_agora += 1
+                chamadas.grandes_juntas = max(chamadas.grandes_juntas, chamadas.grandes_agora)
             time.sleep(DEMORA_NA_GRANDE)
+            with tranca:
+                chamadas.grandes_agora -= 1
         s = Selecao()
         s.acrescentar(retangulo(0.2, y0, 0.5 if grande else 0.6, y1, tipo=GRAVURA, origem=REDE))
         return s
@@ -152,7 +167,8 @@ def _a_mao(pagina) -> list:
 
 
 def _parado(previas) -> bool:
-    return not previas._pedidas and previas._pool.activeThreadCount() == 0
+    return (not previas._pedidas and not previas._medidas_a_espera
+            and previas._pool.activeThreadCount() == 0)
 
 
 def test_trocar_de_pagina_antes_de_a_marcacao_chegar(app, pasta, detector, filtradas):  # noqa: F811
@@ -192,6 +208,9 @@ def test_trocar_de_pagina_antes_de_a_marcacao_chegar(app, pasta, detector, filtr
             assert previas.pedir_medida(i) is False
         # cada pagina foi procurada uma vez na pequena e uma na grande, e so
         assert sorted(detector) == sorted([(i, g) for i in range(FOLHAS) for g in (False, True)])
+        # as buscas na pagina grande rodaram uma de cada vez: sobra sempre um
+        # fio para a previa da pagina para onde a pessoa foi
+        assert detector.grandes_juntas == 1
     finally:
         previas.parar()
 
@@ -236,7 +255,10 @@ def test_previa_pedida_no_meio_da_busca_nao_fica_com_a_marcacao_de_antes(app, pa
     try:
         previas.pegar(0, 110)
         assert _esperar(lambda: previas.chave(0, 110) in previas._cache)
+        da_busca = previas.chave_da_medida(0)
         assert previas.pedir_medida(0) is True
+        # a busca comeca quando o pool fica parado; espera ela estar no meio
+        assert _esperar(lambda: da_busca in previas._pedidas), "a busca não começou"
         pagina.clareza_melhorar = pagina.clareza_melhorar + 10     # outra chave de previa
         assert previas.pegar(0, 110) is None                       # pedida com a busca no meio
         assert _esperar(lambda: _parado(previas)), "travou"

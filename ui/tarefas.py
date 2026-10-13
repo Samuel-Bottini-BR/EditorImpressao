@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import shiboken6
-from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
+from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
@@ -337,6 +337,10 @@ class _TarefaPrevia(QRunnable):
                 self._folha_crua()
                 return
             if not 0 <= self.indice_pagina < len(self.projeto.paginas):
+                if MARCA_DA_MEDIDA in self.chave:
+                    # a pagina deixou de existir: avisa, para a fila dos
+                    # desenhos do tamanho do PDF nao ficar parada atras deste
+                    _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave, self.geracao)
                 return
             if ":recorte:" in self.chave:
                 self._para_recorte()
@@ -446,6 +450,24 @@ class GerenciadorPrevias(QObject):
         # novo sem tirar do cache: ver refazer_previas.
         self._trocas: dict[int, int] = {}
         self._como_pedir: dict[str, tuple[int, int, str | None]] = {}
+        # Os desenhos do tamanho do PDF (pedir_medida) esperam aqui, (chave,
+        # indice), e so comecam quando o pool de previas esta PARADO, um de
+        # cada vez. Sao pesados (de 1 a 4 s, as vezes mais), e desde
+        # 13/10/2026 toda pagina visitada pede um (para trocar a marcacao
+        # provisoria). Medido na tela de verdade, num pedaco do Antiphonal
+        # 1547 (relatorios/para-revisar-impl/tempo_de_trocar_de_pagina.py):
+        # comecando logo, eles disputavam os fios e o processador com as
+        # previas adiantadas das paginas seguintes, e trocar de pagina ficava
+        # 0,3 s mais lento (regra 6 do plano: nao pode). Assim as previas vem
+        # sempre primeiro, e este trabalho so usa o tempo em que a pessoa esta
+        # olhando a pagina. Quem folheia sem parar so tem as paginas acertadas
+        # quando parar (ou ao gerar o PDF, que acerta todas).
+        # Arriscado: comecar um destes com previa na fila, ou dois juntos.
+        self._medidas_a_espera: list[tuple[str, int]] = []
+        self._relogio_das_medidas = QTimer(self)
+        self._relogio_das_medidas.setSingleShot(True)
+        self._relogio_das_medidas.setInterval(150)
+        self._relogio_das_medidas.timeout.connect(self._soltar_a_medida_a_espera)
 
         self._pool = QThreadPool(self)
         # Duas ao mesmo tempo: uma para a pagina que o usuario esta olhando e
@@ -559,8 +581,42 @@ class GerenciadorPrevias(QObject):
         chave = self.chave_da_medida(indice)
         if chave in self._cache or chave in self._pedidas:
             return False
-        self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
+        if any(c == chave for c, _i in self._medidas_a_espera):
+            return False
+        # entra na fila e so comeca com o pool parado (ver _medidas_a_espera)
+        self._medidas_a_espera.append((chave, indice))
+        self._soltar_a_medida_a_espera()
         return True
+
+    def _soltar_a_medida_a_espera(self) -> None:
+        """Comeca o proximo desenho do tamanho do PDF da fila, se o pool de
+        previas esta PARADO (nenhuma previa sendo desenhada nem outro desenho
+        destes); senao, olha de novo daqui a pouco (_relogio_das_medidas).
+        O pedido MAIS NOVO primeiro: e o da pagina que esta na tela, ou perto
+        dela. Pula o que nao serve mais: a pagina mudou de estado (a chave e
+        outra; a tela pede de novo quando a previa nova chegar), ja foi feito,
+        ou a pagina nao precisa mais. Chamado a cada pedido, a cada previa que
+        chega e pelo relogio."""
+        if not self._medidas_a_espera:
+            return
+        if self._pool.activeThreadCount() > 0:
+            if not self._relogio_das_medidas.isActive():
+                self._relogio_das_medidas.start()
+            return
+        while self._medidas_a_espera:
+            chave, indice = self._medidas_a_espera.pop()
+            if not 0 <= indice < len(self.projeto.paginas):
+                continue
+            if chave in self._cache or chave in self._pedidas:
+                continue
+            if chave != self.chave_da_medida(indice):
+                continue
+            if not precisa_do_desenho_do_pdf(self.projeto, self.projeto.paginas[indice]):
+                continue
+            self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
+            break
+        if self._medidas_a_espera and not self._relogio_das_medidas.isActive():
+            self._relogio_das_medidas.start()
 
     def refazer_previas(self, indice: int) -> None:
         """A marcacao da pagina `indice` foi trocada por tras (a provisoria,
@@ -796,6 +852,7 @@ class GerenciadorPrevias(QObject):
                 # a marcacao da pagina FOI trocada: o que foi desenhado com a
                 # de antes tambem tem de ser refeito
                 self.refazer_previas(geracao[0])
+            self._soltar_a_medida_a_espera()
             return
         self._pedidas.pop(chave, None)
         if trocou:
@@ -812,6 +869,7 @@ class GerenciadorPrevias(QObject):
         # so se lembra de como pedir o que ainda esta guardado ou a caminho
         self._como_pedir = {c: como for c, como in self._como_pedir.items()
                             if c in self._cache or c in self._pedidas}
+        self._soltar_a_medida_a_espera()
         self.pronta.emit(chave, img)
 
     def _esquecer_pedido(self, chave: str, geracao: tuple | None = None) -> None:
@@ -819,6 +877,7 @@ class GerenciadorPrevias(QObject):
         pedir de novo (so se o pedido anotado e o mesmo que falhou)."""
         if chave in self._pedidas and (geracao is None or self._pedidas[chave] == geracao):
             del self._pedidas[chave]
+        self._soltar_a_medida_a_espera()
 
     def _promover(self, chave: str) -> None:
         """Move a chave para o fim da fila de LRU (foi usada agora, entao e a
@@ -831,6 +890,8 @@ class GerenciadorPrevias(QObject):
         """Esvazia as filas e espera as tarefas em andamento (ate 3s cada).
         Chamar ao trocar de livro ou fechar, para nao deixar thread orfa
         escrevendo num projeto que ja foi trocado."""
+        self._relogio_das_medidas.stop()
+        self._medidas_a_espera.clear()
         self._pool.clear()
         self._pool_cartoes.clear()
         self._pool.waitForDone(3000)
