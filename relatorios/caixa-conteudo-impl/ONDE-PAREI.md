@@ -19,6 +19,7 @@ O programa passou a ter, guardada e testada, a conta original do ScanTailor que 
 | Os testes (76 casos) e os números do pesquisador | `tests/test_caixas_scantailor.py`, `tests/dados/caixas_scantailor_pesquisador.json` | `330da14`, `1c20d58` |
 | As medidas (caixas, tempos, memória, DLL anterior) e os scripts | `relatorios/caixa-conteudo-impl/dados/`, `scripts/` | `330da14`, `1c20d58` |
 | O LEIA-ME de `terceiros/` com a seção "As caixas" | `terceiros/scantailor-advanced/LEIA-ME.md` | `1c20d58` |
+| Este arquivo | `relatorios/caixa-conteudo-impl/ONDE-PAREI.md` | `28fabf0` e o seguinte |
 
 **O que a função devolve:** a caixa da página e a caixa do conteúdo em pontos da imagem e em milímetros, o tamanho do conteúdo em mm como o ScanTailor guarda (é o número que as margens do 2.4 usam), se a página tem conteúdo (página em branco: não tem), se a conta foi feita na página invertida ("claro no escuro"), e o tempo de cada parte. Sem a DLL, ou com entrada errada, devolve "indisponível" com o motivo em português, sem exceção.
 
@@ -34,7 +35,7 @@ O programa passou a ter, guardada e testada, a conta original do ScanTailor que 
   - folhas de mentira: faixa preta sai da página; texto a 10 pontos da faixa não é cortado; página em branco; colorida igual a cinza; "claro no escuro"; parâmetro errado não derruba; trava de memória; cópia fiel do trecho copiado.
 - As três ferramentas que já estavam na DLL (limpar pontinhos, dividir, endireitar) dão **o mesmo** com a DLL nova e com a anterior nas 32 páginas do gabarito: 96 de 96, 96 de 96 e 32 de 32 (`dados/dll-anterior.json`).
 - Um arquivo por vez: `test_st_ferramentas` 10, `test_dividir_scantailor` 13, `test_endireitar_scantailor` 17, `test_pontinhos_scantailor` 30, `test_gravura_scantailor` 24, todos passam.
-- **A bateria inteira:** ver o fim deste arquivo ("A bateria").
+- **A bateria inteira:** 2081 passaram, nenhum falhou, 59 pulados (ver "A bateria", no fim).
 
 ## Os tempos (item 5 do pedido; para o 2.16)
 
@@ -117,4 +118,4 @@ Nenhum do programa. Do código original do ScanTailor (não consertados, só ano
 
 ## A bateria
 
-(preenchido no fim)
+Rodada em 13/10/2026, de 01:52 a 02:08, **um arquivo de pytest por vez** (113 arquivos de `tests/`, cada um no seu processo, esperando 3 GB de memória livre antes de cada um): **2081 passaram, nenhum falhou, 59 pulados**, no commit `28fabf0` (o código é o de `1c20d58`). Os pulados são de arquivos que não toquei (nenhum de `test_caixas_scantailor.py`, que passou os 76); não comparei a lista de pulados com a do `fase-1`.
