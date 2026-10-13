@@ -13,10 +13,10 @@ O que faz, em tres paginas:
   - Egenloff p. 12 (verso em branco): o aviso "Página sem conteúdo" com os dois
     botoes; "Deixar em branco" deixa a pagina no livro, branca.
 
-As paginas sao preparadas como no dia do estudo (corta antes de endireitar,
-conta do endireitar do programa): com o preparo do livro novo de hoje a letra
-T fica logo abaixo do limite (ver ONDE-PAREI.md, ressalvas). Nada aqui muda o
-programa nem o acervo. Nao substitui o olho do verificador na janela.
+As paginas sao preparadas como num LIVRO NOVO de hoje (endireitar antes de
+cortar, conta do ScanTailor): desde o reacerto dos limites de 13/10/2026 a
+letra T do Antiphonal 46 vai para a lista tambem nesse preparo. Nada aqui muda
+o programa nem o acervo. Nao substitui o olho do verificador na janela.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from core import analise, misto  # noqa: E402
 from core import pipeline as P  # noqa: E402
 from core.filtros import PRETO_E_BRANCO  # noqa: E402
 from historico_acoes import HistoricoAcoes  # noqa: E402
-from modelos import ENDIREITAR_DO_PROJETO_ANTIGO, ORDEM_DO_PROJETO_ANTIGO, Projeto  # noqa: E402
+from modelos import Projeto  # noqa: E402
 
 FALHAS: list[str] = []
 
@@ -71,8 +71,6 @@ def abrir(app, pid: str):
 
     projeto = Projeto(caminho_entrada=str(conferir_89._pdf_da_pagina(pid)), nome=pid)
     projeto.filtro_padrao = PRETO_E_BRANCO
-    projeto.ordem_do_preparo = ORDEM_DO_PROJETO_ANTIGO
-    projeto.endireitar_como = ENDIREITAR_DO_PROJETO_ANTIGO
     projeto.misto_so_as_letras = True
     projeto = P.analisar_projeto(projeto)
     for pagina in projeto.paginas:

@@ -29,11 +29,36 @@ Commits no ramo (todos no GitHub):
 | O programa de verdade, 300 DPI, preparo do livro novo de hoje (G6 + conta do ScanTailor) | 20 | 73 | 7 (ressalva 1) |
 | O programa de verdade, 110 DPI (a prévia), sem a força sozinha | 39 | 60 | 22 (por isso a prévia não mede mais) |
 
-Os resultados página a página estão nos `conferir-89-*.json` desta pasta.
+**Depois do reacerto dos limites (13/10, pedido da gerente; `reacerto-dos-limites.md`):** dois limites mudaram,
+os mesmos para os dois preparos: o tamanho do pedaço grande, de 1,5 para **1,2**, e o mínimo da guarda da linha,
+de 0,20 para **0,13**. A forma da regra não mudou.
+
+| O programa de verdade, 300 DPI, limites reacertados | Vão | Certas | Decidem diferente do estudo |
+|---|---|---|---|
+| Preparo do projeto antigo (o do dia do estudo) | **21** | **78** | nenhuma |
+| Preparo do livro novo (G6 + conta do ScanTailor) | **22** | **75** | 5: Antiphon 260, Cursus 3, Matemática 72, Opus Majus 20, Palatino 66 |
+| A conta do programa sobre as máscaras do estudo | 21 | 78 | nenhuma |
+
+A letra T do Antiphonal 46 e o Egenloff 3 voltaram a ir no livro novo. As 5 que sobram não se resolvem com
+limite (o porquê de cada uma, com os números, está em `reacerto-dos-limites.md`); na Matemática 72 o programa
+de hoje acerta o gabarito e a regra do estudo errava.
+
+Os resultados página a página estão nos `conferir-89-*.json` desta pasta (os `...-limites-da-rodada-4.json`
+são os de antes do reacerto; os `...-completo.json` têm os sinais inteiros que o reacerto leu).
+
+### Tempo de medir uma página na resolução do PDF (para a pergunta da ressalva 2)
+
+Medido nas 89 páginas, o programa de verdade a 300 DPI, uma página por vez, neste PC: desenhar a folha,
+preparar, achar gravura e texto (primeira vez da página), filtrar e fazer a conta. Três rodadas de cada preparo:
+média de 3,6 a 4,4 s por página, mediana de 2,5 a 3,0 s, 9 em cada 10 páginas em menos de 7 s, a pior de 20 a
+31 s (Antiphon 88 e 260, folhas de 38 milhões de pontos). Só a conta da regra: 0,17 a 0,27 s por página em
+média (a pior, 1,1 s). Num livro de 300 páginas todo em "Só as letras": de 13 a 15 minutos pela mediana, de 18
+a 22 minutos pela média (as 89 páginas misturam livros de folha grande; um livro de folha comum fica perto da
+mediana). É tempo de um fio só, com o PC livre; não medi com a tela em uso ao mesmo tempo.
 
 ### Testes de máquina
 
-- Novos: `tests/test_revisar.py` (25), `tests/test_avisos.py` (24), `tests/test_para_revisar_na_tela.py` (20);
+- Novos: `tests/test_revisar.py` (28), `tests/test_avisos.py` (25), `tests/test_para_revisar_na_tela.py` (20);
   refeitos: os do aviso em `tests/test_misto_no_programa.py` (31 no arquivo).
 - A suíte inteira, um arquivo de pytest por vez: antes da junção do `fase-1`, 114 arquivos, 2036 passaram,
   nenhum falhou; depois da junção, 115 arquivos, 2080 passaram, nenhum falhou (`test_ordem_do_preparo.py`: 43).
@@ -77,14 +102,14 @@ forte"). Pasta de dados de teste, nunca a do Samuel.
 
 ## Ressalvas
 
-1. **Com o preparo do livro novo de hoje, 7 das 89 páginas decidem diferente do estudo (20 vão, 73 certas).** A
-   regra foi acertada em páginas preparadas como no programa de 07/10 (corta antes de endireitar, conta do
-   endireitar do programa). Com o G6 (endireitar antes de cortar) e a conta do ScanTailor, as máscaras mudam um
-   pouco e as páginas na beirada do limite trocam de lado: a letra T do Antiphonal 46 dá 1,43 (limite 1,5) e
-   deixa de ir; Egenloff 3 (1 linha falhada em vez de 2), Matemática 72 e Antiphon 260 mudam; Cursus 3, Opus
-   Majus 20 e Palatino 66 passam a ir. Com o preparo do estudo, o programa dá exatamente 21 e 78. **Não mexi
-   nos limites aprovados.** Decisão para a gerente e o Samuel: aceitar assim, ou reacertar os limites no
-   preparo novo (precisa de estudo e de olho).
+1. **No preparo do livro novo, 5 das 89 páginas ainda decidem diferente do estudo (22 vão, 75 certas), mesmo
+   depois do reacerto dos limites** (antes do reacerto eram 7: 20 vão, 73 certas). A regra foi acertada em
+   páginas preparadas como no programa de 07/10; com o G6 e a conta do ScanTailor as máscaras mudam. O
+   reacerto (dois limites, um conjunto só para os dois preparos) trouxe de volta a letra T do Antiphonal 46 e
+   o Egenloff 3. As 5 que sobram: Antiphon 260 deixa de ir (devia ir); Cursus 3, Opus Majus 20 e Palatino 66
+   passam a ir (não precisavam); Matemática 72 deixa de ir (e não precisava: aqui melhorou). Para chegar a
+   21 e 78 no livro novo seria preciso mexer em mais do que limite. **O limite mais apertado é o mínimo da
+   guarda (0,13): apoia-se numa linha do Egenloff 3.** Não olhei as imagens dessas páginas: é do verificador.
 2. **A regra só é medida na resolução do PDF, não na prévia.** A 110 DPI ela erra (39 vão, 60 certas). A tela
    pede, por trás, um desenho na resolução do PDF só para medir a página da vez: custa um desenho desse
    tamanho por página visitada e por mudança de filtro, força ou corte nela (segundos, em fila atrás da
@@ -105,7 +130,11 @@ forte"). Pasta de dados de teste, nunca a do Samuel.
    `alertas_aceitos`, `forca_antes_do_reforco`, `reforco_desfeito`, `faixa_na_beirada`; na folha
    `alertas_aceitos`; no livro `reforcar_texto_falhado` (livro novo ligado; projeto antigo desligado). É
    mudança de formato de dados: entendi que as decisões das rodadas 4 e 5 a autorizam, como nos itens
-   anteriores; confirmar.
+   anteriores (a gerente avisa o Samuel, 13/10). Projeto antigo, sem os campos, abre e sai igual ponto por
+   ponto: `tests/test_avisos.py::test_projeto_antigo_sai_igual_ponto_por_ponto_mesmo_com_texto_falhado` (a
+   página sai idêntica ao "Só as letras" de sempre mesmo com texto falhado: a força não muda sozinha) e
+   `test_os_campos_novos_vao_e_voltam_do_projeto_salvo`; sem "Só as letras",
+   `tests/test_misto_no_programa.py::test_sem_so_as_letras_e_o_preto_e_branco_de_sempre`.
 6. **"Deixar em branco" só aparece nos dois avisos** ("Parece em branco" e "Página sem conteúdo"); os dois botões
    em qualquer página são da Lista de espera (Fase 6) e não foram feitos. A tecla Delete continua "apagar".
 7. **O aviso "Parece em branco" continua com a conta de antes** (o erro da Gladstone 18, que tem título, está

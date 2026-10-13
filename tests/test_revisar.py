@@ -78,6 +78,58 @@ def test_letra_grande_que_some_e_desenho_apagado():
     assert revisar.motivos(s, desenho_apagado_vale=False) == []
 
 
+def test_os_dois_limites_reacertados_para_o_preparo_do_livro_novo():
+    """Reacerto de 13/10/2026 (relatorios/para-revisar-impl/reacerto-dos-limites.md):
+    com o preparo do livro novo (endireitar antes de cortar), a letra T do
+    Antiphonal 46 mede 1,43 alturas de linha ao quadrado (no dia do estudo,
+    1,57) e a linha vermelha do Egenloff 3 guarda 0,148 da tinta. Os limites
+    de antes (1,5 e 0,20) deixavam as duas paginas de fora. Quem mudar estes
+    numeros tem de rodar reacertar_limites.py e ver as 89 paginas de novo."""
+    assert revisar.PEDACO_GRANDE == 1.2
+    assert revisar.GUARDA_MINIMA == 0.13
+    # os outros continuam os da rodada 4
+    assert (revisar.LIMITE_JUNTO, revisar.LIMITE_APAGADO, revisar.LIMITE_VAZOU,
+            revisar.LIMITE_BEIRADA, revisar.LIMITE_SEM_CONTEUDO, revisar.LIMITE_GUARDA,
+            revisar.FRACAO_VIRA_AVISO_DO_LIVRO) == (0.02, 0.025, 0.10, 0.03, 0.005, 0.62, 0.7)
+
+
+def test_letra_grande_do_tamanho_da_t_do_antiphonal_46_no_preparo_novo():
+    """Um pedaco cheio de 1,4 altura de linha ao quadrado, colado no texto,
+    numa pagina com muita tinta (as outras duas contas do desenho apagado nao
+    chegam): com o limite de antes (1,5) nao ia; com 1,2 vai."""
+    cinza, base, linhas, imagem, pol = _texto(n=18)
+    # 20 x 28 = 560 pontos = 1,4 altura de linha ao quadrado (altura 20)
+    base[925:945, 100:128] = True
+    resultado = base.copy()
+    resultado[925:945, 100:128] = False
+    s = revisar.medir(cinza, base, linhas, imagem, resultado, pol, H)
+    assert s.apagado_a < revisar.LIMITE_JUNTO, "so a conta do pedaco grande pode pegar"
+    assert 1.3 < s.maior_pedaco < 1.5
+    assert revisar.motivos(s) == [analise.DESENHO_APAGADO]
+    # um pedaco de 1,0 (20 x 20) continua sem ir
+    base[925:945, 120:128] = False
+    resultado[925:945, 120:128] = False
+    s = revisar.medir(cinza, base, linhas, imagem, resultado, pol, H)
+    assert analise.DESENHO_APAGADO not in revisar.motivos(s)
+
+
+def test_a_linha_que_guarda_15_por_cento_conta_como_falhada():
+    """A linha vermelha do Egenloff 3 no preparo novo guarda 0,148 da tinta;
+    com o minimo de antes (0,20) ela era dada como "sumiu inteira"."""
+    cinza, base, linhas, imagem, pol = _texto()
+    pb = base.copy()
+    pb[200:220:2, :] = False                       # uma linha pela metade (0,5)
+    pb[240:260, :] = False
+    pb[240:243, :] = base[240:243, :]              # outra guarda 3 fileiras de 20: 0,15
+    s = revisar.medir(cinza, base, linhas, imagem, base.copy(), pol, H, tinta_pb=pb)
+    assert sorted(round(g, 2) for g in s.guardas)[:2] == [0.15, 0.5]
+    assert s.falhadas == 2 and s.texto_falhado
+    # com 2 fileiras de 20 (0,10) a linha sumiu inteira: nao conta
+    pb[242, :] = False
+    s = revisar.medir(cinza, base, linhas, imagem, base.copy(), pol, H, tinta_pb=pb)
+    assert s.falhadas == 1 and not s.texto_falhado
+
+
 def test_pedaco_apagado_longe_do_texto_nao_e_letra_grande():
     cinza, base, linhas, imagem, pol = _texto()
     base[800:830, 400:460] = True

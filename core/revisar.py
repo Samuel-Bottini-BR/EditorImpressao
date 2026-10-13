@@ -17,7 +17,7 @@ O QUE FAZ
        tinta que o Preto e branco de sempre imprime, fora das linhas de texto e
        das gravuras, e que NAO esta no resultado. Vai quando essa tinta e 2,5%
        ou mais de toda a tinta, ou 2% amontoada, ou quando um pedaco cheio e
-       grande (1,5 altura de linha ao quadrado ou mais) colado no texto sumiu
+       grande (1,2 altura de linha ao quadrado ou mais) colado no texto sumiu
        (a letra T vermelha do Antiphonal 46). O que fica so na faixa da
        beirada (tarja da biblioteca, fundo do scanner) nao conta.
     2. FIGURA ALEM DA GRAVURA ACHADA: pedacos grandes de tinta encostados por
@@ -26,8 +26,8 @@ O QUE FAZ
        resultado, 3% ou mais da pagina. Em 70% ou mais das paginas do livro,
        vira um aviso so, do livro (faixa_no_livro; quem junta e core.pipeline).
     4. TEXTO FALHADO NOS DOIS JEITOS: 2 ou mais linhas compridas em que o preto
-       e branco guarda entre 20% e 62% da tinta clara da letra, ou todas as
-       linhas contadas. Abaixo de 20% a linha sumiu inteira: no acervo isso e
+       e branco guarda entre 13% e 62% da tinta clara da letra, ou todas as
+       linhas contadas. Abaixo de 13% a linha sumiu inteira: no acervo isso e
        carimbo e anotacao a lapis, que se quer tirar.
     5. PAGINA SEM CONTEUDO: quase nenhuma tinta forte no miolo (menos de 0,5%),
        no maximo 1 linha forte e (3 ou mais linhas fracas, ou nenhuma forte).
@@ -35,10 +35,13 @@ O QUE FAZ
     linha): SUMIU ALGO, quando a tinta forte apagada passa de 10% da tinta (a
     conta do aviso antigo, que ali continua valendo: a musica do Graduale 222).
 
-    As contas sao as dos scripts do estudo, copiadas sem mudar limite nenhum
-    (relatorios/revisar-decisoes/rodada-4/scripts: sinais4.py, sinais.py,
-    medir.py, criterio.py, regra4.py). A prova de que dao o mesmo esta em
-    relatorios/para-revisar-impl/conferir_89.py.
+    As contas sao as dos scripts do estudo (relatorios/revisar-decisoes/
+    rodada-4/scripts: sinais4.py, sinais.py, medir.py, criterio.py,
+    regra4.py), copiadas sem mudar a forma. A prova de que dao o mesmo esta em
+    relatorios/para-revisar-impl/conferir_89.py. Dois LIMITES foram
+    reacertados em 13/10/2026 para o preparo do livro novo (o tamanho do
+    pedaco grande, de 1,5 para 1,2, e o minimo da guarda, de 20% para 13%):
+    o porque e os numeros estao junto dos limites, mais abaixo.
 
     medir() tambem devolve ONDE SUMIU (caixas em fracao da pagina), para o
     aviso mostrar o lugar marcado (Samuel, rodada 5, `rv5-erro-1-desenho`:
@@ -49,10 +52,11 @@ O QUE E SEGURO MUDAR
     marca, nunca quem vai para a lista).
 
 O QUE E ARRISCADO MUDAR
-    Qualquer limite (os numeros 21 e 78 foram aprovados com estes); a ordem das
-    contas dentro de _apagado (a peca da beirada sai ANTES de medir o
-    amontoado); trocar o elemento redondo de _maior_pedaco por quadrado (a
-    letra T do Antiphonal 46 da 1,6, colada no limite de 1,5).
+    Qualquer limite sem rodar reacertar_limites.py (o Samuel aprovou o
+    resultado nas 89 paginas: 21 vao, 78 certas); a ordem das contas dentro de
+    _apagado (a peca da beirada sai ANTES de medir o amontoado); trocar o
+    elemento redondo de _maior_pedaco por quadrado (muda o tamanho medido da
+    letra T do Antiphonal 46, o caso que o limite foi feito para pegar).
 
 Nao importa ui/. Uma pagina por vez. Custa umas rotulacoes de pedacos da
 pagina (tempo medido em relatorios/para-revisar-impl/ONDE-PAREI.md).
@@ -67,16 +71,42 @@ import numpy as np
 
 from core import analise
 
-# --- os limites aprovados (rodada 4; ver o topo) ----------------------------
+# --- os limites (rodada 4; dois reacertados em 13/10/2026) ------------------
+#
+# O que o Samuel aprovou na rodada 4 foi o RESULTADO nas 89 paginas (21 vao, 78
+# certas), com os limites daquele dia: pedaco grande 1,5 e guarda minima 0,20.
+# Eles foram acertados em paginas preparadas como o programa de 07/10
+# preparava (cortar antes de endireitar, conta do endireitar do programa).
+# Desde 12/10 o livro novo endireita antes de cortar (G6) e usa a conta do
+# ScanTailor: as mascaras mudam um pouco, e duas paginas que o Samuel discutiu
+# ficaram logo abaixo do limite - a letra T do Antiphonal 46 (maior pedaco
+# 1,43 em vez de 1,57) e o texto vermelho do Egenloff 3 (a segunda linha
+# falhada guarda 0,148 em vez de 0,46). Decisao da gerente (13/10): reacertar
+# so os limites para as decisoes voltarem. Medido nas 89 paginas, nos DOIS
+# preparos, com o programa de verdade a 300 DPI
+# (relatorios/para-revisar-impl/reacertar_limites.py e reacerto-dos-limites.md):
+#   PEDACO_GRANDE 1,5 -> 1,2: entre 0,8 e 2,0 so existem duas paginas, a
+#       letra T do Antiphonal 46 (1,43 / 1,57) e a letra L do Antiphonal 76
+#       (2,11 / 2,04); 1,2 pega as duas nos dois preparos, com folga.
+#   GUARDA_MINIMA 0,20 -> 0,13: entre 0,10 e 0,20 so ha linhas do Egenloff 3
+#       (0,121; 0,143; 0,148) e uma do Boecio 22 (0,15 / 0,199), que sozinha
+#       nao manda a pagina. 0,13 conta a linha vermelha do Egenloff 3.
+# Um conjunto so para os dois preparos: no do projeto antigo, as 89 paginas
+# decidem como o estudo (21 vao, 78 certas); no do livro novo, 84 das 89 (22
+# vao, 75 certas) - as 5 que sobram nao se resolvem com limite (a gravura
+# achada mudou, ou a faixa e o texto falhado apareceram de verdade no preparo
+# novo; ver o relatorio).
+# Os outros limites nao mudaram. Arriscado: mudar qualquer um sem rodar
+# reacertar_limites.py (ele mostra a folga de cada limite nas 89 paginas).
 LIMITE_JUNTO = 0.02             # desenho apagado: tinta apagada amontoada
 LIMITE_APAGADO = 0.025          # desenho apagado: tinta apagada ao todo
-PEDACO_GRANDE = 1.5             # desenho apagado: o maior pedaco, em alturas de linha ao quadrado
+PEDACO_GRANDE = 1.2             # desenho apagado: o maior pedaco, em alturas de linha ao quadrado
 LIMITE_VAZOU = 0.10             # figura alem da gravura achada
 LIMITE_BEIRADA = 0.03           # faixa escura na beirada (fracao da pagina)
 FRACAO_VIRA_AVISO_DO_LIVRO = 0.7
 LIMITE_SEM_CONTEUDO = 0.005     # pagina sem conteudo: tinta forte no miolo
 LIMITE_GUARDA = 0.62            # texto falhado: guarda menos que isto...
-GUARDA_MINIMA = 0.20            # ...e pelo menos isto (abaixo, a linha sumiu inteira)
+GUARDA_MINIMA = 0.13            # ...e pelo menos isto (abaixo, a linha sumiu inteira)
 LIMITE_JUNTO_DENS = 0.04        # o que e "amontoado": mais de 4% apagado na janela
 # "Guardar só o texto": a tinta forte que ele apaga, em fracao de toda a tinta.
 # E o limite do aviso antigo (core.pipeline.LIMITE_DA_TINTA_FORTE_FORA ate
@@ -109,6 +139,9 @@ class Sinais:
     onde_sumiu_a_tinta_forte: list[Caixa] = field(default_factory=list)
     # as linhas falhadas: (x0, y0, x1, y1) em fracao da pagina
     linhas_falhadas: list[Caixa] = field(default_factory=list)
+    # de cada linha contada, quanto da tinta da letra o preto e branco guarda
+    # (0 a 1): a medida crua do texto falhado, antes dos limites
+    guardas: list[float] = field(default_factory=list)
 
     @property
     def desenho_apagado(self) -> bool:
@@ -352,8 +385,20 @@ def _letra_falhada(cinza: np.ndarray, poligonos, tinta_pb: np.ndarray):
     escuros que papel - 30% do contraste. guarda = quanto dessa tinta o preto e
     branco guarda. Linha de contraste baixo (papel - tinta < 25) nao conta: e a
     mancha do verso que o leitor leu."""
+    guardas = _guardas_das_linhas(cinza, poligonos, tinta_pb)
+    falhadas = [caixa for caixa, guarda in guardas if GUARDA_MINIMA <= guarda < LIMITE_GUARDA]
+    return len(falhadas), len(guardas), falhadas
+
+
+def _guardas_das_linhas(cinza: np.ndarray, poligonos, tinta_pb: np.ndarray) -> list[tuple[Caixa, float]]:
+    """Para cada linha CONTADA (comprida, longe do alto e do pe, com contraste):
+    (a caixa dela em fracao da pagina, quanto da tinta da letra o preto e
+    branco guarda, de 0 a 1). E a medida crua do texto falhado, antes dos
+    limites (ver _letra_falhada): fica em Sinais.guardas para os limites
+    poderem ser reacertados sem rodar o programa de novo
+    (relatorios/para-revisar-impl/reacertar_limites.py)."""
     alt, larg = cinza.shape
-    contadas, falhadas = 0, []
+    guardas: list[tuple[Caixa, float]] = []
     for p in poligonos:
         x0, y0, x1, y1 = _caixa_da_linha(p, larg, alt)
         if (x1 - x0) < 0.15 * larg or y0 < 0.06 * alt or y1 > 0.94 * alt:
@@ -366,10 +411,8 @@ def _letra_falhada(cinza: np.ndarray, poligonos, tinta_pb: np.ndarray):
             continue
         m = g < papel - 0.3 * (papel - tinta)
         guarda = float(np.count_nonzero(tinta_pb[y0:y1, x0:x1] & m)) / max(1, int(np.count_nonzero(m)))
-        contadas += 1
-        if GUARDA_MINIMA <= guarda < LIMITE_GUARDA:
-            falhadas.append((x0 / larg, y0 / alt, x1 / larg, y1 / alt))
-    return len(falhadas), contadas, falhadas
+        guardas.append(((x0 / larg, y0 / alt, x1 / larg, y1 / alt), guarda))
+    return guardas
 
 
 def _linhas_por_contraste(cinza: np.ndarray, poligonos) -> tuple[int, int]:
@@ -481,8 +524,11 @@ def medir(cinza: np.ndarray, base_tinta: np.ndarray, linhas: np.ndarray, imagem:
         s.onde_sumiu_a_tinta_forte = caixas_de(tinta_forte_apagada, h)
     s.vazou_da_gravura = _vazou_da_gravura(base_tinta, imagem, h)
     s.beirada_a = _beirada_escura(tinta_do_resultado & ~imagem)
-    s.falhadas, s.linhas_contadas, s.linhas_falhadas = _letra_falhada(
-        cinza, poligonos, base_tinta if tinta_pb is None else tinta_pb)
+    pares = _guardas_das_linhas(cinza, poligonos, base_tinta if tinta_pb is None else tinta_pb)
+    s.guardas = [float(guarda) for _caixa, guarda in pares]
+    s.linhas_falhadas = [caixa for caixa, guarda in pares
+                         if GUARDA_MINIMA <= guarda < LIMITE_GUARDA]
+    s.falhadas, s.linhas_contadas = len(s.linhas_falhadas), len(pares)
     s.sem_conteudo = _sem_conteudo(cinza)
     s.linhas_fortes, s.linhas_fracas = _linhas_por_contraste(cinza, poligonos)
     return s

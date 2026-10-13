@@ -25,6 +25,8 @@ Dois jeitos de conferir, do mais leve para o mais pesado:
       preto sozinha" fica desligada (a regra pura, como no estudo).
       --preparo-do-estudo: prepara a pagina como o programa de 07/10 (corta
       antes de endireitar, conta do endireitar do programa).
+      --completo: mede sem os atalhos de tempo e guarda tambem as "guardas" de
+      cada linha (para reacertar_limites.py); grava em ...-completo.json.
 
       ACHADO de 12/10/2026: a 110 DPI a regra NAO vale (24 vao, 67 certas, 13
       paginas decidem diferente do estudo; o texto falhado da falso em varias
@@ -104,7 +106,8 @@ def _resumo(s) -> dict:
             "vazou_da_gravura": round(s.vazou_da_gravura, 4), "beirada_a": round(s.beirada_a, 4),
             "falhadas": s.falhadas, "linhas_contadas": s.linhas_contadas,
             "sem_conteudo": round(s.sem_conteudo, 4), "linhas_fortes": s.linhas_fortes,
-            "linhas_fracas": s.linhas_fracas, "caixas": len(s.onde_sumiu)}
+            "linhas_fracas": s.linhas_fracas, "caixas": len(s.onde_sumiu),
+            "guardas": [round(g, 4) for g in s.guardas]}
 
 
 def sem_rodar_o_programa() -> int:
@@ -205,14 +208,19 @@ def _dividir_a_mao(doc, projeto, filtro) -> None:
                        for i, m in enumerate(("esquerda", "direita"))]
 
 
-def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False) -> int:
+def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False,
+                   completo: bool = False) -> int:
     """O programa de verdade, pagina por pagina, no "Só as letras" de fabrica.
 
     como_no_estudo: prepara a pagina como o programa de 07/10/2026 (o do
     estudo) preparava - corta antes de endireitar e endireita pela conta do
     programa - em vez do jeito do livro novo de hoje (endireita antes de
     cortar, G6, e a conta do ScanTailor). Serve para separar o que mudou na
-    REGRA do que mudou no PREPARO da pagina depois do estudo."""
+    REGRA do que mudou no PREPARO da pagina depois do estudo.
+
+    completo: mede sem os atalhos de tempo (core.revisar.medir, completo=True),
+    para os NUMEROS de cada sinal sairem inteiros mesmo abaixo dos limites - e o
+    que reacertar_limites.py le. As decisoes sao as mesmas."""
     from pasta_de_dados_dos_scripts import isolar_pasta_de_dados
 
     isolar_pasta_de_dados("conferir-89")
@@ -225,7 +233,8 @@ def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False)
     from modelos import Projeto
 
     gab = _gabarito()
-    saida = AQUI / f"conferir-89-programa-dpi{dpi}{'-preparo-do-estudo' if como_no_estudo else ''}.json"
+    saida = AQUI / (f"conferir-89-programa-dpi{dpi}{'-preparo-do-estudo' if como_no_estudo else ''}"
+                    f"{'-completo' if completo else ''}.json")
     feitas = json.loads(saida.read_text(encoding="utf-8")) if saida.exists() else {}
 
     vistos: list = []
@@ -240,6 +249,14 @@ def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False)
     # este script mede em qualquer resolucao pedida (e assim que se viu que a
     # 110 DPI a regra nao vale); o programa so mede na resolucao do PDF
     P.MEDIR_SO_NA_RESOLUCAO_DO_PDF = False
+    if completo:
+        medir_de_sempre = P.revisar.medir
+
+        def medir_completo(*args, **kwargs):
+            kwargs["completo"] = True
+            return medir_de_sempre(*args, **kwargs)
+
+        P.revisar.medir = medir_completo
 
     pids = sorted({b.split("__")[0] for b in gab})
     for pid in pids:
@@ -327,7 +344,8 @@ def main() -> int:
         dpi = int(args[args.index("--dpi") + 1])
     so = [a for a in args if not a.startswith("--") and not a.isdigit()]
     return com_o_programa(dpi, so[0].split(",") if so else None,
-                          como_no_estudo="--preparo-do-estudo" in args)
+                          como_no_estudo="--preparo-do-estudo" in args,
+                          completo="--completo" in args)
 
 
 if __name__ == "__main__":

@@ -314,6 +314,39 @@ def test_com_o_reforco_desligado_no_livro_so_avisa(leitor_falso, texto_falhado):
     assert texto_falhado["forcas"] == [50]
 
 
+def test_projeto_antigo_sai_igual_ponto_por_ponto_mesmo_com_texto_falhado(leitor_falso,
+                                                                         texto_falhado):
+    """O projeto gravado antes de 12/10/2026 (sem nenhum dos campos novos)
+    abre e a pagina sai IGUAL, ponto por ponto, ao "So as letras" de sempre -
+    mesmo quando a regra acha o texto falhado: a forca nao muda sozinha, a
+    pagina so ganha o aviso. ("o programa vai ter que ser capaz de abrir
+    arquivos de versoes anteriores", Samuel, 05/10.)"""
+    from tests.test_misto_no_programa import _resultado_falso
+
+    img, s = _pagina_sintetica()
+    dados = _projeto(s, misto_so_as_letras=True).para_dicionario()
+    dados.pop("reforcar_texto_falhado")
+    for pagina in dados["paginas"]:
+        for campo in ("em_branco", "alertas_aceitos", "forca_antes_do_reforco", "reforco_desfeito",
+                      "faixa_na_beirada"):
+            pagina.pop(campo)
+    for folha in dados["folhas"]:
+        folha.pop("alertas_aceitos")
+    antigo = Projeto.de_dicionario(dados)
+    pagina = antigo.paginas[0]
+
+    saida, mono = P._filtrar(antigo, pagina, img.copy())
+
+    linhas, altura = misto.mascara_das_linhas([_resultado_falso()], img.shape)
+    esperado, mono_esperado = misto.aplicar_misto(
+        img.copy(), pagina.obter_selecao(), 50, fora_do_texto=misto.FORA_REDE,
+        linhas=linhas, altura_linha=altura)
+    assert mono == mono_esperado and np.array_equal(saida, esperado)
+    assert pagina.forca_preto == 50 and pagina.forca_antes_do_reforco is None
+    assert pagina.alertas == [analise.TEXTO_FALHADO], "so o aviso; nada mexe na imagem"
+    assert texto_falhado["forcas"] == [50, 50], "filtrou uma vez so (a segunda e a do teste)"
+
+
 def test_o_desfazer_do_reforco_volta_a_forca_e_nao_reforca_de_novo(leitor_falso, texto_falhado):
     img, s = _pagina_sintetica()
     p = _projeto(s, misto_so_as_letras=True)
