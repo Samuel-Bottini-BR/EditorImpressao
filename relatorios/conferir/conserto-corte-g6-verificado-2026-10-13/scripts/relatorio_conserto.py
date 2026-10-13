@@ -145,7 +145,8 @@ QUADROS = [
 
 
 def velocidade_em_texto(v: dict | None) -> tuple[str, list[str], str]:
-    """(frase curta, linhas da tabela em markdown, frase para o item do resumo)."""
+    """(frase curta, linhas da tabela em markdown, frase para o item do resumo).
+    Vale a comparacao so com as rodadas limpas (velocidade.json, "medidas")."""
     if not v or not v.get("medidas"):
         return ("A velocidade não foi medida (as rodadas não terminaram).", [],
                 "RESSALVA: a velocidade não foi medida.")
@@ -158,14 +159,18 @@ def velocidade_em_texto(v: dict | None) -> tuple[str, list[str], str]:
                       f"{sinal(m['diferenca'], casas)} s ({sinal(m['em_pct'])}%) | "
                       f"{br(m['vai_e_vem_antes'], casas)} s / {br(m['vai_e_vem_depois'], casas)} s |")
         if m["diferenca"] > max(m["vai_e_vem_antes"], m["vai_e_vem_depois"]):
-            piorou.append(m["nome"])
+            piorou.append((m["nome"], m["diferenca"], casas))
+    abrir = next(m for m in v["medidas"] if m["chave"] == "abrir_total_s")
+    troca = next(m for m in v["medidas"] if m["chave"] == "troca_media_s")
+    numeros = (f"Abrir o livro de 300 folhas: {br(abrir['antes'])} s hoje, {br(abrir['depois'])} s com o conserto. "
+               f"Trocar de página: {br(troca['antes'], 2)} s e {br(troca['depois'], 2)} s.")
     if piorou:
-        frase = ("Em " + "; ".join(piorou) + " a diferença foi MAIOR que a variação entre duas rodadas iguais: "
-                 "pode ser lentidão de verdade.")
-        item = "RESSALVA GRAVE (velocidade): " + frase
+        frase = ("Atenção: em " + "; ".join(f"{n} ({sinal(d, c)} s)" for n, d, c in piorou)
+                 + " a diferença foi maior que a variação entre duas rodadas iguais nesta medição. " + numeros)
+        item = "RESSALVA (velocidade): " + frase
     else:
-        frase = ("Nenhuma medida ficou mais lenta além da variação entre duas rodadas iguais do mesmo programa: "
-                 "nesta medição não apareceu lentidão.")
+        frase = ("Nesta medição não apareceu lentidão: nenhuma diferença passou da variação entre duas rodadas "
+                 "iguais do mesmo programa. " + numeros)
         item = "BOM (velocidade): " + frase
     return frase, linhas, item
 
@@ -352,13 +357,19 @@ def main() -> int:
         for r in vel["rodadas"]:
             t.append(f"| {r['nome']} | {'hoje' if r['braco'] == 'antes' else 'conserto'} ({r['commit']}) | {r['hora']} | "
                      f"{r['processador_antes_pct']}% | {br(r['memoria_livre_antes_gb'])} GB | "
-                     f"{'sim' if (r.get('outros_python_antes') or r.get('outros_python_depois')) else 'não'} | "
+                     f"{'SIM (não entra na conta)' if r.get('atrapalhada') else 'não'} | "
                      f"{br(r['abrir_total_s']['mediana'])} s | {br(r['troca_media_s']['mediana'], 2)} s | "
                      f"{br(r['processar_magico_pro_s']['mediana'])} s | {br(r['processar_preto_e_branco_s']['mediana'])} s | "
                      f"{br(r['minutos'])} min |")
         t.append("")
+        t.append("A comparação, só com as rodadas em que o outro agente não estava rodando (média dos valores do meio):\n")
         t.extend(tabela_vel)
         t.append("")
+        if vel.get("medidas_com_todas"):
+            t.append("Com todas as rodadas, inclusive a atrapalhada: "
+                     + "; ".join(f"{m['nome']}: {br(m['antes'], 2 if 'troca' in m['chave'] else 1)} s e "
+                                 f"{br(m['depois'], 2 if 'troca' in m['chave'] else 1)} s" for m in vel["medidas_com_todas"])
+                     + ".\n")
         t.append(conf.get("nota_da_velocidade", "") + "\n")
     t.append(f"Medida direta da busca do corte, nas 43 páginas que giram: o conserto custa {br(a_mais, 0)} milésimos "
              "de segundo a mais por página (valor do meio; a pior, 74). O implementador mediu 18. É uma vez por página.\n")

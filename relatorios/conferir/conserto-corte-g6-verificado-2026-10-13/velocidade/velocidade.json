@@ -1,0 +1,568 @@
+{
+ "rodadas": [
+  {
+   "nome": "antes-1",
+   "braco": "antes",
+   "commit": "1d37f8f",
+   "hora": "13:33",
+   "minutos": 14.5,
+   "memoria_livre_antes_gb": 5.31,
+   "processador_antes_pct": 6,
+   "outros_python_antes": 0,
+   "outros_python_depois": 3,
+   "atrapalhada": true,
+   "codigo_de_saida": 0,
+   "arquivos_mexidos": 0,
+   "memoria_maxima_mb": 1385.94921875,
+   "livro": "marial_300.pdf",
+   "folhas": 300,
+   "detector": true,
+   "energia": "na tomada (bateria em 100%)",
+   "pdf_magico_pro_mb": 70.68253421783447,
+   "abrir_total_s": {
+    "mediana": 70.83636180002941,
+    "repeticoes": [
+     82.70273760001874,
+     70.83636180002941,
+     58.790397199976724
+    ]
+   },
+   "troca_media_s": {
+    "mediana": 2.5044808349979575,
+    "repeticoes": [
+     3.3602353249880252,
+     2.5044808349979575,
+     2.385204459997476
+    ]
+   },
+   "troca_pior_s": {
+    "mediana": 3.795262399944477,
+    "repeticoes": [
+     4.5523480999981984,
+     3.6194518000120297,
+     3.795262399944477
+    ]
+   },
+   "processar_magico_pro_s": {
+    "mediana": 77.52150939998683,
+    "repeticoes": [
+     80.33009139995556,
+     77.52150939998683,
+     63.720288200012874
+    ]
+   },
+   "processar_preto_e_branco_s": {
+    "mediana": 31.850975200009998,
+    "repeticoes": [
+     35.64046810002765,
+     31.850975200009998,
+     31.010247399972286
+    ]
+   }
+  },
+  {
+   "nome": "depois-1",
+   "braco": "depois",
+   "commit": "d97b937",
+   "hora": "13:58",
+   "minutos": 12.8,
+   "memoria_livre_antes_gb": 3.86,
+   "processador_antes_pct": 4,
+   "outros_python_antes": 0,
+   "outros_python_depois": 0,
+   "atrapalhada": false,
+   "codigo_de_saida": 0,
+   "arquivos_mexidos": 0,
+   "memoria_maxima_mb": 1371.234375,
+   "livro": "marial_300.pdf",
+   "folhas": 300,
+   "detector": true,
+   "energia": "na tomada (bateria em 100%)",
+   "pdf_magico_pro_mb": 70.69125366210938,
+   "abrir_total_s": {
+    "mediana": 57.92302779998863,
+    "repeticoes": [
+     58.199122500023805,
+     57.84645160002401,
+     57.92302779998863
+    ]
+   },
+   "troca_media_s": {
+    "mediana": 2.5425833849963966,
+    "repeticoes": [
+     3.05002471000189,
+     2.530199094992713,
+     2.5425833849963966
+    ]
+   },
+   "troca_pior_s": {
+    "mediana": 4.013733799976762,
+    "repeticoes": [
+     4.013733799976762,
+     4.183806500048377,
+     3.658061900001485
+    ]
+   },
+   "processar_magico_pro_s": {
+    "mediana": 59.489842999959365,
+    "repeticoes": [
+     63.72413509996841,
+     59.489842999959365,
+     59.037661399983335
+    ]
+   },
+   "processar_preto_e_branco_s": {
+    "mediana": 29.08410290000029,
+    "repeticoes": [
+     29.367620299977716,
+     29.08410290000029,
+     28.411656800017226
+    ]
+   }
+  },
+  {
+   "nome": "antes-2",
+   "braco": "antes",
+   "commit": "1d37f8f",
+   "hora": "14:11",
+   "minutos": 12.8,
+   "memoria_livre_antes_gb": 4.28,
+   "processador_antes_pct": 6,
+   "outros_python_antes": 0,
+   "outros_python_depois": 0,
+   "atrapalhada": false,
+   "codigo_de_saida": 0,
+   "arquivos_mexidos": 0,
+   "memoria_maxima_mb": 1379.55078125,
+   "livro": "marial_300.pdf",
+   "folhas": 300,
+   "detector": true,
+   "energia": "na tomada (bateria em 100%)",
+   "pdf_magico_pro_mb": 70.68253421783447,
+   "abrir_total_s": {
+    "mediana": 60.00389609998092,
+    "repeticoes": [
+     60.00389609998092,
+     61.51081900007557,
+     59.89533410000149
+    ]
+   },
+   "troca_media_s": {
+    "mediana": 2.638796659995569,
+    "repeticoes": [
+     2.994320990011329,
+     2.638796659995569,
+     2.4772445050039096
+    ]
+   },
+   "troca_pior_s": {
+    "mediana": 3.9033994000055827,
+    "repeticoes": [
+     3.9033994000055827,
+     3.938368499977514,
+     3.6386863000225276
+    ]
+   },
+   "processar_magico_pro_s": {
+    "mediana": 59.58957890002057,
+    "repeticoes": [
+     59.58957890002057,
+     58.52233599999454,
+     60.31872670003213
+    ]
+   },
+   "processar_preto_e_branco_s": {
+    "mediana": 27.350641900033224,
+    "repeticoes": [
+     26.790529199992307,
+     29.43762380001135,
+     27.350641900033224
+    ]
+   }
+  }
+ ],
+ "medidas": [
+  {
+   "chave": "abrir_total_s",
+   "nome": "Abrir o livro (300 folhas)",
+   "antes": 60.00389609998092,
+   "depois": 57.92302779998863,
+   "diferenca": -2.0808682999922894,
+   "em_pct": -3.467888645972359,
+   "divisor": 300,
+   "unidade": "por folha",
+   "vai_e_vem_antes": 0.0,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    60.00389609998092
+   ],
+   "medianas_depois": [
+    57.92302779998863
+   ],
+   "todas_antes": [
+    60.00389609998092,
+    61.51081900007557,
+    59.89533410000149
+   ],
+   "todas_depois": [
+    58.199122500023805,
+    57.84645160002401,
+    57.92302779998863
+   ],
+   "repeticoes_antes_de_a": [
+    59.89533410000149,
+    61.51081900007557
+   ],
+   "repeticoes_depois_de_a": [
+    57.84645160002401,
+    58.199122500023805
+   ]
+  },
+  {
+   "chave": "troca_media_s",
+   "nome": "Trocar de página (média de 20)",
+   "antes": 2.638796659995569,
+   "depois": 2.5425833849963966,
+   "diferenca": -0.09621327499917243,
+   "em_pct": -3.6461041677737303,
+   "divisor": 1,
+   "unidade": "",
+   "vai_e_vem_antes": 0.0,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    2.638796659995569
+   ],
+   "medianas_depois": [
+    2.5425833849963966
+   ],
+   "todas_antes": [
+    2.994320990011329,
+    2.638796659995569,
+    2.4772445050039096
+   ],
+   "todas_depois": [
+    3.05002471000189,
+    2.530199094992713,
+    2.5425833849963966
+   ],
+   "repeticoes_antes_de_a": [
+    2.4772445050039096,
+    2.994320990011329
+   ],
+   "repeticoes_depois_de_a": [
+    2.530199094992713,
+    3.05002471000189
+   ]
+  },
+  {
+   "chave": "troca_pior_s",
+   "nome": "Trocar de página (a pior das 20)",
+   "antes": 3.9033994000055827,
+   "depois": 4.013733799976762,
+   "diferenca": 0.11033439997117966,
+   "em_pct": 2.8266233778439855,
+   "divisor": 1,
+   "unidade": "",
+   "vai_e_vem_antes": 0.0,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    3.9033994000055827
+   ],
+   "medianas_depois": [
+    4.013733799976762
+   ],
+   "todas_antes": [
+    3.9033994000055827,
+    3.938368499977514,
+    3.6386863000225276
+   ],
+   "todas_depois": [
+    4.013733799976762,
+    4.183806500048377,
+    3.658061900001485
+   ],
+   "repeticoes_antes_de_a": [
+    3.6386863000225276,
+    3.938368499977514
+   ],
+   "repeticoes_depois_de_a": [
+    3.658061900001485,
+    4.183806500048377
+   ]
+  },
+  {
+   "chave": "processar_magico_pro_s",
+   "nome": "Processar 10 páginas em Mágico pro",
+   "antes": 59.58957890002057,
+   "depois": 59.489842999959365,
+   "diferenca": -0.09973590006120503,
+   "em_pct": -0.16737137919457692,
+   "divisor": 10,
+   "unidade": "por página",
+   "vai_e_vem_antes": 0.0,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    59.58957890002057
+   ],
+   "medianas_depois": [
+    59.489842999959365
+   ],
+   "todas_antes": [
+    59.58957890002057,
+    58.52233599999454,
+    60.31872670003213
+   ],
+   "todas_depois": [
+    63.72413509996841,
+    59.489842999959365,
+    59.037661399983335
+   ],
+   "repeticoes_antes_de_a": [
+    58.52233599999454,
+    60.31872670003213
+   ],
+   "repeticoes_depois_de_a": [
+    59.037661399983335,
+    63.72413509996841
+   ]
+  },
+  {
+   "chave": "processar_preto_e_branco_s",
+   "nome": "Processar 10 páginas em Preto e branco",
+   "antes": 27.350641900033224,
+   "depois": 29.08410290000029,
+   "diferenca": 1.7334609999670647,
+   "em_pct": 6.337917063529536,
+   "divisor": 10,
+   "unidade": "por página",
+   "vai_e_vem_antes": 0.0,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    27.350641900033224
+   ],
+   "medianas_depois": [
+    29.08410290000029
+   ],
+   "todas_antes": [
+    26.790529199992307,
+    29.43762380001135,
+    27.350641900033224
+   ],
+   "todas_depois": [
+    29.367620299977716,
+    29.08410290000029,
+    28.411656800017226
+   ],
+   "repeticoes_antes_de_a": [
+    26.790529199992307,
+    29.43762380001135
+   ],
+   "repeticoes_depois_de_a": [
+    28.411656800017226,
+    29.367620299977716
+   ]
+  }
+ ],
+ "medidas_com_todas": [
+  {
+   "chave": "abrir_total_s",
+   "nome": "Abrir o livro (300 folhas)",
+   "antes": 65.42012895000516,
+   "depois": 57.92302779998863,
+   "diferenca": -7.497101150016533,
+   "em_pct": -11.45993025441131,
+   "divisor": 300,
+   "unidade": "por folha",
+   "vai_e_vem_antes": 10.832465700048488,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    70.83636180002941,
+    60.00389609998092
+   ],
+   "medianas_depois": [
+    57.92302779998863
+   ],
+   "todas_antes": [
+    82.70273760001874,
+    70.83636180002941,
+    58.790397199976724,
+    60.00389609998092,
+    61.51081900007557,
+    59.89533410000149
+   ],
+   "todas_depois": [
+    58.199122500023805,
+    57.84645160002401,
+    57.92302779998863
+   ],
+   "repeticoes_antes_de_a": [
+    58.790397199976724,
+    82.70273760001874
+   ],
+   "repeticoes_depois_de_a": [
+    57.84645160002401,
+    58.199122500023805
+   ]
+  },
+  {
+   "chave": "troca_media_s",
+   "nome": "Trocar de página (média de 20)",
+   "antes": 2.5716387474967632,
+   "depois": 2.5425833849963966,
+   "diferenca": -0.029055362500366666,
+   "em_pct": -1.1298384164046835,
+   "divisor": 1,
+   "unidade": "",
+   "vai_e_vem_antes": 0.13431582499761152,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    2.5044808349979575,
+    2.638796659995569
+   ],
+   "medianas_depois": [
+    2.5425833849963966
+   ],
+   "todas_antes": [
+    3.3602353249880252,
+    2.5044808349979575,
+    2.385204459997476,
+    2.994320990011329,
+    2.638796659995569,
+    2.4772445050039096
+   ],
+   "todas_depois": [
+    3.05002471000189,
+    2.530199094992713,
+    2.5425833849963966
+   ],
+   "repeticoes_antes_de_a": [
+    2.385204459997476,
+    3.3602353249880252
+   ],
+   "repeticoes_depois_de_a": [
+    2.530199094992713,
+    3.05002471000189
+   ]
+  },
+  {
+   "chave": "troca_pior_s",
+   "nome": "Trocar de página (a pior das 20)",
+   "antes": 3.8493308999750298,
+   "depois": 4.013733799976762,
+   "diferenca": 0.16440290000173263,
+   "em_pct": 4.270947452264992,
+   "divisor": 1,
+   "unidade": "",
+   "vai_e_vem_antes": 0.10813700006110594,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    3.795262399944477,
+    3.9033994000055827
+   ],
+   "medianas_depois": [
+    4.013733799976762
+   ],
+   "todas_antes": [
+    4.5523480999981984,
+    3.6194518000120297,
+    3.795262399944477,
+    3.9033994000055827,
+    3.938368499977514,
+    3.6386863000225276
+   ],
+   "todas_depois": [
+    4.013733799976762,
+    4.183806500048377,
+    3.658061900001485
+   ],
+   "repeticoes_antes_de_a": [
+    3.6194518000120297,
+    4.5523480999981984
+   ],
+   "repeticoes_depois_de_a": [
+    3.658061900001485,
+    4.183806500048377
+   ]
+  },
+  {
+   "chave": "processar_magico_pro_s",
+   "nome": "Processar 10 páginas em Mágico pro",
+   "antes": 68.5555441500037,
+   "depois": 59.489842999959365,
+   "diferenca": -9.065701150044333,
+   "em_pct": -13.223877459433519,
+   "divisor": 10,
+   "unidade": "por página",
+   "vai_e_vem_antes": 17.931930499966256,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    77.52150939998683,
+    59.58957890002057
+   ],
+   "medianas_depois": [
+    59.489842999959365
+   ],
+   "todas_antes": [
+    80.33009139995556,
+    77.52150939998683,
+    63.720288200012874,
+    59.58957890002057,
+    58.52233599999454,
+    60.31872670003213
+   ],
+   "todas_depois": [
+    63.72413509996841,
+    59.489842999959365,
+    59.037661399983335
+   ],
+   "repeticoes_antes_de_a": [
+    58.52233599999454,
+    80.33009139995556
+   ],
+   "repeticoes_depois_de_a": [
+    59.037661399983335,
+    63.72413509996841
+   ]
+  },
+  {
+   "chave": "processar_preto_e_branco_s",
+   "nome": "Processar 10 páginas em Preto e branco",
+   "antes": 29.60080855002161,
+   "depois": 29.08410290000029,
+   "diferenca": -0.5167056500213221,
+   "em_pct": -1.7455795139790018,
+   "divisor": 10,
+   "unidade": "por página",
+   "vai_e_vem_antes": 4.500333299976774,
+   "vai_e_vem_depois": 0.0,
+   "medianas_antes": [
+    31.850975200009998,
+    27.350641900033224
+   ],
+   "medianas_depois": [
+    29.08410290000029
+   ],
+   "todas_antes": [
+    35.64046810002765,
+    31.850975200009998,
+    31.010247399972286,
+    26.790529199992307,
+    29.43762380001135,
+    27.350641900033224
+   ],
+   "todas_depois": [
+    29.367620299977716,
+    29.08410290000029,
+    28.411656800017226
+   ],
+   "repeticoes_antes_de_a": [
+    26.790529199992307,
+    35.64046810002765
+   ],
+   "repeticoes_depois_de_a": [
+    28.411656800017226,
+    29.367620299977716
+   ]
+  }
+ ]
+}

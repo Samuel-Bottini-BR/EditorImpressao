@@ -2,8 +2,13 @@
 
 So le os .json que o teste_velocidade.py gravou em rodadas/<nome>/ e a
 anotacao.json de cada rodada, grava velocidade.json (os numeros que o
-relatorio usa) e imprime as tabelas. Mesmo jeito do juntar.py da medicao do
-G6 (relatorios/velocidade-g6-2026-10-12), com 2 rodadas de cada.
+relatorio usa) e imprime as contas. Mesmo jeito do juntar.py da medicao do
+G6 (relatorios/velocidade-g6-2026-10-12).
+
+Rodada ATRAPALHADA: havia outro python da .venv do projeto (outro agente
+medindo tempo) no comeco ou no fim dela (anotacao.json, outros_python_*).
+A comparacao e feita duas vezes: so com as rodadas limpas ("medidas", a que
+vale) e com todas ("medidas_com_todas", para ninguem dizer que escondi).
 
 Uso: python juntar.py
 """
@@ -32,9 +37,35 @@ def ler(nome: str) -> dict | None:
     arquivos = sorted(pasta.glob("velocidade-*.json"))
     if not arquivos or not (pasta / "anotacao.json").exists():
         return None
+    anotacao = json.loads((pasta / "anotacao.json").read_text(encoding="utf-8-sig"))
     return {"nome": nome, "braco": nome.split("-")[0],
-            "dados": json.loads(arquivos[0].read_text(encoding="utf-8")),
-            "anotacao": json.loads((pasta / "anotacao.json").read_text(encoding="utf-8-sig"))}
+            "dados": json.loads(arquivos[0].read_text(encoding="utf-8")), "anotacao": anotacao,
+            "atrapalhada": bool((anotacao.get("outros_python_antes") or 0)
+                                or (anotacao.get("outros_python_depois") or 0))}
+
+
+def comparar(rodadas: list[dict]) -> list[dict]:
+    saida = []
+    for chave, nome, divisor, unidade in MEDIDAS:
+        med = {"antes": [], "depois": []}
+        todas = {"antes": [], "depois": []}
+        for r in rodadas:
+            med[r["braco"]].append(r["dados"]["resumo"][chave]["mediana"])
+            todas[r["braco"]].extend(r["dados"]["resumo"][chave]["rodadas"])
+        if not med["antes"] or not med["depois"]:
+            continue
+        ma, md = statistics.fmean(med["antes"]), statistics.fmean(med["depois"])
+        saida.append({
+            "chave": chave, "nome": nome, "antes": ma, "depois": md, "diferenca": md - ma,
+            "em_pct": 100 * (md - ma) / ma, "divisor": divisor, "unidade": unidade,
+            "vai_e_vem_antes": max(med["antes"]) - min(med["antes"]),
+            "vai_e_vem_depois": max(med["depois"]) - min(med["depois"]),
+            "medianas_antes": med["antes"], "medianas_depois": med["depois"],
+            "todas_antes": todas["antes"], "todas_depois": todas["depois"],
+            # o vai-e-vem das repeticoes (3 por rodada), de todas as rodadas do braco
+            "repeticoes_antes_de_a": [min(todas["antes"]), max(todas["antes"])],
+            "repeticoes_depois_de_a": [min(todas["depois"]), max(todas["depois"])]})
+    return saida
 
 
 def main() -> int:
@@ -43,7 +74,7 @@ def main() -> int:
     if not rodadas:
         print("Nenhuma rodada pronta.")
         return 1
-    saida = {"rodadas": [], "medidas": []}
+    saida = {"rodadas": []}
     for r in rodadas:
         a, d = r["anotacao"], r["dados"]
         linha = {"nome": r["nome"], "braco": r["braco"], "commit": a["commit"], "hora": a["inicio"][11:16],
@@ -51,6 +82,7 @@ def main() -> int:
                  "processador_antes_pct": a["processador_antes_pct"],
                  "outros_python_antes": a.get("outros_python_antes"),
                  "outros_python_depois": a.get("outros_python_depois"),
+                 "atrapalhada": r["atrapalhada"],
                  "codigo_de_saida": a["codigo_de_saida"], "arquivos_mexidos": a["arquivos_mexidos"],
                  "memoria_maxima_mb": d["memoria"]["pico_mb"],
                  "livro": d["livro"]["arquivo"], "folhas": d["livro"]["folhas"],
@@ -61,28 +93,17 @@ def main() -> int:
             linha[chave] = {"mediana": d["resumo"][chave]["mediana"], "repeticoes": d["resumo"][chave]["rodadas"]}
         saida["rodadas"].append(linha)
         print(r["nome"], a["inicio"][11:16], f"{a['processador_antes_pct']}% proc",
-              f"{a['memoria_livre_antes_gb']} GB", f"outros python {a.get('outros_python_antes')}",
-              {c: d["resumo"][c]["mediana"] for c, *_ in MEDIDAS}, f"{a['minutos']} min", flush=True)
-    for chave, nome, divisor, unidade in MEDIDAS:
-        med = {"antes": [], "depois": []}
-        todas = {"antes": [], "depois": []}
-        for r in rodadas:
-            med[r["braco"]].append(r["dados"]["resumo"][chave]["mediana"])
-            todas[r["braco"]].extend(r["dados"]["resumo"][chave]["rodadas"])
-        if not med["antes"] or not med["depois"]:
-            continue
-        ma, md = statistics.fmean(med["antes"]), statistics.fmean(med["depois"])
-        m = {"chave": chave, "nome": nome, "antes": ma, "depois": md, "diferenca": md - ma,
-             "em_pct": 100 * (md - ma) / ma, "divisor": divisor, "unidade": unidade,
-             "vai_e_vem_antes": max(med["antes"]) - min(med["antes"]),
-             "vai_e_vem_depois": max(med["depois"]) - min(med["depois"]),
-             "medianas_antes": med["antes"], "medianas_depois": med["depois"],
-             "pares": [d - a for a, d in zip(med["antes"], med["depois"])],
-             "todas_antes": todas["antes"], "todas_depois": todas["depois"]}
-        saida["medidas"].append(m)
-        print(f"{nome}: antes {ma:.2f} s, depois {md:.2f} s, diferenca {md - ma:+.2f} s ({m['em_pct']:+.1f}%); "
-              f"vai-e-vem antes {m['vai_e_vem_antes']:.2f} s, depois {m['vai_e_vem_depois']:.2f} s; "
-              f"pares {[round(p, 2) for p in m['pares']]}")
+              f"{a['memoria_livre_antes_gb']} GB", "ATRAPALHADA" if r["atrapalhada"] else "limpa",
+              {c: round(d["resumo"][c]["mediana"], 2) for c, *_ in MEDIDAS}, f"{a['minutos']} min",
+              f"PDF {linha['pdf_magico_pro_mb']:.2f} MB", f"mem {linha['memoria_maxima_mb']:.0f} MB",
+              f"detector {linha['detector']}", linha["energia"], flush=True)
+    for nome, quais in (("medidas", [r for r in rodadas if not r["atrapalhada"]]), ("medidas_com_todas", rodadas)):
+        saida[nome] = comparar(quais)
+        print(f"\n--- {nome}: {[r['nome'] for r in quais]}")
+        for m in saida[nome]:
+            print(f"{m['nome']}: antes {m['antes']:.2f} s, depois {m['depois']:.2f} s, "
+                  f"diferenca {m['diferenca']:+.2f} s ({m['em_pct']:+.1f}%); vai-e-vem antes "
+                  f"{m['vai_e_vem_antes']:.2f} s, depois {m['vai_e_vem_depois']:.2f} s")
     (AQUI / "velocidade.json").write_text(json.dumps(saida, indent=1, ensure_ascii=False), encoding="utf-8")
     return 0
 
