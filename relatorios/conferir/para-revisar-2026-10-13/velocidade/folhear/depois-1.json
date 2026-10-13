@@ -1,0 +1,38 @@
+{
+ "rotulo": "depois-1",
+ "codigo": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\verif-para-revisar",
+ "abriu_s": 89,
+ "so_as_letras": "True",
+ "parando_1_5s": [
+  0.07,
+  0.14,
+  0.18,
+  0.09,
+  0.1,
+  0.24,
+  0.14,
+  0.5,
+  0.07,
+  2.37,
+  0.07,
+  0.99
+ ],
+ "resto_depois_de_parar_s": 44.8,
+ "sem_parar": [
+  0.27,
+  0.1,
+  0.12,
+  2.39,
+  2.81,
+  4.25,
+  1.7,
+  3.07,
+  4.44,
+  1.6,
+  2.89,
+  4.32
+ ],
+ "resto_depois_sem_parar_s": 46.6,
+ "pagina_final": "25",
+ "erros_log": ""
+}

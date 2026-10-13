@@ -35,7 +35,7 @@ MEDIDAS = [("abrir_total_s", "Abrir o livro (300 folhas)", 1),
 
 
 def velocidade():
-    pasta = BASE / "velocidade" / "rodadas"
+    pasta = BASE / "velocidade" / RODADAS
     rodadas = []
     for nome in ("antes-1", "depois-1", "antes-2", "depois-2"):
         arqs = sorted((pasta / nome).glob("velocidade-*.json")) if (pasta / nome).is_dir() else []
@@ -77,6 +77,15 @@ def velocidade():
 
 # ------------------------------------------------------------------ conteudo
 COMMIT = "36b9e32"
+COMMIT_ANTES = "88d7ff2"
+RODADAS = "rodadas"
+TITULO = "# Conferência do \"Para revisar\" (Fase 2), 13/10/2026"
+EXTRA_MD = ""          # texto a mais depois da pergunta (2a conferencia)
+EXTRA_JSON = {}        # campos a mais no conferencia.json
+EXTRA_COMO = []        # linhas a mais em "Como foi feito"
+AS_89 = None
+TEMPOS_MD = None
+NOTA_COMMIT = "O `b5b224f` (só o `teste_botoes.py`) não foi trazido: o programa é o mesmo."
 
 RESUMO_PARAGRAFOS = [
     "O programa passa a avisar, página por página, quando o \"Só as letras\" do Preto e branco pode ter estragado alguma coisa: "
@@ -303,7 +312,7 @@ def tabela(vel):
 
 
 def markdown(dados, vel):
-    m = ["# Conferência do \"Para revisar\" (Fase 2), 13/10/2026", "",
+    m = [TITULO, "",
          f"Verificador. Ramo `fase2-para-revisar`, commit `{COMMIT}`, em livro novo (endireitar antes de cortar). "
          "Pilotei a janela de verdade com mouse e teclado nativos, em 1280 x 657, com pasta de dados de teste. "
          "**Não mudei código e não marco nada como aprovado.**", "",
@@ -325,9 +334,9 @@ def markdown(dados, vel):
     for o in p["opcoes"]:
         m += [f"- **{o['nome']}**{' (sugestão do verificador)' if o.get('sugestao_do_verificador') else ''}. {o['texto']}"]
     m += ["", p["sugestao"], "", f"![As duas listas]({p['opcoes'][0]['imgs'][0]['src']})", ""]
-    m += ["## Velocidade", ""]
+    m += [EXTRA_MD, "", "## Velocidade", ""]
     if vel:
-        m += ["Marial de 300 folhas, o programa de hoje (`fase-1`, 88d7ff2) contra o ramo (36b9e32), alternando, 2 rodadas de cada. "
+        m += [f"Marial de 300 folhas, o programa de hoje (`fase-1`, {COMMIT_ANTES}) contra o ramo ({COMMIT}), alternando, 2 rodadas de cada. "
               "Cada número é o valor do meio das 3 repetições da rodada. **O teste não liga o \"Só as letras\": ele confere que o resto do programa não ficou mais lento; "
               "o custo novo (medir a página visitada) não entra nele.**", "",
               "| Rodada | Hora | Memória livre | Processador | Outros Python | Abrir | Trocar (média) | Trocar (pior) | Mágico pro, 10 pág. | Preto e branco, 10 pág. | Memória máxima | Durou |",
@@ -344,7 +353,7 @@ def markdown(dados, vel):
         m += [""]
     else:
         m += ["As rodadas não terminaram.", ""]
-    m += ["Tempos da medida na janela (do clique na página até a medida chegar, já descontada a espera do meu roteiro): Camões 4 a 5 s; Gladstone 4 a 6 s; "
+    m += [TEMPOS_MD, ""] if TEMPOS_MD else ["Tempos da medida na janela (do clique na página até a medida chegar, já descontada a espera do meu roteiro): Camões 4 a 5 s; Gladstone 4 a 6 s; "
           "Antiphonal 6 a 7 s; Egenloff e Palatino 7 a 10 s; Rariora 11 s; Antiphon 20 a 26 s.", ""]
     m += ["## O que não consegui conferir", ""] + [f"- {x}" for x in NAO_CONFERI] + [""]
     m += ["## Bugs para a Lista de bugs", "", "| Data | Bug | Print |", "|---|---|---|"]
@@ -355,7 +364,8 @@ def markdown(dados, vel):
           "- Livros inteiros abertos como livro novo: Antiphonal 1547 (298 folhas), Egenloff (138), Camões (106), Gladstone (146), Rariora (414), Palatino (134), Cursus (402), Antiphon (305). Pedaços: Antiphonal 44 a 49 (para processar até o fim), Graduale 219 a 225, Egenloff 1 a 14 (projeto antigo). Opus Majus 20: a página do gabarito.",
           "- Máquina: `scripts/desenhar.py` e `scripts/ver_pdf.py` (a página na tela contra a do PDF), `scripts/ordem_da_medida.py` e `scripts/conferir_89_como_a_janela.py` (as 89 páginas na ordem da janela; resultado em `conferir-89-como-a-janela.json`), `velocidade/` (as quatro rodadas).",
           "- Imagens: 58 em `img/`. Abri 41 uma a uma; as outras 17 são a tela inteira ou o recorte da mesma captura de uma que abri. Sete prints tinham saído com a imagem velha da janela (o primeiro print depois de abrir o programa); achei por máquina (`scripts/achar_prints_velhos.py`), refiz os que entram aqui e nenhum velho ficou em `img/`.",
-          f"- Tudo no commit `{COMMIT}` do programa. O `b5b224f` (só o `teste_botoes.py`) não foi trazido: o programa é o mesmo.", ""]
+          *EXTRA_COMO,
+          f"- Tudo no commit `{COMMIT}` do programa. {NOTA_COMMIT}", ""]
     return "\n".join(m)
 
 
@@ -369,11 +379,12 @@ def main():
         "velocidade": vel,
         "nao_conferi": NAO_CONFERI,
         "bugs": [{"data": d, "bug": b, "print": i} for d, b, i in BUGS],
-        "as_89_paginas": {"combinado_com_o_samuel": [21, 78], "implementador_direto_a_300": [22, 75],
+        "as_89_paginas": AS_89 or {"combinado_com_o_samuel": [21, 78], "implementador_direto_a_300": [22, 75],
                           "na_ordem_da_janela": [24, 73],
                           "mudam_de_decisao": ["graduale_p221 (passa a ir)", "matematica_p072 (passa a ir)",
                                                "palatino_p113 (passa a ir)", "opusmajus_p020 (deixa de ir)"]},
     }
+    dados.update(EXTRA_JSON)
     (BASE / "conferencia.json").write_text(json.dumps(dados, indent=1, ensure_ascii=False), encoding="utf-8")
     import relatorio
     print(relatorio.gravar(markdown(dados, vel), BASE / "conferencia.md"))

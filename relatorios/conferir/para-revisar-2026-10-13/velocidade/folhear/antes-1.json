@@ -1,0 +1,38 @@
+{
+ "rotulo": "antes-1",
+ "codigo": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\velocidade-antes-pr",
+ "abriu_s": 105,
+ "so_as_letras": "True",
+ "parando_1_5s": [
+  0.09,
+  0.18,
+  0.18,
+  0.26,
+  0.14,
+  0.13,
+  0.92,
+  1.61,
+  3.06,
+  0.12,
+  2.95,
+  0.66
+ ],
+ "resto_depois_de_parar_s": 8.6,
+ "sem_parar": [
+  0.38,
+  0.13,
+  0.1,
+  2.74,
+  3.07,
+  4.49,
+  1.89,
+  3.55,
+  4.64,
+  2.05,
+  3.67,
+  4.74
+ ],
+ "resto_depois_sem_parar_s": 8.8,
+ "pagina_final": "25",
+ "erros_log": ""
+}

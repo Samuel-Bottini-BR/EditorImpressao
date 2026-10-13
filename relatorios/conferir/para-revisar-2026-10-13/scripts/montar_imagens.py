@@ -144,6 +144,40 @@ def main():
     f(inteira("70b-lista-poucas-visitadas-todos", "medir-2-lista-inteira"))
     # bugs
     f(inteira("03e-antiphonal-46-filtro-depois-do-marcar", "bug-duplo-clique-tira-o-aviso-tela"))
+    # ---------------- SEGUNDA CONFERENCIA (ramo em ce2b835): prints refeitos (mesmos nomes) e novos
+    f(recorte("r2-egenloff-12-tres-botoes", "sem-conteudo-1-egenloff-recorte", FAIXA))
+    f(inteira("r2-egenloff-12-tres-botoes", "sem-conteudo-2-egenloff-tela"))
+    f(recorte("r2-rariora-8", "sem-conteudo-5-rariora-recorte", FAIXA))
+    f(recorte("r2-gladstone-18", "parece-em-branco-1-recorte", FAIXA))
+    f(inteira("r2-gladstone-18", "parece-em-branco-2-tela"))
+    f(recorte("r2-camoes-27", "forca-1-camoes-recorte", SO_AVISO))
+    f(inteira("r2-camoes-27", "forca-2-camoes-tela"))
+    f(recorte("r2-egenloff-3", "forca-4-egenloff-3-recorte", FAIXA))
+    f(recorte("r2-egenloff-3-forca-85", "forca-7-egenloff-3-forca-85-recorte", (20, 205, 1580, 762)))
+    f(recorte("r2-palatino-66", "palatino-66-2-aviso-recorte", FAIXA))
+    f(inteira("r2-palatino-66", "palatino-66-3-tela"))
+    f(recorte("r2-graduale-221", "janela-diferente-1-graduale-221-recorte", FAIXA))
+    f(inteira("r2-graduale-221", "janela-diferente-2-graduale-221-tela"))
+    f(recorte("r2-duplo-clique-aviso-continua", "duplo-clique-1-aviso-continua-recorte", FAIXA))
+    f(inteira("r2-duplo-clique-aviso-continua", "bug-duplo-clique-tira-o-aviso-tela"))
+    f(inteira("r2-duplo-clique-ver-de-perto", "duplo-clique-2-ver-de-perto"))
+    f(inteira("r2-contagens-2-lista", "antes-3-lista-camoes"))
+    f(recorte("r2-teclado-depois-do-clique", "teclado-1-recorte", (20, 205, 1580, 815)))
+    f(inteira("r2-teclado-depois-do-clique", "teclado-2-tela"))
+    # a aba Marcar se acertando sozinha
+    f(lado_a_lado([("r2-marcar-1-antes", (590, 200, 850, 540), "Ao chegar: 9 áreas"),
+                   ("r2-marcar-2-depois", (590, 200, 850, 540), "10,7 s depois: 18 áreas")],
+                  "marcar-1-antes-e-depois", altura=640))
+    f(inteira("r2-marcar-1-antes", "marcar-2-antes-tela"))
+    f(inteira("r2-marcar-2-depois", "marcar-3-depois-tela"))
+    f(recorte("r2-marcar-4-a-mao-depois", "marcar-4-a-mao-recorte", (130, 200, 1310, 740), 1.3))
+    # as tres contagens, lado a lado
+    f(lado_a_lado([("r2-contagens-1-painel", (1355, 205, 1580, 440), "O painel: 39"),
+                   ("r2-contagens-2-lista", (0, 40, 702, 275), "A lista: 75 páginas (104 avisos)"),
+                   ("r2-contagens-3-salvar", (25, 230, 825, 365), "A janela de salvar: 106 páginas")],
+                  "contagens-1-lado-a-lado", altura=235))
+    f(inteira("r2-contagens-1-painel", "contagens-2-painel-tela"))
+    f(inteira("r2-contagens-3-salvar", "contagens-3-salvar"))
     for d in feitos:
         im = Image.open(d)
         print(f"{d.name:52s} {im.width}x{im.height} {d.stat().st_size // 1024} KB")

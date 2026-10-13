@@ -1,0 +1,597 @@
+{
+ "antiphon_p088__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "faixa_na_beirada",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 19.1
+ },
+ "antiphon_p260__inteira": {
+  "alertas": [
+   "faixa_na_beirada",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 14.8
+ },
+ "antiphonal1547_p006__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "antiphonal1547_p031__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "antiphonal1547_p046__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "antiphonal1547_p076__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.0
+ },
+ "antiphonal1547_p192__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.1
+ },
+ "antiphonal1547_p252__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "boecio_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "boecio_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "boecio_p008__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "boecio_p022__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.8
+ },
+ "camoes_p006__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.0
+ },
+ "camoes_p009__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.1
+ },
+ "camoes_p011__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.8
+ },
+ "camoes_p027__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.8
+ },
+ "camoes_p066__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.9
+ },
+ "camoes_p104__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.4
+ },
+ "cursus_p003__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 3.6
+ },
+ "cursus_p314__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.6
+ },
+ "egenloff_p003__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 5.4
+ },
+ "egenloff_p007__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 5.0
+ },
+ "egenloff_p012__inteira": {
+  "alertas": [
+   "pagina_sem_conteudo",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 4.7
+ },
+ "egenloff_p047__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 5.3
+ },
+ "egenloff_p121__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 5.1
+ },
+ "egenloff_p131__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 5.2
+ },
+ "escola_p007__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.3
+ },
+ "escola_p035__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.1
+ },
+ "escola_p113__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.0
+ },
+ "escola_p197__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "gladstone_p005__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "gladstone_p018__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "em_branco"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 1.2
+ },
+ "gladstone_p055__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.5
+ },
+ "gladstone_p096__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.4
+ },
+ "gladstone_p116__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.4
+ },
+ "gladstone_p136__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.2
+ },
+ "graduale_p221__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 5.9
+ },
+ "graduale_p222__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 4.8
+ },
+ "graduale_p223__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 6.5
+ },
+ "graduale_p269__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 9.9
+ },
+ "graduale_p588__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 6.9
+ },
+ "horas_p011__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 8.2
+ },
+ "horas_p013__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 8.2
+ },
+ "horas_p014__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 6.9
+ },
+ "horas_p016__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 7.8
+ },
+ "horas_p026__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 7.6
+ },
+ "horas_p027__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 7.0
+ },
+ "horas_p047__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 7.6
+ },
+ "horas_p175__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 8.7
+ },
+ "ljs47_p026__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 7.4
+ },
+ "ljs47_p049__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 8.1
+ },
+ "ljs47_p064__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 9.7
+ },
+ "ljs47_p103__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 6.0
+ },
+ "marial_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 4.7
+ },
+ "marial_p454__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 5.9
+ },
+ "marial_p840__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 4.4
+ },
+ "matematica_p032__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "faixa_na_beirada",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "segundos_da_medida": 5.7
+ },
+ "matematica_p072__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 5.9
+ },
+ "opusmajus_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "opusmajus_p011__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.0
+ },
+ "opusmajus_p020__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.2
+ },
+ "opusmajus_p165__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "opusmajus_p256__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.3
+ },
+ "palatino_p005__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.0
+ },
+ "palatino_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.7
+ },
+ "palatino_p009__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.8
+ },
+ "palatino_p010__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.9
+ },
+ "palatino_p057__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "palatino_p066__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.5
+ },
+ "palatino_p067__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "palatino_p076__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.6
+ },
+ "palatino_p104__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.5
+ },
+ "palatino_p113__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.5
+ },
+ "pesel_p021__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "figura_alem_da_gravura",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 6.1
+ },
+ "rariora_p008__inteira": {
+  "alertas": [
+   "pagina_sem_conteudo"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.3
+ },
+ "rariora_p099__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.4
+ },
+ "rariora_p155__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.4
+ },
+ "rariora_p169__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.6
+ },
+ "rariora_p211__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.8
+ },
+ "rariora_p365__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.4
+ },
+ "rhetorica_p018__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.8
+ },
+ "rhetorica_p034__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.6
+ },
+ "rhetorica_p073__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.9
+ },
+ "rhetorica_p129__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 2.9
+ },
+ "rhetorica_p160__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.7
+ },
+ "siebmacher_p007__esquerda": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.5
+ },
+ "siebmacher_p007__direita": {
+  "alertas": [
+   "desenho_apagado"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.3
+ },
+ "siebmacher_p009__esquerda": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.6
+ },
+ "siebmacher_p009__direita": {
+  "alertas": [
+   "desenho_apagado",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "segundos_da_medida": 3.2
+ }
+}
