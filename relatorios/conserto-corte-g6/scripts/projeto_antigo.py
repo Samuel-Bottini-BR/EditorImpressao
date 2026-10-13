@@ -1,4 +1,13 @@
-"""O projeto comecado ANTES do G6 sai igual no programa de hoje?
+"""COPIA do projeto_antigo.py do verificador (ramo verif-corte-g6-2026-10-13),
+para o conserto do corte do G6 (implementador, 13/10/2026). Mudou SO: os
+caminhos. Aqui so se roda o passo "agora": os projetos gravados pelo programa
+de ANTES do G6 e as paginas que ele desenhou ja estao prontos, feitos pelo
+verificador (pasta _tmp\projetos-antigos da worktree dele, so leitura, e a
+parte "antes" do projeto-antigo.json, copiada para esta pasta). O que se
+confere: o programa COM O CONSERTO desenha esses projetos identicos ponto por
+ponto ao programa de antes do G6.
+
+O projeto comecado ANTES do G6 sai igual no programa de hoje?
 
 Dois passos, cada um num processo (para os dois codigos nao se misturarem):
 
@@ -29,9 +38,9 @@ from pathlib import Path
 
 AQUI = Path(__file__).resolve().parent
 PASTA = AQUI.parent
-RAIZ = PASTA.parents[2]
+RAIZ = PASTA.parents[1]
 ANTES = RAIZ / "_tmp" / "antes-g6"
-PROJETOS = RAIZ / "_tmp" / "projetos-antigos"
+PROJETOS = RAIZ.parent / "verif-corte-g6" / "_tmp" / "projetos-antigos"     # do verificador, so leitura
 TRABALHO = Path(r"D:\programas\EditorImpressao-arquivos\revisar-decisoes-trabalho")
 DPI = 300
 
@@ -116,6 +125,11 @@ def main() -> int:
     lado, pids = sys.argv[1], sys.argv[2].split(",")
     destino = PASTA / "projeto-antigo.json"
     tudo = json.loads(destino.read_text(encoding="utf-8")) if destino.exists() else {}
+    if "antes" not in tudo:
+        # as paginas que o programa de ANTES do G6 desenhou: medidas pelo verificador
+        do_verificador = (RAIZ.parent / "verif-corte-g6" / "relatorios" / "conferir"
+                          / "corte-g6-2026-10-13" / "projeto-antigo.json")
+        tudo["antes"] = json.loads(do_verificador.read_text(encoding="utf-8"))["antes"]
     tudo.setdefault(lado, {}).update(antes(pids) if lado == "antes" else agora(pids))
     if "antes" in tudo and "agora" in tudo:
         comparacao = {}

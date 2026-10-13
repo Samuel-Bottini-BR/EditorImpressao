@@ -26,7 +26,11 @@ def classe(a: dict, n: dict) -> str:
 
 
 def main() -> int:
-    exp = json.loads((PASTA / "experiencia.json").read_text(encoding="utf-8"))
+    arquivo = "experiencia.json"
+    if sys.argv[1] == "--pdf":        # a experiencia feita com as paginas vindas do PDF
+        arquivo = "experiencia-pdf.json"
+        sys.argv.pop(1)
+    exp = json.loads((PASTA / arquivo).read_text(encoding="utf-8"))
     if sys.argv[1] == "--lados":      # --lados variantes paginas: a faixa por lado, em mm
         for base in sys.argv[3].split(","):
             for v in sys.argv[2].split(","):

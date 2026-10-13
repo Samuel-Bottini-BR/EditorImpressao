@@ -3130,3 +3130,56 @@ não a página inteira, tirou mais 0,15 s da Antiphon 88. Custo da conta nova na
 **Resultado:** 17 páginas mudam (13 melhoram, 2 iguais à vista, 2 pioram de leve: linhas finas da
 beirada da folha no ljs47 26 e no Siebmacher 9 direita); 42 saem idênticas ponto a ponto. Relatório:
 `relatorios/conferir/misto-desenho-apagado-2026-10-06/`.
+
+
+## 13/10/2026 - O corte do livro novo deixava a borda preta do scanner dentro da página (ramo `conserto-corte-g6-2026-10-13`)
+
+**O defeito (bug que impede; entrou com o G6 em 12/10).** No livro novo a página é endireitada inteira e só
+depois o corte é procurado. Em página torta com borda preta de scanner, sobrava uma faixa preta larga que a
+ordem antiga cortava: Matemática 32 (4,4 cm), Cursus 3 (1,6 cm), Antiphon 260 e 88, Camões 104. Achado pelo
+verificador em 89 páginas (ramo `verif-corte-g6-2026-10-13`, `relatorios/conferir/corte-g6-2026-10-13/`).
+
+**A causa (confirmada).** O giro (`core/endireitar.rotacionar`) pinta de branco as cunhas das beiradas. Esse
+branco fica entre a beirada da imagem e a borda preta, e a busca do corte (`core/recortar.detectar_bordas`)
+deixava de reconhecer a borda de dois jeitos:
+1. `_apagar_bordas_solidas` anda da beirada para dentro enquanto a coluna for 80% tinta. Com a cunha, a coluna
+   de fora do Cursus 3 cai de 100% para 73% e nada é apagado (Cursus 3, Matemática 32, Camões 104).
+2. No fundo preto **liso** (Antiphon) o limiar local não vê tinta nenhuma na página como veio. O degrau do
+   branco da cunha para o preto cria "tinta" nas 9 linhas de fora (a janela do limiar tem 17 pontos), e a caixa
+   da tinta vai até o fim da folha.
+
+**Achado no caminho (importante para quem mexer aqui depois):** o mesmo degrau branco é o que faz o G6
+"melhorar" o Graduale 221 e 223. O número da folha ("Cvij") encosta na beirada do scan; na página como veio
+ele é peça que encosta na beirada (não empurra o corte) e sai cortado. Com a cunha branca entre ele e a
+beirada, vira peça solta e o corte vai até o fim dele. Ou seja: parte do que melhorou e o que piorou vêm da
+mesma cunha. Qualquer conserto que trate a cunha como "não existe" em tudo desfaz essa melhora.
+
+**O que foi tentado** (`relatorios/conserto-corte-g6/scripts/experiencia.py`, nas 43 páginas que giram, em
+cópias JPEG a 300 DPI; `experiencia.json`; cada linha é uma variante, comparada com o programa de hoje):
+
+| Variante | O que é | Resultado |
+|---|---|---|
+| `r` | girar repetindo a beirada em vez de branco (a experiência do verificador) | conserta as 5; **não serve**: Graduale 221 volta a perder 0,23% da tinta, Boécio 3 0,20%, Camões 66 0,45%, Egenloff 3 vai a 4,4% de faixa |
+| `bS` | só a borda sólida contada nos pontos de imagem de verdade, no lugar da conta de hoje | conserta Cursus 3, Matemática 32 e Camões 104; **não serve sozinha**: Marial 7 ganha 2 mm de faixa à direita (0,06% → 0,21%) e Camões 66 piora (1,0% → 1,6%), porque a conta nova apaga a coluna que o apagar das riscas usava; não conserta os Antiphon |
+| `bSR` | idem, mais a risca de dobra contada na imagem de verdade | **não serve**: Escola 197 perde 3,9% da tinta, Palatino 104 2,2% |
+| `bSD` | idem, e o fundo escuro conta como borda sólida | **não serve**: muda 13 páginas; Matemática 32 fica com 229 mm de altura e 3 peças de fora; é a "página dentro da borda preta" do item 2.13, não este conserto |
+| `pZS`, `pZSP`, `pZSRP` | a cunha "não existe": limiar local com a cunha preenchida, tinta da cunha zerada, peça que encosta na cunha não é peça | conserta as 5; **não serve**: muda 20 e poucas páginas, o Graduale 221 volta a 0,21% de tinta de fora, Egenloff 3 a 4,4%, Siebmacher 9 a 10% |
+| `h` | preencher a cunha só onde ela encosta em fundo escuro | conserta as 5; **não serve**: muda 18; Egenloff 3 4,4%, Camões 66 perde 0,55% |
+| `bUA` | soma ao apagar de hoje + tira ANTES a tinta do degrau em fundo escuro | **não serve**: Egenloff 3 4,4%, Siebmacher 9 10% (nessas a tinta do degrau é o que faz o apagar das riscas pegar a borda) |
+| `bUaB` | a adotada, mais seguir o "borrão" da borda inclinada depois dos 80% | **não serve**: Camões 66 perde 0,55% da tinta (4 peças partidas) |
+| **`bUa` = `bN`** | **a adotada** (abaixo) | muda 8 páginas, nenhuma piora |
+
+**O que ficou** (`core/recortar.py`, comentário "A cunha do giro"; `core/pipeline.py`, só a chamada).
+`detectar_bordas` ganhou o parâmetro `girada` (de quantos graus a página foi girada). Só com ele, a máscara de
+tinta **perde** mais duas coisas, depois do apagar de sempre (que continua igual, ponto por ponto):
+1. as linhas e colunas de borda sólida achadas contando os 80% **só nos pontos que são imagem de verdade**
+   (`_apagar_bordas_solidas_fora_da_cunha`);
+2. a "tinta" que **só existe por causa do degrau branco** e está em fundo escuro do scanner
+   (`_tinta_falsa_da_cunha`: é tinta com a cunha branca, não é com a cunha preenchida pela vizinha, e o lugar é
+   mais escuro que 60% do papel).
+
+Sem `girada` (projeto antigo, página como veio, página que não gira) a conta é a mesma.
+
+Um acerto achado pelo teste de máquina novo (página de mentira com borda preta à direita **e** embaixo, ângulo
+positivo): a coluna já apagada como borda tem de sair também da conta das linhas, senão a faixa de baixo cai
+para menos de 80% e fica. Nas 43 páginas de verdade esse acerto não muda nada.

@@ -331,10 +331,19 @@ def _pecas(tinta):
     return np.stack([x[fica], y[fica], (x + w)[fica], (y + h)[fica], risco[fica]], axis=1)
 
 
-R._mascara_de_tinta_local = _mascara
-R._apagar_bordas_solidas = _bordas_solidas
-R._apagar_riscas_de_dobra = _riscas
-R._pecas_de_tinta = _pecas
+def _so_na_experiencia(nome: str, trocada):
+    """A funcao trocada so vale enquanto uma variante esta sendo medida
+    (CTX["variante"]); fora disso (o programa analisando o projeto, --pdf)
+    vale a do programa."""
+    def funcao(*args):
+        return trocada(*args) if "variante" in CTX else ORIGINAIS[nome](*args)
+    return funcao
+
+
+R._mascara_de_tinta_local = _so_na_experiencia("_mascara_de_tinta_local", _mascara)
+R._apagar_bordas_solidas = _so_na_experiencia("_apagar_bordas_solidas", _bordas_solidas)
+R._apagar_riscas_de_dobra = _so_na_experiencia("_apagar_riscas_de_dobra", _riscas)
+R._pecas_de_tinta = _so_na_experiencia("_pecas_de_tinta", _pecas)
 
 
 VER = None      # pasta onde desenhar as mascaras (ver main)
@@ -383,20 +392,50 @@ def medir_variante(inteira, cinza, angulo, pecas, variante: str, base: str = "")
             "cunha_branca": M._cunha_branca(inteira.shape, recorte, angulo, True, True)}
 
 
+DO_PDF = False   # --pdf: a pagina vem do PDF, pelo programa (e nao da copia JPEG)
+
+
+def inteira_do_pdf(base: str) -> np.ndarray:
+    """A pagina inteira (girada de 90 e dividida, sem corte) como o programa
+    a desenha a 300 DPI, direto do PDF: sem a perda do JPEG, que em pagina no
+    limite de um limiar muda o corte (Antiphon 260: 591 mm de altura na copia
+    JPEG, 603 mm no programa)."""
+    from core import pipeline as P
+    from core.pdf_io import abrir_pdf, pagina_para_array
+
+    CTX.clear()                      # o programa analisa o projeto com as funcoes dele
+    pid, metade = base.split("__")
+    projeto = M._projeto(pid, "C")
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        pagina = next(p for p in projeto.paginas if p.metade == metade)
+        folha = projeto.folhas[pagina.folha]
+        img = P.preparar_para_recorte(pagina_para_array(doc, folha.indice, dpi=M.DPI), folha, pagina, projeto)
+    finally:
+        doc.close()
+    return img if img.ndim == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+
 def main() -> int:
-    global VER
+    global VER, DO_PDF
+    if sys.argv[1] == "--pdf":
+        DO_PDF = True
+        sys.argv.pop(1)
     if sys.argv[1] == "--ver":      # desenha as mascaras em _tmp/ver/
         VER = RAIZ / "_tmp" / "ver"
         sys.argv.pop(1)
     variantes = sys.argv[1].split(",")
     so = set(sys.argv[2].split(",")) if len(sys.argv) > 2 else None
     dados = json.loads((PASTA / "dados-verificador.json").read_text(encoding="utf-8"))
-    destino = PASTA / "experiencia.json"
+    destino = PASTA / ("experiencia-pdf.json" if DO_PDF else "experiencia.json")
     saida = json.loads(destino.read_text(encoding="utf-8")) if destino.exists() else {}
     for base, d in sorted(dados.items()):
         if "C" not in d or abs(d["C"]["angulo"]) < 0.1 or (so and base not in so):
             continue
-        inteira = cv2.imread(str(FINAIS / f"{base}__inteira.jpg"))
+        if DO_PDF:
+            inteira = inteira_do_pdf(base)
+        else:
+            inteira = cv2.imread(str(FINAIS / f"{base}__inteira.jpg"))
         cinza = cv2.cvtColor(inteira, cv2.COLOR_BGR2GRAY)
         angulo = d["C"]["angulo"]
         pecas = M._pecas_do_conteudo(inteira)

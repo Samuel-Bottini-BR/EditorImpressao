@@ -251,13 +251,19 @@ def _mascara_de_tinta_local(cinza: np.ndarray) -> np.ndarray:
 #    nenhuma; o degrau do branco da cunha para o preto cria "tinta" bem na
 #    beirada, e a caixa da tinta ia ate o fim da folha (Antiphon 88 e 260).
 #
+# 3. o que encostava na beirada da imagem (o contorno da folha de baixo, no
+#    canto) nao era "peca"; com a cunha branca no meio virava peca solta e
+#    empurrava o corte 13 mm para dentro do preto (Antiphon 260).
+#
 # O conserto: quando quem chama diz de quanto a pagina foi girada
 # (detectar_bordas, `girada`), a busca sabe quais pontos sao cunha e os deixa
-# de fora dessas duas contas. O apagar de sempre (_apagar_bordas_solidas e
+# de fora dessas contas. O apagar de sempre (_apagar_bordas_solidas e
 # _apagar_riscas_de_dobra) continua igual, ponto por ponto; a mascara de
 # tinta so PERDE mais duas coisas: as linhas e colunas de borda solida
 # contadas so na imagem de verdade (_apagar_bordas_solidas_fora_da_cunha) e a
-# tinta que so existe por causa do degrau branco (_tinta_falsa_da_cunha).
+# tinta que so existe por causa do degrau branco (_tinta_falsa_da_cunha). E,
+# so na hora de achar as pecas, o pedaco grande colado na cunha deixa de ser
+# peca (_sem_as_pecas_grandes_coladas_na_cunha).
 #
 # Por que "somar ao apagar de hoje" em vez de trocar a conta: medido nas 43
 # paginas que giram (relatorios/conserto-corte-g6, experiencia.py). Trocar a
@@ -266,7 +272,7 @@ def _mascara_de_tinta_local(cinza: np.ndarray) -> np.ndarray:
 # a cunha como "nao existe" em tudo (limiar local, riscas, pecas) desfazia o
 # que o G6 melhorou (o numero da folha do Graduale 221 e 223 voltava a sair
 # cortado; Egenloff 3 ganhava preto; Escola 197 perdia 3,9% da tinta). Do
-# jeito adotado, o corte muda em 8 das 43 e nenhuma perde tinta.
+# jeito adotado, o corte muda em 9 das 43 e nenhuma piora.
 #
 # Arriscado mudar: aplicar isto sem `girada` (o caminho do projeto antigo e
 # da pagina como veio tem de continuar identico ponto por ponto); usar a
@@ -335,12 +341,14 @@ def _tinta_falsa_da_cunha(cinza: np.ndarray, tinta: np.ndarray, cunha: np.ndarra
 
     Custo: uma segunda conta do limiar local na imagem reduzida, so quando
     ha fundo escuro a menos de uma janela da cunha (medido em 13/10/2026).
+
+    Arriscado mudar: tirar a condicao do fundo escuro (ver acima);
+    ESCURO_DO_SCANNER e o de _parar_no_escuro.
     """
     from core.filtros import janela_para_altura
 
     cheia = _preencher_a_cunha(cinza, cunha)
-    papel = float(np.percentile(cinza[~cunha][::7], 90))
-    escuro = cheia < ESCURO_DO_SCANNER * papel
+    escuro = cheia < ESCURO_DO_SCANNER * float(np.percentile(cinza[~cunha][::7], 90))
     # o limiar local so olha uma janela em volta do ponto: longe da cunha as
     # duas contas dao o mesmo, e sem fundo escuro por perto nao ha o que achar
     janela = janela_para_altura(cinza.shape[0])
@@ -350,6 +358,54 @@ def _tinta_falsa_da_cunha(cinza: np.ndarray, tinta: np.ndarray, cunha: np.ndarra
     falsa = (tinta > 0) & (_mascara_de_tinta_local(cheia) == 0) & escuro & perto
     return falsa if falsa.any() else None
 
+
+# Peca de tinta colada na cunha do giro e maior que isto (fracao da largura
+# ou da altura da pagina) nao e peca que o corte respeite: ver
+# _sem_as_pecas_grandes_coladas_na_cunha. Medido em 13/10/2026: o numero da
+# folha do Graduale 221 ("Cvij", que tem de continuar peca) mede 9% da
+# largura; o contorno da folha de baixo do Antiphon 260 (que nao pode
+# empurrar o corte), 34%. Arriscado mudar: descer para perto de 0,1 desfaz a
+# melhora do Graduale 221 e 223; subir para perto de 0,35 devolve 13 mm de
+# faixa preta ao pe do Antiphon 260.
+PECA_COLADA_GRANDE = 0.2
+
+
+def _sem_as_pecas_grandes_coladas_na_cunha(tinta: np.ndarray, cunha: np.ndarray) -> np.ndarray:
+    """A mascara de tinta SO PARA ACHAR AS PECAS (_pecas_de_tinta) na pagina
+    endireitada: sem os pedacos ligados que encostam na cunha do giro (a
+    menos de 2 pontos) e sao grandes (mais que PECA_COLADA_GRANDE de um lado
+    da pagina). Devolve `tinta` mesma quando nao ha nenhum.
+
+    Por que: na pagina como veio, o que encosta na beirada da imagem nao e
+    peca (borda de scanner, folha vizinha: _pecas_de_tinta) e nao empurra o
+    corte. Depois do giro, a cunha branca fica entre essa coisa e a beirada,
+    ela vira peca solta e empurra o corte ate 2% do lado (ESTICAR_NO_MAXIMO):
+    no Antiphon 260 o contorno da folha de baixo, no canto, levava o pe 13 mm
+    para dentro do fundo preto. A peca PEQUENA colada na cunha continua peca
+    de proposito: e o numero da folha do Graduale 221 e 223, que encosta na
+    beirada do scan e so sai inteiro no livro novo por causa disso.
+
+    A tinta desses pedacos continua contando na massa da tinta
+    (_faixa_com_a_tinta), como a do que encosta na beirada na pagina como
+    veio: so deixam de ser peca.
+
+    Arriscado mudar: tirar daqui tambem as pecas pequenas (o numero da folha
+    do Graduale volta a sair cortado); apagar esses pedacos da mascara de
+    verdade (a massa da tinta mudaria em toda pagina com borda)."""
+    altura, largura = tinta.shape[:2]
+    quantos, rotulos, caixas, _centros = cv2.connectedComponentsWithStats(
+        tinta.astype(np.uint8), connectivity=8)
+    if quantos <= 1:
+        return tinta
+    junto_da_cunha = cv2.dilate(cunha.astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    tirar = np.zeros(quantos, bool)
+    tirar[np.unique(rotulos[junto_da_cunha])] = True
+    tirar &= ((caixas[:, cv2.CC_STAT_WIDTH] > PECA_COLADA_GRANDE * largura)
+              | (caixas[:, cv2.CC_STAT_HEIGHT] > PECA_COLADA_GRANDE * altura))
+    tirar[0] = False                                   # o fundo nao e pedaco
+    if not tirar.any():
+        return tinta
+    return np.where(tirar[rotulos], 0, tinta).astype(tinta.dtype)
 
 def _apagar_bordas_solidas_fora_da_cunha(tinta: np.ndarray, cunha: np.ndarray) -> np.ndarray:
     """O mesmo andar de _apagar_bordas_solidas (da beirada para dentro,
@@ -477,12 +533,14 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     # nao pode esconder a borda preta do scanner (conserto de 13/10/2026; ver
     # "A cunha do giro", acima). As duas mascaras abaixo so sao usadas para
     # TIRAR tinta, depois do apagar de sempre. Sem `girada`, nada disto roda.
-    sem_borda_na_imagem = sem_tinta_falsa = None
+    sem_borda_na_imagem = sem_tinta_falsa = cunha = None
     sem_fechar = tinta
     tinta = cv2.morphologyEx(tinta, cv2.MORPH_CLOSE, nucleo)
     if girada is not None and abs(girada) >= ANGULO_MINIMO:
         cunha = _cunha_do_giro(cinza.shape, girada)
-        if cunha.any():
+        if not cunha.any():
+            cunha = None
+        else:
             falsa = _tinta_falsa_da_cunha(cinza, sem_fechar, cunha)
             if falsa is not None:
                 # fechada do mesmo jeito que a mascara de verdade, para o
@@ -539,7 +597,11 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     # ignorada: a peca que esta INTEIRA fora da caixa nao puxa nada, e a que
     # encosta na beirada da imagem (borda de scanner, folha vizinha) nem e
     # peca. Ver _pecas_de_tinta e _nao_partir_pecas.
-    pecas = _pecas_de_tinta(tinta)
+    # Na pagina endireitada, o pedaco GRANDE colado na cunha do giro nao e
+    # peca (conserto de 13/10/2026): na pagina como veio ele encostava na
+    # beirada da imagem. Ver _sem_as_pecas_grandes_coladas_na_cunha.
+    pecas = _pecas_de_tinta(tinta if cunha is None
+                            else _sem_as_pecas_grandes_coladas_na_cunha(tinta, cunha))
     respeitar, pode_x, pode_y = _quem_empurra(pecas, largura, altura)
     esticar_x, esticar_y = largura * ESTICAR_NO_MAXIMO, altura * ESTICAR_NO_MAXIMO
     x0, y0, x1, y1 = (int(v) for v in _nao_partir_pecas(respeitar, x0, y0, x1, y1,
