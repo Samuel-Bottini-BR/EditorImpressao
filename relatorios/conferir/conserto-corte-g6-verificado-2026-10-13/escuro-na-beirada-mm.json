@@ -1,0 +1,682 @@
+{
+ "cursus_p003__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "dir": {
+    "mediana": 0.4,
+    "p90": 1.3,
+    "cobre": 0.58
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "pe": {
+    "mediana": 0.3,
+    "p90": 1.8,
+    "cobre": 0.46
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.01
+   },
+   "dir": {
+    "mediana": 14.9,
+    "p90": 15.8,
+    "cobre": 0.82
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "pe": {
+    "mediana": 0.5,
+    "p90": 2.8,
+    "cobre": 0.59
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.01
+   },
+   "dir": {
+    "mediana": 1.5,
+    "p90": 3.7,
+    "cobre": 0.92
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "pe": {
+    "mediana": 0.4,
+    "p90": 2.1,
+    "cobre": 0.57
+   }
+  }
+ },
+ "matematica_p032__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.08
+   },
+   "dir": {
+    "mediana": 0.2,
+    "p90": 163.6,
+    "cobre": 0.29
+   },
+   "topo": {
+    "mediana": 7.5,
+    "p90": 7.8,
+    "cobre": 0.98
+   },
+   "pe": {
+    "mediana": 48.1,
+    "p90": 48.2,
+    "cobre": 0.99
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 208.3,
+    "cobre": 0.17
+   },
+   "dir": {
+    "mediana": 37.7,
+    "p90": 208.3,
+    "cobre": 0.79
+   },
+   "topo": {
+    "mediana": 1.5,
+    "p90": 289.1,
+    "cobre": 0.99
+   },
+   "pe": {
+    "mediana": 47.9,
+    "p90": 48.0,
+    "cobre": 0.89
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 166.6,
+    "cobre": 0.17
+   },
+   "dir": {
+    "mediana": 1.0,
+    "p90": 166.6,
+    "cobre": 1.0
+   },
+   "topo": {
+    "mediana": 1.4,
+    "p90": 1.9,
+    "cobre": 1.0
+   },
+   "pe": {
+    "mediana": 47.9,
+    "p90": 48.0,
+    "cobre": 1.0
+   }
+  }
+ },
+ "antiphon_p260__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.06
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.04
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 2.6,
+    "cobre": 0.14
+   },
+   "pe": {
+    "mediana": 18.7,
+    "p90": 21.1,
+    "cobre": 0.76
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.05
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.08
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 2.6,
+    "cobre": 0.14
+   },
+   "pe": {
+    "mediana": 46.6,
+    "p90": 48.9,
+    "cobre": 0.76
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.06
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.04
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 2.6,
+    "cobre": 0.14
+   },
+   "pe": {
+    "mediana": 21.0,
+    "p90": 23.0,
+    "cobre": 1.0
+   }
+  }
+ },
+ "antiphon_p088__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 1.9,
+    "cobre": 0.15
+   },
+   "dir": {
+    "mediana": 7.6,
+    "p90": 8.5,
+    "cobre": 0.89
+   },
+   "topo": {
+    "mediana": 23.5,
+    "p90": 24.4,
+    "cobre": 0.96
+   },
+   "pe": {
+    "mediana": 21.8,
+    "p90": 22.9,
+    "cobre": 0.98
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 1.9,
+    "cobre": 0.15
+   },
+   "dir": {
+    "mediana": 26.4,
+    "p90": 27.3,
+    "cobre": 0.89
+   },
+   "topo": {
+    "mediana": 25.8,
+    "p90": 26.8,
+    "cobre": 0.97
+   },
+   "pe": {
+    "mediana": 22.6,
+    "p90": 23.9,
+    "cobre": 0.99
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 1.9,
+    "cobre": 0.15
+   },
+   "dir": {
+    "mediana": 1.9,
+    "p90": 4.0,
+    "cobre": 1.0
+   },
+   "topo": {
+    "mediana": 24.6,
+    "p90": 25.5,
+    "cobre": 0.96
+   },
+   "pe": {
+    "mediana": 22.6,
+    "p90": 23.6,
+    "cobre": 0.99
+   }
+  }
+ },
+ "camoes_p104__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.5,
+    "p90": 0.5,
+    "cobre": 0.66
+   },
+   "dir": {
+    "mediana": 0.3,
+    "p90": 0.6,
+    "cobre": 0.48
+   },
+   "topo": {
+    "mediana": 0.8,
+    "p90": 1.3,
+    "cobre": 0.99
+   },
+   "pe": {
+    "mediana": 0.7,
+    "p90": 1.1,
+    "cobre": 0.94
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 2.1,
+    "p90": 2.1,
+    "cobre": 0.98
+   },
+   "dir": {
+    "mediana": 0.2,
+    "p90": 0.9,
+    "cobre": 0.44
+   },
+   "topo": {
+    "mediana": 0.8,
+    "p90": 1.4,
+    "cobre": 0.99
+   },
+   "pe": {
+    "mediana": 0.3,
+    "p90": 0.7,
+    "cobre": 0.47
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.5,
+    "p90": 0.8,
+    "cobre": 0.96
+   },
+   "dir": {
+    "mediana": 0.2,
+    "p90": 0.8,
+    "cobre": 0.44
+   },
+   "topo": {
+    "mediana": 0.8,
+    "p90": 1.2,
+    "cobre": 1.0
+   },
+   "pe": {
+    "mediana": 0.3,
+    "p90": 0.6,
+    "cobre": 0.45
+   }
+  }
+ },
+ "pesel_p021__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 18.6,
+    "p90": 153.9,
+    "cobre": 0.62
+   },
+   "dir": {
+    "mediana": 18.0,
+    "p90": 20.5,
+    "cobre": 0.62
+   },
+   "topo": {
+    "mediana": 19.8,
+    "p90": 116.3,
+    "cobre": 0.68
+   },
+   "pe": {
+    "mediana": 54.6,
+    "p90": 136.0,
+    "cobre": 0.68
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 18.6,
+    "p90": 153.9,
+    "cobre": 0.62
+   },
+   "dir": {
+    "mediana": 18.0,
+    "p90": 20.5,
+    "cobre": 0.62
+   },
+   "topo": {
+    "mediana": 19.8,
+    "p90": 116.3,
+    "cobre": 0.68
+   },
+   "pe": {
+    "mediana": 54.6,
+    "p90": 136.0,
+    "cobre": 0.68
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 10.0,
+    "p90": 143.5,
+    "cobre": 1.0
+   },
+   "dir": {
+    "mediana": 18.6,
+    "p90": 20.7,
+    "cobre": 0.9
+   },
+   "topo": {
+    "mediana": 18.5,
+    "p90": 206.1,
+    "cobre": 1.0
+   },
+   "pe": {
+    "mediana": 24.0,
+    "p90": 206.1,
+    "cobre": 0.99
+   }
+  }
+ },
+ "egenloff_p003__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 5.3,
+    "cobre": 0.17
+   },
+   "dir": {
+    "mediana": 4.2,
+    "p90": 7.0,
+    "cobre": 0.58
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 2.5,
+    "cobre": 0.37
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.3,
+    "p90": 4.7,
+    "cobre": 0.53
+   },
+   "dir": {
+    "mediana": 0.4,
+    "p90": 2.8,
+    "cobre": 0.52
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 3.0,
+    "cobre": 0.41
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.3,
+    "p90": 4.7,
+    "cobre": 0.53
+   },
+   "dir": {
+    "mediana": 0.4,
+    "p90": 2.8,
+    "cobre": 0.52
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 3.0,
+    "cobre": 0.41
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   }
+  }
+ },
+ "camoes_p066__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.2,
+    "p90": 0.4,
+    "cobre": 0.26
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.01
+   },
+   "topo": {
+    "mediana": 0.2,
+    "p90": 0.4,
+    "cobre": 0.32
+   },
+   "pe": {
+    "mediana": 0.7,
+    "p90": 1.1,
+    "cobre": 0.75
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.8,
+    "p90": 1.4,
+    "cobre": 0.7
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.01
+   },
+   "topo": {
+    "mediana": 0.7,
+    "p90": 1.0,
+    "cobre": 0.98
+   },
+   "pe": {
+    "mediana": 0.2,
+    "p90": 0.7,
+    "cobre": 0.47
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.8,
+    "p90": 1.4,
+    "cobre": 0.7
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.01
+   },
+   "topo": {
+    "mediana": 0.3,
+    "p90": 0.7,
+    "cobre": 0.52
+   },
+   "pe": {
+    "mediana": 0.2,
+    "p90": 0.7,
+    "cobre": 0.47
+   }
+  }
+ },
+ "antiphonal1547_p252__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.8,
+    "cobre": 0.33
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   },
+   "dir": {
+    "mediana": 0.3,
+    "p90": 1.2,
+    "cobre": 0.5
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   },
+   "dir": {
+    "mediana": 0.3,
+    "p90": 1.2,
+    "cobre": 0.51
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.02
+   }
+  }
+ },
+ "rariora_p155__inteira": {
+  "antiga": {
+   "esq": {
+    "mediana": 0.2,
+    "p90": 0.4,
+    "cobre": 0.28
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.1,
+    "cobre": 0.0
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   }
+  },
+  "hoje": {
+   "esq": {
+    "mediana": 0.2,
+    "p90": 0.4,
+    "cobre": 0.22
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.1,
+    "cobre": 0.0
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.1,
+    "cobre": 0.0
+   }
+  },
+  "conserto": {
+   "esq": {
+    "mediana": 0.2,
+    "p90": 0.4,
+    "cobre": 0.22
+   },
+   "dir": {
+    "mediana": 0.0,
+    "p90": 0.1,
+    "cobre": 0.0
+   },
+   "topo": {
+    "mediana": 0.0,
+    "p90": 0.0,
+    "cobre": 0.0
+   },
+   "pe": {
+    "mediana": 0.0,
+    "p90": 0.1,
+    "cobre": 0.0
+   }
+  }
+ }
+}

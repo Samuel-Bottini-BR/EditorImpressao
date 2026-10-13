@@ -1,0 +1,260 @@
+{
+ "antiphon_p088__inteira": {
+  "sem_ms": 294.1,
+  "com_ms": 326.1,
+  "a_mais_ms": 32.0,
+  "megapontos": 39.8
+ },
+ "antiphon_p260__inteira": {
+  "sem_ms": 322.4,
+  "com_ms": 334.6,
+  "a_mais_ms": 12.3,
+  "megapontos": 40.0
+ },
+ "antiphonal1547_p006__inteira": {
+  "sem_ms": 21.0,
+  "com_ms": 58.0,
+  "a_mais_ms": 37.0,
+  "megapontos": 1.1
+ },
+ "antiphonal1547_p046__inteira": {
+  "sem_ms": 21.0,
+  "com_ms": 53.3,
+  "a_mais_ms": 32.3,
+  "megapontos": 1.0
+ },
+ "antiphonal1547_p076__inteira": {
+  "sem_ms": 26.8,
+  "com_ms": 42.2,
+  "a_mais_ms": 15.4,
+  "megapontos": 1.1
+ },
+ "antiphonal1547_p192__inteira": {
+  "sem_ms": 19.9,
+  "com_ms": 39.8,
+  "a_mais_ms": 19.9,
+  "megapontos": 1.1
+ },
+ "antiphonal1547_p252__inteira": {
+  "sem_ms": 19.9,
+  "com_ms": 43.5,
+  "a_mais_ms": 23.6,
+  "megapontos": 1.1
+ },
+ "boecio_p003__inteira": {
+  "sem_ms": 20.1,
+  "com_ms": 44.5,
+  "a_mais_ms": 24.4,
+  "megapontos": 1.6
+ },
+ "boecio_p008__inteira": {
+  "sem_ms": 17.2,
+  "com_ms": 46.2,
+  "a_mais_ms": 28.9,
+  "megapontos": 1.6
+ },
+ "boecio_p022__inteira": {
+  "sem_ms": 25.5,
+  "com_ms": 30.3,
+  "a_mais_ms": 4.8,
+  "megapontos": 1.6
+ },
+ "camoes_p006__inteira": {
+  "sem_ms": 22.5,
+  "com_ms": 41.3,
+  "a_mais_ms": 18.8,
+  "megapontos": 1.7
+ },
+ "camoes_p009__inteira": {
+  "sem_ms": 22.9,
+  "com_ms": 35.8,
+  "a_mais_ms": 12.9,
+  "megapontos": 1.8
+ },
+ "camoes_p066__inteira": {
+  "sem_ms": 22.8,
+  "com_ms": 39.7,
+  "a_mais_ms": 16.9,
+  "megapontos": 1.7
+ },
+ "camoes_p104__inteira": {
+  "sem_ms": 19.8,
+  "com_ms": 35.1,
+  "a_mais_ms": 15.3,
+  "megapontos": 1.8
+ },
+ "cursus_p003__inteira": {
+  "sem_ms": 38.7,
+  "com_ms": 76.1,
+  "a_mais_ms": 37.3,
+  "megapontos": 8.4
+ },
+ "egenloff_p003__inteira": {
+  "sem_ms": 251.2,
+  "com_ms": 191.1,
+  "a_mais_ms": -60.1,
+  "megapontos": 22.3
+ },
+ "escola_p007__inteira": {
+  "sem_ms": 39.0,
+  "com_ms": 58.9,
+  "a_mais_ms": 19.9,
+  "megapontos": 6.7
+ },
+ "escola_p035__inteira": {
+  "sem_ms": 44.7,
+  "com_ms": 79.4,
+  "a_mais_ms": 34.7,
+  "megapontos": 7.2
+ },
+ "escola_p197__inteira": {
+  "sem_ms": 59.1,
+  "com_ms": 92.5,
+  "a_mais_ms": 33.4,
+  "megapontos": 6.9
+ },
+ "graduale_p221__inteira": {
+  "sem_ms": 206.7,
+  "com_ms": 225.3,
+  "a_mais_ms": 18.6,
+  "megapontos": 22.5
+ },
+ "graduale_p222__inteira": {
+  "sem_ms": 196.7,
+  "com_ms": 209.2,
+  "a_mais_ms": 12.4,
+  "megapontos": 23.3
+ },
+ "graduale_p223__inteira": {
+  "sem_ms": 232.1,
+  "com_ms": 206.2,
+  "a_mais_ms": -25.9,
+  "megapontos": 22.5
+ },
+ "graduale_p269__inteira": {
+  "sem_ms": 193.7,
+  "com_ms": 267.7,
+  "a_mais_ms": 73.9,
+  "megapontos": 22.5
+ },
+ "graduale_p588__inteira": {
+  "sem_ms": 273.8,
+  "com_ms": 263.5,
+  "a_mais_ms": -10.2,
+  "megapontos": 23.3
+ },
+ "horas_p011__inteira": {
+  "sem_ms": 240.2,
+  "com_ms": 227.9,
+  "a_mais_ms": -12.3,
+  "megapontos": 25.7
+ },
+ "horas_p013__inteira": {
+  "sem_ms": 220.3,
+  "com_ms": 258.1,
+  "a_mais_ms": 37.8,
+  "megapontos": 25.8
+ },
+ "marial_p007__inteira": {
+  "sem_ms": 64.9,
+  "com_ms": 106.9,
+  "a_mais_ms": 42.0,
+  "megapontos": 11.6
+ },
+ "matematica_p032__inteira": {
+  "sem_ms": 37.8,
+  "com_ms": 60.8,
+  "a_mais_ms": 23.1,
+  "megapontos": 8.7
+ },
+ "matematica_p072__inteira": {
+  "sem_ms": 31.5,
+  "com_ms": 61.3,
+  "a_mais_ms": 29.8,
+  "megapontos": 8.7
+ },
+ "opusmajus_p011__inteira": {
+  "sem_ms": 33.0,
+  "com_ms": 37.5,
+  "a_mais_ms": 4.5,
+  "megapontos": 4.8
+ },
+ "opusmajus_p020__inteira": {
+  "sem_ms": 20.0,
+  "com_ms": 35.7,
+  "a_mais_ms": 15.7,
+  "megapontos": 4.5
+ },
+ "opusmajus_p165__inteira": {
+  "sem_ms": 22.6,
+  "com_ms": 29.0,
+  "a_mais_ms": 6.4,
+  "megapontos": 4.3
+ },
+ "opusmajus_p256__inteira": {
+  "sem_ms": 37.5,
+  "com_ms": 70.0,
+  "a_mais_ms": 32.5,
+  "megapontos": 5.1
+ },
+ "palatino_p005__inteira": {
+  "sem_ms": 28.2,
+  "com_ms": 41.7,
+  "a_mais_ms": 13.5,
+  "megapontos": 3.2
+ },
+ "palatino_p010__inteira": {
+  "sem_ms": 30.9,
+  "com_ms": 37.7,
+  "a_mais_ms": 6.8,
+  "megapontos": 3.2
+ },
+ "palatino_p104__inteira": {
+  "sem_ms": 18.5,
+  "com_ms": 44.3,
+  "a_mais_ms": 25.7,
+  "megapontos": 3.2
+ },
+ "palatino_p113__inteira": {
+  "sem_ms": 24.5,
+  "com_ms": 26.0,
+  "a_mais_ms": 1.5,
+  "megapontos": 3.2
+ },
+ "pesel_p021__inteira": {
+  "sem_ms": 32.1,
+  "com_ms": 58.9,
+  "a_mais_ms": 26.7,
+  "megapontos": 5.3
+ },
+ "rariora_p008__inteira": {
+  "sem_ms": 12.5,
+  "com_ms": 6.7,
+  "a_mais_ms": -5.8,
+  "megapontos": 3.5
+ },
+ "rariora_p155__inteira": {
+  "sem_ms": 24.5,
+  "com_ms": 44.4,
+  "a_mais_ms": 19.9,
+  "megapontos": 4.0
+ },
+ "rariora_p365__inteira": {
+  "sem_ms": 24.9,
+  "com_ms": 35.6,
+  "a_mais_ms": 10.7,
+  "megapontos": 3.6
+ },
+ "rhetorica_p073__inteira": {
+  "sem_ms": 36.4,
+  "com_ms": 71.5,
+  "a_mais_ms": 35.1,
+  "megapontos": 4.7
+ },
+ "siebmacher_p009__direita": {
+  "sem_ms": 23.8,
+  "com_ms": 44.7,
+  "a_mais_ms": 20.9,
+  "megapontos": 0.9
+ }
+}
