@@ -440,6 +440,12 @@ class GerenciadorPrevias(QObject):
         # passou nao entra no cache nem na tela (_guardar).
         self._geracoes: dict[int, int] = {}
         self._geracao_do_livro = 0
+        # 13/10/2026: quantas vezes a marcacao de cada pagina foi trocada por
+        # tras (a provisoria pela do tamanho do PDF), e como cada chave
+        # guardada ou pedida foi pedida (indice, dpi, filtro), para pedir de
+        # novo sem tirar do cache: ver refazer_previas.
+        self._trocas: dict[int, int] = {}
+        self._como_pedir: dict[str, tuple[int, int, str | None]] = {}
 
         self._pool = QThreadPool(self)
         # Duas ao mesmo tempo: uma para a pagina que o usuario esta olhando e
@@ -556,26 +562,63 @@ class GerenciadorPrevias(QObject):
         self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
         return True
 
-    def esquecer_previas(self, indice: int) -> None:
-        """Tira do cache as previas (e os cartoes) da pagina `indice`, sem
-        mexer no que diz que o acerto no tamanho do PDF ja foi feito
-        (chave_da_medida) nem na geracao dela. Usado quando esse acerto troca
-        a marcacao da pagina: a previa guardada mostra a marcacao de antes; a
-        proxima vez que a pagina for mostrada, e desenhada de novo. Diferente
-        de invalidar(indice), que tambem esquece o acerto (e a tela o pediria
-        de novo, sem fim)."""
+    def refazer_previas(self, indice: int) -> None:
+        """A marcacao da pagina `indice` foi trocada por tras (a provisoria,
+        da previa, pela do tamanho do PDF): as previas e os cartoes dela foram
+        desenhados com a marcacao de antes. Manda desenhar de novo os do
+        estado de agora, SEM tirar do cache os que ja estao la: a tela
+        continua mostrando a imagem de antes ate a nova chegar (nada pisca
+        nem volta para "preparando..."), e ai sai o sinal `pronta` com a
+        mesma chave e a tela redesenha.
+
+        O que ainda esta sendo desenhado foi pedido antes da troca e pode ter
+        lido a marcacao de antes: e pedido de novo, e o que chegar do pedido
+        velho e jogado fora (a geracao da pagina anda; _guardar). Previa de um
+        estado que ja passou (outra forca, outro filtro) so sai do cache.
+        A imagem da aba Bordas (":recorte:") nao depende da marcacao: a que
+        esta guardada fica.
+        Diferente de invalidar(indice): nao esquece que o acerto no tamanho do
+        PDF ja foi feito (chave_da_medida) - a tela o pediria de novo, sem fim.
+        Arriscado: tirar do cache a previa do estado de agora (a tela piscaria
+        a cada pagina visitada)."""
+        self._trocas[indice] = self._trocas.get(indice, 0) + 1
         prefixo = f"{indice}:"
-        for chave in [c for c in self._ordem
-                      if c.startswith(prefixo) and MARCA_DA_MEDIDA not in c]:
-            self._cache.pop(chave, None)
-            self._ordem.remove(chave)
+        chaves = [c for c in dict.fromkeys(list(self._ordem) + list(self._pedidas))
+                  if c.startswith(prefixo) and MARCA_DA_MEDIDA not in c]
+        for chave in chaves:
+            pendente = chave in self._pedidas
+            if ":recorte:" in chave and not pendente:
+                continue
+            como = self._como_pedir.get(chave)
+            if como is None or not self._e_do_estado_de_agora(chave, *como):
+                self._pedidas.pop(chave, None)
+                if chave in self._cache:
+                    del self._cache[chave]
+                    self._ordem.remove(chave)
+                continue
+            _indice, dpi, filtro = como
+            self._comecar(chave, indice, dpi,
+                          PRIORIDADE_DA_VEZ if filtro is None else PRIORIDADE_ADIANTADA,
+                          filtro=filtro)
+
+    def _e_do_estado_de_agora(self, chave: str, indice: int, dpi: int,
+                              filtro: str | None) -> bool:
+        """A chave (de previa, de cartao ou da aba Bordas) ainda e a que a
+        pagina teria agora, pedida do mesmo jeito?"""
+        if ":recorte:" in chave:
+            return chave == self.chave_para_recorte(indice, dpi)
+        if filtro is not None:
+            return chave == self.chave_com_filtro(indice, dpi, filtro)
+        return chave == self.chave(indice, dpi)
 
     # --- pedidos e geracoes (D4) ---------------------------------------------
 
     def _geracao_de(self, indice: int) -> tuple:
         """A geracao de agora da pagina `indice`: muda a cada invalidar dela
-        ou do livro todo."""
-        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0))
+        ou do livro todo, e a cada troca da marcacao dela por tras
+        (refazer_previas)."""
+        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0),
+                self._trocas.get(indice, 0))
 
     def _comecar(self, chave: str, indice: int, dpi: int, prioridade: int,
                  filtro: str | None = None, rotacao: int | None = None,
@@ -584,7 +627,14 @@ class GerenciadorPrevias(QObject):
         nao leva geracao: o giro dela vai no pedido e na chave, e nada mais
         a muda. Prioridade maior sai primeiro (QThreadPool.start)."""
         geracao = None if folha else self._geracao_de(indice)
+        if MARCA_DA_MEDIDA in chave:
+            # o acerto no tamanho do PDF nao fica velho com a troca da
+            # marcacao (e ele que a faz): a geracao dele vai sem essa parte
+            geracao = geracao[:3]
         self._pedidas[chave] = geracao
+        if not folha and MARCA_DA_MEDIDA not in chave:
+            # como pedir de novo esta mesma chave (refazer_previas)
+            self._como_pedir[chave] = (indice, dpi, filtro)
         self._pool.start(
             _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
                           filtro=filtro, rotacao=rotacao, geracao=geracao),
@@ -735,20 +785,33 @@ class GerenciadorPrevias(QObject):
         geracao: a do pedido (_comecar). Se a pagina foi invalidada depois do
         pedido, a imagem e de um estado que ja passou: nao entra no cache nem
         e anunciada (D4, 06/10/2026)."""
-        if geracao is not None and tuple(geracao) != self._geracao_de(geracao[0]):
+        # o acerto por tras trocou a marcacao da pagina? (ver _TarefaPrevia.run)
+        trocou = MARCA_DA_MEDIDA in chave and tuple(img.shape[:2]) == FORMA_MARCACAO_MUDOU
+        if (geracao is not None
+                and tuple(geracao) != self._geracao_de(geracao[0])[:len(geracao)]):
             if self._pedidas.get(chave) == geracao:
                 del self._pedidas[chave]
+            if trocou:
+                # o pedido ficou velho (a pessoa mexeu na pagina no meio), mas
+                # a marcacao da pagina FOI trocada: o que foi desenhado com a
+                # de antes tambem tem de ser refeito
+                self.refazer_previas(geracao[0])
             return
         self._pedidas.pop(chave, None)
-        if MARCA_DA_MEDIDA in chave and tuple(img.shape[:2]) == FORMA_MARCACAO_MUDOU:
-            # o acerto por tras trocou a marcacao da pagina: as previas
-            # guardadas dela foram desenhadas com a marcacao de antes
-            self.esquecer_previas(int(chave.split(":", 1)[0]))
+        if trocou:
+            # as previas guardadas da pagina foram desenhadas com a marcacao
+            # de antes: desenha de novo, sem tirar da tela a que esta la
+            self.refazer_previas(int(chave.split(":", 1)[0]))
         self._cache[chave] = img
+        if chave in self._ordem:       # previa refeita: a chave ja estava guardada
+            self._ordem.remove(chave)
         self._ordem.append(chave)
         while len(self._ordem) > TAMANHO_CACHE:
             velha = self._ordem.pop(0)
             self._cache.pop(velha, None)
+        # so se lembra de como pedir o que ainda esta guardado ou a caminho
+        self._como_pedir = {c: como for c, como in self._como_pedir.items()
+                            if c in self._cache or c in self._pedidas}
         self.pronta.emit(chave, img)
 
     def _esquecer_pedido(self, chave: str, geracao: tuple | None = None) -> None:

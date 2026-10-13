@@ -877,3 +877,108 @@ def test_aquecer_abre_o_leitor_uma_vez_numa_thread(monkeypatch):
     linhas_do_texto.aquecer_em_segundo_plano()          # ja aberto: nada
     time.sleep(0.05)
     assert falso.vezes == 1
+
+
+# --- a marcacao provisoria e o que a pessoa faz na aba Marcar (13/10/2026) ---------
+
+def test_folha_que_a_pessoa_deixou_so_com_marcacao_a_mao_nao_e_procurada_de_novo(
+        tmp_path, monkeypatch, leitor_falso, detector_que_depende_do_tamanho):
+    """Depois da previa (marcacao provisoria), a pessoa manda a folha sair em
+    branco na aba Marcar: fica so a area DELA. Isso nao e provisorio: a busca
+    por tras nao pode por de volta, por baixo, o que a maquina tinha achado."""
+    from core.pdf_io import abrir_pdf
+    from core.selecao import MAO, PAPEL as TIPO_PAPEL
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    p = _livro_sem_marcacao(tmp_path)
+    pagina = p.paginas[0]
+    pagina.filtro = MELHORAR
+    doc = abrir_pdf(p.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, p, pagina, dpi=110)
+        assert pagina.marcacao_provisoria is True
+        so_a_mao = Selecao()
+        so_a_mao.acrescentar(retangulo(0.0, 0.0, 1.0, 1.0, tipo=TIPO_PAPEL, origem=MAO))
+        pagina.guardar_selecao(so_a_mao, provisoria=True)       # o que a aba Marcar faz
+        assert pagina.marcacao_provisoria is False, "so marcacao a mao nunca e provisoria"
+        guardada = pagina.selecao
+        quantas = len(detector_que_depende_do_tamanho)
+        assert not P.precisa_do_desenho_do_pdf(p, pagina)
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is False
+        P.renderizar_pagina(doc, p, pagina, dpi=300)            # nem o PDF procura
+    finally:
+        doc.close()
+    assert len(detector_que_depende_do_tamanho) == quantas
+    assert pagina.selecao is guardada
+
+
+def test_marcar_a_mao_durante_a_procura_grande_nao_se_perde(tmp_path, monkeypatch, leitor_falso):
+    """A pessoa marca uma area a mao BEM no meio da procura na pagina grande
+    (que leva um segundo, noutro fio): a area dela fica, e a marcacao da
+    maquina termina sendo a do tamanho do PDF (a procura e feita mais uma vez,
+    por cima do que a pessoa gravou)."""
+    import core.detectar_regioes as D
+    from core.pdf_io import abrir_pdf
+    from core.selecao import LETRA, MAO
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    p = _livro_sem_marcacao(tmp_path)
+    pagina = p.paginas[0]
+    pagina.filtro = MELHORAR
+    grandes = []
+
+    def falso(img, **_opcoes):
+        grande = img.shape[0] > 1500
+        if grande:
+            grandes.append(img.shape[:2])
+            if len(grandes) == 1:
+                # no meio da primeira procura grande, a aba Marcar grava
+                s = pagina.obter_selecao()
+                s.acrescentar(retangulo(0.05, 0.05, 0.15, 0.15, tipo=LETRA, origem=MAO))
+                pagina.guardar_selecao(s, provisoria=True)
+        s = Selecao()
+        s.acrescentar(retangulo(0.2, 0.65, 0.5 if grande else 0.6, 0.95, tipo=GRAVURA, origem=REDE))
+        return s
+
+    monkeypatch.setattr(D, "detectar", falso)
+    doc = abrir_pdf(p.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, p, pagina, dpi=110)
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is True
+    finally:
+        doc.close()
+    regioes = pagina.obter_selecao().regioes
+    assert [r.origem for r in regioes] == [REDE, MAO], "a area a mao sumiu ou nao ficou por cima"
+    assert round(regioes[0].pontos[1][0], 2) == 0.5, "a marcacao da maquina nao e a do tamanho do PDF"
+    assert pagina.marcacao_provisoria is False and len(grandes) == 2
+
+
+def test_copia_velha_do_editor_volta_a_ser_provisoria_e_e_trocada_de_novo(
+        tmp_path, monkeypatch, leitor_falso, detector_que_depende_do_tamanho):
+    """O editor da aba Marcar carregou a marcacao provisoria; por tras a pagina
+    ganhou a do tamanho do PDF; a pessoa marca uma area e o editor grava a
+    copia DELE (com as areas provisorias da maquina). A pagina nao pode dizer
+    que isso e a marcacao do tamanho do PDF: volta a ser provisoria, e a
+    proxima busca troca de novo, com a area da pessoa por cima."""
+    from core.pdf_io import abrir_pdf
+    from core.selecao import LETRA, MAO
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    p = _livro_sem_marcacao(tmp_path)
+    pagina = p.paginas[0]
+    pagina.filtro = MELHORAR
+    doc = abrir_pdf(p.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, p, pagina, dpi=110)
+        do_editor = pagina.obter_selecao()                      # o editor carrega (provisoria)
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is True
+        definitiva = pagina.obter_selecao().regioes[0].pontos
+        do_editor.acrescentar(retangulo(0.05, 0.05, 0.15, 0.15, tipo=LETRA, origem=MAO))
+        pagina.guardar_selecao(do_editor, provisoria=True)      # ui/tela_conferir._selecao_mudou
+        assert pagina.marcacao_provisoria is True and P.precisa_do_desenho_do_pdf(p, pagina)
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is True
+    finally:
+        doc.close()
+    regioes = pagina.obter_selecao().regioes
+    assert [r.origem for r in regioes] == [REDE, MAO] and regioes[0].pontos == definitiva
+    assert pagina.marcacao_provisoria is False

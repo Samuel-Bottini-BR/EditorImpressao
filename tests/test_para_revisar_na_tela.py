@@ -467,20 +467,36 @@ def test_a_tela_pede_a_medida_da_pagina_da_vez_na_resolucao_do_pdf(tela):
     """A regra so vale na resolucao do PDF (a 110 DPI, a previa, 13 das 89
     paginas do estudo decidem diferente): a previa nao mede, e a tela pede por
     tras a medida da pagina que esta na frente - so dela, e so uma vez por
-    estado da pagina."""
+    estado da pagina. Desde 13/10/2026 so DEPOIS de a previa dela aparecer: e
+    a previa que guarda a marcacao provisoria, que o desenho de tras troca
+    pela do tamanho do PDF (tests/test_marcacao_por_tras.py)."""
+    import time
+
+    from PySide6.QtCore import QCoreApplication
+
     from ui.tarefas import MARCA_DA_MEDIDA
+
+    def esperar(condicao, segundos=30.0):
+        fim = time.monotonic() + segundos
+        while time.monotonic() < fim and not condicao():
+            QCoreApplication.processEvents()
+            time.sleep(0.01)
+        return condicao()
 
     previas = tela.previas
     chave = previas.chave_da_medida(0)
     assert chave.startswith(f"0{MARCA_DA_MEDIDA}") and f":{tela.projeto.qualidade_dpi}:" in chave
-    # a pagina da vez (0) ja foi pedida ao abrir; pedir de novo nao repete
-    assert chave in previas._pedidas or chave in previas._cache
+    # ao abrir, so a previa e pedida; a medida espera a previa aparecer
+    assert chave not in previas._pedidas and chave not in previas._cache
+    assert esperar(lambda: chave in previas._pedidas or chave in previas._cache), \
+        "a prévia chegou e a tela não pediu a medida"
+    # pedir de novo nao repete
     assert previas.pedir_medida(0) is False
     # as vizinhas nao sao medidas sozinhas (so quando a pessoa chega nelas)
     chave_3 = previas.chave_da_medida(3)
     assert chave_3 not in previas._pedidas and chave_3 not in previas._cache
     tela.ir_para_pagina(3)
-    assert chave_3 in previas._pedidas or chave_3 in previas._cache
+    assert esperar(lambda: chave_3 in previas._pedidas or chave_3 in previas._cache)
     # pagina fora do "So as letras" (aqui: "Guardar tudo") nao tem o que medir
     tela.projeto.paginas[2].misto_fora_do_texto = misto.FORA_TUDO
     assert previas.pedir_medida(2) is False

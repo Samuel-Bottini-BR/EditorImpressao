@@ -1233,7 +1233,14 @@ class TelaConferir(QWidget):
         pagina = self._pagina_marcada()
         if pagina is None:
             return
-        pagina.guardar_selecao(self.editor_selecao.selecao)
+        # 13/10/2026: o que a máquina marcou na cópia do editor é o que ele
+        # carregou (_atualizar_marcacao). Se era a marcação provisória (a da
+        # prévia) e, por trás, a página já tinha ganhado a do tamanho do PDF,
+        # gravar a cópia do editor põe de volta as áreas provisórias: a
+        # página volta a dizer "provisória", e a busca por trás (ou o PDF)
+        # troca de novo - com tudo o que a pessoa marcou à mão por cima.
+        pagina.guardar_selecao(self.editor_selecao.selecao,
+                               provisoria=getattr(self, "_editor_com_a_provisoria", None))
         self._mostrar_aviso_da_marcacao(
             self.editor_selecao.selecao.resumo_em_portugues())
         self._avaliar_os_pedacos(pagina)        # conferencia 13, S3
@@ -1985,6 +1992,13 @@ class TelaConferir(QWidget):
         - isso e so a tela deixar de adivinhar por baixo dos panos.
         """
         self.editor_selecao.definir_imagem(img)
+        # De que marcação é a cópia que o editor passa a ter (ver
+        # _selecao_mudou). Lido ANTES da lista: se a busca por trás trocar a
+        # marcação entre as duas leituras, o pior que acontece é o editor
+        # achar provisória uma cópia que já é a definitiva (e ela ser
+        # procurada mais uma vez); o contrário gravaria a provisória como
+        # definitiva.
+        self._editor_com_a_provisoria = bool(getattr(pagina, "marcacao_provisoria", False))
         selecao = pagina.obter_selecao()
 
         self.editor_selecao.definir_selecao(selecao)

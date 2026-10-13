@@ -236,8 +236,9 @@ class ConfigPagina:
     # tamanho do PDF (a tela pede por tras para a pagina da vez; o PDF troca
     # ao gerar). False = definitiva, ou pagina de projeto antigo (fica como
     # esta), ou sem marcacao. A regra do "Para revisar" so mede com a
-    # definitiva. Nao e escolha de ninguem. Quem poe e tira:
-    # core.pipeline.garantir_selecao. Projeto antigo, sem o campo: False.
+    # definitiva. Nao e escolha de ninguem. Quem poe e tira: guardar_selecao,
+    # chamado por core.pipeline.garantir_selecao e pela aba Marcar. Projeto
+    # antigo, sem o campo: False.
     # Seguro mudar: nada aqui. Arriscado: por True sem haver marcacao
     # automatica (a do tamanho do PDF apagaria o que a maquina marcou antes).
     marcacao_provisoria: bool = False
@@ -308,7 +309,26 @@ class ConfigPagina:
 
         return Selecao.de_lista(self.selecao)
 
-    def guardar_selecao(self, selecao) -> None:
+    def guardar_selecao(self, selecao, provisoria: bool | None = None) -> None:
+        """Guarda a marcacao da pagina (sempre uma lista NOVA: quem procura a
+        marcacao por tras ve que ela mudou; core.pipeline.garantir_selecao).
+
+        provisoria (13/10/2026): o que a MAQUINA marcou nesta selecao veio da
+        previa (True) ou da pagina do tamanho do PDF (False)? None = como a
+        pagina ja estava (quem so acrescenta uma area a mao). Quem passa:
+        garantir_selecao e a aba Marcar (ui/tela_conferir._selecao_mudou, com
+        o que o editor tinha carregado).
+        Marcacao sem nenhuma area da maquina nunca e provisoria: e so o que a
+        pessoa fez ("Esta folha vai sair em branco", ou tudo tirado), e
+        procurar de novo por tras poria de volta areas que ela nao quer.
+        O campo e gravado ANTES da lista de proposito: o outro fio que le a
+        lista nova ja encontra o campo certo."""
+        from core.selecao import MAO
+
+        if provisoria is not None:
+            self.marcacao_provisoria = bool(provisoria)
+        if self.marcacao_provisoria and not any(r.origem != MAO for r in selecao.regioes):
+            self.marcacao_provisoria = False
         self.selecao = selecao.para_lista()
 
 

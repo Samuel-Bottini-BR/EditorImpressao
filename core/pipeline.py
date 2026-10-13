@@ -1234,8 +1234,10 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         if analise.DESENHO_OU_ESCRITA not in pagina.alertas:
             pagina.alertas.append(analise.DESENHO_OU_ESCRITA)
 
-    pagina.guardar_selecao(selecao)
-    pagina.marcacao_provisoria = not no_tamanho_do_pdf
+    # o campo "provisoria" vai junto com a lista (ConfigPagina.guardar_selecao
+    # grava o campo antes dela): o outro fio nunca ve a lista nova com o
+    # campo de antes
+    pagina.guardar_selecao(selecao, provisoria=not no_tamanho_do_pdf)
     return selecao
 
 

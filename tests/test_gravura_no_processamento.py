@@ -396,14 +396,17 @@ def test_previa_passa_o_dpi_de_verdade_para_a_deteccao(tmp_path, monkeypatch, fi
     assert len(pedidos) == 1
     assert pedidos[0]["detector_de_gravura"] == dr.DETECTOR_DE_GRAVURA_PADRAO
     assert pedidos[0]["opcoes_da_gravura"] == dr.OpcoesDaGravura()
-    # Desde 13/10/2026 a previa procura a marcacao na pagina do tamanho do PDF
-    # (core.pipeline._detectar_na_resolucao_do_pdf: a previa e o PDF passam a
-    # usar as mesmas areas, tenha a pagina sido vista na tela antes ou nao).
-    # O DPI que vai junto e o de verdade DESSA imagem: o do PDF, nao os 110 da
-    # previa. Antes este teste cobrava 110.
-    assert pedidos[0]["dpi"] == pytest.approx(projeto.qualidade_dpi, abs=1)
+    # A previa procura a marcacao na pagina DELA (110 DPI): assim ela aparece no
+    # tempo de sempre. Essa marcacao e provisoria; a que vale e procurada
+    # depois, por tras, na pagina do tamanho do PDF
+    # (core.pipeline.acertar_no_tamanho_do_pdf, coberto em
+    # tests/test_misto_no_programa.py). Por algumas horas de 13/10/2026 a
+    # previa procurou direto na pagina grande e este teste cobrou o DPI do PDF;
+    # custava 0,8 s a mais na primeira previa de cada pagina e foi desfeito.
+    assert pedidos[0]["dpi"] == pytest.approx(110, abs=1)
     assert pedidos[0]["dpi_do_scan"] == pytest.approx(150, abs=1)
     assert projeto.paginas[0].selecao, "a marcação não ficou guardada na página"
+    assert projeto.paginas[0].marcacao_provisoria is True
 
 
 def test_processar_passa_o_dpi_de_verdade_para_a_deteccao(tmp_path, monkeypatch):
