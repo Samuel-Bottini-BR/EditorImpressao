@@ -71,6 +71,114 @@ mediana). É tempo de um fio só, com o PC livre; não medi com a tela em uso ao
   só nas páginas em "Só as letras" (jeitos "Guardar a tinta forte" e "Guardar só o texto").
   **O `teste_velocidade.py` não foi rodado** (fica para o verificador).
 
+## Consertos depois da conferência do verificador (13/10)
+
+Relatório dele: `origin/verif-para-revisar-2026-10-13`, `relatorios/conferir/para-revisar-2026-10-13/`.
+**Itens 1 a 6 fechados; 7 e 8 investigados (sem conserto, como pedido). Próximo passo: as decisões da gerente
+listadas abaixo.**
+
+| Item | O que era | O que foi feito | Commit |
+|---|---|---|---|
+| 1 | A medida mudava quando a prévia tinha sido desenhada antes (na janela: 24 vão, 73 certas; direto: 22 e 75) | A causa era a marcação de gravura, letra e papel, procurada no primeiro desenho da página (na janela, a prévia de 110 DPI) e guardada; o detector acha áreas diferentes das de 300 DPI. Agora a prévia procura a marcação na página do tamanho do PDF, e as linhas do leitor de texto saem dela também. Nas 89 páginas, direto e na ordem da janela: **22 vão, 75 certas, os mesmos avisos e os mesmos sinais, nenhuma diferença.** | `027e50d`, `cf04ce7` |
+| 2 | Dois cliques no cartão do filtro davam a página por conferida | Escolher o filtro que já está não grava ação nem confere a página | `c19f054` |
+| 3 | "Parece em branco" e "Página sem conteúdo" sem "está bom assim" | Terceiro botão, "está bom assim", nos dois | `47a9465`, `c19f054` |
+| 4 | Teclado preso no botão do aviso | Os botões do aviso não pegam o foco do teclado (nem escondidos); o mouse funciona igual | `c19f054` |
+| 5 | As contagens não batem | Só a frase da janela: conta páginas do livro e diz "N páginas (M avisos na lista)". O resto fica para a gerente (abaixo) | `47a9465` |
+| 6 | "usar mais escuro" com a força já em 85 | O botão que não faria nada não aparece | `c19f054` |
+
+Testes depois dos consertos: suíte inteira, um arquivo por vez (13/10, 11:52 a 12:08), 115 arquivos, 2094
+passaram; os 2 que falharam eram de `tests/test_gravura_no_processamento.py` e cobravam que a prévia procurasse
+a marcação a 110 DPI: ajustei para a resolução do PDF (o comportamento novo) e o arquivo passou (43).
+`teste_botoes.py`: 180 ações, 0 falhas.
+
+### Custo do item 1 (para a gerente decidir)
+
+A primeira prévia de cada página que ainda não tem marcação ficou mais lenta: em 8 páginas do gabarito, de
+1,14 s para 1,92 s em média (+0,8 s; de +0,1 s no Boécio 7 a +2,0 s na Horas 11). Vale em qualquer filtro com
+"Achar gravuras" ligado, não só no "Só as letras". Da segunda vez em diante a página não paga nada. **O
+`teste_velocidade.py` não foi rodado de novo; o "trocar de página" dele deve subir.** Se for caro demais, dá
+para restringir às páginas em "Só as letras" (uma linha em `core/pipeline.renderizar_pagina`), mas aí a página
+vista primeiro em outro filtro e depois passada para "Só as letras" volta a medir diferente. Projeto que já tem
+a marcação guardada (feita antes, na prévia) continua com ela: não é refeita.
+
+### Item 5: de onde vem cada número (Camões) e o que falta decidir
+
+- **Lista, 105 linhas**: uma linha por motivo pendente de cada folha e de cada página (59 "Qualidade baixa" e
+  2 "Tamanho diferente" são avisos de FOLHA; 35 do endireitar e 5 da regra são de PÁGINA).
+- **Frase, "100 páginas"**: contava folhas e páginas com aviso como coisas separadas (a folha 5 e a página 5
+  eram duas). **Consertado**: agora conta páginas do livro e mostra os dois números com nome.
+- **Painel, 40**: só os avisos de PÁGINA (35 + 5); os de folha nunca entraram no painel (já era assim).
+- **Janela de salvar, "6 páginas que você não conferiu"**: outra coisa e outro livro (o pedaço de 6 páginas do
+  Antiphonal): conta as páginas que não receberam "está certo", com ou sem aviso. Já era assim.
+
+Para os três dizerem a mesma coisa (páginas com aviso pendente) é preciso mudar o que se mostra, então parei:
+- (a) o painel passa a listar também os motivos de folha, e o número de cima vira "páginas com aviso";
+- (b) a janela de salvar passa a contar "páginas com aviso pendente" em vez de "páginas sem 'está certo'" (hoje
+  ela avisa de toda página não olhada, mesmo sem aviso; há teste cobrando isso, `tests/test_barra_de_menu.py`);
+- (c) deixar o painel e a janela de salvar como estão.
+
+### Item 6, a caixinha da força sozinha
+
+Hoje fica no grupo dos filtros da tela "O que fazer", depois das escolhas do "Só as letras", e só aparece
+rolando. Ficaria melhor colada na linha da caixinha "Só as letras" (ela só age com "Só as letras"), ou na aba
+Filtro, ao lado do medidor "força do preto". Não mudei a tela.
+
+### Investigação 7: a tela mostra o que o PDF não tem
+
+No Antiphonal 46 (página pequena: 741 x 1079 pontos a 300 DPI; 272 x 396 na prévia), medido pelo programa:
+
+| Resolução | "Escuro da letra" (o corte do "Guardar a tinta forte") | Tinta na caixa da letra T: preto e branco de base | no resultado |
+|---|---|---|---|
+| 300 DPI (o PDF) | 45 | 25,2% | 11,8% (mais da metade some) |
+| 200 DPI | 56 | 25,8% | 25,5% |
+| 150 DPI | 64 | 27,1% | 26,9% |
+| 110 DPI (a prévia) | 76 | | 27,9% (a letra fica inteira) |
+
+A causa: o "Guardar a tinta forte" decide pedaço por pedaço de tinta (fica o pedaço que tem algum ponto tão
+escuro quanto as letras). Na imagem pequena os pedaços da letra se juntam num só, que tem pontos escuros, e o
+corte fica mais frouxo (76 em vez de 45): a letra fica. Na imagem do PDF os pedaços se separam e os claros
+somem. Nenhuma resolução menor repete o PDF nesta página (a 200 DPI a letra ainda fica).
+
+O que custaria mostrar na tela o mesmo que o PDF, na página da vez:
+- **Em "Só as letras" (onde a medida já roda):** quase nada a mais. O desenho do tamanho do PDF já é feito por
+  trás para medir (nesta página, 5,2 s; nas 89, média de 3,6 a 4,4 s, pior 20 a 31 s) e a imagem é jogada fora.
+  Basta guardá-la reduzida e trocar a prévia por ela quando chegar: o Kaique veria a prévia de hoje em 1 a 2 s
+  e a imagem "como no PDF" de 4 a 11 s depois (20 a 26 s em folha grande, pelos tempos do verificador na
+  janela). Memória: uma imagem reduzida por página guardada (1 a 3 MB). O "Ver de perto" precisaria da imagem
+  inteira da página da vez (8 a 38 milhões de pontos, só uma por vez).
+- **Nos outros filtros** não há medida: seria um desenho do tamanho do PDF a mais por página vista (os mesmos
+  3,6 a 4,4 s em média, por trás).
+- Não fiz: é mudança de tela e de como a prévia funciona.
+
+### Investigação 8: a força sozinha no Palatino 66
+
+O Palatino 66 não vem do reacerto do limite (0,20 para 0,13): as três linhas dele guardam 50%, 57% e 62% da
+tinta, acima dos dois mínimos. Ele passou a ir por causa do preparo do livro novo (no do estudo, uma linha só).
+
+Nas 89 páginas, livro novo, a força sozinha age em **7 páginas com o limite novo e em 6 com o antigo** (a
+diferença é o Egenloff 3). Medido com a força 50 e com a 85:
+
+| Página | Linhas falhadas a 50 | a 85 | Tinta fora do texto (% da página) a 50 | a 85 | Precisava? |
+|---|---|---|---|---|---|
+| Camões 27 | 5 de 28 | 0 | 1,54 | 2,22 | sim |
+| Camões 11 | 3 de 22 | 0 | 2,79 | 3,64 | sim |
+| Camões 104 | 1 de 1 | 0 | 4,22 | 5,48 | sim (e ganha o aviso "figura além da gravura") |
+| ljs47 103 | 3 de 47 | 1 | 9,63 | 10,22 | sim |
+| **Palatino 66** | 3 de 12 | 0 | 7,09 | 8,12 | **não** (caligrafia; o verificador viu a moldura suja) |
+| Antiphonal 252 | 2 de 14 | 2 | 7,82 | 9,34 | sim, mas a força não resolve |
+| Egenloff 3 | 2 de 15 | 5 | 12,49 | 12,60 | sim, mas a força piora a conta (texto vermelho) |
+
+Sem precisar: **1 página (Palatino 66), com o limite novo e com o antigo.** E em 2 (1 com o limite antigo) a
+força é escurecida sem resolver. Nenhum número destes separa o Palatino 66 do Camões 11 (os dois têm 3 linhas
+falhadas e a força "conserta" os dois). Propostas, para a gerente escolher (não mudei nada):
+- **P1: a força sozinha só age com 4 ou mais linhas falhadas, ou com todas** (o aviso continua com 2). Nas 89:
+  age só no Camões 27 e no 104, nenhuma sem precisar; Camões 11, ljs47 103 e Palatino 66 ficam só com o aviso
+  "Texto falhado" e o botão "usar mais escuro" (um clique).
+- **P2: escurece, mede de novo e só mantém se as linhas falhadas caírem**; senão volta a força e deixa o aviso.
+  Tira o Egenloff 3 e o Antiphonal 252; o Palatino 66 continua escurecido.
+- **P3: as duas juntas** (a minha sugestão: é a mais cuidadosa; apoia-se em poucas páginas).
+- P4: desligar a força sozinha de fábrica e deixar só o botão no aviso (muda o que o Samuel escolheu).
+
 ## O que cada pedido virou no programa
 
 | # | Pedido do Samuel | O que o programa faz agora | Onde |
