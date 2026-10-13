@@ -170,7 +170,7 @@ def de_perto(base: str, regiao, dados, destino: Path) -> None:
     caixa = (int(regiao[0] * larg), int(regiao[1] * alt), int(regiao[2] * larg), int(regiao[3] * alt))
     lado_cm = f"{cm((caixa[2] - caixa[0]) * 25.4 / DPI)} x {cm((caixa[3] - caixa[1]) * 25.4 / DPI)} cm"
     img = montar([na_pagina(v, caixa) for v in vs], [legenda(v) for v in vs],
-                 f"azul claro = fora da folha.  O pedaco mostrado tem {lado_cm} da pagina.", 1800)
+                 f"azul claro = fora da folha.  O pedaço mostrado tem {lado_cm} da página.", 1800)
     cv2.imwrite(str(destino), img, [cv2.IMWRITE_JPEG_QUALITY, 88])
 
 

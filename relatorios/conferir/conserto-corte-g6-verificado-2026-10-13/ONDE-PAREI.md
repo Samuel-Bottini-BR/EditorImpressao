@@ -10,10 +10,10 @@ Cópia do programa com o conserto, só para rodar: `.claude/worktrees/verif-cons
 
 ## Passos
 
-- [ ] 1. Medir de novo, por minha conta, o livro novo nas 89 páginas com o programa de hoje e com o do
+- [x] 1. Medir de novo, por minha conta, o livro novo nas 89 páginas com o programa de hoje e com o do
       conserto (`scripts/medir_conserto.py` → `dados-hoje.json`, `dados-conserto.json`; páginas prontas em
       `_tmp/finais-hoje` e `_tmp/finais-conserto`).
-- [ ] 2. Imagens das três versões (`scripts/quadros.py` → `img/cg6-*.jpg`) e abrir todas.
+- [x] 2. Imagens das três versões (`scripts/quadros.py` → `img/cg6-*.jpg`) e abrir todas.
 - [ ] 3. Velocidade: `velocidade/rodar_uma.ps1`, 2 rodadas de cada, alternadas (antes-1, depois-1, antes-2,
       depois-2), cerca de 13 minutos cada. "Antes" = worktree `velocidade-antes` em `origin/fase-1`.
 - [ ] 4. `conferencia.json` (resumo + quadros) e o relatório nos três formatos.
