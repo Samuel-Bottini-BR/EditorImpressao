@@ -1,0 +1,271 @@
+{
+ "cursus_p003__inteira": {
+  "pid": "cursus_p003",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 7.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.7,
+   "angulo_programa": -0.7000000000000001,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.00079,
+    0.04,
+    0.93098,
+    0.95848
+   ],
+   "pagina_inteira_px": [
+    2550,
+    3300
+   ],
+   "tamanho_px": [
+    2374,
+    3163
+   ],
+   "tamanho_mm": [
+    201.0,
+    267.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.44,
+   "papel": 255.0,
+   "beirada_escuro": 0.0048,
+   "lados_escuro": {
+    "esq": {
+     "mm": 3.21,
+     "mm_max": 3.21,
+     "cobre": 0.316
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 74.18,
+     "cobre": 0.021
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 10.44,
+     "cobre": 0.016
+    }
+   },
+   "beirada_pb": 0.00478,
+   "lados_pb": {
+    "esq": {
+     "mm": 3.21,
+     "mm_max": 3.21,
+     "cobre": 0.316
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 74.18,
+     "cobre": 0.021
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 10.44,
+     "cobre": 0.016
+    }
+   },
+   "cunha_branca": 0.00627,
+   "pecas": 4381,
+   "pecas_fora": 12,
+   "pecas_partidas": 5,
+   "tinta_perdida": 0.00114,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 1.12,
+    "topo": 0.98,
+    "pe": 0.0
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 6.95,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.688,
+   "angulo_programa": -0.7000000000000001,
+   "angulo_scantailor": -0.6875,
+   "recorte": [
+    0.0009,
+    0.04,
+    0.93086,
+    0.95848
+   ],
+   "pagina_inteira_px": [
+    2550,
+    3300
+   ],
+   "tamanho_px": [
+    2374,
+    3163
+   ],
+   "tamanho_mm": [
+    201.0,
+    267.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.36,
+   "papel": 255.0,
+   "beirada_escuro": 0.00484,
+   "lados_escuro": {
+    "esq": {
+     "mm": 3.21,
+     "mm_max": 3.48,
+     "cobre": 0.316
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 74.18,
+     "cobre": 0.021
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 10.44,
+     "cobre": 0.017
+    }
+   },
+   "beirada_pb": 0.00469,
+   "lados_pb": {
+    "esq": {
+     "mm": 3.21,
+     "mm_max": 3.21,
+     "cobre": 0.31
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 73.11,
+     "cobre": 0.021
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 9.91,
+     "cobre": 0.015
+    }
+   },
+   "cunha_branca": 0.00616,
+   "pecas": 4381,
+   "pecas_fora": 12,
+   "pecas_partidas": 5,
+   "tinta_perdida": 0.00117,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 1.12,
+    "topo": 0.98,
+    "pe": 0.0
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 5.91,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.688,
+   "angulo_programa": -0.7000000000000001,
+   "angulo_scantailor": -0.6875,
+   "recorte": [
+    0.01886,
+    0.0,
+    0.98114,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2550,
+    3300
+   ],
+   "tamanho_px": [
+    2502,
+    3300
+   ],
+   "tamanho_mm": [
+    211.8,
+    279.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.47,
+   "papel": 255.0,
+   "beirada_escuro": 0.07452,
+   "lados_escuro": {
+    "esq": {
+     "mm": 3.07,
+     "mm_max": 6.43,
+     "cobre": 0.12
+    },
+    "dir": {
+     "mm": 16.48,
+     "mm_max": 16.76,
+     "cobre": 0.996
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 138.58,
+     "cobre": 0.091
+    },
+    "pe": {
+     "mm": 5.76,
+     "mm_max": 139.7,
+     "cobre": 0.116
+    }
+   },
+   "beirada_pb": 0.07393,
+   "lados_pb": {
+    "esq": {
+     "mm": 3.07,
+     "mm_max": 3.63,
+     "cobre": 0.12
+    },
+    "dir": {
+     "mm": 16.48,
+     "mm_max": 16.76,
+     "cobre": 0.996
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 138.58,
+     "cobre": 0.091
+    },
+    "pe": {
+     "mm": 2.43,
+     "mm_max": 139.7,
+     "cobre": 0.1
+    }
+   },
+   "cunha_branca": 0.00418,
+   "pecas": 4381,
+   "pecas_fora": 3,
+   "pecas_partidas": 2,
+   "tinta_perdida": 0.00032,
+   "folga_mm": {
+    "esq": 1.26,
+    "dir": 14.67,
+    "topo": 3.07,
+    "pe": 0.0
+   }
+  },
+  "no_gabarito": false
+ }
+}
