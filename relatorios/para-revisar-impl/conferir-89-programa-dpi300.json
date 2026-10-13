@@ -40,7 +40,7 @@
     0.152
    ]
   ],
-  "segundos_do_desenho": 30.7
+  "segundos_do_desenho": 21.7
  },
  "antiphon_p260__inteira": {
   "alertas": [
@@ -71,7 +71,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 13.0
+  "segundos_do_desenho": 17.4
  },
  "antiphonal1547_p006__inteira": {
   "alertas": [
@@ -111,7 +111,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.0
  },
  "antiphonal1547_p031__inteira": {
   "alertas": [
@@ -145,7 +145,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.5
+  "segundos_do_desenho": 2.0
  },
  "antiphonal1547_p046__inteira": {
   "alertas": [
@@ -193,7 +193,7 @@
     0.363
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "segundos_do_desenho": 2.3
  },
  "antiphonal1547_p076__inteira": {
   "alertas": [
@@ -260,7 +260,7 @@
     0.436
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.4
  },
  "antiphonal1547_p192__inteira": {
   "alertas": [
@@ -293,7 +293,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.8
+  "segundos_do_desenho": 2.4
  },
  "antiphonal1547_p252__inteira": {
   "alertas": [
@@ -357,7 +357,7 @@
     0.48854961832061067
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "segundos_do_desenho": 2.4
  },
  "boecio_p003__inteira": {
   "alertas": [],
@@ -386,7 +386,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.6
+  "segundos_do_desenho": 2.3
  },
  "boecio_p007__inteira": {
   "alertas": [],
@@ -432,7 +432,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.5
+  "segundos_do_desenho": 2.2
  },
  "boecio_p008__inteira": {
   "alertas": [],
@@ -479,7 +479,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.5
+  "segundos_do_desenho": 2.2
  },
  "boecio_p022__inteira": {
   "alertas": [],
@@ -525,7 +525,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.3
  },
  "camoes_p006__inteira": {
   "alertas": [
@@ -563,7 +563,7 @@
     0.715
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.4
  },
  "camoes_p009__inteira": {
   "alertas": [
@@ -610,7 +610,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.8
+  "segundos_do_desenho": 2.5
  },
  "camoes_p011__inteira": {
   "alertas": [
@@ -675,7 +675,7 @@
     0.5067873303167421
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "segundos_do_desenho": 2.4
  },
  "camoes_p027__inteira": {
   "alertas": [
@@ -758,7 +758,7 @@
     0.8161812297734627
    ]
   ],
-  "segundos_do_desenho": 1.6
+  "segundos_do_desenho": 2.3
  },
  "camoes_p066__inteira": {
   "alertas": [
@@ -806,7 +806,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.6
+  "segundos_do_desenho": 2.4
  },
  "camoes_p104__inteira": {
   "alertas": [
@@ -839,7 +839,7 @@
     0.8230719377835386
    ]
   ],
-  "segundos_do_desenho": 2.1
+  "segundos_do_desenho": 2.9
  },
  "cursus_p003__inteira": {
   "alertas": [
@@ -920,7 +920,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "segundos_do_desenho": 4.5
  },
  "cursus_p314__inteira": {
   "alertas": [],
@@ -1077,7 +1077,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "segundos_do_desenho": 4.5
  },
  "egenloff_p003__inteira": {
   "alertas": [
@@ -1129,7 +1129,7 @@
     0.8819690471750886
    ]
   ],
-  "segundos_do_desenho": 5.2
+  "segundos_do_desenho": 7.8
  },
  "egenloff_p007__inteira": {
   "alertas": [
@@ -1155,7 +1155,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.9
+  "segundos_do_desenho": 6.4
  },
  "egenloff_p012__inteira": {
   "alertas": [
@@ -1181,7 +1181,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.5
+  "segundos_do_desenho": 6.2
  },
  "egenloff_p047__inteira": {
   "alertas": [
@@ -1207,7 +1207,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 5.1
+  "segundos_do_desenho": 7.6
  },
  "egenloff_p121__inteira": {
   "alertas": [
@@ -1233,7 +1233,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.9
+  "segundos_do_desenho": 7.0
  },
  "egenloff_p131__inteira": {
   "alertas": [
@@ -1260,7 +1260,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.8
+  "segundos_do_desenho": 5.8
  },
  "escola_p007__inteira": {
   "alertas": [
@@ -1322,7 +1322,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.9
+  "segundos_do_desenho": 3.7
  },
  "escola_p035__inteira": {
   "alertas": [
@@ -1365,7 +1365,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.9
+  "segundos_do_desenho": 4.4
  },
  "escola_p113__inteira": {
   "alertas": [
@@ -1408,7 +1408,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "segundos_do_desenho": 4.1
  },
  "escola_p197__inteira": {
   "alertas": [],
@@ -1454,7 +1454,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.3
+  "segundos_do_desenho": 3.3
  },
  "gladstone_p005__inteira": {
   "alertas": [],
@@ -1501,7 +1501,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "segundos_do_desenho": 3.4
  },
  "gladstone_p018__inteira": {
   "alertas": [
@@ -1526,7 +1526,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.1
+  "segundos_do_desenho": 1.8
  },
  "gladstone_p055__inteira": {
   "alertas": [],
@@ -1565,7 +1565,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "segundos_do_desenho": 3.3
  },
  "gladstone_p096__inteira": {
   "alertas": [],
@@ -1598,7 +1598,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.3
+  "segundos_do_desenho": 4.5
  },
  "gladstone_p116__inteira": {
   "alertas": [],
@@ -1636,7 +1636,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.6
+  "segundos_do_desenho": 3.3
  },
  "gladstone_p136__inteira": {
   "alertas": [],
@@ -1690,7 +1690,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.1
+  "segundos_do_desenho": 2.8
  },
  "graduale_p221__inteira": {
   "alertas": [
@@ -1723,7 +1723,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 5.9
+  "segundos_do_desenho": 7.6
  },
  "graduale_p222__inteira": {
   "alertas": [],
@@ -1756,7 +1756,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.8
+  "segundos_do_desenho": 5.9
  },
  "graduale_p223__inteira": {
   "alertas": [],
@@ -1786,7 +1786,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.2
+  "segundos_do_desenho": 7.6
  },
  "graduale_p269__inteira": {
   "alertas": [
@@ -1818,7 +1818,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 9.0
+  "segundos_do_desenho": 11.0
  },
  "graduale_p588__inteira": {
   "alertas": [
@@ -1850,7 +1850,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.1
+  "segundos_do_desenho": 8.4
  },
  "horas_p011__inteira": {
   "alertas": [
@@ -1882,7 +1882,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.1
+  "segundos_do_desenho": 8.8
  },
  "horas_p013__inteira": {
   "alertas": [
@@ -1921,7 +1921,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.4
+  "segundos_do_desenho": 8.8
  },
  "horas_p014__inteira": {
   "alertas": [
@@ -1979,7 +1979,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.6
+  "segundos_do_desenho": 7.8
  },
  "horas_p016__inteira": {
   "alertas": [
@@ -2034,7 +2034,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.4
+  "segundos_do_desenho": 7.8
  },
  "horas_p026__inteira": {
   "alertas": [
@@ -2088,7 +2088,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.4
+  "segundos_do_desenho": 7.9
  },
  "horas_p027__inteira": {
   "alertas": [
@@ -2144,7 +2144,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.0
+  "segundos_do_desenho": 7.7
  },
  "horas_p047__inteira": {
   "alertas": [
@@ -2186,7 +2186,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.4
+  "segundos_do_desenho": 8.3
  },
  "horas_p175__inteira": {
   "alertas": [
@@ -2220,7 +2220,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.4
+  "segundos_do_desenho": 9.2
  },
  "ljs47_p026__inteira": {
   "alertas": [
@@ -2314,7 +2314,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.4
+  "segundos_do_desenho": 7.5
  },
  "ljs47_p049__inteira": {
   "alertas": [],
@@ -2339,7 +2339,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 6.9
+  "segundos_do_desenho": 8.8
  },
  "ljs47_p064__inteira": {
   "alertas": [],
@@ -2423,7 +2423,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 7.9
+  "segundos_do_desenho": 9.2
  },
  "ljs47_p103__inteira": {
   "alertas": [
@@ -2513,7 +2513,7 @@
     0.25311203319502074
    ]
   ],
-  "segundos_do_desenho": 5.3
+  "segundos_do_desenho": 6.5
  },
  "marial_p007__inteira": {
   "alertas": [],
@@ -2573,7 +2573,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.1
+  "segundos_do_desenho": 5.0
  },
  "marial_p454__inteira": {
   "alertas": [
@@ -2668,7 +2668,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.8
+  "segundos_do_desenho": 5.9
  },
  "marial_p840__inteira": {
   "alertas": [],
@@ -2722,7 +2722,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.7
+  "segundos_do_desenho": 4.7
  },
  "matematica_p032__inteira": {
   "alertas": [
@@ -2776,7 +2776,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.3
+  "segundos_do_desenho": 5.9
  },
  "matematica_p072__inteira": {
   "alertas": [
@@ -2819,7 +2819,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 4.6
+  "segundos_do_desenho": 5.9
  },
  "opusmajus_p003__inteira": {
   "alertas": [],
@@ -2852,7 +2852,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.1
+  "segundos_do_desenho": 2.9
  },
  "opusmajus_p011__inteira": {
   "alertas": [],
@@ -2909,7 +2909,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.3
+  "segundos_do_desenho": 2.8
  },
  "opusmajus_p020__inteira": {
   "alertas": [
@@ -2932,7 +2932,7 @@
    "guardas": []
   },
   "marcas": [],
-  "segundos_do_desenho": 2.8
+  "segundos_do_desenho": 3.6
  },
  "opusmajus_p165__inteira": {
   "alertas": [],
@@ -2988,7 +2988,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.2
+  "segundos_do_desenho": 2.7
  },
  "opusmajus_p256__inteira": {
   "alertas": [],
@@ -3081,7 +3081,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.8
+  "segundos_do_desenho": 3.5
  },
  "palatino_p005__inteira": {
   "alertas": [
@@ -3112,7 +3112,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "segundos_do_desenho": 2.9
  },
  "palatino_p007__inteira": {
   "alertas": [],
@@ -3167,7 +3167,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.1
+  "segundos_do_desenho": 2.7
  },
  "palatino_p009__inteira": {
   "alertas": [
@@ -3219,7 +3219,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.3
+  "segundos_do_desenho": 2.8
  },
  "palatino_p010__inteira": {
   "alertas": [
@@ -3271,7 +3271,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.2
+  "segundos_do_desenho": 2.7
  },
  "palatino_p057__inteira": {
   "alertas": [
@@ -3306,7 +3306,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "segundos_do_desenho": 2.5
  },
  "palatino_p066__inteira": {
   "alertas": [
@@ -3361,7 +3361,7 @@
     0.9309407286568787
    ]
   ],
-  "segundos_do_desenho": 2.0
+  "segundos_do_desenho": 2.5
  },
  "palatino_p067__inteira": {
   "alertas": [],
@@ -3396,7 +3396,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "segundos_do_desenho": 2.5
  },
  "palatino_p076__inteira": {
   "alertas": [],
@@ -3436,7 +3436,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.0
+  "segundos_do_desenho": 2.7
  },
  "palatino_p104__inteira": {
   "alertas": [
@@ -3469,7 +3469,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "segundos_do_desenho": 2.6
  },
  "palatino_p113__inteira": {
   "alertas": [],
@@ -3500,7 +3500,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.0
+  "segundos_do_desenho": 2.6
  },
  "pesel_p021__inteira": {
   "alertas": [
@@ -3546,7 +3546,7 @@
     0.38
    ]
   ],
-  "segundos_do_desenho": 4.8
+  "segundos_do_desenho": 6.0
  },
  "rariora_p008__inteira": {
   "alertas": [
@@ -3588,7 +3588,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.3
  },
  "rariora_p099__inteira": {
   "alertas": [],
@@ -3655,7 +3655,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.0
+  "segundos_do_desenho": 2.8
  },
  "rariora_p155__inteira": {
   "alertas": [
@@ -3683,7 +3683,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.0
+  "segundos_do_desenho": 4.1
  },
  "rariora_p169__inteira": {
   "alertas": [
@@ -3705,7 +3705,7 @@
    "guardas": []
   },
   "marcas": [],
-  "segundos_do_desenho": 3.2
+  "segundos_do_desenho": 4.5
  },
  "rariora_p211__inteira": {
   "alertas": [],
@@ -3735,7 +3735,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 3.1
+  "segundos_do_desenho": 4.4
  },
  "rariora_p365__inteira": {
   "alertas": [],
@@ -3772,7 +3772,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.2
+  "segundos_do_desenho": 3.3
  },
  "rhetorica_p018__inteira": {
   "alertas": [],
@@ -3828,7 +3828,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "segundos_do_desenho": 3.6
  },
  "rhetorica_p034__inteira": {
   "alertas": [
@@ -3866,7 +3866,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.8
+  "segundos_do_desenho": 4.1
  },
  "rhetorica_p073__inteira": {
   "alertas": [
@@ -3926,7 +3926,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "segundos_do_desenho": 3.7
  },
  "rhetorica_p129__inteira": {
   "alertas": [
@@ -3948,7 +3948,7 @@
    "guardas": []
   },
   "marcas": [],
-  "segundos_do_desenho": 2.4
+  "segundos_do_desenho": 3.6
  },
  "rhetorica_p160__inteira": {
   "alertas": [
@@ -4011,7 +4011,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 2.5
+  "segundos_do_desenho": 3.7
  },
  "siebmacher_p007__esquerda": {
   "alertas": [],
@@ -4052,7 +4052,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "segundos_do_desenho": 2.7
  },
  "siebmacher_p007__direita": {
   "alertas": [
@@ -4081,7 +4081,7 @@
     0.976
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.6
  },
  "siebmacher_p009__esquerda": {
   "alertas": [],
@@ -4120,7 +4120,7 @@
    ]
   },
   "marcas": [],
-  "segundos_do_desenho": 1.9
+  "segundos_do_desenho": 2.7
  },
  "siebmacher_p009__direita": {
   "alertas": [
@@ -4162,6 +4162,6 @@
     0.93
    ]
   ],
-  "segundos_do_desenho": 1.7
+  "segundos_do_desenho": 2.4
  }
 }
