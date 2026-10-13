@@ -6,8 +6,11 @@ fora, para a sujeira da margem nao segurar o corte), da uma folga e, desde
 28/09/2026, nunca deixa a borda da caixa passar no meio de uma peca de tinta.
 
 Quem chama: core/pipeline.py (preparar_metade, na hora de gravar e na previa;
-analisar_projeto, so para os avisos). Depois do corte vem o endireitar, e
-`alargar_para_o_giro` da ao corte a folga que o giro vai precisar.
+analisar_projeto, so para os avisos). No projeto de antes de 09/10/2026
+("cortar_antes"), depois do corte vem o endireitar, e `alargar_para_o_giro`
+da ao corte a folga que o giro vai precisar. No livro novo
+("endireitar_antes", item 2.2, G6) o corte e achado na pagina ja endireitada
+e nao ha folga do giro (core/ordem_do_preparo.py).
 
 "Seguir a beirada do papel" (o que o Samuel espera no Livro de Horas) NAO e
 feito aqui: fica para a caixa da pagina do ScanTailor (itens 2.5 e 2.13 do
@@ -182,8 +185,12 @@ def _sem_conteudo_para_recortar(img: np.ndarray) -> bool:
     try:
         from core.detectar_regioes import _pagina_sem_conteudo
 
-        return _pagina_sem_conteudo(img if img.ndim == 3 else
-                                    cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))
+        # A imagem em cinza vai como esta: _pagina_sem_conteudo trabalha no
+        # cinza, e cinza -> cor -> cinza devolve os mesmos valores (conferido
+        # nos 256 niveis, 09/10/2026). Antes ia para cor e voltava: duas
+        # conversoes da pagina inteira a toa (item 2.2, G6: o corte do livro
+        # novo e medido na pagina em cinza; regra 6, velocidade).
+        return _pagina_sem_conteudo(img)
     except Exception:  # noqa: BLE001 - na duvida, recorta como antes
         return False
 
@@ -894,17 +901,33 @@ def fatiar(img: np.ndarray, recorte: Recorte | tuple) -> np.ndarray:
     preparar_metade): poupa copiar a pagina inteira a 300 DPI (ate 80 MB no
     Livro de Horas). Arriscado: escrever na vista escreve na imagem original.
     """
+    caixa = caixa_em_pontos(img.shape, recorte)
+    if caixa is None:               # recorte absurdo: melhor nao cortar
+        return img
+    x0, y0, x1, y1 = caixa
+    return img[y0:y1, x0:x1]
+
+
+def caixa_em_pontos(forma, recorte: Recorte | tuple) -> tuple[int, int, int, int] | None:
+    """O retangulo relativo `recorte` em pontos (x0, y0, x1, y1) de uma imagem
+    de forma `forma` (img.shape), arredondado como fatiar corta; None quando o
+    recorte e absurdo (menos de 8 pontos de lado: melhor nao cortar).
+
+    E a conta de fatiar, separada para o endireitar antes de cortar (item 2.2,
+    G6, core/endireitar.rotacionar_e_cortar) cortar EXATAMENTE os mesmos
+    pontos. Arriscado: mudar o arredondamento (o corte de todo livro anda um
+    ponto, e o projeto antigo deixa de sair identico)."""
     if isinstance(recorte, Recorte):
         x, y, w, h = recorte.tupla
     else:
         x, y, w, h = recorte
 
-    altura, largura = img.shape[:2]
+    altura, largura = forma[:2]
     x0 = int(np.clip(x, 0.0, 1.0) * largura)
     y0 = int(np.clip(y, 0.0, 1.0) * altura)
     x1 = int(np.clip(x + w, 0.0, 1.0) * largura)
     y1 = int(np.clip(y + h, 0.0, 1.0) * altura)
 
-    if x1 - x0 < 8 or y1 - y0 < 8:  # recorte absurdo: melhor nao cortar
-        return img
-    return img[y0:y1, x0:x1]
+    if x1 - x0 < 8 or y1 - y0 < 8:
+        return None
+    return x0, y0, x1, y1
