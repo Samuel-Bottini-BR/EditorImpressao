@@ -1,6 +1,6 @@
 # O "Para revisar" da Fase 2: onde parei
 
-Implementador, 12/10/2026. Ramo `fase2-para-revisar` (saiu do `fase-1` em `9c51801`), cópia em
+Implementador, 12 e 13/10/2026. Ramo `fase2-para-revisar` (saiu do `fase-1` em `9c51801`), cópia em
 `.claude/worktrees/para-revisar`. Bloco do plano: "Decidido pelo Samuel, a fazer: o 'Para revisar'"
 (PLANO-DEFINITIVO, Fase 2). **Nada aqui está aprovado: é para o verificador conferir.**
 
@@ -79,7 +79,7 @@ listadas abaixo.**
 
 | Item | O que era | O que foi feito | Commit |
 |---|---|---|---|
-| 1 | A medida mudava quando a prévia tinha sido desenhada antes (na janela: 24 vão, 73 certas; direto: 22 e 75) | A causa era a marcação de gravura, letra e papel, procurada no primeiro desenho da página (na janela, a prévia de 110 DPI) e guardada; o detector acha áreas diferentes das de 300 DPI. Agora a prévia procura a marcação na página do tamanho do PDF, e as linhas do leitor de texto saem dela também. Nas 89 páginas, direto e na ordem da janela: **22 vão, 75 certas, os mesmos avisos e os mesmos sinais, nenhuma diferença.** | `027e50d`, `cf04ce7` |
+| 1 | A medida mudava quando a prévia tinha sido desenhada antes (na janela: 24 vão, 73 certas; direto: 22 e 75) | A causa era a marcação de gravura, letra e papel, procurada no primeiro desenho da página (na janela, a prévia de 110 DPI) e guardada; o detector acha áreas diferentes das de 300 DPI. Agora a prévia procura a marcação na página do tamanho do PDF, e as linhas do leitor de texto saem dela também. Nas 89 páginas, direto e na ordem da janela: **22 vão, 75 certas, os mesmos avisos e os mesmos sinais, nenhuma diferença.** **Refeito à tarde, a pedido da gerente: a busca passou para trás (seção "Duas mudanças", A); o resultado nas 89 é o mesmo.** | `027e50d`, `cf04ce7` |
 | 2 | Dois cliques no cartão do filtro davam a página por conferida | Escolher o filtro que já está não grava ação nem confere a página | `c19f054` |
 | 3 | "Parece em branco" e "Página sem conteúdo" sem "está bom assim" | Terceiro botão, "está bom assim", nos dois | `47a9465`, `c19f054` |
 | 4 | Teclado preso no botão do aviso | Os botões do aviso não pegam o foco do teclado (nem escondidos); o mouse funciona igual | `c19f054` |
@@ -92,6 +92,9 @@ a marcação a 110 DPI: ajustei para a resolução do PDF (o comportamento novo)
 `teste_botoes.py`: 180 ações, 0 falhas.
 
 ### Custo do item 1 (para a gerente decidir)
+
+**Decidido pela gerente: não pode ficar. Resolvido na seção "Duas mudanças", A (a busca vai por trás). O texto
+abaixo é o registro de como estava.**
 
 A primeira prévia de cada página que ainda não tem marcação ficou mais lenta: em 8 páginas do gabarito, de
 1,14 s para 1,92 s em média (+0,8 s; de +0,1 s no Boécio 7 a +2,0 s na Horas 11). Vale em qualquer filtro com
@@ -179,6 +182,150 @@ falhadas e a força "conserta" os dois). Propostas, para a gerente escolher (nã
 - **P3: as duas juntas** (a minha sugestão: é a mais cuidadosa; apoia-se em poucas páginas).
 - P4: desligar a força sozinha de fábrica e deixar só o botão no aviso (muda o que o Samuel escolheu).
 
+**Decidido pela gerente: P3. Feito (`0541236`); a tabela de antes e depois está na seção "Duas mudanças", B.**
+
+## Duas mudanças pedidas pela gerente depois dos consertos (13/10, tarde)
+
+**PRONTO PARA CONFERIR.** Commits `0541236` (B), `a841fd0`, `36a6549`, `bdc8142` e o que fecha (A).
+
+### A. A marcação do tamanho do PDF é procurada por trás (o custo de 0,8 s saiu da frente)
+
+O conserto do item 1 fazia a prévia procurar a marcação (gravura, letra e papel) na página do tamanho do PDF
+antes de aparecer. Foi desfeito. Agora:
+
+- A prévia procura na página pequena, como sempre, e aparece no tempo de antes. Essa marcação fica guardada
+  como **provisória** (campo novo na página do `projeto.json`: `marcacao_provisoria`).
+- Depois que a prévia aparece, a tela pede por trás (`GerenciadorPrevias.pedir_medida`, fio do pool) a procura
+  na página do tamanho do PDF (`core.pipeline.acertar_no_tamanho_do_pdf`). Quando chega: a marcação guardada
+  passa a ser essa (o que a máquina marcou é trocado; o que a pessoa marcou à mão volta por cima), a prévia é
+  desenhada de novo e, nas páginas em "Só as letras", a regra é medida.
+- **A regra só mede com a marcação do tamanho do PDF, nunca com a da prévia.** Página que ninguém visitou (ou
+  cuja busca não chegou a rodar) é trocada ao gerar o PDF.
+- Projeto antigo, com marcação e sem o campo: a marcação dele vale como está, nada é procurado de novo.
+
+**Critério 1, o tempo até a primeira prévia** (as mesmas 8 páginas, filtro de fábrica, página sem marcação;
+`tempo_da_primeira_previa.py`, as três versões do código medidas hoje uma atrás da outra, várias rodadas):
+
+| | Média das 8 (rodadas de hoje) | Medido antes |
+|---|---|---|
+| Antes de tudo (`b5b224f`) | 1,18 a 1,31 s (seis rodadas; a do meio 1,20) | 1,14 s |
+| Com o conserto de hoje cedo (`cf04ce7`, busca na frente) | 2,08 e 2,57 s | 1,92 s |
+| **Com a busca por trás (agora)** | **1,09 a 1,31 s (seis rodadas; a do meio 1,19)** | |
+
+Por página, o menor tempo de cada uma (segundos): antes de tudo / conserto de hoje / agora. Marial 7:
+1,25 / 2,05 / 1,26. Palatino 7: 1,26 / 2,15 / 1,16. Boécio 7: 0,79 / 0,86 / 0,75. Horas 11: 1,34 / 3,12 / 1,27.
+Graduale 221: 1,49 / 3,06 / 1,33. Escola 7: 1,04 / 1,76 / 0,95. Opus Majus 20: 1,33 / 2,71 / 1,21. Camões 27:
+0,72 / 0,91 / 0,69. As rodadas variam uns 0,1 s entre si (há outros agentes usando o PC); a diferença entre
+"antes de tudo" e "agora" fica dentro disso.
+
+**Achado ao medir na tela de verdade** (`tempo_de_trocar_de_pagina.py`: a tela de conferir sem aparecer, fios de
+verdade, passando por 12 páginas): o tempo de uma prévia sozinha não mostrava tudo. Com a busca começando logo
+depois da prévia, ela disputava os fios e o processador com as prévias adiantadas das páginas seguintes, e num
+pedaço do Antiphonal 1547 trocar de página ficava 0,3 s mais lento. Por isso a busca por trás agora espera
+numa fila e **só começa com o pool de prévias parado**, uma de cada vez, a mais nova primeiro. Medido depois:
+
+| Livro (pedaço), como folheia | Antes de tudo | Busca por trás começando logo | **Busca por trás, só com o pool parado (agora)** |
+|---|---|---|---|
+| Antiphonal 1547, parando 1,5 s em cada página | 0,08 a 0,11 s | 0,40 a 0,43 s | **0,09 s** |
+| Antiphonal 1547, sem parar | 1,33 a 1,54 s | 1,69 a 1,77 s | **1,53 a 1,54 s** |
+| Boécio, parando 1,5 s | 0,01 s | 0,02 s | **0,01 s** |
+| Boécio, sem parar | 0,50 a 0,63 s | 0,60 a 0,63 s | **0,51 s** |
+
+O preço: o trabalho de trás leva mais tempo para acabar. Depois da última das 12 páginas, o programa ainda
+trabalha por trás uns 22 s no Antiphonal (antes: 3 a 5 s) e 11 s no Boécio folheado sem parar (0,2 s parando
+1,5 s por página). Quem folheia sem parar só tem as páginas acertadas quando parar; o PDF acerta todas.
+
+**Critério 2, as 89 páginas** (300 DPI, livro novo): direto, **22 vão e 75 certas**; na ordem da janela (prévia
+de 110 DPI, depois a busca por trás, pela mesma função que a tela chama), **22 e 75**. Página a página, os
+mesmos avisos, os mesmos sinais, a mesma faixa e as mesmas marcas nas 89 (e os mesmos do conserto de hoje cedo).
+Arquivos: `conferir-89-programa-dpi300.json` e `...-ordem-da-janela.json` (os de hoje cedo ficaram com
+`-marcacao-na-frente` no nome).
+
+**Critério 3, trocar de página antes de a marcação chegar** (`tests/test_marcacao_por_tras.py`, QThreadPool de
+verdade, detector falso e lento cuja resposta depende do tamanho da imagem e de qual página ela mostra):
+- passar pelas 4 páginas sem esperar a busca de nenhuma: não trava; cada página termina com a marcação DELA, a
+  do tamanho do PDF; cada uma procurada uma vez na pequena e uma na grande; as buscas grandes nunca rodam duas
+  ao mesmo tempo; a busca não é pedida de novo;
+- a prévia de antes fica no cache até a nova chegar (a tela não pisca nem volta para "preparando...");
+- prévia pedida com a busca no meio (a pessoa mexeu na página) não fica guardada com a marcação de antes;
+- na tela de verdade, aba Marcar: marcar uma área à mão com a busca no meio, ir e voltar: a área da pessoa
+  continua, por cima, e o editor mostra o que a página tem.
+E em `tests/test_misto_no_programa.py` (sem fios): a troca em si; a área marcada à mão bem no meio da procura
+grande; a folha que a pessoa deixou só com marcação à mão ("Esta folha vai sair em branco") não é procurada de
+novo; a cópia velha do editor não é gravada como se fosse a do tamanho do PDF; projeto antigo fica como está;
+os cartões de filtro (cópia da página) não mexem na marcação; se a procura grande falha, a página continua
+provisória e a regra não mede.
+
+**Critério 4, nada congela**: a procura e o desenho novo rodam no pool; no fio da tela só entra trocar a imagem
+e reler a marcação.
+
+**O que o Kaique vê de diferente** (além de a prévia se atualizar sozinha): na aba Marcar, as áreas que o
+programa achou se acertam sozinhas uma vez, alguns segundos depois de ele chegar numa página nunca acertada
+(no Graduale 221 são 9 áreas na prévia e 18 no tamanho do PDF). É a mesma troca, vista no editor. O "desfazer"
+da aba Marcar perde o que tinha anotado nesse momento (pelo código, já perdia quando uma prévia chega; não
+conferi na janela). Se a gerente não
+quiser isso, a saída é o editor só se acertar ao sair e voltar à página.
+
+### B. A força do preto sozinha (a "P3")
+
+A força só é escurecida sozinha com **4 ou mais linhas falhadas, ou com todas as linhas contadas falhadas**; o
+aviso "Texto falhado" continua valendo com 2. Depois de escurecer, a página é medida de novo e o reforço **só
+fica se as linhas falhadas caírem**; senão a força volta à de antes, o programa não tenta de novo nessa página,
+e ela fica só com o aviso e o botão "usar mais escuro".
+
+As 7 páginas em que a força agia (89 páginas, livro novo, 300 DPI), antes e depois:
+
+| Página | Linhas falhadas (força 50) | Antes da P3 | Depois da P3 |
+|---|---|---|---|
+| Camões 27 | 5 de 28 | força 85 (0 falhadas) | **força 85** (0 falhadas), aviso "Força do preto escurecida" |
+| Camões 104 | 1 de 1 (todas) | força 85 (0 falhadas) | **força 85** (0 falhadas), aviso "Força do preto escurecida" (e "figura além da gravura") |
+| Camões 11 | 3 de 22 | força 85 (0 falhadas) | força 50, só o aviso "Texto falhado" |
+| ljs47 103 | 3 de 47 | força 85 (1 falhada) | força 50, só o aviso |
+| Palatino 66 | 3 de 12 | força 85 (0 falhadas; moldura suja) | **força 50, só o aviso** |
+| Antiphonal 252 | 2 de 14 | força 85 (2 falhadas) | força 50, só o aviso |
+| Egenloff 3 | 2 de 15 | força 85 (5 falhadas) | força 50, só o aviso |
+
+Nas 89 páginas com a força sozinha ligada (`conferir-89-programa-dpi300-forca-sozinha.json`): ela age só no
+Camões 27 e no 104; nenhuma outra página muda de força. Nenhuma foi escurecida e desfeita (a segunda metade da
+regra, "só fica se resolver", não chegou a ser usada nestas 89: com 4 linhas ou todas, só entram as duas do
+Camões; ela está coberta por teste de máquina, `tests/test_avisos.py`).
+
+### Testes depois de A e B
+
+- A suíte inteira, um arquivo de pytest por vez (13/10, 13:40 a 13:56): **116 arquivos, 2114 passaram, nenhum
+  falhou.** Arquivo novo: `tests/test_marcacao_por_tras.py` (4, com os fios de verdade; rodado 4 vezes com o código final,
+  sem falhar). Mexidos: `test_misto_no_programa.py` (41), `test_avisos.py` (34), `test_para_revisar_na_tela.py`
+  (25), `test_gravura_no_processamento.py` (43; a prévia volta a procurar a 110 DPI).
+- `teste_botoes.py`: 180 ações, 0 falhas.
+- `conferir_na_tela.py` (a tela de verdade, fios de verdade, Antiphonal 46, Camões 27, Egenloff 12): tudo certo.
+- **O `teste_velocidade.py` não foi rodado** (fica para o verificador). O "trocar de página" dele deve dar o
+  mesmo de antes; se não der, é para me devolver.
+
+### Ressalvas de A e B
+
+1. **Na aba Marcar a marcação se acerta sozinha uma vez por página** (descrito acima). É consequência direta de
+   "a marcação guardada passa a ser a do tamanho do PDF"; não vi como evitar sem o editor mostrar uma marcação
+   que não é a que vai para o PDF. A gerente decide se fica.
+2. **O trabalho de trás agora existe em toda página visitada**, em qualquer filtro com "Achar gravuras" ligado
+   (antes só nas páginas em "Só as letras"): um desenho do tamanho do PDF e uma prévia redesenhada por página,
+   sempre depois das prévias. Num PC mais fraco que este pode aparecer de outro jeito: só o `teste_velocidade`
+   no PC do Kaique diz.
+3. **Quem folheia sem parar** não tem a busca feita na hora (ela espera o pool parar): os avisos da regra e a
+   marcação definitiva dessas páginas chegam quando ele parar, da página mais nova para a mais velha, ou ao
+   gerar o PDF. Antes (desde `8923370`) as medidas das páginas em "Só as letras" entravam na fila junto com as
+   prévias. Não muda quais páginas vão para a lista, só quando.
+4. **Página em "Só as letras" já vista na prévia**: o leitor de texto roda duas vezes nela (na prévia, como
+   sempre, e por trás na página do tamanho do PDF). O da frente é o de sempre; o segundo é por trás.
+5. **Um caso que não fechei**: o "Desfazer" (Ctrl+Z) de "Ajustar o pedaço à figura" devolve a marcação inteira
+   de antes do clique. Se a busca por trás trocou a marcação entre o clique e o desfazer, voltam as áreas da
+   prévia e a página fica dizendo que são as do tamanho do PDF. É raro (segundos de janela) e o efeito é o de
+   antes de hoje (a página sai com as áreas da prévia). Para a Lista de bugs, 13/10/2026.
+6. **A segunda metade da P3 ("só fica se resolver") não foi exercida nas 89 páginas**: com 4 linhas ou todas,
+   só entram as duas do Camões, onde resolve. Está coberta só por teste de máquina.
+7. As cópias de código antigas usadas para medir o tempo ficaram em `saida_teste\codigo-antes-de-tudo` e
+   `saida_teste\codigo-conserto-de-hoje` (pasta fora do git); as duas junções `modelos` que criei dentro delas
+   já foram desfeitas com `(Get-Item ...).Delete()`.
+
 ## O que cada pedido virou no programa
 
 | # | Pedido do Samuel | O que o programa faz agora | Onde |
@@ -235,7 +382,8 @@ forte"). Pasta de dados de teste, nunca a do Samuel.
    traz de volta hoje (o "Guardar a tinta forte" apaga do mesmo jeito): a rodada 5 dizia que trazia. Vai para
    a Lista de bugs (abaixo).
 5. **Campos novos no `projeto.json`** (todos com padrão; projeto antigo abre igual): na página `em_branco`,
-   `alertas_aceitos`, `forca_antes_do_reforco`, `reforco_desfeito`, `faixa_na_beirada`; na folha
+   `alertas_aceitos`, `forca_antes_do_reforco`, `reforco_desfeito`, `faixa_na_beirada`, `marcacao_provisoria`
+   (13/10: a marcação da página veio da prévia e ainda vai ser trocada pela do tamanho do PDF); na folha
    `alertas_aceitos`; no livro `reforcar_texto_falhado` (livro novo ligado; projeto antigo desligado). É
    mudança de formato de dados: entendi que as decisões das rodadas 4 e 5 a autorizam, como nos itens
    anteriores (a gerente avisa o Samuel, 13/10). Projeto antigo, sem os campos, abre e sai igual ponto por
@@ -269,6 +417,7 @@ forte"). Pasta de dados de teste, nunca a do Samuel.
 | 12/10/2026 | As observações do livro ("o livro inteiro é colorido", "este livro tem uma página por folha"...) são escritas num rótulo de um cabeçalho escondido: o Kaique não as vê. | `ui/tela_conferir.py` (`rotulo_observacoes`, `_montar_cabecalho`) |
 | 12/10/2026 | (consertado, por impedir o botão novo) Os botões "usar mais fraco" / "usar mais escuro" dos avisos "Ficou escura" / "Texto quase sumiu" chamavam um método que não existia (`_escolher_forca`) e davam "Não consegui fazer isso agora". | `ui/tela_conferir.py` |
 | 12/10/2026 | Com o preparo do livro novo, o Siebmacher 7 e 9 continua sem ser dividido sozinho (já anotado na rodada 4); nos scripts continua dividido à mão. | divisão do ScanTailor |
+| 13/10/2026 | Desfazer (Ctrl+Z) de "Ajustar o pedaço à figura" depois de a busca por trás trocar a marcação da página: voltam as áreas achadas na prévia e a página fica marcada como se fossem as do tamanho do PDF (a regra do "Para revisar" mede com elas). Raro. | `ui/tela_conferir._ajustar_pedaco_a_figura` (grava `selecao` pelo histórico, sem o campo `marcacao_provisoria`) |
 
 ## Ideias para a Lista de espera
 
