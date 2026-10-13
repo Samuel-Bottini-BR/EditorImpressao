@@ -653,9 +653,14 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
                       if not (b.text() or "").startswith("mudar nas opções")]
             alvos += [c for c in corpo.findChildren(QCheckBox)
                       if c.isVisible() and c.isEnabled()]
+        # Tambem fica de fora a sugestao laranja quando ela e "apagar esta
+        # página": apagar e restaurar ja sao clicados na fila dos filtros e no
+        # menu Pagina, e um apagar a mais deixava o livro de teste (duas
+        # paginas) sem nenhuma para processar.
         if hasattr(conferir, "faixa"):
             alvos += [b for b in botoes_de(conferir.faixa)
-                      if b is not getattr(conferir, "botao_proxima_duvida", None)]
+                      if b is not getattr(conferir, "botao_proxima_duvida", None)
+                      and "apagar" not in (b.text() or "")]
         # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
