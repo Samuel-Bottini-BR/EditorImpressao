@@ -33,6 +33,10 @@ from dataclasses import dataclass, field
 import cv2
 import numpy as np
 
+# Abaixo deste angulo o endireitar nao gira a pagina (nao ha cunha do giro):
+# o mesmo numero do rotacionar. core/endireitar so depende do cv2 e do numpy.
+from core.endireitar import ANGULO_MINIMO
+
 # Folga deixada em volta do conteudo: PELO MENOS 1 mm de papel entre a ultima
 # tinta e a borda do corte (decisao do Samuel, conferencia 5, P2, 01/10/2026:
 # "Sim, 1 mm"). Sem folga nenhuma o corte encosta na letra e o texto fica
@@ -228,7 +232,188 @@ def _mascara_de_tinta_local(cinza: np.ndarray) -> np.ndarray:
         return (cinza < max(20.0, nivel_papel * 0.75)).astype(np.uint8)
 
 
-def detectar_bordas(img: np.ndarray, dpi: float | None = None) -> Recorte:
+# ---------------------------------------------------------------------------
+# A cunha do giro (conserto de 13/10/2026; bug que entrou com o G6 em 12/10)
+#
+# No livro novo ("endireitar_antes") a pagina e girada INTEIRA antes de o
+# corte ser procurado (core/pipeline._geometria_endireitando_antes), e o giro
+# (core/endireitar.rotacionar) pinta de branco as cunhas que sobram nas
+# beiradas. Esse branco fica entre a beirada da imagem e a borda preta do
+# scanner, e a busca do corte, feita para a borda preta ENCOSTADA na beirada,
+# deixava de reconhece-la de dois jeitos (verificador, 13/10, 89 paginas:
+# relatorios/conferir/corte-g6-2026-10-13, ramo verif-corte-g6-2026-10-13):
+#
+# 1. _apagar_bordas_solidas anda da beirada para dentro enquanto a coluna (ou
+#    linha) for 80% tinta; com a cunha branca a coluna de fora caia de 100%
+#    para 73% e nada era apagado (Cursus 3: 16 mm de faixa preta a direita;
+#    Matematica 32: 44 mm; Camoes 104).
+# 2. onde o fundo do scanner e preto LISO o limiar local nao ve tinta
+#    nenhuma; o degrau do branco da cunha para o preto cria "tinta" bem na
+#    beirada, e a caixa da tinta ia ate o fim da folha (Antiphon 88 e 260).
+#
+# O conserto: quando quem chama diz de quanto a pagina foi girada
+# (detectar_bordas, `girada`), a busca sabe quais pontos sao cunha e os deixa
+# de fora dessas duas contas. O apagar de sempre (_apagar_bordas_solidas e
+# _apagar_riscas_de_dobra) continua igual, ponto por ponto; a mascara de
+# tinta so PERDE mais duas coisas: as linhas e colunas de borda solida
+# contadas so na imagem de verdade (_apagar_bordas_solidas_fora_da_cunha) e a
+# tinta que so existe por causa do degrau branco (_tinta_falsa_da_cunha).
+#
+# Por que "somar ao apagar de hoje" em vez de trocar a conta: medido nas 43
+# paginas que giram (relatorios/conserto-corte-g6, experiencia.py). Trocar a
+# borda solida pela conta nova tirava do apagar das riscas a coluna que ele
+# usava (Marial 7 ganhava 2 mm de faixa a direita, Camoes 66 piorava); tratar
+# a cunha como "nao existe" em tudo (limiar local, riscas, pecas) desfazia o
+# que o G6 melhorou (o numero da folha do Graduale 221 e 223 voltava a sair
+# cortado; Egenloff 3 ganhava preto; Escola 197 perdia 3,9% da tinta). Do
+# jeito adotado, o corte muda em 8 das 43 e nenhuma perde tinta.
+#
+# Arriscado mudar: aplicar isto sem `girada` (o caminho do projeto antigo e
+# da pagina como veio tem de continuar identico ponto por ponto); usar a
+# conta nova NO LUGAR da de sempre (ver acima).
+# ---------------------------------------------------------------------------
+
+# Ponto da imagem reduzida que e imagem de verdade: coberto pela pagina
+# girada em pelo menos isto. Abaixo, e cunha (ou mistura com o branco dela).
+COBERTURA_DE_IMAGEM = 0.999
+
+
+def _cunha_do_giro(forma, angulo: float) -> np.ndarray:
+    """Quais pontos de uma imagem de forma `forma` NAO vieram da pagina,
+    depois de ela ser girada `angulo` graus em volta do centro, no mesmo
+    tamanho (core/endireitar.rotacionar): as cunhas das quatro beiradas, mais
+    os pontos da divisa, que sao mistura da pagina com o branco.
+
+    A conta e feita direto no tamanho de `forma` (a imagem reduzida da busca
+    do corte): gira-se uma folha toda "1" com fundo "0" e fica cunha o que
+    nao chega a COBERTURA_DE_IMAGEM. Custa um giro de 800 pontos de altura.
+
+    Arriscado mudar: o centro e o sinal do giro tem de ser os do rotacionar,
+    senao a cunha cai do lado errado da pagina."""
+    altura, largura = forma[:2]
+    matriz = cv2.getRotationMatrix2D((largura / 2.0, altura / 2.0), angulo, 1.0)
+    cobre = cv2.warpAffine(np.ones((altura, largura), np.float32), matriz, (largura, altura),
+                           flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+    return cobre < COBERTURA_DE_IMAGEM
+
+
+def _preencher_a_cunha(cinza: np.ndarray, cunha: np.ndarray) -> np.ndarray:
+    """A imagem com cada ponto da cunha trocado pelo ponto de imagem de
+    verdade mais proximo (uma copia; `cinza` nao muda). So para a conta de
+    _tinta_falsa_da_cunha: sem o degrau branco, o limiar local ve o fundo do
+    scanner como ele e."""
+    _distancia, rotulos = cv2.distanceTransformWithLabels(
+        cunha.astype(np.uint8), cv2.DIST_L2, 3, labelType=cv2.DIST_LABEL_PIXEL)
+    # rotulos: em cada ponto, o numero do ponto de imagem mais proximo
+    valores = np.zeros(int(rotulos.max()) + 1, cinza.dtype)
+    valores[rotulos[~cunha]] = cinza[~cunha]
+    cheia = cinza.copy()
+    cheia[cunha] = valores[rotulos[cunha]]
+    return cheia
+
+
+def _tinta_falsa_da_cunha(cinza: np.ndarray, tinta: np.ndarray, cunha: np.ndarray) -> np.ndarray | None:
+    """A "tinta" que so existe por causa do branco da cunha, em fundo escuro
+    do scanner. Devolve a mascara dela (do tamanho de `tinta`), ou None
+    quando nao ha nenhuma (quase toda pagina: beirada de papel).
+
+    `cinza`: a imagem reduzida da busca do corte; `tinta`: a mascara do
+    limiar local nela (antes do fechamento); `cunha`: _cunha_do_giro.
+
+    E tinta falsa o ponto que (1) e tinta na imagem como veio, com a cunha
+    branca; (2) NAO e tinta quando a cunha e preenchida com a vizinha de
+    verdade (_preencher_a_cunha) - ou seja, quem o fez tinta foi o degrau
+    branco; e (3) esta em fundo escuro do scanner (mais escuro que
+    ESCURO_DO_SCANNER x o nivel do papel, o mesmo criterio de
+    _parar_no_escuro). E o caso do Antiphon 88 e 260: fundo preto liso, 0% de
+    tinta na pagina como veio e ~40% nas 8 linhas de fora depois do giro.
+
+    A condicao (3) e de proposito: a tinta que o degrau cria em PAPEL
+    (margem mais escura, beirada da folha vizinha) fica como esta. Tira-la
+    tambem mudava o corte de 18 das 43 paginas medidas e desfazia melhoras do
+    G6 (Graduale 221: o numero da folha voltava a sair cortado).
+
+    Custo: uma segunda conta do limiar local na imagem reduzida, so quando
+    ha fundo escuro a menos de uma janela da cunha (medido em 13/10/2026).
+    """
+    from core.filtros import janela_para_altura
+
+    cheia = _preencher_a_cunha(cinza, cunha)
+    papel = float(np.percentile(cinza[~cunha][::7], 90))
+    escuro = cheia < ESCURO_DO_SCANNER * papel
+    # o limiar local so olha uma janela em volta do ponto: longe da cunha as
+    # duas contas dao o mesmo, e sem fundo escuro por perto nao ha o que achar
+    janela = janela_para_altura(cinza.shape[0])
+    perto = cv2.dilate(cunha.astype(np.uint8), np.ones((2 * janela + 1, 2 * janela + 1), np.uint8)) > 0
+    if not (escuro & perto).any():
+        return None
+    falsa = (tinta > 0) & (_mascara_de_tinta_local(cheia) == 0) & escuro & perto
+    return falsa if falsa.any() else None
+
+
+def _apagar_bordas_solidas_fora_da_cunha(tinta: np.ndarray, cunha: np.ndarray) -> np.ndarray:
+    """O mesmo andar de _apagar_bordas_solidas (da beirada para dentro,
+    enquanto a linha ou coluna for FRACAO_BORDA_SOLIDA de tinta), mas com a
+    fracao contada SO nos pontos que sao imagem de verdade: a cunha do giro
+    (e um ponto de vizinhanca dela, que e mistura) nao conta nem a favor nem
+    contra. Devolve uma copia de `tinta` sem as linhas e colunas apagadas.
+
+    Linha ou coluna sem nenhum ponto de imagem (so cunha) e passada adiante,
+    como se fosse borda. A coluna ja apagada como borda tambem deixa de ser
+    "imagem" para a conta das linhas (e vice-versa): com borda preta a
+    direita E embaixo (Cursus 3), a cunha tira metade da linha de baixo da
+    conta, e a faixa da direita, ja apagada, derrubava o que sobrava para
+    menos de 80% - a faixa de baixo ficava (achado pelo teste de maquina
+    tests/test_ordem_do_preparo.py, pagina torta com borda preta).
+
+    Nao substitui _apagar_bordas_solidas: detectar_bordas usa as duas e fica
+    com o que as duas apagam (ver o comentario "A cunha do giro", acima).
+
+    Arriscado mudar: FRACAO_BORDA_SOLIDA e CORTE_MAXIMO sao os da conta de
+    sempre; baixar a fracao aqui faz linha de texto encostada na borda virar
+    borda."""
+    limpa = tinta.copy()
+    altura, largura = limpa.shape[:2]
+    imagem = cv2.dilate(cunha.astype(np.uint8), np.ones((3, 3), np.uint8)) == 0
+
+    def solida(faixa: np.ndarray, vale: np.ndarray) -> bool:
+        quantos = int(np.count_nonzero(vale))
+        if quantos == 0:
+            return True
+        return float(np.count_nonzero(faixa[vale])) / quantos >= FRACAO_BORDA_SOLIDA
+
+    limite_x = int(largura * CORTE_MAXIMO)
+    limite_y = int(altura * CORTE_MAXIMO)
+
+    # esquerda e direita
+    x = 0
+    while x < limite_x and solida(limpa[:, x], imagem[:, x]):
+        limpa[:, x] = 0
+        imagem[:, x] = False
+        x += 1
+    x = largura - 1
+    while x > largura - 1 - limite_x and solida(limpa[:, x], imagem[:, x]):
+        limpa[:, x] = 0
+        imagem[:, x] = False
+        x -= 1
+
+    # topo e base
+    y = 0
+    while y < limite_y and solida(limpa[y, :], imagem[y, :]):
+        limpa[y, :] = 0
+        imagem[y, :] = False
+        y += 1
+    y = altura - 1
+    while y > altura - 1 - limite_y and solida(limpa[y, :], imagem[y, :]):
+        limpa[y, :] = 0
+        imagem[y, :] = False
+        y -= 1
+
+    return limpa
+
+
+def detectar_bordas(img: np.ndarray, dpi: float | None = None,
+                    girada: float | None = None) -> Recorte:
     """Acha o retangulo que contem o conteúdo da página.
 
     Ideia: binarizar de forma bem tolerante, achar as linhas e colunas que tem
@@ -244,6 +429,16 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None) -> Recorte:
     do conteudo e de pelo menos FOLGA_MM milimetros (desde 01/10/2026); sem
     ele (None), e a folga de antes (FOLGA do lado). O programa passa o DPI
     sempre que sabe (pipeline._geometria). Ver _folga_em_fracao.
+
+    `girada` (conserto de 13/10/2026): de quantos graus `img` foi girada por
+    core/endireitar.rotacionar antes de chegar aqui (o livro novo,
+    "endireitar_antes": pipeline._geometria_endireitando_antes). Com ele, a
+    cunha branca que o giro poe nas beiradas nao esconde mais a borda preta
+    do scanner (ver "A cunha do giro", acima). None, ou menos que
+    ANGULO_MINIMO (o rotacionar nao gira): a conta de sempre, identica ponto
+    por ponto - e o caso do projeto antigo e da pagina como veio. Arriscado:
+    passar um angulo que nao e o do giro de verdade (a cunha cairia no lugar
+    errado e borda de verdade deixaria de ser reconhecida).
     """
     # Capa de couro, guarda, foto da encadernacao: nao ha borda de scanner nem
     # margem de papel para tirar, e cortar so estraga. O Samuel apontou quatro
@@ -277,7 +472,24 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None) -> Recorte:
     # Um fechamento pequeno junta as letras em blocos de texto e evita que uma
     # unica mancha de poeira defina a borda.
     nucleo = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+
+    # Pagina que chegou ja endireitada (livro novo): a cunha branca do giro
+    # nao pode esconder a borda preta do scanner (conserto de 13/10/2026; ver
+    # "A cunha do giro", acima). As duas mascaras abaixo so sao usadas para
+    # TIRAR tinta, depois do apagar de sempre. Sem `girada`, nada disto roda.
+    sem_borda_na_imagem = sem_tinta_falsa = None
+    sem_fechar = tinta
     tinta = cv2.morphologyEx(tinta, cv2.MORPH_CLOSE, nucleo)
+    if girada is not None and abs(girada) >= ANGULO_MINIMO:
+        cunha = _cunha_do_giro(cinza.shape, girada)
+        if cunha.any():
+            falsa = _tinta_falsa_da_cunha(cinza, sem_fechar, cunha)
+            if falsa is not None:
+                # fechada do mesmo jeito que a mascara de verdade, para o
+                # fechamento nao deixar um resto da tinta falsa
+                sem_tinta_falsa = cv2.morphologyEx(
+                    np.where(falsa, 0, sem_fechar).astype(np.uint8), cv2.MORPH_CLOSE, nucleo)
+            sem_borda_na_imagem = _apagar_bordas_solidas_fora_da_cunha(tinta, cunha)
 
     # A borda preta do scanner tambem e "escura", entao seria confundida com
     # conteudo e nada seria cortado. Ela e descartada antes.
@@ -286,6 +498,14 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None) -> Recorte:
     # E as riscas finas do vinco e da beirada da folha de tras, que nao sao
     # escuras o bastante para a regra acima mas atravessam a pagina toda.
     tinta = _apagar_riscas_de_dobra(tinta)
+
+    # ... e, na pagina endireitada, o que a cunha do giro escondia das duas
+    # regras acima: a borda solida contada so na imagem de verdade e a tinta
+    # que so existe pelo degrau branco em fundo escuro.
+    if sem_borda_na_imagem is not None:
+        tinta[sem_borda_na_imagem == 0] = 0
+    if sem_tinta_falsa is not None:
+        tinta[sem_tinta_falsa == 0] = 0
 
     # Onde esta a MASSA da tinta, e nao onde ha algum pixel dela.
     #

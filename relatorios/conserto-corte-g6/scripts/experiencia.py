@@ -33,6 +33,10 @@ As variantes sao letras juntas:
             em fundo escuro do scanner (duas contas do limiar local)
     a       (com U) a mesma tinta do "A", mas tirada so no fim, depois do
             apagar de hoje: o que hoje e apagado continua sendo
+    N       (so "bN") o conserto COMO ESTA NO PROGRAMA: core.recortar.
+            detectar_bordas com `girada`. E o "bUa", mais um acerto achado
+            pelo teste de maquina (a coluna apagada como borda deixa de
+            contar na conta das linhas).
     D       (com S) o fundo escuro do scanner conta como borda solida mesmo
             onde o limiar local nao ve tinta (fundo preto liso, Antiphon)
     R       risca de dobra: idem, e "encostar na beirada" e encostar na
@@ -362,7 +366,8 @@ def medir_variante(inteira, cinza, angulo, pecas, variante: str, base: str = "")
                margem=(int(variante[variante.index("m") + 1]) if "m" in variante
                        else (0 if variante[0] == "p" else 1)))
     reta = girar(cinza, angulo, "r" if variante[0] == "r" else "b")
-    recorte = R.detectar_bordas(reta, dpi=M.DPI).tupla
+    # "bN": o conserto como esta escrito no programa (detectar_bordas com `girada`)
+    recorte = R.detectar_bordas(reta, dpi=M.DPI, girada=angulo if "N" in variante else None).tupla
     if VER is not None:
         desenhar(variante, recorte, reta)
     caixa = R.caixa_em_pontos(inteira.shape, recorte)

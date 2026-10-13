@@ -30,6 +30,11 @@ ScanTailor, quando entra, é trocada por um número fixo):
   ScanTailor)"): mudar o ângulo depois não mexe no corte à mão (de fábrica);
   a outra opção, "acompanha o texto", está pronta sem tela
   (pipeline.recorte_depois_de_mudar_o_angulo) e é conferida no pixel.
+
+- a borda preta do scanner (conserto de 13/10/2026): página torta COM borda
+  preta, no livro novo, não deixa mais a faixa preta dentro do corte (a cunha
+  branca do giro escondia a borda da busca do corte); e em página sem fundo
+  escuro o conserto não muda nada.
 """
 
 from __future__ import annotations
@@ -261,9 +266,10 @@ def _quase_igual(a: np.ndarray, b: np.ndarray) -> bool:
 
 def _corte_na_reta(base: np.ndarray, angulo: float):
     """O corte automatico do livro novo: detectar_bordas na pagina em cinza
-    endireitada (pipeline._geometria_endireitando_antes)."""
+    endireitada, dizendo de quanto ela foi girada (`girada`, conserto de
+    13/10/2026: pipeline._geometria_endireitando_antes)."""
     cinza = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
-    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI).tupla
+    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI, girada=angulo).tupla
 
 
 def _margens_da_tinta(img: np.ndarray) -> tuple[int, int, int, int]:
@@ -622,3 +628,110 @@ def test_girar_so_a_parte_cortada_e_o_mesmo_que_girar_tudo_e_cortar():
         assert _quase_igual(rotacionar_e_cortar(img, angulo, caixa),
                             fatiar(rotacionar(img, angulo), recorte))
     assert caixa_em_pontos(img.shape, (0.5, 0.5, 0.001, 0.4)) is None     # absurdo: nao corta
+
+
+# ------------------------------------------------------------------ a borda preta do scanner
+#
+# Conserto de 13/10/2026 (bug que entrou com o G6): na ordem nova a pagina e
+# girada inteira e a cunha que sobra na beirada e pintada de branco; esse
+# branco ficava entre a beirada da imagem e a borda preta do scanner, e a
+# busca do corte deixava de reconhecer a borda - sobrava faixa preta larga
+# (Cursus 3: 16 mm; Matematica 32: 44 mm; Antiphon 88 e 260). Nenhum teste
+# daqui tinha pagina torta COM borda preta.
+
+def _pdf_com_borda_preta(pasta: Path, nome: str, graus: float, fundo: int) -> tuple[str, int]:
+    """Uma folha de "texto" torta `graus` sobre o fundo do scanner (cinza
+    `fundo`), que aparece a direita e embaixo ate a beirada da imagem, como
+    no Cursus 3. Devolve (caminho do PDF, quantos retangulos de texto ha).
+
+    fundo=0: preto puro, que o limiar local da busca do corte ve como tinta
+    na faixa inteira (Cursus 3, Matematica 32). fundo=35: preto liso, em que
+    ele NAO ve tinta nenhuma (Antiphon 88 e 260) - sao os dois caminhos do
+    defeito."""
+    largura, altura = 1165, 1654
+    papel_x, papel_y = largura - 150, altura - 110
+    img = np.full((altura, largura, 3), fundo, np.uint8)
+    img[:papel_y, :papel_x] = 255
+    quantos = 0
+    for y in range(180, papel_y - 180, 34):
+        for x in range(130, papel_x - 210, 52):
+            cv2.rectangle(img, (x, y), (x + 38, y + 14), (0, 0, 0), -1)
+            quantos += 1
+    m = cv2.getRotationMatrix2D((largura / 2, altura / 2), graus, 1.0)
+    img = cv2.warpAffine(img, m, (largura, altura), borderMode=cv2.BORDER_REPLICATE)
+    png = pasta / f"{nome}.png"
+    cv2.imwrite(str(png), img)
+    caminho = pasta / f"{nome}.pdf"
+    doc = fitz.open()
+    pagina = doc.new_page(width=largura * 72 / 200, height=altura * 72 / 200)
+    pagina.insert_image(pagina.rect, filename=str(png))
+    doc.save(str(caminho))
+    doc.close()
+    return str(caminho), quantos
+
+
+def _fundo_do_scanner(img: np.ndarray) -> float:
+    """Fracao da pagina pronta que e fundo escuro do scanner: as manchas
+    escuras grandes (5000 pontos ou mais; um retangulo de "texto" tem perto
+    de 1200 e nao entra na conta)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _n, _r, caixas, _c = cv2.connectedComponentsWithStats((cinza < 100).astype(np.uint8), connectivity=8)
+    area = caixas[1:, cv2.CC_STAT_AREA]
+    return float(area[area >= 5000].sum()) / cinza.size
+
+
+def _retangulos_de_texto(img: np.ndarray) -> int:
+    """Quantos retangulos de "texto" inteiros ha na pagina pronta (a 300 DPI
+    cada um tem perto de 57 x 21 pontos; a faixa do scanner e uma mancha
+    enorme e fica de fora da conta)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _n, _r, caixas, _c = cv2.connectedComponentsWithStats((cinza < 128).astype(np.uint8), connectivity=8)
+    area = caixas[1:, cv2.CC_STAT_AREA]
+    return int(np.count_nonzero((area > 800) & (area < 1800)))
+
+
+@pytest.mark.parametrize("fundo", [0, 35])
+@pytest.mark.parametrize("graus", [-0.7, 0.8, 1.6])
+def test_ordem_nova_nao_deixa_a_borda_preta_do_scanner(tmp_path, graus, fundo):
+    """Pagina torta com borda preta do scanner, no livro novo: a faixa preta
+    fica de fora do corte, como na ordem antiga, e nenhum texto se perde.
+
+    A regua e a ordem antiga (cortar e depois endireitar), que nao tem o
+    defeito: o livro novo pode deixar no maximo 1 ponto percentual a mais de
+    fundo escuro que ela (antes do conserto deixava de 9 a 17 pontos a mais
+    nestas seis paginas). A ordem antiga tambem deixa um resto da faixa (a
+    divisa torta do papel com o fundo): por isso a comparacao, e nao zero."""
+    caminho, quantos = _pdf_com_borda_preta(tmp_path, "borda", graus, fundo)
+    img_folha = _desenhar(caminho)
+
+    antigo = _antigo(caminho, endireitar_como=es.JEITO_PROGRAMA)
+    fa, pa = _com_folha(antigo, {"dividir": False}, {})
+    de_antes, _ = pipeline.preparar_metade_e_geometria(img_folha, fa, pa, antigo, dpi=DPI)
+    assert _retangulos_de_texto(de_antes) == quantos
+
+    novo = _novo(caminho, endireitar_como=es.JEITO_PROGRAMA)
+    fn, pn = _com_folha(novo, {"dividir": False}, {})
+    saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, fn, pn, novo, dpi=DPI)
+    assert desenho["ordem"] == op.ENDIREITAR_ANTES
+    assert abs(desenho["angulo"] + graus) < 0.3           # endireitou de verdade
+    assert _fundo_do_scanner(saida) <= _fundo_do_scanner(de_antes) + 0.01, (
+        _fundo_do_scanner(saida), _fundo_do_scanner(de_antes))
+    assert _retangulos_de_texto(saida) == quantos         # nenhum texto ficou de fora
+    # e a pagina pronta nao e maior que a da ordem antiga em mais de 3 mm
+    tres_mm = 3 * DPI / 25.4
+    assert saida.shape[1] <= de_antes.shape[1] + tres_mm, (saida.shape, de_antes.shape)
+    assert saida.shape[0] <= de_antes.shape[0] + tres_mm, (saida.shape, de_antes.shape)
+
+
+@pytest.mark.parametrize("graus", [-1.4, 0.9, 2.5])
+def test_sem_borda_preta_dizer_o_giro_nao_muda_o_corte(tmp_path, graus):
+    """Em pagina sem fundo escuro, dizer a detectar_bordas que a pagina foi
+    girada (`girada`) nao muda nada: o conserto so tira da conta a borda
+    preta do scanner. E sem `girada` (ordem antiga, pagina como veio) a conta
+    e a de sempre."""
+    base = _desenhar(_pdf(tmp_path, "torto", graus))
+    cinza = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+    reta = rotacionar(cinza, -graus)
+    assert detectar_bordas(reta, dpi=DPI, girada=-graus).tupla == detectar_bordas(reta, dpi=DPI).tupla
+    assert detectar_bordas(cinza, dpi=DPI, girada=None).tupla == detectar_bordas(cinza, dpi=DPI).tupla
+    assert detectar_bordas(cinza, dpi=DPI, girada=0.05).tupla == detectar_bordas(cinza, dpi=DPI).tupla

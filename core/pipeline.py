@@ -758,7 +758,11 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
         elif com_o_corte:
             girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
             reta = rotacionar(em_cinza(), angulo) if girar else em_cinza()
-            recorte = detectar_bordas(reta, dpi=dpi).tupla
+            # `girada` (conserto de 13/10/2026): diz ao corte de quanto a
+            # pagina foi girada, para a cunha branca do giro nao esconder a
+            # borda preta do scanner (core/recortar, "A cunha do giro").
+            # Arriscado: tirar (volta a faixa preta do Cursus 3).
+            recorte = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None).tupla
     return recorte, angulo
 
 
