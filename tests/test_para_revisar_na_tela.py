@@ -397,6 +397,37 @@ def test_ver_a_lista_pelo_painel(tela, janela_dos_avisos):
     assert tela.indice_pagina == 1
 
 
+# --- a medida por tras, na resolucao do PDF ----------------------------------------
+
+def test_a_tela_pede_a_medida_da_pagina_da_vez_na_resolucao_do_pdf(tela):
+    """A regra so vale na resolucao do PDF (a 110 DPI, a previa, 13 das 89
+    paginas do estudo decidem diferente): a previa nao mede, e a tela pede por
+    tras a medida da pagina que esta na frente - so dela, e so uma vez por
+    estado da pagina."""
+    from ui.tarefas import MARCA_DA_MEDIDA
+
+    previas = tela.previas
+    chave = previas.chave_da_medida(0)
+    assert chave.startswith(f"0{MARCA_DA_MEDIDA}") and f":{tela.projeto.qualidade_dpi}:" in chave
+    # a pagina da vez (0) ja foi pedida ao abrir; pedir de novo nao repete
+    assert chave in previas._pedidas or chave in previas._cache
+    assert previas.pedir_medida(0) is False
+    # as vizinhas nao sao medidas sozinhas (so quando a pessoa chega nelas)
+    chave_3 = previas.chave_da_medida(3)
+    assert chave_3 not in previas._pedidas and chave_3 not in previas._cache
+    tela.ir_para_pagina(3)
+    assert chave_3 in previas._pedidas or chave_3 in previas._cache
+    # pagina fora do "So as letras" (aqui: "Guardar tudo") nao tem o que medir
+    tela.projeto.paginas[2].misto_fora_do_texto = misto.FORA_TUDO
+    assert previas.pedir_medida(2) is False
+    assert previas.pedir_medida(99) is False
+    # mudou a forca do preto: e outro estado, mede de novo
+    antes = previas.chave_da_medida(1)
+    tela.projeto.paginas[1].forca_preto = 70
+    assert previas.chave_da_medida(1) != antes
+    assert previas.pedir_medida(1) is True and previas.pedir_medida(1) is False
+
+
 # --- o botao de ligar e desligar a forca sozinha (regra 8 do plano) ----------------
 
 def test_a_tela_o_que_fazer_liga_e_desliga_a_forca_sozinha(app):  # noqa: F811

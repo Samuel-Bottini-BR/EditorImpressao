@@ -299,24 +299,46 @@ def test_o_aviso_antigo_sai_do_projeto_salvo_antes(leitor_falso):
         assert p.paginas[0].alertas == [analise.RESOLUCAO_BAIXA]
 
 
-def test_o_desenho_do_arrasto_nao_e_medido(leitor_falso):
-    """O arrasto do medidor desenha a 55 DPI: pequeno demais para a conta. Os
-    avisos ficam como estavam (nem entram nem saem). A previa (110 DPI) e o
-    PDF medem."""
+def test_a_regra_so_e_medida_no_desenho_da_resolucao_do_pdf(leitor_falso):
+    """A regra foi acertada e aprovada a 300 DPI; a 110 DPI (a previa) 13 das
+    89 paginas do estudo decidem diferente (medido em 12/10/2026). A previa e
+    o arrasto do medidor (55 DPI) nao medem: os avisos ficam como estavam (nem
+    entram nem saem). O PDF e a medida que a tela pede por tras medem."""
     img, s = _pagina_sintetica()
     img = _com_letra_clara(img)
     p = _projeto(s, misto_so_as_letras=True)
+    assert p.qualidade_dpi == 300
     pagina = p.paginas[0]
-    P._filtrar(p, pagina, img.copy(), dpi_pedido=55)
-    assert pagina.alertas == [] and pagina.faixa_na_beirada is None
+    for dpi in (55, 110):
+        P._filtrar(p, pagina, img.copy(), dpi_pedido=dpi)
+        assert pagina.alertas == [] and pagina.faixa_na_beirada is None, dpi
     pagina.alertas = [analise.COR]
-    P._filtrar(p, pagina, img.copy(), dpi_pedido=110)
+    P._filtrar(p, pagina, img.copy(), dpi_pedido=300)
     assert pagina.alertas == [analise.DESENHO_APAGADO, analise.COR]
-    # arrastando de novo, o aviso que a previa pos nao sai
-    P._filtrar(p, pagina, _pagina_sintetica()[0], dpi_pedido=55)
+    # a previa de depois, de uma pagina que nem teria o problema, nao tira o aviso
+    P._filtrar(p, pagina, _pagina_sintetica()[0], dpi_pedido=110)
     assert pagina.alertas == [analise.DESENHO_APAGADO, analise.COR]
-    assert P._da_para_medir(img, None) and P._da_para_medir(img, 300)
-    assert not P._da_para_medir(img[:300, :300], None), "imagem minuscula nunca e medida"
+    assert P._da_para_medir(img, None, p) and P._da_para_medir(img, 300, p)
+    assert not P._da_para_medir(img, 299, p)
+    assert not P._da_para_medir(img[:300, :300], None, p), "imagem minuscula nunca e medida"
+    # livro de 200 DPI: a resolucao do PDF dele e 200
+    p.qualidade_dpi = 200
+    assert P._da_para_medir(img, 200, p) and not P._da_para_medir(img, 110, p)
+
+
+def test_quem_precisa_da_medida_por_tras(leitor_falso):
+    _img, s = _pagina_sintetica()
+    p = _projeto(s, misto_so_as_letras=True)
+    pagina = p.paginas[0]
+    assert P.precisa_medir_para_revisar(p, pagina)
+    for mudar, valor in (("misto_fora_do_texto", misto.FORA_TUDO), ("misto_so_as_letras", False),
+                         ("filtro", MELHORAR), ("em_branco", True), ("apagada", True)):
+        antes = getattr(pagina, mudar)
+        setattr(pagina, mudar, valor)
+        assert not P.precisa_medir_para_revisar(p, pagina), mudar
+        setattr(pagina, mudar, antes)
+    p.limpar = False
+    assert not P.precisa_medir_para_revisar(p, pagina)
 
 
 def test_a_copia_do_cartao_nao_mexe_nas_marcas_da_pagina(leitor_falso):

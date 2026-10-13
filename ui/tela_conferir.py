@@ -155,7 +155,7 @@ from modelos import METADE_DIREITA, Projeto
 from registro import registrar_erro
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
-from ui.tarefas import GerenciadorPrevias
+from ui.tarefas import MARCA_DA_MEDIDA, GerenciadorPrevias
 from ui.widgets.barra_girar import BarraGirar
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
@@ -1907,6 +1907,13 @@ class TelaConferir(QWidget):
         img = self.previas.pegar(self.indice_pagina, self._dpi_atual)
         self.previas.pre_carregar(self.indice_pagina, self._dpi_atual)
         pagina = self.projeto.paginas[self.indice_pagina]
+        # A regra do "Para revisar" só vale na resolução do PDF (12/10/2026):
+        # a prévia não mede; a medida da página da vez é pedida aqui, por
+        # trás (GerenciadorPrevias.pedir_medida), e chega em _previa_chegou.
+        # Não durante o arrasto do medidor (cada valor do meio seria um
+        # desenho do tamanho do PDF): só com a prévia normal.
+        if self._dpi_atual == self._dpi_normal:
+            self.previas.pedir_medida(self.indice_pagina)
 
         if aba == ABA_BORDAS:
             vis = self.visualizadores[ABA_BORDAS]
@@ -2560,6 +2567,14 @@ class TelaConferir(QWidget):
             # a tela ficaria esperando uma prévia que ninguém pediu: pede a de
             # agora e acerta a faixa e o medidor. Não entra em laço: o reforço
             # só acontece uma vez por página.
+            self._atualizar_previa()
+            self._alertas_da_previa()
+        elif (not self.trabalha_com_folhas
+              and chave.startswith(f"{self.indice_pagina}{MARCA_DA_MEDIDA}")):
+            # Chegou a medida do "Para revisar" da página da vez (feita por
+            # trás, na resolução do PDF): os avisos, as marcas de "onde sumiu"
+            # e a força do preto podem ter mudado. Se a força mudou (a "força
+            # do preto sozinha"), a prévia de agora é outra: pede.
             self._atualizar_previa()
             self._alertas_da_previa()
         if chave == esperadas[0] and not self.trabalha_com_folhas:

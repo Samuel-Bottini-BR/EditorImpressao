@@ -436,7 +436,8 @@ def caixas_de(mascara: np.ndarray, h: float, maximo: int = MAXIMO_DE_CAIXAS) -> 
         y0 = st[i, cv2.CC_STAT_TOP] + raio - folga
         x1 = st[i, cv2.CC_STAT_LEFT] + st[i, cv2.CC_STAT_WIDTH] - raio + folga
         y1 = st[i, cv2.CC_STAT_TOP] + st[i, cv2.CC_STAT_HEIGHT] - raio + folga
-        caixas.append((max(0.0, x0 / l), max(0.0, y0 / a), min(1.0, x1 / l), min(1.0, y1 / a)))
+        caixas.append((float(max(0.0, x0 / l)), float(max(0.0, y0 / a)),
+                       float(min(1.0, x1 / l)), float(min(1.0, y1 / a))))
     return caixas
 
 

@@ -16,7 +16,7 @@ from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
-from core.pipeline import faixa_da_sobra
+from core.pipeline import faixa_da_sobra, precisa_medir_para_revisar
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -36,6 +36,11 @@ from registro import registrar_erro
 # Seguro mudar: os numeros, mantendo a da vez maior.
 PRIORIDADE_DA_VEZ = 1
 PRIORIDADE_ADIANTADA = 0
+
+# O que marca, na chave, o pedido da MEDIDA do "Para revisar" (ver
+# GerenciadorPrevias.pedir_medida): "<indice>:medida:<chave da previa na
+# resolucao do PDF>". Nao muda nada no disco: e so nome de pedido desta sessao.
+MARCA_DA_MEDIDA = ":medida:"
 
 # Quantas previas ficam guardadas na memoria. Cada uma tem ~900 px de altura;
 # 30 delas cabem folgado e cobrem a navegacao para frente e para tras.
@@ -337,7 +342,15 @@ class _TarefaPrevia(QRunnable):
             # pode ser usado por duas threads ao mesmo tempo.
             doc = abrir_pdf(self.caminho_pdf)
             try:
-                if self.filtro is None:
+                if MARCA_DA_MEDIDA in self.chave:
+                    # A medida do "Para revisar" (12/10/2026): a pagina e
+                    # desenhada na resolucao do PDF so para a regra ser medida
+                    # (os avisos e a forca sozinha sao acertados la dentro,
+                    # core.pipeline._filtrar_no_misto). A imagem grande e
+                    # jogada fora: so um aviso de "medida pronta" volta.
+                    renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
+                    img = np.zeros((1, 1), np.uint8)
+                elif self.filtro is None:
                     img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
                 else:
                     img, _ = renderizar_com_filtro(doc, self.projeto, pagina,
@@ -500,6 +513,42 @@ class GerenciadorPrevias(QObject):
             return
         self._comecar(chave, indice, dpi,
                       PRIORIDADE_DA_VEZ if prioridade is None else prioridade)
+
+    # --- a medida do "Para revisar" (12/10/2026) -----------------------------
+    #
+    # A regra ajustada do "Para revisar" so vale na resolucao do PDF (medido
+    # nas 89 paginas do estudo: a 110 DPI, a previa, 13 decidem diferente; ver
+    # core.pipeline._da_para_medir). A previa nao mede. Para o Kaique ver os
+    # avisos na conferencia, a tela pede aqui, por tras, um desenho da pagina
+    # DA VEZ na resolucao do PDF, so para medir: os avisos (e a forca do preto
+    # sozinha) sao acertados dentro do desenho, e a imagem grande e jogada
+    # fora. Custa um desenho do tamanho do PDF por pagina visitada (e por
+    # mudanca de filtro, forca ou corte nela), em fila atras da previa da
+    # vez; so em pagina no "So as letras" que usa o leitor de texto
+    # (precisa_medir_para_revisar). As paginas nao visitadas sao medidas ao
+    # gerar o PDF. Arriscado: pedir a medida das paginas vizinhas tambem (o
+    # pre-carregamento ficaria varias vezes mais pesado).
+
+    def chave_da_medida(self, indice: int) -> str:
+        """A chave da medida da pagina no estado de agora (a mesma da previa
+        na resolucao do PDF: mudou o filtro, a forca ou o corte, mede de
+        novo). Comeca com f"{indice}:", para invalidar(indice) limpa-la."""
+        return f"{indice}{MARCA_DA_MEDIDA}{self.chave(indice, self.projeto.qualidade_dpi)}"
+
+    def pedir_medida(self, indice: int) -> bool:
+        """Pede, por tras, a medida do "Para revisar" da pagina `indice`, se
+        a regra vale nela e este estado ainda nao foi medido nem pedido.
+        Devolve True se pediu. Quando fica pronta, sai o sinal `pronta` com
+        chave_da_medida (a imagem que vem junto e um ponto so)."""
+        if not 0 <= indice < len(self.projeto.paginas):
+            return False
+        if not precisa_medir_para_revisar(self.projeto, self.projeto.paginas[indice]):
+            return False
+        chave = self.chave_da_medida(indice)
+        if chave in self._cache or chave in self._pedidas:
+            return False
+        self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
+        return True
 
     # --- pedidos e geracoes (D4) ---------------------------------------------
 

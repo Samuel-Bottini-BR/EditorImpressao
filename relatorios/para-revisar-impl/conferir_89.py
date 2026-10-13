@@ -21,7 +21,16 @@ Dois jeitos de conferir, do mais leve para o mais pesado:
       pos. --dpi 300 e a resolucao do PDF (a do estudo); --dpi 110 e a da
       previa da tela. Pesado (o leitor de texto roda em cada pagina): uma
       rodada por vez, com pelo menos 3 GB livres. Pula as paginas ja feitas
-      (apague o conferir-89-programa-dpiN.json para refazer).
+      (apague o conferir-89-programa-dpiN.json para refazer). A "forca do
+      preto sozinha" fica desligada (a regra pura, como no estudo).
+      --preparo-do-estudo: prepara a pagina como o programa de 07/10 (corta
+      antes de endireitar, conta do endireitar do programa).
+
+      ACHADO de 12/10/2026: a 110 DPI a regra NAO vale (24 vao, 67 certas, 13
+      paginas decidem diferente do estudo; o texto falhado da falso em varias
+      paginas e a letra T do Antiphonal 46 nao e vista - a pagina tem 396
+      pontos de altura na previa). Por isso o programa so mede no desenho
+      feito na resolucao do PDF (core.pipeline._da_para_medir).
 
 Nada aqui muda o programa, o acervo, o gabarito nem a pasta do estudo (tudo
 so e lido). A pasta de dados do programa e isolada
@@ -196,8 +205,14 @@ def _dividir_a_mao(doc, projeto, filtro) -> None:
                        for i, m in enumerate(("esquerda", "direita"))]
 
 
-def com_o_programa(dpi: int, so: list[str] | None) -> int:
-    """O programa de verdade, pagina por pagina, no "Só as letras" de fabrica."""
+def com_o_programa(dpi: int, so: list[str] | None, como_no_estudo: bool = False) -> int:
+    """O programa de verdade, pagina por pagina, no "Só as letras" de fabrica.
+
+    como_no_estudo: prepara a pagina como o programa de 07/10/2026 (o do
+    estudo) preparava - corta antes de endireitar e endireita pela conta do
+    programa - em vez do jeito do livro novo de hoje (endireita antes de
+    cortar, G6, e a conta do ScanTailor). Serve para separar o que mudou na
+    REGRA do que mudou no PREPARO da pagina depois do estudo."""
     from pasta_de_dados_dos_scripts import isolar_pasta_de_dados
 
     isolar_pasta_de_dados("conferir-89")
@@ -210,7 +225,7 @@ def com_o_programa(dpi: int, so: list[str] | None) -> int:
     from modelos import Projeto
 
     gab = _gabarito()
-    saida = AQUI / f"conferir-89-programa-dpi{dpi}.json"
+    saida = AQUI / f"conferir-89-programa-dpi{dpi}{'-preparo-do-estudo' if como_no_estudo else ''}.json"
     feitas = json.loads(saida.read_text(encoding="utf-8")) if saida.exists() else {}
 
     vistos: list = []
@@ -222,6 +237,9 @@ def com_o_programa(dpi: int, so: list[str] | None) -> int:
         return s
 
     P.medir_para_revisar = espiao
+    # este script mede em qualquer resolucao pedida (e assim que se viu que a
+    # 110 DPI a regra nao vale); o programa so mede na resolucao do PDF
+    P.MEDIR_SO_NA_RESOLUCAO_DO_PDF = False
 
     pids = sorted({b.split("__")[0] for b in gab})
     for pid in pids:
@@ -232,6 +250,11 @@ def com_o_programa(dpi: int, so: list[str] | None) -> int:
         t0 = time.perf_counter()
         projeto = Projeto(caminho_entrada=str(_pdf_da_pagina(pid)), nome=pid)
         projeto.filtro_padrao = PRETO_E_BRANCO
+        if como_no_estudo:
+            from modelos import ENDIREITAR_DO_PROJETO_ANTIGO, ORDEM_DO_PROJETO_ANTIGO
+
+            projeto.ordem_do_preparo = ORDEM_DO_PROJETO_ANTIGO
+            projeto.endireitar_como = ENDIREITAR_DO_PROJETO_ANTIGO
         projeto = analisar_projeto(projeto)
         doc = abrir_pdf(projeto.caminho_entrada)
         try:
@@ -239,6 +262,10 @@ def com_o_programa(dpi: int, so: list[str] | None) -> int:
                 _dividir_a_mao(doc, projeto, PRETO_E_BRANCO)
             projeto.misto_so_as_letras = True
             projeto.misto_fora_do_texto = misto.FORA_REDE
+            # a regra pura, como no estudo: sem a "forca do preto sozinha" (com
+            # ela ligada, a pagina de texto falhado e filtrada de novo com a
+            # forca mais escura, e os avisos passam a ser os DEPOIS do reforco)
+            projeto.reforcar_texto_falhado = False
             for pagina in projeto.paginas:
                 pagina.filtro = PRETO_E_BRANCO
                 vistos.clear()
@@ -299,7 +326,8 @@ def main() -> int:
     if "--dpi" in args:
         dpi = int(args[args.index("--dpi") + 1])
     so = [a for a in args if not a.startswith("--") and not a.isdigit()]
-    return com_o_programa(dpi, so[0].split(",") if so else None)
+    return com_o_programa(dpi, so[0].split(",") if so else None,
+                          como_no_estudo="--preparo-do-estudo" in args)
 
 
 if __name__ == "__main__":

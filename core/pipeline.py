@@ -1803,7 +1803,7 @@ def _filtrar_a_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
         if opcoes is not None:
             return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes, pontinhos,
-                                     medir=_da_para_medir(img, dpi_pedido))
+                                     medir=_da_para_medir(img, dpi_pedido, projeto))
     _tirar_avisos_do_so_as_letras(projeto, pagina)
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, selecao,
@@ -1833,24 +1833,49 @@ def _filtrar_a_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
 # avisos e _acertar_avisos_do_misto, abaixo. O limite antigo continua valendo
 # so no "Guardar só o texto" (revisar.LIMITE_SO_O_TEXTO).
 #
-# A regra so e medida em desenho pedido com pelo menos esta resolucao: o
-# arrasto do medidor desenha a 55 DPI, pequeno demais para a conta - ali os
-# avisos ficam como estavam (se a conta do arrasto pusesse um aviso que a
-# previa normal tira em seguida, a pagina ja conferida voltaria a "nao
-# conferida" a toa). A previa (110 DPI) e o PDF (300) medem. Quem diz a
-# resolucao e quem pede o desenho (renderizar_pagina, processar); sem ela
-# (testes, scripts que chamam _filtrar direto), mede. Seguro mudar: o
-# numero, entre 55 e 110. E, por seguranca, nunca em imagem minuscula
-# (LADO_MINIMO_PARA_REVISAR pontos no lado maior).
+# A REGRA SO E MEDIDA NO DESENHO FEITO NA RESOLUCAO DO PDF (Projeto.
+# qualidade_dpi), nunca no da previa da tela. Medido em 12/10/2026 nas 89
+# paginas do estudo (relatorios/para-revisar-impl/conferir_89.py --programa):
+# a 300 DPI, a resolucao em que a regra foi acertada e aprovada, o programa
+# decide como o estudo; a 110 DPI (a previa) 13 paginas decidem diferente (24
+# vao, 67 certas): o texto falhado da falso em varias paginas (o preto e
+# branco pequeno quebra o traco fino) e a letra T do Antiphonal 46 nao e
+# vista (a pagina tem 396 pontos de altura na previa). Com a "forca do preto
+# sozinha", um falso "texto falhado" escureceria a pagina sem motivo.
+# Entao: o PDF (processar) mede; a tela pede, por tras, um desenho na
+# resolucao do PDF so para medir a pagina da vez (ui/tarefas.
+# GerenciadorPrevias.pedir_medida); a previa e o arrasto (55 DPI) nao medem
+# e deixam os avisos como estavam. Quem diz a resolucao e quem pede o
+# desenho (renderizar_pagina, processar); sem ela (testes, scripts que chamam
+# _filtrar direto), mede. E nunca em imagem minuscula.
+# Arriscado: medir na previa (os numeros 21 e 78 nao valem la).
+# MEDIR_SO_NA_RESOLUCAO_DO_PDF = False e so para o script que mediu isto.
+MEDIR_SO_NA_RESOLUCAO_DO_PDF = True
 DPI_MINIMO_PARA_REVISAR = 100
 LADO_MINIMO_PARA_REVISAR = 400
 
 
-def _da_para_medir(img: np.ndarray, dpi_pedido: float | None) -> bool:
+def _da_para_medir(img: np.ndarray, dpi_pedido: float | None, projeto: Projeto | None = None) -> bool:
     """A regra do "Para revisar" pode ser medida neste desenho? (ver acima)"""
-    if dpi_pedido is not None and dpi_pedido < DPI_MINIMO_PARA_REVISAR:
+    if max(img.shape[:2]) < LADO_MINIMO_PARA_REVISAR:
         return False
-    return max(img.shape[:2]) >= LADO_MINIMO_PARA_REVISAR
+    if dpi_pedido is None:
+        return True
+    if MEDIR_SO_NA_RESOLUCAO_DO_PDF and projeto is not None:
+        return dpi_pedido >= projeto.qualidade_dpi
+    return dpi_pedido >= DPI_MINIMO_PARA_REVISAR
+
+
+def precisa_medir_para_revisar(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A regra do "Para revisar" vale nesta pagina? (ela esta em Preto e
+    branco com "So as letras" num jeito que usa o leitor de texto, e nao foi
+    deixada em branco nem apagada). Para a tela saber se pede a medida por
+    tras (ui/tarefas.GerenciadorPrevias.pedir_medida). Barato: so le campos."""
+    if (not projeto.limpar or pagina.filtro != PRETO_E_BRANCO or pagina.apagada
+            or getattr(pagina, "em_branco", False)):
+        return False
+    opcoes = misto.opcoes_da_pagina(projeto, pagina)
+    return opcoes is not None and opcoes.precisa_das_linhas
 
 
 def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
