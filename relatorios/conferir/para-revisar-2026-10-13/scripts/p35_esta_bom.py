@@ -1,0 +1,18 @@
+﻿import time, v
+P = v.P
+v.ir_pagina(3); time.sleep(2)
+print("0:", v.contagem())
+print("a) 'está bom assim' num motivo da pagina 3 (ela tem 3):")
+v.clicar("está bom assim", classe="QPushButton", n=-1 if False else 0, espera=2) if False else v.g.clicar_w("tc.botoes_de_sugestao_2['filtro']", espera=2)
+v.passo("23a-esta-bom-um-motivo-da-pagina"); print("  faixa:", v.faixa()); print("  hist:", v.historico()); print("  ", v.contagem())
+v.ctrl_z(); print("  Ctrl+Z:", v.curto()); print("  ", v.contagem())
+print("b) 'está bom: todas' no motivo 'Endireitar: as contas...':")
+v.clicar_no_painel("está bom: todas", n=0)
+v.passo("23b-esta-bom-um-motivo-em-todas"); print("  hist:", v.historico()); print("  ", v.contagem())
+v.ctrl_z(); print("  Ctrl+Z:", v.contagem()); print("  foto:", v.foto("23c-ctrlz-do-motivo-em-todas")[0][-40:])
+print("c) 'está bom em tudo':")
+v.clicar_no_painel("está bom em tudo")
+v.passo("23d-esta-bom-em-tudo"); print("  hist:", v.historico()); print("  ", v.contagem())
+v.ctrl_z(); print("  Ctrl+Z:", v.contagem(), v.historico())
+v.ctrl_z(); print("  mais um Ctrl+Z:", v.contagem(), v.historico())
+print("  foto:", v.foto("23e-ctrlz-do-tudo")[0][-30:])

@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência do &quot;Para revisar&quot; (Fase 2), 13/10/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conferência do "Para revisar" (Fase 2), 13/10/2026</h1>
+<p>Verificador. Ramo <code>fase2-para-revisar</code>, commit <code>36b9e32</code>, em livro novo (endireitar antes de cortar). Pilotei a janela de verdade com mouse e teclado nativos, em 1280 x 657, com pasta de dados de teste. <strong>Não mudei código e não marco nada como aprovado.</strong></p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR, com duas ressalvas graves: os seis pedaços funcionam na janela, mas a tela mostra a letra que o PDF vai apagar (quem confere pelo olho dá "está bom" numa página que sai errada), e na janela a regra não decide igual à conferência das 89 páginas.</strong></p>
+<h2>O que mudou para o Kaique</h2>
+<p>O programa passa a avisar, página por página, quando o "Só as letras" do Preto e branco pode ter estragado alguma coisa: um desenho ou letra grande que sumiu, texto que saiu falhado, página que não tem nada do livro. Cada aviso traz o botão do conserto: "Trazer de volta nesta página", "Deixar em branco", "Tirar do livro", "Desfazer".</p>
+<p>Quando o texto sai falhado, o programa escurece sozinho a força do preto só naquela página e avisa (dá para desfazer, e há uma caixinha para desligar isso na tela "O que fazer"). Ao clicar em "Confirmar e processar" com avisos sem olhar, aparece a lista "Página N - motivo", com "ver" e "continuar assim mesmo".</p>
+<p>O Kaique pode dizer "está bom" numa página, num motivo de uma página, num motivo em todas as páginas ou em tudo, e o Ctrl+Z desfaz cada um. Na janela de verdade os seis pedaços funcionaram e o livro foi processado até "Ficou pronto!" três vezes, sem erro.</p>
+<h2>O que está bom e as ressalvas</h2>
+<ul>
+<li>BOM: os seis pedaços funcionam na janela de verdade, com mouse e teclado nativos (Antiphonal 46, Graduale 222, Egenloff 3 e 12, Rariora 8, Camões 27).</li>
+<li>BOM: processar até "Ficou pronto!" funcionou três vezes (com aviso pendente, passando por "ver" e por "continuar assim mesmo"; sem aviso; e depois de "está bom nas marcadas"). Os PDFs saíram com as 6 páginas e o erros.log ficou vazio.</li>
+<li>BOM: todos os "está bom" e todos os botões de conserto voltam com Ctrl+Z.</li>
+<li>BOM: projeto feito no programa de hoje abre no ramo em 7 segundos, o aviso antigo "Tinta forte fora do texto" some sozinho e a força do preto sozinha vem desligada nele.</li>
+<li>RESSALVA GRAVE: a tela não mostra o defeito. No Antiphonal 46 o aviso está certo (a letra T some no PDF), mas o cartão e o "Ver de perto" mostram a letra T inteira. Quem olha conclui que está bom.</li>
+<li>RESSALVA GRAVE: na janela a regra não mede igual à conferência do implementador. Medindo as 89 páginas na ordem em que a janela mede (primeiro a prévia, depois a medida), vão 24 e acertam 73; o implementador mediu 22 e 75; o combinado com o Samuel era 21 e 78.</li>
+<li>RESSALVA: só a página visitada é medida. Num livro de 298 páginas, com 2 visitadas, a lista mostrou 2 avisos de desenho apagado; depois de visitar mais 4, mostrou 4. É a pergunta para o Samuel.</li>
+<li>RESSALVA: dar dois cliques no cartão para ver de perto conta como "está certo" e o aviso some (o Ctrl+Z traz de volta).</li>
+<li>RESSALVA: nos avisos "Parece em branco" e "Página sem conteúdo" não há botão "está bom assim"; só "Deixar em branco" e "Tirar do livro". Na Gladstone 18 (que tem título e não está em branco) isso é ruim.</li>
+<li>RESSALVA: a lista "Antes de processar" mistura os avisos novos com os de sempre. No Camões são 105 linhas, e só 5 são da regra nova.</li>
+<li>RESSALVA: o teste de velocidade não liga o "Só as letras"; ele mostra que o resto não ficou mais lento, não mede o custo novo. Na janela, a medida de cada página visitada chegou de 4 a 11 segundos depois de trocar de página nos livros comuns e de 20 a 26 segundos no Antiphon (folha grande).</li>
+<li>RESSALVA: no tamanho de janela maximizada só conferi uma tela (Antiphonal 46, onde a marca laranja aparece bem). Todo o resto foi em 1280 x 657.</li>
+</ul>
+<h2>O que foi conferido</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Regra ajustada (quando a página vai para a lista)</td>
+<td>janela + máquina</td>
+<td>Funciona, com ressalva grave: na janela 24 vão e 73 certas nas 89 páginas (implementador: 22 e 75).</td>
+</tr>
+<tr>
+<td>2. "Parece em branco" e "Página sem conteúdo" separados, dois botões cada</td>
+<td>janela</td>
+<td>Funciona. Falta "está bom assim" nesses dois avisos.</td>
+</tr>
+<tr>
+<td>3. "Trazer de volta nesta página", com o lugar marcado em laranja</td>
+<td>janela + olho</td>
+<td>Funciona. A tela mostra a letra que o PDF apaga.</td>
+</tr>
+<tr>
+<td>4. Força do preto sozinha, com "Desfazer" e caixinha</td>
+<td>janela</td>
+<td>Funciona. No Palatino 66 escureceu sem precisar.</td>
+</tr>
+<tr>
+<td>5. Janela "Antes de processar" com "ver" e "continuar assim mesmo"</td>
+<td>janela</td>
+<td>Funciona. A lista fica longa e mistura avisos.</td>
+</tr>
+<tr>
+<td>6. "Está bom" em cada nível, com Ctrl+Z; o aviso some quando se resolve</td>
+<td>janela</td>
+<td>Funciona nos quatro níveis e na lista grande.</td>
+</tr>
+<tr>
+<td>Processar até "Ficou pronto!" (3 vezes)</td>
+<td>janela + máquina</td>
+<td>6 páginas no PDF nas três; 5 s, 2 s e 6 s; erros.log vazio.</td>
+</tr>
+<tr>
+<td>As quatro páginas que o implementador não olhou</td>
+<td>olho, na janela</td>
+<td>Cursus 3: aviso certo (o corte deixa faixa). Opus Majus 20: não foi. Palatino 66: foi sem precisar. Antiphon 260: escapa.</td>
+</tr>
+<tr>
+<td>Lista com poucas páginas visitadas (ressalva 2)</td>
+<td>janela</td>
+<td>Confirmado: 2 visitadas, 2 avisos; mais 4 visitadas, 4 avisos.</td>
+</tr>
+<tr>
+<td>Projeto feito antes da mudança</td>
+<td>janela</td>
+<td>Abre, o aviso antigo some, a força sozinha vem desligada.</td>
+</tr>
+<tr>
+<td>Botões escondidos acionados pelo teclado</td>
+<td>janela</td>
+<td>Não achei atalho; o Tab não chega a botão escondido. Não conferi com a janela ativa.</td>
+</tr>
+<tr>
+<td>Velocidade (Marial de 300 folhas, 2 rodadas de cada, alternadas)</td>
+<td>máquina</td>
+<td>Não dá para dizer que ficou mais lento: as diferenças são menores que o vai-e-vem entre rodadas iguais. O teste não liga o "Só as letras".</td>
+</tr>
+</tbody>
+</table>
+<h2>Quadro por quadro</h2>
+<h3>Antiphonal 46: a letra T que some (funciona)</h3>
+<p><strong>O que olhar:</strong> O aviso laranja, o quadradinho laranja em volta da letra T nos cartões e o botão "Trazer de volta nesta página".</p>
+<p>O aviso aparece sozinho uns 8 segundos depois de chegar na página, com o lugar marcado em laranja. O botão troca só essa página para "Guardar tudo", o aviso some e a página sai da lista. O Ctrl+Z desfaz.</p>
+<p><strong>Ressalva:</strong> Em 1280 x 657 os cartões são pequenos: a marca laranja quase não se vê e o nome do filtro fica escrito por cima da miniatura. No tamanho de maximizada aparece bem. Repare que no cartão a letra T continua lá: é o defeito do quadro seguinte.</p>
+<p><img alt="A marca laranja em volta da letra T nos cartões (ampliado, janela no tamanho de maximizada)" src="img/letra-t-0-marca-recorte.jpg" /></p>
+<p><em>A marca laranja em volta da letra T nos cartões (ampliado, janela no tamanho de maximizada)</em></p>
+<p><img alt="Os cinco cartões, o aviso e os dois botões" src="img/letra-t-1-aviso-recorte.jpg" /></p>
+<p><em>Os cinco cartões, o aviso e os dois botões</em></p>
+<p><img alt="A tela inteira no tamanho de janela maximizada (1920 x 1020), página 46 de 298" src="img/letra-t-2-aviso-tela.jpg" /></p>
+<p><em>A tela inteira no tamanho de janela maximizada (1920 x 1020), página 46 de 298</em></p>
+<p><img alt="A mesma tela em 1280 x 657: os cartões ficam pequenos e o nome do filtro fica por cima da miniatura" src="img/letra-t-5-aviso-tela-1280x657.jpg" /></p>
+<p><em>A mesma tela em 1280 x 657: os cartões ficam pequenos e o nome do filtro fica por cima da miniatura</em></p>
+<p><img alt="Depois de &quot;Trazer de volta nesta página&quot;: &quot;Guardar tudo&quot; ligado, aviso e marca sumiram" src="img/letra-t-3-trazer-de-volta-recorte.jpg" /></p>
+<p><em>Depois de "Trazer de volta nesta página": "Guardar tudo" ligado, aviso e marca sumiram</em></p>
+<p><img alt="Depois do Ctrl+Z: o aviso e os botões voltaram" src="img/letra-t-4-ctrlz-tela.jpg" /></p>
+<p><em>Depois do Ctrl+Z: o aviso e os botões voltaram</em></p>
+<h3>A tela mostra a letra T, o PDF sai sem ela (defeito grave)</h3>
+<p><strong>O que olhar:</strong> A letra T grande à esquerda: na tela ela aparece; na página do PDF que saiu, não.</p>
+<p>O aviso diz a verdade, a tela não. A página que aparece na tela é desenhada pequena, e nesse tamanho a letra T fica. O PDF é desenhado grande, e nele a letra some. Processei o livro na janela: no PDF a letra T sumiu mesmo.</p>
+<p><strong>Ressalva:</strong> Quem confere olhando a tela vê a letra no lugar e clica "está bom assim". Enquanto a tela não mostrar o que sai no PDF, o aviso manda olhar uma coisa que não dá para ver. Já era assim antes desta mudança; ela só deixou à vista.</p>
+<p><img alt="O mesmo pedaço da página 46: à esquerda o &quot;Ver de perto&quot; da janela; à direita o PDF que o programa gerou" src="img/tela-engana-1-comparacao.jpg" /></p>
+<p><em>O mesmo pedaço da página 46: à esquerda o "Ver de perto" da janela; à direita o PDF que o programa gerou</em></p>
+<p><img alt="O &quot;Ver de perto&quot; inteiro, com o aviso de pé: a letra T está lá" src="img/tela-engana-2-ver-de-perto-tela.jpg" /></p>
+<p><em>O "Ver de perto" inteiro, com o aviso de pé: a letra T está lá</em></p>
+<p><img alt="A página inteira tirada do PDF gerado pela janela: no lugar da letra T sobrou um tracinho" src="img/tela-engana-3-pagina-do-pdf.jpg" /></p>
+<p><em>A página inteira tirada do PDF gerado pela janela: no lugar da letra T sobrou um tracinho</em></p>
+<h3>Graduale 222: "Guardar só o texto" apaga a música (funciona)</h3>
+<p><strong>O que olhar:</strong> O cartão do Preto e branco sem as pautas, a marca laranja na página inteira e o botão "Trazer de volta nesta página".</p>
+<p>No jeito de fábrica ("Guardar a tinta forte") a página 222 não tem aviso nenhum. Trocando para "Guardar só o texto", o aviso aparece e o botão devolve só essa página para "Guardar a tinta forte". As outras páginas não mudam.</p>
+<p><strong>Ressalva:</strong> Usei um pedaço de 7 páginas do Graduale (219 a 225), para não abrir as 750 folhas. Na janela a página se chama 4.</p>
+<p><img alt="O aviso do &quot;Guardar só o texto&quot;, com a marca laranja (ampliado)" src="img/so-o-texto-1-aviso-recorte.jpg" /></p>
+<p><em>O aviso do "Guardar só o texto", com a marca laranja (ampliado)</em></p>
+<p><img alt="A tela inteira" src="img/so-o-texto-2-aviso-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<p><img alt="Depois do botão: a música voltou e o aviso sumiu" src="img/so-o-texto-3-trazer-de-volta-recorte.jpg" /></p>
+<p><em>Depois do botão: a música voltou e o aviso sumiu</em></p>
+<h3>Egenloff 12 e Rariora 8: página sem conteúdo (funciona)</h3>
+<p><strong>O que olhar:</strong> Os dois botões, "Deixar em branco" e "Tirar do livro", e o que cada um faz com a página.</p>
+<p>"Deixar em branco" põe uma folha branca no lugar: o livro continua com 138 páginas. "Tirar do livro" apaga a página: ficam 137. Os dois voltam com Ctrl+Z, e depois de "Deixar em branco" aparece o botão "voltar a página".</p>
+<p><strong>Ressalva:</strong> Esse aviso não tem "está bom assim". Quem quiser a página como está só consegue pelo painel, pela lista ou pela barra de espaço.</p>
+<p><img alt="Egenloff 12: o aviso e os dois botões (ampliado)" src="img/sem-conteudo-1-egenloff-recorte.jpg" /></p>
+<p><em>Egenloff 12: o aviso e os dois botões (ampliado)</em></p>
+<p><img alt="A tela inteira" src="img/sem-conteudo-2-egenloff-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<p><img alt="Depois de &quot;Deixar em branco&quot;: folha branca no lugar e botão &quot;voltar a página&quot;" src="img/sem-conteudo-3-deixar-em-branco-recorte.jpg" /></p>
+<p><em>Depois de "Deixar em branco": folha branca no lugar e botão "voltar a página"</em></p>
+<p><img alt="Depois de &quot;Tirar do livro&quot;: a página 12 fica apagada na tira e o botão vira &quot;restaurar página&quot;" src="img/sem-conteudo-4-tirar-do-livro-recorte.jpg" /></p>
+<p><em>Depois de "Tirar do livro": a página 12 fica apagada na tira e o botão vira "restaurar página"</em></p>
+<p><img alt="Rariora 8: o mesmo aviso, com os dois botões" src="img/sem-conteudo-5-rariora-recorte.jpg" /></p>
+<p><em>Rariora 8: o mesmo aviso, com os dois botões</em></p>
+<h3>Gladstone 18: "Parece em branco" numa página com título (erro conhecido)</h3>
+<p><strong>O que olhar:</strong> A página tem o título "DA ORAÇÃO" e mesmo assim o programa pergunta se quer deixar em branco ou tirar do livro.</p>
+<p>Os dois avisos ficaram separados, como o Samuel pediu, e cada um tem os dois botões. O erro da Gladstone 18 continua igual: já está na Lista de bugs e não fazia parte deste trabalho.</p>
+<p><strong>Ressalva:</strong> Agora o aviso errado vem com o botão "Tirar do livro" ao lado e sem "está bom assim". Um clique distraído tira do livro uma página que tem título.</p>
+<p><img alt="Gladstone 18: o aviso &quot;Parece em branco&quot; e os dois botões (ampliado)" src="img/parece-em-branco-1-recorte.jpg" /></p>
+<p><em>Gladstone 18: o aviso "Parece em branco" e os dois botões (ampliado)</em></p>
+<p><img alt="A tela inteira" src="img/parece-em-branco-2-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<p><img alt="A página de perto: tem o título &quot;DA ORAÇÃO&quot;" src="img/parece-em-branco-3-a-pagina.jpg" /></p>
+<p><em>A página de perto: tem o título "DA ORAÇÃO"</em></p>
+<h3>Camões 27 e Egenloff 3: a força do preto sozinha (funciona)</h3>
+<p><strong>O que olhar:</strong> O medidor em "bem forte", o aviso "escureci a força do preto só nela" e o botão "Desfazer".</p>
+<p>O programa leva a força do preto de 50 para 85 só nessa página e avisa. "Desfazer" devolve para 50 e aí aparece o aviso "Texto falhado" com "usar mais escuro"; o Ctrl+Z refaz. No Egenloff 3 a força não resolve o vermelho e os dois avisos ficam juntos. A caixinha fica na tela "O que fazer" e vem ligada no livro novo.</p>
+<p><strong>Ressalva:</strong> A caixinha só aparece depois de rolar a lista de opções para baixo. No Camões 104 a força mais escura trouxe dois avisos novos (desenho apagado e figura além da gravura).</p>
+<p><img alt="Camões 27: o aviso, o medidor em &quot;bem forte&quot; e o &quot;Desfazer&quot; (ampliado)" src="img/forca-1-camoes-recorte.jpg" /></p>
+<p><em>Camões 27: o aviso, o medidor em "bem forte" e o "Desfazer" (ampliado)</em></p>
+<p><img alt="A tela inteira" src="img/forca-2-camoes-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<p><img alt="Depois do &quot;Desfazer&quot;: força normal e o aviso &quot;Texto falhado&quot;" src="img/forca-3-desfazer-recorte.jpg" /></p>
+<p><em>Depois do "Desfazer": força normal e o aviso "Texto falhado"</em></p>
+<p><img alt="Egenloff 3: aviso 1 de 3 desta página" src="img/forca-4-egenloff-3-recorte.jpg" /></p>
+<p><em>Egenloff 3: aviso 1 de 3 desta página</em></p>
+<p><img alt="A caixinha &quot;Escurecer sozinho a força do preto quando o texto sair falhado&quot;" src="img/forca-5-caixinha-recorte.jpg" /></p>
+<p><em>A caixinha "Escurecer sozinho a força do preto quando o texto sair falhado"</em></p>
+<p><img alt="A tela &quot;O que fazer&quot; inteira" src="img/forca-6-caixinha-tela.jpg" /></p>
+<p><em>A tela "O que fazer" inteira</em></p>
+<h3>A janela "Antes de processar" (funciona, lista longa)</h3>
+<p><strong>O que olhar:</strong> As linhas "Página N - motivo", e os botões "ver" e "continuar assim mesmo".</p>
+<p>"ver" leva à página e não processa. "continuar assim mesmo" segue para escolher a pasta e processa até "Ficou pronto!". Fechar no X não processa. O PDF saiu com as 6 páginas em 5 segundos e o erros.log ficou vazio.</p>
+<p><strong>Ressalva:</strong> A lista junta os avisos novos com os de sempre. No Camões são 105 linhas: 59 de qualidade baixa, 35 do endireitar, e só 5 da regra nova. A frase de cima diz "100 páginas" e o painel ao lado diz 40. Logo depois, a janela de salvar diz "6 páginas que você não conferiu", outra conta.</p>
+<p><img alt="Egenloff: 31 linhas, uma por motivo de cada página" src="img/antes-1-lista-egenloff.jpg" /></p>
+<p><em>Egenloff: 31 linhas, uma por motivo de cada página</em></p>
+<p><img alt="Depois de &quot;ver&quot;: o programa foi para a página do aviso e não processou" src="img/antes-2-depois-do-ver-tela.jpg" /></p>
+<p><em>Depois de "ver": o programa foi para a página do aviso e não processou</em></p>
+<p><img alt="Camões: 105 linhas; as da regra nova ficam perdidas no meio" src="img/antes-3-lista-camoes.jpg" /></p>
+<p><em>Camões: 105 linhas; as da regra nova ficam perdidas no meio</em></p>
+<p><img alt="Depois de &quot;continuar assim mesmo&quot;: a janela de salvar" src="img/antes-4-confirmar.jpg" /></p>
+<p><em>Depois de "continuar assim mesmo": a janela de salvar</em></p>
+<p><img alt="&quot;Ficou pronto!&quot;: 6 páginas" src="img/antes-5-ficou-pronto-tela.jpg" /></p>
+<p><em>"Ficou pronto!": 6 páginas</em></p>
+<h3>"Está bom" em cada nível, com Ctrl+Z (funciona)</h3>
+<p><strong>O que olhar:</strong> O número do painel "Para revisar" e o contador de páginas descendo em cada nível.</p>
+<p>Um motivo de uma página: de 31 para 30 avisos, e o aviso seguinte da página aparece. Um motivo em todas: de 31 para 6. Em tudo: "tudo certo". Na lista grande, marquei duas linhas e dei "está bom nas marcadas": de 31 para 29. O Ctrl+Z desfez cada um.</p>
+<p><strong>Ressalva:</strong> Os botões "ver a lista…" e "está bom em tudo" ficam no fim do painel e só aparecem rolando a coluna da direita.</p>
+<p><img alt="Egenloff 3 depois de &quot;está bom assim&quot; no primeiro aviso: agora mostra o segundo (aviso 1 de 2)" src="img/esta-bom-1-um-motivo-recorte.jpg" /></p>
+<p><em>Egenloff 3 depois de "está bom assim" no primeiro aviso: agora mostra o segundo (aviso 1 de 2)</em></p>
+<p><img alt="Depois de &quot;está bom: todas&quot; no motivo do endireitar: sobram 4 páginas" src="img/esta-bom-2-motivo-em-todas-tela.jpg" /></p>
+<p><em>Depois de "está bom: todas" no motivo do endireitar: sobram 4 páginas</em></p>
+<p><img alt="Depois de &quot;está bom em tudo&quot;: nenhuma página marcada na tira" src="img/esta-bom-3-em-tudo-tela.jpg" /></p>
+<p><em>Depois de "está bom em tudo": nenhuma página marcada na tira</em></p>
+<p><img alt="A lista grande com duas linhas marcadas" src="img/esta-bom-4-seletor.jpg" /></p>
+<p><em>A lista grande com duas linhas marcadas</em></p>
+<h3>Graduale 221: na janela o aviso aparece, na conferência das 89 não (regra muda)</h3>
+<p><strong>O que olhar:</strong> O aviso "Desenho apagado" e as marcas laranja na beirada esquerda, onde não sumiu desenho nenhum.</p>
+<p>O implementador mediu cada página direto no tamanho do PDF. Na janela, a página pequena da tela é desenhada antes, e isso muda a medida que vem depois. Refiz as 89 páginas na ordem da janela: 4 mudam de decisão e 3 mudam de motivo.</p>
+<p><strong>Ressalva:</strong> Na ordem da janela: 24 vão, 73 certas (implementador: 22 e 75; combinado com o Samuel: 21 e 78). Passam a ir sem precisar o Graduale 221, a Matemática 72 e o Palatino 113; o Opus Majus 20 deixa de ir. Medi com a força sozinha desligada, como ele.</p>
+<p><img alt="Graduale 221 na janela: &quot;Desenho apagado&quot;, com a marca na beirada esquerda (ampliado)" src="img/janela-diferente-1-graduale-221-recorte.jpg" /></p>
+<p><em>Graduale 221 na janela: "Desenho apagado", com a marca na beirada esquerda (ampliado)</em></p>
+<p><img alt="A tela inteira (página 3 do pedaço de 7 páginas)" src="img/janela-diferente-2-graduale-221-tela.jpg" /></p>
+<p><em>A tela inteira (página 3 do pedaço de 7 páginas)</em></p>
+<h3>Cursus 3: passou a ir para a lista (aviso certo)</h3>
+<p><strong>O que olhar:</strong> A faixa preta larga à direita da página e a linha preta à esquerda.</p>
+<p>O aviso faz sentido para quem olha: a página sai com uma faixa preta larga. O que está errado é o corte do livro novo, que deixa a faixa; no corte de antes ela não sobrava. O aviso só conta o que o corte fez.</p>
+<p><strong>Ressalva:</strong> É defeito do corte do livro novo, não do aviso. Vale a gerente olhar junto do item do corte.</p>
+<p><img alt="A página 3 como sai em Preto e branco, de perto" src="img/cursus-3-1-pagina-recorte.jpg" /></p>
+<p><em>A página 3 como sai em Preto e branco, de perto</em></p>
+<p><img alt="O aviso &quot;Faixa escura na beirada&quot;" src="img/cursus-3-2-aviso-recorte.jpg" /></p>
+<p><em>O aviso "Faixa escura na beirada"</em></p>
+<p><img alt="A tela inteira" src="img/cursus-3-3-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<h3>Opus Majus 20: na janela não foi para a lista (sem aviso)</h3>
+<p><strong>O que olhar:</strong> A foto da estátua fica inteira, como no original.</p>
+<p>Pelos números do implementador ela passaria a ir ("figura além da gravura"). Na janela não foi: só apareceu o aviso do endireitar, que não é deste trabalho. A página está boa e não precisava ir.</p>
+<p><strong>Ressalva:</strong> É mais um caso em que a janela decide diferente da conferência das 89 páginas (aqui, para melhor). Abri a página sozinha, do gabarito; o livro inteiro não está no acervo.</p>
+<p><img alt="A página como sai, de perto: a foto ficou intacta" src="img/opus-majus-20-1-pagina-recorte.jpg" /></p>
+<p><em>A página como sai, de perto: a foto ficou intacta</em></p>
+<p><img alt="O único aviso é o do endireitar" src="img/opus-majus-20-2-aviso-recorte.jpg" /></p>
+<p><em>O único aviso é o do endireitar</em></p>
+<p><img alt="A tela inteira" src="img/opus-majus-20-3-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<h3>Palatino 66: passou a ir, com a força escurecida (sem precisar)</h3>
+<p><strong>O que olhar:</strong> Os pontinhos pretos em volta da moldura e as letras de traço fino.</p>
+<p>O programa achou o texto falhado, escureceu a força do preto e avisou. Para quem olha, o aviso se entende, mas a página não precisava: é uma página de caligrafia, de traço fino de propósito, e a força mais escura sujou a moldura.</p>
+<p><strong>Ressalva:</strong> Aqui a força sozinha mexeu numa página que estava boa. Com o "Desfazer" volta ao normal.</p>
+<p><img alt="A página 66 com a força escurecida, de perto" src="img/palatino-66-1-pagina-recorte.jpg" /></p>
+<p><em>A página 66 com a força escurecida, de perto</em></p>
+<p><img alt="O aviso e o &quot;Desfazer&quot;" src="img/palatino-66-2-aviso-recorte.jpg" /></p>
+<p><em>O aviso e o "Desfazer"</em></p>
+<p><img alt="A tela inteira" src="img/palatino-66-3-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<h3>Antiphon 260: deixou de ir e devia ir (escapa)</h3>
+<p><strong>O que olhar:</strong> A iluminura no meio da página saiu chapada em preto e branco, e há uma faixa preta larga embaixo.</p>
+<p>Na primeira visita apareceu o aviso da faixa escura. Depois de visitar mais três páginas, a faixa virou aviso do livro e a página 260 ficou sem aviso nenhum da regra. A iluminura estragada, que era o motivo de ela ir, ninguém avisa.</p>
+<p><strong>Ressalva:</strong> O aviso da faixa aparece e some conforme a pessoa visita outras páginas (vira aviso do livro quando 70% das páginas medidas têm faixa). No Antiphon cada página levou de 20 a 26 segundos para ser medida.</p>
+<p><img alt="A página 260 como sai em Preto e branco, de perto" src="img/antiphon-260-1-pagina-recorte.jpg" /></p>
+<p><em>A página 260 como sai em Preto e branco, de perto</em></p>
+<p><img alt="Depois de visitar outras páginas: só o aviso do endireitar" src="img/antiphon-260-2-aviso-recorte.jpg" /></p>
+<p><em>Depois de visitar outras páginas: só o aviso do endireitar</em></p>
+<p><img alt="A tela inteira: a faixa virou frase do livro, no alto do painel (meio encoberta pelo título do painel)" src="img/antiphon-260-3-tela.jpg" /></p>
+<p><em>A tela inteira: a faixa virou frase do livro, no alto do painel (meio encoberta pelo título do painel)</em></p>
+<h3>Camões 66: as linhas pretas da beirada (sem aviso)</h3>
+<p><strong>O que olhar:</strong> O aviso desta página é só o do endireitar. Não há aviso das linhas pretas, nem na página nem no livro.</p>
+<p>O Samuel decidiu que basta um aviso no livro. Ele não aparece no Camões: nas 5 páginas que visitei o programa não contou faixa em nenhuma, porque as linhas são finas. As linhas continuam saindo no resultado.</p>
+<p><strong>Ressalva:</strong> O plano já diz que isso depende do corte (item 2.13). Fica registrado que hoje o Camões não recebe aviso nenhum disso.</p>
+<p><img alt="Camões 66: o único aviso é o do endireitar (ampliado)" src="img/camoes-66-1-recorte.jpg" /></p>
+<p><em>Camões 66: o único aviso é o do endireitar (ampliado)</em></p>
+<p><img alt="A tela inteira" src="img/camoes-66-2-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<h3>Projeto feito antes desta mudança (abre igual)</h3>
+<p><strong>O que olhar:</strong> No ramo, a página 3 mostra "Texto falhado" com a força em "normal": o programa não escureceu sozinho.</p>
+<p>Criei um projeto no programa de hoje, com o aviso antigo "Tinta forte fora do texto" em 8 páginas, fechei e abri no ramo. Abriu em 7 segundos, o aviso antigo sumiu sozinho, a força do preto sozinha veio desligada e o erros.log ficou vazio.</p>
+<p><strong>Ressalva:</strong> É um projeto de hoje (já com o endireitar antes de cortar). Não abri um projeto de antes de 09/10, porque esses só existem na pasta de dados de verdade do Samuel.</p>
+<p><img alt="No programa de hoje, página 12: o aviso antigo &quot;Tinta forte fora do texto&quot;" src="img/antigo-1-no-programa-de-hoje-recorte.jpg" /></p>
+<p><em>No programa de hoje, página 12: o aviso antigo "Tinta forte fora do texto"</em></p>
+<p><img alt="O mesmo projeto no ramo, página 12: o aviso antigo sumiu e, depois de medir, veio &quot;Página sem conteúdo&quot;" src="img/antigo-4-no-ramo-p12-recorte.jpg" /></p>
+<p><em>O mesmo projeto no ramo, página 12: o aviso antigo sumiu e, depois de medir, veio "Página sem conteúdo"</em></p>
+<p><img alt="No ramo, página 3: &quot;Texto falhado&quot;, força normal, botão &quot;usar mais escuro&quot;" src="img/antigo-2-no-ramo-recorte.jpg" /></p>
+<p><em>No ramo, página 3: "Texto falhado", força normal, botão "usar mais escuro"</em></p>
+<p><img alt="A tela inteira" src="img/antigo-3-no-ramo-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<h2>A pergunta para o Samuel: quando medir as páginas não visitadas</h2>
+<p>O que você está escolhendo: em que hora o programa confere as páginas que ninguém abriu. Hoje ele só confere a página que está na tela. As outras só são conferidas na hora de gerar o PDF, quando já não dá para parar.</p>
+<p>Por isso a lista "Antes de processar" só mostra as páginas que você visitou. No Antiphonal de 298 páginas, com 2 visitadas, a lista mostrou 2 avisos de desenho apagado; visitei mais 4 e ela passou a mostrar 4. E a força do preto sozinha pode escurecer uma página que ninguém viu.</p>
+<p>Conferir uma página custa tempo: na janela, de 4 a 11 segundos nos livros comuns e de 20 a 26 segundos no Antiphon, de folha grande. O implementador mediu, sem a tela, de 13 a 15 minutos para um livro de 300 páginas.</p>
+<ul>
+<li><strong>Medir o livro inteiro por trás, depois de abrir</strong> (sugestão do verificador). Bom: a lista fica completa enquanto você confere, e nenhuma página muda sem aparecer na lista. Ruim: o PC trabalha de 13 a 15 minutos num livro de 300 páginas (pela conta do implementador; na janela pode chegar a 50 minutos, e a umas 2 horas em livro de folha grande), e a tela pode ficar mais lenta nesse tempo.</li>
+<li><strong>Medir o que falta só ao clicar em "Confirmar e processar"</strong>. Bom: o PC só trabalha quando você pede, e a lista sai completa antes do PDF. Ruim: você espera esse mesmo tempo parado na hora de processar, olha a lista, e depois espera de novo o PDF ser gerado.</li>
+<li><strong>Deixar como está</strong>. Bom: nada fica mais lento. Ruim: a lista só mostra as páginas visitadas; as outras saem no PDF do jeito que o programa decidiu, e o aviso só aparece depois.</li>
+<li><strong>Ainda não entendi</strong>. Explique de outro jeito, com mais exemplos.</li>
+</ul>
+<p>Sugestão do verificador (é minha, não é decisão): "Medir o livro inteiro por trás, depois de abrir", com uma barra de andamento. É a única em que a lista está completa na hora em que o Kaique decide, e a espera acontece enquanto ele já está conferindo.</p>
+<p><img alt="As duas listas" src="img/medir-1-listas.jpg" /></p>
+<h2>Velocidade</h2>
+<p>Marial de 300 folhas, o programa de hoje (<code>fase-1</code>, 88d7ff2) contra o ramo (36b9e32), alternando, 2 rodadas de cada. Cada número é o valor do meio das 3 repetições da rodada. <strong>O teste não liga o "Só as letras": ele confere que o resto do programa não ficou mais lento; o custo novo (medir a página visitada) não entra nele.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rodada</th>
+<th>Hora</th>
+<th>Memória livre</th>
+<th>Processador</th>
+<th>Outros Python</th>
+<th>Abrir</th>
+<th>Trocar (média)</th>
+<th>Trocar (pior)</th>
+<th>Mágico pro, 10 pág.</th>
+<th>Preto e branco, 10 pág.</th>
+<th>Memória máxima</th>
+<th>Durou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antes-1 (88d7ff2)</td>
+<td>04:08</td>
+<td>6,29 GB</td>
+<td>3%</td>
+<td>0</td>
+<td>50,0 s</td>
+<td>2,12 s</td>
+<td>3,21 s</td>
+<td>50,3 s</td>
+<td>23,5 s</td>
+<td>1382 MB</td>
+<td>10,7 min</td>
+</tr>
+<tr>
+<td>depois-1 (36b9e32)</td>
+<td>04:19</td>
+<td>6,33 GB</td>
+<td>2%</td>
+<td>0</td>
+<td>50,6 s</td>
+<td>2,13 s</td>
+<td>3,21 s</td>
+<td>50,6 s</td>
+<td>23,5 s</td>
+<td>1378 MB</td>
+<td>10,8 min</td>
+</tr>
+<tr>
+<td>antes-2 (88d7ff2)</td>
+<td>04:30</td>
+<td>6,25 GB</td>
+<td>0%</td>
+<td>0</td>
+<td>50,5 s</td>
+<td>2,13 s</td>
+<td>3,17 s</td>
+<td>50,3 s</td>
+<td>23,5 s</td>
+<td>1375 MB</td>
+<td>10,8 min</td>
+</tr>
+<tr>
+<td>depois-2 (36b9e32)</td>
+<td>04:41</td>
+<td>5,99 GB</td>
+<td>2%</td>
+<td>0</td>
+<td>50,6 s</td>
+<td>2,11 s</td>
+<td>3,23 s</td>
+<td>50,4 s</td>
+<td>23,5 s</td>
+<td>1374 MB</td>
+<td>10,7 min</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Antes</th>
+<th>Depois</th>
+<th>Diferença</th>
+<th>Vai-e-vem do antes</th>
+<th>Vai-e-vem do depois</th>
+<th>Par a par (depois menos antes)</th>
+<th>Dá para dizer?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir o livro (300 folhas)</td>
+<td>50,2 s</td>
+<td>50,6 s</td>
+<td>+0,3 s (+0,7%)</td>
+<td>0,6 s</td>
+<td>0,0 s</td>
+<td>+0,6; +0,0 s</td>
+<td>não dá para dizer (diferença menor que o vai-e-vem entre rodadas iguais)</td>
+</tr>
+<tr>
+<td>Trocar de página (média de 20)</td>
+<td>2,13 s</td>
+<td>2,12 s</td>
+<td>-0,01 s (-0,2%)</td>
+<td>0,02 s</td>
+<td>0,02 s</td>
+<td>+0,01; -0,02 s</td>
+<td>não dá para dizer (diferença menor que o vai-e-vem entre rodadas iguais)</td>
+</tr>
+<tr>
+<td>Trocar de página (a pior das 20)</td>
+<td>3,19 s</td>
+<td>3,22 s</td>
+<td>+0,03 s (+0,8%)</td>
+<td>0,04 s</td>
+<td>0,02 s</td>
+<td>-0,01; +0,06 s</td>
+<td>não dá para dizer (diferença menor que o vai-e-vem entre rodadas iguais)</td>
+</tr>
+<tr>
+<td>Processar 10 páginas em Mágico pro</td>
+<td>50,3 s</td>
+<td>50,5 s</td>
+<td>+0,2 s (+0,5%)</td>
+<td>0,0 s</td>
+<td>0,2 s</td>
+<td>+0,4; +0,1 s</td>
+<td>não dá para dizer (diferença menor que o vai-e-vem entre rodadas iguais)</td>
+</tr>
+<tr>
+<td>Processar 10 páginas em Preto e branco</td>
+<td>23,5 s</td>
+<td>23,5 s</td>
+<td>+0,0 s (+0,0%)</td>
+<td>0,1 s</td>
+<td>0,0 s</td>
+<td>+0,0; -0,0 s</td>
+<td>não dá para dizer (diferença menor que o vai-e-vem entre rodadas iguais)</td>
+</tr>
+</tbody>
+</table>
+<p>Tempos da medida na janela (do clique na página até a medida chegar, já descontada a espera do meu roteiro): Camões 4 a 5 s; Gladstone 4 a 6 s; Antiphonal 6 a 7 s; Egenloff e Palatino 7 a 10 s; Rariora 11 s; Antiphon 20 a 26 s.</p>
+<h2>O que não consegui conferir</h2>
+<ul>
+<li>Janela maximizada: só uma tela (Antiphonal 46), com a janela fora da tela no tamanho que teria maximizada (1920 x 1020). Os cliques e todo o resto foram em 1280 x 657.</li>
+<li>Botão escondido com o foco do teclado, com a janela ativa: a minha janela de teste nunca fica ativa (não posso tomar o teclado do Samuel). Nela, depois de "Tirar do livro", o botão escondido ficou com o foco e engoliu uma barra de espaço sem fazer nada. Não sei dizer se na janela ativa o foco sai do botão.</li>
+<li>Projeto de antes de 09/10 (ordem antiga do preparo): só existe na pasta de dados de verdade do Samuel, que eu não uso.</li>
+<li>O custo novo na velocidade: o teste de velocidade não liga o "Só as letras". Os tempos da medida que anotei são os da janela, sem comparação com o programa de hoje.</li>
+<li>A roda do mouse (não funciona sem a janela em foco).</li>
+<li>O Opus Majus inteiro e o Graduale inteiro: usei a página do gabarito e um pedaço de 7 páginas.</li>
+<li>A suíte inteira e o teste_botoes.py: a gerente rodou no GitHub.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Bug</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13/10/2026</td>
+<td>A tela mostra o que o PDF não tem: no "Só as letras", a página da tela (e do "Ver de perto") é desenhada pequena e mostra a letra T do Antiphonal 46; no PDF a letra some. O aviso está certo, mas não dá para conferir pelo olho.</td>
+<td><code>img/tela-engana-1-comparacao.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>A medida do "Para revisar" muda quando a prévia da tela foi desenhada antes (é sempre o caso na janela). Nas 89 páginas, na ordem da janela: 24 vão e 73 certas, contra 22 e 75 medindo direto. Mudam Graduale 221, Matemática 72, Palatino 113 (passam a ir) e Opus Majus 20 (deixa de ir).</td>
+<td><code>img/janela-diferente-1-graduale-221-recorte.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>Dois cliques no cartão do filtro (o jeito de abrir o "Ver de perto") gravam "Filtro da página: Preto e branco para Preto e branco", a página fica como conferida e o aviso some. O Ctrl+Z desfaz. Pelo duplo clique na miniatura da tira não acontece.</td>
+<td><code>img/bug-duplo-clique-tira-o-aviso-tela.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>Os avisos "Parece em branco" e "Página sem conteúdo" não têm "está bom assim": só "Deixar em branco" e "Tirar do livro". Na Gladstone 18, que tem título, o aviso errado só oferece essas duas saídas.</td>
+<td><code>img/parece-em-branco-1-recorte.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>A lista "Antes de processar" mistura os avisos da regra com os de sempre (Camões: 105 linhas, 5 da regra). A frase diz "100 páginas", o painel diz 40, e a janela de salvar, logo depois, diz "6 páginas que você não conferiu".</td>
+<td><code>img/antes-3-lista-camoes.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>Depois de clicar num botão do aviso, o teclado fica nesse botão: a seta para a direita não troca de página (pula para outro botão) e a barra de espaço aperta o botão em que o foco parou, em vez de "está certo e avança". A tecla Tab nunca chega ao "próximo aviso": só anda pelos botões.</td>
+<td>(sem print: está na saída dos roteiros p32 e p33)</td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>O corte do livro novo deixa uma faixa preta larga no Cursus 3 (no corte de antes não sobrava). O aviso "Faixa escura na beirada" está certo.</td>
+<td><code>img/cursus-3-1-pagina-recorte.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>Antiphon 260: a iluminura sai chapada em preto e branco e nenhum aviso fala disso; o aviso da faixa aparece na primeira visita e some quando vira aviso do livro.</td>
+<td><code>img/antiphon-260-1-pagina-recorte.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>Palatino 66: a força do preto sozinha escurece uma página de caligrafia que estava boa e suja a moldura.</td>
+<td><code>img/palatino-66-1-pagina-recorte.jpg</code></td>
+</tr>
+<tr>
+<td>13/10/2026</td>
+<td>Pequenos: no Egenloff 3 o aviso "Texto falhado" oferece "usar mais escuro" com a força já no mais escuro que o botão põe; em 1280 x 657 o nome do filtro fica escrito por cima da miniatura dos cartões; a caixinha da força sozinha só aparece rolando a lista de opções.</td>
+<td><code>img/esta-bom-1-um-motivo-recorte.jpg</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Como foi feito</h2>
+<ul>
+<li>Janela de verdade do ramo, aberta fora da tela, com cliques, arrastos e teclas nativos do Windows (<code>scripts/piloto.py</code>, <code>scripts/v.py</code>); as leituras do estado só leem. Ida às páginas: arrastando a barra da tira de miniaturas e clicando na miniatura.</li>
+<li>Pasta de dados de teste em <code>trabalho/dados_teste</code> (fora do git). A pasta de dados do Samuel não foi usada. O <code>erros.log</code> de teste ficou vazio em todas as sessões.</li>
+<li>Livros inteiros abertos como livro novo: Antiphonal 1547 (298 folhas), Egenloff (138), Camões (106), Gladstone (146), Rariora (414), Palatino (134), Cursus (402), Antiphon (305). Pedaços: Antiphonal 44 a 49 (para processar até o fim), Graduale 219 a 225, Egenloff 1 a 14 (projeto antigo). Opus Majus 20: a página do gabarito.</li>
+<li>Máquina: <code>scripts/desenhar.py</code> e <code>scripts/ver_pdf.py</code> (a página na tela contra a do PDF), <code>scripts/ordem_da_medida.py</code> e <code>scripts/conferir_89_como_a_janela.py</code> (as 89 páginas na ordem da janela; resultado em <code>conferir-89-como-a-janela.json</code>), <code>velocidade/</code> (as quatro rodadas).</li>
+<li>Imagens: 58 em <code>img/</code>. Abri 41 uma a uma; as outras 17 são a tela inteira ou o recorte da mesma captura de uma que abri. Sete prints tinham saído com a imagem velha da janela (o primeiro print depois de abrir o programa); achei por máquina (<code>scripts/achar_prints_velhos.py</code>), refiz os que entram aqui e nenhum velho ficou em <code>img/</code>.</li>
+<li>Tudo no commit <code>36b9e32</code> do programa. O <code>b5b224f</code> (só o <code>teste_botoes.py</code>) não foi trazido: o programa é o mesmo.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 13/10/2026 às 05:07</p>
+</body>
+</html>

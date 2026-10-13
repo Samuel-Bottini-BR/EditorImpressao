@@ -1,0 +1,94 @@
+Teste de velocidade do Editor de Impressão
+Livro: D:\programas\EditorImpressao\gabarito\velocidade\marial_300.pdf
+Máquina: SAMUEL-PC, AMD Ryzen 7 5800H with Radeon Graphics, 16 GB, na tomada (bateria em 100%)
+Preparando: o mesmo aquecimento que o programa faz ao ligar...
+  levou 0,8 s; detector de gravura e letra: carregado
+Rodada 1 de 3
+[0:04] Rodada 1 de 3 | abrir o livro: folha 1 de 300
+[0:14] Rodada 1 de 3 | abrir o livro: folha 58 de 300
+[0:24] Rodada 1 de 3 | abrir o livro: folha 121 de 300
+[0:34] Rodada 1 de 3 | abrir o livro: folha 183 de 300
+[0:44] Rodada 1 de 3 | abrir o livro: folha 245 de 300
+  abrir o livro: 51,4 s
+[0:58] Rodada 1 de 3 | trocar de página: 2 de 20 (página 23)
+[1:12] Rodada 1 de 3 | trocar de página: 5 de 20 (página 68)
+[1:25] Rodada 1 de 3 | trocar de página: 8 de 20 (página 113)
+[1:39] Rodada 1 de 3 | trocar de página: 11 de 20 (página 158)
+[1:53] Rodada 1 de 3 | trocar de página: 14 de 20 (página 203)
+[2:08] Rodada 1 de 3 | trocar de página: 17 de 20 (página 248)
+[2:23] Rodada 1 de 3 | trocar de página: 20 de 20 (página 293)
+  trocar de página: 2,4 s em média, 3,1 s a mais demorada
+[2:38] Rodada 1 de 3 | processar em Mágico pro: página 3 de 10
+[2:48] Rodada 1 de 3 | processar em Mágico pro: página 5 de 10
+[2:59] Rodada 1 de 3 | processar em Mágico pro: página 7 de 10
+[3:09] Rodada 1 de 3 | processar em Mágico pro: página 9 de 10
+[3:21] Rodada 1 de 3 | processar em Mágico pro: página 10 de 10
+  processar 10 páginas em Mágico pro: 52,4 s
+[3:32] Rodada 1 de 3 | processar em Preto e branco: página 6 de 10
+[3:43] Rodada 1 de 3 | processar em Preto e branco: página 10 de 10
+  processar 10 páginas em Preto e branco: 23,7 s
+Rodada 2 de 3
+[3:53] Rodada 2 de 3 | abrir o livro: folha 49 de 300
+[4:03] Rodada 2 de 3 | abrir o livro: folha 110 de 300
+[4:13] Rodada 2 de 3 | abrir o livro: folha 171 de 300
+[4:23] Rodada 2 de 3 | abrir o livro: folha 232 de 300
+[4:33] Rodada 2 de 3 | abrir o livro: folha 293 de 300
+  abrir o livro: 50,0 s
+[4:46] Rodada 2 de 3 | trocar de página: 4 de 20 (página 53)
+[4:58] Rodada 2 de 3 | trocar de página: 7 de 20 (página 98)
+[5:10] Rodada 2 de 3 | trocar de página: 10 de 20 (página 143)
+[5:22] Rodada 2 de 3 | trocar de página: 13 de 20 (página 188)
+[5:34] Rodada 2 de 3 | trocar de página: 16 de 20 (página 233)
+[5:48] Rodada 2 de 3 | trocar de página: 19 de 20 (página 278)
+  trocar de página: 2,1 s em média, 3,2 s a mais demorada
+[6:02] Rodada 2 de 3 | processar em Mágico pro: página 2 de 10
+[6:17] Rodada 2 de 3 | processar em Mágico pro: página 5 de 10
+[6:32] Rodada 2 de 3 | processar em Mágico pro: página 8 de 10
+[6:43] Rodada 2 de 3 | processar em Mágico pro: página 10 de 10
+  processar 10 páginas em Mágico pro: 50,1 s
+[6:54] Rodada 2 de 3 | processar em Preto e branco: página 4 de 10
+[7:04] Rodada 2 de 3 | processar em Preto e branco: página 8 de 10
+  processar 10 páginas em Preto e branco: 23,4 s
+Rodada 3 de 3
+[7:15] Rodada 3 de 3 | abrir o livro: folha 18 de 300
+[7:25] Rodada 3 de 3 | abrir o livro: folha 79 de 300
+[7:35] Rodada 3 de 3 | abrir o livro: folha 140 de 300
+[7:45] Rodada 3 de 3 | abrir o livro: folha 201 de 300
+[7:55] Rodada 3 de 3 | abrir o livro: folha 262 de 300
+  abrir o livro: 49,7 s
+[8:05] Rodada 3 de 3 | trocar de página: 2 de 20 (página 23)
+[8:17] Rodada 3 de 3 | trocar de página: 5 de 20 (página 68)
+[8:29] Rodada 3 de 3 | trocar de página: 8 de 20 (página 113)
+[8:40] Rodada 3 de 3 | trocar de página: 11 de 20 (página 158)
+[8:52] Rodada 3 de 3 | trocar de página: 14 de 20 (página 203)
+[9:06] Rodada 3 de 3 | trocar de página: 17 de 20 (página 248)
+[9:19] Rodada 3 de 3 | trocar de página: 20 de 20 (página 293)
+  trocar de página: 2,1 s em média, 3,2 s a mais demorada
+[9:34] Rodada 3 de 3 | processar em Mágico pro: página 3 de 10
+[9:44] Rodada 3 de 3 | processar em Mágico pro: página 5 de 10
+[9:59] Rodada 3 de 3 | processar em Mágico pro: página 8 de 10
+[10:09] Rodada 3 de 3 | processar em Mágico pro: página 10 de 10
+  processar 10 páginas em Mágico pro: 50,3 s
+[10:21] Rodada 3 de 3 | processar em Preto e branco: página 4 de 10
+[10:31] Rodada 3 de 3 | processar em Preto e branco: página 8 de 10
+  processar 10 páginas em Preto e branco: 23,5 s
+
+TESTE DE VELOCIDADE: SAMUEL-PC
+
+Medido em 13/10/2026 às 04:08, no computador SAMUEL-PC. Livro: marial_300.pdf (300 páginas, 67,9 MB). O teste inteiro levou 10 minutos e 41 segundos.
+
+QUANTO DEMORA
+
+Cada coisa foi medida 3 vezes. Na primeira vez é o que o Kaique sente ao abrir um livro pela primeira vez. De costume é o valor do meio entre as 3 vezes (a mediana): não é puxado nem pela vez mais rápida nem pela mais lenta.
+
+- Abrir o livro de 300 páginas: 51,4 segundos na primeira vez, 50,0 segundos de costume.
+- Trocar de página: na primeira vez, a prévia de uma página nunca vista ficou pronta em 2,4 segundos em média, e a mais demorada (página 293) levou 3,1 segundos. De costume: 2,1 segundos em média, e 3,2 segundos a mais demorada.
+- Processar 10 páginas em Mágico pro: 52,4 segundos na primeira vez (5,2 segundos por página), 50,3 segundos de costume (5,0 segundos por página).
+- Processar 10 páginas em Preto e branco: 23,7 segundos na primeira vez (2,4 segundos por página), 23,5 segundos de costume (2,3 segundos por página).
+- Memória máxima usada: 1.382 MB, ao processar em Mágico pro (rodada 3).
+
+Relatório gravado em:
+  D:\programas\EditorImpressao\.claude\worktrees\verif-para-revisar\relatorios\conferir\para-revisar-2026-10-13\velocidade\rodadas\antes-1\velocidade-SAMUEL-PC-2026-10-13-0408.md
+  D:\programas\EditorImpressao\.claude\worktrees\verif-para-revisar\relatorios\conferir\para-revisar-2026-10-13\velocidade\rodadas\antes-1\velocidade-SAMUEL-PC-2026-10-13-0408.html
+  D:\programas\EditorImpressao\.claude\worktrees\verif-para-revisar\relatorios\conferir\para-revisar-2026-10-13\velocidade\rodadas\antes-1\velocidade-SAMUEL-PC-2026-10-13-0408.pdf
+  D:\programas\EditorImpressao\.claude\worktrees\verif-para-revisar\relatorios\conferir\para-revisar-2026-10-13\velocidade\rodadas\antes-1\velocidade-SAMUEL-PC-2026-10-13-0408.json

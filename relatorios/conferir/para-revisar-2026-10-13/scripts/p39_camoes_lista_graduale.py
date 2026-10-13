@@ -1,0 +1,22 @@
+﻿import time, v
+P = v.P
+v.clicar("Confirmar e processar", classe="QPushButton", espera=3)
+j = P.janela("Antes de processar")
+linhas = v.linhas_da_lista()
+print("Camoes, Antes de processar:", [it["texto"] for it in j["itens"] if it["classe"] == "QLabel"][0], "| linhas:", len(linhas))
+print("  tipos:", dict(__import__("collections").Counter(l.split("  -  ")[1] for l in linhas)), "| comeco:", linhas[:3])
+print("  foto:", v.foto("32a-antes-de-processar-camoes", j["hwnd"])[0][-40:])
+P.u32.PostMessageW(j["hwnd"], 0x10, 0, 0); time.sleep(2)
+print("fechou o programa:", P.fechar())
+print(v.abrir())
+print("Graduale 219-225 abriu em", v.novo_livro(str(P.BASE / "trabalho" / "livros" / "graduale_219a225.pdf"), jeito="Guardar só o texto"), "s")
+print(v.s("(len(tc.projeto.paginas), tc.projeto.misto_so_as_letras, tc.projeto.misto_fora_do_texto, tc.projeto.ordem_do_preparo, tc.indice_pagina+1)"))
+print("fui para", v.ir_pagina(4)); v.passo("40a-graduale-222-so-o-texto", 240); time.sleep(5); v.passo("40a-graduale-222-so-o-texto")
+print("  faixa:", v.faixa()); print("  marcas:", v.s("tc.cartoes['preto_e_branco'].amostra._marcas"))
+v.clicar("Trazer de volta nesta página", classe="QPushButton", espera=3)
+print("Trazer de volta:"); v.passo("40b-graduale-222-trazer-de-volta", 240); time.sleep(4); v.passo("40b-graduale-222-trazer-de-volta")
+print("  faixa:", v.faixa(), v.historico()); print("  outras paginas:", v.s("[(p.indice+1, p.misto_fora_do_texto) for p in tc.projeto.paginas]"), v.s("tc.projeto.misto_fora_do_texto"))
+v.ctrl_z(); time.sleep(2); print("Ctrl+Z:"); v.passo("40c-graduale-222-ctrlz", 240)
+for n in (3, 5):
+    print("fui para", v.ir_pagina(n)); v.passo(f"40d-graduale-pagina{n}", 240)
+print(v.contagem())
