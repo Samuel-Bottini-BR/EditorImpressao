@@ -37,9 +37,8 @@ Os resultados página a página estão nos `conferir-89-*.json` desta pasta.
   refeitos: os do aviso em `tests/test_misto_no_programa.py` (31 no arquivo).
 - A suíte inteira, um arquivo de pytest por vez: antes da junção do `fase-1`, 114 arquivos, 2036 passaram,
   nenhum falhou; depois da junção, 115 arquivos, 2080 passaram, nenhum falhou (`test_ordem_do_preparo.py`: 43).
-  Depois da última mudança (a medida por trás) rodei só os arquivos mexidos e os vizinhos (`test_misto_no_programa`,
-  `test_para_revisar_na_tela`, `test_avisos`, `test_revisar`, `test_misto_consertos`, `test_misto_na_tela`,
-  `test_tirar_fundo_no_programa`): todos passaram. **A suíte inteira não foi rodada de novo depois dela.**
+  Depois da última mudança (a medida por trás, `8923370`), a suíte inteira de novo, um arquivo por vez
+  (13/10, 01:48 a 02:04): 115 arquivos, 2082 passaram, nenhum falhou.
 - `conferir_na_tela.py`: a tela de conferir de verdade (sem aparecer no monitor), com os fios de verdade, em três
   páginas reais: Antiphonal 46 (aviso, marca, "Trazer de volta"), Camões 27 (força sozinha, "Desfazer"),
   Egenloff 12 ("Página sem conteúdo", "Deixar em branco"). Tudo certo.
