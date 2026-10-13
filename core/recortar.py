@@ -347,14 +347,17 @@ def _tinta_falsa_da_cunha(cinza: np.ndarray, tinta: np.ndarray, cunha: np.ndarra
     """
     from core.filtros import janela_para_altura
 
-    cheia = _preencher_a_cunha(cinza, cunha)
-    escuro = cheia < ESCURO_DO_SCANNER * float(np.percentile(cinza[~cunha][::7], 90))
+    limite = ESCURO_DO_SCANNER * float(np.percentile(cinza[~cunha][::7], 90))
     # o limiar local so olha uma janela em volta do ponto: longe da cunha as
-    # duas contas dao o mesmo, e sem fundo escuro por perto nao ha o que achar
+    # duas contas dao o mesmo, e sem nada escuro por perto nao ha o que achar
+    # (conferido antes de preencher a cunha, que e a parte cara: a cunha
+    # preenchida so e escura onde o ponto de imagem vizinho dela e escuro)
     janela = janela_para_altura(cinza.shape[0])
     perto = cv2.dilate(cunha.astype(np.uint8), np.ones((2 * janela + 1, 2 * janela + 1), np.uint8)) > 0
-    if not (escuro & perto).any():
+    if not ((cinza < limite) & perto & ~cunha).any():
         return None
+    cheia = _preencher_a_cunha(cinza, cunha)
+    escuro = cheia < limite
     falsa = (tinta > 0) & (_mascara_de_tinta_local(cheia) == 0) & escuro & perto
     return falsa if falsa.any() else None
 

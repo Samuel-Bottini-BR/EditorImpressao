@@ -1,0 +1,1128 @@
+{
+ "antes": {
+  "cursus_p003|g4": {
+   "inteira": {
+    "forma": [
+     3163,
+     2374,
+     3
+    ],
+    "md5": "6e78c8ab324b1986820204349e24796e"
+   }
+  },
+  "cursus_p003|prog": {
+   "inteira": {
+    "forma": [
+     3163,
+     2374,
+     3
+    ],
+    "md5": "bf3b7e0dd30e1ecb24eee928363617f8"
+   }
+  },
+  "matematica_p032|g4": {
+   "inteira": {
+    "forma": [
+     3505,
+     1952,
+     3
+    ],
+    "md5": "3e2551485c56893654ae7c5cd0dfef99"
+   }
+  },
+  "matematica_p032|prog": {
+   "inteira": {
+    "forma": [
+     3505,
+     1951,
+     3
+    ],
+    "md5": "134e6f2ed66ffc209033445245a7c397"
+   }
+  },
+  "antiphon_p260|g4": {
+   "inteira": {
+    "forma": [
+     6971,
+     5475,
+     3
+    ],
+    "md5": "8a4f5d7ec373ce881d95de37ce12fd30"
+   }
+  },
+  "antiphon_p260|prog": {
+   "inteira": {
+    "forma": [
+     6971,
+     5475,
+     3
+    ],
+    "md5": "e44d8f0d7dfecf1f65c1c179b0f25982"
+   }
+  },
+  "antiphon_p088|g4": {
+   "inteira": {
+    "forma": [
+     7338,
+     5170,
+     3
+    ],
+    "md5": "5cbbfbfb9535a2b5b711bd4098816459"
+   }
+  },
+  "antiphon_p088|prog": {
+   "inteira": {
+    "forma": [
+     7338,
+     5170,
+     3
+    ],
+    "md5": "eae656738eff44516ebbbe542dacb230"
+   }
+  },
+  "escola_p197|g4": {
+   "inteira": {
+    "forma": [
+     2873,
+     1885,
+     3
+    ],
+    "md5": "0a6dab135660e33a47d5598b1d6fd058"
+   }
+  },
+  "escola_p197|prog": {
+   "inteira": {
+    "forma": [
+     2873,
+     1885,
+     3
+    ],
+    "md5": "0a6dab135660e33a47d5598b1d6fd058"
+   }
+  },
+  "escola_p007|g4": {
+   "inteira": {
+    "forma": [
+     3119,
+     1954,
+     3
+    ],
+    "md5": "66ea4d08550a31f57d2d5a4bddd5079f"
+   }
+  },
+  "escola_p007|prog": {
+   "inteira": {
+    "forma": [
+     3119,
+     1954,
+     3
+    ],
+    "md5": "a7e47634ca25a95a5357be442d31b11d"
+   }
+  },
+  "camoes_p104|g4": {
+   "inteira": {
+    "forma": [
+     1559,
+     1103,
+     3
+    ],
+    "md5": "cf717b309910ae3814ec9ecd90adef11"
+   }
+  },
+  "camoes_p104|prog": {
+   "inteira": {
+    "forma": [
+     1559,
+     1103,
+     3
+    ],
+    "md5": "cf272233557587087d5c1838ad2741e5"
+   }
+  },
+  "camoes_p006|g4": {
+   "inteira": {
+    "forma": [
+     1537,
+     1091,
+     3
+    ],
+    "md5": "c126a2f1b3eaf61feb0cd2ef7ea6f9b4"
+   }
+  },
+  "camoes_p006|prog": {
+   "inteira": {
+    "forma": [
+     1537,
+     1091,
+     3
+    ],
+    "md5": "749c3839a910131415fd68bc96ab25c6"
+   }
+  },
+  "camoes_p066|g4": {
+   "inteira": {
+    "forma": [
+     1549,
+     1075,
+     3
+    ],
+    "md5": "524ff30654d4a51c442a30dc85b679b0"
+   }
+  },
+  "camoes_p066|prog": {
+   "inteira": {
+    "forma": [
+     1549,
+     1075,
+     3
+    ],
+    "md5": "c1d8deb51718bd579818899c12f97d84"
+   }
+  },
+  "horas_p011|g4": {
+   "inteira": {
+    "forma": [
+     5633,
+     3697,
+     3
+    ],
+    "md5": "fd03ba9b1d2c0db50cee7dd547fe150e"
+   }
+  },
+  "horas_p011|prog": {
+   "inteira": {
+    "forma": [
+     5633,
+     3684,
+     3
+    ],
+    "md5": "a667162e7125cb8b86522cc7b4227962"
+   }
+  },
+  "rariora_p155|g4": {
+   "inteira": {
+    "forma": [
+     1751,
+     1574,
+     3
+    ],
+    "md5": "df70bc0bb74e2f42abef6ad543793326"
+   }
+  },
+  "rariora_p155|prog": {
+   "inteira": {
+    "forma": [
+     1779,
+     1595,
+     3
+    ],
+    "md5": "682bf78c3286654266857a530a57cab6"
+   }
+  },
+  "rhetorica_p073|g4": {
+   "inteira": {
+    "forma": [
+     2325,
+     1611,
+     3
+    ],
+    "md5": "9f7b7944fe807b3029dcbed0ef02d1ac"
+   }
+  },
+  "rhetorica_p073|prog": {
+   "inteira": {
+    "forma": [
+     2325,
+     1611,
+     3
+    ],
+    "md5": "8661ec78caf86a7ca8f912e71e024e56"
+   }
+  },
+  "graduale_p221|g4": {
+   "inteira": {
+    "forma": [
+     5335,
+     3911,
+     3
+    ],
+    "md5": "127d3b9e3c78b6107e68ed3281b159c6"
+   }
+  },
+  "graduale_p221|prog": {
+   "inteira": {
+    "forma": [
+     5335,
+     3911,
+     3
+    ],
+    "md5": "004ce79cb150d6062cdee1edb929093f"
+   }
+  },
+  "boecio_p022|g4": {
+   "inteira": {
+    "forma": [
+     1393,
+     977,
+     3
+    ],
+    "md5": "87bac411466fadda5c18e96c6283369c"
+   }
+  },
+  "boecio_p022|prog": {
+   "inteira": {
+    "forma": [
+     1393,
+     977,
+     3
+    ],
+    "md5": "d0dc7ad720df35ffca57c73666dc5fee"
+   }
+  },
+  "egenloff_p003|g4": {
+   "inteira": {
+    "forma": [
+     5357,
+     4087,
+     3
+    ],
+    "md5": "c371451d4bc82b8c152bf9072117a5f6"
+   }
+  },
+  "egenloff_p003|prog": {
+   "inteira": {
+    "forma": [
+     5357,
+     4087,
+     3
+    ],
+    "md5": "d61ebcd32f4be13db8ea50e2c71da73c"
+   }
+  },
+  "siebmacher_p009|g4": {
+   "inteira": {
+    "forma": [
+     1269,
+     1650,
+     3
+    ],
+    "md5": "9520027a3b34b47c35b02a52852690f3"
+   }
+  },
+  "siebmacher_p009|prog": {
+   "inteira": {
+    "forma": [
+     1269,
+     1650,
+     3
+    ],
+    "md5": "11ea8b091907ae7112276de6c424bc1a"
+   }
+  },
+  "graduale_p588|g4": {
+   "inteira": {
+    "forma": [
+     5322,
+     3617,
+     3
+    ],
+    "md5": "7817e00faafc7d1dfcaf6b41da679f3f"
+   }
+  },
+  "graduale_p588|prog": {
+   "inteira": {
+    "forma": [
+     5322,
+     3617,
+     3
+    ],
+    "md5": "98bdbb058ef68dec101b20b9fb7da4b0"
+   }
+  },
+  "palatino_p005|g4": {
+   "inteira": {
+    "forma": [
+     2073,
+     1176,
+     3
+    ],
+    "md5": "6c650f7e7084c66488f9b1efd9dfa8c4"
+   }
+  },
+  "palatino_p005|prog": {
+   "inteira": {
+    "forma": [
+     2073,
+     1176,
+     3
+    ],
+    "md5": "cf142a5846a79ac493ace1d63dcb80d6"
+   }
+  },
+  "gladstone_p018|g4": {
+   "inteira": {
+    "forma": [
+     3508,
+     2482,
+     3
+    ],
+    "md5": "feca00d6b650a1201d6f8aeda01078c7"
+   }
+  },
+  "gladstone_p018|prog": {
+   "inteira": {
+    "forma": [
+     3508,
+     2482,
+     3
+    ],
+    "md5": "f2c67144c78b6af3d42fb468839ee256"
+   }
+  },
+  "opusmajus_p020|g4": {
+   "inteira": {
+    "forma": [
+     2050,
+     1204,
+     3
+    ],
+    "md5": "d218af9d94e4d901a00c1c0f9c80fad1"
+   }
+  },
+  "opusmajus_p020|prog": {
+   "inteira": {
+    "forma": [
+     2050,
+     1204,
+     3
+    ],
+    "md5": "67fd7285b2bc44fbca1d640441ee1a8d"
+   }
+  }
+ },
+ "agora": {
+  "antiphon_p088|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      7338,
+      5170,
+      3
+     ],
+     "md5": "5cbbfbfb9535a2b5b711bd4098816459"
+    }
+   }
+  },
+  "antiphon_p088|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      7338,
+      5170,
+      3
+     ],
+     "md5": "eae656738eff44516ebbbe542dacb230"
+    }
+   }
+  },
+  "antiphon_p260|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      6971,
+      5475,
+      3
+     ],
+     "md5": "8a4f5d7ec373ce881d95de37ce12fd30"
+    }
+   }
+  },
+  "antiphon_p260|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      6971,
+      5475,
+      3
+     ],
+     "md5": "e44d8f0d7dfecf1f65c1c179b0f25982"
+    }
+   }
+  },
+  "boecio_p022|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1393,
+      977,
+      3
+     ],
+     "md5": "87bac411466fadda5c18e96c6283369c"
+    }
+   }
+  },
+  "boecio_p022|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1393,
+      977,
+      3
+     ],
+     "md5": "d0dc7ad720df35ffca57c73666dc5fee"
+    }
+   }
+  },
+  "camoes_p006|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1537,
+      1091,
+      3
+     ],
+     "md5": "c126a2f1b3eaf61feb0cd2ef7ea6f9b4"
+    }
+   }
+  },
+  "camoes_p006|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1537,
+      1091,
+      3
+     ],
+     "md5": "749c3839a910131415fd68bc96ab25c6"
+    }
+   }
+  },
+  "camoes_p066|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1549,
+      1075,
+      3
+     ],
+     "md5": "524ff30654d4a51c442a30dc85b679b0"
+    }
+   }
+  },
+  "camoes_p066|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1549,
+      1075,
+      3
+     ],
+     "md5": "c1d8deb51718bd579818899c12f97d84"
+    }
+   }
+  },
+  "camoes_p104|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1559,
+      1103,
+      3
+     ],
+     "md5": "cf717b309910ae3814ec9ecd90adef11"
+    }
+   }
+  },
+  "camoes_p104|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1559,
+      1103,
+      3
+     ],
+     "md5": "cf272233557587087d5c1838ad2741e5"
+    }
+   }
+  },
+  "cursus_p003|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3163,
+      2374,
+      3
+     ],
+     "md5": "6e78c8ab324b1986820204349e24796e"
+    }
+   }
+  },
+  "cursus_p003|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3163,
+      2374,
+      3
+     ],
+     "md5": "bf3b7e0dd30e1ecb24eee928363617f8"
+    }
+   }
+  },
+  "egenloff_p003|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5357,
+      4087,
+      3
+     ],
+     "md5": "c371451d4bc82b8c152bf9072117a5f6"
+    }
+   }
+  },
+  "egenloff_p003|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5357,
+      4087,
+      3
+     ],
+     "md5": "d61ebcd32f4be13db8ea50e2c71da73c"
+    }
+   }
+  },
+  "escola_p007|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3119,
+      1954,
+      3
+     ],
+     "md5": "66ea4d08550a31f57d2d5a4bddd5079f"
+    }
+   }
+  },
+  "escola_p007|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3119,
+      1954,
+      3
+     ],
+     "md5": "a7e47634ca25a95a5357be442d31b11d"
+    }
+   }
+  },
+  "escola_p197|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2873,
+      1885,
+      3
+     ],
+     "md5": "0a6dab135660e33a47d5598b1d6fd058"
+    }
+   }
+  },
+  "escola_p197|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2873,
+      1885,
+      3
+     ],
+     "md5": "0a6dab135660e33a47d5598b1d6fd058"
+    }
+   }
+  },
+  "gladstone_p018|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3508,
+      2482,
+      3
+     ],
+     "md5": "feca00d6b650a1201d6f8aeda01078c7"
+    }
+   }
+  },
+  "gladstone_p018|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3508,
+      2482,
+      3
+     ],
+     "md5": "f2c67144c78b6af3d42fb468839ee256"
+    }
+   }
+  },
+  "graduale_p221|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5335,
+      3911,
+      3
+     ],
+     "md5": "127d3b9e3c78b6107e68ed3281b159c6"
+    }
+   }
+  },
+  "graduale_p221|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5335,
+      3911,
+      3
+     ],
+     "md5": "004ce79cb150d6062cdee1edb929093f"
+    }
+   }
+  },
+  "graduale_p588|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5322,
+      3617,
+      3
+     ],
+     "md5": "7817e00faafc7d1dfcaf6b41da679f3f"
+    }
+   }
+  },
+  "graduale_p588|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5322,
+      3617,
+      3
+     ],
+     "md5": "98bdbb058ef68dec101b20b9fb7da4b0"
+    }
+   }
+  },
+  "horas_p011|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5633,
+      3697,
+      3
+     ],
+     "md5": "fd03ba9b1d2c0db50cee7dd547fe150e"
+    }
+   }
+  },
+  "horas_p011|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      5633,
+      3684,
+      3
+     ],
+     "md5": "a667162e7125cb8b86522cc7b4227962"
+    }
+   }
+  },
+  "matematica_p032|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3505,
+      1952,
+      3
+     ],
+     "md5": "3e2551485c56893654ae7c5cd0dfef99"
+    }
+   }
+  },
+  "matematica_p032|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      3505,
+      1951,
+      3
+     ],
+     "md5": "134e6f2ed66ffc209033445245a7c397"
+    }
+   }
+  },
+  "opusmajus_p020|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2050,
+      1204,
+      3
+     ],
+     "md5": "d218af9d94e4d901a00c1c0f9c80fad1"
+    }
+   }
+  },
+  "opusmajus_p020|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2050,
+      1204,
+      3
+     ],
+     "md5": "67fd7285b2bc44fbca1d640441ee1a8d"
+    }
+   }
+  },
+  "palatino_p005|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2073,
+      1176,
+      3
+     ],
+     "md5": "6c650f7e7084c66488f9b1efd9dfa8c4"
+    }
+   }
+  },
+  "palatino_p005|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2073,
+      1176,
+      3
+     ],
+     "md5": "cf142a5846a79ac493ace1d63dcb80d6"
+    }
+   }
+  },
+  "rariora_p155|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1751,
+      1574,
+      3
+     ],
+     "md5": "df70bc0bb74e2f42abef6ad543793326"
+    }
+   }
+  },
+  "rariora_p155|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1779,
+      1595,
+      3
+     ],
+     "md5": "682bf78c3286654266857a530a57cab6"
+    }
+   }
+  },
+  "rhetorica_p073|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2325,
+      1611,
+      3
+     ],
+     "md5": "9f7b7944fe807b3029dcbed0ef02d1ac"
+    }
+   }
+  },
+  "rhetorica_p073|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      2325,
+      1611,
+      3
+     ],
+     "md5": "8661ec78caf86a7ca8f912e71e024e56"
+    }
+   }
+  },
+  "siebmacher_p009|g4": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1269,
+      1650,
+      3
+     ],
+     "md5": "9520027a3b34b47c35b02a52852690f3"
+    }
+   }
+  },
+  "siebmacher_p009|prog": {
+   "ordem_do_preparo": "cortar_antes",
+   "endireitar_como": "programa",
+   "paginas": {
+    "inteira": {
+     "forma": [
+      1269,
+      1650,
+      3
+     ],
+     "md5": "11ea8b091907ae7112276de6c424bc1a"
+    }
+   }
+  }
+ },
+ "comparacao": {
+  "cursus_p003|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "cursus_p003|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "matematica_p032|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "matematica_p032|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "antiphon_p260|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "antiphon_p260|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "antiphon_p088|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "antiphon_p088|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "escola_p197|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "escola_p197|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "escola_p007|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "escola_p007|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "camoes_p104|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "camoes_p104|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "camoes_p006|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "camoes_p006|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "camoes_p066|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "camoes_p066|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "horas_p011|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "horas_p011|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "rariora_p155|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "rariora_p155|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "rhetorica_p073|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "rhetorica_p073|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "graduale_p221|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "graduale_p221|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "boecio_p022|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "boecio_p022|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "egenloff_p003|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "egenloff_p003|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "siebmacher_p009|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "siebmacher_p009|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "graduale_p588|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "graduale_p588|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "palatino_p005|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "palatino_p005|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "gladstone_p018|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "gladstone_p018|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "opusmajus_p020|g4": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  },
+  "opusmajus_p020|prog": {
+   "ordem_ao_abrir_hoje": "cortar_antes",
+   "identica_ponto_por_ponto": true
+  }
+ }
+}

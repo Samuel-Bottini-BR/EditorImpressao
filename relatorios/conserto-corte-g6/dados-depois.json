@@ -119,7 +119,7 @@
     621.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.57,
+   "segundos": 1.42,
    "papel": 233.0,
    "beirada_escuro": 0.08477,
    "lados_escuro": {
@@ -208,7 +208,7 @@
     622.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 2.61,
+   "segundos": 1.81,
    "papel": 233.0,
    "beirada_escuro": 0.07166,
    "lados_escuro": {
@@ -302,7 +302,7 @@
     590.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.29,
+   "segundos": 0.81,
    "papel": 227.0,
    "beirada_escuro": 0.03292,
    "lados_escuro": {
@@ -391,7 +391,7 @@
     590.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 2.27,
+   "segundos": 1.39,
    "papel": 227.0,
    "beirada_escuro": 0.03203,
    "lados_escuro": {
@@ -453,7 +453,7 @@
    "md5": "8a4f5d7ec373ce881d95de37ce12fd30"
   },
   "C": {
-   "replica_diferenca_media": 1.45,
+   "replica_diferenca_media": 1.3,
    "nome": "novo (endireita antes, conta do ScanTailor)",
    "ordem": "endireitar_antes",
    "endireitar_como": "scantailor",
@@ -462,84 +462,84 @@
    "angulo_programa": -1.1102230246251565e-16,
    "angulo_scantailor": 0.5,
    "recorte": [
+    0.00167,
     0.0,
-    0.0,
-    1.0,
-    0.97625
+    0.99833,
+    0.95625
    ],
    "pagina_inteira_px": [
     5475,
     7300
    ],
    "tamanho_px": [
-    5475,
-    7126
+    5466,
+    6980
    ],
    "tamanho_mm": [
-    463.6,
-    603.3
+    462.8,
+    591.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 2.53,
+   "segundos": 1.8,
    "papel": 227.0,
-   "beirada_escuro": 0.05334,
+   "beirada_escuro": 0.03375,
    "lados_escuro": {
     "esq": {
      "mm": 0.0,
-     "mm_max": 228.66,
-     "cobre": 0.055
+     "mm_max": 228.71,
+     "cobre": 0.035
     },
     "dir": {
      "mm": 0.0,
-     "mm_max": 231.68,
-     "cobre": 0.083
+     "mm_max": 231.66,
+     "cobre": 0.064
     },
     "topo": {
      "mm": 0.0,
-     "mm_max": 13.27,
-     "cobre": 0.044
+     "mm_max": 13.0,
+     "cobre": 0.045
     },
     "pe": {
-     "mm": 34.99,
-     "mm_max": 35.6,
-     "cobre": 0.993
+     "mm": 22.46,
+     "mm_max": 23.64,
+     "cobre": 0.995
     }
    },
-   "beirada_pb": 0.05374,
+   "beirada_pb": 0.03422,
    "lados_pb": {
     "esq": {
      "mm": 0.0,
-     "mm_max": 228.66,
-     "cobre": 0.055
+     "mm_max": 228.71,
+     "cobre": 0.035
     },
     "dir": {
      "mm": 0.0,
-     "mm_max": 231.68,
-     "cobre": 0.083
+     "mm_max": 231.66,
+     "cobre": 0.064
     },
     "topo": {
      "mm": 0.0,
-     "mm_max": 13.27,
+     "mm_max": 13.0,
      "cobre": 0.069
     },
     "pe": {
-     "mm": 34.99,
-     "mm_max": 35.6,
-     "cobre": 0.993
+     "mm": 22.46,
+     "mm_max": 23.64,
+     "cobre": 0.995
     }
    },
-   "cunha_branca": 0.00364,
+   "cunha_branca": 0.00305,
    "pecas": 289,
    "pecas_fora": 0,
    "pecas_partidas": 0,
    "tinta_perdida": 2e-05,
    "folga_mm": {
-    "esq": 4.02,
+    "esq": 3.4,
     "dir": 4.02,
     "topo": 0.31,
-    "pe": 38.01
+    "pe": 25.65
    },
-   "md5": "0b22941d71d08399f53112b5a2f619b2"
+   "md5": "bc969ef12ab17702d70839d932f31522"
   },
   "no_gabarito": false
  },
@@ -574,7 +574,7 @@
     105.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.33,
+   "segundos": 0.24,
    "papel": 194.0,
    "beirada_escuro": 0.00315,
    "lados_escuro": {
@@ -663,7 +663,7 @@
     105.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.24,
    "papel": 195.0,
    "beirada_escuro": 0.00286,
    "lados_escuro": {
@@ -752,7 +752,7 @@
     105.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.28,
    "papel": 195.0,
    "beirada_escuro": 0.00643,
    "lados_escuro": {
@@ -846,7 +846,7 @@
     104.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.43,
+   "segundos": 0.23,
    "papel": 205.0,
    "beirada_escuro": 0.00063,
    "lados_escuro": {
@@ -935,7 +935,7 @@
     104.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.36,
+   "segundos": 0.24,
    "papel": 205.0,
    "beirada_escuro": 0.00063,
    "lados_escuro": {
@@ -1024,7 +1024,7 @@
     104.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.41,
+   "segundos": 0.26,
    "papel": 205.0,
    "beirada_escuro": 0.00063,
    "lados_escuro": {
@@ -1118,7 +1118,7 @@
     87.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.44,
+   "segundos": 0.27,
    "papel": 206.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -1207,7 +1207,7 @@
     87.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.32,
+   "segundos": 0.29,
    "papel": 206.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -1296,7 +1296,7 @@
     91.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.51,
+   "segundos": 0.27,
    "papel": 205.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -1390,7 +1390,7 @@
     96.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.42,
+   "segundos": 0.23,
    "papel": 194.0,
    "beirada_escuro": 0.00388,
    "lados_escuro": {
@@ -1479,7 +1479,7 @@
     96.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.43,
+   "segundos": 0.24,
    "papel": 194.0,
    "beirada_escuro": 0.0036,
    "lados_escuro": {
@@ -1568,7 +1568,7 @@
     96.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.46,
+   "segundos": 0.27,
    "papel": 194.0,
    "beirada_escuro": 0.00581,
    "lados_escuro": {
@@ -1662,7 +1662,7 @@
     88.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.35,
+   "segundos": 0.23,
    "papel": 198.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -1751,7 +1751,7 @@
     88.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.37,
+   "segundos": 0.27,
    "papel": 198.0,
    "beirada_escuro": 0.00015,
    "lados_escuro": {
@@ -1840,7 +1840,7 @@
     88.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.41,
+   "segundos": 0.39,
    "papel": 198.0,
    "beirada_escuro": 0.00018,
    "lados_escuro": {
@@ -1934,7 +1934,7 @@
     95.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.34,
+   "segundos": 0.22,
    "papel": 201.0,
    "beirada_escuro": 0.0031,
    "lados_escuro": {
@@ -2023,7 +2023,7 @@
     95.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.24,
    "papel": 201.0,
    "beirada_escuro": 0.0031,
    "lados_escuro": {
@@ -2112,7 +2112,7 @@
     99.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.45,
+   "segundos": 0.28,
    "papel": 201.0,
    "beirada_escuro": 0.00371,
    "lados_escuro": {
@@ -2206,7 +2206,7 @@
     123.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.07,
+   "segundos": 0.06,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2295,7 +2295,7 @@
     123.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.11,
+   "segundos": 0.08,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2384,7 +2384,7 @@
     128.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.15,
+   "segundos": 0.13,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2567,7 +2567,7 @@
     123.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.14,
+   "segundos": 0.08,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2656,7 +2656,7 @@
     123.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.16,
+   "segundos": 0.09,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2750,7 +2750,7 @@
     122.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.13,
+   "segundos": 0.07,
    "papel": 223.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2839,7 +2839,7 @@
     122.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.16,
+   "segundos": 0.1,
    "papel": 223.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -2928,7 +2928,7 @@
     123.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.21,
+   "segundos": 0.14,
    "papel": 223.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -3022,7 +3022,7 @@
     117.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.09,
+   "segundos": 0.06,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -3111,7 +3111,7 @@
     117.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.14,
+   "segundos": 0.08,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -3200,7 +3200,7 @@
     121.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.13,
+   "segundos": 0.11,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -3294,7 +3294,7 @@
     130.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.09,
+   "segundos": 0.07,
    "papel": 204.0,
    "beirada_escuro": 0.01711,
    "lados_escuro": {
@@ -3566,7 +3566,7 @@
     131.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.1,
+   "segundos": 0.09,
    "papel": 189.0,
    "beirada_escuro": 0.03106,
    "lados_escuro": {
@@ -3655,7 +3655,7 @@
     131.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.12,
+   "segundos": 0.11,
    "papel": 189.0,
    "beirada_escuro": 0.02726,
    "lados_escuro": {
@@ -3744,7 +3744,7 @@
     130.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.15,
+   "segundos": 0.14,
    "papel": 189.0,
    "beirada_escuro": 0.0302,
    "lados_escuro": {
@@ -3838,7 +3838,7 @@
     131.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.07,
+   "segundos": 0.09,
    "papel": 190.0,
    "beirada_escuro": 0.01436,
    "lados_escuro": {
@@ -4110,7 +4110,7 @@
     130.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.1,
+   "segundos": 0.08,
    "papel": 189.0,
    "beirada_escuro": 0.0125,
    "lados_escuro": {
@@ -4288,7 +4288,7 @@
     130.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.11,
+   "segundos": 0.12,
    "papel": 189.0,
    "beirada_escuro": 0.0125,
    "lados_escuro": {
@@ -4471,7 +4471,7 @@
     131.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.15,
+   "segundos": 0.1,
    "papel": 189.0,
    "beirada_escuro": 0.00188,
    "lados_escuro": {
@@ -4533,7 +4533,7 @@
    "md5": "524ff30654d4a51c442a30dc85b679b0"
   },
   "C": {
-   "replica_diferenca_media": 4.78,
+   "replica_diferenca_media": 4.77,
    "nome": "novo (endireita antes, conta do ScanTailor)",
    "ordem": "endireitar_antes",
    "endireitar_como": "scantailor",
@@ -4543,9 +4543,9 @@
    "angulo_scantailor": 1.4375,
    "recorte": [
     0.0,
-    0.01075,
+    0.01327,
     1.0,
-    0.97282
+    0.97029
    ],
    "pagina_inteira_px": [
     1086,
@@ -4553,62 +4553,62 @@
    ],
    "tamanho_px": [
     1086,
-    1539
+    1535
    ],
    "tamanho_mm": [
     91.9,
-    130.3
+    130.0
    ],
    "replica_do_tamanho_confere": true,
    "segundos": 0.14,
    "papel": 189.0,
-   "beirada_escuro": 0.00905,
+   "beirada_escuro": 0.00848,
    "lados_escuro": {
     "esq": {
-     "mm": 1.43,
-     "mm_max": 29.71,
-     "cobre": 0.469
+     "mm": 1.56,
+     "mm_max": 7.54,
+     "cobre": 0.54
     },
     "dir": {
      "mm": 0.0,
-     "mm_max": 2.74,
+     "mm_max": 2.73,
      "cobre": 0.006
     },
     "topo": {
-     "mm": 0.91,
-     "mm_max": 26.97,
-     "cobre": 0.323
+     "mm": 0.0,
+     "mm_max": 26.9,
+     "cobre": 0.082
     },
     "pe": {
      "mm": 0.0,
-     "mm_max": 29.45,
+     "mm_max": 38.73,
      "cobre": 0.068
     }
    },
-   "beirada_pb": 0.00364,
+   "beirada_pb": 0.0025,
    "lados_pb": {
     "esq": {
      "mm": 1.04,
-     "mm_max": 19.15,
-     "cobre": 0.183
+     "mm_max": 1.95,
+     "cobre": 0.19
     },
     "dir": {
      "mm": 0.0,
-     "mm_max": 2.61,
+     "mm_max": 2.6,
      "cobre": 0.006
     },
     "topo": {
-     "mm": 0.78,
-     "mm_max": 13.55,
-     "cobre": 0.22
+     "mm": 0.0,
+     "mm_max": 15.21,
+     "cobre": 0.011
     },
     "pe": {
      "mm": 0.0,
-     "mm_max": 9.38,
+     "mm_max": 9.49,
      "cobre": 0.062
     }
    },
-   "cunha_branca": 0.00874,
+   "cunha_branca": 0.00871,
    "pecas": 878,
    "pecas_fora": 0,
    "pecas_partidas": 0,
@@ -4616,10 +4616,10 @@
    "folga_mm": {
     "esq": 0.68,
     "dir": 3.89,
-    "topo": 10.58,
+    "topo": 10.24,
     "pe": 0.0
    },
-   "md5": "b8e0a5b34cff78b600ca570e90b13715"
+   "md5": "22076aedc6ef1eb5d95d7c0d1f86ec8c"
   },
   "no_gabarito": false
  },
@@ -4654,7 +4654,7 @@
     132.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.09,
+   "segundos": 0.08,
    "papel": 140.0,
    "beirada_escuro": 0.01044,
    "lados_escuro": {
@@ -4743,7 +4743,7 @@
     132.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.12,
+   "segundos": 0.11,
    "papel": 140.0,
    "beirada_escuro": 0.0053,
    "lados_escuro": {
@@ -4832,7 +4832,7 @@
     130.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.17,
+   "segundos": 0.14,
    "papel": 140.0,
    "beirada_escuro": 0.00851,
    "lados_escuro": {
@@ -4926,7 +4926,7 @@
     267.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.17,
+   "segundos": 0.14,
    "papel": 255.0,
    "beirada_escuro": 0.0048,
    "lados_escuro": {
@@ -5015,7 +5015,7 @@
     267.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.41,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.00484,
    "lados_escuro": {
@@ -5104,7 +5104,7 @@
     277.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.64,
+   "segundos": 0.31,
    "papel": 255.0,
    "beirada_escuro": 0.00986,
    "lados_escuro": {
@@ -5198,7 +5198,7 @@
     271.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.22,
+   "segundos": 0.12,
    "papel": 255.0,
    "beirada_escuro": 0.00924,
    "lados_escuro": {
@@ -5287,7 +5287,7 @@
     271.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.49,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.00924,
    "lados_escuro": {
@@ -5376,7 +5376,7 @@
     271.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.54,
+   "segundos": 0.27,
    "papel": 255.0,
    "beirada_escuro": 0.00924,
    "lados_escuro": {
@@ -5470,7 +5470,7 @@
     453.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.52,
+   "segundos": 0.29,
    "papel": 196.0,
    "beirada_escuro": 0.04252,
    "lados_escuro": {
@@ -5559,7 +5559,7 @@
     453.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.07,
+   "segundos": 0.6,
    "papel": 196.0,
    "beirada_escuro": 0.03233,
    "lados_escuro": {
@@ -5621,7 +5621,7 @@
    "md5": "c371451d4bc82b8c152bf9072117a5f6"
   },
   "C": {
-   "replica_diferenca_media": 2.17,
+   "replica_diferenca_media": 2.0,
    "nome": "novo (endireita antes, conta do ScanTailor)",
    "ordem": "endireitar_antes",
    "endireitar_como": "scantailor",
@@ -5633,7 +5633,7 @@
     0.02254,
     0.0,
     0.95813,
-    1.0
+    0.99875
    ],
    "pagina_inteira_px": [
     4167,
@@ -5641,73 +5641,73 @@
    ],
    "tamanho_px": [
     3993,
-    5363
+    5356
    ],
    "tamanho_mm": [
     338.1,
-    454.1
+    453.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.63,
+   "segundos": 0.85,
    "papel": 196.0,
-   "beirada_escuro": 0.01923,
+   "beirada_escuro": 0.01926,
    "lados_escuro": {
     "esq": {
      "mm": 4.99,
-     "mm_max": 168.91,
-     "cobre": 0.234
+     "mm_max": 169.15,
+     "cobre": 0.235
     },
     "dir": {
      "mm": 2.72,
-     "mm_max": 169.37,
+     "mm_max": 169.15,
      "cobre": 0.171
     },
     "topo": {
      "mm": 2.72,
-     "mm_max": 71.74,
-     "cobre": 0.119
+     "mm_max": 71.65,
+     "cobre": 0.118
     },
     "pe": {
-     "mm": 7.27,
-     "mm_max": 74.47,
+     "mm": 7.71,
+     "mm_max": 74.37,
      "cobre": 1.0
     }
    },
-   "beirada_pb": 0.01944,
+   "beirada_pb": 0.0194,
    "lados_pb": {
     "esq": {
      "mm": 4.99,
-     "mm_max": 168.91,
-     "cobre": 0.236
+     "mm_max": 169.15,
+     "cobre": 0.235
     },
     "dir": {
      "mm": 2.72,
-     "mm_max": 169.37,
+     "mm_max": 169.15,
      "cobre": 0.172
     },
     "topo": {
      "mm": 2.72,
-     "mm_max": 72.2,
-     "cobre": 0.119
+     "mm_max": 71.65,
+     "cobre": 0.121
     },
     "pe": {
-     "mm": 7.72,
-     "mm_max": 74.92,
+     "mm": 7.71,
+     "mm_max": 74.82,
      "cobre": 1.0
     }
    },
-   "cunha_branca": 0.00489,
+   "cunha_branca": 0.00402,
    "pecas": 397,
-   "pecas_fora": 0,
+   "pecas_fora": 1,
    "pecas_partidas": 2,
-   "tinta_perdida": 0.003,
+   "tinta_perdida": 0.00354,
    "folga_mm": {
     "esq": 0.0,
     "dir": 4.09,
     "topo": 12.03,
     "pe": 0.0
    },
-   "md5": "f9e09f35bdd6e184b1f188c40830bb6c"
+   "md5": "3a8d45373fba044c6b2b2e8c96ee55a2"
   },
   "no_gabarito": false
  },
@@ -5742,7 +5742,7 @@
     462.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.62,
+   "segundos": 0.29,
    "papel": 210.0,
    "beirada_escuro": 0.02608,
    "lados_escuro": {
@@ -5831,7 +5831,7 @@
     462.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.16,
+   "segundos": 0.59,
    "papel": 210.0,
    "beirada_escuro": 0.02608,
    "lados_escuro": {
@@ -5920,7 +5920,7 @@
     462.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.35,
+   "segundos": 0.73,
    "papel": 210.0,
    "beirada_escuro": 0.02608,
    "lados_escuro": {
@@ -6014,7 +6014,7 @@
     465.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.28,
    "papel": 214.0,
    "beirada_escuro": 0.07947,
    "lados_escuro": {
@@ -6103,7 +6103,7 @@
     465.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.96,
+   "segundos": 0.58,
    "papel": 214.0,
    "beirada_escuro": 0.07947,
    "lados_escuro": {
@@ -6192,7 +6192,7 @@
     465.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.3,
+   "segundos": 0.73,
    "papel": 214.0,
    "beirada_escuro": 0.07947,
    "lados_escuro": {
@@ -6286,7 +6286,7 @@
     457.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.53,
+   "segundos": 0.32,
    "papel": 214.0,
    "beirada_escuro": 0.07316,
    "lados_escuro": {
@@ -6375,7 +6375,7 @@
     457.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.83,
+   "segundos": 0.59,
    "papel": 214.0,
    "beirada_escuro": 0.07316,
    "lados_escuro": {
@@ -6464,7 +6464,7 @@
     457.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.34,
+   "segundos": 0.72,
    "papel": 214.0,
    "beirada_escuro": 0.07316,
    "lados_escuro": {
@@ -6558,7 +6558,7 @@
     463.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.37,
+   "segundos": 0.3,
    "papel": 211.0,
    "beirada_escuro": 0.05831,
    "lados_escuro": {
@@ -6647,7 +6647,7 @@
     463.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.74,
+   "segundos": 0.61,
    "papel": 211.0,
    "beirada_escuro": 0.05831,
    "lados_escuro": {
@@ -6736,7 +6736,7 @@
     463.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.15,
+   "segundos": 0.77,
    "papel": 211.0,
    "beirada_escuro": 0.05831,
    "lados_escuro": {
@@ -6830,7 +6830,7 @@
     460.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.3,
    "papel": 210.0,
    "beirada_escuro": 0.06881,
    "lados_escuro": {
@@ -6919,7 +6919,7 @@
     460.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.08,
+   "segundos": 0.6,
    "papel": 210.0,
    "beirada_escuro": 0.06881,
    "lados_escuro": {
@@ -7008,7 +7008,7 @@
     460.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.83,
+   "segundos": 0.75,
    "papel": 210.0,
    "beirada_escuro": 0.06881,
    "lados_escuro": {
@@ -7102,7 +7102,7 @@
     264.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.2,
+   "segundos": 0.19,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7191,7 +7191,7 @@
     264.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.37,
+   "segundos": 0.28,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7280,7 +7280,7 @@
     246.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.49,
+   "segundos": 0.32,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7374,7 +7374,7 @@
     251.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.26,
+   "segundos": 0.2,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7463,7 +7463,7 @@
     251.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.48,
+   "segundos": 0.29,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7552,7 +7552,7 @@
     251.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.56,
+   "segundos": 0.33,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7646,7 +7646,7 @@
     264.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.32,
+   "segundos": 0.19,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7735,7 +7735,7 @@
     264.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.28,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -7824,7 +7824,7 @@
     264.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.51,
+   "segundos": 0.31,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8007,7 +8007,7 @@
     243.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.48,
+   "segundos": 0.33,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8096,7 +8096,7 @@
     242.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.43,
+   "segundos": 0.32,
    "papel": 252.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8190,7 +8190,7 @@
     242.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.19,
+   "segundos": 0.12,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8279,7 +8279,7 @@
     242.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.31,
+   "segundos": 0.23,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8368,7 +8368,7 @@
     242.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.29,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8462,7 +8462,7 @@
     297.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.17,
+   "segundos": 0.1,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8551,7 +8551,7 @@
     297.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.28,
+   "segundos": 0.22,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8640,7 +8640,7 @@
     297.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.33,
+   "segundos": 0.2,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8734,7 +8734,7 @@
     185.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.19,
+   "segundos": 0.11,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8823,7 +8823,7 @@
     185.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.45,
+   "segundos": 0.22,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -8912,7 +8912,7 @@
     185.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.31,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9006,7 +9006,7 @@
     297.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.13,
+   "segundos": 0.11,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9095,7 +9095,7 @@
     297.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.31,
+   "segundos": 0.22,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9184,7 +9184,7 @@
     297.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.33,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9278,7 +9278,7 @@
     192.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.14,
+   "segundos": 0.11,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9367,7 +9367,7 @@
     192.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.35,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9456,7 +9456,7 @@
     192.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.38,
+   "segundos": 0.28,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9550,7 +9550,7 @@
     213.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.18,
+   "segundos": 0.12,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9639,7 +9639,7 @@
     213.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.34,
+   "segundos": 0.23,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9728,7 +9728,7 @@
     213.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.43,
+   "segundos": 0.25,
    "papel": 255.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -9822,7 +9822,7 @@
     451.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.89,
+   "segundos": 0.69,
    "papel": 212.0,
    "beirada_escuro": 0.00016,
    "lados_escuro": {
@@ -9911,7 +9911,7 @@
     451.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.38,
+   "segundos": 0.82,
    "papel": 212.0,
    "beirada_escuro": 0.00019,
    "lados_escuro": {
@@ -10000,7 +10000,7 @@
     463.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.78,
+   "segundos": 1.03,
    "papel": 212.0,
    "beirada_escuro": 0.00021,
    "lados_escuro": {
@@ -10094,7 +10094,7 @@
     445.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.91,
+   "segundos": 0.63,
    "papel": 212.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10183,7 +10183,7 @@
     445.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.3,
+   "segundos": 1.0,
    "papel": 212.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10272,7 +10272,7 @@
     466.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.65,
+   "segundos": 1.18,
    "papel": 212.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10366,7 +10366,7 @@
     445.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.92,
+   "segundos": 0.67,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10455,7 +10455,7 @@
     445.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.41,
+   "segundos": 0.92,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10544,7 +10544,7 @@
     461.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.45,
+   "segundos": 1.36,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10638,7 +10638,7 @@
     476.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.68,
+   "segundos": 0.56,
    "papel": 206.0,
    "beirada_escuro": 0.00496,
    "lados_escuro": {
@@ -10727,7 +10727,7 @@
     476.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.05,
+   "segundos": 0.99,
    "papel": 206.0,
    "beirada_escuro": 0.00178,
    "lados_escuro": {
@@ -10816,7 +10816,7 @@
     476.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.55,
+   "segundos": 1.13,
    "papel": 206.0,
    "beirada_escuro": 0.00406,
    "lados_escuro": {
@@ -10910,7 +10910,7 @@
     450.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.88,
+   "segundos": 0.63,
    "papel": 217.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -10999,7 +10999,7 @@
     450.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.98,
+   "segundos": 1.09,
    "papel": 217.0,
    "beirada_escuro": 0.00012,
    "lados_escuro": {
@@ -11088,7 +11088,7 @@
     472.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.07,
+   "segundos": 1.29,
    "papel": 217.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11182,7 +11182,7 @@
     476.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.4,
+   "segundos": 0.45,
    "papel": 225.0,
    "beirada_escuro": 0.02267,
    "lados_escuro": {
@@ -11360,7 +11360,7 @@
     476.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.51,
+   "segundos": 1.02,
    "papel": 225.0,
    "beirada_escuro": 0.08246,
    "lados_escuro": {
@@ -11454,7 +11454,7 @@
     491.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.65,
+   "segundos": 0.51,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11543,7 +11543,7 @@
     491.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.13,
+   "segundos": 1.02,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11632,7 +11632,7 @@
     501.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.5,
+   "segundos": 1.15,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11726,7 +11726,7 @@
     473.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.69,
+   "segundos": 0.64,
    "papel": 223.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11815,7 +11815,7 @@
     473.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.29,
+   "segundos": 0.98,
    "papel": 223.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11904,7 +11904,7 @@
     473.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.54,
+   "segundos": 1.19,
    "papel": 223.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -11998,7 +11998,7 @@
     424.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.53,
+   "segundos": 0.56,
    "papel": 222.0,
    "beirada_escuro": 0.00335,
    "lados_escuro": {
@@ -12087,7 +12087,7 @@
     424.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.18,
+   "segundos": 0.94,
    "papel": 222.0,
    "beirada_escuro": 0.01188,
    "lados_escuro": {
@@ -12176,7 +12176,7 @@
     424.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.43,
+   "segundos": 1.27,
    "papel": 222.0,
    "beirada_escuro": 0.01188,
    "lados_escuro": {
@@ -12270,7 +12270,7 @@
     487.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.66,
+   "segundos": 0.55,
    "papel": 224.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -12359,7 +12359,7 @@
     487.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.23,
+   "segundos": 0.72,
    "papel": 224.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -12448,7 +12448,7 @@
     487.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.46,
+   "segundos": 0.92,
    "papel": 224.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -12542,7 +12542,7 @@
     491.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.69,
+   "segundos": 0.43,
    "papel": 227.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -12631,7 +12631,7 @@
     491.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.96,
+   "segundos": 0.87,
    "papel": 227.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -12720,7 +12720,7 @@
     491.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.39,
+   "segundos": 0.89,
    "papel": 227.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -12814,7 +12814,7 @@
     484.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.67,
+   "segundos": 0.4,
    "papel": 228.0,
    "beirada_escuro": 0.01084,
    "lados_escuro": {
@@ -12903,7 +12903,7 @@
     484.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.08,
+   "segundos": 0.77,
    "papel": 228.0,
    "beirada_escuro": 0.01057,
    "lados_escuro": {
@@ -12992,7 +12992,7 @@
     484.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.19,
+   "segundos": 0.97,
    "papel": 228.0,
    "beirada_escuro": 0.01057,
    "lados_escuro": {
@@ -13086,7 +13086,7 @@
     482.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.7,
+   "segundos": 0.43,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -13175,7 +13175,7 @@
     482.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.24,
+   "segundos": 1.05,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -13264,7 +13264,7 @@
     482.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.25,
+   "segundos": 1.29,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -13358,7 +13358,7 @@
     437.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.57,
+   "segundos": 0.44,
    "papel": 232.0,
    "beirada_escuro": 0.05165,
    "lados_escuro": {
@@ -13447,7 +13447,7 @@
     437.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.9,
+   "segundos": 0.73,
    "papel": 232.0,
    "beirada_escuro": 0.05165,
    "lados_escuro": {
@@ -13536,7 +13536,7 @@
     437.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.24,
+   "segundos": 0.82,
    "papel": 232.0,
    "beirada_escuro": 0.05165,
    "lados_escuro": {
@@ -13630,7 +13630,7 @@
     447.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.48,
+   "segundos": 0.34,
    "papel": 233.0,
    "beirada_escuro": 0.08637,
    "lados_escuro": {
@@ -13719,7 +13719,7 @@
     447.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.08,
+   "segundos": 0.68,
    "papel": 233.0,
    "beirada_escuro": 0.08637,
    "lados_escuro": {
@@ -13808,7 +13808,7 @@
     447.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.25,
+   "segundos": 0.75,
    "papel": 233.0,
    "beirada_escuro": 0.08637,
    "lados_escuro": {
@@ -13902,7 +13902,7 @@
     445.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.37,
+   "segundos": 0.4,
    "papel": 230.0,
    "beirada_escuro": 0.09922,
    "lados_escuro": {
@@ -13991,7 +13991,7 @@
     445.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.06,
+   "segundos": 0.63,
    "papel": 230.0,
    "beirada_escuro": 0.09922,
    "lados_escuro": {
@@ -14080,7 +14080,7 @@
     445.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.13,
+   "segundos": 0.89,
    "papel": 230.0,
    "beirada_escuro": 0.09922,
    "lados_escuro": {
@@ -14174,7 +14174,7 @@
     448.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.56,
+   "segundos": 0.38,
    "papel": 228.0,
    "beirada_escuro": 0.07114,
    "lados_escuro": {
@@ -14263,7 +14263,7 @@
     448.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.76,
+   "segundos": 0.62,
    "papel": 228.0,
    "beirada_escuro": 0.07114,
    "lados_escuro": {
@@ -14352,7 +14352,7 @@
     448.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.87,
+   "segundos": 0.84,
    "papel": 228.0,
    "beirada_escuro": 0.07114,
    "lados_escuro": {
@@ -14446,7 +14446,7 @@
     330.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.27,
+   "segundos": 0.2,
    "papel": 215.0,
    "beirada_escuro": 0.00058,
    "lados_escuro": {
@@ -14535,7 +14535,7 @@
     330.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.56,
+   "segundos": 0.32,
    "papel": 215.0,
    "beirada_escuro": 0.0006,
    "lados_escuro": {
@@ -14624,7 +14624,7 @@
     330.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.53,
+   "segundos": 0.38,
    "papel": 215.0,
    "beirada_escuro": 0.00056,
    "lados_escuro": {
@@ -14718,7 +14718,7 @@
     330.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.21,
+   "segundos": 0.19,
    "papel": 178.0,
    "beirada_escuro": 0.01033,
    "lados_escuro": {
@@ -14807,7 +14807,7 @@
     330.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.52,
+   "segundos": 0.29,
    "papel": 178.0,
    "beirada_escuro": 0.0127,
    "lados_escuro": {
@@ -14896,7 +14896,7 @@
     330.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.48,
+   "segundos": 0.32,
    "papel": 178.0,
    "beirada_escuro": 0.0127,
    "lados_escuro": {
@@ -14990,7 +14990,7 @@
     331.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.21,
+   "segundos": 0.16,
    "papel": 218.0,
    "beirada_escuro": 0.00458,
    "lados_escuro": {
@@ -15079,7 +15079,7 @@
     331.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.47,
+   "segundos": 0.3,
    "papel": 218.0,
    "beirada_escuro": 0.00648,
    "lados_escuro": {
@@ -15168,7 +15168,7 @@
     331.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.54,
+   "segundos": 0.33,
    "papel": 218.0,
    "beirada_escuro": 0.00648,
    "lados_escuro": {
@@ -15262,7 +15262,7 @@
     296.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.31,
+   "segundos": 0.21,
    "papel": 255.0,
    "beirada_escuro": 0.18635,
    "lados_escuro": {
@@ -15351,7 +15351,7 @@
     296.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.63,
+   "segundos": 0.33,
    "papel": 255.0,
    "beirada_escuro": 0.18447,
    "lados_escuro": {
@@ -15440,7 +15440,7 @@
     290.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.67,
+   "segundos": 0.39,
    "papel": 255.0,
    "beirada_escuro": 0.16814,
    "lados_escuro": {
@@ -15534,7 +15534,7 @@
     296.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.27,
+   "segundos": 0.2,
    "papel": 255.0,
    "beirada_escuro": 0.33093,
    "lados_escuro": {
@@ -15623,7 +15623,7 @@
     296.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.45,
+   "segundos": 0.36,
    "papel": 255.0,
    "beirada_escuro": 0.32321,
    "lados_escuro": {
@@ -15712,7 +15712,7 @@
     295.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.63,
+   "segundos": 0.41,
    "papel": 255.0,
    "beirada_escuro": 0.3202,
    "lados_escuro": {
@@ -15806,7 +15806,7 @@
     234.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.89,
+   "segundos": 1.08,
    "papel": 213.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -15895,7 +15895,7 @@
     234.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.58,
+   "segundos": 1.21,
    "papel": 213.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -15984,7 +15984,7 @@
     234.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.88,
+   "segundos": 1.25,
    "papel": 213.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16078,7 +16078,7 @@
     178.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.0,
+   "segundos": 1.08,
    "papel": 213.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16167,7 +16167,7 @@
     178.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.93,
+   "segundos": 1.21,
    "papel": 213.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16256,7 +16256,7 @@
     178.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.44,
+   "segundos": 1.24,
    "papel": 213.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16350,7 +16350,7 @@
     173.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.14,
+   "segundos": 1.16,
    "papel": 192.0,
    "beirada_escuro": 0.18415,
    "lados_escuro": {
@@ -16439,7 +16439,7 @@
     173.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.26,
+   "segundos": 1.71,
    "papel": 192.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16528,7 +16528,7 @@
     173.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.19,
+   "segundos": 0.97,
    "papel": 192.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16622,7 +16622,7 @@
     190.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.23,
+   "segundos": 1.07,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16711,7 +16711,7 @@
     190.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.1,
+   "segundos": 1.68,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16800,7 +16800,7 @@
     190.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.26,
+   "segundos": 0.99,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16894,7 +16894,7 @@
     146.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.97,
+   "segundos": 1.24,
    "papel": 201.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -16983,7 +16983,7 @@
     146.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.33,
+   "segundos": 1.41,
    "papel": 201.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17072,7 +17072,7 @@
     146.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.25,
+   "segundos": 1.55,
    "papel": 201.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17166,7 +17166,7 @@
     175.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.97,
+   "segundos": 1.03,
    "papel": 210.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17255,7 +17255,7 @@
     175.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.87,
+   "segundos": 1.0,
    "papel": 210.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17344,7 +17344,7 @@
     175.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.92,
+   "segundos": 1.26,
    "papel": 210.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17438,7 +17438,7 @@
     148.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.78,
+   "segundos": 0.73,
    "papel": 217.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17527,7 +17527,7 @@
     148.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.88,
+   "segundos": 1.08,
    "papel": 217.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17616,7 +17616,7 @@
     148.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.97,
+   "segundos": 1.03,
    "papel": 217.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17710,7 +17710,7 @@
     156.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.62,
+   "segundos": 0.7,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17799,7 +17799,7 @@
     156.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.87,
+   "segundos": 1.02,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17888,7 +17888,7 @@
     156.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.99,
+   "segundos": 0.81,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -17982,7 +17982,7 @@
     152.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.98,
+   "segundos": 1.02,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18071,7 +18071,7 @@
     152.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.0,
+   "segundos": 0.87,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18160,7 +18160,7 @@
     152.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.03,
+   "segundos": 0.96,
    "papel": 214.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18254,7 +18254,7 @@
     161.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.58,
+   "segundos": 0.57,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18343,7 +18343,7 @@
     161.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.63,
+   "segundos": 0.52,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18432,7 +18432,7 @@
     161.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.76,
+   "segundos": 0.57,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18526,7 +18526,7 @@
     155.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.5,
+   "segundos": 0.7,
    "papel": 212.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18615,7 +18615,7 @@
     155.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.66,
+   "segundos": 0.65,
    "papel": 212.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18704,7 +18704,7 @@
     155.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.63,
+   "segundos": 0.58,
    "papel": 212.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18798,7 +18798,7 @@
     155.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.72,
+   "segundos": 0.48,
    "papel": 208.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -18976,7 +18976,7 @@
     155.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.58,
+   "segundos": 0.57,
    "papel": 208.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19070,7 +19070,7 @@
     153.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.6,
+   "segundos": 0.52,
    "papel": 207.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19159,7 +19159,7 @@
     153.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.54,
+   "segundos": 0.61,
    "papel": 207.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19248,7 +19248,7 @@
     153.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.56,
+   "segundos": 0.86,
    "papel": 207.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19342,7 +19342,7 @@
     177.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.61,
+   "segundos": 0.52,
    "papel": 218.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19431,7 +19431,7 @@
     177.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.71,
+   "segundos": 0.67,
    "papel": 218.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19520,7 +19520,7 @@
     177.4
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.86,
+   "segundos": 0.95,
    "papel": 218.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19614,7 +19614,7 @@
     154.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.39,
+   "segundos": 0.44,
    "papel": 222.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19703,7 +19703,7 @@
     154.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.62,
+   "segundos": 0.55,
    "papel": 222.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19792,7 +19792,7 @@
     153.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.61,
+   "segundos": 0.71,
    "papel": 222.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -19886,7 +19886,7 @@
     240.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.4,
+   "segundos": 1.1,
    "papel": 189.0,
    "beirada_escuro": 0.49152,
    "lados_escuro": {
@@ -19975,7 +19975,7 @@
     240.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.13,
+   "segundos": 1.7,
    "papel": 190.0,
    "beirada_escuro": 0.47301,
    "lados_escuro": {
@@ -20064,7 +20064,7 @@
     206.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.86,
+   "segundos": 1.47,
    "papel": 189.0,
    "beirada_escuro": 0.35426,
    "lados_escuro": {
@@ -20158,7 +20158,7 @@
     209.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.19,
+   "segundos": 0.87,
    "papel": 216.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20247,7 +20247,7 @@
     209.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.38,
+   "segundos": 1.13,
    "papel": 216.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20336,7 +20336,7 @@
     209.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.37,
+   "segundos": 1.13,
    "papel": 216.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20430,7 +20430,7 @@
     175.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.71,
+   "segundos": 0.82,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20519,7 +20519,7 @@
     175.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.69,
+   "segundos": 0.66,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20608,7 +20608,7 @@
     175.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.72,
+   "segundos": 0.8,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20702,7 +20702,7 @@
     150.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.76,
+   "segundos": 0.79,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20791,7 +20791,7 @@
     148.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.92,
+   "segundos": 0.77,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20880,7 +20880,7 @@
     113.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.05,
+   "segundos": 0.98,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -20974,7 +20974,7 @@
     147.3
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.27,
+   "segundos": 0.93,
    "papel": 227.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21063,7 +21063,7 @@
     146.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.31,
+   "segundos": 1.2,
    "papel": 227.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21152,7 +21152,7 @@
     146.7
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.05,
+   "segundos": 1.52,
    "papel": 227.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21246,7 +21246,7 @@
     136.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.07,
+   "segundos": 1.04,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21335,7 +21335,7 @@
     136.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.05,
+   "segundos": 1.16,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21424,7 +21424,7 @@
     136.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.32,
+   "segundos": 1.1,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21518,7 +21518,7 @@
     214.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.57,
+   "segundos": 0.81,
    "papel": 200.0,
    "beirada_escuro": 0.00016,
    "lados_escuro": {
@@ -21607,7 +21607,7 @@
     214.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.72,
+   "segundos": 0.73,
    "papel": 200.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21696,7 +21696,7 @@
     213.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.98,
+   "segundos": 0.85,
    "papel": 200.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21790,7 +21790,7 @@
     191.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.06,
+   "segundos": 0.83,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21879,7 +21879,7 @@
     191.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.76,
+   "segundos": 1.08,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -21968,7 +21968,7 @@
     191.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.02,
+   "segundos": 0.93,
    "papel": 226.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22062,7 +22062,7 @@
     193.9
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.85,
+   "segundos": 0.74,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22151,7 +22151,7 @@
     193.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.1,
+   "segundos": 0.75,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22240,7 +22240,7 @@
     193.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.15,
+   "segundos": 0.89,
    "papel": 220.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22334,7 +22334,7 @@
     196.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.98,
+   "segundos": 0.74,
    "papel": 187.0,
    "beirada_escuro": 0.00057,
    "lados_escuro": {
@@ -22423,7 +22423,7 @@
     196.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.86,
+   "segundos": 0.93,
    "papel": 187.0,
    "beirada_escuro": 0.00056,
    "lados_escuro": {
@@ -22512,7 +22512,7 @@
     198.6
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.0,
+   "segundos": 0.78,
    "papel": 187.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22606,7 +22606,7 @@
     194.1
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.88,
+   "segundos": 0.93,
    "papel": 201.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22695,7 +22695,7 @@
     193.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.1,
+   "segundos": 0.89,
    "papel": 200.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22784,7 +22784,7 @@
     193.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.02,
+   "segundos": 0.96,
    "papel": 200.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22878,7 +22878,7 @@
     192.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.98,
+   "segundos": 0.92,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -22967,7 +22967,7 @@
     192.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 1.01,
+   "segundos": 0.89,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -23056,7 +23056,7 @@
     192.8
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.92,
+   "segundos": 1.08,
    "papel": 215.0,
    "beirada_escuro": 0.0,
    "lados_escuro": {
@@ -23150,7 +23150,7 @@
     106.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.72,
+   "segundos": 0.6,
    "papel": 212.0,
    "beirada_escuro": 0.01539,
    "lados_escuro": {
@@ -23239,7 +23239,7 @@
     106.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.75,
+   "segundos": 0.55,
    "papel": 212.0,
    "beirada_escuro": 0.01539,
    "lados_escuro": {
@@ -23328,7 +23328,7 @@
     106.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.64,
+   "segundos": 0.56,
    "papel": 212.0,
    "beirada_escuro": 0.01539,
    "lados_escuro": {
@@ -23422,7 +23422,7 @@
     106.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.55,
+   "segundos": 0.92,
    "papel": 211.0,
    "beirada_escuro": 0.08159,
    "lados_escuro": {
@@ -23511,7 +23511,7 @@
     106.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.76,
+   "segundos": 0.57,
    "papel": 211.0,
    "beirada_escuro": 0.08159,
    "lados_escuro": {
@@ -23600,7 +23600,7 @@
     106.5
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.53,
+   "segundos": 0.65,
    "papel": 211.0,
    "beirada_escuro": 0.08159,
    "lados_escuro": {
@@ -23694,7 +23694,7 @@
     107.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.79,
+   "segundos": 0.81,
    "papel": 206.0,
    "beirada_escuro": 0.01905,
    "lados_escuro": {
@@ -23783,7 +23783,7 @@
     107.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.78,
+   "segundos": 0.53,
    "papel": 206.0,
    "beirada_escuro": 0.01905,
    "lados_escuro": {
@@ -23872,7 +23872,7 @@
     107.0
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.83,
+   "segundos": 0.7,
    "papel": 206.0,
    "beirada_escuro": 0.01905,
    "lados_escuro": {
@@ -23966,7 +23966,7 @@
     106.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.76,
+   "segundos": 0.57,
    "papel": 206.0,
    "beirada_escuro": 0.08305,
    "lados_escuro": {
@@ -24055,7 +24055,7 @@
     106.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.86,
+   "segundos": 0.65,
    "papel": 206.0,
    "beirada_escuro": 0.07648,
    "lados_escuro": {
@@ -24144,7 +24144,7 @@
     105.2
    ],
    "replica_do_tamanho_confere": true,
-   "segundos": 0.59,
+   "segundos": 0.61,
    "papel": 206.0,
    "beirada_escuro": 0.06557,
    "lados_escuro": {

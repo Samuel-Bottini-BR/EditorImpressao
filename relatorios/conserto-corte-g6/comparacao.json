@@ -5,8 +5,10 @@
   "antiphon_p088__inteira",
   "antiphon_p260__inteira",
   "antiphonal1547_p252__inteira",
+  "camoes_p066__inteira",
   "camoes_p104__inteira",
   "cursus_p003__inteira",
+  "egenloff_p003__inteira",
   "matematica_p032__inteira",
   "pesel_p021__inteira",
   "rariora_p155__inteira"
@@ -200,46 +202,46 @@
     "angulo": 0.5
    },
    "nova_consertada": {
-    "beirada_escuro": 0.05334,
+    "beirada_escuro": 0.03375,
     "tinta_perdida": 2e-05,
     "pecas_partidas": 0,
     "pecas_fora": 0,
     "tamanho_mm": [
-     463.6,
-     603.3
+     462.8,
+     591.0
     ],
     "lados_escuro": {
      "esq": {
       "mm": 0.0,
-      "mm_max": 228.66,
-      "cobre": 0.055
+      "mm_max": 228.71,
+      "cobre": 0.035
      },
      "dir": {
       "mm": 0.0,
-      "mm_max": 231.68,
-      "cobre": 0.083
+      "mm_max": 231.66,
+      "cobre": 0.064
      },
      "topo": {
       "mm": 0.0,
-      "mm_max": 13.27,
-      "cobre": 0.044
+      "mm_max": 13.0,
+      "cobre": 0.045
      },
      "pe": {
-      "mm": 34.99,
-      "mm_max": 35.6,
-      "cobre": 0.993
+      "mm": 22.46,
+      "mm_max": 23.64,
+      "cobre": 0.995
      }
     },
     "recorte": [
+     0.00167,
      0.0,
-     0.0,
-     1.0,
-     0.97625
+     0.99833,
+     0.95625
     ],
     "angulo": 0.5
    },
    "contra_hoje": "melhorou",
-   "contra_a_antiga": "PIOROU",
+   "contra_a_antiga": "igual",
    "identica_a_de_hoje": false
   },
   "antiphonal1547_p006__inteira": {
@@ -1925,47 +1927,47 @@
     "angulo": 1.438
    },
    "nova_consertada": {
-    "beirada_escuro": 0.00905,
+    "beirada_escuro": 0.00848,
     "tinta_perdida": 0.00043,
     "pecas_partidas": 0,
     "pecas_fora": 0,
     "tamanho_mm": [
      91.9,
-     130.3
+     130.0
     ],
     "lados_escuro": {
      "esq": {
-      "mm": 1.43,
-      "mm_max": 29.71,
-      "cobre": 0.469
+      "mm": 1.56,
+      "mm_max": 7.54,
+      "cobre": 0.54
      },
      "dir": {
       "mm": 0.0,
-      "mm_max": 2.74,
+      "mm_max": 2.73,
       "cobre": 0.006
      },
      "topo": {
-      "mm": 0.91,
-      "mm_max": 26.97,
-      "cobre": 0.323
+      "mm": 0.0,
+      "mm_max": 26.9,
+      "cobre": 0.082
      },
      "pe": {
       "mm": 0.0,
-      "mm_max": 29.45,
+      "mm_max": 38.73,
       "cobre": 0.068
      }
     },
     "recorte": [
      0.0,
-     0.01075,
+     0.01327,
      1.0,
-     0.97282
+     0.97029
     ],
     "angulo": 1.438
    },
    "contra_hoje": "igual",
    "contra_a_antiga": "PIOROU",
-   "identica_a_de_hoje": true
+   "identica_a_de_hoje": false
   },
   "camoes_p104__inteira": {
    "antiga_B": {
@@ -2385,33 +2387,33 @@
     "angulo": -1.562
    },
    "nova_consertada": {
-    "beirada_escuro": 0.01923,
-    "tinta_perdida": 0.003,
+    "beirada_escuro": 0.01926,
+    "tinta_perdida": 0.00354,
     "pecas_partidas": 2,
-    "pecas_fora": 0,
+    "pecas_fora": 1,
     "tamanho_mm": [
      338.1,
-     454.1
+     453.5
     ],
     "lados_escuro": {
      "esq": {
       "mm": 4.99,
-      "mm_max": 168.91,
-      "cobre": 0.234
+      "mm_max": 169.15,
+      "cobre": 0.235
      },
      "dir": {
       "mm": 2.72,
-      "mm_max": 169.37,
+      "mm_max": 169.15,
       "cobre": 0.171
      },
      "topo": {
       "mm": 2.72,
-      "mm_max": 71.74,
-      "cobre": 0.119
+      "mm_max": 71.65,
+      "cobre": 0.118
      },
      "pe": {
-      "mm": 7.27,
-      "mm_max": 74.47,
+      "mm": 7.71,
+      "mm_max": 74.37,
       "cobre": 1.0
      }
     },
@@ -2419,13 +2421,13 @@
      0.02254,
      0.0,
      0.95813,
-     1.0
+     0.99875
     ],
     "angulo": -1.562
    },
    "contra_hoje": "igual",
-   "contra_a_antiga": "melhorou",
-   "identica_a_de_hoje": true
+   "contra_a_antiga": "PIOROU",
+   "identica_a_de_hoje": false
   },
   "egenloff_p007__inteira": {
    "antiga_B": {

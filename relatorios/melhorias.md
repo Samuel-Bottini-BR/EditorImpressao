@@ -3163,23 +3163,70 @@ cópias JPEG a 300 DPI; `experiencia.json`; cada linha é uma variante, comparad
 | `bS` | só a borda sólida contada nos pontos de imagem de verdade, no lugar da conta de hoje | conserta Cursus 3, Matemática 32 e Camões 104; **não serve sozinha**: Marial 7 ganha 2 mm de faixa à direita (0,06% → 0,21%) e Camões 66 piora (1,0% → 1,6%), porque a conta nova apaga a coluna que o apagar das riscas usava; não conserta os Antiphon |
 | `bSR` | idem, mais a risca de dobra contada na imagem de verdade | **não serve**: Escola 197 perde 3,9% da tinta, Palatino 104 2,2% |
 | `bSD` | idem, e o fundo escuro conta como borda sólida | **não serve**: muda 13 páginas; Matemática 32 fica com 229 mm de altura e 3 peças de fora; é a "página dentro da borda preta" do item 2.13, não este conserto |
-| `pZS`, `pZSP`, `pZSRP` | a cunha "não existe": limiar local com a cunha preenchida, tinta da cunha zerada, peça que encosta na cunha não é peça | conserta as 5; **não serve**: muda 20 e poucas páginas, o Graduale 221 volta a 0,21% de tinta de fora, Egenloff 3 a 4,4%, Siebmacher 9 a 10% |
+| `pZS`, `pZSP`, `pZSRP` | a cunha "não existe": limiar local com a cunha preenchida, tinta da cunha zerada, peça que encosta na cunha não é peça | conserta as 5; **não serve**: muda mais de 20 páginas, o Graduale 221 volta a 0,21% de tinta de fora, Egenloff 3 a 4,4%, Siebmacher 9 a 10% |
 | `h` | preencher a cunha só onde ela encosta em fundo escuro | conserta as 5; **não serve**: muda 18; Egenloff 3 4,4%, Camões 66 perde 0,55% |
 | `bUA` | soma ao apagar de hoje + tira ANTES a tinta do degrau em fundo escuro | **não serve**: Egenloff 3 4,4%, Siebmacher 9 10% (nessas a tinta do degrau é o que faz o apagar das riscas pegar a borda) |
 | `bUaB` | a adotada, mais seguir o "borrão" da borda inclinada depois dos 80% | **não serve**: Camões 66 perde 0,55% da tinta (4 peças partidas) |
-| **`bUa` = `bN`** | **a adotada** (abaixo) | muda 8 páginas, nenhuma piora |
+| `bUa` | soma ao apagar de hoje as linhas e colunas de borda sólida contadas na imagem de verdade, e tira NO FIM a tinta do degrau em fundo escuro | muda 8 páginas, nenhuma piora; **faltou o Antiphon 260** na medida com o programa (ver abaixo) |
+| `bUa` + "ponte" | para as peças, ligar à beirada a cunha que está no meio de fundo escuro | **não adiantou**: o contorno que empurra o pé do Antiphon 260 está ao lado de papel claro, não no meio do preto |
+| **`bN`** | **a adotada**: `bUa` + peça grande colada na cunha não é peça (abaixo) | muda 9 páginas, nenhuma piora |
+
+**A cópia JPEG enganou uma vez.** A experiência usa cópias JPEG das páginas. No Antiphon 260 a variante `bUa`
+dava 3,4% de faixa na cópia e **5,3% no programa** (que lê o PDF): o contorno da folha de baixo, no canto,
+começa a 3 pontos da beirada no PDF e a menos de 2 no JPEG, e só no PDF virava peça solta. A experiência ganhou
+o `--pdf` (página vinda do PDF pelo programa; `experiencia-pdf.json`), e a medida que vale é sempre a do
+`medir.py`. A primeira medida de depois, sem a regra das peças, ficou guardada em
+`dados-depois-sem-a-regra-das-pecas.json`.
 
 **O que ficou** (`core/recortar.py`, comentário "A cunha do giro"; `core/pipeline.py`, só a chamada).
-`detectar_bordas` ganhou o parâmetro `girada` (de quantos graus a página foi girada). Só com ele, a máscara de
-tinta **perde** mais duas coisas, depois do apagar de sempre (que continua igual, ponto por ponto):
-1. as linhas e colunas de borda sólida achadas contando os 80% **só nos pontos que são imagem de verdade**
-   (`_apagar_bordas_solidas_fora_da_cunha`);
-2. a "tinta" que **só existe por causa do degrau branco** e está em fundo escuro do scanner
+`detectar_bordas` ganhou o parâmetro `girada` (de quantos graus a página foi girada). Só com ele, depois do
+apagar de sempre (que continua igual, ponto por ponto):
+1. a máscara de tinta perde as linhas e colunas de borda sólida achadas contando os 80% **só nos pontos que são
+   imagem de verdade** (`_apagar_bordas_solidas_fora_da_cunha`);
+2. e perde a "tinta" que **só existe por causa do degrau branco** e está em fundo escuro do scanner
    (`_tinta_falsa_da_cunha`: é tinta com a cunha branca, não é com a cunha preenchida pela vizinha, e o lugar é
-   mais escuro que 60% do papel).
+   mais escuro que 60% do papel);
+3. e, só na hora de achar as peças que o corte respeita, o **pedaço grande colado na cunha** (mais de 20% de um
+   lado da página, `PECA_COLADA_GRANDE`) deixa de ser peça (`_sem_as_pecas_grandes_coladas_na_cunha`). Na página
+   como veio ele encostava na beirada e não empurrava o corte; com a cunha no meio virava peça solta (Antiphon
+   260: o pé ia 13 mm para dentro do preto). O pedaço pequeno continua peça de propósito: é o número da folha do
+   Graduale 221 e 223 (9% da largura), que só sai inteiro no livro novo por causa disso. O limite de 20% foi
+   acertado com esses dois casos e conferido nas 43 páginas: é a parte mais frágil do conserto.
 
 Sem `girada` (projeto antigo, página como veio, página que não gira) a conta é a mesma.
 
 Um acerto achado pelo teste de máquina novo (página de mentira com borda preta à direita **e** embaixo, ângulo
 positivo): a coluna já apagada como borda tem de sair também da conta das linhas, senão a faixa de baixo cai
 para menos de 80% e fica. Nas 43 páginas de verdade esse acerto não muda nada.
+
+**Resultado, medido pelo programa** (89 páginas, 300 DPI, sem filtro, três preparos; `scripts/medir.py` e
+`scripts/comparar.py`; dados em `relatorios/conserto-corte-g6/`). Faixa escura na beirada:
+
+| Página | ordem antiga | ordem nova de hoje | ordem nova consertada | tamanho consertado (antiga) |
+|---|---|---|---|---|
+| Matemática 32 | 18,4% | 31,5% | **16,8%** | 167 × 290 mm (165 × 297) |
+| Cursus 3 | 0,5% | 7,5% | **1,0%** | 198 × 278 mm (201 × 268) |
+| Antiphon 260 | 3,2% | 7,6% | **3,4%** | 463 × 591 mm (464 × 590) |
+| Antiphon 88 | 8,5% | 12,6% | **7,2%** | 432 × 623 mm (438 × 621) |
+| Camões 104 | 0,5% | 2,7% | **0,9%** | 93 × 131 mm (93 × 132) |
+
+Nenhuma das cinco perde tinta (a tinta de fora fica igual à de hoje). Na ordem nova mudam 10 das 89 páginas;
+as outras 79 saem idênticas ponto por ponto (md5), entre elas as 46 que não giram, as 14 páginas do gabarito do
+G6 e 7 das 8 que tinham melhorado. As outras cinco que mudam: Pesel 21 (página de cartão escuro: a faixa cai de
+47,3% para 35,4% e a folha encolhe de 157 × 241 para 145 × 206 mm, o corte passa a apertar em volta do conteúdo:
+**para olhar**); Egenloff 3 (0,5 mm a menos embaixo; a faixa fica em 1,9%, a tinta de fora vai de 0,30% para
+0,35%, uma peça do rodapé da biblioteca); Camões 66 (faixa 0,9% → 0,8%); Antiphonal 252 e Rariora 155 (1 mm).
+Pela conta do verificador, nenhuma piora contra hoje. A ordem antiga (preparos A e B) sai idêntica ponto por
+ponto nas 89.
+
+**O que não ficou perfeito.** No Cursus 3 sobra um fio escuro de uns 4 mm à direita (a borda reta do scanner
+fica inclinada na página endireitada e o apagar para na primeira coluna abaixo de 80%; seguir o "borrão" foi
+medido e estraga o Camões 66). A regra das riscas de dobra continua apagando linhas de texto da máscara no
+Cursus 3 (achado do verificador): o conserto soma ao apagar de hoje, não o troca.
+
+**Custo** (`scripts/custo.py`, só a busca do corte, 43 páginas que giram): mediana de 18 ms a mais por página
+que gira (a busca sem o conserto leva 27 ms de mediana; maior diferença medida, 59 ms, numa página de 26
+milhões de pontos, com ruído de medida grande). Página que não gira não paga nada. As partes: preencher a cunha
+e a segunda conta do limiar local, ~9 ms; achar os pedaços grandes colados na cunha, ~4 ms; a cunha, ~1 ms. Dá
+para baixar fazendo a segunda conta só nas quatro tiras junto da beirada (não feito: muda o resultado nos
+cantos e pediria medir tudo de novo).
