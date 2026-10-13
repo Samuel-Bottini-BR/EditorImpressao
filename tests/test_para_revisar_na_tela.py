@@ -77,8 +77,11 @@ def test_deixar_em_branco_pelo_botao_do_aviso(tela, codigo):
     assert tela.texto_faixa.text() == analise.descrever(codigo).mensagem
     assert not primeiro.isHidden() and primeiro.text() == "Deixar em branco"
     assert not segundo.isHidden() and segundo.text() == "Tirar do livro"
+    terceiro = tela.botoes_de_sugestao_3["filtro"]
+    assert not terceiro.isHidden() and terceiro.text() == "está bom assim"
 
     primeiro.click()
+    assert terceiro.isHidden()
     assert pagina.em_branco is True and pagina.apagada is False and pagina.revisada is True
     assert tela.botao_alertas.text() == "tudo certo"
     # a pagina fica no livro (a encadernacao nao muda)
@@ -103,6 +106,67 @@ def test_tirar_do_livro_pelo_botao_do_aviso(tela, codigo):
     assert pagina not in tela.projeto.paginas_ativas
     tela.desfazer()
     assert pagina.apagada is False
+
+
+@pytest.mark.parametrize("codigo", [analise.EM_BRANCO, analise.PAGINA_SEM_CONTEUDO])
+def test_esta_bom_assim_no_aviso_de_pagina_em_branco(tela, codigo):
+    """O "Parece em branco" erra (Gladstone 18, que tem titulo): tem de dar para
+    dizer "está bom" sem deixar em branco nem tirar do livro (verificador, 13/10)."""
+    pagina = _por_aviso(tela, 1, [codigo])
+    tela.botoes_de_sugestao_3["filtro"].click()
+    assert pagina.alertas_pendentes == [] and tela.botao_alertas.text() == "tudo certo"
+    assert pagina.em_branco is False and pagina.apagada is False, "a pagina nao muda"
+    assert all(b.isHidden() for b in (*_botoes(tela), tela.botoes_de_sugestao_3["filtro"]))
+    tela.desfazer()
+    assert pagina.alertas_pendentes == [codigo]
+
+
+def test_os_botoes_do_aviso_nao_ficam_com_o_teclado(tela):
+    """Verificador, 13/10: depois de clicar num botao do aviso o foco ficava
+    nele - a seta para a direita pulava de botao em vez de trocar de pagina e a
+    barra de espaco apertava o botao (ate escondido)."""
+    from PySide6.QtCore import Qt
+
+    assert tela.botoes_de_sugestao and "filtro" in tela.botoes_de_sugestao
+    assert set(tela.botoes_de_sugestao) == set(tela.botoes_de_sugestao_2) == set(
+        tela.botoes_de_sugestao_3)
+    for botoes in (tela.botoes_de_sugestao, tela.botoes_de_sugestao_2, tela.botoes_de_sugestao_3):
+        for aba, botao in botoes.items():
+            assert botao.focusPolicy() == Qt.NoFocus, aba
+
+
+def test_dois_cliques_no_cartao_do_filtro_nao_dao_a_pagina_por_conferida(tela):
+    """Verificador, 13/10: dois cliques no cartao (o jeito de abrir o "Ver de
+    perto") gravavam "Preto e branco para Preto e branco", a pagina ficava
+    conferida e o aviso sumia."""
+    from core.filtros import MELHORAR
+
+    pagina = _por_aviso(tela, 0, [analise.DESENHO_APAGADO])
+    feitas = len(tela.acoes.feitas)
+    tela._escolher_filtro(PRETO_E_BRANCO)              # o filtro que ja esta (o clique no cartao)
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    assert len(tela.acoes.feitas) == feitas, "nenhuma acao gravada"
+    assert pagina.revisada is False and pagina.alertas_pendentes == [analise.DESENHO_APAGADO]
+    assert "1 página" in tela.botao_alertas.text()
+    # trocar de verdade continua gravando (e dando a pagina por conferida, como sempre)
+    tela._escolher_filtro(MELHORAR)
+    assert len(tela.acoes.feitas) == feitas + 1 and pagina.filtro == MELHORAR and pagina.revisada
+
+
+def test_usar_mais_escuro_nao_aparece_com_a_forca_ja_no_mais_escuro(tela):
+    """Verificador, 13/10 (Egenloff 3): o aviso "Texto falhado" oferecia "usar
+    mais escuro" com a forca ja em 85."""
+    from core.pipeline import FORCA_DO_REFORCO
+
+    pagina = tela.projeto.paginas[0]
+    pagina.forca_preto = FORCA_DO_REFORCO
+    pagina.reforco_desfeito = True
+    _por_aviso(tela, 0, [analise.TEXTO_FALHADO])
+    primeiro, segundo = _botoes(tela)
+    assert primeiro.text() == "está bom assim" and not primeiro.isHidden()
+    assert segundo.isHidden()
+    primeiro.click()                                   # o botao que aparece e o que age
+    assert pagina.alertas_pendentes == [] and pagina.forca_preto == FORCA_DO_REFORCO
 
 
 # --- o conserto rapido e um botao do aviso ---------------------------------------

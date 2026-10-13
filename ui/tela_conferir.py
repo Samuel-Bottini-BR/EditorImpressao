@@ -384,6 +384,9 @@ class TelaConferir(QWidget):
         # livro"; "Trazer de volta nesta página" / "está bom assim"), ao lado
         # do primeiro, em cada aba (ver _atualizar_faixa, _aplicar_sugestao)
         self.botoes_de_sugestao_2: dict[str, QPushButton] = {}
+        # e o TERCEIRO (13/10/2026): o "está bom assim" dos avisos que ja tem
+        # dois botoes de conserto ("Parece em branco", "Página sem conteúdo")
+        self.botoes_de_sugestao_3: dict[str, QPushButton] = {}
         self.cartoes: dict[str, CartaoFiltro] = {}
         self.botoes_forca: dict[str, QPushButton] = {}
         self._cartoes_cache: dict[str, np.ndarray] = {}
@@ -684,6 +687,9 @@ class TelaConferir(QWidget):
         )
         self.botoes_de_sugestao_2[ABA_CORTE] = _botao(
             "", linha, functools.partial(self._aplicar_sugestao, 1), "sugestao")
+        self.botoes_de_sugestao_3[ABA_CORTE] = _botao(
+            "", linha, functools.partial(self._aplicar_sugestao, 2), "sugestao")
+        self._botoes_do_aviso_sem_foco(ABA_CORTE)
 
     def _montar_aba_bordas(self) -> None:
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
@@ -742,6 +748,9 @@ class TelaConferir(QWidget):
         )
         self.botoes_de_sugestao_2[ABA_BORDAS] = _botao(
             "", linha, functools.partial(self._aplicar_sugestao, 1), "sugestao")
+        self.botoes_de_sugestao_3[ABA_BORDAS] = _botao(
+            "", linha, functools.partial(self._aplicar_sugestao, 2), "sugestao")
+        self._botoes_do_aviso_sem_foco(ABA_BORDAS)
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -1028,6 +1037,9 @@ class TelaConferir(QWidget):
         )
         self.botoes_de_sugestao_2[ABA_ANGULO] = _botao(
             "", linha, functools.partial(self._aplicar_sugestao, 1), "sugestao")
+        self.botoes_de_sugestao_3[ABA_ANGULO] = _botao(
+            "", linha, functools.partial(self._aplicar_sugestao, 2), "sugestao")
+        self._botoes_do_aviso_sem_foco(ABA_ANGULO)
 
     def _montar_aba_marcar(self) -> None:
         """A aba de marcar a mao onde estao gravura, letra e papel.
@@ -1581,6 +1593,9 @@ class TelaConferir(QWidget):
         )
         self.botoes_de_sugestao_2[ABA_FILTRO] = _botao(
             "", linha_botoes, functools.partial(self._aplicar_sugestao, 1), "sugestao")
+        self.botoes_de_sugestao_3[ABA_FILTRO] = _botao(
+            "", linha_botoes, functools.partial(self._aplicar_sugestao, 2), "sugestao")
+        self._botoes_do_aviso_sem_foco(ABA_FILTRO)
         fora.addLayout(linha_botoes)
 
         self.linhas_de_botoes[ABA_FILTRO] = painel
@@ -1676,6 +1691,7 @@ class TelaConferir(QWidget):
         self.linhas_de_botoes.clear()
         self.botoes_de_sugestao.clear()
         self.botoes_de_sugestao_2.clear()
+        self.botoes_de_sugestao_3.clear()
         self.cartoes.clear()
         self.botoes_forca.clear()
 
@@ -2353,9 +2369,9 @@ class TelaConferir(QWidget):
                 texto += f"  (aviso 1 de {len(pendentes)} desta página)"
             self.texto_faixa.setText(self._com_andamento(texto))
             self._pintar_faixa(alerta=True)
-            botoes = alerta.botoes
-            self._mostrar_sugestao(aba, botoes[0][0] if botoes else None)
-            self._mostrar_sugestao(aba, botoes[1][0] if len(botoes) > 1 else None, qual=1)
+            botoes = self._botoes_do_aviso(item, pendentes[0])
+            for qual in range(3):
+                self._mostrar_sugestao(aba, botoes[qual][0] if len(botoes) > qual else None, qual)
         elif getattr(item, "em_branco", False) and not self.trabalha_com_folhas:
             # "Deixar em branco": a página fica no livro, branca; o botão
             # devolve a página (o mesmo que o Desfazer faria)
@@ -2364,11 +2380,12 @@ class TelaConferir(QWidget):
             self._pintar_faixa(alerta=False)
             self._mostrar_sugestao(aba, "voltar a página")
             self._mostrar_sugestao(aba, None, qual=1)
+            self._mostrar_sugestao(aba, None, qual=2)
         else:
             self.texto_faixa.setText(self._com_andamento(self._texto_tranquilo(aba)))
             self._pintar_faixa(alerta=False)
-            self._mostrar_sugestao(aba, None)
-            self._mostrar_sugestao(aba, None, qual=1)
+            for qual in range(3):
+                self._mostrar_sugestao(aba, None, qual)
         self._mostrar_marcas_do_aviso()
 
     def _mostrar_marcas_do_aviso(self) -> None:
@@ -2462,10 +2479,43 @@ class TelaConferir(QWidget):
                     f" border-radius: 8px; }} QLabel {{ background: transparent; border: none; }}")
         estilo.estilizar(self.faixa, montar)
 
+    def _botoes_do_aviso_sem_foco(self, aba: str) -> None:
+        """Os botões do aviso desta aba nunca ficam com o foco do teclado.
+
+        O defeito (verificador, 13/10/2026): depois de clicar num botão do
+        aviso o foco ficava nele; a seta para a direita pulava para outro
+        botão em vez de trocar de página, e a barra de espaço apertava o botão
+        em vez de "está certo e avança" - até um botão já escondido engolia a
+        barra de espaço. Sem foco (como os botões da aba Endireitar), o clique
+        do mouse funciona igual e o teclado continua sendo da página.
+        Arriscado: tirar isto de um dos três."""
+        for botoes in (self.botoes_de_sugestao, self.botoes_de_sugestao_2,
+                       self.botoes_de_sugestao_3):
+            botao = botoes.get(aba)
+            if botao is not None:
+                botao.setFocusPolicy(Qt.NoFocus)
+
+    def _botoes_do_aviso(self, item, codigo: str) -> list[tuple[str, str]]:
+        """Os botões do aviso `codigo` que valem para esta folha ou página
+        AGORA: os do aviso (analise.Alerta.botoes) menos os que não fariam
+        nada. Hoje só um caso: "usar mais escuro" / "usar mais fraco" com a
+        força do preto já nesse valor (verificador, 13/10: no Egenloff 3 o
+        aviso "Texto falhado" oferecia "usar mais escuro" com a força já em
+        85). A faixa (_atualizar_faixa) e o clique (_aplicar_sugestao) usam
+        esta mesma lista: o botão que aparece é o que age."""
+        botoes = analise.descrever(codigo).botoes
+        forca = getattr(item, "forca_preto", None)
+        if forca is None:
+            return botoes
+        ja_esta = {"forca:mais_escuro": int(forca) >= FORCA_DO_REFORCO,
+                   "forca:mais_fraco": int(forca) <= FORCA_MAIS_FRACA}
+        return [(rotulo, correcao) for rotulo, correcao in botoes if not ja_esta.get(correcao, False)]
+
     def _mostrar_sugestao(self, aba: str, rotulo: str | None, qual: int = 0) -> None:
         """Mostra (com o rótulo) ou esconde (None) um botão do aviso na aba:
-        qual=0 o primeiro, qual=1 o segundo (12/10/2026)."""
-        botao = (self.botoes_de_sugestao_2 if qual else self.botoes_de_sugestao).get(aba)
+        qual=0 o primeiro, 1 o segundo (12/10/2026), 2 o terceiro (13/10)."""
+        botao = (self.botoes_de_sugestao, self.botoes_de_sugestao_2,
+                 self.botoes_de_sugestao_3)[qual].get(aba)
         if botao is None:
             return
         botao.setVisible(bool(rotulo))
@@ -3169,8 +3219,18 @@ class TelaConferir(QWidget):
 
     @protegido
     def _escolher_filtro(self, filtro: str) -> None:
+        """Troca o filtro da página da vez (cartão, tecla 1 a 4, menu, botão do
+        aviso), como ação do desfazer; a página fica dada como conferida.
+
+        Escolher o filtro que JÁ está não faz nada (13/10/2026). O defeito
+        (verificador): dois cliques no cartão do filtro - o jeito de abrir o
+        "Ver de perto" - gravavam "Preto e branco para Preto e branco", a
+        página ficava conferida e o aviso dela sumia sem ninguém ter decidido
+        nada. Arriscado: voltar a gravar quando o filtro não muda."""
         assert self.projeto is not None
         atual = self.projeto.paginas[self.indice_pagina].filtro
+        if filtro == atual:
+            return
         nome_antes = NOMES_AMIGAVEIS.get(atual, atual)
         nome_depois = NOMES_AMIGAVEIS.get(filtro, filtro)
         self._registrar(
@@ -3540,7 +3600,7 @@ class TelaConferir(QWidget):
                 self._deixar_em_branco(False)
             return
         codigo = pendentes[0]
-        botoes = analise.descrever(codigo).botoes
+        botoes = self._botoes_do_aviso(item, codigo)
         if not 0 <= qual < len(botoes):
             if qual == 0:                       # aviso sem botão: "está bom" nele
                 self._aceitar_avisos([self._aviso_da_vez(codigo)])
@@ -3589,7 +3649,7 @@ class TelaConferir(QWidget):
         não existia, e os dois botões caíam em "Não consegui fazer isso
         agora" (bug achado ao fazer o botão do aviso "Texto falhado")."""
         assert self.projeto is not None
-        valores = {"mais_fraco": 15, "normal": 50, "mais_escuro": FORCA_DO_REFORCO}
+        valores = {"mais_fraco": FORCA_MAIS_FRACA, "normal": 50, "mais_escuro": FORCA_DO_REFORCO}
         novo = valores.get(palavra)
         if novo is None or self.trabalha_com_folhas:
             return
@@ -3729,7 +3789,8 @@ class TelaConferir(QWidget):
             avisos = avisos_do_livro.pendentes_do_livro(self.projeto)
             if not avisos:
                 return CONTINUAR
-            janela = JanelaDosAvisos(avisos, antes_de_processar=antes_de_processar, parent=self)
+            janela = JanelaDosAvisos(avisos, antes_de_processar=antes_de_processar, parent=self,
+                                     projeto=self.projeto)
             janela.exec()
             if janela.escolha == ACEITAR:
                 self._aceitar_avisos(janela.marcados)
@@ -3940,6 +4001,12 @@ def _botao(texto: str, destino: QHBoxLayout, acao, objeto: str = "") -> QPushBut
     _ligar(botao, acao)
     destino.addWidget(botao)
     return botao
+
+
+# A força do preto que o botão "usar mais fraco" dos avisos põe (o "mais
+# escuro" é core.pipeline.FORCA_DO_REFORCO). O mesmo número dos projetos
+# antigos (modelos._migrar). Seguro mudar.
+FORCA_MAIS_FRACA = 15
 
 
 # Item 2.2 (G5): cada clique nas setas da aba Endireitar, em graus, e quanto
