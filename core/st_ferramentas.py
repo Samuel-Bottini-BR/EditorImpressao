@@ -13,7 +13,8 @@ O QUE FAZ
     outras ferramentas sem refazer nada: cada ferramenta é um módulo em core/
     que pede a função aqui (core/pontinhos_scantailor.py, limpar
     pontinhos; core/dividir_scantailor.py, dividir a folha;
-    core/endireitar_scantailor.py, endireitar a página). Ver "Duas
+    core/endireitar_scantailor.py, endireitar a página;
+    core/caixas_scantailor.py, a caixa da página e a do conteúdo). Ver "Duas
     DLLs" em terceiros/scantailor-advanced/LEIA-ME.md.
 
     Recompilar: .venv\\Scripts\\python.exe compilar_st_ferramentas.py
@@ -54,8 +55,10 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 
 # Tem de bater com ST_FERRAMENTAS_VERSAO_API em st_ferramentas.h.
 # 1 = so os pontinhos; 2 (06/10/2026) = + dividir (st_ferramentas_dividir);
-# 3 (06/10/2026) = + endireitar (st_ferramentas_endireitar, item 2.2).
-VERSAO_API = 3
+# 3 (06/10/2026) = + endireitar (st_ferramentas_endireitar, item 2.2);
+# 4 (12/10/2026) = + as caixas da página e do conteúdo (st_ferramentas_caixas,
+# itens 2.13 e 2.5).
+VERSAO_API = 4
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -96,6 +99,25 @@ ASSINATURAS = {
         ctypes.POINTER(ctypes.c_double),                             # angulo bruto
         ctypes.POINTER(ctypes.c_double),                             # confianca
         ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Itens 2.13 e 2.5 (12/10/2026): a caixa da pagina e a do conteudo
+    # (core/caixas_scantailor.py).
+    "st_ferramentas_caixas": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # modo da pagina, ajustar os cantos
+        ctypes.c_double, ctypes.c_double, ctypes.c_double,           # largura e altura esperadas (mm), tolerancia
+        ctypes.c_int,                                                # modo do conteudo
+        ctypes.c_int,                                                # claro no escuro (-1, 0, 1)
+        ctypes.POINTER(ctypes.c_double),                             # pagina (4 numeros)
+        ctypes.POINTER(ctypes.c_double),                             # conteudo (4)
+        ctypes.POINTER(ctypes.c_double),                             # conteudo bruto (4)
+        ctypes.POINTER(ctypes.c_double),                             # tamanho do conteudo em mm (2)
+        ctypes.POINTER(ctypes.c_int),                                # achou conteudo (1/0)
+        ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
+        ctypes.POINTER(ctypes.c_double),                             # milissegundos (3)
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
 }

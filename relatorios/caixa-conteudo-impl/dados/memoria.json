@@ -1,0 +1,80 @@
+[
+ {
+  "pagina": "palatino_p005",
+  "dpi": 400,
+  "disponivel": true,
+  "motivo": null,
+  "megapontos_a_150": 0.8,
+  "megapontos_da_imagem": 5.68,
+  "pico_antes_mb": 70,
+  "pico_depois_mb": 84,
+  "a_mais_mb": 14,
+  "reservada_a_mais_mb": 11,
+  "segundos": 0.34
+ },
+ {
+  "pagina": "escola_p035",
+  "dpi": 200,
+  "disponivel": true,
+  "motivo": null,
+  "megapontos_a_150": 1.79,
+  "megapontos_da_imagem": 3.18,
+  "pico_antes_mb": 56,
+  "pico_depois_mb": 94,
+  "a_mais_mb": 38,
+  "reservada_a_mais_mb": 36,
+  "segundos": 0.64
+ },
+ {
+  "pagina": "egenloff_p047",
+  "dpi": 150,
+  "disponivel": true,
+  "motivo": null,
+  "megapontos_a_150": 5.72,
+  "megapontos_da_imagem": 5.72,
+  "pico_antes_mb": 70,
+  "pico_depois_mb": 186,
+  "a_mais_mb": 115,
+  "reservada_a_mais_mb": 113,
+  "segundos": 3.56
+ },
+ {
+  "pagina": "horas_p014",
+  "dpi": 72,
+  "disponivel": true,
+  "motivo": null,
+  "megapontos_a_150": 6.67,
+  "megapontos_da_imagem": 1.54,
+  "pico_antes_mb": 50,
+  "pico_depois_mb": 188,
+  "a_mais_mb": 138,
+  "reservada_a_mais_mb": 139,
+  "segundos": 1.85
+ },
+ {
+  "pagina": "antiphon_p088",
+  "dpi": 150,
+  "disponivel": true,
+  "motivo": null,
+  "megapontos_a_150": 10.28,
+  "megapontos_da_imagem": 10.28,
+  "pico_antes_mb": 96,
+  "pico_depois_mb": 296,
+  "a_mais_mb": 200,
+  "reservada_a_mais_mb": 198,
+  "segundos": 2.51
+ },
+ {
+  "pagina": "antiphon_p088",
+  "dpi": 125,
+  "disponivel": true,
+  "motivo": null,
+  "megapontos_a_150": 14.81,
+  "megapontos_da_imagem": 10.28,
+  "pico_antes_mb": 96,
+  "pico_depois_mb": 392,
+  "a_mais_mb": 295,
+  "reservada_a_mais_mb": 294,
+  "segundos": 5.07
+ }
+]

@@ -1,0 +1,2968 @@
+{
+ "siebmacher_p007": {
+  "largura": 2217,
+  "altura": 1712,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   26.667,
+   2194.667,
+   1696.0
+  ],
+  "conteudo": [
+   109.333,
+   66.667,
+   1746.667,
+   1434.667
+  ],
+  "conteudo_bruto": [
+   109.333,
+   66.667,
+   1746.667,
+   1434.667
+  ],
+  "pagina_mm": [
+   0.0,
+   1.693,
+   139.361,
+   107.696
+  ],
+  "conteudo_mm": [
+   6.943,
+   4.233,
+   110.913,
+   91.101
+  ],
+  "tamanho_do_conteudo_mm": [
+   103.971,
+   86.868
+  ],
+  "segundos": 0.187,
+  "segundos_do_preparo": 0.038,
+  "segundos_da_pagina": 0.038,
+  "segundos_do_conteudo": 0.11,
+  "megapontos_a_150": 0.53,
+  "diferenca_pagina": 0.0329999999999977,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   109.333,
+   66.667,
+   1746.667,
+   1434.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   0.0,
+   98.667,
+   2072.0,
+   1645.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   397.333,
+   146.667,
+   1386.667,
+   1277.333
+  ],
+  "diferenca_pagina_cantos": 0.03300000000012915,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "siebmacher_p009": {
+  "largura": 2212,
+  "altura": 1712,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   18.667,
+   2184.0,
+   1685.333
+  ],
+  "conteudo": [
+   69.333,
+   34.667,
+   1802.667,
+   1626.667
+  ],
+  "conteudo_bruto": [
+   69.333,
+   34.667,
+   1802.667,
+   1626.667
+  ],
+  "pagina_mm": [
+   0.0,
+   1.185,
+   138.684,
+   107.019
+  ],
+  "conteudo_mm": [
+   4.403,
+   2.201,
+   114.469,
+   103.293
+  ],
+  "tamanho_do_conteudo_mm": [
+   110.067,
+   101.092
+  ],
+  "segundos": 0.209,
+  "segundos_do_preparo": 0.04,
+  "segundos_da_pagina": 0.041,
+  "segundos_do_conteudo": 0.129,
+  "megapontos_a_150": 0.53,
+  "diferenca_pagina": 0.03300000000012915,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   69.333,
+   34.667,
+   1802.667,
+   1626.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   82.667,
+   2072.0,
+   1634.667
+  ],
+  "conteudo_na_pagina_cantos": [
+   360.0,
+   122.667,
+   1362.667,
+   1226.667
+  ],
+  "diferenca_pagina_cantos": 0.03300000000012915,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "horas_p011": {
+  "largura": 1024,
+  "altura": 1446,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1023.84,
+   1446.24
+  ],
+  "conteudo": [
+   100.8,
+   17.76,
+   887.04,
+   1356.96
+  ],
+  "conteudo_bruto": [
+   100.8,
+   17.76,
+   887.04,
+   1356.96
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   361.188,
+   510.201
+  ],
+  "conteudo_mm": [
+   35.56,
+   6.265,
+   312.928,
+   478.705
+  ],
+  "tamanho_do_conteudo_mm": [
+   277.333,
+   472.381
+  ],
+  "segundos": 2.346,
+  "segundos_do_preparo": 0.014,
+  "segundos_da_pagina": 0.395,
+  "segundos_do_conteudo": 1.937,
+  "megapontos_a_150": 6.43,
+  "diferenca_pagina": 0.04000000000007731,
+  "diferenca_conteudo": 0.03999999999999915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   100.8,
+   17.76,
+   887.04,
+   1356.96
+  ],
+  "diferenca_conteudo_folha": 0.03999999999999915,
+  "pagina_cantos": [
+   0.96,
+   0.48,
+   1023.84,
+   1445.76
+  ],
+  "conteudo_na_pagina_cantos": [
+   12.48,
+   17.76,
+   887.04,
+   1409.76
+  ],
+  "diferenca_pagina_cantos": 0.04000000000007731,
+  "diferenca_conteudo_cantos": 0.03999999999999915,
+  "dpi_do_programa": 138.0,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    1023.96,
+    1446.24
+   ],
+   "conteudo": [
+    100.28,
+    17.48,
+    887.8,
+    1357.92
+   ],
+   "conteudo_mm": [
+    18.457,
+    3.217,
+    163.407,
+    249.936
+   ],
+   "segundos": 0.81
+  }
+ },
+ "horas_p013": {
+  "largura": 1024,
+  "altura": 1453,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1023.84,
+   1452.96
+  ],
+  "conteudo": [
+   104.16,
+   37.44,
+   1005.6,
+   1435.2
+  ],
+  "conteudo_bruto": [
+   104.16,
+   37.44,
+   1005.6,
+   1435.2
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   361.188,
+   512.572
+  ],
+  "conteudo_mm": [
+   36.745,
+   13.208,
+   354.753,
+   506.307
+  ],
+  "tamanho_do_conteudo_mm": [
+   317.968,
+   493.037
+  ],
+  "segundos": 2.848,
+  "segundos_do_preparo": 0.031,
+  "segundos_da_pagina": 0.712,
+  "segundos_do_conteudo": 2.106,
+  "megapontos_a_150": 6.46,
+  "diferenca_pagina": 0.04000000000007731,
+  "diferenca_conteudo": 0.04000000000000625,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   104.16,
+   37.44,
+   1005.6,
+   1435.2
+  ],
+  "diferenca_conteudo_folha": 0.04000000000000625,
+  "pagina_cantos": [
+   18.24,
+   1.92,
+   1023.84,
+   1436.64
+  ],
+  "conteudo_na_pagina_cantos": [
+   104.16,
+   37.44,
+   1005.6,
+   1435.2
+  ],
+  "diferenca_pagina_cantos": 0.040000000000190994,
+  "diferenca_conteudo_cantos": 0.04000000000000625,
+  "dpi_do_programa": 138.3,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    1023.96,
+    1452.68
+   ],
+   "conteudo": [
+    118.68,
+    220.8,
+    774.64,
+    1149.08
+   ],
+   "conteudo_mm": [
+    21.844,
+    40.64,
+    142.579,
+    211.497
+   ],
+   "segundos": 1.18
+  }
+ },
+ "horas_p014": {
+  "largura": 1024,
+  "altura": 1501,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1023.84,
+   1500.96
+  ],
+  "conteudo": [
+   248.64,
+   171.84,
+   955.2,
+   1230.72
+  ],
+  "conteudo_bruto": [
+   248.64,
+   171.84,
+   955.2,
+   1230.72
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   361.188,
+   529.505
+  ],
+  "conteudo_mm": [
+   87.715,
+   60.621,
+   336.973,
+   434.171
+  ],
+  "tamanho_do_conteudo_mm": [
+   249.228,
+   373.503
+  ],
+  "segundos": 2.747,
+  "segundos_do_preparo": 0.028,
+  "segundos_da_pagina": 0.572,
+  "segundos_do_conteudo": 2.147,
+  "megapontos_a_150": 6.67,
+  "diferenca_pagina": 0.04000000000007731,
+  "diferenca_conteudo": 0.03999999999999204,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   248.64,
+   171.84,
+   955.2,
+   1230.72
+  ],
+  "diferenca_conteudo_folha": 0.03999999999999204,
+  "pagina_cantos": [
+   0.48,
+   0.48,
+   1023.84,
+   1500.96
+  ],
+  "conteudo_na_pagina_cantos": [
+   248.64,
+   171.84,
+   955.2,
+   1230.72
+  ],
+  "diferenca_pagina_cantos": 0.04000000000007731,
+  "diferenca_conteudo_cantos": 0.03999999999999204,
+  "dpi_do_programa": 140.6,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    1023.66,
+    1501.18
+   ],
+   "conteudo": [
+    252.86,
+    224.66,
+    932.48,
+    1210.72
+   ],
+   "conteudo_mm": [
+    45.551,
+    40.471,
+    167.979,
+    218.101
+   ],
+   "segundos": 0.882
+  }
+ },
+ "horas_p026": {
+  "largura": 1024,
+  "altura": 1533,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1023.84,
+   1533.12
+  ],
+  "conteudo": [
+   227.52,
+   161.76,
+   967.2,
+   1262.4
+  ],
+  "conteudo_bruto": [
+   227.52,
+   161.76,
+   967.2,
+   1262.4
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   361.188,
+   540.851
+  ],
+  "conteudo_mm": [
+   80.264,
+   57.065,
+   341.207,
+   445.347
+  ],
+  "tamanho_do_conteudo_mm": [
+   260.91,
+   388.233
+  ],
+  "segundos": 2.771,
+  "segundos_do_preparo": 0.033,
+  "segundos_da_pagina": 0.806,
+  "segundos_do_conteudo": 1.931,
+  "megapontos_a_150": 6.81,
+  "diferenca_pagina": 0.04000000000007731,
+  "diferenca_conteudo": 0.040000000000020464,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   227.52,
+   161.76,
+   967.2,
+   1262.4
+  ],
+  "diferenca_conteudo_folha": 0.040000000000020464,
+  "pagina_cantos": [
+   0.48,
+   0.48,
+   1023.36,
+   1532.64
+  ],
+  "conteudo_na_pagina_cantos": [
+   227.52,
+   161.76,
+   967.2,
+   1262.4
+  ],
+  "diferenca_pagina_cantos": 0.040000000000190994,
+  "diferenca_conteudo_cantos": 0.040000000000020464,
+  "dpi_do_programa": 142.1,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    1024.293,
+    1532.653
+   ],
+   "conteudo": [
+    227.2,
+    160.933,
+    970.333,
+    1262.853
+   ],
+   "conteudo_mm": [
+    40.64,
+    28.787,
+    173.567,
+    225.891
+   ],
+   "segundos": 0.955
+  }
+ },
+ "horas_p027": {
+  "largura": 1024,
+  "altura": 1471,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1023.84,
+   1471.2
+  ],
+  "conteudo": [
+   85.44,
+   159.36,
+   861.6,
+   1214.4
+  ],
+  "conteudo_bruto": [
+   85.44,
+   159.36,
+   861.6,
+   1214.4
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   361.188,
+   519.007
+  ],
+  "conteudo_mm": [
+   30.141,
+   56.219,
+   303.953,
+   428.413
+  ],
+  "tamanho_do_conteudo_mm": [
+   273.778,
+   372.148
+  ],
+  "segundos": 2.848,
+  "segundos_do_preparo": 0.031,
+  "segundos_da_pagina": 0.658,
+  "segundos_do_conteudo": 2.159,
+  "megapontos_a_150": 6.54,
+  "diferenca_pagina": 0.04000000000007731,
+  "diferenca_conteudo": 0.03999999999999204,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   85.44,
+   159.36,
+   861.6,
+   1214.4
+  ],
+  "diferenca_conteudo_folha": 0.03999999999999204,
+  "pagina_cantos": [
+   12.0,
+   0.48,
+   1023.84,
+   1459.68
+  ],
+  "conteudo_na_pagina_cantos": [
+   85.44,
+   159.36,
+   861.6,
+   1214.4
+  ],
+  "diferenca_pagina_cantos": 0.04000000000007731,
+  "diferenca_conteudo_cantos": 0.03999999999999204,
+  "dpi_do_programa": 139.2,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    1023.967,
+    1470.62
+   ],
+   "conteudo": [
+    85.253,
+    160.313,
+    801.567,
+    1214.86
+   ],
+   "conteudo_mm": [
+    15.579,
+    29.295,
+    146.473,
+    221.996
+   ],
+   "segundos": 0.757
+  }
+ },
+ "horas_p047": {
+  "largura": 1024,
+  "altura": 1504,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1023.84,
+   1503.84
+  ],
+  "conteudo": [
+   10.08,
+   13.92,
+   892.32,
+   1416.0
+  ],
+  "conteudo_bruto": [
+   10.08,
+   13.92,
+   892.32,
+   1416.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   361.188,
+   530.521
+  ],
+  "conteudo_mm": [
+   3.556,
+   4.911,
+   314.791,
+   499.533
+  ],
+  "tamanho_do_conteudo_mm": [
+   311.196,
+   494.561
+  ],
+  "segundos": 2.684,
+  "segundos_do_preparo": 0.028,
+  "segundos_da_pagina": 0.739,
+  "segundos_do_conteudo": 1.917,
+  "megapontos_a_150": 6.68,
+  "diferenca_pagina": 0.04000000000007731,
+  "diferenca_conteudo": 0.020000000000095497,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   10.08,
+   13.92,
+   892.32,
+   1416.0
+  ],
+  "diferenca_conteudo_folha": 0.020000000000095497,
+  "pagina_cantos": [
+   1.44,
+   0.48,
+   1023.84,
+   1502.88
+  ],
+  "conteudo_na_pagina_cantos": [
+   10.08,
+   13.92,
+   892.32,
+   1416.0
+  ],
+  "diferenca_pagina_cantos": 0.04000000000007731,
+  "diferenca_conteudo_cantos": 0.020000000000095497,
+  "dpi_do_programa": 140.7,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    1023.66,
+    1504.0
+   ],
+   "conteudo": [
+    30.08,
+    57.34,
+    893.0,
+    1416.58
+   ],
+   "conteudo_mm": [
+    5.419,
+    10.329,
+    160.867,
+    255.185
+   ],
+   "segundos": 1.017
+  }
+ },
+ "graduale_p221": {
+  "largura": 961,
+  "altura": 1352,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   960.96,
+   1352.16
+  ],
+  "conteudo": [
+   77.76,
+   71.52,
+   877.44,
+   1350.24
+  ],
+  "conteudo_bruto": [
+   77.76,
+   71.52,
+   877.44,
+   1350.24
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   339.005,
+   477.012
+  ],
+  "conteudo_mm": [
+   27.432,
+   25.231,
+   309.541,
+   476.335
+  ],
+  "tamanho_do_conteudo_mm": [
+   282.074,
+   451.048
+  ],
+  "segundos": 2.55,
+  "segundos_do_preparo": 0.029,
+  "segundos_da_pagina": 0.624,
+  "segundos_do_conteudo": 1.897,
+  "megapontos_a_150": 5.64,
+  "diferenca_pagina": 0.03999999999996362,
+  "diferenca_conteudo": 0.04000000000007731,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   77.76,
+   71.52,
+   877.44,
+   1350.24
+  ],
+  "diferenca_conteudo_folha": 0.04000000000007731,
+  "pagina_cantos": [
+   0.96,
+   0.48,
+   960.96,
+   1351.68
+  ],
+  "conteudo_na_pagina_cantos": [
+   12.48,
+   71.52,
+   877.44,
+   1350.24
+  ],
+  "diferenca_pagina_cantos": 0.040000000000000036,
+  "diferenca_conteudo_cantos": 0.04000000000007731,
+  "dpi_do_programa": 129.2,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    7.74,
+    0.0,
+    960.62,
+    1351.92
+   ],
+   "conteudo": [
+    84.28,
+    43.0,
+    960.62,
+    1196.26
+   ],
+   "conteudo_mm": [
+    16.595,
+    8.467,
+    189.145,
+    235.543
+   ],
+   "segundos": 1.165
+  }
+ },
+ "graduale_p222": {
+  "largura": 961,
+  "altura": 1396,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   960.96,
+   1395.84
+  ],
+  "conteudo": [
+   187.68,
+   92.64,
+   950.4,
+   1197.6
+  ],
+  "conteudo_bruto": [
+   187.68,
+   92.64,
+   950.4,
+   1197.6
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   339.005,
+   492.421
+  ],
+  "conteudo_mm": [
+   66.209,
+   32.681,
+   335.28,
+   422.487
+  ],
+  "tamanho_do_conteudo_mm": [
+   269.037,
+   389.757
+  ],
+  "segundos": 3.319,
+  "segundos_do_preparo": 0.025,
+  "segundos_da_pagina": 0.728,
+  "segundos_do_conteudo": 2.566,
+  "megapontos_a_150": 5.82,
+  "diferenca_pagina": 0.03999999999996362,
+  "diferenca_conteudo": 0.04000000000000625,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   187.68,
+   92.64,
+   950.4,
+   1197.6
+  ],
+  "diferenca_conteudo_folha": 0.04000000000000625,
+  "pagina_cantos": [
+   0.48,
+   0.48,
+   960.96,
+   1395.84
+  ],
+  "conteudo_na_pagina_cantos": [
+   187.68,
+   92.64,
+   950.4,
+   1197.6
+  ],
+  "diferenca_pagina_cantos": 0.03999999999996362,
+  "diferenca_conteudo_cantos": 0.04000000000000625,
+  "dpi_do_programa": 131.3,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    960.667,
+    1395.587
+   ],
+   "conteudo": [
+    186.893,
+    92.573,
+    930.973,
+    1202.58
+   ],
+   "conteudo_mm": [
+    36.237,
+    17.949,
+    180.509,
+    233.172
+   ],
+   "segundos": 0.619
+  }
+ },
+ "graduale_p223": {
+  "largura": 961,
+  "altura": 1352,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   960.96,
+   1352.16
+  ],
+  "conteudo": [
+   41.76,
+   38.88,
+   872.64,
+   1286.4
+  ],
+  "conteudo_bruto": [
+   41.76,
+   38.88,
+   872.64,
+   1286.4
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   339.005,
+   477.012
+  ],
+  "conteudo_mm": [
+   14.732,
+   13.716,
+   307.848,
+   453.813
+  ],
+  "tamanho_do_conteudo_mm": [
+   293.079,
+   440.042
+  ],
+  "segundos": 3.132,
+  "segundos_do_preparo": 0.013,
+  "segundos_da_pagina": 0.492,
+  "segundos_do_conteudo": 2.626,
+  "megapontos_a_150": 5.64,
+  "diferenca_pagina": 0.03999999999996362,
+  "diferenca_conteudo": 0.03999999999999915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   41.76,
+   38.88,
+   872.64,
+   1286.4
+  ],
+  "diferenca_conteudo_folha": 0.03999999999999915,
+  "pagina_cantos": [
+   1.44,
+   0.48,
+   960.96,
+   1351.2
+  ],
+  "conteudo_na_pagina_cantos": [
+   72.0,
+   10.56,
+   872.64,
+   1286.4
+  ],
+  "diferenca_pagina_cantos": 0.040000000000000036,
+  "diferenca_conteudo_cantos": 0.03999999999999915,
+  "dpi_do_programa": 129.2,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    0.0,
+    960.62,
+    1351.92
+   ],
+   "conteudo": [
+    89.44,
+    35.26,
+    944.28,
+    1297.74
+   ],
+   "conteudo_mm": [
+    17.611,
+    6.943,
+    185.928,
+    255.524
+   ],
+   "segundos": 0.811
+  }
+ },
+ "palatino_p005": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   152.0,
+   106.667,
+   1688.0,
+   2858.667
+  ],
+  "conteudo_bruto": [
+   152.0,
+   106.667,
+   1688.0,
+   2858.667
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   9.652,
+   6.773,
+   107.188,
+   181.525
+  ],
+  "tamanho_do_conteudo_mm": [
+   97.536,
+   174.752
+  ],
+  "segundos": 0.516,
+  "segundos_do_preparo": 0.114,
+  "segundos_da_pagina": 0.093,
+  "segundos_do_conteudo": 0.309,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000000125,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   152.0,
+   106.667,
+   1688.0,
+   2858.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000000125,
+  "pagina_cantos": [
+   13.333,
+   13.333,
+   1928.0,
+   2944.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   152.0,
+   106.667,
+   1688.0,
+   2858.667
+  ],
+  "diferenca_pagina_cantos": 0.032999999999999474,
+  "diferenca_conteudo_cantos": 0.03300000000000125,
+  "dpi_do_programa": 400.0
+ },
+ "palatino_p007": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   77.333,
+   184.0,
+   1738.667,
+   2514.667
+  ],
+  "conteudo_bruto": [
+   77.333,
+   184.0,
+   1738.667,
+   2514.667
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   4.911,
+   11.684,
+   110.405,
+   159.681
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.495,
+   147.998
+  ],
+  "segundos": 0.536,
+  "segundos_do_preparo": 0.105,
+  "segundos_da_pagina": 0.097,
+  "segundos_do_conteudo": 0.334,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   77.333,
+   184.0,
+   1738.667,
+   2514.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   1928.0,
+   2941.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   77.333,
+   184.0,
+   1738.667,
+   2514.667
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "palatino_p009": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   66.667,
+   90.667,
+   1813.333,
+   2530.667
+  ],
+  "conteudo_bruto": [
+   66.667,
+   90.667,
+   1813.333,
+   2530.667
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   4.233,
+   5.757,
+   115.147,
+   160.697
+  ],
+  "tamanho_do_conteudo_mm": [
+   110.914,
+   154.94
+  ],
+  "segundos": 0.381,
+  "segundos_do_preparo": 0.094,
+  "segundos_da_pagina": 0.097,
+  "segundos_do_conteudo": 0.189,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   66.667,
+   90.667,
+   1813.333,
+   2530.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   1928.0,
+   2941.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   66.667,
+   90.667,
+   1813.333,
+   2530.667
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "palatino_p010": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   104.0,
+   56.0,
+   1826.667,
+   2493.333
+  ],
+  "conteudo_bruto": [
+   104.0,
+   56.0,
+   1826.667,
+   2493.333
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   6.604,
+   3.556,
+   115.993,
+   158.327
+  ],
+  "tamanho_do_conteudo_mm": [
+   109.39,
+   154.771
+  ],
+  "segundos": 0.606,
+  "segundos_do_preparo": 0.176,
+  "segundos_da_pagina": 0.156,
+  "segundos_do_conteudo": 0.272,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   104.0,
+   56.0,
+   1826.667,
+   2493.333
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   1928.0,
+   2941.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   104.0,
+   56.0,
+   1826.667,
+   2493.333
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "palatino_p057": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   74.667,
+   88.0,
+   1741.333,
+   2605.333
+  ],
+  "conteudo_bruto": [
+   74.667,
+   88.0,
+   1741.333,
+   2605.333
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   4.741,
+   5.588,
+   110.575,
+   165.439
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.834,
+   159.851
+  ],
+  "segundos": 0.445,
+  "segundos_do_preparo": 0.105,
+  "segundos_da_pagina": 0.102,
+  "segundos_do_conteudo": 0.237,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   74.667,
+   88.0,
+   1741.333,
+   2605.333
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   1928.0,
+   2941.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   74.667,
+   88.0,
+   1741.333,
+   2605.333
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "palatino_p066": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   149.333,
+   93.333,
+   1808.0,
+   2528.0
+  ],
+  "conteudo_bruto": [
+   149.333,
+   93.333,
+   1808.0,
+   2528.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   9.483,
+   5.927,
+   114.808,
+   160.528
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.326,
+   154.602
+  ],
+  "segundos": 0.385,
+  "segundos_do_preparo": 0.067,
+  "segundos_da_pagina": 0.061,
+  "segundos_do_conteudo": 0.257,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000000125,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   149.333,
+   93.333,
+   1808.0,
+   2528.0
+  ],
+  "diferenca_conteudo_folha": 0.03300000000000125,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   1909.333,
+   2922.667
+  ],
+  "conteudo_na_pagina_cantos": [
+   149.333,
+   93.333,
+   1808.0,
+   2528.0
+  ],
+  "diferenca_pagina_cantos": 0.03300000000012915,
+  "diferenca_conteudo_cantos": 0.03300000000000125,
+  "dpi_do_programa": 400.0
+ },
+ "palatino_p067": {
+  "largura": 1929,
+  "altura": 2943,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1928.0,
+   2944.0
+  ],
+  "conteudo": [
+   42.667,
+   96.0,
+   1709.333,
+   2560.0
+  ],
+  "conteudo_bruto": [
+   42.667,
+   96.0,
+   1709.333,
+   2560.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   122.428,
+   186.944
+  ],
+  "conteudo_mm": [
+   2.709,
+   6.096,
+   108.543,
+   162.56
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.834,
+   156.464
+  ],
+  "segundos": 0.628,
+  "segundos_do_preparo": 0.123,
+  "segundos_da_pagina": 0.154,
+  "segundos_do_conteudo": 0.35,
+  "megapontos_a_150": 0.8,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   42.667,
+   96.0,
+   1709.333,
+   2560.0
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   1928.0,
+   2941.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   42.667,
+   96.0,
+   1709.333,
+   2560.0
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "escola_p007": {
+  "largura": 1420,
+  "altura": 2089,
+  "dpi": 200,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1420.0,
+   2089.333
+  ],
+  "conteudo": [
+   50.667,
+   161.333,
+   1338.667,
+   1992.0
+  ],
+  "conteudo_bruto": [
+   50.667,
+   161.333,
+   1338.667,
+   1992.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   180.34,
+   265.345
+  ],
+  "conteudo_mm": [
+   6.435,
+   20.489,
+   170.011,
+   252.984
+  ],
+  "tamanho_do_conteudo_mm": [
+   163.576,
+   232.495
+  ],
+  "segundos": 0.685,
+  "segundos_do_preparo": 0.053,
+  "segundos_da_pagina": 0.12,
+  "segundos_do_conteudo": 0.512,
+  "megapontos_a_150": 1.67,
+  "diferenca_pagina": 0.032999999999901775,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   50.667,
+   161.333,
+   1338.667,
+   1992.0
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   0.0,
+   0.0,
+   1420.0,
+   2089.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   50.667,
+   161.333,
+   1338.667,
+   1992.0
+  ],
+  "diferenca_pagina_cantos": 0.032999999999901775,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 200.0
+ },
+ "escola_p035": {
+  "largura": 1517,
+  "altura": 2098,
+  "dpi": 200,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1517.333,
+   2098.667
+  ],
+  "conteudo": [
+   90.667,
+   114.667,
+   1378.667,
+   2089.333
+  ],
+  "conteudo_bruto": [
+   90.667,
+   114.667,
+   1378.667,
+   2089.333
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   192.701,
+   266.531
+  ],
+  "conteudo_mm": [
+   11.515,
+   14.563,
+   175.091,
+   265.345
+  ],
+  "tamanho_do_conteudo_mm": [
+   163.576,
+   250.783
+  ],
+  "segundos": 0.642,
+  "segundos_do_preparo": 0.037,
+  "segundos_da_pagina": 0.132,
+  "segundos_do_conteudo": 0.473,
+  "megapontos_a_150": 1.79,
+  "diferenca_pagina": 0.03300000000012915,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   90.667,
+   114.667,
+   1378.667,
+   2089.333
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   1.333,
+   0.0,
+   1517.333,
+   2097.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   90.667,
+   114.667,
+   1378.667,
+   2089.333
+  ],
+  "diferenca_pagina_cantos": 0.03300000000012915,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 200.0
+ },
+ "marial_p007": {
+  "largura": 714,
+  "altura": 937,
+  "dpi": 72,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   2.4,
+   711.36,
+   933.6
+  ],
+  "conteudo": [
+   72.96,
+   61.44,
+   629.76,
+   868.32
+  ],
+  "conteudo_bruto": [
+   72.96,
+   61.44,
+   629.76,
+   868.32
+  ],
+  "pagina_mm": [
+   0.0,
+   0.847,
+   250.952,
+   329.353
+  ],
+  "conteudo_mm": [
+   25.739,
+   21.675,
+   222.165,
+   306.324
+  ],
+  "tamanho_do_conteudo_mm": [
+   196.402,
+   284.614
+  ],
+  "segundos": 1.198,
+  "segundos_do_preparo": 0.01,
+  "segundos_da_pagina": 0.294,
+  "segundos_do_conteudo": 0.894,
+  "megapontos_a_150": 2.9,
+  "diferenca_pagina": 0.03999999999996362,
+  "diferenca_conteudo": 0.04000000000000625,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   72.96,
+   61.44,
+   629.76,
+   868.32
+  ],
+  "diferenca_conteudo_folha": 0.04000000000000625,
+  "pagina_cantos": [
+   0.48,
+   11.04,
+   692.16,
+   922.56
+  ],
+  "conteudo_na_pagina_cantos": [
+   72.96,
+   61.44,
+   629.76,
+   868.32
+  ],
+  "diferenca_pagina_cantos": 0.04000000000007731,
+  "diferenca_conteudo_cantos": 0.04000000000000625,
+  "dpi_do_programa": 92.7,
+  "com_o_dpi_do_programa": {
+   "pagina": [
+    0.0,
+    1.86,
+    711.14,
+    933.72
+   ],
+   "conteudo": [
+    72.54,
+    61.38,
+    629.92,
+    868.62
+   ],
+   "conteudo_mm": [
+    19.812,
+    16.764,
+    172.043,
+    237.236
+   ],
+   "segundos": 0.971
+  }
+ },
+ "opusmajus_p003": {
+  "largura": 2300,
+  "altura": 3699,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   2301.333,
+   3698.667
+  ],
+  "conteudo": [
+   333.333,
+   328.0,
+   1706.667,
+   3146.667
+  ],
+  "conteudo_bruto": [
+   333.333,
+   328.0,
+   1706.667,
+   3146.667
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   146.135,
+   234.865
+  ],
+  "conteudo_mm": [
+   21.167,
+   20.828,
+   108.373,
+   199.813
+  ],
+  "tamanho_do_conteudo_mm": [
+   87.207,
+   178.986
+  ],
+  "segundos": 0.495,
+  "segundos_do_preparo": 0.115,
+  "segundos_da_pagina": 0.112,
+  "segundos_do_conteudo": 0.267,
+  "megapontos_a_150": 1.2,
+  "diferenca_pagina": 0.032999999999901775,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   333.333,
+   328.0,
+   1706.667,
+   3146.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   0.0,
+   2.667,
+   2298.667,
+   3698.667
+  ],
+  "conteudo_na_pagina_cantos": [
+   333.333,
+   328.0,
+   1706.667,
+   3146.667
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "opusmajus_p011": {
+  "largura": 2300,
+  "altura": 3699,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   2301.333,
+   3698.667
+  ],
+  "conteudo": [
+   269.333,
+   456.0,
+   1928.0,
+   3240.0
+  ],
+  "conteudo_bruto": [
+   269.333,
+   456.0,
+   1928.0,
+   3240.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   146.135,
+   234.865
+  ],
+  "conteudo_mm": [
+   17.103,
+   28.956,
+   122.428,
+   205.74
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.326,
+   176.784
+  ],
+  "segundos": 0.633,
+  "segundos_do_preparo": 0.122,
+  "segundos_da_pagina": 0.138,
+  "segundos_do_conteudo": 0.372,
+  "megapontos_a_150": 1.2,
+  "diferenca_pagina": 0.032999999999901775,
+  "diferenca_conteudo": 0.03300000000001546,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   269.333,
+   456.0,
+   1928.0,
+   3240.0
+  ],
+  "diferenca_conteudo_folha": 0.03300000000001546,
+  "pagina_cantos": [
+   0.0,
+   2.667,
+   2298.667,
+   3698.667
+  ],
+  "conteudo_na_pagina_cantos": [
+   269.333,
+   456.0,
+   1928.0,
+   3240.0
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000001546,
+  "dpi_do_programa": 400.0
+ },
+ "opusmajus_p020": {
+  "largura": 2212,
+  "altura": 3620,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   2213.333,
+   3621.333
+  ],
+  "conteudo": [
+   402.667,
+   344.0,
+   1973.333,
+   3048.0
+  ],
+  "conteudo_bruto": [
+   402.667,
+   344.0,
+   1973.333,
+   3048.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   140.547,
+   229.955
+  ],
+  "conteudo_mm": [
+   25.569,
+   21.844,
+   125.307,
+   193.548
+  ],
+  "tamanho_do_conteudo_mm": [
+   99.738,
+   171.704
+  ],
+  "segundos": 0.679,
+  "segundos_do_preparo": 0.137,
+  "segundos_da_pagina": 0.161,
+  "segundos_do_conteudo": 0.381,
+  "megapontos_a_150": 1.13,
+  "diferenca_pagina": 0.032999999999901775,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   402.667,
+   344.0,
+   1973.333,
+   3048.0
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   2.667,
+   2.667,
+   2210.667,
+   3618.667
+  ],
+  "conteudo_na_pagina_cantos": [
+   402.667,
+   344.0,
+   1973.333,
+   3048.0
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "opusmajus_p165": {
+  "largura": 2160,
+  "altura": 3576,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   2160.0,
+   3576.0
+  ],
+  "conteudo": [
+   125.333,
+   216.0,
+   1789.333,
+   3176.0
+  ],
+  "conteudo_bruto": [
+   125.333,
+   216.0,
+   1789.333,
+   3176.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   137.16,
+   227.076
+  ],
+  "conteudo_mm": [
+   7.959,
+   13.716,
+   113.623,
+   201.676
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.664,
+   187.96
+  ],
+  "segundos": 0.589,
+  "segundos_do_preparo": 0.146,
+  "segundos_da_pagina": 0.119,
+  "segundos_do_conteudo": 0.323,
+  "megapontos_a_150": 1.09,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   125.333,
+   216.0,
+   1789.333,
+   3176.0
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   0.0,
+   0.0,
+   2160.0,
+   3576.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   125.333,
+   216.0,
+   1789.333,
+   3176.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.03300000000012915,
+  "dpi_do_programa": 400.0
+ },
+ "opusmajus_p256": {
+  "largura": 3283,
+  "altura": 2767,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   3282.667,
+   2768.0
+  ],
+  "conteudo": [
+   216.0,
+   232.0,
+   3253.333,
+   2522.667
+  ],
+  "conteudo_bruto": [
+   216.0,
+   232.0,
+   3253.333,
+   2522.667
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   208.449,
+   175.768
+  ],
+  "conteudo_mm": [
+   13.716,
+   14.732,
+   206.587,
+   160.189
+  ],
+  "tamanho_do_conteudo_mm": [
+   192.871,
+   145.458
+  ],
+  "segundos": 0.669,
+  "segundos_do_preparo": 0.13,
+  "segundos_da_pagina": 0.143,
+  "segundos_do_conteudo": 0.395,
+  "megapontos_a_150": 1.28,
+  "diferenca_pagina": 0.032999999999901775,
+  "diferenca_conteudo": 0.032999999999901775,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   216.0,
+   232.0,
+   3253.333,
+   2522.667
+  ],
+  "diferenca_conteudo_folha": 0.032999999999901775,
+  "pagina_cantos": [
+   2.667,
+   0.0,
+   3282.667,
+   2765.333
+  ],
+  "conteudo_na_pagina_cantos": [
+   216.0,
+   232.0,
+   3253.333,
+   2522.667
+  ],
+  "diferenca_pagina_cantos": 0.03300000000000036,
+  "diferenca_conteudo_cantos": 0.032999999999901775,
+  "dpi_do_programa": 400.0
+ },
+ "egenloff_p047": {
+  "largura": 2084,
+  "altura": 2744,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   39.0,
+   80.0,
+   2046.0,
+   2741.0
+  ],
+  "conteudo": [
+   159.0,
+   526.0,
+   1681.0,
+   2397.0
+  ],
+  "conteudo_bruto": [
+   159.0,
+   526.0,
+   1681.0,
+   2397.0
+  ],
+  "pagina_mm": [
+   6.604,
+   13.547,
+   346.456,
+   464.143
+  ],
+  "conteudo_mm": [
+   26.924,
+   89.069,
+   284.649,
+   405.892
+  ],
+  "tamanho_do_conteudo_mm": [
+   257.704,
+   316.796
+  ],
+  "segundos": 3.698,
+  "segundos_do_preparo": 0.12,
+  "segundos_da_pagina": 0.453,
+  "segundos_do_conteudo": 3.125,
+  "megapontos_a_150": 5.72,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   159.0,
+   526.0,
+   1681.0,
+   2397.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   60.0,
+   92.0,
+   2018.0,
+   2704.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   159.0,
+   526.0,
+   1681.0,
+   2397.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "egenloff_p003": {
+  "largura": 2084,
+  "altura": 2682,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   26.0,
+   16.0,
+   2056.0,
+   2682.0
+  ],
+  "conteudo": [
+   420.0,
+   345.0,
+   1954.0,
+   2635.0
+  ],
+  "conteudo_bruto": [
+   420.0,
+   345.0,
+   1954.0,
+   2635.0
+  ],
+  "pagina_mm": [
+   4.403,
+   2.709,
+   348.149,
+   454.152
+  ],
+  "conteudo_mm": [
+   71.12,
+   58.42,
+   330.877,
+   446.193
+  ],
+  "tamanho_do_conteudo_mm": [
+   259.736,
+   387.741
+  ],
+  "segundos": 2.968,
+  "segundos_do_preparo": 0.1,
+  "segundos_da_pagina": 0.588,
+  "segundos_do_conteudo": 2.279,
+  "megapontos_a_150": 5.59,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   420.0,
+   345.0,
+   1954.0,
+   2635.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   31.0,
+   58.0,
+   2019.0,
+   2682.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   420.0,
+   345.0,
+   1954.0,
+   2635.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "matematica_p032": {
+  "largura": 1240,
+  "altura": 1753,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   42.0,
+   1024.0,
+   1475.0
+  ],
+  "conteudo": [
+   134.0,
+   345.0,
+   946.0,
+   1381.0
+  ],
+  "conteudo_bruto": [
+   134.0,
+   345.0,
+   946.0,
+   1381.0
+  ],
+  "pagina_mm": [
+   0.0,
+   7.112,
+   173.397,
+   249.767
+  ],
+  "conteudo_mm": [
+   22.691,
+   58.42,
+   160.189,
+   233.849
+  ],
+  "tamanho_do_conteudo_mm": [
+   137.487,
+   175.415
+  ],
+  "segundos": 0.943,
+  "segundos_do_preparo": 0.042,
+  "segundos_da_pagina": 0.149,
+  "segundos_do_conteudo": 0.752,
+  "megapontos_a_150": 2.17,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   134.0,
+   345.0,
+   946.0,
+   1381.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   7.0,
+   49.0,
+   1011.0,
+   1462.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   134.0,
+   345.0,
+   946.0,
+   1381.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "camoes_p066": {
+  "largura": 543,
+  "altura": 791,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   7.0,
+   8.0,
+   543.0,
+   781.0
+  ],
+  "conteudo": [
+   128.0,
+   71.0,
+   517.0,
+   694.0
+  ],
+  "conteudo_bruto": [
+   128.0,
+   71.0,
+   517.0,
+   694.0
+  ],
+  "pagina_mm": [
+   1.185,
+   1.355,
+   91.948,
+   132.249
+  ],
+  "conteudo_mm": [
+   21.675,
+   12.023,
+   87.545,
+   117.517
+  ],
+  "tamanho_do_conteudo_mm": [
+   65.865,
+   105.486
+  ],
+  "segundos": 0.261,
+  "segundos_do_preparo": 0.009,
+  "segundos_da_pagina": 0.049,
+  "segundos_do_conteudo": 0.202,
+  "megapontos_a_150": 0.43,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   128.0,
+   71.0,
+   517.0,
+   694.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   32.0,
+   29.0,
+   536.0,
+   770.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   128.0,
+   71.0,
+   517.0,
+   694.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "cursus_p314": {
+  "largura": 1275,
+  "altura": 1650,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   46.0,
+   0.0,
+   1275.0,
+   1631.0
+  ],
+  "conteudo": [
+   161.0,
+   46.0,
+   1121.0,
+   1594.0
+  ],
+  "conteudo_bruto": [
+   161.0,
+   46.0,
+   1121.0,
+   1594.0
+  ],
+  "pagina_mm": [
+   7.789,
+   0.0,
+   215.9,
+   276.183
+  ],
+  "conteudo_mm": [
+   27.263,
+   7.789,
+   189.823,
+   269.917
+  ],
+  "tamanho_do_conteudo_mm": [
+   162.547,
+   262.106
+  ],
+  "segundos": 0.856,
+  "segundos_do_preparo": 0.048,
+  "segundos_da_pagina": 0.285,
+  "segundos_do_conteudo": 0.523,
+  "megapontos_a_150": 2.1,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   161.0,
+   46.0,
+   1121.0,
+   1594.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   60.0,
+   1.0,
+   1275.0,
+   1618.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   161.0,
+   46.0,
+   1121.0,
+   1594.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "antiphon_p088": {
+  "largura": 2742,
+  "altura": 3750,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   123.0,
+   2585.0,
+   3636.0
+  ],
+  "conteudo": [
+   402.0,
+   291.0,
+   2570.0,
+   3065.0
+  ],
+  "conteudo_bruto": [
+   402.0,
+   291.0,
+   2570.0,
+   3065.0
+  ],
+  "pagina_mm": [
+   0.0,
+   20.828,
+   437.727,
+   615.696
+  ],
+  "conteudo_mm": [
+   68.072,
+   49.276,
+   435.187,
+   519.007
+  ],
+  "tamanho_do_conteudo_mm": [
+   367.084,
+   469.692
+  ],
+  "segundos": 4.332,
+  "segundos_do_preparo": 0.178,
+  "segundos_da_pagina": 0.857,
+  "segundos_do_conteudo": 3.296,
+  "megapontos_a_150": 10.28,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   402.0,
+   291.0,
+   2570.0,
+   3065.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   8.0,
+   152.0,
+   2535.0,
+   3607.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   402.0,
+   291.0,
+   2359.0,
+   3065.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "ljs47_p046": {
+  "largura": 2155,
+  "altura": 2813,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   137.0,
+   113.0,
+   2155.0,
+   2649.0
+  ],
+  "conteudo": [
+   139.0,
+   135.0,
+   1966.0,
+   2649.0
+  ],
+  "conteudo_bruto": [
+   139.0,
+   135.0,
+   1966.0,
+   2757.0
+  ],
+  "pagina_mm": [
+   23.199,
+   19.135,
+   364.913,
+   448.564
+  ],
+  "conteudo_mm": [
+   23.537,
+   22.86,
+   332.909,
+   448.564
+  ],
+  "tamanho_do_conteudo_mm": [
+   309.346,
+   425.669
+  ],
+  "segundos": 3.067,
+  "segundos_do_preparo": 0.081,
+  "segundos_da_pagina": 0.514,
+  "segundos_do_conteudo": 2.471,
+  "megapontos_a_150": 6.06,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": true,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   324.0,
+   135.0,
+   1966.0,
+   2743.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   206.0,
+   165.0,
+   2132.0,
+   2609.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   208.0,
+   181.0,
+   1966.0,
+   2770.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "ljs47_p068": {
+  "largura": 2155,
+  "altura": 2813,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   107.0,
+   170.0,
+   2155.0,
+   2681.0
+  ],
+  "conteudo": [
+   116.0,
+   243.0,
+   2071.0,
+   2681.0
+  ],
+  "conteudo_bruto": [
+   116.0,
+   243.0,
+   2071.0,
+   2697.0
+  ],
+  "pagina_mm": [
+   18.119,
+   28.787,
+   364.913,
+   453.983
+  ],
+  "conteudo_mm": [
+   19.643,
+   41.148,
+   350.689,
+   453.983
+  ],
+  "tamanho_do_conteudo_mm": [
+   331.019,
+   412.801
+  ],
+  "segundos": 2.939,
+  "segundos_do_preparo": 0.082,
+  "segundos_da_pagina": 0.524,
+  "segundos_do_conteudo": 2.333,
+  "megapontos_a_150": 6.06,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": true,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   537.0,
+   243.0,
+   2071.0,
+   2689.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   146.0,
+   197.0,
+   2144.0,
+   2658.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   148.0,
+   243.0,
+   2071.0,
+   2689.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "righetti_p055": {
+  "largura": 1275,
+  "altura": 1650,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1275.0,
+   1650.0
+  ],
+  "conteudo": [
+   11.0,
+   350.0,
+   999.0,
+   1569.0
+  ],
+  "conteudo_bruto": [
+   11.0,
+   350.0,
+   999.0,
+   1569.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   215.9,
+   279.4
+  ],
+  "conteudo_mm": [
+   1.863,
+   59.267,
+   169.164,
+   265.684
+  ],
+  "tamanho_do_conteudo_mm": [
+   167.288,
+   206.4
+  ],
+  "segundos": 0.806,
+  "segundos_do_preparo": 0.034,
+  "segundos_da_pagina": 0.207,
+  "segundos_do_conteudo": 0.565,
+  "megapontos_a_150": 2.1,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   11.0,
+   350.0,
+   999.0,
+   1569.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   0.0,
+   0.0,
+   1275.0,
+   1650.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   11.0,
+   350.0,
+   999.0,
+   1569.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "antiphon_p123": {
+  "largura": 2717,
+  "altura": 3750,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   108.0,
+   43.0,
+   2717.0,
+   3628.0
+  ],
+  "conteudo": [
+   150.0,
+   138.0,
+   2483.0,
+   3586.0
+  ],
+  "conteudo_bruto": [
+   150.0,
+   138.0,
+   2483.0,
+   3586.0
+  ],
+  "pagina_mm": [
+   18.288,
+   7.281,
+   460.079,
+   614.341
+  ],
+  "conteudo_mm": [
+   25.4,
+   23.368,
+   420.455,
+   607.229
+  ],
+  "tamanho_do_conteudo_mm": [
+   395.022,
+   583.813
+  ],
+  "segundos": 5.513,
+  "segundos_do_preparo": 0.142,
+  "segundos_da_pagina": 0.96,
+  "segundos_do_conteudo": 4.411,
+  "megapontos_a_150": 10.19,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   150.0,
+   138.0,
+   2483.0,
+   3586.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   266.0,
+   176.0,
+   2693.0,
+   3579.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   298.0,
+   183.0,
+   2400.0,
+   3586.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "opusmajus_p137": {
+  "largura": 2160,
+  "altura": 3576,
+  "dpi": 400,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   2160.0,
+   3576.0
+  ],
+  "conteudo": [
+   146.667,
+   221.333,
+   1802.667,
+   1850.667
+  ],
+  "conteudo_bruto": [
+   146.667,
+   221.333,
+   1802.667,
+   1850.667
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   137.16,
+   227.076
+  ],
+  "conteudo_mm": [
+   9.313,
+   14.055,
+   114.469,
+   117.517
+  ],
+  "tamanho_do_conteudo_mm": [
+   105.156,
+   103.463
+  ],
+  "segundos": 0.559,
+  "segundos_do_preparo": 0.138,
+  "segundos_da_pagina": 0.117,
+  "segundos_do_conteudo": 0.303,
+  "megapontos_a_150": 1.09,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.03300000000012915,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   146.667,
+   221.333,
+   1802.667,
+   1850.667
+  ],
+  "diferenca_conteudo_folha": 0.03300000000012915,
+  "pagina_cantos": [
+   0.0,
+   0.0,
+   2160.0,
+   3576.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   146.667,
+   221.333,
+   1802.667,
+   1850.667
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.03300000000012915
+ },
+ "horas_p013@150": {
+  "largura": 1024,
+  "altura": 1453,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   1024.0,
+   1453.0
+  ],
+  "conteudo": [
+   121.0,
+   221.0,
+   775.0,
+   1149.0
+  ],
+  "conteudo_bruto": [
+   121.0,
+   221.0,
+   775.0,
+   1149.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   173.397,
+   246.041
+  ],
+  "conteudo_mm": [
+   20.489,
+   37.423,
+   131.233,
+   194.564
+  ],
+  "tamanho_do_conteudo_mm": [
+   110.735,
+   157.128
+  ],
+  "segundos": 1.201,
+  "segundos_do_preparo": 0.02,
+  "segundos_da_pagina": 0.17,
+  "segundos_do_conteudo": 1.011,
+  "megapontos_a_150": 1.49,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   121.0,
+   221.0,
+   775.0,
+   1149.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   18.0,
+   2.0,
+   1024.0,
+   1437.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   121.0,
+   221.0,
+   775.0,
+   1149.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ },
+ "graduale_p222@150": {
+  "largura": 961,
+  "altura": 1396,
+  "dpi": 150,
+  "tamanho_confere": true,
+  "pagina": [
+   0.0,
+   0.0,
+   961.0,
+   1396.0
+  ],
+  "conteudo": [
+   187.0,
+   96.0,
+   931.0,
+   1203.0
+  ],
+  "conteudo_bruto": [
+   187.0,
+   96.0,
+   931.0,
+   1203.0
+  ],
+  "pagina_mm": [
+   0.0,
+   0.0,
+   162.729,
+   236.389
+  ],
+  "conteudo_mm": [
+   31.665,
+   16.256,
+   157.649,
+   203.708
+  ],
+  "tamanho_do_conteudo_mm": [
+   125.974,
+   187.437
+  ],
+  "segundos": 0.56,
+  "segundos_do_preparo": 0.02,
+  "segundos_da_pagina": 0.087,
+  "segundos_do_conteudo": 0.453,
+  "megapontos_a_150": 1.34,
+  "diferenca_pagina": 0.0,
+  "diferenca_conteudo": 0.0,
+  "conteudo_passava_da_pagina": false,
+  "scantailor_viu_claro_no_escuro": false,
+  "conteudo_folha": [
+   187.0,
+   96.0,
+   931.0,
+   1203.0
+  ],
+  "diferenca_conteudo_folha": 0.0,
+  "pagina_cantos": [
+   0.0,
+   0.0,
+   961.0,
+   1396.0
+  ],
+  "conteudo_na_pagina_cantos": [
+   187.0,
+   96.0,
+   931.0,
+   1203.0
+  ],
+  "diferenca_pagina_cantos": 0.0,
+  "diferenca_conteudo_cantos": 0.0
+ }
+}
