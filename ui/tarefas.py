@@ -16,7 +16,7 @@ from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
-from core.pipeline import faixa_da_sobra, precisa_medir_para_revisar
+from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -41,6 +41,10 @@ PRIORIDADE_ADIANTADA = 0
 # GerenciadorPrevias.pedir_medida): "<indice>:medida:<chave da previa na
 # resolucao do PDF>". Nao muda nada no disco: e so nome de pedido desta sessao.
 MARCA_DA_MEDIDA = ":medida:"
+# O que a tarefa do acerto devolve no lugar da imagem: um ponto so. A forma
+# diz se a marcacao da pagina mudou (a previa guardada dela ficou velha).
+FORMA_SEM_MUDANCA = (1, 1)
+FORMA_MARCACAO_MUDOU = (1, 2)
 
 # Quantas previas ficam guardadas na memoria. Cada uma tem ~900 px de altura;
 # 30 delas cabem folgado e cobrem a navegacao para frente e para tras.
@@ -343,13 +347,15 @@ class _TarefaPrevia(QRunnable):
             doc = abrir_pdf(self.caminho_pdf)
             try:
                 if MARCA_DA_MEDIDA in self.chave:
-                    # A medida do "Para revisar" (12/10/2026): a pagina e
-                    # desenhada na resolucao do PDF so para a regra ser medida
-                    # (os avisos e a forca sozinha sao acertados la dentro,
-                    # core.pipeline._filtrar_no_misto). A imagem grande e
-                    # jogada fora: so um aviso de "medida pronta" volta.
-                    renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
-                    img = np.zeros((1, 1), np.uint8)
+                    # O acerto no tamanho do PDF (12 e 13/10/2026): por
+                    # tras, a marcacao provisoria (a da previa) e trocada pela
+                    # achada na pagina do tamanho do PDF e, onde a regra do
+                    # "Para revisar" vale, a pagina e medida (os avisos e a
+                    # forca sozinha sao acertados la dentro). Nenhuma imagem
+                    # grande volta: so um aviso de "pronto", que diz se a
+                    # marcacao mudou (ai a previa tem de ser desenhada de novo).
+                    mudou = acertar_no_tamanho_do_pdf(doc, self.projeto, pagina)
+                    img = np.zeros(FORMA_MARCACAO_MUDOU if mudou else FORMA_SEM_MUDANCA, np.uint8)
                 elif self.filtro is None:
                     img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
                 else:
@@ -542,13 +548,27 @@ class GerenciadorPrevias(QObject):
         chave_da_medida (a imagem que vem junto e um ponto so)."""
         if not 0 <= indice < len(self.projeto.paginas):
             return False
-        if not precisa_medir_para_revisar(self.projeto, self.projeto.paginas[indice]):
+        if not precisa_do_desenho_do_pdf(self.projeto, self.projeto.paginas[indice]):
             return False
         chave = self.chave_da_medida(indice)
         if chave in self._cache or chave in self._pedidas:
             return False
         self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
         return True
+
+    def esquecer_previas(self, indice: int) -> None:
+        """Tira do cache as previas (e os cartoes) da pagina `indice`, sem
+        mexer no que diz que o acerto no tamanho do PDF ja foi feito
+        (chave_da_medida) nem na geracao dela. Usado quando esse acerto troca
+        a marcacao da pagina: a previa guardada mostra a marcacao de antes; a
+        proxima vez que a pagina for mostrada, e desenhada de novo. Diferente
+        de invalidar(indice), que tambem esquece o acerto (e a tela o pediria
+        de novo, sem fim)."""
+        prefixo = f"{indice}:"
+        for chave in [c for c in self._ordem
+                      if c.startswith(prefixo) and MARCA_DA_MEDIDA not in c]:
+            self._cache.pop(chave, None)
+            self._ordem.remove(chave)
 
     # --- pedidos e geracoes (D4) ---------------------------------------------
 
@@ -720,6 +740,10 @@ class GerenciadorPrevias(QObject):
                 del self._pedidas[chave]
             return
         self._pedidas.pop(chave, None)
+        if MARCA_DA_MEDIDA in chave and tuple(img.shape[:2]) == FORMA_MARCACAO_MUDOU:
+            # o acerto por tras trocou a marcacao da pagina: as previas
+            # guardadas dela foram desenhadas com a marcacao de antes
+            self.esquecer_previas(int(chave.split(":", 1)[0]))
         self._cache[chave] = img
         self._ordem.append(chave)
         while len(self._ordem) > TAMANHO_CACHE:

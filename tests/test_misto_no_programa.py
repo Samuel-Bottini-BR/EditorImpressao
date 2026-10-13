@@ -34,7 +34,7 @@ from core import analise, linhas_do_texto, misto
 from core import pipeline as P
 from core.filtros import MELHORAR, PRETO_E_BRANCO, aplicar_filtro_com_selecao
 from core.ocr_comum import LinhaOCR, ResultadoOCR, retangulo as caixa
-from core.selecao import GRAVURA, Selecao, retangulo
+from core.selecao import GRAVURA, REDE, Selecao, retangulo
 from modelos import ConfigFolha, ConfigPagina, Projeto
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -84,7 +84,7 @@ def leitor_falso(monkeypatch):
     """Troca o leitor de texto por um falso que conta as chamadas."""
     chamadas = []
 
-    def falso(img, chave=None, cancelar=None):
+    def falso(img, chave=None, cancelar=None, definitivas=None):
         chamadas.append(img.shape)
         return [_resultado_falso(img.shape[1], img.shape[0])]
 
@@ -481,7 +481,13 @@ def test_previa_e_pdf_passam_pelo_misto_e_o_leitor_roda_uma_vez(tmp_path, monkey
     assert usados == [misto.FORA_REDE]
     P.processar(p)
     assert usados == [misto.FORA_REDE, misto.FORA_REDE], "o PDF nao passou pelo Misto"
-    assert len(contagem) == 1, "o PDF tinha de usar as linhas que a previa achou"
+    # Desde 13/10/2026 as linhas achadas na previa (pagina pequena) sao
+    # provisorias: o PDF acha as dele, uma vez, na pagina do tamanho do PDF
+    # (antes este teste cobrava 1: o PDF usava as da previa, e a pagina era
+    # medida um pouco diferente de quem gera o PDF direto).
+    assert len(contagem) == 2, "a previa acha as provisorias e o PDF as definitivas, uma vez cada"
+    P.processar(p)
+    assert len(contagem) == 2, "o segundo PDF usa as definitivas guardadas"
     assert Path(p.caminho_saida).is_file()
 
 
@@ -493,7 +499,9 @@ def test_previa_e_pdf_passam_pelo_misto_e_o_leitor_roda_uma_vez(tmp_path, monkey
 # detector acha areas diferentes nas duas resolucoes, e a mesma pagina saia
 # (e era medida pela regra do "Para revisar") diferente conforme a ordem: nas
 # 89 paginas do estudo, 24 iam e 73 certas na ordem da janela, contra 22 e 75
-# direto. Agora a marcacao e sempre procurada na resolucao do PDF.
+# direto. Agora a marcacao da previa e PROVISORIA (a previa aparece no tempo
+# de antes) e e trocada pela achada na pagina do tamanho do PDF: por tras,
+# para a pagina da vez (acertar_no_tamanho_do_pdf), e ao gerar o PDF.
 
 @pytest.fixture
 def detector_que_depende_do_tamanho(monkeypatch):
@@ -508,7 +516,8 @@ def detector_que_depende_do_tamanho(monkeypatch):
         vistas.append(img.shape[:2])
         s = Selecao()
         fim = 0.5 if img.shape[0] > 1500 else 0.6
-        s.acrescentar(retangulo(0.2, 0.65, fim, 0.95, tipo=GRAVURA))
+        # origem REDE: marcada pela maquina (a marcada a mao nunca e trocada)
+        s.acrescentar(retangulo(0.2, 0.65, fim, 0.95, tipo=GRAVURA, origem=REDE))
         return s
 
     monkeypatch.setattr(D, "detectar", falso)
@@ -531,8 +540,12 @@ def _livro_sem_marcacao(tmp_path) -> Projeto:
     return p
 
 
-def test_a_previa_procura_a_marcacao_na_resolucao_do_pdf(tmp_path, monkeypatch, leitor_falso,
-                                                        detector_que_depende_do_tamanho):
+def test_a_previa_marca_no_tempo_de_antes_e_o_acerto_por_tras_troca(tmp_path, monkeypatch,
+                                                                   leitor_falso,
+                                                                   detector_que_depende_do_tamanho):
+    """A previa procura na pagina PEQUENA (o tempo de antes) e a marcacao fica
+    provisoria; o acerto por tras troca pela da pagina do tamanho do PDF, e so
+    ai a regra mede. No fim, o mesmo que gerando o PDF direto."""
     from core.pdf_io import abrir_pdf
 
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
@@ -543,29 +556,146 @@ def test_a_previa_procura_a_marcacao_na_resolucao_do_pdf(tmp_path, monkeypatch, 
     doc = abrir_pdf(direto.caminho_entrada)
     try:
         P.renderizar_pagina(doc, direto, direto.paginas[0], dpi=300)
-        assert vistas == [(1800, 1400)]
+        assert vistas == [(1800, 1400)] and direto.paginas[0].marcacao_provisoria is False
 
-        # na ordem da janela: a previa primeiro, depois o desenho do tamanho do PDF
+        # na ordem da janela: a previa primeiro
         janela = _livro_sem_marcacao(tmp_path)
+        pagina = janela.paginas[0]
         vistas.clear()
-        previa, _ = P.renderizar_pagina(doc, janela, janela.paginas[0], dpi=110)
-        assert vistas == [(1800, 1400)], "a previa tinha de procurar na pagina do tamanho do PDF"
-        assert max(previa.shape[:2]) < 800, "e a previa continua pequena"
-        P.renderizar_pagina(doc, janela, janela.paginas[0], dpi=300)
-        assert vistas == [(1800, 1400)], "com a marcacao guardada, nao procura de novo"
+        previa, _ = P.renderizar_pagina(doc, janela, pagina, dpi=110)
+        assert len(vistas) == 1 and max(vistas[0]) < 800, "a previa procura na pagina pequena"
+        assert pagina.marcacao_provisoria is True and pagina.selecao != []
+        assert pagina.selecao != direto.paginas[0].selecao, "o detector falso depende do tamanho"
+        assert pagina.alertas == [] and pagina.faixa_na_beirada is None, "a previa nao mede a regra"
+        assert P.precisa_do_desenho_do_pdf(janela, pagina)
+        provisoria = pagina.selecao
+
+        # ...depois o acerto por tras, no tamanho do PDF
+        assert P.acertar_no_tamanho_do_pdf(doc, janela, pagina) is True, "a marcacao mudou"
+        assert vistas[-1] == (1800, 1400)
+        assert pagina.marcacao_provisoria is False and pagina.selecao is not provisoria
+        assert pagina.selecao == direto.paginas[0].selecao
+        assert pagina.gravura_feita_com == direto.paginas[0].gravura_feita_com != ""
+        # e a regra mediu a mesma coisa nos dois caminhos
+        assert pagina.alertas == direto.paginas[0].alertas
+        assert pagina.faixa_na_beirada == direto.paginas[0].faixa_na_beirada is not None
+        # de novo nao procura nem muda nada; a previa seguinte usa a definitiva
+        quantas = len(vistas)
+        assert P.acertar_no_tamanho_do_pdf(doc, janela, pagina) is False
+        P.renderizar_pagina(doc, janela, pagina, dpi=110)
+        assert len(vistas) == quantas and pagina.marcacao_provisoria is False
     finally:
         doc.close()
-    assert janela.paginas[0].selecao == direto.paginas[0].selecao
-    assert janela.paginas[0].gravura_feita_com == direto.paginas[0].gravura_feita_com != ""
-    # e a regra mediu a mesma coisa nos dois caminhos
-    assert janela.paginas[0].alertas == direto.paginas[0].alertas
-    assert janela.paginas[0].faixa_na_beirada == direto.paginas[0].faixa_na_beirada is not None
 
 
-def test_a_copia_dos_cartoes_nao_procura_na_resolucao_do_pdf(tmp_path, monkeypatch, leitor_falso,
-                                                            detector_que_depende_do_tamanho):
-    """Os cartoes de filtro desenham uma copia da pagina e jogam a marcacao
-    dela fora: procurar na pagina grande ali seria tempo perdido."""
+def test_o_que_a_pessoa_marcou_a_mao_nao_se_perde_no_acerto(tmp_path, monkeypatch, leitor_falso,
+                                                           detector_que_depende_do_tamanho):
+    """Entre a previa e o acerto por tras a pessoa pode marcar uma area a mao:
+    ela fica, por cima da marcacao nova da maquina."""
+    from core.pdf_io import abrir_pdf
+    from core.selecao import LETRA, MAO
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    p = _livro_sem_marcacao(tmp_path)
+    pagina = p.paginas[0]
+    doc = abrir_pdf(p.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, p, pagina, dpi=110)
+        s = pagina.obter_selecao()
+        da_maquina_antes = len(s.regioes)
+        s.acrescentar(retangulo(0.05, 0.05, 0.15, 0.15, tipo=LETRA, origem=MAO))
+        pagina.guardar_selecao(s)                       # o que a aba Marcar faz
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is True
+    finally:
+        doc.close()
+    regioes = pagina.obter_selecao().regioes
+    a_mao = [r for r in regioes if r.origem == MAO]
+    assert len(a_mao) == 1 and a_mao[0].tipo == LETRA and regioes[-1] is a_mao[0]
+    assert len(regioes) == da_maquina_antes + 1 and pagina.marcacao_provisoria is False
+
+
+def test_pagina_fora_do_so_as_letras_so_troca_a_marcacao(tmp_path, monkeypatch, leitor_falso,
+                                                        detector_que_depende_do_tamanho):
+    """Em outro filtro nao ha regra para medir: o acerto por tras so procura a
+    marcacao na pagina grande, sem passar o filtro (tempo jogado fora)."""
+    from core.pdf_io import abrir_pdf
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    filtrou = []
+    monkeypatch.setattr(P, "aplicar_filtro_com_selecao",
+                        lambda img, *a, **k: (filtrou.append(img.shape[:2]), (img, False))[1])
+    p = _livro_sem_marcacao(tmp_path)
+    pagina = p.paginas[0]
+    pagina.filtro = MELHORAR
+    doc = abrir_pdf(p.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, p, pagina, dpi=110)
+        assert pagina.marcacao_provisoria is True and P.precisa_do_desenho_do_pdf(p, pagina)
+        filtrou.clear()
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is True
+    finally:
+        doc.close()
+    assert filtrou == [], "nao passou o filtro na pagina grande"
+    assert detector_que_depende_do_tamanho[-1] == (1800, 1400)
+    assert pagina.marcacao_provisoria is False and not P.precisa_do_desenho_do_pdf(p, pagina)
+
+
+def test_o_pdf_troca_a_marcacao_provisoria_ao_gerar(tmp_path, monkeypatch, leitor_falso,
+                                                   detector_que_depende_do_tamanho):
+    """Pagina vista na previa e nunca acertada por tras (a vizinha que a tela
+    adianta): o PDF troca a marcacao dela ao gerar, e sai como o PDF direto."""
+    from core.pdf_io import abrir_pdf
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    direto = _livro_sem_marcacao(tmp_path)
+    direto.caminho_saida = str(tmp_path / "direto.pdf")
+    P.processar(direto)
+    visto = _livro_sem_marcacao(tmp_path)
+    visto.caminho_saida = str(tmp_path / "visto.pdf")
+    doc = abrir_pdf(visto.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, visto, visto.paginas[0], dpi=110)
+    finally:
+        doc.close()
+    assert visto.paginas[0].marcacao_provisoria is True
+    P.processar(visto)
+    assert visto.paginas[0].marcacao_provisoria is False
+    assert visto.paginas[0].selecao == direto.paginas[0].selecao
+    assert visto.paginas[0].alertas == direto.paginas[0].alertas
+
+
+def test_projeto_antigo_fica_com_a_marcacao_que_tinha(tmp_path, monkeypatch, leitor_falso,
+                                                     detector_que_depende_do_tamanho):
+    """Pagina que ja tem marcacao e nao tem o campo (projeto de antes de
+    13/10/2026): a marcacao dela e a que vale; nada e procurado de novo."""
+    from core.pdf_io import abrir_pdf
+
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
+    p = _livro_sem_marcacao(tmp_path)
+    s = Selecao()
+    s.acrescentar(retangulo(0.2, 0.65, 0.55, 0.95, tipo=GRAVURA))
+    p.paginas[0].guardar_selecao(s)
+    dados = p.para_dicionario()
+    for pagina in dados["paginas"]:
+        pagina.pop("marcacao_provisoria")
+    antigo = Projeto.de_dicionario(dados)
+    pagina = antigo.paginas[0]
+    assert pagina.marcacao_provisoria is False
+    guardada = list(pagina.selecao)
+    doc = abrir_pdf(antigo.caminho_entrada)
+    try:
+        P.renderizar_pagina(doc, antigo, pagina, dpi=110)
+        P.acertar_no_tamanho_do_pdf(doc, antigo, pagina)
+    finally:
+        doc.close()
+    assert detector_que_depende_do_tamanho == [], "nao procurou"
+    assert pagina.selecao == guardada and pagina.marcacao_provisoria is False
+
+
+def test_a_copia_dos_cartoes_nao_mexe_na_marcacao_da_pagina(tmp_path, monkeypatch, leitor_falso,
+                                                           detector_que_depende_do_tamanho):
+    """Os cartoes de filtro desenham uma copia da pagina: a marcacao que a
+    copia acha e dela, e a pagina de verdade nao muda."""
     from core.pdf_io import abrir_pdf
 
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
@@ -575,37 +705,32 @@ def test_a_copia_dos_cartoes_nao_procura_na_resolucao_do_pdf(tmp_path, monkeypat
         P.renderizar_com_filtro(doc, p, p.paginas[0], MELHORAR, dpi=110)
     finally:
         doc.close()
-    assert all(max(forma) < 800 for forma in detector_que_depende_do_tamanho)
-    assert p.paginas[0].selecao == [], "a pagina de verdade nao muda"
+    assert p.paginas[0].selecao == [] and p.paginas[0].marcacao_provisoria is False
 
 
-def test_se_a_procura_grande_falha_a_previa_procura_como_antes(tmp_path, monkeypatch, leitor_falso,
-                                                             detector_que_depende_do_tamanho):
+def test_se_a_procura_grande_falha_a_pagina_fica_com_a_provisoria_e_nao_e_medida(
+        tmp_path, monkeypatch, leitor_falso, detector_que_depende_do_tamanho):
+    """A regra so mede com a marcacao do tamanho do PDF, nunca com a da previa."""
+    import core.detectar_regioes as D
     from core.pdf_io import abrir_pdf
 
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path / "dados"))
-
-    def quebrada(*args, **kwargs):
-        raise RuntimeError("de proposito")
-
-    de_verdade = P._preparar_metade_e_geometria
-    chamadas = []
-
-    def preparar(img, *args, **kwargs):
-        chamadas.append(img.shape[:2])
-        if len(chamadas) == 1:                 # a primeira e a da pagina grande
-            return quebrada()
-        return de_verdade(img, *args, **kwargs)
-
-    monkeypatch.setattr(P, "_preparar_metade_e_geometria", preparar)
     p = _livro_sem_marcacao(tmp_path)
+    pagina = p.paginas[0]
     doc = abrir_pdf(p.caminho_entrada)
     try:
-        previa, _ = P.renderizar_pagina(doc, p, p.paginas[0], dpi=110)
+        P.renderizar_pagina(doc, p, pagina, dpi=110)
+        provisoria = pagina.selecao
+
+        def quebrada(*args, **kwargs):
+            raise RuntimeError("de proposito")
+
+        monkeypatch.setattr(D, "detectar", quebrada)
+        assert P.acertar_no_tamanho_do_pdf(doc, p, pagina) is False
     finally:
         doc.close()
-    assert previa is not None and p.paginas[0].selecao != [], "a previa saiu e a marcacao existe"
-    assert max(detector_que_depende_do_tamanho[-1]) < 800
+    assert pagina.selecao is provisoria and pagina.marcacao_provisoria is True
+    assert pagina.alertas == [] and pagina.faixa_na_beirada is None, "nao mediu com a provisoria"
 
 
 # --- core.linhas_do_texto ------------------------------------------------------

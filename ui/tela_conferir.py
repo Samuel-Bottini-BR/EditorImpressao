@@ -1928,7 +1928,11 @@ class TelaConferir(QWidget):
         # trás (GerenciadorPrevias.pedir_medida), e chega em _previa_chegou.
         # Não durante o arrasto do medidor (cada valor do meio seria um
         # desenho do tamanho do PDF): só com a prévia normal.
-        if self._dpi_atual == self._dpi_normal:
+        # (13/10) e só DEPOIS de a prévia desta página existir: é ela que
+        # guarda a marcação provisória, que o desenho de trás troca pela do
+        # tamanho do PDF. Pedidos juntos, os dois procurariam a marcação ao
+        # mesmo tempo, na página pequena e na grande.
+        if self._dpi_atual == self._dpi_normal and img is not None:
             self.previas.pedir_medida(self.indice_pagina)
 
         if aba == ABA_BORDAS:

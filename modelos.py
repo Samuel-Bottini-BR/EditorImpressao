@@ -229,6 +229,19 @@ class ConfigPagina:
     gravura_forma: str | None = None
     gravura_feita_com: str = ""
 
+    # A marcacao que a MAQUINA fez nesta pagina e a PROVISORIA, achada na
+    # previa da tela (imagem pequena)? (13/10/2026) O detector acha areas
+    # diferentes na previa e na pagina do tamanho do PDF; a que vale e a do
+    # PDF. True = a pagina foi marcada na previa e ainda falta trocar pela do
+    # tamanho do PDF (a tela pede por tras para a pagina da vez; o PDF troca
+    # ao gerar). False = definitiva, ou pagina de projeto antigo (fica como
+    # esta), ou sem marcacao. A regra do "Para revisar" so mede com a
+    # definitiva. Nao e escolha de ninguem. Quem poe e tira:
+    # core.pipeline.garantir_selecao. Projeto antigo, sem o campo: False.
+    # Seguro mudar: nada aqui. Arriscado: por True sem haver marcacao
+    # automatica (a do tamanho do PDF apagaria o que a maquina marcou antes).
+    marcacao_provisoria: bool = False
+
     # Decisao D2 do Samuel (02/10/2026): "Sim, pode mudar (com copia de
     # seguranca dos projetos)" - as zonas ficam presas a FOLHA ORIGINAL.
     # `selecao` continua, na memoria, em fracao da pagina preparada (a tela e
