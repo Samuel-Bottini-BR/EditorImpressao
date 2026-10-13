@@ -1,37 +1,77 @@
 # Segunda conferência do "Para revisar": onde parei
 
-Verificador, 13/10/2026 (tarde). Ramo conferido: `origin/fase2-para-revisar` em `ce2b835`, trazido para esta
-worktree (`verif-para-revisar`, ramo `verif-para-revisar-2026-10-13`). A primeira conferência (commit `2d820d6`)
-foi feita em `36b9e32`.
+Verificador. **Parado pelo Samuel em 13/10/2026, 17:30 (checkpoint da sessão).** Ramo conferido:
+`origin/fase2-para-revisar` em `ce2b835`, trazido para esta worktree (`verif-para-revisar`, ramo
+`verif-para-revisar-2026-10-13`). A primeira conferência (commit `2d820d6`) foi em `36b9e32`.
+Não mudei código e não marquei nada como aprovado.
 
-## Já conferido na janela de verdade (pasta de dados nova: `trabalho/dados_teste2`)
+## Os 8 pontos na janela de verdade: todos conferidos
 
-| Ponto | Resultado | Print bruto (`trabalho/prints`) |
+Pasta de dados nova (`trabalho/dados_teste2`), mouse e teclado nativos, 1280 x 657. `erros.log` de teste vazio em todas as sessões.
+
+| Ponto | Resultado | Imagem (`img/`) |
 |---|---|---|
-| 1. Graduale 221 | Sem aviso depois de medir (antes dava "Desenho apagado") | `r2-graduale-221.png` |
-| 2. Dois cliques no cartão | Abre o "Ver de perto", não grava ação, o aviso continua | `r2-duplo-clique-*.png` |
-| 3. "está bom assim" (3º botão) | Egenloff 12, Gladstone 18, Rariora 8: aparece e aceita só aquele motivo; Ctrl+Z desfaz | `r2-egenloff-12-tres-botoes.png`, `r2-gladstone-18.png`, `r2-rariora-8.png` |
-| 4. Teclado | Os botões do aviso não ficam com o foco; a barra de espaço faz "está certo e avança"; Tab não chega neles. A seta não troca de página na minha janela de teste, mas é igual no programa de hoje (`q2_setas.py`): não dá para confirmar a seta | `r2-teclado-depois-do-clique.png` |
-| 5. Frase da lista | "Ainda tem 75 páginas que eu não tive certeza (104 avisos na lista)" (Camões) | `r2-contagens-2-lista.png` |
-| 6. "usar mais escuro" | No Egenloff 3 com a força em 85 o botão não aparece mais | `r2-egenloff-3-forca-85.png` |
-| 7. Força sozinha | Camões 27 e 104: age (85, "Desfazer"). Palatino 66, Egenloff 3, Camões 11: só o aviso "Texto falhado", força 50 | `r2-camoes-27.png`, `r2-palatino-66.png`, `r2-egenloff-3.png` |
-| 8. Aba Marcar se acerta sozinha | Graduale 221: 9 áreas, e 18 áreas 10,7 s depois de chegar. Área marcada à mão no intervalo (página 5) continuou lá | `r2-marcar-1-antes.png` … `r2-marcar-4-a-mao-depois.png` |
+| 1. A medida não depende mais da prévia | **Vale.** Graduale 221 sem aviso. As 89 páginas na ordem da janela: 22 vão, 75 certas, nenhuma diferente da conta direta (antes: 24 e 73). Resultado em `conferir-89-como-a-janela.json` | `janela-diferente-1-graduale-221-recorte.jpg` |
+| 2. Dois cliques no cartão | **Vale.** Abre o "Ver de perto", não grava ação, o aviso continua | `duplo-clique-1-aviso-continua-recorte.jpg` |
+| 3. "está bom assim" (3º botão) | **Vale** no Egenloff 12, na Gladstone 18 e no Rariora 8; Ctrl+Z desfaz | `sem-conteudo-1-egenloff-recorte.jpg`, `parece-em-branco-1-recorte.jpg`, `sem-conteudo-5-rariora-recorte.jpg` |
+| 4. Teclado | **Em parte.** Os botões do aviso não ficam com o foco; a barra de espaço faz "está certo e avança"; Tab não chega neles. A seta não troca de página na janela de teste, e dá igual no programa de hoje (`scripts/q2_setas.py`): não dá para confirmar a seta. Não conferi com a janela ativa (não tomo o teclado do Samuel) | `teclado-1-recorte.jpg` |
+| 5. Frase da lista | **Vale:** "Ainda tem 75 páginas que eu não tive certeza (104 avisos na lista)" (Camões) | `antes-3-lista-camoes.jpg` |
+| 6. "usar mais escuro" | **Vale:** no Egenloff 3 com a força em 85 o botão não aparece | `forca-7-egenloff-3-forca-85-recorte.jpg` |
+| 7. Força sozinha, mais cautelosa | **Vale.** Camões 27 e 104: age (85, "Desfazer"). Palatino 66, Egenloff 3 e Camões 11: só o aviso "Texto falhado", força 50 | `forca-1-camoes-recorte.jpg`, `palatino-66-2-aviso-recorte.jpg`, `forca-4-egenloff-3-recorte.jpg` |
+| 8. Aba Marcar se acerta sozinha | **Acontece:** Graduale 221, 9 áreas viram 18 em 10,7 s. O retângulo marcado à mão no intervalo (página 5) continuou lá | `marcar-1-antes-e-depois.jpg`, `marcar-4-a-mao-recorte.jpg` |
 
-As três contagens no Camões (para a `pergunta_contagens`): painel "Para revisar 39"; contador de cima "100 páginas
-para você olhar"; lista "75 páginas (104 avisos na lista)"; janela de salvar "106 página(s) que você não conferiu".
-Prints `r2-contagens-1-painel.png`, `-2-lista.png`, `-3-salvar.png`.
+Também conferido no programa novo: processar até "Ficou pronto!" (8 s, PDF com 6 páginas) e abrir um projeto gravado
+na primeira conferência (abre em 6 s, as áreas da aba Marcar ficam como estavam).
 
-## Falta (nesta ordem)
+## O `conferencia.json`: completo para os 8 pontos e as três perguntas
 
-1. As 89 páginas na ordem da janela, de novo (`scripts/conferir_89_como_a_janela.py`; apagar antes o
-   `conferir-89-como-a-janela.json` antigo, guardado como `...-1a-conferencia.json`).
-2. Folhear com "Só as letras" na janela, programa de hoje contra o ramo (`scripts/q4_folhear.py`, 2 rodadas de cada).
-3. `teste_velocidade.py`, 2 rodadas de cada, alternando (`velocidade/rodar_uma.ps1`, saída em `velocidade/rodadas-2`).
-   O "antes" é a minha worktree `.claude/worktrees/velocidade-antes-pr` (origin/fase-1, 94f71bd; junção `modelos`).
-4. Refazer as imagens de `img/`, os quadros do `conferencia.json`, as três perguntas e o relatório nos três formatos.
+Montado por `scripts/segunda.py` (em cima do `montar_conferencia.py` da primeira). Estado de agora:
 
-## Cuidados
+- 18 quadros (os 15 `pr-…` de antes, atualizados, mais `pr-marcar-sozinha`, `pr-duplo-clique`, `pr-teclado`), todos com `imgs`.
+- **As três perguntas estão escritas:** `pergunta_medir` (tempos atualizados), `pergunta_contagens` (Camões: painel 39,
+  lista 75 páginas e 104 avisos, janela de salvar 106) e `pergunta_tela_igual_ao_pdf`. Cada uma com a sugestão marcada como minha e "Ainda não entendi".
+- `conferencia.md`, `.html` e `.pdf` gravados com `relatorio.gravar`.
+- **Falta no JSON e no relatório:** a tabela do layout (não medido) e a frase do veredito sobre a velocidade (ver abaixo).
 
-- Outro verificador (`verif-corte-g6`) rodou teste de velocidade das 13:58 às 14:49: esperei ele acabar antes de usar o PC.
-- `v.fechar()` fecha primeiro o "Ver de perto" que ficar aberto (sem isso a janela de teste não fechava).
-- Para desfazer a worktree `velocidade-antes-pr`: primeiro `(Get-Item …\velocidade-antes-pr\modelos).Delete()`.
+## Velocidade: o que existe e o que falta
+
+`teste_velocidade.py`, Marial de 300 folhas, uma rodada por vez. Rodadas em `velocidade/rodadas-2/`.
+
+| Braço | Rodadas feitas | Onde |
+|---|---|---|
+| 1. `fase-1` de hoje (94f71bd, worktree `velocidade-antes-pr`) | **2** (15:35 e 16:00) | `rodadas-2/antes-1`, `antes-2` |
+| 2. "Para revisar" (ce2b835, esta worktree) | **2** (15:48 e 16:11) | `rodadas-2/depois-1`, `depois-2` |
+| 3. Layout juntado ao `fase-1` (`origin/juntar-layout3-2026-10-13`, f35bcaf) | **nenhuma** | a worktree `velocidade-layout` **não foi criada** |
+
+Resultado dos braços 1 e 2 (está no relatório): abrir, trocar de página e Preto e branco, não dá para dizer.
+**Mágico pro, 10 páginas: 54,6 s contra 55,2 s, +0,6 s (+1,1%), com vai-e-vem de 0,5 s e os dois pares para o mesmo lado
+(+0,6 e +0,7): pela minha conta sai "mais lento", por pouco.** Na primeira conferência os dois pares também tinham saído para
+o mesmo lado (+0,4 e +0,1). São 0,06 s por página. A gerente decide se conta.
+
+Folhear com "Só as letras" na janela (Antiphonal, 12 páginas parando 1,5 s e 12 sem parar; `velocidade/folhear/*.json`,
+2 rodadas de cada): trocar de página não ficou mais lento; **o trabalho por trás depois de parar passou de 8 a 9 s para 44 a 47 s.**
+
+**Falta medir:** o braço do layout. Como pediu a gerente (ordem 1, 2, 3, 1, 2, 3; layout com prioridade), o plano era
+rodar agora `fase-1`, layout, `fase-1`, layout, alternando, para o layout ter o seu "antes" na mesma hora, e gravar
+`velocidade/velocidade-layout.md`. Passos:
+
+1. `git -C D:\programas\EditorImpressao worktree add --detach .claude/worktrees/velocidade-layout origin/juntar-layout3-2026-10-13`
+   e a junção `modelos` (`New-Item -ItemType Junction`).
+2. Em `velocidade/rodar_uma.ps1`: acrescentar `layout` ao `ValidateSet` e ao `$copias`, e trocar `rodadas-2` por `rodadas-3`.
+3. Rodar `antes-3`, `layout-1`, `antes-4`, `layout-2`; juntar com a mesma conta do `montar_conferencia.velocidade()`.
+
+## O que mais falta
+
+- Abrir as imagens novas que ainda não abri uma a uma: `duplo-clique-1`, `duplo-clique-2-ver-de-perto`, `teclado-1`,
+  `teclado-2`, `forca-1`, `forca-2`, `forca-4`, `sem-conteudo-1`, `sem-conteudo-2`, `sem-conteudo-5`, `janela-diferente-1` e `-2`,
+  `marcar-2`, `marcar-3`, `palatino-66-3`, `parece-em-branco-2`, `contagens-2`, `contagens-3`, `bug-duplo-clique-tira-o-aviso-tela`.
+  Todas passaram na conferência por máquina de print velho (`scripts/achar_prints_velhos.py`) e o estado de cada tela foi lido na hora do print.
+- Não reabri na segunda conferência: Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66 (não eram dos consertos).
+
+## Como retomar
+
+- `python scripts/segunda.py` (com a pasta de trabalho na raiz da worktree) refaz o `conferencia.json` e o relatório; não mede nada.
+- `scripts/v.py` pilota a janela; `v.fechar()` fecha primeiro o "Ver de perto" que ficar aberto.
+- A pasta `trabalho/` (prints brutos, pastas de dados de teste, pedaços de PDF) está no disco, fora do git.
+- Worktrees que criei: `verif-para-revisar` (junções `modelos`, `gabarito\paginas`, `gabarito\scantailor-24-09`) e
+  `velocidade-antes-pr` (junção `modelos`). Para desfazer, primeiro as junções, com `(Get-Item …).Delete()`.

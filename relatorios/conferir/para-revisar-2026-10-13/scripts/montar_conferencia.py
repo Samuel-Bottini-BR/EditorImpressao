@@ -21,8 +21,12 @@ def n(v, casas=1):
     return f"{v:.{casas}f}".replace(".", ",")
 
 
+FALTAM = []
+
+
 def img(nome, legenda):
-    assert (IMG / f"{nome}.jpg").exists(), nome
+    if not (IMG / f"{nome}.jpg").exists():      # 2a conferencia: tres imagens da 1a sairam; os quadros que as citavam sao trocados pelo segunda.py
+        FALTAM.append(nome)
     return {"src": f"img/{nome}.jpg", "legenda": legenda}
 
 

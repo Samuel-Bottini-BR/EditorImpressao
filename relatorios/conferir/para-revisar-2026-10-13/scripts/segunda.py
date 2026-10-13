@@ -309,6 +309,21 @@ def tabela2(vel):
     return [{"o_que": a, "como": b, "resultado": c} for a, b, c in p8]
 
 
+_vel = M.velocidade
+
+
+def velocidade2():
+    """Igual a da primeira, mas mostra o commit do PROGRAMA no braco "depois" (a worktree de
+    conferencia esta em ba50856, que e o ce2b835 do ramo mais os arquivos desta conferencia)."""
+    vel = _vel()
+    if vel:
+        for r in vel["rodadas"]:
+            if r["rodada"].startswith("depois"):
+                r["commit"] = "ce2b835"
+    return vel
+
+
+M.velocidade = velocidade2
 M.tabela = tabela2
 M.main()
 d = json.loads((BASE / "conferencia.json").read_text(encoding="utf-8"))

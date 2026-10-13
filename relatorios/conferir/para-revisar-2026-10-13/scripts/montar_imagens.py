@@ -110,7 +110,7 @@ def main():
     f(recorte("01-o-que-fazer-caixinha-forca", "forca-5-caixinha-recorte", (55, 270, 935, 625)))
     f(inteira("01-o-que-fazer-caixinha-forca", "forca-6-caixinha-tela"))
     # 7 antes de processar
-    f(inteira("25a-antes-de-processar-egenloff", "antes-1-lista-egenloff"))
+    # (a lista do Egenloff da 1a conferencia saiu: tinha a frase antiga)
     f(inteira("10c-depois-do-ver-pagina3", "antes-2-depois-do-ver-tela"))
     f(inteira("32a-antes-de-processar-camoes", "antes-3-lista-camoes"))
     f(inteira("10d-janela-confirmar", "antes-4-confirmar"))
@@ -127,6 +127,8 @@ def main():
     for origem, nome in (("62-cursus-p3", "cursus-3"), ("61-opusmajus-p1", "opus-majus-20"),
                          ("60-palatino-p66", "palatino-66"), ("63-antiphon-p260", "antiphon-260")):
         f(recorte(f"{origem}-perto", f"{nome}-1-pagina-recorte", PERTO, 0.9))
+        if nome == "opus-majus-20":
+            continue          # 2a conferencia: os prints da tela desta pagina sao de antes do conserto
         f(recorte(f"{origem}-tela", f"{nome}-2-aviso-recorte", SO_AVISO, 1.0))
         f(inteira(f"{origem}-tela", f"{nome}-3-tela"))
     # 14 camoes 66
