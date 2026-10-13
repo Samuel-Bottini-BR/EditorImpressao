@@ -27,6 +27,7 @@ from modelos import ConfigFolha, ConfigPagina, Projeto
 from tests.test_misto_no_programa import (  # noqa: F401 - fixtures e paginas sinteticas
     _pagina_sintetica,
     _projeto,
+    _resultado_falso,
     leitor_falso,
     linhas_limpas,
 )
@@ -286,8 +287,10 @@ def test_os_campos_novos_vao_e_voltam_do_projeto_salvo():
 @pytest.fixture
 def texto_falhado(monkeypatch):
     """Troca a conta da regra por uma que diz "texto falhado" enquanto a forca
-    do preto esta abaixo de `ate` (como o Camoes 27: 85 fecha as letras)."""
-    estado = {"ate": P.FORCA_DO_REFORCO, "forcas": []}
+    do preto esta abaixo de `ate` (como o Camoes 27: 5 linhas falhadas de 28,
+    e a 85 fecham todas). `falhadas` e `contadas`: as linhas com a forca
+    fraca; `depois`: as que continuam falhadas com a forca em `ate` ou mais."""
+    estado = {"ate": P.FORCA_DO_REFORCO, "forcas": [], "falhadas": 5, "contadas": 28, "depois": 0}
     original = P.misto.aplicar_misto
 
     def espiao(img, selecao, forca_preto, *args, **kwargs):
@@ -296,8 +299,8 @@ def texto_falhado(monkeypatch):
 
     def medir(*args, **kwargs):
         falhou = estado["forcas"][-1] < estado["ate"]
-        return revisar.Sinais(falhadas=3 if falhou else 0, linhas_contadas=5, sem_conteudo=0.2,
-                              linhas_fortes=5)
+        return revisar.Sinais(falhadas=estado["falhadas"] if falhou else estado["depois"],
+                              linhas_contadas=estado["contadas"], sem_conteudo=0.2, linhas_fortes=5)
 
     monkeypatch.setattr(P.misto, "aplicar_misto", espiao)
     monkeypatch.setattr(P.revisar, "medir", medir)
@@ -322,15 +325,67 @@ def test_texto_falhado_escurece_a_forca_so_nessa_pagina_e_avisa(leitor_falso, te
     assert pagina.alertas.count(analise.FORCA_REFORCADA) == 1
 
 
-def test_se_o_reforco_nao_resolve_o_aviso_de_texto_falhado_fica_junto(leitor_falso, texto_falhado):
-    """O texto vermelho do Egenloff 3: nem a 85 fecha."""
-    texto_falhado["ate"] = 101
+def test_se_o_reforco_nao_resolve_a_forca_volta_e_fica_so_o_aviso(leitor_falso, texto_falhado):
+    """O texto vermelho do Egenloff 3 e o Antiphonal 252: a 85 as linhas
+    falhadas nao caem. Decisao da gerente (13/10, a "P3"): a forca volta a de
+    antes e a pagina fica so com o aviso e o botao "usar mais escuro"."""
+    texto_falhado["ate"] = 101                       # nem a forca do reforco resolve
+    img, s = _pagina_sintetica()
+    p = _projeto(s, misto_so_as_letras=True)
+    pagina = p.paginas[0]
+    saida, _ = P._filtrar(p, pagina, img.copy())
+    assert texto_falhado["forcas"] == [50, P.FORCA_DO_REFORCO, 50], "tentou, mediu e voltou"
+    assert pagina.forca_preto == 50 and pagina.forca_antes_do_reforco is None
+    assert pagina.reforco_desfeito is True
+    assert pagina.alertas == [analise.TEXTO_FALHADO]
+    # a pagina que sai e a da forca de antes
+    linhas, altura = misto.mascara_das_linhas([_resultado_falso()], img.shape)
+    esperado, _ = misto.aplicar_misto(img.copy(), s, 50, fora_do_texto=misto.FORA_REDE,
+                                      linhas=linhas, altura_linha=altura)
+    assert np.array_equal(saida, esperado)
+    # e o programa nao tenta de novo no desenho seguinte
+    texto_falhado["forcas"].clear()
+    P._filtrar(p, pagina, img.copy())
+    assert texto_falhado["forcas"] == [50] and pagina.forca_preto == 50
+
+
+def test_se_as_linhas_falhadas_caem_mas_nao_todas_o_reforco_fica(leitor_falso, texto_falhado):
+    texto_falhado["depois"] = 2                      # de 5 para 2: melhorou
     img, s = _pagina_sintetica()
     p = _projeto(s, misto_so_as_letras=True)
     pagina = p.paginas[0]
     P._filtrar(p, pagina, img.copy())
-    assert pagina.forca_preto == P.FORCA_DO_REFORCO
+    assert pagina.forca_preto == P.FORCA_DO_REFORCO and pagina.forca_antes_do_reforco == 50
     assert pagina.alertas == [analise.FORCA_REFORCADA, analise.TEXTO_FALHADO]
+
+
+@pytest.mark.parametrize("falhadas, contadas, escurece", [
+    (2, 15, False),      # Egenloff 3 e Antiphonal 252: so o aviso
+    (3, 12, False),      # Palatino 66 (caligrafia; a forca sujava a moldura), Camoes 11, ljs47 103
+    (4, 28, True),
+    (5, 28, True),       # Camoes 27
+    (1, 1, True),        # Camoes 104: todas as linhas contadas
+    (2, 2, True),
+])
+def test_a_forca_sozinha_so_age_com_4_linhas_falhadas_ou_com_todas(leitor_falso, texto_falhado,
+                                                                 falhadas, contadas, escurece):
+    """Decisao da gerente (13/10/2026): o aviso "Texto falhado" continua com 2
+    linhas, mas a forca so escurece sozinha com 4 ou mais, ou com todas. Nas
+    89 paginas: age no Camoes 27 e no 104; o Palatino 66 fica so com o aviso."""
+    assert P.LINHAS_PARA_REFORCAR == 4
+    texto_falhado.update(falhadas=falhadas, contadas=contadas)
+    img, s = _pagina_sintetica()
+    p = _projeto(s, misto_so_as_letras=True)
+    pagina = p.paginas[0]
+    P._filtrar(p, pagina, img.copy())
+    if escurece:
+        assert pagina.forca_preto == P.FORCA_DO_REFORCO and pagina.forca_antes_do_reforco == 50
+        assert pagina.alertas == [analise.FORCA_REFORCADA]
+    else:
+        assert pagina.forca_preto == 50 and pagina.forca_antes_do_reforco is None
+        assert pagina.reforco_desfeito is False, "nao tentou: se a pagina piorar depois, pode agir"
+        assert pagina.alertas == [analise.TEXTO_FALHADO]
+        assert texto_falhado["forcas"] == [50], "sem reforco, filtra uma vez so"
 
 
 def test_com_o_reforco_desligado_no_livro_so_avisa(leitor_falso, texto_falhado):

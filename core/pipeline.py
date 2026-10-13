@@ -2014,7 +2014,16 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
 
     saida, sinais = uma_vez()
     if _reforcar_se_o_texto_falhou(projeto, pagina, sinais):
-        saida, _sinais = uma_vez()
+        saida, depois = uma_vez()
+        if not _o_reforco_resolveu(sinais, depois):
+            # escureceu e as linhas falhadas nao cairam (o texto vermelho do
+            # Egenloff 3, o Antiphonal 252): a forca volta a de antes, o
+            # programa nao tenta de novo nesta pagina, e ela fica so com o
+            # aviso "Texto falhado" e o botao "usar mais escuro"
+            pagina.forca_preto = int(pagina.forca_antes_do_reforco)
+            pagina.forca_antes_do_reforco = None
+            pagina.reforco_desfeito = True
+            saida, _sinais = uma_vez()
     return saida
 
 
@@ -2030,9 +2039,38 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
 #
 # A forca do reforco: medido na rodada 4 (LEIA-ME, "Forca do preto"), 85 em
 # vez de 50 fecha as letras do Camoes 27 e 104; nao resolve o vermelho do
-# Egenloff 3 (ali o aviso "Texto falhado" continua junto). E o mesmo valor do
-# botao "usar mais escuro". Seguro mudar: o numero (so muda o quanto escurece).
+# Egenloff 3. E o mesmo valor do botao "usar mais escuro". Seguro mudar: o
+# numero (so muda o quanto escurece).
 FORCA_DO_REFORCO = 85
+
+# QUANDO a forca age sozinha (decisao da gerente, 13/10/2026, a "P3"): o aviso
+# "Texto falhado" continua valendo com 2 linhas falhadas, mas a forca so e
+# escurecida sozinha com LINHAS_PARA_REFORCAR ou mais linhas falhadas, ou com
+# todas as linhas contadas falhadas; e, depois de escurecer, a pagina e medida
+# de novo e o reforco so fica se as linhas falhadas CAIREM
+# (_o_reforco_resolveu). Um aviso a mais custa pouco; uma pagina boa
+# escurecida sozinha custa caro.
+# O defeito que isto conserta (verificador, 13/10): no Palatino 66, pagina de
+# caligrafia de traco fino, a regra achava 3 linhas falhadas, a forca era
+# escurecida e sujava a moldura. Medido nas 89 paginas, livro novo, 300 DPI
+# (relatorios/para-revisar-impl/ONDE-PAREI.md, "Investigacao 8"): com 2
+# linhas a forca agia em 7 paginas - Camoes 27 (5 linhas falhadas de 28) e
+# 104 (1 de 1), onde precisa e resolve; Camoes 11, ljs47 103 e Palatino 66 (3
+# linhas cada: nenhum numero separa o Palatino, que nao precisava, dos outros
+# dois); Antiphonal 252 (2, e a 85 continuam 2) e Egenloff 3 (2, e a 85 viram
+# 5). Com 4 linhas ou todas, age so no Camoes 27 e no 104; as outras ficam
+# com o aviso e o botao "usar mais escuro" (um clique).
+# Seguro mudar: o numero, olhando essa tabela. Arriscado: baixar para 3 (o
+# Palatino 66 volta a ser escurecido sozinho).
+LINHAS_PARA_REFORCAR = 4
+
+
+def _o_reforco_resolveu(antes, depois) -> bool:
+    """Depois de escurecer a forca, as linhas falhadas cairam? `antes` e
+    `depois` sao os sinais (core.revisar.Sinais) da pagina com a forca dela e
+    com a do reforco; sem a medida de depois (None), nao da para dizer que
+    resolveu: nao."""
+    return depois is not None and depois.falhadas < antes.falhadas
 
 
 def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) -> bool:
@@ -2040,7 +2078,10 @@ def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) 
     falhado (`sinais`, de core.revisar; None = nao foi medida). Devolve True
     se escureceu (quem chama filtra a pagina de novo).
 
-    So quando: o livro tem o reforco ligado (Projeto.reforcar_texto_falhado,
+    So quando: a pagina tem LINHAS_PARA_REFORCAR ou mais linhas falhadas, ou
+    todas as linhas contadas falhadas (com menos, fica so o aviso; ver
+    LINHAS_PARA_REFORCAR); o livro tem o reforco ligado
+    (Projeto.reforcar_texto_falhado,
     o botao de desligar da regra 8 do plano); o programa ainda nao reforcou
     esta pagina; a pessoa nao desfez o reforco nem mexeu na forca depois dele
     (ConfigPagina.reforco_desfeito); e a forca dela esta abaixo da do
@@ -2049,6 +2090,9 @@ def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) 
     a copia muda. Arriscado: reforcar sem guardar a forca de antes (o
     "Desfazer" nao teria para onde voltar)."""
     if sinais is None or not sinais.texto_falhado:
+        return False
+    todas = sinais.linhas_contadas > 0 and sinais.falhadas == sinais.linhas_contadas
+    if sinais.falhadas < LINHAS_PARA_REFORCAR and not todas:
         return False
     if not getattr(projeto, "reforcar_texto_falhado", False):
         return False
