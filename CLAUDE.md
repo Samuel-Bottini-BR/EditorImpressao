@@ -282,9 +282,20 @@ propósito.
 é estimado numa miniatura de ~400 px e reescalado: mesmo resultado ~10× mais
 rápido (5,0 s → 0,5 s por página a 300 DPI).
 
-**Ordem obrigatória do processamento:**
-`dividir folhas → cortar bordas → endireitar → filtro → montar cadernos`
-Páginas apagadas são descartadas logo depois da etapa 1.
+**Ordem obrigatória do processamento** (mudou para os livros novos em
+09/10/2026 — decisão do Samuel na pergunta `g6-endireitar-antes`, "Endireitar
+antes de cortar (como o ScanTailor): pode começar?" → "Pode começar"):
+
+- **Livro novo:** `dividir folhas → endireitar a página inteira → achar o
+  corte na página reta e cortar → filtro → montar cadernos` (como o
+  ScanTailor).
+- **Projeto começado antes de 09/10/2026** (sem o campo `ordem_do_preparo`
+  no `projeto.json`): `dividir folhas → cortar bordas → endireitar → filtro →
+  montar cadernos`, como sempre, idêntico ponto por ponto.
+
+O campo é `Projeto.ordem_do_preparo` (`core/ordem_do_preparo.py`). O giro de
+90 em 90 vem antes de tudo nas duas. Páginas apagadas são descartadas logo
+depois da etapa 1.
 
 Comandos:
 

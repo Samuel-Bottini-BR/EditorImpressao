@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 08/10/2026, madrugada (PARTE -13). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 12/10/2026 (PARTE -14; a anterior, PARTE -13, é de 08/10). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,108 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -13 — Checkpoint de 07 a 08/10/2026 (leia isto primeiro, é o mais novo)
+# PARTE -14 — Checkpoint da sessão na nuvem, 09 a 12/10/2026 (leia isto primeiro, é o mais novo)
+
+O Samuel trabalhou de 09 a 12/10 numa sessão do Claude Code **na nuvem** e pediu, em 12/10, para salvar tudo e voltar ao
+Claude Code local. **Nada ficou sem gravar:** todos os ramos estão no GitHub, sem mudança fora de commit. O plano está nas
+duas cópias (`docs/plano/` e `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\`), iguais. **O que manda continua
+sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). O Registro de mudanças do PLANO-DEFINITIVO já tem
+as entradas de 07 a 09/10.
+
+## 0. Para recomeçar no PC (primeira coisa a fazer)
+
+- A pasta principal `D:\programas\EditorImpressao` ainda está no `fase-1` antigo (`4bf3888`). O `fase-1` no GitHub está em
+  `a358d4e` (só documentos a mais e o conserto dos testes). Fazer: `git -C D:\programas\EditorImpressao pull --ff-only`
+  (não há conflito: o que mudou são documentos, relatórios e `tests/`).
+- **A sessão na nuvem lia e gravava o HD pelo servidor `https://claude-hd.tail920a48.ts.net/` (WebDAV).** Gravou só:
+  a cópia do plano em `plano-24-09-2026\` (com a anterior guardada em `PLANO-DEFINITIVO.antes-2026-10-09.md`) e a pasta
+  `D:\programas\EditorImpressao-arquivos\sessao-nuvem-2026-10-09\` (cópia do banco das páginas e este checkpoint).
+  **Nunca gravou dentro de `D:\programas\EditorImpressao`**, para não atrapalhar o `git pull`.
+
+## 1. Testes no Windows do GitHub (novo, autorizado pelo Samuel em 09/10)
+
+- Workflow `.github/workflows/testes-windows.yml`, que mora **só no ramo `claude/list-server-files-gkos8v`** (não está no
+  `fase-1`). Roda a suíte em 5 máquinas Windows em paralelo (~6 a 9 min), com Python 3.14.3 e as versões exatas da `.venv`
+  do Samuel (`.github/requisitos-windows.txt`), mais `teste_botoes.py` e prints da janela real (1920x1080).
+- Testa **qualquer ramo sem gravar nele**: Actions > "Testes no Windows" > Run workflow, campo `ramo` (no ref
+  `claude/list-server-files-gkos8v`). Outras opções: `antes_depois` (antes/depois do endireitar nas páginas-gabarito),
+  `so_janela` (só botões e prints), `velocidade` (o `teste_velocidade.py` com o Marial).
+- Ramos novos de apoio (autorizados em 09/10): **`dados-de-teste`** (páginas-gabarito com a Escola de Jesus, modelos e o
+  `marial_300.pdf`; repositório público, publicação autorizada pelo Samuel) e **`prints-testes`** (prints de cada rodada,
+  pasta `data_hora_sha_ramo`). Fora do ramo de dados ficou só o `horas_p047.tif` (154 MB, acima do limite).
+- Resultado de referência: `fase-1` 1947 passaram, 0 falharam, 72 pulados (os 13 a mais que no PC são 11 do acervo inteiro
+  e 2 do Tesseract, que não estão lá). Um teste instável apareceu 1 vez em ~7 rodadas (ver §5).
+- **Velocidade lá não dá veredito:** as máquinas variam até 70% entre si. Medir velocidade só no PC.
+
+## 2. O que entrou no `fase-1` nesta sessão
+
+- Plano em dia (Registro de 07 a 09/10, os 13 pedidos da rodada 4, 7 bugs, rodada 5, G6), sempre só acrescentando.
+- Respostas literais: `relatorios/revisar-decisoes/rodada-5/respostas-samuel.md` e `relatorios/conferencia-samuel-2026-10-09.md`.
+- **Conserto do `erros.log`** (ramo `conserto-conftest-2026-10-08`, merge `a358d4e`): os testes não escrevem mais no
+  `erros.log` de verdade. Samuel autorizou. No Windows do GitHub: 0 falhas. Ressalva: lá o vazamento não acontecia nem
+  antes, então a prova de que resolve é rodar os testes no PC e ver o `erros.log` parado.
+
+## 3. Prontos, NÃO juntados (esperando a conferência do Samuel)
+
+- **G6, endireitar antes de cortar** (item 2.2), ramo `fase2-endireitar-2` = `44cbf21`. Livro novo: endireita a página
+  inteira e depois acha o corte; projeto antigo: igual (campo `Projeto.ordem_do_preparo`). Retângulo do corte à mão fica no
+  mesmo lugar ao mudar o ângulo (de fábrica); "acompanha o texto" pronto por dentro
+  (`pipeline.recorte_depois_de_mudar_o_angulo`), sem controle na tela. CLAUDE.md §7 desse ramo já descreve a ordem nova.
+  Windows: 0 falhas. Ressalvas do verificador: Escola 7 e Siebmacher 9 com o corte colado no que está impresso em cima;
+  Boécio 8 e Marial 7 trocam tiras brancas por cunhas brancas quando o corte vai até a beirada da folha; velocidade só no PC
+  (um par de máquinas igual, outro par mais lento).
+- **Layout, etapa 2 (tela sem abas)**, ramo `layout-impl-2026-10-08` = `a783bd9`. Menus à esquerda consertados.
+  Windows: 0 falhas, 166 ações no `teste_botoes`. Ressalvas: fila do Cortar não cabe em 1280x657 (pergunta r12-cortar-fila);
+  frase "A mesma página nos quatro filtros" repetida; ícones sem a letra do atalho; setas de página pequenas.
+- **Página de conferência dos dois:** https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX — 26 quadros com "Está bom /
+  Melhorar / Está pior" + comentário e uma decisão final por trabalho (ids `g6-*`, `g6`, `layout2-*`, `layout2`).
+  **Sem resposta ainda.** As fotos não apareciam para o Samuel; em 09/10 a página foi republicada com o contrato 0.2.69
+  (o mesmo da página de escolhas, onde as fotos aparecem). **Confirmar com ele se as fotos aparecem.** Se não, guardar as
+  fotos no asset store da página (Artifact, `asset: true`). Relatório nos três formatos no ramo `conferir-09-10`.
+- Uma página vazia criada por engano: https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW — **perguntar ao Samuel se pode
+  apagar** (ainda não respondeu).
+
+## 4. Esperando o Samuel
+
+- **Rodada 12 de layout** (página https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu, ids `r12-*`, ordem 701 a 710), sem
+  resposta: fila do Cortar, frase cortada, botões de girar, "Confirmar e processar", "Marcar como", Propriedades, tema,
+  telas fora, "aplicar em", nomes do endireitar. Ficou de fora a pergunta 8 do ONDE-PAREI (fundo escuro atrás da página no
+  tema cinza) — pode entrar como 711.
+- **A conferência do §3.**
+- Decididas nesta sessão (já no plano): G6 "Pode começar"; g6-retangulo "Fica no mesmo lugar"; g6-retangulo-onde
+  "quero a b e c juntas." (troca nas Configurações, no "O que fazer" e na ferramenta Endireitar — os três controles entram
+  depois da etapa 2 do layout); rodada 5 inteira.
+
+## 5. Próximos passos e achados
+
+1. `git pull` no PC (§0). Ler as respostas da conferência e da rodada 12 quando o Samuel avisar.
+2. **Aviso C1 em página reta** ("as contas discordam" com só 0,2°): causa provável é a análise medir a 150 DPI e a tela
+   mostrar a medida de 300 DPI. Consertar exige escolha do Samuel (medir a 300 ao abrir, mais lento; ou só avisar depois
+   da medida de 300) — **pergunta ainda não montada.**
+3. **Fase 2, próximos itens** (ordem do `docs/plano/fase2-geometria-plano.md`): 2.13 borda preta (G7), 2.5 caixa do
+   conteúdo (G8), 2.4 margens (G9), 2.6 tamanho final (G10). **Perguntas G7 a G10 nunca foram feitas**; precisam de
+   imagens do ScanTailor (no PC ou no Windows do GitHub).
+4. Para a Lista de bugs (ainda não escritos no plano): "Arraste o retangulo" sem acento (`ui/tela_conferir.py:2359`);
+   teste instável `test_gravura_na_aba_marcar.py::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita` (falhou 1 vez
+   em ~7 no Windows); `test_trilha_e_opcoes` ainda testa a trilha antiga; comentário da chave "tema" em `configuracoes.py`
+   desatualizado no ramo do layout.
+5. Lista de espera: instalar Tesseract no Windows do GitHub; pôr uma página torta do gabarito no roteiro de prints;
+   calcular os avisos "encostou no conteúdo" na ordem nova; aproveitar a imagem já girada (velocidade do G6).
+
+## 6. Regras e descobertas desta sessão
+
+- Perguntas ao Samuel: ele pediu "quando tiver mais perguntas me chama aqui" (avisar no chat); a resposta continua na
+  página. Em conferência de imagens, **cada quadro tem a sua pergunta e comentário** (a gerente errou isso em 09/10).
+- Antes de gravar a cópia do plano no HD, conferir que ela não mudou desde a última cópia (para não apagar edição do
+  Samuel) e guardar a anterior. Ele pediu: "não quero apagar as varias rodadas que eu fiquei respondendo relatorios, quero
+  que isso continue salvo e que o plano não mude, só seja acrescentado coisas."
+- O contêiner da nuvem pode reiniciar e matar os agentes; o que está no GitHub sobrevive. Fazer push a cada commit.
+- Página do claude.ai publicada com o contrato novo (0.2.75) pode não mostrar as fotos de arquivos ao lado; as páginas
+  antigas usam 0.2.69.
+
+---
+
+# PARTE -13 — Checkpoint de 07 a 08/10/2026
 
 O Samuel parou tudo às ~02h30 de 08/10 para **continuar numa sessão do Claude na nuvem**. Nada ficou sem gravar:
 todos os ramos estão no GitHub, e as cópias de trabalho (worktrees) não têm mudança sem commit. **O que manda

@@ -163,19 +163,16 @@ def test_so_texto_nao_tem_pedaco_da_vez():
 GABARITO = Path(__file__).resolve().parent.parent / "gabarito" / "paginas"
 
 
-@pytest.fixture(scope="module")
-def escola7():
-    """A Escola 7 como a aba Marcar a usa: sem filtro, preparada, a 110 DPI."""
-    pdf = GABARITO / "escola_p007.pdf"
-    if not pdf.is_file():
-        pytest.skip("sem a pasta gabarito/ (fica fora do git)")
-    import cv2
-
+def _escola7_preparada(pdf, ordem):
+    """A Escola 7 como a aba Marcar a usa (sem filtro, preparada, a 110 DPI)
+    num livro com a ordem do preparo `ordem` (core/ordem_do_preparo), e a
+    geometria do desenho (core/zonas_na_folha) dessa pagina."""
     from core import pipeline
     from core.pdf_io import abrir_pdf
     from modelos import Projeto
 
-    projeto = Projeto(caminho_entrada=str(pdf), nome="escola7")
+    pipeline._GEOMETRIAS.clear()
+    projeto = Projeto(caminho_entrada=str(pdf), nome="escola7", ordem_do_preparo=ordem)
     projeto.filtro_padrao = ORIGINAL
     projeto.detectar_regioes = False
     projeto = pipeline.analisar_projeto(projeto)
@@ -185,42 +182,92 @@ def escola7():
         img, _ = pipeline.renderizar_pagina(doc, projeto, pagina, dpi=110)
     finally:
         doc.close()
+    return img, dict(pagina.geometria_das_zonas)
+
+
+@pytest.fixture(scope="module")
+def _escola7():
+    """(imagem do livro novo, geometria dela, geometria do parecer).
+
+    Os retangulos do parecer do verificador (05/10/2026) foram desenhados na
+    pagina preparada na ordem de entao, "cortar_antes". Desde o G6
+    (09/10/2026) o livro novo endireita antes de cortar, e o corte da pagina
+    muda (na Escola 7, com o angulo do ScanTailor de 0,12 grau, sai a faixa
+    branca e a linha escura de cima e de baixo: 7% a menos de altura). As
+    mesmas fracoes cairiam em outro pedaco do papel; por isso os retangulos
+    sao levados para a pagina de agora pela conta das zonas
+    (zonas_na_folha.trocar_de_geometria), e o resultado volta ao referencial
+    do parecer para conferir os MESMOS limites de antes."""
+    pdf = GABARITO / "escola_p007.pdf"
+    if not pdf.is_file():
+        pytest.skip("sem a pasta gabarito/ (fica fora do git)")
+    import cv2
+
+    from core.ordem_do_preparo import CORTAR_ANTES, ORDEM_DO_LIVRO_NOVO
+
+    _, g_parecer = _escola7_preparada(pdf, CORTAR_ANTES)
+    img, g_agora = _escola7_preparada(pdf, ORDEM_DO_LIVRO_NOVO)
     lado = max(img.shape[:2])
     if lado > 1000:
         img = cv2.resize(img, None, fx=1000 / lado, fy=1000 / lado, interpolation=cv2.INTER_AREA)
-    return img
+    return img, g_agora, g_parecer
 
 
-# os retângulos do parecer do verificador (05/10/2026)
+@pytest.fixture(scope="module")
+def escola7(_escola7):
+    """A Escola 7 como a aba Marcar a usa: sem filtro, preparada, a 110 DPI."""
+    return _escola7[0]
+
+
+def _levar(caixa, de, para):
+    """Uma caixa (x0, y0, x1, y1) de um preparo da pagina para outro: a caixa
+    em volta do retangulo levado (com angulo, os cantos giram uma fracao de
+    ponto)."""
+    from core import zonas_na_folha as zf
+
+    regiao = [{"forma": "retangulo", "tipo": "gravura", "operacao": "somar",
+               "pontos": [list(caixa[:2]), list(caixa[2:])]}]
+    pontos = np.asarray(zf.trocar_de_geometria(regiao, de, para)[0]["pontos"], float)
+    return (float(pontos[:, 0].min()), float(pontos[:, 1].min()),
+            float(pontos[:, 0].max()), float(pontos[:, 1].max()))
+
+
+# os retangulos do parecer do verificador (05/10/2026), na pagina preparada
+# na ordem "cortar_antes" (ver _escola7)
 TEXTO_DA_ESCOLA = (0.018, 0.011, 0.994, 0.372)
 PINTURA_COM_FOLGA = (0.344, 0.345, 0.994, 0.966)
 
 
-def test_escola7_o_bloco_de_texto_nao_e_cortado(escola7):
-    folga = medir_folga(escola7, TEXTO_DA_ESCOLA)
+def test_escola7_o_bloco_de_texto_nao_e_cortado(_escola7):
+    img, g_agora, g_parecer = _escola7
+    texto = _levar(TEXTO_DA_ESCOLA, g_parecer, g_agora)
+    folga = medir_folga(img, texto)
     assert folga is not None
     assert not folga.figura, "o bloco de texto passou por figura"
     assert not folga.muito and not folga.muda
     s = Selecao()
-    s.acrescentar(_pedaco(TEXTO_DA_ESCOLA, PRETO_E_BRANCO))
-    nova, quantos = ajustar_os_pedacos(escola7, s, ORIGINAL)
+    s.acrescentar(_pedaco(texto, PRETO_E_BRANCO))
+    nova, quantos = ajustar_os_pedacos(img, s, ORIGINAL)
     assert quantos == 0 and nova.regioes == s.regioes
 
 
-def test_escola7_a_pintura_continua_sendo_ajustada(escola7):
-    folga = medir_folga(escola7, PINTURA_COM_FOLGA)
+def test_escola7_a_pintura_continua_sendo_ajustada(_escola7):
+    img, g_agora, g_parecer = _escola7
+    folga = medir_folga(img, _levar(PINTURA_COM_FOLGA, g_parecer, g_agora))
     assert folga.figura and folga.muito and folga.muda
-    x0, y0, x1, y1 = folga.justa
+    # a caixa justa, no referencial do parecer: os mesmos limites de antes
+    x0, y0, x1, y1 = _levar(folga.justa, g_agora, g_parecer)
     assert 0.37 < x0 < 0.39 and 0.37 < y0 < 0.40 and y1 < 0.94    # sem a linha e a legenda
 
 
-def test_escola7_texto_e_pintura_na_mesma_pagina(escola7):
+def test_escola7_texto_e_pintura_na_mesma_pagina(_escola7):
     """O caso do verificador: um pedaço de texto e outro de pintura. O
     botão ajusta a pintura e deixa o texto como foi desenhado."""
+    img, g_agora, g_parecer = _escola7
     s = Selecao()
-    s.acrescentar(_pedaco(PINTURA_COM_FOLGA, ORIGINAL))
-    s.acrescentar(_pedaco(TEXTO_DA_ESCOLA, ORIGINAL))
-    nova, quantos = ajustar_os_pedacos(escola7, s, PRETO_E_BRANCO)
+    s.acrescentar(_pedaco(_levar(PINTURA_COM_FOLGA, g_parecer, g_agora), ORIGINAL))
+    s.acrescentar(_pedaco(_levar(TEXTO_DA_ESCOLA, g_parecer, g_agora), ORIGINAL))
+    nova, quantos = ajustar_os_pedacos(img, s, PRETO_E_BRANCO)
     assert quantos == 1
     assert nova.regioes[1] == s.regioes[1]
     assert nova.regioes[0] != s.regioes[0]
