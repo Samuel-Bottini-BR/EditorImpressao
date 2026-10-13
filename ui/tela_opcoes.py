@@ -192,7 +192,7 @@ class TelaOpcoes(QWidget):
         self.combo_jeito_dividir.setToolTip(
             "Onde a folha é dividida: o do programa procura a lombada no meio das "
             "folhas deitadas; o do ScanTailor divide toda folha mais larga que alta, "
-            "na dobra que ele acha. Dá para trocar numa folha só, na aba Onde cortar.")
+            "na dobra que ele acha. Dá para trocar numa folha só, com a ferramenta Dividir a folha.")
         self.combo_jeito_dividir.currentIndexChanged.connect(lambda _i: self._mudou())
         linha.addWidget(self.rotulo_jeito_dividir)
         linha.addWidget(self.combo_jeito_dividir)
@@ -228,7 +228,7 @@ class TelaOpcoes(QWidget):
         self.combo_conta_endireitar.setToolTip(
             "Como a inclinação da página é medida: a conta do ScanTailor ou a do "
             "programa. Quando as duas discordam mais de 0,3 grau, a página vai para "
-            "\"Para revisar\". Dá para trocar numa página só, na aba Endireitar.")
+            "\"Para revisar\". Dá para trocar numa página só, com a ferramenta Endireitar.")
         self.combo_conta_endireitar.currentIndexChanged.connect(lambda _i: self._mudou())
         linha.addWidget(self.rotulo_conta_endireitar)
         linha.addWidget(self.combo_conta_endireitar)

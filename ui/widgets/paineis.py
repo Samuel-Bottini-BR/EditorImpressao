@@ -138,6 +138,27 @@ def lista_estreita(lista) -> None:
     lista.view().setTextElideMode(Qt.ElideNone)
 
 
+def nome_da_conta(jeito: str) -> str:
+    """O nome de uma conta do endireitar COMO APARECE NOS PAINEIS.
+
+    A conta antiga do programa chama-se "Editor" na linha dos dois angulos
+    (decisao do Samuel, rodada 13 do layout, 805 C: "A conta vira 'Editor'").
+    Para a mesma conta nao ter duas palavras no mesmo painel, a lista "Conta",
+    a parte "Para o livro todo", o painel Automatico e a frase do Historico
+    dizem "a do Editor" tambem. ISTO E LEITURA DA GERENTE (13/10/2026), para o
+    Samuel confirmar: a escolha dele foi sobre a linha dos angulos.
+
+    So muda o texto na tela: o codigo gravado no projeto continua "programa"
+    (core/endireitar_scantailor.JEITO_PROGRAMA), e o texto de la
+    (NOMES_DOS_JEITOS, "a do programa") nao foi mexido; a tela "O que fazer"
+    ainda o usa. Seguro mudar: a palavra."""
+    from core import endireitar_scantailor as es
+
+    if jeito == es.JEITO_PROGRAMA:
+        return "a do Editor"
+    return es.NOMES_DOS_JEITOS.get(jeito, str(jeito))
+
+
 def titulo_de_parte(texto: str) -> QLabel:
     """O título de uma PARTE do Propriedades, em maiúsculas ("SÓ NESTA
     PÁGINA", "PARA O LIVRO TODO": rodada 12, 706 B)."""
@@ -800,7 +821,7 @@ class PainelAutomatico(Painel):
              f"jeito: {dividir_scantailor.NOMES_DOS_JEITOS[jeito]}"),
             (bool(projeto.endireitar), "Endireitar folhas tortas",
              "corrige páginas inclinadas",
-             f"conta: {endireitar_scantailor.NOMES_DOS_JEITOS[conta]}"),
+             f"conta: {nome_da_conta(conta)}"),
             (bool(projeto.cortar_bordas), "Cortar as bordas",
              "tira a borda preta e a sombra do scanner",
              "beirada da folha vizinha: "

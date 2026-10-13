@@ -183,6 +183,7 @@ from ui.widgets.paineis import (
     ColunaDePaineis,
     frase_do_painel,
     lista_estreita,
+    nome_da_conta,
     risco_do_painel,
     titulo_de_parte,
     titulo_de_secao,
@@ -1073,8 +1074,9 @@ class TelaConferir(QWidget):
             "Põe a linha de divisão desta folha em todas as folhas.")
         par.setStretch(0, 1)
         par.setStretch(1, 1)
-        _botao("girar", coluna, self._girar).setToolTip(
-            "Gira a folha ¼ de volta para a direita (vale o \"aplicar em\" do girar).")
+        # (O botao "girar" que ficava aqui saiu em 13/10/2026: fazia o mesmo que
+        # o "¼ à direita" do bloco "Girar a folha", logo acima no painel - os
+        # dois chamavam _girar_folhas(GIRO_DIREITA), com o mesmo "aplicar em".)
         coluna.addSpacing(6)
         jeito_do_livro = dividir_scantailor.jeito_valido(
             getattr(self.projeto, "dividir_como", None))
@@ -1431,10 +1433,9 @@ class TelaConferir(QWidget):
         coluna.addWidget(self.rotulo_conta_do_endireitar)
         self.combo_conta_do_endireitar = QComboBox()
         for jeito in endireitar_scantailor.JEITOS:
-            self.combo_conta_do_endireitar.addItem(
-                endireitar_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            self.combo_conta_do_endireitar.addItem(nome_da_conta(jeito), jeito)
         self.combo_conta_do_endireitar.setToolTip(
-            "Endireita esta página por outra conta: a do ScanTailor ou a do programa. "
+            "Endireita esta página por outra conta: a do ScanTailor ou a do Editor. "
             "Os números embaixo são os ângulos que cada uma achou.")
         self.combo_conta_do_endireitar.currentIndexChanged.connect(
             lambda _i: self._trocar_conta_do_endireitar())
@@ -1445,8 +1446,7 @@ class TelaConferir(QWidget):
         coluna.addSpacing(6)
         conta_do_livro = endireitar_scantailor.jeito_do_livro(self.projeto)
         coluna.addWidget(self._parte_do_livro(
-            ["Conta do endireitar: "
-             + endireitar_scantailor.NOMES_DOS_JEITOS[conta_do_livro]]))
+            ["Conta do endireitar: " + nome_da_conta(conta_do_livro)]))
 
     def _montar_aba_marcar(self) -> None:
         """A aba de marcar a mao onde estao gravura, letra e papel.
@@ -3529,7 +3529,7 @@ class TelaConferir(QWidget):
             {"endireitar_como": None if jeito == es.jeito_do_livro(self.projeto) else jeito,
              "revisada": True},
             f"Página {self.indice_pagina + 1}: endireitar pela conta "
-            f"“{es.NOMES_DOS_JEITOS[jeito]}”",
+            f"“{nome_da_conta(jeito)}”",
         )
 
     @protegido

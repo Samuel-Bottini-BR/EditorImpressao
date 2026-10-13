@@ -232,14 +232,18 @@ def test_a_tecla_r_ficou_so_para_o_retangulo(janela, pasta):
         atalhos.restaurar_padrao("ferramenta_retangulo")
 
 
-def test_o_botao_girar_de_sempre_continua_um_quarto_a_direita(janela, pasta):
+def test_no_dividir_ha_um_girar_so(janela, pasta):
+    """O botao "girar" de sempre do Dividir fazia o mesmo que o "¼ à direita"
+    do bloco "Girar a folha" (os dois: um quarto de volta a direita, com o
+    "aplicar em"). Com o bloco no alto do painel Propriedades, o repetido saiu
+    (13/10/2026); o giro de sempre continua, no bloco."""
     tela = _aberta(janela, pasta, dividir=True)
     tela.barra_abas.setCurrentIndex(tela._abas_ativas.index("corte"))
     linha = tela.linhas_de_botoes["corte"]
     from PySide6.QtWidgets import QPushButton
 
-    botao = next(b for b in linha.findChildren(QPushButton) if b.text() == "girar")
-    botao.click()
+    assert not [b for b in linha.findChildren(QPushButton) if b.text() == "girar"]
+    tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
     assert _rotacoes(janela) == [90, 0, 0, 0, 0]
 
 

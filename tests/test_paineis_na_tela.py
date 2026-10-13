@@ -202,6 +202,11 @@ def test_a_faixa_tem_esta_certo_e_proxima_duvida(janela, pasta):
     assert tela.indice_pagina == 3
     assert not tela.botao_sugestao.isHidden()
     assert tela.botao_sugestao.text() == analise.descrever(analise.COR).acao
+    # as palavras da rodada 12 (710 B) e da 13 (805 C) tambem nos avisos
+    assert analise.descrever(analise.ANGULO_SUSPEITO_).acao == "deixar como veio"
+    contas = analise.descrever(analise.CONTAS_DO_ENDIREITAR_DISCORDAM).mensagem
+    assert "a do Editor" in contas and "ferramenta Endireitar" in contas
+    assert "aba " not in contas and "programa" not in contas
     assert tela.botoes_de_sugestao["bordas"] is tela.botao_sugestao
     tela.botao_esta_certo.click()
     assert janela.projeto.paginas[3].revisada
@@ -347,6 +352,11 @@ def test_o_propriedades_do_endireitar_tem_os_nomes_novos(janela, pasta):
     partes = [r.text() for r in conteudo.findChildren(QLabel)]
     assert "SÓ NESTA PÁGINA" in partes and "PARA O LIVRO TODO" in partes
     assert any(t.startswith("Conta do endireitar:") for t in partes)
+    # a mesma conta com uma palavra so no painel (805 C: "Editor")
+    lista = tela.combo_conta_do_endireitar
+    assert [lista.itemText(i) for i in range(lista.count())] == ["a do ScanTailor", "a do Editor"]
+    from core import endireitar_scantailor as es
+    assert [lista.itemData(i) for i in range(lista.count())] == list(es.JEITOS), "os codigos nao mudam"
     tela.paineis.abrir("props")
     _assentar()
     assert tela.paineis.propriedades.cabecalho.subtitulo.text() == "Endireitar"
@@ -382,7 +392,8 @@ def test_o_propriedades_do_dividir(janela, pasta):
     assert tela.barra_botoes.height() == 0
     conteudo = tela.propriedades_das_abas["corte"]
     botoes = _botoes(conteudo)
-    assert {"usar em todas", "girar"} <= set(botoes)
+    assert "usar em todas" in botoes
+    assert "girar" not in botoes, "o girar e um so: o bloco no alto do painel"
     assert tela.botao_nao_dividir in botoes.values()
     assert conteudo.isAncestorOf(tela.combo_jeito_da_folha)
     partes = [r.text() for r in conteudo.findChildren(QLabel)]
