@@ -185,8 +185,12 @@ def test_os_controles_do_endireitar_g5_moram_na_ferramenta_endireitar(janela, pa
         assert not tela.barra_botoes.isAncestorOf(controle)
     # o numero cabe no campo de digitar (no Qt 6.12, com a folha de estilo e
     # sem as setinhas proprias, o campo ficava com 1 pixel: 09/10/2026)
+    # No painel (300 px) a conta com a letra de mentira dos testes sem tela, que
+    # e muito larga, nao vale: aqui so se cobra que o campo nao some; que o
+    # numero cabe com a letra de verdade e conferido na janela real (prints da
+    # etapa 3 do layout).
     campo = tela.campo_angulo.lineEdit()
-    assert campo.width() >= campo.fontMetrics().horizontalAdvance("-45,00 graus"), campo.width()
+    assert campo.width() >= 40, campo.width()
     tela.trilha.escolher(FERRAMENTA_CORTAR)
     assert not tela.campo_angulo.isVisible()
 

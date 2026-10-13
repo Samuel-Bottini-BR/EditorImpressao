@@ -114,6 +114,30 @@ class Bloco(QWidget):
     """
 
 
+class _Envelope(Bloco):
+    """O que vai dentro da rolagem de um painel. Diz ao Qt que pode ser tão
+    estreito quanto o painel: sem isto, uma peça um pouco mais larga (uma
+    lista com uma palavra comprida, uma escala de tela maior) deixava o
+    conteúdo todo mais largo que o painel, e a ponta direita de cada botão
+    ficava escondida, sem barra para chegar até ela. Assim as peças se
+    apertam dentro da largura do painel."""
+
+    def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
+        return QSize(0, super().minimumSizeHint().height())
+
+
+def lista_estreita(lista) -> None:
+    """Deixa uma lista (QComboBox) encolher até poucas letras dentro do
+    painel, em vez de exigir a largura do item mais comprido; a lista aberta
+    continua mostrando os itens inteiros."""
+    from PySide6.QtWidgets import QComboBox
+
+    lista.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+    lista.setMinimumContentsLength(8)
+    lista.view().setMinimumWidth(lista.view().sizeHintForColumn(0) + 28)
+    lista.view().setTextElideMode(Qt.ElideNone)
+
+
 def titulo_de_parte(texto: str) -> QLabel:
     """O título de uma PARTE do Propriedades, em maiúsculas ("SÓ NESTA
     PÁGINA", "PARA O LIVRO TODO": rodada 12, 706 B)."""
@@ -262,8 +286,10 @@ class CabecalhoDoPainel(QFrame):
         self.contagem = QLabel("")
         self.contagem.setObjectName("contagemDoPainel")
         self.contagem.setAlignment(Qt.AlignCenter)
+        self.contagem.setFixedHeight(18)        # uma bolinha, e não a altura do cabeçalho
+        self.contagem.setMinimumWidth(18)
         self.contagem.setVisible(False)
-        linha.addWidget(self.contagem)
+        linha.addWidget(self.contagem, 0, Qt.AlignVCenter)
 
         self.subtitulo = QLabel("")
         self.subtitulo.setObjectName("subtituloDoPainel")
@@ -338,13 +364,13 @@ class Painel(QFrame):
         self.corpo = Bloco()
         self.corpo.setObjectName("corpoDoPainel")
         self.dentro = QVBoxLayout(self.corpo)
-        self.dentro.setContentsMargins(12, 12, 12, 12)
+        self.dentro.setContentsMargins(12, 12, 10, 12)
         self.dentro.setSpacing(6)
 
         self.rolagem: QScrollArea | None = None
         if rolagem:
             self.rolagem = _rolagem_do_painel()
-            envelope = Bloco()
+            envelope = _Envelope()
             caixa = QVBoxLayout(envelope)
             caixa.setContentsMargins(0, 0, 0, 0)
             caixa.setSpacing(0)
@@ -576,7 +602,7 @@ class PainelParaRevisar(Painel):
         self.motivos = QVBoxLayout(caixa)
         self.motivos.setContentsMargins(0, 0, 4, 0)
         self.motivos.setSpacing(6)
-        envelope = Bloco()
+        envelope = _Envelope()
         fora = QVBoxLayout(envelope)
         fora.setContentsMargins(0, 0, 0, 0)
         fora.addWidget(caixa)
@@ -858,7 +884,9 @@ class PainelMarcarComo(Bloco):
         cabeca.setContentsMargins(0, 0, 0, 0)
         cabeca.addWidget(titulo_de_secao("Marcar como"))
         cabeca.addStretch()
-        cabeca.addWidget(frase_do_painel("o que você marcar agora"))
+        explica = frase_do_painel("o que você marcar agora")
+        explica.setWordWrap(False)          # numa linha só, ao lado do título
+        cabeca.addWidget(explica)
         fora.addLayout(cabeca)
         caixa = Bloco()
         self.dentro = QVBoxLayout(caixa)

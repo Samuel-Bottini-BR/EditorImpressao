@@ -182,6 +182,7 @@ from ui.widgets.paineis import (
     Bloco,
     ColunaDePaineis,
     frase_do_painel,
+    lista_estreita,
     risco_do_painel,
     titulo_de_parte,
     titulo_de_secao,
@@ -1065,6 +1066,7 @@ class TelaConferir(QWidget):
         self.combo_jeito_da_folha.currentIndexChanged.connect(
             lambda _i: self._trocar_jeito_da_folha())
         linha.addWidget(self.combo_jeito_da_folha, 1)
+        lista_estreita(self.combo_jeito_da_folha)
         par = self._par_de_botoes(coluna)
         self.botao_nao_dividir = _botao("não dividir esta", par, self._alternar_dividir)
         _botao("usar em todas", par, self._corte_em_todas).setToolTip(
@@ -1144,6 +1146,7 @@ class TelaConferir(QWidget):
             lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
         self.seletor_qualidade = seletor_qualidade
         coluna.addWidget(seletor_qualidade)
+        lista_estreita(seletor_qualidade)
         coluna.addWidget(frase_do_painel(
             "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."))
         coluna.addSpacing(6)
@@ -1412,6 +1415,7 @@ class TelaConferir(QWidget):
             "Em quais páginas o ângulo vale: o que você fizer aqui (girar, "
             "deixar como veio, usar o ângulo do programa) vale para todas as escolhidas.")
         linha3.addWidget(self.combo_alcance_do_angulo, 1)
+        lista_estreita(self.combo_alcance_do_angulo)
         # Rodada 12, 710 B: eram "não endireitar esta" e "voltar ao
         # automático" (as mesmas acoes, com outro nome).
         _botao("deixar como veio", coluna, self._angulo_zero).setToolTip(
@@ -1435,6 +1439,7 @@ class TelaConferir(QWidget):
         self.combo_conta_do_endireitar.currentIndexChanged.connect(
             lambda _i: self._trocar_conta_do_endireitar())
         coluna.addWidget(self.combo_conta_do_endireitar)
+        lista_estreita(self.combo_conta_do_endireitar)
         self.rotulo_angulos_medidos = frase_do_painel("")
         coluna.addWidget(self.rotulo_angulos_medidos)
         coluna.addSpacing(6)

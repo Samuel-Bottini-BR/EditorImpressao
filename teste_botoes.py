@@ -639,8 +639,12 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
         # Propriedades, que vem fechado de fabrica: abre o painel e clica nos
         # botoes e nas caixinhas dele (Espelhado, Proporcao travada). Fica de
         # fora so o "mudar nas opções do livro...", que sai desta tela (o
-        # "voltar" ja e conferido na tela "O que fazer"). Por ultimo, os tres
-        # botoes da faixa do conferir ("próxima dúvida" troca de pagina).
+        # "voltar" ja e conferido na tela "O que fazer"). Por ultimo, os
+        # botoes da faixa do conferir, menos o "próxima dúvida": ele troca de
+        # pagina, e a sugestao "apagar esta página" de uma aba deixaria de ser
+        # desfeita pelo "restaurar página" de outra (o livro de teste ficaria
+        # sem pagina nenhuma para processar). Ele e clicado depois, em
+        # testar_paineis_da_direita.
         if hasattr(conferir, "paineis") and hasattr(conferir.paineis, "abrir"):
             conferir.paineis.abrir("props")
             esperar(0.4)
@@ -650,7 +654,8 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             alvos += [c for c in corpo.findChildren(QCheckBox)
                       if c.isVisible() and c.isEnabled()]
         if hasattr(conferir, "faixa"):
-            alvos += list(botoes_de(conferir.faixa))
+            alvos += [b for b in botoes_de(conferir.faixa)
+                      if b is not getattr(conferir, "botao_proxima_duvida", None)]
         # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
@@ -768,6 +773,12 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
     print("\n--- paineis da direita (conferir) ---")
     ok = falhas = 0
     paineis, icones = conferir.paineis, conferir.paineis.icones
+    # Alguns cliques daqui andam de pagina ("próxima dúvida", um motivo do
+    # "Para revisar"). No fim a tela volta para a pagina em que estava: o
+    # resto da bateria conta com isso (o "apagar" do menu desfaz o "apagar
+    # página" clicado antes NA MESMA pagina; em outra, o livro de teste, de
+    # duas paginas, ficaria sem nenhuma para processar).
+    pagina_de_antes = conferir.indice_pagina
     paineis.fechar()
     esperar(0.2)
 
@@ -814,6 +825,13 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
             falhas += 1
             print(f"  FALHA o 'x' nao fechou o painel '{chave}'")
 
+    # o "próxima dúvida" da faixa (so anda de pagina; nao muda o trabalho)
+    if conferir.botao_proxima_duvida.isEnabled():
+        if acionar(conferir.botao_proxima_duvida, "próxima dúvida (faixa)"):
+            ok += 1
+        else:
+            falhas += 1
+
     # a seta: esconde os icones, e mostra de novo
     for esperado in (False, True):
         if clicar_no_icone("seta") and paineis.icones_a_vista is esperado:
@@ -822,6 +840,8 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
         else:
             falhas += 1
             print(f"  FALHA a seta nao {'mostrou' if esperado else 'escondeu'} os icones")
+    conferir.ir_para_pagina(pagina_de_antes)
+    esperar(0.3)
     return ok, falhas
 
 

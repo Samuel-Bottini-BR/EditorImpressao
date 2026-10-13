@@ -16,7 +16,10 @@ lugar provisório. As duas peças:
     BarraGirar (no painel Propriedades, em todas as ferramentas)
         Girar a folha
         [seta] ¼ à esquerda   [seta] ¼ à direita
-        [seta] meia volta     aplicar em: [só esta folha  v]
+        [seta] meia volta
+        aplicar em: [só esta folha            v]
+      (no desenho, "meia volta" e "aplicar em" dividem uma linha; com a
+      letra do programa as duas não cabem inteiras nos 300 px do painel)
 
     GirarDoCanto (por cima do canto direito de cima da área da página)
         [seta] [seta] [seta]          <- só esta folha, sempre
@@ -202,15 +205,18 @@ class BarraGirar(QWidget):
 
         primeira = QHBoxLayout()
         primeira.setSpacing(6)
+        do_meio = QHBoxLayout()
+        do_meio.setSpacing(6)
         segunda = QHBoxLayout()
         segunda.setSpacing(6)
         coluna.addLayout(primeira)
+        coluna.addLayout(do_meio)
         coluna.addLayout(segunda)
 
         self.botoes_de_giro: dict[int, QPushButton] = {}
         self._textos: dict[int, str] = {}
         for giro, linha in ((GIRO_ESQUERDA, primeira), (GIRO_DIREITA, primeira),
-                            (GIRO_MEIA_VOLTA, segunda)):
+                            (GIRO_MEIA_VOLTA, do_meio)):
             texto = NOMES_DOS_GIROS[giro]
             botao = QPushButton(texto)
             botao.setIcon(icone_de_giro(giro))
@@ -218,12 +224,12 @@ class BarraGirar(QWidget):
             botao.setCursor(Qt.PointingHandCursor)
             botao.setFocusPolicy(Qt.NoFocus)      # nao rouba as setas do teclado
             botao.clicked.connect(lambda *_, g=giro: self.girar_pedido.emit(g))
-            linha.addWidget(botao, 0 if giro == GIRO_MEIA_VOLTA else 1)
+            linha.addWidget(botao, 1)
             self.botoes_de_giro[giro] = botao
             self._textos[giro] = texto
 
+        do_meio.addStretch(1)       # "meia volta" com a largura dos de cima
         self.rotulo_alcance = QLabel("aplicar em:")
-        segunda.addSpacing(4)
         segunda.addWidget(self.rotulo_alcance)
         self.combo_alcance = QComboBox()
         self.combo_alcance.setFocusPolicy(Qt.NoFocus)
@@ -239,6 +245,10 @@ class BarraGirar(QWidget):
         self.combo_alcance.currentIndexChanged.connect(
             lambda *_: self.alcance_mudou.emit(self.alcance()))
         segunda.addWidget(self.combo_alcance, 1)
+        # a lista encolhe para caber no painel (a lista aberta mostra os
+        # itens inteiros); importado aqui para nao fechar um circulo de imports
+        from ui.widgets.paineis import lista_estreita
+        lista_estreita(self.combo_alcance)
         self.definir_teclas({})
 
     def changeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
