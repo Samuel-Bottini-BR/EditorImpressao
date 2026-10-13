@@ -46,17 +46,32 @@ def passos(cinza_cheio: np.ndarray, dpi: float = 300.0) -> dict:
     col, lin = tinta.mean(axis=0), tinta.mean(axis=1)
     sem_borda = R._apagar_bordas_solidas(tinta)
 
-    def apagadas(antes, depois):
-        """Quantas colunas (linhas) inteiras sumiram de cada ponta."""
-        c = (antes.sum(axis=0) > 0) & (depois.sum(axis=0) == 0)
-        l = (antes.sum(axis=1) > 0) & (depois.sum(axis=1) == 0)
-        meio_c, meio_l = len(c) // 2, len(l) // 2
-        return {"esq": int(c[:meio_c].sum()), "dir": int(c[meio_c:].sum()),
-                "topo": int(l[:meio_l].sum()), "pe": int(l[meio_l:].sum())}
+    def andou(v, limite):
+        """Quantas colunas (linhas) seguidas, A PARTIR DA PONTA, tem cobertura
+        >= limite: e exatamente o que _apagar_bordas_solidas apaga."""
+        n = 0
+        while n < len(v) and v[n] >= limite:
+            n += 1
+        return n
 
-    borda = apagadas(tinta, sem_borda)
+    borda = {"esq": andou(col, R.FRACAO_BORDA_SOLIDA), "dir": andou(col[::-1], R.FRACAO_BORDA_SOLIDA),
+             "topo": andou(lin, R.FRACAO_BORDA_SOLIDA), "pe": andou(lin[::-1], R.FRACAO_BORDA_SOLIDA)}
     sem_risca = R._apagar_riscas_de_dobra(sem_borda)
-    risca = apagadas(sem_borda, sem_risca)
+    c_risca = (sem_borda.sum(axis=0) > 0) & (sem_risca.sum(axis=0) == 0)
+    l_risca = (sem_borda.sum(axis=1) > 0) & (sem_risca.sum(axis=1) == 0)
+    risca = {"colunas_apagadas": [int(i) for i in np.flatnonzero(c_risca)][:60],
+             "linhas_apagadas": [int(i) for i in np.flatnonzero(l_risca)][:60]}
+    # as pecas grandes que o corte passa a ter de respeitar (nao encostam na
+    # beirada da mascara): mais de 30% de um lado
+    pecas = R._pecas_de_tinta(sem_risca)
+    grandes = [{"x0": round(float(p[0] / larg), 3), "y0": round(float(p[1] / alt), 3), "x1": round(float(p[2] / larg), 3),
+                "y1": round(float(p[3] / alt), 3), "risco_comprido_e_fino": bool(p[4])}
+               for p in pecas if (p[2] - p[0]) > 0.3 * larg or (p[3] - p[1]) > 0.3 * alt]
+    # quanta tinta da mascara esta ligada a beirada (o que _pecas_de_tinta descarta)
+    n, _rot, st, _c = cv2.connectedComponentsWithStats(sem_risca.astype(np.uint8), connectivity=8)
+    x, y, w, h, area = (st[1:, i] for i in range(5))
+    encosta = (x <= 1) | (y <= 1) | (x + w >= larg - 1) | (y + h >= alt - 1)
+    tinta_na_beirada = float(area[encosta].sum()) / max(1, int(area.sum()))
     fy = R._faixa_com_a_tinta(sem_risca.sum(axis=1))
     fx = R._faixa_com_a_tinta(sem_risca.sum(axis=0))
     final = R.detectar_bordas(cinza_cheio, dpi=dpi).tupla
@@ -84,6 +99,8 @@ def passos(cinza_cheio: np.ndarray, dpi: float = 300.0) -> dict:
         "linhas_com_80_por_cento_ou_mais_seguidas": maior_seguida(lin, R.FRACAO_BORDA_SOLIDA),
         "apagou_como_borda_solida": borda,
         "apagou_como_risca_de_dobra": risca,
+        "pecas_grandes_que_o_corte_respeita": grandes,
+        "fracao_da_tinta_ligada_a_beirada": round(tinta_na_beirada, 3),
         "faixa_da_tinta_x": None if fx is None else [round(fx[0] / larg, 4), round(fx[1] / larg, 4)],
         "faixa_da_tinta_y": None if fy is None else [round(fy[0] / alt, 4), round(fy[1] / alt, 4)],
         "corte_final": [round(float(v), 4) for v in final],

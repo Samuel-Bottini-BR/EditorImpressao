@@ -1,0 +1,327 @@
+{
+ "cursus_p003__inteira": {
+  "angulo": -0.688,
+  "pagina_como_veio": {
+   "mascara_px": [
+    618,
+    800
+   ],
+   "cobertura_da_coluna_0_e_da_ultima": [
+    0.051,
+    1.0
+   ],
+   "cobertura_das_8_colunas_da_esquerda": [
+    0.05,
+    0.05,
+    0.05,
+    0.02,
+    0.01,
+    0.02,
+    0.03,
+    0.02
+   ],
+   "cobertura_das_8_colunas_da_direita": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "cobertura_da_linha_0_e_da_ultima": [
+    0.141,
+    0.992
+   ],
+   "cobertura_das_8_linhas_de_cima": [
+    0.14,
+    0.13,
+    0.12,
+    0.13,
+    0.11,
+    0.11,
+    0.11,
+    0.11
+   ],
+   "cobertura_das_8_linhas_de_baixo": [
+    0.3,
+    0.36,
+    0.44,
+    0.55,
+    0.65,
+    0.72,
+    0.86,
+    0.99
+   ],
+   "colunas_com_80_por_cento_ou_mais_seguidas": {
+    "primeira_metade": 7,
+    "segunda_metade": 45
+   },
+   "linhas_com_80_por_cento_ou_mais_seguidas": {
+    "primeira_metade": 1,
+    "segunda_metade": 2
+   },
+   "apagou_como_borda_solida": {
+    "esq": 0,
+    "dir": 45,
+    "topo": 0,
+    "pe": 2
+   },
+   "apagou_como_risca_de_dobra": {
+    "colunas_apagadas": [
+     66,
+     67,
+     68,
+     69,
+     70,
+     71,
+     72,
+     73,
+     74,
+     75,
+     76
+    ],
+    "linhas_apagadas": [
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     99,
+     100,
+     103,
+     118,
+     795,
+     796,
+     797,
+     798
+    ]
+   },
+   "pecas_grandes_que_o_corte_respeita": [
+    {
+     "x0": 0.125,
+     "y0": 0.155,
+     "x1": 0.927,
+     "y1": 0.994,
+     "risco_comprido_e_fino": false
+    }
+   ],
+   "fracao_da_tinta_ligada_a_beirada": 0.004,
+   "faixa_da_tinta_x": [
+    0.0356,
+    0.9256
+   ],
+   "faixa_da_tinta_y": [
+    0.0462,
+    0.9925
+   ],
+   "corte_final": [
+    0.0011,
+    0.04,
+    0.9307,
+    0.9585
+   ]
+  },
+  "pagina_ja_endireitada": {
+   "mascara_px": [
+    618,
+    800
+   ],
+   "cobertura_da_coluna_0_e_da_ultima": [
+    0.031,
+    0.726
+   ],
+   "cobertura_das_8_colunas_da_esquerda": [
+    0.03,
+    0.03,
+    0.03,
+    0.04,
+    0.05,
+    0.03,
+    0.03,
+    0.01
+   ],
+   "cobertura_das_8_colunas_da_direita": [
+    0.99,
+    0.99,
+    0.99,
+    0.95,
+    0.84,
+    0.73,
+    0.73,
+    0.73
+   ],
+   "cobertura_da_linha_0_e_da_ultima": [
+    0.021,
+    0.683
+   ],
+   "cobertura_das_8_linhas_de_cima": [
+    0.02,
+    0.02,
+    0.02,
+    0.06,
+    0.11,
+    0.12,
+    0.11,
+    0.1
+   ],
+   "cobertura_das_8_linhas_de_baixo": [
+    0.42,
+    0.48,
+    0.54,
+    0.62,
+    0.6,
+    0.52,
+    0.6,
+    0.68
+   ],
+   "colunas_com_80_por_cento_ou_mais_seguidas": {
+    "primeira_metade": 1,
+    "segunda_metade": 40
+   },
+   "linhas_com_80_por_cento_ou_mais_seguidas": {
+    "primeira_metade": 3,
+    "segunda_metade": 3
+   },
+   "apagou_como_borda_solida": {
+    "esq": 0,
+    "dir": 0,
+    "topo": 0,
+    "pe": 0
+   },
+   "apagou_como_risca_de_dobra": {
+    "colunas_apagadas": [
+     65,
+     66,
+     67,
+     68,
+     69,
+     70,
+     71,
+     72,
+     73,
+     74,
+     75,
+     76,
+     77,
+     78,
+     79,
+     80,
+     81,
+     82,
+     83,
+     84,
+     85,
+     86,
+     87,
+     88,
+     89
+    ],
+    "linhas_apagadas": [
+     131,
+     132,
+     133,
+     134,
+     135,
+     136,
+     137,
+     138,
+     139,
+     140,
+     141,
+     142,
+     143,
+     144,
+     145,
+     146,
+     147,
+     148,
+     149,
+     150,
+     153,
+     154,
+     155,
+     156,
+     157,
+     158,
+     159,
+     160,
+     161,
+     162,
+     163,
+     164,
+     165,
+     166,
+     167,
+     168,
+     169,
+     170,
+     171,
+     172,
+     185,
+     186,
+     187,
+     188,
+     189,
+     190,
+     191,
+     192,
+     193,
+     595,
+     596,
+     597,
+     598,
+     599,
+     600,
+     601,
+     602,
+     603,
+     604,
+     605
+    ]
+   },
+   "pecas_grandes_que_o_corte_respeita": [
+    {
+     "x0": 0.146,
+     "y0": 0.242,
+     "x1": 0.843,
+     "y1": 0.744,
+     "risco_comprido_e_fino": false
+    }
+   ],
+   "fracao_da_tinta_ligada_a_beirada": 0.215,
+   "faixa_da_tinta_x": [
+    0.0275,
+    1.0
+   ],
+   "faixa_da_tinta_y": [
+    0.01,
+    1.0
+   ],
+   "corte_final": [
+    0.0189,
+    0.0,
+    0.9811,
+    1.0
+   ]
+  },
+  "corte_do_programa_na_ordem_antiga_B": [
+   0.0009,
+   0.04,
+   0.93086,
+   0.95848
+  ],
+  "corte_do_programa_na_ordem_nova_C": [
+   0.01886,
+   0.0,
+   0.98114,
+   1.0
+  ]
+ }
+}
