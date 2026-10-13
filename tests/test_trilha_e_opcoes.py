@@ -96,16 +96,32 @@ def test_a_barra_tem_a_altura_do_desenho(app):
 def test_a_barra_muda_conforme_a_ferramenta(app):
     barra = BarraOpcoes()
 
+    from PySide6.QtWidgets import QLabel, QSlider
+
+    def ajustes() -> list[str]:
+        return [r.text() for r in barra.controles.findChildren(QLabel)]
+
+    # Rodada 12 do layout, 702 C ("Mostrar só o nome da ferramenta"): a barra
+    # mostra o nome e os ajustes; a frase que ficava escrita ao lado ("a roda
+    # do mouse também muda...") foi para o balão do próprio ajuste.
     barra.definir_ferramenta(FERRAMENTA_COR)
     assert "Pegar tudo desta cor" in barra.rotulo.text()
-    assert "variação" in barra.dica.text()
+    assert not barra.rotulo.text().endswith(":"), "so o nome, sem os dois pontos"
+    assert "variação" in ajustes()
+    assert "variação" in barra.controles.findChildren(QSlider)[0].toolTip()
+    assert barra.dica.text() == "" and not barra.dica.isVisibleTo(barra)
 
     barra.definir_ferramenta(FERRAMENTA_PINCEL)
-    assert "Pincel" in barra.rotulo.text()
-    assert "tamanho" in barra.dica.text()
+    assert barra.rotulo.text() == "Pincel"
+    assert "tamanho" in ajustes()
+    assert "tamanho" in barra.controles.findChildren(QSlider)[0].toolTip()
 
     barra.definir_ferramenta(FERRAMENTA_ZOOM)
     assert "Zoom" in barra.rotulo.text()
+
+    barra.definir_ferramenta_da_pagina("Cortar as bordas", "Arraste o retângulo.")
+    assert barra.rotulo.text() == "Cortar as bordas"
+    assert barra.dica.text() == "", "a frase do que fazer saiu da linha dos menus"
 
 
 def test_a_barra_so_mostra_os_controles_da_ferramenta_ativa(app):

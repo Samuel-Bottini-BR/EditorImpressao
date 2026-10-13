@@ -203,7 +203,7 @@ class JanelaPrincipal(QMainWindow):
         from ui.barra_de_menu import BarraDeMenu
 
         self.menu = BarraDeMenu(self)
-        self.setMenuBar(self.menu)
+        self._montar_a_linha_dos_menus()
         conferir = self.tela_conferir
 
         self.menu.ligar("abrir", self.tela_inicio.area.abrir_dialogo_de_arquivo)
@@ -287,15 +287,65 @@ class JanelaPrincipal(QMainWindow):
                     texto = texto.replace(ingles, portugues)
                 teclas[giro] = texto
         self.tela_conferir.barra_girar.definir_teclas(teclas)
+        self.tela_conferir.girar_do_canto.definir_teclas(teclas)
 
     def _tela_mudou(self, indice: int) -> None:
-        """So a tela de Conferir usa o menu completo; nas outras ele fica apagado."""
+        """So a tela de Conferir usa o menu completo; nas outras ele fica apagado.
+        A barra de opcoes, na linha dos menus (etapa 2 do layout), so aparece
+        na tela de trabalho."""
         if not hasattr(self, "menu"):
             return
         if indice == CONFERIR:
             self.menu.mostrar_tela_de_trabalho()
         else:
             self.menu.mostrar_tela_inicial()
+        for peca in getattr(self, "_pecas_da_tela_de_trabalho", ()):
+            peca.setVisible(indice == CONFERIR)
+
+    def _montar_a_linha_dos_menus(self) -> None:
+        """Etapa 2 do layout (rodada 8, 303 B: "Na mesma linha dos menus"): a
+        linha de cima tem os menus, um traço e a barra de opções da
+        ferramenta (só o nome e os ajustes: rodada 12, 702 C). A página ganha
+        a altura das duas faixas que saíram (abas e barra de opções). O girar,
+        que na etapa 2 ficava na ponta desta linha, foi para o painel
+        Propriedades e para o canto da página (rodada 12, 703 B e D)."""
+        from PySide6.QtWidgets import QFrame, QHBoxLayout, QSizePolicy, QWidget
+
+        linha = QWidget()
+        linha.setObjectName("linhaDosMenus")
+        linha.setAttribute(Qt.WA_StyledBackground, True)
+        caixa = QHBoxLayout(linha)
+        caixa.setContentsMargins(0, 0, 0, 0)
+        caixa.setSpacing(0)
+        self.menu.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        # os menus nunca encolhem (o Qt os esconderia atrás de um "..."); quem
+        # cede lugar é a dica da barra de opções e o nome dos botões de girar
+        self.menu.setMinimumWidth(self.menu.sizeHint().width())
+        caixa.addWidget(self.menu, 0, Qt.AlignVCenter)
+        traco = QFrame()
+        traco.setObjectName("separadorDosMenus")
+        traco.setFixedSize(1, 20)
+        caixa.addSpacing(6)
+        caixa.addWidget(traco, 0, Qt.AlignVCenter)
+        caixa.addSpacing(6)
+        conferir = self.tela_conferir
+        caixa.addWidget(conferir.barra_opcoes, 1)
+        # Mola de peso zero no fim: com a barra de opções à vista (peso 1) ela
+        # não ganha nada; nas telas sem ela (inicial, "O que fazer") é ela que
+        # fica com a sobra, e os menus continuam à esquerda (sem ela, o Qt
+        # centralizava os menus: prints do Windows de 09/10/2026). Arriscado:
+        # dar peso a ela (tiraria a largura da barra de opções).
+        caixa.addStretch(0)
+        self._pecas_da_tela_de_trabalho = (traco, conferir.barra_opcoes)
+        self.setMenuWidget(linha)
+        self.linha_dos_menus = linha
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Etapa 2 do layout: os menus nunca encolhem (quem cede lugar é a
+        barra de opções)."""
+        super().resizeEvent(evento)
+        if hasattr(self, "linha_dos_menus"):
+            self.menu.setMinimumWidth(self.menu.sizeHint().width())
 
     def _escolher_pasta_de_saida(self) -> None:
         """Item de menu "Escolher a pasta de saída...": so lembra a pasta

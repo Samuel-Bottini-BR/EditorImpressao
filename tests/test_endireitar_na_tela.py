@@ -61,7 +61,7 @@ def test_livro_novo_pela_conta_do_scantailor_e_a_lista_so_com_endireitar(janela,
     assert not opcoes.linha_conta_endireitar.isHidden()
     assert [opcoes.combo_conta_endireitar.itemText(i)
             for i in range(opcoes.combo_conta_endireitar.count())] \
-        == ["a do ScanTailor", "a do programa"]
+        == ["a do ScanTailor", "a do Editor"]      # layout, rodada 13, 805 C (so o texto)
     assert opcoes.combo_conta_endireitar.currentData() == es.JEITO_SCANTAILOR
     assert janela.projeto.endireitar_como == es.JEITO_SCANTAILOR
     opcoes.combo_conta_endireitar.setCurrentIndex(
@@ -141,14 +141,16 @@ def test_com_o_angulo_a_mao_a_lista_fica_apagada(janela, pasta):
 
 
 def test_texto_dos_angulos():
+    # Rodada 13 do layout, 805 C: nesta linha a conta antiga chama-se "Editor"
+    # (so o texto; o codigo que vem do programa continua "programa")
     assert texto_dos_angulos_medidos(None) == "(medindo...)"
     assert texto_dos_angulos_medidos(
         {"programa": -1.46, "scantailor": -1.5, "jeito": "scantailor", "discordam": False}) \
-        == "ScanTailor -1,5° · programa -1,5°"
+        == "ScanTailor -1,5° · Editor -1,5°"
     assert texto_dos_angulos_medidos(
         {"programa": 0.0, "scantailor": 0.8, "jeito": "scantailor", "discordam": True}) \
-        == "ScanTailor +0,8° · programa +0,0°  (discordam)"
+        == "ScanTailor +0,8° · Editor +0,0°  (discordam)"
     # livro pela conta do programa, ScanTailor nao medido
     assert texto_dos_angulos_medidos(
         {"programa": 0.4, "scantailor": None, "jeito": "programa", "discordam": False}) \
-        == "programa +0,4°"
+        == "Editor +0,4°"

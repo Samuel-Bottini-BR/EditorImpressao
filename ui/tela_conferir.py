@@ -101,20 +101,33 @@ imagem gira ao vivo e o ângulo vai para o projeto numa ação só, um instante
 depois do último clique) e o "aplicar em" (só esta / todas / daqui em diante
 / só as pares / só as ímpares; core/girar.paginas_do_alcance), que vale para
 o ângulo a mão, "não endireitar" e "voltar ao automático".
+
+Layout, etapa 3 (12/10/2026; decisões do Samuel nas rodadas 7 a 12 do
+"Plano de layout"): o empilhamento descrito no alto deste texto é o de antes;
+o de hoje está em TelaConferir._montar. À direita há a coluna de ícones e o
+painel que ela abre ao lado da página (ui/widgets/paineis.py; de fábrica,
+tudo fechado). Os botões de Dividir, Cortar e Endireitar moram no painel
+Propriedades, em duas partes ("Só nesta página" e "Para o livro todo"); a
+sugestão laranja do aviso, "está certo" e "próxima dúvida" moram na faixa do
+conferir, iguais em todas as ferramentas. Nomes novos na tela (rodada 12, 710
+B; as ações e o que vai para o projeto não mudaram): "deixar como veio" (era
+"não endireitar esta"), "usar o ângulo do programa" e "usar o corte do
+programa" (eram "voltar ao automático"). As listas "aplicar em" dizem folha
+(a do girar) ou página (a do endireitar) nas palavras de dentro (709 B).
 """
 
 from __future__ import annotations
 
 import functools
 import traceback
+from pathlib import Path
 
 import numpy as np
 
 import atalhos
-from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtCore import QEvent, Qt, QTimer, Signal
 from PySide6.QtCore import QLocale, QSize
 from PySide6.QtWidgets import (
-    QAbstractSpinBox,
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
@@ -154,16 +167,36 @@ from registro import registrar_erro
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.tarefas import GerenciadorPrevias
-from ui.widgets.barra_girar import BarraGirar
+from ui.widgets.barra_girar import BarraGirar, GirarDoCanto, nomes_dos_alcances
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.escolhas_do_misto import BOTOES_DO_TEXTO, EscolhasDoMisto
 from ui.widgets.editor_selecao import (
     FERRAMENTA_RETANGULO,
+    FERRAMENTAS_DE_NAVEGACAO,
     ferramenta_da_tecla,
 )
-from ui.widgets.paineis import ColunaDePaineis
-from ui.widgets.trilha_ferramentas import TrilhaFerramentas
+from ui.widgets.paineis import (
+    PAINEL_HISTORICO,
+    PAINEL_PROPRIEDADES,
+    Bloco,
+    ColunaDePaineis,
+    frase_do_painel,
+    lista_estreita,
+    nome_da_conta,
+    risco_do_painel,
+    titulo_de_parte,
+    titulo_de_secao,
+)
+from ui.widgets.trilha_agrupada import (
+    FERRAMENTA_CORTAR,
+    FERRAMENTA_DIVIDIR,
+    FERRAMENTA_ENDIREITAR,
+    FERRAMENTA_FILTROS,
+    FERRAMENTAS_DA_PAGINA,
+    NOMES as NOMES_DA_TRILHA,
+    TrilhaAgrupada,
+)
 
 from ui.widgets.medidor import Medidor
 from ui.widgets.tira_miniaturas import TiraMiniaturas
@@ -327,6 +360,10 @@ class TelaConferir(QWidget):
     # janela comeca a conversao por tras se ela nao estiver andando.
     marcacoes_por_converter = Signal()
 
+    # Etapa 2 do layout: o botao do Historico da barra de baixo foi apertado
+    # (a janela marca o "Painel: Historico" do menu Ver).
+    historico_pedido = Signal()
+
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.projeto: Projeto | None = None
@@ -377,6 +414,12 @@ class TelaConferir(QWidget):
         self.visualizadores: dict[str, Visualizador] = {}
         self.paginas_de_imagem: dict[str, QWidget] = {}
         self.linhas_de_botoes: dict[str, QWidget] = {}
+        # Etapa 3 do layout: o conteudo do painel Propriedades de cada
+        # ferramenta que ja mora la (Dividir, Cortar, Endireitar), pela "aba".
+        self.propriedades_das_abas: dict[str, QWidget] = {}
+        # O botao laranja da sugestao e um so, na faixa do conferir; este
+        # dicionario (uma entrada por aba, todas para o mesmo botao) fica para
+        # quem ainda o procura pela aba.
         self.botoes_de_sugestao: dict[str, QPushButton] = {}
         self.cartoes: dict[str, CartaoFiltro] = {}
         self.botoes_forca: dict[str, QPushButton] = {}
@@ -391,9 +434,34 @@ class TelaConferir(QWidget):
     # ------------------------------------------------------------------
 
     def _montar(self) -> None:
+        """Etapa 2 do layout (08/10/2026): a tela de trabalho sem abas, como
+        o Samuel decidiu (estilo Photoshop, 25/09; rodadas 7 a 9):
+
+            linha dos menus  (a janela põe ali a barra de opções da
+                              ferramenta e a barrinha de girar: R8 303 B)
+            trilha | página                         | painel  | ícones
+                   | faixa fina do conferir         | aberto  |
+                   | botões de Marcar e dos filtros (provisório)
+                   | miniaturas + Confirmar e processar
+                   | barra de baixo: página N de M, desfazer, refazer,
+                   |   histórico, o livro e quantas faltam
+
+        As abas continuam por dentro (barra_abas, escondida): cada ferramenta
+        de página da trilha escolhe a "aba" dela, e tudo o que já dependia da
+        aba da vez (a tira em folhas ou páginas, a prévia, os botões) segue
+        igual. Assim nenhum botão sumiu: só mudaram de lugar.
+
+        Etapa 3 do layout (12/10/2026): à direita, a coluna de ícones e o
+        painel que ela abre empurrando a página (ui/widgets/paineis.py; de
+        fábrica, tudo fechado). A faixa do conferir ganhou os três botões do
+        desenho (a sugestão laranja, "está certo" e "próxima dúvida"), e os
+        botões de Dividir, Cortar e Endireitar saíram da fila embaixo da
+        página para o painel Propriedades (rodada 9, 402 C; rodada 12, 701 A:
+        "Fazer logo o painel Propriedades do Cortar").
+        """
         camadas = QVBoxLayout(self)
-        camadas.setContentsMargins(20, 10, 20, 8)
-        camadas.setSpacing(6)
+        camadas.setContentsMargins(0, 0, 0, 0)
+        camadas.setSpacing(0)
 
         # O cabecalho e criado mas NAO entra na tela: ver _montar_cabecalho.
         self._cabecalho_escondido = self._montar_cabecalho()
@@ -401,64 +469,104 @@ class TelaConferir(QWidget):
         self.barra_abas = QTabBar()
         self.barra_abas.setExpanding(False)
         self.barra_abas.currentChanged.connect(self._trocou_de_aba)
+        # Etapa 2 do layout: sem abas na tela. A barra fica por dentro, só
+        # para guardar qual é a "aba" da vez (quem troca é a trilha).
+        self.barra_abas.setVisible(False)
 
-        # Item 2.3 (girar; provisorio ate o layout): a barrinha de girar a
-        # folha mora na MESMA linha das abas, a direita - a unica faixa em
-        # cima da pagina com sobra de largura, sem custar altura da pagina.
-        # Vale em todas as abas (ui/widgets/barra_girar.py).
+        # Girar a folha (item 2.3). Rodada 12 do layout, 703 B e D, e rodada
+        # 13, 803 B: o bloco "Girar a folha", com o "aplicar em", mora no alto
+        # do painel Propriedades (posto la mais abaixo, quando os paineis
+        # existem), e tres botoes pequenos, que giram so esta folha, ficam por
+        # cima do canto da area da pagina (_por_o_girar_no_canto). Na etapa 2
+        # a barrinha ficava na ponta da linha dos menus (lugar provisorio).
         self.barra_girar = BarraGirar()
         self.barra_girar.girar_pedido.connect(self._girar_folhas)
-        # A altura da linha e acertada em _acertar_a_barra_girar: as abas sao
-        # criadas com a tela ainda escondida (carregar), e o QTabBar escondido
-        # nao avisa o layout que mudou de tamanho - dentro desta linha ele
-        # ficava com altura 0 (achado ao tirar os prints, 06/10).
-        self.linha_das_abas = QWidget()
+        # As abas, que a tela nao mostra mais, continuam dentro desta caixa
+        # escondida (o nome ficou de quando a linha das abas aparecia).
+        self.linha_das_abas = QWidget(self)
         linha_das_abas = QHBoxLayout(self.linha_das_abas)
         linha_das_abas.setContentsMargins(0, 0, 0, 0)
-        linha_das_abas.setSpacing(8)
-        linha_das_abas.addWidget(self.barra_abas, 1)
-        linha_das_abas.addWidget(self.barra_girar, 0, Qt.AlignBottom)
-        camadas.addWidget(self.linha_das_abas)               # 2
+        linha_das_abas.addWidget(self.barra_abas)
+        self.linha_das_abas.setVisible(False)
 
         # A barra de opcoes: faixa fina que muda conforme a ferramenta na mao.
         # E o que deixa a tela ter nove ferramentas sem entulhar - so os
         # controles da ferramenta ativa aparecem.
-        self.barra_opcoes = BarraOpcoes()
-        camadas.addWidget(self.barra_opcoes)
+        self.barra_opcoes = BarraOpcoes(self)
+        self.barra_opcoes.setVisible(False)
 
-        # 3 - a pagina, com a trilha de ferramentas ao lado. E a unica linha
-        # com stretch, entao fica com todo o espaco que sobrar.
-        meio = QHBoxLayout()
-        meio.setContentsMargins(0, 0, 0, 0)
-        meio.setSpacing(0)
+        # 3 - a trilha, o meio (pagina, faixa, botoes, tira, barra de baixo)
+        # e os paineis. O meio e o unico que cresce.
+        corpo = QHBoxLayout()
+        corpo.setContentsMargins(0, 0, 0, 0)
+        corpo.setSpacing(0)
 
-        self.trilha = TrilhaFerramentas()
-        meio.addWidget(self.trilha)
+        self.trilha = TrilhaAgrupada()
+        self.trilha.escolhida.connect(self._ferramenta_da_trilha)
+        corpo.addWidget(self.trilha)
+
+        centro = QVBoxLayout()
+        centro.setContentsMargins(0, 0, 0, 0)
+        centro.setSpacing(0)
 
         self.area_imagem = QStackedWidget()
+        self.area_imagem.setObjectName("areaDaPagina")
         self.area_imagem.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # Minimo pequeno para que a soma de todas as linhas caiba na janela
         # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
         self.area_imagem.setMinimumHeight(112)
-        meio.addWidget(self.area_imagem, 1)
+        centro.addWidget(self.area_imagem, 1)
+        # os botoes de girar do canto: filhos da area da pagina, por cima dela
+        self.girar_do_canto = GirarDoCanto(self.area_imagem)
+        self.girar_do_canto.girar_pedido.connect(
+            lambda giro: self._girar_folhas(giro, so_esta=True))
+        self.girar_do_canto.setVisible(False)
+        self.area_imagem.installEventFilter(self)
+        self.area_imagem.currentChanged.connect(lambda _i: self._por_o_girar_no_canto())
 
-        # Os quatro paineis, na coluna de 172 px do desenho. Eles recebem o que
-        # eram linhas de botoes atravessando a tela.
+        # Etapa 3 do layout: a coluna de icones na borda direita e o painel
+        # que ela abre ao lado da pagina (de fabrica, tudo fechado). Os
+        # paineis recebem o que eram linhas de botoes atravessando a tela.
         self.paineis = ColunaDePaineis()
-        meio.addWidget(self.paineis)
-        camadas.addLayout(meio, 1)
+        # o bloco "Girar a folha" no alto do Propriedades, em todas as ferramentas
+        self.paineis.propriedades.por_no_alto(self.barra_girar)
 
         self._ligar_paineis()
 
-        self.faixa = QFrame()                                # 4
+        # 4 - a faixa fina do conferir, colada embaixo da pagina (decidido em
+        # 05/10: "faixa fina embaixo da página"), com os tres botoes do
+        # desenho dentro dela (opcao 1 do Conferir, aprovada na rodada 2): a
+        # sugestao laranja do aviso (so quando o aviso tem uma), "está certo"
+        # e "próxima dúvida". Antes cada ferramenta tinha o seu "está certo" e
+        # a sua sugestao na fila de botoes embaixo; agora e um lugar so, igual
+        # em todas. Seguro mudar: os textos. Arriscado: tirar um dos tres.
+        self.faixa = QFrame()
         self.faixa.setObjectName("faixaInfo")
         self.faixa.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         faixa_camadas = QHBoxLayout(self.faixa)
-        faixa_camadas.setContentsMargins(14, 9, 14, 9)
+        faixa_camadas.setContentsMargins(14, 5, 10, 5)
+        faixa_camadas.setSpacing(8)
         self.texto_faixa = QLabel("")
         self.texto_faixa.setWordWrap(True)
         faixa_camadas.addWidget(self.texto_faixa, 1)
-        camadas.addWidget(self.faixa)
+        self.botao_sugestao = QPushButton("")
+        self.botao_sugestao.setObjectName("sugestao")
+        self.botao_sugestao.setToolTip("Faz o que o aviso sugere, nesta página.")
+        _ligar(self.botao_sugestao, self._aplicar_sugestao)
+        self.botao_esta_certo = QPushButton("está certo")
+        self.botao_esta_certo.setObjectName("acaoPrimaria")
+        self.botao_esta_certo.setToolTip(
+            "Marca como conferida (a barra de espaço marca e já vai para a próxima).")
+        _ligar(self.botao_esta_certo, self._marcar_revisada)
+        self.botao_proxima_duvida = QPushButton("próxima dúvida")
+        self.botao_proxima_duvida.setToolTip("Vai para a próxima com dúvida (tecla Tab).")
+        _ligar(self.botao_proxima_duvida, self._ir_para_proximo_alerta)
+        for botao in (self.botao_sugestao, self.botao_esta_certo, self.botao_proxima_duvida):
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)        # o teclado continua da página
+            faixa_camadas.addWidget(botao)
+        self.botao_sugestao.setVisible(False)
+        centro.addWidget(self.faixa)
 
         # A fila de botoes de cada aba. O QStackedWidget reserva, por padrao, a
         # altura da MAIOR pagina dele - entao a aba de Marcar, que agora tem uma
@@ -468,9 +576,20 @@ class TelaConferir(QWidget):
         # A conta e feita a mao em _encolher_a_barra_de_botoes: as paginas que
         # nao estao na frente passam a ser ignoradas no calculo, e a pilha
         # ganha a altura da atual. A troca de aba reavalia.
+        # Etapa 2 do layout: PROVISORIO ate a etapa 4, quando estes botoes
+        # vao para o painel Propriedades (R9 402 C: muda conforme a ferramenta).
+        # Etapa 3: os de Dividir, Cortar e Endireitar ja foram (a pagina
+        # deles nesta pilha e vazia, com altura zero); ficam aqui os de
+        # Marcar e os dos quatro filtros.
         self.barra_botoes = QStackedWidget()                 # 5
-        self.barra_botoes.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        camadas.addWidget(self.barra_botoes)
+        self.barra_botoes.setObjectName("barraDeBotoes")
+        # largura "ignorada": com um painel aberto a fila tem menos lugar, e
+        # nunca pode empurrar a janela para mais largo que a tela
+        self.barra_botoes.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Maximum)
+        self.caixa_dos_botoes = QVBoxLayout()
+        self.caixa_dos_botoes.setContentsMargins(*MARGENS_DA_FILA_DE_BOTOES)
+        self.caixa_dos_botoes.addWidget(self.barra_botoes)
+        centro.addLayout(self.caixa_dos_botoes)
 
         # A tira e o botao de processar dividem UMA faixa, como no desenho: a
         # tira a esquerda, "Confirmar e processar" no canto direito. Eram duas
@@ -481,16 +600,139 @@ class TelaConferir(QWidget):
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
 
         faixa_da_tira = QHBoxLayout()
-        faixa_da_tira.setContentsMargins(0, 0, 0, 0)
+        faixa_da_tira.setContentsMargins(6, 2, 10, 4)
         faixa_da_tira.setSpacing(10)
         faixa_da_tira.addWidget(self.tira, 1)
         self._montar_rodape()
         faixa_da_tira.addWidget(self.botao_processar)
-        camadas.addLayout(faixa_da_tira)
+        centro.addLayout(faixa_da_tira)
 
+        # 7 - a barra de baixo (etapa 2 do layout, R9 405 C: desfazer e refazer
+        # sempre a mao, mais o painel Historico).
+        centro.addWidget(self._montar_barra_de_baixo())
+
+        corpo.addLayout(centro, 1)
+        corpo.addWidget(self.paineis)
+        camadas.addLayout(corpo, 1)
+
+    def _montar_barra_de_baixo(self) -> QWidget:
+        """A barra fina de baixo, como no prototipo das rodadas 9 a 11:
+        "< pagina N de M >", desfazer, refazer e o Historico, o nome do livro
+        e quantas foram conferidas e quantas tem duvida. As setas "<" e ">"
+        que ficavam dos lados da pagina moraram aqui (as dos lados ficam
+        escondidas: a roda do mouse e as setas do teclado continuam)."""
+        barra = QFrame()
+        barra.setObjectName("barraDeBaixo")
+        barra.setFixedHeight(30)
+        linha = QHBoxLayout(barra)
+        linha.setContentsMargins(10, 0, 10, 0)
+        linha.setSpacing(6)
+
+        def botao_pequeno(texto: str, dica: str, acao) -> QPushButton:
+            botao = QPushButton(texto)
+            botao.setObjectName("botaoDaBarraDeBaixo")
+            botao.setToolTip(dica)
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)
+            _ligar(botao, acao)
+            linha.addWidget(botao)
+            return botao
+
+        self.botao_anterior = botao_pequeno("‹", "página anterior (seta para a esquerda)",
+                                            lambda: self._navegar(-1))
+        self.rotulo_da_pagina = QLabel("")
+        self.rotulo_da_pagina.setObjectName("rotuloDaBarraDeBaixo")
+        linha.addWidget(self.rotulo_da_pagina)
+        self.botao_proxima = botao_pequeno("›", "próxima página (seta para a direita)",
+                                           lambda: self._navegar(1))
+        linha.addSpacing(8)
+        self.botao_desfazer_embaixo = botao_pequeno(
+            "", "Desfazer (Ctrl+Z)", self.desfazer)
+        self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
+        self.botao_refazer_embaixo = botao_pequeno(
+            "", "Refazer (Ctrl+Shift+Z)", self.refazer)
+        self.botao_refazer_embaixo.setIcon(_icone_da_barra("refazer"))
+        self.botao_historico_embaixo = botao_pequeno(
+            "", "Abrir ou fechar o painel Histórico (a lista do que foi feito)",
+            self._mostrar_o_historico)
+        self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
+        linha.addSpacing(8)
+        self.rotulo_do_livro = QLabel("")
+        self.rotulo_do_livro.setObjectName("rotuloDaBarraDeBaixo")
+        # cede lugar (etapa 3): com um painel aberto numa janela estreita, o
+        # nome comprido do livro e cortado em vez de empurrar a coluna de
+        # icones para fora da janela (o nome inteiro fica no balao)
+        self.rotulo_do_livro.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        linha.addWidget(self.rotulo_do_livro, 1)
+        # os icones desenhados a mao acompanham a troca de tema
+        estilo.estilizar(barra, self._icones_da_barra_de_baixo)
+        return barra
+
+    def _icones_das_setas_do_angulo(self) -> str:
+        """(Re)desenha as setinhas dos botoes de 0,1 grau da ferramenta
+        Endireitar na cor do tema da vez. Devolve a folha (vazia) para
+        estilo.estilizar, que chama isto de novo a cada troca de tema."""
+        from ui.widgets.barra_girar import icone_de_giro
+
+        self.botao_angulo_anti_horario.setIcon(icone_de_giro(girar.GIRO_ESQUERDA))
+        self.botao_angulo_horario.setIcon(icone_de_giro(girar.GIRO_DIREITA))
+        return ""
+
+    def _icones_da_barra_de_baixo(self) -> str:
+        """(Re)desenha os icones da barra de baixo na cor do tema da vez; a
+        folha dela mora em ui/estilo.py (QFrame#barraDeBaixo)."""
+        self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
+        self.botao_refazer_embaixo.setIcon(_icone_da_barra("refazer"))
+        self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
+        # os dois botoes do painel Historico levam os mesmos desenhos
+        self.paineis.historico.definir_icones(
+            _icone_da_barra("desfazer"), _icone_da_barra("refazer"))
+        return ""
+
+    def _mostrar_o_historico(self) -> None:
+        """Botao do Historico na barra de baixo: abre o painel Historico, ou
+        fecha se ja era ele o aberto (o mesmo que o icone do relogio na
+        coluna da direita; rodada 9, 405 C: os botoes sempre a mao e a lista
+        no painel)."""
+        self.paineis.alternar(PAINEL_HISTORICO)
+        self.historico_pedido.emit()
+
+    def _atualizar_barra_de_baixo(self) -> None:
+        """Pagina (ou folha, no Dividir), desfazer/refazer acesos so quando ha
+        o que fazer, e o andamento do livro."""
+        if self.projeto is None or not hasattr(self, "rotulo_da_pagina"):
+            return
+        if self.trabalha_com_folhas:
+            texto = f"folha {self.indice_folha + 1} de {len(self.projeto.folhas)}"
+        else:
+            texto = f"página {self.indice_pagina + 1} de {len(self.projeto.paginas)}"
+        self.rotulo_da_pagina.setText(texto)
+        total = self._total()
+        self.botao_anterior.setEnabled(self.indice_atual > 0)
+        self.botao_proxima.setEnabled(self.indice_atual < total - 1)
+        feitas = bool(self.acoes and self.acoes.feitas)
+        desfeitas = bool(self.acoes and self.acoes.desfeitas)
+        self.botao_desfazer_embaixo.setEnabled(feitas)
+        self.botao_refazer_embaixo.setEnabled(desfeitas)
+        if feitas:
+            self.botao_desfazer_embaixo.setToolTip(
+                f"Desfazer: {self.acoes.feitas[-1].descricao} (Ctrl+Z)")
+        paginas = self.projeto.paginas
+        conferidas = sum(1 for p in paginas if p.revisada)
+        duvidas = sum(1 for p in paginas if p.precisa_revisao)
+        nome = Path(self.projeto.caminho_entrada).stem if self.projeto.caminho_entrada else ""
+        texto = (f"{nome} · {conferidas} de {len(paginas)} conferidas · "
+                 f"{duvidas} com dúvida")
+        self.rotulo_do_livro.setText(texto)
+        self.rotulo_do_livro.setToolTip(texto)     # inteiro, se a barra cortar
 
     def _ligar_paineis(self) -> None:
-        """Cada painel manda no mesmo lugar em que o botao antigo mandava."""
+        """Cada painel manda no mesmo lugar em que o botao antigo mandava.
+
+        Etapa 3 do layout: o Historico ganhou os botoes de desfazer e refazer
+        (os mesmos da barra de baixo), e o Automatico leva a tela "O que
+        fazer" pelo mesmo caminho do menu Arquivo > "Voltar para as opções"
+        (o sinal `voltar`), que grava o trabalho antes de sair."""
         painel = self.paineis
         painel.para_revisar.ir_para.connect(self.ir_para_pagina)
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
@@ -498,6 +740,9 @@ class TelaConferir(QWidget):
             self._escolher_filtro_da_regiao)
         painel.filtro_da_pagina.medidor_mudou.connect(self._medidor_soltou)
         painel.historico.voltar_para.connect(self._voltar_no_historico)
+        painel.historico.desfazer_pedido.connect(self.desfazer)
+        painel.historico.refazer_pedido.connect(self.refazer)
+        painel.automatico.mudar_pedido.connect(lambda: self.voltar.emit())
 
     def _voltar_no_historico(self, posicao: int) -> None:
         """Volta o trabalho ate a acao clicada no painel Historico."""
@@ -523,9 +768,8 @@ class TelaConferir(QWidget):
         botoes que sabia disso e o editor que sabia de novo, e os dois saiam do
         ar quando alguem esquecia de avisar o outro.
         """
-        self.trilha.escolhida.connect(self.barra_opcoes.definir_ferramenta)
-        self.trilha.escolhida.connect(self.editor_selecao.definir_ferramenta)
-
+        # Etapa 2 do layout: a trilha agrupada avisa a tela
+        # (_ferramenta_da_trilha), e a tela avisa a barra e o editor.
         opcoes, editor = self.barra_opcoes, self.editor_selecao
         opcoes.operacao_mudou.connect(editor.definir_operacao)
         opcoes.tolerancia_mudou.connect(
@@ -539,10 +783,98 @@ class TelaConferir(QWidget):
         self.barra_opcoes.definir_ferramenta(FERRAMENTA_RETANGULO)
 
     def escolher_ferramenta(self, ferramenta: str) -> None:
-        """Ponto unico de troca - usado tambem pelos atalhos de letra."""
+        """Ponto unico de troca - usado tambem pelos atalhos de letra.
+
+        Etapa 2 do layout (sem abas): as ferramentas de marcar so trabalham
+        na pagina de marcar, entao escolher uma delas (na trilha ou pela
+        letra) leva a tela para la, como no Photoshop.
+
+        As ferramentas de pagina (Dividir, Cortar, Endireitar, Os quatro
+        filtros) nao sao do editor de marcar: vao pelo mesmo caminho do clique
+        na trilha, que escolhe a "aba" delas. Sem isto, a trilha acendia a
+        ferramenta e a tela continuava na de marcar (achado em 09/10/2026)."""
+        if ferramenta in ABA_DA_FERRAMENTA:
+            self._ferramenta_da_trilha(ferramenta)
+            return
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
         self.editor_selecao.definir_ferramenta(ferramenta)
+        if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
+            self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
+        self._acertar_as_propriedades()     # o painel Propriedades segue a ferramenta
+
+    def _ferramenta_da_trilha(self, ferramenta: str) -> None:
+        """Clique na trilha. As de pagina (Dividir, Cortar, Endireitar e, ate a
+        etapa 4, Os quatro filtros) escolhem a "aba" delas; as de marcar e de
+        navegar vao para a pagina de marcar."""
+        aba = ABA_DA_FERRAMENTA.get(ferramenta)
+        if aba is not None:
+            if aba in self._abas_ativas:
+                self.barra_abas.setCurrentIndex(self._abas_ativas.index(aba))
+                # Rodada 13 do layout, 802 A ("Abre sozinho"): ao ESCOLHER
+                # Dividir, Cortar ou Endireitar, o painel Propriedades abre,
+                # porque e nele que estao os botoes delas. So ao escolher: se
+                # a pessoa fechar o painel, ele fica fechado ate ela escolher
+                # outra dessas tres. Abrir um livro nao abre painel nenhum
+                # (rodada 7, 203 D: de fabrica, tudo fechado).
+                if aba in self.propriedades_das_abas:
+                    self.paineis.abrir(PAINEL_PROPRIEDADES)
+            return
+        if hasattr(self, "editor_selecao") and ABA_MARCAR in self._abas_ativas:
+            self.escolher_ferramenta(ferramenta)
+
+    def _acertar_a_trilha(self) -> None:
+        """A trilha mostra so as ferramentas deste livro e marca a da vez."""
+        disponiveis = {f for f, aba in ABA_DA_FERRAMENTA.items() if aba in self._abas_ativas}
+        if ABA_MARCAR in self._abas_ativas:
+            from ui.widgets.editor_selecao import ORDEM_DA_TRILHA
+            disponiveis.update(ORDEM_DA_TRILHA)
+        self.trilha.definir_disponiveis(disponiveis)
+        aba = self.aba_atual
+        if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            ferramenta = self.barra_opcoes.ferramenta
+        else:
+            ferramenta = FERRAMENTA_DA_ABA.get(aba)
+        self.trilha.definir_ferramenta(ferramenta)
+        # a barra de opcoes, na linha dos menus, diz a ferramenta de pagina
+        # (so o nome: rodada 12, 702 C; a frase do que fazer fica no balao da
+        # ferramenta, na trilha)
+        if aba != ABA_MARCAR and ferramenta in FERRAMENTAS_DA_PAGINA:
+            self.barra_opcoes.definir_ferramenta_da_pagina(NOMES_DA_TRILHA[ferramenta])
+        elif aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            self.barra_opcoes.definir_ferramenta(self.barra_opcoes.ferramenta)
+        self._acertar_as_propriedades()
+        self._por_o_girar_no_canto()
+
+    def _acertar_as_propriedades(self) -> None:
+        """O painel Propriedades mostra o que e da ferramenta da vez (rodada
+        9, 402 C: "Muda conforme a ferramenta (como no Photoshop)"):
+
+          Dividir, Cortar, Endireitar   os botoes delas (montados em
+                                        _montar_aba_corte/_bordas/_angulo)
+          ferramentas de marcar         o "Marcar como"
+          Zoom e Mao                    a frase de que nao tem propriedades
+          Os quatro filtros             idem (provisorio ate o painel Filtro)
+
+        Chamado a cada troca de ferramenta. Nunca levanta excecao por faltar
+        uma peca: o painel mostra a frase de "sem propriedades"."""
+        painel = self.paineis.propriedades
+        aba = self.aba_atual
+        if aba in self.propriedades_das_abas:
+            painel.mostrar(aba, NOMES_DA_TRILHA[FERRAMENTA_DA_ABA[aba]])
+            return
+        if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            ferramenta = self.barra_opcoes.ferramenta
+            nome = NOMES_DA_TRILHA.get(ferramenta, "")
+            if ferramenta in FERRAMENTAS_DE_NAVEGACAO:
+                painel.mostrar(painel.SEM_PROPRIEDADES, nome,
+                               f"{nome} só serve para olhar a página: não tem propriedades.")
+            else:
+                painel.mostrar(painel.CONTEUDO_DE_MARCAR, nome)
+            return
+        ferramenta = FERRAMENTA_DA_ABA.get(aba)
+        painel.mostrar(painel.SEM_PROPRIEDADES, NOMES_DA_TRILHA.get(ferramenta, ""),
+                       "Os ajustes desta ferramenta estão embaixo da página.")
 
     def _montar_cabecalho(self) -> QWidget:
         """Os controles do antigo cabecalho, que agora vivem em outros lugares.
@@ -636,26 +968,95 @@ class TelaConferir(QWidget):
         self.paginas_de_imagem[aba] = pagina
         return visualizador
 
-    def _linha_de_botoes(self, aba: str) -> QHBoxLayout:
-        widget = QWidget()
-        linha = QHBoxLayout(widget)
+    # --- o painel Propriedades de Dividir, Cortar e Endireitar ------------
+    #
+    # Etapa 3 do layout (12/10/2026; rodada 9, 402 C: "Muda conforme a
+    # ferramenta (como no Photoshop)"; rodada 12, 701 A: "Fazer logo o painel
+    # Propriedades do Cortar"; 706 B: duas partes, "Só nesta página" e "Para o
+    # livro todo"). Os botoes destas tres ferramentas sairam da fila embaixo
+    # da pagina (onde a do Cortar nao cabia em 1280 x 657) para o painel
+    # Propriedades. SAO OS MESMOS BOTOES, ligados as mesmas acoes; so mudaram
+    # de lugar e, alguns, de nome (rodada 12, 710 B). O "está certo" e a
+    # sugestao laranja de cada fila viraram os da faixa do conferir.
+
+    def _conteudo_de_propriedades(self, aba: str) -> QVBoxLayout:
+        """Cria a caixa (vazia) do conteudo do painel Propriedades da
+        ferramenta da "aba" e devolve a coluna para por as pecas. A caixa
+        tambem fica em `linhas_de_botoes[aba]`: quem procurava os botoes da
+        ferramenta ali continua achando."""
+        caixa = Bloco()
+        coluna = QVBoxLayout(caixa)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(7)
+        self.propriedades_das_abas[aba] = caixa
+        self.linhas_de_botoes[aba] = caixa
+        return coluna
+
+    def _par_de_botoes(self, coluna: QVBoxLayout) -> QHBoxLayout:
+        """Uma linha para dois botoes lado a lado, da mesma largura."""
+        linha = QHBoxLayout()
         linha.setContentsMargins(0, 0, 0, 0)
-        linha.setSpacing(8)
-        self.linhas_de_botoes[aba] = widget
+        linha.setSpacing(6)
+        coluna.addLayout(linha)
         return linha
 
+    def _caixinha_do_painel(self, texto: str, dica: str, acao, coluna: QVBoxLayout) -> QCheckBox:
+        """Uma caixinha de ligar e desligar do painel Propriedades (com o
+        quadrado a vista tambem desligada: ui/estilo.py). Tem os mesmos
+        metodos do botao "apertado" que ela substitui (isChecked, setChecked,
+        click, setEnabled)."""
+        caixinha = QCheckBox(texto)
+        estilo.estilizar(caixinha, lambda: estilo_da_caixinha_com_quadrado(13))
+        caixinha.setCursor(Qt.PointingHandCursor)
+        caixinha.setFocusPolicy(Qt.NoFocus)        # o teclado continua da pagina
+        caixinha.setToolTip(dica)
+        _ligar(caixinha, acao)
+        coluna.addWidget(caixinha)
+        return caixinha
+
+    def _parte_do_livro(self, linhas: list[str]) -> QFrame:
+        """A parte "Para o livro todo" do Propriedades (rodada 12, 706 B).
+
+        Mostra o que vale para o livro inteiro e leva a tela "O que fazer",
+        que e onde isso se muda HOJE (o mesmo "Voltar para as opções" do menu
+        Arquivo; o trabalho fica gravado). Mudar daqui mesmo, sem sair da
+        pagina, ainda nao existe no programa: pede refazer a conferencia do
+        livro, e nao foi inventado aqui."""
+        caixa = QFrame()
+        caixa.setObjectName("parteDoLivro")
+        caixa.setAttribute(Qt.WA_StyledBackground, True)
+        coluna = QVBoxLayout(caixa)
+        coluna.setContentsMargins(10, 8, 10, 9)
+        coluna.setSpacing(5)
+        coluna.addWidget(titulo_de_parte("Para o livro todo"))
+        for texto in linhas:
+            rotulo = QLabel(texto)
+            rotulo.setObjectName("rotuloDoPainel")
+            rotulo.setWordWrap(True)
+            coluna.addWidget(rotulo)
+        botao = _botao("mudar nas opções do livro...", coluna, lambda: self.voltar.emit())
+        botao.setToolTip(
+            "Volta à tela \"O que fazer\", onde esta escolha vale para o livro inteiro. "
+            "O trabalho deste livro fica gravado.")
+        return caixa
+
     def _montar_aba_corte(self) -> None:
+        """A ferramenta Dividir a folha: a pagina com a linha azul e, no
+        painel Propriedades, os botoes dela."""
         vis = self._area_de_visualizador(ABA_CORTE, MODO_CORTE)
         vis.corte_movido.connect(self._mover_corte)
+        assert self.projeto is not None
 
-        linha = self._linha_de_botoes(ABA_CORTE)
-        _botao("está certo", linha, self._marcar_revisada)
-        self.botao_nao_dividir = _botao("não dividir esta", linha, self._alternar_dividir)
-        # Item 2.1 (G2 (a), "trocando numa folha se um ficar ruim"; provisorio
-        # ate o layout): o jeito de dividir SO desta folha. Trocar recalcula a
-        # linha azul pelo outro jeito (core.pipeline.recalcular_divisao). So
-        # habilitada em folha dividida (_atualizar_botoes).
+        coluna = self._conteudo_de_propriedades(ABA_CORTE)
+        coluna.addWidget(titulo_de_parte("Só nesta folha"))
+        coluna.addWidget(titulo_de_secao("Onde dividir"))
+        # Item 2.1 (G2 (a), "trocando numa folha se um ficar ruim"): o jeito
+        # de dividir SO desta folha. Trocar recalcula a linha azul pelo outro
+        # jeito (core.pipeline.recalcular_divisao). So habilitada em folha
+        # dividida (_atualizar_botoes).
+        linha = self._par_de_botoes(coluna)
         self.rotulo_jeito_da_folha = QLabel("jeito:")
+        self.rotulo_jeito_da_folha.setObjectName("rotuloDoPainel")
         linha.addWidget(self.rotulo_jeito_da_folha)
         self.combo_jeito_da_folha = QComboBox()
         for jeito in dividir_scantailor.JEITOS:
@@ -665,55 +1066,76 @@ class TelaConferir(QWidget):
             "A linha azul vai para onde o outro jeito acha a divisão.")
         self.combo_jeito_da_folha.currentIndexChanged.connect(
             lambda _i: self._trocar_jeito_da_folha())
-        linha.addWidget(self.combo_jeito_da_folha)
-        _botao("girar", linha, self._girar)
-        _botao("usar em todas", linha, self._corte_em_todas)
-        linha.addStretch()
-        self.botoes_de_sugestao[ABA_CORTE] = _botao(
-            "", linha, self._aplicar_sugestao, "sugestao"
-        )
+        linha.addWidget(self.combo_jeito_da_folha, 1)
+        lista_estreita(self.combo_jeito_da_folha)
+        par = self._par_de_botoes(coluna)
+        self.botao_nao_dividir = _botao("não dividir esta", par, self._alternar_dividir)
+        _botao("usar em todas", par, self._corte_em_todas).setToolTip(
+            "Põe a linha de divisão desta folha em todas as folhas.")
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
+        # (O botao "girar" que ficava aqui saiu em 13/10/2026: fazia o mesmo que
+        # o "¼ à direita" do bloco "Girar a folha", logo acima no painel - os
+        # dois chamavam _girar_folhas(GIRO_DIREITA), com o mesmo "aplicar em".)
+        coluna.addSpacing(6)
+        jeito_do_livro = dividir_scantailor.jeito_valido(
+            getattr(self.projeto, "dividir_como", None))
+        coluna.addWidget(self._parte_do_livro(
+            [f"Jeito de dividir: {dividir_scantailor.NOMES_DOS_JEITOS[jeito_do_livro]}"]))
 
     def _montar_aba_bordas(self) -> None:
+        """A ferramenta Cortar as bordas: a pagina com o retangulo verde e,
+        no painel Propriedades, os botoes dela (rodada 12, 701 A)."""
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
         vis.recorte_movido.connect(self._mover_recorte)
         vis.conteudo_movido.connect(self._mover_conteudo)
+        assert self.projeto is not None
 
-        linha = self._linha_de_botoes(ABA_BORDAS)
-        _botao("está certo", linha, self._marcar_revisada)
-        _botao("não cortar esta", linha, self._sem_recorte)
-        _botao("voltar ao automático", linha, self._recorte_automatico)
-        _botao("usar em todas", linha, self._recorte_em_todas)
-        _botao("tamanho...", linha, self._escolher_tamanho_da_folha)
+        coluna = self._conteudo_de_propriedades(ABA_BORDAS)
+        coluna.addWidget(titulo_de_parte("Só nesta página"))
+        coluna.addWidget(titulo_de_secao("Corte desta página"))
+        _botao("não cortar esta", coluna, self._sem_recorte).setToolTip(
+            "Esta página sai inteira, sem cortar a borda.")
+        # Rodada 12, 710 B: era "voltar ao automático" (a mesma acao: tira o
+        # corte feito a mao e volta a valer o que o programa acha sozinho).
+        _botao("usar o corte do programa", coluna, self._recorte_automatico).setToolTip(
+            "Desfaz o corte que você arrastou nesta página: volta a valer o corte "
+            "que o programa acha sozinho.")
+        par = self._par_de_botoes(coluna)
+        _botao("usar em todas", par, self._recorte_em_todas).setToolTip(
+            "Põe o corte desta página em todas as páginas.")
+        _botao("tamanho...", par, self._escolher_tamanho_da_folha).setToolTip(
+            "Escolhe o tamanho da folha em que esta página vai sair.")
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
 
-        self.botao_espelhado = _botao("Espelhado", linha, self._alternar_espelhado)
-        self.botao_espelhado.setCheckable(True)
-        self.botao_espelhado.setToolTip(
-            f"Espelhado  ({atalhos.tecla_atual(CHAVE_RECORTE_ESPELHADO)})")
-
-        self.botao_proporcao_travada = _botao(
-            "Proporção travada", linha, self._alternar_proporcao_travada
-        )
-        self.botao_proporcao_travada.setCheckable(True)
-        self.botao_proporcao_travada.setToolTip(
-            f"Proporção travada  ({atalhos.tecla_atual(CHAVE_RECORTE_PROPORCAO)})")
+        coluna.addWidget(risco_do_painel())
+        coluna.addWidget(titulo_de_secao("Ao arrastar"))
+        tecla_m = atalhos.tecla_atual(CHAVE_RECORTE_ESPELHADO)
+        tecla_t = atalhos.tecla_atual(CHAVE_RECORTE_PROPORCAO)
+        self.botao_espelhado = self._caixinha_do_painel(
+            f"Espelhado   (tecla {tecla_m})",
+            "Arrastar um lado do retângulo mexe o lado oposto junto.",
+            self._alternar_espelhado, coluna)
+        self.botao_proporcao_travada = self._caixinha_do_painel(
+            f"Proporção travada   (tecla {tecla_t})",
+            "O retângulo muda de tamanho sem mudar de formato.",
+            self._alternar_proporcao_travada, coluna)
 
         # Fase 2 (aprovada pelo Samuel em 22/09/2026): mover o conteúdo
         # dentro da folha - só faz sentido quando há uma folha maior que o
-        # recorte escolhida (`_atualizar_previa` habilita/desabilita este
-        # botão, ver `_conferir_tamanho_da_folha` / ABA_BORDAS).
-        self.botao_mover_conteudo = _botao(
-            "Mover conteúdo", linha, self._alternar_mover_conteudo
-        )
-        self.botao_mover_conteudo.setCheckable(True)
+        # recorte escolhida (`_atualizar_previa` habilita/desabilita esta
+        # caixinha, ver `_conferir_tamanho_da_folha` / ABA_BORDAS).
+        self.botao_mover_conteudo = self._caixinha_do_painel(
+            "Mover conteúdo",
+            "Arrastar a página dentro da folha escolhida (botão \"tamanho...\"). "
+            "Só disponível quando a folha é maior que o recorte.",
+            self._alternar_mover_conteudo, coluna)
         self.botao_mover_conteudo.setEnabled(False)
-        self.botao_mover_conteudo.setToolTip(
-            "Arrastar a página dentro da folha escolhida (aba \"tamanho...\"). "
-            "Só disponível quando a folha é maior que o recorte."
-        )
+        coluna.addWidget(frase_do_painel("(só depois de escolher um tamanho de folha)"))
 
-        linha.addStretch()
-
-        linha.addWidget(QLabel("Qualidade:"))
+        coluna.addWidget(risco_do_painel())
+        coluna.addWidget(titulo_de_secao("Qualidade da prévia"))
         seletor_qualidade = QComboBox()
         for chave, nome in NOMES_DA_QUALIDADE.items():
             seletor_qualidade.addItem(nome, chave)
@@ -724,10 +1146,15 @@ class TelaConferir(QWidget):
         )
         seletor_qualidade.currentIndexChanged.connect(
             lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
-        linha.addWidget(seletor_qualidade)
-        self.botoes_de_sugestao[ABA_BORDAS] = _botao(
-            "", linha, self._aplicar_sugestao, "sugestao"
-        )
+        self.seletor_qualidade = seletor_qualidade
+        coluna.addWidget(seletor_qualidade)
+        lista_estreita(seletor_qualidade)
+        coluna.addWidget(frase_do_painel(
+            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."))
+        coluna.addSpacing(6)
+        coluna.addWidget(self._parte_do_livro(
+            ["Cortar a beirada da folha vizinha: "
+             + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não")]))
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -928,29 +1355,18 @@ class TelaConferir(QWidget):
         vis = self._area_de_visualizador(ABA_ANGULO, MODO_ANGULO)
         vis.angulo_movido.connect(self._mover_angulo)
 
-        linha = self._linha_de_botoes(ABA_ANGULO)
-        _botao("está certo", linha, self._marcar_revisada)
-        _botao("não endireitar esta", linha, self._angulo_zero)
-        _botao("voltar ao automático", linha, self._angulo_automatico)
-        # Item 2.2 (G5 (c)): o angulo em numero com as setas de 0,1 grau
-        # (icones desenhados a mao, os da barra de girar) e o "aplicar em".
-        # Numa SEGUNDA linha, embaixo dos botoes: numa so, em 1280 px, os
-        # textos ficavam cortados (print de 07/10/2026). O painel tem as duas.
+        assert self.projeto is not None
+        # Etapa 3 do layout: os botoes do Endireitar moram no painel
+        # Propriedades (ver "o painel Propriedades de Dividir, Cortar e
+        # Endireitar", acima). Item 2.2 (G5 (c)): o angulo em numero com as
+        # setas de 0,1 grau (icones desenhados a mao, os da barra de girar) e
+        # o "aplicar em".
         from ui.widgets.barra_girar import LADO_DO_ICONE, icone_de_giro
 
-        primeira = self.linhas_de_botoes[ABA_ANGULO]
-        painel = QWidget()
-        coluna = QVBoxLayout(painel)
-        coluna.setContentsMargins(0, 0, 0, 0)
-        coluna.setSpacing(6)
-        coluna.addWidget(primeira)
-        segunda = QWidget()
-        linha2 = QHBoxLayout(segunda)
-        linha2.setContentsMargins(0, 0, 0, 0)
-        linha2.setSpacing(8)
-        coluna.addWidget(segunda)
-        self.linhas_de_botoes[ABA_ANGULO] = painel
-        linha2.addWidget(QLabel("inclinação:"))
+        coluna = self._conteudo_de_propriedades(ABA_ANGULO)
+        coluna.addWidget(titulo_de_parte("Só nesta página"))
+        coluna.addWidget(titulo_de_secao("Inclinação desta página"))
+        linha2 = self._par_de_botoes(coluna)
 
         self.botao_angulo_anti_horario = _botao(
             "0,1°", linha2, lambda: self._ajustar_angulo(+PASSO_DO_ANGULO))
@@ -963,7 +1379,10 @@ class TelaConferir(QWidget):
         self.campo_angulo.setDecimals(2)
         self.campo_angulo.setSingleStep(PASSO_DO_ANGULO)
         self.campo_angulo.setSuffix(" graus")
-        self.campo_angulo.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        # Sem as setinhas proprias (as de 0,1 grau ficam ao lado): elas
+        # existem com largura zero pela folha de estilo (ui/estilo.py,
+        # "campo_angulo"). NoButtons deixava o numero invisivel no Qt 6.12.
+        self.campo_angulo.setObjectName("campo_angulo")
         self.campo_angulo.setKeyboardTracking(False)
         self.campo_angulo.setAlignment(Qt.AlignRight)
         self.campo_angulo.setToolTip(
@@ -971,7 +1390,7 @@ class TelaConferir(QWidget):
             "Digite um número e aperte Enter, ou use as setas ao lado.")
         self.campo_angulo.valueChanged.connect(self._angulo_digitado)
         self.campo_angulo.editingFinished.connect(self._angulo_digitado_acabou)
-        linha2.addWidget(self.campo_angulo)
+        linha2.addWidget(self.campo_angulo, 1)
         self.botao_angulo_horario = _botao(
             "0,1°", linha2, lambda: self._ajustar_angulo(-PASSO_DO_ANGULO))
         self.botao_angulo_horario.setIcon(icone_de_giro(girar.GIRO_DIREITA))
@@ -979,39 +1398,55 @@ class TelaConferir(QWidget):
         for botao in (self.botao_angulo_anti_horario, self.botao_angulo_horario):
             botao.setIconSize(QSize(LADO_DO_ICONE, LADO_DO_ICONE))
             botao.setFocusPolicy(Qt.NoFocus)       # nao rouba as setas do teclado
+        # as setinhas desenhadas a mao acompanham a troca de tema (etapa 2 do
+        # layout: no tema claro elas ficavam na cor clara do tema de antes)
+        estilo.estilizar(self.propriedades_das_abas[ABA_ANGULO],
+                         self._icones_das_setas_do_angulo)
+        linha3 = self._par_de_botoes(coluna)
         self.rotulo_alcance_do_angulo = QLabel("aplicar em:")
-        linha2.addSpacing(10)
-        linha2.addWidget(self.rotulo_alcance_do_angulo)
+        self.rotulo_alcance_do_angulo.setObjectName("rotuloDoPainel")
+        linha3.addWidget(self.rotulo_alcance_do_angulo)
         self.combo_alcance_do_angulo = QComboBox()
         self.combo_alcance_do_angulo.setFocusPolicy(Qt.NoFocus)
+        # Rodada 12, 709 B: as palavras da lista dizem PAGINA (a lista do
+        # girar diz folha); os codigos (core/girar.ALCANCES) sao os mesmos.
+        nomes = nomes_dos_alcances("página")
         for alcance in girar.ALCANCES:
-            self.combo_alcance_do_angulo.addItem(girar.NOMES_DOS_ALCANCES[alcance], alcance)
+            self.combo_alcance_do_angulo.addItem(nomes[alcance], alcance)
         self.combo_alcance_do_angulo.setToolTip(
             "Em quais páginas o ângulo vale: o que você fizer aqui (girar, "
-            "não endireitar, voltar ao automático) vale para todas as escolhidas.")
-        linha2.addWidget(self.combo_alcance_do_angulo)
-        linha2.addStretch()
-        # Item 2.2 (G4 (b): "eu vou ter a opção de escolher"; provisorio ate o
-        # layout): a conta do endireitar automatico SO desta pagina, e os dois
-        # angulos que as contas acharam (_atualizar_botoes).
-        self.rotulo_conta_do_endireitar = QLabel("conta:")
-        linha.addWidget(self.rotulo_conta_do_endireitar)
+            "deixar como veio, usar o ângulo do programa) vale para todas as escolhidas.")
+        linha3.addWidget(self.combo_alcance_do_angulo, 1)
+        lista_estreita(self.combo_alcance_do_angulo)
+        # Rodada 12, 710 B: eram "não endireitar esta" e "voltar ao
+        # automático" (as mesmas acoes, com outro nome).
+        _botao("deixar como veio", coluna, self._angulo_zero).setToolTip(
+            "Não endireita: a página sai com a inclinação com que veio no PDF.")
+        _botao("usar o ângulo do programa", coluna, self._angulo_automatico).setToolTip(
+            "Desfaz o seu ajuste: volta a valer o ângulo que o programa acha sozinho.")
+
+        # Item 2.2 (G4 (b): "eu vou ter a opção de escolher"): a conta do
+        # endireitar automatico SO desta pagina, e os dois angulos que as
+        # contas acharam (_atualizar_botoes).
+        coluna.addWidget(risco_do_painel())
+        self.rotulo_conta_do_endireitar = titulo_de_secao("Conta")
+        coluna.addWidget(self.rotulo_conta_do_endireitar)
         self.combo_conta_do_endireitar = QComboBox()
         for jeito in endireitar_scantailor.JEITOS:
-            self.combo_conta_do_endireitar.addItem(
-                endireitar_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            self.combo_conta_do_endireitar.addItem(nome_da_conta(jeito), jeito)
         self.combo_conta_do_endireitar.setToolTip(
-            "Endireita esta página por outra conta: a do ScanTailor ou a do programa. "
-            "Os números ao lado são os ângulos que cada uma achou.")
+            "Endireita esta página por outra conta: a do ScanTailor ou a do Editor. "
+            "Os números embaixo são os ângulos que cada uma achou.")
         self.combo_conta_do_endireitar.currentIndexChanged.connect(
             lambda _i: self._trocar_conta_do_endireitar())
-        linha.addWidget(self.combo_conta_do_endireitar)
-        self.rotulo_angulos_medidos = QLabel("")
-        linha.addWidget(self.rotulo_angulos_medidos)
-        linha.addStretch()
-        self.botoes_de_sugestao[ABA_ANGULO] = _botao(
-            "", linha, self._aplicar_sugestao, "sugestao"
-        )
+        coluna.addWidget(self.combo_conta_do_endireitar)
+        lista_estreita(self.combo_conta_do_endireitar)
+        self.rotulo_angulos_medidos = frase_do_painel("")
+        coluna.addWidget(self.rotulo_angulos_medidos)
+        coluna.addSpacing(6)
+        conta_do_livro = endireitar_scantailor.jeito_do_livro(self.projeto)
+        coluna.addWidget(self._parte_do_livro(
+            ["Conta do endireitar: " + nome_da_conta(conta_do_livro)]))
 
     def _montar_aba_marcar(self) -> None:
         """A aba de marcar a mao onde estao gravura, letra e papel.
@@ -1089,7 +1524,7 @@ class TelaConferir(QWidget):
         # tinham ("usar em todas"/"só nas próximas") - faltava só aqui.
         _botao("usar em todas", linha_detectar, self._marcacao_em_todas).setToolTip(
             "Copia a marcação desta página (gravura, letra, papel) para todas as páginas.")
-        _botao("só nas próximas", linha_detectar, self._marcacao_nas_proximas).setToolTip(
+        _botao("daqui em diante", linha_detectar, self._marcacao_nas_proximas).setToolTip(
             "Copia a marcação desta página para esta e as páginas seguintes.")
         linha_detectar.addStretch()
         fora.addLayout(linha_detectar)
@@ -1116,7 +1551,7 @@ class TelaConferir(QWidget):
         linha_foto.addWidget(self.caixa_tem_foto)
         _botao("usar em todas", linha_foto, self._forma_em_todas).setToolTip(
             "Leva o \"Esta página tem foto\" desta página (marcado ou não) para todas as páginas.")
-        _botao("só nas próximas", linha_foto, self._forma_nas_proximas).setToolTip(
+        _botao("daqui em diante", linha_foto, self._forma_nas_proximas).setToolTip(
             "Leva o \"Esta página tem foto\" desta página para esta e as páginas seguintes.")
         linha_foto.addStretch()
         fora.addLayout(linha_foto)
@@ -1547,7 +1982,7 @@ class TelaConferir(QWidget):
 
         _botao("só nesta", linha_botoes, self._marcar_revisada, "acaoPrimaria")
         _botao("todas", linha_botoes, self._filtro_em_todas)
-        _botao("só nas próximas", linha_botoes, self._filtro_nas_proximas)
+        _botao("daqui em diante", linha_botoes, self._filtro_nas_proximas)
 
         # Apagar e destrutivo: fica de outro lado do separador, para ninguem
         # acertar nele querendo clicar em "só nas próximas".
@@ -1560,9 +1995,7 @@ class TelaConferir(QWidget):
         )
 
         linha_botoes.addStretch()
-        self.botoes_de_sugestao[ABA_FILTRO] = _botao(
-            "", linha_botoes, self._aplicar_sugestao, "sugestao"
-        )
+        # (a sugestao laranja do aviso saiu daqui: e a da faixa do conferir)
         fora.addLayout(linha_botoes)
 
         self.linhas_de_botoes[ABA_FILTRO] = painel
@@ -1611,36 +2044,62 @@ class TelaConferir(QWidget):
             for aba in self._abas_ativas:
                 self.barra_abas.addTab(TITULOS[aba])
                 self.area_imagem.addWidget(self.paginas_de_imagem[aba])
-                self.barra_botoes.addWidget(self.linhas_de_botoes[aba])
+                if aba in self.propriedades_das_abas:
+                    # etapa 3 do layout: os botoes desta ferramenta moram no
+                    # painel Propriedades; embaixo da pagina fica uma pagina
+                    # vazia (a pilha precisa de uma por aba, na mesma ordem)
+                    self.barra_botoes.addWidget(QWidget())
+                    self.paineis.propriedades.definir_conteudo(
+                        aba, self.propriedades_das_abas[aba])
+                else:
+                    self.barra_botoes.addWidget(self.linhas_de_botoes[aba])
+                # o botao laranja da sugestao e o da faixa, em todas
+                self.botoes_de_sugestao[aba] = self.botao_sugestao
 
             self.barra_abas.setCurrentIndex(0)
             self._encolher_a_barra_de_botoes()
-            self._acertar_a_barra_girar()
+            self._esconder_as_setas_dos_lados()
         finally:
             self._carregando = False
+        self._acertar_a_trilha()
 
         self._montar_tira()
         self._aquecer_o_leitor_se_precisar()
         self.atualizar()
 
-    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
-        """A barrinha de girar (item 2.3) cabe ao lado das abas?"""
-        super().resizeEvent(evento)
-        self._acertar_a_barra_girar()
+    def eventFilter(self, vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
+        """A area da pagina mudou de tamanho (a janela, ou um painel que abriu
+        ou fechou): os botoes de girar voltam para o canto dela."""
+        if vigiado is self.area_imagem and evento.type() == QEvent.Resize:
+            self._por_o_girar_no_canto()
+        return super().eventFilter(vigiado, evento)
 
-    def _acertar_a_barra_girar(self) -> None:
-        """Acerta a linha das abas depois de montar as abas e a cada mudanca
-        de tamanho: a altura das abas (ver _montar) e, em janela estreita, a
-        barrinha de girar so com os icones (o nome fica no balao), para nunca
-        empurrar as abas nem passar da janela. A conta e a largura da tela
-        menos as margens e as abas. Seguro mudar a
-        folga; arriscado tirar (na janela minima de 1000 px as abas e a barra
-        com texto nao cabem juntas)."""
-        self.barra_abas.setMinimumHeight(self.barra_abas.sizeHint().height())
-        margens = self.layout().contentsMargins()
-        sobra = (self.width() - margens.left() - margens.right()
-                 - self.barra_abas.sizeHint().width() - 8)
-        self.barra_girar.definir_compacta(sobra < self.barra_girar.largura_com_texto())
+    def _por_o_girar_no_canto(self) -> None:
+        """Poe os tres botoes pequenos de girar no canto direito de cima da
+        area da pagina, por cima dela (rodada 12 do layout, 703 D; o Samuel
+        escolheu sabendo que ficam por cima da pagina). So com um livro
+        aberto; e nao na tela provisoria dos quatro filtros, onde cobririam o
+        ultimo cartao (ali o girar continua no painel Propriedades e no menu
+        Pagina). Seguro mudar: a folga do canto."""
+        canto = self.girar_do_canto
+        a_vista = self.projeto is not None and bool(self._abas_ativas) \
+            and self.aba_atual != ABA_FILTRO
+        canto.setVisible(a_vista)
+        if not a_vista:
+            return
+        canto.adjustSize()
+        canto.move(max(0, self.area_imagem.width() - canto.width() - FOLGA_DO_GIRAR_NO_CANTO[0]),
+                   FOLGA_DO_GIRAR_NO_CANTO[1])
+        canto.raise_()
+
+    def _esconder_as_setas_dos_lados(self) -> None:
+        """Etapa 2 do layout: as setas "<" e ">" dos lados da pagina viraram
+        as da barra de baixo ("< pagina N de M >"), como no prototipo. As dos
+        lados ficam escondidas (nao apagadas: cada aba ainda as cria)."""
+        for pagina in self.paginas_de_imagem.values():
+            for botao in pagina.findChildren(QPushButton):
+                if botao.text() in ("<", ">"):
+                    botao.setVisible(False)
 
     def _limpar_abas(self) -> None:
         """Descarta as abas de um projeto anterior antes de montar as novas."""
@@ -1651,6 +2110,11 @@ class TelaConferir(QWidget):
                 widget = pilha.widget(0)
                 pilha.removeWidget(widget)
                 widget.deleteLater()
+
+        # etapa 3 do layout: o conteudo do painel Propriedades das ferramentas
+        # do livro anterior tambem sai (o painel destroi as pecas)
+        self.paineis.propriedades.tirar_conteudos()
+        self.propriedades_das_abas.clear()
 
         self._abas_ativas.clear()
         self.visualizadores.clear()
@@ -1781,6 +2245,7 @@ class TelaConferir(QWidget):
         # da aba mais alta pelo resto da sessao, e o buraco voltaria.
         self._encolher_a_barra_de_botoes()
         self._montar_tira()
+        self._acertar_a_trilha()
         self.atualizar()
 
     def _encolher_a_barra_de_botoes(self) -> None:
@@ -1793,7 +2258,13 @@ class TelaConferir(QWidget):
             pagina.setSizePolicy(
                 QSizePolicy.Preferred,
                 QSizePolicy.Preferred if pagina is atual else QSizePolicy.Ignored)
-        self.barra_botoes.setFixedHeight(max(0, atual.sizeHint().height()))
+        altura = max(0, atual.sizeHint().height())
+        self.barra_botoes.setFixedHeight(altura)
+        # etapa 3 do layout: a ferramenta cujos botoes moram no painel
+        # Propriedades tem aqui uma pagina vazia; sem as margens, a fila nao
+        # gasta altura nenhuma e a pagina fica com ela
+        self.caixa_dos_botoes.setContentsMargins(
+            *(MARGENS_DA_FILA_DE_BOTOES if altura else (0, 0, 0, 0)))
 
     @protegido
     def ir_para_pagina(self, indice: int) -> None:
@@ -1855,13 +2326,19 @@ class TelaConferir(QWidget):
         self._atualizar_tira()
         self._atualizar_contador()
         self._atualizar_paineis()
+        self._atualizar_barra_de_baixo()
         self.trabalho_mudou.emit()
 
     def _atualizar_paineis(self) -> None:
-        """Os quatro da direita leem o mesmo estado que o resto da tela."""
+        """Os paineis da direita leem o mesmo estado que o resto da tela.
+        Acertados a cada atualizacao, abertos ou nao (abrir um painel mostra
+        o que ja esta em dia); cada um so se refaz quando o que ele mostra
+        mudou."""
         if self.projeto is None:
             return
         self.paineis.para_revisar.atualizar(self.projeto)
+        self.paineis.para_revisar.definir_pagina_atual(self.indice_pagina)
+        self.paineis.automatico.atualizar(self.projeto)
         self.paineis.historico.atualizar(self.acoes)
         pagina = (self.projeto.paginas[self.indice_pagina]
                   if 0 <= self.indice_pagina < len(self.projeto.paginas) else None)
@@ -2356,7 +2833,7 @@ class TelaConferir(QWidget):
         if aba == ABA_BORDAS:
             pagina = self.projeto.paginas[self.indice_pagina]
             if pagina.recorte is None:
-                return "Vou cortar a borda sozinho. Arraste o retangulo se quiser mudar."
+                return "Vou cortar a borda sozinho. Arraste o retângulo se quiser mudar."
             return "Você ajustou o corte desta página."
         if aba == ABA_ANGULO:
             pagina = self.projeto.paginas[self.indice_pagina]
@@ -2464,6 +2941,8 @@ class TelaConferir(QWidget):
             texto += f"  -  {apagadas} apagadas"
         self.botao_alertas.setText(texto)
         self.botao_alertas.setEnabled(pendentes > 0)
+        # o "próxima dúvida" da faixa (etapa 3 do layout) so acende com duvida
+        self.botao_proxima_duvida.setEnabled(pendentes > 0)
 
         observacoes = getattr(self.projeto, "observacoes", [])
         self.rotulo_observacoes.setVisible(bool(observacoes))
@@ -2671,7 +3150,7 @@ class TelaConferir(QWidget):
         self._girar_folhas(girar.GIRO_MEIA_VOLTA)
 
     @protegido
-    def _girar_folhas(self, giro: int) -> None:
+    def _girar_folhas(self, giro: int, so_esta: bool = False) -> None:
         """Gira as folhas do "aplicar em" (item 2.3; core/girar.py).
 
         Uma acao so do desfazer para todas as folhas. Todas terminam viradas
@@ -2696,7 +3175,9 @@ class TelaConferir(QWidget):
         if not self._pronta():
             return
         assert self.projeto is not None
-        alcance = self.barra_girar.alcance()
+        # so_esta: os botoes do canto da pagina, que giram sempre so a folha
+        # da vez, qualquer que seja o "aplicar em" do painel (rodada 13, 803 B)
+        alcance = girar.ALCANCE_ESTA if so_esta else self.barra_girar.alcance()
         aviso = girar.aviso_fora_do_alcance(self.indice_folha, alcance)
         if aviso:
             janela = self.window()
@@ -3048,7 +3529,7 @@ class TelaConferir(QWidget):
             {"endireitar_como": None if jeito == es.jeito_do_livro(self.projeto) else jeito,
              "revisada": True},
             f"Página {self.indice_pagina + 1}: endireitar pela conta "
-            f"“{es.NOMES_DOS_JEITOS[jeito]}”",
+            f"“{nome_da_conta(jeito)}”",
         )
 
     @protegido
@@ -3646,6 +4127,66 @@ def _botao(texto: str, destino: QHBoxLayout, acao, objeto: str = "") -> QPushBut
     return botao
 
 
+# --- etapa 2 do layout: a trilha no lugar das abas -------------------------
+# Cada ferramenta de pagina da trilha escolhe a "aba" dela (as abas ficam por
+# dentro, escondidas). "Os quatro filtros" e provisorio ate a etapa 4.
+ABA_DA_FERRAMENTA = {
+    FERRAMENTA_DIVIDIR: ABA_CORTE,
+    FERRAMENTA_CORTAR: ABA_BORDAS,
+    FERRAMENTA_ENDIREITAR: ABA_ANGULO,
+    FERRAMENTA_FILTROS: ABA_FILTRO,
+}
+FERRAMENTA_DA_ABA = {aba: ferramenta for ferramenta, aba in ABA_DA_FERRAMENTA.items()}
+
+# As margens (esquerda, cima, direita, baixo) da fila de botoes embaixo da
+# pagina, quando ela tem botoes (Marcar e os quatro filtros). Com a fila vazia
+# (Dividir, Cortar e Endireitar, cujos botoes moram no painel Propriedades
+# desde a etapa 3 do layout) as margens somem. Seguro mudar.
+MARGENS_DA_FILA_DE_BOTOES = (10, 6, 10, 4)
+
+# Quanto os botoes de girar do canto ficam afastados da beira direita e de
+# cima da area da pagina (o desenho: 12 e 10). Seguro mudar.
+FOLGA_DO_GIRAR_NO_CANTO = (12, 10)
+
+
+def _icone_da_barra(qual: str):
+    """Os icones da barra de baixo (desfazer, refazer, historico), desenhados a
+    mao na cor do texto do tema (nada de emoji em rotulo)."""
+    from PySide6.QtCore import QPointF, QRectF
+    from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
+
+    escala, lado = 3, 16
+    imagem = QPixmap(lado * escala, lado * escala)
+    imagem.fill(Qt.transparent)
+    p = QPainter(imagem)
+    p.setRenderHint(QPainter.Antialiasing)
+    p.scale(escala, escala)
+    p.setPen(QPen(QColor(estilo.cor("texto")), 1.5, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+    caminho = QPainterPath()
+    if qual in ("desfazer", "refazer"):
+        caminho.moveTo(3, 6)
+        caminho.lineTo(10, 6)
+        caminho.arcTo(QRectF(6, 6, 8, 8), 90, -180)
+        caminho.lineTo(7, 14)
+        p.drawPath(caminho)
+        p.drawLine(QPointF(3, 6), QPointF(6, 3))
+        p.drawLine(QPointF(3, 6), QPointF(6, 9))
+        if qual == "refazer":
+            p.end()
+            from PySide6.QtGui import QTransform
+            # espelhado pela transformação (o QImage.mirrored saiu de uso no Qt 6)
+            imagem = imagem.transformed(QTransform().scale(-1, 1))
+            imagem.setDevicePixelRatio(escala)
+            return QIcon(imagem)
+    else:
+        p.drawEllipse(QRectF(2.5, 2.5, 11, 11))
+        p.drawLine(QPointF(8, 5), QPointF(8, 8))
+        p.drawLine(QPointF(8, 8), QPointF(10.5, 9.5))
+    p.end()
+    imagem.setDevicePixelRatio(escala)
+    return QIcon(imagem)
+
+
 # Item 2.2 (G5): cada clique nas setas da aba Endireitar, em graus, e quanto
 # se espera depois do ultimo clique para gravar (uma acao so do desfazer).
 # Seguro mudar.
@@ -3667,7 +4208,10 @@ def texto_dos_angulos_medidos(medidas: dict | None) -> str:
     if medidas.get("scantailor") is not None:
         partes.append(f"ScanTailor {_graus(medidas['scantailor'])}")
     if medidas.get("programa") is not None:
-        partes.append(f"programa {_graus(medidas['programa'])}")
+        # Rodada 13 do layout, 805 C ("A conta vira 'Editor'"): so o texto
+        # desta linha; o codigo gravado no projeto continua "programa", e a
+        # lista "conta:" (core/endireitar_scantailor) nao foi mexida.
+        partes.append(f"Editor {_graus(medidas['programa'])}")
     texto = " · ".join(partes)
     if medidas.get("discordam"):
         texto += "  (discordam)"

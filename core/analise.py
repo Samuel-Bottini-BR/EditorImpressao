@@ -103,8 +103,8 @@ ALERTAS: dict[str, Alerta] = {
     # Endireitar, com os dois angulos escritos. Seguro mudar: os textos.
     CONTAS_DO_ENDIREITAR_DISCORDAM: Alerta(
         CONTAS_DO_ENDIREITAR_DISCORDAM, "Endireitar: as contas discordam",
-        "A conta do ScanTailor e a do programa acharam inclinações diferentes "
-        "nesta página. Confira na aba Endireitar e escolha a conta que deixou "
+        "A conta do ScanTailor e a do Editor acharam inclinações diferentes "
+        "nesta página. Confira com a ferramenta Endireitar e escolha a conta que deixou "
         "o texto reto.",
         "está bom assim", "revisar",
     ),
@@ -126,7 +126,7 @@ ALERTAS: dict[str, Alerta] = {
     ANGULO_SUSPEITO_: Alerta(
         ANGULO_SUSPEITO_, "Alinhamento duvidoso",
         "Não consegui achar o alinhamento do texto direito.",
-        "não endireitar esta", "angulo_zero",
+        "deixar como veio", "angulo_zero",
     ),
     EM_BRANCO: Alerta(
         EM_BRANCO, "Parece em branco",
