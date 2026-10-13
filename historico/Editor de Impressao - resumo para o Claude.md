@@ -46,7 +46,7 @@ mudanças tem entradas de 12 e 13/10 para quase tudo (o que falta registrar est�
 
 | Ramo (commit) | O que é | Situação |
 |---|---|---|
-| `juntar-layout3-2026-10-13` (`f35bcaf`) | `fase-1` + layout (etapas 2 e 3, painel Propriedades, textos das rodadas 12 e 13) | **Aprovado pelo Samuel em 13/10** (14 quadros "Está bom", `layout3` "Aprovado"). Junção sem conflito. Falta: ler a rodada 38469423649 do GitHub, medir a velocidade no PC e avançar o `fase-1` (`git merge --ff-only origin/juntar-layout3-2026-10-13`, se o `fase-1` não tiver andado; senão refazer a junção) |
+| `juntar-layout3-2026-10-13` (`f35bcaf`) | `fase-1` + layout (etapas 2 e 3, painel Propriedades, textos das rodadas 12 e 13) | **Aprovado pelo Samuel em 13/10** (14 quadros "Está bom", `layout3` "Aprovado"). Junção sem conflito. **Suíte no Windows do GitHub: passou** (rodada 38469423649, `completed / success`, lida em 13/10 às 21h24 UTC; o detalhe por tarefa não foi lido, o GitHub devolveu erro 502 nessa consulta). Falta: medir a velocidade no PC e avançar o `fase-1` (`git merge --ff-only origin/juntar-layout3-2026-10-13`, se o `fase-1` não tiver andado; senão refazer a junção) |
 | `layout-impl-2026-10-08` (`e94fe8c`) | o ramo do agente de layout | suíte GitHub: 2049 passaram, 0 falharam; `teste_botoes` 221 ações, 0 falhas. `ONDE-PAREI` em `relatorios/layout-impl/` |
 | `fase2-para-revisar` (`ce2b835`) | o bloco "Para revisar" (6 pedaços) + consertos + a busca da marcação por trás + força sozinha cautelosa | suíte GitHub: 2101 passaram, 0 falharam. **Segunda conferência do verificador interrompida.** `ONDE-PAREI` em `relatorios/para-revisar-impl/` |
 | `verif-para-revisar-2026-10-13` (`f506ec3`) | parecer do verificador, 2ª conferência feita no `ce2b835` | **Os 8 pontos conferidos na janela** (7 valem; o teclado "em parte": a seta não troca de página na janela de teste, igual ao programa de hoje; não conferido com a janela ativa). `conferencia.json` com 18 quadros e as três perguntas escritas. Velocidade (2 rodadas de cada): abrir, trocar de página e Preto e branco sem diferença; **Mágico pro 54,6 → 55,2 s em 10 páginas (+1,1%), pouco acima do ruído, os dois pares para o mesmo lado: decidir antes de juntar** (regra 6). Folheando com "Só as letras", o trabalho por trás depois de parar foi de 8 a 9 s para 44 a 47 s. Falta: abrir 19 imagens novas uma a uma; reabrir Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66. **A velocidade do layout não foi medida** (nenhuma rodada). `ONDE-PAREI.md` em `relatorios/conferir/para-revisar-2026-10-13/` |
@@ -77,8 +77,8 @@ nunca `Remove-Item -Recurse`; desfazer só com `(Get-Item <junção>).Delete()`.
 
 ## 4. O que ficou por fazer (em ordem)
 
-1. **Juntar o layout aprovado ao `fase-1`:** ler a rodada do GitHub (`gh run view 38469423649 -R
-   Samuel-Bottini-BR/EditorImpressao`), medir a velocidade no PC (`fase-1` × `juntar-layout3`; ver §7) e avançar o
+1. **Juntar o layout aprovado ao `fase-1`:** a suíte do GitHub **já passou** (rodada 38469423649, `success`; para ver o detalhe: `gh run view 38469423649 -R
+   Samuel-Bottini-BR/EditorImpressao`); falta medir a velocidade no PC (`fase-1` × `juntar-layout3`; ver §7) e avançar o
    `fase-1`. Depois: Registro de mudanças, página de andamento.
 2. **Registrar no PLANO-DEFINITIVO (as duas cópias) as respostas de 13/10** que só estão no relatório de respostas:
    o "Melhorar" do conserto do corte com os comentários, e as respostas de geometria. (O "Aprovado" do layout e a
