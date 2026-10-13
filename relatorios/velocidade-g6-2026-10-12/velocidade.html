@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velocidade do G6 (endireitar antes de cortar) no PC do Samuel, 12/10/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Velocidade do G6 (endireitar antes de cortar) no PC do Samuel, 12/10/2026</h1>
+<p>Verificador. Conferido por <strong>máquina</strong> (teste de velocidade). Só medi e relato: não juntei ramo, não mexi em código e <strong>não marco nada como aprovado</strong>.</p>
+<h2>A resposta em uma frase</h2>
+<p><strong>Ficou igual: nesta medição não apareceu lentidão do G6.</strong> As diferenças entre o programa de hoje e o G6 são todas menores que o vai-e-vem entre duas rodadas iguais do mesmo programa. Por isso, para diferenças pequenas, <strong>não dá para dizer</strong> nem "mais lento" nem "mais rápido".</p>
+<ul>
+<li><strong>Abrir o livro de 300 folhas:</strong> 58,1 s antes, 58,3 s depois. Diferença de +0,2 s no livro inteiro (+0,001 s por folha). Rodadas iguais variaram de 4,7 a 6,3 s entre si.</li>
+<li><strong>Trocar de página:</strong> 2,54 s antes, 2,61 s depois (+0,07 s por página). Rodadas iguais variaram de 0,2 a 0,3 s.</li>
+<li><strong>Processar em Mágico pro:</strong> 6,2 s por página antes, 6,0 s depois (10 páginas: 61,8 s e 59,8 s, ou seja, 2,0 s a menos). Rodadas iguais variaram de 3,0 s (antes) a 16,6 s (depois).</li>
+<li><strong>Processar em Preto e branco:</strong> 2,8 s por página antes, 2,6 s depois (10 páginas: 27,9 s e 26,5 s, ou seja, 1,3 s a menos). Rodadas iguais variaram de 2,1 a 5,7 s.</li>
+<li><strong>Memória máxima:</strong> 1.378 MB antes, 1.384 MB depois (igual).</li>
+</ul>
+<p>No livro inteiro de 300 páginas, pela conta das 10 páginas medidas, processar em Mágico pro daria perto de 31 minutos antes e 30 minutos depois. É conta de multiplicar, com o mesmo ruído: vale como "igual".</p>
+<p>O que esta medição garante: <strong>não há lentidão grande</strong>. O que ela não alcança: a diferença de 0,05 s por página que o implementador mediu é muito menor que o ruído deste PC, e aqui não dá para confirmar nem negar (em trocar de página apareceu +0,07 s, dentro do ruído de 0,2 a 0,3 s). Se essa diferença valesse para cada folha ao abrir o livro, seriam 15 s a mais em 300 folhas, e isso não apareceu (+0,2 s).</p>
+<h2>O que foi comparado</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Antes</th>
+<th>Depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Programa</td>
+<td>o de hoje, <code>fase-1</code> (9c51801)</td>
+<td>G6, <code>fase2-endireitar-2</code> (44cbf21)</td>
+</tr>
+<tr>
+<td>Pasta</td>
+<td><code>.claude\worktrees\velocidade-antes</code></td>
+<td><code>.claude\worktrees\endireitar</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>O código do programa no <code>fase-1</code> de hoje é o mesmo do ponto em que o G6 começou (4bf3888): de lá para cá o <code>fase-1</code> só mudou documentos e dois arquivos de <code>tests/</code>. A diferença entre as duas pastas é só o G6.</li>
+<li>O <code>teste_velocidade.py</code> é idêntico nos dois ramos (versão 1 do teste).</li>
+<li>Mesmo livro para as duas: <code>gabarito\velocidade\marial_300.pdf</code> da pasta principal, só lido (300 folhas, 67,9 MB, conferi que é o mesmo arquivo do ramo <code>dados-de-teste</code>). Disco: HD externo (USB).</li>
+<li>Mesmo Python (<code>.venv</code> da pasta principal, 3.14.3), detector de gravura e letra carregado em todas, notebook na tomada em todas.</li>
+<li>Cada rodada é uma execução inteira do teste, que repete tudo 3 vezes (como no GitHub): abrir o livro, 20 trocas de página, processar as páginas 146 a 155 em Mágico pro e em Preto e branco.</li>
+<li>Ordem alternada: antes, depois, antes, depois, antes, depois. Uma de cada vez. Cada uma levou de 12 a 13,5 minutos.</li>
+<li>Prova de que o G6 estava ligado no "depois": o PDF de saída em Mágico pro saiu com 70,7 MB nas três rodadas do depois e 71,3 MB nas três do antes (o corte muda).</li>
+</ul>
+<h2>Todas as rodadas</h2>
+<p>Cada número é o valor do meio (mediana) das 3 repetições daquela execução.</p>
+<table>
+<thead>
+<tr>
+<th>Rodada</th>
+<th>Hora</th>
+<th>Memória livre antes</th>
+<th>Processador antes</th>
+<th>Abrir o livro</th>
+<th>Trocar (média)</th>
+<th>Trocar (a pior)</th>
+<th>Mágico pro, 10 pág.</th>
+<th>Preto e branco, 10 pág.</th>
+<th>Memória máxima</th>
+<th>Durou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antes-1</td>
+<td>18:52</td>
+<td>4,93 GB</td>
+<td>5%</td>
+<td>60,3 s</td>
+<td>2,68 s</td>
+<td>3,91 s</td>
+<td>62,9 s</td>
+<td>29,0 s</td>
+<td>1.369 MB</td>
+<td>12,9 min</td>
+</tr>
+<tr>
+<td>depois-1</td>
+<td>19:06</td>
+<td>4,91 GB</td>
+<td>4%</td>
+<td>60,9 s</td>
+<td>2,65 s</td>
+<td>4,22 s</td>
+<td>68,6 s</td>
+<td>29,9 s</td>
+<td>1.382 MB</td>
+<td>13,5 min</td>
+</tr>
+<tr>
+<td>antes-2</td>
+<td>19:19</td>
+<td>4,15 GB</td>
+<td>8%</td>
+<td>58,4 s</td>
+<td>2,56 s</td>
+<td>3,81 s</td>
+<td>62,7 s</td>
+<td>26,9 s</td>
+<td>1.378 MB</td>
+<td>12,7 min</td>
+</tr>
+<tr>
+<td>depois-2</td>
+<td>19:32</td>
+<td>5,09 GB</td>
+<td>8%</td>
+<td>59,3 s</td>
+<td>2,49 s</td>
+<td>3,44 s</td>
+<td>52,0 s</td>
+<td>24,2 s</td>
+<td>1.389 MB</td>
+<td>11,9 min</td>
+</tr>
+<tr>
+<td>antes-3</td>
+<td>19:44</td>
+<td>5,30 GB</td>
+<td>5%</td>
+<td>55,6 s</td>
+<td>2,37 s</td>
+<td>3,52 s</td>
+<td>59,9 s</td>
+<td>27,7 s</td>
+<td>1.386 MB</td>
+<td>12,0 min</td>
+</tr>
+<tr>
+<td>depois-3</td>
+<td>19:57</td>
+<td>5,38 GB</td>
+<td>7%</td>
+<td>54,6 s</td>
+<td>2,69 s</td>
+<td>4,00 s</td>
+<td>58,9 s</td>
+<td>25,5 s</td>
+<td>1.382 MB</td>
+<td>12,5 min</td>
+</tr>
+</tbody>
+</table>
+<p>A memória livre nunca ficou abaixo de 3 GB (o mínimo foi 4,15 GB).</p>
+<h2>Antes contra depois, e o ruído</h2>
+<p>"Vai-e-vem" é a distância entre a menor e a maior das três rodadas iguais. Se a diferença é menor que o vai-e-vem, não dá para dizer.</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Antes</th>
+<th>Depois</th>
+<th>Diferença</th>
+<th>Vai-e-vem do antes</th>
+<th>Vai-e-vem do depois</th>
+<th>Par a par (depois menos antes)</th>
+<th>Dá para dizer?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir o livro (300 folhas)</td>
+<td>58,1 s</td>
+<td>58,3 s</td>
+<td>+0,2 s (+0,3%)</td>
+<td>4,7 s</td>
+<td>6,3 s</td>
+<td>+0,6; +0,9; -1,0 s</td>
+<td>não: igual</td>
+</tr>
+<tr>
+<td>Trocar de página (média de 20)</td>
+<td>2,54 s</td>
+<td>2,61 s</td>
+<td>+0,07 s (+2,9%)</td>
+<td>0,30 s</td>
+<td>0,20 s</td>
+<td>-0,02; -0,07; +0,31 s</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Trocar de página (a pior das 20)</td>
+<td>3,75 s</td>
+<td>3,89 s</td>
+<td>+0,14 s (+3,7%)</td>
+<td>0,39 s</td>
+<td>0,78 s</td>
+<td>+0,31; -0,37; +0,48 s</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Mágico pro, 10 páginas</td>
+<td>61,8 s</td>
+<td>59,8 s</td>
+<td>-2,0 s (-3,3%)</td>
+<td>3,0 s</td>
+<td>16,6 s</td>
+<td>+5,7; -10,8; -0,9 s</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Preto e branco, 10 páginas</td>
+<td>27,9 s</td>
+<td>26,5 s</td>
+<td>-1,3 s (-4,8%)</td>
+<td>2,1 s</td>
+<td>5,7 s</td>
+<td>+0,9; -2,6; -2,3 s</td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<p>Em nenhuma medida os três pares apontam para o mesmo lado.</p>
+<h2>Cada repetição (3 por execução)</h2>
+<table>
+<thead>
+<tr>
+<th>Rodada</th>
+<th>Medida</th>
+<th>1ª</th>
+<th>2ª</th>
+<th>3ª</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antes-1</td>
+<td>Abrir o livro</td>
+<td>59,6 s</td>
+<td>60,3 s</td>
+<td>61,8 s</td>
+</tr>
+<tr>
+<td>antes-1</td>
+<td>Trocar (média)</td>
+<td>2,79 s</td>
+<td>2,61 s</td>
+<td>2,68 s</td>
+</tr>
+<tr>
+<td>antes-1</td>
+<td>Trocar (a pior)</td>
+<td>3,24 s</td>
+<td>3,91 s</td>
+<td>3,94 s</td>
+</tr>
+<tr>
+<td>antes-1</td>
+<td>Mágico pro</td>
+<td>65,1 s</td>
+<td>62,9 s</td>
+<td>61,9 s</td>
+</tr>
+<tr>
+<td>antes-1</td>
+<td>Preto e branco</td>
+<td>29,4 s</td>
+<td>29,0 s</td>
+<td>24,2 s</td>
+</tr>
+<tr>
+<td>depois-1</td>
+<td>Abrir o livro</td>
+<td>54,9 s</td>
+<td>61,9 s</td>
+<td>60,9 s</td>
+</tr>
+<tr>
+<td>depois-1</td>
+<td>Trocar (média)</td>
+<td>2,95 s</td>
+<td>2,65 s</td>
+<td>2,52 s</td>
+</tr>
+<tr>
+<td>depois-1</td>
+<td>Trocar (a pior)</td>
+<td>4,14 s</td>
+<td>4,31 s</td>
+<td>4,22 s</td>
+</tr>
+<tr>
+<td>depois-1</td>
+<td>Mágico pro</td>
+<td>74,3 s</td>
+<td>68,6 s</td>
+<td>63,0 s</td>
+</tr>
+<tr>
+<td>depois-1</td>
+<td>Preto e branco</td>
+<td>36,7 s</td>
+<td>29,0 s</td>
+<td>29,9 s</td>
+</tr>
+<tr>
+<td>antes-2</td>
+<td>Abrir o livro</td>
+<td>60,9 s</td>
+<td>56,2 s</td>
+<td>58,4 s</td>
+</tr>
+<tr>
+<td>antes-2</td>
+<td>Trocar (média)</td>
+<td>3,02 s</td>
+<td>2,23 s</td>
+<td>2,56 s</td>
+</tr>
+<tr>
+<td>antes-2</td>
+<td>Trocar (a pior)</td>
+<td>4,11 s</td>
+<td>3,03 s</td>
+<td>3,81 s</td>
+</tr>
+<tr>
+<td>antes-2</td>
+<td>Mágico pro</td>
+<td>65,0 s</td>
+<td>59,3 s</td>
+<td>62,7 s</td>
+</tr>
+<tr>
+<td>antes-2</td>
+<td>Preto e branco</td>
+<td>26,2 s</td>
+<td>26,9 s</td>
+<td>28,0 s</td>
+</tr>
+<tr>
+<td>depois-2</td>
+<td>Abrir o livro</td>
+<td>59,3 s</td>
+<td>59,6 s</td>
+<td>50,3 s</td>
+</tr>
+<tr>
+<td>depois-2</td>
+<td>Trocar (média)</td>
+<td>3,01 s</td>
+<td>2,49 s</td>
+<td>2,12 s</td>
+</tr>
+<tr>
+<td>depois-2</td>
+<td>Trocar (a pior)</td>
+<td>3,83 s</td>
+<td>3,44 s</td>
+<td>3,21 s</td>
+</tr>
+<tr>
+<td>depois-2</td>
+<td>Mágico pro</td>
+<td>61,3 s</td>
+<td>52,0 s</td>
+<td>50,3 s</td>
+</tr>
+<tr>
+<td>depois-2</td>
+<td>Preto e branco</td>
+<td>28,3 s</td>
+<td>24,2 s</td>
+<td>24,0 s</td>
+</tr>
+<tr>
+<td>antes-3</td>
+<td>Abrir o livro</td>
+<td>50,7 s</td>
+<td>58,7 s</td>
+<td>55,6 s</td>
+</tr>
+<tr>
+<td>antes-3</td>
+<td>Trocar (média)</td>
+<td>2,63 s</td>
+<td>2,37 s</td>
+<td>2,26 s</td>
+</tr>
+<tr>
+<td>antes-3</td>
+<td>Trocar (a pior)</td>
+<td>3,63 s</td>
+<td>3,52 s</td>
+<td>3,48 s</td>
+</tr>
+<tr>
+<td>antes-3</td>
+<td>Mágico pro</td>
+<td>59,9 s</td>
+<td>57,6 s</td>
+<td>61,5 s</td>
+</tr>
+<tr>
+<td>antes-3</td>
+<td>Preto e branco</td>
+<td>27,7 s</td>
+<td>27,2 s</td>
+<td>29,0 s</td>
+</tr>
+<tr>
+<td>depois-3</td>
+<td>Abrir o livro</td>
+<td>58,3 s</td>
+<td>54,6 s</td>
+<td>51,7 s</td>
+</tr>
+<tr>
+<td>depois-3</td>
+<td>Trocar (média)</td>
+<td>2,99 s</td>
+<td>2,69 s</td>
+<td>2,55 s</td>
+</tr>
+<tr>
+<td>depois-3</td>
+<td>Trocar (a pior)</td>
+<td>4,00 s</td>
+<td>4,34 s</td>
+<td>3,84 s</td>
+</tr>
+<tr>
+<td>depois-3</td>
+<td>Mágico pro</td>
+<td>58,8 s</td>
+<td>60,6 s</td>
+<td>58,9 s</td>
+</tr>
+<tr>
+<td>depois-3</td>
+<td>Preto e branco</td>
+<td>25,5 s</td>
+<td>24,8 s</td>
+<td>28,1 s</td>
+</tr>
+</tbody>
+</table>
+<p>Juntando as 9 repetições de cada lado: abrir o livro, antes de 50,7 a 61,8 s e depois de 50,3 a 61,9 s; Mágico pro, antes de 57,6 a 65,1 s e depois de 50,3 a 74,3 s.</p>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>O PC não estava parado só para o teste.</strong> Não sei se o Samuel estava usando. O processador estava entre 4% e 8% antes de cada rodada, mas durante a medição a pasta principal recebeu dois commits da gerente (19:20, "agentes postos a trabalhar", e 19:57): outros agentes podem ter trabalhado neste PC ao mesmo tempo.</li>
+<li><strong>Duas rodadas destoaram, as duas do "depois", uma para cada lado.</strong> A depois-1 (19:06) foi a mais lenta em Mágico pro (74,3 s na primeira repetição) e a memória livre caiu 0,7 GB enquanto ela rodava. A depois-2 (19:32) foi a mais rápida (52,0 e 50,3 s nas duas últimas repetições). É por isso que o vai-e-vem do depois em Mágico pro é de 16,6 s.</li>
+<li><strong>O PC foi ficando mais rápido ao longo da noite</strong> (abrir o livro: 60,3; 60,9; 58,4; 59,3; 55,6; 54,6 s, na ordem em que rodaram). Como o "depois" sempre rodou logo depois do seu "antes", isso favorece um pouco o depois, perto de 1 s em abrir o livro. Mesmo somando isso, a diferença continua bem dentro do ruído.</li>
+<li><strong>O teste rodou sem janela preta</strong> (chamado por outro programa), e não na janela clássica do Windows. Vale igual para os dois lados.</li>
+<li><strong>Não medi:</strong> a janela de verdade do programa (o teste não tem tela); o notebook do Kaique; outro livro além do Marial; projeto antigo reaberto (que no G6 continua na ordem de antes); a diferença de 0,05 s por página do implementador (menor que o ruído daqui).</li>
+<li><strong>Achado fora desta tarefa, para a gerente:</strong> abrir o livro levou perto de 58 s hoje <strong>nas duas pastas</strong>, e nas medições guardadas deste PC (26/09 a 30/09, mesmo livro, mesmo disco) levava de 25,5 a 44,4 s (a última, de 30/09 às 22:42, deu 25,5 s). Não é do G6, porque o programa de hoje sem o G6 dá o mesmo. Não investiguei a causa (pode ser mudança que já entrou no <code>fase-1</code> depois de 30/09, ou o estado do PC). As outras medidas de hoje estão dentro da faixa das guardadas.</li>
+</ol>
+<h2>Comandos que rodei e o que criei</h2>
+<p>Na pasta principal <code>D:\programas\EditorImpressao</code> só rodei leitura e o <code>fetch</code>; ela continua no <code>fase-1</code>, o livro e a pasta <code>modelos\</code> estão inteiros (18 arquivos, 289.910.409 bytes, antes e depois).</p>
+<pre><code>git -C D:\programas\EditorImpressao fetch origin
+git -C D:\programas\EditorImpressao\.claude\worktrees\endireitar merge --ff-only origin/fase2-endireitar-2
+    (avanço simples, de a742bf4 para 44cbf21; a pasta estava limpa)
+git -C D:\programas\EditorImpressao worktree add --detach .claude/worktrees/velocidade-antes origin/fase-1
+    (sem ramo, em 9c51801)
+New-Item -ItemType Junction -Path D:\programas\EditorImpressao\.claude\worktrees\velocidade-antes\modelos -Target D:\programas\EditorImpressao\modelos
+    (igual à junção modelos da worktree endireitar; as de gabarito não criei, o teste de velocidade não usa)
+</code></pre>
+<p>Cada rodada, pelo <code>rodar_uma.ps1</code> desta pasta (espera 3 GB livres, anota hora, memória e processador, põe TEMP e TMP em <code>saida_teste\tmp-velocidade</code> da própria worktree e roda, com a pasta de trabalho na worktree):</p>
+<pre><code>D:\programas\EditorImpressao\.venv\Scripts\python.exe teste_velocidade.py &quot;D:\programas\EditorImpressao\gabarito\velocidade\marial_300.pdf&quot; --saida &quot;&lt;esta pasta&gt;\rodadas\&lt;nome&gt;&quot;
+</code></pre>
+<p>Ordem: <code>aquecimento-antes</code> e <code>aquecimento-depois</code> (com <code>--rapido</code>, 18:50 e 18:51, só para ver que funcionava; não entram na conta), depois <code>antes-1</code>, <code>depois-1</code>, <code>antes-2</code>, <code>depois-2</code>, <code>antes-3</code>, <code>depois-3</code>. Todas terminaram com saída 0 e sem nada no arquivo de erros.</p>
+<p>O que criei:</p>
+<ul>
+<li>a worktree <code>D:\programas\EditorImpressao\.claude\worktrees\velocidade-antes</code> (sem ramo), com a junção <code>modelos</code> e uma pasta <code>saida_teste</code> vazia;</li>
+<li>nesta worktree (<code>endireitar</code>), só a pasta <code>relatorios\velocidade-g6-2026-10-12\</code> (sem commit): este relatório nos três formatos, <code>rodar_uma.ps1</code>, <code>juntar.py</code> (monta as tabelas a partir dos <code>.json</code>) e <code>rodadas\</code> com o relatório, o <code>.json</code>, o texto do terminal e a anotação de cada rodada;</li>
+<li>arquivos <code>__pycache__</code> nas duas worktrees (fora do git).</li>
+</ul>
+<p>As duas pastas temporárias <code>saida_teste\tmp-velocidade</code> eu mesmo removi no fim, vazias.</p>
+<p>Para desfazer a worktree nova, <strong>primeiro a junção, depois a worktree</strong>:</p>
+<pre><code>(Get-Item D:\programas\EditorImpressao\.claude\worktrees\velocidade-antes\modelos).Delete()
+    (conferir que D:\programas\EditorImpressao\modelos continua com os 18 arquivos)
+git -C D:\programas\EditorImpressao worktree remove .claude/worktrees/velocidade-antes
+</code></pre>
+<p>Sem tirar a junção antes, o <code>worktree remove</code> apaga a pasta com tudo o que há dentro e pode levar junto os modelos de verdade.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 12/10/2026 às 20:12</p>
+</body>
+</html>

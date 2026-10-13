@@ -20,15 +20,17 @@ distribuído, vai com o código-fonte aberto.
 
 | Pasta | O que é | Mudou? |
 |---|---|---|
-| `src/` | 132 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) os 50 do dividir (item 2.1; lista em "O dividir", abaixo) e os 4 do endireitar (item 2.2; ver "O endireitar") | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
+| `src/` | 150 arquivos do ScanTailor, nos mesmos caminhos do repositório: os 72 do item 1.2 (24 `.cpp`, 48 `.h`: `imageproc/`, `foundation/`, `math/`, `core/EstimateBackground.*`, `core/ImageTransformation.h`, `core/OrthogonalRotation.h`, `core/NullTaskStatus.h`, `core/filters/output/PictureShapeOptions.*`) e, desde 06/10/2026, os 6 do limpar pontinhos (`core/Despeckle.*`, `imageproc/ConnectivityMap.*`, `imageproc/InfluenceMap.*`) os 50 do dividir (item 2.1; lista em "O dividir", abaixo) os 4 do endireitar (item 2.2; ver "O endireitar") e, desde 12/10/2026, os 18 das caixas da página e do conteúdo (itens 2.13 e 2.5; ver "As caixas") | **Não.** Iguais aos da v1.2.1, só com o fim de linha do Windows na pasta do PC (ver "Como conferir que nada mudou") |
 | `somas-v1.2.1.txt` | A soma SHA-256 de cada arquivo de `src/` como está no ScanTailor v1.2.1 (tirada do git do ScanTailor, fim de linha LF). O teste `tests/test_st_ferramentas.py` confere todos, a cada rodada | Nosso (a lista) |
 | `referencia/ProjectPages.cpp` | O arquivo do ScanTailor de onde veio a única função copiada como "cola" no dividir (`adviseNumberOfLogicalPages`, linhas 205-214). **Não é compilado**: o teste `tests/test_dividir_scantailor.py` confere a soma dele e que o trecho em `ligacao-ferramentas/dividir.cpp` é igual | Não |
 | `referencia/deskew/Task.cpp` | O arquivo do ScanTailor de onde veio a limpeza das sombras do endireitar (`cleanup` e `from150dpi`, linhas 222-271). **Não é compilado**: o teste `tests/test_endireitar_scantailor.py` confere a soma dele e que o trecho em `ligacao-ferramentas/endireitar.cpp` é igual | Não |
+| `referencia/ImageSettings.cpp` | O arquivo do ScanTailor de onde vieram os dois construtores copiados como "cola" nas caixas (`ImageSettings::PageParams`, linhas 48-51). **Não é compilado**: o teste `tests/test_caixas_scantailor.py` confere a soma dele e que o trecho em `ligacao-ferramentas/caixas.cpp` é igual | Não |
+| `referencia/select_content/Task.cpp` | O arquivo do ScanTailor que diz a ordem da etapa "Select Content" (o que `caixas.cpp` repete, passo a passo). **Não é compilado**; o teste confere a soma | Não |
 | `referencia/OutputGenerator.cpp` | O arquivo do ScanTailor onde mora o detector. **Não é compilado**: serve para o teste conferir que as funções copiadas não mudaram | Não |
 | `ligacao/st_gravura.cpp` | A "cola": copia as funções do detector de `OutputGenerator.cpp` **letra por letra** (entre as marcas `COPIADO SEM MUDANCA (linhas X-Y)`) e troca só o que ligava o detector à janela do ScanTailor | Só a ligação (ver abaixo) |
 | `ligacao/st_gravura.h` | As funções em C que o Python chama por `ctypes` | Nosso |
 | `ligacao/CMakeLists.txt` | Compila `src/` como biblioteca estática e `st_gravura.cpp` como DLL | Nosso |
-| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4), `dividir.cpp` (dividir a folha, item 2.1), `endireitar.cpp` (endireitar a página, item 2.2) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
+| `ligacao-ferramentas/` | A DLL comum `st_ferramentas.dll` (Fase 2, item M9): `st_ferramentas.h` (as funções em C), `comum.h` (conversões e erros, para todas as ferramentas), `st_ferramentas.cpp` (versão e origem), `pontinhos.cpp` (limpar pontinhos, M4), `dividir.cpp` (dividir a folha, item 2.1), `endireitar.cpp` (endireitar a página, item 2.2), `caixas.cpp` (a caixa da página e a do conteúdo, itens 2.13 e 2.5) e `CMakeLists.txt` (compila TODO o `src/`) | Nosso (só a ligação) |
 
 Foram trazidos só os arquivos que o detector usa: o fecho dos `#include` a
 partir das funções copiadas (os `.cpp` de `ImageTransformation`,
@@ -78,7 +80,7 @@ confere, a cada rodada, que esses 7 blocos continuam idênticos ao original.
 | DLL | O que tem | Compila com | Python |
 |---|---|---|---|
 | `core/nativo/st_gravura.dll` | O detector de gravura (item 1.2, aprovado) | `compilar_detector_gravura.py` (pasta `ligacao/`) | `core/gravura_scantailor.py` |
-| `core/nativo/st_ferramentas.dll` | A DLL **comum** das outras ferramentas. Hoje: limpar pontinhos (`Despeckle`) e dividir a folha (`PageLayoutEstimator`) | `compilar_st_ferramentas.py` (pasta `ligacao-ferramentas/`) | `core/st_ferramentas.py` (abre a DLL) + um módulo por ferramenta (`core/pontinhos_scantailor.py`, `core/dividir_scantailor.py`) |
+| `core/nativo/st_ferramentas.dll` | A DLL **comum** das outras ferramentas. Hoje: limpar pontinhos (`Despeckle`), dividir a folha (`PageLayoutEstimator`), endireitar (`SkewFinder`) e as caixas da página e do conteúdo (`PageFinder`, `ContentBoxFinder`) | `compilar_st_ferramentas.py` (pasta `ligacao-ferramentas/`) | `core/st_ferramentas.py` (abre a DLL) + um módulo por ferramenta (`core/pontinhos_scantailor.py`, `core/dividir_scantailor.py`, `core/endireitar_scantailor.py`, `core/caixas_scantailor.py`) |
 
 **Por que a comum fica AO LADO da do 1.2, e não no lugar dela:** a do 1.2 foi
 aprovada pelo Samuel, está ligada ao programa e foi conferida contra as
@@ -192,6 +194,62 @@ O `SkewFinder` já tinha vindo com o dividir.
 - a `st_gravura` (item 1.2), recompilada numa pasta de rascunho com os 4
   arquivos novos em `src/`, ver a seção "Duas DLLs".
 
+## As caixas da página e do conteúdo (itens 2.13 e 2.5, desde 12/10/2026)
+
+Decisões do Samuel G7 (a) e G8 (a), 05/10/2026: "achar a página dentro da
+borda preta" e "seguir a moldura / o papel" entram como opção **desligada de
+fábrica**. Em 12/10/2026 só a base foi trazida: a função existe e é testada,
+mas **nada no programa a chama** (como liga depende das seis perguntas de
+12/10, ainda sem resposta; o teste `test_ninguem_no_programa_chama_as_caixas_ainda`
+segura isso).
+
+**Função em C:** `st_ferramentas_caixas` (`ligacao-ferramentas/caixas.cpp`), o
+que o `select_content::Task` do ScanTailor faz numa página sem caixa nenhuma
+(o original está em `referencia/select_content/Task.cpp`, não compilado):
+o `FilterData` da página, o "claro no escuro" e o limiar do
+`deskew::Task::updateFilterData`, `PageFinder::findPageBox` (a caixa da
+página), `ContentBoxFinder::findContentBox` dentro dela (a caixa do conteúdo),
+o corte `contentRect &= pageRect` e o tamanho em mm do `PhysSizeCalc`. Dois
+construtores de `ImageSettings::PageParams` (4 linhas) estão copiados sem
+mudança na cola, entre marcas; `ImageSettings.cpp` inteiro puxaria o projeto e
+as miniaturas do ScanTailor. Python: `core/caixas_scantailor.py`.
+
+**Os 18 arquivos trazidos** (sem mudança, soma em `somas-v1.2.1.txt` tirada do
+`git show v1.2.1:` do ScanTailor, e conferidos também pelo `git hash-object
+--path` contra o `rev-parse` do ScanTailor): `core/filters/select_content/`
+(`PageFinder.*`, `ContentBoxFinder.*`, `PhysSizeCalc.*`); `core/`
+(`FilterData.*`, `ImageSettings.h`, `Margins.h`, `Units.h`,
+`UnitsConverter.*`); `imageproc/` (`MaxWhitespaceFinder.*`, `SEDM.*`);
+`foundation/FlagOps.h`. É o fecho dos `#include` a partir dos três `.cpp` do
+`select_content` e do `FilterData.cpp`. **Da pasta `select_content` só vieram
+esses três pares** (os filtros têm `Settings.h`, `Task.h`, `Utils.h` de mesmo
+nome; o teste confere que não há outros). O `CMakeLists.txt` não mudou: a
+cola inclui `filters/select_content/...` a partir de `core/`.
+
+**O que não é óbvio no código original** (nada foi consertado; está escrito no
+topo de `caixas.cpp`): o `ContentBoxFinder` monta o retângulo da página com
+(esquerda, cima, direita, baixo) onde o Qt espera largura e altura, e a
+procura do conteúdo pode passar da página à direita e embaixo (no ljs47 o
+conteúdo sai 16 a 108 pontos dentro do preto de baixo; o corte pela página
+devolve); o `PageFinder` calcula cinco preto e branco e usa um.
+
+**Conferido em 12/10/2026, com a DLL nova (versão 4 da interface):**
+- nas 37 páginas que o pesquisador mediu com o programa de teste dele (o mesmo
+  código, ligado na `st_tudo.lib` de 01/10; 26 do gabarito, 6 folhas com borda
+  preta da rodada 4 e 5 do acervo), mais a Horas 13 e o Graduale 222 a 150 DPI,
+  a DLL dá **as mesmas caixas** (página, conteúdo dentro dela, conteúdo na
+  folha inteira e as duas com "ajustar os cantos"): a maior diferença é 0,04
+  ponto, o arredondamento da casa decimal que ele imprimiu;
+- o limpar pontinhos, o dividir e o endireitar dão **o mesmo que a DLL
+  anterior** (versão 3, a do `fase-1` em `4b19a9b`) nas 32 páginas do
+  gabarito: pontinhos nas três forças, ponto a ponto (96 de 96), dividir nos
+  três modos (96 de 96) e endireitar (32 de 32). Script:
+  `relatorios/caixa-conteudo-impl/scripts/comparar_dll_anterior.py`;
+- a `st_gravura.dll` (item 1.2) **não foi tocada** nem recompilada (o teste
+  `test_a_dll_do_1_2_nao_mudou` confere a soma). Ressalva: a recompilação dela
+  com os 18 arquivos novos em `src/` (ver "Duas DLLs") **não foi refeita** em
+  12/10; os novos de `core/` e `imageproc/` entram na biblioteca do 1.2.
+
 ## Como conferir que nada mudou
 
 **Não use `cmp` direto na pasta do PC.** O git deste PC está com
@@ -227,7 +285,7 @@ O teste `tests/test_gravura_scantailor.py` guarda a soma SHA-256 da
 ## Como recompilar
 
 A DLL comum: `.venv\Scripts\python.exe compilar_st_ferramentas.py` (mesmas
-ferramentas; sai em `core/nativo/st_ferramentas.dll`, ~43 KB). A do 1.2:
+ferramentas; sai em `core/nativo/st_ferramentas.dll`, ~290 KB; leva uns 3 minutos). A do 1.2:
 
 
     .venv\Scripts\python.exe compilar_detector_gravura.py            # compila

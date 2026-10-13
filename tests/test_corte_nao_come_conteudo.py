@@ -24,6 +24,7 @@ import cv2
 import numpy as np
 
 from core.endireitar import rotacionar
+from core.ordem_do_preparo import CORTAR_ANTES, ENDIREITAR_ANTES
 from core.pipeline import preparar_metade
 from core.recortar import Recorte, alargar_para_o_giro, detectar_bordas
 from modelos import ConfigFolha, ConfigPagina, Projeto
@@ -132,9 +133,14 @@ def test_cortar_e_endireitar_nao_empurra_o_texto_para_fora():
 
     Hoje o endireitar gira dentro do retangulo justo do corte, e as pontas das
     linhas saem da folha ("para" virava "oara" na Escola 35).
+
+    Item 2.2, G6 (09/10/2026): este teste prende a folga do giro
+    (alargar_para_o_giro), que so existe na ordem "cortar_antes" (projeto
+    gravado antes do G6) - por isso a ordem e dita aqui. A ordem do livro
+    novo tem o teste dela logo abaixo.
     """
     torta = rotacionar(_pagina_de_texto(esquerda=40, direita=515, numero=False), 1.5)
-    projeto = Projeto(caminho_entrada="x.pdf")
+    projeto = Projeto(caminho_entrada="x.pdf", ordem_do_preparo=CORTAR_ANTES)
     projeto.dividir_folhas = False      # cortar_bordas e endireitar: ligados, o padrao
 
     saida = preparar_metade(torta, ConfigFolha(indice=0), ConfigPagina(indice=0, folha=0),
@@ -147,6 +153,33 @@ def test_cortar_e_endireitar_nao_empurra_o_texto_para_fora():
     assert int((tinta & beirada).sum()) == 0, "tem letra encostando na beirada (cortada)"
     tinta_antes = int((cv2.cvtColor(torta, cv2.COLOR_BGR2GRAY) < _TINTA).sum())
     assert tinta.sum() >= 0.97 * tinta_antes, "sumiu tinta no corte + endireitar"
+
+
+def test_endireitar_antes_de_cortar_nao_empurra_o_texto_para_fora():
+    """A mesma pagina torta, no livro novo (G6, 09/10/2026: endireitar a
+    pagina inteira, depois achar o corte na pagina reta). Nada sai da folha e
+    nenhuma letra encosta na beirada.
+
+    O DPI e dito (como o programa faz: o corte e medido na resolucao do PDF,
+    pipeline._guardar_geometria), para a folga sair em milimetros. Ressalva
+    escrita: SEM o DPI (so quando nao ha arquivo, como nos testes), a folga
+    e so a fracao FOLGA do lado (0,5%) - nesta pagina de 560 pontos, 2 a 3
+    pontos -, porque a folga extra do giro da ordem antiga nao existe mais.
+    """
+    torta = rotacionar(_pagina_de_texto(esquerda=40, direita=515, numero=False), 1.5)
+    projeto = Projeto(caminho_entrada="x.pdf", ordem_do_preparo=ENDIREITAR_ANTES)
+    projeto.dividir_folhas = False
+
+    saida = preparar_metade(torta, ConfigFolha(indice=0), ConfigPagina(indice=0, folha=0),
+                            projeto, dpi=150)
+
+    tinta = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY) < _TINTA
+    beirada = np.zeros_like(tinta)
+    beirada[:3] = beirada[-3:] = True
+    beirada[:, :3] = beirada[:, -3:] = True
+    assert int((tinta & beirada).sum()) == 0, "tem letra encostando na beirada (cortada)"
+    tinta_antes = int((cv2.cvtColor(torta, cv2.COLOR_BGR2GRAY) < _TINTA).sum())
+    assert tinta.sum() >= 0.97 * tinta_antes, "sumiu tinta no endireitar + corte"
     # A folha endireitada ainda e cortada (nao voltou ao tamanho inteiro).
     assert saida.shape[0] < torta.shape[0] and saida.shape[1] < torta.shape[1]
 

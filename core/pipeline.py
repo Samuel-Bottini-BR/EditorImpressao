@@ -1,8 +1,14 @@
 """Orquestra tudo, sempre uma página por vez.
 
-Ordem obrigatoria do processamento:
-    1. dividir folhas -> 2. cortar bordas -> 3. endireitar -> 4. filtro
-    -> 5. montar cadernos
+Ordem obrigatoria do processamento (depende do livro desde 09/10/2026, item
+2.2, G6 - core/ordem_do_preparo.py, Projeto.ordem_do_preparo):
+    livro novo ("endireitar_antes", como o ScanTailor):
+        1. dividir folhas -> 2. endireitar a pagina inteira -> 3. achar o
+        corte na pagina reta e cortar -> 4. filtro -> 5. montar cadernos
+    projeto gravado antes do G6 ("cortar_antes", identico ao de antes):
+        1. dividir folhas -> 2. cortar bordas -> 3. endireitar -> 4. filtro
+        -> 5. montar cadernos
+O giro de 90 em 90 vem antes de tudo, nas duas.
 
 As páginas apagadas somem logo depois da etapa 1.
 
@@ -38,8 +44,10 @@ import numpy as np
 from core import analise
 from core.cadernos import impor_pdf
 from core.dividir import Lombada, detectar_lombada, dividir_imagem
-from core.endireitar import ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar
+from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
+                             rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
+from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
@@ -53,7 +61,8 @@ from core.pdf_io import (
     pagina_para_array,
     tamanho_da_pagina_pt,
 )
-from core.recortar import Recorte, alargar_para_o_giro, aplicar_recorte, detectar_bordas, fatiar
+from core.recortar import (Recorte, alargar_para_o_giro, aplicar_recorte, caixa_em_pontos,
+                           detectar_bordas, fatiar)
 from modelos import (
     METADE_DIREITA,
     METADE_ESQUERDA,
@@ -184,7 +193,7 @@ def analisar_projeto(
                 if medir_as_duas:
                     medidas: dict = {}
                     _geometria(pedaco, pagina, projeto, dpi=DPI_ANALISE, dpi_do_scan=dpi_real,
-                               medidas=medidas)
+                               medidas=medidas, com_o_corte=False)
                     if medidas.get("discordam"):
                         discordam.append(pagina)
 
@@ -462,9 +471,15 @@ def preparar_metade(
     guardado e e calculado aqui: a folga do corte sai em milimetros
     (recortar.FOLGA_MM). None (a tela, que nao sabe) = folga em fracao do lado.
 
+    Item 2.2, G6 (09/10/2026): no livro novo (Projeto.ordem_do_preparo
+    "endireitar_antes") a ordem e girar 90 -> dividir -> endireitar a pagina
+    inteira -> cortar, com o corte medido na pagina reta e SEM a folga do
+    giro (o paragrafo "Corte automatico + endireitar" acima vale so para o
+    projeto "cortar_antes"). Ver _preparar_metade_e_geometria.
+
     Arriscado mudar: esta funcao alimenta a previa da tela, o PDF final e o
-    avaliar.py; a ordem cortar -> endireitar e a do CLAUDE.md (e a de
-    core/zonas_na_folha._matriz_folha_para_pagina: mudou uma, muda a outra).
+    avaliar.py; as duas ordens tem de ser as de core/zonas_na_folha.
+    _matriz_folha_para_pagina (mudou uma, muda a outra).
     """
     return _preparar_metade_e_geometria(img_folha, folha, pagina, projeto,
                                         geometria=geometria, dpi=dpi)[0]
@@ -501,6 +516,12 @@ def _preparar_metade_e_geometria(
     de sempre (inclusive o "recorte absurdo nao corta"), sem o custo do
     desenho. Arriscado: separar as duas contas em funcoes diferentes (a
     geometria anotada ao abrir deixaria de ser a da previa e a do PDF).
+
+    As duas ordens (item 2.2, G6, core/ordem_do_preparo):
+      "cortar_antes" (projeto de antes de 09/10/2026): o codigo de sempre,
+        sem mudanca nenhuma (_preparar_cortando_antes);
+      "endireitar_antes" (livro novo): a pagina inteira e endireitada e o
+        recorte (em fracao da pagina RETA) e cortado dela.
     """
     from core.zonas_na_folha import geometria_do_desenho
 
@@ -511,6 +532,18 @@ def _preparar_metade_e_geometria(
     if geometria is None:
         geometria = _geometria(inteira, pagina, projeto, dpi=dpi)
     recorte, angulo = geometria
+
+    if endireita_antes(projeto):
+        img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
+                                                          so_a_geometria)
+        dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
+        desenho = geometria_do_desenho(
+            img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
+            folha.posicao_corte if dividida else None,
+            pagina.metade if dividida else METADE_INTEIRA,
+            tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
+            sobra=faixa_da_sobra(folha, pagina, projeto), ordem=ordem_do_livro(projeto))
+        return img, desenho
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
     img = inteira
@@ -539,9 +572,39 @@ def _preparar_metade_e_geometria(
     return img, desenho
 
 
+def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
+                                 projeto: Projeto, so_a_geometria: bool):
+    """A ordem nova (item 2.2, G6, 09/10/2026): endireitar a pagina inteira
+    (`inteira`: girada de 90 e dividida, sem corte), depois cortar a pagina
+    reta pelo `recorte` (fracao da pagina RETA). Devolve (imagem, cortou,
+    girou). Com so_a_geometria: imagem None e nada e girado nem copiado
+    (o endireitar nao muda o tamanho, entao o "recorte absurdo nao corta" e
+    decidido na mesma conta).
+
+    Velocidade (regra 6): com corte, so a parte cortada da pagina reta e
+    desenhada (core/endireitar.rotacionar_e_cortar), nunca a pagina inteira.
+
+    Arriscado: cortar antes de girar aqui (seria a ordem antiga com o
+    recorte da nova); girar em volta de outro centro ou com outro tamanho
+    (core/zonas_na_folha._matriz_folha_para_pagina supoe o rotacionar).
+    """
+    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    # o endireitar nao muda o tamanho: a caixa do corte e a mesma na pagina
+    # inteira e na reta (None = sem corte, ou recorte absurdo: nao corta)
+    caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
+    cortou = caixa is not None
+    if so_a_geometria:
+        return None, cortou, girar
+    if caixa is not None:
+        img = rotacionar_e_cortar(inteira, angulo if girar else 0.0, caixa)
+    else:
+        img = rotacionar(inteira, angulo) if girar else inteira
+    return img, cortou, girar
+
+
 def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
                dpi: float | None = None, dpi_do_scan: float | None = None,
-               medidas: dict | None = None):
+               medidas: dict | None = None, com_o_corte: bool = True):
     """(recorte, angulo) da pagina, medidos em `base` (a pagina ja girada de
     90 em 90 e dividida, antes de cortar).
 
@@ -560,7 +623,16 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
     detectar_bordas e ganha a folga do giro (alargar_para_o_giro).
     angulo: em graus; 0.0 quando nao endireita. O manual (pagina.angulo_manual)
     vale como esta; o automatico vem da conta da pagina (_angulo_automatico).
+
+    Item 2.2, G6: no livro "endireitar_antes" a conta e a de
+    _geometria_endireitando_antes (o recorte sai em fracao da pagina RETA).
+    com_o_corte=False (so a analise, que quer as duas contas do angulo para
+    o aviso C1): nessa ordem nao mede o corte (recorte None). Na ordem
+    antiga e ignorado - a conta de sempre, sem mudanca nenhuma.
     """
+    if endireita_antes(projeto):
+        return _geometria_endireitando_antes(base, pagina, projeto, dpi, dpi_do_scan,
+                                             medidas, com_o_corte)
     recorte = None
     automatico = None
     if projeto.cortar_bordas:
@@ -624,6 +696,132 @@ def _angulo_automatico(base: np.ndarray, cortada: np.ndarray, pagina: ConfigPagi
     return do_scantailor if valeu == es.JEITO_SCANTAILOR else nosso
 
 
+def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
+                                  dpi: float | None, dpi_do_scan: float | None,
+                                  medidas: dict | None, com_o_corte: bool = True):
+    """(recorte, angulo) na ordem nova (item 2.2, G6, decisao do Samuel de
+    09/10/2026: "Endireitar antes de cortar (como o ScanTailor)" -> "Pode
+    comecar"). `base`: a pagina girada de 90 e dividida, sem corte.
+
+    1. O angulo: o manual (pagina.angulo_manual) como esta; o automatico pela
+       MESMA conta de sempre (_angulo_automatico): a do ScanTailor em `base`,
+       a do programa na pagina cortada pelo corte automatico de `base`
+       (detectar_bordas, como antes) - o angulo de um livro novo e o mesmo
+       que seria na ordem antiga, so o corte muda (foi o que a simulacao
+       mostrou ao Samuel). O corte a mao NAO entra na medida do angulo: ele
+       esta em fracao da pagina reta, que so existe depois do angulo.
+    2. O corte: o manual (pagina.recorte) como esta, em fracao da pagina
+       RETA; o automatico e detectar_bordas na pagina ja endireitada (a
+       inteira, girada em volta do centro, mesmo tamanho), sem a folga do
+       giro (alargar_para_o_giro): o giro ja aconteceu.
+
+    Custo: o corte automatico e medido duas vezes (uma para a conta do
+    programa, outra na pagina reta) - so na hora de guardar a geometria
+    (_guardar_geometria, uma vez por pagina). Para pesar menos, as duas
+    medidas sao feitas na pagina em CINZA (detectar_bordas so olha o cinza;
+    a primeira da exatamente o mesmo corte que na pagina colorida) e e o
+    cinza que e girado para a segunda (girar o cinza custa 1/4 de girar a
+    cor; a diferenca para "girar a cor e passar para cinza" e de 1 nivel de
+    cinza no arredondamento).
+
+    g6-retangulo (Samuel, 09/10/2026, "Fica no mesmo lugar da pagina (como
+    no ScanTailor)"): quando o angulo muda DEPOIS, os numeros do corte a mao
+    nao mudam - ele fica no mesmo lugar da pagina reta. A outra opcao
+    ("acompanha o texto") esta pronta, sem tela: recorte_depois_de_mudar_o_angulo.
+
+    Arriscado: medir a conta do programa em outro lugar (o C1 mudaria);
+    alargar o corte para o giro aqui (a pagina ja esta reta: so cresceria).
+    """
+    angulo = 0.0
+    if projeto.endireitar:
+        angulo = pagina.angulo_manual
+    cinza = None
+
+    def em_cinza():
+        nonlocal cinza
+        if cinza is None:
+            cinza = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+        return cinza
+
+    if projeto.endireitar:
+        angulo = pagina.angulo_manual
+        if angulo is None:
+            provisorio = detectar_bordas(em_cinza(), dpi=dpi).tupla if projeto.cortar_bordas else None
+            cortada = base if provisorio is None else fatiar(base, provisorio)
+            angulo = _angulo_automatico(base, cortada, pagina, projeto, dpi, dpi_do_scan, medidas)
+        angulo = float(angulo or 0.0)
+
+    recorte = None
+    if projeto.cortar_bordas:
+        if pagina.recorte is not None:
+            recorte = tuple(pagina.recorte)
+        elif com_o_corte:
+            girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+            reta = rotacionar(em_cinza(), angulo) if girar else em_cinza()
+            recorte = detectar_bordas(reta, dpi=dpi).tupla
+    return recorte, angulo
+
+
+# Decisao do Samuel, g6-retangulo (09/10/2026): o que acontece com o corte a
+# mao (pagina.recorte) quando o angulo muda DEPOIS, no livro novo. Codigos
+# internos (nunca texto de tela).
+RETANGULO_FICA = "fica"            # de fabrica: fica no mesmo lugar da pagina reta
+RETANGULO_ACOMPANHA = "acompanha"  # a outra opcao: cresce para o texto continuar dentro
+RETANGULO_PADRAO = RETANGULO_FICA
+
+
+def recorte_depois_de_mudar_o_angulo(projeto: Projeto, pagina: ConfigPagina,
+                                     angulo_antes: float | None, angulo_depois: float | None,
+                                     jeito: str = RETANGULO_PADRAO,
+                                     proporcao: float | None = None):
+    """O corte a mao da pagina depois de o angulo mudar de `angulo_antes`
+    para `angulo_depois` (graus, sentido do OpenCV). Nunca muda a pagina:
+    devolve o recorte (x, y, largura, altura) ou None.
+
+    Decisao do Samuel, pergunta g6-retangulo, 09/10/2026: "Fica no mesmo
+    lugar da pagina (como no ScanTailor)" e o de FABRICA (RETANGULO_FICA): o
+    retangulo nao se mexe, os numeros do corte ficam como estao - por isso
+    ninguem precisa chamar esta funcao no caminho de fabrica. Ele pediu
+    tambem a outra opcao, "Acompanha o texto" (RETANGULO_ACOMPANHA), mas ONDE
+    a pessoa troca ainda vai ser perguntado: NAO ha controle na tela nem
+    campo no projeto; quando houver, quem muda o angulo (aba Endireitar,
+    ui/tela_conferir) chama esta funcao com o jeito escolhido e grava o
+    recorte devolvido na mesma acao do desfazer.
+
+    "Acompanha": o retangulo (em fracao da pagina reta com angulo_antes) e
+    levado de volta a pagina sem endireitar, girado pelo angulo novo, e o
+    corte vira a caixa em volta dos quatro cantos (cresce um pouco; nunca
+    passa da pagina). Precisa de `proporcao` (largura / altura da pagina
+    girada de 90 e dividida, antes do corte; o endireitar nao muda o
+    tamanho); sem ela, ou na ordem antiga ("cortar_antes", em que o giro
+    acontece dentro do corte e o texto ja acompanha), devolve como esta.
+
+    Arriscado: trocar RETANGULO_PADRAO (decisao do Samuel); girar em volta
+    de outro centro que nao o da pagina inteira (rotacionar).
+    """
+    if pagina.recorte is None:
+        return None
+    recorte = tuple(float(v) for v in pagina.recorte)
+    if (jeito != RETANGULO_ACOMPANHA or not endireita_antes(projeto) or not proporcao
+            or angulo_antes is None or angulo_depois is None):
+        return recorte
+    giro = angulo_aplicado(angulo_depois) - angulo_aplicado(angulo_antes)
+    if abs(giro) < 1e-9:
+        return recorte
+    from core.zonas_na_folha import _giro_em_fracao
+
+    x, y, w, h = recorte
+    cantos = np.array([[x, y, 1.0], [x + w, y, 1.0], [x + w, y + h, 1.0], [x, y + h, 1.0]]).T
+    # da pagina reta antiga para a nova: desfaz o giro antigo e faz o novo,
+    # em volta do centro da pagina inteira (o mesmo do rotacionar)
+    m = (_giro_em_fracao(angulo_aplicado(angulo_depois), proporcao)
+         @ np.linalg.inv(_giro_em_fracao(angulo_aplicado(angulo_antes), proporcao)))
+    q = m @ cantos
+    x0, y0 = max(0.0, float(q[0].min())), max(0.0, float(q[1].min()))
+    x1, y1 = min(1.0, float(q[0].max())), min(1.0, float(q[1].max()))
+    return (x0, y0, x1 - x0, y1 - y0)
+
+
 # ---------------------------------------------------------------------------
 # Previa = PDF: o corte e o angulo automaticos sao calculados UMA vez por
 # pagina, na folha desenhada na resolucao do PDF (projeto.qualidade_dpi), e
@@ -672,6 +870,7 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
         bool(projeto.endireitar), recorte, pagina.angulo_manual,
         faixa_da_sobra(folha, pagina, projeto),        # item 2.1
         endireitar_scantailor.jeito_da_pagina(projeto, pagina),   # item 2.2
+        ordem_do_livro(projeto),                       # item 2.2, G6
     )
 
 
@@ -1866,10 +2065,26 @@ def renderizar_pagina_para_recorte(
     doc, projeto: Projeto, pagina: ConfigPagina, dpi: int = DPI_PREVIA
 ) -> np.ndarray:
     """A imagem que a aba Bordas mostra enquanto o recorte está sendo
-    ajustado - girada e dividida, nunca cortada. Ver `preparar_para_recorte`."""
+    ajustado - girada e dividida, nunca cortada. Ver `preparar_para_recorte`.
+
+    Item 2.2, G6 (09/10/2026): no livro "endireitar_antes" o corte a mao e
+    marcado sobre a pagina RETA (o recorte esta em fracao dela), entao a
+    imagem desta aba e tambem endireitada, com o angulo que vale na pagina
+    (o a mao, ou o automatico guardado; se ainda nao foi medido, mede e
+    guarda na resolucao do PDF, como a previa). Nunca cortada. No projeto
+    "cortar_antes", como sempre (sem endireitar).
+    Arriscado: mostrar aqui a pagina com outro angulo que nao o do PDF (o
+    retangulo marcado cairia em outro lugar).
+    """
     folha = projeto.folhas[pagina.folha]
     img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
-    return preparar_para_recorte(img_folha, folha, pagina, projeto)
+    base = preparar_para_recorte(img_folha, folha, pagina, projeto)
+    if not endireita_antes(projeto) or not projeto.endireitar:
+        return base
+    grande = img_folha if dpi == projeto.qualidade_dpi else None
+    geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, grande)
+    angulo = pagina.angulo_manual if geometria is None else geometria[1]
+    return rotacionar(base, angulo_aplicado(angulo))
 
 
 # ---------------------------------------------------------------------------
