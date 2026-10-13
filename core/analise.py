@@ -47,7 +47,34 @@ CONFERIR_FUNDO_TIRADO = "conferir_fundo_tirado"
 # sozinho? "Sim". Como o CONFERIR_FUNDO_TIRADO, quem poe e tira e
 # core.pipeline (_anotar_tinta_forte_fora), quando a pagina e desenhada; o
 # limite e core.pipeline.LIMITE_DA_TINTA_FORTE_FORA.
+#
+# TROCADO em 12/10/2026 pela regra ajustada do "Para revisar" (os codigos logo
+# abaixo). Nenhuma pagina ganha mais este aviso; o codigo fica so para o
+# projeto salvo antes (core.pipeline tira o aviso antigo ao abrir a
+# conferencia) e para os scripts do estudo, que o leem.
 TINTA_FORTE_FORA_DO_TEXTO = "tinta_forte_fora_do_texto"
+# A regra ajustada do "Para revisar" no "So as letras" (Samuel, rodada 4,
+# 08/10/2026, `rv4-resumo`: "Fica assim"; as contas e os limites moram em
+# core/revisar.py). Como o aviso que ela troca, quem poe e tira e
+# core.pipeline (_acertar_avisos_do_misto), quando a pagina e desenhada: o
+# aviso some sozinho quando o problema e resolvido ("quando eu resolver aquele
+# problema, o programa ja vai automaticamente ver que eu resolvi?", Samuel,
+# rodada 4). Os valores vao para o projeto.json: mudar o TEXTO de um codigo
+# faz o aviso salvo virar "Confira esta página." (descrever).
+DESENHO_APAGADO = "desenho_apagado"                # sumiu parte de um desenho ou letra grande
+FIGURA_ALEM_DA_GRAVURA = "figura_alem_da_gravura"  # a figura passa da gravura achada
+FAIXA_NA_BEIRADA = "faixa_na_beirada"              # faixa escura na beirada do resultado
+TEXTO_FALHADO = "texto_falhado"                    # o texto sai falhado nos dois jeitos
+PAGINA_SEM_CONTEUDO = "pagina_sem_conteudo"        # em branco, ou so a mancha do verso
+SO_O_TEXTO_APAGOU = "so_o_texto_apagou"            # o "Guardar só o texto" apagou tinta forte
+# "Forca do preto sozinha": o programa escureceu a forca do preto so nesta
+# pagina porque o texto saia falhado. Nao entra em AVISOS_DO_SO_AS_LETRAS: vale
+# enquanto o reforco estiver valendo (core.pipeline.acertar_aviso_do_reforco).
+FORCA_REFORCADA = "forca_reforcada"
+# Os avisos que a regra ajustada poe e tira (os unicos em que core.pipeline
+# mexe ao desenhar uma pagina no "So as letras").
+AVISOS_DO_SO_AS_LETRAS = (DESENHO_APAGADO, SO_O_TEXTO_APAGOU, TEXTO_FALHADO, PAGINA_SEM_CONTEUDO,
+                          FIGURA_ALEM_DA_GRAVURA, FAIXA_NA_BEIRADA)
 # Item 2.2 (decisoes G4 (b) e C1 do Samuel, 05/10/2026): a conta do endireitar
 # do ScanTailor e a do programa discordam mais de 0,3 grau nesta pagina
 # (core/endireitar_scantailor.discordam). Quem poe: a analise (na imagem de
@@ -67,6 +94,25 @@ class Alerta:
     mensagem: str        # frase completa, na faixa da pagina
     acao: str | None     # rotulo do botao de sugestao
     correcao: str | None # o que o botao faz (lido pela interface)
+    # O SEGUNDO botao do aviso (12/10/2026). Samuel, rodada 4 do "Para
+    # revisar": "(a) Botão no aviso" (o conserto rapido vira um botao no
+    # proprio aviso) e "Tem que ter um tipo de aviso para cada coisa, e um
+    # botão de apagar folha e outro realmente de só mudar para um folha
+    # branca." None = o aviso so tem um botao, como sempre.
+    outra_acao: str | None = None
+    outra_correcao: str | None = None
+
+    @property
+    def botoes(self) -> list[tuple[str, str]]:
+        """Os botoes do aviso, na ordem: (rotulo, o que faz). O que cada
+        "o que faz" quer dizer e lido por ui/tela_conferir.py
+        (_aplicar_correcao): "revisar" (esta bom assim: aceita SO este
+        motivo), "em_branco" (deixar a pagina em branco), "apagar" (tirar do
+        livro), "misto_fora:<jeito>" (trocar o jeito do "So as letras" nesta
+        pagina), "desfazer_reforco", e os de sempre ("filtro:", "forca:",
+        "nao_dividir", "angulo_zero", "sem_recorte")."""
+        pares = [(self.acao, self.correcao), (self.outra_acao, self.outra_correcao)]
+        return [(rotulo, correcao or "revisar") for rotulo, correcao in pares if rotulo]
 
 
 ALERTAS: dict[str, Alerta] = {
@@ -96,6 +142,77 @@ ALERTAS: dict[str, Alerta] = {
         TINTA_FORTE_FORA_DO_TEXTO, "Tinta forte fora do texto",
         "Sobrou bastante tinta forte fora do texto que eu achei (pode ser "
         "música, letra grande, desenho ou mancha escura). Confira se ficou certo.",
+        "está bom assim", "revisar",
+    ),
+    # A regra ajustada do "Para revisar" (12/10/2026; ver os codigos no topo).
+    # Os nomes curtos sao os motivos da rodada 4 ("desenho apagado", "figura
+    # além da gravura achada", "faixa escura na beirada", "texto falhado nos
+    # dois jeitos", "página sem conteúdo"). Seguro mudar: os textos (a
+    # aparencia e do agente de layout).
+    # Os botoes de conserto (Samuel, rodadas 4 e 5): "Trazer de volta nesta
+    # página" troca o jeito do "So as letras" SO nesta pagina - para "Guardar
+    # tudo" quando o jeito de fabrica apagou um desenho (`rv5-erro-1-desenho`:
+    # "eu acho que pode ser a opção 1, mas onde sumiu, tem que aparecer
+    # selecionado automaticamente"), para "Guardar a tinta forte" quando foi o
+    # "Guardar só o texto" que apagou (`rv5-erro-6-so-texto`: "opção 1, mas
+    # aparece marcado"). O lugar marcado vem de core.pipeline.marcas_do_aviso.
+    # Os valores depois de "misto_fora:" sao os de core/misto.FORAS_DO_TEXTO.
+    DESENHO_APAGADO: Alerta(
+        DESENHO_APAGADO, "Desenho apagado",
+        "Pode ter sumido parte de um desenho ou de uma letra grande nesta página "
+        "(o lugar está marcado em laranja). Confira se ficou certo.",
+        "Trazer de volta nesta página", "misto_fora:tudo",
+        "está bom assim", "revisar",
+    ),
+    SO_O_TEXTO_APAGOU: Alerta(
+        SO_O_TEXTO_APAGOU, "Sumiu algo no \"Guardar só o texto\"",
+        "O \"Guardar só o texto\" apagou bastante tinta forte desta página (pode ser "
+        "música, letra grande ou desenho; o lugar está marcado em laranja). "
+        "Confira se ficou certo.",
+        "Trazer de volta nesta página", "misto_fora:rede",
+        "está bom assim", "revisar",
+    ),
+    # Sem a "forca sozinha" (desligada no livro, ou desfeita na pagina), o
+    # conserto rapido e o mesmo, a mao: a forca do preto mais escura.
+    TEXTO_FALHADO: Alerta(
+        TEXTO_FALHADO, "Texto falhado",
+        "O texto desta página sai falhado no preto e branco (letra clara, gasta "
+        "ou colorida). Tente a força do preto mais escura, ou marque a linha na "
+        "aba Marcar e use Melhorar ou Mágico pro só neste pedaço.",
+        "usar mais escuro", "forca:mais_escuro",
+        "está bom assim", "revisar",
+    ),
+    # "Forca do preto sozinha" (Samuel, rodada 4, `rv4-erro-4-texto-falhado`:
+    # "Força sozinha"): o programa escureceu a forca so nesta pagina; o aviso
+    # diz o que foi feito e tem o "Desfazer".
+    FORCA_REFORCADA: Alerta(
+        FORCA_REFORCADA, "Força do preto escurecida",
+        "O texto desta página saía falhado: escureci a força do preto só nela. "
+        "Confira se ficou bom.",
+        "Desfazer", "desfazer_reforco",
+        "está bom assim", "revisar",
+    ),
+    # Um aviso para cada coisa, cada um com os dois botoes (Samuel, rodada 5,
+    # `rv5-erro-5-sem-conteudo` e `rv5-em-branco`: "Fica assim"): "Deixar em
+    # branco" poe uma folha branca no lugar (a encadernacao nao muda); "Tirar
+    # do livro" tira a pagina de vez (as seguintes andam uma casa).
+    PAGINA_SEM_CONTEUDO: Alerta(
+        PAGINA_SEM_CONTEUDO, "Página sem conteúdo",
+        "Esta página parece não ter nada do livro (só a mancha da página de "
+        "trás, ou quase nada). Quer deixar em branco ou tirar do livro?",
+        "Deixar em branco", "em_branco",
+        "Tirar do livro", "apagar",
+    ),
+    FIGURA_ALEM_DA_GRAVURA: Alerta(
+        FIGURA_ALEM_DA_GRAVURA, "Figura além da gravura achada",
+        "Uma figura parece passar da área que eu achei como gravura, ou a área "
+        "pegou uma mancha. Confira na aba Marcar.",
+        "está bom assim", "revisar",
+    ),
+    FAIXA_NA_BEIRADA: Alerta(
+        FAIXA_NA_BEIRADA, "Faixa escura na beirada",
+        "Sobrou uma faixa escura na beirada desta página (fundo do scanner ou "
+        "sombra). Confira o corte na aba Bordas.",
         "está bom assim", "revisar",
     ),
     # Item 2.2, C1. "está bom assim" so marca a pagina como conferida; a
@@ -128,10 +245,15 @@ ALERTAS: dict[str, Alerta] = {
         "Não consegui achar o alinhamento do texto direito.",
         "não endireitar esta", "angulo_zero",
     ),
+    # 12/10/2026: o botao era so "apagar esta página", e apagar tira a pagina
+    # da fila e troca frente e verso das seguintes na encadernacao. Agora os
+    # dois botoes separados (Samuel, rodada 4, `rv4-em-branco`: "um botão de
+    # apagar folha e outro realmente de só mudar para um folha branca").
     EM_BRANCO: Alerta(
         EM_BRANCO, "Parece em branco",
-        "Esta página parece estar em branco. Quer apagar?",
-        "apagar esta página", "apagar",
+        "Esta página parece estar em branco. Quer deixar em branco ou tirar do livro?",
+        "Deixar em branco", "em_branco",
+        "Tirar do livro", "apagar",
     ),
     ESCURA_DEMAIS: Alerta(
         ESCURA_DEMAIS, "Ficou escura",
@@ -478,6 +600,12 @@ OBSERVACOES = {
     TAMANHO_DIFERENTE: "as folhas deste livro têm tamanhos variados",
     LOMBADA_INCERTA: "a lombada é difícil de achar neste livro",
     EM_BRANCO: "quase todas as páginas parecem estar em branco",
+    # Regra ajustada do "Para revisar" (12/10/2026): a faixa em 70% ou mais
+    # das paginas vira um aviso so, do livro (Samuel, rodada 4, Camoes 66:
+    # "São as linhas pretas: aviso no livro basta"). Esta nao passa por
+    # separar_observacoes (a faixa so e medida quando a pagina e desenhada):
+    # quem poe e tira e core.pipeline.acertar_faixa_do_livro.
+    FAIXA_NA_BEIRADA: "as páginas deste livro têm uma faixa escura na beirada: confira o corte",
 }
 
 

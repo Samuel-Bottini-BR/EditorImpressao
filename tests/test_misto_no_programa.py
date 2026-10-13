@@ -13,8 +13,10 @@ trocado por um falso, para nao depender do modelo nem do tempo dele):
       com as escolhas da pagina; nos outros filtros nada muda;
     - a B nao chama o leitor; a A e a C chamam, uma vez por pagina (a previa
       e o PDF usam as mesmas linhas);
-    - o aviso "Tinta forte fora do texto" entra acima do limite e sai quando
-      a pagina deixa o Misto A/C;
+    - os avisos da regra ajustada do "Para revisar" (12/10/2026; trocaram o
+      "Tinta forte fora do texto") entram quando algo some do resultado e
+      saem sozinhos quando o problema e resolvido ou a pagina deixa o Misto
+      A/C; a faixa na beirada em quase todas as paginas vira aviso do livro;
     - core.linhas_do_texto guarda as linhas por pagina, nao guarda a de
       imagem pequena nem a que falhou, e o gancho do Kraken soma as linhas.
 A prova nas 32 paginas do gabarito (sem Misto, identicas ao ace15b2) esta em
@@ -176,68 +178,230 @@ def test_leitor_indisponivel_vira_o_misto_b(monkeypatch):
     p = _projeto(s, misto_so_as_letras=True)
     saida, _ = P._filtrar(p, p.paginas[0], img.copy())
     assert np.array_equal(saida, misto.aplicar_misto(img.copy(), s)[0])
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO not in p.paginas[0].alertas
+    # sem o leitor nao ha o que medir: nenhum aviso entra
+    assert p.paginas[0].alertas == []
 
 
-# --- "Para revisar" sozinho ---------------------------------------------------
+# --- "Para revisar" sozinho: a regra ajustada (12/10/2026) --------------------
+#
+# Ate 12/10 a pagina ia para "Para revisar" quando a tinta forte fora das
+# linhas passava de 10% da tinta (o aviso "Tinta forte fora do texto"): nas 89
+# paginas do estudo, 55 iam e 52 estavam certas. A regra ajustada (Samuel,
+# rodada 4, `rv4-resumo`: "Fica assim"; core/revisar.py) olha o que SUMIU do
+# resultado. As contas uma a uma estao em tests/test_revisar.py; aqui, a
+# ligacao ao processamento.
 
-def test_muita_tinta_forte_fora_manda_para_revisar(leitor_falso):
+def _com_letra_clara(img):
+    """A pagina sintetica com uma letra "T" grande e clara colada embaixo do
+    texto (a T vermelha do Antiphonal 46): mais clara que as letras, o jeito de
+    fabrica a manda para o branco inteira."""
+    img = img.copy()
+    img[165:177, 100:180] = 110
+    img[177:245, 134:146] = 110
+    return img
+
+
+def _tem(caixas, x, y, largura=700, altura=900) -> bool:
+    """Alguma caixa (em fracao da pagina) cobre o ponto (x, y)?"""
+    return any(x0 * largura <= x <= x1 * largura and y0 * altura <= y <= y1 * altura
+               for x0, y0, x1, y1 in caixas)
+
+
+def test_a_tinta_forte_guardada_nao_manda_mais_para_revisar(leitor_falso):
+    """O defeito do aviso antigo: a nota escura fora do texto, que o jeito de
+    fabrica GUARDA, mandava a pagina para a lista sem nada estar errado."""
     img, s = _pagina_sintetica()
+    p = _projeto(s, misto_so_as_letras=True)
+    P._filtrar(p, p.paginas[0], img.copy())
+    assert p.paginas[0].alertas == []
+    assert p.paginas[0].faixa_na_beirada is False, "a pagina foi medida"
+
+
+def test_letra_grande_que_some_manda_para_revisar(leitor_falso):
+    img, s = _pagina_sintetica()
+    img = _com_letra_clara(img)
     p = _projeto(s, misto_so_as_letras=True)
     pagina = p.paginas[0]
     pagina.revisada = True
-    P._filtrar(p, pagina, img.copy())
-    assert pagina.alertas[0] == analise.TINTA_FORTE_FORA_DO_TEXTO
+    saida, _ = P._filtrar(p, pagina, img.copy())
+    assert int(saida[165:245, 100:180].min()) == 255, "a letra clara tinha de sumir (A)"
+    assert pagina.alertas[0] == analise.DESENHO_APAGADO
     assert pagina.precisa_revisao and not pagina.revisada
+    # o lugar onde sumiu ja vem marcado
+    assert _tem(P.marcas_do_aviso(pagina, analise.DESENHO_APAGADO), 140, 200)
+    assert P.marcas_do_aviso(pagina) == P.marcas_do_aviso(pagina, analise.DESENHO_APAGADO)
     # "esta bom assim" vale: desenhar de novo nao volta a pedir
     pagina.revisada = True
     P._filtrar(p, pagina, img.copy())
-    assert pagina.revisada and pagina.alertas.count(analise.TINTA_FORTE_FORA_DO_TEXTO) == 1
+    assert pagina.revisada and pagina.alertas.count(analise.DESENHO_APAGADO) == 1
 
 
-def test_pouca_tinta_forte_fora_nao_manda(leitor_falso):
+@pytest.mark.parametrize("como_resolver", ["guardar_tudo", "desligar", "outro_filtro"])
+def test_o_aviso_some_sozinho_quando_o_problema_e_resolvido(leitor_falso, como_resolver):
+    """Samuel, rodada 4: "quando eu resolver aquele problema, o programa já
+    vai automaticamente ver que eu resolvi?" """
     img, s = _pagina_sintetica()
-    img[380:480, 280:400] = PAPEL                  # sem a nota
-    p = _projeto(s, misto_so_as_letras=True)
-    P._filtrar(p, p.paginas[0], img.copy())
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO not in p.paginas[0].alertas
-
-
-def test_o_aviso_vale_tambem_no_c(leitor_falso):
-    img, s = _pagina_sintetica()
-    p = _projeto(s, misto_so_as_letras=True, misto_fora_do_texto=misto.FORA_APAGAR)
-    P._filtrar(p, p.paginas[0], img.copy())
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO in p.paginas[0].alertas
-
-
-@pytest.mark.parametrize("como_sair", ["b", "desligar", "outro_filtro"])
-def test_o_aviso_sai_quando_a_pagina_deixa_o_misto_a(leitor_falso, como_sair):
-    img, s = _pagina_sintetica()
+    img = _com_letra_clara(img)
     p = _projeto(s, misto_so_as_letras=True)
     pagina = p.paginas[0]
     P._filtrar(p, pagina, img.copy())
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO in pagina.alertas
-    if como_sair == "b":
+    assert analise.DESENHO_APAGADO in pagina.alertas
+    if como_resolver == "guardar_tudo":
         pagina.misto_fora_do_texto = misto.FORA_TUDO
-    elif como_sair == "desligar":
+    elif como_resolver == "desligar":
         pagina.misto_so_as_letras = False
     else:
         pagina.filtro = MELHORAR
     # sem desenhar (o que a tela chama a cada atualizacao)...
     P.acertar_alertas_do_fundo(p, [pagina])
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO not in pagina.alertas
+    assert analise.DESENHO_APAGADO not in pagina.alertas
+    assert P.marcas_do_aviso(pagina) == [] and pagina.faixa_na_beirada is None
     # ...e desenhando
-    pagina.alertas.insert(0, analise.TINTA_FORTE_FORA_DO_TEXTO)
+    pagina.alertas.insert(0, analise.DESENHO_APAGADO)
     P._filtrar(p, pagina, img.copy())
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO not in pagina.alertas
+    assert analise.DESENHO_APAGADO not in pagina.alertas
 
 
 def test_acertar_sem_desenhar_nao_tira_o_aviso_de_quem_continua_no_a(leitor_falso):
     img, s = _pagina_sintetica()
+    img = _com_letra_clara(img)
     p = _projeto(s, misto_so_as_letras=True)
     P._filtrar(p, p.paginas[0], img.copy())
     P.acertar_alertas_do_fundo(p)
-    assert analise.TINTA_FORTE_FORA_DO_TEXTO in p.paginas[0].alertas
+    assert analise.DESENHO_APAGADO in p.paginas[0].alertas
+    assert P.marcas_do_aviso(p.paginas[0])
+
+
+def test_guardar_so_o_texto_que_apaga_tinta_forte(leitor_falso):
+    """O "Guardar só o texto" apaga de proposito o que nao e linha; o aviso
+    vale quando some bastante tinta forte (a musica do Graduale 222), e a
+    conta do desenho apagado nao entra."""
+    img, s = _pagina_sintetica()
+    p = _projeto(s, misto_so_as_letras=True, misto_fora_do_texto=misto.FORA_APAGAR)
+    pagina = p.paginas[0]
+    P._filtrar(p, pagina, img.copy())
+    assert pagina.alertas == [analise.SO_O_TEXTO_APAGOU]
+    assert _tem(P.marcas_do_aviso(pagina, analise.SO_O_TEXTO_APAGOU), 340, 430)
+    # trocar a pagina para "Guardar a tinta forte" traz a nota de volta: o aviso some
+    pagina.misto_fora_do_texto = misto.FORA_REDE
+    P._filtrar(p, pagina, img.copy())
+    assert pagina.alertas == []
+
+
+def test_o_aviso_antigo_sai_do_projeto_salvo_antes(leitor_falso):
+    """Projeto gravado antes de 12/10/2026 pode ter o "Tinta forte fora do
+    texto": ele sai ao abrir a conferencia, com ou sem "So as letras"."""
+    for ligado in (True, False):
+        _img, s = _pagina_sintetica()
+        p = _projeto(s, misto_so_as_letras=ligado)
+        p.paginas[0].alertas = [analise.TINTA_FORTE_FORA_DO_TEXTO, analise.RESOLUCAO_BAIXA]
+        P.acertar_alertas_do_fundo(p)
+        assert p.paginas[0].alertas == [analise.RESOLUCAO_BAIXA]
+
+
+def test_o_desenho_do_arrasto_nao_e_medido(leitor_falso):
+    """O arrasto do medidor desenha a 55 DPI: pequeno demais para a conta. Os
+    avisos ficam como estavam (nem entram nem saem). A previa (110 DPI) e o
+    PDF medem."""
+    img, s = _pagina_sintetica()
+    img = _com_letra_clara(img)
+    p = _projeto(s, misto_so_as_letras=True)
+    pagina = p.paginas[0]
+    P._filtrar(p, pagina, img.copy(), dpi_pedido=55)
+    assert pagina.alertas == [] and pagina.faixa_na_beirada is None
+    pagina.alertas = [analise.COR]
+    P._filtrar(p, pagina, img.copy(), dpi_pedido=110)
+    assert pagina.alertas == [analise.DESENHO_APAGADO, analise.COR]
+    # arrastando de novo, o aviso que a previa pos nao sai
+    P._filtrar(p, pagina, _pagina_sintetica()[0], dpi_pedido=55)
+    assert pagina.alertas == [analise.DESENHO_APAGADO, analise.COR]
+    assert P._da_para_medir(img, None) and P._da_para_medir(img, 300)
+    assert not P._da_para_medir(img[:300, :300], None), "imagem minuscula nunca e medida"
+
+
+def test_a_copia_do_cartao_nao_mexe_nas_marcas_da_pagina(leitor_falso):
+    """Os cartoes de filtro desenham uma COPIA da pagina com outro filtro
+    (renderizar_com_filtro): ela nao pode apagar as marcas da pagina de verdade."""
+    from dataclasses import replace
+
+    img, s = _pagina_sintetica()
+    img = _com_letra_clara(img)
+    p = _projeto(s, misto_so_as_letras=True)
+    pagina = p.paginas[0]
+    P._filtrar(p, pagina, img.copy())
+    antes = P.marcas_do_aviso(pagina)
+    assert antes
+    copia = replace(pagina, filtro=MELHORAR, alertas=list(pagina.alertas))
+    P._filtrar(p, copia, img.copy())
+    assert P.marcas_do_aviso(pagina) == antes
+    assert analise.DESENHO_APAGADO in pagina.alertas
+
+
+def test_a_medida_que_falha_nao_derruba_o_desenho(leitor_falso, monkeypatch):
+    def quebrada(*args, **kwargs):
+        raise RuntimeError("de proposito")
+
+    monkeypatch.setattr(P.revisar, "medir", quebrada)
+    img, s = _pagina_sintetica()
+    p = _projeto(s, misto_so_as_letras=True)
+    p.paginas[0].alertas = [analise.DESENHO_APAGADO]
+    saida, _ = P._filtrar(p, p.paginas[0], img.copy())
+    assert saida.shape[:2] == img.shape[:2]
+    assert p.paginas[0].alertas == [analise.DESENHO_APAGADO], "sem medir, fica como estava"
+
+
+def _livro_de(n: int) -> Projeto:
+    p = Projeto(caminho_entrada=str(RAIZ / "nao-existe.pdf"))
+    p.folhas = [ConfigFolha(indice=i, dividir=False) for i in range(n)]
+    p.paginas = [ConfigPagina(indice=i, folha=i, filtro=PRETO_E_BRANCO) for i in range(n)]
+    return p
+
+
+def test_faixa_em_quase_todas_as_paginas_vira_um_aviso_do_livro():
+    """Samuel, rodada 4 (Camoes 66): "São as linhas pretas: aviso no livro basta"."""
+    p = _livro_de(6)
+    frase = analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA]
+    for pagina in p.paginas[:4]:
+        pagina.faixa_na_beirada = True
+        pagina.alertas = [analise.FAIXA_NA_BEIRADA, analise.RESOLUCAO_BAIXA]
+    p.paginas[4].faixa_na_beirada = False          # a quinta foi medida e nao tem
+    assert P.acertar_faixa_do_livro(p) is True     # 4 de 5 medidas = 80%
+    assert frase in p.observacoes
+    assert all(pg.alertas == [analise.RESOLUCAO_BAIXA] for pg in p.paginas[:4])
+    assert P.acertar_faixa_do_livro(p) is False, "sem mudanca, nao pede redesenho"
+    # a faixa do livro nao volta para a pagina desenhada depois
+    assert P._faixa_e_do_livro(p)
+    # duas paginas deixam de ter a faixa (o corte foi consertado): 2 de 5 = 40%
+    p.paginas[0].faixa_na_beirada = p.paginas[1].faixa_na_beirada = False
+    p.paginas[2].revisada = True
+    assert P.acertar_faixa_do_livro(p) is True
+    assert frase not in p.observacoes
+    assert analise.FAIXA_NA_BEIRADA in p.paginas[2].alertas and p.paginas[2].revisada
+    assert analise.FAIXA_NA_BEIRADA in p.paginas[3].alertas
+    assert analise.FAIXA_NA_BEIRADA not in p.paginas[0].alertas
+
+
+def test_com_poucas_paginas_medidas_a_faixa_fica_nas_paginas():
+    p = _livro_de(6)
+    for pagina in p.paginas[:3]:
+        pagina.faixa_na_beirada = True
+        pagina.alertas = [analise.FAIXA_NA_BEIRADA]
+    assert P.acertar_faixa_do_livro(p) is False
+    assert p.observacoes == []
+    assert all(analise.FAIXA_NA_BEIRADA in pg.alertas for pg in p.paginas[:3])
+
+
+def test_o_campo_da_faixa_vai_e_volta_do_projeto_salvo():
+    p = _livro_de(2)
+    p.paginas[0].faixa_na_beirada = True
+    de_volta = Projeto.de_dicionario(p.para_dicionario())
+    assert de_volta.paginas[0].faixa_na_beirada is True
+    assert de_volta.paginas[1].faixa_na_beirada is None
+    # projeto antigo, sem o campo: None
+    dados = p.para_dicionario()
+    for pagina in dados["paginas"]:
+        pagina.pop("faixa_na_beirada")
+    assert Projeto.de_dicionario(dados).paginas[0].faixa_na_beirada is None
 
 
 # --- a previa e o PDF pelo mesmo caminho --------------------------------------
