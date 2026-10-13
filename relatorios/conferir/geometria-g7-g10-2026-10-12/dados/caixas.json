@@ -16,6 +16,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 600.3,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    26.67,
+    2194.67,
+    1696.0
+   ],
+   "conteudo_na_pagina": [
+    109.33,
+    66.67,
+    1746.67,
+    1434.67
+   ],
+   "pagina_cantos": [
+    0.0,
+    98.67,
+    2072.0,
+    1645.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    397.33,
+    146.67,
+    1386.67,
+    1277.33
+   ],
+   "conteudo_folha": [
+    109.33,
+    66.67,
+    1746.67,
+    1434.67
+   ],
+   "segundos": 0.23
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/siebmacher_p007.png",
    "largura": 2217,
    "altura": 1712,
@@ -70,6 +108,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 601.3,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    18.67,
+    2184.0,
+    1685.33
+   ],
+   "conteudo_na_pagina": [
+    69.33,
+    34.67,
+    1802.67,
+    1626.67
+   ],
+   "pagina_cantos": [
+    2.67,
+    82.67,
+    2072.0,
+    1634.67
+   ],
+   "conteudo_na_pagina_cantos": [
+    360.0,
+    122.67,
+    1362.67,
+    1226.67
+   ],
+   "conteudo_folha": [
+    69.33,
+    34.67,
+    1802.67,
+    1626.67
+   ],
+   "segundos": 0.26
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/siebmacher_p009.png",
    "largura": 2212,
    "altura": 1712,
@@ -124,6 +200,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 138.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.96,
+    1446.24
+   ],
+   "conteudo_na_pagina": [
+    100.28,
+    17.48,
+    887.8,
+    1357.92
+   ],
+   "pagina_cantos": [
+    0.92,
+    0.0,
+    1023.96,
+    1445.32
+   ],
+   "conteudo_na_pagina_cantos": [
+    100.28,
+    17.48,
+    887.8,
+    1357.92
+   ],
+   "conteudo_folha": [
+    100.28,
+    17.48,
+    887.8,
+    1357.92
+   ],
+   "segundos": 0.54
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p011.png",
    "largura": 1024,
    "altura": 1446,
@@ -178,6 +292,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 138.3,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.96,
+    1452.68
+   ],
+   "conteudo_na_pagina": [
+    118.68,
+    220.8,
+    774.64,
+    1149.08
+   ],
+   "pagina_cantos": [
+    18.4,
+    1.84,
+    1023.96,
+    1436.12
+   ],
+   "conteudo_na_pagina_cantos": [
+    118.68,
+    220.8,
+    774.64,
+    1149.08
+   ],
+   "conteudo_folha": [
+    118.68,
+    220.8,
+    774.64,
+    1149.08
+   ],
+   "segundos": 1.34
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p013.png",
    "largura": 1024,
    "altura": 1453,
@@ -232,6 +384,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 140.6,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.66,
+    1501.18
+   ],
+   "conteudo_na_pagina": [
+    252.86,
+    224.66,
+    932.48,
+    1210.72
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    1023.66,
+    1501.18
+   ],
+   "conteudo_na_pagina_cantos": [
+    252.86,
+    224.66,
+    932.48,
+    1210.72
+   ],
+   "conteudo_folha": [
+    252.86,
+    224.66,
+    932.48,
+    1210.72
+   ],
+   "segundos": 0.73
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p014.png",
    "largura": 1024,
    "altura": 1501,
@@ -286,6 +476,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 142.1,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1024.29,
+    1532.65
+   ],
+   "conteudo_na_pagina": [
+    227.2,
+    160.93,
+    970.33,
+    1262.85
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.95,
+    1023.35,
+    1532.65
+   ],
+   "conteudo_na_pagina_cantos": [
+    227.2,
+    160.93,
+    970.33,
+    1262.85
+   ],
+   "conteudo_folha": [
+    227.2,
+    160.93,
+    970.33,
+    1262.85
+   ],
+   "segundos": 0.49
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p026.png",
    "largura": 1024,
    "altura": 1533,
@@ -340,6 +568,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 139.2,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.97,
+    1470.62
+   ],
+   "conteudo_na_pagina": [
+    85.25,
+    160.31,
+    801.57,
+    1214.86
+   ],
+   "pagina_cantos": [
+    12.05,
+    0.93,
+    1023.97,
+    1459.5
+   ],
+   "conteudo_na_pagina_cantos": [
+    85.25,
+    160.31,
+    801.57,
+    1214.86
+   ],
+   "conteudo_folha": [
+    85.25,
+    160.31,
+    801.57,
+    1214.86
+   ],
+   "segundos": 0.5
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p027.png",
    "largura": 1024,
    "altura": 1471,
@@ -394,6 +660,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 140.7,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.66,
+    1504.0
+   ],
+   "conteudo_na_pagina": [
+    30.08,
+    57.34,
+    893.0,
+    1416.58
+   ],
+   "pagina_cantos": [
+    1.88,
+    0.0,
+    1023.66,
+    1502.12
+   ],
+   "conteudo_na_pagina_cantos": [
+    30.08,
+    57.34,
+    893.0,
+    1416.58
+   ],
+   "conteudo_folha": [
+    30.08,
+    57.34,
+    893.0,
+    1416.58
+   ],
+   "segundos": 0.95
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p047.png",
    "largura": 1024,
    "altura": 1504,
@@ -448,6 +752,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 129.2,
+   "preto_no_branco": true,
+   "pagina": [
+    7.74,
+    0.0,
+    960.62,
+    1351.92
+   ],
+   "conteudo_na_pagina": [
+    84.28,
+    43.0,
+    960.62,
+    1196.26
+   ],
+   "pagina_cantos": [
+    12.9,
+    5.16,
+    960.62,
+    1351.92
+   ],
+   "conteudo_na_pagina_cantos": [
+    89.44,
+    43.0,
+    960.62,
+    1196.26
+   ],
+   "conteudo_folha": [
+    89.44,
+    43.0,
+    960.62,
+    1196.26
+   ],
+   "segundos": 0.99
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/graduale_p221.png",
    "largura": 961,
    "altura": 1352,
@@ -502,6 +844,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 131.3,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    960.67,
+    1395.59
+   ],
+   "conteudo_na_pagina": [
+    186.89,
+    92.57,
+    930.97,
+    1202.58
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    960.67,
+    1395.59
+   ],
+   "conteudo_na_pagina_cantos": [
+    186.89,
+    92.57,
+    930.97,
+    1202.58
+   ],
+   "conteudo_folha": [
+    186.89,
+    92.57,
+    930.97,
+    1202.58
+   ],
+   "segundos": 0.61
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/graduale_p222.png",
    "largura": 961,
    "altura": 1396,
@@ -556,6 +936,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 129.2,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    960.62,
+    1351.92
+   ],
+   "conteudo_na_pagina": [
+    89.44,
+    35.26,
+    944.28,
+    1297.74
+   ],
+   "pagina_cantos": [
+    1.72,
+    0.0,
+    960.62,
+    1350.2
+   ],
+   "conteudo_na_pagina_cantos": [
+    89.44,
+    38.7,
+    944.28,
+    1297.74
+   ],
+   "conteudo_folha": [
+    89.44,
+    35.26,
+    944.28,
+    1297.74
+   ],
+   "segundos": 0.51
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/graduale_p223.png",
    "largura": 961,
    "altura": 1352,
@@ -610,6 +1028,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    152.0,
+    106.67,
+    1688.0,
+    2858.67
+   ],
+   "pagina_cantos": [
+    13.33,
+    13.33,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    152.0,
+    106.67,
+    1688.0,
+    2858.67
+   ],
+   "conteudo_folha": [
+    152.0,
+    106.67,
+    1688.0,
+    2858.67
+   ],
+   "segundos": 0.34
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p005.png",
    "largura": 1929,
    "altura": 2943,
@@ -664,6 +1120,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    77.33,
+    184.0,
+    1738.67,
+    2514.67
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    1928.0,
+    2941.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    77.33,
+    184.0,
+    1738.67,
+    2514.67
+   ],
+   "conteudo_folha": [
+    77.33,
+    184.0,
+    1738.67,
+    2514.67
+   ],
+   "segundos": 0.37
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p007.png",
    "largura": 1929,
    "altura": 2943,
@@ -718,6 +1212,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    66.67,
+    90.67,
+    1813.33,
+    2530.67
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    1928.0,
+    2941.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    66.67,
+    90.67,
+    1813.33,
+    2530.67
+   ],
+   "conteudo_folha": [
+    66.67,
+    90.67,
+    1813.33,
+    2530.67
+   ],
+   "segundos": 0.34
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p009.png",
    "largura": 1929,
    "altura": 2943,
@@ -772,6 +1304,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    104.0,
+    56.0,
+    1826.67,
+    2493.33
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    1928.0,
+    2941.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    104.0,
+    56.0,
+    1826.67,
+    2493.33
+   ],
+   "conteudo_folha": [
+    104.0,
+    56.0,
+    1826.67,
+    2493.33
+   ],
+   "segundos": 0.28
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p010.png",
    "largura": 1929,
    "altura": 2943,
@@ -826,6 +1396,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    74.67,
+    88.0,
+    1741.33,
+    2605.33
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    1928.0,
+    2941.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    74.67,
+    88.0,
+    1741.33,
+    2605.33
+   ],
+   "conteudo_folha": [
+    74.67,
+    88.0,
+    1741.33,
+    2605.33
+   ],
+   "segundos": 0.28
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p057.png",
    "largura": 1929,
    "altura": 2943,
@@ -880,6 +1488,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    149.33,
+    93.33,
+    1808.0,
+    2528.0
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    1909.33,
+    2922.67
+   ],
+   "conteudo_na_pagina_cantos": [
+    149.33,
+    93.33,
+    1808.0,
+    2528.0
+   ],
+   "conteudo_folha": [
+    149.33,
+    93.33,
+    1808.0,
+    2528.0
+   ],
+   "segundos": 0.35
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p066.png",
    "largura": 1929,
    "altura": 2943,
@@ -934,6 +1580,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 400.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_na_pagina": [
+    42.67,
+    96.0,
+    1709.33,
+    2560.0
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    1928.0,
+    2941.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    42.67,
+    96.0,
+    1709.33,
+    2560.0
+   ],
+   "conteudo_folha": [
+    42.67,
+    96.0,
+    1709.33,
+    2560.0
+   ],
+   "segundos": 0.37
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/palatino_p067.png",
    "largura": 1929,
    "altura": 2943,
@@ -988,6 +1672,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 200.0,
+   "dpi_do_scan": 200.1,
+   "dpi_dito": 200.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1420.0,
+    2089.33
+   ],
+   "conteudo_na_pagina": [
+    50.67,
+    161.33,
+    1338.67,
+    1992.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    1420.0,
+    2089.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    50.67,
+    161.33,
+    1338.67,
+    1992.0
+   ],
+   "conteudo_folha": [
+    50.67,
+    161.33,
+    1338.67,
+    1992.0
+   ],
+   "segundos": 0.59
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/escola_p007.png",
    "largura": 1420,
    "altura": 2089,
@@ -1042,6 +1764,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 200.0,
+   "dpi_do_scan": 200.0,
+   "dpi_dito": 200.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1517.33,
+    2098.67
+   ],
+   "conteudo_na_pagina": [
+    90.67,
+    114.67,
+    1378.67,
+    2089.33
+   ],
+   "pagina_cantos": [
+    1.33,
+    0.0,
+    1517.33,
+    2097.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    90.67,
+    114.67,
+    1378.67,
+    2089.33
+   ],
+   "conteudo_folha": [
+    90.67,
+    114.67,
+    1378.67,
+    2089.33
+   ],
+   "segundos": 0.58
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/escola_p035.png",
    "largura": 1517,
    "altura": 2098,
@@ -1096,6 +1856,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 72.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 92.7,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    1.86,
+    711.14,
+    933.72
+   ],
+   "conteudo_na_pagina": [
+    72.54,
+    61.38,
+    629.92,
+    868.62
+   ],
+   "pagina_cantos": [
+    0.62,
+    10.54,
+    691.92,
+    922.56
+   ],
+   "conteudo_na_pagina_cantos": [
+    72.54,
+    61.38,
+    629.92,
+    868.62
+   ],
+   "conteudo_folha": [
+    72.54,
+    61.38,
+    629.92,
+    868.62
+   ],
+   "segundos": 0.79
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/marial_p007.png",
    "largura": 714,
    "altura": 937,
@@ -1150,6 +1948,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 500.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    2301.33,
+    3698.67
+   ],
+   "conteudo_na_pagina": [
+    333.33,
+    328.0,
+    1706.67,
+    3146.67
+   ],
+   "pagina_cantos": [
+    0.0,
+    2.67,
+    2298.67,
+    3698.67
+   ],
+   "conteudo_na_pagina_cantos": [
+    333.33,
+    328.0,
+    1706.67,
+    3146.67
+   ],
+   "conteudo_folha": [
+    333.33,
+    328.0,
+    1706.67,
+    3146.67
+   ],
+   "segundos": 0.41
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/opusmajus_p003.png",
    "largura": 2300,
    "altura": 3699,
@@ -1204,6 +2040,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 500.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    2301.33,
+    3698.67
+   ],
+   "conteudo_na_pagina": [
+    269.33,
+    456.0,
+    1928.0,
+    3240.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    2.67,
+    2298.67,
+    3698.67
+   ],
+   "conteudo_na_pagina_cantos": [
+    269.33,
+    456.0,
+    1928.0,
+    3240.0
+   ],
+   "conteudo_folha": [
+    269.33,
+    456.0,
+    1928.0,
+    3240.0
+   ],
+   "segundos": 0.48
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/opusmajus_p011.png",
    "largura": 2300,
    "altura": 3699,
@@ -1258,6 +2132,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 500.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    2213.33,
+    3621.33
+   ],
+   "conteudo_na_pagina": [
+    402.67,
+    344.0,
+    1973.33,
+    3048.0
+   ],
+   "pagina_cantos": [
+    2.67,
+    2.67,
+    2210.67,
+    3618.67
+   ],
+   "conteudo_na_pagina_cantos": [
+    402.67,
+    344.0,
+    1973.33,
+    3048.0
+   ],
+   "conteudo_folha": [
+    402.67,
+    344.0,
+    1973.33,
+    3048.0
+   ],
+   "segundos": 0.63
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/opusmajus_p020.png",
    "largura": 2212,
    "altura": 3620,
@@ -1312,6 +2224,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 500.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "conteudo_na_pagina": [
+    125.33,
+    216.0,
+    1789.33,
+    3176.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    125.33,
+    216.0,
+    1789.33,
+    3176.0
+   ],
+   "conteudo_folha": [
+    125.33,
+    216.0,
+    1789.33,
+    3176.0
+   ],
+   "segundos": 0.41
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/opusmajus_p165.png",
    "largura": 2160,
    "altura": 3576,
@@ -1366,6 +2316,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 500.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    3282.67,
+    2768.0
+   ],
+   "conteudo_na_pagina": [
+    216.0,
+    232.0,
+    3253.33,
+    2522.67
+   ],
+   "pagina_cantos": [
+    2.67,
+    0.0,
+    3282.67,
+    2765.33
+   ],
+   "conteudo_na_pagina_cantos": [
+    216.0,
+    232.0,
+    3253.33,
+    2522.67
+   ],
+   "conteudo_folha": [
+    216.0,
+    232.0,
+    3253.33,
+    2522.67
+   ],
+   "segundos": 0.64
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/opusmajus_p256.png",
    "largura": 3283,
    "altura": 2767,
@@ -1420,6 +2408,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": null,
+   "dpi_dito": 271.2,
+   "preto_no_branco": true,
+   "pagina": [
+    37.94,
+    79.49,
+    2046.95,
+    2742.52
+   ],
+   "conteudo_na_pagina": [
+    158.99,
+    525.74,
+    1633.23,
+    2397.45
+   ],
+   "pagina_cantos": [
+    57.81,
+    92.14,
+    2016.24,
+    2704.58
+   ],
+   "conteudo_na_pagina_cantos": [
+    158.99,
+    525.74,
+    1633.23,
+    2397.45
+   ],
+   "conteudo_folha": [
+    158.99,
+    525.74,
+    1633.23,
+    2397.45
+   ],
+   "segundos": 0.79
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/egenloff_p047.png",
    "largura": 2084,
    "altura": 2744,
@@ -1474,6 +2500,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": null,
+   "dpi_dito": 268.1,
+   "preto_no_branco": true,
+   "pagina": [
+    25.01,
+    16.08,
+    2056.45,
+    2681.79
+   ],
+   "conteudo_na_pagina": [
+    510.99,
+    337.68,
+    1881.36,
+    2224.4
+   ],
+   "pagina_cantos": [
+    30.37,
+    58.96,
+    2018.93,
+    2681.79
+   ],
+   "conteudo_na_pagina_cantos": [
+    510.99,
+    337.68,
+    1881.36,
+    2224.4
+   ],
+   "conteudo_folha": [
+    510.99,
+    337.68,
+    1881.36,
+    2224.4
+   ],
+   "segundos": 0.85
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/egenloff_p003.png",
    "largura": 2084,
    "altura": 2682,
@@ -1528,6 +2592,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": null,
+   "dpi_dito": 167.2,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    42.31,
+    1024.27,
+    1475.17
+   ],
+   "conteudo_na_pagina": [
+    133.6,
+    345.13,
+    946.33,
+    1380.53
+   ],
+   "pagina_cantos": [
+    6.68,
+    48.99,
+    1010.91,
+    1461.81
+   ],
+   "conteudo_na_pagina_cantos": [
+    133.6,
+    345.13,
+    946.33,
+    1380.53
+   ],
+   "conteudo_folha": [
+    133.6,
+    345.13,
+    946.33,
+    1380.53
+   ],
+   "segundos": 0.67
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/matematica_p032.png",
    "largura": 1240,
    "altura": 1753,
@@ -1582,6 +2684,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": null,
+   "dpi_dito": 150.0,
+   "preto_no_branco": true,
+   "pagina": [
+    7.0,
+    8.0,
+    543.0,
+    781.0
+   ],
+   "conteudo_na_pagina": [
+    128.0,
+    71.0,
+    517.0,
+    694.0
+   ],
+   "pagina_cantos": [
+    32.0,
+    29.0,
+    536.0,
+    770.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    128.0,
+    71.0,
+    517.0,
+    694.0
+   ],
+   "conteudo_folha": [
+    128.0,
+    71.0,
+    517.0,
+    694.0
+   ],
+   "segundos": 0.16
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/camoes_p066.png",
    "largura": 543,
    "altura": 791,
@@ -1636,6 +2776,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": null,
+   "dpi_dito": 164.5,
+   "preto_no_branco": true,
+   "pagina": [
+    45.92,
+    0.0,
+    1274.83,
+    1631.25
+   ],
+   "conteudo_na_pagina": [
+    160.72,
+    45.92,
+    1119.57,
+    1594.08
+   ],
+   "pagina_cantos": [
+    61.23,
+    1.09,
+    1274.83,
+    1617.04
+   ],
+   "conteudo_na_pagina_cantos": [
+    160.72,
+    45.92,
+    1119.57,
+    1594.08
+   ],
+   "conteudo_folha": [
+    160.72,
+    45.92,
+    1119.57,
+    1594.08
+   ],
+   "segundos": 0.5
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/cursus_p314.png",
    "largura": 1275,
    "altura": 1650,
@@ -1690,6 +2868,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": null,
+   "dpi_dito": 363.6,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    121.33,
+    2586.83,
+    3637.57
+   ],
+   "conteudo_na_pagina": [
+    429.52,
+    288.77,
+    2569.84,
+    2887.73
+   ],
+   "pagina_cantos": [
+    7.28,
+    152.88,
+    2533.44,
+    3608.45
+   ],
+   "conteudo_na_pagina_cantos": [
+    429.52,
+    288.77,
+    2361.15,
+    2887.73
+   ],
+   "conteudo_folha": [
+    429.52,
+    288.77,
+    2569.84,
+    2887.73
+   ],
+   "segundos": 0.55
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/antiphon_p088.png",
    "largura": 2742,
    "altura": 3750,
@@ -1744,6 +2960,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": 96.0,
+   "dpi_dito": 279.2,
+   "preto_no_branco": true,
+   "pagina": [
+    156.24,
+    133.92,
+    2155.74,
+    2650.5
+   ],
+   "conteudo_na_pagina": [
+    636.12,
+    305.04,
+    1930.68,
+    2218.98
+   ],
+   "pagina_cantos": [
+    213.9,
+    163.68,
+    2142.72,
+    2609.58
+   ],
+   "conteudo_na_pagina_cantos": [
+    636.12,
+    305.04,
+    1930.68,
+    2218.98
+   ],
+   "conteudo_folha": [
+    636.12,
+    305.04,
+    1930.68,
+    2218.98
+   ],
+   "segundos": 0.9
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/saida_teste/geometria-perguntas/paginas/ljs47_p046.png",
    "largura": 2155,
    "altura": 2813,
@@ -1798,6 +3052,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": 96.0,
+   "dpi_dito": 279.2,
+   "preto_no_branco": true,
+   "pagina": [
+    106.02,
+    169.26,
+    2155.74,
+    2682.12
+   ],
+   "conteudo_na_pagina": [
+    623.1,
+    271.56,
+    1932.54,
+    2209.68
+   ],
+   "pagina_cantos": [
+    146.94,
+    197.16,
+    2144.58,
+    2657.94
+   ],
+   "conteudo_na_pagina_cantos": [
+    623.1,
+    271.56,
+    1999.5,
+    2209.68
+   ],
+   "conteudo_folha": [
+    623.1,
+    271.56,
+    1999.5,
+    2209.68
+   ],
+   "segundos": 0.98
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/saida_teste/geometria-perguntas/paginas/ljs47_p068.png",
    "largura": 2155,
    "altura": 2813,
@@ -1852,6 +3144,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": 194.4,
+   "dpi_dito": 150.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    1275.0,
+    1650.0
+   ],
+   "conteudo_na_pagina": [
+    11.0,
+    350.0,
+    999.0,
+    1569.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    1275.0,
+    1650.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    11.0,
+    350.0,
+    999.0,
+    1569.0
+   ],
+   "conteudo_folha": [
+    11.0,
+    350.0,
+    999.0,
+    1569.0
+   ],
+   "segundos": 0.51
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/saida_teste/geometria-perguntas/paginas/righetti_p055.png",
    "largura": 1275,
    "altura": 1650,
@@ -1906,6 +3236,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 150.0,
+   "dpi_do_scan": 72.0,
+   "dpi_dito": 361.9,
+   "preto_no_branco": true,
+   "pagina": [
+    106.19,
+    57.92,
+    2717.41,
+    3629.65
+   ],
+   "conteudo_na_pagina": [
+    263.05,
+    364.41,
+    2408.51,
+    3180.77
+   ],
+   "pagina_cantos": [
+    248.57,
+    176.17,
+    2690.87,
+    3578.97
+   ],
+   "conteudo_na_pagina_cantos": [
+    263.05,
+    364.41,
+    2408.51,
+    3180.77
+   ],
+   "conteudo_folha": [
+    263.05,
+    364.41,
+    2408.51,
+    3180.77
+   ],
+   "segundos": 0.85
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/saida_teste/geometria-perguntas/paginas/antiphon_p123.png",
    "largura": 2717,
    "altura": 3750,
@@ -1960,6 +3328,44 @@
    ]
   },
   "scantailor": {
+   "de_onde": "core.caixas_scantailor.achar_na_pagina (DLL do programa)",
+   "dpi_do_desenho": 400.0,
+   "dpi_do_scan": 500.0,
+   "dpi_dito": 400.0,
+   "preto_no_branco": true,
+   "pagina": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "conteudo_na_pagina": [
+    146.67,
+    221.33,
+    1802.67,
+    1850.67
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    146.67,
+    221.33,
+    1802.67,
+    1850.67
+   ],
+   "conteudo_folha": [
+    146.67,
+    221.33,
+    1802.67,
+    1850.67
+   ],
+   "segundos": 0.58
+  },
+  "scantailor_12_10": {
    "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/saida_teste/geometria-perguntas/paginas/opusmajus_p137.png",
    "largura": 2160,
    "altura": 3576,
@@ -1995,84 +3401,6 @@
     1850.7
    ],
    "ms": 1034
-  }
- },
- "horas_p013@150": {
-  "scantailor": {
-   "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/horas_p013.png",
-   "largura": 1024,
-   "altura": 1453,
-   "dpi": 150,
-   "pagina": [
-    0.0,
-    0.0,
-    1024.0,
-    1453.0
-   ],
-   "pagina_cantos": [
-    18.0,
-    2.0,
-    1024.0,
-    1437.0
-   ],
-   "conteudo_folha": [
-    121.0,
-    221.0,
-    775.0,
-    1149.0
-   ],
-   "conteudo_na_pagina": [
-    121.0,
-    221.0,
-    775.0,
-    1149.0
-   ],
-   "conteudo_na_pagina_cantos": [
-    121.0,
-    221.0,
-    775.0,
-    1149.0
-   ],
-   "ms": 2473
-  }
- },
- "graduale_p222@150": {
-  "scantailor": {
-   "arquivo": "D:/programas/EditorImpressao/.claude/worktrees/geometria-perguntas/gabarito/paginas/graduale_p222.png",
-   "largura": 961,
-   "altura": 1396,
-   "dpi": 150,
-   "pagina": [
-    0.0,
-    0.0,
-    961.0,
-    1396.0
-   ],
-   "pagina_cantos": [
-    0.0,
-    0.0,
-    961.0,
-    1396.0
-   ],
-   "conteudo_folha": [
-    187.0,
-    96.0,
-    931.0,
-    1203.0
-   ],
-   "conteudo_na_pagina": [
-    187.0,
-    96.0,
-    931.0,
-    1203.0
-   ],
-   "conteudo_na_pagina_cantos": [
-    187.0,
-    96.0,
-    931.0,
-    1203.0
-   ],
-   "ms": 1270
   }
  }
 }

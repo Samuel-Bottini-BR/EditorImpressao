@@ -91,7 +91,7 @@ def perguntas() -> list[dict]:
                 "pediu como opção, desligada) deixa de fora um pedaço do que está impresso.\n\n"
                 "Esse corte é o do ScanTailor. Em muitas páginas ele acerta e abraça a moldura (primeiro exemplo). Mas ele "
                 "erra de dois jeitos. Trata barra comprida e reta como sombra de scanner: nesta página do Livro de Horas, "
-                "a barra dourada da esquerda ficou de fora. E não pega o número da página quando ele está sozinho, longe "
+                "a moldura dourada inteira ficou de fora, e o título \"TABLE\" junto. E não pega o número da página quando ele está sozinho, longe "
                 "do texto (segundo exemplo).\n\n"
                 "Você já pediu que o programa avise onde o corte pode ter ficado ruim. A pergunta é o que ele faz junto "
                 "com o aviso."),
@@ -102,16 +102,16 @@ def perguntas() -> list[dict]:
             "opcoes": [
                 {"id": "avisa", "nome": "Só avisa",
                  "texto": "O corte fica como o ScanTailor achou, e a página vai para a lista de conferir. Bom: o Kaique vê "
-                          "exatamente o que o ScanTailor fez. Ruim: se ele não olhar, a página sai sem a barra da moldura ou "
-                          "sem o número.",
-                 "imgs": [i("g8-a-avisa-canto", "O canto de cima da moldura, ampliado: a barra dourada da esquerda fica de fora (escurecida). Resultado de verdade do ScanTailor."),
+                          "exatamente o que o ScanTailor fez. Ruim: se ele não olhar, a página sai sem a moldura, sem o título "
+                          "ou sem o número.",
+                 "imgs": [i("g8-a-avisa-canto", "O canto de cima da moldura, ampliado: a moldura dourada e o título ficam de fora (escurecidos). Resultado de verdade do ScanTailor, como o programa vai rodar."),
                           i("g8-a-avisa-inteira", "A página inteira: antes, o corte e depois.")]},
                 {"id": "alarga", "nome": "Alarga sozinho e avisa",
                  "texto": "O programa abre o corte até caber inteiro o que ficou cortado ou sozinho do lado de fora. Bom: "
                           "moldura e número de página não se perdem, mesmo que o Kaique não olhe. Ruim: é uma conta nossa por "
                           "cima do ScanTailor, e às vezes vai trazer uma sujeira junto. Sugestão: esta. Perder a moldura ou "
                           "o número da página é pior do que sobrar um pouco de papel.",
-                 "imgs": [i("g8-b-alarga-canto", "O mesmo canto: a moldura fica inteira dentro do corte. Simulação com uma conta simples minha."),
+                 "imgs": [i("g8-b-alarga-canto", "O mesmo canto: a moldura e o título ficam dentro do corte. Simulação com uma conta simples minha."),
                           i("g8-b-alarga-inteira", "A página inteira: antes, o corte e depois.")]},
                 {"id": "volta", "nome": "Nessa página, volta para o corte comum e avisa",
                  "texto": "Bom: usa o corte que já está aprovado, que não perde a moldura nem o número. Ruim: nesta página o "
@@ -260,7 +260,9 @@ def main() -> None:
     destino.write_text(json.dumps({
         "sobre": "Seis perguntas dos itens 2.13, 2.5, 2.4 e 2.6 (G7 a G10), preparadas pelo pesquisador em 12/10/2026 "
                  "para a página 'Escolhas do Editor de Impressão'. Cada item de 'decisoes' é um documento da coleção "
-                 "'decisoes' (o 'id' é o nome do documento). Imagens em img/g7g10/. Ainda NÃO publicadas.",
+                 "'decisoes' (o 'id' é o nome do documento). Imagens em img/g7g10/. Revisto em 13/10/2026: as caixas do "
+                 "ScanTailor passaram a ser as da função do programa, com o DPI que o programa diz; mudaram 5 imagens e o "
+                 "texto da pergunta g8-moldura-tinta-fora (ver pesquisa.md, seção 7).",
         "decisoes": lista}, indent=1, ensure_ascii=False), encoding="utf-8")
     print("gravou", destino.name, len(lista), "perguntas,", len(usadas), "imagens citadas")
     print("imagens faltando:", sorted(set(faltando)) or "nenhuma")

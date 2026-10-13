@@ -6,7 +6,9 @@ escolhas-g7-g10.json usa (montar_json.py).
 
 O QUE E DE VERDADE E O QUE E SIMULACAO (esta escrito tambem nas legendas):
   - "corte de hoje": core.recortar.detectar_bordas, o corte do programa (de verdade);
-  - caixas do ScanTailor: codigo original v1.2.1, pelo caixas.exe (de verdade);
+  - caixas do ScanTailor: codigo original v1.2.1, pela funcao do programa
+    (core.caixas_scantailor.achar_na_pagina) com o DPI que o programa diz (passo 1b,
+    13/10/2026; em 12/10 eram do caixas.exe com o DPI que o PDF diz) (de verdade);
   - "so o preto" (pergunta da borda preta) e "alargar ate a moldura" (pergunta do
     seguir a moldura): contas simples MINHAS, so para mostrar como ficaria;
   - margens, alinhamento e "tamanho da maior": as contas do ScanTailor
@@ -360,11 +362,10 @@ def preparar_caixas_boas() -> None:
     """Nas folhas com margem (tamanho final) a caixa precisa estar certa, senao a
     imagem mostraria o erro do corte e nao o assunto da pergunta. No Livro de Horas:
     pagina cheia = o corte do programa (abraca a iluminura); pagina da tabela pequena =
-    a caixa do ScanTailor (com 150 DPI declarados, por dentro da moldura) alargada
-    ate a moldura. Conferidas a olho; gravadas em dados/caixas-boas.json."""
+    a caixa do ScanTailor (que fica por dentro da moldura) alargada ate a moldura.
+    Conferidas a olho; gravadas em dados/caixas-boas.json."""
     CAIXAS_BOAS["horas_p047"] = nosso("horas_p047")
-    por_dentro = D["horas_p013@150"]["scantailor"]["conteudo_na_pagina"]
-    CAIXAS_BOAS["horas_p013"] = alargar_ate_a_tinta("horas_p013", por_dentro)
+    CAIXAS_BOAS["horas_p013"] = alargar_ate_a_tinta("horas_p013", st("horas_p013"))
     (comum.DADOS / "caixas-boas.json").write_text(json.dumps(CAIXAS_BOAS, indent=1), encoding="utf-8")
 
 

@@ -1,0 +1,240 @@
+{
+ "horas_p013": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 138.3,
+  "conteudo_12_10": [
+   104,
+   37,
+   1006,
+   1435
+  ],
+  "conteudo_agora": [
+   119,
+   221,
+   775,
+   1149
+  ],
+  "maior_diferenca_em_pontos": 286
+ },
+ "horas_p014": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 140.6,
+  "conteudo_12_10": [
+   249,
+   172,
+   955,
+   1231
+  ],
+  "conteudo_agora": [
+   253,
+   225,
+   932,
+   1211
+  ],
+  "maior_diferenca_em_pontos": 53
+ },
+ "horas_p026": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 142.1,
+  "conteudo_12_10": [
+   228,
+   162,
+   967,
+   1262
+  ],
+  "conteudo_agora": [
+   227,
+   161,
+   970,
+   1263
+  ],
+  "maior_diferenca_em_pontos": 3
+ },
+ "horas_p027": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 139.2,
+  "conteudo_12_10": [
+   85,
+   159,
+   862,
+   1214
+  ],
+  "conteudo_agora": [
+   85,
+   160,
+   802,
+   1215
+  ],
+  "maior_diferenca_em_pontos": 60
+ },
+ "horas_p047": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 140.7,
+  "conteudo_12_10": [
+   10,
+   14,
+   892,
+   1416
+  ],
+  "conteudo_agora": [
+   30,
+   57,
+   893,
+   1417
+  ],
+  "maior_diferenca_em_pontos": 43
+ },
+ "graduale_p221": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 129.2,
+  "conteudo_12_10": [
+   78,
+   72,
+   877,
+   1350
+  ],
+  "conteudo_agora": [
+   84,
+   43,
+   961,
+   1196
+  ],
+  "maior_diferenca_em_pontos": 154
+ },
+ "graduale_p222": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 131.3,
+  "conteudo_12_10": [
+   188,
+   93,
+   950,
+   1198
+  ],
+  "conteudo_agora": [
+   187,
+   93,
+   931,
+   1203
+  ],
+  "maior_diferenca_em_pontos": 19
+ },
+ "graduale_p223": {
+  "dpi_12_10": 72.0,
+  "dpi_dito": 129.2,
+  "conteudo_12_10": [
+   42,
+   39,
+   873,
+   1286
+  ],
+  "conteudo_agora": [
+   89,
+   35,
+   944,
+   1298
+  ],
+  "maior_diferenca_em_pontos": 72
+ },
+ "egenloff_p047": {
+  "dpi_12_10": 150,
+  "dpi_dito": 271.2,
+  "conteudo_12_10": [
+   159,
+   526,
+   1681,
+   2397
+  ],
+  "conteudo_agora": [
+   159,
+   526,
+   1633,
+   2397
+  ],
+  "maior_diferenca_em_pontos": 48
+ },
+ "egenloff_p003": {
+  "dpi_12_10": 150,
+  "dpi_dito": 268.1,
+  "conteudo_12_10": [
+   420,
+   345,
+   1954,
+   2635
+  ],
+  "conteudo_agora": [
+   511,
+   338,
+   1881,
+   2224
+  ],
+  "maior_diferenca_em_pontos": 411
+ },
+ "antiphon_p088": {
+  "dpi_12_10": 150,
+  "dpi_dito": 363.6,
+  "conteudo_12_10": [
+   402,
+   291,
+   2570,
+   3065
+  ],
+  "conteudo_agora": [
+   430,
+   289,
+   2570,
+   2888
+  ],
+  "maior_diferenca_em_pontos": 177
+ },
+ "ljs47_p046": {
+  "dpi_12_10": 150.0,
+  "dpi_dito": 279.2,
+  "conteudo_12_10": [
+   139,
+   135,
+   1966,
+   2649
+  ],
+  "conteudo_agora": [
+   636,
+   305,
+   1931,
+   2219
+  ],
+  "maior_diferenca_em_pontos": 497
+ },
+ "ljs47_p068": {
+  "dpi_12_10": 150.0,
+  "dpi_dito": 279.2,
+  "conteudo_12_10": [
+   116,
+   243,
+   2071,
+   2681
+  ],
+  "conteudo_agora": [
+   623,
+   272,
+   1933,
+   2210
+  ],
+  "maior_diferenca_em_pontos": 507
+ },
+ "antiphon_p123": {
+  "dpi_12_10": 150.0,
+  "dpi_dito": 361.9,
+  "conteudo_12_10": [
+   150,
+   138,
+   2483,
+   3586
+  ],
+  "conteudo_agora": [
+   263,
+   364,
+   2409,
+   3181
+  ],
+  "maior_diferenca_em_pontos": 405
+ }
+}

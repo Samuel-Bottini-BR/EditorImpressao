@@ -1,5 +1,13 @@
 """Passo 1: mede, em cada pagina usada nas perguntas, onde cada conta corta.
 
+ATENCAO (13/10/2026): este passo diz ao ScanTailor o DPI que o PDF diz (72 no
+Livro de Horas, no Graduale e no Marial), e o programa NAO faz assim: ele diz o
+DPI de core.caixas_scantailor.achar_na_pagina (uns 130 a 140 nesses livros), e a
+caixa do conteudo muda. As imagens das perguntas usam o passo 1b
+(passo1b_dpi_do_programa.py), que parte deste arquivo e refaz as caixas do
+ScanTailor com a funcao e o DPI do programa. Este passo continua valendo para o
+corte de hoje ("nosso") e como registro do que foi medido em 12/10.
+
 Para cada pagina:
   - "nosso": o corte de bordas do NOSSO programa como roda hoje
     (core.recortar.detectar_bordas, o mesmo que o pipeline chama com "Cortar
@@ -8,7 +16,7 @@ Para cada pagina:
     teste caixas.exe (scripts/caixas.cpp): caixa da pagina (item 2.13), com e
     sem "ajustar os cantos", e caixa do conteudo (item 2.5), na folha inteira e
     dentro da caixa da pagina.
-Grava dados/caixas.json (tudo em pontos da imagem: x0, y0, x1, y1) e, para eu
+Grava dados/caixas-12-10.json (tudo em pontos da imagem: x0, y0, x1, y1) e, para eu
 conferir a olho, uma imagem por pagina com as caixas desenhadas em
 saida_teste/geometria-perguntas/inspecao/ (fora do git).
 
@@ -120,8 +128,8 @@ def main() -> None:
     for nome, d in extra.items():
         dados[nome] = {"scantailor": d}
     comum.DADOS.mkdir(parents=True, exist_ok=True)
-    (comum.DADOS / "caixas.json").write_text(json.dumps(dados, indent=1, ensure_ascii=False), encoding="utf-8")
-    print("gravou dados/caixas.json", flush=True)
+    (comum.DADOS / "caixas-12-10.json").write_text(json.dumps(dados, indent=1, ensure_ascii=False), encoding="utf-8")
+    print("gravou dados/caixas-12-10.json", flush=True)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ Legenda: **[lido]** = está no código; **[medido]** = rodei e olhei; **[deduç�
 
 1. As quatro perguntas antigas do plano de geometria (G7 a G10) **já tinham sido respondidas em 05/10** (conferência 9); o que faltava eram as escolhas que apareceram depois, e ficaram **seis perguntas** (`escolhas-g7-g10.json`).
 2. **Borda preta (2.13):** a busca de página do ScanTailor só tira faixa preta que vai reta de ponta a ponta; no Siebmacher 7 e 9 ela quase não corta, e quem tira o preto ali é a **caixa do conteúdo** [medido].
-3. **Caixa do conteúdo (2.5):** acerta em muitas páginas, mas deixa de fora barra de moldura (Horas 14) e número de página sozinho no pé (Opus Majus 137), e o resultado **muda com o DPI declarado** da página [medido].
+3. **Caixa do conteúdo (2.5):** acerta em muitas páginas, mas deixa de fora a moldura dourada e o título (Horas 14) e o número de página sozinho no pé (Opus Majus 137), e o resultado **muda com o DPI que se diz** da página [medido; números revistos em 13/10, seção 7].
 4. **Margens (2.4):** as contas são pequenas e claras; uma única folha muito maior (tabela dobrável) aumenta o tamanho de todas, e no ScanTailor é a pessoa que tira essa folha da conta [lido].
 5. **Tamanho final (2.6):** o ScanTailor não tem papel-alvo; no nosso, o tamanho vale por página e a montagem dos cadernos dobra a largura, então "A4" hoje vira folha A3 [lido no nosso código].
 
@@ -48,7 +48,7 @@ Legenda: **[lido]** = está no código; **[medido]** = rodei e olhei; **[deduç�
 ### 2.5 Caixa do conteúdo e guias
 
 - **ScanTailor** [lido, `ContentBoxFinder.cpp`, `select_content/Task.cpp`]: a 150 DPI, tira como "sombra" o que tem risco comprido (200 × 14 pontos deitado, 14 × 300 em pé, mais o que encosta neles), limpa pontinhos, procura os maiores vazios, joga fora o que encosta na beirada, estima onde há texto e apara lado a lado. Roda **dentro** da caixa da página e é cortada por ela. Modos: automático, à mão, desligado.
-- **Medido:** acerta a moldura na Horas 26 e no Siebmacher 7. Erra: Horas 14 (a barra dourada da esquerda fica de fora: a caixa começa em 249 e a moldura em 225) e Opus Majus 137 (o número "[ 115 ]", sozinho no pé, fica de fora: a caixa acaba em 1851 de 3576). **DPI:** na Horas 13 (moldura de 96 a 804 na largura), com 72 DPI declarados a caixa fica quase na folha inteira (104 a 1006 de 1024); com 150, fica por dentro da moldura (121 a 775). O implementador tem de passar o DPI certo e testar com os dois.
+- **Medido:** acerta a moldura na Horas 26 e no Siebmacher 7. Erra, **com o DPI que o programa diz** (seção 7): Horas 14 (a moldura dourada inteira e o título "TABLE" ficam de fora: a caixa vai de 253 a 932 e de 225 a 1211, e a moldura de 225 a 953 e de 163 a 1236), Horas 13 (a caixa fica por dentro da moldura: 119 a 775, com a moldura de 96 a 804) e Opus Majus 137 (o número "[ 115 ]", sozinho no pé, fica de fora: a caixa acaba em 1851 de 3576). **DPI:** em 12/10 medi com o DPI que o PDF diz (72 no Horas), e aí a Horas 14 perdia só a barra da esquerda (249 a 955) e a Horas 13 ficava quase na folha inteira (104 a 1006 de 1024).
 - **Guias** [lido, `page_layout/ImageView.cpp`, README]: linhas horizontais e verticais que a pessoa põe com o botão direito na etapa das margens; valem para o projeto inteiro (guardadas em mm); duplo clique no conteúdo gruda na guia mais próxima. As nossas (`ui/widgets/visualizador.py`, `guias_ativas`, `encaixar_no_ima`) são automáticas: centro e beiradas da folha.
 
 ### 2.4 Margens iguais e alinhamento
@@ -64,7 +64,7 @@ Legenda: **[lido]** = está no código; **[medido]** = rodei e olhei; **[deduç�
 
 ## 4. As imagens: o que é de verdade e o que é simulação
 
-- **De verdade:** o corte de hoje (`core.recortar.detectar_bordas`), as caixas do ScanTailor (código original), as páginas.
+- **De verdade:** o corte de hoje (`core.recortar.detectar_bordas`), as caixas do ScanTailor (código original; desde 13/10 pela função do programa, `core.caixas_scantailor.achar_na_pagina`, com o DPI que o programa diz), as páginas.
 - **Simulação com conta minha:** "tira só o preto" (anda da beirada enquanto o meio do lado é escuro) e "alarga sozinho" (junta à caixa do ScanTailor as peças de tinta que o nosso corte já conhece e que a caixa atravessa, ou que estão sozinhas acima ou abaixo dela).
 - **Contas do ScanTailor refeitas em Python:** margens e "tamanho da maior" (pergunta da tabela dobrável), com as caixas de verdade.
 - **Desenhos em escala:** folhas impressas (A4, A5, A3) e linhas de apoio. Não são a tela do programa.
@@ -80,4 +80,29 @@ Legenda: **[lido]** = está no código; **[medido]** = rodei e olhei; **[deduç�
 
 ## 6. Como refazer
 
-Da raiz da worktree: `scripts\compilar_caixas.ps1` (compila o teste), depois `scripts\rodar.ps1 passo0_paginas_extras.py`, `passo1_dados.py`, `passo2_imagens.py`, `montar_json.py`. Os rascunhos ficam em `saida_teste\geometria-perguntas\` (fora do git). Os números estão em `dados\`.
+Da raiz da worktree: `scripts\rodar.ps1 passo0_paginas_extras.py`, `passo1b_dpi_do_programa.py`, `passo2_imagens.py`, `montar_json.py`. O `passo1_dados.py` (com `compilar_caixas.ps1`) só é preciso para refazer as medidas de 12/10 (`dados\caixas-12-10.json`), de onde o passo 1b tira o corte de hoje. Os rascunhos ficam em `saida_teste\geometria-perguntas\` (fora do git). Os números estão em `dados\`.
+
+## 7. Nota de 13/10/2026: as caixas refeitas com o DPI do programa
+
+**Por quê.** Em 12/10 eu disse ao ScanTailor o DPI que o PDF diz. No Livro de Horas, no Graduale e no Marial o PDF diz 72, que não é a resolução de verdade. O programa diz outro número às ferramentas do ScanTailor (`core.caixas_scantailor.dpi_para_as_caixas`, a mesma conta do limpar pontinhos, do endireitar e da gravura): 138 a 142 no Horas, 129 a 131 no Graduale, 93 no Marial. O implementador apontou que com esse número as caixas são outras (`relatorios/caixa-conteudo-impl/ONDE-PAREI.md`, ressalva 2).
+
+**O que fiz.** Juntei o ramo `fase2-caixa-conteudo` (`19e8e56`) ao meu e refiz as caixas com a função do programa (`scripts/passo1b_dpi_do_programa.py`, que grava `dados/caixas.json`; as de 12/10 ficaram em `dados/caixas-12-10.json` e, dentro do arquivo novo, em `scantailor_12_10`). `dados/mudou-com-o-dpi.json` lista as 14 páginas em que a caixa do conteúdo andou mais de 2 pontos. Refiz todas as imagens; **5 mudaram** (as outras 31 saíram idênticas, byte a byte).
+
+| Página | DPI dito: antes → agora | Caixa do conteúdo: antes → agora (pontos) | O que muda no que se vê |
+|---|---|---|---|
+| Siebmacher 7 e 9 | 400 → 400 | igual | nada |
+| Palatino, Opus Majus (inclusive a 137) | 400 → 400 | igual | nada |
+| Horas 14 | 72 → 141 | 249–955 × 172–1231 → 253–932 × 225–1211 | antes só a barra dourada da esquerda ficava de fora; agora a moldura inteira e o título "TABLE" |
+| Horas 13 | 72 → 138 | 104–1006 × 37–1435 → 119–775 × 221–1149 | antes quase a folha inteira; agora por dentro da moldura (a moldura fica de fora) |
+| Horas 26 | 72 → 142 | 228–967 × 162–1262 → 227–970 × 161–1263 | nada (continua abraçando a moldura) |
+| Horas 27 | 72 → 139 | 85–862 × 159–1214 → 85–802 × 160–1215 | melhora: a direita passa a parar na moldura |
+| Horas 47 | 72 → 141 | 10–892 × 14–1416 → 30–893 × 57–1417 | fica mais justa na pintura (não olhei de perto) |
+| Graduale 221 | 72 → 129 | 78–877 × 72–1350 → 84–961 × 43–1196 | melhora: pega o número da folha à direita e para na última linha |
+| ljs47, página 46 | 150 → 279 | caixa da **página**: 137–2155 × 113–2649 → 156–2156 × 134–2650 | quase nada na caixa da página (a que a imagem mostra); a caixa do conteúdo muda muito (139–1966 × 135–2649 → 636–1931 × 305–2219), mas nenhuma pergunta a usa |
+
+**As histórias das perguntas.** Só a da pergunta `g8-moldura-tinta-fora` mudou, e ficou mais forte: na Horas 14 o corte do ScanTailor perde a moldura inteira e o título, não só uma barra. O texto e duas legendas foram acertados; a pergunta e as opções são as mesmas. O exemplo do número da página (Opus Majus 137, 400 DPI) e o exemplo em que o corte acerta (Horas 26) continuam valendo. Nas outras cinco perguntas nada mudou: usam páginas de 400 DPI (Siebmacher, Palatino, Opus Majus) ou, na `g10-ajustar-todas`, caixas que não dependem desse DPI (o corte de hoje na página cheia; na pequena, a caixa alargada até a moldura, que deu a mesma).
+
+**Ressalvas novas.**
+- O DPI dito depende do DPI em que a página é desenhada. Usei, como o implementador, o PNG do gabarito (do tamanho do scan). No programa a página é desenhada na qualidade do projeto (por exemplo 300), e qual imagem vai à DLL (prévia ou PDF final) ainda não foi decidido (ressalva 3 dele): a caixa pode andar alguns pontos.
+- No ljs47 (o PDF diz 96 DPI) o programa diz 279, e a caixa do **conteúdo** encolhe muito. Não olhei se ela corta texto; quem ligar o "até a moldura" em livro de folha grande precisa conferir.
+- "Alarga sozinho" na Horas 14 agora junta 7 peças (a moldura e as letras do título), em vez de 1; o resultado é o mesmo retângulo de 12/10, com 3 pontos a menos à direita.
