@@ -67,6 +67,7 @@ nunca `Remove-Item -Recurse`; desfazer só com `(Get-Item <junção>).Delete()`.
   fotos do programa no meio da obra). Tela-base decidida mais nova: `prototipo\21-rodada13-base.html`.
 - **G6:** "Aprovado" (12/10). **Layout no programa:** "Aprovado" (13/10).
 - **Conserto do corte:** "Melhorar" (13/10).
+- **Regra da Fase 2 (13/10, depois do checkpoint): implementar igual ao ScanTailor, sem perguntar antes.** Ele: "mas eu preciso responder o que? não dá para simplismente implementar no programa?" e "ok" à regra. Ajustes de fábrica do ScanTailor; desligado de fábrica quando muda a imagem; botão no lugar que o layout decidido manda; ele só confere no fim. Por extenso na seção da Fase 2 do PLANO-DEFINITIVO. **Não preparar rodada de perguntas para os itens 2.8 a 2.12, 2.15 a 2.17 e 2.19.**
 - **Geometria (página de escolhas, 13/10):** quatro respondidas e duas que não cheguei a ler (`g10-papel-ou-pagina`,
   `g10-ajustar-todas`); tudo literal em `relatorios/conferencia-samuel-2026-10-13.md`.
 - **Decisões da gerente** (alçada técnica, registradas no plano): reacertar só os limites da regra do "Para revisar"
@@ -110,6 +111,7 @@ nunca `Remove-Item -Recurse`; desfazer só com `(Get-Item <junção>).Delete()`.
    de folha grande (ljs47, Antiphon, Egenloff), onde a caixa encolhe muito com o DPI do programa.
 8. **Layout:** rodada 14 (qual vista de "Todas as páginas" vem de fábrica; onde se escolhe a "área de trabalho 1";
    menus; nome "o mesmo da página"; frase nova para o aviso "Confira na aba Marcar"); etapas 4 a 7 no programa.
+8b. **Os nove itens da Fase 2 ainda não começados** (2.8 a 2.12, 2.15 a 2.17, 2.19): construir direto, pela regra de 13/10 (§3). Contagem ao fechar: 4 dos 19 itens no programa (2.1, 2.2, 2.3, 2.7); 2.4, 2.5, 2.6 e 2.13 são os próximos (item 7); 2.14 e 2.18 têm decisão dele e vêm depois.
 9. Perguntas soltas no chat, sem resposta dele: apagar a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW ?;
    apagar `C:\Users\fotog\AppData\Local\Temp\p2.py` (arquivo vazio deixado por um agente)?
 
