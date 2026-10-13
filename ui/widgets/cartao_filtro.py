@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import numpy as np
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QPainter, QPixmap
+from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
 
 from ui import estilo
@@ -58,6 +58,13 @@ class CartaoFiltro(QFrame):
         "preparando..." - ver _Amostra.paintEvent."""
         self.amostra.definir(img)
 
+    def definir_marcas(self, caixas) -> None:
+        """As marcas do aviso (12/10/2026): retângulos laranja por cima da
+        amostra, mostrando ONDE está o problema ("onde sumiu, tem que aparecer
+        selecionado automaticamente", Samuel, rodada 5 do "Para revisar").
+        caixas: lista de (x0, y0, x1, y1) em fração da página; vazia tira."""
+        self.amostra.definir_marcas(caixas)
+
     def definir_selecionado(self, selecionado: bool) -> None:
         """Liga/desliga a borda azul de destaque. Nao redesenha a toa se o
         estado nao mudou."""
@@ -97,11 +104,20 @@ class _Amostra(QWidget):
         super().__init__(parent)
         self.setMinimumHeight(ALTURA_AMOSTRA)
         self._pixmap: QPixmap | None = None
+        self._marcas: list = []
 
     def definir(self, img: np.ndarray | None) -> None:
         """Guarda o array numpy como QPixmap e pede um redesenho."""
         self._pixmap = None if img is None else QPixmap.fromImage(numpy_para_qimage(img))
         self.update()
+
+    def definir_marcas(self, caixas) -> None:
+        """Guarda as marcas do aviso (ver CartaoFiltro.definir_marcas); só
+        redesenha se mudaram."""
+        novas = [tuple(c) for c in (caixas or [])]
+        if novas != self._marcas:
+            self._marcas = novas
+            self.update()
 
     def paintEvent(self, evento) -> None:  # noqa: N802
         """Desenha a amostra centralizada e proporcional, ou "preparando..." se
@@ -118,8 +134,30 @@ class _Amostra(QWidget):
         escalado = self._pixmap.scaled(
             self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
-        pintor.drawPixmap(
-            (self.width() - escalado.width()) // 2,
-            (self.height() - escalado.height()) // 2,
-            escalado,
-        )
+        x = (self.width() - escalado.width()) // 2
+        y = (self.height() - escalado.height()) // 2
+        pintor.drawPixmap(x, y, escalado)
+        pintar_marcas(pintor, self._marcas, x, y, escalado.width(), escalado.height())
+
+
+# A cor das marcas do aviso: o laranja dos avisos ("elas já vão aparecer
+# laranjas", Samuel, rodada 4 do "Para revisar"). Provisória: a aparência é
+# do agente de layout.
+COR_DA_MARCA = QColor(230, 126, 34)
+
+
+def pintar_marcas(pintor: QPainter, caixas, x: int, y: int, largura: int, altura: int) -> None:
+    """Desenha as marcas do aviso (caixas em fração da página) por cima de uma
+    imagem que está em (x, y) com `largura` x `altura` pontos de tela:
+    contorno laranja tracejado, sem preencher (o que está embaixo tem de
+    continuar à vista). Usada pelos cartões de filtro e pela aba Marcar."""
+    if not caixas or largura <= 0 or altura <= 0:
+        return
+    pintor.save()
+    caneta = QPen(COR_DA_MARCA, 2, Qt.DashLine)
+    pintor.setPen(caneta)
+    pintor.setBrush(Qt.NoBrush)
+    for x0, y0, x1, y1 in caixas:
+        pintor.drawRect(int(x + x0 * largura), int(y + y0 * altura),
+                        max(3, int((x1 - x0) * largura)), max(3, int((y1 - y0) * altura)))
+    pintor.restore()

@@ -133,9 +133,11 @@ from PySide6.QtWidgets import (
 from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
-from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
+from core import avisos as avisos_do_livro
+from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
+                           acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, jeito_de_dividir,
-                           recalcular_divisao)
+                           marcas_do_aviso, recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -378,6 +380,10 @@ class TelaConferir(QWidget):
         self.paginas_de_imagem: dict[str, QWidget] = {}
         self.linhas_de_botoes: dict[str, QWidget] = {}
         self.botoes_de_sugestao: dict[str, QPushButton] = {}
+        # o SEGUNDO botão do aviso (12/10/2026: "Deixar em branco" / "Tirar do
+        # livro"; "Trazer de volta nesta página" / "está bom assim"), ao lado
+        # do primeiro, em cada aba (ver _atualizar_faixa, _aplicar_sugestao)
+        self.botoes_de_sugestao_2: dict[str, QPushButton] = {}
         self.cartoes: dict[str, CartaoFiltro] = {}
         self.botoes_forca: dict[str, QPushButton] = {}
         self._cartoes_cache: dict[str, np.ndarray] = {}
@@ -493,6 +499,10 @@ class TelaConferir(QWidget):
         """Cada painel manda no mesmo lugar em que o botao antigo mandava."""
         painel = self.paineis
         painel.para_revisar.ir_para.connect(self.ir_para_pagina)
+        # "está bom" de uma vez e o seletor grande (12/10/2026)
+        painel.para_revisar.aceitar_motivo.connect(self._aceitar_o_motivo_em_todas)
+        painel.para_revisar.aceitar_tudo.connect(self._aceitar_tudo)
+        painel.para_revisar.abrir_lista.connect(self._abrir_a_lista_dos_avisos)
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
@@ -672,6 +682,8 @@ class TelaConferir(QWidget):
         self.botoes_de_sugestao[ABA_CORTE] = _botao(
             "", linha, self._aplicar_sugestao, "sugestao"
         )
+        self.botoes_de_sugestao_2[ABA_CORTE] = _botao(
+            "", linha, functools.partial(self._aplicar_sugestao, 1), "sugestao")
 
     def _montar_aba_bordas(self) -> None:
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
@@ -728,6 +740,8 @@ class TelaConferir(QWidget):
         self.botoes_de_sugestao[ABA_BORDAS] = _botao(
             "", linha, self._aplicar_sugestao, "sugestao"
         )
+        self.botoes_de_sugestao_2[ABA_BORDAS] = _botao(
+            "", linha, functools.partial(self._aplicar_sugestao, 1), "sugestao")
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -1012,6 +1026,8 @@ class TelaConferir(QWidget):
         self.botoes_de_sugestao[ABA_ANGULO] = _botao(
             "", linha, self._aplicar_sugestao, "sugestao"
         )
+        self.botoes_de_sugestao_2[ABA_ANGULO] = _botao(
+            "", linha, functools.partial(self._aplicar_sugestao, 1), "sugestao")
 
     def _montar_aba_marcar(self) -> None:
         """A aba de marcar a mao onde estao gravura, letra e papel.
@@ -1563,6 +1579,8 @@ class TelaConferir(QWidget):
         self.botoes_de_sugestao[ABA_FILTRO] = _botao(
             "", linha_botoes, self._aplicar_sugestao, "sugestao"
         )
+        self.botoes_de_sugestao_2[ABA_FILTRO] = _botao(
+            "", linha_botoes, functools.partial(self._aplicar_sugestao, 1), "sugestao")
         fora.addLayout(linha_botoes)
 
         self.linhas_de_botoes[ABA_FILTRO] = painel
@@ -1657,6 +1675,7 @@ class TelaConferir(QWidget):
         self.paginas_de_imagem.clear()
         self.linhas_de_botoes.clear()
         self.botoes_de_sugestao.clear()
+        self.botoes_de_sugestao_2.clear()
         self.cartoes.clear()
         self.botoes_forca.clear()
 
@@ -1849,6 +1868,10 @@ class TelaConferir(QWidget):
             # muitas de uma vez, e o "Para revisar" e o contador contam
             # todas). Barato: so le campos (core.pipeline.acertar_alertas_de_cor).
             acertar_alertas_de_cor(self.projeto)
+            # Regra ajustada do "Para revisar" (12/10/2026): a faixa escura na
+            # beirada em 70% ou mais das páginas já medidas vira um aviso só,
+            # do livro. Barato: só lê campos.
+            acertar_faixa_do_livro(self.projeto)
         self._atualizar_previa()
         self._atualizar_faixa()
         self._atualizar_botoes()
@@ -2305,18 +2328,62 @@ class TelaConferir(QWidget):
             return None
 
     def _atualizar_faixa(self) -> None:
+        """A faixa de aviso: o PRIMEIRO alerta que ainda pede um olhar nesta
+        folha ou página (ConfigPagina.alertas_pendentes), com os botões dele
+        (analise.Alerta.botoes: até dois, ao lado dos botões da aba). Dar
+        "está bom assim" nele mostra o próximo motivo da mesma página (Samuel,
+        rodada 4: "com um motivo individual de uma pagina"). Sem alerta, o
+        texto tranquilo da aba. As marcas de "onde sumiu" seguem o alerta
+        mostrado (_mostrar_marcas_do_aviso)."""
         item = self.item_atual
         aba = self.aba_atual
-        alerta = analise.descrever(item.alertas[0]) if item.alertas else None
+        pendentes = item.alertas_pendentes
+        alerta = analise.descrever(pendentes[0]) if pendentes else None
 
-        if alerta is not None and not item.revisada:
-            self.texto_faixa.setText(self._com_andamento(alerta.mensagem))
+        if alerta is not None:
+            texto = alerta.mensagem
+            if len(pendentes) > 1:
+                texto += f"  (aviso 1 de {len(pendentes)} desta página)"
+            self.texto_faixa.setText(self._com_andamento(texto))
             self._pintar_faixa(alerta=True)
-            self._mostrar_sugestao(aba, alerta.acao)
+            botoes = alerta.botoes
+            self._mostrar_sugestao(aba, botoes[0][0] if botoes else None)
+            self._mostrar_sugestao(aba, botoes[1][0] if len(botoes) > 1 else None, qual=1)
+        elif getattr(item, "em_branco", False) and not self.trabalha_com_folhas:
+            # "Deixar em branco": a página fica no livro, branca; o botão
+            # devolve a página (o mesmo que o Desfazer faria)
+            self.texto_faixa.setText(self._com_andamento(
+                "Esta página vai sair em branco (uma folha branca no lugar dela)."))
+            self._pintar_faixa(alerta=False)
+            self._mostrar_sugestao(aba, "voltar a página")
+            self._mostrar_sugestao(aba, None, qual=1)
         else:
             self.texto_faixa.setText(self._com_andamento(self._texto_tranquilo(aba)))
             self._pintar_faixa(alerta=False)
             self._mostrar_sugestao(aba, None)
+            self._mostrar_sugestao(aba, None, qual=1)
+        self._mostrar_marcas_do_aviso()
+
+    def _mostrar_marcas_do_aviso(self) -> None:
+        """Mostra ONDE está o problema do aviso da página da vez: retângulos
+        laranja nos cartões de filtro e na aba Marcar (Samuel, rodada 5:
+        "onde sumiu, tem que aparecer selecionado automaticamente"). As
+        caixas vêm da mesma conta do aviso (core.pipeline.marcas_do_aviso) e
+        só existem depois que a página foi desenhada nesta sessão. Página já
+        dada como boa: sem marcas. Nunca levanta exceção."""
+        try:
+            caixas: list = []
+            if self.projeto is not None and 0 <= self.indice_pagina < len(self.projeto.paginas):
+                pagina = self.projeto.paginas[self.indice_pagina]
+                if pagina.alertas_pendentes:
+                    caixas = marcas_do_aviso(pagina, pagina.alertas_pendentes[0])
+            for cartao in self.cartoes.values():
+                cartao.definir_marcas(caixas)
+            editor = getattr(self, "editor_selecao", None)
+            if editor is not None:
+                editor.definir_marcas_do_aviso(caixas)
+        except Exception:  # noqa: BLE001 - a marca é só um desenho de ajuda
+            registrar_erro("marcas do aviso", traceback.format_exc())
 
     def _com_andamento(self, texto: str) -> str:
         """O texto da faixa, com o andamento da conversao das marcacoes no
@@ -2388,8 +2455,10 @@ class TelaConferir(QWidget):
                     f" border-radius: 8px; }} QLabel {{ background: transparent; border: none; }}")
         estilo.estilizar(self.faixa, montar)
 
-    def _mostrar_sugestao(self, aba: str, rotulo: str | None) -> None:
-        botao = self.botoes_de_sugestao.get(aba)
+    def _mostrar_sugestao(self, aba: str, rotulo: str | None, qual: int = 0) -> None:
+        """Mostra (com o rótulo) ou esconde (None) um botão do aviso na aba:
+        qual=0 o primeiro, qual=1 o segundo (12/10/2026)."""
+        botao = (self.botoes_de_sugestao_2 if qual else self.botoes_de_sugestao).get(aba)
         if botao is None:
             return
         botao.setVisible(bool(rotulo))
@@ -2483,6 +2552,16 @@ class TelaConferir(QWidget):
         )
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
+        elif (not self.trabalha_com_folhas
+              and chave.startswith(f"{self.indice_pagina}:{self._dpi_atual}:")):
+            # "Força do preto sozinha" (12/10/2026): a prévia que chegou é
+            # desta página, mas de um estado que mudou DURANTE o desenho (o
+            # programa escureceu a força, e a força entra na chave). Sem isto
+            # a tela ficaria esperando uma prévia que ninguém pediu: pede a de
+            # agora e acerta a faixa e o medidor. Não entra em laço: o reforço
+            # só acontece uma vez por página.
+            self._atualizar_previa()
+            self._alertas_da_previa()
         if chave == esperadas[0] and not self.trabalha_com_folhas:
             self._alertas_da_previa()
             # item 2.2: a previa mediu as duas contas do endireitar
@@ -2521,11 +2600,19 @@ class TelaConferir(QWidget):
         alertas da página mudaram.
         """
         item = self.item_atual
-        estado = (self.indice_pagina, tuple(item.alertas), item.revisada)
+        # 12/10/2026: entram também as marcas de "onde sumiu" (chegam com a
+        # prévia) e a força do preto (a "força do preto sozinha" pode tê-la
+        # escurecido durante o desenho: o medidor tem de mostrar a nova)
+        marcas = tuple(marcas_do_aviso(item)) if hasattr(item, "filtro") else ()
+        estado = (self.indice_pagina, tuple(item.alertas), item.revisada, marcas,
+                  getattr(item, "forca_preto", None))
         if estado == getattr(self, "_alertas_vistos", None):
             return
         self._alertas_vistos = estado
+        if self.projeto is not None and acertar_faixa_do_livro(self.projeto):
+            self._atualizar_tira()        # a faixa virou (ou deixou de ser) aviso do livro
         self._atualizar_faixa()
+        self._atualizar_botoes()
         self.tira.marcar(self.indice_pagina, em_alerta=item.precisa_revisao,
                          apagada=getattr(item, "apagada", False))
         self._atualizar_contador()
@@ -3422,21 +3509,53 @@ class TelaConferir(QWidget):
         self._navegar(1)
 
     @protegido
-    def _aplicar_sugestao(self) -> None:
-        """O botão laranja do alerta: aplica a correcao mais provavel.
+    def _aplicar_sugestao(self, qual: int = 0) -> None:
+        """Um botão laranja do aviso (qual=0 o primeiro, 1 o segundo): faz o
+        conserto que o aviso oferece (Samuel, rodada 4 do "Para revisar":
+        "(a) Botão no aviso").
 
-        E só um atalho. Todos os controles manuais continuam valendo.
+        E só um atalho. Todos os controles manuais continuam valendo. O aviso
+        é o primeiro que ainda pede um olhar (o que a faixa mostra). Página
+        "em branco" sem aviso: o botão é o "voltar a página".
         """
         item = self.item_atual
-        if not item.alertas:
+        pendentes = item.alertas_pendentes
+        if not pendentes:
+            if getattr(item, "em_branco", False) and not self.trabalha_com_folhas and qual == 0:
+                self._deixar_em_branco(False)
             return
-        correcao = analise.descrever(item.alertas[0]).correcao
-        if correcao is None or correcao == "revisar":
-            self._marcar_revisada()
+        codigo = pendentes[0]
+        botoes = analise.descrever(codigo).botoes
+        if not 0 <= qual < len(botoes):
+            if qual == 0:                       # aviso sem botão: "está bom" nele
+                self._aceitar_avisos([self._aviso_da_vez(codigo)])
+            return
+        self._aplicar_correcao(codigo, botoes[qual][1])
+
+    def _aplicar_correcao(self, codigo: str, correcao: str) -> None:
+        """Faz o que um botão de aviso manda (os valores possíveis estão em
+        core.analise.Alerta.botoes). "revisar" é o "está bom assim": aceita
+        SÓ este motivo desta página; os outros motivos dela continuam na
+        lista (o "está certo" da aba aceita a página inteira)."""
+        if correcao == "revisar":
+            if len(self.item_atual.alertas_pendentes) <= 1:
+                # o único motivo que faltava: a página inteira fica conferida,
+                # como este botão sempre fez
+                self._marcar_revisada()
+            else:
+                self._aceitar_avisos([self._aviso_da_vez(codigo)])
         elif correcao.startswith("filtro:"):
             self._escolher_filtro(correcao.split(":", 1)[1])
         elif correcao.startswith("forca:"):
             self._escolher_forca(correcao.split(":", 1)[1])
+        elif correcao.startswith("misto_fora:"):
+            # "Trazer de volta nesta página": troca o jeito do "Só as letras"
+            # só nela (o aviso some sozinho quando a prévia nova chegar)
+            self._mudar_fora_do_texto(correcao.split(":", 1)[1])
+        elif correcao == "em_branco":
+            self._deixar_em_branco(True)
+        elif correcao == "desfazer_reforco":
+            self._desfazer_o_reforco()
         elif correcao == "apagar":
             self.apagar_pagina()
         elif correcao == "nao_dividir":
@@ -3445,6 +3564,171 @@ class TelaConferir(QWidget):
             self._angulo_zero()
         elif correcao == "sem_recorte":
             self._sem_recorte()
+
+    # --- os consertos dos avisos (12/10/2026) -----------------------------
+
+    def _escolher_forca(self, palavra: str) -> None:
+        """Os botões "usar mais fraco" / "usar mais escuro" dos avisos: põe a
+        força do preto desta página no valor da palavra (os mesmos números
+        dos projetos antigos, modelos._migrar). Até 12/10/2026 este método
+        não existia, e os dois botões caíam em "Não consegui fazer isso
+        agora" (bug achado ao fazer o botão do aviso "Texto falhado")."""
+        assert self.projeto is not None
+        valores = {"mais_fraco": 15, "normal": 50, "mais_escuro": FORCA_DO_REFORCO}
+        novo = valores.get(palavra)
+        if novo is None or self.trabalha_com_folhas:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if int(pagina.forca_preto) == novo:
+            self._aceitar_avisos([self._aviso_da_vez(pagina.alertas_pendentes[0])]
+                                 if pagina.alertas_pendentes else [])
+            return
+        self._registrar(
+            "ajuste_filtro", "pagina", [self.indice_pagina], {"forca_preto": novo},
+            f"Força do preto da página {self.indice_pagina + 1}: {palavra_do_ajuste(novo)}")
+
+    def _deixar_em_branco(self, em_branco: bool) -> None:
+        """"Deixar em branco" (e o "voltar a página"): a página fica no
+        livro, no mesmo lugar, e sai toda branca - a encadernação não muda
+        (Samuel, 07/10: "quando é apagada uma folha, tem que ser colocada uma
+        no lugar dele né, pois se não a encadernação vai ficar errada").
+        Ação do desfazer; a página fica dada como conferida."""
+        assert self.projeto is not None
+        if self.trabalha_com_folhas:
+            return
+        campos = {"em_branco": bool(em_branco)}
+        if em_branco:
+            campos["revisada"] = True
+        self._registrar(
+            "em_branco" if em_branco else "voltar_pagina", "pagina", [self.indice_pagina],
+            campos,
+            (f"Deixar em branco a página {self.indice_pagina + 1}" if em_branco
+             else f"Voltar a página {self.indice_pagina + 1} (não fica mais em branco)"))
+
+    def _desfazer_o_reforco(self) -> None:
+        """O "Desfazer" do aviso "Força do preto escurecida": devolve a
+        força que a página tinha antes de o programa escurecer, e o programa
+        não reforça esta página de novo (ConfigPagina.reforco_desfeito).
+        Ação do desfazer (o Ctrl+Z dela traz o reforço de volta)."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if pagina.forca_antes_do_reforco is None:
+            return
+        self._registrar(
+            "desfazer_reforco", "pagina", [self.indice_pagina],
+            {"forca_preto": int(pagina.forca_antes_do_reforco),
+             "forca_antes_do_reforco": None, "reforco_desfeito": True},
+            f"Desfazer a força do preto escurecida na página {self.indice_pagina + 1}")
+
+    # --- "está bom" em cada nível (12/10/2026) ----------------------------
+    #
+    # Samuel, rodada 4 do "Para revisar": "Eu tenho que conseguir fazer isso
+    # com uma pagina individual, com um motivo individual de uma pagina e com
+    # todas as paginas ou com todos os motivos de todas as paginas".
+    #   a página inteira        "está certo" da aba (_marcar_revisada)
+    #   um motivo de uma página "está bom assim" do aviso (_aplicar_correcao)
+    #   um motivo em todas      "está bom: todas" do painel "Para revisar"
+    #   tudo                    "está bom em tudo" do painel
+    #   as que ele escolher     a lista grande (_abrir_a_lista_dos_avisos)
+    # Tudo passa por _aceitar_avisos, que grava no histórico (o Ctrl+Z desfaz).
+
+    def _aviso_da_vez(self, codigo: str):
+        """O aviso `codigo` da folha ou página que está na tela."""
+        alvo = avisos_do_livro.FOLHA if self.trabalha_com_folhas else avisos_do_livro.PAGINA
+        return avisos_do_livro.Aviso(alvo, self.indice_atual, codigo)
+
+    def _aceitar_avisos(self, avisos: list, descricao: str = "") -> int:
+        """Dá "está bom" nos `avisos` (core.avisos.Aviso): cada um sai da
+        lista "Para revisar"; a página não muda. Uma ação do desfazer por
+        alvo (páginas; e folhas, se houver). Devolve quantos avisos saíram."""
+        assert self.projeto is not None and self.acoes is not None
+        mudancas = avisos_do_livro.campos_para_aceitar(self.projeto, avisos)
+        quantos = 0
+        for alvo, (indices, campos) in mudancas.items():
+            quantos += len(indices)
+            nome = "folha" if alvo == avisos_do_livro.FOLHA else "página"
+            if descricao:
+                texto = descricao + (f" ({nome}s)" if len(mudancas) > 1 else "")
+            elif len(indices) == 1:
+                texto = f"Está bom: um aviso da {nome} {indices[0] + 1}"
+            else:
+                texto = f"Está bom: avisos de {len(indices)} {nome}s"
+            # Sem passar por _registrar de propósito: ele joga fora a prévia
+            # das páginas da ação, e aqui a imagem não muda (num "está bom em
+            # tudo" de um livro grande, todas as prévias seriam refeitas).
+            acao = montar_acao(self.projeto, "aceitar_avisos", alvo, indices, campos, texto)
+            aplicar(self.projeto, acao, acao.depois)
+            self.acoes.registrar(acao)
+        if mudancas:
+            self.atualizar()
+        return quantos
+
+    @protegido
+    def _aceitar_o_motivo_em_todas(self, codigo: str) -> None:
+        """"está bom: todas" do painel: o motivo `codigo` sai de todas as
+        folhas e páginas em que ainda pede um olhar."""
+        if not self._pronta() or self.projeto is None:
+            return
+        avisos = [a for a in avisos_do_livro.pendentes_do_livro(self.projeto)
+                  if a.codigo == codigo]
+        nome = analise.descrever(codigo).titulo
+        self._aceitar_avisos(avisos, f"Está bom: \"{nome}\" em {len(avisos)} "
+                             + ("página" if len(avisos) == 1 else "páginas"))
+
+    @protegido
+    def _aceitar_tudo(self) -> None:
+        """"está bom em tudo" do painel: todos os avisos de todas as páginas."""
+        if not self._pronta() or self.projeto is None:
+            return
+        avisos = avisos_do_livro.pendentes_do_livro(self.projeto)
+        self._aceitar_avisos(avisos, f"Está bom em tudo ({len(avisos)} avisos)")
+
+    def _ir_para_o_aviso(self, aviso) -> None:
+        """Leva a tela à folha ou página de um aviso ("ver"). Aviso de folha:
+        vai para a aba "Onde cortar", se ela existir neste livro."""
+        assert self.projeto is not None
+        if aviso.alvo == avisos_do_livro.FOLHA:
+            if ABA_CORTE in self._abas_ativas:
+                self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_CORTE))
+                self._ir_para(max(0, min(aviso.indice, len(self.projeto.folhas) - 1)))
+                return
+            for pagina in self.projeto.paginas:
+                if pagina.folha == aviso.indice:
+                    self.ir_para_pagina(pagina.indice)
+                    return
+            return
+        if self.trabalha_com_folhas and ABA_FILTRO in self._abas_ativas:
+            self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_FILTRO))
+        self.ir_para_pagina(aviso.indice)
+
+    def _mostrar_a_lista_dos_avisos(self, antes_de_processar: bool) -> str:
+        """Abre a lista grande (ui/janela_dos_avisos.py) e faz o que a pessoa
+        escolher, até ela sair: "está bom nas marcadas" tira as marcadas e
+        mostra o que sobrou; "ver" leva à página. Devolve a última escolha
+        (as constantes de ui.janela_dos_avisos): VER, CONTINUAR ou FECHAR. Se
+        os avisos acabarem depois de um "está bom", devolve CONTINUAR."""
+        from ui.janela_dos_avisos import ACEITAR, CONTINUAR, FECHAR, VER, JanelaDosAvisos
+
+        assert self.projeto is not None
+        while True:
+            avisos = avisos_do_livro.pendentes_do_livro(self.projeto)
+            if not avisos:
+                return CONTINUAR
+            janela = JanelaDosAvisos(avisos, antes_de_processar=antes_de_processar, parent=self)
+            janela.exec()
+            if janela.escolha == ACEITAR:
+                self._aceitar_avisos(janela.marcados)
+                continue
+            if janela.escolha == VER and janela.aviso_para_ver is not None:
+                self._ir_para_o_aviso(janela.aviso_para_ver)
+                return VER
+            return CONTINUAR if janela.escolha == CONTINUAR else FECHAR
+
+    @protegido
+    def _abrir_a_lista_dos_avisos(self) -> None:
+        """"ver a lista…" do painel "Para revisar": o seletor grande."""
+        if self._pronta() and self.projeto is not None:
+            self._mostrar_a_lista_dos_avisos(antes_de_processar=False)
 
     # --- desfazer / refazer -----------------------------------------------
 
@@ -3584,25 +3868,22 @@ class TelaConferir(QWidget):
 
     @protegido
     def _pedir_processamento(self) -> None:
-        """Avisa se ainda ha dúvidas, mas nunca bloqueia."""
+        """Avisa se ainda ha dúvidas, mas nunca bloqueia.
+
+        A janela "Antes de processar" agora LISTA as páginas e os motivos
+        (Samuel, rodada 5 do "Para revisar", 08/10/2026, `rv5-aviso-so-texto`:
+        "Lista as páginas e os motivos"; rodada 4: "quando alguém tentar
+        imprimir sem ver os alertas o programa para e mostra os alertas e a
+        pessoa diz se quer ver ou continuar"). Antes só dizia quantas
+        páginas eram. "ver" leva à página escolhida e não processa;
+        "continuar assim mesmo" processa; fechar no X não processa. Sem
+        aviso pendente, processa direto, como sempre."""
         if self.projeto is None:
             return
-        pendentes = self.projeto.pendentes_de_revisao()
-        if pendentes > 0:
-            caixa = QMessageBox(self)
-            caixa.setWindowTitle("Antes de processar")
-            caixa.setIcon(QMessageBox.Question)
-            caixa.setText(
-                f"Ainda tem {pendentes} "
-                + ("página que eu não tive certeza." if pendentes == 1
-                   else "páginas que eu não tive certeza.")
-            )
-            caixa.setInformativeText("Quer conferir antes ou processar assim mesmo?")
-            conferir = caixa.addButton("conferir", QMessageBox.RejectRole)
-            caixa.addButton("processar assim mesmo", QMessageBox.AcceptRole)
-            caixa.exec()
-            if caixa.clickedButton() is conferir:
-                self._ir_para_proximo_alerta()
+        if avisos_do_livro.pendentes_do_livro(self.projeto):
+            from ui.janela_dos_avisos import CONTINUAR
+
+            if self._mostrar_a_lista_dos_avisos(antes_de_processar=True) != CONTINUAR:
                 return
         self.processar.emit()
 

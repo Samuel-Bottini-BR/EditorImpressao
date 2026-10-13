@@ -1,0 +1,419 @@
+"""O "Para revisar" na tela de conferir, depois das decisoes do Samuel
+(rodadas 4 e 5 do "Para revisar", 07 a 09/10/2026). Testes de maquina: a tela
+de verdade (TelaConferir) e montada sem aparecer, e os botoes sao clicados
+com .click().
+
+O que se cobra:
+    - um aviso para cada coisa, cada um com os dois botoes: "Deixar em
+      branco" e "Tirar do livro" (`rv5-em-branco`: "Fica assim");
+    - o conserto rapido e um botao do proprio aviso: "Trazer de volta nesta
+      página" (`rv5-erro-1-desenho`, `rv5-erro-6-so-texto`), com o lugar onde
+      sumiu marcado; "Desfazer" na forca do preto escurecida;
+    - "está bom" num motivo de uma pagina, em todas as paginas de um motivo e
+      em tudo (`rv4-aviso-so-texto`), sempre com Ctrl+Z;
+    - a janela "Antes de processar" lista as paginas e os motivos, com "ver"
+      e "continuar assim mesmo" (`rv5-aviso-so-texto`).
+A aparencia nao e cobrada aqui (fica com o agente de layout).
+"""
+
+from __future__ import annotations
+
+import pytest
+
+pytest.importorskip("PySide6")
+
+from PySide6.QtWidgets import QPushButton  # noqa: E402
+
+from core import analise, avisos, misto  # noqa: E402
+from core.filtros import PRETO_E_BRANCO  # noqa: E402
+from tests.test_mesmo_livro_outro_caminho import _pdf, app, pasta  # noqa: F401, E402 - fixtures
+from tests.test_misto_consertos import _projeto_com_cor, leitor_rapido  # noqa: F401, E402
+
+CAIXA = (0.10, 0.20, 0.30, 0.40)
+
+
+@pytest.fixture
+def tela(app, pasta):  # noqa: F811 - fixtures importadas
+    """A tela de conferir de um livro de 4 paginas em Preto e branco com "So
+    as letras" de fabrica (e ali que os avisos novos valem), na aba Filtro.
+    O leitor de texto e trocado por um que nao acha nada (leitor_rapido): as
+    previas de fundo nao medem a regra, e os avisos postos a mao ficam."""
+    from historico_acoes import HistoricoAcoes
+    from ui.tarefas import GerenciadorPrevias
+    from ui.tela_conferir import TelaConferir
+
+    projeto = _projeto_com_cor()
+    projeto.caminho_entrada = str(_pdf(pasta, folhas=4))
+    projeto.paginas[0].tem_cor = False
+    projeto.paginas[0].alertas = []
+    projeto.misto_so_as_letras = True
+    conferir = TelaConferir()
+    previas = GerenciadorPrevias(projeto.caminho_entrada, projeto, conferir)
+    conferir.carregar(projeto, HistoricoAcoes(), previas)
+    conferir.barra_abas.setCurrentIndex(conferir._abas_ativas.index("filtro"))
+    conferir.ir_para_pagina(0)
+    yield conferir
+    previas.parar()
+
+
+def _botoes(tela):
+    return tela.botoes_de_sugestao["filtro"], tela.botoes_de_sugestao_2["filtro"]
+
+
+def _por_aviso(tela, indice: int, codigos: list[str]):
+    pagina = tela.projeto.paginas[indice]
+    pagina.alertas = list(codigos)
+    pagina.revisada = False
+    tela.ir_para_pagina(indice)
+    return pagina
+
+
+# --- um aviso para cada coisa, com os dois botoes -------------------------------
+
+@pytest.mark.parametrize("codigo", [analise.EM_BRANCO, analise.PAGINA_SEM_CONTEUDO])
+def test_deixar_em_branco_pelo_botao_do_aviso(tela, codigo):
+    pagina = _por_aviso(tela, 1, [codigo])
+    primeiro, segundo = _botoes(tela)
+    assert tela.texto_faixa.text() == analise.descrever(codigo).mensagem
+    assert not primeiro.isHidden() and primeiro.text() == "Deixar em branco"
+    assert not segundo.isHidden() and segundo.text() == "Tirar do livro"
+
+    primeiro.click()
+    assert pagina.em_branco is True and pagina.apagada is False and pagina.revisada is True
+    assert tela.botao_alertas.text() == "tudo certo"
+    # a pagina fica no livro (a encadernacao nao muda)
+    assert pagina in tela.projeto.paginas_ativas
+    # a faixa diz o que vai acontecer e deixa voltar atras
+    assert "em branco" in tela.texto_faixa.text()
+    assert primeiro.text() == "voltar a página" and segundo.isHidden()
+    primeiro.click()
+    assert pagina.em_branco is False
+    tela.desfazer()
+    assert pagina.em_branco is True
+    tela.desfazer()
+    assert pagina.em_branco is False and pagina.revisada is False
+    assert not primeiro.isHidden() and primeiro.text() == "Deixar em branco"
+
+
+@pytest.mark.parametrize("codigo", [analise.EM_BRANCO, analise.PAGINA_SEM_CONTEUDO])
+def test_tirar_do_livro_pelo_botao_do_aviso(tela, codigo):
+    pagina = _por_aviso(tela, 2, [codigo])
+    _botoes(tela)[1].click()
+    assert pagina.apagada is True and pagina.em_branco is False
+    assert pagina not in tela.projeto.paginas_ativas
+    tela.desfazer()
+    assert pagina.apagada is False
+
+
+# --- o conserto rapido e um botao do aviso ---------------------------------------
+
+def test_trazer_de_volta_quando_o_jeito_de_fabrica_apagou_um_desenho(tela):
+    pagina = _por_aviso(tela, 0, [analise.DESENHO_APAGADO])
+    primeiro, segundo = _botoes(tela)
+    assert primeiro.text() == "Trazer de volta nesta página" and not primeiro.isHidden()
+    assert segundo.text() == "está bom assim" and not segundo.isHidden()
+    primeiro.click()
+    assert pagina.misto_fora_do_texto == misto.FORA_TUDO, "so esta pagina passa a guardar tudo"
+    assert tela.projeto.misto_fora_do_texto == misto.FORA_REDE, "o livro nao muda"
+    assert all(p.misto_fora_do_texto is None for p in tela.projeto.paginas[1:])
+    # no "Guardar tudo" nada some: o aviso sai sozinho
+    assert analise.DESENHO_APAGADO not in pagina.alertas
+    assert primeiro.isHidden() and tela.botao_alertas.text() == "tudo certo"
+    tela.desfazer()
+    assert pagina.misto_fora_do_texto is None
+
+
+def test_trazer_de_volta_quando_o_guardar_so_o_texto_apagou(tela):
+    tela.projeto.misto_fora_do_texto = misto.FORA_APAGAR
+    pagina = _por_aviso(tela, 0, [analise.SO_O_TEXTO_APAGOU])
+    primeiro, _segundo = _botoes(tela)
+    assert primeiro.text() == "Trazer de volta nesta página"
+    primeiro.click()
+    assert pagina.misto_fora_do_texto == misto.FORA_REDE, "esta pagina passa a guardar a tinta forte"
+    assert tela.projeto.misto_fora_do_texto == misto.FORA_APAGAR, "as outras continuam so com o texto"
+
+
+def test_o_lugar_onde_sumiu_aparece_marcado(tela):
+    pagina = _por_aviso(tela, 0, [analise.DESENHO_APAGADO])
+    setattr(pagina, "_marcas_do_aviso", {analise.DESENHO_APAGADO: [CAIXA]})   # o que o desenho guarda
+    tela.atualizar()
+    assert tela.cartoes[PRETO_E_BRANCO].amostra._marcas == [CAIXA]
+    if "marcar" in tela._abas_ativas:
+        assert tela.editor_selecao._marcas_do_aviso == [CAIXA], "a aba Marcar mostra o mesmo lugar"
+    # pagina dada como boa: a marca some
+    tela._marcar_revisada()
+    assert tela.cartoes[PRETO_E_BRANCO].amostra._marcas == []
+    # outra pagina, sem aviso: sem marca
+    tela.desfazer()
+    assert tela.cartoes[PRETO_E_BRANCO].amostra._marcas == [CAIXA]
+    tela.ir_para_pagina(1)
+    assert tela.cartoes[PRETO_E_BRANCO].amostra._marcas == []
+
+
+def test_forca_do_preto_escurecida_tem_o_desfazer(tela):
+    from core.pipeline import FORCA_DO_REFORCO
+
+    pagina = tela.projeto.paginas[0]
+    pagina.forca_preto, pagina.forca_antes_do_reforco = FORCA_DO_REFORCO, 50   # o que o desenho faz
+    tela.atualizar()
+    assert pagina.alertas_pendentes == [analise.FORCA_REFORCADA]
+    primeiro, segundo = _botoes(tela)
+    assert primeiro.text() == "Desfazer" and segundo.text() == "está bom assim"
+    assert tela.texto_faixa.text() == analise.descrever(analise.FORCA_REFORCADA).mensagem
+    primeiro.click()
+    assert pagina.forca_preto == 50 and pagina.forca_antes_do_reforco is None
+    assert pagina.reforco_desfeito is True
+    assert analise.FORCA_REFORCADA not in pagina.alertas
+    # o Ctrl+Z do "Desfazer" traz o reforco (e o aviso) de volta
+    tela.desfazer()
+    assert pagina.forca_preto == FORCA_DO_REFORCO and pagina.forca_antes_do_reforco == 50
+    assert pagina.alertas_pendentes == [analise.FORCA_REFORCADA]
+
+
+def test_usar_mais_escuro_do_texto_falhado_funciona(tela):
+    """Ate 12/10/2026 os botoes "usar mais escuro" / "usar mais fraco" caiam em
+    "Não consegui fazer isso agora" (o metodo que eles chamavam nao existia)."""
+    from core.pipeline import FORCA_DO_REFORCO
+
+    pagina = _por_aviso(tela, 0, [analise.TEXTO_FALHADO])
+    pagina.reforco_desfeito = True                     # a pessoa ja tinha desfeito o reforco
+    avisou = []
+    tela._avisar_problema = lambda: avisou.append(1)
+    primeiro, _segundo = _botoes(tela)
+    assert primeiro.text() == "usar mais escuro"
+    primeiro.click()
+    assert avisou == [], "o botao nao pode cair no aviso de problema"
+    assert pagina.forca_preto == FORCA_DO_REFORCO
+    tela.desfazer()
+    assert pagina.forca_preto == 50
+
+
+# --- "está bom" em cada nivel ------------------------------------------------------
+
+def test_esta_bom_num_motivo_mostra_o_proximo_motivo_da_pagina(tela):
+    pagina = _por_aviso(tela, 0, [analise.DESENHO_APAGADO, analise.FIGURA_ALEM_DA_GRAVURA])
+    _primeiro, segundo = _botoes(tela)
+    assert analise.descrever(analise.DESENHO_APAGADO).mensagem in tela.texto_faixa.text()
+    assert "aviso 1 de 2" in tela.texto_faixa.text()
+    segundo.click()                                     # "está bom assim" so no desenho apagado
+    assert pagina.alertas_aceitos == [analise.DESENHO_APAGADO] and not pagina.revisada
+    assert tela.texto_faixa.text() == analise.descrever(analise.FIGURA_ALEM_DA_GRAVURA).mensagem
+    assert "1 página" in tela.botao_alertas.text(), "a pagina continua na lista pelo outro motivo"
+    primeiro, _ = _botoes(tela)
+    assert primeiro.text() == "está bom assim"
+    primeiro.click()
+    assert pagina.alertas_pendentes == [] and tela.botao_alertas.text() == "tudo certo"
+    tela.desfazer()
+    assert pagina.alertas_pendentes == [analise.FIGURA_ALEM_DA_GRAVURA]
+    tela.desfazer()
+    assert pagina.alertas_pendentes == [analise.DESENHO_APAGADO, analise.FIGURA_ALEM_DA_GRAVURA]
+
+
+def _botao_do_painel(tela, comeco: str, qual: int = 0) -> QPushButton:
+    achados = [b for b in tela.paineis.para_revisar.findChildren(QPushButton)
+               if getattr(b, "_texto_completo", b.text()).startswith(comeco)]
+    assert len(achados) > qual, (comeco, [getattr(b, "_texto_completo", "") for b in
+                                          tela.paineis.para_revisar.findChildren(QPushButton)])
+    return achados[qual]
+
+
+def test_esta_bom_em_todas_as_paginas_de_um_motivo_pelo_painel(tela):
+    for i in (0, 1, 3):
+        tela.projeto.paginas[i].alertas = [analise.FAIXA_NA_BEIRADA]
+    tela.projeto.paginas[2].alertas = [analise.DESENHO_APAGADO, analise.FAIXA_NA_BEIRADA]
+    tela.atualizar()
+    assert "4 páginas" in tela.botao_alertas.text()
+    # o primeiro motivo do painel e o de mais paginas: a faixa (4)
+    _botao_do_painel(tela, "está bom: todas").click()
+    assert all(analise.FAIXA_NA_BEIRADA in p.alertas_aceitos for p in tela.projeto.paginas)
+    assert "1 página" in tela.botao_alertas.text(), "sobra a pagina 3, pelo desenho apagado"
+    assert tela.projeto.paginas[2].alertas_pendentes == [analise.DESENHO_APAGADO]
+    tela.desfazer()                                     # uma acao so
+    assert "4 páginas" in tela.botao_alertas.text()
+
+
+def test_esta_bom_em_tudo_pelo_painel(tela):
+    for i in range(4):
+        tela.projeto.paginas[i].alertas = [analise.FAIXA_NA_BEIRADA, analise.FIGURA_ALEM_DA_GRAVURA]
+    tela.atualizar()
+    _botao_do_painel(tela, "está bom em tudo").click()
+    assert tela.botao_alertas.text() == "tudo certo"
+    assert avisos.pendentes_do_livro(tela.projeto) == []
+    assert all(len(p.alertas) == 2 for p in tela.projeto.paginas), "as paginas nao mudam"
+    tela.desfazer()
+    assert "4 páginas" in tela.botao_alertas.text()
+
+
+def test_o_esta_certo_da_aba_continua_valendo_para_a_pagina_inteira(tela):
+    pagina = _por_aviso(tela, 0, [analise.DESENHO_APAGADO, analise.FIGURA_ALEM_DA_GRAVURA])
+    tela._marcar_revisada()
+    assert pagina.revisada and pagina.alertas_pendentes == []
+    assert tela.botao_alertas.text() == "tudo certo"
+
+
+# --- a lista grande e a janela "Antes de processar" --------------------------------
+
+def _lista(tela):
+    for i in (0, 2):
+        tela.projeto.paginas[i].alertas = [analise.FAIXA_NA_BEIRADA]
+    tela.projeto.paginas[1].alertas = [analise.DESENHO_APAGADO, analise.FAIXA_NA_BEIRADA]
+    tela.atualizar()
+    return avisos.pendentes_do_livro(tela.projeto)
+
+
+def test_a_janela_lista_as_paginas_e_os_motivos(tela):
+    from ui.janela_dos_avisos import ACEITAR, CONTINUAR, FECHAR, VER, JanelaDosAvisos
+
+    lista = _lista(tela)
+    janela = JanelaDosAvisos(lista, antes_de_processar=True)
+    assert janela.windowTitle() == "Antes de processar"
+    assert janela.linhas() == [
+        "Página 1  -  Faixa escura na beirada",
+        "Página 2  -  Desenho apagado",
+        "Página 2  -  Faixa escura na beirada",
+        "Página 3  -  Faixa escura na beirada",
+    ]
+    assert "3 páginas" in janela.rotulo.text()
+    assert janela.botao_ver.text() == "ver"
+    assert janela.botao_continuar.text() == "continuar assim mesmo"
+    assert (janela.botao_todas.text(), janela.botao_nenhuma.text()) == ("Selecionar todas", "Nenhuma")
+
+    # "está bom nas marcadas" sem nada marcado nao faz nada
+    janela.botao_aceitar.click()
+    assert janela.escolha == FECHAR and janela.marcados == []
+    janela.botao_todas.click()
+    assert len(janela.avisos_marcados()) == 4
+    janela.botao_nenhuma.click()
+    assert janela.avisos_marcados() == []
+
+    # so as paginas de um motivo ("todas as paginas com aquele problema")
+    janela.combo_motivo.setCurrentIndex(janela.combo_motivo.findData(analise.FAIXA_NA_BEIRADA))
+    assert len(janela.linhas()) == 3 and all("Faixa" in t for t in janela.linhas())
+    janela.botao_todas.click()
+    janela.botao_aceitar.click()
+    assert janela.escolha == ACEITAR
+    assert [(a.indice, a.codigo) for a in janela.marcados] == [
+        (0, analise.FAIXA_NA_BEIRADA), (1, analise.FAIXA_NA_BEIRADA), (2, analise.FAIXA_NA_BEIRADA)]
+
+    outra = JanelaDosAvisos(lista, antes_de_processar=True)
+    outra.lista.setCurrentRow(3)
+    outra.botao_ver.click()
+    assert outra.escolha == VER and outra.aviso_para_ver.indice == 2
+    terceira = JanelaDosAvisos(lista, antes_de_processar=True)
+    terceira.botao_continuar.click()
+    assert terceira.escolha == CONTINUAR
+    # no seletor do painel o ultimo botao so fecha
+    seletor = JanelaDosAvisos(lista)
+    assert seletor.windowTitle() == "Para revisar" and seletor.botao_continuar.text() == "fechar"
+    seletor.botao_continuar.click()
+    assert seletor.escolha == FECHAR
+
+
+@pytest.fixture
+def janela_dos_avisos(monkeypatch):
+    """Troca o exec() da lista grande por um roteiro: cada vez que ela abre,
+    roda a proxima funcao de `roteiro` (que recebe a janela) em vez de esperar
+    a pessoa. Guarda as janelas abertas em `abertas`."""
+    from ui.janela_dos_avisos import JanelaDosAvisos
+
+    estado = {"roteiro": [], "abertas": []}
+
+    def falso(self):
+        estado["abertas"].append(self)
+        assert estado["roteiro"], "a janela abriu mais vezes do que o teste esperava"
+        estado["roteiro"].pop(0)(self)
+        return 0
+
+    monkeypatch.setattr(JanelaDosAvisos, "exec", falso)
+    return estado
+
+
+def test_processar_com_avisos_para_e_mostra_a_lista(tela, janela_dos_avisos):
+    _lista(tela)
+    pediu = []
+    tela.processar.connect(lambda: pediu.append(1))
+
+    # "ver": vai para a pagina e NAO processa
+    def ver_a_pagina_3(janela):
+        assert janela.antes_de_processar and len(janela.linhas()) == 4
+        janela.lista.setCurrentRow(3)
+        janela.botao_ver.click()
+
+    janela_dos_avisos["roteiro"] = [ver_a_pagina_3]
+    tela._pedir_processamento()
+    assert pediu == [] and tela.indice_pagina == 2
+
+    # fechar no X: nao processa
+    janela_dos_avisos["roteiro"] = [lambda janela: janela.reject()]
+    tela._pedir_processamento()
+    assert pediu == []
+
+    # "continuar assim mesmo": processa, e os avisos ficam como estavam
+    janela_dos_avisos["roteiro"] = [lambda janela: janela.botao_continuar.click()]
+    tela._pedir_processamento()
+    assert pediu == [1]
+    assert len(avisos.pendentes_do_livro(tela.projeto)) == 4
+
+
+def test_esta_bom_nas_marcadas_dentro_da_janela_e_ela_mostra_o_que_sobrou(tela, janela_dos_avisos):
+    _lista(tela)
+    pediu = []
+    tela.processar.connect(lambda: pediu.append(1))
+
+    def aceitar_as_faixas(janela):
+        janela.combo_motivo.setCurrentIndex(janela.combo_motivo.findData(analise.FAIXA_NA_BEIRADA))
+        janela.botao_todas.click()
+        janela.botao_aceitar.click()
+
+    def conferir_o_resto_e_fechar(janela):
+        assert janela.linhas() == ["Página 2  -  Desenho apagado"]
+        janela.reject()
+
+    janela_dos_avisos["roteiro"] = [aceitar_as_faixas, conferir_o_resto_e_fechar]
+    tela._pedir_processamento()
+    assert pediu == [] and len(janela_dos_avisos["abertas"]) == 2
+    assert "1 página" in tela.botao_alertas.text()
+    tela.desfazer()
+    assert "3 páginas" in tela.botao_alertas.text()
+
+
+def test_sem_aviso_nenhum_processa_direto(tela, janela_dos_avisos):
+    pediu = []
+    tela.processar.connect(lambda: pediu.append(1))
+    tela._pedir_processamento()                      # roteiro vazio: a janela nao pode abrir
+    assert pediu == [1] and janela_dos_avisos["abertas"] == []
+
+
+def test_ver_a_lista_pelo_painel(tela, janela_dos_avisos):
+    _lista(tela)
+
+    def ver_a_segunda(janela):
+        assert not janela.antes_de_processar
+        janela.lista.setCurrentRow(1)
+        janela.botao_ver.click()
+
+    janela_dos_avisos["roteiro"] = [ver_a_segunda]
+    _botao_do_painel(tela, "ver a lista").click()
+    assert tela.indice_pagina == 1
+
+
+# --- o botao de ligar e desligar a forca sozinha (regra 8 do plano) ----------------
+
+def test_a_tela_o_que_fazer_liga_e_desliga_a_forca_sozinha(app):  # noqa: F811
+    from ui.tela_opcoes import TelaOpcoes
+
+    projeto = _projeto_com_cor()
+    projeto.misto_so_as_letras = True
+    opcoes = TelaOpcoes()
+    opcoes.projeto = projeto
+    opcoes.mostrar_opcoes()
+    assert opcoes.cx_forca_sozinha.isChecked() and projeto.reforcar_texto_falhado is True
+    assert "força do preto" in opcoes.cx_forca_sozinha.text()
+    opcoes.cx_forca_sozinha.setChecked(False)
+    assert projeto.reforcar_texto_falhado is False
+    # projeto que veio desligado (o salvo antes de 12/10) abre desmarcado
+    antigo = _projeto_com_cor()
+    antigo.reforcar_texto_falhado = False
+    opcoes.projeto = antigo
+    opcoes.mostrar_opcoes()
+    assert not opcoes.cx_forca_sozinha.isChecked() and antigo.reforcar_texto_falhado is False

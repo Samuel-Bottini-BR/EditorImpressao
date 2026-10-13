@@ -181,9 +181,24 @@ class PainelParaRevisar(Painel):
     A especificação original pedia este painel e ele nunca tinha sido feito. E
     pedia agrupado: uma lista de "página 3, página 17, página 40" não diz o que
     há de errado com elas.
+
+    "Está bom" de uma vez (12/10/2026; Samuel, rodada 4 do "Para revisar",
+    `rv4-aviso-so-texto`: "com todas as paginas ou com todos os motivos de
+    todas as paginas, e eu devo conseguir abrir um selecionador em aba grande"):
+    embaixo de cada motivo, um botão "está bom: todas" (aceitar_motivo);
+    no pé, "ver a lista…" (abrir_lista: o seletor grande,
+    ui/janela_dos_avisos.py) e "está bom em tudo" (aceitar_tudo). O painel só
+    AVISA quem escuta (ui/tela_conferir.py aplica, pelo histórico: o Ctrl+Z
+    desfaz). Os botões só mudam quem está na lista, nunca a página. A
+    aparência é provisória (fica com o agente de layout). Seguro mudar: os
+    textos. Arriscado: pôr outro botão ANTES do botão do motivo (o primeiro
+    botão do corpo é o que leva à primeira página; tests/test_paineis.py).
     """
 
     ir_para = Signal(int)
+    aceitar_motivo = Signal(str)     # o código do alerta
+    aceitar_tudo = Signal()
+    abrir_lista = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__("Para revisar", parent)
@@ -194,7 +209,9 @@ class PainelParaRevisar(Painel):
 
     def atualizar(self, projeto) -> None:
         """Reconstroi a lista agrupada por tipo de alerta, dos maiores grupos
-        para os menores, e o contador no cabeçalho."""
+        para os menores, e o contador no cabeçalho. Só entram os alertas que
+        ainda pedem um olhar (ConfigPagina.alertas_pendentes: a página não
+        foi dada como boa, nem aquele motivo dela)."""
         self.limpar()
         if projeto is None:
             return
@@ -203,14 +220,23 @@ class PainelParaRevisar(Painel):
 
         por_tipo: dict[str, list[int]] = {}
         for pagina in projeto.paginas:
-            if pagina.revisada or pagina.apagada:
+            if pagina.apagada:
                 continue
-            for alerta in pagina.alertas:
+            for alerta in pagina.alertas_pendentes:
                 por_tipo.setdefault(alerta, []).append(pagina.indice)
 
         total = sum(len(p) for p in por_tipo.values())
         self.cabecalho.setText(f"Para revisar          {total}" if total
                                else "Para revisar")
+
+        # O aviso do LIVRO da faixa escura na beirada (12/10/2026; Samuel,
+        # rodada 4, Camões 66: "aviso no livro basta"): quando a faixa está em
+        # quase todas as páginas, ela sai das páginas e é dita uma vez, aqui
+        # (core.pipeline.acertar_faixa_do_livro). As outras observações do
+        # livro continuam onde estavam (ui/tela_conferir.rotulo_observacoes).
+        frase_da_faixa = analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA]
+        if frase_da_faixa in (getattr(projeto, "observacoes", None) or []):
+            self._texto("No livro inteiro: " + frase_da_faixa + ".", tamanho=11)
 
         if not por_tipo:
             self._texto("nada pendente")
@@ -226,8 +252,20 @@ class PainelParaRevisar(Painel):
                                 lambda _c=False, i=indices[0]: self.ir_para.emit(i))
             botao.setToolTip(
                 "páginas: " + ", ".join(str(i + 1) for i in indices[:20]))
+            todas = self._botao(
+                "está bom: todas" if len(indices) > 1 else "está bom",
+                lambda _c=False, codigo=alerta: self.aceitar_motivo.emit(codigo))
+            todas.setToolTip(
+                f"Tira da lista {'as ' + str(len(indices)) + ' páginas' if len(indices) > 1 else 'a página'} "
+                f"com o aviso \"{nome}\". Não muda nada nas páginas; o Desfazer traz de volta.")
 
-        self._texto("clicar leva à primeira", tamanho=11)
+        self._texto("clicar no aviso leva à primeira página", tamanho=11)
+        lista = self._botao("ver a lista…", lambda _c=False: self.abrir_lista.emit())
+        lista.setToolTip("Abre a lista de todas as páginas com aviso e os motivos, "
+                         "para escolher em quais dar \"está bom\".")
+        tudo = self._botao("está bom em tudo", lambda _c=False: self.aceitar_tudo.emit())
+        tudo.setToolTip("Tira da lista todos os avisos de todas as páginas. "
+                        "Não muda nada nas páginas; o Desfazer traz de volta.")
 
 
 class PainelMarcarComo(Painel):

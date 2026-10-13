@@ -426,10 +426,29 @@ class TelaOpcoes(QWidget):
         linha.addWidget(self.combo_pontinhos)
         linha.addStretch()
 
+        # "Força do preto sozinha" (Samuel, rodada 4 do "Para revisar",
+        # 08/10/2026: "Força sozinha"): o botão de ligar e desligar que a
+        # regra 8 do plano pede para toda função automática
+        # (Projeto.reforcar_texto_falhado). Só vale com o Preto e branco e
+        # "Só as letras" (é ali que o programa sabe onde está o texto):
+        # aparece e some junto com o "Só as letras" (ver _mudou). Provisória
+        # até o layout; seguro mudar: os textos.
+        self.cx_forca_sozinha = QCheckBox(
+            "Escurecer sozinho a força do preto quando o texto sair falhado")
+        estilo.estilizar(self.cx_forca_sozinha, lambda: (
+            estilo_da_caixinha_com_quadrado(14)
+            + f" QCheckBox:disabled {{ color: {estilo.cor('desligado')}; }}"))
+        self.cx_forca_sozinha.setChecked(True)
+        self.cx_forca_sozinha.setToolTip(
+            "Com \"Só as letras\": na página em que o texto sai falhado (letra clara ou "
+            "gasta), o programa escurece a força do preto só nela e avisa, com \"Desfazer\".")
+        self.cx_forca_sozinha.toggled.connect(self._mudou)
+
         linhas = (len(FILTROS_NA_TELA) + 1) // 2
         grade.addWidget(self.escolhas_misto, linhas, 0, 1, 4)
-        grade.addLayout(bloco, linhas + 1, 0, 1, 4)
-        grade.addWidget(self.linha_pontinhos, linhas + 2, 0, 1, 4)
+        grade.addWidget(self.cx_forca_sozinha, linhas + 1, 0, 1, 4)
+        grade.addLayout(bloco, linhas + 2, 0, 1, 4)
+        grade.addWidget(self.linha_pontinhos, linhas + 3, 0, 1, 4)
         return painel
 
     def _montar_gravuras(self) -> QWidget:
@@ -684,6 +703,11 @@ class TelaOpcoes(QWidget):
         self.cx_igualar_luz.setChecked(bool(projeto.gravura_normalizar))
         self.cx_decoracao_pb.setChecked(
             bool(getattr(projeto, "pb_decoracao_em_preto_e_branco", False)))
+        # "Força do preto sozinha" (12/10/2026). Sem sinal: quem grava no
+        # projeto é o _mudou logo abaixo, já com self.projeto certo.
+        self.cx_forca_sozinha.blockSignals(True)
+        self.cx_forca_sozinha.setChecked(bool(getattr(projeto, "reforcar_texto_falhado", False)))
+        self.cx_forca_sozinha.blockSignals(False)
         # modo Misto (projeto antigo em memoria, sem os campos: os padroes)
         self.escolhas_misto.mostrar(
             bool(getattr(projeto, "misto_so_as_letras", False)),
@@ -794,6 +818,12 @@ class TelaOpcoes(QWidget):
         # a escolha fica guardada e volta ao escolher o Preto e branco de novo.
         no_preto_e_branco = self.projeto.filtro_padrao == PRETO_E_BRANCO
         self.escolhas_misto.setVisible(no_preto_e_branco)
+        # "Força do preto sozinha" (12/10): à vista com o Preto e branco;
+        # apagada (cinza) sem "Só as letras", onde ela não age. Escondida ou
+        # apagada, a escolha fica guardada.
+        self.projeto.reforcar_texto_falhado = self.cx_forca_sozinha.isChecked()
+        self.cx_forca_sozinha.setVisible(no_preto_e_branco)
+        self.cx_forca_sozinha.setEnabled(so_as_letras)
         # "Limpar pontinhos" do livro (06/10): como o "So as letras", so a
         # vista com o Preto e branco; escondida, a escolha fica guardada
         self.projeto.limpar_pontinhos = pontinhos.escolha_valida(

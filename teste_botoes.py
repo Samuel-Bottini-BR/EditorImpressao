@@ -349,6 +349,20 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
 
     TelaConfiguracoes.exec = _exec_configuracoes_sem_travar
 
+    # A lista dos avisos ("Antes de processar" e o seletor do painel "Para
+    # revisar", 12/10/2026) também é modal: antes era um QMessageBox, que a
+    # técnica de cima já resolvia. Aqui se clica no botão que segue em frente
+    # ("continuar assim mesmo", ou "fechar" no seletor).
+    from ui.janela_dos_avisos import JanelaDosAvisos
+
+    _exec_original_avisos = JanelaDosAvisos.exec
+
+    def _exec_avisos_sem_travar(self):
+        QTimer.singleShot(0, self.botao_continuar.click)
+        return _exec_original_avisos(self)
+
+    JanelaDosAvisos.exec = _exec_avisos_sem_travar
+
     # O diálogo "tamanho..." (Problema 1, opção A) também é modal.
     from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
 

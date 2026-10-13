@@ -473,6 +473,8 @@ class GerenciadorPrevias(QObject):
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"
+            # "Deixar em branco" (12/10/2026) muda a pagina desenhada
+            f":{'branca' if getattr(p, 'em_branco', False) else ''}"
         )
 
     # --- uso --------------------------------------------------------------

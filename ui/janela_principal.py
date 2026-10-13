@@ -680,6 +680,10 @@ class JanelaPrincipal(QMainWindow):
         # "nosso" (modelos.Projeto.de_dicionario); objeto sem o campo, o de agora
         self.projeto.limpar_pontinhos = getattr(salvo, "limpar_pontinhos",
                                                 self.projeto.limpar_pontinhos)
+        # "Forca do preto sozinha" (12/10): o projeto.json antigo ja volta
+        # desligado (modelos.Projeto.de_dicionario); objeto sem o campo, idem
+        self.projeto.reforcar_texto_falhado = bool(
+            getattr(salvo, "reforcar_texto_falhado", False))
         self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
@@ -853,6 +857,9 @@ class JanelaPrincipal(QMainWindow):
                     setattr(salvo, campo, getattr(projeto, campo))
                 # "Limpar pontinhos" do livro (06/10): tambem vem da tela
                 salvo.limpar_pontinhos = projeto.limpar_pontinhos
+                # "Forca do preto sozinha" (12/10): tambem vem da tela
+                salvo.reforcar_texto_falhado = bool(
+                    getattr(projeto, "reforcar_texto_falhado", False))
                 # Item 2.1: o jeito de dividir e o corte da sobra vem da tela;
                 # com o jeito trocado, as folhas que seguem o livro ganham a
                 # divisao da analise nova (a que a pessoa mexeu fica)
@@ -1204,6 +1211,8 @@ class JanelaPrincipal(QMainWindow):
                        *CAMPOS_DO_MISTO,
                        # "Limpar pontinhos" do livro (06/10)
                        "limpar_pontinhos",
+                       # "Forca do preto sozinha" (12/10)
+                       "reforcar_texto_falhado",
                        # item 2.1: o jeito de dividir e o corte da sobra
                        "dividir_como", "cortar_sobra",
                        # item 2.2: a conta do endireitar
