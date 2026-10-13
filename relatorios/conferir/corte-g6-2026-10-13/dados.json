@@ -267,5 +267,9151 @@
    }
   },
   "no_gabarito": false
+ },
+ "antiphon_p088__inteira": {
+  "pid": "antiphon_p088",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.00375,
+    0.9589,
+    0.995
+   ],
+   "pagina_inteira_px": [
+    5392,
+    7375
+   ],
+   "tamanho_px": [
+    5170,
+    7338
+   ],
+   "tamanho_mm": [
+    437.7,
+    621.3
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.87,
+   "papel": 233.0,
+   "beirada_escuro": 0.08622,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 206.27,
+     "cobre": 0.093
+    },
+    "dir": {
+     "mm": 8.7,
+     "mm_max": 219.31,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 24.85,
+     "mm_max": 310.64,
+     "cobre": 0.953
+    },
+    "pe": {
+     "mm": 22.99,
+     "mm_max": 310.64,
+     "cobre": 0.983
+    }
+   },
+   "beirada_pb": 0.08672,
+   "lados_pb": {
+    "esq": {
+     "mm": 4.97,
+     "mm_max": 206.27,
+     "cobre": 0.104
+    },
+    "dir": {
+     "mm": 9.32,
+     "mm_max": 219.31,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 24.85,
+     "mm_max": 310.64,
+     "cobre": 0.966
+    },
+    "pe": {
+     "mm": 22.99,
+     "mm_max": 310.64,
+     "cobre": 0.983
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 137,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 2.5,
+    "dir": 9.68,
+    "topo": 46.52,
+    "pe": 86.79
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 1.05,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.25,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": -0.25,
+   "recorte": [
+    0.0,
+    0.00375,
+    0.95883,
+    0.99489
+   ],
+   "pagina_inteira_px": [
+    5392,
+    7375
+   ],
+   "tamanho_px": [
+    5170,
+    7338
+   ],
+   "tamanho_mm": [
+    437.7,
+    621.3
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 1.59,
+   "papel": 233.0,
+   "beirada_escuro": 0.08477,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 203.78,
+     "cobre": 0.092
+    },
+    "dir": {
+     "mm": 8.7,
+     "mm_max": 219.31,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 24.85,
+     "mm_max": 310.02,
+     "cobre": 0.948
+    },
+    "pe": {
+     "mm": 22.99,
+     "mm_max": 310.64,
+     "cobre": 0.977
+    }
+   },
+   "beirada_pb": 0.08509,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 204.4,
+     "cobre": 0.093
+    },
+    "dir": {
+     "mm": 9.32,
+     "mm_max": 219.31,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 24.85,
+     "mm_max": 310.02,
+     "cobre": 0.948
+    },
+    "pe": {
+     "mm": 22.99,
+     "mm_max": 310.64,
+     "cobre": 0.979
+    }
+   },
+   "cunha_branca": 0.00223,
+   "pecas": 137,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 3e-05,
+   "folga_mm": {
+    "esq": 2.81,
+    "dir": 8.74,
+    "topo": 46.21,
+    "pe": 86.17
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.97,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.25,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": -0.25,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    5392,
+    7375
+   ],
+   "tamanho_px": [
+    5392,
+    7375
+   ],
+   "tamanho_mm": [
+    456.5,
+    624.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 2.07,
+   "papel": 232.0,
+   "beirada_escuro": 0.12648,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 212.93,
+     "cobre": 0.097
+    },
+    "dir": {
+     "mm": 27.54,
+     "mm_max": 228.54,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 26.85,
+     "mm_max": 311.58,
+     "cobre": 0.956
+    },
+    "pe": {
+     "mm": 23.73,
+     "mm_max": 312.21,
+     "cobre": 0.977
+    }
+   },
+   "beirada_pb": 0.12643,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 212.93,
+     "cobre": 0.097
+    },
+    "dir": {
+     "mm": 27.47,
+     "mm_max": 228.54,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 26.85,
+     "mm_max": 311.58,
+     "cobre": 0.956
+    },
+    "pe": {
+     "mm": 23.73,
+     "mm_max": 312.21,
+     "cobre": 0.977
+    }
+   },
+   "cunha_branca": 0.00222,
+   "pecas": 137,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 3e-05,
+   "folga_mm": {
+    "esq": 2.81,
+    "dir": 27.79,
+    "topo": 48.39,
+    "pe": 87.11
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphon_p260__inteira": {
+  "pid": "antiphon_p260",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    0.955
+   ],
+   "pagina_inteira_px": [
+    5475,
+    7300
+   ],
+   "tamanho_px": [
+    5475,
+    6971
+   ],
+   "tamanho_mm": [
+    463.6,
+    590.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.88,
+   "papel": 227.0,
+   "beirada_escuro": 0.03292,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 231.36,
+     "cobre": 0.053
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 231.95,
+     "cobre": 0.062
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 12.98,
+     "cobre": 0.076
+    },
+    "pe": {
+     "mm": 20.66,
+     "mm_max": 21.84,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.03336,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 231.36,
+     "cobre": 0.056
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 231.95,
+     "cobre": 0.062
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 12.98,
+     "cobre": 0.099
+    },
+    "pe": {
+     "mm": 20.66,
+     "mm_max": 21.84,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 289,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 4.94,
+    "dir": 2.47,
+    "topo": 0.62,
+    "pe": 26.89
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 1.66,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.5,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.5,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    0.95493
+   ],
+   "pagina_inteira_px": [
+    5475,
+    7300
+   ],
+   "tamanho_px": [
+    5475,
+    6971
+   ],
+   "tamanho_mm": [
+    463.6,
+    590.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 1.67,
+   "papel": 227.0,
+   "beirada_escuro": 0.03203,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 227.82,
+     "cobre": 0.034
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 231.95,
+     "cobre": 0.063
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 12.98,
+     "cobre": 0.045
+    },
+    "pe": {
+     "mm": 21.25,
+     "mm_max": 22.43,
+     "cobre": 0.992
+    }
+   },
+   "beirada_pb": 0.03255,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 227.82,
+     "cobre": 0.034
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 231.95,
+     "cobre": 0.064
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 13.57,
+     "cobre": 0.07
+    },
+    "pe": {
+     "mm": 21.25,
+     "mm_max": 22.43,
+     "cobre": 0.992
+    }
+   },
+   "cunha_branca": 0.00444,
+   "pecas": 289,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 3e-05,
+   "folga_mm": {
+    "esq": 4.02,
+    "dir": 4.02,
+    "topo": 0.31,
+    "pe": 24.72
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 1.47,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.5,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.5,
+   "recorte": [
+    0.00167,
+    0.0,
+    0.99833,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    5475,
+    7300
+   ],
+   "tamanho_px": [
+    5466,
+    7300
+   ],
+   "tamanho_mm": [
+    462.8,
+    618.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 1.78,
+   "papel": 227.0,
+   "beirada_escuro": 0.07612,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 229.3,
+     "cobre": 0.079
+    },
+    "dir": {
+     "mm": 10.51,
+     "mm_max": 231.78,
+     "cobre": 0.105
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 12.98,
+     "cobre": 0.044
+    },
+    "pe": {
+     "mm": 48.95,
+     "mm_max": 50.06,
+     "cobre": 0.996
+    }
+   },
+   "beirada_pb": 0.07642,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 229.3,
+     "cobre": 0.079
+    },
+    "dir": {
+     "mm": 10.51,
+     "mm_max": 231.78,
+     "cobre": 0.105
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 12.98,
+     "cobre": 0.069
+    },
+    "pe": {
+     "mm": 49.45,
+     "mm_max": 50.06,
+     "cobre": 0.996
+    }
+   },
+   "cunha_branca": 0.00389,
+   "pecas": 289,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 2e-05,
+   "folga_mm": {
+    "esq": 3.4,
+    "dir": 4.02,
+    "topo": 0.31,
+    "pe": 52.84
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphonal1547_p006__inteira": {
+  "pid": "antiphonal1547_p006",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.0,
+    0.88738,
+    0.9944
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    765,
+    1243
+   ],
+   "tamanho_mm": [
+    64.8,
+    105.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.24,
+   "papel": 194.0,
+   "beirada_escuro": 0.00315,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 26.94,
+     "cobre": 0.011
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 1.05,
+     "cobre": 0.008
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.95,
+     "mm_max": 1.16,
+     "cobre": 0.433
+    }
+   },
+   "beirada_pb": 0.00286,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 26.84,
+     "cobre": 0.01
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.84,
+     "mm_max": 1.05,
+     "cobre": 0.415
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 489,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 7.62,
+    "dir": 1.1,
+    "topo": 4.66,
+    "pe": 13.04
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 4.53,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.125,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.125,
+   "recorte": [
+    0.0,
+    0.0,
+    0.88738,
+    0.9944
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    765,
+    1243
+   ],
+   "tamanho_mm": [
+    64.8,
+    105.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.28,
+   "papel": 195.0,
+   "beirada_escuro": 0.00286,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 25.47,
+     "cobre": 0.01
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.95,
+     "cobre": 0.01
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.84,
+     "mm_max": 1.05,
+     "cobre": 0.408
+    }
+   },
+   "beirada_pb": 0.00268,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 25.47,
+     "cobre": 0.01
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.84,
+     "mm_max": 1.05,
+     "cobre": 0.393
+    }
+   },
+   "cunha_branca": 0.00113,
+   "pecas": 489,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 7.62,
+    "dir": 1.19,
+    "topo": 4.57,
+    "pe": 13.12
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 4.13,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.125,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.125,
+   "recorte": [
+    0.0,
+    0.0,
+    0.88768,
+    0.9968
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    766,
+    1246
+   ],
+   "tamanho_mm": [
+    64.9,
+    105.5
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.29,
+   "papel": 195.0,
+   "beirada_escuro": 0.00643,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 31.75,
+     "cobre": 0.013
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 26.48,
+     "cobre": 0.013
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 1.05,
+     "mm_max": 1.37,
+     "cobre": 0.898
+    }
+   },
+   "beirada_pb": 0.00552,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 31.65,
+     "cobre": 0.012
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.51,
+     "cobre": 0.006
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 1.05,
+     "mm_max": 1.27,
+     "cobre": 0.758
+    }
+   },
+   "cunha_branca": 0.00063,
+   "pecas": 489,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 1e-05,
+   "folga_mm": {
+    "esq": 7.62,
+    "dir": 1.27,
+    "topo": 4.57,
+    "pe": 13.38
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphonal1547_p031__inteira": {
+  "pid": "antiphonal1547_p031",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.1,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.08876,
+    0.0077,
+    0.91124,
+    0.98335
+   ],
+   "pagina_inteira_px": [
+    867,
+    1250
+   ],
+   "tamanho_px": [
+    791,
+    1229
+   ],
+   "tamanho_mm": [
+    67.0,
+    104.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.26,
+   "papel": 205.0,
+   "beirada_escuro": 0.00063,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.62,
+     "cobre": 0.072
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 7.49,
+     "cobre": 0.009
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 418,
+   "pecas_fora": 5,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00167,
+   "folga_mm": {
+    "esq": 0.51,
+    "dir": 6.86,
+    "topo": 1.19,
+    "pe": 10.92
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.08876,
+    0.0077,
+    0.91124,
+    0.98335
+   ],
+   "pagina_inteira_px": [
+    867,
+    1250
+   ],
+   "tamanho_px": [
+    791,
+    1229
+   ],
+   "tamanho_mm": [
+    67.0,
+    104.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.35,
+   "papel": 205.0,
+   "beirada_escuro": 0.00063,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.62,
+     "cobre": 0.072
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 7.49,
+     "cobre": 0.009
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 418,
+   "pecas_fora": 5,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00167,
+   "folga_mm": {
+    "esq": 0.51,
+    "dir": 6.86,
+    "topo": 1.19,
+    "pe": 10.92
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.08876,
+    0.0077,
+    0.91124,
+    0.98335
+   ],
+   "pagina_inteira_px": [
+    867,
+    1250
+   ],
+   "tamanho_px": [
+    791,
+    1229
+   ],
+   "tamanho_mm": [
+    67.0,
+    104.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.3,
+   "papel": 205.0,
+   "beirada_escuro": 0.00063,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.62,
+     "cobre": 0.072
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 7.49,
+     "cobre": 0.009
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 418,
+   "pecas_fora": 5,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00167,
+   "folga_mm": {
+    "esq": 0.51,
+    "dir": 6.86,
+    "topo": 1.19,
+    "pe": 10.92
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphonal1547_p046__inteira": {
+  "pid": "antiphonal1547_p046",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 8.25,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 1.5,
+   "angulo_programa": 1.5000000000000004,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.03305,
+    0.89836,
+    0.828
+   ],
+   "pagina_inteira_px": [
+    834,
+    1250
+   ],
+   "tamanho_px": [
+    749,
+    1035
+   ],
+   "tamanho_mm": [
+    63.4,
+    87.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.27,
+   "papel": 206.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00989,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.96,
+     "mm_max": 12.09,
+     "cobre": 0.284
+    },
+    "dir": {
+     "mm": 0.96,
+     "mm_max": 12.09,
+     "cobre": 0.286
+    },
+    "topo": {
+     "mm": 0.7,
+     "mm_max": 24.27,
+     "cobre": 0.209
+    },
+    "pe": {
+     "mm": 0.7,
+     "mm_max": 24.1,
+     "cobre": 0.209
+    }
+   },
+   "cunha_branca": 0.01343,
+   "pecas": 439,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0008,
+   "folga_mm": {
+    "esq": 1.27,
+    "dir": 1.61,
+    "topo": 1.69,
+    "pe": 0.93
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 8.25,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 1.5,
+   "angulo_programa": 1.5000000000000004,
+   "angulo_scantailor": 1.5,
+   "recorte": [
+    0.0,
+    0.03305,
+    0.89836,
+    0.828
+   ],
+   "pagina_inteira_px": [
+    834,
+    1250
+   ],
+   "tamanho_px": [
+    749,
+    1035
+   ],
+   "tamanho_mm": [
+    63.4,
+    87.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.33,
+   "papel": 206.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00989,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.96,
+     "mm_max": 12.09,
+     "cobre": 0.284
+    },
+    "dir": {
+     "mm": 0.96,
+     "mm_max": 12.09,
+     "cobre": 0.286
+    },
+    "topo": {
+     "mm": 0.7,
+     "mm_max": 24.27,
+     "cobre": 0.209
+    },
+    "pe": {
+     "mm": 0.7,
+     "mm_max": 24.1,
+     "cobre": 0.209
+    }
+   },
+   "cunha_branca": 0.01343,
+   "pecas": 439,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0008,
+   "folga_mm": {
+    "esq": 1.27,
+    "dir": 1.61,
+    "topo": 1.69,
+    "pe": 0.93
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 6.46,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 1.5,
+   "angulo_programa": 1.5000000000000004,
+   "angulo_scantailor": 1.5,
+   "recorte": [
+    0.0,
+    0.0,
+    0.88898,
+    0.86355
+   ],
+   "pagina_inteira_px": [
+    834,
+    1250
+   ],
+   "tamanho_px": [
+    741,
+    1079
+   ],
+   "tamanho_mm": [
+    62.7,
+    91.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.29,
+   "papel": 205.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00591,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.82,
+     "mm_max": 21.83,
+     "cobre": 0.253
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.91,
+     "mm_max": 1.19,
+     "cobre": 0.348
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 21.93,
+     "cobre": 0.016
+    }
+   },
+   "cunha_branca": 0.00602,
+   "pecas": 439,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00073,
+   "folga_mm": {
+    "esq": 1.1,
+    "dir": 1.1,
+    "topo": 5.25,
+    "pe": 1.1
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphonal1547_p076__inteira": {
+  "pid": "antiphonal1547_p076",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 4.38,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.2,
+   "angulo_programa": 0.19999999999999984,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.012,
+    0.8747,
+    0.9078
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    754,
+    1134
+   ],
+   "tamanho_mm": [
+    63.8,
+    96.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.27,
+   "papel": 194.0,
+   "beirada_escuro": 0.00388,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 15.17,
+     "cobre": 0.014
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.57,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.77,
+     "mm_max": 1.15,
+     "cobre": 0.513
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00322,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 10.56,
+     "cobre": 0.013
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.57,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.67,
+     "mm_max": 1.06,
+     "cobre": 0.441
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00179,
+   "pecas": 397,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00048,
+   "folga_mm": {
+    "esq": 0.59,
+    "dir": 1.02,
+    "topo": 5.59,
+    "pe": 1.19
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 4.61,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.25,
+   "angulo_programa": 0.19999999999999984,
+   "angulo_scantailor": 0.25,
+   "recorte": [
+    0.0,
+    0.012,
+    0.8747,
+    0.9078
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    754,
+    1134
+   ],
+   "tamanho_mm": [
+    63.8,
+    96.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.26,
+   "papel": 194.0,
+   "beirada_escuro": 0.0036,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 12.87,
+     "cobre": 0.014
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.47,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.77,
+     "mm_max": 1.15,
+     "cobre": 0.475
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00309,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 9.7,
+     "cobre": 0.014
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.47,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.67,
+     "mm_max": 1.06,
+     "cobre": 0.426
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00232,
+   "pecas": 397,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00049,
+   "folga_mm": {
+    "esq": 0.59,
+    "dir": 1.02,
+    "topo": 5.67,
+    "pe": 1.19
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 3.85,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.25,
+   "angulo_programa": 0.19999999999999984,
+   "angulo_scantailor": 0.25,
+   "recorte": [
+    0.0,
+    0.012,
+    0.87651,
+    0.9078
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    756,
+    1134
+   ],
+   "tamanho_mm": [
+    64.0,
+    96.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.31,
+   "papel": 194.0,
+   "beirada_escuro": 0.00581,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 27.08,
+     "cobre": 0.014
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.38,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.96,
+     "mm_max": 1.34,
+     "cobre": 0.694
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00484,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 22.56,
+     "cobre": 0.014
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.47,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.86,
+     "mm_max": 1.34,
+     "cobre": 0.625
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00069,
+   "pecas": 397,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0005,
+   "folga_mm": {
+    "esq": 0.59,
+    "dir": 1.19,
+    "topo": 5.67,
+    "pe": 1.19
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphonal1547_p192__inteira": {
+  "pid": "antiphonal1547_p192",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 4.96,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.4,
+   "angulo_programa": 0.4,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.00645,
+    1.0,
+    0.83335
+   ],
+   "pagina_inteira_px": [
+    871,
+    1250
+   ],
+   "tamanho_px": [
+    871,
+    1041
+   ],
+   "tamanho_mm": [
+    73.7,
+    88.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.26,
+   "papel": 198.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.00033,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.79,
+     "cobre": 0.035
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 3.08,
+     "cobre": 0.011
+    }
+   },
+   "cunha_branca": 0.00348,
+   "pecas": 133,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00022,
+   "folga_mm": {
+    "esq": 0.25,
+    "dir": 1.27,
+    "topo": 1.35,
+    "pe": 1.02
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 4.24,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.188,
+   "angulo_programa": 0.4,
+   "angulo_scantailor": 0.1875,
+   "recorte": [
+    0.0,
+    0.00645,
+    1.0,
+    0.83335
+   ],
+   "pagina_inteira_px": [
+    871,
+    1250
+   ],
+   "tamanho_px": [
+    871,
+    1041
+   ],
+   "tamanho_mm": [
+    73.7,
+    88.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.37,
+   "papel": 198.0,
+   "beirada_escuro": 0.00015,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.62,
+     "cobre": 0.018
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 1.59,
+     "cobre": 0.008
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00158,
+   "pecas": 133,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0002,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 1.19,
+    "topo": 1.27,
+    "pe": 1.1
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 3.75,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.188,
+   "angulo_programa": 0.4,
+   "angulo_scantailor": 0.1875,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    0.8398
+   ],
+   "pagina_inteira_px": [
+    871,
+    1250
+   ],
+   "tamanho_px": [
+    871,
+    1049
+   ],
+   "tamanho_mm": [
+    73.7,
+    88.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.36,
+   "papel": 198.0,
+   "beirada_escuro": 0.00018,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.71,
+     "cobre": 0.019
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 1.69,
+     "cobre": 0.01
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00132,
+   "pecas": 133,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00019,
+   "folga_mm": {
+    "esq": 0.34,
+    "dir": 1.27,
+    "topo": 1.95,
+    "pe": 1.1
+   }
+  },
+  "no_gabarito": false
+ },
+ "antiphonal1547_p252__inteira": {
+  "pid": "antiphonal1547_p252",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 7.07,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -1.0,
+   "angulo_programa": -0.9999999999999996,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.10537,
+    0.0177,
+    0.89463,
+    0.90335
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    773,
+    1129
+   ],
+   "tamanho_mm": [
+    65.4,
+    95.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.24,
+   "papel": 201.0,
+   "beirada_escuro": 0.0031,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 1.15,
+     "mm_max": 1.43,
+     "cobre": 0.171
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 7.55,
+     "cobre": 0.02
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 8.79,
+     "cobre": 0.022
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0092,
+   "pecas": 497,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00045,
+   "folga_mm": {
+    "esq": 1.52,
+    "dir": 6.1,
+    "topo": 1.02,
+    "pe": 5.16
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 7.07,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -1.0,
+   "angulo_programa": -0.9999999999999996,
+   "angulo_scantailor": -1.0,
+   "recorte": [
+    0.10537,
+    0.0177,
+    0.89463,
+    0.90335
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    773,
+    1129
+   ],
+   "tamanho_mm": [
+    65.4,
+    95.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.28,
+   "papel": 201.0,
+   "beirada_escuro": 0.0031,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 1.15,
+     "mm_max": 1.43,
+     "cobre": 0.171
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 7.55,
+     "cobre": 0.02
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 8.79,
+     "cobre": 0.022
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0092,
+   "pecas": 497,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00045,
+   "folga_mm": {
+    "esq": 1.52,
+    "dir": 6.1,
+    "topo": 1.02,
+    "pe": 5.16
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 4.96,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -1.0,
+   "angulo_programa": -0.9999999999999996,
+   "angulo_scantailor": -1.0,
+   "recorte": [
+    0.11081,
+    0.0,
+    0.88919,
+    0.94355
+   ],
+   "pagina_inteira_px": [
+    863,
+    1250
+   ],
+   "tamanho_px": [
+    768,
+    1179
+   ],
+   "tamanho_mm": [
+    65.0,
+    99.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.31,
+   "papel": 201.0,
+   "beirada_escuro": 0.00353,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 1.2,
+     "mm_max": 1.4,
+     "cobre": 0.194
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.68,
+     "cobre": 0.022
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 10.68,
+     "cobre": 0.022
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00465,
+   "pecas": 497,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0002,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 6.01,
+    "topo": 1.02,
+    "pe": 7.54
+   }
+  },
+  "no_gabarito": false
+ },
+ "boecio_p003__inteira": {
+  "pid": "boecio_p003",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 6.4,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.6,
+   "angulo_programa": 0.6000000000000001,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.01103,
+    1.0,
+    0.94463
+   ],
+   "pagina_inteira_px": [
+    1037,
+    1539
+   ],
+   "tamanho_px": [
+    1037,
+    1454
+   ],
+   "tamanho_mm": [
+    87.8,
+    123.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.06,
+   "papel": 214.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00544,
+   "pecas": 351,
+   "pecas_fora": 1,
+   "pecas_partidas": 2,
+   "tinta_perdida": 0.00029,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.85,
+    "topo": 0.93,
+    "pe": 1.1
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 6.74,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.75,
+   "angulo_programa": 0.6000000000000001,
+   "angulo_scantailor": 0.75,
+   "recorte": [
+    0.0,
+    0.01103,
+    1.0,
+    0.94508
+   ],
+   "pagina_inteira_px": [
+    1037,
+    1539
+   ],
+   "tamanho_px": [
+    1037,
+    1455
+   ],
+   "tamanho_mm": [
+    87.8,
+    123.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.09,
+   "papel": 214.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00682,
+   "pecas": 351,
+   "pecas_fora": 2,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00052,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.93,
+    "topo": 1.1,
+    "pe": 1.1
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 6.43,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.75,
+   "angulo_programa": 0.6000000000000001,
+   "angulo_scantailor": 0.75,
+   "recorte": [
+    0.0,
+    0.01478,
+    1.0,
+    0.98522
+   ],
+   "pagina_inteira_px": [
+    1037,
+    1539
+   ],
+   "tamanho_px": [
+    1037,
+    1517
+   ],
+   "tamanho_mm": [
+    87.8,
+    128.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 214.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00581,
+   "pecas": 351,
+   "pecas_fora": 2,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00053,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.93,
+    "topo": 0.59,
+    "pe": 6.86
+   }
+  },
+  "no_gabarito": true
+ },
+ "boecio_p007__inteira": {
+  "pid": "boecio_p007",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.1,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.01106,
+    0.98005,
+    0.94414
+   ],
+   "pagina_inteira_px": [
+    1051,
+    1544
+   ],
+   "tamanho_px": [
+    1030,
+    1457
+   ],
+   "tamanho_mm": [
+    87.2,
+    123.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.06,
+   "papel": 226.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1078,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 1.1,
+    "topo": 1.1,
+    "pe": 1.61
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.01106,
+    0.98005,
+    0.94414
+   ],
+   "pagina_inteira_px": [
+    1051,
+    1544
+   ],
+   "tamanho_px": [
+    1030,
+    1457
+   ],
+   "tamanho_mm": [
+    87.2,
+    123.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.08,
+   "papel": 226.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1078,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 1.1,
+    "topo": 1.1,
+    "pe": 1.61
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.01106,
+    0.98005,
+    0.94414
+   ],
+   "pagina_inteira_px": [
+    1051,
+    1544
+   ],
+   "tamanho_px": [
+    1030,
+    1457
+   ],
+   "tamanho_mm": [
+    87.2,
+    123.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.1,
+   "papel": 226.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1078,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 1.1,
+    "topo": 1.1,
+    "pe": 1.61
+   }
+  },
+  "no_gabarito": true
+ },
+ "boecio_p008__inteira": {
+  "pid": "boecio_p008",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 5.4,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -1.0,
+   "angulo_programa": -0.9999999999999996,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.00721,
+    1.0,
+    0.95059
+   ],
+   "pagina_inteira_px": [
+    1034,
+    1527
+   ],
+   "tamanho_px": [
+    1034,
+    1451
+   ],
+   "tamanho_mm": [
+    87.5,
+    122.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.08,
+   "papel": 223.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00907,
+   "pecas": 727,
+   "pecas_fora": 1,
+   "pecas_partidas": 2,
+   "tinta_perdida": 0.00048,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.08,
+    "topo": 1.86,
+    "pe": 1.02
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 5.56,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -1.125,
+   "angulo_programa": -0.9999999999999996,
+   "angulo_scantailor": -1.125,
+   "recorte": [
+    0.0,
+    0.00721,
+    1.0,
+    0.95059
+   ],
+   "pagina_inteira_px": [
+    1034,
+    1527
+   ],
+   "tamanho_px": [
+    1034,
+    1451
+   ],
+   "tamanho_mm": [
+    87.5,
+    122.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.12,
+   "papel": 223.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.01017,
+   "pecas": 727,
+   "pecas_fora": 1,
+   "pecas_partidas": 3,
+   "tinta_perdida": 0.00057,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 1.95,
+    "pe": 0.93
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 4.73,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -1.125,
+   "angulo_programa": -0.9999999999999996,
+   "angulo_scantailor": -1.125,
+   "recorte": [
+    0.0,
+    0.015,
+    1.0,
+    0.95654
+   ],
+   "pagina_inteira_px": [
+    1034,
+    1527
+   ],
+   "tamanho_px": [
+    1034,
+    1461
+   ],
+   "tamanho_mm": [
+    87.5,
+    123.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 223.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00683,
+   "pecas": 727,
+   "pecas_fora": 1,
+   "pecas_partidas": 2,
+   "tinta_perdida": 0.00072,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 1.02,
+    "pe": 2.71
+   }
+  },
+  "no_gabarito": true
+ },
+ "boecio_p022__inteira": {
+  "pid": "boecio_p022",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 5.74,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.2,
+   "angulo_programa": -0.20000000000000007,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.06531,
+    0.04586,
+    0.9245,
+    0.92203
+   ],
+   "pagina_inteira_px": [
+    1057,
+    1511
+   ],
+   "tamanho_px": [
+    977,
+    1393
+   ],
+   "tamanho_mm": [
+    82.7,
+    117.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.06,
+   "papel": 215.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00177,
+   "pecas": 992,
+   "pecas_fora": 2,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00128,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.02,
+    "topo": 0.17,
+    "pe": 1.19
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 5.68,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.188,
+   "angulo_programa": -0.20000000000000007,
+   "angulo_scantailor": -0.1875,
+   "recorte": [
+    0.06535,
+    0.04586,
+    0.92446,
+    0.92203
+   ],
+   "pagina_inteira_px": [
+    1057,
+    1511
+   ],
+   "tamanho_px": [
+    977,
+    1393
+   ],
+   "tamanho_mm": [
+    82.7,
+    117.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.08,
+   "papel": 214.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00161,
+   "pecas": 992,
+   "pecas_fora": 2,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.0013,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.02,
+    "topo": 0.17,
+    "pe": 1.19
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 4.24,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.188,
+   "angulo_programa": -0.20000000000000007,
+   "angulo_scantailor": -0.1875,
+   "recorte": [
+    0.06565,
+    0.01711,
+    0.92595,
+    0.94953
+   ],
+   "pagina_inteira_px": [
+    1057,
+    1511
+   ],
+   "tamanho_px": [
+    979,
+    1435
+   ],
+   "tamanho_mm": [
+    82.9,
+    121.5
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 215.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 992,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0001,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.19,
+    "topo": 1.19,
+    "pe": 1.02
+   }
+  },
+  "no_gabarito": true
+ },
+ "camoes_p006__inteira": {
+  "pid": "camoes_p006",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.00818,
+    0.00833,
+    0.99182,
+    0.98526
+   ],
+   "pagina_inteira_px": [
+    1100,
+    1560
+   ],
+   "tamanho_px": [
+    1091,
+    1537
+   ],
+   "tamanho_mm": [
+    92.4,
+    130.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.09,
+   "papel": 204.0,
+   "beirada_escuro": 0.01711,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.08,
+     "mm_max": 27.59,
+     "cobre": 0.535
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 30.06,
+     "cobre": 0.015
+    },
+    "topo": {
+     "mm": 1.04,
+     "mm_max": 35.27,
+     "cobre": 0.348
+    },
+    "pe": {
+     "mm": 1.56,
+     "mm_max": 34.36,
+     "cobre": 0.544
+    }
+   },
+   "beirada_pb": 0.00419,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 1.95,
+     "cobre": 0.099
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 29.15,
+     "cobre": 0.014
+    },
+    "topo": {
+     "mm": 0.91,
+     "mm_max": 8.33,
+     "cobre": 0.325
+    },
+    "pe": {
+     "mm": 0.91,
+     "mm_max": 3.64,
+     "cobre": 0.217
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 261,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.52,
+    "dir": 0.25,
+    "topo": 2.62,
+    "pe": 7.7
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 2.76,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.5,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": -0.5,
+   "recorte": [
+    0.00818,
+    0.00833,
+    0.99182,
+    0.98526
+   ],
+   "pagina_inteira_px": [
+    1100,
+    1560
+   ],
+   "tamanho_px": [
+    1091,
+    1537
+   ],
+   "tamanho_mm": [
+    92.4,
+    130.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 204.0,
+   "beirada_escuro": 0.00981,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.08,
+     "mm_max": 17.18,
+     "cobre": 0.377
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 2.99,
+     "cobre": 0.006
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 24.33,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 1.56,
+     "mm_max": 24.6,
+     "cobre": 0.218
+    }
+   },
+   "beirada_pb": 0.0059,
+   "lados_pb": {
+    "esq": {
+     "mm": 1.95,
+     "mm_max": 6.25,
+     "cobre": 0.315
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 2.21,
+     "cobre": 0.006
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 23.81,
+     "cobre": 0.024
+    },
+    "pe": {
+     "mm": 0.78,
+     "mm_max": 15.62,
+     "cobre": 0.101
+    }
+   },
+   "cunha_branca": 0.00457,
+   "pecas": 261,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 1e-05,
+   "folga_mm": {
+    "esq": 1.78,
+    "dir": 0.34,
+    "topo": 3.05,
+    "pe": 7.7
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 1.55,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.5,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": -0.5,
+   "recorte": [
+    0.00818,
+    0.00833,
+    0.99182,
+    0.98654
+   ],
+   "pagina_inteira_px": [
+    1100,
+    1560
+   ],
+   "tamanho_px": [
+    1091,
+    1539
+   ],
+   "tamanho_mm": [
+    92.4,
+    130.3
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.13,
+   "papel": 204.0,
+   "beirada_escuro": 0.01895,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.61,
+     "mm_max": 37.53,
+     "cobre": 0.507
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 35.57,
+     "cobre": 0.018
+    },
+    "topo": {
+     "mm": 1.3,
+     "mm_max": 40.91,
+     "cobre": 0.415
+    },
+    "pe": {
+     "mm": 2.08,
+     "mm_max": 25.15,
+     "cobre": 0.543
+    }
+   },
+   "beirada_pb": 0.00429,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.78,
+     "mm_max": 7.56,
+     "cobre": 0.151
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 23.32,
+     "cobre": 0.015
+    },
+    "topo": {
+     "mm": 1.04,
+     "mm_max": 3.26,
+     "cobre": 0.262
+    },
+    "pe": {
+     "mm": 0.78,
+     "mm_max": 15.64,
+     "cobre": 0.197
+    }
+   },
+   "cunha_branca": 0.00152,
+   "pecas": 261,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 4e-05,
+   "folga_mm": {
+    "esq": 1.78,
+    "dir": 0.34,
+    "topo": 3.05,
+    "pe": 7.87
+   }
+  },
+  "no_gabarito": false
+ },
+ "camoes_p009__inteira": {
+  "pid": "camoes_p009",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.00575,
+    0.99112,
+    0.99041
+   ],
+   "pagina_inteira_px": [
+    1126,
+    1564
+   ],
+   "tamanho_px": [
+    1116,
+    1549
+   ],
+   "tamanho_mm": [
+    94.5,
+    131.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.08,
+   "papel": 189.0,
+   "beirada_escuro": 0.03106,
+   "lados_escuro": {
+    "esq": {
+     "mm": 3.42,
+     "mm_max": 47.21,
+     "cobre": 0.641
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 47.21,
+     "cobre": 0.076
+    },
+    "topo": {
+     "mm": 1.57,
+     "mm_max": 46.3,
+     "cobre": 0.871
+    },
+    "pe": {
+     "mm": 1.18,
+     "mm_max": 37.64,
+     "cobre": 0.662
+    }
+   },
+   "beirada_pb": 0.00653,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 9.84,
+     "cobre": 0.024
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 45.9,
+     "cobre": 0.028
+    },
+    "topo": {
+     "mm": 0.92,
+     "mm_max": 2.23,
+     "cobre": 0.321
+    },
+    "pe": {
+     "mm": 1.05,
+     "mm_max": 1.44,
+     "cobre": 0.599
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 945,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 3.39,
+    "dir": 3.39,
+    "topo": 16.51,
+    "pe": 1.69
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 3.48,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.375,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.375,
+   "recorte": [
+    0.0,
+    0.00575,
+    0.99112,
+    0.99041
+   ],
+   "pagina_inteira_px": [
+    1126,
+    1564
+   ],
+   "tamanho_px": [
+    1116,
+    1549
+   ],
+   "tamanho_mm": [
+    94.5,
+    131.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 189.0,
+   "beirada_escuro": 0.02726,
+   "lados_escuro": {
+    "esq": {
+     "mm": 3.54,
+     "mm_max": 41.05,
+     "cobre": 0.764
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 21.51,
+     "cobre": 0.033
+    },
+    "topo": {
+     "mm": 1.7,
+     "mm_max": 62.56,
+     "cobre": 0.662
+    },
+    "pe": {
+     "mm": 0.92,
+     "mm_max": 36.98,
+     "cobre": 0.185
+    }
+   },
+   "beirada_pb": 0.00561,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 26.62,
+     "cobre": 0.046
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 17.18,
+     "cobre": 0.031
+    },
+    "topo": {
+     "mm": 1.57,
+     "mm_max": 3.41,
+     "cobre": 0.483
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 2.62,
+     "cobre": 0.076
+    }
+   },
+   "cunha_branca": 0.0034,
+   "pecas": 945,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 5e-05,
+   "folga_mm": {
+    "esq": 3.3,
+    "dir": 2.96,
+    "topo": 16.68,
+    "pe": 1.95
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 2.77,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.375,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.375,
+   "recorte": [
+    0.0,
+    0.01087,
+    0.99112,
+    0.98657
+   ],
+   "pagina_inteira_px": [
+    1126,
+    1564
+   ],
+   "tamanho_px": [
+    1116,
+    1543
+   ],
+   "tamanho_mm": [
+    94.5,
+    130.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.13,
+   "papel": 189.0,
+   "beirada_escuro": 0.0302,
+   "lados_escuro": {
+    "esq": {
+     "mm": 3.4,
+     "mm_max": 39.06,
+     "cobre": 0.761
+    },
+    "dir": {
+     "mm": 0.78,
+     "mm_max": 47.29,
+     "cobre": 0.132
+    },
+    "topo": {
+     "mm": 1.18,
+     "mm_max": 62.45,
+     "cobre": 0.425
+    },
+    "pe": {
+     "mm": 1.7,
+     "mm_max": 36.84,
+     "cobre": 0.723
+    }
+   },
+   "beirada_pb": 0.00708,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 29.66,
+     "cobre": 0.043
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 32.27,
+     "cobre": 0.047
+    },
+    "topo": {
+     "mm": 1.05,
+     "mm_max": 3.4,
+     "cobre": 0.342
+    },
+    "pe": {
+     "mm": 1.31,
+     "mm_max": 1.44,
+     "cobre": 0.516
+    }
+   },
+   "cunha_branca": 0.00113,
+   "pecas": 945,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 6e-05,
+   "folga_mm": {
+    "esq": 3.3,
+    "dir": 2.96,
+    "topo": 16.0,
+    "pe": 2.12
+   }
+  },
+  "no_gabarito": false
+ },
+ "camoes_p011__inteira": {
+  "pid": "camoes_p011",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.00703,
+    0.98479,
+    0.98913
+   ],
+   "pagina_inteira_px": [
+    1052,
+    1564
+   ],
+   "tamanho_px": [
+    1036,
+    1547
+   ],
+   "tamanho_mm": [
+    87.7,
+    131.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.08,
+   "papel": 190.0,
+   "beirada_escuro": 0.01436,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 43.88,
+     "cobre": 0.019
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.88,
+     "cobre": 0.034
+    },
+    "topo": {
+     "mm": 1.44,
+     "mm_max": 1.57,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 1.18,
+     "mm_max": 3.14,
+     "cobre": 0.734
+    }
+   },
+   "beirada_pb": 0.00981,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 20.17,
+     "cobre": 0.016
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.62,
+     "cobre": 0.018
+    },
+    "topo": {
+     "mm": 1.18,
+     "mm_max": 1.31,
+     "cobre": 0.672
+    },
+    "pe": {
+     "mm": 1.05,
+     "mm_max": 1.18,
+     "cobre": 0.699
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 799,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.34,
+    "dir": 9.31,
+    "topo": 15.24,
+    "pe": 15.92
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.00703,
+    0.98479,
+    0.98913
+   ],
+   "pagina_inteira_px": [
+    1052,
+    1564
+   ],
+   "tamanho_px": [
+    1036,
+    1547
+   ],
+   "tamanho_mm": [
+    87.7,
+    131.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 190.0,
+   "beirada_escuro": 0.01436,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 43.88,
+     "cobre": 0.019
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.88,
+     "cobre": 0.034
+    },
+    "topo": {
+     "mm": 1.44,
+     "mm_max": 1.57,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 1.18,
+     "mm_max": 3.14,
+     "cobre": 0.734
+    }
+   },
+   "beirada_pb": 0.00981,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 20.17,
+     "cobre": 0.016
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.62,
+     "cobre": 0.018
+    },
+    "topo": {
+     "mm": 1.18,
+     "mm_max": 1.31,
+     "cobre": 0.672
+    },
+    "pe": {
+     "mm": 1.05,
+     "mm_max": 1.18,
+     "cobre": 0.699
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 799,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.34,
+    "dir": 9.31,
+    "topo": 15.24,
+    "pe": 15.92
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.00703,
+    0.98479,
+    0.98913
+   ],
+   "pagina_inteira_px": [
+    1052,
+    1564
+   ],
+   "tamanho_px": [
+    1036,
+    1547
+   ],
+   "tamanho_mm": [
+    87.7,
+    131.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.14,
+   "papel": 190.0,
+   "beirada_escuro": 0.01436,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 43.88,
+     "cobre": 0.019
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.88,
+     "cobre": 0.034
+    },
+    "topo": {
+     "mm": 1.44,
+     "mm_max": 1.57,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 1.18,
+     "mm_max": 3.14,
+     "cobre": 0.734
+    }
+   },
+   "beirada_pb": 0.00981,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 20.17,
+     "cobre": 0.016
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.62,
+     "cobre": 0.018
+    },
+    "topo": {
+     "mm": 1.18,
+     "mm_max": 1.31,
+     "cobre": 0.672
+    },
+    "pe": {
+     "mm": 1.05,
+     "mm_max": 1.18,
+     "cobre": 0.699
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 799,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.34,
+    "dir": 9.31,
+    "topo": 15.24,
+    "pe": 15.92
+   }
+  },
+  "no_gabarito": false
+ },
+ "camoes_p027__inteira": {
+  "pid": "camoes_p027",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.01588,
+    0.97881,
+    0.98158
+   ],
+   "pagina_inteira_px": [
+    1038,
+    1574
+   ],
+   "tamanho_px": [
+    1016,
+    1545
+   ],
+   "tamanho_mm": [
+    86.0,
+    130.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.08,
+   "papel": 189.0,
+   "beirada_escuro": 0.0125,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 36.1,
+     "cobre": 0.021
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.04,
+     "cobre": 0.042
+    },
+    "topo": {
+     "mm": 1.57,
+     "mm_max": 2.88,
+     "cobre": 0.429
+    },
+    "pe": {
+     "mm": 1.83,
+     "mm_max": 2.62,
+     "cobre": 0.9
+    }
+   },
+   "beirada_pb": 0.00733,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 26.82,
+     "cobre": 0.018
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 31.26,
+     "cobre": 0.021
+    },
+    "topo": {
+     "mm": 1.05,
+     "mm_max": 1.31,
+     "cobre": 0.264
+    },
+    "pe": {
+     "mm": 1.31,
+     "mm_max": 1.44,
+     "cobre": 0.675
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1422,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 2.12,
+    "topo": 2.54,
+    "pe": 2.37
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.01588,
+    0.97881,
+    0.98158
+   ],
+   "pagina_inteira_px": [
+    1038,
+    1574
+   ],
+   "tamanho_px": [
+    1016,
+    1545
+   ],
+   "tamanho_mm": [
+    86.0,
+    130.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.1,
+   "papel": 189.0,
+   "beirada_escuro": 0.0125,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 36.1,
+     "cobre": 0.021
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.04,
+     "cobre": 0.042
+    },
+    "topo": {
+     "mm": 1.57,
+     "mm_max": 2.88,
+     "cobre": 0.429
+    },
+    "pe": {
+     "mm": 1.83,
+     "mm_max": 2.62,
+     "cobre": 0.9
+    }
+   },
+   "beirada_pb": 0.00733,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 26.82,
+     "cobre": 0.018
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 31.26,
+     "cobre": 0.021
+    },
+    "topo": {
+     "mm": 1.05,
+     "mm_max": 1.31,
+     "cobre": 0.264
+    },
+    "pe": {
+     "mm": 1.31,
+     "mm_max": 1.44,
+     "cobre": 0.675
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1422,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 2.12,
+    "topo": 2.54,
+    "pe": 2.37
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.01588,
+    0.97881,
+    0.98158
+   ],
+   "pagina_inteira_px": [
+    1038,
+    1574
+   ],
+   "tamanho_px": [
+    1016,
+    1545
+   ],
+   "tamanho_mm": [
+    86.0,
+    130.8
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.12,
+   "papel": 189.0,
+   "beirada_escuro": 0.0125,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 36.1,
+     "cobre": 0.021
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 43.04,
+     "cobre": 0.042
+    },
+    "topo": {
+     "mm": 1.57,
+     "mm_max": 2.88,
+     "cobre": 0.429
+    },
+    "pe": {
+     "mm": 1.83,
+     "mm_max": 2.62,
+     "cobre": 0.9
+    }
+   },
+   "beirada_pb": 0.00733,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 26.82,
+     "cobre": 0.018
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 31.26,
+     "cobre": 0.021
+    },
+    "topo": {
+     "mm": 1.05,
+     "mm_max": 1.31,
+     "cobre": 0.264
+    },
+    "pe": {
+     "mm": 1.31,
+     "mm_max": 1.44,
+     "cobre": 0.675
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1422,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 2.12,
+    "topo": 2.54,
+    "pe": 2.37
+   }
+  },
+  "no_gabarito": false
+ },
+ "camoes_p066__inteira": {
+  "pid": "camoes_p066",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 4.95,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 1.0,
+   "angulo_programa": 0.9999999999999999,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.01013,
+    0.01201,
+    0.98987,
+    0.97914
+   ],
+   "pagina_inteira_px": [
+    1086,
+    1582
+   ],
+   "tamanho_px": [
+    1075,
+    1549
+   ],
+   "tamanho_mm": [
+    91.0,
+    131.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.09,
+   "papel": 189.0,
+   "beirada_escuro": 0.00194,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 15.74,
+     "cobre": 0.013
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 6.16,
+     "cobre": 0.016
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.79,
+     "cobre": 0.022
+    },
+    "pe": {
+     "mm": 0.92,
+     "mm_max": 1.7,
+     "cobre": 0.241
+    }
+   },
+   "beirada_pb": 0.00076,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 9.05,
+     "cobre": 0.013
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.13,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.46,
+     "mm_max": 1.7,
+     "cobre": 0.101
+    }
+   },
+   "cunha_branca": 0.00914,
+   "pecas": 878,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00015,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 4.15,
+    "topo": 10.5,
+    "pe": 1.19
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 5.98,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 1.438,
+   "angulo_programa": 0.9999999999999999,
+   "angulo_scantailor": 1.4375,
+   "recorte": [
+    0.01013,
+    0.01201,
+    0.98987,
+    0.97914
+   ],
+   "pagina_inteira_px": [
+    1086,
+    1582
+   ],
+   "tamanho_px": [
+    1075,
+    1549
+   ],
+   "tamanho_mm": [
+    91.0,
+    131.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.12,
+   "papel": 189.0,
+   "beirada_escuro": 0.00188,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 15.21,
+     "cobre": 0.011
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 7.87,
+     "cobre": 0.011
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.92,
+     "mm_max": 1.44,
+     "cobre": 0.254
+    }
+   },
+   "beirada_pb": 0.00075,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 9.71,
+     "cobre": 0.01
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.66,
+     "cobre": 0.007
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.66,
+     "mm_max": 1.31,
+     "cobre": 0.114
+    }
+   },
+   "cunha_branca": 0.01306,
+   "pecas": 878,
+   "pecas_fora": 0,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00119,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 3.89,
+    "topo": 10.41,
+    "pe": 0.93
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 4.78,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 1.438,
+   "angulo_programa": 0.9999999999999999,
+   "angulo_scantailor": 1.4375,
+   "recorte": [
+    0.0,
+    0.01075,
+    1.0,
+    0.97282
+   ],
+   "pagina_inteira_px": [
+    1086,
+    1582
+   ],
+   "tamanho_px": [
+    1086,
+    1539
+   ],
+   "tamanho_mm": [
+    91.9,
+    130.3
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.13,
+   "papel": 189.0,
+   "beirada_escuro": 0.00905,
+   "lados_escuro": {
+    "esq": {
+     "mm": 1.43,
+     "mm_max": 29.71,
+     "cobre": 0.469
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 2.74,
+     "cobre": 0.006
+    },
+    "topo": {
+     "mm": 0.91,
+     "mm_max": 26.97,
+     "cobre": 0.323
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 29.45,
+     "cobre": 0.068
+    }
+   },
+   "beirada_pb": 0.00364,
+   "lados_pb": {
+    "esq": {
+     "mm": 1.04,
+     "mm_max": 19.15,
+     "cobre": 0.183
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 2.61,
+     "cobre": 0.006
+    },
+    "topo": {
+     "mm": 0.78,
+     "mm_max": 13.55,
+     "cobre": 0.22
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 9.38,
+     "cobre": 0.062
+    }
+   },
+   "cunha_branca": 0.00874,
+   "pecas": 878,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00043,
+   "folga_mm": {
+    "esq": 0.68,
+    "dir": 3.89,
+    "topo": 10.58,
+    "pe": 0.0
+   }
+  },
+  "no_gabarito": false
+ },
+ "camoes_p104__inteira": {
+  "pid": "camoes_p104",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 2.64,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.1,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.01681,
+    0.00571,
+    0.97611,
+    0.98921
+   ],
+   "pagina_inteira_px": [
+    1130,
+    1576
+   ],
+   "tamanho_px": [
+    1103,
+    1559
+   ],
+   "tamanho_mm": [
+    93.4,
+    132.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.09,
+   "papel": 140.0,
+   "beirada_escuro": 0.01044,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.79,
+     "mm_max": 46.59,
+     "cobre": 0.28
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 15.44,
+     "cobre": 0.048
+    },
+    "topo": {
+     "mm": 1.58,
+     "mm_max": 2.77,
+     "cobre": 0.664
+    },
+    "pe": {
+     "mm": 0.79,
+     "mm_max": 34.85,
+     "cobre": 0.311
+    }
+   },
+   "beirada_pb": 0.01734,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.79,
+     "mm_max": 46.73,
+     "cobre": 0.256
+    },
+    "dir": {
+     "mm": 0.79,
+     "mm_max": 45.54,
+     "cobre": 0.11
+    },
+    "topo": {
+     "mm": 1.45,
+     "mm_max": 3.56,
+     "cobre": 0.987
+    },
+    "pe": {
+     "mm": 1.32,
+     "mm_max": 30.23,
+     "cobre": 0.864
+    }
+   },
+   "cunha_branca": 0.00078,
+   "pecas": 978,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 2e-05,
+   "folga_mm": {
+    "esq": 1.02,
+    "dir": 0.76,
+    "topo": 2.37,
+    "pe": 1.02
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 3.54,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.5,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": -0.5,
+   "recorte": [
+    0.01681,
+    0.00571,
+    0.97611,
+    0.98921
+   ],
+   "pagina_inteira_px": [
+    1130,
+    1576
+   ],
+   "tamanho_px": [
+    1103,
+    1559
+   ],
+   "tamanho_mm": [
+    93.4,
+    132.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.11,
+   "papel": 140.0,
+   "beirada_escuro": 0.0053,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 46.2,
+     "cobre": 0.035
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 6.47,
+     "cobre": 0.027
+    },
+    "topo": {
+     "mm": 1.32,
+     "mm_max": 2.38,
+     "cobre": 0.564
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 2.51,
+     "cobre": 0.096
+    }
+   },
+   "beirada_pb": 0.01937,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.92,
+     "mm_max": 46.73,
+     "cobre": 0.233
+    },
+    "dir": {
+     "mm": 1.45,
+     "mm_max": 46.73,
+     "cobre": 0.28
+    },
+    "topo": {
+     "mm": 1.32,
+     "mm_max": 27.85,
+     "cobre": 0.999
+    },
+    "pe": {
+     "mm": 1.58,
+     "mm_max": 34.19,
+     "cobre": 0.75
+    }
+   },
+   "cunha_branca": 0.00458,
+   "pecas": 978,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 8e-05,
+   "folga_mm": {
+    "esq": 1.27,
+    "dir": 1.02,
+    "topo": 2.12,
+    "pe": 1.02
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 2.71,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.5,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": -0.5,
+   "recorte": [
+    0.0,
+    0.00698,
+    0.99115,
+    0.97928
+   ],
+   "pagina_inteira_px": [
+    1130,
+    1576
+   ],
+   "tamanho_px": [
+    1120,
+    1543
+   ],
+   "tamanho_mm": [
+    94.8,
+    130.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.14,
+   "papel": 141.0,
+   "beirada_escuro": 0.02736,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.09,
+     "mm_max": 30.18,
+     "cobre": 0.96
+    },
+    "dir": {
+     "mm": 0.78,
+     "mm_max": 47.29,
+     "cobre": 0.12
+    },
+    "topo": {
+     "mm": 1.31,
+     "mm_max": 60.09,
+     "cobre": 0.824
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 65.32,
+     "cobre": 0.048
+    }
+   },
+   "beirada_pb": 0.02783,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.35,
+     "mm_max": 22.6,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 40.76,
+     "cobre": 0.088
+    },
+    "topo": {
+     "mm": 1.31,
+     "mm_max": 65.32,
+     "cobre": 0.668
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 65.32,
+     "cobre": 0.066
+    }
+   },
+   "cunha_branca": 0.00152,
+   "pecas": 978,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00013,
+   "folga_mm": {
+    "esq": 2.88,
+    "dir": 0.85,
+    "topo": 1.95,
+    "pe": 0.0
+   }
+  },
+  "no_gabarito": false
+ },
+ "cursus_p314__inteira": {
+  "pid": "cursus_p314",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.1,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.03216,
+    0.02,
+    0.87132,
+    0.97242
+   ],
+   "pagina_inteira_px": [
+    2550,
+    3300
+   ],
+   "tamanho_px": [
+    2221,
+    3209
+   ],
+   "tamanho_mm": [
+    188.0,
+    271.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.18,
+   "papel": 255.0,
+   "beirada_escuro": 0.00924,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.17,
+     "mm_max": 94.01,
+     "cobre": 0.339
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 42.11,
+     "cobre": 0.037
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.15,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 2.72,
+     "mm_max": 84.23,
+     "cobre": 0.724
+    }
+   },
+   "beirada_pb": 0.00924,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.17,
+     "mm_max": 94.01,
+     "cobre": 0.339
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 42.11,
+     "cobre": 0.037
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.15,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 2.72,
+     "mm_max": 84.23,
+     "cobre": 0.724
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 9387,
+   "pecas_fora": 1082,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.12792,
+   "folga_mm": {
+    "esq": 20.95,
+    "dir": 6.29,
+    "topo": 2.37,
+    "pe": 7.4
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.03216,
+    0.02,
+    0.87132,
+    0.97242
+   ],
+   "pagina_inteira_px": [
+    2550,
+    3300
+   ],
+   "tamanho_px": [
+    2221,
+    3209
+   ],
+   "tamanho_mm": [
+    188.0,
+    271.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.29,
+   "papel": 255.0,
+   "beirada_escuro": 0.00924,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.17,
+     "mm_max": 94.01,
+     "cobre": 0.339
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 42.11,
+     "cobre": 0.037
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.15,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 2.72,
+     "mm_max": 84.23,
+     "cobre": 0.724
+    }
+   },
+   "beirada_pb": 0.00924,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.17,
+     "mm_max": 94.01,
+     "cobre": 0.339
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 42.11,
+     "cobre": 0.037
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.15,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 2.72,
+     "mm_max": 84.23,
+     "cobre": 0.724
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 9387,
+   "pecas_fora": 1082,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.12792,
+   "folga_mm": {
+    "esq": 20.95,
+    "dir": 6.29,
+    "topo": 2.37,
+    "pe": 7.4
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": 0.09999999999999987,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.03216,
+    0.02,
+    0.87132,
+    0.97242
+   ],
+   "pagina_inteira_px": [
+    2550,
+    3300
+   ],
+   "tamanho_px": [
+    2221,
+    3209
+   ],
+   "tamanho_mm": [
+    188.0,
+    271.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.31,
+   "papel": 255.0,
+   "beirada_escuro": 0.00924,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.17,
+     "mm_max": 94.01,
+     "cobre": 0.339
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 42.11,
+     "cobre": 0.037
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.15,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 2.72,
+     "mm_max": 84.23,
+     "cobre": 0.724
+    }
+   },
+   "beirada_pb": 0.00924,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.17,
+     "mm_max": 94.01,
+     "cobre": 0.339
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 42.11,
+     "cobre": 0.037
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 8.15,
+     "cobre": 0.025
+    },
+    "pe": {
+     "mm": 2.72,
+     "mm_max": 84.23,
+     "cobre": 0.724
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 9387,
+   "pecas_fora": 1082,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.12792,
+   "folga_mm": {
+    "esq": 20.95,
+    "dir": 6.29,
+    "topo": 2.37,
+    "pe": 7.4
+   }
+  },
+  "no_gabarito": false
+ },
+ "egenloff_p003__inteira": {
+  "pid": "egenloff_p003",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.01932,
+    0.00125,
+    0.98068,
+    0.99875
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5363
+   ],
+   "tamanho_px": [
+    4087,
+    5357
+   ],
+   "tamanho_mm": [
+    346.0,
+    453.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.32,
+   "papel": 196.0,
+   "beirada_escuro": 0.04252,
+   "lados_escuro": {
+    "esq": {
+     "mm": 5.44,
+     "mm_max": 172.81,
+     "cobre": 0.223
+    },
+    "dir": {
+     "mm": 9.07,
+     "mm_max": 173.26,
+     "cobre": 0.961
+    },
+    "topo": {
+     "mm": 3.17,
+     "mm_max": 226.78,
+     "cobre": 0.822
+    },
+    "pe": {
+     "mm": 7.26,
+     "mm_max": 209.09,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.04271,
+   "lados_pb": {
+    "esq": {
+     "mm": 5.44,
+     "mm_max": 172.81,
+     "cobre": 0.224
+    },
+    "dir": {
+     "mm": 9.07,
+     "mm_max": 173.26,
+     "cobre": 0.961
+    },
+    "topo": {
+     "mm": 3.17,
+     "mm_max": 226.78,
+     "cobre": 0.834
+    },
+    "pe": {
+     "mm": 7.26,
+     "mm_max": 209.09,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 397,
+   "pecas_fora": 0,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00144,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 5.22,
+    "topo": 12.26,
+    "pe": 1.59
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 4.49,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -1.562,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": -1.5625,
+   "recorte": [
+    0.0192,
+    0.00125,
+    0.9808,
+    0.99875
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5363
+   ],
+   "tamanho_px": [
+    4087,
+    5357
+   ],
+   "tamanho_mm": [
+    346.0,
+    453.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.68,
+   "papel": 196.0,
+   "beirada_escuro": 0.03233,
+   "lados_escuro": {
+    "esq": {
+     "mm": 5.44,
+     "mm_max": 172.81,
+     "cobre": 0.193
+    },
+    "dir": {
+     "mm": 7.26,
+     "mm_max": 167.82,
+     "cobre": 0.912
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 222.24,
+     "cobre": 0.085
+    },
+    "pe": {
+     "mm": 7.71,
+     "mm_max": 188.68,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.03252,
+   "lados_pb": {
+    "esq": {
+     "mm": 5.44,
+     "mm_max": 172.81,
+     "cobre": 0.193
+    },
+    "dir": {
+     "mm": 7.26,
+     "mm_max": 167.82,
+     "cobre": 0.913
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 222.24,
+     "cobre": 0.088
+    },
+    "pe": {
+     "mm": 7.71,
+     "mm_max": 189.13,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.01376,
+   "pecas": 397,
+   "pecas_fora": 0,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00256,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 11.12,
+    "topo": 11.58,
+    "pe": 0.0
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 2.17,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -1.562,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": -1.5625,
+   "recorte": [
+    0.02254,
+    0.0,
+    0.95813,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5363
+   ],
+   "tamanho_px": [
+    3993,
+    5363
+   ],
+   "tamanho_mm": [
+    338.1,
+    454.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.81,
+   "papel": 196.0,
+   "beirada_escuro": 0.01923,
+   "lados_escuro": {
+    "esq": {
+     "mm": 4.99,
+     "mm_max": 168.91,
+     "cobre": 0.234
+    },
+    "dir": {
+     "mm": 2.72,
+     "mm_max": 169.37,
+     "cobre": 0.171
+    },
+    "topo": {
+     "mm": 2.72,
+     "mm_max": 71.74,
+     "cobre": 0.119
+    },
+    "pe": {
+     "mm": 7.27,
+     "mm_max": 74.47,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.01944,
+   "lados_pb": {
+    "esq": {
+     "mm": 4.99,
+     "mm_max": 168.91,
+     "cobre": 0.236
+    },
+    "dir": {
+     "mm": 2.72,
+     "mm_max": 169.37,
+     "cobre": 0.172
+    },
+    "topo": {
+     "mm": 2.72,
+     "mm_max": 72.2,
+     "cobre": 0.119
+    },
+    "pe": {
+     "mm": 7.72,
+     "mm_max": 74.92,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.00489,
+   "pecas": 397,
+   "pecas_fora": 0,
+   "pecas_partidas": 2,
+   "tinta_perdida": 0.003,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 4.09,
+    "topo": 12.03,
+    "pe": 0.0
+   }
+  },
+  "no_gabarito": false
+ },
+ "egenloff_p007__inteira": {
+  "pid": "egenloff_p007",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.01485,
+    0.00625,
+    0.98185,
+    0.99375
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4092,
+    5458
+   ],
+   "tamanho_mm": [
+    346.5,
+    462.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.32,
+   "papel": 210.0,
+   "beirada_escuro": 0.02608,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.77,
+     "mm_max": 103.51,
+     "cobre": 0.201
+    },
+    "dir": {
+     "mm": 8.78,
+     "mm_max": 69.32,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 231.06,
+     "cobre": 0.499
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 213.5,
+     "cobre": 0.028
+    }
+   },
+   "beirada_pb": 0.06414,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.77,
+     "mm_max": 172.37,
+     "cobre": 0.259
+    },
+    "dir": {
+     "mm": 9.24,
+     "mm_max": 173.29,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 231.06,
+     "cobre": 0.565
+    },
+    "pe": {
+     "mm": 21.26,
+     "mm_max": 231.06,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 227,
+   "pecas_fora": 0,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00203,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 3.49,
+    "topo": 19.99,
+    "pe": 2.32
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.01485,
+    0.00625,
+    0.98185,
+    0.99375
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4092,
+    5458
+   ],
+   "tamanho_mm": [
+    346.5,
+    462.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.7,
+   "papel": 210.0,
+   "beirada_escuro": 0.02608,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.77,
+     "mm_max": 103.51,
+     "cobre": 0.201
+    },
+    "dir": {
+     "mm": 8.78,
+     "mm_max": 69.32,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 231.06,
+     "cobre": 0.499
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 213.5,
+     "cobre": 0.028
+    }
+   },
+   "beirada_pb": 0.06414,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.77,
+     "mm_max": 172.37,
+     "cobre": 0.259
+    },
+    "dir": {
+     "mm": 9.24,
+     "mm_max": 173.29,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 231.06,
+     "cobre": 0.565
+    },
+    "pe": {
+     "mm": 21.26,
+     "mm_max": 231.06,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 227,
+   "pecas_fora": 0,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00203,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 3.49,
+    "topo": 19.99,
+    "pe": 2.32
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.01485,
+    0.00625,
+    0.98185,
+    0.99375
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4092,
+    5458
+   ],
+   "tamanho_mm": [
+    346.5,
+    462.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.75,
+   "papel": 210.0,
+   "beirada_escuro": 0.02608,
+   "lados_escuro": {
+    "esq": {
+     "mm": 2.77,
+     "mm_max": 103.51,
+     "cobre": 0.201
+    },
+    "dir": {
+     "mm": 8.78,
+     "mm_max": 69.32,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 231.06,
+     "cobre": 0.499
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 213.5,
+     "cobre": 0.028
+    }
+   },
+   "beirada_pb": 0.06414,
+   "lados_pb": {
+    "esq": {
+     "mm": 2.77,
+     "mm_max": 172.37,
+     "cobre": 0.259
+    },
+    "dir": {
+     "mm": 9.24,
+     "mm_max": 173.29,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 231.06,
+     "cobre": 0.565
+    },
+    "pe": {
+     "mm": 21.26,
+     "mm_max": 231.06,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 227,
+   "pecas_fora": 0,
+   "pecas_partidas": 1,
+   "tinta_perdida": 0.00203,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 3.49,
+    "topo": 19.99,
+    "pe": 2.32
+   }
+  },
+  "no_gabarito": false
+ },
+ "egenloff_p012__inteira": {
+  "pid": "egenloff_p012",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4167,
+    5492
+   ],
+   "tamanho_mm": [
+    352.8,
+    465.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.3,
+   "papel": 214.0,
+   "beirada_escuro": 0.07947,
+   "lados_escuro": {
+    "esq": {
+     "mm": 9.3,
+     "mm_max": 176.23,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 7.9,
+     "mm_max": 176.7,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 7.9,
+     "mm_max": 232.49,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 10.23,
+     "mm_max": 214.83,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.0793,
+   "lados_pb": {
+    "esq": {
+     "mm": 9.3,
+     "mm_max": 176.23,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 7.9,
+     "mm_max": 176.7,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 7.9,
+     "mm_max": 232.49,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 10.23,
+     "mm_max": 214.83,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 39,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 195.3,
+    "pe": 2.32
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4167,
+    5492
+   ],
+   "tamanho_mm": [
+    352.8,
+    465.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.72,
+   "papel": 214.0,
+   "beirada_escuro": 0.07947,
+   "lados_escuro": {
+    "esq": {
+     "mm": 9.3,
+     "mm_max": 176.23,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 7.9,
+     "mm_max": 176.7,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 7.9,
+     "mm_max": 232.49,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 10.23,
+     "mm_max": 214.83,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.0793,
+   "lados_pb": {
+    "esq": {
+     "mm": 9.3,
+     "mm_max": 176.23,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 7.9,
+     "mm_max": 176.7,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 7.9,
+     "mm_max": 232.49,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 10.23,
+     "mm_max": 214.83,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 39,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 195.3,
+    "pe": 2.32
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4167,
+    5492
+   ],
+   "tamanho_mm": [
+    352.8,
+    465.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.78,
+   "papel": 214.0,
+   "beirada_escuro": 0.07947,
+   "lados_escuro": {
+    "esq": {
+     "mm": 9.3,
+     "mm_max": 176.23,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 7.9,
+     "mm_max": 176.7,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 7.9,
+     "mm_max": 232.49,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 10.23,
+     "mm_max": 214.83,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.0793,
+   "lados_pb": {
+    "esq": {
+     "mm": 9.3,
+     "mm_max": 176.23,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 7.9,
+     "mm_max": 176.7,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 7.9,
+     "mm_max": 232.49,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 10.23,
+     "mm_max": 214.83,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 39,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 195.3,
+    "pe": 2.32
+   }
+  },
+  "no_gabarito": false
+ },
+ "egenloff_p047__inteira": {
+  "pid": "egenloff_p047",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.015,
+    1.0,
+    0.985
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5488
+   ],
+   "tamanho_px": [
+    4167,
+    5406
+   ],
+   "tamanho_mm": [
+    352.8,
+    457.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.31,
+   "papel": 214.0,
+   "beirada_escuro": 0.07316,
+   "lados_escuro": {
+    "esq": {
+     "mm": 7.78,
+     "mm_max": 176.22,
+     "cobre": 0.963
+    },
+    "dir": {
+     "mm": 6.41,
+     "mm_max": 176.68,
+     "cobre": 0.963
+    },
+    "topo": {
+     "mm": 8.7,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 9.61,
+     "mm_max": 211.92,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.10212,
+   "lados_pb": {
+    "esq": {
+     "mm": 7.78,
+     "mm_max": 176.22,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 6.87,
+     "mm_max": 176.68,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 8.7,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 26.09,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 232,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 20.91,
+    "pe": 1.39
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.015,
+    1.0,
+    0.985
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5488
+   ],
+   "tamanho_px": [
+    4167,
+    5406
+   ],
+   "tamanho_mm": [
+    352.8,
+    457.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.7,
+   "papel": 214.0,
+   "beirada_escuro": 0.07316,
+   "lados_escuro": {
+    "esq": {
+     "mm": 7.78,
+     "mm_max": 176.22,
+     "cobre": 0.963
+    },
+    "dir": {
+     "mm": 6.41,
+     "mm_max": 176.68,
+     "cobre": 0.963
+    },
+    "topo": {
+     "mm": 8.7,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 9.61,
+     "mm_max": 211.92,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.10212,
+   "lados_pb": {
+    "esq": {
+     "mm": 7.78,
+     "mm_max": 176.22,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 6.87,
+     "mm_max": 176.68,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 8.7,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 26.09,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 232,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 20.91,
+    "pe": 1.39
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.015,
+    1.0,
+    0.985
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5488
+   ],
+   "tamanho_px": [
+    4167,
+    5406
+   ],
+   "tamanho_mm": [
+    352.8,
+    457.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.74,
+   "papel": 214.0,
+   "beirada_escuro": 0.07316,
+   "lados_escuro": {
+    "esq": {
+     "mm": 7.78,
+     "mm_max": 176.22,
+     "cobre": 0.963
+    },
+    "dir": {
+     "mm": 6.41,
+     "mm_max": 176.68,
+     "cobre": 0.963
+    },
+    "topo": {
+     "mm": 8.7,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 9.61,
+     "mm_max": 211.92,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.10212,
+   "lados_pb": {
+    "esq": {
+     "mm": 7.78,
+     "mm_max": 176.22,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 6.87,
+     "mm_max": 176.68,
+     "cobre": 1.0
+    },
+    "topo": {
+     "mm": 8.7,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    },
+    "pe": {
+     "mm": 26.09,
+     "mm_max": 228.85,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 232,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 20.91,
+    "pe": 1.39
+   }
+  },
+  "no_gabarito": false
+ },
+ "egenloff_p121__inteira": {
+  "pid": "egenloff_p121",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.00495,
+    0.0025,
+    0.98845,
+    0.9975
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4119,
+    5479
+   ],
+   "tamanho_mm": [
+    348.7,
+    463.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.32,
+   "papel": 211.0,
+   "beirada_escuro": 0.05831,
+   "lados_escuro": {
+    "esq": {
+     "mm": 10.21,
+     "mm_max": 174.42,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 4.17,
+     "mm_max": 174.42,
+     "cobre": 0.49
+    },
+    "topo": {
+     "mm": 3.25,
+     "mm_max": 231.94,
+     "cobre": 0.707
+    },
+    "pe": {
+     "mm": 11.6,
+     "mm_max": 214.32,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.08664,
+   "lados_pb": {
+    "esq": {
+     "mm": 10.21,
+     "mm_max": 174.42,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 4.17,
+     "mm_max": 174.42,
+     "cobre": 0.53
+    },
+    "topo": {
+     "mm": 3.25,
+     "mm_max": 231.94,
+     "cobre": 0.722
+    },
+    "pe": {
+     "mm": 28.76,
+     "mm_max": 231.94,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 130,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00017,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 2.32,
+    "topo": 16.04,
+    "pe": 2.32
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.00495,
+    0.0025,
+    0.98845,
+    0.9975
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4119,
+    5479
+   ],
+   "tamanho_mm": [
+    348.7,
+    463.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.66,
+   "papel": 211.0,
+   "beirada_escuro": 0.05831,
+   "lados_escuro": {
+    "esq": {
+     "mm": 10.21,
+     "mm_max": 174.42,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 4.17,
+     "mm_max": 174.42,
+     "cobre": 0.49
+    },
+    "topo": {
+     "mm": 3.25,
+     "mm_max": 231.94,
+     "cobre": 0.707
+    },
+    "pe": {
+     "mm": 11.6,
+     "mm_max": 214.32,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.08664,
+   "lados_pb": {
+    "esq": {
+     "mm": 10.21,
+     "mm_max": 174.42,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 4.17,
+     "mm_max": 174.42,
+     "cobre": 0.53
+    },
+    "topo": {
+     "mm": 3.25,
+     "mm_max": 231.94,
+     "cobre": 0.722
+    },
+    "pe": {
+     "mm": 28.76,
+     "mm_max": 231.94,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 130,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00017,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 2.32,
+    "topo": 16.04,
+    "pe": 2.32
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.00495,
+    0.0025,
+    0.98845,
+    0.9975
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4119,
+    5479
+   ],
+   "tamanho_mm": [
+    348.7,
+    463.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.78,
+   "papel": 211.0,
+   "beirada_escuro": 0.05831,
+   "lados_escuro": {
+    "esq": {
+     "mm": 10.21,
+     "mm_max": 174.42,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 4.17,
+     "mm_max": 174.42,
+     "cobre": 0.49
+    },
+    "topo": {
+     "mm": 3.25,
+     "mm_max": 231.94,
+     "cobre": 0.707
+    },
+    "pe": {
+     "mm": 11.6,
+     "mm_max": 214.32,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.08664,
+   "lados_pb": {
+    "esq": {
+     "mm": 10.21,
+     "mm_max": 174.42,
+     "cobre": 1.0
+    },
+    "dir": {
+     "mm": 4.17,
+     "mm_max": 174.42,
+     "cobre": 0.53
+    },
+    "topo": {
+     "mm": 3.25,
+     "mm_max": 231.94,
+     "cobre": 0.722
+    },
+    "pe": {
+     "mm": 28.76,
+     "mm_max": 231.94,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 130,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00017,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 2.32,
+    "topo": 16.04,
+    "pe": 2.32
+   }
+  },
+  "no_gabarito": false
+ },
+ "egenloff_p131__inteira": {
+  "pid": "egenloff_p131",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.00875,
+    1.0,
+    0.99125
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4167,
+    5444
+   ],
+   "tamanho_mm": [
+    352.8,
+    460.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.28,
+   "papel": 210.0,
+   "beirada_escuro": 0.06881,
+   "lados_escuro": {
+    "esq": {
+     "mm": 10.6,
+     "mm_max": 176.07,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 11.98,
+     "mm_max": 176.53,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 230.46,
+     "cobre": 0.325
+    },
+    "pe": {
+     "mm": 11.52,
+     "mm_max": 212.95,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.06886,
+   "lados_pb": {
+    "esq": {
+     "mm": 10.6,
+     "mm_max": 176.07,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 11.98,
+     "mm_max": 176.53,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 230.46,
+     "cobre": 0.327
+    },
+    "pe": {
+     "mm": 11.52,
+     "mm_max": 212.95,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 152,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 13.72,
+    "pe": 2.32
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.00875,
+    1.0,
+    0.99125
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4167,
+    5444
+   ],
+   "tamanho_mm": [
+    352.8,
+    460.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.6,
+   "papel": 210.0,
+   "beirada_escuro": 0.06881,
+   "lados_escuro": {
+    "esq": {
+     "mm": 10.6,
+     "mm_max": 176.07,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 11.98,
+     "mm_max": 176.53,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 230.46,
+     "cobre": 0.325
+    },
+    "pe": {
+     "mm": 11.52,
+     "mm_max": 212.95,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.06886,
+   "lados_pb": {
+    "esq": {
+     "mm": 10.6,
+     "mm_max": 176.07,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 11.98,
+     "mm_max": 176.53,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 230.46,
+     "cobre": 0.327
+    },
+    "pe": {
+     "mm": 11.52,
+     "mm_max": 212.95,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 152,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 13.72,
+    "pe": 2.32
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.00875,
+    1.0,
+    0.99125
+   ],
+   "pagina_inteira_px": [
+    4167,
+    5492
+   ],
+   "tamanho_px": [
+    4167,
+    5444
+   ],
+   "tamanho_mm": [
+    352.8,
+    460.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.8,
+   "papel": 210.0,
+   "beirada_escuro": 0.06881,
+   "lados_escuro": {
+    "esq": {
+     "mm": 10.6,
+     "mm_max": 176.07,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 11.98,
+     "mm_max": 176.53,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 230.46,
+     "cobre": 0.325
+    },
+    "pe": {
+     "mm": 11.52,
+     "mm_max": 212.95,
+     "cobre": 1.0
+    }
+   },
+   "beirada_pb": 0.06886,
+   "lados_pb": {
+    "esq": {
+     "mm": 10.6,
+     "mm_max": 176.07,
+     "cobre": 0.962
+    },
+    "dir": {
+     "mm": 11.98,
+     "mm_max": 176.53,
+     "cobre": 0.962
+    },
+    "topo": {
+     "mm": 3.23,
+     "mm_max": 230.46,
+     "cobre": 0.327
+    },
+    "pe": {
+     "mm": 11.52,
+     "mm_max": 212.95,
+     "cobre": 1.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 152,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 0.93,
+    "dir": 4.88,
+    "topo": 13.72,
+    "pe": 2.32
+   }
+  },
+  "no_gabarito": false
+ },
+ "escola_p007__inteira": {
+  "pid": "escola_p007",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.03035,
+    0.005,
+    0.9172,
+    0.995
+   ],
+   "pagina_inteira_px": [
+    2130,
+    3134
+   ],
+   "tamanho_px": [
+    1954,
+    3119
+   ],
+   "tamanho_mm": [
+    165.4,
+    264.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.21,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1276,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00121,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.53,
+    "pe": 1.46
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 2.12,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.125,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.125,
+   "recorte": [
+    0.03035,
+    0.005,
+    0.9172,
+    0.995
+   ],
+   "pagina_inteira_px": [
+    2130,
+    3134
+   ],
+   "tamanho_px": [
+    1954,
+    3119
+   ],
+   "tamanho_mm": [
+    165.4,
+    264.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.3,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00113,
+   "pecas": 1276,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00123,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.27,
+    "topo": 0.4,
+    "pe": 1.33
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 1.72,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.125,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.125,
+   "recorte": [
+    0.03219,
+    0.0725,
+    0.91536,
+    0.9275
+   ],
+   "pagina_inteira_px": [
+    2130,
+    3134
+   ],
+   "tamanho_px": [
+    1950,
+    2907
+   ],
+   "tamanho_mm": [
+    165.1,
+    246.1
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.41,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00013,
+   "pecas": 1276,
+   "pecas_fora": 2,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.01806,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.19,
+    "topo": 1.33,
+    "pe": 1.33
+   }
+  },
+  "no_gabarito": true
+ },
+ "escola_p035__inteira": {
+  "pid": "escola_p035",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 3.86,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.8,
+   "angulo_programa": -0.7999999999999994,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.05448,
+    0.05,
+    0.85989,
+    0.945
+   ],
+   "pagina_inteira_px": [
+    2275,
+    3146
+   ],
+   "tamanho_px": [
+    1957,
+    2973
+   ],
+   "tamanho_mm": [
+    165.7,
+    251.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.23,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00747,
+   "pecas": 1172,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00014,
+   "folga_mm": {
+    "esq": 1.2,
+    "dir": 2.66,
+    "topo": 2.26,
+    "pe": 0.0
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 3.84,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.812,
+   "angulo_programa": -0.7999999999999994,
+   "angulo_scantailor": -0.8125,
+   "recorte": [
+    0.05448,
+    0.05,
+    0.85989,
+    0.945
+   ],
+   "pagina_inteira_px": [
+    2275,
+    3146
+   ],
+   "tamanho_px": [
+    1957,
+    2973
+   ],
+   "tamanho_mm": [
+    165.7,
+    251.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.31,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00759,
+   "pecas": 1172,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00015,
+   "folga_mm": {
+    "esq": 1.2,
+    "dir": 2.66,
+    "topo": 2.26,
+    "pe": 0.0
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 1.61,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": -0.812,
+   "angulo_programa": -0.7999999999999994,
+   "angulo_scantailor": -0.8125,
+   "recorte": [
+    0.05448,
+    0.05375,
+    0.85124,
+    0.9425
+   ],
+   "pagina_inteira_px": [
+    2275,
+    3146
+   ],
+   "tamanho_px": [
+    1937,
+    2965
+   ],
+   "tamanho_mm": [
+    164.0,
+    251.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.44,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.29445,
+   "lados_pb": {
+    "esq": {
+     "mm": 59.24,
+     "mm_max": 67.78,
+     "cobre": 0.4
+    },
+    "dir": {
+     "mm": 72.8,
+     "mm_max": 73.8,
+     "cobre": 0.402
+    },
+    "topo": {
+     "mm": 100.41,
+     "mm_max": 100.67,
+     "cobre": 0.888
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1172,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 6e-05,
+   "folga_mm": {
+    "esq": 1.07,
+    "dir": 0.93,
+    "topo": 1.33,
+    "pe": 0.0
+   }
+  },
+  "no_gabarito": true
+ },
+ "escola_p113__inteira": {
+  "pid": "escola_p113",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 1.86,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.1,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.05171,
+    0.0025,
+    0.8685,
+    0.9975
+   ],
+   "pagina_inteira_px": [
+    2234,
+    3130
+   ],
+   "tamanho_px": [
+    1940,
+    3123
+   ],
+   "tamanho_mm": [
+    164.3,
+    264.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.22,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00076,
+   "pecas": 1160,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00056,
+   "folga_mm": {
+    "esq": 0.27,
+    "dir": 0.0,
+    "topo": 1.19,
+    "pe": 1.33
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.05171,
+    0.0025,
+    0.8685,
+    0.9975
+   ],
+   "pagina_inteira_px": [
+    2234,
+    3130
+   ],
+   "tamanho_px": [
+    1940,
+    3123
+   ],
+   "tamanho_mm": [
+    164.3,
+    264.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.36,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1160,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00055,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 1.33,
+    "pe": 1.46
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.05171,
+    0.0025,
+    0.8685,
+    0.9975
+   ],
+   "pagina_inteira_px": [
+    2234,
+    3130
+   ],
+   "tamanho_px": [
+    1940,
+    3123
+   ],
+   "tamanho_mm": [
+    164.3,
+    264.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.42,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1160,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00055,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 1.33,
+    "pe": 1.46
+   }
+  },
+  "no_gabarito": false
+ },
+ "escola_p197__inteira": {
+  "pid": "escola_p197",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 2.96,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": 0.5,
+   "angulo_programa": 0.5,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.05295,
+    0.075,
+    0.84367,
+    0.925
+   ],
+   "pagina_inteira_px": [
+    2234,
+    3105
+   ],
+   "tamanho_px": [
+    1885,
+    2873
+   ],
+   "tamanho_mm": [
+    159.6,
+    243.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.25,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00469,
+   "pecas": 1310,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00034,
+   "folga_mm": {
+    "esq": 0.79,
+    "dir": 1.84,
+    "topo": 1.45,
+    "pe": 0.13
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 2.96,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.5,
+   "angulo_programa": 0.5,
+   "angulo_scantailor": 0.5,
+   "recorte": [
+    0.05295,
+    0.075,
+    0.84367,
+    0.925
+   ],
+   "pagina_inteira_px": [
+    2234,
+    3105
+   ],
+   "tamanho_px": [
+    1885,
+    2873
+   ],
+   "tamanho_mm": [
+    159.6,
+    243.2
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.36,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00469,
+   "pecas": 1310,
+   "pecas_fora": 1,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00034,
+   "folga_mm": {
+    "esq": 0.79,
+    "dir": 1.84,
+    "topo": 1.45,
+    "pe": 0.13
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 1.69,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.5,
+   "angulo_programa": 0.5,
+   "angulo_scantailor": 0.5,
+   "recorte": [
+    0.07208,
+    0.07625,
+    0.82106,
+    0.92375
+   ],
+   "pagina_inteira_px": [
+    2234,
+    3105
+   ],
+   "tamanho_px": [
+    1834,
+    2869
+   ],
+   "tamanho_mm": [
+    155.3,
+    242.9
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.42,
+   "papel": 252.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00061,
+   "pecas": 1310,
+   "pecas_fora": 4,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.00276,
+   "folga_mm": {
+    "esq": 1.18,
+    "dir": 1.18,
+    "topo": 1.31,
+    "pe": 0.0
+   }
+  },
+  "no_gabarito": false
+ },
+ "gladstone_p005__inteira": {
+  "pid": "gladstone_p005",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 2.96,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.1,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.07394,
+    0.0975,
+    0.84505,
+    0.8175
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2097,
+    2867
+   ],
+   "tamanho_mm": [
+    177.5,
+    242.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.16,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00055,
+   "pecas": 1024,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.04,
+    "dir": 1.19,
+    "topo": 1.63,
+    "pe": 1.19
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.07394,
+    0.0975,
+    0.84505,
+    0.8175
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2097,
+    2867
+   ],
+   "tamanho_mm": [
+    177.5,
+    242.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.36,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1024,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.34,
+    "topo": 1.63,
+    "pe": 1.34
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.07394,
+    0.0975,
+    0.84505,
+    0.8175
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2097,
+    2867
+   ],
+   "tamanho_mm": [
+    177.5,
+    242.7
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.39,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 1024,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.34,
+    "topo": 1.63,
+    "pe": 1.34
+   }
+  },
+  "no_gabarito": false
+ },
+ "gladstone_p018__inteira": {
+  "pid": "gladstone_p018",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 1.3,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.5,
+   "angulo_programa": -0.5000000000000001,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2482,
+    3508
+   ],
+   "tamanho_mm": [
+    210.1,
+    297.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.12,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00457,
+   "pecas": 8,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 81.08,
+    "dir": 81.68,
+    "topo": 145.39,
+    "pe": 143.9
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.5000000000000001,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2482,
+    3508
+   ],
+   "tamanho_mm": [
+    210.1,
+    297.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.25,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 8,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 81.08,
+    "dir": 81.68,
+    "topo": 145.24,
+    "pe": 144.05
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.5000000000000001,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2482,
+    3508
+   ],
+   "tamanho_mm": [
+    210.1,
+    297.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.27,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 8,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 81.08,
+    "dir": 81.68,
+    "topo": 145.24,
+    "pe": 144.05
+   }
+  },
+  "no_gabarito": false
+ },
+ "gladstone_p055__inteira": {
+  "pid": "gladstone_p055",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.08454,
+    0.18875,
+    0.82032,
+    0.625
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2036,
+    2192
+   ],
+   "tamanho_mm": [
+    172.4,
+    185.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.13,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 835,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.04,
+    "dir": 1.04,
+    "topo": 1.49,
+    "pe": 1.34
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.08454,
+    0.18875,
+    0.82032,
+    0.625
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2036,
+    2192
+   ],
+   "tamanho_mm": [
+    172.4,
+    185.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.28,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 835,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.04,
+    "dir": 1.04,
+    "topo": 1.49,
+    "pe": 1.34
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.08454,
+    0.18875,
+    0.82032,
+    0.625
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2036,
+    2192
+   ],
+   "tamanho_mm": [
+    172.4,
+    185.6
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.37,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 835,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.04,
+    "dir": 1.04,
+    "topo": 1.49,
+    "pe": 1.34
+   }
+  },
+  "no_gabarito": false
+ },
+ "gladstone_p096__inteira": {
+  "pid": "gladstone_p096",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.94,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.1,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2482,
+    3508
+   ],
+   "tamanho_mm": [
+    210.1,
+    297.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.13,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.00079,
+   "pecas": 489,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 3e-05,
+   "folga_mm": {
+    "esq": 28.81,
+    "dir": 29.11,
+    "topo": 59.25,
+    "pe": 57.17
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2482,
+    3508
+   ],
+   "tamanho_mm": [
+    210.1,
+    297.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.36,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 489,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 28.96,
+    "dir": 29.26,
+    "topo": 59.25,
+    "pe": 57.17
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -0.10000000000000009,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2482,
+    3508
+   ],
+   "tamanho_mm": [
+    210.1,
+    297.0
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.27,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 489,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 28.96,
+    "dir": 29.26,
+    "topo": 59.25,
+    "pe": 57.17
+   }
+  },
+  "no_gabarito": false
+ },
+ "gladstone_p116__inteira": {
+  "pid": "gladstone_p116",
+  "metade": "inteira",
+  "A": {
+   "replica_diferenca_media": 0.0,
+   "nome": "antigo (corta antes, conta do programa)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "programa",
+   "conta_que_valeu": "programa",
+   "angulo": -0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": null,
+   "recorte": [
+    0.07217,
+    0.1775,
+    0.84858,
+    0.6475
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2106,
+    2272
+   ],
+   "tamanho_mm": [
+    178.3,
+    192.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.25,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 678,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.04,
+    "topo": 1.63,
+    "pe": 1.34
+   }
+  },
+  "B": {
+   "replica_diferenca_media": 0.0,
+   "nome": "so a ordem antiga (corta antes, conta do ScanTailor)",
+   "ordem": "cortar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.07217,
+    0.1775,
+    0.84858,
+    0.6475
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2106,
+    2272
+   ],
+   "tamanho_mm": [
+    178.3,
+    192.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.37,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 678,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.04,
+    "topo": 1.63,
+    "pe": 1.34
+   }
+  },
+  "C": {
+   "replica_diferenca_media": 0.0,
+   "nome": "novo (endireita antes, conta do ScanTailor)",
+   "ordem": "endireitar_antes",
+   "endireitar_como": "scantailor",
+   "conta_que_valeu": "scantailor",
+   "angulo": 0.0,
+   "angulo_programa": -1.1102230246251565e-16,
+   "angulo_scantailor": 0.0,
+   "recorte": [
+    0.07217,
+    0.1775,
+    0.84858,
+    0.6475
+   ],
+   "pagina_inteira_px": [
+    2482,
+    3508
+   ],
+   "tamanho_px": [
+    2106,
+    2272
+   ],
+   "tamanho_mm": [
+    178.3,
+    192.4
+   ],
+   "replica_do_tamanho_confere": true,
+   "segundos": 0.4,
+   "papel": 255.0,
+   "beirada_escuro": 0.0,
+   "lados_escuro": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "beirada_pb": 0.0,
+   "lados_pb": {
+    "esq": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "dir": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "topo": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    },
+    "pe": {
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "cobre": 0.0
+    }
+   },
+   "cunha_branca": 0.0,
+   "pecas": 678,
+   "pecas_fora": 0,
+   "pecas_partidas": 0,
+   "tinta_perdida": 0.0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.04,
+    "topo": 1.63,
+    "pe": 1.34
+   }
+  },
+  "no_gabarito": false
  }
 }

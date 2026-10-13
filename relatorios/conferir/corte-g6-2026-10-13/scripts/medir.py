@@ -348,6 +348,34 @@ def medir_pagina(pid: str) -> dict:
     return saida
 
 
+def _gb_livres() -> float:
+    """Memoria fisica livre, em GB (Windows)."""
+    import ctypes
+
+    class Estado(ctypes.Structure):
+        _fields_ = [("tamanho", ctypes.c_ulong), ("carga", ctypes.c_ulong),
+                    ("total", ctypes.c_ulonglong), ("livre", ctypes.c_ulonglong),
+                    ("a", ctypes.c_ulonglong), ("b", ctypes.c_ulonglong),
+                    ("c", ctypes.c_ulonglong), ("d", ctypes.c_ulonglong),
+                    ("e", ctypes.c_ulonglong)]
+
+    estado = Estado()
+    estado.tamanho = ctypes.sizeof(Estado)
+    ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(estado))
+    return estado.livre / 2 ** 30
+
+
+def _esperar_memoria(minimo: float = 3.0, no_maximo: float = 600.0) -> None:
+    """Espera ter `minimo` GB livres (ha outro agente rodando testes no PC);
+    depois de `no_maximo` segundos segue assim mesmo, avisando."""
+    t0 = time.perf_counter()
+    while _gb_livres() < minimo:
+        if time.perf_counter() - t0 > no_maximo:
+            print(f"  (segui com {_gb_livres():.1f} GB livres depois de esperar)", flush=True)
+            return
+        time.sleep(10)
+
+
 def _pids() -> list[str]:
     gab = json.loads((TRABALHO / "regra4.json").read_text(encoding="utf-8"))
     return sorted({b.split("__")[0] for b in gab})
@@ -365,6 +393,7 @@ def main() -> int:
             continue
         if any(v.get("pid") == pid and all(c in v for c in CONFIGS) for v in dados.values()):
             continue
+        _esperar_memoria()
         t0 = time.perf_counter()
         try:
             novas = medir_pagina(pid)
