@@ -143,8 +143,14 @@ class BarraDeMenu(QMenuBar):
         livres - conferido contra todo o registro de atalhos.py e o
         tratar_tecla da tela de conferir). A meia volta fica sem tecla de
         fabrica (Ctrl+Direita duas vezes); o nome das teclas e o do Qt."""
-        from core.girar import ALCANCES, NOMES_DOS_ALCANCES
+        from core.girar import ALCANCES
         from PySide6.QtGui import QActionGroup
+
+        from ui.widgets.barra_girar import nomes_dos_alcances
+
+        # as mesmas palavras da lista "aplicar em" do girar (rodada 12 do
+        # layout, 709 B: dizem "folha")
+        nomes = nomes_dos_alcances("folha")
 
         menu = self._menu("Página")
         self._acao(menu, "ir_para_pagina", "Ir para a página...", "Ctrl+G")
@@ -157,7 +163,7 @@ class BarraDeMenu(QMenuBar):
         grupo = QActionGroup(self)
         grupo.setExclusive(True)
         for chave in ALCANCES:
-            item = self._acao(alcance, f"giro_em_{chave}", NOMES_DOS_ALCANCES[chave])
+            item = self._acao(alcance, f"giro_em_{chave}", nomes[chave])
             item.setCheckable(True)
             grupo.addAction(item)
         self.acoes[f"giro_em_{ALCANCES[0]}"].setChecked(True)
