@@ -111,6 +111,7 @@ nunca `Remove-Item -Recurse`; desfazer só com `(Get-Item <junção>).Delete()`.
    de folha grande (ljs47, Antiphon, Egenloff), onde a caixa encolhe muito com o DPI do programa.
 8. **Layout:** rodada 14 (qual vista de "Todas as páginas" vem de fábrica; onde se escolhe a "área de trabalho 1";
    menus; nome "o mesmo da página"; frase nova para o aviso "Confira na aba Marcar"); etapas 4 a 7 no programa.
+8a. **Lista completa do que falta do layout** (o que cada print ainda tem de antigo, etapas 4 a 7, decidido e não construído, barra de baixo sem etapa marcada): `relatorios/layout-impl/ONDE-PAREI.md` no ramo `layout-impl-2026-10-08`, seções "O que em cada print..." e "O que ainda falta". Foi a base da resposta dada ao Samuel em 13/10 ("o que não foi implementado ainda no programa do layout?"): fora do programa ainda está tudo menos os temas (etapa 1); etapas 2 e 3 e o Propriedades estão aprovados, faltando só a velocidade.
 8b. **Os nove itens da Fase 2 ainda não começados** (2.8 a 2.12, 2.15 a 2.17, 2.19): construir direto, pela regra de 13/10 (§3). Contagem ao fechar: 4 dos 19 itens no programa (2.1, 2.2, 2.3, 2.7); 2.4, 2.5, 2.6 e 2.13 são os próximos (item 7); 2.14 e 2.18 têm decisão dele e vêm depois.
 9. Perguntas soltas no chat, sem resposta dele: apagar a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW ?;
    apagar `C:\Users\fotog\AppData\Local\Temp\p2.py` (arquivo vazio deixado por um agente)?
