@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 13/10/2026 (PARTE -15; a anterior, PARTE -14, é de 12/10). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 14/10/2026 (PARTE -16; a anterior, PARTE -15, é de 12 a 13/10). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,128 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -15 — Checkpoint de 12 a 13/10/2026, no Claude Code local (leia isto primeiro, é o mais novo)
+# PARTE -16 — Checkpoint de 14/10/2026, no Claude Code local (leia isto primeiro, é o mais novo)
+
+Sessão curta no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. Nenhum agente foi chamado: a gerente
+fez tudo. **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). A PARTE -15 abaixo
+continua valendo no que esta não muda. As duas cópias do plano (`docs/plano/` e `...-arquivos\plano-24-09-2026\`) estavam
+iguais ao fechar.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao status -sb` e `git fetch origin`. A pasta principal está no `fase-1`, igual ao
+   GitHub. Sobram só os arquivos soltos antigos em `relatorios/` (fotos e conferências de setembro e outubro, nunca
+   commitados; não mexer).
+2. Ler o banco da página de escolhas (§4): podem ter chegado as respostas de `g7-borda-ate-onde` e
+   `g9-folha-maior-impressao`.
+3. Arquivos desta sessão (scripts, documentos do banco, desenhos): `D:\programas\EditorImpressao-arquivos\sessao-2026-10-14\`
+   (`escolhas\montar.py` e `montar2.py`, `andamento\sincronizar_plano.py`, `desenhos_impressao.py`). O arquivo da
+   página de escolhas que vale para republicar continua em `...\sessao-2026-10-13\paginas\pub-escolhas\` (com `img\imp\`
+   novo).
+
+## 1. O que está no programa (ramo `fase-1`)
+
+- **Layout das etapas 2 e 3, painel Propriedades e textos das rodadas 12 e 13: JUNTADO** (`ccc84aa`, junção do ramo
+  `juntar-layout3-2026-10-13`). Aprovado pelo Samuel em 13/10. O código juntado é idêntico ao `f35bcaf` (conferido com
+  `git diff`, fora de docs/relatorios: vazio). A janela abre (teste rápido sem tela: `JanelaPrincipal()` mostra).
+- **Velocidade no PC: ficou igual** (Marial 300 folhas, 3 rodadas alternadas de cada; relatório em
+  `relatorios/velocidade-layout3-2026-10-14/velocidade.html`): abrir 55,2 → 55,6 s; trocar de página 2,36 → 2,31 s;
+  Mágico pro 10 páginas 57,0 → 55,2 s (três pares para o mesmo lado, mas do tamanho do vai-e-vem); Preto e branco
+  26,0 → 26,4 s; mesmo PDF de saída (70,7 MB).
+- **Suíte completa no Windows do GitHub do `fase-1` (`6f79734`+): rodada 38662254297**: passou, 2049 passaram, 0 falharam (§7).
+- Continua no programa o defeito do G6 (faixa preta em página torta com borda preta); conserto em ramo (PARTE -15 §2).
+
+## 2. Decisões do Samuel nesta sessão (literais em `docs/plano/PLANO-DEFINITIVO.md`, Registro de mudanças, 13 e 14/10)
+
+- **Explicação da impressão (chat, 14/10), a mais importante:** o programa tem **duas fases**. Na edição, "Cada página
+  ocupa a folha inteira" e só se cuida de legível, branco, desenho, endireitar. Formato, escala e margens **só na hora de
+  gerar o arquivo para impressão**: livreto (A4 deitada com duas A5, imposição automática "como o embaralhador antigo"),
+  A4 inteira em pé e "TODAS essas opções" da janela de imprimir do leitor de PDF dele (Tamanho: Ajustar / Tamanho real /
+  Escala personalizada / Reduzir páginas muito grandes; Pôster; Múltiplo; Livreto: frente e verso, folhas de-até,
+  encadernação esquerda; os tamanhos de papel; orientação; centralizar; escala de cinza; reverter páginas). Margens
+  contadas na A5, mínimo 1 cm nos quatro lados, costura 1 cm (par → direita, ímpar → esquerda); aviso quando o corte deixar
+  margem abaixo de 1 cm. Texto inteiro e as cinco fotos: `relatorios/conferencia-samuel-2026-10-14/`. Anotado no item 2.6.
+- **Página de escolhas, decididas:** `g8-guias` (as duas linhas; desligar as automáticas quando quiser);
+  `g8-moldura-tinta-fora` (só avisa, com opção de mudar o corte e mostrar alargado o que foi tirado);
+  `g9-pagina-muito-maior` (fica fora da conta do tamanho e avisa); `g10-papel-ou-pagina` (é o papel da impressora,
+  formato só na impressão); `g10-ajustar-todas` ("Cada página até encher a folha" = "Ajustar" de fábrica; ele reclamou
+  "Porque essa opção voltou ? eu já não tinha respondido?"); **`g11-margem-impressora`: "1 cm a partir de onde a
+  impressora imprime (1,3 cm do papel)"**; **`g12-diminuir-um-lado`: "Em todas, e dá para mudar uma folha só"**. As
+  duas últimas foram lidas no fechamento, marcadas `decidida` na página e registradas no plano.
+- **Conserto do corte:** o "Melhorar" de 13/10 com os comentários foi registrado no plano. Decisão `cg6` reaberta na
+  página de conferência (opção esvaziada) até o conserto do Pesel 21.
+
+## 3. Tentado e descartado / desvios
+
+- **Medir a velocidade com 3 GB livres:** o PC ficou em 2,6 GB mesmo depois de fechar o CapCut e de `wsl --shutdown`
+  (com o Samuel autorizando). O `vmmem` de 0,9 GB **não é o WSL** (continuou depois do shutdown, sem distribuição
+  rodando; provavelmente a máquina virtual de outro programa): não mexer. A exigência baixou para 2,5 GB (o teste usa
+  no máximo 1,4 GB); as rodadas começaram com 3,8 a 4,4 GB.
+- Na página de escolhas, a opção "o Kaique escolhe folha por folha" da pergunta da folha maior saiu: com "todas as opções
+  no programa", isso vale sempre; a pergunta ficou "qual vem de fábrica".
+
+## 4. Perguntas em aberto (exatas)
+
+- **Página de escolhas** (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV), abertas e sem resposta ao fechar:
+  - `g7-borda-ate-onde` — "Página com borda preta: até onde vai o corte que o programa sugere?" Opções: "Tira só o
+    preto" · "Vai até a moldura (o que está impresso)" · "O Kaique escolhe por livro: só o preto, ou até a moldura"
+    (sugestão, começando em "até a moldura") · "Ainda não entendi". A dúvida dele ("hoje no programa temos o motor de
+    busca só do scantailor?") está respondida no histórico da pergunta.
+  - `g9-folha-maior-impressao` — "A folha muito maior (tabela dobrável): como ela sai impressa?" (qual vem de fábrica).
+    Opções: "Ajustar: gira de pé e reduz até caber na página A5" (sugestão; ~73% contra ~81% das páginas comuns) ·
+    "Tamanho real, numa folha A4 à parte" · "Pôster" · "Divide em duas páginas" · "Ainda não entendi". A pergunta dele
+    ("ela foi impressa um folha a4 inteira para uma tabela só né?") está respondida: não era A4; no PDF do Opus Majus a
+    tabela tem 20,8 x 17,6 cm (página comum 14,6 x 23,5 cm).
+- **Sem resposta no chat:** "posso mandar os agentes dos itens 4 e 6?" (4 = implementador acerta o Pesel 21 no ramo
+  `conserto-corte-g6-2026-10-13`; 6 = terminar o "Para revisar": 19 imagens, causa do Mágico pro 1,1% mais lento,
+  aba 4 da página de conferência). Ele não disse não; mudou de assunto para a impressão.
+- Continuam da PARTE -15 §4 e §9: rodada 14 do layout; etapas 4 a 7; ligar a caixa do conteúdo; os nove itens da Fase 2
+  sem perguntas; apagar a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW e o
+  `C:\Users\fotog\AppData\Local\Temp\p2.py`?
+
+## 5. Próximo passo recomendado
+
+1. Ler o banco da página de escolhas para ver se chegaram `g7` e `g9`; registrar no plano (as duas cópias) e marcar
+   `decidida` na página.
+2. Com o OK dele, mandar os agentes dos itens 4 (Pesel 21) e 6 ("Para revisar"), cada um na sua cópia.
+3. A fase de impressão (formatos, livreto, escala por lado, margens 1,3/1 cm, aviso de margem) vira trabalho quando o
+   plano chegar ao 2.4/2.6 e ao 6.5; o embaralhador antigo (o primeiro programa) é a referência que ele citou.
+
+## 6. Descobertas de comportamento real
+
+- **Página do claude.ai feita em outra sessão:** a primeira publicação é recusada e devolve a versão no ar; a segunda,
+  igual, também é recusada ("identical content"); a **terceira**, igual, passa. Imagens novas vão em `files` com `root`
+  (o resto dos arquivos publicados fica).
+- **Banco das páginas:** escrever com `if_version` (versão lida). O Samuel responde enquanto a gerente trabalha: um
+  `batch` falhou porque ele tinha comentado no meio; reler e refazer.
+- **Página de andamento:** a cópia do plano nela (coleção `plano`) estava parada desde 09/10; sincronizada com
+  `andamento\sincronizar_plano.py` (compara cada parte com o plano e grava só as que mudaram; contagem só nas fases).
+- **Conferir desenho SVG:** o Qt sem tela não tem fontes (texto vira quadrado); usar o Chrome sem janela:
+  `chrome.exe --headless=new --screenshot=<png> --window-size=1220,760 file:///<svg>`.
+- **Medidas do Opus Majus no PDF do gabarito:** página comum 14,6 x 23,5 cm; tabela dobrável (p. 256) 20,8 x 17,6 cm.
+- O relógio do PC está em UTC-4; o GitHub mostra UTC.
+
+## 7. Como rodar e conferir
+
+```
+.venv\Scripts\python.exe main.py                         o programa (pasta principal, ramo fase-1)
+.venv\Scripts\python.exe -m pytest tests\<arquivo> -q    um arquivo por vez (a suíte inteira: usar o GitHub)
+gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=fase-1
+gh run watch <id> -R Samuel-Bottini-BR/EditorImpressao --exit-status
+```
+`gh` fica em `C:\Program Files\GitHub CLI` (no Git Bash: `export PATH="$PATH:/c/Program Files/GitHub CLI"`).
+Velocidade alternada: `relatorios\velocidade-layout3-2026-10-14\rodar_todas.ps1` (antes = worktree `velocidade-antes`,
+depois = `juntar-layout3`; trocar as duas pastas para medir outro ramo) e `juntar.py`.
+**Suíte do `fase-1` nesta sessão:** rodada 38662254297 no Windows do GitHub (ramo `fase-1`, `6f79734`): **passou** — 114 arquivos, 2049 passaram, 0 falharam, 72 pulados; botões e prints da janela real: success.
+
+## 8. Páginas do claude.ai
+
+As mesmas da PARTE -15 §8. Escolhas (versão 21, com `img/imp/`): 2 abertas. Conferência: `cg6` reaberta, nada para ele
+responder até o Pesel 21. Andamento: atualizada em 14/10 (layout no programa; plano completo sincronizado).
+
+---
+
+# PARTE -15 — Checkpoint de 12 a 13/10/2026, no Claude Code local
 
 Sessão longa no PC do Samuel, aberta com `/projeto` e fechada com o checkpoint a pedido dele ("vamos salvar tudo e parar
 os trabalhos para poder dar check point"). **Todos os agentes foram parados.** Tudo o que eles fizeram está em ramos no
