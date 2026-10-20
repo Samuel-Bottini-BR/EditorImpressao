@@ -3230,3 +3230,23 @@ milhões de pontos, com ruído de medida grande). Página que não gira não pag
 e a segunda conta do limiar local, ~9 ms; achar os pedaços grandes colados na cunha, ~4 ms; a cunha, ~1 ms. Dá
 para baixar fazendo a segunda conta só nas quatro tiras junto da beirada (não feito: muda o resultado nos
 cantos e pediria medir tudo de novo).
+### Acerto do Pesel 21 no conserto do corte com borda preta (20/10/2026, implementador)
+
+Pedido: o Samuel marcou "Melhorar" em 13/10; o Pesel 21 (cartão escuro) saía cortado rente com o conserto da cunha
+("Ele chega a quase cortar as letras."). Tem de sair como no `fase-1`.
+
+**Causa.** A pergunta "há o que recortar?" (`_sem_conteudo_para_recortar`, pela mediana da página) era feita na
+página girada. O cartão do Pesel tem dois tons quase meio a meio; o branco da cunha e os cantos que o giro leva
+embora fazem a mediana pular do cartão para o tecido (102 → 125) e a página deixava de ser "sem conteúdo". No
+`fase-1` isso ficava escondido pelo degrau branco da cunha (que segurava o corte na folha inteira). Diagnóstico:
+desligando só a conta da "tinta falsa", o Pesel 21 saía inteiro.
+
+**Tentado e descartado.** Fazer a pergunta na página girada sem contar os pontos da cunha: acerta o Pesel 21 real
+(2,6% contra o limite de 3%), mas não a página de teste a 2°, porque os cantos do cartão que saem da imagem também
+contam.
+
+**Adotado.** `detectar_bordas(..., como_veio=)`: a pergunta é feita na página antes do giro (a mesma resposta da
+ordem antiga); `core/pipeline.py` só passa a página em cinza que já tinha. Custo zero: a conta (11 a 15 ms a 300
+DPI) só troca de imagem. Resultado nas 89 páginas: contra o `d97b937` muda só o Pesel 21, que sai idêntico ao
+`fase-1` ponto por ponto; as cinco melhorias e as outras 83 ficam idênticas. Projeto antigo 40 de 40. Detalhe:
+`relatorios/conferir/conserto-corte-g6-pesel21-2026-10-20/pesel21.md`.
