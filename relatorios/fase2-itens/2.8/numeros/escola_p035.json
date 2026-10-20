@@ -1,0 +1,32 @@
+{
+ "escola_p035": {
+  "tamanho": [
+   1937,
+   2965
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   0,
+   1608,
+   484
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 1852475,
+   "Otsu do ScanTailor": 1807931,
+   "Sauvola do ScanTailor": 1756378,
+   "Wolf do ScanTailor": 1792450
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 48824,
+   "Sauvola do ScanTailor": 93575,
+   "Wolf do ScanTailor": 61887
+  },
+  "segundos": {
+   "Hoje: Automático": 0.69,
+   "Otsu do ScanTailor": 1.24,
+   "Sauvola do ScanTailor": 1.45,
+   "Wolf do ScanTailor": 1.34
+  },
+  "nao_rodou": {}
+ }
+}

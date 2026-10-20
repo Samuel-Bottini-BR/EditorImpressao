@@ -1,0 +1,32 @@
+{
+ "horas_p026": {
+  "tamanho": [
+   3277,
+   5757
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   2458,
+   2501,
+   819
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 1337426,
+   "Otsu do ScanTailor": 1287355,
+   "Sauvola do ScanTailor": 831124,
+   "Wolf do ScanTailor": 1186764
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 242232,
+   "Sauvola do ScanTailor": 511187,
+   "Wolf do ScanTailor": 289342
+  },
+  "segundos": {
+   "Hoje: Automático": 2.94,
+   "Otsu do ScanTailor": 4.12,
+   "Sauvola do ScanTailor": 5.48,
+   "Wolf do ScanTailor": 4.2
+  },
+  "nao_rodou": {}
+ }
+}

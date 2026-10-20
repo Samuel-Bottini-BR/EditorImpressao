@@ -15,7 +15,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 
 | Item | Estado | Commits | Rodada do GitHub |
 |---|---|---|---|
-| 2.8 preto e branco (os dez do ScanTailor) | em andamento | | |
+| 2.8 preto e branco (os dez do ScanTailor) | **entregue à gerente** (falta verificador e Samuel) | `77e9446` (core), `34b3d0e` (tela), `b36b540` (script) | 39395632426: 2084 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.9 claro no escuro | não começado | | |
 | 2.11 cores | não começado | | |
 | 2.15 páginas diferentes | não começado | | |
@@ -31,3 +31,15 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
   (`ONDE-PAREI-filtro-velocidade.md` no ramo `claude/list-server-files-gkos8v`, passo 1 de 9).
 - A DLL `st_ferramentas` também muda no ramo `fase2-caixa-conteudo` (versão 4, não juntado). Aqui a versão
   pula para 5, para não brigar; quem juntar os dois recompila a DLL (`compilar_st_ferramentas.py`).
+
+## 2.8 — o que foi feito e onde olhar
+
+- Os dez jeitos do ScanTailor (Otsu, Sauvola, Wolf, Fox, Window, Bradley, Grad, EdgePlus, BlurDiv, EdgeDiv), com o
+  código dele (`ligacao-ferramentas/saida.cpp`, `core/preto_e_branco_scantailor.py`), como opções a mais na lista
+  "Algoritmo" da aba Filtro. De fábrica continua "Automático".
+- Prova de "desligado de fábrica": `2.8/somas-antigo.json` (código `b8e9af7`) = `2.8/somas-novo.json` nas 32 páginas
+  do gabarito × Original, Preto e branco, Melhorar (96 de 96 iguais, ponto a ponto).
+- Antes/depois (Original · Hoje · Otsu ST · Sauvola ST · Wolf ST), 32 páginas + recorte ampliado de cada:
+  `relatorios/conferir/fase2-itens/2.8/` (fora do git, só neste PC). Números por página: `2.8/numeros/`.
+  Script: `scripts/rodada_gabarito.py` (uma página por processo; `scripts/rodar_todas.sh` roda as 32).
+- Horas 13 falhou uma vez por falta de memória do PC (outros agentes); rodada de novo sozinha, deu certo.
