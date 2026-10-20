@@ -774,7 +774,15 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
         elif com_o_corte:
             girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
             reta = rotacionar(em_cinza(), angulo) if girar else em_cinza()
-            comum = detectar_bordas(reta, dpi=dpi)
+            # `girada` (conserto de 13/10/2026): diz ao corte de quanto a
+            # pagina foi girada, para a cunha branca do giro nao esconder a
+            # borda preta do scanner (core/recortar, "A cunha do giro").
+            # Arriscado: tirar (volta a faixa preta do Cursus 3).
+            # `como_veio` (conserto de 20/10/2026): a pergunta "ha o que
+            # recortar?" e feita na pagina antes do giro, como na ordem
+            # antiga. Arriscado: tirar (o Pesel 21 volta a sair cortado rente).
+            comum = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None,
+                                    como_veio=em_cinza() if girar else None)
             recorte = comum.tupla
             if _corta_pelo_conteudo(projeto, pagina):
                 # item 2.5: o corte do ScanTailor, na pagina ja reta (a ordem
