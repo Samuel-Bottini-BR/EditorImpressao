@@ -66,13 +66,19 @@ FONTE_NEGRITO = Path(r"C:\Windows\Fonts\segoeuib.ttf")
 
 # ------------------------------------------------------------------ o programa
 
+# --pdf: um PDF de fora do gabarito (uma página copiada do acervo para uma
+# pasta de rascunho; o acervo é somente leitura). None = gabarito/paginas/<pid>.pdf.
+PDF_DE_FORA: Path | None = None
+
+
 def abrir(pid: str):
-    """(projeto, doc) do PDF do gabarito, analisado como o programa faz."""
+    """(projeto, doc) do PDF do gabarito (ou de --pdf), analisado como o programa faz."""
     from core.pdf_io import abrir_pdf
     from core.pipeline import analisar_projeto
     from modelos import Projeto
 
-    projeto = Projeto(caminho_entrada=str(GABARITO / "paginas" / f"{pid}.pdf"), nome=pid)
+    caminho = PDF_DE_FORA or (GABARITO / "paginas" / f"{pid}.pdf")
+    projeto = Projeto(caminho_entrada=str(caminho), nome=pid)
     projeto = analisar_projeto(projeto)
     return projeto, abrir_pdf(projeto.caminho_entrada)
 
@@ -128,7 +134,17 @@ def variantes_2_8():
     return lista
 
 
-ITENS = {"2.8": variantes_2_8}
+def variantes_2_9():
+    """Item 2.9: cada filtro sem e com a caixinha "Letra clara em fundo escuro"."""
+    from core.filtros import MELHORAR, PRETO_E_BRANCO
+
+    return [("Hoje: Preto e branco", {"filtro": PRETO_E_BRANCO, "claro_no_escuro": False}),
+            ("Preto e branco + Letra clara", {"filtro": PRETO_E_BRANCO, "claro_no_escuro": True}),
+            ("Hoje: Melhorar", {"filtro": MELHORAR, "claro_no_escuro": False}),
+            ("Melhorar + Letra clara", {"filtro": MELHORAR, "claro_no_escuro": True})]
+
+
+ITENS = {"2.8": variantes_2_8, "2.9": variantes_2_9}
 
 
 # ------------------------------------------------------------------ as imagens
@@ -231,7 +247,10 @@ def main() -> int:
     analisador.add_argument("--hashes", type=Path, help="grava as somas de fábrica neste .json (acrescenta)")
     analisador.add_argument("--item", choices=sorted(ITENS))
     analisador.add_argument("--pasta", type=Path)
+    analisador.add_argument("--pdf", type=Path, help="PDF de fora do gabarito (ver PDF_DE_FORA)")
     opcoes = analisador.parse_args()
+    global PDF_DE_FORA
+    PDF_DE_FORA = opcoes.pdf
     _registrar_falhas()
     if opcoes.hashes:
         somas = json.loads(opcoes.hashes.read_text(encoding="utf-8")) if opcoes.hashes.is_file() else {}

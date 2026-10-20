@@ -16,7 +16,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 | Item | Estado | Commits | Rodada do GitHub |
 |---|---|---|---|
 | 2.8 preto e branco (os dez do ScanTailor) | **entregue à gerente** (falta verificador e Samuel) | `77e9446` (core), `34b3d0e` (tela), `b36b540` (script) | 39395632426: 2084 passaram, 0 falharam; botões 221 ações, 0 falhas |
-| 2.9 claro no escuro | rascunho pronto, não ligado (`rascunho-2.9/`) | | |
+| 2.9 claro no escuro | **entregue à gerente** | `4cec7a9` (core), `0f4ee58` (tela) | 39470347203: 2097 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.11 cores | não começado | | |
 | 2.15 páginas diferentes | não começado | | |
 | 2.12 desentortar | não começado | | |
@@ -44,12 +44,12 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
   Script: `scripts/rodada_gabarito.py` (uma página por processo; `scripts/rodar_todas.sh` roda as 32).
 - Horas 13 falhou uma vez por falta de memória do PC (outros agentes); rodada de novo sozinha, deu certo.
 
-## 2.9 — onde parei (próximo item)
+## 2.9 — o que foi feito e onde olhar
 
-Rascunho em `relatorios/fase2-itens/rascunho-2.9/` (fora de `core/` e `tests/` para não quebrar a suíte):
-`claro_no_escuro.py` (vai para `core/`), `test_claro_no_escuro.py` (vai para `tests/`) e `patch_2_9.py` (rodar da
-worktree: acrescenta `ConfigPagina.claro_no_escuro`, inverte na entrada e na saída em `pipeline._filtrar`, como o
-ScanTailor em `initFilterData` e no fim da saída, e põe o sufixo na assinatura da gravura só com a caixinha ligada).
-Falta: aplicar, rodar os testes, a caixinha na aba Filtro (P9 (a)), o "comparar" da tela ampliada
-(`ui/tela_ampliada._imagem_do_outro_filtro` chama `aplicar_filtro` direto), somas de fábrica e antes/depois
-(o gabarito não tem página de letra clara em fundo escuro: procurar uma no acervo ou usar a Horas 11 invertida).
+- Caixinha por página "Letra clara em fundo escuro" (aba Filtro, bloco AJUSTE). Igual ao ScanTailor: inverte na
+  entrada, caminho de sempre, inverte no fim. Desmarcada de fábrica.
+- Prova de fábrica: `2.9/somas-novo.json` = `2.8/somas-antigo.json` (código `b8e9af7`), 96 de 96.
+- Página de verdade achada no acervo (script `scripts/procurar_claro_no_escuro.py`, 14 livros lidos): só uma,
+  Livro de Horas p. 187 (a lombada de couro escuro com "HEURES DE LOVIS XIV" dourado). Antes/depois em
+  `relatorios/conferir/fase2-itens/2.9/` (fora do git), números em `2.9/numeros/`.
+- Filtro de velocidade do GitHub (b8e9af7 x 0f4ee58): rodada 39470417724, disparada.

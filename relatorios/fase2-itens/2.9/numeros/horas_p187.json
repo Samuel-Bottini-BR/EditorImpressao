@@ -1,0 +1,32 @@
+{
+ "horas_p187": {
+  "tamanho": [
+   2321,
+   14222
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   332,
+   4699,
+   580
+  ],
+  "pontos_pretos": {
+   "Hoje: Preto e branco": 2936204,
+   "Preto e branco + Letra clara": 27014483,
+   "Hoje: Melhorar": 24939093,
+   "Melhorar + Letra clara": 28757132
+  },
+  "pontos_diferentes_de_hoje": {
+   "Preto e branco + Letra clara": 24365114,
+   "Hoje: Melhorar": 25048320,
+   "Melhorar + Letra clara": 28818815
+  },
+  "segundos": {
+   "Hoje: Preto e branco": 5.11,
+   "Preto e branco + Letra clara": 10.49,
+   "Hoje: Melhorar": 38.96,
+   "Melhorar + Letra clara": 19.57
+  },
+  "nao_rodou": {}
+ }
+}
