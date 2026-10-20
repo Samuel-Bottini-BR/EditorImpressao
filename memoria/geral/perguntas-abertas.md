@@ -105,6 +105,32 @@ Ficha [layout](../itens/layout.md).
 - **Aviso C1 em página reta**: "medir a 300 ao abrir, mais lento; ou só avisar depois da medida de 300" — pergunta
   "ainda não montada" (PARTE -14 §5; é a mesma do aviso "as contas discordam" acima).
 
+- **Regra 6 e a "prévia igual ao PDF"** (28/09/2026): "Decisão pendente do Samuel (regra 6): o conserto 'prévia
+  igual ao PDF' deixa a primeira prévia de cada página de 6% a 52% mais lenta". O teste oficial de 29/09/2026 não viu
+  lentidão na troca de página, mas não há resposta registrada. Item [5.1](../itens/5.1.md).
+- **As duas frases do `TESTE-SCANTAILOR-MISTO.md`** que a pesquisa corrigiu "são mostradas a ele antes de mudar"
+  (Registro 29/09/2026); resposta não achada. Ver [referencias/scantailor.md](../referencias/scantailor.md).
+- **Todos os núcleos (2.16) × "uma página por vez na memória"**: abrir exceção à regra técnica? Quantas páginas por
+  vez? (pesquisa de 01/10/2026; PARTE -10 §5). É "escolha de verdade" pela regra de 13/10/2026. Item
+  [2.16](../itens/2.16.md).
+- **O engano do leitor de texto** (pedacinhos de figura, capitular e borda marcados como texto) deve mandar a página
+  para revisar? (Registro 06/10/2026, "pergunta em aberto"; provavelmente superada pela regra ajustada das rodadas 3
+  a 5). Ficha [para-revisar](../itens/para-revisar.md).
+- **A pergunta do fundo também dentro do programa, e voltar ao original** (F5, 30/09/2026; Lista de espera, fase não
+  decidida). Item [1.1](../itens/1.1.md).
+- **As seis perguntas da pesquisa da impressão** (ramo pesquisa-impressao-2026-10-19, `docs/pesquisa/fase-impressao/fase-impressao.md`
+  §9), ainda não levadas a ele. A primeira: "Na escala por lado, quando você diz 'dá para mudar uma folha só', a folha
+  é a A4 inteira (as duas páginas que saem nela) ou uma página só do livro?" Item [2.6](../itens/2.6.md).
+- **Quem faz o 2.10** (separar a saída em duas camadas): D1 de 02/10/2026 manda "2.10 com o 1.6"; a fila do
+  Implementador 3 (19/10/2026) o deixa fora. Item [2.10](../itens/2.10.md).
+- **Zoom que travou** (PARTE -4): quantas regiões marcadas tinha a página e se a roda do mouse falha "sempre assim ou
+  só naquela hora". Item [3.8](../itens/3.8.md).
+- **Esperando ele instalar ou rodar:** testar a detecção na aba Marcar com o instalador (fecha o `[~]` do bug do
+  instalador sem os modelos, 25/09/2026); o programa empacotado com os servidores de páginas (30/09/2026); as licenças
+  das 26 DLLs do Tesseract (29/09/2026). Itens [6.8](../itens/6.8.md), [0.6](../itens/0.6.md).
+- **Decisões de item que ainda nem foram perguntadas:** 7.1 (regra da IA no OCR, opções a/b/c de
+  `docs/plano/OCR-PESQUISA.md`), 7.3 (os manuscritos entram?), 6.6 (separar as chapas vermelho/preto?).
+
 ## 4b. Arrumação de disco e pastas, sem resposta registrada
 
 Pela regra de 29/09/2026 (CLAUDE.md §10.9), nada disto se apaga sem o "sim" dele.
