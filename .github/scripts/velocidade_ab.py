@@ -39,8 +39,8 @@ A CONTA DO VEREDITO (por medida):
     - diferenca % = (mediana depois / mediana antes - 1) x 100;
     - vai-e-vem de uma versao = (maior - menor) das medianas das rodadas dela,
       em % da mediana dela; o vai-e-vem que vale e o MAIOR dos dois;
-    - se |diferenca| <= vai-e-vem: "igual (dentro do vai-e-vem)"; acima disso,
-      "parece mais lento" ou "parece mais rapido".
+    - se |diferenca| <= max(vai-e-vem, PISO_PCT = 2%): "igual (dentro do
+      vai-e-vem)"; acima disso, "parece mais lento" ou "parece mais rapido".
     Com 1 rodada so de cada versao nao ha vai-e-vem entre rodadas: usa-se o das
     repeticoes de dentro do teste (e o texto avisa).
     Medidas que dao veredito: abrir o livro, trocar de pagina (media das 20),
@@ -82,6 +82,21 @@ MEDIDAS_EXTRAS = (("troca_pior_s", "Trocar de pagina (a pior das 20)", 2),)
 
 LIMITE_POR_RODADA_S = 90 * 60   # uma execucao do teste no GitHub leva 10 a 20 min
 
+# Diferenca minima (em %) para o filtro dizer "mais lento"/"mais rapido", mesmo
+# quando o vai-e-vem medido sai menor que isso. Motivo: com 3 rodadas o
+# vai-e-vem as vezes sai pequeno por sorte (no GitHub ja saiu 0,3%), e ai
+# qualquer 1% vira alarme falso (simulado com ruido puro: ~12% das rodadas
+# acusariam algo numa das 4 medidas). Abaixo disso quem decide e a medida do
+# PC no fim da fase. ARRISCADO: subir muito (esconde lentidao de verdade).
+PISO_PCT = 2.0
+
+# Antes de cada rodada, espera o processador da maquina ficar quieto: outra
+# coisa do Windows rodando no fundo atrapalha a rodada inteira (validacao de
+# 20/10: 28-30% de uso antes de rodadas que sairam ate ~18% mais lentas, sempre
+# nos primeiros ~40 min da maquina).
+QUIETO_PCT = 15.0
+ESPERA_MAXIMA_S = 5 * 60
+
 
 # ---------------------------------------------------------------------------
 # numeros em portugues
@@ -111,12 +126,20 @@ def memoria_livre_gb() -> float | None:
         return None
 
 
-def carga_processador_pct() -> float | None:
+def esperar_processador_quieto() -> tuple[float | None, float]:
+    """Espera (ate ESPERA_MAXIMA_S) o uso do processador da maquina, medido em
+    5 s, ficar abaixo de QUIETO_PCT. Devolve (ultimo uso medido, segundos
+    esperados). Sem psutil, nao espera."""
+    comeco = time.perf_counter()
     try:
         import psutil
-        return psutil.cpu_percent(interval=3)
     except Exception:  # noqa: BLE001
-        return None
+        return None, 0.0
+    while True:
+        carga = psutil.cpu_percent(interval=5)
+        esperou = time.perf_counter() - comeco
+        if carga < QUIETO_PCT or esperou >= ESPERA_MAXIMA_S:
+            return carga, esperou
 
 
 def commit_da_pasta(pasta: Path) -> str:
@@ -137,8 +160,10 @@ def rodar_uma(braco: str, nome: str, copia: Path, livro: Path, saida: Path,
         print(f"A pasta {pasta} ja existe: parei para nao misturar rodadas.")
         return 4
     pasta.mkdir(parents=True)
+    carga, esperou = esperar_processador_quieto()
+    if esperou >= 10:
+        print(f"    esperei {n(esperou, 0)} s o processador ficar quieto (ultimo uso {n(carga, 0)}%)")
     livre = memoria_livre_gb()
-    carga = carga_processador_pct()
     inicio = datetime.now(timezone.utc)
     comeco = time.perf_counter()
     comando = [sys.executable, "teste_velocidade.py", str(livro), "--saida", str(pasta)]
@@ -170,6 +195,7 @@ def rodar_uma(braco: str, nome: str, copia: Path, livro: Path, saida: Path,
         "memoria_livre_antes_gb": livre,
         "memoria_livre_depois_gb": memoria_livre_gb(),
         "processador_antes_pct": carga,
+        "espera_processador_s": round(esperou, 1),
         "codigo_de_saida": codigo,
     }
     (pasta / "anotacao.json").write_text(json.dumps(anotacao, ensure_ascii=False, indent=2),
@@ -281,7 +307,7 @@ def comparar(rodadas: list[dict]) -> list[dict]:
 
         va, origem_a = vaivem("antes", ma)
         vd, origem_d = vaivem("depois", md)
-        limite = max(va, vd)
+        limite = max(va, vd, PISO_PCT)
         if abs(dif) <= limite:
             veredito = "igual"
         elif dif > 0:
@@ -355,7 +381,8 @@ def montar_texto(rodadas: list[dict], linhas: list[dict], rotulos: dict[str, str
         t.append(f"- **Atencao:** {aviso}")
     t.append("")
     t.append("Regra do veredito: diferenca entre as medianas maior que o vai-e-vem (a maior distancia "
-             "entre rodadas da MESMA versao, em %). Dentro disso, o filtro nao distingue: \"igual\". "
+             f"entre rodadas da MESMA versao, em %), e nunca menos que {n(PISO_PCT, 0)}%. "
+             "Dentro disso, o filtro nao distingue: \"igual\". "
              "Quem da a medida que vale (regra 6) e o PC do Samuel no fim da fase.\n")
 
     if linhas:
