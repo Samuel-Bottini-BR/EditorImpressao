@@ -22,6 +22,9 @@ class CartaoFiltro(QFrame):
 
     escolhido = Signal(str)
     ampliar_pedido = Signal(str)   # clicar no cartão abre a página ampliada
+    # Etapa 4 do layout (20/10/2026): a mesma amostra vai também para a fila
+    # de filtros do painel "Filtro da página" (o filtro e a imagem, ou None)
+    amostra_mudou = Signal(str, object)
 
     def __init__(self, filtro: str, nome: str, explicacao: str, parent=None) -> None:
         super().__init__(parent)
@@ -55,8 +58,10 @@ class CartaoFiltro(QFrame):
 
     def definir_amostra(self, img: np.ndarray | None) -> None:
         """Poe (ou tira, com None) a imagem mostrada no cartao. None mostra
-        "preparando..." - ver _Amostra.paintEvent."""
+        "preparando..." - ver _Amostra.paintEvent. Avisa a fila do painel
+        Filtro (amostra_mudou)."""
         self.amostra.definir(img)
+        self.amostra_mudou.emit(self.filtro, img)
 
     def definir_selecionado(self, selecionado: bool) -> None:
         """Liga/desliga a borda azul de destaque. Nao redesenha a toa se o

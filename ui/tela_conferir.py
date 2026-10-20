@@ -171,12 +171,14 @@ from ui.widgets.barra_girar import BarraGirar, GirarDoCanto, nomes_dos_alcances
 from ui.widgets.barra_opcoes import BarraOpcoes
 from ui.widgets.cartao_filtro import CartaoFiltro
 from ui.widgets.escolhas_do_misto import BOTOES_DO_TEXTO, EscolhasDoMisto
+from ui.widgets.menu_com_amostra import ListaComAmostra, desenho_da_limpeza
 from ui.widgets.editor_selecao import (
     FERRAMENTA_RETANGULO,
     FERRAMENTAS_DE_NAVEGACAO,
     ferramenta_da_tecla,
 )
 from ui.widgets.paineis import (
+    PAINEL_FILTRO,
     PAINEL_HISTORICO,
     PAINEL_PROPRIEDADES,
     Bloco,
@@ -301,6 +303,23 @@ CARTOES = [
     # Item 1.1: so em livro com camadas (ver _montar_aba_filtro).
     (TIRAR_FUNDO, "Tirar o fundo", "só o que está impresso"),
 ]
+
+# A tecla de cada filtro (as mesmas do menu Filtro), escrita na fila do
+# painel "Filtro da página". O "Tirar o fundo" nao tem tecla.
+TECLAS_DOS_FILTROS = {ORIGINAL: "1", PRETO_E_BRANCO: "2", MELHORAR: "3", MAGICO_PRO: "4"}
+
+# A frase de cada jeito do "Limpar a sujeira" na lista com amostra (etapa 4 do
+# layout; as mesmas palavras da EXPLICACAO_NA_TELA de core/pontinhos_scantailor,
+# decididas na rodada 10). Seguro mudar: os textos.
+FRASES_DA_LIMPEZA = {
+    pontinhos.DESLIGADO: "a sujeira fica como está",
+    pontinhos.NOSSO: ("apaga todo ponto pequeno, sem olhar onde ele está: a borda da letra "
+                      "fica lisa, mas some pingo do i, vírgula e tracinho de desenho"),
+    pontinhos.POUCO: ("só apaga o que está longe das letras: pingo do i e pontuação ficam; "
+                      "a força mais fraca"),
+    pontinhos.NORMAL: "só apaga o que está longe das letras, com força média",
+    pontinhos.MUITO: "só apaga o que está longe das letras, com a força mais forte",
+}
 
 # Resolucao da amostra dos cartoes de filtro (_imagem_sem_filtro): a folha
 # como veio no PDF, desenhada pequena, e preparada na tela. Era o 70 escrito
@@ -740,11 +759,31 @@ class TelaConferir(QWidget):
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
-        painel.filtro_da_pagina.medidor_mudou.connect(self._medidor_soltou)
+        # etapa 4 do layout: a fila de filtros do painel escolhe o filtro da
+        # pagina (o mesmo caminho dos cartoes grandes e das teclas 1 a 4)
+        painel.filtro_da_pagina.filtro_escolhido.connect(self._escolher_filtro)
+        painel.abriu.connect(self._painel_abriu)
         painel.historico.voltar_para.connect(self._voltar_no_historico)
         painel.historico.desfazer_pedido.connect(self.desfazer)
         painel.historico.refazer_pedido.connect(self.refazer)
         painel.automatico.mudar_pedido.connect(lambda: self.voltar.emit())
+
+    def _painel_abriu(self, chave: str) -> None:
+        """Abriu o painel Filtro: as páginas pequenas da fila (as amostras
+        dos outros filtros) são pedidas agora, e daqui em diante a cada troca
+        de página, só enquanto ele estiver aberto (_filtro_aberto). Com ele
+        fechado nada é calculado a mais."""
+        if chave == PAINEL_FILTRO and self._pronta() and self.previas is not None:
+            self._atualizar_previa()
+
+    def _filtro_aberto(self) -> bool:
+        """O painel "Filtro da página" está aberto?"""
+        return self.paineis.aberto == PAINEL_FILTRO
+
+    def _cartoes_a_vista(self) -> bool:
+        """As amostras dos filtros estão sendo mostradas (a tela provisória
+        dos quatro filtros, ou a fila do painel Filtro)?"""
+        return self.aba_atual == ABA_FILTRO or self._filtro_aberto()
 
     def _voltar_no_historico(self, posicao: int) -> None:
         """Volta o trabalho ate a acao clicada no painel Historico."""
@@ -878,7 +917,7 @@ class TelaConferir(QWidget):
             return
         ferramenta = FERRAMENTA_DA_ABA.get(aba)
         painel.mostrar(painel.SEM_PROPRIEDADES, NOMES_DA_TRILHA.get(ferramenta, ""),
-                       "Os ajustes desta ferramenta estão embaixo da página.")
+                       "Os ajustes do filtro estão no painel “Filtro da página”.")
 
     def _montar_cabecalho(self) -> QWidget:
         """Os controles do antigo cabecalho, que agora vivem em outros lugares.
@@ -1908,98 +1947,118 @@ class TelaConferir(QWidget):
 
         self.paginas_de_imagem[ABA_FILTRO] = pagina
 
-        # Abaixo da faixa vem AJUSTE (o que muda a página) e, separado dele,
-        # APLICAR EM (o que decide onde a mudança vale). Sao coisas diferentes:
-        # misturar as duas na mesma linha era o que confundia.
-        painel = QWidget()
-        fora = QVBoxLayout(painel)
-        fora.setContentsMargins(0, 0, 0, 0)
-        fora.setSpacing(6)
+        # Etapa 4 do layout (20/10/2026): os controles que eram a fila de
+        # botoes embaixo da pagina (o bloco AJUSTE, o "Algoritmo", o "Limpar a
+        # sujeira", o "Só as letras", o "Aplicar em" e o "apagar página")
+        # vao para o painel "Filtro da página" decidido (rodada 9, 403 B: a
+        # fila dos filtros e partes que abrem e fecham; rodada 10, 502 B: as
+        # escolhas em menu com amostra). SAO AS MESMAS PECAS, com os mesmos
+        # nomes e as mesmas acoes: so mudaram de lugar e de desenho. Quem as
+        # arruma no painel e PainelFiltroDaPagina.montar (ui/widgets/paineis.py).
+        # Embaixo da pagina fica uma pagina vazia (altura zero).
 
-        self.bloco_ajuste = QFrame()
-        self.bloco_ajuste.setObjectName("cartao")
+        # --- Ajuste: o deslizante do filtro da vez (o Original nao tem) ---
+        corpo_ajuste = Bloco()
+        coluna_ajuste = QVBoxLayout(corpo_ajuste)
+        coluna_ajuste.setContentsMargins(0, 0, 0, 0)
+        coluna_ajuste.setSpacing(4)
+        self.bloco_ajuste = Bloco()
         dentro = QVBoxLayout(self.bloco_ajuste)
-        dentro.setContentsMargins(12, 7, 12, 7)
+        dentro.setContentsMargins(0, 0, 0, 0)
         dentro.setSpacing(2)
-
-        rotulo_bloco = QLabel("AJUSTE")
-        rotulo_bloco.setObjectName("rotuloBloco")
-        dentro.addWidget(rotulo_bloco)
-
-        self.medidor = Medidor("Força do preto", "mais fraco", "mais escuro")
+        self.medidor = Medidor("Força do preto", "mais fraco", "mais escuro", em_duas_linhas=True)
         self.medidor.arrastando.connect(self._medidor_arrastando)
         self.medidor.soltou.connect(self._medidor_soltou)
         self.medidor.barra.sliderPressed.connect(self._medidor_pegou)
         dentro.addWidget(self.medidor)
+        coluna_ajuste.addWidget(self.bloco_ajuste)
+        self.frase_sem_ajuste = frase_do_painel("O Original não tem ajuste.")
+        coluna_ajuste.addWidget(self.frase_sem_ajuste)
 
-        # Problema 5 do plano: só aparece com o Preto e branco escolhido (ver
-        # _configurar_medidor). "Automático" é o padrão - o programa decide
-        # pela espessura do traço desta página.
+        # --- Mais ajustes: o jeito do preto e branco (Problema 5 do plano) ---
+        # So aparece com o Preto e branco escolhido (ver _configurar_medidor).
+        # "Automático" é o padrão - o programa decide pela espessura do traço
+        # desta página. Na tela o nome e "Jeito do preto e branco" (rodada 9:
+        # no lugar do "Algoritmo: Sauvola/Otsu/Wolf"); a lista e a mesma.
+        corpo_mais = Bloco()
+        coluna_mais = QVBoxLayout(corpo_mais)
+        coluna_mais.setContentsMargins(0, 0, 0, 0)
+        coluna_mais.setSpacing(4)
+        self.rotulo_algoritmo_pb = QLabel("Jeito do preto e branco")
+        self.rotulo_algoritmo_pb.setObjectName("rotuloDoPainel")
+        coluna_mais.addWidget(self.rotulo_algoritmo_pb)
         linha_algoritmo = QHBoxLayout()
-        linha_algoritmo.addWidget(QLabel("Algoritmo:"))
+        coluna_mais.addLayout(linha_algoritmo)
         self.seletor_algoritmo_pb = QComboBox()
         self.seletor_algoritmo_pb.addItem("Automático", "auto")
         for chave in ALGORITMOS_PB:
             self.seletor_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
         self.seletor_algoritmo_pb.currentIndexChanged.connect(self._mudar_algoritmo_pb)
         linha_algoritmo.addWidget(self.seletor_algoritmo_pb, 1)
-        # "Limpar pontinhos" (decisão do Samuel, 06/10/2026, P7), no lugar
-        # da caixinha "limpar poeirinha": desligado, o nosso, e o do
-        # ScanTailor em pouco/normal/muito. Só aparece com o Preto e branco
-        # (ver _configurar_medidor). Provisório até o layout. Seguro mudar:
-        # os textos (moram em core/pontinhos_scantailor.py).
-        self.rotulo_pontinhos = QLabel(pontinhos.ROTULO_NA_TELA)
-        linha_algoritmo.addWidget(self.rotulo_pontinhos)
-        self.seletor_pontinhos = QComboBox()
+        lista_estreita(self.seletor_algoritmo_pb)
+
+        # --- Limpar a sujeira (decisão do Samuel, 06/10/2026, P7) ---
+        # Desligado, o nosso, e o do ScanTailor em pouco/normal/muito. Só
+        # aparece com o Preto e branco (ver _configurar_medidor). Na lista com
+        # amostra da rodada 10 (502 B). Seguro mudar: os textos (moram em
+        # core/pontinhos_scantailor.py).
+        corpo_limpar = Bloco()
+        coluna_limpar = QVBoxLayout(corpo_limpar)
+        coluna_limpar.setContentsMargins(0, 0, 0, 0)
+        coluna_limpar.setSpacing(5)
+        self.rotulo_pontinhos = frase_do_painel(pontinhos.EXPLICACAO_NA_TELA.split("\n")[0])
+        coluna_limpar.addWidget(self.rotulo_pontinhos)
+        self.seletor_pontinhos = ListaComAmostra(desenho_da_limpeza)
         for chave in pontinhos.ESCOLHAS:
             self.seletor_pontinhos.addItem(pontinhos.NOMES_NA_TELA[chave], chave)
+            self.seletor_pontinhos.definir_detalhes(
+                chave, FRASES_DA_LIMPEZA.get(chave, ""), de_fabrica=(chave == pontinhos.PADRAO))
         self.seletor_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
-        self.rotulo_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
         self.seletor_pontinhos.currentIndexChanged.connect(self._mudar_pontinhos)
-        linha_algoritmo.addWidget(self.seletor_pontinhos)
-        dentro.addLayout(linha_algoritmo)
+        coluna_limpar.addWidget(self.seletor_pontinhos)
 
-        # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
-        # e branco escolhido (ver _configurar_medidor). Compacto: a altura da
-        # aba é pouca (a janela de 1280 x 657 tem de caber).
-        self.escolhas_misto = EscolhasDoMisto(compacto=True)
+        # --- Só as letras (modo Misto, 05/10/2026), desta página ---
+        # Só com o Preto e branco escolhido (ver _configurar_medidor). No
+        # painel, com a lista com amostra (rodada 10, 502 B) no lugar dos três
+        # botões, que continuam existindo, escondidos (EscolhasDoMisto).
+        self.escolhas_misto = EscolhasDoMisto(com_amostra=True)
         self.escolhas_misto.so_as_letras_mudou.connect(self._mudar_so_as_letras)
         self.escolhas_misto.fora_do_texto_escolhido.connect(self._mudar_fora_do_texto)
         self.escolhas_misto.papel_escolhido.connect(self._mudar_papel_da_gravura)
         self.escolhas_misto.letras_escolhidas.connect(self._mudar_letras_na_moldura)
-        # o "Mais opcoes" abre e fecha sem passar pelo projeto: a barra de
-        # botoes e medida de novo (_medir_de_novo_a_barra)
-        self.escolhas_misto.botao_mais.toggled.connect(
-            lambda _aberto: self._medir_de_novo_a_barra())
-        dentro.addWidget(self.escolhas_misto)
 
-        fora.addWidget(self.bloco_ajuste)
-
+        # --- Aplicar em (o pé do painel, sempre à vista) ---
+        # AJUSTE (o que muda a página) e APLICAR EM (onde a mudança vale) sao
+        # coisas diferentes: misturar as duas na mesma linha confundia.
+        aplicar = Bloco()
+        coluna_aplicar = QVBoxLayout(aplicar)
+        coluna_aplicar.setContentsMargins(0, 0, 0, 0)
+        coluna_aplicar.setSpacing(5)
+        coluna_aplicar.addWidget(titulo_de_secao("Aplicar em"))
         linha_botoes = QHBoxLayout()
-        linha_botoes.setSpacing(8)
-        rotulo_aplicar = QLabel("Aplicar em:")
-        rotulo_aplicar.setStyleSheet("font-weight: 600;")
-        linha_botoes.addWidget(rotulo_aplicar)
-
+        linha_botoes.setSpacing(6)
         _botao("só nesta", linha_botoes, self._marcar_revisada, "acaoPrimaria")
         _botao("todas", linha_botoes, self._filtro_em_todas)
         _botao("daqui em diante", linha_botoes, self._filtro_nas_proximas)
+        coluna_aplicar.addLayout(linha_botoes)
 
-        # Apagar e destrutivo: fica de outro lado do separador, para ninguem
-        # acertar nele querendo clicar em "só nas próximas".
-        separador = QFrame()
-        separador.setFrameShape(QFrame.VLine)
-        separador.setObjectName("separador")   # cor do tema (ui/estilo.py)
-        linha_botoes.addWidget(separador)
-        self.botao_apagar = _botao(
-            "apagar página", linha_botoes, self.apagar_pagina, "destrutivo"
-        )
+        # Apagar e destrutivo: fica longe dos outros, no fim do corpo do
+        # painel, depois de um risco (o painel arruma).
+        self.botao_apagar = QPushButton("apagar página")
+        self.botao_apagar.setObjectName("destrutivo")
+        _ligar(self.botao_apagar, self.apagar_pagina)
 
-        linha_botoes.addStretch()
-        # (a sugestao laranja do aviso saiu daqui: e a da faixa do conferir)
-        fora.addLayout(linha_botoes)
+        self.paineis.filtro_da_pagina.montar(
+            [(chave, nome, TECLAS_DOS_FILTROS.get(chave, ""))
+             for chave, nome, _explica in CARTOES if chave in filtros],
+            {"ajuste": corpo_ajuste, "letras": self.escolhas_misto, "limpar": corpo_limpar,
+             "mais": corpo_mais, "aplicar": aplicar, "apagar": self.botao_apagar})
+        # a amostra de cada cartao grande vai tambem para a fila do painel
+        for cartao in self.cartoes.values():
+            cartao.amostra_mudou.connect(self.paineis.filtro_da_pagina.definir_amostra)
 
-        self.linhas_de_botoes[ABA_FILTRO] = painel
+        # embaixo da pagina, uma pagina vazia: a pilha precisa de uma por aba
+        self.linhas_de_botoes[ABA_FILTRO] = QWidget()
 
     # ------------------------------------------------------------------
     # carga
@@ -2116,6 +2175,8 @@ class TelaConferir(QWidget):
         # do livro anterior tambem sai (o painel destroi as pecas)
         self.paineis.propriedades.tirar_conteudos()
         self.propriedades_das_abas.clear()
+        # etapa 4: as pecas do filtro do livro anterior saem do painel Filtro
+        self.paineis.filtro_da_pagina.desmontar()
 
         self._abas_ativas.clear()
         self.visualizadores.clear()
@@ -2357,6 +2418,12 @@ class TelaConferir(QWidget):
             # a linha so aparece em folha dividida (parecer do verificador, 06/10)
             vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
+            # na ferramenta Dividir a tela trabalha com a folha inteira: a
+            # fila do painel Filtro fica sem as paginas pequenas (nao mostra
+            # as de outra pagina)
+            if self._filtro_aberto():
+                for cartao in self.cartoes.values():
+                    cartao.definir_amostra(None)
             return
 
         img = self.previas.pegar(self.indice_pagina, self._dpi_atual)
@@ -2399,6 +2466,11 @@ class TelaConferir(QWidget):
         elif aba == ABA_MARCAR:
             self._atualizar_marcacao(img, pagina)
         else:
+            self._atualizar_cartoes(img)
+        # etapa 4 do layout: com o painel "Filtro da página" aberto, a fila
+        # dele mostra a pagina nos outros filtros (o mesmo pedido dos cartoes
+        # grandes, com o mesmo cache): so enquanto ele estiver aberto
+        if aba != ABA_FILTRO and self._filtro_aberto() and self.cartoes:
             self._atualizar_cartoes(img)
 
     def _atualizar_marcacao(self, img, pagina) -> None:
@@ -2973,14 +3045,14 @@ class TelaConferir(QWidget):
             if ABA_ANGULO in self._abas_ativas:
                 self._atualizar_conta_do_endireitar()
         # Item 1.1: chegou o cartao "Tirar o fundo" da pagina da vez.
-        if (self.aba_atual == ABA_FILTRO and TIRAR_FUNDO in self.cartoes
+        if (self._cartoes_a_vista() and TIRAR_FUNDO in self.cartoes
                 and chave == self.previas.chave_com_filtro(
                     self.indice_pagina, DPI_CARTAO_SEM_FUNDO, TIRAR_FUNDO)):
             self._cartao_sem_fundo(_img)
         # Modo Misto (bug Misto 2): chegou o cartao "Preto e branco" com o
         # "So as letras" da pagina da vez (a chave inclui as escolhas do
         # Misto: uma que chegue atrasada, de antes de uma mudanca, nao serve)
-        if (self.aba_atual == ABA_FILTRO and self.projeto is not None
+        if (self._cartoes_a_vista() and self.projeto is not None
                 and 0 <= self.indice_pagina < len(self.projeto.paginas)
                 and self._cartao_pb_pelo_misto(self.projeto.paginas[self.indice_pagina])
                 and chave == self.previas.chave_com_filtro(
@@ -3672,9 +3744,12 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[self.indice_pagina]
         campo = self._campo_do_ajuste(pagina.filtro)
 
-        # Original não tem o que ajustar: o bloco inteiro some.
+        # Original não tem o que ajustar: o bloco inteiro some (e a frase
+        # "O Original não tem ajuste." aparece no lugar dele, no painel).
         self.bloco_ajuste.setVisible(campo is not None)
+        self.frase_sem_ajuste.setVisible(campo is None)
         if campo is None:
+            self._resumir_o_filtro(pagina, None)
             self._medir_de_novo_a_barra()
             return
 
@@ -3706,7 +3781,29 @@ class TelaConferir(QWidget):
             self.seletor_pontinhos.setCurrentIndex(
                 max(0, self.seletor_pontinhos.findData(escolha)))
             self.seletor_pontinhos.blockSignals(False)
+        self._resumir_o_filtro(pagina, campo)
         self._medir_de_novo_a_barra()
+
+    def _resumir_o_filtro(self, pagina, campo: str | None) -> None:
+        """Etapa 4 do layout: no painel "Filtro da página", as partes que só
+        valem no Preto e branco ("Só as letras", "Limpar a sujeira", "Mais
+        ajustes") aparecem só com ele, e cada parte fechada diz à direita o
+        que está escolhido (desenho das rodadas 10 e 11: "Força do preto:
+        normal", "Sem limpeza", "Guardar a tinta forte"). Só lê campos."""
+        painel = self.paineis.filtro_da_pagina
+        if campo is None:
+            painel.definir_parte("ajuste", True, "não tem")
+        else:
+            painel.definir_parte("ajuste", True, f"{self.medidor.rotulo.text()}: "
+                                                 f"{self.medidor.palavra.text()}")
+        eh_pb = pagina.filtro == PRETO_E_BRANCO
+        letras = "desligado"
+        if eh_pb and self.escolhas_misto.caixa.isChecked():
+            valor = self.escolhas_misto.fora_do_texto()
+            letras = next((texto for v, texto, _f in BOTOES_DO_TEXTO if v == valor), "")
+        painel.definir_parte("letras", eh_pb, letras)
+        painel.definir_parte("limpar", eh_pb, self.seletor_pontinhos.currentText())
+        painel.definir_parte("mais", eh_pb, self.seletor_algoritmo_pb.currentText())
 
     def _medir_de_novo_a_barra(self) -> None:
         """Mede de novo a barra de botões se a altura que a aba da frente

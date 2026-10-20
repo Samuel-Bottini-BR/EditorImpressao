@@ -433,13 +433,15 @@ def test_cartao_pb_do_misto_chega_de_uma_tarefa_de_fundo(conferir_original):
 # 50b9319 (aba Marcar): medir de novo quando os controles mudam.
 
 def _nada_espremido(tela):
-    from PySide6.QtWidgets import QPushButton
+    """Desde a etapa 4 do layout (20/10/2026) os controles do filtro moram no
+    painel "Filtro da página" (com rolagem): a fila embaixo da página fica
+    vazia, e nenhum botão do painel fica mais baixo do que precisa."""
+    from PySide6.QtWidgets import QApplication, QPushButton
 
-    from ui.tela_conferir import ABA_FILTRO
-
-    painel = tela.linhas_de_botoes[ABA_FILTRO]
-    assert tela.barra_botoes.height() >= painel.sizeHint().height(), \
-        f"barra {tela.barra_botoes.height()} < {painel.sizeHint().height()}"
+    for _ in range(3):
+        QApplication.processEvents()
+    assert tela.barra_botoes.height() == 0, "a fila embaixo da página não ficou vazia"
+    painel = tela.paineis.filtro_da_pagina
     botoes = [b for b in painel.findChildren(QPushButton) if b.isVisible()]
     assert botoes
     for botao in botoes:
@@ -453,49 +455,54 @@ def test_escolher_preto_e_branco_numa_pagina_original_nao_espreme(
         conferir_original, tamanho, so_as_letras):
     from PySide6.QtWidgets import QApplication
 
+    from ui.widgets.paineis import ParteQueAbre
+
+    ParteQueAbre.ABERTAS.clear()
     tela = conferir_original
     tela.projeto.misto_so_as_letras = so_as_letras
     tela.resize(*tamanho)
     tela.show()
+    tela.paineis.abrir("filtro")
     QApplication.processEvents()
     assert tela.bloco_ajuste.isHidden(), "no Original o bloco AJUSTE some"
-    altura_sem = tela.barra_botoes.height()
+    assert not tela.frase_sem_ajuste.isHidden()
+    assert tela.paineis.filtro_da_pagina.partes["letras"].isHidden()
 
     tela._escolher_filtro(PRETO_E_BRANCO)
     for _ in range(3):
         QApplication.processEvents()
     assert not tela.bloco_ajuste.isHidden()
-    assert tela.barra_botoes.height() > altura_sem, "a barra nao cresceu com o bloco"
+    assert not tela.paineis.filtro_da_pagina.partes["letras"].isHidden()
+    tela.paineis.filtro_da_pagina.partes["ajuste"].abrir()
     _nada_espremido(tela)
     if so_as_letras:
         e = tela.escolhas_misto
-        assert e.caixa.isChecked() and e.botoes[misto.FORA_REDE].isVisible()
+        assert e.caixa.isChecked() and e.lista_do_texto.isVisible()
+        assert e.lista_do_texto.currentData() == misto.FORA_REDE
 
-    # e ao voltar para o Original, a barra encolhe de novo (a pagina ganha a
-    # altura de volta)
+    # e ao voltar para o Original, as partes do Preto e branco somem
     tela._escolher_filtro(ORIGINAL)
     QApplication.processEvents()
-    assert tela.barra_botoes.height() < altura_sem + 1
+    assert tela.paineis.filtro_da_pagina.partes["letras"].isHidden()
+    assert tela.barra_botoes.height() == 0
+    ParteQueAbre.ABERTAS.clear()
     tela.hide()
 
 
 def test_ligar_so_as_letras_na_pagina_nao_espreme(conferir_original):
-    """Os tres botoes aparecem ao marcar "So as letras": a barra cresce."""
+    """A lista com amostra aparece ao marcar "So as letras", sem espremer nada."""
     from PySide6.QtWidgets import QApplication
 
     tela = conferir_original
     tela.projeto.paginas[0].filtro = PRETO_E_BRANCO
     tela.resize(1280, 657)
     tela.show()
+    tela.paineis.abrir("filtro")
     tela.atualizar()
     QApplication.processEvents()
     tela.escolhas_misto.caixa.setChecked(True)
-    for _ in range(3):
-        QApplication.processEvents()
     _nada_espremido(tela)
     tela.escolhas_misto.botao_mais.click()
-    for _ in range(3):
-        QApplication.processEvents()
     _nada_espremido(tela)
     tela.hide()
 

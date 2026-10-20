@@ -407,55 +407,98 @@ def test_o_propriedades_mostra_so_o_da_ferramenta_da_vez(app):
 # --- Filtro da página -------------------------------------------------------
 
 
-def test_o_painel_de_filtro_mostra_o_filtro_e_a_tecla(app):
+def _clicar(widget) -> None:
+    """Aperta e solta o botão esquerdo do mouse no meio do widget."""
+    centro = widget.rect().center()
+    for tipo in (QEvent.MouseButtonPress, QEvent.MouseButtonRelease):
+        widget.event(QMouseEvent(tipo, centro, widget.mapToGlobal(centro), Qt.LeftButton,
+                                 Qt.LeftButton, Qt.NoModifier))
+
+
+def _painel_de_filtro_montado():
+    """O painel Filtro com as peças que a tela entregaria (aqui, de mentira)."""
+    from PySide6.QtWidgets import QWidget
+
+    from core.filtros import MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO
+
+    painel = PainelFiltroDaPagina()
+    pecas = {nome: QWidget() for nome in ("ajuste", "letras", "limpar", "mais", "aplicar")}
+    pecas["apagar"] = QPushButton("apagar página")
+    painel.montar([(ORIGINAL, "Original", "1"), (PRETO_E_BRANCO, "Preto e branco", "2"),
+                   (MELHORAR, "Melhorar", "3"), (MAGICO_PRO, "Mágico pro", "4")], pecas)
+    return painel
+
+
+def test_o_painel_de_filtro_mostra_a_fila_com_as_teclas(app):
+    """Etapa 4 do layout (rodada 9, 403 B): a fila dos filtros, cada um com a
+    tecla, e o da página aceso."""
     from core.filtros import MAGICO_PRO
 
-    pagina = ConfigPagina(indice=0, folha=0, filtro=MAGICO_PRO)
-    painel = PainelFiltroDaPagina()
-    painel.atualizar(pagina)
-
+    painel = _painel_de_filtro_montado()
+    painel.atualizar(ConfigPagina(indice=0, folha=0, filtro=MAGICO_PRO))
     textos = " ".join(r.text() for r in painel.findChildren(QLabel))
-    assert "Mágico pro" in textos
-    assert "tecla 4" in textos
+    for esperado in ("Original", "Preto e branco", "Melhorar", "Mágico pro",
+                     "tecla 1", "tecla 4"):
+        assert esperado in textos
+    assert painel.cartoes[MAGICO_PRO].selecionado
+    assert sum(c.selecionado for c in painel.cartoes.values()) == 1
     assert painel.cabecalho.subtitulo.text() == "página 1"
+
+
+def test_clicar_na_fila_escolhe_o_filtro(app):
+    from core.filtros import MELHORAR
+
+    painel = _painel_de_filtro_montado()
+    escolhidos = []
+    painel.filtro_escolhido.connect(escolhidos.append)
+    _clicar(painel.cartoes[MELHORAR])
+    assert escolhidos == [MELHORAR]
 
 
 def test_o_painel_de_filtro_traz_os_cinco_do_so_neste_pedaco(app):
     """Os cinco valores da linha "Filtro só neste pedaço" não se perderam."""
     from core.filtros import PRETO_E_BRANCO
 
-    painel = PainelFiltroDaPagina()
+    painel = _painel_de_filtro_montado()
     painel.atualizar(ConfigPagina(indice=0, folha=0, filtro=PRETO_E_BRANCO))
 
     textos = _textos(painel.corpo.findChildren(QPushButton))
     for esperado in ("o mesmo da página", "Original", "Preto e branco",
                      "Melhorar", "Mágico pro"):
         assert esperado in textos, f'sumiu "{esperado}" de "só neste pedaço"'
+    escolhidos = []
+    painel.filtro_do_pedaco.connect(escolhidos.append)
+    painel.botoes_do_pedaco[PRETO_E_BRANCO].click()
+    assert escolhidos == [PRETO_E_BRANCO]
+    assert painel.partes["pedaco"].cabeca.resumo.text() == "Preto e branco"
 
 
-def test_o_deslizante_e_o_daquele_filtro(app):
-    from PySide6.QtWidgets import QSlider
+def test_as_partes_abrem_fecham_e_lembram(app):
+    """Rodada 9, 403 B: partes que abrem e fecham; a escolha vale para a
+    próxima página (e para o próximo painel montado, no mesmo programa)."""
+    from ui.widgets.paineis import ParteQueAbre
 
-    from core.filtros import MELHORAR
+    ParteQueAbre.ABERTAS.clear()
+    painel = _painel_de_filtro_montado()
+    parte = painel.partes["limpar"]
+    assert not parte.aberta and parte.caixa_do_corpo.isHidden()
+    _clicar(parte.cabeca)
+    assert parte.aberta and not parte.caixa_do_corpo.isHidden()
+    outro = _painel_de_filtro_montado()
+    assert outro.partes["limpar"].aberta, "não lembrou que estava aberta"
+    painel.definir_parte("limpar", False, "Sem limpeza")
+    assert parte.isHidden() and parte.cabeca.resumo.text() == "Sem limpeza"
+    ParteQueAbre.ABERTAS.clear()
 
-    pagina = ConfigPagina(indice=0, folha=0, filtro=MELHORAR,
-                          clareza_melhorar=73)
+
+def test_sem_os_filtros_o_painel_diz_por_que(app):
     painel = PainelFiltroDaPagina()
-    painel.atualizar(pagina)
-
-    barras = painel.findChildren(QSlider)
-    assert barras, "o filtro Melhorar perdeu o deslizante"
-    assert barras[0].value() == 73
-
-
-def test_o_original_nao_tem_deslizante(app):
-    from PySide6.QtWidgets import QSlider
-
-    from core.filtros import ORIGINAL
-
-    painel = PainelFiltroDaPagina()
-    painel.atualizar(ConfigPagina(indice=0, folha=0, filtro=ORIGINAL))
-    assert not painel.findChildren(QSlider), "o Original ganhou um ajuste que não tem"
+    assert not painel.sem_filtro.isHidden()
+    assert "Limpar a folha" in painel.sem_filtro.text()
+    montado = _painel_de_filtro_montado()
+    assert montado.sem_filtro.isHidden() and not montado.pe.isHidden()
+    montado.desmontar()
+    assert not montado.sem_filtro.isHidden() and not montado.cartoes
 
 
 # --- Histórico --------------------------------------------------------------
