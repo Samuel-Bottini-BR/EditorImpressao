@@ -35,7 +35,7 @@ name: Testes no Windows
 # Com "ramo" preenchido (so pelo workflow_dispatch), o CODIGO DO PROGRAMA vem
 # daquele ramo e a .github/ (este workflow e os scripts) continua a deste
 # (.github/scripts/trocar_codigo.sh). Nada e gravado no ramo testado.
-run-name: ${{ inputs.antes_depois && format('Antes/depois do endireitar ({0})', inputs.ramos_antes_depois) || inputs.velocidade && format('Velocidade no Windows ({0})', inputs.ramos_velocidade) || format('Testes no Windows ({0})', inputs.ramo || github.ref_name) }}
+run-name: ${{ inputs.velocidade_ab && format('Filtro de velocidade ({0} -> {1})', inputs.ramo_antes, inputs.ramo_depois) || inputs.antes_depois && format('Antes/depois do endireitar ({0})', inputs.ramos_antes_depois) || inputs.velocidade && format('Velocidade no Windows ({0})', inputs.ramos_velocidade) || format('Testes no Windows ({0})', inputs.ramo || github.ref_name) }}
 
 on:
   push:
@@ -74,6 +74,22 @@ on:
         description: 'Antes/depois: lista JSON dos ramos, ex.: ["fase-1","fase2-endireitar-2"]'
         required: false
         default: '["fase-1","fase2-endireitar-2"]'
+      velocidade_ab:
+        description: "Filtro de velocidade: SO antes x depois alternados na MESMA maquina (sem a suite)"
+        type: boolean
+        default: false
+      ramo_antes:
+        description: "Filtro: ramo ou commit de ANTES"
+        required: false
+        default: "fase-1"
+      ramo_depois:
+        description: "Filtro: ramo ou commit de DEPOIS"
+        required: false
+        default: ""
+      rodadas_ab:
+        description: "Filtro: rodadas de CADA versao (1 a 10; cada uma leva 10 a 20 min)"
+        required: false
+        default: "3"
 
 permissions:
   contents: read
@@ -86,7 +102,7 @@ env:
 jobs:
   suite:
     name: Suite (parte ${{ matrix.parte }} de 5)
-    if: ${{ !inputs.velocidade && !inputs.antes_depois && !inputs.so_janela }}
+    if: ${{ !inputs.velocidade && !inputs.antes_depois && !inputs.so_janela && !inputs.velocidade_ab }}
     runs-on: windows-latest
     timeout-minutes: 60
     strategy:
@@ -179,7 +195,7 @@ jobs:
 
   janela:
     name: Botoes e prints da janela real
-    if: ${{ !inputs.velocidade && !inputs.antes_depois }}
+    if: ${{ !inputs.velocidade && !inputs.antes_depois && !inputs.velocidade_ab }}
     runs-on: windows-latest
     timeout-minutes: 45
     # Escrita SO neste job, e so para o passo que grava os prints no ramo
@@ -318,7 +334,7 @@ jobs:
     # todo lugar; o log sempre se le. Roda mesmo se alguma parte falhou.
     name: Resumo
     needs: [suite, janela]
-    if: ${{ always() && !inputs.velocidade && !inputs.antes_depois }}
+    if: ${{ always() && !inputs.velocidade && !inputs.antes_depois && !inputs.velocidade_ab }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -537,3 +553,116 @@ jobs:
             echo "push recusado (outra rodada gravou antes?), tentativa $tentativa"; sleep $((tentativa * 5))
           done
           echo "nao consegui gravar as imagens no ramo prints-testes"; exit 1
+
+  # ---------------------------------------------------------------------------
+  # FILTRO DE VELOCIDADE: ANTES x DEPOIS NA MESMA MAQUINA (decisao do Samuel de
+  # 19/10/2026, "opcao 2", CLAUDE.md 4.6). So com workflow_dispatch e
+  # "velocidade_ab" marcado; a suite, a janela e o resumo NAO rodam.
+  # Num job SO (uma maquina so): poe lado a lado o programa de "ramo_antes" e o
+  # de "ramo_depois" (.github/scripts/preparar_versao.sh; aceita ramo ou
+  # commit, ate abreviado), copia gabarito/ e modelos/ do ramo dados-de-teste
+  # para os dois, aquece cada um com uma rodada --rapido, e roda o
+  # teste_velocidade.py de cada versao ALTERNANDO: antes-1, depois-1, antes-2,
+  # depois-2... ("rodadas_ab" de cada). A tabela e o veredito ("igual (dentro
+  # do vai-e-vem)" / "parece mais lento: X" / "parece mais rapido: X") vao para
+  # o resumo da rodada e para o artifact "filtro-velocidade"
+  # (.github/scripts/velocidade_ab.py, que explica a conta). Com "rapido"
+  # marcado, tudo roda em --rapido: so prova que funciona.
+  # Por que num job so: as maquinas do GitHub variam ate 70% entre si; so a
+  # comparacao dentro da mesma maquina diz alguma coisa.
+  # ARRISCADO: dividir as rodadas em varios jobs ou rodar as duas versoes ao
+  # mesmo tempo (deixa de ser a mesma maquina / uma atrapalha a outra); comparar
+  # estes numeros com os do PC (outra maquina; so o veredito se compara);
+  # "timeout-minutes" abaixo de ~25 min por rodada.
+  # ---------------------------------------------------------------------------
+  velocidade_ab:
+    name: Filtro de velocidade (antes x depois, mesma maquina)
+    if: ${{ inputs.velocidade_ab }}
+    runs-on: windows-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: As duas versoes, lado a lado
+        shell: bash
+        env:
+          RAMO_ANTES: ${{ inputs.ramo_antes }}     # por variavel, nunca colado no comando
+          RAMO_DEPOIS: ${{ inputs.ramo_depois }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$RAMO_ANTES" ] || [ -z "$RAMO_DEPOIS" ]; then
+            echo "preencha ramo_antes e ramo_depois"; exit 1
+          fi
+          bash .github/scripts/preparar_versao.sh "$RAMO_ANTES" _versao_antes ANTES
+          bash .github/scripts/preparar_versao.sh "$RAMO_DEPOIS" _versao_depois DEPOIS
+          if ! cmp -s _versao_antes/requirements.txt _versao_depois/requirements.txt; then
+            echo "::warning::requirements.txt diferente entre as duas versoes; as bibliotecas instaladas sao as do .github/requisitos-windows.txt"
+          fi
+
+      - name: Arquivos pesados (ramo dados-de-teste)
+        uses: actions/checkout@v4
+        with:
+          ref: dados-de-teste
+          path: _dados_de_teste
+
+      - name: Copiar gabarito/ e modelos/ para as duas versoes
+        shell: pwsh
+        run: |
+          foreach ($v in '_versao_antes', '_versao_depois') {
+            robocopy _dados_de_teste\gabarito $v\gabarito /E /NFL /NDL /NJH /NP
+            if ($LASTEXITCODE -ge 8) { exit 1 }
+            robocopy _dados_de_teste\modelos $v\modelos /E /NFL /NDL /NJH /NP
+            if ($LASTEXITCODE -ge 8) { exit 1 }
+          }
+          # o livro medido: UM arquivo so, lido pelas duas versoes
+          New-Item -ItemType Directory -Force -Path _livro | Out-Null
+          Copy-Item _dados_de_teste\gabarito\velocidade\marial_300.pdf _livro\
+          Remove-Item -Recurse -Force _dados_de_teste
+          if (-not (Test-Path _livro\marial_300.pdf)) { "falta o marial_300.pdf"; exit 1 }
+          exit 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: .github/requisitos-windows.txt
+
+      - name: Bibliotecas (versoes da .venv do Samuel)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .github/requisitos-windows.txt
+
+      - name: Pastas temporarias e de dados dentro da pasta de trabalho
+        shell: pwsh
+        run: |
+          $t = Join-Path $env:GITHUB_WORKSPACE "_temp_testes"
+          New-Item -ItemType Directory -Force -Path $t, "$t\tmp", "$t\localappdata", "$t\appdata" | Out-Null
+          "TEMP=$t\tmp" >> $env:GITHUB_ENV
+          "TMP=$t\tmp" >> $env:GITHUB_ENV
+          "LOCALAPPDATA=$t\localappdata" >> $env:GITHUB_ENV
+          "APPDATA=$t\appdata" >> $env:GITHUB_ENV
+
+      - name: Medir alternando (antes, depois, antes, depois...)
+        shell: pwsh
+        env:
+          RODADAS: ${{ inputs.rodadas_ab }}
+          RAPIDO: ${{ inputs.rapido }}
+          RAMO_ANTES: ${{ inputs.ramo_antes }}
+          RAMO_DEPOIS: ${{ inputs.ramo_depois }}
+        run: |
+          $extra = @('--aquecer')
+          if ($env:RAPIDO -eq "true") { $extra = @('--rapido') }
+          python .github/scripts/velocidade_ab.py --antes _versao_antes --depois _versao_depois `
+            --livro _livro\marial_300.pdf --saida filtro-velocidade --rodadas $env:RODADAS `
+            --rotulo-antes "$env:RAMO_ANTES = $env:VERSAO_ANTES_SHA" `
+            --rotulo-depois "$env:RAMO_DEPOIS = $env:VERSAO_DEPOIS_SHA" @extra
+          exit $LASTEXITCODE
+
+      - name: Guardar a medicao
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: filtro-velocidade
+          path: filtro-velocidade
+          if-no-files-found: warn
