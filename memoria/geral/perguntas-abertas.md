@@ -91,6 +91,46 @@ Ficha [layout](../itens/layout.md).
   Apagar `C:\Users\fotog\AppData\Local\Temp\p2.py` (arquivo vazio deixado por um agente)? E a pasta de rascunho
   criada fora do projeto pelo implementador do dividir (Registro 06/10/2026, "pode ser apagada?").
 
+- **D2 e D7 da conferência 3** (capitular a pena do Graduale; pauta e notas): ele pediu para escolher vendo o
+  resultado ("preciso ver o resultado de cada tipo de seleção para saber qual escolher"); a gerente mostra no item 1.5
+  (Registro 30/09/2026). Item [1.5](../itens/1.5.md).
+- **O programa já substitui o CamScanner?** "Sim, não, ou ainda não" — aberta desde 18/07/2026 (PEDIDOS.md, bloco
+  10). É o item [6.7](../itens/6.7.md).
+- **"Aviso que o Kaique pediu"** — sem descrição ("o áudio enviado não fala disso"; Lista de espera 24/09/2026).
+  Ver [kaique.md](kaique.md).
+- **Barra de rolagem preta ou cinza** — "isso é irrelevante agora, deixe para depois." (07/09/2026; hoje cinza,
+  CLAUDE.md §9).
+- **O Histórico mostra os nomes velhos nas ações feitas antes da troca. Traduzir na hora de mostrar?** (PARTE -13
+  §2, sem resposta registrada).
+- **Aviso C1 em página reta**: "medir a 300 ao abrir, mais lento; ou só avisar depois da medida de 300" — pergunta
+  "ainda não montada" (PARTE -14 §5; é a mesma do aviso "as contas discordam" acima).
+
+## 4b. Arrumação de disco e pastas, sem resposta registrada
+
+Pela regra de 29/09/2026 (CLAUDE.md §10.9), nada disto se apaga sem o "sim" dele.
+
+- "você tinha uma pasta `D:\d`?" (PARTE -9 §1 e PARTE -12 §2; a pasta foi apagada por um agente em 29/09/2026).
+- Apagar `C:\Users\fotog\AppData\Local\Temp\revisar_decisoes_rodada1` (1,5 GB)? (PARTE -13 §2).
+- Temporários do Claude Code: "opção 1, apagar mais cedo (cleanupPeriodDays...); opção 2, mandar para o D:
+  (CLAUDE_CODE_TMPDIR...); ou deixar como está" (PARTE -13 §2). E a limpeza do C: ainda não autorizada (6 GB de
+  temporários do Claude, Photos.zip e filmes, cache do CapCut, do pip e do VS Code C++).
+- Apagar a pasta de rascunho `D:\programas\EditorImpressao-arquivos\ferramentas\build-st-ferramentas-dividir`?
+  (PARTE -12 §2).
+- Apagar `LIVROS PARA FAZER TESTE (duplicata)` (~1,5 GB) e `D:\programas\EditorImpressao_backup_antigo_2026-09-07`
+  (6,6 GB)? (LEIA-ME de `EditorImpressao-arquivos`, 15/09/2026; PEDIDOS.md, bloco 11). E a cópia
+  `kaique explica (duplicata...).docx`? (`historico/LEIA-ME.md`).
+- A pasta do verificador `.claude/worktrees/verif-consertos-saida/` (1,8 GB): "Vamos apagar mais para frente" (Lista
+  de espera 05/10/2026).
+
+## 4c. Dúvidas levantadas pela montagem da memória (não são dele; levar à gerente)
+
+- **6.3 × decisão V1:** o item 6.3 diz "Tinta vermelha não virar preto"; a decisão V1 de 30/09/2026 diz que no Preto
+  e branco o vermelho sai preto. Leitura provável: V1 vale para o Preto e branco, o 6.3 para os outros filtros e as
+  chapas. Confirmar. Item [6.3](../itens/6.3.md).
+- **Margens da edição × da impressão:** as margens do ScanTailor (G9: 10 mm dos lados, 5 mm em cima e embaixo, na
+  edição) e as margens de 1 cm / 1,3 cm da impressão (14/10/2026) — como se juntam? Itens [2.4](../itens/2.4.md),
+  [2.6](../itens/2.6.md).
+
 ## 5. Respondidas recentemente (para não perguntar de novo)
 
 - Os agentes dos itens 4 e 6 da PARTE -16 ("posso mandar os agentes...?"): liberados em 19/10/2026 ("Implementador 1
