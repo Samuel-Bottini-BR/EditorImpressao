@@ -55,7 +55,10 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 # Tem de bater com ST_FERRAMENTAS_VERSAO_API em st_ferramentas.h.
 # 1 = so os pontinhos; 2 (06/10/2026) = + dividir (st_ferramentas_dividir);
 # 3 (06/10/2026) = + endireitar (st_ferramentas_endireitar, item 2.2).
-VERSAO_API = 3
+# 4 = reservado para as caixas (ramo fase2-caixa-conteudo, ainda nao juntado).
+# 5 (20/10/2026) = + preto e branco do ScanTailor (st_ferramentas_preto_e_branco,
+#     item 2.8; core/preto_e_branco_scantailor.py).
+VERSAO_API = 5
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -96,6 +99,20 @@ ASSINATURAS = {
         ctypes.POINTER(ctypes.c_double),                             # angulo bruto
         ctypes.POINTER(ctypes.c_double),                             # confianca
         ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.8 (20/10/2026): o preto e branco do ScanTailor, com os dez jeitos
+    # (core/preto_e_branco_scantailor.py).
+    "st_ferramentas_preto_e_branco": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # metodo, ajuste do limiar
+        ctypes.c_int,                                                # janela
+        ctypes.c_double, ctypes.c_double,                            # coef. Sauvola, coef. Wolf
+        ctypes.c_int, ctypes.c_int,                                  # Wolf minimo, maximo
+        ctypes.c_int, ctypes.c_int, ctypes.c_int,                    # normalizar, Savitzky-Golay, morfologica
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
 }

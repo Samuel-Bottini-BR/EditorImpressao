@@ -1626,8 +1626,18 @@ def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
     Preto e branco com "pouco", "normal" ou "muito")? So serve para medir o
     DPI de verdade so quando precisa. Errar para "sim" so custa milissegundos."""
     return bool(projeto.limpar and pagina.filtro == PRETO_E_BRANCO
-                and pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
-                in pontinhos_scantailor.DO_SCANTAILOR)
+                and (pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
+                     in pontinhos_scantailor.DO_SCANTAILOR
+                     or _jeito_do_scantailor(pagina)))
+
+
+def _jeito_do_scantailor(pagina: ConfigPagina) -> bool:
+    """A pagina usa um dos dez jeitos de preto e branco do ScanTailor (item
+    2.8)? Eles tambem precisam do DPI de verdade (a suavizacao Savitzky-Golay
+    escolhe a janela pelo DPI); ver pontinhos_da_pagina."""
+    from core.preto_e_branco_scantailor import e_do_scantailor
+
+    return e_do_scantailor(getattr(pagina, "algoritmo_preto_branco", None))
 
 
 def pontinhos_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
@@ -1643,7 +1653,8 @@ def pontinhos_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     montar_misto.py tambem usam."""
     escolha = pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
     dpi_certo = None
-    if escolha in pontinhos_scantailor.DO_SCANTAILOR and dpi:
+    # item 2.8: os dez jeitos do ScanTailor leem o DPI daqui (Pontinhos.dpi)
+    if (escolha in pontinhos_scantailor.DO_SCANTAILOR or _jeito_do_scantailor(pagina)) and dpi:
         dpi_certo = pontinhos_scantailor.dpi_para_os_pontinhos(
             img.shape[1], img.shape[0], dpi, dpi_do_scan)
     return pontinhos_scantailor.Pontinhos(escolha, dpi_certo)

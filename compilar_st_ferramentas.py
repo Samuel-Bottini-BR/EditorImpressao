@@ -150,6 +150,17 @@ def testar_a_dll() -> str:
     if not medido.disponivel:
         raise ErroDeCompilacao(f"A DLL abriu, mas o endireitar falhou: {medido.motivo} "
                                f"({medido.detalhe_tecnico})")
+    # Item 2.8: o preto e branco responde (a peca escura fica preta, o papel branco).
+    from core import preto_e_branco_scantailor as pbst
+
+    pagina = np.full((300, 400), 230, np.uint8)
+    pagina[100:200, 100:300] = 30
+    pb = pbst.binarizar(pagina, 300, "st_otsu", biblioteca=biblioteca)
+    if not pb.disponivel:
+        raise ErroDeCompilacao(f"A DLL abriu, mas o preto e branco falhou: {pb.motivo} "
+                               f"({pb.detalhe_tecnico})")
+    if pb.imagem[150, 200] != 0 or pb.imagem[20, 20] != 255:
+        raise ErroDeCompilacao("A DLL abriu, mas o preto e branco da imagem de prova está errado.")
     return biblioteca.origem or "?"
 
 
