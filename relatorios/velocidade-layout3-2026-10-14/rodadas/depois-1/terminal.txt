@@ -1,0 +1,104 @@
+Teste de velocidade do Editor de Impressão
+Livro: D:\programas\EditorImpressao\gabarito\velocidade\marial_300.pdf
+Máquina: SAMUEL-PC, AMD Ryzen 7 5800H with Radeon Graphics, 16 GB, na tomada (bateria em 100%)
+Preparando: o mesmo aquecimento que o programa faz ao ligar...
+  levou 6,4 s; detector de gravura e letra: carregado
+Rodada 1 de 3
+[0:11] Rodada 1 de 3 | abrir o livro: folha 1 de 300
+[0:21] Rodada 1 de 3 | abrir o livro: folha 54 de 300
+[0:31] Rodada 1 de 3 | abrir o livro: folha 113 de 300
+[0:41] Rodada 1 de 3 | abrir o livro: folha 168 de 300
+[0:51] Rodada 1 de 3 | abrir o livro: folha 226 de 300
+[1:02] Rodada 1 de 3 | abrir o livro: folha 283 de 300
+  abrir o livro: 55,1 s
+[1:13] Rodada 1 de 3 | trocar de página: 2 de 20 (página 23)
+[1:23] Rodada 1 de 3 | trocar de página: 4 de 20 (página 53)
+[1:33] Rodada 1 de 3 | trocar de página: 6 de 20 (página 83)
+[1:44] Rodada 1 de 3 | trocar de página: 8 de 20 (página 113)
+[1:56] Rodada 1 de 3 | trocar de página: 10 de 20 (página 143)
+[2:07] Rodada 1 de 3 | trocar de página: 12 de 20 (página 173)
+[2:19] Rodada 1 de 3 | trocar de página: 14 de 20 (página 203)
+[2:30] Rodada 1 de 3 | trocar de página: 16 de 20 (página 233)
+[2:42] Rodada 1 de 3 | trocar de página: 18 de 20 (página 263)
+[2:54] Rodada 1 de 3 | trocar de página: 20 de 20 (página 293)
+  trocar de página: 3,0 s em média, 3,9 s a mais demorada
+[3:08] Rodada 1 de 3 | processar em Mágico pro: página 2 de 10
+[3:21] Rodada 1 de 3 | processar em Mágico pro: página 4 de 10
+[3:36] Rodada 1 de 3 | processar em Mágico pro: página 6 de 10
+[3:47] Rodada 1 de 3 | processar em Mágico pro: página 7 de 10
+[3:59] Rodada 1 de 3 | processar em Mágico pro: página 9 de 10
+[4:12] Rodada 1 de 3 | processar em Mágico pro: página 10 de 10
+  processar 10 páginas em Mágico pro: 1 min 11 s
+[4:23] Rodada 1 de 3 | processar em Preto e branco: página 5 de 10
+[4:34] Rodada 1 de 3 | processar em Preto e branco: página 9 de 10
+  processar 10 páginas em Preto e branco: 27,4 s
+Rodada 2 de 3
+[4:45] Rodada 2 de 3 | abrir o livro: folha 23 de 300
+[4:55] Rodada 2 de 3 | abrir o livro: folha 77 de 300
+[5:05] Rodada 2 de 3 | abrir o livro: folha 132 de 300
+[5:15] Rodada 2 de 3 | abrir o livro: folha 186 de 300
+[5:25] Rodada 2 de 3 | abrir o livro: folha 240 de 300
+[5:35] Rodada 2 de 3 | abrir o livro: folha 294 de 300
+  abrir o livro: 56,5 s
+[5:46] Rodada 2 de 3 | trocar de página: 3 de 20 (página 38)
+[6:00] Rodada 2 de 3 | trocar de página: 6 de 20 (página 83)
+[6:13] Rodada 2 de 3 | trocar de página: 9 de 20 (página 128)
+[6:25] Rodada 2 de 3 | trocar de página: 12 de 20 (página 173)
+[6:38] Rodada 2 de 3 | trocar de página: 15 de 20 (página 218)
+[6:52] Rodada 2 de 3 | trocar de página: 18 de 20 (página 263)
+  trocar de página: 2,3 s em média, 3,4 s a mais demorada
+[7:07] Rodada 2 de 3 | processar em Mágico pro: página 1 de 10
+[7:18] Rodada 2 de 3 | processar em Mágico pro: página 3 de 10
+[7:31] Rodada 2 de 3 | processar em Mágico pro: página 5 de 10
+[7:42] Rodada 2 de 3 | processar em Mágico pro: página 7 de 10
+[7:57] Rodada 2 de 3 | processar em Mágico pro: página 10 de 10
+  processar 10 páginas em Mágico pro: 55,1 s
+[8:07] Rodada 2 de 3 | processar em Preto e branco: página 3 de 10
+[8:18] Rodada 2 de 3 | processar em Preto e branco: página 7 de 10
+[8:29] Rodada 2 de 3 | processar em Preto e branco: página 10 de 10
+  processar 10 páginas em Preto e branco: 26,8 s
+Rodada 3 de 3
+[8:39] Rodada 3 de 3 | abrir o livro: folha 56 de 300
+[8:49] Rodada 3 de 3 | abrir o livro: folha 109 de 300
+[8:59] Rodada 3 de 3 | abrir o livro: folha 164 de 300
+[9:10] Rodada 3 de 3 | abrir o livro: folha 218 de 300
+[9:20] Rodada 3 de 3 | abrir o livro: folha 271 de 300
+  abrir o livro: 55,9 s
+[9:33] Rodada 3 de 3 | trocar de página: 3 de 20 (página 38)
+[9:46] Rodada 3 de 3 | trocar de página: 6 de 20 (página 83)
+[9:59] Rodada 3 de 3 | trocar de página: 9 de 20 (página 128)
+[10:11] Rodada 3 de 3 | trocar de página: 12 de 20 (página 173)
+[10:24] Rodada 3 de 3 | trocar de página: 15 de 20 (página 218)
+[10:34] Rodada 3 de 3 | trocar de página: 17 de 20 (página 248)
+[10:49] Rodada 3 de 3 | trocar de página: 20 de 20 (página 293)
+  trocar de página: 2,3 s em média, 3,5 s a mais demorada
+[11:00] Rodada 3 de 3 | processar em Mágico pro: página 2 de 10
+[11:11] Rodada 3 de 3 | processar em Mágico pro: página 4 de 10
+[11:23] Rodada 3 de 3 | processar em Mágico pro: página 6 de 10
+[11:34] Rodada 3 de 3 | processar em Mágico pro: página 8 de 10
+[11:45] Rodada 3 de 3 | processar em Mágico pro: página 10 de 10
+  processar 10 páginas em Mágico pro: 55,8 s
+[11:55] Rodada 3 de 3 | processar em Preto e branco: página 3 de 10
+[12:06] Rodada 3 de 3 | processar em Preto e branco: página 7 de 10
+[12:17] Rodada 3 de 3 | processar em Preto e branco: página 10 de 10
+  processar 10 páginas em Preto e branco: 26,4 s
+
+TESTE DE VELOCIDADE: SAMUEL-PC
+
+Medido em 14/10/2026 às 13:37, no computador SAMUEL-PC. Livro: marial_300.pdf (300 páginas, 67,9 MB). O teste inteiro levou 12 minutos e 19 segundos.
+
+QUANTO DEMORA
+
+Cada coisa foi medida 3 vezes. Na primeira vez é o que o Kaique sente ao abrir um livro pela primeira vez. De costume é o valor do meio entre as 3 vezes (a mediana): não é puxado nem pela vez mais rápida nem pela mais lenta.
+
+- Abrir o livro de 300 páginas: 55,1 segundos na primeira vez, 55,9 segundos de costume.
+- Trocar de página: na primeira vez, a prévia de uma página nunca vista ficou pronta em 3,0 segundos em média, e a mais demorada (página 293) levou 3,9 segundos. De costume: 2,3 segundos em média, e 3,5 segundos a mais demorada.
+- Processar 10 páginas em Mágico pro: 1 minuto e 11 segundos na primeira vez (7,1 segundos por página), 55,8 segundos de costume (5,6 segundos por página).
+- Processar 10 páginas em Preto e branco: 27,4 segundos na primeira vez (2,7 segundos por página), 26,8 segundos de costume (2,7 segundos por página).
+- Memória máxima usada: 1.261 MB, ao processar em Mágico pro (rodada 1).
+
+Relatório gravado em:
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\depois-1\velocidade-SAMUEL-PC-2026-10-14-1337.md
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\depois-1\velocidade-SAMUEL-PC-2026-10-14-1337.html
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\depois-1\velocidade-SAMUEL-PC-2026-10-14-1337.pdf
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\depois-1\velocidade-SAMUEL-PC-2026-10-14-1337.json

@@ -1,0 +1,35 @@
+Teste de velocidade do Editor de Impressão (TESTE RÁPIDO: os números NÃO valem como medição)
+Livro: D:\programas\EditorImpressao\gabarito\velocidade\marial_300.pdf
+Máquina: SAMUEL-PC, AMD Ryzen 7 5800H with Radeon Graphics, 16 GB, na tomada (bateria em 100%)
+Preparando: o mesmo aquecimento que o programa faz ao ligar...
+  levou 2,0 s; detector de gravura e letra: carregado
+Rodada 1 de 1
+[0:05] Rodada 1 de 1 | abrir o livro: folha 1 de 20
+  abrir o livro: 4,2 s
+[0:20] Rodada 1 de 1 | trocar de página: 3 de 3 (página 17)
+  trocar de página: 2,6 s em média, 2,8 s a mais demorada
+[0:31] Rodada 1 de 1 | processar em Mágico pro: página 2 de 2
+  processar 2 páginas em Mágico pro: 11,1 s
+  processar 2 páginas em Preto e branco: 4,6 s
+
+TESTE DE VELOCIDADE: SAMUEL-PC
+
+TESTE RÁPIDO: estes números NÃO valem como medição. Ele só confere que o teste funciona do começo ao fim, com um livro pequeno e poucas repetições.
+
+Medido em 14/10/2026 às 13:24, no computador SAMUEL-PC. Livro: as 20 primeiras páginas de marial_300.pdf. O teste inteiro levou 42,0 segundos.
+
+QUANTO DEMORA
+
+Cada coisa foi medida uma vez só.
+
+- Abrir o livro de 20 páginas: 4,2 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 2,6 segundos em média (3 trocas), e a mais demorada (página 11) levou 2,8 segundos.
+- Processar 2 páginas em Mágico pro: 11,1 segundos (5,6 segundos por página).
+- Processar 2 páginas em Preto e branco: 4,6 segundos (2,3 segundos por página).
+- Memória máxima usada: 1.289 MB, ao processar em Mágico pro.
+
+Relatório gravado em:
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\aquecimento-depois\velocidade-SAMUEL-PC-2026-10-14-1324-rapido.md
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\aquecimento-depois\velocidade-SAMUEL-PC-2026-10-14-1324-rapido.html
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\aquecimento-depois\velocidade-SAMUEL-PC-2026-10-14-1324-rapido.pdf
+  D:\programas\EditorImpressao\.claude\worktrees\juntar-layout3\relatorios\velocidade-layout3-2026-10-14\rodadas\aquecimento-depois\velocidade-SAMUEL-PC-2026-10-14-1324-rapido.json

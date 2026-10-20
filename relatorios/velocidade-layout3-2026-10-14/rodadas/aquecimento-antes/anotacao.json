@@ -1,0 +1,15 @@
+﻿{
+    "braco":  "antes",
+    "nome":  "aquecimento-antes",
+    "rapido":  true,
+    "copia":  "D:\\programas\\EditorImpressao\\.claude\\worktrees\\velocidade-antes",
+    "commit":  "1d37f8f",
+    "arquivos_mexidos":  0,
+    "inicio":  "2026-10-14 13:23:13",
+    "fim":  "2026-10-14 13:24:32",
+    "minutos":  1.3,
+    "memoria_livre_antes_gb":  3.5,
+    "memoria_livre_depois_gb":  3.96,
+    "processador_antes_pct":  6,
+    "codigo_de_saida":  0
+}
