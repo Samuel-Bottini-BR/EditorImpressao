@@ -14,10 +14,13 @@ Passos:
 4. [x] Teste de reversao: `test_cartao_escuro_sai_inteiro_no_livro_novo` (3 angulos, roda no GitHub) e
    `test_pesel_21_sai_como_no_fase_1` (so no PC). Falharam no codigo antigo: `pesel21/reversao-no-codigo-antigo.txt`.
    `tests/test_ordem_do_preparo.py` inteiro: 56 passaram (os 6 da borda preta inclusive).
-5. [ ] Medida das 89 paginas (`MEDIR_CONFIGS=C`, `MEDIR_SAIDA=dados-pesel21.json`, `MEDIR_SUFIXO=__pesel21`).
-6. [ ] Projeto antigo 40 de 40.
-7. [ ] Antes/depois das que mudam, abrir cada uma.
-8. [ ] Suite no GitHub.
+5. [x] Medida das 89 paginas (`MEDIR_CONFIGS=C`, `MEDIR_SAIDA=dados-pesel21.json`, `MEDIR_SUFIXO=__pesel21`;
+   `scripts/comparar_pesel21.py`): contra o d97b937 so o Pesel 21 muda; contra o fase-1, as 9 de 13/10.
+6. [x] Projeto antigo 40 de 40 (`projeto-antigo.json`).
+7. [x] Antes/depois das 10 (`scripts/montar_pesel21.py`), todas abertas. Relatorio:
+   `relatorios/conferir/conserto-corte-g6-pesel21-2026-10-20/pesel21.md`.
+8. [ ] Suite no GitHub (rodada anotada aqui quando disparar).
+9. [ ] Filtro de velocidade do GitHub (em validacao pelo outro agente; rodar se der, como indicativo).
 
 ---
 
