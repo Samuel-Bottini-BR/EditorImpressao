@@ -678,6 +678,15 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             sugestao = conferir.botao_sugestao
             if aba != "marcar" and sugestao.isVisible() and sugestao.isEnabled():
                 alvos.append(sugestao)
+            # O segundo e o terceiro botao do aviso ("Para revisar", junção
+            # com o layout em 20/10/2026: moram na faixa, ao lado do primeiro).
+            # O que eles apagam ou deixam em branco volta antes de processar
+            # (_devolver_as_paginas_apagadas).
+            for extra in (getattr(conferir, "botao_sugestao_2", None),
+                          getattr(conferir, "botao_sugestao_3", None)):
+                if (aba != "marcar" and extra is not None and extra.isVisible()
+                        and extra.isEnabled()):
+                    alvos.append(extra)
         # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
