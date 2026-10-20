@@ -4,7 +4,7 @@ Implementador, 12 e 13/10/2026. Ramo `fase2-para-revisar` (saiu do `fase-1` em `
 `.claude/worktrees/para-revisar`. Bloco do plano: "Decidido pelo Samuel, a fazer: o 'Para revisar'"
 (PLANO-DEFINITIVO, Fase 2). **Nada aqui está aprovado: é para o verificador conferir.**
 
-## Retomada de 20/10/2026: junção com o layout aprovado (EM ANDAMENTO)
+## Retomada de 20/10/2026: junção com o layout aprovado (feita; PRONTO PARA CONFERIR pelo verificador)
 
 Pedido da gerente: juntar `origin/fase-1` (b6fd091, com o layout das etapas 2 e 3 de 14/10), acertar os textos
 dos avisos, consertar dois bugs do parecer do verificador (`2920f21`) com teste de reversão, provar que livro já
@@ -17,8 +17,8 @@ começado sai igual ao fase-1, suíte e `teste_botoes.py` no GitHub.
 | 3a. Lista "Antes de processar" só em páginas (teste de reversão, falha no `ce2b835`) | feito | `617a389` |
 | 3b. "voltar a página" × "restaurar página" | **não unificado** (ações diferentes; relatado) | — |
 | teste_botoes clica nos botões 2 e 3 da faixa; roteiro da prova "sai igual" | feito | `adf4e69` |
-| 4. Prova "sai igual" (projeto do fase-1, 32 páginas-gabarito × 2 jeitos) | rodando no PC | — |
-| 5. Suíte + teste_botoes no GitHub | rodada 39473380589 disparada em `adf4e69` | — |
+| 4. Prova "sai igual" (projeto do fase-1, 32 páginas-gabarito × 2 jeitos) | **64 de 64 iguais** (uma refeita 4 vezes; ver `sai-igual-2026-10-20/LEIA-ME.md`) | este |
+| 5. Suíte + teste_botoes no GitHub | rodada 39473380589 em `adf4e69`: 120 arquivos, 2172 passaram, 0 falharam, 72 pulados; botões 228 ações, 0 falhas | — |
 
 Como os conflitos foram resolvidos: o layout do fase-1 ficou inteiro. Os botões do aviso (2º e 3º) saíram das
 filas de cada aba e foram para a **faixa do conferir**, ao lado do primeiro (`botao_sugestao_2`, `_3`, mapeados em
