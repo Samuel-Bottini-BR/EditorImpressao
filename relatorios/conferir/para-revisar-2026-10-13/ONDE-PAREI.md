@@ -1,5 +1,22 @@
 # Segunda conferência do "Para revisar": onde parei
 
+## Retomada de 20/10/2026 (verificador, a pedido da gerente) - EM ANDAMENTO
+
+Ordem da tarefa: (1) abrir as 19 imagens; (2) reabrir Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66;
+(3) teclado; (4) conferência da aba 4 para o Samuel, comparando cada foto com as decisões dele; (5) parecer
+nos três formatos. Velocidade: NÃO medir (Mágico pro +1,1% foi para a Fase 5, Samuel 19/10).
+
+- [x] 1. As 19 imagens abertas uma a uma (e, para comparar com as decisões, todas as 66 citadas nos quadros).
+- [ ] 2. Reabrir as 4 páginas NA JANELA (código ce2b835), livro novo, pasta `trabalho/dados_teste3`.
+- [ ] 3. Teclado: conferido pelo código (`ui/janela_principal.py` keyPressEvent): a seta só chega à
+      página se o que está com o teclado não usar a seta; tira e medidor usam. Falta escrever.
+- [ ] 4. Aba 4: `conferencia-aba4.json` (a fazer). ACHADO GRAVE: as fotos são da tela de ANTES do layout
+      aprovado (no fase-1 desde 14/10); juntar fase-1 no ramo dá conflito em `ui/tela_conferir.py` e
+      `ui/widgets/paineis.py` (git merge-tree). E `esta-bom-1..4` mostram comportamento da 1a
+      conferência que já mudou (Egenloff 3 com a força escurecida sozinha; "usar mais escuro" em "bem forte").
+- [ ] 5. Parecer: `scripts/terceira.py` (a fazer), por cima do `segunda.py`.
+
+
 Verificador. **Parado pelo Samuel em 13/10/2026, 17:30 (checkpoint da sessão).** Ramo conferido:
 `origin/fase2-para-revisar` em `ce2b835`, trazido para esta worktree (`verif-para-revisar`, ramo
 `verif-para-revisar-2026-10-13`). A primeira conferência (commit `2d820d6`) foi em `36b9e32`.
