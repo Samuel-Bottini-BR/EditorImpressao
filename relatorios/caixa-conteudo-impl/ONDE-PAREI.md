@@ -24,11 +24,12 @@ Passos (marque ao terminar):
 - [x] GitHub: suíte rodada 39470960244: 2168 passaram, 0 falharam, 86 pulados; botões ok.
 - [ ] Filtro de velocidade 39471048026 (b8e9af7 -> 9861e4f): em andamento ao entregar; ler.
 - [x] Parte 1 entregue à gerente (20/10).
-- [ ] PARTE 2 LIBERADA (gerente, 20/10): g7 = "O Kaique escolhe por livro: só o preto, ou até a
-      moldura"; "até a moldura" de fábrica no livro novo, igual a hoje no começado; exceção por
-      página; seletor Selecionar todas / Nenhuma. Antes de mexer em core/recortar.py ou na chamada
-      do pipeline: juntar `conserto-corte-g6-2026-10-13` (`5a84f7c`, detectar_bordas ganhou
-      `como_veio`).
+- [x] PARTE 2 (2.13), 20/10: conserto-corte-g6 juntado (`35f724f`, conflito resolvido em
+      _geometria_endireitando_antes); núcleo `6bbd233` (core/borda_preta.py, campos
+      Projeto.borda_preta/borda_preta_ate); tela `6be46d4` (caixinha + lista em "O que fazer",
+      "Em quais páginas?" no "usar em todas"); cunha escura `7729096`; imagens `b60abd5`.
+      Relatório `parte2-2026-10-20.*`. Linhas do §6 coladas no "Botoes e funcoes para o layout.md".
+- [ ] Suíte GitHub do ramo (rodada 39478562934) e velocidade 39471048026: ler e entregar.
 
 ### Decisões técnicas (20/10)
 

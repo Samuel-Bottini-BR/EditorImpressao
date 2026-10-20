@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Borda preta do scanner (2.13)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Borda preta do scanner (item 2.13): Parte 2</h1>
+<p><strong>Quem:</strong> agente implementador · <strong>Data:</strong> 20/10/2026 · <strong>Ramo:</strong> <code>fase2-caixa-conteudo</code> (com o conserto do corte <code>conserto-corte-g6-2026-10-13</code> <code>5a84f7c</code> juntado) · <strong>Não juntado ao <code>fase-1</code>.</strong> Não é "aprovado".</p>
+<h2>Em uma frase</h2>
+<p>O livro ganhou, <strong>desligada de fábrica</strong>, a opção "Achar a página dentro da borda preta do scanner", com a escolha "Cortar: até a moldura (o que está impresso) / só o preto" (vem "até a moldura"); o corte à mão continua sendo a exceção da página; e o "usar em todas" do Cortar agora pergunta "Em quais páginas?", com as exceções desmarcadas e "Selecionar todas" / "Nenhuma".</p>
+<h2>O que vale (respostas do Samuel)</h2>
+<table>
+<thead>
+<tr>
+<th>Resposta</th>
+<th>O que o programa faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G7 (05/10): "Sim, desligada de fábrica"</td>
+<td>Caixinha do livro desmarcada; livro novo e livro começado saem como hoje (teste: nenhuma conta nova é chamada, nas duas ordens).</td>
+</tr>
+<tr>
+<td>g7-borda-ate-onde (20/10): "O Kaique escolhe por livro: só o preto, ou até a moldura"</td>
+<td>Lista do livro. <strong>Até a moldura</strong> = conta do ScanTailor (página dentro da borda + o que está impresso, + 1 mm). <strong>Só o preto</strong> = conta do pesquisador mostrada na pergunta, sem mudança (anda da beirada enquanto o meio do lado é escuro).</td>
+</tr>
+<tr>
+<td>Rodada 4 (08/10): "o programa sugere o corte, o Kaique aceita [...] alterar em algumas paginas só [...] selecionar as que eu quero [...] selecionar todas"; rodada 5: "Selecionar todas" e "Nenhuma"</td>
+<td>O corte sugerido é o automático; mudar numa página é o corte à mão (exceção). O "usar em todas" abre "Em quais páginas?": vêm marcadas as páginas sem corte próprio; as exceções vêm desmarcadas; botões "Selecionar todas" e "Nenhuma"; Aplicar / Cancelar; Ctrl+Z desfaz.</td>
+</tr>
+<tr>
+<td>Junto com o 2.5 ligado</td>
+<td>O corte do conteúdo e o tamanho do livro ficam dentro da página achada.</td>
+</tr>
+</tbody>
+</table>
+<h2>Antes/depois (14 páginas com borda, todas abertas)</h2>
+<p><code>img/borda-preta/</code>: hoje · só o preto · até a moldura (o que fica fora aparece escurecido).</p>
+<ul>
+<li><strong>Até a moldura</strong> tira o preto, a beirada das outras folhas e a lombada em todas: Siebmacher 7 e 9, ljs47 46 e 68, Antiphon 88 e 260, Egenloff 3 e 47, Cursus 3 e 314, Matemática 32, Righetti 55, Camões 66 e 104. Igual ao que a pergunta mostrou: some também o papel vazio, e nos Egenloff ficam de fora a etiqueta de 1880 e parte dos carimbos (o aviso da <code>g8</code> só vale com o 2.5 ligado ou com "até a moldura"; ver ressalva 2).</li>
+<li><strong>Só o preto</strong> tira a faixa preta reta (Matemática 32 embaixo, Righetti 55 em cima, Cursus 3 à direita, Antiphon 88 e 260, Siebmacher em cima e à direita) e deixa o papel, a beirada das outras folhas e a lombada, como a pergunta dizia. No Righetti 55 o preto da direita, que não chega ao meio do lado, fica.</li>
+<li><strong>Defeito achado olhando e consertado:</strong> no livro novo a página girada ganha uma cunha branca nas beiradas, e o "só o preto" parava nela sem tirar nada (Righetti 55: 0% → 16% do preto de cima). Conserto: a conta da borda recebe a página girada com a cunha escura. Teste de reversão <code>test_regressao_so_o_preto_em_pagina_girada_cunha_branca</code> (falha no <code>6be46d4</code>, passa no <code>7729096</code>).</li>
+</ul>
+<h2>Testes</h2>
+<ul>
+<li>Novos: <code>tests/test_borda_preta.py</code> (11) e 4 em <code>test_corte_pelo_conteudo_na_tela.py</code> (caixinha, seletor, cancelar, reversão do bug de 08/10). Passam no PC, um arquivo por vez; vizinhos também (ordem do preparo 56, corte pelo conteúdo 14 + 12, girar cartões 23, painéis 22 + 33, trabalho não se perde 82, marcação em todas 4).</li>
+<li><strong>Bug da Lista de bugs de 08/10 ("usar em todas" apaga as exceções):</strong> consertado; <code>test_regressao_usar_em_todas_nao_apaga_as_excecoes</code> falha no código antigo (a exceção virava o corte da página da vez) e passa no novo.</li>
+<li>Dois testes antigos mudaram só para responder a janela nova (<code>test_paineis_na_tela</code>, <code>test_girar_cartoes_e_previas</code>), e o <code>teste_botoes.py</code> clica "Nenhuma", "Selecionar todas" e aplica.</li>
+<li>Suíte do GitHub e velocidade: ver a entrega.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li>Nenhum livro inteiro gerado com a opção ligada; olhei a página sozinha.</li>
+<li>"Até a moldura" sem o 2.5 não tem o tamanho do livro (cada página do tamanho do impresso dela); o aviso "Corte deixou algo de fora" vale nele.</li>
+<li>"Só o preto" só tira faixa que passa pelo meio do lado; preto só no canto ou só numa ponta fica (escrito na pergunta).</li>
+<li>A janela "Em quais páginas?" é uma lista simples, em lugar provisório; o desenho é do agente de layout.</li>
+<li>O "usar em todas" mexe só no corte; o "seletor grande" do "Para revisar" é outro trabalho.</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 14:53</p>
+</body>
+</html>
