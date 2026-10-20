@@ -147,7 +147,7 @@ from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
 from core import preto_e_branco_scantailor
-from core import claro_no_escuro
+from core import claro_no_escuro, cores_scantailor
 from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, jeito_de_dividir,
                            recalcular_divisao)
@@ -1981,6 +1981,23 @@ class TelaConferir(QWidget):
         self.caixa_claro_no_escuro.toggled.connect(self._mudar_claro_no_escuro)
         dentro.addWidget(self.caixa_claro_no_escuro)
 
+        # Item 2.11 (Samuel P10 (a), 05/10/2026): "Letras com a cor delas" (só no
+        # Preto e branco) e "Reduzir cores", SÓ desta página (core/cores_scantailor.py).
+        # Controle mínimo; aparência do agente de layout. Seguro mudar: os textos.
+        linha_cores = QHBoxLayout()
+        self.caixa_letras_com_a_cor = QCheckBox(cores_scantailor.ROTULO_LETRAS)
+        self.caixa_reduzir_cores = QCheckBox(cores_scantailor.ROTULO_REDUZIR)
+        for caixa, dica, campo in ((self.caixa_letras_com_a_cor, cores_scantailor.EXPLICACAO_LETRAS,
+                                    "letras_com_a_cor"),
+                                   (self.caixa_reduzir_cores, cores_scantailor.EXPLICACAO_REDUZIR,
+                                    "reduzir_cores")):
+            estilo.estilizar(caixa, lambda: estilo_da_caixinha_com_quadrado(15))
+            caixa.setToolTip(dica)
+            caixa.toggled.connect(lambda marcada, c=campo: self._mudar_cores(c, marcada))
+            linha_cores.addWidget(caixa)
+        linha_cores.addStretch(1)
+        dentro.addLayout(linha_cores)
+
         # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
         # e branco escolhido (ver _configurar_medidor). Compacto: a altura da
         # aba é pouca (a janela de 1280 x 657 tem de caber).
@@ -3604,6 +3621,24 @@ class TelaConferir(QWidget):
         )
 
     @protegido
+    def _mudar_cores(self, campo: str, marcada: bool) -> None:
+        """As caixinhas "Letras com a cor delas" e "Reduzir cores" (item 2.11):
+        SÓ desta página, como ação do desfazer. Mostrar o valor nunca grava."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if bool(marcada) == bool(getattr(pagina, campo, False)):
+            return
+        rotulo = (cores_scantailor.ROTULO_LETRAS if campo == "letras_com_a_cor"
+                  else cores_scantailor.ROTULO_REDUZIR)
+        self._registrar(
+            f"mudar_{campo}", "pagina", [self.indice_pagina], {campo: bool(marcada)},
+            cores_scantailor.FRASE_DO_DESFAZER.format(
+                rotulo=rotulo, pagina=self.indice_pagina + 1,
+                estado="marcada" if marcada else "desmarcada"),
+        )
+
+    @protegido
     def _mudar_claro_no_escuro(self, marcada: bool) -> None:
         """A caixinha "Letra clara em fundo escuro" da aba Filtro (item 2.9):
         SÓ desta página, como ação do desfazer. Nada acontece se a página já
@@ -3722,6 +3757,13 @@ class TelaConferir(QWidget):
         self.caixa_claro_no_escuro.blockSignals(True)
         self.caixa_claro_no_escuro.setChecked(claro_no_escuro.ligado(pagina))
         self.caixa_claro_no_escuro.blockSignals(False)
+        # item 2.11: idem; "Letras com a cor delas" so no Preto e branco
+        for caixa, campo in ((self.caixa_letras_com_a_cor, "letras_com_a_cor"),
+                             (self.caixa_reduzir_cores, "reduzir_cores")):
+            caixa.blockSignals(True)
+            caixa.setChecked(bool(getattr(pagina, campo, False)))
+            caixa.blockSignals(False)
+        self.caixa_letras_com_a_cor.setVisible(pagina.filtro == PRETO_E_BRANCO)
 
         # O algoritmo só faz sentido no Preto e branco - Melhorar/Mágico pro
         # não binarizam.
@@ -3897,6 +3939,9 @@ class TelaConferir(QWidget):
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
              # "Limpar pontinhos" DESTA pagina (None = segue o livro)
              "limpar_pontinhos": pagina.limpar_pontinhos,
+             # item 2.11: as cores desta pagina
+             "letras_com_a_cor": pagina.letras_com_a_cor,
+             "reduzir_cores": pagina.reduzir_cores,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} em todas as {len(indices)} páginas",
@@ -3916,6 +3961,9 @@ class TelaConferir(QWidget):
              "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
              # "Limpar pontinhos" DESTA pagina (None = segue o livro)
              "limpar_pontinhos": pagina.limpar_pontinhos,
+             # item 2.11: as cores desta pagina
+             "letras_com_a_cor": pagina.letras_com_a_cor,
+             "reduzir_cores": pagina.reduzir_cores,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",

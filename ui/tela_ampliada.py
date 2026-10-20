@@ -347,6 +347,14 @@ class TelaAmpliada(QDialog):
             algoritmo_pb=pagina.algoritmo_preto_branco,
             despeckle=pontinhos_da_pagina(self.projeto, pagina, preparada, DPI_AMPLIADA),
         )
+        # item 2.11: "Letras com a cor delas" e "Reduzir cores" desta pagina
+        from core import cores_scantailor
+
+        com_cor = cores_scantailor.aplicar(
+            entrada, saida, outro, cores_scantailor.letras_ligadas(pagina),
+            cores_scantailor.reduzir_ligado(pagina), DPI_AMPLIADA)
+        if com_cor is not None:
+            saida = com_cor[0]
         return claro_no_escuro.inverter(saida) if invertida else saida
 
     def _atualizar_rotulos(self) -> None:
