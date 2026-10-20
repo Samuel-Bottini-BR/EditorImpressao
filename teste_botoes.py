@@ -771,7 +771,11 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             print(f"  {largura}x{altura}: ok em todas as abas")
 
     print("\n--- menu (conferir) ---")
-    o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir"})
+    # "comparar" (Ver > "Modo comparar", ligado na etapa 4 do layout) abre a
+    # tela grande, que é modal: ela é conferida em testar_tela_ampliada, com
+    # o .exec() interceptado; aqui travaria a bateria.
+    o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir",
+                                                    "comparar"})
     ok += o
     falhas += f
 

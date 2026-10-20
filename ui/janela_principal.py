@@ -41,6 +41,10 @@ from ui.tela_opcoes import TelaOpcoes
 
 INICIO, OPCOES, PROGRESSO, CONFERIR, FINAL = range(5)
 
+# Quantos livros o menu Arquivo > "Livros recentes" mostra (os mais mexidos
+# por ultimo). Seguro mudar.
+MAXIMO_DE_RECENTES = 10
+
 
 # (largura, altura) minimas da janela, em pontos. Ver JanelaPrincipal.__init__.
 LARGURA_E_ALTURA_MINIMAS = (1000, 600)
@@ -239,6 +243,16 @@ class JanelaPrincipal(QMainWindow):
         conferir.marcacoes_por_converter.connect(self._converter_as_zonas_se_parado)
         self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
         self.menu.ligar("apagar", conferir.apagar_pagina)
+        # Etapa 4 do layout (20/10/2026): os itens que estavam no menu e nao
+        # faziam nada (inventario de 02/10, "11 itens de menu mortos"). Os
+        # quatro "Painel: ..." do menu Ver esperam a rodada 14 (903).
+        self.menu.ligar("restaurar", conferir.restaurar_pagina)
+        self.menu.ligar("historico", conferir._mostrar_o_historico)
+        self.menu.ligar("mais_zoom", lambda: conferir.mudar_o_zoom(conferir.PASSO_DO_ZOOM))
+        self.menu.ligar("menos_zoom", lambda: conferir.mudar_o_zoom(1 / conferir.PASSO_DO_ZOOM))
+        self.menu.ligar("ajustar", lambda: conferir.mudar_o_zoom(None))
+        self.menu.ligar("comparar", self._modo_comparar)
+        self.menu.menu_recentes.aboutToShow.connect(self._montar_livros_recentes)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
@@ -246,6 +260,36 @@ class JanelaPrincipal(QMainWindow):
         for nome in estilo.TEMAS:
             self.menu.ligar(f"tema_{nome}", lambda _marcado=False, t=nome: self._trocar_tema(t))
         self.menu.marcar_tema(estilo.tema_atual())
+
+    def _modo_comparar(self) -> None:  # noqa: D401
+        """Menu Ver > "Modo comparar": abre a página grande já com dois filtros
+        lado a lado (o "comparar" da tela grande). O item não fica marcado: a
+        tela grande é uma janela à parte, e ao fechá-la o modo acaba."""
+        self.menu.acoes["comparar"].setChecked(False)
+        if self.telas.currentIndex() == CONFERIR:
+            self.tela_conferir.ampliar(comparar=True)
+
+    def _montar_livros_recentes(self) -> None:
+        """Menu Arquivo > "Livros recentes": os livros da tela inicial (os
+        mesmos cartões), do mexido por último ao mais antigo; clicar abre o
+        livro do jeito que o cartão "continuar" abre. Montado na hora de abrir
+        o menu (a lista muda a cada livro). Passa pela mesma conferência do
+        cartão (o PDF ainda existe e é o MESMO livro: pedir_para_continuar), e
+        o livro aberto é gravado antes (abrir_livro)."""
+        menu = self.menu.menu_recentes
+        menu.clear()
+        try:
+            resumos = projetos.listar()[:MAXIMO_DE_RECENTES]
+        except Exception:  # noqa: BLE001 - o menu nunca derruba a janela
+            registrar_erro("livros recentes", traceback.format_exc())
+            resumos = []
+        if not resumos:
+            vazio = menu.addAction("(nenhum livro ainda)")
+            vazio.setEnabled(False)
+            return
+        for resumo in resumos:
+            acao = menu.addAction(resumo.nome or Path(resumo.caminho_entrada).name)
+            acao.triggered.connect(lambda _c=False, r=resumo: self.tela_inicio.pedir_para_continuar(r))
 
     def _trocar_tema(self, nome: str) -> None:
         """Menu Ver > Tema (etapa 1 do layout): põe o tema para valer na hora,

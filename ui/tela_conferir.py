@@ -3909,9 +3909,49 @@ class TelaConferir(QWidget):
         self._ir_para(indice)
         self.ampliar()
 
+    # --- os itens do menu Ver e Pagina que nao faziam nada ------------------
+    #
+    # Etapa 4 do layout (20/10/2026). Bug do inventario de 02/10 ("11 itens de
+    # menu mortos"): Aproximar, Afastar, Ajustar à tela, Mostrar o histórico,
+    # Restaurar página apagada, Modo comparar e Livros recentes estavam no
+    # menu, com tecla, e nao faziam nada. Agora fazem o que o nome diz. Os
+    # quatro "Painel: ..." do menu Ver esperam a rodada 14 (903).
+
+    PASSO_DO_ZOOM = 1.25        # quanto o Aproximar/Afastar do menu muda o zoom
+
     @protegido
-    def ampliar(self) -> None:
-        """Abre a página em tamanho grande, no modo da aba atual."""
+    def mudar_o_zoom(self, fator: float | None) -> None:
+        """Aproxima (fator > 1), afasta (fator < 1) ou ajusta à tela (None) a
+        página que está à vista: a da ferramenta de marcar ou a da ferramenta
+        de página (Dividir, Cortar, Endireitar). Sem livro, não faz nada."""
+        if not self._pronta():
+            return
+        aba = self.aba_atual
+        if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            vista = self.editor_selecao
+        else:
+            vista = self.visualizadores.get(aba)
+        if vista is None:
+            return
+        if fator is None:
+            vista.ajustar_a_tela()
+        else:
+            vista.definir_zoom(vista.zoom * fator)
+
+    @protegido
+    def restaurar_pagina(self) -> None:
+        """Menu Página > "Restaurar página apagada": volta a página da vez,
+        se ela estiver apagada (o mesmo caminho do botão "restaurar página",
+        com desfazer). Página que não está apagada fica como está."""
+        if not self._pronta() or self.projeto is None:
+            return
+        if self.projeto.paginas[self.indice_pagina].apagada:
+            self.apagar_pagina()
+
+    @protegido
+    def ampliar(self, comparar: bool = False) -> None:
+        """Abre a página em tamanho grande, no modo da aba atual. comparar=True
+        (menu Ver > "Modo comparar") abre já com os dois filtros lado a lado."""
         if not self._pronta():
             return
 
@@ -3929,6 +3969,9 @@ class TelaConferir(QWidget):
         # ao fechar, a tela normal se redesenha: o usuário pode ter trocado o
         # filtro ou movido a linha de corte lá dentro
         janela.fechou.connect(self.atualizar)
+        if comparar and modo == MODO_FILTRO:
+            janela.botao_comparar.setChecked(True)
+            janela._alternar_comparar()
         janela.exec()
 
     def _redesenhar_previa(self) -> None:
