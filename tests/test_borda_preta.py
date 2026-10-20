@@ -187,3 +187,30 @@ def test_ate_a_moldura_fica_dentro_da_pagina_e_tira_o_preto(tmp_path, com_o_cont
     assert x0 >= 60 and y0 >= 50
     assert x1 <= LARGURA - 150 and y1 <= ALTURA - 120
     assert x0 <= 200 and y0 <= 300 and x1 >= 886 and y1 >= 1280       # o texto inteiro dentro
+
+
+def test_regressao_so_o_preto_em_pagina_girada_cunha_branca(tmp_path, monkeypatch):
+    """Defeito achado olhando o Righetti 55 (20/10/2026, antes de entregar):
+    no livro novo a página é girada pelo endireitar e as beiradas ganham uma
+    cunha BRANCA; o "só o preto" (que anda da beirada enquanto é escuro)
+    parava na cunha e não tirava nada (Righetti 55, preto de cima: 0% cortado
+    antes do conserto, 16% depois; relatorios/caixa-conteudo-impl/img/
+    borda-preta/righetti_p055.jpg). A página de mentira não reproduz o
+    tropeço (a beirada do scan do Righetti é mais clara); a medida aqui é a
+    causa: a conta tem de receber a página girada com a cunha ESCURA."""
+    vistas = []
+    original = bp.so_o_preto
+
+    def espiao(img):
+        vistas.append(img)
+        return original(img)
+
+    monkeypatch.setattr(bp, "so_o_preto", espiao)
+    caminho = _pdf(tmp_path, _folha(cima=200, direita=120))
+    projeto = _projeto(caminho, endireitar=True, borda_preta=True, borda_preta_ate=bp.SO_O_PRETO)
+    projeto.paginas[0].angulo_manual = 3.0
+    _img, (x, y, w, h) = _corte(projeto, caminho)
+    assert vistas, "a conta não foi chamada"
+    canto = vistas[-1][:6, :6]
+    assert float(canto.mean()) < 60, "a cunha do giro chegou branca à conta do preto"
+    assert y * ALTURA >= 180 and (x + w) * LARGURA <= LARGURA - 100

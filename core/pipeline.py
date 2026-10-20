@@ -789,7 +789,9 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
                 # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"), na
                 # pagina ja reta (a ordem dele); sem caixa (pagina em branco,
                 # sem a DLL) fica o comum
-                medido = _medir_o_conteudo(reta, dpi, dpi_do_scan, comum.pecas, projeto)
+                cunha_preta = (rotacionar(em_cinza(), angulo, fundo=0)
+                               if girar and _corta_pela_borda(projeto, pagina) else None)
+                medido = _medir_o_conteudo(reta, dpi, dpi_do_scan, comum.pecas, projeto, cunha_preta)
                 if medidas is not None:
                     medidas["conteudo"] = medido
                 recorte = medido.recorte_proprio() or recorte
@@ -1159,15 +1161,23 @@ def _segue_o_conteudo(projeto: Projeto, pagina: ConfigPagina) -> bool:
 
 
 def _medida_da_pagina(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
-                      projeto: Projeto):
+                      projeto: Projeto, com_a_cunha_preta: np.ndarray | None = None):
     """(medida, so_o_limite) de `img` conforme as opcoes do livro:
     - 2.13 "so o preto": a pagina sem a faixa preta (borda_preta.so_o_preto)
       vira o limite; com o 2.5 junto, o conteudo e procurado dentro dele;
       sozinho, o corte e o proprio limite (so_o_limite);
     - 2.13 "ate a moldura": a pagina e o conteudo pelo ScanTailor (a busca da
       pagina ligada);
-    - so o 2.5: o conteudo na imagem inteira (a busca da pagina desligada)."""
+    - so o 2.5: o conteudo na imagem inteira (a busca da pagina desligada).
+    com_a_cunha_preta: (livro novo, pagina girada) a mesma pagina girada com
+    a cunha das beiradas PRETA em vez de branca: so para as contas da borda
+    preta. Achado olhando o Righetti 55 (20/10/2026): com a cunha branca, o
+    "so o preto" parava na primeira linha (a cunha e clara) e nao tirava
+    nada. A cunha fica fora da folha escaneada, entao trata-la como fundo do
+    scanner e o certo. O 2.5 sozinho continua na pagina de sempre."""
     jeito = _jeito_da_borda(projeto)
+    if jeito is not None and com_a_cunha_preta is not None:
+        img = com_a_cunha_preta
     com_o_conteudo = bool(getattr(projeto, "cortar_pelo_conteudo", False))
     if jeito == borda_preta.SO_O_PRETO:
         limite = borda_preta.so_o_preto(img)
@@ -1182,14 +1192,15 @@ def _medida_da_pagina(img: np.ndarray, dpi: float | None, dpi_do_scan: float | N
 
 
 def _medir_o_conteudo(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
-                      pecas, projeto: Projeto | None = None) -> ConteudoMedido:
+                      pecas, projeto: Projeto | None = None,
+                      com_a_cunha_preta: np.ndarray | None = None) -> ConteudoMedido:
     """A medida do conteudo de `img` (a pagina onde o corte vai ser feito) e as
     candidatas ao "ficou de fora". Nunca levanta excecao (sem a DLL: sem
     caixa, e quem chama fica com o corte comum). Sem `projeto`: so o 2.5."""
     if projeto is None:
         medida, so_o_limite = corte_pelo_conteudo.medir(img, dpi, dpi_do_scan), False
     else:
-        medida, so_o_limite = _medida_da_pagina(img, dpi, dpi_do_scan, projeto)
+        medida, so_o_limite = _medida_da_pagina(img, dpi, dpi_do_scan, projeto, com_a_cunha_preta)
     candidatas: tuple = ()
     caixa = None if so_o_limite else corte_pelo_conteudo.caixa_do_corte(medida)
     if caixa is not None and pecas is not None and len(pecas):
@@ -1373,14 +1384,17 @@ def medir_conteudo_do_livro(projeto: Projeto, doc=None, progresso: Progresso = N
             dpi_do_scan = _dpi_do_scan(doc, folha)
             base = preparar_para_recorte(img_folha, folha, pagina, projeto)
             cinza = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+            cunha_preta = None
             if endireita_antes(projeto) and projeto.endireitar:
                 angulo = angulo_da_pagina(projeto, pagina)
                 if angulo is None:
                     angulo = _geometria(base, pagina, projeto, dpi=dpi, dpi_do_scan=dpi_do_scan,
                                         com_o_corte=False)[1]
                 if abs(float(angulo or 0.0)) >= ANGULO_MINIMO:
+                    if _corta_pela_borda(projeto, pagina):
+                        cunha_preta = rotacionar(cinza, float(angulo), fundo=0)
                     cinza = rotacionar(cinza, float(angulo))
-            medida, _so = _medida_da_pagina(cinza, dpi, dpi_do_scan, projeto)
+            medida, _so = _medida_da_pagina(cinza, dpi, dpi_do_scan, projeto, cunha_preta)
             chave = _chave_da_geometria(folha, pagina, projeto)
             if chave is not None:
                 with _TRANCA_GEOMETRIAS:
