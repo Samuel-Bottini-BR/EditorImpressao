@@ -122,3 +122,69 @@ def test_o_visualizador_usa_as_linhas_do_kaique(app):
     assert encaixar_no_ima((0.205, 0.3, 0.3, 0.4), linhas=[(guias.DE_PE, 0.2)],
                            automaticas=False)[0] == pytest.approx(0.2)
     assert encaixar_no_ima((0.255, 0.3, 0.5, 0.4), automaticas=False) == (0.255, 0.3, 0.5, 0.4)
+
+
+# ------------------------------------- borda preta (2.13) e "usar em todas"
+
+def test_a_caixinha_da_borda_preta_nasce_desmarcada_com_ate_a_moldura(janela, pasta):
+    """G7 (a) "desligada de fábrica"; g7-borda-ate-onde: ao ligar, "até a
+    moldura" vem escolhido; trocar grava no livro."""
+    from core import borda_preta as bp
+
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela, projeto = janela.tela_opcoes, janela.projeto
+    assert not tela.cx_borda_preta.isChecked() and projeto.borda_preta is False
+    assert tela.combo_borda_preta.currentData() == bp.ATE_A_MOLDURA
+    tela.cx_borda_preta.setChecked(True)
+    assert projeto.borda_preta is True and projeto.borda_preta_ate == bp.ATE_A_MOLDURA
+    tela.combo_borda_preta.setCurrentIndex(tela.combo_borda_preta.findData(bp.SO_O_PRETO))
+    assert projeto.borda_preta_ate == bp.SO_O_PRETO
+    assert {"borda_preta", "borda_preta_ate"} <= set(janela.OPCOES_DO_LIVRO)
+
+
+def test_regressao_usar_em_todas_nao_apaga_as_excecoes(janela, pasta, monkeypatch):
+    """Bug da Lista de bugs (08/10/2026): "O 'usar em todas' da aba Bordas apaga
+    as exceções por página (o Samuel pediu que as exceções fiquem, item 2.13)".
+    No código antigo o corte ia para TODAS as páginas e a exceção da página 3
+    se perdia; agora a janela vem com as exceções desmarcadas."""
+    from ui import dialogo_escolher_paginas as dep
+
+    tela = _na_conferencia(janela, pasta)
+    projeto = janela.projeto
+    excecao = [0.2, 0.2, 0.6, 0.6]
+    projeto.paginas[2].recorte = excecao
+    tela.ir_para_pagina(0)
+    projeto.paginas[0].recorte = [0.05, 0.05, 0.9, 0.9]
+    monkeypatch.setattr(type(tela), "_escolher_paginas_do_corte",
+                        lambda self: dep.paginas_de_fabrica(self.projeto, self.indice_pagina),
+                        raising=False)
+    tela._recorte_em_todas()
+    assert list(projeto.paginas[2].recorte) == excecao                   # a exceção ficou
+    assert list(projeto.paginas[1].recorte) == [0.05, 0.05, 0.9, 0.9]
+    tela.desfazer()
+    assert projeto.paginas[1].recorte is None
+
+
+def test_janela_em_quais_paginas_selecionar_todas_e_nenhuma(janela, pasta):
+    from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+    _na_conferencia(janela, pasta)
+    projeto = janela.projeto
+    projeto.paginas[2].recorte = [0.2, 0.2, 0.6, 0.6]
+    d = DialogoEscolherPaginas(projeto, 0)
+    assert d.escolhidas() == [0, 1, 3]
+    d.botao_todas.click()
+    assert d.escolhidas() == [0, 1, 2, 3]
+    d.botao_nenhuma.click()
+    assert d.escolhidas() == []
+
+
+def test_cancelar_a_janela_nao_muda_nada(janela, pasta, monkeypatch):
+    tela = _na_conferencia(janela, pasta)
+    projeto = janela.projeto
+    tela.ir_para_pagina(0)
+    projeto.paginas[0].recorte = [0.05, 0.05, 0.9, 0.9]
+    monkeypatch.setattr(type(tela), "_escolher_paginas_do_corte", lambda self: [])
+    feitas = len(janela.acoes.feitas)
+    tela._recorte_em_todas()
+    assert projeto.paginas[1].recorte is None and len(janela.acoes.feitas) == feitas

@@ -176,7 +176,7 @@ from ui.widgets.editor_selecao import (
     FERRAMENTAS_DE_NAVEGACAO,
     ferramenta_da_tecla,
 )
-from ui.widgets.paineis import (
+from ui.widgets.paineis import (_nome_da_borda, 
     PAINEL_HISTORICO,
     PAINEL_PROPRIEDADES,
     Bloco,
@@ -1171,7 +1171,11 @@ class TelaConferir(QWidget):
              + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não"),
              # item 2.5 (G8): o corte que segue o conteudo
              "Cortar seguindo o conteúdo (como o ScanTailor): "
-             + ("sim" if getattr(self.projeto, "cortar_pelo_conteudo", False) else "não")]))
+             + ("sim" if getattr(self.projeto, "cortar_pelo_conteudo", False) else "não"),
+             # item 2.13 (g7): a borda preta do scanner
+             "Página dentro da borda preta: "
+             + (_nome_da_borda(self.projeto) if getattr(self.projeto, "borda_preta", False)
+                else "não")]))
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -3435,14 +3439,37 @@ class TelaConferir(QWidget):
 
     @protegido
     def _recorte_em_todas(self) -> None:
+        """O "usar em todas" do Cortar. Item 2.13 (pedido do Samuel, rodada 4,
+        08/10/2026, e bug da Lista de bugs de 08/10: "usar em todas" apagava as
+        excecoes por pagina): antes de aplicar, a janela "Em quais paginas?"
+        (ui/dialogo_escolher_paginas) mostra as paginas, com as excecoes
+        desmarcadas de fabrica e "Selecionar todas" / "Nenhuma". So as
+        marcadas recebem o corte; cancelar nao muda nada."""
         assert self.projeto is not None
         recorte = self.projeto.paginas[self.indice_pagina].recorte
-        indices = [p.indice for p in self.projeto.paginas]
+        campos = {"recorte": list(recorte) if recorte else None}
+        # pendencia da D2: com marcacoes ainda no formato antigo, avisa e nao
+        # abre a janela (o mesmo que _registrar faria depois)
+        if self._espera_pelas_marcacoes("pagina", [p.indice for p in self.projeto.paginas], campos):
+            return
+        indices = self._escolher_paginas_do_corte()
+        if not indices:
+            return
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
             {"recorte": list(recorte) if recorte else None},
-            f"Corte de borda de todas as {len(indices)} páginas",
+            f"Corte de borda em {len(indices)} páginas",
         )
+
+    def _escolher_paginas_do_corte(self) -> list[int]:
+        """Abre a janela "Em quais paginas?" e devolve as marcadas (vazio se
+        cancelou). Separado para os testes trocarem a janela."""
+        from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+        dialogo = DialogoEscolherPaginas(self.projeto, self.indice_pagina, self)
+        if dialogo.exec() != DialogoEscolherPaginas.Accepted:
+            return []
+        return dialogo.escolhidas()
 
     @protegido
     def _mover_conteudo(self, retangulo: tuple) -> None:

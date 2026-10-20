@@ -713,6 +713,9 @@ class JanelaPrincipal(QMainWindow):
         self.projeto.cortar_sobra = bool(getattr(salvo, "cortar_sobra", False))
         # item 2.5: o corte pelo conteudo (o salvo de antes volta desligado)
         self.projeto.cortar_pelo_conteudo = bool(getattr(salvo, "cortar_pelo_conteudo", False))
+        # item 2.13: a borda preta (o salvo de antes volta desligado)
+        self.projeto.borda_preta = bool(getattr(salvo, "borda_preta", False))
+        self.projeto.borda_preta_ate = getattr(salvo, "borda_preta_ate", self.projeto.borda_preta_ate)
         self.projeto.limpar = salvo.limpar
         self.projeto.filtro_padrao = salvo.filtro_padrao
         self.projeto.endireitar = salvo.endireitar
@@ -1314,6 +1317,8 @@ class JanelaPrincipal(QMainWindow):
                        "dividir_como", "cortar_sobra",
                        # item 2.5: o corte pelo conteudo
                        "cortar_pelo_conteudo",
+                       # item 2.13: a borda preta do scanner
+                       "borda_preta", "borda_preta_ate",
                        # item 2.2: a conta do endireitar
                        "endireitar_como")
 

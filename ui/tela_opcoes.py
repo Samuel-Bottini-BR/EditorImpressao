@@ -99,6 +99,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import borda_preta
 from core import dividir_scantailor
 from core import endireitar_scantailor
 from core import misto
@@ -251,6 +252,32 @@ class TelaOpcoes(QWidget):
             "o corte abraça o que está impresso, e todas as páginas ficam do tamanho da maior",
             opcoes,
         )
+        # Item 2.13 (G7 (a): "Sim, desligada de fabrica"; g7-borda-ate-onde,
+        # 20/10/2026: "O Kaique escolhe por livro: so o preto, ou ate a
+        # moldura"). Desmarcada de fabrica; ao marcar, "ate a moldura" vem
+        # escolhido (core/borda_preta.JEITO_PADRAO). A lista so aparece com a
+        # caixinha marcada (ver _mudou). Controle minimo, lugar provisorio
+        # (para o agente de layout).
+        self.cx_borda_preta = self._caixa(
+            "Achar a página dentro da borda preta do scanner",
+            "o programa sugere o corte; dá para mudar o corte numa página só", opcoes,
+        )
+        self.linha_borda_preta = QWidget()
+        linha = QHBoxLayout(self.linha_borda_preta)
+        linha.setContentsMargins(26, 2, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_borda_preta = QLabel("Cortar:")
+        self.combo_borda_preta = QComboBox()
+        for jeito in borda_preta.JEITOS:
+            self.combo_borda_preta.addItem(borda_preta.NOMES[jeito], jeito)
+        self.combo_borda_preta.setToolTip(
+            "Até a moldura: o corte vai até o que está impresso, e somem o preto, a beirada "
+            "das outras folhas e a lombada. Só o preto: tira só a faixa preta do scanner.")
+        self.combo_borda_preta.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_borda_preta)
+        linha.addWidget(self.combo_borda_preta)
+        linha.addStretch()
+        opcoes.addWidget(self.linha_borda_preta)
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
@@ -318,7 +345,7 @@ class TelaOpcoes(QWidget):
 
         for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
                       self.cx_endireitar, self.cx_cortar, self.cx_cortar_pelo_conteudo,
-                      self.cx_cadernos):
+                      self.cx_borda_preta, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -678,6 +705,10 @@ class TelaOpcoes(QWidget):
             endireitar_scantailor.jeito_do_livro(projeto)))
         self.cx_cortar.setChecked(projeto.cortar_bordas)
         self.cx_cortar_pelo_conteudo.setChecked(bool(getattr(projeto, "cortar_pelo_conteudo", False)))
+        # item 2.13: a borda preta e ate onde vai o corte
+        self.combo_borda_preta.setCurrentIndex(self.combo_borda_preta.findData(
+            borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))))
+        self.cx_borda_preta.setChecked(bool(getattr(projeto, "borda_preta", False)))
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
@@ -775,6 +806,10 @@ class TelaOpcoes(QWidget):
         self.linha_conta_endireitar.setVisible(self.projeto.endireitar)
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
         self.projeto.cortar_pelo_conteudo = self.cx_cortar_pelo_conteudo.isChecked()   # item 2.5
+        # item 2.13: a lista so aparece com a caixinha marcada (escondida, fica guardada)
+        self.projeto.borda_preta = self.cx_borda_preta.isChecked()
+        self.projeto.borda_preta_ate = borda_preta.jeito_valido(self.combo_borda_preta.currentData())
+        self.linha_borda_preta.setVisible(self.projeto.borda_preta)
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(
