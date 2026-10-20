@@ -19,8 +19,8 @@ Passos:
 6. [x] Projeto antigo 40 de 40 (`projeto-antigo.json`).
 7. [x] Antes/depois das 10 (`scripts/montar_pesel21.py`), todas abertas. Relatorio:
    `relatorios/conferir/conserto-corte-g6-pesel21-2026-10-20/pesel21.md`.
-8. [ ] Suite no GitHub (rodada anotada aqui quando disparar).
-9. [ ] Filtro de velocidade do GitHub (em validacao pelo outro agente; rodar se der, como indicativo).
+8. [ ] Suite no GitHub: rodada 39396681554 (disparada 08:53 UTC), esperando.
+9. [ ] Filtro de velocidade do GitHub (ainda em validacao pelo outro agente; indicativo): rodada 39396712441, fase-1 x este ramo, 3 rodadas.
 
 ---
 
