@@ -17,7 +17,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 |---|---|---|---|
 | 2.8 preto e branco (os dez do ScanTailor) | **entregue à gerente** (falta verificador e Samuel) | `77e9446` (core), `34b3d0e` (tela), `b36b540` (script) | 39395632426: 2084 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.9 claro no escuro | **entregue à gerente** | `4cec7a9` (core), `0f4ee58` (tela) | 39470347203: 2097 passaram, 0 falharam; botões 221 ações, 0 falhas |
-| 2.11 cores | não começado | | |
+| 2.11 cores | **entregue à gerente** | `b7dcc14`, `40a5ce1` (core), `02c2cea` (tela) | 39474481779: 2109 passaram, 0 falharam; botões 221, 0 falhas |
 | 2.15 páginas diferentes | não começado | | |
 | 2.12 desentortar | não começado | | |
 | 2.16 todos os núcleos | não começado | | |
@@ -53,3 +53,12 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
   Livro de Horas p. 187 (a lombada de couro escuro com "HEURES DE LOVIS XIV" dourado). Antes/depois em
   `relatorios/conferir/fase2-itens/2.9/` (fora do git), números em `2.9/numeros/`.
 - Filtro de velocidade do GitHub (b8e9af7 x 0f4ee58): rodada 39470417724, disparada.
+
+## 2.11 — o que foi feito e onde olhar
+
+- "Letras com a cor delas" (só Preto e branco) e "Reduzir cores", por página, desmarcadas de fábrica
+  (`core/cores_scantailor.py`, `st_ferramentas_cores` na DLL versão 6).
+- Prova de fábrica: `2.11/somas-novo.json` = `2.8/somas-antigo.json`, 96 de 96.
+- Antes/depois em 7 páginas com cor (Horas 13, 26, 27, 47; Graduale 221; Palatino 67; Escola 7):
+  `relatorios/conferir/fase2-itens/2.11/` (fora do git); números em `2.11/numeros/`.
+- Próximo: 2.15 (destacar páginas diferentes).

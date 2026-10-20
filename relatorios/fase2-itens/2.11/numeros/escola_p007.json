@@ -1,0 +1,32 @@
+{
+ "escola_p007": {
+  "tamanho": [
+   1950,
+   2907
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   0,
+   2250,
+   487
+  ],
+  "pontos_pretos": {
+   "Hoje: Preto e branco": 1285541,
+   "Letras com a cor delas": 978655,
+   "Letras com a cor + Reduzir cores": 1015130,
+   "Melhorar + Reduzir cores": 1022531
+  },
+  "pontos_diferentes_de_hoje": {
+   "Letras com a cor delas": 382214,
+   "Letras com a cor + Reduzir cores": 270411,
+   "Melhorar + Reduzir cores": 728775
+  },
+  "segundos": {
+   "Hoje: Preto e branco": 1.45,
+   "Letras com a cor delas": 2.87,
+   "Letras com a cor + Reduzir cores": 2.65,
+   "Melhorar + Reduzir cores": 5.34
+  },
+  "nao_rodou": {}
+ }
+}

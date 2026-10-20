@@ -144,7 +144,18 @@ def variantes_2_9():
             ("Melhorar + Letra clara", {"filtro": MELHORAR, "claro_no_escuro": True})]
 
 
-ITENS = {"2.8": variantes_2_8, "2.9": variantes_2_9}
+def variantes_2_11():
+    """Item 2.11: as cores do ScanTailor no Preto e branco e no Melhorar."""
+    from core.filtros import MELHORAR, PRETO_E_BRANCO
+
+    return [("Hoje: Preto e branco", {"filtro": PRETO_E_BRANCO}),
+            ("Letras com a cor delas", {"filtro": PRETO_E_BRANCO, "letras_com_a_cor": True}),
+            ("Letras com a cor + Reduzir cores", {"filtro": PRETO_E_BRANCO, "letras_com_a_cor": True,
+                                                  "reduzir_cores": True}),
+            ("Melhorar + Reduzir cores", {"filtro": MELHORAR, "reduzir_cores": True})]
+
+
+ITENS = {"2.8": variantes_2_8, "2.9": variantes_2_9, "2.11": variantes_2_11}
 
 
 # ------------------------------------------------------------------ as imagens
