@@ -874,16 +874,30 @@ _TRANCA_GEOMETRIAS = threading.Lock()
 MAX_GEOMETRIAS = 4096
 
 
-def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
-    """Tudo de que o corte e o angulo dependem. None se o arquivo do projeto
-    nao existe (projeto de teste, arquivo movido) - ai nada e guardado."""
+def _arquivo_do_projeto(projeto: Projeto):
+    """(caminho normalizado, os.stat) do PDF do projeto, ou None se ele nao
+    existe. Separado de _chave_da_geometria so para quem faz a chave de
+    muitas paginas de uma vez (item 2.5, tamanho_do_livro) consultar o disco
+    uma vez so."""
     try:
         # normcase: o mesmo PDF escrito com `\` ou `/`, ou com maiusculas
         # diferentes, da a mesma chave (bug de 29/09, projetos.mesmo_arquivo).
         caminho = os.path.normcase(os.path.abspath(projeto.caminho_entrada))
-        info = os.stat(caminho)
+        return caminho, os.stat(caminho)
     except (OSError, TypeError, ValueError):
         return None
+
+
+def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+                        arquivo=False):
+    """Tudo de que o corte e o angulo dependem. None se o arquivo do projeto
+    nao existe (projeto de teste, arquivo movido) - ai nada e guardado.
+    arquivo: o _arquivo_do_projeto ja consultado (False = consulta aqui)."""
+    if arquivo is False:
+        arquivo = _arquivo_do_projeto(projeto)
+    if arquivo is None:
+        return None
+    caminho, info = arquivo
     recorte = None if pagina.recorte is None else tuple(round(float(v), 6) for v in pagina.recorte)
     dividir = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
     return (
@@ -1129,8 +1143,9 @@ def tamanho_do_livro(projeto: Projeto) -> "corte_pelo_conteudo.TamanhoDoLivro | 
     if not getattr(projeto, "cortar_pelo_conteudo", False) or not projeto.cortar_bordas:
         return None
     tamanhos, dentro, fora = {}, [], []
+    arquivo = _arquivo_do_projeto(projeto)
     for pagina in _paginas_do_corte_do_livro(projeto):
-        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto)
+        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto, arquivo)
         if chave is None:
             continue
         with _TRANCA_GEOMETRIAS:
@@ -1226,8 +1241,9 @@ def paginas_sem_medida_do_conteudo(projeto: Projeto) -> list[ConfigPagina]:
     if not getattr(projeto, "cortar_pelo_conteudo", False) or not projeto.cortar_bordas:
         return []
     faltam = []
+    arquivo = _arquivo_do_projeto(projeto)
     for pagina in _paginas_do_corte_do_livro(projeto):
-        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto)
+        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto, arquivo)
         if chave is None:
             continue
         with _TRANCA_GEOMETRIAS:
