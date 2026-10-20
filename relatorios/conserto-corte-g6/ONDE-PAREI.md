@@ -1,3 +1,26 @@
+# Onde parei — acerto do Pesel 21 (implementador, 20/10/2026)
+
+**EM ANDAMENTO.** Pedido da gerente: o Pesel 21 tem de sair como no `fase-1` (folha inteira, 157 x 241 mm), sem
+perder as cinco melhorias. O Samuel marcou "Melhorar" em 13/10 ("Ele chega a quase cortar as letras.").
+
+Passos:
+1. [x] `origin/fase-1` (b8e9af7) juntado ao ramo, sem conflito (`3e1cc3a`).
+2. [x] Causa: a pergunta "ha o que recortar?" (`_sem_conteudo_para_recortar`) era feita na pagina girada; o branco
+   da cunha mudava a mediana do cartao (102 -> 125) e o Pesel 21 deixava de ser "sem conteudo". No `fase-1` o
+   degrau branco da cunha escondia isso (segurava o corte na folha inteira); o conserto de 13/10 tirou o degrau.
+   Diagnostico: so a conta da "tinta falsa" muda o Pesel 21 (desligando-a, sai inteiro).
+3. [x] Conserto: `detectar_bordas(..., como_veio=)` - a pergunta e feita na pagina antes do giro (a mesma resposta
+   da ordem antiga). `core/pipeline.py`: so a chamada. Tirar so a cunha da conta nao bastava (testado).
+4. [x] Teste de reversao: `test_cartao_escuro_sai_inteiro_no_livro_novo` (3 angulos, roda no GitHub) e
+   `test_pesel_21_sai_como_no_fase_1` (so no PC). Falharam no codigo antigo: `pesel21/reversao-no-codigo-antigo.txt`.
+   `tests/test_ordem_do_preparo.py` inteiro: 56 passaram (os 6 da borda preta inclusive).
+5. [ ] Medida das 89 paginas (`MEDIR_CONFIGS=C`, `MEDIR_SAIDA=dados-pesel21.json`, `MEDIR_SUFIXO=__pesel21`).
+6. [ ] Projeto antigo 40 de 40.
+7. [ ] Antes/depois das que mudam, abrir cada uma.
+8. [ ] Suite no GitHub.
+
+---
+
 # Onde parei — conserto do corte do G6 (implementador, 13/10/2026)
 
 **PRONTO PARA CONFERIR.** Ramo `conserto-corte-g6-2026-10-13` (worktree `.claude/worktrees/conserto-corte-g6`,

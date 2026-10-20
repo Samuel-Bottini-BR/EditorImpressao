@@ -267,9 +267,10 @@ def _quase_igual(a: np.ndarray, b: np.ndarray) -> bool:
 def _corte_na_reta(base: np.ndarray, angulo: float):
     """O corte automatico do livro novo: detectar_bordas na pagina em cinza
     endireitada, dizendo de quanto ela foi girada (`girada`, conserto de
-    13/10/2026: pipeline._geometria_endireitando_antes)."""
+    13/10/2026) e qual era a pagina antes do giro (`como_veio`, conserto de
+    20/10/2026), como pipeline._geometria_endireitando_antes."""
     cinza = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
-    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI, girada=angulo).tupla
+    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI, girada=angulo, como_veio=cinza).tupla
 
 
 def _margens_da_tinta(img: np.ndarray) -> tuple[int, int, int, int]:
@@ -735,3 +736,107 @@ def test_sem_borda_preta_dizer_o_giro_nao_muda_o_corte(tmp_path, graus):
     assert detectar_bordas(reta, dpi=DPI, girada=-graus).tupla == detectar_bordas(reta, dpi=DPI).tupla
     assert detectar_bordas(cinza, dpi=DPI, girada=None).tupla == detectar_bordas(cinza, dpi=DPI).tupla
     assert detectar_bordas(cinza, dpi=DPI, girada=0.05).tupla == detectar_bordas(cinza, dpi=DPI).tupla
+
+# ------------------------------------------------------------------ o cartao escuro (Pesel 21)
+#
+# Bug de 13/10/2026 (conferencia do conserto do corte, quadro do Pesel 21,
+# "Esta pior"; Samuel: "Ele chega a quase cortar as letras."): com o conserto
+# da cunha do giro (d97b937), o cartao escuro do livro de bordados da Pesel
+# passou a sair cortado rente (15,7 x 24,1 -> 14,5 x 20,6 cm, legenda a 1 ou
+# 2 mm da borda). Tem de sair como no fase-1 e como na ordem antiga: a folha
+# inteira. Causa: a pagina como veio e "sem conteudo para recortar" (cartao
+# liso; core/recortar._sem_conteudo_para_recortar), e o branco da cunha do
+# giro, contado na mediana, a fazia deixar de ser.
+
+def _pdf_cartao_escuro(pasta: Path, nome: str, graus: float) -> str:
+    """Uma pagina como o Pesel 21, torta `graus` (sentido do OpenCV), a 200
+    DPI: cartao pardo liso (cinza 62 a 94, da esquerda para a direita) ate a
+    beirada da imagem, com um painel de tecido claro (195) no meio, uns
+    pontos de bordado e uma legenda no cartao.
+
+    As medidas sao de proposito: o painel cobre um pouco menos da metade da
+    folha (71,1% x 71,1%), entao a mediana da pagina como veio cai no cartao
+    (como no Pesel 21: mediana 102, so 2,1% de pontos escuros, "sem conteudo")
+    e os ~2% de branco da cunha do giro bastam para a mediana pular para o
+    painel (Pesel 21: 125, e 14,7% de "escuros")."""
+    largura, altura = 1165, 1654
+    x = np.linspace(0, 1, largura)[None, :]
+    img = (62 + 32 * x + np.zeros((altura, 1))).astype(np.uint8)
+    lado = 0.711
+    px0 = int(largura * (1 - lado) / 2)
+    px1 = largura - px0
+    py0 = int(altura * 0.08)
+    py1 = py0 + int(altura * lado)
+    img[py0:py1, px0:px1] = 195
+    for y in range(py0 + 120, py1 - 120, 120):                # o bordado
+        cv2.line(img, (px0 + 80, y), (px1 - 80, y + 30), 40, 3)
+    for y in range(py1 + 50, py1 + 140, 28):                  # a legenda
+        for xx in range(px0 + 20, px1 - 60, 42):
+            cv2.rectangle(img, (xx, y), (xx + 28, y + 9), 20, -1)
+    m = cv2.getRotationMatrix2D((largura / 2, altura / 2), graus, 1.0)
+    img = cv2.warpAffine(img, m, (largura, altura), borderMode=cv2.BORDER_REPLICATE)
+    png = pasta / f"{nome}.png"
+    cv2.imwrite(str(png), img)
+    caminho = pasta / f"{nome}.pdf"
+    doc = fitz.open()
+    pagina = doc.new_page(width=largura * 72 / 200, height=altura * 72 / 200)
+    pagina.insert_image(pagina.rect, filename=str(png))
+    doc.save(str(caminho))
+    doc.close()
+    return str(caminho)
+
+
+def _tamanho_em_mm(img: np.ndarray) -> tuple[float, float]:
+    """(largura, altura) da pagina pronta em milimetros (ela sai a DPI)."""
+    return img.shape[1] * 25.4 / DPI, img.shape[0] * 25.4 / DPI
+
+
+@pytest.mark.parametrize("graus", [2.0, -1.5, 1.0])
+def test_cartao_escuro_sai_inteiro_no_livro_novo(tmp_path, graus):
+    """Bug de 13/10/2026, Pesel 21 (ver o comentario acima): no livro novo o
+    cartao escuro sai do MESMO tamanho que na ordem antiga (a folha inteira,
+    porque nao ha o que recortar), com no maximo 1 mm de diferenca.
+
+    Medida: o tamanho da pagina pronta em mm. Em d97b937 a do livro novo saia
+    com 105 x 171 mm contra 148 x 210 mm da ordem antiga (o corte entrava no
+    cartao e deixava a legenda colada na borda)."""
+    caminho = _pdf_cartao_escuro(tmp_path, "cartao", graus)
+    img_folha = _desenhar(caminho)
+    angulo = {"angulo_manual": -graus}
+
+    antigo = _antigo(caminho)
+    fa, pa = _com_folha(antigo, {"dividir": False}, dict(angulo))
+    de_antes, _ = pipeline.preparar_metade_e_geometria(img_folha, fa, pa, antigo, dpi=DPI)
+
+    novo = _novo(caminho)
+    fn, pn = _com_folha(novo, {"dividir": False}, dict(angulo))
+    saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, fn, pn, novo, dpi=DPI)
+    assert desenho["ordem"] == op.ENDIREITAR_ANTES
+
+    (la, aa), (ln, an) = _tamanho_em_mm(de_antes), _tamanho_em_mm(saida)
+    assert abs(ln - la) <= 1.0 and abs(an - aa) <= 1.0, (
+        f"livro novo {ln:.1f} x {an:.1f} mm, ordem antiga {la:.1f} x {aa:.1f} mm")
+    # e a ordem antiga de fato nao recorta (a folha inteira)
+    assert (la, aa) == pytest.approx(_tamanho_em_mm(img_folha), abs=1.0)
+
+
+PESEL_21 = Path(r"D:\programas\EditorImpressao-arquivos\revisar-decisoes-trabalho\paginas\pesel_p021.pdf")
+
+
+@pytest.mark.skipif(not PESEL_21.exists(), reason="pagina do acervo (so no PC do Samuel)")
+def test_pesel_21_sai_como_no_fase_1():
+    """Bug de 13/10/2026, o proprio Pesel 21 (ver o comentario acima), no
+    giro que a conta do ScanTailor da a ele (-2,0 graus) posto a mao: a
+    pagina pronta do livro novo tem 157 x 241 mm, como no fase-1 (b8e9af7).
+    Em d97b937 saia com 144,7 x 206,1 mm.
+
+    So roda no PC do Samuel (a pagina e do acervo, fora do git); no Windows
+    do GitHub quem cobre o bug e test_cartao_escuro_sai_inteiro_no_livro_novo."""
+    img_folha = _desenhar(str(PESEL_21))
+    novo = _novo(str(PESEL_21))
+    fn, pn = _com_folha(novo, {"dividir": False}, {"angulo_manual": -2.0})
+    saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, fn, pn, novo, dpi=DPI)
+    assert desenho["ordem"] == op.ENDIREITAR_ANTES
+    largura, altura = _tamanho_em_mm(saida)
+    assert largura == pytest.approx(157.1, abs=1.0) and altura == pytest.approx(240.6, abs=1.0), (
+        f"{largura:.1f} x {altura:.1f} mm")

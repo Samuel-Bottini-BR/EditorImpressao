@@ -185,6 +185,9 @@ def _sem_conteudo_para_recortar(img: np.ndarray) -> bool:
     Mesma pergunta que o detector de regioes faz, e pela mesma razao: uma capa
     de couro TEM textura, mas nao tem nada significativamente mais escuro que
     ela mesma. Cortar uma capa so tira pedaco dela.
+
+    No livro novo a pergunta e feita na pagina COMO VEIO, nao na endireitada
+    (detectar_bordas, `como_veio`; conserto de 20/10/2026, Pesel 21).
     """
     try:
         from core.detectar_regioes import _pagina_sem_conteudo
@@ -254,6 +257,23 @@ def _mascara_de_tinta_local(cinza: np.ndarray) -> np.ndarray:
 # 3. o que encostava na beirada da imagem (o contorno da folha de baixo, no
 #    canto) nao era "peca"; com a cunha branca no meio virava peca solta e
 #    empurrava o corte 13 mm para dentro do preto (Antiphon 260).
+#
+# 4. (achado em 20/10/2026, depois da conferencia do Samuel de 13/10, quadro
+#    do Pesel 21: "Ele chega a quase cortar as letras.") a pergunta "ha o
+#    que recortar?" (_sem_conteudo_para_recortar) e feita pela mediana da
+#    pagina. O cartao pardo do livro de bordados da Pesel tem dois tons
+#    quase meio a meio (cartao ~60 a 95, tecido ~190): como veio, a mediana
+#    cai no cartao e a pagina NAO e recortada (folha inteira, na ordem
+#    antiga e no fase-1); girada, os ~2% de branco da cunha (e os cantos do
+#    cartao que saem da imagem) fazem a mediana pular para o tecido (102 ->
+#    125) e a pagina passava a ser recortada. Antes do conserto da cunha o
+#    erro ficava escondido pelo degrau branco (caminho 2), que segurava o
+#    corte na folha inteira; tirado o degrau, o Pesel 21 saia cortado rente
+#    (15,7 x 24,1 -> 14,5 x 20,6 cm, legenda a 1 ou 2 mm da borda).
+#    Conserto: a pergunta e feita na pagina como veio (detectar_bordas,
+#    `como_veio`), a mesma resposta da ordem antiga. Tirar so a cunha da
+#    conta nao bastava: a pagina de teste a 2 graus continuava virando,
+#    pelos cantos que o giro leva embora (medido em 20/10/2026).
 #
 # O conserto: quando quem chama diz de quanto a pagina foi girada
 # (detectar_bordas, `girada`), a busca sabe quais pontos sao cunha e os deixa
@@ -472,7 +492,8 @@ def _apagar_bordas_solidas_fora_da_cunha(tinta: np.ndarray, cunha: np.ndarray) -
 
 
 def detectar_bordas(img: np.ndarray, dpi: float | None = None,
-                    girada: float | None = None) -> Recorte:
+                    girada: float | None = None,
+                    como_veio: np.ndarray | None = None) -> Recorte:
     """Acha o retangulo que contem o conteúdo da página.
 
     Ideia: binarizar de forma bem tolerante, achar as linhas e colunas que tem
@@ -498,11 +519,26 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     por ponto - e o caso do projeto antigo e da pagina como veio. Arriscado:
     passar um angulo que nao e o do giro de verdade (a cunha cairia no lugar
     errado e borda de verdade deixaria de ser reconhecida).
+
+    `como_veio` (conserto de 20/10/2026, Pesel 21): a pagina ANTES do giro
+    (a que foi girada `girada` graus para virar `img`), de preferencia em
+    cinza. So e usada com `girada`, e so para a pergunta "ha o que
+    recortar?" (_sem_conteudo_para_recortar), que assim da a mesma resposta
+    da ordem antiga (ver o caminho 4 de "A cunha do giro"). None: a pergunta
+    e feita em `img`, como antes. Arriscado: passar outra pagina que nao a
+    de antes do giro.
     """
     # Capa de couro, guarda, foto da encadernacao: nao ha borda de scanner nem
     # margem de papel para tirar, e cortar so estraga. O Samuel apontou quatro
     # casos assim nas dezesseis imagens que conferiu.
-    if _sem_conteudo_para_recortar(img):
+    #
+    # Na pagina endireitada (livro novo) a pergunta e feita na pagina como
+    # veio, quando quem chama a da (`como_veio`): conserto de 20/10/2026, o
+    # Pesel 21 (ver o caminho 4 de "A cunha do giro", acima). Sem `girada`,
+    # `como_veio` nao e olhado: a conta de sempre, ponto por ponto.
+    if girada is None or abs(girada) < ANGULO_MINIMO:
+        como_veio = None
+    if _sem_conteudo_para_recortar(img if como_veio is None else como_veio):
         return Recorte.inteiro()
 
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
