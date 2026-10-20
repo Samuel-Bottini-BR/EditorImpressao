@@ -47,7 +47,7 @@ from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
                              rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
-from core import claro_no_escuro
+from core import claro_no_escuro, cores_scantailor
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -1786,11 +1786,21 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     if not projeto.limpar:
         _anotar_tinta_forte_fora(pagina, False)
         return img, False
-    if claro_no_escuro.ligado(pagina) and pagina.filtro not in (ORIGINAL, TIRAR_FUNDO):
-        saida, monocromatica = _filtrar_preto_no_branco(
-            projeto, pagina, claro_no_escuro.inverter(img), dpi, dpi_do_scan)
-        return claro_no_escuro.inverter(saida), monocromatica
-    return _filtrar_preto_no_branco(projeto, pagina, img, dpi, dpi_do_scan)
+    invertida = claro_no_escuro.ligado(pagina) and pagina.filtro not in (ORIGINAL, TIRAR_FUNDO)
+    entrada = claro_no_escuro.inverter(img) if invertida else img
+    saida, monocromatica = _filtrar_preto_no_branco(projeto, pagina, entrada, dpi, dpi_do_scan)
+    # Item 2.11: "Letras com a cor delas" e "Reduzir cores" (core.cores_scantailor),
+    # o ultimo passo, antes de desinverter (como no ScanTailor). Desmarcadas (o de
+    # fabrica): nenhuma conta a mais.
+    if cores_scantailor.letras_ligadas(pagina) or cores_scantailor.reduzir_ligado(pagina):
+        dpi_certo = (pontinhos_scantailor.dpi_para_os_pontinhos(
+            entrada.shape[1], entrada.shape[0], dpi, dpi_do_scan) if dpi else None)
+        com_cor = cores_scantailor.aplicar(
+            entrada, saida, pagina.filtro, cores_scantailor.letras_ligadas(pagina),
+            cores_scantailor.reduzir_ligado(pagina), dpi_certo)
+        if com_cor is not None:
+            saida, monocromatica = com_cor
+    return (claro_no_escuro.inverter(saida) if invertida else saida), monocromatica
 
 
 def _filtrar_preto_no_branco(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,

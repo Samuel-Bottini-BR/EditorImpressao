@@ -76,7 +76,7 @@ def test_funcoes_copiadas_sem_mudanca():
         fim = ligacao.index("// ===== FIM DO COPIADO =====", i)
         assert ligacao[i + 1:fim] == original[a - 1:b], f"bloco {a}-{b} mudou"
         blocos += 1
-    assert blocos == 8
+    assert blocos == 9
 
 
 def test_os_arquivos_do_scantailor_estao_entre_os_conferidos():

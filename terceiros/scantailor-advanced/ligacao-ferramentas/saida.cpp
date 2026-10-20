@@ -1,5 +1,7 @@
 // A saida do ScanTailor Advanced (o "Output" dele), chamada do Python: o preto e
-// branco com os dez jeitos de binarizar (item 2.8 da Fase 2, 20/10/2026).
+// branco com os dez jeitos de binarizar (item 2.8 da Fase 2, 20/10/2026) e as
+// cores: "letras com a cor delas" (segmentacao de cor) e "reduzir cores"
+// (posterizacao) - item 2.11, 20/10/2026.
 //
 // Copyright (C) 2019  Joseph Artsimovich <joseph.artsimovich@gmail.com>, 4lex4 <4lex49@zoho.com>
 //   (todas as funcoes entre as marcas "COPIADO SEM MUDANCA" abaixo)
@@ -44,6 +46,8 @@
 
 #include <AdjustBrightness.h>
 #include <Binarize.h>
+#include <ColorSegmenter.h>
+#include <Posterizer.h>
 #include <BinaryImage.h>
 #include <BinaryThreshold.h>
 #include <Dpi.h>
@@ -70,6 +74,7 @@
 #include <vector>
 
 #include "BlackWhiteOptions.h"
+#include "ColorCommonOptions.h"
 #include "DebugImages.h"
 #include "EstimateBackground.h"
 #include "NullTaskStatus.h"
@@ -95,13 +100,22 @@ class OutputGenerator::Processor {
   // image: a pagina ja girada e cortada pelo programa (o sistema de trabalho e ela mesma).
   // dpi: o DPI da imagem (no original, o DPI de saida).
   // opcoes: as opcoes do preto e branco do ScanTailor (metodo, limiar, janela, k...).
-  Processor(const QImage& image, const Dpi& dpi, const BlackWhiteOptions& opcoes);
+  Processor(const QImage& image,
+            const Dpi& dpi,
+            const BlackWhiteOptions& opcoes,
+            const ColorCommonOptions& comum = ColorCommonOptions());
 
   // Passo 1 da ordem acima: a pagina com a luz igualada (ou nao).
   QImage preparar(bool normalizar) const;
 
   // Passos 3 a 5: o preto e branco (bit 1 = preto).
   BinaryImage pretoEBranco(const QImage& preparada, bool savitzkyGolay, bool morfologica) const;
+
+  // Item 2.11: as cores. Com segmentar, o trecho "Color segment" de
+  // processWithoutDewarping() (linhas 1351-1368): pinta cada peca preta de `bw`
+  // com a cor dela na pagina `preparada`, e posteriza se pedido. Sem segmentar,
+  // o trecho da saida em cor (linhas 1516-1518): so posteriza `preparada`.
+  QImage cores(const BinaryImage& bw, const QImage& preparada, bool segmentar, bool posterizar) const;
 
  private:
   GrayImage normalizeIlluminationGray(const QImage& input,
@@ -118,6 +132,10 @@ class OutputGenerator::Processor {
 
   BinaryImage binarize(const QImage& image) const;
 
+  QImage segmentImage(const BinaryImage& image, const QImage& colorImage) const;
+
+  QImage posterizeImage(const QImage& image, const QColor& backgroundColor = Qt::white) const;
+
   // No original m_xform e um ImageTransformation; as funcoes copiadas so chamam
   // m_xform.transform().
   struct XformDaLigacao {
@@ -126,10 +144,12 @@ class OutputGenerator::Processor {
   };
 
   // No original m_colorParams e um ColorParams; as funcoes copiadas so chamam
-  // m_colorParams.blackWhiteOptions().
+  // m_colorParams.blackWhiteOptions() e m_colorParams.colorCommonOptions().
   struct ColorParamsDaLigacao {
     BlackWhiteOptions m_bw;
+    ColorCommonOptions m_comum;
     const BlackWhiteOptions& blackWhiteOptions() const { return m_bw; }
+    const ColorCommonOptions& colorCommonOptions() const { return m_comum; }
   };
 
   XformDaLigacao m_xform;
@@ -254,7 +274,10 @@ QImage smoothToGrayscale(const QImage& src, const Dpi& dpi) {
 //    depois daqui, como o ScanTailor faz: inverte na entrada e na saida);
 //  - cor de fora da pagina: branco (nenhum ponto cai fora: identidade).
 // ---------------------------------------------------------------------------
-OutputGenerator::Processor::Processor(const QImage& image, const Dpi& dpi, const BlackWhiteOptions& opcoes)
+OutputGenerator::Processor::Processor(const QImage& image,
+                                      const Dpi& dpi,
+                                      const BlackWhiteOptions& opcoes,
+                                      const ColorCommonOptions& comum)
     : m_dpi(dpi),
       m_workingBoundingRect(image.rect()),
       m_inputOrigImage(image),
@@ -264,6 +287,7 @@ OutputGenerator::Processor::Processor(const QImage& image, const Dpi& dpi, const
       m_dbg(nullptr),
       m_outsideBackgroundColor(Qt::white) {
   m_colorParams.m_bw = opcoes;
+  m_colorParams.m_comum = comum;
   m_preCropAreaInOriginalCs = QPolygonF(QRectF(image.rect()));
   m_colorOriginal = !m_inputOrigImage.allGray();
 }
@@ -524,6 +548,64 @@ BinaryImage OutputGenerator::Processor::binarize(const QImage& image) const {
 }
 // ===== FIM DO COPIADO =====
 
+// LIGACAO (item 2.11): as cores, na ordem do original. "Color segment" (1351-1368):
+// a imagem colorida e a `preparada` (maybeNormalized) do tamanho da pagina,
+// segmentImage(dst, colorImage), posterizeImage(..., m_outsideBackgroundColor).
+// Saida em cor (1516-1518): posterizeImage(dst), com o fundo branco de fabrica.
+QImage OutputGenerator::Processor::cores(const BinaryImage& bw,
+                                         const QImage& preparada,
+                                         const bool segmentar,
+                                         const bool posterizar) const {
+  if (!segmentar) {
+    return posterizar ? posterizeImage(preparada) : preparada;
+  }
+  QImage segmentedImage = segmentImage(bw, preparada);
+  if (posterizar) {
+    segmentedImage = posterizeImage(segmentedImage, m_outsideBackgroundColor);
+  }
+  return segmentedImage;
+}
+
+// ===== COPIADO SEM MUDANCA (linhas 2502-2538) =====
+QImage OutputGenerator::Processor::segmentImage(const BinaryImage& image, const QImage& colorImage) const {
+  const BlackWhiteOptions::ColorSegmenterOptions& segmenterOptions
+      = m_colorParams.blackWhiteOptions().getColorSegmenterOptions();
+  ColorSegmenter segmenter(m_dpi, segmenterOptions.getNoiseReduction(), segmenterOptions.getRedThresholdAdjustment(),
+                           segmenterOptions.getGreenThresholdAdjustment(),
+                           segmenterOptions.getBlueThresholdAdjustment());
+
+  QImage segmented;
+  {
+    if (m_colorOriginal) {
+      segmented = segmenter.segment(image, colorImage);
+    } else {
+      segmented = segmenter.segment(image, GrayImage(colorImage));
+    }
+  }
+
+  if (m_dbg) {
+    m_dbg->add(segmented, "segmented");
+  }
+  m_status.throwIfCancelled();
+  return segmented;
+}
+
+QImage OutputGenerator::Processor::posterizeImage(const QImage& image, const QColor& backgroundColor) const {
+  const ColorCommonOptions::PosterizationOptions& posterizationOptions
+      = m_colorParams.colorCommonOptions().getPosterizationOptions();
+  Posterizer posterizer(posterizationOptions.getLevel(), posterizationOptions.isNormalizationEnabled(),
+                        posterizationOptions.isForceBlackAndWhite(), 0, qRound(backgroundColor.lightnessF() * 255));
+
+  QImage posterized = posterizer.posterize(image);
+
+  if (m_dbg) {
+    m_dbg->add(posterized, "posterized");
+  }
+  m_status.throwIfCancelled();
+  return posterized;
+}
+// ===== FIM DO COPIADO =====
+
 // ===== COPIADO SEM MUDANCA (linhas 2583-2606) =====
 QImage OutputGenerator::Processor::transformToWorkingCs(bool normalize) const {
   QImage dst;
@@ -629,6 +711,83 @@ ST_FERRAMENTAS_API int st_ferramentas_preto_e_branco(const unsigned char* pixels
     const BinaryImage bw = processador.pretoEBranco(preparada, opcoes.isSavitzkyGolaySmoothingEnabled(),
                                                     opcoes.isMorphologicalSmoothingEnabled());
     st_ferramentas::bytesDeBinaria(bw, saida, passoSaida);
+    return ST_FERRAMENTAS_OK;
+  });
+}
+
+
+// Item 2.11: as cores do ScanTailor (ver st_ferramentas.h).
+ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
+                                            int largura,
+                                            int altura,
+                                            int passo,
+                                            int canais,
+                                            const unsigned char* pretoEBranco,
+                                            int passoPretoEBranco,
+                                            int dpiX,
+                                            int dpiY,
+                                            int normalizar,
+                                            int segmentar,
+                                            int ruido,
+                                            int ajusteVermelho,
+                                            int ajusteVerde,
+                                            int ajusteAzul,
+                                            int posterizar,
+                                            int nivel,
+                                            int normalizarCores,
+                                            int forcarPretoEBranco,
+                                            unsigned char* saida,
+                                            int passoSaida,
+                                            char* erro,
+                                            int tamanhoErro) {
+  return st_ferramentas::protegido(erro, tamanhoErro, [&]() -> int {
+    if (!pixels || !saida || largura <= 0 || altura <= 0 || (canais != 1 && canais != 3)
+        || passo < largura * canais || passoSaida < largura * 3 || dpiX <= 0 || dpiY <= 0
+        || (segmentar && (!pretoEBranco || passoPretoEBranco < largura)) || nivel < 2 || nivel > 255
+        || ruido < 0) {
+      st_ferramentas::escreverErro(erro, tamanhoErro, "parametros invalidos");
+      return ST_FERRAMENTAS_ERRO_PARAMETRO;
+    }
+    output::BlackWhiteOptions opcoes;
+    output::BlackWhiteOptions::ColorSegmenterOptions segmentacao;
+    segmentacao.setEnabled(segmentar != 0);
+    segmentacao.setNoiseReduction(ruido);
+    segmentacao.setRedThresholdAdjustment(ajusteVermelho);
+    segmentacao.setGreenThresholdAdjustment(ajusteVerde);
+    segmentacao.setBlueThresholdAdjustment(ajusteAzul);
+    opcoes.setColorSegmenterOptions(segmentacao);
+    output::ColorCommonOptions comum;
+    output::ColorCommonOptions::PosterizationOptions posterizacao;
+    posterizacao.setEnabled(posterizar != 0);
+    posterizacao.setLevel(nivel);
+    posterizacao.setNormalizationEnabled(normalizarCores != 0);
+    posterizacao.setForceBlackAndWhite(forcarPretoEBranco != 0);
+    comum.setPosterizationOptions(posterizacao);
+
+    const QImage imagem = montarImagem(pixels, largura, altura, passo, canais);
+    output::OutputGenerator::Processor processador(imagem, Dpi(dpiX, dpiY), opcoes, comum);
+    BinaryImage bw;
+    if (segmentar) {
+      bw = st_ferramentas::binariaDeBytes(pretoEBranco, largura, altura, passoPretoEBranco);
+    }
+    // Na segmentacao a imagem colorida e a pagina preparada (com a luz igualada,
+    // se pedido); sem segmentar, e a propria pagina (a saida em cor do programa).
+    const QImage base = segmentar ? processador.preparar(normalizar != 0) : imagem;
+    QImage resultado = processador.cores(bw, base, segmentar != 0, posterizar != 0);
+    resultado = resultado.convertToFormat(QImage::Format_RGB888);
+    if (resultado.isNull() || resultado.width() != largura || resultado.height() != altura) {
+      st_ferramentas::escreverErro(erro, tamanhoErro, "resultado de tamanho inesperado");
+      return ST_FERRAMENTAS_ERRO_INTERNO;
+    }
+    for (int y = 0; y < altura; ++y) {  // RGB -> azul, verde, vermelho (a ordem do OpenCV)
+      const unsigned char* origem = resultado.constScanLine(y);
+      unsigned char* destino = saida + static_cast<size_t>(y) * passoSaida;
+      for (int x = 0; x < largura; ++x) {
+        destino[3 * x] = origem[3 * x + 2];
+        destino[3 * x + 1] = origem[3 * x + 1];
+        destino[3 * x + 2] = origem[3 * x];
+      }
+    }
     return ST_FERRAMENTAS_OK;
   });
 }

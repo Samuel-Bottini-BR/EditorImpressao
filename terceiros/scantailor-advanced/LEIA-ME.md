@@ -216,6 +216,16 @@ conteúdo é a imagem inteira: `binarize(imagem, área)` do original vira
 a imagem toda (linhas 2412-2420). Os pontinhos (Despeckle) não entram aqui: no
 programa eles são a escolha "Limpar a sujeira", que já existe.
 
+## As cores da saída (item 2.11, desde 20/10/2026)
+
+"Letras com a cor delas" (Color segmentation) e "Reduzir cores" (Posterize), decisão P10 (a) do Samuel
+(05/10): opção desligada de fábrica. Função em C `st_ferramentas_cores` em `ligacao-ferramentas/saida.cpp`;
+Python em `core/cores_scantailor.py`, chamado no fim de `core.pipeline._filtrar`. Arquivos novos em `src/`
+(sem mudança, com soma): `imageproc/ColorSegmenter.*`, `imageproc/Posterizer.*`,
+`imageproc/ImageCombination.*`, `core/filters/output/ColorCommonOptions.*`, `core/AutoManualMode.*`. Funções
+copiadas a mais de `OutputGenerator.cpp`: 2502-2538 (`segmentImage`, `posterizeImage`). Ajustes de fábrica:
+"Reduce noise" 7, ajustes de vermelho/verde/azul 0, nível 4, sem normalizar, "forçar preto e branco" ligado.
+
 ## Como conferir que nada mudou
 
 **Não use `cmp` direto na pasta do PC.** O git deste PC está com

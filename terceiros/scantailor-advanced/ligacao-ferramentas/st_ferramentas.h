@@ -43,7 +43,9 @@
 //     12/10/2026, ainda nao juntado). Quem juntar os dois ramos sobe para 6.
 // 5 = 20/10/2026: + o preto e branco do ScanTailor (st_ferramentas_preto_e_branco,
 //     item 2.8, em saida.cpp); o que ja existia nao mudou.
-#define ST_FERRAMENTAS_VERSAO_API 5
+// 6 = 20/10/2026: + as cores do ScanTailor (st_ferramentas_cores, item 2.11, em
+//     saida.cpp); o que ja existia nao mudou.
+#define ST_FERRAMENTAS_VERSAO_API 6
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -200,6 +202,48 @@ ST_FERRAMENTAS_API int st_ferramentas_preto_e_branco(const unsigned char* pixels
                                                      int passoSaida,
                                                      char* erro,
                                                      int tamanhoErro);
+
+// AS CORES DO SCANTAILOR (item 2.11; cola em saida.cpp): "letras com a cor delas"
+// (Color segmentation, src/imageproc/ColorSegmenter.cpp) e "reduzir cores"
+// (Posterize, src/imageproc/Posterizer.cpp), sem mudanca.
+//
+// pixels, largura, altura, passo, canais: a pagina (1 = cinza; 3 = azul, verde,
+//   vermelho). Com segmentar = 1, a pagina preparada ANTES do filtro (a cor das
+//   letras sai dela); com segmentar = 0, a pagina ja filtrada, a posterizar.
+// pretoEBranco, passoPretoEBranco: so com segmentar = 1: o preto e branco da
+//   pagina, 1 byte por ponto (menor que 128 = preto). Cada peca preta e pintada
+//   com a cor dela; o resto sai branco.
+// dpiX, dpiY: o DPI (o tamanho do ruido que a segmentacao tira acompanha o DPI).
+// normalizar: 1 = iguala a luz da pagina antes de tirar as cores (o de fabrica do
+//   preto e branco do ScanTailor).
+// ruido: "Reduce noise" (7 de fabrica). ajusteVermelho/Verde/Azul: 0 de fabrica.
+// posterizar, nivel (4 de fabrica), normalizarCores (0), forcarPretoEBranco (1):
+//   as opcoes do "Posterize".
+// saida, passoSaida: o resultado em cor, 3 bytes por ponto (azul, verde, vermelho).
+// Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
+                                            int largura,
+                                            int altura,
+                                            int passo,
+                                            int canais,
+                                            const unsigned char* pretoEBranco,
+                                            int passoPretoEBranco,
+                                            int dpiX,
+                                            int dpiY,
+                                            int normalizar,
+                                            int segmentar,
+                                            int ruido,
+                                            int ajusteVermelho,
+                                            int ajusteVerde,
+                                            int ajusteAzul,
+                                            int posterizar,
+                                            int nivel,
+                                            int normalizarCores,
+                                            int forcarPretoEBranco,
+                                            unsigned char* saida,
+                                            int passoSaida,
+                                            char* erro,
+                                            int tamanhoErro);
 
 #ifdef __cplusplus
 }

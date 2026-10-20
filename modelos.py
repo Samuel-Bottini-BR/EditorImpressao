@@ -122,6 +122,12 @@ class ConfigPagina:
     # padrao). Arriscado: vir marcada (a pagina sairia com as cores trocadas
     # no tratamento).
     claro_no_escuro: bool = False
+    # Item 2.11 (Samuel P10 (a), 05/10/2026: "Trazer como opcao, desligada de
+    # fabrica"): "Letras com a cor delas" (so no Preto e branco) e "Reduzir
+    # cores" desta pagina (core.cores_scantailor). Desmarcadas de fabrica;
+    # projeto salvo antes abre desmarcado.
+    letras_com_a_cor: bool = False
+    reduzir_cores: bool = False
 
     # "Limpar pontinhos" SO desta pagina, por cima do livro
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
