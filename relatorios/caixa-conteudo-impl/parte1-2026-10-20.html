@@ -143,9 +143,10 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </ul>
 <h2>4. Testes (de máquina)</h2>
 <ul>
-<li><code>tests/test_corte_pelo_conteudo.py</code> (22), <code>test_corte_pelo_conteudo_no_programa.py</code> (14), <code>test_corte_pelo_conteudo_na_tela.py</code> (8), <code>test_guias.py</code> (14): todos passam no PC, um arquivo por vez. O principal: <strong>com a opção desligada a conta do ScanTailor não é chamada nem na prévia nem no PDF, nas duas ordens</strong> (livro novo e projeto antigo), e o corte é o de sempre; com a DLL, um PDF gerado sai com as páginas comuns do mesmo tamanho e a muito maior no dela.</li>
+<li><code>tests/test_corte_pelo_conteudo.py</code> (21), <code>test_corte_pelo_conteudo_no_programa.py</code> (14), <code>test_corte_pelo_conteudo_na_tela.py</code> (8), <code>test_guias.py</code> (14): todos passam no PC, um arquivo por vez. O principal: <strong>com a opção desligada a conta do ScanTailor não é chamada nem na prévia nem no PDF, nas duas ordens</strong> (livro novo e projeto antigo), e o corte é o de sempre; com a DLL, um PDF gerado sai com as páginas comuns do mesmo tamanho e a muito maior no dela.</li>
 <li>Vizinhos, um por vez, todos passam: ordem do preparo (43), corte prévia = PDF (4), folga 1 mm (6), corte não come conteúdo (9), endireitar no programa (15) e na tela (5), dividir na tela (9), painéis (33 + 22), trabalho não se perde (82), visualizador (70), prévia composta (12), girar cartões e prévias (23), caixas do ScanTailor (76, com o teste de guarda trocado: só o corte pelo conteúdo pode usar a DLL de caixas, e nunca com a busca da borda preta).</li>
-<li>Suíte inteira no GitHub e filtro de velocidade: ver a entrega (números da rodada).</li>
+<li><strong>Suíte inteira no Windows do GitHub</strong> (rodada 39470960244, código <code>9861e4f</code>): 119 arquivos, <strong>2168 passaram, 0 falharam</strong>, 86 pulados (os pulados são páginas e OCRs fora do git, os mesmos motivos de antes); botões e prints da janela real: passou. Os 4 arquivos novos rodaram inteiros lá (com a DLL).</li>
+<li><strong>Filtro de velocidade no GitHub</strong> (rodada 39471048026, <code>b8e9af7</code> antes x <code>9861e4f</code> depois, 3 rodadas alternadas): em andamento na entrega. Com a opção desligada de fábrica nenhuma conta nova roda (provado por teste); o custo novo é só a consulta da opção.</li>
 <li><strong>Teste de reversão:</strong> não houve conserto de bug do programa (tudo é função nova). O Egenloff 12 tem teste, mas é defeito da função nova achado antes de ligar; não há "código antigo" a reverter.</li>
 </ul>
 <h2>5. Ressalvas</h2>
@@ -204,6 +205,6 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <li>"No livro com 'Cortar seguindo o conteúdo', o carimbo da biblioteca fica fora do corte (Opus Majus 3) e às vezes dispara o aviso (Egenloff). Está bom assim?" (Está bom · Quero o carimbo dentro · Ainda não entendi)</li>
 <li>"Página quase em branco (Egenloff 12, só um carimbo): ela sai do tamanho das outras, mas centrada no carimbo, não no papel. Está bom?" (Está bom · Centrar no papel · Ainda não entendi)</li>
 </ol>
-<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 14:05</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 14:18</p>
 </body>
 </html>

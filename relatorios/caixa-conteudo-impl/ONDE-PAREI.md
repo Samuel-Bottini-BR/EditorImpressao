@@ -21,8 +21,9 @@ Passos (marque ao terminar):
       livro todo" e no Automático, botões dos 2 avisos, passada por trás (TarefaMedirOLivro).
 - [x] Linhas de apoio (g8-guias): núcleo `5fbc731`, tela `9861e4f`.
 - [x] Antes/depois em 41 páginas, todas abertas (`b7c3d2c`); relatório `parte1-2026-10-20.*`.
-- [ ] GitHub: suíte rodada 39470960244, filtro de velocidade 39471048026 (b8e9af7 -> 9861e4f): ler.
-- [ ] Entregar a Parte 1 à gerente.
+- [x] GitHub: suíte rodada 39470960244: 2168 passaram, 0 falharam, 86 pulados; botões ok.
+- [ ] Filtro de velocidade 39471048026 (b8e9af7 -> 9861e4f): em andamento ao entregar; ler.
+- [x] Parte 1 entregue à gerente (20/10).
 - [ ] PARTE 2 LIBERADA (gerente, 20/10): g7 = "O Kaique escolhe por livro: só o preto, ou até a
       moldura"; "até a moldura" de fábrica no livro novo, igual a hoje no começado; exceção por
       página; seletor Selecionar todas / Nenhuma. Antes de mexer em core/recortar.py ou na chamada
