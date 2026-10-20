@@ -180,6 +180,7 @@ from ui.widgets.paineis import (
     PAINEL_HISTORICO,
     PAINEL_PROPRIEDADES,
     Bloco,
+    NaoEspreme,
     ColunaDePaineis,
     frase_do_painel,
     lista_estreita,
@@ -441,7 +442,8 @@ class TelaConferir(QWidget):
                               ferramenta e a barrinha de girar: R8 303 B)
             trilha | página                         | painel  | ícones
                    | faixa fina do conferir         | aberto  |
-                   | botões de Marcar e dos filtros (provisório)
+                   | botões dos filtros (provisório; os de Marcar
+                   |   foram para o painel Propriedades na etapa 4)
                    | miniaturas + Confirmar e processar
                    | barra de baixo: página N de M, desfazer, refazer,
                    |   histórico, o livro e quantas faltam
@@ -852,7 +854,9 @@ class TelaConferir(QWidget):
 
           Dividir, Cortar, Endireitar   os botoes delas (montados em
                                         _montar_aba_corte/_bordas/_angulo)
-          ferramentas de marcar         o "Marcar como"
+          ferramentas de marcar         o "Marcar como" e, embaixo, as
+                                        partes "Marcação desta página",
+                                        "Foto" e "Pedaço" (etapa 4)
           Zoom e Mao                    a frase de que nao tem propriedades
           Os quatro filtros             idem (provisorio ate o painel Filtro)
 
@@ -1489,115 +1493,108 @@ class TelaConferir(QWidget):
         linha.addWidget(proxima)
         self.paginas_de_imagem[ABA_MARCAR] = pagina
 
-        # --- os botoes ---
+        # --- os botoes: no painel Propriedades ---
         #
-        # Tres linhas sairam daqui na etapa 3, e nao se perderam:
+        # Etapa 4 do layout (20/10/2026; rodada 9, 402 C: "Muda conforme a
+        # ferramenta (como no Photoshop)"; protótipo da rodada 13,
+        # `propsMarcarA`): as filas "Marcação:", "Foto:" e "Pedaço:", que
+        # atravessavam a tela embaixo da página, viraram partes do painel
+        # Propriedades das ferramentas de marcar, embaixo do "Marcar como".
+        # SAO OS MESMOS BOTOES, ligados as mesmas acoes; so mudaram de lugar.
+        # Embaixo da pagina fica uma pagina vazia (altura zero), como a de
+        # Dividir, Cortar e Endireitar desde a etapa 3. Antes, na etapa 3:
         #
-        #   Marcar como               painel "Marcar como", um embaixo do outro
+        #   Marcar como               painel Propriedades
         #   Filtro so neste pedaco    painel "Filtro da pagina"
         #   desfazer, procurar de     menu Marcar e menu Editar, ja na etapa 1
         #   novo, limpar tudo,
         #   deixar a folha em branco
-        #
-        # Cada uma custava altura da pagina, e a pagina e o que precisa ser
-        # olhado. Sobra so o aviso do que foi marcado, que e uma frase e nao um
-        # controle.
-        painel = QWidget()
-        fora = QVBoxLayout(painel)
+        extra = NaoEspreme()
+        fora = QVBoxLayout(extra)
         fora.setContentsMargins(0, 0, 0, 0)
-        fora.setSpacing(4)
+        fora.setSpacing(7)
+
+        # O resumo do que esta marcado ("Marcado: 4 de letra e traço..."):
+        # uma frase, logo embaixo do "Marcar como".
+        self.aviso_marcacao = frase_do_painel("")
+        fora.addWidget(self.aviso_marcacao)
+        self.aviso_marcacao.setVisible(False)
 
         # Problema 2 do plano (redesenho do fluxo): a detecção automática não
-        # roda mais sozinha ao abrir esta aba - o Samuel pede quando quiser,
-        # aqui ou pelo menu Marcar -> "Procurar de novo" (mesma ação).
-        # Item 1.2 (verificador, 30/09, r06): as duas linhas tinham o mesmo par
-        # "usar em todas / so nas proximas", sem dizer a que cada um se
-        # referia. Cada linha comeca agora com o nome do que ela leva para as
-        # outras paginas ("Marcação:" e "Foto:"), na mesma largura, e cada
-        # botao diz na dica o que copia.
-        linha_detectar = QHBoxLayout()
-        rotulo_marcacao = QLabel("Marcação:")
-        rotulo_marcacao.setMinimumWidth(90)
-        linha_detectar.addWidget(rotulo_marcacao)
-        _botao("detectar automaticamente", linha_detectar, self._detectar_de_novo)
-        # Fase 3b do plano: mesma granularidade que corte/bordas/filtro já
-        # tinham ("usar em todas"/"só nas próximas") - faltava só aqui.
-        _botao("usar em todas", linha_detectar, self._marcacao_em_todas).setToolTip(
+        # roda mais sozinha - o Samuel pede quando quiser, aqui ou pelo menu
+        # Marcar -> "Procurar de novo" (mesma ação). Item 1.2 (verificador,
+        # 30/09, r06): cada parte diz a que se refere (o titulo), e cada botao
+        # diz na dica o que copia. Fase 3b do plano: "usar em todas" e "daqui
+        # em diante" (rodada 13, 806 B), como no corte, nas bordas e no filtro.
+        fora.addWidget(risco_do_painel())
+        fora.addWidget(titulo_de_secao("Marcação desta página"))
+        _botao("detectar automaticamente", fora, self._detectar_de_novo).setToolTip(
+            "Procura de novo a gravura, a letra e o papel desta página. "
+            "O que você marcou à mão continua.")
+        par = self._par_de_botoes(fora)
+        _botao("usar em todas", par, self._marcacao_em_todas).setToolTip(
             "Copia a marcação desta página (gravura, letra, papel) para todas as páginas.")
-        _botao("daqui em diante", linha_detectar, self._marcacao_nas_proximas).setToolTip(
+        _botao("daqui em diante", par, self._marcacao_nas_proximas).setToolTip(
             "Copia a marcação desta página para esta e as páginas seguintes.")
-        linha_detectar.addStretch()
-        fora.addLayout(linha_detectar)
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
 
         # Item 1.2 (decisao do Samuel, 30/09/2026): "Quero poder trocar
         # tambem so numa pagina (ex.: so a pagina da estatua do Opus Majus),
         # sem mudar o livro inteiro." Marcada = a gravura desta pagina e
         # procurada em retangulo (pega a foto inteira); desmarcada = seguindo
         # o contorno do desenho. Por cima do "Este livro tem fotos" da tela
-        # "O que fazer". Mesmo padrao dos outros controles de pagina ("usar em
-        # todas", "so nas proximas") e mesmo desfazer (ConfigPagina.gravura_forma).
-        linha_foto = QHBoxLayout()
-        rotulo_foto = QLabel("Foto:")
-        rotulo_foto.setMinimumWidth(90)
-        linha_foto.addWidget(rotulo_foto)
+        # "O que fazer". Mesmo desfazer (ConfigPagina.gravura_forma).
+        fora.addWidget(risco_do_painel())
+        fora.addWidget(titulo_de_secao("Foto"))
         self.caixa_tem_foto = QCheckBox("Esta página tem foto")
         # com quadrado tambem desmarcada (na janela de verdade saia so o
         # texto: verificador, 30/09, r06); ver ui/estilo.py
-        estilo.estilizar(self.caixa_tem_foto, lambda: estilo_da_caixinha_com_quadrado(15))
+        estilo.estilizar(self.caixa_tem_foto, lambda: estilo_da_caixinha_com_quadrado(13))
+        self.caixa_tem_foto.setCursor(Qt.PointingHandCursor)
+        self.caixa_tem_foto.setFocusPolicy(Qt.NoFocus)     # o teclado continua da pagina
         self.caixa_tem_foto.setToolTip(
             "Procura a gravura desta página em retângulo, que pega a foto inteira. "
             "Desmarcada, segue o contorno do desenho. O que você marcou à mão continua.")
         self.caixa_tem_foto.toggled.connect(self._mudar_forma_da_pagina)
-        linha_foto.addWidget(self.caixa_tem_foto)
-        _botao("usar em todas", linha_foto, self._forma_em_todas).setToolTip(
+        fora.addWidget(self.caixa_tem_foto)
+        par = self._par_de_botoes(fora)
+        _botao("usar em todas", par, self._forma_em_todas).setToolTip(
             "Leva o \"Esta página tem foto\" desta página (marcado ou não) para todas as páginas.")
-        _botao("daqui em diante", linha_foto, self._forma_nas_proximas).setToolTip(
+        _botao("daqui em diante", par, self._forma_nas_proximas).setToolTip(
             "Leva o \"Esta página tem foto\" desta página para esta e as páginas seguintes.")
-        linha_foto.addStretch()
-        fora.addLayout(linha_foto)
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
 
         # Conferencia 13, S3 (Samuel, 05/10/2026): "(b) e (c) juntas - Mas
         # caso ele nao queira mudar, fica do jeito que esta." O pedaco com
         # outro filtro obedece inteiro ao filtro dele, inclusive o papel pego
-        # junto em volta da figura (a faixa creme da Escola 7). Esta linha so
+        # junto em volta da figura (a faixa creme da Escola 7). Esta parte so
         # aparece quando a pagina tem um pedaco assim: (c) o botao encolhe o
         # retangulo ate a figura (core/ajustar_pedaco.py), numa acao do
         # desfazer; (b) a frase avisa quando o papel em volta e muito
         # (core.ajustar_pedaco.PAPEL_DEMAIS). Os dois so sugerem: nada muda
-        # sozinho. Ver _avaliar_os_pedacos e _ajustar_pedaco_a_figura.
-        #
-        # Conserto de 05/10/2026 (verificador, defeito 1): a linha espremia as
-        # outras. A barra de botoes tem a altura FIXA da aba da frente,
-        # medida na troca de aba (_encolher_a_barra_de_botoes), e esta linha
-        # aparece depois, ao desenhar o pedaco: as tres linhas eram
-        # espremidas na altura antiga e o texto dos botoes saia cortado ao
-        # meio, em qualquer tamanho de janela. Agora _avaliar_os_pedacos mede
-        # de novo quando a linha aparece ou some (a pagina da aba encolhe
-        # ~45 pontos), e a frase do aviso e curta e numa linha so (sem quebra:
-        # com quebra de linha a altura pedida dependia da largura e a conta
-        # errava), com a explicacao inteira na dica do mouse.
+        # sozinho. Ver _avaliar_os_pedacos e _ajustar_pedaco_a_figura. No
+        # painel (com rolagem) a frase pode quebrar linha; embaixo da pagina
+        # nao podia (o defeito 1 do verificador, 05/10/2026, era isso).
         self.linha_pedaco = QWidget()
-        linha_pedaco = QHBoxLayout(self.linha_pedaco)
+        linha_pedaco = QVBoxLayout(self.linha_pedaco)
         linha_pedaco.setContentsMargins(0, 0, 0, 0)
-        rotulo_pedaco = QLabel("Pedaço:")
-        rotulo_pedaco.setMinimumWidth(90)
-        linha_pedaco.addWidget(rotulo_pedaco)
+        linha_pedaco.setSpacing(7)
+        linha_pedaco.addWidget(risco_do_painel())
+        linha_pedaco.addWidget(titulo_de_secao("Pedaço"))
         self.botao_ajustar_pedaco = _botao(
             "Ajustar o pedaço à figura", linha_pedaco, self._ajustar_pedaco_a_figura)
         self.botao_ajustar_pedaco.setIcon(_icone_de_ajustar_o_pedaco())
         self.botao_ajustar_pedaco.setToolTip(DICA_DO_AJUSTE)
-        self.aviso_pedaco = QLabel("")
-        self.aviso_pedaco.setObjectName("fraco")
-        self.aviso_pedaco.setWordWrap(False)
-        linha_pedaco.addWidget(self.aviso_pedaco, 1)
+        self.aviso_pedaco = frase_do_painel("")
+        linha_pedaco.addWidget(self.aviso_pedaco)
         self.linha_pedaco.setVisible(False)
         fora.addWidget(self.linha_pedaco)
 
-        self.aviso_marcacao = QLabel("")
-        self.aviso_marcacao.setObjectName("dica")
-        fora.addWidget(self.aviso_marcacao)
-
-        self.linhas_de_botoes[ABA_MARCAR] = painel
+        self.paineis.propriedades.definir_extra_de_marcar(extra)
+        # embaixo da pagina, uma pagina vazia: a pilha precisa de uma por aba
+        self.linhas_de_botoes[ABA_MARCAR] = QWidget()
 
     # --- acoes da aba de marcar -------------------------------------------
 
@@ -1624,8 +1621,12 @@ class TelaConferir(QWidget):
         self.editor_selecao.definir_filtro_da_regiao(filtro)
 
     def _mostrar_aviso_da_marcacao(self, texto: str) -> None:
+        """Escreve o resumo do que está marcado (ou o aviso da última ação de
+        marcar) no painel Propriedades, embaixo do "Marcar como". Sem texto, a
+        frase some (não deixa um buraco no painel)."""
         if hasattr(self, "aviso_marcacao"):
             self.aviso_marcacao.setText(texto)
+            self.aviso_marcacao.setVisible(bool(texto))
 
     def _pagina_marcada(self):
         """A pagina que a aba de marcar esta editando, ou None."""
@@ -2465,7 +2466,8 @@ class TelaConferir(QWidget):
         return img
 
     def _avaliar_os_pedacos(self, pagina) -> None:
-        """Mostra ou esconde a linha "Pedaco:" da aba Marcar e acerta o aviso.
+        """Mostra ou esconde a parte "Pedaço" (painel Propriedades das
+        ferramentas de marcar) e acerta o aviso.
 
         A linha aparece so quando a pagina tem um pedaco em retangulo com
         "so neste pedaco" num filtro diferente do da pagina, e com alguma
@@ -2531,6 +2533,9 @@ class TelaConferir(QWidget):
         else:
             self.aviso_pedaco.setText("")
             self.aviso_pedaco.setToolTip("")
+        # (desde a etapa 4 do layout a parte "Pedaço" mora no painel
+        # Propriedades, com rolagem; a fila embaixo da pagina fica vazia, e
+        # medir de novo nao custa nada)
         if estava_visivel != (not self.linha_pedaco.isHidden()):
             self._encolher_a_barra_de_botoes()
 

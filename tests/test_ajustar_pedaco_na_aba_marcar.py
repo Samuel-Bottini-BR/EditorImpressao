@@ -159,20 +159,23 @@ def test_o_botao_ajusta_so_o_pedaco_de_figura(tela):
 
 
 @pytest.mark.parametrize("tamanho", [(1280, 657), (1920, 1040)])
-def test_a_linha_pedaco_nao_espreme_os_botoes(tela, tamanho):
-    """Defeito 1: quando a linha "Pedaço:" aparece, a barra de botões cresce
-    e nenhum botão da aba Marcar fica mais baixo do que precisa (antes: 24
-    pontos de altura para 39, e o texto cortado ao meio, em qualquer tamanho
-    de janela)."""
+def test_a_parte_pedaco_mora_no_painel_e_nao_espreme_os_botoes(tela, tamanho):
+    """Defeito 1 (verificador, 05/10/2026): quando a linha "Pedaço:" aparecia
+    embaixo da página, ela espremia os outros botões (24 pontos de altura para
+    39, o texto cortado ao meio). Desde a etapa 4 do layout (20/10/2026) a
+    parte "Pedaço" mora no painel Propriedades das ferramentas de marcar, que
+    tem rolagem: a fila embaixo da página fica vazia (altura zero) com ou sem
+    o pedaço, e nenhum botão do painel fica mais baixo do que precisa."""
     from PySide6.QtWidgets import QApplication, QPushButton
-
-    from ui.tela_conferir import ABA_MARCAR
 
     tela.resize(*tamanho)
     tela.show()
+    tela.paineis.abrir("props")
     QApplication.processEvents()
-    painel = tela.linhas_de_botoes[ABA_MARCAR]
-    altura_sem = tela.barra_botoes.height()
+    painel = tela.paineis.propriedades
+    assert tela.linha_pedaco.parent() is not None
+    assert painel.extra_de_marcar.isAncestorOf(tela.linha_pedaco)
+    assert tela.barra_botoes.height() == 0, "a fila embaixo da página não ficou vazia"
 
     pagina = tela.projeto.paginas[0]
     _com_pedaco(pagina, FOLGADO)
@@ -180,21 +183,16 @@ def test_a_linha_pedaco_nao_espreme_os_botoes(tela, tamanho):
     for _ in range(3):
         QApplication.processEvents()
     assert not tela.linha_pedaco.isHidden()
-    assert tela.barra_botoes.height() > altura_sem, "a barra nao cresceu com a linha nova"
-    assert tela.barra_botoes.height() >= painel.sizeHint().height()
-    botoes = [b for b in painel.findChildren(QPushButton) if b.isVisible()]
+    assert tela.barra_botoes.height() == 0, "a parte Pedaço foi parar embaixo da página"
+    botoes = [b for b in painel.extra_de_marcar.findChildren(QPushButton) if b.isVisible()]
     assert tela.botao_ajustar_pedaco in botoes
     for botao in botoes:
-        assert botao.height() >= botao.sizeHint().height(), \
-            f"{botao.text()!r}: {botao.height()} de altura, precisa de {botao.sizeHint().height()}"
+        assert botao.height() >= botao.sizeHint().height(),             f"{botao.text()!r}: {botao.height()} de altura, precisa de {botao.sizeHint().height()}"
 
-    # e quando a linha some, a barra encolhe de novo (a pagina ganha a
-    # altura de volta), na medida das linhas que sobraram
-    com_a_linha = tela.barra_botoes.height()
+    # e quando o pedaço volta ao filtro da página, a parte some
     _com_pedaco(pagina, FOLGADO, filtro_do_pedaco=PRETO_E_BRANCO)     # o mesmo da pagina
     tela._avaliar_os_pedacos(pagina)
     QApplication.processEvents()
     assert tela.linha_pedaco.isHidden()
-    assert tela.barra_botoes.height() < com_a_linha
-    assert tela.barra_botoes.height() == painel.sizeHint().height()
+    assert tela.barra_botoes.height() == 0
     tela.hide()

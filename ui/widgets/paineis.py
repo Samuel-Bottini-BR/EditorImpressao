@@ -114,13 +114,56 @@ class Bloco(QWidget):
     """
 
 
-class _Envelope(Bloco):
+class NaoEspreme(Bloco):
+    """Uma caixa que nunca deixa o Qt espremer as peças na altura (etapa 4 do
+    layout, 20/10/2026): o mínimo dela é a altura que as peças pedem na
+    largura de verdade, contando as frases que quebram de linha. Usada no
+    corpo dos painéis e no que vai dentro da rolagem: um painel mais alto que
+    a janela (o das ferramentas de marcar, com o "Pedaço" aberto) espremia os
+    botões até a metade da altura, com o texto cortado, em vez de rolar."""
+
+    def _altura_de_verdade(self, altura: int) -> int:
+        """A altura pedida, ou mais, se as frases que quebram de linha pedem
+        mais na largura que a caixa tem agora (o sizeHint do Qt conta as
+        frases numa largura folgada, com menos linhas)."""
+        caixa = self.layout()
+        if caixa is not None and caixa.hasHeightForWidth() and self.width() > 0:
+            altura = max(altura, caixa.totalHeightForWidth(self.width()))
+        return altura
+
+    def sizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
+        pedido = super().sizeHint()
+        return QSize(pedido.width(), self._altura_de_verdade(pedido.height()))
+
+    def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
+        return QSize(super().minimumSizeHint().width(), self.sizeHint().height())
+
+    def event(self, evento) -> bool:  # noqa: D401 - nome do Qt
+        """Quando as peças de dentro mudam (uma parte aparece ou some), a
+        caixa de fora mede de novo. Sem isto ela continuava com a altura de
+        antes, e as peças novas eram espremidas."""
+        resposta = super().event(evento)
+        if evento.type() in (QEvent.LayoutRequest, QEvent.Resize):
+            self._acertar_o_minimo()
+        return resposta
+
+    def _acertar_o_minimo(self) -> None:
+        """Põe como altura mínima explícita a que as peças pedem agora. É o
+        único mínimo que o Qt respeita em todo caso (a caixa de fora guarda
+        as medidas de antes e não as pede de novo)."""
+        altura = self._altura_de_verdade(super().sizeHint().height())
+        if self.minimumHeight() != altura:
+            self.setMinimumHeight(altura)
+
+
+class _Envelope(NaoEspreme):
     """O que vai dentro da rolagem de um painel. Diz ao Qt que pode ser tão
     estreito quanto o painel: sem isto, uma peça um pouco mais larga (uma
     lista com uma palavra comprida, uma escala de tela maior) deixava o
     conteúdo todo mais largo que o painel, e a ponta direita de cada botão
     ficava escondida, sem barra para chegar até ela. Assim as peças se
-    apertam dentro da largura do painel."""
+    apertam dentro da largura do painel. Na altura, nunca espreme (ver
+    NaoEspreme)."""
 
     def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
         return QSize(0, super().minimumSizeHint().height())
@@ -382,7 +425,7 @@ class Painel(QFrame):
         self.cabecalho.fechar.connect(self.fechar_pedido)
         camadas.addWidget(self.cabecalho)
 
-        self.corpo = Bloco()
+        self.corpo = NaoEspreme() if rolagem else Bloco()
         self.corpo.setObjectName("corpoDoPainel")
         self.dentro = QVBoxLayout(self.corpo)
         self.dentro.setContentsMargins(12, 12, 10, 12)
@@ -954,8 +997,15 @@ class PainelPropriedades(Painel):
 
     O painel só GUARDA e MOSTRA: o conteúdo de Cortar, Endireitar e Dividir é
     montado pela tela de conferir (que tem as ações) e entregue em
-    `definir_conteudo`. Os fixos são o "Marcar como" (ferramentas de marcar)
-    e a frase de quem não tem propriedades (Zoom, Mão).
+    `definir_conteudo`. Os fixos são o das ferramentas de marcar e a frase
+    de quem não tem propriedades (Zoom, Mão).
+
+    O das ferramentas de marcar (etapa 4 do layout, 20/10/2026; protótipo da
+    rodada 13, `propsMarcarA`) é o "Marcar como" e, embaixo dele, as partes
+    que eram filas de botões embaixo da página ("Marcação desta página",
+    "Foto", "Pedaço"), montadas pela tela de conferir e entregues em
+    `definir_extra_de_marcar`. O "Na área marcada" do protótipo (pintar por
+    cima, copiar, colar, mover) ainda não existe no programa e não entrou.
     """
 
     CONTEUDO_DE_MARCAR = "marcar"
@@ -964,9 +1014,18 @@ class PainelPropriedades(Painel):
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_PROPRIEDADES], parent)
         self.marcar_como = PainelMarcarComo()
+        # o conteúdo das ferramentas de marcar: o "Marcar como" e, embaixo,
+        # o que a tela entrega em definir_extra_de_marcar
+        self.conteudo_de_marcar = NaoEspreme()
+        coluna = QVBoxLayout(self.conteudo_de_marcar)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(7)
+        coluna.addWidget(self.marcar_como)
+        self._coluna_de_marcar = coluna
+        self.extra_de_marcar: QWidget | None = None
         self.sem_propriedades = frase_do_painel("")
         self._fixos: dict[str, QWidget] = {
-            self.CONTEUDO_DE_MARCAR: self.marcar_como,
+            self.CONTEUDO_DE_MARCAR: self.conteudo_de_marcar,
             self.SEM_PROPRIEDADES: self.sem_propriedades,
         }
         self._da_tela: dict[str, QWidget] = {}
@@ -992,12 +1051,28 @@ class PainelPropriedades(Painel):
         self.dentro.addWidget(widget)
         widget.setVisible(False)
 
+    def definir_extra_de_marcar(self, widget: QWidget) -> None:
+        """Põe, embaixo do "Marcar como", as partes das ferramentas de marcar
+        que a tela montou ("Marcação desta página", "Foto", "Pedaço"). Troca
+        a anterior (outro livro): a peça antiga é destruída."""
+        self._tirar_o_extra_de_marcar()
+        self.extra_de_marcar = widget
+        self._coluna_de_marcar.addWidget(widget)
+
+    def _tirar_o_extra_de_marcar(self) -> None:
+        if self.extra_de_marcar is not None:
+            self.extra_de_marcar.setParent(None)
+            self.extra_de_marcar.deleteLater()
+            self.extra_de_marcar = None
+
     def tirar_conteudos(self) -> None:
-        """Joga fora os conteúdos da tela (ao abrir outro livro); os fixos ficam."""
+        """Joga fora os conteúdos da tela (ao abrir outro livro), inclusive as
+        partes de marcar; os fixos ficam."""
         for widget in self._da_tela.values():
             widget.setParent(None)
             widget.deleteLater()
         self._da_tela.clear()
+        self._tirar_o_extra_de_marcar()
 
     def tem_conteudo(self, chave: str) -> bool:
         """Há conteúdo (da tela ou fixo) guardado com esta chave?"""
