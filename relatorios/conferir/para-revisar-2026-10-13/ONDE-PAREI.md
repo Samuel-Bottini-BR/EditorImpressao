@@ -7,7 +7,13 @@ Ordem da tarefa: (1) abrir as 19 imagens; (2) reabrir Opus Majus 20, Antiphon 26
 nos três formatos. Velocidade: NÃO medir (Mágico pro +1,1% foi para a Fase 5, Samuel 19/10).
 
 - [x] 1. As 19 imagens abertas uma a uma (e, para comparar com as decisões, todas as 66 citadas nos quadros).
-- [ ] 2. Reabrir as 4 páginas NA JANELA (código ce2b835), livro novo, pasta `trabalho/dados_teste3`.
+- [~] 2. Reabrir as 4 páginas NA JANELA (código ce2b835), livro novo, pasta `trabalho/dados_teste3` (`scripts/r3_quatro_paginas.py`).
+      - Opus Majus 20: FEITO. O parecer estava ERRADO: no PDF a foto da estátua sai destruída (r3_processar_opus.py,
+        `img/a4-opus-20.jpg`); o aviso "Figura além da gravura" está certo. Igual no fase-1 (r3_render_raiz.py: idêntico).
+      - Camões 66: FEITO. Só o aviso do Endireitar, nenhum aviso das linhas pretas (página ou livro). Camões 27 e 104: força 85.
+      - Cursus (402 folhas, livro inteiro): a análise parou 2 vezes com MemoryError (04:46 e 05:02; "Aconteceu um problema
+        inesperado"). Refazer com o pedaço `trabalho/livros/cursus_1a10.pdf` (opção cursus10).
+      - Antiphon 260: falta; usar o pedaço `antiphon_256a264.pdf` (opção antiphon9).
 - [ ] 3. Teclado: conferido pelo código (`ui/janela_principal.py` keyPressEvent): a seta só chega à
       página se o que está com o teclado não usar a seta; tira e medidor usam. Falta escrever.
 - [ ] 4. Aba 4: `conferencia-aba4.json` (a fazer). ACHADO GRAVE: as fotos são da tela de ANTES do layout

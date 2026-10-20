@@ -20,6 +20,10 @@ PEDIDO = {
     "camoes": (LIVROS["camoes"], 66, (65, 67, 27, 104)),
     # Antiphon 260: na 1a conferencia o aviso da faixa virou aviso do livro depois de visitar mais 3 paginas
     "antiphon": (LIVROS["antiphon"], 260, (259, 261, 262)),
+    # pedacos (o livro inteiro do Cursus parou duas vezes na analise por falta de memoria, 20/10):
+    # a pagina 3 do Cursus e a 3 do pedaco 1-10; a 260 do Antiphon e a 5 do pedaco 256-264
+    "cursus10": (P.BASE / "trabalho" / "livros" / "cursus_1a10.pdf", 3, ()),
+    "antiphon9": (P.BASE / "trabalho" / "livros" / "antiphon_256a264.pdf", 5, (4, 6, 7)),
 }
 
 
