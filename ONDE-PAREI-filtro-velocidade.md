@@ -32,3 +32,10 @@ de apoio em `.github/`.
   veredito. Refeita a conta nas 4 rodadas e no PC: continua "igual". Rodada curta de conferencia: 39470587102 (success, igual).
 - Rodada inteira de conferencia do 7e3a006: 39471738696 (disparada 18:05 UTC; resultado no resumo da rodada).
 - Alguem ja usou o filtro: rodada 39396712441 (fase-1 -> conserto-corte-g6-2026-10-13) -> igual.
+
+## Controle positivo (autorizado pela gerente, 20/10)
+
+- Ramo **`teste-filtro-lento-2026-10-20`** (de `3bdbab3`, commit 92b3327; worktree `.claude/worktrees/teste-filtro-lento`):
+  **SÓ DE TESTE, NUNCA JUNTAR.** Única mudança: `time.sleep(0.7)` por página em Mágico pro no laço do processar
+  (`core/pipeline.py`, `_escrever_as_paginas`, comentado "TESTE"). Esperado: Mágico pro ~+10%, o resto igual.
+- Rodada 39472021616 (3bdbab3 -> teste-filtro-lento-2026-10-20), disparada 18:07 UTC.
