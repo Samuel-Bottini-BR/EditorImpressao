@@ -1,0 +1,3055 @@
+{
+ "antiphon_p088__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    437.7,
+    621.3
+   ],
+   "beirada_escuro": 0.08477,
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00223
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "tamanho_mm": [
+    456.5,
+    624.4
+   ],
+   "beirada_escuro": 0.12648,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 27.54,
+    "topo": 26.85,
+    "pe": 23.73
+   },
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 2.81,
+    "dir": 27.79,
+    "topo": 48.39,
+    "pe": 87.11
+   },
+   "cunha_branca": 0.00222
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0025,
+    0.9452,
+    0.9975
+   ],
+   "tamanho_mm": [
+    431.5,
+    622.9
+   ],
+   "beirada_escuro": 0.07166,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 3.11,
+    "topo": 26.16,
+    "pe": 23.05
+   },
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 2.81,
+    "dir": 2.5,
+    "topo": 47.14,
+    "pe": 87.11
+   },
+   "cunha_branca": 0.00117
+  }
+ },
+ "antiphon_p260__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    463.6,
+    590.2
+   ],
+   "beirada_escuro": 0.03203,
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00444
+  },
+  "b": {
+   "recorte": [
+    0.0017,
+    0.0,
+    0.9983,
+    1.0
+   ],
+   "tamanho_mm": [
+    462.8,
+    618.1
+   ],
+   "beirada_escuro": 0.07612,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 10.51,
+    "topo": 0.0,
+    "pe": 48.95
+   },
+   "tinta_perdida": 2e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 3.4,
+    "dir": 4.02,
+    "topo": 0.31,
+    "pe": 52.84
+   },
+   "cunha_branca": 0.00389
+  },
+  "bN": {
+   "recorte": [
+    0.0017,
+    0.0,
+    0.9983,
+    0.9563
+   ],
+   "tamanho_mm": [
+    462.8,
+    591.0
+   ],
+   "beirada_escuro": 0.03375,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 22.46
+   },
+   "tinta_perdida": 2e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 3.4,
+    "dir": 4.02,
+    "topo": 0.31,
+    "pe": 25.65
+   },
+   "cunha_branca": 0.00305
+  }
+ },
+ "antiphonal1547_p006__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    64.8,
+    105.2
+   ],
+   "beirada_escuro": 0.00286,
+   "tinta_perdida": 0.0,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00113
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0,
+    0.8877,
+    0.9968
+   ],
+   "tamanho_mm": [
+    64.9,
+    105.5
+   ],
+   "beirada_escuro": 0.00643,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 1.05
+   },
+   "tinta_perdida": 1e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 7.62,
+    "dir": 1.27,
+    "topo": 4.57,
+    "pe": 13.38
+   },
+   "cunha_branca": 0.00063
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0,
+    0.8877,
+    0.9968
+   ],
+   "tamanho_mm": [
+    64.9,
+    105.5
+   ],
+   "beirada_escuro": 0.00643,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 1.05
+   },
+   "tinta_perdida": 1e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 7.62,
+    "dir": 1.27,
+    "topo": 4.57,
+    "pe": 13.38
+   },
+   "cunha_branca": 0.00063
+  }
+ },
+ "antiphonal1547_p046__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    63.4,
+    87.6
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.0008,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "cunha_branca": 0.01343
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0,
+    0.889,
+    0.8635
+   ],
+   "tamanho_mm": [
+    62.7,
+    91.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00073,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 1.1,
+    "dir": 1.1,
+    "topo": 5.25,
+    "pe": 1.1
+   },
+   "cunha_branca": 0.00602
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0,
+    0.889,
+    0.8635
+   ],
+   "tamanho_mm": [
+    62.7,
+    91.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00073,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 1.1,
+    "dir": 1.1,
+    "topo": 5.25,
+    "pe": 1.1
+   },
+   "cunha_branca": 0.00602
+  }
+ },
+ "antiphonal1547_p076__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    63.8,
+    96.0
+   ],
+   "beirada_escuro": 0.0036,
+   "tinta_perdida": 0.00049,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "cunha_branca": 0.00232
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.012,
+    0.8765,
+    0.9078
+   ],
+   "tamanho_mm": [
+    64.0,
+    96.0
+   ],
+   "beirada_escuro": 0.00581,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.96,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0005,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 0.59,
+    "dir": 1.19,
+    "topo": 5.67,
+    "pe": 1.19
+   },
+   "cunha_branca": 0.00069
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.012,
+    0.8765,
+    0.9078
+   ],
+   "tamanho_mm": [
+    64.0,
+    96.0
+   ],
+   "beirada_escuro": 0.00581,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.96,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0005,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 0.59,
+    "dir": 1.19,
+    "topo": 5.67,
+    "pe": 1.19
+   },
+   "cunha_branca": 0.00069
+  }
+ },
+ "antiphonal1547_p192__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    73.7,
+    88.1
+   ],
+   "beirada_escuro": 0.00015,
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "cunha_branca": 0.00158
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    0.8398
+   ],
+   "tamanho_mm": [
+    73.7,
+    88.8
+   ],
+   "beirada_escuro": 0.00018,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00019,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.34,
+    "dir": 1.27,
+    "topo": 1.95,
+    "pe": 1.1
+   },
+   "cunha_branca": 0.00132
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    0.8398
+   ],
+   "tamanho_mm": [
+    73.7,
+    88.8
+   ],
+   "beirada_escuro": 0.00018,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00019,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.34,
+    "dir": 1.27,
+    "topo": 1.95,
+    "pe": 1.1
+   },
+   "cunha_branca": 0.00132
+  }
+ },
+ "antiphonal1547_p252__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    65.4,
+    95.6
+   ],
+   "beirada_escuro": 0.0031,
+   "tinta_perdida": 0.00045,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "cunha_branca": 0.0092
+  },
+  "b": {
+   "recorte": [
+    0.1108,
+    0.0,
+    0.8892,
+    0.9435
+   ],
+   "tamanho_mm": [
+    65.0,
+    99.8
+   ],
+   "beirada_escuro": 0.00353,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 1.2,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 6.01,
+    "topo": 1.02,
+    "pe": 7.54
+   },
+   "cunha_branca": 0.00465
+  },
+  "bN": {
+   "recorte": [
+    0.1108,
+    0.0,
+    0.8892,
+    0.9373
+   ],
+   "tamanho_mm": [
+    65.0,
+    99.1
+   ],
+   "beirada_escuro": 0.00371,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 1.19,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 6.01,
+    "topo": 1.02,
+    "pe": 6.86
+   },
+   "cunha_branca": 0.0046
+  }
+ },
+ "boecio_p003__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    87.8,
+    123.2
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00052,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "cunha_branca": 0.00682
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0148,
+    1.0,
+    0.9852
+   ],
+   "tamanho_mm": [
+    87.8,
+    128.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00053,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.93,
+    "topo": 0.59,
+    "pe": 6.86
+   },
+   "cunha_branca": 0.00581
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0148,
+    1.0,
+    0.9852
+   ],
+   "tamanho_mm": [
+    87.8,
+    128.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00053,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.93,
+    "topo": 0.59,
+    "pe": 6.86
+   },
+   "cunha_branca": 0.00581
+  }
+ },
+ "boecio_p008__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    87.5,
+    122.9
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00057,
+   "pecas_partidas": 3,
+   "pecas_fora": 1,
+   "cunha_branca": 0.01017
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.015,
+    1.0,
+    0.9565
+   ],
+   "tamanho_mm": [
+    87.5,
+    123.7
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00072,
+   "pecas_partidas": 2,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 1.02,
+    "pe": 2.71
+   },
+   "cunha_branca": 0.00683
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.015,
+    1.0,
+    0.9565
+   ],
+   "tamanho_mm": [
+    87.5,
+    123.7
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00072,
+   "pecas_partidas": 2,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 1.02,
+    "pe": 2.71
+   },
+   "cunha_branca": 0.00683
+  }
+ },
+ "boecio_p022__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    82.7,
+    117.9
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.0013,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "cunha_branca": 0.00161
+  },
+  "b": {
+   "recorte": [
+    0.0656,
+    0.0171,
+    0.926,
+    0.9495
+   ],
+   "tamanho_mm": [
+    82.9,
+    121.5
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 9e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.19,
+    "topo": 1.19,
+    "pe": 1.02
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0656,
+    0.0171,
+    0.926,
+    0.9495
+   ],
+   "tamanho_mm": [
+    82.9,
+    121.5
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 9e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.19,
+    "topo": 1.19,
+    "pe": 1.02
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "camoes_p006__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    92.4,
+    130.1
+   ],
+   "beirada_escuro": 0.00981,
+   "tinta_perdida": 1e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00457
+  },
+  "b": {
+   "recorte": [
+    0.0082,
+    0.0083,
+    0.9918,
+    0.9865
+   ],
+   "tamanho_mm": [
+    92.4,
+    130.3
+   ],
+   "beirada_escuro": 0.01895,
+   "lados_mm": {
+    "esq": 2.61,
+    "dir": 0.0,
+    "topo": 1.3,
+    "pe": 2.08
+   },
+   "tinta_perdida": 4e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.78,
+    "dir": 0.34,
+    "topo": 3.05,
+    "pe": 7.87
+   },
+   "cunha_branca": 0.00152
+  },
+  "bN": {
+   "recorte": [
+    0.0082,
+    0.0083,
+    0.9918,
+    0.9865
+   ],
+   "tamanho_mm": [
+    92.4,
+    130.3
+   ],
+   "beirada_escuro": 0.01895,
+   "lados_mm": {
+    "esq": 2.61,
+    "dir": 0.0,
+    "topo": 1.3,
+    "pe": 2.08
+   },
+   "tinta_perdida": 4e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.78,
+    "dir": 0.34,
+    "topo": 3.05,
+    "pe": 7.87
+   },
+   "cunha_branca": 0.00152
+  }
+ },
+ "camoes_p009__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    94.5,
+    131.1
+   ],
+   "beirada_escuro": 0.02726,
+   "tinta_perdida": 5e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.0034
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0109,
+    0.9911,
+    0.9866
+   ],
+   "tamanho_mm": [
+    94.5,
+    130.6
+   ],
+   "beirada_escuro": 0.0302,
+   "lados_mm": {
+    "esq": 3.4,
+    "dir": 0.78,
+    "topo": 1.18,
+    "pe": 1.7
+   },
+   "tinta_perdida": 6e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 3.3,
+    "dir": 2.96,
+    "topo": 16.0,
+    "pe": 2.12
+   },
+   "cunha_branca": 0.00113
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0109,
+    0.9911,
+    0.9866
+   ],
+   "tamanho_mm": [
+    94.5,
+    130.6
+   ],
+   "beirada_escuro": 0.0302,
+   "lados_mm": {
+    "esq": 3.4,
+    "dir": 0.78,
+    "topo": 1.18,
+    "pe": 1.7
+   },
+   "tinta_perdida": 6e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 3.3,
+    "dir": 2.96,
+    "topo": 16.0,
+    "pe": 2.12
+   },
+   "cunha_branca": 0.00113
+  }
+ },
+ "camoes_p066__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    91.0,
+    131.1
+   ],
+   "beirada_escuro": 0.00188,
+   "tinta_perdida": 0.00119,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "cunha_branca": 0.01306
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0107,
+    1.0,
+    0.9728
+   ],
+   "tamanho_mm": [
+    91.9,
+    130.3
+   ],
+   "beirada_escuro": 0.00904,
+   "lados_mm": {
+    "esq": 1.43,
+    "dir": 0.0,
+    "topo": 0.91,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00039,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.68,
+    "dir": 3.89,
+    "topo": 10.58,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00874
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0133,
+    1.0,
+    0.9703
+   ],
+   "tamanho_mm": [
+    91.9,
+    130.0
+   ],
+   "beirada_escuro": 0.00848,
+   "lados_mm": {
+    "esq": 1.56,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00039,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.68,
+    "dir": 3.89,
+    "topo": 10.24,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00872
+  }
+ },
+ "camoes_p104__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    93.4,
+    132.0
+   ],
+   "beirada_escuro": 0.0053,
+   "tinta_perdida": 8e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00458
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.007,
+    0.9912,
+    0.9793
+   ],
+   "tamanho_mm": [
+    94.8,
+    130.6
+   ],
+   "beirada_escuro": 0.02736,
+   "lados_mm": {
+    "esq": 2.09,
+    "dir": 0.78,
+    "topo": 1.31,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 2.88,
+    "dir": 0.85,
+    "topo": 1.95,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00152
+  },
+  "bN": {
+   "recorte": [
+    0.0168,
+    0.007,
+    0.9743,
+    0.9793
+   ],
+   "tamanho_mm": [
+    93.2,
+    130.6
+   ],
+   "beirada_escuro": 0.00851,
+   "lados_mm": {
+    "esq": 0.78,
+    "dir": 0.78,
+    "topo": 1.18,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.27,
+    "dir": 0.85,
+    "topo": 1.95,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "cursus_p003__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    201.0,
+    267.8
+   ],
+   "beirada_escuro": 0.00484,
+   "tinta_perdida": 0.00117,
+   "pecas_partidas": 5,
+   "pecas_fora": 12,
+   "cunha_branca": 0.00616
+  },
+  "b": {
+   "recorte": [
+    0.0189,
+    0.0,
+    0.9811,
+    1.0
+   ],
+   "tamanho_mm": [
+    211.8,
+    279.4
+   ],
+   "beirada_escuro": 0.07436,
+   "lados_mm": {
+    "esq": 3.07,
+    "dir": 16.48,
+    "topo": 0.0,
+    "pe": 5.76
+   },
+   "tinta_perdida": 0.00034,
+   "pecas_partidas": 2,
+   "pecas_fora": 3,
+   "folga_mm": {
+    "esq": 1.26,
+    "dir": 14.67,
+    "topo": 3.07,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00418
+  },
+  "bN": {
+   "recorte": [
+    0.0189,
+    0.0062,
+    0.916,
+    0.9938
+   ],
+   "tamanho_mm": [
+    197.8,
+    277.7
+   ],
+   "beirada_escuro": 0.00985,
+   "lados_mm": {
+    "esq": 3.05,
+    "dir": 3.61,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00034,
+   "pecas_partidas": 2,
+   "pecas_fora": 3,
+   "folga_mm": {
+    "esq": 1.26,
+    "dir": 0.56,
+    "topo": 1.4,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00116
+  }
+ },
+ "egenloff_p003__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    346.0,
+    453.6
+   ],
+   "beirada_escuro": 0.03233,
+   "tinta_perdida": 0.00256,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "cunha_branca": 0.01376
+  },
+  "b": {
+   "recorte": [
+    0.0209,
+    0.0,
+    0.9597,
+    1.0
+   ],
+   "tamanho_mm": [
+    338.6,
+    454.1
+   ],
+   "beirada_escuro": 0.0197,
+   "lados_mm": {
+    "esq": 5.45,
+    "dir": 2.72,
+    "topo": 2.72,
+    "pe": 7.27
+   },
+   "tinta_perdida": 0.00292,
+   "pecas_partidas": 2,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 4.09,
+    "topo": 12.03,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00489
+  },
+  "bN": {
+   "recorte": [
+    0.0209,
+    0.0,
+    0.9597,
+    0.9988
+   ],
+   "tamanho_mm": [
+    338.6,
+    453.5
+   ],
+   "beirada_escuro": 0.01973,
+   "lados_mm": {
+    "esq": 5.44,
+    "dir": 2.72,
+    "topo": 2.72,
+    "pe": 7.71
+   },
+   "tinta_perdida": 0.00346,
+   "pecas_partidas": 2,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 4.09,
+    "topo": 12.03,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00402
+  }
+ },
+ "escola_p007__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    165.4,
+    264.1
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00123,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "cunha_branca": 0.00113
+  },
+  "b": {
+   "recorte": [
+    0.0322,
+    0.0725,
+    0.9154,
+    0.9275
+   ],
+   "tamanho_mm": [
+    165.1,
+    246.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.01806,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.19,
+    "topo": 1.33,
+    "pe": 1.33
+   },
+   "cunha_branca": 0.00013
+  },
+  "bN": {
+   "recorte": [
+    0.0322,
+    0.0725,
+    0.9154,
+    0.9275
+   ],
+   "tamanho_mm": [
+    165.1,
+    246.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.01806,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 1.19,
+    "topo": 1.33,
+    "pe": 1.33
+   },
+   "cunha_branca": 0.00013
+  }
+ },
+ "escola_p035__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    165.7,
+    251.7
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00015,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00759
+  },
+  "b": {
+   "recorte": [
+    0.0545,
+    0.0537,
+    0.8512,
+    0.9425
+   ],
+   "tamanho_mm": [
+    164.0,
+    251.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 6e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.07,
+    "dir": 0.93,
+    "topo": 1.33,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0545,
+    0.0537,
+    0.8512,
+    0.9425
+   ],
+   "tamanho_mm": [
+    164.0,
+    251.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 6e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.07,
+    "dir": 0.93,
+    "topo": 1.33,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "escola_p197__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    159.6,
+    243.2
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00034,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "cunha_branca": 0.00469
+  },
+  "b": {
+   "recorte": [
+    0.0721,
+    0.0762,
+    0.8211,
+    0.9237
+   ],
+   "tamanho_mm": [
+    155.3,
+    242.9
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00276,
+   "pecas_partidas": 0,
+   "pecas_fora": 4,
+   "folga_mm": {
+    "esq": 1.18,
+    "dir": 1.18,
+    "topo": 1.31,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00061
+  },
+  "bN": {
+   "recorte": [
+    0.0721,
+    0.0762,
+    0.8211,
+    0.9237
+   ],
+   "tamanho_mm": [
+    155.3,
+    242.9
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00276,
+   "pecas_partidas": 0,
+   "pecas_fora": 4,
+   "folga_mm": {
+    "esq": 1.18,
+    "dir": 1.18,
+    "topo": 1.31,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00061
+  }
+ },
+ "graduale_p221__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    331.1,
+    451.7
+   ],
+   "beirada_escuro": 0.00019,
+   "tinta_perdida": 0.002,
+   "pecas_partidas": 1,
+   "pecas_fora": 6,
+   "cunha_branca": 0.00675
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0225,
+    0.9947,
+    0.9713
+   ],
+   "tamanho_mm": [
+    337.1,
+    463.0
+   ],
+   "beirada_escuro": 0.00021,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00027,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 3.34,
+    "dir": 1.67,
+    "topo": 2.62,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00256
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0225,
+    0.9947,
+    0.9713
+   ],
+   "tamanho_mm": [
+    337.1,
+    463.0
+   ],
+   "beirada_escuro": 0.00021,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00027,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 3.34,
+    "dir": 1.67,
+    "topo": 2.62,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.00256
+  }
+ },
+ "graduale_p222__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    272.1,
+    445.7
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "cunha_branca": 0.00846
+  },
+  "b": {
+   "recorte": [
+    0.2073,
+    0.02,
+    0.7836,
+    0.9463
+   ],
+   "tamanho_mm": [
+    265.5,
+    466.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00022,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 8.37,
+    "topo": 21.67,
+    "pe": 2.46
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.2073,
+    0.02,
+    0.7836,
+    0.9463
+   ],
+   "tamanho_mm": [
+    265.5,
+    466.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00022,
+   "pecas_partidas": 0,
+   "pecas_fora": 2,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 8.37,
+    "topo": 21.67,
+    "pe": 2.46
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "graduale_p223__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    334.7,
+    445.2
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "cunha_branca": 0.0067
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0175,
+    0.9947,
+    0.9688
+   ],
+   "tamanho_mm": [
+    337.1,
+    461.9
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 2e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 2.38,
+    "dir": 4.29,
+    "topo": 2.62,
+    "pe": 26.22
+   },
+   "cunha_branca": 0.00251
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0175,
+    0.9947,
+    0.9688
+   ],
+   "tamanho_mm": [
+    337.1,
+    461.9
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 2e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 2.38,
+    "dir": 4.29,
+    "topo": 2.62,
+    "pe": 26.22
+   },
+   "cunha_branca": 0.00251
+  }
+ },
+ "graduale_p269__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    337.7,
+    476.8
+   ],
+   "beirada_escuro": 0.00178,
+   "tinta_perdida": 0.00016,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00909
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0013,
+    0.9965,
+    0.9988
+   ],
+   "tamanho_mm": [
+    337.7,
+    476.2
+   ],
+   "beirada_escuro": 0.00406,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 6.19
+   },
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 28.61,
+    "topo": 26.7,
+    "pe": 2.15
+   },
+   "cunha_branca": 0.00689
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0013,
+    0.9965,
+    0.9988
+   ],
+   "tamanho_mm": [
+    337.7,
+    476.2
+   ],
+   "beirada_escuro": 0.00406,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 6.19
+   },
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 28.61,
+    "topo": 26.7,
+    "pe": 2.15
+   },
+   "cunha_branca": 0.00689
+  }
+ },
+ "graduale_p588__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    306.2,
+    450.6
+   ],
+   "beirada_escuro": 0.00012,
+   "tinta_perdida": 0.00243,
+   "pecas_partidas": 3,
+   "pecas_fora": 1,
+   "cunha_branca": 0.00977
+  },
+  "b": {
+   "recorte": [
+    0.0782,
+    0.0175,
+    0.92,
+    0.9587
+   ],
+   "tamanho_mm": [
+    311.7,
+    472.2
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00118,
+   "pecas_partidas": 1,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 15.27,
+    "topo": 21.67,
+    "pe": 3.2
+   },
+   "cunha_branca": 0.00212
+  },
+  "bN": {
+   "recorte": [
+    0.0782,
+    0.0175,
+    0.92,
+    0.9587
+   ],
+   "tamanho_mm": [
+    311.7,
+    472.2
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00118,
+   "pecas_partidas": 1,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 0.0,
+    "dir": 15.27,
+    "topo": 21.67,
+    "pe": 3.2
+   },
+   "cunha_branca": 0.00212
+  }
+ },
+ "horas_p011__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    313.0,
+    476.9
+   ],
+   "beirada_escuro": 0.04769,
+   "tinta_perdida": 0.00067,
+   "pecas_partidas": 0,
+   "pecas_fora": 13,
+   "cunha_branca": 0.00586
+  },
+  "b": {
+   "recorte": [
+    0.0071,
+    0.0075,
+    0.8604,
+    0.935
+   ],
+   "tamanho_mm": [
+    310.8,
+    476.9
+   ],
+   "beirada_escuro": 0.08246,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 68.82,
+    "topo": 37.68,
+    "pe": 112.79
+   },
+   "tinta_perdida": 0.00067,
+   "pecas_partidas": 0,
+   "pecas_fora": 13,
+   "folga_mm": {
+    "esq": 0.26,
+    "dir": 1.28,
+    "topo": 2.55,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0071,
+    0.0075,
+    0.8604,
+    0.935
+   ],
+   "tamanho_mm": [
+    310.8,
+    476.9
+   ],
+   "beirada_escuro": 0.08246,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 68.82,
+    "topo": 37.68,
+    "pe": 112.79
+   },
+   "tinta_perdida": 0.00067,
+   "pecas_partidas": 0,
+   "pecas_fora": 13,
+   "folga_mm": {
+    "esq": 0.26,
+    "dir": 1.28,
+    "topo": 2.55,
+    "pe": 0.0
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "horas_p013__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    351.7,
+    491.5
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00085,
+   "pecas_partidas": 1,
+   "pecas_fora": 2,
+   "cunha_branca": 0.00568
+  },
+  "b": {
+   "recorte": [
+    0.0071,
+    0.0163,
+    0.9716,
+    0.9775
+   ],
+   "tamanho_mm": [
+    351.0,
+    501.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.03,
+    "dir": 0.77,
+    "topo": 0.0,
+    "pe": 4.61
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0071,
+    0.0163,
+    0.9716,
+    0.9775
+   ],
+   "tamanho_mm": [
+    351.0,
+    501.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.03,
+    "dir": 0.77,
+    "topo": 0.0,
+    "pe": 4.61
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "marial_p007__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    245.3,
+    330.6
+   ],
+   "beirada_escuro": 0.0006,
+   "tinta_perdida": 0.00036,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.0106
+  },
+  "b": {
+   "recorte": [
+    0.0164,
+    0.0,
+    0.9737,
+    1.0
+   ],
+   "tamanho_mm": [
+    245.3,
+    330.6
+   ],
+   "beirada_escuro": 0.00056,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00027,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.99,
+    "dir": 1.32,
+    "topo": 1.32,
+    "pe": 6.78
+   },
+   "cunha_branca": 0.0039
+  },
+  "bN": {
+   "recorte": [
+    0.0164,
+    0.0,
+    0.9737,
+    1.0
+   ],
+   "tamanho_mm": [
+    245.3,
+    330.6
+   ],
+   "beirada_escuro": 0.00056,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00027,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.99,
+    "dir": 1.32,
+    "topo": 1.32,
+    "pe": 6.78
+   },
+   "cunha_branca": 0.0039
+  }
+ },
+ "matematica_p032__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    165.3,
+    296.8
+   ],
+   "beirada_escuro": 0.18447,
+   "tinta_perdida": 7e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00756
+  },
+  "b": {
+   "recorte": [
+    0.005,
+    0.0225,
+    0.995,
+    0.9775
+   ],
+   "tamanho_mm": [
+    209.0,
+    290.2
+   ],
+   "beirada_escuro": 0.31511,
+   "lados_mm": {
+    "esq": 103.87,
+    "dir": 104.45,
+    "topo": 145.08,
+    "pe": 143.92
+   },
+   "tinta_perdida": 8e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 6.38,
+    "dir": 50.89,
+    "topo": 2.37,
+    "pe": 62.02
+   },
+   "cunha_branca": 0.00397
+  },
+  "bN": {
+   "recorte": [
+    0.0298,
+    0.0225,
+    0.7932,
+    0.9775
+   ],
+   "tamanho_mm": [
+    166.6,
+    290.2
+   ],
+   "beirada_escuro": 0.16814,
+   "lados_mm": {
+    "esq": 83.27,
+    "dir": 83.27,
+    "topo": 1.74,
+    "pe": 47.88
+   },
+   "tinta_perdida": 8e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.19,
+    "dir": 13.65,
+    "topo": 2.37,
+    "pe": 62.02
+   },
+   "cunha_branca": 0.0006
+  }
+ },
+ "matematica_p072__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    210.0,
+    296.8
+   ],
+   "beirada_escuro": 0.32321,
+   "tinta_perdida": 0.00011,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.0057
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0062,
+    1.0,
+    0.9938
+   ],
+   "tamanho_mm": [
+    210.0,
+    295.0
+   ],
+   "beirada_escuro": 0.3202,
+   "lados_mm": {
+    "esq": 104.72,
+    "dir": 103.54,
+    "topo": 147.49,
+    "pe": 147.49
+   },
+   "tinta_perdida": 0.00011,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 5.49,
+    "dir": 51.19,
+    "topo": 9.2,
+    "pe": 11.28
+   },
+   "cunha_branca": 0.00474
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0062,
+    1.0,
+    0.9938
+   ],
+   "tamanho_mm": [
+    210.0,
+    295.0
+   ],
+   "beirada_escuro": 0.3202,
+   "lados_mm": {
+    "esq": 104.72,
+    "dir": 103.54,
+    "topo": 147.49,
+    "pe": 147.49
+   },
+   "tinta_perdida": 0.00011,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 5.49,
+    "dir": 51.19,
+    "topo": 9.2,
+    "pe": 11.28
+   },
+   "cunha_branca": 0.00474
+  }
+ },
+ "opusmajus_p011__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    107.3,
+    178.8
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 1e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00239
+  },
+  "b": {
+   "recorte": [
+    0.1087,
+    0.1187,
+    0.7363,
+    0.7612
+   ],
+   "tamanho_mm": [
+    107.5,
+    178.8
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.29,
+    "dir": 1.17,
+    "topo": 1.29,
+    "pe": 1.17
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.1087,
+    0.1187,
+    0.7363,
+    0.7612
+   ],
+   "tamanho_mm": [
+    107.5,
+    178.8
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.29,
+    "dir": 1.17,
+    "topo": 1.29,
+    "pe": 1.17
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "opusmajus_p020__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    101.9,
+    173.6
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.0,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00308
+  },
+  "b": {
+   "recorte": [
+    0.172,
+    0.0899,
+    0.7298,
+    0.7552
+   ],
+   "tamanho_mm": [
+    102.5,
+    173.6
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.26,
+    "dir": 1.03,
+    "topo": 1.15,
+    "pe": 0.92
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.172,
+    0.0899,
+    0.7298,
+    0.7552
+   ],
+   "tamanho_mm": [
+    102.5,
+    173.6
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.26,
+    "dir": 1.03,
+    "topo": 1.15,
+    "pe": 0.92
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "opusmajus_p165__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    107.4,
+    190.0
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 4e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00309
+  },
+  "b": {
+   "recorte": [
+    0.0515,
+    0.0561,
+    0.7831,
+    0.8365
+   ],
+   "tamanho_mm": [
+    107.4,
+    190.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 4e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.14,
+    "dir": 1.14,
+    "topo": 1.36,
+    "pe": 1.14
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0515,
+    0.0561,
+    0.7831,
+    0.8365
+   ],
+   "tamanho_mm": [
+    107.4,
+    190.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 4e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.14,
+    "dir": 1.14,
+    "topo": 1.36,
+    "pe": 1.14
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "opusmajus_p256__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    194.6,
+    146.7
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.0,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00158
+  },
+  "b": {
+   "recorte": [
+    0.0608,
+    0.0808,
+    0.9322,
+    0.8317
+   ],
+   "tamanho_mm": [
+    194.3,
+    146.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 2e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.15,
+    "dir": 1.67,
+    "topo": 1.15,
+    "pe": 1.15
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0608,
+    0.0808,
+    0.9322,
+    0.8317
+   ],
+   "tamanho_mm": [
+    194.3,
+    146.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 2e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.15,
+    "dir": 1.67,
+    "topo": 1.15,
+    "pe": 1.15
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "palatino_p005__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    99.6,
+    175.5
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00047,
+   "pecas_partidas": 0,
+   "pecas_fora": 4,
+   "cunha_branca": 0.00503
+  },
+  "b": {
+   "recorte": [
+    0.0649,
+    0.0337,
+    0.813,
+    0.9375
+   ],
+   "tamanho_mm": [
+    99.7,
+    175.3
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00049,
+   "pecas_partidas": 0,
+   "pecas_fora": 4,
+   "folga_mm": {
+    "esq": 1.22,
+    "dir": 1.22,
+    "topo": 1.22,
+    "pe": 1.03
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0649,
+    0.0337,
+    0.813,
+    0.9375
+   ],
+   "tamanho_mm": [
+    99.7,
+    175.3
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00049,
+   "pecas_partidas": 0,
+   "pecas_fora": 4,
+   "folga_mm": {
+    "esq": 1.22,
+    "dir": 1.22,
+    "topo": 1.22,
+    "pe": 1.03
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "palatino_p010__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    111.3,
+    152.7
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00052,
+   "pecas_partidas": 0,
+   "pecas_fora": 5,
+   "cunha_branca": 0.00102
+  },
+  "b": {
+   "recorte": [
+    0.0458,
+    0.0162,
+    0.9103,
+    0.815
+   ],
+   "tamanho_mm": [
+    111.5,
+    152.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00052,
+   "pecas_partidas": 0,
+   "pecas_fora": 5,
+   "folga_mm": {
+    "esq": 1.12,
+    "dir": 1.12,
+    "topo": 0.84,
+    "pe": 1.03
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0458,
+    0.0162,
+    0.9103,
+    0.815
+   ],
+   "tamanho_mm": [
+    111.5,
+    152.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00052,
+   "pecas_partidas": 0,
+   "pecas_fora": 5,
+   "folga_mm": {
+    "esq": 1.12,
+    "dir": 1.12,
+    "topo": 0.84,
+    "pe": 1.03
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "palatino_p104__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    107.8,
+    177.1
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00015,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "cunha_branca": 0.00482
+  },
+  "b": {
+   "recorte": [
+    0.0782,
+    0.0062,
+    0.8702,
+    0.9488
+   ],
+   "tamanho_mm": [
+    106.6,
+    177.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00019,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 1.68,
+    "dir": 1.03,
+    "topo": 1.31,
+    "pe": 1.22
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0782,
+    0.0062,
+    0.8702,
+    0.9488
+   ],
+   "tamanho_mm": [
+    106.6,
+    177.4
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00019,
+   "pecas_partidas": 0,
+   "pecas_fora": 1,
+   "folga_mm": {
+    "esq": 1.68,
+    "dir": 1.03,
+    "topo": 1.31,
+    "pe": 1.22
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "palatino_p113__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    106.1,
+    154.0
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 9e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00688
+  },
+  "b": {
+   "recorte": [
+    0.0267,
+    0.035,
+    0.8702,
+    0.8188
+   ],
+   "tamanho_mm": [
+    106.6,
+    153.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0001,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.22,
+    "dir": 1.12,
+    "topo": 1.31,
+    "pe": 0.56
+   },
+   "cunha_branca": 0.0
+  },
+  "bN": {
+   "recorte": [
+    0.0267,
+    0.035,
+    0.8702,
+    0.8188
+   ],
+   "tamanho_mm": [
+    106.6,
+    153.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0001,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 1.22,
+    "dir": 1.12,
+    "topo": 1.31,
+    "pe": 0.56
+   },
+   "cunha_branca": 0.0
+  }
+ },
+ "pesel_p021__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    157.1,
+    240.6
+   ],
+   "beirada_escuro": 0.47301,
+   "tinta_perdida": 0.00034,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.01846
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "tamanho_mm": [
+    157.1,
+    240.6
+   ],
+   "beirada_escuro": 0.47301,
+   "lados_mm": {
+    "esq": 78.44,
+    "dir": 76.28,
+    "topo": 117.91,
+    "pe": 120.31
+   },
+   "tinta_perdida": 0.00034,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 22.98,
+    "dir": 40.67,
+    "topo": 32.36,
+    "pe": 62.2
+   },
+   "cunha_branca": 0.01846
+  },
+  "bN": {
+   "recorte": [
+    0.0706,
+    0.0112,
+    0.9215,
+    0.8561
+   ],
+   "tamanho_mm": [
+    144.7,
+    206.1
+   ],
+   "beirada_escuro": 0.35426,
+   "lados_mm": {
+    "esq": 72.33,
+    "dir": 71.3,
+    "topo": 103.04,
+    "pe": 103.04
+   },
+   "tinta_perdida": 0.00034,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 11.91,
+    "dir": 39.34,
+    "topo": 29.72,
+    "pe": 30.2
+   },
+   "cunha_branca": 0.00121
+  }
+ },
+ "rariora_p008__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    121.0,
+    209.0
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00012,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00866
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "tamanho_mm": [
+    121.0,
+    209.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00012,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 12.43,
+    "dir": 6.27,
+    "topo": 38.76,
+    "pe": 19.54
+   },
+   "cunha_branca": 0.00866
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    1.0
+   ],
+   "tamanho_mm": [
+    121.0,
+    209.0
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00012,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 12.43,
+    "dir": 6.27,
+    "topo": 38.76,
+    "pe": 19.54
+   },
+   "cunha_branca": 0.00866
+  }
+ },
+ "rariora_p155__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    133.3,
+    148.3
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.00037,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.01018
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.2332,
+    0.9871,
+    0.5348
+   ],
+   "tamanho_mm": [
+    133.3,
+    113.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00023,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.85,
+    "dir": 0.53,
+    "topo": 3.81,
+    "pe": 1.06
+   },
+   "cunha_branca": 0.00213
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.2332,
+    0.9871,
+    0.5348
+   ],
+   "tamanho_mm": [
+    133.3,
+    113.1
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.00023,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.85,
+    "dir": 0.53,
+    "topo": 3.81,
+    "pe": 1.06
+   },
+   "cunha_branca": 0.00213
+  }
+ },
+ "rariora_p365__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    120.1,
+    214.0
+   ],
+   "beirada_escuro": 0.0,
+   "tinta_perdida": 0.0,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00183
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0096,
+    0.9919,
+    0.9904
+   ],
+   "tamanho_mm": [
+    119.9,
+    213.2
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.86,
+    "dir": 1.72,
+    "topo": 0.0,
+    "pe": 0.43
+   },
+   "cunha_branca": 0.00091
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0096,
+    0.9919,
+    0.9904
+   ],
+   "tamanho_mm": [
+    119.9,
+    213.2
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 0.0002,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.86,
+    "dir": 1.72,
+    "topo": 0.0,
+    "pe": 0.43
+   },
+   "cunha_branca": 0.00091
+  }
+ },
+ "rhetorica_p073__inteira": {
+  "antiga_B": {
+   "tamanho_mm": [
+    136.4,
+    196.8
+   ],
+   "beirada_escuro": 0.00056,
+   "tinta_perdida": 0.00631,
+   "pecas_partidas": 1,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00228
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0373,
+    0.9159,
+    0.8867
+   ],
+   "tamanho_mm": [
+    136.7,
+    198.6
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.45,
+    "dir": 1.12,
+    "topo": 1.01,
+    "pe": 1.12
+   },
+   "cunha_branca": 0.00087
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0373,
+    0.9159,
+    0.8867
+   ],
+   "tamanho_mm": [
+    136.7,
+    198.6
+   ],
+   "beirada_escuro": 0.0,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 0.0,
+    "topo": 0.0,
+    "pe": 0.0
+   },
+   "tinta_perdida": 3e-05,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.45,
+    "dir": 1.12,
+    "topo": 1.01,
+    "pe": 1.12
+   },
+   "cunha_branca": 0.00087
+  }
+ },
+ "siebmacher_p009__direita": {
+  "antiga_B": {
+   "tamanho_mm": [
+    59.8,
+    106.2
+   ],
+   "beirada_escuro": 0.07648,
+   "tinta_perdida": 0.00011,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "cunha_branca": 0.00752
+  },
+  "b": {
+   "recorte": [
+    0.0,
+    0.0132,
+    1.0,
+    0.9673
+   ],
+   "tamanho_mm": [
+    59.8,
+    105.2
+   ],
+   "beirada_escuro": 0.06557,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 5.15,
+    "topo": 5.99,
+    "pe": 3.36
+   },
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 3.22,
+    "topo": 2.03,
+    "pe": 0.59
+   },
+   "cunha_branca": 0.0057
+  },
+  "bN": {
+   "recorte": [
+    0.0,
+    0.0132,
+    1.0,
+    0.9673
+   ],
+   "tamanho_mm": [
+    59.8,
+    105.2
+   ],
+   "beirada_escuro": 0.06557,
+   "lados_mm": {
+    "esq": 0.0,
+    "dir": 5.15,
+    "topo": 5.99,
+    "pe": 3.36
+   },
+   "tinta_perdida": 0.00013,
+   "pecas_partidas": 0,
+   "pecas_fora": 0,
+   "folga_mm": {
+    "esq": 0.42,
+    "dir": 3.22,
+    "topo": 2.03,
+    "pe": 0.59
+   },
+   "cunha_branca": 0.0057
+  }
+ }
+}

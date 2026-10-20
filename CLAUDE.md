@@ -214,11 +214,21 @@ Registro de mudanças do PLANO-DEFINITIVO (19/10).
 | **PC do Samuel** | **Medida de velocidade que vale** para a regra 6 (alternada, PC sem agentes) | **No fim de cada fase** |
 | **Notebook do Kaique** | Régua final de velocidade (item 0.6 / Fase 5) | Quando ele puder |
 
+**Exceção (Samuel, 20/10: "opção 1"):** trabalho que **só acrescenta
+documentos** (nenhuma linha do programa muda; no máximo um teste novo de um
+script de documentos) entra no `fase-1` só com a rodada do GitHub passando, sem
+a parada no PC. A parada no PC fica para quando o código do programa muda.
+
 Decisões: suíte "B: GitHub e meu PC"; velocidade "opção 2" (filtro no
 GitHub sempre, PC no fim de cada fase). Lentidão pequena achada no meio de uma
 fase (ex.: Mágico pro +1,1% do "Para revisar") vai para a Fase 5, como o Samuel
 mandou em 19/10: "vamos deixar esse concerto de lentidão para o final, para a
 fase de desempenho".
+
+**Filtro de velocidade (adotado em 20/10, validado contra o PC):**
+`gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f velocidade_ab=true -f ramo_antes=<ramo ou commit> -f ramo_depois=<ramo ou commit>`
+(~1h55; veredito no topo da rodada; não vê diferença abaixo de 2% nem abaixo do vai-e-vem;
+quando acusar "parece mais lento", disparar de novo uma vez antes de devolver ao agente).
 
 Rodar no GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao
 --ref claude/list-server-files-gkos8v -f ramo=<ramo>`; acompanhar com

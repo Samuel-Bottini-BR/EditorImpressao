@@ -57,6 +57,8 @@ GRUPOS = {
     # Recortes ampliados dos prints 19, para as três perguntas que o Samuel não entendeu (12/10).
     "20": (20, "Rodada 12: explicações refeitas, com a parte que muda ampliada"),
     "21": (21, "Rodada 13"),
+    "22": (22, "Rodada 14"),
+    "23": (23, "Rodada 14b: duas perguntas refeitas"),
     "tela": (-1, "O programa antigo"),
 }
 
