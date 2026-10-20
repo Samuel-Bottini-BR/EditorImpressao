@@ -147,6 +147,20 @@ class NaoEspreme(Bloco):
             self._acertar_o_minimo()
         return resposta
 
+    def acertar_tudo(self) -> None:
+        """Mede de novo esta caixa e todas as NaoEspreme de dentro, das mais
+        fundas para fora. Usado quando o conteúdo trocou enquanto o painel
+        estava fechado (escondido, o Qt não mede nada) ou trocou de
+        ferramenta: sem isto, na janela de verdade, os botões do Propriedades
+        de marcar saíam com 22 pontos de altura para 30 (texto cortado)."""
+        caixas = [c for c in self.findChildren(NaoEspreme) if c.isVisibleTo(self)]
+        caixas.sort(key=_profundidade, reverse=True)
+        for caixa in caixas + [self]:
+            if caixa.layout() is not None:
+                caixa.layout().invalidate()
+                caixa.layout().activate()
+            caixa._acertar_o_minimo()
+
     def _acertar_o_minimo(self) -> None:
         """Põe como altura mínima explícita a que as peças pedem agora. É o
         único mínimo que o Qt respeita em todo caso (a caixa de fora guarda
@@ -154,6 +168,15 @@ class NaoEspreme(Bloco):
         altura = self._altura_de_verdade(super().sizeHint().height())
         if self.minimumHeight() != altura:
             self.setMinimumHeight(altura)
+
+
+def _profundidade(widget) -> int:
+    """Quantos pais o widget tem (para medir das caixas mais fundas para fora)."""
+    n = 0
+    while widget is not None:
+        widget = widget.parentWidget()
+        n += 1
+    return n
 
 
 class _Envelope(NaoEspreme):
@@ -454,6 +477,17 @@ class Painel(QFrame):
         self.no_pe.setSpacing(6)
         self.pe.setVisible(False)
         camadas.addWidget(self.pe)
+
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Ao aparecer, mede de novo o corpo (ver NaoEspreme.acertar_tudo)."""
+        super().showEvent(evento)
+        self.medir_de_novo()
+
+    def medir_de_novo(self) -> None:
+        """Mede de novo o corpo logo depois que o Qt arrumar a tela (o
+        conteúdo pode ter mudado com o painel escondido)."""
+        if isinstance(self.corpo, NaoEspreme):
+            QTimer.singleShot(0, self.corpo.acertar_tudo)
 
     def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """O risco fino da esquerda, que separa o painel da página."""
@@ -1091,6 +1125,7 @@ class PainelPropriedades(Painel):
         for nome, widget in {**self._fixos, **self._da_tela}.items():
             widget.setVisible(nome == chave)
         self.cabecalho.definir_subtitulo(ferramenta)
+        self.medir_de_novo()
 
 
 # ---------------------------------------------------------------------------
@@ -1395,7 +1430,7 @@ class PainelFiltroDaPagina(Painel):
         self.dentro.addWidget(parte)
 
         # apagar: destrutivo, longe dos outros, depois de um risco
-        self._espaco = QWidget()
+        self._espaco = Bloco()          # Bloco: um QWidget puro pintaria uma faixa escura
         self._espaco.setFixedHeight(4)
         self.dentro.addWidget(self._espaco)
         self._risco = risco_do_painel()

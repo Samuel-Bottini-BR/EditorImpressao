@@ -109,7 +109,10 @@ class _Delegado(QStyledItemDelegate):
         return max(80, opcao.rect.width() - LADO_DA_AMOSTRA.width() - 3 * MARGEM)
 
     def sizeHint(self, opcao, indice) -> QSize:  # noqa: N802 - nome do Qt
-        largura = max(LARGURA_MINIMA_ABERTA, self.lista.width())
+        # a largura da lista aberta (posta em showPopup), menos a barra de
+        # rolagem que pode aparecer: a conta por outra largura dava menos
+        # linhas, e a frase passava por cima do item de baixo
+        largura = self.lista.largura_aberta() - 18
         texto = largura - LADO_DA_AMOSTRA.width() - 3 * MARGEM
         frase = self.lista.frase(indice.row())
         fonte = QFont(self.lista.font())
@@ -117,7 +120,7 @@ class _Delegado(QStyledItemDelegate):
         altura_frase = (QFontMetrics(fonte).boundingRect(QRect(0, 0, texto, 1000),
                                                         Qt.TextWordWrap, frase).height()
                         if frase else 0)
-        return QSize(largura, max(LADO_DA_AMOSTRA.height() + 2 * MARGEM, 22 + altura_frase + 2 * MARGEM))
+        return QSize(largura, max(LADO_DA_AMOSTRA.height() + 2 * MARGEM, 24 + altura_frase + 2 * MARGEM))
 
     def paint(self, pintor: QPainter, opcao, indice) -> None:
         pintor.save()
@@ -185,6 +188,10 @@ class ListaComAmostra(QComboBox):
         self._frases: dict[object, str] = {}
         self._de_fabrica: set = set()
         self.setItemDelegate(_Delegado(self))
+        # a lista aberta do QComboBox mede todos os itens pela altura do
+        # primeiro; aqui cada um tem a altura da frase dele
+        if hasattr(self.view(), "setUniformItemSizes"):
+            self.view().setUniformItemSizes(False)
         self.setCursor(Qt.PointingHandCursor)
         self.setFocusPolicy(Qt.NoFocus)          # o teclado continua da página
         self.setMinimumHeight(ALTURA_FECHADA)
@@ -210,9 +217,17 @@ class ListaComAmostra(QComboBox):
     def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
         return QSize(120, ALTURA_FECHADA)
 
+    def largura_aberta(self) -> int:
+        """A largura da lista aberta: a da lista fechada, e no mínimo
+        LARGURA_MINIMA_ABERTA (para a frase caber em poucas linhas)."""
+        return max(self.width(), LARGURA_MINIMA_ABERTA)
+
     def showPopup(self) -> None:  # noqa: N802 - nome do Qt
-        """A lista aberta fica pelo menos LARGURA_MINIMA_ABERTA de largura (a frase cabe)."""
-        self.view().setMinimumWidth(max(self.width(), LARGURA_MINIMA_ABERTA))
+        """Abre a lista na largura de largura_aberta, com a altura de cada
+        item medida nessa largura ANTES de abrir (o Qt calcula a altura da
+        janelinha com as medidas que já tem)."""
+        self.view().setMinimumWidth(self.largura_aberta())
+        self.view().doItemsLayout()
         super().showPopup()
 
     def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt

@@ -2610,6 +2610,7 @@ class TelaConferir(QWidget):
         # medir de novo nao custa nada)
         if estava_visivel != (not self.linha_pedaco.isHidden()):
             self._encolher_a_barra_de_botoes()
+            self.paineis.propriedades.medir_de_novo()
 
     @protegido
     def _ajustar_pedaco_a_figura(self) -> None:
