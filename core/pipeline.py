@@ -1715,6 +1715,10 @@ def acertar_alertas_do_fundo(projeto: Projeto,
         acertar_alertas_de_cor(projeto, [pagina])
         # e o C1 do endireitar sai onde nao vale mais (item 2.2)
         acertar_alerta_do_endireitar(projeto, pagina)
+        # e os dois avisos do corte pelo conteudo (item 2.5), idem
+        if not _corta_pelo_conteudo(projeto, pagina):
+            _anotar(pagina, analise.CORTE_DEIXOU_TINTA_FORA, False)
+            _anotar(pagina, analise.PAGINA_MUITO_MAIOR, False)
         if not usa_tirar_fundo(projeto, pagina):
             _anotar_conferir(pagina, False)
             continue

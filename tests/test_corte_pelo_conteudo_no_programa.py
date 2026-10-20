@@ -304,3 +304,13 @@ def test_pdf_de_verdade_paginas_do_mesmo_tamanho(tmp_path):
     assert com[3][1] > com[0][1] + 20
     sem = tamanhos[False]
     assert abs(sem[0][1] - sem[2][1]) > 20                  # desligado: tamanhos diferentes
+
+
+def test_faxina_dos_avisos_tira_os_do_corte_pelo_conteudo(tmp_path, monkeypatch):
+    """acertar_alertas_do_fundo (que a tela chama ao abrir e a cada
+    atualização) tira os avisos do 2.5 das páginas onde não valem mais."""
+    caminho, projeto = _livro_medido(tmp_path, monkeypatch, BLOCOS)
+    _corte(projeto, caminho, 3)
+    projeto.paginas[3].recorte = (0.0, 0.0, 1.0, 1.0)            # virou corte à mão
+    pipeline.acertar_alertas_do_fundo(projeto)
+    assert analise.PAGINA_MUITO_MAIOR not in projeto.paginas[3].alertas
