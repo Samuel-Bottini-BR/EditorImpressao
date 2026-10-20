@@ -250,7 +250,7 @@ E o começo do "Vamos recapitular": "Um selecionador de gravuras / Um selecionad
 
 **Páginas.** Original: "TESTE 1 (Boécio)". Valem: `boecio_p003`, `boecio_p007`, `boecio_p008`, `boecio_p022` (`lista.json`, item `fase3`; `para_que`: p. 3 "o marcador não separa direito letra e gravura (item 2 do TESTE 1)"; p. 7 "a margem não aumenta para o lado direito; ver a parte de cima do papel (itens 3 e 4)"; p. 8 "letras perdendo qualidade no preto e branco (item 5)"; p. 22 "quantos cm vão para cada lado da borda (item 1) e marcador que não seleciona exatamente as letras (item 2)").
 
-**Itens do plano:** Fase 3, [3.1](itens/3.1.md) a [3.9](itens/3.9.md) ("Seleção manual no nível do Photoshop"); [1.2](itens/1.2.md), [1.3](itens/1.3.md), [1.5](itens/1.5.md); [2.18](itens/2.18.md) (edição manual das zonas); item 1 do TESTE 1 → aba Bordas ("medidas em cm enquanto arrasta", a aperfeiçoar na Fase 2) e [2.19](itens/2.19.md); item 3 → [2.4](itens/2.4.md); item 4 → [layout](layout.md); item 5 → [2.8](itens/2.8.md).
+**Itens do plano:** Fase 3, [3.1](itens/3.1.md) a [3.9](itens/3.9.md) ("Seleção manual no nível do Photoshop"); [1.2](itens/1.2.md), [1.3](itens/1.3.md), [1.5](itens/1.5.md); [2.18](itens/2.18.md) (edição manual das zonas); item 1 do TESTE 1 → aba Bordas ("medidas em cm enquanto arrasta", a aperfeiçoar na Fase 2) e [2.19](itens/2.19.md); item 3 → [2.4](itens/2.4.md); item 4 → [layout](itens/layout.md); item 5 → [2.8](itens/2.8.md).
 
 **Páginas de teste:** [boecio-022](paginas-de-teste/boecio-022.md). Boécio 3, 7 e 8 ainda sem ficha. Livro: [boecio](livros/boecio.md).
 

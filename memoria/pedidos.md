@@ -51,17 +51,17 @@ Onde as duas se tocam (e onde diferem):
 
 | PEDIDOS.md | De que pedido veio | Diferença | Onde está hoje |
 |---|---|---|---|
-| BLOCO 1 (abrir e carregar; robustez) | pedido 1 (especificação), pedido 14 | não existe pedido literal "cartões", "religar PDF"; vieram da especificação e de consertos | trabalho salvo: Lista de bugs de 29-30/09 (consertados); tela inicial: [layout](layout.md), etapa 7 |
+| BLOCO 1 (abrir e carregar; robustez) | pedido 1 (especificação), pedido 14 | não existe pedido literal "cartões", "religar PDF"; vieram da especificação e de consertos | trabalho salvo: Lista de bugs de 29-30/09 (consertados); tela inicial: [layout](itens/layout.md), etapa 7 |
 | BLOCO 2 (dividir) | pedido 1 (§4.1) | — | [2.1](itens/2.1.md) juntado em 07/10/2026; girar [2.3](itens/2.3.md) juntado em 06/10/2026 |
 | BLOCO 3 (cortar e endireitar) | pedido 1 (§4.4, §4.6) | — | [2.2](itens/2.2.md) (G6 juntado em 12/10/2026), [2.13](itens/2.13.md), [2.5](itens/2.5.md) |
-| BLOCO 4 (os quatro filtros, ampliar, comparar, sliders) | pedidos 1 e 9 | o PEDIDOS.md acrescenta os defeitos abertos (mancha do verso, rubricação, halo, folha de guarda) | Fase 1 ([1.4](itens/1.4.md), [1.5](itens/1.5.md)), [2.7](itens/2.7.md), [2.8](itens/2.8.md), [6.1](itens/6.1.md), [6.3](itens/6.3.md); ampliar e comparar: [layout](layout.md) |
-| BLOCO 5 (alertas, "menos de 10%") | pedido 1 (§4.3 e critério 8) | — | o "Para revisar" ([para-revisar.md](para-revisar.md), ramo `fase2-para-revisar`) |
+| BLOCO 4 (os quatro filtros, ampliar, comparar, sliders) | pedidos 1 e 9 | o PEDIDOS.md acrescenta os defeitos abertos (mancha do verso, rubricação, halo, folha de guarda) | Fase 1 ([1.4](itens/1.4.md), [1.5](itens/1.5.md)), [2.7](itens/2.7.md), [2.8](itens/2.8.md), [6.1](itens/6.1.md), [6.3](itens/6.3.md); ampliar e comparar: [layout](itens/layout.md) |
+| BLOCO 5 (alertas, "menos de 10%") | pedido 1 (§4.3 e critério 8) | — | o "Para revisar" ([para-revisar.md](itens/para-revisar.md), ramo `fase2-para-revisar`) |
 | BLOCO 6 (seleção) | pedidos 56, 61, 62 | — | Fase 3 ([3.1](itens/3.1.md) a [3.9](itens/3.9.md)), [1.2](itens/1.2.md), [2.18](itens/2.18.md) |
 | BLOCO 7 (cadernos, marca de alceamento, chapas vermelho/preto) | pedido 1 (§4.5) | marca de alceamento, numeração e chapas não estão nos 68 | [6.5](itens/6.5.md), [6.6](itens/6.6.md); impressão: [2.6](itens/2.6.md) |
 | BLOCO 8 (salvar, desfazer, instalar) | pedidos 5, 8 | — | [6.8](itens/6.8.md); Lista de bugs |
 | BLOCO 9 (as dez queixas do Kaique) | pedido 17 (ler as queixas) | as queixas são do **Kaique**, não do Samuel; ver abaixo, "Queixas do Kaique" | R1, R2, [6.1](itens/6.1.md) |
 | BLOCO 10 (o veredito do CamScanner) | pedido 14 | igual | [6.7](itens/6.7.md) |
-| BLOCO 11 (pendências resgatadas, 22/09) | PARTE 1C do histórico (navegação, de um handoff de 29/07) | os 7 pedidos de navegação (setas fixas na tira, roda do mouse, "ir para página", Page Up/Down, Home/End, barra de rolagem mais alta) **não estão** entre os 68 numerados | **sem lugar no plano** (a tira de miniaturas está no [layout](layout.md), etapa 5, mas esses 7 comportamentos não foram achados no plano; procurei "Page Up", "ir para página", "Home" no PLANO-DEFINITIVO) |
+| BLOCO 11 (pendências resgatadas, 22/09) | PARTE 1C do histórico (navegação, de um handoff de 29/07) | os 7 pedidos de navegação (setas fixas na tira, roda do mouse, "ir para página", Page Up/Down, Home/End, barra de rolagem mais alta) **não estão** entre os 68 numerados | **sem lugar no plano** (a tira de miniaturas está no [layout](itens/layout.md), etapa 5, mas esses 7 comportamentos não foram achados no plano; procurei "Page Up", "ir para página", "Home" no PLANO-DEFINITIVO) |
 
 Os **pedidos de 07/09/2026** e as **seis regras permanentes** só existem na PARTE 2; o PEDIDOS.md não os tem.
 
@@ -90,7 +90,7 @@ Documento longo (40.566 caracteres): a especificação original. Texto inteiro n
 >
 > [...] "## 10. Critérios de aceitação" [...] "3. O filtro Preto e branco remove o amarelado **e** o texto do verso transparecendo" [...] "6. É possível aplicar filtros diferentes em páginas diferentes do mesmo livro, gerando um PDF só" [...] "8. Num livro bem escaneado, menos de 10% das páginas são marcadas para revisão — o alerta não vira ruído" [...] "13. Ctrl+Z desfaz qualquer alteração, sem limite de quantidade, e Ctrl+Shift+Z refaz" [...] "15. Roda como `.exe` único numa máquina sem Python instalado"
 
-- **Liga-se a:** o plano inteiro. Critério 2 → [2.1](itens/2.1.md); 3 → [6.1](itens/6.1.md) (R2); 4 → R6; 7 e 8 → [para-revisar.md](para-revisar.md); 10 → [6.5](itens/6.5.md); 15 → [6.8](itens/6.8.md). Critério 6 ("um PDF só"): sem item próprio (PEDIDOS.md, BLOCO 4, "Nunca conferido ponta a ponta").
+- **Liga-se a:** o plano inteiro. Critério 2 → [2.1](itens/2.1.md); 3 → [6.1](itens/6.1.md) (R2); 4 → R6; 7 e 8 → [para-revisar.md](itens/para-revisar.md); 10 → [6.5](itens/6.5.md); 15 → [6.8](itens/6.8.md). Critério 6 ("um PDF só"): sem item próprio (PEDIDOS.md, BLOCO 4, "Nunca conferido ponta a ponta").
 - **Situação: superado** pelo PLANO-DEFINITIVO de 24/09/2026 (Registro 24/09/2026, "Plano criado e discutido ponto por ponto"). Grande parte foi feita (filtros, alertas, desfazer que sobrevive a fechar — consertos de 06/10/2026 —, cadernos, instalador, `.exe` único em `empacotar.py --modo arquivo`). **A ordem do processamento mudou** para livro novo em 09/10/2026 (endireitar antes de cortar, G6; CLAUDE.md §7). O critério 3 (verso) continua **aberto** (R2). O "OCR / texto pesquisável" estava fora da v1 e voltou ao plano em 24/09/2026 (só para achar o texto; ESTADO-ATUAL §2).
 
 ### Pedido 2 — 18/07/2026 14:58 — Samuel
@@ -149,7 +149,7 @@ Texto inteiro no [histórico, PARTE 2](../historico/Editor%20de%20Impressao%20-%
 >
 > "4. LIMPE TUDO E ME ENTREGUE SÓ O INSTALADOR [...] coloque o arquivo final na minha Área de Trabalho, dentro de uma pasta chamada "Editor de Impressao" - dentro dessa pasta quero SÓ o "EditorImpressao-Setup.exe" [...]"
 
-- **Liga-se a:** parte 1 → regra do CLAUDE.md §3 ("Nenhuma exceção fecha a janela"; `sys.excepthook` em `main.py`); parte 2 → [layout](layout.md); parte 3 → regra do CLAUDE.md §4.1 e `teste_botoes.py`; parte 4 → [6.8](itens/6.8.md) e [0.2](itens/0.2.md).
+- **Liga-se a:** parte 1 → regra do CLAUDE.md §3 ("Nenhuma exceção fecha a janela"; `sys.excepthook` em `main.py`); parte 2 → [layout](itens/layout.md); parte 3 → regra do CLAUDE.md §4.1 e `teste_botoes.py`; parte 4 → [6.8](itens/6.8.md) e [0.2](itens/0.2.md).
 - **Situação: feito.** Parte 1: feito e virou regra. Parte 2: **superado** pelo layout novo (tela de trabalho sem abas, etapas 2 e 3 juntadas ao `fase-1` em 14/10/2026). Parte 3: virou regra (o `teste_botoes.py` clica em todas as telas; roda no GitHub em toda entrega, CLAUDE.md §4.6). Parte 4: existe o `empacotar.py --modo entrega`; para testar, o Samuel usa o atalho "(desenvolvimento)" (CLAUDE.md §8, passo 9; item 0.2 `[~]`).
 
 ### Pedido 9 — 18/07/2026 17:54 — Samuel
@@ -162,7 +162,7 @@ Texto inteiro no [histórico, PARTE 2](../historico/Editor%20de%20Impressao%20-%
 >
 > "3. ACENTOS (já pedi duas vezes e continua errado) [...] Corrija TODOS os textos da interface para português correto: Impressão, página, Mágico, só nesta, próximas, Força, Espaço, dúvida, não."
 
-- **Liga-se a:** ampliar e comparar → [layout](layout.md) (rodada 11 de 07/10/2026: tela cheia dos filtros "um grande" com "Comparar com o Original"; etapa 6 da obra); sliders → "Aba Filtro, a aperfeiçoar" da Fase 2 (junto de [2.7](itens/2.7.md) e [2.8](itens/2.8.md)); acentos → Lista de bugs.
+- **Liga-se a:** ampliar e comparar → [layout](itens/layout.md) (rodada 11 de 07/10/2026: tela cheia dos filtros "um grande" com "Comparar com o Original"; etapa 6 da obra); sliders → "Aba Filtro, a aperfeiçoar" da Fase 2 (junto de [2.7](itens/2.7.md) e [2.8](itens/2.8.md)); acentos → Lista de bugs.
 - **Situação: feito**, com sobras. Ampliar e comparar existem (`ui/tela_ampliada.py`, conferido em 20/10/2026); a tela cheia nova do layout está **em ramo** (`layout-etapas4a7-2026-10-19`, começando). Sliders existem (`forca_preto`, `clareza_melhorar`, `intensidade_magico` em `modelos.py`; medidor de força acertado em 02/10/2026, `bf9680f`); bug aberto: "deslizante do painel 'Filtro da página' que volta a 50" (Lista de bugs, 02/10). Acentos: **ainda sobram** textos sem acento na Lista de bugs ("retangulo" na faixa do Cortar, 09/10; "mantem a cor", 12/10; "Conferir a pagina 5", 13/10).
 
 ### Pedido 10 — 18/07/2026 19:02 — Samuel
@@ -504,7 +504,7 @@ Documento longo (9.195 caracteres): o prompt de testes. Texto inteiro no [histó
 
 > "eu quero ter opção de transformar uma capa em branco. 2 - pode continuar mexendo no programa, precisa treinar o programa poder selecionar cores né? e tambem letras antigas tambem."
 
-- **Liga-se a:** capa em branco → [para-revisar.md](para-revisar.md) ("Deixar em branco" / "Tirar do livro") e Lista de espera 30/09/2026 ("Transformar uma página em folha branca") e 07/10/2026 ("Página branca no lugar da página apagada", Fase 6); cores → [3.4](itens/3.4.md); letras antigas → [1.3](itens/1.3.md) (OCR com Kraken, aprovado em 02/10/2026) e [7.2](itens/7.2.md)/[7.3](itens/7.3.md).
+- **Liga-se a:** capa em branco → [para-revisar.md](itens/para-revisar.md) ("Deixar em branco" / "Tirar do livro") e Lista de espera 30/09/2026 ("Transformar uma página em folha branca") e 07/10/2026 ("Página branca no lugar da página apagada", Fase 6); cores → [3.4](itens/3.4.md); letras antigas → [1.3](itens/1.3.md) (OCR com Kraken, aprovado em 02/10/2026) e [7.2](itens/7.2.md)/[7.3](itens/7.3.md).
 - **Situação: feito** (a capa). "Marcar a folha inteira como papel = folha em branco" está no programa (histórico, PARTE 4 e PARTE 1B). A forma nova, com os dois botões "Deixar em branco" e "Tirar do livro", está **em ramo** (`fase2-para-revisar`, `ce2b835`, Registro 13/10/2026), só para as páginas com aviso; os dois botões em **qualquer** página ficam para a Fase 6 (Lista de espera 07/10/2026; Samuel, rodada 5, 09/10/2026: "Essa opção de tirar do livro ou deixar folha em branco eu quero ter em outras paginas, mas no caso essa ai aparece com aviso quando o programa detectar se tem uma folha em branco ou manchada."). Letras antigas: o OCR de manuscrito (Kraken) já acha as linhas (1.3); treinar fica para a Fase 7.
 
 ### Pedido 62 — 06/08/2026 17:47 — Samuel
@@ -596,7 +596,7 @@ As queixas são do **Kaique**, não do Samuel; ficam aqui só como ponte. Fonte:
 | "às vezes a parte de trás fica com uma mancha da parte da frente" | [6.1](itens/6.1.md), R2 | **falta** (CLAUDE.md §9) |
 | "o programa não localizou as bordas corretamente" | [2.13](itens/2.13.md), [2.5](itens/2.5.md) | corte com 1 mm aprovado em 02/10/2026 (conferência 6, C1 a C4 "BOM"); borda preta do scanner **em ramo** (`fase2-caixa-conteudo`, não ligada) |
 | "o livro já foi recortado ao meio, sobra dos lados uma parte branca" | [2.1](itens/2.1.md) | dividir do ScanTailor juntado em 07/10/2026; não marcado `[x]` |
-| "colocar botão clicável nas páginas que o programa não tem certeza" | [para-revisar.md](para-revisar.md) | botão no próprio aviso **em ramo** (`fase2-para-revisar`) |
+| "colocar botão clicável nas páginas que o programa não tem certeza" | [para-revisar.md](itens/para-revisar.md) | botão no próprio aviso **em ramo** (`fase2-para-revisar`) |
 | "a barra de scroll devia ser preta" | CLAUDE.md §9 | cinza médio; decisão adiada pelo Samuel em 07/09/2026 ("isso é irrelevante agora, deixe para depois.") |
 | "como ter certeza que os cadernos estão na sequência correta sem olhar folha por folha?" | [6.5](itens/6.5.md) | **feito** (o programa simula a dobra; `core/cadernos.py`) |
 | "no mágico pro o fundo deveria remover o amarelado e deixar totalmente branco" | R1, R6 | aprovado em parte (conferências 5 e 6, 01-02/10/2026; ver [resultados-R1-a-R9.md](resultados-R1-a-R9.md)) |
