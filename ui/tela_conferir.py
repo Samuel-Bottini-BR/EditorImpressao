@@ -187,6 +187,7 @@ from ui.widgets.paineis import (
     frase_do_painel,
     lista_estreita,
     nome_da_conta,
+    nome_do_jeito_de_dividir,
     risco_do_painel,
     titulo_de_parte,
     titulo_de_secao,
@@ -1103,9 +1104,9 @@ class TelaConferir(QWidget):
         linha.addWidget(self.rotulo_jeito_da_folha)
         self.combo_jeito_da_folha = QComboBox()
         for jeito in dividir_scantailor.JEITOS:
-            self.combo_jeito_da_folha.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            self.combo_jeito_da_folha.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_da_folha.setToolTip(
-            "Divide esta folha de outro jeito: o do programa ou o do ScanTailor. "
+            "Divide esta folha de outro jeito: o do Editor ou o do ScanTailor. "
             "A linha azul vai para onde o outro jeito acha a divisão.")
         self.combo_jeito_da_folha.currentIndexChanged.connect(
             lambda _i: self._trocar_jeito_da_folha())
@@ -1124,7 +1125,7 @@ class TelaConferir(QWidget):
         jeito_do_livro = dividir_scantailor.jeito_valido(
             getattr(self.projeto, "dividir_como", None))
         coluna.addWidget(self._parte_do_livro(
-            [f"Jeito de dividir: {dividir_scantailor.NOMES_DOS_JEITOS[jeito_do_livro]}"]))
+            [f"Jeito de dividir: {nome_do_jeito_de_dividir(jeito_do_livro)}"]))
 
     def _montar_aba_bordas(self) -> None:
         """A ferramenta Cortar as bordas: a pagina com o retangulo verde e,
@@ -3209,7 +3210,7 @@ class TelaConferir(QWidget):
              "posicao_corte": round(float(lombada.posicao), 4),
              "confianca_corte": float(lombada.confianca), "revisada": True},
             f"Folha {self.indice_folha + 1}: dividir pelo jeito "
-            f"“{dividir_scantailor.NOMES_DOS_JEITOS[jeito]}”",
+            f"“{nome_do_jeito_de_dividir(jeito)}”",
         )
 
     @protegido
@@ -3587,8 +3588,22 @@ class TelaConferir(QWidget):
         self.combo_conta_do_endireitar.blockSignals(False)
         self.combo_conta_do_endireitar.setEnabled(automatico)
         self.rotulo_conta_do_endireitar.setEnabled(automatico)
+        # Rodada 14b do layout, 910 (Samuel, 20/10/2026: "A — Os dois ângulos
+        # e, embaixo, o seu", com "os angulos continuam embaixo mas a
+        # mensagem só aparece quando bota o mouse em cima"): com o ângulo à
+        # mão a linha dos dois ângulos NÃO some (antes ficava vazia), e a
+        # frase do giro à mão vai para o balão do mouse da linha e da lista.
+        medidos = angulos_medidos(self.projeto, pagina) if self.projeto.endireitar else None
         self.rotulo_angulos_medidos.setText(
-            texto_dos_angulos_medidos(angulos_medidos(self.projeto, pagina)) if automatico else "")
+            texto_dos_angulos_medidos(medidos) if self.projeto.endireitar else "")
+        frase = ""
+        if pagina.angulo_manual is not None:
+            frase = (f"Você girou à mão: {_graus(pagina.angulo_manual)}. As contas voltam com "
+                     "“usar o ângulo do programa”.")
+        for peca in (self.rotulo_angulos_medidos, self.combo_conta_do_endireitar):
+            peca.setToolTip(frase or (
+                "Endireita esta página por outra conta: a do ScanTailor ou a do Editor. "
+                "Os números embaixo são os ângulos que cada uma achou."))
 
     @protegido
     def _trocar_conta_do_endireitar(self) -> None:

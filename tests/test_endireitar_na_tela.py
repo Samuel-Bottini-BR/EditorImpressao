@@ -135,8 +135,13 @@ def test_com_o_angulo_a_mao_a_lista_fica_apagada(janela, pasta):
     tela._angulo_zero()
     assert janela.projeto.paginas[0].angulo_manual == 0.0
     assert not tela.combo_conta_do_endireitar.isEnabled()
-    assert tela.rotulo_angulos_medidos.text() == ""
+    # rodada 14b do layout, 910 A: os dois ângulos continuam à vista (antes a
+    # linha ficava vazia), e a frase do giro à mão fica no balão do mouse
+    assert tela.rotulo_angulos_medidos.text() != ""
+    assert "girou à mão" in tela.rotulo_angulos_medidos.toolTip()
+    assert "girou à mão" in tela.combo_conta_do_endireitar.toolTip()
     tela._angulo_automatico()
+    assert "girou à mão" not in tela.rotulo_angulos_medidos.toolTip()
     assert tela.combo_conta_do_endireitar.isEnabled()
 
 

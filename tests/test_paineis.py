@@ -455,22 +455,26 @@ def test_clicar_na_fila_escolhe_o_filtro(app):
     assert escolhidos == [MELHORAR]
 
 
-def test_o_painel_de_filtro_traz_os_cinco_do_so_neste_pedaco(app):
-    """Os cinco valores da linha "Filtro só neste pedaço" não se perderam."""
+def test_o_so_neste_pedaco_sem_o_botao_de_cima(app):
+    """Rodada 14b do layout, 909 (Samuel, 20/10/2026: "B — Sem o botão de
+    cima, nenhum aceso"): os quatro filtros, nenhum aceso de começo; clicar
+    num acende, clicar de novo no aceso volta a nenhum."""
     from core.filtros import PRETO_E_BRANCO
 
     painel = _painel_de_filtro_montado()
     painel.atualizar(ConfigPagina(indice=0, folha=0, filtro=PRETO_E_BRANCO))
-
-    textos = _textos(painel.corpo.findChildren(QPushButton))
-    for esperado in ("o mesmo da página", "Original", "Preto e branco",
-                     "Melhorar", "Mágico pro"):
-        assert esperado in textos, f'sumiu "{esperado}" de "só neste pedaço"'
+    textos = _textos(painel.botoes_do_pedaco.values())
+    assert textos == ["Original", "Preto e branco", "Melhorar", "Mágico pro"]
+    assert "o mesmo da página" not in _textos(painel.corpo.findChildren(QPushButton))
+    assert painel.filtro_pedaco == ""
+    assert painel.partes["pedaco"].cabeca.resumo.text() == "nenhum"
     escolhidos = []
     painel.filtro_do_pedaco.connect(escolhidos.append)
     painel.botoes_do_pedaco[PRETO_E_BRANCO].click()
-    assert escolhidos == [PRETO_E_BRANCO]
     assert painel.partes["pedaco"].cabeca.resumo.text() == "Preto e branco"
+    painel.botoes_do_pedaco[PRETO_E_BRANCO].click()
+    assert escolhidos == [PRETO_E_BRANCO, ""]
+    assert painel.partes["pedaco"].cabeca.resumo.text() == "nenhum"
 
 
 def test_as_partes_abrem_fecham_e_lembram(app):

@@ -225,6 +225,22 @@ def nome_da_conta(jeito: str) -> str:
     return es.NOMES_DOS_JEITOS.get(jeito, str(jeito))
 
 
+def nome_do_jeito_de_dividir(jeito: str) -> str:
+    """O nome de um jeito de dividir a folha COMO APARECE NA TELA.
+
+    Rodada 14 do layout, 907 (Samuel, 20/10/2026: "B — “o do Editor”"): o
+    jeito antigo chama-se "o do Editor", como a conta do Endireitar ("a do
+    Editor", 805 C). Vale na lista "jeito:" do Dividir, na parte "Para o
+    livro todo", no painel Automático, no Histórico e na tela "O que fazer".
+    Só muda o texto na tela: o código gravado no projeto continua "programa"
+    (core/dividir_scantailor.JEITO_PROGRAMA). Seguro mudar: a palavra."""
+    from core import dividir_scantailor as ds
+
+    if jeito == ds.JEITO_PROGRAMA:
+        return "o do Editor"
+    return ds.NOMES_DOS_JEITOS.get(jeito, str(jeito))
+
+
 def titulo_de_parte(texto: str) -> QLabel:
     """O título de uma PARTE do Propriedades, em maiúsculas ("SÓ NESTA
     PÁGINA", "PARA O LIVRO TODO": rodada 12, 706 B)."""
@@ -895,7 +911,7 @@ class PainelAutomatico(Painel):
         return [
             (bool(projeto.dividir_folhas), "Dividir folhas ao meio",
              "quando a folha tem 2 páginas do livro",
-             f"jeito: {dividir_scantailor.NOMES_DOS_JEITOS[jeito]}"),
+             f"jeito: {nome_do_jeito_de_dividir(jeito)}"),
             (bool(projeto.endireitar), "Endireitar folhas tortas",
              "corrige páginas inclinadas",
              f"conta: {nome_da_conta(conta)}"),
@@ -1362,8 +1378,10 @@ class PainelFiltroDaPagina(Painel):
 
     Ainda não estão aqui: o ícone da tela cheia dos filtros no título (etapa
     6) e, em "Mais ajustes", "Letra clara em fundo escuro" e "Letras com a
-    cor delas" (não existem no programa). O nome do primeiro botão do "só
-    neste pedaço" ("o mesmo da página") espera a rodada 14 (905).
+    cor delas" (não existem no programa). No "Só neste pedaço" (rodada 14b,
+    909: "B — Sem o botão de cima, nenhum aceso") não há mais o botão "o
+    mesmo da página": nenhum filtro vem aceso, e o pedaço só ganha filtro
+    próprio se a pessoa clicar num; clicar de novo no aceso volta a nenhum.
     Seguro mudar: a ordem e os títulos das partes. Arriscado: criar aqui as
     peças da tela (perdem a ligação com o desfazer).
     """
@@ -1418,8 +1436,7 @@ class PainelFiltroDaPagina(Painel):
         coluna = QVBoxLayout(pedaco)
         coluna.setContentsMargins(0, 0, 0, 0)
         coluna.setSpacing(5)
-        for chave, texto in [("", "o mesmo da página")] + [
-                (f, NOMES_AMIGAVEIS.get(f, n)) for f, n, _t in filtros]:
+        for chave, texto in [(f, NOMES_AMIGAVEIS.get(f, n)) for f, n, _t in filtros]:
             botao = botao_de_lista(texto)
             botao.clicked.connect(lambda _c=False, k=chave: self._escolher_pedaco(k))
             coluna.addWidget(botao)
@@ -1501,11 +1518,15 @@ class PainelFiltroDaPagina(Painel):
                 azul=estilo.cor("azul")))
         parte = self.partes.get("pedaco")
         if parte is not None:
-            parte.definir_resumo("o mesmo da página" if not self.filtro_pedaco
+            parte.definir_resumo("nenhum" if not self.filtro_pedaco
                                  else NOMES_AMIGAVEIS.get(self.filtro_pedaco, self.filtro_pedaco))
 
     def _escolher_pedaco(self, chave: str) -> None:
-        """Marca qual filtro vale "só neste pedaço" (chave vazia = o mesmo da página)."""
+        """Marca qual filtro vale "só neste pedaço" (chave vazia = nenhum: o
+        pedaço sai como o resto da página). Clicar no que já está aceso
+        apaga (volta a nenhum)."""
+        if chave == self.filtro_pedaco:
+            chave = ""
         self.filtro_pedaco = chave
         self._acertar_pedaco()
         self.filtro_do_pedaco.emit(chave)

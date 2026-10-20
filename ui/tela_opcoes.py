@@ -118,7 +118,7 @@ from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.escolhas_do_misto import EscolhasDoMisto
 from ui.widgets.folhear_pdf import FolhearPDF
-from ui.widgets.paineis import nome_da_conta
+from ui.widgets.paineis import nome_da_conta, nome_do_jeito_de_dividir
 
 FILTROS_NA_TELA = [
     (ORIGINAL, "Original", "não mexe na página"),
@@ -189,9 +189,10 @@ class TelaOpcoes(QWidget):
         self.rotulo_jeito_dividir = QLabel("Jeito de dividir:")
         self.combo_jeito_dividir = QComboBox()
         for jeito in dividir_scantailor.JEITOS:
-            self.combo_jeito_dividir.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            # rodada 14 do layout, 907 B: "o do Editor" (ui/widgets/paineis.py)
+            self.combo_jeito_dividir.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_dividir.setToolTip(
-            "Onde a folha é dividida: o do programa procura a lombada no meio das "
+            "Onde a folha é dividida: o do Editor procura a lombada no meio das "
             "folhas deitadas; o do ScanTailor divide toda folha mais larga que alta, "
             "na dobra que ele acha. Dá para trocar numa folha só, com a ferramenta Dividir a folha.")
         self.combo_jeito_dividir.currentIndexChanged.connect(lambda _i: self._mudou())
