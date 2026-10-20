@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caixa do conteudo e linhas de apoio (2.5)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Caixa do conteúdo e linhas de apoio (item 2.5): Parte 1</h1>
+<p><strong>Quem:</strong> agente implementador · <strong>Data:</strong> 20/10/2026 · <strong>Ramo:</strong> <code>fase2-caixa-conteudo</code> (com o <code>fase-1</code> <code>b8e9af7</code> juntado) · <strong>Não juntado ao <code>fase-1</code>.</strong> Teste de máquina feito; o de olho é do Samuel. Não é "aprovado".</p>
+<h2>Em uma frase</h2>
+<p>O programa ganhou, <strong>desligada de fábrica</strong>, a opção "Cortar seguindo o conteúdo (como o ScanTailor)": ligada, cada página é cortada justa no que está impresso (mais 1 mm) e fica do tamanho da maior página do livro; a folha muito maior fica de fora dessa conta e avisa; quando o corte deixa algo impresso de fora, avisa e oferece o corte alargado. As linhas de apoio do "Mover conteúdo" ganharam as linhas do Kaique e o desligar das automáticas. Livro já começado sai igual.</p>
+<h2>1. Os livros de folha grande (ljs47, Antiphon, Egenloff)</h2>
+<p><strong>O que vi</strong> (18 imagens com as quatro beiradas ampliadas, em <code>img/folha-grande/</code>, e as 9 páginas de novo no antes/depois): a caixa "que encolhe" com o DPI do programa é a <strong>certa</strong>. No ljs47 e no Antiphon ela abraça o texto e as notas e deixa de fora a beirada do livro, a folha vizinha e o papel vazio; nenhuma letra é partida. A caixa "grande" das imagens de 12/10 (DPI que o PDF diz) é que estava errada: pegava quase a folha inteira.</p>
+<p><strong>A causa:</strong> esses PDFs dizem 72 ou 96 DPI, então "a folha" teria 35 x 46 a 46 x 63 cm; mas a imagem de verdade tem só 1.000 a 1.800 pontos de altura. O programa diz à conta do ScanTailor o mesmo DPI das outras ferramentas dele (endireitar, limpar pontinhos, gravura), o que faz a página "valer" uns 19 x 26 cm, perto da resolução de verdade do scan. As regras do ScanTailor para sujeira e beirada são em milímetros; com o DPI do PDF, a beirada do livro e a folha vizinha ficam "grandes" e entram como conteúdo. Desenhada a 300 DPI (como no programa), a caixa é a mesma (até 4 pontos de diferença).</p>
+<p><strong>Problemas de verdade achados olhando (e o que foi feito):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>O que acontece</th>
+<th>Correção</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Egenloff 12 (verso quase em branco, só o carimbo)</td>
+<td>A caixa vira uma tira de 231 x 22 pontos em cima do risco do carimbo. Sozinha, a página viraria uma tira.</td>
+<td>Com o tamanho do livro (G9) a página sai do tamanho das outras (teste <code>test_regressao_egenloff_12...</code>). <strong>Ressalva:</strong> fica centrada no carimbo, não no papel.</td>
+</tr>
+<tr>
+<td>Antiphon 260</td>
+<td>A pauta de cima, já cortada pelo próprio scan, e letras que vão até a beirada da imagem ficam de fora.</td>
+<td>Aviso "Corte deixou algo de fora" + corte alargado (pega).</td>
+</tr>
+<tr>
+<td>Egenloff 3 e 47</td>
+<td>A caixa passa no meio dos carimbos da biblioteca; no 3 deixa de fora a etiqueta vermelha impressa de 1880.</td>
+<td>Aviso + corte alargado (pega a etiqueta e o carimbo). Carimbo de biblioteca dispara aviso: é o esperado, mas é aviso a mais.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Proposta:</strong> manter o DPI do programa (é o certo).</p>
+<h2>2. O que foi ligado (conforme as respostas)</h2>
+<table>
+<thead>
+<tr>
+<th>Resposta do Samuel</th>
+<th>O que o programa faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G8 (05/10): "Trazer como opção 'seguir a moldura / o papel', desligada"</td>
+<td>Caixinha do livro "Cortar seguindo o conteúdo (como o ScanTailor)", <strong>desmarcada de fábrica</strong>. Usa a caixa do conteúdo do ScanTailor com a busca da borda preta <strong>desligada</strong> (essa é o 2.13, Parte 2). Corte à mão continua valendo como está.</td>
+</tr>
+<tr>
+<td>G9 (05/10): "Todas as páginas do tamanho da maior: Sim"</td>
+<td>O tamanho do livro é a conta do ScanTailor (maior largura e maior altura, cada uma com 1 mm de cada lado); cada página cresce até ele com o conteúdo no meio (o alinhamento de fábrica dele). O PDF mede o livro todo antes da primeira página; na tela, uma passada por trás mede ao abrir.</td>
+</tr>
+<tr>
+<td>Explicação de 14/10 ("Na edição [...] Não penso em tamanho final, formato nem margem")</td>
+<td>As margens de 10/5 mm do ScanTailor <strong>não</strong> entram: só a folga de 1 mm já aprovada. Margens e formato ficam para a fase de impressão (2.6).</td>
+</tr>
+<tr>
+<td><code>g9-pagina-muito-maior</code>: "deixa essa folha de fora sozinho, e avisa"</td>
+<td>Página com conteúdo mais de 1,25 vez a mediana do livro fica fora da conta, sai no tamanho dela, com o aviso "Página muito maior" e o botão "deixar do tamanho das outras" (Ctrl+Z desfaz). Não contradiz a <code>g9-folha-maior-impressao</code> (essa é da impressão).</td>
+</tr>
+<tr>
+<td><code>g8-moldura-tinta-fora</code>: "Só avisa" + "dá opção de mudar o corte e mostrar ele alargado com o que foi tirado"</td>
+<td>O corte fica como o ScanTailor achou; a página ganha o aviso "Corte deixou algo de fora" com o botão "usar o corte alargado" (vira corte à mão; Ctrl+Z desfaz). "Mudar o corte" é a ferramenta Cortar de sempre. A regra do "ficou de fora" é a do pesquisador mostrada na pergunta, sem mudança.</td>
+</tr>
+<tr>
+<td><code>g8-guias</code>: "As duas" + "ele vai poder tirar a automatica a hora que ele quiser"</td>
+<td>No "Mover conteúdo", botão direito sobre a folha: "Pôr uma linha de pé aqui", "Pôr uma linha deitada aqui", "Tirar esta linha", "Tirar todas as linhas" (o menu do ScanTailor). As linhas valem no livro todo (guardadas em mm a partir do meio da folha, como o ScanTailor) e o conteúdo gruda nelas. Caixinha "Linhas automáticas (meio e beiradas)", ligada de fábrica = como hoje.</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Antes/depois nas páginas-gabarito (41 imagens, todas abertas)</h2>
+<p><code>img/antes-depois/</code>: à esquerda o corte de hoje (laranja), à direita o corte que segue o conteúdo, a página sozinha (verde), o que ficou de fora (vermelho) e o corte alargado (lilás tracejado).</p>
+<ul>
+<li><strong>Iguais ou quase a hoje (ok):</strong> Palatino 7, 9, 10, 57, 66, 67; Opus Majus 11, 20, 165, 256; Rhetorica 18, 73; Boécio 7, 8; Escola 35; Graduale 222; Horas 11, 47.</li>
+<li><strong>Melhor que hoje:</strong> Horas 26 e 27 (corta rente à moldura, sem o papel vazio e a lombada); Graduale 221 (o "Cvij" da folha entra inteiro: está na Lista de bugs desde 28/09); Siebmacher 7 (o fundo escuro da direita sai); ljs47 10, 46, 68 e Antiphon 88, 123 (sai a folha vizinha e a borda).</li>
+<li><strong>O aviso faz o trabalho:</strong> Horas 13 e 14 (moldura dourada e "TABLE" de fora; o alargado pega tudo); Escola 7 (o número "9" do pé); Egenloff 3 e 47; Antiphon 260.</li>
+<li><strong>Aviso à toa (pequeno):</strong> Palatino 5 (um risquinho no pé), Boécio 3 e 22, Siebmacher 9, ljs47 68, Marial 7 (pedaços da beirada/sombra).</li>
+<li><strong>Pior ou a ver:</strong> Opus Majus 3 (o carimbo da biblioteca fica de fora, sem aviso; eu acho bom, mas é escolha); Boécio 22 e Graduale 223 (a caixa vai até a beirada da folha, levando a sombra que o corte de hoje tira); Marial 7 (a caixa fica por dentro e deixa o pé "$2 luga-" de fora; o aviso pega); Egenloff 12 (ver acima).</li>
+</ul>
+<h2>4. Testes (de máquina)</h2>
+<ul>
+<li><code>tests/test_corte_pelo_conteudo.py</code> (22), <code>test_corte_pelo_conteudo_no_programa.py</code> (14), <code>test_corte_pelo_conteudo_na_tela.py</code> (8), <code>test_guias.py</code> (14): todos passam no PC, um arquivo por vez. O principal: <strong>com a opção desligada a conta do ScanTailor não é chamada nem na prévia nem no PDF, nas duas ordens</strong> (livro novo e projeto antigo), e o corte é o de sempre; com a DLL, um PDF gerado sai com as páginas comuns do mesmo tamanho e a muito maior no dela.</li>
+<li>Vizinhos, um por vez, todos passam: ordem do preparo (43), corte prévia = PDF (4), folga 1 mm (6), corte não come conteúdo (9), endireitar no programa (15) e na tela (5), dividir na tela (9), painéis (33 + 22), trabalho não se perde (82), visualizador (70), prévia composta (12), girar cartões e prévias (23), caixas do ScanTailor (76, com o teste de guarda trocado: só o corte pelo conteúdo pode usar a DLL de caixas, e nunca com a busca da borda preta).</li>
+<li>Suíte inteira no GitHub e filtro de velocidade: ver a entrega (números da rodada).</li>
+<li><strong>Teste de reversão:</strong> não houve conserto de bug do programa (tudo é função nova). O Egenloff 12 tem teste, mas é defeito da função nova achado antes de ligar; não há "código antigo" a reverter.</li>
+</ul>
+<h2>5. Ressalvas</h2>
+<ol>
+<li>A opção só foi conferida a olho na página sozinha, na folha inteira sem endireitar. A conta do tamanho do livro foi conferida por teste em livro de mentira e medida em 10 livros de verdade (30 páginas cada; <code>dados/tamanhos-do-livro.json</code>), <strong>não</strong> num livro inteiro gerado em PDF.</li>
+<li>Regra da folha muito maior (1,25 x a mediana) é nossa. Nos 10 livros pega a tabela dobrável do Opus 256, a capa do Marial 907 e fotos de lombada/beirada (Horas 191, Antiphon 305, ljs47 113); avisa à toa no ljs47 89 (1,26) e no Camões 40 (a caixa pegou o papel inteiro).</li>
+<li>O corte nunca sai da imagem: quando o tamanho do livro não cabe, o corte anda para dentro; pintar de branco o que faltar é o 2.14.</li>
+<li>As medidas ficam só na memória da sessão (como o corte guardado de hoje). Ao abrir um livro com a opção ligada, a passada por trás mede tudo (0,3 a 1 s por página comum; Antiphon ~2 s). Antes de ela terminar, a prévia mostra cada página do tamanho das já medidas.</li>
+<li>Na ordem antiga (projeto começado antes de 09/10), a caixa é medida na página ainda torta, com a folga do giro do corte comum; só testado em livro de mentira.</li>
+<li>A caixinha "Cortar seguindo o conteúdo" e as das linhas estão em lugar provisório (tela "O que fazer" e painel do Cortar): o lugar é do agente de layout.</li>
+</ol>
+<h2>6. Para o agente de layout (controles novos, commits <code>da306e8</code> e <code>9861e4f</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>Onde fica hoje</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Caixinha <strong>"Cortar seguindo o conteúdo (como o ScanTailor)"</strong></td>
+<td>Tela "O que fazer", embaixo de "Cortar as bordas"</td>
+<td>Desmarcada de fábrica. Liga o corte do item 2.5 no livro.</td>
+</tr>
+<tr>
+<td>Linha "Cortar seguindo o conteúdo: sim/não"</td>
+<td>Cortar &gt; Propriedades &gt; "Para o livro todo"; painel Automático</td>
+<td>Só mostra.</td>
+</tr>
+<tr>
+<td>Botão <strong>"usar o corte alargado"</strong></td>
+<td>Faixa do aviso "Corte deixou algo de fora"</td>
+<td>Troca o corte da página pelo alargado (Ctrl+Z desfaz).</td>
+</tr>
+<tr>
+<td>Botão <strong>"deixar do tamanho das outras"</strong></td>
+<td>Faixa do aviso "Página muito maior"</td>
+<td>Põe a página de volta na conta do tamanho (Ctrl+Z desfaz).</td>
+</tr>
+<tr>
+<td>Menu do botão direito: "Pôr uma linha de pé aqui", "Pôr uma linha deitada aqui", "Tirar esta linha", "Tirar todas as linhas"</td>
+<td>Sobre a folha, no "Mover conteúdo"</td>
+<td>Linhas de apoio do Kaique, valendo no livro todo, em azul tracejado.</td>
+</tr>
+<tr>
+<td>Caixinha <strong>"Linhas automáticas (meio e beiradas)"</strong></td>
+<td>Cortar &gt; Propriedades, embaixo de "Mover conteúdo"</td>
+<td>Ligada de fábrica; desligada, o meio e as beiradas não puxam.</td>
+</tr>
+</tbody>
+</table>
+<h2>7. Perguntas para o Samuel (sugestão de texto)</h2>
+<ol>
+<li>"No livro com 'Cortar seguindo o conteúdo', o carimbo da biblioteca fica fora do corte (Opus Majus 3) e às vezes dispara o aviso (Egenloff). Está bom assim?" (Está bom · Quero o carimbo dentro · Ainda não entendi)</li>
+<li>"Página quase em branco (Egenloff 12, só um carimbo): ela sai do tamanho das outras, mas centrada no carimbo, não no papel. Está bom?" (Está bom · Centrar no papel · Ainda não entendi)</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 14:05</p>
+</body>
+</html>

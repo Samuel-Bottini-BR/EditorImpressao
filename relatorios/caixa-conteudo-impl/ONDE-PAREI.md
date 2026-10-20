@@ -19,9 +19,15 @@ Passos (marque ao terminar):
       passada no processar (`2f1cd43`, `5621ca7`, `5ea33f5`); 14 testes no programa.
 - [x] Tela mínima, commit separado (`da306e8`): caixinha em "O que fazer", linhas em "Para o
       livro todo" e no Automático, botões dos 2 avisos, passada por trás (TarefaMedirOLivro).
-- [ ] Linhas de apoio (g8-guias): `core/guias.py` escrito (20/10), falta teste, ligar no
-      visualizador (tela, commit separado).
-- [ ] Testes (um arquivo por vez), GitHub, antes/depois no gabarito, entrega.
+- [x] Linhas de apoio (g8-guias): núcleo `5fbc731`, tela `9861e4f`.
+- [x] Antes/depois em 41 páginas, todas abertas (`b7c3d2c`); relatório `parte1-2026-10-20.*`.
+- [ ] GitHub: suíte rodada 39470960244, filtro de velocidade 39471048026 (b8e9af7 -> 9861e4f): ler.
+- [ ] Entregar a Parte 1 à gerente.
+- [ ] PARTE 2 LIBERADA (gerente, 20/10): g7 = "O Kaique escolhe por livro: só o preto, ou até a
+      moldura"; "até a moldura" de fábrica no livro novo, igual a hoje no começado; exceção por
+      página; seletor Selecionar todas / Nenhuma. Antes de mexer em core/recortar.py ou na chamada
+      do pipeline: juntar `conserto-corte-g6-2026-10-13` (`5a84f7c`, detectar_bordas ganhou
+      `como_veio`).
 
 ### Decisões técnicas (20/10)
 
