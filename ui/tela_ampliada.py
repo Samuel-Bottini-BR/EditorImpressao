@@ -335,13 +335,19 @@ class TelaAmpliada(QDialog):
         # desta imagem (o pedido; o DPI do scan nao e lido aqui, entao o
         # acerto dos PDFs de "72 DPI" vale pelo tamanho da pagina - ver
         # core.pontinhos_scantailor.dpi_para_os_pontinhos)
+        # item 2.9: "Letra clara em fundo escuro" desta pagina - inverte na
+        # entrada e na saida, como core.pipeline._filtrar
+        from core import claro_no_escuro
+
+        invertida = claro_no_escuro.ligado(pagina) and outro != TIRAR_FUNDO
+        entrada = claro_no_escuro.inverter(preparada) if invertida else preparada
         saida, _ = aplicar_filtro(
-            preparada, outro, pagina.forca_preto,
+            entrada, outro, pagina.forca_preto,
             pagina.clareza_melhorar, pagina.intensidade_magico,
             algoritmo_pb=pagina.algoritmo_preto_branco,
             despeckle=pontinhos_da_pagina(self.projeto, pagina, preparada, DPI_AMPLIADA),
         )
-        return saida
+        return claro_no_escuro.inverter(saida) if invertida else saida
 
     def _atualizar_rotulos(self) -> None:
         """Atualiza o texto de página/filtro/zoom e o estado dos botões < >."""

@@ -147,6 +147,7 @@ from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
 from core import preto_e_branco_scantailor
+from core import claro_no_escuro
 from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, jeito_de_dividir,
                            recalcular_divisao)
@@ -1968,6 +1969,18 @@ class TelaConferir(QWidget):
         linha_algoritmo.addWidget(self.seletor_pontinhos)
         dentro.addLayout(linha_algoritmo)
 
+        # Item 2.9 (Samuel P9 (a), 05/10/2026): "Letra clara em fundo escuro",
+        # caixinha SÓ desta página, marcada à mão (core/claro_no_escuro.py).
+        # Vale nos filtros que mexem na imagem (o bloco AJUSTE só aparece neles).
+        # Controle mínimo; a aparência é do agente de layout (listado em
+        # layout/Botoes e funcoes para o layout.md). Seguro mudar: os textos
+        # (moram em core/claro_no_escuro.py).
+        self.caixa_claro_no_escuro = QCheckBox(claro_no_escuro.ROTULO_NA_TELA)
+        estilo.estilizar(self.caixa_claro_no_escuro, lambda: estilo_da_caixinha_com_quadrado(15))
+        self.caixa_claro_no_escuro.setToolTip(claro_no_escuro.EXPLICACAO_NA_TELA)
+        self.caixa_claro_no_escuro.toggled.connect(self._mudar_claro_no_escuro)
+        dentro.addWidget(self.caixa_claro_no_escuro)
+
         # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
         # e branco escolhido (ver _configurar_medidor). Compacto: a altura da
         # aba é pouca (a janela de 1280 x 657 tem de caber).
@@ -3591,6 +3604,23 @@ class TelaConferir(QWidget):
         )
 
     @protegido
+    def _mudar_claro_no_escuro(self, marcada: bool) -> None:
+        """A caixinha "Letra clara em fundo escuro" da aba Filtro (item 2.9):
+        SÓ desta página, como ação do desfazer. Nada acontece se a página já
+        está assim (mostrar o valor nunca grava)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if bool(marcada) == claro_no_escuro.ligado(pagina):
+            return
+        self._registrar(
+            "mudar_claro_no_escuro", "pagina", [self.indice_pagina],
+            {"claro_no_escuro": bool(marcada)},
+            claro_no_escuro.FRASE_DO_DESFAZER.format(
+                pagina=self.indice_pagina + 1, estado="marcada" if marcada else "desmarcada"),
+        )
+
+    @protegido
     def _mudar_pontinhos(self, indice: int) -> None:
         """A lista "Limpar pontinhos" da aba Filtro (decisão do Samuel,
         06/10/2026, P7): a escolha SÓ desta página, como ação do desfazer.
@@ -3688,6 +3718,10 @@ class TelaConferir(QWidget):
         rotulo, esquerda, direita = ROTULOS_DO_AJUSTE[pagina.filtro]
         self.medidor.definir_rotulo(rotulo, esquerda, direita)
         self.medidor.definir(getattr(pagina, campo))
+        # item 2.9: o que vale nesta pagina, sem virar acao
+        self.caixa_claro_no_escuro.blockSignals(True)
+        self.caixa_claro_no_escuro.setChecked(claro_no_escuro.ligado(pagina))
+        self.caixa_claro_no_escuro.blockSignals(False)
 
         # O algoritmo só faz sentido no Preto e branco - Melhorar/Mágico pro
         # não binarizam.
