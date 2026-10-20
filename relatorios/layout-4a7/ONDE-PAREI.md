@@ -25,4 +25,22 @@ Situação: **pronta para a gerente publicar** (20/10).
 
 ## Tarefa 2: etapas 4 a 7
 
-Situação: não começada.
+Situação: não começada (a rodada 14 foi entregue primeiro, para o Samuel responder enquanto a obra anda).
+
+### Plano da etapa 4 (o que não depende da rodada 14)
+1. **Propriedades das ferramentas de marcar** (protótipo `21-rodada13-base.html`, `propsMarcarA`): sob o "Marcar
+   como", as partes "Marcação desta página" (detectar automaticamente · usar em todas · daqui em diante), "Foto"
+   ("Esta página tem foto" · usar em todas · daqui em diante) e "Pedaço" (Ajustar o pedaço à figura + o aviso);
+   saem as filas de baixo da página (`_montar_aba_marcar`, `linhas_de_botoes[ABA_MARCAR]`). O "Na área marcada"
+   (pintar por cima, copiar, colar, mover) não existe no programa: não inventar.
+2. **Painel Filtro decidido** (R9 403 B, R10 nomes do conjunto 2 e menus com amostra, R11 ícone da tela cheia no
+   título): fila dos filtros com tecla, partes que abrem e fecham (Ajuste · Só as letras · Limpar a sujeira · Mais
+   ajustes · Só neste pedaço), "apagar página" depois de um risco, pé "Aplicar em: só nesta · todas · daqui em
+   diante". **Atenção:** o agente da Fase 2 (ramo `fase2-scantailor-itens-2026-10-19`, `34b3d0e`) pôs os dez
+   jeitos do ScanTailor na lista `seletor_algoritmo_pb` ("Algoritmo:"); no painel novo essa lista vira "Jeito do
+   preto e branco" em "Mais ajustes" e tem de levar os itens dele (juntar o ramo dele antes, ou manter a mesma
+   lista `seletor_algoritmo_pb`).
+3. **Itens de menu mortos** (conserto, com teste de reversão): Aproximar, Afastar, Ajustar à tela, Mostrar o
+   histórico, Restaurar página apagada, Modo comparar, Livros recentes. Os quatro "Painel: …" esperam a 903.
+4. Depois de cada passo: prints da janela real (`saida_teste/prints_etapa3.py` como base), `teste_botoes.py` no
+   GitHub (`-f so_janela=true`) e a lista do que ficou antigo.
