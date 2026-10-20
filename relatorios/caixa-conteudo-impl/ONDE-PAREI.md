@@ -12,11 +12,29 @@ Passos (marque ao terminar):
 - [x] Folha grande olhada: `scripts/olhar_folha_grande.py`, imagens em `img/folha-grande/`
       (9 páginas: ljs47 10/46/68, Antiphon 88/123/260, Egenloff 3/12/47, com as quatro beiradas
       ampliadas), números em `dados/folha-grande.json`. Resumo e causa: seção "Folha grande" abaixo.
-- [ ] Ligar no núcleo (opção do livro, desligada de fábrica).
-- [ ] Aviso "o corte deixou tinta de fora" (g8) + corte alargado.
-- [ ] Conta do tamanho do livro sem a folha muito maior (g9).
-- [ ] Linhas de apoio (g8-guias): núcleo; tela só o mínimo, commit separado.
+- [x] Contas no núcleo: `core/corte_pelo_conteudo.py` (`8c3994c`), 21 testes.
+- [x] Ligado no núcleo, desligado de fábrica (`Projeto.cortar_pelo_conteudo`), corte = caixa +
+      1 mm alargada até o tamanho do livro (G9), folha muito maior de fora com aviso (g9,
+      `ConfigPagina.alinhar_com_as_outras`), aviso de tinta de fora + corte alargado (g8),
+      passada no processar (`2f1cd43`, `5621ca7`, `5ea33f5`); 14 testes no programa.
+- [x] Tela mínima, commit separado (`da306e8`): caixinha em "O que fazer", linhas em "Para o
+      livro todo" e no Automático, botões dos 2 avisos, passada por trás (TarefaMedirOLivro).
+- [ ] Linhas de apoio (g8-guias): `core/guias.py` escrito (20/10), falta teste, ligar no
+      visualizador (tela, commit separado).
 - [ ] Testes (um arquivo por vez), GitHub, antes/depois no gabarito, entrega.
+
+### Decisões técnicas (20/10)
+
+- 2.5 usa a caixa do conteúdo com a busca de página DESLIGADA (de fábrica do ScanTailor; nas 9
+  páginas grandes dá o mesmo; a busca de página é o 2.13, Parte 2, espera a g7).
+- Margem = só a folga de 1 mm (14/10: margens só na impressão). Tamanho do livro =
+  `getAggregateHardSizeMM`; alargar = `calcSoftMarginsMM` com HCENTER/VCENTER (de fábrica).
+- Folha muito maior: conteúdo > 1,25 x a mediana do livro. Medido em 10 livros
+  (`dados/tamanhos-do-livro.json`, `img/folha-grande/muito-maiores.jpg`): pega a tabela do Opus
+  256, a capa do Marial 907, as fotos de lombada/beirada (Horas 191, Antiphon 305, ljs47 113);
+  avisa à toa no ljs47 89 (página comum, 1,26) e no Camões 40 (a caixa pegou o papel inteiro).
+- O corte não sai da imagem: o corte do tamanho do livro anda para dentro (pintar de branco é o
+  2.14). Medidas só na memória da sessão; o PDF mede antes (passada).
 
 ### Folha grande (20/10): o que vi, a causa, a proposta
 
