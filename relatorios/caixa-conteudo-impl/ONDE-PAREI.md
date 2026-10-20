@@ -1,5 +1,52 @@
 # Caixa da página e caixa do conteúdo do ScanTailor: onde parei
 
+## 20/10/2026 — Parte 1 (ligar a caixa do conteúdo, 2.5) — EM ANDAMENTO
+
+Pedido da gerente (20/10): olhar os livros de folha grande; ligar a caixa do conteúdo e as
+linhas de apoio conforme `g8-guias`, `g8-moldura-tinta-fora`, `g9-pagina-muito-maior`. A borda
+preta (2.13, Parte 2) só quando a gerente mandar (depende da `g7-borda-ate-onde`).
+
+Passos (marque ao terminar):
+- [x] `origin/fase-1` (b8e9af7) juntado ao ramo, sem conflito (`a67e1f0`; o fase-1 só mexeu em
+      `core/analise.py`, que este ramo não toca).
+- [x] Folha grande olhada: `scripts/olhar_folha_grande.py`, imagens em `img/folha-grande/`
+      (9 páginas: ljs47 10/46/68, Antiphon 88/123/260, Egenloff 3/12/47, com as quatro beiradas
+      ampliadas), números em `dados/folha-grande.json`. Resumo e causa: seção "Folha grande" abaixo.
+- [ ] Ligar no núcleo (opção do livro, desligada de fábrica).
+- [ ] Aviso "o corte deixou tinta de fora" (g8) + corte alargado.
+- [ ] Conta do tamanho do livro sem a folha muito maior (g9).
+- [ ] Linhas de apoio (g8-guias): núcleo; tela só o mínimo, commit separado.
+- [ ] Testes (um arquivo por vez), GitHub, antes/depois no gabarito, entrega.
+
+### Folha grande (20/10): o que vi, a causa, a proposta
+
+**O que vi (abri as 18 imagens):** no ljs47 e no Antiphon a caixa "encolhida" (DPI do programa)
+é a certa: abraça o texto e as notas, deixa de fora a beirada do livro, a folha vizinha e o
+papel vazio. A caixa "grande" (DPI que o PDF diz, a das imagens de 12/10) é que estava errada:
+pega quase a folha inteira. Nas beiradas ampliadas, nenhuma letra do ljs47 nem do Antiphon 88 e
+123 é partida (algumas encostam na linha; a folga de 1 mm resolve). **Problemas reais:**
+(1) Antiphon 260: no alto, a caixa corta o enfeite da esquerda e as notas da pauta de cima, que
+o próprio scan já cortou; à direita, letras que vão até a beirada da imagem ficam de fora (as
+duas contas, de DPI do programa e do PDF, fazem isso). (2) Egenloff 3 e 47: a caixa passa no
+meio dos carimbos da biblioteca e da anotação "3865"; no 3 deixa de fora a etiqueta vermelha
+impressa de 1880 ("1880 neu aufgelegt von George Gilbers"). (3) **Egenloff 12** (verso quase em
+branco, só o carimbo): a caixa vira uma tira de 231 x 22 pontos em cima do risco de caneta do
+carimbo. Usada como corte, a página viraria uma tira.
+
+**A causa:** esses PDFs dizem 72 ou 96 DPI, então "a folha" teria 35 x 46 a 46 x 63 cm; mas a
+imagem de verdade tem só 1.000 a 1.800 pontos de altura (Antiphon 1316 x 1800, ljs47 1379 x
+1800, Egenloff 1000 x 1300). O programa diz à DLL o mesmo DPI das outras ferramentas do
+ScanTailor (`dpi_para_as_caixas`, que põe a página grande em no máximo 7 milhões de pontos a
+300 DPI): a DLL vê uma página de uns 19 x 26 cm, perto da resolução de verdade do scan. As
+regras do ScanTailor para "sujeira" e "lixo da beirada" são em milímetros; com o DPI do PDF a
+beirada do livro e a folha vizinha ficam "grandes" e entram como conteúdo. A 300 DPI (como o
+programa desenha) a caixa é a mesma (diferença de até 4 pontos).
+
+**Proposta:** manter o DPI do programa (é o certo). Ao usar a caixa como corte: (a) página com
+conteúdo pequeno demais (Egenloff 12: 0,1% da página; a menor página boa medida tem 35%) não usa
+a caixa, fica o corte comum, e avisa; (b) o aviso de tinta partida/de fora (`g8`) pega o
+Antiphon 260 e os carimbos do Egenloff. Ressalva: carimbo de biblioteca vai disparar o aviso.
+
 **Quem:** agente implementador · **Datas:** 12 e 13/10/2026 · **Ramo:** `fase2-caixa-conteudo` (saiu do `fase-1` em `4b19a9b`; **não juntado**) · **Pedido:** gerente (a base dos itens 2.13 e 2.5, que serve para qualquer resposta do Samuel às seis perguntas de 12/10).
 
 ## Em uma frase
