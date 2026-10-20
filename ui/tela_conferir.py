@@ -146,6 +146,7 @@ from PySide6.QtWidgets import (
 from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
+from core import preto_e_branco_scantailor
 from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, jeito_de_dividir,
                            recalcular_divisao)
@@ -1940,6 +1941,15 @@ class TelaConferir(QWidget):
         self.seletor_algoritmo_pb.addItem("Automático", "auto")
         for chave in ALGORITMOS_PB:
             self.seletor_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
+        # Item 2.8 (Samuel P8, 05/10/2026: "Trazer os dez do ScanTailor como
+        # opções a mais"): os dez do ScanTailor, depois dos três de sempre.
+        # Controle mínimo; a aparência é do agente de layout (listado em
+        # layout/Botoes e funcoes para o layout.md). Seguro mudar: os textos
+        # (moram em core/preto_e_branco_scantailor.py).
+        self.seletor_algoritmo_pb.insertSeparator(self.seletor_algoritmo_pb.count())
+        for chave in preto_e_branco_scantailor.CODIGOS:
+            self.seletor_algoritmo_pb.addItem(preto_e_branco_scantailor.NOMES_NA_TELA[chave], chave)
+        self.seletor_algoritmo_pb.setToolTip(preto_e_branco_scantailor.EXPLICACAO_NA_TELA)
         self.seletor_algoritmo_pb.currentIndexChanged.connect(self._mudar_algoritmo_pb)
         linha_algoritmo.addWidget(self.seletor_algoritmo_pb, 1)
         # "Limpar pontinhos" (decisão do Samuel, 06/10/2026, P7), no lugar
@@ -3561,7 +3571,7 @@ class TelaConferir(QWidget):
 
     @protegido
     def _mudar_algoritmo_pb(self, indice: int) -> None:
-        """Problema 5 do plano: qual dos 3 algoritmos o Preto e branco usa
+        """Problema 5 do plano (e item 2.8): qual algoritmo o Preto e branco usa
         nesta página. Chamado pelo seletor da aba Filtro."""
         if not self._pronta() or self.projeto is None:
             return
@@ -3571,7 +3581,9 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[self.indice_pagina]
         if novo == pagina.algoritmo_preto_branco:
             return
-        nome = NOMES_DOS_ALGORITMOS_PB.get(novo, novo) if novo != "auto" else "Automático"
+        nome = (NOMES_DOS_ALGORITMOS_PB.get(novo)
+                or preto_e_branco_scantailor.NOMES_NA_TELA.get(novo, novo)
+                if novo != "auto" else "Automático")
         self._registrar(
             "mudar_algoritmo_pb", "pagina", [self.indice_pagina],
             {"algoritmo_preto_branco": novo},
