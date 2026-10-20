@@ -116,6 +116,12 @@ class ConfigPagina:
     # valores vêm de ALGORITMOS_PB (sauvola/otsu/wolf), escolha manual ou
     # "usar em todas". Só importa quando `filtro` é Preto e branco.
     algoritmo_preto_branco: str = "auto"
+    # Item 2.9 (Samuel P9 (a), 05/10/2026): a caixinha "Letra clara em fundo
+    # escuro" desta pagina, marcada a mao (core.claro_no_escuro). Desmarcada de
+    # fabrica; projeto salvo antes abre desmarcado (campo que falta ganha o
+    # padrao). Arriscado: vir marcada (a pagina sairia com as cores trocadas
+    # no tratamento).
+    claro_no_escuro: bool = False
 
     # "Limpar pontinhos" SO desta pagina, por cima do livro
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel

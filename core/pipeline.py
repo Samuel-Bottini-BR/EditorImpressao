@@ -47,6 +47,7 @@ from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
                              rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
+from core import claro_no_escuro
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -1047,7 +1048,23 @@ def _gravura_a_refazer(projeto: Projeto, pagina: ConfigPagina) -> bool:
 
     if not pagina.selecao or not getattr(pagina, "gravura_feita_com", ""):
         return False
-    return pagina.gravura_feita_com != assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
+    return pagina.gravura_feita_com != _assinatura_da_gravura_da_pagina(projeto, pagina)
+
+
+def _assinatura_da_gravura_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> str:
+    """A assinatura das opcoes com que a gravura desta pagina e achada
+    (core.detectar_regioes.assinatura_da_gravura) e, desde o item 2.9, a
+    caixinha "Letra clara em fundo escuro": com ela ligada, o detector ve a
+    pagina invertida (como no ScanTailor), e a assinatura ganha
+    claro_no_escuro.SUFIXO_DA_GRAVURA. Desligada, a assinatura e a de sempre
+    (nenhum livro ja comecado refaz a marcacao). Arriscado: por o sufixo
+    sempre (todas as paginas refariam a gravura)."""
+    from core.detectar_regioes import assinatura_da_gravura
+
+    assinatura = assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
+    if claro_no_escuro.ligado(pagina):
+        assinatura += claro_no_escuro.SUFIXO_DA_GRAVURA
+    return assinatura
 
 
 # As opcoes de gravura do LIVRO (modelos.Projeto), na tela "O que fazer".
@@ -1194,7 +1211,7 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     if pagina.selecao is not lida:
         # a pessoa marcou durante a deteccao: vale a marcacao dela
         return pagina.obter_selecao()
-    pagina.gravura_feita_com = assinatura_da_gravura(detector, opcoes)
+    pagina.gravura_feita_com = _assinatura_da_gravura_da_pagina(projeto, pagina)   # item 2.9
 
     # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.
     # Quando isso acontece a pagina fica laranja, para a pessoa conferir na
@@ -1720,6 +1737,13 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
              dpi: float | None = None, dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:
     """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
 
+    Item 2.9 (20/10/2026, Samuel P9 (a)): pagina com a caixinha "Letra clara
+    em fundo escuro" (core.claro_no_escuro) passa invertida por todo o
+    caminho abaixo - marcacao de gravura inclusive - e o resultado e invertido
+    de novo, como o ScanTailor faz (initFilterData e o fim da saida). Original
+    e "Tirar o fundo" nao mudam (inverter duas vezes daria a mesma pagina).
+    Caixinha desmarcada (o de fabrica): nenhuma conta a mais.
+
     dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
     ScanTailor precisa deles; item 1.2) e para o "Limpar pontinhos" do
     Preto e branco e do "So as letras" (pontinhos_da_pagina; decisao do
@@ -1762,6 +1786,20 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     if not projeto.limpar:
         _anotar_tinta_forte_fora(pagina, False)
         return img, False
+    if claro_no_escuro.ligado(pagina) and pagina.filtro not in (ORIGINAL, TIRAR_FUNDO):
+        saida, monocromatica = _filtrar_preto_no_branco(
+            projeto, pagina, claro_no_escuro.inverter(img), dpi, dpi_do_scan)
+        return claro_no_escuro.inverter(saida), monocromatica
+    return _filtrar_preto_no_branco(projeto, pagina, img, dpi, dpi_do_scan)
+
+
+def _filtrar_preto_no_branco(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                             dpi: float | None = None,
+                             dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:
+    """O corpo de _filtrar (ver a explicacao la): a pagina tratada como letra
+    escura em papel claro. Chamado direto, ou com a pagina ja invertida
+    (item 2.9). Arriscado: chamar daqui fora sem passar por _filtrar (a
+    caixinha "Letra clara em fundo escuro" deixaria de valer)."""
     if pagina.filtro == TIRAR_FUNDO:
         # Conferencia 14 (Samuel, "FUNDO: Sim, do mesmo jeito (só muda se
         # alguém marcar um pedaço)"): o pedaco vale aqui como no Original. A
