@@ -102,7 +102,9 @@ def instalar_no_programa(dll: Path) -> Path:
     (PASTA_NATIVO / "st_ferramentas.txt").write_text(
         "st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)\n"
         "Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1)\n"
-        "e endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2).\n"
+        "endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2),\n"
+        "o preto e branco da saida com os dez jeitos de Binarize.cpp (item 2.8)\n"
+        "e as cores da saida: segmentacao e posterizacao (item 2.11).\n"
         "\n"
         f"Código:      {base.REPOSITORIO}\n"
         f"Versão:      {base.VERSAO_SCANTAILOR} (commit {base.COMMIT_SCANTAILOR})\n"
