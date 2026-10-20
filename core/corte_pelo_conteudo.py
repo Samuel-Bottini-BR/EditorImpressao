@@ -108,6 +108,9 @@ class MedidaDoConteudo:
         (é o que entra na conta do tamanho do livro).
     mm_por_ponto: (x, y), pelo DPI que foi dito à DLL; None se indisponível.
     motivo: por que não há caixa (texto para o log; nunca vai para a tela).
+    limite: (x0, y0, x1, y1) em pontos: a página dentro da borda preta (item
+        2.13, core/borda_preta), de onde o corte não passa; None = a imagem
+        inteira (sem a borda preta ligada, como antes).
     """
 
     largura: int
@@ -116,6 +119,7 @@ class MedidaDoConteudo:
     tamanho_mm: tuple[float, float] | None
     mm_por_ponto: tuple[float, float] | None
     motivo: str | None = None
+    limite: tuple[float, float, float, float] | None = None
 
     @property
     def disponivel(self) -> bool:
@@ -142,24 +146,45 @@ class TamanhoDoLivro:
 
 
 def medir(img: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None, *,
-          biblioteca=None) -> MedidaDoConteudo:
+          biblioteca=None, achar_pagina: bool = False,
+          limite: tuple[float, float, float, float] | None = None) -> MedidaDoConteudo:
     """A caixa do conteúdo de `img` (a página já girada, dividida e, no livro
     novo, endireitada), com o DPI das outras ferramentas do ScanTailor
-    (core.caixas_scantailor.achar_na_pagina) e a busca da página desligada.
-    Nunca levanta exceção: sem a DLL, volta sem caixa e com o motivo."""
+    (core.caixas_scantailor.achar_na_pagina).
+
+    achar_pagina: False (o de fábrica do ScanTailor, e o do item 2.5 sozinho)
+        procura o conteúdo na imagem inteira; True (item 2.13, "até a
+        moldura") procura antes a página dentro da borda preta (PageFinder), e
+        a caixa dela vira o `limite` da medida.
+    limite: (item 2.13, "só o preto") a página já achada por outra conta, em
+        pontos: o conteúdo é procurado só dentro dele (o resto da imagem é
+        pintado de branco numa cópia antes de ir à DLL) e o corte não passa
+        dele.
+    Nunca levanta exceção: sem a DLL, volta sem caixa e com o motivo (e com o
+    limite, se veio)."""
     altura, largura = (img.shape[:2] if img is not None and getattr(img, "ndim", 0) >= 2
                        else (0, 0))
-    opcoes = {"achar_pagina": False}
+    opcoes = {"achar_pagina": bool(achar_pagina and limite is None)}
     if biblioteca is not None:
         opcoes["biblioteca"] = biblioteca
-    r = cs.achar_na_pagina(img, dpi_do_desenho, dpi_do_scan, **opcoes)
+    entrada = img
+    if limite is not None and img is not None and largura and altura:
+        x0, y0, x1, y1 = (int(round(v)) for v in limite)
+        entrada = np.full_like(img, 255)
+        entrada[max(0, y0):y1, max(0, x0):x1] = img[max(0, y0):y1, max(0, x0):x1]
+    r = cs.achar_na_pagina(entrada, dpi_do_desenho, dpi_do_scan, **opcoes)
     if not r.disponivel or r.dpi is None:
-        return MedidaDoConteudo(largura, altura, None, None, None, r.motivo)
+        return MedidaDoConteudo(largura, altura, None, None, None, r.motivo, limite)
+    if limite is None and opcoes["achar_pagina"]:
+        limite = r.pagina.como_tupla()
     mm = (cs.MILIMETROS_POR_POLEGADA / r.dpi[0], cs.MILIMETROS_POR_POLEGADA / r.dpi[1])
     if not r.tem_conteudo:
-        return MedidaDoConteudo(largura, altura, None, None, mm, "a página não tem conteúdo")
-    return MedidaDoConteudo(largura, altura, r.conteudo.como_tupla(),
-                            r.tamanho_do_conteudo_mm, mm)
+        return MedidaDoConteudo(largura, altura, None, None, mm, "a página não tem conteúdo", limite)
+    caixa = r.conteudo.como_tupla()
+    if limite is not None:                    # a caixa nunca sai da página
+        caixa = (max(caixa[0], limite[0]), max(caixa[1], limite[1]),
+                 min(caixa[2], limite[2]), min(caixa[3], limite[3]))
+    return MedidaDoConteudo(largura, altura, caixa, r.tamanho_do_conteudo_mm, mm, None, limite)
 
 
 def tamanho_duro_mm(tamanho_mm: tuple[float, float]) -> tuple[float, float]:
@@ -208,16 +233,16 @@ def tamanho_do_livro(tamanhos: Mapping[Hashable, tuple[float, float] | None], *,
                           sozinhas, len(entram))
 
 
-def _caber(a: float, b: float, limite: float) -> tuple[float, float]:
-    """Põe o trecho [a, b] dentro de [0, limite] guardando o tamanho (anda
-    para dentro); se o trecho é maior que o limite, fica o limite inteiro."""
-    if b - a >= limite:
-        return 0.0, float(limite)
-    if a < 0:
-        b, a = b - a, 0.0
+def _caber(a: float, b: float, limite: float, comeco: float = 0.0) -> tuple[float, float]:
+    """Põe o trecho [a, b] dentro de [comeco, limite] guardando o tamanho
+    (anda para dentro); se o trecho é maior, fica [comeco, limite] inteiro."""
+    if b - a >= limite - comeco:
+        return float(comeco), float(limite)
+    if a < comeco:
+        b, a = b + (comeco - a), float(comeco)
     if b > limite:
         a, b = a - (b - limite), float(limite)
-    return max(0.0, a), min(float(limite), b)
+    return max(float(comeco), a), min(float(limite), b)
 
 
 def caixa_do_corte(medida: MedidaDoConteudo,
@@ -231,7 +256,8 @@ def caixa_do_corte(medida: MedidaDoConteudo,
        fora): alarga até ele, metade da diferença para cada lado (Utils::
        calcSoftMarginsMM, linhas 74-176, com Alignment::HCENTER e VCENTER, o
        de fábrica). Sem diferença (esta é a maior), não alarga.
-    3. Cabe na imagem (_caber): anda para dentro guardando o tamanho."""
+    3. Cabe na imagem (_caber): anda para dentro guardando o tamanho. Com a
+       borda preta (medida.limite, item 2.13), cabe na página dentro dela."""
     if not medida.tem_conteudo or medida.mm_por_ponto is None:
         return None
     mx, my = medida.mm_por_ponto
@@ -246,8 +272,9 @@ def caixa_do_corte(medida: MedidaDoConteudo,
             x0, x1 = x0 - 0.5 * delta_l / mx, x1 + 0.5 * delta_l / mx
         if delta_a > 0:
             y0, y1 = y0 - 0.5 * delta_a / my, y1 + 0.5 * delta_a / my
-    x0, x1 = _caber(x0, x1, medida.largura)
-    y0, y1 = _caber(y0, y1, medida.altura)
+    lx0, ly0, lx1, ly1 = medida.limite or (0.0, 0.0, float(medida.largura), float(medida.altura))
+    x0, x1 = _caber(x0, x1, lx1, lx0)
+    y0, y1 = _caber(y0, y1, ly1, ly0)
     return (x0, y0, x1, y1)
 
 

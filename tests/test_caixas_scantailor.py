@@ -385,9 +385,10 @@ def test_so_o_corte_pelo_conteudo_chama_as_caixas():
     prova de que desligado nada é chamado está em
     tests/test_corte_pelo_conteudo_no_programa.py). Nada mais em core/, em
     ui/ ou na raiz pode usar o módulo direto: a busca da página dentro da
-    borda preta (item 2.13) espera a pergunta g7-borda-ate-onde. Quem ligar o
-    2.13 acrescenta o arquivo dele aqui, de propósito."""
-    permitidos = {"caixas_scantailor.py", "st_ferramentas.py", "corte_pelo_conteudo.py"}
+    borda preta (item 2.13) espera a pergunta g7-borda-ate-onde. A busca da
+    página dentro da borda preta (2.13) entra só pelo livro com a borda preta."""
+    permitidos = {"caixas_scantailor.py", "st_ferramentas.py", "corte_pelo_conteudo.py",
+                  "borda_preta.py"}   # 2.13 (g7, 20/10/2026)
     usam = []
     for pasta in ("core", "ui"):
         for arquivo in (RAIZ / pasta).rglob("*.py"):
@@ -402,9 +403,17 @@ def test_so_o_corte_pelo_conteudo_chama_as_caixas():
         if "caixas_scantailor" in arquivo.read_text(encoding="utf-8", errors="replace"):
             usam.append(arquivo.name)
     assert usam == []
-    # e o corte pelo conteúdo nunca liga a busca da página (2.13)
-    texto = (RAIZ / "core" / "corte_pelo_conteudo.py").read_text(encoding="utf-8")
-    assert '"achar_pagina": False' in texto and "achar_pagina=True" not in texto
+    # A busca da página (2.13) só liga pelo livro com a borda preta: o
+    # corte_pelo_conteudo.medir a deixa desligada de fábrica, e quem a pede é
+    # só core/pipeline.py com Projeto.borda_preta "até a moldura" (liberado
+    # pela g7-borda-ate-onde, 20/10/2026).
+    import inspect
+    from core import corte_pelo_conteudo as cpc
+
+    assert inspect.signature(cpc.medir).parameters["achar_pagina"].default is False
+    pipeline_txt = (RAIZ / "core" / "pipeline.py").read_text(encoding="utf-8")
+    assert pipeline_txt.count("achar_pagina=True") == 1
+    assert "jeito == borda_preta.ATE_A_MOLDURA" in pipeline_txt
 
 
 # ------------------------------------------------------------- as páginas de verdade

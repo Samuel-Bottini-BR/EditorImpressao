@@ -308,6 +308,16 @@ class Projeto:
     # Projeto antigo nao tem os campos: volta sem linhas e com as automaticas.
     guias: list = field(default_factory=list)
     guias_automaticas: bool = True
+    # Item 2.13, decisoes G7 (a) do Samuel (05/10/2026: "Sim, desligada de
+    # fabrica") e g7-borda-ate-onde (20/10/2026: "O Kaique escolhe por livro:
+    # so o preto, ou ate a moldura"). borda_preta = achar a pagina dentro da
+    # borda preta do scanner e sugerir o corte (False de fabrica: livro novo e
+    # projeto antigo saem como hoje). borda_preta_ate = ate onde vai o corte
+    # sugerido: "ate_a_moldura" (o impresso, conta do ScanTailor; o que vem
+    # escolhido) ou "so_o_preto" (conta nossa). Ver core/borda_preta.py. O
+    # corte a mao (ConfigPagina.recorte) e a excecao por pagina, como sempre.
+    borda_preta: bool = False
+    borda_preta_ate: str = "ate_a_moldura"
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
