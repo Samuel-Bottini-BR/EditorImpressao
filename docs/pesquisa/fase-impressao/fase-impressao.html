@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fase de impressão dentro do programa</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Fase de impressão dentro do programa: como fazer</h1>
+<p>Pesquisa para a gerente, 19 e 20/10/2026. Ramo <code>pesquisa-impressao-2026-10-19</code>.
+Pedido do Samuel (14/10): todas as opções da janela de imprimir do UPDF dentro do programa, mais o livreto
+automático "como o embaralhador antigo (o primeiro que fizemos)". Texto dele em
+<code>relatorios/conferencia-samuel-2026-10-14/explicacao-da-impressao.md</code>; decisões <code>g10</code>, <code>g11</code> e <code>g12</code> no Registro
+do plano (13 e 14/10).</p>
+<p>Ao longo do texto, <strong>[lido]</strong> quer dizer que eu li na fonte (código, foto, página da internet) e <strong>[dedução]</strong>
+quer dizer que é conclusão minha, ainda não conferida.</p>
+<h2>A resposta em cinco frases</h2>
+<ol>
+<li>O "embaralhador antigo" é o primeiro programa, o <code>imposicao_cadernos.py</code>, e a conta dele já está no programa
+   de hoje (<code>core/cadernos.py</code>), testada e com a conferência da dobra. Essa parte se aproveita inteira.</li>
+<li>O que falta é a <strong>montagem da folha</strong>: hoje cada folha sai com o dobro da largura da página, sem papel A4,
+   sem margem e sem escala. Com o PyMuPDF, que o programa já usa, dá para pôr cada página na metade de uma A4
+   deitada com as margens de 1,3 cm e 1 cm, a escala de cada lado e o aviso de margem. Uma prova pequena,
+   fora do programa, funcionou.</li>
+<li>Quase todas as opções do UPDF se fazem no próprio arquivo PDF, sem biblioteca nova (Tamanho, Livreto,
+   Múltiplo, Pôster, papel, orientação, girar, centralizar, cinza, inverter a ordem, intervalo). Cópias,
+   "Agrupar" e escolher a impressora só existem se o programa mandar direto para a impressora. O PySide6 tem
+   isso pronto, mas é decisão do Samuel.</li>
+<li>Achei um defeito que veio do embaralhador antigo: o último caderno sai sempre do tamanho cheio. Num livro
+   de 23 páginas em cadernos de 20, saem 17 páginas em branco, 3 folhas inteiras vazias. Corrigir isso é
+   decisão do Samuel.</li>
+<li>Dá para fazer em livros de 300 a 1000 páginas e no notebook do Kaique. A memória cresce com o tamanho do
+   arquivo final, como já acontece hoje ao gravar o PDF. Ficam seis perguntas para o Samuel (seção 9).</li>
+</ol>
+<h2>Tabela: cada opção, o que faz, como fazer, dificuldade</h2>
+<table>
+<thead>
+<tr>
+<th>Opção (nome no UPDF)</th>
+<th>O que faz</th>
+<th>Como fazer no programa</th>
+<th>Dificuldade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Livreto</strong> (frente e verso, encadernação esquerda)</td>
+<td>Duas páginas por folha deitada, na ordem da dobra</td>
+<td>Ordem: <code>core/cadernos.py</code> (já existe). Folha: <code>show_pdf_page</code> em cada metade de uma A4 deitada</td>
+<td>Média (a ordem está pronta; falta a folha A4, as margens e a escala)</td>
+</tr>
+<tr>
+<td>Livreto em <strong>cadernos de N folhas</strong></td>
+<td>Vários cadernos em vez de um só (o UPDF e o Acrobat fazem um só)</td>
+<td>Já existe (<code>paginas_por_caderno</code>, 8 a 40)</td>
+<td>Pronto</td>
+</tr>
+<tr>
+<td>Livreto: <strong>Folhas de / até</strong></td>
+<td>Imprime só algumas folhas (ex.: refazer uma folha que enroscou)</td>
+<td>Monta a ordem inteira e grava só os lados do intervalo</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td>Livreto: <strong>Frente e verso / só frente / só verso</strong></td>
+<td>Para impressora sem frente e verso automático</td>
+<td>Grava só os lados ímpares ou só os pares</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td>Livreto: <strong>Encadernação esquerda / direita</strong></td>
+<td>Direita é para livro que abre ao contrário</td>
+<td>Trocar a página da esquerda pela da direita em cada lado</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Ajustar</strong></td>
+<td>Aumenta ou diminui cada página até caber no papel</td>
+<td>Conta da escala <code>min(largura, altura)</code> e <code>show_pdf_page</code> com proporção mantida</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Tamanho real</strong></td>
+<td>100%, sem escala; o que passar do papel é cortado</td>
+<td><code>show_pdf_page</code> com o tamanho da página em pontos, centrado, e <code>clip</code></td>
+<td>Fácil (depende do DPI declarado do scan, ver Riscos)</td>
+</tr>
+<tr>
+<td><strong>Escala personalizada (%)</strong></td>
+<td>Escala fixa escolhida pelo usuário</td>
+<td>Multiplica o tamanho real pela %</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Reduzir páginas muito grandes</strong></td>
+<td>Só diminui as páginas maiores que o papel; as menores ficam em 100%</td>
+<td><code>escala = min(1, ajustar)</code></td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Escala só da esquerda / só da direita / das duas</strong> (pedido do Samuel)</td>
+<td>Diminuir as páginas pares, as ímpares ou todas</td>
+<td>Uma escala para cada lado da folha, valendo para o livro, com exceção por folha</td>
+<td>Média (o difícil é a tela, não a conta)</td>
+</tr>
+<tr>
+<td><strong>Margens</strong> 1,3 cm fora / 1 cm na costura (<code>g11</code>)</td>
+<td>Garantir a margem da encadernação clássica</td>
+<td>Área de cada metade descontada das margens; a costura fica sempre no meio da A4</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Aviso de margem abaixo de 1 cm</strong></td>
+<td>Avisar quando a tinta chegar perto demais da beirada</td>
+<td>Caixa da tinta de cada página (4 números) e a conta da margem depois da escala</td>
+<td>Média</td>
+</tr>
+<tr>
+<td><strong>Pôster</strong></td>
+<td>Divide uma página grande em várias folhas, com sobreposição para colar</td>
+<td>Uma página nova por pedaço, <code>show_pdf_page(..., clip=pedaço)</code>; marcas de corte com <code>draw_line</code></td>
+<td>Média</td>
+</tr>
+<tr>
+<td><strong>Múltiplo</strong></td>
+<td>Várias páginas numa folha (2, 4, 6, 9, 16), em grade</td>
+<td>Grade de células, <code>show_pdf_page</code> em cada uma; moldura com <code>draw_rect</code></td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Tamanho do papel</strong> (A4, Carta, Ofício...)</td>
+<td>Muda a folha de saída</td>
+<td>Tabela de tamanhos em cm (a do UPDF, ver seção 2)</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Orientação</strong> Retrato / Paisagem</td>
+<td>Folha em pé ou deitada</td>
+<td>Trocar largura e altura da folha</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Rotação automática</strong></td>
+<td>Gira a página que está "deitada" num papel "em pé" (e o contrário)</td>
+<td><code>show_pdf_page(..., rotate=90)</code> quando a orientação não bate</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Centralizar automático</strong></td>
+<td>Centra a página no papel; desligado, ela fica no canto</td>
+<td>Posição do retângulo</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Escala de cinza</strong></td>
+<td>Tira a cor</td>
+<td>Melhor na hora de gravar a página (o programa já tem a imagem na mão); depois só refazendo a imagem</td>
+<td>Fácil se for na gravação</td>
+</tr>
+<tr>
+<td><strong>Imprimir como imagem</strong></td>
+<td>Manda a folha como uma foto inteira, não como desenho do PDF</td>
+<td>As páginas do programa já são imagens. "Achatar" a folha inteira é possível, mas deixa o arquivo maior e mais lento</td>
+<td>Fácil, mas pouco útil (ver seção 3)</td>
+</tr>
+<tr>
+<td><strong>Reverter páginas</strong></td>
+<td>Imprime da última para a primeira</td>
+<td>Inverter a ordem das <strong>folhas</strong>, sem separar frente e verso de cada uma</td>
+<td>Fácil, com teste na impressora</td>
+</tr>
+<tr>
+<td><strong>Intervalo de páginas</strong> / Todas</td>
+<td>Imprime só parte do livro</td>
+<td>Escolher as páginas antes de montar</td>
+<td>Fácil</td>
+</tr>
+<tr>
+<td><strong>Cópias / Agrupar</strong>, <strong>impressora</strong>, <strong>Predefinição</strong></td>
+<td>Coisas da impressora</td>
+<td>Só se o programa imprimir direto (PySide6 <code>QPrinter</code>: cópias, agrupar, frente e verso pela borda curta)</td>
+<td>Média</td>
+</tr>
+<tr>
+<td>A folha muito maior (<code>g9</code>)</td>
+<td>Tabela dobrável</td>
+<td>Quatro caminhos na seção 6</td>
+<td>Média</td>
+</tr>
+</tbody>
+</table>
+<h2>1. O embaralhador antigo</h2>
+<p><strong>Onde está [lido]:</strong> é o <code>imposicao_cadernos.py</code>, feito no chat que deu origem ao projeto, guardado inteiro em
+<code>historico/genesis-conversa-imposicao-cadernos.md</code> (linhas 80 a 620). Não achei o arquivo solto no disco. Procurei
+em <code>D:\programas</code>, <code>velhos/</code>, <code>EditorImpressao-arquivos</code>, Área de Trabalho, Downloads e Documentos. O git
+começa no programa novo (<code>94d3459</code>); os ramos antigos não têm nada antes disso.</p>
+<p><strong>Como ele montava o caderno [lido]:</strong></p>
+<ul>
+<li><strong>Primeira versão</strong> (Python, biblioteca PyPDF2): para um caderno de N páginas, a folha <code>i</code> (contando do 0)
+  leva na frente <code>[N − 2i] [1 + 2i]</code> e no verso <code>[2 + 2i] [N − 1 − 2i]</code>. Exemplo do próprio chat, 20 páginas:
+  folha 1 = 20|1 e 2|19; folha 5 (miolo) = 12|9 e 10|11. Os cadernos seguem em blocos de N páginas. O que
+  passa do fim vira página em branco <strong>no fim do último caderno</strong>, que é sempre do tamanho cheio. O arquivo saía
+  só com as páginas na nova ordem, e o Kaique tinha de imprimir "2 por folha".</li>
+<li><strong>Segunda versão</strong> (página da internet, a que o Samuel aprovou): o arquivo já saía com as duas páginas lado a
+  lado numa folha deitada. Cada página era <strong>reduzida até caber na metade e centrada</strong> (o
+  <code>criar_pagina_dupla</code> da primeira versão já fazia essa conta). Teste no chat: "232 páginas → 120 folhas
+  landscape". Ele dizia para imprimir em "Ajustar" ou "Tamanho real", frente e verso pela borda curta.</li>
+<li>Depois disso, o mesmo chat virou o "Editor e Programador de Impressão" (v3 a v5.2: filtros, endireitar),
+  que é o avô do programa de hoje.</li>
+</ul>
+<p><strong>O que existe hoje no programa [lido]:</strong> <code>core/cadernos.py</code> tem a <strong>mesma conta</strong> (<code>ordem_do_caderno</code>,
+<code>montar_ordem</code>), mais duas coisas que o antigo não tinha: <code>conferir_sequencia</code> (simula a dobra e confere que a
+leitura sai 1, 2, 3…, sem página faltando nem repetida) e <code>instrucoes_de_impressao</code>. Tem testes
+(<code>tests/test_cadernos.py</code>). A caixa "Montar cadernos para impressão" fica em <code>ui/tela_opcoes.py</code>, com 8 a 40 páginas
+por caderno (padrão 20), e há um "caminho rápido, só cadernos" que não refaz as imagens (<code>core/pipeline.py</code>).</p>
+<p><strong>Diferença importante [lido]:</strong> o <code>impor_pdf</code> de hoje faz a folha com <strong>o dobro da largura da maior página</strong> e
+põe as páginas em 100%, sem papel A4, sem margem e sem escala. As provas antigas em
+<code>EditorImpressao-arquivos\testes-cadernos-gradus-primus\</code> saem com 29,8 x 21,0 cm porque a página do Gradus
+já é quase A5. Num livro de página maior (Opus Majus, 14,6 x 23,5 cm), a folha sairia com 29,2 x 23,5 cm, que
+não é A4. Quem acerta o tamanho hoje é a janela do UPDF ("Escala personalizada" de 75% e 83% nas fotos).</p>
+<p><strong>Dá para reaproveitar? [dedução]</strong> Sim. A ordem e a conferência ficam como estão. O que muda é só a parte de pôr
+cada página na folha (<code>impor_pdf</code> / <code>_colocar</code>): passa a receber o papel, as margens e a escala de cada lado.
+A conta do "reduzir e centrar na metade" da segunda versão é a mesma do "Ajustar" da seção 3.</p>
+<p><strong>O defeito herdado [lido no código, conferido rodando]:</strong> com 23 páginas em cadernos de 20, <code>montar_ordem</code> faz
+dois cadernos de 20: o segundo leva as páginas 21 a 23 e <strong>17 páginas em branco</strong>, com as folhas 3, 4 e 5 do
+caderno <strong>inteiramente vazias</strong> (a conferência diz "sobram 17 páginas em branco no fim do último caderno"). Num
+livro de 250 páginas, o último caderno (241 a 250) sai com metade de cada folha em branco. O antigo fazia o
+mesmo. Ver a pergunta 4 da seção 9.</p>
+<h2>2. O que as fotos mostram</h2>
+<p><strong>[lido nas fotos]</strong></p>
+<ul>
+<li>Impressora <strong>EPSON WF-C5890 Series</strong>. "Predefinição: Última configuração". Caixa de cima: "Documento, Comentário,
+  Campos de formulários".</li>
+<li>Fotos 1 e 2: um PDF de <strong>250 páginas</strong>, A4, <strong>Paisagem</strong>, "Centralizar Automático" marcado, "Rotação
+  Automática" desmarcada, aba <strong>Tamanho</strong> em <strong>Escala personalizada 75%</strong> (foto 1) e <strong>83%</strong> (foto 2).
+  "Imprimir como imagem" marcado, "Agrupar" marcado, 1 cópia, intervalo 1 a 250.</li>
+<li>Foto 3: outro PDF, de <strong>486 páginas</strong> (o Balzac), aberta a lista de papéis (A4; Carta 216 x 279; Ofício 9
+  215 x 315; 8,5 x 13 pol. 216 x 330; México-Ofício 216 x 341; Ofício 216 x 356; Executivo 184 x 267; Envelope
+  #10 105 x 241; 8 x 10 pol. 203 x 254; 5 x 7 pol. 127 x 178; a lista continua). Aba <strong>Livreto</strong>: "Ordem de
+  páginas: Frente e verso", "Folhas de 1 – 244" (em cinza), "Encadernação: Esquerda". A prévia mostra 244 folhas.</li>
+<li>Fotos 4 e 5: a capa do Balzac em <strong>Ajustar</strong>: <strong>69%</strong> em paisagem (a capa em pé numa folha deitada) e <strong>97%</strong>
+  em retrato. A escala personalizada guardada é 70.</li>
+<li>As abas <strong>Pôster</strong> e <strong>Múltiplo</strong> não aparecem abertas em nenhuma foto.</li>
+</ul>
+<p><strong>[dedução]</strong></p>
+<ul>
+<li>No fundo das fotos 1 e 2 aparecem os números de página <strong>40</strong> e <strong>21</strong> lado a lado. Isso é a frente da folha
+  de fora do 2º caderno de 20 páginas (40|21), a ordem do embaralhador. Então o PDF de 250 páginas é <strong>um livro
+  de ~500 páginas já embaralhado</strong>, e o Kaique o imprime com "Escala personalizada" para criar margem. Isso
+  explica os 75% e 83%.</li>
+<li>Diminuir a folha inteira, centrada, como nas fotos, <strong>aproxima as duas páginas do meio</strong>. A margem da costura
+  encolhe na mesma proporção, e a de fora cresce. A escala por página (seção 5) não tem esse efeito.</li>
+<li>No Livreto do UPDF, "Folhas 1 – 244" para 486 páginas é igual a 488 ÷ 2. Então o UPDF conta <strong>lados de
+  folha</strong>, não folhas de papel (seriam 122). O Acrobat conta folhas de papel: "um PDF de 16 páginas dá folhas de
+  1 a 4" [lido, guia de Syracuse/Adobe].</li>
+<li>A janela do UPDF tem os mesmos nomes e a mesma arrumação da janela do Adobe Acrobat ("Tamanho / Pôster /
+  Múltiplo / Livreto", "Reduzir páginas muito grandes"). Por isso usei a documentação da Adobe onde a do UPDF
+  não diz nada.</li>
+</ul>
+<h2>3. Cada opção em detalhe</h2>
+<p>Fonte das definições: a documentação da Adobe para as opções iguais. O guia do UPDF só lista os nomes, e a
+explicação que ele dá da escala de cinza ("imprimir as cores opostas de fundo e frente") parece engano do texto;
+não a uso.</p>
+<p><strong>Tamanho (aba).</strong> [lido, Adobe] <em>Ajustar</em> "reduz ou aumenta cada página até caber na área imprimível do papel";
+<em>Tamanho real</em> "imprime sem escala; o que não cabe é cortado"; <em>Reduzir páginas muito grandes</em> "diminui as páginas
+grandes até caber, mas não aumenta as pequenas"; <em>Escala personalizada</em> é a %. <strong>No PyMuPDF [lido, documentação
+do <code>show_pdf_page</code>]:</strong> cria-se uma página do tamanho do papel e põe-se a página do livro com
+<code>folha.show_pdf_page(retângulo, livro, número)</code>. A página entra como desenho do PDF, <strong>sem refazer a imagem</strong>: os
+pixels do livro ficam intactos e a conta é rápida. O retângulo é a única coisa que muda entre as quatro opções:</p>
+<ul>
+<li>Ajustar: <code>f = min(largura_área / largura_pág, altura_área / altura_pág)</code>;</li>
+<li>Tamanho real: <code>f = 1</code>, e o <code>clip</code> corta o que passar;</li>
+<li>Reduzir muito grandes: <code>f = min(1, ajustar)</code>;</li>
+<li>Escala personalizada: <code>f = %/100</code>.</li>
+</ul>
+<p>A "área imprimível" do UPDF é a da impressora (os ~3 mm que o Samuel citou). No programa, a área é o papel menos
+esses 3 mm, ou o papel menos as margens de 1,3/1 cm (ver a pergunta 2).</p>
+<p><strong>Rotação automática e Centralizar automático.</strong> [lido, Adobe] a rotação automática gira cada página para o
+melhor encaixe. [dedução] Desligada a centralização, a página encosta num canto (não achei qual na
+documentação). No PyMuPDF: <code>show_pdf_page(..., rotate=90)</code> e a posição do retângulo.</p>
+<p><strong>Múltiplo.</strong> [lido, PDF Reader Pro e Adobe] várias páginas por folha ("n-up": 2, 4, 6, 9, 16 ou sob medida), em
+ordem horizontal ou vertical (e as duas invertidas), com moldura opcional. No PyMuPDF: divide-se a folha em
+grade e cada célula recebe um <code>show_pdf_page</code>. <strong>Para o livro, o uso real é pouco [dedução]</strong>: "2 por folha" sem
+embaralhar é o que a primeira versão do embaralhador pedia ao Kaique, e o Livreto já faz melhor.</p>
+<p><strong>Pôster.</strong> [lido, Adobe/docuslice] divide uma página grande em várias folhas. "Escala do bloco" (% do tamanho),
+"Sobreposição" (faixa repetida na beirada de cada pedaço para colar; sugestão de ~1 cm), "Marcas de corte",
+"Rótulos" (nome do arquivo e número do pedaço) e "Só páginas grandes" (as que cabem num papel saem inteiras).
+No PyMuPDF: para cada pedaço, uma página nova e <code>show_pdf_page(folha.rect, livro, n, clip=pedaço)</code>; as marcas
+com <code>draw_line</code> e o rótulo com <code>insert_text</code>. Serve para a tabela dobrável (seção 6).</p>
+<p><strong>Livreto (aba).</strong> [lido, Adobe] "Subconjunto: os dois lados / só frente / só verso" (o UPDF chama de "Ordem de
+páginas: Frente e verso"); "Folhas de / até"; "Encadernação: Esquerda, Direita, Esquerda alta, Direita alta".
+<strong>O Acrobat trata o PDF inteiro como um caderno só e completa com brancos no fim até múltiplo de 4</strong> [lido,
+Adobe e o chat de origem: "o Acrobat não tem nativamente a opção de dividir em múltiplos cadernos"]. O programa
+já faz melhor, com cadernos de N páginas. A encadernação "alta" (dobra em cima) não serve para estes livros
+[dedução]. "Direita" é só trocar os lados.</p>
+<p><strong>Escala de cinza.</strong> Tira a cor. [dedução] As páginas do programa são imagens. O jeito barato é converter na hora
+de gravar cada página (o <code>EscritorPDF</code> já recebe a imagem); fazer isso depois obriga a abrir e refazer cada
+imagem. No filtro "Preto e branco" já é cinza (1 bit), então a opção só muda algo no "Original", "Melhorar" e
+"Mágico pro".</p>
+<p><strong>Imprimir como imagem.</strong> [lido, guia UPDF] "manda o pedido como uma imagem simples em vez do documento".
+Serve quando a impressora desenha mal o PDF (fontes, transparências). [dedução] O PDF do programa já é feito de
+imagens, sem fonte nenhuma. "Achatar" cada folha numa imagem só (<code>get_pixmap</code> a 300 ou 600 DPI e gravar de
+novo) é possível, mas deixa o arquivo maior e a gravação mais lenta. No Preto e branco pode até amaciar a letra,
+se o DPI ficar abaixo do original. Recomendo não ter de fábrica e perguntar por que estava marcada (pergunta 6).</p>
+<p><strong>Reverter páginas.</strong> [lido, guia UPDF] imprime da última para a primeira, para impressora que solta a folha
+virada para cima. [dedução] No livreto frente e verso <strong>não se pode inverter página a página</strong>: separaria a frente
+do verso de cada folha. Tem de inverter a ordem das <strong>folhas</strong>, mantendo o par frente/verso. Precisa de um teste
+na Epson antes de entregar.</p>
+<p><strong>Intervalo de páginas.</strong> Simples no arquivo. [dedução] No livreto há duas leituras: (a) um trecho do livro vira
+o seu próprio livreto (o Acrobat faz assim); (b) "Folhas de/até" reimprime folhas já montadas. As duas servem.
+A (b) é a que salva papel quando uma folha enrosca.</p>
+<p><strong>Tamanhos de papel e orientação.</strong> Uma tabela fixa (a da foto 3) e a troca de largura com altura. O
+<code>core/folha.py</code> já tem A4, A5 e Carta. No livreto, cada metade do papel deitado é uma página.</p>
+<p><strong>Cópias, Agrupar, impressora, Predefinição.</strong> Não existem num arquivo PDF. Dois caminhos [dedução]:</p>
+<ul>
+<li>(A) o programa grava o PDF pronto e o Kaique imprime no UPDF <strong>em "Tamanho real"</strong>. Se imprimir em "Ajustar",
+  o UPDF encolhe de novo e as margens mudam; isso tem de estar escrito na tela final.</li>
+<li>(B) o programa imprime direto. O PySide6 que já está no projeto tem <code>QtPrintSupport</code>, com escolha de
+  impressora, cópias, agrupar e frente e verso pela borda curta (<code>QPrinter.DuplexShortSide</code>) [lido: o módulo
+  importa neste PC e lista as impressoras].</li>
+</ul>
+<p>O caminho B rende cada folha como imagem para a impressora (uma por vez, sem pesar na memória). Recomendo
+começar pelo A e deixar o B como segundo passo (pergunta 5).</p>
+<h2>4. Livreto A4 deitada com duas A5: a ordem</h2>
+<p>A ordem é a do <code>core/cadernos.py</code> (seção 1). Exemplo com cadernos de 8 páginas (2 folhas), conferido rodando:</p>
+<table>
+<thead>
+<tr>
+<th>Folha</th>
+<th>Frente (esquerda · direita)</th>
+<th>Verso (esquerda · direita)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (de fora)</td>
+<td>8 · 1</td>
+<td>2 · 7</td>
+</tr>
+<tr>
+<td>2 (miolo)</td>
+<td>6 · 3</td>
+<td>4 · 5</td>
+</tr>
+</tbody>
+</table>
+<p>O caderno seguinte começa na página 9, com a mesma conta somando 8. Com 20 páginas por caderno (o padrão), a
+folha 1 é 20·1 / 2·19 e a do miolo é 12·9 / 10·11, igual ao chat de origem.</p>
+<p><strong>A costura fica sempre no meio da A4 [lido na conta, conferido]:</strong> a página da esquerda de cada lado é sempre par
+e a da direita sempre ímpar. Isso bate com a regra do Samuel: "página par → direita, página ímpar → esquerda"
+(par tem a costura à direita, ímpar à esquerda). Logo, a margem de costura é sempre a do meio da folha, e a de
+fora é sempre a da beirada do papel. Não depende de qual página caiu onde.</p>
+<p><strong>Quando o número de páginas não fecha o caderno (opções) [dedução, para o Samuel escolher]:</strong></p>
+<ol>
+<li><strong>Como hoje (e como o embaralhador antigo):</strong> último caderno do tamanho cheio, brancos no fim. Num livro de
+   23 páginas em cadernos de 20, saem 3 folhas inteiras em branco.</li>
+<li><strong>Último caderno menor:</strong> só as folhas necessárias, com no máximo 3 páginas em branco (23 páginas = 1 caderno
+   de 20 + 1 de 4).</li>
+<li><strong>Cadernos equilibrados:</strong> reparte as páginas para todos ficarem parecidos (ex.: 250 páginas em 13 cadernos de
+   20 ou 16). É mais bonito na encadernação, mas muda o tamanho que o Kaique escolheu.</li>
+</ol>
+<p>Em todos os casos, os brancos podem ir no fim do livro (o usual, e o que o Acrobat faz) ou antes da última folha
+(guarda). A conferência da dobra (<code>conferir_sequencia</code>) continua valendo e precisa de um teste para cada caso.</p>
+<p><strong>Instrução de imprimir (já existe):</strong> frente e verso virando pela borda curta; separar em grupos de N÷4 folhas;
+dobrar. A Epson WF-C5890 tem frente e verso automático [lido, fichas de revenda; não achei a ficha da Epson].</p>
+<h2>5. Margens, escala por lado e o aviso</h2>
+<p><strong>As medidas [lido no plano]:</strong> contadas na A5; 1 cm a partir de onde a impressora imprime = <strong>1,3 cm da beirada
+do papel</strong> em cima, embaixo e do lado de fora; <strong>1 cm na costura</strong> (<code>g11</code>). Numa A4 deitada, cada metade tem
+14,85 x 21,0 cm, e a área garantida fica com <strong>12,55 x 18,4 cm</strong>.</p>
+<p><strong>A escala por lado [lido no plano, <code>g12</code>]:</strong> "Em todas, e dá para mudar uma folha só". [dedução] "Lado esquerdo"
+= as páginas que caem à esquerda da folha (as pares); "lado direito" = as ímpares. Faz sentido quando o scan das
+páginas pares e das ímpares saiu de tamanhos diferentes. Na prova: uma escala para a esquerda, outra para a
+direita, e uma lista de exceções <code>{folha: (esquerda, direita)}</code>.</p>
+<p><strong>Onde fica a página reduzida [dedução]:</strong> na prova, centrada na sua metade. Assim a margem da costura e a de fora
+crescem juntas, ao contrário do que acontece hoje ao reduzir a folha inteira no UPDF (seção 2). Outra opção
+seria encostar na costura e deixar a sobra toda para fora. Fica para o Samuel.</p>
+<p><strong>O aviso [dedução, testado na prova]:</strong> o programa guarda, para cada página, o retângulo onde há tinta
+(4 números). Na hora de montar, calcula onde esse retângulo cai na folha e mede as quatro distâncias até a
+beirada da metade. Avisa se fora, cima ou baixo der menos de 1,3 cm, ou a costura menos de 1,0 cm, e diz quanto
+falta e que escala resolve. O melhor é medir a tinta <strong>durante o processamento</strong>, quando a imagem já está na
+memória, e não reler o livro na hora de imprimir (seção 7).</p>
+<p><strong>A prova (rascunho, fora do programa; script em <code>prova_livreto.py.txt</code>):</strong> livro falso de 23 páginas de
+14,6 x 23,5 cm (o tamanho do Opus Majus) com a tinta a 0,4 cm da beirada, como depois de um corte justo.</p>
+<table>
+<thead>
+<tr>
+<th>Montagem</th>
+<th>Páginas com aviso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ajustar na metade da A4 (só tirando os 3 mm da impressora)</td>
+<td>23 de 23 (cima e baixo com 0,67 cm)</td>
+</tr>
+<tr>
+<td>A mesma, com escala 95%</td>
+<td>23 (1,16 cm, ainda abaixo de 1,3)</td>
+</tr>
+<tr>
+<td>A mesma, com escala 90% / 85% / 80%</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Ajustar dentro das margens (1,3 / 1,0 cm)</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Direita 90%, esquerda 100%, folha 1 com exceção de 80%</td>
+<td>10 (só as páginas da esquerda)</td>
+</tr>
+</tbody>
+</table>
+<p>A linha vermelha tracejada é a margem mínima e a azul é a dobra. As duas aparecem só na prévia, nunca no arquivo
+de imprimir.</p>
+<p><img alt="Ajustar na metade da A4: a página passa da linha vermelha em cima e embaixo, e o programa avisa" src="img/livreto-ajustar-papel-folha1.png" /></p>
+<p><img alt="Ajustar dentro das margens: tudo dentro da linha vermelha" src="img/livreto-ajustar-margens-folha1.png" /></p>
+<p><img alt="Só o lado direito a 90% (folha 2): a página 3 diminui, a 6 não" src="img/livreto-direita90-folha2.png" /></p>
+<h2>6. A folha muito maior (tabela dobrável, pergunta <code>g9-folha-maior-impressao</code>)</h2>
+<p>Medidas [lido, resumo de 14/10]: tabela do Opus Majus 20,8 x 17,6 cm; página comum 14,6 x 23,5 cm. Contas minhas
+com as áreas da seção 5:</p>
+<table>
+<thead>
+<tr>
+<th>Opção</th>
+<th>Como se faz</th>
+<th>Tamanho que sai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ajustar</strong> (gira de pé e reduz até caber na A5)</td>
+<td><code>rotate=90</code> e a conta do Ajustar na vaga dela no caderno</td>
+<td>83% dentro da A5 menos 3 mm; <strong>71%</strong> dentro das margens (a página comum fica com 87% e 78%)</td>
+</tr>
+<tr>
+<td><strong>Tamanho real numa A4 à parte</strong></td>
+<td>Uma página A4 deitada a 100%, num arquivo separado ou no fim; na vaga dela no caderno, uma página em branco ou a tabela reduzida</td>
+<td>100% (cabe: 20,8 x 17,6 numa A4 deitada, mesmo com 1,3 cm de margem). Dobra-se e cola-se à mão</td>
+</tr>
+<tr>
+<td><strong>Pôster</strong></td>
+<td>Pedaços com sobreposição, para colar</td>
+<td>Só faz sentido para tabela <strong>maior que uma A4</strong>; esta não precisa</td>
+</tr>
+<tr>
+<td><strong>Dividir em duas</strong></td>
+<td>Metade esquerda numa página, metade direita na seguinte (<code>clip</code> em cada metade)</td>
+<td><strong>100%</strong>: cada metade (10,4 x 17,6) cabe numa A5 até dentro das margens; a tabela fica aberta em duas páginas, cortada pela dobra</td>
+</tr>
+</tbody>
+</table>
+<p>(A página de escolhas fala em ~73% e ~81%. A diferença vem da área usada na conta; os números acima usam as
+margens de <code>g11</code>.)</p>
+<p><strong>Cuidado com a paridade [dedução]:</strong> tirar a tabela do caderno ou dividi-la em duas muda o número de páginas.
+Se mudar em número ímpar, <strong>todas as páginas seguintes trocam de lado</strong> (a ímpar vai para a esquerda, a costura vai
+para o lado errado). Para não acontecer: ao tirar, tira-se também o verso em branco dela (se existir) ou fica uma
+página em branco na vaga; ao dividir, a primeira metade tem de cair numa página par (lado esquerdo do livro
+aberto). Se não cair, o programa põe uma branca antes. Isso tem de ter teste.</p>
+<h2>7. Riscos</h2>
+<ul>
+<li><strong>Memória [lido rodando, prova no PC do Samuel com outros agentes ligados]:</strong> livro falso de 120 páginas e
+  178 MB, imagem pouco compressível: livreto montado em <strong>2,3 s</strong>, memória de 85 MB para <strong>pico de 360 MB</strong>,
+  arquivo de 178 MB. [dedução] O pico acompanha o tamanho do arquivo final, porque o PyMuPDF guarda o PDF novo na
+  memória até gravar. O programa <strong>já faz isso hoje</strong> ao gravar (o <code>EscritorPDF</code> também só grava no fim). A regra
+  "uma página por vez" continua valendo: nenhuma página aberta em pixels fica guardada. Um livro de 1000 páginas
+  e 600 MB deve passar de 1 GB de pico. O notebook do Kaique (32 GB) aguenta, mas tem de ser medido na Fase 5.</li>
+<li><strong>Velocidade [dedução]:</strong> o <code>show_pdf_page</code> não refaz imagem nenhuma, então montar é rápido. O que pesa é medir
+  a tinta para o aviso relendo o livro (na prova, a 30 DPI). Em 1000 páginas, isso pode levar dezenas de segundos.
+  Por isso a recomendação de medir durante o processamento. "Escala de cinza" e "Imprimir como imagem" feitas
+  depois obrigam a refazer cada imagem (lento); a cinza deve ir na gravação.</li>
+<li><strong>Qualidade e fontes [lido no código]:</strong> o PDF do programa é feito só de imagens (<code>EscritorPDF.escrever_imagem</code>),
+  então não há fonte para dar problema. O "caminho rápido, só cadernos" copia o PDF original, e o <code>show_pdf_page</code>
+  mantém o texto e as fontes dele. A escala não estraga pixel no arquivo: quem reduz na hora é a impressora.</li>
+<li><strong>Tamanho real depende do DPI declarado [dedução]:</strong> o tamanho físico de cada página vem dos pontos do PDF de
+  entrada. Se o scan declarou o DPI errado, "Tamanho real" sai errado. O "Ajustar" não tem esse problema.</li>
+<li><strong>Imprimir o PDF pronto em "Ajustar" no UPDF desfaz as margens [dedução]:</strong> a tela final tem de mandar imprimir em
+  "Tamanho real" (ou o programa imprime direto).</li>
+<li><strong>Inverter a ordem e frente e verso:</strong> testar na Epson (seção 3).</li>
+<li><strong>A impressora do PC do Samuel é outra:</strong> a lista do Windows aqui mostra uma EPSON ET-3750, não a WF-C5890 [lido].
+  O teste de papel tem de ser feito onde está a WF-C5890.</li>
+<li><strong>Notebook do Kaique:</strong> nada aqui usa placa de vídeo; é PyMuPDF e conta simples [dedução].</li>
+</ul>
+<h2>8. Licenças</h2>
+<p>Nada novo. PyMuPDF (AGPL; liberado pela decisão de 17/09) e PySide6 com <code>QtPrintSupport</code> (LGPL), os dois já no
+projeto. O embaralhador antigo usava PyPDF2 (BSD), que não é preciso trazer: a mesma conta já está no
+<code>core/cadernos.py</code>.</p>
+<h2>9. Em aberto e perguntas exatas para o Samuel (via gerente)</h2>
+<p><strong>Em aberto, não deu para confirmar:</strong></p>
+<ul>
+<li>O que há nas abas <strong>Pôster</strong> e <strong>Múltiplo</strong> do UPDF (nenhuma foto mostra); usei as do Acrobat.</li>
+<li>Se o UPDF conta "Folhas" em lados (a dedução da seção 2).</li>
+<li>O código da segunda versão do embaralhador (a página da internet) não está no disco, só a descrição no chat.</li>
+<li>A margem que a WF-C5890 não imprime: usei os 3 mm do Samuel; não achei a ficha da Epson.</li>
+<li>A pergunta <code>g9-folha-maior-impressao</code> continua aberta na página de escolhas (seção 6 tem as contas).</li>
+</ul>
+<p><strong>Perguntas (texto para colar):</strong></p>
+<ol>
+<li>"Na escala por lado, quando você diz 'dá para mudar uma folha só', a folha é a A4 inteira (as duas páginas
+   que saem nela) ou uma página só do livro?"</li>
+<li>"No livreto, o 'Ajustar' de fábrica deve: (a) encher a metade da A4, tirando só os 3 mm da impressora, e o
+   programa avisa onde a margem ficar abaixo de 1 cm, para você diminuir a escala; ou (b) já pôr cada página
+   dentro das margens (1,3 cm da beirada e 1 cm na costura), e o aviso quase nunca aparece, com a letra um pouco
+   menor?"</li>
+<li>"Quando uma página é diminuída, ela fica: (a) no meio da sua metade da folha, com a margem crescendo dos
+   quatro lados; ou (b) encostada na costura, com a sobra toda do lado de fora?"</li>
+<li>"Quando as páginas não fecham o último caderno: (a) como hoje e como o embaralhador antigo, o último caderno
+   sai do tamanho cheio com brancos no fim (num livro de 23 páginas em cadernos de 20, saem 3 folhas inteiras em
+   branco); (b) o último caderno sai menor, só com as folhas necessárias; ou (c) o programa reparte as páginas
+   para os cadernos ficarem parecidos?"</li>
+<li>"O programa deve só gravar o PDF pronto, para o Kaique imprimir no UPDF em 'Tamanho real', ou também mandar
+   direto para a impressora, escolhendo a impressora, as cópias e o frente e verso, como a janela do UPDF?"</li>
+<li>"Nas cinco fotos, 'Imprimir como imagem' está marcado. A impressora precisa disso (sai algo errado sem ela)
+   ou estava marcado por costume? E pode mandar uma foto das abas 'Pôster' e 'Múltiplo' da mesma janela?"</li>
+</ol>
+<h2>10. Fontes consultadas (19 e 20/10/2026)</h2>
+<ul>
+<li>Projeto: <code>historico/genesis-conversa-imposicao-cadernos.md</code>; <code>core/cadernos.py</code>, <code>core/pdf_io.py</code>,
+  <code>core/folha.py</code>, <code>core/pipeline.py</code>, <code>ui/tela_opcoes.py</code>, <code>ui/tela_final.py</code>;
+  <code>relatorios/conferencia-samuel-2026-10-14/</code> (texto e cinco fotos); <code>docs/plano/PLANO-DEFINITIVO.md</code>.</li>
+<li>UPDF, guia do Windows, "Print a PDF on Windows": https://updf.com/updf-windows-user-guide-1/print-pdf/</li>
+<li>UPDF, "Print PDF as booklet": https://updf.com/print-pdf/print-pdf-as-booklet/</li>
+<li>UPDF, "How to print a large PDF on multiple pages": https://updf.com/print-pdf/how-to-print-a-large-pdf-on-multiple-pages/</li>
+<li>Adobe, "Scale or resize printed pages" (Ajustar, Tamanho real, Reduzir): https://helpx.adobe.com/acrobat/kb/scale-or-resize-printed-pages.html
+  e https://helpx.adobe.com/acrobat/desktop/print-documents/set-up-and-print-pdfs/page-size.html (lidos pelo
+  resumo da busca; a página recusa leitura direta)</li>
+<li>Adobe, livretos: https://helpx.adobe.com/acrobat/kb/print-booklets-acrobat-reader.html (pelo resumo da busca)</li>
+<li>Adobe, pôster: https://helpx.adobe.com/acrobat/kb/print-posters-banners-acrobat-reader.html (pelo resumo da busca)</li>
+<li>Guia de pôster do Acrobat: https://docuslice.com/blog/2026-08-12-How-to-Tile-Print-in-Adobe-Acrobat/</li>
+<li>PDF Reader Pro, pôster, múltiplo e livreto: https://www.pdfreaderpro.com/help/how-to-print-by-poster-multiple-and-booklet</li>
+<li>Syracuse University, "Booklet printing using Acrobat": https://answers.atlassian.syr.edu/wiki/spaces/arch/pages/149568236/Booklet+printing+using+Acrobat</li>
+<li>Fichas de revenda da Epson WF-C5890 (frente e verso automático): https://www.shi.com/Product/45563662</li>
+<li>PyMuPDF 1.28.0 (no <code>.venv</code>): documentação de <code>Page.show_pdf_page</code> (parâmetros <code>clip</code>, <code>rotate</code>, <code>keep_proportion</code>).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 04:40</p>
+</body>
+</html>

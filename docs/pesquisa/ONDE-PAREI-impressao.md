@@ -11,6 +11,7 @@ Só documentos em `docs/pesquisa/`. Sem código do programa.
 - [x] Prova no rascunho (fora do programa): livreto A4 deitada com margens 1,3/1,0 cm, escala por lado, exceção por folha, aviso de margem. Figuras em `docs/pesquisa/fase-impressao/img/`, script em `fase-impressao/prova_livreto.py.txt`. Memória: 120 págs/178 MB -> pico 360 MB, 2,3 s.
 - [x] Achado: hoje o último caderno sai do tamanho cheio (23 págs em cadernos de 20 = 17 brancas, 3 folhas inteiras vazias).
 
+- [x] Documento gravado nos três formatos: `docs/pesquisa/fase-impressao/fase-impressao.md`, `.html`, `.pdf` (11 páginas, 3 figuras).
+
 ## Falta
-- [ ] Escrever `docs/pesquisa/fase-impressao.md` e gravar os três formatos com `relatorio.gravar`.
-- [ ] Entregar à gerente.
+- [ ] Entregar à gerente (resumo, tabela, seis perguntas para o Samuel na seção 9 do documento).
