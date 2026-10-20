@@ -1,0 +1,181 @@
+{
+  "versao_do_teste": 1,
+  "rapido": true,
+  "quando": "2026-10-14T13:23:13",
+  "maquina": {
+    "computador": "SAMUEL-PC",
+    "processador": "AMD Ryzen 7 5800H with Radeon Graphics",
+    "nucleos_fisicos": 8,
+    "nucleos_logicos": 16,
+    "memoria_instalada_gb": 16.0,
+    "memoria_utilizavel_gb": 15.355525970458984,
+    "placas_de_video": [
+      "AMD Radeon(TM) Graphics",
+      "NVIDIA GeForce GTX 1650"
+    ],
+    "windows": "Windows 11 Home Single Language 25H2 (compilação 26200.9711)",
+    "energia": {
+      "na_tomada": true,
+      "carga": "100%",
+      "texto": "na tomada (bateria em 100%)"
+    }
+  },
+  "versoes": {
+    "python": "3.14.3",
+    "empacotado": false,
+    "pymupdf": "1.28.0",
+    "opencv": "5.0.0",
+    "numpy": "2.5.1",
+    "onnxruntime": "1.28.0",
+    "pyside6": "6.11.1"
+  },
+  "livro": {
+    "arquivo": "marial_300.pdf",
+    "caminho": "D:\\programas\\EditorImpressao\\gabarito\\velocidade\\marial_300.pdf",
+    "tamanho_mb": 4.237095832824707,
+    "folhas": 20,
+    "paginas": 20,
+    "disco": "HD externo (USB)",
+    "recortado": true
+  },
+  "configuracao": {
+    "rodadas": 1,
+    "trocas": 3,
+    "paginas_processadas": 2,
+    "dpi_analise": 150,
+    "dpi_previa": 110,
+    "dpi_saida": 300,
+    "filtro_do_livro": "magico_pro",
+    "paginas_adiantadas": 3,
+    "lista_trocas": [
+      3,
+      10,
+      16
+    ],
+    "lista_processadas": [
+      9,
+      10
+    ]
+  },
+  "preparo": {
+    "aquecimento_s": 17.655224900001485,
+    "detector_de_regioes": true,
+    "memoria_mb": 327.9609375
+  },
+  "rodadas": [
+    {
+      "abrir": {
+        "arquivo_s": 0.052288500002759974,
+        "analise_s": 5.70707830000174,
+        "total_s": 5.7593668000045,
+        "folhas": 20,
+        "paginas": 20
+      },
+      "trocas": {
+        "paginas": [
+          3,
+          10,
+          16
+        ],
+        "tempos_s": [
+          3.4228671999953804,
+          2.6639445000037085,
+          2.481997800001409
+        ],
+        "media_s": 2.8562698333334993,
+        "pior_s": 3.4228671999953804,
+        "pior_pagina": 3
+      },
+      "processar": {
+        "magico_pro": {
+          "lista": [
+            9,
+            10
+          ],
+          "segundos": 11.778038799995556,
+          "paginas": 2,
+          "por_pagina_s": 5.889019399997778,
+          "tamanho_saida_mb": 14.58809757232666
+        },
+        "preto_e_branco": {
+          "lista": [
+            9,
+            10
+          ],
+          "segundos": 4.845153700000083,
+          "paginas": 2,
+          "por_pagina_s": 2.4225768500000413,
+          "tamanho_saida_mb": 0.22589492797851562
+        }
+      },
+      "memoria_pico_mb": {
+        "abrir": 327.9609375,
+        "trocas": 908.75,
+        "processar_magico_pro": 1338.07421875,
+        "processar_preto_e_branco": 1338.07421875
+      },
+      "duracao_s": 38.9481558999978
+    }
+  ],
+  "resumo": {
+    "abrir_total_s": {
+      "primeira": 5.7593668000045,
+      "mediana": 5.7593668000045,
+      "rodadas": [
+        5.7593668000045
+      ]
+    },
+    "abrir_arquivo_s": {
+      "primeira": 0.052288500002759974,
+      "mediana": 0.052288500002759974,
+      "rodadas": [
+        0.052288500002759974
+      ]
+    },
+    "abrir_analise_s": {
+      "primeira": 5.70707830000174,
+      "mediana": 5.70707830000174,
+      "rodadas": [
+        5.70707830000174
+      ]
+    },
+    "troca_media_s": {
+      "primeira": 2.8562698333334993,
+      "mediana": 2.8562698333334993,
+      "rodadas": [
+        2.8562698333334993
+      ]
+    },
+    "troca_pior_s": {
+      "primeira": 3.4228671999953804,
+      "mediana": 3.4228671999953804,
+      "rodadas": [
+        3.4228671999953804
+      ]
+    },
+    "processar_magico_pro_s": {
+      "primeira": 11.778038799995556,
+      "mediana": 11.778038799995556,
+      "rodadas": [
+        11.778038799995556
+      ]
+    },
+    "processar_preto_e_branco_s": {
+      "primeira": 4.845153700000083,
+      "mediana": 4.845153700000083,
+      "rodadas": [
+        4.845153700000083
+      ]
+    }
+  },
+  "memoria": {
+    "pico_mb": 1338.07421875,
+    "onde": "ao processar em Mágico pro"
+  },
+  "duracao_total_s": 73.38258720000158,
+  "edicao_rapida": "sem_janela",
+  "janela": {
+    "situacao": "sem_janela",
+    "classe": null
+  }
+}

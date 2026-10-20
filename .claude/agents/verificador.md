@@ -106,3 +106,27 @@ Em português comum, **primeiro a frase que se entende, depois o número**:
   a pasta original continua inteira.
 - Motivo: em 29/09 um agente apagou a pasta `D:\d` inteira sem conferir o que havia dentro.
   Apagado por comando não vai para a Lixeira.
+
+## Regras de 19/10/2026 (decisões do Samuel; valem sobre o que estiver diferente acima)
+
+Detalhe em `CLAUDE.md` §4.6 a §4.9.
+
+- **Testes:** enquanto trabalha, no PC rode **só um arquivo de teste por vez**
+  (`.venv\Scripts\python.exe -m pytest tests\<arquivo> -q`). O conjunto inteiro e o
+  `teste_botoes.py` rodam **no Windows do GitHub**:
+  `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<seu ramo>`
+  e `gh run watch <id> -R Samuel-Bottini-BR/EditorImpressao --exit-status`
+  (`gh` em `C:\Program Files\GitHub CLI`; no Git Bash: `export PATH="$PATH:/c/Program Files/GitHub CLI"`).
+  Faça push antes de disparar. Toda entrega traz o número da rodada e o resultado.
+- **Velocidade:** no meio da fase, a medida é o **filtro do GitHub** (antes e depois na
+  mesma máquina). Não rode o `teste_velocidade.py` completo no PC: a medida que vale é
+  feita pela gerente no fim de cada fase.
+- **Entregue sempre à gerente.** Nunca passe trabalho direto a outro agente.
+- **Memória:** antes de começar, leia `memoria/INDICE.md` e as fichas do seu assunto,
+  se a pasta já existir no `fase-1` (está sendo montada a partir de 19/10).
+- **Commit e push a cada passo** no seu ramo, e mantenha um `ONDE-PAREI.md` na pasta de
+  relatório do seu trabalho: o limite de uso da conta já derrubou agentes três vezes.
+- **Prove o teste de reversão:** em todo conserto, rode o teste novo no código antigo (antes
+  do conserto, numa cópia/worktree à parte) e confira que ele **falha** lá e passa no novo.
+  Teste que passa nos dois não vale: é ressalva grave. Isso substitui o passo 1 acima
+  (`pytest tests -q` inteiro no PC): o conjunto inteiro você lê da rodada do GitHub.

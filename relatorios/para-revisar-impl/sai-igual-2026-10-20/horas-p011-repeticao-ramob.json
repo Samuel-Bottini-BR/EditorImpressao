@@ -1,0 +1,19 @@
+{
+ "horas_p011__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5633,
+     3671,
+     3
+    ],
+    "sha256": "b85e5b05fd2017c6b50037e9f624518ac585d13941e1e8c80ae7d3d9f15c3eea"
+   }
+  ],
+  "segundos": 21.4,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ }
+}

@@ -89,6 +89,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import (
     QApplication,
+    QCheckBox,
     QFileDialog,
     QInputDialog,
     QLayout,
@@ -634,6 +635,7 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
         esperar(1.5)
 
         print(f"\n--- aba '{aba}' ---")
+        dizer_as_paginas(conferir, "ao entrar")
 
         problemas = sobreposicoes(conferir) + ordem_correta(conferir)
         if problemas:
@@ -647,10 +649,52 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
 
         alvos = list(botoes_de(conferir.area_imagem.currentWidget()))
         alvos += list(botoes_de(conferir.barra_botoes.currentWidget()))
+        # Etapa 3 do layout (12/10/2026): os botoes de Dividir, Cortar e
+        # Endireitar sairam da fila embaixo da pagina e moram no painel
+        # Propriedades: abre o painel e clica nos botoes e nas caixinhas dele
+        # (Espelhado, Proporcao travada). Fica de fora so o "mudar nas opções
+        # do livro...", que sai desta tela (o "voltar" ja e conferido na tela
+        # "O que fazer").
+        if hasattr(conferir, "paineis") and hasattr(conferir.paineis, "abrir"):
+            conferir.paineis.abrir("props")
+            esperar(0.4)
+            corpo = conferir.paineis.propriedades.corpo
+            alvos += [b for b in botoes_de(corpo)
+                      if not (b.text() or "").startswith("mudar nas opções")]
+            alvos += [c for c in corpo.findChildren(QCheckBox)
+                      if c.isVisible() and c.isEnabled()]
+        # O "está certo" e a sugestao laranja, que cada fila tinha, sao agora
+        # os da faixa do conferir. Sao clicados NAS MESMAS ferramentas e NA
+        # MESMA ORDEM de quando moravam nas filas ("está certo" primeiro, em
+        # Dividir, Cortar e Endireitar; a sugestao por ultimo, menos no
+        # Marcar, que nunca teve): a bateria conta com isso. A sugestao
+        # "apagar esta página" de uma ferramenta e desfeita pelo "restaurar
+        # página" de outra, e um clique a mais ou a menos deixa o livro de
+        # teste (duas paginas) sem nenhuma para processar. O "próxima dúvida"
+        # (que troca de pagina) e clicado em testar_paineis_da_direita.
+        if hasattr(conferir, "faixa"):
+            if aba in ("corte", "bordas", "angulo") and conferir.botao_esta_certo.isVisible():
+                alvos.insert(0, conferir.botao_esta_certo)
+            sugestao = conferir.botao_sugestao
+            if aba != "marcar" and sugestao.isVisible() and sugestao.isEnabled():
+                alvos.append(sugestao)
+            # O segundo e o terceiro botao do aviso ("Para revisar", junção
+            # com o layout em 20/10/2026: moram na faixa, ao lado do primeiro).
+            # O que eles apagam ou deixam em branco volta antes de processar
+            # (_devolver_as_paginas_apagadas).
+            for extra in (getattr(conferir, "botao_sugestao_2", None),
+                          getattr(conferir, "botao_sugestao_3", None)):
+                if (aba != "marcar" and extra is not None and extra.isVisible()
+                        and extra.isEnabled()):
+                    alvos.append(extra)
         # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
             alvos += list(botoes_de(conferir.barra_girar))
+        # Etapa 3 do layout: os tres botoes pequenos de girar do canto da
+        # area da pagina (giram so esta folha).
+        if hasattr(conferir, "girar_do_canto"):
+            alvos += list(botoes_de(conferir.girar_do_canto))
         # Item 2.1: a lista "jeito:" da aba Onde cortar (ida e volta; numa
         # folha em pe ela fica apagada e trocar nao faz nada - so nao pode quebrar)
         if aba == "corte" and hasattr(conferir, "combo_jeito_da_folha"):
@@ -696,10 +740,25 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
                     print(f"  ok    tamanho_folha_cm registrado: "
                           f"{pagina_depois.tamanho_folha_cm}")
 
+    # O "apagar página" da fila dos filtros deixou a pagina da vez apagada:
+    # o mesmo botao, que agora diz "restaurar página", e clicado de volta.
+    # Antes do layout sem abas quem equilibrava isso era a ordem dos cliques
+    # (as setas "<" e ">" dos lados da pagina, hoje escondidas, levavam a
+    # bateria para a segunda pagina, que a sugestao "apagar esta página"
+    # apagava e este botao restaurava). Sem isto o livro de teste, de duas
+    # paginas, chegava ao "Processar" sem nenhuma: o menu Pagina > Apagar,
+    # mais adiante, apaga a outra.
+    if hasattr(conferir, "botao_apagar") and conferir.botao_apagar.text() == "restaurar página":
+        if acionar(conferir.botao_apagar, "restaurar página (desfaz o apagar da fila)"):
+            ok += 1
+        else:
+            falhas += 1
+
     o, f = testar_cartao_tirar_fundo(conferir)
     ok += o
     falhas += f
 
+    dizer_as_paginas(conferir, "depois das ferramentas")
     print("\n--- cabecalho e rodape (conferir) ---")
     for botao in (conferir.botao_alertas, conferir.botao_desfazer, conferir.botao_refazer):
         if not botao.isEnabled():
@@ -708,6 +767,12 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             ok += 1
         else:
             falhas += 1
+
+    dizer_as_paginas(conferir, "depois do cabecalho")
+    o, f = testar_paineis_da_direita(conferir)
+    ok += o
+    falhas += f
+    dizer_as_paginas(conferir, "depois dos paineis")
 
     print("\n--- redimensionando (conferir) ---")
     for largura, altura in TAMANHOS_GRANDES:
@@ -733,11 +798,128 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     ok += o
     falhas += f
 
+    dizer_as_paginas(conferir, "depois do menu")
     print("\n--- tela ampliada ---")
     o, f = testar_tela_ampliada(conferir)
     ok += o
     falhas += f
 
+    return ok, falhas
+
+
+def dizer_as_paginas(conferir, quando: str) -> None:
+    """Escreve quais paginas estao apagadas e quantas vao sair no PDF. A
+    bateria clica em "apagar" e "restaurar" em varios lugares, e o livro de
+    teste tem poucas paginas: quando ele chega ao "Processar" sem nenhuma,
+    estas linhas dizem em que parte isso aconteceu."""
+    projeto = conferir.projeto
+    if projeto is None:
+        return
+    apagadas = [p.indice + 1 for p in projeto.paginas if p.apagada]
+    print(f"  (paginas {quando}: {len(projeto.paginas)} no livro, apagadas {apagadas}, "
+          f"vao sair {len(projeto.paginas_ativas)}; na tela a pagina "
+          f"{conferir.indice_pagina + 1})")
+
+
+def testar_paineis_da_direita(conferir) -> tuple[int, int]:
+    """Etapa 3 do layout (12/10/2026): a coluna de icones da direita e os
+    paineis que ela abre. Clica de verdade (mouse do Qt em cima do desenho) em
+    cada icone, confere que o painel dele abriu ao lado da pagina, clica nos
+    botoes do painel (as abas do "Para revisar", desfazer e refazer do
+    Historico, o "x") e, por fim, na seta que esconde e mostra os icones.
+    Ficam de fora os dois botoes que saem desta tela ("Voltar para as opções"
+    e "mudar nas opções do livro...") e as acoes da lista do Historico (cada
+    uma desfaria o trabalho ate ali, mudando o que o resto da bateria ve)."""
+    global _contexto_atual
+    if not hasattr(conferir, "paineis") or not hasattr(conferir.paineis, "icones"):
+        return 0, 0
+    print("\n--- paineis da direita (conferir) ---")
+    ok = falhas = 0
+    paineis, icones = conferir.paineis, conferir.paineis.icones
+    # Alguns cliques daqui andam de pagina ("próxima dúvida", um motivo do
+    # "Para revisar"). No fim a tela volta para a pagina em que estava: o
+    # resto da bateria conta com isso (o "apagar" do menu desfaz o "apagar
+    # página" clicado antes NA MESMA pagina; em outra, o livro de teste, de
+    # duas paginas, ficaria sem nenhuma para processar).
+    pagina_de_antes = conferir.indice_pagina
+    paineis.fechar()
+    esperar(0.2)
+
+    def clicar_no_icone(item: str) -> bool:
+        global _contexto_atual
+        _contexto_atual = f"clique no icone '{item}' da coluna da direita"
+        antes = len(_falhas)
+        QTest.mouseClick(icones, Qt.LeftButton, Qt.NoModifier,
+                         icones.retangulos()[item].center())
+        QApplication.processEvents()
+        esperar(0.3)
+        return len(_falhas) == antes
+
+    for chave, painel in list(paineis.paineis.items()):
+        largura_antes = conferir.area_imagem.width()
+        if not clicar_no_icone(chave) or paineis.aberto != chave or not painel.isVisible():
+            falhas += 1
+            print(f"  FALHA o icone '{chave}' nao abriu o painel dele")
+            continue
+        if conferir.area_imagem.width() >= largura_antes:
+            falhas += 1
+            print(f"  FALHA o painel '{chave}' nao empurrou a pagina "
+                  f"({largura_antes} -> {conferir.area_imagem.width()})")
+            continue
+        ok += 1
+        print(f"  ok    icone '{chave}': painel aberto ao lado da pagina "
+              f"({largura_antes} -> {conferir.area_imagem.width()} de largura)")
+        itens_do_historico = set(getattr(painel, "itens", [])) | set(
+            getattr(painel, "itens_desfeitos", [])) if chave == "historico" else set()
+        fechar = painel.cabecalho.botao_fechar
+        feitas_antes = len(conferir.acoes.feitas) if conferir.acoes is not None else 0
+        for botao in botoes_de(painel):
+            texto = botao.text() or botao.toolTip() or "(sem texto)"
+            if botao is fechar or botao in itens_do_historico:
+                continue
+            if texto.startswith(("Voltar para as opções", "mudar nas opções")):
+                continue
+            if acionar(botao, f"{texto} (painel {chave})"):
+                ok += 1
+            else:
+                falhas += 1
+        # No Historico, "Desfazer" e "Refazer" sao clicados em PAR e
+        # conferidos (o laco acima so clica no que estava aceso ao abrir o
+        # painel: so o "Desfazer", e a ultima acao da bateria ficava
+        # desfeita - era o "restaurar página", e o livro de teste chegava ao
+        # "Processar" sem pagina nenhuma).
+        if chave == "historico" and conferir.acoes is not None:
+            if len(conferir.acoes.feitas) < feitas_antes:
+                acionar(painel.botao_refazer, "Refazer (painel historico)")
+            if len(conferir.acoes.feitas) == feitas_antes:
+                ok += 1
+                print("  ok    Desfazer e Refazer do painel: o trabalho ficou como estava")
+            else:
+                falhas += 1
+                print("  FALHA o Refazer do painel Historico nao refez a acao desfeita")
+        if acionar(fechar, f"x do painel {chave}") and paineis.aberto is None:
+            ok += 1
+        else:
+            falhas += 1
+            print(f"  FALHA o 'x' nao fechou o painel '{chave}'")
+
+    # o "próxima dúvida" da faixa (so anda de pagina; nao muda o trabalho)
+    if conferir.botao_proxima_duvida.isEnabled():
+        if acionar(conferir.botao_proxima_duvida, "próxima dúvida (faixa)"):
+            ok += 1
+        else:
+            falhas += 1
+
+    # a seta: esconde os icones, e mostra de novo
+    for esperado in (False, True):
+        if clicar_no_icone("seta") and paineis.icones_a_vista is esperado:
+            ok += 1
+            print(f"  ok    seta: icones {'a vista' if esperado else 'escondidos'}")
+        else:
+            falhas += 1
+            print(f"  FALHA a seta nao {'mostrou' if esperado else 'escondeu'} os icones")
+    conferir.ir_para_pagina(pagina_de_antes)
+    esperar(0.3)
     return ok, falhas
 
 

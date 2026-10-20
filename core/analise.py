@@ -124,6 +124,13 @@ class Alerta:
         return [(rotulo, correcao or "revisar") for rotulo, correcao in pares if rotulo]
 
 
+# Textos sem "aba" (20/10/2026, junção com o layout aprovado de 14/10, que
+# não tem abas; verificador: os avisos ainda diziam "aba Marcar" e "aba
+# Bordas"). Onde o aviso mandava à aba Marcar, a frase ficou neutra (não diz
+# onde marcar) até o Samuel responder a pergunta `r14-aviso-marcar` da rodada
+# 14 do layout; o Cortar ganhou o nome da trilha ("Cortar as bordas"), como o
+# Endireitar já tinha ("a ferramenta Endireitar"). Teste:
+# tests/test_reversao_para_revisar.py.
 ALERTAS: dict[str, Alerta] = {
     COR: Alerta(
         COR, "Tem cor",
@@ -132,8 +139,8 @@ ALERTAS: dict[str, Alerta] = {
     ),
     DESENHO_OU_ESCRITA: Alerta(
         DESENHO_OU_ESCRITA, "Desenho ou escrita?",
-        "Não tenho certeza se esta página é desenho ou escrita. Confira "
-        "na aba Marcar - se for escrita, marque como letra.",
+        "Não tenho certeza se esta página é desenho ou escrita. Confira: "
+        "se for escrita, marque como letra.",
         None, None,
     ),
     # Item 1.1. "está bom assim" so marca a pagina como conferida (o mesmo
@@ -186,8 +193,8 @@ ALERTAS: dict[str, Alerta] = {
     TEXTO_FALHADO: Alerta(
         TEXTO_FALHADO, "Texto falhado",
         "O texto desta página sai falhado no preto e branco (letra clara, gasta "
-        "ou colorida). Tente a força do preto mais escura, ou marque a linha na "
-        "aba Marcar e use Melhorar ou Mágico pro só neste pedaço.",
+        "ou colorida). Tente a força do preto mais escura, ou marque a linha "
+        "e use Melhorar ou Mágico pro só neste pedaço.",
         "usar mais escuro", "forca:mais_escuro",
         "está bom assim", "revisar",
     ),
@@ -217,13 +224,13 @@ ALERTAS: dict[str, Alerta] = {
     FIGURA_ALEM_DA_GRAVURA: Alerta(
         FIGURA_ALEM_DA_GRAVURA, "Figura além da gravura achada",
         "Uma figura parece passar da área que eu achei como gravura, ou a área "
-        "pegou uma mancha. Confira na aba Marcar.",
+        "pegou uma mancha. Confira o que ficou marcado nesta página.",
         "está bom assim", "revisar",
     ),
     FAIXA_NA_BEIRADA: Alerta(
         FAIXA_NA_BEIRADA, "Faixa escura na beirada",
         "Sobrou uma faixa escura na beirada desta página (fundo do scanner ou "
-        "sombra). Confira o corte na aba Bordas.",
+        "sombra). Confira o corte com a ferramenta Cortar as bordas.",
         "está bom assim", "revisar",
     ),
     # Item 2.2, C1. "está bom assim" so marca a pagina como conferida; a
@@ -231,8 +238,8 @@ ALERTAS: dict[str, Alerta] = {
     # Endireitar, com os dois angulos escritos. Seguro mudar: os textos.
     CONTAS_DO_ENDIREITAR_DISCORDAM: Alerta(
         CONTAS_DO_ENDIREITAR_DISCORDAM, "Endireitar: as contas discordam",
-        "A conta do ScanTailor e a do programa acharam inclinações diferentes "
-        "nesta página. Confira na aba Endireitar e escolha a conta que deixou "
+        "A conta do ScanTailor e a do Editor acharam inclinações diferentes "
+        "nesta página. Confira com a ferramenta Endireitar e escolha a conta que deixou "
         "o texto reto.",
         "está bom assim", "revisar",
     ),
@@ -254,7 +261,7 @@ ALERTAS: dict[str, Alerta] = {
     ANGULO_SUSPEITO_: Alerta(
         ANGULO_SUSPEITO_, "Alinhamento duvidoso",
         "Não consegui achar o alinhamento do texto direito.",
-        "não endireitar esta", "angulo_zero",
+        "deixar como veio", "angulo_zero",
     ),
     # 12/10/2026: o botao era so "apagar esta página", e apagar tira a pagina
     # da fila e troca frente e verso das seguintes na encadernacao. Agora os
