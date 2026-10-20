@@ -1089,6 +1089,7 @@ class TelaConferir(QWidget):
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
         vis.recorte_movido.connect(self._mover_recorte)
         vis.conteudo_movido.connect(self._mover_conteudo)
+        vis.guias_mudaram.connect(self._mudar_as_linhas_de_apoio)    # item 2.5, g8-guias
         assert self.projeto is not None
 
         coluna = self._conteudo_de_propriedades(ABA_BORDAS)
@@ -1133,6 +1134,19 @@ class TelaConferir(QWidget):
             self._alternar_mover_conteudo, coluna)
         self.botao_mover_conteudo.setEnabled(False)
         coluna.addWidget(frase_do_painel("(só depois de escolher um tamanho de folha)"))
+        # Item 2.5, g8-guias (Samuel, 13/10/2026: "As duas" + "Mas ele vai
+        # poder tirar a automatica a hora que ele quiser."): o ima do meio e
+        # das beiradas, para o livro todo. As linhas do Kaique: botao direito
+        # sobre a folha no "Mover conteudo". Controle minimo (lugar
+        # provisorio, listado para o agente de layout).
+        self.botao_linhas_automaticas = self._caixinha_do_painel(
+            "Linhas automáticas (meio e beiradas)",
+            "Ao mover o conteúdo, ele gruda no meio e nas beiradas da folha. "
+            "Vale para o livro todo. Para pôr suas próprias linhas, clique com o "
+            "botão direito sobre a folha no \"Mover conteúdo\".",
+            self._alternar_linhas_automaticas, coluna)
+        self.botao_linhas_automaticas.setChecked(
+            bool(getattr(self.projeto, "guias_automaticas", True)))
 
         coluna.addWidget(risco_do_painel())
         coluna.addWidget(titulo_de_secao("Qualidade da prévia"))
@@ -1336,6 +1350,61 @@ class TelaConferir(QWidget):
         else:
             modo = RECORTE_LIVRE
         self.visualizadores[ABA_BORDAS].definir_modo_arraste_recorte(modo)
+
+    # --- item 2.5, g8-guias: as linhas de apoio do "Mover conteudo" -------
+
+    def _mostrar_as_linhas_de_apoio(self, vis, pagina) -> None:
+        """Passa ao visualizador as linhas do livro (guardadas em mm a partir
+        do meio da folha, core/guias) convertidas para a folha desta pagina,
+        e se as automaticas valem."""
+        from core import guias
+
+        folha_cm = pagina.tamanho_folha_cm
+        linhas = []
+        if folha_cm is not None:
+            linhas = [(g.orientacao, guias.em_fracao(g, folha_cm))
+                      for g in guias.do_projeto(getattr(self.projeto, "guias", []))]
+        vis.definir_guias(linhas, bool(getattr(self.projeto, "guias_automaticas", True)))
+        self.botao_linhas_automaticas.setChecked(
+            bool(getattr(self.projeto, "guias_automaticas", True)))
+
+    def _gravar_no_livro(self, campo: str, valor, descricao: str) -> None:
+        """Uma mudanca que vale para o livro (campo "livro." da acao,
+        historico_acoes.aplicar), numa acao do Historico que o Ctrl+Z desfaz."""
+        assert self.projeto is not None and self.acoes is not None
+        acao = montar_acao(self.projeto, campo, "pagina", [], {}, descricao)
+        acao.antes[f"livro.{campo}"] = getattr(self.projeto, campo)
+        acao.depois[f"livro.{campo}"] = valor
+        aplicar(self.projeto, acao, acao.depois)
+        self.acoes.registrar(acao)
+        self.atualizar()
+
+    @protegido
+    def _mudar_as_linhas_de_apoio(self, linhas: list) -> None:
+        """O menu do botao direito mudou as linhas (fracao desta folha): grava
+        no livro em mm a partir do meio da folha (como o ScanTailor)."""
+        from core import guias
+
+        if self.projeto is None:
+            return
+        folha_cm = self.projeto.paginas[self.indice_pagina].tamanho_folha_cm
+        if folha_cm is None:
+            return
+        novas = guias.para_salvar(guias.de_fracao(o, p, folha_cm) for o, p in linhas)
+        antes = len(getattr(self.projeto, "guias", []) or [])
+        descricao = ("Linha de apoio posta" if len(novas) > antes
+                     else "Linhas de apoio tiradas" if not novas else "Linha de apoio tirada")
+        self._gravar_no_livro("guias", novas, descricao)
+
+    @protegido
+    def _alternar_linhas_automaticas(self) -> None:
+        if self.projeto is None:
+            return
+        ligadas = self.botao_linhas_automaticas.isChecked()
+        if ligadas == bool(getattr(self.projeto, "guias_automaticas", True)):
+            return
+        self._gravar_no_livro("guias_automaticas", ligadas,
+                              "Linhas automáticas " + ("ligadas" if ligadas else "desligadas"))
 
     def _alternar_mover_conteudo(self) -> None:
         """Fase 2: troca o visualizador entre editar o RECORTE (padrão) e
@@ -2381,6 +2450,7 @@ class TelaConferir(QWidget):
             from ui.widgets.visualizador import MODO_RECORTE
 
             tem_folha = pagina.tamanho_folha_cm is not None
+            self._mostrar_as_linhas_de_apoio(vis, pagina)            # item 2.5, g8-guias
             self.botao_mover_conteudo.setEnabled(tem_folha)
             if not tem_folha and self.botao_mover_conteudo.isChecked():
                 self.botao_mover_conteudo.setChecked(False)

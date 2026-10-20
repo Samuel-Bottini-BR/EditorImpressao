@@ -84,3 +84,41 @@ def test_as_correcoes_dos_avisos_existem():
     assert analise.descrever(analise.CORTE_DEIXOU_TINTA_FORA).correcao == "corte_alargado"
     assert analise.descrever(analise.PAGINA_MUITO_MAIOR).correcao == "alinhar_com_as_outras"
     assert hasattr(pipeline, "corte_alargado")
+
+
+# ------------------------------------------------- linhas de apoio (g8-guias)
+
+def test_linhas_de_apoio_gravam_no_livro_em_mm_e_desfazem(janela, pasta):
+    """g8-guias: a linha que o Kaique põe vale no livro todo, guardada em mm a
+    partir do meio da folha (como o ScanTailor); o Ctrl+Z tira."""
+    from core import guias
+
+    tela = _na_conferencia(janela, pasta)
+    projeto = janela.projeto
+    projeto.paginas[tela.indice_pagina].tamanho_folha_cm = (14.8, 21.0)
+    tela._mudar_as_linhas_de_apoio([(guias.DE_PE, 0.25)])
+    assert projeto.guias == [{"orientacao": guias.DE_PE, "mm": -37.0}]
+    tela.desfazer()
+    assert projeto.guias == []
+
+
+def test_desligar_as_linhas_automaticas_e_desfazer(janela, pasta):
+    """'Mas ele vai poder tirar a automatica a hora que ele quiser.'"""
+    tela = _na_conferencia(janela, pasta)
+    projeto = janela.projeto
+    assert tela.botao_linhas_automaticas.isChecked() and projeto.guias_automaticas
+    tela.botao_linhas_automaticas.click()
+    assert projeto.guias_automaticas is False
+    tela.desfazer()
+    assert projeto.guias_automaticas is True
+
+
+def test_o_visualizador_usa_as_linhas_do_kaique(app):
+    """No "Mover conteúdo", o ímã pega a linha do Kaique e, com as automáticas
+    desligadas, não pega mais o meio da folha."""
+    from core import guias
+    from ui.widgets.visualizador import encaixar_no_ima
+
+    assert encaixar_no_ima((0.205, 0.3, 0.3, 0.4), linhas=[(guias.DE_PE, 0.2)],
+                           automaticas=False)[0] == pytest.approx(0.2)
+    assert encaixar_no_ima((0.255, 0.3, 0.5, 0.4), automaticas=False) == (0.255, 0.3, 0.5, 0.4)
