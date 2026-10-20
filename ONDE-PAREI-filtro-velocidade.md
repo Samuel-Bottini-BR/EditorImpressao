@@ -10,10 +10,10 @@ de apoio em `.github/`.
 - [x] 2. Script `.github/scripts/velocidade_ab.py` (roda alternando e junta a tabela) + `preparar_versao.sh`.
 - [x] 3. Conferir a parte que junta com os números do PC de 14/10 (tem de dar "igual").
 - [x] 4. Novo modo no workflow (`velocidade_ab`), sem mudar os modos que já existem.
-- [ ] 5. Rodada curta (`rapido`) para ver que funciona: rodada 39394176019 (disparada 20/10 08:32 UTC).
-- [ ] 6. Validação 1: antes = `1d37f8f`, depois = `3bdbab3`.
-- [ ] 7. Validação 2: a mesma coisa de novo.
-- [ ] 8. Controle: antes = depois = mesmo commit.
+- [x] 5. Rodada curta (`rapido`) para ver que funciona: rodada 39394176019, success (preparo ~3 min, 4 rodadas --rapido de 1 min).
+- [ ] 6. Validação 1: antes = `1d37f8f`, depois = `3bdbab3`: rodada 39395142921 (disparada 08:40 UTC).
+- [ ] 7. Validação 2: a mesma coisa de novo: rodada 39395156472.
+- [ ] 8. Controle: antes = depois = mesmo commit (`1d37f8f`): rodada 39395169127.
 - [ ] 9. Entrega à gerente.
 
 ## Anotações
@@ -24,3 +24,6 @@ de apoio em `.github/`.
 - A regra do veredito (diferenca das medianas > maior vai-e-vem entre rodadas da mesma versao), simulada com
   ruido puro e 3 rodadas: ~3% de "falso lento" por medida (~12% em alguma das 4). Ver se a validacao confirma;
   se acusar lentidao, repetir antes de devolver ao agente.
+- Na rodada curta a maquina do GitHub foi MUITO estavel dentro do job (vai-e-vem 0,1% a 2,5%); com isso a regra
+  "maior que o vai-e-vem" chamou de "mais rapido" uma diferenca de -0,7% no Magico pro. Pensar num piso minimo
+  depois de ver as rodadas de verdade (a conta pode ser refeita sem medir de novo: `--so-juntar` no artifact).
