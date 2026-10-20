@@ -1,32 +1,22 @@
 # Segunda conferência do "Para revisar": onde parei
 
-## Retomada de 20/10/2026 (verificador, a pedido da gerente) - EM ANDAMENTO
+## Retomada de 20/10/2026 (verificador, a pedido da gerente) - TERMINADA
 
-Ordem da tarefa: (1) abrir as 19 imagens; (2) reabrir Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66;
-(3) teclado; (4) conferência da aba 4 para o Samuel, comparando cada foto com as decisões dele; (5) parecer
-nos três formatos. Velocidade: NÃO medir (Mágico pro +1,1% foi para a Fase 5, Samuel 19/10).
+Velocidade: NÃO medida (Mágico pro +1,1% foi para a Fase 5, Samuel 19/10). Tudo no `ce2b835`, pasta `trabalho/dados_teste3`.
 
-- [x] 1. As 19 imagens abertas uma a uma (e, para comparar com as decisões, todas as 66 citadas nos quadros).
-- [~] 2. Reabrir as 4 páginas NA JANELA (código ce2b835), livro novo, pasta `trabalho/dados_teste3` (`scripts/r3_quatro_paginas.py`).
-      - Opus Majus 20: FEITO. O parecer estava ERRADO: no PDF a foto da estátua sai destruída (r3_processar_opus.py,
-        `img/a4-opus-20.jpg`); o aviso "Figura além da gravura" está certo. Igual no fase-1 (r3_render_raiz.py: idêntico).
-      - Camões 66: FEITO. Só o aviso do Endireitar, nenhum aviso das linhas pretas (página ou livro). Camões 27 e 104: força 85.
-      - Cursus (402 folhas, livro inteiro): a análise parou 2 vezes com MemoryError (04:46 e 05:02; "Aconteceu um problema
-        inesperado"). Refazer com o pedaço `trabalho/livros/cursus_1a10.pdf` (opção cursus10).
-      - Antiphon 260: falta; usar o pedaço `antiphon_256a264.pdf` (opção antiphon9).
-- [ ] 3. Teclado: conferido pelo código (`ui/janela_principal.py` keyPressEvent): a seta só chega à
-      página se o que está com o teclado não usar a seta; tira e medidor usam. Falta escrever.
-- [ ] 4. Aba 4: `conferencia-aba4.json` (a fazer). ACHADO GRAVE: as fotos são da tela de ANTES do layout
-      aprovado (no fase-1 desde 14/10); juntar fase-1 no ramo dá conflito em `ui/tela_conferir.py` e
-      `ui/widgets/paineis.py` (git merge-tree). E `esta-bom-1..4` mostram comportamento da 1a
-      conferência que já mudou (Egenloff 3 com a força escurecida sozinha; "usar mais escuro" em "bem forte").
-- [ ] 5. Parecer: `scripts/terceira.py` (a fazer), por cima do `segunda.py`.
+- [x] 1. As 19 imagens abertas uma a uma (todas batem); e as 66 citadas nos quadros, contra as decisões.
+- [x] 2. As 4 páginas reabertas na janela (`scripts/r3_quatro_paginas.py`):
+      - Opus Majus 20: o parecer de 13/10 estava ERRADO. No PDF a foto sai destruída (`r3_processar_opus.py`,
+        `img/a4-opus-20.jpg`); o aviso "Figura além da gravura" está certo. Igual no fase-1 (`r3_render_raiz.py`).
+      - Cursus 3 (pedaço 1-10; o livro inteiro parou 2 vezes com MemoryError), Antiphon 260 (pedaço 256-264),
+        Camões 66: confirmam o parecer.
+- [x] 3. Teclado: explicado pelo código (a seta só chega à janela se a tira/medidor não a usarem; no medidor, muda a força).
+- [x] 4. Aba 4: `conferencia-aba4.json` (+ .md/.html/.pdf), montado por `scripts/aba4.py` (+ `aba4_reabertos.py`,
+      `a4_recortes.py`). NÃO PUBLICAR antes de juntar o fase-1 no ramo (conflito em ui/tela_conferir.py e
+      ui/widgets/paineis.py) e refazer as fotos: 25 de 40 são da tela antiga; 3 desatualizadas (quadro "está bom").
+- [x] 5. Parecer nos três formatos: `conferencia.md/.html/.pdf` (`scripts/vistas_20_10.py` + `scripts/terceira.py`).
 
-
-Verificador. **Parado pelo Samuel em 13/10/2026, 17:30 (checkpoint da sessão).** Ramo conferido:
-`origin/fase2-para-revisar` em `ce2b835`, trazido para esta worktree (`verif-para-revisar`, ramo
-`verif-para-revisar-2026-10-13`). A primeira conferência (commit `2d820d6`) foi em `36b9e32`.
-Não mudei código e não marquei nada como aprovado.
+Próximo (quando a gerente mandar): conferir o conserto do Pesel 21; depois, o item 2.8.
 
 ## Os 8 pontos na janela de verdade: todos conferidos
 
