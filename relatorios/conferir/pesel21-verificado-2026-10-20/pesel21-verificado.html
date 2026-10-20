@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conserto do corte com borda preta: acerto do Pesel 21 conferido (verificador, 20/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conserto do corte com borda preta: acerto do Pesel 21 conferido (verificador, 20/10/2026)</h1>
+<p>Ramo <code>conserto-corte-g6-2026-10-13</code>, commit <code>5a84f7c</code> (contra o <code>d97b937</code> de 13/10). Não mudei código; não marco nada como aprovado.</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> O Pesel 21 volta a sair exatamente como hoje no programa, e as outras 88 páginas não mudam. O teste de reversão falha no código antigo e passa no novo. A conferência para o Samuel decidir de novo a <code>cg6</code> está em <code>conferencia-cg6.json</code>.</p>
+<h2>O que conferi (máquina ou olho)</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Teste de reversão no código novo (5a84f7c)</td>
+<td>máquina, no PC</td>
+<td><code>test_cartao_escuro_sai_inteiro_no_livro_novo</code> (3 casos) e <code>test_pesel_21_sai_como_no_fase_1</code>: 4 passaram</td>
+</tr>
+<tr>
+<td>O mesmo teste no código antigo (d97b937)</td>
+<td>máquina, no PC</td>
+<td>os 4 <strong>falharam</strong>: 105,3 × 171,4 mm contra 148,0 × 210,1 mm (página de mentira, 3 ângulos); 144,7 × 206,1 mm no Pesel 21</td>
+</tr>
+<tr>
+<td>As 89 páginas, medidas de novo por mim (livro novo, 300 DPI, sem filtro, <code>scripts/medir89.py</code>)</td>
+<td>máquina</td>
+<td>d97b937 contra 5a84f7c: muda só pesel_p021__inteira (144,7 × 206,1 → 157,1 × 240,6 mm); as 89 dão o mesmo md5 que a medida do implementador</td>
+</tr>
+<tr>
+<td>Suíte no Windows do GitHub, rodada 39396681554</td>
+<td>máquina</td>
+<td>passou: 114 arquivos, 2061 passaram, 0 falharam, 73 pulados; botões e prints passaram. Testou <code>bd193d4</code>; o código de <code>core/</code>, <code>ui/</code> e <code>tests/</code> é idêntico ao <code>5a84f7c</code> (git diff vazio)</td>
+</tr>
+<tr>
+<td>As 11 imagens do implementador</td>
+<td>olho</td>
+<td>abertas uma a uma; ver abaixo</td>
+</tr>
+</tbody>
+</table>
+<p>Saída do código antigo:</p>
+<pre><code>﻿
+E       AssertionError: livro novo 105.3 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       assert (42.672 &lt;= 1.0)
+E        +  where 42.672 = abs((105.32533333333333 - 147.99733333333333))
+E       AssertionError: livro novo 105.3 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       assert (42.672 &lt;= 1.0)
+E        +  where 42.672 = abs((105.32533333333333 - 147.99733333333333))
+E       AssertionError: livro novo 104.9 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       assert (43.09533333333333 &lt;= 1.0)
+E        +  where 43.09533333333333 = abs((104.902 - 147.99733333333333))
+</code></pre>
+<h2>As imagens (uma linha por página)</h2>
+<ol>
+<li>Pesel 21: hoje 15,7 × 24,1; 13/10 cortado rente, legenda a 1-2 mm da borda; agora igual a hoje. Cantinhos brancos do giro continuam (já anotado). Certo.</li>
+<li>Pesel 21 de perto: legenda com uns 3 cm de cartão embaixo, igual a hoje. Certo.</li>
+<li>Cursus 3: a faixa preta larga da direita sai; sobra um fio fino à direita e a linha da esquerda. 13/10 = agora.</li>
+<li>Matemática 32: a faixa preta da direita sai; a faixa de baixo fica (fundo do scanner). 13/10 = agora.</li>
+<li>Antiphon 260: a faixa de baixo fica mais fina (uns 2 cm). 13/10 = agora.</li>
+<li>Antiphon 88: menos preto dos lados; sobra preto em cima e embaixo. 13/10 = agora.</li>
+<li>Camões 104: fio escuro da beirada menor (diferença pequena). 13/10 = agora.</li>
+<li>Camões 66: as três quase iguais (1 mm). 13/10 = agora.</li>
+<li>Antiphonal 252: as três quase iguais (1 mm embaixo). 13/10 = agora.</li>
+<li>Egenloff 3: as três iguais à vista (tarja da biblioteca embaixo continua). 13/10 = agora.</li>
+<li>Rariora 155: as três iguais à vista. 13/10 = agora.</li>
+</ol>
+<h2>As fotos contra as decisões do Samuel (cg6, 13/10)</h2>
+<table>
+<thead>
+<tr>
+<th>Quadro</th>
+<th>Decisão dele</th>
+<th>Bate?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pesel 21: o cartão escuro volta a sair inteiro</td>
+<td>cg6, Pesel 21 (13/10): "Está pior" - "Ele chega a quase cortar as letras. Nós estamos olhando o endireitar com o cortar ou só o endireitar?"</td>
+<td>sim: volta a ser como hoje</td>
+</tr>
+<tr>
+<td>Cursus 3: a faixa preta larga da direita sai</td>
+<td>cg6, Cursus 3 (13/10): "Está pior" - "como vamos resolver isso dentro do programa então?"</td>
+<td>em parte: tira a faixa larga, não todo o preto (o resto é 2.13/2.14)</td>
+</tr>
+<tr>
+<td>Matemática 32: a faixa preta da direita sai; a de baixo fica</td>
+<td>cg6, Matemática 32 (13/10): "Está pior" - "Era para sumir completamente né?"</td>
+<td>em parte: o preto não some todo</td>
+</tr>
+<tr>
+<td>Antiphon 260: a faixa preta de baixo fica mais fina</td>
+<td>cg6, Antiphon 260 (13/10): "Está bom" - "Mas sobrou preto embaixo."</td>
+<td>sim, com a sobra que ele viu</td>
+</tr>
+<tr>
+<td>Antiphon 88: menos preto em volta</td>
+<td>cg6, Antiphon 88 (13/10): "Está bom" - "mas ainda sobrou preto embaixo."</td>
+<td>sim, com a sobra que ele viu</td>
+</tr>
+<tr>
+<td>Camões 104: o fio escuro da beirada fica menor</td>
+<td>cg6, Camões 104 (13/10): "Está pior" - "Como vamos resolver isso, com filtro? copiando a imagem do livro e colocando em uma folha branca? com o endireitar e depois cortar? selecionando só essa parte preta e apagando?"</td>
+<td>em parte: melhora pequena; o resto é 2.13/2.14</td>
+</tr>
+</tbody>
+</table>
+<p>Ele esperava o preto sumir por completo em três páginas. O conserto não faz isso (é o 2.13/2.14); cada quadro diz isso com as palavras dele. As fotos são da página pronta, não da janela: não ficam velhas com o layout.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li>O "sem conteúdo" do Pesel 21 é por pouco (2,1% contra o limite de 3%, conta do implementador): outro cartão do mesmo livro pode cair do outro lado.</li>
+<li>89 páginas soltas, nenhum livro inteiro; nada visto na janela.</li>
+<li>Velocidade: não medi (a do implementador é só indicativa: rodada 39396712441, igual). A medida que vale é no fim da fase.</li>
+<li>Quadros só das 6 páginas que mudam de verdade; Camões 66, Antiphonal 252, Egenloff 3 e Rariora 155 mudam 1 mm ou menos e ficaram fora (já foram mostrados em 13/10).</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<p>Nenhum novo.</p>
+<h2>Quadro: Pesel 21: o cartão escuro volta a sair inteiro</h2>
+<p>O que você está escolhendo: se o Pesel 21 ficou como você queria.</p>
+<p>Em 13/10 você marcou "Está pior": "Ele chega a quase cortar as letras." O conserto daquele dia confundia o cartão pardo com o fundo do scanner e cortava rente, a 1 ou 2 mm da legenda. É como uma tesoura que achou que a moldura era sobra.</p>
+<p>Agora a página sai exatamente como sai hoje no programa (15,7 × 24,1 cm, igual ponto por ponto): a legenda volta a ter uns 3 cm de cartão embaixo. Os cantinhos brancos do giro continuam, como hoje (defeito já anotado).</p>
+<p><strong>O que olhar:</strong> O espaço entre a legenda e a beirada de baixo.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o pé da página hoje, no conserto de 13/10 e agora" src="img/cg6b-pesel-21.jpg" /></p>
+<p><em>Ampliado: o pé da página hoje, no conserto de 13/10 e agora</em></p>
+<p><img alt="A página inteira nas três versões" src="img/tres-pesel_p021__inteira.jpg" /></p>
+<p><em>A página inteira nas três versões</em></p>
+<h2>Quadro: Cursus 3: a faixa preta larga da direita sai</h2>
+<p>O que você está escolhendo: se a melhora do Cursus 3 basta por agora.</p>
+<p>Hoje, no livro novo, o corte deixa uma faixa preta larga à direita (o defeito que o endireitar antes de cortar trouxe em 12/10). Com o conserto, ela sai; sobra um fio fino de até 4 mm e a linha preta da esquerda.</p>
+<p>Você perguntou "como vamos resolver isso dentro do programa então?": tirar todo o preto é o item 2.13 (o corte do ScanTailor, com a caixa do conteúdo) e pintar de branco é o 2.14. Este conserto só desfaz a piora.</p>
+<p><strong>O que olhar:</strong> A faixa preta à direita.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o canto de cima à direita, hoje e com o conserto" src="img/cg6b-cursus-3.jpg" /></p>
+<p><em>Ampliado: o canto de cima à direita, hoje e com o conserto</em></p>
+<p><img alt="A página inteira: hoje, conserto de 13/10 e agora (as duas últimas iguais)" src="img/tres-cursus_p003__inteira.jpg" /></p>
+<p><em>A página inteira: hoje, conserto de 13/10 e agora (as duas últimas iguais)</em></p>
+<h2>Quadro: Matemática 32: a faixa preta da direita sai; a de baixo fica</h2>
+<p>O que você está escolhendo: se a melhora da Matemática 32 basta por agora.</p>
+<p>Hoje a página sai com uma faixa preta de 4 cm à direita. Com o conserto ela some. A faixa preta de baixo continua: é o fundo do scanner, que já estava lá antes de 12/10.</p>
+<p>Você perguntou "Era para sumir completamente né?". Sumir tudo é o item 2.13 (corte) ou o 2.14 (pintar de branco); este conserto só desfaz a piora de 12/10.</p>
+<p><strong>O que olhar:</strong> A faixa preta à direita (some) e a de baixo (fica).</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o canto de baixo à direita, hoje e com o conserto" src="img/cg6b-matematica-32.jpg" /></p>
+<p><em>Ampliado: o canto de baixo à direita, hoje e com o conserto</em></p>
+<p><img alt="A página inteira nas três versões" src="img/tres-matematica_p032__inteira.jpg" /></p>
+<p><em>A página inteira nas três versões</em></p>
+<h2>Quadro: Antiphon 260: a faixa preta de baixo fica mais fina</h2>
+<p>O que você está escolhendo: se a melhora do Antiphon 260 basta por agora.</p>
+<p>Hoje sobra uma faixa preta larga embaixo. Com o conserto ela fica com uns 2 cm, a mesma de antes de 12/10.</p>
+<p>Você escreveu "Mas sobrou preto embaixo.": sobrou, sim; tirar essa sobra é o 2.13 ou o 2.14.</p>
+<p><strong>O que olhar:</strong> A faixa preta embaixo da página.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o pé da página, hoje e com o conserto" src="img/cg6b-antiphon-260.jpg" /></p>
+<p><em>Ampliado: o pé da página, hoje e com o conserto</em></p>
+<p><img alt="A página inteira nas três versões" src="img/tres-antiphon_p260__inteira.jpg" /></p>
+<p><em>A página inteira nas três versões</em></p>
+<h2>Quadro: Antiphon 88: menos preto em volta</h2>
+<p>O que você está escolhendo: se a melhora do Antiphon 88 basta por agora.</p>
+<p>Hoje sobra preto largo dos lados. Com o conserto sobra uma beirada fina, com o preto de cima e de baixo do fundo do scanner.</p>
+<p>Você escreveu "mas ainda sobrou preto embaixo.": continua lá; é o 2.13 ou o 2.14.</p>
+<p><strong>O que olhar:</strong> O preto em volta da folha.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o canto de cima à direita, hoje e com o conserto" src="img/cg6b-antiphon-88.jpg" /></p>
+<p><em>Ampliado: o canto de cima à direita, hoje e com o conserto</em></p>
+<p><img alt="A página inteira nas três versões" src="img/tres-antiphon_p088__inteira.jpg" /></p>
+<p><em>A página inteira nas três versões</em></p>
+<h2>Quadro: Camões 104: o fio escuro da beirada fica menor</h2>
+<p>O que você está escolhendo: se a melhora do Camões 104 basta por agora.</p>
+<p>A diferença é pequena: hoje sobra um fio escuro de uns 2 mm na beirada da capa; com o conserto, uns 0,5 mm, como antes de 12/10.</p>
+<p>Você perguntou como resolver de vez ("com filtro? copiando a imagem do livro e colocando em uma folha branca? ..."): é o 2.13 (corte até o conteúdo) e o 2.14 (pintar de branco).</p>
+<p><strong>O que olhar:</strong> A beirada escura à esquerda da capa.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o canto de cima à esquerda, hoje e com o conserto" src="img/cg6b-camoes-104.jpg" /></p>
+<p><em>Ampliado: o canto de cima à esquerda, hoje e com o conserto</em></p>
+<p><img alt="A página inteira nas três versões" src="img/tres-camoes_p104__inteira.jpg" /></p>
+<p><em>A página inteira nas três versões</em></p>
+<h2>Decisão: Conserto do corte com borda preta: o que você decide agora?</h2>
+<p>O que você está escolhendo: se este conserto entra no programa agora, como está, ou depois.</p>
+<p>Em 13/10 você marcou "Melhorar" e perguntou: "Só não sei se vamos fazer esse concerto agora ou deixar para depois". O Pesel 21 foi acertado; as cinco melhorias continuam iguais. O que ele não faz é tirar todo o preto: isso é o 2.13 e o 2.14, que vêm depois.</p>
+<p>Sugestão (do verificador, não é decisão): entrar agora. Hoje o programa deixa faixas pretas largas que este conserto tira, e ele não piora nenhuma das 89 páginas.</p>
+<p>Opções: Aprovado: entra agora · Melhorar · Deixar para depois · Ainda não entendi</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 14:16</p>
+</body>
+</html>

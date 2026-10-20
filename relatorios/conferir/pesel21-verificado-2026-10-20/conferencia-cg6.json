@@ -1,0 +1,163 @@
+{
+ "aba": 3,
+ "ramo": "conserto-corte-g6-2026-10-13",
+ "commit": "5a84f7c",
+ "montado_em": "20/10/2026",
+ "pode_publicar": true,
+ "nota_para_a_gerente": "As fotos são da página pronta (300 DPI, sem filtro), não da janela: não dependem do layout. Substituem os quadros cg6-* de 13/10; os comentários dele já estão fixados na página.",
+ "quadros": [
+  {
+   "id": "cg6b-pesel-21",
+   "nome": "Pesel 21: o cartão escuro volta a sair inteiro",
+   "explicacao": [
+    "O que você está escolhendo: se o Pesel 21 ficou como você queria.",
+    "Em 13/10 você marcou \"Está pior\": \"Ele chega a quase cortar as letras.\" O conserto daquele dia confundia o cartão pardo com o fundo do scanner e cortava rente, a 1 ou 2 mm da legenda. É como uma tesoura que achou que a moldura era sobra.",
+    "Agora a página sai exatamente como sai hoje no programa (15,7 × 24,1 cm, igual ponto por ponto): a legenda volta a ter uns 3 cm de cartão embaixo. Os cantinhos brancos do giro continuam, como hoje (defeito já anotado)."
+   ],
+   "olhar": "O espaço entre a legenda e a beirada de baixo.",
+   "decisao_do_samuel": "cg6, Pesel 21 (13/10): \"Está pior\" - \"Ele chega a quase cortar as letras. Nós estamos olhando o endireitar com o cortar ou só o endireitar?\"",
+   "bate_com_a_decisao": "sim: volta a ser como hoje",
+   "imgs": [
+    {
+     "src": "img/cg6b-pesel-21.jpg",
+     "legenda": "Ampliado: o pé da página hoje, no conserto de 13/10 e agora"
+    },
+    {
+     "src": "img/tres-pesel_p021__inteira.jpg",
+     "legenda": "A página inteira nas três versões"
+    }
+   ]
+  },
+  {
+   "id": "cg6b-cursus-3",
+   "nome": "Cursus 3: a faixa preta larga da direita sai",
+   "explicacao": [
+    "O que você está escolhendo: se a melhora do Cursus 3 basta por agora.",
+    "Hoje, no livro novo, o corte deixa uma faixa preta larga à direita (o defeito que o endireitar antes de cortar trouxe em 12/10). Com o conserto, ela sai; sobra um fio fino de até 4 mm e a linha preta da esquerda.",
+    "Você perguntou \"como vamos resolver isso dentro do programa então?\": tirar todo o preto é o item 2.13 (o corte do ScanTailor, com a caixa do conteúdo) e pintar de branco é o 2.14. Este conserto só desfaz a piora."
+   ],
+   "olhar": "A faixa preta à direita.",
+   "decisao_do_samuel": "cg6, Cursus 3 (13/10): \"Está pior\" - \"como vamos resolver isso dentro do programa então?\"",
+   "bate_com_a_decisao": "em parte: tira a faixa larga, não todo o preto (o resto é 2.13/2.14)",
+   "imgs": [
+    {
+     "src": "img/cg6b-cursus-3.jpg",
+     "legenda": "Ampliado: o canto de cima à direita, hoje e com o conserto"
+    },
+    {
+     "src": "img/tres-cursus_p003__inteira.jpg",
+     "legenda": "A página inteira: hoje, conserto de 13/10 e agora (as duas últimas iguais)"
+    }
+   ]
+  },
+  {
+   "id": "cg6b-matematica-32",
+   "nome": "Matemática 32: a faixa preta da direita sai; a de baixo fica",
+   "explicacao": [
+    "O que você está escolhendo: se a melhora da Matemática 32 basta por agora.",
+    "Hoje a página sai com uma faixa preta de 4 cm à direita. Com o conserto ela some. A faixa preta de baixo continua: é o fundo do scanner, que já estava lá antes de 12/10.",
+    "Você perguntou \"Era para sumir completamente né?\". Sumir tudo é o item 2.13 (corte) ou o 2.14 (pintar de branco); este conserto só desfaz a piora de 12/10."
+   ],
+   "olhar": "A faixa preta à direita (some) e a de baixo (fica).",
+   "decisao_do_samuel": "cg6, Matemática 32 (13/10): \"Está pior\" - \"Era para sumir completamente né?\"",
+   "bate_com_a_decisao": "em parte: o preto não some todo",
+   "imgs": [
+    {
+     "src": "img/cg6b-matematica-32.jpg",
+     "legenda": "Ampliado: o canto de baixo à direita, hoje e com o conserto"
+    },
+    {
+     "src": "img/tres-matematica_p032__inteira.jpg",
+     "legenda": "A página inteira nas três versões"
+    }
+   ]
+  },
+  {
+   "id": "cg6b-antiphon-260",
+   "nome": "Antiphon 260: a faixa preta de baixo fica mais fina",
+   "explicacao": [
+    "O que você está escolhendo: se a melhora do Antiphon 260 basta por agora.",
+    "Hoje sobra uma faixa preta larga embaixo. Com o conserto ela fica com uns 2 cm, a mesma de antes de 12/10.",
+    "Você escreveu \"Mas sobrou preto embaixo.\": sobrou, sim; tirar essa sobra é o 2.13 ou o 2.14."
+   ],
+   "olhar": "A faixa preta embaixo da página.",
+   "decisao_do_samuel": "cg6, Antiphon 260 (13/10): \"Está bom\" - \"Mas sobrou preto embaixo.\"",
+   "bate_com_a_decisao": "sim, com a sobra que ele viu",
+   "imgs": [
+    {
+     "src": "img/cg6b-antiphon-260.jpg",
+     "legenda": "Ampliado: o pé da página, hoje e com o conserto"
+    },
+    {
+     "src": "img/tres-antiphon_p260__inteira.jpg",
+     "legenda": "A página inteira nas três versões"
+    }
+   ]
+  },
+  {
+   "id": "cg6b-antiphon-88",
+   "nome": "Antiphon 88: menos preto em volta",
+   "explicacao": [
+    "O que você está escolhendo: se a melhora do Antiphon 88 basta por agora.",
+    "Hoje sobra preto largo dos lados. Com o conserto sobra uma beirada fina, com o preto de cima e de baixo do fundo do scanner.",
+    "Você escreveu \"mas ainda sobrou preto embaixo.\": continua lá; é o 2.13 ou o 2.14."
+   ],
+   "olhar": "O preto em volta da folha.",
+   "decisao_do_samuel": "cg6, Antiphon 88 (13/10): \"Está bom\" - \"mas ainda sobrou preto embaixo.\"",
+   "bate_com_a_decisao": "sim, com a sobra que ele viu",
+   "imgs": [
+    {
+     "src": "img/cg6b-antiphon-88.jpg",
+     "legenda": "Ampliado: o canto de cima à direita, hoje e com o conserto"
+    },
+    {
+     "src": "img/tres-antiphon_p088__inteira.jpg",
+     "legenda": "A página inteira nas três versões"
+    }
+   ]
+  },
+  {
+   "id": "cg6b-camoes-104",
+   "nome": "Camões 104: o fio escuro da beirada fica menor",
+   "explicacao": [
+    "O que você está escolhendo: se a melhora do Camões 104 basta por agora.",
+    "A diferença é pequena: hoje sobra um fio escuro de uns 2 mm na beirada da capa; com o conserto, uns 0,5 mm, como antes de 12/10.",
+    "Você perguntou como resolver de vez (\"com filtro? copiando a imagem do livro e colocando em uma folha branca? ...\"): é o 2.13 (corte até o conteúdo) e o 2.14 (pintar de branco)."
+   ],
+   "olhar": "A beirada escura à esquerda da capa.",
+   "decisao_do_samuel": "cg6, Camões 104 (13/10): \"Está pior\" - \"Como vamos resolver isso, com filtro? copiando a imagem do livro e colocando em uma folha branca? com o endireitar e depois cortar? selecionando só essa parte preta e apagando?\"",
+   "bate_com_a_decisao": "em parte: melhora pequena; o resto é 2.13/2.14",
+   "imgs": [
+    {
+     "src": "img/cg6b-camoes-104.jpg",
+     "legenda": "Ampliado: o canto de cima à esquerda, hoje e com o conserto"
+    },
+    {
+     "src": "img/tres-camoes_p104__inteira.jpg",
+     "legenda": "A página inteira nas três versões"
+    }
+   ]
+  }
+ ],
+ "opcoes_de_cada_quadro": [
+  "Está bom",
+  "Melhorar",
+  "Está pior",
+  "Ainda não entendi"
+ ],
+ "pergunta": {
+  "id": "cg6",
+  "titulo": "Conserto do corte com borda preta: o que você decide agora?",
+  "explicacao": [
+   "O que você está escolhendo: se este conserto entra no programa agora, como está, ou depois.",
+   "Em 13/10 você marcou \"Melhorar\" e perguntou: \"Só não sei se vamos fazer esse concerto agora ou deixar para depois\". O Pesel 21 foi acertado; as cinco melhorias continuam iguais. O que ele não faz é tirar todo o preto: isso é o 2.13 e o 2.14, que vêm depois.",
+   "Sugestão (do verificador, não é decisão): entrar agora. Hoje o programa deixa faixas pretas largas que este conserto tira, e ele não piora nenhuma das 89 páginas."
+  ],
+  "opcoes": [
+   "Aprovado: entra agora",
+   "Melhorar",
+   "Deixar para depois",
+   "Ainda não entendi"
+  ]
+ }
+}

@@ -1,0 +1,12 @@
+﻿
+E       AssertionError: livro novo 105.3 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       assert (42.672 <= 1.0)
+E        +  where 42.672 = abs((105.32533333333333 - 147.99733333333333))
+E       AssertionError: livro novo 105.3 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       assert (42.672 <= 1.0)
+E        +  where 42.672 = abs((105.32533333333333 - 147.99733333333333))
+E       AssertionError: livro novo 104.9 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       assert (43.09533333333333 <= 1.0)
+E        +  where 43.09533333333333 = abs((104.902 - 147.99733333333333))
+
+
