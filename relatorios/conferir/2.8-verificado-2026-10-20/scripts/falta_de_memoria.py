@@ -30,6 +30,7 @@ original = biblioteca.funcao
 
 class FuncaoSemMemoria:
     def __call__(self, *args):
+        print("    (a DLL fingida foi chamada)")
         erro = args[-2]
         erro.value = b"std::bad_alloc (fingido pelo verificador)"
         return st.ERRO_MEMORIA
@@ -46,10 +47,15 @@ class Ouvido(logging.Handler):
         ouvidos.append(r.getMessage())
 
 
-logging.getLogger().addHandler(Ouvido())          # so para ver se a mensagem foi emitida
+logging.getLogger().addHandler(Ouvido())
+logging.getLogger().setLevel(logging.WARNING)          # so para ver se a mensagem foi emitida
 
-saida = F.filtro_preto_e_branco(img, 50, "st_sauvola", None)
-auto = F.filtro_preto_e_branco(img, 50, "auto", None)
+class Pontinhos:            # o DPI de verdade, como o programa passa (sem ele, a pagina pequena seria recusada antes)
+    dpi = 300
+
+
+saida = F.filtro_preto_e_branco(img, 50, Pontinhos(), algoritmo="st_sauvola")
+auto = F.filtro_preto_e_branco(img, 50, Pontinhos(), algoritmo="auto")
 print("(a) saiu igual ao Automatico:", np.array_equal(saida, auto))
 print("    mensagens emitidas pelo logging:", ouvidos)
 log = caminho_do_log()

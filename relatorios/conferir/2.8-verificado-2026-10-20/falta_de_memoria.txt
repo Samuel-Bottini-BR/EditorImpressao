@@ -1,0 +1,5 @@
+    (a DLL fingida foi chamada)
+(a) saiu igual ao Automatico: True
+    mensagens emitidas pelo logging: ['st_ferramentas: Faltou memória para o preto e branco desta página. (código 2: std::bad_alloc (fingido pelo verificador))', 'preto e branco do ScanTailor indisponível, usei o Automático: Faltou memória para o preto e branco desta página. (código 2: std::bad_alloc (fingido pelo verificador))']
+(b) erros.log existe: False | conteudo: (nenhum)
+    handlers no logger raiz alem do meu: []

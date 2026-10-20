@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Item 2.8: os dez preto e branco do ScanTailor - conferência do verificador (20/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Item 2.8: os dez preto e branco do ScanTailor - conferência do verificador (20/10/2026)</h1>
+<p>Ramo <code>fase2-scantailor-itens-2026-10-19</code>, commit <code>34b3d0e</code>, contra o <code>fase-1</code> em <code>b8e9af7</code>. Não mudei código; não marco nada como aprovado.</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR, com uma ressalva:</strong> desligado de fábrica está provado (somas iguais), os 8 trechos copiados do ScanTailor batem e a suíte passou. Mas a falha por memória cai no "Automático" e <strong>não chega ao erros.log</strong> (o aviso vai só para o <code>logging</code> do Python, que o programa não grava). Nas fotos, os jeitos do ScanTailor transformam a ferrugem do Palatino em borrão preto, e o Sauvola esvazia as notas do Graduale: bom que venham desligados.</p>
+<h2>O que conferi</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Desligado de fábrica: somas das 32 páginas-gabarito em Original, Preto e branco, Melhorar e Preto e branco com "Só as letras", no <code>b8e9af7</code> e no <code>34b3d0e</code> (script meu, <code>scripts/somas.py</code>, uma página por processo)</td>
+<td>máquina</td>
+<td><strong>iguais: 128 de 128</strong></td>
+</tr>
+<tr>
+<td>2. Imagens do implementador: 32 páginas inteiras (5 colunas) e 32 recortes ampliados, inclusive os 12 que ele não reabriu</td>
+<td>olho</td>
+<td>abertas todas (as páginas por 8 folhas de contato, os recortes um a um); ver abaixo</td>
+</tr>
+<tr>
+<td>3. Os 8 trechos copiados de <code>OutputGenerator.cpp</code> sem mudança</td>
+<td>máquina</td>
+<td>conferi por conta própria (comparação linha a linha): 8 blocos, 335 linhas, todos iguais; o arquivo de referência não mudou neste ramo. <code>tests/test_preto_e_branco_scantailor.py</code>: 31 passaram no PC; <code>..._na_tela.py</code>: 4 passaram</td>
+</tr>
+<tr>
+<td>4. Falta de memória na DLL</td>
+<td>máquina</td>
+<td>cai no "Automático" (sai igual, ponto por ponto). <strong>Não vai ao erros.log</strong>: ver ressalva</td>
+</tr>
+<tr>
+<td>5. Suíte no Windows do GitHub, rodada 39395632426 (<code>34b3d0e</code>)</td>
+<td>máquina</td>
+<td>passou: 116 arquivos, 2084 passaram, 0 falharam, 72 pulados; botões: 221 ações, 0 falhas</td>
+</tr>
+<tr>
+<td>Velocidade</td>
+<td>-</td>
+<td>não rodei (opção a mais e desligada; a gerente dispensou)</td>
+</tr>
+<tr>
+<td>Janela</td>
+<td>-</td>
+<td>não pilotei; o controle novo está na lista "Algoritmo" da aba Filtro, a tela de hoje, que o layout vai mudar</td>
+</tr>
+</tbody>
+</table>
+<p>Saída do teste de falta de memória:</p>
+<pre><code>(a DLL fingida foi chamada)
+(a) saiu igual ao Automatico: True
+    mensagens emitidas pelo logging: ['st_ferramentas: Faltou memória para o preto e branco desta página. (código 2: std::bad_alloc (fingido pelo verificador))', 'preto e branco do ScanTailor indisponível, usei o Automático: Faltou memória para o preto e branco desta página. (código 2: std::bad_alloc (fingido pelo verificador))']
+(b) erros.log existe: False | conteudo: (nenhum)
+    handlers no logger raiz alem do meu: []
+</code></pre>
+<h2>Os 12 recortes que o implementador não reabriu (uma linha cada)</h2>
+<ol>
+<li>Boécio 8 (itálico): os quatro quase iguais; Wolf um pouco mais grosso.</li>
+<li>Boécio 22: Otsu e Sauvola parecidos com o de hoje; Wolf traz sujeira do verso entre as linhas.</li>
+<li>Escola 7 (texto moderno): o de hoje sai em negrito; os três do ScanTailor saem finos, mais parecidos com o original.</li>
+<li>Escola 35: igual ao 7.</li>
+<li>Graduale 221: o de hoje deixa uma faixa preta larga na lombada (esquerda); os três do ScanTailor, só um fio. Sauvola esvazia algumas notas.</li>
+<li>Graduale 223: igual ao 221 (faixa larga no de hoje, fio nos outros; Sauvola falha uma nota).</li>
+<li>Horas 11 (frontispício pintado): a pintura fica em cor nos quatro; só muda a beirada da esquerda (Sauvola quase limpa).</li>
+<li>Horas 14 (tabela): Sauvola afina e falha os números; Otsu e Wolf perto do de hoje; os quatro com a faixa preta à direita.</li>
+<li>Horas 26: Sauvola falha a letra ("Neocefarée"); Otsu deixa uma linha preta na beirada esquerda; Wolf igual ao de hoje.</li>
+<li>Horas 27: o de hoje deixa faixa preta na beirada esquerda; os três do ScanTailor não. Sauvola mais fino.</li>
+<li>Horas 47: Otsu e Sauvola mais finos e com falhas ("l'étenduë"); Wolf e o de hoje cheios.</li>
+</ol>
+<h2>O que vi nas 32 páginas (os três do ScanTailor contra o de hoje)</h2>
+<ul>
+<li>Texto impresso comum (Boécio, Opus Majus, Palatino 7 e 10, Rhetorica, Marial, Escola): parecidos; Wolf engrossa a letra e guarda mais sujeira do verso (Boécio 7 e 22, Marial 7); Otsu e Sauvola afinam. Na Escola o de hoje sai em negrito e os do ScanTailor, finos.</li>
+<li>Letra fina/colorida (Horas 13, 14, 26, 27, 47): Otsu e Sauvola falham a letra fina; Wolf e o de hoje saem cheios.</li>
+<li>Música (Graduale 221, 222, 223): Sauvola esvazia algumas notas; a faixa preta da lombada muda de lugar (no 221 e no 223 o de hoje deixa a mais larga; no 222 é o Otsu).</li>
+<li>Gravura (Boécio 3, Palatino 5 e 9, Opus Majus 20): Otsu e Wolf deixam o selo e a gravura mais escuros e cheios, às vezes melhor que o de hoje (o selo do Boécio 3).</li>
+<li>Ferrugem (Palatino 66 e 67): os três transformam a mancha em borrão preto; o de hoje a apaga (66) ou deixa menor (67).</li>
+<li>Beirada do scanner (Siebmacher 7 e 9): os três deixam faixa preta sólida maior que o de hoje.</li>
+<li>Fotos e pinturas (Escola, Horas 11 e 47, Opus Majus 20): iguais nos quatro (ficam em tons ou em cor).</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>A falha da DLL não chega ao erros.log.</strong> <code>core/preto_e_branco_scantailor._avisar_uma_vez</code> usa <code>logging.warning</code>, e o programa não liga o <code>logging</code> a arquivo nenhum (o erros.log só recebe <code>registro.registrar_erro</code>). O módulo irmão <code>core/endireitar_scantailor.py</code> faz igual, então é um padrão do projeto, mas a página cai no Automático sem deixar rastro. O teste do implementador cobre a queda no Automático, não o log.</li>
+<li>Fotos de três dos dez jeitos (Otsu, Sauvola, Wolf); os outros sete não foram olhados por ninguém.</li>
+<li>Não pilotei a janela: a lista "Algoritmo" é da tela de hoje, que o layout vai mudar.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<ul>
+<li>20/10/2026: quando o preto e branco do ScanTailor falha (memória, DLL), a página cai no Automático e o motivo não vai ao erros.log (vai ao <code>logging</code>, que não é gravado). Mesmo padrão no endireitar do ScanTailor.</li>
+</ul>
+<h2>Quadro para o Samuel: Texto comum (Palatino 7 e Opus Majus 11)</h2>
+<p>O que você está escolhendo: se os jeitos do ScanTailor, numa página só de texto, servem como opção a mais.</p>
+<p>Nas duas páginas as letras saem parecidas nos quatro. O Wolf deixa a letra mais grossa e escura; o Otsu e o Sauvola, mais finas, como o de hoje. É como escolher entre uma caneta fina e uma média.</p>
+<p>Cada foto: a página como sai no PDF, Preto e branco de fábrica ("Hoje") e com três dos dez jeitos do ScanTailor, com os ajustes de fábrica dele. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher.</p>
+<p><strong>O que olhar:</strong> A grossura das letras.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: Palatino 7 - Original, Hoje, Otsu, Sauvola, Wolf" src="img/28-palatino_p007-recorte.jpg" /></p>
+<p><em>Ampliado: Palatino 7 - Original, Hoje, Otsu, Sauvola, Wolf</em></p>
+<p><img alt="Ampliado: Opus Majus 11, na mesma ordem" src="img/28-opusmajus_p011-recorte.jpg" /></p>
+<p><em>Ampliado: Opus Majus 11, na mesma ordem</em></p>
+<h2>Quadro para o Samuel: Livro de Horas (13 e 47): letra fina e colorida</h2>
+<p>O que você está escolhendo: se os jeitos do ScanTailor servem como opção nas páginas finas e coloridas do Livro de Horas.</p>
+<p>Na Horas 13 (letras azuis e vermelhas finas) o Otsu e o Sauvola afinam a letra, e o Sauvola chega a falhar; o Wolf e o de hoje saem cheios. Na Horas 47 as quatro saem iguais na moldura pintada, que fica em cor.</p>
+<p>Cada foto: a página como sai no PDF, Preto e branco de fábrica ("Hoje") e com três dos dez jeitos do ScanTailor, com os ajustes de fábrica dele. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher.</p>
+<p><strong>O que olhar:</strong> As letras finas "la fainte", "Confeffion": falhas no Otsu e no Sauvola.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: Horas 13 - Original, Hoje, Otsu, Sauvola, Wolf" src="img/28-horas_p013-recorte.jpg" /></p>
+<p><em>Ampliado: Horas 13 - Original, Hoje, Otsu, Sauvola, Wolf</em></p>
+<p><img alt="Ampliado: Horas 47, na mesma ordem" src="img/28-horas_p047-recorte.jpg" /></p>
+<p><em>Ampliado: Horas 47, na mesma ordem</em></p>
+<p><img alt="Horas 47 inteira" src="img/28-horas_p047-pagina.jpg" /></p>
+<p><em>Horas 47 inteira</em></p>
+<h2>Quadro para o Samuel: Graduale (221 e 222): música</h2>
+<p>O que você está escolhendo: se os jeitos do ScanTailor servem como opção nas páginas de música.</p>
+<p>Nas pautas, o Sauvola deixa algumas notas vazadas, com buracos. A faixa preta da lombada muda: no 222 o Otsu a deixa grossa; no 221 é o de hoje que deixa a faixa larga e os do ScanTailor só um fio.</p>
+<p>Cada foto: a página como sai no PDF, Preto e branco de fábrica ("Hoje") e com três dos dez jeitos do ScanTailor, com os ajustes de fábrica dele. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher.</p>
+<p><strong>O que olhar:</strong> As notas quadradas (vazadas no Sauvola) e a faixa preta da lombada.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: Graduale 222 - Original, Hoje, Otsu, Sauvola, Wolf" src="img/28-graduale_p222-recorte.jpg" /></p>
+<p><em>Ampliado: Graduale 222 - Original, Hoje, Otsu, Sauvola, Wolf</em></p>
+<p><img alt="Graduale 221 inteira" src="img/28-graduale_p221-pagina.jpg" /></p>
+<p><em>Graduale 221 inteira</em></p>
+<h2>Quadro para o Samuel: Palatino 66 e 67: a mancha de ferrugem</h2>
+<p>O que você está escolhendo: se aceita que os jeitos do ScanTailor fiquem disponíveis sabendo que pioram a ferrugem.</p>
+<p>Na Palatino 66 a mancha de ferrugem ao lado da letra P some no jeito de hoje; nos três do ScanTailor ela vira um borrão preto em cima da letra. Na 67 a ferrugem embaixo do M vira um bloco preto nos três (no de hoje, uma mancha menor).</p>
+<p>Por isso eles são opção a mais e não vêm ligados: o de hoje continua o de fábrica. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher.</p>
+<p><strong>O que olhar:</strong> A mancha marrom do original: some no Hoje, vira preto nos três do ScanTailor.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: Palatino 66, a ferrugem ao lado do P" src="img/28-palatino-66-ferrugem.jpg" /></p>
+<p><em>Ampliado: Palatino 66, a ferrugem ao lado do P</em></p>
+<p><img alt="Ampliado: Palatino 67, a ferrugem embaixo do M" src="img/28-palatino-67-ferrugem.jpg" /></p>
+<p><em>Ampliado: Palatino 67, a ferrugem embaixo do M</em></p>
+<h2>Decisão: Os dez preto e branco do ScanTailor como opções a mais: o que você decide?</h2>
+<p>O que você está escolhendo: se esta entrega entra no programa.</p>
+<p>Você pediu em 05/10 (P8): "Trazer os dez do ScanTailor como opções a mais". Eles ficam na lista "Algoritmo" da aba Filtro, depois dos três de sempre. Vêm desligados: o "Automático" de hoje continua o de fábrica, e livro já começado sai igual, ponto por ponto.</p>
+<p>As fotos mostram três dos dez (Otsu, Sauvola, Wolf) em quatro tipos de página. Não há um vencedor: cada um ganha numa página e perde noutra.</p>
+<p>Opções: Aprovado · Melhorar · Ainda não entendi</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/10/2026 às 14:42</p>
+</body>
+</html>
