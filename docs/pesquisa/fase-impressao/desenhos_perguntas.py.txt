@@ -1,0 +1,355 @@
+"""Desenhos das 6 perguntas da impressao (pesquisa; NAO e codigo do programa).
+Uso: python desenhos_perguntas.py <pasta_worktree> <pasta_saida>"""
+import sys
+from pathlib import Path
+
+import fitz
+import numpy as np
+
+WT, OUT = Path(sys.argv[1]), Path(sys.argv[2])
+OUT.mkdir(parents=True, exist_ok=True)
+sys.path.insert(0, str(WT))
+from core.cadernos import ordem_do_caderno  # noqa: E402
+
+CM = 72 / 2.54
+FONTE = "C:/Windows/Fonts/arial.ttf"
+FONTE_N = "C:/Windows/Fonts/arialbd.ttf"
+LIVRO = Path("D:/programas/EditorImpressao/gabarito/paginas/opusmajus_p011.pdf")
+src = fitz.open(LIVRO)
+
+# Corte justo: a caixa da tinta da pagina do Opus Majus (como depois de um corte bem rente)
+pix = src[0].get_pixmap(dpi=40, colorspace=fitz.csGRAY)
+a = np.frombuffer(pix.samples, np.uint8).reshape(pix.h, pix.w)
+ys, xs = np.nonzero(a < 150)
+# ignora pontinhos soltos: percentis
+x0, x1 = np.percentile(xs, [0.3, 99.7]); y0, y1 = np.percentile(ys, [0.3, 99.7])
+R = src[0].rect
+CORTE = fitz.Rect(x0 / pix.w * R.width, y0 / pix.h * R.height, x1 / pix.w * R.width, y1 / pix.h * R.height)
+CORTE = CORTE + (-0.15 * CM, -0.15 * CM, 0.15 * CM, 0.15 * CM)  # sobra 1,5 mm
+print("corte (cm):", round(CORTE.width / CM, 2), "x", round(CORTE.height / CM, 2))
+
+A4W, A4H = 29.7 * CM, 21.0 * CM
+VERDE, VERM, AZUL, CINZA = (0, 0.55, 0.2), (0.85, 0, 0), (0.1, 0.3, 0.9), (0.55, 0.55, 0.55)
+
+
+def tela(titulo, larg=A4W, alt=A4H, extra_baixo=1.6 * CM):
+    doc = fitz.open()
+    pg = doc.new_page(width=larg + 3 * CM, height=alt + 2.6 * CM + extra_baixo)
+    pg.insert_font(fontname="ar", fontfile=FONTE)
+    pg.insert_font(fontname="arb", fontfile=FONTE_N)
+    pg.draw_rect(pg.rect, color=None, fill=(1, 1, 1))
+    pg.insert_text((1.5 * CM, 1.3 * CM), titulo, fontname="arb", fontsize=15, color=(0.1, 0.1, 0.1))
+    return doc, pg, fitz.Point(1.5 * CM, 2.0 * CM)
+
+
+def texto(pg, p, s, tam=10, cor=(0.15, 0.15, 0.15), negrito=False, centro=False, rot=0):
+    f = "arb" if negrito else "ar"
+    if centro:
+        w = fitz.get_text_length(s, fontname="helv", fontsize=tam) * 1.0
+        p = fitz.Point(p.x - w / 2, p.y)
+    pg.insert_text(p, s, fontname=f, fontsize=tam, color=cor, rotate=rot)
+
+
+def folha_a4(pg, o, rotulo=None):
+    r = fitz.Rect(o.x, o.y, o.x + A4W, o.y + A4H)
+    pg.draw_rect(r, color=(0.2, 0.2, 0.2), fill=(1, 1, 1), width=1.2)
+    m = o.x + A4W / 2
+    pg.draw_line((m, o.y), (m, o.y + A4H), color=AZUL, dashes="[3 3] 0", width=0.8)
+    texto(pg, fitz.Point(m + 3, o.y + A4H - 4), "dobra (costura)", 8, AZUL)
+    if rotulo:
+        texto(pg, fitz.Point(o.x, o.y + A4H + 14), rotulo, 10, negrito=True)
+    return r
+
+
+def metades(o):
+    esq = fitz.Rect(o.x, o.y, o.x + A4W / 2, o.y + A4H)
+    dir_ = fitz.Rect(o.x + A4W / 2, o.y, o.x + A4W, o.y + A4H)
+    return esq, dir_
+
+
+def area(meia, esquerda, modo):
+    if modo == "papel":
+        f, c, cb = 0.3, 0.0, 0.3
+    else:
+        f, c, cb = 1.3, 1.0, 1.3
+    if esquerda:
+        return fitz.Rect(meia.x0 + f * CM, meia.y0 + cb * CM, meia.x1 - c * CM, meia.y1 - cb * CM)
+    return fitz.Rect(meia.x0 + c * CM, meia.y0 + cb * CM, meia.x1 - f * CM, meia.y1 - cb * CM)
+
+
+def por_pagina(pg, meia, esquerda, modo="papel", escala=1.0, ancora="meio", numero=None, cotas=True,
+               margem_min=True):
+    """Poe a pagina (o corte justo do Opus Majus 11) na metade. Devolve as margens em cm."""
+    ar = area(meia, esquerda, modo)
+    f = min(ar.width / CORTE.width, ar.height / CORTE.height) * escala
+    w, h = CORTE.width * f, CORTE.height * f
+    cy = (ar.y0 + ar.y1) / 2
+    if ancora == "meio":
+        cx = (ar.x0 + ar.x1) / 2
+        r = fitz.Rect(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2)
+    else:  # encostada na costura: mantem a distancia da costura que teria com 100%
+        w100 = CORTE.width * f / escala
+        cx100 = (ar.x0 + ar.x1) / 2
+        if esquerda:
+            borda = cx100 + w100 / 2
+            r = fitz.Rect(borda - w, cy - h / 2, borda, cy + h / 2)
+        else:
+            borda = cx100 - w100 / 2
+            r = fitz.Rect(borda, cy - h / 2, borda + w, cy + h / 2)
+    pg.show_pdf_page(r, src, 0, clip=CORTE)
+    if margem_min:
+        pg.draw_rect(area(meia, esquerda, "margens"), color=VERM, dashes="[4 3] 0", width=0.9)
+    m = {"cima": (r.y0 - meia.y0) / CM, "baixo": (meia.y1 - r.y1) / CM}
+    if esquerda:
+        m["fora"], m["costura"] = (r.x0 - meia.x0) / CM, (meia.x1 - r.x1) / CM
+    else:
+        m["costura"], m["fora"] = (r.x0 - meia.x0) / CM, (meia.x1 - r.x1) / CM
+    if cotas:
+        desenhar_cotas(pg, meia, r, esquerda, m)
+    if numero is not None:
+        texto(pg, fitz.Point((meia.x0 + meia.x1) / 2 - 18, meia.y0 - 4), f"pág. {numero}", 9, negrito=True)
+    return m, f
+
+
+def fmt(v):
+    return f"{v:.1f}".replace(".", ",") + " cm"
+
+
+def cota_h(pg, xa, xb, y, s, cor):
+    pg.draw_line((xa, y), (xb, y), color=cor, width=1.1)
+    for x in (xa, xb):
+        pg.draw_line((x, y - 3), (x, y + 3), color=cor, width=1.1)
+    tw = fitz.get_text_length(s, fontname="helv", fontsize=8)
+    xm = (xa + xb) / 2
+    pg.draw_rect(fitz.Rect(xm - tw / 2 - 2, y - 9, xm + tw / 2 + 2, y + 1.5), color=None, fill=(1, 1, 1))
+    pg.insert_text((xm - tw / 2, y - 1.5), s, fontname="arb", fontsize=8, color=cor)
+
+
+def cota_v(pg, x, ya, yb, s, cor):
+    pg.draw_line((x, ya), (x, yb), color=cor, width=1.1)
+    for y in (ya, yb):
+        pg.draw_line((x - 3, y), (x + 3, y), color=cor, width=1.1)
+    tw = fitz.get_text_length(s, fontname="helv", fontsize=8)
+    ym = (ya + yb) / 2
+    pg.draw_rect(fitz.Rect(x + 3, ym - 6, x + 7 + tw, ym + 4), color=None, fill=(1, 1, 1))
+    pg.insert_text((x + 5, ym + 2.5), s, fontname="arb", fontsize=8, color=cor)
+
+
+def desenhar_cotas(pg, meia, r, esquerda, m):
+    ok = lambda k: m[k] >= (1.0 if k == "costura" else 1.3) - 1e-6
+    cor = lambda k: VERDE if ok(k) else VERM
+    ym = r.y0 + r.height * 0.62
+    xm = r.x0 + r.width * 0.35
+    if esquerda:
+        cota_h(pg, meia.x0, r.x0, ym, fmt(m["fora"]), cor("fora"))
+        cota_h(pg, r.x1, meia.x1, ym + 22, fmt(m["costura"]), cor("costura"))
+    else:
+        cota_h(pg, meia.x0, r.x0, ym + 22, fmt(m["costura"]), cor("costura"))
+        cota_h(pg, r.x1, meia.x1, ym, fmt(m["fora"]), cor("fora"))
+    cota_v(pg, xm, meia.y0, r.y0, fmt(m["cima"]), cor("cima"))
+    cota_v(pg, xm, r.y1, meia.y1, fmt(m["baixo"]), cor("baixo"))
+
+
+def legenda_padrao(pg, y):
+    x = 1.5 * CM
+    pg.draw_line((x, y), (x + 22, y), color=VERM, dashes="[4 3] 0", width=1)
+    texto(pg, fitz.Point(x + 26, y + 3), "margem mínima: 1,3 cm da beirada do papel (1 cm depois dos 3 mm da impressora) e 1 cm na costura", 8.5)
+    pg.draw_line((x, y + 13), (x + 22, y + 13), color=VERDE, width=1.2)
+    texto(pg, fitz.Point(x + 26, y + 16), "medida verde: margem boa", 8.5)
+    pg.draw_line((x + 190, y + 13), (x + 212, y + 13), color=VERM, width=1.2)
+    texto(pg, fitz.Point(x + 216, y + 16), "medida vermelha: abaixo do mínimo (o programa avisa)", 8.5)
+
+
+def salvar(doc, nome, dpi=80):
+    caminho = OUT / nome
+    doc[0].get_pixmap(dpi=dpi).save(caminho)
+    doc.close()
+    print("gravado", nome)
+
+
+# ---------- Pergunta 1: exceção "uma folha só" ----------
+lado = ordem_do_caderno(20)[2]   # folha 2, frente: 18 | 3
+for nome, tit, ee, ed in (
+    ("imp-1-a-folha-inteira.png", "Opção A: a folha A4 inteira muda (as duas páginas dela)", 0.85, 0.85),
+    ("imp-1-b-uma-pagina.png", "Opção B: só uma página muda (a pág. 3); a do lado fica como está", 1.0, 0.85),
+):
+    doc, pg, o = tela(tit)
+    folha_a4(pg, o, "Folha 2, frente, do 1º caderno: páginas 18 e 3. Escala do livro: 100%. Exceção: 85%.")
+    e, d = metades(o)
+    por_pagina(pg, e, True, escala=ee, numero=lado.esquerda + 1, cotas=False, margem_min=False)
+    por_pagina(pg, d, False, escala=ed, numero=lado.direita + 1, cotas=False, margem_min=False)
+    for meia, esc in ((e, ee), (d, ed)):
+        cor = VERM if esc < 1 else CINZA
+        texto(pg, fitz.Point(meia.x0 + 4, meia.y0 - 4), f"{int(esc * 100)}%" + ("  (mudou)" if esc < 1 else "  (igual ao livro)"), 10, cor, negrito=True)
+    salvar(doc, nome)
+
+# ---------- Pergunta 2: o que o "Ajustar" faz no livreto ----------
+for nome, tit, modo in (
+    ("imp-2-a-encher-a-metade.png", "Opção A: a página enche a metade da folha (só tira os 3 mm da impressora)", "papel"),
+    ("imp-2-b-dentro-das-margens.png", "Opção B: a página já entra dentro das margens (1,3 cm e 1 cm)", "margens"),
+):
+    doc, pg, o = tela(tit)
+    folha_a4(pg, o, "Folha 1, frente: páginas 20 e 1 (Opus Majus, página cortada rente ao texto)")
+    e, d = metades(o)
+    me, fe = por_pagina(pg, e, True, modo=modo, numero=20)
+    md, fd = por_pagina(pg, d, False, modo=modo, numero=1)
+    print(nome, "escala", round(fe, 3), {k: round(v, 2) for k, v in me.items()})
+    legenda_padrao(pg, o.y + A4H + 28)
+    salvar(doc, nome)
+
+# ---------- Pergunta 3: onde fica a página diminuída ----------
+for nome, tit, anc in (
+    ("imp-3-a-no-meio.png", "Opção A: a página diminuída (85%) fica no meio da sua metade", "meio"),
+    ("imp-3-b-na-costura.png", "Opção B: a página diminuída (85%) fica encostada na costura", "costura"),
+):
+    doc, pg, o = tela(tit)
+    folha_a4(pg, o, "Folha 1, frente: páginas 20 e 1, as duas a 85%")
+    e, d = metades(o)
+    me, _ = por_pagina(pg, e, True, escala=0.85, ancora=anc, numero=20)
+    md, _ = por_pagina(pg, d, False, escala=0.85, ancora=anc, numero=1)
+    print(nome, {k: round(v, 2) for k, v in me.items()})
+    legenda_padrao(pg, o.y + A4H + 28)
+    salvar(doc, nome)
+
+# ---------- Pergunta 4: o último caderno ----------
+def cadernos(total, tamanhos):
+    """tamanhos: lista com o nº de páginas de cada caderno. Devolve [[(frente, verso), ...], ...]."""
+    res, ini = [], 0
+    for n in tamanhos:
+        lados = ordem_do_caderno(n, ini)
+        fol = []
+        for i in range(0, len(lados), 2):
+            f, v = lados[i], lados[i + 1]
+            num = lambda x: None if x is None or x >= total else x + 1
+            fol.append(((num(f.esquerda), num(f.direita)), (num(v.esquerda), num(v.direita))))
+        res.append(fol)
+        ini += n
+    return res
+
+
+def desenho_cadernos(nome, tit, total, tamanhos, rodape):
+    cads = cadernos(total, tamanhos)
+    col_w, lin_h = 8.4 * CM, 1.55 * CM
+    alt = max(len(c) for c in cads) * lin_h + 1.6 * CM
+    doc, pg, o = tela(tit, larg=len(cads) * (col_w + 0.8 * CM), alt=alt, extra_baixo=1.4 * CM)
+    vazias = 0
+    for ci, fol in enumerate(cads):
+        x = o.x + ci * (col_w + 0.8 * CM)
+        texto(pg, fitz.Point(x, o.y + 10), f"Caderno {ci + 1}: {len(fol)} folha" + ("s" if len(fol) > 1 else ""), 11, negrito=True)
+        for fi, (fr, ve) in enumerate(fol):
+            y = o.y + 0.7 * CM + fi * lin_h
+            for k, (lado_, rot) in enumerate(((fr, "frente"), (ve, "verso"))):
+                bx = x + k * (col_w / 2)
+                cel = fitz.Rect(bx, y, bx + col_w / 2 - 6, y + lin_h - 8)
+                vazia_lado = lado_[0] is None and lado_[1] is None
+                pg.draw_rect(cel, color=(0.3, 0.3, 0.3), fill=(0.93, 0.93, 0.93) if vazia_lado else (1, 1, 1), width=0.8)
+                pg.draw_line((cel.x0 + cel.width / 2, cel.y0), (cel.x0 + cel.width / 2, cel.y1), color=AZUL, dashes="[2 2] 0", width=0.5)
+                for j, p in enumerate(lado_):
+                    sx = cel.x0 + j * cel.width / 2
+                    s = str(p) if p else "branco"
+                    cor = (0.1, 0.1, 0.1) if p else VERM
+                    texto(pg, fitz.Point(sx + 8, cel.y0 + cel.height / 2 + 4), s, 11 if p else 9, cor, negrito=bool(p))
+                texto(pg, fitz.Point(cel.x0, cel.y1 + 7), f"folha {fi + 1}, {rot}", 6.5, CINZA)
+            if all(p is None for p in fr + ve):
+                vazias += 1
+    l1, l2 = rodape.split(" Resultado: ")
+    texto(pg, fitz.Point(o.x, pg.rect.height - 1.5 * CM), l1, 10)
+    texto(pg, fitz.Point(o.x, pg.rect.height - 1.5 * CM + 14), "Resultado: " + l2, 10, negrito=True)
+    salvar(doc, nome)
+    return vazias
+
+
+for nome, tit, tams in (
+    ("imp-4-a-cheio.png", "Opção A: último caderno do tamanho cheio (como hoje)", [20, 20]),
+    ("imp-4-b-menor.png", "Opção B: último caderno menor, só com as folhas necessárias", [20, 4]),
+    ("imp-4-c-repartido.png", "Opção C: cadernos parecidos (as páginas repartidas)", [12, 12]),
+):
+    folhas = sum(t // 4 for t in tams)
+    brancos = sum(tams) - 23
+    vaz = cadernos(23, tams)
+    nvaz = sum(1 for c in vaz for fr, ve in c if all(p is None for p in fr + ve))
+    pb = "1 página em branco" if brancos == 1 else f"{brancos} páginas em branco"
+    rod = f"Livro de 23 páginas, Kaique escolheu cadernos de 20. Resultado: {folhas} folhas de papel, {pb}"
+    rod += f", {nvaz} folhas inteiras vazias." if nvaz else ", nenhuma folha inteira vazia."
+    desenho_cadernos(nome, tit, 23, tams, rod)
+
+# conta do Balzac (486 paginas), para o texto
+for tams, rot in (([20] * 25, "cheio"), ([20] * 24 + [8], "menor")):
+    c = cadernos(486, tams)
+    nvaz = sum(1 for cad in c for fr, ve in cad if all(p is None for p in fr + ve))
+    print("Balzac", rot, "folhas", sum(t // 4 for t in tams), "brancos", sum(tams) - 486, "folhas vazias", nvaz)
+
+
+# ---------- Pergunta 5: so o arquivo, ou imprimir direto ----------
+def caixa(pg, r, s1, s2=None, cor=(0.93, 0.95, 1)):
+    pg.draw_rect(r, color=(0.25, 0.3, 0.5), fill=cor, width=1.1)
+    texto(pg, fitz.Point(r.x0 + 8, r.y0 + 20), s1, 13, negrito=True)
+    if s2:
+        y = r.y0 + 40
+        for linha in s2.split("\n"):
+            texto(pg, fitz.Point(r.x0 + 8, y), linha, 11)
+            y += 14
+
+
+def seta(pg, a, b):
+    pg.draw_line(a, b, color=(0.2, 0.2, 0.2), width=1.6)
+    pg.draw_polyline([(b[0] - 7, b[1] - 5), b, (b[0] - 7, b[1] + 5)], color=(0.2, 0.2, 0.2), width=1.6)
+
+
+for nome, tit, passos in (
+    ("imp-5-a-so-o-arquivo.png", "Opção A: o programa grava o arquivo pronto; o Kaique imprime no UPDF", [
+        ("Editor de Impressão", "monta o livreto\ncom as margens\ne grava o PDF"),
+        ("Arquivo PDF", "folhas A4 deitadas,\njá na ordem\nda dobra"),
+        ("UPDF", "Kaique abre e escolhe:\nimpressora, cópias,\nfrente e verso,\n'Tamanho real' (100%)"),
+        ("Impressora", "Epson WF-C5890")]),
+    ("imp-5-b-imprime-direto.png", "Opção B: o próprio programa manda para a impressora (e também grava o PDF)", [
+        ("Editor de Impressão", "monta o livreto\ncom as margens"),
+        ("Janela de imprimir\ndo programa", "\nimpressora, cópias,\nagrupar, frente e verso\n(sem o risco do 'Ajustar')"),
+        ("Impressora", "Epson WF-C5890")]),
+):
+    doc, pg, o = tela(tit, alt=6.5 * CM, extra_baixo=0.4 * CM)
+    n = len(passos)
+    w = (A4W - (n - 1) * 1.2 * CM) / n
+    for i, (s1, s2) in enumerate(passos):
+        x = o.x + i * (w + 1.2 * CM)
+        r = fitz.Rect(x, o.y + 0.8 * CM, x + w, o.y + 5.6 * CM)
+        linhas1 = s1.split("\n")
+        caixa(pg, r, linhas1[0], ("\n".join(linhas1[1:]) + "\n" if len(linhas1) > 1 else "") + s2,
+              (1, 0.96, 0.9) if s1 == "UPDF" else (0.93, 0.95, 1))
+        if i < n - 1:
+            seta(pg, (r.x1 + 4, r.y0 + r.height / 2), (r.x1 + 1.2 * CM - 4, r.y0 + r.height / 2))
+    salvar(doc, nome)
+
+for nome, tit, passos in (
+    ("imp-6-a-precisa.png", "Opção A: a impressora precisa; o programa tem a caixa 'Imprimir como imagem'", [
+        ("Editor de Impressão", "monta o livreto"),
+        ("Foto da folha", "cada folha A4 vira\numa imagem só\n(arquivo maior,\num pouco mais lento)"),
+        ("Impressora", "Epson WF-C5890")]),
+    ("imp-6-b-costume.png", "Opção B: era costume; o programa manda a folha como ela é", [
+        ("Editor de Impressão", "monta o livreto"),
+        ("Arquivo PDF", "as páginas já são\nimagens do scan\n(nada a converter)"),
+        ("Impressora", "Epson WF-C5890")]),
+):
+    doc, pg, o = tela(tit, alt=6.5 * CM, extra_baixo=0.4 * CM)
+    n = len(passos)
+    w = (A4W - (n - 1) * 1.2 * CM) / n
+    for i, (s1, s2) in enumerate(passos):
+        x = o.x + i * (w + 1.2 * CM)
+        r = fitz.Rect(x, o.y + 0.8 * CM, x + w, o.y + 5.6 * CM)
+        caixa(pg, r, s1, s2)
+        if i < n - 1:
+            seta(pg, (r.x1 + 4, r.y0 + r.height / 2), (r.x1 + 1.2 * CM - 4, r.y0 + r.height / 2))
+    salvar(doc, nome)
+
+# ---------- Pergunta 6: recorte da foto do Samuel ----------
+foto = fitz.open("pdf", fitz.open(str(WT / "relatorios/conferencia-samuel-2026-10-14/prints/janela-imprimir-1.png")).convert_to_pdf())
+fr = foto[0].rect
+doc = fitz.open()
+clip = fitz.Rect(fr.width * 0.53, fr.height * 0.27, fr.width * 0.92, fr.height * 0.50)
+pg = doc.new_page(width=clip.width * 1.6, height=clip.height * 1.6)
+pg.show_pdf_page(pg.rect, foto, 0, clip=clip)
+# circulo na linha "Imprimir como imagem" (cerca de 40% da altura do recorte)
+cy = (fr.height * 0.397 - clip.y0) / clip.height * pg.rect.height
+pg.draw_oval(fitz.Rect(pg.rect.width * 0.02, cy - 22, pg.rect.width * 0.62, cy + 22), color=VERM, width=3)
+pg.get_pixmap(dpi=100).save(OUT / "imp-6-foto-como-imagem.png")
+print("gravado imp-6-foto-como-imagem.png")

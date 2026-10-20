@@ -15,3 +15,8 @@ Só documentos em `docs/pesquisa/`. Sem código do programa.
 
 ## Falta
 - [ ] Entregar à gerente (resumo, tabela, seis perguntas para o Samuel na seção 9 do documento).
+
+## Pedido da gerente (20/10): relatório das 6 perguntas para o Samuel
+- [x] Desenhos (14 PNG, conferidos um por um) em `docs/pesquisa/fase-impressao/img-perguntas/`; scripts em `desenhos_perguntas.py.txt` e `montar_perguntas.py.txt`.
+- [x] `perguntas-para-o-samuel.md/.html/.pdf` (9 páginas, 14 imagens) e `perguntas-impressao.json` (ids imp-1 a imp-6, ordem 127 a 132; imagens com `src` em `img/imp/`, copiar os PNG para `pub-escolhas/img/imp/`).
+- [ ] Entregar à gerente.
