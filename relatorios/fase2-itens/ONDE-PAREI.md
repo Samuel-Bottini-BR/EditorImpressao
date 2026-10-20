@@ -16,7 +16,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 | Item | Estado | Commits | Rodada do GitHub |
 |---|---|---|---|
 | 2.8 preto e branco (os dez do ScanTailor) | **entregue à gerente** (falta verificador e Samuel) | `77e9446` (core), `34b3d0e` (tela), `b36b540` (script) | 39395632426: 2084 passaram, 0 falharam; botões 221 ações, 0 falhas |
-| 2.9 claro no escuro | não começado | | |
+| 2.9 claro no escuro | rascunho pronto, não ligado (`rascunho-2.9/`) | | |
 | 2.11 cores | não começado | | |
 | 2.15 páginas diferentes | não começado | | |
 | 2.12 desentortar | não começado | | |
@@ -43,3 +43,13 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
   `relatorios/conferir/fase2-itens/2.8/` (fora do git, só neste PC). Números por página: `2.8/numeros/`.
   Script: `scripts/rodada_gabarito.py` (uma página por processo; `scripts/rodar_todas.sh` roda as 32).
 - Horas 13 falhou uma vez por falta de memória do PC (outros agentes); rodada de novo sozinha, deu certo.
+
+## 2.9 — onde parei (próximo item)
+
+Rascunho em `relatorios/fase2-itens/rascunho-2.9/` (fora de `core/` e `tests/` para não quebrar a suíte):
+`claro_no_escuro.py` (vai para `core/`), `test_claro_no_escuro.py` (vai para `tests/`) e `patch_2_9.py` (rodar da
+worktree: acrescenta `ConfigPagina.claro_no_escuro`, inverte na entrada e na saída em `pipeline._filtrar`, como o
+ScanTailor em `initFilterData` e no fim da saída, e põe o sufixo na assinatura da gravura só com a caixinha ligada).
+Falta: aplicar, rodar os testes, a caixinha na aba Filtro (P9 (a)), o "comparar" da tela ampliada
+(`ui/tela_ampliada._imagem_do_outro_filtro` chama `aplicar_filtro` direto), somas de fábrica e antes/depois
+(o gabarito não tem página de letra clara em fundo escuro: procurar uma no acervo ou usar a Horas 11 invertida).
