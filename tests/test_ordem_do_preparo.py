@@ -30,6 +30,11 @@ ScanTailor, quando entra, é trocada por um número fixo):
   ScanTailor)"): mudar o ângulo depois não mexe no corte à mão (de fábrica);
   a outra opção, "acompanha o texto", está pronta sem tela
   (pipeline.recorte_depois_de_mudar_o_angulo) e é conferida no pixel.
+
+- a borda preta do scanner (conserto de 13/10/2026): página torta COM borda
+  preta, no livro novo, não deixa mais a faixa preta dentro do corte (a cunha
+  branca do giro escondia a borda da busca do corte); e em página sem fundo
+  escuro o conserto não muda nada.
 """
 
 from __future__ import annotations
@@ -261,9 +266,11 @@ def _quase_igual(a: np.ndarray, b: np.ndarray) -> bool:
 
 def _corte_na_reta(base: np.ndarray, angulo: float):
     """O corte automatico do livro novo: detectar_bordas na pagina em cinza
-    endireitada (pipeline._geometria_endireitando_antes)."""
+    endireitada, dizendo de quanto ela foi girada (`girada`, conserto de
+    13/10/2026) e qual era a pagina antes do giro (`como_veio`, conserto de
+    20/10/2026), como pipeline._geometria_endireitando_antes."""
     cinza = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
-    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI).tupla
+    return detectar_bordas(rotacionar(cinza, angulo), dpi=DPI, girada=angulo, como_veio=cinza).tupla
 
 
 def _margens_da_tinta(img: np.ndarray) -> tuple[int, int, int, int]:
@@ -622,3 +629,214 @@ def test_girar_so_a_parte_cortada_e_o_mesmo_que_girar_tudo_e_cortar():
         assert _quase_igual(rotacionar_e_cortar(img, angulo, caixa),
                             fatiar(rotacionar(img, angulo), recorte))
     assert caixa_em_pontos(img.shape, (0.5, 0.5, 0.001, 0.4)) is None     # absurdo: nao corta
+
+
+# ------------------------------------------------------------------ a borda preta do scanner
+#
+# Conserto de 13/10/2026 (bug que entrou com o G6): na ordem nova a pagina e
+# girada inteira e a cunha que sobra na beirada e pintada de branco; esse
+# branco ficava entre a beirada da imagem e a borda preta do scanner, e a
+# busca do corte deixava de reconhecer a borda - sobrava faixa preta larga
+# (Cursus 3: 16 mm; Matematica 32: 44 mm; Antiphon 88 e 260). Nenhum teste
+# daqui tinha pagina torta COM borda preta.
+
+def _pdf_com_borda_preta(pasta: Path, nome: str, graus: float, fundo: int) -> tuple[str, int]:
+    """Uma folha de "texto" torta `graus` sobre o fundo do scanner (cinza
+    `fundo`), que aparece a direita e embaixo ate a beirada da imagem, como
+    no Cursus 3. Devolve (caminho do PDF, quantos retangulos de texto ha).
+
+    fundo=0: preto puro, que o limiar local da busca do corte ve como tinta
+    na faixa inteira (Cursus 3, Matematica 32). fundo=35: preto liso, em que
+    ele NAO ve tinta nenhuma (Antiphon 88 e 260) - sao os dois caminhos do
+    defeito."""
+    largura, altura = 1165, 1654
+    papel_x, papel_y = largura - 150, altura - 110
+    img = np.full((altura, largura, 3), fundo, np.uint8)
+    img[:papel_y, :papel_x] = 255
+    quantos = 0
+    for y in range(180, papel_y - 180, 34):
+        for x in range(130, papel_x - 210, 52):
+            cv2.rectangle(img, (x, y), (x + 38, y + 14), (0, 0, 0), -1)
+            quantos += 1
+    m = cv2.getRotationMatrix2D((largura / 2, altura / 2), graus, 1.0)
+    img = cv2.warpAffine(img, m, (largura, altura), borderMode=cv2.BORDER_REPLICATE)
+    png = pasta / f"{nome}.png"
+    cv2.imwrite(str(png), img)
+    caminho = pasta / f"{nome}.pdf"
+    doc = fitz.open()
+    pagina = doc.new_page(width=largura * 72 / 200, height=altura * 72 / 200)
+    pagina.insert_image(pagina.rect, filename=str(png))
+    doc.save(str(caminho))
+    doc.close()
+    return str(caminho), quantos
+
+
+def _fundo_do_scanner(img: np.ndarray) -> float:
+    """Fracao da pagina pronta que e fundo escuro do scanner: as manchas
+    escuras grandes (5000 pontos ou mais; um retangulo de "texto" tem perto
+    de 1200 e nao entra na conta)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _n, _r, caixas, _c = cv2.connectedComponentsWithStats((cinza < 100).astype(np.uint8), connectivity=8)
+    area = caixas[1:, cv2.CC_STAT_AREA]
+    return float(area[area >= 5000].sum()) / cinza.size
+
+
+def _retangulos_de_texto(img: np.ndarray) -> int:
+    """Quantos retangulos de "texto" inteiros ha na pagina pronta (a 300 DPI
+    cada um tem perto de 57 x 21 pontos; a faixa do scanner e uma mancha
+    enorme e fica de fora da conta)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _n, _r, caixas, _c = cv2.connectedComponentsWithStats((cinza < 128).astype(np.uint8), connectivity=8)
+    area = caixas[1:, cv2.CC_STAT_AREA]
+    return int(np.count_nonzero((area > 800) & (area < 1800)))
+
+
+@pytest.mark.parametrize("fundo", [0, 35])
+@pytest.mark.parametrize("graus", [-0.7, 0.8, 1.6])
+def test_ordem_nova_nao_deixa_a_borda_preta_do_scanner(tmp_path, graus, fundo):
+    """Pagina torta com borda preta do scanner, no livro novo: a faixa preta
+    fica de fora do corte, como na ordem antiga, e nenhum texto se perde.
+
+    A regua e a ordem antiga (cortar e depois endireitar), que nao tem o
+    defeito: o livro novo pode deixar no maximo 1 ponto percentual a mais de
+    fundo escuro que ela (antes do conserto deixava de 9 a 17 pontos a mais
+    nestas seis paginas). A ordem antiga tambem deixa um resto da faixa (a
+    divisa torta do papel com o fundo): por isso a comparacao, e nao zero."""
+    caminho, quantos = _pdf_com_borda_preta(tmp_path, "borda", graus, fundo)
+    img_folha = _desenhar(caminho)
+
+    antigo = _antigo(caminho, endireitar_como=es.JEITO_PROGRAMA)
+    fa, pa = _com_folha(antigo, {"dividir": False}, {})
+    de_antes, _ = pipeline.preparar_metade_e_geometria(img_folha, fa, pa, antigo, dpi=DPI)
+    assert _retangulos_de_texto(de_antes) == quantos
+
+    novo = _novo(caminho, endireitar_como=es.JEITO_PROGRAMA)
+    fn, pn = _com_folha(novo, {"dividir": False}, {})
+    saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, fn, pn, novo, dpi=DPI)
+    assert desenho["ordem"] == op.ENDIREITAR_ANTES
+    assert abs(desenho["angulo"] + graus) < 0.3           # endireitou de verdade
+    assert _fundo_do_scanner(saida) <= _fundo_do_scanner(de_antes) + 0.01, (
+        _fundo_do_scanner(saida), _fundo_do_scanner(de_antes))
+    assert _retangulos_de_texto(saida) == quantos         # nenhum texto ficou de fora
+    # e a pagina pronta nao e maior que a da ordem antiga em mais de 3 mm
+    tres_mm = 3 * DPI / 25.4
+    assert saida.shape[1] <= de_antes.shape[1] + tres_mm, (saida.shape, de_antes.shape)
+    assert saida.shape[0] <= de_antes.shape[0] + tres_mm, (saida.shape, de_antes.shape)
+
+
+@pytest.mark.parametrize("graus", [-1.4, 0.9, 2.5])
+def test_sem_borda_preta_dizer_o_giro_nao_muda_o_corte(tmp_path, graus):
+    """Em pagina sem fundo escuro, dizer a detectar_bordas que a pagina foi
+    girada (`girada`) nao muda nada: o conserto so tira da conta a borda
+    preta do scanner. E sem `girada` (ordem antiga, pagina como veio) a conta
+    e a de sempre."""
+    base = _desenhar(_pdf(tmp_path, "torto", graus))
+    cinza = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+    reta = rotacionar(cinza, -graus)
+    assert detectar_bordas(reta, dpi=DPI, girada=-graus).tupla == detectar_bordas(reta, dpi=DPI).tupla
+    assert detectar_bordas(cinza, dpi=DPI, girada=None).tupla == detectar_bordas(cinza, dpi=DPI).tupla
+    assert detectar_bordas(cinza, dpi=DPI, girada=0.05).tupla == detectar_bordas(cinza, dpi=DPI).tupla
+
+# ------------------------------------------------------------------ o cartao escuro (Pesel 21)
+#
+# Bug de 13/10/2026 (conferencia do conserto do corte, quadro do Pesel 21,
+# "Esta pior"; Samuel: "Ele chega a quase cortar as letras."): com o conserto
+# da cunha do giro (d97b937), o cartao escuro do livro de bordados da Pesel
+# passou a sair cortado rente (15,7 x 24,1 -> 14,5 x 20,6 cm, legenda a 1 ou
+# 2 mm da borda). Tem de sair como no fase-1 e como na ordem antiga: a folha
+# inteira. Causa: a pagina como veio e "sem conteudo para recortar" (cartao
+# liso; core/recortar._sem_conteudo_para_recortar), e o branco da cunha do
+# giro, contado na mediana, a fazia deixar de ser.
+
+def _pdf_cartao_escuro(pasta: Path, nome: str, graus: float) -> str:
+    """Uma pagina como o Pesel 21, torta `graus` (sentido do OpenCV), a 200
+    DPI: cartao pardo liso (cinza 62 a 94, da esquerda para a direita) ate a
+    beirada da imagem, com um painel de tecido claro (195) no meio, uns
+    pontos de bordado e uma legenda no cartao.
+
+    As medidas sao de proposito: o painel cobre um pouco menos da metade da
+    folha (71,1% x 71,1%), entao a mediana da pagina como veio cai no cartao
+    (como no Pesel 21: mediana 102, so 2,1% de pontos escuros, "sem conteudo")
+    e os ~2% de branco da cunha do giro bastam para a mediana pular para o
+    painel (Pesel 21: 125, e 14,7% de "escuros")."""
+    largura, altura = 1165, 1654
+    x = np.linspace(0, 1, largura)[None, :]
+    img = (62 + 32 * x + np.zeros((altura, 1))).astype(np.uint8)
+    lado = 0.711
+    px0 = int(largura * (1 - lado) / 2)
+    px1 = largura - px0
+    py0 = int(altura * 0.08)
+    py1 = py0 + int(altura * lado)
+    img[py0:py1, px0:px1] = 195
+    for y in range(py0 + 120, py1 - 120, 120):                # o bordado
+        cv2.line(img, (px0 + 80, y), (px1 - 80, y + 30), 40, 3)
+    for y in range(py1 + 50, py1 + 140, 28):                  # a legenda
+        for xx in range(px0 + 20, px1 - 60, 42):
+            cv2.rectangle(img, (xx, y), (xx + 28, y + 9), 20, -1)
+    m = cv2.getRotationMatrix2D((largura / 2, altura / 2), graus, 1.0)
+    img = cv2.warpAffine(img, m, (largura, altura), borderMode=cv2.BORDER_REPLICATE)
+    png = pasta / f"{nome}.png"
+    cv2.imwrite(str(png), img)
+    caminho = pasta / f"{nome}.pdf"
+    doc = fitz.open()
+    pagina = doc.new_page(width=largura * 72 / 200, height=altura * 72 / 200)
+    pagina.insert_image(pagina.rect, filename=str(png))
+    doc.save(str(caminho))
+    doc.close()
+    return str(caminho)
+
+
+def _tamanho_em_mm(img: np.ndarray) -> tuple[float, float]:
+    """(largura, altura) da pagina pronta em milimetros (ela sai a DPI)."""
+    return img.shape[1] * 25.4 / DPI, img.shape[0] * 25.4 / DPI
+
+
+@pytest.mark.parametrize("graus", [2.0, -1.5, 1.0])
+def test_cartao_escuro_sai_inteiro_no_livro_novo(tmp_path, graus):
+    """Bug de 13/10/2026, Pesel 21 (ver o comentario acima): no livro novo o
+    cartao escuro sai do MESMO tamanho que na ordem antiga (a folha inteira,
+    porque nao ha o que recortar), com no maximo 1 mm de diferenca.
+
+    Medida: o tamanho da pagina pronta em mm. Em d97b937 a do livro novo saia
+    com 105 x 171 mm contra 148 x 210 mm da ordem antiga (o corte entrava no
+    cartao e deixava a legenda colada na borda)."""
+    caminho = _pdf_cartao_escuro(tmp_path, "cartao", graus)
+    img_folha = _desenhar(caminho)
+    angulo = {"angulo_manual": -graus}
+
+    antigo = _antigo(caminho)
+    fa, pa = _com_folha(antigo, {"dividir": False}, dict(angulo))
+    de_antes, _ = pipeline.preparar_metade_e_geometria(img_folha, fa, pa, antigo, dpi=DPI)
+
+    novo = _novo(caminho)
+    fn, pn = _com_folha(novo, {"dividir": False}, dict(angulo))
+    saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, fn, pn, novo, dpi=DPI)
+    assert desenho["ordem"] == op.ENDIREITAR_ANTES
+
+    (la, aa), (ln, an) = _tamanho_em_mm(de_antes), _tamanho_em_mm(saida)
+    assert abs(ln - la) <= 1.0 and abs(an - aa) <= 1.0, (
+        f"livro novo {ln:.1f} x {an:.1f} mm, ordem antiga {la:.1f} x {aa:.1f} mm")
+    # e a ordem antiga de fato nao recorta (a folha inteira)
+    assert (la, aa) == pytest.approx(_tamanho_em_mm(img_folha), abs=1.0)
+
+
+PESEL_21 = Path(r"D:\programas\EditorImpressao-arquivos\revisar-decisoes-trabalho\paginas\pesel_p021.pdf")
+
+
+@pytest.mark.skipif(not PESEL_21.exists(), reason="pagina do acervo (so no PC do Samuel)")
+def test_pesel_21_sai_como_no_fase_1():
+    """Bug de 13/10/2026, o proprio Pesel 21 (ver o comentario acima), no
+    giro que a conta do ScanTailor da a ele (-2,0 graus) posto a mao: a
+    pagina pronta do livro novo tem 157 x 241 mm, como no fase-1 (b8e9af7).
+    Em d97b937 saia com 144,7 x 206,1 mm.
+
+    So roda no PC do Samuel (a pagina e do acervo, fora do git); no Windows
+    do GitHub quem cobre o bug e test_cartao_escuro_sai_inteiro_no_livro_novo."""
+    img_folha = _desenhar(str(PESEL_21))
+    novo = _novo(str(PESEL_21))
+    fn, pn = _com_folha(novo, {"dividir": False}, {"angulo_manual": -2.0})
+    saida, desenho = pipeline.preparar_metade_e_geometria(img_folha, fn, pn, novo, dpi=DPI)
+    assert desenho["ordem"] == op.ENDIREITAR_ANTES
+    largura, altura = _tamanho_em_mm(saida)
+    assert largura == pytest.approx(157.1, abs=1.0) and altura == pytest.approx(240.6, abs=1.0), (
+        f"{largura:.1f} x {altura:.1f} mm")
