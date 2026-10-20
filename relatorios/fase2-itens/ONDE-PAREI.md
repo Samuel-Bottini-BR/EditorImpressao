@@ -62,3 +62,22 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 - Antes/depois em 7 páginas com cor (Horas 13, 26, 27, 47; Graduale 221; Palatino 67; Escola 7):
   `relatorios/conferir/fase2-itens/2.11/` (fora do git); números em `2.11/numeros/`.
 - Próximo: 2.15 (destacar páginas diferentes).
+
+## Conserto pedido pela gerente (verificador do 2.8): falha do ScanTailor no erros.log
+
+`ba5eefe`: os quatro "avisar uma vez" (preto e branco, endireitar, limpar pontinhos, cores do ScanTailor) gravam
+com `registro.registrar_erro` (`st_ferramentas.anotar_no_erros_log`). Teste de reversão
+`tests/test_falha_do_scantailor_vai_ao_erros_log.py`: 5 falharam no código antigo, 5 passam no novo.
+Suíte GitHub 39478778828: 2114 passaram, 0 falharam; botões 221 ações, 0 falhas.
+
+## Velocidade (filtro do GitHub, rodada 39470417724: `b8e9af7` x `0f4ee58` = 2.8 + 2.9)
+
+Veredito "igual (dentro do vai-e-vem)": abrir 36,2 → 36,3 s; trocar de página 1,99 → 1,97 s; Mágico pro 43,9 → 42,5 s;
+Preto e branco 20,9 → 20,9 s. O 2.11 (`02c2cea`) ainda não passou no filtro.
+
+## PAUSA (20/10, ~15h no PC) — pedida pela gerente para a suíte no PC
+
+Parei num ponto limpo: tudo commitado e enviado, nada rodando no PC. Ao retomar:
+1. disparar o filtro de velocidade `b8e9af7` x último commit (cobre 2.11 e o conserto do log);
+2. entregar o 2.11 à gerente (já pronto: ver a seção do 2.11);
+3. seguir com o 2.15 (destacar páginas diferentes: DeviationProvider.h do ScanTailor).
