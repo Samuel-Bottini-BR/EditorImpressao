@@ -103,6 +103,16 @@ class ConfigPagina:
     # Seguro mudar: nada aqui.
     endireitar_como: str | None = None
 
+    # Item 2.5, decisao g9-pagina-muito-maior do Samuel (13/10/2026): "O
+    # programa deixa essa folha de fora sozinho, e avisa". So vale com o
+    # livro em Projeto.cortar_pelo_conteudo. None = o programa decide (a
+    # pagina muito maior que as outras fica fora da conta do tamanho do
+    # livro; core/corte_pelo_conteudo.muito_maiores); True = o Kaique pos de
+    # volta na conta ("do tamanho das outras"); False = ele tirou (o "nao
+    # alinhar com as outras" do ScanTailor). Projeto antigo nao tem o campo:
+    # volta None, e com a opcao desligada nada muda. Seguro mudar: nada aqui.
+    alinhar_com_as_outras: bool | None = None
+
     # Problema 2 do plano (redesenho do fluxo): a página nasce em Original,
     # nunca com um filtro já aplicado sozinho - o Samuel decide quando
     # aplicar algo. TelaOpcoes ainda deixa escolher outro filtro padrão para
@@ -279,6 +289,16 @@ class Projeto:
     # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
     # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.
     cortar_sobra: bool = False
+    # Item 2.5, decisao G8 (a) do Samuel (05/10/2026): "Trazer como opcao
+    # 'seguir a moldura / o papel', desligada - eu quero pode escolher dentro
+    # do programa". Ligado, o corte AUTOMATICO de cada pagina passa a ser o
+    # do ScanTailor: a caixa do conteudo, do tamanho do livro (G9: "Todas as
+    # paginas do tamanho da maior: Sim"), com o aviso do que ficou de fora
+    # (g8-moldura-tinta-fora) e a folha muito maior fora da conta
+    # (g9-pagina-muito-maior). Ver core/corte_pelo_conteudo.py. DESLIGADO de
+    # fabrica: livro novo e projeto antigo saem como hoje. O corte a mao
+    # (ConfigPagina.recorte) vale como esta, ligado ou nao.
+    cortar_pelo_conteudo: bool = False
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True

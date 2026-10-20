@@ -282,28 +282,52 @@ def tinta_tirada(corte: tuple[float, float, float, float], pecas, cinza: np.ndar
         dela entre a esquerda e a direita do corte: o número da página no pé,
         o reclamo), tiver PECA_MINIMA_MM ou mais nos dois sentidos e for
         escura como tinta (para mancha clara e risquinho não contarem)."""
+    return tiradas_do_corte(corte, candidatas(corte, pecas, cinza, mm_por_ponto))
+
+
+def candidatas(corte: tuple[float, float, float, float], pecas, cinza: np.ndarray,
+               mm_por_ponto: tuple[float, float]) -> list[tuple[tuple[float, float, float, float], bool]]:
+    """A parte de tinta_tirada que olha a imagem, feita UMA vez por página: as
+    peças (menos o risco comprido e fino) que não estão inteiras dentro de
+    `corte`, em pontos, cada uma com "pode contar sozinha de fora" (1 mm ou
+    mais nos dois sentidos e escura como tinta). Quem chama guarda e, quando o
+    corte crescer (o tamanho do livro mudou), chama tiradas_do_corte com o
+    corte novo: um corte que contém `corte` nunca precisa de outra peça."""
     if pecas is None or len(pecas) == 0:
         return []
     altura, largura = cinza.shape[:2]
     x0, y0, x1, y1 = corte
     papel = float(np.percentile(cinza, PERCENTIL_DO_PAPEL))
     minimo = PECA_MINIMA_MM / min(mm_por_ponto)
-    tiradas = []
+    saida = []
     for p in np.asarray(pecas, dtype=np.float64):
         if p[4] > 0:
             continue                                         # risco comprido e fino
         px0, py0, px1, py1 = p[0] * largura, p[1] * altura, p[2] * largura, p[3] * altura
         if px0 >= x0 and py0 >= y0 and px1 <= x1 and py1 <= y1:
             continue                                         # inteira dentro
-        toca = not (px1 < x0 or px0 > x1 or py1 < y0 or py0 > y1)
-        if not toca:
-            na_coluna = (x0 <= (px0 + px1) / 2 <= x1
-                         and min(px1 - px0, py1 - py0) >= minimo)
-            if not na_coluna:
-                continue
+        grande = min(px1 - px0, py1 - py0) >= minimo
+        escura = False
+        if grande:
             pedaco = cinza[int(py0):int(py1) + 1, int(px0):int(px1) + 1]
-            if pedaco.size == 0 or float(np.percentile(pedaco, 5)) >= ESCURA_COMO_TINTA * papel:
-                continue
+            escura = pedaco.size > 0 and float(np.percentile(pedaco, 5)) < ESCURA_COMO_TINTA * papel
+        saida.append(((px0, py0, px1, py1), bool(grande and escura)))
+    return saida
+
+
+def tiradas_do_corte(corte: tuple[float, float, float, float],
+                     candidatas_da_pagina) -> list[tuple[float, float, float, float]]:
+    """A parte de tinta_tirada que olha só o corte (barata): das candidatas,
+    as que o corte atravessa e as inteiras de fora "na coluna" que podem
+    contar sozinhas."""
+    x0, y0, x1, y1 = corte
+    tiradas = []
+    for (px0, py0, px1, py1), sozinha in candidatas_da_pagina:
+        if px0 >= x0 and py0 >= y0 and px1 <= x1 and py1 <= y1:
+            continue                                         # inteira dentro
+        toca = not (px1 < x0 or px0 > x1 or py1 < y0 or py0 > y1)
+        if not toca and not (sozinha and x0 <= (px0 + px1) / 2 <= x1):
+            continue
         tiradas.append((px0, py0, px1, py1))
     return tiradas
 

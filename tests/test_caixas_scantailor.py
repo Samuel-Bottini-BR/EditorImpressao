@@ -378,15 +378,20 @@ def test_o_dpi_do_programa_e_o_das_outras_ferramentas_do_scantailor():
     assert cs.dpi_para_as_caixas(100, 100, None) is None
 
 
-def test_ninguem_no_programa_chama_as_caixas_ainda():
-    """Decisão do Samuel (G7 e G8, 05/10/2026): entra DESLIGADO de fábrica, e
-    como liga depende das perguntas de 12/10. Até lá, nada em core/ (fora o
-    próprio módulo e a lista de funções da DLL), em ui/ ou na raiz pode usar
-    o módulo. Quem ligar ao programa tira este teste junto, de propósito."""
+def test_so_o_corte_pelo_conteudo_chama_as_caixas():
+    """Decisão do Samuel (G8, 05/10/2026): entra DESLIGADO de fábrica. Ligado
+    em 20/10/2026 SÓ pelo corte que segue o conteúdo (item 2.5,
+    core/corte_pelo_conteudo.py, com a opção do livro desligada de fábrica; a
+    prova de que desligado nada é chamado está em
+    tests/test_corte_pelo_conteudo_no_programa.py). Nada mais em core/, em
+    ui/ ou na raiz pode usar o módulo direto: a busca da página dentro da
+    borda preta (item 2.13) espera a pergunta g7-borda-ate-onde. Quem ligar o
+    2.13 acrescenta o arquivo dele aqui, de propósito."""
+    permitidos = {"caixas_scantailor.py", "st_ferramentas.py", "corte_pelo_conteudo.py"}
     usam = []
     for pasta in ("core", "ui"):
         for arquivo in (RAIZ / pasta).rglob("*.py"):
-            if arquivo.name in ("caixas_scantailor.py", "st_ferramentas.py"):
+            if arquivo.name in permitidos:
                 continue
             texto = arquivo.read_text(encoding="utf-8", errors="replace")
             if "caixas_scantailor" in texto or "st_ferramentas_caixas" in texto:
@@ -397,6 +402,9 @@ def test_ninguem_no_programa_chama_as_caixas_ainda():
         if "caixas_scantailor" in arquivo.read_text(encoding="utf-8", errors="replace"):
             usam.append(arquivo.name)
     assert usam == []
+    # e o corte pelo conteúdo nunca liga a busca da página (2.13)
+    texto = (RAIZ / "core" / "corte_pelo_conteudo.py").read_text(encoding="utf-8")
+    assert '"achar_pagina": False' in texto and "achar_pagina=True" not in texto
 
 
 # ------------------------------------------------------------- as páginas de verdade

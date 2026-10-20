@@ -252,3 +252,15 @@ def test_medir_sem_dll_volta_sem_caixa(monkeypatch):
     m = cc.medir(np.full((300, 200), 255, np.uint8), 150.0, 150.0, biblioteca=SemDLL())
     assert not m.disponivel and not m.tem_conteudo
     assert m.motivo
+
+
+def test_g8_corte_maior_so_tira_menos():
+    """As candidatas são medidas uma vez, no corte da própria página; quando o
+    corte cresce até o tamanho do livro, a conta barata dá o mesmo que medir de
+    novo (o número da página entra; a barra, atravessada, continua)."""
+    cinza, pecas = _pagina_com_numero_e_moldura()
+    pequeno = (490.0, 590.0, 1510.0, 2010.0)
+    grande = (300.0, 500.0, 1560.0, 2400.0)
+    guardadas = cc.candidatas(pequeno, pecas, cinza, (MM, MM))
+    assert cc.tiradas_do_corte(grande, guardadas) == cc.tinta_tirada(grande, pecas, cinza, (MM, MM))
+    assert cc.tiradas_do_corte(grande, guardadas) == [(1550.0, 400.0, 1600.0, 2200.0)]
