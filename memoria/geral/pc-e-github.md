@@ -227,7 +227,7 @@ sem as DLLs do ScanTailor, sem a janela" ([plano, Registro 09/10/2026](../../doc
 O que ela **não tem** (PARTE -13 §0): `modelos\` (doclayout, doctr, mobile_sam, tessdata), `gabarito\paginas\`,
 `gabarito\scantailor-24-09\`, as imagens de `relatorios\`, os livros de teste do D:, a `.venv`; as DLLs
 `core/nativo/*.dll` e a janela PySide6 são do Windows. "Na nuvem, muitos testes pulam ou falham por falta disso: **não
-conclua que o código quebrou**." Ela lia o HD pelo servidor WebDAV `https://claude-hd.tail920a48.ts.net/` e só gravou
+conclua que o código quebrou**." Ela lia o HD pelo servidor WebDAV da rede privada do Samuel (endereço fora desta memória) e só gravou
 na cópia do plano e em `D:\programas\EditorImpressao-arquivos\sessao-nuvem-2026-10-09\`, nunca dentro da pasta do
 projeto. Serve para escrever código, preparar perguntas e atualizar o plano; foi dela que nasceram os testes no Windows
 do GitHub (§4). O contêiner pode reiniciar e matar os agentes: push a cada commit.
