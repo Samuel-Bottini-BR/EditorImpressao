@@ -2337,6 +2337,15 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
         _checar(cancelado)
         _avisar(progresso, feito, total, f"Página {feito + 1} de {total}")
 
+        # TESTE (20/10/2026): atraso PROPOSITAL, so no ramo
+        # teste-filtro-lento-2026-10-20, para conferir que o filtro de velocidade
+        # do GitHub acusa lentidao (controle positivo pedido pela gerente).
+        # 0,7 s por pagina em Magico pro = ~10% do processar no GitHub (~7 s/pag).
+        # NUNCA juntar este ramo.
+        if pagina.filtro == "magico_pro":
+            import time as _time_teste
+            _time_teste.sleep(0.7)
+
         folha = projeto.folhas[pagina.folha]
         if folha.apagada:
             continue
