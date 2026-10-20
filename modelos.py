@@ -299,6 +299,15 @@ class Projeto:
     # fabrica: livro novo e projeto antigo saem como hoje. O corte a mao
     # (ConfigPagina.recorte) vale como esta, ligado ou nao.
     cortar_pelo_conteudo: bool = False
+    # Item 2.5, decisao g8-guias do Samuel (13/10/2026): "As duas" + "Mas ele
+    # vai poder tirar a automatica a hora que ele quiser." As linhas de apoio
+    # do "Mover conteudo" (core/guias.py): guias = as do Kaique, valendo no
+    # livro todo, como dicionarios {"orientacao": "de_pe"|"deitada", "mm":
+    # distancia do meio da folha} (o jeito do ScanTailor); guias_automaticas =
+    # o ima no meio e nas beiradas da folha (ligado de fabrica = como sempre).
+    # Projeto antigo nao tem os campos: volta sem linhas e com as automaticas.
+    guias: list = field(default_factory=list)
+    guias_automaticas: bool = True
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
