@@ -14,7 +14,7 @@ de apoio em `.github/`.
 - [x] 6. Validação 1: antes = `1d37f8f`, depois = `3bdbab3`: rodada 39395142921 -> igual (1h50).
 - [x] 7. Validação 2: a mesma coisa de novo: rodada 39395156472 -> igual.
 - [x] 8. Controle: antes = depois = mesmo commit (`1d37f8f`): rodada 39395169127 -> igual.
-- [ ] 9. Entrega à gerente.
+- [x] 9. Entrega à gerente (20/10).
 
 ## Anotações
 
@@ -29,5 +29,6 @@ de apoio em `.github/`.
   depois de ver as rodadas de verdade (a conta pode ser refeita sem medir de novo: `--so-juntar` no artifact).
 - Rodadas de 20/10: a 1a rodada de cada versao as vezes sai ate ~18% lenta (processador 28-30% ocupado no fundo,
   primeiros ~40 min da maquina). Commit 7e3a006: espera o processador quieto antes de cada rodada + piso de 2% no
-  veredito. Refeita a conta nas 4 rodadas e no PC: continua "igual". Rodada curta de conferencia: 39470587102.
+  veredito. Refeita a conta nas 4 rodadas e no PC: continua "igual". Rodada curta de conferencia: 39470587102 (success, igual).
+- Rodada inteira de conferencia do 7e3a006: 39471738696 (disparada 18:05 UTC; resultado no resumo da rodada).
 - Alguem ja usou o filtro: rodada 39396712441 (fase-1 -> conserto-corte-g6-2026-10-13) -> igual.
