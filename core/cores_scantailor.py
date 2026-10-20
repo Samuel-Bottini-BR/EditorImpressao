@@ -172,6 +172,7 @@ def _avisar_uma_vez(motivo, detalhe) -> None:
             return
         _AVISADOS.add(chave)
     _log.warning("cores do ScanTailor indisponíveis, a página saiu sem elas: %s (%s)", motivo, detalhe)
+    st.anotar_no_erros_log("cores do ScanTailor (item 2.11): a página saiu sem elas", motivo, detalhe)
 
 
 def _bgr(img: np.ndarray) -> np.ndarray:

@@ -159,6 +159,21 @@ def indisponivel(motivo: str, detalhe: str | None = None) -> Resultado:
     return Resultado(None, motivo, detalhe)
 
 
+def anotar_no_erros_log(origem: str, motivo: str | None, detalhe: str | None) -> None:
+    """Grava no erros.log (registro.registrar_erro, como o resto do programa)
+    que uma ferramenta do ScanTailor não rodou e a página saiu pelo caminho de
+    reserva. Conserto de 20/10/2026 (verificador do 2.8): antes ia só para o
+    `logging` do Python, que o programa não grava em arquivo - a queda não
+    deixava rastro. Nunca levanta exceção (anotar não pode derrubar a página).
+    Quem chama já faz isso uma vez por sessão (senão seria uma linha por página)."""
+    try:
+        from registro import registrar_erro
+
+        registrar_erro(origem, (motivo or "") + (f"\ndetalhe: {detalhe}" if detalhe else ""))
+    except Exception:  # noqa: BLE001
+        pass
+
+
 def dpi_inteiro(dpi) -> tuple[int, int]:
     """(x, y) inteiros: o ScanTailor guarda o DPI como número inteiro (classe Dpi).
 

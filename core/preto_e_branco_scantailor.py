@@ -225,6 +225,7 @@ def _avisar_uma_vez(motivo: str | None, detalhe: str | None) -> None:
         _AVISADOS.add(chave)
     _log.warning("preto e branco do ScanTailor indisponível, usei o Automático: %s (%s)",
                  motivo, detalhe)
+    st.anotar_no_erros_log("preto e branco do ScanTailor (item 2.8): caiu no Automático", motivo, detalhe)
 
 
 def preto_e_branco(img: np.ndarray, metodo: str, forca=50, dpi=None, *,

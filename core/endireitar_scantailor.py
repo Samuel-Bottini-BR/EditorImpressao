@@ -266,3 +266,5 @@ def avisar_uma_vez(medida: Medida) -> None:
         _AVISADOS.add(chave)
     _log.warning("endireitar do ScanTailor indisponível, usei o do programa: %s (%s)",
                  medida.motivo, medida.detalhe_tecnico)
+    st_ferramentas.anotar_no_erros_log("endireitar do ScanTailor (item 2.2): usei o do programa",
+                                       medida.motivo, medida.detalhe_tecnico)
