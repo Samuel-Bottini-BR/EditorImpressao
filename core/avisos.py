@@ -62,6 +62,27 @@ def nome_do_item(alvo: str, indice: int) -> str:
     return f"{'Folha' if alvo == FOLHA else 'Página'} {indice + 1}"
 
 
+def onde_no_livro(aviso: Aviso, projeto) -> str:
+    """Onde está o aviso, sempre em PÁGINAS do livro (as da tira de
+    miniaturas): "Página 4", ou "Páginas 1 e 2" para o aviso de uma folha que
+    foi dividida. Só quando a folha não tem página nenhuma no livro (todas
+    tiradas) sobra "Folha N", porque não há página para nomear.
+
+    O defeito (verificador, 20/10/2026): a lista "Antes de processar"
+    misturava "Folha N" e "Página N" - e depois de uma folha dividida a folha
+    2 já não é a página 2. Seguro mudar: as palavras. Arriscado: voltar a
+    usar o número da folha como se fosse o da página."""
+    if aviso.alvo != FOLHA or projeto is None:
+        return aviso.onde
+    numeros = sorted(p.indice + 1 for p in projeto.paginas
+                     if p.folha == aviso.indice and not p.apagada)
+    if not numeros:
+        return aviso.onde
+    if len(numeros) == 1:
+        return f"Página {numeros[0]}"
+    return "Páginas " + ", ".join(str(n) for n in numeros[:-1]) + f" e {numeros[-1]}"
+
+
 def pendentes_do_livro(projeto) -> list[Aviso]:
     """Todos os avisos que ainda pedem um olhar, na ordem do livro: para cada
     folha, os dela (o corte, o angulo, o tamanho) e depois os das paginas que

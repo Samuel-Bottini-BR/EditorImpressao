@@ -145,10 +145,15 @@ class JanelaDosAvisos(QDialog):
 
     def _encher_a_lista(self) -> None:
         """Uma linha por motivo de cada página: "Página 12 - Desenho apagado",
-        com a caixinha desmarcada."""
+        com a caixinha desmarcada. O aviso de uma folha diz as páginas dela
+        ("Páginas 3 e 4 - Qualidade baixa"; core.avisos.onde_no_livro), para a
+        lista não misturar folha e página (verificador, 20/10/2026)."""
         self.lista.clear()
         for aviso in self._visiveis():
-            item = QListWidgetItem(f"{aviso.onde}  -  {aviso.titulo}")
+            onde = avisos_do_livro.onde_no_livro(aviso, self.projeto)
+            item = QListWidgetItem(f"{onde}  -  {aviso.titulo}")
+            if aviso.alvo == avisos_do_livro.FOLHA:
+                item.setToolTip(f"Aviso da folha {aviso.indice + 1} do PDF de entrada.")
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setCheckState(Qt.Unchecked)
             item.setData(Qt.UserRole, aviso)
