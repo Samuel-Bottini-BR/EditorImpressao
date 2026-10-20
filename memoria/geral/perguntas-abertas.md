@@ -11,22 +11,12 @@ lista com nome entre crases já aparece como decidida no Registro.
 
 ## 1. Na página de escolhas (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV)
 
-Abertas e sem resposta na última leitura (Registro 19/10/2026: "`g7-borda-ate-onde` e `g9-folha-maior-impressao`
-continuam sem resposta").
+Nenhuma aberta (lida em 20/10/2026). Respondidas recentemente:
 
-- `g7-borda-ate-onde` — "Página com borda preta: até onde vai o corte que o programa sugere?" Opções: "Tira só o
-  preto" · "Vai até a moldura (o que está impresso)" · "O Kaique escolhe por livro: só o preto, ou até a moldura"
-  (sugestão, começando em "até a moldura") · "Ainda não entendi". Comentário dele de 13/10/2026: "Vai depender do
-  livro, mas se tivessemos maneira de embranquecer esse preto depois poderia ser usa a busca do scantailor, hoje no
-  programa temos o motor de busca só do scantailor?" (respondido na página em 14/10/2026). **Trava:** ligar o corte
-  da caixa do conteúdo (Implementador 4, ramo `fase2-caixa-conteudo`) só depois desta resposta (Registro 19/10/2026).
-  Itens [2.13](../itens/2.13.md), [2.5](../itens/2.5.md), [2.14](../itens/2.14.md).
-- `g9-folha-maior-impressao` — "A folha muito maior (tabela dobrável): como ela sai impressa?" (qual vem de
-  fábrica). Opções: "Ajustar: gira de pé e reduz até caber na página A5" (sugestão; ~73% contra ~81% das páginas
-  comuns) · "Tamanho real, numa folha A4 à parte" · "Pôster" · "Divide em duas páginas" · "Ainda não entendi". A
-  dúvida dele ("quando ela foi impressa a primeira vez, ela foi impressa um folha a4 inteira para uma tabela só
-  né?") foi respondida na página em 14/10/2026. Itens [2.6](../itens/2.6.md), [2.4](../itens/2.4.md); página
-  [opusmajus-256](../paginas-de-teste/opusmajus-256.md).
+- 20/10/2026 — g7-borda-ate-onde: "O Kaique escolhe por livro: só o preto, ou até a moldura". Itens
+  [2.13](../itens/2.13.md), [2.5](../itens/2.5.md). Liberou ligar o corte da borda preta (Implementador 4).
+- 20/10/2026 — g9-folha-maior-impressao: "Ajustar: gira de pé e reduz até caber na página A5" + "Quero que o
+  programa avise quando isso estiver acontecendo." Itens [2.6](../itens/2.6.md), [2.4](../itens/2.4.md).
 
 ## 2. Na página de conferência (https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX)
 
