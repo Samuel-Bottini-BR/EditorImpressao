@@ -79,3 +79,9 @@ inteira; o conserto de 13/10 tirou esse efeito e o Pesel 21 passou a ser cortado
   iguais. Não é deste conserto.
 - O teste da página de verdade só roda no PC do Samuel; no GitHub quem cobre é a página de mentira.
 - 89 páginas soltas, nenhum livro inteiro; nada visto na janela do programa.
+
+## Suíte no Windows do GitHub
+
+Rodada 39396681554 (o ramo em `bd193d4`; o código de `core/` e `tests/` é o de agora): **passou**. 114 arquivos, 2061 passaram,
+0 falharam, 0 erros, 73 pulados (entre eles o teste do Pesel 21 de verdade, que só roda no PC); botões e prints da
+janela real: passou.

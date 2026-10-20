@@ -19,7 +19,7 @@ Passos:
 6. [x] Projeto antigo 40 de 40 (`projeto-antigo.json`).
 7. [x] Antes/depois das 10 (`scripts/montar_pesel21.py`), todas abertas. Relatorio:
    `relatorios/conferir/conserto-corte-g6-pesel21-2026-10-20/pesel21.md`.
-8. [ ] Suite no GitHub: rodada 39396681554 (disparada 08:53 UTC), esperando.
+8. [x] Suite no GitHub: rodada 39396681554, success: 114 arquivos, 2061 passaram, 0 falharam, 0 erros, 73 pulados (o teste do Pesel 21 de verdade pula la, como previsto; os 3 do cartao de mentira passam); botoes e prints da janela real: success.
 9. [ ] Filtro de velocidade do GitHub (ainda em validacao pelo outro agente; indicativo): rodada 39396712441, fase-1 x este ramo, 3 rodadas.
 
 ---
