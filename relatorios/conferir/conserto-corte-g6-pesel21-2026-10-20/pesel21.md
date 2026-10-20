@@ -85,3 +85,10 @@ inteira; o conserto de 13/10 tirou esse efeito e o Pesel 21 passou a ser cortado
 Rodada 39396681554 (o ramo em `bd193d4`; o código de `core/` e `tests/` é o de agora): **passou**. 114 arquivos, 2061 passaram,
 0 falharam, 0 erros, 73 pulados (entre eles o teste do Pesel 21 de verdade, que só roda no PC); botões e prints da
 janela real: passou.
+
+## Velocidade (só indicativo)
+
+O filtro de velocidade do GitHub ainda está sendo montado por outro agente; a medida que vale fica para ele (ou para
+o PC no fim da fase). Uma rodada dele já tinha terminado e foi lida: 39396712441, `fase-1` (`b8e9af7`) contra este
+ramo (`90c9d61`), três rodadas de cada, alternadas: **"igual" nas quatro medidas** (abrir o livro +1,7%, trocar de
+página -3,7%, Mágico pro -4,4%, Preto e branco -1,4%, todas dentro do vai-e-vem entre rodadas iguais).

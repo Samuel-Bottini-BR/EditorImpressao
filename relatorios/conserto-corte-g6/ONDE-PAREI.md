@@ -1,6 +1,6 @@
 # Onde parei — acerto do Pesel 21 (implementador, 20/10/2026)
 
-**EM ANDAMENTO.** Pedido da gerente: o Pesel 21 tem de sair como no `fase-1` (folha inteira, 157 x 241 mm), sem
+**PRONTO PARA CONFERIR (entregue a gerente em 20/10).** Pedido da gerente: o Pesel 21 tem de sair como no `fase-1` (folha inteira, 157 x 241 mm), sem
 perder as cinco melhorias. O Samuel marcou "Melhorar" em 13/10 ("Ele chega a quase cortar as letras.").
 
 Passos:
@@ -20,7 +20,8 @@ Passos:
 7. [x] Antes/depois das 10 (`scripts/montar_pesel21.py`), todas abertas. Relatorio:
    `relatorios/conferir/conserto-corte-g6-pesel21-2026-10-20/pesel21.md`.
 8. [x] Suite no GitHub: rodada 39396681554, success: 114 arquivos, 2061 passaram, 0 falharam, 0 erros, 73 pulados (o teste do Pesel 21 de verdade pula la, como previsto; os 3 do cartao de mentira passam); botoes e prints da janela real: success.
-9. [ ] Filtro de velocidade do GitHub (ainda em validacao pelo outro agente; indicativo): rodada 39396712441, fase-1 x este ramo, 3 rodadas.
+9. [x] Filtro de velocidade do GitHub, SO INDICATIVO (o filtro ainda esta sendo montado por outro agente; a gerente mandou nao esperar): rodada 39396712441, fase-1 (b8e9af7) x este ramo (90c9d61), 3 rodadas alternadas: veredito "igual" nas quatro medidas (abrir +1,7%, trocar de pagina -3,7%, Magico pro -4,4%, Preto e branco -1,4%; todas dentro do vai-e-vem). A medida que vale fica para o filtro pronto / o PC no fim da fase.
+10. [x] Entregue a gerente (20/10).
 
 ---
 
