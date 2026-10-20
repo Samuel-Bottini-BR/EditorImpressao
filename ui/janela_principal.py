@@ -33,7 +33,8 @@ from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
 from ui import estilo
-from ui.tarefas import GerenciadorPrevias, TarefaAnalise, TarefaConverterZonas, TarefaProcessar
+from ui.tarefas import (GerenciadorPrevias, TarefaAnalise, TarefaConverterZonas, TarefaMedirOLivro,
+                        TarefaProcessar)
 from ui.tela_conferir import TelaConferir
 from ui.tela_final import TelaFinal, TelaProgresso
 from ui.tela_inicio import TelaInicio
@@ -115,6 +116,10 @@ class JanelaPrincipal(QMainWindow):
         # tras as zonas do livro aberto para o formato novo (zonas na folha
         # original). None quando nao ha. Ver _comecar_a_converter_as_zonas.
         self.conversao_das_zonas: TarefaConverterZonas | None = None
+        # Item 2.5: a passada que mede o tamanho do livro por tras (so com o
+        # corte pelo conteudo ligado). Comeca e para junto com a conversao
+        # das zonas (_comecar_a_converter_as_zonas / _parar_a_conversao_das_zonas).
+        self.medida_do_livro: TarefaMedirOLivro | None = None
         # D2 do girar (06/10/2026): o giro da primeira folha com que a capa do
         # cartao (capa.png) foi desenhada por ultimo, nesta sessao. A capa
         # nasce como veio no PDF (projetos.garantir_miniatura): 0. Ver
@@ -706,6 +711,8 @@ class JanelaPrincipal(QMainWindow):
         # do 2.1 ja volta "programa" e sem sobra: modelos.Projeto.de_dicionario)
         self.projeto.dividir_como = getattr(salvo, "dividir_como", self.projeto.dividir_como)
         self.projeto.cortar_sobra = bool(getattr(salvo, "cortar_sobra", False))
+        # item 2.5: o corte pelo conteudo (o salvo de antes volta desligado)
+        self.projeto.cortar_pelo_conteudo = bool(getattr(salvo, "cortar_pelo_conteudo", False))
         self.projeto.limpar = salvo.limpar
         self.projeto.filtro_padrao = salvo.filtro_padrao
         self.projeto.endireitar = salvo.endireitar
@@ -1034,6 +1041,7 @@ class JanelaPrincipal(QMainWindow):
         from core.zonas_na_folha import paginas_por_converter
 
         self._parar_a_conversao_das_zonas()
+        self._comecar_a_medir_o_livro()          # item 2.5 (so com a opcao ligada)
         if self.projeto is None or not paginas_por_converter(self.projeto):
             return
         tarefa = TarefaConverterZonas(self.projeto)
@@ -1054,6 +1062,7 @@ class JanelaPrincipal(QMainWindow):
         termina a pagina dela vai para self._tarefas_saindo (o Qt derrubaria
         o programa se a QThread fosse destruida rodando; ver _trocar_tarefa).
         """
+        self._parar_a_medida_do_livro()          # item 2.5
         tarefa = self.conversao_das_zonas
         self.conversao_das_zonas = None
         if tarefa is None:
@@ -1064,6 +1073,46 @@ class JanelaPrincipal(QMainWindow):
         self.tela_conferir.mostrar_andamento_das_marcacoes(0, 0)
         if gravar and tarefa.feitas:
             self._salvar_agora()
+
+    # --- item 2.5: o tamanho do livro, por tras ---------------------------
+
+    def _comecar_a_medir_o_livro(self) -> None:
+        """Com o corte pelo conteudo ligado (Projeto.cortar_pelo_conteudo),
+        mede por tras o tamanho do livro (ui/tarefas.TarefaMedirOLivro); no
+        fim, as previas sao refeitas, ja do tamanho do livro. Desligado, ou
+        tudo ja medido nesta sessao: nao faz nada."""
+        from core.pipeline import paginas_sem_medida_do_conteudo
+
+        self._parar_a_medida_do_livro()
+        if self.projeto is None or not paginas_sem_medida_do_conteudo(self.projeto):
+            return
+        tarefa = TarefaMedirOLivro(self.projeto)
+        tarefa.terminou.connect(self._medida_do_livro_terminou)
+        self.medida_do_livro = tarefa
+        tarefa.start()
+
+    def _parar_a_medida_do_livro(self) -> None:
+        """Para a passada da vez (trocar de livro, fechar). O que ela mediu
+        fica na memoria; o resto, o PDF mede."""
+        tarefa = self.medida_do_livro
+        self.medida_do_livro = None
+        if tarefa is None:
+            return
+        tarefa.cancelar()
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)
+
+    def _medida_do_livro_terminou(self, tarefa, medidas: int) -> None:
+        """A passada acabou: as previas sao refeitas, agora com o tamanho do
+        livro inteiro (so a da vez; um sinal atrasado nao entra)."""
+        if tarefa is None or tarefa is not self.medida_do_livro:
+            return
+        self.medida_do_livro = None
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)
+        if medidas and self.tela_conferir.previas is not None:
+            self.tela_conferir.previas.invalidar()
+            self.tela_conferir.atualizar()
 
     def _andamento_da_conversao(self, tarefa, feitas: int, total: int) -> None:
         """Uma pagina a mais convertida: atualiza a faixa (so a da vez; um
@@ -1263,6 +1312,8 @@ class JanelaPrincipal(QMainWindow):
                        "limpar_pontinhos",
                        # item 2.1: o jeito de dividir e o corte da sobra
                        "dividir_como", "cortar_sobra",
+                       # item 2.5: o corte pelo conteudo
+                       "cortar_pelo_conteudo",
                        # item 2.2: a conta do endireitar
                        "endireitar_como")
 

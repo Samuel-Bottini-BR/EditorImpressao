@@ -825,7 +825,9 @@ class PainelAutomatico(Painel):
             (bool(projeto.cortar_bordas), "Cortar as bordas",
              "tira a borda preta e a sombra do scanner",
              "beirada da folha vizinha: "
-             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")),
+             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")
+             + "; seguindo o conteúdo: "                       # item 2.5
+             + ("sim" if getattr(projeto, "cortar_pelo_conteudo", False) else "não")),
             (bool(projeto.limpar), "Limpar a folha", "tira o amarelado",
              f"filtro do livro: {NOMES_AMIGAVEIS.get(filtro, filtro)}"),
             (bool(projeto.montar_cadernos), "Montar cadernos para impressão",

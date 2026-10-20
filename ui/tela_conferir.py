@@ -147,7 +147,7 @@ from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
 from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
-                           angulo_da_pagina, angulos_medidos, jeito_de_dividir,
+                           angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
                            recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
@@ -1154,7 +1154,10 @@ class TelaConferir(QWidget):
         coluna.addSpacing(6)
         coluna.addWidget(self._parte_do_livro(
             ["Cortar a beirada da folha vizinha: "
-             + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não")]))
+             + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não"),
+             # item 2.5 (G8): o corte que segue o conteudo
+             "Cortar seguindo o conteúdo (como o ScanTailor): "
+             + ("sim" if getattr(self.projeto, "cortar_pelo_conteudo", False) else "não")]))
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -3323,6 +3326,37 @@ class TelaConferir(QWidget):
         )
 
     @protegido
+    def _usar_corte_alargado(self) -> None:
+        """Item 2.5, g8-moldura-tinta-fora ("ele avisa e da opção e de mudar o
+        corte e mostrar ele alargado com o que foi tirado"): troca o corte desta
+        pagina pelo corte alargado (core.pipeline.corte_alargado), que passa a
+        valer como corte a mao. Desfaz com Ctrl+Z; "usar o corte do programa"
+        volta ao do conteudo. Sem corte alargado (ainda nao medido), so marca
+        como conferida."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        alargado = corte_alargado(self.projeto, pagina)
+        if alargado is None:
+            self._marcar_revisada()
+            return
+        self._registrar(
+            "recortar", "pagina", [self.indice_pagina],
+            {"recorte": [float(v) for v in alargado], "revisada": True},
+            f"Corte alargado na página {self.indice_pagina + 1}",
+        )
+
+    @protegido
+    def _alinhar_com_as_outras(self) -> None:
+        """Item 2.5, g9-pagina-muito-maior: poe de volta na conta do tamanho do
+        livro a pagina que o programa deixou de fora sozinho (o aviso deixa
+        desfazer). Desfaz com Ctrl+Z."""
+        self._registrar(
+            "alinhar", "pagina", [self.indice_pagina],
+            {"alinhar_com_as_outras": True, "revisada": True},
+            f"Página {self.indice_pagina + 1} do tamanho das outras",
+        )
+
+    @protegido
     def _recorte_automatico(self) -> None:
         self._registrar(
             "recortar", "pagina", [self.indice_pagina], {"recorte": None},
@@ -3926,6 +3960,10 @@ class TelaConferir(QWidget):
             self._angulo_zero()
         elif correcao == "sem_recorte":
             self._sem_recorte()
+        elif correcao == "corte_alargado":           # item 2.5, g8
+            self._usar_corte_alargado()
+        elif correcao == "alinhar_com_as_outras":    # item 2.5, g9
+            self._alinhar_com_as_outras()
 
     # --- desfazer / refazer -----------------------------------------------
 

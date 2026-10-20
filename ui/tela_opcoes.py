@@ -242,6 +242,15 @@ class TelaOpcoes(QWidget):
         self.cx_cortar = self._caixa(
             "Cortar as bordas", "tira a borda preta e a sombra do scanner", opcoes
         )
+        # Item 2.5 (G8 (a) do Samuel, 05/10/2026: "Trazer como opcao 'seguir a
+        # moldura / o papel', desligada"): o corte do ScanTailor, desligado de
+        # fabrica. So vale com "Cortar as bordas" marcada. Controle minimo
+        # (lugar provisorio, listado para o agente de layout).
+        self.cx_cortar_pelo_conteudo = self._caixa(
+            "Cortar seguindo o conteúdo (como o ScanTailor)",
+            "o corte abraça o que está impresso, e todas as páginas ficam do tamanho da maior",
+            opcoes,
+        )
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
@@ -308,7 +317,8 @@ class TelaOpcoes(QWidget):
         camadas.addLayout(rodape)
 
         for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
-                      self.cx_endireitar, self.cx_cortar, self.cx_cadernos):
+                      self.cx_endireitar, self.cx_cortar, self.cx_cortar_pelo_conteudo,
+                      self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -667,6 +677,7 @@ class TelaOpcoes(QWidget):
         self.combo_conta_endireitar.setCurrentIndex(self.combo_conta_endireitar.findData(
             endireitar_scantailor.jeito_do_livro(projeto)))
         self.cx_cortar.setChecked(projeto.cortar_bordas)
+        self.cx_cortar_pelo_conteudo.setChecked(bool(getattr(projeto, "cortar_pelo_conteudo", False)))
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
@@ -763,6 +774,7 @@ class TelaOpcoes(QWidget):
             self.combo_conta_endireitar.currentData())
         self.linha_conta_endireitar.setVisible(self.projeto.endireitar)
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
+        self.projeto.cortar_pelo_conteudo = self.cx_cortar_pelo_conteudo.isChecked()   # item 2.5
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(
