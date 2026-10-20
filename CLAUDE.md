@@ -199,6 +199,71 @@ entre 59 e 150 — nenhum dos dois batia):
   que dirige a lógica interna diretamente, sem clique real, e serve para outra
   coisa: validar o resultado de uma ação, não a fiação do botão).
 
+### 4.6 Onde roda cada teste (decisões do Samuel, 19/10/2026)
+
+As cinco perguntas foram respondidas uma por uma no chat; palavras dele no
+Registro de mudanças do PLANO-DEFINITIVO (19/10).
+
+| Onde | O que roda | Quando |
+|---|---|---|
+| **GitHub** (Windows da nuvem) | As ~2.050 conferências (`pytest`), o `teste_botoes.py` e os prints da janela real | Em **toda** entrega de agente, antes de ir ao verificador |
+| **GitHub** | **Filtro de velocidade**: antes e depois **na mesma máquina, alternados** (`teste_velocidade.py` + Marial 300). Se acusar lentidão, volta para o agente | Em toda mudança que mexe em processamento (`core/`) |
+| **PC do Samuel** | Um arquivo de teste por vez (`pytest tests\<arquivo> -q`) | Enquanto o agente trabalha |
+| **PC do Samuel** | As ~2.050 conferências e o `teste_botoes.py` inteiros, com os outros agentes parados | **Antes de qualquer trabalho entrar no `fase-1`** (a gerente roda) |
+| **PC do Samuel** | Janela de verdade pilotada pelo verificador | Nos trabalhos de tela |
+| **PC do Samuel** | **Medida de velocidade que vale** para a regra 6 (alternada, PC sem agentes) | **No fim de cada fase** |
+| **Notebook do Kaique** | Régua final de velocidade (item 0.6 / Fase 5) | Quando ele puder |
+
+**Exceção (Samuel, 20/10: "opção 1"):** trabalho que **só acrescenta
+documentos** (nenhuma linha do programa muda; no máximo um teste novo de um
+script de documentos) entra no `fase-1` só com a rodada do GitHub passando, sem
+a parada no PC. A parada no PC fica para quando o código do programa muda.
+
+Decisões: suíte "B: GitHub e meu PC"; velocidade "opção 2" (filtro no
+GitHub sempre, PC no fim de cada fase). Lentidão pequena achada no meio de uma
+fase (ex.: Mágico pro +1,1% do "Para revisar") vai para a Fase 5, como o Samuel
+mandou em 19/10: "vamos deixar esse concerto de lentidão para o final, para a
+fase de desempenho".
+
+Rodar no GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao
+--ref claude/list-server-files-gkos8v -f ramo=<ramo>`; acompanhar com
+`gh run watch <id> -R Samuel-Bottini-BR/EditorImpressao --exit-status`. O `gh`
+fica em `C:\Program Files\GitHub CLI`.
+
+### 4.7 Teste de reversão — obrigatório em todo conserto de bug (Samuel, 19/10/2026: "opção 1")
+
+- Todo bug consertado ganha um teste em `tests/` que **falha no código antigo e
+  passa no novo**. O nome ou a docstring do teste cita o bug (data e descrição
+  da Lista de bugs).
+- **O verificador prova**: roda o teste no código antigo (antes do conserto) e
+  mostra que ele acusa o defeito. Teste que passa nos dois não vale.
+- **Bug de imagem** (faixa preta, letra apagada, desenho que some) usa uma
+  **medida** que pega o defeito (ex.: mm de preto na beirada do Cursus 3). Se
+  não existir medida possível, isso vira **ressalva escrita**, nunca silêncio.
+- Motivo, nas palavras da explicação aceita: "um defeito consertado nunca volta
+  escondido, nem os de imagem".
+
+### 4.8 Quem conversa com quem (Samuel, 19/10/2026: "C: chefe + bilhetes")
+
+- **Os agentes entregam sempre à gerente.** Nunca passam trabalho direto a outro
+  agente; a gerente confere o pedido e só então chama o próximo.
+- **Outras janelas do Claude Code no PC** podem mandar recado direto à gerente
+  (SendMessage), com três cuidados: (1) as **palavras literais** do Samuel, não
+  resumo; (2) a gerente **repete o recado ao Samuel** e só muda o plano depois do
+  "sim" dele; (3) todo recado fica **anotado na memória** (`memoria/conferencias.md`
+  e a ficha do item), com data e de qual janela veio.
+- Se a gerente estiver fechada, o recado vai para `memoria/recados/<data>-<origem>.md`
+  e é lido ao abrir.
+
+### 4.9 Memória do projeto (Samuel, 19/10/2026)
+
+A memória organizada por assunto fica em `memoria/` (índice em
+`memoria/INDICE.md`). Antes de começar um trabalho, cada agente lê o índice e
+as fichas do assunto dele. **O plano continua mandando**: a memória organiza e
+aponta, nunca contradiz o PLANO-DEFINITIVO. O `/checkpoint` atualiza as fichas
+dos assuntos tocados na sessão. O histórico por data
+(`historico/Editor de Impressao - resumo para o Claude.md`) continua inteiro.
+
 ---
 
 ## 5. O protocolo de qualquer mudança de imagem

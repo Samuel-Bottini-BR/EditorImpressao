@@ -195,7 +195,7 @@ def test_as_duas_linhas_dizem_a_que_se_referem(conferir):
     rotulos = [r.text() for r in painel.findChildren(QLabel)]
     assert "Marcação:" in rotulos and "Foto:" in rotulos
     dicas = [b.toolTip() for b in painel.findChildren(QPushButton)
-             if b.text() in ("usar em todas", "só nas próximas")]
+             if b.text() in ("usar em todas", "daqui em diante")]   # rodada 13, 806 B
     assert len(dicas) == 4 and all(dicas)
     assert sum("marcação" in d for d in dicas) == 2
     assert sum("tem foto" in d for d in dicas) == 2

@@ -20,10 +20,11 @@ Como as cores chegam às telas:
   - quem põe cor num setStyleSheet próprio deve preferir um objectName com a
     regra aqui na folha, para a troca de tema pegar sem nada a mais.
 
-O tema escolhido fica num arquivo pequeno na pasta de dados do programa
-(tema.json, ao lado do configuracoes.json): o configuracoes.py só guarda as
-chaves que ele conhece, e ele não é da tela (pedido para a gerente: pôr
-"tema" nos PADROES dele, e então este arquivo pode sair).
+O tema escolhido fica na chave "tema" do configuracoes.json (configuracoes.py,
+PADROES), junto das outras preferências. Na etapa 1 ele ficava num arquivo
+próprio (tema.json); desde a etapa 2 (09/10/2026) o tema.json só é lido uma
+vez, para quem já tinha escolhido um tema não voltar ao de fábrica, e nunca
+mais é gravado nem apagado.
 
 Seguro mudar: as cores de cada tema. Arriscado: tirar um dos nomes antigos
 (alguma tela ainda usa) ou o tamanho das letras (as telas foram medidas para
@@ -148,34 +149,75 @@ def folha() -> str:
     return FOLHA_DE_ESTILO
 
 
-def _arquivo_do_tema():
-    """Onde a escolha do tema fica guardada (pasta de dados do programa)."""
+def _arquivo_do_tema_antigo():
+    """O tema.json da etapa 1 do layout (08/10/2026), na pasta de dados. Só
+    é lido, para trazer a escolha antiga para o configuracoes.json."""
     from historico import pasta_de_dados
 
     return pasta_de_dados() / "tema.json"
 
 
-def tema_guardado() -> str:
-    """O tema que a pessoa escolheu da última vez, ou o de fábrica. Nunca
-    quebra: arquivo sumido ou estragado vira o de fábrica."""
+def _tema_do_arquivo_antigo() -> str | None:
+    """O tema guardado no tema.json antigo, ou None se não há (ou estragou)."""
     try:
-        arquivo = _arquivo_do_tema()
+        arquivo = _arquivo_do_tema_antigo()
         if arquivo.is_file():
             nome = json.loads(arquivo.read_text(encoding="utf-8")).get("tema")
             if nome in TEMAS:
                 return nome
     except (OSError, ValueError, TypeError, AttributeError):
         pass
+    return None
+
+
+def tema_guardado() -> str:
+    """O tema que a pessoa escolheu da última vez, ou o de fábrica. Nunca
+    quebra: configuração sumida ou estragada vira o de fábrica.
+
+    Lê a chave "tema" do configuracoes.json. Se ela ainda não foi gravada lá
+    e existe o tema.json da etapa 1, usa o dele e já o passa para a
+    configuração (uma vez só; o tema.json fica como está). Seguro mudar: a
+    ordem de procura. Arriscado: gravar o tema.json de novo (seriam dois
+    lugares para a mesma escolha)."""
+    import configuracoes
+
+    try:
+        if not _tema_ja_gravado_na_configuracao():
+            antigo = _tema_do_arquivo_antigo()
+            if antigo is not None:
+                configuracoes.escrever("tema", antigo)
+                return antigo
+        nome = configuracoes.ler("tema")
+        if nome in TEMAS:
+            return nome
+    except Exception:  # noqa: BLE001 - tema nunca pode impedir a janela de abrir
+        pass
     return TEMA_DE_FABRICA
 
 
-def _gravar_o_tema(nome: str) -> None:
-    """Grava a escolha do tema. Falha em silêncio (não é essencial)."""
+def _tema_ja_gravado_na_configuracao() -> bool:
+    """O configuracoes.json já tem a chave "tema" gravada (e não só o valor
+    de fábrica que configuracoes.carregar completa)? Lê o arquivo cru."""
+    import configuracoes
+
     try:
-        arquivo = _arquivo_do_tema()
-        arquivo.parent.mkdir(parents=True, exist_ok=True)
-        arquivo.write_text(json.dumps({"tema": nome}), encoding="utf-8")
-    except OSError:
+        arquivo = configuracoes._caminho()
+        if not arquivo.is_file():
+            return False
+        dados = json.loads(arquivo.read_text(encoding="utf-8"))
+        return isinstance(dados, dict) and "tema" in dados
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def _gravar_o_tema(nome: str) -> None:
+    """Grava a escolha do tema na configuração. Falha em silêncio (não é
+    essencial: configuracoes.escrever já engole erro de disco)."""
+    import configuracoes
+
+    try:
+        configuracoes.escrever("tema", nome)
+    except Exception:  # noqa: BLE001 - tema nao e essencial
         pass
 
 
@@ -356,6 +398,19 @@ QComboBox, QSpinBox, QLineEdit, QDoubleSpinBox {{
     border-radius: 6px;
     padding: 6px 10px;
 }}
+/* A caixa do angulo do Endireitar (item 2.2, G5; objectName "campo_angulo"),
+   que nao mostra as setinhas proprias (as setas de 0,1 grau ficam ao lado).
+   Antes era setButtonSymbols(NoButtons), mas no Qt 6.12, com esta folha de
+   estilo, o campo de digitar ficava com 1 pixel e o numero sumia (achado em
+   09/10/2026, na nuvem). Agora as setinhas existem com largura zero, e o
+   campo de dentro (um QLineEdit, que pegaria o espaco interno da regra de
+   cima) fica sem borda e com pouco espaco. Seguro mudar: o espaco. Arriscado:
+   voltar ao NoButtons sem conferir que o numero aparece. */
+QDoubleSpinBox#campo_angulo::up-button, QDoubleSpinBox#campo_angulo::down-button {{
+    width: 0px; border: none; }}
+QDoubleSpinBox#campo_angulo::up-arrow, QDoubleSpinBox#campo_angulo::down-arrow {{
+    width: 0px; height: 0px; }}
+QDoubleSpinBox#campo_angulo QLineEdit {{ padding: 0px 8px; border: none; background: transparent; }}
 QComboBox QAbstractItemView {{ background: {c["painel"]}; color: {c["texto"]};
     selection-background-color: {c["sel"]}; border: 1px solid {c["sep"]}; }}
 
@@ -376,6 +431,77 @@ QToolTip {{
 }}
 
 QMessageBox, QDialog {{ background: {c["app"]}; }}
+
+/* Etapa 2 do layout: a linha dos menus (menus + barra de opções + girar), a
+   barra de baixo da tela de trabalho e o fundo atrás da página. */
+QWidget#linhaDosMenus {{ background: {c["bar"]}; border-bottom: 1px solid {c["linha"]}; }}
+QWidget#linhaDosMenus QMenuBar {{ border: none; }}
+QFrame#separadorDosMenus {{ background: {c["sep"]}; }}
+QFrame#barraDeBaixo {{ background: {c["bar"]}; border-top: 1px solid {c["linha"]}; }}
+QLabel#rotuloDaBarraDeBaixo {{ color: {c["fraco"]}; font-size: 12px; }}
+QPushButton#botaoDaBarraDeBaixo {{ background: transparent; border: 1px solid transparent;
+    border-radius: 4px; padding: 0px 7px; min-height: 22px; font-size: 16px; color: {c["fraco"]}; }}
+QPushButton#botaoDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
+QPushButton#botaoDaBarraDeBaixo:disabled {{ color: {c["desligado"]}; background: transparent; }}
+QStackedWidget#areaDaPagina {{ background: {c["tela"]}; }}
+/* os botões da ferramenta embaixo da página (provisório até a etapa 4): mais
+   enxutos, para caber a fila inteira entre a trilha e os painéis */
+QStackedWidget#barraDeBotoes QPushButton {{ padding: 5px 10px; font-size: 13px; border-radius: 6px; }}
+QStackedWidget#barraDeBotoes QComboBox {{ padding: 4px 8px; font-size: 13px; }}
+QStackedWidget#barraDeBotoes QLabel {{ font-size: 13px; }}
+QStackedWidget#barraDeBotoes QCheckBox {{ font-size: 13px; }}
+
+/* Etapa 3 do layout: a faixa do conferir com os botões dentro (aceitar a
+   sugestão, está certo, próxima dúvida) e os painéis da direita, que abrem
+   pela coluna de ícones (ui/widgets/paineis.py). As regras usam o nome de
+   cada peça, e não "QWidget", de propósito: uma regra geral dentro do painel
+   tiraria o fundo dos botões e das listas. */
+QFrame#faixaInfo QPushButton {{ padding: 4px 12px; font-size: 13px; border-radius: 6px; }}
+QFrame#painelDaDireita {{ background: {c["painel"]}; border: none; }}
+QWidget#fundoDoPainel {{ background: {c["painel"]}; }}
+QStackedWidget#pilhaDoPainel {{ background: {c["painel"]}; border: none; }}
+QFrame#cabecalhoDoPainel {{ background: {c["painel"]}; border: none;
+    border-bottom: 1px solid {c["linha"]}; }}
+QFrame#topoDoPainel {{ background: {c["painel"]}; border: none;
+    border-bottom: 1px solid {c["linha"]}; }}
+QFrame#peDoPainel {{ background: {c["painel"]}; border: none;
+    border-top: 1px solid {c["linha"]}; }}
+QLabel#tituloDoPainel {{ color: {c["forte"]}; font-size: 14px; font-weight: 600; }}
+QLabel#subtituloDoPainel {{ color: {c["apagado"]}; font-size: 12px; }}
+QLabel#contagemDoPainel {{ background: {c["aviso"]}; color: #2A1808; font-size: 11px;
+    font-weight: 700; border-radius: 8px; padding: 1px 6px; }}
+QPushButton#fecharPainel {{ background: transparent; border: none; border-radius: 5px;
+    padding: 0px; }}
+QPushButton#fecharPainel:hover {{ background: {c["botao_h"]}; }}
+QLabel#parteDoPainel {{ color: {c["fraco"]}; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; }}
+QLabel#secaoDoPainel {{ color: {c["fraco"]}; font-size: 12px; font-weight: 600; }}
+QLabel#fraseDoPainel {{ color: {c["apagado"]}; font-size: 12px; }}
+QLabel#escolhaDoLivro {{ color: {c["link"]}; font-size: 12px; }}
+QLabel#etapaLigada {{ color: {c["forte"]}; font-size: 13px; font-weight: 600; }}
+QLabel#etapaDesligada {{ color: {c["apagado"]}; font-size: 13px; }}
+QFrame#riscoDoPainel {{ background: {c["linha"]}; border: none; }}
+QFrame#etapaDoPainel {{ background: {c["linha_f"]}; border: 1px solid {c["linha_b"]};
+    border-radius: 7px; }}
+QFrame#parteDoLivro {{ background: {c["aviso_f"]}; border: 1px solid {c["aviso_b"]};
+    border-radius: 8px; }}
+QFrame#parteDoLivro QLabel#parteDoPainel {{ color: {c["aviso"]}; }}
+QListWidget#listaDoPainel {{ background: {c["painel"]}; border: none; outline: none; }}
+QListWidget#listaDoPainel::item {{ border: none; background: transparent; }}
+QPushButton#abaDoPainel {{ background: {c["botao"]}; border: 1px solid {c["sep"]};
+    border-radius: 0px; padding: 5px 8px; font-size: 13px; }}
+QPushButton#abaDoPainel:hover {{ background: {c["botao_h"]}; }}
+QPushButton#abaDoPainel:checked {{ background: {c["azul"]}; border-color: {c["azul"]};
+    color: white; font-weight: 600; }}
+/* os botões, listas e caixinhas da ferramenta, dentro do painel Propriedades:
+   mais enxutos que os das outras telas, para caberem nos 300 px */
+QWidget#corpoDoPainel QPushButton {{ padding: 5px 8px; font-size: 13px; border-radius: 6px; }}
+QFrame#peDoPainel QPushButton, QFrame#topoDoPainel QPushButton {{ padding: 5px 8px;
+    font-size: 13px; border-radius: 6px; }}
+QWidget#corpoDoPainel QComboBox, QWidget#corpoDoPainel QDoubleSpinBox {{ padding: 4px 8px;
+    font-size: 13px; }}
+QWidget#corpoDoPainel QCheckBox {{ font-size: 13px; font-weight: normal; }}
+QLabel#rotuloDoPainel {{ color: {c["texto"]}; font-size: 13px; }}
 """
 
 
