@@ -261,8 +261,13 @@ class _TarefaCartoes(QRunnable):
     def __init__(self, indice_pagina: int, base: np.ndarray, filtros: list[str],
                  forca_preto: int, clareza: int, intensidade: int,
                  sinais: _SinaisCartoes, chave: object = None,
-                 pagina: ConfigPagina | None = None, dpi: float = 70) -> None:
+                 pagina: ConfigPagina | None = None, dpi: float = 70,
+                 despeckle=True) -> None:
         super().__init__()
+        # O "Limpar pontinhos" que vale na pagina (core.pipeline.
+        # pontinhos_da_pagina), resolvido na hora do pedido. True = o de antes
+        # do conserto de 21/10 (o nosso, sempre).
+        self.despeckle = despeckle
         # As caixinhas da pagina (2.9 e 2.11), copiadas na hora do pedido para
         # o outro fio nao ler a pagina enquanto a pessoa mexe nela. None =
         # nenhuma marcada (o cartao de sempre). dpi: o da amostra.
@@ -296,7 +301,9 @@ class _TarefaCartoes(QRunnable):
                     # na pagina, com as caixinhas dela
                     amostra = filtro_com_as_caixinhas(
                         self.base, self.pagina, chave, self.dpi,
-                        self.forca_preto, self.clareza, self.intensidade)
+                        self.forca_preto, self.clareza, self.intensidade,
+                        algoritmo_pb=self.pagina.algoritmo_preto_branco,
+                        despeckle=self.despeckle)
                 resultados[chave] = amostra
         except Exception:  # noqa: BLE001 - cartao que falha so fica "preparando..."
             registrar_erro("cartoes", traceback.format_exc())
@@ -597,11 +604,19 @@ class GerenciadorPrevias(QObject):
         que estado da pagina e o resultado. A tela de conferir passa a chave
         dos cartoes (giro, corte, ajustes...) e descarta o que chegar de um
         estado que ja passou (D1, 06/10/2026)."""
+        from core.pipeline import pontinhos_da_pagina as pontinhos_prontos
+
         pagina = (self.projeto.paginas[indice]
                   if 0 <= indice < len(self.projeto.paginas) else None)
+        # 21/10 (bug do verificador do 2.9): o cartao = a pagina com o filtro,
+        # entao com o algoritmo e o "Limpar pontinhos" dela (antes: sempre
+        # "auto" e o nosso, e o cartao apagava pontos que a pagina mantem)
+        despeckle = (pontinhos_prontos(self.projeto, pagina, base, dpi)
+                     if pagina is not None else True)
         self._pool_cartoes.start(
             _TarefaCartoes(indice, base, filtros, forca_preto, clareza, intensidade,
-                            self._sinais_cartoes, chave=chave, pagina=pagina, dpi=dpi)
+                            self._sinais_cartoes, chave=chave, pagina=pagina, dpi=dpi,
+                            despeckle=despeckle)
         )
 
     # --- folha crua (aba "Onde cortar") -----------------------------------

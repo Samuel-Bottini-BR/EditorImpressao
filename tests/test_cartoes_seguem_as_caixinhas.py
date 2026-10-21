@@ -115,3 +115,18 @@ def test_chave_muda_com_as_caixinhas(app):
         assert depois != antes, campo
         antes = depois
     previas.parar()
+
+
+def test_cartao_preto_e_branco_igual_a_pagina(app):
+    """O cartão Preto e branco usa o "Limpar pontinhos" e o jeito da página
+    (antes: sempre o nosso limpar, e o cartão apagava os "..." de um slide que
+    a página mantinha)."""
+    from core import pipeline
+
+    base = _pagina_escura()
+    base[60:62, 30:32] = 225                      # um pontinho claro: o "..." do slide
+    projeto = _projeto(claro_no_escuro=True)
+    projeto.paginas[0].filtro = PRETO_E_BRANCO
+    resultados = _cartoes(app, projeto, base, [PRETO_E_BRANCO])
+    pagina = pipeline._filtrar(projeto, projeto.paginas[0], base)[0]
+    assert np.array_equal(resultados[PRETO_E_BRANCO], pagina)
