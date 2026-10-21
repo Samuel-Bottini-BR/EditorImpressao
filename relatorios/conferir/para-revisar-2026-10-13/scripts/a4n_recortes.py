@@ -1,4 +1,4 @@
-"""21/10/2026: recortes da aba 4 na TELA NOVA (layout aprovado, codigo adf4e69), a partir dos prints
+"""21/10/2026: recortes da aba 4 na TELA NOVA (layout aprovado; codigo adf4e69, e 8cb84b8 nas fotos m*), a partir dos prints
 trabalho/prints/n*.png (janela de 1600 x 821 pontos, com a barra de titulo). So le os prints.
 Grava img/a4n-*.jpg: so a parte que muda, ampliada."""
 from pathlib import Path
@@ -58,11 +58,11 @@ FEITOS = {
     "deixar-em-branco": junta("deixar-em-branco", [p("n21-egenloff12-deixar-em-branco", (56, 116, 1544, 468))]),
     "tirar-do-livro": junta("tirar-do-livro", [p("n22-egenloff12-tirar-do-livro", (56, 655, 1544, 821))]),
     "teclado": junta("teclado", [p("n23-egenloff-espaco", (56, 402, 1544, 821))]),
-    "egenloff-3": junta("egenloff-3", [p("n24-egenloff3-texto-falhado", CARTOES_E_FAIXA)]),
-    "egenloff-3-escuro": junta("egenloff-3-escuro", [p("n25-egenloff3-mais-escuro", (56, 402, 1544, 545))]),
+    "egenloff-3": junta("egenloff-3", [p("m01-egenloff3-texto-falhado", CARTOES_E_FAIXA)]),
+    "egenloff-3-escuro": junta("egenloff-3-escuro", [p("m08-egenloff3-escuro", (56, 402, 1544, 545))]),
     "caixinha": junta("caixinha", [p("n28-o-que-fazer-caixinha-rolado", (60, 212, 910, 600))], largura=1100),
     "forca-sozinha": junta("forca-sozinha", [p("n29-camoes27-forca-sozinha", (56, 402, 1544, 545))]),
-    "forca-desfazer": junta("forca-desfazer", [p("n30-camoes27-desfazer", (56, 402, 1544, 545))]),
+    "forca-desfazer": junta("forca-desfazer", [p("m07-camoes27-desfazer", (56, 402, 1544, 545))]),
     "antes-de-processar": junta("antes-de-processar", [p("n31-antes-de-processar-camoes")], largura=900),
     "antes-varios": junta("antes-varios", [p("n46-antes-de-processar-varios")], largura=900),
     "confirmar": junta("confirmar", [p("n47-confirmar")], largura=1000),
@@ -75,11 +75,12 @@ FEITOS = {
     "camoes-66": junta("camoes-66", [p("n37-camoes66", (56, 86, 1600, 470))]),
     "rariora-8": junta("rariora-8", [p("n41-rariora8", CARTOES_E_FAIXA)]),
     "gladstone-18": junta("gladstone-18", [p("n45-gladstone18-parece-em-branco", CARTOES_E_FAIXA)]),
-    "palatino-66": junta("palatino-66", [p("n43-palatino66", CARTOES_E_FAIXA)]),
-    "opus-20": junta("opus-20", [p("n44-opus20", CARTOES_E_FAIXA)]),
+    "palatino-66": junta("palatino-66", [p("m03-palatino66", CARTOES_E_FAIXA)]),
+    "opus-20": junta("opus-20", [p("m04-opus20", CARTOES_E_FAIXA)]),
+    "cursus-3": junta("cursus-3", [p("m05-cursus3", CARTOES_E_FAIXA)]),
+    "antiphon-260": junta("antiphon-260", [p("m06-antiphon260", CARTOES_E_FAIXA)]),
     "antigo-no-fase1": junta("antigo-no-fase1", [p("n50-antigo-no-fase1-p12", CARTOES_E_FAIXA)]),
-    "antigo-no-ramo": junta("antigo-no-ramo", [p("n52-antigo-no-ramo-p12", CARTOES_E_FAIXA),
-                                               p("n53-antigo-no-ramo-p3", (56, 402, 1544, 545))]),
+    "antigo-no-ramo": junta("antigo-no-ramo", [p("n52-antigo-no-ramo-p12", CARTOES_E_FAIXA)]),
 }
 
 if __name__ == "__main__":

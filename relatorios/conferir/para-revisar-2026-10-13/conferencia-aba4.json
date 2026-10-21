@@ -3,13 +3,12 @@
  "id_da_decisao": "pr",
  "titulo_da_aba": "4. Para revisar: os avisos com botão",
  "ramo": "fase2-para-revisar",
- "commit": "adf4e69 (juntado ao layout aprovado)",
+ "commit": "8cb84b8 (juntado ao layout aprovado e ao conserto do corte)",
  "montado_em": "21/10/2026",
  "pode_publicar": true,
  "antes_de_publicar": [
-  "As fotos são da tela nova (layout aprovado, no ramo desde a junção do implementador; código adf4e69), tiradas por mim na janela de verdade em 20 e 21/10 e abertas uma a uma.",
-  "Fora da tela nova ficaram só o Cursus 3 e o Antiphon 260: dependem do conserto do corte (f418cc3), que entrou no fase-1 e ainda não está neste ramo. Publicar com esses dois marcados, ou esperar a próxima junção.",
-  "O texto do aviso de marcar vai mudar para \"diz onde fica o letra e traço\" (r14-aviso-marcar, \"C\" em 20/10), ainda não aplicado: as fotos mostram o texto de hoje.",
+  "Pode publicar. As fotos são da tela nova, tiradas por mim na janela de verdade em 20 e 21/10 e abertas uma a uma; as que mostram as frases novas (\"Texto falhado\", \"Figura além da gravura\"), o Cursus 3 e o Antiphon 260 são do código 8cb84b8 (com o conserto do corte).",
+  "A frase nova do \"Desenho ou escrita?\" (\"marque a área e escolha 'letra e traço' no painel Propriedades\") não aparece em nenhuma foto: nenhuma das 32 páginas-gabarito nem dos livros que abri deu esse aviso. Ela está conferida pelo teste de reversão.",
   "As perguntas de baixo ficaram com as fotos da primeira conferência (falam de comportamento). Os números da pergunta \"As contagens\" mudaram na tela nova (ver o parecer)."
  ],
  "resumo": {
@@ -272,9 +271,9 @@
    ],
    "olhar": "O número do painel \"Para revisar\" descendo em cada nível.",
    "texto": "Um motivo de uma página: de 31 para 30 avisos. Um motivo em todas: de 31 para 6. Em tudo: \"tudo certo\". Na lista grande, duas linhas marcadas: de 31 para 29.",
-   "ressalva": "\"está bom em tudo\" vira DUAS ações no Ctrl+Z (páginas e folhas): um Ctrl+Z só desfaz metade; no Camões o contador voltou de \"tudo certo\" para 35, e só o segundo Ctrl+Z trouxe os 98 (Lista de bugs).",
+   "ressalva": "Conferido de novo em 21/10, depois do conserto: \"está bom em tudo\" se desfaz com um Ctrl+Z só (Camões: \"tudo certo\" e, depois do Ctrl+Z, de volta os 98 e o painel com 35).",
    "tipo": "melhor",
-   "selo": "funciona; Ctrl+Z em dois passos",
+   "selo": "funciona; FOTOS A TROCAR",
    "decisao_do_samuel": "rv4-aviso-so-texto: \"Eu tenho que conseguir fazer isso com uma pagina individual, com um motivo individual de uma pagina e com todas as paginas ou com todos os motivos de todas as paginas, e eu devo conseguir abrir um selecionador em aba grande [...] quando eu resolver aquele problema, o programa já vai automaticamente ver que eu resolvi?\"",
    "bate_com_a_decisao": "sim",
    "imgs": [
@@ -349,62 +348,47 @@
   },
   {
    "id": "pr-cursus-3",
-   "nome": "Cursus 3: a faixa preta da beirada vai para a lista",
+   "nome": "Cursus 3: a faixa preta da beirada sumiu com o conserto do corte",
    "explicacao": [
-    "O que você está escolhendo: se está certo esta página ir para a lista com o aviso \"Faixa escura na beirada\".",
-    "Caso real: no livro novo, o corte do Cursus 3 deixa uma faixa preta larga à direita e uma linha preta à esquerda. O aviso conta isso e manda conferir o corte.",
-    "O defeito é do corte (o endireitar antes de cortar, já no programa), não do aviso. O conserto do corte está em outro trabalho, que você marcou \"Melhorar\" (decisão cg6). Se ele entrar antes, esta página muda."
+    "O que você está escolhendo: se está bom o Cursus 3 não ir mais para a lista.",
+    "Caso real: antes, o corte deixava uma faixa preta larga à direita e o aviso \"Faixa escura na beirada\" mandava conferir. Com o conserto do corte (que entrou no programa em 21/10), a faixa sumiu: a página sai limpa e não há mais o que avisar.",
+    "O aviso continua valendo para as páginas que ainda tiverem faixa."
    ],
-   "olhar": "A faixa preta à direita da página e a linha preta à esquerda.",
-   "texto": "Reabri em 20/10 na janela: o aviso é só o da faixa.",
-   "ressalva": "O livro inteiro do Cursus (402 folhas) parou duas vezes na análise, por falta de memória no PC (\"Aconteceu um problema inesperado\"); reabri pelas 10 primeiras folhas, como livro novo.",
+   "olhar": "A beirada direita da página, sem a faixa preta.",
+   "texto": "Reaberto em 21/10 na janela (folhas 1 a 10, livro novo): a página 3 não tem aviso nenhum.",
+   "ressalva": "Ficou uma linha preta fina na beirada esquerda, no cartão do Preto e branco.",
    "tipo": "misto",
-   "selo": "aviso certo",
+   "selo": "consertado pelo corte",
    "decisao_do_samuel": "rv4-erro-3-faixa: \"Os dois jeitos estão bons\"; corte: cg6 \"Melhorar\" (13/10).",
    "bate_com_a_decisao": "sim",
    "imgs": [
     {
-     "src": "img/a4-cursus-3.jpg",
-     "legenda": "Ampliado: Original e Preto e branco com a faixa preta à direita, e o aviso",
-     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
-    },
-    {
-     "src": "img/cursus-3-1-pagina-recorte.jpg",
-     "legenda": "A página como sai em Preto e branco, de perto",
-     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
+     "src": "img/a4n-cursus-3.jpg",
+     "legenda": "Cursus 3 com o conserto do corte: a faixa preta sumiu e a página não vai mais para a lista",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
   {
    "id": "pr-antiphon-260",
-   "nome": "Antiphon 260: a iluminura sai estragada e ninguém avisa",
+   "nome": "Antiphon 260: agora vai para a lista",
    "explicacao": [
-    "O que você está escolhendo: se aceita que esta página fique sem aviso da iluminura, até o detector de figuras (item 1.5).",
-    "Caso real: no Preto e branco a iluminura sai chapada, quase toda preta, e há uma faixa preta embaixo. Na primeira visita aparece o aviso da faixa; depois de visitar mais três páginas, a faixa vira aviso do livro inteiro e a página 260 fica só com o aviso do Endireitar.",
-    "Pela regra que você aprovou ela devia ir para a lista. É uma das cinco que decidem diferente do estudo."
+    "O que você está escolhendo: se o aviso que o Antiphon 260 ganhou está bom.",
+    "Caso real: antes esta página escapava (ficava só com o aviso do Endireitar). Com o conserto do corte, ela vai para a lista com \"Figura além da gravura\": a iluminura ou a faixa embaixo passa da área marcada.",
+    "Pela regra que você aprovou ela devia ir: agora vai."
    ],
-   "olhar": "A iluminura chapada no cartão do Preto e branco, e o aviso, que é só o do Endireitar.",
-   "texto": "Reabri em 20/10 na janela, as folhas 256 a 264: 1ª visita, faixa + Endireitar; depois de visitar 259, 261 e 262, só Endireitar. A frase do livro (\"No livro inteiro: as páginas deste livro têm uma faixa...\") fica meio escondida embaixo do título do painel.",
-   "ressalva": "O aviso da faixa aparece e some conforme a pessoa visita outras páginas (vira aviso do livro quando 70% das páginas medidas têm faixa). Cada página levou de 13 a 42 segundos para ser medida.",
-   "tipo": "pior",
-   "selo": "escapa",
+   "olhar": "O aviso \"Figura além da gravura\" e a faixa preta embaixo, no cartão do Preto e branco.",
+   "texto": "Reaberto em 21/10 na janela, as folhas 256 a 264 (a página 5 é a 260).",
+   "ressalva": "No cartão do Preto e branco a iluminura fica em cor (o \"Só as letras\" guarda), mas embaixo sobra uma faixa preta.",
+   "tipo": "melhor",
+   "selo": "agora vai para a lista",
    "decisao_do_samuel": "rv4-resumo: \"Fica assim\" (pela regra aprovada esta página vai); rv5-erro-2-gravura: \"Fica no plano (1.5 e 2.18)\".",
-   "bate_com_a_decisao": "não: devia ir e não vai",
+   "bate_com_a_decisao": "sim",
    "imgs": [
     {
-     "src": "img/a4-antiphon-260.jpg",
-     "legenda": "Ampliado: Original e Preto e branco (iluminura chapada), e o único aviso",
-     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
-    },
-    {
-     "src": "img/antiphon-260-1-pagina-recorte.jpg",
-     "legenda": "A página como sai em Preto e branco, de perto (primeira conferência)",
-     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
-    },
-    {
-     "src": "img/r3-antiphon-260-tela-depois.jpg",
-     "legenda": "A tela inteira depois de visitar outras páginas: a frase do livro meio escondida no alto do painel",
-     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
+     "src": "img/a4n-antiphon-260.jpg",
+     "legenda": "Antiphon 260 com o conserto do corte: o aviso \"Figura além da gravura\"",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },

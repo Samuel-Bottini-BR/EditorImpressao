@@ -1,6 +1,6 @@
 # Segunda conferência do "Para revisar": onde parei
 
-## 21/10/2026: aba 4 refeita na tela nova - TERMINADA (falta só o Cursus 3 e o Antiphon 260, que dependem do corte)
+## 21/10/2026: aba 4 refeita na tela nova - PRONTA PARA PUBLICAR (código 8cb84b8: reversão 6/6, as 3 novas falham no de5b84e; Cursus 3, Antiphon 260 e frases novas refotografados, prints m*)
 
 Código conferido: `adf4e69` (esta worktree, merge `d7e3a2c`).
 - Reversão: 3 passam no `adf4e69`; 3 falham no `ce2b835` pelos motivos certos.
