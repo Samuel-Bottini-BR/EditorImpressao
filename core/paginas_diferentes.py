@@ -53,6 +53,17 @@ MARGENS = Ajuste(0.35, 1.0)        # DEFAULT_MARGINS_DEVIATION_COEF / _THRESHOLD
 
 SEM_NUMERO = math.nan              # o NAN do ScanTailor: "esta página não tem o número"
 
+# NOSSO, não do ScanTailor. Decisão da gerente (20-21/10/2026, limiar técnico,
+# CLAUDE.md §6; o Samuel confere na conferência e pode mudar): o aviso do
+# ângulo só sai quando a página, além de diferente pela conta do ScanTailor,
+# se afasta pelo menos 1 grau da média do livro. Motivo: no ScanTailor a marca
+# é só um asterisco; aqui vai para "Para revisar", que deve ficar abaixo de 10%
+# das páginas (core/analise.py). Sem o mínimo, num livro quase todo reto (o
+# Catecismo, desvio 0,28°) páginas de 0,4° saíam marcadas: 16,6% do livro.
+# Contagem antes x depois: relatorios/fase2-itens/2.15/. Seguro mudar: o
+# número (0 = a conta pura do ScanTailor).
+AFASTAMENTO_MINIMO_DO_ANGULO = 1.0
+
 
 class Desvio:
     """DeviationProvider<K> do ScanTailor, em Python: um número por página
@@ -144,6 +155,19 @@ def diferentes(valores: Iterable[float | None], ajuste: Ajuste,
     lista = list(valores)
     desvio = Desvio({i: (SEM_NUMERO if v is None else float(v)) for i, v in enumerate(lista)})
     return [desvio.diferente(i, ajuste, sem_numero_conta) for i in range(len(lista))]
+
+
+def diferentes_e_longe(valores: Iterable[float | None], ajuste: Ajuste,
+                       minimo: float) -> list[bool]:
+    """`diferentes` (a conta do ScanTailor) E a pelo menos `minimo` da média
+    das páginas que têm número (AFASTAMENTO_MINIMO_DO_ANGULO)."""
+    lista = list(valores)
+    numeros = [float(v) for v in lista if v is not None and not math.isnan(float(v))]
+    if not numeros:
+        return [False] * len(lista)
+    media = sum(numeros) / len(numeros)
+    return [d and abs(float(v) - media) >= minimo
+            for v, d in zip(lista, diferentes(lista, ajuste))]
 
 
 def ordem_pela_diferenca(valores: Iterable[float | None]) -> list[int]:

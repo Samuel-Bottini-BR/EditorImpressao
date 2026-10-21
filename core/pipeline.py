@@ -992,15 +992,17 @@ def _angulo_que_valeu(medidas: dict, reserva: float | None) -> float | None:
 def marcar_paginas_diferentes(paginas: list[ConfigPagina], angulos: list[float | None]) -> None:
     """Item 2.15 (igual ao ScanTailor, core/paginas_diferentes.py): poe o aviso
     analise.ANGULO_DIFERENTE_DAS_OUTRAS nas paginas cujo angulo se afasta das
-    outras (coeficiente e limite de fabrica do ScanTailor). `angulos` na
+    outras (coeficiente e limite de fabrica do ScanTailor) E a pelo menos
+    AFASTAMENTO_MINIMO_DO_ANGULO da media (decisao da gerente, 20-21/10). `angulos` na
     ordem de `paginas`; None = sem numero (endireitar desligado: nenhuma
     pagina e marcada). So poe: quem chama e a analise, com as paginas novas."""
     from core import paginas_diferentes
 
     if not paginas_diferentes.DESTACAR_DE_FABRICA or len(angulos) != len(paginas):
         return
-    for pagina, diferente in zip(paginas, paginas_diferentes.diferentes(
-            angulos, paginas_diferentes.ENDIREITAR)):
+    for pagina, diferente in zip(paginas, paginas_diferentes.diferentes_e_longe(
+            angulos, paginas_diferentes.ENDIREITAR,
+            paginas_diferentes.AFASTAMENTO_MINIMO_DO_ANGULO)):
         if diferente and analise.ANGULO_DIFERENTE_DAS_OUTRAS not in pagina.alertas:
             pagina.alertas.append(analise.ANGULO_DIFERENTE_DAS_OUTRAS)
 

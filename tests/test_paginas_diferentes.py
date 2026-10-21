@@ -139,3 +139,32 @@ def test_endireitar_desligado_nenhuma(tmp_path):
     projeto = Projeto(caminho_entrada=_livro(tmp_path, 4), dividir_folhas=False, endireitar=False)
     pipeline.analisar_projeto(projeto)
     assert not any(analise.ANGULO_DIFERENTE_DAS_OUTRAS in p.alertas for p in projeto.paginas)
+
+
+# ------------------------------------------------------------------ o mínimo de 1 grau (decisão da gerente, 20-21/10)
+
+def test_minimo_de_um_grau():
+    """A conta pura do ScanTailor marca a página de 0,5° num livro quase todo
+    reto; com o mínimo de 1° (o que vale no programa) ela não é marcada, e a
+    de 5° continua."""
+    reto = [0.0, 0.05, -0.05, 0.0, 0.02, 0.5]
+    assert pd.diferentes(reto, pd.ENDIREITAR)[5] is True                  # ScanTailor puro
+    assert pd.diferentes_e_longe(reto, pd.ENDIREITAR, 1.0)[5] is False
+    torto = [0.0, 0.05, -0.05, 0.0, 0.02, 5.0]
+    assert pd.diferentes_e_longe(torto, pd.ENDIREITAR, 1.0)[5] is True
+    assert pd.AFASTAMENTO_MINIMO_DO_ANGULO == 1.0
+    # mínimo 0 = a conta pura do ScanTailor
+    assert pd.diferentes_e_longe(reto, pd.ENDIREITAR, 0.0) == pd.diferentes(reto, pd.ENDIREITAR)
+    assert pd.diferentes_e_longe([None, None, None], pd.ENDIREITAR, 1.0) == [False] * 3
+
+
+def test_na_analise_pouco_torta_nao_ganha_o_aviso(tmp_path, monkeypatch):
+    from core import endireitar_scantailor as es
+    from core import pipeline
+    from modelos import Projeto
+
+    caminho = _livro(tmp_path, 6)
+    monkeypatch.setattr(es, "medir_na_pagina", _medidas_em_fila([0.5, 0.48, 0.52, 0.5, 0.5, 1.2]))
+    projeto = Projeto(caminho_entrada=caminho, dividir_folhas=False)
+    pipeline.analisar_projeto(projeto)
+    assert not any(analise.ANGULO_DIFERENTE_DAS_OUTRAS in p.alertas for p in projeto.paginas)

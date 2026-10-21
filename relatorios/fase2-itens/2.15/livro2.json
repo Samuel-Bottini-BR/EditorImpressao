@@ -148,5 +148,24 @@
   0.0,
   -0.688
  ],
- "segundos": 54.3
+ "segundos": 54.3,
+ "marcadas_scantailor_puro": [
+  2,
+  3,
+  4,
+  6,
+  52,
+  79,
+  100,
+  132
+ ],
+ "marcadas_com_1_grau": [
+  2,
+  3,
+  4,
+  6,
+  52,
+  100,
+  132
+ ]
 }
