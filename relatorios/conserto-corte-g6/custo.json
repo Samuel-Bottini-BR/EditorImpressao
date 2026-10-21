@@ -1,0 +1,485 @@
+{
+ "resumo": {
+  "paginas": 43,
+  "a_mais_mediana_ms": 17.9,
+  "a_mais_maior_ms": 58.6,
+  "a_mais_menor_ms": -36.3,
+  "corte_sem_mediana_ms": 27.0,
+  "giro_mediana_ms": 7.7
+ },
+ "paginas": {
+  "antiphon_p088__inteira": {
+   "px": [
+    5392,
+    7375
+   ],
+   "giro_da_pagina_ms": 50.3,
+   "corte_sem_ms": 231.7,
+   "corte_com_ms": 249.9,
+   "a_mais_ms": 18.3,
+   "tinha_tinta_falsa": true
+  },
+  "antiphon_p260__inteira": {
+   "px": [
+    5475,
+    7300
+   ],
+   "giro_da_pagina_ms": 50.8,
+   "corte_sem_ms": 297.9,
+   "corte_com_ms": 261.6,
+   "a_mais_ms": -36.3,
+   "tinha_tinta_falsa": true
+  },
+  "antiphonal1547_p006__inteira": {
+   "px": [
+    863,
+    1250
+   ],
+   "giro_da_pagina_ms": 1.5,
+   "corte_sem_ms": 19.2,
+   "corte_com_ms": 32.1,
+   "a_mais_ms": 12.9,
+   "tinha_tinta_falsa": true
+  },
+  "antiphonal1547_p046__inteira": {
+   "px": [
+    834,
+    1250
+   ],
+   "giro_da_pagina_ms": 1.4,
+   "corte_sem_ms": 12.9,
+   "corte_com_ms": 30.5,
+   "a_mais_ms": 17.5,
+   "tinha_tinta_falsa": true
+  },
+  "antiphonal1547_p076__inteira": {
+   "px": [
+    863,
+    1250
+   ],
+   "giro_da_pagina_ms": 1.7,
+   "corte_sem_ms": 14.0,
+   "corte_com_ms": 47.8,
+   "a_mais_ms": 33.8,
+   "tinha_tinta_falsa": true
+  },
+  "antiphonal1547_p192__inteira": {
+   "px": [
+    871,
+    1250
+   ],
+   "giro_da_pagina_ms": 2.8,
+   "corte_sem_ms": 23.1,
+   "corte_com_ms": 37.6,
+   "a_mais_ms": 14.5,
+   "tinha_tinta_falsa": true
+  },
+  "antiphonal1547_p252__inteira": {
+   "px": [
+    863,
+    1250
+   ],
+   "giro_da_pagina_ms": 2.6,
+   "corte_sem_ms": 18.5,
+   "corte_com_ms": 45.9,
+   "a_mais_ms": 27.5,
+   "tinha_tinta_falsa": true
+  },
+  "boecio_p003__inteira": {
+   "px": [
+    1037,
+    1539
+   ],
+   "giro_da_pagina_ms": 3.3,
+   "corte_sem_ms": 22.9,
+   "corte_com_ms": 41.1,
+   "a_mais_ms": 18.2,
+   "tinha_tinta_falsa": true
+  },
+  "boecio_p008__inteira": {
+   "px": [
+    1034,
+    1527
+   ],
+   "giro_da_pagina_ms": 2.1,
+   "corte_sem_ms": 20.3,
+   "corte_com_ms": 30.1,
+   "a_mais_ms": 9.8,
+   "tinha_tinta_falsa": false
+  },
+  "boecio_p022__inteira": {
+   "px": [
+    1057,
+    1511
+   ],
+   "giro_da_pagina_ms": 2.2,
+   "corte_sem_ms": 20.6,
+   "corte_com_ms": 24.7,
+   "a_mais_ms": 4.2,
+   "tinha_tinta_falsa": false
+  },
+  "camoes_p006__inteira": {
+   "px": [
+    1100,
+    1560
+   ],
+   "giro_da_pagina_ms": 2.2,
+   "corte_sem_ms": 17.9,
+   "corte_com_ms": 31.8,
+   "a_mais_ms": 13.9,
+   "tinha_tinta_falsa": true
+  },
+  "camoes_p009__inteira": {
+   "px": [
+    1126,
+    1564
+   ],
+   "giro_da_pagina_ms": 2.3,
+   "corte_sem_ms": 19.2,
+   "corte_com_ms": 32.5,
+   "a_mais_ms": 13.2,
+   "tinha_tinta_falsa": true
+  },
+  "camoes_p066__inteira": {
+   "px": [
+    1086,
+    1582
+   ],
+   "giro_da_pagina_ms": 4.7,
+   "corte_sem_ms": 17.9,
+   "corte_com_ms": 50.6,
+   "a_mais_ms": 32.7,
+   "tinha_tinta_falsa": true
+  },
+  "camoes_p104__inteira": {
+   "px": [
+    1130,
+    1576
+   ],
+   "giro_da_pagina_ms": 4.6,
+   "corte_sem_ms": 21.0,
+   "corte_com_ms": 34.3,
+   "a_mais_ms": 13.3,
+   "tinha_tinta_falsa": true
+  },
+  "cursus_p003__inteira": {
+   "px": [
+    2550,
+    3300
+   ],
+   "giro_da_pagina_ms": 18.1,
+   "corte_sem_ms": 46.7,
+   "corte_com_ms": 82.1,
+   "a_mais_ms": 35.4,
+   "tinha_tinta_falsa": true
+  },
+  "egenloff_p003__inteira": {
+   "px": [
+    4167,
+    5363
+   ],
+   "giro_da_pagina_ms": 30.1,
+   "corte_sem_ms": 127.4,
+   "corte_com_ms": 142.6,
+   "a_mais_ms": 15.3,
+   "tinha_tinta_falsa": true
+  },
+  "escola_p007__inteira": {
+   "px": [
+    2130,
+    3134
+   ],
+   "giro_da_pagina_ms": 9.9,
+   "corte_sem_ms": 38.3,
+   "corte_com_ms": 65.2,
+   "a_mais_ms": 26.8,
+   "tinha_tinta_falsa": false
+  },
+  "escola_p035__inteira": {
+   "px": [
+    2275,
+    3146
+   ],
+   "giro_da_pagina_ms": 14.7,
+   "corte_sem_ms": 34.1,
+   "corte_com_ms": 58.4,
+   "a_mais_ms": 24.4,
+   "tinha_tinta_falsa": false
+  },
+  "escola_p197__inteira": {
+   "px": [
+    2234,
+    3105
+   ],
+   "giro_da_pagina_ms": 13.0,
+   "corte_sem_ms": 31.0,
+   "corte_com_ms": 52.0,
+   "a_mais_ms": 20.9,
+   "tinha_tinta_falsa": false
+  },
+  "graduale_p221__inteira": {
+   "px": [
+    4003,
+    5631
+   ],
+   "giro_da_pagina_ms": 28.9,
+   "corte_sem_ms": 186.4,
+   "corte_com_ms": 189.2,
+   "a_mais_ms": 2.8,
+   "tinha_tinta_falsa": true
+  },
+  "graduale_p222__inteira": {
+   "px": [
+    4002,
+    5817
+   ],
+   "giro_da_pagina_ms": 29.0,
+   "corte_sem_ms": 140.7,
+   "corte_com_ms": 189.4,
+   "a_mais_ms": 48.7,
+   "tinha_tinta_falsa": true
+  },
+  "graduale_p223__inteira": {
+   "px": [
+    4003,
+    5631
+   ],
+   "giro_da_pagina_ms": 43.9,
+   "corte_sem_ms": 156.4,
+   "corte_com_ms": 138.7,
+   "a_mais_ms": -17.7,
+   "tinha_tinta_falsa": true
+  },
+  "graduale_p269__inteira": {
+   "px": [
+    4003,
+    5631
+   ],
+   "giro_da_pagina_ms": 50.0,
+   "corte_sem_ms": 149.2,
+   "corte_com_ms": 168.6,
+   "a_mais_ms": 19.4,
+   "tinha_tinta_falsa": true
+  },
+  "graduale_p588__inteira": {
+   "px": [
+    4002,
+    5817
+   ],
+   "giro_da_pagina_ms": 31.3,
+   "corte_sem_ms": 157.8,
+   "corte_com_ms": 178.2,
+   "a_mais_ms": 20.4,
+   "tinha_tinta_falsa": true
+  },
+  "horas_p011__inteira": {
+   "px": [
+    4267,
+    6025
+   ],
+   "giro_da_pagina_ms": 33.1,
+   "corte_sem_ms": 185.1,
+   "corte_com_ms": 204.7,
+   "a_mais_ms": 19.6,
+   "tinha_tinta_falsa": false
+  },
+  "horas_p013__inteira": {
+   "px": [
+    4267,
+    6055
+   ],
+   "giro_da_pagina_ms": 33.0,
+   "corte_sem_ms": 149.2,
+   "corte_com_ms": 207.8,
+   "a_mais_ms": 58.6,
+   "tinha_tinta_falsa": false
+  },
+  "marial_p007__inteira": {
+   "px": [
+    2975,
+    3905
+   ],
+   "giro_da_pagina_ms": 24.1,
+   "corte_sem_ms": 50.5,
+   "corte_com_ms": 59.1,
+   "a_mais_ms": 8.7,
+   "tinha_tinta_falsa": true
+  },
+  "matematica_p032__inteira": {
+   "px": [
+    2480,
+    3505
+   ],
+   "giro_da_pagina_ms": 11.2,
+   "corte_sem_ms": 33.3,
+   "corte_com_ms": 61.7,
+   "a_mais_ms": 28.5,
+   "tinha_tinta_falsa": true
+  },
+  "matematica_p072__inteira": {
+   "px": [
+    2480,
+    3505
+   ],
+   "giro_da_pagina_ms": 21.7,
+   "corte_sem_ms": 42.0,
+   "corte_com_ms": 61.7,
+   "a_mais_ms": 19.6,
+   "tinha_tinta_falsa": true
+  },
+  "opusmajus_p011__inteira": {
+   "px": [
+    1725,
+    2774
+   ],
+   "giro_da_pagina_ms": 10.4,
+   "corte_sem_ms": 29.7,
+   "corte_com_ms": 46.6,
+   "a_mais_ms": 16.9,
+   "tinha_tinta_falsa": false
+  },
+  "opusmajus_p020__inteira": {
+   "px": [
+    1659,
+    2715
+   ],
+   "giro_da_pagina_ms": 6.1,
+   "corte_sem_ms": 24.9,
+   "corte_com_ms": 32.8,
+   "a_mais_ms": 7.9,
+   "tinha_tinta_falsa": false
+  },
+  "opusmajus_p165__inteira": {
+   "px": [
+    1620,
+    2682
+   ],
+   "giro_da_pagina_ms": 5.4,
+   "corte_sem_ms": 27.0,
+   "corte_com_ms": 36.9,
+   "a_mais_ms": 9.9,
+   "tinha_tinta_falsa": false
+  },
+  "opusmajus_p256__inteira": {
+   "px": [
+    2462,
+    2075
+   ],
+   "giro_da_pagina_ms": 7.1,
+   "corte_sem_ms": 34.9,
+   "corte_com_ms": 62.2,
+   "a_mais_ms": 27.3,
+   "tinha_tinta_falsa": false
+  },
+  "palatino_p005__inteira": {
+   "px": [
+    1447,
+    2208
+   ],
+   "giro_da_pagina_ms": 7.1,
+   "corte_sem_ms": 21.4,
+   "corte_com_ms": 39.3,
+   "a_mais_ms": 17.9,
+   "tinha_tinta_falsa": false
+  },
+  "palatino_p010__inteira": {
+   "px": [
+    1447,
+    2208
+   ],
+   "giro_da_pagina_ms": 6.6,
+   "corte_sem_ms": 22.3,
+   "corte_com_ms": 47.3,
+   "a_mais_ms": 25.0,
+   "tinha_tinta_falsa": false
+  },
+  "palatino_p104__inteira": {
+   "px": [
+    1447,
+    2208
+   ],
+   "giro_da_pagina_ms": 7.5,
+   "corte_sem_ms": 23.3,
+   "corte_com_ms": 29.9,
+   "a_mais_ms": 6.6,
+   "tinha_tinta_falsa": false
+  },
+  "palatino_p113__inteira": {
+   "px": [
+    1447,
+    2208
+   ],
+   "giro_da_pagina_ms": 4.3,
+   "corte_sem_ms": 18.5,
+   "corte_com_ms": 31.6,
+   "a_mais_ms": 13.1,
+   "tinha_tinta_falsa": false
+  },
+  "pesel_p021__inteira": {
+   "px": [
+    1855,
+    2842
+   ],
+   "giro_da_pagina_ms": 7.7,
+   "corte_sem_ms": 27.0,
+   "corte_com_ms": 61.7,
+   "a_mais_ms": 34.7,
+   "tinha_tinta_falsa": true
+  },
+  "rariora_p008__inteira": {
+   "px": [
+    1429,
+    2468
+   ],
+   "giro_da_pagina_ms": 7.9,
+   "corte_sem_ms": 8.6,
+   "corte_com_ms": 8.7,
+   "a_mais_ms": 0.0,
+   "tinha_tinta_falsa": false
+  },
+  "rariora_p155__inteira": {
+   "px": [
+    1595,
+    2498
+   ],
+   "giro_da_pagina_ms": 8.6,
+   "corte_sem_ms": 26.4,
+   "corte_com_ms": 47.4,
+   "a_mais_ms": 21.1,
+   "tinha_tinta_falsa": true
+  },
+  "rariora_p365__inteira": {
+   "px": [
+    1428,
+    2542
+   ],
+   "giro_da_pagina_ms": 9.5,
+   "corte_sem_ms": 28.7,
+   "corte_com_ms": 39.8,
+   "a_mais_ms": 11.0,
+   "tinha_tinta_falsa": true
+  },
+  "rhetorica_p073__inteira": {
+   "px": [
+    1763,
+    2646
+   ],
+   "giro_da_pagina_ms": 5.9,
+   "corte_sem_ms": 19.2,
+   "corte_com_ms": 40.6,
+   "a_mais_ms": 21.4,
+   "tinha_tinta_falsa": true
+  },
+  "siebmacher_p009__direita": {
+   "px": [
+    706,
+    1284
+   ],
+   "giro_da_pagina_ms": 1.4,
+   "corte_sem_ms": 15.3,
+   "corte_com_ms": 23.9,
+   "a_mais_ms": 8.7,
+   "tinha_tinta_falsa": true
+  }
+ }
+}
