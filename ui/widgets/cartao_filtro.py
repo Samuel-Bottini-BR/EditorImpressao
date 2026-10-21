@@ -31,6 +31,7 @@ class CartaoFiltro(QFrame):
         self.filtro = filtro
         self.selecionado = False
         self._pixmap: QPixmap | None = None
+        self.ultima_amostra = None
 
         self.setObjectName("cartao")
         self.setCursor(Qt.PointingHandCursor)
@@ -61,6 +62,7 @@ class CartaoFiltro(QFrame):
         "preparando..." - ver _Amostra.paintEvent. Avisa a fila do painel
         Filtro (amostra_mudou)."""
         self.amostra.definir(img)
+        self.ultima_amostra = img           # a tela cheia dos filtros começa com ela
         self.amostra_mudou.emit(self.filtro, img)
 
     def definir_selecionado(self, selecionado: bool) -> None:

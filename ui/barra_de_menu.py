@@ -5,8 +5,8 @@ Rodada 14 do layout (Samuel, 20/10/2026): 903 "B — Um menu novo, “Painéis�
 "Janela" do Photoshop; os quatro "Painel: ..." que o menu Ver tinha, e que
 nunca fizeram nada, saíram) e 904 "A — Sim, no menu Ver" (as peças novas da
 tela ganham item no menu Ver: por enquanto "Miniaturas" e "Ícones da
-direita" e, desde a etapa 5, "Todas as páginas"; "Ver lado a lado" e
-"Filtros em tela cheia" entram quando essas telas existirem - item que não
+direita", "Todas as páginas" (etapa 5) e "Filtros em tela cheia" (etapa
+6); "Ver lado a lado" entra quando essa tela existir - item que não
 faz nada não entra).
 
 Ela existe para tirar botao solto da tela. Antes, "limpar tudo", "procurar de
@@ -193,6 +193,7 @@ class BarraDeMenu(QMenuBar):
             item.setCheckable(True)
             item.setChecked(True)
         self._acao(menu, "todas_as_paginas", "Todas as páginas")
+        self._acao(menu, "filtros_tela_cheia", "Filtros em tela cheia")
         menu.addSeparator()
         item = self._acao(menu, "comparar", "Modo comparar")
         item.setCheckable(True)

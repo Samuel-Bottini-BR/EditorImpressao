@@ -293,6 +293,20 @@ def _icone_de_fechar() -> QIcon:
     return QIcon(imagem)
 
 
+def icone_de_tela_cheia() -> QIcon:
+    """Quatro cantinhos para fora (abrir em tela cheia), na cor do tema."""
+    pix = QPixmap(32, 32)
+    pix.fill(Qt.transparent)
+    pintor = QPainter(pix)
+    pintor.setRenderHint(QPainter.Antialiasing)
+    pintor.setPen(_caneta(estilo.cor("icone"), 3))
+    for (x, y), (dx, dy) in (((5, 5), (1, 1)), ((27, 5), (-1, 1)), ((5, 27), (1, -1)), ((27, 27), (-1, -1))):
+        pintor.drawLine(QPointF(x, y), QPointF(x + 8 * dx, y))
+        pintor.drawLine(QPointF(x, y), QPointF(x, y + 8 * dy))
+    pintor.end()
+    return QIcon(pix)
+
+
 def _quadradinho(cor: QColor) -> QIcon:
     """Um quadradinho colorido (a cor da marcação, no "Marcar como")."""
     escala, lado = 3, 12
@@ -411,6 +425,20 @@ class CabecalhoDoPainel(QFrame):
         linha.addWidget(self.botao_fechar)
         # o "x" desenhado à mão acompanha a troca de tema
         estilo.estilizar(self.botao_fechar, self._desenhar_o_fechar)
+
+    def por_botao(self, icone, dica: str) -> QPushButton:
+        """Um botão pequeno de ícone, antes do "x" (o da tela cheia dos filtros,
+        rodada 10, 503: "ícone no título do painel")."""
+        botao = QPushButton()
+        botao.setObjectName("fecharPainel")          # o mesmo desenho do "x"
+        botao.setFixedSize(26, 26)
+        botao.setIconSize(QSize(15, 15))
+        botao.setCursor(Qt.PointingHandCursor)
+        botao.setFocusPolicy(Qt.NoFocus)
+        botao.setToolTip(dica)
+        self.layout().insertWidget(self.layout().indexOf(self.botao_fechar), botao)
+        estilo.estilizar(botao, lambda: (botao.setIcon(icone()), "")[1])
+        return botao
 
     def _desenhar_o_fechar(self) -> str:
         """(Re)desenha o "x" na cor do tema; devolve a folha (vazia) para
@@ -1376,8 +1404,8 @@ class PainelFiltroDaPagina(Painel):
     entregues em `montar`. O que o painel faz sozinho: a fila (sinal
     `filtro_escolhido`) e o "só neste pedaço" (sinal `filtro_do_pedaco`).
 
-    Ainda não estão aqui: o ícone da tela cheia dos filtros no título (etapa
-    6) e, em "Mais ajustes", "Letra clara em fundo escuro" e "Letras com a
+    O ícone no título abre a tela cheia dos filtros (etapa 6,
+    ui/widgets/filtros_tela_cheia.py). Ainda não estão aqui: em "Mais ajustes", "Letra clara em fundo escuro" e "Letras com a
     cor delas" (não existem no programa). No "Só neste pedaço" (rodada 14b,
     909: "B — Sem o botão de cima, nenhum aceso") não há mais o botão "o
     mesmo da página": nenhum filtro vem aceso, e o pedaço só ganha filtro
@@ -1388,9 +1416,15 @@ class PainelFiltroDaPagina(Painel):
 
     filtro_escolhido = Signal(str)
     filtro_do_pedaco = Signal(str)
+    tela_cheia_pedida = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_FILTRO], parent)
+        # etapa 6 do layout (rodada 10, 503; rodada 11, 601 A): o ícone no
+        # título abre a tela cheia dos filtros
+        self.botao_tela_cheia = self.cabecalho.por_botao(
+            icone_de_tela_cheia, "Ver os filtros em tela cheia (a página grande em cada filtro)")
+        self.botao_tela_cheia.clicked.connect(lambda: self.tela_cheia_pedida.emit())
         self.filtro = ""
         self.filtro_pedaco = ""
         self.cartoes: dict[str, CartaozinhoDoFiltro] = {}

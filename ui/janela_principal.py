@@ -266,6 +266,7 @@ class JanelaPrincipal(QMainWindow):
         paineis.abriu.connect(lambda chave: self.menu.marcar_painel(chave or None))
         conferir.miniaturas_mudaram.connect(self._miniaturas_mudaram)
         self.menu.ligar("todas_as_paginas", conferir.abrir_todas_as_paginas)
+        self.menu.ligar("filtros_tela_cheia", conferir.abrir_filtros_em_tela_cheia)
         paineis.icones_mudaram.connect(self._icones_mudaram)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)

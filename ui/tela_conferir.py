@@ -861,6 +861,7 @@ class TelaConferir(QWidget):
         # etapa 4 do layout: a fila de filtros do painel escolhe o filtro da
         # pagina (o mesmo caminho dos cartoes grandes e das teclas 1 a 4)
         painel.filtro_da_pagina.filtro_escolhido.connect(self._escolher_filtro)
+        painel.filtro_da_pagina.tela_cheia_pedida.connect(self.abrir_filtros_em_tela_cheia)
         painel.abriu.connect(self._painel_abriu)
         painel.historico.voltar_para.connect(self._voltar_no_historico)
         painel.historico.desfazer_pedido.connect(self.desfazer)
@@ -4120,6 +4121,48 @@ class TelaConferir(QWidget):
         self.lugares_de_encaixe.esconder()
         if zona is not None and zona != self.miniaturas.lugar:
             self._por_as_miniaturas(zona)
+
+    # --- etapa 6 do layout: a tela cheia dos filtros ------------------------
+
+    def abrir_filtros_em_tela_cheia(self) -> None:
+        """Ícone no título do painel Filtro (rodada 10, 503) e menu Ver >
+        "Filtros em tela cheia" (rodada 14, 904 A): abre a tela cheia dos
+        filtros (rodada 11, 601 A; ui/widgets/filtros_tela_cheia.py). Só em
+        livro que passa pelos filtros."""
+        if not self._pronta() or self.projeto is None or not self.cartoes:
+            return
+        from ui.widgets.filtros_tela_cheia import FiltrosEmTelaCheia
+
+        # as páginas pequenas da fila (as mesmas dos cartões) são pedidas agora
+        self._atualizar_previa()
+        janela = FiltrosEmTelaCheia(self, parent=self.window())
+        janela.fechou.connect(self.atualizar)
+        janela.exec()
+
+    @protegido
+    def usar_da_tela_cheia(self, filtro: str, ajuste: int | None, alcance: str) -> None:
+        """O "Usar <filtro>" da tela cheia dos filtros: o filtro na página e,
+        se foi mexido lá, o ajuste (cada um uma ação do desfazer, pelos mesmos
+        caminhos dos cartões e do deslizante); depois, com "todas" ou "daqui
+        em diante", leva para as outras páginas como os botões do painel."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if filtro != pagina.filtro:
+            self._escolher_filtro(filtro)
+        else:
+            self._marcar_revisada()
+        campo = self._campo_do_ajuste(filtro)
+        if ajuste is not None and campo is not None and getattr(pagina, campo) != int(ajuste):
+            rotulo = ROTULOS_DO_AJUSTE[filtro][0]
+            self._registrar(
+                "ajuste_filtro", "pagina", [self.indice_pagina],
+                {campo: int(ajuste), "revisada": True},
+                f"{rotulo} da página {self.indice_pagina + 1}: {palavra_do_ajuste(int(ajuste))}",
+            )
+        if alcance == "todas":
+            self._filtro_em_todas()
+        elif alcance == "daqui":
+            self._filtro_nas_proximas()
 
     def abrir_todas_as_paginas(self) -> None:
         """Botão "ver todas" (808 A) e menu Ver > "Todas as páginas" (904 A):
