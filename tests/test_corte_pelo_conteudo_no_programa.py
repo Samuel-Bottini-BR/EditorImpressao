@@ -104,14 +104,18 @@ def _medida_fixa(caixas: dict):
     soma dos pontos da imagem, que muda de página para página): o teste não
     depende da DLL."""
     def medir(img, dpi=None, dpi_do_scan=None, **_k):
+        # mm pelo DPI do desenho, como a medida de verdade (desde 21/10/2026:
+        # a passada desenha a 150 e a geometria a 200, e as duas têm de dar o
+        # mesmo tamanho em mm)
+        mm = 25.4 / float(dpi) if dpi else MM
         cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         tinta = np.argwhere(cinza < 128)
         if tinta.size == 0:
-            return cc.MedidaDoConteudo(img.shape[1], img.shape[0], None, None, (MM, MM), "vazia")
+            return cc.MedidaDoConteudo(img.shape[1], img.shape[0], None, None, (mm, mm), "vazia")
         (y0, x0), (y1, x1) = tinta.min(0), tinta.max(0) + 1
         caixa = caixas.get("forcada") or (float(x0), float(y0), float(x1), float(y1))
         return cc.MedidaDoConteudo(img.shape[1], img.shape[0], caixa,
-                                   ((caixa[2] - caixa[0]) * MM, (caixa[3] - caixa[1]) * MM), (MM, MM))
+                                   ((caixa[2] - caixa[0]) * mm, (caixa[3] - caixa[1]) * mm), (mm, mm))
     return medir
 
 
@@ -314,3 +318,18 @@ def test_faxina_dos_avisos_tira_os_do_corte_pelo_conteudo(tmp_path, monkeypatch)
     projeto.paginas[3].recorte = (0.0, 0.0, 1.0, 1.0)            # virou corte à mão
     pipeline.acertar_alertas_do_fundo(projeto)
     assert analise.PAGINA_MUITO_MAIOR not in projeto.paginas[3].alertas
+
+
+def test_regressao_a_frase_da_tela_diz_as_opcoes_novas():
+    """Achado do verificador (21/10/2026): a linha-resumo da tela "O que fazer"
+    ("Vou endireitar as tortas e cortar as bordas.") não dizia nada das opções
+    novas. Desligadas, a frase é a de sempre."""
+    p = Projeto(caminho_entrada="x.pdf")
+    antes = pipeline.resumo_em_portugues(p, 10)
+    assert "impresso" not in antes and "borda preta" not in antes
+    p.cortar_pelo_conteudo = True
+    assert "seguindo o que está impresso" in pipeline.resumo_em_portugues(p, 10)
+    p.borda_preta = True
+    assert "tirando a borda preta do scanner (até o que está impresso)" in pipeline.resumo_em_portugues(p, 10)
+    p.borda_preta_ate, p.borda_preta_fazer = "so_o_preto", "pintar"
+    assert "pintando de branco a borda preta do scanner (só o preto)" in pipeline.resumo_em_portugues(p, 10)

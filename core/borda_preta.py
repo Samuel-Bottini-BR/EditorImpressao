@@ -66,6 +66,16 @@ PASSO = 4                  # olha 4 linhas de cada vez (pula um risco claro de 1
 # abaixo disto (0 a 255). Medido em 20/10/2026 (ver o topo): fundo 0 a 28,
 # cartão marrom do Pesel 21 de 52 a 75. Seguro mudar entre ~30 e ~45.
 CROMA_MAXIMO = 40
+# A tarja cinza da digitalização (a barra "SLUB" do Egenloff, cinza ~0,6 do
+# papel, com letras): mais clara que o preto, mas NEUTRA e atravessando o
+# lado inteiro. Achado do verificador gerando o Egenloff 1-14 (21/10/2026): com
+# as duas opções a barra entrava no corte. Conta como fundo do scanner a
+# linha que, quase de ponta a ponta (BEIRA_INTEIRA do lado: as letras brancas da
+# barra tiram até 25%), é cinza neutro mais
+# escuro que TARJA_DO_PAPEL do papel. Só a linha INTEIRA: uma versão que
+# contava qualquer cinza neutro escuro cortou as notas do Antiphon 260.
+TARJA_DO_PAPEL = 0.75
+BEIRA_INTEIRA = 0.70
 
 
 # Item 2.14 (decisão do Samuel, "Para revisar" rodada 5, 09/10/2026,
@@ -117,7 +127,14 @@ def so_o_preto(img: np.ndarray) -> tuple[float, float, float, float]:
     escuro = g < papel * ESCURO_DO_PAPEL
     if img.ndim == 3 and img.shape[2] >= 3:
         cor = img[:, :, :3]
-        escuro &= (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < CROMA_MAXIMO
+        neutro = (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < CROMA_MAXIMO
+        cinza_escuro = (g < papel * TARJA_DO_PAPEL) & neutro
+        escuro &= neutro
+        # a tarja inteira (linha ou coluna de ponta a ponta): soma ao preto
+        linhas = cinza_escuro.mean(axis=1) >= BEIRA_INTEIRA
+        colunas = cinza_escuro.mean(axis=0) >= BEIRA_INTEIRA
+        escuro[linhas, :] = True
+        escuro[:, colunas] = True
     meio_x = slice(int(larg * 0.25), int(larg * 0.75))
     meio_y = slice(int(alt * 0.25), int(alt * 0.75))
 
