@@ -115,3 +115,5 @@ Situação: **pronta para a gerente publicar** (20/10).
 - "Algoritmo:" sem nada no Melhorar: esse rótulo não existe neste ramo (o painel Filtro diz "Jeito do preto e branco",
   em "Mais ajustes", só no Preto e branco). Ele existe no `fase-1` e no ramo `fase2-scantailor-itens-2026-10-19`
   (`QLabel("Algoritmo:")` na fila antiga): cuidado na junção para não voltar. Teste em `tests/test_filtros_tela_cheia.py`.
+
+- GitHub 39621726467 (`f963cfd`): 121 arquivos, 2098 passaram, 0 falharam; teste_botoes 216 ações, 0 falhas; erros.log vazio. Janela: etapa 7 12 de 12, etapa 5 15 de 15.
