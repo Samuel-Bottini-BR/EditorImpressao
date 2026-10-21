@@ -108,5 +108,5 @@ Parei num ponto limpo: tudo commitado e enviado, nada rodando no PC. Ao retomar:
   do Direito Político Brasileiro" p. 1 e slide do "O meio ambiente hoje" p. 18):
   `relatorios/conferir/fase2-itens/conserto-cartoes/` (fora do git), cartão = página nos 3 filtros.
 - Próximo: 2.12 (desentortar). Código do ScanTailor em
-  `D:\programas\EditorImpressao-arquivoserramentas\scantailor-advanced-v1.2.1\src\dewarping` (5.073 linhas)
+  `D:\programas\EditorImpressao-arquivos\ferramentas\scantailor-advanced-v1.2.1\src\dewarping` (5.073 linhas)
   + `OutputGenerator.cpp` 1532-1700, 2059-2105, 2608-2760; de fábrica desligado (`DewarpingOptions(OFF)`).
