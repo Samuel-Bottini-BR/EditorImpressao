@@ -126,9 +126,10 @@ class Alerta:
 
 # Textos sem "aba" (20/10/2026, junção com o layout aprovado de 14/10, que
 # não tem abas; verificador: os avisos ainda diziam "aba Marcar" e "aba
-# Bordas"). Onde o aviso mandava à aba Marcar, a frase ficou neutra (não diz
-# onde marcar) até o Samuel responder a pergunta `r14-aviso-marcar` da rodada
-# 14 do layout; o Cortar ganhou o nome da trilha ("Cortar as bordas"), como o
+# Bordas"). Onde o aviso mandava à aba Marcar, a frase diz onde fica o que
+# usar - decisão do Samuel na `r14-aviso-marcar` (rodada 14 do layout, 20/10:
+# "C — Diz onde fica o “letra e traço”"), e as outras frases de marcar no
+# mesmo espírito (pedido da gerente, 21/10); o Cortar ganhou o nome da trilha ("Cortar as bordas"), como o
 # Endireitar já tinha ("a ferramenta Endireitar"). Teste:
 # tests/test_reversao_para_revisar.py.
 ALERTAS: dict[str, Alerta] = {
@@ -139,8 +140,8 @@ ALERTAS: dict[str, Alerta] = {
     ),
     DESENHO_OU_ESCRITA: Alerta(
         DESENHO_OU_ESCRITA, "Desenho ou escrita?",
-        "Não tenho certeza se esta página é desenho ou escrita. Confira: "
-        "se for escrita, marque como letra.",
+        "Não tenho certeza se esta página é desenho ou escrita. Confira: se for "
+        "escrita, marque a área e escolha “letra e traço” no painel Propriedades.",
         None, None,
     ),
     # Item 1.1. "está bom assim" so marca a pagina como conferida (o mesmo
@@ -193,8 +194,8 @@ ALERTAS: dict[str, Alerta] = {
     TEXTO_FALHADO: Alerta(
         TEXTO_FALHADO, "Texto falhado",
         "O texto desta página sai falhado no preto e branco (letra clara, gasta "
-        "ou colorida). Tente a força do preto mais escura, ou marque a linha "
-        "e use Melhorar ou Mágico pro só neste pedaço.",
+        "ou colorida). Tente a força do preto mais escura, ou marque a linha e "
+        "escolha Melhorar ou Mágico pro em “só neste pedaço”, no painel Filtro da página.",
         "usar mais escuro", "forca:mais_escuro",
         "está bom assim", "revisar",
     ),
@@ -224,7 +225,8 @@ ALERTAS: dict[str, Alerta] = {
     FIGURA_ALEM_DA_GRAVURA: Alerta(
         FIGURA_ALEM_DA_GRAVURA, "Figura além da gravura achada",
         "Uma figura parece passar da área que eu achei como gravura, ou a área "
-        "pegou uma mancha. Confira o que ficou marcado nesta página.",
+        "pegou uma mancha. Confira as áreas marcadas desta página; o tipo de cada "
+        "área (gravura, letra e traço, papel) se escolhe no painel Propriedades.",
         "está bom assim", "revisar",
     ),
     FAIXA_NA_BEIRADA: Alerta(
