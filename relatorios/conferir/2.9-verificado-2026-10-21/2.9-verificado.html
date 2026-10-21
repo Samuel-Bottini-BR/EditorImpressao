@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Item 2.9: letra clara em fundo escuro - conferência do verificador (21/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Item 2.9: letra clara em fundo escuro - conferência do verificador (21/10/2026)</h1>
+<p>Ramo <code>fase2-scantailor-itens-2026-10-19</code>, código <code>0f4ee58</code>, contra o <code>fase-1</code> em <code>b8e9af7</code>. Não mudei código; não marco nada como aprovado.</p>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO, por um defeito de tela:</strong> com a caixinha marcada, os cartões dos filtros que não estão escolhidos mostram a página sem inverter, e o que se escolhe não é o que o cartão mostrava (<code>ui/tarefas.py</code> <code>_TarefaCartoes.run</code> chama <code>aplicar_filtro</code> direto, sem <code>claro_no_escuro</code>). O resto está certo: fábrica igual (128 de 128), a conta igual à do ScanTailor, o PDF sai invertido e o "Ver de perto" compara certo.</p>
+<h2>O que conferi</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Desligado de fábrica: somas das 32 páginas-gabarito em Original, Preto e branco, Melhorar e Preto e branco com "Só as letras" (<code>scripts/somas.py</code>, uma página por processo; lado antigo = o que medi no 2.8)</td>
+<td>máquina</td>
+<td><strong>iguais: 128 de 128</strong></td>
+</tr>
+<tr>
+<td>A conta igual à do ScanTailor</td>
+<td>código</td>
+<td>inverte na entrada e no fim, como <code>OutputGenerator.cpp</code> 1245-1249, 1344-1346, 1370-1372, 1497-1499 (conferido no arquivo de referência); Original e "Tirar o fundo" não passam por ela</td>
+</tr>
+<tr>
+<td>Testes do implementador (<code>test_claro_no_escuro.py</code>, <code>..._na_tela.py</code>)</td>
+<td>máquina</td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td>Janela de verdade (Livro de Horas 186-188, tela nova)</td>
+<td>olho</td>
+<td>a caixinha aparece no AJUSTE (some no Original); marcar grava ação no desfazer; o cartão escolhido inverte; <strong>os outros cartões não</strong>; "Ver de perto" compara certo; o PDF sai com letra branca em fundo preto (12 s, erros.log vazio)</td>
+</tr>
+<tr>
+<td>Páginas de verdade</td>
+<td>procura minha (<code>scripts/procurar.py</code>, 320 livros de D:\Livros para editar e das pastas de teste; parei antes do fim)</td>
+<td>achei casos melhores que a lombada: a capa do "História do Direito Político Brasileiro" e slides do "O meio ambiente hoje" (texto branco em fundo escuro)</td>
+</tr>
+<tr>
+<td>Antes/depois</td>
+<td><code>scripts/antes_depois.py</code> (caminho do programa, 300 DPI)</td>
+<td>três páginas, abertas: ver os quadros</td>
+</tr>
+<tr>
+<td>Velocidade</td>
+<td>-</td>
+<td>não rodei (desligada de fábrica)</td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas</h2>
+<ul>
+<li>A procura do implementador leu só 14 livros e achou só a lombada; a minha achou capas e slides. Nenhuma página do gabarito é deste tipo.</li>
+<li>Na lombada, com a caixinha, o couro brilhante vira manchas brancas: não é defeito da caixinha (a lombada não é texto em fundo uniforme).</li>
+<li>Melhorar com a caixinha deixa uma moldura cinza em volta da lombada (o fundo claro do scanner, invertido).</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<ul>
+<li>21/10/2026: com "Letra clara em fundo escuro" marcada, os cartões "A mesma página nos quatro filtros" (menos o escolhido) mostram a página sem inverter; escolher um deles dá outro resultado (<code>ui/tarefas.py</code> <code>_TarefaCartoes.run</code>).</li>
+</ul>
+<h2>Quadro para o Samuel: Capa com letra branca em fundo azul</h2>
+<p>O que você está escolhendo: se a caixinha faz o que você pediu numa capa de letra branca em fundo escuro.</p>
+<p>Caso real: a capa do "História do Direito Político Brasileiro". Hoje o Preto e branco não mexe nela (fica igual ao original). Com a caixinha, sai letra branca em fundo preto puro, limpa, como o ScanTailor faz.</p>
+<p>Cada foto: a página como sai no PDF, sem a caixinha ("Hoje") e com a caixinha marcada, em Preto e branco e em Melhorar. A caixinha vem desmarcada: livro já começado sai igual.</p>
+<p><strong>O que olhar:</strong> O título: em Preto e branco com a caixinha, branco limpo no fundo preto.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Original, Hoje (Preto e branco), Preto e branco com a caixinha, Hoje (Melhorar), Melhorar com a caixinha" src="img/29-capa-direito.jpg" /></p>
+<p><em>Original, Hoje (Preto e branco), Preto e branco com a caixinha, Hoje (Melhorar), Melhorar com a caixinha</em></p>
+<h2>Quadro para o Samuel: Slide com parágrafos brancos em fundo escuro</h2>
+<p>O que você está escolhendo: se a caixinha resolve as páginas de texto claro em fundo escuro.</p>
+<p>Caso real: um slide do "O meio ambiente hoje". Hoje o Preto e branco desenha só o contorno das letras, como letra vazada, com borrões; com a caixinha, o texto sai branco e inteiro no fundo preto.</p>
+<p>Cada foto: a página como sai no PDF, sem a caixinha ("Hoje") e com a caixinha marcada, em Preto e branco e em Melhorar. A caixinha vem desmarcada: livro já começado sai igual.</p>
+<p><strong>O que olhar:</strong> As letras: vazadas no "Hoje", inteiras com a caixinha.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o título e os parágrafos, nas cinco versões" src="img/29-slide-perto.jpg" /></p>
+<p><em>Ampliado: o título e os parágrafos, nas cinco versões</em></p>
+<p><img alt="O slide inteiro" src="img/29-slide.jpg" /></p>
+<p><em>O slide inteiro</em></p>
+<h2>Quadro para o Samuel: Livro de Horas 187: a lombada de couro</h2>
+<p>O que você está escolhendo: se está bom o resultado na lombada (a página que o implementador achou).</p>
+<p>Caso real: o título dourado "HEURES DE LOVIS XIV" na lombada escura. Hoje o Preto e branco vira uma página quase branca, sem título. Com a caixinha o título aparece em branco, mas o couro brilhante vira muitas manchas brancas.</p>
+<p>Cada foto: a página como sai no PDF, sem a caixinha ("Hoje") e com a caixinha marcada, em Preto e branco e em Melhorar. A caixinha vem desmarcada: livro já começado sai igual.</p>
+<p><strong>O que olhar:</strong> O título dourado e o brilho do couro.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o título na lombada" src="img/29-horas-187-perto.jpg" /></p>
+<p><em>Ampliado: o título na lombada</em></p>
+<p><img alt="A lombada inteira" src="img/29-horas-187.jpg" /></p>
+<p><em>A lombada inteira</em></p>
+<p><img alt="O PDF gerado na janela de verdade, com a caixinha: letra branca no fundo preto" src="img/29-pdf-titulo.jpg" /></p>
+<p><em>O PDF gerado na janela de verdade, com a caixinha: letra branca no fundo preto</em></p>
+<h2>Quadro para o Samuel: Os cartões da tela não seguem a caixinha (defeito)</h2>
+<p>O que você está escolhendo: se isto precisa ser consertado antes de aprovar.</p>
+<p>Caso real: com a caixinha marcada, só o cartão do filtro escolhido mostra a página invertida; os outros cartões ("A mesma página nos quatro filtros") mostram como se a caixinha estivesse desmarcada. Clicando no cartão Melhorar, que mostrava a lombada cinza, a página sai preta.</p>
+<p>A tela "Ver de perto", no "comparar", mostra certo.</p>
+<p><strong>O que olhar:</strong> Em cima: o cartão Melhorar cinza. Embaixo, depois de clicar nele: preto.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Em cima: caixinha marcada, filtro Preto e branco. Embaixo: depois de escolher o Melhorar" src="img/29-cartoes.jpg" /></p>
+<p><em>Em cima: caixinha marcada, filtro Preto e branco. Embaixo: depois de escolher o Melhorar</em></p>
+<p><img alt="&quot;Ver de perto&quot;, comparar: o Melhorar com a caixinha, certo" src="img/29-ver-de-perto.jpg" /></p>
+<p><em>"Ver de perto", comparar: o Melhorar com a caixinha, certo</em></p>
+<h2>Decisão: A caixinha "Letra clara em fundo escuro": o que você decide?</h2>
+<p>O que você está escolhendo: se esta entrega entra no programa.</p>
+<p>Você pediu em 05/10 (P9 (a)): "Uma caixinha por página, 'Letra clara em fundo escuro', que o Kaique marca à mão". Ela fica no AJUSTE da ferramenta Filtro, desmarcada. Igual ao ScanTailor: inverte a página, trata como letra escura em papel claro e inverte de novo no fim.</p>
+<p>Falta consertar os cartões da tela (quadro acima) antes de aprovar.</p>
+<p>Opções: Aprovado · Melhorar · Ainda não entendi</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:15</p>
+</body>
+</html>

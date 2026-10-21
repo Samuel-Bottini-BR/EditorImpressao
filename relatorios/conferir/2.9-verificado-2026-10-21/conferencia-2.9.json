@@ -1,0 +1,109 @@
+{
+ "item": "2.9",
+ "ramo": "fase2-scantailor-itens-2026-10-19",
+ "commit": "0f4ee58 (prova em 40a32c2)",
+ "montado_em": "21/10/2026",
+ "nota_para_a_gerente": "Fotos da página pronta (300 DPI) e da tela nova de hoje. O quadro dos cartões é um defeito: melhor consertar antes de publicar, ou publicar com ele como aviso.",
+ "quadros": [
+  {
+   "id": "29-capa",
+   "nome": "Capa com letra branca em fundo azul",
+   "explicacao": [
+    "O que você está escolhendo: se a caixinha faz o que você pediu numa capa de letra branca em fundo escuro.",
+    "Caso real: a capa do \"História do Direito Político Brasileiro\". Hoje o Preto e branco não mexe nela (fica igual ao original). Com a caixinha, sai letra branca em fundo preto puro, limpa, como o ScanTailor faz.",
+    "Cada foto: a página como sai no PDF, sem a caixinha (\"Hoje\") e com a caixinha marcada, em Preto e branco e em Melhorar. A caixinha vem desmarcada: livro já começado sai igual."
+   ],
+   "olhar": "O título: em Preto e branco com a caixinha, branco limpo no fundo preto.",
+   "imgs": [
+    {
+     "src": "img/29-capa-direito.jpg",
+     "legenda": "Original, Hoje (Preto e branco), Preto e branco com a caixinha, Hoje (Melhorar), Melhorar com a caixinha"
+    }
+   ]
+  },
+  {
+   "id": "29-slide",
+   "nome": "Slide com parágrafos brancos em fundo escuro",
+   "explicacao": [
+    "O que você está escolhendo: se a caixinha resolve as páginas de texto claro em fundo escuro.",
+    "Caso real: um slide do \"O meio ambiente hoje\". Hoje o Preto e branco desenha só o contorno das letras, como letra vazada, com borrões; com a caixinha, o texto sai branco e inteiro no fundo preto.",
+    "Cada foto: a página como sai no PDF, sem a caixinha (\"Hoje\") e com a caixinha marcada, em Preto e branco e em Melhorar. A caixinha vem desmarcada: livro já começado sai igual."
+   ],
+   "olhar": "As letras: vazadas no \"Hoje\", inteiras com a caixinha.",
+   "imgs": [
+    {
+     "src": "img/29-slide-perto.jpg",
+     "legenda": "Ampliado: o título e os parágrafos, nas cinco versões"
+    },
+    {
+     "src": "img/29-slide.jpg",
+     "legenda": "O slide inteiro"
+    }
+   ]
+  },
+  {
+   "id": "29-horas",
+   "nome": "Livro de Horas 187: a lombada de couro",
+   "explicacao": [
+    "O que você está escolhendo: se está bom o resultado na lombada (a página que o implementador achou).",
+    "Caso real: o título dourado \"HEURES DE LOVIS XIV\" na lombada escura. Hoje o Preto e branco vira uma página quase branca, sem título. Com a caixinha o título aparece em branco, mas o couro brilhante vira muitas manchas brancas.",
+    "Cada foto: a página como sai no PDF, sem a caixinha (\"Hoje\") e com a caixinha marcada, em Preto e branco e em Melhorar. A caixinha vem desmarcada: livro já começado sai igual."
+   ],
+   "olhar": "O título dourado e o brilho do couro.",
+   "imgs": [
+    {
+     "src": "img/29-horas-187-perto.jpg",
+     "legenda": "Ampliado: o título na lombada"
+    },
+    {
+     "src": "img/29-horas-187.jpg",
+     "legenda": "A lombada inteira"
+    },
+    {
+     "src": "img/29-pdf-titulo.jpg",
+     "legenda": "O PDF gerado na janela de verdade, com a caixinha: letra branca no fundo preto"
+    }
+   ]
+  },
+  {
+   "id": "29-cartoes",
+   "nome": "Os cartões da tela não seguem a caixinha (defeito)",
+   "explicacao": [
+    "O que você está escolhendo: se isto precisa ser consertado antes de aprovar.",
+    "Caso real: com a caixinha marcada, só o cartão do filtro escolhido mostra a página invertida; os outros cartões (\"A mesma página nos quatro filtros\") mostram como se a caixinha estivesse desmarcada. Clicando no cartão Melhorar, que mostrava a lombada cinza, a página sai preta.",
+    "A tela \"Ver de perto\", no \"comparar\", mostra certo."
+   ],
+   "olhar": "Em cima: o cartão Melhorar cinza. Embaixo, depois de clicar nele: preto.",
+   "imgs": [
+    {
+     "src": "img/29-cartoes.jpg",
+     "legenda": "Em cima: caixinha marcada, filtro Preto e branco. Embaixo: depois de escolher o Melhorar"
+    },
+    {
+     "src": "img/29-ver-de-perto.jpg",
+     "legenda": "\"Ver de perto\", comparar: o Melhorar com a caixinha, certo"
+    }
+   ]
+  }
+ ],
+ "opcoes_de_cada_quadro": [
+  "Está bom",
+  "Melhorar",
+  "Está pior",
+  "Ainda não entendi"
+ ],
+ "pergunta": {
+  "id": "29",
+  "titulo": "A caixinha \"Letra clara em fundo escuro\": o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se esta entrega entra no programa.",
+   "Você pediu em 05/10 (P9 (a)): \"Uma caixinha por página, 'Letra clara em fundo escuro', que o Kaique marca à mão\". Ela fica no AJUSTE da ferramenta Filtro, desmarcada. Igual ao ScanTailor: inverte a página, trata como letra escura em papel claro e inverte de novo no fim.",
+   "Falta consertar os cartões da tela (quadro acima) antes de aprovar."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}

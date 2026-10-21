@@ -1,7 +1,7 @@
 # Item 2.9 (letra clara em fundo escuro) - verificador, onde parei (21/10/2026)
 
 Ramo `fase2-scantailor-itens-2026-10-19`, código `0f4ee58` (worktree `v29-novo`, ramo meu `verif-2.9-2026-10-21`).
-PARADO a pedido da gerente para terminar a aba 4 do "Para revisar"; voltar aqui depois.
+TERMINADO (21/10): parecer 2.9-verificado.* e conferencia-2.9.json; veredito NÃO ESTÁ PRONTO (cartões).
 
 Feito:
 - Fábrica igual: `scripts/rodar_somas.sh` (32 páginas x Original, PB, Melhorar, PB com "Só as letras"): **128 de 128 iguais**
