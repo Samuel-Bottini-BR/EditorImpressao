@@ -122,11 +122,15 @@ class _Amostra(QWidget):
             pintor.drawText(self.rect(), Qt.AlignCenter, "preparando...")
             return
 
+        # nos pixels de verdade (escala do Windows), para não sair mole
+        from ui.widgets.todas_as_paginas import razao_do_pintor
+        razao = razao_do_pintor(pintor)
         escalado = self._pixmap.scaled(
-            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            self.size() * razao, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
+        escalado.setDevicePixelRatio(razao)
         pintor.drawPixmap(
-            (self.width() - escalado.width()) // 2,
-            (self.height() - escalado.height()) // 2,
+            round((self.width() - escalado.width() / razao) / 2),
+            round((self.height() - escalado.height() / razao) / 2),
             escalado,
         )

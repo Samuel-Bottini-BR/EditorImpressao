@@ -125,16 +125,22 @@ class Miniatura(QFrame):
         area = self.rect().adjusted(2, 2, -2, -(ALTURA_DO_NUMERO + 2))
 
         if self._pixmap is not None:
+            # nos pixels de verdade (escala do Windows), para não sair mole
+            from ui.widgets.todas_as_paginas import razao_do_pintor
+            razao = razao_do_pintor(pintor)
             escalado = self._pixmap.scaled(
-                area.width() - 4, area.height() - 4,
+                round((area.width() - 4) * razao), round((area.height() - 4) * razao),
                 Qt.KeepAspectRatio, Qt.SmoothTransformation,
             )
-            x = area.left() + (area.width() - escalado.width()) // 2
-            y = area.top() + (area.height() - escalado.height()) // 2
+            escalado.setDevicePixelRatio(razao)
+            largura = round(escalado.width() / razao)
+            altura = round(escalado.height() / razao)
+            x = area.left() + (area.width() - largura) // 2
+            y = area.top() + (area.height() - altura) // 2
             pintor.drawPixmap(x, y, escalado)
             area = area.adjusted(x - area.left() - 2, y - area.top() - 2,
-                                 -(area.right() - (x + escalado.width()) - 1),
-                                 -(area.bottom() - (y + escalado.height()) - 1))
+                                 -(area.right() - (x + largura) - 1),
+                                 -(area.bottom() - (y + altura) - 1))
         else:
             pintor.fillRect(area.adjusted(4, 2, -4, -2), QColor(estilo.cor("cabeca")))
 

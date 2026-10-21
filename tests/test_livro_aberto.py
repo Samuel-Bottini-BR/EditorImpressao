@@ -90,3 +90,46 @@ def test_a_grade_desenha_na_altura_do_quadro(app, livro):  # noqa: F811
     sinais.pronta.connect(lambda folha, img: recebidas.append(img))
     tp._TarefaDasFolhas(str(livro), [0], sinais, altura_px=420).run()
     assert recebidas and recebidas[0].shape[0] >= 400
+
+
+def _pintado_com_razao(widget, razao: float):
+    """O widget pintado numa imagem com `razao` pixels por ponto (como numa tela
+    a 125% ou 200%), em numpy cinza."""
+    import numpy as np
+    from PySide6.QtGui import QImage, QPixmap
+
+    pix = QPixmap(round(widget.width() * razao), round(widget.height() * razao))
+    pix.setDevicePixelRatio(razao)
+    pix.fill()
+    widget.render(pix)
+    img = pix.toImage().convertToFormat(QImage.Format_Grayscale8)
+    largura, altura = img.width(), img.height()
+    dados = np.frombuffer(img.constBits(), dtype=np.uint8, count=img.bytesPerLine() * altura)
+    return dados.reshape(altura, img.bytesPerLine())[:, :largura].astype(float)
+
+
+def test_a_grade_pinta_nitida_na_escala_do_windows(app):  # noqa: F811
+    """Verificador, 21/10/2026: a grade "Todas as páginas" continuava mole na
+    janela. A imagem guardada tinha o tamanho certo em pixels, mas era reduzida
+    ao tamanho em PONTOS e o Qt aumentava de novo pela escala do Windows.
+    Mede o que é PINTADO: listras de 1 pixel guardadas no tamanho da tela têm de
+    continuar listras (contraste alto entre pixels vizinhos) depois de pintadas
+    a 2 pixels por ponto. No jeito antigo viram cinza (falha no f963cfd)."""
+    import numpy as np
+    from PySide6.QtGui import QImage, QPixmap
+
+    from ui.widgets.todas_as_paginas import ALTURA_DA_PAGINA, ItemDaGrade, _Quadro
+
+    quadro = _Quadro([ItemDaGrade(indice=0, folha=0)], atual=False)
+    razao = 2.0
+    alt = int(ALTURA_DA_PAGINA * razao)
+    larg = int(alt * 0.7)
+    listras = np.zeros((alt, larg), dtype=np.uint8)
+    listras[:, ::2] = 255                                   # uma coluna branca, uma preta
+    imagem = QImage(listras.data, larg, alt, larg, QImage.Format_Grayscale8).copy()
+    quadro.definir_pixmap(0, QPixmap.fromImage(imagem))
+    quadro.resize(quadro.sizeHint())
+    pintado = _pintado_com_razao(quadro.desenho, razao)
+    meio = pintado[pintado.shape[0] // 2, pintado.shape[1] // 2 - 40: pintado.shape[1] // 2 + 40]
+    contraste = float(np.mean(np.abs(np.diff(meio))))
+    assert contraste > 100, f"a página foi pintada mole (contraste entre vizinhos {contraste:.0f})"

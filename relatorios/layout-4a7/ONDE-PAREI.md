@@ -117,3 +117,13 @@ Situação: **pronta para a gerente publicar** (20/10).
   (`QLabel("Algoritmo:")` na fila antiga): cuidado na junção para não voltar. Teste em `tests/test_filtros_tela_cheia.py`.
 
 - GitHub 39621726467 (`f963cfd`): 121 arquivos, 2098 passaram, 0 falharam; teste_botoes 216 ações, 0 falhas; erros.log vazio. Janela: etapa 7 12 de 12, etapa 5 15 de 15.
+
+### Acerto da grade (3ª leva do verificador, 21/10): PRONTO PARA CONFERIR
+- Causa: a imagem guardada tinha o tamanho certo em pixels, mas era reduzida ao tamanho em PONTOS ao pintar e o Qt
+  aumentava pela escala do Windows. Agora a redução é nos pixels de verdade do aparelho que pinta
+  (`todas_as_paginas.razao_do_pintor` / `_reduzir_para_a_tela`); o mesmo nas miniaturas da tira, nos cartões grandes
+  dos filtros e na capa dos cartões dos livros.
+- Teste que mede o PINTADO: `tests/test_livro_aberto.py::test_a_grade_pinta_nitida_na_escala_do_windows` (listras de 1
+  pixel pintadas a 2 pixels por ponto; falha no `f963cfd` com contraste 0, passa no novo).
+- Janela: etapa 5 15 de 15; print ampliado `relatorios/layout-4a7/etapa5/7-todas-uma-a-uma-ampliado.png`.
+- **Parado aqui a pedido do Samuel (21/10).** Nada começado depois disto.

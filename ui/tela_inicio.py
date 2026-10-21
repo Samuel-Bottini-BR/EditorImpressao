@@ -487,9 +487,12 @@ class CartaoDeProjeto(QFrame):
         if imagem.isNull():
             capa.setText("sem capa")
         else:
-            capa.setPixmap(imagem.scaled(
-                QSize(LARGURA_DO_CARTAO - 40, ALTURA_DA_CAPA - 8),
-                Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            razao = capa.devicePixelRatioF()       # nos pixels de verdade (escala do Windows)
+            reduzida = imagem.scaled(
+                QSize(round((LARGURA_DO_CARTAO - 40) * razao), round((ALTURA_DA_CAPA - 8) * razao)),
+                Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            reduzida.setDevicePixelRatio(razao)
+            capa.setPixmap(reduzida)
         botao = self._botao_do_cartao()
         botao.setParent(capa)
         botao.adjustSize()

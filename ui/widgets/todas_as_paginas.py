@@ -28,7 +28,7 @@ import traceback
 from dataclasses import dataclass
 
 import numpy as np
-from PySide6.QtCore import QObject, QRect, QRunnable, QSize, Qt, QThreadPool, Signal
+from PySide6.QtCore import QObject, QPointF, QRect, QRunnable, QSize, Qt, QThreadPool, Signal
 from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QFrame,
@@ -104,6 +104,27 @@ class _TarefaDasFolhas(QRunnable):
             registrar_erro("todas as páginas", traceback.format_exc())
 
 
+def razao_do_pintor(pintor: QPainter) -> float:
+    """Quantos pixels de verdade por ponto o pintor está pintando: o do
+    aparelho de verdade por trás (a tela, ou a imagem de um grab/render), e não
+    o do widget, que num grab pode ser outro."""
+    motor = pintor.paintEngine()
+    aparelho = motor.paintDevice() if motor is not None else None
+    aparelho = aparelho or pintor.device()
+    return aparelho.devicePixelRatioF() if aparelho is not None else 1.0
+
+
+def _reduzir_para_a_tela(pix: QPixmap, tamanho: QSize, pintor: QPainter) -> QPixmap:
+    """A imagem reduzida para caber em `tamanho` (pontos), nos pixels de verdade
+    do que está sendo pintado (a razão de pixels do dispositivo do pintor),
+    marcada com essa razão para o Qt não aumentá-la de novo."""
+    razao = razao_do_pintor(pintor)
+    escalado = pix.scaled(QSize(round(tamanho.width() * razao), round(tamanho.height() * razao)),
+                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    escalado.setDevicePixelRatio(razao)
+    return escalado
+
+
 class _Quadro(QFrame):
     """Uma página (ou um par) na grade: o desenho e a legenda."""
 
@@ -161,13 +182,19 @@ class _Quadro(QFrame):
             if pix is None or pix.isNull():
                 pintor.fillRect(alvo.adjusted(2, 2, -2, -2), QColor(estilo.cor("cabeca")))
             else:
-                escalado = pix.scaled(alvo.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # reduzida nos pixels DE VERDADE do lugar onde é pintada (a
+                # escala do Windows: 1,25 a 125%), e não no tamanho em pontos:
+                # reduzir a 150 pontos e o Qt aumentar 1,25x deixava a grade
+                # mole (verificador, 21/10/2026). Seguro mudar: nada aqui.
+                escalado = _reduzir_para_a_tela(pix, alvo.size(), pintor)
+                w = escalado.width() / escalado.devicePixelRatio()
+                h = escalado.height() / escalado.devicePixelRatio()
                 if self.lugares == 1:
-                    x = alvo.left() + (alvo.width() - escalado.width()) // 2
+                    x = alvo.left() + (alvo.width() - w) / 2
                 else:                    # o par encosta no meio, como o livro aberto
-                    x = alvo.right() - escalado.width() + 1 if lugar == 0 else alvo.left()
-                y = alvo.top() + (alvo.height() - escalado.height()) // 2
-                pintor.drawPixmap(x, y, escalado)
+                    x = alvo.right() + 1 - w if lugar == 0 else alvo.left()
+                y = alvo.top() + (alvo.height() - h) / 2
+                pintor.drawPixmap(QPointF(x, y), escalado)
             if item.apagada:
                 pintor.fillRect(alvo, QColor(255, 255, 255, 170))
                 pintor.setPen(QColor("#B91C1C"))
