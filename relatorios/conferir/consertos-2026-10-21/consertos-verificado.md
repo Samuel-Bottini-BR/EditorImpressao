@@ -28,3 +28,20 @@ Não gerei o instalador de verdade (Inno Setup), e o implementador também não.
 | `test_paineis_na_tela.py` sozinho, no `fb9de49` (o que a primeira versão quebrava) | 22 passaram |
 
 **Ressalva:** o teste de reversão fica no mesmo arquivo que leva metade do conserto (`registro_limpo` em `tests/test_atalhos.py`). Copiado inteiro para o código antigo, ele **passa**: 16 passaram, porque o arquivo novo já devolve o registro. Ele só falha quando vai sozinho, sem o resto do arquivo novo. É assim que conferi.
+
+
+## 3. "Parece em branco" na Gladstone 18 (`c97661c`) e o teste dos atalhos em arquivo próprio (`4c53152`), conferidos em 21/10
+
+**PRONTO PARA CONFERIR, os dois.**
+
+| O que | Resultado |
+|---|---|
+| `tests/test_em_branco.py` no `4c53152` | 6 passaram |
+| O mesmo no `fb9de49` (reversão) | 4 falham: título em página branca dava "em branco"; verso só com carimbo não dava; Gladstone 18 e Egenloff 12 de verdade |
+| `tests/test_reversao_atalhos_ordem.py` + `test_atalhos.py` no `4c53152` | 16 passaram |
+| `test_reversao_atalhos_ordem.py` sozinho, copiado para o `31a9253` | falha ("Espelhado (tecla )"): agora o teste de reversão vale sozinho, a ressalva anterior caiu |
+| Livros inteiros, análise do programa, antes (`fb9de49`) x depois (`4c53152`) (`scripts/contar_em_branco.py`) | Gladstone (146): 18 e 72 → nenhuma; Boécio (50): nenhuma → 49 e 50; Camões (106): nenhuma → 5, 8, 100, 103; Egenloff (138): nenhuma → 67 páginas (todos os versos pares) |
+
+Abri as páginas que ganharam ou perderam o aviso (`em-branco-paginas.jpg`): Gladstone 18 ("DA ORAÇÃO") e 72 ("DO PERÍODO") são páginas de título e saíram da lista, certo. As novas são páginas em branco de verdade: guardas e capa do Boécio, guardas do Camões (uma com o número da biblioteca a lápis), e os versos do Egenloff (só o carimbo da biblioteca, ou a transparência da frente).
+
+**Ressalva:** no Egenloff o aviso vai para 67 de 138 páginas (49%, acima dos 10% da regra do CLAUDE.md). Estão certas (o livro imprime de um lado só), mas o "Para revisar" fica cheio; não passa dos 70% que viram aviso do livro. A Rariora 8 (verso com transparência) continua sem aviso, como o implementador escreveu.

@@ -126,6 +126,40 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </tbody>
 </table>
 <p><strong>Ressalva:</strong> o teste de reversão fica no mesmo arquivo que leva metade do conserto (<code>registro_limpo</code> em <code>tests/test_atalhos.py</code>). Copiado inteiro para o código antigo, ele <strong>passa</strong>: 16 passaram, porque o arquivo novo já devolve o registro. Ele só falha quando vai sozinho, sem o resto do arquivo novo. É assim que conferi.</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:45</p>
+<h2>3. "Parece em branco" na Gladstone 18 (<code>c97661c</code>) e o teste dos atalhos em arquivo próprio (<code>4c53152</code>), conferidos em 21/10</h2>
+<p><strong>PRONTO PARA CONFERIR, os dois.</strong></p>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_em_branco.py</code> no <code>4c53152</code></td>
+<td>6 passaram</td>
+</tr>
+<tr>
+<td>O mesmo no <code>fb9de49</code> (reversão)</td>
+<td>4 falham: título em página branca dava "em branco"; verso só com carimbo não dava; Gladstone 18 e Egenloff 12 de verdade</td>
+</tr>
+<tr>
+<td><code>tests/test_reversao_atalhos_ordem.py</code> + <code>test_atalhos.py</code> no <code>4c53152</code></td>
+<td>16 passaram</td>
+</tr>
+<tr>
+<td><code>test_reversao_atalhos_ordem.py</code> sozinho, copiado para o <code>31a9253</code></td>
+<td>falha ("Espelhado (tecla )"): agora o teste de reversão vale sozinho, a ressalva anterior caiu</td>
+</tr>
+<tr>
+<td>Livros inteiros, análise do programa, antes (<code>fb9de49</code>) x depois (<code>4c53152</code>) (<code>scripts/contar_em_branco.py</code>)</td>
+<td>Gladstone (146): 18 e 72 → nenhuma; Boécio (50): nenhuma → 49 e 50; Camões (106): nenhuma → 5, 8, 100, 103; Egenloff (138): nenhuma → 67 páginas (todos os versos pares)</td>
+</tr>
+</tbody>
+</table>
+<p>Abri as páginas que ganharam ou perderam o aviso (<code>em-branco-paginas.jpg</code>): Gladstone 18 ("DA ORAÇÃO") e 72 ("DO PERÍODO") são páginas de título e saíram da lista, certo. As novas são páginas em branco de verdade: guardas e capa do Boécio, guardas do Camões (uma com o número da biblioteca a lápis), e os versos do Egenloff (só o carimbo da biblioteca, ou a transparência da frente).</p>
+<p><strong>Ressalva:</strong> no Egenloff o aviso vai para 67 de 138 páginas (49%, acima dos 10% da regra do CLAUDE.md). Estão certas (o livro imprime de um lado só), mas o "Para revisar" fica cheio; não passa dos 70% que viram aviso do livro. A Rariora 8 (verso com transparência) continua sem aviso, como o implementador escreveu.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 11:41</p>
 </body>
 </html>
