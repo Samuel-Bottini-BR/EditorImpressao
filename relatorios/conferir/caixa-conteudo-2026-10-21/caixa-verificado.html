@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Caixa do conteúdo (2.5) e borda preta (2.13): conferência do verificador (21/10/2026)</title>
+<title>Caixa do conteúdo (2.5), borda preta (2.13) e pintar de branco (2.14): conferência do verificador (21/10/2026)</title>
 <style>
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -62,10 +62,10 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </style>
 </head>
 <body>
-<h1>Caixa do conteúdo (2.5) e borda preta (2.13): conferência do verificador (21/10/2026)</h1>
-<p>Ramo <code>fase2-caixa-conteudo</code>, código <code>4120c68</code>, contra o <code>fase-1</code> em <code>31a9253</code>. Não mudei código; não marco nada como aprovado.</p>
+<h1>Caixa do conteúdo (2.5), borda preta (2.13) e pintar de branco (2.14): conferência do verificador (21/10/2026)</h1>
+<p>Ramo <code>fase2-caixa-conteudo</code>, código <code>57de8af</code> (a primeira conferência foi no <code>4120c68</code>), contra o <code>fase-1</code> em <code>31a9253</code>. Não mudei código; não marco nada como aprovado.</p>
 <h2>Veredito</h2>
-<p><strong>NÃO ESTÁ PRONTO, por um defeito:</strong> com "Cortar seguindo o conteúdo" E "Achar a página dentro da borda preta" ligadas juntas, o livro gerado perde o tamanho do livro (G9): cada página sai de um tamanho e a página 6 do Egenloff vira uma tira de 253 x 139 mm. O implementador nunca gerou um livro inteiro (ressalva 1 dele); eu gerei na janela. O resto está certo: de fábrica igual (128 de 128), os testes de reversão falham no código antigo, e as imagens dele batem com o que ele escreveu.</p>
+<p><strong>PRONTO PARA CONFERIR</strong> (refeito em 21/10 no código <code>57de8af</code>). O defeito achado na primeira conferência (as duas opções juntas perdiam o tamanho do livro; a página 6 do Egenloff virava tira) foi consertado: gerei de novo o Egenloff 1-14 na janela e todas as páginas do miolo saem do mesmo tamanho nos dois jeitos; os 4 testes de reversão falham no <code>4120c68</code> e passam no novo. Ressalva nova: com as duas opções, a etiqueta impressa de 1880 do Egenloff 3 sai cortada ao meio e a página não ganha aviso (só com a primeira opção ela fica de fora, mas com aviso).</p>
 <h2>O que conferi</h2>
 <table>
 <thead>
@@ -77,9 +77,9 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </thead>
 <tbody>
 <tr>
-<td>Desligado de fábrica: somas das 32 páginas-gabarito em Original, PB, Melhorar e PB com "Só as letras" (<code>scripts/somas.py</code>, uma página por processo), fase-1 <code>31a9253</code> (com o conserto do corte) x <code>4120c68</code></td>
+<td>Desligado de fábrica: somas das 32 páginas-gabarito em Original, PB, Melhorar e PB com "Só as letras" (<code>scripts/somas.py</code>, uma página por processo), fase-1 <code>31a9253</code> (com o conserto do corte) x <code>4120c68</code> e x <code>57de8af</code></td>
 <td>máquina</td>
-<td><strong>iguais: 128 de 128</strong></td>
+<td><strong>iguais: 128 de 128 nos dois</strong></td>
 </tr>
 <tr>
 <td>Testes novos, um arquivo por vez</td>
@@ -102,6 +102,21 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <td><strong>só a 2.5:</strong> capas e contracapa muito maiores no tamanho delas; o resto 255 x 363 mm, menos as páginas 3 e 4 (252 x 381). <strong>As duas juntas:</strong> tamanhos de 221 x 323 a 254 x 362, e a página 6 com <strong>253 x 139</strong> (só o bloco de texto; o papel e o lápis "Af 10" somem)</td>
 </tr>
 <tr>
+<td>Livro inteiro de novo no <code>57de8af</code> (Egenloff 1-14, janela de verdade, <code>gerar_caixa.py</code> no piloto)</td>
+<td>medida do PDF (<code>scripts/medir_pdf.py</code>)</td>
+<td><strong>só a 2.5:</strong> miolo 252,5-252,6 x 360,4-360,5 mm (12 páginas), capas 326 x 396 e 326 x 459; <strong>as duas:</strong> miolo 252,5-252,6 x 378,9-379,0 mm, capas 316 x 395 e 330 x 423. Página 6 = 253 x 360 / 379 (antes: 253 x 139). erros.log vazio</td>
+</tr>
+<tr>
+<td>Reversão do conserto do tamanho (<code>tests/test_corte_pelo_conteudo_livro.py</code>)</td>
+<td>no <code>4120c68</code></td>
+<td>4 falham (páginas de tamanhos diferentes; capa sem conteúdo do tamanho errado), passam no <code>57de8af</code></td>
+</tr>
+<tr>
+<td>2.14 (<code>831a4ce</code>)</td>
+<td>olho</td>
+<td>abri as 7 imagens "cinco jeitos": batem com a tabela do implementador</td>
+</tr>
+<tr>
 <td>Velocidade</td>
 <td>-</td>
 <td>não rodei (o filtro do GitHub dele deu igual na Parte 1; desligado de fábrica)</td>
@@ -110,14 +125,14 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </table>
 <h2>Ressalvas</h2>
 <ul>
-<li>O texto da tela "O que fazer" ("Vou endireitar as tortas e cortar as bordas.") não diz nada das duas opções ligadas.</li>
+<li>A frase da tela "O que fazer" agora diz as opções do corte (consertado em <code>57de8af</code>).</li>
 <li>Com as duas opções a barra "SLUB" da digitalização entra no corte de algumas páginas (4, 13, 14).</li>
 <li>Não conferi as linhas de apoio (g8-guias) na janela.</li>
 </ul>
 <h2>Bugs para a Lista de bugs</h2>
 <ul>
-<li>21/10/2026: com "Cortar seguindo o conteúdo" e "Achar a página dentro da borda preta" (até a moldura) ligadas juntas, o PDF não tem o tamanho do livro; Egenloff folha 6 sai uma tira de 253 x 139 mm.</li>
-<li>21/10/2026: só com "Cortar seguindo o conteúdo", Egenloff 3 e 4 saem 252 x 381 mm e as outras 255 x 363 mm.</li>
+<li>21/10/2026 (consertados em <code>57de8af</code>): o PDF sem o tamanho do livro com as duas opções (tira de 253 x 139 mm) e Egenloff 3 e 4 maiores só com a 2.5.</li>
+<li>21/10/2026: com as duas opções, a etiqueta impressa de 1880 do Egenloff 3 sai cortada ao meio, sem o aviso "Corte deixou algo de fora".</li>
 </ul>
 <h2>Quadro para o Samuel: Cortar seguindo o conteúdo: onde fica melhor que hoje</h2>
 <p>O que você está escolhendo: se o corte que segue o que está impresso está como você pediu (G8: "Trazer como opção, desligada").</p>
@@ -139,16 +154,30 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p><em>Horas 14: o título e a moldura de fora, e o corte alargado</em></p>
 <p><img alt="Graduale 223: o novo leva a sombra da beirada" src="img/cx-graduale_p223.jpg" /></p>
 <p><em>Graduale 223: o novo leva a sombra da beirada</em></p>
-<h2>Quadro para o Samuel: O livro inteiro gerado em PDF (defeito com as duas opções juntas)</h2>
-<p>O que você está escolhendo: se isto precisa ser consertado antes de aprovar.</p>
-<p>Caso real: gerei na janela as 14 primeiras folhas do Egenloff. Só com "Cortar seguindo o conteúdo", as páginas saem quase todas do mesmo tamanho (G9), e as capas, muito maiores, no tamanho delas. Com ela e "Achar a página dentro da borda preta" juntas, o tamanho do livro some: cada página sai de um tamanho, e a página 6 vira uma tira de 25 x 14 cm, só com o texto.</p>
-<p>Com só a primeira opção ainda sobram diferenças pequenas: as páginas 3 e 4 saem 2 cm mais altas que as outras.</p>
-<p><strong>O que olhar:</strong> Em cima, as duas opções: a página 6 é a tira larga e baixa. Embaixo, só a primeira: todas do mesmo tamanho.</p>
+<h2>Quadro para o Samuel: O livro inteiro gerado em PDF (defeito achado e já consertado)</h2>
+<p>O que você está escolhendo: se o livro inteiro sai como você pediu (G9: "Todas as páginas do tamanho da maior: Sim").</p>
+<p>Caso real: gerei na janela as 14 primeiras folhas do Egenloff, nos dois jeitos. Só com "Cortar seguindo o conteúdo": as 12 páginas do miolo saem todas com 253 x 360 mm. Com ela e "Achar a página dentro da borda preta": todas com 253 x 379 mm. As duas capas, muito maiores, saem no tamanho delas.</p>
+<p>Ressalva: na primeira conferência (4120c68) cada página saía de um tamanho e a página 6 virava uma tira de 25 x 14 cm. O implementador consertou (57de8af); o teste de reversão falha no código de antes (4 testes, conferido por mim). Mudou também um comportamento: a página "muito maior" nunca sai menor que o livro; quem fica menor cresce até o tamanho do livro.</p>
+<p><strong>O que olhar:</strong> Embaixo, as 12 páginas do miolo do mesmo tamanho; as capas maiores.</p>
 <p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
-<p><img alt="As duas opções ligadas: 14 páginas do PDF (fundo rosa = sobra)" src="img/cx-livro-as-duas.jpg" /></p>
-<p><em>As duas opções ligadas: 14 páginas do PDF (fundo rosa = sobra)</em></p>
-<p><img alt="Só &quot;Cortar seguindo o conteúdo&quot;: o mesmo livro" src="img/cx-livro-so-2.5.jpg" /></p>
-<p><em>Só "Cortar seguindo o conteúdo": o mesmo livro</em></p>
+<p><img alt="Só &quot;Cortar seguindo o conteúdo&quot;: as 14 páginas do PDF (fundo rosa = sobra)" src="img/cx-livro-57de8af-0.jpg" /></p>
+<p><em>Só "Cortar seguindo o conteúdo": as 14 páginas do PDF (fundo rosa = sobra)</em></p>
+<p><img alt="As duas opções ligadas: as 14 páginas do PDF" src="img/cx-livro-57de8af-1.jpg" /></p>
+<p><em>As duas opções ligadas: as 14 páginas do PDF</em></p>
+<p><img alt="O pé da página 3: à esquerda só a primeira opção (a etiqueta de 1880 fica de fora, com aviso); à direita as duas (a etiqueta sai cortada ao meio, sem aviso)" src="img/cx-egenloff3-pe.jpg" /></p>
+<p><em>O pé da página 3: à esquerda só a primeira opção (a etiqueta de 1880 fica de fora, com aviso); à direita as duas (a etiqueta sai cortada ao meio, sem aviso)</em></p>
+<h2>Quadro para o Samuel: Pintar de branco em vez de cortar (item 2.14)</h2>
+<p>O que você está escolhendo: se o "pintar de branco" ficou como você pediu (rv5-pag-egenloff-047: "O Kaique escolhe por livro").</p>
+<p>Com a borda preta ligada, o livro escolhe entre cortar fora (vem escolhido) e pintar de branco. Pintando, a página fica do tamanho de sempre e o que está fora da página achada ("só o preto") ou fora do impresso ("até a moldura") vira branco. No Egenloff 47, "até a moldura" pintando apaga também a tarja da biblioteca; "só o preto" pintando deixa a tarja (ela é cinza, não preta).</p>
+<p>Em cada foto: hoje · só o preto · até a moldura · só o preto pintando · até a moldura pintando.</p>
+<p><strong>O que olhar:</strong> As duas últimas de cada fila: a página do tamanho de sempre, com branco em volta.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Egenloff 47" src="img/cx-214-egenloff_p047.jpg" /></p>
+<p><em>Egenloff 47</em></p>
+<p><img alt="Matemática 32" src="img/cx-214-matematica_p032.jpg" /></p>
+<p><em>Matemática 32</em></p>
+<p><img alt="Pesel 21: &quot;até a moldura&quot; pintando pinta o cartão de branco" src="img/cx-214-pesel_p021.jpg" /></p>
+<p><em>Pesel 21: "até a moldura" pintando pinta o cartão de branco</em></p>
 <h2>Quadro para o Samuel: Achar a página dentro da borda preta: só o preto ou até a moldura</h2>
 <p>O que você está escolhendo: se os dois jeitos que você pediu (g7-borda-ate-onde, "O Kaique escolhe por livro") estão como você quer.</p>
 <p>Caso real: em cada foto, hoje, "só o preto" e "até a moldura". "Só o preto" tira a faixa preta e deixa o papel; "até a moldura" corta rente ao que está impresso (o que sai fica escurecido).</p>
@@ -183,8 +212,8 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p><em>Pesel 21: hoje, só o preto, até a moldura</em></p>
 <h2>Decisão: Caixa do conteúdo e borda preta: o que você decide?</h2>
 <p>O que você está escolhendo: se as duas opções entram no programa.</p>
-<p>Falta consertar o livro inteiro com as duas opções juntas (o quadro do PDF).</p>
+<p>O livro inteiro com as duas opções juntas, que saía cada página de um tamanho, já foi consertado (quadro do PDF). Vem junto o "pintar de branco" (2.14).</p>
 <p>Opções: Aprovado · Melhorar · Ainda não entendi</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:32</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 11:33</p>
 </body>
 </html>
