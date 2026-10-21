@@ -1,27 +1,44 @@
-"""TELA 1 - Inicio: arrastar um livro novo, e continuar os que ja existem.
+"""TELA 1 - Inicio: os livros em cartões, e o livro aberto na tela inteira.
 
-O que havia antes tinha quatro defeitos, todos visiveis num print: quatro
-projetos com o mesmo nome e nenhum jeito de distingui-los; "abrir a pasta"
-apagado em um deles sem explicar por que; a caixa de arrastar ocupando um terco
-da tela para uma acao que se faz uma vez por livro; e "abrir de novo" que na
-verdade nao retomava trabalho nenhum.
+ETAPA 7 DO LAYOUT (21/10/2026). O que o Samuel decidiu (rodadas 4 a 6 e a página de escolhas de
+06/10; prints `layout\\imagens\\12-rodada6-proposta-1-livros.png`, `-livro-aberto.png`, `-vazia.png`):
 
-Os cartoes resolvem os quatro. **A miniatura da primeira pagina e o que
-distingue livros de nome igual** - a pessoa reconhece o livro pela aparencia. A
-barra de progresso diz onde o trabalho parou. E nada de botao apagado sem
-explicacao: quando o PDF sai do lugar, o cartao inteiro fica laranja e diz o
-que houve.
+  A TELA DOS LIVROS: "Seus livros", a busca, "Configurações" e "Ajuda" no alto, SEM barra de menus
+  (a janela esconde a linha dos menus nesta tela). Os cartões no tamanho, nas cores e com as
+  informações da tela 1 (capa, nome, páginas e data, andamento); o primeiro lugar da grade é o
+  cartão "+ Abrir um PDF novo" ("Como abrir um livro novo?": "Cartão '+' no começo da grade"); dá
+  para arrastar o PDF em qualquer lugar da tela. Sem livro nenhum, a página vazia da tela 6 (o "+"
+  grande e a explicação). Um clique no cartão abre o livro na tela inteira; duplo clique, ou o
+  botão do cartão, continua direto.
 
-Medidas do desenho aprovado (1366x768): faixa de arrastar com 62 px de altura,
-cartao de 304x220, area da miniatura com 112 px.
+  O LIVRO ABERTO, NA TELA INTEIRA (rodada 5: "queria que ele tomasse toda a tela e não ficasse com
+  os outros livros do lado"): linha 1, "Voltar para os livros" (Esc), o nome, páginas e data, o
+  andamento e "Mais..."; linha 2, Continuar, Rodar o automático..., Ver todas as páginas,
+  Confirmar e processar... e, à direita, "Onde está". Embaixo, as páginas rolando com a coluna de
+  miniaturas ("Sim, fica assim"), a pílula "página N de M · ir para", e o botão "Ver lado a lado"
+  (rodada 7, 201 B e 202 A).
+
+O QUE CADA BOTÃO DO LIVRO ABERTO FAZ HOJE (sem inventar caminho novo):
+  Continuar               o "continuar" do cartão (confere se o livro é o mesmo, abre o trabalho).
+  Rodar o automático...   abre a tela "O que fazer" deste livro, com as escolhas dele (é onde o
+                          automático se escolhe e roda hoje; o painel Automático completo, com
+                          receitas, ainda não existe).
+  Ver todas as páginas    a grade das folhas do PDF (ui/widgets/todas_as_paginas.py); clicar numa
+                          folha leva a ela no folhear.
+  Confirmar e processar   continua o trabalho e, quando ele abre, pede a confirmação de sempre.
+  "Para revisar" e "Receita usada", do desenho, não aparecem: a quantidade de páginas com dúvida não
+  fica guardada no resumo do livro, e receitas ainda não existem.
+
+A miniatura da primeira pagina e o que distingue livros de nome igual. Nada de botao apagado sem
+explicacao: quando o PDF sai do lugar, o cartao fica laranja e diz o que houve.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import QSize, Qt, Signal
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import QPoint, QSize, Qt, Signal
+from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import (
     QFrame,
     QGridLayout,
@@ -33,6 +50,8 @@ from PySide6.QtWidgets import (
     QPushButton,
     QScrollArea,
     QSizePolicy,
+    QSpinBox,
+    QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
@@ -43,25 +62,59 @@ from ui import perguntas
 from ui import estilo
 from ui.widgets.area_arrastar import AreaArrastar
 
-LARGURA_DO_CARTAO = 304
-ALTURA_DO_CARTAO = 220
-ALTURA_DA_CAPA = 112
-ESPACO_ENTRE_CARTOES = 24
+# O cartão do desenho da rodada 6 (seis por linha em 1280 x 657). Antes: 304 x 220.
+LARGURA_DO_CARTAO = 196
+ALTURA_DO_CARTAO = 244
+ALTURA_DA_CAPA = 150
+ESPACO_ENTRE_CARTOES = 14
 
-# Etapa 1 do layout (temas): as cores dos cartões vêm do tema da vez
-# (ui/estilo.py), lidas na hora em que cada peça é estilizada.
-
-# O botao do cartao NAO usa o #primario da folha de estilo: aquele tem 13 px de
-# recheio e fonte 16, feito para o "Confirmar e processar" do rodape. Dentro de
-# um cartao de 220 px ele empurra o proprio texto para fora e o botao sai azul
-# e vazio - foi o que apareceu no primeiro print.
 BOTAO_DO_CARTAO = """
 QPushButton {{
     background: {fundo}; color: {cor}; border: {borda};
-    border-radius: 6px; font-size: 12px; padding: 4px 12px;
+    border-radius: 5px; font-size: 12px; padding: 3px 10px;
 }}
 QPushButton:hover {{ background: {aceso}; }}
 """
+
+
+def _botao_pequeno(texto: str, desenho: str, dica: str) -> QPushButton:
+    """Botão leve do alto da tela ("Configurações", "Ajuda"), com o desenhinho ao lado."""
+    botao = _BotaoComDesenho(texto, desenho)
+    botao.setToolTip(dica)
+    botao.setCursor(Qt.PointingHandCursor)
+    botao.setFocusPolicy(Qt.NoFocus)
+    estilo.estilizar(botao, lambda: (
+        f"QPushButton {{ background: transparent; border: none; color: {estilo.cor('texto')};"
+        " padding: 4px 8px 4px 26px; font-size: 13px; }"
+        f"QPushButton:hover {{ background: {estilo.cor('botao_h')}; border-radius: 5px; }}"))
+    return botao
+
+
+class _BotaoComDesenho(QPushButton):
+    """Um botão com um desenho à esquerda do texto (engrenagem, ponto de interrogação, seta)."""
+
+    def __init__(self, texto: str, desenho: str) -> None:
+        super().__init__(texto)
+        self.desenho = desenho
+
+    def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().paintEvent(evento)
+        pintor = QPainter(self)
+        pintor.setRenderHint(QPainter.Antialiasing)
+        pintor.setPen(QPen(QColor(estilo.cor("texto")), 1.4))
+        cx, cy = 14, self.height() / 2
+        if self.desenho == "engrenagem":
+            pintor.drawEllipse(QPoint(int(cx), int(cy)), 3, 3)
+            for dx, dy in ((0, -6), (0, 6), (-6, 0), (6, 0), (4, 4), (-4, -4), (4, -4), (-4, 4)):
+                pintor.drawLine(int(cx + dx * 0.7), int(cy + dy * 0.7), int(cx + dx), int(cy + dy))
+        elif self.desenho == "ajuda":
+            pintor.drawEllipse(QPoint(int(cx), int(cy)), 6, 6)
+            pintor.drawText(int(cx - 3), int(cy - 6), 7, 12, Qt.AlignCenter, "?")
+        elif self.desenho == "voltar":
+            pintor.drawLine(int(cx - 6), int(cy), int(cx + 6), int(cy))
+            pintor.drawLine(int(cx - 6), int(cy), int(cx - 2), int(cy - 4))
+            pintor.drawLine(int(cx - 6), int(cy), int(cx - 2), int(cy + 4))
+        pintor.end()
 
 
 class TelaInicio(QWidget):
@@ -73,53 +126,69 @@ class TelaInicio(QWidget):
     # nada mais grava-lo (R-B do verificador-3, 06/10/2026). Ligacao direta
     # (mesmo fio): quando o emit volta, a janela ja soltou.
     vai_tirar_da_lista = Signal(object)     # projetos.Resumo
+    # Etapa 7 do layout: os botões do livro aberto e do alto da tela
+    abrir_o_automatico = Signal(object)     # projetos.Resumo: a tela "O que fazer" deste livro
+    processar_pedido = Signal(object)       # projetos.Resumo: continuar e confirmar
+    configuracoes_pedidas = Signal()
+    ajuda_pedida = Signal()
 
     # Mantido por compatibilidade com a janela, que ainda escuta o nome antigo.
     reabrir_projeto = Signal(object)
 
     def __init__(self, parent=None) -> None:
-        """Monta a faixa de arrastar, a busca e a grade (vazia) de cartões,
-        depois chama recarregar() para preencher com o que ja existe em disco."""
+        """A pilha com as duas telas: os livros e o livro aberto. Preenche os
+        cartões com o que já existe em disco (recarregar)."""
         super().__init__(parent)
         self._resumos: list[projetos.Resumo] = []
+        self.ultimo_aberto: str = ""            # a pasta do último livro aberto (fica marcado)
+        self.setAcceptDrops(True)
 
-        camadas = QVBoxLayout(self)
-        camadas.setContentsMargins(40, 24, 40, 22)
-        camadas.setSpacing(14)
+        fora = QVBoxLayout(self)
+        fora.setContentsMargins(0, 0, 0, 0)
+        self.pilha = QStackedWidget()
+        fora.addWidget(self.pilha)
 
-        titulo = QLabel("Editor de Impressão")
-        titulo.setObjectName("titulo")
-        camadas.addWidget(titulo)
-
-        subtitulo = QLabel("Recupere um livro escaneado e prepare para reimprimir")
-        subtitulo.setObjectName("subtitulo")
-        camadas.addWidget(subtitulo)
-
-        # A faixa de arrastar cabe numa linha: abrir livro novo se faz uma vez
-        # por livro, e nao merecia um terco da tela.
-        self.area = AreaArrastar()
-        self.area.setFixedHeight(62)
-        self.area.arquivo_escolhido.connect(self.abrir_pdf.emit)
-        camadas.addWidget(self.area)
-
-        cabecalho = QHBoxLayout()
-        rotulo = QLabel("Continuar de onde parou")
-        rotulo.setObjectName("secao")
-        cabecalho.addWidget(rotulo)
-        cabecalho.addStretch()
+        # --- a tela dos livros
+        livros = QWidget()
+        camadas = QVBoxLayout(livros)
+        camadas.setContentsMargins(20, 14, 20, 14)
+        camadas.setSpacing(12)
+        alto = QHBoxLayout()
+        alto.setSpacing(8)
+        titulo = QLabel("Seus livros")
+        titulo.setObjectName("tituloDosLivros")
+        estilo.estilizar(titulo, lambda: f"color: {estilo.cor('forte')}; font-size: 18px; font-weight: 600;")
+        alto.addWidget(titulo)
+        self.contagem = QLabel("")
+        estilo.estilizar(self.contagem, lambda: f"color: {estilo.cor('fraco')}; font-size: 13px;")
+        alto.addWidget(self.contagem, 0, Qt.AlignBottom)
+        alto.addStretch()
         self.busca = QLineEdit()
         self.busca.setPlaceholderText("procurar pelo nome")
-        self.busca.setFixedWidth(196)
+        self.busca.setFixedWidth(220)
         self.busca.setClearButtonEnabled(True)
         self.busca.textChanged.connect(self._remontar)
-        cabecalho.addWidget(self.busca)
-        camadas.addLayout(cabecalho)
+        alto.addWidget(self.busca)
+        alto.addSpacing(10)
+        self.botao_configuracoes = _botao_pequeno("Configurações", "engrenagem",
+                                                  "Tema, atalhos de teclado e outras escolhas")
+        self.botao_configuracoes.clicked.connect(lambda: self.configuracoes_pedidas.emit())
+        alto.addWidget(self.botao_configuracoes)
+        self.botao_ajuda = _botao_pequeno("Ajuda", "ajuda", "A lista de atalhos de teclado (F1)")
+        self.botao_ajuda.clicked.connect(lambda: self.ajuda_pedida.emit())
+        alto.addWidget(self.botao_ajuda)
+        camadas.addLayout(alto)
+
+        # o cartão "+": a mesma AreaArrastar de antes (clique procura o PDF,
+        # arrastar solta nele), agora no desenho de cartão
+        self.area = AreaArrastar(cartao=True)
+        self.area.setFixedSize(LARGURA_DO_CARTAO, ALTURA_DO_CARTAO)
+        self.area.arquivo_escolhido.connect(self.abrir_pdf.emit)
 
         self.rolagem = QScrollArea()
         self.rolagem.setWidgetResizable(True)
         self.rolagem.setFrameShape(QFrame.NoFrame)
-        # Nunca rola de lado: os cartoes quebram linha sozinhos. Deixar a barra
-        # horizontal ligada punha uma faixa escura atravessada no pe da tela.
+        # Nunca rola de lado: os cartoes quebram linha sozinhos.
         self.rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         interno = QWidget()
         self.grade = QGridLayout(interno)
@@ -128,6 +197,11 @@ class TelaInicio(QWidget):
         self.grade.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.rolagem.setWidget(interno)
         camadas.addWidget(self.rolagem, 1)
+        self.pilha.addWidget(livros)
+
+        # --- o livro aberto
+        self.livro_aberto = LivroAberto(self)
+        self.pilha.addWidget(self.livro_aberto)
 
         self.recarregar()
 
@@ -143,47 +217,55 @@ class TelaInicio(QWidget):
         self._remontar()
 
     def _remontar(self) -> None:
-        """Refaz a grade de cartões do zero (filtrando pela busca) e reflui
-        quantos cabem por linha, dado a largura atual da area de rolagem."""
+        """Refaz a grade: o cartão "+" primeiro e os cartões dos livros
+        (filtrados pela busca), quantos couberem por linha. Sem livro nenhum,
+        a página vazia (o "+" grande e a explicação)."""
         while self.grade.count():
             item = self.grade.takeAt(0)
             velho = item.widget()
-            if velho is not None:
-                # setParent(None) ANTES do deleteLater. So tirar do layout nao
-                # tira da tela: o widget continua filho do painel e continua
-                # sendo pintado na posicao antiga ate o Qt processar a fila -
-                # e aparece um cartao fantasma ao lado dos de verdade, que e
-                # exatamente o defeito que estes cartoes vieram consertar.
+            if velho is not None and velho is not self.area:
+                # setParent(None) ANTES do deleteLater: so tirar do layout nao
+                # tira da tela (aparecia um cartao fantasma).
                 velho.setParent(None)
                 velho.deleteLater()
+        quantos = len(self._resumos)
+        self.contagem.setText(f"{quantos} livro" + ("s" if quantos != 1 else "") if quantos else "")
 
         procurado = self.busca.text().strip().lower()
         mostrar = [r for r in self._resumos
                    if not procurado or procurado in r.nome.lower()]
 
-        if not mostrar:
-            self.grade.addWidget(self._recado(procurado), 0, 0)
+        if not self._resumos:
+            # a página vazia da tela 6: o "+" grande à esquerda, a explicação ao lado
+            self.area.setFixedSize(530, 364)
+            self.area.grande = True
+            self.grade.addWidget(self.area, 0, 0)
+            self.grade.addWidget(self._recado(""), 0, 1, Qt.AlignVCenter)
             return
-
-        # Quantos cabem por linha. A folga de 6 px existe porque o desenho
-        # aprovado nao tem margens iguais dos dois lados: 40 px a esquerda e 38
-        # a direita, para os quatro cartoes caberem numa tela de 1366. Sem ela,
-        # a conta erra por dois pixels e o quarto cartao cai para a linha de
-        # baixo - que e o oposto do desenho.
-        FOLGA = 6
-        largura = self.rolagem.viewport().width() + ESPACO_ENTRE_CARTOES + FOLGA
+        self.area.grande = False
+        self.area.setFixedSize(LARGURA_DO_CARTAO, ALTURA_DO_CARTAO)
+        largura = self.rolagem.viewport().width() + ESPACO_ENTRE_CARTOES
         por_linha = max(1, largura // (LARGURA_DO_CARTAO + ESPACO_ENTRE_CARTOES))
-        for posicao, resumo in enumerate(mostrar):
+        self.grade.addWidget(self.area, 0, 0)
+        if not mostrar:
+            self.grade.addWidget(self._recado(procurado), 0, 1, 1, max(1, por_linha - 1))
+            return
+        for posicao, resumo in enumerate(mostrar, start=1):
             cartao = CartaoDeProjeto(resumo, self)
+            cartao.definir_marcado(resumo.pasta == self.ultimo_aberto)
             self.grade.addWidget(cartao, posicao // por_linha, posicao % por_linha)
 
     def _recado(self, procurado: str) -> QLabel:
-        """Texto para quando a grade fica vazia: motivo muda conforme ha busca ou não."""
+        """Texto para quando nao ha cartao a mostrar: muda conforme ha busca ou não."""
         texto = (f'Nenhum projeto com "{procurado}" no nome.' if procurado
-                 else "Nenhum livro ainda. Arraste o primeiro PDF ali em cima "
-                      "para começar.")
+                 else "<b style='font-size:16px'>Ainda não há nenhum livro aqui</b><br><br>"
+                      "Cada livro que você abrir vira um cartão nesta tela.<br>"
+                      "Um clique no cartão abre o livro na tela inteira, com as opções e as "
+                      "páginas para folhear.<br><br>Para começar, clique no + ou arraste o PDF "
+                      "de um livro para cá.")
         recado = QLabel(texto)
-        estilo.estilizar(recado, lambda: f"color: {estilo.TEXTO_FRACO}; padding: 14px;")
+        recado.setWordWrap(True)
+        estilo.estilizar(recado, lambda: f"color: {estilo.TEXTO_FRACO}; padding: 14px 24px;")
         return recado
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
@@ -191,9 +273,51 @@ class TelaInicio(QWidget):
         super().resizeEvent(evento)
         self._remontar()
 
+    # --- arrastar em qualquer lugar ------------------------------------------
+
+    def dragEnterEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        if self.pilha.currentIndex() == 0 and AreaArrastar._pdf_de(evento):
+            evento.acceptProposedAction()
+
+    def dropEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        caminho = AreaArrastar._pdf_de(evento)
+        if caminho and self.pilha.currentIndex() == 0:
+            self.abrir_pdf.emit(caminho)
+
+    # --- o livro aberto -------------------------------------------------------
+
+    def abrir_o_livro(self, resumo: projetos.Resumo) -> None:
+        """Um clique no cartão: o livro na tela inteira (rodada 6)."""
+        self.ultimo_aberto = resumo.pasta
+        self.livro_aberto.mostrar(resumo)
+        self.pilha.setCurrentWidget(self.livro_aberto)
+
+    def voltar_para_os_livros(self) -> None:
+        """"Voltar para os livros" ou Esc: os cartões voltam, com o último marcado."""
+        self.livro_aberto.fechar()
+        self.pilha.setCurrentIndex(0)
+        self._remontar()
+
+    def mostrar_os_livros(self) -> None:
+        """A janela trocou de tela: o livro aberto fecha (para de ler o PDF)
+        e esta tela volta a começar pelos livros."""
+        if self.pilha.currentIndex() != 0:
+            self.voltar_para_os_livros()
+
     # --- acoes dos cartoes ------------------------------------------------
 
-    def pedir_para_continuar(self, resumo: projetos.Resumo) -> None:
+    def pedir_o_automatico(self, resumo: projetos.Resumo) -> None:
+        """"Rodar o automático..." do livro aberto: a tela "O que fazer" deste
+        livro, depois da mesma conferência do "continuar" (o PDF existe e é o
+        mesmo livro)."""
+        self.pedir_para_continuar(resumo, sinal=self.abrir_o_automatico)
+
+    def pedir_para_processar(self, resumo: projetos.Resumo) -> None:
+        """"Confirmar e processar..." do livro aberto: continua o trabalho e a
+        janela pede a confirmação de sempre quando ele abrir."""
+        self.pedir_para_continuar(resumo, sinal=self.processar_pedido)
+
+    def pedir_para_continuar(self, resumo: projetos.Resumo, sinal=None) -> None:
         """Reabre o projeto - mas so depois de conferir que o PDF de entrada
         ainda existe e e o MESMO livro (nao um arquivo trocado no mesmo lugar).
         Aplicar ajustes salvos num livro diferente estragaria as páginas."""
@@ -217,7 +341,7 @@ class TelaInicio(QWidget):
             resumo.caminho_entrada = caminho
             projetos.gravar_resumo(resumo)
 
-        self.continuar_projeto.emit(resumo)
+        (sinal or self.continuar_projeto).emit(resumo)
 
     def procurar_o_livro_a_mao(self, resumo: projetos.Resumo) -> None:
         """Pede pra pessoa apontar onde o PDF foi parar, e confere a assinatura
@@ -295,17 +419,19 @@ class TelaInicio(QWidget):
 
 
 class CartaoDeProjeto(QFrame):
-    """Um livro na tela inicial: capa, nome, andamento e o que dá para fazer."""
+    """Um livro na tela dos livros: capa (com o botão por cima, no canto),
+    nome, páginas e data, andamento. Um clique abre o livro na tela inteira;
+    duplo clique ou o botão continua direto."""
 
     def __init__(self, resumo: projetos.Resumo, tela: TelaInicio) -> None:
-        """Monta o cartão: capa, nome, progresso (ou aviso de PDF perdido) e o
-        rodapé de acao. `tela` e guardada so para os botões chamarem de volta
-        pedir_para_continuar/renomear/etc."""
         super().__init__()
         self.resumo = resumo
         self.tela = tela
+        self.marcado = False
         self.setObjectName("cartao")
         self.setFixedSize(LARGURA_DO_CARTAO, ALTURA_DO_CARTAO)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setToolTip("Um clique abre o livro; duplo clique continua o trabalho")
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._abrir_menu)
 
@@ -313,145 +439,119 @@ class CartaoDeProjeto(QFrame):
         self.perdido = situacao in (projetos.SUMIU, projetos.TROCADO)
 
         camadas = QVBoxLayout(self)
-        camadas.setContentsMargins(0, 0, 0, 0)
+        camadas.setContentsMargins(1, 1, 1, 1)
         camadas.setSpacing(0)
-
         camadas.addWidget(self._montar_capa())
 
         corpo = QVBoxLayout()
-        corpo.setContentsMargins(18, 10, 18, 10)
-        corpo.setSpacing(5)
-
+        corpo.setContentsMargins(12, 9, 12, 9)
+        corpo.setSpacing(4)
         # O nome e cortado com reticencias em vez de vazar do cartao. O nome
         # inteiro fica na dica do mouse, junto com o caminho do livro.
         self.rotulo_nome = QLabel()
-        self.rotulo_nome.setStyleSheet("font-size: 15px; background: transparent;")
+        self.rotulo_nome.setStyleSheet("font-size: 14px; font-weight: 600; background: transparent;")
         self.rotulo_nome.setToolTip(f"{resumo.nome}\n{resumo.caminho_entrada}")
         corpo.addWidget(self.rotulo_nome)
-
         detalhe = QLabel(f"{resumo.total_paginas} páginas · {resumo.data_amigavel}")
         estilo.estilizar(detalhe, lambda: (
             f"color: {estilo.TEXTO_FRACO}; font-size: 12px; background: transparent;"))
         corpo.addWidget(detalhe)
-
         if self.perdido:
             corpo.addWidget(self._montar_aviso_de_perdido())
         else:
             corpo.addWidget(self._montar_progresso())
-            corpo.addLayout(self._montar_rodape())
-
+            frase = QLabel(resumo.frase_do_progresso)
+            gerado = resumo.pdf_gerado
+            estilo.estilizar(frase, lambda: (
+                f"color: {estilo.cor('ok') if gerado else (estilo.cor('link') if resumo.conferidas else estilo.cor('fraco'))}; "
+                "font-size: 12px; background: transparent;"))
+            corpo.addWidget(frase)
+        corpo.addStretch()
         camadas.addLayout(corpo)
         self._aplicar_cor()
 
     # --- pedacos ----------------------------------------------------------
 
     def _montar_capa(self) -> QWidget:
-        """A miniatura da primeira página, ou "sem capa" se nao existir - e o
-        que distingue livros de nome igual na lista."""
+        """A miniatura da primeira página (o que distingue livros de nome
+        igual), com o botão do cartão no canto de baixo, por cima."""
         capa = QLabel()
         capa.setFixedHeight(ALTURA_DA_CAPA)
         capa.setAlignment(Qt.AlignCenter)
         perdido = self.perdido
         estilo.estilizar(capa, lambda: (
-            f"background: {estilo.cor('aviso_f') if perdido else estilo.cor('tela')};"
-            f" color: {estilo.TEXTO_FRACO};"))
-
+            f"background: {estilo.cor('aviso_f') if perdido else estilo.cor('fora')};"
+            f" color: {estilo.TEXTO_FRACO}; border-top-left-radius: 9px; border-top-right-radius: 9px;"))
         caminho = projetos.garantir_miniatura(self.resumo)
         imagem = QPixmap(caminho) if caminho else QPixmap()
         if imagem.isNull():
             capa.setText("sem capa")
         else:
             capa.setPixmap(imagem.scaled(
-                QSize(LARGURA_DO_CARTAO, ALTURA_DA_CAPA - 16),
+                QSize(LARGURA_DO_CARTAO - 40, ALTURA_DA_CAPA - 8),
                 Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        botao = self._botao_do_cartao()
+        botao.setParent(capa)
+        botao.adjustSize()
+        botao.move(LARGURA_DO_CARTAO - botao.width() - 10, ALTURA_DA_CAPA - botao.height() - 8)
         return capa
 
-    def _montar_progresso(self) -> QWidget:
-        """Barra fina: verde e 100% se ja gerou PDF, azul com o progresso salvo senão."""
-        caixa = QWidget()
-        dentro = QVBoxLayout(caixa)
-        dentro.setContentsMargins(0, 0, 0, 0)
-        dentro.setSpacing(4)
-
-        pronto = self.resumo.pdf_gerado
-        barra = QProgressBar()
-        barra.setTextVisible(False)
-        barra.setFixedHeight(6)
-        barra.setRange(0, 100)
-        barra.setValue(100 if pronto else int(self.resumo.progresso * 100))
-        estilo.estilizar(barra, lambda: (
-            f"QProgressBar {{ background: {estilo.cor('sep')}; border: none; border-radius: 3px; }}"
-            f"QProgressBar::chunk {{ background: {estilo.cor('ok') if pronto else estilo.cor('azul')};"
-            " border-radius: 3px; }"))
-        dentro.addWidget(barra)
-        return caixa
-
-    def _montar_rodape(self) -> QHBoxLayout:
-        """Frase de progresso + o botão de ação (abrir pasta se ja gerou PDF,
-        continuar senão)."""
-        linha = QHBoxLayout()
-        linha.setContentsMargins(0, 0, 0, 0)
-
-        frase = QLabel(self.resumo.frase_do_progresso)
-        gerado = self.resumo.pdf_gerado
-        estilo.estilizar(frase, lambda: (
-            f"color: {estilo.cor('ok') if gerado else estilo.cor('link')}; "
-            "font-size: 12px; background: transparent;"))
-        linha.addWidget(frase)
-        linha.addStretch()
-
-        if self.resumo.pdf_gerado:
+    def _botao_do_cartao(self) -> QPushButton:
+        """continuar (azul) · abrir a pasta (pronto) · procurar de novo (laranja, livro perdido)."""
+        if self.perdido:
+            botao = QPushButton("procurar de novo")
+            estilo.estilizar(botao, lambda: BOTAO_DO_CARTAO.format(
+                fundo=estilo.cor("aviso_f"), cor=estilo.cor("aviso"),
+                borda=f"1px solid {estilo.cor('aviso')}", aceso=estilo.cor("aviso_b")))
+            botao.clicked.connect(lambda: self.tela.procurar_o_livro_a_mao(self.resumo))
+        elif self.resumo.pdf_gerado:
             botao = QPushButton("abrir a pasta")
             estilo.estilizar(botao, lambda: BOTAO_DO_CARTAO.format(
                 fundo=estilo.cor("botao"), cor=estilo.cor("texto"),
                 borda=f"1px solid {estilo.cor('sep')}", aceso=estilo.cor("botao_h")))
-            botao.clicked.connect(
-                lambda: historico.abrir_pasta(self.resumo.caminho_saida))
+            botao.clicked.connect(lambda: historico.abrir_pasta(self.resumo.caminho_saida))
         else:
             botao = QPushButton("continuar")
             estilo.estilizar(botao, lambda: BOTAO_DO_CARTAO.format(
-                fundo=estilo.cor("azul"), cor="#ffffff", borda="none",
-                aceso=estilo.cor("azul_e")))
+                fundo=estilo.cor("azul"), cor="#ffffff", borda="none", aceso=estilo.cor("azul_e")))
             botao.clicked.connect(lambda: self.tela.pedir_para_continuar(self.resumo))
-        botao.setFixedHeight(26)
         botao.setCursor(Qt.PointingHandCursor)
-        linha.addWidget(botao)
-        return linha
+        return botao
+
+    def _montar_progresso(self) -> QWidget:
+        """Barra fina: verde e 100% se ja gerou PDF, azul com o progresso salvo senão."""
+        pronto = self.resumo.pdf_gerado
+        barra = QProgressBar()
+        barra.setTextVisible(False)
+        barra.setFixedHeight(5)
+        barra.setRange(0, 100)
+        barra.setValue(100 if pronto else int(self.resumo.progresso * 100))
+        estilo.estilizar(barra, lambda: (
+            f"QProgressBar {{ background: {estilo.cor('sep')}; border: none; border-radius: 2px; }}"
+            f"QProgressBar::chunk {{ background: {estilo.cor('ok') if pronto else estilo.cor('azul')};"
+            " border-radius: 2px; }"))
+        return barra
 
     def _montar_aviso_de_perdido(self) -> QWidget:
         """Nunca um botao apagado sem explicacao - era a queixa do print."""
-        caixa = QWidget()
-        caixa.setStyleSheet("background: transparent;")
-        dentro = QVBoxLayout(caixa)
-        dentro.setContentsMargins(0, 0, 0, 0)
-        dentro.setSpacing(2)
-
         aviso = QLabel("o PDF saiu do lugar")
         aviso.setObjectName("avisoFraco")   # cor do tema (ui/estilo.py)
-        dentro.addWidget(aviso)
+        return aviso
 
-        procurar = QPushButton("procurar de novo")
-        procurar.setFlat(True)
-        procurar.setCursor(Qt.PointingHandCursor)
-        estilo.estilizar(procurar, lambda: (
-            f"QPushButton {{ border: none; color: {estilo.cor('link')}; font-size: 12px; "
-            "text-align: left; padding: 0; background: transparent; }"))
-        procurar.clicked.connect(
-            lambda: self.tela.procurar_o_livro_a_mao(self.resumo))
-        dentro.addWidget(procurar)
-        return caixa
+    def definir_marcado(self, marcado: bool) -> None:
+        """O último livro aberto fica com a borda azul ao voltar para os livros."""
+        self.marcado = bool(marcado)
+        self._aplicar_cor()
 
     def _aplicar_cor(self) -> None:
-        """Pinta o cartão de laranja quando o PDF de entrada esta perdido/trocado."""
-        if not self.perdido:
-            return
-        # O seletor precisa ser QFrame#cartao e nao so o widget: sem ele, o Qt
-        # aplica o fundo aos FILHOS tambem, e cada rotulo do cartao ganha uma
-        # caixinha branca atras - foi o que apareceu no primeiro print.
+        """Laranja quando o PDF esta perdido/trocado; azul no último aberto."""
+        perdido, marcado = self.perdido, self.marcado
         estilo.estilizar(self, lambda: (
-            f"QFrame#cartao {{ border: 2px solid {estilo.cor('aviso')}; "
-            f"background: {estilo.cor('aviso_f')}; border-radius: 10px; }}"
-            "QLabel, QPushButton { background: transparent; }"))
+            f"QFrame#cartao {{ border: {2 if (perdido or marcado) else 1}px solid "
+            f"{estilo.cor('aviso') if perdido else (estilo.cor('azul') if marcado else estilo.cor('linha_b'))}; "
+            f"background: {estilo.cor('aviso_f') if perdido else estilo.cor('painel')}; border-radius: 10px; }}"
+            f"QFrame#cartao:hover {{ border-color: {estilo.cor('azul')}; }}"
+            "QLabel { background: transparent; }"))
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         super().resizeEvent(evento)
@@ -470,35 +570,310 @@ class CartaoDeProjeto(QFrame):
         self.rotulo_nome.setText(
             metrica.elidedText(self.resumo.nome, Qt.ElideRight, largura))
 
-    # --- menu do botao direito --------------------------------------------
+    # --- menu do botao direito e cliques ------------------------------------
 
     def _abrir_menu(self, posicao) -> None:
         """Menu de contexto (botão direito) do cartão, com as mesmas ações do
-        clique/rodapé, mais renomear e remover."""
-        menu = QMenu(self)
-        if not self.perdido:
-            menu.addAction("continuar",
-                           lambda: self.tela.pedir_para_continuar(self.resumo))
-        else:
-            menu.addAction("procurar o livro",
-                           lambda: self.tela.procurar_o_livro_a_mao(self.resumo))
-        menu.addAction("começar de novo",
-                       lambda: self.tela.pedir_para_recomecar(self.resumo))
-        menu.addSeparator()
-        menu.addAction("renomear", lambda: self.tela.pedir_para_renomear(self.resumo))
-        abrir = menu.addAction(
-            "abrir a pasta de saída",
-            lambda: historico.abrir_pasta(self.resumo.caminho_saida))
-        abrir.setEnabled(bool(self.resumo.caminho_saida)
-                         and Path(self.resumo.caminho_saida).exists())
-        if not abrir.isEnabled():
-            abrir.setToolTip("Este livro ainda não gerou PDF nenhum.")
-        menu.addSeparator()
-        menu.addAction("remover da lista",
-                       lambda: self.tela.pedir_para_remover(self.resumo))
+        livro aberto, mais renomear e remover."""
+        menu = _menu_do_livro(self, self.tela, self.resumo, self.perdido)
         menu.exec(self.mapToGlobal(posicao))
+
+    def mouseReleaseEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Um clique abre o livro na tela inteira (rodada 6)."""
+        if evento.button() == Qt.LeftButton and self.rect().contains(evento.position().toPoint()):
+            self.tela.abrir_o_livro(self.resumo)
 
     def mouseDoubleClickEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Duplo clique no cartão continua o projeto (se o livro nao estiver perdido)."""
         if not self.perdido:
             self.tela.pedir_para_continuar(self.resumo)
+
+
+def _menu_do_livro(pai, tela: TelaInicio, resumo: projetos.Resumo, perdido: bool) -> QMenu:
+    """O menu de um livro: o do botão direito do cartão e o "Mais..." do livro aberto."""
+    menu = QMenu(pai)
+    if not perdido:
+        menu.addAction("continuar", lambda: tela.pedir_para_continuar(resumo))
+    else:
+        menu.addAction("procurar o livro", lambda: tela.procurar_o_livro_a_mao(resumo))
+    menu.addAction("começar de novo", lambda: tela.pedir_para_recomecar(resumo))
+    menu.addSeparator()
+    menu.addAction("renomear", lambda: tela.pedir_para_renomear(resumo))
+    abrir = menu.addAction("abrir a pasta de saída", lambda: historico.abrir_pasta(resumo.caminho_saida))
+    abrir.setEnabled(bool(resumo.caminho_saida) and Path(resumo.caminho_saida).exists())
+    if not abrir.isEnabled():
+        abrir.setToolTip("Este livro ainda não gerou PDF nenhum.")
+    menu.addSeparator()
+    menu.addAction("remover da lista", lambda: tela.pedir_para_remover(resumo))
+    return menu
+
+
+class LivroAberto(QWidget):
+    """O livro aberto, na tela inteira (rodada 6, proposta 1; ver o começo do arquivo)."""
+
+    def __init__(self, tela: TelaInicio) -> None:
+        super().__init__()
+        from ui.widgets.paginas_rolando import PaginasRolando
+        from ui.widgets.tira_miniaturas import TiraMiniaturas
+
+        self.tela = tela
+        self.resumo: projetos.Resumo | None = None
+        self.perdido = False
+        fora = QVBoxLayout(self)
+        fora.setContentsMargins(0, 0, 0, 0)
+        fora.setSpacing(0)
+
+        alto = QFrame()
+        alto.setObjectName("altoDoLivroAberto")
+        estilo.estilizar(alto, lambda: (
+            f"QFrame#altoDoLivroAberto {{ background: {estilo.cor('bar')};"
+            f" border-bottom: 1px solid {estilo.cor('linha')}; }}"))
+        caixa = QVBoxLayout(alto)
+        caixa.setContentsMargins(20, 12, 20, 10)
+        caixa.setSpacing(10)
+        linha1 = QHBoxLayout()
+        linha1.setSpacing(14)
+        self.botao_voltar = _BotaoComDesenho("Voltar para os livros   Esc", "voltar")
+        self.botao_voltar.setCursor(Qt.PointingHandCursor)
+        self.botao_voltar.setFocusPolicy(Qt.NoFocus)
+        self.botao_voltar.setToolTip("Volta para os cartões dos livros (tecla Esc)")
+        estilo.estilizar(self.botao_voltar, lambda: (
+            f"QPushButton {{ padding: 8px 14px 8px 30px; font-size: 14px; font-weight: 600; }}"))
+        self.botao_voltar.clicked.connect(tela.voltar_para_os_livros)
+        linha1.addWidget(self.botao_voltar)
+        nomes = QVBoxLayout()
+        nomes.setSpacing(0)
+        self.nome = QLabel("")
+        estilo.estilizar(self.nome, lambda: f"color: {estilo.cor('forte')}; font-size: 18px; font-weight: 600;")
+        nomes.addWidget(self.nome)
+        self.detalhe = QLabel("")
+        estilo.estilizar(self.detalhe, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
+        nomes.addWidget(self.detalhe)
+        linha1.addLayout(nomes, 1)
+        self.barra = QProgressBar()
+        self.barra.setTextVisible(False)
+        self.barra.setFixedSize(160, 5)
+        self.barra.setRange(0, 100)
+        estilo.estilizar(self.barra, lambda: (
+            f"QProgressBar {{ background: {estilo.cor('sep')}; border: none; border-radius: 2px; }}"
+            f"QProgressBar::chunk {{ background: {estilo.cor('azul')}; border-radius: 2px; }}"))
+        linha1.addWidget(self.barra)
+        self.andamento = QLabel("")
+        estilo.estilizar(self.andamento, lambda: f"color: {estilo.cor('link')}; font-size: 13px;")
+        linha1.addWidget(self.andamento)
+        self.botao_mais = QPushButton("Mais...")
+        self.botao_mais.setCursor(Qt.PointingHandCursor)
+        self.botao_mais.setFocusPolicy(Qt.NoFocus)
+        self.botao_mais.clicked.connect(self._abrir_o_mais)
+        linha1.addWidget(self.botao_mais)
+        caixa.addLayout(linha1)
+
+        linha2 = QHBoxLayout()
+        linha2.setSpacing(8)
+        self.botao_continuar = self._botao("Continuar", "Abre o trabalho deste livro onde parou",
+                                           lambda: tela.pedir_para_continuar(self.resumo), primario=True)
+        self.botao_automatico = self._botao(
+            "Rodar o automático...", "Abre a tela “O que fazer” deste livro, com as escolhas dele",
+            lambda: tela.pedir_o_automatico(self.resumo))
+        self.botao_todas = self._botao("Ver todas as páginas", "Todas as folhas do livro, em grade",
+                                       self._ver_todas)
+        self.botao_processar = self._botao(
+            "Confirmar e processar...", "Abre o trabalho e pede a confirmação para gerar o PDF",
+            lambda: tela.pedir_para_processar(self.resumo))
+        for botao in (self.botao_continuar, self.botao_automatico, self.botao_todas, self.botao_processar):
+            linha2.addWidget(botao)
+        linha2.addStretch()
+        self.onde_esta = QLabel("")
+        self.onde_esta.setTextFormat(Qt.RichText)
+        estilo.estilizar(self.onde_esta, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
+        linha2.addWidget(self.onde_esta)
+        caixa.addLayout(linha2)
+        fora.addWidget(alto)
+
+        meio = QHBoxLayout()
+        meio.setContentsMargins(0, 0, 0, 0)
+        meio.setSpacing(0)
+        self.miniaturas = TiraMiniaturas("Páginas")
+        self.miniaturas.definir_arranjo(True, False)
+        self.miniaturas.setFixedWidth(100)
+        self.miniaturas.selecionada.connect(self.ir_para)
+        meio.addWidget(self.miniaturas)
+        self.pilha_do_meio = QStackedWidget()
+        self.paginas = PaginasRolando()
+        self.paginas.pagina_mudou.connect(self._pagina_mudou)
+        self.pilha_do_meio.addWidget(self.paginas)
+        from ui.widgets.todas_as_paginas import TodasAsPaginas
+        self.todas = TodasAsPaginas()
+        self.todas.ir_para.connect(self._voltar_da_grade)
+        self.todas.voltar.connect(lambda: self._voltar_da_grade(None))
+        self.todas.botao_voltar.setText("voltar ao livro")
+        self.pilha_do_meio.addWidget(self.todas)
+        self.perdido_aviso = QLabel("")
+        self.perdido_aviso.setAlignment(Qt.AlignCenter)
+        self.perdido_aviso.setWordWrap(True)
+        self.pilha_do_meio.addWidget(self.perdido_aviso)
+        meio.addWidget(self.pilha_do_meio, 1)
+        fora.addLayout(meio, 1)
+
+        # "Ver lado a lado" (201 B: em cima das páginas, canto direito) e a pílula
+        self.botao_lado_a_lado = QPushButton("Ver lado a lado", self.paginas)
+        self.botao_lado_a_lado.setCheckable(True)
+        self.botao_lado_a_lado.setCursor(Qt.PointingHandCursor)
+        self.botao_lado_a_lado.setFocusPolicy(Qt.NoFocus)
+        self.botao_lado_a_lado.setToolTip("Mostra as páginas em pares, como no livro aberto")
+        self.botao_lado_a_lado.toggled.connect(self.paginas.definir_lado_a_lado)
+        self.pilula = QFrame(self.paginas)
+        self.pilula.setObjectName("pilulaDoLivro")
+        estilo.estilizar(self.pilula, lambda: (
+            f"QFrame#pilulaDoLivro {{ background: {estilo.cor('cabeca')}; border: 1px solid "
+            f"{estilo.cor('sep')}; border-radius: 18px; }} QLabel {{ background: transparent; }}"))
+        pl = QHBoxLayout(self.pilula)
+        pl.setContentsMargins(14, 4, 6, 4)
+        pl.setSpacing(8)
+        self.rotulo_pagina = QLabel("")
+        pl.addWidget(self.rotulo_pagina)
+        ir = QLabel("ir para")
+        estilo.estilizar(ir, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
+        pl.addWidget(ir)
+        self.campo_ir = QSpinBox()
+        self.campo_ir.setButtonSymbols(QSpinBox.NoButtons)
+        self.campo_ir.setFixedWidth(52)
+        self.campo_ir.editingFinished.connect(lambda: self.ir_para(self.campo_ir.value() - 1))
+        pl.addWidget(self.campo_ir)
+        for texto, passo, dica in (("‹", -1, "folha anterior"), ("›", 1, "próxima folha")):
+            botao = QPushButton(texto)
+            botao.setFixedSize(32, 28)
+            botao.setStyleSheet("padding: 0px; font-size: 16px;")
+            botao.setToolTip(dica)
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)
+            botao.clicked.connect(lambda _c=False, p=passo: self.ir_para(self.paginas.atual + p))
+            pl.addWidget(botao)
+
+    def _botao(self, texto: str, dica: str, acao, primario: bool = False) -> QPushButton:
+        botao = QPushButton(texto)
+        botao.setToolTip(dica)
+        botao.setCursor(Qt.PointingHandCursor)
+        botao.setFocusPolicy(Qt.NoFocus)
+        if primario:
+            botao.setObjectName("acaoPrimaria")
+        botao.clicked.connect(lambda _c=False: acao())
+        return botao
+
+    # --- uso --------------------------------------------------------------------
+
+    def mostrar(self, resumo: projetos.Resumo) -> None:
+        """Mostra o livro `resumo` (o folhear lê o PDF como ele está)."""
+        self.resumo = resumo
+        situacao, caminho = projetos.procurar_o_livro(resumo)
+        self.perdido = situacao in (projetos.SUMIU, projetos.TROCADO)
+        self.nome.setText(resumo.nome)
+        self.detalhe.setText(f"{resumo.total_paginas} páginas · aberto {resumo.data_amigavel}")
+        self.barra.setValue(100 if resumo.pdf_gerado else int(resumo.progresso * 100))
+        self.andamento.setText(resumo.frase_do_progresso)
+        from PySide6.QtGui import QFontMetrics
+        curto = QFontMetrics(self.onde_esta.font()).elidedText(
+            resumo.caminho_entrada, Qt.ElideMiddle, 420)
+        self.onde_esta.setText(f"Onde está: <b>{curto}</b>")
+        self.onde_esta.setToolTip(resumo.caminho_entrada)
+        for botao in (self.botao_continuar, self.botao_automatico, self.botao_processar, self.botao_todas):
+            botao.setVisible(not self.perdido)
+        self.botao_lado_a_lado.setChecked(False)
+        self.pilha_do_meio.setCurrentWidget(self.paginas)
+        if self.perdido:
+            self.perdido_aviso.setText(
+                "O PDF deste livro saiu do lugar (ou foi trocado por outro).\n"
+                "Use “Mais...” > “procurar o livro” e aponte onde ele está.")
+            self.pilha_do_meio.setCurrentWidget(self.perdido_aviso)
+            self.miniaturas.limpar()
+            self.paginas.limpar()
+            return
+        self.paginas.abrir(resumo.caminho_entrada)
+        total = self.paginas.total()
+        self.miniaturas.montar(total, resumo.caminho_entrada, {i: i for i in range(total)})
+        self.campo_ir.setRange(1, max(1, total))
+        self.ir_para(min(max(0, resumo.pagina_atual), max(0, total - 1)))
+        self._acertar_pecas_soltas()
+
+    def fechar(self) -> None:
+        """Ao voltar para os livros: para de desenhar e solta o PDF."""
+        self.paginas.parar()
+        self.paginas.limpar()
+        self.miniaturas.parar()
+        self.todas.esquecer()
+
+    def ir_para(self, indice: int) -> None:
+        total = self.paginas.total()
+        if not total:
+            return
+        indice = max(0, min(total - 1, int(indice)))
+        self.paginas.ir_para(indice)
+        self._pagina_mudou(indice)
+
+    def _pagina_mudou(self, indice: int) -> None:
+        total = self.paginas.total()
+        self.rotulo_pagina.setText(f"página {indice + 1} de {total}")
+        self.campo_ir.blockSignals(True)
+        self.campo_ir.setValue(indice + 1)
+        self.campo_ir.blockSignals(False)
+        self.miniaturas.selecionar(indice)
+        self._acertar_pecas_soltas()
+
+    def _ver_todas(self) -> None:
+        """Ver todas as páginas: as folhas do PDF em grade (uma a uma, 901 A)."""
+        from ui.widgets.todas_as_paginas import ItemDaGrade
+        if self.resumo is None or self.perdido:
+            return
+        itens = [ItemDaGrade(indice=i, folha=i) for i in range(self.paginas.total())]
+        self.todas.mostrar(itens, self.paginas.atual, self.resumo.caminho_entrada, None)
+        self.pilha_do_meio.setCurrentWidget(self.todas)
+
+    def _voltar_da_grade(self, indice) -> None:
+        self.pilha_do_meio.setCurrentWidget(self.paginas)
+        if indice is not None:
+            self.ir_para(indice)
+
+    def _abrir_o_mais(self) -> None:
+        if self.resumo is None:
+            return
+        menu = _menu_do_livro(self, self.tela, self.resumo, self.perdido)
+        menu.exec(self.botao_mais.mapToGlobal(QPoint(0, self.botao_mais.height())))
+
+    def _acertar_pecas_soltas(self) -> None:
+        """O "Ver lado a lado" no canto de cima à direita das páginas e a
+        pílula no canto de baixo, por cima delas."""
+        area = self.paginas.viewport().geometry()
+        self.botao_lado_a_lado.adjustSize()
+        self.botao_lado_a_lado.move(area.right() - self.botao_lado_a_lado.width() - 22, area.top() + 12)
+        self.botao_lado_a_lado.raise_()
+        self.pilula.adjustSize()
+        self.pilula.move(area.right() - self.pilula.width() - 22,
+                         area.bottom() - self.pilula.height() - 12)
+        self.pilula.raise_()
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().resizeEvent(evento)
+        self._acertar_pecas_soltas()
+
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().showEvent(evento)
+        self._acertar_pecas_soltas()
+
+    def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Esc volta para os livros; Page Up/Down e setas folheiam."""
+        tecla = evento.key()
+        if tecla == Qt.Key_Escape:
+            if self.pilha_do_meio.currentWidget() is self.todas:
+                self._voltar_da_grade(None)
+            else:
+                self.tela.voltar_para_os_livros()
+        elif tecla in (Qt.Key_PageDown, Qt.Key_Down, Qt.Key_Right):
+            self.ir_para(self.paginas.atual + 1)
+        elif tecla in (Qt.Key_PageUp, Qt.Key_Up, Qt.Key_Left):
+            self.ir_para(self.paginas.atual - 1)
+        elif tecla == Qt.Key_Home:
+            self.ir_para(0)
+        elif tecla == Qt.Key_End:
+            self.ir_para(self.paginas.total() - 1)
+        else:
+            super().keyPressEvent(evento)

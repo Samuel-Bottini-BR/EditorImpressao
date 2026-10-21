@@ -1333,7 +1333,9 @@ class CartaozinhoDoFiltro(QFrame):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setToolTip(nome + (f" (tecla {tecla})" if tecla else ""))
         fora = QVBoxLayout(self)
-        fora.setContentsMargins(3, 5, 3, 4)
+        # margens pequenas: em 300 pontos de painel, quatro filtros lado a
+        # lado; com 3 de cada lado o "Melhorar" saía cortado (verificador, 21/10)
+        fora.setContentsMargins(1, 5, 1, 4)
         fora.setSpacing(2)
         self.desenho = _PaginaPequena()
         fora.addWidget(self.desenho, 0, Qt.AlignHCenter)
@@ -1370,7 +1372,7 @@ class CartaozinhoDoFiltro(QFrame):
             f"{estilo.cor('azul') if sel else 'transparent'}; border-radius: 6px; "
             f"background: {estilo.cor('sel') if sel else 'transparent'}; }}"
             f"QFrame#cartaozinhoDoFiltro:hover {{ border-color: {estilo.cor('azul')}; }}"
-            f"QLabel {{ color: {estilo.cor('forte') if sel else estilo.cor('texto')}; font-size: 12px;"
+            f"QLabel {{ color: {estilo.cor('forte') if sel else estilo.cor('texto')}; font-size: 11px;"
             f" font-weight: {600 if sel else 400}; background: transparent; border: none; }}"
             f"QLabel#teclaDoFiltro {{ color: {estilo.cor('fraco')}; font-size: 10px; font-weight: 400; }}"))
 

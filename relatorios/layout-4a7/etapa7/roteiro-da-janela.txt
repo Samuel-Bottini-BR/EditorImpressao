@@ -1,0 +1,26 @@
+  ok      a tela dos livros abre sem a barra de menus
+  ok      sem livro nenhum: a página vazia com o + grande
+  1-sem-livro-nenhum.png  (tela inteira)
+  ok      na tela de trabalho a barra de menus volta
+  ok      com um livro: o cartão + e o cartão do livro
+  2-tela-dos-livros.png  (tela inteira)
+  ok      clique nativo no cartão: o livro na tela inteira
+  3-livro-aberto.png  (tela inteira)
+  ok      ir para a folha 11 (página 11 de 50)
+  ok      clique nativo em 'Ver lado a lado': pares rolando
+  4-ver-lado-a-lado.png  (tela inteira)
+  ok      'Ver todas as páginas': a grade
+  5-ver-todas-as-paginas.png  (tela inteira)
+  ok      clique na folha 7 da grade: volta ao folhear nela
+  ok      Esc volta para os livros, com o último marcado em azul
+  6-de-volta-com-o-ultimo-marcado.png  (tela inteira)
+  ok      clique nativo em 'Configurações' abre as Configurações
+  7-configuracoes-aparencia.png  (tela inteira)
+  ok      tema claro nas Configurações marcou o menu Ver
+  8-tela-dos-livros-claro.png  (tela inteira)
+  7-configuracoes-atalhos.png  (tela inteira)
+  9-minima-livros.png  (tela inteira)
+  9-minima-livro-aberto.png  (tela inteira)
+
+conferências: 12 de 12 certas
+FIM
