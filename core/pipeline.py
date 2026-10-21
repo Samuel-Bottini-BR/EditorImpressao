@@ -538,10 +538,16 @@ def _preparar_metade_e_geometria(
     # item 2.5: com o livro em "cortar seguindo o conteudo", o corte do livro
     # (do tamanho das outras paginas); fora disso, volta como esta
     recorte = _corte_do_livro(folha, pagina, projeto, recorte, angulo, inteira)
+    # item 2.14: o que fica fora da pagina achada vira branco (so com a borda
+    # preta ligada e "pintar de branco"); None = nada a pintar
+    area = None if so_a_geometria else _area_que_fica(folha, pagina, projeto)
 
     if endireita_antes(projeto):
         img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
                                                           so_a_geometria)
+        if area is not None and img is not None:
+            # a area foi medida na pagina RETA, e o recorte e fracao dela
+            img = _pintar_na_cortada(img, area, tuple(recorte) if cortou else None)
         dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
         desenho = geometria_do_desenho(
             img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
@@ -552,6 +558,10 @@ def _preparar_metade_e_geometria(
         return img, desenho
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
+    if area is not None:
+        # item 2.14, ordem antiga: a area foi medida na pagina antes do corte
+        # (a `inteira`): pinta nela, e o corte e o giro levam junto
+        inteira = borda_preta.pintar_fora(inteira, area)
     img = inteira
     girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
     if recorte is not None:
@@ -655,7 +665,7 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
                                            base if _corta_pela_borda(projeto, pagina) else None)
                 if medidas is not None:
                     medidas["conteudo"] = medido
-                proprio = medido.recorte_proprio()
+                proprio = medido.recorte_proprio() if _troca_o_corte(projeto, pagina) else None
                 if proprio is not None:
                     automatico = Recorte(*proprio, pecas=automatico.pecas)
                     recorte = automatico.tupla
@@ -797,7 +807,8 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
                 medido = _medir_o_conteudo(reta, dpi, dpi_do_scan, comum.pecas, projeto, cunha_preta)
                 if medidas is not None:
                     medidas["conteudo"] = medido
-                recorte = medido.recorte_proprio() or recorte
+                if _troca_o_corte(projeto, pagina):
+                    recorte = medido.recorte_proprio() or recorte
     return recorte, angulo
 
 
@@ -926,6 +937,8 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
         ordem_do_livro(projeto),                       # item 2.2, G6
         bool(getattr(projeto, "cortar_pelo_conteudo", False)),   # item 2.5
         (borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))   # item 2.13
+         if getattr(projeto, "borda_preta", False) else None),
+        (borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))   # item 2.14
          if getattr(projeto, "borda_preta", False) else None),
     )
 
@@ -1151,6 +1164,22 @@ def _jeito_da_borda(projeto: Projeto) -> str | None:
     return borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))
 
 
+def _so_pinta(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """Item 2.14: a borda desta pagina e PINTADA de branco em vez de cortada,
+    e o corte fica o de sempre (o 2.5, se ligado junto, continua mandando no
+    corte)."""
+    return bool(_corta_pela_borda(projeto, pagina)
+                and borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))
+                == borda_preta.PINTAR)
+
+
+def _troca_o_corte(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O corte automatico desta pagina e trocado pelo medido (2.5, ou 2.13
+    cortando fora)? Pintando (2.14) sem o 2.5, o corte fica o comum."""
+    return _corta_pelo_conteudo(projeto, pagina) or (
+        _corta_pela_borda(projeto, pagina) and not _so_pinta(projeto, pagina))
+
+
 def _corte_sugerido(projeto: Projeto, pagina: ConfigPagina) -> bool:
     """O corte automatico desta pagina e um dos novos (2.5 ou 2.13)?"""
     return _corta_pelo_conteudo(projeto, pagina) or _corta_pela_borda(projeto, pagina)
@@ -1312,10 +1341,52 @@ def _corte_do_livro(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
     _anotar(pagina, analise.PAGINA_MUITO_MAIOR,
             bool(livro is not None and pagina.indice in livro.muito_maiores
                  and getattr(pagina, "alinhar_com_as_outras", None) is not True))
+    if not _troca_o_corte(projeto, pagina):
+        return recorte                      # item 2.14: pinta, nao corta
     final = corte_pelo_conteudo.em_fracao(caixa, medido.medida.largura, medido.medida.altura)
     if not endireita_antes(projeto) and projeto.endireitar and abs(angulo) >= ANGULO_MINIMO:
         final = alargar_para_o_giro(Recorte(*final, pecas=medido.pecas), angulo, inteira).tupla
     return final
+
+
+def _area_que_fica(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
+    """Item 2.14: o que NAO e pintado de branco, (x0, y0, x1, y1) em fracao
+    da pagina medida (a reta, no livro novo; a inteira antes do corte, no
+    projeto antigo): "so o preto" = a pagina achada; "ate a moldura" = o
+    impresso + 1 mm, dentro dela. None quando nao pinta (opcao desligada,
+    cortar fora, corte a mao, pagina ainda nao medida, nada a pintar)."""
+    if not _so_pinta(projeto, pagina):
+        return None
+    chave = _chave_da_geometria(folha, pagina, projeto)
+    if chave is None:
+        return None
+    with _TRANCA_GEOMETRIAS:
+        medido = _CONTEUDOS.get(chave)
+    if medido is None:
+        return None
+    m = medido.medida
+    area = None
+    if not medido.so_o_limite:
+        area = corte_pelo_conteudo.caixa_do_corte(m)
+    if area is None:
+        area = m.limite
+    if area is None or not m.largura or not m.altura:
+        return None
+    fr = (area[0] / m.largura, area[1] / m.altura, area[2] / m.largura, area[3] / m.altura)
+    if fr[0] <= 0 and fr[1] <= 0 and fr[2] >= 1 and fr[3] >= 1:
+        return None
+    return fr
+
+
+def _pintar_na_cortada(img: np.ndarray, area, recorte) -> np.ndarray:
+    """Pinta de branco, na pagina ja cortada `img`, o que fica fora de `area`
+    (fracao da pagina antes do corte); `recorte` (x, y, largura, altura em
+    fracao) e o corte que foi aplicado, None = nenhum."""
+    x, y, w, h = recorte if recorte is not None else (0.0, 0.0, 1.0, 1.0)
+    if w <= 0 or h <= 0:
+        return img
+    na_cortada = ((area[0] - x) / w, (area[1] - y) / h, (area[2] - x) / w, (area[3] - y) / h)
+    return borda_preta.pintar_fora(img, na_cortada)
 
 
 def corte_alargado(projeto: Projeto, pagina: ConfigPagina) -> tuple[float, float, float, float] | None:

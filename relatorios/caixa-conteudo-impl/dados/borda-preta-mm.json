@@ -80,6 +80,60 @@
     ],
     "angulo": 0.44
    }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 21.25,
+     "topo": 13.36,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     475.5,
+     607.2
+    ],
+    "recorte": [
+     0.0017,
+     0.0,
+     0.9983,
+     0.9563
+    ],
+    "angulo": 0.44
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 21.25,
+     "topo": 13.36,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     475.5,
+     607.2
+    ],
+    "recorte": [
+     0.0017,
+     0.0,
+     0.9983,
+     0.9563
+    ],
+    "angulo": 0.44
+   }
   }
  },
  "antiphon_p088": {
@@ -119,20 +173,20 @@
      "pe": 0.0
     },
     "lados_mm_max": {
-     "esq": 4.68,
+     "esq": 5.27,
      "dir": 0.0,
      "topo": 0.0,
-     "pe": 10.52
+     "pe": 10.53
     },
     "tamanho_mm": [
-     436.8,
-     584.6
+     437.0,
+     585.1
     ],
     "recorte": [
-     0.0003,
-     0.042,
-     0.9406,
-     0.9206
+     0.0,
+     0.0418,
+     0.9412,
+     0.9212
     ],
     "angulo": -0.25
    }
@@ -156,10 +210,64 @@
      445.5
     ],
     "recorte": [
-     0.1487,
-     0.0731,
+     0.1489,
+     0.0729,
      0.7922,
      0.7015
+    ],
+    "angulo": -0.25
+   }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 5.71,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 10.15
+    },
+    "tamanho_mm": [
+     438.8,
+     634.2
+    ],
+    "recorte": [
+     0.0,
+     0.0013,
+     0.9452,
+     0.9988
+    ],
+    "angulo": -0.25
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     438.8,
+     634.2
+    ],
+    "recorte": [
+     0.0,
+     0.0013,
+     0.9452,
+     0.9988
     ],
     "angulo": -0.25
    }
@@ -202,19 +310,19 @@
      "pe": 0.0
     },
     "lados_mm_max": {
-     "esq": 6.91,
+     "esq": 7.04,
      "dir": 3.52,
      "topo": 1.96,
      "pe": 7.3
     },
     "tamanho_mm": [
-     92.6,
+     92.7,
      130.4
     ],
     "recorte": [
-     0.0225,
+     0.0212,
      0.0124,
-     0.9668,
+     0.9682,
      0.9772
     ],
     "angulo": -0.56
@@ -235,14 +343,68 @@
      "pe": 0.0
     },
     "tamanho_mm": [
-     73.2,
-     101.7
+     73.4,
+     111.1
     ],
     "recorte": [
-     0.1359,
-     0.1482,
-     0.7636,
-     0.7622
+     0.1328,
+     0.0797,
+     0.7671,
+     0.832
+    ],
+    "angulo": -0.56
+   }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 2.75,
+     "topo": 1.83,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     93.2,
+     130.8
+    ],
+    "recorte": [
+     0.0172,
+     0.0067,
+     0.9735,
+     0.9802
+    ],
+    "angulo": -0.56
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     93.2,
+     130.8
+    ],
+    "recorte": [
+     0.0172,
+     0.0067,
+     0.9735,
+     0.9802
     ],
     "angulo": -0.56
    }
@@ -329,6 +491,60 @@
     ],
     "angulo": -0.69
    }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 3.06,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 3.61,
+     "dir": 0.0,
+     "topo": 38.61,
+     "pe": 8.89
+    },
+    "tamanho_mm": [
+     198.2,
+     277.7
+    ],
+    "recorte": [
+     0.0185,
+     0.0062,
+     0.918,
+     0.9938
+    ],
+    "angulo": -0.69
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     198.2,
+     277.7
+    ],
+    "recorte": [
+     0.0185,
+     0.0062,
+     0.918,
+     0.9938
+    ],
+    "angulo": -0.69
+   }
   }
  },
  "matematica_p032": {
@@ -375,13 +591,13 @@
     },
     "tamanho_mm": [
      172.0,
-     240.9
+     241.0
     ],
     "recorte": [
      0.0,
      0.0265,
      0.8191,
-     0.8117
+     0.8122
     ],
     "angulo": 0.69
    }
@@ -409,6 +625,60 @@
      0.05,
      0.6597,
      0.7444
+    ],
+    "angulo": 0.69
+   }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 65.66,
+     "dir": 57.3,
+     "topo": 37.72,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 65.66,
+     "dir": 69.57,
+     "topo": 37.72,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     166.6,
+     279.4
+    ],
+    "recorte": [
+     0.0294,
+     0.0588,
+     0.7933,
+     0.9413
+    ],
+    "angulo": 0.69
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 65.66,
+     "dir": 57.3,
+     "topo": 37.72,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 65.66,
+     "dir": 69.57,
+     "topo": 37.72,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     166.6,
+     279.4
+    ],
+    "recorte": [
+     0.0294,
+     0.0588,
+     0.7933,
+     0.9413
     ],
     "angulo": 0.69
    }
@@ -494,6 +764,197 @@
      0.8329
     ],
     "angulo": -2.0
+   }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 78.46,
+     "dir": 76.29,
+     "topo": 117.93,
+     "pe": 120.33
+    },
+    "lados_mm_max": {
+     "esq": 78.46,
+     "dir": 78.7,
+     "topo": 120.33,
+     "pe": 120.33
+    },
+    "tamanho_mm": [
+     157.1,
+     240.7
+    ],
+    "recorte": [
+     0.0,
+     0.0,
+     1.0,
+     1.0
+    ],
+    "angulo": -2.0
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     157.1,
+     240.7
+    ],
+    "recorte": [
+     0.0,
+     0.0,
+     1.0,
+     1.0
+    ],
+    "angulo": -2.0
+   }
+  }
+ },
+ "egenloff_p047": {
+  "hoje": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 7.33,
+     "dir": 0.0,
+     "topo": 7.87,
+     "pe": 9.16
+    },
+    "lados_mm_max": {
+     "esq": 173.52,
+     "dir": 173.98,
+     "topo": 228.92,
+     "pe": 211.06
+    },
+    "tamanho_mm": [
+     347.5,
+     457.8
+    ],
+    "recorte": [
+     0.0,
+     0.015,
+     0.9852,
+     0.985
+    ],
+    "angulo": 0.0
+   }
+  },
+  "so_o_preto": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 9.02
+    },
+    "lados_mm_max": {
+     "esq": 169.12,
+     "dir": 169.57,
+     "topo": 0.0,
+     "pe": 14.88
+    },
+    "tamanho_mm": [
+     338.8,
+     451.0
+    ],
+    "recorte": [
+     0.0202,
+     0.0295,
+     0.96,
+     0.9705
+    ],
+    "angulo": 0.0
+   }
+  },
+  "ate_a_moldura": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     253.4,
+     320.5
+    ],
+    "recorte": [
+     0.0706,
+     0.1879,
+     0.7183,
+     0.6898
+    ],
+    "angulo": 0.0
+   }
+  },
+  "so_o_preto_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 9.16
+    },
+    "lados_mm_max": {
+     "esq": 166.19,
+     "dir": 172.15,
+     "topo": 0.0,
+     "pe": 9.61
+    },
+    "tamanho_mm": [
+     347.5,
+     457.8
+    ],
+    "recorte": [
+     0.0,
+     0.015,
+     0.9852,
+     0.985
+    ],
+    "angulo": 0.0
+   }
+  },
+  "ate_a_moldura_pinta": {
+   "inteira": {
+    "lados_mm": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "lados_mm_max": {
+     "esq": 0.0,
+     "dir": 0.0,
+     "topo": 0.0,
+     "pe": 0.0
+    },
+    "tamanho_mm": [
+     347.5,
+     457.8
+    ],
+    "recorte": [
+     0.0,
+     0.015,
+     0.9852,
+     0.985
+    ],
+    "angulo": 0.0
    }
   }
  }

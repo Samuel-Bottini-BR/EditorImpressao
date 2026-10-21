@@ -318,6 +318,13 @@ class Projeto:
     # corte a mao (ConfigPagina.recorte) e a excecao por pagina, como sempre.
     borda_preta: bool = False
     borda_preta_ate: str = "ate_a_moldura"
+    # Item 2.14 (rodada 5, 09/10/2026, rv5-pag-egenloff-047: "O Kaique escolhe
+    # por livro" entre cortar fora e pintar de branco): o que fazer com o que
+    # fica fora da pagina achada, so com borda_preta ligada. "cortar" (de
+    # fabrica: o 2.13) ou "pintar" (o corte fica o de sempre e o resto vira
+    # branco). Projeto antigo volta "cortar" (e com a borda desligada nada
+    # muda). Ver core/borda_preta.py.
+    borda_preta_fazer: str = "cortar"
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
