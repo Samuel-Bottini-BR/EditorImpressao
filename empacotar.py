@@ -147,6 +147,8 @@ EXCLUIR = [
 # explicitos, e o OnnxTR e importado so dentro de uma funcao (ocr_doctr).
 OCULTOS = ["doxapy", "skimage.filters", "PIL._tkinter_finder",
            "core.gravura_scantailor",
+           # a DLL comum das ferramentas do ScanTailor (bug de 20/10/2026)
+           "core.st_ferramentas",
            "core.ocr_comum", "core.ocr_doctr", "core.ocr_tesseract", "core.ocr_kraken",
            "core.ocr_comparar", "core.ocr_diagnostico",
            "onnxtr", "onnxtr.models", "onnxtr.models.detection", "onnxtr.models.builder",
@@ -321,19 +323,24 @@ def modelos_faltando_no_registro_do_inno(registro: str) -> list[str]:
 def nativos_do_programa() -> list[tuple[Path, str]]:
     """As bibliotecas nativas (DLL) que o programa usa: [(origem, destino no pacote)].
 
-    Hoje so o detector de gravura do ScanTailor: core/nativo/st_gravura.dll
-    (o caminho vem do proprio codigo, core/gravura_scantailor.CAMINHO_DLL) e o
-    st_gravura.txt ao lado (de onde veio o codigo, versao, soma - e a licenca
-    GPL-3 exige dizer isso). O destino e o caminho relativo a raiz do codigo
+    As duas DLLs do ScanTailor, cada uma com o .txt ao lado (de onde veio o
+    codigo, versao, soma - e a licenca GPL-3 exige dizer isso):
+      - core/nativo/st_gravura.dll, o detector de gravura (item 1.2; o
+        caminho vem de core/gravura_scantailor.CAMINHO_DLL);
+      - core/nativo/st_ferramentas.dll, a DLL comum das outras ferramentas do
+        ScanTailor (limpar pontinhos, dividir, endireitar, caixas; o caminho
+        vem de core/st_ferramentas.CAMINHO_DLL). Entrou em 21/10/2026: o bug
+        da Lista de bugs de 20/10 ("Instalador sem a st_ferramentas.dll") -
+        sem ela o programa instalado caia no caminho "nosso" sem avisar. O destino e o caminho relativo a raiz do codigo
     (core/nativo), onde o codigo empacotado procura. Vai por --add-data, e nao
     --add-binary: a DLL usa o Qt do PySide6 que ja vai no pacote, e a analise
     de dependencias do PyInstaller so arrastaria copias dele.
     """
-    from core import detectar_regioes, gravura_scantailor
+    from core import detectar_regioes, gravura_scantailor, st_ferramentas
 
     raiz_do_codigo = Path(detectar_regioes.__file__).resolve().parent.parent
-    dll = gravura_scantailor.CAMINHO_DLL
-    usados = (dll, dll.with_suffix(".txt"))
+    usados = tuple(caminho for dll in (gravura_scantailor.CAMINHO_DLL, st_ferramentas.CAMINHO_DLL)
+                   for caminho in (dll, dll.with_suffix(".txt")))
     return [(origem, origem.relative_to(raiz_do_codigo).parent.as_posix()) for origem in usados]
 
 
@@ -350,12 +357,13 @@ def _avisar_nativos_faltando() -> bool:
     faltando = nativos_faltando()
     if not faltando:
         return True
-    print("\n  PAREI: falta o detector de gravura do ScanTailor, e sem ele o programa")
-    print("  sairia usando o detector antigo, sem avisar.")
+    print("\n  PAREI: falta uma DLL do ScanTailor, e sem ela o programa sairia usando")
+    print("  as contas antigas, sem avisar.")
     for origem in faltando:
         print(f"    não achei {origem}")
-    print("  A DLL está no git (core\\nativo\\). Se sumiu, recompile com:")
-    print("    .venv\\Scripts\\python.exe compilar_detector_gravura.py")
+    print("  As DLLs estão no git (core\\nativo\\). Se sumiram, recompile com:")
+    print("    .venv\\Scripts\\python.exe compilar_detector_gravura.py   (st_gravura)")
+    print("    .venv\\Scripts\\python.exe compilar_st_ferramentas.py     (st_ferramentas)")
     return False
 
 
