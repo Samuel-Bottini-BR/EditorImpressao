@@ -225,3 +225,23 @@ Gerando o Egenloff 1-14 de verdade (300 DPI, `scripts/gerar_livro_egenloff.py`),
 Resultado (imagens `img/livro-egenloff/`): só a 2.5 → páginas comuns 253 x 360 mm; as duas → 253 x 379 mm;
 capas no tamanho delas (muito maiores, com aviso). Teste de reversão `tests/test_corte_pelo_conteudo_livro.py`
 (4 falham no `4120c68`) e `test_regressao_a_frase_da_tela_diz_as_opcoes_novas`.
+
+## 21/10/2026 — PARADO a pedido do Samuel. O que falta, exatamente
+
+- **Etiqueta de 1880 do Egenloff 3 cortada ao meio com as duas opções (verificador, `f10b2df`) — NÃO
+  CONSERTADA.** Feito: `core/corte_pelo_conteudo.sem_partir` (o corte do tamanho do livro anda, sem mudar de
+  tamanho, para não partir uma peça impressa; poeira < 1 mm não conta), chamado em
+  `pipeline._caixa_do_livro`; testes `test_regressao_corte_do_livro_nao_parte_peca_ao_meio` (falha sem o
+  código novo) e `test_sem_partir_sem_jeito_fica_como_esta`. **Mas na página de verdade não anda**
+  (`scripts/eg3.py as_duas`: corte 849,208–3832,4683; a etiqueta é a peça 792,4431–3389,4807). Próximo:
+  achar qual peça prende o deslocamento (imprimir as peças atravessadas no topo depois de andar 136
+  pontos para baixo). O aviso: na minha medida direta a página 3 TEM o aviso nos dois jeitos; não reproduzi
+  o "sem aviso" da janela — conferir na janela.
+- **Velocidade da passada que mede o livro** (opções ligadas, `scripts/tempo_passada.py`, PC com outros
+  agentes): Egenloff 14 folhas 18,8–19,6 s antes (`4120c68`, 150 DPI) × 51,6–59,0 s depois (`57de8af`,
+  300 DPI), ~2,8x; Marial 100 folhas 137–143 s × 276–319 s, ~2,1x. Custo do conserto 3 (passada na
+  resolução do PDF). Ideia para baixar: medir a passada a 150 e a geometria também a 150 (as duas iguais).
+- **Filtro de velocidade do GitHub** (rodada 39623840809, `31a9253` × `57de8af`, opções DESLIGADAS, que é
+  o que o filtro mede): estava rodando ao parar; ler `gh run view 39623840809`.
+- **Horas 11** (ramo `consertos-2026-10-21`): consertado em `2ff16e7` (ver o ONDE-PAREI de lá). Falta só a
+  suíte do GitHub daquele ramo depois desse commit.

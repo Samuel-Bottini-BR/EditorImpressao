@@ -300,6 +300,72 @@ def caixa_do_corte(medida: MedidaDoConteudo,
     return (x0, y0, x1, y1)
 
 
+def sem_partir(caixa: tuple[float, float, float, float], pecas, dentro: tuple[float, float, float, float],
+               medida: MedidaDoConteudo) -> tuple[float, float, float, float]:
+    """O corte do tamanho do livro sem partir uma peça impressa ao meio.
+
+    Conserto de 21/10/2026 (verificador: com as duas opções ligadas, a
+    etiqueta impressa de 1880 do Egenloff 3 saía cortada ao meio). Quando
+    `caixa` (já do tamanho do livro) atravessa uma peça (`pecas`: as
+    candidatas de candidatas(), em pontos), o corte ANDA, sem mudar de
+    tamanho, para o lado que deixa a peça inteira (dentro ou fora), o menos
+    possível, desde que continue contendo `dentro` (o conteúdo + 1 mm) e
+    caiba na página. Sem jeito, fica como está (e o aviso de "ficou de fora"
+    vale). Cada eixo é acertado à parte. Nosso (o ScanTailor não faz isto)."""
+    if not pecas:
+        return caixa
+    mx, my = medida.mm_por_ponto or (1.0, 1.0)
+    folga_x, folga_y = MARGEM_MM / mx, MARGEM_MM / my
+    lx0, ly0, lx1, ly1 = medida.limite or (0.0, 0.0, float(medida.largura), float(medida.altura))
+    # poeira (menor que PECA_MINIMA_MM nos dois sentidos) nao conta: partir um
+    # pontinho nao estraga nada, e ele prendia o corte (Egenloff 3)
+    caixas = [c for c, _sozinha in pecas
+              if (c[2] - c[0]) * mx >= PECA_MINIMA_MM or (c[3] - c[1]) * my >= PECA_MINIMA_MM]
+
+    def acertar(a: float, b: float, d0: float, d1: float, comeco: float, fim: float,
+                eixo: int, folga: float, outro: tuple[float, float]) -> tuple[float, float]:
+        o0, o1 = outro
+
+        def no_eixo(c):
+            return (c[0], c[2]) if eixo == 0 else (c[1], c[3])
+
+        def no_outro(c):
+            return (c[1], c[3]) if eixo == 0 else (c[0], c[2])
+
+        def partidas(x0, x1):
+            n = 0
+            for c in caixas:
+                p0, p1 = no_eixo(c)
+                q0, q1 = no_outro(c)
+                if q1 <= o0 or q0 >= o1:
+                    continue                                 # fora no outro eixo
+                if (p0 < x0 < p1) or (p0 < x1 < p1):
+                    n += 1
+            return n
+
+        if partidas(a, b) == 0:
+            return a, b
+        passos = set()
+        for c in caixas:
+            p0, p1 = no_eixo(c)
+            for borda in (a, b):
+                if p0 < borda < p1:
+                    passos.update({p1 + folga - borda, p0 - folga - borda})
+        for passo in sorted(passos, key=abs):
+            x0, x1 = a + passo, b + passo
+            if x0 < comeco or x1 > fim or x0 > d0 or x1 < d1:
+                continue
+            if partidas(x0, x1) == 0:
+                return x0, x1
+        return a, b
+
+    x0, y0, x1, y1 = caixa
+    d0x, d0y, d1x, d1y = dentro
+    y0, y1 = acertar(y0, y1, d0y, d1y, ly0, ly1, 1, folga_y, (x0, x1))
+    x0, x1 = acertar(x0, x1, d0x, d1x, lx0, lx1, 0, folga_x, (y0, y1))
+    return (x0, y0, x1, y1)
+
+
 def caixa_vazia(medida: MedidaDoConteudo, livro: TamanhoDoLivro) -> tuple[float, float, float, float] | None:
     """O corte de uma página SEM conteúdo, com o tamanho do livro: um
     retângulo do tamanho do livro no meio da página (dentro de medida.limite,

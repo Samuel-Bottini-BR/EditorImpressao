@@ -1345,6 +1345,11 @@ def _caixa_do_livro(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
     # (alinhar_com_as_outras False) sai do tamanho dela, como no ScanTailor.
     sozinha = livro is None or alinhar is False
     caixa = corte_pelo_conteudo.caixa_do_corte(medido.medida, None if sozinha else livro)
+    if caixa is not None and not sozinha:
+        # o corte do tamanho do livro nao parte uma peca impressa ao meio
+        # (conserto de 21/10/2026, Egenloff 3 com as duas opcoes)
+        caixa = corte_pelo_conteudo.sem_partir(
+            caixa, medido.candidatas, corte_pelo_conteudo.caixa_do_corte(medido.medida), medido.medida)
     return medido, caixa, livro
 
 
