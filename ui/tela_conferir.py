@@ -2675,7 +2675,7 @@ class TelaConferir(QWidget):
         self.previas.pedir_cartoes(
             self.indice_pagina, base, outros,
             pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
-            chave=chave_cache,
+            chave=chave_cache, dpi=DPI_AMOSTRA_DOS_CARTOES,
         )
 
     def _chave_dos_cartoes(self) -> str:

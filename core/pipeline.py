@@ -1835,6 +1835,33 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     return (claro_no_escuro.inverter(saida) if invertida else saida), monocromatica
 
 
+def filtro_com_as_caixinhas(img: np.ndarray, pagina: ConfigPagina, filtro: str, dpi: float,
+                            forca_preto: int, clareza: int, intensidade: int,
+                            algoritmo_pb: str = "auto", despeckle=True) -> np.ndarray:
+    """O filtro `filtro` numa imagem solta (o cartao do filtro, a tela
+    ampliada), com as caixinhas desta pagina, na ordem de _filtrar: "Letra
+    clara em fundo escuro" (item 2.9) inverte na entrada e na saida (nunca no
+    Original nem no Tirar o fundo); "Letras com a cor delas" e "Reduzir
+    cores" (item 2.11) sao o ultimo passo antes de desinverter. Sem caixinha
+    marcada sai exatamente o aplicar_filtro de sempre.
+
+    Bug do verificador do 2.9 (21/10/2026): o cartao chamava aplicar_filtro
+    direto e mostrava a pagina sem inverter (tests/
+    test_cartoes_seguem_as_caixinhas.py). Arriscado: tirar daqui uma das
+    caixinhas (o cartao volta a mostrar outra coisa que a pagina)."""
+    invertida = claro_no_escuro.ligado(pagina) and filtro not in (ORIGINAL, TIRAR_FUNDO)
+    entrada = claro_no_escuro.inverter(img) if invertida else img
+    saida, _ = aplicar_filtro(entrada, filtro, forca_preto, clareza, intensidade,
+                              algoritmo_pb=algoritmo_pb, despeckle=despeckle)
+    if cores_scantailor.letras_ligadas(pagina) or cores_scantailor.reduzir_ligado(pagina):
+        com_cor = cores_scantailor.aplicar(
+            entrada, saida, filtro, cores_scantailor.letras_ligadas(pagina),
+            cores_scantailor.reduzir_ligado(pagina), dpi)
+        if com_cor is not None:
+            saida = com_cor[0]
+    return claro_no_escuro.inverter(saida) if invertida else saida
+
+
 def _filtrar_preto_no_branco(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
                              dpi: float | None = None,
                              dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:

@@ -335,27 +335,16 @@ class TelaAmpliada(QDialog):
         # desta imagem (o pedido; o DPI do scan nao e lido aqui, entao o
         # acerto dos PDFs de "72 DPI" vale pelo tamanho da pagina - ver
         # core.pontinhos_scantailor.dpi_para_os_pontinhos)
-        # item 2.9: "Letra clara em fundo escuro" desta pagina - inverte na
-        # entrada e na saida, como core.pipeline._filtrar
-        from core import claro_no_escuro
+        # itens 2.9 e 2.11: as caixinhas desta pagina, pela mesma conta da
+        # pagina e dos cartoes (core.pipeline.filtro_com_as_caixinhas)
+        from core.pipeline import filtro_com_as_caixinhas
 
-        invertida = claro_no_escuro.ligado(pagina) and outro != TIRAR_FUNDO
-        entrada = claro_no_escuro.inverter(preparada) if invertida else preparada
-        saida, _ = aplicar_filtro(
-            entrada, outro, pagina.forca_preto,
+        return filtro_com_as_caixinhas(
+            preparada, pagina, outro, DPI_AMPLIADA, pagina.forca_preto,
             pagina.clareza_melhorar, pagina.intensidade_magico,
             algoritmo_pb=pagina.algoritmo_preto_branco,
             despeckle=pontinhos_da_pagina(self.projeto, pagina, preparada, DPI_AMPLIADA),
         )
-        # item 2.11: "Letras com a cor delas" e "Reduzir cores" desta pagina
-        from core import cores_scantailor
-
-        com_cor = cores_scantailor.aplicar(
-            entrada, saida, outro, cores_scantailor.letras_ligadas(pagina),
-            cores_scantailor.reduzir_ligado(pagina), DPI_AMPLIADA)
-        if com_cor is not None:
-            saida = com_cor[0]
-        return claro_no_escuro.inverter(saida) if invertida else saida
 
     def _atualizar_rotulos(self) -> None:
         """Atualiza o texto de página/filtro/zoom e o estado dos botões < >."""
