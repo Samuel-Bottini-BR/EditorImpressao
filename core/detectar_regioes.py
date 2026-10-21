@@ -240,19 +240,30 @@ class DetectorDeLayout:
         None em vez de propagar erro - o resto do detector sabe lidar com
         "sem modelo" caindo nos sinais que nao dependem dele.
         """
-        if self._tentou:
+        if self._tentou or self._sessao is not None:
             return self._sessao
-        self._tentou = True
         if not self.caminho.exists():
+            self._tentou = True
             return None
         try:
             import onnxruntime as ort
-
+        except ImportError:
+            self._tentou = True          # sem a biblioteca: nao adianta tentar de novo
+            return None
+        try:
             opcoes = ort.SessionOptions()
             opcoes.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
             self._sessao = ort.InferenceSession(
                 str(self.caminho), opcoes, providers=["CPUExecutionProvider"])
-        except Exception:  # noqa: BLE001 - sem o modelo o resto continua
+        except Exception as erro:  # noqa: BLE001 - sem o modelo o resto continua
+            # Conserto de 21/10/2026 (bug "o mesmo código nem sempre dá a mesma
+            # imagem", Lista de bugs de 20/10): a falha da CARGA (falta de
+            # memória, arquivo preso) nao fica para a sessao inteira - a
+            # proxima pagina tenta de novo. Antes, uma falha num momento de
+            # pouca memoria deixava o livro todo sem o modelo, em silencio, e
+            # as regioes (e a imagem) mudavam. Arriscado: voltar a guardar.
+            _log.warning("modelo de layout nao abriu (tento de novo na proxima pagina): %s: %s",
+                         type(erro).__name__, erro)
             self._sessao = None
         return self._sessao
 
@@ -1270,6 +1281,17 @@ def _gravura_pelo_scantailor(img: np.ndarray, dpi: float | None, dpi_do_scan: fl
         resultado = gravura_scantailor.detectar_gravura(
             entrada, declarado, forma=opcoes.forma, sensibilidade=opcoes.sensibilidade,
             mais_sensivel=opcoes.mais_sensivel, normalizar_iluminacao=opcoes.normalizar)
+        if not resultado.disponivel and gravura_scantailor.faltou_memoria(resultado):
+            # Conserto de 21/10/2026 (bug "o mesmo código nem sempre dá a
+            # mesma imagem"): faltou memoria nesta pagina. Antes caia direto
+            # no detector antigo, e a imagem mudava so porque o PC estava
+            # ocupado. Solta a memoria que der e tenta de novo uma vez.
+            import gc
+
+            gc.collect()
+            resultado = gravura_scantailor.detectar_gravura(
+                entrada, declarado, forma=opcoes.forma, sensibilidade=opcoes.sensibilidade,
+                mais_sensivel=opcoes.mais_sensivel, normalizar_iluminacao=opcoes.normalizar)
         if not resultado.disponivel:
             return _falhou(f"{resultado.motivo} Usei o detector antigo nesta página.",
                            resultado.detalhe_tecnico)

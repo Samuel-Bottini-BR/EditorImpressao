@@ -43,3 +43,17 @@ Os dois bugs da Lista de bugs estão consertados, cada um com teste de reversão
 
 - [x] Suíte no Windows do GitHub, rodada 39559866204 (código `e414ba1`): 115 arquivos, 2074 passaram,
       0 falharam, 73 pulados; botões e prints da janela real: passou.
+
+## 4. Horas p. 11 em Mágico pro nem sempre dá a mesma imagem (Lista de bugs, 20/10)
+
+- Causa achada: com pouca memória, dois caminhos trocavam a conta em silêncio: (1) o modelo de layout
+  (`doclayout.onnx`) que falhava na carga ficava fora a sessão inteira; (2) o detector de gravura, ao
+  responder "faltou memória", caía no detector antigo naquela página.
+- Prova na página de verdade (`scripts/horas11_soma.py`): normal, duas vezes em processos separados,
+  `b85e5b05…` (a soma das 4 repetições da prova "sai igual"); com a falta de memória da gravura simulada,
+  `183af29c…` (outra imagem).
+- Conserto: a carga que falhou é tentada de novo na página seguinte (arquivo/biblioteca ausentes ficam de
+  vez); a falta de memória da gravura é tentada de novo depois de `gc.collect()`.
+- Teste de reversão `tests/test_mesma_imagem_com_pouca_memoria.py` (2 falham antes, passam depois).
+- Ressalva: não reproduzi a falta de memória de verdade (só simulada); se faltar memória nas duas
+  tentativas, a página ainda cai no detector antigo (com o aviso de sempre na tela e no erros.log).
