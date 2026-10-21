@@ -1,0 +1,175 @@
+{
+ "item": "2.5 e 2.13 (caixa do conteúdo, Partes 1 e 2)",
+ "ramo": "fase2-caixa-conteudo",
+ "commit": "4120c68",
+ "montado_em": "21/10/2026",
+ "nota_para_a_gerente": "Fotos da página e do PDF, não da janela: não dependem do layout. O quadro do livro inteiro é um defeito.",
+ "quadros": [
+  {
+   "id": "cx-melhor",
+   "nome": "Cortar seguindo o conteúdo: onde fica melhor que hoje",
+   "explicacao": [
+    "O que você está escolhendo: se o corte que segue o que está impresso está como você pediu (G8: \"Trazer como opção, desligada\").",
+    "Caso real: no calendário do Livro de Horas o corte de hoje pega papel vazio e a lombada; o novo corta rente à moldura. No ljs47 sai a folha vizinha e a borda.",
+    "As duas opções vêm desligadas: livro já começado sai igual."
+   ],
+   "olhar": "Laranja = corte de hoje; verde = o corte novo.",
+   "imgs": [
+    {
+     "src": "img/cx-horas_p026.jpg",
+     "legenda": "Horas 26: hoje (laranja) e seguindo o conteúdo (verde)"
+    },
+    {
+     "src": "img/cx-ljs47_p046.jpg",
+     "legenda": "ljs47 46: a folha vizinha e a borda saem"
+    }
+   ]
+  },
+  {
+   "id": "cx-aviso",
+   "nome": "Quando o corte deixa algo impresso de fora: o aviso",
+   "explicacao": [
+    "O que você está escolhendo: se o aviso \"Corte deixou algo de fora\" com o botão \"usar o corte alargado\" está como você pediu (g8-moldura-tinta-fora: \"Só avisa\" + mostrar alargado).",
+    "Caso real: na tabela do Livro de Horas a moldura dourada e o título \"TABLE\" ficam de fora; o aviso mostra o pedaço em vermelho e o corte alargado em lilás, que pega tudo.",
+    "No Graduale 223 a caixa vai até a beirada da folha e leva a sombra que o corte de hoje tirava."
+   ],
+   "olhar": "Vermelho = o que ficou de fora; lilás tracejado = o corte alargado.",
+   "imgs": [
+    {
+     "src": "img/cx-horas_p014.jpg",
+     "legenda": "Horas 14: o título e a moldura de fora, e o corte alargado"
+    },
+    {
+     "src": "img/cx-graduale_p223.jpg",
+     "legenda": "Graduale 223: o novo leva a sombra da beirada"
+    }
+   ]
+  },
+  {
+   "id": "cx-livro-inteiro",
+   "nome": "O livro inteiro gerado em PDF (defeito com as duas opções juntas)",
+   "explicacao": [
+    "O que você está escolhendo: se isto precisa ser consertado antes de aprovar.",
+    "Caso real: gerei na janela as 14 primeiras folhas do Egenloff. Só com \"Cortar seguindo o conteúdo\", as páginas saem quase todas do mesmo tamanho (G9), e as capas, muito maiores, no tamanho delas. Com ela e \"Achar a página dentro da borda preta\" juntas, o tamanho do livro some: cada página sai de um tamanho, e a página 6 vira uma tira de 25 x 14 cm, só com o texto.",
+    "Com só a primeira opção ainda sobram diferenças pequenas: as páginas 3 e 4 saem 2 cm mais altas que as outras."
+   ],
+   "olhar": "Em cima, as duas opções: a página 6 é a tira larga e baixa. Embaixo, só a primeira: todas do mesmo tamanho.",
+   "imgs": [
+    {
+     "src": "img/cx-livro-as-duas.jpg",
+     "legenda": "As duas opções ligadas: 14 páginas do PDF (fundo rosa = sobra)"
+    },
+    {
+     "src": "img/cx-livro-so-2.5.jpg",
+     "legenda": "Só \"Cortar seguindo o conteúdo\": o mesmo livro"
+    }
+   ]
+  },
+  {
+   "id": "cx-borda",
+   "nome": "Achar a página dentro da borda preta: só o preto ou até a moldura",
+   "explicacao": [
+    "O que você está escolhendo: se os dois jeitos que você pediu (g7-borda-ate-onde, \"O Kaique escolhe por livro\") estão como você quer.",
+    "Caso real: em cada foto, hoje, \"só o preto\" e \"até a moldura\". \"Só o preto\" tira a faixa preta e deixa o papel; \"até a moldura\" corta rente ao que está impresso (o que sai fica escurecido).",
+    "Nas suas páginas-alvo (Antiphon 260, Camões 104, Cursus 3, Matemática 32) a faixa preta sai com os dois jeitos."
+   ],
+   "olhar": "A faixa preta embaixo do Antiphon 260 e as pontas pretas nos cantos do Camões 104.",
+   "imgs": [
+    {
+     "src": "img/cx-antiphon_p260.jpg",
+     "legenda": "Antiphon 260: hoje, só o preto, até a moldura"
+    },
+    {
+     "src": "img/cx-camoes_p104.jpg",
+     "legenda": "Camões 104: com \"só o preto\" ficam pontas nos cantos; com \"até a moldura\" some tudo"
+    },
+    {
+     "src": "img/cx-cursus_p003.jpg",
+     "legenda": "Cursus 3"
+    },
+    {
+     "src": "img/cx-matematica_p032.jpg",
+     "legenda": "Matemática 32"
+    }
+   ]
+  }
+ ],
+ "opcoes_de_cada_quadro": [
+  "Está bom",
+  "Melhorar",
+  "Está pior",
+  "Ainda não entendi"
+ ],
+ "perguntas": [
+  {
+   "id": "cx-carimbo",
+   "titulo": "O carimbo da biblioteca fora do corte",
+   "explicacao": [
+    "O que você está escolhendo: o que fazer com o carimbo de biblioteca no corte que segue o conteúdo.",
+    "No Opus Majus 3 o carimbo fica fora do corte, sem aviso; no Egenloff ele às vezes dispara o aviso \"Corte deixou algo de fora\". (pergunta do implementador)"
+   ],
+   "imgs": [
+    {
+     "src": "img/cx-opusmajus_p003.jpg",
+     "legenda": "Opus Majus 3: o carimbo do canto fica fora do verde"
+    }
+   ],
+   "opcoes": [
+    "Está bom assim",
+    "Quero o carimbo dentro",
+    "Ainda não entendi"
+   ]
+  },
+  {
+   "id": "cx-quase-branca",
+   "titulo": "Página quase em branco, só com um carimbo",
+   "explicacao": [
+    "O que você está escolhendo: onde fica o centro de uma página quase em branco.",
+    "No Egenloff 12 (só um carimbo) a página sai do tamanho das outras, mas centrada no carimbo, não no papel. (pergunta do implementador)"
+   ],
+   "imgs": [
+    {
+     "src": "img/cx-egenloff_p012.jpg",
+     "legenda": "Egenloff 12: a caixa (verde) é só o risco do carimbo"
+    }
+   ],
+   "opcoes": [
+    "Está bom",
+    "Centrar no papel",
+    "Ainda não entendi"
+   ]
+  },
+  {
+   "id": "cx-pesel",
+   "titulo": "Página com cartão escuro em volta da gravura (Pesel 21)",
+   "explicacao": [
+    "O que você está escolhendo: o que o Kaique escolhe num livro assim.",
+    "Com \"até a moldura\", o corte vai até a gravura e o cartão some, junto com o número 3 e parte do título e da legenda. Com \"só o preto\", a página sai inteira. (pergunta do implementador)"
+   ],
+   "imgs": [
+    {
+     "src": "img/cx-pesel_p021.jpg",
+     "legenda": "Pesel 21: hoje, só o preto, até a moldura"
+    }
+   ],
+   "opcoes": [
+    "Só o preto neste livro",
+    "Até a moldura, e eu acerto à mão",
+    "Ainda não entendi"
+   ]
+  }
+ ],
+ "pergunta": {
+  "id": "cx",
+  "titulo": "Caixa do conteúdo e borda preta: o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se as duas opções entram no programa.",
+   "Falta consertar o livro inteiro com as duas opções juntas (o quadro do PDF)."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}
