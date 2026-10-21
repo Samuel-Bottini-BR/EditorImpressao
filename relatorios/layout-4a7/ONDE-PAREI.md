@@ -59,5 +59,17 @@ Situação: **pronta para a gerente publicar** (20/10).
   construir); "Limpeza cuidadosa" em 3 itens da lista (no desenho da rodada 11 era um item com "leve·média·forte");
   tela "O que fazer" com o "Só as letras" ainda em botões; barra de baixo sem "antes/depois" e zoom.
 
+### Rodada 14 construída (21/10): PRONTA PARA CONFERIR
+- `aa5fe9d`: fase-1 (`31a9253`) juntado ao ramo.
+- `8c28641`: 907 B ("o do Editor" no Dividir, "Para o livro todo", Histórico e tela "O que fazer");
+  909 B ("Só neste pedaço" sem o botão de cima, nenhum aceso; clicar no aceso apaga); 910 A (a linha dos ângulos
+  continua com o giro à mão; a frase vai para o balão do mouse da linha e da lista "Conta").
+- `f228cd9`: 903 B (menu "Painéis": os cinco, "Fechar o painel", "Ícones da direita"; saíram os quatro "Painel: …"
+  do Ver) e 904 A ("Miniaturas" e "Ícones da direita" no menu Ver). "Ver lado a lado", "Todas as páginas" e
+  "Filtros em tela cheia" entram no Ver quando essas telas existirem.
+- `e1ef0d3`: 910 com a página já medida (procura as medidas sem o ângulo à mão); prints em
+  `relatorios/layout-4a7/rodada14-feita/` (4 de 4 conferências). GitHub 39554220929: 2081 passaram, 0 falharam; teste_botoes 213 ações, 0 falhas.
+- 906 C: só na junção com o "Para revisar" (texto em `core/analise.py`, da gerente).
+
 ### Próximas
-- Construir 903 B, 904 A e 907 B (decididos); depois a etapa 5 (miniaturas).
+- Etapa 5 (miniaturas: cabeçalho "PÁGINAS", seta, três pontinhos, alça de arrastar, 801 A, 808 A).
