@@ -102,3 +102,5 @@ Leia-me das fontes no git: [docs/plano/paginas-claude-ai/LEIA-ME.md](../../docs/
 ## 5. Antes das páginas: os formulários HTML (até 06/10/2026)
 
 `relatorios/conferir-aqui.html`, `-2` a `-15` e `relatorios/decisoes-2026-10-01.html`: cartões com ORIGINAL · ANTES · AGORA, botões Bom/Ruim/Não sei e "Copiar respostas"; ele colava no chat e a gerente gravava em `relatorios/conferencia-samuel-*.md`. As exigências dele daquela época continuam valendo: toda pergunta com foto, dizer onde olhar, resultado ao lado do original, opções por extenso (PARTE -9 §1). Lista completa em [conferencias.md](../conferencias.md).
+
+- Memória do Editor de Impressão (página com busca, publicada em 20/10/2026): https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE — refazer com `memoria/pagina/montar_pagina.py` e republicar quando as fichas mudarem.

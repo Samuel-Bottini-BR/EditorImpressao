@@ -4,6 +4,19 @@ Implementador, 12 e 13/10/2026. Ramo `fase2-para-revisar` (saiu do `fase-1` em `
 `.claude/worktrees/para-revisar`. Bloco do plano: "Decidido pelo Samuel, a fazer: o 'Para revisar'"
 (PLANO-DEFINITIVO, Fase 2). **Nada aqui está aprovado: é para o verificador conferir.**
 
+## Retomada de 21/10/2026 (pedido da gerente depois da aba 4 do verificador): feita
+
+| Passo | Resultado | Commit |
+|---|---|---|
+| Junção do `fase-1` em `31a9253` (conserto do corte) | sem conflito | `de5b84e` |
+| Frase da `r14-aviso-marcar` (C) + as outras de marcar dizendo onde fica | feito | `8cb84b8` |
+| "está bom em tudo" = uma ação só (folhas e páginas juntas) | teste de reversão, falha no `de5b84e` | `8cb84b8` |
+| Rodapé "N com dúvida" atrasado | teste de reversão, falha no `de5b84e` | `8cb84b8` |
+| Texto da linha do painel cortado | só aparência: anotado para o agente de layout | — |
+| Janela que sumiu no "Deixar em branco" (Egenloff 12) | **não reproduziu**: 62 cliques em 4 jeitos, faulthandler ligado, nada | roteiro `reproduzir_deixar_em_branco.py` |
+| Sai igual de novo | 64 de 64 (`sai-igual-2026-10-21/`) | este |
+| GitHub | rodada 39555791320 em `8cb84b8`: 120 arquivos, 2187 passaram, 0 falharam; botões 228 ações, 0 falhas | — |
+
 ## Retomada de 20/10/2026: junção com o layout aprovado (feita; PRONTO PARA CONFERIR pelo verificador)
 
 Pedido da gerente: juntar `origin/fase-1` (b6fd091, com o layout das etapas 2 e 3 de 14/10), acertar os textos

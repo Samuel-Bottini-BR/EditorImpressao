@@ -89,3 +89,59 @@ def test_bug_20_10_os_textos_dos_avisos_nao_falam_de_aba():
     for codigo, alerta in analise.ALERTAS.items():
         texto = f"{alerta.titulo} {alerta.mensagem}".lower()
         assert not re.search(r"\baba\b", texto), (codigo, alerta.mensagem)
+
+
+# --- 21/10/2026: a terceira conferência do verificador (aba 4 na tela nova) -----
+#
+# Código antigo destes = o ramo em `de5b84e` (antes deste conserto).
+
+def test_aviso_desenho_ou_escrita_diz_onde_fica_o_letra_e_traco():
+    """Decisão do Samuel na `r14-aviso-marcar` (rodada 14 do layout): "C — Diz
+    onde fica o “letra e traço”". Até 20/10 a frase era neutra (não dizia
+    onde)."""
+    assert analise.descrever(analise.DESENHO_OU_ESCRITA).mensagem == (
+        "Não tenho certeza se esta página é desenho ou escrita. Confira: se for "
+        "escrita, marque a área e escolha “letra e traço” no painel Propriedades.")
+    # as outras frases de marcar dizem onde fica o que usar
+    assert "painel Filtro da página" in analise.descrever(analise.TEXTO_FALHADO).mensagem
+    assert "painel Propriedades" in analise.descrever(analise.FIGURA_ALEM_DA_GRAVURA).mensagem
+
+
+# A tela de conferir do tests/test_para_revisar_na_tela.py (o mesmo livro de 4
+# páginas em Preto e branco com "Só as letras"), com as fixtures que ela usa.
+pytest.importorskip("PySide6")
+from tests.test_para_revisar_na_tela import app, leitor_rapido, pasta, tela  # noqa: F401, E402
+
+
+def test_bug_esta_bom_em_tudo_se_desfaz_com_um_ctrl_z(tela):
+    """Bug do verificador (20/10/2026, aba 4): "está bom em tudo" com avisos de
+    folha E de página gravava duas ações, e o Ctrl+Z precisava de dois toques."""
+    projeto = tela.projeto
+    projeto.folhas[0].alertas = [analise.RESOLUCAO_BAIXA]
+    projeto.folhas[0].revisada = False
+    projeto.paginas[1].alertas = [analise.DESENHO_APAGADO]
+    projeto.paginas[1].revisada = False
+    tela.atualizar()
+    assert len(avisos.pendentes_do_livro(projeto)) >= 2
+    tela._aceitar_tudo()
+    assert avisos.pendentes_do_livro(projeto) == []
+    tela.desfazer()                                   # UM Ctrl+Z
+    pendentes = {(a.alvo, a.indice, a.codigo) for a in avisos.pendentes_do_livro(projeto)}
+    assert (avisos.FOLHA, 0, analise.RESOLUCAO_BAIXA) in pendentes
+    assert (avisos.PAGINA, 1, analise.DESENHO_APAGADO) in pendentes
+
+
+def test_bug_rodape_com_duvida_acerta_quando_o_aviso_chega(tela):
+    """Bug do verificador (20/10/2026, aba 4): o rodapé "N com dúvida" ficava um
+    passo atrasado - o aviso que chegava com a medida por trás mudava o
+    contador de cima, e o rodapé só acertava ao trocar de página."""
+    projeto = tela.projeto
+    for pagina in projeto.paginas:
+        pagina.alertas, pagina.revisada = [], False
+    tela.ir_para_pagina(0)
+    tela.atualizar()
+    assert "0 com dúvida" in tela.rotulo_do_livro.text()
+    # chega um aviso na página da vez (o que _previa_chegou faz com a medida)
+    projeto.paginas[0].alertas = [analise.DESENHO_APAGADO]
+    tela._alertas_da_previa()
+    assert "1 com dúvida" in tela.rotulo_do_livro.text(), tela.rotulo_do_livro.text()

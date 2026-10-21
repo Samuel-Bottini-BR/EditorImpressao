@@ -3090,6 +3090,12 @@ class TelaConferir(QWidget):
         self.rotulo_observacoes.setVisible(bool(observacoes))
         if observacoes:
             self.rotulo_observacoes.setText("   -   " + "; ".join(observacoes))
+        # O rodapé ("N de M conferidas · K com dúvida") conta as mesmas
+        # páginas: acerta junto. O defeito (verificador, 20/10/2026): quando
+        # um aviso chegava com a medida por trás, o contador de cima mudava e
+        # o rodapé só acertava na troca de página (um passo atrasado), porque
+        # só atualizar() o refazia. Arriscado: tirar esta linha.
+        self._atualizar_barra_de_baixo()
 
     @protegido
     def _previa_chegou(self, chave: str, _img: np.ndarray) -> None:
@@ -4211,28 +4217,46 @@ class TelaConferir(QWidget):
 
     def _aceitar_avisos(self, avisos: list, descricao: str = "") -> int:
         """Dá "está bom" nos `avisos` (core.avisos.Aviso): cada um sai da
-        lista "Para revisar"; a página não muda. Uma ação do desfazer por
-        alvo (páginas; e folhas, se houver). Devolve quantos avisos saíram."""
+        lista "Para revisar"; a página não muda. UMA ação do desfazer, mesmo
+        quando há avisos de folhas e de páginas juntos. Devolve quantos itens
+        (folhas e páginas) mudaram.
+
+        O defeito (verificador, 20/10/2026): o "está bom em tudo" gravava uma
+        ação para as folhas e outra para as páginas, e o Ctrl+Z precisava de
+        dois toques para desfazer um clique só. Agora, com os dois tipos, a
+        ação é de folha e leva as páginas nos campos "pagina:N.alertas_aceitos"
+        (historico_acoes.PREFIXO_PAGINA, o mesmo jeito do "não dividir esta").
+        Arriscado: voltar a registrar uma ação por alvo."""
         assert self.projeto is not None and self.acoes is not None
         mudancas = avisos_do_livro.campos_para_aceitar(self.projeto, avisos)
-        quantos = 0
-        for alvo, (indices, campos) in mudancas.items():
-            quantos += len(indices)
+        if not mudancas:
+            return 0
+        folhas = mudancas.get(avisos_do_livro.FOLHA)
+        paginas = mudancas.get(avisos_do_livro.PAGINA)
+        quantos = sum(len(indices) for indices, _c in mudancas.values())
+        if folhas and paginas:
+            alvo, (indices, campos) = avisos_do_livro.FOLHA, folhas
+            campos = dict(campos)
+            for chave, aceitos in paginas[1]["alertas_aceitos"].items():
+                campos[campo_de_pagina(int(chave), "alertas_aceitos")] = aceitos
+            nome = "folhas e páginas"
+        else:
+            alvo, (indices, campos) = next(iter(mudancas.items()))
             nome = "folha" if alvo == avisos_do_livro.FOLHA else "página"
-            if descricao:
-                texto = descricao + (f" ({nome}s)" if len(mudancas) > 1 else "")
-            elif len(indices) == 1:
-                texto = f"Está bom: um aviso da {nome} {indices[0] + 1}"
-            else:
-                texto = f"Está bom: avisos de {len(indices)} {nome}s"
-            # Sem passar por _registrar de propósito: ele joga fora a prévia
-            # das páginas da ação, e aqui a imagem não muda (num "está bom em
-            # tudo" de um livro grande, todas as prévias seriam refeitas).
-            acao = montar_acao(self.projeto, "aceitar_avisos", alvo, indices, campos, texto)
-            aplicar(self.projeto, acao, acao.depois)
-            self.acoes.registrar(acao)
-        if mudancas:
-            self.atualizar()
+        if descricao:
+            texto = descricao
+        elif quantos == 1:
+            texto = f"Está bom: um aviso da {nome} {indices[0] + 1}"
+        else:
+            texto = f"Está bom: avisos de {quantos} " + (
+                nome if folhas and paginas else nome + "s")
+        # Sem passar por _registrar de propósito: ele joga fora a prévia
+        # das páginas da ação, e aqui a imagem não muda (num "está bom em
+        # tudo" de um livro grande, todas as prévias seriam refeitas).
+        acao = montar_acao(self.projeto, "aceitar_avisos", alvo, indices, campos, texto)
+        aplicar(self.projeto, acao, acao.depois)
+        self.acoes.registrar(acao)
+        self.atualizar()
         return quantos
 
     @protegido

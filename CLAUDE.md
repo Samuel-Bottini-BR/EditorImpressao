@@ -225,6 +225,11 @@ fase (ex.: Mágico pro +1,1% do "Para revisar") vai para a Fase 5, como o Samuel
 mandou em 19/10: "vamos deixar esse concerto de lentidão para o final, para a
 fase de desempenho".
 
+**Filtro de velocidade (adotado em 20/10, validado contra o PC):**
+`gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f velocidade_ab=true -f ramo_antes=<ramo ou commit> -f ramo_depois=<ramo ou commit>`
+(~1h55; veredito no topo da rodada; não vê diferença abaixo de 2% nem abaixo do vai-e-vem;
+quando acusar "parece mais lento", disparar de novo uma vez antes de devolver ao agente).
+
 Rodar no GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao
 --ref claude/list-server-files-gkos8v -f ramo=<ramo>`; acompanhar com
 `gh run watch <id> -R Samuel-Bottini-BR/EditorImpressao --exit-status`. O `gh`

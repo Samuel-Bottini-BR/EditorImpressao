@@ -1,0 +1,10 @@
+E       AssertionError: livro novo 105.3 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       AssertionError: livro novo 105.3 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       AssertionError: livro novo 104.9 x 171.4 mm, ordem antiga 148.0 x 210.1 mm
+E       AssertionError: 144.7 x 206.1 mm
+E         comparison failed
+FAILED tests/test_ordem_do_preparo.py::test_cartao_escuro_sai_inteiro_no_livro_novo[2.0]
+FAILED tests/test_ordem_do_preparo.py::test_cartao_escuro_sai_inteiro_no_livro_novo[-1.5]
+FAILED tests/test_ordem_do_preparo.py::test_cartao_escuro_sai_inteiro_no_livro_novo[1.0]
+FAILED tests/test_ordem_do_preparo.py::test_pesel_21_sai_como_no_fase_1 - Ass...
+4 failed, 52 deselected in 2.74s
