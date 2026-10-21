@@ -264,6 +264,8 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("icones", lambda marcado=False: paineis.mostrar_icones(bool(marcado)))
         self.menu.ligar("miniaturas", lambda marcado=False: conferir.mostrar_miniaturas(bool(marcado)))
         paineis.abriu.connect(lambda chave: self.menu.marcar_painel(chave or None))
+        conferir.miniaturas_mudaram.connect(self._miniaturas_mudaram)
+        self.menu.ligar("todas_as_paginas", conferir.abrir_todas_as_paginas)
         paineis.icones_mudaram.connect(self._icones_mudaram)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
@@ -272,6 +274,14 @@ class JanelaPrincipal(QMainWindow):
         for nome in estilo.TEMAS:
             self.menu.ligar(f"tema_{nome}", lambda _marcado=False, t=nome: self._trocar_tema(t))
         self.menu.marcar_tema(estilo.tema_atual())
+
+    def _miniaturas_mudaram(self, abertas: bool) -> None:
+        """As miniaturas abriram ou fecharam (pela seta ou pelos três
+        pontinhos): o "Miniaturas" do menu Ver acompanha."""
+        item = self.menu.acoes["miniaturas"]
+        item.blockSignals(True)
+        item.setChecked(bool(abertas))
+        item.blockSignals(False)
 
     def _icones_mudaram(self, a_vista: bool) -> None:
         """A coluna de ícones apareceu ou sumiu (pela seta ou pelo menu): o

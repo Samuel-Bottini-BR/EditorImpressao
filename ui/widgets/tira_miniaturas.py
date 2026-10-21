@@ -8,6 +8,13 @@ veio no PDF (uma imagem minuscula por folha) e mostra cada uma no giro dela
 (definir_giros). Girar uma folha so redesenha os quadros dela, a partir da
 imagem guardada - nada e lido do PDF de novo. Arriscado: remontar a tira
 (montar) por causa de um giro - refaria a leitura do livro inteiro.
+
+Etapa 5 do layout (21/10/2026; rodadas 7 e 8: as miniaturas embaixo, à
+esquerda ou à direita junto da página, e "em pares"): os quadros ficam numa
+grade (definir_arranjo): numa fila (embaixo) ou numa coluna (de lado); "em
+pares" junta as páginas como no livro aberto - a 1 sozinha à direita, depois
+2 e 3, 4 e 5. O número da página fica embaixo do desenho, sem cobri-lo (antes
+o número e o "!" do aviso saíam por cima da página e cortados).
 """
 
 from __future__ import annotations
@@ -19,7 +26,7 @@ from PySide6.QtCore import QObject, QRunnable, QSize, Qt, QThreadPool, Signal
 from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QFrame,
-    QHBoxLayout,
+    QGridLayout,
     QLabel,
     QScrollArea,
     QVBoxLayout,
@@ -35,8 +42,11 @@ from ui.widgets.visualizador import numpy_para_qimage
 # A tira toda ocupa 58 px no desenho aprovado - contra os 144 de antes. Cada
 # linha de altura sai da PAGINA, que e o que precisa ser olhado; a tira serve
 # para achar a pagina, e para isso a miniatura nao precisa ser grande.
-ALTURA_MINIATURA = 40
+ALTURA_MINIATURA = 54       # a página desenhada (etapa 5: era 40, pequena demais)
 LARGURA_MAXIMA = 62
+LARGURA_DO_QUADRO = 50
+ALTURA_DO_NUMERO = 16
+ESPACO_ENTRE_PARES = 10     # o vão entre um par e outro, "em pares"
 
 # Altura da folha guardada (como veio no PDF). Maior que o quadro de
 # proposito: a folha em pe, girada 1/4, fica deitada, e a altura guardada
@@ -97,7 +107,7 @@ class Miniatura(QFrame):
         self.apagada = False
         self._pixmap: QPixmap | None = None
 
-        self.setFixedSize(QSize(LARGURA_MAXIMA, ALTURA_MINIATURA + 14))
+        self.setFixedSize(QSize(LARGURA_DO_QUADRO, ALTURA_MINIATURA + ALTURA_DO_NUMERO + 4))
         self.setCursor(Qt.PointingHandCursor)
 
     def definir_imagem(self, img: np.ndarray) -> None:
@@ -111,20 +121,22 @@ class Miniatura(QFrame):
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
 
-        area = self.rect().adjusted(3, 3, -3, -3)
-        pintor.fillRect(area, QColor(estilo.cor("bar2")))
+        # o desenho em cima; o número embaixo, fora dele
+        area = self.rect().adjusted(2, 2, -2, -(ALTURA_DO_NUMERO + 2))
 
         if self._pixmap is not None:
             escalado = self._pixmap.scaled(
-                area.width() - 6, ALTURA_MINIATURA - 4,
+                area.width() - 4, area.height() - 4,
                 Qt.KeepAspectRatio, Qt.SmoothTransformation,
             )
-            pintor.drawPixmap(
-                area.left() + (area.width() - escalado.width()) // 2,
-                area.top() + 2, escalado,
-            )
+            x = area.left() + (area.width() - escalado.width()) // 2
+            y = area.top() + (area.height() - escalado.height()) // 2
+            pintor.drawPixmap(x, y, escalado)
+            area = area.adjusted(x - area.left() - 2, y - area.top() - 2,
+                                 -(area.right() - (x + escalado.width()) - 1),
+                                 -(area.bottom() - (y + escalado.height()) - 1))
         else:
-            pintor.fillRect(area.adjusted(0, 0, 0, -20), QColor(estilo.cor("cabeca")))
+            pintor.fillRect(area.adjusted(4, 2, -4, -2), QColor(estilo.cor("cabeca")))
 
         if self.apagada:
             pintor.fillRect(area, QColor(255, 255, 255, 165))
@@ -142,11 +154,11 @@ class Miniatura(QFrame):
         pintor.setPen(caneta)
         pintor.drawRect(area)
 
-        rodape = area.adjusted(0, area.height() - 18, 0, 0)
+        rodape = self.rect().adjusted(0, self.height() - ALTURA_DO_NUMERO - 1, 0, -1)
         pintor.setPen(QColor(estilo.LARANJA) if self.em_alerta else QColor(estilo.TEXTO_FRACO))
         rotulo = str(self.numero)
         if self.em_alerta:
-            rotulo += "  !"
+            rotulo += " !"
         if self.apagada:
             rotulo = "apagada"
         pintor.drawText(rodape, Qt.AlignCenter, rotulo)
@@ -209,17 +221,18 @@ class TiraMiniaturas(QWidget):
 
         self.rolagem = QScrollArea()
         self.rolagem.setWidgetResizable(True)
-        self.rolagem.setFixedHeight(ALTURA_MINIATURA + 18)
-        self.rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.rolagem.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.rolagem.setFrameShape(QFrame.NoFrame)
 
         interno = QWidget()
-        self.linha = QHBoxLayout(interno)
-        self.linha.setContentsMargins(2, 2, 2, 2)
+        interno.setObjectName("dentroDaTira")
+        self.linha = QGridLayout(interno)
+        self.linha.setContentsMargins(4, 2, 4, 2)
         self.linha.setSpacing(6)
-        self.linha.addStretch()
         self.rolagem.setWidget(interno)
         fora.addWidget(self.rolagem)
+        self.vertical = False
+        self.em_pares = False
+        self.definir_arranjo(False, False)
 
     def montar(self, quantidade: int, caminho_pdf: str, folha_de: dict[int, int],
                corte_de: dict[int, tuple[str, float]] | None = None,
@@ -244,12 +257,68 @@ class TiraMiniaturas(QWidget):
         for i in range(quantidade):
             mini = Miniatura(i + 1)
             self._miniaturas.append(mini)
-            self.linha.insertWidget(self.linha.count() - 1, mini)
             self._mapa_folha.setdefault(folha_de.get(i, i), []).append(i)
+        self._arrumar()
 
         indices_de_folha = sorted(self._mapa_folha)
         self._tarefa = _TarefaMiniaturas(caminho_pdf, indices_de_folha, self._sinais)
         self._pool.start(self._tarefa)
+
+    # --- o arranjo (etapa 5 do layout) -----------------------------------
+
+    def definir_arranjo(self, vertical: bool, em_pares: bool) -> None:
+        """Fila (embaixo) ou coluna (de lado), e "em pares" ou não. Só
+        reposiciona os quadros que já existem: nada é lido do PDF de novo."""
+        self.vertical = bool(vertical)
+        self.em_pares = bool(em_pares)
+        rolagem = self.rolagem
+        altura_do_quadro = ALTURA_MINIATURA + ALTURA_DO_NUMERO + 4
+        if self.vertical:
+            rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            rolagem.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            rolagem.setMinimumHeight(0)
+            rolagem.setMaximumHeight(16777215)
+        else:
+            rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            rolagem.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            rolagem.setFixedHeight(altura_do_quadro + 18)
+        self._arrumar()
+
+    def posicao(self, indice: int) -> tuple[int, int]:
+        """(linha, coluna) do quadro `indice` na grade. "Em pares", como no
+        livro aberto: a página 1 sozinha, do lado direito; depois 2 e 3, 4 e
+        5... Na fila, um vão (uma coluna vazia) separa cada par."""
+        if not self.em_pares:
+            return (indice, 0) if self.vertical else (0, indice)
+        par = (indice + 1) // 2
+        lado = 0 if (indice + 1) % 2 == 0 else 1       # página par à esquerda
+        if self.vertical:
+            return par, lado
+        return 0, par * 3 + lado                        # coluna 3*par+2 fica vazia (o vão)
+
+    def _arrumar(self) -> None:
+        """Põe cada quadro no lugar da grade (posicao) e o espaço que sobra no fim."""
+        grade = self.linha
+        while grade.count():
+            grade.takeAt(0)
+        for linha in range(grade.rowCount()):
+            grade.setRowStretch(linha, 0)
+            grade.setRowMinimumHeight(linha, 0)
+        for coluna in range(grade.columnCount()):
+            grade.setColumnStretch(coluna, 0)
+            grade.setColumnMinimumWidth(coluna, 0)
+        ultima_linha = ultima_coluna = 0
+        for i, mini in enumerate(self._miniaturas):
+            linha, coluna = self.posicao(i)
+            grade.addWidget(mini, linha, coluna, Qt.AlignCenter)
+            ultima_linha, ultima_coluna = max(ultima_linha, linha), max(ultima_coluna, coluna)
+        if self.em_pares and not self.vertical:
+            for coluna in range(2, ultima_coluna + 1, 3):
+                grade.setColumnMinimumWidth(coluna, ESPACO_ENTRE_PARES)
+        if self.vertical:
+            grade.setRowStretch(ultima_linha + 1, 1)
+        else:
+            grade.setColumnStretch(ultima_coluna + 1, 1)
 
     def limpar(self) -> None:
         """Interrompe a geracao em andamento e tira todos os quadros - usado
@@ -259,6 +328,7 @@ class TiraMiniaturas(QWidget):
             self._tarefa = None
         for mini in self._miniaturas:
             self.linha.removeWidget(mini)
+            mini.setParent(None)
             mini.deleteLater()
         self._miniaturas.clear()
         self._mapa_folha.clear()
@@ -336,7 +406,8 @@ class TiraMiniaturas(QWidget):
             if estava != mini.selecionada:
                 mini.update()
         if 0 <= indice < len(self._miniaturas):
-            self.rolagem.ensureWidgetVisible(self._miniaturas[indice], 200, 0)
+            folga = (0, 120) if self.vertical else (200, 0)
+            self.rolagem.ensureWidgetVisible(self._miniaturas[indice], *folga)
 
     def definir_titulo(self, texto: str) -> None:
         """Muda o texto do rotulo (hoje invisivel - ver o comentario no __init__)."""

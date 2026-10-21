@@ -128,6 +128,7 @@ import numpy as np
 import atalhos
 from PySide6.QtCore import QEvent, Qt, QTimer, Signal
 from PySide6.QtCore import QLocale, QSize
+from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -204,7 +205,8 @@ from ui.widgets.trilha_agrupada import (
 )
 
 from ui.widgets.medidor import Medidor
-from ui.widgets.tira_miniaturas import TiraMiniaturas
+from ui.widgets.miniaturas import EMBAIXO, ESQUERDA, DIREITA, PainelDeMiniaturas
+from ui.widgets.todas_as_paginas import ItemDaGrade, TodasAsPaginas
 from ui.widgets.visualizador import (
     MODO_ANGULO,
     MODO_CORTE,
@@ -368,6 +370,49 @@ def protegido(metodo):
     return envolvido
 
 
+class _LugaresDeEncaixe(QWidget):
+    """Os três lugares onde as miniaturas podem ser soltas, desenhados por cima
+    da tela enquanto a alça é arrastada (rodada 8: contorno azul tracejado; o
+    lugar sob o mouse fica azul cheio). Não pega o mouse (os cliques vão para
+    a tela de baixo)."""
+
+    def __init__(self, tela) -> None:
+        super().__init__(tela)
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self.retangulos: dict = {}
+        self.aceso = None
+        self.setVisible(False)
+
+    def mostrar(self, retangulos: dict, aceso) -> None:
+        self.retangulos = retangulos
+        self.aceso = aceso
+        self.setGeometry(self.parentWidget().rect())
+        self.raise_()
+        self.setVisible(True)
+        self.update()
+
+    def esconder(self) -> None:
+        self.setVisible(False)
+
+    def paintEvent(self, _evento) -> None:  # noqa: N802 - nome do Qt
+        from PySide6.QtGui import QPen
+
+        pintor = QPainter(self)
+        pintor.setRenderHint(QPainter.Antialiasing)
+        azul = QColor(estilo.cor("azul"))
+        for lugar, ret in self.retangulos.items():
+            if lugar == self.aceso:
+                cheio = QColor(azul)
+                cheio.setAlpha(90)
+                pintor.setBrush(cheio)
+            else:
+                pintor.setBrush(Qt.NoBrush)
+            caneta = QPen(azul, 2, Qt.DashLine)
+            pintor.setPen(caneta)
+            pintor.drawRoundedRect(ret.adjusted(4, 4, -4, -4), 8, 8)
+        pintor.end()
+
+
 class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
@@ -385,6 +430,10 @@ class TelaConferir(QWidget):
     # Etapa 2 do layout: o botao do Historico da barra de baixo foi apertado
     # (a janela marca o "Painel: Historico" do menu Ver).
     historico_pedido = Signal()
+
+    # etapa 5 do layout: as miniaturas abriram (True) ou fecharam; a janela
+    # acompanha no menu Ver > "Miniaturas"
+    miniaturas_mudaram = Signal(bool)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -528,6 +577,17 @@ class TelaConferir(QWidget):
         self.trilha.escolhida.connect(self._ferramenta_da_trilha)
         corpo.addWidget(self.trilha)
 
+        # Etapa 5 do layout: os dois lugares de lado das miniaturas (rodada
+        # 7, 204 A: à direita JUNTO DA PÁGINA, antes do painel e dos ícones).
+        self.lugar_esquerda = QWidget()
+        self.lugar_direita = QWidget()
+        for lugar in (self.lugar_esquerda, self.lugar_direita):
+            caixa = QVBoxLayout(lugar)
+            caixa.setContentsMargins(0, 0, 0, 0)
+            caixa.setSpacing(0)
+            lugar.setVisible(False)
+        corpo.addWidget(self.lugar_esquerda)
+
         centro = QVBoxLayout()
         centro.setContentsMargins(0, 0, 0, 0)
         centro.setSpacing(0)
@@ -618,25 +678,57 @@ class TelaConferir(QWidget):
         # tira a esquerda, "Confirmar e processar" no canto direito. Eram duas
         # faixas empilhadas, e a de baixo custava uns 70 px so para segurar um
         # botao.
-        self.tira = TiraMiniaturas("Folhas")                 # 6
+        # Etapa 5 do layout (rodadas 7, 8 e 13): as miniaturas com o
+        # cabeçalho "PÁGINAS" (seta, três pontinhos, alça, "ver todas"),
+        # embaixo, à esquerda ou à direita da página. Embaixo e abertas, o
+        # "Confirmar e processar" fica ao lado delas (704 A); fechadas ou de
+        # lado, ele desce para a barra de baixo (801 A).
+        self.miniaturas = PainelDeMiniaturas()               # 6
+        self.tira = self.miniaturas.tira
         self.tira.selecionada.connect(self._escolher_da_tira)
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
+        self.miniaturas.lugar_pedido.connect(self._por_as_miniaturas)
+        self.miniaturas.aberta_mudou.connect(lambda _a: self._por_as_miniaturas(self.miniaturas.lugar))
+        self.miniaturas.ver_todas.connect(self.abrir_todas_as_paginas)
+        self.miniaturas.alca.arrastando.connect(self._arrastando_as_miniaturas)
+        self.miniaturas.alca.soltou.connect(self._soltou_as_miniaturas)
 
-        faixa_da_tira = QHBoxLayout()
-        faixa_da_tira.setContentsMargins(6, 2, 10, 4)
-        faixa_da_tira.setSpacing(10)
-        faixa_da_tira.addWidget(self.tira, 1)
+        self.lugar_embaixo = QFrame()
+        self.lugar_embaixo.setObjectName("lugarDasMiniaturas")
+        # o mesmo fundo do cabeçalho "PÁGINAS", até o canto do "Confirmar e processar"
+        estilo.estilizar(self.lugar_embaixo, lambda: (
+            f"QFrame#lugarDasMiniaturas {{ background: {estilo.cor('bar')}; "
+            f"border-top: 1px solid {estilo.cor('linha')}; }}"))
+        self.faixa_da_tira = QHBoxLayout(self.lugar_embaixo)
+        self.faixa_da_tira.setContentsMargins(0, 0, 10, 0)
+        self.faixa_da_tira.setSpacing(10)
         self._montar_rodape()
-        faixa_da_tira.addWidget(self.botao_processar)
-        centro.addLayout(faixa_da_tira)
+        self.caixa_do_processar = QVBoxLayout()
+        self.caixa_do_processar.setContentsMargins(0, 26, 0, 6)
+        self.faixa_da_tira.addLayout(self.caixa_do_processar)
+        centro.addWidget(self.lugar_embaixo)
 
         # 7 - a barra de baixo (etapa 2 do layout, R9 405 C: desfazer e refazer
         # sempre a mao, mais o painel Historico).
         centro.addWidget(self._montar_barra_de_baixo())
 
         corpo.addLayout(centro, 1)
+        corpo.addWidget(self.lugar_direita)
         corpo.addWidget(self.paineis)
-        camadas.addLayout(corpo, 1)
+        # Etapa 5 do layout: a tela de trabalho e "Todas as páginas" (808 A)
+        # dividem o lugar; a barra de menus fica.
+        self.trabalho = QWidget()
+        self.trabalho.setLayout(corpo)
+        self.todas = TodasAsPaginas()
+        self.todas.ir_para.connect(self._voltar_das_todas)
+        self.todas.voltar.connect(lambda: self._voltar_das_todas(None))
+        self.pilha_da_tela = QStackedWidget()
+        self.pilha_da_tela.addWidget(self.trabalho)
+        self.pilha_da_tela.addWidget(self.todas)
+        camadas.addWidget(self.pilha_da_tela, 1)
+        # os lugares de encaixe que aparecem ao arrastar as miniaturas
+        self.lugares_de_encaixe = _LugaresDeEncaixe(self)
+        self._por_as_miniaturas(EMBAIXO)
 
     def _montar_barra_de_baixo(self) -> QWidget:
         """A barra fina de baixo, como no prototipo das rodadas 9 a 11:
@@ -687,6 +779,11 @@ class TelaConferir(QWidget):
         # icones para fora da janela (o nome inteiro fica no balao)
         self.rotulo_do_livro.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
         linha.addWidget(self.rotulo_do_livro, 1)
+        # rodada 13, 801 A: o "Confirmar e processar" pequeno, no canto direito,
+        # com as miniaturas fechadas ou de lado (_por_as_miniaturas)
+        self.caixa_do_processar_na_barra = QHBoxLayout()
+        self.caixa_do_processar_na_barra.setContentsMargins(0, 0, 0, 0)
+        linha.addLayout(self.caixa_do_processar_na_barra)
         # os icones desenhados a mao acompanham a troca de tema
         estilo.estilizar(barra, self._icones_da_barra_de_baixo)
         return barra
@@ -2215,6 +2312,7 @@ class TelaConferir(QWidget):
             }
 
         self.tira.definir_titulo(titulo)
+        self.miniaturas.definir_titulo("FOLHAS" if self.aba_atual == ABA_CORTE else "PÁGINAS")
 
         assinatura = (
             quantidade,
@@ -3946,10 +4044,123 @@ class TelaConferir(QWidget):
     # quatro "Painel: ..." do menu Ver viraram o menu Painéis (rodada 14, 903 B).
 
     def mostrar_miniaturas(self, a_vista: bool) -> None:
-        """Menu Ver > "Miniaturas" (rodada 14 do layout, 904 A): esconde ou
-        mostra a tira de miniaturas (o "Confirmar e processar" fica). A seta e
-        o cabeçalho "PÁGINAS" das miniaturas vêm na etapa 5."""
-        self.tira.setVisible(bool(a_vista))
+        """Menu Ver > "Miniaturas" (rodada 14 do layout, 904 A): abre ou fecha
+        as miniaturas, como a seta do cabeçalho "PÁGINAS"."""
+        self.miniaturas.definir_aberta(bool(a_vista))
+        self._por_as_miniaturas(self.miniaturas.lugar)
+
+    # --- etapa 5 do layout: as miniaturas e "Todas as páginas" -------------
+
+    def _por_as_miniaturas(self, lugar: str) -> None:
+        """Põe as miniaturas embaixo, à esquerda ou à direita da página, e o
+        "Confirmar e processar" no lugar certo: ao lado delas quando estão
+        embaixo e abertas (704 A); senão, pequeno, no canto direito da barra
+        de baixo (801 A). Avisa a janela (o menu Ver acompanha a seta)."""
+        m = self.miniaturas
+        m.setParent(None)
+        m.definir_lugar(lugar)
+        if m.lugar == EMBAIXO:
+            self.faixa_da_tira.insertWidget(0, m, 1)
+        elif m.lugar == ESQUERDA:
+            self.lugar_esquerda.layout().addWidget(m)
+        else:
+            self.lugar_direita.layout().addWidget(m)
+        m.show()
+        self.lugar_esquerda.setVisible(m.lugar == ESQUERDA)
+        self.lugar_direita.setVisible(m.lugar == DIREITA)
+        grande = m.lugar == EMBAIXO and m.aberta
+        self.lugar_embaixo.setVisible(m.lugar == EMBAIXO)
+        botao = self.botao_processar
+        botao.setParent(None)
+        if grande:
+            botao.setObjectName("primario")
+            self.caixa_do_processar.addWidget(botao)
+        else:
+            botao.setObjectName("primario")
+            self.caixa_do_processar_na_barra.addWidget(botao)
+        botao.setStyleSheet("" if grande else "padding: 2px 12px; font-size: 12px; min-height: 0px;")
+        botao.style().unpolish(botao)
+        botao.style().polish(botao)
+        botao.show()
+        self.miniaturas_mudaram.emit(m.aberta)
+
+    def _zona_de_encaixe(self, ponto_na_tela) -> str | None:
+        """Qual lugar das miniaturas está sob o ponto (coordenadas da tela do
+        computador), ou None."""
+        ponto = self.mapFromGlobal(ponto_na_tela)
+        for lugar, ret in self._retangulos_de_encaixe().items():
+            if ret.contains(ponto):
+                return lugar
+        return None
+
+    def _retangulos_de_encaixe(self) -> dict:
+        """Os três lugares de encaixe (rodada 8: contorno azul tracejado), em
+        coordenadas desta tela: embaixo da página, e uma faixa de cada lado."""
+        from PySide6.QtCore import QRect
+
+        area = QRect(self.area_imagem.mapTo(self, self.area_imagem.rect().topLeft()),
+                     self.area_imagem.size())
+        largura = min(160, max(60, area.width() // 4))
+        return {
+            ESQUERDA: QRect(area.left(), area.top(), largura, area.height()),
+            DIREITA: QRect(area.right() - largura, area.top(), largura, area.height()),
+            EMBAIXO: QRect(area.left() + largura, area.bottom() - 110, area.width() - 2 * largura, 110),
+        }
+
+    def _arrastando_as_miniaturas(self, ponto_na_tela) -> None:
+        """A alça das miniaturas está sendo arrastada: mostra os três lugares
+        e acende o que está sob o mouse."""
+        self.lugares_de_encaixe.mostrar(self._retangulos_de_encaixe(),
+                                        self._zona_de_encaixe(ponto_na_tela))
+
+    def _soltou_as_miniaturas(self, ponto_na_tela) -> None:
+        """Soltou a alça: num lugar de encaixe, as miniaturas vão para lá;
+        fora deles, ficam onde estavam."""
+        zona = self._zona_de_encaixe(ponto_na_tela)
+        self.lugares_de_encaixe.esconder()
+        if zona is not None and zona != self.miniaturas.lugar:
+            self._por_as_miniaturas(zona)
+
+    def abrir_todas_as_paginas(self) -> None:
+        """Botão "ver todas" (808 A) e menu Ver > "Todas as páginas" (904 A):
+        abre a grade do livro, sempre "uma a uma" (rodada 14, 901 A)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        itens = []
+        for pagina in self.projeto.paginas:
+            motivo = ""
+            if pagina.alertas and not pagina.revisada:
+                alerta = analise.descrever(pagina.alertas[0])
+                motivo = alerta.titulo if alerta is not None else ""
+            itens.append(ItemDaGrade(indice=pagina.indice, folha=pagina.folha, motivo=motivo,
+                                     apagada=bool(pagina.apagada)))
+        self.todas.mostrar(itens, self.indice_pagina, self.projeto.caminho_entrada,
+                           self._pagina_dentro_da_folha)
+        self.pilha_da_tela.setCurrentWidget(self.todas)
+
+    def _pagina_dentro_da_folha(self, indice: int, img):
+        """A página `indice` dentro da folha pequena `img` (como veio no PDF):
+        gira a folha como ela está e pega a metade da página (a mesma conta da
+        tira: core/pipeline.preparar_metade gira e depois divide)."""
+        from core.endireitar import girar_90
+
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[indice]
+        giro = self._giros_das_folhas().get(pagina.folha, 0)
+        if giro:
+            img = girar_90(img, giro)
+        folha = self.projeto.folhas[pagina.folha]
+        if not folha.dividir or pagina.metade not in ("esquerda", "direita"):
+            return img
+        largura = img.shape[1]
+        corte = max(1, min(largura - 1, int(folha.posicao_corte * largura)))
+        return img[:, :corte] if pagina.metade == "esquerda" else img[:, corte:]
+
+    def _voltar_das_todas(self, indice) -> None:
+        """Volta da grade ao trabalho (na página clicada, se houver)."""
+        self.pilha_da_tela.setCurrentWidget(self.trabalho)
+        if indice is not None:
+            self.ir_para_pagina(int(indice))
 
     PASSO_DO_ZOOM = 1.25        # quanto o Aproximar/Afastar do menu muda o zoom
 
