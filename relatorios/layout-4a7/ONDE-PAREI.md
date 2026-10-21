@@ -82,5 +82,25 @@ Situação: **pronta para a gerente publicar** (20/10).
 - Não feito: lembrar o lugar/aberta/em pares entre sessões (não decidido); clicar num par abrir as duas lado a lado
   (depende do "Ver lado a lado", que não existe); soltar a barra em qualquer lugar (a "C — tudo livre", para o fim).
 
-### Próximas
-- Etapa 6 (tela cheia dos filtros, 601 A) e 7 (tela inicial).
+### Etapa 6 (21/10): `dc51dec`, PRONTA PARA CONFERIR
+- `ui/widgets/filtros_tela_cheia.py`: fila à esquerda, o escolhido grande, opções à direita (o ajuste do filtro),
+  "Comparar com o Original" (desligada de começo) com a linha que se arrasta; "Aplicar em" e "Fechar sem mudar" /
+  "Usar <filtro>" embaixo; teclas 1-4, setas, Esc. Abre pelo ícone no título do painel Filtro e pelo menu Ver.
+  Escolher só mostra; "Usar" grava com desfazer. Janela: 8 de 8; GitHub 39561681378: success.
+- Ressalvas: o ajuste mexido na tela cheia mostra só o filtro (sem o "Só as letras") até "Usar"; os outros ajustes
+  do Preto e branco ficam no painel; o antes e depois não tem zoom.
+
+### Etapa 7 (21/10): `60a0a3d` (Configurações em partes, 807 B + 707 C) e `e7a3843` (tela dos livros e livro aberto)
+- Tela dos livros sem barra de menus (as teclas continuam), cartão "+" no começo, página vazia da tela 6, cartões
+  menores (196 x 244), um clique abre o livro na tela inteira, duplo clique continua. Livro aberto: Voltar (Esc),
+  Mais..., Continuar, Rodar o automático... (= tela "O que fazer" deste livro), Ver todas as páginas, Confirmar e
+  processar... (continua e pede a confirmação), Onde está; folhas rolando (`ui/widgets/paginas_rolando.py`, só as
+  visíveis, no máximo 40 guardadas) com a coluna de miniaturas, a pílula e "Ver lado a lado".
+- Acertos do verificador (`verif-layout-4a5-2026-10-21`): "Melhorar" cortado na fila (letra 11 e margens menores);
+  grade "Todas as páginas" borrada (folha guardada maior, 48 DPI, no máximo 160 guardadas).
+- Janela: 12 de 12. GitHub: rodada 39564648498 (a ler).
+- Não feito: "Para revisar" e "Receita usada" no livro aberto (sem dado no resumo / receitas não existem); 804 B (aviso
+  do livro novo: o livro ainda não abre direto na tela de trabalho); Configurações sem "Para todos os livros" e
+  "Lado direito" (não existem).
+- Ressalva: `test_girar_cartoes_e_previas.py` caiu uma vez no PC ("cannot get C stack") na rodada um-por-vez; repetido
+  duas vezes, passou (23). Parecido com o "access violation" já anotado em `janela_principal` (06/10).
