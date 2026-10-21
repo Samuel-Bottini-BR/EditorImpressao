@@ -65,7 +65,7 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <h1>Item 2.9: letra clara em fundo escuro - conferência do verificador (21/10/2026)</h1>
 <p>Ramo <code>fase2-scantailor-itens-2026-10-19</code>, código <code>0f4ee58</code>, contra o <code>fase-1</code> em <code>b8e9af7</code>. Não mudei código; não marco nada como aprovado.</p>
 <h2>Veredito</h2>
-<p><strong>NÃO ESTÁ PRONTO, por um defeito de tela:</strong> com a caixinha marcada, os cartões dos filtros que não estão escolhidos mostram a página sem inverter, e o que se escolhe não é o que o cartão mostrava (<code>ui/tarefas.py</code> <code>_TarefaCartoes.run</code> chama <code>aplicar_filtro</code> direto, sem <code>claro_no_escuro</code>). O resto está certo: fábrica igual (128 de 128), a conta igual à do ScanTailor, o PDF sai invertido e o "Ver de perto" compara certo.</p>
+<p><strong>PRONTO PARA CONFERIR</strong> (refeito em 21/10 no código <code>839bf1f</code>). O defeito de tela achado na primeira conferência - com a caixinha marcada, os cartões dos filtros não escolhidos mostravam a página sem inverter - foi consertado pelo implementador (<code>e49463c</code>): o teste de reversão <code>tests/test_cartoes_seguem_as_caixinhas.py</code> falha no <code>e49463c^</code> (4 de 5) e passa no novo, e na janela os quatro cartões e o filtro escolhido batem (Livro de Horas 187). O resto continua certo: fábrica igual (128 de 128, também no <code>839bf1f</code>), a conta igual à do ScanTailor, o PDF sai invertido e o "Ver de perto" compara certo.</p>
 <h2>O que conferi</h2>
 <table>
 <thead>
@@ -121,7 +121,8 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </ul>
 <h2>Bugs para a Lista de bugs</h2>
 <ul>
-<li>21/10/2026: com "Letra clara em fundo escuro" marcada, os cartões "A mesma página nos quatro filtros" (menos o escolhido) mostram a página sem inverter; escolher um deles dá outro resultado (<code>ui/tarefas.py</code> <code>_TarefaCartoes.run</code>).</li>
+<li>21/10/2026 (já consertado em <code>e49463c</code>): com "Letra clara em fundo escuro" marcada, os cartões dos filtros não escolhidos mostravam a página sem inverter.</li>
+<li>21/10/2026 (pequeno): no Melhorar, o AJUSTE mostra o rótulo "Algoritmo:" sem nada ao lado.</li>
 </ul>
 <h2>Quadro para o Samuel: Capa com letra branca em fundo azul</h2>
 <p>O que você está escolhendo: se a caixinha faz o que você pediu numa capa de letra branca em fundo escuro.</p>
@@ -153,21 +154,21 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p><em>A lombada inteira</em></p>
 <p><img alt="O PDF gerado na janela de verdade, com a caixinha: letra branca no fundo preto" src="img/29-pdf-titulo.jpg" /></p>
 <p><em>O PDF gerado na janela de verdade, com a caixinha: letra branca no fundo preto</em></p>
-<h2>Quadro para o Samuel: Os cartões da tela não seguem a caixinha (defeito)</h2>
-<p>O que você está escolhendo: se isto precisa ser consertado antes de aprovar.</p>
-<p>Caso real: com a caixinha marcada, só o cartão do filtro escolhido mostra a página invertida; os outros cartões ("A mesma página nos quatro filtros") mostram como se a caixinha estivesse desmarcada. Clicando no cartão Melhorar, que mostrava a lombada cinza, a página sai preta.</p>
-<p>A tela "Ver de perto", no "comparar", mostra certo.</p>
-<p><strong>O que olhar:</strong> Em cima: o cartão Melhorar cinza. Embaixo, depois de clicar nele: preto.</p>
+<h2>Quadro para o Samuel: Os cartões da tela seguem a caixinha (defeito achado e já consertado)</h2>
+<p>O que você está escolhendo: se os cartões da tela ficaram certos com a caixinha marcada.</p>
+<p>Caso real: Livro de Horas 187 com "Letra clara em fundo escuro" marcada. Os quatro cartões ("A mesma página nos quatro filtros") mostram a página já tratada com a caixinha, e escolher um deles dá o mesmo que o cartão mostrava (embaixo: o Melhorar escolhido).</p>
+<p>Ressalva: na primeira conferência (0f4ee58) os cartões não seguiam a caixinha: o Melhorar aparecia cinza e, escolhido, a página saía preta. O implementador consertou (e49463c); o teste de reversão falha no código de antes (conferido por mim) e passa no novo.</p>
+<p><strong>O que olhar:</strong> O cartão Melhorar em cima e a página depois de escolhê-lo, embaixo: iguais.</p>
 <p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
-<p><img alt="Em cima: caixinha marcada, filtro Preto e branco. Embaixo: depois de escolher o Melhorar" src="img/29-cartoes.jpg" /></p>
-<p><em>Em cima: caixinha marcada, filtro Preto e branco. Embaixo: depois de escolher o Melhorar</em></p>
-<p><img alt="&quot;Ver de perto&quot;, comparar: o Melhorar com a caixinha, certo" src="img/29-ver-de-perto.jpg" /></p>
-<p><em>"Ver de perto", comparar: o Melhorar com a caixinha, certo</em></p>
+<p><img alt="Em cima: caixinha marcada, os quatro cartões. Embaixo: depois de escolher o Melhorar" src="img/29-cartoes-certos.jpg" /></p>
+<p><em>Em cima: caixinha marcada, os quatro cartões. Embaixo: depois de escolher o Melhorar</em></p>
+<p><img alt="A tela inteira" src="img/29-cartoes-certos-tela.jpg" /></p>
+<p><em>A tela inteira</em></p>
 <h2>Decisão: A caixinha "Letra clara em fundo escuro": o que você decide?</h2>
 <p>O que você está escolhendo: se esta entrega entra no programa.</p>
 <p>Você pediu em 05/10 (P9 (a)): "Uma caixinha por página, 'Letra clara em fundo escuro', que o Kaique marca à mão". Ela fica no AJUSTE da ferramenta Filtro, desmarcada. Igual ao ScanTailor: inverte a página, trata como letra escura em papel claro e inverte de novo no fim.</p>
-<p>Falta consertar os cartões da tela (quadro acima) antes de aprovar.</p>
+<p>Os cartões da tela, que não seguiam a caixinha, já foram consertados (quadro acima).</p>
 <p>Opções: Aprovado · Melhorar · Ainda não entendi</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:15</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 04:01</p>
 </body>
 </html>

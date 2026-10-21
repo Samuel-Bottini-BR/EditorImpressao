@@ -1,9 +1,9 @@
 {
  "item": "2.9",
  "ramo": "fase2-scantailor-itens-2026-10-19",
- "commit": "0f4ee58 (prova em 40a32c2)",
+ "commit": "839bf1f (o 2.9 em 0f4ee58; o conserto dos cartões em e49463c)",
  "montado_em": "21/10/2026",
- "nota_para_a_gerente": "Fotos da página pronta (300 DPI) e da tela nova de hoje. O quadro dos cartões é um defeito: melhor consertar antes de publicar, ou publicar com ele como aviso.",
+ "nota_para_a_gerente": "Fotos da página pronta (300 DPI) e da janela de verdade no 839bf1f. O quadro dos cartões mostra o defeito já consertado.",
  "quadros": [
   {
    "id": "29-capa",
@@ -67,21 +67,21 @@
   },
   {
    "id": "29-cartoes",
-   "nome": "Os cartões da tela não seguem a caixinha (defeito)",
+   "nome": "Os cartões da tela seguem a caixinha (defeito achado e já consertado)",
    "explicacao": [
-    "O que você está escolhendo: se isto precisa ser consertado antes de aprovar.",
-    "Caso real: com a caixinha marcada, só o cartão do filtro escolhido mostra a página invertida; os outros cartões (\"A mesma página nos quatro filtros\") mostram como se a caixinha estivesse desmarcada. Clicando no cartão Melhorar, que mostrava a lombada cinza, a página sai preta.",
-    "A tela \"Ver de perto\", no \"comparar\", mostra certo."
+    "O que você está escolhendo: se os cartões da tela ficaram certos com a caixinha marcada.",
+    "Caso real: Livro de Horas 187 com \"Letra clara em fundo escuro\" marcada. Os quatro cartões (\"A mesma página nos quatro filtros\") mostram a página já tratada com a caixinha, e escolher um deles dá o mesmo que o cartão mostrava (embaixo: o Melhorar escolhido).",
+    "Ressalva: na primeira conferência (0f4ee58) os cartões não seguiam a caixinha: o Melhorar aparecia cinza e, escolhido, a página saía preta. O implementador consertou (e49463c); o teste de reversão falha no código de antes (conferido por mim) e passa no novo."
    ],
-   "olhar": "Em cima: o cartão Melhorar cinza. Embaixo, depois de clicar nele: preto.",
+   "olhar": "O cartão Melhorar em cima e a página depois de escolhê-lo, embaixo: iguais.",
    "imgs": [
     {
-     "src": "img/29-cartoes.jpg",
-     "legenda": "Em cima: caixinha marcada, filtro Preto e branco. Embaixo: depois de escolher o Melhorar"
+     "src": "img/29-cartoes-certos.jpg",
+     "legenda": "Em cima: caixinha marcada, os quatro cartões. Embaixo: depois de escolher o Melhorar"
     },
     {
-     "src": "img/29-ver-de-perto.jpg",
-     "legenda": "\"Ver de perto\", comparar: o Melhorar com a caixinha, certo"
+     "src": "img/29-cartoes-certos-tela.jpg",
+     "legenda": "A tela inteira"
     }
    ]
   }
@@ -98,7 +98,7 @@
   "explicacao": [
    "O que você está escolhendo: se esta entrega entra no programa.",
    "Você pediu em 05/10 (P9 (a)): \"Uma caixinha por página, 'Letra clara em fundo escuro', que o Kaique marca à mão\". Ela fica no AJUSTE da ferramenta Filtro, desmarcada. Igual ao ScanTailor: inverte a página, trata como letra escura em papel claro e inverte de novo no fim.",
-   "Falta consertar os cartões da tela (quadro acima) antes de aprovar."
+   "Os cartões da tela, que não seguiam a caixinha, já foram consertados (quadro acima)."
   ],
   "opcoes": [
    "Aprovado",
