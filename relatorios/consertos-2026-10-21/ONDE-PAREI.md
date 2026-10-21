@@ -33,7 +33,8 @@ Os dois bugs da Lista de bugs estão consertados, cada um com teste de reversão
   `tests/test_atalhos.py` devolve o registro exato (as teclas dele são de mentira).
 - Primeira versão (`0e763f1`) errada: devolvia a cópia tirada antes de a tela ser importada e apagava
   os atalhos da tela; o arquivo dos painéis falhava sozinho. Corrigida em `6411221`.
-- Teste de reversão `tests/test_atalhos.py::test_regressao_quem_vem_depois_ve_o_registro_de_antes`:
+- Teste de reversão `tests/test_atalhos.py::test_regressao_quem_vem_depois_ve_o_registro_de_antes` (desde 21/10 em
+  `tests/test_reversao_atalhos_ordem.py`, arquivo só dele, a pedido do verificador):
   roda, num processo à parte, a ordem que falhava; falha sem o conserto ("tecla )"), passa com ele.
 - Seis arquivos de tela/atalhos em sequência (atalhos, menu, endireitar, girar, painéis, trilha):
   103 passaram.
