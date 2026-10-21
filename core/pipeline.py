@@ -132,6 +132,9 @@ def analisar_projeto(
         # DEPOIS das observacoes: e por pagina, nunca vira caracteristica do
         # livro (a previa o poria de volta em cada pagina).
         discordam: list[ConfigPagina] = []
+        # Item 2.15: o angulo automatico de cada pagina, para destacar as
+        # que se afastam das outras (core/paginas_diferentes.py).
+        angulos_das_paginas: list[float | None] = []
         medir_as_duas = (projeto.endireitar and endireitar_scantailor.jeito_do_livro(projeto)
                          == endireitar_scantailor.JEITO_SCANTAILOR)
 
@@ -191,12 +194,15 @@ def analisar_projeto(
                 pagina.alertas = alertas
                 pagina.tem_cor = tem_cor
                 paginas.append(pagina)
+                angulo_da_analise = folha.angulo_detectado if projeto.endireitar else None
                 if medir_as_duas:
                     medidas: dict = {}
                     _geometria(pedaco, pagina, projeto, dpi=DPI_ANALISE, dpi_do_scan=dpi_real,
                                medidas=medidas, com_o_corte=False)
                     if medidas.get("discordam"):
                         discordam.append(pagina)
+                    angulo_da_analise = _angulo_que_valeu(medidas, angulo_da_analise)
+                angulos_das_paginas.append(angulo_da_analise)
 
             del img
 
@@ -216,6 +222,7 @@ def analisar_projeto(
 
         for pagina in discordam:
             _anotar_contas_discordam(pagina, True)
+        marcar_paginas_diferentes(paginas, angulos_das_paginas)
 
         projeto.observacoes = observacoes
         projeto.folhas = folhas
@@ -973,6 +980,29 @@ def _usa_o_endireitar_do_scantailor(projeto: Projeto, pagina: ConfigPagina) -> b
     es = endireitar_scantailor
     return (bool(projeto.endireitar) and pagina.angulo_manual is None
             and es.JEITO_SCANTAILOR in (es.jeito_da_pagina(projeto, pagina), es.jeito_do_livro(projeto)))
+
+
+def _angulo_que_valeu(medidas: dict, reserva: float | None) -> float | None:
+    """Item 2.15: o angulo automatico que valeu na pagina (a conta de
+    _angulo_automatico), ou `reserva` quando nada foi medido."""
+    angulo = medidas.get("scantailor") if medidas.get("jeito") == endireitar_scantailor.JEITO_SCANTAILOR         else medidas.get("programa")
+    return reserva if angulo is None else float(angulo)
+
+
+def marcar_paginas_diferentes(paginas: list[ConfigPagina], angulos: list[float | None]) -> None:
+    """Item 2.15 (igual ao ScanTailor, core/paginas_diferentes.py): poe o aviso
+    analise.ANGULO_DIFERENTE_DAS_OUTRAS nas paginas cujo angulo se afasta das
+    outras (coeficiente e limite de fabrica do ScanTailor). `angulos` na
+    ordem de `paginas`; None = sem numero (endireitar desligado: nenhuma
+    pagina e marcada). So poe: quem chama e a analise, com as paginas novas."""
+    from core import paginas_diferentes
+
+    if not paginas_diferentes.DESTACAR_DE_FABRICA or len(angulos) != len(paginas):
+        return
+    for pagina, diferente in zip(paginas, paginas_diferentes.diferentes(
+            angulos, paginas_diferentes.ENDIREITAR)):
+        if diferente and analise.ANGULO_DIFERENTE_DAS_OUTRAS not in pagina.alertas:
+            pagina.alertas.append(analise.ANGULO_DIFERENTE_DAS_OUTRAS)
 
 
 def _anotar_contas_discordam(pagina: ConfigPagina, discordam: bool) -> None:
