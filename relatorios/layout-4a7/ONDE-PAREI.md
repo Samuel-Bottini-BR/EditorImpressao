@@ -98,7 +98,9 @@ Situação: **pronta para a gerente publicar** (20/10).
   visíveis, no máximo 40 guardadas) com a coluna de miniaturas, a pílula e "Ver lado a lado".
 - Acertos do verificador (`verif-layout-4a5-2026-10-21`): "Melhorar" cortado na fila (letra 11 e margens menores);
   grade "Todas as páginas" borrada (folha guardada maior, 48 DPI, no máximo 160 guardadas).
-- Janela: 12 de 12. GitHub: rodada 39564648498 (a ler).
+- Janela: 12 de 12. GitHub 39564648498: success; 39566066549 (`448299e`, com o acerto do resumo): 121 arquivos, 2095 passaram, 0 falharam; teste_botoes 216 ações, 0 falhas; erros.log vazio.
+- Acerto 3 do verificador (`448299e`): a linha-resumo da tela "O que fazer" dizia "(jeito: o do programa)"; troca feita na tela (`ui/tela_opcoes._com_o_nome_do_editor`), com teste de reversão (falhou no código de antes). O texto nasce em `core/pipeline.resumo_em_portugues` (fora da minha área).
+- Filtro de velocidade 39559946683 (`31a9253` x `744292d`, etapa 5): igual em tudo (abrir -0,2%, trocar de página -0,4%, Mágico pro +0,0%, P&B +0,2%). Não mede a grade "Todas as páginas" nem o livro aberto (o teste não abre essas telas).
 - Não feito: "Para revisar" e "Receita usada" no livro aberto (sem dado no resumo / receitas não existem); 804 B (aviso
   do livro novo: o livro ainda não abre direto na tela de trabalho); Configurações sem "Para todos os livros" e
   "Lado direito" (não existem).
