@@ -157,9 +157,8 @@ def medir(img: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None, *,
         moldura") procura antes a página dentro da borda preta (PageFinder), e
         a caixa dela vira o `limite` da medida.
     limite: (item 2.13, "só o preto") a página já achada por outra conta, em
-        pontos: o conteúdo é procurado só dentro dele (o resto da imagem é
-        pintado de branco numa cópia antes de ir à DLL) e o corte não passa
-        dele.
+        pontos: o conteúdo é procurado só dentro dele (só esse pedaço vai à
+        DLL, com o DPI da imagem inteira) e o corte não passa dele.
     Nunca levanta exceção: sem a DLL, volta sem caixa e com o motivo (e com o
     limite, se veio)."""
     altura, largura = (img.shape[:2] if img is not None and getattr(img, "ndim", 0) >= 2
@@ -167,12 +166,20 @@ def medir(img: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None, *,
     opcoes = {"achar_pagina": bool(achar_pagina and limite is None)}
     if biblioteca is not None:
         opcoes["biblioteca"] = biblioteca
-    entrada = img
+    dx = dy = 0
     if limite is not None and img is not None and largura and altura:
+        # So a pagina vai a conta (recortada, sem copiar), com o MESMO DPI da
+        # imagem inteira. Ate 20/10/2026 o resto era pintado de branco numa
+        # copia: num papel escuro (Camoes 104, tom 109) essa moldura branca
+        # fazia o ScanTailor cortar a gravura.
         x0, y0, x1, y1 = (int(round(v)) for v in limite)
-        entrada = np.full_like(img, 255)
-        entrada[max(0, y0):y1, max(0, x0):x1] = img[max(0, y0):y1, max(0, x0):x1]
-    r = cs.achar_na_pagina(entrada, dpi_do_desenho, dpi_do_scan, **opcoes)
+        x0, y0 = max(0, x0), max(0, y0)
+        x1, y1 = min(largura, max(x0 + 1, x1)), min(altura, max(y0 + 1, y1))
+        dpi_dito = cs.dpi_para_as_caixas(largura, altura, dpi_do_desenho, dpi_do_scan)
+        r = cs.achar(img[y0:y1, x0:x1], dpi_dito, **opcoes)
+        dx, dy = x0, y0
+    else:
+        r = cs.achar_na_pagina(img, dpi_do_desenho, dpi_do_scan, **opcoes)
     if not r.disponivel or r.dpi is None:
         return MedidaDoConteudo(largura, altura, None, None, None, r.motivo, limite)
     if limite is None and opcoes["achar_pagina"]:
@@ -181,6 +188,7 @@ def medir(img: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None, *,
     if not r.tem_conteudo:
         return MedidaDoConteudo(largura, altura, None, None, mm, "a página não tem conteúdo", limite)
     caixa = r.conteudo.como_tupla()
+    caixa = (caixa[0] + dx, caixa[1] + dy, caixa[2] + dx, caixa[3] + dy)
     if limite is not None:                    # a caixa nunca sai da página
         caixa = (max(caixa[0], limite[0]), max(caixa[1], limite[1]),
                  min(caixa[2], limite[2]), min(caixa[3], limite[3]))
