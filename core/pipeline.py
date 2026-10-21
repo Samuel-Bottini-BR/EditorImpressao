@@ -47,7 +47,7 @@ from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
                              rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
-from core import claro_no_escuro, cores_scantailor
+from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -525,6 +525,15 @@ def _preparar_metade_e_geometria(
     desenho. Arriscado: separar as duas contas em funcoes diferentes (a
     geometria anotada ao abrir deixaria de ser a da previa e a do PDF).
 
+    Item 2.12 (21/10/2026): no fim, nas duas ordens, o desentortar do
+    ScanTailor (core/desentortar_scantailor.aplicar), se a pagina o tiver
+    ligado; e onde o ScanTailor faz (na saida, depois do corte). Desligado (o
+    de fabrica) devolve a MESMA imagem: nada muda. O desenho (geometria das
+    zonas) NAO inclui o desentortar: as zonas da aba Marcar ficam onde
+    estavam na pagina reta (ressalva do item; a curva perto da lombada e
+    pequena). Arriscado: desentortar antes de cortar (o corte foi medido na
+    pagina sem desentortar).
+
     As duas ordens (item 2.2, G6, core/ordem_do_preparo):
       "cortar_antes" (projeto de antes de 09/10/2026): o codigo de sempre,
         sem mudanca nenhuma (_preparar_cortando_antes);
@@ -544,6 +553,9 @@ def _preparar_metade_e_geometria(
     if endireita_antes(projeto):
         img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
                                                           so_a_geometria)
+        # item 2.12: o desentortar do ScanTailor, o ultimo passo do preparo
+        # (desligado de fabrica: devolve a MESMA imagem, sem conta nenhuma)
+        img = desentortar_scantailor.aplicar(img, pagina, dpi)
         dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
         desenho = geometria_do_desenho(
             img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
@@ -569,6 +581,8 @@ def _preparar_metade_e_geometria(
         img = rotacionar(img, angulo)
     if so_a_geometria:
         img = None
+    # 4. item 2.12: desentortar (desligado de fabrica: a MESMA imagem)
+    img = desentortar_scantailor.aplicar(img, pagina, dpi)
 
     dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
     desenho = geometria_do_desenho(
@@ -1096,6 +1110,11 @@ def _assinatura_da_gravura_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> 
     assinatura = assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
     if claro_no_escuro.ligado(pagina):
         assinatura += claro_no_escuro.SUFIXO_DA_GRAVURA
+    # item 2.12: a pagina desentortada e outra imagem para o detector; so com
+    # o desentortar ligado (desligado, a assinatura de sempre)
+    if desentortar_scantailor.ligado(pagina):
+        assinatura += (desentortar_scantailor.SUFIXO_DA_GRAVURA
+                       + desentortar_scantailor.modo_da_pagina(pagina))
     return assinatura
 
 

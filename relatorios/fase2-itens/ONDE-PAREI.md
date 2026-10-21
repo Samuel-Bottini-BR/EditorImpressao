@@ -19,7 +19,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 | 2.9 claro no escuro | **entregue à gerente** | `4cec7a9` (core), `0f4ee58` (tela) | 39470347203: 2097 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.11 cores | **entregue à gerente** | `b7dcc14`, `40a5ce1` (core), `02c2cea` (tela) | 39474481779: 2109 passaram, 0 falharam; botões 221, 0 falhas |
 | 2.15 páginas diferentes | **entregue à gerente** (limiar de 1° da gerente) | `a8b1b2e`, `ebe017e` | 39553730620: 2124 passaram, 0 falharam; botões 221, 0 falhas |
-| 2.12 desentortar | não começado | | |
+| 2.12 desentortar | **em andamento** (21/10, novo implementador) | `e23f63e` (DLL v7), parte 2 (preparo) | |
 | 2.16 todos os núcleos | não começado | | |
 | 2.19 unidades e perfis | não começado | | |
 | 2.17 iluminação e suavizar | não começado | | |
@@ -116,3 +116,18 @@ Parei num ponto limpo: tudo commitado e enviado, nada rodando no PC. Ao retomar:
 Veredito "igual (dentro do vai-e-vem)": abrir 61,3 → 61,4 s; trocar de página 4,64 → 4,32 s; Mágico pro 74,9 → 72,8 s;
 Preto e branco 39,4 → 39,3 s. Suíte do conserto dos cartões (39562148188): 2131 passaram, 0 falharam; botões 221, 0 falhas.
 O 2.12 ainda não começou no código (só a leitura de onde está o código do ScanTailor, ver acima).
+
+## 2.12 — desentortar (retomado por outro implementador, 21/10)
+
+- Parte 1 `e23f63e`: 79 arquivos do ScanTailor (todo `dewarping/`, `math/spfit`, `math/adiff` e o fecho dos
+  `#include`) sem mudança, com soma; cola `ligacao-ferramentas/desentortar.cpp` (7 blocos copiados, conferidos
+  por `tests/test_desentortar_scantailor.py`); DLL versão 7; `core/desentortar_scantailor.py`;
+  `ConfigPagina.desentortar = "desligado"`. Modos: desligado (fábrica), automático, pelas margens. O MANUAL
+  (malha) não veio. A `st_gravura` recompilada num rascunho (`ferramentasuild-st-gravura-fase2-desentortar`,
+  fora do projeto, criado por mim) ainda compila; a guardada não foi tocada.
+- Parte 2: ligado no fim de `_preparar_metade_e_geometria` (nas duas ordens) e na assinatura da gravura.
+  Prova de fábrica: `2.12/somas-novo.json` = `2.8/somas-antigo.json` (código `b8e9af7`), 96 de 96.
+- Ressalvas já sabidas: as zonas da aba Marcar não acompanham o desentortar; o "pelas margens" quase não mexe na
+  página de mentira (ele usa as beiradas brancas, não as linhas).
+- Falta: controle na tela (commit separado; chave do cache em `ui/tarefas.py`), páginas do acervo com curva,
+  antes/depois, suíte e velocidade no GitHub.

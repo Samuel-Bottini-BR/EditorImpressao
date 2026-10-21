@@ -262,3 +262,69 @@ def test_sem_a_dll_a_pagina_sai_como_veio(monkeypatch):
     assert len(anotados) == 1  # vai ao erros.log, uma vez
     ds.aplicar(img, pagina, 300, biblioteca=sem)
     assert len(anotados) == 1
+
+
+# ------------------------------------------------------------- no preparo da página
+
+def _livro(ordem: str, desentortar: str):
+    from core import pipeline
+    from modelos import ConfigFolha, Projeto
+
+    pipeline._GEOMETRIAS.clear()
+    projeto = Projeto(caminho_entrada="x.pdf", qualidade_dpi=300, cortar_bordas=False,
+                      endireitar=False, ordem_do_preparo=ordem)
+    folha = ConfigFolha(indice=0)
+    pagina = ConfigPagina(indice=0, folha=0, metade="inteira")
+    pagina.desentortar = desentortar
+    projeto.folhas, projeto.paginas = [folha], [pagina]
+    return projeto, folha, pagina
+
+
+@pytest.mark.parametrize("ordem", ["endireitar_antes", "cortar_antes"])
+def test_desligado_o_preparo_sai_como_sempre(ordem):
+    from core import pipeline
+
+    img = pagina_curva()
+    projeto, folha, pagina = _livro(ordem, ds.DESLIGADO)
+    saida, _ = pipeline.preparar_metade_e_geometria(img, folha, pagina, projeto, dpi=300)
+    assert np.array_equal(saida, img)
+
+
+@precisa_da_dll
+@pytest.mark.parametrize("ordem", ["endireitar_antes", "cortar_antes"])
+def test_ligado_o_preparo_desentorta_nas_duas_ordens(ordem):
+    from core import pipeline
+
+    img = pagina_curva()
+    projeto, folha, pagina = _livro(ordem, ds.AUTOMATICO)
+    pagina.metade = "inteira"
+    saida = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=300)
+    assert saida.shape == img.shape
+    assert abs(queda_das_linhas(saida)) < 10
+
+
+def test_a_marcacao_de_gravura_e_refeita_so_com_o_desentortar_ligado():
+    """Com o desentortar ligado o detector vê outra página: a assinatura muda.
+    Desligado, é a de sempre (nenhum livro já começado refaz a marcação)."""
+    from core import pipeline
+
+    projeto, _, pagina = _livro("endireitar_antes", ds.DESLIGADO)
+    de_sempre = pipeline._assinatura_da_gravura_da_pagina(projeto, pagina)
+    assert ds.SUFIXO_DA_GRAVURA not in de_sempre
+    pagina.desentortar = ds.AUTOMATICO
+    ligado = pipeline._assinatura_da_gravura_da_pagina(projeto, pagina)
+    assert ligado == de_sempre + ds.SUFIXO_DA_GRAVURA + ds.AUTOMATICO
+    pagina.desentortar = ds.PELAS_MARGENS
+    assert pipeline._assinatura_da_gravura_da_pagina(projeto, pagina) != ligado
+
+
+def test_o_campo_vai_e_volta_do_arquivo_e_o_antigo_abre_desligado():
+    from modelos import Projeto
+
+    projeto, _, pagina = _livro("endireitar_antes", ds.PELAS_MARGENS)
+    dados = projeto.para_dicionario()
+    assert Projeto.de_dicionario(dados).paginas[0].desentortar == ds.PELAS_MARGENS
+    dados = projeto.para_dicionario()  # de_dicionario consome o dicionario
+    for p in dados["paginas"]:
+        p.pop("desentortar")
+    assert Projeto.de_dicionario(dados).paginas[0].desentortar == ds.DESLIGADO
