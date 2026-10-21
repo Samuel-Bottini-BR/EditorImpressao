@@ -110,3 +110,9 @@ Parei num ponto limpo: tudo commitado e enviado, nada rodando no PC. Ao retomar:
 - Próximo: 2.12 (desentortar). Código do ScanTailor em
   `D:\programas\EditorImpressao-arquivos\ferramentas\scantailor-advanced-v1.2.1\src\dewarping` (5.073 linhas)
   + `OutputGenerator.cpp` 1532-1700, 2059-2105, 2608-2760; de fábrica desligado (`DewarpingOptions(OFF)`).
+
+## Velocidade do 2.15 (rodada 39553741406, `d490c61` x `a8b1b2e`)
+
+Veredito "igual (dentro do vai-e-vem)": abrir 61,3 → 61,4 s; trocar de página 4,64 → 4,32 s; Mágico pro 74,9 → 72,8 s;
+Preto e branco 39,4 → 39,3 s. Suíte do conserto dos cartões (39562148188): 2131 passaram, 0 falharam; botões 221, 0 falhas.
+O 2.12 ainda não começou no código (só a leitura de onde está o código do ScanTailor, ver acima).
