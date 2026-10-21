@@ -9,6 +9,10 @@ import atalhos
 
 @pytest.fixture(autouse=True)
 def registro_limpo():
+    """Cada teste daqui começa com o registro vazio e, no fim, o registro de
+    antes VOLTA (o conftest devolve a cópia; _atalhos_isolados). Antes de
+    21/10/2026 o registro ficava vazio depois deste arquivo e os testes de
+    tela seguintes perdiam as teclas do Cortar (Lista de bugs, 20/10)."""
     atalhos.limpar_registro_para_teste()
     yield
     atalhos.limpar_registro_para_teste()
@@ -112,3 +116,23 @@ def test_todas_devolve_na_ordem_de_registro():
     atalhos.registrar("segundo", "Segundo", "2")
     nomes = [a.nome for a in atalhos.todas()]
     assert nomes == ["Primeiro", "Segundo"]
+
+
+def test_regressao_quem_vem_depois_ve_o_registro_de_antes():
+    """Bug da Lista de bugs (20/10/2026): "teste que depende da ordem" -
+    test_paineis_na_tela.py::test_espelhado_e_proporcao_travada_sao_caixinhas_e_as_teclas_valem
+    falhava na suíte inteira ("Espelhado   (tecla )") e passava sozinho,
+    porque este arquivo esvaziava o registro global e não o devolvia. Roda,
+    num processo à parte, este arquivo seguido de um que importa a tela na
+    coleta e do teste que falhava: tem de passar."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    raiz = Path(__file__).resolve().parents[1]
+    r = subprocess.run(
+        [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",
+         "tests/test_atalhos.py::test_registrar_e_ler_a_tecla_atual", "tests/test_endireitar_na_tela.py",
+         "tests/test_paineis_na_tela.py::test_espelhado_e_proporcao_travada_sao_caixinhas_e_as_teclas_valem"],
+        cwd=raiz, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
+    assert r.returncode == 0, r.stdout[-3000:]

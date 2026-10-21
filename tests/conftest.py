@@ -133,6 +133,27 @@ def _sem_janela_na_tela() -> None:
 
 
 @pytest.fixture(autouse=True)
+def _atalhos_isolados():
+    """O registro de atalhos (atalhos.py) é global e é preenchido UMA vez, ao
+    importar as telas (ui/tela_conferir.py registra o "Espelhado" e o
+    "Proporção travada" na importação). Teste que esvazia ou muda o registro
+    (tests/test_atalhos.py, os que redefinem uma tecla) contaminava os que
+    vinham depois: na suíte inteira, test_paineis_na_tela via "Espelhado
+    (tecla )" (Lista de bugs, 20/10/2026, "teste que depende da ordem").
+    Aqui cada teste começa e termina com uma cópia do registro de antes: o
+    que um teste fizer nele some no fim. Seguro mudar: nada. Arriscado:
+    tirar (volta a depender da ordem)."""
+    import copy
+
+    import atalhos
+
+    antes = copy.deepcopy(atalhos._registro)
+    yield
+    atalhos._registro.clear()
+    atalhos._registro.update(antes)
+
+
+@pytest.fixture(autouse=True)
 def _caixas_sem_resposta():
     """Falha o teste em que o vigia teve de fechar uma caixa modal."""
     _CAIXAS_SEM_RESPOSTA.clear()
