@@ -18,7 +18,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 | 2.8 preto e branco (os dez do ScanTailor) | **entregue à gerente** (falta verificador e Samuel) | `77e9446` (core), `34b3d0e` (tela), `b36b540` (script) | 39395632426: 2084 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.9 claro no escuro | **entregue à gerente** | `4cec7a9` (core), `0f4ee58` (tela) | 39470347203: 2097 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.11 cores | **entregue à gerente** | `b7dcc14`, `40a5ce1` (core), `02c2cea` (tela) | 39474481779: 2109 passaram, 0 falharam; botões 221, 0 falhas |
-| 2.15 páginas diferentes | **entregue à gerente, com uma pergunta** (calibragem) | `a8b1b2e` | 39553730620: 2124 passaram, 0 falharam; botões 221, 0 falhas |
+| 2.15 páginas diferentes | **entregue à gerente** (limiar de 1° da gerente) | `a8b1b2e`, `ebe017e` | 39553730620: 2124 passaram, 0 falharam; botões 221, 0 falhas |
 | 2.12 desentortar | não começado | | |
 | 2.16 todos os núcleos | não começado | | |
 | 2.19 unidades e perfis | não começado | | |
@@ -96,3 +96,17 @@ Parei num ponto limpo: tudo commitado e enviado, nada rodando no PC. Ao retomar:
   Horas 15/191 (7,8%), Catecismo 33/199 (16,6%: páginas com só 0,4° a 0,9°, desvio do livro 0,28°).
 - **Pergunta:** dois livros passam da regra "menos de 10% das páginas" (core/analise.py). No ScanTailor é só um
   asterisco; aqui vai para "Para revisar". Ver a entrega à gerente.
+
+## 21/10, depois da decisão da gerente
+
+- 2.15: mínimo de 1° da média (decisão da gerente, opção b), `ebe017e`. Antes x depois:
+  `2.15/contagem-antes-depois.md` (Catecismo 33 → 0; Siebmacher 8 → 8, com as de 5°; Boécio 9 → 7 = 14%;
+  Horas 15 → 6; Palatino 8 → 7). Suíte 39554612216: 2126 passaram, 0 falharam.
+- Conserto dos cartões (bug do verificador do 2.9): `e49463c` (cartão com inverter e cores; chave com as três
+  caixinhas; tela ampliada pela mesma função) e `e3c4d49` (cartão com o limpar pontinhos e o jeito de PB da
+  página). Teste `tests/test_cartoes_seguem_as_caixinhas.py`. Prova em páginas de verdade (capa do "História
+  do Direito Político Brasileiro" p. 1 e slide do "O meio ambiente hoje" p. 18):
+  `relatorios/conferir/fase2-itens/conserto-cartoes/` (fora do git), cartão = página nos 3 filtros.
+- Próximo: 2.12 (desentortar). Código do ScanTailor em
+  `D:\programas\EditorImpressao-arquivoserramentas\scantailor-advanced-v1.2.1\src\dewarping` (5.073 linhas)
+  + `OutputGenerator.cpp` 1532-1700, 2059-2105, 2608-2760; de fábrica desligado (`DewarpingOptions(OFF)`).
