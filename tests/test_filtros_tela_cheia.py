@@ -80,3 +80,27 @@ def test_fechar_sem_mudar_nao_muda(conferir_original):  # noqa: F811
     dialogo.botao_sem_mudar.click()
     assert [p.filtro for p in tela.projeto.paginas] == antes
     assert not tela.acoes.pode_desfazer
+
+
+def test_no_melhorar_nao_aparece_o_jeito_do_preto_e_branco(conferir_original):  # noqa: F811
+    """Verificador, 21/10/2026: no Melhorar não pode aparecer o rótulo da lista
+    do Preto e branco (o "Algoritmo:" de antes) sem nada ao lado. No painel
+    Filtro a lista mora em "Mais ajustes", que só aparece no Preto e branco."""
+    from PySide6.QtWidgets import QApplication, QLabel
+
+    from core.filtros import MELHORAR, PRETO_E_BRANCO
+
+    tela = conferir_original
+    tela.resize(1280, 657)
+    tela.show()
+    tela.paineis.abrir("filtro")
+    tela._escolher_filtro(MELHORAR)
+    QApplication.processEvents()
+    painel = tela.paineis.filtro_da_pagina
+    visiveis = [r.text() for r in painel.findChildren(QLabel) if r.isVisible()]
+    assert not any("Algoritmo" in t or "Jeito do preto" in t for t in visiveis), visiveis
+    assert painel.partes["mais"].isHidden()
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    QApplication.processEvents()
+    assert not painel.partes["mais"].isHidden()
+    tela.hide()

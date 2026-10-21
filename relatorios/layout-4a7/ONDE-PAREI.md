@@ -106,3 +106,14 @@ Situação: **pronta para a gerente publicar** (20/10).
   "Lado direito" (não existem).
 - Ressalva: `test_girar_cartoes_e_previas.py` caiu uma vez no PC ("cannot get C stack") na rodada um-por-vez; repetido
   duas vezes, passou (23). Parecido com o "access violation" já anotado em `janela_principal` (06/10).
+
+### Acertos do verificador de 21/10 (2ª leva, `8451256`)
+- Livro aberto, uma página por vez, borrado: a folha passa a ser desenhada no DPI que dá a largura em pixels que ela
+  ocupa na tela (escala do Windows incluída; 40 a 220 DPI); ao desligar o lado a lado, as pequenas são refeitas.
+- "Todas as páginas" mole: cada folha no DPI que dá a altura do quadro em pixels (até 160 DPI; no máximo 120 guardadas).
+- Testes de reversão em `tests/test_livro_aberto.py` (os dois falham no código de antes).
+- "Algoritmo:" sem nada no Melhorar: esse rótulo não existe neste ramo (o painel Filtro diz "Jeito do preto e branco",
+  em "Mais ajustes", só no Preto e branco). Ele existe no `fase-1` e no ramo `fase2-scantailor-itens-2026-10-19`
+  (`QLabel("Algoritmo:")` na fila antiga): cuidado na junção para não voltar. Teste em `tests/test_filtros_tela_cheia.py`.
+
+- GitHub 39621726467 (`f963cfd`): 121 arquivos, 2098 passaram, 0 falharam; teste_botoes 216 ações, 0 falhas; erros.log vazio. Janela: etapa 7 12 de 12, etapa 5 15 de 15.

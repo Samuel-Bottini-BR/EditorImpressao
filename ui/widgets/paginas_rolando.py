@@ -29,7 +29,13 @@ from registro import registrar_erro
 from ui import estilo
 from ui.widgets.visualizador import numpy_para_qimage
 
-DPI_DE_LER = 70                # nítido o bastante para reconhecer a página, rápido de desenhar
+# A folha é desenhada na resolução de que a tela precisa: a largura mostrada
+# (em pontos) vezes a escala do Windows (125%, 150%...), com uma folga. Antes
+# era 70 DPI fixo, e numa folha pequena (o Boécio) a página de 350 pontos saía
+# aumentada de uma imagem menor, borrada (verificador, 21/10/2026). Os limites
+# seguram o tempo de desenhar e a memória.
+DPI_MINIMO, DPI_MAXIMO = 40, 220
+FOLGA_DE_NITIDEZ = 1.05
 MAXIMO_GUARDADAS = 40          # folhas desenhadas guardadas (~0,5 MB cada)
 LARGURA_UMA = 350              # o desenho da rodada 6: 350 x 497 em 1280 x 657
 LARGURA_PAR = 300              # rodada 7: cada página do par com 300
@@ -41,16 +47,16 @@ class _Sinais(QObject):
 
 
 class _Tarefa(QRunnable):
-    def __init__(self, caminho: str, indice: int, sinais: _Sinais) -> None:
+    def __init__(self, caminho: str, indice: int, dpi: float, sinais: _Sinais) -> None:
         super().__init__()
-        self.caminho, self.indice, self.sinais = caminho, indice, sinais
+        self.caminho, self.indice, self.dpi, self.sinais = caminho, indice, dpi, sinais
 
     def run(self) -> None:
         from core.pdf_io import abrir_pdf, pagina_para_array
         try:
             doc = abrir_pdf(self.caminho)
             try:
-                img = pagina_para_array(doc, self.indice, dpi=DPI_DE_LER)
+                img = pagina_para_array(doc, self.indice, dpi=self.dpi)
             finally:
                 doc.close()
             self.sinais.pronta.emit(self.indice, img)
@@ -73,6 +79,8 @@ class _Folhas(QWidget):
             if not ret.intersects(visivel):
                 continue
             pix = self.dono.guardadas.get(indice)
+            if pix is not None and pix.width() < self.dono.pixels_necessarios(indice) * 0.95:
+                self.dono.pedir(indice)          # ficou pequena (o lado a lado desligou): refaz
             if pix is None:
                 pintor.fillRect(ret, QColor(estilo.cor("cabeca")))
                 pintor.setPen(QColor(estilo.cor("fraco")))
@@ -229,17 +237,35 @@ class PaginasRolando(QScrollArea):
 
     # --- as folhas desenhadas ---------------------------------------------------------
 
+    def pixels_necessarios(self, indice: int) -> int:
+        """Quantos pixels de largura a folha `indice` ocupa de verdade na tela
+        (a largura mostrada vezes a escala do Windows)."""
+        largura = next((ret.width() for i, ret in self._ret if i == indice), LARGURA_UMA)
+        return int(round(largura * self.devicePixelRatioF()))
+
+    def dpi_para(self, indice: int) -> float:
+        """O DPI que dá a folha `indice` com a largura de que a tela precisa."""
+        if not 0 <= indice < len(self.tamanhos):
+            return DPI_MINIMO
+        largura_pt = max(1.0, self.tamanhos[indice][0])
+        dpi = 72.0 * self.pixels_necessarios(indice) * FOLGA_DE_NITIDEZ / largura_pt
+        return max(DPI_MINIMO, min(DPI_MAXIMO, dpi))
+
     def pedir(self, indice: int) -> None:
-        if not self.caminho or indice in self._pedidas or indice in self.guardadas:
+        if not self.caminho or indice in self._pedidas:
+            return
+        guardada = self.guardadas.get(indice)
+        if guardada is not None and guardada.width() >= self.pixels_necessarios(indice) * 0.95:
             return
         self._pedidas.add(indice)
-        self._pool.start(_Tarefa(self.caminho, indice, self._sinais))
+        self._pool.start(_Tarefa(self.caminho, indice, self.dpi_para(indice), self._sinais))
 
     def _chegou(self, indice: int, img) -> None:
         self._pedidas.discard(indice)
         if not self.caminho:
             return
         self.guardadas[indice] = QPixmap.fromImage(numpy_para_qimage(img))
+        self.guardadas.move_to_end(indice)
         while len(self.guardadas) > MAXIMO_GUARDADAS:
             longe = max(self.guardadas, key=lambda i: abs(i - self.atual))
             self.guardadas.pop(longe)

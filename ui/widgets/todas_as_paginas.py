@@ -51,9 +51,9 @@ ALTURA_DA_PAGINA = 150        # o desenho de cada página na grade
 # 250%), senão a página sai borrada (verificador, 21/10/2026). No máximo
 # MAXIMO_GUARDADAS folhas ficam guardadas (as mais longe da página da vez saem):
 # ~0,25 MB cada, uns 40 MB no máximo, num livro de qualquer tamanho.
-ALTURA_GUARDADA = 340
-DPI_DA_GRADE = 48
-MAXIMO_GUARDADAS = 160
+ALTURA_GUARDADA = 340          # (fica para quem importava o nome; a altura vem da tela)
+DPI_MAXIMO_DA_GRADE = 160
+MAXIMO_GUARDADAS = 120
 
 
 @dataclass
@@ -73,8 +73,14 @@ class _Sinais(QObject):
 class _TarefaDasFolhas(QRunnable):
     """Desenha as folhas pedidas, uma por vez, em segundo plano."""
 
-    def __init__(self, caminho_pdf: str, folhas: list[int], sinais: _Sinais) -> None:
+    def __init__(self, caminho_pdf: str, folhas: list[int], sinais: _Sinais,
+                 altura_px: int = ALTURA_GUARDADA) -> None:
+        """altura_px: a altura, em pixels de verdade, de que o quadro precisa
+        (150 pontos vezes a escala do Windows, com folga): cada folha é
+        desenhada no DPI que dá essa altura (verificador, 21/10/2026: com um
+        DPI fixo a grade saía mole)."""
         super().__init__()
+        self.altura_px = altura_px
         self.caminho_pdf = caminho_pdf
         self.folhas = folhas
         self.sinais = sinais
@@ -88,10 +94,12 @@ class _TarefaDasFolhas(QRunnable):
                     return
                 doc = abrir_pdf(self.caminho_pdf)
                 try:
-                    img = pagina_para_array(doc, folha, dpi=DPI_DA_GRADE)
+                    altura_pt = max(1.0, doc[folha].rect.height)
+                    dpi = min(DPI_MAXIMO_DA_GRADE, 72.0 * self.altura_px / altura_pt)
+                    img = pagina_para_array(doc, folha, dpi=dpi)
                 finally:
                     doc.close()
-                self.sinais.pronta.emit(folha, limitar_altura(img, ALTURA_GUARDADA))
+                self.sinais.pronta.emit(folha, limitar_altura(img, self.altura_px))
         except Exception:  # noqa: BLE001 - a grade nunca derruba a janela
             registrar_erro("todas as páginas", traceback.format_exc())
 
@@ -314,8 +322,13 @@ class TodasAsPaginas(QWidget):
         faltam = sorted({i.folha for i in self.itens} - set(self._folhas))
         if faltam and self._caminho:
             self._parar_a_tarefa()
-            self._tarefa = _TarefaDasFolhas(self._caminho, faltam, self._sinais)
+            self._tarefa = _TarefaDasFolhas(self._caminho, faltam, self._sinais,
+                                            self.altura_necessaria())
             self._pool.start(self._tarefa)
+
+    def altura_necessaria(self) -> int:
+        """A altura, em pixels de verdade, de uma página no quadro (com folga)."""
+        return int(round(ALTURA_DA_PAGINA * self.devicePixelRatioF() * 1.05))
 
     def definir_vista(self, vista: str) -> None:
         self.vista = vista
