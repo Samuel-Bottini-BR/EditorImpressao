@@ -142,7 +142,9 @@ def _nome_da_borda(projeto) -> str:
     """Item 2.13: o nome de ate onde vai o corte da borda preta do livro."""
     from core import borda_preta
 
-    return borda_preta.NOMES[borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))]
+    return (borda_preta.NOMES[borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))]
+            + ", " + borda_preta.NOMES_DO_FAZER[                      # item 2.14
+                borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))])
 
 
 def nome_da_conta(jeito: str) -> str:

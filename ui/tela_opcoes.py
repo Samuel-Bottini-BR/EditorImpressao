@@ -276,6 +276,16 @@ class TelaOpcoes(QWidget):
         self.combo_borda_preta.currentIndexChanged.connect(lambda _i: self._mudou())
         linha.addWidget(self.rotulo_borda_preta)
         linha.addWidget(self.combo_borda_preta)
+        # Item 2.14 (rodada 5, rv5-pag-egenloff-047: "O Kaique escolhe por
+        # livro" entre cortar fora e pintar de branco). Vem "cortar fora".
+        self.combo_borda_fazer = QComboBox()
+        for fazer in borda_preta.FAZERES:
+            self.combo_borda_fazer.addItem(borda_preta.NOMES_DO_FAZER[fazer], fazer)
+        self.combo_borda_fazer.setToolTip(
+            "Cortar fora: a página fica menor, sem o preto. Pintar de branco: a página fica "
+            "do tamanho de sempre e o que está fora dela vira branco.")
+        self.combo_borda_fazer.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.combo_borda_fazer)
         linha.addStretch()
         opcoes.addWidget(self.linha_borda_preta)
         opcoes.addWidget(_separador())
@@ -708,6 +718,8 @@ class TelaOpcoes(QWidget):
         # item 2.13: a borda preta e ate onde vai o corte
         self.combo_borda_preta.setCurrentIndex(self.combo_borda_preta.findData(
             borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))))
+        self.combo_borda_fazer.setCurrentIndex(self.combo_borda_fazer.findData(
+            borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))))   # item 2.14
         self.cx_borda_preta.setChecked(bool(getattr(projeto, "borda_preta", False)))
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
@@ -809,6 +821,8 @@ class TelaOpcoes(QWidget):
         # item 2.13: a lista so aparece com a caixinha marcada (escondida, fica guardada)
         self.projeto.borda_preta = self.cx_borda_preta.isChecked()
         self.projeto.borda_preta_ate = borda_preta.jeito_valido(self.combo_borda_preta.currentData())
+        self.projeto.borda_preta_fazer = borda_preta.fazer_valido(           # item 2.14
+            self.combo_borda_fazer.currentData())
         self.linha_borda_preta.setVisible(self.projeto.borda_preta)
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()

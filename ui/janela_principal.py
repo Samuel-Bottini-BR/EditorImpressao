@@ -716,6 +716,8 @@ class JanelaPrincipal(QMainWindow):
         # item 2.13: a borda preta (o salvo de antes volta desligado)
         self.projeto.borda_preta = bool(getattr(salvo, "borda_preta", False))
         self.projeto.borda_preta_ate = getattr(salvo, "borda_preta_ate", self.projeto.borda_preta_ate)
+        # item 2.14: cortar fora ou pintar de branco (o salvo de antes volta "cortar")
+        self.projeto.borda_preta_fazer = getattr(salvo, "borda_preta_fazer", "cortar")
         self.projeto.limpar = salvo.limpar
         self.projeto.filtro_padrao = salvo.filtro_padrao
         self.projeto.endireitar = salvo.endireitar
@@ -1319,6 +1321,8 @@ class JanelaPrincipal(QMainWindow):
                        "cortar_pelo_conteudo",
                        # item 2.13: a borda preta do scanner
                        "borda_preta", "borda_preta_ate",
+                       # item 2.14: cortar fora ou pintar de branco
+                       "borda_preta_fazer",
                        # item 2.2: a conta do endireitar
                        "endireitar_como")
 
