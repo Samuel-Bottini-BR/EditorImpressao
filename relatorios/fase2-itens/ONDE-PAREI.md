@@ -18,7 +18,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 | 2.8 preto e branco (os dez do ScanTailor) | **entregue à gerente** (falta verificador e Samuel) | `77e9446` (core), `34b3d0e` (tela), `b36b540` (script) | 39395632426: 2084 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.9 claro no escuro | **entregue à gerente** | `4cec7a9` (core), `0f4ee58` (tela) | 39470347203: 2097 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.11 cores | **entregue à gerente** | `b7dcc14`, `40a5ce1` (core), `02c2cea` (tela) | 39474481779: 2109 passaram, 0 falharam; botões 221, 0 falhas |
-| 2.15 páginas diferentes | não começado | | |
+| 2.15 páginas diferentes | **entregue à gerente, com uma pergunta** (calibragem) | `a8b1b2e` | 39553730620: 2124 passaram, 0 falharam; botões 221, 0 falhas |
 | 2.12 desentortar | não começado | | |
 | 2.16 todos os núcleos | não começado | | |
 | 2.19 unidades e perfis | não começado | | |
@@ -81,3 +81,18 @@ Parei num ponto limpo: tudo commitado e enviado, nada rodando no PC. Ao retomar:
 1. disparar o filtro de velocidade `b8e9af7` x último commit (cobre 2.11 e o conserto do log);
 2. entregar o 2.11 à gerente (já pronto: ver a seção do 2.11);
 3. seguir com o 2.15 (destacar páginas diferentes: DeviationProvider.h do ScanTailor).
+
+## Retomada (21/10)
+
+- Velocidade do 2.11 + conserto do log (39482416807, `b8e9af7` x `d490c61`): "igual" (abrir 60,4 → 60,6 s).
+- Velocidade do 2.15 (39553741406, `d490c61` x `a8b1b2e`): disparada, resultado ainda não lido.
+
+## 2.15 — o que foi feito e a pergunta
+
+- `core/paginas_diferentes.py` (DeviationProvider.h em Python, fábrica do ScanTailor). Só o ângulo do endireitar:
+  conteúdo (2.5) e margens (2.4) estão em `fase2-caixa-conteudo`, fora do `fase-1`; as contas deles já estão prontas.
+- Aviso "Inclinação diferente das outras" posto na análise (livro novo); não muda imagem.
+- Contagem (`2.15/livro1..5.json`): Boécio 9/50 (18%), Palatino 8/134 (6%), Siebmacher 8/134 (6%),
+  Horas 15/191 (7,8%), Catecismo 33/199 (16,6%: páginas com só 0,4° a 0,9°, desvio do livro 0,28°).
+- **Pergunta:** dois livros passam da regra "menos de 10% das páginas" (core/analise.py). No ScanTailor é só um
+  asterisco; aqui vai para "Para revisar". Ver a entrega à gerente.
