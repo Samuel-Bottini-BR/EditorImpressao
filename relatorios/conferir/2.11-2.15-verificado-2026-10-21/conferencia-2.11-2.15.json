@@ -1,0 +1,116 @@
+{
+ "item": "2.11 e 2.15",
+ "ramo": "fase2-scantailor-itens-2026-10-19",
+ "commit": "839bf1f",
+ "montado_em": "21/10/2026",
+ "nota_para_a_gerente": "As caixinhas e o painel estão na tela de hoje (aba Filtro, controle mínimo), que o layout vai mudar; as fotos de página não dependem disso.",
+ "quadros": [
+  {
+   "id": "211-letras",
+   "nome": "Letras com a cor delas (Livro de Horas 13)",
+   "explicacao": [
+    "O que você está escolhendo: se a caixinha \"Letras com a cor delas\" faz o que você pediu (P10 (a): \"Trazer como opção, desligada de fábrica\").",
+    "Caso real: na tabela do Livro de Horas, o título vermelho sai vermelho, as letras azuis saem azuis e o papel sai branco, no Preto e branco. Hoje elas saem todas pretas. As letras ficam mais claras que no preto de hoje.",
+    "Em cada foto ampliada: Original, Preto e branco de hoje, com \"Letras com a cor delas\", com ela e \"Reduzir cores\", e Melhorar com \"Reduzir cores\"."
+   ],
+   "olhar": "As letras azuis e o título vermelho: com a caixinha eles guardam a cor.",
+   "imgs": [
+    {
+     "src": "img/211-horas_p013.jpg",
+     "legenda": "Ampliado: Horas 13, as cinco versões"
+    },
+    {
+     "src": "img/211-janela-letras.jpg",
+     "legenda": "Na janela de verdade, \"Ver de perto\", Preto e branco com a caixinha"
+    },
+    {
+     "src": "img/211-caixinhas.jpg",
+     "legenda": "As caixinhas no AJUSTE da ferramenta Filtro"
+    }
+   ]
+  },
+  {
+   "id": "211-reduzir",
+   "nome": "Reduzir cores",
+   "explicacao": [
+    "O que você está escolhendo: se \"Reduzir cores\" está bom (junta as cores parecidas em poucas cores chapadas).",
+    "Caso real: no Preto e branco ela só vale junto com \"Letras com a cor delas\". No calendário do Livro de Horas 26, metade das letras fica preta e metade com a cor, misturadas na mesma palavra (\"S. Leonard\", \"Theodore\").",
+    "Em cada foto ampliada: Original, Preto e branco de hoje, com \"Letras com a cor delas\", com ela e \"Reduzir cores\", e Melhorar com \"Reduzir cores\"."
+   ],
+   "olhar": "\"S. Leonard\" e \"Theodore\": letras pretas e cinza na mesma palavra.",
+   "imgs": [
+    {
+     "src": "img/211-horas_p026.jpg",
+     "legenda": "Ampliado: Horas 26"
+    },
+    {
+     "src": "img/211-janela-reduzir.jpg",
+     "legenda": "Na janela, Horas 13 com as duas caixinhas"
+    }
+   ]
+  },
+  {
+   "id": "211-outras",
+   "nome": "Outras páginas: música, texto comum, gravura",
+   "explicacao": [
+    "O que você está escolhendo: se o resultado nas páginas sem cor de propósito está aceitável.",
+    "No Graduale 221 a faixa da lombada, que no Preto e branco de hoje sai preta, sai bege; as notas saem cor de vinho. Na Escola 7 (texto impresso preto) e no Palatino 67 (gravura) as letras ficam cinza-amarronzadas, mais fracas que no preto de hoje.",
+    "Por isso ela vem desligada: é para página de letra colorida."
+   ],
+   "olhar": "A cor das letras pretas comuns: com a caixinha elas ficam cinza.",
+   "imgs": [
+    {
+     "src": "img/211-graduale_p221.jpg",
+     "legenda": "Graduale 221"
+    },
+    {
+     "src": "img/211-escola_p007.jpg",
+     "legenda": "Escola 7"
+    },
+    {
+     "src": "img/211-palatino_p067.jpg",
+     "legenda": "Palatino 67"
+    }
+   ]
+  },
+  {
+   "id": "215-aviso",
+   "nome": "Página com inclinação diferente das outras",
+   "explicacao": [
+    "O que você está escolhendo: se o aviso novo \"Inclinação diferente das outras\" está bom.",
+    "Igual ao ScanTailor (ele põe um asterisco na miniatura), a página cujo ângulo se afasta do resto do livro ganha um aviso no \"Para revisar\". A gerente acrescentou um mínimo: só avisa se a página estiver a pelo menos 1 grau da média do livro.",
+    "Caso real: no Boécio (50 páginas) são 7 páginas; no Livro de Horas (191), 6. Contei de novo por conta própria e deu o mesmo. Mas no Boécio o \"Para revisar\" fica com 17 páginas de 50 (34%), somando os outros avisos."
+   ],
+   "olhar": "\"Inclinação diferente das outras (7)\" no painel Para revisar.",
+   "imgs": [
+    {
+     "src": "img/215-painel.jpg",
+     "legenda": "Ampliado: o painel Para revisar do Boécio, por motivo"
+    },
+    {
+     "src": "img/215-boecio-para-revisar.jpg",
+     "legenda": "A tela inteira"
+    }
+   ]
+  }
+ ],
+ "opcoes_de_cada_quadro": [
+  "Está bom",
+  "Melhorar",
+  "Está pior",
+  "Ainda não entendi"
+ ],
+ "pergunta": {
+  "id": "211-215",
+  "titulo": "Cores (2.11) e páginas diferentes (2.15): o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se estas duas entregas entram no programa.",
+   "As duas caixinhas de cor vêm desmarcadas; livro já começado sai igual. O aviso das páginas diferentes vem ligado em livro novo (como no ScanTailor) e não muda nenhuma imagem."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}

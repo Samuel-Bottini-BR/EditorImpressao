@@ -1,0 +1,48 @@
+{
+ "livro": "Livro de Horas - Luís XIV.pdf",
+ "paginas": 191,
+ "codigo": "angulo_diferente_das_outras",
+ "marcadas_pelo_programa": [
+  5,
+  7,
+  9,
+  75,
+  77,
+  152
+ ],
+ "scantailor_puro_minha_conta": [
+  5,
+  7,
+  9,
+  29,
+  43,
+  61,
+  69,
+  75,
+  77,
+  81,
+  103,
+  130,
+  144,
+  152,
+  184
+ ],
+ "com_1_grau_minha_conta": [
+  5,
+  7,
+  9,
+  75,
+  77,
+  152
+ ],
+ "media": 0.28272251308900526,
+ "desvio": 0.48173130364503597,
+ "angulos": {
+  "5": 2.75,
+  "7": 2.1875,
+  "9": 1.875,
+  "75": 1.3125,
+  "77": 1.3125,
+  "152": -0.8125
+ }
+}

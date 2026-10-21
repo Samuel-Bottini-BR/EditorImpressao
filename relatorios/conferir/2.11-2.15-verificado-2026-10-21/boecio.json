@@ -1,0 +1,45 @@
+{
+ "livro": "Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+ "paginas": 50,
+ "codigo": "angulo_diferente_das_outras",
+ "marcadas_pelo_programa": [
+  8,
+  11,
+  15,
+  16,
+  34,
+  46,
+  48
+ ],
+ "scantailor_puro_minha_conta": [
+  8,
+  11,
+  12,
+  15,
+  16,
+  34,
+  46,
+  48,
+  49
+ ],
+ "com_1_grau_minha_conta": [
+  8,
+  11,
+  15,
+  16,
+  34,
+  46,
+  48
+ ],
+ "media": -0.125,
+ "desvio": 0.5819346691714401,
+ "angulos": {
+  "8": -1.1875,
+  "11": 1.0625,
+  "15": 1.25,
+  "16": -1.25,
+  "34": 0.9375,
+  "46": -1.5,
+  "48": -1.25
+ }
+}

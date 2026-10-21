@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Itens 2.11 (cores) e 2.15 (páginas diferentes): conferência do verificador (21/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Itens 2.11 (cores) e 2.15 (páginas diferentes): conferência do verificador (21/10/2026)</h1>
+<p>Ramo <code>fase2-scantailor-itens-2026-10-19</code>, código <code>839bf1f</code> (o mais novo; tem também o 2.8, o 2.9, o conserto do erros.log e o dos cartões), contra o <code>fase-1</code> <code>b8e9af7</code>. Não mudei código; não marco nada como aprovado.</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR, os dois.</strong> De fábrica a imagem é igual (128 de 128). As contas são as do ScanTailor (números de fábrica e fórmula conferidos no código dele). O 2.15 dá as mesmas páginas na minha recontagem. Os dois consertos que vieram junto (erros.log e cartões) têm teste de reversão que falha no código antigo. Ressalva principal: o aviso do 2.15 soma-se aos outros, e no Boécio o "Para revisar" chega a 17 de 50 páginas.</p>
+<h2>O que conferi</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Desligado de fábrica: 32 páginas-gabarito × Original, PB, Melhorar, PB com "Só as letras" (<code>scripts/somas.py</code>, uma por processo)</td>
+<td>máquina</td>
+<td><strong>128 de 128 iguais</strong> a <code>b8e9af7</code></td>
+</tr>
+<tr>
+<td>2.11 igual ao ScanTailor</td>
+<td>código</td>
+<td>números de fábrica iguais a <code>BlackWhiteOptions.cpp</code> (ruído 7, ajustes 0) e <code>ColorCommonOptions.cpp</code> (nível 4, sem normalizar, forçar preto e branco); <code>test_st_ferramentas.py</code> (somas dos arquivos copiados do ScanTailor): 10 passaram</td>
+</tr>
+<tr>
+<td>2.15 igual ao ScanTailor</td>
+<td>código</td>
+<td>fórmula de <code>DeviationProvider.h</code> (média, desvio amostral n−1, <code>|v−m| &gt; max(coef·desvio, limite%·média)</code>, mínimo de 3), o ângulo como valor (<code>deskew/Settings.cpp</code>) e os ajustes 1,5 e 1% (<code>ApplicationSettings.cpp</code>): iguais</td>
+</tr>
+<tr>
+<td>2.15: as páginas marcadas</td>
+<td>refiz a conta à parte sobre os ângulos que o programa usou (<code>scripts/contar_215.py</code>)</td>
+<td>Boécio: ScanTailor puro 9, com 1° [8, 11, 15, 16, 34, 46, 48] = o programa; Horas: ScanTailor puro 15, com 1° [5, 7, 9, 75, 77, 152] = o programa. Batem com a tabela do implementador</td>
+</tr>
+<tr>
+<td>Testes, um arquivo por vez</td>
+<td>máquina</td>
+<td>cores 7, cores na tela 5, páginas diferentes 12, cartões 5, erros.log 5: todos passam</td>
+</tr>
+<tr>
+<td>Reversão do conserto do erros.log (<code>ba5eefe</code>)</td>
+<td>no <code>ba5eefe^</code></td>
+<td>5 falham (nada no log), passam no novo</td>
+</tr>
+<tr>
+<td>Reversão do conserto dos cartões (<code>e49463c</code>, o bug que achei no 2.9)</td>
+<td>no <code>e49463c^</code></td>
+<td>4 de 5 falham, passam no novo</td>
+</tr>
+<tr>
+<td>Janela de verdade</td>
+<td>olho</td>
+<td>as caixinhas "Letras com a cor delas" e "Reduzir cores" no AJUSTE, com ação no desfazer; o "Ver de perto" mostra as letras coloridas; o Boécio aberto como livro novo mostra "Inclinação diferente das outras (7)" no Para revisar</td>
+</tr>
+<tr>
+<td>Imagens do implementador (7 páginas, 2.11)</td>
+<td>olho</td>
+<td>abri os 7 recortes: batem com o que ele escreveu</td>
+</tr>
+<tr>
+<td>Velocidade</td>
+<td>-</td>
+<td>não rodei; o filtro do GitHub do 2.11 não tinha passado quando ele parou</td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>2.15, quantidade de avisos:</strong> a regra do CLAUDE.md é "menos de 10% das páginas marcadas". Sozinho o aviso novo marca 14% do Boécio (7 de 50) e, somado aos outros, o "Para revisar" fica com 17 de 50 (34%). Horas: 3% (6 de 191).</li>
+<li><strong>2.11:</strong> com "Letras com a cor delas", as letras pretas comuns saem cinza-amarronzadas, mais fracas que no preto de hoje (Escola 7, Palatino 67). Com "Reduzir cores" junto, a mesma palavra mistura letra preta e cinza (Horas 26).</li>
+<li>O mínimo de 1° do 2.15 é nosso (da gerente), não do ScanTailor.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<ul>
+<li>nenhum novo.</li>
+</ul>
+<h2>Quadro para o Samuel: Letras com a cor delas (Livro de Horas 13)</h2>
+<p>O que você está escolhendo: se a caixinha "Letras com a cor delas" faz o que você pediu (P10 (a): "Trazer como opção, desligada de fábrica").</p>
+<p>Caso real: na tabela do Livro de Horas, o título vermelho sai vermelho, as letras azuis saem azuis e o papel sai branco, no Preto e branco. Hoje elas saem todas pretas. As letras ficam mais claras que no preto de hoje.</p>
+<p>Em cada foto ampliada: Original, Preto e branco de hoje, com "Letras com a cor delas", com ela e "Reduzir cores", e Melhorar com "Reduzir cores".</p>
+<p><strong>O que olhar:</strong> As letras azuis e o título vermelho: com a caixinha eles guardam a cor.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: Horas 13, as cinco versões" src="img/211-horas_p013.jpg" /></p>
+<p><em>Ampliado: Horas 13, as cinco versões</em></p>
+<p><img alt="Na janela de verdade, &quot;Ver de perto&quot;, Preto e branco com a caixinha" src="img/211-janela-letras.jpg" /></p>
+<p><em>Na janela de verdade, "Ver de perto", Preto e branco com a caixinha</em></p>
+<p><img alt="As caixinhas no AJUSTE da ferramenta Filtro" src="img/211-caixinhas.jpg" /></p>
+<p><em>As caixinhas no AJUSTE da ferramenta Filtro</em></p>
+<h2>Quadro para o Samuel: Reduzir cores</h2>
+<p>O que você está escolhendo: se "Reduzir cores" está bom (junta as cores parecidas em poucas cores chapadas).</p>
+<p>Caso real: no Preto e branco ela só vale junto com "Letras com a cor delas". No calendário do Livro de Horas 26, metade das letras fica preta e metade com a cor, misturadas na mesma palavra ("S. Leonard", "Theodore").</p>
+<p>Em cada foto ampliada: Original, Preto e branco de hoje, com "Letras com a cor delas", com ela e "Reduzir cores", e Melhorar com "Reduzir cores".</p>
+<p><strong>O que olhar:</strong> "S. Leonard" e "Theodore": letras pretas e cinza na mesma palavra.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: Horas 26" src="img/211-horas_p026.jpg" /></p>
+<p><em>Ampliado: Horas 26</em></p>
+<p><img alt="Na janela, Horas 13 com as duas caixinhas" src="img/211-janela-reduzir.jpg" /></p>
+<p><em>Na janela, Horas 13 com as duas caixinhas</em></p>
+<h2>Quadro para o Samuel: Outras páginas: música, texto comum, gravura</h2>
+<p>O que você está escolhendo: se o resultado nas páginas sem cor de propósito está aceitável.</p>
+<p>No Graduale 221 a faixa da lombada, que no Preto e branco de hoje sai preta, sai bege; as notas saem cor de vinho. Na Escola 7 (texto impresso preto) e no Palatino 67 (gravura) as letras ficam cinza-amarronzadas, mais fracas que no preto de hoje.</p>
+<p>Por isso ela vem desligada: é para página de letra colorida.</p>
+<p><strong>O que olhar:</strong> A cor das letras pretas comuns: com a caixinha elas ficam cinza.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Graduale 221" src="img/211-graduale_p221.jpg" /></p>
+<p><em>Graduale 221</em></p>
+<p><img alt="Escola 7" src="img/211-escola_p007.jpg" /></p>
+<p><em>Escola 7</em></p>
+<p><img alt="Palatino 67" src="img/211-palatino_p067.jpg" /></p>
+<p><em>Palatino 67</em></p>
+<h2>Quadro para o Samuel: Página com inclinação diferente das outras</h2>
+<p>O que você está escolhendo: se o aviso novo "Inclinação diferente das outras" está bom.</p>
+<p>Igual ao ScanTailor (ele põe um asterisco na miniatura), a página cujo ângulo se afasta do resto do livro ganha um aviso no "Para revisar". A gerente acrescentou um mínimo: só avisa se a página estiver a pelo menos 1 grau da média do livro.</p>
+<p>Caso real: no Boécio (50 páginas) são 7 páginas; no Livro de Horas (191), 6. Contei de novo por conta própria e deu o mesmo. Mas no Boécio o "Para revisar" fica com 17 páginas de 50 (34%), somando os outros avisos.</p>
+<p><strong>O que olhar:</strong> "Inclinação diferente das outras (7)" no painel Para revisar.</p>
+<p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
+<p><img alt="Ampliado: o painel Para revisar do Boécio, por motivo" src="img/215-painel.jpg" /></p>
+<p><em>Ampliado: o painel Para revisar do Boécio, por motivo</em></p>
+<p><img alt="A tela inteira" src="img/215-boecio-para-revisar.jpg" /></p>
+<p><em>A tela inteira</em></p>
+<h2>Decisão: Cores (2.11) e páginas diferentes (2.15): o que você decide?</h2>
+<p>O que você está escolhendo: se estas duas entregas entram no programa.</p>
+<p>As duas caixinhas de cor vêm desmarcadas; livro já começado sai igual. O aviso das páginas diferentes vem ligado em livro novo (como no ScanTailor) e não muda nenhuma imagem.</p>
+<p>Opções: Aprovado · Melhorar · Ainda não entendi</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:59</p>
+</body>
+</html>
