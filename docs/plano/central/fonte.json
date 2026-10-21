@@ -1,0 +1,284 @@
+{
+  "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
+  "geral": {
+    "frase": "Estamos na Fase 2 (ferramentas do ScanTailor). Cinco trabalhos prontos esperam você; os agentes estão parados desde 21/10.",
+    "faseAtual": "2",
+    "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
+    "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
+    "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
+    "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
+    "novidades": [
+      {"em": "2026-10-21T18:00:00Z", "texto": "A página de Andamento virou esta Central de decisões."},
+      {"em": "2026-10-21T15:00:00Z", "texto": "Cinco trabalhos ficaram prontos e esperam você: \"Para revisar\", 2.8, 2.9, 2.11 + 2.15 e o layout 4-5."},
+      {"em": "2026-10-21T15:00:00Z", "texto": "Quatro consertos ficaram prontos (instalador, atalhos, Gladstone 18, Horas 11)."},
+      {"em": "2026-10-20T20:00:00Z", "texto": "O conserto do corte com borda preta (Pesel 21) entrou no programa."}
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "para-revisar",
+      "titulo": "\"Para revisar\": os avisos por página",
+      "item": "Para revisar", "fase": "2", "coluna": "decidir",
+      "oque": "O programa avisa as páginas com problema e põe o conserto num botão no próprio aviso: \"Trazer de volta nesta página\", \"Deixar em branco\", \"Tirar do livro\", \"Está bom\" por página, por motivo ou em tudo.",
+      "situacao": "Pronto e conferido pelo verificador (64 de 64 páginas saem iguais). Falta você olhar as fotos e dizer se entra.",
+      "falta": "Sua resposta na aba 4 da página de conferência (18 quadros e 3 perguntas).",
+      "ressalva": "O Boécio chega a 34% das páginas no \"Para revisar\".",
+      "selos": {"github": "sim", "pc": "nao", "samuel": "nao"},
+      "ramo": "fase2-para-revisar", "commit": "f54428e",
+      "conferencia": {"pagina": "conferencia", "aba": "4"},
+      "comparar": {"antes": "fotos/a4n-letra-t.jpg", "depois": "fotos/a4n-letra-t-depois.jpg", "legenda": "Antiphonal 46: a letra grande que sumia volta com \"Trazer de volta nesta página\""},
+      "fotos": [
+        {"src": "fotos/a4n-seletor.jpg", "legenda": "O seletor grande, para dar \"está bom\" em várias páginas"},
+        {"src": "fotos/a4n-sem-conteudo.jpg", "legenda": "Página sem conteúdo, com os dois botões"}
+      ],
+      "testar": [
+        "Peça \"Preparar para eu testar\" aqui: a gerente põe um atalho desta versão na sua área de trabalho.",
+        "Abra o Antiphonal e vá à página 46: o aviso deve ter o botão \"Trazer de volta nesta página\".",
+        "Abra o Egenloff e vá à página 12: o aviso \"Página sem conteúdo\" deve ter \"Deixar em branco\" e \"Tirar do livro\".",
+        "Aperte Processar com avisos abertos: a janela deve listar as páginas e os motivos."
+      ]
+    },
+    {
+      "id": "2.8",
+      "titulo": "Os dez tipos de preto e branco do ScanTailor",
+      "item": "2.8", "fase": "2", "coluna": "decidir",
+      "oque": "Mais jeitos de transformar a letra em preto e branco (Sauvola, Wolf e os outros oito do ScanTailor). Vem desligado: livro já começado sai igual ao de hoje.",
+      "situacao": "Pronto. Desligado de fábrica provado: 128 de 128 páginas iguais. Testes no GitHub: 2084 passaram, 0 falharam.",
+      "falta": "Sua resposta na aba 6 da página de conferência.",
+      "selos": {"github": "sim", "pc": "nao", "samuel": "nao"},
+      "ramo": "fase2-scantailor-itens-2026-10-19", "commit": "ffa2463",
+      "conferencia": {"pagina": "conferencia", "aba": "6"},
+      "fotos": [
+        {"src": "fotos/28-horas_p047-recorte.jpg", "legenda": "Horas 47, de perto"},
+        {"src": "fotos/28-palatino_p007-recorte.jpg", "legenda": "Palatino 7, de perto"}
+      ],
+      "testar": [
+        "Peça \"Preparar para eu testar\".",
+        "Abra um livro, vá ao painel Filtro, escolha Preto e branco e troque o tipo na lista nova.",
+        "Confira a letra no Horas 47 e no Palatino 7 com cada tipo."
+      ]
+    },
+    {
+      "id": "2.9",
+      "titulo": "Texto claro em fundo escuro",
+      "item": "2.9", "fase": "2", "coluna": "decidir",
+      "oque": "Página com letra clara sobre fundo escuro (capa, título em faixa) sai com a letra certa, como no ScanTailor.",
+      "situacao": "Pronto e conferido pelo verificador; os cartões da conferência foram consertados.",
+      "falta": "Sua resposta na aba 7 da página de conferência.",
+      "selos": {"github": "falta", "pc": "nao", "samuel": "nao"},
+      "ramo": "fase2-scantailor-itens-2026-10-19", "commit": "ffa2463",
+      "conferencia": {"pagina": "conferencia", "aba": "7"},
+      "fotos": [
+        {"src": "fotos/29-horas-187-perto.jpg", "legenda": "Horas 187, de perto"},
+        {"src": "fotos/29-slide-perto.jpg", "legenda": "Título claro sobre fundo escuro"}
+      ],
+      "testar": [
+        "Peça \"Preparar para eu testar\".",
+        "Abra o Horas e vá à página 187; ligue \"Texto claro em fundo escuro\" no painel Filtro."
+      ]
+    },
+    {
+      "id": "2.11-2.15",
+      "titulo": "Reduzir cores e destacar páginas diferentes",
+      "item": "2.11 e 2.15", "fase": "2", "coluna": "decidir",
+      "oque": "2.11: reduzir as cores da página, como no ScanTailor. 2.15: o programa aponta as páginas que saem muito diferentes das outras do livro (só se afastam 1° ou mais da média).",
+      "situacao": "Pronto e conferido pelo verificador.",
+      "falta": "Sua resposta na aba 8 da página de conferência.",
+      "ressalva": "\"Letras com a cor delas\" deixa a letra preta comum marrom-acinzentada.",
+      "selos": {"github": "falta", "pc": "nao", "samuel": "nao"},
+      "ramo": "fase2-scantailor-itens-2026-10-19", "commit": "ffa2463",
+      "conferencia": {"pagina": "conferencia", "aba": "8"},
+      "fotos": [
+        {"src": "fotos/211-horas_p026.jpg", "legenda": "Horas 26 com as cores reduzidas"},
+        {"src": "fotos/215-boecio-para-revisar.jpg", "legenda": "Boécio: páginas apontadas como diferentes"}
+      ],
+      "testar": [
+        "Peça \"Preparar para eu testar\".",
+        "No painel Filtro, ligue \"Reduzir cores\" no Horas 26.",
+        "Abra o Boécio e veja quais páginas o programa aponta como diferentes."
+      ]
+    },
+    {
+      "id": "layout-4a5",
+      "titulo": "Tela nova: etapas 4 e 5 do layout",
+      "item": "Layout (Fase 4)", "fase": "4", "coluna": "decidir",
+      "oque": "A ferramenta Marcar no painel Propriedades e o painel Filtro novo, com as frases da rodada 14.",
+      "situacao": "Pronto.",
+      "falta": "Sua resposta na aba 5 da página de conferência.",
+      "selos": {"github": "falta", "pc": "nao", "samuel": "nao"},
+      "ramo": "layout-etapas4a7-2026-10-19", "commit": "2eeec20",
+      "conferencia": {"pagina": "conferencia", "aba": "5"},
+      "comparar": {"antes": "fotos/ly-11-antes.jpg", "depois": "fotos/ly-11-depois.jpg", "legenda": "Painel Filtro: antes e depois"},
+      "fotos": [],
+      "testar": [
+        "Peça \"Preparar para eu testar\".",
+        "Abra um livro e use o painel Filtro e a ferramenta Marcar pelo painel da direita."
+      ]
+    },
+    {
+      "id": "consertos",
+      "titulo": "Quatro consertos prontos",
+      "item": "Consertos", "fase": "2", "coluna": "decidir",
+      "oque": "Instalador com as duas DLLs do ScanTailor; teste dos atalhos; \"Parece em branco\" na Gladstone 18; Horas 11 com pouca memória dando sempre a mesma imagem.",
+      "situacao": "Verificado até o penúltimo passo. Falta rodar os testes no GitHub da última versão e a parada de ~30 min no PC para juntar.",
+      "falta": "Você escolher: juntar agora (pausa de ~30 min no PC) ou no próximo intervalo.",
+      "pergunta": "Quando juntar os consertos ao programa?",
+      "opcoes": ["Agora (pausa de ~30 min no PC)", "No próximo intervalo"],
+      "selos": {"github": "falta", "pc": "nao", "samuel": "nao"},
+      "ramo": "consertos-2026-10-21", "commit": "2ff16e7",
+      "fotos": [{"src": "fotos/a4n-gladstone-18.jpg", "legenda": "Gladstone 18"}],
+      "testar": ["Depois de juntar, abra a Gladstone na página 18: o aviso \"Parece em branco\" deve estar certo."]
+    },
+    {
+      "id": "impressao",
+      "titulo": "As 6 perguntas da fase de impressão",
+      "item": "2.6 e 6.5", "fase": "2", "coluna": "decidir",
+      "oque": "Como o programa vai gerar o arquivo para imprimir: folha ou página, ajustar no livreto, onde diminuir a página, último caderno, arquivo ou impressora, imprimir como imagem.",
+      "situacao": "Pesquisa entregue, com desenhos. As perguntas estão na página de escolhas.",
+      "falta": "Suas respostas na página de escolhas (a 6ª pede fotos das abas Pôster e Múltiplo do UPDF).",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "nao"},
+      "ramo": "pesquisa-impressao-2026-10-19", "commit": "479706f",
+      "conferencia": {"pagina": "escolhas"},
+      "fotos": [],
+      "testar": []
+    },
+    {
+      "id": "pergunta-miniaturas",
+      "titulo": "Lembrar as miniaturas de um livro para o outro?",
+      "item": "Layout", "fase": "4", "coluna": "decidir", "tipo": "pergunta",
+      "oque": "Quando você muda o lugar das miniaturas (esquerda ou direita), deixa abertas ou fechadas, ou em pares, o programa deve lembrar isso ao abrir outro livro?",
+      "pergunta": "O programa deve lembrar onde você deixou as miniaturas?",
+      "opcoes": ["Sim, lembrar para todos os livros", "Não, cada livro começa do jeito de fábrica"],
+      "selos": {}, "fotos": [], "testar": []
+    },
+    {
+      "id": "pergunta-rascunho",
+      "titulo": "Apagar uma pasta de rascunho?",
+      "item": "Arrumação", "fase": "2", "coluna": "decidir", "tipo": "pergunta",
+      "oque": "A pasta D:\\programas\\EditorImpressao-arquivos\\ferramentas\\build-st-gravura-fase2-desentortar sobrou de uma montagem antiga. Não é usada pelo programa.",
+      "pergunta": "Posso apagar essa pasta?",
+      "opcoes": ["Sim, pode apagar", "Não, deixe"],
+      "selos": {}, "fotos": [], "testar": []
+    },
+    {
+      "id": "pergunta-verificador",
+      "titulo": "Um segundo verificador?",
+      "item": "Agentes", "fase": "2", "coluna": "decidir", "tipo": "pergunta",
+      "oque": "Hoje um verificador confere tudo antes de chegar a você, e ele vira fila. Com dois, anda mais rápido, mas gasta mais do limite da conta.",
+      "pergunta": "Quer um segundo verificador?",
+      "opcoes": ["Sim, dois verificadores", "Não, um basta"],
+      "selos": {}, "fotos": [], "testar": []
+    },
+    {
+      "id": "caixa-conteudo",
+      "titulo": "Caixa do conteúdo, borda preta e pintar de branco",
+      "item": "2.5, 2.13 e 2.14", "fase": "2", "coluna": "melhorar",
+      "oque": "O programa acha onde está o conteúdo da página, corta a borda preta do scanner (o Kaique escolhe por livro: só o preto ou até a moldura) e pinta de branco o que sobra.",
+      "situacao": "Feito e com a conferência montada, mas com dois defeitos.",
+      "falta": "Consertar a etiqueta do Egenloff 3, que sai cortada ao meio, e a lentidão: medir o livro ficou 2 a 3 vezes mais lento (Marial de 100 folhas: de ~140 s para ~300 s).",
+      "selos": {"github": "parte", "pc": "nao", "samuel": "nao"},
+      "ramo": "fase2-caixa-conteudo", "commit": "ed68928",
+      "fotos": [
+        {"src": "fotos/cg6-egenloff-3-perto.jpg", "legenda": "Egenloff 3: a etiqueta que sai cortada"},
+        {"src": "fotos/cg6-pesel-21-perto.jpg", "legenda": "Pesel 21, de perto"}
+      ],
+      "testar": []
+    },
+    {
+      "id": "2.12",
+      "titulo": "Desentortar a página curva perto da lombada",
+      "item": "2.12", "fase": "2", "coluna": "melhorar",
+      "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
+      "situacao": "Pela metade, pausado.",
+      "falta": "O antes e depois em páginas reais e ler duas rodadas de teste.",
+      "selos": {"github": "falta", "pc": "nao", "samuel": "nao"},
+      "ramo": "fase2-scantailor-itens-2026-10-19", "commit": "ffa2463",
+      "fotos": [], "testar": []
+    },
+    {
+      "id": "layout-6a7",
+      "titulo": "Tela nova: etapas 6 e 7 do layout",
+      "item": "Layout (Fase 4)", "fase": "4", "coluna": "andamento",
+      "oque": "As últimas etapas da tela nova; a grade ficou nítida depois.",
+      "situacao": "Pronto, com a conferência montada mas não publicada.",
+      "falta": "O verificador medir de novo a grade nítida; depois a conferência vai para você.",
+      "selos": {"github": "falta", "pc": "nao", "samuel": "nao"},
+      "ramo": "layout-etapas4a7-2026-10-19", "commit": "2eeec20",
+      "fotos": [], "testar": []
+    },
+    {
+      "id": "2.1", "titulo": "Dividir a folha (o do ScanTailor)", "item": "2.1", "fase": "2", "coluna": "sem-aprovado",
+      "oque": "O programa sabe quando a folha é uma página só e quando são duas.",
+      "situacao": "No programa desde 07/10. Você aprovou a tela; o resultado de imagem não teve conferência própria.",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "parte"}, "commit": "fa35e86", "fotos": [], "testar": []
+    },
+    {
+      "id": "2.2", "titulo": "Endireitar do ScanTailor, antes de cortar", "item": "2.2", "fase": "2", "coluna": "programa",
+      "oque": "A página é endireitada antes do corte, com a grade e o ângulo em número. O conserto do corte com borda preta (Pesel 21) entrou em 20/10.",
+      "situacao": "No programa. Você aprovou: \"Pode entrar no programa\" (12/10) e \"Aprovado: entra agora\" (20/10).",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "sim"}, "commit": "f418cc3",
+      "fotos": [{"src": "fotos/cg6b-cursus-3.jpg", "legenda": "Cursus 3 com o corte consertado"}], "testar": []
+    },
+    {
+      "id": "2.3", "titulo": "Girar (o do ScanTailor)", "item": "2.3", "fase": "2", "coluna": "sem-aprovado",
+      "oque": "Girar a página e aplicar o giro em outras.",
+      "situacao": "No programa desde 06/10. Você aprovou a tela; o resultado não teve conferência própria.",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "parte"}, "commit": "b7b42be", "fotos": [], "testar": []
+    },
+    {
+      "id": "2.7", "titulo": "Limpar pontinhos", "item": "2.7", "fase": "2", "coluna": "sem-aprovado",
+      "oque": "Tira os pontinhos soltos da página, com controle de força. Vem desligado.",
+      "situacao": "No programa desde 07/10 (\"Aceito, pode entrar\"). Sem conferência de imagem com \"Está bom\".",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "parte"}, "commit": "fa35e86", "fotos": [], "testar": []
+    },
+    {
+      "id": "misto", "titulo": "\"Só as letras\" (modo Misto)", "item": "1.5 (parte)", "fase": "1", "coluna": "sem-aprovado",
+      "oque": "Só as letras viram preto e branco; gravuras e cores ficam como no original.",
+      "situacao": "No programa desde 06/10 (\"Bom por enquanto\"). Nada marcado como aprovado.",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "parte"}, "commit": "2efc409", "fotos": [], "testar": []
+    },
+    {
+      "id": "layout-1a3", "titulo": "Tela nova: etapas 1 a 3 e os três temas", "item": "Layout (Fase 4)", "fase": "4", "coluna": "programa",
+      "oque": "Temas escuro, cinza e claro; tela sem abas com o painel Propriedades.",
+      "situacao": "No programa. Aprovado por você em 13/10.",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "sim"}, "commit": "ccc84aa", "fotos": [], "testar": []
+    },
+    {
+      "id": "fase1-aprovados", "titulo": "Tirar o fundo, detector de gravura e os OCRs", "item": "1.1, 1.2 e 1.3", "fase": "1", "coluna": "programa",
+      "oque": "Tirar o fundo de PDF com camadas, o detector de gravura do ScanTailor e os OCRs para achar o texto.",
+      "situacao": "No programa. Aprovados por você em 02/10.",
+      "selos": {"github": "sim", "pc": "sim", "samuel": "sim"}, "commit": "d4b0430", "fotos": [], "testar": []
+    },
+    {"id": "2.4", "titulo": "Margens iguais em todas as páginas", "item": "2.4", "fase": "2", "coluna": "fila", "oque": "Margens e alinhamento iguais em todas as páginas.", "situacao": "Não começado. Depende das respostas da impressão.", "selos": {}, "fotos": [], "testar": []},
+    {"id": "2.6", "titulo": "Tamanho final e arquivo para impressão", "item": "2.6", "fase": "2", "coluna": "fila", "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.", "situacao": "Não começado no código. Espera as 6 perguntas da impressão.", "selos": {}, "fotos": [], "testar": []},
+    {"id": "2.16", "titulo": "Usar todos os núcleos do processador", "item": "2.16", "fase": "2", "coluna": "fila", "oque": "Processar várias páginas ao mesmo tempo.", "situacao": "Não começado.", "selos": {}, "fotos": [], "testar": []},
+    {"id": "2.19", "titulo": "Unidades cm/mm e perfis de configuração", "item": "2.19", "fase": "2", "coluna": "fila", "oque": "Escolher cm ou mm e guardar perfis de ajustes. O tema já está feito.", "situacao": "Não começado (o tema já está no programa).", "selos": {}, "fotos": [], "testar": []},
+    {"id": "2.17", "titulo": "Igualar a luz e suavizar", "item": "2.17", "fase": "2", "coluna": "fila", "oque": "Igualar a luz da página como filtro de imagem.", "situacao": "Não começado. Metade da conta já está no programa (usada pelo detector de gravura).", "selos": {}, "fotos": [], "testar": []},
+    {"id": "2.18", "titulo": "Mudar à mão as áreas de gravura", "item": "2.18", "fase": "2", "coluna": "fila", "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).", "situacao": "Não começado.", "selos": {}, "fotos": [], "testar": []},
+    {"id": "2.10", "titulo": "PDF em duas camadas", "item": "2.10 e 1.6", "fase": "2", "coluna": "fila", "oque": "Letra em cima, fundo embaixo, como opção.", "situacao": "Não começado. Vai junto do 1.6.", "selos": {}, "fotos": [], "testar": []},
+    {"id": "1.4", "titulo": "Reconhecer melhor a tinta clara e colorida", "item": "1.4", "fase": "1", "coluna": "fila", "oque": "Achar a tinta só dentro das linhas de texto, guardando a cor original.", "situacao": "Não começado. Até lá, a força do preto sobe sozinha.", "selos": {}, "fotos": [], "testar": []},
+    {"id": "1.5", "titulo": "Juntar os dois detectores", "item": "1.5", "fase": "1", "coluna": "fila", "oque": "Papel branco, letra com a cor original, gravura intacta; inclui o título \"NOVEMBRE.\" da Horas 26.", "situacao": "Não começado (só a parte \"Só as letras\" está feita).", "selos": {}, "fotos": [], "testar": []}
+  ],
+  "agentes": [
+    {"id": "implementador-3", "nome": "Implementador 3", "papel": "Ferramentas do ScanTailor", "estado": "parado", "tarefa": "2.8 → 2.9 → 2.11 → 2.15 → 2.12 → 2.16 → 2.19 → 2.17", "ultimo": "2.8, 2.9, 2.11 e 2.15 prontos; parou no meio do 2.12.", "ramo": "fase2-scantailor-itens-2026-10-19", "quando": "2026-10-21T15:00:00Z"},
+    {"id": "implementador-4", "nome": "Implementador 4", "papel": "Caixa do conteúdo e borda preta", "estado": "parado", "tarefa": "2.5, 2.13 e 2.14", "ultimo": "Começou o conserto da etiqueta do Egenloff 3; ainda não funciona na página real.", "ramo": "fase2-caixa-conteudo", "quando": "2026-10-21T15:00:00Z"},
+    {"id": "layout", "nome": "Agente de layout", "papel": "Tela nova", "estado": "parado", "tarefa": "Etapas 4 a 7 do layout", "ultimo": "Etapas 4 a 7 prontas; deixou a grade nítida.", "ramo": "layout-etapas4a7-2026-10-19", "quando": "2026-10-21T15:00:00Z"},
+    {"id": "verificador", "nome": "Verificador", "papel": "Confere antes de chegar a você", "estado": "parado", "tarefa": "Conferências da caixa do conteúdo e do layout 6-7", "ultimo": "Montou as duas conferências; falta medir a grade nítida.", "ramo": "verif-layout-4a5-2026-10-21", "quando": "2026-10-21T15:00:00Z"},
+    {"id": "consertos", "nome": "Consertador", "papel": "Bugs achados no caminho", "estado": "parado", "tarefa": "Instalador, atalhos, Gladstone 18, Horas 11", "ultimo": "Quatro consertos prontos; falta o GitHub da última versão.", "ramo": "consertos-2026-10-21", "quando": "2026-10-21T15:00:00Z"},
+    {"id": "pesquisador", "nome": "Pesquisador", "papel": "Pesquisa de código de fora", "estado": "terminou", "tarefa": "Fase de impressão", "ultimo": "Entregou o relatório com as 6 perguntas.", "ramo": "pesquisa-impressao-2026-10-19", "quando": "2026-10-20T20:00:00Z"}
+  ],
+  "velocidade": {
+    "nota": "Teste oficial no PC do Samuel, Marial de 300 folhas. A régua do notebook do Kaique ainda não existe (item 0.6 não feito).",
+    "series": [
+      {"nome": "Abrir o livro", "unidade": "s", "pontos": [["26/09", 38.9], ["29/09", 37.9], ["30/09", 25.5], ["12/10", 58], ["14/10", 55]]},
+      {"nome": "Mágico pro, 10 páginas", "unidade": "s", "pontos": [["26/09", 74], ["29/09", 69], ["30/09", 54.5]]},
+      {"nome": "Preto e branco, 10 páginas", "unidade": "s", "pontos": [["26/09", 33.1], ["29/09", 30.1], ["30/09", 27.3]]}
+    ],
+    "lentidoes": [
+      "Medir o livro com a caixa do conteúdo ligada: ~140 s → ~300 s (Marial, 100 folhas). Em conserto.",
+      "Abrir o livro de 300 folhas foi a ~58 s em 12/10 (era 25,5 s em 30/09). Causa não investigada.",
+      "\"Só as letras\": 3,4% mais lento depois do conserto do desenho. Aceito até a Fase 5.",
+      "Primeira prévia ~0,5 s mais lenta com o detector de gravura. Aceito até a Fase 5."
+    ]
+  }
+}

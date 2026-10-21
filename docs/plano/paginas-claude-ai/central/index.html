@@ -1,0 +1,1015 @@
+<title>Central do Editor de Impressão</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+  /* Layout: painel de gráfica. Topo com o resumo e o que mudou; abas fixas; cada aba é uma mesa de trabalho.
+     Cores de sentido fixo (verde no programa, azul espera você, âmbar falta melhorar, vermelho sem aprovado, cinza fila);
+     magenta de registro só para estrutura (aba atual, "você está aqui"). */
+  :root {
+    --papel: #eef1f4; --folha: #ffffff; --tinta: #18202b; --fraco: #5a6575; --fio: #d3d9e1;
+    --magenta: #a8326e; --magenta-suave: #f6e2ec;
+    --azul: #0f6f8f; --azul-suave: #dceff5;
+    --verde: #1d7a45; --verde-suave: #e1f2e8;
+    --ambar: #9a5a00; --ambar-suave: #fbeed9;
+    --verm: #b42d2d; --verm-suave: #f8e1df;
+    --roxo: #5a4aa8; --roxo-suave: #e8e5f7;
+    --cinza: #6b7480; --cinza-suave: #e6e9ed;
+    --sombra: 0 1px 2px rgba(24, 32, 43, .08), 0 4px 14px rgba(24, 32, 43, .06);
+    --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --fonte-texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --papel: #141920; --folha: #1e252e; --tinta: #e8edf3; --fraco: #a1acba; --fio: #343e4a;
+      --magenta: #e886b6; --magenta-suave: #3a2030;
+      --azul: #5cc0e0; --azul-suave: #173341;
+      --verde: #5fd193; --verde-suave: #18321f;
+      --ambar: #f0b45c; --ambar-suave: #3a2c14;
+      --verm: #f08a82; --verm-suave: #3d1d1b;
+      --roxo: #a99bf0; --roxo-suave: #29244a;
+      --cinza: #9aa3ae; --cinza-suave: #2a313a;
+      --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --papel: #141920; --folha: #1e252e; --tinta: #e8edf3; --fraco: #a1acba; --fio: #343e4a;
+    --magenta: #e886b6; --magenta-suave: #3a2030;
+    --azul: #5cc0e0; --azul-suave: #173341;
+    --verde: #5fd193; --verde-suave: #18321f;
+    --ambar: #f0b45c; --ambar-suave: #3a2c14;
+    --verm: #f08a82; --verm-suave: #3d1d1b;
+    --roxo: #a99bf0; --roxo-suave: #29244a;
+    --cinza: #9aa3ae; --cinza-suave: #2a313a;
+    --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--papel); color: var(--tinta); font: 17px/1.5 var(--fonte-texto);
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 72px;
+  }
+  .miolo { max-width: 1240px; margin: 0 auto; display: grid; gap: 22px; }
+  a { color: var(--azul); }
+  :focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+  h1, h2, h3 { text-wrap: balance; }
+
+  /* ---- topo */
+  header.topo { padding-block: 26px 0; display: grid; gap: 14px; }
+  .marca { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--magenta); font-weight: 700; }
+  .marca svg { flex: none; }
+  .topo-linha { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
+  h1 { margin: 0; font: 800 clamp(30px, 5vw, 42px)/1.05 var(--fonte-titulo); }
+  .resumo { margin: 0; max-width: 68ch; font-size: 18px; }
+  .atualizado { color: var(--fraco); font-size: 14px; margin: 0; }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .links a { font-size: 14px; text-decoration: none; border: 1px solid var(--fio); background: var(--folha); padding: 4px 12px; border-radius: 99px; }
+  .links a:hover { border-color: var(--azul); }
+
+  .placar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .placar button { font: inherit; color: var(--tinta); text-align: left; cursor: pointer; border: 1px solid var(--fio); border-radius: 10px;
+    background: var(--folha); padding: 12px 14px; display: grid; gap: 2px; border-top: 4px solid var(--cor, var(--fio)); }
+  .placar button:hover { box-shadow: var(--sombra); }
+  .placar .n { font: 800 30px/1 var(--fonte-titulo); font-variant-numeric: tabular-nums; color: var(--cor); }
+  .placar .r { font-size: 14px; color: var(--fraco); line-height: 1.3; }
+
+  .mudou { background: var(--folha); border: 1px solid var(--fio); border-left: 5px solid var(--magenta); border-radius: 10px; padding: 12px 16px; display: grid; gap: 6px; }
+  .mudou h2 { margin: 0; font: 600 17px/1.2 var(--fonte-titulo); }
+  .mudou ul { margin: 0; padding-left: 20px; display: grid; gap: 3px; }
+  .mudou .quando { color: var(--fraco); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .aviso { background: var(--ambar-suave); padding: 10px 14px; border-radius: 8px; margin: 0; }
+
+  /* ---- abas */
+  nav.abas { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--papel);
+    display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; border-bottom: 2px solid var(--fio); scrollbar-width: thin; }
+  nav.abas button { font: 700 15px/1 var(--fonte-texto); color: var(--fraco); background: transparent; border: 0; border-radius: 8px;
+    padding: 10px 14px; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
+  nav.abas button:hover { background: var(--folha); color: var(--tinta); }
+  nav.abas button[aria-selected="true"] { background: var(--tinta); color: var(--papel); }
+  nav.abas .cont { font-size: 12px; background: var(--magenta); color: #ffffff; border-radius: 99px; padding: 2px 7px; }
+  section.painel { display: grid; gap: 16px; min-width: 0; }
+  section.painel > header h2 { margin: 0; font: 600 26px/1.15 var(--fonte-titulo); }
+  section.painel > header p { margin: 4px 0 0; color: var(--fraco); max-width: 72ch; }
+
+  /* ---- botões e selos */
+  .bt { font: 700 15px/1.2 var(--fonte-texto); padding: 9px 14px; border-radius: 8px; border: 1px solid var(--fio); background: var(--folha);
+    color: var(--tinta); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .bt:hover:not(:disabled) { border-color: var(--tinta); }
+  .bt:disabled { opacity: .5; cursor: default; }
+  .bt.forte { background: var(--verde); border-color: var(--verde); color: var(--folha); }
+  .bt.azul { background: var(--azul); border-color: var(--azul); color: var(--folha); }
+  .bt.parar { color: var(--verm); }
+  .bt.pequeno { font-size: 13px; padding: 5px 10px; }
+  .linha { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 99px;
+    background: var(--cinza-suave); color: var(--cinza); white-space: nowrap; }
+  .chip.c-decidir { background: var(--azul-suave); color: var(--azul); }
+  .chip.c-melhorar { background: var(--ambar-suave); color: var(--ambar); }
+  .chip.c-andamento { background: var(--roxo-suave); color: var(--roxo); }
+  .chip.c-sem-aprovado { background: var(--verm-suave); color: var(--verm); }
+  .chip.c-programa { background: var(--verde-suave); color: var(--verde); }
+  .selos { display: flex; flex-wrap: wrap; gap: 6px; }
+  .selo { font-size: 13px; padding: 2px 9px; border-radius: 6px; border: 1px solid var(--fio); color: var(--fraco); white-space: nowrap; }
+  .selo b { font-weight: 700; }
+  .selo.sim { border-color: var(--verde); color: var(--verde); }
+  .selo.nao { border-color: var(--verm); color: var(--verm); }
+  .selo.falta, .selo.parte { border-color: var(--ambar); color: var(--ambar); }
+
+  /* ---- cartão grande (Decidir agora) */
+  .barra-varios { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); z-index: 4; background: var(--tinta); color: var(--papel);
+    border-radius: 10px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+  .barra-varios .bt { background: var(--verde); border-color: var(--verde); color: #ffffff; }
+  .barra-varios .bt.leve { background: transparent; border-color: var(--papel); color: var(--papel); }
+  .grade-cartoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 16px; align-items: start; }
+  .cartao { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; box-shadow: var(--sombra); display: grid; gap: 12px;
+    padding: 16px; min-width: 0; border-top: 5px solid var(--cor, var(--azul)); }
+  .cartao.marcado { outline: 3px solid var(--verde); }
+  .cartao-topo { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+  .cartao-topo input[type="checkbox"] { width: 22px; height: 22px; margin: 3px 0 0; accent-color: var(--verde); cursor: pointer; }
+  .cartao h3 { margin: 0; font: 600 21px/1.2 var(--fonte-titulo); }
+  .cartao .item { font-size: 13px; color: var(--fraco); letter-spacing: .04em; text-transform: uppercase; margin-top: 2px; }
+  .cartao p { margin: 0; max-width: 70ch; }
+  .rot { font-size: 13px; font-weight: 700; color: var(--fraco); letter-spacing: .05em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  .ressalva { background: var(--ambar-suave); border-radius: 8px; padding: 8px 12px; font-size: 15px; }
+  .falta { border-left: 3px solid var(--azul); padding-left: 10px; }
+  .pergunta { font-weight: 700; }
+  .ordem-estado { font-size: 14px; border-radius: 8px; padding: 8px 12px; background: var(--papel); display: grid; gap: 2px; }
+  .ordem-estado.feita { background: var(--verde-suave); }
+  .ordem-estado .resp { color: var(--fraco); }
+  details.sub { border-top: 1px solid var(--fio); padding-top: 8px; }
+  details.sub > summary { cursor: pointer; font-weight: 700; color: var(--azul); list-style: none; display: flex; gap: 6px; align-items: center; }
+  details.sub > summary::-webkit-details-marker { display: none; }
+  details.sub > summary::before { content: "▸"; transition: transform .15s; }
+  details.sub[open] > summary::before { transform: rotate(90deg); }
+  details.sub .dentro { padding-top: 10px; display: grid; gap: 10px; }
+  ol.passos { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+  .tecnico { font-size: 14px; color: var(--fraco); font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
+  textarea, input[type="text"], input[type="search"] { font: inherit; width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--fio);
+    background: var(--papel); color: var(--tinta); }
+  textarea { min-height: 76px; resize: vertical; }
+  .estado { font-size: 14px; color: var(--fraco); }
+
+  /* fotos e comparador */
+  .fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .fotos figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
+  .fotos button { padding: 0; border: 1px solid var(--fio); border-radius: 6px; overflow: hidden; cursor: zoom-in; background: #ffffff; display: block; width: 100%; aspect-ratio: 4 / 3; }
+  .fotos img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .fotos figcaption { font-size: 13px; color: var(--fraco); line-height: 1.3; }
+  .comparar { display: grid; gap: 6px; }
+  .comparar .caixa { position: relative; border: 1px solid var(--fio); border-radius: 8px; overflow: hidden; background: #ffffff; max-width: 100%; touch-action: pan-y; }
+  .comparar .caixa img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+  .comparar .depois { position: absolute; inset: 0; }
+  .comparar .depois img { width: 100%; height: 100%; object-fit: cover; }
+  .comparar .fio-corte { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--magenta); transform: translateX(-1.5px); pointer-events: none; }
+  .comparar .fio-corte::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--magenta); color: #ffffff;
+    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; }
+  .comparar .nomes { display: flex; justify-content: space-between; font-size: 13px; color: var(--fraco); font-weight: 700; }
+  .comparar input[type="range"] { width: 100%; accent-color: var(--magenta); }
+
+  /* ---- quadro */
+  .quadro { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
+  .coluna { background: var(--cinza-suave); border-radius: 12px; padding: 10px; display: grid; gap: 8px; align-content: start; min-width: 0; border-top: 4px solid var(--cor); }
+  .coluna h3 { margin: 0; font: 600 16px/1.2 var(--fonte-titulo); display: flex; justify-content: space-between; gap: 8px; }
+  .coluna h3 span { color: var(--fraco); font-variant-numeric: tabular-nums; }
+  .coluna .explica { font-size: 13px; color: var(--fraco); margin: 0 0 4px; line-height: 1.35; }
+  .mini { background: var(--folha); border: 1px solid var(--fio); border-radius: 8px; padding: 10px; display: grid; gap: 6px; cursor: pointer; text-align: left; font: inherit; color: var(--tinta); }
+  .mini:hover { border-color: var(--tinta); }
+  .mini .t { font-weight: 700; line-height: 1.3; }
+  .mini .s { font-size: 14px; color: var(--fraco); line-height: 1.35; }
+  .mini.arrastando { opacity: .4; }
+  .mini.alvo { box-shadow: 0 -3px 0 var(--magenta); }
+  .mini .pri { display: flex; gap: 6px; align-items: center; justify-content: space-between; }
+  .mini .num { font: 800 14px/1 var(--fonte-titulo); color: var(--magenta); }
+  .mini .setas { display: flex; gap: 4px; }
+  .mini .setas button { font: inherit; width: 30px; height: 28px; border-radius: 6px; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta); cursor: pointer; }
+
+  /* ---- etapas */
+  .trilha { display: grid; grid-template-columns: repeat(8, minmax(130px, 1fr)); gap: 0; overflow-x: auto; padding-block: 8px 4px; }
+  .etapa { position: relative; display: grid; gap: 8px; padding: 0 8px; justify-items: start; text-align: left; font: inherit; color: var(--tinta);
+    background: transparent; border: 0; cursor: pointer; min-width: 0; }
+  .etapa .ponto { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--fio); background: var(--folha); display: grid; place-items: center;
+    font: 800 13px/1 var(--fonte-titulo); position: relative; z-index: 1; }
+  .etapa::before { content: ""; position: absolute; top: 13px; left: 0; right: 0; height: 3px; background: var(--fio); }
+  .etapa:first-child::before { left: 22px; }
+  .etapa:last-child::before { right: calc(100% - 22px); }
+  .etapa.feita .ponto { border-color: var(--verde); background: var(--verde); color: var(--folha); }
+  .etapa.atual .ponto { border-color: var(--magenta); background: var(--magenta); color: #ffffff; box-shadow: 0 0 0 5px var(--magenta-suave); }
+  .etapa .nome { font-weight: 700; line-height: 1.25; font-size: 15px; }
+  .etapa .aqui { font-size: 12px; font-weight: 700; color: var(--magenta); letter-spacing: .06em; text-transform: uppercase; }
+  .etapa.escolhida .nome { text-decoration: underline; text-decoration-color: var(--magenta); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+  .barra-fase { display: flex; width: 100%; height: 8px; border-radius: 99px; overflow: hidden; background: var(--cinza-suave); }
+  .barra-fase span { display: block; height: 100%; }
+  .etapa .conta { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--fraco); }
+  .legenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .fase-aberta { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+  .fase-aberta h3 { margin: 0; font: 600 22px/1.2 var(--fonte-titulo); }
+  .lista-itens { display: grid; gap: 6px; }
+  .lista-itens button { font: inherit; color: var(--tinta); text-align: left; background: var(--papel); border: 1px solid var(--fio); border-radius: 8px;
+    padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+  .md { min-width: 0; max-width: 80ch; font-size: 15px; }
+  .md p, .md ul, .md ol { margin: 0 0 8px; }
+  .md ul, .md ol { padding-left: 22px; }
+  .md code { font-size: 13px; background: var(--papel); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
+  .md table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 14px; max-width: 100%; }
+  .md th, .md td { border: 1px solid var(--fio); padding: 5px 8px; vertical-align: top; }
+  .md td:nth-child(2) { min-width: 300px; }
+
+  /* ---- agentes */
+  .controle-agentes { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+  .numeros { display: flex; flex-wrap: wrap; gap: 6px; }
+  .numeros button { font: 800 18px/1 var(--fonte-titulo); width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--fio); background: var(--papel);
+    color: var(--tinta); cursor: pointer; font-variant-numeric: tabular-nums; }
+  .numeros button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+  .numeros button.risco { border-color: var(--ambar); }
+  .agentes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+  .agente { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .agente h3 { margin: 0; font: 600 19px/1.2 var(--fonte-titulo); }
+  .agente .papel-ag { font-size: 13px; color: var(--fraco); text-transform: uppercase; letter-spacing: .04em; }
+  .agente p { margin: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 99px; width: fit-content; }
+  .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .pill.trabalhando { color: var(--azul); background: var(--azul-suave); }
+  .pill.terminou { color: var(--verde); background: var(--verde-suave); }
+  .pill.parado { color: var(--ambar); background: var(--ambar-suave); }
+  @media (prefers-reduced-motion: no-preference) { .pill.trabalhando::before { animation: pulsa 1.6s ease-in-out infinite; } }
+  @keyframes pulsa { 50% { opacity: .3; } }
+
+  /* ---- defeitos */
+  .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .filtros button { font: 700 14px/1 var(--fonte-texto); padding: 8px 12px; border-radius: 99px; border: 1px solid var(--fio); background: var(--folha); color: var(--tinta); cursor: pointer; }
+  .filtros button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
+  .filtros input { max-width: 300px; }
+  .grupo-def { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; overflow: hidden; }
+  .grupo-def h3 { margin: 0; padding: 10px 14px; font: 600 16px/1.2 var(--fonte-titulo); background: var(--cinza-suave); display: flex; justify-content: space-between; gap: 8px; }
+  .def { padding: 10px 14px; border-top: 1px solid var(--fio); display: grid; grid-template-columns: 64px 1fr; gap: 4px 12px; }
+  .def .d { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+  .def .x { min-width: 0; }
+  .def .sit { font-size: 14px; color: var(--fraco); }
+  .def .faixa { width: 6px; border-radius: 3px; }
+
+  /* ---- velocidade */
+  .graficos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; }
+  .grafico { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px; display: grid; gap: 6px; min-width: 0; }
+  .grafico h3 { margin: 0; font: 600 17px/1.2 var(--fonte-titulo); }
+  .grafico .ult { font-size: 14px; color: var(--fraco); }
+  .grafico svg { width: 100%; height: auto; display: block; }
+  .grafico svg text { fill: var(--fraco); font: 11px var(--fonte-texto); }
+  .regua { border: 2px dashed var(--fio); border-radius: 12px; padding: 14px; color: var(--fraco); }
+  ul.limpa { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+  /* ---- ordens */
+  .ordens { display: grid; gap: 8px; }
+  .ordem { background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; border-left: 5px solid var(--cor, var(--fio)); }
+  .ordem .cab { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; }
+  .ordem .quando { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+  .ordem .resp { color: var(--fraco); border-left: 3px solid var(--verde); padding-left: 10px; white-space: pre-wrap; }
+  .vazio { color: var(--fraco); font-style: italic; margin: 0; }
+  .ideia-nova { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
+
+  /* ---- janelas */
+  dialog { border: 0; border-radius: 14px; padding: 0; background: var(--papel); color: var(--tinta); width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 32px); box-shadow: var(--sombra); }
+  dialog::backdrop { background: rgba(10, 14, 20, .65); }
+  dialog .dlg-cab { position: sticky; top: 0; background: var(--papel); display: flex; justify-content: flex-end; padding: 8px; z-index: 1; }
+  dialog .dlg-corpo { padding: 0 14px 16px; }
+  dialog.zoom { background: transparent; width: auto; max-width: 96vw; box-shadow: none; }
+  dialog.zoom img { display: block; max-width: 96vw; max-height: 84vh; border-radius: 6px; background: #ffffff; }
+  dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 8px; color: #ffffff; }
+  .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--tinta); color: var(--papel);
+    padding: 10px 16px; border-radius: 10px; font-weight: 700; z-index: 20; max-width: calc(100vw - 32px); }
+  .confirmar { background: var(--verde-suave); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; }
+
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .def { grid-template-columns: 1fr; }
+    .barra-varios { top: calc(env(safe-area-inset-top, 0px) + 54px); }
+  }
+</style>
+
+<div class="miolo">
+  <header class="topo">
+    <div class="marca">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 0v22M0 11h22" stroke="currentColor" stroke-width="1.6"/></svg>
+      Instituto São Bento · Editor de Impressão
+    </div>
+    <div class="topo-linha">
+      <div style="display:grid;gap:6px;min-width:0">
+        <h1>Central de decisões</h1>
+        <p class="resumo" id="resumo">Carregando...</p>
+        <p class="atualizado" id="atualizado"></p>
+      </div>
+      <nav class="links" id="links" aria-label="Outras páginas"></nav>
+    </div>
+    <p class="aviso" id="aviso" hidden></p>
+    <div class="placar" id="placar"></div>
+    <div class="mudou" id="mudou" hidden></div>
+  </header>
+
+  <nav class="abas" role="tablist" aria-label="Partes da central" id="abas">
+    <button role="tab" data-aba="decidir" aria-selected="true">Decidir agora <span class="cont" id="cont-decidir" hidden></span></button>
+    <button role="tab" data-aba="quadro" aria-selected="false">Quadro dos trabalhos</button>
+    <button role="tab" data-aba="etapas" aria-selected="false">Etapas do projeto</button>
+    <button role="tab" data-aba="agentes" aria-selected="false">Agentes</button>
+    <button role="tab" data-aba="defeitos" aria-selected="false">Defeitos</button>
+    <button role="tab" data-aba="velocidade" aria-selected="false">Velocidade</button>
+    <button role="tab" data-aba="ordens" aria-selected="false">Ordens e ideias <span class="cont" id="cont-ordens" hidden></span></button>
+  </nav>
+
+  <section class="painel" id="aba-decidir" role="tabpanel">
+    <header>
+      <h2>Decidir agora</h2>
+      <p>Só o que espera você. Cada botão vira uma ordem para a gerente, guardada na hora. "Pôr no programa como está" passa primeiro pelos testes no GitHub e no PC; as melhorias continuam depois.</p>
+    </header>
+    <div class="barra-varios" id="barra-varios" hidden>
+      <span id="varios-texto"></span>
+      <span class="linha">
+        <button class="bt" type="button" id="varios-juntar">Pôr os marcados no programa como estão</button>
+        <button class="bt leve" type="button" id="varios-limpar">Desmarcar</button>
+      </span>
+    </div>
+    <div class="grade-cartoes" id="lista-decidir"><p class="vazio">Carregando os trabalhos...</p></div>
+  </section>
+
+  <section class="painel" id="aba-quadro" role="tabpanel" hidden>
+    <header>
+      <h2>Quadro dos trabalhos</h2>
+      <p>Cada trabalho numa coluna, pela situação. Clique para abrir. Nas colunas do que falta fazer, arraste (ou use as setas) para dizer o que vem primeiro: os agentes seguem essa ordem.</p>
+    </header>
+    <div class="quadro" id="quadro"></div>
+  </section>
+
+  <section class="painel" id="aba-etapas" role="tabpanel" hidden>
+    <header>
+      <h2>Etapas do projeto</h2>
+      <p>As oito fases do plano, em ordem. A barra mostra os trabalhos de cada fase por situação. Clique numa fase para ver os trabalhos e o texto do plano.</p>
+    </header>
+    <div class="trilha" id="trilha"></div>
+    <div class="legenda" id="legenda"></div>
+    <div class="fase-aberta" id="fase-aberta" hidden></div>
+  </section>
+
+  <section class="painel" id="aba-agentes" role="tabpanel" hidden>
+    <header>
+      <h2>Agentes</h2>
+      <p>Os ajudantes da gerente e o último passo de cada um. A gerente atualiza aqui quando um começa, entrega ou para.</p>
+    </header>
+    <div class="controle-agentes">
+      <span class="rot" id="rot-max">Quantos agentes podem trabalhar ao mesmo tempo</span>
+      <div class="numeros" id="numeros" role="group" aria-labelledby="rot-max"></div>
+      <p class="estado" id="estado-max">Com 5 ou mais juntos, a conta já bateu no limite de uso três vezes (20 e 21/10) e os agentes pararam no meio.</p>
+    </div>
+    <div class="agentes" id="lista-agentes"><p class="vazio">Nenhum agente registrado.</p></div>
+  </section>
+
+  <section class="painel" id="aba-defeitos" role="tabpanel" hidden>
+    <header>
+      <h2>Defeitos conhecidos</h2>
+      <p>Tirados da Lista de bugs do plano. "Aceito até depois" são os que você mandou deixar para outra fase.</p>
+    </header>
+    <div class="filtros" id="filtros-def">
+      <button type="button" data-f="aberto" aria-pressed="true">Abertos</button>
+      <button type="button" data-f="aceito" aria-pressed="false">Aceitos até depois</button>
+      <button type="button" data-f="conferir" aria-pressed="false">Consertados, a conferir</button>
+      <label class="rot" for="busca-def" style="margin:0 0 0 6px">Procurar</label>
+      <input type="search" id="busca-def" placeholder="Ex.: Egenloff, zoom, corte">
+    </div>
+    <div id="lista-defeitos" style="display:grid;gap:12px"><p class="vazio">Carregando...</p></div>
+  </section>
+
+  <section class="painel" id="aba-velocidade" role="tabpanel" hidden>
+    <header>
+      <h2>Velocidade</h2>
+      <p id="vel-nota">Tempos do teste oficial.</p>
+    </header>
+    <div class="graficos" id="graficos"></div>
+    <div class="regua" id="regua"><b>Régua do notebook do Kaique: ainda não existe.</b> O teste no notebook (item 0.6) não foi feito; até lá, os tempos acima são só do seu PC.</div>
+    <div class="grafico">
+      <h3>Lentidões conhecidas</h3>
+      <ul class="limpa" id="lentidoes"></ul>
+    </div>
+  </section>
+
+  <section class="painel" id="aba-ordens" role="tabpanel" hidden>
+    <header>
+      <h2>Ordens e ideias</h2>
+      <p>Tudo o que você mandou por esta página. A gerente lê ao abrir cada conversa, entre uma tarefa e outra, ou na hora se você escrever "olha a central" no chat.</p>
+    </header>
+    <div class="ideia-nova">
+      <label class="rot" for="ideia-texto">Ideia nova (vai para a Lista de espera do plano, com as suas palavras)</label>
+      <textarea id="ideia-texto" placeholder="Ex.: quero um botão para virar todas as páginas pares de uma vez."></textarea>
+      <div class="linha"><button class="bt azul" type="button" id="ideia-enviar" disabled>Guardar ideia</button><span class="estado" id="ideia-estado" role="status"></span></div>
+    </div>
+    <div class="ordens" id="lista-ordens"><p class="vazio">Nenhuma ordem ainda.</p></div>
+  </section>
+</div>
+
+<dialog id="detalhe"><div class="dlg-cab"><button class="bt pequeno" type="button" id="detalhe-fechar">Fechar</button></div><div class="dlg-corpo" id="detalhe-corpo"></div></dialog>
+<dialog class="zoom" id="zoom"><img id="zoom-img" alt=""><div class="barra"><span id="zoom-legenda"></span><button class="bt pequeno" id="zoom-fechar" type="button">Fechar</button></div></dialog>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var COLUNAS = [
+    { id: "decidir", nome: "Esperando você", cor: "--azul", explica: "Pronto e testado por máquina; falta o seu teste ou a sua decisão." },
+    { id: "melhorar", nome: "Pronto, mas falta melhorar", cor: "--ambar", explica: "Funciona, com defeito conhecido sendo consertado." },
+    { id: "andamento", nome: "Em andamento", cor: "--roxo", explica: "Um agente trabalha nisso (ou parou no meio)." },
+    { id: "fila", nome: "Ainda não começado", cor: "--cinza", explica: "Na fila. A ordem daqui é a ordem dos agentes." },
+    { id: "sem-aprovado", nome: "No programa, sem o seu aprovado", cor: "--verm", explica: "Já está no programa, mas você não deu o aprovado final." },
+    { id: "programa", nome: "No programa, aprovado", cor: "--verde", explica: "Entrou e você aprovou." }
+  ];
+  var COL = {}; COLUNAS.forEach(function (c) { COL[c.id] = c; });
+  var PRIORIZA = { melhorar: 1, andamento: 1, fila: 1 };
+  var TIPOS = {
+    juntar: { nome: "Pôr no programa como está", cor: "--verde" },
+    continuar: { nome: "Continuar trabalhando", cor: "--azul" },
+    parar: { nome: "Parar", cor: "--verm" },
+    testar: { nome: "Preparar para eu testar no PC", cor: "--roxo" },
+    comentar: { nome: "Comentário", cor: "--cinza" },
+    resposta: { nome: "Resposta", cor: "--azul" }
+  };
+  var ESTADOS = { enviada: "Enviada: a gerente ainda não viu", vista: "A gerente viu", feita: "Feito" };
+  var SELOS = [["github", "GitHub"], ["pc", "Seu PC"], ["samuel", "Você"]];
+  var SELO_TXT = { sim: "✓", nao: "✗", falta: "falta", parte: "em parte" };
+
+  var dados = { geral: null, trabalhos: [], fases: [], agentes: [], defeitos: [], velocidade: null, ordens: [], testes: [], ideias: [], config: {} };
+  var db = null, user = null;
+  var marcados = {};
+  var abaAtual = "decidir";
+  var faseEscolhida = null;
+  var filtroDef = "aberto";
+
+  // ---------- utilidades
+  function el(tag, cls, texto) { var e = document.createElement(tag); if (cls) e.className = cls; if (texto != null) e.textContent = texto; return e; }
+  function botao(texto, cls, fn) { var b = el("button", "bt" + (cls ? " " + cls : ""), texto); b.type = "button"; if (fn) b.addEventListener("click", fn); return b; }
+  function dataHora(iso) { try { return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } }
+  function porOrdem(a, b) { return (a.ordem || 0) - (b.ordem || 0); }
+  function guardar(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  var toastT = null;
+  function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { x.hidden = true; }, 3200); }
+  function novoId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // ---------- última visita (só neste navegador)
+  var visitaAnterior = ler("central-ultima-visita");
+  setTimeout(function () { guardar("central-ultima-visita", new Date().toISOString()); }, 8000);
+
+  // ---------- zoom e detalhe
+  var zoom = document.getElementById("zoom");
+  document.getElementById("zoom-fechar").addEventListener("click", function () { zoom.close(); });
+  zoom.addEventListener("click", function (ev) { if (ev.target === zoom) zoom.close(); });
+  function abrirZoom(src, leg) { var i = document.getElementById("zoom-img"); i.src = src; i.alt = leg || ""; document.getElementById("zoom-legenda").textContent = leg || ""; zoom.showModal(); }
+  var detalhe = document.getElementById("detalhe");
+  document.getElementById("detalhe-fechar").addEventListener("click", function () { detalhe.close(); });
+  detalhe.addEventListener("click", function (ev) { if (ev.target === detalhe) detalhe.close(); });
+  var detalheId = null;
+  detalhe.addEventListener("close", function () { detalheId = null; });
+  function abrirDetalhe(t) {
+    detalheId = t.id;
+    var c = document.getElementById("detalhe-corpo"); c.textContent = "";
+    c.appendChild(cartao(t, { semMarcar: true }));
+    detalhe.showModal();
+  }
+
+  // ---------- ordens
+  async function mandarOrdem(t, tipo, extra) {
+    if (!db) { toast("Abra pelo claude.ai para mandar ordens."); return false; }
+    var o = Object.assign({ trabalho: t.id, titulo: t.titulo, tipo: tipo, texto: "", opcao: "", em: new Date().toISOString(), estado: "enviada", resposta: "" }, extra || {});
+    try { await db.doc("ordens/" + novoId("o")).set(o); toast("Ordem guardada: " + (TIPOS[tipo] || {}).nome); return true; }
+    catch (e) { toast("Não consegui guardar (" + (e && e.code || "erro") + "). Tente de novo."); return false; }
+  }
+  function ultimaOrdem(id) {
+    var l = dados.ordens.filter(function (o) { return o.trabalho === id; }).sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
+    return l[0] || null;
+  }
+
+  // ---------- comparador
+  function comparador(c) {
+    var w = el("div", "comparar");
+    var caixa = el("div", "caixa");
+    var a = el("img"); a.src = c.antes; a.alt = "Antes"; a.loading = "lazy";
+    var dep = el("div", "depois"); var b = el("img"); b.src = c.depois; b.alt = "Depois"; b.loading = "lazy"; dep.appendChild(b);
+    var fio = el("div", "fio-corte");
+    caixa.appendChild(a); caixa.appendChild(dep); caixa.appendChild(fio);
+    var r = el("input"); r.type = "range"; r.min = 0; r.max = 100; r.value = 50; r.setAttribute("aria-label", "Arraste para comparar antes e depois");
+    function por(v) { dep.style.clipPath = "inset(0 0 0 " + v + "%)"; fio.style.left = v + "%"; }
+    r.addEventListener("input", function () { por(r.value); });
+    function arrasta(ev) { var q = caixa.getBoundingClientRect(); var v = Math.max(0, Math.min(100, (ev.clientX - q.left) / q.width * 100)); r.value = v; por(v); }
+    var apertado = false;
+    caixa.addEventListener("pointerdown", function (ev) { apertado = true; caixa.setPointerCapture(ev.pointerId); arrasta(ev); });
+    caixa.addEventListener("pointermove", function (ev) { if (apertado) arrasta(ev); });
+    caixa.addEventListener("pointerup", function () { apertado = false; });
+    por(50);
+    var nomes = el("div", "nomes"); nomes.appendChild(el("span", null, "← Antes")); nomes.appendChild(el("span", null, "Depois →"));
+    w.appendChild(caixa); w.appendChild(r); w.appendChild(nomes);
+    if (c.legenda) w.appendChild(el("span", "estado", c.legenda));
+    return w;
+  }
+  function fotos(lista) {
+    var f = el("div", "fotos");
+    lista.forEach(function (im) {
+      var fig = el("figure"); var b = el("button"); b.type = "button"; b.setAttribute("aria-label", "Ver grande: " + (im.legenda || "imagem"));
+      var i = el("img"); i.src = im.src; i.alt = im.legenda || ""; i.loading = "lazy"; b.appendChild(i);
+      b.addEventListener("click", function () { abrirZoom(im.src, im.legenda); });
+      fig.appendChild(b); if (im.legenda) fig.appendChild(el("figcaption", null, im.legenda)); f.appendChild(fig);
+    });
+    return f;
+  }
+  function selos(t) {
+    var s = el("div", "selos");
+    SELOS.forEach(function (p) {
+      var v = (t.selos || {})[p[0]]; if (!v) return;
+      if (p[0] === "pc") { var tt = ultimoTeste(t.id); if (tt) v = tt.resultado === "bom" ? "sim" : "nao"; }
+      var x = el("span", "selo " + v); x.appendChild(el("b", null, p[1] + " ")); x.appendChild(document.createTextNode(SELO_TXT[v] || v)); s.appendChild(x);
+    });
+    return s;
+  }
+  function ultimoTeste(id) {
+    var l = dados.testes.filter(function (x) { return x.trabalho === id; }).sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
+    return l[0] || null;
+  }
+  function linkConferencia(t) {
+    var g = dados.geral || {}; var c = t.conferencia; if (!c) return null;
+    var url = c.pagina === "escolhas" ? g.escolhas : g.conferencia; if (!url) return null;
+    var a = el("a", null, c.pagina === "escolhas" ? "Responder na página de escolhas ↗" : "Ver a conferência completa (aba " + c.aba + ") ↗");
+    a.href = url; a.target = "_blank"; a.rel = "noopener"; return a;
+  }
+
+  // ---------- cartão completo
+  function cartao(t, op) {
+    op = op || {};
+    var col = COL[t.coluna] || COL.fila;
+    var c = el("article", "cartao" + (marcados[t.id] ? " marcado" : ""));
+    c.style.setProperty("--cor", "var(" + col.cor + ")");
+    var topo = el("div", "cartao-topo");
+    var podeMarcar = !op.semMarcar && t.coluna === "decidir" && t.tipo !== "pergunta" && !t.pergunta;
+    if (podeMarcar) {
+      var cb = el("input"); cb.type = "checkbox"; cb.id = "marca-" + t.id; cb.checked = !!marcados[t.id];
+      cb.setAttribute("aria-label", "Marcar para decidir junto: " + t.titulo);
+      cb.addEventListener("change", function () { if (cb.checked) marcados[t.id] = true; else delete marcados[t.id]; c.classList.toggle("marcado", cb.checked); barraVarios(); });
+      topo.appendChild(cb);
+    } else topo.appendChild(el("span"));
+    var tit = el("div"); tit.appendChild(el("h3", null, t.titulo));
+    tit.appendChild(el("div", "item", (t.item ? "Item " + t.item + " · " : "") + "Fase " + t.fase));
+    topo.appendChild(tit); c.appendChild(topo);
+    var l1 = el("div", "linha"); l1.appendChild(el("span", "chip c-" + t.coluna, col.nome));
+    if (t.selos && Object.keys(t.selos).length) l1.appendChild(selos(t));
+    c.appendChild(l1);
+    if (t.oque) { var p = el("p"); p.appendChild(el("span", "rot", "O que é")); p.appendChild(document.createTextNode(t.oque)); c.appendChild(p); }
+    if (t.situacao) { var p2 = el("p"); p2.appendChild(el("span", "rot", "Como está")); p2.appendChild(document.createTextNode(t.situacao)); c.appendChild(p2); }
+    if (t.ressalva) c.appendChild(el("p", "ressalva", "Ressalva: " + t.ressalva));
+    if (t.falta) { var p3 = el("p", "falta"); p3.appendChild(el("span", "rot", "Falta")); p3.appendChild(document.createTextNode(t.falta)); c.appendChild(p3); }
+    if (t.comparar) c.appendChild(comparador(t.comparar));
+    if (t.fotos && t.fotos.length) c.appendChild(fotos(t.fotos));
+    var lk = linkConferencia(t); if (lk) { var pl = el("p"); pl.appendChild(lk); c.appendChild(pl); }
+
+    var uo = ultimaOrdem(t.id);
+    if (uo) {
+      var oe = el("div", "ordem-estado" + (uo.estado === "feita" ? " feita" : ""));
+      oe.appendChild(el("span", null, "Sua última ordem: " + (TIPOS[uo.tipo] || {}).nome + (uo.opcao ? " (" + uo.opcao + ")" : "") + " · " + (ESTADOS[uo.estado] || uo.estado) + " · " + dataHora(uo.em)));
+      if (uo.resposta) oe.appendChild(el("span", "resp", "Gerente: " + uo.resposta));
+      c.appendChild(oe);
+    }
+
+    // ações
+    var acoes = el("div", "linha");
+    var ehPergunta = t.tipo === "pergunta" || t.pergunta;
+    if (t.coluna === "decidir" || t.coluna === "melhorar" || t.coluna === "andamento" || t.coluna === "fila") {
+      if (ehPergunta) {
+        c.appendChild(el("p", "pergunta", t.pergunta || ""));
+        (t.opcoes || []).forEach(function (o) {
+          acoes.appendChild(botao(o, "azul", function () { mandarOrdem(t, "resposta", { opcao: o }); }));
+        });
+      } else {
+        if (t.coluna === "decidir" || t.coluna === "melhorar") {
+          var conf = el("div", "confirmar"); conf.hidden = true;
+          conf.appendChild(el("span", null, "Pôr \"" + t.titulo + "\" no programa como está? Antes de entrar, roda a suíte no GitHub e no seu PC (com os agentes parados). As melhorias continuam depois."));
+          var lc = el("div", "linha");
+          lc.appendChild(botao("Sim, pôr no programa", "forte", function () { conf.hidden = true; mandarOrdem(t, "juntar"); }));
+          lc.appendChild(botao("Cancelar", "", function () { conf.hidden = true; }));
+          conf.appendChild(lc);
+          acoes.appendChild(botao("✓ Pôr no programa como está", "forte", function () { conf.hidden = false; }));
+          c.appendChild(acoes); c.appendChild(conf); acoes = el("div", "linha");
+        }
+        acoes.appendChild(botao("▶ Continuar trabalhando", "", function () { mandarOrdem(t, "continuar"); }));
+        acoes.appendChild(botao("■ Parar", "parar", function () { mandarOrdem(t, "parar"); }));
+        if (t.ramo && t.coluna !== "fila") acoes.appendChild(botao("Preparar para eu testar no PC", "", function () { mandarOrdem(t, "testar"); }));
+      }
+    }
+    c.appendChild(acoes);
+
+    // comentário
+    var dc = el("details", "sub"); dc.appendChild(el("summary", null, "Comentar"));
+    var dd = el("div", "dentro");
+    var ta = el("textarea"); ta.id = "com-" + t.id + (op.semMarcar ? "-d" : ""); ta.placeholder = "Escreva o que a gerente deve saber ou fazer.";
+    var rascunho = ler("rascunho-" + t.id); if (rascunho) ta.value = rascunho;
+    ta.addEventListener("input", function () { guardar("rascunho-" + t.id, ta.value); });
+    dd.appendChild(ta);
+    dd.appendChild(botao("Guardar comentário", "azul", async function () {
+      var v = ta.value.trim(); if (!v) return;
+      if (await mandarOrdem(t, "comentar", { texto: v })) { ta.value = ""; guardar("rascunho-" + t.id, ""); }
+    }));
+    dc.appendChild(dd); c.appendChild(dc);
+
+    // como testar no PC
+    if (t.testar && t.testar.length) {
+      var dt = el("details", "sub"); dt.appendChild(el("summary", null, "Como testar no seu PC"));
+      var di = el("div", "dentro");
+      var ol = el("ol", "passos"); t.testar.forEach(function (s) { ol.appendChild(el("li", null, s)); }); di.appendChild(ol);
+      var ut = ultimoTeste(t.id);
+      if (ut) di.appendChild(el("span", "estado", "Seu último teste: " + (ut.resultado === "bom" ? "bom" : "ruim") + " · " + dataHora(ut.em) + (ut.texto ? " · \"" + ut.texto + "\"" : "")));
+      var tt = el("input"); tt.type = "text"; tt.id = "teste-" + t.id + (op.semMarcar ? "-d" : ""); tt.placeholder = "O que você viu (opcional)";
+      di.appendChild(tt);
+      var lt = el("div", "linha");
+      function testei(res) { return async function () {
+        if (!db) { toast("Abra pelo claude.ai para guardar."); return; }
+        try { await db.doc("testes/" + novoId("t")).set({ trabalho: t.id, titulo: t.titulo, resultado: res, texto: tt.value.trim(), em: new Date().toISOString() }); tt.value = ""; toast("Teste guardado: " + res); }
+        catch (e) { toast("Não consegui guardar o teste. Tente de novo."); }
+      }; }
+      lt.appendChild(botao("Testei no PC: bom", "forte", testei("bom")));
+      lt.appendChild(botao("Testei no PC: ruim", "parar", testei("ruim")));
+      di.appendChild(lt); dt.appendChild(di); c.appendChild(dt);
+    }
+
+    if (t.ramo || t.commit) {
+      var dx = el("details", "sub"); dx.appendChild(el("summary", null, "Detalhes técnicos"));
+      var dxi = el("div", "dentro");
+      dxi.appendChild(el("span", "tecnico", (t.ramo ? "cópia separada (ramo): " + t.ramo + " · " : "") + (t.commit ? "versão (commit): " + t.commit : "") + (t.noFase1 === true ? " · já está no programa (fase-1)" : t.noFase1 === false ? " · ainda não está no programa (fase-1)" : "")));
+      dx.appendChild(dxi); c.appendChild(dx);
+    }
+    return c;
+  }
+
+  function barraVarios() {
+    var ids = Object.keys(marcados);
+    var b = document.getElementById("barra-varios");
+    b.hidden = !ids.length;
+    document.getElementById("varios-texto").textContent = ids.length + (ids.length === 1 ? " trabalho marcado" : " trabalhos marcados");
+    document.getElementById("varios-juntar").textContent = "Pôr " + (ids.length === 1 ? "o marcado" : "os " + ids.length + " marcados") + " no programa como estão";
+  }
+  document.getElementById("varios-limpar").addEventListener("click", function () { marcados = {}; barraVarios(); desenhar(); });
+  var confirmaVarios = false;
+  document.getElementById("varios-juntar").addEventListener("click", async function () {
+    var b = this;
+    if (!confirmaVarios) { confirmaVarios = true; b.textContent = "Confirmar: cada um passa pelos testes antes de entrar"; setTimeout(function () { confirmaVarios = false; barraVarios(); }, 6000); return; }
+    confirmaVarios = false;
+    var ids = Object.keys(marcados); var ok = 0;
+    for (var i = 0; i < ids.length; i++) {
+      var t = dados.trabalhos.find(function (x) { return x.id === ids[i]; });
+      if (t && await mandarOrdem(t, "juntar", { texto: "pedido junto com " + (ids.length - 1) + " outro(s)" })) ok++;
+    }
+    marcados = {}; barraVarios(); desenhar(); toast(ok + " ordens guardadas");
+  });
+
+  // ---------- prioridade
+  function prioridade() { return ((dados.config.prioridade || {}).ordem) || []; }
+  function ordenarFila(lista) {
+    var p = prioridade();
+    return lista.slice().sort(function (a, b) {
+      var ia = p.indexOf(a.id), ib = p.indexOf(b.id);
+      if (ia < 0) ia = 1e4 + (a.ordem || 0); if (ib < 0) ib = 1e4 + (b.ordem || 0);
+      return ia - ib;
+    });
+  }
+  async function salvarPrioridade(ids) {
+    dados.config.prioridade = { ordem: ids, em: new Date().toISOString() };
+    desenhar();
+    if (!db) { toast("Abra pelo claude.ai para guardar a ordem."); return; }
+    try { await db.doc("config/prioridade").set({ ordem: ids, em: new Date().toISOString() }); toast("Ordem de prioridade guardada"); }
+    catch (e) { toast("Não consegui guardar a ordem."); }
+  }
+  function listaPriorizavel() {
+    return ordenarFila(dados.trabalhos.filter(function (t) { return PRIORIZA[t.coluna]; }));
+  }
+  function mover(id, delta) {
+    var ids = listaPriorizavel().map(function (t) { return t.id; });
+    var i = ids.indexOf(id), j = i + delta; if (i < 0 || j < 0 || j >= ids.length) return;
+    ids.splice(j, 0, ids.splice(i, 1)[0]); salvarPrioridade(ids);
+  }
+
+  // ---------- desenho
+  function desenharTopo() {
+    var g = dados.geral || {};
+    document.getElementById("resumo").textContent = g.frase || (db ? "Ainda sem resumo." : "Carregando...");
+    document.getElementById("atualizado").textContent = g.atualizado ? "Atualizado pela gerente em " + dataHora(g.atualizado) + "." : "";
+    var links = document.getElementById("links"); links.textContent = "";
+    [["conferencia", "Conferência"], ["escolhas", "Escolhas"], ["layout", "Layout"], ["memoria", "Memória"]].forEach(function (p) {
+      if (!g[p[0]]) return; var a = el("a", null, p[1] + " ↗"); a.href = g[p[0]]; a.target = "_blank"; a.rel = "noopener"; links.appendChild(a);
+    });
+    var conta = {}; dados.trabalhos.forEach(function (t) { conta[t.coluna] = (conta[t.coluna] || 0) + 1; });
+    var placar = document.getElementById("placar"); placar.textContent = "";
+    COLUNAS.forEach(function (c) {
+      var b = el("button"); b.type = "button"; b.style.setProperty("--cor", "var(" + c.cor + ")");
+      b.appendChild(el("span", "n", String(conta[c.id] || 0))); b.appendChild(el("span", "r", c.nome));
+      b.addEventListener("click", function () { irPara(c.id === "decidir" ? "decidir" : "quadro"); });
+      placar.appendChild(b);
+    });
+    var nd = conta.decidir || 0; var cd = document.getElementById("cont-decidir"); cd.hidden = !nd; cd.textContent = nd;
+    var no = dados.ordens.filter(function (o) { return o.estado !== "feita"; }).length;
+    var co = document.getElementById("cont-ordens"); co.hidden = !no; co.textContent = no;
+
+    // o que mudou
+    var m = document.getElementById("mudou"); m.textContent = "";
+    var itens = [];
+    (g.novidades || []).forEach(function (n) { itens.push({ em: n.em, texto: n.texto }); });
+    dados.ordens.forEach(function (o) { if (o.resposta && o.respondidaEm) itens.push({ em: o.respondidaEm, texto: "A gerente respondeu à sua ordem \"" + (TIPOS[o.tipo] || {}).nome + "\" em " + o.titulo + ": " + o.resposta }); });
+    dados.agentes.forEach(function (a) { if (a.quando) itens.push({ em: a.quando, texto: a.nome + ": " + (a.ultimo || "") }); });
+    var novos = visitaAnterior ? itens.filter(function (x) { return String(x.em) > visitaAnterior; }) : itens.filter(function (x) { return (g.novidades || []).some(function (n) { return n.texto === x.texto; }); });
+    novos.sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
+    if (novos.length) {
+      m.hidden = false;
+      m.appendChild(el("h2", null, visitaAnterior ? "Mudou desde a sua última visita (" + dataHora(visitaAnterior) + ")" : "Novidades"));
+      var ul = el("ul");
+      novos.slice(0, 8).forEach(function (x) { var li = el("li"); li.appendChild(el("span", "quando", dataHora(x.em) + " · ")); li.appendChild(document.createTextNode(x.texto)); ul.appendChild(li); });
+      m.appendChild(ul);
+    } else if (visitaAnterior && db) {
+      m.hidden = false; m.appendChild(el("h2", null, "Nada mudou desde a sua última visita (" + dataHora(visitaAnterior) + ")."));
+    } else m.hidden = true;
+    var av = document.getElementById("aviso");
+    if (db && g.avisos && g.avisos.length) { av.hidden = false; av.textContent = "Conferência automática achou diferença: " + g.avisos.join("; "); }
+  }
+
+  function desenharDecidir() {
+    var l = document.getElementById("lista-decidir"); l.textContent = "";
+    var lista = dados.trabalhos.filter(function (t) { return t.coluna === "decidir"; }).sort(porOrdem);
+    if (!lista.length) { l.appendChild(el("p", "vazio", db ? "Nada esperando você agora." : "Carregando os trabalhos...")); return; }
+    lista.forEach(function (t) { l.appendChild(cartao(t)); });
+  }
+
+  var arrastado = null;
+  function desenharQuadro() {
+    var q = document.getElementById("quadro"); q.textContent = "";
+    var pri = listaPriorizavel().map(function (t) { return t.id; });
+    COLUNAS.forEach(function (c) {
+      var col = el("div", "coluna"); col.style.setProperty("--cor", "var(" + c.cor + ")");
+      var lista = dados.trabalhos.filter(function (t) { return t.coluna === c.id; });
+      lista = PRIORIZA[c.id] ? ordenarFila(lista) : lista.sort(porOrdem);
+      var h = el("h3"); h.appendChild(document.createTextNode(c.nome)); h.appendChild(el("span", null, String(lista.length))); col.appendChild(h);
+      col.appendChild(el("p", "explica", c.explica));
+      lista.forEach(function (t) {
+        var m = el("div", "mini"); m.tabIndex = 0; m.setAttribute("role", "button"); m.setAttribute("aria-label", "Abrir " + t.titulo);
+        if (PRIORIZA[c.id]) {
+          var pr = el("div", "pri"); pr.appendChild(el("span", "num", "#" + (pri.indexOf(t.id) + 1)));
+          var st = el("span", "setas");
+          var up = el("button", null, "↑"); up.type = "button"; up.setAttribute("aria-label", "Subir na prioridade"); up.addEventListener("click", function (ev) { ev.stopPropagation(); mover(t.id, -1); });
+          var dn = el("button", null, "↓"); dn.type = "button"; dn.setAttribute("aria-label", "Descer na prioridade"); dn.addEventListener("click", function (ev) { ev.stopPropagation(); mover(t.id, 1); });
+          st.appendChild(up); st.appendChild(dn); pr.appendChild(st); m.appendChild(pr);
+          m.draggable = true;
+          m.addEventListener("dragstart", function (ev) { arrastado = t.id; m.classList.add("arrastando"); try { ev.dataTransfer.setData("text/plain", t.id); } catch (e) {} });
+          m.addEventListener("dragend", function () { m.classList.remove("arrastando"); arrastado = null; });
+          m.addEventListener("dragover", function (ev) { if (arrastado && arrastado !== t.id) { ev.preventDefault(); m.classList.add("alvo"); } });
+          m.addEventListener("dragleave", function () { m.classList.remove("alvo"); });
+          m.addEventListener("drop", function (ev) {
+            ev.preventDefault(); m.classList.remove("alvo"); if (!arrastado) return;
+            var ids = pri.slice(); var i = ids.indexOf(arrastado); if (i < 0) return; ids.splice(i, 1);
+            ids.splice(ids.indexOf(t.id), 0, arrastado); salvarPrioridade(ids);
+          });
+        }
+        m.appendChild(el("span", "t", t.titulo));
+        m.appendChild(el("span", "s", t.situacao || ""));
+        if (t.selos && Object.keys(t.selos).length) m.appendChild(selos(t));
+        var uo = ultimaOrdem(t.id); if (uo && uo.estado !== "feita") m.appendChild(el("span", "chip", "Ordem: " + (TIPOS[uo.tipo] || {}).nome));
+        m.addEventListener("click", function () { abrirDetalhe(t); });
+        m.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); abrirDetalhe(t); } });
+        col.appendChild(m);
+      });
+      if (!lista.length) col.appendChild(el("p", "vazio", "Nenhum."));
+      q.appendChild(col);
+    });
+  }
+
+  function mdHtml(md) {
+    if (window.marked && window.DOMPurify) return window.DOMPurify.sanitize(window.marked.parse(String(md || "")));
+    return null;
+  }
+  function desenharEtapas() {
+    var tr = document.getElementById("trilha"); tr.textContent = "";
+    var fases = dados.fases.slice().sort(function (a, b) { return a.num - b.num; });
+    var atual = fases.find(function (f) { return f.atual; });
+    var numAtual = atual ? atual.num : 2;
+    if (faseEscolhida == null) faseEscolhida = numAtual;
+    fases.forEach(function (f) {
+      var b = el("button", "etapa" + (f.atual ? " atual" : "") + (f.num === faseEscolhida ? " escolhida" : "") + (f.num < numAtual && f.num === 0 ? " feita" : ""));
+      b.type = "button";
+      b.appendChild(el("span", "ponto", String(f.num)));
+      if (f.atual) b.appendChild(el("span", "aqui", "Você está aqui"));
+      b.appendChild(el("span", "nome", f.nome));
+      var c = f.contagem || {}; var total = 0; COLUNAS.forEach(function (k) { total += c[k.id] || 0; });
+      var barra = el("span", "barra-fase");
+      ["programa", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"].forEach(function (k) {
+        if (!c[k]) return; var s = el("span"); s.style.width = (100 * c[k] / total) + "%"; s.style.background = "var(" + COL[k].cor + ")"; barra.appendChild(s);
+      });
+      b.appendChild(barra);
+      b.appendChild(el("span", "conta", total ? total + (total === 1 ? " trabalho" : " trabalhos") : "nada começado"));
+      b.addEventListener("click", function () { faseEscolhida = f.num; desenharEtapas(); });
+      tr.appendChild(b);
+    });
+    var lg = document.getElementById("legenda"); lg.textContent = "";
+    ["programa", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"].forEach(function (k) {
+      var s = el("span"); var i = el("i"); i.style.background = "var(" + COL[k].cor + ")"; s.appendChild(i); s.appendChild(document.createTextNode(COL[k].nome)); lg.appendChild(s);
+    });
+    var fa = document.getElementById("fase-aberta"); fa.textContent = "";
+    var f = fases.find(function (x) { return x.num === faseEscolhida; }); if (!f) { fa.hidden = true; return; }
+    fa.hidden = false;
+    fa.appendChild(el("h3", null, "Fase " + f.num + ": " + f.nome));
+    var its = dados.trabalhos.filter(function (t) { return String(t.fase) === String(f.num); });
+    if (its.length) {
+      var li = el("div", "lista-itens");
+      its.forEach(function (t) { var b = el("button"); b.type = "button"; b.appendChild(el("span", null, t.titulo)); b.appendChild(el("span", "chip c-" + t.coluna, COL[t.coluna].nome)); b.addEventListener("click", function () { abrirDetalhe(t); }); li.appendChild(b); });
+      fa.appendChild(li);
+    } else fa.appendChild(el("p", "vazio", "Nenhum trabalho desta fase começou."));
+    if (f.md) {
+      var d = el("details", "sub"); d.appendChild(el("summary", null, "O texto desta fase no plano"));
+      var md = el("div", "md dentro"); d.appendChild(md);
+      d.addEventListener("toggle", function () { if (d.open && !md.childNodes.length) { var h = mdHtml(f.md); if (h == null) { md.style.whiteSpace = "pre-wrap"; md.textContent = f.md; } else md.innerHTML = h; } });
+      fa.appendChild(d);
+    }
+  }
+
+  function desenharAgentes() {
+    var n = document.getElementById("numeros"); n.textContent = "";
+    var max = (dados.config.agentes || {}).max;
+    for (var i = 1; i <= 8; i++) (function (v) {
+      var b = el("button" , v >= 5 ? "risco" : "", String(v)); b.type = "button"; b.setAttribute("aria-pressed", String(max === v));
+      b.setAttribute("aria-label", v + (v === 1 ? " agente" : " agentes") + (v >= 5 ? " (risco de bater no limite)" : ""));
+      b.addEventListener("click", async function () {
+        dados.config.agentes = { max: v }; desenharAgentes();
+        if (!db) return;
+        try { await db.doc("config/agentes").set({ max: v, em: new Date().toISOString() }); toast("No máximo " + v + (v === 1 ? " agente" : " agentes") + " ao mesmo tempo"); } catch (e) { toast("Não consegui guardar."); }
+      });
+      n.appendChild(b);
+    })(i);
+    document.getElementById("estado-max").textContent = (max ? "Escolhido: " + max + ". " : "Ainda sem escolha: a gerente usa o bom senso. ") + "Com 5 ou mais juntos, a conta já bateu no limite de uso três vezes (20 e 21/10) e os agentes pararam no meio.";
+    var l = document.getElementById("lista-agentes"); l.textContent = "";
+    var ags = dados.agentes.slice().sort(porOrdem);
+    if (!ags.length) { l.appendChild(el("p", "vazio", "Nenhum agente registrado.")); return; }
+    var trabalhando = ags.filter(function (a) { return a.estado === "trabalhando"; }).length;
+    if (!trabalhando) l.appendChild(el("p", "vazio", "Nenhum agente trabalhando agora. Todos pararam com o trabalho salvo; para retomar um, use \"Continuar trabalhando\" no cartão do trabalho."));
+    ags.forEach(function (a) {
+      var c = el("article", "agente");
+      c.appendChild(el("span", "pill " + (a.estado || "parado"), a.estado === "terminou" ? "Terminou" : a.estado === "trabalhando" ? "Trabalhando" : "Parado"));
+      c.appendChild(el("h3", null, a.nome || "")); if (a.papel) c.appendChild(el("span", "papel-ag", a.papel));
+      if (a.tarefa) { var p = el("p"); p.appendChild(el("span", "rot", "Tarefa")); p.appendChild(document.createTextNode(a.tarefa)); c.appendChild(p); }
+      if (a.ultimo) { var p2 = el("p"); p2.appendChild(el("span", "rot", "Último passo")); p2.appendChild(document.createTextNode(a.ultimo)); c.appendChild(p2); }
+      if (a.quando) c.appendChild(el("span", "estado", "Atualizado " + dataHora(a.quando)));
+      if (a.ramo) c.appendChild(el("span", "tecnico", "ramo: " + a.ramo));
+      l.appendChild(c);
+    });
+  }
+
+  document.getElementById("filtros-def").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-f]"); if (!b) return; filtroDef = b.dataset.f;
+    this.querySelectorAll("button[data-f]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); desenharDefeitos();
+  });
+  document.getElementById("busca-def").addEventListener("input", function () { desenharDefeitos(); });
+  function desenharDefeitos() {
+    var l = document.getElementById("lista-defeitos"); l.textContent = "";
+    var q = document.getElementById("busca-def").value.trim().toLowerCase();
+    var conta = { aberto: 0, aceito: 0, conferir: 0 }; dados.defeitos.forEach(function (d) { conta[d.grupo] = (conta[d.grupo] || 0) + 1; });
+    document.querySelectorAll("#filtros-def button[data-f]").forEach(function (b) { b.textContent = { aberto: "Abertos", aceito: "Aceitos até depois", conferir: "Consertados, a conferir" }[b.dataset.f] + " (" + (conta[b.dataset.f] || 0) + ")"; });
+    var lista = dados.defeitos.filter(function (d) { return d.grupo === filtroDef && (!q || (d.texto + " " + d.situacao + " " + d.onde).toLowerCase().indexOf(q) >= 0); }).sort(porOrdem);
+    if (!lista.length) { l.appendChild(el("p", "vazio", db ? "Nenhum defeito com esse filtro." : "Carregando...")); return; }
+    var grupos = {}; var ordem = [];
+    lista.forEach(function (d) { if (!grupos[d.onde]) { grupos[d.onde] = []; ordem.push(d.onde); } grupos[d.onde].push(d); });
+    var cor = { aberto: "--verm", aceito: "--ambar", conferir: "--azul" }[filtroDef];
+    ordem.forEach(function (o) {
+      var g = el("div", "grupo-def"); var h = el("h3"); h.appendChild(document.createTextNode(o)); h.appendChild(el("span", "estado", String(grupos[o].length))); g.appendChild(h);
+      grupos[o].forEach(function (d) {
+        var x = el("div", "def"); x.style.borderLeft = "5px solid var(" + cor + ")";
+        x.appendChild(el("span", "d", d.data));
+        var c = el("div", "x"); c.appendChild(el("div", null, d.texto)); c.appendChild(el("div", "sit", d.situacao)); x.appendChild(c);
+        g.appendChild(x);
+      });
+      l.appendChild(g);
+    });
+  }
+
+  function grafico(s) {
+    var W = 340, H = 170, ml = 34, mr = 12, mt = 14, mb = 26;
+    var vals = s.pontos.map(function (p) { return p[1]; });
+    var max = Math.max.apply(null, vals) * 1.15, min = 0;
+    var passo = max > 60 ? 20 : max > 30 ? 10 : 5; max = Math.ceil(max / passo) * passo;
+    function x(i) { return ml + (s.pontos.length === 1 ? (W - ml - mr) / 2 : i * (W - ml - mr) / (s.pontos.length - 1)); }
+    function y(v) { return mt + (H - mt - mb) * (1 - (v - min) / (max - min)); }
+    var ns = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(ns, "svg"); svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", s.nome + ": " + s.pontos.map(function (p) { return p[0] + " " + p[1] + " " + s.unidade; }).join(", "));
+    function n(tag, at) { var e = document.createElementNS(ns, tag); for (var k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; }
+    for (var v = 0; v <= max; v += passo) {
+      n("line", { x1: ml, x2: W - mr, y1: y(v), y2: y(v), stroke: "var(--fio)", "stroke-width": 1 });
+      var t = n("text", { x: ml - 6, y: y(v) + 4, "text-anchor": "end" }); t.textContent = v;
+    }
+    s.pontos.forEach(function (p, i) { var t = n("text", { x: x(i), y: H - 8, "text-anchor": "middle" }); t.textContent = p[0]; });
+    var d = s.pontos.map(function (p, i) { return (i ? "L" : "M") + x(i) + " " + y(p[1]); }).join(" ");
+    var area = d + " L" + x(s.pontos.length - 1) + " " + y(0) + " L" + x(0) + " " + y(0) + " Z";
+    n("path", { d: area, fill: "var(--azul-suave)", stroke: "none" });
+    n("path", { d: d, fill: "none", stroke: "var(--azul)", "stroke-width": 2.5, "stroke-linejoin": "round" });
+    s.pontos.forEach(function (p, i) {
+      var ult = i === s.pontos.length - 1;
+      n("circle", { cx: x(i), cy: y(p[1]), r: ult ? 5 : 3.5, fill: ult ? "var(--magenta)" : "var(--azul)", stroke: "var(--folha)", "stroke-width": 1.5 });
+      var t = n("text", { x: x(i), y: y(p[1]) - 9, "text-anchor": "middle" }); t.textContent = String(p[1]).replace(".", ",");
+    });
+    return svg;
+  }
+  function desenharVelocidade() {
+    var v = dados.velocidade; var g = document.getElementById("graficos"); g.textContent = "";
+    var le = document.getElementById("lentidoes"); le.textContent = "";
+    if (!v) { g.appendChild(el("p", "vazio", "Carregando...")); return; }
+    document.getElementById("vel-nota").textContent = v.nota || "";
+    (v.series || []).forEach(function (s) {
+      var c = el("div", "grafico"); c.appendChild(el("h3", null, s.nome));
+      var u = s.pontos[s.pontos.length - 1]; var p = s.pontos[0];
+      var dif = Math.round((u[1] - p[1]) / p[1] * 100);
+      c.appendChild(el("span", "ult", "Última medida (" + u[0] + "): " + String(u[1]).replace(".", ",") + " " + s.unidade + " · " + (dif > 0 ? dif + "% mais lento" : (-dif) + "% mais rápido") + " que em " + p[0]));
+      c.appendChild(grafico(s)); g.appendChild(c);
+    });
+    (v.lentidoes || []).forEach(function (t) { le.appendChild(el("li", null, t)); });
+  }
+
+  function desenharOrdens() {
+    var l = document.getElementById("lista-ordens"); l.textContent = "";
+    var tudo = dados.ordens.map(function (o) { return { k: "o", v: o }; })
+      .concat(dados.testes.map(function (t) { return { k: "t", v: t }; }))
+      .concat(dados.ideias.map(function (i) { return { k: "i", v: i }; }))
+      .sort(function (a, b) { return String(b.v.em).localeCompare(String(a.v.em)); });
+    if (!tudo.length) { l.appendChild(el("p", "vazio", "Nenhuma ordem ainda. Os botões dos cartões em \"Decidir agora\" guardam as ordens aqui.")); return; }
+    tudo.forEach(function (x) {
+      var o = x.v; var c = el("div", "ordem"); var cab = el("div", "cab");
+      if (x.k === "o") {
+        c.style.setProperty("--cor", "var(" + ((TIPOS[o.tipo] || {}).cor || "--fio") + ")");
+        cab.appendChild(el("b", null, (TIPOS[o.tipo] || {}).nome + (o.opcao ? ": " + o.opcao : "") + " · " + (o.titulo || "")));
+        cab.appendChild(el("span", "chip" + (o.estado === "feita" ? " c-programa" : o.estado === "vista" ? " c-decidir" : ""), ESTADOS[o.estado] || o.estado));
+      } else if (x.k === "t") {
+        c.style.setProperty("--cor", o.resultado === "bom" ? "var(--verde)" : "var(--verm)");
+        cab.appendChild(el("b", null, "Teste no PC: " + o.resultado + " · " + (o.titulo || "")));
+      } else {
+        c.style.setProperty("--cor", "var(--magenta)");
+        cab.appendChild(el("b", null, "Ideia nova"));
+        cab.appendChild(el("span", "chip" + (o.estado === "registrada" ? " c-programa" : ""), o.estado === "registrada" ? "Na Lista de espera" : "Guardada: a gerente ainda não viu"));
+      }
+      c.appendChild(cab);
+      c.appendChild(el("span", "quando", dataHora(o.em)));
+      if (o.texto) c.appendChild(el("div", null, o.texto));
+      if (o.resposta) c.appendChild(el("div", "resp", "Gerente: " + o.resposta));
+      l.appendChild(c);
+    });
+  }
+
+  var ideia = document.getElementById("ideia-texto"), ideiaBt = document.getElementById("ideia-enviar");
+  try { ideia.value = ler("rascunho-ideia") || ""; } catch (e) {}
+  ideia.addEventListener("input", function () { guardar("rascunho-ideia", ideia.value); ideiaBt.disabled = !db || !ideia.value.trim(); });
+  ideiaBt.addEventListener("click", async function () {
+    var v = ideia.value.trim(); if (!db || !v) return; ideiaBt.disabled = true;
+    try { await db.doc("ideias/" + novoId("i")).set({ texto: v, em: new Date().toISOString(), estado: "nova", resposta: "" }); ideia.value = ""; guardar("rascunho-ideia", ""); document.getElementById("ideia-estado").textContent = "Ideia guardada."; }
+    catch (e) { document.getElementById("ideia-estado").textContent = "Não consegui guardar. O texto continua na caixa."; ideiaBt.disabled = false; }
+  });
+
+  function desenhar() {
+    desenharTopo(); desenharDecidir(); desenharQuadro(); desenharEtapas(); desenharAgentes(); desenharDefeitos(); desenharVelocidade(); desenharOrdens(); barraVarios();
+    if (detalheId && detalhe.open) {
+      var t = dados.trabalhos.find(function (x) { return x.id === detalheId; });
+      if (t) { var c = document.getElementById("detalhe-corpo"); var s = detalhe.scrollTop; c.textContent = ""; c.appendChild(cartao(t, { semMarcar: true })); detalhe.scrollTop = s; }
+    }
+  }
+  var agendado = false;
+  function redesenhar() { if (agendado) return; agendado = true; requestAnimationFrame(function () { agendado = false; desenhar(); }); }
+
+  // ---------- abas
+  function irPara(aba) {
+    abaAtual = aba;
+    document.querySelectorAll("#abas [role=tab]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.aba === aba)); });
+    document.querySelectorAll("section.painel").forEach(function (s) { s.hidden = s.id !== "aba-" + aba; });
+    guardar("central-aba", aba);
+    try { history.replaceState(null, "", "#" + aba); } catch (e) {}
+  }
+  document.getElementById("abas").addEventListener("click", function (ev) { var b = ev.target.closest("[role=tab]"); if (b) irPara(b.dataset.aba); });
+  var inicial = (location.hash || "").slice(1) || ler("central-aba") || "decidir";
+  if (!document.getElementById("aba-" + inicial)) inicial = "decidir";
+  irPara(inicial);
+
+  // ---------- banco
+  function ouvir(col, campo) {
+    db.collection(col).onSnapshot(function (snap) {
+      dados[campo] = snap.docs.map(function (s) { var x = Object.assign({}, s.data()); x.id = s.id; return x; }); redesenhar();
+    }, function () {});
+  }
+  (async function () {
+    try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
+    var av = document.getElementById("aviso");
+    if (!db) { av.hidden = false; av.textContent = "Para ver os trabalhos e mandar ordens, abra esta página pelo claude.ai, com a sua conta."; document.getElementById("resumo").textContent = "Sem ligação com o banco de dados da página."; return; }
+    ideiaBt.disabled = !ideia.value.trim();
+    db.doc("geral/resumo").onSnapshot(function (s) { dados.geral = s.exists ? s.data() : null; redesenhar(); },
+      function () { av.hidden = false; av.textContent = "Perdi a ligação com a central. Recarregue a página."; });
+    db.doc("velocidade/dados").onSnapshot(function (s) { dados.velocidade = s.exists ? s.data() : null; redesenhar(); }, function () {});
+    db.collection("config").onSnapshot(function (snap) { var c = {}; snap.docs.forEach(function (s) { c[s.id] = s.data(); }); dados.config = c; redesenhar(); }, function () {});
+    db.doc("defeitos/lista").onSnapshot(function (s) { dados.defeitos = s.exists ? (s.data().itens || []) : []; redesenhar(); }, function () {});
+    ouvir("trabalhos", "trabalhos"); ouvir("fases", "fases"); ouvir("agentes", "agentes");
+    ouvir("ordens", "ordens"); ouvir("testes", "testes"); ouvir("ideias", "ideias");
+  })();
+  desenhar();
+})();
+</script>

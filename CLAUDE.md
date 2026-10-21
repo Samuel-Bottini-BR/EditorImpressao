@@ -533,8 +533,24 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
       https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV
     - "Layout do Editor de Impressão" (telas): https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu
     - "Quando revisar uma página" (o "Para revisar"): https://claude.ai/artifact/NeCgyTotRfqsdXntn9vMUc
-    - "Andamento do programa" (o que cada agente faz, o que falta, o plano completo, recados):
+    - **"Central de decisões"** (era "Andamento do programa"; refeita em 21/10/2026 a pedido do Samuel:
+      "tem que ser como uma central de decições, para tornar as coisas mais rapidas e mais faceis"):
       https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy
+      - **O que mostra:** Decidir agora · Quadro dos trabalhos · Etapas · Agentes · Defeitos · Velocidade
+        · Ordens e ideias. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
+        `docs/plano/para_a_central.py` (junta com o plano, `memoria/bugs.md` e o git; avisa se um
+        trabalho "no programa" não estiver no `fase-1`). Gravar o banco com ArtifactData `batch` a partir
+        dos arquivos que o script gera (`D:\programas\EditorImpressao-arquivos\central-banco\`).
+      - **Atualizar sempre** que um trabalho muda de situação, um agente começa/entrega/para e no
+        `/checkpoint` (fonte.json → script → batch). Novidade para ele: acrescentar em `geral.novidades`.
+      - **Ler as ordens dele primeiro, ao abrir cada conversa**, e entre uma tarefa e outra: coleções
+        `ordens` (tipo juntar | continuar | parar | testar | comentar | resposta), `testes` (testei no PC
+        bom/ruim), `ideias` e `config` (`prioridade.ordem` = fila dos agentes; `agentes.max` = quantos
+        agentes ao mesmo tempo). Ao ler, marcar `estado: "vista"`; ao cumprir, `"feita"`, com `resposta` e
+        `respondidaEm`. Registrar a ordem no Registro de mudanças com as palavras dele. "Pôr no programa
+        como está" **não pula** a §4.6 (GitHub + PC antes de juntar). Ideia nova vai para a Lista de
+        espera e fica `estado: "registrada"`.
+      - Quando puser cartão novo em "Decidir agora", mandar aviso no celular (PushNotification).
 
     **Quando uma página de conferência nova ficar pronta, a gerente abre sozinha no navegador do
     Samuel (com `start "" "<endereço>"`, que abre no navegador padrão do Windows; a ação `open` da
