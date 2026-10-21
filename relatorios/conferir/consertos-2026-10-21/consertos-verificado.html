@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consertos de 21/10 (instalador e teste que depende da ordem) - conferência do verificador (21/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Consertos de 21/10 (instalador e teste que depende da ordem) - conferência do verificador (21/10/2026)</h1>
+<p>Ramo <code>consertos-2026-10-21</code>, código <code>fb9de49</code>, contra o <code>fase-1</code> <code>31a9253</code>. Não mudei código; não marco nada como aprovado. (O ramo já tem um commit a mais, <code>c97661c</code>, da Gladstone 18: não conferido aqui.)</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> Os dois consertos fazem o que dizem e os dois testes de reversão falham sem o conserto. Uma ressalva sobre o segundo teste (abaixo). Isto é só teste de máquina, sem janela: não precisa da conferência em fotos do Samuel.</p>
+<h2>1. Instalador sem a <code>st_ferramentas.dll</code></h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_empacotar.py</code> no <code>fb9de49</code></td>
+<td>41 passaram</td>
+</tr>
+<tr>
+<td>O mesmo arquivo no <code>31a9253</code> (reversão)</td>
+<td>3 falham: <code>test_regressao_o_pacote_leva_as_duas_dlls_do_scantailor</code> ("st_ferramentas.dll não vai para o pacote") e os dois testes antigos acertados</td>
+</tr>
+<tr>
+<td><code>empacotar.nativos_do_programa()</code> chamado de verdade</td>
+<td>devolve as 4 peças: <code>st_gravura.dll</code> e <code>.txt</code>, <code>st_ferramentas.dll</code> e <code>.txt</code>, em <code>core/nativo</code></td>
+</tr>
+<tr>
+<td><code>instalador.iss</code></td>
+<td>trava <code>#error</code> para a <code>st_ferramentas.dll</code> e o <code>.txt</code> (linhas 56 a 60)</td>
+</tr>
+</tbody>
+</table>
+<p>Não gerei o instalador de verdade (Inno Setup), e o implementador também não.</p>
+<h2>2. Teste que depende da ordem (atalhos)</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A ordem que falhava (<code>test_atalhos.py</code>, <code>test_endireitar_na_tela.py</code>, o teste do Espelhado), no <code>31a9253</code></td>
+<td>falha: "Espelhado   (tecla )"</td>
+</tr>
+<tr>
+<td>A mesma ordem no <code>fb9de49</code></td>
+<td>22 passaram</td>
+</tr>
+<tr>
+<td>Reversão: só o teste novo, sem nenhuma parte do conserto, no <code>31a9253</code></td>
+<td>falha: "assert 'tecla M' in 'Espelhado   (tecla )'"</td>
+</tr>
+<tr>
+<td>Seis arquivos de tela e atalhos em sequência, no <code>fb9de49</code></td>
+<td>115 passaram</td>
+</tr>
+<tr>
+<td><code>test_paineis_na_tela.py</code> sozinho, no <code>fb9de49</code> (o que a primeira versão quebrava)</td>
+<td>22 passaram</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ressalva:</strong> o teste de reversão fica no mesmo arquivo que leva metade do conserto (<code>registro_limpo</code> em <code>tests/test_atalhos.py</code>). Copiado inteiro para o código antigo, ele <strong>passa</strong>: 16 passaram, porque o arquivo novo já devolve o registro. Ele só falha quando vai sozinho, sem o resto do arquivo novo. É assim que conferi.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:45</p>
+</body>
+</html>
