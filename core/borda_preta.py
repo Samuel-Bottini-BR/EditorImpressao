@@ -66,6 +66,50 @@ PASSO = 4                  # olha 4 linhas de cada vez (pula um risco claro de 1
 # abaixo disto (0 a 255). Medido em 20/10/2026 (ver o topo): fundo 0 a 28,
 # cartão marrom do Pesel 21 de 52 a 75. Seguro mudar entre ~30 e ~45.
 CROMA_MAXIMO = 40
+# A tarja cinza da digitalização (a barra "SLUB" do Egenloff, cinza ~0,6 do
+# papel, com letras): mais clara que o preto, mas NEUTRA e atravessando o
+# lado inteiro. Achado do verificador gerando o Egenloff 1-14 (21/10/2026): com
+# as duas opções a barra entrava no corte. Conta como fundo do scanner a
+# linha que, quase de ponta a ponta (BEIRA_INTEIRA do lado: as letras brancas da
+# barra tiram até 25%), é cinza neutro mais
+# escuro que TARJA_DO_PAPEL do papel. Só a linha INTEIRA: uma versão que
+# contava qualquer cinza neutro escuro cortou as notas do Antiphon 260.
+TARJA_DO_PAPEL = 0.75
+BEIRA_INTEIRA = 0.70
+
+
+# Item 2.14 (decisão do Samuel, "Para revisar" rodada 5, 09/10/2026,
+# rv5-pag-egenloff-047: "O Kaique escolhe por livro" entre cortar fora a
+# tarja e a moldura do scanner (2.13) e pintar de branco (2.14)). O que fazer
+# com o que fica fora da página achada. CORTAR_FORA: o corte sugerido do
+# 2.13. PINTAR: o corte fica o de sempre e o que está fora da página (só o
+# preto) ou fora do impresso (até a moldura) vira branco, como o "Fill
+# margins" / "Fill outside page box" do ScanTailor (output/OutputGenerator.
+# cpp, fillMarginsInPlace), com a cor branca (a decisão dele é "pintar de
+# branco"; o ScanTailor usa a cor do fundo de fábrica).
+CORTAR_FORA = "cortar"
+PINTAR = "pintar"
+FAZERES = (CORTAR_FORA, PINTAR)
+FAZER_PADRAO = CORTAR_FORA
+NOMES_DO_FAZER = {CORTAR_FORA: "cortar fora", PINTAR: "pintar de branco"}
+
+
+def fazer_valido(fazer) -> str:
+    """O que fazer com a borda; valor estranho do arquivo vale o de fábrica."""
+    return fazer if fazer in FAZERES else FAZER_PADRAO
+
+
+def pintar_fora(img: np.ndarray, area: tuple[float, float, float, float]) -> np.ndarray:
+    """Uma cópia de `img` com tudo fora de `area` (x0, y0, x1, y1 em fração
+    da imagem) pintado de branco. Item 2.14."""
+    alt, larg = img.shape[:2]
+    x0 = max(0, min(larg, int(round(area[0] * larg))))
+    y0 = max(0, min(alt, int(round(area[1] * alt))))
+    x1 = max(x0, min(larg, int(round(area[2] * larg))))
+    y1 = max(y0, min(alt, int(round(area[3] * alt))))
+    saida = np.full_like(img, 255)
+    saida[y0:y1, x0:x1] = img[y0:y1, x0:x1]
+    return saida
 
 
 def jeito_valido(jeito) -> str:
@@ -83,7 +127,14 @@ def so_o_preto(img: np.ndarray) -> tuple[float, float, float, float]:
     escuro = g < papel * ESCURO_DO_PAPEL
     if img.ndim == 3 and img.shape[2] >= 3:
         cor = img[:, :, :3]
-        escuro &= (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < CROMA_MAXIMO
+        neutro = (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < CROMA_MAXIMO
+        cinza_escuro = (g < papel * TARJA_DO_PAPEL) & neutro
+        escuro &= neutro
+        # a tarja inteira (linha ou coluna de ponta a ponta): soma ao preto
+        linhas = cinza_escuro.mean(axis=1) >= BEIRA_INTEIRA
+        colunas = cinza_escuro.mean(axis=0) >= BEIRA_INTEIRA
+        escuro[linhas, :] = True
+        escuro[:, colunas] = True
     meio_x = slice(int(larg * 0.25), int(larg * 0.75))
     meio_y = slice(int(alt * 0.25), int(alt * 0.75))
 

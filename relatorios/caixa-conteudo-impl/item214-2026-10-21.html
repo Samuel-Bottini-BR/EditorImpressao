@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pintar de branco (2.14)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Pintar de branco o que sobra fora da página (item 2.14)</h1>
+<p><strong>Quem:</strong> agente implementador · <strong>Data:</strong> 21/10/2026 · <strong>Ramo:</strong> <code>fase2-caixa-conteudo</code> · <strong>Não juntado ao <code>fase-1</code>.</strong> Não é "aprovado".</p>
+<h2>Em uma frase</h2>
+<p>Com a borda preta ligada, o livro escolhe agora entre <strong>cortar fora</strong> (o 2.13, que vem escolhido) e <strong>pintar de branco</strong>: pintando, a página fica do tamanho de sempre e o que está fora da página achada ("só o preto") ou fora do impresso ("até a moldura") vira branco. Desligado de fábrica: livro novo e livro começado saem como hoje.</p>
+<h2>A decisão que cumpre</h2>
+<p>"Para revisar", rodada 5 (09/10/2026), <code>rv5-pag-egenloff-047</code>, sobre a tarja da biblioteca e a moldura do scanner do Egenloff 47 ("ela deveria tirar essa tarja do livro né?"): <strong>"O Kaique escolhe por livro"</strong> entre cortar fora (2.13) e pintar de branco (2.14).</p>
+<h2>Como funciona (igual ao ScanTailor)</h2>
+<p>É o "Fill margins" / "Fill outside page box" do ScanTailor (<code>output/OutputGenerator.cpp</code>, <code>fillMarginsInPlace</code>): fora da área que fica, a imagem é preenchida. O ScanTailor pinta com a cor do fundo de fábrica; aqui é <strong>branco</strong>, porque a decisão dele é "pintar de branco".</p>
+<ul>
+<li><strong>Pintar + só o preto:</strong> o que fica é a página sem a faixa preta (escura e cinza; ver Parte 2).</li>
+<li><strong>Pintar + até a moldura:</strong> o que fica é o impresso + 1 mm (dentro da página); fora disso, branco (some também a tarja da biblioteca, a beirada das outras folhas e o papel vazio).</li>
+<li>O corte é o de sempre; com o 2.5 ligado junto, o corte do 2.5 continua mandando.</li>
+<li>Livro novo: pinta na página já reta e cortada. Projeto antigo: pinta antes do corte e do giro (a medida foi feita ali).</li>
+<li>Campo novo: <code>Projeto.borda_preta_fazer</code> ("cortar" de fábrica / "pintar"). Código: <code>core/borda_preta.py</code> (<code>pintar_fora</code>), <code>core/pipeline.py</code> (<code>_so_pinta</code>, <code>_area_que_fica</code>, <code>_pintar_na_cortada</code>).</li>
+</ul>
+<h2>Medida nas páginas do alvo (mm de preto por lado, página preparada como no programa)</h2>
+<p>Imagens: <code>img/borda-preta-mm/*__cinco.jpg</code> (hoje · só o preto · até a moldura · só o preto pintando · até a moldura pintando), <strong>todas abertas</strong>. Números: <code>dados/borda-preta-mm.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Página</th>
+<th>Só o preto pintando</th>
+<th>Até a moldura pintando</th>
+<th>Tamanho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antiphon 260</td>
+<td>0 / 0 / 0 / 0</td>
+<td>0 / 0 / 0 / 0</td>
+<td>igual a hoje</td>
+</tr>
+<tr>
+<td>Antiphon 88</td>
+<td>0 / 0 / 0 / 0 (pontas nos cantos)</td>
+<td>0 / 0 / 0 / 0</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>Camões 104</td>
+<td>0 / 0 / 0 / 0</td>
+<td>0 / 0 / 0 / 0</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>Cursus 3</td>
+<td>3 / 0 / 0 / 0</td>
+<td>0 / 0 / 0 / 0</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>Matemática 32</td>
+<td>a faixa de baixo some (sobra a sombra cinza da lombada à esquerda)</td>
+<td>idem, mais o papel vazio</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>Pesel 21</td>
+<td><strong>igual a hoje</strong> (o cartão não é cinza)</td>
+<td>cartão pintado de branco fora do impresso</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>Egenloff 47</td>
+<td>o preto dos lados some; a tarja cinza da biblioteca (SLUB) fica (não é preta)</td>
+<td><strong>tudo fora do impresso branco, inclusive a tarja</strong></td>
+<td>igual</td>
+</tr>
+</tbody>
+</table>
+<h2>Testes</h2>
+<ul>
+<li><code>tests/test_borda_preta.py</code>: +5 (campo de fábrica e projeto antigo; desligado não pinta; pintar não muda o tamanho e não deixa escuro nas beiradas, nas duas ordens; cortar fora continua cortando; até a moldura pintando com a DLL).</li>
+<li><code>tests/test_borda_preta_paginas_do_samuel.py</code>: +7, com a medida em mm, nas páginas do alvo e no Egenloff 47, preparadas como no programa (pulam fora do PC do Samuel).</li>
+<li><code>tests/test_corte_pelo_conteudo_na_tela.py</code>: +1 (a lista nova, grava no livro).</li>
+<li>Vizinhos no PC, um por vez: todos passam (ordem do preparo 56, corte prévia = PDF 4, corte pelo conteúdo no programa 14, painéis 33, gravura na tela 15, mesmo livro em outro caminho 17).</li>
+<li>Suíte do GitHub e filtro de velocidade: ver a entrega.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li>"Só o preto" pintando deixa o que não é preto: a tarja <strong>cinza</strong> da biblioteca do Egenloff 47 e a sombra cinza da lombada da Matemática 32. Para tirar a tarja, o jeito é "até a moldura" pintando (ou cortando).</li>
+<li>"Até a moldura" pintando pinta também o papel vazio em volta do impresso (a página fica branca fora do texto, como o "fill margins" do ScanTailor) e o cartão do Pesel 21.</li>
+<li>A cor é branco puro; o ScanTailor de fábrica usa a cor do fundo. Se o branco destoar de um papel amarelado sem filtro (Original), a borda fica visível: é o que o Samuel escolheu, mas vale ele ver.</li>
+<li>Corte à mão numa página = exceção: ali não pinta.</li>
+<li>Nenhum livro inteiro gerado com a opção.</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 02:30</p>
+</body>
+</html>

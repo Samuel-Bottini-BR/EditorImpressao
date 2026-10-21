@@ -104,9 +104,10 @@ class MedidaDoConteudo:
     largura, altura: da imagem medida (pontos).
     caixa: (x0, y0, x1, y1) em pontos dessa imagem, SEM folga; None quando a
         página não tem conteúdo ou a conta ficou indisponível.
-    tamanho_mm: (largura, altura) do conteúdo em mm, como o ScanTailor guarda
-        (é o que entra na conta do tamanho do livro).
-    mm_por_ponto: (x, y), pelo DPI que foi dito à DLL; None se indisponível.
+    tamanho_mm: (largura, altura) do conteúdo em mm do desenho (é o que entra
+        na conta do tamanho do livro).
+    mm_por_ponto: (x, y), pelo DPI do desenho (sem ele, o dito à DLL); None
+        se indisponível.
     motivo: por que não há caixa (texto para o log; nunca vai para a tela).
     limite: (x0, y0, x1, y1) em pontos: a página dentro da borda preta (item
         2.13, core/borda_preta), de onde o corte não passa; None = a imagem
@@ -184,7 +185,19 @@ def medir(img: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None, *,
         return MedidaDoConteudo(largura, altura, None, None, None, r.motivo, limite)
     if limite is None and opcoes["achar_pagina"]:
         limite = r.pagina.como_tupla()
-    mm = (cs.MILIMETROS_POR_POLEGADA / r.dpi[0], cs.MILIMETROS_POR_POLEGADA / r.dpi[1])
+    # Os milímetros são os do DESENHO (pontos da imagem / DPI em que ela foi
+    # desenhada), não os do DPI "dito" à DLL. Conserto de 21/10/2026 (defeito
+    # achado pelo verificador gerando o Egenloff 1-14: páginas do mesmo livro
+    # de tamanhos diferentes): o DPI dito muda de página para página (o teto
+    # de pontos de dpi_para_as_caixas depende do tamanho de cada imagem), e o
+    # mesmo tamanho do livro em mm virava um número diferente de pontos em
+    # cada página. O DPI dito continua valendo só para a conta da DLL.
+    try:
+        dpi_mm = float(dpi_do_desenho) if dpi_do_desenho and float(dpi_do_desenho) > 0 else None
+    except (TypeError, ValueError):
+        dpi_mm = None
+    mm = ((cs.MILIMETROS_POR_POLEGADA / dpi_mm,) * 2 if dpi_mm is not None
+          else (cs.MILIMETROS_POR_POLEGADA / r.dpi[0], cs.MILIMETROS_POR_POLEGADA / r.dpi[1]))
     if not r.tem_conteudo:
         return MedidaDoConteudo(largura, altura, None, None, mm, "a página não tem conteúdo", limite)
     caixa = r.conteudo.como_tupla()
@@ -192,7 +205,8 @@ def medir(img: np.ndarray, dpi_do_desenho=None, dpi_do_scan=None, *,
     if limite is not None:                    # a caixa nunca sai da página
         caixa = (max(caixa[0], limite[0]), max(caixa[1], limite[1]),
                  min(caixa[2], limite[2]), min(caixa[3], limite[3]))
-    return MedidaDoConteudo(largura, altura, caixa, r.tamanho_do_conteudo_mm, mm, None, limite)
+    tamanho = ((caixa[2] - caixa[0]) * mm[0], (caixa[3] - caixa[1]) * mm[1])
+    return MedidaDoConteudo(largura, altura, caixa, tamanho, mm, None, limite)
 
 
 def tamanho_duro_mm(tamanho_mm: tuple[float, float]) -> tuple[float, float]:
@@ -283,6 +297,22 @@ def caixa_do_corte(medida: MedidaDoConteudo,
     lx0, ly0, lx1, ly1 = medida.limite or (0.0, 0.0, float(medida.largura), float(medida.altura))
     x0, x1 = _caber(x0, x1, lx1, lx0)
     y0, y1 = _caber(y0, y1, ly1, ly0)
+    return (x0, y0, x1, y1)
+
+
+def caixa_vazia(medida: MedidaDoConteudo, livro: TamanhoDoLivro) -> tuple[float, float, float, float] | None:
+    """O corte de uma página SEM conteúdo, com o tamanho do livro: um
+    retângulo do tamanho do livro no meio da página (dentro de medida.limite,
+    a página achada na borda preta, se houver), como o ScanTailor faz com
+    conteúdo vazio (page_layout/Utils.cpp, adaptContentRect). None sem os mm."""
+    if medida.mm_por_ponto is None or not medida.largura or not medida.altura:
+        return None
+    mx, my = medida.mm_por_ponto
+    lx0, ly0, lx1, ly1 = medida.limite or (0.0, 0.0, float(medida.largura), float(medida.altura))
+    cx, cy = (lx0 + lx1) / 2, (ly0 + ly1) / 2
+    meia_l, meia_a = 0.5 * livro.largura_mm / mx, 0.5 * livro.altura_mm / my
+    x0, x1 = _caber(cx - meia_l, cx + meia_l, lx1, lx0)
+    y0, y1 = _caber(cy - meia_a, cy + meia_a, ly1, ly0)
     return (x0, y0, x1, y1)
 
 

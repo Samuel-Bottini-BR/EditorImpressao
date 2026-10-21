@@ -197,3 +197,31 @@ Nenhum do programa. Do código original do ScanTailor (não consertados, só ano
 ## A bateria
 
 Rodada em 13/10/2026, de 01:52 a 02:08, **um arquivo de pytest por vez** (113 arquivos de `tests/`, cada um no seu processo, esperando 3 GB de memória livre antes de cada um): **2081 passaram, nenhum falhou, 59 pulados**, no commit `28fabf0` (o código é o de `1c20d58`). Os pulados são de arquivos que não toquei (nenhum de `test_caixas_scantailor.py`, que passou os 76); não comparei a lista de pulados com a do `fase-1`.
+
+## 21/10/2026 — Item 2.14 (pintar de branco) — pedido da gerente
+
+- [x] Linhas da Parte 2 e do 2.14 coladas no "Botoes e funcoes para o layout.md" (só acréscimo).
+- [x] Núcleo `5e09cfa` (Projeto.borda_preta_fazer, core/borda_preta.pintar_fora, pipeline
+      _so_pinta/_area_que_fica); tela `49c0dcf` (lista "cortar fora / pintar de branco").
+- [x] Medida em mm nas 7 páginas (5 do alvo + Pesel 21 + Egenloff 47), imagens `*__cinco.jpg`
+      abertas. Relatório `item214-2026-10-21.*`.
+- [ ] GitHub: suíte 39555805412; filtro de velocidade 39555809454 (fase-1 31a9253 -> 49c0dcf). Ler e
+      entregar.
+
+## 21/10/2026 — Conserto do tamanho do livro (achado do verificador, `verif-caixa-2026-10-21`)
+
+Gerando o Egenloff 1-14 de verdade (300 DPI, `scripts/gerar_livro_egenloff.py`), as causas e os consertos:
+1. Os mm do tamanho do livro eram pelo DPI "dito" à DLL, que muda por página → agora pelo DPI do desenho.
+2. A página "muito maior" saía no tamanho DELA (pág. 6 virava tira 253 x 139) → fica fora da conta, mas
+   nunca menor que o livro (só a que o Kaique tirar sai sozinha).
+3. A passada media a 150 DPI e a geometria a 300 (a DLL dá caixas diferentes) e a medida nova trocava o
+   tamanho no meio da geração → a passada mede na resolução do PDF e o tamanho medido não é trocado.
+4. Página sem conteúdo (verso só com carimbo) saía maior → do tamanho do livro, no meio (adaptContentRect
+   do ScanTailor).
+5. Barra cinza "SLUB" da digitalização entrava → "só o preto"/"até a moldura" contam como fundo a linha
+   cinza neutra que atravessa >= 70% do lado (uma 1a versão, qualquer cinza neutro escuro, cortou as
+   notas do Antiphon 260: descartada).
+6. A frase da tela "O que fazer" agora diz as opções do corte.
+Resultado (imagens `img/livro-egenloff/`): só a 2.5 → páginas comuns 253 x 360 mm; as duas → 253 x 379 mm;
+capas no tamanho delas (muito maiores, com aviso). Teste de reversão `tests/test_corte_pelo_conteudo_livro.py`
+(4 falham no `4120c68`) e `test_regressao_a_frase_da_tela_diz_as_opcoes_novas`.

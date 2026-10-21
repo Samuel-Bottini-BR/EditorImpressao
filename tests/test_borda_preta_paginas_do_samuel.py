@@ -130,3 +130,38 @@ def test_pesel_21_so_o_preto_continua_inteiro():
     hoje = _pronta("pesel_p021")
     so = _pronta("pesel_p021", borda_preta=True, borda_preta_ate="so_o_preto")
     assert abs(so.shape[0] - hoje.shape[0]) <= 3 and abs(so.shape[1] - hoje.shape[1]) <= 3
+
+
+# ------------------------------------------- item 2.14: pintar de branco
+
+@pytest.mark.parametrize("pid", ["antiphon_p260", "antiphon_p088", "camoes_p104", "cursus_p003",
+                                 "egenloff_p047"])
+def test_2_14_ate_a_moldura_pintando_nao_sobra_preto_e_o_tamanho_fica(pid):
+    """Item 2.14 (rodada 5, rv5-pag-egenloff-047: "O Kaique escolhe por
+    livro" entre cortar fora e pintar de branco). Pintando, a página fica do
+    tamanho de hoje e não sobra faixa preta em beirada nenhuma (no Egenloff
+    47, a tarja da biblioteca também some)."""
+    hoje = _pronta(pid)
+    pintada = _pronta(pid, borda_preta=True, borda_preta_ate="ate_a_moldura", borda_preta_fazer="pintar")
+    assert pintada.shape == hoje.shape
+    lados = _preto_mm(pintada)
+    assert max(lados.values()) <= TOLERANCIA_MM, lados
+
+
+def test_2_14_matematica_32_pintando_a_faixa_some():
+    hoje = _pronta("matematica_p032")
+    pintada = _pronta("matematica_p032", borda_preta=True, borda_preta_ate="so_o_preto",
+                      borda_preta_fazer="pintar")
+    assert pintada.shape == hoje.shape
+    assert _faixa_escura_na_beirada(hoje, "pe", 0.25, 1.0) > 0.5          # hoje a faixa está lá
+    assert _faixa_escura_na_beirada(pintada, "pe", 0.25, 1.0) <= 0.05
+
+
+def test_2_14_pesel_21_so_o_preto_pintando_fica_igual():
+    """Pesel 21: "só o preto" pintando não toca no cartão (não é cinza)."""
+    import numpy as np
+
+    hoje = _pronta("pesel_p021")
+    pintada = _pronta("pesel_p021", borda_preta=True, borda_preta_ate="so_o_preto", borda_preta_fazer="pintar")
+    assert pintada.shape == hoje.shape
+    assert float(np.abs(pintada.astype(int) - hoje.astype(int)).mean()) < 1.0

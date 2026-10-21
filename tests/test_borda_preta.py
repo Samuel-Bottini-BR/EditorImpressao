@@ -214,3 +214,87 @@ def test_regressao_so_o_preto_em_pagina_girada_cunha_branca(tmp_path, monkeypatc
     canto = vistas[-1][:6, :6]
     assert float(canto.mean()) < 60, "a cunha do giro chegou branca à conta do preto"
     assert y * ALTURA >= 180 and (x + w) * LARGURA <= LARGURA - 100
+
+
+# ------------------------------------------------- item 2.14: pintar de branco
+
+def _escuro_na_beirada(img, mm=2.0):
+    """Fração escura (< 100) nas tiras de `mm` junto de cada beirada."""
+    g = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    n = max(1, int(round(mm * DPI / 25.4)))
+    return {"esq": float((g[:, :n] < 100).mean()), "dir": float((g[:, -n:] < 100).mean()),
+            "topo": float((g[:n, :] < 100).mean()), "pe": float((g[-n:, :] < 100).mean())}
+
+
+def _pintada(tmp_path, folha, nome="livro", **campos):
+    caminho = _pdf(tmp_path, folha, nome)
+    projeto = _projeto(caminho, **campos)
+    doc = abrir_pdf(caminho)
+    try:
+        img = pagina_para_array(doc, 0, dpi=DPI)
+    finally:
+        doc.close()
+    pipeline._guardar_geometria(projeto.folhas[0], projeto.paginas[0], projeto, img)
+    saida, desenho = pipeline.preparar_metade_e_geometria(img, projeto.folhas[0], projeto.paginas[0],
+                                                          projeto, dpi=DPI)
+    return img, saida, desenho
+
+
+def test_2_14_campo_de_fabrica_e_projeto_antigo():
+    """Rodada 5 (09/10): "O Kaique escolhe por livro" entre cortar fora e
+    pintar de branco. De fábrica "cortar" (e a borda vem desligada)."""
+    p = Projeto(caminho_entrada="x.pdf")
+    assert p.borda_preta_fazer == bp.CORTAR_FORA
+    dados = p.para_dicionario()
+    dados.pop("borda_preta_fazer")
+    assert Projeto.de_dicionario(dados).borda_preta_fazer == bp.CORTAR_FORA
+    p.borda_preta_fazer = bp.PINTAR
+    assert Projeto.de_dicionario(p.para_dicionario()).borda_preta_fazer == bp.PINTAR
+    assert bp.fazer_valido("torto") == bp.CORTAR_FORA
+
+
+def test_2_14_desligado_nao_pinta(tmp_path, monkeypatch):
+    def proibido(*_a, **_k):
+        raise AssertionError("pintou com a borda desligada")
+
+    monkeypatch.setattr(bp, "pintar_fora", proibido)
+    _pintada(tmp_path, _folha(direita=150, baixo=120), borda_preta_fazer=bp.PINTAR)
+
+
+@pytest.mark.parametrize("ordem", ["endireitar_antes", "cortar_antes"])
+def test_2_14_so_o_preto_pinta_de_branco_e_nao_corta(tmp_path, monkeypatch, ordem):
+    """Pintando, o corte fica o de sempre (o tamanho da página não muda) e a
+    faixa preta vira branca: não sobra escuro nas beiradas. O corte comum é
+    trocado pela folha inteira (o que ele faz no Antiphon 260, que deixa a
+    faixa de baixo), para só a pintura aparecer."""
+    import numpy as np
+    from core.recortar import Recorte
+
+    monkeypatch.setattr(pipeline, "detectar_bordas",
+                        lambda *_a, **_k: Recorte(0.0, 0.0, 1.0, 1.0, pecas=np.zeros((0, 5), np.int64)))
+    folha = _folha(direita=150, baixo=120)
+    img, hoje, _d = _pintada(tmp_path, folha, ordem_do_preparo=ordem)
+    pipeline._GEOMETRIAS.clear(); pipeline._CONTEUDOS.clear(); pipeline._TAMANHOS.clear()
+    _img, pintada, _d2 = _pintada(tmp_path, folha, "pintado", ordem_do_preparo=ordem, borda_preta=True,
+                                  borda_preta_ate=bp.SO_O_PRETO, borda_preta_fazer=bp.PINTAR)
+    assert pintada.shape == hoje.shape
+    assert max(_escuro_na_beirada(hoje).values()) > 0.5          # hoje o preto está lá
+    assert max(_escuro_na_beirada(pintada).values()) < 0.02, _escuro_na_beirada(pintada)
+
+
+def test_2_14_cortar_fora_continua_cortando(tmp_path):
+    _img, saida, _d = _pintada(tmp_path, _folha(direita=150, baixo=120), borda_preta=True,
+                               borda_preta_ate=bp.SO_O_PRETO, borda_preta_fazer=bp.CORTAR_FORA)
+    assert saida.shape[1] <= LARGURA - 140 and saida.shape[0] <= ALTURA - 110
+
+
+@precisa_da_dll
+def test_2_14_ate_a_moldura_pinta_fora_do_impresso(tmp_path):
+    """"Até a moldura" + pintar: o tamanho fica, e o que está fora do impresso
+    (+1 mm) vira branco, inclusive o preto; o texto continua inteiro."""
+    folha = _folha(direita=150, baixo=120, esquerda=60, cima=50)
+    _img, saida, _d = _pintada(tmp_path, folha, borda_preta=True,
+                               borda_preta_ate=bp.ATE_A_MOLDURA, borda_preta_fazer=bp.PINTAR)
+    assert max(_escuro_na_beirada(saida).values()) < 0.02
+    g = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY)
+    assert (g < 100).sum() >= 0.9 * (cv2.cvtColor(_folha(), cv2.COLOR_BGR2GRAY) < 100).sum()

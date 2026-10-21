@@ -188,3 +188,17 @@ def test_cancelar_a_janela_nao_muda_nada(janela, pasta, monkeypatch):
     feitas = len(janela.acoes.feitas)
     tela._recorte_em_todas()
     assert projeto.paginas[1].recorte is None and len(janela.acoes.feitas) == feitas
+
+
+def test_2_14_lista_cortar_fora_ou_pintar(janela, pasta):
+    """Item 2.14: "O Kaique escolhe por livro" entre cortar fora e pintar de
+    branco; vem "cortar fora"; trocar grava no livro."""
+    from core import borda_preta as bp
+
+    janela.abrir_livro(str(_pdf(pasta)))
+    tela, projeto = janela.tela_opcoes, janela.projeto
+    assert tela.combo_borda_fazer.currentData() == bp.CORTAR_FORA
+    tela.cx_borda_preta.setChecked(True)
+    tela.combo_borda_fazer.setCurrentIndex(tela.combo_borda_fazer.findData(bp.PINTAR))
+    assert projeto.borda_preta_fazer == bp.PINTAR
+    assert "borda_preta_fazer" in janela.OPCOES_DO_LIVRO

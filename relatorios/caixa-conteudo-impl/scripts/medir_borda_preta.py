@@ -18,7 +18,8 @@ medir.py, _beirada e _por_lado, importadas daqui sem cópia): a faixa "escura"
 (mais escura que 60% do papel) encostada na beirada, em mm por lado
 ("mm" = percentil 90 ao longo do lado; "mm_max" = o pior ponto).
 
-Jeitos: hoje (desligado), só o preto, até a moldura. Grava
+Jeitos: hoje (desligado), só o preto, até a moldura, e os dois pintando de
+branco (item 2.14) em vez de cortar. Grava
 dados/borda-preta-mm.json e as páginas prontas reduzidas em
 img/borda-preta-mm/. Uso: python medir_borda_preta.py [pid ...]
 """
@@ -39,11 +40,16 @@ sys.path.insert(0, str(RAIZ / "relatorios" / "conserto-corte-g6" / "scripts"))
 import medir as verif  # noqa: E402  (a medida do verificador)
 
 PAGINAS = ["antiphon_p260", "antiphon_p088", "camoes_p104", "cursus_p003", "matematica_p032",
-           "pesel_p021"]
+           "pesel_p021", "egenloff_p047"]
 TRABALHO = Path(r"D:\programas\EditorImpressao-arquivos\revisar-decisoes-trabalho\paginas")
 DPI = 200
 JEITOS = {"hoje": {}, "so_o_preto": {"borda_preta": True, "borda_preta_ate": "so_o_preto"},
-          "ate_a_moldura": {"borda_preta": True, "borda_preta_ate": "ate_a_moldura"}}
+          "ate_a_moldura": {"borda_preta": True, "borda_preta_ate": "ate_a_moldura"},
+          # item 2.14: pintar de branco em vez de cortar fora
+          "so_o_preto_pinta": {"borda_preta": True, "borda_preta_ate": "so_o_preto",
+                               "borda_preta_fazer": "pintar"},
+          "ate_a_moldura_pinta": {"borda_preta": True, "borda_preta_ate": "ate_a_moldura",
+                                  "borda_preta_fazer": "pintar"}}
 
 
 def medir(pid: str, jeito: str) -> dict:
