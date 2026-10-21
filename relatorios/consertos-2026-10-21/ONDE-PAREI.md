@@ -40,4 +40,5 @@ Os dois bugs da Lista de bugs estão consertados, cada um com teste de reversão
 
 ## GitHub
 
-- [ ] Suíte do ramo: disparada depois do limite de consultas (403) liberar; ler uma vez no fim.
+- [x] Suíte no Windows do GitHub, rodada 39559866204 (código `e414ba1`): 115 arquivos, 2074 passaram,
+      0 falharam, 73 pulados; botões e prints da janela real: passou.
