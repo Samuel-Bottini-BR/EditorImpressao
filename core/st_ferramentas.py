@@ -60,7 +60,9 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 #     item 2.8; core/preto_e_branco_scantailor.py).
 # 6 (20/10/2026) = + as cores do ScanTailor (st_ferramentas_cores, item 2.11;
 #     core/cores_scantailor.py).
-VERSAO_API = 6
+# 7 (21/10/2026) = + o desentortar do ScanTailor (st_ferramentas_desentortar,
+#     item 2.12; core/desentortar_scantailor.py).
+VERSAO_API = 7
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -127,6 +129,18 @@ ASSINATURAS = {
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # ruido, ajustes R, G, B
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # posterizar, nivel, normalizar cores, forcar P&B
         ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.12 (21/10/2026): o desentortar do ScanTailor (core/desentortar_scantailor.py).
+    "st_ferramentas_desentortar": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # modo, lado
+        ctypes.c_double, ctypes.c_int,                               # profundidade, endireitar depois
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # caixa do conteudo (x, y, larg., alt.)
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double),  # achou curvas, angulo depois
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
 }

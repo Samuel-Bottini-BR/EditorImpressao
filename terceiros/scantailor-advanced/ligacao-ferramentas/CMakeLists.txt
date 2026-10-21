@@ -1,6 +1,7 @@
 # Compila st_ferramentas.dll: as ferramentas de imagem do ScanTailor Advanced
-# numa DLL so (item M9 da Fase 2). Hoje: limpar pontinhos, dividir, endireitar e o
-# preto e branco da saida (item 2.8, saida.cpp).
+# numa DLL so (item M9 da Fase 2). Hoje: limpar pontinhos, dividir, endireitar, o
+# preto e branco e as cores da saida (itens 2.8 e 2.11, saida.cpp) e o desentortar
+# (item 2.12, desentortar.cpp; precisa da pasta dewarping nos cabecalhos).
 #
 # Nao rode direto: use  .venv\Scripts\python.exe compilar_st_ferramentas.py
 # (ele acha o Qt, o Boost e o Visual Studio e passa as variaveis abaixo).
@@ -46,6 +47,7 @@ set(ST_PASTAS_DE_CABECALHO
     "${ST_SRC}"
     "${ST_SRC}/foundation"
     "${ST_SRC}/math"
+    "${ST_SRC}/dewarping"
     "${ST_SRC}/imageproc"
     "${ST_SRC}/core"
     "${ST_SRC}/core/filters/output")

@@ -45,7 +45,9 @@
 //     item 2.8, em saida.cpp); o que ja existia nao mudou.
 // 6 = 20/10/2026: + as cores do ScanTailor (st_ferramentas_cores, item 2.11, em
 //     saida.cpp); o que ja existia nao mudou.
-#define ST_FERRAMENTAS_VERSAO_API 6
+// 7 = 21/10/2026: + o desentortar do ScanTailor (st_ferramentas_desentortar,
+//     item 2.12, em desentortar.cpp); o que ja existia nao mudou.
+#define ST_FERRAMENTAS_VERSAO_API 7
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -244,6 +246,46 @@ ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
                                             int passoSaida,
                                             char* erro,
                                             int tamanhoErro);
+
+// DESENTORTAR A PAGINA CURVA PERTO DA LOMBADA (item 2.12): o "Dewarping" do
+// ScanTailor (src/dewarping, sem mudanca; a ordem em desentortar.cpp).
+//
+// pixels, largura, altura, passo, canais: a pagina ja dividida, girada e
+//   cortada (canais 1 = cinza; 3 = azul, verde, vermelho, como o OpenCV).
+// dpiX, dpiY: o DPI da imagem (o TextLineTracer reduz para 200 DPI por ele).
+// modo: 1 = automatico (AUTO, pelas linhas do texto); 3 = pelas margens
+//   (MARGINAL). Os numeros sao os de output::DewarpingMode. 0 (desligado, o de
+//   fabrica) nao chega aqui: o Python nem chama.
+// lado: 0 = pagina unica, 1 = esquerda, 2 = direita (PageId::SubPage).
+// profundidade: a "Depth perception" do ScanTailor, de 1,0 a 3,0 (2,0 de fabrica).
+// endireitarDepois: o "post deskew" (1 de fabrica; so vale no "pelas margens").
+// conteudoX, conteudoY, conteudoLargura, conteudoAltura: a caixa do conteudo, em
+//   pontos; largura ou altura 0 = a pagina inteira.
+// saida, passoSaida: a pagina desentortada, do mesmo tamanho e com os mesmos canais.
+// achouCurvas: 1 se as curvas achadas nao sao as do modelo "sem curva".
+// anguloDepois: o angulo do endireitar depois, em graus (0 se nao endireitou).
+// Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
+                                                  int largura,
+                                                  int altura,
+                                                  int passo,
+                                                  int canais,
+                                                  int dpiX,
+                                                  int dpiY,
+                                                  int modo,
+                                                  int lado,
+                                                  double profundidade,
+                                                  int endireitarDepois,
+                                                  int conteudoX,
+                                                  int conteudoY,
+                                                  int conteudoLargura,
+                                                  int conteudoAltura,
+                                                  unsigned char* saida,
+                                                  int passoSaida,
+                                                  int* achouCurvas,
+                                                  double* anguloDepois,
+                                                  char* erro,
+                                                  int tamanhoErro);
 
 #ifdef __cplusplus
 }

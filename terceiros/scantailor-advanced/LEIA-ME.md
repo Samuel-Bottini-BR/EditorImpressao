@@ -226,6 +226,29 @@ Python em `core/cores_scantailor.py`, chamado no fim de `core.pipeline._filtrar`
 copiadas a mais de `OutputGenerator.cpp`: 2502-2538 (`segmentImage`, `posterizeImage`). Ajustes de fábrica:
 "Reduce noise" 7, ajustes de vermelho/verde/azul 0, nível 4, sem normalizar, "forçar preto e branco" ligado.
 
+## O desentortar (item 2.12, desde 21/10/2026)
+
+Regra de 13/10 (igual ao ScanTailor, ajustes de fábrica dele, desligado de fábrica). Função em C
+`st_ferramentas_desentortar` em `ligacao-ferramentas/desentortar.cpp` (versão 7 da interface); Python em
+`core/desentortar_scantailor.py`, chamado no fim do preparo da página (`core.pipeline._preparar_metade_e_geometria`).
+
+| | |
+|---|---|
+| Modos trazidos | "automático" (AUTO, pelas linhas do texto) e "pelas margens" (MARGINAL, pelas beiradas brancas, com o endireitar depois). O de fábrica é "desligado" (OFF). O MANUAL (malha à mão) **não** veio: precisa de uma tela de malha |
+| Arquivos novos em `src/` (79, sem mudança, somas em `somas-v1.2.1.txt`, conferidas pelo `git hash-object --path` contra o `rev-parse` do ScanTailor) | todo o `dewarping/` (22); `math/` (`ArcLengthMapper`, `HomographicTransform.h`, `LineBoundedByRect`, `LinearFunction`, `PolylineIntersector`, `QuadraticFunction`, `SidesOfLine`, `XSpline`), todo o `math/spfit/` e o `math/adiff/`; `foundation/` (`FlagOps.h`, `Grid.h`, `GridLineTraverser`, `LineIntersectionScalar`, `PriorityQueue.h`, `ValueConv.h`); `imageproc/` (`GaussBlur`, `SEDM`, `LocalMinMaxGeneric.h`, `Sobel.h`); `core/` (`PageId.cpp`, `ImageId.cpp`, `filters/output/DepthPerception.*`, `filters/output/DewarpingOptions.*`). É o fecho dos `#include` a partir do `dewarping/` |
+| Funções copiadas de `referencia/OutputGenerator.cpp` (marcas `COPIADO SEM MUDANCA`, conferidas por `tests/test_desentortar_scantailor.py`) | 987-992 (`applyAffineTransform`), 1067-1125 (`movePointToTopMargin`, `movePointToBottomMargin`, `drawPoint`), 1173-1176 (`vertBorderSkewAngle`), 2034-2106 (`setupTrivialDistortionModel`, `createDewarper`, `dewarp`), 2490-2500 (`findSkew`), 2608-2813 (`buildAutoDistortionModel`, `buildMarginalDistortionModel`); e de `referencia/output/Utils.cpp` (novo, não compilado) 47-58 (`Utils::rotate`) |
+| Ajustes de fábrica | profundidade 2,0 (`DepthPerception.h`), endireitar depois ligado (`DewarpingOptions.h`), sem igualar a luz antes (o caminho do modo Cor/Cinza do ScanTailor, `ColorCommonOptions.cpp` linha 13) |
+
+O que a ligação troca: como em `saida.cpp`, a classe `OutputGenerator::Processor` vira uma classe com o mesmo nome e
+só os membros usados - mas no namespace `st_desentortar::output`, para não brigar com a de `saida.cpp` na mesma DLL.
+A página chega dividida, girada e cortada: geometria identidade, página de saída = a imagem, caixa do conteúdo = a
+imagem inteira (ou a que o Python mandar). O resto de `processWithDewarping` (preto e branco, Misto, pontinhos)
+não está aqui: no programa são os filtros, que vêm depois, na página já desentortada.
+
+Conferido em 21/10/2026: a `st_gravura` (item 1.2), recompilada numa pasta de rascunho
+(`ferramentasuild-st-gravura-fase2-desentortar`) com os arquivos novos em `src/`, compila (o `ligacao/CMakeLists.txt`
+dela pega `math/*.cpp`, `core/*.cpp` e `core/filters/output/*.cpp` inteiros); a DLL guardada não foi tocada.
+
 ## Como conferir que nada mudou
 
 **Não use `cmp` direto na pasta do PC.** O git deste PC está com
