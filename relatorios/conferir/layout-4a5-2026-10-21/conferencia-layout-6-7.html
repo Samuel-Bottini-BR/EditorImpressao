@@ -63,14 +63,15 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 </head>
 <body>
 <h1>Conferência em fotos: layout etapas 6 e 7 e os três acertos (verificador, 21/10/2026)</h1>
-<p>Ramo <code>layout-etapas4a7-2026-10-19</code>, código <code>448299e</code>. Não marco nada como aprovado.</p>
+<p>Ramo <code>layout-etapas4a7-2026-10-19</code>, código <code>f963cfd</code> (etapas 6 e 7 no <code>448299e</code>; acerto do livro aberto e da grade no <code>f963cfd</code>). Não marco nada como aprovado.</p>
 <h2>O que conferi</h2>
 <ul>
 <li>Fora de <code>ui/</code> e dos testes nada muda desde o <code>60a0a3d</code>.</li>
 <li>Testes, um arquivo por vez: dividir na tela 9, filtros em tela cheia 5, configurações 2, miniaturas 4, menu Painéis 3, painéis na tela 22, barra de menu 20, livro aberto 2, tela de início 15: todos passam.</li>
 <li>Reversão do "o do Editor" (<code>tests/test_dividir_na_tela.py</code>): falha no <code>9e6956d</code> ("(jeito: o do programa)"), passa no <code>448299e</code>.</li>
 <li>Janela de verdade: tela dos livros, livro aberto (uma por vez e lado a lado, "Mais…", Esc volta), Configurações, filtros em tela cheia (abrir pelo ícone, comparar, escolher, "Fechar sem mudar" não muda), a fila do Filtro e "Todas as páginas". 12 prints, todos abertos.</li>
-<li>Não abri a rodada do GitHub citada (39566066549).</li>
+<li>Não abri as rodadas do GitHub citadas (39566066549, 39621726467).</li>
+<li>Acerto <code>f963cfd</code>: os 2 testes de reversão (<code>test_a_folha_e_desenhada_na_resolucao_da_tela</code>, <code>test_a_grade_desenha_na_altura_do_quadro</code>) falham no <code>448299e</code> e passam no novo. Na janela: o livro aberto ficou nítido; a grade NÃO (nitidez medida 669 contra 1004 antes e 5371 da página desenhada direto nesse tamanho). Causa vista no código: <code>ui/widgets/todas_as_paginas.py</code> <code>_pintar</code> faz <code>pix.scaled(alvo.size())</code> em pontos lógicos (150) e a tela a 125% aumenta de novo; a imagem guardada já tem 197 pontos. O teste só olha a imagem guardada, não o que é pintado.</li>
 </ul>
 <h2>Ressalvas (o que ainda não está como no desenho)</h2>
 <ul>
@@ -78,8 +79,7 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <li>Não está como no desenho: 804 B, o aviso de livro novo ("ainda não passou pelo automático"): o livro ainda não abre direto na tela de trabalho.</li>
 <li>Não está como no desenho: Configurações sem as partes "Para todos os livros" e "Lado direito" (não existem ainda).</li>
 <li>Tela cheia dos filtros: o ajuste mexido ali mostra só o filtro (sem "Só as letras") até "Usar"; o antes e depois não aproxima.</li>
-<li>Livro aberto, uma página por vez: a página sai borrada; lado a lado sai nítida.</li>
-<li>"Todas as páginas": melhorou, mas ainda um pouco macia.</li>
+<li>"Todas as páginas": continua mole depois do acerto f963cfd (a página é reduzida ao tamanho lógico antes de pintar, e a escala de 125% do Windows a aumenta de novo).</li>
 </ul>
 <h2>As fotos contra as decisões dele</h2>
 <table>
@@ -114,7 +114,7 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <tr>
 <td>Os três acertos da conferência anterior</td>
 <td>907 (20/10): "B — “o do Editor”".</td>
-<td>sim (a grade ainda um pouco macia)</td>
+<td>em parte: a grade continua mole</td>
 </tr>
 </tbody>
 </table>
@@ -152,12 +152,11 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p>As páginas rolam uma embaixo da outra, com a coluna de miniaturas à esquerda e a pílula "página 4 de 6 · ir para" embaixo. No alto: "Voltar para os livros (Esc)", "Continuar", "Rodar o automático…", "Ver todas as páginas", "Confirmar e processar…", "Mais…" (continuar, começar de novo, renomear, abrir a pasta de saída, remover da lista) e "Onde está". "Ver lado a lado" é um botão (não vem ligado): mostra as páginas em pares, como o livro aberto.</p>
 <p><strong>O que olhar:</strong> O botão "Ver lado a lado" e as duas páginas lado a lado.</p>
 <p><strong>Sua decisão:</strong> "O livro aberto fica assim?" (06/10): "Sim, fica assim" + "quero ter a opção de clicar e ver como ia ficar as paginas lado a lado [...] eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado."</p>
-<p><em>Ressalva:</em> Na vista de uma página por vez, a página sai borrada (aumentada de uma imagem pequena); lado a lado sai nítida.</p>
 <p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
 <p><img alt="Ampliado: &quot;Ver lado a lado&quot; ligado" src="img/c67-lado-a-lado.jpg" /></p>
 <p><em>Ampliado: "Ver lado a lado" ligado</em></p>
-<p><img alt="O livro aberto (uma página por vez)" src="img/c67-M02-livro-aberto-inteira.jpg" /></p>
-<p><em>O livro aberto (uma página por vez)</em></p>
+<p><img alt="O livro aberto, uma página por vez (nítida, depois do acerto f963cfd)" src="img/c67-M13-livro-aberto-nitido-inteira.jpg" /></p>
+<p><em>O livro aberto, uma página por vez (nítida, depois do acerto f963cfd)</em></p>
 <p><img alt="O menu &quot;Mais…&quot;" src="img/c67-mais.jpg" /></p>
 <p><em>O menu "Mais…"</em></p>
 <h2>Os três acertos da conferência anterior</h2>
@@ -165,16 +164,16 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <p>1) O nome "Melhorar" cabe inteiro na fila do painel Filtro. 2) As páginas de "Todas as páginas" ficaram mais nítidas. 3) A frase de resumo da tela "O que fazer" diz "(jeito: o do Editor)", como a lista (907 B), com teste de reversão que falha no código de antes.</p>
 <p><strong>O que olhar:</strong> "Melhorar" inteiro na fila; as páginas da grade.</p>
 <p><strong>Sua decisão:</strong> 907 (20/10): "B — “o do Editor”".</p>
-<p><em>Ressalva:</em> A grade de "Todas as páginas" melhorou, mas ainda não fica bem nítida.</p>
+<p><em>Ressalva:</em> A grade de "Todas as páginas" continua mole mesmo depois do acerto f963cfd: a página é desenhada no tamanho certo (197 pontos), mas ao pintar ela é reduzida para 150 e aumentada de novo pela escala do Windows (125%).</p>
 <p>Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.</p>
 <p><img alt="Ampliado: a fila com &quot;Melhorar&quot; inteiro" src="img/c67-melhorar.jpg" /></p>
 <p><em>Ampliado: a fila com "Melhorar" inteiro</em></p>
-<p><img alt="&quot;Todas as páginas&quot; depois do acerto" src="img/c67-M12-todas-as-paginas-inteira.jpg" /></p>
-<p><em>"Todas as páginas" depois do acerto</em></p>
+<p><img alt="&quot;Todas as páginas&quot; no f963cfd" src="img/c67-M15-todas-30s-inteira.jpg" /></p>
+<p><em>"Todas as páginas" no f963cfd</em></p>
 <h2>Decisão: Layout: etapas 6 e 7: o que você decide?</h2>
 <p>O que você está escolhendo: se a tela cheia dos filtros, as Configurações, a tela dos livros e o livro aberto entram no programa.</p>
 <p>Cada quadro é uma coisa que você decidiu, com a foto da janela de verdade. O que ainda não está como no desenho está na lista de ressalvas.</p>
 <p>Opções: Aprovado · Melhorar · Ainda não entendi</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 10:50</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 11:40</p>
 </body>
 </html>

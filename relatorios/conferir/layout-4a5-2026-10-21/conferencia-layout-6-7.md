@@ -1,6 +1,6 @@
 # Conferência em fotos: layout etapas 6 e 7 e os três acertos (verificador, 21/10/2026)
 
-Ramo `layout-etapas4a7-2026-10-19`, código `448299e`. Não marco nada como aprovado.
+Ramo `layout-etapas4a7-2026-10-19`, código `f963cfd` (etapas 6 e 7 no `448299e`; acerto do livro aberto e da grade no `f963cfd`). Não marco nada como aprovado.
 
 ## O que conferi
 
@@ -8,7 +8,8 @@ Ramo `layout-etapas4a7-2026-10-19`, código `448299e`. Não marco nada como apro
 - Testes, um arquivo por vez: dividir na tela 9, filtros em tela cheia 5, configurações 2, miniaturas 4, menu Painéis 3, painéis na tela 22, barra de menu 20, livro aberto 2, tela de início 15: todos passam.
 - Reversão do "o do Editor" (`tests/test_dividir_na_tela.py`): falha no `9e6956d` ("(jeito: o do programa)"), passa no `448299e`.
 - Janela de verdade: tela dos livros, livro aberto (uma por vez e lado a lado, "Mais…", Esc volta), Configurações, filtros em tela cheia (abrir pelo ícone, comparar, escolher, "Fechar sem mudar" não muda), a fila do Filtro e "Todas as páginas". 12 prints, todos abertos.
-- Não abri a rodada do GitHub citada (39566066549).
+- Não abri as rodadas do GitHub citadas (39566066549, 39621726467).
+- Acerto `f963cfd`: os 2 testes de reversão (`test_a_folha_e_desenhada_na_resolucao_da_tela`, `test_a_grade_desenha_na_altura_do_quadro`) falham no `448299e` e passam no novo. Na janela: o livro aberto ficou nítido; a grade NÃO (nitidez medida 669 contra 1004 antes e 5371 da página desenhada direto nesse tamanho). Causa vista no código: `ui/widgets/todas_as_paginas.py` `_pintar` faz `pix.scaled(alvo.size())` em pontos lógicos (150) e a tela a 125% aumenta de novo; a imagem guardada já tem 197 pontos. O teste só olha a imagem guardada, não o que é pintado.
 
 ## Ressalvas (o que ainda não está como no desenho)
 
@@ -16,8 +17,7 @@ Ramo `layout-etapas4a7-2026-10-19`, código `448299e`. Não marco nada como apro
 - Não está como no desenho: 804 B, o aviso de livro novo ("ainda não passou pelo automático"): o livro ainda não abre direto na tela de trabalho.
 - Não está como no desenho: Configurações sem as partes "Para todos os livros" e "Lado direito" (não existem ainda).
 - Tela cheia dos filtros: o ajuste mexido ali mostra só o filtro (sem "Só as letras") até "Usar"; o antes e depois não aproxima.
-- Livro aberto, uma página por vez: a página sai borrada; lado a lado sai nítida.
-- "Todas as páginas": melhorou, mas ainda um pouco macia.
+- "Todas as páginas": continua mole depois do acerto f963cfd (a página é reduzida ao tamanho lógico antes de pintar, e a escala de 125% do Windows a aumenta de novo).
 
 ## As fotos contra as decisões dele
 
@@ -27,7 +27,7 @@ Ramo `layout-etapas4a7-2026-10-19`, código `448299e`. Não marco nada como apro
 | Configurações com a lista das partes à esquerda | 807 (12/10): "B — Lista das partes à esquerda"; 707 (12/10): "C — Nos dois lugares". | em parte: faltam as partes "Para todos os livros" e "Lado direito" (ainda não existem) |
 | A tela dos livros | "Como abrir um livro novo?" (06/10): "Cartão “+” no começo da grade"; rodada 6: Configurações e Ajuda no alto, sem barra de menus. | sim |
 | O livro aberto na tela inteira | "O livro aberto fica assim?" (06/10): "Sim, fica assim" + "quero ter a opção de clicar e ver como ia ficar as paginas lado a lado [...] eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado." | sim |
-| Os três acertos da conferência anterior | 907 (20/10): "B — “o do Editor”". | sim (a grade ainda um pouco macia) |
+| Os três acertos da conferência anterior | 907 (20/10): "B — “o do Editor”". | em parte: a grade continua mole |
 
 ## Filtros em tela cheia
 
@@ -100,17 +100,15 @@ As páginas rolam uma embaixo da outra, com a coluna de miniaturas à esquerda e
 
 **Sua decisão:** "O livro aberto fica assim?" (06/10): "Sim, fica assim" + "quero ter a opção de clicar e ver como ia ficar as paginas lado a lado [...] eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado."
 
-*Ressalva:* Na vista de uma página por vez, a página sai borrada (aumentada de uma imagem pequena); lado a lado sai nítida.
-
 Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.
 
 ![Ampliado: "Ver lado a lado" ligado](img/c67-lado-a-lado.jpg)
 
 *Ampliado: "Ver lado a lado" ligado*
 
-![O livro aberto (uma página por vez)](img/c67-M02-livro-aberto-inteira.jpg)
+![O livro aberto, uma página por vez (nítida, depois do acerto f963cfd)](img/c67-M13-livro-aberto-nitido-inteira.jpg)
 
-*O livro aberto (uma página por vez)*
+*O livro aberto, uma página por vez (nítida, depois do acerto f963cfd)*
 
 ![O menu "Mais…"](img/c67-mais.jpg)
 
@@ -127,7 +125,7 @@ O que você está escolhendo: se os três acertos que eu pedi ficaram bons.
 
 **Sua decisão:** 907 (20/10): "B — “o do Editor”".
 
-*Ressalva:* A grade de "Todas as páginas" melhorou, mas ainda não fica bem nítida.
+*Ressalva:* A grade de "Todas as páginas" continua mole mesmo depois do acerto f963cfd: a página é desenhada no tamanho certo (197 pontos), mas ao pintar ela é reduzida para 150 e aumentada de novo pela escala do Windows (125%).
 
 Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um comentário.
 
@@ -135,9 +133,9 @@ Opções: Está bom · Melhorar · Está pior · Ainda não entendi · e um come
 
 *Ampliado: a fila com "Melhorar" inteiro*
 
-!["Todas as páginas" depois do acerto](img/c67-M12-todas-as-paginas-inteira.jpg)
+!["Todas as páginas" no f963cfd](img/c67-M15-todas-30s-inteira.jpg)
 
-*"Todas as páginas" depois do acerto*
+*"Todas as páginas" no f963cfd*
 
 ## Decisão: Layout: etapas 6 e 7: o que você decide?
 

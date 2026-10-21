@@ -1,7 +1,7 @@
 {
  "aba": "layout etapas 6 e 7",
  "ramo": "layout-etapas4a7-2026-10-19",
- "commit": "448299e",
+ "commit": "f963cfd",
  "montado_em": "21/10/2026",
  "nota_para_a_gerente": "Prints da janela de verdade (1600 x 821), tirados e abertos por mim em 21/10. Não publicado.",
  "ressalvas": [
@@ -9,8 +9,7 @@
   "Não está como no desenho: 804 B, o aviso de livro novo (\"ainda não passou pelo automático\"): o livro ainda não abre direto na tela de trabalho.",
   "Não está como no desenho: Configurações sem as partes \"Para todos os livros\" e \"Lado direito\" (não existem ainda).",
   "Tela cheia dos filtros: o ajuste mexido ali mostra só o filtro (sem \"Só as letras\") até \"Usar\"; o antes e depois não aproxima.",
-  "Livro aberto, uma página por vez: a página sai borrada; lado a lado sai nítida.",
-  "\"Todas as páginas\": melhorou, mas ainda um pouco macia."
+  "\"Todas as páginas\": continua mole depois do acerto f963cfd (a página é reduzida ao tamanho lógico antes de pintar, e a escala de 125% do Windows a aumenta de novo)."
  ],
  "quadros": [
   {
@@ -89,15 +88,14 @@
      "legenda": "Ampliado: \"Ver lado a lado\" ligado"
     },
     {
-     "src": "img/c67-M02-livro-aberto-inteira.jpg",
-     "legenda": "O livro aberto (uma página por vez)"
+     "src": "img/c67-M13-livro-aberto-nitido-inteira.jpg",
+     "legenda": "O livro aberto, uma página por vez (nítida, depois do acerto f963cfd)"
     },
     {
      "src": "img/c67-mais.jpg",
      "legenda": "O menu \"Mais…\""
     }
-   ],
-   "ressalva": "Na vista de uma página por vez, a página sai borrada (aumentada de uma imagem pequena); lado a lado sai nítida."
+   ]
   },
   {
    "id": "l67-acertos",
@@ -108,18 +106,18 @@
    ],
    "olhar": "\"Melhorar\" inteiro na fila; as páginas da grade.",
    "decisao_do_samuel": "907 (20/10): \"B — “o do Editor”\".",
-   "bate_com_a_decisao": "sim (a grade ainda um pouco macia)",
+   "bate_com_a_decisao": "em parte: a grade continua mole",
    "imgs": [
     {
      "src": "img/c67-melhorar.jpg",
      "legenda": "Ampliado: a fila com \"Melhorar\" inteiro"
     },
     {
-     "src": "img/c67-M12-todas-as-paginas-inteira.jpg",
-     "legenda": "\"Todas as páginas\" depois do acerto"
+     "src": "img/c67-M15-todas-30s-inteira.jpg",
+     "legenda": "\"Todas as páginas\" no f963cfd"
     }
    ],
-   "ressalva": "A grade de \"Todas as páginas\" melhorou, mas ainda não fica bem nítida."
+   "ressalva": "A grade de \"Todas as páginas\" continua mole mesmo depois do acerto f963cfd: a página é desenhada no tamanho certo (197 pontos), mas ao pintar ela é reduzida para 150 e aumentada de novo pela escala do Windows (125%)."
   }
  ],
  "opcoes_de_cada_quadro": [
