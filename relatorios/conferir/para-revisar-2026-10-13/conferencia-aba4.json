@@ -3,17 +3,14 @@
  "id_da_decisao": "pr",
  "titulo_da_aba": "4. Para revisar: os avisos com botão",
  "ramo": "fase2-para-revisar",
- "commit": "ce2b835",
- "montado_em": "20/10/2026",
- "pode_publicar": false,
+ "commit": "adf4e69 (juntado ao layout aprovado)",
+ "montado_em": "21/10/2026",
+ "pode_publicar": true,
  "antes_de_publicar": [
-  "NÃO publicar esta aba como está. Todas as fotos da janela são da tela de antes do layout que o Samuel aprovou e que está no fase-1 desde 14/10 (sem abas, painel \"Para revisar\" na coluna da direita com \"Por página | Por motivo\", \"daqui em diante\" no lugar de \"só nas próximas\"). É o mesmo erro de 09 e 12/10.",
-  "O ramo fase2-para-revisar (ce2b835) não se junta ao fase-1 (b8e9af7) sem conflito: `git merge-tree` dá conflito em ui/tela_conferir.py e ui/widgets/paineis.py, exatamente onde ficam os avisos e o painel. Quem resolve é o implementador (o verificador não mexe em ui/).",
-  "Depois da junção: os textos novos dos avisos ainda dizem \"aba Marcar\" e \"aba Bordas\" (core/analise.py do ramo); o layout já trocou \"aba Endireitar\" por \"ferramenta Endireitar\" e \"programa\" por \"Editor\". Acertar as palavras novas antes das fotos.",
-  "Depois da junção, o verificador refaz na janela as fotos marcadas \"tela antiga\" e troca as \"desatualizadas\" (quadro pr-esta-bom), com os mesmos recortes (scripts/a4_recortes.py), e confere de novo as 89 páginas (a junção mexe na tela que pede a medida).",
-  "O Cursus 3 e o Antiphon 260 dependem do conserto do corte com borda preta (outro ramo, decisão cg6 ainda aberta): se ele entrar antes, as fotos desses dois quadros mudam.",
-  "Podem ir já, se a gerente quiser separar: as três perguntas (\"Quando medir\", \"As contagens\", \"A tela igual ao PDF\") falam de comportamento, não de aparência. Só a foto do painel na pergunta das contagens é da tela antiga (o painel novo pode contar diferente: conferir depois da junção).",
-  "Cada quadro precisa da opção \"Ainda não entendi\" ao lado de \"Está bom / Melhorar / Está pior\" (as abas 2 e 3 só têm as três)."
+  "As fotos são da tela nova (layout aprovado, no ramo desde a junção do implementador; código adf4e69), tiradas por mim na janela de verdade em 20 e 21/10 e abertas uma a uma.",
+  "Fora da tela nova ficaram só o Cursus 3 e o Antiphon 260: dependem do conserto do corte (f418cc3), que entrou no fase-1 e ainda não está neste ramo. Publicar com esses dois marcados, ou esperar a próxima junção.",
+  "O texto do aviso de marcar vai mudar para \"diz onde fica o letra e traço\" (r14-aviso-marcar, \"C\" em 20/10), ainda não aplicado: as fotos mostram o texto de hoje.",
+  "As perguntas de baixo ficaram com as fotos da primeira conferência (falam de comportamento). Os números da pergunta \"As contagens\" mudaram na tela nova (ver o parecer)."
  ],
  "resumo": {
   "titulo": "O que aconteceu e o que eu achei",
@@ -32,7 +29,7 @@
    "explicacao": [
     "O que você está escolhendo: se o aviso da letra grande que some ficou como você pediu na rodada 5.",
     "Caso real: no Antiphonal 46 o Preto e branco apaga a letra T vermelha. O programa avisa, desenha um quadrado laranja em volta do T e mostra o botão \"Trazer de volta nesta página\". Um clique e a página guarda tudo de novo; o Ctrl+Z desfaz.",
-    "O que ficou diferente do que você pediu: você escreveu \"onde sumiu, tem que aparecer selecionado automaticamente, como na opção 3\". O quadrado laranja mostra o lugar, mas é só um desenho por cima, como um post-it: não é uma marcação da aba Marcar que dá para aumentar ou diminuir, e o botão traz de volta a página inteira, não só o T."
+    "O que ficou diferente do que você pediu: você escreveu \"onde sumiu, tem que aparecer selecionado automaticamente, como na opção 3\". O quadrado laranja mostra o lugar, mas é só um desenho por cima, como um post-it: não é uma marcação da ferramenta Marcar que dá para aumentar ou diminuir, e o botão traz de volta a página inteira, não só o T."
    ],
    "olhar": "O quadrado laranja em volta do T, nos dois cartões, e o botão \"Trazer de volta nesta página\".",
    "texto": "O aviso aparece sozinho uns 8 segundos depois de chegar na página. O botão troca só essa página para \"Guardar tudo\", o aviso some e a página sai da lista. O Ctrl+Z desfaz.",
@@ -43,19 +40,19 @@
    "bate_com_a_decisao": "em parte: o botão sim; o lugar aparece marcado, mas não como uma seleção que se ajusta",
    "imgs": [
     {
-     "src": "img/a4-letra-t.jpg",
-     "legenda": "Ampliado: o T no Original (vermelho) e no Preto e branco, com o quadrado laranja",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-letra-t.jpg",
+     "legenda": "Ampliado: os cinco cartões com o quadrado laranja no T, o aviso e os botões na faixa",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/letra-t-1-aviso-recorte.jpg",
-     "legenda": "Os cartões, o aviso e os dois botões",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-letra-t-marcar.jpg",
+     "legenda": "Ferramenta Marcar: o quadrado laranja tracejado em volta do T",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/letra-t-3-trazer-de-volta-recorte.jpg",
-     "legenda": "Depois de \"Trazer de volta nesta página\": \"Guardar tudo\" ligado, aviso e marca sumiram",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-letra-t-depois.jpg",
+     "legenda": "Depois de \"Trazer de volta nesta página\": \"Guardar tudo\", aviso e marca sumiram; o painel diz \"nada pendente\"",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -76,14 +73,9 @@
    "bate_com_a_decisao": "não se aplica",
    "imgs": [
     {
-     "src": "img/tela-engana-1-comparacao.jpg",
-     "legenda": "Ampliado: o mesmo pedaço da página 46, na tela (com o T) e no PDF (sem o T)",
-     "situacao": "vale"
-    },
-    {
-     "src": "img/tela-engana-3-pagina-do-pdf.jpg",
-     "legenda": "A página inteira tirada do PDF: no lugar do T sobrou um tracinho",
-     "situacao": "vale"
+     "src": "img/a4n-ver-de-perto.jpg",
+     "legenda": "Tela nova, \"Ver de perto\" do Preto e branco: o T ainda aparece inteiro (no PDF ele some)",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -104,14 +96,14 @@
    "bate_com_a_decisao": "em parte: o botão sim; a marca é a página inteira, não as pautas",
    "imgs": [
     {
-     "src": "img/a4-so-o-texto.jpg",
-     "legenda": "Ampliado: Original e Preto e branco sem a música, o contorno laranja, o aviso e os botões",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-so-o-texto.jpg",
+     "legenda": "Ampliado: Graduale 222 em \"Guardar só o texto\", a música some, o contorno laranja e o aviso",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/so-o-texto-3-trazer-de-volta-recorte.jpg",
-     "legenda": "Depois do botão: a música voltou e o aviso sumiu",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-so-o-texto-depois.jpg",
+     "legenda": "Depois do botão: a música voltou (\"Guardar a tinta forte\") e o aviso sumiu",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -132,24 +124,24 @@
    "bate_com_a_decisao": "sim (com um botão a mais, \"está bom assim\")",
    "imgs": [
     {
-     "src": "img/a4-sem-conteudo.jpg",
+     "src": "img/a4n-sem-conteudo.jpg",
      "legenda": "Ampliado: Egenloff 12, o aviso e os três botões",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/sem-conteudo-3-deixar-em-branco-recorte.jpg",
+     "src": "img/a4n-deixar-em-branco.jpg",
      "legenda": "Depois de \"Deixar em branco\": folha branca no lugar e o botão \"voltar a página\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/sem-conteudo-4-tirar-do-livro-recorte.jpg",
+     "src": "img/a4n-tirar-do-livro.jpg",
      "legenda": "Depois de \"Tirar do livro\": a página 12 fica apagada na tira e o botão vira \"restaurar página\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/sem-conteudo-5-rariora-recorte.jpg",
+     "src": "img/a4n-rariora-8.jpg",
      "legenda": "Rariora 8: o mesmo aviso, com os três botões",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -170,14 +162,9 @@
    "bate_com_a_decisao": "sim (o aviso errado na Gladstone 18 é bug à parte)",
    "imgs": [
     {
-     "src": "img/a4-parece-em-branco.jpg",
-     "legenda": "Ampliado: o aviso \"Parece em branco\" e os três botões",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
-    },
-    {
-     "src": "img/parece-em-branco-3-a-pagina.jpg",
-     "legenda": "A página: tem o título \"DA ORAÇÃO\"",
-     "situacao": "vale"
+     "src": "img/a4n-gladstone-18.jpg",
+     "legenda": "Gladstone 18: \"Parece em branco\" numa página com o título \"DA ORAÇÃO\"",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -198,24 +185,24 @@
    "bate_com_a_decisao": "sim, com o limite de 4 linhas (decisão técnica da gerente, a confirmar com você)",
    "imgs": [
     {
-     "src": "img/a4-forca-sozinha.jpg",
-     "legenda": "Ampliado: o aviso, o medidor em \"bem forte\" e os botões \"Desfazer\" e \"está bom assim\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-forca-sozinha.jpg",
+     "legenda": "Camões 27: o aviso, o botão \"Desfazer\" e a força em \"bem forte\"",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/forca-3-desfazer-recorte.jpg",
+     "src": "img/a4n-forca-desfazer.jpg",
      "legenda": "Depois do \"Desfazer\": força normal e o aviso \"Texto falhado\" com \"usar mais escuro\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/forca-7-egenloff-3-forca-85-recorte.jpg",
+     "src": "img/a4n-egenloff-3-escuro.jpg",
      "legenda": "Egenloff 3 depois de \"usar mais escuro\": o botão sumiu, fica \"está bom assim\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/forca-5-caixinha-recorte.jpg",
-     "legenda": "A caixinha \"Escurecer sozinho a força do preto quando o texto sair falhado\"",
-     "situacao": "vale"
+     "src": "img/a4n-caixinha.jpg",
+     "legenda": "Tela \"O que fazer\": a caixinha \"Escurecer sozinho a força do preto...\", logo abaixo do \"Só as letras\"",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -236,14 +223,9 @@
    "bate_com_a_decisao": "sim",
    "imgs": [
     {
-     "src": "img/a4-palatino-66.jpg",
-     "legenda": "Ampliado: o aviso \"Texto falhado\", a força em \"normal\" e os botões",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
-    },
-    {
-     "src": "img/palatino-66-1-pagina-recorte.jpg",
-     "legenda": "Como saía na primeira versão, com a força escurecida sozinha (moldura suja)",
-     "situacao": "vale"
+     "src": "img/a4n-palatino-66.jpg",
+     "legenda": "Palatino 66: o aviso \"Texto falhado\", força normal, os botões",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -257,21 +239,26 @@
    ],
    "olhar": "As linhas \"Página N - motivo\" e os botões \"ver\" e \"continuar assim mesmo\".",
    "texto": "Fechar no X não processa.",
-   "ressalva": "A lista junta os avisos novos com os de sempre, e mistura \"Folha N\" com \"Página N\" (no Camões: 104 linhas, 4 da regra nova). Só mostra as páginas já visitadas: é a pergunta \"Quando medir\".",
+   "ressalva": "A lista junta os avisos novos com os de sempre; agora toda linha diz \"Página N\" (antes misturava \"Folha N\"). Só mostra as páginas já visitadas: é a pergunta \"Quando medir\".",
    "tipo": "misto",
    "selo": "funciona; contagens em pergunta",
    "decisao_do_samuel": "rv5-aviso-so-texto (08/10): \"Lista as páginas e os motivos\"; rv4-aviso-so-texto: \"quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas e a pessoa diz se quer ver ou continuar\".",
    "bate_com_a_decisao": "sim",
    "imgs": [
     {
-     "src": "img/a4-antes-de-processar.jpg",
-     "legenda": "Ampliado: a frase nova e as linhas da lista (Camões)",
-     "situacao": "vale"
+     "src": "img/a4n-antes-de-processar.jpg",
+     "legenda": "Camões: a lista agora só fala em \"Página N\" (100 linhas)",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/antes-5-ficou-pronto-tela.jpg",
-     "legenda": "Depois de \"continuar assim mesmo\": \"Ficou pronto!\"",
-     "situacao": "vale"
+     "src": "img/a4n-confirmar.jpg",
+     "legenda": "Depois de \"continuar assim mesmo\": a janela de salvar",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "img/a4n-ficou-pronto.jpg",
+     "legenda": "\"Ficou pronto!\" (livro de 4 páginas, todas com aviso)",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -285,26 +272,31 @@
    ],
    "olhar": "O número do painel \"Para revisar\" descendo em cada nível.",
    "texto": "Um motivo de uma página: de 31 para 30 avisos. Um motivo em todas: de 31 para 6. Em tudo: \"tudo certo\". Na lista grande, duas linhas marcadas: de 31 para 29.",
-   "ressalva": "Os botões \"ver a lista…\" e \"está bom em tudo\" ficam no fim do painel e só aparecem rolando a coluna da direita.",
+   "ressalva": "\"está bom em tudo\" vira DUAS ações no Ctrl+Z (páginas e folhas): um Ctrl+Z só desfaz metade; no Camões o contador voltou de \"tudo certo\" para 35, e só o segundo Ctrl+Z trouxe os 98 (Lista de bugs).",
    "tipo": "melhor",
-   "selo": "funciona; FOTOS A TROCAR",
+   "selo": "funciona; Ctrl+Z em dois passos",
    "decisao_do_samuel": "rv4-aviso-so-texto: \"Eu tenho que conseguir fazer isso com uma pagina individual, com um motivo individual de uma pagina e com todas as paginas ou com todos os motivos de todas as paginas, e eu devo conseguir abrir um selecionador em aba grande [...] quando eu resolver aquele problema, o programa já vai automaticamente ver que eu resolvi?\"",
    "bate_com_a_decisao": "sim",
    "imgs": [
     {
-     "src": "img/esta-bom-4-seletor.jpg",
-     "legenda": "A lista grande com duas linhas marcadas",
-     "situacao": "desatualizada: mostra o que o programa já não faz; trocar antes de publicar"
+     "src": "img/a4n-painel-por-motivo.jpg",
+     "legenda": "O painel novo \"Para revisar\", em \"Por motivo\" (Camões)",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/esta-bom-2-motivo-em-todas-tela.jpg",
-     "legenda": "Depois de \"está bom: todas\" no motivo do endireitar",
-     "situacao": "desatualizada: mostra o que o programa já não faz; trocar antes de publicar"
+     "src": "img/a4n-esta-bom-todas.jpg",
+     "legenda": "Depois de \"está bom: todas\" no motivo do endireitar: sobra 1",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/esta-bom-3-em-tudo-tela.jpg",
-     "legenda": "Depois de \"está bom em tudo\": nenhuma página marcada na tira",
-     "situacao": "desatualizada: mostra o que o programa já não faz; trocar antes de publicar"
+     "src": "img/a4n-esta-bom-em-tudo.jpg",
+     "legenda": "Depois de \"está bom em tudo\": \"nada pendente\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "img/a4n-seletor.jpg",
+     "legenda": "\"ver a lista…\": a lista grande com duas linhas marcadas",
+     "situacao": "tela nova (21/10)"
     }
    ],
    "nota_para_a_gerente": "As quatro fotos deste quadro são da primeira conferência e mostram o Egenloff 3 com a força escurecida sozinha (\"bem forte\", \"Força do preto escurecida\" na lista) e, na esta-bom-1, o botão \"usar mais escuro\" com a força já em \"bem forte\". Os dois mudaram no ce2b835: o Egenloff 3 fica só com o aviso. Refazer no programa juntado."
@@ -326,9 +318,9 @@
    "bate_com_a_decisao": "em parte: 22 vão e 75 certas, contra 21 e 78 aprovados",
    "imgs": [
     {
-     "src": "img/a4-janela-diferente.jpg",
-     "legenda": "Ampliado: Graduale 221 na janela, sem aviso",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-janela-diferente.jpg",
+     "legenda": "Graduale 221 na tela nova: nenhum aviso",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -349,14 +341,9 @@
    "bate_com_a_decisao": "sim (o aviso vale; o conserto da foto é o 1.5)",
    "imgs": [
     {
-     "src": "img/a4-opus-20.jpg",
-     "legenda": "Ampliado: a página no livro e no PDF que o programa gerou",
-     "situacao": "vale"
-    },
-    {
-     "src": "img/r3-opus-20-tela.jpg",
-     "legenda": "A janela: o aviso \"Figura além da gravura\" e, no cartão do Preto e branco, a estátua já estragada",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-opus-20.jpg",
+     "legenda": "Opus Majus 20 na tela nova: o aviso \"Figura além da gravura\"",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -379,12 +366,12 @@
     {
      "src": "img/a4-cursus-3.jpg",
      "legenda": "Ampliado: Original e Preto e branco com a faixa preta à direita, e o aviso",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
     },
     {
      "src": "img/cursus-3-1-pagina-recorte.jpg",
      "legenda": "A página como sai em Preto e branco, de perto",
-     "situacao": "vale"
+     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
     }
    ]
   },
@@ -407,17 +394,17 @@
     {
      "src": "img/a4-antiphon-260.jpg",
      "legenda": "Ampliado: Original e Preto e branco (iluminura chapada), e o único aviso",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
     },
     {
      "src": "img/antiphon-260-1-pagina-recorte.jpg",
      "legenda": "A página como sai em Preto e branco, de perto (primeira conferência)",
-     "situacao": "vale"
+     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
     },
     {
      "src": "img/r3-antiphon-260-tela-depois.jpg",
      "legenda": "A tela inteira depois de visitar outras páginas: a frase do livro meio escondida no alto do painel",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "situacao": "tela antiga: o conserto do corte (f418cc3) entrou no fase-1 e ainda não está neste ramo; refazer depois"
     }
    ]
   },
@@ -438,9 +425,9 @@
    "bate_com_a_decisao": "não (depende do 2.13, como está no plano)",
    "imgs": [
     {
-     "src": "img/a4-camoes-66.jpg",
-     "legenda": "Ampliado: Original e Preto e branco com as linhas finas nas beiradas, e o único aviso",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-camoes-66.jpg",
+     "legenda": "Camões 66 na tela nova: só o aviso do endireitar, nada sobre as linhas da beirada",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -448,12 +435,12 @@
    "id": "pr-marcar-sozinha",
    "nome": "Aba Marcar: as áreas se acertam sozinhas",
    "explicacao": [
-    "O que você está escolhendo: se está bom as áreas da aba Marcar mudarem sozinhas alguns segundos depois de chegar numa página.",
-    "Caso real: no Graduale 221 a aba Marcar mostra 9 áreas ao chegar; uns 10 segundos depois, o programa troca por 18, achadas na página do tamanho do PDF. É como um rascunho que é passado a limpo sem ninguém pedir.",
+    "O que você está escolhendo: se está bom as áreas da ferramenta Marcar mudarem sozinhas alguns segundos depois de chegar numa página.",
+    "Caso real: no Graduale 221 a ferramenta Marcar mostra 9 áreas ao chegar; uns 10 segundos depois, o programa troca por 18, achadas na página do tamanho do PDF. É como um rascunho que é passado a limpo sem ninguém pedir.",
     "Uma área marcada à mão nesse intervalo continuou lá depois da troca. Nada avisa que o programa ainda está procurando."
    ],
    "olhar": "As áreas azuis (letra) e verdes (papel) antes e depois.",
-   "texto": "Só acontece uma vez por página.",
+   "texto": "Na tela nova continua igual: a página chega com a marcação da prévia e, segundos depois, se acerta sozinha (Graduale 223: 9 áreas, 13 s depois 10; Graduale 221: 18 áreas ao fim). O retângulo marcado à mão no meio continua.",
    "ressalva": "Não testei apagar ou mexer numa área do programa nesse intervalo, só marcar uma nova.",
    "tipo": "misto",
    "selo": "novo, para saber",
@@ -461,14 +448,14 @@
    "bate_com_a_decisao": "não se aplica",
    "imgs": [
     {
-     "src": "img/marcar-1-antes-e-depois.jpg",
-     "legenda": "Ampliado: Graduale 221 na aba Marcar, ao chegar e 10,7 segundos depois",
-     "situacao": "vale"
+     "src": "img/a4n-marcar-sozinha.jpg",
+     "legenda": "Graduale 223, ferramenta Marcar: ao chegar (9 áreas) e 13 s depois (10 áreas)",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/marcar-4-a-mao-recorte.jpg",
-     "legenda": "Página 5: o retângulo marcado à mão continuou depois do acerto",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-marcar-a-mao.jpg",
+     "legenda": "Graduale 224: o retângulo marcado à mão antes do acerto (em rosa) continuou depois",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -488,14 +475,9 @@
    "bate_com_a_decisao": "não se aplica",
    "imgs": [
     {
-     "src": "img/a4-duplo-clique.jpg",
-     "legenda": "Ampliado: depois dos dois cliques, o aviso e os botões continuam",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
-    },
-    {
-     "src": "img/duplo-clique-2-ver-de-perto.jpg",
-     "legenda": "O \"Ver de perto\" que os dois cliques abrem",
-     "situacao": "vale"
+     "src": "img/a4n-duplo-clique.jpg",
+     "legenda": "Depois dos dois cliques no cartão (abre o \"Ver de perto\"): o aviso e os botões continuam",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -508,7 +490,7 @@
     "A seta para a direita só troca de página quando o teclado não está na tira de miniaturas nem no medidor da força: esses dois usam a seta (a tira rola; o medidor muda a força do preto daquela página). Isso já era assim no programa de hoje."
    ],
    "olhar": "Depois de \"Deixar em branco\" e da barra de espaço, o programa passou para a página 13.",
-   "texto": "Com Tab, 40 vezes, o foco nunca parou num botão do aviso.",
+   "texto": "Depois de clicar em \"está bom assim\" o botão não fica com o teclado (nenhum widget com o foco), e a barra de espaço faz \"está certo e avança\": a página 12 ficou conferida e a 13 escolhida.",
    "ressalva": "A seta foi conferida na janela de teste, que nunca fica ativa, e pelo código (a tecla vai primeiro para quem está com o teclado). A conclusão não depende da janela estar ativa, mas não testei com o teclado de verdade.",
    "tipo": "misto",
    "selo": "espaço sim; seta como antes",
@@ -516,9 +498,9 @@
    "bate_com_a_decisao": "não se aplica",
    "imgs": [
     {
-     "src": "img/a4-teclado.jpg",
-     "legenda": "Ampliado: depois da barra de espaço, a página 13 escolhida na tira",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-teclado.jpg",
+     "legenda": "Depois de \"está bom assim\" e da barra de espaço: a página 12 conferida e a 13 escolhida",
+     "situacao": "tela nova (21/10)"
     }
    ]
   },
@@ -530,7 +512,7 @@
     "Caso real: um projeto do programa de hoje, com o aviso antigo \"Tinta forte fora do texto\" em 8 páginas, aberto no programa novo. Abriu em 7 segundos, o aviso antigo sumiu sozinho e os avisos novos vieram ao visitar cada página. A força sozinha vem desligada nesses livros."
    ],
    "olhar": "No programa novo, a página 3 mostra \"Texto falhado\" com a força em \"normal\".",
-   "texto": "O erros.log ficou vazio.",
+   "texto": "Projeto feito agora com o código do fase-1 (b6fd091) e aberto no ramo: abre direto, a força do preto sozinha fica desligada (força 50 em todas) e os avisos novos aparecem ao visitar a página. A prova por soma (abaixo) mostra que o PDF sai igual.",
    "ressalva": "O projeto salvo ganhou campos novos, todos com valor padrão. Projeto de antes de 09/10 não foi conferido (só existe na sua pasta de dados).",
    "tipo": "igual",
    "selo": "abre igual",
@@ -538,14 +520,14 @@
    "bate_com_a_decisao": "não se aplica",
    "imgs": [
     {
-     "src": "img/a4-projeto-antigo.jpg",
-     "legenda": "Ampliado: no programa novo, \"Texto falhado\" e a força em \"normal\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-antigo-no-fase1.jpg",
+     "legenda": "Projeto feito no programa de hoje (fase-1): Egenloff 12 sem aviso",
+     "situacao": "tela nova (21/10)"
     },
     {
-     "src": "img/antigo-1-no-programa-de-hoje-recorte.jpg",
-     "legenda": "O mesmo projeto no programa de hoje: o aviso antigo \"Tinta forte fora do texto\"",
-     "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+     "src": "img/a4n-antigo-no-ramo.jpg",
+     "legenda": "O mesmo projeto no ramo: os avisos novos aparecem e a força continua normal (a força sozinha fica desligada)",
+     "situacao": "tela nova (21/10)"
     }
    ]
   }

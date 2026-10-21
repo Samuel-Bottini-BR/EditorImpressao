@@ -1,39 +1,16 @@
 # Segunda conferência do "Para revisar": onde parei
 
-## 20/10/2026, noite: refazer a aba 4 na tela nova (PARADO a pedido da gerente, PC livre para a suíte)
+## 21/10/2026: aba 4 refeita na tela nova - TERMINADA (falta só o Cursus 3 e o Antiphon 260, que dependem do corte)
 
-Pedido da gerente: refazer as fotos e a conferência da aba 4 com o layout juntado (`fase2-para-revisar`, código
-`adf4e69`; `41343ac` só acrescenta relatório), conferir os 3 testes de reversão e a prova "sai igual" (64/64).
-Esta worktree recebeu `origin/fase2-para-revisar` por merge (`d7e3a2c`): o código daqui = `adf4e69`.
-
-- [x] **Testes de reversão** (`tests/test_reversao_para_revisar.py`): no `adf4e69`, 3 passaram; numa cópia do
-      `ce2b835` (worktree `pr-antigo`, com o arquivo de teste copiado), 3 falharam pelos motivos certos (lista com
-      "Folha 1/Folha 2"; `avisos.onde_no_livro` não existe; texto "Confira na aba Marcar").
-- [ ] **"Sai igual" refeito por mim** (`scripts/rodar_sai_igual.sh`, cópia do roteiro do implementador em
-      `scripts/sai_igual_copia_do_implementador.py`; fase-1 = worktree `fase1-b6fd091`; saída em `trabalho/sai-igual/`).
-      PARADO depois da análise: os 64 projetos do fase-1 estão em `trabalho/sai-igual/projetos/`; o processar (fase-1 e ramo) não chegou a gravar somas. Para retomar:
-      `sh scripts/rodar_sai_igual.sh` (pula o que já fez). O resultado do implementador (64/64; uma diferença da
-      Horas 11 no próprio fase-1) eu só li, não confirmei.
-- [ ] **Fotos na tela nova** (`scripts/n.py`: ajudantes da tela sem abas; `n.clicar_print(x, y)` clica no ponto do
-      print, que tem 40 pontos de barra de título; pasta de dados `trabalho/dados_teste4`; prints em `trabalho/prints/n*.png`).
-      Feitas (todas abertas e conferidas por mim):
-      - Antiphonal 46 (pedaço 44a49, página 3), ferramenta Filtro (◐ da esquerda): `n04` aviso, marca laranja nos 5
-        cartões, "Trazer de volta nesta página" / "está bom assim" na faixa; `n05`-`n07` dois cliques no cartão abrem o
-        "Ver de perto" (`n06`) e o aviso continua, sem ação no histórico; `n08` painel "Para revisar" (⚠ da direita):
-        "Página 3 / Desenho apagado" (o texto do item sai cortado na 2ª linha: anotar); `n09` depois do botão: "Guardar
-        tudo", aviso e marca somem, "nada pendente"; Ctrl+Z volta o aviso; `n10` ferramenta Marcar: retângulo laranja
-        tracejado no T.
-      - Graduale 221 (pedaço 219a225, página 3), ferramenta Marcar: ao chegar, 0 áreas (`n11`); a medida chegou em 18 s
-        e ficaram 18 áreas (7 letra, 11 papel) (`n12`). **Ainda não abri `n11` e `n12`.**
-      Faltam: Graduale 222 com "Guardar só o texto"; Egenloff 12 (3 botões, "Deixar em branco", "Tirar do livro"), Egenloff 3
-      ("usar mais escuro"), teclado (barra de espaço, página 13); Rariora 8; Gladstone 18; Camões 27 (força sozinha,
-      "Desfazer"), Camões 66, a caixinha da força em "O que fazer"; "Antes de processar" e "Ficou pronto!" (Camões: as
-      linhas agora dizem "Página N"); "está bom" nos 4 níveis com o painel novo; Palatino 66; Opus Majus 20; Cursus 3;
-      Antiphon 260; projeto antigo. Depois: recortes novos (os de `a4_recortes.py` têm coordenadas da tela velha),
-      quadros contra as decisões, e trocar a frase do aviso de marcar quando o "letra e traço" (r14, "C") entrar.
-- Fechei o programa e os processos da prova antes de parar. Próximos itens da gerente, ainda não começados:
-  2.9 (`0f4ee58`, Horas p. 187) e a Parte 1 da caixa do conteúdo (`b63b3d8`).
-
+Código conferido: `adf4e69` (esta worktree, merge `d7e3a2c`).
+- Reversão: 3 passam no `adf4e69`; 3 falham no `ce2b835` pelos motivos certos.
+- "Sai igual" refeito por mim (`scripts/rodar_sai_igual.sh`; somas em `sai-igual-verificador/`): **64 de 64 iguais**, forças iguais,
+  força sozinha desligada em todas; e minhas 64 somas do ramo batem com as do implementador.
+- Fotos: prints `trabalho/prints/n*.png` (todos abertos), recortes `img/a4n-*.jpg` (`scripts/a4n_recortes.py`), aba montada por
+  `scripts/aba4_tela_nova.py` (base: `scripts/aba4_base_20-10.json`) -> `conferencia-aba4.json/.md/.html/.pdf`.
+- Achados novos: "está bom em tudo" = 2 passos no Ctrl+Z; rodapé "N com dúvida" atrasado um passo; texto do item do painel cortado;
+  4 números diferentes no Camões (botão 98 páginas, painel 35, lista 74 páginas/100 avisos, rodapé 33). A janela de teste sumiu uma vez
+  (Egenloff, ao clicar "Deixar em branco"), sem nada no erros.log; reaberta, o mesmo clique funcionou.
 
 ## Retomada de 20/10/2026 (verificador, a pedido da gerente) - TERMINADA
 
