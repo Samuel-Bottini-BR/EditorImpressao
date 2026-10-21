@@ -39,3 +39,7 @@ de apoio em `.github/`.
   **SÓ DE TESTE, NUNCA JUNTAR.** Única mudança: `time.sleep(0.7)` por página em Mágico pro no laço do processar
   (`core/pipeline.py`, `_escrever_as_paginas`, comentado "TESTE"). Esperado: Mágico pro ~+10%, o resto igual.
 - Rodada 39472021616 (3bdbab3 -> teste-filtro-lento-2026-10-20), disparada 18:07 UTC.
+- **Resultado (20/10):** rodada 39472021616 -> "parece mais lento: Magico pro +9,5%" (71,4 -> 78,2 s; pares +6,7/+6,8/+7,5 s,
+  esperado +7 s); abrir, trocar de pagina e Preto e branco: igual. Controle positivo PASSOU.
+- Rodada inteira de conferencia do 7e3a006 (39471738696, 1d37f8f -> 3bdbab3): igual (todas abaixo de 1,2%).
+- Trabalho entregue. O ramo `teste-filtro-lento-2026-10-20` fica no GitHub so como prova: NUNCA juntar.
