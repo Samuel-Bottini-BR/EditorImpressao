@@ -19,7 +19,7 @@ Ordem (D1 de 02/10, depois a lista da gerente): 2.8 → 2.9 → 2.11 → 2.15 �
 | 2.9 claro no escuro | **entregue à gerente** | `4cec7a9` (core), `0f4ee58` (tela) | 39470347203: 2097 passaram, 0 falharam; botões 221 ações, 0 falhas |
 | 2.11 cores | **entregue à gerente** | `b7dcc14`, `40a5ce1` (core), `02c2cea` (tela) | 39474481779: 2109 passaram, 0 falharam; botões 221, 0 falhas |
 | 2.15 páginas diferentes | **entregue à gerente** (limiar de 1° da gerente) | `a8b1b2e`, `ebe017e` | 39553730620: 2124 passaram, 0 falharam; botões 221, 0 falhas |
-| 2.12 desentortar | **em andamento** (21/10, novo implementador) | `e23f63e` (DLL v7), parte 2 (preparo) | |
+| 2.12 desentortar | **em andamento** (21/10, novo implementador) | `e23f63e` (DLL v7), `fa8dd6c` (preparo), `81a950e` (tela) | suíte 39623234116 e velocidade 39623242157 disparadas 15:10 UTC (ler uma vez, no fim) |
 | 2.16 todos os núcleos | não começado | | |
 | 2.19 unidades e perfis | não começado | | |
 | 2.17 iluminação e suavizar | não começado | | |
@@ -129,5 +129,10 @@ O 2.12 ainda não começou no código (só a leitura de onde está o código do 
   Prova de fábrica: `2.12/somas-novo.json` = `2.8/somas-antigo.json` (código `b8e9af7`), 96 de 96.
 - Ressalvas já sabidas: as zonas da aba Marcar não acompanham o desentortar; o "pelas margens" quase não mexe na
   página de mentira (ele usa as beiradas brancas, não as linhas).
-- Falta: controle na tela (commit separado; chave do cache em `ui/tarefas.py`), páginas do acervo com curva,
-  antes/depois, suíte e velocidade no GitHub.
+- Tela `81a950e`: lista "Desentortar perto da lombada" no Propriedades do Endireitar (parte "Só nesta página",
+  abaixo da "Conta"); chave do cache da prévia em `ui/tarefas.py`; linha acrescentada em
+  `Botoes e funcoes para o layout.md`. Teste `tests/test_desentortar_na_tela.py`.
+- GitHub: suíte 39623234116 (ramo, em `81a950e`) e velocidade 39623242157 (`25504fb` x `81a950e`), disparadas
+  21/10 15:10 UTC. Ler o resultado UMA vez, no fim (o GitHub limita consultas).
+- Em andamento: procura de páginas curvas no acervo (`scripts/procurar_paginas_curvas.py`, saída em
+  `relatorios/conferir/fase2-itens/2.12/procura/`, fora do git), depois o antes/depois pelo caminho do programa.
