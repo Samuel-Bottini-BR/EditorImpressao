@@ -136,3 +136,27 @@ O 2.12 ainda não começou no código (só a leitura de onde está o código do 
   21/10 15:10 UTC. Ler o resultado UMA vez, no fim (o GitHub limita consultas).
 - Em andamento: procura de páginas curvas no acervo (`scripts/procurar_paginas_curvas.py`, saída em
   `relatorios/conferir/fase2-itens/2.12/procura/`, fora do git), depois o antes/depois pelo caminho do programa.
+
+## PAUSA do 2.12 (21/10, pedido do Samuel pela gerente) — onde parou exatamente
+
+Feito e enviado: parte 1 `e23f63e` (DLL v7 + módulo + testes), parte 2 `fa8dd6c` (no preparo da página; prova de
+fábrica 96 de 96 iguais ao `b8e9af7`), tela `81a950e` (lista no Propriedades do Endireitar), e o script
+`rodada_gabarito.py` com `--item 2.12` (variantes: Original desligado / automático / pelas margens; Preto e branco
+desligado / automático) — escrito, AINDA NÃO RODADO.
+
+Rodando quando parei (deixado terminar): a procura de páginas curvas no acervo
+(`scripts/procurar_paginas_curvas.py`, passo 5, saída `relatorios/conferir/fase2-itens/2.12/procura/achados.json` +
+40 miniaturas antes|depois, fora do git).
+
+Falta, nesta ordem:
+1. Abrir as 40 miniaturas da procura e escolher 3 a 6 páginas curvas de verdade (e as R5: Graduale 221, Escola 7).
+2. Antes/depois pelo caminho do programa: `rodada_gabarito.py <pid> --item 2.12 --pasta relatorios/conferir/fase2-itens/2.12/imagens`
+   (gabarito) e, para as do acervo, copiar a página para um PDF de rascunho e usar `--pdf`. Abrir todas as imagens.
+3. Ler UMA vez a suíte 39623234116 e a velocidade 39623242157 (`25504fb` x `81a950e`), disparadas 15:10 UTC.
+4. Atualizar `memoria/itens/2.12.md`? (não: é da gerente) — entregar à gerente.
+
+Ressalvas já sabidas: MANUAL (malha) não veio; as zonas da aba Marcar não acompanham o desentortar; o controle só
+existe com "Endireitar" ligado no livro; ligado, o desentortar roda no fio da tela nos cartões/tela ampliada
+(~1 s por página a 300 DPI na página de mentira); "pelas margens" quase não mexe na página de mentira. Pasta de
+rascunho criada fora do projeto: `EditorImpressao-arquivoserramentasuild-st-gravura-fase2-desentortar`
+(teste de compilação da st_gravura; não apaguei, regra 9).

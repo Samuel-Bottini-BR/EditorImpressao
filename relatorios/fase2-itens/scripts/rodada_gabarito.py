@@ -58,6 +58,9 @@ def _registrar_falhas() -> None:
     from core import preto_e_branco_scantailor as pbst
 
     pbst._avisar_uma_vez = lambda motivo, detalhe: FALHAS.append((motivo, detalhe))
+    from core import desentortar_scantailor as ds   # item 2.12
+
+    ds._avisar_uma_vez = lambda motivo, detalhe: FALHAS.append((motivo, detalhe))
 
 
 FONTE = Path(r"C:\Windows\Fonts\segoeui.ttf")
@@ -155,7 +158,19 @@ def variantes_2_11():
             ("Melhorar + Reduzir cores", {"filtro": MELHORAR, "reduzir_cores": True})]
 
 
-ITENS = {"2.8": variantes_2_8, "2.9": variantes_2_9, "2.11": variantes_2_11}
+def variantes_2_12():
+    """Item 2.12: o desentortar do ScanTailor, no Original (só a geometria) e
+    no Preto e branco."""
+    from core.filtros import ORIGINAL, PRETO_E_BRANCO
+
+    return [("Hoje: Original", {"filtro": ORIGINAL, "desentortar": "desligado"}),
+            ("Desentortar automático", {"filtro": ORIGINAL, "desentortar": "automatico"}),
+            ("Desentortar pelas margens", {"filtro": ORIGINAL, "desentortar": "pelas_margens"}),
+            ("Hoje: Preto e branco", {"filtro": PRETO_E_BRANCO, "desentortar": "desligado"}),
+            ("Automático + Preto e branco", {"filtro": PRETO_E_BRANCO, "desentortar": "automatico"})]
+
+
+ITENS = {"2.8": variantes_2_8, "2.9": variantes_2_9, "2.11": variantes_2_11, "2.12": variantes_2_12}
 
 
 # ------------------------------------------------------------------ as imagens
