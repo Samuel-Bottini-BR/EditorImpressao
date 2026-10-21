@@ -10,12 +10,16 @@ import atalhos
 @pytest.fixture(autouse=True)
 def registro_limpo():
     """Cada teste daqui começa com o registro vazio e, no fim, o registro de
-    antes VOLTA (o conftest devolve a cópia; _atalhos_isolados). Antes de
+    antes VOLTA, exato (sem as teclas de mentira registradas aqui). Antes de
     21/10/2026 o registro ficava vazio depois deste arquivo e os testes de
     tela seguintes perdiam as teclas do Cortar (Lista de bugs, 20/10)."""
+    import copy
+
+    antes = copy.deepcopy(atalhos._registro)
     atalhos.limpar_registro_para_teste()
     yield
     atalhos.limpar_registro_para_teste()
+    atalhos._registro.update(antes)        # sem as teclas de mentira daqui
 
 
 def test_registrar_e_ler_a_tecla_atual():

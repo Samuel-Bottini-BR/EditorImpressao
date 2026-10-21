@@ -140,16 +140,18 @@ def _atalhos_isolados():
     (tests/test_atalhos.py, os que redefinem uma tecla) contaminava os que
     vinham depois: na suíte inteira, test_paineis_na_tela via "Espelhado
     (tecla )" (Lista de bugs, 20/10/2026, "teste que depende da ordem").
-    Aqui cada teste começa e termina com uma cópia do registro de antes: o
-    que um teste fizer nele some no fim. Seguro mudar: nada. Arriscado:
-    tirar (volta a depender da ordem)."""
+    Aqui, no fim de cada teste, toda tecla que já existia antes dele volta
+    como estava (inclusive a apagada). As que NASCERAM durante o teste ficam:
+    são as das telas importadas pela primeira vez ali dentro (o import não se
+    repete, e apagá-las deixaria as teclas vazias para sempre). Quem registra
+    teclas de mentira (tests/test_atalhos.py) devolve o registro exato.
+    Arriscado: tirar (volta a depender da ordem)."""
     import copy
 
     import atalhos
 
     antes = copy.deepcopy(atalhos._registro)
     yield
-    atalhos._registro.clear()
     atalhos._registro.update(antes)
 
 
