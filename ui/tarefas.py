@@ -500,7 +500,9 @@ class GerenciadorPrevias(QObject):
             # caixinhas da pagina mudam a previa e os cartoes
             f"{bool(getattr(p, 'claro_no_escuro', False))}:"
             f"{bool(getattr(p, 'letras_com_a_cor', False))}:"
-            f"{bool(getattr(p, 'reduzir_cores', False))}"
+            f"{bool(getattr(p, 'reduzir_cores', False))}:"
+            # item 2.12: o desentortar muda a pagina preparada
+            f"{getattr(p, 'desentortar', 'desligado')}"
         )
 
     # --- uso --------------------------------------------------------------

@@ -147,7 +147,7 @@ from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
 from core import preto_e_branco_scantailor
-from core import claro_no_escuro, cores_scantailor
+from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, jeito_de_dividir,
                            recalcular_divisao)
@@ -1445,6 +1445,23 @@ class TelaConferir(QWidget):
         lista_estreita(self.combo_conta_do_endireitar)
         self.rotulo_angulos_medidos = frase_do_painel("")
         coluna.addWidget(self.rotulo_angulos_medidos)
+
+        # Item 2.12 (regra da Fase 2, 13/10/2026: igual ao ScanTailor,
+        # desligado de fabrica; controle minimo, a aparencia e do agente de
+        # layout): desentortar a pagina curva perto da lombada, SO desta
+        # pagina. Os textos moram em core/desentortar_scantailor.py.
+        ds = desentortar_scantailor
+        coluna.addWidget(risco_do_painel())
+        coluna.addWidget(titulo_de_secao(ds.ROTULO_NA_TELA))
+        self.combo_desentortar = QComboBox()
+        self.combo_desentortar.setFocusPolicy(Qt.NoFocus)
+        for modo in ds.MODOS:
+            self.combo_desentortar.addItem(ds.ROTULOS_NA_TELA[modo], modo)
+        self.combo_desentortar.setToolTip(ds.EXPLICACAO_NA_TELA)
+        self.combo_desentortar.currentIndexChanged.connect(
+            lambda _i: self._mudar_desentortar())
+        coluna.addWidget(self.combo_desentortar)
+        lista_estreita(self.combo_desentortar)
         coluna.addSpacing(6)
         conta_do_livro = endireitar_scantailor.jeito_do_livro(self.projeto)
         coluna.addWidget(self._parte_do_livro(
@@ -3551,6 +3568,11 @@ class TelaConferir(QWidget):
         self.rotulo_conta_do_endireitar.setEnabled(automatico)
         self.rotulo_angulos_medidos.setText(
             texto_dos_angulos_medidos(angulos_medidos(self.projeto, pagina)) if automatico else "")
+        # item 2.12: o desentortar desta pagina (sem sinal: mostrar nao e trocar)
+        self.combo_desentortar.blockSignals(True)
+        self.combo_desentortar.setCurrentIndex(self.combo_desentortar.findData(
+            desentortar_scantailor.modo_da_pagina(pagina)))
+        self.combo_desentortar.blockSignals(False)
 
     @protegido
     def _trocar_conta_do_endireitar(self) -> None:
@@ -3570,6 +3592,26 @@ class TelaConferir(QWidget):
              "revisada": True},
             f"Página {self.indice_pagina + 1}: endireitar pela conta "
             f"“{nome_da_conta(jeito)}”",
+        )
+
+    @protegido
+    def _mudar_desentortar(self) -> None:
+        """Item 2.12: a lista "Desentortar perto da lombada" do Propriedades
+        do Endireitar. Troca o desentortar SO desta pagina, numa acao do
+        desfazer (a previa e refeita). Nada acontece se a pagina ja esta
+        assim (mostrar o valor nunca grava)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        ds = desentortar_scantailor
+        pagina = self.projeto.paginas[self.indice_pagina]
+        modo = ds.modo_valido(self.combo_desentortar.currentData())
+        if modo == ds.modo_da_pagina(pagina):
+            return
+        self._registrar(
+            "mudar_desentortar", "pagina", [self.indice_pagina],
+            {"desentortar": modo},
+            ds.FRASE_DO_DESFAZER.format(pagina=self.indice_pagina + 1,
+                                        estado=ds.ROTULOS_NA_TELA[modo]),
         )
 
     @protegido
