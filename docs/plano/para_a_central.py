@@ -115,6 +115,16 @@ def main() -> None:
 
     docs[("defeitos", "lista")] = {"itens": defeitos(), "atualizado": agora}
 
+    # relatórios de conferência (gerados por central/extrair_conferencia.py), um documento por aba
+    rel_do_trabalho = {}
+    for arq in sorted((AQUI / "central" / "conferencias").glob("*.json")):
+        r = json.loads(arq.read_text(encoding="utf-8"))
+        rel_do_trabalho[r["trabalho"]] = r["id"]
+        docs[("conferencias", r["id"])] = dict(r, atualizado=agora)
+    for (col, i), d in docs.items():
+        if col == "trabalhos" and i in rel_do_trabalho:
+            d["relatorio"] = rel_do_trabalho[i]
+
     docs[("velocidade", "dados")] = dict(fonte["velocidade"], atualizado=agora)
     docs[("geral", "resumo")] = dict(fonte["geral"], atualizado=agora, avisos=avisos)
 

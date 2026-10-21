@@ -3,9 +3,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
 <style>
-  /* Layout: painel de gráfica. Topo com o resumo e o que mudou; abas fixas; cada aba é uma mesa de trabalho.
-     Cores de sentido fixo (verde no programa, azul espera você, âmbar falta melhorar, vermelho sem aprovado, cinza fila);
-     magenta de registro só para estrutura (aba atual, "você está aqui"). */
+  /* Layout: painel de gráfica. Topo curto; abas fixas; "Conferência" com uma aba por relatório.
+     Cores de sentido fixo: verde no programa / respondido, azul espera você, âmbar falta melhorar,
+     vermelho sem aprovado ou pior, roxo em andamento, cinza fila. Magenta de registro só para estrutura. */
   :root {
     --papel: #eef1f4; --folha: #ffffff; --tinta: #18202b; --fraco: #5a6575; --fio: #d3d9e1;
     --magenta: #a8326e; --magenta-suave: #f6e2ec;
@@ -23,12 +23,9 @@
     :root:not([data-theme="light"]) {
       color-scheme: dark;
       --papel: #141920; --folha: #1e252e; --tinta: #e8edf3; --fraco: #a1acba; --fio: #343e4a;
-      --magenta: #e886b6; --magenta-suave: #3a2030;
-      --azul: #5cc0e0; --azul-suave: #173341;
-      --verde: #5fd193; --verde-suave: #18321f;
-      --ambar: #f0b45c; --ambar-suave: #3a2c14;
-      --verm: #f08a82; --verm-suave: #3d1d1b;
-      --roxo: #a99bf0; --roxo-suave: #29244a;
+      --magenta: #e886b6; --magenta-suave: #3a2030; --azul: #5cc0e0; --azul-suave: #173341;
+      --verde: #5fd193; --verde-suave: #18321f; --ambar: #f0b45c; --ambar-suave: #3a2c14;
+      --verm: #f08a82; --verm-suave: #3d1d1b; --roxo: #a99bf0; --roxo-suave: #29244a;
       --cinza: #9aa3ae; --cinza-suave: #2a313a;
       --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
     }
@@ -36,12 +33,9 @@
   :root[data-theme="dark"] {
     color-scheme: dark;
     --papel: #141920; --folha: #1e252e; --tinta: #e8edf3; --fraco: #a1acba; --fio: #343e4a;
-    --magenta: #e886b6; --magenta-suave: #3a2030;
-    --azul: #5cc0e0; --azul-suave: #173341;
-    --verde: #5fd193; --verde-suave: #18321f;
-    --ambar: #f0b45c; --ambar-suave: #3a2c14;
-    --verm: #f08a82; --verm-suave: #3d1d1b;
-    --roxo: #a99bf0; --roxo-suave: #29244a;
+    --magenta: #e886b6; --magenta-suave: #3a2030; --azul: #5cc0e0; --azul-suave: #173341;
+    --verde: #5fd193; --verde-suave: #18321f; --ambar: #f0b45c; --ambar-suave: #3a2c14;
+    --verm: #f08a82; --verm-suave: #3d1d1b; --roxo: #a99bf0; --roxo-suave: #29244a;
     --cinza: #9aa3ae; --cinza-suave: #2a313a;
     --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
   }
@@ -51,93 +45,75 @@
     padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
     padding-block: 0 72px;
   }
-  .miolo { max-width: 1240px; margin: 0 auto; display: grid; gap: 22px; }
+  .miolo { max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
   a { color: var(--azul); }
   :focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
   h1, h2, h3 { text-wrap: balance; }
+  p { margin: 0; }
 
   /* ---- topo */
-  header.topo { padding-block: 26px 0; display: grid; gap: 14px; }
+  header.topo { padding-block: 22px 0; display: grid; gap: 12px; }
   .marca { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--magenta); font-weight: 700; }
-  .marca svg { flex: none; }
-  .topo-linha { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; }
-  h1 { margin: 0; font: 800 clamp(30px, 5vw, 42px)/1.05 var(--fonte-titulo); }
-  .resumo { margin: 0; max-width: 68ch; font-size: 18px; }
-  .atualizado { color: var(--fraco); font-size: 14px; margin: 0; }
+  .topo-linha { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: end; justify-content: space-between; }
+  h1 { margin: 0; font: 800 clamp(28px, 4.4vw, 38px)/1.05 var(--fonte-titulo); }
+  .resumo { max-width: 68ch; font-size: 17px; }
+  .atualizado { color: var(--fraco); font-size: 14px; }
   .links { display: flex; flex-wrap: wrap; gap: 8px; }
   .links a { font-size: 14px; text-decoration: none; border: 1px solid var(--fio); background: var(--folha); padding: 4px 12px; border-radius: 99px; }
-  .links a:hover { border-color: var(--azul); }
-
-  .placar { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-  .placar button { font: inherit; color: var(--tinta); text-align: left; cursor: pointer; border: 1px solid var(--fio); border-radius: 10px;
-    background: var(--folha); padding: 12px 14px; display: grid; gap: 2px; border-top: 4px solid var(--cor, var(--fio)); }
-  .placar button:hover { box-shadow: var(--sombra); }
-  .placar .n { font: 800 30px/1 var(--fonte-titulo); font-variant-numeric: tabular-nums; color: var(--cor); }
-  .placar .r { font-size: 14px; color: var(--fraco); line-height: 1.3; }
-
-  .mudou { background: var(--folha); border: 1px solid var(--fio); border-left: 5px solid var(--magenta); border-radius: 10px; padding: 12px 16px; display: grid; gap: 6px; }
-  .mudou h2 { margin: 0; font: 600 17px/1.2 var(--fonte-titulo); }
-  .mudou ul { margin: 0; padding-left: 20px; display: grid; gap: 3px; }
-  .mudou .quando { color: var(--fraco); font-size: 13px; font-variant-numeric: tabular-nums; }
-  .aviso { background: var(--ambar-suave); padding: 10px 14px; border-radius: 8px; margin: 0; }
+  .placar { display: flex; flex-wrap: wrap; gap: 8px; }
+  .placar button { font: inherit; color: var(--tinta); cursor: pointer; border: 1px solid var(--fio); border-radius: 99px; background: var(--folha);
+    padding: 5px 12px 5px 6px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+  .placar .n { font: 800 14px/1 var(--fonte-titulo); color: #ffffff; background: var(--cor); border-radius: 99px; min-width: 26px; padding: 5px 7px; text-align: center; font-variant-numeric: tabular-nums; }
+  details.mudou { background: var(--folha); border: 1px solid var(--fio); border-left: 5px solid var(--magenta); border-radius: 10px; padding: 10px 14px; }
+  details.mudou > summary { cursor: pointer; font: 600 16px/1.3 var(--fonte-titulo); }
+  details.mudou ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 3px; font-size: 15px; }
+  .quando { color: var(--fraco); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .aviso { background: var(--ambar-suave); padding: 10px 14px; border-radius: 8px; }
 
   /* ---- abas */
   nav.abas { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--papel);
     display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; border-bottom: 2px solid var(--fio); scrollbar-width: thin; }
   nav.abas button { font: 700 15px/1 var(--fonte-texto); color: var(--fraco); background: transparent; border: 0; border-radius: 8px;
-    padding: 10px 14px; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
+    padding: 10px 13px; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
   nav.abas button:hover { background: var(--folha); color: var(--tinta); }
   nav.abas button[aria-selected="true"] { background: var(--tinta); color: var(--papel); }
-  nav.abas .cont { font-size: 12px; background: var(--magenta); color: #ffffff; border-radius: 99px; padding: 2px 7px; }
+  .cont { font-size: 12px; background: var(--magenta); color: #ffffff; border-radius: 99px; padding: 2px 7px; font-variant-numeric: tabular-nums; }
   section.painel { display: grid; gap: 16px; min-width: 0; }
-  section.painel > header h2 { margin: 0; font: 600 26px/1.15 var(--fonte-titulo); }
-  section.painel > header p { margin: 4px 0 0; color: var(--fraco); max-width: 72ch; }
+  section.painel > header h2 { margin: 0; font: 600 25px/1.15 var(--fonte-titulo); }
+  section.painel > header p { margin-top: 4px; color: var(--fraco); max-width: 72ch; }
+  h3.secao { margin: 8px 0 0; font: 600 18px/1.2 var(--fonte-titulo); color: var(--fraco); }
 
   /* ---- botões e selos */
   .bt { font: 700 15px/1.2 var(--fonte-texto); padding: 9px 14px; border-radius: 8px; border: 1px solid var(--fio); background: var(--folha);
     color: var(--tinta); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
   .bt:hover:not(:disabled) { border-color: var(--tinta); }
-  .bt:disabled { opacity: .5; cursor: default; }
+  .bt:disabled { opacity: .55; cursor: default; }
   .bt.forte { background: var(--verde); border-color: var(--verde); color: var(--folha); }
   .bt.azul { background: var(--azul); border-color: var(--azul); color: var(--folha); }
   .bt.parar { color: var(--verm); }
   .bt.pequeno { font-size: 13px; padding: 5px 10px; }
+  .bt.escolhido { background: var(--verde); border-color: var(--verde); color: var(--folha); box-shadow: 0 0 0 3px var(--verde-suave); }
+  .bt.escolhido::before { content: "✓"; }
   .linha { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 99px;
     background: var(--cinza-suave); color: var(--cinza); white-space: nowrap; }
   .chip.c-decidir { background: var(--azul-suave); color: var(--azul); }
   .chip.c-melhorar { background: var(--ambar-suave); color: var(--ambar); }
   .chip.c-andamento { background: var(--roxo-suave); color: var(--roxo); }
-  .chip.c-sem-aprovado { background: var(--verm-suave); color: var(--verm); }
-  .chip.c-programa { background: var(--verde-suave); color: var(--verde); }
+  .chip.c-sem-aprovado, .chip.c-pior { background: var(--verm-suave); color: var(--verm); }
+  .chip.c-programa, .chip.c-ok { background: var(--verde-suave); color: var(--verde); }
   .selos { display: flex; flex-wrap: wrap; gap: 6px; }
   .selo { font-size: 13px; padding: 2px 9px; border-radius: 6px; border: 1px solid var(--fio); color: var(--fraco); white-space: nowrap; }
-  .selo b { font-weight: 700; }
   .selo.sim { border-color: var(--verde); color: var(--verde); }
   .selo.nao { border-color: var(--verm); color: var(--verm); }
   .selo.falta, .selo.parte { border-color: var(--ambar); color: var(--ambar); }
-
-  /* ---- cartão grande (Decidir agora) */
-  .barra-varios { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); z-index: 4; background: var(--tinta); color: var(--papel);
-    border-radius: 10px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
-  .barra-varios .bt { background: var(--verde); border-color: var(--verde); color: #ffffff; }
-  .barra-varios .bt.leve { background: transparent; border-color: var(--papel); color: var(--papel); }
-  .grade-cartoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 16px; align-items: start; }
-  .cartao { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; box-shadow: var(--sombra); display: grid; gap: 12px;
-    padding: 16px; min-width: 0; border-top: 5px solid var(--cor, var(--azul)); }
-  .cartao.marcado { outline: 3px solid var(--verde); }
-  .cartao-topo { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
-  .cartao-topo input[type="checkbox"] { width: 22px; height: 22px; margin: 3px 0 0; accent-color: var(--verde); cursor: pointer; }
-  .cartao h3 { margin: 0; font: 600 21px/1.2 var(--fonte-titulo); }
-  .cartao .item { font-size: 13px; color: var(--fraco); letter-spacing: .04em; text-transform: uppercase; margin-top: 2px; }
-  .cartao p { margin: 0; max-width: 70ch; }
   .rot { font-size: 13px; font-weight: 700; color: var(--fraco); letter-spacing: .05em; text-transform: uppercase; display: block; margin-bottom: 2px; }
-  .ressalva { background: var(--ambar-suave); border-radius: 8px; padding: 8px 12px; font-size: 15px; }
-  .falta { border-left: 3px solid var(--azul); padding-left: 10px; }
-  .pergunta { font-weight: 700; }
-  .ordem-estado { font-size: 14px; border-radius: 8px; padding: 8px 12px; background: var(--papel); display: grid; gap: 2px; }
-  .ordem-estado.feita { background: var(--verde-suave); }
-  .ordem-estado .resp { color: var(--fraco); }
+  textarea, input[type="text"], input[type="search"] { font: inherit; width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--fio);
+    background: var(--papel); color: var(--tinta); }
+  textarea { min-height: 70px; resize: vertical; }
+  .estado { font-size: 14px; color: var(--fraco); }
+  .vazio { color: var(--fraco); font-style: italic; }
+  .tecnico { font-size: 13px; color: var(--fraco); font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
   details.sub { border-top: 1px solid var(--fio); padding-top: 8px; }
   details.sub > summary { cursor: pointer; font-weight: 700; color: var(--azul); list-style: none; display: flex; gap: 6px; align-items: center; }
   details.sub > summary::-webkit-details-marker { display: none; }
@@ -145,35 +121,99 @@
   details.sub[open] > summary::before { transform: rotate(90deg); }
   details.sub .dentro { padding-top: 10px; display: grid; gap: 10px; }
   ol.passos { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
-  .tecnico { font-size: 14px; color: var(--fraco); font-family: ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
-  textarea, input[type="text"], input[type="search"] { font: inherit; width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid var(--fio);
-    background: var(--papel); color: var(--tinta); }
-  textarea { min-height: 76px; resize: vertical; }
-  .estado { font-size: 14px; color: var(--fraco); }
 
-  /* fotos e comparador */
-  .fotos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
-  .fotos figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
-  .fotos button { padding: 0; border: 1px solid var(--fio); border-radius: 6px; overflow: hidden; cursor: zoom-in; background: #ffffff; display: block; width: 100%; aspect-ratio: 4 / 3; }
-  .fotos img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .fotos figcaption { font-size: 13px; color: var(--fraco); line-height: 1.3; }
-  .comparar { display: grid; gap: 6px; }
-  .comparar .caixa { position: relative; border: 1px solid var(--fio); border-radius: 8px; overflow: hidden; background: #ffffff; max-width: 100%; touch-action: pan-y; }
-  .comparar .caixa img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
-  .comparar .depois { position: absolute; inset: 0; }
-  .comparar .depois img { width: 100%; height: 100%; object-fit: cover; }
-  .comparar .fio-corte { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--magenta); transform: translateX(-1.5px); pointer-events: none; }
-  .comparar .fio-corte::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--magenta); color: #ffffff;
-    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; }
-  .comparar .nomes { display: flex; justify-content: space-between; font-size: 13px; color: var(--fraco); font-weight: 700; }
-  .comparar input[type="range"] { width: 100%; accent-color: var(--magenta); }
+  /* recibo: a resposta foi recebida */
+  .recibo { border-radius: 10px; padding: 10px 14px; display: grid; gap: 2px; background: var(--azul-suave); border: 1px solid var(--azul); }
+  .recibo b { font-size: 16px; }
+  .recibo.vista { background: var(--roxo-suave); border-color: var(--roxo); }
+  .recibo.feita { background: var(--verde-suave); border-color: var(--verde); }
+  .recibo .passos-recibo { display: flex; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--fraco); }
+  .recibo .passos-recibo span.ok { color: var(--verde); font-weight: 700; }
+  .recibo .resp { color: var(--tinta); }
+  @media (prefers-reduced-motion: no-preference) { .recibo.novo { animation: chega .5s ease-out; } }
+  @keyframes chega { from { transform: scale(.97); opacity: .3; } }
 
-  /* ---- quadro */
-  .quadro { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(250px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
+  /* ---- cartão (Decidir agora) */
+  .grade-cartoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr)); gap: 14px; align-items: start; }
+  .cartao { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; box-shadow: var(--sombra); display: grid; gap: 12px;
+    padding: 16px; min-width: 0; border-top: 5px solid var(--cor, var(--azul)); }
+  .cartao.marcado { outline: 3px solid var(--verde); }
+  .cartao.respondido { box-shadow: none; }
+  .cartao-topo { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; }
+  .cartao-topo input[type="checkbox"] { width: 22px; height: 22px; margin: 3px 0 0; accent-color: var(--verde); cursor: pointer; }
+  .cartao h3 { margin: 0; font: 600 20px/1.2 var(--fonte-titulo); }
+  .cartao .item { font-size: 13px; color: var(--fraco); letter-spacing: .04em; text-transform: uppercase; margin-top: 2px; }
+  .falta { border-left: 3px solid var(--azul); padding-left: 10px; }
+  .pergunta-txt { font-weight: 700; }
+  .relatorio-link { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; background: var(--papel); border-radius: 10px; padding: 10px 12px; }
+  .barrinha { height: 6px; border-radius: 99px; background: var(--cinza-suave); overflow: hidden; width: 140px; }
+  .barrinha span { display: block; height: 100%; background: var(--verde); }
+  .barra-varios { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 58px); z-index: 4; background: var(--tinta); color: var(--papel);
+    border-radius: 10px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+  .barra-varios .bt { background: var(--verde); border-color: var(--verde); color: #ffffff; }
+  .barra-varios .bt.leve { background: transparent; border-color: var(--papel); color: var(--papel); }
+  .confirmar { background: var(--verde-suave); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; }
+
+  /* miniaturas: sempre abrem grandes */
+  .tiras { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .mini-foto { position: relative; padding: 0; border: 1px solid var(--fio); border-radius: 8px; overflow: hidden; cursor: zoom-in; background: #ffffff; display: block; width: 100%; aspect-ratio: 4 / 3; }
+  .mini-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .mini-foto .lupa { position: absolute; right: 6px; bottom: 6px; background: rgba(24, 32, 43, .78); color: #ffffff; font-size: 12px; font-weight: 700; padding: 3px 7px; border-radius: 6px; }
+  .mini-foto.par { aspect-ratio: 8 / 3; grid-column: span 2; }
+  .mini-foto.par .lado { position: absolute; top: 0; bottom: 0; width: 50%; }
+  .mini-foto.par .lado img { width: 100%; height: 100%; object-fit: cover; }
+  .mini-foto.par .lado + .lado { left: 50%; border-left: 2px solid var(--magenta); }
+  .mini-foto.par .rotulo { position: absolute; top: 6px; background: rgba(24, 32, 43, .78); color: #ffffff; font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 6px; }
+
+  /* ---- conferência */
+  .sub-abas { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sub-abas button { font: 700 14px/1.2 var(--fonte-texto); color: var(--tinta); background: var(--folha); border: 1px solid var(--fio); border-radius: 10px;
+    padding: 8px 12px; cursor: pointer; display: grid; gap: 5px; text-align: left; min-width: 150px; }
+  .sub-abas button[aria-selected="true"] { border: 2px solid var(--magenta); background: var(--magenta-suave); }
+  .sub-abas .prog { font-size: 12px; color: var(--fraco); font-weight: 400; font-variant-numeric: tabular-nums; }
+  .sub-abas .barrinha { width: 100%; }
+  .rel-topo { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+  .rel-topo h3 { margin: 0; font: 600 22px/1.2 var(--fonte-titulo); }
+  .rel-topo ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+  .veredito { border-left: 3px solid var(--magenta); padding-left: 10px; }
+  .navega { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+  .quadro { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 16px; display: grid; gap: 12px; min-width: 0; scroll-margin-top: 80px; }
+  .quadro.respondido { border-left: 5px solid var(--verde); }
+  .quadro-cab { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: baseline; }
+  .quadro-cab .num { font-size: 13px; color: var(--magenta); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .quadro h4 { margin: 0; font: 600 20px/1.25 var(--fonte-titulo); flex-basis: 100%; }
+  .quadro .explic { display: grid; gap: 8px; max-width: 75ch; }
+  .olhar { background: var(--azul-suave); border-radius: 8px; padding: 8px 12px; }
+  .opiniao { background: var(--papel); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; font-size: 15px; }
+  .ressalva { background: var(--ambar-suave); border-radius: 8px; padding: 8px 12px; font-size: 15px; }
+  .decisao-ant { font-size: 15px; color: var(--fraco); }
+  .fotos-q { display: grid; gap: 8px; }
+  .fotos-q .grande { padding: 0; border: 1px solid var(--fio); border-radius: 8px; overflow: hidden; cursor: zoom-in; background: #ffffff; position: relative; display: block; width: 100%; }
+  .fotos-q .grande img { display: block; width: 100%; height: auto; background: #ffffff; }
+  .fotos-q .grande .lupa { position: absolute; right: 8px; bottom: 8px; background: rgba(24, 32, 43, .8); color: #ffffff; font-size: 13px; font-weight: 700; padding: 4px 9px; border-radius: 6px; }
+  .fotos-q figcaption { font-size: 14px; color: var(--fraco); }
+  .fotos-q figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
+  .fotos-q .resto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: start; }
+  @media (max-width: 640px) { .fotos-q .resto { grid-template-columns: 1fr; } }
+  .quadro { padding: 22px 24px; }
+  .quadro .explic, .quadro .olhar, .quadro .opiniao, .quadro .ressalva, .quadro .decisao-ant { max-width: 860px; }
+  .quadro .olhar { font-size: 16px; }
+  .quadro .olhar b { color: var(--azul); }
+  .resposta-q { border-top: 1px solid var(--fio); padding-top: 12px; display: grid; gap: 8px; }
+  .opcoes-p { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 10px; }
+  .opcao-p { border: 1px solid var(--fio); border-radius: 10px; padding: 12px; display: grid; gap: 8px; align-content: start; background: var(--papel); }
+  .opcao-p.escolhida { border: 2px solid var(--verde); background: var(--verde-suave); }
+  .opcao-p h5 { margin: 0; font: 600 16px/1.3 var(--fonte-titulo); }
+  .opcao-p p { font-size: 15px; }
+  .final { background: var(--folha); border: 2px solid var(--tinta); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
+  .final h4 { margin: 0; font: 600 20px/1.25 var(--fonte-titulo); }
+
+  /* ---- quadro dos trabalhos */
+  .quadro-k { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(240px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
   .coluna { background: var(--cinza-suave); border-radius: 12px; padding: 10px; display: grid; gap: 8px; align-content: start; min-width: 0; border-top: 4px solid var(--cor); }
   .coluna h3 { margin: 0; font: 600 16px/1.2 var(--fonte-titulo); display: flex; justify-content: space-between; gap: 8px; }
   .coluna h3 span { color: var(--fraco); font-variant-numeric: tabular-nums; }
-  .coluna .explica { font-size: 13px; color: var(--fraco); margin: 0 0 4px; line-height: 1.35; }
+  .coluna .explica { font-size: 13px; color: var(--fraco); line-height: 1.35; }
   .mini { background: var(--folha); border: 1px solid var(--fio); border-radius: 8px; padding: 10px; display: grid; gap: 6px; cursor: pointer; text-align: left; font: inherit; color: var(--tinta); }
   .mini:hover { border-color: var(--tinta); }
   .mini .t { font-weight: 700; line-height: 1.3; }
@@ -181,54 +221,46 @@
   .mini.arrastando { opacity: .4; }
   .mini.alvo { box-shadow: 0 -3px 0 var(--magenta); }
   .mini .pri { display: flex; gap: 6px; align-items: center; justify-content: space-between; }
-  .mini .num { font: 800 14px/1 var(--fonte-titulo); color: var(--magenta); }
+  .mini .numx { font: 800 14px/1 var(--fonte-titulo); color: var(--magenta); }
   .mini .setas { display: flex; gap: 4px; }
   .mini .setas button { font: inherit; width: 30px; height: 28px; border-radius: 6px; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta); cursor: pointer; }
 
   /* ---- etapas */
-  .trilha { display: grid; grid-template-columns: repeat(8, minmax(130px, 1fr)); gap: 0; overflow-x: auto; padding-block: 8px 4px; }
-  .etapa { position: relative; display: grid; gap: 8px; padding: 0 8px; justify-items: start; text-align: left; font: inherit; color: var(--tinta);
-    background: transparent; border: 0; cursor: pointer; min-width: 0; }
-  .etapa .ponto { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--fio); background: var(--folha); display: grid; place-items: center;
-    font: 800 13px/1 var(--fonte-titulo); position: relative; z-index: 1; }
+  .trilha { display: grid; grid-template-columns: repeat(8, minmax(124px, 1fr)); overflow-x: auto; padding-block: 8px 4px; }
+  .etapa { position: relative; display: grid; gap: 8px; padding: 0 8px; justify-items: start; text-align: left; font: inherit; color: var(--tinta); background: transparent; border: 0; cursor: pointer; min-width: 0; }
+  .etapa .ponto { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--fio); background: var(--folha); display: grid; place-items: center; font: 800 13px/1 var(--fonte-titulo); position: relative; z-index: 1; }
   .etapa::before { content: ""; position: absolute; top: 13px; left: 0; right: 0; height: 3px; background: var(--fio); }
   .etapa:first-child::before { left: 22px; }
   .etapa:last-child::before { right: calc(100% - 22px); }
-  .etapa.feita .ponto { border-color: var(--verde); background: var(--verde); color: var(--folha); }
   .etapa.atual .ponto { border-color: var(--magenta); background: var(--magenta); color: #ffffff; box-shadow: 0 0 0 5px var(--magenta-suave); }
   .etapa .nome { font-weight: 700; line-height: 1.25; font-size: 15px; }
   .etapa .aqui { font-size: 12px; font-weight: 700; color: var(--magenta); letter-spacing: .06em; text-transform: uppercase; }
   .etapa.escolhida .nome { text-decoration: underline; text-decoration-color: var(--magenta); text-decoration-thickness: 3px; text-underline-offset: 4px; }
   .barra-fase { display: flex; width: 100%; height: 8px; border-radius: 99px; overflow: hidden; background: var(--cinza-suave); }
   .barra-fase span { display: block; height: 100%; }
-  .etapa .conta { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
+  .etapa .conta { font-size: 13px; color: var(--fraco); }
   .legenda { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--fraco); }
   .legenda i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
-  .fase-aberta { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
-  .fase-aberta h3 { margin: 0; font: 600 22px/1.2 var(--fonte-titulo); }
+  .fase-aberta { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
+  .fase-aberta h3 { margin: 0; font: 600 21px/1.2 var(--fonte-titulo); }
   .lista-itens { display: grid; gap: 6px; }
-  .lista-itens button { font: inherit; color: var(--tinta); text-align: left; background: var(--papel); border: 1px solid var(--fio); border-radius: 8px;
-    padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+  .lista-itens button { font: inherit; color: var(--tinta); text-align: left; background: var(--papel); border: 1px solid var(--fio); border-radius: 8px; padding: 8px 12px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
   .md { min-width: 0; max-width: 80ch; font-size: 15px; }
   .md p, .md ul, .md ol { margin: 0 0 8px; }
   .md ul, .md ol { padding-left: 22px; }
   .md code { font-size: 13px; background: var(--papel); padding: 1px 4px; border-radius: 4px; overflow-wrap: anywhere; }
   .md table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 14px; max-width: 100%; }
   .md th, .md td { border: 1px solid var(--fio); padding: 5px 8px; vertical-align: top; }
-  .md td:nth-child(2) { min-width: 300px; }
 
-  /* ---- agentes */
-  .controle-agentes { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
+  /* ---- agentes, defeitos, velocidade, ordens */
+  .caixa { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; }
   .numeros { display: flex; flex-wrap: wrap; gap: 6px; }
-  .numeros button { font: 800 18px/1 var(--fonte-titulo); width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--fio); background: var(--papel);
-    color: var(--tinta); cursor: pointer; font-variant-numeric: tabular-nums; }
+  .numeros button { font: 800 18px/1 var(--fonte-titulo); width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--fio); background: var(--papel); color: var(--tinta); cursor: pointer; }
   .numeros button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
   .numeros button.risco { border-color: var(--ambar); }
   .agentes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
   .agente { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
   .agente h3 { margin: 0; font: 600 19px/1.2 var(--fonte-titulo); }
-  .agente .papel-ag { font-size: 13px; color: var(--fraco); text-transform: uppercase; letter-spacing: .04em; }
-  .agente p { margin: 0; }
   .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 2px 10px; border-radius: 99px; width: fit-content; }
   .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
   .pill.trabalhando { color: var(--azul); background: var(--azul-suave); }
@@ -236,8 +268,6 @@
   .pill.parado { color: var(--ambar); background: var(--ambar-suave); }
   @media (prefers-reduced-motion: no-preference) { .pill.trabalhando::before { animation: pulsa 1.6s ease-in-out infinite; } }
   @keyframes pulsa { 50% { opacity: .3; } }
-
-  /* ---- defeitos */
   .filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .filtros button { font: 700 14px/1 var(--fonte-texto); padding: 8px 12px; border-radius: 99px; border: 1px solid var(--fio); background: var(--folha); color: var(--tinta); cursor: pointer; }
   .filtros button[aria-pressed="true"] { background: var(--tinta); color: var(--papel); border-color: var(--tinta); }
@@ -246,45 +276,55 @@
   .grupo-def h3 { margin: 0; padding: 10px 14px; font: 600 16px/1.2 var(--fonte-titulo); background: var(--cinza-suave); display: flex; justify-content: space-between; gap: 8px; }
   .def { padding: 10px 14px; border-top: 1px solid var(--fio); display: grid; grid-template-columns: 64px 1fr; gap: 4px 12px; }
   .def .d { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
-  .def .x { min-width: 0; }
   .def .sit { font-size: 14px; color: var(--fraco); }
-  .def .faixa { width: 6px; border-radius: 3px; }
-
-  /* ---- velocidade */
   .graficos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; }
-  .grafico { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px; display: grid; gap: 6px; min-width: 0; }
-  .grafico h3 { margin: 0; font: 600 17px/1.2 var(--fonte-titulo); }
-  .grafico .ult { font-size: 14px; color: var(--fraco); }
   .grafico svg { width: 100%; height: auto; display: block; }
   .grafico svg text { fill: var(--fraco); font: 11px var(--fonte-texto); }
   .regua { border: 2px dashed var(--fio); border-radius: 12px; padding: 14px; color: var(--fraco); }
   ul.limpa { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
-
-  /* ---- ordens */
   .ordens { display: grid; gap: 8px; }
   .ordem { background: var(--folha); border: 1px solid var(--fio); border-radius: 10px; padding: 12px 14px; display: grid; gap: 4px; border-left: 5px solid var(--cor, var(--fio)); }
   .ordem .cab { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; }
-  .ordem .quando { font-size: 13px; color: var(--fraco); font-variant-numeric: tabular-nums; }
   .ordem .resp { color: var(--fraco); border-left: 3px solid var(--verde); padding-left: 10px; white-space: pre-wrap; }
-  .vazio { color: var(--fraco); font-style: italic; margin: 0; }
-  .ideia-nova { background: var(--folha); border: 1px solid var(--fio); border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; }
 
-  /* ---- janelas */
-  dialog { border: 0; border-radius: 14px; padding: 0; background: var(--papel); color: var(--tinta); width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 32px); box-shadow: var(--sombra); }
-  dialog::backdrop { background: rgba(10, 14, 20, .65); }
-  dialog .dlg-cab { position: sticky; top: 0; background: var(--papel); display: flex; justify-content: flex-end; padding: 8px; z-index: 1; }
-  dialog .dlg-corpo { padding: 0 14px 16px; }
-  dialog.zoom { background: transparent; width: auto; max-width: 96vw; box-shadow: none; }
-  dialog.zoom img { display: block; max-width: 96vw; max-height: 84vh; border-radius: 6px; background: #ffffff; }
-  dialog.zoom .barra { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 8px; color: #ffffff; }
-  .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--tinta); color: var(--papel);
-    padding: 10px 16px; border-radius: 10px; font-weight: 700; z-index: 20; max-width: calc(100vw - 32px); }
-  .confirmar { background: var(--verde-suave); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; }
+  /* ---- visor de fotos */
+  dialog.visor { border: 0; padding: 0; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; background: rgba(8, 11, 16, .96); color: #ffffff; }
+  dialog.visor::backdrop { background: rgba(8, 11, 16, .9); }
+  .visor-grade { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
+  .visor-barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+    padding: calc(8px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 8px max(12px, env(safe-area-inset-left, 0px)); }
+  .visor-barra .grupo { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .visor button { font: 700 14px/1 var(--fonte-texto); padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, .25); background: rgba(255, 255, 255, .08); color: #ffffff; cursor: pointer; }
+  .visor button:hover { background: rgba(255, 255, 255, .18); }
+  .visor button[aria-pressed="true"] { background: #ffffff; color: #111111; }
+  .visor .contador { font-size: 14px; opacity: .8; font-variant-numeric: tabular-nums; }
+  .visor-palco { position: relative; overflow: auto; cursor: grab; touch-action: none; }
+  .visor-palco.arrastando { cursor: grabbing; }
+  .visor-palco img { display: block; margin: auto; user-select: none; -webkit-user-drag: none; background: #ffffff; }
+  .visor-palco .seta { position: fixed; top: 50%; transform: translateY(-50%); width: 48px; height: 64px; font-size: 26px; padding: 0; z-index: 2; }
+  .visor-palco .seta.esq { left: max(8px, env(safe-area-inset-left, 0px)); }
+  .visor-palco .seta.dir { right: max(8px, env(safe-area-inset-right, 0px)); }
+  .visor-leg { padding: 10px max(14px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px)); font-size: 15px; opacity: .9; }
+  .comp { position: relative; margin: auto; touch-action: none; }
+  .comp img { display: block; width: 100%; height: auto; background: #ffffff; }
+  .comp .dep { position: absolute; inset: 0; }
+  .comp .dep img { width: 100%; height: 100%; object-fit: fill; }
+  .comp .fio-corte { position: absolute; top: 0; bottom: 0; width: 3px; background: #e886b6; transform: translateX(-1.5px); pointer-events: none; }
+  .comp .fio-corte::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #e886b6; color: #111111; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; }
+  .comp .tag { position: absolute; top: 8px; background: rgba(0, 0, 0, .7); color: #ffffff; font-size: 13px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+
+  dialog.detalhe { border: 0; border-radius: 14px; padding: 0; background: var(--papel); color: var(--tinta); width: min(760px, calc(100vw - 24px)); max-height: calc(100vh - 32px); box-shadow: var(--sombra); }
+  dialog.detalhe::backdrop { background: rgba(10, 14, 20, .65); }
+  dialog.detalhe .dlg-cab { position: sticky; top: 0; background: var(--papel); display: flex; justify-content: flex-end; padding: 8px; z-index: 1; }
+  dialog.detalhe .dlg-corpo { padding: 0 14px 16px; }
+  .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--verde); color: #ffffff;
+    padding: 12px 18px; border-radius: 10px; font-weight: 700; z-index: 30; max-width: calc(100vw - 32px); box-shadow: var(--sombra); }
+  .toast.erro { background: var(--verm); }
 
   @media (max-width: 560px) {
     body { font-size: 16px; }
     .def { grid-template-columns: 1fr; }
-    .barra-varios { top: calc(env(safe-area-inset-top, 0px) + 54px); }
+    .mini-foto.par { grid-column: span 2; }
   }
 </style>
 
@@ -295,7 +335,7 @@
       Instituto São Bento · Editor de Impressão
     </div>
     <div class="topo-linha">
-      <div style="display:grid;gap:6px;min-width:0">
+      <div style="display:grid;gap:4px;min-width:0">
         <h1>Central de decisões</h1>
         <p class="resumo" id="resumo">Carregando...</p>
         <p class="atualizado" id="atualizado"></p>
@@ -304,46 +344,58 @@
     </div>
     <p class="aviso" id="aviso" hidden></p>
     <div class="placar" id="placar"></div>
-    <div class="mudou" id="mudou" hidden></div>
+    <details class="mudou" id="mudou" hidden></details>
   </header>
 
   <nav class="abas" role="tablist" aria-label="Partes da central" id="abas">
     <button role="tab" data-aba="decidir" aria-selected="true">Decidir agora <span class="cont" id="cont-decidir" hidden></span></button>
+    <button role="tab" data-aba="conferencia" aria-selected="false">Conferência <span class="cont" id="cont-conf" hidden></span></button>
     <button role="tab" data-aba="quadro" aria-selected="false">Quadro dos trabalhos</button>
-    <button role="tab" data-aba="etapas" aria-selected="false">Etapas do projeto</button>
+    <button role="tab" data-aba="etapas" aria-selected="false">Etapas</button>
     <button role="tab" data-aba="agentes" aria-selected="false">Agentes</button>
     <button role="tab" data-aba="defeitos" aria-selected="false">Defeitos</button>
     <button role="tab" data-aba="velocidade" aria-selected="false">Velocidade</button>
-    <button role="tab" data-aba="ordens" aria-selected="false">Ordens e ideias <span class="cont" id="cont-ordens" hidden></span></button>
+    <button role="tab" data-aba="ordens" aria-selected="false">Ordens e ideias</button>
   </nav>
 
   <section class="painel" id="aba-decidir" role="tabpanel">
     <header>
       <h2>Decidir agora</h2>
-      <p>Só o que espera você. Cada botão vira uma ordem para a gerente, guardada na hora. "Pôr no programa como está" passa primeiro pelos testes no GitHub e no PC; as melhorias continuam depois.</p>
+      <p>O que espera você. Toda resposta aparece em verde na hora: "Recebido". Os relatórios completos, com todas as fotos, ficam na aba Conferência.</p>
     </header>
     <div class="barra-varios" id="barra-varios" hidden>
       <span id="varios-texto"></span>
       <span class="linha">
-        <button class="bt" type="button" id="varios-juntar">Pôr os marcados no programa como estão</button>
+        <button class="bt" type="button" id="varios-juntar">Pôr os marcados no programa</button>
         <button class="bt leve" type="button" id="varios-limpar">Desmarcar</button>
       </span>
     </div>
     <div class="grade-cartoes" id="lista-decidir"><p class="vazio">Carregando os trabalhos...</p></div>
+    <h3 class="secao" id="titulo-respondidos" hidden>Você já respondeu: a gerente cuida agora</h3>
+    <div class="grade-cartoes" id="lista-respondidos"></div>
+  </section>
+
+  <section class="painel" id="aba-conferencia" role="tabpanel" hidden>
+    <header>
+      <h2>Conferência</h2>
+      <p>Um relatório por aba. Clique em qualquer foto para abrir grande; lá dentro dá para ampliar até o tamanho real e passar para a próxima com as setas.</p>
+    </header>
+    <div class="sub-abas" role="tablist" aria-label="Relatórios" id="sub-abas"></div>
+    <div id="relatorio" style="display:grid;gap:14px"><p class="vazio">Carregando os relatórios...</p></div>
   </section>
 
   <section class="painel" id="aba-quadro" role="tabpanel" hidden>
     <header>
       <h2>Quadro dos trabalhos</h2>
-      <p>Cada trabalho numa coluna, pela situação. Clique para abrir. Nas colunas do que falta fazer, arraste (ou use as setas) para dizer o que vem primeiro: os agentes seguem essa ordem.</p>
+      <p>Cada trabalho numa coluna, pela situação. Clique para abrir. No que falta fazer, arraste (ou use as setas) para dizer o que vem primeiro: os agentes seguem essa ordem.</p>
     </header>
-    <div class="quadro" id="quadro"></div>
+    <div class="quadro-k" id="quadro"></div>
   </section>
 
   <section class="painel" id="aba-etapas" role="tabpanel" hidden>
     <header>
       <h2>Etapas do projeto</h2>
-      <p>As oito fases do plano, em ordem. A barra mostra os trabalhos de cada fase por situação. Clique numa fase para ver os trabalhos e o texto do plano.</p>
+      <p>As oito fases do plano, em ordem. Clique numa fase para ver os trabalhos dela e o texto do plano.</p>
     </header>
     <div class="trilha" id="trilha"></div>
     <div class="legenda" id="legenda"></div>
@@ -353,60 +405,79 @@
   <section class="painel" id="aba-agentes" role="tabpanel" hidden>
     <header>
       <h2>Agentes</h2>
-      <p>Os ajudantes da gerente e o último passo de cada um. A gerente atualiza aqui quando um começa, entrega ou para.</p>
+      <p>Os ajudantes da gerente e o último passo de cada um.</p>
     </header>
-    <div class="controle-agentes">
+    <div class="caixa">
       <span class="rot" id="rot-max">Quantos agentes podem trabalhar ao mesmo tempo</span>
       <div class="numeros" id="numeros" role="group" aria-labelledby="rot-max"></div>
-      <p class="estado" id="estado-max">Com 5 ou mais juntos, a conta já bateu no limite de uso três vezes (20 e 21/10) e os agentes pararam no meio.</p>
+      <p class="estado" id="estado-max"></p>
     </div>
-    <div class="agentes" id="lista-agentes"><p class="vazio">Nenhum agente registrado.</p></div>
+    <div class="agentes" id="lista-agentes"></div>
   </section>
 
   <section class="painel" id="aba-defeitos" role="tabpanel" hidden>
     <header>
       <h2>Defeitos conhecidos</h2>
-      <p>Tirados da Lista de bugs do plano. "Aceito até depois" são os que você mandou deixar para outra fase.</p>
+      <p>Tirados da Lista de bugs do plano. "Aceitos até depois" são os que você mandou deixar para outra fase.</p>
     </header>
     <div class="filtros" id="filtros-def">
       <button type="button" data-f="aberto" aria-pressed="true">Abertos</button>
       <button type="button" data-f="aceito" aria-pressed="false">Aceitos até depois</button>
       <button type="button" data-f="conferir" aria-pressed="false">Consertados, a conferir</button>
-      <label class="rot" for="busca-def" style="margin:0 0 0 6px">Procurar</label>
-      <input type="search" id="busca-def" placeholder="Ex.: Egenloff, zoom, corte">
+      <input type="search" id="busca-def" placeholder="Procurar: Egenloff, zoom, corte" aria-label="Procurar defeito">
     </div>
-    <div id="lista-defeitos" style="display:grid;gap:12px"><p class="vazio">Carregando...</p></div>
+    <div id="lista-defeitos" style="display:grid;gap:12px"></div>
   </section>
 
   <section class="painel" id="aba-velocidade" role="tabpanel" hidden>
     <header>
       <h2>Velocidade</h2>
-      <p id="vel-nota">Tempos do teste oficial.</p>
+      <p id="vel-nota"></p>
     </header>
     <div class="graficos" id="graficos"></div>
-    <div class="regua" id="regua"><b>Régua do notebook do Kaique: ainda não existe.</b> O teste no notebook (item 0.6) não foi feito; até lá, os tempos acima são só do seu PC.</div>
-    <div class="grafico">
-      <h3>Lentidões conhecidas</h3>
-      <ul class="limpa" id="lentidoes"></ul>
-    </div>
+    <div class="regua"><b>Régua do notebook do Kaique: ainda não existe.</b> O teste no notebook (item 0.6) não foi feito; até lá, os tempos são só do seu PC.</div>
+    <div class="caixa"><h3 style="margin:0;font:600 17px var(--fonte-titulo)">Lentidões conhecidas</h3><ul class="limpa" id="lentidoes"></ul></div>
   </section>
 
   <section class="painel" id="aba-ordens" role="tabpanel" hidden>
     <header>
       <h2>Ordens e ideias</h2>
-      <p>Tudo o que você mandou por esta página. A gerente lê ao abrir cada conversa, entre uma tarefa e outra, ou na hora se você escrever "olha a central" no chat.</p>
+      <p>Tudo o que você mandou por aqui e a resposta da gerente. Ela lê ao abrir cada conversa, entre uma tarefa e outra, ou na hora se você escrever "olha a central" no chat.</p>
     </header>
-    <div class="ideia-nova">
+    <div class="caixa">
       <label class="rot" for="ideia-texto">Ideia nova (vai para a Lista de espera do plano, com as suas palavras)</label>
       <textarea id="ideia-texto" placeholder="Ex.: quero um botão para virar todas as páginas pares de uma vez."></textarea>
       <div class="linha"><button class="bt azul" type="button" id="ideia-enviar" disabled>Guardar ideia</button><span class="estado" id="ideia-estado" role="status"></span></div>
     </div>
-    <div class="ordens" id="lista-ordens"><p class="vazio">Nenhuma ordem ainda.</p></div>
+    <div class="ordens" id="lista-ordens"></div>
   </section>
 </div>
 
-<dialog id="detalhe"><div class="dlg-cab"><button class="bt pequeno" type="button" id="detalhe-fechar">Fechar</button></div><div class="dlg-corpo" id="detalhe-corpo"></div></dialog>
-<dialog class="zoom" id="zoom"><img id="zoom-img" alt=""><div class="barra"><span id="zoom-legenda"></span><button class="bt pequeno" id="zoom-fechar" type="button">Fechar</button></div></dialog>
+<dialog class="detalhe" id="detalhe"><div class="dlg-cab"><button class="bt pequeno" type="button" id="detalhe-fechar">Fechar</button></div><div class="dlg-corpo" id="detalhe-corpo"></div></dialog>
+
+<dialog class="visor" id="visor" aria-label="Foto ampliada">
+  <div class="visor-grade">
+    <div class="visor-barra">
+      <div class="grupo">
+        <span class="contador" id="visor-cont"></span>
+        <span class="grupo" id="visor-modo"></span>
+      </div>
+      <div class="grupo">
+        <button type="button" id="visor-menos" aria-label="Diminuir">−</button>
+        <button type="button" id="visor-ajustar">Caber na tela</button>
+        <button type="button" id="visor-real">Tamanho real</button>
+        <button type="button" id="visor-mais" aria-label="Aumentar">+</button>
+        <button type="button" id="visor-fechar">Fechar ✕</button>
+      </div>
+    </div>
+    <div class="visor-palco" id="visor-palco">
+      <button type="button" class="seta esq" id="visor-ant" aria-label="Foto anterior">‹</button>
+      <div id="visor-conteudo"></div>
+      <button type="button" class="seta dir" id="visor-prox" aria-label="Próxima foto">›</button>
+    </div>
+    <div class="visor-leg" id="visor-leg"></div>
+  </div>
+</dialog>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
@@ -415,33 +486,30 @@
 (function () {
   "use strict";
   var COLUNAS = [
-    { id: "decidir", nome: "Esperando você", cor: "--azul", explica: "Pronto e testado por máquina; falta o seu teste ou a sua decisão." },
-    { id: "melhorar", nome: "Pronto, mas falta melhorar", cor: "--ambar", explica: "Funciona, com defeito conhecido sendo consertado." },
+    { id: "decidir", nome: "Esperando você", cor: "--azul", explica: "Pronto e testado por máquina; falta a sua decisão." },
+    { id: "melhorar", nome: "Pronto, falta melhorar", cor: "--ambar", explica: "Funciona, com defeito conhecido sendo consertado." },
     { id: "andamento", nome: "Em andamento", cor: "--roxo", explica: "Um agente trabalha nisso (ou parou no meio)." },
     { id: "fila", nome: "Ainda não começado", cor: "--cinza", explica: "Na fila. A ordem daqui é a ordem dos agentes." },
-    { id: "sem-aprovado", nome: "No programa, sem o seu aprovado", cor: "--verm", explica: "Já está no programa, mas você não deu o aprovado final." },
+    { id: "sem-aprovado", nome: "No programa, sem o seu aprovado", cor: "--verm", explica: "Já está no programa, mas sem o seu aprovado final." },
     { id: "programa", nome: "No programa, aprovado", cor: "--verde", explica: "Entrou e você aprovou." }
   ];
   var COL = {}; COLUNAS.forEach(function (c) { COL[c.id] = c; });
   var PRIORIZA = { melhorar: 1, andamento: 1, fila: 1 };
   var TIPOS = {
-    juntar: { nome: "Pôr no programa como está", cor: "--verde" },
-    continuar: { nome: "Continuar trabalhando", cor: "--azul" },
-    parar: { nome: "Parar", cor: "--verm" },
-    testar: { nome: "Preparar para eu testar no PC", cor: "--roxo" },
-    comentar: { nome: "Comentário", cor: "--cinza" },
-    resposta: { nome: "Resposta", cor: "--azul" }
+    juntar: "Pôr no programa como está", continuar: "Continuar trabalhando", parar: "Parar",
+    testar: "Preparar para eu testar no PC", comentar: "Comentário", resposta: "Resposta"
   };
-  var ESTADOS = { enviada: "Enviada: a gerente ainda não viu", vista: "A gerente viu", feita: "Feito" };
-  var SELOS = [["github", "GitHub"], ["pc", "Seu PC"], ["samuel", "Você"]];
+  var COR_TIPO = { juntar: "--verde", continuar: "--azul", parar: "--verm", testar: "--roxo", comentar: "--cinza", resposta: "--azul" };
+  var ESTADO_TXT = { enviada: "Recebido. A gerente ainda não leu.", vista: "A gerente leu e está cuidando.", feita: "Feito." };
+  var OP_QUADRO = [
+    { id: "bom", nome: "Está bom" }, { id: "melhorar", nome: "Melhorar" }, { id: "pior", nome: "Está pior" }, { id: "nao-entendi", nome: "Ainda não entendi" }
+  ];
+  var OP_FINAL = { "Aprovado": "aprovado", "Melhorar": "melhorar", "Ainda não entendi": "nao-entendi", "Descartar": "descartar" };
   var SELO_TXT = { sim: "✓", nao: "✗", falta: "falta", parte: "em parte" };
 
-  var dados = { geral: null, trabalhos: [], fases: [], agentes: [], defeitos: [], velocidade: null, ordens: [], testes: [], ideias: [], config: {} };
-  var db = null, user = null;
-  var marcados = {};
-  var abaAtual = "decidir";
-  var faseEscolhida = null;
-  var filtroDef = "aberto";
+  var dados = { geral: null, trabalhos: [], fases: [], agentes: [], defeitos: [], velocidade: null, ordens: [], testes: [], ideias: [], config: {}, conferencias: [], respostas: {} };
+  var locais = { ordens: [], respostas: {} };  // o que a página acabou de mandar, antes do banco confirmar
+  var db = null, marcados = {}, faseEscolhida = null, filtroDef = "aberto", relAtual = null, ultimoRecibo = null;
 
   // ---------- utilidades
   function el(tag, cls, texto) { var e = document.createElement(tag); if (cls) e.className = cls; if (texto != null) e.textContent = texto; return e; }
@@ -451,80 +519,166 @@
   function guardar(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   var toastT = null;
-  function toast(t) { var x = document.getElementById("toast"); x.textContent = t; x.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { x.hidden = true; }, 3200); }
+  function toast(t, erro) { var x = document.getElementById("toast"); x.textContent = t; x.className = "toast" + (erro ? " erro" : ""); x.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { x.hidden = true; }, 3500); }
   function novoId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function paragrafos(lista) { var d = el("div", "explic"); (lista || []).forEach(function (t) { d.appendChild(el("p", null, t)); }); return d; }
 
-  // ---------- última visita (só neste navegador)
   var visitaAnterior = ler("central-ultima-visita");
   setTimeout(function () { guardar("central-ultima-visita", new Date().toISOString()); }, 8000);
 
-  // ---------- zoom e detalhe
-  var zoom = document.getElementById("zoom");
-  document.getElementById("zoom-fechar").addEventListener("click", function () { zoom.close(); });
-  zoom.addEventListener("click", function (ev) { if (ev.target === zoom) zoom.close(); });
-  function abrirZoom(src, leg) { var i = document.getElementById("zoom-img"); i.src = src; i.alt = leg || ""; document.getElementById("zoom-legenda").textContent = leg || ""; zoom.showModal(); }
-  var detalhe = document.getElementById("detalhe");
-  document.getElementById("detalhe-fechar").addEventListener("click", function () { detalhe.close(); });
-  detalhe.addEventListener("click", function (ev) { if (ev.target === detalhe) detalhe.close(); });
-  var detalheId = null;
-  detalhe.addEventListener("close", function () { detalheId = null; });
-  function abrirDetalhe(t) {
-    detalheId = t.id;
-    var c = document.getElementById("detalhe-corpo"); c.textContent = "";
-    c.appendChild(cartao(t, { semMarcar: true }));
-    detalhe.showModal();
+  // ---------- visor de fotos (abre qualquer foto grande, com zoom e setas)
+  var visor = document.getElementById("visor"), palco = document.getElementById("visor-palco"), conteudo = document.getElementById("visor-conteudo");
+  var V = { lista: [], i: 0, escala: 0, modo: "foto", nat: null };
+  function abrirVisor(lista, i) { V.lista = lista; V.i = i || 0; V.escala = 0; mostrarVisor(); if (!visor.open) visor.showModal(); }
+  function itemAtual() { return V.lista[V.i]; }
+  function mostrarVisor() {
+    var it = itemAtual(); conteudo.textContent = ""; V.nat = null;
+    document.getElementById("visor-cont").textContent = V.lista.length > 1 ? (V.i + 1) + " de " + V.lista.length : "";
+    document.getElementById("visor-ant").hidden = V.lista.length < 2;
+    document.getElementById("visor-prox").hidden = V.lista.length < 2;
+    document.getElementById("visor-leg").textContent = it.legenda || "";
+    var modo = document.getElementById("visor-modo"); modo.textContent = "";
+    if (it.antes) {
+      if (!it.ver) it.ver = "comparar";
+      [["comparar", "Comparar"], ["antes", "Só o antes"], ["depois", "Só o depois"]].forEach(function (m) {
+        var b = el("button", null, m[1]); b.type = "button"; b.setAttribute("aria-pressed", String(it.ver === m[0]));
+        b.addEventListener("click", function () { it.ver = m[0]; mostrarVisor(); }); modo.appendChild(b);
+      });
+    }
+    var src = it.antes ? (it.ver === "depois" ? it.depois : it.antes) : it.src;
+    var img = new Image(); img.alt = it.legenda || ""; img.draggable = false;
+    img.onload = function () { V.nat = { w: img.naturalWidth, h: img.naturalHeight }; aplicarEscala(); };
+    img.src = src;
+    if (it.antes && it.ver === "comparar") {
+      var c = el("div", "comp"); c.appendChild(img);
+      var dep = el("div", "dep"); var b2 = new Image(); b2.src = it.depois; b2.alt = "Depois"; b2.draggable = false; dep.appendChild(b2); c.appendChild(dep);
+      var fio = el("div", "fio-corte"); c.appendChild(fio);
+      var t1 = el("span", "tag", "Antes"); t1.style.left = "8px"; var t2 = el("span", "tag", "Depois"); t2.style.right = "8px"; c.appendChild(t1); c.appendChild(t2);
+      var pos = 50; function por(v) { pos = v; dep.style.clipPath = "inset(0 0 0 " + v + "%)"; fio.style.left = v + "%"; } por(50);
+      var ap = false;
+      c.addEventListener("pointerdown", function (ev) { ap = true; ev.stopPropagation(); c.setPointerCapture(ev.pointerId); var q = c.getBoundingClientRect(); por(Math.max(0, Math.min(100, (ev.clientX - q.left) / q.width * 100))); });
+      c.addEventListener("pointermove", function (ev) { if (!ap) return; ev.stopPropagation(); var q = c.getBoundingClientRect(); por(Math.max(0, Math.min(100, (ev.clientX - q.left) / q.width * 100))); });
+      c.addEventListener("pointerup", function () { ap = false; });
+      conteudo.appendChild(c); V.alvo = c;
+    } else { conteudo.appendChild(img); V.alvo = img; }
+  }
+  function escalaCaber() { if (!V.nat) return 1; var w = palco.clientWidth - 24, h = palco.clientHeight - 24; return Math.min(1, w / V.nat.w, h / V.nat.h); }
+  function aplicarEscala() {
+    if (!V.nat || !V.alvo) return;
+    var e = V.escala || escalaCaber(); var w = Math.round(V.nat.w * e);
+    V.alvo.style.width = w + "px"; V.alvo.style.height = "auto";
+    if (V.alvo.tagName === "IMG") V.alvo.style.maxWidth = "none";
+    conteudo.style.display = "grid"; conteudo.style.minHeight = "100%"; conteudo.style.placeItems = "center"; conteudo.style.padding = "12px";
+    document.getElementById("visor-real").setAttribute("aria-pressed", String(V.escala === 1));
+    document.getElementById("visor-ajustar").setAttribute("aria-pressed", String(!V.escala));
+  }
+  function zoom(f) { var atual = V.escala || escalaCaber(); V.escala = Math.max(.1, Math.min(4, atual * f)); aplicarEscala(); }
+  document.getElementById("visor-mais").addEventListener("click", function () { zoom(1.4); });
+  document.getElementById("visor-menos").addEventListener("click", function () { zoom(1 / 1.4); });
+  document.getElementById("visor-ajustar").addEventListener("click", function () { V.escala = 0; aplicarEscala(); });
+  document.getElementById("visor-real").addEventListener("click", function () { V.escala = 1; aplicarEscala(); });
+  document.getElementById("visor-fechar").addEventListener("click", function () { visor.close(); });
+  function passo(d) { if (V.lista.length < 2) return; V.i = (V.i + d + V.lista.length) % V.lista.length; V.escala = 0; mostrarVisor(); }
+  document.getElementById("visor-ant").addEventListener("click", function () { passo(-1); });
+  document.getElementById("visor-prox").addEventListener("click", function () { passo(1); });
+  visor.addEventListener("keydown", function (ev) {
+    if (ev.key === "ArrowLeft") { ev.preventDefault(); passo(-1); } else if (ev.key === "ArrowRight") { ev.preventDefault(); passo(1); }
+    else if (ev.key === "+" || ev.key === "=") zoom(1.4); else if (ev.key === "-") zoom(1 / 1.4); else if (ev.key === "0") { V.escala = 0; aplicarEscala(); }
+  });
+  palco.addEventListener("wheel", function (ev) { if (!ev.ctrlKey) return; ev.preventDefault(); zoom(ev.deltaY < 0 ? 1.15 : 1 / 1.15); }, { passive: false });
+  (function () { // arrastar para mover a foto ampliada
+    var ap = null;
+    palco.addEventListener("pointerdown", function (ev) { if (ev.target.closest("button")) return; ap = { x: ev.clientX, y: ev.clientY, l: palco.scrollLeft, t: palco.scrollTop }; palco.classList.add("arrastando"); });
+    window.addEventListener("pointermove", function (ev) { if (!ap) return; palco.scrollLeft = ap.l - (ev.clientX - ap.x); palco.scrollTop = ap.t - (ev.clientY - ap.y); });
+    window.addEventListener("pointerup", function () { ap = null; palco.classList.remove("arrastando"); });
+    palco.addEventListener("dblclick", function () { V.escala = V.escala === 1 ? 0 : 1; aplicarEscala(); });
+  })();
+  window.addEventListener("resize", function () { if (visor.open && !V.escala) aplicarEscala(); });
+
+  function miniatura(lista, i) {
+    var it = lista[i];
+    var b = el("button", "mini-foto" + (it.antes ? " par" : "")); b.type = "button";
+    b.setAttribute("aria-label", "Abrir grande: " + (it.legenda || "foto"));
+    if (it.antes) {
+      var a = el("span", "lado"); var ia = new Image(); ia.src = it.antes; ia.alt = ""; ia.loading = "lazy"; a.appendChild(ia);
+      var d = el("span", "lado"); var id = new Image(); id.src = it.depois; id.alt = ""; id.loading = "lazy"; d.appendChild(id);
+      b.appendChild(a); b.appendChild(d);
+      var r1 = el("span", "rotulo", "Antes"); r1.style.left = "6px"; var r2 = el("span", "rotulo", "Depois"); r2.style.left = "calc(50% + 6px)";
+      b.appendChild(r1); b.appendChild(r2);
+    } else { var im = new Image(); im.src = it.src; im.alt = it.legenda || ""; im.loading = "lazy"; b.appendChild(im); }
+    b.appendChild(el("span", "lupa", "Abrir ⤢"));
+    b.addEventListener("click", function () { abrirVisor(lista, i); });
+    return b;
+  }
+  function fotosDoTrabalho(t) {
+    var l = [];
+    if (t.comparar) l.push({ antes: t.comparar.antes, depois: t.comparar.depois, legenda: t.comparar.legenda });
+    (t.fotos || []).forEach(function (f) { l.push({ src: f.src, legenda: f.legenda }); });
+    return l;
   }
 
-  // ---------- ordens
-  async function mandarOrdem(t, tipo, extra) {
-    if (!db) { toast("Abra pelo claude.ai para mandar ordens."); return false; }
-    var o = Object.assign({ trabalho: t.id, titulo: t.titulo, tipo: tipo, texto: "", opcao: "", em: new Date().toISOString(), estado: "enviada", resposta: "" }, extra || {});
-    try { await db.doc("ordens/" + novoId("o")).set(o); toast("Ordem guardada: " + (TIPOS[tipo] || {}).nome); return true; }
-    catch (e) { toast("Não consegui guardar (" + (e && e.code || "erro") + "). Tente de novo."); return false; }
+  // ---------- ordens (com recibo na hora)
+  function todasOrdens() {
+    var ids = {}; dados.ordens.forEach(function (o) { ids[o.id] = 1; });
+    return dados.ordens.concat(locais.ordens.filter(function (o) { return !ids[o.id]; }));
   }
-  function ultimaOrdem(id) {
-    var l = dados.ordens.filter(function (o) { return o.trabalho === id; }).sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
+  async function mandarOrdem(t, tipo, extra) {
+    if (!db) { toast("Abra pelo claude.ai para mandar ordens.", true); return false; }
+    var id = novoId("o");
+    var o = Object.assign({ trabalho: t.id, titulo: t.titulo, tipo: tipo, texto: "", opcao: "", em: new Date().toISOString(), estado: "enviada", resposta: "" }, extra || {});
+    locais.ordens.push(Object.assign({ id: id, local: true }, o)); ultimoRecibo = t.id; redesenhar();
+    try { await db.doc("ordens/" + id).set(o); toast("✓ Recebido: " + TIPOS[tipo] + (o.opcao ? " (" + o.opcao + ")" : "")); return true; }
+    catch (e) { locais.ordens = locais.ordens.filter(function (x) { return x.id !== id; }); redesenhar(); toast("Não consegui guardar. Tente de novo.", true); return false; }
+  }
+  function ultimaOrdem(id, tipos) {
+    var l = todasOrdens().filter(function (o) { return o.trabalho === id && (!tipos || tipos.indexOf(o.tipo) >= 0); })
+      .sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
     return l[0] || null;
   }
-
-  // ---------- comparador
-  function comparador(c) {
-    var w = el("div", "comparar");
-    var caixa = el("div", "caixa");
-    var a = el("img"); a.src = c.antes; a.alt = "Antes"; a.loading = "lazy";
-    var dep = el("div", "depois"); var b = el("img"); b.src = c.depois; b.alt = "Depois"; b.loading = "lazy"; dep.appendChild(b);
-    var fio = el("div", "fio-corte");
-    caixa.appendChild(a); caixa.appendChild(dep); caixa.appendChild(fio);
-    var r = el("input"); r.type = "range"; r.min = 0; r.max = 100; r.value = 50; r.setAttribute("aria-label", "Arraste para comparar antes e depois");
-    function por(v) { dep.style.clipPath = "inset(0 0 0 " + v + "%)"; fio.style.left = v + "%"; }
-    r.addEventListener("input", function () { por(r.value); });
-    function arrasta(ev) { var q = caixa.getBoundingClientRect(); var v = Math.max(0, Math.min(100, (ev.clientX - q.left) / q.width * 100)); r.value = v; por(v); }
-    var apertado = false;
-    caixa.addEventListener("pointerdown", function (ev) { apertado = true; caixa.setPointerCapture(ev.pointerId); arrasta(ev); });
-    caixa.addEventListener("pointermove", function (ev) { if (apertado) arrasta(ev); });
-    caixa.addEventListener("pointerup", function () { apertado = false; });
-    por(50);
-    var nomes = el("div", "nomes"); nomes.appendChild(el("span", null, "← Antes")); nomes.appendChild(el("span", null, "Depois →"));
-    w.appendChild(caixa); w.appendChild(r); w.appendChild(nomes);
-    if (c.legenda) w.appendChild(el("span", "estado", c.legenda));
-    return w;
-  }
-  function fotos(lista) {
-    var f = el("div", "fotos");
-    lista.forEach(function (im) {
-      var fig = el("figure"); var b = el("button"); b.type = "button"; b.setAttribute("aria-label", "Ver grande: " + (im.legenda || "imagem"));
-      var i = el("img"); i.src = im.src; i.alt = im.legenda || ""; i.loading = "lazy"; b.appendChild(i);
-      b.addEventListener("click", function () { abrirZoom(im.src, im.legenda); });
-      fig.appendChild(b); if (im.legenda) fig.appendChild(el("figcaption", null, im.legenda)); f.appendChild(fig);
+  function recibo(o, t) {
+    var r = el("div", "recibo " + (o.estado || "enviada") + (ultimoRecibo === t.id ? " novo" : ""));
+    r.setAttribute("role", "status");
+    r.appendChild(el("b", null, "✓ Você mandou: " + TIPOS[o.tipo] + (o.opcao ? " — " + o.opcao : "") + (o.tipo === "comentar" && o.texto ? " — \"" + o.texto + "\"" : "")));
+    var p = el("div", "passos-recibo");
+    [["enviada", "Recebido"], ["vista", "Gerente leu"], ["feita", "Feito"]].forEach(function (s, n) {
+      var ordem = { enviada: 0, vista: 1, feita: 2 }[o.estado || "enviada"];
+      p.appendChild(el("span", n <= ordem ? "ok" : "", (n <= ordem ? "● " : "○ ") + s[1]));
+      if (n < 2) p.appendChild(el("span", null, "→"));
     });
-    return f;
+    r.appendChild(p);
+    r.appendChild(el("span", "quando", dataHora(o.em)));
+    if (o.resposta) r.appendChild(el("span", "resp", "Gerente: " + o.resposta));
+    return r;
   }
+
+  // ---------- respostas da conferência
+  function resposta(id) { return locais.respostas[id] || dados.respostas[id] || null; }
+  async function responder(rel, id, op, comentario) {
+    if (!db) { toast("Abra pelo claude.ai para responder.", true); return; }
+    var antes = resposta(id) || {};
+    var r = { relatorio: rel.id, opcao: op ? op.id : (antes.opcao || ""), opcaoNome: op ? op.nome : (antes.opcaoNome || ""),
+      comentario: comentario != null ? comentario : (antes.comentario || ""), em: new Date().toISOString(), lida: false };
+    locais.respostas[id] = r; redesenhar();
+    try { await db.doc("respostas/" + id).set(r); toast(op ? "✓ Recebido: " + op.nome : "✓ Comentário guardado"); }
+    catch (e) { delete locais.respostas[id]; redesenhar(); toast("Não consegui guardar. Tente de novo.", true); }
+  }
+  function idsDoRelatorio(rel) {
+    var ids = (rel.quadros || []).map(function (q) { return q.id; }).concat((rel.perguntas || []).map(function (q) { return q.id; }));
+    if (rel.pergunta) ids.push(rel.pergunta.id);
+    return ids;
+  }
+  function progresso(rel) {
+    var ids = idsDoRelatorio(rel); var feitos = ids.filter(function (i) { var r = resposta(i); return r && r.opcao; }).length;
+    return { feitos: feitos, total: ids.length };
+  }
+
+  // ---------- cartão do trabalho
   function selos(t) {
     var s = el("div", "selos");
-    SELOS.forEach(function (p) {
+    [["github", "GitHub"], ["pc", "Seu PC"], ["samuel", "Você"]].forEach(function (p) {
       var v = (t.selos || {})[p[0]]; if (!v) return;
       if (p[0] === "pc") { var tt = ultimoTeste(t.id); if (tt) v = tt.resultado === "bom" ? "sim" : "nao"; }
-      var x = el("span", "selo " + v); x.appendChild(el("b", null, p[1] + " ")); x.appendChild(document.createTextNode(SELO_TXT[v] || v)); s.appendChild(x);
+      s.appendChild(el("span", "selo " + v, p[1] + " " + (SELO_TXT[v] || v)));
     });
     return s;
   }
@@ -532,22 +686,17 @@
     var l = dados.testes.filter(function (x) { return x.trabalho === id; }).sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
     return l[0] || null;
   }
-  function linkConferencia(t) {
-    var g = dados.geral || {}; var c = t.conferencia; if (!c) return null;
-    var url = c.pagina === "escolhas" ? g.escolhas : g.conferencia; if (!url) return null;
-    var a = el("a", null, c.pagina === "escolhas" ? "Responder na página de escolhas ↗" : "Ver a conferência completa (aba " + c.aba + ") ↗");
-    a.href = url; a.target = "_blank"; a.rel = "noopener"; return a;
-  }
+  function relDe(t) { return dados.conferencias.find(function (r) { return r.id === t.relatorio; }) || null; }
 
-  // ---------- cartão completo
   function cartao(t, op) {
     op = op || {};
     var col = COL[t.coluna] || COL.fila;
-    var c = el("article", "cartao" + (marcados[t.id] ? " marcado" : ""));
-    c.style.setProperty("--cor", "var(" + col.cor + ")");
+    var uo = ultimaOrdem(t.id);
+    var c = el("article", "cartao" + (marcados[t.id] ? " marcado" : "") + (op.respondido ? " respondido" : ""));
+    c.style.setProperty("--cor", "var(" + (op.respondido ? "--verde" : col.cor) + ")");
     var topo = el("div", "cartao-topo");
-    var podeMarcar = !op.semMarcar && t.coluna === "decidir" && t.tipo !== "pergunta" && !t.pergunta;
-    if (podeMarcar) {
+    var ehPergunta = t.tipo === "pergunta" || !!t.pergunta;
+    if (!op.semMarcar && !op.respondido && t.coluna === "decidir" && !ehPergunta) {
       var cb = el("input"); cb.type = "checkbox"; cb.id = "marca-" + t.id; cb.checked = !!marcados[t.id];
       cb.setAttribute("aria-label", "Marcar para decidir junto: " + t.titulo);
       cb.addEventListener("change", function () { if (cb.checked) marcados[t.id] = true; else delete marcados[t.id]; c.classList.toggle("marcado", cb.checked); barraVarios(); });
@@ -559,55 +708,60 @@
     var l1 = el("div", "linha"); l1.appendChild(el("span", "chip c-" + t.coluna, col.nome));
     if (t.selos && Object.keys(t.selos).length) l1.appendChild(selos(t));
     c.appendChild(l1);
-    if (t.oque) { var p = el("p"); p.appendChild(el("span", "rot", "O que é")); p.appendChild(document.createTextNode(t.oque)); c.appendChild(p); }
-    if (t.situacao) { var p2 = el("p"); p2.appendChild(el("span", "rot", "Como está")); p2.appendChild(document.createTextNode(t.situacao)); c.appendChild(p2); }
-    if (t.ressalva) c.appendChild(el("p", "ressalva", "Ressalva: " + t.ressalva));
-    if (t.falta) { var p3 = el("p", "falta"); p3.appendChild(el("span", "rot", "Falta")); p3.appendChild(document.createTextNode(t.falta)); c.appendChild(p3); }
-    if (t.comparar) c.appendChild(comparador(t.comparar));
-    if (t.fotos && t.fotos.length) c.appendChild(fotos(t.fotos));
-    var lk = linkConferencia(t); if (lk) { var pl = el("p"); pl.appendChild(lk); c.appendChild(pl); }
+    if (t.oque) c.appendChild(el("p", null, t.oque));
+    if (uo) c.appendChild(recibo(uo, t));
+    if (t.falta && !op.respondido) { var pf = el("p", "falta"); pf.appendChild(el("span", "rot", "Falta")); pf.appendChild(document.createTextNode(t.falta)); c.appendChild(pf); }
 
-    var uo = ultimaOrdem(t.id);
-    if (uo) {
-      var oe = el("div", "ordem-estado" + (uo.estado === "feita" ? " feita" : ""));
-      oe.appendChild(el("span", null, "Sua última ordem: " + (TIPOS[uo.tipo] || {}).nome + (uo.opcao ? " (" + uo.opcao + ")" : "") + " · " + (ESTADOS[uo.estado] || uo.estado) + " · " + dataHora(uo.em)));
-      if (uo.resposta) oe.appendChild(el("span", "resp", "Gerente: " + uo.resposta));
-      c.appendChild(oe);
+    var fl = fotosDoTrabalho(t);
+    if (fl.length) { var tr = el("div", "tiras"); fl.forEach(function (_, i) { tr.appendChild(miniatura(fl, i)); }); c.appendChild(tr); }
+
+    var rel = relDe(t);
+    if (rel) {
+      var pr = progresso(rel); var rl = el("div", "relatorio-link");
+      var info = el("div"); info.appendChild(el("b", null, "Relatório: " + pr.feitos + " de " + pr.total + " respondidos"));
+      var bar = el("div", "barrinha"); var bs = el("span"); bs.style.width = (pr.total ? 100 * pr.feitos / pr.total : 0) + "%"; bar.appendChild(bs); info.appendChild(bar);
+      rl.appendChild(info);
+      rl.appendChild(botao("Abrir o relatório →", "azul", function () { if (detalhe.open) detalhe.close(); abrirRelatorio(rel.id); }));
+      c.appendChild(rl);
+    } else if (t.conferencia && t.conferencia.pagina === "escolhas" && dados.geral && dados.geral.escolhas) {
+      var a = el("a", null, "Responder na página de escolhas ↗"); a.href = dados.geral.escolhas; a.target = "_blank"; a.rel = "noopener"; c.appendChild(a);
     }
 
     // ações
-    var acoes = el("div", "linha");
-    var ehPergunta = t.tipo === "pergunta" || t.pergunta;
-    if (t.coluna === "decidir" || t.coluna === "melhorar" || t.coluna === "andamento" || t.coluna === "fila") {
+    var abertos = { decidir: 1, melhorar: 1, andamento: 1, fila: 1 };
+    if (abertos[t.coluna]) {
       if (ehPergunta) {
-        c.appendChild(el("p", "pergunta", t.pergunta || ""));
+        c.appendChild(el("p", "pergunta-txt", t.pergunta || ""));
+        var lr = el("div", "linha"); var escolhida = uo && uo.tipo === "resposta" ? uo.opcao : null;
         (t.opcoes || []).forEach(function (o) {
-          acoes.appendChild(botao(o, "azul", function () { mandarOrdem(t, "resposta", { opcao: o }); }));
+          var b = botao(o, escolhida === o ? "escolhido" : "azul", function () { if (escolhida === o) return; lr.querySelectorAll("button").forEach(function (x) { x.disabled = true; }); mandarOrdem(t, "resposta", { opcao: o }); });
+          lr.appendChild(b);
         });
+        c.appendChild(lr);
       } else {
+        var acoes = el("div", "linha"), feitoJuntar = uo && uo.tipo === "juntar";
         if (t.coluna === "decidir" || t.coluna === "melhorar") {
           var conf = el("div", "confirmar"); conf.hidden = true;
-          conf.appendChild(el("span", null, "Pôr \"" + t.titulo + "\" no programa como está? Antes de entrar, roda a suíte no GitHub e no seu PC (com os agentes parados). As melhorias continuam depois."));
+          conf.appendChild(el("span", null, "Pôr \"" + t.titulo + "\" no programa como está? Antes de entrar, roda a suíte no GitHub e no seu PC. As melhorias continuam depois."));
           var lc = el("div", "linha");
           lc.appendChild(botao("Sim, pôr no programa", "forte", function () { conf.hidden = true; mandarOrdem(t, "juntar"); }));
           lc.appendChild(botao("Cancelar", "", function () { conf.hidden = true; }));
           conf.appendChild(lc);
-          acoes.appendChild(botao("✓ Pôr no programa como está", "forte", function () { conf.hidden = false; }));
+          acoes.appendChild(botao(feitoJuntar ? "Mandado pôr no programa" : "Pôr no programa como está", feitoJuntar ? "escolhido" : "forte", function () { if (!feitoJuntar) conf.hidden = false; }));
           c.appendChild(acoes); c.appendChild(conf); acoes = el("div", "linha");
         }
-        acoes.appendChild(botao("▶ Continuar trabalhando", "", function () { mandarOrdem(t, "continuar"); }));
-        acoes.appendChild(botao("■ Parar", "parar", function () { mandarOrdem(t, "parar"); }));
-        if (t.ramo && t.coluna !== "fila") acoes.appendChild(botao("Preparar para eu testar no PC", "", function () { mandarOrdem(t, "testar"); }));
+        acoes.appendChild(botao("▶ Continuar", uo && uo.tipo === "continuar" ? "escolhido" : "", function () { mandarOrdem(t, "continuar"); }));
+        acoes.appendChild(botao("■ Parar", uo && uo.tipo === "parar" ? "escolhido" : "parar", function () { mandarOrdem(t, "parar"); }));
+        if (t.ramo && t.coluna !== "fila") acoes.appendChild(botao("Preparar para eu testar", uo && uo.tipo === "testar" ? "escolhido" : "", function () { mandarOrdem(t, "testar"); }));
+        c.appendChild(acoes);
       }
     }
-    c.appendChild(acoes);
 
     // comentário
     var dc = el("details", "sub"); dc.appendChild(el("summary", null, "Comentar"));
     var dd = el("div", "dentro");
     var ta = el("textarea"); ta.id = "com-" + t.id + (op.semMarcar ? "-d" : ""); ta.placeholder = "Escreva o que a gerente deve saber ou fazer.";
-    var rascunho = ler("rascunho-" + t.id); if (rascunho) ta.value = rascunho;
-    ta.addEventListener("input", function () { guardar("rascunho-" + t.id, ta.value); });
+    ta.value = ler("rascunho-" + t.id) || ""; ta.addEventListener("input", function () { guardar("rascunho-" + t.id, ta.value); });
     dd.appendChild(ta);
     dd.appendChild(botao("Guardar comentário", "azul", async function () {
       var v = ta.value.trim(); if (!v) return;
@@ -615,130 +769,248 @@
     }));
     dc.appendChild(dd); c.appendChild(dc);
 
-    // como testar no PC
+    // mais detalhes
+    var dm = el("details", "sub"); dm.appendChild(el("summary", null, "Mais detalhes"));
+    var di = el("div", "dentro");
+    if (t.situacao) { var p2 = el("p"); p2.appendChild(el("span", "rot", "Como está")); p2.appendChild(document.createTextNode(t.situacao)); di.appendChild(p2); }
+    if (t.ressalva) di.appendChild(el("p", "ressalva", "Ressalva: " + t.ressalva));
     if (t.testar && t.testar.length) {
-      var dt = el("details", "sub"); dt.appendChild(el("summary", null, "Como testar no seu PC"));
-      var di = el("div", "dentro");
+      di.appendChild(el("span", "rot", "Como testar no seu PC"));
       var ol = el("ol", "passos"); t.testar.forEach(function (s) { ol.appendChild(el("li", null, s)); }); di.appendChild(ol);
       var ut = ultimoTeste(t.id);
       if (ut) di.appendChild(el("span", "estado", "Seu último teste: " + (ut.resultado === "bom" ? "bom" : "ruim") + " · " + dataHora(ut.em) + (ut.texto ? " · \"" + ut.texto + "\"" : "")));
-      var tt = el("input"); tt.type = "text"; tt.id = "teste-" + t.id + (op.semMarcar ? "-d" : ""); tt.placeholder = "O que você viu (opcional)";
-      di.appendChild(tt);
+      var tt = el("input"); tt.type = "text"; tt.id = "teste-" + t.id + (op.semMarcar ? "-d" : ""); tt.placeholder = "O que você viu (opcional)"; di.appendChild(tt);
       var lt = el("div", "linha");
       function testei(res) { return async function () {
-        if (!db) { toast("Abra pelo claude.ai para guardar."); return; }
-        try { await db.doc("testes/" + novoId("t")).set({ trabalho: t.id, titulo: t.titulo, resultado: res, texto: tt.value.trim(), em: new Date().toISOString() }); tt.value = ""; toast("Teste guardado: " + res); }
-        catch (e) { toast("Não consegui guardar o teste. Tente de novo."); }
+        if (!db) { toast("Abra pelo claude.ai para guardar.", true); return; }
+        try { await db.doc("testes/" + novoId("t")).set({ trabalho: t.id, titulo: t.titulo, resultado: res, texto: tt.value.trim(), em: new Date().toISOString() }); tt.value = ""; toast("✓ Teste guardado: " + res); }
+        catch (e) { toast("Não consegui guardar o teste.", true); }
       }; }
       lt.appendChild(botao("Testei no PC: bom", "forte", testei("bom")));
       lt.appendChild(botao("Testei no PC: ruim", "parar", testei("ruim")));
-      di.appendChild(lt); dt.appendChild(di); c.appendChild(dt);
+      di.appendChild(lt);
     }
-
-    if (t.ramo || t.commit) {
-      var dx = el("details", "sub"); dx.appendChild(el("summary", null, "Detalhes técnicos"));
-      var dxi = el("div", "dentro");
-      dxi.appendChild(el("span", "tecnico", (t.ramo ? "cópia separada (ramo): " + t.ramo + " · " : "") + (t.commit ? "versão (commit): " + t.commit : "") + (t.noFase1 === true ? " · já está no programa (fase-1)" : t.noFase1 === false ? " · ainda não está no programa (fase-1)" : "")));
-      dx.appendChild(dxi); c.appendChild(dx);
-    }
+    if (t.ramo || t.commit) di.appendChild(el("span", "tecnico", (t.ramo ? "cópia separada (ramo): " + t.ramo + " · " : "") + (t.commit ? "versão: " + t.commit : "") + (t.noFase1 === true ? " · já está no programa" : t.noFase1 === false ? " · ainda não está no programa" : "")));
+    if (di.childNodes.length) { dm.appendChild(di); c.appendChild(dm); }
     return c;
   }
 
   function barraVarios() {
-    var ids = Object.keys(marcados);
-    var b = document.getElementById("barra-varios");
-    b.hidden = !ids.length;
+    var ids = Object.keys(marcados); var b = document.getElementById("barra-varios"); b.hidden = !ids.length;
     document.getElementById("varios-texto").textContent = ids.length + (ids.length === 1 ? " trabalho marcado" : " trabalhos marcados");
     document.getElementById("varios-juntar").textContent = "Pôr " + (ids.length === 1 ? "o marcado" : "os " + ids.length + " marcados") + " no programa como estão";
   }
   document.getElementById("varios-limpar").addEventListener("click", function () { marcados = {}; barraVarios(); desenhar(); });
   var confirmaVarios = false;
   document.getElementById("varios-juntar").addEventListener("click", async function () {
-    var b = this;
-    if (!confirmaVarios) { confirmaVarios = true; b.textContent = "Confirmar: cada um passa pelos testes antes de entrar"; setTimeout(function () { confirmaVarios = false; barraVarios(); }, 6000); return; }
-    confirmaVarios = false;
-    var ids = Object.keys(marcados); var ok = 0;
-    for (var i = 0; i < ids.length; i++) {
-      var t = dados.trabalhos.find(function (x) { return x.id === ids[i]; });
-      if (t && await mandarOrdem(t, "juntar", { texto: "pedido junto com " + (ids.length - 1) + " outro(s)" })) ok++;
-    }
-    marcados = {}; barraVarios(); desenhar(); toast(ok + " ordens guardadas");
+    if (!confirmaVarios) { confirmaVarios = true; this.textContent = "Clique de novo para confirmar (cada um passa pelos testes antes)"; setTimeout(function () { confirmaVarios = false; barraVarios(); }, 6000); return; }
+    confirmaVarios = false; var ids = Object.keys(marcados); marcados = {}; barraVarios();
+    for (var i = 0; i < ids.length; i++) { var t = dados.trabalhos.find(function (x) { return x.id === ids[i]; }); if (t) await mandarOrdem(t, "juntar", { texto: "pedido junto com " + (ids.length - 1) + " outro(s)" }); }
   });
 
   // ---------- prioridade
   function prioridade() { return ((dados.config.prioridade || {}).ordem) || []; }
   function ordenarFila(lista) {
     var p = prioridade();
-    return lista.slice().sort(function (a, b) {
-      var ia = p.indexOf(a.id), ib = p.indexOf(b.id);
-      if (ia < 0) ia = 1e4 + (a.ordem || 0); if (ib < 0) ib = 1e4 + (b.ordem || 0);
-      return ia - ib;
-    });
+    return lista.slice().sort(function (a, b) { var ia = p.indexOf(a.id), ib = p.indexOf(b.id); if (ia < 0) ia = 1e4 + (a.ordem || 0); if (ib < 0) ib = 1e4 + (b.ordem || 0); return ia - ib; });
   }
   async function salvarPrioridade(ids) {
-    dados.config.prioridade = { ordem: ids, em: new Date().toISOString() };
-    desenhar();
-    if (!db) { toast("Abra pelo claude.ai para guardar a ordem."); return; }
-    try { await db.doc("config/prioridade").set({ ordem: ids, em: new Date().toISOString() }); toast("Ordem de prioridade guardada"); }
-    catch (e) { toast("Não consegui guardar a ordem."); }
+    dados.config.prioridade = { ordem: ids }; desenhar();
+    if (!db) return;
+    try { await db.doc("config/prioridade").set({ ordem: ids, em: new Date().toISOString() }); toast("✓ Ordem de prioridade guardada"); } catch (e) { toast("Não consegui guardar a ordem.", true); }
   }
-  function listaPriorizavel() {
-    return ordenarFila(dados.trabalhos.filter(function (t) { return PRIORIZA[t.coluna]; }));
-  }
-  function mover(id, delta) {
-    var ids = listaPriorizavel().map(function (t) { return t.id; });
-    var i = ids.indexOf(id), j = i + delta; if (i < 0 || j < 0 || j >= ids.length) return;
-    ids.splice(j, 0, ids.splice(i, 1)[0]); salvarPrioridade(ids);
-  }
+  function listaPriorizavel() { return ordenarFila(dados.trabalhos.filter(function (t) { return PRIORIZA[t.coluna]; })); }
+  function mover(id, d) { var ids = listaPriorizavel().map(function (t) { return t.id; }); var i = ids.indexOf(id), j = i + d; if (i < 0 || j < 0 || j >= ids.length) return; ids.splice(j, 0, ids.splice(i, 1)[0]); salvarPrioridade(ids); }
 
-  // ---------- desenho
+  // ---------- topo
   function desenharTopo() {
     var g = dados.geral || {};
-    document.getElementById("resumo").textContent = g.frase || (db ? "Ainda sem resumo." : "Carregando...");
+    document.getElementById("resumo").textContent = g.frase || (db ? "" : "Carregando...");
     document.getElementById("atualizado").textContent = g.atualizado ? "Atualizado pela gerente em " + dataHora(g.atualizado) + "." : "";
     var links = document.getElementById("links"); links.textContent = "";
-    [["conferencia", "Conferência"], ["escolhas", "Escolhas"], ["layout", "Layout"], ["memoria", "Memória"]].forEach(function (p) {
-      if (!g[p[0]]) return; var a = el("a", null, p[1] + " ↗"); a.href = g[p[0]]; a.target = "_blank"; a.rel = "noopener"; links.appendChild(a);
-    });
+    [["escolhas", "Escolhas"], ["layout", "Layout"], ["memoria", "Memória"]].forEach(function (p) { if (!g[p[0]]) return; var a = el("a", null, p[1] + " ↗"); a.href = g[p[0]]; a.target = "_blank"; a.rel = "noopener"; links.appendChild(a); });
     var conta = {}; dados.trabalhos.forEach(function (t) { conta[t.coluna] = (conta[t.coluna] || 0) + 1; });
     var placar = document.getElementById("placar"); placar.textContent = "";
     COLUNAS.forEach(function (c) {
       var b = el("button"); b.type = "button"; b.style.setProperty("--cor", "var(" + c.cor + ")");
-      b.appendChild(el("span", "n", String(conta[c.id] || 0))); b.appendChild(el("span", "r", c.nome));
-      b.addEventListener("click", function () { irPara(c.id === "decidir" ? "decidir" : "quadro"); });
-      placar.appendChild(b);
+      b.appendChild(el("span", "n", String(conta[c.id] || 0))); b.appendChild(document.createTextNode(c.nome));
+      b.addEventListener("click", function () { irPara(c.id === "decidir" ? "decidir" : "quadro"); }); placar.appendChild(b);
     });
-    var nd = conta.decidir || 0; var cd = document.getElementById("cont-decidir"); cd.hidden = !nd; cd.textContent = nd;
-    var no = dados.ordens.filter(function (o) { return o.estado !== "feita"; }).length;
-    var co = document.getElementById("cont-ordens"); co.hidden = !no; co.textContent = no;
+    var pend = pendentesDecidir().length; var cd = document.getElementById("cont-decidir"); cd.hidden = !pend; cd.textContent = pend;
+    var faltaConf = 0; dados.conferencias.forEach(function (r) { var p = progresso(r); faltaConf += p.total - p.feitos; });
+    var cc = document.getElementById("cont-conf"); cc.hidden = !faltaConf; cc.textContent = faltaConf;
 
-    // o que mudou
     var m = document.getElementById("mudou"); m.textContent = "";
-    var itens = [];
-    (g.novidades || []).forEach(function (n) { itens.push({ em: n.em, texto: n.texto }); });
-    dados.ordens.forEach(function (o) { if (o.resposta && o.respondidaEm) itens.push({ em: o.respondidaEm, texto: "A gerente respondeu à sua ordem \"" + (TIPOS[o.tipo] || {}).nome + "\" em " + o.titulo + ": " + o.resposta }); });
-    dados.agentes.forEach(function (a) { if (a.quando) itens.push({ em: a.quando, texto: a.nome + ": " + (a.ultimo || "") }); });
-    var novos = visitaAnterior ? itens.filter(function (x) { return String(x.em) > visitaAnterior; }) : itens.filter(function (x) { return (g.novidades || []).some(function (n) { return n.texto === x.texto; }); });
+    var itens = (g.novidades || []).map(function (n) { return { em: n.em, texto: n.texto }; });
+    todasOrdens().forEach(function (o) { if (o.resposta && o.respondidaEm) itens.push({ em: o.respondidaEm, texto: "A gerente respondeu (" + o.titulo + "): " + o.resposta }); });
+    var novos = visitaAnterior ? itens.filter(function (x) { return String(x.em) > visitaAnterior; }) : itens;
     novos.sort(function (a, b) { return String(b.em).localeCompare(String(a.em)); });
     if (novos.length) {
-      m.hidden = false;
-      m.appendChild(el("h2", null, visitaAnterior ? "Mudou desde a sua última visita (" + dataHora(visitaAnterior) + ")" : "Novidades"));
-      var ul = el("ul");
-      novos.slice(0, 8).forEach(function (x) { var li = el("li"); li.appendChild(el("span", "quando", dataHora(x.em) + " · ")); li.appendChild(document.createTextNode(x.texto)); ul.appendChild(li); });
+      m.hidden = false; m.open = novos.length <= 4;
+      m.appendChild(el("summary", null, (visitaAnterior ? "O que mudou desde a sua última visita" : "Novidades") + " (" + novos.length + ")"));
+      var ul = el("ul"); novos.slice(0, 10).forEach(function (x) { var li = el("li"); li.appendChild(el("span", "quando", dataHora(x.em) + " · ")); li.appendChild(document.createTextNode(x.texto)); ul.appendChild(li); });
       m.appendChild(ul);
-    } else if (visitaAnterior && db) {
-      m.hidden = false; m.appendChild(el("h2", null, "Nada mudou desde a sua última visita (" + dataHora(visitaAnterior) + ")."));
     } else m.hidden = true;
     var av = document.getElementById("aviso");
-    if (db && g.avisos && g.avisos.length) { av.hidden = false; av.textContent = "Conferência automática achou diferença: " + g.avisos.join("; "); }
+    if (db && g.avisos && g.avisos.length) { av.hidden = false; av.textContent = "A conferência automática achou diferença: " + g.avisos.join("; "); }
   }
 
+  // ---------- Decidir agora
+  function respondidoAgora(t) { var o = ultimaOrdem(t.id, ["juntar", "resposta", "parar"]); return o && o.estado !== "feita" ? o : null; }
+  function pendentesDecidir() { return dados.trabalhos.filter(function (t) { return t.coluna === "decidir" && !respondidoAgora(t); }); }
   function desenharDecidir() {
     var l = document.getElementById("lista-decidir"); l.textContent = "";
-    var lista = dados.trabalhos.filter(function (t) { return t.coluna === "decidir"; }).sort(porOrdem);
-    if (!lista.length) { l.appendChild(el("p", "vazio", db ? "Nada esperando você agora." : "Carregando os trabalhos...")); return; }
+    var lista = pendentesDecidir().sort(porOrdem);
+    if (!lista.length) l.appendChild(el("p", "vazio", db ? "Nada esperando você agora." : "Carregando os trabalhos..."));
     lista.forEach(function (t) { l.appendChild(cartao(t)); });
+    var r = document.getElementById("lista-respondidos"); r.textContent = "";
+    var resp = dados.trabalhos.filter(function (t) { return t.coluna === "decidir" && respondidoAgora(t); }).sort(porOrdem);
+    document.getElementById("titulo-respondidos").hidden = !resp.length;
+    resp.forEach(function (t) { r.appendChild(cartao(t, { respondido: true })); });
   }
+
+  // ---------- Conferência
+  function abrirRelatorio(id) { relAtual = id; guardar("central-rel", id); irPara("conferencia"); desenharConferencia(); window.scrollTo(0, 0); }
+  function desenharConferencia() {
+    var abas = document.getElementById("sub-abas"); abas.textContent = "";
+    var rels = dados.conferencias.slice().sort(porOrdem);
+    var caixa = document.getElementById("relatorio"); caixa.textContent = "";
+    if (!rels.length) { caixa.appendChild(el("p", "vazio", db ? "Nenhum relatório esperando você." : "Carregando os relatórios...")); return; }
+    if (!relAtual || !rels.some(function (r) { return r.id === relAtual; })) relAtual = ler("central-rel") || rels[0].id;
+    if (!rels.some(function (r) { return r.id === relAtual; })) relAtual = rels[0].id;
+    rels.forEach(function (r) {
+      var p = progresso(r); var b = el("button"); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(r.id === relAtual));
+      b.appendChild(el("span", null, r.nome));
+      b.appendChild(el("span", "prog", p.feitos === p.total ? "✓ tudo respondido" : p.feitos + " de " + p.total + " respondidos"));
+      var bar = el("span", "barrinha"); var s = el("span"); s.style.width = (p.total ? 100 * p.feitos / p.total : 0) + "%"; bar.appendChild(s); b.appendChild(bar);
+      b.addEventListener("click", function () { relAtual = r.id; guardar("central-rel", r.id); desenharConferencia(); });
+      abas.appendChild(b);
+    });
+    var rel = rels.find(function (r) { return r.id === relAtual; });
+    // todas as fotos do relatório numa lista só, para o visor passar de uma para outra
+    var todas = []; function reg(im) { todas.push({ src: im.src, legenda: im.legenda || "" }); return todas.length - 1; }
+
+    var topo = el("div", "rel-topo"); topo.appendChild(el("h3", null, rel.nome));
+    if (rel.resumo) {
+      (rel.resumo.paragrafos || []).forEach(function (t) { topo.appendChild(el("p", null, t)); });
+      if (rel.resumo.veredito) topo.appendChild(el("p", "veredito", "Opinião do verificador: " + rel.resumo.veredito));
+      if (rel.resumo.velocidade) topo.appendChild(el("p", "estado", "Velocidade: " + rel.resumo.velocidade));
+    }
+    if (rel.ressalvas && rel.ressalvas.length) { topo.appendChild(el("span", "rot", "Ressalvas")); var ul = el("ul"); rel.ressalvas.forEach(function (t) { ul.appendChild(el("li", null, t)); }); topo.appendChild(ul); }
+    var p = progresso(rel); var nav = el("div", "navega");
+    nav.appendChild(el("b", null, p.feitos + " de " + p.total + " respondidos"));
+    nav.appendChild(botao("Ir para o próximo sem resposta ↓", "azul", function () {
+      var id = idsDoRelatorio(rel).find(function (i) { var r = resposta(i); return !(r && r.opcao); });
+      var alvo = id && document.getElementById("q-" + id); if (alvo) alvo.scrollIntoView({ behavior: "smooth", block: "start" }); else toast("✓ Tudo respondido neste relatório");
+    }));
+    topo.appendChild(nav); caixa.appendChild(topo);
+
+    (rel.quadros || []).forEach(function (q, n) {
+      var r = resposta(q.id);
+      var s = el("article", "quadro" + (r && r.opcao ? " respondido" : "")); s.id = "q-" + q.id;
+      var cab = el("div", "quadro-cab"); cab.appendChild(el("span", "num", "Quadro " + (n + 1) + " de " + rel.quadros.length));
+      if (r && r.opcao) cab.appendChild(el("span", "chip " + (r.opcao === "bom" ? "c-ok" : r.opcao === "pior" ? "c-pior" : "c-melhorar"), "✓ Sua resposta: " + r.opcaoNome));
+      cab.appendChild(el("h4", null, q.nome)); s.appendChild(cab);
+      s.appendChild(paragrafos(q.explicacao));
+      if (q.olhar) { var o = el("p", "olhar"); o.appendChild(el("b", null, "O que olhar: ")); o.appendChild(document.createTextNode(q.olhar)); s.appendChild(o); }
+      s.appendChild(fotosQuadro(q.imgs || [], reg, todas));
+      if (q.selo || q.texto) {
+        var op = el("div", "opiniao"); op.appendChild(el("span", "rot", "O que o verificador achou" + (q.selo ? ": " + q.selo : "")));
+        if (q.texto) op.appendChild(el("p", null, q.texto)); s.appendChild(op);
+      }
+      if (q.ressalva) s.appendChild(el("p", "ressalva", "Ressalva: " + q.ressalva));
+      if (q.decisao_do_samuel) s.appendChild(el("p", "decisao-ant", "O que você tinha decidido: " + q.decisao_do_samuel + (q.bate_com_a_decisao ? " — bate? " + q.bate_com_a_decisao : "")));
+      s.appendChild(blocoResposta(rel, q.id, OP_QUADRO, "Nesta página, como ficou?"));
+      caixa.appendChild(s);
+    });
+
+    (rel.perguntas || []).forEach(function (q, n) {
+      var r = resposta(q.id);
+      var s = el("article", "quadro" + (r && r.opcao ? " respondido" : "")); s.id = "q-" + q.id;
+      var cab = el("div", "quadro-cab"); cab.appendChild(el("span", "num", "Pergunta " + (n + 1) + " de " + rel.perguntas.length));
+      if (r && r.opcao) cab.appendChild(el("span", "chip c-ok", "✓ Sua resposta: " + r.opcaoNome));
+      cab.appendChild(el("h4", null, q.titulo)); s.appendChild(cab);
+      s.appendChild(paragrafos(q.explicacao));
+      var ex = (q.exemplos || []).slice(); if (q.primeira_imagem) ex.unshift(q.primeira_imagem);
+      if (ex.length) s.appendChild(fotosQuadro(ex, reg, todas));
+      if (q.sugestao) s.appendChild(el("p", "opiniao", "Sugestão: " + q.sugestao));
+      var ops = (q.opcoes || []).slice(); if (!ops.some(function (o) { return o.id === "nao-entendi"; })) ops.push({ id: "nao-entendi", nome: "Ainda não entendi", texto: "Explique de outro jeito." });
+      var grade = el("div", "opcoes-p");
+      ops.forEach(function (o) {
+        var esc = r && r.opcao === o.id; var cx = el("div", "opcao-p" + (esc ? " escolhida" : ""));
+        cx.appendChild(el("h5", null, o.nome));
+        if (o.texto) cx.appendChild(el("p", null, o.texto));
+        if (o.sugestao_do_verificador) cx.appendChild(el("p", "estado", "Sugestão do verificador: " + o.sugestao_do_verificador));
+        if (o.imgs && o.imgs.length) { var tr = el("div", "tiras"); o.imgs.forEach(function (im) { var k = reg(im); tr.appendChild(miniatura(todas, k)); }); cx.appendChild(tr); }
+        cx.appendChild(botao(esc ? "Escolhida" : "Escolho esta", esc ? "escolhido" : "azul", function () { if (!esc) responder(rel, q.id, { id: o.id, nome: o.nome }); }));
+        grade.appendChild(cx);
+      });
+      s.appendChild(grade);
+      s.appendChild(comentarioResposta(rel, q.id));
+      caixa.appendChild(s);
+    });
+
+    if (rel.pergunta) {
+      var r2 = resposta(rel.pergunta.id);
+      var f = el("article", "final"); f.id = "q-" + rel.pergunta.id;
+      f.appendChild(el("span", "rot", "Decisão final deste trabalho"));
+      f.appendChild(el("h4", null, rel.pergunta.titulo));
+      if (rel.pergunta.explicacao) f.appendChild(paragrafos(rel.pergunta.explicacao));
+      f.appendChild(el("p", "estado", "\"Aprovado\" = pôr no programa como está (passa pelos testes no GitHub e no seu PC antes). As melhorias pedidas nos quadros continuam depois."));
+      var ops2 = (rel.pergunta.opcoes || []).map(function (o) { return typeof o === "string" ? { id: OP_FINAL[o] || o, nome: o } : o; });
+      if (!ops2.some(function (o) { return o.id === "nao-entendi"; })) ops2.push({ id: "nao-entendi", nome: "Ainda não entendi" });
+      f.appendChild(blocoResposta(rel, rel.pergunta.id, ops2, null, true));
+      caixa.appendChild(f);
+    }
+  }
+  function fotosQuadro(imgs, reg, todas) {
+    var w = el("div", "fotos-q"); if (!imgs.length) return w;
+    var k0 = reg(imgs[0]);
+    var fig = el("figure"); var b = el("button", "grande"); b.type = "button"; b.setAttribute("aria-label", "Abrir grande: " + (imgs[0].legenda || "foto"));
+    var im = new Image(); im.src = imgs[0].src; im.alt = imgs[0].legenda || ""; im.loading = "lazy"; b.appendChild(im); b.appendChild(el("span", "lupa", "Abrir grande ⤢"));
+    b.addEventListener("click", function () { abrirVisor(todas, k0); });
+    fig.appendChild(b); if (imgs[0].legenda) fig.appendChild(el("figcaption", null, imgs[0].legenda)); w.appendChild(fig);
+    if (imgs.length > 1) {
+      var resto = el("div", "resto");
+      imgs.slice(1).forEach(function (x) {
+        var k = reg(x); var fg = el("figure"); var bb = el("button", "grande"); bb.type = "button"; bb.setAttribute("aria-label", "Abrir grande: " + (x.legenda || "foto"));
+        var ii = new Image(); ii.src = x.src; ii.alt = x.legenda || ""; ii.loading = "lazy"; bb.appendChild(ii); bb.appendChild(el("span", "lupa", "Abrir ⤢"));
+        bb.addEventListener("click", function () { abrirVisor(todas, k); });
+        fg.appendChild(bb); if (x.legenda) fg.appendChild(el("figcaption", null, x.legenda)); resto.appendChild(fg);
+      });
+      w.appendChild(resto);
+    }
+    return w;
+  }
+  function blocoResposta(rel, id, ops, titulo, grande) {
+    var r = resposta(id); var w = el("div", "resposta-q");
+    if (titulo) w.appendChild(el("span", "rot", titulo));
+    var l = el("div", "linha");
+    ops.forEach(function (o) {
+      var esc = r && r.opcao === o.id;
+      l.appendChild(botao(o.nome, esc ? "escolhido" : (grande && o.id === "aprovado" ? "forte" : ""), function () { if (!esc) responder(rel, id, o); }));
+    });
+    w.appendChild(l);
+    if (r && r.opcao) w.appendChild(el("span", "estado", "✓ Recebido " + dataHora(r.em) + (r.lida ? " · a gerente leu" : " · a gerente ainda não leu") + ". Pode trocar clicando em outra opção."));
+    w.appendChild(comentarioResposta(rel, id));
+    return w;
+  }
+  function comentarioResposta(rel, id) {
+    var r = resposta(id); var d = el("details", "sub"); if (r && r.comentario) d.open = true;
+    d.appendChild(el("summary", null, r && r.comentario ? "Seu comentário" : "Comentar (não é obrigatório)"));
+    var dd = el("div", "dentro"); var ta = el("textarea"); ta.id = "rc-" + id;
+    ta.value = (r && r.comentario) || ler("rascunho-rc-" + id) || ""; ta.addEventListener("input", function () { guardar("rascunho-rc-" + id, ta.value); });
+    dd.appendChild(ta);
+    dd.appendChild(botao("Guardar comentário", "azul", function () { responder(rel, id, null, ta.value.trim()); guardar("rascunho-rc-" + id, ""); }));
+    d.appendChild(dd); return d;
+  }
+
+  // ---------- quadro, etapas, agentes, defeitos, velocidade, ordens
+  var detalhe = document.getElementById("detalhe"), detalheId = null;
+  document.getElementById("detalhe-fechar").addEventListener("click", function () { detalhe.close(); });
+  detalhe.addEventListener("click", function (ev) { if (ev.target === detalhe) detalhe.close(); });
+  detalhe.addEventListener("close", function () { detalheId = null; });
+  function abrirDetalhe(t) { detalheId = t.id; var c = document.getElementById("detalhe-corpo"); c.textContent = ""; c.appendChild(cartao(t, { semMarcar: true })); detalhe.showModal(); }
 
   var arrastado = null;
   function desenharQuadro() {
@@ -753,26 +1025,20 @@
       lista.forEach(function (t) {
         var m = el("div", "mini"); m.tabIndex = 0; m.setAttribute("role", "button"); m.setAttribute("aria-label", "Abrir " + t.titulo);
         if (PRIORIZA[c.id]) {
-          var pr = el("div", "pri"); pr.appendChild(el("span", "num", "#" + (pri.indexOf(t.id) + 1)));
+          var pr = el("div", "pri"); pr.appendChild(el("span", "numx", "#" + (pri.indexOf(t.id) + 1)));
           var st = el("span", "setas");
-          var up = el("button", null, "↑"); up.type = "button"; up.setAttribute("aria-label", "Subir na prioridade"); up.addEventListener("click", function (ev) { ev.stopPropagation(); mover(t.id, -1); });
-          var dn = el("button", null, "↓"); dn.type = "button"; dn.setAttribute("aria-label", "Descer na prioridade"); dn.addEventListener("click", function (ev) { ev.stopPropagation(); mover(t.id, 1); });
+          var up = el("button", null, "↑"); up.type = "button"; up.setAttribute("aria-label", "Subir"); up.addEventListener("click", function (ev) { ev.stopPropagation(); mover(t.id, -1); });
+          var dn = el("button", null, "↓"); dn.type = "button"; dn.setAttribute("aria-label", "Descer"); dn.addEventListener("click", function (ev) { ev.stopPropagation(); mover(t.id, 1); });
           st.appendChild(up); st.appendChild(dn); pr.appendChild(st); m.appendChild(pr);
           m.draggable = true;
           m.addEventListener("dragstart", function (ev) { arrastado = t.id; m.classList.add("arrastando"); try { ev.dataTransfer.setData("text/plain", t.id); } catch (e) {} });
           m.addEventListener("dragend", function () { m.classList.remove("arrastando"); arrastado = null; });
           m.addEventListener("dragover", function (ev) { if (arrastado && arrastado !== t.id) { ev.preventDefault(); m.classList.add("alvo"); } });
           m.addEventListener("dragleave", function () { m.classList.remove("alvo"); });
-          m.addEventListener("drop", function (ev) {
-            ev.preventDefault(); m.classList.remove("alvo"); if (!arrastado) return;
-            var ids = pri.slice(); var i = ids.indexOf(arrastado); if (i < 0) return; ids.splice(i, 1);
-            ids.splice(ids.indexOf(t.id), 0, arrastado); salvarPrioridade(ids);
-          });
+          m.addEventListener("drop", function (ev) { ev.preventDefault(); m.classList.remove("alvo"); if (!arrastado) return; var ids = pri.slice(); var i = ids.indexOf(arrastado); if (i < 0) return; ids.splice(i, 1); ids.splice(ids.indexOf(t.id), 0, arrastado); salvarPrioridade(ids); });
         }
-        m.appendChild(el("span", "t", t.titulo));
-        m.appendChild(el("span", "s", t.situacao || ""));
-        if (t.selos && Object.keys(t.selos).length) m.appendChild(selos(t));
-        var uo = ultimaOrdem(t.id); if (uo && uo.estado !== "feita") m.appendChild(el("span", "chip", "Ordem: " + (TIPOS[uo.tipo] || {}).nome));
+        m.appendChild(el("span", "t", t.titulo)); m.appendChild(el("span", "s", t.situacao || ""));
+        var uo = ultimaOrdem(t.id); if (uo && uo.estado !== "feita") m.appendChild(el("span", "chip c-ok", "✓ " + TIPOS[uo.tipo] + (uo.opcao ? ": " + uo.opcao : "")));
         m.addEventListener("click", function () { abrirDetalhe(t); });
         m.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); abrirDetalhe(t); } });
         col.appendChild(m);
@@ -782,149 +1048,101 @@
     });
   }
 
-  function mdHtml(md) {
-    if (window.marked && window.DOMPurify) return window.DOMPurify.sanitize(window.marked.parse(String(md || "")));
-    return null;
-  }
   function desenharEtapas() {
     var tr = document.getElementById("trilha"); tr.textContent = "";
     var fases = dados.fases.slice().sort(function (a, b) { return a.num - b.num; });
-    var atual = fases.find(function (f) { return f.atual; });
-    var numAtual = atual ? atual.num : 2;
-    if (faseEscolhida == null) faseEscolhida = numAtual;
+    var atual = fases.find(function (f) { return f.atual; }); if (faseEscolhida == null) faseEscolhida = atual ? atual.num : 2;
+    var ordemCor = ["programa", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"];
     fases.forEach(function (f) {
-      var b = el("button", "etapa" + (f.atual ? " atual" : "") + (f.num === faseEscolhida ? " escolhida" : "") + (f.num < numAtual && f.num === 0 ? " feita" : ""));
-      b.type = "button";
-      b.appendChild(el("span", "ponto", String(f.num)));
-      if (f.atual) b.appendChild(el("span", "aqui", "Você está aqui"));
+      var b = el("button", "etapa" + (f.atual ? " atual" : "") + (f.num === faseEscolhida ? " escolhida" : "")); b.type = "button";
+      b.appendChild(el("span", "ponto", String(f.num))); if (f.atual) b.appendChild(el("span", "aqui", "Você está aqui"));
       b.appendChild(el("span", "nome", f.nome));
-      var c = f.contagem || {}; var total = 0; COLUNAS.forEach(function (k) { total += c[k.id] || 0; });
-      var barra = el("span", "barra-fase");
-      ["programa", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"].forEach(function (k) {
-        if (!c[k]) return; var s = el("span"); s.style.width = (100 * c[k] / total) + "%"; s.style.background = "var(" + COL[k].cor + ")"; barra.appendChild(s);
-      });
-      b.appendChild(barra);
-      b.appendChild(el("span", "conta", total ? total + (total === 1 ? " trabalho" : " trabalhos") : "nada começado"));
-      b.addEventListener("click", function () { faseEscolhida = f.num; desenharEtapas(); });
-      tr.appendChild(b);
+      var c = {}; dados.trabalhos.forEach(function (t) { if (String(t.fase) === String(f.num) && COL[t.coluna]) c[t.coluna] = (c[t.coluna] || 0) + 1; });
+      var total = 0; ordemCor.forEach(function (k) { total += c[k] || 0; });
+      var barra = el("span", "barra-fase"); ordemCor.forEach(function (k) { if (!c[k]) return; var s = el("span"); s.style.width = (100 * c[k] / total) + "%"; s.style.background = "var(" + COL[k].cor + ")"; barra.appendChild(s); });
+      b.appendChild(barra); b.appendChild(el("span", "conta", total ? total + (total === 1 ? " trabalho" : " trabalhos") : "nada começado"));
+      b.addEventListener("click", function () { faseEscolhida = f.num; desenharEtapas(); }); tr.appendChild(b);
     });
     var lg = document.getElementById("legenda"); lg.textContent = "";
-    ["programa", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"].forEach(function (k) {
-      var s = el("span"); var i = el("i"); i.style.background = "var(" + COL[k].cor + ")"; s.appendChild(i); s.appendChild(document.createTextNode(COL[k].nome)); lg.appendChild(s);
-    });
+    ordemCor.forEach(function (k) { var s = el("span"); var i = el("i"); i.style.background = "var(" + COL[k].cor + ")"; s.appendChild(i); s.appendChild(document.createTextNode(COL[k].nome)); lg.appendChild(s); });
     var fa = document.getElementById("fase-aberta"); fa.textContent = "";
     var f = fases.find(function (x) { return x.num === faseEscolhida; }); if (!f) { fa.hidden = true; return; }
-    fa.hidden = false;
-    fa.appendChild(el("h3", null, "Fase " + f.num + ": " + f.nome));
-    var its = dados.trabalhos.filter(function (t) { return String(t.fase) === String(f.num); });
-    if (its.length) {
-      var li = el("div", "lista-itens");
-      its.forEach(function (t) { var b = el("button"); b.type = "button"; b.appendChild(el("span", null, t.titulo)); b.appendChild(el("span", "chip c-" + t.coluna, COL[t.coluna].nome)); b.addEventListener("click", function () { abrirDetalhe(t); }); li.appendChild(b); });
-      fa.appendChild(li);
-    } else fa.appendChild(el("p", "vazio", "Nenhum trabalho desta fase começou."));
+    fa.hidden = false; fa.appendChild(el("h3", null, "Fase " + f.num + ": " + f.nome));
+    var its = dados.trabalhos.filter(function (t) { return String(t.fase) === String(f.num) && COL[t.coluna]; });
+    if (its.length) { var li = el("div", "lista-itens"); its.forEach(function (t) { var b = el("button"); b.type = "button"; b.appendChild(el("span", null, t.titulo)); b.appendChild(el("span", "chip c-" + t.coluna, COL[t.coluna].nome)); b.addEventListener("click", function () { abrirDetalhe(t); }); li.appendChild(b); }); fa.appendChild(li); }
+    else fa.appendChild(el("p", "vazio", "Nenhum trabalho desta fase começou."));
     if (f.md) {
-      var d = el("details", "sub"); d.appendChild(el("summary", null, "O texto desta fase no plano"));
-      var md = el("div", "md dentro"); d.appendChild(md);
-      d.addEventListener("toggle", function () { if (d.open && !md.childNodes.length) { var h = mdHtml(f.md); if (h == null) { md.style.whiteSpace = "pre-wrap"; md.textContent = f.md; } else md.innerHTML = h; } });
+      var d = el("details", "sub"); d.appendChild(el("summary", null, "O texto desta fase no plano")); var md = el("div", "md dentro"); d.appendChild(md);
+      d.addEventListener("toggle", function () { if (d.open && !md.childNodes.length) { if (window.marked && window.DOMPurify) md.innerHTML = window.DOMPurify.sanitize(window.marked.parse(f.md)); else { md.style.whiteSpace = "pre-wrap"; md.textContent = f.md; } } });
       fa.appendChild(d);
     }
   }
 
   function desenharAgentes() {
-    var n = document.getElementById("numeros"); n.textContent = "";
-    var max = (dados.config.agentes || {}).max;
+    var n = document.getElementById("numeros"); n.textContent = ""; var max = (dados.config.agentes || {}).max;
     for (var i = 1; i <= 8; i++) (function (v) {
-      var b = el("button" , v >= 5 ? "risco" : "", String(v)); b.type = "button"; b.setAttribute("aria-pressed", String(max === v));
-      b.setAttribute("aria-label", v + (v === 1 ? " agente" : " agentes") + (v >= 5 ? " (risco de bater no limite)" : ""));
-      b.addEventListener("click", async function () {
-        dados.config.agentes = { max: v }; desenharAgentes();
-        if (!db) return;
-        try { await db.doc("config/agentes").set({ max: v, em: new Date().toISOString() }); toast("No máximo " + v + (v === 1 ? " agente" : " agentes") + " ao mesmo tempo"); } catch (e) { toast("Não consegui guardar."); }
-      });
+      var b = el("button", v >= 5 ? "risco" : "", String(v)); b.type = "button"; b.setAttribute("aria-pressed", String(max === v));
+      b.setAttribute("aria-label", v + (v === 1 ? " agente" : " agentes"));
+      b.addEventListener("click", async function () { dados.config.agentes = { max: v }; desenharAgentes(); if (!db) return;
+        try { await db.doc("config/agentes").set({ max: v, em: new Date().toISOString() }); toast("✓ No máximo " + v + (v === 1 ? " agente" : " agentes") + " ao mesmo tempo"); } catch (e) { toast("Não consegui guardar.", true); } });
       n.appendChild(b);
     })(i);
-    document.getElementById("estado-max").textContent = (max ? "Escolhido: " + max + ". " : "Ainda sem escolha: a gerente usa o bom senso. ") + "Com 5 ou mais juntos, a conta já bateu no limite de uso três vezes (20 e 21/10) e os agentes pararam no meio.";
+    document.getElementById("estado-max").textContent = (max ? "Escolhido: " + max + ". " : "Ainda sem escolha. ") + "Com 5 ou mais juntos, a conta já bateu no limite de uso três vezes (20 e 21/10).";
     var l = document.getElementById("lista-agentes"); l.textContent = "";
     var ags = dados.agentes.slice().sort(porOrdem);
-    if (!ags.length) { l.appendChild(el("p", "vazio", "Nenhum agente registrado.")); return; }
-    var trabalhando = ags.filter(function (a) { return a.estado === "trabalhando"; }).length;
-    if (!trabalhando) l.appendChild(el("p", "vazio", "Nenhum agente trabalhando agora. Todos pararam com o trabalho salvo; para retomar um, use \"Continuar trabalhando\" no cartão do trabalho."));
+    if (!ags.some(function (a) { return a.estado === "trabalhando"; })) l.appendChild(el("p", "vazio", "Nenhum agente trabalhando agora. Para retomar um trabalho, use \"Continuar\" no cartão dele."));
     ags.forEach(function (a) {
       var c = el("article", "agente");
       c.appendChild(el("span", "pill " + (a.estado || "parado"), a.estado === "terminou" ? "Terminou" : a.estado === "trabalhando" ? "Trabalhando" : "Parado"));
-      c.appendChild(el("h3", null, a.nome || "")); if (a.papel) c.appendChild(el("span", "papel-ag", a.papel));
+      c.appendChild(el("h3", null, a.nome || "")); if (a.papel) c.appendChild(el("span", "estado", a.papel));
       if (a.tarefa) { var p = el("p"); p.appendChild(el("span", "rot", "Tarefa")); p.appendChild(document.createTextNode(a.tarefa)); c.appendChild(p); }
       if (a.ultimo) { var p2 = el("p"); p2.appendChild(el("span", "rot", "Último passo")); p2.appendChild(document.createTextNode(a.ultimo)); c.appendChild(p2); }
-      if (a.quando) c.appendChild(el("span", "estado", "Atualizado " + dataHora(a.quando)));
-      if (a.ramo) c.appendChild(el("span", "tecnico", "ramo: " + a.ramo));
+      if (a.quando) c.appendChild(el("span", "quando", "Atualizado " + dataHora(a.quando)));
       l.appendChild(c);
     });
   }
 
-  document.getElementById("filtros-def").addEventListener("click", function (ev) {
-    var b = ev.target.closest("button[data-f]"); if (!b) return; filtroDef = b.dataset.f;
-    this.querySelectorAll("button[data-f]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); desenharDefeitos();
-  });
+  document.getElementById("filtros-def").addEventListener("click", function (ev) { var b = ev.target.closest("button[data-f]"); if (!b) return; filtroDef = b.dataset.f; this.querySelectorAll("button[data-f]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); desenharDefeitos(); });
   document.getElementById("busca-def").addEventListener("input", function () { desenharDefeitos(); });
   function desenharDefeitos() {
-    var l = document.getElementById("lista-defeitos"); l.textContent = "";
-    var q = document.getElementById("busca-def").value.trim().toLowerCase();
-    var conta = { aberto: 0, aceito: 0, conferir: 0 }; dados.defeitos.forEach(function (d) { conta[d.grupo] = (conta[d.grupo] || 0) + 1; });
+    var l = document.getElementById("lista-defeitos"); l.textContent = ""; var q = document.getElementById("busca-def").value.trim().toLowerCase();
+    var conta = {}; dados.defeitos.forEach(function (d) { conta[d.grupo] = (conta[d.grupo] || 0) + 1; });
     document.querySelectorAll("#filtros-def button[data-f]").forEach(function (b) { b.textContent = { aberto: "Abertos", aceito: "Aceitos até depois", conferir: "Consertados, a conferir" }[b.dataset.f] + " (" + (conta[b.dataset.f] || 0) + ")"; });
     var lista = dados.defeitos.filter(function (d) { return d.grupo === filtroDef && (!q || (d.texto + " " + d.situacao + " " + d.onde).toLowerCase().indexOf(q) >= 0); }).sort(porOrdem);
     if (!lista.length) { l.appendChild(el("p", "vazio", db ? "Nenhum defeito com esse filtro." : "Carregando...")); return; }
-    var grupos = {}; var ordem = [];
-    lista.forEach(function (d) { if (!grupos[d.onde]) { grupos[d.onde] = []; ordem.push(d.onde); } grupos[d.onde].push(d); });
+    var grupos = {}, ordem = []; lista.forEach(function (d) { if (!grupos[d.onde]) { grupos[d.onde] = []; ordem.push(d.onde); } grupos[d.onde].push(d); });
     var cor = { aberto: "--verm", aceito: "--ambar", conferir: "--azul" }[filtroDef];
     ordem.forEach(function (o) {
       var g = el("div", "grupo-def"); var h = el("h3"); h.appendChild(document.createTextNode(o)); h.appendChild(el("span", "estado", String(grupos[o].length))); g.appendChild(h);
-      grupos[o].forEach(function (d) {
-        var x = el("div", "def"); x.style.borderLeft = "5px solid var(" + cor + ")";
-        x.appendChild(el("span", "d", d.data));
-        var c = el("div", "x"); c.appendChild(el("div", null, d.texto)); c.appendChild(el("div", "sit", d.situacao)); x.appendChild(c);
-        g.appendChild(x);
-      });
+      grupos[o].forEach(function (d) { var x = el("div", "def"); x.style.borderLeft = "5px solid var(" + cor + ")"; x.appendChild(el("span", "d", d.data)); var c = el("div"); c.appendChild(el("div", null, d.texto)); c.appendChild(el("div", "sit", d.situacao)); x.appendChild(c); g.appendChild(x); });
       l.appendChild(g);
     });
   }
 
   function grafico(s) {
-    var W = 340, H = 170, ml = 34, mr = 12, mt = 14, mb = 26;
-    var vals = s.pontos.map(function (p) { return p[1]; });
-    var max = Math.max.apply(null, vals) * 1.15, min = 0;
+    var W = 340, H = 170, ml = 34, mr = 12, mt = 16, mb = 26, ns = "http://www.w3.org/2000/svg";
+    var vals = s.pontos.map(function (p) { return p[1]; }); var max = Math.max.apply(null, vals) * 1.15;
     var passo = max > 60 ? 20 : max > 30 ? 10 : 5; max = Math.ceil(max / passo) * passo;
     function x(i) { return ml + (s.pontos.length === 1 ? (W - ml - mr) / 2 : i * (W - ml - mr) / (s.pontos.length - 1)); }
-    function y(v) { return mt + (H - mt - mb) * (1 - (v - min) / (max - min)); }
-    var ns = "http://www.w3.org/2000/svg";
+    function y(v) { return mt + (H - mt - mb) * (1 - v / max); }
     var svg = document.createElementNS(ns, "svg"); svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("role", "img");
     svg.setAttribute("aria-label", s.nome + ": " + s.pontos.map(function (p) { return p[0] + " " + p[1] + " " + s.unidade; }).join(", "));
     function n(tag, at) { var e = document.createElementNS(ns, tag); for (var k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; }
-    for (var v = 0; v <= max; v += passo) {
-      n("line", { x1: ml, x2: W - mr, y1: y(v), y2: y(v), stroke: "var(--fio)", "stroke-width": 1 });
-      var t = n("text", { x: ml - 6, y: y(v) + 4, "text-anchor": "end" }); t.textContent = v;
-    }
-    s.pontos.forEach(function (p, i) { var t = n("text", { x: x(i), y: H - 8, "text-anchor": "middle" }); t.textContent = p[0]; });
+    for (var v = 0; v <= max; v += passo) { n("line", { x1: ml, x2: W - mr, y1: y(v), y2: y(v), stroke: "var(--fio)", "stroke-width": 1 }); n("text", { x: ml - 6, y: y(v) + 4, "text-anchor": "end" }).textContent = v; }
+    s.pontos.forEach(function (p, i) { n("text", { x: x(i), y: H - 8, "text-anchor": "middle" }).textContent = p[0]; });
     var d = s.pontos.map(function (p, i) { return (i ? "L" : "M") + x(i) + " " + y(p[1]); }).join(" ");
-    var area = d + " L" + x(s.pontos.length - 1) + " " + y(0) + " L" + x(0) + " " + y(0) + " Z";
-    n("path", { d: area, fill: "var(--azul-suave)", stroke: "none" });
+    n("path", { d: d + " L" + x(s.pontos.length - 1) + " " + y(0) + " L" + x(0) + " " + y(0) + " Z", fill: "var(--azul-suave)", stroke: "none" });
     n("path", { d: d, fill: "none", stroke: "var(--azul)", "stroke-width": 2.5, "stroke-linejoin": "round" });
-    s.pontos.forEach(function (p, i) {
-      var ult = i === s.pontos.length - 1;
-      n("circle", { cx: x(i), cy: y(p[1]), r: ult ? 5 : 3.5, fill: ult ? "var(--magenta)" : "var(--azul)", stroke: "var(--folha)", "stroke-width": 1.5 });
-      var t = n("text", { x: x(i), y: y(p[1]) - 9, "text-anchor": "middle" }); t.textContent = String(p[1]).replace(".", ",");
-    });
+    s.pontos.forEach(function (p, i) { var u = i === s.pontos.length - 1; n("circle", { cx: x(i), cy: y(p[1]), r: u ? 5 : 3.5, fill: u ? "var(--magenta)" : "var(--azul)", stroke: "var(--folha)", "stroke-width": 1.5 }); n("text", { x: x(i), y: y(p[1]) - 9, "text-anchor": "middle" }).textContent = String(p[1]).replace(".", ","); });
     return svg;
   }
   function desenharVelocidade() {
-    var v = dados.velocidade; var g = document.getElementById("graficos"); g.textContent = "";
-    var le = document.getElementById("lentidoes"); le.textContent = "";
-    if (!v) { g.appendChild(el("p", "vazio", "Carregando...")); return; }
-    document.getElementById("vel-nota").textContent = v.nota || "";
+    var v = dados.velocidade, g = document.getElementById("graficos"), le = document.getElementById("lentidoes"); g.textContent = ""; le.textContent = "";
+    if (!v) return; document.getElementById("vel-nota").textContent = v.nota || "";
     (v.series || []).forEach(function (s) {
-      var c = el("div", "grafico"); c.appendChild(el("h3", null, s.nome));
-      var u = s.pontos[s.pontos.length - 1]; var p = s.pontos[0];
-      var dif = Math.round((u[1] - p[1]) / p[1] * 100);
-      c.appendChild(el("span", "ult", "Última medida (" + u[0] + "): " + String(u[1]).replace(".", ",") + " " + s.unidade + " · " + (dif > 0 ? dif + "% mais lento" : (-dif) + "% mais rápido") + " que em " + p[0]));
+      var c = el("div", "caixa grafico"); c.appendChild(el("h3", null, s.nome)); c.firstChild.style.cssText = "margin:0;font:600 17px var(--fonte-titulo)";
+      var u = s.pontos[s.pontos.length - 1], p = s.pontos[0], dif = Math.round((u[1] - p[1]) / p[1] * 100);
+      c.appendChild(el("span", "estado", "Última (" + u[0] + "): " + String(u[1]).replace(".", ",") + " " + s.unidade + " · " + (dif > 0 ? dif + "% mais lento" : (-dif) + "% mais rápido") + " que em " + p[0]));
       c.appendChild(grafico(s)); g.appendChild(c);
     });
     (v.lentidoes || []).forEach(function (t) { le.appendChild(el("li", null, t)); });
@@ -932,82 +1150,72 @@
 
   function desenharOrdens() {
     var l = document.getElementById("lista-ordens"); l.textContent = "";
-    var tudo = dados.ordens.map(function (o) { return { k: "o", v: o }; })
+    var tudo = todasOrdens().map(function (o) { return { k: "o", v: o }; })
       .concat(dados.testes.map(function (t) { return { k: "t", v: t }; }))
       .concat(dados.ideias.map(function (i) { return { k: "i", v: i }; }))
       .sort(function (a, b) { return String(b.v.em).localeCompare(String(a.v.em)); });
-    if (!tudo.length) { l.appendChild(el("p", "vazio", "Nenhuma ordem ainda. Os botões dos cartões em \"Decidir agora\" guardam as ordens aqui.")); return; }
+    if (!tudo.length) { l.appendChild(el("p", "vazio", "Nenhuma ordem ainda.")); return; }
     tudo.forEach(function (x) {
-      var o = x.v; var c = el("div", "ordem"); var cab = el("div", "cab");
-      if (x.k === "o") {
-        c.style.setProperty("--cor", "var(" + ((TIPOS[o.tipo] || {}).cor || "--fio") + ")");
-        cab.appendChild(el("b", null, (TIPOS[o.tipo] || {}).nome + (o.opcao ? ": " + o.opcao : "") + " · " + (o.titulo || "")));
-        cab.appendChild(el("span", "chip" + (o.estado === "feita" ? " c-programa" : o.estado === "vista" ? " c-decidir" : ""), ESTADOS[o.estado] || o.estado));
-      } else if (x.k === "t") {
-        c.style.setProperty("--cor", o.resultado === "bom" ? "var(--verde)" : "var(--verm)");
-        cab.appendChild(el("b", null, "Teste no PC: " + o.resultado + " · " + (o.titulo || "")));
-      } else {
-        c.style.setProperty("--cor", "var(--magenta)");
-        cab.appendChild(el("b", null, "Ideia nova"));
-        cab.appendChild(el("span", "chip" + (o.estado === "registrada" ? " c-programa" : ""), o.estado === "registrada" ? "Na Lista de espera" : "Guardada: a gerente ainda não viu"));
-      }
-      c.appendChild(cab);
-      c.appendChild(el("span", "quando", dataHora(o.em)));
-      if (o.texto) c.appendChild(el("div", null, o.texto));
-      if (o.resposta) c.appendChild(el("div", "resp", "Gerente: " + o.resposta));
+      var o = x.v, c = el("div", "ordem"), cab = el("div", "cab");
+      if (x.k === "o") { c.style.setProperty("--cor", "var(" + (COR_TIPO[o.tipo] || "--fio") + ")"); cab.appendChild(el("b", null, TIPOS[o.tipo] + (o.opcao ? ": " + o.opcao : "") + " · " + (o.titulo || ""))); cab.appendChild(el("span", "chip" + (o.estado === "feita" ? " c-ok" : " c-decidir"), ESTADO_TXT[o.estado] || o.estado)); }
+      else if (x.k === "t") { c.style.setProperty("--cor", o.resultado === "bom" ? "var(--verde)" : "var(--verm)"); cab.appendChild(el("b", null, "Teste no PC: " + o.resultado + " · " + (o.titulo || ""))); }
+      else { c.style.setProperty("--cor", "var(--magenta)"); cab.appendChild(el("b", null, "Ideia nova")); cab.appendChild(el("span", "chip" + (o.estado === "registrada" ? " c-ok" : " c-decidir"), o.estado === "registrada" ? "Na Lista de espera" : "Recebida. A gerente ainda não leu.")); }
+      c.appendChild(cab); c.appendChild(el("span", "quando", dataHora(o.em)));
+      if (o.texto) c.appendChild(el("div", null, o.texto)); if (o.resposta) c.appendChild(el("div", "resp", "Gerente: " + o.resposta));
       l.appendChild(c);
     });
   }
-
   var ideia = document.getElementById("ideia-texto"), ideiaBt = document.getElementById("ideia-enviar");
-  try { ideia.value = ler("rascunho-ideia") || ""; } catch (e) {}
+  ideia.value = ler("rascunho-ideia") || "";
   ideia.addEventListener("input", function () { guardar("rascunho-ideia", ideia.value); ideiaBt.disabled = !db || !ideia.value.trim(); });
   ideiaBt.addEventListener("click", async function () {
     var v = ideia.value.trim(); if (!db || !v) return; ideiaBt.disabled = true;
-    try { await db.doc("ideias/" + novoId("i")).set({ texto: v, em: new Date().toISOString(), estado: "nova", resposta: "" }); ideia.value = ""; guardar("rascunho-ideia", ""); document.getElementById("ideia-estado").textContent = "Ideia guardada."; }
-    catch (e) { document.getElementById("ideia-estado").textContent = "Não consegui guardar. O texto continua na caixa."; ideiaBt.disabled = false; }
+    try { await db.doc("ideias/" + novoId("i")).set({ texto: v, em: new Date().toISOString(), estado: "nova", resposta: "" }); ideia.value = ""; guardar("rascunho-ideia", ""); toast("✓ Ideia recebida"); }
+    catch (e) { toast("Não consegui guardar. O texto continua na caixa.", true); ideiaBt.disabled = false; }
   });
 
+  // ---------- desenho geral
   function desenhar() {
-    desenharTopo(); desenharDecidir(); desenharQuadro(); desenharEtapas(); desenharAgentes(); desenharDefeitos(); desenharVelocidade(); desenharOrdens(); barraVarios();
-    if (detalheId && detalhe.open) {
-      var t = dados.trabalhos.find(function (x) { return x.id === detalheId; });
-      if (t) { var c = document.getElementById("detalhe-corpo"); var s = detalhe.scrollTop; c.textContent = ""; c.appendChild(cartao(t, { semMarcar: true })); detalhe.scrollTop = s; }
-    }
+    var y = window.scrollY;
+    desenharTopo(); desenharDecidir(); desenharConferencia(); desenharQuadro(); desenharEtapas(); desenharAgentes(); desenharDefeitos(); desenharVelocidade(); desenharOrdens(); barraVarios();
+    if (detalheId && detalhe.open) { var t = dados.trabalhos.find(function (x) { return x.id === detalheId; }); if (t) { var c = document.getElementById("detalhe-corpo"), s = detalhe.scrollTop; c.textContent = ""; c.appendChild(cartao(t, { semMarcar: true })); detalhe.scrollTop = s; } }
+    window.scrollTo(0, y);
   }
   var agendado = false;
   function redesenhar() { if (agendado) return; agendado = true; requestAnimationFrame(function () { agendado = false; desenhar(); }); }
 
-  // ---------- abas
   function irPara(aba) {
-    abaAtual = aba;
     document.querySelectorAll("#abas [role=tab]").forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.aba === aba)); });
     document.querySelectorAll("section.painel").forEach(function (s) { s.hidden = s.id !== "aba-" + aba; });
-    guardar("central-aba", aba);
-    try { history.replaceState(null, "", "#" + aba); } catch (e) {}
+    guardar("central-aba", aba); try { history.replaceState(null, "", "#" + aba); } catch (e) {}
   }
   document.getElementById("abas").addEventListener("click", function (ev) { var b = ev.target.closest("[role=tab]"); if (b) irPara(b.dataset.aba); });
   var inicial = (location.hash || "").slice(1) || ler("central-aba") || "decidir";
   if (!document.getElementById("aba-" + inicial)) inicial = "decidir";
   irPara(inicial);
 
-  // ---------- banco
   function ouvir(col, campo) {
     db.collection(col).onSnapshot(function (snap) {
-      dados[campo] = snap.docs.map(function (s) { var x = Object.assign({}, s.data()); x.id = s.id; return x; }); redesenhar();
+      dados[campo] = snap.docs.map(function (s) { var x = Object.assign({}, s.data()); x.id = s.id; return x; });
+      if (campo === "ordens") { var ids = {}; dados.ordens.forEach(function (o) { ids[o.id] = 1; }); locais.ordens = locais.ordens.filter(function (o) { return !ids[o.id]; }); }
+      redesenhar();
     }, function () {});
   }
   (async function () {
     try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
     var av = document.getElementById("aviso");
-    if (!db) { av.hidden = false; av.textContent = "Para ver os trabalhos e mandar ordens, abra esta página pelo claude.ai, com a sua conta."; document.getElementById("resumo").textContent = "Sem ligação com o banco de dados da página."; return; }
+    if (!db) { av.hidden = false; av.textContent = "Para ver os trabalhos e responder, abra esta página pelo claude.ai, com a sua conta."; return; }
     ideiaBt.disabled = !ideia.value.trim();
-    db.doc("geral/resumo").onSnapshot(function (s) { dados.geral = s.exists ? s.data() : null; redesenhar(); },
-      function () { av.hidden = false; av.textContent = "Perdi a ligação com a central. Recarregue a página."; });
+    db.doc("geral/resumo").onSnapshot(function (s) { dados.geral = s.exists ? s.data() : null; redesenhar(); }, function () { av.hidden = false; av.textContent = "Perdi a ligação com a central. Recarregue a página."; });
     db.doc("velocidade/dados").onSnapshot(function (s) { dados.velocidade = s.exists ? s.data() : null; redesenhar(); }, function () {});
-    db.collection("config").onSnapshot(function (snap) { var c = {}; snap.docs.forEach(function (s) { c[s.id] = s.data(); }); dados.config = c; redesenhar(); }, function () {});
     db.doc("defeitos/lista").onSnapshot(function (s) { dados.defeitos = s.exists ? (s.data().itens || []) : []; redesenhar(); }, function () {});
-    ouvir("trabalhos", "trabalhos"); ouvir("fases", "fases"); ouvir("agentes", "agentes");
+    db.collection("config").onSnapshot(function (snap) { var c = {}; snap.docs.forEach(function (s) { c[s.id] = s.data(); }); dados.config = c; redesenhar(); }, function () {});
+    db.collection("respostas").onSnapshot(function (snap) {
+      var r = {}; snap.docs.forEach(function (s) { r[s.id] = s.data(); }); dados.respostas = r;
+      Object.keys(locais.respostas).forEach(function (k) { if (r[k] && r[k].em === locais.respostas[k].em) delete locais.respostas[k]; });
+      redesenhar();
+    }, function () {});
+    ouvir("trabalhos", "trabalhos"); ouvir("fases", "fases"); ouvir("agentes", "agentes"); ouvir("conferencias", "conferencias");
     ouvir("ordens", "ordens"); ouvir("testes", "testes"); ouvir("ideias", "ideias");
   })();
   desenhar();

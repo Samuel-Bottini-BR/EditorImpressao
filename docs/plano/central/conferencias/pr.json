@@ -1,0 +1,695 @@
+{
+ "id": "pr",
+ "nome": "Para revisar",
+ "trabalho": "para-revisar",
+ "ordem": 0,
+ "origem": "PR4",
+ "titulo_da_aba": "4. Para revisar: os avisos com botão",
+ "resumo": {
+  "titulo": "O que aconteceu e o que eu achei",
+  "paragrafos": [
+   "O programa passa a avisar, página por página, quando o \"Só as letras\" do Preto e branco pode ter estragado alguma coisa: uma letra grande que sumiu, texto falhado, página sem nada do livro. Cada aviso traz o botão do conserto que você escolheu: \"Trazer de volta nesta página\", \"Deixar em branco\", \"Tirar do livro\", \"Desfazer\".",
+   "Quando 4 linhas ou mais saem falhadas, o programa escurece sozinho a força do preto só naquela página e avisa. Ao processar com avisos sem olhar, aparece a lista \"Página N - motivo\", com \"ver\" e \"continuar assim mesmo\". O Kaique dá \"está bom\" numa página, num motivo, em todas ou em tudo, e o Ctrl+Z desfaz.",
+   "Ficaram três perguntas para você, no fim da aba: quando medir as páginas não visitadas, as três contagens que não batem e se a tela deve mostrar o mesmo que o PDF."
+  ],
+  "veredito": "PRONTO PARA CONFERIR no que faz: os seis pedaços e os consertos funcionam na janela de verdade. Duas escolhas suas ficaram em parte (a marca laranja é só desenho; no \"Guardar só o texto\" ela contorna a página toda) e a regra dá 22 vão e 75 certas, contra 21 e 78 aprovados.",
+  "velocidade": "O Mágico pro saiu 1,1% mais lento (0,06 s por página); você mandou deixar para a Fase 5, de desempenho (19/10)."
+ },
+ "quadros": [
+  {
+   "id": "pr-letra-t",
+   "nome": "Antiphonal 46: a letra grande que some",
+   "explicacao": [
+    "O que você está escolhendo: se o aviso da letra grande que some ficou como você pediu na rodada 5.",
+    "Caso real: no Antiphonal 46 o Preto e branco apaga a letra T vermelha. O programa avisa, desenha um quadrado laranja em volta do T e mostra o botão \"Trazer de volta nesta página\". Um clique e a página guarda tudo de novo; o Ctrl+Z desfaz.",
+    "O que ficou diferente do que você pediu: você escreveu \"onde sumiu, tem que aparecer selecionado automaticamente, como na opção 3\". O quadrado laranja mostra o lugar, mas é só um desenho por cima, como um post-it: não é uma marcação da ferramenta Marcar que dá para aumentar ou diminuir, e o botão traz de volta a página inteira, não só o T."
+   ],
+   "olhar": "O quadrado laranja em volta do T, nos dois cartões, e o botão \"Trazer de volta nesta página\".",
+   "texto": "O aviso aparece sozinho uns 8 segundos depois de chegar na página. O botão troca só essa página para \"Guardar tudo\", o aviso some e a página sai da lista. O Ctrl+Z desfaz.",
+   "ressalva": "A marca laranja não entra na marcação (está escrito no código: \"são só um desenho\"). Em 1280 x 657 os cartões são pequenos e a marca quase não se vê. No cartão a letra T continua lá: é o defeito do quadro seguinte.",
+   "tipo": "misto",
+   "selo": "funciona; a marca é só desenho",
+   "decisao_do_samuel": "rv5-erro-1-desenho (09/10): \"Botão 'Trazer de volta nesta página'\" + \"eu acho que pode ser a opção 1, mas onde sumiu, tem que aparecer selecionado automaticamente, como na opção 3\" (a opção 3 era o retângulo 'letra e traço' da aba Marcar).",
+   "bate_com_a_decisao": "em parte: o botão sim; o lugar aparece marcado, mas não como uma seleção que se ajusta",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-letra-t.jpg",
+     "legenda": "Ampliado: os cinco cartões com o quadrado laranja no T, o aviso e os botões na faixa",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-letra-t-marcar.jpg",
+     "legenda": "Ferramenta Marcar: o quadrado laranja tracejado em volta do T",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-letra-t-depois.jpg",
+     "legenda": "Depois de \"Trazer de volta nesta página\": \"Guardar tudo\", aviso e marca sumiram; o painel diz \"nada pendente\"",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-tela-engana",
+   "nome": "Antiphonal 46: a tela mostra a letra T, o PDF sai sem ela",
+   "explicacao": [
+    "O que você está escolhendo: se este defeito é grave. A escolha do conserto está na pergunta \"A tela igual ao PDF\", no fim da aba.",
+    "Caso real: na tela, a página 46 aparece com a letra T. No PDF que o programa gerou, a letra sumiu. É como uma prova de gráfica que mostra uma coisa e a impressão sai outra.",
+    "O aviso \"Desenho apagado\" diz a verdade; a imagem da tela é que engana, porque é desenhada pequena para ser rápida."
+   ],
+   "olhar": "A letra T grande à esquerda: na tela ela aparece; na página do PDF, não.",
+   "texto": "Processei o livro na janela: no PDF a letra T sumiu mesmo. O \"Ver de perto\" continua mostrando a letra T.",
+   "ressalva": "Não foi mexido de propósito: depende da sua resposta à pergunta \"A tela igual ao PDF\".",
+   "tipo": "pior",
+   "selo": "defeito grave, já existia",
+   "decisao_do_samuel": "Sem decisão ainda (pergunta nova desta aba).",
+   "bate_com_a_decisao": "não se aplica",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-ver-de-perto.jpg",
+     "legenda": "Tela nova, \"Ver de perto\" do Preto e branco: o T ainda aparece inteiro (no PDF ele some)",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-so-o-texto",
+   "nome": "Graduale 222: \"Guardar só o texto\" apaga a música",
+   "explicacao": [
+    "O que você está escolhendo: se o aviso do \"Guardar só o texto\" ficou como você pediu na rodada 5.",
+    "Caso real: no Graduale 222, quem escolhe \"Guardar só o texto\" perde as pautas. O programa avisa, marca de laranja e mostra \"Trazer de volta nesta página\": um clique e só essa página volta a guardar a música.",
+    "O que ficou diferente: você pediu \"aparece marcado como apareceu na segunda opção\", que era um retângulo em volta de uma pauta. Aqui o laranja é um contorno em volta da página inteira, porque o botão traz de volta a página toda."
+   ],
+   "olhar": "O cartão do Preto e branco sem as pautas, o contorno laranja e o botão \"Trazer de volta nesta página\".",
+   "texto": "No jeito de fábrica (\"Guardar a tinta forte\") a página 222 não tem aviso. Trocando para \"Guardar só o texto\", o aviso aparece; o botão devolve só essa página para \"Guardar a tinta forte\". As outras páginas não mudam.",
+   "ressalva": "Conferido num pedaço de 7 páginas do Graduale (219 a 225); na janela a página se chama 4.",
+   "tipo": "misto",
+   "selo": "funciona; a marca é a página toda",
+   "decisao_do_samuel": "rv5-erro-6-so-texto (09/10): \"Botão 'Trazer de volta nesta página'\" + \"opção 1, mas aparece marcado como apareceu na segunda opção.\" (a segunda opção mostrava um retângulo em volta de uma pauta).",
+   "bate_com_a_decisao": "em parte: o botão sim; a marca é a página inteira, não as pautas",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-so-o-texto.jpg",
+     "legenda": "Ampliado: Graduale 222 em \"Guardar só o texto\", a música some, o contorno laranja e o aviso",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-so-o-texto-depois.jpg",
+     "legenda": "Depois do botão: a música voltou (\"Guardar a tinta forte\") e o aviso sumiu",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-sem-conteudo",
+   "nome": "Egenloff 12 e Rariora 8: página sem conteúdo",
+   "explicacao": [
+    "O que você está escolhendo: se o aviso da página sem conteúdo ficou como você pediu (os dois botões, \"Deixar em branco\" e \"Tirar do livro\").",
+    "Caso real: o verso do Egenloff 12 só tem a mancha da página de trás. \"Deixar em branco\" põe uma folha branca no lugar (o livro fica com o mesmo número de páginas); \"Tirar do livro\" apaga a página.",
+    "Há um terceiro botão, \"está bom assim\", que não estava na sua escolha: ele tira só o aviso e deixa a página como está. Foi posto porque o aviso às vezes erra (quadro da Gladstone 18)."
+   ],
+   "olhar": "Os três botões: \"Deixar em branco\", \"Tirar do livro\" e \"está bom assim\".",
+   "texto": "Os três voltam com Ctrl+Z.",
+   "ressalva": "",
+   "tipo": "melhor",
+   "selo": "funciona",
+   "decisao_do_samuel": "rv5-erro-5-sem-conteudo (09/10): \"Os dois botões: 'Deixar em branco' e 'Tirar do livro'\"; rv4-pag-rariora-008: \"Vai para a lista, com botão\"; rv4-pag-egenloff-012: \"Concordo\".",
+   "bate_com_a_decisao": "sim (com um botão a mais, \"está bom assim\")",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-sem-conteudo.jpg",
+     "legenda": "Ampliado: Egenloff 12, o aviso e os três botões",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-deixar-em-branco.jpg",
+     "legenda": "Depois de \"Deixar em branco\": folha branca no lugar e o botão \"voltar a página\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-tirar-do-livro.jpg",
+     "legenda": "Depois de \"Tirar do livro\": a página 12 fica apagada na tira e o botão vira \"restaurar página\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-rariora-8.jpg",
+     "legenda": "Rariora 8: o mesmo aviso, com os três botões",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-parece-em-branco",
+   "nome": "Gladstone 18: \"Parece em branco\" numa página com título",
+   "explicacao": [
+    "O que você está escolhendo: se os dois avisos separados (\"Parece em branco\" e \"Página sem conteúdo\") ficaram como você pediu.",
+    "Caso real, e é um erro: a Gladstone 18 tem o título \"DA ORAÇÃO\", e o programa diz que ela parece em branco, oferecendo \"Tirar do livro\". O erro já estava na Lista de bugs.",
+    "O que mudou: agora o aviso tem também \"está bom assim\", que deixa a página como está."
+   ],
+   "olhar": "A página tem o título \"DA ORAÇÃO\" e mesmo assim vem o aviso \"Parece em branco\".",
+   "texto": "O aviso errado continua; com o terceiro botão há uma saída certa.",
+   "ressalva": "O conserto do aviso em si fica para a Lista de bugs (não era deste trabalho).",
+   "tipo": "misto",
+   "selo": "erro conhecido, com saída",
+   "decisao_do_samuel": "rv4-em-branco: \"Tem que ter um tipo de aviso para cada coisa, e um botão de apagar folha e outro realmente de só mudar para um folha branca.\"; rv5-em-branco (08/10): \"Fica assim\".",
+   "bate_com_a_decisao": "sim (o aviso errado na Gladstone 18 é bug à parte)",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-gladstone-18.jpg",
+     "legenda": "Gladstone 18: \"Parece em branco\" numa página com o título \"DA ORAÇÃO\"",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-forca-sozinha",
+   "nome": "Camões 27: a força do preto sozinha",
+   "explicacao": [
+    "O que você está escolhendo: se a força do preto sozinha ficou como você pediu (\"Força sozinha\", até o reconhecimento de tintas do item 1.4).",
+    "Caso real: no Camões 27 várias linhas saíam falhadas. O programa escureceu a força só nessa página (de \"normal\" para \"bem forte\"), avisou e deixou o botão \"Desfazer\".",
+    "Uma regra a mais, decidida pela gerente para não estragar página boa: a força só muda sozinha quando 4 linhas ou mais saem falhadas, e só fica se as falhas diminuírem. Nas 89 páginas do estudo ela agiu em duas (Camões 27 e 104); nas outras com texto falhado fica só o aviso, com o botão \"usar mais escuro\"."
+   ],
+   "olhar": "O medidor em \"bem forte\", o aviso \"escureci a força do preto só nela\" e o botão \"Desfazer\".",
+   "texto": "Com a força já em 85, o botão \"usar mais escuro\" não aparece. Há uma caixinha na tela \"O que fazer\" para desligar a força sozinha no livro.",
+   "ressalva": "A caixinha só aparece rolando a lista de opções. Com a força em 85, a frase do aviso \"Texto falhado\" ainda diz \"tente a força do preto mais escura\" (Lista de bugs).",
+   "tipo": "melhor",
+   "selo": "funciona",
+   "decisao_do_samuel": "rv4-erro-4-texto-falhado: \"Força sozinha\" + \"mas temos que melhorar o reconhecimento de tintas, para não sair falhado assim, não precisar usar sempre o reforço.\"; rv5-erro-4-tintas (09/10): \"Fica no plano; até lá, a força sozinha\".",
+   "bate_com_a_decisao": "sim, com o limite de 4 linhas (decisão técnica da gerente, a confirmar com você)",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-forca-sozinha.jpg",
+     "legenda": "Camões 27: o aviso, o botão \"Desfazer\" e a força em \"bem forte\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-forca-desfazer.jpg",
+     "legenda": "Depois do \"Desfazer\": força normal e o aviso \"Texto falhado\" com \"usar mais escuro\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-egenloff-3-escuro.jpg",
+     "legenda": "Egenloff 3 depois de \"usar mais escuro\": o botão sumiu, fica \"está bom assim\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-caixinha.jpg",
+     "legenda": "Tela \"O que fazer\": a caixinha \"Escurecer sozinho a força do preto...\", logo abaixo do \"Só as letras\"",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-palatino-66",
+   "nome": "Palatino 66: a força não mexe mais; fica o aviso",
+   "explicacao": [
+    "O que você está escolhendo: se está bom a página de caligrafia ficar só com o aviso, sem a força mudar sozinha.",
+    "Caso real: na primeira versão, o programa escurecia sozinho a força nesta página e sujava a moldura. Agora ele não mexe: mostra \"Texto falhado\" e o botão \"usar mais escuro\", e quem decide é o Kaique.",
+    "A página continua indo para a lista sem precisar: é uma das cinco que decidem diferente do estudo que você aprovou."
+   ],
+   "olhar": "O medidor em \"normal\" e o aviso \"Texto falhado\" com \"usar mais escuro\".",
+   "texto": "Agora não estraga nada; o aviso fica.",
+   "ressalva": "",
+   "tipo": "melhor",
+   "selo": "melhorou",
+   "decisao_do_samuel": "rv4-erro-4-texto-falhado: \"Força sozinha\" (o limite de 4 linhas é da gerente).",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-palatino-66.jpg",
+     "legenda": "Palatino 66: o aviso \"Texto falhado\", força normal, os botões",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-antes-de-processar",
+   "nome": "A janela \"Antes de processar\"",
+   "explicacao": [
+    "O que você está escolhendo: se a janela que aparece ao processar com avisos ficou como você pediu (\"Lista as páginas e os motivos\").",
+    "Caso real: no Camões, ao clicar em \"Confirmar e processar\", a janela lista \"Página N - motivo\" e \"Folha N - motivo\", com \"ver\" (vai para a página e não processa) e \"continuar assim mesmo\" (segue até \"Ficou pronto!\").",
+    "A frase de cima diz quantas páginas e quantos avisos: \"75 páginas (104 avisos na lista)\". Os números de três telas não batem: é a pergunta \"As contagens\", no fim da aba."
+   ],
+   "olhar": "As linhas \"Página N - motivo\" e os botões \"ver\" e \"continuar assim mesmo\".",
+   "texto": "Fechar no X não processa.",
+   "ressalva": "A lista junta os avisos novos com os de sempre; agora toda linha diz \"Página N\" (antes misturava \"Folha N\"). Só mostra as páginas já visitadas: é a pergunta \"Quando medir\".",
+   "tipo": "misto",
+   "selo": "funciona; contagens em pergunta",
+   "decisao_do_samuel": "rv5-aviso-so-texto (08/10): \"Lista as páginas e os motivos\"; rv4-aviso-so-texto: \"quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas e a pessoa diz se quer ver ou continuar\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-antes-de-processar.jpg",
+     "legenda": "Camões: a lista agora só fala em \"Página N\" (100 linhas)",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-confirmar.jpg",
+     "legenda": "Depois de \"continuar assim mesmo\": a janela de salvar",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-ficou-pronto.jpg",
+     "legenda": "\"Ficou pronto!\" (livro de 4 páginas, todas com aviso)",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-esta-bom",
+   "nome": "\"Está bom\" numa página, num motivo, em todas e em tudo",
+   "explicacao": [
+    "O que você está escolhendo: se dar \"está bom\" nos avisos ficou como você pediu na rodada 4.",
+    "Caso real (Egenloff): \"está bom assim\" tira um aviso de uma página; \"está bom: todas\" tira um motivo do livro inteiro; \"está bom em tudo\" limpa a lista; na lista grande dá para marcar várias linhas e dar \"está bom nas marcadas\". O Ctrl+Z desfaz cada um.",
+    "Quando o problema é resolvido (por exemplo, \"Guardar tudo\" na página da letra que sumiu), o aviso some sozinho."
+   ],
+   "olhar": "O número do painel \"Para revisar\" descendo em cada nível.",
+   "texto": "Um motivo de uma página: de 31 para 30 avisos. Um motivo em todas: de 31 para 6. Em tudo: \"tudo certo\". Na lista grande, duas linhas marcadas: de 31 para 29.",
+   "ressalva": "Conferido de novo em 21/10, depois do conserto: \"está bom em tudo\" se desfaz com um Ctrl+Z só (Camões: \"tudo certo\" e, depois do Ctrl+Z, de volta os 98 e o painel com 35).",
+   "tipo": "melhor",
+   "selo": "funciona; FOTOS A TROCAR",
+   "decisao_do_samuel": "rv4-aviso-so-texto: \"Eu tenho que conseguir fazer isso com uma pagina individual, com um motivo individual de uma pagina e com todas as paginas ou com todos os motivos de todas as paginas, e eu devo conseguir abrir um selecionador em aba grande [...] quando eu resolver aquele problema, o programa já vai automaticamente ver que eu resolvi?\"",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-painel-por-motivo.jpg",
+     "legenda": "O painel novo \"Para revisar\", em \"Por motivo\" (Camões)",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-esta-bom-todas.jpg",
+     "legenda": "Depois de \"está bom: todas\" no motivo do endireitar: sobra 1",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-esta-bom-em-tudo.jpg",
+     "legenda": "Depois de \"está bom em tudo\": \"nada pendente\"",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-seletor.jpg",
+     "legenda": "\"ver a lista…\": a lista grande com duas linhas marcadas",
+     "situacao": "tela nova (21/10)"
+    }
+   ],
+   "nota_para_a_gerente": "As quatro fotos deste quadro são da primeira conferência e mostram o Egenloff 3 com a força escurecida sozinha (\"bem forte\", \"Força do preto escurecida\" na lista) e, na esta-bom-1, o botão \"usar mais escuro\" com a força já em \"bem forte\". Os dois mudaram no ce2b835: o Egenloff 3 fica só com o aviso. Refazer no programa juntado."
+  },
+  {
+   "id": "pr-janela-diferente",
+   "nome": "Graduale 221: as 89 páginas decidem igual na tela e na conta",
+   "explicacao": [
+    "O que você está escolhendo: se aceita o resultado da regra como está, um pouco abaixo do que você aprovou.",
+    "Você aprovou a regra com 21 páginas indo para a lista e 78 decididas certo, das 89 do estudo. Com o preparo do livro novo (endireitar antes de cortar), dá 22 e 75: três páginas certas a menos.",
+    "As cinco que decidem diferente do estudo: Antiphon 260, Cursus 3, Matemática 72, Opus Majus 20 e Palatino 66. O erro desta página, o Graduale 221 com aviso na tela e sem aviso na conta, foi consertado."
+   ],
+   "olhar": "Não há mais aviso nem marca laranja nesta página.",
+   "texto": "A medida usa sempre as áreas achadas na página do tamanho do PDF. Na janela e na conta direta as 89 páginas dão o mesmo resultado.",
+   "ressalva": "O Opus Majus 20, reaberto em 20/10, vai para a lista e devia ir (quadro do Opus Majus 20).",
+   "tipo": "melhor",
+   "selo": "consertado; 22 e 75",
+   "decisao_do_samuel": "rv4-resumo: \"Fica assim\" (a regra ajustada: 21 vão, 78 certas).",
+   "bate_com_a_decisao": "em parte: 22 vão e 75 certas, contra 21 e 78 aprovados",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-janela-diferente.jpg",
+     "legenda": "Graduale 221 na tela nova: nenhum aviso",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-opus-20",
+   "nome": "Opus Majus 20: a foto da estátua sai estragada, e o aviso pega",
+   "explicacao": [
+    "O que você está escolhendo: se está certo esta página ir para a lista com o aviso \"Figura além da gravura\".",
+    "Caso real: a foto da estátua de Roger Bacon. No PDF que o programa gerou, com Preto e branco e \"Só as letras\", a estátua sai branca, com manchas e blocos pretos: a foto foi estragada. O aviso manda conferir, e está certo. É como um alarme que toca porque há fumaça de verdade.",
+    "A foto já sai assim no programa de hoje (conferi: a mesma imagem, ponto por ponto). O que este trabalho muda é só o aviso, que antes dizia \"Tinta forte fora do texto\". Achar a foto inteira é o item 1.5 (detector de figuras), que você deixou no plano."
+   ],
+   "olhar": "A estátua: inteira no livro, branca e manchada no PDF.",
+   "texto": "Reabri em 20/10 como livro novo, na janela, e processei até \"Ficou pronto!\".",
+   "ressalva": "Corrige o que eu tinha escrito em 13/10 (\"a foto sai intacta, a página não precisava ir\"): aquela foto era da imagem pequena da tela, não do PDF.",
+   "tipo": "misto",
+   "selo": "aviso certo; a foto estraga (já estragava)",
+   "decisao_do_samuel": "rv5-erro-2-gravura (09/10): \"Fica no plano (1.5 e 2.18)\"; rv4-erro-2-gravura: \"ele tem que ser mais acertivo para achar as figuras\".",
+   "bate_com_a_decisao": "sim (o aviso vale; o conserto da foto é o 1.5)",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-opus-20.jpg",
+     "legenda": "Opus Majus 20 na tela nova: o aviso \"Figura além da gravura\"",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-cursus-3",
+   "nome": "Cursus 3: a faixa preta da beirada sumiu com o conserto do corte",
+   "explicacao": [
+    "O que você está escolhendo: se está bom o Cursus 3 não ir mais para a lista.",
+    "Caso real: antes, o corte deixava uma faixa preta larga à direita e o aviso \"Faixa escura na beirada\" mandava conferir. Com o conserto do corte (que entrou no programa em 21/10), a faixa sumiu: a página sai limpa e não há mais o que avisar.",
+    "O aviso continua valendo para as páginas que ainda tiverem faixa."
+   ],
+   "olhar": "A beirada direita da página, sem a faixa preta.",
+   "texto": "Reaberto em 21/10 na janela (folhas 1 a 10, livro novo): a página 3 não tem aviso nenhum.",
+   "ressalva": "Ficou uma linha preta fina na beirada esquerda, no cartão do Preto e branco.",
+   "tipo": "misto",
+   "selo": "consertado pelo corte",
+   "decisao_do_samuel": "rv4-erro-3-faixa: \"Os dois jeitos estão bons\"; corte: cg6 \"Melhorar\" (13/10).",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-cursus-3.jpg",
+     "legenda": "Cursus 3 com o conserto do corte: a faixa preta sumiu e a página não vai mais para a lista",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-antiphon-260",
+   "nome": "Antiphon 260: agora vai para a lista",
+   "explicacao": [
+    "O que você está escolhendo: se o aviso que o Antiphon 260 ganhou está bom.",
+    "Caso real: antes esta página escapava (ficava só com o aviso do Endireitar). Com o conserto do corte, ela vai para a lista com \"Figura além da gravura\": a iluminura ou a faixa embaixo passa da área marcada.",
+    "Pela regra que você aprovou ela devia ir: agora vai."
+   ],
+   "olhar": "O aviso \"Figura além da gravura\" e a faixa preta embaixo, no cartão do Preto e branco.",
+   "texto": "Reaberto em 21/10 na janela, as folhas 256 a 264 (a página 5 é a 260).",
+   "ressalva": "No cartão do Preto e branco a iluminura fica em cor (o \"Só as letras\" guarda), mas embaixo sobra uma faixa preta.",
+   "tipo": "melhor",
+   "selo": "agora vai para a lista",
+   "decisao_do_samuel": "rv4-resumo: \"Fica assim\" (pela regra aprovada esta página vai); rv5-erro-2-gravura: \"Fica no plano (1.5 e 2.18)\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-antiphon-260.jpg",
+     "legenda": "Antiphon 260 com o conserto do corte: o aviso \"Figura além da gravura\"",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-camoes-66",
+   "nome": "Camões 66: as linhas pretas da beirada, sem aviso",
+   "explicacao": [
+    "O que você está escolhendo: se pode esperar o corte (item 2.13) para este aviso existir.",
+    "Você decidiu: \"São as linhas pretas: aviso no livro basta\". Hoje o Camões não recebe esse aviso, nem na página nem no livro: as linhas são finas demais para a conta da faixa. Elas continuam saindo no resultado.",
+    "O único aviso da página 66 é o do Endireitar."
+   ],
+   "olhar": "As linhas finas pretas nas beiradas do Preto e branco, e o aviso, que é só o do Endireitar.",
+   "texto": "Reabri em 20/10 na janela e visitei também 65, 67, 27 e 104: em nenhuma veio aviso de faixa ou de linhas. O 27 e o 104 receberam a força sozinha (85), como esperado.",
+   "ressalva": "O plano já diz que isto depende do corte (item 2.13).",
+   "tipo": "igual",
+   "selo": "sem aviso",
+   "decisao_do_samuel": "rv4-pag-camoes-066: \"São as linhas pretas: aviso no livro basta\".",
+   "bate_com_a_decisao": "não (depende do 2.13, como está no plano)",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-camoes-66.jpg",
+     "legenda": "Camões 66 na tela nova: só o aviso do endireitar, nada sobre as linhas da beirada",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-marcar-sozinha",
+   "nome": "Aba Marcar: as áreas se acertam sozinhas",
+   "explicacao": [
+    "O que você está escolhendo: se está bom as áreas da ferramenta Marcar mudarem sozinhas alguns segundos depois de chegar numa página.",
+    "Caso real: no Graduale 221 a ferramenta Marcar mostra 9 áreas ao chegar; uns 10 segundos depois, o programa troca por 18, achadas na página do tamanho do PDF. É como um rascunho que é passado a limpo sem ninguém pedir.",
+    "Uma área marcada à mão nesse intervalo continuou lá depois da troca. Nada avisa que o programa ainda está procurando."
+   ],
+   "olhar": "As áreas azuis (letra) e verdes (papel) antes e depois.",
+   "texto": "Na tela nova continua igual: a página chega com a marcação da prévia e, segundos depois, se acerta sozinha (Graduale 223: 9 áreas, 13 s depois 10; Graduale 221: 18 áreas ao fim). O retângulo marcado à mão no meio continua.",
+   "ressalva": "Não testei apagar ou mexer numa área do programa nesse intervalo, só marcar uma nova.",
+   "tipo": "misto",
+   "selo": "novo, para saber",
+   "decisao_do_samuel": "Não foi pedido por você: veio do conserto da medida (decisão técnica da gerente).",
+   "bate_com_a_decisao": "não se aplica",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-marcar-sozinha.jpg",
+     "legenda": "Graduale 223, ferramenta Marcar: ao chegar (9 áreas) e 13 s depois (10 áreas)",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-marcar-a-mao.jpg",
+     "legenda": "Graduale 224: o retângulo marcado à mão antes do acerto (em rosa) continuou depois",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-duplo-clique",
+   "nome": "Dois cliques no cartão não tiram mais o aviso",
+   "explicacao": [
+    "O que você está escolhendo: se o conserto está bom.",
+    "Na primeira versão, dois cliques no cartão do filtro gravavam uma ação vazia e o aviso sumia. Agora os dois cliques só abrem o \"Ver de perto\" e o aviso continua."
+   ],
+   "olhar": "Depois dos dois cliques, o aviso e os botões laranja continuam na tela.",
+   "texto": "Nada foi gravado no histórico.",
+   "ressalva": "",
+   "tipo": "melhor",
+   "selo": "consertado",
+   "decisao_do_samuel": "Conserto de um defeito achado na primeira conferência.",
+   "bate_com_a_decisao": "não se aplica",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-duplo-clique.jpg",
+     "legenda": "Depois dos dois cliques no cartão (abre o \"Ver de perto\"): o aviso e os botões continuam",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-teclado",
+   "nome": "O teclado depois de clicar num botão do aviso",
+   "explicacao": [
+    "O que você está escolhendo: se o conserto do teclado está bom.",
+    "Na primeira versão, depois de clicar num botão do aviso, a barra de espaço apertava o botão de novo. Agora o botão não fica com o teclado, e a barra de espaço faz \"está certo e avança\".",
+    "A seta para a direita só troca de página quando o teclado não está na tira de miniaturas nem no medidor da força: esses dois usam a seta (a tira rola; o medidor muda a força do preto daquela página). Isso já era assim no programa de hoje."
+   ],
+   "olhar": "Depois de \"Deixar em branco\" e da barra de espaço, o programa passou para a página 13.",
+   "texto": "Depois de clicar em \"está bom assim\" o botão não fica com o teclado (nenhum widget com o foco), e a barra de espaço faz \"está certo e avança\": a página 12 ficou conferida e a 13 escolhida.",
+   "ressalva": "A seta foi conferida na janela de teste, que nunca fica ativa, e pelo código (a tecla vai primeiro para quem está com o teclado). A conclusão não depende da janela estar ativa, mas não testei com o teclado de verdade.",
+   "tipo": "misto",
+   "selo": "espaço sim; seta como antes",
+   "decisao_do_samuel": "Conserto de um defeito achado na primeira conferência.",
+   "bate_com_a_decisao": "não se aplica",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-teclado.jpg",
+     "legenda": "Depois de \"está bom assim\" e da barra de espaço: a página 12 conferida e a 13 escolhida",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  },
+  {
+   "id": "pr-projeto-antigo",
+   "nome": "Projeto feito antes desta mudança",
+   "explicacao": [
+    "O que você está escolhendo: se está bom o que acontece com um livro começado antes desta mudança.",
+    "Caso real: um projeto do programa de hoje, com o aviso antigo \"Tinta forte fora do texto\" em 8 páginas, aberto no programa novo. Abriu em 7 segundos, o aviso antigo sumiu sozinho e os avisos novos vieram ao visitar cada página. A força sozinha vem desligada nesses livros."
+   ],
+   "olhar": "No programa novo, a página 3 mostra \"Texto falhado\" com a força em \"normal\".",
+   "texto": "Projeto feito agora com o código do fase-1 (b6fd091) e aberto no ramo: abre direto, a força do preto sozinha fica desligada (força 50 em todas) e os avisos novos aparecem ao visitar a página. A prova por soma (abaixo) mostra que o PDF sai igual.",
+   "ressalva": "O projeto salvo ganhou campos novos, todos com valor padrão. Projeto de antes de 09/10 não foi conferido (só existe na sua pasta de dados).",
+   "tipo": "igual",
+   "selo": "abre igual",
+   "decisao_do_samuel": "Não se aplica.",
+   "bate_com_a_decisao": "não se aplica",
+   "imgs": [
+    {
+     "src": "conf/img/a4n-antigo-no-fase1.jpg",
+     "legenda": "Projeto feito no programa de hoje (fase-1): Egenloff 12 sem aviso",
+     "situacao": "tela nova (21/10)"
+    },
+    {
+     "src": "conf/img/a4n-antigo-no-ramo.jpg",
+     "legenda": "O mesmo projeto no ramo: os avisos novos aparecem e a força continua normal (a força sozinha fica desligada)",
+     "situacao": "tela nova (21/10)"
+    }
+   ]
+  }
+ ],
+ "perguntas": [
+  {
+   "id": "pr-medir-o-livro",
+   "titulo": "Quando o programa mede as páginas que você não visitou?",
+   "explicacao": [
+    "O que você está escolhendo: em que hora o programa confere as páginas que ninguém abriu.",
+    "Hoje ele só confere a página que está na tela, como um revisor que só lê as páginas que você abre. As outras ele só lê na hora de gerar o PDF, quando já não dá para parar. Por isso a lista \"Antes de processar\" só traz as páginas visitadas: no Antiphonal, com 2 páginas visitadas a lista tinha 2 avisos; visitei mais 4 e ela passou a 4.",
+    "Conferir custa tempo: de 4 a 15 segundos por página nos livros comuns e de 20 a 26 no Antiphon. Num livro de 300 páginas, de 13 a 15 minutos (pela conta do implementador)."
+   ],
+   "opcoes": [
+    {
+     "id": "medir-por-tras",
+     "nome": "Medir o livro inteiro por trás, depois de abrir",
+     "texto": "Bom: a lista fica completa enquanto você confere, e nenhuma página muda sem aparecer na lista. Ruim: o PC trabalha de 13 a 15 minutos num livro de 300 páginas (pela conta do implementador; na janela pode chegar a 50 minutos, e a umas 2 horas em livro de folha grande), e a tela pode ficar mais lenta nesse tempo.",
+     "sugestao_do_verificador": true,
+     "imgs": [
+      {
+       "src": "conf/img/medir-1-listas.jpg",
+       "legenda": "Hoje: a lista cresce conforme as páginas são visitadas (print da primeira conferência; a frase de cima hoje traz também \"(M avisos na lista)\")"
+      }
+     ]
+    },
+    {
+     "id": "medir-ao-processar",
+     "nome": "Medir o que falta só ao clicar em \"Confirmar e processar\"",
+     "texto": "Bom: o PC só trabalha quando você pede, e a lista sai completa antes do PDF. Ruim: você espera esse mesmo tempo parado na hora de processar, olha a lista, e depois espera de novo o PDF ser gerado.",
+     "imgs": [
+      {
+       "src": "conf/img/antes-3-lista-camoes.jpg",
+       "legenda": "A lista \"Antes de processar\": é ela que ficaria completa, depois da espera"
+      }
+     ]
+    },
+    {
+     "id": "deixar-como-esta",
+     "nome": "Deixar como está",
+     "texto": "Bom: nada fica mais lento. Ruim: a lista só mostra as páginas visitadas; as outras saem no PDF do jeito que o programa decidiu, e o aviso só aparece depois.",
+     "imgs": [
+      {
+       "src": "conf/img/medir-2-lista-inteira.jpg",
+       "legenda": "A lista de hoje no Antiphonal, com 2 páginas visitadas de 298 (print da primeira conferência)"
+      }
+     ]
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito, com mais exemplos.",
+     "imgs": []
+    }
+   ],
+   "sugestao": "Sugestão do verificador (é minha, não é decisão): \"Medir o livro inteiro por trás, depois de abrir\", com uma barra de andamento. É a única em que a lista está completa na hora em que o Kaique decide, e a espera acontece enquanto ele já está conferindo.",
+   "primeira_imagem": {
+    "src": "conf/img/medir-1-listas.jpg",
+    "legenda": "As duas listas: 2 páginas visitadas, 2 avisos; mais 4 visitadas, 4 avisos",
+    "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+   }
+  },
+  {
+   "id": "pr-contagens",
+   "titulo": "Os três números de páginas e avisos não batem. Qual deve valer?",
+   "explicacao": [
+    "O que você está escolhendo: qual número cada tela mostra, para não haver três placares diferentes do mesmo jogo.",
+    "No Camões (106 páginas): o painel \"Para revisar\" diz 39 (só avisos de página); a lista \"Antes de processar\" diz 75 páginas e 104 avisos (junta os de folha: qualidade baixa, tamanho diferente); a janela de salvar diz 106 (toda página em que ninguém clicou \"está certo\").",
+    "Quem dá \"continuar assim mesmo\" para 75 páginas lê, na janela seguinte, que ainda há 106 sem conferir."
+   ],
+   "opcoes": [
+    {
+     "id": "painel-com-folhas",
+     "nome": "O painel passa a listar também os motivos de folha",
+     "texto": "Bom: o painel e a lista mostram os mesmos avisos (no Camões, 104 nos dois). Ruim: o painel fica comprido, e a janela de salvar continua dizendo 106.",
+     "imgs": [
+      {
+       "src": "conf/img/contagens-2-painel-tela.jpg",
+       "legenda": "O painel de hoje (39): só os avisos de página"
+      }
+     ]
+    },
+    {
+     "id": "salvar-conta-pendentes",
+     "nome": "A janela de salvar passa a contar as páginas com aviso pendente",
+     "texto": "Bom: o número da janela de salvar fica igual ao da lista que acabou de aparecer (no Camões, 75), e some quando todos os avisos foram vistos. Ruim: ela deixa de lembrar as páginas sem \"está certo\" que não têm aviso nenhum.",
+     "sugestao_do_verificador": true,
+     "imgs": [
+      {
+       "src": "conf/img/contagens-3-salvar.jpg",
+       "legenda": "A janela de salvar de hoje: 106 páginas"
+      }
+     ]
+    },
+    {
+     "id": "deixar-como-esta",
+     "nome": "Deixar como está",
+     "texto": "Bom: não muda nada. Ruim: três números diferentes em três telas seguidas.",
+     "imgs": [
+      {
+       "src": "conf/img/contagens-1-lado-a-lado.jpg",
+       "legenda": "Os três números no Camões: 39, 75 (104 avisos) e 106"
+      }
+     ]
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito, com mais exemplos.",
+     "imgs": []
+    }
+   ],
+   "sugestao": "Sugestão do verificador (é minha, não é decisão): a janela de salvar contar as páginas com aviso pendente. É o número que aparece por último, logo antes de processar, e hoje é o que mais desmente a lista. Se couber, a primeira opção junto.",
+   "primeira_imagem": {
+    "src": "conf/img/contagens-1-lado-a-lado.jpg",
+    "legenda": "Os três números no Camões: 39, 75 (104 avisos) e 106",
+    "situacao": "tela antiga: refazer depois de juntar o fase-1 no ramo"
+   }
+  },
+  {
+   "id": "pr-tela-igual-ao-pdf",
+   "titulo": "A tela deve mostrar a página igual à do PDF?",
+   "explicacao": [
+    "O que você está escolhendo: se a página que aparece na tela, no \"Só as letras\", passa a ser a mesma que vai para o PDF, como uma prova de gráfica fiel.",
+    "Hoje a tela usa uma imagem menor, para ser rápida. No Antiphonal 46 essa imagem mostra a letra T grande; no PDF a letra some. O aviso está certo, mas quem olha a tela vê a letra no lugar.",
+    "O programa já desenha por trás a página do tamanho do PDF, para medir os avisos. Ela chega de 4 a 15 segundos depois de abrir a página (20 a 26 em folha grande). Dá para mostrá-la na tela quase sem custo."
+   ],
+   "opcoes": [
+    {
+     "id": "trocar-sozinha",
+     "nome": "A tela troca sozinha pela imagem do PDF quando ela chegar",
+     "texto": "Bom: o que se vê é o que sai, sem precisar pedir. Ruim: a página muda sozinha na tela alguns segundos depois de aparecer, e nesse meio tempo ainda mostra a imagem menor.",
+     "sugestao_do_verificador": true,
+     "imgs": [
+      {
+       "src": "conf/img/tela-engana-1-comparacao.jpg",
+       "legenda": "A mesma página 46: a tela (com a letra T) e o PDF que saiu (sem ela)"
+      }
+     ]
+    },
+    {
+     "id": "botao-ver-como-sai",
+     "nome": "Um botão \"ver como sai no PDF\"",
+     "texto": "Bom: nada muda sozinho; quem quiser conferir aperta o botão. Ruim: quem não apertar continua vendo a letra que não vai sair.",
+     "imgs": [
+      {
+       "src": "conf/img/tela-engana-2-ver-de-perto-tela.jpg",
+       "legenda": "O \"Ver de perto\" de hoje, com o aviso de pé: a letra T aparece"
+      }
+     ]
+    },
+    {
+     "id": "deixar-como-esta",
+     "nome": "Deixar como está",
+     "texto": "Bom: a tela continua rápida e igual. Ruim: só o aviso diz a verdade; pelo olho a página parece certa.",
+     "imgs": [
+      {
+       "src": "conf/img/letra-t-0-marca-recorte.jpg",
+       "legenda": "Hoje: a marca laranja em volta de uma letra que, na tela, está lá"
+      }
+     ]
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito, com mais exemplos.",
+     "imgs": []
+    }
+   ],
+   "sugestao": "Sugestão do verificador (é minha, não é decisão): trocar sozinha quando chegar. Aviso que manda olhar uma coisa que a tela não mostra não ajuda o Kaique; e a troca só vale no \"Só as letras\", onde a imagem do PDF já é desenhada de qualquer jeito.",
+   "primeira_imagem": {
+    "src": "conf/img/tela-engana-1-comparacao.jpg",
+    "legenda": "A mesma página 46: a tela (com a letra T) e o PDF que saiu (sem ela)",
+    "situacao": "vale"
+   }
+  }
+ ],
+ "pergunta": {
+  "id": "pr",
+  "titulo": "\"Para revisar\": o que você decide?",
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}

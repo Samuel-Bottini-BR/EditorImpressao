@@ -551,6 +551,13 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         como está" **não pula** a §4.6 (GitHub + PC antes de juntar). Ideia nova vai para a Lista de
         espera e fica `estado: "registrada"`.
       - Quando puser cartão novo em "Decidir agora", mandar aviso no celular (PushNotification).
+      - **Aba Conferência (21/10, pedido dele: "os tipos de relatorio para conferencia tem que estar separados por abas
+        dentro da aba de conferencia"; quadros grandes como na página de conferência antiga):** os relatórios ficam na
+        coleção `conferencias` (um documento por aba), tirados por `docs/plano/central/extrair_conferencia.py` da página de
+        conferência e das perguntas abertas da página de escolhas. **As respostas dele aos quadros e perguntas ficam na
+        coleção `respostas` da Central** (`opcao`, `opcaoNome`, `comentario`, `em`, `relatorio`); ao ler, marcar `lida: true`.
+        Relatório novo: acrescentar a variável em `RELATORIOS` do extrator (ou o JSON direto em `central/conferencias/`),
+        copiar as fotos com `files: {artifact, path}` (lista em `_imagens.txt`) e rodar o gerador.
 
     **Quando uma página de conferência nova ficar pronta, a gerente abre sozinha no navegador do
     Samuel (com `start "" "<endereço>"`, que abre no navegador padrão do Windows; a ação `open` da

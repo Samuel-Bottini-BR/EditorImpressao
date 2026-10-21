@@ -54,7 +54,7 @@ Ficha [layout](../itens/layout.md).
 - "O programa deve **lembrar** onde você deixou as miniaturas (lugar, abertas, em pares) de um livro para o outro?"
   Ficha [layout](../itens/layout.md).
 - "Posso apagar a pasta de rascunho `D:\programas\EditorImpressao-arquivos\ferramentas\build-st-gravura-fase2-desentortar`?"
-- Se quer um **segundo verificador** para andar mais rápido (gasta mais do limite da conta).
+- ~~Se quer um **segundo verificador**~~ — respondido em 21/10/2026 na Central: "Não, um basta".
 - **Para levar com as conferências que faltam publicar:** caixa do conteúdo — "o carimbo da biblioteca fica fora do corte
   (Opus Majus 3)?", "página quase em branco sai centrada no carimbo ou no papel (Egenloff 12)?", "Pesel 21: só o preto ou
   até a moldura nesse livro?" (fichas [2.13](../itens/2.13.md), [2.5](../itens/2.5.md)); "Parece em branco" — avisar uma
