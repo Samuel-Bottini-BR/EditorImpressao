@@ -411,9 +411,10 @@ def test_so_o_corte_pelo_conteudo_chama_as_caixas():
     from core import corte_pelo_conteudo as cpc
 
     assert inspect.signature(cpc.medir).parameters["achar_pagina"].default is False
+    # Desde 20/10/2026 nem o 2.13 usa a busca da página do ScanTailor (cortava o
+    # cartão do Pesel 21); a página vem de core/borda_preta.so_o_preto.
     pipeline_txt = (RAIZ / "core" / "pipeline.py").read_text(encoding="utf-8")
-    assert pipeline_txt.count("achar_pagina=True") == 1
-    assert "jeito == borda_preta.ATE_A_MOLDURA" in pipeline_txt
+    assert "achar_pagina=True" not in pipeline_txt
 
 
 # ------------------------------------------------------------- as páginas de verdade

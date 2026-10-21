@@ -13,11 +13,14 @@ DECISÕES DO SAMUEL QUE ESTE ARQUIVO CUMPRE
       (JEITO_PADRAO).
 
 OS DOIS JEITOS
-    - "até a moldura" (ATE_A_MOLDURA): a conta do ScanTailor Advanced v1.2.1,
-      sem mudança: a caixa da página dentro da borda preta (PageFinder) e,
-      dentro dela, a caixa do que está impresso (ContentBoxFinder), pela DLL
-      (core/caixas_scantailor). O corte é o impresso + 1 mm, sem passar da
-      página. É o "Vai até a moldura (o que está impresso)" que o Samuel viu.
+    - "até a moldura" (ATE_A_MOLDURA): a página sem a faixa preta (a conta
+      "só o preto" abaixo) e, dentro dela, a caixa do que está impresso pela
+      conta do ScanTailor Advanced v1.2.1, sem mudança (ContentBoxFinder, pela
+      DLL, core/caixas_scantailor). O corte é o impresso + 1 mm, sem passar
+      da página. É o "Vai até a moldura (o que está impresso)" que o Samuel
+      viu. Até 20/10/2026 a página vinha da busca de página do ScanTailor
+      (PageFinder); trocada porque cortava o cartão marrom do Pesel 21 (com
+      o título e a legenda) e não mudava nada nas cinco páginas do alvo.
     - "só o preto" (SO_O_PRETO): conta NOSSA (o ScanTailor só tira faixa preta
       reta que cobre 95% do lado, e no Siebmacher quase não corta): a do
       pesquisador mostrada na pergunta (ramo fase2-geometria-perguntas,
@@ -27,6 +30,12 @@ OS DOIS JEITOS
       nunca anda mais que 30% do lado. Não tira nada do livro nem o papel
       vazio; ficam a beirada das outras folhas, a sombra da lombada e a ponta
       preta do canto de folha torta (escrito na pergunta).
+      Acréscimo de 20/10/2026 (Pesel 21, que tem de sair inteiro): "escuro"
+      é também NEUTRO (cinza: a diferença entre o canal mais forte e o mais
+      fraco da cor abaixo de CROMA_MAXIMO). Medido nas 87 folhas do estudo
+      do "Para revisar": o fundo do scanner tem diferença de 0 a 13 (um caso
+      28); o cartão marrom do Pesel 21, de 52 a 75. Página em cinza (sem cor)
+      vale como neutra, como antes.
 
 COMO ISTO ENTRA NO CORTE (core/pipeline.py)
     O que sai daqui é o LIMITE da página (x0, y0, x1, y1, em pontos): o corte
@@ -53,6 +62,10 @@ ESCURO_DO_PAPEL = 0.45     # mais escuro que isto vezes o tom do papel = fundo d
 PARTE_ESCURA = 0.5         # a linha é "preta" se mais da metade do meio do lado for escura
 ANDA_NO_MAXIMO = 0.3       # nunca tira mais que 30% de um lado
 PASSO = 4                  # olha 4 linhas de cada vez (pula um risco claro de 1 ponto)
+# Fundo do scanner é cinza: diferença entre o canal mais forte e o mais fraco
+# abaixo disto (0 a 255). Medido em 20/10/2026 (ver o topo): fundo 0 a 28,
+# cartão marrom do Pesel 21 de 52 a 75. Seguro mudar entre ~30 e ~45.
+CROMA_MAXIMO = 40
 
 
 def jeito_valido(jeito) -> str:
@@ -68,6 +81,9 @@ def so_o_preto(img: np.ndarray) -> tuple[float, float, float, float]:
     alt, larg = g.shape
     papel = float(np.percentile(g[alt // 4: 3 * alt // 4, larg // 4: 3 * larg // 4], 60))
     escuro = g < papel * ESCURO_DO_PAPEL
+    if img.ndim == 3 and img.shape[2] >= 3:
+        cor = img[:, :, :3]
+        escuro &= (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < CROMA_MAXIMO
     meio_x = slice(int(larg * 0.25), int(larg * 0.75))
     meio_y = slice(int(alt * 0.25), int(alt * 0.75))
 
@@ -75,6 +91,11 @@ def so_o_preto(img: np.ndarray) -> tuple[float, float, float, float]:
         i = 0
         limite = int(len(perfil) * ANDA_NO_MAXIMO)
         while i < limite and perfil[i:i + PASSO].mean() > PARTE_ESCURA:
+            i += 1
+        # acréscimo de 20/10/2026 ("não pode ter preto ali", Cursus 3): a
+        # janela de PASSO linhas para até PASSO/2 linhas antes do fim da faixa;
+        # termina linha a linha
+        while i < limite and perfil[i] > PARTE_ESCURA:
             i += 1
         return i
 
