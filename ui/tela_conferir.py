@@ -119,6 +119,7 @@ programa" (eram "voltar ao automático"). As listas "aplicar em" dizem folha
 from __future__ import annotations
 
 import functools
+import dataclasses
 import traceback
 from pathlib import Path
 
@@ -3593,9 +3594,20 @@ class TelaConferir(QWidget):
         # mensagem só aparece quando bota o mouse em cima"): com o ângulo à
         # mão a linha dos dois ângulos NÃO some (antes ficava vazia), e a
         # frase do giro à mão vai para o balão do mouse da linha e da lista.
-        medidos = angulos_medidos(self.projeto, pagina) if self.projeto.endireitar else None
-        self.rotulo_angulos_medidos.setText(
-            texto_dos_angulos_medidos(medidos) if self.projeto.endireitar else "")
+        medidos = None
+        if self.projeto.endireitar:
+            # com o angulo a mao, as medidas guardadas sao as da pagina SEM
+            # ele (a geometria automatica): procura com uma copia sem o a mao
+            consulta = (pagina if pagina.angulo_manual is None
+                        else dataclasses.replace(pagina, angulo_manual=None))
+            medidos = angulos_medidos(self.projeto, consulta)
+        if not self.projeto.endireitar:
+            texto = ""
+        elif medidos is None and pagina.angulo_manual is not None:
+            texto = "(as contas não foram medidas nesta página)"
+        else:
+            texto = texto_dos_angulos_medidos(medidos)
+        self.rotulo_angulos_medidos.setText(texto)
         frase = ""
         if pagina.angulo_manual is not None:
             frase = (f"Você girou à mão: {_graus(pagina.angulo_manual)}. As contas voltam com "

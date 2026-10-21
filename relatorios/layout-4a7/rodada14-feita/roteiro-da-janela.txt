@@ -1,0 +1,14 @@
+  1-menu-paineis.png  (tela inteira)
+      Painéis ['Propriedades', 'Filtro da página', 'Para revisar', 'Automático', 'Histórico', 'Fechar o painel', 'Ícones da direita']
+  2-menu-ver.png  (tela inteira)
+      Ver ['Aproximar', 'Afastar', 'Ajustar à tela', 'Miniaturas', 'Ícones da direita', 'Modo comparar', 'Tema']
+  ok      menu Painéis > Filtro da página abriu o painel e ficou marcado
+  ok      909 B: sem o botão de cima, nenhum aceso
+  3-so-neste-pedaco.png  (tela inteira)
+  ok      907 B: a lista do Dividir diz 'o do Editor'
+  4-dividir-o-do-editor.png  (tela inteira)
+  ok      910 A: com o giro à mão a linha continua ('ScanTailor -0,6° · Editor -0,7°') e a frase está no balão
+  5-endireitar-a-mao-balao.png  (tela inteira)
+
+conferências: 4 de 4 certas
+FIM
