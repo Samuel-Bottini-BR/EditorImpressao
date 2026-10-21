@@ -1,0 +1,144 @@
+{
+ "aba": "layout etapas 6 e 7",
+ "ramo": "layout-etapas4a7-2026-10-19",
+ "commit": "448299e",
+ "montado_em": "21/10/2026",
+ "nota_para_a_gerente": "Prints da janela de verdade (1600 x 821), tirados e abertos por mim em 21/10. Não publicado.",
+ "ressalvas": [
+  "Não está como no desenho: \"Para revisar\" e \"Receita usada\" no livro aberto (o resumo não tem esse dado; receitas não existem).",
+  "Não está como no desenho: 804 B, o aviso de livro novo (\"ainda não passou pelo automático\"): o livro ainda não abre direto na tela de trabalho.",
+  "Não está como no desenho: Configurações sem as partes \"Para todos os livros\" e \"Lado direito\" (não existem ainda).",
+  "Tela cheia dos filtros: o ajuste mexido ali mostra só o filtro (sem \"Só as letras\") até \"Usar\"; o antes e depois não aproxima.",
+  "Livro aberto, uma página por vez: a página sai borrada; lado a lado sai nítida.",
+  "\"Todas as páginas\": melhorou, mas ainda um pouco macia."
+ ],
+ "quadros": [
+  {
+   "id": "l67-tela-cheia",
+   "nome": "Filtros em tela cheia",
+   "explicacao": [
+    "O que você está escolhendo: se a tela cheia dos filtros ficou como você escolheu na rodada 11 (601).",
+    "O ícone no canto do título do painel \"Filtro da página\" (e o menu Ver > \"Filtros em tela cheia\") abre a tela: a fila dos filtros à esquerda, o escolhido grande no meio, o ajuste dele à direita. A chave \"Comparar com o Original\" começa desligada; ligada, vira o antes e depois com a linha que se arrasta. Escolher na fila só mostra; \"Usar …\" grava, \"Fechar sem mudar\" não muda nada (conferido: a página continuou em Preto e branco)."
+   ],
+   "olhar": "A linha do meio com \"antes: Original\" e \"depois: …\".",
+   "decisao_do_samuel": "601 (07/10): \"A — A “um grande”, com a chave “Comparar com o Original”\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c67-comparar.jpg",
+     "legenda": "Ampliado: \"Comparar com o Original\" ligado"
+    },
+    {
+     "src": "img/c67-M09-tela-cheia-inteira.jpg",
+     "legenda": "A tela cheia ao abrir (chave desligada)"
+    },
+    {
+     "src": "img/c67-M11-tela-cheia-melhorar-inteira.jpg",
+     "legenda": "Melhorar escolhido na fila, comparando"
+    }
+   ],
+   "ressalva": "O ajuste mexido aqui mostra só o filtro, sem o \"Só as letras\", até \"Usar\"; os outros ajustes do Preto e branco ficam no painel; o antes e depois não aproxima."
+  },
+  {
+   "id": "l67-config",
+   "nome": "Configurações com a lista das partes à esquerda",
+   "explicacao": [
+    "O que você está escolhendo: se a tela de Configurações e o lugar da troca de tema ficaram como você escolheu (807 e 707).",
+    "\"Configurações\" (no alto da tela dos livros) abre uma janela com a lista das partes à esquerda, \"Aparência\" e \"Atalhos de teclado\". Em \"Aparência\": Escuro, Cinza (de fábrica), Claro. O tema também se troca pelo menu Ver > Tema."
+   ],
+   "olhar": "A lista à esquerda e os três temas.",
+   "decisao_do_samuel": "807 (12/10): \"B — Lista das partes à esquerda\"; 707 (12/10): \"C — Nos dois lugares\".",
+   "bate_com_a_decisao": "em parte: faltam as partes \"Para todos os livros\" e \"Lado direito\" (ainda não existem)",
+   "imgs": [
+    {
+     "src": "img/c67-M06-configuracoes-inteira.jpg",
+     "legenda": "A janela de Configurações"
+    }
+   ]
+  },
+  {
+   "id": "l67-livros",
+   "nome": "A tela dos livros",
+   "explicacao": [
+    "O que você está escolhendo: se a tela dos livros ficou como você escolheu na rodada 6 e na página de escolhas (cartão \"+\").",
+    "Só os cartões, sem barra de menus. O cartão \"+ Abrir um PDF novo\" vem no começo da grade (clique ou arraste o PDF). No alto: \"procurar pelo nome\", \"Configurações\" e \"Ajuda\". Um clique num livro abre o livro na tela inteira; \"continuar\" vai direto ao trabalho."
+   ],
+   "olhar": "O cartão \"+\" no começo e o alto da tela.",
+   "decisao_do_samuel": "\"Como abrir um livro novo?\" (06/10): \"Cartão “+” no começo da grade\"; rodada 6: Configurações e Ajuda no alto, sem barra de menus.",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c67-M01-tela-dos-livros-inteira.jpg",
+     "legenda": "A tela dos livros"
+    }
+   ]
+  },
+  {
+   "id": "l67-livro-aberto",
+   "nome": "O livro aberto na tela inteira",
+   "explicacao": [
+    "O que você está escolhendo: se o livro aberto ficou como você escolheu na rodada 6.",
+    "As páginas rolam uma embaixo da outra, com a coluna de miniaturas à esquerda e a pílula \"página 4 de 6 · ir para\" embaixo. No alto: \"Voltar para os livros (Esc)\", \"Continuar\", \"Rodar o automático…\", \"Ver todas as páginas\", \"Confirmar e processar…\", \"Mais…\" (continuar, começar de novo, renomear, abrir a pasta de saída, remover da lista) e \"Onde está\". \"Ver lado a lado\" é um botão (não vem ligado): mostra as páginas em pares, como o livro aberto."
+   ],
+   "olhar": "O botão \"Ver lado a lado\" e as duas páginas lado a lado.",
+   "decisao_do_samuel": "\"O livro aberto fica assim?\" (06/10): \"Sim, fica assim\" + \"quero ter a opção de clicar e ver como ia ficar as paginas lado a lado [...] eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado.\"",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c67-lado-a-lado.jpg",
+     "legenda": "Ampliado: \"Ver lado a lado\" ligado"
+    },
+    {
+     "src": "img/c67-M02-livro-aberto-inteira.jpg",
+     "legenda": "O livro aberto (uma página por vez)"
+    },
+    {
+     "src": "img/c67-mais.jpg",
+     "legenda": "O menu \"Mais…\""
+    }
+   ],
+   "ressalva": "Na vista de uma página por vez, a página sai borrada (aumentada de uma imagem pequena); lado a lado sai nítida."
+  },
+  {
+   "id": "l67-acertos",
+   "nome": "Os três acertos da conferência anterior",
+   "explicacao": [
+    "O que você está escolhendo: se os três acertos que eu pedi ficaram bons.",
+    "1) O nome \"Melhorar\" cabe inteiro na fila do painel Filtro. 2) As páginas de \"Todas as páginas\" ficaram mais nítidas. 3) A frase de resumo da tela \"O que fazer\" diz \"(jeito: o do Editor)\", como a lista (907 B), com teste de reversão que falha no código de antes."
+   ],
+   "olhar": "\"Melhorar\" inteiro na fila; as páginas da grade.",
+   "decisao_do_samuel": "907 (20/10): \"B — “o do Editor”\".",
+   "bate_com_a_decisao": "sim (a grade ainda um pouco macia)",
+   "imgs": [
+    {
+     "src": "img/c67-melhorar.jpg",
+     "legenda": "Ampliado: a fila com \"Melhorar\" inteiro"
+    },
+    {
+     "src": "img/c67-M12-todas-as-paginas-inteira.jpg",
+     "legenda": "\"Todas as páginas\" depois do acerto"
+    }
+   ],
+   "ressalva": "A grade de \"Todas as páginas\" melhorou, mas ainda não fica bem nítida."
+  }
+ ],
+ "opcoes_de_cada_quadro": [
+  "Está bom",
+  "Melhorar",
+  "Está pior",
+  "Ainda não entendi"
+ ],
+ "pergunta": {
+  "id": "ly-6-7",
+  "titulo": "Layout: etapas 6 e 7: o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se a tela cheia dos filtros, as Configurações, a tela dos livros e o livro aberto entram no programa.",
+   "Cada quadro é uma coisa que você decidiu, com a foto da janela de verdade. O que ainda não está como no desenho está na lista de ressalvas."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}
