@@ -11,49 +11,64 @@ lista com nome entre crases já aparece como decidida no Registro.
 
 ## 1. Na página de escolhas (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV)
 
-Nenhuma aberta (lida em 20/10/2026). Respondidas recentemente:
+Seis perguntas da impressão, publicadas em 20/10/2026 e **sem resposta** (conferido na [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5). Vêm da
+pesquisa do ramo `pesquisa-impressao-2026-10-19`; o relatório com desenhos é
+`docs/pesquisa/fase-impressao/perguntas-para-o-samuel.pdf`. Itens [2.6](../itens/2.6.md), [6.5](../itens/6.5.md).
 
-- 20/10/2026 — g7-borda-ate-onde: "O Kaique escolhe por livro: só o preto, ou até a moldura". Itens
-  [2.13](../itens/2.13.md), [2.5](../itens/2.5.md). Liberou ligar o corte da borda preta (Implementador 4).
-- 20/10/2026 — g9-folha-maior-impressao: "Ajustar: gira de pé e reduz até caber na página A5" + "Quero que o
-  programa avise quando isso estiver acontecendo." Itens [2.6](../itens/2.6.md), [2.4](../itens/2.4.md).
+- `imp-1-folha-ou-pagina` — a primeira: "Na escala por lado, quando você diz 'dá para mudar uma folha só', a folha é a A4
+  inteira (as duas páginas que saem nela) ou uma página só do livro?"
+- `imp-2-ajustar-no-livreto`
+- `imp-3-pagina-diminuida-onde`
+- `imp-4-ultimo-caderno`
+- `imp-5-arquivo-ou-impressora`
+- `imp-6-imprimir-como-imagem` — pede fotos das abas Pôster e Múltiplo do UPDF.
+
+(`g7` e `g9`, que estavam aqui, foram respondidas em 20/10/2026: ver "Respondidas recentemente", no fim.)
 
 ## 2. Na página de conferência (https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX)
 
-- `cg6` — conserto do corte com borda preta (defeito do G6). Marcado "Melhorar" em 13/10/2026, com a dúvida dele:
-  "Só não sei se vamos fazer esse concerto agora ou deixar para depois e o corte de borda continua assim e segue
-  para o aplicativo e depois arrumamos." Reaberta (opção esvaziada) em 14/10/2026 até o implementador acertar o
-  Pesel 21 (tem de sair como sai hoje). Volta para ele com a sugestão de fazer agora. Itens [2.2](../itens/2.2.md),
-  [2.13](../itens/2.13.md); páginas [pesel-021](../paginas-de-teste/pesel-021.md),
-  [cursus-003](../paginas-de-teste/cursus-003.md).
-- **"Para revisar", aba 4 da conferência (ainda por montar)** — três perguntas que o verificador escreveu (ramo
-  verif-para-revisar-2026-10-13, `conferencia.json`): (1) medir o livro inteiro por trás, com andamento, na resolução
-  do PDF (hoje só a página visitada é medida, e a lista "Antes de processar" mostra só o que já foi medido; Lista de
-  espera 12/10/2026); (2) as três contagens que não batem (no Camões: 105 linhas, "100 páginas", 40 no painel, 6 na
-  janela de salvar; Registro 13/10/2026); (3) mostrar na tela o mesmo que o PDF (a prévia de 110 DPI decide diferente
-  do PDF de 300; Lista de bugs 13/10/2026, "a tela mostra o que o PDF não tem"). Ficha
-  [para-revisar](../itens/para-revisar.md).
+Abas 4 a 8, publicadas, **sem resposta** (21/10/2026):
 
-## 3. Layout: rodada 14 (ainda não publicada)
+- **Aba 4, "Para revisar"** — 18 quadros e 3 perguntas (`pr-medir-o-livro`, `pr-contagens`, `pr-tela-igual-ao-pdf`), decisão
+  `pr`. As três perguntas, como o verificador as escreveu: (1) medir o livro inteiro por trás, com andamento, na resolução
+  do PDF (hoje só a página visitada é medida; Lista de espera 12/10/2026); (2) as três contagens que não batem (no Camões:
+  105 linhas, "100 páginas", 40 no painel, 6 na janela de salvar; Registro 13/10/2026); (3) mostrar na tela o mesmo que o
+  PDF (a prévia de 110 DPI decide diferente do PDF de 300; Lista de bugs 13/10/2026). Ficha
+  [para-revisar](../itens/para-revisar.md). Ressalva: o Boécio chega a 34% no "Para revisar".
+- **Aba 5, layout etapas 4-5 + rodada 14** — decisão `ly-4a5`. Ficha [layout](../itens/layout.md).
+- **Aba 6, item 2.8** — decisão `28`. Ficha [2.8](../itens/2.8.md).
+- **Aba 7, item 2.9** — decisão `29`. Ficha [2.9](../itens/2.9.md).
+- **Aba 8, itens 2.11 e 2.15** — decisão `211-215`. Fichas [2.11](../itens/2.11.md), [2.15](../itens/2.15.md).
+- Ressalva que vai junto: "Letras com a cor delas" deixa a letra preta comum marrom-acinzentada.
 
-Da PARTE -15 §4 item 8 e do Registro 12/10/2026 (rodada 13):
+## 3. Layout
 
-- qual vista de "Todas as páginas" vem de fábrica;
-- onde se escolhe a "área de trabalho 1" e os jeitos do menu da direita;
-- os menus;
-- o nome "o mesmo da página";
-- a frase nova para o aviso de `core/analise.py` "Confira na aba Marcar - se for escrita, marque como letra." (as
-  abas saíram; Lista de bugs 13/10/2026);
-- pendências sem dono achadas em 12/10/2026: receitas, ordem arrastando e "pular as páginas mexidas" do painel
-  Automático; tela inicial sem barra de menus.
-
+Nada aberto na página de layout (rodadas 14 e 14b decididas em 20/10/2026; ver "Respondidas recentemente"). A conferência
+das etapas 6-7 está montada e **não publicada**; a pergunta sobre lembrar as miniaturas está em "No chat" abaixo.
 Ficha [layout](../itens/layout.md).
+
+## 3b. No chat, sem resposta (21/10/2026)
+
+- "Juntar os consertos ao programa: **1** agora (pausa de ~30 min no PC) ou **2** no próximo intervalo?" (ramo
+  `consertos-2026-10-21`). Fichas [6.8](../itens/6.8.md), [para-revisar](../itens/para-revisar.md).
+- "O programa deve **lembrar** onde você deixou as miniaturas (lugar, abertas, em pares) de um livro para o outro?"
+  Ficha [layout](../itens/layout.md).
+- "Posso apagar a pasta de rascunho `D:\programas\EditorImpressao-arquivos\ferramentas\build-st-gravura-fase2-desentortar`?"
+- Se quer um **segundo verificador** para andar mais rápido (gasta mais do limite da conta).
+- **Para levar com as conferências que faltam publicar:** caixa do conteúdo — "o carimbo da biblioteca fica fora do corte
+  (Opus Majus 3)?", "página quase em branco sai centrada no carimbo ou no papel (Egenloff 12)?", "Pesel 21: só o preto ou
+  até a moldura nesse livro?" (fichas [2.13](../itens/2.13.md), [2.5](../itens/2.5.md)); "Parece em branco" — avisar uma
+  vez para o livro inteiro quando os versos são vazios (Egenloff 49%)? (ficha [para-revisar](../itens/para-revisar.md));
+  e a pergunta do pedido de testes: como aplicar em todos os testes o "testar sobre a página que já passou pelas etapas
+  anteriores" (20/10/2026; ficha [2.2](../itens/2.2.md)).
+- Continuam das PARTEs anteriores: apagar a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW e o
+  `C:\Users\fotog\AppData\Local\Temp\p2.py`.
 
 ## 4. Feitas no chat ou no Registro, sem resposta registrada
 
 - **Pesel 21 no conserto do corte** — o cartão escuro passa a sair cortado rente (15,7 × 24,1 → 14,5 × 20,6 cm,
   legenda a 1 ou 2 mm da borda): "efeito de lado, para o Samuel decidir" (Registro 13/10/2026). Em andamento: o
-  Implementador 1 foi liberado em 19/10/2026 para fazer o Pesel 21 sair como sai hoje.
+  Implementador 1 foi liberado em 19/10/2026 para fazer o Pesel 21 sair como sai hoje. **[Resolvido em 20/10/2026: Pesel 21 sai idêntico ao `fase-1`; conserto juntado (`f418cc3`), `cg6` "Aprovado: entra agora". Ver o fim do arquivo.]**
 - **Endireitar: aviso "as contas discordam" em página reta** (0,2° de diferença, limite 0,3°; a análise mede a 150
   DPI e a tela a 300): "Consertar exige escolha do Samuel (pergunta a montar)" (Lista de bugs, 09/10/2026). Item
   [2.2](../itens/2.2.md).
@@ -109,7 +124,7 @@ Ficha [layout](../itens/layout.md).
 - **A pergunta do fundo também dentro do programa, e voltar ao original** (F5, 30/09/2026; Lista de espera, fase não
   decidida). Item [1.1](../itens/1.1.md).
 - **As seis perguntas da pesquisa da impressão** (ramo pesquisa-impressao-2026-10-19, `docs/pesquisa/fase-impressao/fase-impressao.md`
-  §9), ainda não levadas a ele. A primeira: "Na escala por lado, quando você diz 'dá para mudar uma folha só', a folha
+  §9), ainda não levadas a ele **[publicadas em 20/10/2026 como imp-1 a imp-6, ver o item 1]**. A primeira: "Na escala por lado, quando você diz 'dá para mudar uma folha só', a folha
   é a A4 inteira (as duas páginas que saem nela) ou uma página só do livro?" Item [2.6](../itens/2.6.md).
 - **Quem faz o 2.10** (separar a saída em duas camadas): D1 de 02/10/2026 manda "2.10 com o 1.6"; a fila do
   Implementador 3 (19/10/2026) o deixa fora. Item [2.10](../itens/2.10.md).
@@ -148,6 +163,71 @@ Pela regra de 29/09/2026 (CLAUDE.md §10.9), nada disto se apaga sem o "sim" del
   [2.6](../itens/2.6.md).
 
 ## 5. Respondidas recentemente (para não perguntar de novo)
+
+**De 19 a 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) e Registro):**
+
+- 20/10/2026 — g7-borda-ate-onde: "O Kaique escolhe por livro: só o preto, ou até a moldura". Itens
+  [2.13](../itens/2.13.md), [2.5](../itens/2.5.md). Liberou ligar o corte da borda preta (Implementador 4).
+- 20/10/2026 — g9-folha-maior-impressao: "Ajustar: gira de pé e reduz até caber na página A5" + "Quero que o programa avise
+  quando isso estiver acontecendo." Itens [2.6](../itens/2.6.md), [6.5](../itens/6.5.md), [2.4](../itens/2.4.md).
+- 20/10/2026 — cg6 (conserto do corte com borda preta): **"Aprovado: entra agora"**, com o comentário "pode entrar como
+  está, mas vamos melhorar ele ainda, e descobri uma coisa [...]" (literal na ficha [2.2](../itens/2.2.md)). Antes: "Melhorar"
+  (13/10/2026) e reaberta em 14/10/2026 até o Pesel 21. Quadros: Pesel 21 "Está bom"; Antiphon 260, Antiphon 88, Camões 104,
+  Cursus 3 e Matemática 32 "Melhorar" (alvo do [2.13](../itens/2.13.md)).
+- 20/10/2026 — rodada 14 do layout: r14-todas-fabrica "A — Uma a uma"; r14-lado-direito-onde "C — Nos dois lugares";
+  r14-menu-paineis "B — Um menu novo, “Painéis”"; r14-menus-novas "A — Sim, no menu Ver"; r14-aviso-marcar "C — Diz onde
+  fica o “letra e traço”"; r14-dividir-palavra "B — “o do Editor”". As duas sem opção (r14-mesmo-da-pagina, r14-endireitar-a-mao)
+  foram refeitas. (Lista de 12/10/2026 que a rodada 14 respondeu: vista de "Todas as páginas", "área de trabalho 1", menus, nome
+  "o mesmo da página", frase do aviso "Confira na aba Marcar...", pendências de receitas e tela inicial sem menu.)
+- 20/10/2026 — rodada 14b: r14b-mesmo-da-pagina "B — Sem o botão de cima, nenhum aceso"; r14b-endireitar-a-mao "A — Os dois
+  ângulos e, embaixo, o seu" + "a opção 1, podia aparecer só na hora que passasse o mouse em cima, os angulos continuam
+  embaixo mas a mensagem só aparece quando bota o mouse em cima". Ficha [layout](../itens/layout.md).
+- 20/10/2026 — exceção à regra da suíte no PC, "opção 1": trabalho que só acrescenta documentos entra só com o GitHub.
+- 19/10/2026 — MemPalace: "Testar depois" (Lista de espera), depois da `memoria/`.
+
+**Texto antigo das seções 1 a 3 (de 20/10/2026), guardado:**
+
+```
+## 1. Na página de escolhas (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV)
+
+Nenhuma aberta (lida em 20/10/2026). Respondidas recentemente:
+
+- 20/10/2026 — g7-borda-ate-onde: "O Kaique escolhe por livro: só o preto, ou até a moldura". Itens
+  [2.13](../itens/2.13.md), [2.5](../itens/2.5.md). Liberou ligar o corte da borda preta (Implementador 4).
+- 20/10/2026 — g9-folha-maior-impressao: "Ajustar: gira de pé e reduz até caber na página A5" + "Quero que o
+  programa avise quando isso estiver acontecendo." Itens [2.6](../itens/2.6.md), [2.4](../itens/2.4.md).
+
+## 2. Na página de conferência (https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX)
+
+- `cg6` — conserto do corte com borda preta (defeito do G6). Marcado "Melhorar" em 13/10/2026, com a dúvida dele:
+  "Só não sei se vamos fazer esse concerto agora ou deixar para depois e o corte de borda continua assim e segue
+  para o aplicativo e depois arrumamos." Reaberta (opção esvaziada) em 14/10/2026 até o implementador acertar o
+  Pesel 21 (tem de sair como sai hoje). Volta para ele com a sugestão de fazer agora. Itens [2.2](../itens/2.2.md),
+  [2.13](../itens/2.13.md); páginas [pesel-021](../paginas-de-teste/pesel-021.md),
+  [cursus-003](../paginas-de-teste/cursus-003.md).
+- **"Para revisar", aba 4 da conferência (ainda por montar)** — três perguntas que o verificador escreveu (ramo
+  verif-para-revisar-2026-10-13, `conferencia.json`): (1) medir o livro inteiro por trás, com andamento, na resolução
+  do PDF (hoje só a página visitada é medida, e a lista "Antes de processar" mostra só o que já foi medido; Lista de
+  espera 12/10/2026); (2) as três contagens que não batem (no Camões: 105 linhas, "100 páginas", 40 no painel, 6 na
+  janela de salvar; Registro 13/10/2026); (3) mostrar na tela o mesmo que o PDF (a prévia de 110 DPI decide diferente
+  do PDF de 300; Lista de bugs 13/10/2026, "a tela mostra o que o PDF não tem"). Ficha
+  [para-revisar](../itens/para-revisar.md).
+
+## 3. Layout: rodada 14 (ainda não publicada)
+
+Da PARTE -15 §4 item 8 e do Registro 12/10/2026 (rodada 13):
+
+- qual vista de "Todas as páginas" vem de fábrica;
+- onde se escolhe a "área de trabalho 1" e os jeitos do menu da direita;
+- os menus;
+- o nome "o mesmo da página";
+- a frase nova para o aviso de `core/analise.py` "Confira na aba Marcar - se for escrita, marque como letra." (as
+  abas saíram; Lista de bugs 13/10/2026);
+- pendências sem dono achadas em 12/10/2026: receitas, ordem arrastando e "pular as páginas mexidas" do painel
+  Automático; tela inicial sem barra de menus.
+
+Ficha [layout](../itens/layout.md).
+```
 
 - Os agentes dos itens 4 e 6 da PARTE -16 ("posso mandar os agentes...?"): liberados em 19/10/2026 ("Implementador 1
   - ok / Verificador - ok / ...", Registro 19/10/2026).

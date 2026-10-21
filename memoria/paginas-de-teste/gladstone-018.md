@@ -18,6 +18,8 @@
 - 08/10/2026 → Lista de bugs: o aviso "Parece em branco" aparece na Gladstone 18 (errado).
 - 13/10/2026 → verificador: sem "está bom" na 1ª conferência → consertado; o 3º botão "está bom assim" conferido na janela na 2ª.
 
+- 20-21/10/2026 → "Parece em branco" consertado (ramo `consertos-2026-10-21`, `2ff16e7`; Lista de bugs 08/10/2026 dizia que errava no Gladstone 18). Passa a avisar 49% das páginas do Egenloff; acima de 70% vira aviso do livro inteiro. Não juntado.
+
 ## O que o Samuel disse
 
 - 07/10/2026, rodada 3: "Concordo" ([rodada 3](../../relatorios/revisar-decisoes/rodada-3/respostas-samuel.md)).
@@ -25,3 +27,5 @@
 ## De onde veio (fontes)
 
 - Rodada 3 do "Para revisar"; [plano, Lista de bugs 08/10 e Registro 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2 e §4 (ver [para-revisar](../itens/para-revisar.md))

@@ -94,6 +94,11 @@ H. Caminhos técnicos já fechados.
 - **Onde está hoje:** R, 30/09/2026 (Conferência 3, "Correção da gerente"). Caso parecido em 17/09: a
   gerente explicou a prévia a 150 DPI e era 110 (H, PARTE -5 §4).
 
+### A9. Livro inteiro pega o que página solta não pega (21/10/2026)
+- **O que aconteceu:** a caixa do conteúdo passava em todas as páginas soltas e perdia o tamanho do livro ao gerar o Egenloff 1-14 (DPI da conta × DPI do desenho: a passada media a 150 e a geração era a 300).
+- **A regra que nasceu:** conferir com um **livro inteiro** gerado, não só com páginas soltas; o tamanho do livro foi consertado em `57de8af`.
+- **Onde está hoje:** H, PARTE -17 §4; ficha [2.5](itens/2.5.md).
+
 ---
 
 ## B. Perguntas ao Samuel
@@ -251,6 +256,21 @@ H. Caminhos técnicos já fechados.
   janela.
 - **Onde está hoje:** H, PARTE -5 §1 e PARTE -16 §6; verificador.
 
+### C11. O teste tem de medir o que é pintado (20-21/10/2026)
+- **O que aconteceu:** no Qt com a escala do Windows em 125%, a imagem guardada no tamanho certo e pintada com `pix.scaled(tamanho lógico)` ficou borrada; o teste olhava a imagem guardada, não a pintada.
+- **A regra que nasceu:** reduzir nos pixels de verdade (`razao_do_pintor`) e testar o que é **pintado**.
+- **Onde está hoje:** H, PARTE -17 §4; ficha [layout](itens/layout.md).
+
+### C12. Testar a ferramenta sobre a página que já passou pelas etapas anteriores (20/10/2026)
+- **O que aconteceu:** o Samuel viu que o corte falhava no teste porque a página não tinha sido endireitada antes: "vamos ficar tentando concertar uma ferramenta que não precisa ser consertada".
+- **A regra que nasceu (pedido dele, 20/10/2026):** cada funcionalidade testada sobre páginas que passaram pelas etapas anteriores. Como aplicar em todos os testes: pergunta ainda não feita a ele.
+- **Onde está hoje:** R, 20/10/2026 (`cg6`); H, PARTE -17 §1; ficha [2.2](itens/2.2.md).
+
+### C13. O mesmo código nem sempre dá a mesma imagem (20/10/2026)
+- **O que aconteceu:** a Horas 11 em Mágico pro saiu diferente numa passada longa com pouca memória: o modelo de regiões ficava desligado a sessão inteira e o detector de gravura caía no antigo. A prova de "sai igual" por soma acusou diferença falsa.
+- **A regra que nasceu:** repetir antes de concluir; consertado em `2ff16e7` (tenta de novo).
+- **Onde está hoje:** H, PARTE -17 §4; Lista de bugs 20/10/2026; [bugs](bugs.md).
+
 ---
 
 ## D. Arquivos, disco e PC do Samuel
@@ -402,6 +422,26 @@ H. Caminhos técnicos já fechados.
 - **A regra que nasceu:** juntar tudo e rodar uma vez; desde 19/10 a suíte inteira roda no Windows do
   GitHub em toda entrega, e no PC (com os agentes parados) antes de entrar no `fase-1`.
 - **Onde está hoje:** H, PARTE -13 §0 e §4; [CLAUDE.md](../CLAUDE.md) §4.6.
+
+### F1b. Limite da conta com 5 a 8 agentes (20-21/10/2026)
+- **O que aconteceu:** a conta bateu o limite três vezes (20/10 de manhã, 20/10 à tarde, 21/10 de madrugada); os agentes pararam no meio.
+- **A regra que vale:** a de F1 (commit + `ONDE-PAREI.md` a cada passo, retomar com SendMessage depois do horário que o erro informa). Nada se perdeu.
+- **Onde está hoje:** H, PARTE -17 §4; [pc-e-github](geral/pc-e-github.md).
+
+### F7b. Mensagem de commit pelo scratchpad compartilhado (20/10/2026)
+- **O que aconteceu:** um agente pegou a mensagem de commit de outro, gravada no scratchpad compartilhado.
+- **A regra que nasceu:** cada agente grava a mensagem num arquivo dentro da **própria** worktree.
+- **Onde está hoje:** H, PARTE -17 §4; [regras-de-trabalho](geral/regras-de-trabalho.md) §9.
+
+### F8. `gh run watch` de vários agentes esgota a API do GitHub (20/10/2026)
+- **O que aconteceu:** vários agentes com `gh run watch` ao mesmo tempo bateram no limite de consultas (HTTP 403).
+- **A regra que nasceu:** disparar a rodada e ler o resultado **uma vez só, no fim**.
+- **Onde está hoje:** H, PARTE -17 §4; [pc-e-github](geral/pc-e-github.md) §10.
+
+### F9. Medir velocidade direto no GitHub (20/10/2026)
+- **O que aconteceu:** as máquinas do GitHub variam até 70%.
+- **A regra que nasceu:** medir antes e depois **na mesma máquina, alternando**, com espera do processador (< 15%) e piso de 2% (filtro `velocidade_ab`).
+- **Onde está hoje:** H, PARTE -17 §3; [pc-e-github](geral/pc-e-github.md) §10.
 
 ---
 

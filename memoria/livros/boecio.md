@@ -44,3 +44,7 @@
 ## De onde veio
 
 - Acervo desde 18/07/2026; 1º livro do ciclo de 12–13/09; relatórios `relatorios/so-boecio*.md` e `para-conferir-boecio-15-09-2026`. Ficha `LIVROS PARA FAZER TESTE (duplicata)\Sobre a Consolação da Filosofia - Severino Boécio.txt`; [relatório por livro](../../relatorios/por-livro/Sobre%20a%20Consolacao%20da%20Filosofia%20-%20Severino%20Boecio.md).
+
+## Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- No "Para revisar" (aba 4 da conferência, sem resposta) o Boécio chega a 34% das páginas marcadas: ressalva que vai junto da pergunta. Ficha [para-revisar](../itens/para-revisar.md).

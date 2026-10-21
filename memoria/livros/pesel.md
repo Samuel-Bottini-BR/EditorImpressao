@@ -41,3 +41,7 @@
 ## De onde veio
 
 - Acervo desde 18/07/2026; ficha `LIVROS PARA FAZER TESTE (duplicata)\POINTS d´ANCIENNES BRODERIES ANGLAISES - Louisa F. Pesel.txt`; [relatório por livro](../../relatorios/por-livro/POINTS%20d%20ANCIENNES%20BRODERIES%20ANGLAISES%20-%20Louisa%20F.md).
+
+## Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- Pesel 21 acertado e juntado ao `fase-1` em 20/10/2026 (`f418cc3`): sai idêntico ao que saía (15,7 × 24,1 cm). Pergunta para levar com a caixa do conteúdo: só o preto ou até a moldura nesse livro? Ver [pesel-021](../paginas-de-teste/pesel-021.md).

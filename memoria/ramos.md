@@ -14,6 +14,34 @@ Samuel aprovar. Hoje (20/10) há agentes em oito ramos próprios: os seis que o 
 corte, conferência do "Para revisar", itens da Fase 2 iguais ao ScanTailor, layout etapas 4 a 7, caixa do conteúdo e
 pesquisa da impressão), mais o filtro de velocidade no GitHub e esta memória.
 
+## Atualização de 21/10/2026 ([PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)): vale mais que a tabela de 20/10 abaixo
+
+Tudo parou em 21/10/2026 (pausa pedida pelo Samuel), com commit, push e `ONDE-PAREI.md` em dia. O `fase-1` está em
+`e1f4c7d` (registro da pausa). **Nada foi juntado depois do conserto do corte** (`f418cc3`, 20/10/2026). Os arquivos soltos
+antigos em `relatorios/` continuam sem commit; não mexer.
+
+| Ramo (último commit) | O que é | Situação em 21/10/2026 |
+|---|---|---|
+| `fase-1` (`e1f4c7d`) | o programa | conserto do corte juntado (`f418cc3`); memória `memoria/` (`ccc3d6d`); regras novas; registros `31a9253`, `e1f4c7d` |
+| `conserto-corte-g6-2026-10-13` (`5a84f7c`) / `juntar-corte-2026-10-20` | conserto do corte com borda preta + Pesel 21 | **juntado** (`f418cc3`) |
+| `memoria-2026-10-19` (`ccc3d6d`) | a memória por assunto | **juntada** ao `fase-1` e publicada (20/10/2026) |
+| `fase2-para-revisar` (`8cb84b8`) | "Para revisar" sobre o layout aprovado + frases da r14 + 2 consertos | PRONTO; aba 4 publicada, sem resposta |
+| `fase2-scantailor-itens-2026-10-19` (`ffa2463`) | 2.8, 2.9 (+ cartões `e49463c`, `e3c4d49`), 2.11, 2.15, erros.log do ScanTailor, 2.12 pela metade | 2.8/2.9/2.11/2.15 PRONTOS (abas 6-8 publicadas, sem resposta); 2.12: falta antes/depois em páginas reais e ler as rodadas 39623234116 e 39623242157 |
+| `layout-etapas4a7-2026-10-19` (`2eeec20`) | etapas 4 a 7 do layout + rodadas 14 e 14b + acertos de nitidez | 4-5 PRONTAS (aba 5 publicada); 6-7 PRONTAS, conferência `verif-layout-4a5-2026-10-21` (`5650a1c`) não publicada; suíte 39629275637 não lida |
+| `fase2-caixa-conteudo` (`ed68928`) | 2.5 caixa do conteúdo + guias, 2.13 borda preta, 2.14 pintar de branco, tamanho do livro (`57de8af`) | conferência `verif-caixa-2026-10-21` (`f10b2df`) não publicada; aberto: etiqueta do Egenloff 3, passada 2-3× mais lenta, velocidade 39623840809 não lida |
+| `consertos-2026-10-21` (`2ff16e7`) | instalador com as duas DLLs; teste dos atalhos; Gladstone 18 "Parece em branco"; Horas 11 com pouca memória | verificado até `4c53152`; falta GitHub do `2ff16e7` e a parada no PC para juntar |
+| `pesquisa-impressao-2026-10-19` (`479706f`) | pesquisa da fase de impressão + relatório das 6 perguntas | entregue; perguntas publicadas (só documentos) |
+| `claude/list-server-files-gkos8v` (`6f6fe76`) | workflow com o filtro de velocidade `velocidade_ab` | **adotado**; provado com versão lenta de propósito |
+| `teste-filtro-lento-2026-10-20` | a versão lenta de propósito que provou o filtro | **NUNCA JUNTAR** |
+
+**Ramos de verificação** (todos só relatórios): `verif-para-revisar-2026-10-13`, `verif-pesel21-2026-10-20`,
+`verif-2.8-2026-10-20`, `verif-2.9-2026-10-21`, `verif-2.11-2.15-2026-10-21`, `verif-caixa-2026-10-21`,
+`verif-layout-4a5-2026-10-21`, `verif-consertos-2026-10-21`.
+
+**Worktrees novas** em `.claude\worktrees\` (v28-*, v29-*, v211, vcx-*, vcs-*, vly-*, pr-*, fase1-*, juntar-corte,
+fase2-itens, layout-4a7, consertos-2026-10-21, filtro-velocidade, memoria, pesquisa-impressao, teste-filtro-lento):
+**as junções `modelos` e `gabarito` se removem com `(Get-Item …).Delete()` antes de apagar qualquer worktree** (lição D2).
+Para continuar uma frente numa conversa nova, chame um agente novo apontando o ramo, a worktree e o `ONDE-PAREI.md` dela.
 ## Tabela-resumo
 
 "No fase-1?" = `git merge-base --is-ancestor origin/<ramo> origin/fase-1` (SIM = tudo o que o ramo tem já está no

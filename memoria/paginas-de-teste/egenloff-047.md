@@ -19,6 +19,8 @@
 - 08/10/2026 → rodada 5 (`rv5-pag-egenloff-047`): "O Kaique escolhe por livro" entre cortar fora e pintar de branco. [rodada 5](../../relatorios/revisar-decisoes/rodada-5/respostas-samuel.md)
 - 20/10/2026 → hoje: decidido no plano (2.13/2.14), não construído. A busca da página e a caixa do conteúdo do ScanTailor estão na DLL no ramo `fase2-caixa-conteudo`, não ligadas; o pesquisador alertou que em livro de folha grande (ljs47, Antiphon, Egenloff) a caixa do conteúdo encolhe muito com o DPI do programa e ninguém olhou se corta texto ([plano, Registro 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md)).
 
+- 20-21/10/2026 → tarja da biblioteca e moldura ("O Kaique escolhe por livro") entram no 2.13/2.14 do ramo `fase2-caixa-conteudo` (`ed68928`); `g7` respondida em 20/10/2026. Esta página não é citada nominalmente nas fontes de 19 a 21/10.
+
 ## O que o Samuel disse
 
 - 07/10/2026, rodada 3: "Não concordo" (sem comentário) ([rodada 3](../../relatorios/revisar-decisoes/rodada-3/respostas-samuel.md)).
@@ -29,3 +31,5 @@
 
 - Rodada 3 do "Para revisar" (06/10/2026): [rodada 3, LEIA-ME](../../relatorios/revisar-decisoes/rodada-3/LEIA-ME.md).
 - [plano, itens 2.13 e 2.14 e Registro 09/10/2026](../../docs/plano/PLANO-DEFINITIVO.md).
+
+- Registro 20/10/2026 (`g7`) e [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2.

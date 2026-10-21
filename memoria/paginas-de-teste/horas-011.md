@@ -27,6 +27,8 @@
 - 08/10/2026 → endireitar do ScanTailor no programa: aviso C1. 12/10 G6: "Está bom".
 - 13/10/2026 → investigação do G6: igual ao olho ("a conta errou": contou a moldura pintada como faixa).
 
+- 20/10/2026 → achado: o mesmo código nem sempre dava a mesma imagem (Mágico pro): com pouca memória o modelo de regiões ficava desligado a sessão inteira e o detector de gravura caía no antigo; repetida 4 vezes no `fase-1` deu sempre a mesma soma. 21/10/2026: consertado em `2ff16e7` (tenta de novo); ramo `consertos-2026-10-21`, não juntado.
+
 ## O que o Samuel disse
 
 - 30/09/2026, G1: "RUIM - o centro está branco e pegou a luminaria inteira, mas a cor ainda não está satisfatoria, se você analisar vai ver que perdemos bastante da cor original, e ainda vemos uma sujeiras na parte branca da folha." ([conferência 30/09](../../relatorios/conferencia-samuel-2026-09-30.md))
@@ -39,3 +41,5 @@
 
 - "Vamos recapitular..." (12/09/2026) e teste do ScanTailor de 24/09/2026 ([gabarito/LEIA-ME.md](../../gabarito/LEIA-ME.md)).
 - [plano, Fase 1 (regras de 28/09), Lista de bugs 28/09–01/10, Registro](../../docs/plano/PLANO-DEFINITIVO.md); [relatório D3](../../relatorios/fase2-geometria-d3-2026-10-05/relatorio.md).
+
+- Lista de bugs 20/10/2026 e [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4 (ver [para-revisar](../itens/para-revisar.md))

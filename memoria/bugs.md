@@ -5,6 +5,7 @@
 tem teste de reversão. Onde esta ficha e o plano discordarem, vale o plano e a entrada mais nova do Registro de
 mudanças (seção 7). Conferido em 20/10/2026.
 
+> **Atualização de 21/10/2026 ([PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)):** as contagens e tabelas abaixo são de 20/10/2026. O que mudou depois está em "Atualização de 21/10/2026" no fim deste arquivo (bugs de 20/10 e o que foi consertado).
 ## Contagens (20/10/2026)
 
 | | quantos |
@@ -377,3 +378,22 @@ Nada aberto. A linha 304 (PDF pesado) está em "fechados" (decisão do Samuel: e
   ficaram sem marca, por isso ela continua entre os "a conferir".
 - **Linha 317** (02/10, `_escolher_forca`) continua sem marca, e a linha 381 (12/10) é o mesmo bug marcado `[x]`
   "consertado no ramo `fase2-para-revisar`". No `fase-1` o defeito continua (o ramo não foi juntado).
+
+## Atualização de 21/10/2026 (bugs de 20/10 e o que foi consertado)
+
+Fonte: Lista de bugs do [plano](../docs/plano/PLANO-DEFINITIVO.md) (linhas de 20/10) e [PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md).
+
+| Data | Bug | Item | Situação em 21/10/2026 |
+|---|---|---|---|
+| 20/10 | **Instalador sem a `st_ferramentas.dll`** (achado pelo montador da memória): `empacotar.py` e `instalador.iss` levavam só a `st_gravura.dll`; um instalador novo cairia no caminho "nosso" sem avisar | [6.8](itens/6.8.md) | **consertado** no ramo `consertos-2026-10-21` (`2ff16e7`, as duas DLLs, com teste de que o pacote as contém); verificado até `4c53152`; falta GitHub do `2ff16e7` e a parada no PC para juntar |
+| 20/10 | **O mesmo código nem sempre dá a mesma imagem** (Horas 11, Mágico pro; achado pelo Implementador 5): com pouca memória o modelo de regiões ficava desligado a sessão inteira e o detector de gravura caía no antigo; provas de "sai igual" por soma podiam acusar diferença falsa | [para-revisar](itens/para-revisar.md), `core/filtros.py` | **consertado** em `2ff16e7` (tenta de novo); mesmo ramo, não juntado |
+| 20/10 | **Teste que depende da ordem**: `tests/test_paineis_na_tela.py::test_espelhado_e_proporcao_travada_sao_caixinhas_e_as_teclas_valem` falhou na suíte inteira no PC ("Espelhado   (tecla )": tecla vazia, herdada da configuração de atalhos de outro teste); passa sozinho; não é do conserto do corte | testes | **consertado** no ramo `consertos-2026-10-21` (teste dos atalhos); não juntado |
+| 20/10 | **2.8: a queda para o Automático não vai ao `erros.log`** | [2.8](itens/2.8.md) | mandado ao implementador; o ramo `fase2-scantailor-itens-2026-10-19` traz o erros.log do ScanTailor |
+| 21/10 | **"Parece em branco" errava (Gladstone 18)**: consertado; passa a avisar 49% das páginas do Egenloff (versos realmente vazios); acima de 70% vira aviso do livro inteiro | [para-revisar](itens/para-revisar.md) | consertado em `consertos-2026-10-21`; pergunta de aviso único do livro inteiro aberta |
+| 21/10 | **Etiqueta do Egenloff 3 cortada ao meio** com as duas opções (caixa do conteúdo + borda preta) | [2.13](itens/2.13.md), [2.5](itens/2.5.md) | **aberto**: o conserto começado (`ed68928`) não funciona na página real |
+| 21/10 | **Passada que mede o livro 2-3× mais lenta** com as opções da caixa ligadas (Marial 100 folhas ~140 → ~300 s) | [2.13](itens/2.13.md), [5.1](itens/5.1.md) | **aberto**; rodada de velocidade 39623840809 não lida |
+| 21/10 | **A janela do programa sumiu uma vez, sem log**, ao clicar "Deixar em branco" (Egenloff 12); 62 cliques depois não repetiu | [6.5](itens/6.5.md) | **aberto**, suspeita de falta de memória com muitos agentes |
+| 20/10 | Faixa preta do corte do G6 (Cursus 3, Matemática 32, Antiphon 88 e 260, Camões 104; Pesel 21 como efeito de lado) | [2.2](itens/2.2.md), [2.13](itens/2.13.md) | conserto **juntado** ao `fase-1` (`f418cc3`) com teste de reversão provado; "Melhorar" nas cinco páginas (tirar todo o preto é o 2.13) |
+| 19/10 | Mágico pro +1,1% do "Para revisar" | [5.1](itens/5.1.md) | **Fase 5** ("vamos deixar esse concerto de lentidão para o final, para a fase de desempenho.") |
+
+Bug de 13/10 "G6 deixa faixa preta larga" (tabela "Em ramo, não juntados" acima) deixou de estar em ramo: juntado em 20/10/2026. Os três consertos de `consertos-2026-10-21` seguem a regra do teste de reversão (o verificador prova antes de juntar).

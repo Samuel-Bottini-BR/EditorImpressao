@@ -26,12 +26,18 @@
 - 13/10/2026 → "Para revisar" com os limites reacertados: no livro novo decide diferente do estudo (uma das 5 que não se resolvem com limite). `ramo fase2-para-revisar: relatorios/para-revisar-impl/ONDE-PAREI.md`
 - 20/10/2026 → hoje: o verificador do "Para revisar" tem esta página para reabrir na janela (`ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md`, passo 2, a fazer).
 
+- 20/10/2026 → quadro da `cg6`: "Melhorar". Conserto do corte juntado (`f418cc3`); o 2.13 é quem tira o resto. Na borda preta, "qualquer cinza neutro escuro" como borda de scanner cortou as notas desta página; ficou "faixa cinza neutra que atravessa ≥ 70% do lado" ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §3).
+
 ## O que o Samuel disse
 
 - 06/10/2026, rodada 1: "Sim, deveria ir" ([rodada 1](../../relatorios/revisar-decisoes/rodada-1/respostas-samuel.md)).
 - 13/10/2026, quadro `cg6-antiphon-260`, "Está bom": "Mas sobrou preto embaixo." ([conferência 13/10/2026](../../relatorios/conferencia-samuel-2026-10-13.md))
 
+- 20/10/2026, quadro da `cg6`, "Melhorar": "tem que cortar a faixa inteira." (Registro 20/10/2026)
+
 ## De onde veio (fontes)
 
 - Estudo do "Para revisar": `relatorios/revisar-decisoes/rodada-3/scripts/comum.py`, `EXTRAS["antiphon_p260"] = ("Antiphon_25.pdf", 260)` ("música com capitular", escolhida olhando miniaturas).
 - [plano, Lista de bugs 06/10 e 13/10, Registro 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md); [histórico, PARTE -15 §5](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) (incluir no gabarito do corte).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) e Registro 20/10/2026 (ver [2.2](../itens/2.2.md), [2.13](../itens/2.13.md)).

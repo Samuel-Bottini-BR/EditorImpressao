@@ -21,11 +21,17 @@
 - 13/10/2026 → conserto (`d97b937`): preto na beirada 7,6 mm → 26,4 mm → 1,9 mm; faixa 7,2%. Samuel: "Está bom", com ressalva.
 - 20/10/2026 → hoje: defeito do G6 no `fase-1`; conserto em ramo, não juntado.
 
+- 20/10/2026 → quadro da `cg6`: "Melhorar". Conserto do corte juntado (`f418cc3`); o resto é o 2.13.
+
 ## O que o Samuel disse
 
 - 13/10/2026, quadro `cg6-antiphon-88`, "Está bom": "mas ainda sobrou preto embaixo." ([conferência 13/10/2026](../../relatorios/conferencia-samuel-2026-10-13.md))
+
+- 20/10/2026, quadro da `cg6`, "Melhorar": "Tem que cortar em cima e embaixo e dos lados ainda tem um fio preto." (Registro 20/10/2026)
 
 ## De onde veio (fontes)
 
 - Estudo do "Para revisar": `relatorios/revisar-decisoes/rodada-3/scripts/comum.py`, `EXTRAS["antiphon_p088"]`.
 - [plano, Registro 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) e Registro 20/10/2026 (ver [2.2](../itens/2.2.md), [2.13](../itens/2.13.md)).

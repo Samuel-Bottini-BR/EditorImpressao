@@ -1,12 +1,13 @@
 # layout — A obra do layout (tela "como o Photoshop")
 
-Fase 4 · **etapas 1 a 3 no programa; rodada 14 e etapas 4 a 7 em andamento (agente de layout, ramo `layout-etapas4a7-2026-10-19`)** · ficha montada em 20/10/2026 · o que manda: [PLANO-DEFINITIVO, Fase 4](../../docs/plano/PLANO-DEFINITIVO.md)
+Fase 4 · **etapas 1 a 3 no programa; rodadas 14 e 14b DECIDIDAS (20/10/2026); etapas 4 a 7 PRONTAS no ramo `layout-etapas4a7-2026-10-19` (`2eeec20`), nada juntado; aba 5 publicada, etapas 6-7 montadas e NÃO publicadas** · ficha montada em 20/10/2026 · o que manda: [PLANO-DEFINITIVO, Fase 4](../../docs/plano/PLANO-DEFINITIVO.md)
 
 O item "Fase 4" do plano (atalhos editáveis "a aperfeiçoar") tem ficha própria: [4.md](4.md). Esta ficha é a obra
 inteira do layout: o plano feito com o Samuel, as 13 rodadas de escolhas e as etapas já construídas.
 
 ## Situação
 
+- **Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)); vale sobre os pontos de 20/10 abaixo:** ramo `layout-etapas4a7-2026-10-19` em **`2eeec20`**. **Etapas 4 e 5 PRONTAS**; a **aba 5** da página de conferência (layout etapas 4-5 + rodada 14, decisão `ly-4a5`) está **publicada, sem resposta**. **Etapas 6 e 7 PRONTAS**; conferência montada em `verif-layout-4a5-2026-10-21` (`5650a1c`), **não publicada**. A grade ficou nítida depois, em `2eeec20` (a suíte 39629275637 não foi lida e o verificador não mediu de novo). **Rodada 14 e 14b respondidas** em 20/10/2026 (abaixo). Nada juntado ao `fase-1`. A página de layout está com 500 arquivos (limite de 511 por versão).
 - **No programa (`fase-1`):**
   - **Etapa 1, os três temas** (escuro, cinza, claro; cinza de fábrica): commit `7ebbc04`, juntado em 08/10/2026
     (merge `5ecc4dc`). Troca provisória em Ver > Tema.
@@ -103,6 +104,14 @@ pasta `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\layout\`)
 - Os três controles do retângulo do corte do G6 (Configurações, livro, página: "quero a b e c juntas.", 09/10/2026)
   "entram depois da etapa 2 do layout" (Registro 09/10/2026) e ainda não existem na tela (Registro 12/10/2026).
 
+**Rodada 14 (20/10/2026), decididas:** `r14-todas-fabrica` "A — Uma a uma"; `r14-lado-direito-onde` "C — Nos dois lugares"; `r14-menu-paineis` "B — Um menu novo, “Painéis”"; `r14-menus-novas` "A — Sim, no menu Ver"; `r14-aviso-marcar` "C — Diz onde fica o “letra e traço”"; `r14-dividir-palavra` "B — “o do Editor”".
+
+**Rodada 14, sem opção, com comentário** (fixado na página; perguntas refeitas pelo agente de layout): `r14-mesmo-da-pagina` "Ainda não entendi" + "ficou muito confuso, por favor explique melhor. Não seria mais fácil só usar o original ?"; `r14-endireitar-a-mao` "não gostei de nenhuma opção. e mesmo que coloque a mão tem que continuar aparecendo o angulo".
+
+**Rodada 14b (20/10/2026), decididas:** `r14b-mesmo-da-pagina` "B — Sem o botão de cima, nenhum aceso"; `r14b-endireitar-a-mao` "A — Os dois ângulos e, embaixo, o seu", com o comentário: "a opção 1, podia aparecer só na hora que passasse o mouse em cima, os angulos continuam embaixo mas a mensagem só aparece quando bota o mouse em cima".
+
+**Lição de tela (PARTE -17 §4):** no Qt com a escala do Windows em 125%, imagem guardada no tamanho certo e pintada com `pix.scaled(tamanho lógico)` fica borrada; é preciso reduzir nos pixels de verdade (`razao_do_pintor`). O teste tem de medir o que é **pintado**.
+
 ## Mudou em
 
 - 25/09/2026 — antes: abas por etapa + trilha e painéis ao mesmo tempo → ficou: "Photoshop puro, sem abas" (decisão 1
@@ -129,6 +138,9 @@ pasta `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\layout\`)
   Editor" também no painel Automático, no Histórico e na tela "O que fazer" (a escolha 805 C era só sobre a linha dos
   dois ângulos).
 
+- 20/10/2026 — antes: rodada 14 "ainda não feita"/"não publicada" → ficou: publicada (8 perguntas `r14-*`) e respondida; 6 decididas, 2 sem opção e refeitas como rodada 14b, que também foi respondida no mesmo dia.
+- 20/10/2026 — antes: telas clicáveis das rodadas 7, 8 e 9 na página de layout → ficou: fora da página (limite de 511 arquivos; originais em `layout\prototipo\`). A [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §3 diz rodadas 7 a 10; o Registro diz 7, 8 e 9: não conferi qual está certa.
+
 ## Tentado e descartado
 
 - Abas por etapa (After Effects) e dois modos simples/completo: recusados em 25/09 (decisão 1 do rascunho).
@@ -142,6 +154,9 @@ pasta `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\layout\`)
 - Publicar conferência sem comparar as fotos com as escolhas: a aba da etapa 2 saiu desatualizada; agora um conferente
   abre todas as fotos contra as decisões antes de publicar ([histórico, PARTE -15 §5](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)).
 - Perguntas sem imagem de cada opção: ele não entende (PARTE -13 §4).
+
+- **Pôr as 53 fotos da rodada 14 na página de layout sem tirar nada** (20/10/2026): o limite é de **511 arquivos por versão**; saíram as telas clicáveis já decididas (PARTE -17 §3).
+- **Imagem guardada no tamanho certo e pintada com `scaled(tamanho lógico)`** no Windows a 125%: fica borrada (ver "O que vale hoje").
 
 ## Ramos e commits
 
@@ -161,6 +176,8 @@ Pasta dos desenhos e respostas (fora do git): `D:\programas\EditorImpressao-arqu
 `respostas-rodada12-2026-10-12\`, `banco-antes-2026-10-12\`, `ABRA-AQUI*.html`). Fontes das páginas do claude.ai:
 [docs/plano/para_a_pagina_de_layout.py](../../docs/plano/para_a_pagina_de_layout.py) e `docs/plano/paginas-claude-ai/`.
 
+- `layout-etapas4a7-2026-10-19`: **`2eeec20`** (21/10/2026; a grade nítida). Verificação `verif-layout-4a5-2026-10-21` `5650a1c`. Nada juntado ao `fase-1`.
+
 ## Testes que cobrem
 
 Testes de tela (rodam sem janela, `tests/conftest.py`):
@@ -176,6 +193,8 @@ Testes de tela (rodam sem janela, `tests/conftest.py`):
   prints da janela real (`saida_teste/prints_etapa3.py`, fora do git: 49 de 49 e depois 51 de 51).
 - Testes de reversão dos bugs de tela de 13/10 (regra de 19/10/2026, CLAUDE.md §4.7): **não achados** (nenhum desses bugs
   foi consertado ainda).
+
+- Suíte do GitHub 39629275637 (grade nítida, `2eeec20`): **não lida**; o verificador não mediu de novo a nitidez ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2).
 
 ## Velocidade medida
 
@@ -206,6 +225,9 @@ Testes de tela (rodam sem janela, `tests/conftest.py`):
   Os quatro foram respondidos na própria página.
 - Ver também [../conferencias.md](../conferencias.md).
 
+- 20/10/2026 — rodadas 14 e 14b (página de layout), respondidas; ver [conferencias](../conferencias.md).
+- 21/10/2026 — aba 5 (layout etapas 4-5 + rodada 14, decisão `ly-4a5`) publicada, **sem resposta**; etapas 6-7 montadas, não publicadas.
+
 ## Perguntas abertas
 
 - Rodada 14 (ainda não publicada em 20/10/2026): as quatro do fim do rascunho (vista de fábrica de "Todas as páginas";
@@ -214,6 +236,9 @@ Testes de tela (rodam sem janela, `tests/conftest.py`):
 - Escala do notebook do Kaique (125% ou 150%): "Isso pode ser resolvido depois" (Samuel, 05/10/2026; Registro 05/10/2026).
 - Frase nova para o aviso de `core/analise.py` "Confira na aba Marcar - se for escrita, marque como letra." ("a decidir
   com o Samuel", Lista de bugs 13/10/2026).
+
+- (21/10/2026) Decisão `ly-4a5` da aba 5, sem resposta.
+- No chat, sem resposta: "O programa deve **lembrar** onde você deixou as miniaturas (lugar, abertas, em pares) de um livro para o outro?" ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5).
 
 ## De onde veio
 
@@ -246,3 +271,5 @@ Testes de tela (rodam sem janela, `tests/conftest.py`):
   postos a trabalhar; rodada 13 decidida; conferência da etapa 2 desatualizada); 13/10/2026 (etapa 3 PRONTA PARA
   CONFERIR; layout APROVADO; suíte da junção passou; regra da Fase 2 sobre o lugar dos botões); 14/10/2026 (layout
   JUNTADO, velocidade igual); 19/10/2026 (agente de layout liberado: "rodada 14 e etapas 4 a 7 do layout").
+
+- 20/10/2026 — Registro "Layout, rodada 14" e "Conserto do corte ... JUNTADO" (rodada 14b); 21/10/2026 — Registro "Pausa pedida pelo Samuel"; [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2, §3, §4, §5.

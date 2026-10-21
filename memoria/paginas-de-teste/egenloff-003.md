@@ -22,6 +22,8 @@
 - 13/10/2026 → "Para revisar" com os limites reacertados: o Egenloff 3 voltou a ir no livro novo. Na 2ª conferência do verificador: só o aviso "Texto falhado", força 50; com a força já em 85, o botão "usar mais escuro" não aparece. `ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md`
 - 20/10/2026 → o verificador anotou que as fotos `esta-bom-1..4` da aba 4 mostram comportamento antigo ("Egenloff 3 com a força escurecida sozinha"), que já mudou.
 
+- 21/10/2026 → com a caixa do conteúdo e a borda preta ligadas (ramo `fase2-caixa-conteudo`), a **etiqueta** desta folha de rosto sai cortada ao meio com as duas opções; o conserto começado (`ed68928`) não funciona na página real. Aberto ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2).
+
 ## O que o Samuel disse
 
 - 07/10/2026, rodada 3, "Não concordo": "Ele apaga o titulo em vermelho em baixo." ([rodada 3](../../relatorios/revisar-decisoes/rodada-3/respostas-samuel.md))
@@ -32,3 +34,5 @@
 
 - Rodada 3 do "Para revisar" (06/10/2026): [rodada 3, LEIA-ME](../../relatorios/revisar-decisoes/rodada-3/LEIA-ME.md); livro de `D:\Livros para editar`.
 - [plano, Registro 07/10, 08/10 e 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2 e Registro 21/10/2026 (ver [2.13](../itens/2.13.md))

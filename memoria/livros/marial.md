@@ -44,3 +44,7 @@
 ## De onde veio
 
 - Acervo desde 18/07/2026; ficha `LIVROS PARA FAZER TESTE (duplicata)\Marial de sermoens - Frei Balthasar Paez..txt`; [relatório por livro](../../relatorios/por-livro/Marial%20de%20sermoens%20-%20Frei%20Balthasar%20Paez.md). O "Vamos recapitular" o chama de "Livro 4", sem nome ([lista.json](../../gabarito/lista.json)).
+
+## Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- Com as opções da caixa do conteúdo ligadas, a passada que mede o livro ficou 2 a 3 vezes mais lenta: Marial de 100 folhas ~140 → ~300 s (ramo `fase2-caixa-conteudo`; rodada de velocidade 39623840809 não lida). O Marial 300 é o livro da régua de velocidade (ver [pc-e-github](../geral/pc-e-github.md) §10).

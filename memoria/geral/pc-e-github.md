@@ -231,3 +231,12 @@ conclua que o código quebrou**." Ela lia o HD pelo servidor WebDAV da rede priv
 na cópia do plano e em `D:\programas\EditorImpressao-arquivos\sessao-nuvem-2026-10-09\`, nunca dentro da pasta do
 projeto. Serve para escrever código, preparar perguntas e atualizar o plano; foi dela que nasceram os testes no Windows
 do GitHub (§4). O contêiner pode reiniciar e matar os agentes: push a cada commit.
+
+## 10. Atualização de 19 a 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- **Filtro de velocidade adotado.** O workflow `Testes no Windows` (ramo `claude/list-server-files-gkos8v`, `6f6fe76`) ganhou o modo `velocidade_ab`: roda antes e depois **na mesma máquina, alternando**. Provado com uma versão lenta de propósito (ramo `teste-filtro-lento-2026-10-20`, **nunca juntar**). Comando: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f velocidade_ab=true -f ramo_antes=<a> -f ramo_depois=<b>`. A seção "em construção" acima descreve o começo; vale esta.
+- **Por quê alternar:** medir direto no GitHub não serve, as máquinas variam até 70%. Funcionou medir antes e depois na mesma máquina, alternando, com espera do processador (< 15%) e piso de 2%.
+- **Limite de consultas do GitHub (HTTP 403):** vários agentes com `gh run watch` ao mesmo tempo esgotam a API. Disparar e ler **uma vez só, no fim**.
+- **Limite de uso da conta:** três vezes com 5 a 8 agentes juntos (20/10 de manhã, 20/10 à tarde, 21/10 de madrugada); os agentes param no meio e voltam com SendMessage depois do horário do erro. Nada se perde com commit + `ONDE-PAREI.md`.
+- **Suíte no PC (antes de juntar):** com TEMP dentro da worktree e os agentes parados: `TEMP=<worktree>\_tmp TMP=<worktree>\_tmp .venv\Scripts\python.exe -m pytest tests -q -p no:cacheprovider --basetemp=<worktree>\_tmp\bt` (~13 min) e `teste_botoes.py` (~5 min). Última no PC (junção do corte, 20/10/2026): 2085 passaram, 1 falhou (teste que depende da ordem, consertado em `consertos-2026-10-21`), botões 221/0. Última do `fase-1` no GitHub: 39478983864 (junção do corte), passou.
+- **Rede privada:** o endereço da rede privada do Samuel foi tirado desta ficha antes de a memória ser publicada (PARTE -17 §3).

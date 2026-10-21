@@ -26,12 +26,18 @@
 - 13/10/2026 → Samuel marcou o quadro `cg6-cursus-3` como "Está pior" (ver abaixo).
 - 20/10/2026 → hoje: o defeito do G6 continua no `fase-1` (livro novo). O conserto continua no ramo, não juntado; o implementador está acertando o Pesel 21 no mesmo ramo (`ramo conserto-corte-g6-2026-10-13: relatorios/conserto-corte-g6/ONDE-PAREI.md`, "EM ANDAMENTO"). O verificador do "Para revisar" tem esta página na lista para reabrir na janela (`ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md`).
 
+- 20/10/2026 → conserto do corte com borda preta juntado ao `fase-1` (`f418cc3`); a `cg6` foi aprovada ("Aprovado: entra agora"). O Cursus 3 segue como alvo do 2.13 (tirar todo o preto). Quadro `cg6`: "Melhorar".
+
 ## O que o Samuel disse
 
 - 13/10/2026, quadro `cg6-cursus-3`, "Está pior": "como vamos resolver isso dentro do programa então?" ([conferência 13/10/2026](../../relatorios/conferencia-samuel-2026-10-13.md))
+
+- 20/10/2026, quadro da `cg6`, "Melhorar": "tem que ficar rente a folha de papel, não pode ter preto ali." (Registro 20/10/2026)
 
 ## De onde veio (fontes)
 
 - Escolhida olhando miniaturas para o estudo do "Para revisar" (06/10/2026): `relatorios/revisar-decisoes/rodada-3/scripts/comum.py`, `EXTRAS["cursus_p003"] = ("Cursus philosophicus*.pdf", 3)`.
 - Livro copiado em 05/10/2026 para o acervo de testes como livro de borda preta (`LEIA-ME borda preta (05-10-2026).txt`).
 - [plano, Lista de bugs e Registro 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md); [histórico, PARTE -15 §5](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) ("Incluir no gabarito do corte: Cursus 3, Matemática 32, Antiphon 260, Escola 197").
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) e Registro 20/10/2026 (ver [2.2](../itens/2.2.md), [2.13](../itens/2.13.md)).

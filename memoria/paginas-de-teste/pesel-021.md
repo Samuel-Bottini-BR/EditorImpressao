@@ -24,12 +24,18 @@
 - 19/10/2026 → agente liberado pelo Samuel para o Pesel 21 ("Implementador 1 - ok", [plano, Registro 19/10/2026](../../docs/plano/PLANO-DEFINITIVO.md)).
 - 20/10/2026 → hoje, **EM ANDAMENTO** no ramo `conserto-corte-g6-2026-10-13` (`3283012`): causa achada (a pergunta "há o que recortar?" era feita na página girada; o branco da cunha mudava a mediana do cartão de 102 para 125); conserto feito (`detectar_bordas(..., como_veio=)`); testes de reversão `test_cartao_escuro_sai_inteiro_no_livro_novo` e `test_pesel_21_sai_como_no_fase_1` falham no código antigo. Faltam: medida das 89, projeto antigo 40 de 40, antes/depois, suíte no GitHub. `ramo conserto-corte-g6-2026-10-13: relatorios/conserto-corte-g6/ONDE-PAREI.md`
 
+- 20/10/2026 → quadro da `cg6`: "Está bom"; o Pesel 21 sai idêntico ao `fase-1` (15,7 × 24,1 cm) e as cinco melhorias de 13/10 saem idênticas ao `d97b937`. Juntado ao `fase-1` (`f418cc3`). 21/10/2026: pergunta para levar com a caixa do conteúdo: "Pesel 21: só o preto ou até a moldura nesse livro?" ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5).
+
 ## O que o Samuel disse
 
 - 06/10/2026, rodada 1 do "Para revisar": "Sim, deveria ir" ([rodada 1](../../relatorios/revisar-decisoes/rodada-1/respostas-samuel.md)).
 - 13/10/2026, quadro `cg6-pesel-21`, "Está pior": "Ele chega a quase cortar as letras. Nós estamos olhando o endireitar com o cortar ou só o endireitar?" ([conferência 13/10/2026](../../relatorios/conferencia-samuel-2026-10-13.md))
 
+- 20/10/2026, quadro `cg6-pesel-21`, "Está bom", com o comentário da `cg6`: "pode entrar como está, mas vamos melhorar ele ainda, e descobri uma coisa [...] deveriamos ter indireitado a folha antes de cortar [...]" (Registro 20/10/2026; texto inteiro na ficha [2.2](../itens/2.2.md)).
+
 ## De onde veio (fontes)
 
 - Estudo do "Para revisar" (06/10/2026): `relatorios/revisar-decisoes/rodada-3/scripts/comum.py`, `EXTRAS["pesel_p021"] = ("POINTS*.pdf", 21)`.
 - [plano, Registro 13/10/2026 e 19/10/2026](../../docs/plano/PLANO-DEFINITIVO.md); [histórico, PARTE -15 §4 e PARTE -16 §4](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) e Registro 20/10/2026 (ver [2.2](../itens/2.2.md), [2.13](../itens/2.13.md)).

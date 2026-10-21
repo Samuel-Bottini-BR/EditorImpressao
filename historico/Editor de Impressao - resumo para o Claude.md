@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 14/10/2026 (PARTE -16; a anterior, PARTE -15, é de 12 a 13/10). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 21/10/2026 (PARTE -17; a anterior, PARTE -16, é de 14/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,163 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -16 — Checkpoint de 14/10/2026, no Claude Code local (leia isto primeiro, é o mais novo)
+# PARTE -17 — Checkpoint de 19 a 21/10/2026, no Claude Code local (leia isto primeiro, é o mais novo)
+
+Sessão longa no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`, depois de ele pedir: "quando os
+agentes acabarem, pode parar todos os serviços e esperar meu proximo comando". **Todos os agentes pararam**, com
+commit, push e `ONDE-PAREI.md` em dia. **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO
+→ CLAUDE.md). **Novidade: a memória por assunto em `memoria/`** (índice `memoria/INDICE.md`). Ela organiza o que
+estava espalhado nas PARTEs; leia a ficha do assunto antes de mexer nele. O Registro de mudanças do plano tem
+entradas de 19, 20 e 21/10 para tudo o que está aqui, com as palavras do Samuel.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao status -sb` e `git fetch origin`. O `fase-1` está em `e1f4c7d` (ou no commit
+   deste checkpoint). Os arquivos soltos antigos em `relatorios/` continuam sem commit; não mexer.
+2. Ler as respostas do Samuel nas páginas (§5) e registrar, nas duas cópias do plano e nas fichas da memória.
+3. O estado de cada frente está nos `ONDE-PAREI.md` dos ramos (§2). Os agentes desta sessão foram parados e não
+   existem numa conversa nova: para continuar uma frente, chame um agente novo, apontando o ramo, a worktree e o
+   `ONDE-PAREI.md` dela.
+
+## 1. Regras novas (decisões do Samuel, uma por vez, 19 e 20/10; em `CLAUDE.md` §4.6 a §4.9 e nos 4 agentes)
+
+- **Testes, "B: GitHub e meu PC":** as ~2.100 conferências e o `teste_botoes.py` rodam no GitHub em toda entrega; antes de qualquer
+  trabalho entrar no `fase-1`, rodam também no PC com os outros agentes parados. **Exceção (20/10, "opção 1"):** trabalho
+  que só acrescenta documentos entra só com o GitHub.
+- **Velocidade, "opção 2":** filtro no GitHub em toda mudança de processamento; medida que vale no PC no fim de cada fase.
+  O notebook do Kaique continua sendo a régua final. Lentidão pequena no meio da fase vai para a Fase 5 ("vamos deixar
+  esse concerto de lentidão para o final, para a fase de desempenho").
+- **Teste de reversão, "opção 1":** todo bug consertado ganha teste que falha no código antigo e passa no novo; o
+  verificador prova. Bug de imagem usa medida (mm de preto etc.).
+- **Sessões, "C: chefe + bilhetes":** agentes entregam sempre à gerente; outras janelas do Claude Code mandam recado com as
+  palavras literais dele, a gerente repete e só muda o plano depois do "sim".
+- **Memória, "Opção D completa"** + acréscimos; MemPalace "Testar depois" (Lista de espera).
+- **Pedido novo sobre testes (20/10, na `cg6`):** testar cada ferramenta sobre a página que já passou pelas etapas
+  anteriores (ex.: o corte sobre a página já endireitada), "se não fizermos os testes mais apurados, eles vão continuar
+  saindo falhados e vamos ficar tentando concertar uma ferramenta que não precisa ser consertada". Como aplicar em todos
+  os testes: **pergunta ainda não feita** a ele.
+- **Jeito de perguntar (memória do Claude):** explicar cada opção por extenso no chat, com caso real e desenho simples,
+  e deixar ele responder digitando; a caixinha de pergunta cobre o texto. Uma decisão por vez.
+- **Decisão da gerente (alçada de limiar, CLAUDE.md §6):** no 2.15, a página só vai para o "Para revisar" se também se
+  afastar 1° da média do livro (`core/paginas_diferentes.py`, `AFASTAMENTO_MINIMO_DO_ANGULO`). O Samuel confere na aba 8.
+
+## 2. Onde está cada trabalho (nada juntado ao `fase-1` depois do conserto do corte)
+
+**No programa (`fase-1`):** o conserto do corte com borda preta + Pesel 21 (`f418cc3`; `cg6` "Aprovado: entra agora" +
+"pode entrar como está, mas vamos melhorar ele ainda"), suíte no PC 2085/1 (o 1 era teste que depende da ordem,
+consertado no ramo de consertos) e botões 221/0; a memória `memoria/` (`ccc3d6d`); regras novas.
+
+| Ramo (último commit) | O que é | Situação |
+|---|---|---|
+| `fase2-para-revisar` (`8cb84b8`) | "Para revisar" sobre o layout aprovado + frases da r14 + 2 consertos | PRONTO; aba 4 publicada, **sem resposta** |
+| `fase2-scantailor-itens-2026-10-19` (`ffa2463`) | 2.8, 2.9 (+ cartões `e49463c`, `e3c4d49`), 2.11, 2.15, erros.log do ScanTailor, **2.12 pela metade** | 2.8/2.9/2.11/2.15 PRONTOS (abas 6-8 publicadas, sem resposta); 2.12: falta antes/depois em páginas reais e ler as rodadas 39623234116 e 39623242157 |
+| `layout-etapas4a7-2026-10-19` (`2eeec20`) | etapas 4 a 7 do layout + rodadas 14 e 14b + acertos de nitidez | 4-5 PRONTAS (aba 5 publicada); 6-7 PRONTAS, conferência montada (`verif-layout-4a5-2026-10-21` `5650a1c`) **não publicada**; a grade ficou nítida em `2eeec20` depois (suíte 39629275637 não lida; verificador não mediu de novo) |
+| `fase2-caixa-conteudo` (`ed68928`) | 2.5 caixa do conteúdo + guias, 2.13 borda preta, 2.14 pintar de branco, tamanho do livro consertado (`57de8af`) | conferência montada (`verif-caixa-2026-10-21` `f10b2df`) **não publicada**; **aberto:** etiqueta do Egenloff 3 cortada ao meio com as duas opções (conserto começado, `ed68928`, não funciona na página real); com as opções ligadas a passada que mede o livro ficou 2-3× mais lenta (Marial 100 folhas: ~140 → ~300 s); velocidade 39623840809 não lida |
+| `consertos-2026-10-21` (`2ff16e7`) | instalador com as duas DLLs; teste dos atalhos; Gladstone 18 "Parece em branco"; Horas 11 com pouca memória | verificados até `4c53152`; falta GitHub do `2ff16e7` e a parada no PC para juntar |
+| `pesquisa-impressao-2026-10-19` (`479706f`) | pesquisa da fase de impressão + relatório das 6 perguntas | entregue; perguntas publicadas |
+| `claude/list-server-files-gkos8v` (`6f6fe76`) | workflow com o **filtro de velocidade** `velocidade_ab` | adotado; provado com versão lenta de propósito (ramo `teste-filtro-lento-2026-10-20`, **nunca juntar**) |
+
+Ramos de verificação: `verif-para-revisar-2026-10-13`, `verif-pesel21-2026-10-20`, `verif-2.8-2026-10-20`,
+`verif-2.9-2026-10-21`, `verif-2.11-2.15-2026-10-21`, `verif-caixa-2026-10-21`, `verif-layout-4a5-2026-10-21`,
+`verif-consertos-2026-10-21`. Muitas worktrees novas em `.claude\worktrees\` (v28-*, v29-*, v211, vcx-*, vcs-*,
+vly-*, pr-*, fase1-*, juntar-corte, fase2-itens, layout-4a7, consertos-2026-10-21, filtro-velocidade, memoria,
+pesquisa-impressao, teste-filtro-lento): **as junções `modelos`/`gabarito` se removem com `(Get-Item …).Delete()`
+antes de apagar qualquer worktree.**
+
+## 3. Tentado e descartado
+
+- Medir a velocidade no GitHub direto: as máquinas variam até 70%. **Funcionou** medir antes e depois **na mesma máquina,
+  alternando**, com espera do processador (< 15%) e piso de 2%.
+- Pôr as 53 fotos da rodada 14 na página de layout sem tirar nada: limite de **511 arquivos por versão**. Saíram as telas
+  clicáveis das rodadas 7 a 10, já decididas (originais em `layout\prototipo\`).
+- Na borda preta, "qualquer cinza neutro escuro" como borda de scanner: cortou as notas do Antiphon 260. Ficou "faixa
+  cinza neutra que atravessa ≥ 70% do lado".
+- No 2.15, a conta pura do ScanTailor: o Catecismo ia a 17% de páginas marcadas por ruído (< 1°).
+- Publicar a página da memória sem tirar o endereço da rede privada do Samuel: tirado de `memoria/geral/pc-e-github.md`.
+
+## 4. Descobertas de comportamento real
+
+- **Limite de uso da conta:** com 5 a 8 agentes juntos, a conta bateu no limite **três vezes** (20/10 de manhã, 20/10 à tarde,
+  21/10 de madrugada); os agentes param no meio e voltam com SendMessage depois do horário que o erro informa. Nada se perde
+  com commit + ONDE-PAREI.
+- **Limite de consultas do GitHub (HTTP 403):** vários agentes com `gh run watch` ao mesmo tempo esgotam a API. Disparar e
+  ler o resultado **uma vez só, no fim**.
+- **Mensagem de commit pelo scratchpad compartilhado:** um agente pegou a mensagem de outro. Cada agente grava a mensagem
+  num arquivo dentro da **própria** worktree.
+- **Páginas do claude.ai feitas em outra sessão:** a primeira publicação é recusada e devolve a versão no ar; a segunda,
+  igual, também ("identical content"); a terceira passa. `read` com `path` não conta como ter visto.
+- **Ferramenta de publicar:** só aceita arquivos sob `C:\Users\fotog` ou o scratchpad; copiar a página e as imagens para o
+  scratchpad antes (`pub-layout`, `pub-layout2`, `pub-conf`, `pub-escolhas` no scratchpad desta sessão; montadores
+  `montar_aba4.py`, `montar_aba5e6.py`, `montar_aba7e8.py`, `montar_cg6b.py`).
+- **Página de conferência:** os quadros ficam dentro do HTML; abas 4 a 8 usam ids com prefixo `pr`, `ly`, `28`, `29`, `211`;
+  a página abre na primeira aba (a partir da 4) com resposta faltando. Fonte que vale para republicar: o arquivo publicado
+  (ler com `Artifact read` com `path: "index.html"` e tirar o esqueleto até `<title>`).
+- **O mesmo código nem sempre dava a mesma imagem** (Horas 11, Mágico pro): com pouca memória, o modelo de regiões ficava
+  desligado a sessão inteira e o detector de gravura caía no antigo; consertado em `2ff16e7` (tenta de novo).
+- **Livro inteiro pega o que página solta não pega:** a caixa do conteúdo passava em todas as páginas soltas e perdia o
+  tamanho do livro ao gerar o Egenloff 1-14 (DPI da conta × DPI do desenho; passada a 150 e geração a 300).
+- **Qt e a escala do Windows (125%):** imagem guardada no tamanho certo e pintada com `pix.scaled(tamanho lógico)` fica
+  borrada; é preciso reduzir nos pixels de verdade (`razao_do_pintor`). Teste tem de medir o que é **pintado**.
+- **A janela do programa sumiu uma vez sem log** ao clicar "Deixar em branco" (Egenloff 12); 62 cliques depois, não repetiu.
+  Suspeita: falta de memória com muitos agentes.
+- **"Parece em branco" consertado** passa a avisar 49% das páginas do Egenloff (versos realmente vazios). Acima de 70% vira
+  aviso do livro inteiro.
+
+## 5. Perguntas em aberto (exatas)
+
+- **Página de conferência** (https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX), sem resposta: **aba 4** "Para revisar"
+  (18 quadros, 3 perguntas `pr-medir-o-livro`, `pr-contagens`, `pr-tela-igual-ao-pdf`, decisão `pr`); **aba 5** layout
+  etapas 4-5 + rodada 14 (decisão `ly-4a5`); **aba 6** 2.8 (decisão `28`); **aba 7** 2.9 (decisão `29`); **aba 8** 2.11
+  e 2.15 (decisão `211-215`). Ressalvas que vão junto: Boécio chega a 34% no "Para revisar"; "Letras com a cor delas"
+  deixa a letra preta comum marrom-acinzentada.
+- **Página de escolhas** (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV), sem resposta: `imp-1-folha-ou-pagina`,
+  `imp-2-ajustar-no-livreto`, `imp-3-pagina-diminuida-onde`, `imp-4-ultimo-caderno`, `imp-5-arquivo-ou-impressora`,
+  `imp-6-imprimir-como-imagem` (esta pede fotos das abas Pôster e Múltiplo do UPDF). Relatório com desenhos:
+  `docs/pesquisa/fase-impressao/perguntas-para-o-samuel.pdf` (ramo `pesquisa-impressao-2026-10-19`).
+- **No chat, sem resposta:**
+  - "Juntar os consertos ao programa: **1** agora (pausa de ~30 min no PC) ou **2** no próximo intervalo?" (ramo `consertos-2026-10-21`).
+  - "O programa deve **lembrar** onde você deixou as miniaturas (lugar, abertas, em pares) de um livro para o outro?"
+  - "Posso apagar a pasta de rascunho `D:\programas\EditorImpressao-arquivos\ferramentas\build-st-gravura-fase2-desentortar`?"
+  - Se quer um **segundo verificador** para andar mais rápido (gasta mais do limite da conta).
+- **Para levar com as conferências que faltam publicar:** caixa do conteúdo — "o carimbo da biblioteca fica fora do
+  corte (Opus Majus 3)?", "página quase em branco sai centrada no carimbo ou no papel (Egenloff 12)?", "Pesel 21: só o preto
+  ou até a moldura nesse livro?"; "Parece em branco" — avisar uma vez para o livro inteiro quando os versos são vazios
+  (Egenloff 49%)?; e a pergunta do pedido de testes (§1).
+- Continuam das PARTEs anteriores: apagar a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW e o
+  `C:\Users\fotog\AppData\Local\Temp\p2.py`.
+
+## 6. Próximo passo recomendado
+
+Ler as respostas das abas 4 a 8 e das 6 perguntas da impressão; com o "1/2" dele, juntar ao `fase-1` (com a parada no PC)
+o ramo de consertos e o que ele aprovar; publicar as conferências das etapas 6-7 do layout (depois de o verificador medir a
+grade nítida) e da caixa do conteúdo (depois do conserto da etiqueta do Egenloff 3); retomar o 2.12 e a velocidade da caixa.
+
+## 7. Como rodar e conferir
+
+```
+.venv\Scripts\python.exe main.py                         o programa (pasta principal, ramo fase-1)
+.venv\Scripts\python.exe -m pytest tests\<arquivo> -q    um arquivo por vez no PC
+.venv\Scripts\python.exe memoria\conferir_memoria.py     conferência da memória (deve dar "Tudo certo")
+.venv\Scripts\python.exe memoria\pagina\montar_pagina.py refaz a página da memória
+gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>
+gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f velocidade_ab=true -f ramo_antes=<a> -f ramo_depois=<b>
+```
+Suíte inteira no PC (antes de juntar; TEMP dentro da worktree, agentes parados):
+`TEMP=<worktree>\_tmp TMP=<worktree>\_tmp .venv\Scripts\python.exe -m pytest tests -q -p no:cacheprovider --basetemp=<worktree>\_tmp\bt`
+(~13 min) e `teste_botoes.py` (~5 min). Última no PC: junção do corte, 2085 passaram, 1 falhou (teste dos atalhos,
+consertado no ramo de consertos), botões 221/0. Última do `fase-1` no GitHub: 39478983864 (junção do corte), passou.
+
+## 8. Páginas do claude.ai
+
+- Escolhas: https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV (6 perguntas `imp-*` abertas; `g7`, `g9` decididas em 20/10)
+- Layout: https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu (rodadas 14 e 14b decididas; nada aberto; 500 arquivos)
+- Conferência: https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX (abas 4 a 8 abertas; `cg6` decidida)
+- **Memória (nova):** https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE
+- Andamento: https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy (**não atualizada nesta sessão**)
+
+---
+
+# PARTE -16 — Checkpoint de 14/10/2026, no Claude Code local
 
 Sessão curta no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. Nenhum agente foi chamado: a gerente
 fez tudo. **O que manda continua sendo `docs/plano/`** (ESTADO-ATUAL → PLANO-DEFINITIVO → CLAUDE.md). A PARTE -15 abaixo

@@ -23,13 +23,19 @@
 - 13/10/2026 → "Para revisar" (ramo `fase2-para-revisar`, `ce2b835`): a força sozinha age só no Camões 27 e no 104 das 89 páginas; o verificador confirmou na janela (85, com "Desfazer"). `ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md`
 - 20/10/2026 → hoje: defeito do G6 no `fase-1`; conserto em ramo.
 
+- 20/10/2026 → quadro da `cg6`: "Melhorar". Conserto do corte juntado (`f418cc3`); o resto é o 2.13.
+
 ## O que o Samuel disse
 
 - 07/10/2026, rodada 3, "Não concordo": "por apagar o titulo do altor embaixo, mas imagem em si, não está tão ruim" ([rodada 3](../../relatorios/revisar-decisoes/rodada-3/respostas-samuel.md)).
 - 08/10/2026, rodada 4: "Concordo" ([rodada 4](../../relatorios/revisar-decisoes/rodada-4/respostas-samuel.md)).
 - 13/10/2026, quadro `cg6-camoes-104`, "Está pior": "Como vamos resolver isso, com filtro? copiando a imagem do livro e colocando em uma folha branca? com o endireitar e depois cortar? selecionando só essa parte preta e apagando?" ([conferência 13/10/2026](../../relatorios/conferencia-samuel-2026-10-13.md))
 
+- 20/10/2026, quadro da `cg6`, "Melhorar": "É para sumir totalmente." (Registro 20/10/2026)
+
 ## De onde veio (fontes)
 
 - Rodada 3 do "Para revisar" (06/10/2026), 5 livros novos de `D:\Livros para editar`: [rodada 3, LEIA-ME](../../relatorios/revisar-decisoes/rodada-3/LEIA-ME.md).
 - [plano, Registro 07/10, 08/10 e 13/10/2026](../../docs/plano/PLANO-DEFINITIVO.md).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) e Registro 20/10/2026 (ver [2.2](../itens/2.2.md), [2.13](../itens/2.13.md)).

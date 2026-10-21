@@ -19,6 +19,7 @@ Este arquivo junta endereços, banco, arquivos-fonte e o que já se descobriu pu
 | **Andamento do programa** | https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy | O que cada agente faz, esperando o Samuel, próximos, feito, o **plano completo** e os recados dele | atualizada em 14/10/2026 (PARTE -16 §8); a coleção `recados` estava vazia na leitura de 20/10/2026 |
 | **Conferência** ("Conferir: endireitar antes de cortar e tela sem abas") | https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX | Conferência de imagens: cada quadro com "Está bom / Melhorar / Está pior" + comentário, e uma decisão final por trabalho. Uma aba por trabalho: 1 G6 (`g6-*`), 2 layout (`layout3-*`; a antiga `layout2-*` ficou desatualizada), 3 conserto do corte (`cg6-*`), **4 "Para revisar" (a montar)** | `cg6` **reaberta** em 14/10/2026 até o conserto do Pesel 21 (Registro 14/10/2026); aba 4 ainda não publicada (PARTE -15 §4 item 6) |
 | Página vazia | https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW | Criada por engano na sessão na nuvem (PARTE -14 §3) | pergunta "posso apagar?" **sem resposta** (PARTE -15 §4 item 9; PARTE -16 §4). Não apagar sem o "sim" dele |
+| **Memória do projeto** | https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE | A pasta `memoria/` num arquivo só, navegável e com busca (`memoria/pagina/index.html`, gerada por `memoria/pagina/montar_pagina.py`). Publicada em 20/10/2026 | sem perguntas; republicar depois de mexer nas fichas |
 
 O [CLAUDE.md](../../CLAUDE.md) §10 item 10 lista só as quatro primeiras; a página de conferência nasceu depois (09/10/2026, sessão na nuvem).
 Outras páginas: não achei mais nenhuma nas fontes lidas (procurei os endereços `claude.ai/artifact/` no histórico, no CLAUDE.md e no plano).
@@ -104,3 +105,15 @@ Leia-me das fontes no git: [docs/plano/paginas-claude-ai/LEIA-ME.md](../../docs/
 `relatorios/conferir-aqui.html`, `-2` a `-15` e `relatorios/decisoes-2026-10-01.html`: cartões com ORIGINAL · ANTES · AGORA, botões Bom/Ruim/Não sei e "Copiar respostas"; ele colava no chat e a gerente gravava em `relatorios/conferencia-samuel-*.md`. As exigências dele daquela época continuam valendo: toda pergunta com foto, dizer onde olhar, resultado ao lado do original, opções por extenso (PARTE -9 §1). Lista completa em [conferencias.md](../conferencias.md).
 
 - Memória do Editor de Impressão (página com busca, publicada em 20/10/2026): https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE — refazer com `memoria/pagina/montar_pagina.py` e republicar quando as fichas mudarem.
+
+## 6. Atualização de 19 a 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- **Página de conferência:** abas 4 a 8 publicadas, **sem resposta**: **4** "Para revisar" (18 quadros, decisão `pr`), **5** layout etapas 4-5 + rodada 14 (`ly-4a5`), **6** 2.8 (`28`), **7** 2.9 (`29`), **8** 2.11 e 2.15 (`211-215`). Os ids usam prefixo `pr`, `ly`, `28`, `29`, `211`; os quadros ficam dentro do HTML; a página abre na primeira aba (a partir da 4) com resposta faltando. `cg6` (aba 3) decidida em 20/10/2026.
+- **Página de escolhas:** `g7` e `g9` decididas em 20/10/2026; `imp-1` a `imp-6` publicadas, sem resposta.
+- **Página de layout:** rodadas 14 e 14b decididas; nada aberto; **500 arquivos**. O limite é de **511 arquivos por versão**: para caber, saíram as telas clicáveis já decididas (originais em `layout\prototipo\`).
+- **Página feita em outra sessão:** a primeira publicação é recusada e devolve a versão no ar; a segunda, igual, também ("identical content"); a **terceira** passa. `read` com `path` não conta como ter visto.
+- **A ferramenta de publicar só aceita arquivos sob `C:\Users\fotog` ou o scratchpad:** copiar a página e as imagens para o scratchpad antes.
+- **Fonte que vale para republicar:** o arquivo publicado (ler com `Artifact read` e `path: "index.html"` e tirar o esqueleto até `<title>`).
+- **Página de andamento** (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy): **não atualizada nesta sessão**.
+- **Página da memória:** https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE (publicada em 20/10/2026, "opção 2").
+- Ainda por apagar, sem resposta dele: a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW.

@@ -1,7 +1,7 @@
 # Conferências e escolhas do Samuel (índice)
 
 Tudo o que o Samuel respondeu: formulários, páginas do claude.ai, rodadas de layout, rodadas do "Para revisar", explicações no chat.
-**Ordem: da mais antiga para a mais nova** (28/09/2026 → 19/10/2026). Escrito em 20/10/2026.
+**Ordem: da mais antiga para a mais nova** (28/09/2026 → 21/10/2026). Escrito em 20/10/2026; atualizado em 21/10/2026 ([PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)).
 
 **O que vale:** este arquivo só aponta. Quem manda é o [plano](../docs/plano/PLANO-DEFINITIVO.md) (Registro de mudanças, seção 7).
 Se uma resposta daqui parecer diferente do Registro, vale a entrada mais nova do Registro.
@@ -19,7 +19,22 @@ Atalhos para as fontes: histórico = [resumo para o Claude](../historico/Editor%
 
 ---
 
-## Resumo: o que está aberto hoje (20/10/2026)
+## Resumo: o que está aberto hoje (21/10/2026)
+
+| Onde | Pergunta (id) | Situação |
+|---|---|---|
+| Página de conferência, aba 4 | "Para revisar" (18 quadros, `pr-medir-o-livro`, `pr-contagens`, `pr-tela-igual-ao-pdf`, decisão `pr`) | publicada, **sem resposta** |
+| Página de conferência, aba 5 | layout etapas 4-5 + rodada 14 (decisão `ly-4a5`) | publicada, **sem resposta** |
+| Página de conferência, aba 6 | item 2.8 (decisão `28`) | publicada, **sem resposta** |
+| Página de conferência, aba 7 | item 2.9 (decisão `29`) | publicada, **sem resposta** |
+| Página de conferência, aba 8 | itens 2.11 e 2.15 (decisão `211-215`) | publicada, **sem resposta** |
+| Página de escolhas | `imp-1-folha-ou-pagina`, `imp-2-ajustar-no-livreto`, `imp-3-pagina-diminuida-onde`, `imp-4-ultimo-caderno`, `imp-5-arquivo-ou-impressora`, `imp-6-imprimir-como-imagem` | publicadas em 20/10/2026, **sem resposta** |
+| Chat | juntar os consertos (1 agora / 2 no próximo intervalo); lembrar as miniaturas entre livros; apagar a pasta de rascunho do desentortar; segundo verificador; apagar a página vazia e o `p2.py` | sem resposta |
+| Ainda por publicar | layout etapas 6-7; caixa do conteúdo (Opus Majus 3, Egenloff 12, Pesel 21) | montadas ou a montar, **não publicadas** |
+
+Respondidas em 20/10/2026: `g7`, `g9`, `cg6`, rodadas 14 e 14b (abaixo). Lista completa em [geral/perguntas-abertas.md](geral/perguntas-abertas.md).
+
+### Resumo anterior (20/10/2026, superado pelo de 21/10/2026)
 
 | Onde | Pergunta (id) | Situação |
 |---|---|---|
@@ -177,6 +192,24 @@ Antes da rodada 12 ser refeita, o Samuel reclamou (12/10/2026, chat): "cade o la
 
 ---
 
+## Rodadas de layout 14 e 14b (20/10/2026)
+
+Página de layout (https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu). Itens: [layout](itens/layout.md), [para-revisar](itens/para-revisar.md).
+
+| Rodada | Pergunta | Resposta (literal) | Comentário dele (literal) |
+|---|---|---|---|
+| 14 | `r14-todas-fabrica` | "A — Uma a uma" | — |
+| 14 | `r14-lado-direito-onde` | "C — Nos dois lugares" | — |
+| 14 | `r14-menu-paineis` | "B — Um menu novo, “Painéis”" | — |
+| 14 | `r14-menus-novas` | "A — Sim, no menu Ver" | — |
+| 14 | `r14-aviso-marcar` | "C — Diz onde fica o “letra e traço”" | — |
+| 14 | `r14-dividir-palavra` | "B — “o do Editor”" | — |
+| 14 | `r14-mesmo-da-pagina` | "Ainda não entendi" | "ficou muito confuso, por favor explique melhor. Não seria mais fácil só usar o original ?" |
+| 14 | `r14-endireitar-a-mao` | sem opção | "não gostei de nenhuma opção. e mesmo que coloque a mão tem que continuar aparecendo o angulo" |
+| 14b | `r14b-mesmo-da-pagina` | "B — Sem o botão de cima, nenhum aceso" | — |
+| 14b | `r14b-endireitar-a-mao` | "A — Os dois ângulos e, embaixo, o seu" | "a opção 1, podia aparecer só na hora que passasse o mouse em cima, os angulos continuam embaixo mas a mensagem só aparece quando bota o mouse em cima" |
+
+As duas sem opção foram refeitas pelo agente de layout (comentários fixados na página) e viraram a rodada 14b, respondida no mesmo dia. Para caber na página (limite de 511 arquivos) saíram as telas clicáveis já decididas.
 ## Página de escolhas (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV), pergunta por pergunta
 
 Respostas gravadas sozinhas no banco (coleção `respostas`). Cópia do banco de 13/10: `D:\programas\EditorImpressao-arquivos\sessao-2026-10-13\banco-das-paginas\escolhas\respostas\` e de 14/10 em `...\sessao-2026-10-14\escolhas\respostas\` (listar só).
@@ -208,8 +241,11 @@ Respostas gravadas sozinhas no banco (coleção `respostas`). Cópia do banco de
 | 14/10/2026 | `g9-folha-maior-impressao` | **sem resposta** | pergunta dele no chat: "quando ela foi impressa a primeira vez, ela foi impressa um folha a4 inteira para uma tabela só né?" | Registro 14/10/2026 | [2.6](itens/2.6.md), [6.5](itens/6.5.md) |
 | 14/10/2026 | `g11-margem-impressora` | 1 cm a partir de onde a impressora imprime (1,3 cm do papel) | — | Registro 14/10/2026; histórico PARTE -16 §2 (sem arquivo em `relatorios/`) | [2.6](itens/2.6.md) |
 | 14/10/2026 | `g12-diminuir-um-lado` | Em todas, e dá para mudar uma folha só | — | idem | [2.6](itens/2.6.md) |
+| 20/10/2026 | `g7-borda-ate-onde` | **"O Kaique escolhe por livro: só o preto, ou até a moldura"** | — | Registro 20/10/2026 | [2.13](itens/2.13.md), [2.5](itens/2.5.md), [2.14](itens/2.14.md) |
+| 20/10/2026 | `g9-folha-maior-impressao` | **"Ajustar: gira de pé e reduz até caber na página A5"** | "Quero que o programa avise quando isso estiver acontecendo." | Registro 20/10/2026 | [2.6](itens/2.6.md), [6.5](itens/6.5.md), [2.4](itens/2.4.md) |
+| 20/10/2026 | `imp-1` a `imp-6` (impressão) | publicadas; **sem resposta** | — | `docs/pesquisa/fase-impressao/perguntas-para-o-samuel.pdf` (ramo `pesquisa-impressao-2026-10-19`) | [2.6](itens/2.6.md) |
 
-**Abertas:** `g7-borda-ate-onde` (ganhou em 14/10 a opção "O Kaique escolhe por livro" e a resposta à dúvida dele, fixada na página) e `g9-folha-maior-impressao`. Na leitura de 20/10/2026 as duas continuavam vazias no banco.
+**Abertas (até 20/10):** `g7-borda-ate-onde` e `g9-folha-maior-impressao`: **respondidas em 20/10/2026** (linhas acima). Hoje as abertas são as seis `imp-*`.
 
 ---
 
@@ -241,7 +277,9 @@ Cada quadro tem "Está bom / Melhorar / Está pior" e comentário; cada trabalho
 | 09/10 a 12/10/2026 | aba 2 antiga, layout etapa 2 (`layout2-*`) | nunca respondida; dada por desatualizada em 12/10 ("[...] uma aba do layout que eu acredito que não esteja atualizada com as escolhas passadas") | Registro 12/10/2026 | [layout](itens/layout.md) | substituída pela `layout3` |
 | 13/10/2026 | aba 2, layout etapas 2 e 3 (`layout3-*`, `layout3`) | 14 "Está bom", `layout3` **Aprovado**; quatro comentários (ex.: `layout3-historico`: "a gente poderia mostrar o horario que a ação foi feita ou desfeita." → Lista de espera). Juntado ao `fase-1` em 14/10 | [conferencia-samuel-2026-10-13.md](../relatorios/conferencia-samuel-2026-10-13.md) | [layout](itens/layout.md) | — |
 | 13/10/2026 | aba 3, conserto do corte com borda preta (`cg6-*`, `cg6`) | `cg6` **Melhorar**: "Só não sei se vamos fazer esse concerto agora ou deixar para depois e o corte de borda continua assim e segue para o aplicativo e depois arrumamos."; Cursus 3, Matemática 32, Camões 104 e Pesel 21 "Está pior" (Pesel 21: "Ele chega a quase cortar as letras. [...]") | idem | [2.2](itens/2.2.md), [2.13](itens/2.13.md), [2.14](itens/2.14.md), [bugs](bugs.md) | **reaberta em 14/10** (opção esvaziada) até o conserto do Pesel 21; em 20/10 o implementador está acertando o Pesel 21 (`ramo conserto-corte-g6-2026-10-13: relatorios/conserto-corte-g6/ONDE-PAREI.md`) |
-| — | aba 4, "Para revisar" (18 quadros `pr-*` + três perguntas) | ainda não publicada | `ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md` | [para-revisar](itens/para-revisar.md) | em 20/10 o verificador achou que as fotos são da tela de antes do layout aprovado; precisa refazer antes de mostrar |
+| 20/10/2026 | aba 3 refeita, `cg6` | **"Aprovado: entra agora"**, com o comentário: "pode entrar como está, mas vamos melhorar ele ainda, e descobri uma coisa : \" o problema aqui, é que deveriamos ter indireitado a folha antes de cortar, deviamos aplicar isso nos testes, porque as vezes alguns textes não saiem como deveriam pois\" eles deviam ter passado por uma etapa antes para saber se realmente iriam ficar bons na funcionalidade que está sendo testada.\" - Esse problema se extende a outros testes também, se não fizermos os testes mais apurados, eles vão continuar saindo falhados e vamos ficar tentando concertar uma ferramenta que não precisa ser consertada." Quadros: Pesel 21 "Está bom"; Antiphon 260 "Melhorar" ("tem que cortar a faixa inteira."); Antiphon 88 "Melhorar" ("Tem que cortar em cima e embaixo e dos lados ainda tem um fio preto."); Camões 104 "Melhorar" ("É para sumir totalmente."); Cursus 3 "Melhorar" ("tem que ficar rente a folha de papel, não pode ter preto ali."); Matemática 32 "Melhorar" ("ainda estou vendo a faixa preta.") | Registro 20/10/2026 | [2.2](itens/2.2.md), [2.13](itens/2.13.md) | juntado ao `fase-1` (`f418cc3`); tirar todo o preto é o 2.13; a pergunta de como aplicar o pedido de testes ainda não foi feita |
+| 21/10/2026 | abas 4 a 8 | publicadas: **4** "Para revisar" (`pr`), **5** layout etapas 4-5 + rodada 14 (`ly-4a5`), **6** 2.8 (`28`), **7** 2.9 (`29`), **8** 2.11 e 2.15 (`211-215`) | Registro 21/10/2026; [PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5 | [para-revisar](itens/para-revisar.md), [layout](itens/layout.md), [2.8](itens/2.8.md), [2.9](itens/2.9.md), [2.11](itens/2.11.md), [2.15](itens/2.15.md) | **todas sem resposta** |
+| — | aba 4, "Para revisar" (18 quadros `pr-*` + três perguntas) | ainda não publicada em 20/10; **publicada depois (ver as linhas de 21/10/2026 abaixo)** | `ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md` | [para-revisar](itens/para-revisar.md) | em 20/10 o verificador achou que as fotos são da tela de antes do layout aprovado; precisa refazer antes de mostrar |
 
 ---
 
@@ -263,6 +301,13 @@ Cada quadro tem "Está bom / Melhorar / Está pior" e comentário; cada trabalho
 
 ---
 
+## Decisões de 20 e 21/10/2026 (chat)
+
+- **20/10/2026, "opção 1":** trabalho que só acrescenta documentos entra no `fase-1` só com a rodada do GitHub ([CLAUDE.md](../CLAUDE.md) §4.6). Primeiro caso: a memória por assunto.
+- **21/10/2026, pausa:** "quando os agentes acabarem, pode parar todos os serviços e esperar meu proximo comando". Todos os agentes pararam, com commit, push e `ONDE-PAREI.md` em dia (Registro 21/10/2026).
+- **Itens:** [geral/regras-de-trabalho.md](geral/regras-de-trabalho.md) §9, [2.2](itens/2.2.md).
+
+---
 ## Recados de outras janelas
 
 Regra do Samuel de 19/10/2026 ("C: chefe + bilhetes"; [CLAUDE.md](../CLAUDE.md) §4.8; pasta [recados/](recados/LEIAME.md)).
@@ -271,7 +316,7 @@ Todo recado tratado é anotado aqui (data, de qual janela, o texto literal, onde
 
 | Data | De qual janela | Recado (literal) | Tratado em / onde foi anotado |
 |---|---|---|---|
-| — | — | Nenhum recado até 20/10/2026 (pasta `recados/` só com o LEIAME; coleção `recados` da página de andamento vazia na leitura de 20/10/2026). | — |
+| — | — | Nenhum recado até 20/10/2026 (pasta `recados/` só com o LEIAME; coleção `recados` da página de andamento vazia na leitura de 20/10/2026). Nenhum registrado também até a pausa de 21/10/2026. | — |
 
 ---
 

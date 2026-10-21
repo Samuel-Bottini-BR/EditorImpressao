@@ -41,3 +41,10 @@
 ## De onde veio
 
 - Rodada 3 do "Para revisar" (06/10/2026) ([rodada 3, LEIA-ME](../../relatorios/revisar-decisoes/rodada-3/LEIA-ME.md): "ornamentos de traço; fundo escuro do scanner e tarja da biblioteca em todas as páginas").
+
+## Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- A caixa do conteúdo perdia o tamanho do livro ao gerar o Egenloff 1-14 (DPI da conta × DPI do desenho; passada a 150 e geração a 300): consertado em `57de8af` (ramo `fase2-caixa-conteudo`).
+- Folha de rosto (página 3): etiqueta cortada ao meio com as duas opções ligadas; aberto. Página 12: a janela sumiu uma vez ao clicar "Deixar em branco".
+- "Parece em branco" passa a avisar 49% das páginas (versos realmente vazios); acima de 70% vira aviso do livro inteiro. Pergunta para levar: avisar uma vez para o livro inteiro?
+- Ver [egenloff-003](../paginas-de-teste/egenloff-003.md), [egenloff-012](../paginas-de-teste/egenloff-012.md), [egenloff-047](../paginas-de-teste/egenloff-047.md).

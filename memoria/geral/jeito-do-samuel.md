@@ -202,3 +202,13 @@ Resumo do [CLAUDE.md](../../CLAUDE.md) §2 (o texto lá é o que vale):
 - Honesto: avisar quando ele estiver enganado ou correndo risco; não concordar só para agradar.
 - Não inventar detalhe que ele não forneceu.
 - Todo relatório em três formatos (`.md`, `.html`, `.pdf`), porque ele não abre `.md`.
+
+## 7. Atualização de 19 a 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- **Como perguntar (memória do Claude, decidido em 19/10/2026):** explicar cada opção **por extenso, no chat**, com um caso real e um desenho simples, e deixar ele **responder digitando**; a caixinha de pergunta cobre o texto. **Uma decisão por vez.** As cinco decisões de 19/10/2026 foram perguntadas assim, uma por uma.
+- **Quando a explicação confunde, ele diz:** `r14-mesmo-da-pagina` "Ainda não entendi" + "ficou muito confuso, por favor explique melhor. Não seria mais fácil só usar o original ?" (20/10/2026). A pergunta foi refeita e voltou como rodada 14b.
+- **Ele quer ver a informação sem poluir a tela:** na `r14b-endireitar-a-mao` pediu que a mensagem "só aparece quando bota o mouse em cima", com os ângulos sempre embaixo; e na rodada 14, "mesmo que coloque a mão tem que continuar aparecendo o angulo".
+- **Ele pensa nos testes:** na `cg6` percebeu que o corte falhava no teste porque a página não tinha sido endireitada antes, e pediu testes encadeados ("se não fizermos os testes mais apurados, eles vão continuar saindo falhados e vamos ficar tentando concertar uma ferramenta que não precisa ser consertada").
+- **Quando quer parar, diz e a gerente para tudo:** "quando os agentes acabarem, pode parar todos os serviços e esperar meu proximo comando" (21/10/2026).
+- **Quer ser avisado pelo programa:** `g9` "Quero que o programa avise quando isso estiver acontecendo." (20/10/2026).
+- **Sobre velocidade ele perguntou:** "mas nós precisamos medir a velocidade no meu pc sempre? porque o programa deveria conseguir se desenvolver bem em qualquer computador né?" (19/10/2026); a resposta registrada: o notebook do Kaique é a régua final.

@@ -1,4 +1,4 @@
-# Linha do tempo do Editor de Impressão (18/07/2026 a 20/10/2026)
+# Linha do tempo do Editor de Impressão (18/07/2026 a 21/10/2026)
 
 Uma linha por sessão ou marco, **do mais novo para o mais antigo**. Serve para achar rápido
 "quando foi isso e onde está escrito". O detalhe fica nas fontes: o histórico por data
@@ -30,7 +30,7 @@ Montada em 20/10/2026 pelo ajudante A da memória.
 8. **09 a 12/10/2026, sessão na nuvem:** cópia do GitHub num Linux; testes no Windows do GitHub.
 9. **19/10/2026, regras novas da retomada:** onde roda cada teste, teste de reversão, quem conversa com
    quem e a memória por assunto ([CLAUDE.md](../CLAUDE.md) §4.6 a §4.9). Em 20/10/2026 esta pasta
-   `memoria/` foi montada.
+   `memoria/` foi montada. De 19 a 21/10/2026 a memória foi publicada, o conserto do corte entrou no programa e os agentes liberados entregaram quase tudo em ramos (pausa pedida pelo Samuel em 21/10/2026; [PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)).
 
 ## A tabela
 
@@ -40,6 +40,7 @@ Abreviações das fontes: **H** = [histórico](../historico/Editor%20de%20Impres
 
 | Data(s) | Onde | O que se fez | Decisões principais do Samuel | Ramo / commit principal | Fonte |
 |---|---|---|---|---|---|
+| 19 a 21/10/2026 | PC | 19 a 21/10/2026 — regras novas (testes GitHub+PC, reversão, recados, memória), memória montada e publicada, filtro de velocidade, Pesel 21 no programa, abas 4-8 publicadas, 6 perguntas da impressão, caixa do conteúdo/borda preta/2.14, 2.8-2.15, layout etapas 4-7; pausa a pedido do Samuel — PARTE -17 | `cg6` "Aprovado: entra agora"; `g7` "O Kaique escolhe por livro: só o preto, ou até a moldura"; `g9` "Ajustar: gira de pé e reduz até caber na página A5"; rodadas 14 e 14b; exceção "opção 1"; pausa: "quando os agentes acabarem, pode parar todos os serviços e esperar meu proximo comando" | `fase-1` `e1f4c7d` (corte juntado `f418cc3`, memória `ccc3d6d`); ramos `fase2-para-revisar` `8cb84b8`, `fase2-scantailor-itens-2026-10-19` `ffa2463`, `layout-etapas4a7-2026-10-19` `2eeec20`, `fase2-caixa-conteudo` `ed68928`, `consertos-2026-10-21` `2ff16e7`, `pesquisa-impressao-2026-10-19` `479706f` | [H, PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md); R, 19/10, 20/10 e 21/10/2026 |
 | 20/10/2026 | PC | Montagem desta memória por assunto (`memoria/`), por um montador e ajudantes. Os agentes liberados em 19/10 trabalham em ramos próprios, cada um com `ONDE-PAREI.md` (pesquisa da impressão, itens da Fase 2 igual ao ScanTailor, layout etapas 4 a 7, conferência do "Para revisar", Pesel 21 do conserto do corte, caixa do conteúdo, filtro de velocidade no GitHub). | conjunto da memória aprovado em 19/10: "Está certo" | `memoria-2026-10-19` (`9e8c5d5`); ramos `pesquisa-impressao-2026-10-19`, `fase2-scantailor-itens-2026-10-19`, `layout-etapas4a7-2026-10-19` | [ONDE-PAREI da memória](ONDE-PAREI.md); [CLAUDE.md](../CLAUDE.md) §4.9 |
 | 19/10/2026 | PC | Retomada depois de 5 dias sem sessão: cinco decisões perguntadas uma por uma no chat, escritas no CLAUDE.md §4.6 a §4.9 e nos quatro agentes; agentes liberados. | suíte "B: GitHub e meu PC"; memória "Opção D" e "Está certo"; sessões "C: chefe + bilhetes"; teste de reversão "opção 1"; velocidade "opção 2"; MemPalace "Testar depois"; "vamos deixar esse concerto de lentidão para o final, para a fase de desempenho." | `fase-1` `b8e9af7` (commit gravado 20/10 04:20) | R, Registro 19/10/2026; [CLAUDE.md](../CLAUDE.md) §4.6 a §4.9 |
 | 15/10 a 18/10/2026 | — | Nenhuma sessão registrada (só um commit automático de prints no ramo `prints-testes`, 15/10). | — | `prints-testes` `2256b13` | git log (não achado em H nem em R) |

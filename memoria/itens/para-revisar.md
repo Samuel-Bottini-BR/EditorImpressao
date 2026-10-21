@@ -1,9 +1,10 @@
 # Para revisar — Decidido pelo Samuel, a fazer: o "Para revisar" (rodadas 3 a 5)
 
-Fase 2 (bloco sem número) · **pronto em ramo, não juntado; falta a conferência do Samuel (aba 4 por montar)** · ficha montada em 20/10/2026 · o que manda: [PLANO-DEFINITIVO, Fase 2, bloco "Decidido pelo Samuel, a fazer: o 'Para revisar'"](../../docs/plano/PLANO-DEFINITIVO.md)
+Fase 2 (bloco sem número) · **PRONTO no ramo `fase2-para-revisar` (`8cb84b8`); aba 4 da conferência publicada (18 quadros, 3 perguntas, decisão `pr`) e SEM resposta** · ficha montada em 20/10/2026 · o que manda: [PLANO-DEFINITIVO, Fase 2, bloco "Decidido pelo Samuel, a fazer: o 'Para revisar'"](../../docs/plano/PLANO-DEFINITIVO.md)
 
 ## Situação
 
+- **Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)); vale sobre os pontos de 20/10 abaixo:** o "Para revisar" foi juntado **ao layout aprovado** (`adf4e69`, 20/10/2026: 64/64 saídas iguais; suíte 2172/0; 3 testes de reversão) e ganhou as frases da rodada 14 e dois consertos: ramo `fase2-para-revisar` em **`8cb84b8`**, **PRONTO**. **Aba 4** da página de conferência publicada, **sem resposta**: 18 quadros, 3 perguntas (`pr-medir-o-livro`, `pr-contagens`, `pr-tela-igual-ao-pdf`), decisão `pr`. Ressalva que vai junto: o Boécio chega a 34% no "Para revisar". Não juntado ao `fase-1`.
 - **Pronto em ramo, não juntado:** ramo `fase2-para-revisar`, commit `ce2b835` (13/10/2026). Os seis pedaços estão construídos. Suíte no Windows do GitHub: 116 arquivos, 2101 passaram, 0 falharam (Registro 13/10/2026).
 - **Segunda conferência do verificador feita, mas parada pelo Samuel em 13/10/2026 às 17:30** (checkpoint): ramo `verif-para-revisar-2026-10-13`, commit `f506ec3`. Os 8 pontos foram conferidos na janela de verdade: 7 valem, 1 "em parte" (teclado: a seta não troca de página na janela de teste, igual ao programa de hoje). Falta: abrir uma a uma 19 imagens novas; reabrir Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66 (`ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md`).
 - **Liberado de novo em 19/10/2026**: "Verificador - ok" (conferência do "Para revisar"), palavras do Samuel no [plano, Registro 19/10/2026](../../docs/plano/PLANO-DEFINITIVO.md). Conferido no git em 20/10/2026: os dois ramos continuam com o último commit de 13/10 (`ce2b835` e `f506ec3`); nada novo no GitHub ainda.
@@ -36,6 +37,12 @@ Mais duas decisões do bloco: **pauta com pouca falha não vai** (`rv4-pag-antip
 
 **O que fica de fora do ramo** (de propósito): "Deixar em branco" e "Tirar do livro" em qualquer página, sem aviso, é da Lista de espera, Fase 6 (`rv5-erro-5-sem-conteudo`: "Essa opção de tirar do livro ou deixar folha em branco eu quero ter em outras paginas"); o "Parece em branco" continua com a conta antiga (bug da Gladstone 18); a regra só vale no "Só as letras" com "Guardar a tinta forte" ou "Guardar só o texto" (o "Só as letras" mora em [1.5](1.5.md)).
 
+**Frase da rodada 14 (20/10/2026):** `r14-aviso-marcar` "C — Diz onde fica o "letra e traço"" (a frase nova do aviso `core/analise.py`).
+
+**Mágico pro +1,1% do "Para revisar":** Fase 5 ("vamos deixar esse concerto de lentidão para o final, para a fase de desempenho.", 19/10/2026).
+
+**"Parece em branco" consertado** (ramo `consertos-2026-10-21`, Gladstone 18): passa a avisar 49% das páginas do Egenloff (versos realmente vazios); acima de 70% vira aviso do **livro inteiro** ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4).
+
 ## Mudou em
 
 - 05/10/2026 — antes: não havia aviso por tinta fora do texto → ficou: "REVISAR Mandar para 'Para revisar' sozinho?: Sim" (conferência 8, [respostas](../../relatorios/conferencia-samuel-2026-10-05-f.md)).
@@ -47,6 +54,8 @@ Mais duas decisões do bloco: **pauta com pouca falha não vai** (`rv4-pag-antip
 - 13/10/2026 — limites reacertados pela gerente para o preparo novo (1,5 → 1,2; 0,20 → 0,13) e força sozinha mais cautelosa (P3). Não muda nenhuma decisão do Samuel; o resultado (22/75) fica perto do aprovado (21/78).
 - 19/10/2026 — o Mágico pro +1,1% vai para a Fase 5 (literal acima).
 
+- 20/10/2026 — antes: pronto em `ce2b835`, esperando a 2ª conferência do verificador → ficou: juntado ao layout aprovado (`adf4e69`), com 64/64 iguais, suíte 2172/0 e 3 testes de reversão; 21/10/2026: `8cb84b8` e aba 4 publicada (Registro 20/10/2026 e 21/10/2026).
+
 ## Tentado e descartado
 
 - Aviso por "tinta forte fora do texto > 10%": manda 35 de 59 páginas, 20 certas à toa ([histórico, PARTE -12 §4](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)).
@@ -55,6 +64,8 @@ Mais duas decisões do bloco: **pauta com pouca falha não vai** (`rv4-pag-antip
 - Procurar a marcação do tamanho do PDF **na frente** da prévia: a primeira prévia foi de 1,14 para 1,92 s; recusado pela regra 6 e trocado pela busca por trás, numa fila, só com o pool de prévias parado (PARTE -15 §5; `ramo fase2-para-revisar: relatorios/para-revisar-impl/ONDE-PAREI.md`).
 - Medir a regra na prévia de 110 DPI: 39 vão e 60 certas (22 diferentes do estudo). Por isso a regra só mede no tamanho do PDF.
 - Força sozinha com 2 linhas falhadas (antes da P3): escurecia o Palatino 66 sem precisar e piorava o Egenloff 3.
+
+- **O mesmo código nem sempre dava a mesma imagem** (Horas 11, Mágico pro, achado em 20/10/2026): com pouca memória o modelo de regiões ficava desligado a sessão inteira e o detector de gravura caía no antigo. Provas de "sai igual" por soma podiam acusar diferença falsa. Consertado em `2ff16e7` (tenta de novo); ver [horas-011](../paginas-de-teste/horas-011.md).
 
 ## Ramos e commits
 
@@ -73,11 +84,15 @@ Mais duas decisões do bloco: **pauta com pouca falha não vai** (`rv4-pag-antip
 
 Nada deste bloco está no `fase-1` (`b8e9af7`). O ramo saiu do `fase-1` em `9c51801` e não recebeu o layout juntado em 14/10 (`ccc84aa`): ao juntar, conflitos são esperados em `ui/`. A junção com o conserto do corte do G6 é numa linha só de `core/pipeline.py` (`ramo conserto-corte-g6-2026-10-13: relatorios/conserto-corte-g6/ONDE-PAREI.md`).
 
+- `fase2-para-revisar`: `adf4e69` (20/10/2026, junção ao layout aprovado), **`8cb84b8`** (21/10/2026). Verificação: `verif-para-revisar-2026-10-13` (retomada em 20/10/2026).
+
 ## Testes que cobrem
 
 - No `fase-1`: [tests/test_misto_no_programa.py](../../tests/test_misto_no_programa.py) (o aviso de hoje, "Tinta forte fora do texto"), [tests/test_paineis.py](../../tests/test_paineis.py) e [tests/test_paineis_na_tela.py](../../tests/test_paineis_na_tela.py) (painel "Para revisar").
 - Só no ramo `fase2-para-revisar` (não existem em W): `tests/test_revisar.py` (23 testes), `tests/test_avisos.py` (34), `tests/test_para_revisar_na_tela.py` (25), `tests/test_marcacao_por_tras.py` (4, com os fios de verdade); mexidos `tests/test_misto_no_programa.py` (41) e `tests/test_gravura_no_processamento.py` (43).
 - **Testes de reversão (regra de 19/10/2026, `CLAUDE.md` §4.7):** os consertos da conferência do verificador têm testes com o nome do defeito (`test_dois_cliques_no_cartao_do_filtro_nao_dao_a_pagina_por_conferida`, `test_os_botoes_do_aviso_nao_ficam_com_o_teclado`, `test_esta_bom_assim_no_aviso_de_pagina_em_branco`, `test_usar_mais_escuro_nao_aparece_com_a_forca_ja_no_mais_escuro`), mas **nenhum foi provado falhando no código antigo** (a regra é posterior). Faltam testes de reversão para o bug `_escolher_forca` (consertado no ramo) e para a medida que dependia da prévia. O verificador que retomar precisa provar.
+
+- 20/10/2026: 64/64 saídas iguais; suíte 2172/0; 3 testes de reversão (Registro 20/10/2026).
 
 ## Velocidade medida
 
@@ -113,6 +128,8 @@ Ver também [../conferencias.md](../conferencias.md).
 - 08 e 09/10/2026, rodada 5 (10 respostas, todas `decidida`) ([respostas](../../relatorios/revisar-decisoes/rodada-5/respostas-samuel.md)).
 - O resultado construído **ainda não foi conferido por ele** (aba 4 por montar).
 
+- 21/10/2026 — aba 4 da página de conferência (https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX): 18 quadros `pr-*`, 3 perguntas, decisão `pr`. **Sem resposta.**
+
 ## Perguntas abertas
 
 Três perguntas escritas pelo verificador no `conferencia.json` (`ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/conferencia.json`), ainda não publicadas (vão na aba 4):
@@ -121,6 +138,8 @@ Três perguntas escritas pelo verificador no `conferencia.json` (`ramo verif-par
 3. `pr-tela-igual-ao-pdf` — "A tela deve mostrar a página igual à do PDF?" (trocar sozinha pela imagem do PDF quando chegar — sugestão do verificador; um botão "ver como sai no PDF"; deixar como está). É a causa do bug grave de 13/10/2026.
 
 Mais, sem pergunta montada: a aba Marcar que "se acerta sozinha" uma vez por página (Graduale 221: 9 áreas viram 18 em 10,7 s) — a gerente decide se fica (ressalva 1 do implementador); onde fica a caixinha da força sozinha (hoje só aparece rolando a tela "O que fazer").
+
+- (21/10/2026) As três perguntas e a decisão `pr` da aba 4, sem resposta. E, para levar: "Parece em branco" — avisar uma vez para o livro inteiro quando os versos são vazios (Egenloff 49%)? ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5).
 
 ## De onde veio
 
@@ -154,3 +173,5 @@ Mais, sem pergunta montada: a aba Marcar que "se acerta sozinha" uma vez por pá
   - 13/10/2026 — consertos e dois ajustes (`ce2b835`), de volta ao verificador; as três perguntas.
   - 13/10/2026 — segunda conferência do verificador feita; Mágico pro 1,1% mais lento, a decidir.
   - 19/10/2026 — verificador liberado; Mágico pro +1,1% para a Fase 5.
+
+- 20/10/2026 — Registro "Layout, rodada 14" ("Para revisar" juntado ao layout aprovado, `adf4e69`) e "Exceção à regra da suíte no PC"; 21/10/2026 — Registro "Pausa pedida pelo Samuel"; [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2, §4, §5.

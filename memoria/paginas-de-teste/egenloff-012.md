@@ -18,6 +18,8 @@
 - 08/10/2026 → rodada 4: com o motivo "página sem conteúdo", vai; "Concordo". Lista de bugs 08/10: o aviso "Parece em branco" não aparece no Egenloff 12.
 - 13/10/2026 → "Para revisar": "Página sem conteúdo" com "Deixar em branco", testado na tela; "está bom assim" conferido na janela.
 
+- 20-21/10/2026 → a janela do programa sumiu uma vez, sem log, ao clicar "Deixar em branco" nesta página; 62 cliques depois não repetiu (suspeita: falta de memória com muitos agentes). Páginas de versos vazios: "Parece em branco" passou a avisar 49% das páginas do Egenloff (versos realmente vazios). Pergunta para levar: "página quase em branco sai centrada no carimbo ou no papel (Egenloff 12)?" ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4 e §5).
+
 ## O que o Samuel disse
 
 - 07/10/2026, rodada 3, "Não concordo": "é uma pagina que deveria ir para revisar, porque não tem nada nela, deve ser trocada por uma pagina branca" ([rodada 3](../../relatorios/revisar-decisoes/rodada-3/respostas-samuel.md)).
@@ -26,3 +28,5 @@
 ## De onde veio (fontes)
 
 - Rodada 3 do "Para revisar"; [plano, Lista de bugs 08/10/2026](../../docs/plano/PLANO-DEFINITIVO.md).
+
+- [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4 e §5 (ver [para-revisar](../itens/para-revisar.md), [2.13](../itens/2.13.md))

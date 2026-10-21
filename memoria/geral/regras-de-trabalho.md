@@ -131,3 +131,18 @@ abrir arquivos de versões anteriores.", conferência 14, 05/10/2026).
 **Fronteira de autonomia** (CLAUDE.md §6). Pode decidir sozinho: limiar, janela, `k`, bloco, ordem interna de um
 filtro, troca de binarizador, cache, paralelismo, memória. **Precisa perguntar antes:** criar/remover/renomear
 filtro, mudar tela, pôr ou tirar controle, mudar formato dos dados, mexer no desfazer, trocar biblioteca.
+
+## 9. Regras e hábitos novos de 19 a 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md))
+
+- **Testes, "B: GitHub e meu PC" (19/10/2026):** as ~2.100 conferências e o `teste_botoes.py` rodam no GitHub em toda entrega e, antes de qualquer trabalho entrar no `fase-1`, também no PC com os outros agentes parados. **Exceção (20/10/2026, "opção 1"):** trabalho que só acrescenta documentos entra só com o GitHub.
+- **Velocidade, "opção 2":** filtro no GitHub em toda mudança de processamento (adotado em 20/10/2026, ver [pc-e-github](pc-e-github.md)); medida que vale no PC no fim de cada fase; o notebook do Kaique é a régua final. Lentidão pequena no meio da fase vai para a Fase 5.
+- **Teste de reversão, "opção 1":** todo bug consertado ganha teste que falha no código antigo e passa no novo; o verificador prova; bug de imagem usa medida (mm de preto etc.).
+- **Sessões, "C: chefe + bilhetes":** agentes entregam sempre à gerente; recados de outras janelas com as palavras literais, a gerente repete e só muda o plano depois do "sim".
+- **Memória, "Opção D completa":** montada e publicada em 20/10/2026 (https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE); MemPalace "Testar depois" (Lista de espera, 19/10/2026), só depois da `memoria/`.
+- **Mensagem de commit na própria worktree (aprendido em 20/10/2026):** um agente pegou a mensagem de outro pelo scratchpad compartilhado. Cada agente grava a mensagem num arquivo dentro da **própria** worktree.
+- **Ler o GitHub uma vez só (aprendido em 20/10/2026):** vários agentes com `gh run watch` ao mesmo tempo esgotam a API (HTTP 403). Disparar a rodada e ler o resultado **uma vez, no fim**.
+- **Limite de uso da conta com muitos agentes:** com 5 a 8 agentes juntos a conta bateu o limite três vezes (20/10 de manhã, 20/10 à tarde, 21/10 de madrugada). Commit + `ONDE-PAREI.md` a cada passo; retomar com SendMessage depois do horário que o erro informa.
+- **Pedido novo sobre testes (20/10/2026):** testar cada ferramenta sobre a página que já passou pelas etapas anteriores. Como aplicar: pergunta ainda não feita a ele.
+- **Decisão da gerente dentro da alçada de limiar (`CLAUDE.md` §6):** no 2.15 a página só vai ao "Para revisar" se também se afastar 1° da média do livro; o Samuel confere na aba 8.
+- **Antes de apagar uma worktree:** as junções `modelos` e `gabarito` se removem com `(Get-Item …).Delete()` (muitas worktrees novas em 20-21/10; ver [ramos](../ramos.md)).
+- **Pausa de 21/10/2026:** a pedido dele ("quando os agentes acabarem, pode parar todos os serviços e esperar meu proximo comando"), todos os agentes pararam, com commit, push e `ONDE-PAREI.md` em dia. Agentes de uma sessão não existem numa conversa nova: para continuar uma frente, chame um agente novo apontando ramo, worktree e `ONDE-PAREI.md`.
