@@ -47,7 +47,13 @@ from ui.widgets.visualizador import numpy_para_qimage
 
 UMA_A_UMA, EM_PARES = "uma", "pares"
 ALTURA_DA_PAGINA = 150        # o desenho de cada página na grade
-ALTURA_GUARDADA = 200         # a folha guardada (maior que o quadro, para a metade ficar nítida)
+# A folha guardada: maior que o quadro (150 pontos são ~375 pixels numa tela a
+# 250%), senão a página sai borrada (verificador, 21/10/2026). No máximo
+# MAXIMO_GUARDADAS folhas ficam guardadas (as mais longe da página da vez saem):
+# ~0,25 MB cada, uns 40 MB no máximo, num livro de qualquer tamanho.
+ALTURA_GUARDADA = 340
+DPI_DA_GRADE = 48
+MAXIMO_GUARDADAS = 160
 
 
 @dataclass
@@ -82,7 +88,7 @@ class _TarefaDasFolhas(QRunnable):
                     return
                 doc = abrir_pdf(self.caminho_pdf)
                 try:
-                    img = pagina_para_array(doc, folha, dpi=30)
+                    img = pagina_para_array(doc, folha, dpi=DPI_DA_GRADE)
                 finally:
                     doc.close()
                 self.sinais.pronta.emit(folha, limitar_altura(img, ALTURA_GUARDADA))
@@ -403,6 +409,10 @@ class TodasAsPaginas(QWidget):
 
     def _folha_chegou(self, folha: int, img) -> None:
         self._folhas[folha] = img
+        if len(self._folhas) > MAXIMO_GUARDADAS:
+            atual = next((i.folha for i in self.itens if i.indice == self.atual), 0)
+            longe = max(self._folhas, key=lambda f: abs(f - atual))
+            self._folhas.pop(longe)
         for quadro in self.quadros:
             for n, item in enumerate(quadro.itens):
                 if item.folha == folha:

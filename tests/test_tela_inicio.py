@@ -77,7 +77,8 @@ def test_remontar_nao_deixa_cartao_fantasma(app, raiz, tmp_path):
     """
     resumo = _resumo(_livro(tmp_path / "a.pdf"), "Um")
     tela = TelaInicio()
-    velho = tela.grade.itemAt(0).widget()
+    velho = next(tela.grade.itemAt(i).widget() for i in range(tela.grade.count())
+                 if isinstance(tela.grade.itemAt(i).widget(), CartaoDeProjeto))
 
     projetos.renomear(resumo, "Outro nome")
     tela.recarregar()
@@ -102,15 +103,19 @@ def test_busca_sem_resultado_explica_em_vez_de_ficar_vazia(app, raiz, tmp_path):
     tela = TelaInicio()
     tela.busca.setText("nao existe")
 
-    recado = tela.grade.itemAt(0).widget()
+    # etapa 7 do layout: o cartão "+" fica sempre no começo; o recado vem depois
+    assert tela.grade.itemAt(0).widget() is tela.area
+    recado = tela.grade.itemAt(1).widget()
     assert not isinstance(recado, CartaoDeProjeto)
     assert "nao existe" in recado.text() or "não existe" in recado.text()
 
 
 def test_sem_projeto_nenhum_convida_a_arrastar(app, raiz):
     tela = TelaInicio()
-    recado = tela.grade.itemAt(0).widget()
-    assert "Arraste" in recado.text()
+    # etapa 7 do layout: a página vazia da tela 6 (o "+" grande e a explicação)
+    assert tela.grade.itemAt(0).widget() is tela.area and tela.area.grande
+    recado = tela.grade.itemAt(1).widget()
+    assert "arraste" in recado.text().lower()
 
 
 # --- o cartão ---------------------------------------------------------------
@@ -119,8 +124,9 @@ def test_sem_projeto_nenhum_convida_a_arrastar(app, raiz):
 def test_o_cartao_tem_o_tamanho_do_desenho(app, raiz, tmp_path):
     resumo = _resumo(_livro(tmp_path / "a.pdf"), "Um")
     cartao = CartaoDeProjeto(resumo, TelaInicio())
-    assert cartao.width() == LARGURA_DO_CARTAO == 304
-    assert cartao.height() == ALTURA_DO_CARTAO == 220
+    # etapa 7 do layout (rodada 6): seis por linha em 1280 x 657
+    assert cartao.width() == LARGURA_DO_CARTAO == 196
+    assert cartao.height() == ALTURA_DO_CARTAO == 244
 
 
 def test_o_cartao_diz_onde_o_trabalho_parou(app, raiz, tmp_path):
@@ -237,7 +243,30 @@ def test_comecar_de_novo_pede_confirmacao(app, raiz, tmp_path, monkeypatch):
     assert pedidos
 
 
-def test_a_faixa_de_arrastar_e_uma_linha(app, raiz):
-    """Abrir livro novo se faz uma vez por livro, e tomava um terço da tela."""
+def test_abrir_um_pdf_novo_e_um_cartao_do_tamanho_dos_outros(app, raiz, tmp_path):
+    """Abrir livro novo se faz uma vez por livro, e tomava um terço da tela.
+    Etapa 7 do layout (rodada 6: "Cartão '+' no começo da grade"): com livros,
+    é um cartão do tamanho dos outros."""
+    _resumo(_livro(tmp_path / "a.pdf"), "Um")
     tela = TelaInicio()
-    assert tela.area.height() <= 70, "a caixa de arrastar voltou a ser grande"
+    assert tela.grade.itemAt(0).widget() is tela.area and not tela.area.grande
+    assert tela.area.size() == CartaoDeProjeto(projetos.listar()[0], tela).size()
+
+
+def test_um_clique_abre_o_livro_na_tela_inteira_e_esc_volta(app, raiz, tmp_path):
+    """Rodada 6: um clique no cartão abre o livro na tela inteira; "Voltar"
+    (ou Esc) traz os cartões, com o último livro marcado."""
+    from PySide6.QtCore import QPoint, Qt
+    from PySide6.QtTest import QTest
+
+    _resumo(_livro(tmp_path / "a.pdf"), "Um")
+    tela = TelaInicio()
+    cartao = next(tela.grade.itemAt(i).widget() for i in range(tela.grade.count())
+                  if isinstance(tela.grade.itemAt(i).widget(), CartaoDeProjeto))
+    QTest.mouseClick(cartao, Qt.LeftButton, pos=QPoint(20, 200))
+    assert tela.pilha.currentWidget() is tela.livro_aberto
+    assert tela.livro_aberto.nome.text() == "Um"
+    QTest.keyClick(tela.livro_aberto, Qt.Key_Escape)
+    assert tela.pilha.currentIndex() == 0
+    marcados = [c for c in tela.findChildren(CartaoDeProjeto) if c.marcado and c.parent() is not None]
+    assert [c.resumo.nome for c in marcados] == ["Um"]

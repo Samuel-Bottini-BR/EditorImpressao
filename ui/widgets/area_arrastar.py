@@ -16,8 +16,13 @@ class AreaArrastar(QWidget):
 
     arquivo_escolhido = Signal(str)
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, cartao: bool = False) -> None:
+        """cartao=True (etapa 7 do layout, rodada 6: "Cartão '+' no começo da
+        grade"): o desenho de cartão, com o "+" azul redondo no meio;
+        `grande` (a página sem livro nenhum, da tela 6) muda só o texto."""
         super().__init__(parent)
+        self.cartao = cartao
+        self.grande = False
         self.setAcceptDrops(True)
         # Baixa de proposito. Abrir livro novo se faz uma vez por livro, e a
         # caixa antiga tomava um terco da tela para isso - o espaco pertence
@@ -33,6 +38,9 @@ class AreaArrastar(QWidget):
         e o texto - muda de cor quando um PDF esta sendo arrastado por cima."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
+        if self.cartao:
+            self._pintar_o_cartao(pintor)
+            return
 
         area = self.rect().adjusted(2, 2, -2, -2)
         pintor.setBrush(QColor(estilo.AZUL_CLARO if self._por_cima else estilo.cor("bar2")))
@@ -60,6 +68,41 @@ class AreaArrastar(QWidget):
         pintor.setFont(fonte)
         pintor.setPen(QColor(estilo.TEXTO_FRACO))
         pintor.drawText(texto_x, meio + 16, "ou clique para procurar no computador")
+
+    def _pintar_o_cartao(self, pintor: QPainter) -> None:
+        """O cartão "+": borda tracejada, o círculo azul com o "+" desenhado, o
+        nome e a frase. Acende em azul com um PDF arrastado por cima."""
+        from PySide6.QtCore import QPointF, QRectF
+
+        area = QRectF(self.rect()).adjusted(1.5, 1.5, -1.5, -1.5)
+        pintor.setBrush(QColor(estilo.AZUL_CLARO) if self._por_cima else Qt.NoBrush)
+        pintor.setPen(QPen(QColor(estilo.AZUL if self._por_cima else estilo.BORDA), 1.2, Qt.DashLine))
+        pintor.drawRoundedRect(area, 10, 10)
+        raio = 30 if self.grande else 21
+        centro = QPointF(area.center().x(), area.center().y() - (36 if self.grande else 28))
+        pintor.setPen(Qt.NoPen)
+        pintor.setBrush(QColor(estilo.AZUL))
+        pintor.drawEllipse(centro, raio, raio)
+        pintor.setPen(QPen(QColor("white"), 3 if self.grande else 2.4))
+        braco = raio * 0.45
+        pintor.drawLine(QPointF(centro.x() - braco, centro.y()), QPointF(centro.x() + braco, centro.y()))
+        pintor.drawLine(QPointF(centro.x(), centro.y() - braco), QPointF(centro.x(), centro.y() + braco))
+        fonte = pintor.font()
+        fonte.setPixelSize(17 if self.grande else 14)
+        fonte.setBold(True)
+        pintor.setFont(fonte)
+        pintor.setPen(QColor(estilo.cor("forte")))
+        y = centro.y() + raio + 10
+        pintor.drawText(QRectF(area.left(), y, area.width(), 26), Qt.AlignCenter,
+                        "Abrir um PDF" if self.grande else "Abrir um PDF novo")
+        fonte.setBold(False)
+        fonte.setPixelSize(12)
+        pintor.setFont(fonte)
+        pintor.setPen(QColor(estilo.TEXTO_FRACO))
+        quebra = "\n"
+        frase = (f"clique aqui para procurar no computador,{quebra}ou arraste o PDF de um livro para cá"
+                 if self.grande else f"clique aqui, ou arraste{quebra}o PDF de um livro para cá")
+        pintor.drawText(QRectF(area.left() + 8, y + 28, area.width() - 16, 40), Qt.AlignHCenter | Qt.AlignTop, frase)
 
     def _desenhar_icone_arquivo(self, pintor: QPainter, x: int, y: int) -> None:
         """Um icone de folha com a quina dobrada, desenhado a mao com QPainterPath."""

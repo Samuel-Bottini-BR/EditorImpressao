@@ -152,6 +152,13 @@ class JanelaPrincipal(QMainWindow):
         self.tela_inicio.continuar_projeto.connect(self._continuar_projeto)
         self.tela_inicio.recomecar_projeto.connect(self._recomecar_projeto)
         self.tela_inicio.vai_tirar_da_lista.connect(self._soltar_o_livro_tirado_da_lista)
+        # etapa 7 do layout: os botões do livro aberto e do alto da tela dos livros
+        self.tela_inicio.abrir_o_automatico.connect(
+            lambda resumo: self.abrir_livro(resumo.caminho_entrada, resumo=resumo))
+        self.tela_inicio.processar_pedido.connect(self._continuar_e_processar)
+        self.tela_inicio.configuracoes_pedidas.connect(lambda: self._abrir_configuracoes())
+        self.tela_inicio.ajuda_pedida.connect(lambda: self._mostrar_atalhos())
+        self._processar_ao_abrir = False
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
@@ -322,6 +329,15 @@ class JanelaPrincipal(QMainWindow):
             acao = menu.addAction(resumo.nome or Path(resumo.caminho_entrada).name)
             acao.triggered.connect(lambda _c=False, r=resumo: self.tela_inicio.pedir_para_continuar(r))
 
+    def _continuar_e_processar(self, resumo) -> None:
+        """"Confirmar e processar..." do livro aberto (etapa 7 do layout):
+        continua o trabalho; quando ele abrir, pede a confirmação de sempre
+        (processar). Se a abertura falhar ou for cancelada, nada é processado."""
+        self._processar_ao_abrir = True
+        self._continuar_projeto(resumo)
+        if self.telas.currentIndex() != PROGRESSO and self.telas.currentIndex() != CONFERIR:
+            self._processar_ao_abrir = False
+
     def _trocar_tema(self, nome: str) -> None:
         """Menu Ver > Tema (etapa 1 do layout): põe o tema para valer na hora,
         em tudo o que está aberto, e guarda a escolha para a próxima vez."""
@@ -374,6 +390,15 @@ class JanelaPrincipal(QMainWindow):
             self.menu.mostrar_tela_de_trabalho()
         else:
             self.menu.mostrar_tela_inicial()
+        # Etapa 7 do layout (rodadas 4 a 6): a tela dos livros não tem barra
+        # de menus, só "Configurações" e "Ajuda" no alto. As teclas dos menus
+        # continuam valendo (as ações também estão na janela).
+        if hasattr(self, "linha_dos_menus"):
+            self.linha_dos_menus.setVisible(indice != INICIO)
+        # e o livro aberto para de ler o PDF ao sair dela (duas leituras do
+        # mesmo arquivo ao mesmo tempo já travaram o MuPDF: _montar_tira)
+        if hasattr(self, "tela_inicio"):
+            self.tela_inicio.mostrar_os_livros()
         for peca in getattr(self, "_pecas_da_tela_de_trabalho", ()):
             peca.setVisible(indice == CONFERIR)
 
@@ -414,6 +439,8 @@ class JanelaPrincipal(QMainWindow):
         self._pecas_da_tela_de_trabalho = (traco, conferir.barra_opcoes)
         self.setMenuWidget(linha)
         self.linha_dos_menus = linha
+        # as teclas dos menus valem mesmo com a linha escondida (tela dos livros)
+        self.addActions(list(self.menu.acoes.values()))
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Etapa 2 do layout: os menus nunca encolhem (quem cede lugar é a
@@ -1065,6 +1092,11 @@ class JanelaPrincipal(QMainWindow):
             self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
         self._salvar_agora()
+        # etapa 7 do layout: "Confirmar e processar..." do livro aberto pede a
+        # confirmação de sempre assim que o trabalho abre
+        if self._processar_ao_abrir:
+            self._processar_ao_abrir = False
+            QTimer.singleShot(0, self.processar)
         # Decisao Z1 (b): as zonas de projeto antigo sao convertidas por
         # tras, o livro inteiro, enquanto o Kaique ja trabalha.
         self._comecar_a_converter_as_zonas()
