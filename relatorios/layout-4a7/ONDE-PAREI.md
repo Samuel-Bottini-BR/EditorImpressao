@@ -71,5 +71,16 @@ Situação: **pronta para a gerente publicar** (20/10).
   `relatorios/layout-4a7/rodada14-feita/` (4 de 4 conferências). GitHub 39554220929: 2081 passaram, 0 falharam; teste_botoes 213 ações, 0 falhas.
 - 906 C: só na junção com o "Para revisar" (texto em `core/analise.py`, da gerente).
 
+### Etapa 5 (21/10): construída, `744292d`
+- `ui/widgets/miniaturas.py` (cabeçalho PÁGINAS/FOLHAS: alça, seta, três pontinhos com "Ver em pares", "Lugar",
+  "Fechar"; "ver todas"); a tira em grade (`tira_miniaturas.definir_arranjo`: fila ou coluna, em pares como no livro
+  aberto); `ui/widgets/todas_as_paginas.py` (grade "uma a uma" de fábrica, "em pares", "só as que precisam de
+  atenção", clique vai à página). Lugares de encaixe com contorno azul ao arrastar a alça. 801 A e 808 A.
+- Janela de verdade: 15 de 15 (`relatorios/layout-4a7/etapa5/`); testes de tela um por vez: 37 arquivos passaram;
+  `tests/test_miniaturas_novas.py` novo.
+- GitHub 39557719615: 118 arquivos, 2085 passaram, 0 falharam; teste_botoes 215 ações, 0 falhas; erros.log vazio. PRONTA PARA CONFERIR.
+- Não feito: lembrar o lugar/aberta/em pares entre sessões (não decidido); clicar num par abrir as duas lado a lado
+  (depende do "Ver lado a lado", que não existe); soltar a barra em qualquer lugar (a "C — tudo livre", para o fim).
+
 ### Próximas
-- Etapa 5 (miniaturas: cabeçalho "PÁGINAS", seta, três pontinhos, alça de arrastar, 801 A, 808 A).
+- Etapa 6 (tela cheia dos filtros, 601 A) e 7 (tela inicial).
