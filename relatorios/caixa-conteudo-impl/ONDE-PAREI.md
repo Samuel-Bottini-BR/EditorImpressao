@@ -29,22 +29,12 @@ Passos (marque ao terminar):
       Projeto.borda_preta/borda_preta_ate); tela `6be46d4` (caixinha + lista em "O que fazer",
       "Em quais páginas?" no "usar em todas"); cunha escura `7729096`; imagens `b60abd5`.
       Relatório `parte2-2026-10-20.*`. Linhas do §6 coladas no "Botoes e funcoes para o layout.md".
-- [x] Suíte GitHub do ramo (rodada 39478562934, código `e09252d`): passou (5 partes + botões ok);
-      números por arquivo ainda não lidos.
-- [ ] Velocidade 39471048026 (b8e9af7 -> 9861e4f, só a Parte 1): ainda rodando às 19h do GitHub.
-- PAUSA pedida pela gerente (20/10): PC livre para a suíte dela. NADA rodando no PC.
-- [ ] AO RETOMAR (pedido novo da gerente, 20/10): gabarito da Parte 2 = Antiphon 260 ("tem
-      que cortar a faixa inteira."), Antiphon 88 ("cortar em cima e embaixo e dos lados ainda
-      tem um fio preto."), Camões 104 ("É para sumir totalmente."), Cursus 3 ("tem que ficar
-      rente a folha de papel, não pode ter preto ali."), Matemática 32 ("ainda estou vendo a
-      faixa preta."), e Pesel 21 continua inteiro. Teste com medida em mm de preto restante em
-      cada beirada, sobre a página JÁ dividida e endireitada (regra nova do Samuel: testar o
-      corte depois das etapas de antes, como no programa). Olhando as imagens de hoje
-      (`img/borda-preta/`): Antiphon 260 "só o preto" deixa a faixa de baixo; Antiphon 88 "só
-      o preto" deixa o fio da direita; Camões 104 "só o preto" quase nada; "até a moldura"
-      tira o preto em todas, mas corta o papel vazio. Medir mm de preto por beirada nos dois
-      jeitos antes de mexer.
-- [ ] Entregar a Parte 2 à gerente (relatório `parte2-2026-10-20.*` já gravado).
+- [x] 21/10: acerto contra o alvo do Samuel (5 páginas + Pesel 21), medida em mm
+      (`medir_borda_preta.py`, `tests/test_borda_preta_paginas_do_samuel.py`): preto = escuro E
+      neutro; "até a moldura" sem o PageFinder e só na página recortada; beirada linha a linha
+      (`71cc77d`, `86295dc`). Suíte GitHub 39554260784: 2195 passaram, 0 falharam. Velocidade
+      da Parte 1 (39471048026): igual.
+- [x] Parte 2 entregue à gerente (21/10).
 
 ### Decisões técnicas (20/10)
 
