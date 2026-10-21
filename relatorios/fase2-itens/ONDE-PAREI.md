@@ -160,3 +160,9 @@ existe com "Endireitar" ligado no livro; ligado, o desentortar roda no fio da te
 (~1 s por página a 300 DPI na página de mentira); "pelas margens" quase não mexe na página de mentira. Pasta de
 rascunho criada fora do projeto: `EditorImpressao-arquivoserramentasuild-st-gravura-fase2-desentortar`
 (teste de compilação da st_gravura; não apaguei, regra 9).
+
+Procura terminou (21/10): 828 páginas medidas, 40 miniaturas antes|depois em
+`relatorios/conferir/fase2-itens/2.12/procura/` (fora do git), NÃO abertas ainda. As que mais mexeram: Righetti
+p. 76, 106, 96 e Cursus philosophicus p. 176, 401, 186, 151, 166... A "diferença" muito alta (77 a 97) pode ser a
+página inteira deslocada, e não curva: conferir a olho antes de escolher. Uma página deu "Faltou memória para
+desentortar" (PC com outros agentes) — anotar como ressalva ou repetir sozinha. Nenhum processo meu ficou aberto.
