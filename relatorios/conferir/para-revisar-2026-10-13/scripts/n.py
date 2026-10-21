@@ -44,6 +44,13 @@ def clicar_print(x, y, espera=2.0):
     P.clicar_em(P.principal(), int(x), int(y) - 40); time.sleep(espera)
 
 
+def painel_clicar(texto, n=0, espera=2.0):
+    """Clique nativo num botao VISIVEL do painel "Para revisar" (posicao lida pelo v.painel())."""
+    achados = [b for b in v.painel()[1:] if b[0] == texto and not b[3]]
+    x, y = achados[n][1], achados[n][2]
+    P.clicar_em(P.principal(), int(x), int(y)); time.sleep(espera)
+
+
 def botoes():
     return [x for x in v.itens(classes=("QPushButton", "QToolButton")) if x[5] > 0 and x[6] > 0]
 

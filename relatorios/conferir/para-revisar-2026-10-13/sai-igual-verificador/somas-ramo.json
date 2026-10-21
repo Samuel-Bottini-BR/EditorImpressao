@@ -1,0 +1,1090 @@
+{
+ "boecio_p003__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1517,
+     1037,
+     3
+    ],
+    "sha256": "d1e8937449f622547c62b8f32bced9ff3e348c8a33b738d5ec0bc26e967e64ec"
+   }
+  ],
+  "segundos": 4.5,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p003__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1517,
+     1037,
+     3
+    ],
+    "sha256": "41497a43fe50a486b6e04577ee8d22b50804ed9a818703545b2a39027fd78551"
+   }
+  ],
+  "segundos": 7.3,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p007__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1457,
+     1030,
+     3
+    ],
+    "sha256": "4dd180c5727619a31f6fdfcaa4380e3e74729be5f1979d2f6515b8f7adb74d35"
+   }
+  ],
+  "segundos": 2.3,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p007__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1457,
+     1030,
+     3
+    ],
+    "sha256": "c628a50fcf41596dcb136f722b0ae299553c3b4bbbe19dc657e8f5cd20bab81e"
+   }
+  ],
+  "segundos": 1.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p008__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1461,
+     1034,
+     3
+    ],
+    "sha256": "373f0255df6eb723e563c425d1445fc4e5d690652f237c07afa5b27a83418291"
+   }
+  ],
+  "segundos": 1.7,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p008__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1461,
+     1034,
+     3
+    ],
+    "sha256": "74743c8f2177aa5f2fcf4c0f7f7962958631406b64a52e2d9dc8fd0c3e30bd92"
+   }
+  ],
+  "segundos": 1.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p022__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1435,
+     979,
+     3
+    ],
+    "sha256": "3cd4a0bf4914f8f328e1b5d057fc9b61e38c4d611c2055e61b8721ccfcb22fe4"
+   }
+  ],
+  "segundos": 1.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "boecio_p022__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1435,
+     979,
+     3
+    ],
+    "sha256": "abfc50221787b67d58cd0959e4ee212ceaaefa867289cad9ddb94924c911091c"
+   }
+  ],
+  "segundos": 1.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "escola_p007__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2907,
+     1950,
+     3
+    ],
+    "sha256": "713a2ee10d9783447014a9f93bf041a8877a51a0774a6a987b2b047702380885"
+   }
+  ],
+  "segundos": 5.3,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "escola_p007__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2907,
+     1950,
+     3
+    ],
+    "sha256": "37a17a29e225ebd1062c8f2c24035e1508c297c4a97c96959e7cfe8b945edaf3"
+   }
+  ],
+  "segundos": 3.4,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "escola_p035__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2965,
+     1937,
+     3
+    ],
+    "sha256": "fead5969681d4e0e446c16068373b9e4d3ebb0686076fc86f2df9d5a48f48685"
+   }
+  ],
+  "segundos": 5.2,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "escola_p035__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2965,
+     1937,
+     3
+    ],
+    "sha256": "1cf2a5e37bb47eeb7837ab2fb4e9c69aafe3b96a027fe126cef84f8e6a93dce0"
+   }
+  ],
+  "segundos": 3.5,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "graduale_p221__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5469,
+     3981,
+     3
+    ],
+    "sha256": "fca5e15fbe8acd69813c98308ec3cd747cb98f4c83646015e9bda3c8f4a44104"
+   }
+  ],
+  "segundos": 14.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "graduale_p221__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5469,
+     3981,
+     3
+    ],
+    "sha256": "d358b2f09cc230e7a4747980460f77677144615a8fea323c1271fa609041f8c5"
+   }
+  ],
+  "segundos": 24.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "graduale_p222__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5504,
+     3136,
+     3
+    ],
+    "sha256": "851714b721d305b78fdffe6fa25f5ef6f9fef74c0da62dcb5d0f70126b02d4b1"
+   }
+  ],
+  "segundos": 18.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "graduale_p222__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5504,
+     3136,
+     3
+    ],
+    "sha256": "34acabbeaee32acd56b8d0784e215da61fcc72b3705e2041d0f65255ec223171"
+   }
+  ],
+  "segundos": 6.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "graduale_p223__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5455,
+     3981,
+     3
+    ],
+    "sha256": "16b09f4724aee1d4946952955dd487ec6a9a8d1b84f330db9ae4c9dd2c96506e"
+   }
+  ],
+  "segundos": 16.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "graduale_p223__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5455,
+     3981,
+     3
+    ],
+    "sha256": "1b52cf828a7872a90c188f8fa94153506c4fd20d6ffdd44bbc96e755e4567815"
+   }
+  ],
+  "segundos": 10.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p011__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5633,
+     3671,
+     3
+    ],
+    "sha256": "b85e5b05fd2017c6b50037e9f624518ac585d13941e1e8c80ae7d3d9f15c3eea"
+   }
+  ],
+  "segundos": 16.4,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p011__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5633,
+     3671,
+     3
+    ],
+    "sha256": "026bd1ab10b1b9c7824215e622d126e45e2d47fbb41ce429b5048d1144605270"
+   }
+  ],
+  "segundos": 10.3,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p013__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5919,
+     4146,
+     3
+    ],
+    "sha256": "c95dddfdfdb42d2e1e405915c1e019985fcdab4aaf4416d89ea05fd98c8b7f32"
+   }
+  ],
+  "segundos": 17.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p013__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5919,
+     4146,
+     3
+    ],
+    "sha256": "c07718eeb6e6c02c371d2f1619ec7d1fc30ea7dbb6929ca98893b5044c2e9ae9"
+   }
+  ],
+  "segundos": 9.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p014__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5591,
+     4166,
+     3
+    ],
+    "sha256": "e79bd2a6d56551ff2be9cf7e56cf228e089029a709820f903a65814733f213a1"
+   }
+  ],
+  "segundos": 15.5,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p014__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5591,
+     4166,
+     3
+    ],
+    "sha256": "856c8d8ffa26a209873b5ff7ed5633ab1ad5038a7dc03055fcb04b68b770f81c"
+   }
+  ],
+  "segundos": 7.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p026__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5757,
+     3277,
+     3
+    ],
+    "sha256": "83a3067729ce4b84c499d7cc00a0a77909b144ec2cf33d854bd85f579cb64210"
+   }
+  ],
+  "segundos": 12.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p026__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5757,
+     3277,
+     3
+    ],
+    "sha256": "56dc8c07e9041f7904a5a47b08763133f4790d87b1037b2bc49a310e4c60fa3b"
+   }
+  ],
+  "segundos": 7.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p027__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5801,
+     3300,
+     3
+    ],
+    "sha256": "22f4e1e2c65460bdb040fb1cd4290757f3bb692f3c7d4e7c1cc9e33eeb3f60dc"
+   }
+  ],
+  "segundos": 16.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p027__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5801,
+     3300,
+     3
+    ],
+    "sha256": "8f36846bf9783501386897e736e11c759a3915196f2ed9707f94acfc95b4a6c4"
+   }
+  ],
+  "segundos": 7.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p047__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     5719,
+     3428,
+     3
+    ],
+    "sha256": "28b659ac7a5fc3bb55d9c1d5d92048771025101d652f3021c06dfe6daa367d41"
+   }
+  ],
+  "segundos": 14.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "horas_p047__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     5719,
+     3428,
+     3
+    ],
+    "sha256": "c8c0e49a503f668791269907f891b50304d64f40c16e44573ebd73ce507dd044"
+   }
+  ],
+  "segundos": 10.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "marial_p007__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     3905,
+     2897,
+     3
+    ],
+    "sha256": "4bd9330229377008c9068eba24d50dcf22dc887c310747105a57a4311d08acb3"
+   }
+  ],
+  "segundos": 8.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "marial_p007__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     3905,
+     2897,
+     3
+    ],
+    "sha256": "2f9809eafae42d4817cd0ef39ff7911e2f42d65ce7904eeeae4fbb11cc170a0d"
+   }
+  ],
+  "segundos": 6.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p003__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2774,
+     1725,
+     3
+    ],
+    "sha256": "057e4d29828c8e6105c55226aca124af5f3a4173ab22c32d15c95d04983e8d20"
+   }
+  ],
+  "segundos": 3.4,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p003__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2774,
+     1725,
+     3
+    ],
+    "sha256": "f7dc28c089234897489c1cbc59e1a67fb888ae06fbb36d62018603f683cd02f1"
+   }
+  ],
+  "segundos": 3.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p011__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2112,
+     1270,
+     3
+    ],
+    "sha256": "377231142173ec72de8165a00354a739b9b10982c988314e069c340a354640fe"
+   }
+  ],
+  "segundos": 3.8,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p011__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2112,
+     1270,
+     3
+    ],
+    "sha256": "d8484c2905d2c0bae44d9ce0646bfc383a2870552041c579ec310829bf566037"
+   }
+  ],
+  "segundos": 3.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p020__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2050,
+     1211,
+     3
+    ],
+    "sha256": "5d4a677553132054aea1314d3b09c8f6f9d3e80651da73c9fd61f6042d31e0cf"
+   }
+  ],
+  "segundos": 5.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p020__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2050,
+     1211,
+     3
+    ],
+    "sha256": "b7a3f4074b0122d7c4ebf89c18ed7e934fc4c5aff7b67b3ff003f866f3b7f6a4"
+   }
+  ],
+  "segundos": 3.5,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p165__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2244,
+     1269,
+     3
+    ],
+    "sha256": "27154a4b36c9cb1df066d34c2a00a559dbe78b0f9e7962d3e4883cc7124e7dad"
+   }
+  ],
+  "segundos": 4.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p165__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2244,
+     1269,
+     3
+    ],
+    "sha256": "179e60b52b9c35488b0c3eeb5554b60441df3837dc17ecb6d1d97d9c748d1f3b"
+   }
+  ],
+  "segundos": 3.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p256__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1726,
+     2295,
+     3
+    ],
+    "sha256": "a9f9e3caf6f48981113803d148cba9851c3ea6e795efe7ad2e0313b537543c37"
+   }
+  ],
+  "segundos": 4.5,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "opusmajus_p256__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1726,
+     2295,
+     3
+    ],
+    "sha256": "ab0075f58fa1405fc56bfae6e016cd4a08b898801b280384ef216b73aada5f2d"
+   }
+  ],
+  "segundos": 3.7,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p005__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2070,
+     1177,
+     3
+    ],
+    "sha256": "cf7fdd1fa61d3cefb788eb37ff29bc2c31402dfff50ebb7822217d91c65e33bf"
+   }
+  ],
+  "segundos": 5.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p005__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2070,
+     1177,
+     3
+    ],
+    "sha256": "43b67805f3c699f2851bae8f3a906f37e179ea0ebbeb660ab84808a0f0dbddf5"
+   }
+  ],
+  "segundos": 3.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p007__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1755,
+     1193,
+     3
+    ],
+    "sha256": "d6f32fe99251deaf3a4dfc74cd8ea29c97b60b28b343de1544493c95891eb00f"
+   }
+  ],
+  "segundos": 3.4,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p007__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1755,
+     1193,
+     3
+    ],
+    "sha256": "84298aec0b3a1eed86d801a24377d285d1c624c107e4e7a4e28826bb72fe640a"
+   }
+  ],
+  "segundos": 2.7,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p009__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1852,
+     1331,
+     3
+    ],
+    "sha256": "cd48cc3b122b0124d365a5b95f26ebfa70936863fdbdfc90f7d21ca4af52ddef"
+   }
+  ],
+  "segundos": 3.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p009__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1852,
+     1331,
+     3
+    ],
+    "sha256": "b313457c51daac28b73956380fcba44498285d2d5f352034c63246d66323d2b1"
+   }
+  ],
+  "segundos": 3.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p010__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1800,
+     1317,
+     3
+    ],
+    "sha256": "49194d56b59e052f8c9fefc52b1819079e6558d4f6ba3c98391eb148736ef4f4"
+   }
+  ],
+  "segundos": 3.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p010__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1800,
+     1317,
+     3
+    ],
+    "sha256": "32f94e16cbdcbc8451131f0d3dd7683862f48b8ac1d09c202b4f755513430c78"
+   }
+  ],
+  "segundos": 3.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p057__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1912,
+     1275,
+     3
+    ],
+    "sha256": "8dcfd68a2a32e76cf8ea6442f58b4efa029002580d50cd018d6dd8bd34ed7e17"
+   }
+  ],
+  "segundos": 2.6,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p057__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1912,
+     1275,
+     3
+    ],
+    "sha256": "604493becdc3a1ffbf875216ce5ea06e722f0961f69e0566e61fe94a6fda3ce1"
+   }
+  ],
+  "segundos": 2.5,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p066__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1839,
+     1251,
+     3
+    ],
+    "sha256": "9fe9b41a1d165de274517e3c80a20a5afedaec97c29dae9bd12b4f6c03e82bc4"
+   }
+  ],
+  "segundos": 2.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p066__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1839,
+     1251,
+     3
+    ],
+    "sha256": "44b1c8ed4a3b6193dc62c86a6c6824f75d4e0e05f60d311aa0e683101f1b3e1f"
+   }
+  ],
+  "segundos": 2.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p067__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1836,
+     1257,
+     3
+    ],
+    "sha256": "66e59596cb0a3413d26b4e61cc7a257e5ce437abcd3aebc041c403afb49b8efc"
+   }
+  ],
+  "segundos": 2.9,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "palatino_p067__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1836,
+     1257,
+     3
+    ],
+    "sha256": "1139be2a51b377a13f42d80a79c8ada7c50fc214d9378a15a98c769186d7e4bc"
+   }
+  ],
+  "segundos": 2.7,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "rhetorica_p018__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2256,
+     1618,
+     3
+    ],
+    "sha256": "47ef3ef274749277e012713ac7e042e1ea96cc40d433fc2d3dcf521000a195f7"
+   }
+  ],
+  "segundos": 4.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "rhetorica_p018__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2256,
+     1618,
+     3
+    ],
+    "sha256": "98422410aa5018e741149704d944e91692b50eb8b8028bcdbb59daad0e88bc6d"
+   }
+  ],
+  "segundos": 3.3,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "rhetorica_p073__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     2346,
+     1614,
+     3
+    ],
+    "sha256": "8dae60d982b9b4cde401e3d66f3b8aed89faa9f013139d74fc06cc5e9d8714d3"
+   }
+  ],
+  "segundos": 4.2,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "rhetorica_p073__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     2346,
+     1614,
+     3
+    ],
+    "sha256": "8be7d8c2c13149db06a6ce33986e63ebceddc27d374a57c72d5f0f8ae66e22c3"
+   }
+  ],
+  "segundos": 3.1,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "siebmacher_p007__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1264,
+     1634,
+     3
+    ],
+    "sha256": "f3b513a8b198a8e3ec25f98cfc317050da7d1e184c86b3827105120d35b32102"
+   }
+  ],
+  "segundos": 3.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "siebmacher_p007__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1264,
+     1634,
+     3
+    ],
+    "sha256": "908ad272a581edae53864f314899c59d07a9b59d448d22db896ccf6530b9456d"
+   }
+  ],
+  "segundos": 3.2,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "siebmacher_p009__magico_pro": {
+  "paginas": [
+   {
+    "forma": [
+     1250,
+     1654,
+     3
+    ],
+    "sha256": "602082cfae05c2eebc96fd193a5c5f98dac918faad9ca86051844ca6fdd1dd73"
+   }
+  ],
+  "segundos": 3.3,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ },
+ "siebmacher_p009__pb_letras": {
+  "paginas": [
+   {
+    "forma": [
+     1250,
+     1654,
+     3
+    ],
+    "sha256": "c802fdd7b6ceb273528e26c37d90b84077379e2814b57cd1f6e9df5434cd038b"
+   }
+  ],
+  "segundos": 3.0,
+  "reforcar_texto_falhado": false,
+  "forcas": [
+   50
+  ]
+ }
+}
