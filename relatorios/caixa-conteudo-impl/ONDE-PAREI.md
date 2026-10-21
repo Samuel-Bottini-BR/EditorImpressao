@@ -197,3 +197,13 @@ Nenhum do programa. Do código original do ScanTailor (não consertados, só ano
 ## A bateria
 
 Rodada em 13/10/2026, de 01:52 a 02:08, **um arquivo de pytest por vez** (113 arquivos de `tests/`, cada um no seu processo, esperando 3 GB de memória livre antes de cada um): **2081 passaram, nenhum falhou, 59 pulados**, no commit `28fabf0` (o código é o de `1c20d58`). Os pulados são de arquivos que não toquei (nenhum de `test_caixas_scantailor.py`, que passou os 76); não comparei a lista de pulados com a do `fase-1`.
+
+## 21/10/2026 — Item 2.14 (pintar de branco) — pedido da gerente
+
+- [x] Linhas da Parte 2 e do 2.14 coladas no "Botoes e funcoes para o layout.md" (só acréscimo).
+- [x] Núcleo `5e09cfa` (Projeto.borda_preta_fazer, core/borda_preta.pintar_fora, pipeline
+      _so_pinta/_area_que_fica); tela `49c0dcf` (lista "cortar fora / pintar de branco").
+- [x] Medida em mm nas 7 páginas (5 do alvo + Pesel 21 + Egenloff 47), imagens `*__cinco.jpg`
+      abertas. Relatório `item214-2026-10-21.*`.
+- [ ] GitHub: suíte 39555805412; filtro de velocidade 39555809454 (fase-1 31a9253 -> 49c0dcf). Ler e
+      entregar.
