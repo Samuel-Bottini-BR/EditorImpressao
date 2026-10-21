@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layout: etapa 4, entrega 3 da rodada 14 e etapa 5 - conferência do verificador (21/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Layout: etapa 4, entrega 3 da rodada 14 e etapa 5 - conferência do verificador (21/10/2026)</h1>
+<p>Ramo <code>layout-etapas4a7-2026-10-19</code>, conferido no código mais novo do ramo, <code>60a0a3d</code> (contém <code>d1f92a0</code>, <code>e1ef0d3</code> e <code>744292d</code>; as etapas 6 e 7a também estão nele, mas <strong>não as conferi</strong>). Não mudei código; não marco nada como aprovado.</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> O que as três entregas dizem fazer está na janela de verdade e bate com as respostas das rodadas 12 a 14b. Os testes do ramo passam um por um, e o teste de reversão dos menus falha no código de antes. Achei só detalhes de aparência (ver abaixo).</p>
+<h2>O que conferi</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fora de <code>ui/</code> nada muda</td>
+<td><code>git diff 31a9253 60a0a3d</code></td>
+<td>só <code>teste_botoes.py</code> (e testes)</td>
+</tr>
+<tr>
+<td>Testes de tela do ramo, um arquivo por vez</td>
+<td>máquina</td>
+<td>12 arquivos, todos passaram (menus 5, miniaturas 4, menu Painéis 3, painéis 34 + 22, dividir 9, endireitar 5, barra de menu 20, misto 25, ajustar pedaço 8, gravura na Marcar 8, pontinhos 19)</td>
+</tr>
+<tr>
+<td>Reversão <code>tests/test_menus_que_nao_faziam_nada.py</code></td>
+<td>máquina, no <code>f25c2e9</code> (antes de <code>969a3a9</code>)</td>
+<td>5 falham e 1 dá erro: 10 itens de menu sem ação, "Livros recentes" vazio, sem <code>mudar_o_zoom</code>, sem <code>restaurar_pagina</code></td>
+</tr>
+<tr>
+<td>Janela de verdade (Antiphonal 44 a 49, 1600 x 821)</td>
+<td>olho, clique nativo, 18 prints em <code>img/</code></td>
+<td>abaixo</td>
+</tr>
+</tbody>
+</table>
+<h2>Na janela, contra as decisões</h2>
+<ul>
+<li><strong>Rodada 14 entrega 3.</strong></li>
+<li><strong>903 B, menu "Painéis":</strong> os cinco painéis, "Fechar o painel" e "Ícones da direita" (<code>L02-menu-Paineis</code>).</li>
+<li><strong>904 A, menu Ver:</strong> "Miniaturas", "Ícones da direita", "Todas as páginas" e "Filtros em tela cheia". Os quatro "Painel: …" saíram do Ver (<code>L02-menu-Ver</code>).</li>
+<li><strong>909 B, "Só neste pedaço":</strong> sem "o mesmo da página"; a lista mostra Original, Preto e branco, Melhorar e Mágico pro, nenhum aceso (<code>L07</code>).</li>
+<li><strong>910 A, ângulo girado à mão:</strong> a linha "ScanTailor -2,0° · Editor -2,0°" continua à vista. A frase "Você girou à mão: -2,1°. As contas voltam com 'usar o ângulo do programa'." fica só no balão do mouse (<code>L17</code>).</li>
+<li><strong>805, conta "Editor":</strong> aparece na linha do Endireitar e no "Para o livro todo" (<code>L03</code>).</li>
+<li><strong>907 B, "o do Editor" no Dividir:</strong> está no código (<code>ui/tela_conferir.py:1208</code>). <strong>Não vi na janela:</strong> este pedaço não divide folha.</li>
+<li><strong>Etapa 4.</strong></li>
+<li><strong>Propriedades do Retângulo:</strong> "Girar a folha", "Marcar como" (gravura ou foto, letra e traço, papel), "Marcação desta página" e "Foto" (<code>L05</code>).</li>
+<li><strong>Painel "Filtro da página":</strong> fila com a página nos 5 filtros e as teclas; partes Ajuste, Só as letras, Limpar a sujeira (lista com amostra), Mais ajustes e Só neste pedaço; "apagar página"; pé "Aplicar em: só nesta · todas · daqui em diante" (<code>L06</code>, <code>L08</code>).</li>
+<li><strong>Propriedades do Endireitar com duas partes (706 B):</strong> "Só nesta página" e "Para o livro todo" (<code>L03</code>).</li>
+<li><strong>Etapa 5.</strong></li>
+<li><strong>Cabeçalho PÁGINAS:</strong> alça, seta, três pontinhos com "Ver em pares", "Lugar" (embaixo, à esquerda, à direita junto da página) e "Fechar as miniaturas" (<code>L10</code>, <code>L12</code>).</li>
+<li><strong>"ver todas" (808 A):</strong> abre "Todas as páginas" em "uma a uma" (901 A), com "em pares", "todas" e "só as que precisam de atenção". Clicar na página 4 levou à página 4 (<code>L09</code>).</li>
+<li><strong>Em pares:</strong> a página 1 fica sozinha, depois 2-3 e 4-5, como no livro aberto (<code>L11</code>, <code>L14</code>).</li>
+<li><strong>Miniaturas à esquerda ou fechadas (801 A):</strong> o "Confirmar e processar" desce para a barra de baixo, no canto direito (<code>L14</code>, <code>L15</code>).</li>
+<li><strong>Ver &gt; Miniaturas:</strong> traz as miniaturas de volta (<code>L16</code>).</li>
+</ul>
+<h2>Detalhes vistos (não bloqueiam)</h2>
+<ul>
+<li>Na fila do painel Filtro, o nome "Melhorar" sai cortado ("Melhora" / "Melhorai") nas duas larguras (<code>L06</code>, <code>L07</code>).</li>
+<li>Em "Todas as páginas" as páginas pequenas saem borradas (<code>L09</code>).</li>
+<li>Ao clicar num menu, o "Ver" ficou marcado como aberto no print do Endireitar (<code>L03</code>); é do print logo depois do Esc, não um defeito confirmado.</li>
+<li>O ramo diz que o GitHub passou (rodadas 39476824315, 39554220929 e 39557719615). Não abri as rodadas.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 21/10/2026 às 03:41</p>
+</body>
+</html>
