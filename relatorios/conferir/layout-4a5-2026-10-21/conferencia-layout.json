@@ -1,0 +1,267 @@
+{
+ "aba": "layout etapas 4 e 5 + rodada 14",
+ "ramo": "layout-etapas4a7-2026-10-19",
+ "commit": "60a0a3d",
+ "montado_em": "21/10/2026",
+ "nota_para_a_gerente": "Prints da janela de verdade (1600 x 821), tirados e abertos por mim em 21/10. As etapas 6 e 7a estão no mesmo código e não entram aqui. Formato: o do 2.8/2.9 (quadros com \"O que você está escolhendo\", a parte ampliada e a tela inteira, a decisão literal).",
+ "ressalvas": [
+  "Na fila do painel Filtro, \"Melhorar\" sai cortado.",
+  "Em \"Todas as páginas\" as páginas pequenas saem borradas.",
+  "A frase de resumo da tela \"O que fazer\" diz \"(jeito: o do programa)\" (devia ser \"o do Editor\", 907 B)."
+ ],
+ "quadros": [
+  {
+   "id": "ly-paineis",
+   "nome": "O menu novo \"Painéis\"",
+   "explicacao": [
+    "O que você está escolhendo: se o menu \"Painéis\" ficou como você pediu na rodada 14 (903).",
+    "Entre \"Ver\" e \"Ajuda\" há o menu \"Painéis\": Propriedades, Filtro da página, Para revisar, Automático, Histórico, \"Fechar o painel\" e \"Ícones da direita\". Os quatro \"Painel: …\" saíram do Ver."
+   ],
+   "olhar": "O menu aberto e o nome \"Painéis\" na linha dos menus.",
+   "decisao_do_samuel": "903 (20/10): \"B — Um menu novo, “Painéis”\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-menu-paineis.jpg",
+     "legenda": "Ampliado: o menu \"Painéis\" aberto"
+    },
+    {
+     "src": "img/c-L01-conferir-inteira.jpg",
+     "legenda": "A tela inteira: \"Painéis\" entre \"Ver\" e \"Ajuda\""
+    }
+   ]
+  },
+  {
+   "id": "ly-ver",
+   "nome": "As peças novas no menu Ver",
+   "explicacao": [
+    "O que você está escolhendo: se as peças novas da tela ganharam item no menu Ver, como na rodada 14 (904).",
+    "O menu Ver tem Aproximar, Afastar, Ajustar à tela, e agora \"Miniaturas\", \"Ícones da direita\", \"Todas as páginas\" e \"Filtros em tela cheia\", depois \"Modo comparar\" e \"Tema\". \"Ver lado a lado\" ainda não existe no programa."
+   ],
+   "olhar": "Os quatro itens do meio do menu.",
+   "decisao_do_samuel": "904 (20/10): \"A — Sim, no menu Ver\".",
+   "bate_com_a_decisao": "sim (falta \"Ver lado a lado\", que ainda não existe)",
+   "imgs": [
+    {
+     "src": "img/c-menu-ver.jpg",
+     "legenda": "Ampliado: o menu Ver aberto"
+    }
+   ]
+  },
+  {
+   "id": "ly-pedaco",
+   "nome": "\"Só neste pedaço\" sem \"o mesmo da página\"",
+   "explicacao": [
+    "O que você está escolhendo: se o \"Só neste pedaço\" ficou como você escolheu na rodada 14b (909).",
+    "No painel Filtro da página, a parte \"Só neste pedaço\" mostra Original, Preto e branco, Melhorar e Mágico pro, nenhum aceso, e não tem mais o botão \"o mesmo da página\". O pedaço só ganha filtro se o Kaique clicar num."
+   ],
+   "olhar": "A lista embaixo de \"Só neste pedaço\": nenhum botão aceso.",
+   "decisao_do_samuel": "909 (20/10): \"B — Sem o botão de cima, nenhum aceso\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-pedaco.jpg",
+     "legenda": "Ampliado: \"Só neste pedaço\" aberto"
+    },
+    {
+     "src": "img/c-L07-so-neste-pedaco-inteira.jpg",
+     "legenda": "A tela inteira"
+    }
+   ]
+  },
+  {
+   "id": "ly-angulo",
+   "nome": "Ângulo posto à mão: as contas continuam à vista",
+   "explicacao": [
+    "O que você está escolhendo: se o Endireitar com o ângulo à mão ficou como você pediu na rodada 14b (910).",
+    "Girei a página à mão (−2,1°). A linha \"ScanTailor −2,0° · Editor −2,0°\" continua embaixo da lista \"Conta\". A frase \"Você girou à mão: −2,1°. As contas voltam com “usar o ângulo do programa”.\" aparece só no balão, quando o mouse passa em cima da linha ou da lista."
+   ],
+   "olhar": "A linha \"ScanTailor · Editor\" embaixo da \"Conta\" (o balão só aparece com o mouse em cima; não sai na foto).",
+   "decisao_do_samuel": "910 (20/10): \"A — Os dois ângulos e, embaixo, o seu\" + \"a opção 1, podia aparecer só na hora que passasse o mouse em cima, os angulos continuam embaixo mas a mensagem só aparece quando bota o mouse em cima\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-angulo.jpg",
+     "legenda": "Ampliado: o painel do Endireitar depois de girar à mão"
+    },
+    {
+     "src": "img/c-L17-angulo-a-mao-inteira.jpg",
+     "legenda": "A tela inteira"
+    }
+   ]
+  },
+  {
+   "id": "ly-editor",
+   "nome": "\"o do Editor\" no Dividir e no Endireitar",
+   "explicacao": [
+    "O que você está escolhendo: se as palavras \"o do Editor\" e \"Editor\" ficaram como você escolheu (805 e 907).",
+    "No Dividir, a lista \"jeito:\" diz \"o do Editor\" e \"o do ScanTailor\", no painel e na tela \"O que fazer\". No Endireitar, a linha da conta diz \"ScanTailor +0,2° · Editor +0,3°\"."
+   ],
+   "olhar": "A lista \"jeito:\" do Dividir e a linha da conta do Endireitar.",
+   "decisao_do_samuel": "907 (20/10): \"B — “o do Editor”\"; 805 (12/10): \"C — A conta vira “Editor”\".",
+   "bate_com_a_decisao": "em parte: a frase de resumo da tela \"O que fazer\" ainda diz \"(jeito: o do programa)\"",
+   "imgs": [
+    {
+     "src": "img/c-dividir.jpg",
+     "legenda": "Ampliado: o Dividir, \"jeito: o do Editor\""
+    },
+    {
+     "src": "img/c-o-que-fazer.jpg",
+     "legenda": "A tela \"O que fazer\": a lista diz \"o do Editor\", a frase de baixo ainda diz \"o do programa\""
+    },
+    {
+     "src": "img/c-endireitar-conta.jpg",
+     "legenda": "O Endireitar: \"ScanTailor +0,2° · Editor +0,3°\""
+    }
+   ],
+   "ressalva": "A frase de resumo embaixo das opções (\"Vou dividir as 6 folhas em 12 páginas (jeito: o do programa)…\") ficou com a palavra antiga."
+  },
+  {
+   "id": "ly-propriedades",
+   "nome": "Propriedades em duas partes (Endireitar e Dividir)",
+   "explicacao": [
+    "O que você está escolhendo: se o painel Propriedades separa o que é da página e o que é do livro, como você escolheu (706).",
+    "No Endireitar e no Dividir, o painel tem \"Girar a folha\" no alto, depois \"Só nesta página\" (ou folha) e, embaixo, a caixa \"Para o livro todo\" com \"mudar nas opções do livro…\"."
+   ],
+   "olhar": "As duas partes, com títulos em letras maiúsculas.",
+   "decisao_do_samuel": "706 (12/10): \"B — Propriedades com duas partes: “Só nesta página” e “Para o livro todo”\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-duas-partes.jpg",
+     "legenda": "Ampliado: o painel do Endireitar"
+    },
+    {
+     "src": "img/c-L03-endireitar-inteira.jpg",
+     "legenda": "A tela inteira"
+    }
+   ]
+  },
+  {
+   "id": "ly-marcar",
+   "nome": "Propriedades do Marcar",
+   "explicacao": [
+    "O que você está escolhendo: se o painel Propriedades do Marcar ficou como você escolheu (402 e 701).",
+    "Com o Retângulo, o painel mostra \"Girar a folha\", \"Marcar como\" (gravura ou foto, letra e traço, papel), \"Marcação desta página\" (detectar automaticamente, usar em todas, daqui em diante) e \"Foto\". A fila embaixo da página ficou vazia."
+   ],
+   "olhar": "As partes do painel e a contagem \"Marcado: 6 de letra e traço e 8 de papel.\"",
+   "decisao_do_samuel": "402 (06/10): \"C — Muda conforme a ferramenta (como no Photoshop)\".",
+   "bate_com_a_decisao": "sim (\"Marcar como\" ainda com 3 jeitos: a 705, iluminura e moldura, mexe no processamento)",
+   "imgs": [
+    {
+     "src": "img/c-marcar.jpg",
+     "legenda": "Ampliado: Propriedades do Retângulo"
+    },
+    {
+     "src": "img/c-L05-marcar-inteira.jpg",
+     "legenda": "A tela inteira"
+    }
+   ]
+  },
+  {
+   "id": "ly-filtro",
+   "nome": "O painel \"Filtro da página\"",
+   "explicacao": [
+    "O que você está escolhendo: se o painel Filtro ficou como você escolheu na rodada 9 (403).",
+    "No alto, a fila com a página pequena nos cinco filtros e a tecla de cada um. Embaixo, partes que abrem e fecham: Ajuste, Só as letras, Limpar a sujeira (lista com amostra), Mais ajustes, Só neste pedaço. Depois \"apagar página\", separado, e no pé \"Aplicar em: só nesta · todas · daqui em diante\". O ícone do canto do título abre os filtros em tela cheia."
+   ],
+   "olhar": "A fila dos filtros, as partes e o pé \"Aplicar em\".",
+   "decisao_do_samuel": "403 (06/10): \"B — Filtros numa fila + partes que abrem e fecham\" + \"Mas eu vou querer uma opção para conseguir abrir os filtros para ver um review de como ficaria com cada filtro, abrir em tela cheia, com as opções de cada filtro nessa tela cheia.\"",
+   "bate_com_a_decisao": "sim (a tela cheia é a etapa 6, não conferida aqui)",
+   "imgs": [
+    {
+     "src": "img/c-filtro.jpg",
+     "legenda": "Ampliado: o painel com \"Limpar a sujeira\" aberto"
+    },
+    {
+     "src": "img/c-L06-filtro-inteira.jpg",
+     "legenda": "A tela inteira"
+    }
+   ],
+   "ressalva": "Na fila, o nome \"Melhorar\" sai cortado (\"Melhora\"). Acerto pendente."
+  },
+  {
+   "id": "ly-cabecalho",
+   "nome": "O cabeçalho das miniaturas e \"ver todas\"",
+   "explicacao": [
+    "O que você está escolhendo: se o cabeçalho das miniaturas e o botão de \"Todas as páginas\" ficaram onde você escolheu (808).",
+    "Em cima das miniaturas há o cabeçalho \"PÁGINAS\" (\"FOLHAS\" no Dividir): a alça de arrastar, a seta, os três pontinhos (\"Ver em pares\", \"Lugar\", \"Fechar as miniaturas\") e \"ver todas\"."
+   ],
+   "olhar": "A linha \"PÁGINAS ˅ ••• ver todas\" e o menu dos três pontinhos.",
+   "decisao_do_samuel": "808 (12/10): \"A — No cabeçalho das miniaturas\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-cabecalho.jpg",
+     "legenda": "Ampliado: o cabeçalho e as miniaturas"
+    },
+    {
+     "src": "img/c-menu-miniaturas.jpg",
+     "legenda": "O menu dos três pontinhos"
+    }
+   ]
+  },
+  {
+   "id": "ly-todas",
+   "nome": "\"Todas as páginas\" abre uma a uma",
+   "explicacao": [
+    "O que você está escolhendo: se a tela \"Todas as páginas\" ficou como você escolheu na rodada 14 (901).",
+    "\"ver todas\" abre a tela com uma página em cada quadro (\"uma a uma\" aceso), com \"em pares\", \"todas\" e \"só as que precisam de atenção\". Clicar numa página leva até ela; \"voltar ao trabalho\" fecha."
+   ],
+   "olhar": "\"uma a uma\" aceso no alto.",
+   "decisao_do_samuel": "901 (20/10): \"A — Uma a uma\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-L09-todas-as-paginas-inteira.jpg",
+     "legenda": "A tela \"Todas as páginas\""
+    }
+   ],
+   "ressalva": "As páginas pequenas desta tela saem borradas. Acerto pendente."
+  },
+  {
+   "id": "ly-pares",
+   "nome": "Miniaturas em pares e em outro lugar",
+   "explicacao": [
+    "O que você está escolhendo: se as miniaturas em pares e o lugar delas ficaram como você escolheu (rodada 7 e 801).",
+    "\"Ver em pares\" junta as miniaturas como no livro aberto: a 1 sozinha, depois 2-3, 4-5. Com as miniaturas à esquerda (ou fechadas), o \"Confirmar e processar\" desce para a barra de baixo, no canto direito. \"Ver > Miniaturas\" traz de volta as miniaturas fechadas."
+   ],
+   "olhar": "O botão azul \"Confirmar e processar\" no canto de baixo quando as miniaturas saem de baixo.",
+   "decisao_do_samuel": "801 (12/10): \"A — Desce para a barra de baixo, no canto direito\".",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "img/c-pares.jpg",
+     "legenda": "Ampliado: em pares, embaixo"
+    },
+    {
+     "src": "img/c-L14-miniaturas-a-esquerda-inteira.jpg",
+     "legenda": "Miniaturas à esquerda: o \"Confirmar e processar\" na barra de baixo"
+    },
+    {
+     "src": "img/c-L15-miniaturas-fechadas-inteira.jpg",
+     "legenda": "Miniaturas fechadas"
+    }
+   ]
+  }
+ ],
+ "opcoes_de_cada_quadro": [
+  "Está bom",
+  "Melhorar",
+  "Está pior",
+  "Ainda não entendi"
+ ],
+ "pergunta": {
+  "id": "ly-4a5",
+  "titulo": "Layout: etapa 4, etapa 5 e a rodada 14: o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se estas partes da tela nova entram no programa.",
+   "Cada quadro acima é uma coisa que você decidiu, com a foto da janela de verdade. Ficaram dois acertos pequenos (o nome \"Melhorar\" cortado e as páginas borradas em \"Todas as páginas\") e uma palavra antiga na frase da tela \"O que fazer\"."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}
