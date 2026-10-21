@@ -3931,7 +3931,13 @@ class TelaConferir(QWidget):
     # menu mortos"): Aproximar, Afastar, Ajustar à tela, Mostrar o histórico,
     # Restaurar página apagada, Modo comparar e Livros recentes estavam no
     # menu, com tecla, e nao faziam nada. Agora fazem o que o nome diz. Os
-    # quatro "Painel: ..." do menu Ver esperam a rodada 14 (903).
+    # quatro "Painel: ..." do menu Ver viraram o menu Painéis (rodada 14, 903 B).
+
+    def mostrar_miniaturas(self, a_vista: bool) -> None:
+        """Menu Ver > "Miniaturas" (rodada 14 do layout, 904 A): esconde ou
+        mostra a tira de miniaturas (o "Confirmar e processar" fica). A seta e
+        o cabeçalho "PÁGINAS" das miniaturas vêm na etapa 5."""
+        self.tira.setVisible(bool(a_vista))
 
     PASSO_DO_ZOOM = 1.25        # quanto o Aproximar/Afastar do menu muda o zoom
 

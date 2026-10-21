@@ -440,7 +440,10 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     falhas += f
 
     # menu, no estado "tela inicial" (so Arquivo/Ver/Ajuda valem)
-    o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair"})
+    # "miniaturas" e "icones" (menu Ver, rodada 14 do layout) escondem a tira
+    # e os icones da direita: acionados aqui, os passos seguintes nao os
+    # achariam. Sao conferidos em tests/test_menu_paineis.py.
+    o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair", "miniaturas", "icones"})
     ok += o
     falhas += f
 
@@ -775,7 +778,7 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     # tela grande, que é modal: ela é conferida em testar_tela_ampliada, com
     # o .exec() interceptado; aqui travaria a bateria.
     o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir",
-                                                    "comparar"})
+                                                    "comparar", "miniaturas", "icones"})
     ok += o
     falhas += f
 

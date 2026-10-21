@@ -245,7 +245,7 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("apagar", conferir.apagar_pagina)
         # Etapa 4 do layout (20/10/2026): os itens que estavam no menu e nao
         # faziam nada (inventario de 02/10, "11 itens de menu mortos"). Os
-        # quatro "Painel: ..." do menu Ver esperam a rodada 14 (903).
+        # quatro "Painel: ..." do menu Ver viraram o menu Painéis (rodada 14).
         self.menu.ligar("restaurar", conferir.restaurar_pagina)
         self.menu.ligar("historico", conferir._mostrar_o_historico)
         self.menu.ligar("mais_zoom", lambda: conferir.mudar_o_zoom(conferir.PASSO_DO_ZOOM))
@@ -253,6 +253,18 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("ajustar", lambda: conferir.mudar_o_zoom(None))
         self.menu.ligar("comparar", self._modo_comparar)
         self.menu.menu_recentes.aboutToShow.connect(self._montar_livros_recentes)
+        # Rodada 14 do layout: o menu Painéis (903 B) e as peças do menu Ver
+        # (904 A). Os itens marcados acompanham a tela (abrir pelo ícone, a
+        # seta que esconde os ícones), sem virar clique de novo.
+        paineis = conferir.paineis
+        for chave, painel, _texto in self.menu.PAINEIS_DO_MENU:
+            self.menu.ligar(chave, lambda marcado=False, p=painel:
+                            paineis.mostrar_painel(p, bool(marcado)))
+        self.menu.ligar("painel_fechar", paineis.fechar)
+        self.menu.ligar("icones", lambda marcado=False: paineis.mostrar_icones(bool(marcado)))
+        self.menu.ligar("miniaturas", lambda marcado=False: conferir.mostrar_miniaturas(bool(marcado)))
+        paineis.abriu.connect(lambda chave: self.menu.marcar_painel(chave or None))
+        paineis.icones_mudaram.connect(self._icones_mudaram)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
@@ -260,6 +272,14 @@ class JanelaPrincipal(QMainWindow):
         for nome in estilo.TEMAS:
             self.menu.ligar(f"tema_{nome}", lambda _marcado=False, t=nome: self._trocar_tema(t))
         self.menu.marcar_tema(estilo.tema_atual())
+
+    def _icones_mudaram(self, a_vista: bool) -> None:
+        """A coluna de ícones apareceu ou sumiu (pela seta ou pelo menu): o
+        "Ícones da direita" dos menus Ver e Painéis acompanha."""
+        item = self.menu.acoes["icones"]
+        item.blockSignals(True)
+        item.setChecked(bool(a_vista))
+        item.blockSignals(False)
 
     def _modo_comparar(self) -> None:  # noqa: D401
         """Menu Ver > "Modo comparar": abre a página grande já com dois filtros

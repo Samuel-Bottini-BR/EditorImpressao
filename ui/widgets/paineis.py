@@ -1920,6 +1920,7 @@ class ColunaDePaineis(QWidget):
     """
 
     abriu = Signal(str)        # a chave do painel aberto, ou "" quando fechou
+    icones_mudaram = Signal(bool)   # a coluna de ícones apareceu (True) ou sumiu
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -1966,7 +1967,9 @@ class ColunaDePaineis(QWidget):
         """Abre o painel `chave` (fecha o que estava aberto: um por vez)."""
         if chave not in self.paineis:
             return
-        self.icones_a_vista = True           # painel aberto sem ícones não existe
+        if not self.icones_a_vista:          # painel aberto sem ícones não existe
+            self.icones_a_vista = True
+            self.icones_mudaram.emit(True)
         self.aberto = chave
         self.area.setCurrentWidget(self.paineis[chave])
         if chave == PAINEL_REVISAR:
@@ -1998,6 +2001,7 @@ class ColunaDePaineis(QWidget):
         """Mostra ou esconde a coluna de ícones."""
         self.icones_a_vista = bool(a_vista)
         self._acertar()
+        self.icones_mudaram.emit(self.icones_a_vista)
 
     def mostrar_painel(self, chave: str, visivel: bool) -> None:
         """Do menu Ver (nome de antes): abrir ou fechar um painel. A chave

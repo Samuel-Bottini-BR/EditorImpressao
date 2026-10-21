@@ -18,7 +18,8 @@ pytest.importorskip("PySide6")
 
 from tests.test_gravura_na_aba_marcar import app, conferir, livro  # noqa: F401, E402 - fixtures
 
-ESPERAM_A_RODADA_14 = {"painel_revisar", "painel_marcar", "painel_filtro", "painel_historico"}
+# (os quatro "Painel: ..." sairam do menu Ver: viraram o menu Painéis, 903 B)
+ESPERAM_A_RODADA_14: set[str] = set()
 
 
 @pytest.fixture

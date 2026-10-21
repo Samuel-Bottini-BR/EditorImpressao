@@ -35,8 +35,9 @@ def janela(app, tmp_path, monkeypatch):
 # --- os menus do desenho ----------------------------------------------------
 
 
-def test_os_sete_menus_do_desenho(janela):
-    esperados = ["Arquivo", "Editar", "Marcar", "Filtro", "Página", "Ver", "Ajuda"]
+def test_os_menus_do_desenho(janela):
+    """Os sete do desenho e o "Painéis" (rodada 14 do layout, 903 B)."""
+    esperados = ["Arquivo", "Editar", "Marcar", "Filtro", "Página", "Ver", "Painéis", "Ajuda"]
     assert list(janela.menu.menus) == esperados
 
 
