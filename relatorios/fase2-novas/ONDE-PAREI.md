@@ -15,17 +15,25 @@ imagem (prova com somas iguais nas páginas-gabarito); testes seguem a ordem das
 cortar → filtro) e só com páginas que vão ser impressas; um arquivo de teste por vez no PC; suíte e velocidade
 no GitHub, lidas uma vez no fim de cada item; nunca juntar ao `fase-1`; no máximo "PRONTO PARA CONFERIR".
 
-## Os 7 itens, na ordem
+## Os 7 itens, na ordem (estado em 22/10/2026, fim do trabalho)
 
-| # | Item | Situação | Commits | GitHub |
-|---|---|---|---|---|
-| 1 | 2.4 margens iguais + alinhamento | código e tela prontos; prova de fábrica rodando | `c180af3` | (no fim) |
-| 2 | 2.6 arquivo para impressão | código e tela prontos | `cac76b0` (último caderno), `f41201a` (core), `c31489c` (tela) | (no fim) |
-| 3 | 2.16 todos os núcleos | código e Configurações prontos | `14a7f97` | (no fim) |
-| 4 | 2.17 igualar a luz e suavizar | DLL versão 8 compilada (`5f5c2e3`); falta o módulo, a ligação e a tela | `5f5c2e3` | |
-| 5 | 2.18 mudar à mão as áreas de gravura | não começado | | |
-| 6 | 2.19 unidades e perfis | não começado | | |
-| 7 | 2.10 + 1.6 duas camadas | não começado | | |
+Todos **PRONTO PARA CONFERIR** (falta verificador e Samuel). Relatório da entrega (três formatos):
+`relatorios/fase2-novas/conferencia/entrega-2026-10-22.*`. Antes/depois (fora do git):
+`relatorios/conferir/fase2-novas/<item>/`.
+
+| # | Item | Commits | Prova / GitHub |
+|---|---|---|---|
+| 1 | 2.4 margens iguais + alinhamento | `c180af3` | 96/96 somas iguais (`c31489c`) |
+| 2 | 2.6 arquivo para impressão (+ último caderno menor) | `cac76b0`, `f41201a`, `c31489c`, `4990e13` | 96/96; reversão do último caderno: 14 falham no antigo |
+| 3 | 2.16 todos os núcleos | `14a7f97` | PDF igual com 1 e 4 trabalhadores (teste) |
+| 4 | 2.17 igualar a luz e suavizar | `5f5c2e3` (DLL v8), `fa269d9` | 96/96 (`c9f3335`) |
+| 5 | 2.18 mudar à mão as áreas | `bfad304`, `578c1a5`, `d652248` | 96/96 (`c9f3335`) |
+| 6 | 2.19 unidades e receitas | `2d0a850` | 96/96 (`c9f3335`) |
+| 7 | 2.10 + 1.6 duas camadas | `c9f3335` | 96/96 (`c9f3335`) |
+
+GitHub: suíte `39787683890` (`fa269d9`) 2150/0, botões 222/0; suíte `39791078658` (`4990e13`) 2171 passaram, 2
+falharam (trilha antiga com 9 ferramentas, consertado em `d652248`); suíte `39794419960` (`d652248`) e velocidade
+`39787700625` (`9804b98`→`fa269d9`), `39791117352` (`9804b98`→`4990e13`): ver a entrega à gerente.
 
 ## Provas de "sai igual de fábrica"
 
@@ -85,3 +93,21 @@ Original, Preto e branco e Melhorar). `somas_todas.sh <raiz> <saida.json>` roda 
   a DLL; quem juntar recompila com tudo. A minha cola `luz.cpp` tem uma classe com o nome
   `output::OutputGenerator::Processor` (como a `st_gravura.cpp`); se o ramo dos itens tiver outra com o mesmo
   nome na mesma DLL, dá conflito na hora de juntar.
+
+## Escolhas de tela feitas depois
+
+- **2.17:** linha na aba Filtro (bloco AJUSTE): "Igualar a luz da página", "Suavizar as letras" (só no Preto e
+  branco) e "Tirar o chuvisco: [0-100]". "Todas"/"daqui em diante" levam os três.
+- **2.18:** ferramenta nova "Mover e mudar o tamanho da área" (tecla A) na trilha, depois de "Pegar pela cor";
+  linha "Área:" embaixo da página na ferramenta de marcar ("Mostrar as áreas achadas", apagar a área, pintar de
+  branco, copiar, colar); "Marcar como" com seis tipos e o botão "cor de pintar".
+- **2.19:** linha "Receita:" no alto da tela "O que fazer"; em Configurações "Medidas em" e "Receita de todo livro novo".
+- **2.10/1.6:** caixinha "Gravar em duas camadas..." na janela "Confirmar e processar".
+- **2.6:** parte "Impressão" em Configurações (margem 10 mm e o que a impressora não imprime, 3 mm).
+
+## Perguntas novas (do olho nos antes/depois)
+
+6. **2.17:** igualar a luz antes do Melhorar/Mágico pro deixa a tinta lavada (Graduale 221, Horas 47). Deixar o
+   "igualar" só no Preto e branco e no Original?
+7. **2.17:** "tirar o chuvisco" acima de ~20 borra a letra. Limitar a escala?
+8. **2.18:** a "tinta com a cor" numa página em Preto e branco deixa a letra cinza (a cor do original). É isso?
