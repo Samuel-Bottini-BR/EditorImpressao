@@ -1,6 +1,6 @@
 # Conferência da caixa do conteúdo (2.5, 2.13, 2.14) — verificador, 22/10/2026 — ONDE PAREI
 
-**RETOMADO em 22/10/2026** (estava pausado a pedido do Samuel). Nenhuma janela do programa foi aberta; nenhum processo ficou rodando.
+**TERMINADO em 22/10/2026: PRONTO PARA CONFERIR, com ressalvas** (estava pausado a pedido do Samuel; retomado e terminado). Entrega: `conferencia.json` nesta pasta (id `cx22`; as imagens em `img/`, referidas como `cx22/img/...`). Nenhuma janela do programa foi aberta; nenhum processo ficou rodando.
 Nenhuma rodada do GitHub foi disparada por mim.
 
 Código conferido: ramo `fase2-caixa-conteudo` em `49d1ed3` (o último código é `5bc5b33`; `4b37fc0` e `49d1ed3` só têm
@@ -40,7 +40,7 @@ apagadas por mim; no lugar, `img/egenloff_p003_beiradas_perto.jpg`.
 - p. 2 (guarda de papel estampado com a ficha da biblioteca) e p. 6 (texto do editor): sem mudança.
 
 **Marial** (o corte tem sempre o mesmo tamanho, 2647 x 3575 pontos; o que muda é onde ele fica)
-- p. 4, 7, 16, 22, 30, 32, 37, 50, 64, 66, 71, 86, 96: andou 5 a 30 pontos (até 2,5 mm). Não dá para ver diferença
+- p. 4, 7, 16, 22, 30, 32, 37, 50, 64, 66, 71, 86, 88, 96 (e 6 e 78, abaixo): andou 5 a 30 pontos (até 2,5 mm). Não dá para ver diferença
   na página inteira; o texto fica inteiro nos dois.
 - p. 6: andou 12 pontos para os lados e para baixo; frontispício (impressão do verso aparecendo) inteiro nos dois.
 - p. 8: andou 36 pontos (3 mm) para a esquerda; a margem direita fica mais justa, "Vi" e o fim das linhas continuam
@@ -106,8 +106,9 @@ O que acontece: no Marial (100 páginas) o aviso aparece em **82**; no Egenloff 
 páginas: só na **Egenloff 3** o que ficou de fora é do livro (o carimbo). Nas outras, o aviso está contando a beirada
 do papel, a sombra dela, pontinhos de sujeira, manchas, o verso aparecendo por transparência e a faixa da biblioteca no
 pé do escaneado. Com aviso em quase toda página, o Kaique não vai saber qual abrir.
-Foto: `img/avisos_o_que_fica_fora.jpg` (seis casos; o primeiro é o útil, os outros cinco não) e
-`img/egenloff_p003_beiradas_perto.jpg` (o caso útil, ampliado).
+Foto: `img/avisos_o_que_fica_fora.jpg` (seis casos; o primeiro é o útil, os outros cinco não),
+`img/egenloff_p003_beiradas_perto.jpg` (o caso útil, ampliado), `img/janela_marial_p008.jpg` (opção A) e
+`img/aviso_opcao_c_pedacos_grandes.jpg` (opção C). Na Central: `pergunta_avisos` do `conferencia.json`.
 
 - **A) Deixar como está.** Avisa tudo, inclusive sujeira. O Kaique teria de abrir 82 de 100 páginas.
 - **B) O aviso só conta o que parece impresso** (recomendo): não conta o que encosta na beirada do papel ou do
@@ -131,8 +132,8 @@ Foto: `img/avisos_o_que_fica_fora.jpg` (seis casos; o primeiro é o útil, os ou
 4. ~~FEITO~~ Janela de verdade: `scripts/janela.py <pdf> <rótulo> <págs>` (piloto copiado do verificador de 13/10:
    `piloto.py`, `g.py`, `v.py`, `lancador2.py`; janela fora da tela, mensagens nativas). Rodar no Marial 100
    (págs. 7, 8) e no Egenloff 1-14 (pág. 3): print do corte e do aviso, contador de avisos, erros.log. Fechar com WM_CLOSE.
-5. Montar `conferencia.json` (formato da Central, ver pedido da gerente) com os quadros cx-etiqueta (Egenloff 3),
+5. ~~FEITO~~ Montar `conferencia.json` (formato da Central, ver pedido da gerente) com os quadros cx-etiqueta (Egenloff 3),
    cx-marial (o corte que andou; p. 8 com o aviso), cx-velocidade (números acima), cx-avisos-demais (ressalva) e,
    se for o caso, pergunta extra sobre o excesso de avisos; manter as ressalvas: carimbos do Egenloff 3 continuam
    partidos (o oval de cima e o "Fachschule" da direita; o lápis "Af 10" some), pergunta do carimbo aberta.
-6. Commit (`git add -f` nas imagens), push, ler o GitHub uma vez (só disparar se o código mudar), entregar à gerente.
+6. ~~FEITO~~ (GitHub lido: o código do `fase2-caixa-conteudo` continua em `49d1ed3`/`5bc5b33`, nenhuma rodada nova) Commit (`git add -f` nas imagens), push, ler o GitHub uma vez (só disparar se o código mudar), entregar à gerente.
