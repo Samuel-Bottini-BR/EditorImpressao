@@ -19,13 +19,17 @@ import sys
 AQUI = pathlib.Path(__file__).resolve().parent
 
 # variável na página de conferência -> (id na Central, nome curto da aba, trabalho da Central)
-RELATORIOS = {
+# Os cinco abaixo foram respondidos pelo Samuel em 21/10/2026; os JSON ficaram em conferencias/respondidas/.
+# Não rode de novo com eles (recriaria abas já respondidas). Relatório novo: entra aqui ou como JSON direto em
+# conferencias/ (como o ly67.json, feito da conferência do layout 6 e 7 do ramo verif-layout-4a5-2026-10-21).
+RELATORIOS_RESPONDIDOS = {
     "PR4": ("pr", "Para revisar", "para-revisar"),
     "LY5": ("ly", "Layout 4 e 5", "layout-4a5"),
     "P28": ("p28", "Preto e branco (2.8)", "2.8"),
     "P29": ("p29", "Letra clara (2.9)", "2.9"),
     "P211": ("p211", "Cores e páginas diferentes (2.11 e 2.15)", "2.11-2.15"),
 }
+RELATORIOS: dict = {}
 
 
 def cortar_objeto(texto: str, nome: str) -> dict:

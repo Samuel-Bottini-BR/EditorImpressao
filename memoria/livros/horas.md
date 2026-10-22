@@ -42,3 +42,7 @@
 ## De onde veio
 
 - Acervo desde 18/07/2026; ficha `LIVROS PARA FAZER TESTE (duplicata)\Livro de Horas - Luís XIV.txt`; [relatório por livro](../../relatorios/por-livro/Livro%20de%20Horas%20-%20Luis%20XIV.md). Fotos do CamScanner de 24/09/2026 em `gabarito/camscanner/`.
+
+## Página que não se usa em teste (Samuel, 21/10/2026)
+
+- **p. 187 é a lombada de couro** (título dourado "HEURES DE LOVIS XIV"): nunca usar em teste nem em conferência. Palavras dele: "essa lombada de couro não seria impressa nunca, então não existe motivo para fazer teste nela e ficou muito ruim, não faça mais testes com lombadas de livros". Regra geral no CLAUDE.md §4.10.

@@ -271,6 +271,22 @@ dos assuntos tocados na sessão. O histórico por data
 
 ---
 
+### 4.10 Páginas de teste: caminho inteiro e só o que vai ser impresso (Samuel, 21/10/2026)
+
+- **O teste segue a ordem das etapas** ("1 - recomendado"). Palavras dele: "Precisamos melhorar nossos testes porque
+  as vezes o resultado de uma funcionalidade depende de ter passado por outra, por exemplo o cortar faixa preta, as
+  vezes a folha precisa ter passado por endireitar antes de cortar, e você faz os testes sem pensar nisso, por favor o
+  proximos testes tem que levar essa questão em conta." Todo teste de imagem e toda conferência levam a página pelo
+  **caminho inteiro do programa**, na ordem do livro novo (dividir → endireitar → cortar → filtro), com os ajustes de
+  fábrica, até a ferramenta testada. Teste da ferramenta sozinha só para achar causa de defeito, nunca na conferência.
+- **Cada foto diz por onde a página passou e com quais opções** (ex.: "endireitada, cortada, Preto e branco + Só as
+  letras"). Motivo: ele perguntou de onde vinha a letra T apagada e a estátua estragada sem saber a opção escolhida.
+- **Só páginas que vão ser impressas** ("recomendado"). Palavras dele: "essa lombada de couro não seria impressa nunca,
+  então não existe motivo para fazer teste nela e ficou muito ruim, não faça mais testes com lombadas de livros". Fora:
+  lombada, capa e contracapa de couro ou papelão (o lado de fora do livro). Folha de rosto e guardas impressas valem.
+
+---
+
 ## 5. O protocolo de qualquer mudança de imagem
 
 **Medir antes — uma mudança por vez — medir de novo — reverter se qualquer

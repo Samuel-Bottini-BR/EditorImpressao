@@ -146,3 +146,12 @@ filtro, mudar tela, pôr ou tirar controle, mudar formato dos dados, mexer no de
 - **Decisão da gerente dentro da alçada de limiar (`CLAUDE.md` §6):** no 2.15 a página só vai ao "Para revisar" se também se afastar 1° da média do livro; o Samuel confere na aba 8.
 - **Antes de apagar uma worktree:** as junções `modelos` e `gabarito` se removem com `(Get-Item …).Delete()` (muitas worktrees novas em 20-21/10; ver [ramos](../ramos.md)).
 - **Pausa de 21/10/2026:** a pedido dele ("quando os agentes acabarem, pode parar todos os serviços e esperar meu proximo comando"), todos os agentes pararam, com commit, push e `ONDE-PAREI.md` em dia. Agentes de uma sessão não existem numa conversa nova: para continuar uma frente, chame um agente novo apontando ramo, worktree e `ONDE-PAREI.md`.
+
+## Regras de 21/10/2026 (decisões do Samuel na Central; CLAUDE.md §4.10)
+- **Caminho inteiro:** todo teste de imagem e toda conferência levam a página pela ordem do livro novo (dividir →
+  endireitar → cortar → filtro), com os ajustes de fábrica, até a ferramenta testada. Nunca a página crua só com a
+  ferramenta (isso fica para achar causa de defeito, fora da conferência).
+- **Cada foto diz o caminho e as opções** ("endireitada, cortada, Preto e branco + Só as letras").
+- **Só páginas que vão ser impressas:** nunca lombada, capa ou contracapa de couro/papelão.
+- Quantos agentes: dois implementadores (as 4 ferramentas começadas; as 7 não começadas) + verificador quando entregarem (Samuel, 22/10).
+- Juntar no fim: quando o layout 4 a 7 e as 11 ferramentas terminarem, junta tudo num ramo de junção → GitHub → PC → `fase-1` (Samuel, 22/10; ajuste de segurança da gerente no plano aprovado).

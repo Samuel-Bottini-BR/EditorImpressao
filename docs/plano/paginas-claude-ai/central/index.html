@@ -15,6 +15,7 @@
     --verm: #b42d2d; --verm-suave: #f8e1df;
     --roxo: #5a4aa8; --roxo-suave: #e8e5f7;
     --cinza: #6b7480; --cinza-suave: #e6e9ed;
+    --teal: #0f7f73; --teal-suave: #dcf2ee;
     --sombra: 0 1px 2px rgba(24, 32, 43, .08), 0 4px 14px rgba(24, 32, 43, .06);
     --fonte-titulo: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
     --fonte-texto: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
@@ -26,7 +27,7 @@
       --magenta: #e886b6; --magenta-suave: #3a2030; --azul: #5cc0e0; --azul-suave: #173341;
       --verde: #5fd193; --verde-suave: #18321f; --ambar: #f0b45c; --ambar-suave: #3a2c14;
       --verm: #f08a82; --verm-suave: #3d1d1b; --roxo: #a99bf0; --roxo-suave: #29244a;
-      --cinza: #9aa3ae; --cinza-suave: #2a313a;
+      --cinza: #9aa3ae; --cinza-suave: #2a313a; --teal: #5fd1c4; --teal-suave: #173a36;
       --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
     }
   }
@@ -36,7 +37,7 @@
     --magenta: #e886b6; --magenta-suave: #3a2030; --azul: #5cc0e0; --azul-suave: #173341;
     --verde: #5fd193; --verde-suave: #18321f; --ambar: #f0b45c; --ambar-suave: #3a2c14;
     --verm: #f08a82; --verm-suave: #3d1d1b; --roxo: #a99bf0; --roxo-suave: #29244a;
-    --cinza: #9aa3ae; --cinza-suave: #2a313a;
+    --cinza: #9aa3ae; --cinza-suave: #2a313a; --teal: #5fd1c4; --teal-suave: #173a36;
     --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
   }
   * { box-sizing: border-box; }
@@ -102,6 +103,7 @@
   .chip.c-andamento { background: var(--roxo-suave); color: var(--roxo); }
   .chip.c-sem-aprovado, .chip.c-pior { background: var(--verm-suave); color: var(--verm); }
   .chip.c-programa, .chip.c-ok { background: var(--verde-suave); color: var(--verde); }
+  .chip.c-aprovado { background: var(--teal-suave); color: var(--teal); }
   .selos { display: flex; flex-wrap: wrap; gap: 6px; }
   .selo { font-size: 13px; padding: 2px 9px; border-radius: 6px; border: 1px solid var(--fio); color: var(--fraco); white-space: nowrap; }
   .selo.sim { border-color: var(--verde); color: var(--verde); }
@@ -487,6 +489,7 @@
   "use strict";
   var COLUNAS = [
     { id: "decidir", nome: "Esperando você", cor: "--azul", explica: "Pronto e testado por máquina; falta a sua decisão." },
+    { id: "aprovado", nome: "Aprovado, espera entrar", cor: "--teal", explica: "Você aprovou. Entra no programa com o resto, depois dos testes no GitHub e no PC." },
     { id: "melhorar", nome: "Pronto, falta melhorar", cor: "--ambar", explica: "Funciona, com defeito conhecido sendo consertado." },
     { id: "andamento", nome: "Em andamento", cor: "--roxo", explica: "Um agente trabalha nisso (ou parou no meio)." },
     { id: "fila", nome: "Ainda não começado", cor: "--cinza", explica: "Na fila. A ordem daqui é a ordem dos agentes." },
@@ -1052,7 +1055,7 @@
     var tr = document.getElementById("trilha"); tr.textContent = "";
     var fases = dados.fases.slice().sort(function (a, b) { return a.num - b.num; });
     var atual = fases.find(function (f) { return f.atual; }); if (faseEscolhida == null) faseEscolhida = atual ? atual.num : 2;
-    var ordemCor = ["programa", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"];
+    var ordemCor = ["programa", "aprovado", "sem-aprovado", "decidir", "melhorar", "andamento", "fila"];
     fases.forEach(function (f) {
       var b = el("button", "etapa" + (f.atual ? " atual" : "") + (f.num === faseEscolhida ? " escolhida" : "")); b.type = "button";
       b.appendChild(el("span", "ponto", String(f.num))); if (f.atual) b.appendChild(el("span", "aqui", "Você está aqui"));

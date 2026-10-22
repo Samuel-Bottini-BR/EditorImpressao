@@ -1,13 +1,25 @@
 {
   "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
   "geral": {
-    "frase": "Estamos na Fase 2 (ferramentas do ScanTailor). Cinco trabalhos prontos esperam você; os agentes estão parados desde 21/10.",
+    "frase": "Fase 2 (ferramentas do ScanTailor). Dois agentes trabalham: um nas 4 ferramentas começadas, outro nas 7 que faltam. Você aprovou 5 trabalhos, que entram no programa todos juntos no fim. Falta conferir o layout 6 e 7.",
     "faseAtual": "2",
     "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
     "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
     "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
+      {
+        "em": "2026-10-22T03:10:00Z",
+        "texto": "Dois agentes começaram: um conserta as 4 ferramentas começadas, o outro faz as 7 que faltam."
+      },
+      {
+        "em": "2026-10-22T03:10:00Z",
+        "texto": "Nova conferência: Layout 6 e 7 (aba Conferência)."
+      },
+      {
+        "em": "2026-10-22T03:00:00Z",
+        "texto": "Suas respostas de 21/10 estão registradas no plano. Os 5 aprovados esperam para entrar no programa juntos."
+      },
       {
         "em": "2026-10-21T18:00:00Z",
         "texto": "A página de Andamento virou esta Central de decisões."
@@ -32,22 +44,18 @@
       "titulo": "\"Para revisar\": os avisos por página",
       "item": "Para revisar",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "O programa avisa as páginas com problema e põe o conserto num botão no próprio aviso: \"Trazer de volta nesta página\", \"Deixar em branco\", \"Tirar do livro\", \"Está bom\" por página, por motivo ou em tudo.",
-      "situacao": "Pronto e conferido pelo verificador (64 de 64 páginas saem iguais). Falta você olhar as fotos e dizer se entra.",
-      "falta": "Sua resposta na aba 4 da página de conferência (18 quadros e 3 perguntas).",
+      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "falta": "Melhorias pedidas: \"Antes de processar\" mais clara e menor; regra voltar aos 78 de 89; bolinhas de carregamento e tela igual ao PDF (na fila).",
       "ressalva": "O Boécio chega a 34% das páginas no \"Para revisar\".",
       "selos": {
         "github": "sim",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "fase2-para-revisar",
       "commit": "f54428e",
-      "conferencia": {
-        "pagina": "conferencia",
-        "aba": "4"
-      },
       "comparar": {
         "antes": "fotos/a4n-letra-t.jpg",
         "depois": "fotos/a4n-letra-t-depois.jpg",
@@ -68,28 +76,25 @@
         "Abra o Antiphonal e vá à página 46: o aviso deve ter o botão \"Trazer de volta nesta página\".",
         "Abra o Egenloff e vá à página 12: o aviso \"Página sem conteúdo\" deve ter \"Deixar em branco\" e \"Tirar do livro\".",
         "Aperte Processar com avisos abertos: a janela deve listar as páginas e os motivos."
-      ]
+      ],
+      "mudouEm": "2026-10-22T03:00:00Z"
     },
     {
       "id": "2.8",
       "titulo": "Os dez tipos de preto e branco do ScanTailor",
       "item": "2.8",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Mais jeitos de transformar a letra em preto e branco (Sauvola, Wolf e os outros oito do ScanTailor). Vem desligado: livro já começado sai igual ao de hoje.",
-      "situacao": "Pronto. Desligado de fábrica provado: 128 de 128 páginas iguais. Testes no GitHub: 2084 passaram, 0 falharam.",
-      "falta": "Sua resposta na aba 6 da página de conferência.",
+      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "falta": "",
       "selos": {
         "github": "sim",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
       "commit": "ffa2463",
-      "conferencia": {
-        "pagina": "conferencia",
-        "aba": "6"
-      },
       "fotos": [
         {
           "src": "fotos/28-horas_p047-recorte.jpg",
@@ -104,28 +109,25 @@
         "Peça \"Preparar para eu testar\".",
         "Abra um livro, vá ao painel Filtro, escolha Preto e branco e troque o tipo na lista nova.",
         "Confira a letra no Horas 47 e no Palatino 7 com cada tipo."
-      ]
+      ],
+      "mudouEm": "2026-10-22T03:00:00Z"
     },
     {
       "id": "2.9",
       "titulo": "Texto claro em fundo escuro",
       "item": "2.9",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Página com letra clara sobre fundo escuro (capa, título em faixa) sai com a letra certa, como no ScanTailor.",
-      "situacao": "Pronto e conferido pelo verificador; os cartões da conferência foram consertados.",
-      "falta": "Sua resposta na aba 7 da página de conferência.",
+      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "falta": "Melhorias pedidas: Inverter letra branca em fundo preto para economizar tinta (pesquisa, Lista de espera).",
       "selos": {
         "github": "falta",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
       "commit": "ffa2463",
-      "conferencia": {
-        "pagina": "conferencia",
-        "aba": "7"
-      },
       "fotos": [
         {
           "src": "fotos/29-horas-187-perto.jpg",
@@ -139,29 +141,26 @@
       "testar": [
         "Peça \"Preparar para eu testar\".",
         "Abra o Horas e vá à página 187; ligue \"Texto claro em fundo escuro\" no painel Filtro."
-      ]
+      ],
+      "mudouEm": "2026-10-22T03:00:00Z"
     },
     {
       "id": "2.11-2.15",
       "titulo": "Reduzir cores e destacar páginas diferentes",
       "item": "2.11 e 2.15",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "2.11: reduzir as cores da página, como no ScanTailor. 2.15: o programa aponta as páginas que saem muito diferentes das outras do livro (só se afastam 1° ou mais da média).",
-      "situacao": "Pronto e conferido pelo verificador.",
-      "falta": "Sua resposta na aba 8 da página de conferência.",
+      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "falta": "Melhorias pedidas: \"Reduzir cores\" apaga parte da letra em alguns casos (Lista de bugs).",
       "ressalva": "\"Letras com a cor delas\" deixa a letra preta comum marrom-acinzentada.",
       "selos": {
         "github": "falta",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
       "commit": "ffa2463",
-      "conferencia": {
-        "pagina": "conferencia",
-        "aba": "8"
-      },
       "fotos": [
         {
           "src": "fotos/211-horas_p026.jpg",
@@ -176,28 +175,25 @@
         "Peça \"Preparar para eu testar\".",
         "No painel Filtro, ligue \"Reduzir cores\" no Horas 26.",
         "Abra o Boécio e veja quais páginas o programa aponta como diferentes."
-      ]
+      ],
+      "mudouEm": "2026-10-22T03:00:00Z"
     },
     {
       "id": "layout-4a5",
       "titulo": "Tela nova: etapas 4 e 5 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "A ferramenta Marcar no painel Propriedades e o painel Filtro novo, com as frases da rodada 14.",
-      "situacao": "Pronto.",
-      "falta": "Sua resposta na aba 5 da página de conferência.",
+      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "falta": "Melhorias pedidas: \"Melhorar\" cortado no painel Filtro (já consertado na etapa 7b).",
       "selos": {
         "github": "falta",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "layout-etapas4a7-2026-10-19",
       "commit": "2eeec20",
-      "conferencia": {
-        "pagina": "conferencia",
-        "aba": "5"
-      },
       "comparar": {
         "antes": "fotos/ly-11-antes.jpg",
         "depois": "fotos/ly-11-depois.jpg",
@@ -207,22 +203,18 @@
       "testar": [
         "Peça \"Preparar para eu testar\".",
         "Abra um livro e use o painel Filtro e a ferramenta Marcar pelo painel da direita."
-      ]
+      ],
+      "mudouEm": "2026-10-22T03:00:00Z"
     },
     {
       "id": "consertos",
       "titulo": "Quatro consertos prontos",
       "item": "Consertos",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Instalador com as duas DLLs do ScanTailor; teste dos atalhos; \"Parece em branco\" na Gladstone 18; Horas 11 com pouca memória dando sempre a mesma imagem.",
-      "situacao": "Verificado até o penúltimo passo. Falta rodar os testes no GitHub da última versão e a parada de ~30 min no PC para juntar.",
-      "falta": "Você escolher: juntar agora (pausa de ~30 min no PC) ou no próximo intervalo.",
-      "pergunta": "Quando juntar os consertos ao programa?",
-      "opcoes": [
-        "Agora (pausa de ~30 min no PC)",
-        "No próximo intervalo"
-      ],
+      "situacao": "Prontos. Entram no programa junto com o resto (ordem de 22/10).",
+      "falta": "Testes do GitHub da última versão (na junção).",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -245,7 +237,7 @@
       "titulo": "As 6 perguntas da fase de impressão",
       "item": "2.6 e 6.5",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "decidida",
       "oque": "Como o programa vai gerar o arquivo para imprimir: folha ou página, ajustar no livreto, onde diminuir a página, último caderno, arquivo ou impressora, imprimir como imagem.",
       "situacao": "Pesquisa entregue, com desenhos. As perguntas estão na página de escolhas.",
       "falta": "Suas respostas na página de escolhas (a 6ª pede fotos das abas Pôster e Múltiplo do UPDF).",
@@ -260,14 +252,15 @@
         "pagina": "escolhas"
       },
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "decisao": "As 6 respondidas em 21/10 (ver 2.4 e 2.6)"
     },
     {
       "id": "pergunta-miniaturas",
       "titulo": "Lembrar as miniaturas de um livro para o outro?",
       "item": "Layout",
       "fase": "4",
-      "coluna": "decidir",
+      "coluna": "decidida",
       "tipo": "pergunta",
       "oque": "Quando você muda o lugar das miniaturas (esquerda ou direita), deixa abertas ou fechadas, ou em pares, o programa deve lembrar isso ao abrir outro livro?",
       "pergunta": "O programa deve lembrar onde você deixou as miniaturas?",
@@ -277,14 +270,15 @@
       ],
       "selos": {},
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "decisao": "Sim, lembrar para todos os livros (21/10)"
     },
     {
       "id": "pergunta-rascunho",
       "titulo": "Apagar uma pasta de rascunho?",
       "item": "Arrumação",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "decidida",
       "tipo": "pergunta",
       "oque": "A pasta D:\\programas\\EditorImpressao-arquivos\\ferramentas\\build-st-gravura-fase2-desentortar sobrou de uma montagem antiga. Não é usada pelo programa.",
       "pergunta": "Posso apagar essa pasta?",
@@ -294,7 +288,8 @@
       ],
       "selos": {},
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "decisao": "Sim, pode apagar (apagada em 22/10)"
     },
     {
       "id": "pergunta-verificador",
@@ -319,9 +314,9 @@
       "titulo": "Caixa do conteúdo, borda preta e pintar de branco",
       "item": "2.5, 2.13 e 2.14",
       "fase": "2",
-      "coluna": "melhorar",
+      "coluna": "andamento",
       "oque": "O programa acha onde está o conteúdo da página, corta a borda preta do scanner (o Kaique escolhe por livro: só o preto ou até a moldura) e pinta de branco o que sobra.",
-      "situacao": "Feito e com a conferência montada, mas com dois defeitos.",
+      "situacao": "O Implementador A está consertando (desde 22/10).",
       "falta": "Consertar a etiqueta do Egenloff 3, que sai cortada ao meio, e a lentidão: medir o livro ficou 2 a 3 vezes mais lento (Marial de 100 folhas: de ~140 s para ~300 s).",
       "selos": {
         "github": "parte",
@@ -347,9 +342,9 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "melhorar",
+      "coluna": "andamento",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Pela metade, pausado.",
+      "situacao": "O Implementador A está consertando (desde 22/10).",
       "falta": "O antes e depois em páginas reais e ler duas rodadas de teste.",
       "selos": {
         "github": "falta",
@@ -366,10 +361,10 @@
       "titulo": "Tela nova: etapas 6 e 7 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "andamento",
-      "oque": "As últimas etapas da tela nova; a grade ficou nítida depois.",
-      "situacao": "Pronto, com a conferência montada mas não publicada.",
-      "falta": "O verificador medir de novo a grade nítida; depois a conferência vai para você.",
+      "coluna": "decidir",
+      "oque": "Tela cheia dos filtros (etapa 6), Configurações em partes, tela dos livros e o livro aberto na tela inteira (etapa 7).",
+      "situacao": "Pronto. Conferência na aba Conferência > Layout 6 e 7.",
+      "falta": "Sua resposta na aba Conferência > Layout 6 e 7.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -378,7 +373,8 @@
       "ramo": "layout-etapas4a7-2026-10-19",
       "commit": "2eeec20",
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "mudouEm": "2026-10-22T03:00:00Z"
     },
     {
       "id": "2.1",
@@ -509,9 +505,9 @@
       "titulo": "Margens iguais em todas as páginas",
       "item": "2.4",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Margens e alinhamento iguais em todas as páginas.",
-      "situacao": "Não começado. Depende das respostas da impressão.",
+      "situacao": "O Implementador B começou por aqui (22/10). Depois: 2.6, 2.16, 2.17, 2.18, 2.19, 2.10.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -523,7 +519,7 @@
       "fase": "2",
       "coluna": "fila",
       "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.",
-      "situacao": "Não começado no código. Espera as 6 perguntas da impressão.",
+      "situacao": "Na fila do Implementador B, logo depois do 2.4. As 6 perguntas da impressão já foram respondidas.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -535,7 +531,7 @@
       "fase": "2",
       "coluna": "fila",
       "oque": "Processar várias páginas ao mesmo tempo.",
-      "situacao": "Não começado.",
+      "situacao": "Não começado. Na fila do Implementador B.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -547,7 +543,7 @@
       "fase": "2",
       "coluna": "fila",
       "oque": "Escolher cm ou mm e guardar perfis de ajustes. O tema já está feito.",
-      "situacao": "Não começado (o tema já está no programa).",
+      "situacao": "Não começado (o tema já está no programa). Na fila do Implementador B.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -559,7 +555,7 @@
       "fase": "2",
       "coluna": "fila",
       "oque": "Igualar a luz da página como filtro de imagem.",
-      "situacao": "Não começado. Metade da conta já está no programa (usada pelo detector de gravura).",
+      "situacao": "Não começado. Metade da conta já está no programa (usada pelo detector de gravura). Na fila do Implementador B.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -571,7 +567,7 @@
       "fase": "2",
       "coluna": "fila",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
-      "situacao": "Não começado.",
+      "situacao": "Não começado. Na fila do Implementador B.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -583,7 +579,7 @@
       "fase": "2",
       "coluna": "fila",
       "oque": "Letra em cima, fundo embaixo, como opção.",
-      "situacao": "Não começado. Vai junto do 1.6.",
+      "situacao": "Não começado. Vai junto do 1.6. Na fila do Implementador B.",
       "selos": {},
       "fotos": [],
       "testar": []
@@ -611,56 +607,92 @@
       "selos": {},
       "fotos": [],
       "testar": []
+    },
+    {
+      "id": "bolinhas",
+      "titulo": "Bolinhas de carregamento e folha pronta mais rápido",
+      "item": "Para revisar / layout",
+      "fase": "2",
+      "coluna": "fila",
+      "oque": "A tela troca sozinha pela imagem do PDF; uma bolinha do livro e uma da página, com % e páginas ao passar o mouse; adiantar as páginas vizinhas e guardar a página pronta no disco.",
+      "situacao": "Decidido em 22/10. Na fila, depois das 11 ferramentas.",
+      "selos": {},
+      "fotos": [],
+      "testar": []
+    },
+    {
+      "id": "antes-de-processar",
+      "titulo": "Janela \"Antes de processar\" mais clara e menor",
+      "item": "Layout",
+      "fase": "4",
+      "coluna": "fila",
+      "oque": "Você pediu: \"ficou meio embolado, deve ficar mais claro e não tão grande.\"",
+      "situacao": "Na fila do agente de layout.",
+      "selos": {},
+      "fotos": [],
+      "testar": []
+    },
+    {
+      "id": "miniaturas-lembradas",
+      "titulo": "Lembrar as miniaturas de um livro para o outro",
+      "item": "Layout",
+      "fase": "4",
+      "coluna": "fila",
+      "oque": "Lugar, abertas ou fechadas e em pares: o programa lembra para todos os livros.",
+      "situacao": "Decidido em 21/10. Na fila do agente de layout.",
+      "selos": {},
+      "fotos": [],
+      "testar": []
     }
   ],
   "agentes": [
     {
-      "id": "implementador-3",
-      "nome": "Implementador 3",
-      "papel": "Ferramentas do ScanTailor",
-      "estado": "parado",
-      "tarefa": "2.8 → 2.9 → 2.11 → 2.15 → 2.12 → 2.16 → 2.19 → 2.17",
-      "ultimo": "2.8, 2.9, 2.11 e 2.15 prontos; parou no meio do 2.12.",
-      "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-21T15:00:00Z"
+      "id": "implementador-a",
+      "nome": "Implementador A",
+      "papel": "As 4 ferramentas começadas",
+      "estado": "trabalhando",
+      "tarefa": "Caixa do conteúdo + borda preta + pintar de branco (etiqueta do Egenloff 3, lentidão) → 2.12 desentortar",
+      "ultimo": "Começou em 22/10.",
+      "ramo": "fase2-caixa-conteudo e fase2-scantailor-itens-2026-10-19",
+      "quando": "2026-10-22T03:00:00Z"
     },
     {
-      "id": "implementador-4",
-      "nome": "Implementador 4",
-      "papel": "Caixa do conteúdo e borda preta",
-      "estado": "parado",
-      "tarefa": "2.5, 2.13 e 2.14",
-      "ultimo": "Começou o conserto da etiqueta do Egenloff 3; ainda não funciona na página real.",
-      "ramo": "fase2-caixa-conteudo",
-      "quando": "2026-10-21T15:00:00Z"
-    },
-    {
-      "id": "layout",
-      "nome": "Agente de layout",
-      "papel": "Tela nova",
-      "estado": "parado",
-      "tarefa": "Etapas 4 a 7 do layout",
-      "ultimo": "Etapas 4 a 7 prontas; deixou a grade nítida.",
-      "ramo": "layout-etapas4a7-2026-10-19",
-      "quando": "2026-10-21T15:00:00Z"
+      "id": "implementador-b",
+      "nome": "Implementador B",
+      "papel": "As 7 ferramentas não começadas",
+      "estado": "trabalhando",
+      "tarefa": "2.4 → 2.6 → 2.16 → 2.17 → 2.18 → 2.19 → 2.10",
+      "ultimo": "Começou em 22/10 pelo 2.4 (margens).",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "quando": "2026-10-22T03:00:00Z"
     },
     {
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
       "estado": "parado",
-      "tarefa": "Conferências da caixa do conteúdo e do layout 6-7",
-      "ultimo": "Montou as duas conferências; falta medir a grade nítida.",
+      "tarefa": "Entra quando um implementador entregar",
+      "ultimo": "Montou a conferência do layout 6 e 7 (agora na Central).",
       "ramo": "verif-layout-4a5-2026-10-21",
+      "quando": "2026-10-22T03:00:00Z"
+    },
+    {
+      "id": "layout",
+      "nome": "Agente de layout",
+      "papel": "Tela nova",
+      "estado": "parado",
+      "tarefa": "Esperando a sua conferência do layout 6 e 7",
+      "ultimo": "Etapas 4 a 7 prontas.",
+      "ramo": "layout-etapas4a7-2026-10-19",
       "quando": "2026-10-21T15:00:00Z"
     },
     {
       "id": "consertos",
       "nome": "Consertador",
       "papel": "Bugs achados no caminho",
-      "estado": "parado",
+      "estado": "terminou",
       "tarefa": "Instalador, atalhos, Gladstone 18, Horas 11",
-      "ultimo": "Quatro consertos prontos; falta o GitHub da última versão.",
+      "ultimo": "Quatro consertos prontos; entram na junção.",
       "ramo": "consertos-2026-10-21",
       "quando": "2026-10-21T15:00:00Z"
     },
@@ -670,9 +702,9 @@
       "papel": "Pesquisa de código de fora",
       "estado": "terminou",
       "tarefa": "Fase de impressão",
-      "ultimo": "Entregou o relatório com as 6 perguntas.",
+      "ultimo": "Entregou; você respondeu as 6 perguntas.",
       "ramo": "pesquisa-impressao-2026-10-19",
-      "quando": "2026-10-20T20:00:00Z"
+      "quando": "2026-10-21T20:00:00Z"
     }
   ],
   "velocidade": {

@@ -130,3 +130,10 @@ Detalhe em `CLAUDE.md` §4.6 a §4.9.
   do conserto, numa cópia/worktree à parte) e confira que ele **falha** lá e passa no novo.
   Teste que passa nos dois não vale: é ressalva grave. Isso substitui o passo 1 acima
   (`pytest tests -q` inteiro no PC): o conjunto inteiro você lê da rodada do GitHub.
+
+## Regras de 21/10/2026 (decisões do Samuel; CLAUDE.md §4.10)
+- **Caminho inteiro:** todo teste de imagem e toda conferência levam a página pela ordem do livro novo (dividir →
+  endireitar → cortar → filtro), com os ajustes de fábrica, até a ferramenta testada. Nunca a página crua só com a
+  ferramenta (isso fica para achar causa de defeito, fora da conferência).
+- **Cada foto diz o caminho e as opções** ("endireitada, cortada, Preto e branco + Só as letras").
+- **Só páginas que vão ser impressas:** nunca lombada, capa ou contracapa de couro/papelão.

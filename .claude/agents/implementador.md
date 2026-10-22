@@ -103,3 +103,10 @@ Detalhe em `CLAUDE.md` §4.6 a §4.9.
   que **falha no código antigo e passa no novo**, com o bug citado na docstring. Rode-o no
   código antigo e diga na entrega que ele falhou lá. Bug de imagem: use uma medida que pegue
   o defeito; sem medida possível, escreva a ressalva.
+
+## Regras de 21/10/2026 (decisões do Samuel; CLAUDE.md §4.10)
+- **Caminho inteiro:** todo teste de imagem e toda conferência levam a página pela ordem do livro novo (dividir →
+  endireitar → cortar → filtro), com os ajustes de fábrica, até a ferramenta testada. Nunca a página crua só com a
+  ferramenta (isso fica para achar causa de defeito, fora da conferência).
+- **Cada foto diz o caminho e as opções** ("endireitada, cortada, Preto e branco + Só as letras").
+- **Só páginas que vão ser impressas:** nunca lombada, capa ou contracapa de couro/papelão.
