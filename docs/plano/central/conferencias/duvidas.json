@@ -1,0 +1,250 @@
+{
+ "id": "duvidas",
+ "nome": "Suas dúvidas sem resposta",
+ "trabalho": "duvidas",
+ "ordem": 0,
+ "origem": "comentários das conferências de 21/10",
+ "resumo": {
+  "titulo": "Perguntas que você fez nas conferências e ficaram sem resposta",
+  "paragrafos": [
+   "Você tinha razão: nos comentários de 21/10 você fez perguntas que eu registrei no plano, mas não respondi aqui. Algumas foram resolvidas no chat de 22/10, mas a regra é responder na Central. Estão todas aqui, uma por uma, com o seu comentário fixado no alto.",
+   "Se alguma resposta não ficar clara, marque \"Ainda não entendi\" e escreva o porquê."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "dv-211-reduzir",
+   "titulo": "\"Reduzir cores\": quando você pediu? É do ScanTailor?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T20:11:42Z",
+     "texto": "Ele está apagando as letras, isso sim, e quando foi que eu pedi para fazer isso? isso é do scantailor?"
+    }
+   ],
+   "explicacao": [
+    "Sim, é do ScanTailor. É o item 2.11 do plano (\"Segmentação de cor / reduzir cores\"), uma das ferramentas do ScanTailor da Fase 2. Você mandou trazer essas ferramentas em 13/10 com a regra \"implementar igual ao ScanTailor, sem perguntar antes\". Ninguém pediu esta em separado; ela veio na lista.",
+    "O que ela faz: junta cores parecidas em poucas cores chapadas. Vem desligada de fábrica.",
+    "Você tem razão sobre o defeito: no Livro de Horas 26 ela apaga parte das letras. Ficou registrado no plano como algo a melhorar (\"aprovado, mas ainda tem que melhorar\"). E, como você decidiu no chat em 22/10, a caixinha entra visível e desligada."
+   ],
+   "exemplos": [
+    {
+     "src": "conf/img/211-horas_p026.jpg",
+     "legenda": "Livro de Horas 26: \"S. Leonard\" e \"Theodore\" com parte das letras apagada."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-tela-igual",
+   "titulo": "Antiphonal 46: o Kaique pediu para tirar a letra T? Qual opção tirou?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T21:09:17Z",
+     "texto": "mas o kaique pediu para tirar a letra ou não? porque a letra foi tirada, qual opção foi pedida para ser feita que tirou a letra? anote ai para explicar melhor o processo que a pagina passou para poder me perguntar."
+    }
+   ],
+   "explicacao": [
+    "Não, o Kaique não pediu. Quem escolheu as opções foi o verificador, para o teste. O caminho da página foi: livro novo, de fábrica → dividir → endireitar → cortar → filtro Preto e branco com a caixinha \"Só as letras\" no jeito de fábrica, \"Guardar a tinta forte\".",
+    "Por que o T sumiu: \"Guardar a tinta forte\" guarda como no original só a tinta forte. O T é vermelho, e o programa não o reconheceu como desenho. Então ele foi para o preto e branco, e lá virou branco e sumiu.",
+    "Por que o programa avisou: ele percebe que um desenho grande sumiu e mostra o aviso \"Desenho apagado\", com o botão \"Trazer de volta nesta página\".",
+    "Daqui para frente, toda foto diz o caminho e as opções (regra que você deu em 22/10, CLAUDE.md §4.10). O conserto da tela, que mostrava o T que não ia sair, você já decidiu no chat: a tela troca sozinha pela imagem do PDF, com as bolinhas de carregamento."
+   ],
+   "exemplos": [
+    {
+     "src": "conf/img/tela-engana-1-comparacao.jpg",
+     "legenda": "A mesma página 46: a tela (com a letra T) e o PDF que saiu (sem ela)."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-opus-20",
+   "titulo": "Opus Majus 20: o que você está olhando, por que a foto sai assim e qual opção",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T21:45:57Z",
+     "texto": "o que eu estou olhando? e porque a foto sai assim? que opção foi escolhida para sair assim?"
+    }
+   ],
+   "explicacao": [
+    "O que você está olhando: a página 20 do Opus Majus, com a foto da estátua de Roger Bacon. De um lado, como está no livro; do outro, como saiu no PDF que o programa gerou.",
+    "Qual opção: o mesmo caminho do teste, escolhido pelo verificador: livro novo, de fábrica → dividir → endireitar → cortar → Preto e branco com \"Só as letras\" (\"Guardar a tinta forte\").",
+    "Por que a foto sai assim: o Preto e branco transforma tudo em só preto ou só branco. Uma foto tem centenas de tons de cinza, e sem eles vira manchas e blocos pretos. O \"Só as letras\" serve justamente para guardar as fotos como no original, mas só guarda o que o programa reconhece como figura. Ele não reconheceu a estátua como figura e tratou a foto como se fosse texto.",
+    "O que este quadro mostrava: que o aviso agora pega essa página e manda conferir (o certo). O conserto de verdade, achar a foto inteira, é o item 1.5 (detector de figuras), que você deixou no plano."
+   ],
+   "exemplos": [
+    {
+     "src": "conf/img/a4n-opus-20.jpg",
+     "legenda": "Opus Majus 20: a estátua inteira no livro, branca e manchada no PDF."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-29-cartoes",
+   "titulo": "Livro de Horas 187: teste em lombada que nunca vai ser impressa",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T20:08:38Z",
+     "texto": "está fazendo teste com pagina de lombada que nem iria ser impressa, e no caso é uma lombada de uma capa de livro."
+    }
+   ],
+   "explicacao": [
+    "Você tem razão, e foi erro do verificador: a página 187 do Livro de Horas é a lombada de couro da capa e nunca vai ser impressa. Desde 22/10 é regra (CLAUDE.md §4.10): só páginas que vão ser impressas, nunca lombada nem capa. O Horas 187 saiu dos testes.",
+    "O que o quadro queria mostrar, em palavras simples: com a caixinha \"Letra clara em fundo escuro\" marcada, os quatro cartões (a mesma página nos quatro filtros) não mostravam a caixinha ligada. O Melhorar aparecia cinza e, escolhido, a página saía preta. Isso foi consertado: agora o cartão mostra o mesmo que sai.",
+    "Na próxima conferência do 2.9 isso vai ser mostrado numa página de verdade, com texto claro em fundo escuro, que vá para a impressão."
+   ],
+   "exemplos": [
+    {
+     "src": "conf/img/29-cartoes-certos.jpg",
+     "legenda": "Os cartões depois do conserto (na lombada, que não devia ter sido usada)."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-imp-2",
+   "titulo": "Livreto: \"Mas eu ainda vou poder aumentar né?\"",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T20:34:32Z",
+     "texto": "Mas eu ainda vou poder aumentar né?"
+    }
+   ],
+   "explicacao": [
+    "Sim. O de fábrica põe a página dentro das margens (a sua escolha), mas a escala sobe e desce à mão. Se ao aumentar a margem ficar menor que 1,3 cm, o programa avisa, como você pediu em 14/10."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-29-slide",
+   "titulo": "Slide de letras brancas em fundo preto: ficou anotado?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T20:05:59Z",
+     "texto": "eu acho que aqui até resolve, mas o que gostariamos de fazer é selecionar a cor branca das letras e transformar em preto e dai então transformar a pagina em branco, porque quando imprimir a impressora vai imprimir todo esse preto, fica isso para ser solucionado mais para frente, precisamos pesquisar como fazer isso, deixe anotado."
+    }
+   ],
+   "explicacao": [
+    "Anotado. Está na Lista de espera do plano desde 21/10 (\"Letra branca em fundo preto: inverter para economizar tinta\"), com as suas palavras, para pesquisar mais para frente."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-pr-testes",
+   "titulo": "Testes que levam em conta a ordem das etapas",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T21:52:21Z",
+     "texto": "Precisamos melhorar nossos testes porque as vezes o resultado de uma funcionalidade depende de ter passado por outra, por exemplo o cortar faixa preta, as vezes a folha precisa ter passado por endireitar antes de cortar, e você faz os testes sem pensar nisso, por favor o proximos testes tem que levar essa questão em conta."
+    }
+   ],
+   "explicacao": [
+    "Feito. Virou regra para todos os agentes em 22/10 (CLAUDE.md §4.10). Todo teste leva a página pelo caminho inteiro (dividir → endireitar → cortar → filtro), e cada foto diz o caminho e as opções. O verificador que está trabalhando agora já segue essa regra."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
+}
