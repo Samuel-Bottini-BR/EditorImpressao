@@ -1,0 +1,15 @@
+código: D:\programas\EditorImpressao\.claude\worktrees\vlu-2eeec20
+memória com o livro aberto (programa + processos filhos): 885 MB
+--- 1600x821: janela 1280 x 657 pontos (1600 x 821 pixels)
+1600x821 Uma página, Caber a página: alturas pintadas (pixels, achadas no print) {301: np.int64(620)}; nitidez da folha 301: 0.98
+1600x821 Duas lado a lado, Caber a página: alturas pintadas (pixels, achadas no print) {302: np.int64(550), 303: np.int64(528), 304: '92 (cortada pela tela)', 305: '92 (cortada pela tela)'}; nitidez da folha 302: 1.04
+--- maximizada: janela 1536 x 794 pontos (1920 x 992 pixels)
+maximizada Uma página, Caber a página: alturas pintadas (pixels, achadas no print) {301: np.int64(620), 302: '194 (cortada pela tela)'}; nitidez da folha 301: 0.98
+maximizada Duas lado a lado, Caber a página: alturas pintadas (pixels, achadas no print) {302: np.int64(550), 303: np.int64(528), 304: '264 (cortada pela tela)', 305: '264 (cortada pela tela)'}; nitidez da folha 302: 1.04
+1600x821 grade Todas as páginas: folha 301 desenhada em 28.1 s, 131 x 184 pixels, nitidez 0.69
+maximizada grade Todas as páginas: folha 301 desenhada em 1.5 s, 131 x 184 pixels, nitidez 0.69
+
+ok   o cartão do livro na tela dos livros (1)
+ok   um clique nativo no cartão abre o livro
+ok   1600x821: clique nativo em Duas lado a lado
+ok   maximizada: clique nativo em Duas lado a lado

@@ -1,0 +1,47 @@
+código: D:\programas\EditorImpressao\.claude\worktrees\layout-4a7
+livro novo, ajustes de fábrica: dividir=False, endireitar=True, cortar=True, ordem=endireitar_antes; 50 páginas; página 7: ângulo None, recorte None, filtro de fábrica original
+Jeito do preto e branco: 14 itens: ['Automático', 'Sauvola (padrão)', 'Otsu (letra grossa/gótica)', 'Wolf (scan de baixo contraste)', 'Otsu do ScanTailor', 'Sauvola do ScanTailor', 'Wolf do ScanTailor', 'Fox do ScanTailor', 'Window do ScanTailor', 'Bradley do ScanTailor', 'Grad do ScanTailor', 'EdgePlus do ScanTailor', 'BlurDiv do ScanTailor', 'EdgeDiv do ScanTailor']
+Limpar a sujeira: ['Sem limpeza', 'Limpeza bruta', 'Limpeza cuidadosa (leve)', 'Limpeza cuidadosa (média)', 'Limpeza cuidadosa (forte)']
+tela cheia, original: partes []; caixinhas ['Letra clara em fundo escuro', 'Reduzir cores']; jeito do preto e branco não aparece; ajuste não aparece
+tela cheia, preto_e_branco: partes ['Só as letras', 'Limpar a sujeira', 'Mais ajustes']; caixinhas ['Letra clara em fundo escuro', 'Letras com a cor delas', 'Reduzir cores']; jeito do preto e branco aparece; ajuste aparece
+tela cheia, melhorar: partes ['Mais ajustes']; caixinhas ['Letra clara em fundo escuro', 'Reduzir cores']; jeito do preto e branco não aparece; ajuste aparece
+tela cheia, magico_pro: partes ['Mais ajustes']; caixinhas ['Letra clara em fundo escuro', 'Reduzir cores']; jeito do preto e branco não aparece; ajuste aparece
+  preto_e_branco + Só as letras: 0.13% dos pontos mudam (3.1 s)
+  preto_e_branco + Limpar a sujeira: Limpeza bruta: 0.29% dos pontos mudam (0.2 s)
+  preto_e_branco + Limpar a sujeira: Limpeza cuidadosa (leve): 0.03% dos pontos mudam (0.2 s)
+  preto_e_branco + Limpar a sujeira: Limpeza cuidadosa (média): 0.08% dos pontos mudam (0.2 s)
+  preto_e_branco + Limpar a sujeira: Limpeza cuidadosa (forte): 0.15% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Otsu do ScanTailor: 4.17% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Sauvola do ScanTailor: 2.24% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Wolf do ScanTailor: 8.74% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Fox do ScanTailor: 2.28% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Window do ScanTailor: 6.51% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Bradley do ScanTailor: 3.05% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito Grad do ScanTailor: 6.45% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito EdgePlus do ScanTailor: 5.42% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito BlurDiv do ScanTailor: 2.41% dos pontos mudam (0.2 s)
+  preto_e_branco + jeito EdgeDiv do ScanTailor: 3.52% dos pontos mudam (0.2 s)
+  preto_e_branco + Letra clara em fundo escuro: 68.97% dos pontos mudam (1.4 s)
+  preto_e_branco + Letras com a cor delas: 100.00% dos pontos mudam (0.4 s)
+  preto_e_branco + Reduzir cores: 0.00% dos pontos mudam (0.2 s)
+  preto_e_branco + Letras com a cor delas + Reduzir cores: 100.00% dos pontos mudam (0.4 s)
+  melhorar + Letra clara em fundo escuro: 85.37% dos pontos mudam (1.9 s)
+  melhorar + Reduzir cores: 13.79% dos pontos mudam (0.4 s)
+  magico_pro + Letra clara em fundo escuro: 86.17% dos pontos mudam (1.6 s)
+  magico_pro + Reduzir cores: 13.62% dos pontos mudam (0.4 s)
+mexido na tela cheia: {'misto_so_as_letras': True, 'limpar_pontinhos': 'st_normal', 'algoritmo_preto_branco': 'st_wolf'}
+PDF gerado por core.pipeline.processar (o do botão Processar) em 55 s: D:\programas\EditorImpressao\.claude\worktrees\layout-4a7\saida_teste\vlu_trab\saida-boecio.pdf
+tela cheia (515 x 729, 247 x 350 pt no PDF) x PDF gerado no mesmo tamanho: tinta na tela 19.22%, no PDF 14.31%; tinta só na tela (longe de tinta do PDF) 776 pontos = 1.1% da tinta; só no PDF 194 pontos = 0.4%
+página 21 desenhada duas vezes seguidas (cópia do livro): iguais
+
+ok   clique nativo em Conferir: análise do livro novo terminou (5 s)
+ok   clique nativo no cartão Preto e branco do painel
+ok   clique nativo no ícone do título do painel abre a tela cheia
+ok   os 10 jeitos do ScanTailor na lista (10)
+ok   clique nativo no cartão original da tela cheia
+ok   clique nativo no cartão preto_e_branco da tela cheia
+ok   clique nativo no cartão melhorar da tela cheia
+FALHOU clique nativo no cartão magico_pro da tela cheia
+ok   depois de desmarcar tudo, nada fica mexido ({})
+ok   clique nativo em Só as letras na tela cheia
+ok   clique nativo em Usar: as opções gravadas na página

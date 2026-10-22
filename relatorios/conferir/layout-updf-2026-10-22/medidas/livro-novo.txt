@@ -1,0 +1,46 @@
+código: D:\programas\EditorImpressao\.claude\worktrees\layout-4a7
+memória com o livro aberto (programa + processos filhos): 873 MB
+--- 1600x821: janela 1280 x 657 pontos (1600 x 821 pixels)
+1600x821 Uma página, Caber a página: alturas pintadas (pixels, achadas no print) {301: np.int64(575)}; nitidez da folha 301: 0.99
+1600x821 Duas lado a lado, Caber a página: alturas pintadas (pixels, achadas no print) {302: np.int64(575), 303: np.int64(570)}; nitidez da folha 302: 0.98
+1600x821 Duas lado a lado, Caber a altura: alturas pintadas (pixels, achadas no print) {302: np.int64(560), 303: np.int64(555)}; nitidez da folha 302: 1.02
+1600x821 Duas lado a lado, Caber a largura: alturas pintadas (pixels, achadas no print) {302: '596 (cortada pela tela)', 303: '606 (cortada pela tela)'}; nitidez da folha 302: -
+1600x821 Duas lado a lado, Tamanho real: alturas pintadas (pixels, achadas no print) {302: '580 (cortada pela tela)'}; nitidez da folha 302: -
+1600x821 Duas lado a lado, sem rolar: alturas pintadas (pixels, achadas no print) {302: np.int64(570), 303: np.int64(570)}; nitidez da folha 302: 0.98
+1600x821 Uma página, sem rolar: alturas pintadas (pixels, achadas no print) {302: np.int64(570)}; nitidez da folha 302: 0.99
+--- maximizada: janela 1536 x 794 pontos (1920 x 992 pixels)
+maximizada Uma página, Caber a página: alturas pintadas (pixels, achadas no print) {301: np.int64(746)}; nitidez da folha 301: 1.00
+maximizada Duas lado a lado, Caber a página: alturas pintadas (pixels, achadas no print) {302: np.int64(746), 303: np.int64(741)}; nitidez da folha 302: 1.05
+maximizada Duas lado a lado, Caber a altura: alturas pintadas (pixels, achadas no print) {302: np.int64(731), 303: np.int64(726)}; nitidez da folha 302: 1.00
+maximizada Duas lado a lado, Caber a largura: alturas pintadas (pixels, achadas no print) {302: '766 (cortada pela tela)', 303: '776 (cortada pela tela)'}; nitidez da folha 302: -
+maximizada Duas lado a lado, Tamanho real: alturas pintadas (pixels, achadas no print) {302: '765 (cortada pela tela)'}; nitidez da folha 302: -
+maximizada Duas lado a lado, sem rolar: alturas pintadas (pixels, achadas no print) {302: np.int64(742), 303: np.int64(742)}; nitidez da folha 302: 1.00
+maximizada Uma página, sem rolar: alturas pintadas (pixels, achadas no print) {302: np.int64(742)}; nitidez da folha 302: 1.00
+roda NATIVA (PostMessage WM_MOUSEWHEEL, janela sem foco), sem Rolar sem parar: folha/rolagem (300, 0) -> (303, 0)
+roda SIMULADA do Qt (QWheelEvent), Uma página sem rolar, 4 voltinhas para baixo a partir da folha 301: folhas [302, 303, 304, 305]
+  e 2 voltinhas para cima: folha 303, rolagem 0 de 0
+roda SIMULADA, Duas lado a lado sem rolar, 3 voltinhas: folha da vez [304, 306, 308]
+1600x821 Duas sem rolar, depois da roda: alturas pintadas (pixels, achadas no print) {308: np.int64(570), 309: np.int64(570)}; nitidez da folha 308: 1.00
+Tamanho real, Duas lado a lado, rolando por 50 lugares do livro (66 s): memória 873 MB no começo, pico 1194 MB, no fim 1187 MB; 16 folhas guardadas, 231 MB nelas
+1600x821 grade Todas as páginas: folha 301 desenhada em 1.5 s, 133 x 188 pixels, nitidez 0.97
+maximizada grade Todas as páginas: folha 301 desenhada em 1.5 s, 132 x 188 pixels, nitidez 0.97
+configuracoes.json depois de Duas + Caber a largura: {'mostrar': 'duas', 'rolar': True, 'caber': 'largura'}
+
+ok   o cartão do livro na tela dos livros (1)
+ok   um clique nativo no cartão abre o livro
+ok   de fábrica: Uma página + Rolar sem parar + Caber a página
+ok   1600x821: clique nativo em Duas lado a lado
+ok   1600x821: clique nativo em Caber a altura
+ok   1600x821: clique nativo em Caber a largura
+ok   1600x821: clique nativo em Tamanho real
+ok   1600x821: clique nativo desliga Rolar sem parar
+ok   maximizada: clique nativo em Duas lado a lado
+ok   maximizada: clique nativo em Caber a altura
+ok   maximizada: clique nativo em Caber a largura
+ok   maximizada: clique nativo em Tamanho real
+ok   maximizada: clique nativo desliga Rolar sem parar
+ok   roda nativa sem foco CHEGOU ao programa
+ok   sem Rolar sem parar a roda passa para a página seguinte (simulada)
+ok   memória do Tamanho real não passa de +900 MB (321)
+ok   a escolha foi gravada
+ok   programa fechado e aberto de novo: o livro abre em Duas + Caber a largura

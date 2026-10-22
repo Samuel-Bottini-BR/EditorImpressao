@@ -1,0 +1,263 @@
+"""Monta conferencia.json (formato da Central) da conferência lyupdf (verificador, 22/10/2026).
+Uso: python montar_conferencia.py  (na pasta scripts/)."""
+import json
+from pathlib import Path
+
+AQUI = Path(__file__).resolve().parent.parent
+PEDIDO_LIVRO = ("22/10, quadro do livro aberto, \"Está pior\": \"Eu não consigo ver a página direito, e elas estão "
+                "de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali\"")
+PEDIDO_TC = ("22/10, quadro l67-tela-cheia: \"esse aqui é para mostrar só o antes e depois? mas no programa vai "
+             "aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos "
+             "do scan?\" e \"faça o recomendado\"")
+
+
+def img(arq, legenda):
+    return {"src": f"lyupdf/img/{arq}", "legenda": legenda}
+
+
+conf = {
+    "id": "lyupdf",
+    "nome": "Livro aberto e tela cheia",
+    "trabalho": "layout-6a7",
+    "origem": "verif-layout-updf-2026-10-22 (conferido no layout-etapas4a7-2026-10-19 7843503)",
+    "resumo": {
+        "titulo": "Livro aberto como o UPDF e filtros em tela cheia com todas as opções",
+        "paragrafos": [
+            "O livro aberto agora tem a barra de baixo como no UPDF (Uma página, Duas lado a lado, Rolar sem parar, "
+            "e Caber a página, a altura, a largura, Tamanho real). As duas páginas do par ficam da mesma altura e a "
+            "página ocupa a janela toda; a escolha fica guardada. A grade \"Todas as páginas\" ficou nítida e "
+            "aparece em 1,5 segundo (antes, 28).",
+            "A tela cheia dos filtros mostra as mesmas opções do painel: os 10 jeitos do ScanTailor, Só as letras, "
+            "Limpar a sujeira, Letra clara em fundo escuro, Letras com a cor delas e Reduzir cores.",
+            "Um porém importante: com um jeito do ScanTailor escolhido, as letras na tela cheia saem mais grossas do "
+            "que no PDF (cerca de 20% mais tinta). No Preto e branco de fábrica a tela e o PDF batem.",
+            "Tudo foi visto na janela de verdade, com cliques do Windows, em 1600x821 e maximizada (escala 125%), "
+            "no Graduale (folhas 301 a 309) e no Boécio (página 7), páginas do miolo.",
+        ],
+        "veredito": "PRONTO PARA CONFERIR, com ressalvas (a principal: a tela cheia com os jeitos do ScanTailor não é "
+                    "igual ao PDF).",
+    },
+    "ressalvas": [
+        "Tela cheia x PDF: com os jeitos do ScanTailor, a tela cheia (150 DPI) mostra letras mais grossas que o PDF "
+        "(300 DPI). Boécio pág. 7, Wolf do ScanTailor: tinta 19,7% na tela e 16,3% no PDF; Otsu do ScanTailor: 14,8% "
+        "e 12,1%. No Preto e branco de fábrica bate (10,85% e 10,90%). A causa é do processamento (a conta dos jeitos "
+        "muda com o DPI), não do desenho da tela; a prévia do painel deve ter o mesmo (não medi).",
+        "\"Reduzir cores\" sozinho no Preto e branco não muda nada (0,00% da página); só vale junto com \"Letras com "
+        "a cor delas\". A caixinha aparece como se valesse sozinha (no painel também).",
+        "Em 1600x821, o cartão do Mágico pro fica cortado embaixo na fila da tela cheia: o clique no meio dele não "
+        "pega (precisa rolar a fila ou usar a tecla 4).",
+        "\"Todas as páginas\": em Duas lado a lado, indo à página 301, a grade marca de azul a 300 (a do par), "
+        "enquanto a pílula diz 301.",
+        "\"Caber a altura\" deixa a página um pouco MENOR que \"Caber a página\" (555 contra 570 pixels em "
+        "1600x821): os dois parecem iguais. \"Tamanho real\" no Graduale dá 2326 pixels de altura por página (o PDF "
+        "diz 72 DPI), quase três telas.",
+        "Programa fechado e aberto de novo: a escolha volta, mas o livro abre na folha 1 (não lembra onde parou).",
+        "Memória no Tamanho real, Graduale (750 folhas, 271 MB): 873 MB com o livro aberto, pico 1194 MB (+321) "
+        "rolando por 50 lugares do livro; ficam 16 folhas guardadas, 231 MB (o limite é 240). Não cresce sem parar.",
+        "Roda do mouse: desta vez a roda de verdade do Windows chegou ao programa sem foco (3 voltinhas: folha 301 "
+        "para 304, sem Rolar sem parar). O resto da roda foi conferido com a roda do Qt (simulada).",
+        "Achado do core (\"a primeira vez que uma página é desenhada sai diferente\"): não reproduzi na página 21 do "
+        "Boécio (saiu igual nas duas vezes). Fica só registrado.",
+        "Texto da tela sem acento: \"Mantem a cor.\" (Melhorar), texto antigo.",
+        "A tela cheia foi aberta pelo clique no ícone, mas mostrada fora da tela sem travar o roteiro (o resto, "
+        "cliques e Usar, foi o programa de verdade). O UPDF não está no PC: a comparação foi pela descrição.",
+    ],
+    "quadros": [
+        {
+            "id": "lu-par",
+            "nome": "As duas páginas do par na mesma altura",
+            "explicacao": [
+                "O que você está escolhendo: se as duas páginas lado a lado agora ficam do mesmo tamanho, como num "
+                "livro de verdade.",
+                "Antes, quando o scan de uma página era maior, ela aparecia mais alta que a outra (folhas 302 e 303 do "
+                "Graduale: 545 e 528 pixels). Agora as duas têm 570 pixels em 1600x821 e 742 maximizada.",
+            ],
+            "olhar": "A beirada de baixo das duas páginas: antes fazia um degrau, agora termina na mesma linha.",
+            "texto": "Confirmado na foto (medido no print, pela cor): 570 e 570 pixels. A linha azul fina em volta da "
+                     "página da esquerda é a marca da página da vez, não é diferença de tamanho.",
+            "selo": "Bom",
+            "ressalva": "",
+            "decisao_do_samuel": PEDIDO_LIVRO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                img("lu-par-zoom.jpg", "Ampliado 3x: a beirada de baixo do par, antes e depois"),
+                img("lu-par-depois.jpg", "Depois: Graduale folhas 302 e 303, Duas lado a lado, 1600x821"),
+                img("lu-par-antes.jpg", "Antes (código de ontem): o mesmo par, uma mais alta"),
+            ],
+        },
+        {
+            "id": "lu-tamanho",
+            "nome": "A página ocupa a janela toda e sai nítida",
+            "explicacao": [
+                "O que você está escolhendo: se a página aparece grande e nítida, como você pediu (\"Eu não consigo "
+                "ver a página direito\").",
+                "Antes a página tinha sempre 620 pixels de altura, mesmo com a janela maximizada. Agora ela ocupa a "
+                "altura que a janela tem (746 pixels maximizada). A nitidez, comparada com o PDF desenhado direto no "
+                "mesmo tamanho, ficou em 0,99 a 1,05 (1,00 = igual ao PDF).",
+            ],
+            "olhar": "O tamanho da página na janela maximizada e as letras ampliadas.",
+            "texto": "Confirmado: 620 antes, 746 depois (maximizada); nitidez 1,00. Na imagem ampliada as letras e as "
+                     "notas estão firmes, sem borrão.",
+            "selo": "Bom",
+            "ressalva": "",
+            "decisao_do_samuel": PEDIDO_LIVRO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                img("lu-maximizada-zoom.jpg", "Maximizada, folha 301: antes (620 px) e depois (746 px)"),
+                img("lu-nitida-zoom.jpg", "Depois, ampliado 3x: as letras e as notas"),
+                img("lu-maximizada-depois.jpg", "Depois: a janela maximizada inteira"),
+            ],
+        },
+        {
+            "id": "lu-barra",
+            "nome": "A barra de baixo como no UPDF",
+            "explicacao": [
+                "O que você está escolhendo: se os botões de baixo fazem o que o UPDF faz: mostrar uma página ou "
+                "duas, rolar sem parar ou de uma em uma, e caber a página, a altura, a largura ou o tamanho real.",
+                "De fábrica: Uma página, Rolar sem parar ligado, Caber a página. Sem \"Rolar sem parar\", a roda do "
+                "mouse passa de página em página (ou de par em par).",
+            ],
+            "olhar": "A barra de baixo, e as quatro fotos dos jeitos de caber.",
+            "texto": "Os sete botões funcionaram com clique de verdade nos dois tamanhos de janela. A roda, sem "
+                     "\"Rolar sem parar\", foi da 301 para 302, 303, 304, 305 e, no par, 304, 306, 308. \"Caber a altura\" quase "
+                     "não se distingue de \"Caber a página\" e \"Tamanho real\" fica muito grande neste livro (veja a "
+                     "ressalva).",
+            "selo": "Bom, com ressalva",
+            "ressalva": "\"Caber a altura\" sai 15 pixels menor que \"Caber a página\" (parecem iguais); "
+                        "\"Tamanho real\" no Graduale: 2326 pixels por página. Memória no Tamanho real: pico +321 MB, "
+                        "não cresce sem parar.",
+            "decisao_do_samuel": PEDIDO_LIVRO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                img("lu-barra-zoom.jpg", "Ampliado: a barra de baixo"),
+                img("lu-caber-4.jpg", "Os quatro jeitos de caber, em Duas lado a lado (1600x821)"),
+                img("lu-sem-rolar.jpg", "Sem Rolar sem parar: só o par da vez"),
+                img("lu-roda.jpg", "Depois de 3 voltinhas da roda: o par 308-309"),
+            ],
+        },
+        {
+            "id": "lu-escolha",
+            "nome": "A escolha fica guardada",
+            "explicacao": [
+                "O que você está escolhendo: se o jeito escolhido (por exemplo Duas lado a lado + Caber a largura) "
+                "volta na próxima vez que abrir o programa.",
+                "Conferido fechando o programa e abrindo de novo: voltou como estava.",
+            ],
+            "olhar": "Os botões acesos na barra depois de reabrir.",
+            "texto": "Confirmado. O livro, porém, volta na folha 1, não onde você parou.",
+            "selo": "Bom, com ressalva",
+            "ressalva": "Reabre na folha 1 (não lembra a página).",
+            "decisao_do_samuel": PEDIDO_LIVRO + " (guardar a escolha foi pedido da gerente junto com isso)",
+            "bate_com_a_decisao": "sim",
+            "imgs": [img("lu-escolha-guardada.jpg", "Depois de fechar e abrir: Duas lado a lado + Caber a largura")],
+        },
+        {
+            "id": "lu-grade",
+            "nome": "\"Todas as páginas\" nítida e rápida",
+            "explicacao": [
+                "O que você está escolhendo: se a grade de todas as páginas ficou nítida e aparece logo.",
+                "Antes, aberta perto da página 301, a página ficava cinza 28 segundos e depois saía mole (nitidez "
+                "0,69). Agora aparece em 1,5 segundo, com nitidez 0,97.",
+            ],
+            "olhar": "A folha 301 ampliada, antes e depois.",
+            "texto": "Confirmado: 28 s e 0,69 antes, 1,5 s e 0,97 depois. Achei um detalhe: em Duas lado a lado, a "
+                     "grade marca a página do lado (300) em vez da 301.",
+            "selo": "Bom, com ressalva",
+            "ressalva": "Em Duas lado a lado o quadro azul fica na outra página do par.",
+            "decisao_do_samuel": "Rodada 14, 901 A: \"Todas as páginas\" uma a uma, de fábrica; e " + PEDIDO_LIVRO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                img("lu-grade-zoom.jpg", "Ampliado 3x: a folha 301 na grade, antes e depois"),
+                img("lu-grade-depois.jpg", "Depois: a grade inteira (1600x821)"),
+            ],
+        },
+        {
+            "id": "lu-tc-opcoes",
+            "nome": "Tela cheia: todas as opções do filtro",
+            "explicacao": [
+                "O que você está escolhendo: se a tela cheia dos filtros tem as mesmas opções do painel, como você "
+                "perguntou.",
+                "No Preto e branco aparecem: a Força do preto, Só as letras, Limpar a sujeira (5 jeitos) e em Mais "
+                "ajustes o \"Jeito do preto e branco\" (Automático, os 3 de antes e os 10 do ScanTailor), Letra clara "
+                "em fundo escuro, Letras com a cor delas e Reduzir cores. Mexer só mostra; \"Usar\" grava.",
+            ],
+            "olhar": "A coluna da direita, com as opções.",
+            "texto": "Confirmado: 14 jeitos na lista, 10 do ScanTailor. Cada opção muda a página grande (os jeitos "
+                     "mudam de 2% a 9% da página). \"Usar\" gravou Só as letras + Limpeza média + Wolf na página. "
+                     "\"Reduzir cores\" sozinho, no Preto e branco, não muda nada.",
+            "selo": "Bom, com ressalva",
+            "ressalva": "\"Reduzir cores\" sozinho no Preto e branco não faz nada (só com \"Letras com a cor delas\").",
+            "decisao_do_samuel": PEDIDO_TC,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                img("lu-tc-opcoes-zoom.jpg", "Ampliado: as opções do Preto e branco"),
+                img("lu-tc-pb.jpg", "Boécio pág. 7, endireitada e cortada (de fábrica), Preto e branco, 1600x821"),
+                img("lu-tc-lista.jpg", "A lista do Jeito do preto e branco aberta"),
+                img("lu-tc-mexida-max.jpg", "Maximizada, com Só as letras + Limpeza média + Wolf do ScanTailor"),
+                img("lu-tc-painel.jpg", "O painel Filtro da página, com as mesmas opções"),
+            ],
+        },
+        {
+            "id": "lu-tc-igual",
+            "nome": "Tela cheia: a página grande é igual ao PDF?",
+            "explicacao": [
+                "O que você está escolhendo: se o que a tela cheia mostra é o que sai no PDF.",
+                "Gerei o PDF de verdade (o mesmo do botão Processar) com as opções da foto e comparei com a tela "
+                "cheia. As palavras e as manchas são as mesmas, mas a tela mostra as letras mais grossas: preto = os "
+                "dois, vermelho = só na tela, azul = só no PDF.",
+                "No Preto e branco de fábrica a tela e o PDF batem; a diferença aparece com os jeitos do ScanTailor.",
+            ],
+            "olhar": "A grossura das letras na tela e no PDF, e o vermelho em volta das letras.",
+            "texto": "Não está igual. Wolf do ScanTailor: 19,7% de tinta na tela, 16,3% no PDF; Otsu do ScanTailor: "
+                     "14,8% e 12,1%; de fábrica 10,85% e 10,90%. A causa é a conta dos jeitos do ScanTailor, que "
+                     "muda com o tamanho da imagem (tela 150 DPI, PDF 300); o desenho da tela está certo. A prévia do "
+                     "painel deve ter o mesmo (não medi).",
+            "selo": "Melhorar",
+            "ressalva": "Com os jeitos do ScanTailor a tela mostra cerca de 20% mais tinta que o PDF.",
+            "decisao_do_samuel": PEDIDO_TC + "; e o pedido da gerente: \"a página grande igual ao que sai\"",
+            "bate_com_a_decisao": "em parte",
+            "imgs": [
+                img("lu-tc-igual-zoom.jpg", "Ampliado 3x: tela cheia, PDF gerado e a diferença"),
+                img("lu-tc-igual-inteira.jpg", "A página 7 inteira: tela, PDF e diferença"),
+            ],
+        },
+        {
+            "id": "lu-tc-outros",
+            "nome": "Tela cheia: Melhorar e Mágico pro",
+            "explicacao": [
+                "O que você está escolhendo: se faz sentido o Melhorar e o Mágico pro terem \"Mais ajustes\" com "
+                "Letra clara em fundo escuro e Reduzir cores.",
+                "As duas fazem algo nesses filtros: Reduzir cores mudou 14% da página; Letra clara em fundo escuro "
+                "vira a página do avesso, como deve (é para página de letra clara em fundo escuro).",
+            ],
+            "olhar": "A coluna da direita no Melhorar, e a fila de cartões à esquerda.",
+            "texto": "Faz sentido: as duas caixinhas mudam a página nesses filtros. Mas em 1600x821 o cartão do "
+                     "Mágico pro fica cortado embaixo da fila e o clique no meio dele não pega.",
+            "selo": "Bom, com ressalva",
+            "ressalva": "Cartão do Mágico pro cortado na fila em 1600x821; \"Mantem a cor\" sem acento.",
+            "decisao_do_samuel": PEDIDO_TC,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                img("lu-tc-melhorar-zoom.jpg", "Ampliado: as opções do Melhorar"),
+                img("lu-tc-melhorar.jpg", "Melhorar na tela cheia, 1600x821 (o Mágico pro cortado embaixo, à esquerda)"),
+            ],
+        },
+    ],
+    "pergunta": {
+        "id": "lyupdf",
+        "titulo": "Livro aberto e tela cheia: o que você decide?",
+        "explicacao": [
+            "O que você está escolhendo: se o livro aberto como o UPDF e a tela cheia com todas as opções entram no "
+            "programa.",
+            "Cada quadro mostra uma parte, com a foto da janela de verdade. O ponto que mais pesa: na tela cheia, com "
+            "os jeitos do ScanTailor, as letras aparecem mais grossas do que saem no PDF.",
+        ],
+        "opcoes": ["Aprovado", "Melhorar", "Ainda não entendi"],
+    },
+}
+
+(AQUI / "conferencia.json").write_text(json.dumps(conf, ensure_ascii=False, indent=1), encoding="utf-8")
+for q in conf["quadros"]:
+    for i in q["imgs"]:
+        assert (AQUI / "img" / i["src"].split("/")[-1]).exists(), i["src"]
+print("ok", len(conf["quadros"]), "quadros")
