@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T01:00:00Z",
+        "texto": "A \"tinta com a cor\" A e B está feita. Uma pergunta pequena do Implementador B sobre onde aparecem os botões (aba do Implementador B)."
+      },
+      {
         "em": "2026-10-23T00:40:00Z",
         "texto": "Nova conferência: as três melhorias do layout (quadro azul, \"Antes de processar\", miniaturas lembradas), aba Conferência."
       },
@@ -675,10 +679,10 @@
       },
       "fotos": [],
       "testar": [],
-      "falta": "A tinta com a cor (opção B) está sendo feita pelo Implementador B; a pergunta do aviso do \"Pintar por cima\".",
+      "falta": "A tinta com a cor A e B está feita (Implementador B, 22/10); falta a pergunta dos botões, o verificador e a sua conferência. Depois da junção: o aviso do \"Pintar por cima\".",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T23:00:00Z"
+      "mudouEm": "2026-10-23T01:00:00Z"
     },
     {
       "id": "2.10",
@@ -783,21 +787,21 @@
       "id": "implementador-b",
       "nome": "Implementador B",
       "papel": "As 7 ferramentas não começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "\"Tinta com a cor original\": as duas opções separadas (A como está, B escurecida)",
-      "ultimo": "Começou a sua resposta da tinta com a cor (as duas opções), para o 2.18 entrar completo na junção.",
+      "ultimo": "Fez a tinta com a cor, opções A e B (testes no GitHub: 2185 passaram, 0 falharam; velocidade igual). Deixou uma pergunta para você sobre onde aparecem os botões.",
       "ramo": "fase2-ferramentas-2026-10-22",
-      "quando": "2026-10-22T21:45:00Z"
+      "quando": "2026-10-23T01:00:00Z"
     },
     {
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "terminou",
-      "tarefa": "Conferir as três melhorias do layout (quadro azul, \"Antes de processar\", miniaturas lembradas)",
-      "ultimo": "Entregou as três melhorias do layout (aba Conferência), pronto para você conferir, com ressalvas. Próximo: o desentortar, depois das suas três respostas.",
-      "ramo": "verif-layout-melhorias-2026-10-22",
-      "quando": "2026-10-23T00:40:00Z"
+      "estado": "trabalhando",
+      "tarefa": "Conferir a tinta com a cor A e B (2.18); depois o desentortar, quando você responder as três perguntas",
+      "ultimo": "Começou a conferir a tinta com a cor A e B.",
+      "ramo": "verif-tinta-2026-10-23",
+      "quando": "2026-10-23T01:05:00Z"
     },
     {
       "id": "layout",

@@ -347,6 +347,43 @@
      "texto": "A foto de antes foi mal escolhida: era uma página de tinta preta desbotada, e a opção serve para tinta colorida. Refiz com um título vermelho e azul (Livro de Horas 13) e com a mesma Escola 7, cada uma em quatro jeitos."
     }
    ]
+  },
+  {
+   "id": "b-9-botoes-tinta",
+   "titulo": "\"Cor como no livro\" e \"cor escurecida\": os dois botões aparecem só no Preto e branco, ou em qualquer filtro?",
+   "explicacao": [
+    "A sua resposta da tinta com a cor (\"As duas: A e B como opções separadas\") já está feita. Quando você marca uma área como \"Tinta com a cor original, papel branco\", aparecem dois botões: \"cor como no livro\" (A, a de fábrica, igual a hoje) e \"cor escurecida\" (B).",
+    "O que o Implementador B pergunta: a pergunta de antes falava de página em Preto e branco. Ele fez os botões aparecerem em qualquer filtro, porque a escolha \"Marcar como\" é a mesma em todos e a B funciona igual no Original e no Melhorar (o papel vai a branco e a tinta escurece).",
+    "Caminho das fotos: livro novo, de fábrica → girar 0° → não dividiu → endireitar → cortar as bordas → Preto e branco + área A ou B. Colunas: Original · Preto e branco · A · B."
+   ],
+   "exemplos": [
+    {
+     "src": "pb2/horas_p013-titulo-ampliado.jpg",
+     "legenda": "Livro de Horas 13, o título ampliado: na A o vermelho e o azul como no livro; na B vermelho-escuro e azul-marinho."
+    },
+    {
+     "src": "pb2/escola_p007-titulo-ampliado.jpg",
+     "legenda": "Escola 7: na B o título fica marrom-escuro, quase tão forte quanto o Preto e branco."
+    },
+    {
+     "src": "pb2/opusmajus_p003-titulo-ampliado.jpg",
+     "legenda": "Opus Majus 3: \"OPUS MAJUS\" e \"ROGER BACON\" ficam vermelho-escuro na B."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "sempre",
+     "nome": "Em qualquer filtro, como está (recomendo)",
+     "texto": "Os dois botões aparecem sempre que se marca \"tinta com a cor\". A B também serve numa página em Original ou Melhorar.",
+     "imgs": []
+    },
+    {
+     "id": "so-pb",
+     "nome": "Só quando a página está em Preto e branco",
+     "texto": "Nos outros filtros os botões ficam escondidos e vale a A.",
+     "imgs": []
+    }
+   ]
   }
  ]
 }
