@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência tc23: tinta A e B</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conferência tc23: "Tinta com a cor original" em dois jeitos (item 2.18)</h1>
+<p>Verificador, 23/10/2026. Ramo conferido: <code>fase2-ferramentas-2026-10-22</code> (código em <code>8226f33</code> e <code>41fa7bc</code>, ponta
+<code>639136a</code>); antes = <code>f26407c</code>. Ramo do verificador: <code>verif-tinta-2026-10-23</code>.</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR.</strong> O jeito A ("cor como no livro") sai igual ao de antes, ponto por ponto; o B ("cor
+escurecida") deixa a tinta mais escura e com a cor mais forte, só dentro da área; os dois botões aparecem na janela de
+verdade e cada área guarda o seu jeito, inclusive fechando e abrindo o programa. Ressalvas abaixo.</p>
+<h2>Máquina ou olho, item por item</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A igual ao de antes</td>
+<td>máquina: soma de cada PDF, código antigo x novo, caminho inteiro</td>
+<td>25 de 25 iguais (5 páginas × Preto e branco, Original e Melhorar; uma área só e quatro áreas juntas: duas "tinta com a cor" que se cruzam, uma "tinta preta" e um "pintar por cima")</td>
+</tr>
+<tr>
+<td>Projeto antigo sem <code>tinta_escurecida</code></td>
+<td>máquina: <code>projeto.json</code> gravado pelo código antigo, aberto no novo</td>
+<td>4 de 4: as áreas abrem como A e o PDF sai igual ao do antigo</td>
+</tr>
+<tr>
+<td>Fora da área nada muda</td>
+<td>máquina: ponto a ponto, A x B e sem área x B, 200 DPI</td>
+<td>0 pontos diferentes fora da área nas 10 (5 páginas × 2 filtros); uma exceção antiga no Graduale, ver ressalvas</td>
+</tr>
+<tr>
+<td>B como prometido</td>
+<td>máquina + olho</td>
+<td>brilho da tinta cai para 52 a 65 % do A; a cor sobe 10 a 23 % (medido no PDF); o papel da área continua branco</td>
+</tr>
+<tr>
+<td>Duas áreas que se cruzam</td>
+<td>máquina</td>
+<td>manda a última desenhada, nos dois sentidos (2 de 2)</td>
+</tr>
+<tr>
+<td>Os dois botões na janela</td>
+<td>janela de verdade (fora da tela, cliques do Windows, WM_CLOSE)</td>
+<td>24 de 24 (livro novo) e 5 de 5 (programa fechado e aberto de novo)</td>
+</tr>
+<tr>
+<td>Código de antes na janela</td>
+<td>janela de verdade</td>
+<td>9 de 9: lá não existem os dois botões (confere que a foto do "antes" é do antigo)</td>
+</tr>
+<tr>
+<td>Teste novo <code>test_tinta_escurecida.py</code></td>
+<td>máquina</td>
+<td>8 passam no novo; no antigo 7 falham e 1 passa (o "livro novo sai igual", que tem de passar nos dois)</td>
+</tr>
+<tr>
+<td>Suíte e velocidade</td>
+<td>GitHub (lidas; o código não mudou depois de <code>41fa7bc</code>)</td>
+<td>suíte 39850503362: 2185 passaram, 0 falharam, botões 234 ações sem falha; velocidade 39849559789: "igual" (abrir +0,4 %, trocar de página +1,3 %, Mágico pro −0,7 %, Preto e branco +0,1 %)</td>
+</tr>
+</tbody>
+</table>
+<p>As áreas são minhas, não as do Implementador B, para a prova não depender das dele.</p>
+<h2>Caminho de cada foto</h2>
+<p>Livro novo de cada página-gabarito, ajustes de fábrica: girar (0°, a análise não precisou) → dividir (não, de
+fábrica) → endireitar (sim) → cortar as bordas (sim) → filtro (Preto e branco ou Original) → área marcada à mão como
+"tinta com a cor, papel branco", jeito A ou B. Só páginas que vão ser impressas.</p>
+<h2>O que vi em cada página</h2>
+<ul>
+<li><strong>Livro de Horas 13</strong> (título "TABLE / DE CE QUI EST / CONTENU EN CE LIVRE", vermelho e azul): A traz de volta o
+  vermelho e o azul claros do livro; B fica vermelho-escuro e azul-marinho, bem legível. No Original, a área vira um
+  retângulo branco sobre o creme.</li>
+<li><strong>Na Escola de Jesus 7</strong> (título cinza-marrom): A fica claro como no livro, mais fraco que o Preto e branco; B fica
+  marrom-escuro, quase tão forte quanto o Preto e branco.</li>
+<li><strong>Opus Majus 3</strong> (folha de rosto, parte de baixo: "UNIVERSITY OF PENNSYLVANIA PRESS" e "MCMXXVIII" em vermelho):
+  A vermelho como no livro; B vermelho-escuro; "PHILADELPHIA" e "LONDON..." (pretos) ficam pretos.</li>
+<li><strong>Livro de Horas 11</strong> (folha de rosto, escolhida por mim: título vermelho e azul dentro da moldura oval): A como no
+  livro; B vermelho-escuro e azul-marinho. <strong>Os cantos da moldura laranja e o dourado das letras de "LOUIS" que caem
+  dentro do retângulo também escurecem na B</strong> (o dourado vira oliva-escuro). O "L" de "LOUIS" ficou fora da minha área
+  e saiu preto (escolha minha da área, não defeito).</li>
+<li><strong>Graduale 221</strong> (a mais, rubricas vermelhas no meio do texto): A traz o vermelho das rubricas e das linhas da pauta,
+  com a tinta marrom clara; B deixa o vermelho escuro e a tinta marrom-escura.</li>
+</ul>
+<h2>Na janela</h2>
+<p>Livro de Horas 13 (cópia do gabarito), o programa de verdade fora da tela. Cliquei no cartão Preto e branco,
+escolhi o Retângulo na trilha, abri o Propriedades pelo ícone e cliquei em "tinta com a cor, papel branco": aparecem,
+logo abaixo, "cor como no livro" (escolhido de fábrica) e "cor escurecida". Cliquei em "cor escurecida", arrastei um
+retângulo no título (saiu B); cliquei em "cor como no livro", arrastei outro (saiu A, e a primeira continuou B). O
+"Ver de perto" mostra as duas áreas lado a lado no mesmo título. Troquei a página para Original: os dois botões
+continuam aparecendo e as áreas guardam o jeito. Escolhendo "letra e traço", os botões somem; voltando, o último
+jeito escolhido continua. Fechei com WM_CLOSE, abri o programa de novo com o mesmo livro: as duas áreas voltaram, B e
+A, e o <code>projeto.json</code> guarda o campo.</p>
+<p><strong>Pergunta 9 (aberta, não decidi):</strong> os prints mostram os dois casos, Preto e branco e Original.</p>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>B escurece tudo o que for "tinta" dentro da área</strong>, não só a letra: na Horas 11, os cantos da moldura e o dourado
+   das letras. Já estava na pergunta 8 que o Samuel respondeu; continua valendo.</li>
+<li><strong>A cor fica 10 a 23 % mais forte, não 25 %</strong>, medida no PDF pronto (o programa multiplica por 1,25, mas a cor muito
+   escura não cabe toda na tela/papel e é cortada). O brilho cai para 52 a 65 % (a conta é 50 %; a medida mistura a
+   beirada clara de cada letra).</li>
+<li><strong>Graduale 221 em Preto e branco, defeito antigo:</strong> com qualquer área por cima (A ou B), a faixa escura da beirada
+   esquerda (fora da área) sai um pouco diferente de sem área (cerca de 4.900 pontos com diferença visível, e outros
+   26.000 com diferença de 1 em 255). O A é igual ao do código antigo, então já era assim; não é desta mudança.</li>
+<li><strong>No Original, a área vira um retângulo branco</strong> no papel creme (A e B; já era assim). Virou a pergunta tc23-1.</li>
+<li><strong>Botões soltos por um instante:</strong> cada vez que se escolhe um tipo no "Marcar como", os botões do painel aparecem
+   por um instante como janelinhas soltas (o meu roteiro as pôs fora da tela). Acontece igual no código de antes; é o
+   mesmo achado de 22/10 (vlm22), para a Lista de bugs.</li>
+<li>Clicar num cartão de filtro também abre o "Ver de perto" (é assim de propósito); o roteiro fotografou e fechou com
+   WM_CLOSE.</li>
+<li>Não testei roda do mouse nem a Melhorar/Mágico pro na janela (as somas do Melhorar foram feitas na máquina).</li>
+</ol>
+<h2>Onde está</h2>
+<ul>
+<li>Fotos: <code>relatorios/conferir/tinta-2026-10-23/img/</code> (fora do git).</li>
+<li>Números: <code>maquina/somas-antigo-f26407c.json</code>, <code>maquina/somas-novo-639136a.json</code>,
+  <code>maquina/projeto-antigo/abrir-antigo.json</code>, <code>maquina/cruzadas/cruzadas.json</code>, <code>img-b/numeros-b.json</code>,
+  <code>maquina/janela-*/conferencias.txt</code>.</li>
+<li>Roteiros: <code>scripts/tinta.py</code>, <code>scripts/janela.py</code>, <code>scripts/base.py</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 22/10/2026 às 18:46</p>
+</body>
+</html>
