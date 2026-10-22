@@ -145,3 +145,15 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - Ordens: "Tela nova: etapas 6 e 7 do layout" — **juntar** (18:20:18) e **continuar** (18:20:26).
 - `cx-avisos-demais` (2ª volta, 19:40 UTC): **Ainda não entendi** — "Foi resolvido? o programa parou de confundir?" Respondido na Central: ainda não; o conserto (contar só o que parece impresso) vai ao Implementador A depois do 2.12, e o verificador mede de novo nas 37 páginas.
 - Cobrança do Samuel no chat (22/10): "Tem coisa sem foto lá nas duas perguntas que você colocou pra mim e tem coisa sem ser bem explicada". Feito: desenhos `img/corte-uma-vez.svg` e `img/riscos-pagina.svg` + fotos nas perguntas `a-212-desentortar` e `a-comer-pagina`; corrigida a explicação do `cx-etiqueta` (antes à esquerda, depois à direita).
+
+## Conferência das 7 ferramentas (`fr22`) e caixa do conteúdo, 22/10/2026 (20:25-21:00 UTC)
+- `fr22` DECISÃO FINAL: **Aprovado**
+- `fr-chuvisco`: **Deixar como está (aviso só acima de 20)**
+- `fr-210`, `fr-216`, `fr-217`: **Está bom**
+- `fr-218`: **Está bom** — "Ele fez, mas apagou as letras juntos, não sei se foi erro seu ou do programa."
+- `fr-219`: **Está bom** — "Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro da receita."
+- `fr-24`: **Está bom** — "Mas se eu quiser redimensionar isso dentro do programa eu vou conseguir né?"
+- `fr-26`: **Está bom** — "Só tem que melhorar esse layout, cheio de letras uma em cima da outra , tudo bagunçado e dificil de saber o que é o que."
+- `cx-etiqueta` (2ª volta): **Está bom**; `cx-avisos-demais` (3ª volta): **Está bom**
+- `cx22` DECISÃO FINAL (de novo): **Aprovado** — "vai para o programa assim, mas vai ser investigado no futuro, esse problema."
+- Respondidas na Central: fr-218 (erro do teste; pergunta nova `fr-218-aviso`), fr-24 (sim), fr-219 (anotado), fr-26 (pergunta `fr-26-qual`), cx22 (registrado).

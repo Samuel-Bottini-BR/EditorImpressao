@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T23:00:00Z",
+        "texto": "As 7 ferramentas do Implementador B foram aprovadas. Respondi as suas perguntas na conferência e deixei duas perguntas pequenas (o aviso do \"Pintar por cima\" e de qual tela você falou no 2.6)."
+      },
+      {
         "em": "2026-10-22T22:30:00Z",
         "texto": "Nova conferência: as 7 ferramentas do Implementador B (aba Conferência), com uma pergunta sobre o aviso do \"Tirar o chuvisco\"."
       },
@@ -554,16 +558,17 @@
       "titulo": "Perguntas do Implementador B (margens, impressão, luz, áreas)",
       "item": "2.4",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Margens e alinhamento iguais em todas as páginas.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
-      "mudouEm": "2026-10-22T22:30:00Z",
+      "falta": "",
+      "mudouEm": "2026-10-22T23:00:00Z",
       "relatorio": "perg-b",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c"
@@ -573,16 +578,17 @@
       "titulo": "Tamanho final e arquivo para impressão",
       "item": "2.6",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T22:30:00Z",
-      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
+      "mudouEm": "2026-10-22T23:00:00Z",
+      "falta": "Melhoria depois da junção: a tela \"bagunçada\" (pergunta de qual tela). Ressalvas: a escala de 120% corta a página; \"são 1 cadernos\".",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c"
     },
@@ -591,90 +597,95 @@
       "titulo": "Usar todos os núcleos do processador",
       "item": "2.16",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Processar várias páginas ao mesmo tempo.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
+      "falta": "",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T22:30:00Z"
+      "mudouEm": "2026-10-22T23:00:00Z"
     },
     {
       "id": "2.19",
       "titulo": "Unidades cm/mm e perfis de configuração",
       "item": "2.19",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Escolher cm ou mm e guardar perfis de ajustes. O tema já está feito.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
+      "falta": "Melhoria depois da junção: a caixa de escolher o que entra na receita.",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T22:30:00Z"
+      "mudouEm": "2026-10-22T23:00:00Z"
     },
     {
       "id": "2.17",
       "titulo": "Igualar a luz e suavizar",
       "item": "2.17",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Igualar a luz da página como filtro de imagem.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (7 ferramentas) e a pergunta do chuvisco.",
+      "falta": "",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T22:30:00Z"
+      "mudouEm": "2026-10-22T23:00:00Z"
     },
     {
       "id": "2.18",
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (7 ferramentas). A tinta com a cor (opção B) está sendo feita pelo Implementador B.",
+      "falta": "A tinta com a cor (opção B) está sendo feita pelo Implementador B; a pergunta do aviso do \"Pintar por cima\".",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T22:30:00Z"
+      "mudouEm": "2026-10-22T23:00:00Z"
     },
     {
       "id": "2.10",
       "titulo": "PDF em duas camadas",
       "item": "2.10 e 1.6",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Letra em cima, fundo embaixo, como opção.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
-        "github": "sim"
+        "github": "sim",
+        "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
+      "falta": "",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T22:30:00Z"
+      "mudouEm": "2026-10-22T23:00:00Z"
     },
     {
       "id": "1.4",

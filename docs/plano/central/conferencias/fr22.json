@@ -63,6 +63,18 @@
      "src": "fr22/img/janela_24_margens_na_tela_filtro.jpg",
      "legenda": "Na janela: os cartões dos filtros já com a margem"
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T20:57:44Z",
+     "texto": "Mas se eu quiser redimensionar isso dentro do programa eu vou conseguir né?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T23:00:00Z",
+     "texto": "Sim. As quatro margens (em cima, embaixo, dentro e fora) são números que você digita na janela; de fábrica vêm 10, 5, 10 e 5 mm (foto \"janela_24_margens\"). E na hora de imprimir, em \"Montar para imprimir\", o tamanho da página sobe e desce pela escala, e cada lado (páginas da esquerda e da direita) tem a sua."
+    }
    ]
   },
   {
@@ -110,6 +122,18 @@
     {
      "src": "fr22/img/26_janela_graduale.jpg",
      "legenda": "O arquivo gravado pela janela: a dobra dá certo"
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T20:58:56Z",
+     "texto": "Só tem que melhorar esse layout, cheio de letras uma em cima da outra , tudo bagunçado e dificil de saber o que é o que."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T23:00:00Z",
+     "texto": "Fica anotado como melhoria. Só preciso saber de qual tela você falou: pode ser a foto do livreto, onde os números vermelhos (\"p. 20\", \"p. 1\"...) foram postos pelo verificador por cima das páginas só para conferir a ordem (eles não vão para o PDF), ou a janela \"Montar para imprimir\" do programa. Pergunta logo abaixo."
     }
    ]
   },
@@ -227,6 +251,18 @@
      "src": "fr22/img/janela_218_area_colada.jpg",
      "legenda": "Na janela: a área copiada e colada"
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T20:56:50Z",
+     "texto": "Ele fez, mas apagou as letras juntos, não sei se foi erro seu ou do programa."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T23:00:00Z",
+     "texto": "Foi erro do teste, não do programa. No Marial 7, na última coluna (\"Retângulo à mão: Pintar por cima\"), o retângulo foi desenhado cobrindo a mancha E o começo das linhas (veja o quadro vermelho passando por cima do \"P\" e de \"Or commissaõ\"). \"Pintar por cima\" pinta tudo o que está dentro do retângulo, então pintou as letras junto. Na coluna do meio (\"pintar de branco\" na área que o programa achou), a mancha sai e as letras ficam. Isso abre uma pergunta nova, logo abaixo: o programa deve avisar quando um retângulo de pintar cobre letras?"
+    }
    ]
   },
   {
@@ -249,6 +285,18 @@
     {
      "src": "fr22/img/janela_219_receita_posta.jpg",
      "legenda": "A receita posta num livro novo"
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T20:55:38Z",
+     "texto": "Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro da receita."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T23:00:00Z",
+     "texto": "Anotado como melhoria do 2.19 para o agente de layout, depois da junção: deixar mais claro como se escolhe o que entra na receita."
     }
    ]
   }
@@ -313,6 +361,72 @@
        "legenda": "Boécio 7: 0, 10, 15 e 20"
       }
      ]
+    }
+   ]
+  },
+  {
+   "id": "fr-218-aviso",
+   "titulo": "\"Pintar por cima\": avisar quando o retângulo cobre letras?",
+   "explicacao": [
+    "Por que pergunto: no teste do Marial 7 o retângulo de \"Pintar por cima\" foi desenhado em cima do começo das linhas, e as letras foram pintadas junto com a mancha. O programa fez o que a ferramenta manda (pinta tudo dentro do retângulo), mas o Kaique pode fazer o mesmo sem querer.",
+    "Foto: a última coluna mostra o que acontece; a coluna do meio, o jeito que guarda as letras (pintar de branco só a área que o programa achou)."
+   ],
+   "exemplos": [
+    {
+     "src": "fr22/img/218_marial_p007_mancha.jpg",
+     "legenda": "Marial 7: na última coluna o retângulo vermelho cobre o começo das linhas, e elas somem."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Avisar (recomendo)",
+     "texto": "Quando o retângulo de \"Pintar por cima\" cobre letras, aparece um aviso (\"Este retângulo cobre letras; elas vão ser pintadas também\") com \"Pintar assim mesmo\" e \"Voltar\". Nada é pintado sem a pessoa confirmar.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Não avisar",
+     "texto": "Fica como está: pinta tudo dentro do retângulo; o Ctrl+Z desfaz.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "fr-26-qual",
+   "titulo": "\"Letras uma em cima da outra\": de qual tela você falou?",
+   "explicacao": [
+    "Para eu mandar a melhoria para o lugar certo."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "foto",
+     "nome": "A foto do livreto (os números vermelhos por cima das páginas)",
+     "texto": "Os números vermelhos são marcas do verificador para conferir a ordem; não vão para o PDF. Nas próximas fotos ele põe o número fora da página, numa faixa em cima.",
+     "imgs": [
+      {
+       "src": "fr22/img/26_livreto_fabrica.jpg",
+       "legenda": "A foto do livreto, com os números do verificador por cima."
+      }
+     ]
+    },
+    {
+     "id": "janela",
+     "nome": "A janela \"Montar para imprimir\" do programa",
+     "texto": "A janela vai para o agente de layout depois da junção, para ficar mais clara e organizada.",
+     "imgs": [
+      {
+       "src": "fr22/img/janela_26_montar_para_imprimir.jpg",
+       "legenda": "A janela \"Montar para imprimir\"."
+      }
+     ]
+    },
+    {
+     "id": "as-duas",
+     "nome": "As duas",
+     "texto": "",
+     "imgs": []
     }
    ]
   }
