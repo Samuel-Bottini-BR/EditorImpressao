@@ -2044,6 +2044,12 @@ class TelaConferir(QWidget):
         linha_luz.addWidget(self.seletor_luz_chuvisco)
         linha_luz.addStretch()
         dentro.addLayout(linha_luz)
+        # os avisos das opcoes de luz (Samuel, 22/10/2026)
+        self.aviso_luz = QLabel("")
+        self.aviso_luz.setObjectName("fraco")
+        self.aviso_luz.setWordWrap(True)
+        self.aviso_luz.setVisible(False)
+        dentro.addWidget(self.aviso_luz)
 
         # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
         # e branco escolhido (ver _configurar_medidor). Compacto: a altura da
@@ -2690,7 +2696,7 @@ class TelaConferir(QWidget):
 
         for chave, cartao in self.cartoes.items():
             if chave == pagina.filtro:
-                cartao.definir_amostra(limitar_altura(img, 260))
+                cartao.definir_amostra(limitar_altura(self._com_as_margens(img), 260))
 
         outros = [chave for chave in self.cartoes if chave != pagina.filtro]
         if TIRAR_FUNDO in outros:
@@ -2714,7 +2720,8 @@ class TelaConferir(QWidget):
         if (chave_cache == self._cartoes_cache_chave
                 and all(c in self._cartoes_cache for c in a_pintar)):
             for chave in a_pintar:
-                self.cartoes[chave].definir_amostra(self._cartoes_cache.get(chave))
+                self.cartoes[chave].definir_amostra(
+                    self._com_as_margens(self._cartoes_cache.get(chave)))
             return
 
         for chave in a_pintar:
@@ -2725,6 +2732,37 @@ class TelaConferir(QWidget):
             pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
             chave=chave_cache,
         )
+
+    def _com_as_margens(self, img):
+        """Item 2.4 (Samuel, 22/10/2026: "Sim, a tela mostra igual ao que
+        sai"): com as margens iguais ligadas, a pagina dos cartoes aparece com
+        elas, como no PDF. Enquanto as paginas nao foram medidas, pede a
+        medida por tras (TarefaMedirAsMargens) e mostra sem margem; quando
+        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo."""
+        from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
+
+        if img is None or self.projeto is None or not getattr(self.projeto, "margens_iguais", False):
+            return img
+        conta = conta_das_margens_para_a_tela(self.projeto)
+        if conta is None:
+            self._medir_as_margens()
+            return img
+        return margens_na_tela(img, self.projeto, self.projeto.paginas[self.indice_pagina], conta)
+
+    def _medir_as_margens(self) -> None:
+        from ui.tarefas import TarefaMedirAsMargens
+
+        tarefa = getattr(self, "_tarefa_das_margens", None)
+        if tarefa is not None and tarefa.isRunning():
+            return
+        self._tarefa_das_margens = TarefaMedirAsMargens(self.projeto)
+        self._tarefa_das_margens.pronta.connect(self._margens_medidas)
+        self._tarefa_das_margens.start()
+
+    def _margens_medidas(self) -> None:
+        """A medida das margens chegou: pinta os cartoes de novo."""
+        self._cartoes_cache_chave = None
+        self.atualizar()
 
     def _chave_dos_cartoes(self) -> str:
         """Tudo de que os cartoes da pagina da vez dependem: o giro, a divisao,
@@ -2820,7 +2858,7 @@ class TelaConferir(QWidget):
         a_pintar = self._cartoes_a_pintar(list(resultados), pagina)
         for chave, amostra in resultados.items():
             if chave in self.cartoes and chave in a_pintar:
-                self.cartoes[chave].definir_amostra(amostra)
+                self.cartoes[chave].definir_amostra(self._com_as_margens(amostra))
 
         self._conferir_qualidade_do_preto_e_branco(pagina, resultados)
 
@@ -3806,6 +3844,9 @@ class TelaConferir(QWidget):
         self.seletor_luz_chuvisco.blockSignals(True)
         self.seletor_luz_chuvisco.setValue(luz_scantailor.chuvisco(pagina))
         self.seletor_luz_chuvisco.blockSignals(False)
+        avisos = luz_scantailor.avisos_da_pagina(pagina)
+        self.aviso_luz.setText(" ".join(avisos))
+        self.aviso_luz.setVisible(bool(avisos))
         if eh_preto_e_branco:
             ligado, escolhas = misto.escolhas_da_pagina(self.projeto, pagina)
             self.escolhas_misto.mostrar(ligado, escolhas.fora_do_texto,

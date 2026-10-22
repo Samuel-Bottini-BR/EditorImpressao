@@ -133,3 +133,25 @@ Sem conserto de código, sem teste de reversão (não houve bug). Imagens novas 
   41,3 → 29,1 s (−30%); trocar de página 4,59 → 4,23 s ("igual"). É o 2.16 (várias folhas ao mesmo tempo).
 - Filtro `39791117352` (`9804b98` → `4990e13`, os 7 itens): ainda rodando ao entregar.
 - Suíte `39794419960` (`d652248`): 2173 passaram, 0 falharam; botões 234 ações, 0 falhas.
+
+## Respostas do Samuel (22/10/2026, via gerente) e o que foi feito
+
+- **Pergunta 8 (2.18, "tinta com a cor"):** fotos novas em `relatorios/conferir/fase2-novas/pergunta-8/`. As fotos
+  são da Horas 13 (título vermelho e azul) e da Escola 7, em 4 painéis: Original · Preto e branco · A (o programa)
+  · B (escurecida, SIMULADA). O script é `scripts/pergunta8.py`. **Não mexer até a resposta.**
+- **Pergunta 3 (montagem antiga): "Deixar os dois".** Ficam os dois, com nomes novos:
+  - "Montar cadernos no tamanho do scan (sem A4, sem margem)", a caixinha antiga da tela "O que fazer" e do painel
+    "Automático";
+  - "montar para imprimir em A4 (com margens)...", o botão da tela "Ficou pronto!".
+- **2.4: "Ficam as duas"** (a do ScanTailor como opção desligada e a da impressão): nada a mudar.
+- **2.4: "Sim, a tela mostra igual ao que sai".** Os cartões da aba Filtro (a página da vez nos filtros) aparecem com as
+  margens iguais quando ligadas.
+  - A tela mede as páginas por trás (`ui/tarefas.TarefaMedirAsMargens`, só números por página, cache
+    `core.pipeline._TAMANHOS_PRONTOS`).
+  - Enquanto mede, mostra sem margem; o processar reaproveita a medida (não desenha de novo).
+  - Ressalva: a tela ampliada ("comparar") ainda mostra sem margem.
+- **2.6:** página deitada com o alto à esquerda, como está. O "Falando com a impressora (pode demorar um pouco)" já
+  aparece ao mandar imprimir.
+- **2.17:** "Igualar a luz" em todos os filtros, com aviso no Melhorar e no Mágico pro; "Tirar o chuvisco" de 0 a 100,
+  com aviso acima de 20. Os textos estão em `core/luz_scantailor.py`, e a frase aparece embaixo da linha da luz na
+  aba Filtro.

@@ -286,7 +286,10 @@ class TelaOpcoes(QWidget):
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
-            "Montar cadernos para impressão",
+            # Pergunta 3 do Samuel (22/10/2026): "Deixar os dois" - este, o de
+            # sempre, ao lado da montagem nova em A4 da tela "Ficou pronto!"; o
+            # nome diz a diferenca para o Kaique.
+            "Montar cadernos no tamanho do scan (sem A4, sem margem)",
             "para imprimir, dobrar ao meio e costurar", opcoes,
         )
         self.painel_caderno = self._montar_caderno()

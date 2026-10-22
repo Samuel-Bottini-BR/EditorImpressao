@@ -828,7 +828,7 @@ class PainelAutomatico(Painel):
              + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")),
             (bool(projeto.limpar), "Limpar a folha", "tira o amarelado",
              f"filtro do livro: {NOMES_AMIGAVEIS.get(filtro, filtro)}"),
-            (bool(projeto.montar_cadernos), "Montar cadernos para impressão",
+            (bool(projeto.montar_cadernos), "Montar cadernos no tamanho do scan (sem A4, sem margem)",
              "para imprimir, dobrar ao meio e costurar", ""),
         ]
 

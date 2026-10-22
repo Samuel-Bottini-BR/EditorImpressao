@@ -2595,6 +2595,12 @@ def tamanho_da_pagina_pronta(img_folha: np.ndarray, folha: ConfigFolha,
     inteira = preparar_para_recorte(img_folha, folha, pagina, projeto)
     if _precisa_de_geometria(pagina, projeto):
         _guardar_geometria(folha, pagina, projeto, img_folha, doc)
+    chave = _chave_da_geometria(folha, pagina, projeto)
+    if chave is not None:
+        with _TRANCA_GEOMETRIAS:
+            pronto = _TAMANHOS_PRONTOS.get(chave)
+        if pronto is not None:
+            return pronto
     geometria = _geometria_guardada(folha, pagina, projeto)
     if geometria is None:
         geometria = _geometria(inteira, pagina, projeto, dpi=projeto.qualidade_dpi)
@@ -2602,9 +2608,81 @@ def tamanho_da_pagina_pronta(img_folha: np.ndarray, folha: ConfigFolha,
     altura, largura = inteira.shape[:2]
     caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
     if caixa is None:
-        return (largura, altura), (0.5, 0.5)
-    x0, y0, x1, y1 = caixa
-    return (x1 - x0, y1 - y0), ((x0 + x1) / 2 / max(1, largura), (y0 + y1) / 2 / max(1, altura))
+        pronto = ((largura, altura), (0.5, 0.5))
+    else:
+        x0, y0, x1, y1 = caixa
+        pronto = ((x1 - x0, y1 - y0),
+                  ((x0 + x1) / 2 / max(1, largura), (y0 + y1) / 2 / max(1, altura)))
+    if chave is not None:
+        with _TRANCA_GEOMETRIAS:
+            _TAMANHOS_PRONTOS[chave] = pronto
+            while len(_TAMANHOS_PRONTOS) > MAX_GEOMETRIAS:
+                _TAMANHOS_PRONTOS.popitem(last=False)
+    return pronto
+
+
+# Item 2.4: o tamanho da pagina pronta (e o centro do conteudo) de cada
+# pagina ja medida, na mesma chave do corte (_GEOMETRIAS): a tela de conferir
+# monta a conta das margens iguais com eles, sem desenhar nada (decisao do
+# Samuel, 22/10/2026: "Sim, a tela mostra igual ao que sai"). Seguro esvaziar
+# a qualquer hora (mede de novo).
+_TAMANHOS_PRONTOS: "OrderedDict[tuple, tuple]" = OrderedDict()
+
+
+def tamanhos_ja_medidos(projeto: Projeto) -> list | None:
+    """Os (tamanho, centro) de todas as paginas ativas, se todas ja foram
+    medidas no estado de agora (corte, angulo, giro); None se falta alguma."""
+    medidos = []
+    for pagina in projeto.paginas_ativas:
+        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto)
+        if chave is None:
+            return None
+        with _TRANCA_GEOMETRIAS:
+            pronto = _TAMANHOS_PRONTOS.get(chave)
+        if pronto is None:
+            return None
+        medidos.append(pronto)
+    return medidos
+
+
+def conta_das_margens_para_a_tela(projeto: Projeto):
+    """Item 2.4: a conta das margens iguais, se todas as paginas ja foram
+    medidas (senao None: a tela pede a medida por tras e mostra sem
+    margem ate la). Mesma conta do processar."""
+    if not getattr(projeto, "margens_iguais", False):
+        return None
+    medidos = tamanhos_ja_medidos(projeto)
+    if medidos is None:
+        return None
+    ms = margens_scantailor
+    conta = ms.montar_a_conta([t for t, _c in medidos], projeto.qualidade_dpi,
+                              ms.Margens.de(getattr(projeto, "margens_mm", None)),
+                              ms.alinhamento_valido(getattr(projeto, "margens_alinhamento", None)))
+    conta.centros = [c for _t, c in medidos]
+    return conta
+
+
+def margens_na_tela(img: np.ndarray, projeto: Projeto, pagina: ConfigPagina, conta) -> np.ndarray:
+    """Item 2.4: a pagina da tela (em qualquer resolucao) com as margens iguais,
+    como sai no PDF: a resolucao da imagem sai do tamanho medido da pagina.
+    Sem conta, ou pagina fora da lista, devolve `img`."""
+    if conta is None or img is None:
+        return img
+    ativas = projeto.paginas_ativas
+    try:
+        posicao = next(i for i, p in enumerate(ativas) if p is pagina)
+    except StopIteration:
+        return img
+    medidos = tamanhos_ja_medidos(projeto)
+    if medidos is None or posicao >= len(medidos):
+        return img
+    altura_px = medidos[posicao][0][1]
+    dpi = projeto.qualidade_dpi * img.shape[0] / max(1, altura_px)
+    altura, largura = img.shape[:2]
+    suaves, livro = conta.margens_da_pagina(
+        posicao, (round(largura * projeto.qualidade_dpi / dpi), altura_px),
+        projeto.qualidade_dpi, conta.centros[posicao] if posicao < len(conta.centros) else None)
+    return margens_scantailor.compor_com_margens(img, dpi, conta.margens, suaves, livro)
 
 
 def medir_o_livro_para_as_margens(projeto: Projeto, doc, ativas: list[ConfigPagina],
@@ -2629,6 +2707,15 @@ def medir_o_livro_para_as_margens(projeto: Projeto, doc, ativas: list[ConfigPagi
         _avisar(progresso, feito, total,
                 f"Medindo as páginas para as margens iguais: {feito + 1} de {total}")
         folha = projeto.folhas[pagina.folha]
+        # ja medida neste estado (pela tela ou por um processar de antes):
+        # nao desenha a folha de novo
+        chave = _chave_da_geometria(folha, pagina, projeto)
+        with _TRANCA_GEOMETRIAS:
+            pronto = _TAMANHOS_PRONTOS.get(chave) if chave is not None else None
+        if pronto is not None:
+            tamanhos.append(pronto[0])
+            centros.append(pronto[1])
+            continue
         if folha_atual != folha.indice:
             img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
             folha_atual = folha.indice

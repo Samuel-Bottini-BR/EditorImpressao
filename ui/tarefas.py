@@ -173,6 +173,41 @@ class TarefaProcessar(QThread):
             self.falhou.emit(_mensagem_amigavel(erro))
 
 
+class TarefaMedirAsMargens(QThread):
+    """Item 2.4 (decisao do Samuel, 22/10/2026: "Sim, a tela mostra igual ao
+    que sai"): mede por tras o tamanho de cada pagina pronta, para a tela
+    poder mostrar as margens iguais como no PDF
+    (core.pipeline.medir_o_livro_para_as_margens; uma folha por vez, so
+    numeros ficam guardados). Nunca deixa excecao escapar."""
+
+    pronta = Signal()
+
+    def __init__(self, projeto: Projeto) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        from core.pdf_io import abrir_pdf
+        from core.pipeline import medir_o_livro_para_as_margens
+
+        try:
+            doc = abrir_pdf(self.projeto.caminho_entrada)
+            try:
+                medir_o_livro_para_as_margens(self.projeto, doc, self.projeto.paginas_ativas,
+                                              cancelado=lambda: self._cancelar)
+            finally:
+                doc.close()
+            self.pronta.emit()
+        except Cancelou:
+            pass
+        except Exception:  # noqa: BLE001
+            registrar_erro("medir as margens iguais", traceback.format_exc())
+
+
 class TarefaConverterZonas(QThread):
     """Converte as zonas do livro inteiro para o formato novo, por tras, ao
     abrir (decisao Z1 (b) do Samuel, 05/10/2026: "O livro inteiro, por tras,

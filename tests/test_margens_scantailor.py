@@ -228,3 +228,30 @@ def test_projeto_antigo_sem_os_campos_abre_desligado():
     projeto = Projeto.de_dicionario(dados)
     assert projeto.margens_iguais is False
     assert projeto.margens_mm == [10.0, 5.0, 10.0, 5.0]
+
+
+def test_a_tela_mostra_as_margens_como_no_pdf(tmp_path):
+    """Decisão do Samuel (22/10/2026): "Sim, a tela mostra igual ao que sai".
+    Medidas as páginas, a página da tela (em outra resolução) ganha as mesmas
+    margens: a proporção dela é a da página do PDF."""
+    from core import pipeline
+    from core.pdf_io import abrir_pdf, pagina_para_array
+
+    _pdf(tmp_path / "e.pdf", TAMANHOS)
+    projeto = _projeto(tmp_path / "e.pdf", tmp_path / "s.pdf", 3)
+    projeto.margens_iguais = True
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        pipeline.medir_o_livro_para_as_margens(projeto, doc, projeto.paginas_ativas)
+        conta = pipeline.conta_das_margens_para_a_tela(projeto)
+        assert conta is not None
+        pagina = projeto.paginas[0]
+        tela = pagina_para_array(doc, 0, dpi=50)               # a "prévia", em 50 DPI
+    finally:
+        doc.close()
+    com = pipeline.margens_na_tela(tela, projeto, pagina, conta)
+    processar(projeto)
+    largura_pt, altura_pt = _tamanhos_pt(tmp_path / "s.pdf")[0]
+    assert com.shape[1] / com.shape[0] == pytest.approx(largura_pt / altura_pt, rel=0.02)
+    projeto.margens_iguais = False
+    assert pipeline.conta_das_margens_para_a_tela(projeto) is None

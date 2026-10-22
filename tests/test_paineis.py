@@ -338,7 +338,7 @@ def test_o_automatico_mostra_as_etapas_do_livro(app):
     painel.atualizar(projeto)
     nomes = [nome for _ligada, nome, _faz, _escolha in painel.linhas]
     assert nomes == ["Dividir folhas ao meio", "Endireitar folhas tortas", "Cortar as bordas",
-                     "Limpar a folha", "Montar cadernos para impressão"]
+                     "Limpar a folha", "Montar cadernos no tamanho do scan (sem A4, sem margem)"]   # nome novo: pergunta 3, 22/10
     ligadas = {nome: ligada for ligada, nome, _faz, _escolha in painel.linhas}
     assert ligadas["Dividir folhas ao meio"] is True
     assert ligadas["Endireitar folhas tortas"] is False

@@ -184,7 +184,9 @@ class TelaFinal(QWidget):
         # do programa (livreto A4 com margens e escala, pagina inteira,
         # varias por folha, poster, mandar para a impressora). Trabalha sobre
         # o PDF que acabou de sair, sem mexer nele.
-        self.botao_montar = QPushButton("montar para imprimir...")
+        # nome que diz a diferenca do "Montar cadernos" antigo (pergunta 3
+        # do Samuel, 22/10/2026: "Deixar os dois")
+        self.botao_montar = QPushButton("montar para imprimir em A4 (com margens)...")
         self.botao_montar.clicked.connect(self.abrir_montar_para_imprimir)
         linha.addWidget(self.botao_montar)
 

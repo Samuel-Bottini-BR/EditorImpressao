@@ -63,6 +63,29 @@ EXPLICACAO_CHUVISCO = ("Como o ScanTailor (filtro de Wiener): tira o chuvisco da
                        "0 = desligado.")
 FRASE_DO_DESFAZER = "{rotulo} na página {pagina}: {estado}"
 
+# Os avisos (decisões do Samuel, 22/10/2026): o "igualar a luz" vale em todos os
+# filtros, com aviso no Melhorar e no Mágico pro ("mas vai ser uma opção que eu
+# posso desligar e ligar né?" - sim, a caixinha); o "tirar o chuvisco" continua
+# de 0 a 100, com aviso a partir de LIMITE_DO_CHUVISCO ("mas eu vou poder
+# escolher a escala né?" - sim). Seguro mudar: os textos.
+AVISO_IGUALAR = ("No Melhorar e no Mágico pro, igualar a luz pode deixar a tinta mais clara "
+                 "(lavada). Se acontecer, desligue esta caixinha.")
+AVISO_CHUVISCO = ("Acima de 20, tirar o chuvisco pode borrar a letra. Os valores que mais "
+                  "ajudam ficam entre 10 e 20.")
+LIMITE_DO_CHUVISCO = 20
+
+
+def avisos_da_pagina(pagina) -> list[str]:
+    """Os avisos das opções de luz desta página (vazio: nenhum)."""
+    from core.filtros import MAGICO_PRO, MELHORAR
+
+    avisos = []
+    if igualar_ligado(pagina) and getattr(pagina, "filtro", "") in (MELHORAR, MAGICO_PRO):
+        avisos.append(AVISO_IGUALAR)
+    if chuvisco(pagina) > LIMITE_DO_CHUVISCO:
+        avisos.append(AVISO_CHUVISCO)
+    return avisos
+
 CAMPOS = ("luz_igualar", "luz_suavizar", "luz_chuvisco")   # os de ConfigPagina
 JANELA_DO_WIENER = 5            # ColorCommonOptions: m_wienerWindowSize(5)
 

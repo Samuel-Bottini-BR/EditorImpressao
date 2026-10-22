@@ -237,3 +237,31 @@ def test_na_tela_suavizar_so_no_preto_e_branco_e_todas_leva_junto(app, conferir)
     conferir.ir_para_pagina(2)
     assert conferir.caixa_luz_suavizar.isHidden()
     assert not conferir.caixa_luz_igualar.isHidden()
+
+
+def test_avisos_do_igualar_no_melhorar_e_do_chuvisco_acima_de_20():
+    """Decisões do Samuel (22/10/2026): igualar a luz em todos os filtros, com
+    aviso no Melhorar e no Mágico pro; o chuvisco de 0 a 100, com aviso acima de 20."""
+    from core.filtros import MAGICO_PRO, MELHORAR, PRETO_E_BRANCO
+    from modelos import ConfigPagina
+
+    pagina = ConfigPagina(indice=0, folha=0, filtro=PRETO_E_BRANCO, luz_igualar=True)
+    assert luz.avisos_da_pagina(pagina) == []
+    for filtro in (MELHORAR, MAGICO_PRO):
+        pagina.filtro = filtro
+        assert luz.avisos_da_pagina(pagina) == [luz.AVISO_IGUALAR]
+    pagina.luz_igualar = False
+    pagina.luz_chuvisco = 20
+    assert luz.avisos_da_pagina(pagina) == []
+    pagina.luz_chuvisco = 21
+    assert luz.avisos_da_pagina(pagina) == [luz.AVISO_CHUVISCO]
+
+
+def test_na_tela_o_aviso_aparece(app, conferir):
+    conferir.ir_para_pagina(2)                       # Melhorar
+    assert conferir.aviso_luz.isHidden()
+    conferir.caixa_luz_igualar.setChecked(True)
+    assert not conferir.aviso_luz.isHidden() and "lavada" in conferir.aviso_luz.text()
+    conferir.caixa_luz_igualar.setChecked(False)
+    conferir.seletor_luz_chuvisco.setValue(50)
+    assert "borrar" in conferir.aviso_luz.text()

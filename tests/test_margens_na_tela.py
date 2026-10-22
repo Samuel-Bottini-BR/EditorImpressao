@@ -56,3 +56,36 @@ def test_mostrar_opcoes_traz_o_que_esta_no_projeto(janela, pasta):
         [1.0, 2.0, 3.0, 4.0]
     assert tela.combo_alinhar_horizontal.currentData() == "direita"
     assert projeto.margens_mm == [1.0, 2.0, 3.0, 4.0]
+
+
+def test_os_cartoes_mostram_as_margens_depois_de_medir(app, pasta):
+    """"Sim, a tela mostra igual ao que sai" (Samuel, 22/10/2026): a tela pede
+    a medida por trás e, quando chega, a página do cartão vem com as margens."""
+    import numpy as np
+
+    from core.filtros import ORIGINAL
+    from historico_acoes import HistoricoAcoes
+    from modelos import ConfigFolha, ConfigPagina, Projeto
+    from ui.tarefas import GerenciadorPrevias
+    from ui.tela_conferir import TelaConferir
+
+    caminho = _pdf(pasta, folhas=3)
+    projeto = Projeto(caminho_entrada=str(caminho), nome="t", dividir_folhas=False,
+                      detectar_regioes=False, margens_iguais=True)
+    projeto.folhas = [ConfigFolha(indice=i, dividir=False) for i in range(3)]
+    projeto.paginas = [ConfigPagina(indice=i, folha=i, filtro=ORIGINAL) for i in range(3)]
+    tela = TelaConferir()
+    previas = GerenciadorPrevias(projeto.caminho_entrada, projeto, tela)
+    tela.carregar(projeto, HistoricoAcoes(), previas)
+    try:
+        img = np.full((300, 200, 3), 120, np.uint8)
+        primeira = tela._com_as_margens(img)
+        tela._tarefa_das_margens.wait(60000)
+        app.processEvents()
+        depois = tela._com_as_margens(img)
+        assert depois.shape[0] > img.shape[0] and depois.shape[1] > img.shape[1]
+        assert primeira is img
+        projeto.margens_iguais = False
+        assert tela._com_as_margens(img) is img
+    finally:
+        previas.parar()
