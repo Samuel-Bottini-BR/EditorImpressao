@@ -281,5 +281,7 @@ capas no tamanho delas (muito maiores, com aviso). Teste de reversão `tests/tes
       sai inteira; em cima, o carimbo oval e a anotação "Af 10" ficam mais de fora) e `marial-007/023/064/085.jpg`
       (o corte anda alguns mm; nada partido). Caminho: dividida, endireitada, cortada (conteúdo + borda preta até
       a moldura), filtro Original, 300 DPI, PDF gerado pelo programa.
-- [ ] GitHub: suíte 39788341137 (ramo em `5bc5b33`); filtro de velocidade 39788346337 (`c66f28d` x `5bc5b33`,
-      opções desligadas). Ler UMA vez no fim.
+- [x] GitHub: suíte 39788341137 (ramo em `5bc5b33`): as 5 partes e os botões passaram (verde). Filtro de
+      velocidade 39788346337 (`c66f28d` x `5bc5b33`, opções desligadas): **"igual (dentro do vai-e-vem)"**.
+- **PRONTO PARA CONFERIR** (22/10): etiqueta do Egenloff 3 e velocidade da passada. Falta a conferência a olho
+  (a gerente/verificador), com a ressalva das 32 páginas do Marial que mudam de corte e dos carimbos de biblioteca.
