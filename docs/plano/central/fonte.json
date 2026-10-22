@@ -361,14 +361,14 @@
       "titulo": "Tela nova: etapas 6 e 7 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "decidir",
+      "coluna": "andamento",
       "oque": "Tela cheia dos filtros (etapa 6), Configurações em partes, tela dos livros e o livro aberto na tela inteira (etapa 7).",
-      "situacao": "Pronto. Conferência na aba Conferência > Layout 6 e 7.",
-      "falta": "Sua resposta na aba Conferência > Layout 6 e 7.",
+      "situacao": "Aprovado por você em 22/10. O agente de layout faz dois consertos antes da junção: o livro aberto como no UPDF e a tela cheia dos filtros com todas as opções.",
+      "falta": "Os dois consertos e a conferência deles.",
       "selos": {
         "github": "falta",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "layout-etapas4a7-2026-10-19",
       "commit": "2eeec20",
@@ -680,11 +680,11 @@
       "id": "layout",
       "nome": "Agente de layout",
       "papel": "Tela nova",
-      "estado": "parado",
-      "tarefa": "Esperando a sua conferência do layout 6 e 7",
-      "ultimo": "Etapas 4 a 7 prontas.",
+      "estado": "trabalhando",
+      "tarefa": "Livro aberto como no UPDF e filtros em tela cheia com todas as opções",
+      "ultimo": "Começou em 22/10, de manhã.",
       "ramo": "layout-etapas4a7-2026-10-19",
-      "quando": "2026-10-21T15:00:00Z"
+      "quando": "2026-10-22T13:20:00Z"
     },
     {
       "id": "consertos",
