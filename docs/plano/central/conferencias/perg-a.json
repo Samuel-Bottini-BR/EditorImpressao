@@ -7,6 +7,7 @@
  "resumo": {
   "titulo": "O desentortar perto da lombada (2.12)",
   "paragrafos": [
+   "Novidade (22/10, à noite): o Implementador A refez o desentortar do jeito que você escolheu (opção A: cortar uma vez só, no fim, como o ScanTailor). Desligado, o livro sai idêntico ao de hoje (96 de 96 conferido). Os testes do GitHub passaram (2175, nenhum falhou) e a velocidade ficou igual. Ele parou em três perguntas, logo abaixo. Depois das suas respostas, o verificador confere e a conferência vem para você.",
    "O Implementador A parou o 2.12 numa escolha que o ScanTailor não resolve. As outras três ferramentas dele (caixa do conteúdo, borda preta, pintar de branco) ficaram prontas e vão para o verificador."
   ]
  },
@@ -180,6 +181,126 @@
      "quem": "gerente",
      "em": "2026-10-22T20:40:00Z",
      "texto": "Você tinha razão: esta pergunta estava sem nenhuma foto. Pus um desenho dos três riscos mais difíceis de imaginar e duas fotos de verdade de casos parecidos que já tínhamos. As fotos de cada um dos 8 vêm quando o verificador provar em páginas de verdade, como você mandou."
+    }
+   ]
+  },
+  {
+   "id": "a-212-p1",
+   "titulo": "Desentortar automático: o Righetti 96 ainda perde o começo das linhas. O que fazer?",
+   "explicacao": [
+    "O que melhorou: na maioria das páginas o automático parou de estragar. No Marial 41 e 501, antes ele redesenhava a página e agora a deixa como está; na Matemática 63 a página que saía inclinada agora sai certa.",
+    "O que continua: no Righetti 96 (página da direita) o automático ainda corta o começo das linhas e o cabeçalho sobe. O implementador rodou também \"como o ScanTailor faria\" e ele faz igual: ali o próprio ScanTailor acha uma curva que não existe.",
+    "Caminho das fotos: livro novo, de fábrica → (girar e dividir quando o livro pede) → endireitar → cortar → desentortar → filtro. A linha vermelha é uma régua reta: se as linhas do texto ficam paralelas a ela, a página está reta. Colunas: Hoje · Antes do conserto · Agora automático · Agora pelas margens · Hoje Preto e branco · Agora automático + Preto e branco."
+   ],
+   "exemplos": [
+    {
+     "src": "pa2/righetti_p096-direita-recorte.jpg",
+     "legenda": "Righetti 96, ampliado: na coluna \"Agora automático\" o começo das linhas (\"raros\", \"sonar\") ainda some."
+    },
+    {
+     "src": "pa2/righetti_p096-direita-como-o-scantailor-pagina.jpg",
+     "legenda": "O mesmo, feito como o ScanTailor faria: corta igual."
+    },
+    {
+     "src": "pa2/marial_p041-pagina.jpg",
+     "legenda": "Marial 41: antes do conserto o automático redesenhava a página; agora fica como está."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Deixar assim (como o ScanTailor)",
+     "texto": "Desligado de fábrica; quem ligar pode perder o começo das linhas numa página como esta.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Proteção: se a tinta passar a encostar na beirada, a página sai sem desentortar e vai para o \"Para revisar\" (recomendo)",
+     "texto": "O programa compara antes e depois: se o desentortar empurrar letra para fora, ele desiste naquela página, deixa como estava e avisa. As páginas em que o desentortar dá certo continuam desentortadas.",
+     "imgs": []
+    },
+    {
+     "id": "c",
+     "nome": "C — A página cresce para caber o que esticou",
+     "texto": "Nada sai da página, mas ela fica de tamanho diferente das outras (e as margens iguais, 2.4, compensam depois).",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "a-212-p2",
+   "titulo": "Desentortar \"pelas margens\": agora entorta páginas com fundo escuro. O que fazer?",
+   "explicacao": [
+    "O que é: o \"pelas margens\" acha a curva pelas beiradas brancas de cima e de baixo. Agora que ele recebe a página com o papel do scan em volta, nas páginas em que em volta há fundo escuro (mesa, sombra, outra página) ele se confunde e entorta a página inteira, com uma cunha escura.",
+    "Onde acontece: Cursus 176 e Matemática 31, 63, 65 e 66. O automático, nessas mesmas páginas, ficou certo.",
+    "Caminho das fotos: livro novo, de fábrica → (girar e dividir quando o livro pede) → endireitar → cortar → desentortar → filtro. A linha vermelha é uma régua reta: se as linhas do texto ficam paralelas a ela, a página está reta. Colunas: Hoje · Antes do conserto · Agora automático · Agora pelas margens · Hoje Preto e branco · Agora automático + Preto e branco."
+   ],
+   "exemplos": [
+    {
+     "src": "pa2/matematica_p063-pagina.jpg",
+     "legenda": "Matemática 63: \"Agora automático\" (3ª coluna) certo; \"Agora pelas margens\" (4ª coluna) entorta a página inteira."
+    },
+    {
+     "src": "pa2/cursus_p176-pagina.jpg",
+     "legenda": "Cursus 176: o mesmo no \"pelas margens\"."
+    },
+    {
+     "src": "pa2/matematica_p031-pagina.jpg",
+     "legenda": "Matemática 31: a cunha escura no \"pelas margens\"."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Deixar como o ScanTailor faz",
+     "texto": "Quem escolher \"pelas margens\" numa página com fundo escuro em volta vê a página entortada.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — A mesma proteção da pergunta anterior",
+     "texto": "Se o resultado empurrar tinta para fora ou trouxer fundo escuro para dentro, a página sai sem desentortar e vai para o \"Para revisar\".",
+     "imgs": []
+    },
+    {
+     "id": "c",
+     "nome": "C — Só o \"pelas margens\" volta a receber a página já cortada (recomendo)",
+     "texto": "Para o \"pelas margens\" o papel em volta atrapalha em vez de ajudar, porque ele precisa ver as beiradas brancas da própria página. O automático continua com o papel em volta.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "a-212-p3",
+   "titulo": "Você tem um livro escaneado aberto, com as linhas bem curvas perto da lombada?",
+   "explicacao": [
+    "Você pediu para ver o desentortar numa página bem curva. O implementador procurou nos 15 livros do acervo de teste e não achou nenhuma: as mais curvas (Matemática e Marial) têm curva pequena. Sem uma página assim, não dá para mostrar se o desentortar endireita de verdade.",
+    "Se você tiver um livro grosso escaneado aberto (foto ou scanner de mesa, com a página subindo perto da costura), diga onde está o PDF e quais páginas. Se não tiver, dá para escanear umas 5 páginas de qualquer livro grosso, aberto sem apertar."
+   ],
+   "exemplos": [
+    {
+     "src": "pa2/marial_p501-pagina.jpg",
+     "legenda": "Marial 501, uma das \"mais curvas\" do acervo: a curva é pequena."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "tenho",
+     "nome": "Tenho, vou dizer onde está (escreva no comentário)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "vou-escanear",
+     "nome": "Não tenho; vou escanear algumas páginas",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "sem-curva",
+     "nome": "Não tenho; seguir sem essa prova",
+     "texto": "A conferência vai só com as páginas do acervo.",
+     "imgs": []
     }
    ]
   }

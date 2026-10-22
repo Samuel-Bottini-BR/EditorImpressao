@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T00:10:00Z",
+        "texto": "O desentortar (2.12) foi refeito do jeito que você escolheu. Três perguntas novas para você, com fotos (aba do desentortar)."
+      },
+      {
         "em": "2026-10-22T23:40:00Z",
         "texto": "Mais 8 comentários seus que tinham ficado sem resposta na Central estão respondidos no fim da aba \"Suas dúvidas sem resposta\"."
       },
@@ -395,20 +399,20 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Você escolheu a A (22/10): cortar uma vez só, no fim, como o ScanTailor. O Implementador A está refazendo.",
-      "falta": "Refazer, testar em páginas bem curvas com uma régua reta por cima, o verificador e depois a sua conferência.",
+      "situacao": "Refeito pelo Implementador A (22/10) como você escolheu: corta uma vez só, no fim. Desligado, sai idêntico ao de hoje. Testes no GitHub: 2175 passaram, 0 falharam; velocidade igual.",
+      "falta": "As suas três respostas (aba do desentortar), o verificador e a sua conferência.",
       "selos": {
         "github": "falta",
         "pc": "nao",
         "samuel": "nao"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "ffa2463",
+      "commit": "177f711",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T20:15:00Z",
+      "mudouEm": "2026-10-23T00:10:00Z",
       "relatorio": "perg-a"
     },
     {
@@ -765,11 +769,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Refazer o 2.12 desentortar como o ScanTailor: cortar uma vez só, no fim",
-      "ultimo": "Começou a refazer o desentortar do jeito que você escolheu (opção A).",
+      "ultimo": "Refez o desentortar (opção A) e parou em três perguntas para você (aba do desentortar). Próximo: o aviso de corte que toca sem precisar.",
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-22T20:15:00Z"
+      "quando": "2026-10-23T00:10:00Z"
     },
     {
       "id": "implementador-b",
