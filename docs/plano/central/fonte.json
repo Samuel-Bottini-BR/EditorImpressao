@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T21:30:00Z",
+        "texto": "O agente de layout terminou as três melhorias. Elas esperam o verificador, que está nas 7 ferramentas do Implementador B."
+      },
+      {
         "em": "2026-10-22T20:15:00Z",
         "texto": "Três agentes trabalham: o verificador confere as 7 ferramentas do Implementador B, o Implementador A refaz o desentortar (2.12) e o agente de layout faz as melhorias."
       },
@@ -705,24 +709,32 @@
       "titulo": "Janela \"Antes de processar\" mais clara e menor",
       "item": "Layout",
       "fase": "4",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Você pediu: \"ficou meio embolado, deve ficar mais claro e não tão grande.\"",
-      "situacao": "Na fila do agente de layout.",
+      "situacao": "Pronto pelo agente de layout (22/10): janela menor (ocupava 80% da altura numa tela pequena, agora 61%), a frase em duas linhas, uma fila só de botões. Nenhum controle saiu. Testes no GitHub passaram.",
       "selos": {},
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "O verificador, depois das 7 ferramentas, e depois a sua conferência.",
+      "ramo": "layout-antes-de-processar-2026-10-22",
+      "commit": "138e425",
+      "mudouEm": "2026-10-22T21:30:00Z"
     },
     {
       "id": "miniaturas-lembradas",
       "titulo": "Lembrar as miniaturas de um livro para o outro",
       "item": "Layout",
       "fase": "4",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Lugar, abertas ou fechadas e em pares: o programa lembra para todos os livros.",
-      "situacao": "Decidido em 21/10. Na fila do agente de layout.",
+      "situacao": "Pronto pelo agente de layout (22/10): o lugar das miniaturas, abertas ou fechadas e em pares ficam guardados de um livro para o outro. Testes no GitHub passaram.",
       "selos": {},
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "O verificador, depois das 7 ferramentas, e depois a sua conferência.",
+      "ramo": "layout-etapas4a7-2026-10-19",
+      "commit": "edc6143",
+      "mudouEm": "2026-10-22T21:30:00Z"
     }
   ],
   "agentes": [
@@ -760,11 +772,11 @@
       "id": "layout",
       "nome": "Agente de layout",
       "papel": "Tela nova",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Melhorias do layout 6 e 7: quadro azul certo no \"Duas lado a lado\"; \"Antes de processar\" mais clara e menor; lembrar as miniaturas para todos os livros",
-      "ultimo": "Começou as melhorias, como você mandou (\"continuar\", 22/10).",
+      "ultimo": "Entregou as três melhorias: o quadro azul na página certa em \"Duas lado a lado\", a janela \"Antes de processar\" mais clara e menor, e as miniaturas lembradas para todos os livros. Testes no GitHub passaram. Vão para o verificador.",
       "ramo": "layout-etapas4a7-2026-10-19",
-      "quando": "2026-10-22T20:00:00Z"
+      "quando": "2026-10-22T21:30:00Z"
     },
     {
       "id": "consertos",
