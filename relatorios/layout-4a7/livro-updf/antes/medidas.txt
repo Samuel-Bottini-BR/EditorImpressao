@@ -1,0 +1,10 @@
+1600x821 uma página: folhas na tela (altura em pixels) {301: 615, 302: 635}; nitidez da folha 301: 0.98
+1600x821 lado a lado: folhas na tela (altura em pixels) {302: 545, 303: 528, 304: 545, 305: 528}; nitidez da folha 302: 1.05
+1600x821 grade: a folha 301 ainda cinza (não desenhada) depois de 28 s
+maximizada uma página: folhas na tela (altura em pixels) {301: 615, 302: 635}; nitidez da folha 301: 0.98
+maximizada lado a lado: folhas na tela (altura em pixels) {302: 545, 303: 528, 304: 545, 305: 528}; nitidez da folha 302: 1.05
+maximizada grade: folha 301 pintada com 131 x 184 pixels; nitidez 0.69
+ok   clique nativo no cartão: o livro aberto
+ok   1600x821: clique nativo em lado a lado
+ok   maximizada: clique nativo em lado a lado
+ok   maximizada: a folha 301 aparece na grade (158 pontos)

@@ -54,6 +54,7 @@ ALTURA_DA_PAGINA = 150        # o desenho de cada página na grade
 ALTURA_GUARDADA = 340          # (fica para quem importava o nome; a altura vem da tela)
 DPI_MAXIMO_DA_GRADE = 160
 MAXIMO_GUARDADAS = 120
+FOLGA_NA_MARGEM = 3            # pontos que a folha pode avançar na margem do quadro (ver _pintar)
 
 
 @dataclass
@@ -206,7 +207,11 @@ class _Quadro(QFrame):
                 # imagem meio pixel para o lado, borrando (medido em 22/10/2026:
                 # nitidez 0,60 do desenho direto do PDF). Seguro mudar: nada aqui.
                 razao = razao_do_pintor(pintor)
-                escalado = _reduzir_para_a_tela(pix, alvo.size(), pintor)
+                # a folha pode avançar até FOLGA_NA_MARGEM pontos na margem do quadro: uma
+                # folha só um pouco mais larga que o lugar (o Graduale: 134 pixels para 131)
+                # era reduzida a 97,7% inteira e amolecia (medido em 22/10/2026: 0,65)
+                cabe = QSize(alvo.width() + (2 if self.lugares == 1 else 1) * FOLGA_NA_MARGEM, alvo.height())
+                escalado = _reduzir_para_a_tela(pix, cabe, pintor)
                 w, h = escalado.width(), escalado.height()          # pixels de verdade
                 ax0, ay0 = round(alvo.left() * razao), round(alvo.top() * razao)
                 ax1, ay1 = round((alvo.right() + 1) * razao), round((alvo.bottom() + 1) * razao)
@@ -368,7 +373,10 @@ class TodasAsPaginas(QWidget):
         self.vista = UMA_A_UMA
         self.so_atencao = False
         self._montar()
-        faltam = sorted({i.folha for i in self.itens} - set(self._folhas))
+        # primeiro as folhas perto da página da vez (num livro de 750 folhas, as de
+        # perto da 300 esperavam as 299 de antes, 22/10/2026), depois as outras
+        perto = next((i.folha for i in self.itens if i.indice == atual), 0)
+        faltam = sorted({i.folha for i in self.itens} - set(self._folhas), key=lambda f: (abs(f - perto), f))
         if faltam and self._caminho:
             self._parar_a_tarefa()
             self._tarefa = _TarefaDasFolhas(self._caminho, faltam, self._sinais,

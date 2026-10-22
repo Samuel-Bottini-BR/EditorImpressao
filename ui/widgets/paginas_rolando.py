@@ -55,6 +55,7 @@ ALTURA_MINIMA = 60             # nenhuma página fica menor que isto (pontos)
 MAXIMO_GUARDADAS = 40          # folhas desenhadas guardadas
 MAXIMO_DE_BYTES = 240 * 2**20  # e no máximo isto de memória nelas (as da tela ficam sempre)
 MAXIMO_DE_PIXELS = 16_000_000  # folha maior que isto na tela é desenhada menor e aumentada
+SUPERAMOSTRA = 2               # a folha é desenhada com o dobro de pixels e reduzida (ver _Tarefa)
 ESPACO = MARGEM                # (nome antigo, para quem importava)
 
 
@@ -75,6 +76,27 @@ def no_tamanho(img: np.ndarray, largura: int, altura: int) -> np.ndarray:
     return np.ascontiguousarray(img)
 
 
+def vezes_para_desenhar(pagina, largura: int, altura: int) -> int:
+    """Quantas vezes maior que a tela a folha é desenhada antes de ser reduzida
+    (por área) ao tamanho da tela: 2 quando o scan tem resolução para isso, 1 no
+    resto. Medido em 22/10/2026 (nitidez perto da página ideal): numa folha
+    mostrada bem menor que o scan, desenhar o dobro e reduzir fica mais nítido
+    (Graduale, 790 pixels: 0,83 -> 0,99; o PDF não desenha abaixo de 50 DPI e a
+    redução quebrada amolecia); mas com a tela perto da resolução do scan, o
+    dobro é aumento seguido de redução e borra (0,44). A resolução do scan vem
+    da largura da maior imagem da página (só os dados dela, sem abrir a imagem);
+    página sem imagem (PDF de texto): 1."""
+    try:
+        largura_pt = max(1.0, pagina.rect.width)
+        maior = max((int(im[2]) for im in pagina.get_images()), default=0)
+    except Exception:  # noqa: BLE001 - na dúvida, no tamanho da tela
+        return 1
+    dpi_do_scan = maior / (largura_pt / 72.0)
+    dpi_da_tela = 72.0 * largura / largura_pt
+    cabe = largura * altura * SUPERAMOSTRA ** 2 <= MAXIMO_DE_PIXELS
+    return SUPERAMOSTRA if cabe and dpi_do_scan >= SUPERAMOSTRA * dpi_da_tela * 0.95 else 1
+
+
 class _Sinais(QObject):
     pronta = Signal(int, object, int, int)      # índice, imagem, largura e altura pedidas
 
@@ -93,7 +115,8 @@ class _Tarefa(QRunnable):
             doc = abrir_pdf(self.caminho)
             try:
                 altura_pt = max(1.0, doc[self.indice].rect.height)
-                img = pagina_para_array(doc, self.indice, dpi=72.0 * self.altura / altura_pt)
+                vezes = vezes_para_desenhar(doc[self.indice], self.largura, self.altura)
+                img = pagina_para_array(doc, self.indice, dpi=72.0 * self.altura * vezes / altura_pt)
             finally:
                 doc.close()
             self.sinais.pronta.emit(self.indice, no_tamanho(img, self.largura, self.altura),

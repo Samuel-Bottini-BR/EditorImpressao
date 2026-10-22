@@ -617,6 +617,9 @@ def _menu_do_livro(pai, tela: TelaInicio, resumo: projetos.Resumo, perdido: bool
     return menu
 
 
+LARGURA_DA_PILULA_INTEIRA = 1180   # abaixo disto a pílula diz só "301 de 750" (ver _pagina_mudou)
+
+
 class LivroAberto(QWidget):
     """O livro aberto, na tela inteira (rodada 6, proposta 1; ver o começo do arquivo)."""
 
@@ -724,26 +727,25 @@ class LivroAberto(QWidget):
         meio.addWidget(self.pilha_do_meio, 1)
         fora.addLayout(meio, 1)
 
-        # a barra de baixo: os jeitos de mostrar e de caber, como no UPDF (22/10/2026)
-        fora.addWidget(self._montar_barra_de_baixo())
-
-        # a pílula "página N de M · ir para", por cima das páginas, canto de baixo
-        self.pilula = QFrame(self.paginas)
+        # a pílula "página N de M · ir para": na barra de baixo, à direita, como o número
+        # da página no UPDF (22/10/2026; antes ficava por cima das páginas e cobria o canto
+        # da folha da direita)
+        self.pilula = QFrame()
         self.pilula.setObjectName("pilulaDoLivro")
         estilo.estilizar(self.pilula, lambda: (
             f"QFrame#pilulaDoLivro {{ background: {estilo.cor('cabeca')}; border: 1px solid "
             f"{estilo.cor('sep')}; border-radius: 18px; }} QLabel {{ background: transparent; }}"))
         pl = QHBoxLayout(self.pilula)
-        pl.setContentsMargins(14, 4, 6, 4)
+        pl.setContentsMargins(12, 1, 4, 1)
         pl.setSpacing(8)
         self.rotulo_pagina = QLabel("")
         pl.addWidget(self.rotulo_pagina)
-        ir = QLabel("ir para")
-        estilo.estilizar(ir, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
-        pl.addWidget(ir)
+        self.rotulo_ir = QLabel("ir para")
+        estilo.estilizar(self.rotulo_ir, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
+        pl.addWidget(self.rotulo_ir)
         self.campo_ir = QSpinBox()
         self.campo_ir.setButtonSymbols(QSpinBox.NoButtons)
-        self.campo_ir.setFixedWidth(52)
+        self.campo_ir.setFixedWidth(64)          # "1000" cabe inteiro a 125% (com 52 o "304" cortava)
         self.campo_ir.editingFinished.connect(lambda: self.ir_para(self.campo_ir.value() - 1))
         pl.addWidget(self.campo_ir)
         for texto, passo, dica in (("‹", -1, "folha anterior"), ("›", 1, "próxima folha")):
@@ -755,6 +757,9 @@ class LivroAberto(QWidget):
             botao.setFocusPolicy(Qt.NoFocus)
             botao.clicked.connect(lambda _c=False, p=passo: self.ir_para(self.paginas.passo(p)))
             pl.addWidget(botao)
+
+        # a barra de baixo: os jeitos de mostrar e de caber, como no UPDF (22/10/2026)
+        fora.addWidget(self._montar_barra_de_baixo())
 
     # --- a barra de baixo (como no UPDF, 22/10/2026) ------------------------------
 
@@ -781,7 +786,7 @@ class LivroAberto(QWidget):
         estilo.estilizar(barra, lambda: (
             f"QFrame#baixoDoLivroAberto {{ background: {estilo.cor('bar')};"
             f" border-top: 1px solid {estilo.cor('linha')}; }}"
-            f"QPushButton#jeitoDoLivro {{ padding: 4px 10px; font-size: 12px; }}"
+            f"QPushButton#jeitoDoLivro {{ padding: 4px 8px; font-size: 12px; }}"
             f"QPushButton#jeitoDoLivro:checked {{ background: {estilo.cor('sel')};"
             f" border: 1px solid {estilo.cor('azul')}; color: {estilo.cor('forte')}; }}"
             f"QLabel#separadorDoLivro {{ background: {estilo.cor('sep')}; }}"))
@@ -817,6 +822,7 @@ class LivroAberto(QWidget):
                 linha.addWidget(separador)
                 linha.addSpacing(10)
         linha.addStretch()
+        linha.addWidget(self.pilula)
         return barra
 
     def _botao_de_jeito(self, texto: str, dica: str) -> QPushButton:
@@ -936,12 +942,16 @@ class LivroAberto(QWidget):
 
     def _pagina_mudou(self, indice: int) -> None:
         total = self.paginas.total()
-        self.rotulo_pagina.setText(f"página {indice + 1} de {total}")
+        # janela estreita (a mínima, 1000 x 600): "301 de 750", sem o "ir para",
+        # para a pílula caber ao lado dos botões da barra de baixo
+        estreita = self.width() < LARGURA_DA_PILULA_INTEIRA
+        self.rotulo_pagina.setText(f"{indice + 1} de {total}" if estreita else f"página {indice + 1} de {total}")
+        self.rotulo_ir.setVisible(not estreita)
+        self.rotulo_pagina.setMinimumWidth(self.rotulo_pagina.sizeHint().width())   # nunca cortado
         self.campo_ir.blockSignals(True)
         self.campo_ir.setValue(indice + 1)
         self.campo_ir.blockSignals(False)
         self.miniaturas.selecionar(indice)
-        self._acertar_pecas_soltas()
 
     def _ver_todas(self) -> None:
         """Ver todas as páginas: as folhas do PDF em grade (uma a uma, 901 A)."""
@@ -964,12 +974,10 @@ class LivroAberto(QWidget):
         menu.exec(self.botao_mais.mapToGlobal(QPoint(0, self.botao_mais.height())))
 
     def _acertar_pecas_soltas(self) -> None:
-        """A pílula no canto de baixo, por cima das páginas."""
-        area = self.paginas.viewport().geometry()
-        self.pilula.adjustSize()
-        self.pilula.move(area.right() - self.pilula.width() - 22,
-                         area.bottom() - self.pilula.height() - 12)
-        self.pilula.raise_()
+        """A pílula mora na barra de baixo desde 22/10/2026 (antes era posta por
+        cima das páginas, aqui); só o texto dela muda com a largura da janela."""
+        if self.paginas.total():
+            self._pagina_mudou(self.paginas.atual)
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         super().resizeEvent(evento)

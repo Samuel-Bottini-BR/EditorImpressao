@@ -183,8 +183,10 @@ def _esperar_e_pintar(vista, folhas, vezes=40):
 
 def _nitidez(pintado, caminho, indice):
     """A nitidez da página pintada: quanto detalhe fino ela tem (desvio do
-    Laplaciano) comparado com a mesma página desenhada pelo MuPDF direto no
-    tamanho pintado. 1,0 = tão nítida quanto dá; página reamostrada fica abaixo."""
+    Laplaciano) comparado com o "ideal": a mesma página desenhada 4 vezes maior e
+    reduzida por área para o tamanho pintado (o MuPDF direto, num tamanho pequeno,
+    serrilha e parece mais nítido do que é). 1,0 = tão nítida quanto dá; página
+    reamostrada (borrada) fica abaixo."""
     import cv2
     import numpy as np
 
@@ -194,9 +196,10 @@ def _nitidez(pintado, caminho, indice):
     regiao = pintado[y + 2:y + h - 2, x + 2:x + w - 2]
     doc = fitz.open(str(caminho))
     pagina = doc[indice]
-    pix = pagina.get_pixmap(matrix=fitz.Matrix(w / pagina.rect.width, h / pagina.rect.height),
+    pix = pagina.get_pixmap(matrix=fitz.Matrix(4 * w / pagina.rect.width, 4 * h / pagina.rect.height),
                             colorspace=fitz.csGRAY, alpha=False)
-    ref = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width)[:h, :w].astype(float)
+    ref = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width)
+    ref = cv2.resize(ref, (w, h), interpolation=cv2.INTER_AREA).astype(float)
     doc.close()
     ref = ref[2:h - 2, 2:w - 2]
     return cv2.Laplacian(regiao, cv2.CV_64F).std() / cv2.Laplacian(ref, cv2.CV_64F).std()
@@ -240,7 +243,7 @@ def test_o_livro_aberto_pinta_nitido_na_escala_do_windows(app, tmp_path):  # noq
     """22/10/2026, "Eu não consigo ver a página direito": a página do livro
     aberto tem de ser pintada tão nítida quanto o PDF desenhado direto naquele
     tamanho (nada de desenhar num tamanho e reduzir ou aumentar ao pintar).
-    Mede o PINTADO a 125%. Falha no 2eeec20 (0,41; o novo, 0,99)."""
+    Mede o PINTADO a 125%. Falha no 2eeec20 (0,33; o novo, 0,89)."""
     from ui.widgets.paginas_rolando import PaginasRolando
 
     caminho = _pdf_de_ruido(tmp_path / "uma.pdf", [(400, 600)] * 3)
@@ -250,22 +253,24 @@ def test_o_livro_aberto_pinta_nitido_na_escala_do_windows(app, tmp_path):  # noq
     vista.ir_para(0)
     nitidez = _nitidez(_esperar_e_pintar(vista, [0]), caminho, 0)
     vista.parar()
-    assert nitidez > 0.9, f"a página do livro aberto foi pintada mole (nitidez {nitidez:.2f})"
+    assert nitidez > 0.75, f"a página do livro aberto foi pintada mole (nitidez {nitidez:.2f})"
 
 
-def test_a_grade_pinta_nitida_a_125(app, tmp_path):  # noqa: F811
+@pytest.mark.parametrize("tamanho", [(400, 600), (430, 600)])
+def test_a_grade_pinta_nitida_a_125(app, tmp_path, tamanho):  # noqa: F811
     """Ressalva do verificador (21/10/2026), medida em 22/10: a grade "Todas as
     páginas" a 125% ainda saía mole (a folha guardada 5% maior e reduzida ao
     pintar, e posta meio pixel fora do lugar, o Qt reamostrando). Agora ela é
     guardada na altura exata do quadro e pintada 1 para 1 num pixel inteiro.
-    Falha no 2eeec20 (0,89; o novo, 1,18: o MuPDF mais a redução por área
-    saem um pouco mais marcados que o MuPDF sozinho)."""
+    Com (430, 600) a folha é um pouco mais larga que o lugar do quadro (o
+    Graduale, 22/10/2026: 134 pixels para 131) e era reduzida a 97,7% inteira.
+    Falha no 2eeec20 (0,62; o novo, 0,82)."""
     from PySide6.QtGui import QPixmap
 
     from ui.widgets import todas_as_paginas as tp
     from ui.widgets.visualizador import numpy_para_qimage
 
-    caminho = _pdf_de_ruido(tmp_path / "grade.pdf", [(400, 600)])
+    caminho = _pdf_de_ruido(tmp_path / "grade.pdf", [tamanho])
     recebidas = []
     sinais = tp._Sinais()
     sinais.pronta.connect(lambda folha, img: recebidas.append(img))
@@ -277,7 +282,7 @@ def test_a_grade_pinta_nitida_a_125(app, tmp_path):  # noqa: F811
     quadro.definir_pixmap(0, QPixmap.fromImage(numpy_para_qimage(recebidas[0])))
     quadro.resize(quadro.sizeHint())
     nitidez = _nitidez(_pintado_com_razao(quadro.desenho, RAZAO_DO_WINDOWS), caminho, 0)
-    assert nitidez > 0.97, f"a grade foi pintada mole (nitidez {nitidez:.2f})"
+    assert nitidez > 0.72, f"a grade foi pintada mole (nitidez {nitidez:.2f})"
 
 
 def test_os_jeitos_de_caber_e_de_mostrar(app, tmp_path):  # noqa: F811
@@ -343,3 +348,32 @@ def test_a_escolha_fica_para_o_proximo_livro(app, monkeypatch):  # noqa: F811
     guardado["livro_aberto"] = {"mostrar": "tres", "rolar": "sim", "caber": 7}
     assert outro.jeito_guardado() == {"mostrar": "uma", "rolar": True, "caber": "pagina"}
     assert configuracoes.PADROES["livro_aberto"] == LivroAberto.DE_FABRICA
+
+
+def test_desenha_o_dobro_so_quando_o_scan_tem_resolucao(app, tmp_path):  # noqa: F811
+    """Folha mostrada bem menor que o scan: desenhada com o dobro de pixels e
+    reduzida (mais nítida); tela perto da resolução do scan, ou PDF sem imagem:
+    no tamanho da tela (o dobro seria aumentar e reduzir, e borraria)."""
+    from ui.widgets.paginas_rolando import vezes_para_desenhar
+
+    caminho = _pdf_de_ruido(tmp_path / "scan.pdf", [(400, 600)])      # scan de 144 DPI
+    doc = fitz.open(str(caminho))
+    assert vezes_para_desenhar(doc[0], 300, 450) == 2                  # tela a 54 DPI
+    assert vezes_para_desenhar(doc[0], 560, 840) == 1                  # tela a 101 DPI
+    texto = fitz.open()
+    texto.new_page(width=400, height=600).insert_text((50, 80), "texto", fontsize=30)
+    assert vezes_para_desenhar(texto[0], 300, 450) == 1
+    doc.close()
+
+
+def test_a_grade_desenha_primeiro_as_de_perto(app, livro):  # noqa: F811
+    """22/10/2026, janela de verdade no Graduale (750 folhas): aberta na folha
+    301, a grade ficava cinza perto dela, esperando as 300 de antes. Agora as
+    folhas são desenhadas a partir da página da vez."""
+    from ui.widgets.todas_as_paginas import ItemDaGrade, TodasAsPaginas
+
+    grade = TodasAsPaginas()
+    grade.mostrar([ItemDaGrade(indice=i, folha=i) for i in range(30)], 20, str(livro), None)
+    ordem = list(grade._tarefa.folhas)
+    grade.esquecer()
+    assert ordem[0] == 20 and set(ordem[:5]) == {18, 19, 20, 21, 22}
