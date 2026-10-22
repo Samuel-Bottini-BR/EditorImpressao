@@ -235,6 +235,41 @@ páginas curvas (`scripts/procurar_linhas_curvas.py`); filtro de velocidade do G
 
 **Falta:** antes/depois com régua (Righetti 96, Cursus 151 e as curvas achadas), rodada da suíte no GitHub, entrega.
 
+**Depois (22/10, noite) — `177f711`:** a caixa do conteúdo passou a ser a da tinta dentro do corte
+(`desentortar_scantailor.caixa_do_conteudo`), e não "o corte menos 1 mm": o corte do programa é muitas vezes a folha
+inteira (Righetti, Marial) e "o corte menos 1 mm" destruía o Marial 498 (0,05 da tinta no lugar). Medido em seis
+páginas (`saida_teste/2.12a/exp12.py`, fora do git): Marial 41 0,49 → 1,00; Cursus 176 0,97 → 1,00; Righetti 91
+0,955 → 0,984; Cursus 151 0,966 → 0,962; Righetti 96 0,849 → 0,842 (igual); página de mentira 0,971 → 0,996.
+Provisório até o 2.5 (o ContentBoxFinder do ScanTailor, em `fase2-ferramentas-2026-10-22`): quando juntar, a caixa
+dele entra no lugar desta conta. Reversão agora: página de mentira (0,971 no `8cb90a1`) e **Marial 41** (0,493 no
+`8cb90a1`); o teste do Righetti 96 saiu (ver a pergunta 1). Os dois falharam no código antigo; 40 de 40 passam aqui.
+
+Fotos finais (todas abertas): `relatorios/conferir/fase2-itens/2.12/depois-do-conserto/` (fora do git).
+
 ### Perguntas para o Samuel
 
-Nenhuma por enquanto.
+**P1 — Righetti 96: o começo das linhas ainda some no "automático". O que fazer?**
+O conserto entrou (o desentortar lê a página com o papel em volta e corta uma vez, no fim), mas nessa página o
+começo das linhas continua sumindo ("mente" → "te"). A causa não é mais o nosso corte: a página é reta, o automático
+do ScanTailor inventa uma curva e amplia o texto. Fiz o ScanTailor de verdade (o código dele, com a caixa do texto
+e as margens de fábrica dele, 10 mm dos lados e 5 mm em cima e embaixo) e ele corta igual:
+`depois-do-conserto/righetti_p096-direita-como-o-scantailor-beirada.jpg` e `...-como-o-scantailor-pagina.jpg`.
+- (a) Deixar como o ScanTailor: vem desligado de fábrica; quem liga numa página reta pode perder a beirada.
+- (b) **(recomendo)** Proteção: se, depois de desentortar, houver tinta encostando na beirada do corte que antes não
+  encostava, a página sai sem desentortar (como a coluna "Hoje") e vai para o "Para revisar" com o aviso "O
+  desentortar empurrava o texto para fora; a página saiu sem ele". Não existe no ScanTailor.
+- (c) A página cresce até caber o que o desentortar empurrou (muda o tamanho só dessa página).
+
+**P2 — "Pelas margens" agora segue a beirada do papel no scan, e no Cursus 176 entortou a página inteira.**
+Com o papel em volta (como o ScanTailor), o "pelas margens" procura a beirada de cima e de baixo da folha no scan
+inteiro. No Cursus 176 (com a tira da página vizinha e a sombra da lombada) a página saiu torta, com uma cunha preta
+embaixo: `depois-do-conserto/cursus_p176-pagina.jpg` (4ª coluna). Antes do conserto ele quase não fazia nada.
+- (a) Deixar como o ScanTailor (desligado de fábrica).
+- (b) **(recomendo)** A mesma proteção da P1-(b) também para ele.
+- (c) Só o "pelas margens" volta a receber a página já cortada (sem papel em volta), como antes.
+
+**P3 — Página curva de verdade para conferir.** Procurei no acervo inteiro (script
+`scripts/procurar_linhas_curvas.py`, 2.900 páginas) e olhei as candidatas: não há página com as linhas **bem** curvas
+perto da lombada. As mais curvas são do Marial (pp. 41, 201, 501, 701: curva pequena perto da lombada) e o
+automático do ScanTailor não acha curva que baste nelas (sai igual a "Hoje"). Você tem um livro grosso escaneado
+aberto, com as linhas bem curvas, para eu testar?
