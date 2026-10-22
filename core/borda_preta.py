@@ -121,18 +121,35 @@ def so_o_preto(img: np.ndarray) -> tuple[float, float, float, float]:
     """A página sem a faixa preta de cada lado, em pontos de `img` (cinza ou
     BGR). Conta do pesquisador, sem mudança (ver o topo). Sem preto: a imagem
     inteira."""
+    # VELOCIDADE (22/10/2026): as mesmas contas de antes, escritas de um jeito
+    # mais rápido, com o MESMO resultado ponto a ponto (conferido em 67 páginas
+    # reais a 300 DPI, inteiras e giradas; ver relatorios/caixa-conteudo-impl/
+    # ONDE-PAREI.md, "Velocidade da passada"). Era metade do tempo da passada
+    # que mede o livro (1,7 s por página a 300 DPI). O que mudou:
+    #   - o maior e o menor canal da cor: np.maximum/np.minimum canal a canal,
+    #     em vez de .max(axis=2)/.min(axis=2) (lento com só 3 valores por ponto);
+    #   - "a fração escura" de cada linha/coluna: contagem inteira / tamanho,
+    #     que dá o MESMO número que .mean() de um vetor de verdadeiro/falso
+    #     (a soma de 0 e 1 é exata);
+    #   - o "anda" percorre uma lista do Python, somando as PASSO linhas na
+    #     mesma ordem que o numpy soma um vetor curto (o mesmo número).
+    # Arriscado: trocar por média móvel com soma acumulada (o arredondamento
+    # muda e uma linha no limite de 0,5 pode cair do outro lado).
     g = (img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)).astype(np.float32)
     alt, larg = g.shape
     papel = float(np.percentile(g[alt // 4: 3 * alt // 4, larg // 4: 3 * larg // 4], 60))
     escuro = g < papel * ESCURO_DO_PAPEL
     if img.ndim == 3 and img.shape[2] >= 3:
-        cor = img[:, :, :3]
-        neutro = (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < CROMA_MAXIMO
+        b, v, r = img[:, :, 0], img[:, :, 1], img[:, :, 2]
+        maior = np.maximum(np.maximum(b, v), r)
+        menor = np.minimum(np.minimum(b, v), r)
+        neutro = (maior.astype(np.int16) - menor) < CROMA_MAXIMO
+        del maior, menor
         cinza_escuro = (g < papel * TARJA_DO_PAPEL) & neutro
         escuro &= neutro
         # a tarja inteira (linha ou coluna de ponta a ponta): soma ao preto
-        linhas = cinza_escuro.mean(axis=1) >= BEIRA_INTEIRA
-        colunas = cinza_escuro.mean(axis=0) >= BEIRA_INTEIRA
+        linhas = _fracao(cinza_escuro, 1) >= BEIRA_INTEIRA
+        colunas = _fracao(cinza_escuro, 0) >= BEIRA_INTEIRA
         escuro[linhas, :] = True
         escuro[:, colunas] = True
     meio_x = slice(int(larg * 0.25), int(larg * 0.75))
@@ -141,17 +158,36 @@ def so_o_preto(img: np.ndarray) -> tuple[float, float, float, float]:
     def anda(perfil: np.ndarray) -> int:
         i = 0
         limite = int(len(perfil) * ANDA_NO_MAXIMO)
-        while i < limite and perfil[i:i + PASSO].mean() > PARTE_ESCURA:
+        p = perfil[:limite + PASSO].tolist()
+        while i < limite and _media_curta(p[i:i + PASSO]) > PARTE_ESCURA:
             i += 1
         # acréscimo de 20/10/2026 ("não pode ter preto ali", Cursus 3): a
         # janela de PASSO linhas para até PASSO/2 linhas antes do fim da faixa;
         # termina linha a linha
-        while i < limite and perfil[i] > PARTE_ESCURA:
+        while i < limite and p[i] > PARTE_ESCURA:
             i += 1
         return i
 
-    x0 = anda(escuro[meio_y, :].mean(axis=0))
-    x1 = larg - anda(escuro[meio_y, ::-1].mean(axis=0))
-    y0 = anda(escuro[:, meio_x].mean(axis=1))
-    y1 = alt - anda(escuro[::-1, meio_x].mean(axis=1))
+    por_coluna = _fracao(escuro[meio_y, :], 0)
+    por_linha = _fracao(escuro[:, meio_x], 1)
+    x0 = anda(por_coluna)
+    x1 = larg - anda(por_coluna[::-1])
+    y0 = anda(por_linha)
+    y1 = alt - anda(por_linha[::-1])
     return (float(x0), float(y0), float(x1), float(y1))
+
+
+def _fracao(marcas: np.ndarray, eixo: int) -> np.ndarray:
+    """A fração de pontos marcados ao longo de `eixo` (0 = por coluna, 1 = por
+    linha): o mesmo número de marcas.mean(axis=eixo), mais rápido."""
+    return np.count_nonzero(marcas, axis=eixo) / marcas.shape[eixo]
+
+
+def _media_curta(valores: list) -> float:
+    """A média de uma janela curta (até 7 valores), somada da esquerda para a
+    direita a partir de 0,0, como o numpy soma um vetor com menos de 8 valores
+    (o mesmo número de np.mean)."""
+    s = 0.0
+    for x in valores:
+        s += x
+    return s / len(valores)

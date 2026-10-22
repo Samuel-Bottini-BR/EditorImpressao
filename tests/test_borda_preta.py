@@ -298,3 +298,68 @@ def test_2_14_ate_a_moldura_pinta_fora_do_impresso(tmp_path):
     assert max(_escuro_na_beirada(saida).values()) < 0.02
     g = cv2.cvtColor(saida, cv2.COLOR_BGR2GRAY)
     assert (g < 100).sum() >= 0.9 * (cv2.cvtColor(_folha(), cv2.COLOR_BGR2GRAY) < 100).sum()
+
+
+def _so_o_preto_de_antes(img):
+    """A conta "só o preto" como estava até 22/10/2026 (lenta), copiada sem
+    mudança: a régua do teste abaixo."""
+    g = (img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)).astype(np.float32)
+    alt, larg = g.shape
+    papel = float(np.percentile(g[alt // 4: 3 * alt // 4, larg // 4: 3 * larg // 4], 60))
+    escuro = g < papel * bp.ESCURO_DO_PAPEL
+    if img.ndim == 3 and img.shape[2] >= 3:
+        cor = img[:, :, :3]
+        neutro = (cor.max(axis=2).astype(np.int16) - cor.min(axis=2)) < bp.CROMA_MAXIMO
+        cinza_escuro = (g < papel * bp.TARJA_DO_PAPEL) & neutro
+        escuro &= neutro
+        escuro[cinza_escuro.mean(axis=1) >= bp.BEIRA_INTEIRA, :] = True
+        escuro[:, cinza_escuro.mean(axis=0) >= bp.BEIRA_INTEIRA] = True
+    meio_x = slice(int(larg * 0.25), int(larg * 0.75))
+    meio_y = slice(int(alt * 0.25), int(alt * 0.75))
+
+    def anda(perfil):
+        i = 0
+        limite = int(len(perfil) * bp.ANDA_NO_MAXIMO)
+        while i < limite and perfil[i:i + bp.PASSO].mean() > bp.PARTE_ESCURA:
+            i += 1
+        while i < limite and perfil[i] > bp.PARTE_ESCURA:
+            i += 1
+        return i
+
+    return (float(anda(escuro[meio_y, :].mean(axis=0))), float(anda(escuro[:, meio_x].mean(axis=1))),
+            float(larg - anda(escuro[meio_y, ::-1].mean(axis=0))),
+            float(alt - anda(escuro[::-1, meio_x].mean(axis=1))))
+
+
+@pytest.mark.parametrize("semente", range(12))
+def test_so_o_preto_rapido_da_o_mesmo_que_o_de_antes(semente):
+    """Velocidade (22/10/2026): a conta "só o preto" foi reescrita para ser
+    ~4,6 vezes mais rápida (era metade do tempo da passada que mede o livro).
+    O resultado tem de ser o MESMO, ponto a ponto, da conta de antes: folhas
+    de mentira com faixas pretas irregulares, tarja cinza, cartão colorido e
+    beirada que fica bem no limite de meio escuro."""
+    rng = np.random.default_rng(semente)
+    alt, larg = int(rng.integers(300, 900)), int(rng.integers(300, 900))
+    img = np.full((alt, larg, 3), 225, np.uint8)
+    img += rng.integers(0, 20, size=img.shape, dtype=np.uint8)
+    for _ in range(4):                                        # faixas pretas irregulares
+        lado = int(rng.integers(4))
+        fundo = int(rng.integers(5, int(0.35 * (larg if lado < 2 else alt))))
+        ruido = rng.random((alt, larg)) < rng.uniform(0.3, 0.8)
+        faixa = np.zeros((alt, larg), bool)
+        if lado == 0:
+            faixa[:, :fundo] = True
+        elif lado == 1:
+            faixa[:, larg - fundo:] = True
+        elif lado == 2:
+            faixa[:fundo, :] = True
+        else:
+            faixa[alt - fundo:, :] = True
+        img[faixa & ruido] = int(rng.integers(0, 60))
+    if semente % 3 == 0:                                      # tarja cinza de ponta a ponta
+        y = int(rng.integers(0, alt // 5))
+        img[y:y + 15, :] = 140
+    if semente % 4 == 1:                                      # cartão colorido (não neutro)
+        img[:, : larg // 6] = (40, 70, 120)
+    for x in (img, cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)):
+        assert bp.so_o_preto(x) == _so_o_preto_de_antes(x)
