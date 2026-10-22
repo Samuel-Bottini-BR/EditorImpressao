@@ -4,6 +4,8 @@ Fase 2 (bloco sem número) · **PRONTO no ramo `fase2-para-revisar` (`8cb84b8`);
 
 ## Situação
 
+- **Atualização de 22/10/2026:** Aprovado pelo Samuel na Central em 21/10/2026; em 22/10/2026: regra com 75 de 89 aceita ("A"), tela troca sozinha pela imagem do PDF com duas bolinhas de carregamento, adiantar e guardar páginas (na fila). Entra no programa na junção final.
+
 - **Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)); vale sobre os pontos de 20/10 abaixo:** o "Para revisar" foi juntado **ao layout aprovado** (`adf4e69`, 20/10/2026: 64/64 saídas iguais; suíte 2172/0; 3 testes de reversão) e ganhou as frases da rodada 14 e dois consertos: ramo `fase2-para-revisar` em **`8cb84b8`**, **PRONTO**. **Aba 4** da página de conferência publicada, **sem resposta**: 18 quadros, 3 perguntas (`pr-medir-o-livro`, `pr-contagens`, `pr-tela-igual-ao-pdf`), decisão `pr`. Ressalva que vai junto: o Boécio chega a 34% no "Para revisar". Não juntado ao `fase-1`.
 - **Pronto em ramo, não juntado:** ramo `fase2-para-revisar`, commit `ce2b835` (13/10/2026). Os seis pedaços estão construídos. Suíte no Windows do GitHub: 116 arquivos, 2101 passaram, 0 falharam (Registro 13/10/2026).
 - **Segunda conferência do verificador feita, mas parada pelo Samuel em 13/10/2026 às 17:30** (checkpoint): ramo `verif-para-revisar-2026-10-13`, commit `f506ec3`. Os 8 pontos foram conferidos na janela de verdade: 7 valem, 1 "em parte" (teclado: a seta não troca de página na janela de teste, igual ao programa de hoje). Falta: abrir uma a uma 19 imagens novas; reabrir Opus Majus 20, Antiphon 260, Cursus 3 e Camões 66 (`ramo verif-para-revisar-2026-10-13: relatorios/conferir/para-revisar-2026-10-13/ONDE-PAREI.md`).

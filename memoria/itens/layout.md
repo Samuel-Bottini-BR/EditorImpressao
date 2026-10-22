@@ -7,6 +7,8 @@ inteira do layout: o plano feito com o Samuel, as 13 rodadas de escolhas e as et
 
 ## Situação
 
+- **Atualização de 22/10/2026:** Etapas 4 e 5 aprovadas pelo Samuel em 21/10/2026; 22/10/2026: conferência das etapas 6 e 7 publicada na Central (aba Conferência > Layout 6 e 7). O layout 4 a 7 entra no programa na junção final.
+
 - **Atualização de 21/10/2026 ([PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)); vale sobre os pontos de 20/10 abaixo:** ramo `layout-etapas4a7-2026-10-19` em **`2eeec20`**. **Etapas 4 e 5 PRONTAS**; a **aba 5** da página de conferência (layout etapas 4-5 + rodada 14, decisão `ly-4a5`) está **publicada, sem resposta**. **Etapas 6 e 7 PRONTAS**; conferência montada em `verif-layout-4a5-2026-10-21` (`5650a1c`), **não publicada**. A grade ficou nítida depois, em `2eeec20` (a suíte 39629275637 não foi lida e o verificador não mediu de novo). **Rodada 14 e 14b respondidas** em 20/10/2026 (abaixo). Nada juntado ao `fase-1`. A página de layout está com 500 arquivos (limite de 511 por versão).
 - **No programa (`fase-1`):**
   - **Etapa 1, os três temas** (escuro, cinza, claro; cinza de fábrica): commit `7ebbc04`, juntado em 08/10/2026
