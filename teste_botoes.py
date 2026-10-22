@@ -1093,6 +1093,15 @@ def testar_processar_e_final(janela) -> tuple[int, int]:
             ok += 1
         else:
             falhas += 1
+    # item 2.6: a janela "Montar para imprimir" abre (sem bloquear) e fecha
+    if final.botao_montar.isEnabled():
+        if acionar(final.botao_montar, final.botao_montar.text()):
+            ok += 1
+        else:
+            falhas += 1
+        dialogo = getattr(final, "dialogo_impressao", None)
+        if dialogo is not None:
+            dialogo.reject()
 
     outro = next((b for b in botoes_de(final) if "fazer outro" in b.text().lower()), None)
     if outro is not None:

@@ -764,3 +764,29 @@ def montar_em_memoria(entrada: str | Path, opcoes: OpcoesDeImpressao) -> tuple[f
         dados = doc.tobytes()
         doc.close()
     return fitz.open("pdf", dados), resultado
+
+
+def _linha_de_comando() -> int:
+    """`python -m core.impressao livro.pdf saida.pdf [--opcoes '{"formato": "livreto"}']`:
+    a mesma montagem, sem janela (CLAUDE.md §7: todo o processamento roda por
+    linha de comando)."""
+    import argparse
+    import json
+
+    analisador = argparse.ArgumentParser(description="Monta o arquivo para impressão.")
+    analisador.add_argument("entrada")
+    analisador.add_argument("saida")
+    analisador.add_argument("--opcoes", default="{}", help="as opções em JSON (as de fábrica se vazio)")
+    argumentos = analisador.parse_args()
+    opcoes = OpcoesDeImpressao.de_dicionario(json.loads(argumentos.opcoes))
+    resultado = montar_para_impressao(argumentos.entrada, argumentos.saida, opcoes)
+    print(f"{resultado.paginas_do_arquivo} páginas no arquivo, {resultado.folhas_de_papel} folhas de papel")
+    for linha in resultado.instrucoes:
+        print(linha)
+    for aviso in resultado.avisos:
+        print(aviso.texto)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_linha_de_comando())

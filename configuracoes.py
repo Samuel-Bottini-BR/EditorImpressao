@@ -28,6 +28,11 @@ PADROES: dict[str, Any] = {
     # mudar: nada aqui sem mudar ui/estilo.py junto. Arriscado: outro valor de
     # fabrica que nao seja um dos tres temas.
     "tema": "cinza",
+    # Item 2.6: as ultimas escolhas da janela "Montar para imprimir"
+    # (core/impressao.OpcoesDeImpressao.para_dicionario), como a "Predefinicao:
+    # Ultima configuracao" do UPDF. Vazio = as de fabrica (as decisoes do
+    # Samuel). Seguro mudar: nada (quem le corrige o que vier estranho).
+    "impressao": {},
 }
 
 

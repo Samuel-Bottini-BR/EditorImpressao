@@ -179,6 +179,15 @@ class TelaFinal(QWidget):
         self.botao_imprimir.clicked.connect(lambda: historico.imprimir(self.caminho))
         linha.addWidget(self.botao_imprimir)
 
+        # Item 2.6 (CONTROLE MINIMO, provisorio ate o layout; anotado em
+        # relatorios/fase2-novas/ONDE-PAREI.md): a janela de imprimir dentro
+        # do programa (livreto A4 com margens e escala, pagina inteira,
+        # varias por folha, poster, mandar para a impressora). Trabalha sobre
+        # o PDF que acabou de sair, sem mexer nele.
+        self.botao_montar = QPushButton("montar para imprimir...")
+        self.botao_montar.clicked.connect(self.abrir_montar_para_imprimir)
+        linha.addWidget(self.botao_montar)
+
         outro = QPushButton("fazer outro")
         outro.setObjectName("primario")
         outro.clicked.connect(self.fazer_outro.emit)
@@ -229,6 +238,16 @@ class TelaFinal(QWidget):
             if item.widget():
                 item.widget().deleteLater()
 
+        # item 2.6: o PDF ja em cadernos (o "Montar cadernos" de sempre) nao
+        # pode ser montado de novo - sairia embaralhado duas vezes
+        self.botao_montar.setEnabled(not projeto.montar_cadernos)
+        self.botao_montar.setToolTip(
+            "Este PDF já saiu montado em cadernos. Para usar a montagem nova (A4 com margens), "
+            "desmarque \"Montar cadernos\" nas opções do livro e gere de novo."
+            if projeto.montar_cadernos else
+            "Monta as folhas para a impressora: livreto em A4 com as margens da encadernação, "
+            "página inteira, várias por folha ou pôster. O PDF do livro não muda.")
+
         self.cartao_impressao.setVisible(projeto.montar_cadernos)
         if projeto.montar_cadernos:
             linhas = instrucoes_de_impressao(num_paginas, projeto.paginas_por_caderno)
@@ -246,6 +265,16 @@ class TelaFinal(QWidget):
                 f"color: {estilo.VERDE if certo else estilo.VERMELHO}; "
                 "margin-top: 8px;"))
             self.passos.addWidget(aviso)
+
+
+    def abrir_montar_para_imprimir(self) -> None:
+        """Item 2.6: abre a janela "Montar para imprimir" sobre o PDF gerado."""
+        from ui.dialogo_impressao import DialogoImpressao
+
+        if not self.caminho or not Path(self.caminho).exists():
+            return
+        self.dialogo_impressao = DialogoImpressao(self.caminho, self)
+        self.dialogo_impressao.open()
 
 
 class _Certo(QWidget):
