@@ -198,3 +198,6 @@ Resposta do Samuel à `b-8-tinta-com-cor` (Central, 22/10): **"As duas: A e B co
    com o filtro da página e a B funciona igual no Original e no Melhorar (o papel vai a branco e a tinta escurece).
    Fica assim, ou esconder os dois botões quando a página não está em Preto e branco?
    Foto: `relatorios/conferir/fase2-novas/tinta-a-e-b/horas_p013-titulo-ampliado.jpg` (A e B no Preto e branco).
+
+GitHub da tinta A e B: suíte `39850503362` (`41fa7bc`): 2185 passaram, 0 falharam; botões 234 ações, 0 falhas.
+Velocidade `39849559789` (`f26407c` → `8226f33`): rodando (ver a linha abaixo quando sair).
