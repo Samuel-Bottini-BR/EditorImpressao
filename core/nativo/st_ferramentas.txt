@@ -10,6 +10,6 @@ Fontes:      terceiros/scantailor-advanced/src (licença GPL-3, ver LEIA-ME.md l
 Ligação:     terceiros/scantailor-advanced/ligacao-ferramentas
 Qt:          6.11.1 (o do PySide6; a DLL usa as DLLs do Qt da pasta do PySide6)
 Compilador:  MSVC 19.44.35229.0
-Compilada:   21/10/2026 10:54 por compilar_st_ferramentas.py
-Tamanho:     587776 bytes
-SHA-256:     570cdcfec28971f4bfc034033f1d89c4a55842ef9fc55ca0468863bdf3920213
+Compilada:   22/10/2026 15:20 por compilar_st_ferramentas.py
+Tamanho:     590848 bytes
+SHA-256:     982b42eca1521ce0c413a4a85a883ba8f09133883be38d7a400c8507fc95023d

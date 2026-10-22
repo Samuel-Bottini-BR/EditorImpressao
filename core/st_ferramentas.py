@@ -62,7 +62,10 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 #     core/cores_scantailor.py).
 # 7 (21/10/2026) = + o desentortar do ScanTailor (st_ferramentas_desentortar,
 #     item 2.12; core/desentortar_scantailor.py).
-VERSAO_API = 7
+# 8 (22/10/2026) = o desentortar recebe a pagina com o papel do scan em volta e
+#     o corte como medida (escolha do Samuel na Central: "cortar uma vez so, no
+#     fim", como o ScanTailor); a saida tem o tamanho do corte.
+VERSAO_API = 8
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -138,6 +141,7 @@ ASSINATURAS = {
         ctypes.c_int, ctypes.c_int,                                  # dpi x, y
         ctypes.c_int, ctypes.c_int,                                  # modo, lado
         ctypes.c_double, ctypes.c_int,                               # profundidade, endireitar depois
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # corte x, y, largura, altura (versao 8)
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # caixa do conteudo (x, y, larg., alt.)
         ctypes.c_void_p, ctypes.c_int,                               # saida, passo
         ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double),  # achou curvas, angulo depois

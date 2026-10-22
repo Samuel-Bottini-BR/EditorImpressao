@@ -525,14 +525,21 @@ def _preparar_metade_e_geometria(
     desenho. Arriscado: separar as duas contas em funcoes diferentes (a
     geometria anotada ao abrir deixaria de ser a da previa e a do PDF).
 
-    Item 2.12 (21/10/2026): no fim, nas duas ordens, o desentortar do
-    ScanTailor (core/desentortar_scantailor.aplicar), se a pagina o tiver
-    ligado; e onde o ScanTailor faz (na saida, depois do corte). Desligado (o
-    de fabrica) devolve a MESMA imagem: nada muda. O desenho (geometria das
-    zonas) NAO inclui o desentortar: as zonas da aba Marcar ficam onde
-    estavam na pagina reta (ressalva do item; a curva perto da lombada e
-    pequena). Arriscado: desentortar antes de cortar (o corte foi medido na
-    pagina sem desentortar).
+    Item 2.12 (21/10/2026; refeito em 22/10/2026): no fim, nas duas ordens,
+    o desentortar do ScanTailor, se a pagina o tiver ligado. O corte continua
+    MEDIDO como sempre (mesma conta, mesma caixa), mas e so uma medida: o
+    desentortar recebe a pagina endireitada SEM o corte, com o papel do scan
+    em volta, e a imagem e recortada uma vez, pela medida, dentro dele (a
+    escolha do Samuel na Central, 22/10: "A - Como o ScanTailor: cortar uma
+    vez so, no fim"; _desentortar_com_o_papel_em_volta). Desligado (o de
+    fabrica) o codigo e o de sempre, sem passo nenhum: nada muda. O desenho
+    (geometria das zonas) NAO inclui o desentortar: as zonas da aba Marcar
+    ficam onde estavam na pagina reta (ressalva do item).
+    Arriscado: (1) passar ao desentortar a pagina ja cortada (era o defeito
+    de 21/10: o cabecalho e o comeco das linhas sumiam no Righetti 96 e no
+    Cursus 151); (2) medir o corte na pagina desentortada (mudaria a ordem
+    aprovada em 09/10: endireitar -> cortar -> desentortar -> filtro); (3)
+    mexer no caminho do desligado (o livro tem de sair identico).
 
     As duas ordens (item 2.2, G6, core/ordem_do_preparo):
       "cortar_antes" (projeto de antes de 09/10/2026): o codigo de sempre,
@@ -550,12 +557,17 @@ def _preparar_metade_e_geometria(
         geometria = _geometria(inteira, pagina, projeto, dpi=dpi)
     recorte, angulo = geometria
 
+    # item 2.12: so com o desentortar ligado o preparo vai pelo caminho do
+    # "papel em volta"; desligado (o de fabrica) e o codigo de sempre.
+    desentortar = desentortar_scantailor.ligado(pagina) and not so_a_geometria
+
     if endireita_antes(projeto):
-        img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
-                                                          so_a_geometria)
-        # item 2.12: o desentortar do ScanTailor, o ultimo passo do preparo
-        # (desligado de fabrica: devolve a MESMA imagem, sem conta nenhuma)
-        img = desentortar_scantailor.aplicar(img, pagina, dpi)
+        if desentortar:
+            img, cortou, girar = _desentortar_com_o_papel_em_volta(
+                inteira, recorte, angulo, projeto, pagina, dpi, endireita_antes=True)
+        else:
+            img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
+                                                              so_a_geometria)
         dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
         desenho = geometria_do_desenho(
             img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
@@ -563,6 +575,18 @@ def _preparar_metade_e_geometria(
             pagina.metade if dividida else METADE_INTEIRA,
             tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
             sobra=faixa_da_sobra(folha, pagina, projeto), ordem=ordem_do_livro(projeto))
+        return img, desenho
+
+    if desentortar:
+        img, cortou, girar = _desentortar_com_o_papel_em_volta(
+            inteira, recorte, angulo, projeto, pagina, dpi, endireita_antes=False)
+        dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
+        desenho = geometria_do_desenho(
+            img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
+            folha.posicao_corte if dividida else None,
+            pagina.metade if dividida else METADE_INTEIRA,
+            tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
+            sobra=faixa_da_sobra(folha, pagina, projeto))
         return img, desenho
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
@@ -581,8 +605,6 @@ def _preparar_metade_e_geometria(
         img = rotacionar(img, angulo)
     if so_a_geometria:
         img = None
-    # 4. item 2.12: desentortar (desligado de fabrica: a MESMA imagem)
-    img = desentortar_scantailor.aplicar(img, pagina, dpi)
 
     dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
     desenho = geometria_do_desenho(
@@ -592,6 +614,62 @@ def _preparar_metade_e_geometria(
         tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
         sobra=faixa_da_sobra(folha, pagina, projeto))
     return img, desenho
+
+
+def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: float,
+                                      projeto: Projeto, pagina: ConfigPagina, dpi,
+                                      endireita_antes: bool):
+    """O preparo da pagina com o desentortar LIGADO (item 2.12, 22/10/2026).
+    Devolve (imagem, cortou, girou), como _preparar_endireitando_antes.
+
+    A escolha do Samuel na Central (22/10/2026): "A - Como o ScanTailor:
+    cortar uma vez so, no fim". O corte e medido como sempre (o mesmo
+    `recorte`, a mesma caixa_em_pontos); a pagina e endireitada INTEIRA e
+    entregue ao desentortar com o papel do proprio scan em volta, junto com a
+    caixa do corte; o desentortar recorta uma vez, pela caixa
+    (core/desentortar_scantailor.aplicar_no_corte). Nao inventa papel branco
+    e nao corta duas vezes.
+
+    As duas ordens dao a MESMA caixa e o MESMO giro do caminho desligado:
+      livro novo ("endireitar_antes"): a pagina inteira girada em volta do
+        centro DELA (rotacionar), como _preparar_endireitando_antes; a caixa
+        e a do corte na pagina reta;
+      livro de antes de 09/10 ("cortar_antes"): la o giro e feito no pedaco
+        ja cortado, em volta do centro do CORTE. Aqui a pagina inteira e
+        girada em volta desse mesmo centro: dentro da caixa os pontos sao os
+        do caminho de sempre, e o que estava fora do corte (o papel de
+        verdade) fica no lugar do branco que o giro punha nos cantos.
+
+    Custo: o giro da pagina inteira (em vez de so a caixa) e a DLL lendo a
+    pagina inteira; so com o desentortar ligado (desligado nao passa aqui).
+    Arriscado: cortar antes de chamar o desentortar (o defeito de 21/10) ou
+    trocar a caixa/o centro do giro (a pagina deixaria de bater com a do
+    desentortar desligado nos pontos que nao mudam).
+    """
+    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
+    cortou = caixa is not None
+    if not girar:
+        reta = inteira
+    elif endireita_antes or caixa is None:
+        reta = rotacionar(inteira, angulo)  # em volta do centro da pagina
+    else:
+        reta = _rotacionar_em_volta_de(inteira, angulo, caixa)
+    return desentortar_scantailor.aplicar_no_corte(reta, caixa, pagina, dpi), cortou, girar
+
+
+def _rotacionar_em_volta_de(img: np.ndarray, angulo: float, caixa) -> np.ndarray:
+    """A pagina inteira girada como core.endireitar.rotacionar gira o pedaco
+    img[y0:y1, x0:x1] (em volta do centro DO PEDACO, mesma interpolacao), mas
+    com o papel de verdade em volta no lugar do branco. So para o desentortar
+    no livro "cortar_antes" (_desentortar_com_o_papel_em_volta)."""
+    x0, y0, x1, y1 = caixa
+    altura, largura = img.shape[:2]
+    centro = (x0 + (x1 - x0) / 2.0, y0 + (y1 - y0) / 2.0)
+    matriz = cv2.getRotationMatrix2D(centro, angulo, 1.0)
+    borda = 255 if img.ndim == 2 else (255, 255, 255)
+    return cv2.warpAffine(img, matriz, (largura, altura), flags=cv2.INTER_CUBIC,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=borda)
 
 
 def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,

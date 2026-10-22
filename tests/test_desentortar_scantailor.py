@@ -328,3 +328,206 @@ def test_o_campo_vai_e_volta_do_arquivo_e_o_antigo_abre_desligado():
     for p in dados["paginas"]:
         p.pop("desentortar")
     assert Projeto.de_dicionario(dados).paginas[0].desentortar == ds.DESLIGADO
+
+
+# ------------------------------------------------------------- o corte é só uma medida (22/10/2026)
+#
+# Escolha do Samuel na Central (22/10/2026, pergunta "a-212-desentortar"): "A —
+# Como o ScanTailor: cortar uma vez só, no fim". O desentortar recebe a página
+# endireitada SEM o corte (com o papel do scan em volta) e a caixa do corte; a
+# DLL (versão 8) devolve a página já do tamanho do corte.
+
+def _caixa_rente(img, folga=12):
+    """O corte rente de 1 mm (12 pontos a 300 DPI) em volta da tinta, como o
+    corte automático do programa: (x0, y0, x1, y1)."""
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ys, xs = np.where(cinza < 128)
+    return (int(xs.min()) - folga, int(ys.min()) - folga, int(xs.max()) + folga + 1, int(ys.max()) + folga + 1)
+
+
+def tinta_que_ficou_no_lugar(antes: np.ndarray, depois: np.ndarray, tolerancia: int = 4) -> float:
+    """A fração da tinta de `antes` que continua tinta em `depois`, aceitando
+    `tolerancia` pontos de desvio. Numa página RETA, o desentortar não tem o
+    que mudar: perto de 1,0 = as letras ficaram onde estavam."""
+    a = cv2.cvtColor(antes, cv2.COLOR_BGR2GRAY) < 128
+    b = cv2.cvtColor(depois, cv2.COLOR_BGR2GRAY) < 128
+    lado = 2 * tolerancia + 1
+    b = cv2.dilate(b.astype(np.uint8), np.ones((lado, lado), np.uint8)) > 0
+    return float((a & b).sum() / a.sum())
+
+
+@precisa_da_dll
+def test_a_saida_tem_o_tamanho_do_corte():
+    img = pagina_curva()
+    x0, y0, x1, y1 = _caixa_rente(img)
+    for modo in (ds.AUTOMATICO, ds.PELAS_MARGENS):
+        r = ds.desentortar(img, 300, modo, lado=2, corte=(x0, y0, x1 - x0, y1 - y0),
+                           conteudo=ds.caixa_do_conteudo((x0, y0, x1, y1), 300))
+        assert r.disponivel, r.motivo
+        assert r.imagem.shape == (y1 - y0, x1 - x0, 3)
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    r = ds.desentortar(cinza, 300, ds.AUTOMATICO, lado=2, corte=(x0, y0, x1 - x0, y1 - y0))
+    assert r.disponivel and r.imagem.shape == (y1 - y0, x1 - x0)
+
+
+@pytest.mark.parametrize("corte", [(-1, 0, 10, 10), (0, 0, 0, 10), (90, 0, 20, 10), (0, 95, 10, 10)])
+def test_corte_fora_da_pagina_nao_chega_a_dll(corte):
+    class SemDLL:
+        def funcao(self, nome):
+            raise AssertionError("não devia chegar à DLL")
+
+    r = ds.desentortar(np.zeros((100, 100), np.uint8), 300, ds.AUTOMATICO, corte=corte, biblioteca=SemDLL())
+    assert not r.disponivel and r.motivo
+
+
+def test_caixa_do_conteudo_e_o_corte_sem_a_folga():
+    assert ds.caixa_do_conteudo((100, 200, 1100, 2200), 300) == (112, 212, 976, 1976)
+    assert ds.caixa_do_conteudo((0, 0, 20, 20), 300) == (0, 0, 20, 20)  # não cabe: o próprio corte
+    assert ds.caixa_do_conteudo((0, 0, 100, 100), None) == (0, 0, 100, 100)
+
+
+@precisa_da_dll
+def test_reversao_pagina_reta_com_corte_rente_nao_mexe_nas_letras():
+    """REVERSÃO do defeito de 22/10/2026 (item 2.12, Righetti 96 e Cursus 151):
+    o desentortar recebia a página JÁ CORTADA rente (1 mm) e tomava o corte
+    inteiro como caixa do conteúdo; sem papel em volta, ele redesenhava a
+    página até numa página reta, apertando e empurrando as letras (no Righetti
+    96 o começo das linhas e o cabeçalho sumiam). Agora o corte é só uma
+    medida, como no ScanTailor: a página vai com o papel em volta e a caixa do
+    conteúdo justa. Medida: numa página RETA, com o corte rente, a tinta tem de
+    ficar no lugar (no código de antes: 0,97 da tinta; agora 1,00).
+    Pelo caminho do programa (preparar_metade), nas duas ordens."""
+    from core import pipeline
+    from modelos import ConfigFolha, Projeto
+
+    img = pagina_curva(curva=0)
+    altura, largura = img.shape[:2]
+    x0, y0, x1, y1 = _caixa_rente(img)
+    for ordem in ("endireitar_antes", "cortar_antes"):
+        pipeline._GEOMETRIAS.clear()
+        projeto = Projeto(caminho_entrada="x.pdf", qualidade_dpi=300, cortar_bordas=True,
+                          endireitar=False, ordem_do_preparo=ordem)
+        folha = ConfigFolha(indice=0, dividir=False)  # a página direita já separada
+        pagina = ConfigPagina(indice=0, folha=0, metade="direita")
+        pagina.recorte = (x0 / largura, y0 / altura, (x1 - x0) / largura, (y1 - y0) / altura)
+        projeto.folhas, projeto.paginas = [folha], [pagina]
+        hoje = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=300)
+        pagina.desentortar = ds.AUTOMATICO
+        saida = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=300)
+        assert saida.shape == hoje.shape
+        assert tinta_que_ficou_no_lugar(hoje, saida) > 0.99, ordem
+
+
+def test_desligado_nao_passa_pelo_desentortar_nem_com_corte_e_giro(monkeypatch):
+    """Desligado (o de fábrica), o preparo é o de sempre ponto por ponto: nem
+    chega ao desentortar, com corte e com giro, nas duas ordens."""
+    from core import pipeline
+    from core.endireitar import rotacionar, rotacionar_e_cortar
+    from core.recortar import caixa_em_pontos
+    from modelos import ConfigFolha, Projeto
+
+    def nao(*a, **k):
+        raise AssertionError("desligado não pode chamar o desentortar")
+
+    monkeypatch.setattr(ds, "aplicar_no_corte", nao)
+    monkeypatch.setattr(ds, "aplicar", nao)
+    img = pagina_curva(curva=0)
+    recorte = (0.08, 0.08, 0.84, 0.84)
+    for ordem in ("endireitar_antes", "cortar_antes"):
+        pipeline._GEOMETRIAS.clear()
+        projeto = Projeto(caminho_entrada="x.pdf", qualidade_dpi=300, cortar_bordas=True,
+                          endireitar=True, ordem_do_preparo=ordem)
+        folha = ConfigFolha(indice=0)
+        pagina = ConfigPagina(indice=0, folha=0, metade="inteira")
+        pagina.recorte, pagina.angulo_manual = recorte, 1.5
+        projeto.folhas, projeto.paginas = [folha], [pagina]
+        saida = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=300)
+        x0, y0, x1, y1 = caixa_em_pontos(img.shape, recorte)
+        esperado = (rotacionar_e_cortar(img, 1.5, (x0, y0, x1, y1)) if ordem == "endireitar_antes"
+                    else rotacionar(img[y0:y1, x0:x1], 1.5))
+        assert np.array_equal(saida, esperado), ordem
+
+
+@pytest.mark.parametrize("ordem", ["endireitar_antes", "cortar_antes"])
+def test_ligado_sem_a_dll_sai_o_mesmo_corte_e_giro_de_sempre(monkeypatch, ordem):
+    """Sem a DLL, o caminho do papel em volta devolve o corte da página reta:
+    o mesmo corte e o mesmo giro do desligado (no livro antigo, girado em volta
+    do centro do CORTE). Só os cantos que o giro trazia de fora mudam: antes
+    branco, agora o papel de verdade."""
+    from core import pipeline
+    from modelos import ConfigFolha, Projeto
+
+    monkeypatch.setattr(ds, "_AVISADOS", set())
+    monkeypatch.setattr(ds.st, "anotar_no_erros_log", lambda *a: None)
+    sem = st.BibliotecaScanTailor(RAIZ / "nao-existe" / "st_ferramentas.dll")
+    monkeypatch.setattr(ds.st, "padrao", lambda: sem)
+    img = pagina_curva(curva=0)
+    img[:, :] = np.clip(img.astype(int) - 20, 0, 255).astype(np.uint8)  # papel cinza: o branco do giro aparece
+    pipeline._GEOMETRIAS.clear()
+    projeto = Projeto(caminho_entrada="x.pdf", qualidade_dpi=300, cortar_bordas=True,
+                      endireitar=True, ordem_do_preparo=ordem)
+    folha = ConfigFolha(indice=0)
+    pagina = ConfigPagina(indice=0, folha=0, metade="inteira")
+    pagina.recorte, pagina.angulo_manual = (0.08, 0.08, 0.84, 0.84), 2.0
+    projeto.folhas, projeto.paginas = [folha], [pagina]
+    hoje = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=300)
+    pagina.desentortar = ds.AUTOMATICO
+    ligado = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=300)
+    assert ligado.shape == hoje.shape
+    miolo = (slice(60, -60), slice(60, -60))
+    diferenca = np.abs(ligado[miolo].astype(int) - hoje[miolo].astype(int))
+    assert diferenca.max() <= 2
+    if ordem == "cortar_antes":  # o canto: antes o branco do giro, agora o papel
+        assert hoje[2, 2].min() == 255 and ligado[2, 2].max() < 255
+
+
+ACERVO = Path(r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE")
+RIGHETTI = ACERVO / "Mario Righetti - Historia de la Liturgia 02-2 (da_página_262_à_531).pdf"
+
+
+def _margem_esquerda_do_texto(img: np.ndarray) -> int:
+    """Onde começa o bloco de texto (a primeira coluna com tinta em mais de 1%
+    das linhas), sem a faixa preta do scanner (linhas com mais de metade de
+    tinta) e sem os 15 pontos da beirada (a sombra preta da lombada)."""
+    t = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) < 128
+    t[t.mean(axis=1) > 0.5] = False
+    t[:, :15] = False
+    t[:, -15:] = False
+    return int(np.where(t.mean(axis=0) > 0.01)[0].min())
+
+
+@precisa_da_dll
+@pytest.mark.skipif(not RIGHETTI.is_file(), reason="sem o acervo (só no PC do Samuel)")
+def test_reversao_righetti_96_o_comeco_das_linhas_nao_some(tmp_path):
+    """REVERSÃO do defeito de 22/10/2026 no livro de verdade: Righetti, folha 96
+    (deitada: girada 270°, "Dividir" ligado), página da direita, livro novo de
+    fábrica, desentortar automático. No código de antes o texto saía ampliado e
+    o começo das linhas sumia ("mente" -> "nte"): o bloco de texto encostava na
+    beirada (margem de 15 pontos, a beirada medida). Agora a margem esquerda do
+    texto fica a de hoje (173 pontos; aceito 80%)."""
+    import fitz
+    from core import pipeline
+    from core.pdf_io import abrir_pdf, pagina_para_array
+    from modelos import Projeto
+
+    pdf = tmp_path / "righetti_96.pdf"
+    origem, novo = fitz.open(RIGHETTI), fitz.open()
+    novo.insert_pdf(origem, from_page=95, to_page=95)
+    novo[0].set_rotation((novo[0].rotation + 270) % 360)
+    novo.save(pdf)
+    novo.close()
+    origem.close()
+    projeto = pipeline.analisar_projeto(Projeto(caminho_entrada=str(pdf), nome="righetti", dividir_folhas=True))
+    doc = abrir_pdf(str(pdf))
+    try:
+        folha = projeto.folhas[0]
+        pagina = [p for p in projeto.paginas if p.metade == "direita"][0]
+        img = pagina_para_array(doc, 0, dpi=projeto.qualidade_dpi)
+    finally:
+        doc.close()
+    hoje = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+    pagina.desentortar = ds.AUTOMATICO
+    saida = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+    assert saida.shape == hoje.shape
+    assert _margem_esquerda_do_texto(hoje) > 100
+    assert _margem_esquerda_do_texto(saida) >= 0.8 * _margem_esquerda_do_texto(hoje)

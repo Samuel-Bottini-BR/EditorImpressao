@@ -45,12 +45,19 @@
 //     NOME e so os membros que as funcoes copiadas usam (como em saida.cpp e no
 //     1.2). Para nao brigar com a de saida.cpp (mesma DLL), ela mora no
 //     namespace st_desentortar::output, e nao em output.
-//   - A pagina chega ja dividida, girada e cortada pelo programa: a geometria
-//     (m_xform) e a identidade (ImageTransformation(image.rect(), Dpm(dpi)),
-//     como o FilterData do ScanTailor), a pagina de saida (m_outRect) e a
-//     imagem inteira e a caixa do conteudo (m_contentRect) e a que o Python
-//     manda (de fabrica, a imagem inteira). As areas seguem calcAreas()
-//     (linhas 319-363) com a pagina inteira como area antes do corte.
+//   - A pagina chega dividida e endireitada pelo programa, mas SEM o corte, com
+//     o papel do proprio scan em volta (versao 8, 22/10/2026; antes chegava ja
+//     cortada e as letras empurradas para fora do corte sumiam). A geometria
+//     (m_xform) e ImageTransformation(image.rect(), dpi) com o corte do
+//     programa como "post-crop" (setPostCropArea); a pagina de saida
+//     (m_outRect) e o corte e a caixa do conteudo (m_contentRect) e a que o
+//     Python manda (de fabrica, o proprio corte). As areas seguem calcAreas()
+//     (linhas 319-363) com os de fabrica do ScanTailor (fillOffcut,
+//     fillMargins). A imagem e recortada uma vez so, pelo RasterDewarper, no
+//     tamanho de m_outRect, como no ScanTailor.
+//   - O endireitar depois do "pelas margens" gira com o papel em volta (ver o
+//     comentario no desentortar()): o angulo e o do ScanTailor, so os cantos
+//     vem do scan em vez da cor do fundo.
 //   - O lado da pagina (m_pageId.subPage(): unica, esquerda, direita) vem do
 //     Python (a metade da folha). So o "pelas margens" e a correcao da beirada
 //     do automatico usam.
@@ -161,19 +168,23 @@ class OutputGenerator {
 
 class OutputGenerator::Processor {
  public:
-  // image: a pagina ja dividida, girada e cortada pelo programa.
+  // image: a pagina ja dividida e endireitada pelo programa, SEM o corte (com o
+  //   papel do proprio scan em volta; versao 8, 22/10/2026).
   // dpi: o DPI da imagem. modo: AUTO ou MARGINAL. lado: a metade da folha.
-  // conteudo: a caixa do conteudo, em pontos da imagem (vazia = a imagem inteira).
+  // corte: o corte medido pelo programa, em pontos da imagem (vazio = a imagem
+  //   inteira): vira a pagina de saida (m_outRect), como o ScanTailor.
+  // conteudo: a caixa do conteudo, em pontos da imagem (vazia = o corte).
   // endireitarDepois: o "post deskew" do ScanTailor (ligado de fabrica).
   Processor(const QImage& image,
             const Dpi& dpi,
             DewarpingMode modo,
             PageId::SubPage lado,
+            const QRect& corte,
             const QRect& conteudo,
             bool endireitarDepois);
 
-  // Os passos 1 a 5 do topo do arquivo. Devolve a pagina desentortada, do
-  // mesmo tamanho; achouCurvas = as curvas nao sao as do modelo "sem curva".
+  // Os passos 1 a 5 do topo do arquivo. Devolve a pagina desentortada, ja do
+  // tamanho do corte; achouCurvas = as curvas nao sao as do modelo "sem curva".
   QImage desentortar(const DepthPerception& depthPerception, bool* achouCurvas, double* anguloDepois);
 
  private:
@@ -299,6 +310,7 @@ OutputGenerator::Processor::Processor(const QImage& image,
                                       const Dpi& dpi,
                                       DewarpingMode modo,
                                       PageId::SubPage lado,
+                                      const QRect& corte,
                                       const QRect& conteudo,
                                       bool endireitarDepois)
     : m_xform(image.rect(), dpi),
@@ -308,18 +320,42 @@ OutputGenerator::Processor::Processor(const QImage& image,
       m_inputOrigImage(image),
       m_inputGrayImage(toGrayscale(image)),
       m_colorOriginal(!image.allGray()),
-      m_outRect(image.rect()),
-      m_contentRect(conteudo.isEmpty() ? image.rect() : conteudo.intersected(image.rect())),
       m_status(m_nullStatus),
       m_dbg(nullptr),
       m_outsideBackgroundColor(Qt::white) {
-  // calcAreas() (linhas 319-363) com a pagina inteira como area antes do corte
-  // (m_preCropArea = m_outRect) e a caixa do conteudo dentro dela.
+  // VERSAO 8 (22/10/2026, escolha do Samuel na Central: "Como o ScanTailor:
+  // cortar uma vez so, no fim"). No ScanTailor o corte e so uma MEDIDA: a
+  // geometria (m_xform) leva o escaneamento inteiro ate a pagina de saida
+  // (m_outRect, que comeca em 0,0) e o RasterDewarper le os pontos do
+  // escaneamento inteiro. Aqui e igual: a imagem vem SEM o corte, o corte vira
+  // o "post-crop" da geometria (ImageTransformation::setPostCropArea, o mesmo
+  // que o ScanTailor usa) e m_outRect/m_contentRect saem como no construtor do
+  // OutputGenerator (linhas 80-89). O que o desentortar empurra para fora do
+  // corte le o papel de verdade em volta, nao o branco/preto de fora da imagem.
+  // ARRISCADO: voltar a mandar a pagina ja cortada (as letras da beirada somem,
+  // Righetti 96 e Cursus 151 em 22/10) ou fazer o corte fora daqui e de novo
+  // depois (seria cortar duas vezes, o que o Samuel recusou).
+  const QRect corteNaImagem = corte.isEmpty() ? image.rect() : corte.intersected(image.rect());
+  m_xform.setPostCropArea(QPolygonF(QRectF(corteNaImagem)));
+  m_outRect = m_xform.resultingRect().toRect();
+  const QRect conteudoNaImagem = conteudo.isEmpty() ? corteNaImagem : conteudo;
+  m_contentRect = m_xform.transform().map(QRectF(conteudoNaImagem)).boundingRect().toRect().intersected(m_outRect);
+
+  // calcAreas() (linhas 319-363), com os de fabrica do ScanTailor: "fillOffcut"
+  // ligado (m_preCropArea = resultingPreCropArea, a pagina inteira na
+  // coordenada da saida) e "fillMargins" ligado (o conteudo recortado pela
+  // caixa do conteudo). Fica de fora so o que o desentortar nao usa.
+  const QPolygonF preCropArea = m_xform.resultingPreCropArea();
+  const QRect croppedContentRect = preCropArea.intersected(QRectF(m_contentRect)).boundingRect().toRect();
+  const QPolygonF outCropArea = preCropArea.intersected(QRectF(m_outRect));
   const int contentMargin = m_dpi.vertical() * 20 / 300;
   m_workingBoundingRect
-      = m_outRect.intersected(m_contentRect.adjusted(-contentMargin, -contentMargin, contentMargin, contentMargin));
-  m_contentRectInWorkingCs = m_contentRect.translated(-m_workingBoundingRect.topLeft());
-  m_outCropAreaInOriginalCs = m_xform.transformBack().map(QPolygonF(QRectF(m_outRect)));
+      = preCropArea
+            .intersected(QRectF(croppedContentRect.adjusted(-contentMargin, -contentMargin, contentMargin, contentMargin)))
+            .boundingRect()
+            .toRect();
+  m_contentRectInWorkingCs = croppedContentRect.translated(-m_workingBoundingRect.topLeft());
+  m_outCropAreaInOriginalCs = m_xform.transformBack().map(outCropArea);
 }
 
 QImage OutputGenerator::Processor::desentortar(const DepthPerception& depthPerception,
@@ -371,6 +407,40 @@ QImage OutputGenerator::Processor::desentortar(const DepthPerception& depthPerce
     dewarped = dewarp(QTransform(), normalizedOriginal, m_xform.transform(), distortionModel, depthPerception,
                       m_outsideBackgroundColor);
   }
+  // O endireitar depois (so no "pelas margens"), COM O PAPEL EM VOLTA (versao 8,
+  // 22/10/2026). No ScanTailor o giro e feito na pagina de saida e os cantos que
+  // entram vem com a cor do fundo; la a pagina de saida tem as margens do layout
+  // (10 mm dos lados, 5 mm em cima e embaixo), e os cantos caem nelas. Aqui a
+  // pagina de saida e o corte rente (1 mm de folga): o canto do texto sairia.
+  // Por isso, quando ha giro, o MESMO desentortar (mesmo modelo, mesmo centro,
+  // mesmo angulo, medido como no ScanTailor na pagina do tamanho do corte) e
+  // redesenhado numa pagina maior pela folga do giro, girado em volta do mesmo
+  // centro e recortado no corte: os cantos vem do papel do scan. Sem giro (o
+  // automatico, ou angulo 0), nada disso roda.
+  // ARRISCADO: girar em volta de outro centro (Utils::rotate usa o centro do
+  // retangulo; a pagina maior e simetrica, o centro e o mesmo) ou medir o angulo
+  // na pagina maior (o angulo deixaria de ser o do ScanTailor).
+  if (!rotateXform.isIdentity()) {
+    const double seno = std::abs(std::sin(m_dewarpingOptions.getPostDeskewAngle() * constants::PI / 180.0));
+    const int folga = static_cast<int>(std::ceil(seno * (m_outRect.width() + m_outRect.height()) / 2.0)) + 2;
+    const QRect saidaDoCorte = m_outRect;
+    QImage maior;
+    try {
+      m_outRect = QRect(0, 0, saidaDoCorte.width() + 2 * folga, saidaDoCorte.height() + 2 * folga);
+      maior = dewarp(QTransform(), normalizedOriginal, m_xform.transform() * QTransform::fromTranslate(folga, folga),
+                     distortionModel, depthPerception, m_outsideBackgroundColor);
+    } catch (const std::runtime_error&) {
+      maior = QImage();
+    }
+    m_outRect = saidaDoCorte;
+    if (!maior.isNull()) {
+      applyAffineTransform(maior, Utils::rotate(m_dewarpingOptions.getPostDeskewAngle(), maior.rect()),
+                           m_outsideBackgroundColor);
+      dewarped = maior.copy(folga, folga, saidaDoCorte.width(), saidaDoCorte.height());
+      rotateXform = QTransform();  // ja girado
+    }
+  }
+  // (O normalizedOriginal fica ate aqui: o redesenho com o papel em volta usa.)
   normalizedOriginal = QImage();  // Save memory.
   applyAffineTransform(dewarped, rotateXform, m_outsideBackgroundColor);
 
@@ -723,6 +793,10 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
                                                   int lado,
                                                   double profundidade,
                                                   int endireitarDepois,
+                                                  int corteX,
+                                                  int corteY,
+                                                  int corteLargura,
+                                                  int corteAltura,
                                                   int conteudoX,
                                                   int conteudoY,
                                                   int conteudoLargura,
@@ -735,33 +809,40 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
                                                   int tamanhoErro) {
   return st_ferramentas::protegido(erro, tamanhoErro, [&]() -> int {
     if (!pixels || !saida || !achouCurvas || !anguloDepois || largura <= 0 || altura <= 0
-        || (canais != 1 && canais != 3) || passo < largura * canais || passoSaida < largura * canais || dpiX <= 0
+        || (canais != 1 && canais != 3) || passo < largura * canais
+        || passoSaida < ((corteLargura == 0 || corteAltura == 0) ? largura : corteLargura) * canais || dpiX <= 0
         || dpiY <= 0 || (modo != ::output::AUTO && modo != ::output::MARGINAL) || lado < PageId::SINGLE_PAGE
         || lado > PageId::RIGHT_PAGE || !(profundidade >= 1.0 && profundidade <= 3.0) || conteudoLargura < 0
-        || conteudoAltura < 0) {
+        || conteudoAltura < 0 || corteLargura < 0 || corteAltura < 0 || corteX < 0 || corteY < 0
+        || corteX + corteLargura > largura || corteY + corteAltura > altura) {
       st_ferramentas::escreverErro(erro, tamanhoErro, "parametros invalidos");
       return ST_FERRAMENTAS_ERRO_PARAMETRO;
     }
     const QImage pagina = montarPagina(pixels, largura, altura, passo, canais);
+    // O corte (vazio = a pagina inteira): o tamanho da saida (versao 8).
+    const QRect corte = (corteLargura == 0 || corteAltura == 0)
+                            ? QRect(0, 0, largura, altura)
+                            : QRect(corteX, corteY, corteLargura, corteAltura);
     st_desentortar::output::OutputGenerator::Processor processador(
         pagina, Dpi(dpiX, dpiY), static_cast<::output::DewarpingMode>(modo), static_cast<PageId::SubPage>(lado),
-        QRect(conteudoX, conteudoY, conteudoLargura, conteudoAltura), endireitarDepois != 0);
+        corte, QRect(conteudoX, conteudoY, conteudoLargura, conteudoAltura), endireitarDepois != 0);
     bool achou = false;
     double angulo = 0.0;
     QImage resultado = processador.desentortar(::output::DepthPerception(profundidade), &achou, &angulo);
     resultado = resultado.convertToFormat(canais == 1 ? QImage::Format_Grayscale8 : QImage::Format_RGB888);
-    if (resultado.isNull() || resultado.width() != largura || resultado.height() != altura) {
+    if (resultado.isNull() || resultado.width() != corte.width() || resultado.height() != corte.height()) {
       st_ferramentas::escreverErro(erro, tamanhoErro, "resultado de tamanho inesperado");
       return ST_FERRAMENTAS_ERRO_INTERNO;
     }
-    for (int y = 0; y < altura; ++y) {
+    // A saida tem o tamanho do corte (passoSaida >= corteLargura * canais).
+    for (int y = 0; y < corte.height(); ++y) {
       const unsigned char* origem = resultado.constScanLine(y);
       unsigned char* destino = saida + static_cast<size_t>(y) * passoSaida;
       if (canais == 1) {
-        std::memcpy(destino, origem, static_cast<size_t>(largura));
+        std::memcpy(destino, origem, static_cast<size_t>(corte.width()));
         continue;
       }
-      for (int x = 0; x < largura; ++x) {  // RGB -> azul, verde, vermelho (a ordem do OpenCV)
+      for (int x = 0; x < corte.width(); ++x) {  // RGB -> azul, verde, vermelho (a ordem do OpenCV)
         destino[3 * x] = origem[3 * x + 2];
         destino[3 * x + 1] = origem[3 * x + 1];
         destino[3 * x + 2] = origem[3 * x];

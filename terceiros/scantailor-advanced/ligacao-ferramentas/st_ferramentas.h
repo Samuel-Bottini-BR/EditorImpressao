@@ -47,7 +47,11 @@
 //     saida.cpp); o que ja existia nao mudou.
 // 7 = 21/10/2026: + o desentortar do ScanTailor (st_ferramentas_desentortar,
 //     item 2.12, em desentortar.cpp); o que ja existia nao mudou.
-#define ST_FERRAMENTAS_VERSAO_API 7
+// 8 = 22/10/2026: o desentortar recebe a pagina com o papel do scan em volta e
+//     o corte como medida (corteX..corteAltura); a saida tem o tamanho do corte
+//     (escolha do Samuel na Central, 22/10: "cortar uma vez so, no fim", como o
+//     ScanTailor). O resto nao mudou.
+#define ST_FERRAMENTAS_VERSAO_API 8
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -250,8 +254,9 @@ ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
 // DESENTORTAR A PAGINA CURVA PERTO DA LOMBADA (item 2.12): o "Dewarping" do
 // ScanTailor (src/dewarping, sem mudanca; a ordem em desentortar.cpp).
 //
-// pixels, largura, altura, passo, canais: a pagina ja dividida, girada e
-//   cortada (canais 1 = cinza; 3 = azul, verde, vermelho, como o OpenCV).
+// pixels, largura, altura, passo, canais: a pagina ja dividida e endireitada,
+//   AINDA SEM O CORTE, com o papel do proprio scan em volta (canais 1 = cinza;
+//   3 = azul, verde, vermelho, como o OpenCV). Versao 8, 22/10/2026.
 // dpiX, dpiY: o DPI da imagem (o TextLineTracer reduz para 200 DPI por ele).
 // modo: 1 = automatico (AUTO, pelas linhas do texto); 3 = pelas margens
 //   (MARGINAL). Os numeros sao os de output::DewarpingMode. 0 (desligado, o de
@@ -259,9 +264,14 @@ ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
 // lado: 0 = pagina unica, 1 = esquerda, 2 = direita (PageId::SubPage).
 // profundidade: a "Depth perception" do ScanTailor, de 1,0 a 3,0 (2,0 de fabrica).
 // endireitarDepois: o "post deskew" (1 de fabrica; so vale no "pelas margens").
-// conteudoX, conteudoY, conteudoLargura, conteudoAltura: a caixa do conteudo, em
-//   pontos; largura ou altura 0 = a pagina inteira.
-// saida, passoSaida: a pagina desentortada, do mesmo tamanho e com os mesmos canais.
+// corteX, corteY, corteLargura, corteAltura: o corte medido pelo programa, em
+//   pontos da pagina recebida: e a pagina de saida do ScanTailor (m_outRect).
+//   Largura ou altura 0 = a pagina inteira (sem corte). Tem de caber na pagina.
+// conteudoX, conteudoY, conteudoLargura, conteudoAltura: a caixa do conteudo
+//   (m_contentRect), em pontos da pagina recebida; largura ou altura 0 = o corte.
+// saida, passoSaida: a pagina desentortada JA RECORTADA pelo corte (corteLargura
+//   x corteAltura), com os mesmos canais. O corte e feito uma vez, aqui, como no
+//   ScanTailor: o desentortar le os pontos da pagina inteira.
 // achouCurvas: 1 se as curvas achadas nao sao as do modelo "sem curva".
 // anguloDepois: o angulo do endireitar depois, em graus (0 se nao endireitou).
 // Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
@@ -276,6 +286,10 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
                                                   int lado,
                                                   double profundidade,
                                                   int endireitarDepois,
+                                                  int corteX,
+                                                  int corteY,
+                                                  int corteLargura,
+                                                  int corteAltura,
                                                   int conteudoX,
                                                   int conteudoY,
                                                   int conteudoLargura,
