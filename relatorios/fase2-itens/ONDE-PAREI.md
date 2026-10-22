@@ -284,3 +284,17 @@ acha curva que baste). Você tem um livro grosso escaneado aberto, com as linhas
 - Fábrica: 96 de 96 somas iguais ao `b8e9af7` no `a44c668` e no `177f711`.
 - Fotos (todas abertas): `relatorios/conferir/fase2-itens/2.12/depois-do-conserto/` (fora do git), 14 páginas.
 - Perguntas P1 a P3 acima, abertas.
+
+## 22/10/2026 (noite) — Implementador A retoma o 2.12 com as respostas P1 a P3
+
+Respostas do Samuel (22/10, pela gerente; `docs/plano/central/conferencias/perg-a.json`, `a-212-p1` a `a-212-p3`):
+P1 "B — Proteção" (+ "Ainda vou poder selecionar a opção c para as paginas que entrarem para revisão?" — sim: botão
+no aviso, a opção C só naquela página); P2 "B — A mesma proteção da pergunta anterior"; P3 "Na pasta livros para
+editar, procure lá" (`D:\Livros para editar`, SÓ LEITURA).
+
+Plano: (1) DLL v9: o mesmo desentortar redesenhado numa página maior (`crescer`) e uma "marca" (onde estava a tinta
+e onde acabava o corte) redesenhada com o mesmo modelo, para medir; (2) proteção no `aplicar_no_corte`: tinta
+empurrada para fora do corte ou o de fora do corte trazido para dentro -> sai sem desentortar + aviso no "Para
+revisar"; (3) botão do aviso = opção C só na página (campo novo `ConfigPagina.desentortar_aumentar`);
+(4) procura de páginas curvas em `D:\Livros para editar` (`scripts/procurar_curvas_livros_para_editar.py`,
+rodando, saída fora do git em `relatorios/conferir/fase2-itens/2.12/procura-livros-para-editar/`).
