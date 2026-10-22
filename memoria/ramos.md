@@ -14,6 +14,20 @@ Samuel aprovar. Hoje (20/10) há agentes em oito ramos próprios: os seis que o 
 corte, conferência do "Para revisar", itens da Fase 2 iguais ao ScanTailor, layout etapas 4 a 7, caixa do conteúdo e
 pesquisa da impressão), mais o filtro de velocidade no GitHub e esta memória.
 
+## Atualização de 22/10/2026 ([PARTE -18](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)): vale mais que as tabelas abaixo
+
+| Ramo (último commit) | Situação em 22/10/2026 |
+|---|---|
+| `fase-1` | só documentos novos (Central, regras §4.10, Registro) |
+| `fase2-para-revisar` (`f54428e`) | APROVADO; espera a junção final |
+| `fase2-scantailor-itens-2026-10-19` (`8cb90a1`) | 2.8/2.9/2.11/2.15 APROVADOS (até `25504fb`); 2.12 parado na pergunta `a-212-desentortar` |
+| `layout-etapas4a7-2026-10-19` (`7843503`) | layout 4 a 7 APROVADO; livro aberto UPDF + tela cheia verificados (`verif-layout-updf-2026-10-22` `40bc3ed`); conferência `lyupdf` na Central; contém o merge de `25504fb` |
+| `fase2-caixa-conteudo` (`49d1ed3`) | PRONTO; verificador em `verif-caixa-2026-10-22` (worktree `vcx22-novo`) |
+| `fase2-ferramentas-2026-10-22` (`f26407c`, worktree `fase2-novas`) | 2.4, 2.6, 2.16, 2.17, 2.18, 2.19, 2.10+1.6 PRONTOS; falta o verificador e a pergunta 8 |
+| `consertos-2026-10-21` (`2ff16e7`) | pronto; entra na junção final |
+
+Worktrees de apoio a limpar (com junções): `fase2-novas-antes` (`9804b98`), `fase2-novas-prova` (`c9f3335`).
+
 ## Atualização de 21/10/2026 ([PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)): vale mais que a tabela de 20/10 abaixo
 
 Tudo parou em 21/10/2026 (pausa pedida pelo Samuel), com commit, push e `ONDE-PAREI.md` em dia. O `fase-1` está em

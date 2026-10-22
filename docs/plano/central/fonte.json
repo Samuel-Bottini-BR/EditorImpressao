@@ -67,12 +67,12 @@
       },
       "fotos": [
         {
-          "src": "fotos/a4n-seletor.jpg",
-          "legenda": "O seletor grande, para dar \"está bom\" em várias páginas"
+          "legenda": "O seletor grande, para dar \"está bom\" em várias páginas",
+          "src": "fotos/a4n-seletor.jpg"
         },
         {
-          "src": "fotos/a4n-sem-conteudo.jpg",
-          "legenda": "Página sem conteúdo, com os dois botões"
+          "legenda": "Página sem conteúdo, com os dois botões",
+          "src": "fotos/a4n-sem-conteudo.jpg"
         }
       ],
       "testar": [
@@ -101,12 +101,12 @@
       "commit": "ffa2463",
       "fotos": [
         {
-          "src": "fotos/28-horas_p047-recorte.jpg",
-          "legenda": "Horas 47, de perto"
+          "legenda": "Horas 47, de perto",
+          "src": "fotos/28-horas_p047-recorte.jpg"
         },
         {
-          "src": "fotos/28-palatino_p007-recorte.jpg",
-          "legenda": "Palatino 7, de perto"
+          "legenda": "Palatino 7, de perto",
+          "src": "fotos/28-palatino_p007-recorte.jpg"
         }
       ],
       "testar": [
@@ -134,12 +134,12 @@
       "commit": "ffa2463",
       "fotos": [
         {
-          "src": "fotos/29-horas-187-perto.jpg",
-          "legenda": "Horas 187, de perto"
+          "legenda": "Horas 187, de perto",
+          "src": "fotos/29-horas-187-perto.jpg"
         },
         {
-          "src": "fotos/29-slide-perto.jpg",
-          "legenda": "Título claro sobre fundo escuro"
+          "legenda": "Título claro sobre fundo escuro",
+          "src": "fotos/29-slide-perto.jpg"
         }
       ],
       "testar": [
@@ -167,12 +167,12 @@
       "commit": "ffa2463",
       "fotos": [
         {
-          "src": "fotos/211-horas_p026.jpg",
-          "legenda": "Horas 26 com as cores reduzidas"
+          "legenda": "Horas 26 com as cores reduzidas",
+          "src": "fotos/211-horas_p026.jpg"
         },
         {
-          "src": "fotos/215-boecio-para-revisar.jpg",
-          "legenda": "Boécio: páginas apontadas como diferentes"
+          "legenda": "Boécio: páginas apontadas como diferentes",
+          "src": "fotos/215-boecio-para-revisar.jpg"
         }
       ],
       "testar": [
@@ -228,8 +228,8 @@
       "commit": "2ff16e7",
       "fotos": [
         {
-          "src": "fotos/a4n-gladstone-18.jpg",
-          "legenda": "Gladstone 18"
+          "legenda": "Gladstone 18",
+          "src": "fotos/a4n-gladstone-18.jpg"
         }
       ],
       "testar": [
@@ -320,8 +320,8 @@
       "fase": "2",
       "coluna": "andamento",
       "oque": "O programa acha onde está o conteúdo da página, corta a borda preta do scanner (o Kaique escolhe por livro: só o preto ou até a moldura) e pinta de branco o que sobra.",
-      "situacao": "O Implementador A está consertando (desde 22/10).",
-      "falta": "Consertar a etiqueta do Egenloff 3, que sai cortada ao meio, e a lentidão: medir o livro ficou 2 a 3 vezes mais lento (Marial de 100 folhas: de ~140 s para ~300 s).",
+      "situacao": "Pronto pelo Implementador A (22/10): etiqueta do Egenloff 3 consertada; medir o livro voltou ao tempo de antes (Marial: passada + PDF de ~500 s para ~200 s). Vai para o verificador.",
+      "falta": "Conferência do verificador.",
       "selos": {
         "github": "parte",
         "pc": "nao",
@@ -331,25 +331,26 @@
       "commit": "ed68928",
       "fotos": [
         {
-          "src": "fotos/cg6-egenloff-3-perto.jpg",
-          "legenda": "Egenloff 3: a etiqueta que sai cortada"
+          "legenda": "Egenloff 3: a etiqueta que sai cortada",
+          "src": "fotos/cg6-egenloff-3-perto.jpg"
         },
         {
-          "src": "fotos/cg6-pesel-21-perto.jpg",
-          "legenda": "Pesel 21, de perto"
+          "legenda": "Pesel 21, de perto",
+          "src": "fotos/cg6-pesel-21-perto.jpg"
         }
       ],
-      "testar": []
+      "testar": [],
+      "mudouEm": "2026-10-22T17:00:00Z"
     },
     {
       "id": "2.12",
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "O Implementador A está consertando (desde 22/10).",
-      "falta": "O antes e depois em páginas reais e ler duas rodadas de teste.",
+      "situacao": "Parado numa escolha: ligado, o desentortar corta letras da beirada. Desligado, o livro sai igual.",
+      "falta": "Sua resposta na aba Conferência > Pergunta do Implementador A.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -358,17 +359,19 @@
       "ramo": "fase2-scantailor-itens-2026-10-19",
       "commit": "ffa2463",
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "mudouEm": "2026-10-22T17:00:00Z",
+      "relatorio": "perg-a"
     },
     {
       "id": "layout-6a7",
       "titulo": "Tela nova: etapas 6 e 7 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Tela cheia dos filtros (etapa 6), Configurações em partes, tela dos livros e o livro aberto na tela inteira (etapa 7).",
-      "situacao": "Aprovado por você em 22/10. O agente de layout faz dois consertos antes da junção: o livro aberto como no UPDF e a tela cheia dos filtros com todas as opções.",
-      "falta": "Os dois consertos e a conferência deles.",
+      "situacao": "O verificador conferiu os dois consertos (livro aberto como no UPDF e tela cheia com todas as opções). Pronto para você conferir, com ressalvas.",
+      "falta": "Sua resposta na aba Conferência > Livro aberto e tela cheia.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -378,7 +381,9 @@
       "commit": "2eeec20",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T03:00:00Z"
+      "mudouEm": "2026-10-22T16:40:00Z",
+      "relatorio": "lyupdf",
+      "ressalva": "Na tela cheia, com um dos jeitos do ScanTailor, a letra aparece mais grossa do que sai no PDF (a conta muda com a resolução)."
     },
     {
       "id": "2.1",
@@ -413,8 +418,8 @@
       "commit": "f418cc3",
       "fotos": [
         {
-          "src": "fotos/cg6b-cursus-3.jpg",
-          "legenda": "Cursus 3 com o corte consertado"
+          "legenda": "Cursus 3 com o corte consertado",
+          "src": "fotos/cg6b-cursus-3.jpg"
         }
       ],
       "testar": []
@@ -515,19 +520,22 @@
       "selos": {},
       "fotos": [],
       "testar": [],
-      "falta": "Suas respostas às 8 perguntas (aba Conferência > Perguntas do Implementador B)."
+      "falta": "Suas respostas às 8 perguntas (aba Conferência > Perguntas do Implementador B).",
+      "mudouEm": "2026-10-22T16:30:00Z",
+      "relatorio": "perg-b"
     },
     {
       "id": "2.6",
       "titulo": "Tamanho final e arquivo para impressão",
       "item": "2.6",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.",
-      "situacao": "Na fila do Implementador B, logo depois do 2.4. As 6 perguntas da impressão já foram respondidas.",
+      "situacao": "Pronto pelo Implementador B (22/10): botão \"montar para imprimir...\" com livreto A4, margens, escala, último caderno menor, imprimir direto. Espera o verificador.",
       "selos": {},
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "mudouEm": "2026-10-22T15:20:00Z"
     },
     {
       "id": "2.16",
@@ -655,41 +663,41 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Caixa do conteúdo + borda preta + pintar de branco (etiqueta do Egenloff 3, lentidão) → 2.12 desentortar",
-      "ultimo": "Começou em 22/10.",
+      "ultimo": "Entregou a caixa do conteúdo/borda preta/pintar de branco (pronto) e parou o 2.12 numa escolha que está com você.",
       "ramo": "fase2-caixa-conteudo e fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-22T03:00:00Z"
+      "quando": "2026-10-22T17:00:00Z"
     },
     {
       "id": "implementador-b",
       "nome": "Implementador B",
       "papel": "As 7 ferramentas não começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "2.4 → 2.6 → 2.16 → 2.17 → 2.18 → 2.19 → 2.10",
-      "ultimo": "Começou em 22/10 pelo 2.4 (margens).",
+      "ultimo": "Fez os ajustes das suas respostas (margens na tela, avisos do igualar a luz e do chuvisco, nomes das duas montagens). Testes no GitHub: 2177 passaram, 0 falharam. Espera a sua resposta da pergunta 8 e o verificador.",
       "ramo": "fase2-ferramentas-2026-10-22",
-      "quando": "2026-10-22T03:00:00Z"
+      "quando": "2026-10-22T17:30:00Z"
     },
     {
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "parado",
-      "tarefa": "Entra quando um implementador entregar",
-      "ultimo": "Montou a conferência do layout 6 e 7 (agora na Central).",
+      "estado": "trabalhando",
+      "tarefa": "Conferir a caixa do conteúdo, borda preta e pintar de branco; depois as 7 ferramentas do Implementador B",
+      "ultimo": "Entregou o livro aberto e a tela cheia; começou a caixa do conteúdo (22/10).",
       "ramo": "verif-layout-4a5-2026-10-21",
-      "quando": "2026-10-22T03:00:00Z"
+      "quando": "2026-10-22T17:00:00Z"
     },
     {
       "id": "layout",
       "nome": "Agente de layout",
       "papel": "Tela nova",
-      "estado": "trabalhando",
-      "tarefa": "Livro aberto como no UPDF e filtros em tela cheia com todas as opções",
-      "ultimo": "Começou em 22/10, de manhã.",
+      "estado": "terminou",
+      "tarefa": "Livro aberto como no UPDF (mesma altura, nítido, jeitos de mostrar e de caber) e filtros em tela cheia com todas as opções",
+      "ultimo": "Entregou o livro aberto como no UPDF e a tela cheia com todas as opções (testes no GitHub: 2194 passaram, 0 falharam). Vai para o verificador.",
       "ramo": "layout-etapas4a7-2026-10-19",
-      "quando": "2026-10-22T13:20:00Z"
+      "quando": "2026-10-22T15:10:00Z"
     },
     {
       "id": "consertos",

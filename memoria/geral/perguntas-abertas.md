@@ -239,3 +239,10 @@ Ficha [layout](../itens/layout.md).
   [2.6](../itens/2.6.md).
 - Geometria (13 e 14/10/2026): g8-guias, g8-moldura-tinta-fora, g9-pagina-muito-maior. Fichas
   [2.5](../itens/2.5.md), [2.13](../itens/2.13.md), [2.4](../itens/2.4.md).
+
+## Abertas em 22/10/2026 (na Central de decisões; PARTE -18 §6)
+
+- `b-8-tinta-com-cor` — "Tinta com a cor original" numa página em Preto e branco: fica como está (A), escurece a tinta (B) ou as duas como opções.
+- `a-212-desentortar` — o desentortar perto da lombada (2.12) corta letras da beirada: A papel em volta antes de desentortar (recomendado), B desentortar antes de cortar, C desligado com aviso.
+- Conferência `lyupdf` — livro aberto como no UPDF e tela cheia dos filtros (8 quadros + decisão final).
+

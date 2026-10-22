@@ -99,3 +99,4 @@ Abreviações das fontes: **H** = [histórico](../historico/Editor%20de%20Impres
   - `colar-no-claude-code-fase-0.md` — o texto de começo da Fase 0 da retomada (arquivado em 07/09/2026).
   - `kaique explica (duplicata - original em EditorImpressao-arquivos slash soltos-area-de-trabalho).docx`
     — duplicata de um documento do Kaique (data não dita nas fontes).
+| 21-22/10/2026 | PC | Central de decisões (ex-Andamento) com Conferência por abas; o Samuel respondeu tudo; aprovados Para revisar, 2.8, 2.9, 2.11+2.15, layout 4 a 7; regras §4.10; os dois implementadores entregaram (caixa do conteúdo; 2.4/2.6/2.16/2.17/2.18/2.19/2.10); 2.12 numa pergunta. [PARTE -18](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) |

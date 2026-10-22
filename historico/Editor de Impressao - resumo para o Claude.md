@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 21/10/2026 (PARTE -17; a anterior, PARTE -16, é de 14/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 22/10/2026 (PARTE -18; a anterior, PARTE -17, é de 19 a 21/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,105 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -18 — Checkpoint de 21 e 22/10/2026: a Central de decisões (leia isto primeiro, é o mais novo)
+
+Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. **O que manda continua sendo `docs/plano/`**
+(o Registro de mudanças de 21 e 22/10 tem tudo, com as palavras dele) e a memória `memoria/`. **Novidade principal: a
+Central de decisões** (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy), que substituiu a página de Andamento no mesmo
+endereço. **Agentes:** só o verificador da caixa do conteúdo pode ainda estar rodando (ver §2); os outros terminaram.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin` e `status -sb`. O `fase-1` está no commit deste checkpoint (só
+   documentos mudaram no `fase-1` nesta sessão; nenhum código do programa).
+2. **Ler a Central primeiro** (regra, CLAUDE.md §10 item 10): coleções `respostas` (`lida: false`; use `query` com
+   `where` por `relatorio`, porque a lista pagina em 50), `ordens` (`estado: "enviada"`), `ideias` (`estado: "nova"`),
+   `config`. Copiar palavra por palavra para `relatorios/conferencia-samuel-2026-10-21-central.md` e para o Registro;
+   marcar `lida`/`vista`/`feita`.
+3. Ler a seção "Perguntas para o Samuel" do ONDE-PAREI de cada ramo ativo (§2). Pergunta nova → Central na hora, com fotos.
+
+## 1. A Central de decisões (como funciona)
+- Abas: Decidir agora · **Conferência (um relatório por aba)** · Quadro dos trabalhos (colunas por situação, incluindo
+  "Aprovado, espera entrar"; prioridade arrastável) · Etapas · Agentes · Defeitos · Velocidade · Ordens e ideias.
+- Toda foto abre num visor (tamanho real, zoom, setas; antes/depois com comparador). Toda resposta mostra "Recebido" na
+  hora (Recebido → Gerente leu → Feito). Comentário dele em pergunta refeita fica **fixado** em cima (campo `historico`).
+- Fonte no git: página `docs/plano/paginas-claude-ai/central/index.html`; dados `docs/plano/central/fonte.json` +
+  `docs/plano/para_a_central.py` (gera o banco em `D:\programas\EditorImpressao-arquivos\central-banco\`; gravar com
+  ArtifactData `batch`, cada documento existente com `if_version`); relatórios em `docs/plano/central/conferencias/*.json`
+  (respondidos em `respondidas/`); extrator `docs/plano/central/extrair_conferencia.py`.
+- Publicar: copiar a página para `scratchpad\pub-central\central.html` e publicar com `root` = `pub-central` e `files`
+  só com as fotos novas (as antigas ficam). Fotos de outra página do claude.ai: `files: {caminho: {artifact, path}}`.
+- Descrição completa: `memoria/geral/paginas-claude-ai.md` e CLAUDE.md §10 item 10.
+
+## 2. Onde está cada trabalho (nada de código entrou no `fase-1`)
+**Ordem do Samuel (22/10):** "quando terminar o layout 4 a 7 e essas ferramentas do scan tailor, vamos testar no git e
+vamos juntar tudo no programa e depois testar no pc" — com o ajuste aprovado no plano: ramo de junção → GitHub → PC →
+`fase-1`. Os aprovados esperam e entram juntos.
+
+| Ramo (último commit) | O que é | Situação |
+|---|---|---|
+| `fase2-para-revisar` (`f54428e`) | "Para revisar" | **APROVADO** 21/10; espera a junção |
+| `fase2-scantailor-itens-2026-10-19` (`8cb90a1`) | 2.8, 2.9, 2.11, 2.15 (até `25504fb`) + 2.12 | 2.8/2.9/2.11/2.15 **APROVADOS**; **2.12 parado na pergunta `a-212-desentortar`** (ligado, corta letras da beirada) |
+| `layout-etapas4a7-2026-10-19` (`7843503`) | layout 4 a 7 + livro aberto como UPDF + tela cheia com todas as opções (já contém o merge de `25504fb`) | 4-5 e 6-7 **APROVADOS**; consertos verificados (`verif-layout-updf-2026-10-22` `40bc3ed`); conferência `lyupdf` na Central **sem resposta** |
+| `fase2-caixa-conteudo` (`49d1ed3`) | 2.5, 2.13, 2.14 | PRONTO (etiqueta do Egenloff 3 consertada; Marial passada+PDF ~500 → ~200 s); **verificador trabalhando** (ramo `verif-caixa-2026-10-22`, worktree `vcx22-novo`) |
+| `fase2-ferramentas-2026-10-22` (`f26407c`, worktree `fase2-novas`) | 2.4, 2.6, 2.16, 2.17, 2.18, 2.19, 2.10 + 1.6 | PRONTO com os ajustes das respostas; GitHub 39807401594 (2177/0); abrir o livro −43%; **falta o verificador** (depois da caixa) e a pergunta 8 |
+| `consertos-2026-10-21` (`2ff16e7`) | instalador com 2 DLLs etc. | pronto; entra na junção |
+
+Worktrees de apoio a limpar (tirar as junções `modelos`/`gabarito\paginas` com `(Get-Item …).Delete()` antes):
+`fase2-novas-antes`, `fase2-novas-prova`. Ao juntar: a DLL `st_ferramentas` tem versões 4 (caixa), 5-7 (itens) e 8
+(ferramentas) — recompilar com tudo; possível conflito de nome de classe `output::OutputGenerator::Processor`.
+
+## 3. Decisões do Samuel (todas no Registro de 21 e 22/10, com as palavras dele)
+- Aprovados: "Para revisar", 2.8, 2.9, 2.11 + 2.15, layout 4-5, layout 6-7 (com dois consertos já feitos).
+- **CLAUDE.md §4.10:** teste leva a página pelo caminho inteiro (dividir → endireitar → cortar → filtro) e cada foto diz
+  o caminho; só páginas que vão ser impressas (nunca lombada/capa; Horas 187 fora).
+- "Reduzir cores" visível; a tela troca sozinha pela imagem do PDF + duas bolinhas de carregamento; adiantar e guardar
+  páginas; regra do "Para revisar" com 75 de 89; ideia do "laboratório" no Automático na Lista de espera.
+- Impressão (imp-1 a 6) e as perguntas do Implementador B (margens: as duas; margens na tela; deitada com o alto à
+  esquerda; EPSON na conferência; igualar a luz em todos com aviso; chuvisco até 100 com aviso; **deixar as duas
+  montagens** de cadernos).
+- Segundo verificador: **não** ("Não, um basta"). Agentes: 2 implementadores + verificador (`config/agentes` = 3).
+
+## 4. Tentado e descartado
+- Central atualizada só quando o agente **entrega**: falhou — 8 perguntas ficaram escondidas no ONDE-PAREI. Agora a
+  gerente lê a cada aviso (CLAUDE.md §10 item 10 e memória do Claude).
+- Perguntas na Central sem fotos: ele cobrou ("não era para ter prints nessa conferencia?"). Toda pergunta com imagem,
+  de preferência por opção; gerar a que faltar (fizemos a montagem antiga de cadernos e o desenho em escala).
+- Foto de exemplo mal escolhida (Escola 7, tinta preta desbotada, para mostrar "tinta com a cor") confundiu; refeita
+  com título colorido (Horas 13).
+- No chat eu disse que os 75%/83% das fotos de 14/10 eram do caso dos cadernos — errado (era outro arquivo, já
+  embaralhado); corrigido na Central.
+
+## 5. Descobertas de comportamento real
+- A lista do ArtifactData pagina em 50: uma resposta dele ficou na 2ª página e passou despercebida.
+- Ele responde enquanto a gerente escreve: batch com `if_version` falha por `version_mismatch` — reler e refazer.
+- Agentes em segundo plano mandam aviso "esperando o próprio trabalho" a cada minuto enquanto o filtro de velocidade
+  roda (~1 h); não é entrega.
+- Verificador do layout: na tela cheia, os jeitos do ScanTailor (2.8) mostram letra mais grossa que o PDF (Wolf: 19,7%
+  de tinta a 150 DPI × 16,3% a 300 DPI) — a conta muda com o DPI; defeito de `core`, a consertar depois da resposta.
+- Righetti (folhas duplas deitadas) não é girado nem dividido sozinho (Lista de bugs 22/10).
+- UPDF não está instalado neste PC.
+
+## 6. Perguntas em aberto (na Central, exatas)
+- `b-8-tinta-com-cor`: "\"Tinta com a cor original\" numa página em Preto e branco: fica como está (A) ou escurece a
+  tinta (B)?" — opções A, B, "As duas: A e B como opções separadas".
+- `a-212-desentortar`: "Desentortar perto da lombada (2.12): como evitar que corte as letras?" — A papel em volta antes
+  de desentortar (recomendado), B desentortar antes de cortar, C deixar como está, desligado, com aviso.
+- Conferência `lyupdf` (livro aberto como UPDF e tela cheia): 8 quadros + decisão final.
+- Conferência da caixa do conteúdo: o verificador vai entregar `relatorios/conferir/caixa-2026-10-22/conferencia.json`
+  no ramo `verif-caixa-2026-10-22` → publicar na Central como `conferencias/caixa`.
+
+## 7. Próximo passo recomendado
+Ler as respostas da Central; publicar a conferência da caixa quando o verificador entregar; chamar o verificador para as
+7 ferramentas do B; mandar ao implementador certo os consertos que ele pedir (2.12 conforme a resposta; a letra grossa da
+tela cheia no 2.8). Com tudo aprovado: ramo de junção → GitHub → PC (agentes parados) → `fase-1`.
+
+## 8. Como rodar e conferir
+Igual à PARTE -17 §7. Nesta sessão só documentos mudaram no `fase-1`; `memoria\conferir_memoria.py` → "Tudo certo".
+Suítes do GitHub dos ramos: ferramentas 39807401594 (2177/0, botões 234/0), layout 39797331030 (2194/0, botões 216/0),
+caixa 39788341137 (passou).
 
 ---
 
