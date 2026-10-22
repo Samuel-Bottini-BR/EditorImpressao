@@ -1491,6 +1491,24 @@ def medir_conteudo_do_livro(projeto: Projeto, doc=None, progresso: Progresso = N
             if folha_atual != folha.indice:
                 img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
                 folha_atual = folha.indice
+            # VELOCIDADE (22/10/2026): a passada guarda a geometria INTEIRA da
+            # pagina (angulo, corte comum e a medida do conteudo), pela mesma
+            # funcao que a geracao do PDF e a previa usam (_guardar_geometria,
+            # mesma imagem, mesmo DPI). Antes ela fazia a sua propria medida e
+            # jogava o resto fora, e a geracao calculava tudo de novo na mesma
+            # pagina: o angulo e a caixa do ScanTailor eram feitos duas vezes.
+            # O tamanho guardado e o da propria medida que corta (antes eram
+            # duas contas que tinham de dar o mesmo). Arriscado: voltar a
+            # medir aqui por outra conta.
+            _guardar_geometria(folha, pagina, projeto, img_folha, doc)
+            chave = _chave_da_geometria(folha, pagina, projeto)
+            with _TRANCA_GEOMETRIAS:
+                ja_tem = chave is None or chave in _TAMANHOS
+            if ja_tem:
+                medidas += 1
+                continue
+            # Reserva (nao deveria acontecer: a geometria ja estava guardada
+            # de antes sem a medida do conteudo): a medida so do tamanho.
             # o MESMO desenho e o MESMO DPI da geometria (_guardar_geometria):
             # a conta do ScanTailor da caixas diferentes em resolucoes
             # diferentes (contracapa do Egenloff: 276 mm a 300 DPI, <= 252 a
