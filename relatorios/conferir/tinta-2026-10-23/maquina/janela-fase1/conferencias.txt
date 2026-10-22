@@ -1,0 +1,25 @@
+ok   o livro abriu e a análise terminou
+ok   o cartão do filtro preto_e_branco está à vista
+ok   a página ficou com o filtro preto_e_branco
+ok   a ferramenta da vez é o Retângulo (retangulo)
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   antes de escolher a tinta com a cor, os dois botões não aparecem
+ok   "tinta com a cor, papel branco" ficou escolhida
+ok   aparecem os dois botões, à vista: ['cor como no livro', 'cor escurecida']
+ok   de fábrica está o A ("cor como no livro"); o editor também (tinta_escurecida False)
+ok   clicar em "cor escurecida" escolhe a B (painel e editor)
+ok   os dois botões continuam à vista depois do clique
+ok   a área desenhada saiu B: [(0.25, True)]
+ok   clicar em "cor como no livro" volta para a A
+ok   a área nova saiu A e a já marcada continua B: [(0.25, True), (0.25, False)]
+ok   o cartão do filtro original está à vista
+ok   a página ficou com o filtro original
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   no Original, com a tinta com a cor escolhida, os dois botões também aparecem ([True, True])
+ok   no Original as áreas guardam o jeito: [(0.25, True), (0.25, False)]
+ok   escolhendo "letra e traço", os dois botões somem ([])
+ok   voltando à tinta com a cor, o jeito escolhido por último (A) continua
+ok   o cartão do filtro preto_e_branco está à vista
+ok   a página ficou com o filtro preto_e_branco
+ok   WM_CLOSE fechou a janela
+24 de 24

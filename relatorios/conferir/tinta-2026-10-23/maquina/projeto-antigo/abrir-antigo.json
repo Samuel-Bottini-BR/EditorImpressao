@@ -1,0 +1,34 @@
+{
+ "horas_p013": {
+  "chave_no_json_antigo": false,
+  "jeitos_ao_abrir": [
+   false,
+   false
+  ],
+  "igual_ao_antigo": true
+ },
+ "escola_p007": {
+  "chave_no_json_antigo": false,
+  "jeitos_ao_abrir": [
+   false,
+   false
+  ],
+  "igual_ao_antigo": true
+ },
+ "opusmajus_p003": {
+  "chave_no_json_antigo": false,
+  "jeitos_ao_abrir": [
+   false,
+   false
+  ],
+  "igual_ao_antigo": true
+ },
+ "horas_p011": {
+  "chave_no_json_antigo": false,
+  "jeitos_ao_abrir": [
+   false,
+   false
+  ],
+  "igual_ao_antigo": true
+ }
+}

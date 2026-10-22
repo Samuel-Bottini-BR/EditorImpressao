@@ -1,0 +1,112 @@
+{
+ "horas_p013|preto_e_branco": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 136.2,
+  "brilho_tinta_B": 70.9,
+  "razao_brilho_B_sobre_A": 0.521,
+  "forca_cor_A_tinta_colorida": 33.2,
+  "forca_cor_B_tinta_colorida": 40.9,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 76481
+ },
+ "horas_p013|original": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 136.2,
+  "brilho_tinta_B": 70.9,
+  "razao_brilho_B_sobre_A": 0.521,
+  "forca_cor_A_tinta_colorida": 33.2,
+  "forca_cor_B_tinta_colorida": 40.9,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 76481
+ },
+ "escola_p007|preto_e_branco": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 120.7,
+  "brilho_tinta_B": 70.6,
+  "razao_brilho_B_sobre_A": 0.584,
+  "forca_cor_A_tinta_colorida": 15.0,
+  "forca_cor_B_tinta_colorida": 18.2,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 14183
+ },
+ "escola_p007|original": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 120.7,
+  "brilho_tinta_B": 70.6,
+  "razao_brilho_B_sobre_A": 0.584,
+  "forca_cor_A_tinta_colorida": 15.0,
+  "forca_cor_B_tinta_colorida": 18.2,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 14183
+ },
+ "opusmajus_p003|preto_e_branco": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 125.7,
+  "brilho_tinta_B": 81.6,
+  "razao_brilho_B_sobre_A": 0.649,
+  "forca_cor_A_tinta_colorida": 44.8,
+  "forca_cor_B_tinta_colorida": 49.1,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 11304
+ },
+ "opusmajus_p003|original": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 125.7,
+  "brilho_tinta_B": 81.6,
+  "razao_brilho_B_sobre_A": 0.649,
+  "forca_cor_A_tinta_colorida": 44.8,
+  "forca_cor_B_tinta_colorida": 49.1,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 11304
+ },
+ "horas_p011|preto_e_branco": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 139.5,
+  "brilho_tinta_B": 74.4,
+  "razao_brilho_B_sobre_A": 0.533,
+  "forca_cor_A_tinta_colorida": 40.8,
+  "forca_cor_B_tinta_colorida": 46.9,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 117020
+ },
+ "horas_p011|original": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 139.5,
+  "brilho_tinta_B": 74.4,
+  "razao_brilho_B_sobre_A": 0.533,
+  "forca_cor_A_tinta_colorida": 40.8,
+  "forca_cor_B_tinta_colorida": 46.9,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 117022
+ },
+ "graduale_p221|preto_e_branco": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 31119,
+  "brilho_tinta_A": 130.4,
+  "brilho_tinta_B": 67.8,
+  "razao_brilho_B_sobre_A": 0.52,
+  "forca_cor_A_tinta_colorida": 25.5,
+  "forca_cor_B_tinta_colorida": 31.3,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 244060
+ },
+ "graduale_p221|original": {
+  "fora_da_area_A_x_B_pontos_diferentes": 0,
+  "fora_da_area_sem_x_B_pontos_diferentes": 0,
+  "brilho_tinta_A": 130.4,
+  "brilho_tinta_B": 67.8,
+  "razao_brilho_B_sobre_A": 0.52,
+  "forca_cor_A_tinta_colorida": 25.5,
+  "forca_cor_B_tinta_colorida": 31.3,
+  "papel_da_area_igual_em_A_e_B": false,
+  "pontos_de_tinta": 244054
+ }
+}

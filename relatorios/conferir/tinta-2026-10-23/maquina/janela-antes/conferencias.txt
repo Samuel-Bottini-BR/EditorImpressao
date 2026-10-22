@@ -1,0 +1,10 @@
+ok   o livro abriu e a análise terminou
+ok   o cartão do filtro preto_e_branco está à vista
+ok   a página ficou com o filtro preto_e_branco
+ok   a ferramenta da vez é o Retângulo (retangulo)
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   antes de escolher a tinta com a cor, os dois botões não aparecem
+ok   "tinta com a cor, papel branco" ficou escolhida
+ok   (antes) não existem os dois botões
+ok   WM_CLOSE fechou a janela
+9 de 9

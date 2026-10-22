@@ -1,0 +1,6 @@
+ok   no projeto aberto de novo, as áreas da página: [True, False]
+ok   fechando e abrindo o programa, as duas áreas voltam com o jeito delas (B e A): [(0.25, True), (0.25, False)]
+ok   o projeto.json guarda o campo tinta_escurecida
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   WM_CLOSE fechou a janela
+5 de 5

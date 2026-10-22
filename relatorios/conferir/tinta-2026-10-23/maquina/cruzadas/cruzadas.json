@@ -1,0 +1,42 @@
+{
+ "A_esq_depois_B_dir": {
+  "so_esquerda": {
+   "esperado": "A",
+   "igual_a_A": true,
+   "igual_a_B": false,
+   "certo": true
+  },
+  "cruzada": {
+   "esperado": "B",
+   "igual_a_A": false,
+   "igual_a_B": true,
+   "certo": true
+  },
+  "so_direita": {
+   "esperado": "B",
+   "igual_a_A": false,
+   "igual_a_B": true,
+   "certo": true
+  }
+ },
+ "B_esq_depois_A_dir": {
+  "so_esquerda": {
+   "esperado": "B",
+   "igual_a_A": false,
+   "igual_a_B": true,
+   "certo": true
+  },
+  "cruzada": {
+   "esperado": "A",
+   "igual_a_A": true,
+   "igual_a_B": false,
+   "certo": true
+  },
+  "so_direita": {
+   "esperado": "A",
+   "igual_a_A": true,
+   "igual_a_B": false,
+   "certo": true
+  }
+ }
+}
