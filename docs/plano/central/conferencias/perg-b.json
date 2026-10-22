@@ -1,0 +1,186 @@
+{
+ "id": "perg-b",
+ "nome": "Perguntas do Implementador B (8)",
+ "trabalho": "2.4",
+ "ordem": 7,
+ "origem": "ONDE-PAREI do ramo fase2-ferramentas-2026-10-22",
+ "resumo": {
+  "titulo": "Perguntas sobre o que ele está construindo",
+  "paragrafos": [
+   "O Implementador B (margens, impressão, núcleos, igualar a luz, áreas à mão, receitas, duas camadas) deixou estas perguntas enquanto trabalha. As fotos de conferência vêm depois, com o verificador; estas respostas decidem como ele termina."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "b-1-margens",
+   "titulo": "Margens iguais na edição (ScanTailor) e margens só na impressão: ficam as duas?",
+   "explicacao": [
+    "O que você está escolhendo: se o programa tem os dois tipos de margem.",
+    "As do ScanTailor (item 2.4) deixam, ainda na edição, todas as páginas do mesmo tamanho, com o texto na mesma posição (põem papel branco em volta). Servem para livro com páginas escaneadas de tamanhos diferentes, como o Opus Majus. As da impressão (sua explicação de 14/10) são a margem de 1,3 cm fora e 1 cm na costura, só na hora de gerar o arquivo.",
+    "O agente fez as duas; a do ScanTailor vem desligada, então o seu jeito de 14/10 continua de fábrica."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Ficam as duas (recomendado)",
+     "texto": "As margens iguais viram opção desligada, para o livro que precisar.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Fica só a da impressão",
+     "texto": "A do ScanTailor sai do programa.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-2-margens-na-tela",
+   "titulo": "Mostrar as margens iguais na tela de conferir?",
+   "explicacao": [
+    "Hoje elas só aparecem no PDF; a tela de conferir mostra a página sem elas."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Sim, a tela mostra igual ao que sai (recomendado)",
+     "texto": "Mesma regra da \"tela igual ao PDF\".",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Não, só no PDF",
+     "texto": "A tela fica como está.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-3-cadernos-antigo",
+   "titulo": "O \"Montar cadernos\" antigo: tirar ou deixar junto do novo?",
+   "explicacao": [
+    "O antigo monta a folha com o dobro da largura da página, sem A4 e sem margem. O novo monta em A4, com margens e escala, e faz tudo o que o antigo fazia."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Tirar o antigo (recomendado)",
+     "texto": "Fica só a montagem nova em A4.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Deixar os dois",
+     "texto": "O Kaique escolhe qual usar.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-4-girar-deitada",
+   "titulo": "Página deitada numa folha em pé: o alto fica para que lado?",
+   "explicacao": [
+    "Exemplo: uma tabela larga. Hoje ela gira e o alto da tabela fica à esquerda (o leitor vira o livro no sentido horário para ler), como no Acrobat e no UPDF."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Alto à esquerda, como está (recomendado)",
+     "texto": "Igual ao Acrobat e ao UPDF.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Alto à direita",
+     "texto": "Gira para o outro lado.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-5-imprimir-direto",
+   "titulo": "Imprimir direto: testar na EPSON?",
+   "explicacao": [
+    "O imprimir direto só foi testado mandando para PDF, não numa impressora de verdade. Neste PC o Windows leva uns 50 segundos só para \"conversar\" com a EPSON da rede antes de imprimir."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Testo uma folha na EPSON quando a conferência chegar (recomendado)",
+     "texto": "O programa mostra \"falando com a impressora…\" nesses 50 s para não parecer travado.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Deixar o imprimir direto para depois",
+     "texto": "Por enquanto só o arquivo.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-6-igualar-luz",
+   "titulo": "\"Igualar a luz\" (2.17) deixa a tinta lavada no Melhorar e no Mágico pro",
+   "explicacao": [
+    "Usado antes do Melhorar ou do Mágico pro, deixa a tinta lavada (Graduale 221, Horas 47). No Preto e branco e no Original ajuda."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Só no Preto e branco e no Original (recomendado)",
+     "texto": "Nos outros filtros a opção não aparece.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Em todos, com aviso",
+     "texto": "Aparece sempre, com aviso de que pode lavar a tinta.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-7-chuvisco",
+   "titulo": "\"Tirar o chuvisco\" (2.17) acima de 20 borra a letra",
+   "explicacao": [
+    "A escala vai de 0 a 100; acima de uns 20 a letra começa a borrar."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Escala até 20 (recomendado)",
+     "texto": "O meio da escala é o valor bom.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Até 100, com aviso a partir de 20",
+     "texto": "Fica como está, com aviso.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-8-tinta-com-cor",
+   "titulo": "\"Tinta com a cor\" numa página em Preto e branco deixa a letra cinza",
+   "explicacao": [
+    "No item 2.18 (marcar uma área à mão), a opção \"Tinta com a cor original, papel branco\" mantém a cor da tinta do original. Numa página em Preto e branco, a letra daquela área sai cinza (era a cor dela no livro)."
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "Está certo, é o que a opção faz (recomendado)",
+     "texto": "Para sair preto, o Kaique escolhe outra opção na área.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "Nessa opção, no Preto e branco, a letra sai preta",
+     "texto": "A opção muda de comportamento no Preto e branco.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
+}

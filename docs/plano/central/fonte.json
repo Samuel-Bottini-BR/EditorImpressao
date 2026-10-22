@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T16:30:00Z",
+        "texto": "8 perguntas do Implementador B para você (aba Conferência)."
+      },
+      {
         "em": "2026-10-22T03:10:00Z",
         "texto": "Dois agentes começaram: um conserta as 4 ferramentas começadas, o outro faz as 7 que faltam."
       },
@@ -502,15 +506,16 @@
     },
     {
       "id": "2.4",
-      "titulo": "Margens iguais em todas as páginas",
+      "titulo": "Perguntas do Implementador B (margens, impressão, luz, áreas)",
       "item": "2.4",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Margens e alinhamento iguais em todas as páginas.",
-      "situacao": "O Implementador B começou por aqui (22/10). Depois: 2.6, 2.16, 2.17, 2.18, 2.19, 2.10.",
+      "situacao": "O Implementador B fez 2.4, 2.6, 2.16 e 2.17 e está no 2.18. Deixou 8 perguntas para você.",
       "selos": {},
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "Suas respostas às 8 perguntas (aba Conferência > Perguntas do Implementador B)."
     },
     {
       "id": "2.6",

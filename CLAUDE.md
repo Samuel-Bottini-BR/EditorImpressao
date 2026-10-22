@@ -567,6 +567,13 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         como está" **não pula** a §4.6 (GitHub + PC antes de juntar). Ideia nova vai para a Lista de
         espera e fica `estado: "registrada"`.
       - Quando puser cartão novo em "Decidir agora", mandar aviso no celular (PushNotification).
+      - **Pergunta de agente vai para a Central na hora, sem esperar a entrega** (falha de 22/10: as 8 perguntas do
+        Implementador B ficaram no ONDE-PAREI dele e só foram vistas quando o Samuel perguntou "tem alguma coisa para
+        responder já?"; ele: "na central, você não deveria atualizar sempre que ouver algo para responder? [...] regra
+        falhou?"). A cada aviso de agente (inclusive "esperando os testes") e a cada pedido de andamento, a gerente lê a
+        seção "Perguntas para o Samuel" do ONDE-PAREI de cada ramo ativo; pergunta nova vira aba na Conferência
+        (`conferencias/perg-<agente>`), cartão em "Decidir agora", novidade no topo, aviso no celular e a página aberta
+        no navegador dele com `start ""`.
       - **Aba Conferência (21/10, pedido dele: "os tipos de relatorio para conferencia tem que estar separados por abas
         dentro da aba de conferencia"; quadros grandes como na página de conferência antiga):** os relatórios ficam na
         coleção `conferencias` (um documento por aba), tirados por `docs/plano/central/extrair_conferencia.py` da página de
