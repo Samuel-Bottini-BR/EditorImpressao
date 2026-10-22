@@ -214,11 +214,21 @@ Registro de mudanças do PLANO-DEFINITIVO (19/10).
 | **PC do Samuel** | **Medida de velocidade que vale** para a regra 6 (alternada, PC sem agentes) | **No fim de cada fase** |
 | **Notebook do Kaique** | Régua final de velocidade (item 0.6 / Fase 5) | Quando ele puder |
 
+**Exceção (Samuel, 20/10: "opção 1"):** trabalho que **só acrescenta
+documentos** (nenhuma linha do programa muda; no máximo um teste novo de um
+script de documentos) entra no `fase-1` só com a rodada do GitHub passando, sem
+a parada no PC. A parada no PC fica para quando o código do programa muda.
+
 Decisões: suíte "B: GitHub e meu PC"; velocidade "opção 2" (filtro no
 GitHub sempre, PC no fim de cada fase). Lentidão pequena achada no meio de uma
 fase (ex.: Mágico pro +1,1% do "Para revisar") vai para a Fase 5, como o Samuel
 mandou em 19/10: "vamos deixar esse concerto de lentidão para o final, para a
 fase de desempenho".
+
+**Filtro de velocidade (adotado em 20/10, validado contra o PC):**
+`gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f velocidade_ab=true -f ramo_antes=<ramo ou commit> -f ramo_depois=<ramo ou commit>`
+(~1h55; veredito no topo da rodada; não vê diferença abaixo de 2% nem abaixo do vai-e-vem;
+quando acusar "parece mais lento", disparar de novo uma vez antes de devolver ao agente).
 
 Rodar no GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao
 --ref claude/list-server-files-gkos8v -f ramo=<ramo>`; acompanhar com
@@ -523,8 +533,31 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
       https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV
     - "Layout do Editor de Impressão" (telas): https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu
     - "Quando revisar uma página" (o "Para revisar"): https://claude.ai/artifact/NeCgyTotRfqsdXntn9vMUc
-    - "Andamento do programa" (o que cada agente faz, o que falta, o plano completo, recados):
+    - **"Central de decisões"** (era "Andamento do programa"; refeita em 21/10/2026 a pedido do Samuel:
+      "tem que ser como uma central de decições, para tornar as coisas mais rapidas e mais faceis"):
       https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy
+      - **O que mostra:** Decidir agora · Quadro dos trabalhos · Etapas · Agentes · Defeitos · Velocidade
+        · Ordens e ideias. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
+        `docs/plano/para_a_central.py` (junta com o plano, `memoria/bugs.md` e o git; avisa se um
+        trabalho "no programa" não estiver no `fase-1`). Gravar o banco com ArtifactData `batch` a partir
+        dos arquivos que o script gera (`D:\programas\EditorImpressao-arquivos\central-banco\`).
+      - **Atualizar sempre** que um trabalho muda de situação, um agente começa/entrega/para e no
+        `/checkpoint` (fonte.json → script → batch). Novidade para ele: acrescentar em `geral.novidades`.
+      - **Ler as ordens dele primeiro, ao abrir cada conversa**, e entre uma tarefa e outra: coleções
+        `ordens` (tipo juntar | continuar | parar | testar | comentar | resposta), `testes` (testei no PC
+        bom/ruim), `ideias` e `config` (`prioridade.ordem` = fila dos agentes; `agentes.max` = quantos
+        agentes ao mesmo tempo). Ao ler, marcar `estado: "vista"`; ao cumprir, `"feita"`, com `resposta` e
+        `respondidaEm`. Registrar a ordem no Registro de mudanças com as palavras dele. "Pôr no programa
+        como está" **não pula** a §4.6 (GitHub + PC antes de juntar). Ideia nova vai para a Lista de
+        espera e fica `estado: "registrada"`.
+      - Quando puser cartão novo em "Decidir agora", mandar aviso no celular (PushNotification).
+      - **Aba Conferência (21/10, pedido dele: "os tipos de relatorio para conferencia tem que estar separados por abas
+        dentro da aba de conferencia"; quadros grandes como na página de conferência antiga):** os relatórios ficam na
+        coleção `conferencias` (um documento por aba), tirados por `docs/plano/central/extrair_conferencia.py` da página de
+        conferência e das perguntas abertas da página de escolhas. **As respostas dele aos quadros e perguntas ficam na
+        coleção `respostas` da Central** (`opcao`, `opcaoNome`, `comentario`, `em`, `relatorio`); ao ler, marcar `lida: true`.
+        Relatório novo: acrescentar a variável em `RELATORIOS` do extrator (ou o JSON direto em `central/conferencias/`),
+        copiar as fotos com `files: {artifact, path}` (lista em `_imagens.txt`) e rodar o gerador.
 
     **Quando uma página de conferência nova ficar pronta, a gerente abre sozinha no navegador do
     Samuel (com `start "" "<endereço>"`, que abre no navegador padrão do Windows; a ação `open` da

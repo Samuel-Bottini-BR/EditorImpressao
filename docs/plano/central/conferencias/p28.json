@@ -1,0 +1,107 @@
+{
+ "id": "p28",
+ "nome": "Preto e branco (2.8)",
+ "trabalho": "2.8",
+ "ordem": 2,
+ "origem": "P28",
+ "quadros": [
+  {
+   "id": "28-texto-comum",
+   "nome": "Texto comum (Palatino 7 e Opus Majus 11)",
+   "explicacao": [
+    "O que você está escolhendo: se os jeitos do ScanTailor, numa página só de texto, servem como opção a mais.",
+    "Nas duas páginas as letras saem parecidas nos quatro. O Wolf deixa a letra mais grossa e escura; o Otsu e o Sauvola, mais finas, como o de hoje. É como escolher entre uma caneta fina e uma média.",
+    "Cada foto: a página como sai no PDF, Preto e branco de fábrica (\"Hoje\") e com três dos dez jeitos do ScanTailor, com os ajustes de fábrica dele. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher."
+   ],
+   "olhar": "A grossura das letras.",
+   "imgs": [
+    {
+     "src": "conf/img/28-palatino_p007-recorte.jpg",
+     "legenda": "Ampliado: Palatino 7 - Original, Hoje, Otsu, Sauvola, Wolf"
+    },
+    {
+     "src": "conf/img/28-opusmajus_p011-recorte.jpg",
+     "legenda": "Ampliado: Opus Majus 11, na mesma ordem"
+    }
+   ]
+  },
+  {
+   "id": "28-horas",
+   "nome": "Livro de Horas (13 e 47): letra fina e colorida",
+   "explicacao": [
+    "O que você está escolhendo: se os jeitos do ScanTailor servem como opção nas páginas finas e coloridas do Livro de Horas.",
+    "Na Horas 13 (letras azuis e vermelhas finas) o Otsu e o Sauvola afinam a letra, e o Sauvola chega a falhar; o Wolf e o de hoje saem cheios. Na Horas 47 as quatro saem iguais na moldura pintada, que fica em cor.",
+    "Cada foto: a página como sai no PDF, Preto e branco de fábrica (\"Hoje\") e com três dos dez jeitos do ScanTailor, com os ajustes de fábrica dele. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher."
+   ],
+   "olhar": "As letras finas \"la fainte\", \"Confeffion\": falhas no Otsu e no Sauvola.",
+   "imgs": [
+    {
+     "src": "conf/img/28-horas_p013-recorte.jpg",
+     "legenda": "Ampliado: Horas 13 - Original, Hoje, Otsu, Sauvola, Wolf"
+    },
+    {
+     "src": "conf/img/28-horas_p047-recorte.jpg",
+     "legenda": "Ampliado: Horas 47, na mesma ordem"
+    },
+    {
+     "src": "conf/img/28-horas_p047-pagina.jpg",
+     "legenda": "Horas 47 inteira"
+    }
+   ]
+  },
+  {
+   "id": "28-graduale",
+   "nome": "Graduale (221 e 222): música",
+   "explicacao": [
+    "O que você está escolhendo: se os jeitos do ScanTailor servem como opção nas páginas de música.",
+    "Nas pautas, o Sauvola deixa algumas notas vazadas, com buracos. A faixa preta da lombada muda: no 222 o Otsu a deixa grossa; no 221 é o de hoje que deixa a faixa larga e os do ScanTailor só um fio.",
+    "Cada foto: a página como sai no PDF, Preto e branco de fábrica (\"Hoje\") e com três dos dez jeitos do ScanTailor, com os ajustes de fábrica dele. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher."
+   ],
+   "olhar": "As notas quadradas (vazadas no Sauvola) e a faixa preta da lombada.",
+   "imgs": [
+    {
+     "src": "conf/img/28-graduale_p222-recorte.jpg",
+     "legenda": "Ampliado: Graduale 222 - Original, Hoje, Otsu, Sauvola, Wolf"
+    },
+    {
+     "src": "conf/img/28-graduale_p221-pagina.jpg",
+     "legenda": "Graduale 221 inteira"
+    }
+   ]
+  },
+  {
+   "id": "28-palatino-ferrugem",
+   "nome": "Palatino 66 e 67: a mancha de ferrugem",
+   "explicacao": [
+    "O que você está escolhendo: se aceita que os jeitos do ScanTailor fiquem disponíveis sabendo que pioram a ferrugem.",
+    "Na Palatino 66 a mancha de ferrugem ao lado da letra P some no jeito de hoje; nos três do ScanTailor ela vira um borrão preto em cima da letra. Na 67 a ferrugem embaixo do M vira um bloco preto nos três (no de hoje, uma mancha menor).",
+    "Por isso eles são opção a mais e não vêm ligados: o de hoje continua o de fábrica. Nada disso muda livro já começado: os jeitos novos só valem se alguém escolher."
+   ],
+   "olhar": "A mancha marrom do original: some no Hoje, vira preto nos três do ScanTailor.",
+   "imgs": [
+    {
+     "src": "conf/img/28-palatino-66-ferrugem.jpg",
+     "legenda": "Ampliado: Palatino 66, a ferrugem ao lado do P"
+    },
+    {
+     "src": "conf/img/28-palatino-67-ferrugem.jpg",
+     "legenda": "Ampliado: Palatino 67, a ferrugem embaixo do M"
+    }
+   ]
+  }
+ ],
+ "pergunta": {
+  "id": "28",
+  "titulo": "Os dez preto e branco do ScanTailor como opções a mais: o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se esta entrega entra no programa.",
+   "Você pediu em 05/10 (P8): \"Trazer os dez do ScanTailor como opções a mais\". Eles ficam na lista \"Algoritmo\" da aba Filtro, depois dos três de sempre. Vêm desligados: o \"Automático\" de hoje continua o de fábrica, e livro já começado sai igual, ponto por ponto.",
+   "As fotos mostram três dos dez (Otsu, Sauvola, Wolf) em quatro tipos de página. Não há um vencedor: cada um ganha numa página e perde noutra."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ }
+}
