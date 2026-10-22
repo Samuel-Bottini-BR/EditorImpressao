@@ -15,8 +15,14 @@ ETAPA 7 DO LAYOUT (21/10/2026). O que o Samuel decidiu (rodadas 4 a 6 e a págin
   os outros livros do lado"): linha 1, "Voltar para os livros" (Esc), o nome, páginas e data, o
   andamento e "Mais..."; linha 2, Continuar, Rodar o automático..., Ver todas as páginas,
   Confirmar e processar... e, à direita, "Onde está". Embaixo, as páginas rolando com a coluna de
-  miniaturas ("Sim, fica assim"), a pílula "página N de M · ir para", e o botão "Ver lado a lado"
-  (rodada 7, 201 B e 202 A).
+  miniaturas ("Sim, fica assim") e a pílula "página N de M · ir para".
+  A BARRA DE BAIXO, COMO NO UPDF (conferência de 22/10/2026, quadro "O livro aberto na tela
+  inteira", "Está pior": "Eu não consigo ver a página direito, e elas estão de maneira muito ruim,
+  da uma na internet como o updf faz. Tem uma pagina maior que outra ali"): os jeitos de MOSTRAR
+  ("Uma página" de fábrica, "Duas lado a lado", que é o "Ver lado a lado" de antes, e "Rolar sem
+  parar", ligado de fábrica) e de CABER ("Caber a página" de fábrica, "Caber a altura", "Caber a
+  largura", "Tamanho real"). A escolha fica em configuracoes.json ("livro_aberto") e vale para o
+  próximo livro. As páginas de um par ficam sempre da mesma altura (ui/widgets/paginas_rolando.py).
 
 O QUE CADA BOTÃO DO LIVRO ABERTO FAZ HOJE (sem inventar caminho novo):
   Continuar               o "continuar" do cartão (confere se o livro é o mesmo, abre o trabalho).
@@ -718,13 +724,10 @@ class LivroAberto(QWidget):
         meio.addWidget(self.pilha_do_meio, 1)
         fora.addLayout(meio, 1)
 
-        # "Ver lado a lado" (201 B: em cima das páginas, canto direito) e a pílula
-        self.botao_lado_a_lado = QPushButton("Ver lado a lado", self.paginas)
-        self.botao_lado_a_lado.setCheckable(True)
-        self.botao_lado_a_lado.setCursor(Qt.PointingHandCursor)
-        self.botao_lado_a_lado.setFocusPolicy(Qt.NoFocus)
-        self.botao_lado_a_lado.setToolTip("Mostra as páginas em pares, como no livro aberto")
-        self.botao_lado_a_lado.toggled.connect(self.paginas.definir_lado_a_lado)
+        # a barra de baixo: os jeitos de mostrar e de caber, como no UPDF (22/10/2026)
+        fora.addWidget(self._montar_barra_de_baixo())
+
+        # a pílula "página N de M · ir para", por cima das páginas, canto de baixo
         self.pilula = QFrame(self.paginas)
         self.pilula.setObjectName("pilulaDoLivro")
         estilo.estilizar(self.pilula, lambda: (
@@ -750,8 +753,126 @@ class LivroAberto(QWidget):
             botao.setToolTip(dica)
             botao.setCursor(Qt.PointingHandCursor)
             botao.setFocusPolicy(Qt.NoFocus)
-            botao.clicked.connect(lambda _c=False, p=passo: self.ir_para(self.paginas.atual + p))
+            botao.clicked.connect(lambda _c=False, p=passo: self.ir_para(self.paginas.passo(p)))
             pl.addWidget(botao)
+
+    # --- a barra de baixo (como no UPDF, 22/10/2026) ------------------------------
+
+    # (jeito, texto do botão, balão do mouse)
+    JEITOS_DE_MOSTRAR = (
+        ("uma", "Uma página", "Uma página de cada vez"),
+        ("duas", "Duas lado a lado", "As páginas em pares, como no livro aberto (a 1 sozinha, à direita)"),
+    )
+    JEITOS_DE_CABER = (
+        ("pagina", "Caber a página", "A página inteira (ou o par) cabe na tela"),
+        ("altura", "Caber a altura", "A página ocupa a altura toda da tela"),
+        ("largura", "Caber a largura", "A página ocupa a largura toda da tela (rola para ver o resto)"),
+        ("real", "Tamanho real", "A página no tamanho dela, a 100%"),
+    )
+    DE_FABRICA = {"mostrar": "uma", "rolar": True, "caber": "pagina"}
+
+    def _montar_barra_de_baixo(self) -> QFrame:
+        """A barra de baixo: "Uma página" / "Duas lado a lado", "Rolar sem
+        parar" e os quatro jeitos de caber. Cada grupo é de escolha única."""
+        from PySide6.QtWidgets import QButtonGroup
+
+        barra = QFrame()
+        barra.setObjectName("baixoDoLivroAberto")
+        estilo.estilizar(barra, lambda: (
+            f"QFrame#baixoDoLivroAberto {{ background: {estilo.cor('bar')};"
+            f" border-top: 1px solid {estilo.cor('linha')}; }}"
+            f"QPushButton#jeitoDoLivro {{ padding: 4px 10px; font-size: 12px; }}"
+            f"QPushButton#jeitoDoLivro:checked {{ background: {estilo.cor('sel')};"
+            f" border: 1px solid {estilo.cor('azul')}; color: {estilo.cor('forte')}; }}"
+            f"QLabel#separadorDoLivro {{ background: {estilo.cor('sep')}; }}"))
+        linha = QHBoxLayout(barra)
+        linha.setContentsMargins(12, 5, 12, 5)
+        linha.setSpacing(4)
+        linha.addStretch()
+        self.botoes_mostrar: dict[str, QPushButton] = {}
+        self.botoes_caber: dict[str, QPushButton] = {}
+        self._grupos = []
+        for jeitos, botoes, acao in ((self.JEITOS_DE_MOSTRAR, self.botoes_mostrar, self._escolher_mostrar),
+                                     (self.JEITOS_DE_CABER, self.botoes_caber, self._escolher_caber)):
+            grupo = QButtonGroup(barra)
+            grupo.setExclusive(True)
+            self._grupos.append(grupo)
+            for jeito, texto, dica in jeitos:
+                botao = self._botao_de_jeito(texto, dica)
+                botao.clicked.connect(lambda _c=False, j=jeito, a=acao: a(j))
+                grupo.addButton(botao)
+                botoes[jeito] = botao
+                linha.addWidget(botao)
+            if botoes is self.botoes_mostrar:
+                self.botao_rolar = self._botao_de_jeito(
+                    "Rolar sem parar", "Ligado: as páginas rolam uma atrás da outra.\n"
+                    "Desligado: uma página (ou um par) de cada vez; a roda do mouse passa para a próxima.")
+                self.botao_rolar.clicked.connect(lambda ligado: self._escolher_rolar(ligado))
+                linha.addSpacing(4)
+                linha.addWidget(self.botao_rolar)
+                separador = QLabel()
+                separador.setObjectName("separadorDoLivro")
+                separador.setFixedSize(1, 20)
+                linha.addSpacing(10)
+                linha.addWidget(separador)
+                linha.addSpacing(10)
+        linha.addStretch()
+        return barra
+
+    def _botao_de_jeito(self, texto: str, dica: str) -> QPushButton:
+        botao = QPushButton(texto)
+        botao.setObjectName("jeitoDoLivro")
+        botao.setCheckable(True)
+        botao.setToolTip(dica)
+        botao.setCursor(Qt.PointingHandCursor)
+        botao.setFocusPolicy(Qt.NoFocus)
+        return botao
+
+    def jeito_guardado(self) -> dict:
+        """O jeito de mostrar e de caber escolhido da última vez (configuracoes.json,
+        chave "livro_aberto"); o que faltar ou vier estranho volta ao de fábrica."""
+        import configuracoes
+        jeito = dict(self.DE_FABRICA)
+        try:
+            salvo = configuracoes.ler("livro_aberto")
+        except Exception:  # noqa: BLE001 - configuração nunca impede a tela
+            salvo = None
+        if isinstance(salvo, dict):
+            if salvo.get("mostrar") in {j for j, _t, _d in self.JEITOS_DE_MOSTRAR}:
+                jeito["mostrar"] = salvo["mostrar"]
+            if isinstance(salvo.get("rolar"), bool):
+                jeito["rolar"] = salvo["rolar"]
+            if salvo.get("caber") in {j for j, _t, _d in self.JEITOS_DE_CABER}:
+                jeito["caber"] = salvo["caber"]
+        return jeito
+
+    def _aplicar_jeito(self, jeito: dict) -> None:
+        """Mostra o jeito nos botões e nas páginas (sem gravar)."""
+        self.botoes_mostrar[jeito["mostrar"]].setChecked(True)
+        self.botao_rolar.setChecked(bool(jeito["rolar"]))
+        self.botoes_caber[jeito["caber"]].setChecked(True)
+        self.paginas.definir_jeito(mostrar=jeito["mostrar"], continuo=jeito["rolar"], caber=jeito["caber"])
+
+    def _gravar_jeito(self) -> None:
+        """Lembra a escolha para o próximo livro (configuracoes.json)."""
+        import configuracoes
+        configuracoes.escrever("livro_aberto", {
+            "mostrar": self.paginas.mostrar, "rolar": self.paginas.continuo, "caber": self.paginas.caber})
+
+    def _escolher_mostrar(self, jeito: str) -> None:
+        self.paginas.definir_jeito(mostrar=jeito)
+        self._pagina_mudou(self.paginas.atual)
+        self._gravar_jeito()
+
+    def _escolher_rolar(self, ligado: bool) -> None:
+        self.paginas.definir_jeito(continuo=ligado)
+        self._pagina_mudou(self.paginas.atual)
+        self._gravar_jeito()
+
+    def _escolher_caber(self, jeito: str) -> None:
+        self.paginas.definir_jeito(caber=jeito)
+        self._pagina_mudou(self.paginas.atual)
+        self._gravar_jeito()
 
     def _botao(self, texto: str, dica: str, acao, primario: bool = False) -> QPushButton:
         botao = QPushButton(texto)
@@ -781,7 +902,6 @@ class LivroAberto(QWidget):
         self.onde_esta.setToolTip(resumo.caminho_entrada)
         for botao in (self.botao_continuar, self.botao_automatico, self.botao_processar, self.botao_todas):
             botao.setVisible(not self.perdido)
-        self.botao_lado_a_lado.setChecked(False)
         self.pilha_do_meio.setCurrentWidget(self.paginas)
         if self.perdido:
             self.perdido_aviso.setText(
@@ -792,6 +912,7 @@ class LivroAberto(QWidget):
             self.paginas.limpar()
             return
         self.paginas.abrir(resumo.caminho_entrada)
+        self._aplicar_jeito(self.jeito_guardado())
         total = self.paginas.total()
         self.miniaturas.montar(total, resumo.caminho_entrada, {i: i for i in range(total)})
         self.campo_ir.setRange(1, max(1, total))
@@ -843,12 +964,8 @@ class LivroAberto(QWidget):
         menu.exec(self.botao_mais.mapToGlobal(QPoint(0, self.botao_mais.height())))
 
     def _acertar_pecas_soltas(self) -> None:
-        """O "Ver lado a lado" no canto de cima à direita das páginas e a
-        pílula no canto de baixo, por cima delas."""
+        """A pílula no canto de baixo, por cima das páginas."""
         area = self.paginas.viewport().geometry()
-        self.botao_lado_a_lado.adjustSize()
-        self.botao_lado_a_lado.move(area.right() - self.botao_lado_a_lado.width() - 22, area.top() + 12)
-        self.botao_lado_a_lado.raise_()
         self.pilula.adjustSize()
         self.pilula.move(area.right() - self.pilula.width() - 22,
                          area.bottom() - self.pilula.height() - 12)
@@ -871,9 +988,9 @@ class LivroAberto(QWidget):
             else:
                 self.tela.voltar_para_os_livros()
         elif tecla in (Qt.Key_PageDown, Qt.Key_Down, Qt.Key_Right):
-            self.ir_para(self.paginas.atual + 1)
+            self.ir_para(self.paginas.passo(1))         # no par, o par seguinte
         elif tecla in (Qt.Key_PageUp, Qt.Key_Up, Qt.Key_Left):
-            self.ir_para(self.paginas.atual - 1)
+            self.ir_para(self.paginas.passo(-1))
         elif tecla == Qt.Key_Home:
             self.ir_para(0)
         elif tecla == Qt.Key_End:

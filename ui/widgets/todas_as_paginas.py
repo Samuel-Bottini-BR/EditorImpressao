@@ -99,7 +99,14 @@ class _TarefaDasFolhas(QRunnable):
                     img = pagina_para_array(doc, folha, dpi=dpi)
                 finally:
                     doc.close()
-                self.sinais.pronta.emit(folha, limitar_altura(img, self.altura_px))
+                img = limitar_altura(img, self.altura_px)
+                # a altura EXATA do quadro em pixels (cortando ou completando 1 ou
+                # 2 pixels do arredondamento, sem reamostrar): assim ela é pintada
+                # 1 para 1 (22/10/2026)
+                from ui.widgets.paginas_rolando import no_tamanho
+                if 0 < self.altura_px - img.shape[0] <= 2 or img.shape[0] == self.altura_px:
+                    img = no_tamanho(img, img.shape[1], self.altura_px)
+                self.sinais.pronta.emit(folha, img)
         except Exception:  # noqa: BLE001 - a grade nunca derruba a janela
             registrar_erro("todas as páginas", traceback.format_exc())
 
@@ -117,10 +124,17 @@ def razao_do_pintor(pintor: QPainter) -> float:
 def _reduzir_para_a_tela(pix: QPixmap, tamanho: QSize, pintor: QPainter) -> QPixmap:
     """A imagem reduzida para caber em `tamanho` (pontos), nos pixels de verdade
     do que está sendo pintado (a razão de pixels do dispositivo do pintor),
-    marcada com essa razão para o Qt não aumentá-la de novo."""
+    marcada com essa razão para o Qt não aumentá-la de novo. Se ela já cabe
+    exatamente (um dos lados igual ao lugar, o outro menor), volta igual: nada
+    de reamostrar o que já tem o tamanho certo (22/10/2026)."""
     razao = razao_do_pintor(pintor)
-    escalado = pix.scaled(QSize(round(tamanho.width() * razao), round(tamanho.height() * razao)),
-                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    alvo_w, alvo_h = round(tamanho.width() * razao), round(tamanho.height() * razao)
+    escala = min(alvo_w / max(1, pix.width()), alvo_h / max(1, pix.height()))
+    if abs(escala - 1.0) < 1e-6:
+        escalado = QPixmap(pix)
+    else:
+        escalado = pix.scaled(QSize(max(1, round(pix.width() * escala)), max(1, round(pix.height() * escala))),
+                              Qt.KeepAspectRatio, Qt.SmoothTransformation)
     escalado.setDevicePixelRatio(razao)
     return escalado
 
@@ -186,15 +200,23 @@ class _Quadro(QFrame):
                 # escala do Windows: 1,25 a 125%), e não no tamanho em pontos:
                 # reduzir a 150 pontos e o Qt aumentar 1,25x deixava a grade
                 # mole (verificador, 21/10/2026). Seguro mudar: nada aqui.
+                #
+                # E posta num PIXEL INTEIRO da tela, 1 para 1, sem o "suavizar" do
+                # Qt: a 125% um ponto não cai em pixel inteiro e o Qt reamostrava a
+                # imagem meio pixel para o lado, borrando (medido em 22/10/2026:
+                # nitidez 0,60 do desenho direto do PDF). Seguro mudar: nada aqui.
+                razao = razao_do_pintor(pintor)
                 escalado = _reduzir_para_a_tela(pix, alvo.size(), pintor)
-                w = escalado.width() / escalado.devicePixelRatio()
-                h = escalado.height() / escalado.devicePixelRatio()
+                w, h = escalado.width(), escalado.height()          # pixels de verdade
+                ax0, ay0 = round(alvo.left() * razao), round(alvo.top() * razao)
+                ax1, ay1 = round((alvo.right() + 1) * razao), round((alvo.bottom() + 1) * razao)
                 if self.lugares == 1:
-                    x = alvo.left() + (alvo.width() - w) / 2
+                    x = ax0 + (ax1 - ax0 - w) // 2
                 else:                    # o par encosta no meio, como o livro aberto
-                    x = alvo.right() + 1 - w if lugar == 0 else alvo.left()
-                y = alvo.top() + (alvo.height() - h) / 2
-                pintor.drawPixmap(QPointF(x, y), escalado)
+                    x = ax1 - w if lugar == 0 else ax0
+                y = ay0 + (ay1 - ay0 - h) // 2
+                pintor.setRenderHint(QPainter.SmoothPixmapTransform, False)
+                pintor.drawPixmap(QPointF(x / razao, y / razao), escalado)
             if item.apagada:
                 pintor.fillRect(alvo, QColor(255, 255, 255, 170))
                 pintor.setPen(QColor("#B91C1C"))
@@ -354,8 +376,9 @@ class TodasAsPaginas(QWidget):
             self._pool.start(self._tarefa)
 
     def altura_necessaria(self) -> int:
-        """A altura, em pixels de verdade, de uma página no quadro (com folga)."""
-        return int(round(ALTURA_DA_PAGINA * self.devicePixelRatioF() * 1.05))
+        """A altura, em pixels de verdade, de uma página no quadro (exata: ela é
+        pintada 1 para 1; com folga ela tinha de ser reduzida ao pintar)."""
+        return int(round(ALTURA_DA_PAGINA * self.devicePixelRatioF()))
 
     def definir_vista(self, vista: str) -> None:
         self.vista = vista
