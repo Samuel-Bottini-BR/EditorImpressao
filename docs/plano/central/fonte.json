@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T22:30:00Z",
+        "texto": "Nova conferência: as 7 ferramentas do Implementador B (aba Conferência), com uma pergunta sobre o aviso do \"Tirar o chuvisco\"."
+      },
+      {
         "em": "2026-10-22T21:45:00Z",
         "texto": "Plano mantido: a junção espera o desentortar e as 7 ferramentas do Implementador B, conferidos e aprovados. As melhorias do aviso de corte e do layout entram numa rodada logo depois. O Implementador B está fazendo a tinta com a cor."
       },
@@ -550,16 +554,16 @@
       "titulo": "Perguntas do Implementador B (margens, impressão, luz, áreas)",
       "item": "2.4",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Margens e alinhamento iguais em todas as páginas.",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A conferência do verificador e depois a sua.",
-      "mudouEm": "2026-10-22T20:15:00Z",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
+      "mudouEm": "2026-10-22T22:30:00Z",
       "relatorio": "perg-b",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c"
@@ -569,16 +573,16 @@
       "titulo": "Tamanho final e arquivo para impressão",
       "item": "2.6",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T20:15:00Z",
-      "falta": "A conferência do verificador e depois a sua.",
+      "mudouEm": "2026-10-22T22:30:00Z",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c"
     },
@@ -587,90 +591,90 @@
       "titulo": "Usar todos os núcleos do processador",
       "item": "2.16",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Processar várias páginas ao mesmo tempo.",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A conferência do verificador e depois a sua.",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T20:15:00Z"
+      "mudouEm": "2026-10-22T22:30:00Z"
     },
     {
       "id": "2.19",
       "titulo": "Unidades cm/mm e perfis de configuração",
       "item": "2.19",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Escolher cm ou mm e guardar perfis de ajustes. O tema já está feito.",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A conferência do verificador e depois a sua.",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T20:15:00Z"
+      "mudouEm": "2026-10-22T22:30:00Z"
     },
     {
       "id": "2.17",
       "titulo": "Igualar a luz e suavizar",
       "item": "2.17",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Igualar a luz da página como filtro de imagem.",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A conferência do verificador e depois a sua.",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas) e a pergunta do chuvisco.",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T20:15:00Z"
+      "mudouEm": "2026-10-22T22:30:00Z"
     },
     {
       "id": "2.18",
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A conferência do verificador e depois a sua. Também falta fazer a sua resposta da tinta com a cor: as duas opções separadas.",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas). A tinta com a cor (opção B) está sendo feita pelo Implementador B.",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T20:15:00Z"
+      "mudouEm": "2026-10-22T22:30:00Z"
     },
     {
       "id": "2.10",
       "titulo": "PDF em duas camadas",
       "item": "2.10 e 1.6",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Letra em cima, fundo embaixo, como opção.",
-      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. Com as ferramentas desligadas, o PDF sai igual ao de antes.",
       "selos": {
         "github": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "A conferência do verificador e depois a sua.",
+      "falta": "A sua resposta na aba Conferência (7 ferramentas).",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-22T20:15:00Z"
+      "mudouEm": "2026-10-22T22:30:00Z"
     },
     {
       "id": "1.4",
@@ -767,10 +771,10 @@
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
       "estado": "trabalhando",
-      "tarefa": "Conferir as 7 ferramentas do Implementador B (2.4, 2.6, 2.10, 2.16, 2.17, 2.18, 2.19)",
-      "ultimo": "Começou a conferir as 7 ferramentas do Implementador B.",
-      "ramo": "verif-ferramentas-2026-10-22",
-      "quando": "2026-10-22T20:15:00Z"
+      "tarefa": "Conferir as três melhorias do layout (quadro azul, \"Antes de processar\", miniaturas lembradas)",
+      "ultimo": "Entregou as 7 ferramentas (aba Conferência) e começou as três melhorias do layout.",
+      "ramo": "verif-layout-melhorias-2026-10-22",
+      "quando": "2026-10-22T22:35:00Z"
     },
     {
       "id": "layout",
