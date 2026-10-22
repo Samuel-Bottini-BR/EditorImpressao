@@ -112,3 +112,6 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `b-7-chuvisco`: **Até 100, com aviso a partir de 20** — "mas eu vou poder escolher a escala né?" (respondido: sim)
 - `b-3-cadernos-antigo`: primeiro "Ainda não entendi" — "Pera ai, mas ele monta em formato livreto também? como assim monta com dobro de largura explique melhor."; refeita com desenho em escala; depois **Deixar os dois**
 - `b-8-tinta-com-cor`: "Ainda não entendi" — "Não entendi o que estou olhando. uma está o preto e branco bem melhor, a outra apagou as letras."; refeita com Livro de Horas 13 (título vermelho e azul) e Escola 7 em quatro jeitos; aguardando resposta
+
+## Conferência `lyupdf` (livro aberto como UPDF e tela cheia), respostas a partir de 22/10/2026
+- `lu-par` As duas páginas do par na mesma altura: **Está bom** (22/10, 15:41 UTC). Os outros 7 quadros e a decisão final ainda sem resposta.
