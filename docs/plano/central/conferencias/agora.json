@@ -1,14 +1,14 @@
 {
  "id": "agora",
- "nome": "Para responder agora (2)",
+ "nome": "Para responder agora (1)",
  "trabalho": "2.18",
  "ordem": -1,
  "origem": "cópia das duas perguntas abertas",
  "resumo": {
   "titulo": "As duas perguntas que faltam responder",
   "paragrafos": [
-   "Estas são as únicas perguntas abertas agora, as duas da \"tinta com a cor\". São as mesmas que estão nas abas \"Perguntas do Implementador B\" e \"Tinta com a cor\": responder aqui vale para lá também.",
-   "A conferência completa da tinta com a cor (fotos de todas as páginas e a decisão final) está na aba \"Tinta com a cor original em dois jeitos\"."
+   "Falta só esta: a pergunta do papel branco no Original, refeita com exemplo. A dos botões já está respondida (\"Em qualquer filtro\").",
+   "Responder aqui vale também para a aba \"Tinta com a cor\"."
   ]
  },
  "quadros": [],
@@ -52,33 +52,64 @@
   },
   {
    "id": "tc23-1",
-   "titulo": "No Original, o papel da área vira um retângulo branco. Fica assim?",
-   "explicacao": [
-    "O que é: com a página em Original (ou Melhorar), a área \"tinta com a cor, papel branco\" sai como um retângulo branco no meio do papel creme. Vale para A e para B, e já era assim antes. No Preto e branco não aparece, porque a página toda já é branca.",
-    "Pergunto agora porque a pergunta 9 (os botões só no Preto e branco ou em qualquer filtro?) depende disto: no Original, o resultado é este retângulo."
-   ],
-   "imgs": [
+   "titulo": "No Original, a área \"tinta com a cor\" fica com o papel branco no meio do papel creme. Fica assim?",
+   "historico": [
     {
-     "src": "tc23/img/graduale_p221-original-pagina.jpg",
-     "legenda": "Graduale 221 em Original: o retângulo branco com A e com B"
+     "quem": "samuel",
+     "em": "2026-10-22T23:23:32Z",
+     "texto": "não entendi nada, não tem exemplos."
     },
     {
+     "quem": "gerente",
+     "em": "2026-10-23T02:50:00Z",
+     "texto": "Refiz com o exemplo do Livro de Horas 13, logo abaixo."
+    }
+   ],
+   "explicacao": [
+    "Exemplo: veja a primeira foto. É a mesma página, o Livro de Horas 13, com o filtro Original (as cores e o papel como no livro).",
+    "Coluna da esquerda: sem área marcada. O papel é todo creme.",
+    "Colunas do meio e da direita: com uma área \"tinta com a cor, papel branco\" marcada no título. Repare que, em volta de \"TABLE / DE CE QUI EST / CONTENU EN CE LIVRE\", aparece um RETÂNGULO BRANCO, e o resto da página continua creme. É isso que a pergunta mostra: a área deixa o papel branco só dentro dela.",
+    "No Preto e branco isso não aparece, porque lá a página inteira já sai branca. Já era assim antes desta mudança, com a opção A.",
+    "A pergunta: no Original e no Melhorar, a área deve continuar deixando o papel branco (o retângulo branco), ou deve deixar o papel da cor do resto da página e mudar só a tinta?"
+   ],
+   "exemplos": [
+    {
      "src": "tc23/img/horas_p013-original-pagina.jpg",
-     "legenda": "Horas 13 em Original"
+     "legenda": "Livro de Horas 13 no Original: à esquerda sem área; no meio e à direita, com a área no título — o retângulo branco em volta do título."
     },
     {
      "src": "tc23/img/jan_06_ver_de_perto_original.jpg",
-     "legenda": "O mesmo na janela do programa"
+     "legenda": "O mesmo na janela do programa (Ver de perto, Original)."
     },
     {
-     "src": "tc23/img/graduale_p221-pb-pagina.jpg",
-     "legenda": "Para comparar: no Preto e branco não se vê retângulo"
+     "src": "tc23/img/graduale_p221-original-pagina.jpg",
+     "legenda": "Graduale 221 no Original: o mesmo retângulo branco."
     }
    ],
    "opcoes": [
-    "Fica assim: o papel da área sai branco em qualquer filtro",
-    "No Original (e no Melhorar), o papel da área fica como o resto da página; só a tinta muda",
-    "Ainda não entendi"
+    {
+     "id": "fica",
+     "nome": "Fica assim: o papel da área sai branco em qualquer filtro",
+     "texto": "Como hoje. No Original aparece o retângulo branco.",
+     "imgs": [
+      {
+       "src": "tc23/img/horas_p013-original-pagina.jpg",
+       "legenda": "O retângulo branco (colunas do meio e da direita)."
+      }
+     ]
+    },
+    {
+     "id": "papel-igual",
+     "nome": "No Original e no Melhorar, o papel da área fica como o resto da página; só a tinta muda",
+     "texto": "Some o retângulo branco: o papel dentro da área fica creme como em volta, e só a cor da tinta segue o A ou o B. No Preto e branco continua igual.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "",
+     "imgs": []
+    }
    ]
   }
  ]

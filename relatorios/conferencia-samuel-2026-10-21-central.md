@@ -166,3 +166,11 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `a-212-p3`: **Tenho, vou dizer onde está** — "Na pasta livros para editar, procure lá."
 - `lm-azul`, `lm-antes-de-processar`, `lm-miniaturas`: **Está bom**; `lm22` DECISÃO FINAL: **Aprovado**
 - `b-9-botoes-tinta`: sem resposta ainda.
+
+## Tinta com a cor (`tc23`) e dúvidas, 22/10/2026 (22:50-23:23 UTC)
+- `b-9-botoes-tinta`: **Em qualquer filtro, como está**
+- `tc23` DECISÃO FINAL: **Aprovado**; `tc23-pb`, `tc23-original`: **Está bom**
+- `tc23-janela`: **Está bom** — "Pode explicar como eu vou usar isso? \nsegundo esse painel embaixo abre quando?\no painel está muito bagunçado."
+- `tc23-1`: **Ainda não entendi** — "não entendi nada, não tem exemplos."
+- Dúvidas: `dv-ly-filtro`, `dv-cx-velocidade`, `dv-cx-avisos`, `dv-l67-livro-aberto`, `dv-l67-acertos`: **Entendi**; `dv-l67-tela-cheia`: **Entendi** — "ele colocou todas as funções em todos os filtros?"; `dv-lu-tc-igual`: **Entendi** — "ok, então deixe isso anotado, precisamos que o pdf saia que nem está na tela."; `dv-pr-antes`: **Entendi** — "os nomes dos botões são horriveis, na verdade em todo o programa, a nomeação dos botões é horrivel. Anote a ideia de depois revisarmos todos os nomes de botão com um novo agente que vai ser criado."
+- Respondidas na Central: tc23-janela (passo a passo), tc23-1 (refeita com exemplo), dv-l67-tela-cheia, dv-lu-tc-igual, dv-pr-antes.

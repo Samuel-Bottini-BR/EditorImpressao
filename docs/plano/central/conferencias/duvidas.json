@@ -300,6 +300,16 @@
      "quem": "samuel",
      "em": "2026-10-22T12:39:24.691Z",
      "texto": "esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?"
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T22:55:04Z",
+     "texto": "ele colocou todas as funções em todos os filtros?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T02:50:00Z",
+     "texto": "Não todas em todos: cada filtro mostra as opções que servem para ele, as mesmas do painel do lado. No Preto e branco: Força do preto, Só as letras, Limpar a sujeira e, em \"Mais ajustes\", o jeito do preto e branco (Automático, os 3 de antes e os 10 do ScanTailor), Letra clara em fundo escuro, Letras com a cor delas e Reduzir cores. No Melhorar e no Mágico pro: \"Mais ajustes\" com Letra clara em fundo escuro e Reduzir cores. Mexer só mostra na página grande; \"Usar\" grava na página."
     }
    ],
    "explicacao": [
@@ -370,6 +380,16 @@
      "quem": "samuel",
      "em": "2026-10-22T18:13:22.735Z",
      "texto": "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T22:53:46Z",
+     "texto": "ok, então deixe isso anotado, precisamos que o pdf saia que nem está na tela."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T02:50:00Z",
+     "texto": "Anotado no plano com as suas palavras. É o mesmo pedido que já estava na Lista de espera como \"a tela decide, o PDF obedece\". Entra na rodada logo depois da junção, e antes de mudar qualquer coisa você vê as fotos da tela e do PDF lado a lado."
     }
    ],
    "explicacao": [
@@ -497,6 +517,16 @@
      "quem": "samuel",
      "em": "2026-10-21T21:43:25.375Z",
      "texto": "ficou meio embolado, deve ficar mais claro e não tão grande."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T22:51:12Z",
+     "texto": "os nomes dos botões são horriveis, na verdade em todo o programa, a nomeação dos botões é horrivel. Anote a ideia de depois revisarmos todos os nomes de botão com um novo agente que vai ser criado."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T02:50:00Z",
+     "texto": "Anotado na Lista de espera do plano, com as suas palavras: um agente novo, só para revisar os nomes de todos os botões do programa. Ele traz a lista de todos os botões com o nome de hoje e uma sugestão, e você decide um por um."
     }
    ],
    "explicacao": [
