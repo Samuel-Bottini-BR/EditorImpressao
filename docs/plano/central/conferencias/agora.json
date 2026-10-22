@@ -1,0 +1,85 @@
+{
+ "id": "agora",
+ "nome": "Para responder agora (2)",
+ "trabalho": "2.18",
+ "ordem": -1,
+ "origem": "cópia das duas perguntas abertas",
+ "resumo": {
+  "titulo": "As duas perguntas que faltam responder",
+  "paragrafos": [
+   "Estas são as únicas perguntas abertas agora, as duas da \"tinta com a cor\". São as mesmas que estão nas abas \"Perguntas do Implementador B\" e \"Tinta com a cor\": responder aqui vale para lá também.",
+   "A conferência completa da tinta com a cor (fotos de todas as páginas e a decisão final) está na aba \"Tinta com a cor original em dois jeitos\"."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "b-9-botoes-tinta",
+   "titulo": "\"Cor como no livro\" e \"cor escurecida\": os dois botões aparecem só no Preto e branco, ou em qualquer filtro?",
+   "explicacao": [
+    "A sua resposta da tinta com a cor (\"As duas: A e B como opções separadas\") já está feita. Quando você marca uma área como \"Tinta com a cor original, papel branco\", aparecem dois botões: \"cor como no livro\" (A, a de fábrica, igual a hoje) e \"cor escurecida\" (B).",
+    "O que o Implementador B pergunta: a pergunta de antes falava de página em Preto e branco. Ele fez os botões aparecerem em qualquer filtro, porque a escolha \"Marcar como\" é a mesma em todos e a B funciona igual no Original e no Melhorar (o papel vai a branco e a tinta escurece).",
+    "Caminho das fotos: livro novo, de fábrica → girar 0° → não dividiu → endireitar → cortar as bordas → Preto e branco + área A ou B. Colunas: Original · Preto e branco · A · B."
+   ],
+   "exemplos": [
+    {
+     "src": "pb2/horas_p013-titulo-ampliado.jpg",
+     "legenda": "Livro de Horas 13, o título ampliado: na A o vermelho e o azul como no livro; na B vermelho-escuro e azul-marinho."
+    },
+    {
+     "src": "pb2/escola_p007-titulo-ampliado.jpg",
+     "legenda": "Escola 7: na B o título fica marrom-escuro, quase tão forte quanto o Preto e branco."
+    },
+    {
+     "src": "pb2/opusmajus_p003-titulo-ampliado.jpg",
+     "legenda": "Opus Majus 3: \"OPUS MAJUS\" e \"ROGER BACON\" ficam vermelho-escuro na B."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "sempre",
+     "nome": "Em qualquer filtro, como está (recomendo)",
+     "texto": "Os dois botões aparecem sempre que se marca \"tinta com a cor\". A B também serve numa página em Original ou Melhorar.",
+     "imgs": []
+    },
+    {
+     "id": "so-pb",
+     "nome": "Só quando a página está em Preto e branco",
+     "texto": "Nos outros filtros os botões ficam escondidos e vale a A.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "tc23-1",
+   "titulo": "No Original, o papel da área vira um retângulo branco. Fica assim?",
+   "explicacao": [
+    "O que é: com a página em Original (ou Melhorar), a área \"tinta com a cor, papel branco\" sai como um retângulo branco no meio do papel creme. Vale para A e para B, e já era assim antes. No Preto e branco não aparece, porque a página toda já é branca.",
+    "Pergunto agora porque a pergunta 9 (os botões só no Preto e branco ou em qualquer filtro?) depende disto: no Original, o resultado é este retângulo."
+   ],
+   "imgs": [
+    {
+     "src": "tc23/img/graduale_p221-original-pagina.jpg",
+     "legenda": "Graduale 221 em Original: o retângulo branco com A e com B"
+    },
+    {
+     "src": "tc23/img/horas_p013-original-pagina.jpg",
+     "legenda": "Horas 13 em Original"
+    },
+    {
+     "src": "tc23/img/jan_06_ver_de_perto_original.jpg",
+     "legenda": "O mesmo na janela do programa"
+    },
+    {
+     "src": "tc23/img/graduale_p221-pb-pagina.jpg",
+     "legenda": "Para comparar: no Preto e branco não se vê retângulo"
+    }
+   ],
+   "opcoes": [
+    "Fica assim: o papel da área sai branco em qualquer filtro",
+    "No Original (e no Melhorar), o papel da área fica como o resto da página; só a tinta muda",
+    "Ainda não entendi"
+   ]
+  }
+ ]
+}
