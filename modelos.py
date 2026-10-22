@@ -411,6 +411,21 @@ class Projeto:
     # de fabrica mora em core/pontinhos_scantailor.PADRAO).
     limpar_pontinhos: str = PONTINHOS_PADRAO
 
+    # Item 2.4 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado de
+    # fabrica): margens iguais em todas as paginas, a etapa "Margens" do
+    # ScanTailor (core/margens_scantailor.py). margens_iguais False = o PDF sai
+    # como sempre (o processar nem mede as paginas). margens_mm = (esquerda,
+    # cima, direita, baixo) em mm, de fabrica as do ScanTailor (10, 5, 10, 5;
+    # G9 (a), 05/10/2026: "As do ScanTailor [...] Mas eu vou conseguir alterar
+    # isso né?"). margens_alinhamento = (vertical, horizontal), de fabrica no
+    # meio e no meio. Projeto antigo, sem os campos, abre com tudo desligado
+    # (os padroes). Quem usa: core/pipeline.processar; quem mostra:
+    # ui/tela_opcoes.py. Arriscado: trocar o padrao de margens_iguais (livro
+    # ja comecado mudaria de tamanho).
+    margens_iguais: bool = False
+    margens_mm: list = field(default_factory=lambda: [10.0, 5.0, 10.0, 5.0])
+    margens_alinhamento: list = field(default_factory=lambda: ["meio", "meio"])
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
@@ -489,6 +504,8 @@ class Projeto:
             and not self.endireitar
             and not self.cortar_bordas
             and self.total_apagadas == 0
+            # item 2.4: as margens iguais mudam a imagem (desligadas, nada muda)
+            and not getattr(self, "margens_iguais", False)
         )
 
     @property

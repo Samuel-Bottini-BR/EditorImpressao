@@ -56,6 +56,11 @@ TINTA_FORTE_FORA_DO_TEXTO = "tinta_forte_fora_do_texto"
 # como o TINTA_FORTE_FORA_DO_TEXTO). So em livro cuja conta e a do
 # ScanTailor, e so com o angulo automatico (o a mao ja foi conferido).
 CONTAS_DO_ENDIREITAR_DISCORDAM = "contas_do_endireitar_discordam"
+# Item 2.4 (g9-pagina-muito-maior, Samuel 14/10/2026: "O programa deixa essa
+# folha de fora sozinho, e avisa"): com as margens iguais ligadas, a pagina
+# muito maior que as outras (tabela dobravel) ficou fora da conta do tamanho
+# do livro. Quem poe e tira: core.pipeline.medir_o_livro_para_as_margens.
+FOLHA_MAIOR_FORA_DAS_MARGENS = "folha_maior_fora_das_margens"
 
 
 @dataclass(frozen=True)
@@ -106,6 +111,13 @@ ALERTAS: dict[str, Alerta] = {
         "A conta do ScanTailor e a do Editor acharam inclinações diferentes "
         "nesta página. Confira com a ferramenta Endireitar e escolha a conta que deixou "
         "o texto reto.",
+        "está bom assim", "revisar",
+    ),
+    # Item 2.4. Seguro mudar: os textos.
+    FOLHA_MAIOR_FORA_DAS_MARGENS: Alerta(
+        FOLHA_MAIOR_FORA_DAS_MARGENS, "Página bem maior que as outras",
+        "Esta página é bem maior que as outras (uma tabela dobrável, por exemplo) e "
+        "ficou fora da conta das margens iguais: sai do tamanho dela.",
         "está bom assim", "revisar",
     ),
     LOMBADA_INCERTA: Alerta(

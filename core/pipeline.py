@@ -51,6 +51,7 @@ from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
+from core import margens_scantailor
 from core.pdf_io import (
     DPI_PREVIA,
     dpi_real_da_pagina,
@@ -2288,9 +2289,17 @@ def processar(
 
     doc = abrir_pdf(projeto.caminho_entrada)
     try:
+        # Item 2.4: com as margens iguais ligadas (desligadas de fabrica), uma
+        # passada antes mede o tamanho de cada pagina pronta - so dois numeros
+        # por pagina - para saber o tamanho do livro (o da maior). Desligadas,
+        # conta e None e nada muda.
+        conta = None
+        if getattr(projeto, "margens_iguais", False):
+            conta = medir_o_livro_para_as_margens(projeto, doc, ativas, progresso, cancelado)
         with EscritorPDF(destino) as escritor:
             try:
-                _escrever_as_paginas(projeto, doc, ativas, escritor, progresso, cancelado)
+                _escrever_as_paginas(projeto, doc, ativas, escritor, progresso, cancelado,
+                                     conta_das_margens=conta)
             except BaseException:
                 # cancelou ou deu erro: nada vai para o disco (antes o
                 # __exit__ gravava as paginas feitas ate ali - no PDF antigo,
@@ -2323,7 +2332,7 @@ def processar(
 
 def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
                          escritor: EscritorPDF, progresso: Progresso,
-                         cancelado: Cancelado) -> None:
+                         cancelado: Cancelado, conta_das_margens=None) -> None:
     """O laco do processar: cada pagina ativa, uma por vez, ate o escritor.
 
     Separado do processar em 05/10/2026 so para o tratamento de cancelar e
@@ -2412,6 +2421,12 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
         # qualidade dos filtros) e padding ali contaminaria as
         # metricas. Sem `tamanho_folha_cm` (None, o padrao) devolve
         # `img` sem nenhuma alteracao - comportamento de sempre.
+        # Item 2.4: as margens iguais do ScanTailor (so com a conta feita,
+        # isto e, ligadas). Antes do tamanho de folha escolhido a mao, que
+        # continua valendo por cima (e nao corta nada se nao couber).
+        if conta_das_margens is not None:
+            img = _por_as_margens(img, conta_das_margens, feito, projeto)
+
         img = compor_na_folha(
             img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
             escala=pagina.conteudo_escala,
@@ -2422,6 +2437,99 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
         del img
 
     _checar(cancelado)
+
+
+def tamanho_da_pagina_pronta(img_folha: np.ndarray, folha: ConfigFolha,
+                             pagina: ConfigPagina, projeto: Projeto,
+                             doc=None) -> tuple[tuple[int, int], tuple[float, float]]:
+    """Item 2.4: o tamanho em pontos (largura, altura) que a pagina vai ter
+    depois do preparo (girar, dividir, cortar, endireitar), e o centro do
+    conteudo em fracao da pagina antes do corte - sem girar nem copiar a
+    imagem (as mesmas contas de _preparar_metade_e_geometria: o endireitar
+    nao muda o tamanho, e o corte e o caixa_em_pontos da pagina inteira).
+
+    Guarda o corte e o angulo (_guardar_geometria, com o mesmo doc do
+    processar): a segunda passada usa os mesmos, sem medir de novo.
+    Arriscado: medir de outro jeito que o preparo (o tamanho medido deixaria
+    de ser o da pagina gravada)."""
+    inteira = preparar_para_recorte(img_folha, folha, pagina, projeto)
+    if _precisa_de_geometria(pagina, projeto):
+        _guardar_geometria(folha, pagina, projeto, img_folha, doc)
+    geometria = _geometria_guardada(folha, pagina, projeto)
+    if geometria is None:
+        geometria = _geometria(inteira, pagina, projeto, dpi=projeto.qualidade_dpi)
+    recorte = geometria[0]
+    altura, largura = inteira.shape[:2]
+    caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
+    if caixa is None:
+        return (largura, altura), (0.5, 0.5)
+    x0, y0, x1, y1 = caixa
+    return (x1 - x0, y1 - y0), ((x0 + x1) / 2 / max(1, largura), (y0 + y1) / 2 / max(1, altura))
+
+
+def medir_o_livro_para_as_margens(projeto: Projeto, doc, ativas: list[ConfigPagina],
+                                  progresso: Progresso = None, cancelado: Cancelado = None):
+    """Item 2.4: a primeira passada das margens iguais. Desenha cada folha
+    (uma por vez, solta logo), mede o tamanho da pagina pronta e monta a
+    conta do livro (core/margens_scantailor.montar_a_conta): o tamanho do
+    livro e as paginas muito maiores, que ficam fora da conta e ganham o
+    aviso (g9-pagina-muito-maior, Samuel 14/10/2026: "O programa deixa essa
+    folha de fora sozinho, e avisa").
+
+    Regra "uma pagina por vez": guarda so dois numeros e um centro por
+    pagina, nunca imagem. Custa um desenho a mais por folha (a segunda
+    passada nao mede o corte de novo: ele fica guardado)."""
+    ms = margens_scantailor
+    total = len(ativas)
+    tamanhos: list[tuple[int, int]] = []
+    centros: list[tuple[float, float]] = []
+    folha_atual, img_folha = None, None
+    for feito, pagina in enumerate(ativas):
+        _checar(cancelado)
+        _avisar(progresso, feito, total,
+                f"Medindo as páginas para as margens iguais: {feito + 1} de {total}")
+        folha = projeto.folhas[pagina.folha]
+        if folha_atual != folha.indice:
+            img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+            folha_atual = folha.indice
+        tamanho, centro = tamanho_da_pagina_pronta(img_folha, folha, pagina, projeto, doc)
+        tamanhos.append(tamanho)
+        centros.append(centro)
+    del img_folha
+    conta = ms.montar_a_conta(tamanhos, projeto.qualidade_dpi,
+                              ms.Margens.de(getattr(projeto, "margens_mm", None)),
+                              ms.alinhamento_valido(getattr(projeto, "margens_alinhamento", None)))
+    conta.centros = centros
+    for posicao, pagina in enumerate(ativas):
+        _anotar_folha_maior(pagina, posicao in conta.fora_da_conta)
+    return conta
+
+
+def _anotar_folha_maior(pagina: ConfigPagina, fora: bool) -> None:
+    """Poe (ou tira) o aviso da pagina muito maior na lista de avisos da
+    pagina (core/analise.FOLHA_MAIOR_FORA_DAS_MARGENS)."""
+    codigo = analise.FOLHA_MAIOR_FORA_DAS_MARGENS
+    alertas = list(getattr(pagina, "alertas", []) or [])
+    tem = codigo in alertas
+    if fora and not tem:
+        alertas.append(codigo)
+    elif not fora and tem:
+        alertas.remove(codigo)
+    else:
+        return
+    pagina.alertas = alertas
+
+
+def _por_as_margens(img: np.ndarray, conta, posicao: int, projeto: Projeto) -> np.ndarray:
+    """Item 2.4: cola a pagina pronta na folha branca com as margens fixas e
+    as suaves (core/margens_scantailor.compor_com_margens)."""
+    ms = margens_scantailor
+    centros = getattr(conta, "centros", None) or []
+    centro = centros[posicao] if posicao < len(centros) else None
+    altura, largura = img.shape[:2]
+    suaves, livro = conta.margens_da_pagina(posicao, (largura, altura),
+                                            projeto.qualidade_dpi, centro)
+    return ms.compor_com_margens(img, projeto.qualidade_dpi, conta.margens, suaves, livro)
 
 
 def _so_as_letras_no_livro(projeto: Projeto) -> bool:
@@ -2505,6 +2613,9 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
             # com "So as letras", separar a gravura do texto ja esta dito
             # na frase dela (_frase_do_so_as_letras)
             partes.append("separar as gravuras do texto")
+    if getattr(projeto, "margens_iguais", False):
+        # item 2.4 (as margens do ScanTailor)
+        partes.append("deixar todas as páginas do tamanho da maior, com margens iguais")
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")
 

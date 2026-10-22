@@ -87,6 +87,7 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
@@ -101,6 +102,7 @@ from PySide6.QtWidgets import (
 
 from core import dividir_scantailor
 from core import endireitar_scantailor
+from core import margens_scantailor
 from core import misto
 from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
@@ -242,6 +244,16 @@ class TelaOpcoes(QWidget):
         self.cx_cortar = self._caixa(
             "Cortar as bordas", "tira a borda preta e a sombra do scanner", opcoes
         )
+        # Item 2.4 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
+        # de fabrica). CONTROLE MINIMO e PROVISORIO: o lugar e a aparencia sao
+        # do agente de layout (anotado em relatorios/fase2-novas/ONDE-PAREI.md).
+        self.cx_margens = self._caixa(
+            "Margens iguais em todas as páginas",
+            "como o ScanTailor: todas do tamanho da maior, com a margem em volta", opcoes
+        )
+        self.cx_margens.setChecked(False)
+        self.painel_margens = self._montar_margens()
+        opcoes.addWidget(self.painel_margens)
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
@@ -308,7 +320,7 @@ class TelaOpcoes(QWidget):
         camadas.addLayout(rodape)
 
         for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
-                      self.cx_endireitar, self.cx_cortar, self.cx_cadernos):
+                      self.cx_endireitar, self.cx_cortar, self.cx_margens, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -594,6 +606,44 @@ class TelaOpcoes(QWidget):
         self.botao_mais_opcoes.setText("Menos opções" if aberto else "Mais opções")
         self._acertar_altura_da_rolagem()
 
+    def _montar_margens(self) -> QWidget:
+        """Item 2.4: as quatro margens em mm (de fabrica as do ScanTailor:
+        10, 5, 10, 5) e onde a pagina menor fica (de fabrica no meio). So
+        aparece com "Margens iguais" marcada - ver _mudou."""
+        painel = QWidget()
+        grade = QGridLayout(painel)
+        grade.setContentsMargins(34, 4, 0, 4)
+        grade.setHorizontalSpacing(8)
+        grade.setVerticalSpacing(4)
+        self.margens_mm: dict[str, QDoubleSpinBox] = {}
+        rotulos = (("esquerda", "esquerda"), ("cima", "em cima"),
+                   ("direita", "direita"), ("baixo", "embaixo"))
+        for i, (chave, rotulo) in enumerate(rotulos):
+            caixa = QDoubleSpinBox()
+            caixa.setRange(0.0, 100.0)
+            caixa.setDecimals(1)
+            caixa.setSingleStep(1.0)
+            caixa.setSuffix(" mm")
+            caixa.valueChanged.connect(lambda _v: self._mudou())
+            self.margens_mm[chave] = caixa
+            grade.addWidget(QLabel(f"margem {rotulo}:"), i // 2, (i % 2) * 2)
+            grade.addWidget(caixa, i // 2, (i % 2) * 2 + 1)
+        self.combo_alinhar_vertical = QComboBox()
+        for codigo in margens_scantailor.VERTICAIS:
+            self.combo_alinhar_vertical.addItem(margens_scantailor.NOMES_VERTICAIS[codigo], codigo)
+        self.combo_alinhar_horizontal = QComboBox()
+        for codigo in margens_scantailor.HORIZONTAIS:
+            self.combo_alinhar_horizontal.addItem(margens_scantailor.NOMES_HORIZONTAIS[codigo], codigo)
+        for combo in (self.combo_alinhar_vertical, self.combo_alinhar_horizontal):
+            combo.setToolTip("Onde a página menor fica dentro do tamanho da maior "
+                             "(o alinhamento do ScanTailor).")
+            combo.currentIndexChanged.connect(lambda _i: self._mudou())
+        grade.addWidget(QLabel("página menor, de cima a baixo:"), 2, 0)
+        grade.addWidget(self.combo_alinhar_vertical, 2, 1)
+        grade.addWidget(QLabel("de um lado ao outro:"), 2, 2)
+        grade.addWidget(self.combo_alinhar_horizontal, 2, 3)
+        return painel
+
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
         esta marcada - ver _mudou."""
@@ -667,6 +717,16 @@ class TelaOpcoes(QWidget):
         self.combo_conta_endireitar.setCurrentIndex(self.combo_conta_endireitar.findData(
             endireitar_scantailor.jeito_do_livro(projeto)))
         self.cx_cortar.setChecked(projeto.cortar_bordas)
+        # item 2.4 (projeto em memoria sem os campos: os de fabrica)
+        self.cx_margens.setChecked(bool(getattr(projeto, "margens_iguais", False)))
+        margens = margens_scantailor.Margens.de(getattr(projeto, "margens_mm", None))
+        for chave, valor in zip(("esquerda", "cima", "direita", "baixo"), margens.como_lista()):
+            self.margens_mm[chave].setValue(valor)
+        vertical, horizontal = margens_scantailor.alinhamento_valido(
+            getattr(projeto, "margens_alinhamento", None))
+        self.combo_alinhar_vertical.setCurrentIndex(self.combo_alinhar_vertical.findData(vertical))
+        self.combo_alinhar_horizontal.setCurrentIndex(
+            self.combo_alinhar_horizontal.findData(horizontal))
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
@@ -763,6 +823,14 @@ class TelaOpcoes(QWidget):
             self.combo_conta_endireitar.currentData())
         self.linha_conta_endireitar.setVisible(self.projeto.endireitar)
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
+        # item 2.4: as margens so aparecem com a caixinha marcada (escondidas,
+        # ficam guardadas)
+        self.projeto.margens_iguais = self.cx_margens.isChecked()
+        self.projeto.margens_mm = [float(self.margens_mm[c].value())
+                                   for c in ("esquerda", "cima", "direita", "baixo")]
+        self.projeto.margens_alinhamento = list(margens_scantailor.alinhamento_valido(
+            (self.combo_alinhar_vertical.currentData(), self.combo_alinhar_horizontal.currentData())))
+        self.painel_margens.setVisible(self.projeto.margens_iguais)
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(
