@@ -42,10 +42,18 @@ print("abriu conferir", v.esperar("tc.projeto is not None and tc._pronta() and t
 time.sleep(5)
 print("ocioso", v.esperar_ocioso(1500), round(time.time() - t0))
 print("avisos:", v.s("[(p.indice+1, list(p.alertas)) for p in tc.projeto.paginas if p.alertas]"))
+EST = ("(lambda p: dict(pagina=tc.indice_pagina+1, alertas=list(p.alertas), "
+       "pendentes=list(getattr(p, 'alertas_pendentes', [])), contador=tc.botao_alertas.text()))"
+       "(tc.projeto.paginas[tc.indice_pagina])")
+print("contador:", v.s("tc.botao_alertas.text()"))
+print(v.foto(f"{rot}-depois-de-abrir"))
 for n in quais:
-    print("pagina", v.ir_pagina(n), "medida", v.esperar_medida(300))
+    print("pagina", v.ir_pagina(n), "ocioso", v.esperar_ocioso(600))
     time.sleep(3)
-    print(n, v.estado_da_pagina())
+    print(n, v.s(EST))
+    print("  caixa do livro na janela:", v.s("(lambda pl, p: (lambda a: None if a is None else (tuple(round(x) for x in a[1]), a[0].medida.largura, a[0].medida.altura))(pl._caixa_do_livro(tc.projeto.folhas[p.folha], p, tc.projeto)))(__import__('core.pipeline').pipeline, tc.projeto.paginas[tc.indice_pagina])"))
     print(v.foto(f"{rot}-p{n:03d}"))
+print("avisos no fim:", v.s("[(p.indice+1, list(p.alertas)) for p in tc.projeto.paginas if p.alertas]"))
+print("contador no fim:", v.s("tc.botao_alertas.text()"))
 print("erros.log:", repr(v.erros_log()[-400:]))
 print(v.fechar())

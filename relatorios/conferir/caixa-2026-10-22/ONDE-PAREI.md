@@ -40,7 +40,7 @@ apagadas por mim; no lugar, `img/egenloff_p003_beiradas_perto.jpg`.
 - p. 2 (guarda de papel estampado com a ficha da biblioteca) e p. 6 (texto do editor): sem mudança.
 
 **Marial** (o corte tem sempre o mesmo tamanho, 2647 x 3575 pontos; o que muda é onde ele fica)
-- p. 4, 7, 16, 22, 30, 32, 37, 50, 64, 66, 71, 86, 88, 96: andou 5 a 30 pontos (até 2,5 mm). Não dá para ver diferença
+- p. 4, 7, 16, 22, 30, 32, 37, 50, 64, 66, 71, 86, 96: andou 5 a 30 pontos (até 2,5 mm). Não dá para ver diferença
   na página inteira; o texto fica inteiro nos dois.
 - p. 6: andou 12 pontos para os lados e para baixo; frontispício (impressão do verso aparecendo) inteiro nos dois.
 - p. 8: andou 36 pontos (3 mm) para a esquerda; a margem direita fica mais justa, "Vi" e o fim das linhas continuam
@@ -54,7 +54,7 @@ apagadas por mim; no lugar, `img/egenloff_p003_beiradas_perto.jpg`.
 - p. 43, 45, 47, 75, 95, 99: 42 a 70 para a direita; notas da margem direita ("Luc.1.51", "Iob.13", "Pf.28.7",
   "Pf.143.10", "Ecclesiast. 24.19", "Gen.37.7") ficam dentro, algumas bem perto da beirada (conferido ampliado: p. 75 e 99).
 - p. 51: 36 para a direita; "Cant.4.9" dentro.
-- p. 87, 88: 66 e 12 pontos para cima/baixo; título e reclamo dentro.
+- p. 87: 66 pontos para cima; p. 88: 12 para baixo; título e reclamo dentro nos dois.
 - p. 78: 5 pontos (não conta como mudança no desenho); a gravura do vaso inteira.
 - p. 2 (contracapa por dentro, papel amassado com carimbo), 10, 50: sem mudança.
 
@@ -72,6 +72,31 @@ contato `trabalho/folha_fora_marial_*.jpg`; resumo em `img/avisos_o_que_fica_for
   um canto do papel; p. 2 conta a borda do papel estampado.
 - Conclusão: o aviso é verdadeiro na conta, mas em quase todas as páginas o que "ficou de fora" não é do livro. Vira
   pergunta ao Samuel (abaixo).
+
+## Passo 4: janela de verdade (olho; `scripts/janela.py`, janela fora da tela, cliques nativos, fechada com WM_CLOSE)
+
+Livro novo, "Cortar seguindo o conteúdo" e "Achar a página dentro da borda preta" (até a moldura, cortar fora)
+ligados com cliques, Original. Prints em `trabalho/prints/` (todos abertos); os que vão para a Central em `img/janela_*.jpg`.
+`erros.log` vazio nas três aberturas. Nenhum processo ficou rodando.
+- **Marial 100:** a página que ganhou o aviso é a **8 contando de 1** (confirmado; o "p. 7" do implementador
+  contava de 0). Na janela, a caixa do corte da p. 8 é a mesma da passada (186,136-2833,3708). O aviso diz "deixou
+  de fora um pedaço impresso (moldura, título, número da página ou carimbo)", mas o que ficou de fora são 3
+  pontinhos e um risco na beirada do papel (`img/janela_marial_p008.jpg`). A p. 25 também bate (279,157-2926,3730).
+- **Egenloff 1-14, achado novo:** na **primeira vez** que a página 3 aparece (é a página em que a tela abre), a
+  caixa do corte ainda é a de um livro menor (842,120-3825,4378: a etiqueta inteira ficaria de fora) e **não há
+  aviso** nenhum de corte. Depois de visitar a 6 e a 12 e voltar, a caixa vira a certa (761,409-3744,4884, igual à
+  do PDF) e o aviso aparece. Causa provável: o tamanho do livro vai crescendo enquanto o programa mede as páginas,
+  e a página da tela não é refeita quando ele muda. Não sei se o PDF gerado direto da janela, sem voltar à
+  página, sai com a caixa certa (não gerei PDF pela janela). Prints: `img/janela_egenloff_p003_primeira_vez.jpg` e
+  `img/janela_egenloff_p003_ao_voltar.jpg` (a tela parece igual nas duas: ver o próximo item).
+- **Na ferramenta Cortar, o retângulo verde mostra a folha inteira** (com a faixa SLUB), não o corte que segue o
+  conteúdo: o Kaique não vê na tela onde o corte vai ficar. A tela não foi mexida neste trabalho (deve ser igual
+  antes); fica como ressalva para a gerente.
+- **O contador de avisos cresce enquanto se folheia:** Egenloff 6 -> 9 -> 11; Marial 27 -> 30 -> 31 -> 33 -> 34
+  (a passada sem tela dá 83 no Marial). É o mesmo assunto da pergunta já feita `pr-medir-o-livro` (o programa só
+  mede as páginas visitadas).
+- A página 1 dos dois livros é a capa (couro/pergaminho): fica fora da conferência (regra 4.10); no Marial ela
+  também tem o aviso de corte.
 
 ## Perguntas para o Samuel
 
@@ -103,7 +128,7 @@ Foto: `img/avisos_o_que_fica_fora.jpg` (seis casos; o primeiro é o útil, os ou
    (dá `__perto.jpg` e `__inteira.jpg`; preto = fica, vermelho = tirado, amarelo = parte ampliada). Fazer para
    Egenloff 3 e 12 e para as 32 do Marial; abrir TODAS (folha de contato se preciso) e escrever uma linha por página.
 3. ~~FEITO~~ Ver as páginas com aviso sem mudança (Marial 2, 10, 50; Egenloff 2, 6) para entender o excesso de avisos.
-4. Janela de verdade: `scripts/janela.py <pdf> <rótulo> <págs>` (piloto copiado do verificador de 13/10:
+4. ~~FEITO~~ Janela de verdade: `scripts/janela.py <pdf> <rótulo> <págs>` (piloto copiado do verificador de 13/10:
    `piloto.py`, `g.py`, `v.py`, `lancador2.py`; janela fora da tela, mensagens nativas). Rodar no Marial 100
    (págs. 7, 8) e no Egenloff 1-14 (pág. 3): print do corte e do aviso, contador de avisos, erros.log. Fechar com WM_CLOSE.
 5. Montar `conferencia.json` (formato da Central, ver pedido da gerente) com os quadros cx-etiqueta (Egenloff 3),
