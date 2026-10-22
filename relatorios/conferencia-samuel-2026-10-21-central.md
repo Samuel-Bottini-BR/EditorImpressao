@@ -159,3 +159,10 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - Respondidas na Central: fr-218 (erro do teste; pergunta nova `fr-218-aviso`), fr-24 (sim), fr-219 (anotado), fr-26 (pergunta `fr-26-qual`), cx22 (registrado).
 - No chat (22/10, depois): `fr-218-aviso` — "1- sim" (avisar); `fr-26-qual` — "2- mandei o print." (print da janela "Montar para imprimir" com o texto do resultado espremido: `relatorios/prints-samuel/2026-10-22-montar-para-imprimir-baguncado.png`).
 - Samuel (chat, 22/10): "foram só essas questões que eu falei lá, não tem mais nada?" Varredura de todos os comentários do banco: mais 8 sem resposta na Central (l67-acertos, l67-tela-cheia, l67-livro-aberto, lu-tc-igual, cx-avisos, cx-velocidade, ly-filtro, pr-antes-de-processar), respondidos na aba `duvidas`. A letra grossa da tela cheia (lu-tc-igual) entra na rodada logo depois da junção.
+
+## Desentortar (perguntas P1-P3) e melhorias do layout (`lm22`), 22/10/2026 (22:33-22:40 UTC)
+- `a-212-p1`: **B — Proteção: se a tinta passar a encostar na beirada, a página sai sem desentortar e vai para o "Para revisar"** — "Ainda vou poder selecionar a opção c para as paginas que entrarem para revisão?"
+- `a-212-p2`: **B — A mesma proteção da pergunta anterior**
+- `a-212-p3`: **Tenho, vou dizer onde está** — "Na pasta livros para editar, procure lá."
+- `lm-azul`, `lm-antes-de-processar`, `lm-miniaturas`: **Está bom**; `lm22` DECISÃO FINAL: **Aprovado**
+- `b-9-botoes-tinta`: sem resposta ainda.

@@ -225,6 +225,18 @@
      "texto": "Nada sai da página, mas ela fica de tamanho diferente das outras (e as margens iguais, 2.4, compensam depois).",
      "imgs": []
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T22:38:11Z",
+     "texto": "Ainda vou poder selecionar a opção c para as paginas que entrarem para revisão?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T01:40:00Z",
+     "texto": "Vai, sim. Fica a B (a proteção) e, no aviso de cada página que for para o \"Para revisar\" por isso, um botão a mais: \"desentortar aumentando a página\" (a opção C só naquela página). O Implementador A já começou."
+    }
    ]
   },
   {
@@ -301,6 +313,18 @@
      "nome": "Não tenho; seguir sem essa prova",
      "texto": "A conferência vai só com as páginas do acervo.",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T22:40:29Z",
+     "texto": "Na pasta livros para editar, procure lá."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T01:40:00Z",
+     "texto": "Combinado: o Implementador A vai procurar em D:\\Livros para editar (só lendo, sem mexer em nada da pasta) livros escaneados abertos com as linhas curvas perto da lombada, e usar essas páginas na conferência."
     }
    ]
   }

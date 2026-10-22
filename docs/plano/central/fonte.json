@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T01:40:00Z",
+        "texto": "Suas respostas foram lidas: as melhorias do layout foram aprovadas e o Implementador A está fazendo as respostas do desentortar. Falta só a pergunta dos botões da tinta (aba do Implementador B)."
+      },
+      {
         "em": "2026-10-23T01:00:00Z",
         "texto": "A \"tinta com a cor\" A e B está feita. Uma pergunta pequena do Implementador B sobre onde aparecem os botões (aba do Implementador B)."
       },
@@ -407,10 +411,10 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "andamento",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Refeito pelo Implementador A (22/10) como você escolheu: corta uma vez só, no fim. Desligado, sai idêntico ao de hoje. Testes no GitHub: 2175 passaram, 0 falharam; velocidade igual.",
-      "falta": "As suas três respostas (aba do desentortar), o verificador e a sua conferência.",
+      "situacao": "Você respondeu as três perguntas (22/10): proteção nas duas (a página que perderia letra sai sem desentortar e vai para o \"Para revisar\", com botão para desentortar aumentando a página). O Implementador A está fazendo e procurando páginas curvas em \"Livros para editar\".",
+      "falta": "O Implementador A, o verificador e a sua conferência.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -420,7 +424,7 @@
       "commit": "177f711",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T00:10:00Z",
+      "mudouEm": "2026-10-23T01:40:00Z",
       "relatorio": "perg-a"
     },
     {
@@ -744,32 +748,36 @@
       "titulo": "Janela \"Antes de processar\" mais clara e menor",
       "item": "Layout",
       "fase": "4",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Você pediu: \"ficou meio embolado, deve ficar mais claro e não tão grande.\"",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas.",
-      "selos": {},
+      "situacao": "Aprovado por você em 22/10. Entra na rodada logo depois da junção.",
+      "selos": {
+        "samuel": "sim"
+      },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (melhorias do layout). Ressalva: o campo \"Mostrar\" corta o motivo mais comprido; vai para o agente de layout.",
+      "falta": "Consertar o campo \"Mostrar\" que corta o motivo mais comprido.",
       "ramo": "layout-antes-de-processar-2026-10-22",
       "commit": "138e425",
-      "mudouEm": "2026-10-23T00:40:00Z"
+      "mudouEm": "2026-10-23T01:40:00Z"
     },
     {
       "id": "miniaturas-lembradas",
       "titulo": "Lembrar as miniaturas de um livro para o outro",
       "item": "Layout",
       "fase": "4",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Lugar, abertas ou fechadas e em pares: o programa lembra para todos os livros.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas.",
-      "selos": {},
+      "situacao": "Aprovado por você em 22/10. Entra na rodada logo depois da junção.",
+      "selos": {
+        "samuel": "sim"
+      },
       "fotos": [],
       "testar": [],
-      "falta": "A sua resposta na aba Conferência (melhorias do layout).",
+      "falta": "",
       "ramo": "layout-etapas4a7-2026-10-19",
       "commit": "edc6143",
-      "mudouEm": "2026-10-23T00:40:00Z"
+      "mudouEm": "2026-10-23T01:40:00Z"
     }
   ],
   "agentes": [
@@ -777,11 +785,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "terminou",
-      "tarefa": "Refazer o 2.12 desentortar como o ScanTailor: cortar uma vez só, no fim",
-      "ultimo": "Refez o desentortar (opção A) e parou em três perguntas para você (aba do desentortar). Próximo: o aviso de corte que toca sem precisar.",
+      "estado": "trabalhando",
+      "tarefa": "2.12: a proteção das suas respostas (P1 e P2), o botão \"desentortar aumentando a página\" e páginas curvas de \"Livros para editar\"",
+      "ultimo": "Começou as suas respostas do desentortar.",
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-23T00:10:00Z"
+      "quando": "2026-10-23T01:40:00Z"
     },
     {
       "id": "implementador-b",
