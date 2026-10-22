@@ -17,12 +17,20 @@ O QUE FAZ, E O QUE NÃO FAZ
     conferir (com desfazer) e, se o "Aplicar em" for "todas" ou "daqui em diante", leva para as
     outras páginas como os botões do painel Filtro.
 
-    A página grande de cada filtro é a de verdade (GerenciadorPrevias.pegar_com_filtro: o mesmo
-    caminho do PDF, com o "Só as letras" e o limpar da página). Mexendo no ajuste aqui, a página é
-    refeita em segundo plano só com o filtro (sem o "Só as letras"), até "Usar"; a frase embaixo
-    do ajuste diz isso. Os outros ajustes do Preto e branco ("Só as letras", "Limpar a sujeira",
-    "Jeito do preto e branco") continuam no painel Filtro da página: aqui eles valem como estão
-    na página. O antes e depois não tem zoom (a página inteira, lado a lado na mesma imagem).
+    TODAS AS OPÇÕES DO FILTRO À DIREITA (Samuel, 22/10/2026, quadro l67-tela-cheia: "mas no
+    programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e
+    branco que trouxemos do scan?", e "faça o recomendado"): as mesmas do painel Filtro da página,
+    com os mesmos nomes. No Preto e branco: o ajuste, "Só as letras", "Limpar a sujeira", e em
+    "Mais ajustes" o "Jeito do preto e branco" (com os dez do ScanTailor, 2.8), "Letra clara em
+    fundo escuro" (2.9), "Letras com a cor delas" e "Reduzir cores" (2.11). Nos outros filtros, o
+    ajuste, "Letra clara em fundo escuro" e "Reduzir cores". O que se mexe aqui fica guardado só
+    nesta tela (self.ajustes e self.opcoes) até "Usar".
+
+    O QUE SE VÊ É O QUE SAI: a página grande é sempre feita pelo mesmo caminho do PDF
+    (core.pipeline.renderizar_com_filtro, o mesmo da GerenciadorPrevias.pegar_com_filtro), numa
+    CÓPIA da página com as opções mexidas aqui; sem nada mexido, é a própria pegar_com_filtro.
+    Antes (21/10) o ajuste mexido aqui mostrava a página só com o filtro, sem o "Só as letras".
+    O antes e depois não tem zoom (a página inteira, lado a lado na mesma imagem).
 
 Seguro mudar: tamanhos, textos e o DPI_DA_TELA_CHEIA. Arriscado: aplicar o filtro na página ao
 escolher (o "Fechar sem mudar" perderia o sentido) ou desenhar a página no fio da tela (trava).
@@ -42,7 +50,9 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
+    QComboBox,
     QPushButton,
+    QScrollArea,
     QVBoxLayout,
     QWidget,
 )
@@ -54,6 +64,7 @@ from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.visualizador import numpy_para_qimage
 
 DPI_DA_TELA_CHEIA = 150          # nítido na tela cheia, sem demorar demais (a prévia é 110)
+LARGURA_DAS_OPCOES = 300         # a coluna das opções, à direita (com a barra de rolar)
 TECLAS = {Qt.Key_1: ORIGINAL, Qt.Key_2: PRETO_E_BRANCO, Qt.Key_3: MELHORAR, Qt.Key_4: MAGICO_PRO}
 SO_NESTA, TODAS, DAQUI_EM_DIANTE = "nesta", "todas", "daqui"
 
@@ -62,34 +73,41 @@ class _Sinais(QObject):
     pronta = Signal(object, object)          # chave, imagem
 
 
-class _TarefaDoAjuste(QRunnable):
-    """A página com um filtro e um ajuste que ainda não foram gravados (só o
-    filtro, sem o "Só as letras"), em segundo plano."""
+class _TarefaDasOpcoes(QRunnable):
+    """A página com um filtro e opções que ainda não foram gravados, em segundo
+    plano, pelo MESMO caminho do PDF (core.pipeline.renderizar_com_filtro) numa
+    cópia da página: o que a tela cheia mostra é o que vai sair."""
 
-    def __init__(self, chave, bruta, folha, pagina, projeto, filtro, campos, sinais) -> None:
+    def __init__(self, chave, caminho_pdf, projeto, copia, filtro, sinais) -> None:
         super().__init__()
-        self.chave, self.bruta, self.folha, self.pagina = chave, bruta, folha, pagina
-        self.projeto, self.filtro, self.campos, self.sinais = projeto, filtro, campos, sinais
+        self.chave, self.caminho_pdf, self.projeto = chave, caminho_pdf, projeto
+        self.copia, self.filtro, self.sinais = copia, filtro, sinais
 
     def run(self) -> None:
         try:
-            from dataclasses import replace
+            from core.pdf_io import abrir_pdf
+            from core.pipeline import renderizar_com_filtro
 
-            from core.filtros import aplicar_filtro
-            from core.pipeline import pontinhos_da_pagina, preparar_metade
-
-            pagina = replace(self.pagina, **self.campos)
-            preparada = preparar_metade(self.bruta, self.folha, pagina, self.projeto)
-            if self.filtro == ORIGINAL:
-                saida = preparada
-            else:
-                saida, _ = aplicar_filtro(
-                    preparada, self.filtro, pagina.forca_preto, pagina.clareza_melhorar,
-                    pagina.intensidade_magico, algoritmo_pb=pagina.algoritmo_preto_branco,
-                    despeckle=pontinhos_da_pagina(self.projeto, pagina, preparada, DPI_DA_TELA_CHEIA))
+            doc = abrir_pdf(self.caminho_pdf)
+            try:
+                saida, _ = renderizar_com_filtro(doc, self.projeto, self.copia, self.filtro,
+                                                 dpi=DPI_DA_TELA_CHEIA)
+            finally:
+                doc.close()
             self.sinais.pronta.emit(self.chave, saida)
         except Exception:  # noqa: BLE001 - a tela cheia nunca derruba o programa
             registrar_erro("filtros em tela cheia", traceback.format_exc())
+
+
+def pagina_com_as_opcoes(pagina, filtro: str, ajuste_campo: str | None, ajuste, opcoes: dict):
+    """A cópia da página com o `filtro`, o ajuste e as `opcoes` mexidas na tela
+    cheia (campo da ConfigPagina -> valor). A página de verdade não muda."""
+    from dataclasses import replace
+
+    campos = dict(opcoes)
+    if ajuste_campo is not None and ajuste is not None:
+        campos[ajuste_campo] = int(ajuste)
+    return replace(pagina, filtro=filtro, alertas=list(pagina.alertas), **campos)
 
 
 class VistaAntesDepois(QWidget):
@@ -215,6 +233,7 @@ class FiltrosEmTelaCheia(QDialog):
         self.filtros = [c for c, _n, _e in CARTOES if c in filtros]
         self.escolhido = projeto.paginas[conferir.indice_pagina].filtro
         self.ajustes: dict[str, int] = {}         # o ajuste mexido aqui, por filtro (até "Usar")
+        self.opcoes: dict[str, object] = {}       # as outras opções mexidas aqui (campo -> valor)
         self.alcance = SO_NESTA
         self._imagens: dict = {}                  # as feitas aqui (ajuste mexido)
         self._pedidas: set = set()
@@ -276,7 +295,6 @@ class FiltrosEmTelaCheia(QDialog):
             coluna.addWidget(cartao)
         coluna.addStretch()
         # a fila rola quando a janela é baixa (1000 x 600: os quatro não cabem)
-        from PySide6.QtWidgets import QScrollArea
         rolagem = QScrollArea()
         rolagem.setWidgetResizable(True)
         rolagem.setFrameShape(QFrame.NoFrame)
@@ -288,7 +306,6 @@ class FiltrosEmTelaCheia(QDialog):
         meio.addWidget(self.vista, 1)
         opcoes = QFrame()
         opcoes.setObjectName("opcoesDaTelaCheia")
-        opcoes.setFixedWidth(270)
         self.coluna_opcoes = QVBoxLayout(opcoes)
         self.coluna_opcoes.setContentsMargins(16, 14, 16, 14)
         self.coluna_opcoes.setSpacing(8)
@@ -309,8 +326,16 @@ class FiltrosEmTelaCheia(QDialog):
         self.frase_do_ajuste.setObjectName("fraseDaTelaCheia")
         self.frase_do_ajuste.setWordWrap(True)
         self.coluna_opcoes.addWidget(self.frase_do_ajuste)
+        self._montar_as_opcoes()
         self.coluna_opcoes.addStretch()
-        meio.addWidget(opcoes)
+        # as opções rolam (no Preto e branco são muitas para a janela de 1280 x 657)
+        rolagem_opcoes = QScrollArea()
+        rolagem_opcoes.setWidgetResizable(True)
+        rolagem_opcoes.setFrameShape(QFrame.NoFrame)
+        rolagem_opcoes.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        rolagem_opcoes.setWidget(opcoes)
+        rolagem_opcoes.setFixedWidth(LARGURA_DAS_OPCOES)
+        meio.addWidget(rolagem_opcoes)
         fora.addLayout(meio, 1)
 
         # --- embaixo
@@ -349,6 +374,143 @@ class FiltrosEmTelaCheia(QDialog):
         janela = conferir.window()
         self.resize(janela.size() if janela is not None else QSize(1280, 760))
         self.atualizar()
+
+    # --- as opções do filtro (22/10/2026) ---------------------------------------
+
+    def _montar_as_opcoes(self) -> None:
+        """As opções do painel Filtro da página, com os mesmos nomes e as mesmas
+        listas: "Só as letras", "Limpar a sujeira" e "Mais ajustes". Mexer aqui
+        só guarda em self.opcoes (ver _guardar_opcao); nada muda na página."""
+        from core import claro_no_escuro, cores_scantailor
+        from core import pontinhos_scantailor as pontinhos
+        from core import preto_e_branco_scantailor
+        from core.filtros import ALGORITMOS_PB, NOMES_DOS_ALGORITMOS_PB
+        from ui.tela_conferir import FRASES_DA_LIMPEZA
+        from ui.widgets.escolhas_do_misto import EscolhasDoMisto
+        from ui.widgets.menu_com_amostra import ListaComAmostra, desenho_da_limpeza
+        from ui.widgets.paineis import frase_do_painel, lista_estreita, titulo_de_secao
+
+        self._mostrando = False
+
+        def parte(titulo: str) -> QVBoxLayout:
+            caixa = QWidget()
+            coluna = QVBoxLayout(caixa)
+            coluna.setContentsMargins(0, 8, 0, 0)
+            coluna.setSpacing(5)
+            coluna.addWidget(titulo_de_secao(titulo))
+            self.coluna_opcoes.addWidget(caixa)
+            self.partes_das_opcoes[titulo] = caixa
+            return coluna
+
+        self.partes_das_opcoes: dict[str, QWidget] = {}
+        # Só as letras (só no Preto e branco)
+        coluna = parte("Só as letras")
+        self.escolhas_misto = EscolhasDoMisto(com_amostra=True)
+        self.escolhas_misto.so_as_letras_mudou.connect(
+            lambda v: self._guardar_opcao("misto_so_as_letras", bool(v)))
+        self.escolhas_misto.fora_do_texto_escolhido.connect(
+            lambda v: self._guardar_opcao("misto_fora_do_texto", v))
+        self.escolhas_misto.papel_escolhido.connect(lambda v: self._guardar_opcao("misto_papel_da_gravura", v))
+        self.escolhas_misto.letras_escolhidas.connect(
+            lambda v: self._guardar_opcao("misto_letras_na_moldura", v))
+        coluna.addWidget(self.escolhas_misto)
+        # Limpar a sujeira (só no Preto e branco)
+        coluna = parte("Limpar a sujeira")
+        coluna.addWidget(frase_do_painel(pontinhos.EXPLICACAO_NA_TELA.split("\n")[0]))
+        self.seletor_pontinhos = ListaComAmostra(desenho_da_limpeza)
+        for chave in pontinhos.ESCOLHAS:
+            self.seletor_pontinhos.addItem(pontinhos.NOMES_NA_TELA[chave], chave)
+            self.seletor_pontinhos.definir_detalhes(
+                chave, FRASES_DA_LIMPEZA.get(chave, ""), de_fabrica=(chave == pontinhos.PADRAO))
+        self.seletor_pontinhos.setToolTip(pontinhos.EXPLICACAO_NA_TELA)
+        self.seletor_pontinhos.currentIndexChanged.connect(
+            lambda i: self._guardar_opcao("limpar_pontinhos", self.seletor_pontinhos.itemData(i)))
+        coluna.addWidget(self.seletor_pontinhos)
+        # Mais ajustes (em todo filtro que tem ajuste)
+        coluna = parte("Mais ajustes")
+        self.rotulo_algoritmo_pb = QLabel("Jeito do preto e branco")
+        coluna.addWidget(self.rotulo_algoritmo_pb)
+        self.seletor_algoritmo_pb = QComboBox()
+        self.seletor_algoritmo_pb.addItem("Automático", "auto")
+        for chave in ALGORITMOS_PB:
+            self.seletor_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
+        self.seletor_algoritmo_pb.insertSeparator(self.seletor_algoritmo_pb.count())
+        for chave in preto_e_branco_scantailor.CODIGOS:
+            self.seletor_algoritmo_pb.addItem(preto_e_branco_scantailor.NOMES_NA_TELA[chave], chave)
+        self.seletor_algoritmo_pb.setToolTip(preto_e_branco_scantailor.EXPLICACAO_NA_TELA)
+        self.seletor_algoritmo_pb.currentIndexChanged.connect(
+            lambda i: self._guardar_opcao("algoritmo_preto_branco", self.seletor_algoritmo_pb.itemData(i)))
+        lista_estreita(self.seletor_algoritmo_pb)
+        coluna.addWidget(self.seletor_algoritmo_pb)
+        self.caixas: dict[str, QCheckBox] = {}
+        for campo, rotulo, dica in (
+                ("claro_no_escuro", claro_no_escuro.ROTULO_NA_TELA, claro_no_escuro.EXPLICACAO_NA_TELA),
+                ("letras_com_a_cor", cores_scantailor.ROTULO_LETRAS, cores_scantailor.EXPLICACAO_LETRAS),
+                ("reduzir_cores", cores_scantailor.ROTULO_REDUZIR, cores_scantailor.EXPLICACAO_REDUZIR)):
+            caixa = QCheckBox(rotulo)
+            estilo.estilizar(caixa, lambda: estilo_da_caixinha_com_quadrado(15))
+            caixa.setToolTip(dica)
+            caixa.setCursor(Qt.PointingHandCursor)
+            caixa.toggled.connect(lambda marcada, c=campo: self._guardar_opcao(c, bool(marcada)))
+            coluna.addWidget(caixa)
+            self.caixas[campo] = caixa
+
+    def _valores_da_pagina(self, pagina) -> dict:
+        """O que vale numa página (dela ou do livro), campo a campo, nas opções."""
+        from core import claro_no_escuro, misto
+        from core import pontinhos_scantailor as pontinhos
+
+        projeto = self.conferir.projeto
+        ligado, escolhas = misto.escolhas_da_pagina(projeto, pagina)
+        return {"misto_so_as_letras": ligado, "misto_fora_do_texto": escolhas.fora_do_texto,
+                "misto_papel_da_gravura": escolhas.papel_da_gravura,
+                "misto_letras_na_moldura": escolhas.letras_na_moldura,
+                "limpar_pontinhos": pontinhos.escolha_da_pagina(projeto, pagina),
+                "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
+                "claro_no_escuro": claro_no_escuro.ligado(pagina),
+                "letras_com_a_cor": bool(getattr(pagina, "letras_com_a_cor", False)),
+                "reduzir_cores": bool(getattr(pagina, "reduzir_cores", False))}
+
+    def _guardar_opcao(self, campo: str, valor) -> None:
+        """Uma opção mexida aqui: guardada (ou esquecida, se voltou ao que a
+        página já tem) e a página grande é refeita. A página não muda."""
+        if self._mostrando or valor is None:
+            return
+        if self._valores_da_pagina(self.pagina).get(campo) == valor:
+            self.opcoes.pop(campo, None)
+        else:
+            self.opcoes[campo] = valor
+        self.atualizar()
+
+    def _mostrar_as_opcoes(self) -> None:
+        """Mostra nas opções o que vale agora (o da página com o mexido aqui),
+        e só as que valem no filtro escolhido (sem virar mudança)."""
+        valores = self._valores_da_pagina(self.pagina)
+        valores.update(self.opcoes)
+        eh_pb = self.escolhido == PRETO_E_BRANCO
+        tem_ajuste = self._campo(self.escolhido) is not None
+        self._mostrando = True
+        try:
+            self.partes_das_opcoes["Só as letras"].setVisible(eh_pb)
+            self.partes_das_opcoes["Limpar a sujeira"].setVisible(eh_pb)
+            self.partes_das_opcoes["Mais ajustes"].setVisible(tem_ajuste)
+            self.rotulo_algoritmo_pb.setVisible(eh_pb)
+            self.seletor_algoritmo_pb.setVisible(eh_pb)
+            self.caixas["letras_com_a_cor"].setVisible(eh_pb)
+            self.escolhas_misto.mostrar(valores["misto_so_as_letras"], valores["misto_fora_do_texto"],
+                                        valores["misto_papel_da_gravura"], valores["misto_letras_na_moldura"])
+            self.seletor_pontinhos.setCurrentIndex(
+                max(0, self.seletor_pontinhos.findData(valores["limpar_pontinhos"])))
+            self.seletor_algoritmo_pb.setCurrentIndex(
+                max(0, self.seletor_algoritmo_pb.findData(valores["algoritmo_preto_branco"])))
+            for campo, caixa in self.caixas.items():
+                caixa.setChecked(bool(valores[campo]))
+        finally:
+            self._mostrando = False
+
+    def _mexido(self, filtro: str) -> bool:
+        """Se há algo mexido aqui que muda a página no `filtro`."""
+        return filtro in self.ajustes or (filtro != ORIGINAL and bool(self.opcoes))
 
     # --- peças -----------------------------------------------------------------
 
@@ -405,13 +567,12 @@ class FiltrosEmTelaCheia(QDialog):
             frases = []
             if campo is None:
                 frases.append("O Original não tem ajuste.")
-            elif self.escolhido in self.ajustes:
-                frases.append("Mexido aqui: a página mostra só o filtro (sem o “Só as letras”) até "
-                              "você clicar em “Usar”.")
-            if self.escolhido == PRETO_E_BRANCO:
-                frases.append("“Só as letras”, “Limpar a sujeira” e o jeito do preto e branco ficam "
-                              "no painel Filtro da página, e valem aqui como estão nela.")
+            elif self._mexido(self.escolhido):
+                frases.append(f"Mexido aqui: a página grande já mostra como vai sair; a página só "
+                              f"muda quando você clicar em “Usar {nome}”.")
             self.frase_do_ajuste.setText("\n\n".join(frases))
+            self.frase_do_ajuste.setVisible(bool(frases))
+            self._mostrar_as_opcoes()
             comparando = self.chave_comparar.isChecked()
             aviso = ""
             antes = None
@@ -426,27 +587,30 @@ class FiltrosEmTelaCheia(QDialog):
             registrar_erro("filtros em tela cheia (atualizar)", traceback.format_exc())
 
     def _imagem(self, filtro: str):
-        """A página grande no `filtro`: a de verdade (pegar_com_filtro), ou a
-        feita aqui com o ajuste mexido. None até chegar (pedida em segundo plano)."""
+        """A página grande no `filtro`, como vai sair: sem nada mexido aqui, a de
+        verdade (pegar_com_filtro); com algo mexido, a cópia da página com o
+        mexido, pelo mesmo caminho do PDF (_TarefaDasOpcoes). None até chegar
+        (pedida em segundo plano)."""
         conferir = self.conferir
         indice = conferir.indice_pagina
-        if filtro not in self.ajustes:
+        if not self._mexido(filtro):
             return conferir.previas.pegar_com_filtro(indice, DPI_DA_TELA_CHEIA, filtro)
-        campo = self._campo(filtro)
-        chave = (indice, filtro, self.ajustes[filtro], conferir.previas.chave(indice, DPI_DA_TELA_CHEIA))
+        copia = self.pagina_mexida(filtro)
+        chave = (indice, filtro, tuple(sorted((k, str(v)) for k, v in self.opcoes.items())),
+                 self.ajustes.get(filtro), conferir.previas.chave(indice, DPI_DA_TELA_CHEIA))
         if chave in self._imagens:
             return self._imagens[chave]
         if chave not in self._pedidas:
-            pagina = self.pagina
-            bruta = conferir.previas.pegar_folha(pagina.folha, DPI_DA_TELA_CHEIA, girada=False)
-            if bruta is None:
-                return None              # a folha chega pelo sinal pronta, e o pedido sai então
             self._pedidas.add(chave)
-            projeto = conferir.projeto
-            self._pool.start(_TarefaDoAjuste(chave, bruta, projeto.folhas[pagina.folha], pagina,
-                                             projeto, filtro, {campo: self.ajustes[filtro]},
-                                             self._sinais))
+            self._pool.start(_TarefaDasOpcoes(chave, conferir.previas.caminho_pdf, conferir.projeto,
+                                              copia, filtro, self._sinais))
         return None
+
+    def pagina_mexida(self, filtro: str):
+        """A cópia da página com o `filtro` e tudo o que foi mexido aqui."""
+        campo = self._campo(filtro)
+        opcoes = self.opcoes if filtro != ORIGINAL else {}
+        return pagina_com_as_opcoes(self.pagina, filtro, campo, self.ajustes.get(filtro), opcoes)
 
     def _chegou(self, chave, img) -> None:
         self._imagens = {k: v for k, v in self._imagens.items() if k[0] == chave[0]}
@@ -490,13 +654,15 @@ class FiltrosEmTelaCheia(QDialog):
             return
         self.conferir.ir_para_pagina(novo)
         self.ajustes.clear()
+        self.opcoes.clear()
         self.escolhido = self.pagina.filtro
         self.atualizar()
 
     def usar(self) -> None:
         """Grava o filtro (e o ajuste mexido) na página, e leva para as outras
         se o "Aplicar em" pedir. Fecha a tela."""
-        self.conferir.usar_da_tela_cheia(self.escolhido, self.ajustes.get(self.escolhido), self.alcance)
+        self.conferir.usar_da_tela_cheia(self.escolhido, self.ajustes.get(self.escolhido), self.alcance,
+                                         opcoes=dict(self.opcoes) if self.escolhido != ORIGINAL else {})
         self.accept()
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt

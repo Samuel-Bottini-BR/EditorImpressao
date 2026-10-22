@@ -4240,11 +4240,14 @@ class TelaConferir(QWidget):
         janela.exec()
 
     @protegido
-    def usar_da_tela_cheia(self, filtro: str, ajuste: int | None, alcance: str) -> None:
+    def usar_da_tela_cheia(self, filtro: str, ajuste: int | None, alcance: str,
+                           opcoes: dict | None = None) -> None:
         """O "Usar <filtro>" da tela cheia dos filtros: o filtro na página e,
-        se foi mexido lá, o ajuste (cada um uma ação do desfazer, pelos mesmos
-        caminhos dos cartões e do deslizante); depois, com "todas" ou "daqui
-        em diante", leva para as outras páginas como os botões do painel."""
+        se foi mexido lá, o ajuste e as outras opções (`opcoes`: campo da
+        página -> valor; 22/10/2026), cada um uma ação do desfazer, pelos
+        MESMOS caminhos dos controles do painel Filtro da página; depois, com
+        "todas" ou "daqui em diante", leva para as outras páginas como os
+        botões do painel."""
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
         if filtro != pagina.filtro:
@@ -4259,10 +4262,32 @@ class TelaConferir(QWidget):
                 {campo: int(ajuste), "revisada": True},
                 f"{rotulo} da página {self.indice_pagina + 1}: {palavra_do_ajuste(int(ajuste))}",
             )
+        for campo, valor in (opcoes or {}).items():
+            self._gravar_opcao_da_tela_cheia(campo, valor)
         if alcance == "todas":
             self._filtro_em_todas()
         elif alcance == "daqui":
             self._filtro_nas_proximas()
+
+    def _gravar_opcao_da_tela_cheia(self, campo: str, valor) -> None:
+        """Uma opção mexida na tela cheia, gravada pelo caminho do controle dela
+        no painel (a mesma ação do desfazer e a mesma frase)."""
+        if campo == "algoritmo_preto_branco":
+            self._mudar_algoritmo_pb(self.seletor_algoritmo_pb.findData(valor))
+        elif campo == "limpar_pontinhos":
+            self._mudar_pontinhos(self.seletor_pontinhos.findData(valor))
+        elif campo == "claro_no_escuro":
+            self._mudar_claro_no_escuro(bool(valor))
+        elif campo in ("letras_com_a_cor", "reduzir_cores"):
+            self._mudar_cores(campo, bool(valor))
+        elif campo == "misto_so_as_letras":
+            self._mudar_so_as_letras(bool(valor))
+        elif campo == "misto_fora_do_texto":
+            self._mudar_fora_do_texto(valor)
+        elif campo == "misto_papel_da_gravura":
+            self._mudar_papel_da_gravura(valor)
+        elif campo == "misto_letras_na_moldura":
+            self._mudar_letras_na_moldura(valor)
 
     def abrir_todas_as_paginas(self) -> None:
         """Botão "ver todas" (808 A) e menu Ver > "Todas as páginas" (904 A):
