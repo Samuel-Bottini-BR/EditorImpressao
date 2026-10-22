@@ -164,8 +164,40 @@ memória: 900 MB por trabalhador + 1,5 GB de reserva). Para ver o ganho forcei 3
     (22/10, "Imprimir com escala acima de 100% corta..."). Para "aumentar" depois do Ajustar (imp-2) o caminho é a
     escala de cada lado; o nome "Escala personalizada" não diz que é sobre o tamanho real. Ressalva de tela.
   - Imprimir direto: **não testado na impressora de verdade** (o Samuel disse que testa na conferência).
-- [ ] 4. Janela de verdade (fora da tela, WM_CLOSE)
-- [ ] 5. Velocidade antes x depois alternados
+- [x] 4. Janela de verdade (olho; fora da tela em -32000, cliques e teclas nativos por PostMessage, prints por
+  PrintWindow; scripts `v.py`, `piloto.py`, `g.py`, `lancador2.py` copiados do verificador da caixa, mais
+  `j_abrir.py`, `j_rolar.py`; o lançador troca também a caixa "Salvar como" por resposta em arquivo). Pasta de dados
+  só de teste. Fechada com WM_CLOSE; `erros.log` vazio; nenhum processo meu ficou rodando. Prints em
+  `trabalho/prints/j*.png`, os que vão para a Central em `img/janela_*.jpg` (todos abertos).
+  - 2.4: livro novo (Graduale 3 páginas): a caixinha "Margens iguais em todas as páginas" fica embaixo de "Cortar as
+    bordas"; marcada, abre margem esquerda/direita 10 mm, cima/embaixo 5 mm e "página menor, de cima a baixo / de um
+    lado ao outro: no meio"; a frase de baixo muda para "...deixar todas as páginas do tamanho da maior, com margens
+    iguais." Na aba dos filtros os cartões já mostram a página com a margem branca. Na ferramenta de cortar e na de
+    áreas a página aparece sem margem (esperado). O PDF gerado pela janela tem as 3 páginas com 35,7 x 47,6 cm.
+  - 2.17: aba dos filtros (Melhorar): linha "Igualar a luz da página / Tirar o chuvisco: [0]"; marcando o igualar
+    aparece o aviso do Melhorar/Mágico pro; pondo 30 no chuvisco, aparece também o aviso "Acima de 20...". O
+    "Suavizar as letras" só aparece no Preto e branco. Achado de piloto: uma janela "Ver de perto" (tela ampliada)
+    fica aberta escondida depois de clicar no cartão e engole o primeiro clique; fechada, os cliques funcionaram.
+  - 2.18: ferramenta "Mover e mudar o tamanho da área" (ícone novo na trilha), linha "Área: Mostrar as áreas achadas
+    · apagar a área · pintar de branco · copiar · colar". Marcando "Mostrar", as áreas achadas ficam com contorno
+    laranja; clique numa área mostra os quadradinhos; Ctrl+C / Ctrl+V cola uma cópia (8 → 9 áreas, "3 de letra e
+    traço"), Delete apaga (9 → 8). Arrastar os quadradinhos não testei pela janela (só a conta, acima).
+  - 2.16 + 2.19: Configurações tem "Velocidade: Páginas ao mesmo tempo: Todos os núcleos do processador (16)";
+    "Medidas em: centímetros" (trocado para milímetros, a conta do programa passa a dizer "25.4 mm"; voltei para cm);
+    "Receita de todo livro novo"; "Impressão: margem 10 mm, a impressora não imprime 3 mm". Receita: guardei
+    "pb com margens" (Preto e branco + margens iguais) no Livro de Horas e, num livro novo (Palatino), escolhi a
+    receita e "pôr neste livro": o livro passou a Preto e branco com margens iguais. Não testei "Receita de todo
+    livro novo" nem a régua em mm na ferramenta de cortar.
+  - 2.10: "Confirmar e processar" tem a caixinha "Gravar em duas camadas: a letra em cima, o fundo embaixo (arquivo
+    bem menor)", desmarcada; marcada e processado, o PDF saiu com 2 imagens por página (as duas camadas), 9,4 MB.
+  - 2.6: "Ficou pronto!" tem "montar para imprimir em A4 (com margens)..." ao lado de "imprimir agora"; a janela
+    "Montar para imprimir" abre com Livreto, A4, Ajustar, rotação e centralizar e margens marcadas, escala de cada
+    lado, só uma página, caderno 20, encadernação, frente e verso, cinza, como imagem, reverter, impressora, cópias.
+    "gravar o arquivo para imprimir" gravou 1 folha (2 lados) e escreveu as instruções; a minha dobra simulada nesse
+    arquivo dá 1, 2, 3 e 1 branca (certo; `img/26_janela_graduale.jpg`). Texto: "são 1 cadernos prontos" (plural
+    errado com 1). "mandar para a impressora" **não testado** (sem papel; o Samuel testa).
+- [x] 5. Velocidade antes x depois alternados: ver 2.16 acima (máquina). Outro agente começou a rodar scripts às
+  16:16, depois das minhas medidas (15:51 a 16:00); durante a rodada 1 havia outro agente compilando e tirando prints.
 - [ ] 6. conferencia.json
 
 ## Perguntas para o Samuel
