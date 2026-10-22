@@ -8,7 +8,8 @@
   "titulo": "Perguntas que você fez nas conferências e ficaram sem resposta",
   "paragrafos": [
    "Você tinha razão: nos comentários de 21/10 você fez perguntas que eu registrei no plano, mas não respondi aqui. Algumas foram resolvidas no chat de 22/10, mas a regra é responder na Central. Estão todas aqui, uma por uma, com o seu comentário fixado no alto.",
-   "Se alguma resposta não ficar clara, marque \"Ainda não entendi\" e escreva o porquê."
+   "Se alguma resposta não ficar clara, marque \"Ainda não entendi\" e escreva o porquê.",
+   "Segunda leva (22/10, à noite): conferi todos os seus comentários no banco da Central e achei mais 8 que eu respondi só no chat, ou não respondi. Estão no fim desta aba, a partir de \"Layout 6 e 7: a ressalva dos três acertos\"."
   ]
  },
  "quadros": [],
@@ -241,6 +242,273 @@
     "Feito. Virou regra para todos os agentes em 22/10 (CLAUDE.md §4.10). Todo teste leva a página pelo caminho inteiro (dividir → endireitar → cortar → filtro), e cada foto diz o caminho e as opções. O verificador que está trabalhando agora já segue essa regra."
    ],
    "exemplos": [],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-l67-acertos",
+   "titulo": "Layout 6 e 7: a ressalva dos três acertos. É um erro? Vai ser resolvido?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T12:48:42.713Z",
+     "texto": "Mas explica melhor essa ressalva, isso é um erro? vai ser resolvido?"
+    }
+   ],
+   "explicacao": [
+    "Era um erro, sim, e já foi resolvido. A ressalva era a tela \"Todas as páginas\" sair borrada: a imagem era encolhida e depois aumentada de novo pela escala de 125% do Windows.",
+    "O agente de layout consertou. Na conferência do livro aberto como no UPDF, a grade passou a aparecer em 1,5 segundo (antes 28) e nítida (0,97, contra 0,69 antes), e você marcou \"Está bom\" (quadro lu-grade)."
+   ],
+   "exemplos": [
+    {
+     "src": "lyupdf/img/lu-grade-zoom.jpg",
+     "legenda": "\"Todas as páginas\": antes borrada (esquerda), depois nítida (direita)."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-l67-tela-cheia",
+   "titulo": "Tela cheia dos filtros: só antes e depois? Vão aparecer as opções?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T12:39:24.691Z",
+     "texto": "esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?"
+    }
+   ],
+   "explicacao": [
+    "Não é só antes e depois. Depois da sua pergunta, o agente de layout pôs na tela cheia todas as opções do filtro escolhido: Só as letras, os 10 tipos de preto e branco do ScanTailor (2.8), Texto claro em fundo escuro (2.9), Reduzir cores (2.11), Limpar a sujeira e Mais ajustes. A página do meio sai com todas aplicadas.",
+    "Você conferiu e marcou \"Está bom\" (quadro lu-tc-opcoes, 22/10)."
+   ],
+   "exemplos": [
+    {
+     "src": "lyupdf/img/lu-tc-opcoes-zoom.jpg",
+     "legenda": "A tela cheia com as opções do filtro."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-l67-livro-aberto",
+   "titulo": "O livro aberto: página ruim de ver e uma maior que a outra",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T12:43:47.951Z",
+     "texto": "Eu não consigo ver a página direito, e elas estão  de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali"
+    }
+   ],
+   "explicacao": [
+    "Foi refeito como no UPDF: as duas páginas do par na mesma altura, a página ocupando a janela toda e nítida, e a barra de baixo com Uma página, Duas lado a lado, Rolar sem parar, Caber a página, Caber a altura, Caber a largura e Tamanho real.",
+    "Você aprovou a conferência inteira (lyupdf, 22/10)."
+   ],
+   "exemplos": [
+    {
+     "src": "lyupdf/img/lu-par-depois.jpg",
+     "legenda": "As duas páginas do par agora na mesma altura."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-lu-tc-igual",
+   "titulo": "Tela cheia: a letra mais grossa que no PDF. O que vai ser feito?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:13:22.735Z",
+     "texto": "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações."
+    }
+   ],
+   "explicacao": [
+    "Você tem razão que é um perigo, e não está resolvido ainda. A causa: os 10 jeitos de preto e branco do ScanTailor calculam a imagem de um jeito que muda com o tamanho dela. A tela usa uma imagem com a metade da resolução do PDF, e por isso a letra sai cerca de 20% mais grossa na tela. No Preto e branco de fábrica, a tela e o PDF batem.",
+    "O conserto é de processamento: fazer a conta da tela dar o mesmo que a do PDF. Vai para um implementador na rodada logo depois da junção, com teste de reversão que compara a tinta da tela com a do PDF. Também vale para a prévia do painel."
+   ],
+   "exemplos": [
+    {
+     "src": "lyupdf/img/lu-tc-igual-zoom.jpg",
+     "legenda": "Preto = os dois; vermelho = só na tela; azul = só no PDF."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-cx-avisos",
+   "titulo": "Aviso de corte: melhorar o acerto do aviso",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:37:00.520Z",
+     "texto": "Mas se precisa melhorar a acuracidade desse aviso"
+    }
+   ],
+   "explicacao": [
+    "Anotado junto com o conserto do aviso (Lista de bugs, 22/10). Além de contar só o que parece impresso, o implementador mede o acerto: nas mesmas 37 páginas, quantos avisos eram de verdade antes e depois. O aviso do carimbo do Egenloff 3, que é de verdade, tem de continuar aparecendo."
+   ],
+   "exemplos": [
+    {
+     "src": "cx22/img/avisos_o_que_fica_fora.jpg",
+     "legenda": "O que o aviso conta hoje (retângulos azuis)."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-cx-velocidade",
+   "titulo": "\"Quanto mais rápido pudermos deixar, melhor\"",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:34:10.633Z",
+     "texto": "Mas quanto mais rápidos pudermos deixar, melhor."
+    }
+   ],
+   "explicacao": [
+    "Anotado. A velocidade tem uma fase só para ela, a Fase 5 (Desempenho), e o seu pedido fica lá. Até agora, nesta rodada: medir o livro e gerar o PDF ficou cerca de 2,2 vezes mais rápido (Marial: 310 s para 142 s), e o 2.16 (usar todos os núcleos) deixa uns 40% mais rápido quando o PC tem memória livre."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-ly-filtro",
+   "titulo": "Painel Filtro: \"tem que sair inteiro os inscritos\"",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T19:59:38.933Z",
+     "texto": "tem que sair inteiro os inscritos"
+    }
+   ],
+   "explicacao": [
+    "Feito. O texto \"Melhorar\", que saía cortado no painel Filtro, foi consertado pelo agente de layout na etapa 7b. Você aprovou o layout 6 e 7 depois disso."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "entendi",
+     "nome": "Entendi",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "dv-pr-antes",
+   "titulo": "A janela \"Antes de processar\": embolada e grande demais",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-21T21:43:25.375Z",
+     "texto": "ficou meio embolado, deve ficar mais claro e não tão grande."
+    }
+   ],
+   "explicacao": [
+    "Feito pelo agente de layout em 22/10: a janela ficou menor (numa tela pequena ocupava 80% da altura, agora 61%), a frase em duas linhas, \"Selecionar todas\" e \"Nenhuma\" pequenos, e uma fila só de botões. Nenhum controle saiu.",
+    "O verificador está conferindo agora; depois vem para você aqui na Central, com as fotos de antes e depois."
+   ],
+   "exemplos": [
+    {
+     "src": "conf/img/a4n-antes-de-processar.jpg",
+     "legenda": "Como era (antes do conserto)."
+    }
+   ],
    "opcoes": [
     {
      "id": "entendi",
