@@ -158,3 +158,43 @@ Sem conserto de código, sem teste de reversão (não houve bug). Imagens novas 
 - GitHub depois dos ajustes: suíte `39807401594` (`7d13a5f`): 2177 passaram, 0 falharam; botões 234, 0 falhas.
   Velocidade `39791117352` (`9804b98` → `4990e13`, os 7 itens): "parece mais rápido" - abrir −43%, Mágico pro −41%,
   Preto e branco −27%.
+
+## Pergunta 8 respondida: "As duas: A e B como opções separadas" (22/10/2026, feito)
+
+Resposta do Samuel à `b-8-tinta-com-cor` (Central, 22/10): **"As duas: A e B como opções separadas"**.
+
+- **O que mudou:** a área "Tinta com a cor original, papel branco" agora tem dois jeitos.
+  - **A, "cor como no livro"** (o de fábrica, igual ao de antes ponto por ponto);
+  - **B, "cor escurecida"**: a mesma tinta mais escura (brilho pela metade) e com a cor 25% mais forte, os números da
+    simulação que ele viu.
+- **Na tela (nome escolhido):** quando "tinta com a cor, papel branco" é a escolhida no "Marcar como", aparecem logo
+  abaixo, lado a lado, dois botões: **"cor como no livro"** e **"cor escurecida"**. Vale para a próxima área marcada;
+  a área já marcada guarda o jeito dela. Sem emoji. Provisório até o agente de layout.
+- **Dados:** campo novo e opcional `Regiao.tinta_escurecida` (padrão `False` = A). Projeto antigo abre sem a chave e
+  sai A; programa antigo que abrir projeto novo descarta a chave e mostra A.
+- **Código:** `core/selecao.py`, `core/editar_zonas.py` (`escurecida`, `_mascara_escurecida`), `ui/widgets/paineis.py`,
+  `ui/widgets/editor_selecao.py`, `ui/tela_conferir.py`. Commit `8226f33`.
+- **Testes:** `tests/test_tinta_escurecida.py` (8 passaram). Prova que livro novo, livro já começado (sem a chave) e a
+  conta antiga saem iguais ponto por ponto; testa a B, a área de cima mandando onde duas se cruzam, o "tirar" e a tela.
+  Também passaram aqui `test_editar_zonas.py` (10), `test_paineis.py` (33), `test_selecao.py` (24) e `test_editor_selecao.py` (17).
+- **Prova "A igual ao de antes" em páginas de verdade:** `scripts/tinta_a_e_b.py somas-a`, Horas 13, Escola 7 e Opus
+  Majus 3 com a área A, código antigo (`f26407c`, worktree `fase2-novas-prova`) e novo (`8226f33`): **3 de 3 PDFs iguais**
+  (`somas-tinta-a-antigo-f26407c.json`, `somas-tinta-a-novo-8226f33.json`).
+- **Antes/depois:** `relatorios/conferir/fase2-novas/tinta-a-e-b/` (fora do git), feito por `scripts/tinta_a_e_b.py fotos`.
+  Caminho de cada foto: girar (0°, a análise não girou) → dividir (não, de fábrica) → endireitar (sim) → cortar as
+  bordas (sim) → Preto e branco → área "Tinta com a cor" A ou B. Quatro painéis: Original · Preto e branco · A · B.
+  - Horas 13: o vermelho e o azul do título voltam (A); na B ficam vermelho-escuro e azul-marinho. Brilho da tinta
+    134 → 68. A moldura dourada que cai dentro da área também escurece na B (a ressalva que já estava na pergunta).
+  - Escola 7: o título cinza-marrom claro (A) fica marrom-escuro na B, quase tão forte quanto o Preto e branco. 112 → 56.
+  - Opus Majus 3 (folha de rosto): "OPUS MAJUS" e "ROGER BACON" vermelhos (A) ficam vermelho-escuro (B); "THE" e "OF"
+    pretos continuam escuros. 124 → 74. Um pedaço do carimbo roxo da biblioteca que cai na área volta em pontinhos
+    coloridos na A e na B (é a A de sempre, não mudou).
+  - Fora da área: igual entre A e B (0 a 121 pontos diferentes, só na beirada da área).
+
+## Perguntas para o Samuel (via gerente)
+
+9. **Onde aparecem os dois botões:** a gerente disse "quando a página está em Preto e branco". Eu fiz os dois botões
+   aparecerem sempre que "tinta com a cor, papel branco" é escolhida, em qualquer filtro, porque o "Marcar como" não muda
+   com o filtro da página e a B funciona igual no Original e no Melhorar (o papel vai a branco e a tinta escurece).
+   Fica assim, ou esconder os dois botões quando a página não está em Preto e branco?
+   Foto: `relatorios/conferir/fase2-novas/tinta-a-e-b/horas_p013-titulo-ampliado.jpg` (A e B no Preto e branco).
