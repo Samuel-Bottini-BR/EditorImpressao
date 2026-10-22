@@ -33,6 +33,16 @@
      "texto": "A do ScanTailor sai do programa.",
      "imgs": []
     }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/opusmajus-contato.png",
+     "legenda": "Opus Majus. Em cima, antes: cada página do tamanho em que foi escaneada (14,6 x 23,5 cm, 10,8 x 17,9 cm...). Embaixo, com as margens iguais ligadas: todas com 12,8 x 20,0 cm e o texto no meio. Caminho: endireitar (ScanTailor) → cortar as bordas → Original → margens iguais."
+    },
+    {
+     "src": "pb/palatino-contato.png",
+     "legenda": "Palatino, o mesmo antes e depois."
+    }
    ]
   },
   {
@@ -54,6 +64,12 @@
      "texto": "A tela fica como está.",
      "imgs": []
     }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/opusmajus-contato.png",
+     "legenda": "Isto é o que sai no PDF com as margens iguais. Hoje a tela de conferir mostra a página como em cima (\"antes\")."
+    }
    ]
   },
   {
@@ -67,13 +83,27 @@
      "id": "a",
      "nome": "Tirar o antigo (recomendado)",
      "texto": "Fica só a montagem nova em A4.",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "pb/livreto-de-fabrica-folha1.png",
+       "legenda": "A montagem NOVA: folha A4 deitada, margem mínima em vermelho (1,3 cm do papel, 1 cm da dobra), dobra em azul."
+      }
+     ]
     },
     {
      "id": "b",
      "nome": "Deixar os dois",
      "texto": "O Kaique escolhe qual usar.",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "pb/cadernos-antigo.png",
+       "legenda": "A montagem ANTIGA (a de hoje): folha com o dobro da largura da página, 70,5 x 50,1 cm, sem A4 e sem margem."
+      },
+      {
+       "src": "pb/livreto-de-fabrica-folha1.png",
+       "legenda": "A NOVA, para comparar."
+      }
+     ]
     }
    ]
   },
@@ -88,13 +118,23 @@
      "id": "a",
      "nome": "Alto à esquerda, como está (recomendado)",
      "texto": "Igual ao Acrobat e ao UPDF.",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "pb/girar-esquerda.png",
+       "legenda": "Desenho: a tabela da p. 5 do Opus Majus numa folha em pé, com o alto à esquerda."
+      }
+     ]
     },
     {
      "id": "b",
      "nome": "Alto à direita",
      "texto": "Gira para o outro lado.",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "pb/girar-direita.png",
+       "legenda": "Desenho: a mesma tabela com o alto à direita."
+      }
+     ]
     }
    ]
   },
@@ -117,6 +157,12 @@
      "texto": "Por enquanto só o arquivo.",
      "imgs": []
     }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/livreto-de-fabrica-folha1.png",
+     "legenda": "O que vai para a impressora: a mesma folha A4 do arquivo."
+    }
    ]
   },
   {
@@ -137,6 +183,20 @@
      "nome": "Em todos, com aviso",
      "texto": "Aparece sempre, com aviso de que pode lavar a tinta.",
      "imgs": []
+    }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/graduale_p221-Igualar_a_luz-pagina.jpg",
+     "legenda": "Graduale 221. Caminho: endireitar (ScanTailor) → cortar as bordas → Melhorar. Esquerda: hoje. Direita: com \"Igualar a luz\": a tinta das notas e das letras fica mais clara, lavada."
+    },
+    {
+     "src": "pb/graduale_p221-Igualar_a_luz-recorte.png",
+     "legenda": "O mesmo, ampliado."
+    },
+    {
+     "src": "pb/horas_p047-Igualar_a_luz-recorte.png",
+     "legenda": "Livro de Horas 47, ampliado."
     }
    ]
   },
@@ -159,6 +219,20 @@
      "texto": "Fica como está, com aviso.",
      "imgs": []
     }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/boecio_p022-Tirar_o_chuvisco_50-pagina.jpg",
+     "legenda": "Boécio 22 com \"Tirar o chuvisco\" em 50 (a página inteira, com o caminho escrito no alto)."
+    },
+    {
+     "src": "pb/boecio_p022-Tirar_o_chuvisco_50-recorte.png",
+     "legenda": "O mesmo, ampliado: a letra começa a borrar."
+    },
+    {
+     "src": "pb/escola_p035-Tirar_o_chuvisco_50-recorte.png",
+     "legenda": "Escola de Jesus 35, também em 50, ampliado."
+    }
    ]
   },
   {
@@ -179,6 +253,12 @@
      "nome": "Nessa opção, no Preto e branco, a letra sai preta",
      "texto": "A opção muda de comportamento no Preto e branco.",
      "imgs": []
+    }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/escola_p007-tinta-com-cor.jpg",
+     "legenda": "Escola de Jesus 7. Caminho: endireitar (ScanTailor) → cortar as bordas → Preto e branco. Esquerda: hoje. Direita: o alto da página marcado à mão como \"Tinta com a cor, papel branco\": o título e as primeiras linhas saem cinza (a cor da tinta no livro)."
     }
    ]
   }
