@@ -12,8 +12,22 @@ Worktrees (com junções `modelos` e `gabarito\paginas`; **não apagar com Remov
   **Ainda não foi feito** no ramo: só existe a A (a cor do original). Fica como pendência do implementador.
 
 ## Passos
-- [ ] 0. GitHub 39807401594 lido
-- [ ] 1. Testes de reversão no código antigo
+- [x] 0. GitHub 39807401594 lido: testou `fase2-ferramentas-2026-10-22` em `7d13a5f` (o código de `f26407c` é o mesmo:
+  de `7d13a5f` para `f26407c` só muda o ONDE-PAREI dele). **2177 passaram, 0 falharam, 0 erros, 73 pulados**, 124
+  arquivos; botões: **234 ações, 0 falhas**. Não disparei outra rodada (o código não mudou).
+- [x] 1. Testes de reversão no código antigo (`vfr22-antes`, `9804b98`; cada arquivo novo copiado para lá com outro
+  nome, rodado sozinho e apagado):
+  - `tests/test_cadernos.py` (o único conserto de defeito, o "último caderno menor", imp-4): **14 falham no antigo**,
+    28 passam no novo. O principal falha pela substância: `test_ultimo_caderno_sai_menor_...` dá **17 páginas em branco
+    no antigo** (esperado 1); `conferir_sequencia(907, 20)` diz "sobram 13 páginas em branco" no antigo. Os 11
+    parametrizados falham no antigo porque `tamanhos_dos_cadernos` não existe lá (falha por falta da função, não pela conta).
+  - Os arquivos novos (ferramentas que não existiam) falham todos no antigo: `test_impressao`, `test_dialogo_impressao`,
+    `test_duas_camadas`, `test_editar_zonas`, `test_luz_scantailor`, `test_margens_scantailor`, `test_nucleos`,
+    `test_unidades_e_perfis` (erro de importação: o módulo não existe); `test_margens_na_tela` (4 falham);
+    `test_paineis` (2 falham: nome novo da caixinha e os seis "Marcar como"); `test_trilha_e_opcoes` (2 falham: a
+    ferramenta nova "ajustar").
+  - Ressalva: fora o último caderno, não houve conserto de defeito neste ramo; os outros testes são de ferramenta nova
+    (falhar no antigo é esperado, não prova conserto).
 - [ ] 2. Fotos pelo caminho inteiro, item por item (uma linha por página)
 - [ ] 3. 2.6: PDF de impressão de verdade + dobra simulada
 - [ ] 4. Janela de verdade (fora da tela, WM_CLOSE)
