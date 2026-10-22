@@ -560,6 +560,10 @@ def _preparar_metade_e_geometria(
     # item 2.12: so com o desentortar ligado o preparo vai pelo caminho do
     # "papel em volta"; desligado (o de fabrica) e o codigo de sempre.
     desentortar = desentortar_scantailor.ligado(pagina) and not so_a_geometria
+    if not desentortar and not so_a_geometria:
+        # o aviso da protecao (item 2.12) so vale com o desentortar ligado;
+        # desligado, so tira o aviso que tiver ficado (nao muda a imagem)
+        _anotar_desentortar_saiu_sem(pagina, False)
 
     if endireita_antes(projeto):
         if desentortar:
@@ -655,7 +659,28 @@ def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: floa
         reta = rotacionar(inteira, angulo)  # em volta do centro da pagina
     else:
         reta = _rotacionar_em_volta_de(inteira, angulo, caixa)
-    return desentortar_scantailor.aplicar_no_corte(reta, caixa, pagina, dpi), cortou, girar
+    preparo = desentortar_scantailor.preparar_no_corte(reta, caixa, pagina, dpi)
+    _anotar_desentortar_saiu_sem(pagina, preparo.saiu_sem)
+    return preparo.imagem, cortou, girar
+
+
+def _anotar_desentortar_saiu_sem(pagina: ConfigPagina, saiu_sem: bool) -> None:
+    """Poe ou tira o aviso analise.DESENTORTAR_SAIU_SEM (item 2.12, respostas
+    P1 e P2 do Samuel, 22/10/2026: a protecao recusou o desentortar e a pagina
+    saiu sem ele). Do mesmo jeito que _anotar_conferir: ao POR, a pagina volta
+    a "nao conferida" e o aviso vai para a frente; o "esta bom assim" depois
+    disso continua valendo. Tirado quando a pagina sai desentortada (o botao
+    "Desentortar aumentando a página") ou com o desentortar desligado.
+    Arriscado: por o aviso sem voltar `revisada` (nasceria escondido)."""
+    if not hasattr(pagina, "alertas"):
+        return
+    codigo = analise.DESENTORTAR_SAIU_SEM
+    tem = codigo in pagina.alertas
+    if saiu_sem and not tem:
+        pagina.alertas.insert(0, codigo)
+        pagina.revisada = False
+    elif not saiu_sem and tem:
+        pagina.alertas = [a for a in pagina.alertas if a != codigo]
 
 
 def _rotacionar_em_volta_de(img: np.ndarray, angulo: float, caixa) -> np.ndarray:

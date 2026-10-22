@@ -62,6 +62,15 @@ CONTAS_DO_ENDIREITAR_DISCORDAM = "contas_do_endireitar_discordam"
 # analise, depois de medir todas as paginas (core.pipeline.analisar). Por
 # pagina: nunca vira caracteristica do livro.
 ANGULO_DIFERENTE_DAS_OUTRAS = "angulo_diferente_das_outras"
+# Item 2.12 (respostas P1 e P2 do Samuel, 22/10/2026: "B — Proteção" e "B — A
+# mesma proteção da pergunta anterior"): o desentortar ligado nesta pagina
+# empurrava tinta para fora do corte (Righetti 96: o comeco das linhas sumia)
+# ou trazia para dentro o que estava fora do corte (fundo do scanner, sombra,
+# pagina vizinha: "pelas margens" no Cursus 176 e na Matematica 65); a pagina
+# saiu SEM desentortar. Quem poe e tira: core.pipeline, quando a pagina e
+# desenhada (como o CONFERIR_FUNDO_TIRADO). O botao e a opcao C so nesta
+# pagina (ConfigPagina.desentortar_aumentar).
+DESENTORTAR_SAIU_SEM = "desentortar_saiu_sem"
 
 
 @dataclass(frozen=True)
@@ -163,6 +172,17 @@ ALERTAS: dict[str, Alerta] = {
         ANGULO_DIFERENTE_DAS_OUTRAS, "Inclinação diferente das outras",
         "Esta página foi endireitada num ângulo bem diferente do das outras. Veja se ficou certa.",
         "está bom assim", "revisar",
+    ),
+    # Item 2.12 (22/10/2026). O botao faz a opcao C so nesta pagina: o mesmo
+    # desentortar, com a pagina maior para caber o que ele esticou (le
+    # ui/tela_conferir._aplicar_sugestao: "desentortar_aumentando"). Seguro
+    # mudar: os textos. Arriscado: o codigo da correcao (a tela le).
+    DESENTORTAR_SAIU_SEM: Alerta(
+        DESENTORTAR_SAIU_SEM, "Desentortar não usado",
+        "O desentortar empurrava o texto para fora da página, ou trazia o fundo "
+        "de fora para dentro dela. Por isso a página saiu sem desentortar. Se "
+        "quiser, desentorte aumentando a página até caber o texto.",
+        "Desentortar aumentando a página", "desentortar_aumentando",
     ),
     TAMANHO_DIFERENTE: Alerta(
         TAMANHO_DIFERENTE, "Tamanho diferente",

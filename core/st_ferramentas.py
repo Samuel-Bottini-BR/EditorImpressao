@@ -65,7 +65,10 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 # 8 (22/10/2026) = o desentortar recebe a pagina com o papel do scan em volta e
 #     o corte como medida (escolha do Samuel na Central: "cortar uma vez so, no
 #     fim", como o ScanTailor); a saida tem o tamanho do corte.
-VERSAO_API = 8
+# 9 (22/10/2026) = o desentortar ganha o `crescer` (a mesma pagina desentortada
+#     numa pagina maior) e a `marca` redesenhada com o mesmo modelo: a protecao
+#     e o "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel).
+VERSAO_API = 9
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -143,7 +146,10 @@ ASSINATURAS = {
         ctypes.c_double, ctypes.c_int,                               # profundidade, endireitar depois
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # corte x, y, largura, altura (versao 8)
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # caixa do conteudo (x, y, larg., alt.)
+        ctypes.c_int,                                                # crescer (versao 9)
+        ctypes.c_void_p, ctypes.c_int,                               # marca, passo (versao 9; None = sem)
         ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_void_p, ctypes.c_int,                               # marca desentortada, passo (versao 9)
         ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double),  # achou curvas, angulo depois
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),

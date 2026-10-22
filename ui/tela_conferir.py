@@ -4062,6 +4062,26 @@ class TelaConferir(QWidget):
             self._angulo_zero()
         elif correcao == "sem_recorte":
             self._sem_recorte()
+        elif correcao == "desentortar_aumentando":
+            self._desentortar_aumentando()
+
+    def _desentortar_aumentando(self) -> None:
+        """Item 2.12 (22/10/2026): o botão "Desentortar aumentando a página"
+        do aviso "Desentortar não usado" - a opção C do Samuel SÓ nesta página
+        (pergunta P1: "Ainda vou poder selecionar a opção c para as paginas que
+        entrarem para revisão?" - sim): a página cresce até caber o que o
+        desentortar esticou. Ação do desfazer; o aviso some sozinho quando a
+        prévia nova chega (core.pipeline._anotar_desentortar_saiu_sem)."""
+        if self.projeto is None or self.trabalha_com_folhas:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if getattr(pagina, "desentortar_aumentar", False):
+            return
+        self._registrar(
+            "mudar_desentortar", "pagina", [self.indice_pagina],
+            {"desentortar_aumentar": True},
+            f"Desentortar aumentando a página {self.indice_pagina + 1}",
+        )
 
     # --- desfazer / refazer -----------------------------------------------
 

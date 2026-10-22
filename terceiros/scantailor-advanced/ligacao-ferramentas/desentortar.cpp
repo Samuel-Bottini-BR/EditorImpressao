@@ -185,7 +185,13 @@ class OutputGenerator::Processor {
 
   // Os passos 1 a 5 do topo do arquivo. Devolve a pagina desentortada, ja do
   // tamanho do corte; achouCurvas = as curvas nao sao as do modelo "sem curva".
-  QImage desentortar(const DepthPerception& depthPerception, bool* achouCurvas, double* anguloDepois);
+  // Versao 9 (22/10/2026): crescer > 0 = a MESMA pagina desentortada (mesmo
+  // modelo, mesmo angulo) redesenhada numa pagina maior, crescer pontos a mais
+  // de cada lado; marca (nao nula) = uma imagem cinza do tamanho da pagina
+  // recebida, redesenhada com o mesmo modelo e o mesmo giro em *marcaSaida
+  // (do tamanho da saida). Ver redesenharMaior().
+  QImage desentortar(const DepthPerception& depthPerception, bool* achouCurvas, double* anguloDepois,
+                     int crescer = 0, const QImage* marca = nullptr, QImage* marcaSaida = nullptr);
 
  private:
   void setupTrivialDistortionModel(DistortionModel& distortionModel) const;
@@ -202,6 +208,14 @@ class OutputGenerator::Processor {
                 const QColor& bgColor) const;
 
   double findSkew(const QImage& image) const;
+
+  // LIGACAO (versao 9): o redesenho do passo 5 numa pagina maior.
+  QImage redesenharMaior(const QImage& src,
+                         const DistortionModel& distortionModel,
+                         const DepthPerception& depthPerception,
+                         const QColor& bgColor,
+                         double angulo,
+                         int crescer);
 
   DistortionModel buildAutoDistortionModel(const GrayImage& warpedGrayOutput, const QTransform& toOriginal) const;
 
@@ -360,7 +374,10 @@ OutputGenerator::Processor::Processor(const QImage& image,
 
 QImage OutputGenerator::Processor::desentortar(const DepthPerception& depthPerception,
                                                bool* achouCurvas,
-                                               double* anguloDepois) {
+                                               double* anguloDepois,
+                                               int crescer,
+                                               const QImage* marca,
+                                               QImage* marcaSaida) {
   // 1. processImpl, linhas 1263-1264.
   m_outsideBackgroundColor = BackgroundColorCalculator::calcDominantBackgroundColor(
       m_colorOriginal ? m_inputOrigImage : m_inputGrayImage, m_outCropAreaInOriginalCs);
@@ -440,6 +457,22 @@ QImage OutputGenerator::Processor::desentortar(const DepthPerception& depthPerce
       rotateXform = QTransform();  // ja girado
     }
   }
+  // VERSAO 9 (22/10/2026, respostas P1 e P2 do Samuel: a protecao e a opcao C
+  // so na pagina): a mesma pagina numa pagina maior e a marca. So quando o
+  // Python pede (crescer > 0 ou marca); sem pedido, nada disto roda e a saida e
+  // a da versao 8, ponto por ponto.
+  // ARRISCADO: medir o angulo de novo na pagina maior (deixaria de ser o do
+  // ScanTailor) ou usar outro centro (redesenharMaior cresce igual dos dois
+  // lados; o centro da pagina de saida, que o modelDomain usa, nao muda).
+  if (crescer > 0) {
+    dewarped = redesenharMaior(normalizedOriginal, distortionModel, depthPerception, m_outsideBackgroundColor,
+                               m_dewarpingOptions.getPostDeskewAngle(), crescer);
+    rotateXform = QTransform();  // ja girado
+  }
+  if (marca != nullptr && marcaSaida != nullptr) {
+    *marcaSaida = redesenharMaior(*marca, distortionModel, depthPerception, QColor(Qt::white),
+                                  m_dewarpingOptions.getPostDeskewAngle(), crescer);
+  }
   // (O normalizedOriginal fica ate aqui: o redesenho com o papel em volta usa.)
   normalizedOriginal = QImage();  // Save memory.
   applyAffineTransform(dewarped, rotateXform, m_outsideBackgroundColor);
@@ -449,6 +482,43 @@ QImage OutputGenerator::Processor::desentortar(const DepthPerception& depthPerce
   *achouCurvas = !distortionModel.matches(semCurva);
   *anguloDepois = m_dewarpingOptions.getPostDeskewAngle();
   return dewarped;
+}
+
+// LIGACAO (versao 9, 22/10/2026): o redesenho do passo 5 numa pagina maior.
+// A mesma conta do giro com o papel em volta (acima): o modelo e o angulo sao
+// os ja achados; a pagina de saida cresce `crescer` pontos de cada lado (mais a
+// folga do giro, se houver giro), a geometria anda o mesmo tanto, e o centro
+// fica onde estava - o modelDomain do ScanTailor so usa o centro da pagina de
+// saida, entao o desenho dentro do corte e o mesmo. Usada (1) para a opcao C
+// do Samuel ("desentortar aumentando a pagina", so na pagina) e (2) para
+// redesenhar a marca da protecao com o mesmo modelo. src pode ser a pagina ou
+// a marca (cinza); bgColor e a cor de fora da pagina recebida.
+QImage OutputGenerator::Processor::redesenharMaior(const QImage& src,
+                                                   const DistortionModel& distortionModel,
+                                                   const DepthPerception& depthPerception,
+                                                   const QColor& bgColor,
+                                                   double angulo,
+                                                   int crescer) {
+  const double seno = std::abs(std::sin(angulo * constants::PI / 180.0));
+  const int folgaDoGiro
+      = (angulo == 0.0) ? 0 : static_cast<int>(std::ceil(seno * (m_outRect.width() + m_outRect.height()) / 2.0)) + 2;
+  const int folga = folgaDoGiro + crescer;
+  const QRect saidaDoCorte = m_outRect;
+  QImage maior;
+  try {
+    m_outRect = QRect(0, 0, saidaDoCorte.width() + 2 * folga, saidaDoCorte.height() + 2 * folga);
+    maior = dewarp(QTransform(), src, m_xform.transform() * QTransform::fromTranslate(folga, folga), distortionModel,
+                   depthPerception, bgColor);
+  } catch (...) {
+    m_outRect = saidaDoCorte;
+    throw;
+  }
+  m_outRect = saidaDoCorte;
+  if (folgaDoGiro > 0) {
+    applyAffineTransform(maior, Utils::rotate(angulo, maior.rect()), bgColor);
+  }
+  return maior.copy(folgaDoGiro, folgaDoGiro, saidaDoCorte.width() + 2 * crescer,
+                    saidaDoCorte.height() + 2 * crescer);
 }
 
 // ===== COPIADO SEM MUDANCA (linhas 2034-2106) =====
@@ -801,16 +871,24 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
                                                   int conteudoY,
                                                   int conteudoLargura,
                                                   int conteudoAltura,
+                                                  int crescer,
+                                                  const unsigned char* marca,
+                                                  int passoMarca,
                                                   unsigned char* saida,
                                                   int passoSaida,
+                                                  unsigned char* marcaSaida,
+                                                  int passoMarcaSaida,
                                                   int* achouCurvas,
                                                   double* anguloDepois,
                                                   char* erro,
                                                   int tamanhoErro) {
   return st_ferramentas::protegido(erro, tamanhoErro, [&]() -> int {
+    const int larguraDaSaida = ((corteLargura == 0 || corteAltura == 0) ? largura : corteLargura) + 2 * crescer;
     if (!pixels || !saida || !achouCurvas || !anguloDepois || largura <= 0 || altura <= 0
-        || (canais != 1 && canais != 3) || passo < largura * canais
-        || passoSaida < ((corteLargura == 0 || corteAltura == 0) ? largura : corteLargura) * canais || dpiX <= 0
+        || (canais != 1 && canais != 3) || passo < largura * canais || crescer < 0 || crescer > 20000
+        || passoSaida < larguraDaSaida * canais
+        || (marca != nullptr && (!marcaSaida || passoMarca < largura || passoMarcaSaida < larguraDaSaida))
+        || dpiX <= 0
         || dpiY <= 0 || (modo != ::output::AUTO && modo != ::output::MARGINAL) || lado < PageId::SINGLE_PAGE
         || lado > PageId::RIGHT_PAGE || !(profundidade >= 1.0 && profundidade <= 3.0) || conteudoLargura < 0
         || conteudoAltura < 0 || corteLargura < 0 || corteAltura < 0 || corteX < 0 || corteY < 0
@@ -828,21 +906,43 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
         corte, QRect(conteudoX, conteudoY, conteudoLargura, conteudoAltura), endireitarDepois != 0);
     bool achou = false;
     double angulo = 0.0;
-    QImage resultado = processador.desentortar(::output::DepthPerception(profundidade), &achou, &angulo);
+    // Versao 9: a marca (cinza, do tamanho da pagina recebida), se veio.
+    QImage marcaNaPagina;
+    QImage marcaDesentortada;
+    if (marca != nullptr) {
+      marcaNaPagina = montarPagina(marca, largura, altura, passoMarca, 1);
+    }
+    QImage resultado = processador.desentortar(::output::DepthPerception(profundidade), &achou, &angulo, crescer,
+                                               marca != nullptr ? &marcaNaPagina : nullptr,
+                                               marca != nullptr ? &marcaDesentortada : nullptr);
     resultado = resultado.convertToFormat(canais == 1 ? QImage::Format_Grayscale8 : QImage::Format_RGB888);
-    if (resultado.isNull() || resultado.width() != corte.width() || resultado.height() != corte.height()) {
+    const int larguraFinal = corte.width() + 2 * crescer;
+    const int alturaFinal = corte.height() + 2 * crescer;
+    if (resultado.isNull() || resultado.width() != larguraFinal || resultado.height() != alturaFinal) {
       st_ferramentas::escreverErro(erro, tamanhoErro, "resultado de tamanho inesperado");
       return ST_FERRAMENTAS_ERRO_INTERNO;
     }
-    // A saida tem o tamanho do corte (passoSaida >= corteLargura * canais).
-    for (int y = 0; y < corte.height(); ++y) {
+    if (marca != nullptr) {
+      marcaDesentortada = marcaDesentortada.convertToFormat(QImage::Format_Grayscale8);
+      if (marcaDesentortada.isNull() || marcaDesentortada.width() != larguraFinal
+          || marcaDesentortada.height() != alturaFinal) {
+        st_ferramentas::escreverErro(erro, tamanhoErro, "marca de tamanho inesperado");
+        return ST_FERRAMENTAS_ERRO_INTERNO;
+      }
+      for (int y = 0; y < alturaFinal; ++y) {
+        std::memcpy(marcaSaida + static_cast<size_t>(y) * passoMarcaSaida, marcaDesentortada.constScanLine(y),
+                    static_cast<size_t>(larguraFinal));
+      }
+    }
+    // A saida tem o tamanho do corte mais o crescer (passoSaida >= largura * canais).
+    for (int y = 0; y < alturaFinal; ++y) {
       const unsigned char* origem = resultado.constScanLine(y);
       unsigned char* destino = saida + static_cast<size_t>(y) * passoSaida;
       if (canais == 1) {
-        std::memcpy(destino, origem, static_cast<size_t>(corte.width()));
+        std::memcpy(destino, origem, static_cast<size_t>(larguraFinal));
         continue;
       }
-      for (int x = 0; x < corte.width(); ++x) {  // RGB -> azul, verde, vermelho (a ordem do OpenCV)
+      for (int x = 0; x < larguraFinal; ++x) {  // RGB -> azul, verde, vermelho (a ordem do OpenCV)
         destino[3 * x] = origem[3 * x + 2];
         destino[3 * x + 1] = origem[3 * x + 1];
         destino[3 * x + 2] = origem[3 * x];

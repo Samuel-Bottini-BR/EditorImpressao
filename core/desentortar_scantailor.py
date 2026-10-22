@@ -131,6 +131,9 @@ class Resultado(st.Resultado):
 
     achou_curvas: bool = False
     angulo_depois: float = 0.0
+    # Versão 9 da DLL (22/10/2026): a marca redesenhada com o mesmo modelo
+    # (uint8, do tamanho de .imagem), ou None se não foi pedida.
+    marca: np.ndarray | None = None
 
 
 def modo_valido(modo) -> str:
@@ -158,6 +161,8 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
                 endireitar_depois: bool = ENDIREITAR_DEPOIS_DE_FABRICA,
                 conteudo: tuple[int, int, int, int] | None = None,
                 corte: tuple[int, int, int, int] | None = None,
+                crescer: int = 0,
+                marca: np.ndarray | None = None,
                 biblioteca: st.BibliotecaScanTailor | None = None) -> Resultado:
     """O desentortar do ScanTailor numa página.
 
@@ -169,8 +174,13 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
     ScanTailor (m_outRect); None = a imagem inteira.
     conteudo: (x, y, largura, altura) em pontos de `img` (m_contentRect);
     None = o próprio corte. O preparo passa caixa_do_conteudo (a tinta).
-    Devolve Resultado: .imagem do tamanho do CORTE, com os mesmos canais, ou
-    None com .motivo. Nunca levanta exceção; não muda a entrada.
+    crescer (versão 9): pontos a mais de cada lado da saída; é a MESMA página
+    desentortada (mesmo modelo, mesmo ângulo, mesmo centro), só maior.
+    marca (versão 9): None, ou uint8 de 1 canal do tamanho de `img`,
+    redesenhada com o mesmo modelo em .marca (fora de `img` entra 255).
+    Devolve Resultado: .imagem do tamanho do CORTE mais 2 x crescer, com os
+    mesmos canais, ou None com .motivo. Nunca levanta exceção; não muda a
+    entrada.
 
     Arriscado: passar a página já cortada com corte None (volta o defeito de
     21/10: o que o desentortar empurra para fora da imagem some).
@@ -196,6 +206,12 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
         if kl <= 0 or ka <= 0 or kx < 0 or ky < 0 or kx + kl > larg_img or ky + ka > alt_img:
             raise ValueError(f"corte fora da página: {(kx, ky, kl, ka)} em {larg_img}x{alt_img}")
         dpi_x, dpi_y = st.dpi_inteiro(dpi)
+        crescer = int(crescer)
+        if crescer < 0 or crescer > 20000:
+            raise ValueError(f"crescer fora de 0 a 20000: {crescer}")
+        if marca is not None and (not isinstance(marca, np.ndarray) or marca.dtype != np.uint8
+                                  or marca.shape != img.shape[:2]):
+            raise ValueError("a marca tem de ser uint8 de 1 canal, do tamanho da página")
     except (TypeError, ValueError) as erro:
         return Resultado(*_motivo("A página não pôde ser passada ao desentortar do ScanTailor.", str(erro)))
     altura, largura = img.shape[:2]
@@ -207,7 +223,10 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
         return Resultado(None, biblioteca.motivo_indisponivel, biblioteca.detalhe_indisponivel)
 
     entrada = np.ascontiguousarray(img)
-    saida = np.empty((ka, kl) + entrada.shape[2:], np.uint8)  # do tamanho do corte
+    # do tamanho do corte (mais o crescer de cada lado)
+    saida = np.empty((ka + 2 * crescer, kl + 2 * crescer) + entrada.shape[2:], np.uint8)
+    marca_c = None if marca is None else np.ascontiguousarray(marca)
+    marca_saida = None if marca is None else np.empty(saida.shape[:2], np.uint8)
     achou = ctypes.c_int(0)
     angulo = ctypes.c_double(0.0)
     erro = ctypes.create_string_buffer(512)
@@ -219,7 +238,12 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
                         _CODIGO_DO_MODO[modo], int(lado), profundidade, int(bool(endireitar_depois)),
                         kx, ky, kl, ka,
                         cx, cy, cl, ca,
+                        crescer,
+                        None if marca_c is None else marca_c.ctypes.data_as(ctypes.c_void_p),
+                        0 if marca_c is None else int(marca_c.strides[0]),
                         saida.ctypes.data_as(ctypes.c_void_p), int(saida.strides[0]),
+                        None if marca_saida is None else marca_saida.ctypes.data_as(ctypes.c_void_p),
+                        0 if marca_saida is None else int(marca_saida.strides[0]),
                         ctypes.byref(achou), ctypes.byref(angulo), erro, len(erro))
     except Exception as falha:  # noqa: BLE001
         return Resultado(*_motivo("O desentortar do ScanTailor falhou nesta página.",
@@ -230,7 +254,7 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
         if codigo == st.ERRO_MEMORIA:
             return Resultado(*_motivo("Faltou memória para desentortar esta página.", detalhe))
         return Resultado(*_motivo("O desentortar do ScanTailor falhou nesta página.", detalhe))
-    return Resultado(saida, None, None, segundos, bool(achou.value), float(angulo.value))
+    return Resultado(saida, None, None, segundos, bool(achou.value), float(angulo.value), marca_saida)
 
 
 def _motivo(motivo: str, detalhe: str | None) -> tuple:
@@ -350,16 +374,140 @@ def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) ->
     return (x0 + cx0, y0 + cy0, cx1 - cx0, cy1 - cy0)
 
 
-def aplicar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, pagina,
-                     dpi=None, *, biblioteca: st.BibliotecaScanTailor | None = None) -> np.ndarray:
-    """O passo do preparo (22/10/2026, "cortar uma vez só, no fim").
+# --- a proteção e o "aumentando a página" (22/10/2026) ----------------------
+#
+# Respostas do Samuel às perguntas P1 e P2 do 2.12 (22/10/2026): P1 "B —
+# Proteção: se a tinta passar a encostar na beirada, a página sai sem
+# desentortar e vai para o 'Para revisar'"; P2 "B — A mesma proteção da
+# pergunta anterior" (o "pelas margens" que entorta a página com fundo
+# escuro). E, sobre a opção C da P1 ("Ainda vou poder selecionar a opção c
+# para as paginas que entrarem para revisão?"): sim, só na página, pelo botão
+# do aviso (ConfigPagina.desentortar_aumentar).
+#
+# COMO MEDE: a página reta ganha uma MARCA do mesmo tamanho (MARCA_TINTA na
+# tinta da caixa do conteúdo, MARCA_PAPEL no resto do corte, MARCA_FORA fora
+# do corte), e a DLL (versão 9) redesenha a marca com o MESMO modelo numa
+# página CRESCER_MM maior de cada lado. Na marca redesenhada:
+#   - "tinta para fora": pedaços de tinta do conteúdo (de PECA_MINIMA_MM ou
+#     mais nos dois sentidos) que caíram fora do corte; PECAS_PARA_FORA ou mais
+#     = o desentortar cortava letras (Righetti 96: 22 pedaços; as páginas que
+#     saem certas: 0 ou 1);
+#   - "fundo para dentro": a fração da página de saída que veio de fora do
+#     corte; mais de FUNDO_DENTRO_MAXIMO = o desentortar puxou fundo, sombra ou
+#     página vizinha para dentro (Cursus 176 e Matemática 31-66 no "pelas
+#     margens": 14% a 30%; as que saem certas: até 0,7%).
+# Medido em 22/10/2026 em 14 páginas (relatorios/fase2-itens/ONDE-PAREI.md).
+# A página dentro do corte é a mesma, ponto por ponto, com e sem o crescer
+# (conferido nas 14 x 2 modos): a medida não muda a imagem.
+# SEGURO MUDAR: os limites (com nova medida nas páginas). ARRISCADO: medir na
+# imagem em vez da marca (a faixa preta do scanner e a página vizinha
+# confundem) ou tirar o crescer (a tinta que sai do corte não seria vista).
+
+MARCA_TINTA, MARCA_PAPEL, MARCA_FORA = 0, 128, 255
+CRESCER_MM = 10.0           # quanto a página medida cresce de cada lado
+PECA_MINIMA_MM = 1.0        # pedaço de tinta que conta (largura e altura)
+PECAS_PARA_FORA = 3         # a partir de quantos pedaços para fora recusa
+FUNDO_DENTRO_MAXIMO = 0.02  # fração da página vinda de fora do corte
+AUMENTO_MAXIMO_MM = 25.0    # o "aumentando a página": até quanto cresce
+FOLGA_DO_AUMENTO_MM = 1.0   # a folga em volta da tinta (a do corte)
+
+
+@dataclass(frozen=True)
+class Preparo:
+    """O passo do desentortar no preparo (preparar_no_corte).
+
+    imagem: a página que sai. saiu_sem: a proteção recusou o desentortar (a
+    imagem é o corte sem desentortar e a página vai para o "Para revisar").
+    pecas_para_fora, fundo_dentro: as medidas (None se não mediu).
+    """
+
+    imagem: np.ndarray
+    saiu_sem: bool = False
+    pecas_para_fora: int | None = None
+    fundo_dentro: float | None = None
+
+
+def _pontos_por_mm(dpi) -> float:
+    try:
+        d = float(dpi[1]) if isinstance(dpi, (tuple, list)) else float(dpi)
+    except (TypeError, ValueError):
+        d = 300.0
+    return max(1.0, d) / 25.4
+
+
+def marca_da_pagina(reta: np.ndarray, caixa, conteudo) -> np.ndarray:
+    """A marca da proteção: uint8 do tamanho de `reta` - MARCA_FORA fora do
+    corte `caixa` ((x0, y0, x1, y1)), MARCA_PAPEL dentro, e MARCA_TINTA na
+    tinta (Otsu do corte) dentro da caixa do conteúdo `conteudo`
+    ((x, y, largura, altura))."""
+    x0, y0, x1, y1 = caixa
+    cinza = reta if reta.ndim == 2 else cv2.cvtColor(reta, cv2.COLOR_BGR2GRAY)
+    marca = np.full(cinza.shape, MARCA_FORA, np.uint8)
+    marca[y0:y1, x0:x1] = MARCA_PAPEL
+    cx, cy, cl, ca = conteudo
+    if cl > 0 and ca > 0 and y1 > y0 and x1 > x0:
+        limiar, _ = cv2.threshold(cinza[y0:y1, x0:x1], 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        pedaco = marca[cy:cy + ca, cx:cx + cl]
+        # "<=": o Otsu devolve o limiar onde o que passa dele e papel
+        pedaco[cinza[cy:cy + ca, cx:cx + cl] <= limiar] = MARCA_TINTA
+    return marca
+
+
+def medir_o_estrago(marca: np.ndarray, crescer: int, dpi) -> tuple[int, float]:
+    """(pedaços de tinta para fora do corte, fração da página vinda de fora)
+    na marca redesenhada pela DLL com `crescer` pontos a mais de cada lado."""
+    altura, largura = marca.shape[0] - 2 * crescer, marca.shape[1] - 2 * crescer
+    tinta = (marca < 64).astype(np.uint8)
+    tinta[crescer:crescer + altura, crescer:crescer + largura] = 0
+    minimo = PECA_MINIMA_MM * _pontos_por_mm(dpi)
+    _, _, caixas, _ = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    pecas = int(sum(1 for c in caixas[1:] if c[2] >= minimo and c[3] >= minimo))
+    dentro = marca[crescer:crescer + altura, crescer:crescer + largura]
+    return pecas, float((dentro > 192).mean()) if dentro.size else 0.0
+
+
+def recusar(pecas_para_fora: int, fundo_dentro: float) -> bool:
+    """A regra da proteção (os limites no topo desta parte)."""
+    return pecas_para_fora >= PECAS_PARA_FORA or fundo_dentro > FUNDO_DENTRO_MAXIMO
+
+
+def _recorte_aumentado(imagem: np.ndarray, marca: np.ndarray, crescer: int, dpi) -> np.ndarray:
+    """O "desentortar aumentando a página": da página desentortada com
+    `crescer` a mais de cada lado, fica o corte de sempre mais o que a tinta
+    do conteúdo precisou (com FOLGA_DO_AUMENTO_MM em volta). Pontinho menor
+    que PECA_MINIMA_MM nos dois sentidos não faz a página crescer. Sem tinta
+    para fora, sai o corte de sempre."""
+    altura, largura = marca.shape[0] - 2 * crescer, marca.shape[1] - 2 * crescer
+    x0, y0, x1, y1 = crescer, crescer, crescer + largura, crescer + altura
+    tinta = (marca < 64).astype(np.uint8)
+    minimo = PECA_MINIMA_MM * _pontos_por_mm(dpi)
+    _, _, caixas, _ = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    folga = int(round(FOLGA_DO_AUMENTO_MM * _pontos_por_mm(dpi)))
+    for c in caixas[1:]:
+        x, y, w, h = (int(v) for v in c[:4])
+        if w < minimo and h < minimo:
+            continue
+        x0, y0 = min(x0, x - folga), min(y0, y - folga)
+        x1, y1 = max(x1, x + w + folga), max(y1, y + h + folga)
+    x0, y0 = max(0, x0), max(0, y0)
+    x1, y1 = min(marca.shape[1], x1), min(marca.shape[0], y1)
+    return imagem[y0:y1, x0:x1].copy()
+
+
+def preparar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, pagina,
+                      dpi=None, *, biblioteca: st.BibliotecaScanTailor | None = None) -> Preparo:
+    """O passo do preparo (22/10/2026, "cortar uma vez só, no fim"), com a
+    proteção e o "aumentando a página".
 
     reta: a página endireitada e AINDA SEM O CORTE (o papel do scan em volta).
     caixa: o corte medido pelo programa, (x0, y0, x1, y1) em pontos de `reta`
     (a conta de core.recortar.caixa_em_pontos); None = sem corte.
-    Devolve a página desentortada já do tamanho do corte. Se a DLL não rodou
+    Devolve Preparo: a página desentortada do tamanho do corte; se a proteção
+    recusou, o corte sem desentortar e saiu_sem=True; com
+    pagina.desentortar_aumentar, a página desentortada do tamanho que a tinta
+    precisou (sem proteção: foi a pessoa que pediu). Se a DLL não rodou
     (anotado uma vez no erros.log): o corte da página sem desentortar (o que
-    sairia com o desentortar desligado).
+    sairia com o desentortar desligado), saiu_sem=False.
 
     Só para página com o desentortar ligado: desligado, quem chama corta como
     sempre (o pipeline nem chama esta função; ver core.pipeline). dpi None (a
@@ -370,15 +518,34 @@ def aplicar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, 
     """
     altura, largura = reta.shape[:2]
     x0, y0, x1, y1 = (0, 0, largura, altura) if caixa is None else caixa
+    sem = reta[y0:y1, x0:x1]
     modo = modo_da_pagina(pagina)
     if modo == DESLIGADO:
-        return reta[y0:y1, x0:x1].copy()
+        return Preparo(sem.copy())
     dpi = _dpi_ou_pela_altura(dpi, altura)
     conteudo = caixa_do_conteudo(reta, (x0, y0, x1, y1), dpi)
+    marca = marca_da_pagina(reta, (x0, y0, x1, y1), conteudo)
+    aumentar = bool(getattr(pagina, "desentortar_aumentar", False))
+    crescer = int(round((AUMENTO_MAXIMO_MM if aumentar else CRESCER_MM) * _pontos_por_mm(dpi)))
     resultado = desentortar(reta, dpi, modo, lado=lado_da_pagina(pagina),
                             corte=(x0, y0, x1 - x0, y1 - y0), conteudo=conteudo,
-                            biblioteca=biblioteca)
+                            crescer=crescer, marca=marca, biblioteca=biblioteca)
     if not resultado.disponivel:
         _avisar_uma_vez(resultado.motivo, resultado.detalhe_tecnico)
-        return reta[y0:y1, x0:x1].copy()
-    return resultado.imagem
+        return Preparo(sem.copy())
+    pecas, fundo = medir_o_estrago(resultado.marca, crescer, dpi)
+    if aumentar:
+        return Preparo(_recorte_aumentado(resultado.imagem, resultado.marca, crescer, dpi),
+                       False, pecas, fundo)
+    if recusar(pecas, fundo):
+        return Preparo(sem.copy(), True, pecas, fundo)
+    h, w = y1 - y0, x1 - x0
+    return Preparo(resultado.imagem[crescer:crescer + h, crescer:crescer + w].copy(), False, pecas, fundo)
+
+
+def aplicar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, pagina,
+                     dpi=None, *, biblioteca: st.BibliotecaScanTailor | None = None) -> np.ndarray:
+    """Só a imagem de preparar_no_corte (com a proteção). Fica para quem não
+    precisa saber se a proteção recusou; o preparo da página usa
+    preparar_no_corte, que diz (para o aviso do "Para revisar")."""
+    return preparar_no_corte(reta, caixa, pagina, dpi, biblioteca=biblioteca).imagem

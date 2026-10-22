@@ -441,6 +441,7 @@ def test_desligado_nao_passa_pelo_desentortar_nem_com_corte_e_giro(monkeypatch):
         raise AssertionError("desligado não pode chamar o desentortar")
 
     monkeypatch.setattr(ds, "aplicar_no_corte", nao)
+    monkeypatch.setattr(ds, "preparar_no_corte", nao)
     monkeypatch.setattr(ds, "aplicar", nao)
     img = pagina_curva(curva=0)
     recorte = (0.08, 0.08, 0.84, 0.84)

@@ -503,6 +503,9 @@ class GerenciadorPrevias(QObject):
             f"{bool(getattr(p, 'reduzir_cores', False))}:"
             # item 2.12: o desentortar muda a pagina preparada
             f"{getattr(p, 'desentortar', 'desligado')}"
+            # item 2.12 (22/10): "Desentortar aumentando a página" muda o
+            # tamanho da pagina; so entra na chave quando ligado
+            f"{':aumentar' if getattr(p, 'desentortar_aumentar', False) else ''}"
         )
 
     # --- uso --------------------------------------------------------------

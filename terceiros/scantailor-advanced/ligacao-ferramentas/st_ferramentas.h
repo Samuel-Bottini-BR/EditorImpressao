@@ -51,7 +51,12 @@
 //     o corte como medida (corteX..corteAltura); a saida tem o tamanho do corte
 //     (escolha do Samuel na Central, 22/10: "cortar uma vez so, no fim", como o
 //     ScanTailor). O resto nao mudou.
-#define ST_FERRAMENTAS_VERSAO_API 8
+// 9 = 22/10/2026: o desentortar ganha `crescer` (a mesma pagina desentortada
+//     numa pagina maior) e a `marca` (uma imagem cinza redesenhada com o mesmo
+//     modelo, para o Python medir para onde a tinta foi): a protecao e o
+//     "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel, 22/10).
+//     Com crescer 0 e sem marca, a saida e a da versao 8. O resto nao mudou.
+#define ST_FERRAMENTAS_VERSAO_API 9
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -269,9 +274,17 @@ ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
 //   Largura ou altura 0 = a pagina inteira (sem corte). Tem de caber na pagina.
 // conteudoX, conteudoY, conteudoLargura, conteudoAltura: a caixa do conteudo
 //   (m_contentRect), em pontos da pagina recebida; largura ou altura 0 = o corte.
+// crescer (versao 9): pontos a mais de cada lado da pagina de saida (0 = o
+//   corte, como na versao 8). E a MESMA pagina desentortada, so maior.
+// marca, passoMarca (versao 9): NULL, ou uma imagem cinza (1 canal) do tamanho
+//   da pagina recebida, redesenhada com o mesmo modelo e o mesmo giro em
+//   marcaSaida (fora da pagina recebida entra branco, 255).
 // saida, passoSaida: a pagina desentortada JA RECORTADA pelo corte (corteLargura
-//   x corteAltura), com os mesmos canais. O corte e feito uma vez, aqui, como no
-//   ScanTailor: o desentortar le os pontos da pagina inteira.
+//   + 2 x crescer, corteAltura + 2 x crescer), com os mesmos canais. O corte e
+//   feito uma vez, aqui, como no ScanTailor: o desentortar le os pontos da
+//   pagina inteira.
+// marcaSaida, passoMarcaSaida (versao 9): a marca redesenhada, do tamanho da
+//   saida, 1 canal (ignorados com marca NULL).
 // achouCurvas: 1 se as curvas achadas nao sao as do modelo "sem curva".
 // anguloDepois: o angulo do endireitar depois, em graus (0 se nao endireitou).
 // Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
@@ -294,8 +307,13 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
                                                   int conteudoY,
                                                   int conteudoLargura,
                                                   int conteudoAltura,
+                                                  int crescer,
+                                                  const unsigned char* marca,
+                                                  int passoMarca,
                                                   unsigned char* saida,
                                                   int passoSaida,
+                                                  unsigned char* marcaSaida,
+                                                  int passoMarcaSaida,
                                                   int* achouCurvas,
                                                   double* anguloDepois,
                                                   char* erro,

@@ -135,6 +135,14 @@ class ConfigPagina:
     # Projeto salvo antes abre "desligado" (campo que falta ganha o padrao).
     # Arriscado: outro padrao (todo livro mudaria de imagem).
     desentortar: str = "desligado"
+    # Item 2.12, opcao C SO nesta pagina (Samuel, 22/10/2026, pergunta P1:
+    # "Ainda vou poder selecionar a opção c para as paginas que entrarem para
+    # revisão?" - sim): com o desentortar ligado, a pagina CRESCE ate caber o
+    # que ele esticou, em vez de sair sem desentortar pela protecao. Posto pelo
+    # botao "Desentortar aumentando a página" do aviso
+    # analise.DESENTORTAR_SAIU_SEM. Falso de fabrica; projeto salvo antes abre
+    # falso. Sem efeito com o desentortar desligado.
+    desentortar_aumentar: bool = False
 
     # "Limpar pontinhos" SO desta pagina, por cima do livro
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
