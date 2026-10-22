@@ -1,0 +1,65 @@
+{
+ "id": "perg-a",
+ "nome": "Pergunta do Implementador A (desentortar)",
+ "trabalho": "2.12",
+ "ordem": 9,
+ "origem": "ONDE-PAREI do ramo fase2-scantailor-itens-2026-10-19",
+ "resumo": {
+  "titulo": "O desentortar perto da lombada (2.12)",
+  "paragrafos": [
+   "O Implementador A parou o 2.12 numa escolha que o ScanTailor não resolve. As outras três ferramentas dele (caixa do conteúdo, borda preta, pintar de branco) ficaram prontas e vão para o verificador."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "a-212-desentortar",
+   "titulo": "Desentortar perto da lombada (2.12): como evitar que corte as letras?",
+   "explicacao": [
+    "O que você está escolhendo: como consertar o \"desentortar\" do ScanTailor, que hoje corta letras da beirada quando está ligado.",
+    "Para que serve: página que entorta perto da costura do livro (as linhas fazem curva) sai reta. Vem desligado de fábrica, e desligado o livro sai idêntico ao de hoje (conferido).",
+    "O defeito: ligado, ele estica as linhas nas partes curvas, e o que estica sai para fora da imagem. No Righetti 96 o cabeçalho \"S.3 C.4 § 3\" some, aparece uma faixa preta no alto e o começo das linhas sai cortado. No Cursus 151 o começo das linhas também sai cortado.",
+    "A causa: no ScanTailor a página tem uns 10 mm de papel em volta quando ele desentorta, então o que estica cai no papel. No nosso programa o desentortar vem depois do corte rente de 1 mm, então o que estica sai da página.",
+    "Todas as fotos: livro novo, de fábrica, girar → dividir → endireitar → cortar → desentortar → filtro. Colunas: Original · Hoje (Original) · Desentortar automático · Desentortar pelas margens · Hoje (Preto e branco) · Automático + Preto e branco."
+   ],
+   "exemplos": [
+    {
+     "src": "pa/righetti_f096-direita-recorte.jpg",
+     "legenda": "Righetti 96, página da direita, ampliado: no \"Desentortar automático\" o cabeçalho some, aparece uma faixa preta e as linhas saem cortadas."
+    },
+    {
+     "src": "pa/righetti_f096-direita-pagina.jpg",
+     "legenda": "A página inteira nas seis colunas."
+    },
+    {
+     "src": "pa/cursus_p151-recorte.jpg",
+     "legenda": "Cursus 151, ampliado: o começo das linhas sai cortado no automático."
+    },
+    {
+     "src": "pa/cursus_p151-pagina.jpg",
+     "legenda": "A página inteira."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Papel em volta antes de desentortar (recomendo)",
+     "texto": "O programa põe uma margem de papel branco em volta da página, desentorta e corta de novo depois, como o ScanTailor faz. A ordem das etapas não muda. Ressalva: a página pode mudar um pouco de tamanho depois do novo corte.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Desentortar antes de cortar",
+     "texto": "Muda a ordem do preparo: desentorta a página inteira e só depois mede e faz o corte. Ressalva: mexe na ordem que você aprovou em 09/10 (endireitar → cortar); livro já começado continua igual.",
+     "imgs": []
+    },
+    {
+     "id": "c",
+     "nome": "C — Deixar como está, desligado, com aviso",
+     "texto": "Continua desligado de fábrica; quem ligar vê o aviso \"pode cortar letras da beirada\". O conserto fica para depois.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
+}
