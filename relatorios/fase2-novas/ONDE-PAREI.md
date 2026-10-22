@@ -200,4 +200,4 @@ Resposta do Samuel à `b-8-tinta-com-cor` (Central, 22/10): **"As duas: A e B co
    Foto: `relatorios/conferir/fase2-novas/tinta-a-e-b/horas_p013-titulo-ampliado.jpg` (A e B no Preto e branco).
 
 GitHub da tinta A e B: suíte `39850503362` (`41fa7bc`): 2185 passaram, 0 falharam; botões 234 ações, 0 falhas.
-Velocidade `39849559789` (`f26407c` → `8226f33`): rodando (ver a linha abaixo quando sair).
+Velocidade `39849559789` (`f26407c` → `8226f33`): **"igual (dentro do vai-e-vem)"** - abrir 36,5 → 36,6 s (+0,4%); trocar de página 4,26 → 4,32 s (+1,3%); Mágico pro 45,3 → 45,0 s (−0,7%); Preto e branco 29,0 → 29,0 s (+0,1%). O caminho de fábrica não passa pela conta nova.
