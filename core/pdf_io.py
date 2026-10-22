@@ -275,6 +275,22 @@ class EscritorPDF:
             pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), xref=xref)
         self._paginas += 1
 
+    def escrever_em_duas_camadas(self, img: np.ndarray, dpi: int = DPI_PADRAO) -> None:
+        """Itens 2.10 e 1.6 (opção, desmarcada de fábrica): a página em duas
+        camadas - o fundo embaixo, em resolução baixa, e o que se imprime em
+        cima, recortado por uma máscara de 1 bit (core/duas_camadas.py). O
+        tamanho da página é o mesmo de escrever_imagem."""
+        from core import duas_camadas
+
+        altura, largura = img.shape[:2]
+        retangulo = fitz.Rect(0, 0, largura / dpi * 72.0, altura / dpi * 72.0)
+        de_baixo, cima, mascara = duas_camadas.camadas(img)
+        with _TRANCA:
+            pagina = self.doc.new_page(width=retangulo.width, height=retangulo.height)
+            pagina.insert_image(retangulo, stream=de_baixo)
+            pagina.insert_image(retangulo, stream=cima, mask=mascara)
+        self._paginas += 1
+
     def copiar_pagina(self, origem: fitz.Document, indice: int) -> None:
         """Copia a página do PDF de origem sem rasterizar.
 

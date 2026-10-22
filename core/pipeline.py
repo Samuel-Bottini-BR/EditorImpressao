@@ -2486,6 +2486,17 @@ def _pagina_pronta(projeto: Projeto, doc, folha: ConfigFolha, pagina: ConfigPagi
     return img, mono
 
 
+def _escrever(escritor: EscritorPDF, img: np.ndarray, mono: bool, projeto: Projeto) -> None:
+    """Uma pagina pronta ate o PDF. Itens 2.10 e 1.6 (opcao do livro,
+    desmarcada de fabrica): com Projeto.pdf_em_duas_camadas, a pagina que nao
+    e 1 bit vai em duas camadas (core/duas_camadas.py); a de 1 bit e toda
+    pagina com a caixinha desmarcada saem como sempre."""
+    if getattr(projeto, "pdf_em_duas_camadas", False) and not mono:
+        escritor.escrever_em_duas_camadas(img, dpi=projeto.qualidade_dpi)
+    else:
+        escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
+
+
 def _grupos_por_folha(projeto: Projeto, ativas: list[ConfigPagina]) -> list[list[tuple[int, ConfigPagina]]]:
     """As paginas ativas juntadas por folha (as duas metades seguidas de uma
     folha dividida vao para o mesmo trabalhador, que desenha a folha uma vez
@@ -2535,7 +2546,7 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
                 continue
             img, mono = _pagina_pronta(projeto, doc, folha, pagina, da_vez, feito,
                                        conta_das_margens)
-            escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
+            _escrever(escritor, img, mono, projeto)
             del img
         _checar(cancelado)
         return
@@ -2560,7 +2571,7 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             if pronta is None:
                 continue
             img, mono = pronta
-            escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
+            _escrever(escritor, img, mono, projeto)
             del img
         del prontas
         feito = grupo[-1][0] + 1

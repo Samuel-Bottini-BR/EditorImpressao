@@ -432,6 +432,12 @@ class Projeto:
     # ui/tela_opcoes.py. Arriscado: trocar o padrao de margens_iguais (livro
     # ja comecado mudaria de tamanho).
     margens_iguais: bool = False
+    # Itens 2.10 e 1.6 (conferencia 5, P3, 01/10/2026: "Eu quero ter a opcao
+    # 1.6, mas eu quero poder deixar como esta tambem"): o PDF de saida em
+    # duas camadas, a letra em cima e o fundo embaixo (core/duas_camadas.py).
+    # Desmarcado de fabrica; projeto antigo abre desmarcado. Quem mostra:
+    # ui/janela_confirmar.py ("Confirmar e processar").
+    pdf_em_duas_camadas: bool = False
     margens_mm: list = field(default_factory=lambda: [10.0, 5.0, 10.0, 5.0])
     margens_alinhamento: list = field(default_factory=lambda: ["meio", "meio"])
 
