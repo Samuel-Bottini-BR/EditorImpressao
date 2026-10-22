@@ -945,6 +945,8 @@ class PainelMarcarComo(Bloco):
             botao.clicked.connect(lambda _c=False, t=tipo: self.definir_tipo(t))
             self.dentro.addWidget(botao)
             self.botoes[tipo] = botao
+            if tipo == TINTA_COR and self.tipo == TINTA_COR:
+                self._montar_jeitos_da_cor()
         self.tipo = self.tipo or GRAVURA
         # item 2.18: a cor do "pintar por cima" (abre a caixa de cores do Qt)
         self.botao_cor = botao_de_lista(f"cor de pintar: {self.cor}", escolhido=False)
@@ -955,6 +957,40 @@ class PainelMarcarComo(Bloco):
 
     cor_escolhida = Signal(str)
     cor = "#ffffff"
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta b-8-tinta-com-cor:
+    # "As duas: A e B como opções separadas". Os dois jeitos aparecem logo
+    # abaixo de "tinta com a cor, papel branco", só quando ela é a escolhida;
+    # valem para a próxima área marcada (a já marcada guarda o dela).
+    # De fábrica a A (False), igual ao de antes: ARRISCADO trocar.
+    escurecer_escolhido = Signal(bool)
+    escurecer = False
+    JEITOS_DA_COR = ((False, "cor como no livro"), (True, "cor escurecida"))
+
+    def _montar_jeitos_da_cor(self) -> None:
+        """Os dois botões "cor como no livro" (A) e "cor escurecida" (B), um
+        ao lado do outro e um pouco recuados, embaixo do botão da tinta com a
+        cor. CONTROLE MÍNIMO, provisório até o layout (sem emoji, §3)."""
+        linha = Bloco()                  # sem fundo proprio (ver Bloco)
+        caixa = QHBoxLayout(linha)
+        caixa.setContentsMargins(18, 0, 0, 0)
+        caixa.setSpacing(5)
+        self.botoes_da_cor = {}
+        for escura, texto in self.JEITOS_DA_COR:
+            botao = botao_de_lista(texto, escolhido=(escura == self.escurecer))
+            botao.clicked.connect(lambda _c=False, e=escura: self.definir_escurecer(e))
+            caixa.addWidget(botao)
+            self.botoes_da_cor[escura] = botao
+        self.dentro.addWidget(linha)
+
+    def definir_escurecer(self, escurecer: bool) -> None:
+        """Troca entre A ("cor como no livro") e B ("cor escurecida")."""
+        escurecer = bool(escurecer)
+        if escurecer == self.escurecer:
+            return
+        self.escurecer = escurecer
+        self._montar()
+        self.escurecer_escolhido.emit(escurecer)
 
     def _escolher_cor(self) -> None:
         """Abre a caixa de cores; a cor vale para o próximo "pintar por cima"."""

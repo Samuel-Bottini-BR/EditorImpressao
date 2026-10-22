@@ -740,6 +740,8 @@ class TelaConferir(QWidget):
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
         painel.marcar_como.cor_escolhida.connect(              # item 2.18
             lambda cor: self.editor_selecao.definir_cor_de_pintar(cor))
+        painel.marcar_como.escurecer_escolhido.connect(        # item 2.18, A ou B
+            lambda escura: self.editor_selecao.definir_tinta_escurecida(escura))
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
         painel.filtro_da_pagina.medidor_mudou.connect(self._medidor_soltou)

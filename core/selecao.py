@@ -125,6 +125,17 @@ class Regiao:
     # Campo novo e opcional (projeto antigo abre igual: padrao vazio).
     cor: str = ""
 
+    # Item 2.18, resposta do Samuel de 22/10/2026 a pergunta b-8-tinta-com-cor
+    # ("As duas: A e B como opcoes separadas"): so para TINTA_COR. False = A,
+    # "cor como no livro" (a tinta com a cor do original, o de fabrica e o que
+    # o programa sempre fez); True = B, "cor escurecida" (a mesma tinta, mais
+    # escura e um pouco mais forte; core/editar_zonas.escurecida).
+    # ARRISCADO: o padrao tem de continuar False. Projeto gravado antes disto
+    # nao tem a chave e abre com o padrao (de_dicionario), entao sai A, igual
+    # ponto por ponto (tests/test_tinta_escurecida.py); programa de antes que
+    # abrir um projeto novo descarta a chave e mostra A.
+    tinta_escurecida: bool = False
+
     def valida(self) -> bool:
         """Tipo e forma reconhecidos, e pontos suficientes para desenhar a forma?"""
         if self.tipo not in TIPOS or self.forma not in FORMAS:

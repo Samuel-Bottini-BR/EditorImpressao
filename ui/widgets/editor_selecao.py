@@ -259,6 +259,9 @@ class EditorSelecao(QWidget):
         # Item 2.18: a cor do "Pintar por cima", as areas achadas delineadas,
         # a area escolhida pela ferramenta Ajustar e a copiada.
         self.cor_de_pintar = "#ffffff"
+        # Item 2.18 (Samuel, 22/10/2026, "As duas: A e B"): a proxima "tinta
+        # com a cor" sai escurecida (B)? De fabrica nao (A, como sempre).
+        self.tinta_escurecida = False
         self.mostrar_achadas = False
         self.escolhida: int | None = None
         self._copiada: Regiao | None = None
@@ -352,6 +355,11 @@ class EditorSelecao(QWidget):
         """Item 2.18: a cor ("#rrggbb") do proximo "Pintar por cima"."""
         self.cor_de_pintar = cor or "#ffffff"
 
+    def definir_tinta_escurecida(self, escurecer: bool) -> None:
+        """Item 2.18: a proxima "Tinta com a cor original" sai como no livro
+        (False, A) ou escurecida (True, B)."""
+        self.tinta_escurecida = bool(escurecer)
+
     def definir_mostrar_achadas(self, mostrar: bool) -> None:
         """Item 2.18: delinear (em laranja) as areas que a maquina achou."""
         self.mostrar_achadas = bool(mostrar)
@@ -413,6 +421,8 @@ class EditorSelecao(QWidget):
         regiao.filtro = self.filtro_da_regiao
         if regiao.tipo == PINTAR:
             regiao.cor = self.cor_de_pintar       # item 2.18
+        if regiao.tipo == TINTA_COR:
+            regiao.tinta_escurecida = self.tinta_escurecida   # item 2.18, A ou B
         self._marcar()
         self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()

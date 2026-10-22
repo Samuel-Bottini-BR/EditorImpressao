@@ -19,7 +19,12 @@ O QUE FAZ (as decisões do Samuel, literais na ficha memoria/itens/2.18.md)
     (`aplicar_por_cima`), como as "fill zones" do ScanTailor, que são a última
     coisa da saída dele (OutputGenerator.cpp, applyFillZonesInPlace):
         PINTAR       a área inteira de uma cor (Regiao.cor; vazio = branco);
-        TINTA_COR    a tinta com a cor do original, o resto em branco;
+        TINTA_COR    a tinta com a cor do original, o resto em branco
+                     (desde 22/10/2026 com duas opções, resposta do Samuel à
+                     pergunta b-8-tinta-com-cor, "As duas: A e B como opções
+                     separadas": A "cor como no livro", o de fábrica, e B
+                     "cor escurecida", Regiao.tinta_escurecida; ver
+                     `escurecida`);
         TINTA_PRETA  a tinta em preto, o resto como no original.
     A "tinta" é o preto do Preto e branco da página (o mesmo binarizador, com a
     força da página), medido só no retângulo da área.
@@ -27,8 +32,11 @@ O QUE FAZ (as decisões do Samuel, literais na ficha memoria/itens/2.18.md)
 TUDO É CÓPIA: nenhuma função muda a Regiao recebida (o desfazer da tela guarda
 as antigas). Pontos em fração da página, como em core/selecao.py.
 
-SEGURO MUDAR: DESLOCAMENTO_DA_COPIA, LADO_DA_BUSCA. ARRISCADO: a ordem em
-`aplicar_por_cima` (PINTAR por último: a pessoa pintou por cima de tudo).
+SEGURO MUDAR: DESLOCAMENTO_DA_COPIA, LADO_DA_BUSCA, e (só mudam a opção B)
+BRILHO_DA_ESCURECIDA e FORCA_DA_COR_ESCURECIDA. ARRISCADO: a ordem em
+`aplicar_por_cima` (PINTAR por último: a pessoa pintou por cima de tudo); e o
+caminho da opção A dentro dela, que tem de sair igual ponto por ponto ao de
+antes de 22/10/2026 (tests/test_tinta_escurecida.py confere).
 """
 
 from __future__ import annotations
@@ -43,6 +51,14 @@ from core.selecao import (AUTOMATICO, MAO, PAPEL, PINTAR, REDE, SOMAR, SUBTRAIR,
 
 DESLOCAMENTO_DA_COPIA = 0.03     # a cópia colada aparece um pouco ao lado
 LADO_DA_BUSCA = 800              # resolução da conta de "em que área cliquei"
+
+# Opção B da "Tinta com a cor original" ("cor escurecida", 22/10/2026). São os
+# números da simulação que o Samuel viu e escolheu (pergunta 8, fotos em
+# relatorios/conferir/fase2-novas/pergunta-8/): o brilho (L do Lab) pela
+# metade e a cor (a e b do Lab) 25% mais forte. Mudar aqui muda a cor de toda
+# área B já marcada nos projetos (não fica gravado na área): conferir com ele.
+BRILHO_DA_ESCURECIDA = 0.5
+FORCA_DA_COR_ESCURECIDA = 1.25
 
 
 # --------------------------------------------------------------- escolher
@@ -205,8 +221,15 @@ def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: boo
             continue
         tinta = _tinta_na_area(original, mascara, forca_preto, algoritmo)
         if tipo == TINTA_COR:
+            # Opção A ("cor como no livro"), o de fábrica: estas duas linhas são
+            # as de antes de 22/10/2026 e valem para TODA a área, mesmo quando
+            # há área B (que só é trocada depois, por cima). ARRISCADO mexer:
+            # é o que garante o livro já começado sair igual ponto por ponto.
             resultado[mascara & tinta] = original3[mascara & tinta]
             resultado[mascara & ~tinta] = 255
+            escura = _mascara_escurecida(selecao, altura, largura) & mascara & tinta
+            if escura.any():
+                resultado[escura] = escurecida(original3, escura)[escura]
         else:
             resultado[mascara & tinta] = 0
             resultado[mascara & ~tinta] = original3[mascara & ~tinta]
@@ -220,6 +243,42 @@ def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: boo
         mascara = Selecao([regiao] + depois).mascara(altura, largura, PINTAR)
         resultado[mascara] = _cor_em_bgr(regiao.cor)
     return resultado, False
+
+
+def _mascara_escurecida(selecao, altura: int, largura: int) -> np.ndarray:
+    """Onde a "Tinta com a cor" é a opção B ("cor escurecida"). A última área
+    desenhada manda no pedaço em que duas se cruzam (como em toda a marcação);
+    o "tirar" do pincel já está fora da máscara do tipo, que a chamadora junta
+    com esta. Sem área B: tudo False, sem desenhar nada (caminho de fábrica)."""
+    escura = np.zeros((altura, largura), bool)
+    regioes = [r for r in getattr(selecao, "regioes", [])
+               if r.tipo == TINTA_COR and r.operacao == SOMAR and r.valida()]
+    if not any(r.tinta_escurecida for r in regioes):
+        return escura
+    for regiao in regioes:
+        dela = Selecao([regiao]).mascara(altura, largura, TINTA_COR)
+        escura[dela] = bool(regiao.tinta_escurecida)
+    return escura
+
+
+def escurecida(original3: np.ndarray, onde: np.ndarray) -> np.ndarray:
+    """A opção B: a cor do original mais escura e um pouco mais forte, no Lab
+    (BRILHO_DA_ESCURECIDA no L, FORCA_DA_COR_ESCURECIDA no a e no b). Só o
+    retângulo que cerca `onde` é calculado (o resto volta como no original):
+    a página inteira em Lab custaria à toa. Vermelho vira vermelho-escuro,
+    azul vira azul-marinho, tinta desbotada fica marrom-escura; o branco do
+    papel não entra (só a tinta é trocada, na chamadora)."""
+    saida = original3.copy()
+    ys, xs = np.nonzero(onde)
+    if ys.size == 0:
+        return saida
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    lab = cv2.cvtColor(np.ascontiguousarray(original3[y0:y1, x0:x1]),
+                       cv2.COLOR_BGR2LAB).astype(np.float32)
+    lab[..., 0] *= BRILHO_DA_ESCURECIDA
+    lab[..., 1:] = (lab[..., 1:] - 128.0) * FORCA_DA_COR_ESCURECIDA + 128.0
+    saida[y0:y1, x0:x1] = cv2.cvtColor(np.clip(lab, 0, 255).astype(np.uint8), cv2.COLOR_LAB2BGR)
+    return saida
 
 
 def _tinta_na_area(original: np.ndarray, mascara: np.ndarray, forca_preto: int,
