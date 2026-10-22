@@ -1,0 +1,6 @@
+1600x821-antes-de-processar: janela dos avisos com 560 x 520 pontos (programa 1280 x 657), 25 linhas
+maximizada-antes-de-processar: janela dos avisos com 560 x 520 pontos (programa 1536 x 816), 25 linhas
+ok   1600x821: clique do Windows em processar abriu 'Antes de processar'
+ok   1600x821: o 'ver' (clique do Windows) fechou a janela sem processar
+ok   maximizada: clique do Windows em processar abriu 'Antes de processar'
+ok   maximizada: o 'ver' (clique do Windows) fechou a janela sem processar
