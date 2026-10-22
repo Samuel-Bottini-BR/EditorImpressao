@@ -76,7 +76,11 @@
    "id": "b-3-cadernos-antigo",
    "titulo": "O \"Montar cadernos\" antigo: tirar ou deixar junto do novo?",
    "explicacao": [
-    "O antigo monta a folha com o dobro da largura da página, sem A4 e sem margem. O novo monta em A4, com margens e escala, e faz tudo o que o antigo fazia."
+    "O que você está escolhendo: se o programa continua com a montagem de cadernos antiga, além da nova.",
+    "As duas montam em livreto: põem as páginas na ordem da dobra, em cadernos de 20 páginas. A diferença é só o tamanho da folha que sai.",
+    "A antiga (a que existe hoje no programa, vinda do embaralhador) põe as duas páginas lado a lado no tamanho em que foram escaneadas. No Livro de Horas, cada página do scan tem uns 35 x 50 cm; então a folha sai com 70,5 x 50,1 cm: a largura de duas páginas e a altura de uma. Isso não é A4 e não cabe na impressora. Por isso o Kaique precisa diminuir na janela de imprimir do UPDF (\"escala personalizada\") antes de imprimir.",
+    "A nova faz a mesma ordem, mas já monta numa folha A4 deitada, com 1,3 cm de margem por fora e 1 cm na costura, e a escala certa. O arquivo sai pronto para a impressora, sem passar pelo UPDF.",
+    "Correção do que eu escrevi no chat: os 75% e 83% das suas fotos de 14/10 eram de outro arquivo (um livro já embaralhado), não deste caso."
    ],
    "opcoes": [
     {
@@ -86,7 +90,7 @@
      "imgs": [
       {
        "src": "pb/livreto-de-fabrica-folha1.png",
-       "legenda": "A montagem NOVA: folha A4 deitada, margem mínima em vermelho (1,3 cm do papel, 1 cm da dobra), dobra em azul."
+       "legenda": "A nova, lado 1: A4 deitada, margem mínima em vermelho, dobra em azul."
       }
      ]
     },
@@ -97,13 +101,27 @@
      "imgs": [
       {
        "src": "pb/cadernos-antigo.png",
-       "legenda": "A montagem ANTIGA (a de hoje): folha com o dobro da largura da página, 70,5 x 50,1 cm, sem A4 e sem margem."
-      },
-      {
-       "src": "pb/livreto-de-fabrica-folha1.png",
-       "legenda": "A NOVA, para comparar."
+       "legenda": "A antiga, lado 1: 70,5 x 50,1 cm, sem margem."
       }
      ]
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T15:27:08Z",
+     "texto": "Pera ai, mas ele monta em formato livreto também? como assim monta com dobro de largura explique melhor."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T16:20:00Z",
+     "texto": "Sim, o antigo também monta em livreto. A diferença é o tamanho da folha: explico abaixo, com um desenho em escala."
+    }
+   ],
+   "exemplos": [
+    {
+     "src": "pb/cadernos-tamanhos.png",
+     "legenda": "Desenho em escala: a folha antiga (vermelho, 70,5 x 50,1 cm) e a A4 da nova (azul, 29,7 x 21 cm)."
     }
    ]
   },
@@ -198,6 +216,18 @@
      "src": "pb/horas_p047-Igualar_a_luz-recorte.png",
      "legenda": "Livro de Horas 47, ampliado."
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T15:22:07Z",
+     "texto": "mas vai ser uma opção que eu posso desligar e ligar né?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T16:20:00Z",
+     "texto": "Sim. \"Igualar a luz da página\" é uma caixinha no painel Filtro, desligada de fábrica; você liga e desliga quando quiser, na página ou no livro todo. Com a sua escolha (\"Em todos, com aviso\"), ela aparece em todos os filtros, e no Melhorar e no Mágico pro mostra um aviso de que pode lavar a tinta."
+    }
    ]
   },
   {
@@ -232,6 +262,18 @@
     {
      "src": "pb/escola_p035-Tirar_o_chuvisco_50-recorte.png",
      "legenda": "Escola de Jesus 35, também em 50, ampliado."
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T15:23:46Z",
+     "texto": "mas eu vou poder escolher a escala né?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T16:20:00Z",
+     "texto": "Sim. É uma régua de 0 a 100 que você arrasta; vem em 0 (desligado). Com a sua escolha (\"Até 100, com aviso a partir de 20\"), a partir de 20 aparece o aviso de que a letra pode borrar."
     }
    ]
   },

@@ -207,6 +207,10 @@
   .opcao-p.escolhida { border: 2px solid var(--verde); background: var(--verde-suave); }
   .opcao-p h5 { margin: 0; font: 600 16px/1.3 var(--fonte-titulo); }
   .opcao-p p { font-size: 15px; }
+  .fixado { background: var(--magenta-suave); border-radius: 10px; padding: 10px 14px; display: grid; gap: 6px; }
+  .fixado .quem { font-weight: 700; }
+  .fixado .gerente { border-left: 3px solid var(--azul); padding-left: 10px; }
+  .fixado .samuel { border-left: 3px solid var(--magenta); padding-left: 10px; }
   .final { background: var(--folha); border: 2px solid var(--tinta); border-radius: 12px; padding: 16px; display: grid; gap: 10px; }
   .final h4 { margin: 0; font: 600 20px/1.25 var(--fonte-titulo); }
 
@@ -914,6 +918,7 @@
       var cab = el("div", "quadro-cab"); cab.appendChild(el("span", "num", "Quadro " + (n + 1) + " de " + rel.quadros.length));
       if (r && r.opcao) cab.appendChild(el("span", "chip " + (r.opcao === "bom" ? "c-ok" : r.opcao === "pior" ? "c-pior" : "c-melhorar"), "✓ Sua resposta: " + r.opcaoNome));
       cab.appendChild(el("h4", null, q.nome)); s.appendChild(cab);
+      var fxq = fixados(q); if (fxq) s.appendChild(fxq);
       s.appendChild(paragrafos(q.explicacao));
       if (q.olhar) { var o = el("p", "olhar"); o.appendChild(el("b", null, "O que olhar: ")); o.appendChild(document.createTextNode(q.olhar)); s.appendChild(o); }
       s.appendChild(fotosQuadro(q.imgs || [], reg, todas));
@@ -933,6 +938,7 @@
       var cab = el("div", "quadro-cab"); cab.appendChild(el("span", "num", "Pergunta " + (n + 1) + " de " + rel.perguntas.length));
       if (r && r.opcao) cab.appendChild(el("span", "chip c-ok", "✓ Sua resposta: " + r.opcaoNome));
       cab.appendChild(el("h4", null, q.titulo)); s.appendChild(cab);
+      var fxp = fixados(q); if (fxp) s.appendChild(fxp);
       s.appendChild(paragrafos(q.explicacao));
       var ex = (q.exemplos || []).slice(); if (q.primeira_imagem) ex.unshift(q.primeira_imagem);
       if (ex.length) s.appendChild(fotosQuadro(ex, reg, todas));
@@ -965,6 +971,16 @@
       f.appendChild(blocoResposta(rel, rel.pergunta.id, ops2, null, true));
       caixa.appendChild(f);
     }
+  }
+  function fixados(q) {
+    if (!q.historico || !q.historico.length) return null;
+    var b = el("div", "fixado"); b.appendChild(el("span", "rot", "Comentários anteriores desta pergunta (fixados)"));
+    q.historico.forEach(function (h) {
+      var d = el("div", h.quem === "samuel" ? "samuel" : "gerente");
+      d.appendChild(el("span", "quem", (h.quem === "samuel" ? "Você" : "Gerente") + (h.em ? " · " + dataHora(h.em) : "") + ": "));
+      d.appendChild(document.createTextNode(h.texto)); b.appendChild(d);
+    });
+    return b;
   }
   function fotosQuadro(imgs, reg, todas) {
     var w = el("div", "fotos-q"); if (!imgs.length) return w;
