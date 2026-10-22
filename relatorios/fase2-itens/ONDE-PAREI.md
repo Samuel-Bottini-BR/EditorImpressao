@@ -275,3 +275,12 @@ cunha preta: Cursus 176, Matemática 65 e 66 (`depois-do-conserto/cursus_p176-pa
 perto da lombada. As que têm alguma curva: Matemática para vencer (pp. 31, 63, 65, 66: perto da lombada, na sombra)
 e Marial (pp. 41, 201, 501, 701: curva pequena). O automático mexe pouco nas da Matemática e nada nas do Marial (não
 acha curva que baste). Você tem um livro grosso escaneado aberto, com as linhas bem curvas, para eu testar?
+
+### Fim (22/10, noite) — entregue à gerente
+
+- GitHub suíte 39853809910 (ramo em `f75ddf1`): 2175 passaram, 0 falharam, 73 pulados; botões 221 ações, 0 falhas.
+- Velocidade 39841907268 (`8cb90a1` x `a44c668`): "igual (dentro do vai-e-vem)". O `177f711` só muda o caminho
+  ligado (desligado não passa por ele); não passou no filtro.
+- Fábrica: 96 de 96 somas iguais ao `b8e9af7` no `a44c668` e no `177f711`.
+- Fotos (todas abertas): `relatorios/conferir/fase2-itens/2.12/depois-do-conserto/` (fora do git), 14 páginas.
+- Perguntas P1 a P3 acima, abertas.
