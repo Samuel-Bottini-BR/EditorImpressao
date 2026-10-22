@@ -166,3 +166,49 @@ Procura terminou (21/10): 828 páginas medidas, 40 miniaturas antes|depois em
 p. 76, 106, 96 e Cursus philosophicus p. 176, 401, 186, 151, 166... A "diferença" muito alta (77 a 97) pode ser a
 página inteira deslocada, e não curva: conferir a olho antes de escolher. Uma página deu "Faltou memória para
 desentortar" (PC com outros agentes) — anotar como ressalva ou repetir sozinha. Nenhum processo meu ficou aberto.
+
+## 22/10/2026 — Implementador A retoma o 2.12 (pedido da gerente) — PARADO numa escolha
+
+**GitHub lido (uma vez):** suíte 39623234116 (ramo em `81a950e`): as 5 partes e os botões passaram (verde).
+Velocidade 39623242157 (`25504fb` x `81a950e`): **"igual (dentro do vai-e-vem)"**.
+
+**Desligado de fábrica sai idêntico:** somas de `ffa2463` x `2.8/somas-antigo.json` (código `b8e9af7`) em Escola 7,
+Graduale 221 e Horas 13, nos três filtros: **9 de 9 iguais** (`saida_teste/2.12/somas-hoje.json`).
+
+**A procura de 21/10 não existe mais no disco** (a pasta `relatorios/conferir/fase2-itens/2.12/procura/` não foi
+achada; provavelmente o caminho perdeu as barras, como a pasta de compilação citada acima). E ela lia a página sem o
+giro de 90° nem a divisão do programa: no Righetti (folha deitada) as miniaturas não valem.
+
+**Antes/depois pelo caminho do programa** (`rodada_gabarito.py --item 2.12`; livro novo, ajustes de fábrica:
+girar 90 → dividir → endireitar → cortar → desentortar → filtro; colunas Original · Hoje Original · Automático ·
+Pelas margens · Hoje Preto e branco · Automático + Preto e branco). Imagens em
+`relatorios/conferir/fase2-itens/2.12/imagens/` (fora do git), TODAS abertas:
+- Graduale 221, Escola 7 (gabarito): Escola 7 sem mudança no automático (página reta: certo); Graduale 221 o
+  automático desloca a página um pouco, nada curvo para endireitar.
+- Cursus 151, 176, 401 (miolo, página única com a lombada à esquerda): o automático **empurra o texto e letras somem
+  na beirada** (recorte do 151: começo das linhas cortado).
+- Righetti: o programa NÃO gira nem divide esse livro sozinho (de fábrica livro novo não divide; o giro automático
+  não pega). Para chegar à página que vai ser impressa, fiz o que o Kaique faria: PDF de rascunho girado 270° e
+  "Dividir" ligado no livro (`scripts/rodada_trecho.py`, trecho das folhas 91-110). Folha 96 (`righetti_f096-*`):
+  esquerda, o automático não acha curva (igual a hoje); **direita, o automático amplia o alto, achata o pé e corta
+  o começo das linhas ("mente" → "nte")**. As imagens `righetti_p0xx-*` e `righettig_p0xx-*` (página deitada /
+  página dupla sem dividir) NÃO valem como antes/depois (não é a página que vai ser impressa); ficam só como prova
+  de que o desentortar estraga folha não dividida.
+
+**A causa provável (achada, não consertada):**
+1. Na Righetti 96 direita, com "lado = página única" o ScanTailor não acha curva e não mexe
+   (`scripts/desentortar_lado_da_pagina.py`); com "lado = direita" a correção da beirada da lombada (código dele,
+   sem mudança) monta curvas numa página quase reta e distorce. Limitar à caixa do conteúdo (sem a faixa preta do
+   scanner) não mudou nada.
+2. O ScanTailor "não só desenrola as linhas, também as estica nas partes curvas" (`DistortionModel::modelDomain`).
+   Lá a página de saída é o conteúdo MAIS as margens do layout (~10 mm); aqui o desentortar vem depois do nosso corte
+   rente (1 mm de folga), então o que estica sai da imagem: letras cortadas na beirada.
+
+**A escolha que o ScanTailor não resolve** (por isso parei, regra da gerente): para não cortar letras, o desentortar
+precisa de folga em volta antes de redesenhar — (a) dar uma margem branca antes e cortar de novo depois (a página
+pode mudar de tamanho), ou (b) desentortar antes do corte e medir o corte na página já desentortada (muda a ordem do
+preparo), ou (c) deixar como está, desligado de fábrica, com aviso de que pode cortar letras. Não decidi.
+
+**Falta:** página curva DE VERDADE perto da lombada como exemplo bom (nenhuma das 8 que olhei é bem curva); depois da
+escolha acima, o conserto e um teste de reversão com medida (ex.: nenhuma peça de tinta a menos de 1 mm da beirada
+depois do desentortar).
