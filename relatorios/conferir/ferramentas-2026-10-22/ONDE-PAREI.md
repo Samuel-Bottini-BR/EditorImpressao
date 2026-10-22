@@ -53,7 +53,29 @@ folha) → endireitada → cortada (automático) → filtro Original; antes = c�
   (tabela dobrável) ficam fora da conta e ganham o aviso "Página bem maior que as outras"**. A tabela é o caso
   decidido (g9-pagina-muito-maior); a folha de rosto não é tabela, é só 35 % maior (o limite é 25 % acima da
   mediana) e vai ser impressa de outro tamanho. Ressalva.
-- Observação: as margens são branco puro; no filtro Original o papel creme fica com uma moldura branca em volta
+- "Desligado de fábrica sai igual" (máquina): 6 páginas (graduale 222, horas 14, palatino 57, escola 7, horas 11,
+  marial 7) em Preto e branco e Melhorar, antigo x novo: **12 de 12 somas iguais** (o implementador fez 96).
+
+### 2.10 + 1.6 PDF em duas camadas (olho + máquina; 12 fotos abertas). Caminho: girar → não dividiu → endireitada →
+cortada → filtro (Preto e branco, Melhorar ou Mágico pro); "uma" = caixinha desmarcada, "duas" = marcada. Um livro
+de 6 páginas. Fotos `img/210_<página>_<filtro>.jpg` (inteira + pedaço ampliado a 300 DPI).
+- Tamanho do arquivo: Preto e branco **29,1 → 8,1 MB**; Melhorar **51,2 → 11,9 MB**; Mágico pro **50,9 → 11,9 MB**.
+  Horas 11 no Preto e branco: **24,2 → 4,2 MB** (o caso do pedido). Tempo de processar igual ou menor.
+- Diferença ponto a ponto (150 DPI): média de 0 a 1,5 em 255, máximo 42; nenhum ponto com diferença acima de 40
+  em nenhuma página. Página de 1 bit (Palatino 5 e Graduale 221 no Preto e branco) sai **idêntica** (0).
+- Uma linha por página (as duas lado a lado, olhadas inteiras e ampliadas):
+  - Horas 11 (PB e Melhorar): iluminura, título em cor e letra preta iguais; não achei diferença a olho.
+  - Horas 13 (PB e Melhorar): moldura dourada, título vermelho e azul, o "c" de lápis: iguais.
+  - Escola 7 (PB e Melhorar): texto, gravura colorida, endereço do blog: iguais.
+  - Palatino 5 (PB idêntica; Melhorar): retrato e letras iguais a olho.
+  - Graduale 221 (PB idêntica; Melhorar): linhas vermelhas, neumas, capitular: iguais.
+  - Opus Majus 20 (PB e Melhorar): igual entre as duas; **nos dois a foto da estátua sai estragada** (Melhorar: manchas
+    pontilhadas no fundo escuro; PB: blocos pretos e cinza liso) — é o filtro de hoje com o PDF de camadas (Fase 1.1),
+    não deste item.
+- Ressalva: a camada de cima vai em JPEG de qualidade 92 (perda pequena); o implementador escreveu isso. Não testei
+  abrir o PDF de duas camadas em outro leitor além do PyMuPDF (Acrobat/navegador).
+
+- Observação (2.4): as margens são branco puro; no filtro Original o papel creme fica com uma moldura branca em volta
   (como o ScanTailor faz).
 - [ ] 3. 2.6: PDF de impressão de verdade + dobra simulada
 - [ ] 4. Janela de verdade (fora da tela, WM_CLOSE)

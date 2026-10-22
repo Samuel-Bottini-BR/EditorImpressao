@@ -28,7 +28,7 @@ import tempfile
 import time
 from pathlib import Path
 
-_DADOS = Path(tempfile.gettempdir()) / "vfr22_localappdata"
+_DADOS = Path(os.environ.get("VFR_DADOS") or (Path(tempfile.gettempdir()) / "vfr22_localappdata"))
 _DADOS.mkdir(parents=True, exist_ok=True)
 os.environ["LOCALAPPDATA"] = str(_DADOS)
 
@@ -36,7 +36,7 @@ FILTROS = {}
 
 
 def _pagina_de(pid: str, raiz: Path):
-    if ":" in pid and pid.lower().split(":")[0].endswith(".pdf"):
+    if ":" in pid and pid.lower().rsplit(":", 1)[0].endswith(".pdf"):
         arq, n = pid.rsplit(":", 1)
         return Path(arq), int(n) - 1
     return raiz / "gabarito" / "paginas" / f"{pid}.pdf", 0
@@ -74,6 +74,14 @@ def frase(projeto) -> str:
     return " → ".join(partes)
 
 
+def _trab():
+    try:
+        import core.nucleos as n
+        return n.quantos_trabalhadores()
+    except Exception:  # noqa: BLE001 - codigo antigo nao tem
+        return "sem 2.16"
+
+
 def processar_livro(raiz: Path, pids, saida: Path, campos: dict, campos_pagina: dict) -> dict:
     import fitz
     from core.pipeline import analisar_projeto, processar
@@ -105,6 +113,7 @@ def processar_livro(raiz: Path, pids, saida: Path, campos: dict, campos_pagina: 
         "avisos": {str(i + 1): list(pg.alertas) for i, pg in enumerate(projeto.paginas_ativas) if pg.alertas},
         "segundos_analise": round(t_analise, 2), "segundos_processar": round(t_proc, 2),
         "tamanho_arquivo_mb": round(saida.stat().st_size / 1e6, 3),
+        "trabalhadores": _trab(),
     }
     saida.with_suffix(".json").write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")
     return info
@@ -151,6 +160,12 @@ def main() -> int:
     o.saida = o.saida.resolve()
     sys.path.insert(0, str(raiz))
     os.chdir(raiz)
+    if os.environ.get("VFR_TRABALHADORES") and (raiz / "core" / "nucleos.py").is_file():
+        # 2.16: forca N trabalhadores (o PC esta com pouca memoria livre e o
+        # programa cairia sozinho para 1); so para comparar 1 x N
+        import core.nucleos as _nuc
+        _n = int(os.environ["VFR_TRABALHADORES"])
+        _nuc.quantos_trabalhadores = lambda *a, **k: _n
     if o.modo == "livro":
         from core import filtros as F
         campos = json.loads(o.campos)
