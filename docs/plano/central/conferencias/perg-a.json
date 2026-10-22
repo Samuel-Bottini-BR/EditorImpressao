@@ -16,11 +16,10 @@
    "id": "a-212-desentortar",
    "titulo": "Desentortar perto da lombada (2.12): como evitar que corte as letras?",
    "explicacao": [
-    "Suas quatro perguntas, respondidas:",
-    "1. \"Por que a gente não resolve isso? Não era para ter mais tamanho de página?\" Era, sim, e dá para resolver. É exatamente a opção A: antes de desentortar, o programa põe papel branco em volta da página (como os 10 mm do ScanTailor). O que esticar cai nesse papel, e depois o corte é feito de novo. O implementador parou só para você escolher, porque a A muda um pouco o tamanho final da página.",
-    "2. \"Ainda não consegui perceber se ficou melhor.\" Tem razão, e a culpa é das fotos: o Righetti 96 e o Cursus 151 quase não têm curva (as linhas já saem retas no original). Então não havia o que melhorar, e só apareceu o defeito. Antes de você aprovar, o próximo teste vai usar páginas com as linhas bem curvas perto da lombada, com uma régua reta desenhada por cima, para dar para ver a diferença.",
-    "3. \"Você trouxe do ScanTailor exatamente como é lá, ou recriou?\" Trouxe o código do próprio ScanTailor, sem reescrever. As contas do desentortar (seguir as linhas, montar as curvas e redesenhar a página reta) são as funções originais dele em C++, copiadas sem mudança e postas dentro do programa. Só a ligação é nossa, a parte que entrega a página a essas funções. A diferença está no que chega a elas: no ScanTailor chega a página com papel em volta, e no nosso chega cortada rente.",
-    "4. \"Por que o desentortar automático deforma a página?\" O automático adivinha a curva olhando as linhas do texto. Numa página que já está reta, qualquer erro pequeno nessa adivinhação vira uma curva que não existia, e aí ele entorta as linhas (repare, na foto do Righetti, as linhas do meio onduladas na coluna \"Desentortar automático\"). O ScanTailor faz igual, e por isso lá ele também vem desligado de fábrica. O \"pelas margens\" usa as beiradas brancas de cima e de baixo e erra menos nessas páginas.",
+    "Como o ScanTailor faz (conferi no código dele, OutputGenerator.cpp): ele nunca corta a imagem antes da hora. O corte que você ajusta na tela é só uma medida, um retângulo guardado. Na hora de gerar a página, ele pega o escaneamento inteiro, desentorta com o papel de verdade do próprio scan em volta e só no fim recorta pelo retângulo, uma vez só. O que estica cai em papel que já existia, e nada é cortado duas vezes.",
+    "Como o nosso programa faz hoje: ele corta de verdade primeiro (rente, com 1 mm de sobra) e entrega ao desentortar a página já cortada. O que estica não tem para onde ir e sai da página. Por isso somem o cabeçalho e o começo das linhas.",
+    "Por isso a minha resposta anterior (pôr papel branco em volta e cortar de novo) era um remendo. O certo é fazer como o ScanTailor, e essa passou a ser a opção A.",
+    "As outras dúvidas, já respondidas antes (estão fixadas acima): o código é o do próprio ScanTailor, sem reescrever; nas duas fotos não havia curva para tirar, por isso não deu para ver melhora; o automático inventa curva numa página que já é reta, e por isso vem desligado de fábrica, também no ScanTailor.",
     "O que não muda: vem desligado de fábrica, e desligado o livro sai idêntico ao de hoje (conferido).",
     "Todas as fotos: livro novo, de fábrica, girar → dividir → endireitar → cortar → desentortar → filtro. Colunas: Original · Hoje (Original) · Desentortar automático · Desentortar pelas margens · Hoje (Preto e branco) · Automático + Preto e branco."
    ],
@@ -45,14 +44,14 @@
    "opcoes": [
     {
      "id": "a",
-     "nome": "A — Papel em volta antes de desentortar, e me mostrar de novo com páginas bem curvas (recomendo)",
-     "texto": "É o \"mais tamanho de página\" que você falou: o programa põe papel branco em volta, desentorta e corta de novo, como o ScanTailor. A ordem das etapas não muda. Depois o verificador traz páginas com curva de verdade e uma régua reta por cima, para você ver se melhora. Ressalva: a página pode mudar um pouco de tamanho depois do novo corte.",
+     "nome": "A — Como o ScanTailor: cortar uma vez só, no fim (recomendo)",
+     "texto": "O programa mede o corte como hoje, mas entrega ao desentortar a página ainda com o papel do próprio scan em volta. Desentorta e só então corta, uma vez, no mesmo lugar medido. Não inventa papel e não faz nada duas vezes. A ordem que você aprovou em 09/10 continua a mesma. Depois o verificador traz páginas com curva de verdade e uma régua reta por cima, para você ver se melhora. Ressalva: o que esticar além do papel que o scan tem em volta ainda sai da página (no ScanTailor também).",
      "imgs": []
     },
     {
      "id": "b",
-     "nome": "B — Desentortar antes de cortar",
-     "texto": "Muda a ordem do preparo: desentorta a página inteira e só depois mede e faz o corte. Ressalva: mexe na ordem que você aprovou em 09/10 (endireitar → cortar); livro já começado continua igual.",
+     "nome": "B — Desentortar antes de medir o corte",
+     "texto": "Desentorta a página inteira e só depois mede e faz o corte. Ressalva: mexe na ordem que você aprovou em 09/10 (endireitar → cortar), e o corte passa a ser medido numa página já redesenhada. Livro já começado continua igual.",
      "imgs": []
     },
     {
@@ -72,6 +71,16 @@
      "quem": "gerente",
      "em": "2026-10-22T18:30:00Z",
      "texto": "Respondo às quatro perguntas logo abaixo, uma por uma. Em resumo: dá para resolver, e é exatamente a opção A. Você não viu melhora porque nessas duas páginas não havia curva para tirar."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:11:41Z",
+     "texto": "Quando você respondeu a pergunta 2 disse que a gente iria cortar depois adicionar folha em volta e depois cortar de novo, porque fazer o trabalho duas vezes? como é feito no scantailor e que dá certo?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T18:25:00Z",
+     "texto": "Você tem razão: não precisa fazer duas vezes, e o ScanTailor não faz. Conferi no código dele e troquei a opção A pelo jeito dele, explicado logo abaixo."
     }
    ]
   }
