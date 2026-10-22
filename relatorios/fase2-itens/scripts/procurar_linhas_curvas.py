@@ -7,13 +7,12 @@ PARA QUÊ
     sobem perto da lombada em relação ao meio da página, e grava a lista das
     mais curvas com uma miniatura de cada, para escolher a olho.
 
-COMO MEDE (rápido e grosseiro; só para escolher candidatas)
-    A página a 75 DPI, em cinza, com a tinta marcada (Otsu). Para a metade de
-    cima e a de baixo, compara o perfil de tinta (soma por linha) de uma faixa
-    vertical perto de cada beirada com o da faixa do meio: o deslocamento que
-    melhor encaixa os dois perfis é quanto as linhas "andaram" ali. A curva é
-    o maior deslocamento das beiradas, em milímetros, depois de tirar a parte
-    que é só inclinação (a média das duas beiradas). Página dupla (mais larga
+COMO MEDE (grosseiro; só para escolher candidatas, a olho depois)
+    A página a 100 DPI, em cinza, com a tinta marcada (Otsu), sem as barras e
+    faixas pretas. No bloco de texto principal, cada linha é seguida do meio
+    para as beiradas (ver medir) e a curva é o quanto ela se afasta da reta
+    perto das beiradas. Conferido na página de mentira dos testes: curva de
+    2,5 mm mede 2,2; de 5,1 mm mede 4,4; reta mede 0. Página dupla (mais larga
     que alta) é medida em cada metade. O Righetti (folhas deitadas) é girado
     270° antes, como o Kaique faria.
 
@@ -35,7 +34,7 @@ import numpy as np
 ACERVO = Path(r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE")
 RAIZ = Path(__file__).resolve().parents[3]
 SAIDA = RAIZ / "relatorios" / "conferir" / "fase2-itens" / "2.12" / "procura"
-DPI = 75
+DPI = 100
 LIVROS = [
     "Cursus philosophicus. Tomo.2.pdf",
     "Mario Righetti - Historia de la Liturgia 02-2 (da_página_262_à_531).pdf",
@@ -67,45 +66,94 @@ def _deslocamento(a: np.ndarray, b: np.ndarray, maximo: int) -> tuple[int, float
     return melhor, nota
 
 
-def medir(cinza: np.ndarray) -> dict | None:
-    """A curva das linhas de uma página (cinza, 75 DPI), em mm, ou None se não há texto que baste."""
+def medir(cinza):
+    """A curva das linhas de uma página (cinza, a DPI), em mm: cada linha de
+    texto é seguida do meio para as beiradas, em faixas estreitas, cada passo
+    procurando o pico de tinta perto de onde a linha estava (segue a linha,
+    não pula para a vizinha). Tira a reta (inclinação) de cada linha e fica o
+    quanto ela se afasta da reta perto das beiradas; a curva da página é a
+    mediana disso nas linhas que foram seguidas até o fim. None sem texto."""
     _, tinta = cv2.threshold(cinza, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    altura, largura = tinta.shape
+    tinta = tinta.astype(np.float32)
+    por_coluna = tinta.mean(axis=0)
+    tinta[:, por_coluna > 0.6] = 0
+    tinta[tinta.mean(axis=1) > 0.5] = 0  # a faixa preta do scanner em cima ou embaixo
     if tinta.mean() < 0.02 or tinta.mean() > 0.4:
         return None
-    por_coluna = tinta.mean(axis=0)
-    # sem as barras pretas (lombada, beirada do scanner): coluna com mais de 60% de tinta
-    tinta[:, por_coluna > 0.6] = 0
     colunas = np.where((por_coluna > 0.02) & (por_coluna <= 0.6))[0]
-    linhas = np.where(tinta.mean(axis=1) > 0.02)[0]
-    if len(colunas) < 50 or len(linhas) < 50:
+    if len(colunas) < 50:
         return None
-    x0, x1 = colunas.min(), colunas.max()
-    y0, y1 = linhas.min(), linhas.max()
-    # o bloco de texto principal: do 5% ao 95% das colunas com tinta (fora a tira da página vizinha)
-    x0, x1 = int(np.percentile(colunas, 5)), int(np.percentile(colunas, 95))
-    faixa = max(6, (x1 - x0) // 10)
+    # o bloco de texto principal: o trecho de colunas com tinta mais largo,
+    # separado dos outros por um vão branco de 3 mm (a tira da página vizinha
+    # e a sombra da lombada ficam de fora)
+    tem = cv2.blur(por_coluna.reshape(1, -1), (max(3, int(DPI * 0.05)), 1)).ravel() > 0.01
+    tem &= por_coluna <= 0.6
+    vao = max(3, int(DPI * 3 / 25.4))
+    trechos, inicio, branco = [], None, 0
+    for x, t in enumerate(list(tem) + [False] * (vao + 1)):
+        if t:
+            if inicio is None:
+                inicio = x
+            branco, fim = 0, x
+        elif inicio is not None:
+            branco += 1
+            if branco > vao:
+                trechos.append((inicio, fim))
+                inicio, branco = None, 0
+    if not trechos:
+        return None
+    x0, x1 = max(trechos, key=lambda t: t[1] - t[0])
+    largura = x1 - x0
+    if largura < 100:
+        return None
+    faixa = max(8, int(DPI * 0.2))
+    passo = max(4, faixa // 2)
     meio = (x0 + x1) // 2
-    maximo = int(6 / 25.4 * DPI)  # até 6 mm
-    resultado = {}
-    for nome, (ya, yb) in {"cima": (y0, (y0 + y1) // 2), "baixo": ((y0 + y1) // 2, y1)}.items():
-        if yb - ya < 40:
-            return None
-        ref = tinta[ya:yb, meio - faixa // 2:meio + faixa // 2].sum(axis=1).astype(float)
-        esq = tinta[ya:yb, x0:x0 + faixa].sum(axis=1).astype(float)
-        dir_ = tinta[ya:yb, x1 - faixa:x1].sum(axis=1).astype(float)
-        de, ne = _deslocamento(ref, esq, maximo)
-        dd, nd = _deslocamento(ref, dir_, maximo)
-        if min(ne, nd) < 0.2:
-            return None
-        resultado[nome] = (de, dd)
-    # tira a inclinação (a parte igual e oposta nas duas beiradas) e fica a curva
-    curvas = []
-    for de, dd in resultado.values():
-        inclinacao = (dd - de) / 2.0
-        curvas += [abs(de + inclinacao), abs(dd - inclinacao)]
-    return {"curva_mm": round(max(curvas) * 25.4 / DPI, 2),
-            "cima": resultado["cima"], "baixo": resultado["baixo"]}
+
+    def perfil(x):
+        p = tinta[:, max(0, x - faixa // 2):x + faixa // 2].mean(axis=1)
+        return cv2.GaussianBlur(p.reshape(-1, 1), (1, 7), 0).ravel()
+
+    p0 = perfil(meio)
+    # os picos do meio: as linhas
+    picos = [y for y in range(3, len(p0) - 3) if p0[y] > 0.15 and p0[y] == p0[y - 3:y + 4].max()]
+    if len(picos) < 6:
+        return None
+    janela = max(2, int(DPI * 0.04))
+    desvios = []
+    for y_meio in picos:
+        trilha = {meio: float(y_meio)}
+        for sentido in (-1, 1):
+            y = float(y_meio)
+            x = meio + sentido * passo
+            while x0 <= x <= x1:
+                p = perfil(x)
+                a, b = int(y) - janela, int(y) + janela + 1
+                if a < 0 or b > len(p):
+                    break
+                trecho = p[a:b]
+                if trecho.max() < 0.08:
+                    x += sentido * passo
+                    continue  # espaço entre palavras: segue reto
+                y = float(a + int(np.argmax(trecho)))
+                trilha[x] = y
+                x += sentido * passo
+        xs = np.array(sorted(trilha))
+        if xs.min() > x0 + 0.1 * largura or xs.max() < x1 - 0.1 * largura:
+            continue
+        ys = np.array([trilha[x] for x in xs])
+        centro = np.abs(xs - meio) < 0.3 * largura
+        if centro.sum() < 3:
+            continue
+        reta = np.polyfit(xs[centro], ys[centro], 1)
+        resto = ys - np.polyval(reta, xs)
+        beirada = np.abs(xs - meio) > 0.35 * largura
+        desvios.append(float(np.abs(resto[beirada]).max()) if beirada.any() else 0.0)
+    if len(desvios) < 4:
+        return None
+    return {"curva_mm": round(float(np.median(desvios)) * 25.4 / DPI, 2),
+            "curva_max_mm": round(float(np.percentile(desvios, 90)) * 25.4 / DPI, 2),
+            "linhas": len(desvios)}
 
 
 def paginas_do_livro(nome: str):
@@ -129,6 +177,8 @@ def paginas_do_livro(nome: str):
 def main() -> int:
     SAIDA.mkdir(parents=True, exist_ok=True)
     livros = sys.argv[1:] or LIVROS
+    # com livros dados (rodadas em paralelo, um livro por processo): um arquivo por livro, sem miniaturas
+    arquivo = SAIDA / ("achados.json" if not sys.argv[1:] else f"achados-{livros[0][:10].strip()}.json")
     achados = []
     for nome in livros:
         for i, metade, img in paginas_do_livro(nome):
@@ -137,9 +187,11 @@ def main() -> int:
                 continue
             achados.append({"livro": nome, "pagina_pdf": i + 1, "metade": metade, **m})
         print(nome, len(achados), flush=True)
-        (SAIDA / "achados.json").write_text(json.dumps(achados, ensure_ascii=False, indent=1), encoding="utf-8")
+        arquivo.write_text(json.dumps(achados, ensure_ascii=False, indent=1), encoding="utf-8")
     achados.sort(key=lambda a: -a["curva_mm"])
-    (SAIDA / "achados.json").write_text(json.dumps(achados, ensure_ascii=False, indent=1), encoding="utf-8")
+    arquivo.write_text(json.dumps(achados, ensure_ascii=False, indent=1), encoding="utf-8")
+    if sys.argv[1:]:
+        return 0
     # miniaturas das 40 mais curvas
     for k, a in enumerate(achados[:40]):
         for i, metade, img in paginas_do_livro_uma(a["livro"], a["pagina_pdf"] - 1):

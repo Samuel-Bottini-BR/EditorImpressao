@@ -362,7 +362,7 @@ def test_a_saida_tem_o_tamanho_do_corte():
     x0, y0, x1, y1 = _caixa_rente(img)
     for modo in (ds.AUTOMATICO, ds.PELAS_MARGENS):
         r = ds.desentortar(img, 300, modo, lado=2, corte=(x0, y0, x1 - x0, y1 - y0),
-                           conteudo=ds.caixa_do_conteudo((x0, y0, x1, y1), 300))
+                           conteudo=ds.caixa_do_conteudo(img, (x0, y0, x1, y1), 300))
         assert r.disponivel, r.motivo
         assert r.imagem.shape == (y1 - y0, x1 - x0, 3)
     cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -380,10 +380,21 @@ def test_corte_fora_da_pagina_nao_chega_a_dll(corte):
     assert not r.disponivel and r.motivo
 
 
-def test_caixa_do_conteudo_e_o_corte_sem_a_folga():
-    assert ds.caixa_do_conteudo((100, 200, 1100, 2200), 300) == (112, 212, 976, 1976)
-    assert ds.caixa_do_conteudo((0, 0, 20, 20), 300) == (0, 0, 20, 20)  # não cabe: o próprio corte
-    assert ds.caixa_do_conteudo((0, 0, 100, 100), None) == (0, 0, 100, 100)
+def test_caixa_do_conteudo_e_a_da_tinta_sem_o_que_encosta_na_beirada():
+    """A caixa do conteúdo (m_contentRect) é a da tinta dentro do corte, como a
+    do ScanTailor; a faixa preta do scanner e a sombra da lombada (que
+    encostam na beirada do corte) ficam de fora."""
+    img = pagina_curva(curva=0)
+    cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ys, xs = np.where(cinza < 128)
+    tinta = (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)
+    img[:80, :] = 10  # faixa preta do scanner, em cima
+    img[:, -40:] = 10  # sombra da lombada, à direita
+    x, y, w, h = ds.caixa_do_conteudo(img, (0, 0, img.shape[1], img.shape[0]), 300)
+    assert abs(x - tinta[0]) <= 6 and abs(y - tinta[1]) <= 6
+    assert abs(x + w - tinta[2]) <= 6 and abs(y + h - tinta[3]) <= 6
+    branca = np.full((300, 300, 3), 240, np.uint8)  # sem tinta: o próprio corte
+    assert ds.caixa_do_conteudo(branca, (10, 20, 210, 220), 300) == (10, 20, 200, 200)
 
 
 @precisa_da_dll
@@ -394,8 +405,8 @@ def test_reversao_pagina_reta_com_corte_rente_nao_mexe_nas_letras():
     página até numa página reta, apertando e empurrando as letras (no Righetti
     96 o começo das linhas e o cabeçalho sumiam). Agora o corte é só uma
     medida, como no ScanTailor: a página vai com o papel em volta e a caixa do
-    conteúdo justa. Medida: numa página RETA, com o corte rente, a tinta tem de
-    ficar no lugar (no código de antes: 0,97 da tinta; agora 1,00).
+    conteúdo é a da tinta. Medida: numa página RETA, com o corte rente, a tinta
+    tem de ficar no lugar (no código de antes: 0,971 da tinta; agora 0,996).
     Pelo caminho do programa (preparar_metade), nas duas ordens."""
     from core import pipeline
     from modelos import ConfigFolha, Projeto
@@ -482,46 +493,35 @@ def test_ligado_sem_a_dll_sai_o_mesmo_corte_e_giro_de_sempre(monkeypatch, ordem)
 
 
 ACERVO = Path(r"D:\programas\EditorImpressao-arquivos\TESTES EDITOR DE IMPRESSAO\LIVROS PARA TESTE")
-RIGHETTI = ACERVO / "Mario Righetti - Historia de la Liturgia 02-2 (da_página_262_à_531).pdf"
-
-
-def _margem_esquerda_do_texto(img: np.ndarray) -> int:
-    """Onde começa o bloco de texto (a primeira coluna com tinta em mais de 1%
-    das linhas), sem a faixa preta do scanner (linhas com mais de metade de
-    tinta) e sem os 15 pontos da beirada (a sombra preta da lombada)."""
-    t = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) < 128
-    t[t.mean(axis=1) > 0.5] = False
-    t[:, :15] = False
-    t[:, -15:] = False
-    return int(np.where(t.mean(axis=0) > 0.01)[0].min())
+MARIAL = ACERVO / "Marial de sermoens - Frei Balthasar Paez. (1).pdf"
 
 
 @precisa_da_dll
-@pytest.mark.skipif(not RIGHETTI.is_file(), reason="sem o acervo (só no PC do Samuel)")
-def test_reversao_righetti_96_o_comeco_das_linhas_nao_some(tmp_path):
-    """REVERSÃO do defeito de 22/10/2026 no livro de verdade: Righetti, folha 96
-    (deitada: girada 270°, "Dividir" ligado), página da direita, livro novo de
-    fábrica, desentortar automático. No código de antes o texto saía ampliado e
-    o começo das linhas sumia ("mente" -> "nte"): o bloco de texto encostava na
-    beirada (margem de 15 pontos, a beirada medida). Agora a margem esquerda do
-    texto fica a de hoje (173 pontos; aceito 80%)."""
+@pytest.mark.skipif(not MARIAL.is_file(), reason="sem o acervo (só no PC do Samuel)")
+def test_reversao_marial_41_pagina_reta_fica_como_esta(tmp_path):
+    """REVERSÃO do defeito de 22/10/2026 num livro de verdade: Marial de
+    sermoens, página 41 do PDF (página reta, duas colunas, notas na margem),
+    livro novo de fábrica, desentortar automático. No código de antes (a página
+    já cortada, o corte como caixa do conteúdo) o automático redesenhava a
+    página e só 0,49 da tinta ficava no lugar; agora, com o papel em volta e a
+    caixa do conteúdo da tinta, a página reta sai como está (1,00; aceito 0,95,
+    com 6 pontos de tolerância)."""
     import fitz
     from core import pipeline
     from core.pdf_io import abrir_pdf, pagina_para_array
     from modelos import Projeto
 
-    pdf = tmp_path / "righetti_96.pdf"
-    origem, novo = fitz.open(RIGHETTI), fitz.open()
-    novo.insert_pdf(origem, from_page=95, to_page=95)
-    novo[0].set_rotation((novo[0].rotation + 270) % 360)
+    pdf = tmp_path / "marial_41.pdf"
+    origem, novo = fitz.open(MARIAL), fitz.open()
+    novo.insert_pdf(origem, from_page=40, to_page=40)
     novo.save(pdf)
     novo.close()
     origem.close()
-    projeto = pipeline.analisar_projeto(Projeto(caminho_entrada=str(pdf), nome="righetti", dividir_folhas=True))
+    projeto = pipeline.analisar_projeto(Projeto(caminho_entrada=str(pdf), nome="marial"))
     doc = abrir_pdf(str(pdf))
     try:
-        folha = projeto.folhas[0]
-        pagina = [p for p in projeto.paginas if p.metade == "direita"][0]
+        pagina = projeto.paginas_ativas[0]
+        folha = projeto.folhas[pagina.folha]
         img = pagina_para_array(doc, 0, dpi=projeto.qualidade_dpi)
     finally:
         doc.close()
@@ -529,5 +529,4 @@ def test_reversao_righetti_96_o_comeco_das_linhas_nao_some(tmp_path):
     pagina.desentortar = ds.AUTOMATICO
     saida = pipeline.preparar_metade(img, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
     assert saida.shape == hoje.shape
-    assert _margem_esquerda_do_texto(hoje) > 100
-    assert _margem_esquerda_do_texto(saida) >= 0.8 * _margem_esquerda_do_texto(hoje)
+    assert tinta_que_ficou_no_lugar(hoje, saida, tolerancia=6) > 0.95

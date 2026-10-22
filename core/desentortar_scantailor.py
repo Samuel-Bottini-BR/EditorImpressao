@@ -46,7 +46,9 @@ o ScanTailor: cortar uma vez só, no fim")
     em volta, e a imagem é recortada uma vez, no fim. Agora é igual:
     aplicar_no_corte() recebe a página endireitada SEM o corte e a caixa do
     corte (em pontos); a DLL (versão 8) devolve a página desentortada já do
-    tamanho do corte. Desligado, o pipeline nem chama: corta como sempre.
+    tamanho do corte. A caixa do conteúdo (m_contentRect) é a da tinta dentro
+    do corte (caixa_do_conteudo), como a do ScanTailor, e não o corte.
+    Desligado, o pipeline nem chama: corta como sempre.
 
 O QUE É SEGURO MUDAR
     Os textos da tela (ROTULOS_NA_TELA, EXPLICACAO_NA_TELA, FRASE_DO_DESFAZER).
@@ -70,6 +72,7 @@ import threading
 import time
 from dataclasses import dataclass
 
+import cv2
 import numpy as np
 
 from core import st_ferramentas as st
@@ -165,7 +168,7 @@ def desentortar(img: np.ndarray, dpi, modo: str, *, lado: int = 0,
     corte: (x, y, largura, altura) em pontos de `img`: a página de saída do
     ScanTailor (m_outRect); None = a imagem inteira.
     conteudo: (x, y, largura, altura) em pontos de `img` (m_contentRect);
-    None = o próprio corte. O preparo passa caixa_do_conteudo(corte).
+    None = o próprio corte. O preparo passa caixa_do_conteudo (a tinta).
     Devolve Resultado: .imagem do tamanho do CORTE, com os mesmos canais, ou
     None com .motivo. Nunca levanta exceção; não muda a entrada.
 
@@ -283,35 +286,68 @@ def aplicar(img: np.ndarray, pagina, dpi=None, *,
     return resultado.imagem
 
 
-def caixa_do_conteudo(caixa: tuple[int, int, int, int], dpi) -> tuple[int, int, int, int]:
+def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) -> tuple[int, int, int, int]:
     """A caixa do conteúdo (m_contentRect do ScanTailor), (x, y, largura,
-    altura), tirada do corte: o corte SEM a folga de core.recortar.FOLGA_MM
-    de cada lado (o corte automático é a tinta mais essa folga).
+    altura) em pontos de `img`: a caixa da tinta DENTRO do corte `caixa`
+    ((x0, y0, x1, y1)), sem o que encosta na beirada do corte.
 
-    Por que importa (medido em 22/10/2026 na página de mentira dos testes):
-    no ScanTailor a caixa do conteúdo é justa e a página de saída tem margens
-    em volta; o desentortar mantém o texto dentro da caixa do conteúdo. Com a
-    caixa do conteúdo igual ao corte (1 mm de folga) o texto desentortado
-    passava do corte e a última linha saía partida; com a caixa justa as 40
-    linhas ficam dentro do corte.
+    Por que (medido em 22/10/2026): no ScanTailor a caixa do conteúdo é a do
+    texto (etapa "Select Content"), justa, e não o corte; o desentortar usa
+    ela para seguir as linhas e para saber até onde vai o texto. O corte do
+    programa é muitas vezes a folha inteira (Righetti, Marial), e com ele
+    como caixa do conteúdo o desentortar seguia as beiradas da folha e
+    redesenhava a página errado. Conferido em seis páginas do acervo e na de
+    mentira (relatorios/fase2-itens/ONDE-PAREI.md, 22/10): com a caixa da
+    tinta a tinta das páginas retas fica no lugar (Marial 41: 0,49 -> 1,00;
+    Cursus 176: 0,97 -> 1,00).
 
-    Ressalva: no corte feito à mão a caixa é só "o corte menos 1 mm" (o
-    programa não mede a tinta de novo). Se a folga não couber (corte com
-    menos de 8 pontos sobrando), a caixa é o próprio corte.
-    Arriscado: usar o corte como caixa (volta a linha partida) ou uma caixa
-    maior que o corte.
+    Como mede: a tinta (Otsu) numa cópia a 75 DPI; ficam as manchas que não
+    encostam na beirada do corte (sombra da lombada, faixa preta do scanner,
+    tira da página vizinha) e não são pontinhos (menos de 4 pontos a 75 DPI)
+    nem do tamanho do corte. Sem 5 manchas: o próprio corte.
+
+    PROVISÓRIO: a caixa do conteúdo do próprio ScanTailor (ContentBoxFinder)
+    é o item 2.5, em outro ramo; quando ele entrar, a caixa dele deve tomar
+    o lugar desta conta. Arriscado: usar o corte como caixa (o desentortar
+    segue a folha) ou tirar o "não encosta na beirada" (a faixa preta do
+    scanner entra na caixa).
     """
-    from core.recortar import FOLGA_MM
-
     x0, y0, x1, y1 = caixa
+    corte = (x0, y0, x1 - x0, y1 - y0)
+    pedaco = img[y0:y1, x0:x1]
+    if pedaco.size == 0:
+        return corte
+    cinza = pedaco if pedaco.ndim == 2 else cv2.cvtColor(pedaco, cv2.COLOR_BGR2GRAY)
     try:
         dpi_y = float(dpi[1]) if isinstance(dpi, (tuple, list)) else float(dpi)
     except (TypeError, ValueError):
-        dpi_y = 0.0
-    folga = int(round(FOLGA_MM * dpi_y / 25.4)) if dpi_y > 0 else 0
-    if x1 - x0 - 2 * folga < 8 or y1 - y0 - 2 * folga < 8:
-        folga = 0
-    return (x0 + folga, y0 + folga, x1 - x0 - 2 * folga, y1 - y0 - 2 * folga)
+        dpi_y = 300.0
+    escala = min(1.0, 75.0 / max(1.0, dpi_y))
+    pequena = cv2.resize(cinza, None, fx=escala, fy=escala, interpolation=cv2.INTER_AREA)
+    if min(pequena.shape[:2]) < 8:
+        return corte
+    _, tinta = cv2.threshold(pequena, 0, 1, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    n, _, caixas, _ = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    altura, largura = tinta.shape
+    ficam = []
+    for i in range(1, n):
+        x, y, w, h, area = (int(v) for v in caixas[i])
+        if area < 4:
+            continue
+        if x <= 0 or y <= 0 or x + w >= largura or y + h >= altura:
+            continue
+        if w > 0.9 * largura or h > 0.9 * altura:
+            continue
+        ficam.append((x, y, x + w, y + h))
+    if len(ficam) < 5:
+        return corte
+    m = np.array(ficam)
+    cx0, cy0 = int(m[:, 0].min() / escala), int(m[:, 1].min() / escala)
+    cx1 = min(x1 - x0, int(np.ceil(m[:, 2].max() / escala)))
+    cy1 = min(y1 - y0, int(np.ceil(m[:, 3].max() / escala)))
+    if cx1 - cx0 < 8 or cy1 - cy0 < 8:
+        return corte
+    return (x0 + cx0, y0 + cy0, cx1 - cx0, cy1 - cy0)
 
 
 def aplicar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, pagina,
@@ -338,7 +374,7 @@ def aplicar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, 
     if modo == DESLIGADO:
         return reta[y0:y1, x0:x1].copy()
     dpi = _dpi_ou_pela_altura(dpi, altura)
-    conteudo = None if caixa is None else caixa_do_conteudo(caixa, dpi)
+    conteudo = caixa_do_conteudo(reta, (x0, y0, x1, y1), dpi)
     resultado = desentortar(reta, dpi, modo, lado=lado_da_pagina(pagina),
                             corte=(x0, y0, x1 - x0, y1 - y0), conteudo=conteudo,
                             biblioteca=biblioteca)

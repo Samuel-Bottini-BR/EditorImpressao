@@ -84,11 +84,13 @@ def _bgr(img):
 
 
 def pes_das_linhas(img: np.ndarray, cada: int = 4) -> list[int]:
-    """O pé (y) das linhas de texto medido na faixa do meio (40% a 60% da
-    largura), uma a cada `cada` linhas."""
+    """O pé (y) das linhas de texto medido numa faixa perto do meio (a de mais
+    tinta entre 30-45%, 42-58% e 55-70% da largura: em página de duas colunas
+    a do meio cai no vão), uma a cada `cada` linhas."""
     cinza = cv2.cvtColor(_bgr(img), cv2.COLOR_BGR2GRAY)
     largura = cinza.shape[1]
-    faixa = cinza[:, int(largura * 0.4):int(largura * 0.6)] < 128
+    faixas = [cinza[:, int(largura * a):int(largura * b)] < 128 for a, b in ((0.3, 0.45), (0.42, 0.58), (0.55, 0.7))]
+    faixa = max(faixas, key=lambda f: float(f.mean()) if f.mean() < 0.5 else 0.0)
     perfil = faixa.mean(axis=1)
     perfil[perfil > 0.6] = 0  # a faixa preta do scanner não é linha
     tem = perfil > 0.04
@@ -193,7 +195,7 @@ def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, meta
     caminho = (f"Livro novo, ajustes de fábrica: girar {giro}° → " if giro else "Livro novo, ajustes de fábrica: ") + \
         ("dividir (ligado no livro) → " if dividir else "") + "endireitar → cortar → desentortar → filtro"
     titulo = [f"{livro.split(' - ')[0].split('.pdf')[0][:60]}, página {pagina_pdf} do PDF, {NOME_DA_METADE[metade]}",
-              caminho + "   |   régua vermelha: reta, no pé das linhas do meio da página"]
+              caminho, "Régua vermelha: reta, no pé das linhas do meio da página"]
     colunas = [
         ("Hoje", "desentortar desligado · Original", hoje),
         ("Antes do conserto", "desentortar automático (21/10) · Original", antes),
