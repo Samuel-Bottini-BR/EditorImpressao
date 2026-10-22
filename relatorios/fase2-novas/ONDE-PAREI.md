@@ -125,3 +125,11 @@ pontos (Horas 13) e 109 (Marial 7), todos na beirada da área (arredondamento); 
    é a borda do scanner, que existe no "Hoje" também (abaixo da área). Refeito com a área na mancha da esquerda
    [(0;0),(0,11;0,28)]: a mancha sai; a área retangular pega também o começo das linhas que estão dentro dela.
 Sem conserto de código, sem teste de reversão (não houve bug). Imagens novas em `relatorios/conferir/fase2-novas/2.18/`.
+
+## Velocidade e suíte final (22/10/2026)
+
+- Filtro de velocidade `39787700625` (`9804b98` → `fa269d9`, 2.4 + 2.6 + 2.16 + 2.17): **"parece mais rápido"** -
+  abrir o livro 61,3 → 36,0 s (−41%); Mágico pro 10 páginas 75,2 → 44,8 s (−40%); Preto e branco 10 páginas
+  41,3 → 29,1 s (−30%); trocar de página 4,59 → 4,23 s ("igual"). É o 2.16 (várias folhas ao mesmo tempo).
+- Filtro `39791117352` (`9804b98` → `4990e13`, os 7 itens): ainda rodando ao entregar.
+- Suíte `39794419960` (`d652248`): 2173 passaram, 0 falharam; botões 234 ações, 0 falhas.
