@@ -92,6 +92,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QRadioButton,
     QScrollArea,
@@ -178,6 +179,34 @@ class TelaOpcoes(QWidget):
         opcoes = QVBoxLayout(cartao)
         opcoes.setContentsMargins(20, 16, 20, 16)
         opcoes.setSpacing(6)
+
+        # Item 2.19 (CONTROLE MINIMO, provisorio ate o layout; anotado em
+        # relatorios/fase2-novas/ONDE-PAREI.md): as receitas do livro, como os
+        # perfis do ScanTailor (core/perfis.py). Por uma receita no livro
+        # marca as caixinhas abaixo; guardar leva as caixinhas de agora.
+        linha_receita = QHBoxLayout()
+        linha_receita.setSpacing(6)
+        linha_receita.addWidget(QLabel("Receita:"))
+        self.combo_receitas = QComboBox()
+        self.combo_receitas.setToolTip(
+            "Um jeito de trabalhar guardado com um nome: as caixinhas desta tela. "
+            "\"De fábrica\" é o de um livro novo sem nada mudado.")
+        linha_receita.addWidget(self.combo_receitas, 1)
+        self.botao_por_receita = QPushButton("pôr neste livro")
+        self.botao_por_receita.clicked.connect(self._por_receita)
+        linha_receita.addWidget(self.botao_por_receita)
+        self.nome_da_receita = QLineEdit()
+        self.nome_da_receita.setPlaceholderText("nome da receita")
+        linha_receita.addWidget(self.nome_da_receita, 1)
+        self.botao_guardar_receita = QPushButton("guardar")
+        self.botao_guardar_receita.clicked.connect(self._guardar_receita)
+        linha_receita.addWidget(self.botao_guardar_receita)
+        self.botao_apagar_receita = QPushButton("apagar")
+        self.botao_apagar_receita.clicked.connect(self._apagar_receita)
+        linha_receita.addWidget(self.botao_apagar_receita)
+        opcoes.addLayout(linha_receita)
+        self._encher_receitas()
+        opcoes.addWidget(_separador())
 
         self.cx_dividir = self._caixa(
             "Dividir folhas ao meio", "esta folha tem 2 páginas do livro", opcoes
@@ -643,6 +672,42 @@ class TelaOpcoes(QWidget):
         grade.addWidget(QLabel("de um lado ao outro:"), 2, 2)
         grade.addWidget(self.combo_alinhar_horizontal, 2, 3)
         return painel
+
+    # --- item 2.19: as receitas -------------------------------------------
+
+    def _encher_receitas(self, escolher: str = "") -> None:
+        from core import perfis
+
+        self.combo_receitas.clear()
+        for nome in perfis.nomes():
+            self.combo_receitas.addItem(nome, nome)
+        if escolher:
+            self.combo_receitas.setCurrentIndex(max(0, self.combo_receitas.findData(escolher)))
+
+    def _por_receita(self) -> None:
+        """Põe a receita escolhida neste livro e mostra as caixinhas."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        if perfis.aplicar(self.combo_receitas.currentData(), self.projeto):
+            self.mostrar_opcoes()
+
+    def _guardar_receita(self) -> None:
+        """Guarda as caixinhas de agora com o nome digitado."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        nome = perfis.guardar(self.nome_da_receita.text(), self.projeto)
+        self.nome_da_receita.clear()
+        self._encher_receitas(escolher=nome)
+
+    def _apagar_receita(self) -> None:
+        from core import perfis
+
+        if perfis.apagar(self.combo_receitas.currentData()):
+            self._encher_receitas()
 
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"

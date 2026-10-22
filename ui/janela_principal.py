@@ -498,6 +498,11 @@ class JanelaPrincipal(QMainWindow):
         livro_novo = self.resumo is None
         salvo = None
         if livro_novo:
+            # Item 2.19: a receita escolhida em Configuracoes para todo livro
+            # novo (core/perfis.py; de fabrica nenhuma: nada muda)
+            from core import perfis
+
+            perfis.aplicar_no_livro_novo(self.projeto)
             self.resumo = projetos.criar(self.projeto, self.total_folhas)
         else:
             self.resumo.caminho_entrada = caminho   # pode ter mudado de pasta

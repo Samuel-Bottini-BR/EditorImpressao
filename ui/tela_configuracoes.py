@@ -69,6 +69,40 @@ class TelaConfiguracoes(QDialog):
         linha_nucleos.addWidget(self.combo_nucleos, 1)
         raiz.addLayout(linha_nucleos)
 
+        # Item 2.19 (CONTROLE MINIMO, provisorio ate o layout): a unidade das
+        # medidas na tela (core/unidades.py; de fabrica centimetros) e a
+        # receita de todo livro novo (core/perfis.py; de fabrica nenhuma).
+        from core import perfis, unidades
+
+        titulo_medidas = QLabel("Medidas e receitas")
+        titulo_medidas.setObjectName("titulo")
+        raiz.addWidget(titulo_medidas)
+        linha_unidade = QHBoxLayout()
+        linha_unidade.addWidget(QLabel("Medidas em:"))
+        self.combo_unidade = QComboBox()
+        for codigo in unidades.UNIDADES:
+            self.combo_unidade.addItem(unidades.NOMES[codigo], codigo)
+        self.combo_unidade.setCurrentIndex(max(0, self.combo_unidade.findData(unidades.da_maquina())))
+        self.combo_unidade.currentIndexChanged.connect(
+            lambda _i: configuracoes.escrever(unidades.CHAVE_DAS_CONFIGURACOES,
+                                              self.combo_unidade.currentData()))
+        linha_unidade.addWidget(self.combo_unidade, 1)
+        raiz.addLayout(linha_unidade)
+        linha_receita = QHBoxLayout()
+        linha_receita.addWidget(QLabel("Receita de todo livro novo:"))
+        self.combo_receita_nova = QComboBox()
+        for nome in perfis.nomes():
+            self.combo_receita_nova.addItem(nome, nome)
+        atual = perfis.do_livro_novo() or perfis.NOME_DE_FABRICA
+        self.combo_receita_nova.setCurrentIndex(max(0, self.combo_receita_nova.findData(atual)))
+        self.combo_receita_nova.setToolTip(
+            "As caixinhas com que todo livro novo começa. As receitas se guardam na tela "
+            "\"O que fazer\".")
+        self.combo_receita_nova.currentIndexChanged.connect(
+            lambda _i: perfis.definir_do_livro_novo(self.combo_receita_nova.currentData()))
+        linha_receita.addWidget(self.combo_receita_nova, 1)
+        raiz.addLayout(linha_receita)
+
         titulo = QLabel("Atalhos de teclado")
         titulo.setObjectName("titulo")
         raiz.addWidget(titulo)
