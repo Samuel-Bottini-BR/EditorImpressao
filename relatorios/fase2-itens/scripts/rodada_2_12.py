@@ -155,7 +155,8 @@ def _onde_mais_muda(a, b, lado):
             int(np.clip(x - lado // 2, 0, max(0, ca.shape[1] - lado))))
 
 
-def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, metade: str, pasta: Path) -> dict:
+def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, metade: str, pasta: Path,
+          dpi_real: float = 0.0) -> dict:
     from core import desentortar_scantailor as ds
     from core.filtros import ORIGINAL, PRETO_E_BRANCO
     from core.pdf_io import abrir_pdf
@@ -181,46 +182,63 @@ def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, meta
             tempos[rotulo] = round(time.perf_counter() - inicio, 2)
             return img
 
+        from core import analise
+
+        def com_aviso(rotulo, **campos):
+            img = medir(rotulo, **campos)
+            return img, analise.DESENTORTAR_SAIU_SEM in pagina.alertas
+
         hoje = medir("hoje", filtro=ORIGINAL, desentortar=ds.DESLIGADO)
-        auto = medir("auto", filtro=ORIGINAL, desentortar=ds.AUTOMATICO)
-        margens = medir("margens", filtro=ORIGINAL, desentortar=ds.PELAS_MARGENS)
+        auto, aviso_auto = com_aviso("auto", filtro=ORIGINAL, desentortar=ds.AUTOMATICO)
+        maior = medir("aumentar", filtro=ORIGINAL, desentortar=ds.AUTOMATICO, desentortar_aumentar=True)
+        margens, aviso_margens = com_aviso("margens", filtro=ORIGINAL, desentortar=ds.PELAS_MARGENS)
         pb_hoje = medir("pb", filtro=PRETO_E_BRANCO, desentortar=ds.DESLIGADO)
         pb_auto = medir("pb_auto", filtro=PRETO_E_BRANCO, desentortar=ds.AUTOMATICO)
-        # o desentortar de 21/10: o mesmo, na página JÁ CORTADA, sem papel em volta
-        antes_cfg = type("P", (), {"desentortar": ds.AUTOMATICO, "metade": pagina.metade})()
-        antes = ds.aplicar(hoje.copy(), antes_cfg, projeto.qualidade_dpi)
+        # antes da protecao (o 177f711): o mesmo caminho, com a protecao sem recusar nunca
+        recusar = ds.recusar
+        ds.recusar = lambda pecas, fundo: False
+        try:
+            antes = medir("antes", filtro=ORIGINAL, desentortar=ds.AUTOMATICO)
+        finally:
+            ds.recusar = recusar
+        # so para mostrar a causa (pergunta P4): o desentortar ouvindo o tamanho de verdade da pagina
+        real = None
+        if dpi_real:
+            preparar = ds.preparar_no_corte
+            ds.preparar_no_corte = lambda reta, caixa, pag, dpi=None, **k: preparar(reta, caixa, pag, dpi_real, **k)
+            try:
+                real, aviso_real = com_aviso("real", filtro=ORIGINAL, desentortar=ds.AUTOMATICO)
+            finally:
+                ds.preparar_no_corte = preparar
     finally:
         doc.close()
 
-    caminho = (f"Livro novo, ajustes de fábrica: girar {giro}° → " if giro else "Livro novo, ajustes de fábrica: ") + \
-        ("dividir (ligado no livro) → " if dividir else "") + "endireitar → cortar → desentortar → filtro"
-    titulo = [f"{livro.split(' - ')[0].split('.pdf')[0][:60]}, página {pagina_pdf} do PDF, {NOME_DA_METADE[metade]}",
+    caminho = (f"Livro novo, ajustes de fábrica: girar {giro}° → " if giro else "Livro novo, ajustes de fábrica: ") +         ("dividir (ligado no livro) → " if dividir else "") + "endireitar → cortar → desentortar → filtro"
+    titulo = [f"{Path(livro).stem.split(' - ')[0][:60]}, página {pagina_pdf} do PDF, {NOME_DA_METADE[metade]}",
               caminho, "Régua vermelha: reta, no pé das linhas do meio da página"]
+
+    def sai(aviso):
+        return " · foi para o Para revisar" if aviso else ""
+
     colunas = [
         ("Hoje", "desentortar desligado · Original", hoje),
-        ("Antes do conserto", "desentortar automático (21/10) · Original", antes),
-        ("Agora", "desentortar automático · Original", auto),
-        ("Agora", "desentortar pelas margens · Original", margens),
+        ("Antes da proteção", "automático, sem proteção · Original", antes),
+        ("Agora", "automático · Original" + sai(aviso_auto), auto),
+        ("Agora, com o botão", "Desentortar aumentando a página · Original", maior),
+        ("Agora", "pelas margens · Original" + sai(aviso_margens), margens),
         ("Hoje", "desentortar desligado · Preto e branco", pb_hoje),
-        ("Agora", "desentortar automático · Preto e branco", pb_auto),
+        ("Agora", "automático · Preto e branco", pb_auto),
     ]
+    if real is not None:
+        colunas.append((f"Só para mostrar a causa", f"automático com o tamanho certo ({dpi_real:.0f} DPI)" + sai(aviso_real), real))
     com = [(n, o, com_a_regua(i)) for n, o, i in colunas]
     cv2.imwrite(str(pasta / f"{nome}-pagina.jpg"), _painel(titulo, com, 1300), [cv2.IMWRITE_JPEG_QUALITY, 88])
     lado = max(300, min(hoje.shape[:2]) // 3)
-    y0, x0 = _onde_mais_muda(hoje, auto, lado)
+    y0, x0 = _onde_mais_muda(hoje, antes if antes.shape == hoje.shape else auto, lado)
     recortes = [(n, o, i[y0:y0 + lado, x0:x0 + lado]) for n, o, i in com]
     cv2.imwrite(str(pasta / f"{nome}-recorte.jpg"),
-                _painel(titulo + [f"ampliado: o quadrado de {lado} pontos onde o automático mais muda"], recortes, 700),
-                [cv2.IMWRITE_JPEG_QUALITY, 90])
-
-    # as duas beiradas (onde as letras eram cortadas e onde fica a lombada):
-    # um quarto da largura de cada lado, no terço de cima da página
-    h, w = hoje.shape[:2]
-    for lado_nome, fatia in (("esquerda", slice(0, w // 4)), ("direita", slice(w - w // 4, w))):
-        beiradas = [(n, o, i[: h // 3, fatia]) for n, o, i in com[:4] if i.shape[:2] == hoje.shape[:2]]
-        cv2.imwrite(str(pasta / f"{nome}-beirada-{lado_nome}.jpg"),
-                    _painel(titulo + [f"ampliado: a beirada da {lado_nome} (um quarto da largura), terço de cima"],
-                            beiradas, 800), [cv2.IMWRITE_JPEG_QUALITY, 90])
+                _painel(titulo + [f"ampliado: o quadrado de {lado} pontos onde o automático sem proteção mais muda"],
+                        recortes, 700), [cv2.IMWRITE_JPEG_QUALITY, 90])
 
     def cinza(i):
         return cv2.cvtColor(_bgr(i), cv2.COLOR_BGR2GRAY)
@@ -230,7 +248,9 @@ def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, meta
         "rotacao_da_folha": folha.rotacao, "tamanho": list(hoje.shape[:2]), "dpi": projeto.qualidade_dpi,
         "pontos_diferentes_de_hoje": {
             n: int((cv2.absdiff(cinza(hoje), cinza(i)) > 64).sum()) if i.shape[:2] == hoje.shape[:2] else None
-            for n, i in (("antes_auto", antes), ("auto", auto), ("margens", margens))},
+            for n, i in (("antes_auto", antes), ("auto", auto), ("margens", margens), ("aumentar", maior))},
+        "foi_para_revisar": {"auto": aviso_auto, "margens": aviso_margens},
+        "tamanho_aumentado": list(maior.shape[:2]),
         "segundos": tempos,
     }
     (pasta / f"{nome}.json").write_text(json.dumps(numeros, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -239,4 +259,5 @@ def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, meta
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    print(json.dumps(rodar(a[0], a[1], int(a[2]), int(a[3]), a[4] == "1", a[5], Path(a[6])), ensure_ascii=False))
+    print(json.dumps(rodar(a[0], a[1], int(a[2]), int(a[3]), a[4] == "1", a[5], Path(a[6]),
+                           float(a[7]) if len(a) > 7 else 0.0), ensure_ascii=False))
