@@ -20,7 +20,23 @@
 - Janela de verdade (Graduale, ir para 301 pela pílula, "Ver todas as páginas" por clique do Windows): antes o azul na
   300 em 1600 x 821 (maximizada já acertava por acaso); depois na 301 nos dois tamanhos (5 de 5).
 
-## Item 2: "Antes de processar": a fazer
+## Item 2: "Antes de processar": FEITO NUM RAMO À PARTE, PRONTO PARA CONFERIR
+- A janela (`ui/janela_dos_avisos.py`) só existe no ramo do "Para revisar" (`fase2-para-revisar`, aprovado, ainda não
+  juntado), não neste ramo nem no `fase-1`. Para não juntar o "Para revisar" inteiro aqui (é trabalho da gerente),
+  fiz a mudança num ramo novo, `layout-antes-de-processar-2026-10-22`, que parte do `f54428e` (ponta do
+  `fase2-para-revisar`) e só mexe em `ui/janela_dos_avisos.py` e num teste. Worktree `.claude/worktrees/layout-avisos`
+  (junção `modelos`). Commit `138e425`.
+- O que mudou: abre com 500 x 400 (era 560 x 520; na janela de verdade 522 x 400 contra 560 x 520, a 1280 x 657 ela
+  passou de 80% para 61% da altura); a frase em duas linhas (o que aconteceu, forte; "Quer ver antes ou continuar
+  assim mesmo?", mais fraca); "Selecionar todas" e "Nenhuma" pequenos na mesma linha do "Mostrar"; uma fila só
+  embaixo ("está bom nas marcadas" à esquerda, "ver" em azul e "continuar assim mesmo" à direita); linhas da lista
+  mais baixas. Nenhum controle saiu, nenhum nome mudou.
+- Testes: `tests/test_para_revisar_na_tela.py` 26 passaram (teste novo `test_antes_de_processar_menor_e_em_duas_filas`);
+  `tests/test_reversao_para_revisar.py` 6 passaram.
+- Prints (janela de verdade, Palatino, clique do Windows em "Confirmar e processar" e em "ver"): no ramo novo,
+  `relatorios/layout-antes-de-processar/antes|depois` (4 de 4 nas duas rodadas).
+- Ressalva: a página que tem dois motivos aparece em duas linhas ("Página 69 - Alinhamento duvidoso" e "Página 69 -
+  Endireitar..."). Juntar numa linha mudaria as caixinhas (uma por motivo): não mexi.
 ## Item 3: lembrar as miniaturas: a fazer
 
 ## Perguntas para o Samuel
