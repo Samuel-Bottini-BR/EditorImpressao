@@ -115,3 +115,15 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 
 ## Conferência `lyupdf` (livro aberto como UPDF e tela cheia), respostas a partir de 22/10/2026
 - `lu-par` As duas páginas do par na mesma altura: **Está bom** (22/10, 15:41 UTC). Os outros 7 quadros e a decisão final ainda sem resposta.
+- `lu-tamanho` A página ocupa a janela toda e sai nítida: **Está bom**, com o comentário "Só não entendi porque cortou parte do livro ali no canto superior direito." Resposta da gerente (na Central): o "Cxlvii" já vem cortado no escaneamento original do Graduale (p. 301 conferida no PDF).
+- `lu-barra` A barra de baixo como no UPDF: **Está bom**
+- `lu-escolha` A escolha fica guardada: **Está bom**
+- `lu-grade` "Todas as páginas" nítida e rápida: **Ainda não entendi** (sem comentário). Explicação refeita na Central.
+- `lu-tc-opcoes` Tela cheia: todas as opções do filtro: **Está bom**
+- `lu-tc-igual` Tela cheia: a página grande é igual ao PDF?: **Melhorar**, com o comentário "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações."
+- `lu-tc-outros` Tela cheia: Melhorar e Mágico pro: **Está bom**
+- `lyupdf` DECISÃO FINAL: **Aprovado**
+
+## Perguntas dos implementadores (22/10/2026, segunda leva)
+- `b-8-tinta-com-cor`: **As duas: A e B como opções separadas**
+- `a-212-desentortar`: **Ainda não entendi**, com o comentário: "A causa: no ScanTailor a página tem uns 10 mm de papel em volta quando ele desentorta, então o que estica cai no papel. No nosso programa o desentortar vem depois do corte rente de 1 mm, então o que estica sai da página. porque a gente não resolve isso? não era para ter mais tamanho de pagina? / ainda não consegui perceber se ficou melhor. / essa funcionalidade você trouxe do scantailor exactamente como é lá? ou tu recriou em outra linguagem? / porque o desentortar automatico deforma a pagina?" Refeita na Central, com as quatro perguntas respondidas (código do próprio ScanTailor, sem reescrever; nas duas fotos não havia curva para tirar; o automático inventa curva em página reta; a opção A é o "mais tamanho de página").

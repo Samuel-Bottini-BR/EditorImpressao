@@ -16,10 +16,12 @@
    "id": "a-212-desentortar",
    "titulo": "Desentortar perto da lombada (2.12): como evitar que corte as letras?",
    "explicacao": [
-    "O que você está escolhendo: como consertar o \"desentortar\" do ScanTailor, que hoje corta letras da beirada quando está ligado.",
-    "Para que serve: página que entorta perto da costura do livro (as linhas fazem curva) sai reta. Vem desligado de fábrica, e desligado o livro sai idêntico ao de hoje (conferido).",
-    "O defeito: ligado, ele estica as linhas nas partes curvas, e o que estica sai para fora da imagem. No Righetti 96 o cabeçalho \"S.3 C.4 § 3\" some, aparece uma faixa preta no alto e o começo das linhas sai cortado. No Cursus 151 o começo das linhas também sai cortado.",
-    "A causa: no ScanTailor a página tem uns 10 mm de papel em volta quando ele desentorta, então o que estica cai no papel. No nosso programa o desentortar vem depois do corte rente de 1 mm, então o que estica sai da página.",
+    "Suas quatro perguntas, respondidas:",
+    "1. \"Por que a gente não resolve isso? Não era para ter mais tamanho de página?\" Era, sim, e dá para resolver. É exatamente a opção A: antes de desentortar, o programa põe papel branco em volta da página (como os 10 mm do ScanTailor). O que esticar cai nesse papel, e depois o corte é feito de novo. O implementador parou só para você escolher, porque a A muda um pouco o tamanho final da página.",
+    "2. \"Ainda não consegui perceber se ficou melhor.\" Tem razão, e a culpa é das fotos: o Righetti 96 e o Cursus 151 quase não têm curva (as linhas já saem retas no original). Então não havia o que melhorar, e só apareceu o defeito. Antes de você aprovar, o próximo teste vai usar páginas com as linhas bem curvas perto da lombada, com uma régua reta desenhada por cima, para dar para ver a diferença.",
+    "3. \"Você trouxe do ScanTailor exatamente como é lá, ou recriou?\" Trouxe o código do próprio ScanTailor, sem reescrever. As contas do desentortar (seguir as linhas, montar as curvas e redesenhar a página reta) são as funções originais dele em C++, copiadas sem mudança e postas dentro do programa. Só a ligação é nossa, a parte que entrega a página a essas funções. A diferença está no que chega a elas: no ScanTailor chega a página com papel em volta, e no nosso chega cortada rente.",
+    "4. \"Por que o desentortar automático deforma a página?\" O automático adivinha a curva olhando as linhas do texto. Numa página que já está reta, qualquer erro pequeno nessa adivinhação vira uma curva que não existia, e aí ele entorta as linhas (repare, na foto do Righetti, as linhas do meio onduladas na coluna \"Desentortar automático\"). O ScanTailor faz igual, e por isso lá ele também vem desligado de fábrica. O \"pelas margens\" usa as beiradas brancas de cima e de baixo e erra menos nessas páginas.",
+    "O que não muda: vem desligado de fábrica, e desligado o livro sai idêntico ao de hoje (conferido).",
     "Todas as fotos: livro novo, de fábrica, girar → dividir → endireitar → cortar → desentortar → filtro. Colunas: Original · Hoje (Original) · Desentortar automático · Desentortar pelas margens · Hoje (Preto e branco) · Automático + Preto e branco."
    ],
    "exemplos": [
@@ -43,8 +45,8 @@
    "opcoes": [
     {
      "id": "a",
-     "nome": "A — Papel em volta antes de desentortar (recomendo)",
-     "texto": "O programa põe uma margem de papel branco em volta da página, desentorta e corta de novo depois, como o ScanTailor faz. A ordem das etapas não muda. Ressalva: a página pode mudar um pouco de tamanho depois do novo corte.",
+     "nome": "A — Papel em volta antes de desentortar, e me mostrar de novo com páginas bem curvas (recomendo)",
+     "texto": "É o \"mais tamanho de página\" que você falou: o programa põe papel branco em volta, desentorta e corta de novo, como o ScanTailor. A ordem das etapas não muda. Depois o verificador traz páginas com curva de verdade e uma régua reta por cima, para você ver se melhora. Ressalva: a página pode mudar um pouco de tamanho depois do novo corte.",
      "imgs": []
     },
     {
@@ -58,6 +60,18 @@
      "nome": "C — Deixar como está, desligado, com aviso",
      "texto": "Continua desligado de fábrica; quem ligar vê o aviso \"pode cortar letras da beirada\". O conserto fica para depois.",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:02:15Z",
+     "texto": "A causa: no ScanTailor a página tem uns 10 mm de papel em volta quando ele desentorta, então o que estica cai no papel. No nosso programa o desentortar vem depois do corte rente de 1 mm, então o que estica sai da página. porque a gente não resolve isso? não era para ter mais tamanho de pagina?\n\nainda não consegui perceber se ficou melhor.\n\nessa funcionalidade você trouxe do scantailor exactamente como é lá? ou tu recriou em outra linguagem?\n\nporque o desentortar automatico deforma a pagina?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T18:30:00Z",
+     "texto": "Respondo às quatro perguntas logo abaixo, uma por uma. Em resumo: dá para resolver, e é exatamente a opção A. Você não viu melhora porque nessas duas páginas não havia curva para tirar."
     }
    ]
   }

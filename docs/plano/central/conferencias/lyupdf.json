@@ -81,6 +81,18 @@
      "src": "lyupdf/img/lu-maximizada-depois.jpg",
      "legenda": "Depois: a janela maximizada inteira"
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T17:54:49Z",
+     "texto": "Só não entendi porque cortou parte do livro ali no canto superior direito."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T18:30:00Z",
+     "texto": "Não foi o programa que cortou: o número da folha (\"Cxlvii\") já vem cortado no próprio escaneamento do Graduale. Abri a página 301 do PDF original e ela é assim, com o número saindo pela beirada da imagem. A tela mostra a página inteira, sem cortar nada. Sua resposta \"Está bom\" ficou registrada."
+    }
    ]
   },
   {
@@ -139,10 +151,12 @@
    "id": "lu-grade",
    "nome": "\"Todas as páginas\" nítida e rápida",
    "explicacao": [
-    "O que você está escolhendo: se a grade de todas as páginas ficou nítida e aparece logo.",
-    "Antes, aberta perto da página 301, a página ficava cinza 28 segundos e depois saía mole (nitidez 0,69). Agora aparece em 1,5 segundo, com nitidez 0,97."
+    "Do que se trata: o botão \"Ver todas as páginas\" (no alto da janela) mostra o livro inteiro em miniaturas, uma ao lado da outra, para achar uma página rápido.",
+    "Antes, com o livro aberto perto da página 301, essas miniaturas ficavam cinza quase meio minuto (28 segundos) e, quando apareciam, saíam borradas.",
+    "Agora aparecem em um segundo e meio, e nítidas. Na foto: à esquerda, como era (borrada); à direita, como ficou.",
+    "O que você responde: se a tela \"Ver todas as páginas\" ficou boa assim."
    ],
-   "olhar": "A folha 301 ampliada, antes e depois.",
+   "olhar": "As letras da folha 301: à esquerda borradas, à direita nítidas.",
    "texto": "Confirmado: 28 s e 0,69 antes, 1,5 s e 0,97 depois. Achei um detalhe: em Duas lado a lado, a grade marca a página do lado (300) em vez da 301.",
    "selo": "Bom, com ressalva",
    "ressalva": "Em Duas lado a lado o quadro azul fica na outra página do par.",
@@ -156,6 +170,13 @@
     {
      "src": "lyupdf/img/lu-grade-depois.jpg",
      "legenda": "Depois: a grade inteira (1600x821)"
+    }
+   ],
+   "historico": [
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T18:30:00Z",
+     "texto": "Você marcou \"Ainda não entendi\". Refiz a explicação mais simples logo abaixo."
     }
    ]
   },
