@@ -147,3 +147,22 @@ faz. Tem uma pagina maior que outra ali".
 - Testes de reversão em `tests/test_livro_aberto.py` (5 falham no `2eeec20`): par da mesma altura, livro aberto
   nítido a 125%, grade nítida a 125% (2 formatos), grade começa perto. 13 passam no novo.
 - Cópia do código antigo para provar: `saida_teste/antigo` (git worktree destacado do `2eeec20`, criado por mim).
+
+## 22/10/2026: junção da Fase 2 (até `25504fb`) e filtros em tela cheia com todas as opções
+Pedido (quadro l67-tela-cheia): "esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções
+dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?" e "faça o recomendado".
+- `d285b48`: `git merge 25504fb` (2.8, 2.9, 2.11, 2.15 e o conserto dos cartões; nada do 2.12). Um conflito, em
+  `ui/tela_conferir.py` (a aba Filtro antiga virou o painel). **Onde cada controle foi parar** (painel "Filtro da
+  página", parte "Mais ajustes"): os dez do ScanTailor (2.8) na lista "Jeito do preto e branco" (a mesma
+  `seletor_algoritmo_pb`, só no Preto e branco); "Letra clara em fundo escuro" (2.9, todo filtro com ajuste); "Letras
+  com a cor delas" (2.11, só no Preto e branco) e "Reduzir cores" (2.11, todo filtro com ajuste). "Mais ajustes"
+  aparece agora em todo filtro com ajuste. O "Algoritmo:" antigo não voltou.
+- `40df242`: tela cheia (`ui/widgets/filtros_tela_cheia.py`) com as mesmas opções do painel, com os mesmos nomes
+  (rola à direita); a página grande pelo mesmo caminho do PDF (`renderizar_com_filtro`) numa cópia com o mexido;
+  "Usar" grava cada opção pelo caminho do controle no painel (`TelaConferir._gravar_opcao_da_tela_cheia`).
+- Testes em `tests/test_filtros_tela_cheia.py` (11 passam): opções por filtro; página da tela cheia = a gerada com as
+  mesmas opções = a página depois de "Usar"; fechar sem mudar; livro já começado sai igual; reversão do ajuste
+  mexido (falha no `d285b48`).
+- Janela de verdade (`relatorios/layout-4a7/tela-cheia-opcoes/`, Boécio folha 7): 8 de 8 conferências.
+- Achado do `core` (não mexi): a primeira vez que uma página é desenhada sai umas dezenas de pixels diferente das
+  seguintes (grava a `geometria_das_zonas` e pode acertar um alerta do endireitar na primeira).
