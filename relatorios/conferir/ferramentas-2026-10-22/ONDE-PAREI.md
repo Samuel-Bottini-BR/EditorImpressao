@@ -75,6 +75,28 @@ de 6 páginas. Fotos `img/210_<página>_<filtro>.jpg` (inteira + pedaço ampliad
 - Ressalva: a camada de cima vai em JPEG de qualidade 92 (perda pequena); o implementador escreveu isso. Não testei
   abrir o PDF de duas camadas em outro leitor além do PyMuPDF (Acrobat/navegador).
 
+### 2.17 Igualar a luz, suavizar, tirar o chuvisco (olho; 19 fotos abertas). Caminho: girar → não dividiu →
+endireitada → cortada → filtro (Preto e branco, Melhorar ou Original) → a opção ligada em todas as páginas. Livro
+de 6 páginas. Fotos `img/217_<página>_<pb|melhorar|original>.jpg` e `img/217_escola_p035_legenda.jpg`.
+- **Marial 7** — PB: "chuvisco 20" tira os pontinhos do verso em volta de "O Pref. Fr. Francisco..." (melhor) e
+  engrossa a letra; igualar e suavizar quase iguais ao de hoje; a sombra cinza do canto de cima à esquerda fica em
+  todos. Melhorar: igualar tira a sombra do canto e branqueia o papel (melhor), tinta um pouco mais clara; chuvisco
+  20/50 quase sem diferença. Original: igualar deixa a página mais uniforme.
+- **Graduale 221** — PB: igualar e chuvisco 20 afinam/tiram a faixa preta da beirada esquerda; suavizar alisa as
+  bordas. Melhorar: **igualar deixa a tinta lavada** (marrom e vermelho mais claros; é o aviso que aparece);
+  chuvisco 20/50 quase igual. Original: igualar quase igual.
+- **Horas 47** — Melhorar: **igualar desbota o texto dourado e azul** (lavada); chuvisco sem diferença visível. PB:
+  suavizar afina a letra, chuvisco 20 engrossa; iluminura igual. Original: igual.
+- **Boécio 7** — PB: chuvisco 20 tira parte dos pontinhos do verso à direita dos versos, mas a letra fica mais
+  grossa e manchada. Melhorar: chuvisco 20/50 engrossa e borra a letra. Original: igualar igual.
+- **Escola 35** — **PB + chuvisco 20 apaga a legenda pequena "Adão e Eva expulsos do Paraíso"** (fica "A ... e Eva
+  e..."; `img/217_escola_p035_legenda.jpg`). O aviso do chuvisco só aparece **acima** de 20, e o próprio aviso diz
+  que "os valores que mais ajudam ficam entre 10 e 20": com 20 a letra pequena já some. **Ressalva grave.**
+  Melhorar: chuvisco 50 deixa a legenda inteira. Original: igual.
+- **Palatino 10** — PB: chuvisco 20 engrossa e emenda letras; suavizar quase igual. Melhorar: chuvisco 20/50
+  engrossa e borra. Original: igual.
+- "Suavizar as letras" no Melhorar não foi testado (é só do Preto e branco, como no ScanTailor).
+
 - Observação (2.4): as margens são branco puro; no filtro Original o papel creme fica com uma moldura branca em volta
   (como o ScanTailor faz).
 - [ ] 3. 2.6: PDF de impressão de verdade + dobra simulada
