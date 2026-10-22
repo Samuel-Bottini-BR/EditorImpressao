@@ -717,11 +717,11 @@
       "id": "layout",
       "nome": "Agente de layout",
       "papel": "Tela nova",
-      "estado": "terminou",
-      "tarefa": "Livro aberto como no UPDF (mesma altura, nítido, jeitos de mostrar e de caber) e filtros em tela cheia com todas as opções",
-      "ultimo": "Entregou o livro aberto como no UPDF e a tela cheia com todas as opções (testes no GitHub: 2194 passaram, 0 falharam). Vai para o verificador.",
+      "estado": "trabalhando",
+      "tarefa": "Melhorias do layout 6 e 7: quadro azul certo no \"Duas lado a lado\"; \"Antes de processar\" mais clara e menor; lembrar as miniaturas para todos os livros",
+      "ultimo": "Começou as melhorias, como você mandou (\"continuar\", 22/10).",
       "ramo": "layout-etapas4a7-2026-10-19",
-      "quando": "2026-10-22T15:10:00Z"
+      "quando": "2026-10-22T20:00:00Z"
     },
     {
       "id": "consertos",
