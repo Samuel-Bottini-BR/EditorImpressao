@@ -28,7 +28,33 @@ Worktrees (com junções `modelos` e `gabarito\paginas`; **não apagar com Remov
     ferramenta nova "ajustar").
   - Ressalva: fora o último caderno, não houve conserto de defeito neste ramo; os outros testes são de ferramenta nova
     (falhar no antigo é esperado, não prova conserto).
-- [ ] 2. Fotos pelo caminho inteiro, item por item (uma linha por página)
+- [ ] 2. Fotos pelo caminho inteiro, item por item (uma linha por página). Script `scripts/caminho.py` (Projeto
+  novo → `analisar_projeto` → `processar`), fotos `scripts/fotos.py`, rodada `scripts/rodada1.sh`.
+
+### 2.4 Margens iguais (olho; todas as fotos abertas). Caminho: girar (automático) → não dividiu (uma página por
+folha) → endireitada → cortada (automático) → filtro Original; antes = código `9804b98`, depois = caixinha marcada
+(10/5/10/5 mm, no meio). Fotos `img/24_<livro>.jpg`.
+- **Graduale** (3 páginas, de 33,7/26,6/33,7 cm de largura) → as três saem 35,7 x 47,6 cm.
+  - p. 221: ganha 1 cm de cada lado e 0,5 cm em cima e embaixo, branco; nada some.
+  - p. 222 (a estreita; gabarito do 2.4, "aumentar a margem do lado direito"): fica no meio, com ~4,5 cm de branco de
+    cada lado. A margem da direita cresce, mas a da esquerda também (alinhamento "no meio").
+  - p. 223 (gabarito, "mais margem do lado esquerdo"): é a mais larga, ganha só 1 cm de cada lado; o pedido de mais
+    margem à esquerda **não** é atendido pelas margens iguais (precisaria do alinhamento ou da margem da costura).
+- **Horas** (4 páginas) → todas 37,3 x 51,1 cm.
+  - p. 11 (frontispício): inteiro, com branco em volta.
+  - p. 13 (moldura dourada): inteira, o lápis "c" no canto continua.
+  - p. 14 (gabarito, "centralizar, margem muito à esquerda"): a página fica no meio da folha nova, **mas a tabela
+    continua deslocada dentro dela** (mais papel de um lado que do outro), porque o "conteúdo" é a página já
+    cortada, não a caixa do conteúdo do 2.5 (ressalva que o próprio implementador escreveu).
+  - p. 47 (iluminura): inteira, no meio; o aviso "contas do endireitar discordam" da p. 11 é igual antes e depois.
+- **Palatino** (7 páginas, 10 a 11,3 cm de largura) → todas 13,3 x 18,5 cm; p. 5, 7, 9, 10, 57 (gabarito,
+  "centralizar"), 66 e 67 inteiras, cada uma no meio com branco em volta.
+- **Opus Majus** (5 páginas): p. 11, 20 e 165 saem 12,8 x 20 cm; **p. 3 (folha de rosto, 14,6 x 23,5 cm) e p. 256
+  (tabela dobrável) ficam fora da conta e ganham o aviso "Página bem maior que as outras"**. A tabela é o caso
+  decidido (g9-pagina-muito-maior); a folha de rosto não é tabela, é só 35 % maior (o limite é 25 % acima da
+  mediana) e vai ser impressa de outro tamanho. Ressalva.
+- Observação: as margens são branco puro; no filtro Original o papel creme fica com uma moldura branca em volta
+  (como o ScanTailor faz).
 - [ ] 3. 2.6: PDF de impressão de verdade + dobra simulada
 - [ ] 4. Janela de verdade (fora da tela, WM_CLOSE)
 - [ ] 5. Velocidade antes x depois alternados
