@@ -89,3 +89,19 @@ Copiadas palavra por palavra do banco da Central (coleções `respostas`, `orden
 ## Ideia nova
 
 - (20:17 UTC) "Tive uma nova ideia: como nós temos muitas opções e jeitos de arrumar as coisas, quero adicionar uma coisa no automatico, quando abrirmos o painel em tela cheia do automatico, ele mostra o livro e nós poderemos passar as paginas e ir adicionando filtro e coisas e vendo como a pagina , me de ideias do que poderia ter de opções, para que nós possamos ver qual o melhor jeito de restaurar o livro e de forma mais rapida. seria bom se o programa desse sugestões e tivesse um botão para delisgar ou ligar sugestões nesse painel do automatico em tela cheia."
+
+## Layout 6 e 7 (respondido em 22/10/2026, ~12:40-12:48 UTC)
+
+- `l67-tela-cheia` Filtros em tela cheia: **Ainda não entendi** — comentário: "esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?"
+- `l67-config` Configurações: **Está bom**
+- `l67-livros` Tela dos livros: **Está bom**
+- `l67-livro-aberto` O livro aberto na tela inteira: **Está pior** — comentário: "Eu não consigo ver a página direito, e elas estão  de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali"
+- `l67-acertos` Os três acertos: **Está bom** — comentário: "Mas explica melhor essa ressalva, isso é um erro? vai ser resolvido?"
+- `ly-6-7` DECISÃO FINAL: **Aprovado**
+
+Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.11 + 2.15, layout 4-5 e "Para revisar": recebidas; entram na junção final (ordem de 22/10).
+
+### Decisões discutidas no chat (22/10/2026)
+- Livro aberto: refazer como no UPDF (barra de baixo com uma página / duas lado a lado / rolar sem parar e caber página / altura / largura / tamanho real; todas as páginas na mesma altura; página nítida): "concordo sim, pode colocar o agente de layout para trabalhar."
+- Ressalva da grade: é erro (imagem encolhida e aumentada de novo pela escala de 125%); o agente de layout mede e conserta.
+- Filtros em tela cheia: mostram todas as opções do filtro escolhido (Só as letras, os 10 tipos do ScanTailor, 2.9, 2.11, Limpar a sujeira, Mais ajustes) e a página do meio sai com todas aplicadas; o agente de layout junta o 2.8-2.15 aprovado (até 25504fb) ao ramo dele: "faça o recomendado."
