@@ -960,9 +960,12 @@ class PainelMarcarComo(Bloco):
         """Abre a caixa de cores; a cor vale para o próximo "pintar por cima"."""
         from PySide6.QtWidgets import QColorDialog
 
-        nova = QColorDialog.getColor(QColor(self.cor), self, "Cor para pintar por cima")
-        if nova.isValid():
-            self.definir_cor(nova.name())
+        # aberta sem travar o programa (open, nao exec): o teste_botoes.py
+        # clica em todos os botoes e uma caixa que espera resposta o pararia
+        self.caixa_de_cor = QColorDialog(QColor(self.cor), self)
+        self.caixa_de_cor.setWindowTitle("Cor para pintar por cima")
+        self.caixa_de_cor.colorSelected.connect(lambda cor: self.definir_cor(cor.name()))
+        self.caixa_de_cor.open()
 
     def definir_cor(self, cor: str) -> None:
         self.cor = cor or "#ffffff"
