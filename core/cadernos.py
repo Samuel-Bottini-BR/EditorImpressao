@@ -14,6 +14,16 @@ Confira com N = 8 (2 folhas):
     folha 1 frente: 6 3   verso: 4 5
 Dobrando as duas juntas ao meio, a leitura sai 1,2,3,4,5,6,7,8. E o que
 queremos.
+
+O ULTIMO CADERNO (decisao do Samuel imp-4, 21/10/2026: "Ultimo caderno menor,
+so com as folhas necessarias"): ate aqui o ultimo caderno saia sempre do
+tamanho cheio, como no embaralhador antigo - 23 paginas em cadernos de 20
+davam 17 paginas em branco (3 folhas inteiras vazias). Agora o ultimo caderno
+tem so as folhas que precisa (o multiplo de 4 logo acima do que sobrou): 23
+paginas = um caderno de 20 e um de 4, com 1 pagina em branco. Vale para o
+"Montar cadernos" de sempre e para o arquivo de impressao novo
+(core/impressao.py). Arriscado: voltar a completar o ultimo caderno (o
+defeito volta; tests/test_cadernos.py::test_ultimo_caderno_sai_menor_*).
 """
 
 from __future__ import annotations
@@ -78,17 +88,29 @@ def ordem_do_caderno(paginas_no_caderno: int, deslocamento: int = 0) -> list[Lad
     return lados
 
 
+def tamanhos_dos_cadernos(total_paginas: int, paginas_por_caderno: int) -> list[int]:
+    """Quantas páginas (com as brancas) tem cada caderno, na ordem. Todos do
+    tamanho escolhido, menos o último, que tem só o múltiplo de 4 logo acima
+    do que sobrou (imp-4, 21/10/2026). Sem páginas: lista vazia."""
+    n = paginas_por_caderno_valido(paginas_por_caderno)
+    tamanhos: list[int] = []
+    for inicio in range(0, max(0, total_paginas), n):
+        resto = total_paginas - inicio
+        tamanhos.append(n if resto >= n else MULTIPLO * -(-resto // MULTIPLO))
+    return tamanhos
+
+
 def montar_ordem(total_paginas: int, paginas_por_caderno: int) -> list[Lado]:
     """Ordem de impressão do livro inteiro, caderno por caderno.
 
     As páginas que passarem do total viram branco: são o arredondamento do
-    último caderno.
+    último caderno, que tem só as folhas necessárias (tamanhos_dos_cadernos).
     """
-    n = paginas_por_caderno_valido(paginas_por_caderno)
     lados: list[Lado] = []
 
-    for inicio in range(0, total_paginas, n):
-        for lado in ordem_do_caderno(n, deslocamento=inicio):
+    inicio = 0
+    for tamanho in tamanhos_dos_cadernos(total_paginas, paginas_por_caderno):
+        for lado in ordem_do_caderno(tamanho, deslocamento=inicio):
             lados.append(
                 Lado(
                     esquerda=lado.esquerda if _existe(lado.esquerda, total_paginas) else None,
@@ -96,6 +118,7 @@ def montar_ordem(total_paginas: int, paginas_por_caderno: int) -> list[Lado]:
                     frente=lado.frente,
                 )
             )
+        inicio += tamanho
     return lados
 
 
@@ -184,12 +207,12 @@ def conferir_sequencia(total_paginas: int, paginas_por_caderno: int) -> tuple[bo
 
     Devolve (esta certo, frase em portugues para a tela).
     """
-    n = paginas_por_caderno_valido(paginas_por_caderno)
     if total_paginas <= 0:
         return True, "Nao ha paginas para conferir."
 
     vistas: list[int] = []
-    for inicio in range(0, total_paginas, n):
+    inicio = 0
+    for n in tamanhos_dos_cadernos(total_paginas, paginas_por_caderno):
         lados = ordem_do_caderno(n, deslocamento=inicio)
 
         # Os lados saem aos pares, na ordem em que o papel entra na impressora:
@@ -221,6 +244,7 @@ def conferir_sequencia(total_paginas: int, paginas_por_caderno: int) -> tuple[bo
                 "assim: avise quem cuida do programa."
             )
         vistas.extend(p for p in leitura if _existe(p, total_paginas))
+        inicio += n
 
     if sorted(vistas) != list(range(total_paginas)):
         return False, (
@@ -230,7 +254,7 @@ def conferir_sequencia(total_paginas: int, paginas_por_caderno: int) -> tuple[bo
 
     quantas = ("1 página" if total_paginas == 1
                else f"as {total_paginas} páginas")
-    brancos = contar_cadernos(total_paginas, n) * n - total_paginas
+    brancos = sum(tamanhos_dos_cadernos(total_paginas, paginas_por_caderno)) - total_paginas
     if brancos:
         sobra = ("sobra 1 página em branco" if brancos == 1
                  else f"sobram {brancos} páginas em branco")
@@ -248,9 +272,16 @@ def instrucoes_de_impressao(total_paginas: int, paginas_por_caderno: int) -> lis
     """Texto em portugues para a tela final. Sem jargao."""
     n = paginas_por_caderno_valido(paginas_por_caderno)
     folhas = folhas_por_caderno(n)
-    cadernos = contar_cadernos(total_paginas, n)
+    tamanhos = tamanhos_dos_cadernos(total_paginas, n)
+    cadernos = max(1, len(tamanhos))
+    grupos = f"Separe as folhas em grupos de {folhas}."
+    if tamanhos and tamanhos[-1] < n:
+        # imp-4 (21/10/2026): o ultimo caderno tem so as folhas necessarias
+        ultimo = tamanhos[-1] // 4
+        grupos = (f"Separe as folhas em grupos de {folhas}; o último grupo tem "
+                  + ("1 folha." if ultimo == 1 else f"{ultimo} folhas."))
     return [
         "Imprima frente e verso, virando na borda curta.",
-        f"Separe as folhas em grupos de {folhas}.",
+        grupos,
         f"Dobre cada grupo ao meio - são {cadernos} cadernos prontos.",
     ]
