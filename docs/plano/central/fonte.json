@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T20:15:00Z",
+        "texto": "Três agentes trabalham: o verificador confere as 7 ferramentas do Implementador B, o Implementador A refaz o desentortar (2.12) e o agente de layout faz as melhorias."
+      },
+      {
         "em": "2026-10-22T19:50:00Z",
         "texto": "Suas respostas foram lidas: a caixa do conteúdo foi aprovada; os 8 lugares que podem comer a página entraram na Lista de bugs com a sua regra de provar antes. Respondi as três dúvidas novas na própria pergunta."
       },
@@ -371,10 +375,10 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "andamento",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Parado numa escolha: ligado, o desentortar corta letras da beirada. Desligado, o livro sai igual.",
-      "falta": "Sua resposta na aba Conferência > Pergunta do Implementador A.",
+      "situacao": "Você escolheu a A (22/10): cortar uma vez só, no fim, como o ScanTailor. O Implementador A está refazendo.",
+      "falta": "Refazer, testar em páginas bem curvas com uma régua reta por cima, o verificador e depois a sua conferência.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -384,7 +388,7 @@
       "commit": "ffa2463",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T17:00:00Z",
+      "mudouEm": "2026-10-22T20:15:00Z",
       "relatorio": "perg-a"
     },
     {
@@ -538,15 +542,19 @@
       "titulo": "Perguntas do Implementador B (margens, impressão, luz, áreas)",
       "item": "2.4",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "andamento",
       "oque": "Margens e alinhamento iguais em todas as páginas.",
-      "situacao": "O Implementador B fez 2.4, 2.6, 2.16 e 2.17 e está no 2.18. Deixou 8 perguntas para você.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
       "testar": [],
-      "falta": "Suas respostas às 8 perguntas (aba Conferência > Perguntas do Implementador B).",
-      "mudouEm": "2026-10-22T16:30:00Z",
-      "relatorio": "perg-b"
+      "falta": "A conferência do verificador e depois a sua.",
+      "mudouEm": "2026-10-22T20:15:00Z",
+      "relatorio": "perg-b",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c"
     },
     {
       "id": "2.6",
@@ -555,71 +563,106 @@
       "fase": "2",
       "coluna": "andamento",
       "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.",
-      "situacao": "Pronto pelo Implementador B (22/10): botão \"montar para imprimir...\" com livreto A4, margens, escala, último caderno menor, imprimir direto. Espera o verificador.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T15:20:00Z"
+      "mudouEm": "2026-10-22T20:15:00Z",
+      "falta": "A conferência do verificador e depois a sua.",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c"
     },
     {
       "id": "2.16",
       "titulo": "Usar todos os núcleos do processador",
       "item": "2.16",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Processar várias páginas ao mesmo tempo.",
-      "situacao": "Não começado. Na fila do Implementador B.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "A conferência do verificador e depois a sua.",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c",
+      "mudouEm": "2026-10-22T20:15:00Z"
     },
     {
       "id": "2.19",
       "titulo": "Unidades cm/mm e perfis de configuração",
       "item": "2.19",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Escolher cm ou mm e guardar perfis de ajustes. O tema já está feito.",
-      "situacao": "Não começado (o tema já está no programa). Na fila do Implementador B.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "A conferência do verificador e depois a sua.",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c",
+      "mudouEm": "2026-10-22T20:15:00Z"
     },
     {
       "id": "2.17",
       "titulo": "Igualar a luz e suavizar",
       "item": "2.17",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Igualar a luz da página como filtro de imagem.",
-      "situacao": "Não começado. Metade da conta já está no programa (usada pelo detector de gravura). Na fila do Implementador B.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "A conferência do verificador e depois a sua.",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c",
+      "mudouEm": "2026-10-22T20:15:00Z"
     },
     {
       "id": "2.18",
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
-      "situacao": "Não começado. Na fila do Implementador B.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "A conferência do verificador e depois a sua. Também falta fazer a sua resposta da tinta com a cor: as duas opções separadas.",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c",
+      "mudouEm": "2026-10-22T20:15:00Z"
     },
     {
       "id": "2.10",
       "titulo": "PDF em duas camadas",
       "item": "2.10 e 1.6",
       "fase": "2",
-      "coluna": "fila",
+      "coluna": "andamento",
       "oque": "Letra em cima, fundo embaixo, como opção.",
-      "situacao": "Não começado. Vai junto do 1.6. Na fila do Implementador B.",
-      "selos": {},
+      "situacao": "Pronto pelo Implementador B (22/10), com os ajustes das suas respostas. Testes no GitHub: 2177 passaram, 0 falharam. O verificador está conferindo agora.",
+      "selos": {
+        "github": "sim"
+      },
       "fotos": [],
-      "testar": []
+      "testar": [],
+      "falta": "A conferência do verificador e depois a sua.",
+      "ramo": "fase2-ferramentas-2026-10-22",
+      "commit": "f26407c",
+      "mudouEm": "2026-10-22T20:15:00Z"
     },
     {
       "id": "1.4",
@@ -687,11 +730,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "terminou",
-      "tarefa": "Caixa do conteúdo + borda preta + pintar de branco (etiqueta do Egenloff 3, lentidão) → 2.12 desentortar",
-      "ultimo": "Entregou a caixa do conteúdo/borda preta/pintar de branco (pronto) e parou o 2.12 numa escolha que está com você.",
-      "ramo": "fase2-caixa-conteudo e fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-22T17:00:00Z"
+      "estado": "trabalhando",
+      "tarefa": "Refazer o 2.12 desentortar como o ScanTailor: cortar uma vez só, no fim",
+      "ultimo": "Começou a refazer o desentortar do jeito que você escolheu (opção A).",
+      "ramo": "fase2-scantailor-itens-2026-10-19",
+      "quando": "2026-10-22T20:15:00Z"
     },
     {
       "id": "implementador-b",
@@ -707,11 +750,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "terminou",
-      "tarefa": "Conferir a caixa do conteúdo, borda preta e pintar de branco; depois as 7 ferramentas do Implementador B",
-      "ultimo": "Entregou a caixa do conteúdo: pronto para conferir, com ressalvas, e uma pergunta sobre o excesso de avisos. Próximo: as 7 ferramentas do Implementador B.",
-      "ramo": "verif-caixa-2026-10-22",
-      "quando": "2026-10-22T19:30:00Z"
+      "estado": "trabalhando",
+      "tarefa": "Conferir as 7 ferramentas do Implementador B (2.4, 2.6, 2.10, 2.16, 2.17, 2.18, 2.19)",
+      "ultimo": "Começou a conferir as 7 ferramentas do Implementador B.",
+      "ramo": "verif-ferramentas-2026-10-22",
+      "quando": "2026-10-22T20:15:00Z"
     },
     {
       "id": "layout",
