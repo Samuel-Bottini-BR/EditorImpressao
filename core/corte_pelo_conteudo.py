@@ -345,12 +345,24 @@ def sem_partir(caixa: tuple[float, float, float, float], pecas, dentro: tuple[fl
 
         if partidas(a, b) == 0:
             return a, b
+        # Os passos experimentados: pôr uma das duas beiradas do corte logo
+        # antes ou logo depois de CADA peça (com a folga de 1 mm, ou rente, se
+        # a folga cair noutra peça). Até 22/10/2026 eram só as peças que o
+        # corte partia na posição de saída; no Egenloff 3 o passo que deixava
+        # a etiqueta inteira (136 pontos para baixo) fazia a beirada de cima
+        # partir um carimbo (y 295-382), e nenhum outro passo era tentado: o
+        # corte ficava como estava, com a etiqueta partida. O menor passo que
+        # não parte nada sempre põe uma beirada rente a alguma peça, então
+        # esta lista contém a resposta quando ela existe. Barato: dezenas de
+        # peças por página.
         passos = set()
         for c in caixas:
             p0, p1 = no_eixo(c)
+            q0, q1 = no_outro(c)
+            if q1 <= o0 or q0 >= o1:
+                continue                                     # fora no outro eixo
             for borda in (a, b):
-                if p0 < borda < p1:
-                    passos.update({p1 + folga - borda, p0 - folga - borda})
+                passos.update({p1 + folga - borda, p0 - folga - borda, p1 - borda, p0 - borda})
         for passo in sorted(passos, key=abs):
             x0, x1 = a + passo, b + passo
             if x0 < comeco or x1 > fim or x0 > d0 or x1 < d1:

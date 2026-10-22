@@ -281,6 +281,29 @@ def test_regressao_corte_do_livro_nao_parte_peca_ao_meio():
     assert y0 <= 673 and y1 >= 4218                          # o conteúdo continua dentro
 
 
+def test_regressao_egenloff3_o_passo_que_salva_a_etiqueta_nao_pode_partir_o_carimbo():
+    """Bug de 21/10/2026 (verificador, `f10b2df`; o conserto de `ed68928` não
+    funcionava na página real): Egenloff 3, com o corte pelo conteúdo e a borda
+    preta ligados, a etiqueta impressa de 1880 ("1880 neu aufgelegt von George
+    Gilbers") saía cortada ao meio. Causa: andar 136 pontos para baixo (o passo
+    que deixa a etiqueta inteira) fazia a beirada de cima partir duas peças de
+    um carimbo (y 295-382), e a conta não tentava outro passo. Peças e caixas
+    são as medidas da página de verdade a 300 DPI (scripts/eg3.py). Medida do
+    defeito: a etiqueta, de 31,8 mm de altura, fica inteira (dentro ou fora)."""
+    m = cc.MedidaDoConteudo(4167, 5363, (1056.0, 673.0, 3625.0, 4218.0), (217.6, 300.0),
+                            (0.08467, 0.08467), limite=(95.0, 37.0, 4082.0, 5079.0))
+    caixa = (849.0, 208.0, 3832.0, 4683.0)                   # o corte do livro, como saía
+    pecas = [((792.0, 4431.0, 3389.0, 4807.0), False),        # a etiqueta
+             ((3449.0, 295.0, 3536.0, 382.0), False),         # o carimbo, em cima
+             ((3040.0, 322.0, 3053.0, 362.0), False)]
+    x0, y0, x1, y1 = cc.sem_partir(caixa, pecas, cc.caixa_do_corte(m), m)
+    assert (x1 - x0, y1 - y0) == pytest.approx((caixa[2] - caixa[0], caixa[3] - caixa[1]))
+    for (p0, q0, p1, q1), _s in pecas:                        # nenhuma peça partida
+        assert not (q0 < y0 < q1 or q0 < y1 < q1), (y0, y1, q0, q1)
+    assert y1 >= 4807                                         # a etiqueta fica dentro
+    assert y0 <= 673 and y1 >= 4218                          # o conteúdo continua dentro
+
+
 def test_sem_partir_sem_jeito_fica_como_esta():
     m = cc.MedidaDoConteudo(1000, 1000, (100.0, 100.0, 900.0, 900.0), (80.0, 80.0), (0.1, 0.1))
     caixa = (90.0, 90.0, 910.0, 910.0)
