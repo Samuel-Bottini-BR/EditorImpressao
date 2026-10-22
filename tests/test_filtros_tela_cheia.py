@@ -85,7 +85,10 @@ def test_fechar_sem_mudar_nao_muda(conferir_original):  # noqa: F811
 def test_no_melhorar_nao_aparece_o_jeito_do_preto_e_branco(conferir_original):  # noqa: F811
     """Verificador, 21/10/2026: no Melhorar não pode aparecer o rótulo da lista
     do Preto e branco (o "Algoritmo:" de antes) sem nada ao lado. No painel
-    Filtro a lista mora em "Mais ajustes", que só aparece no Preto e branco."""
+    Filtro a lista mora em "Mais ajustes". Desde a junção com a Fase 2
+    (22/10/2026) "Mais ajustes" aparece também no Melhorar, com "Letra clara em
+    fundo escuro" (2.9) e "Reduzir cores" (2.11), mas sem a lista do preto e
+    branco nem "Letras com a cor delas"."""
     from PySide6.QtWidgets import QApplication, QLabel
 
     from core.filtros import MELHORAR, PRETO_E_BRANCO
@@ -99,7 +102,9 @@ def test_no_melhorar_nao_aparece_o_jeito_do_preto_e_branco(conferir_original):  
     painel = tela.paineis.filtro_da_pagina
     visiveis = [r.text() for r in painel.findChildren(QLabel) if r.isVisible()]
     assert not any("Algoritmo" in t or "Jeito do preto" in t for t in visiveis), visiveis
-    assert painel.partes["mais"].isHidden()
+    assert not painel.partes["mais"].isHidden()
+    assert tela.seletor_algoritmo_pb.isHidden() and tela.caixa_letras_com_a_cor.isHidden()
+    assert not tela.caixa_claro_no_escuro.isHidden() and not tela.caixa_reduzir_cores.isHidden()
     tela._escolher_filtro(PRETO_E_BRANCO)
     QApplication.processEvents()
     assert not painel.partes["mais"].isHidden()

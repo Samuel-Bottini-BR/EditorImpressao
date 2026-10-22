@@ -1,0 +1,32 @@
+{
+ "graduale_p221": {
+  "tamanho": [
+   3981,
+   5469
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   0,
+   2015,
+   995
+  ],
+  "pontos_pretos": {
+   "Hoje: Preto e branco": 3768802,
+   "Letras com a cor delas": 40372,
+   "Letras com a cor + Reduzir cores": 18832,
+   "Melhorar + Reduzir cores": 2276162
+  },
+  "pontos_diferentes_de_hoje": {
+   "Letras com a cor delas": 3765621,
+   "Letras com a cor + Reduzir cores": 3765621,
+   "Melhorar + Reduzir cores": 3913251
+  },
+  "segundos": {
+   "Hoje: Preto e branco": 3.27,
+   "Letras com a cor delas": 8.73,
+   "Letras com a cor + Reduzir cores": 9.33,
+   "Melhorar + Reduzir cores": 11.51
+  },
+  "nao_rodou": {}
+ }
+}

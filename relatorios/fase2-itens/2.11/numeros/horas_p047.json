@@ -1,0 +1,32 @@
+{
+ "horas_p047": {
+  "tamanho": [
+   3428,
+   5719
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   1801,
+   3425,
+   857
+  ],
+  "pontos_pretos": {
+   "Hoje: Preto e branco": 6796116,
+   "Letras com a cor delas": 6178448,
+   "Letras com a cor + Reduzir cores": 6552951,
+   "Melhorar + Reduzir cores": 6337702
+  },
+  "pontos_diferentes_de_hoje": {
+   "Letras com a cor delas": 719631,
+   "Letras com a cor + Reduzir cores": 243165,
+   "Melhorar + Reduzir cores": 735136
+  },
+  "segundos": {
+   "Hoje: Preto e branco": 3.86,
+   "Letras com a cor delas": 9.11,
+   "Letras com a cor + Reduzir cores": 10.42,
+   "Melhorar + Reduzir cores": 10.82
+  },
+  "nao_rodou": {}
+ }
+}

@@ -55,7 +55,12 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 # Tem de bater com ST_FERRAMENTAS_VERSAO_API em st_ferramentas.h.
 # 1 = so os pontinhos; 2 (06/10/2026) = + dividir (st_ferramentas_dividir);
 # 3 (06/10/2026) = + endireitar (st_ferramentas_endireitar, item 2.2).
-VERSAO_API = 3
+# 4 = reservado para as caixas (ramo fase2-caixa-conteudo, ainda nao juntado).
+# 5 (20/10/2026) = + preto e branco do ScanTailor (st_ferramentas_preto_e_branco,
+#     item 2.8; core/preto_e_branco_scantailor.py).
+# 6 (20/10/2026) = + as cores do ScanTailor (st_ferramentas_cores, item 2.11;
+#     core/cores_scantailor.py).
+VERSAO_API = 6
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -98,6 +103,32 @@ ASSINATURAS = {
         ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
+    # Item 2.8 (20/10/2026): o preto e branco do ScanTailor, com os dez jeitos
+    # (core/preto_e_branco_scantailor.py).
+    "st_ferramentas_preto_e_branco": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # metodo, ajuste do limiar
+        ctypes.c_int,                                                # janela
+        ctypes.c_double, ctypes.c_double,                            # coef. Sauvola, coef. Wolf
+        ctypes.c_int, ctypes.c_int,                                  # Wolf minimo, maximo
+        ctypes.c_int, ctypes.c_int, ctypes.c_int,                    # normalizar, Savitzky-Golay, morfologica
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.11 (20/10/2026): as cores do ScanTailor (core/cores_scantailor.py).
+    "st_ferramentas_cores": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_void_p, ctypes.c_int,                               # preto e branco, passo
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # normalizar, segmentar
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # ruido, ajustes R, G, B
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # posterizar, nivel, normalizar cores, forcar P&B
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
 }
 
 
@@ -126,6 +157,21 @@ def indisponivel(motivo: str, detalhe: str | None = None) -> Resultado:
     if detalhe:
         _log.warning("st_ferramentas: %s (%s)", motivo, detalhe)
     return Resultado(None, motivo, detalhe)
+
+
+def anotar_no_erros_log(origem: str, motivo: str | None, detalhe: str | None) -> None:
+    """Grava no erros.log (registro.registrar_erro, como o resto do programa)
+    que uma ferramenta do ScanTailor não rodou e a página saiu pelo caminho de
+    reserva. Conserto de 20/10/2026 (verificador do 2.8): antes ia só para o
+    `logging` do Python, que o programa não grava em arquivo - a queda não
+    deixava rastro. Nunca levanta exceção (anotar não pode derrubar a página).
+    Quem chama já faz isso uma vez por sessão (senão seria uma linha por página)."""
+    try:
+        from registro import registrar_erro
+
+        registrar_erro(origem, (motivo or "") + (f"\ndetalhe: {detalhe}" if detalhe else ""))
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def dpi_inteiro(dpi) -> tuple[int, int]:

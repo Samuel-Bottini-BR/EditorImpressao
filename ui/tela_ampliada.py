@@ -335,13 +335,16 @@ class TelaAmpliada(QDialog):
         # desta imagem (o pedido; o DPI do scan nao e lido aqui, entao o
         # acerto dos PDFs de "72 DPI" vale pelo tamanho da pagina - ver
         # core.pontinhos_scantailor.dpi_para_os_pontinhos)
-        saida, _ = aplicar_filtro(
-            preparada, outro, pagina.forca_preto,
+        # itens 2.9 e 2.11: as caixinhas desta pagina, pela mesma conta da
+        # pagina e dos cartoes (core.pipeline.filtro_com_as_caixinhas)
+        from core.pipeline import filtro_com_as_caixinhas
+
+        return filtro_com_as_caixinhas(
+            preparada, pagina, outro, DPI_AMPLIADA, pagina.forca_preto,
             pagina.clareza_melhorar, pagina.intensidade_magico,
             algoritmo_pb=pagina.algoritmo_preto_branco,
             despeckle=pontinhos_da_pagina(self.projeto, pagina, preparada, DPI_AMPLIADA),
         )
-        return saida
 
     def _atualizar_rotulos(self) -> None:
         """Atualiza o texto de página/filtro/zoom e o estado dos botões < >."""

@@ -1,0 +1,32 @@
+{
+ "opusmajus_p003": {
+  "tamanho": [
+   1725,
+   2774
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   647,
+   1171,
+   431
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 106154,
+   "Otsu do ScanTailor": 106154,
+   "Sauvola do ScanTailor": 106154,
+   "Wolf do ScanTailor": 106154
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 0,
+   "Sauvola do ScanTailor": 0,
+   "Wolf do ScanTailor": 0
+  },
+  "segundos": {
+   "Hoje: Automático": 1.96,
+   "Otsu do ScanTailor": 1.28,
+   "Sauvola do ScanTailor": 1.38,
+   "Wolf do ScanTailor": 1.62
+  },
+  "nao_rodou": {}
+ }
+}

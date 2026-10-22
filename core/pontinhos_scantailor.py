@@ -350,6 +350,7 @@ def _avisar_uma_vez(motivo: str | None, detalhe: str | None) -> None:
         _AVISADOS.add(chave)
     _log.warning("limpar pontinhos do ScanTailor indisponível, usei o nosso: %s (%s)",
                  motivo, detalhe)
+    st.anotar_no_erros_log("limpar pontinhos do ScanTailor: usei o nosso", motivo, detalhe)
 
 
 def limpar_conforme_a_escolha(binaria: np.ndarray, escolha, *,

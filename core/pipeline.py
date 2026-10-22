@@ -47,6 +47,7 @@ from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
                              rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
+from core import claro_no_escuro, cores_scantailor
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -131,6 +132,9 @@ def analisar_projeto(
         # DEPOIS das observacoes: e por pagina, nunca vira caracteristica do
         # livro (a previa o poria de volta em cada pagina).
         discordam: list[ConfigPagina] = []
+        # Item 2.15: o angulo automatico de cada pagina, para destacar as
+        # que se afastam das outras (core/paginas_diferentes.py).
+        angulos_das_paginas: list[float | None] = []
         medir_as_duas = (projeto.endireitar and endireitar_scantailor.jeito_do_livro(projeto)
                          == endireitar_scantailor.JEITO_SCANTAILOR)
 
@@ -190,12 +194,15 @@ def analisar_projeto(
                 pagina.alertas = alertas
                 pagina.tem_cor = tem_cor
                 paginas.append(pagina)
+                angulo_da_analise = folha.angulo_detectado if projeto.endireitar else None
                 if medir_as_duas:
                     medidas: dict = {}
                     _geometria(pedaco, pagina, projeto, dpi=DPI_ANALISE, dpi_do_scan=dpi_real,
                                medidas=medidas, com_o_corte=False)
                     if medidas.get("discordam"):
                         discordam.append(pagina)
+                    angulo_da_analise = _angulo_que_valeu(medidas, angulo_da_analise)
+                angulos_das_paginas.append(angulo_da_analise)
 
             del img
 
@@ -215,6 +222,7 @@ def analisar_projeto(
 
         for pagina in discordam:
             _anotar_contas_discordam(pagina, True)
+        marcar_paginas_diferentes(paginas, angulos_das_paginas)
 
         projeto.observacoes = observacoes
         projeto.folhas = folhas
@@ -982,6 +990,31 @@ def _usa_o_endireitar_do_scantailor(projeto: Projeto, pagina: ConfigPagina) -> b
             and es.JEITO_SCANTAILOR in (es.jeito_da_pagina(projeto, pagina), es.jeito_do_livro(projeto)))
 
 
+def _angulo_que_valeu(medidas: dict, reserva: float | None) -> float | None:
+    """Item 2.15: o angulo automatico que valeu na pagina (a conta de
+    _angulo_automatico), ou `reserva` quando nada foi medido."""
+    angulo = medidas.get("scantailor") if medidas.get("jeito") == endireitar_scantailor.JEITO_SCANTAILOR         else medidas.get("programa")
+    return reserva if angulo is None else float(angulo)
+
+
+def marcar_paginas_diferentes(paginas: list[ConfigPagina], angulos: list[float | None]) -> None:
+    """Item 2.15 (igual ao ScanTailor, core/paginas_diferentes.py): poe o aviso
+    analise.ANGULO_DIFERENTE_DAS_OUTRAS nas paginas cujo angulo se afasta das
+    outras (coeficiente e limite de fabrica do ScanTailor) E a pelo menos
+    AFASTAMENTO_MINIMO_DO_ANGULO da media (decisao da gerente, 20-21/10). `angulos` na
+    ordem de `paginas`; None = sem numero (endireitar desligado: nenhuma
+    pagina e marcada). So poe: quem chama e a analise, com as paginas novas."""
+    from core import paginas_diferentes
+
+    if not paginas_diferentes.DESTACAR_DE_FABRICA or len(angulos) != len(paginas):
+        return
+    for pagina, diferente in zip(paginas, paginas_diferentes.diferentes_e_longe(
+            angulos, paginas_diferentes.ENDIREITAR,
+            paginas_diferentes.AFASTAMENTO_MINIMO_DO_ANGULO)):
+        if diferente and analise.ANGULO_DIFERENTE_DAS_OUTRAS not in pagina.alertas:
+            pagina.alertas.append(analise.ANGULO_DIFERENTE_DAS_OUTRAS)
+
+
 def _anotar_contas_discordam(pagina: ConfigPagina, discordam: bool) -> None:
     """Poe ou tira o aviso C1 (analise.CONTAS_DO_ENDIREITAR_DISCORDAM), do
     mesmo jeito que _anotar_tinta_forte_fora: ao POR, a pagina volta a "nao
@@ -1055,7 +1088,23 @@ def _gravura_a_refazer(projeto: Projeto, pagina: ConfigPagina) -> bool:
 
     if not pagina.selecao or not getattr(pagina, "gravura_feita_com", ""):
         return False
-    return pagina.gravura_feita_com != assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
+    return pagina.gravura_feita_com != _assinatura_da_gravura_da_pagina(projeto, pagina)
+
+
+def _assinatura_da_gravura_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> str:
+    """A assinatura das opcoes com que a gravura desta pagina e achada
+    (core.detectar_regioes.assinatura_da_gravura) e, desde o item 2.9, a
+    caixinha "Letra clara em fundo escuro": com ela ligada, o detector ve a
+    pagina invertida (como no ScanTailor), e a assinatura ganha
+    claro_no_escuro.SUFIXO_DA_GRAVURA. Desligada, a assinatura e a de sempre
+    (nenhum livro ja comecado refaz a marcacao). Arriscado: por o sufixo
+    sempre (todas as paginas refariam a gravura)."""
+    from core.detectar_regioes import assinatura_da_gravura
+
+    assinatura = assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
+    if claro_no_escuro.ligado(pagina):
+        assinatura += claro_no_escuro.SUFIXO_DA_GRAVURA
+    return assinatura
 
 
 # As opcoes de gravura do LIVRO (modelos.Projeto), na tela "O que fazer".
@@ -1202,7 +1251,7 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     if pagina.selecao is not lida:
         # a pessoa marcou durante a deteccao: vale a marcacao dela
         return pagina.obter_selecao()
-    pagina.gravura_feita_com = assinatura_da_gravura(detector, opcoes)
+    pagina.gravura_feita_com = _assinatura_da_gravura_da_pagina(projeto, pagina)   # item 2.9
 
     # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.
     # Quando isso acontece a pagina fica laranja, para a pessoa conferir na
@@ -1634,8 +1683,18 @@ def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
     Preto e branco com "pouco", "normal" ou "muito")? So serve para medir o
     DPI de verdade so quando precisa. Errar para "sim" so custa milissegundos."""
     return bool(projeto.limpar and pagina.filtro == PRETO_E_BRANCO
-                and pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
-                in pontinhos_scantailor.DO_SCANTAILOR)
+                and (pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
+                     in pontinhos_scantailor.DO_SCANTAILOR
+                     or _jeito_do_scantailor(pagina)))
+
+
+def _jeito_do_scantailor(pagina: ConfigPagina) -> bool:
+    """A pagina usa um dos dez jeitos de preto e branco do ScanTailor (item
+    2.8)? Eles tambem precisam do DPI de verdade (a suavizacao Savitzky-Golay
+    escolhe a janela pelo DPI); ver pontinhos_da_pagina."""
+    from core.preto_e_branco_scantailor import e_do_scantailor
+
+    return e_do_scantailor(getattr(pagina, "algoritmo_preto_branco", None))
 
 
 def pontinhos_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
@@ -1651,7 +1710,8 @@ def pontinhos_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     montar_misto.py tambem usam."""
     escolha = pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
     dpi_certo = None
-    if escolha in pontinhos_scantailor.DO_SCANTAILOR and dpi:
+    # item 2.8: os dez jeitos do ScanTailor leem o DPI daqui (Pontinhos.dpi)
+    if (escolha in pontinhos_scantailor.DO_SCANTAILOR or _jeito_do_scantailor(pagina)) and dpi:
         dpi_certo = pontinhos_scantailor.dpi_para_os_pontinhos(
             img.shape[1], img.shape[0], dpi, dpi_do_scan)
     return pontinhos_scantailor.Pontinhos(escolha, dpi_certo)
@@ -1717,6 +1777,13 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
              dpi: float | None = None, dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:
     """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
 
+    Item 2.9 (20/10/2026, Samuel P9 (a)): pagina com a caixinha "Letra clara
+    em fundo escuro" (core.claro_no_escuro) passa invertida por todo o
+    caminho abaixo - marcacao de gravura inclusive - e o resultado e invertido
+    de novo, como o ScanTailor faz (initFilterData e o fim da saida). Original
+    e "Tirar o fundo" nao mudam (inverter duas vezes daria a mesma pagina).
+    Caixinha desmarcada (o de fabrica): nenhuma conta a mais.
+
     dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
     ScanTailor precisa deles; item 1.2) e para o "Limpar pontinhos" do
     Preto e branco e do "So as letras" (pontinhos_da_pagina; decisao do
@@ -1759,6 +1826,57 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     if not projeto.limpar:
         _anotar_tinta_forte_fora(pagina, False)
         return img, False
+    invertida = claro_no_escuro.ligado(pagina) and pagina.filtro not in (ORIGINAL, TIRAR_FUNDO)
+    entrada = claro_no_escuro.inverter(img) if invertida else img
+    saida, monocromatica = _filtrar_preto_no_branco(projeto, pagina, entrada, dpi, dpi_do_scan)
+    # Item 2.11: "Letras com a cor delas" e "Reduzir cores" (core.cores_scantailor),
+    # o ultimo passo, antes de desinverter (como no ScanTailor). Desmarcadas (o de
+    # fabrica): nenhuma conta a mais.
+    if cores_scantailor.letras_ligadas(pagina) or cores_scantailor.reduzir_ligado(pagina):
+        dpi_certo = (pontinhos_scantailor.dpi_para_os_pontinhos(
+            entrada.shape[1], entrada.shape[0], dpi, dpi_do_scan) if dpi else None)
+        com_cor = cores_scantailor.aplicar(
+            entrada, saida, pagina.filtro, cores_scantailor.letras_ligadas(pagina),
+            cores_scantailor.reduzir_ligado(pagina), dpi_certo)
+        if com_cor is not None:
+            saida, monocromatica = com_cor
+    return (claro_no_escuro.inverter(saida) if invertida else saida), monocromatica
+
+
+def filtro_com_as_caixinhas(img: np.ndarray, pagina: ConfigPagina, filtro: str, dpi: float,
+                            forca_preto: int, clareza: int, intensidade: int,
+                            algoritmo_pb: str = "auto", despeckle=True) -> np.ndarray:
+    """O filtro `filtro` numa imagem solta (o cartao do filtro, a tela
+    ampliada), com as caixinhas desta pagina, na ordem de _filtrar: "Letra
+    clara em fundo escuro" (item 2.9) inverte na entrada e na saida (nunca no
+    Original nem no Tirar o fundo); "Letras com a cor delas" e "Reduzir
+    cores" (item 2.11) sao o ultimo passo antes de desinverter. Sem caixinha
+    marcada sai exatamente o aplicar_filtro de sempre.
+
+    Bug do verificador do 2.9 (21/10/2026): o cartao chamava aplicar_filtro
+    direto e mostrava a pagina sem inverter (tests/
+    test_cartoes_seguem_as_caixinhas.py). Arriscado: tirar daqui uma das
+    caixinhas (o cartao volta a mostrar outra coisa que a pagina)."""
+    invertida = claro_no_escuro.ligado(pagina) and filtro not in (ORIGINAL, TIRAR_FUNDO)
+    entrada = claro_no_escuro.inverter(img) if invertida else img
+    saida, _ = aplicar_filtro(entrada, filtro, forca_preto, clareza, intensidade,
+                              algoritmo_pb=algoritmo_pb, despeckle=despeckle)
+    if cores_scantailor.letras_ligadas(pagina) or cores_scantailor.reduzir_ligado(pagina):
+        com_cor = cores_scantailor.aplicar(
+            entrada, saida, filtro, cores_scantailor.letras_ligadas(pagina),
+            cores_scantailor.reduzir_ligado(pagina), dpi)
+        if com_cor is not None:
+            saida = com_cor[0]
+    return claro_no_escuro.inverter(saida) if invertida else saida
+
+
+def _filtrar_preto_no_branco(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                             dpi: float | None = None,
+                             dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:
+    """O corpo de _filtrar (ver a explicacao la): a pagina tratada como letra
+    escura em papel claro. Chamado direto, ou com a pagina ja invertida
+    (item 2.9). Arriscado: chamar daqui fora sem passar por _filtrar (a
+    caixinha "Letra clara em fundo escuro" deixaria de valer)."""
     if pagina.filtro == TIRAR_FUNDO:
         # Conferencia 14 (Samuel, "FUNDO: Sim, do mesmo jeito (só muda se
         # alguém marcar um pedaço)"): o pedaco vale aqui como no Original. A

@@ -102,7 +102,9 @@ def instalar_no_programa(dll: Path) -> Path:
     (PASTA_NATIVO / "st_ferramentas.txt").write_text(
         "st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)\n"
         "Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1)\n"
-        "e endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2).\n"
+        "endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2),\n"
+        "o preto e branco da saida com os dez jeitos de Binarize.cpp (item 2.8)\n"
+        "e as cores da saida: segmentacao e posterizacao (item 2.11).\n"
         "\n"
         f"Código:      {base.REPOSITORIO}\n"
         f"Versão:      {base.VERSAO_SCANTAILOR} (commit {base.COMMIT_SCANTAILOR})\n"
@@ -150,6 +152,17 @@ def testar_a_dll() -> str:
     if not medido.disponivel:
         raise ErroDeCompilacao(f"A DLL abriu, mas o endireitar falhou: {medido.motivo} "
                                f"({medido.detalhe_tecnico})")
+    # Item 2.8: o preto e branco responde (a peca escura fica preta, o papel branco).
+    from core import preto_e_branco_scantailor as pbst
+
+    pagina = np.full((300, 400), 230, np.uint8)
+    pagina[100:200, 100:300] = 30
+    pb = pbst.binarizar(pagina, 300, "st_otsu", biblioteca=biblioteca)
+    if not pb.disponivel:
+        raise ErroDeCompilacao(f"A DLL abriu, mas o preto e branco falhou: {pb.motivo} "
+                               f"({pb.detalhe_tecnico})")
+    if pb.imagem[150, 200] != 0 or pb.imagem[20, 20] != 255:
+        raise ErroDeCompilacao("A DLL abriu, mas o preto e branco da imagem de prova está errado.")
     return biblioteca.origem or "?"
 
 

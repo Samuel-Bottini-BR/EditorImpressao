@@ -1,0 +1,32 @@
+{
+ "palatino_p067": {
+  "tamanho": [
+   1257,
+   1836
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   0,
+   777,
+   314
+  ],
+  "pontos_pretos": {
+   "Hoje: Preto e branco": 295048,
+   "Letras com a cor delas": 285504,
+   "Letras com a cor + Reduzir cores": 289301,
+   "Melhorar + Reduzir cores": 289262
+  },
+  "pontos_diferentes_de_hoje": {
+   "Letras com a cor delas": 234088,
+   "Letras com a cor + Reduzir cores": 121012,
+   "Melhorar + Reduzir cores": 132806
+  },
+  "segundos": {
+   "Hoje: Preto e branco": 1.04,
+   "Letras com a cor delas": 1.4,
+   "Letras com a cor + Reduzir cores": 1.66,
+   "Melhorar + Reduzir cores": 2.01
+  },
+  "nao_rodou": {}
+ }
+}

@@ -39,7 +39,13 @@
 // 2 = 06/10/2026: + dividir (st_ferramentas_dividir); os pontinhos nao mudaram.
 // 3 = 06/10/2026: + endireitar (st_ferramentas_endireitar, item 2.2); os
 //     pontinhos e o dividir nao mudaram.
-#define ST_FERRAMENTAS_VERSAO_API 3
+// 4 = reservado para as caixas da pagina e do conteudo (ramo fase2-caixa-conteudo,
+//     12/10/2026, ainda nao juntado). Quem juntar os dois ramos sobe para 6.
+// 5 = 20/10/2026: + o preto e branco do ScanTailor (st_ferramentas_preto_e_branco,
+//     item 2.8, em saida.cpp); o que ja existia nao mudou.
+// 6 = 20/10/2026: + as cores do ScanTailor (st_ferramentas_cores, item 2.11, em
+//     saida.cpp); o que ja existia nao mudou.
+#define ST_FERRAMENTAS_VERSAO_API 6
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -155,6 +161,89 @@ ST_FERRAMENTAS_API int st_ferramentas_endireitar(const unsigned char* pixels,
                                                  int* pretoNoBranco,
                                                  char* erro,
                                                  int tamanhoErro);
+
+// PRETO E BRANCO DO SCANTAILOR (a saida "Black and white" dele, item 2.8; a cola
+// esta em saida.cpp, com as funcoes de OutputGenerator.cpp copiadas sem mudanca
+// e os dez jeitos de src/imageproc/Binarize.cpp).
+//
+// pixels, largura, altura, passo, canais: a pagina ja preparada pelo programa
+//   (girada, cortada), como no dividir (1 = cinza; 3 = azul, verde, vermelho).
+// dpiX, dpiY: o DPI da imagem (muda a suavizacao Savitzky-Golay).
+// metodo: o BinarizationMethod do ScanTailor: 0 Otsu, 1 Sauvola, 2 Wolf,
+//   3 Fox, 4 Window, 5 Bradley, 6 Grad, 7 EdgePlus, 8 BlurDiv, 9 EdgeDiv.
+// ajusteDoLimiar: o "thresholdAdjustment" (-100 a 100 na tela dele; 0 de
+//   fabrica). Mais = mais preto.
+// janela: windowSize (200 de fabrica). coefSauvola: 0,34 de fabrica.
+//   coefWolf: 0,3. wolfMinimo, wolfMaximo: 1 e 254.
+// normalizar, savitzkyGolay, morfologica: 1 = ligado (os tres ligados de fabrica).
+// saida, passoSaida: o preto e branco, 1 byte por ponto: 0 = preto, 255 = branco.
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// So le a pagina. Devolve ST_FERRAMENTAS_OK ou um codigo de erro.
+// Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_preto_e_branco(const unsigned char* pixels,
+                                                     int largura,
+                                                     int altura,
+                                                     int passo,
+                                                     int canais,
+                                                     int dpiX,
+                                                     int dpiY,
+                                                     int metodo,
+                                                     int ajusteDoLimiar,
+                                                     int janela,
+                                                     double coefSauvola,
+                                                     double coefWolf,
+                                                     int wolfMinimo,
+                                                     int wolfMaximo,
+                                                     int normalizar,
+                                                     int savitzkyGolay,
+                                                     int morfologica,
+                                                     unsigned char* saida,
+                                                     int passoSaida,
+                                                     char* erro,
+                                                     int tamanhoErro);
+
+// AS CORES DO SCANTAILOR (item 2.11; cola em saida.cpp): "letras com a cor delas"
+// (Color segmentation, src/imageproc/ColorSegmenter.cpp) e "reduzir cores"
+// (Posterize, src/imageproc/Posterizer.cpp), sem mudanca.
+//
+// pixels, largura, altura, passo, canais: a pagina (1 = cinza; 3 = azul, verde,
+//   vermelho). Com segmentar = 1, a pagina preparada ANTES do filtro (a cor das
+//   letras sai dela); com segmentar = 0, a pagina ja filtrada, a posterizar.
+// pretoEBranco, passoPretoEBranco: so com segmentar = 1: o preto e branco da
+//   pagina, 1 byte por ponto (menor que 128 = preto). Cada peca preta e pintada
+//   com a cor dela; o resto sai branco.
+// dpiX, dpiY: o DPI (o tamanho do ruido que a segmentacao tira acompanha o DPI).
+// normalizar: 1 = iguala a luz da pagina antes de tirar as cores (o de fabrica do
+//   preto e branco do ScanTailor).
+// ruido: "Reduce noise" (7 de fabrica). ajusteVermelho/Verde/Azul: 0 de fabrica.
+// posterizar, nivel (4 de fabrica), normalizarCores (0), forcarPretoEBranco (1):
+//   as opcoes do "Posterize".
+// saida, passoSaida: o resultado em cor, 3 bytes por ponto (azul, verde, vermelho).
+// Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
+                                            int largura,
+                                            int altura,
+                                            int passo,
+                                            int canais,
+                                            const unsigned char* pretoEBranco,
+                                            int passoPretoEBranco,
+                                            int dpiX,
+                                            int dpiY,
+                                            int normalizar,
+                                            int segmentar,
+                                            int ruido,
+                                            int ajusteVermelho,
+                                            int ajusteVerde,
+                                            int ajusteAzul,
+                                            int posterizar,
+                                            int nivel,
+                                            int normalizarCores,
+                                            int forcarPretoEBranco,
+                                            unsigned char* saida,
+                                            int passoSaida,
+                                            char* erro,
+                                            int tamanhoErro);
 
 #ifdef __cplusplus
 }
