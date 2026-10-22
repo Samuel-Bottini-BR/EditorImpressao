@@ -146,7 +146,7 @@ faz. Tem uma pagina maior que outra ali".
   `relatorios/layout-4a7/livro-updf/antes|depois` (`medidas.txt`). UPDF não está instalado no PC: sem print lado a lado.
 - Testes de reversão em `tests/test_livro_aberto.py` (5 falham no `2eeec20`): par da mesma altura, livro aberto
   nítido a 125%, grade nítida a 125% (2 formatos), grade começa perto. 13 passam no novo.
-- Cópia do código antigo para provar: `saida_teste/antigo` (git worktree destacado do `2eeec20`, criado por mim).
+- Cópia do código antigo usada para provar (`saida_teste/antigo`, worktree do `2eeec20` e depois do `d285b48`): removida no fim (sem junções).
 
 ## 22/10/2026: junção da Fase 2 (até `25504fb`) e filtros em tela cheia com todas as opções
 Pedido (quadro l67-tela-cheia): "esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções
@@ -166,3 +166,5 @@ dos filtros né? o agente de layout fez já as opções de preto e branco que tr
 - Janela de verdade (`relatorios/layout-4a7/tela-cheia-opcoes/`, Boécio folha 7): 8 de 8 conferências.
 - Achado do `core` (não mexi): a primeira vez que uma página é desenhada sai umas dezenas de pixels diferente das
   seguintes (grava a `geometria_das_zonas` e pode acertar um alerta do endireitar na primeira).
+- GitHub 39797331030 (`b496573`): 130 arquivos, 2194 passaram, 0 falharam, 73 pulados; teste_botoes 216 ações, 0
+  falhas; erros.log vazio. **PRONTO PARA CONFERIR** (livro aberto como o UPDF; tela cheia com as opções). Parado aqui.
