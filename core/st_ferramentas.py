@@ -55,7 +55,10 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 # Tem de bater com ST_FERRAMENTAS_VERSAO_API em st_ferramentas.h.
 # 1 = so os pontinhos; 2 (06/10/2026) = + dividir (st_ferramentas_dividir);
 # 3 (06/10/2026) = + endireitar (st_ferramentas_endireitar, item 2.2).
-VERSAO_API = 3
+# 8 (22/10/2026, ramo fase2-ferramentas-2026-10-22) = + igualar a luz,
+#   suavizar e Wiener (item 2.17, core/luz_scantailor.py). Pula 4 a 7 de
+#   proposito (usados nos ramos da caixa do conteudo e dos itens 2.8 a 2.12).
+VERSAO_API = 8
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -88,6 +91,32 @@ ASSINATURAS = {
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
     # Item 2.2 (06/10/2026): endireitar a pagina (core/endireitar_scantailor.py).
+    # item 2.17 (core/luz_scantailor.py)
+    "st_ferramentas_igualar_luz": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_suavizar_cinza": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_void_p, ctypes.c_int,                               # saida (cinza), passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_suavizar_preto_e_branco": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # entrada, largura, altura, passo
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_wiener": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_double,                               # janela, coeficiente
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
     "st_ferramentas_endireitar": (ctypes.c_int, [
         ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
         ctypes.c_int,                                                # canais (1 ou 3)
