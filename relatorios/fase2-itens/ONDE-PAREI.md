@@ -212,3 +212,29 @@ preparo), ou (c) deixar como está, desligado de fábrica, com aviso de que pode
 **Falta:** página curva DE VERDADE perto da lombada como exemplo bom (nenhuma das 8 que olhei é bem curva); depois da
 escolha acima, o conserto e um teste de reversão com medida (ex.: nenhuma peça de tinta a menos de 1 mm da beirada
 depois do desentortar).
+
+## 22/10/2026 (tarde) — 2.12 refeito pela opção A do Samuel ("cortar uma vez só, no fim")
+
+**Feito e enviado — `a44c668`:** DLL versão 8. O corte é medido como sempre e vira só a medida (`m_outRect`,
+pelo `setPostCropArea` do próprio ScanTailor); a DLL lê a página endireitada inteira, com o papel do scan em volta,
+e devolve a página já do tamanho do corte. `m_contentRect` = a caixa do conteúdo justa (o corte sem a folga de 1 mm,
+`desentortar_scantailor.caixa_do_conteudo`). O endireitar depois do "pelas margens" gira com o papel em volta.
+Desligado: o código de sempre, sem passo nenhum (`pipeline._desentortar_com_o_papel_em_volta` só roda ligado).
+
+**Achado que importa (medido):** no Righetti 96 o que salvou foi a caixa do conteúdo justa; só o papel em volta com a
+caixa = corte ainda ampliava o texto e cortava "mente" → "nte" (`saida_teste/2.12a/exp1_rg96.jpg` x `exp1_rg96_cd.jpg`,
+fora do git). As duas coisas são o jeito do ScanTailor (`m_contentRect` e `m_outRect`), e as duas entraram.
+
+**Reversão (§4.7):** `tests/test_desentortar_scantailor.py` — `test_reversao_pagina_reta_com_corte_rente_nao_mexe_nas_letras`
+(0,971 no `8cb90a1` → 1,000) e `test_reversao_righetti_96_o_comeco_das_linhas_nao_some` (margem do texto 15 → 173
+pontos; só com o acervo). Rodados no código antigo (worktree de rascunho `antigo-8cb90a1` no scratchpad): **os dois
+falharam lá**; aqui 40 de 40 passam.
+
+**Rodando:** somas de fábrica das 32 páginas (`2.12/somas-v8.json`, comparar com `2.8/somas-antigo.json`); procura de
+páginas curvas (`scripts/procurar_linhas_curvas.py`); filtro de velocidade do GitHub 39841907268 (`8cb90a1` x `a44c668`).
+
+**Falta:** antes/depois com régua (Righetti 96, Cursus 151 e as curvas achadas), rodada da suíte no GitHub, entrega.
+
+### Perguntas para o Samuel
+
+Nenhuma por enquanto.
