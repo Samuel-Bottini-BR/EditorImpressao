@@ -14,6 +14,7 @@ import numpy as np
 import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
 
+from core import luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import faixa_da_sobra
@@ -472,7 +473,9 @@ class GerenciadorPrevias(QObject):
             f"{self.projeto.cortar_bordas}:{mist}:"
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
-            f"{faixa_da_sobra(f, p, self.projeto)}"
+            f"{faixa_da_sobra(f, p, self.projeto)}:"
+            # item 2.17: igualar a luz, suavizar, chuvisco ("-" desligados)
+            f"{luz_scantailor.assinatura(p)}"
         )
 
     # --- uso --------------------------------------------------------------

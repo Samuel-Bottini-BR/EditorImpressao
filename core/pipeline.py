@@ -51,7 +51,7 @@ from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
-from core import margens_scantailor, nucleos
+from core import luz_scantailor, margens_scantailor, nucleos
 from core.pdf_io import (
     DPI_PREVIA,
     dpi_real_da_pagina,
@@ -1793,6 +1793,25 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         # paga o ~1 s da deteccao (e sai o mesmo objeto, como antes).
         _anotar_tinta_forte_fora(pagina, False)
         return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, img), False
+    # Item 2.17 (desligado de fabrica): igualar a luz e tirar o chuvisco,
+    # ANTES do filtro e da marcacao, como o ScanTailor (transformToWorkingCs e
+    # o Wiener vem antes de tudo na saida dele). Tudo desligado: `img` e o
+    # mesmo objeto, nenhuma conta a mais.
+    if pagina.filtro != ORIGINAL:          # o Original nao muda nada (nem a luz)
+        img = luz_scantailor.antes_do_filtro(img, pagina)
+    # O "suavizar as letras" vale dentro do Preto e branco desta pagina, neste
+    # fio (core.luz_scantailor.suavizar_nesta_pagina; item 2.16: varias
+    # paginas ao mesmo tempo, cada uma no seu fio).
+    with luz_scantailor.suavizar_nesta_pagina(
+            pagina, dpi or pontinhos_scantailor.dpi_pela_altura(img.shape[0])):
+        return _filtrar_com_a_marcacao(projeto, pagina, img, dpi, dpi_do_scan)
+
+
+def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                            dpi: float | None, dpi_do_scan: float | None) -> tuple[np.ndarray, bool]:
+    """O fim de _filtrar (a marcacao e o filtro), separado em 22/10/2026 so
+    para caber dentro do "suavizar nesta pagina" do item 2.17. A conta e a
+    mesma de antes, linha por linha."""
     selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
     # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
     pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)

@@ -137,6 +137,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QSizePolicy,
+    QSpinBox,
     QStackedWidget,
     QTabBar,
     QVBoxLayout,
@@ -146,6 +147,7 @@ from PySide6.QtWidgets import (
 from core import analise, dividir_scantailor, girar, linhas_do_texto, misto
 from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
+from core import luz_scantailor
 from core.pipeline import (acertar_alertas_de_cor, acertar_alertas_do_fundo, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, jeito_de_dividir,
                            recalcular_divisao)
@@ -1958,6 +1960,35 @@ class TelaConferir(QWidget):
         linha_algoritmo.addWidget(self.seletor_pontinhos)
         dentro.addLayout(linha_algoritmo)
 
+        # Item 2.17 (regra da Fase 2: igual ao ScanTailor, desligado de
+        # fabrica): igualar a luz, suavizar as letras (so no Preto e branco) e
+        # tirar o chuvisco, SO desta pagina. CONTROLE MINIMO, provisorio: a
+        # aparencia e do agente de layout (relatorios/fase2-novas/ONDE-PAREI.md).
+        # Os textos moram em core/luz_scantailor.py.
+        linha_luz = QHBoxLayout()
+        self.caixa_luz_igualar = QCheckBox(luz_scantailor.ROTULO_IGUALAR)
+        self.caixa_luz_igualar.setToolTip(luz_scantailor.EXPLICACAO_IGUALAR)
+        self.caixa_luz_suavizar = QCheckBox(luz_scantailor.ROTULO_SUAVIZAR)
+        self.caixa_luz_suavizar.setToolTip(luz_scantailor.EXPLICACAO_SUAVIZAR)
+        for caixa, campo in ((self.caixa_luz_igualar, "luz_igualar"),
+                             (self.caixa_luz_suavizar, "luz_suavizar")):
+            estilo.estilizar(caixa, lambda: estilo_da_caixinha_com_quadrado(15))
+            caixa.toggled.connect(lambda marcada, c=campo: self._mudar_luz(c, bool(marcada)))
+            linha_luz.addWidget(caixa)
+        self.rotulo_luz_chuvisco = QLabel(luz_scantailor.ROTULO_CHUVISCO + ":")
+        self.rotulo_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
+        linha_luz.addWidget(self.rotulo_luz_chuvisco)
+        self.seletor_luz_chuvisco = QSpinBox()
+        self.seletor_luz_chuvisco.setRange(0, 100)
+        self.seletor_luz_chuvisco.setSingleStep(10)
+        self.seletor_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
+        self.seletor_luz_chuvisco.setKeyboardTracking(False)
+        self.seletor_luz_chuvisco.valueChanged.connect(
+            lambda valor: self._mudar_luz("luz_chuvisco", int(valor)))
+        linha_luz.addWidget(self.seletor_luz_chuvisco)
+        linha_luz.addStretch()
+        dentro.addLayout(linha_luz)
+
         # Modo Misto (05/10/2026): "Só as letras" desta página, só com o Preto
         # e branco escolhido (ver _configurar_medidor). Compacto: a altura da
         # aba é pouca (a janela de 1280 x 657 tem de caber).
@@ -3599,6 +3630,27 @@ class TelaConferir(QWidget):
                                                nome=pontinhos.NOMES_NA_TELA[novo]),
         )
 
+    @protegido
+    def _mudar_luz(self, campo: str, valor) -> None:
+        """Item 2.17: igualar a luz, suavizar as letras ou tirar o chuvisco SO
+        desta página, como ação do desfazer. Nada acontece se a página já está
+        assim (mostrar o valor nunca grava)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if getattr(pagina, campo, None) == valor:
+            return
+        rotulos = {"luz_igualar": luz_scantailor.ROTULO_IGUALAR,
+                   "luz_suavizar": luz_scantailor.ROTULO_SUAVIZAR,
+                   "luz_chuvisco": luz_scantailor.ROTULO_CHUVISCO}
+        estado = (("ligado" if valor else "desligado") if isinstance(valor, bool)
+                  else ("desligado" if not valor else f"{valor}"))
+        self._registrar(
+            "mudar_luz", "pagina", [self.indice_pagina], {campo: valor},
+            luz_scantailor.FRASE_DO_DESFAZER.format(rotulo=rotulos[campo],
+                                                    pagina=self.indice_pagina + 1, estado=estado),
+        )
+
     # --- modo Misto ("Só as letras", 05/10/2026) ---------------------------
 
     def _mudar_misto(self, campo: str, valor, descricao: str) -> None:
@@ -3686,6 +3738,17 @@ class TelaConferir(QWidget):
         # modo Misto: so no Preto e branco; mostra o que vale nesta pagina
         # (dela ou do livro), sem virar acao no desfazer
         self.escolhas_misto.setVisible(eh_preto_e_branco)
+        # item 2.17: o que vale nesta pagina, sem virar acao; suavizar so no
+        # Preto e branco
+        self.caixa_luz_suavizar.setVisible(eh_preto_e_branco)
+        for controle, valor in ((self.caixa_luz_igualar, luz_scantailor.igualar_ligado(pagina)),
+                                (self.caixa_luz_suavizar, luz_scantailor.suavizar_ligado(pagina))):
+            controle.blockSignals(True)
+            controle.setChecked(valor)
+            controle.blockSignals(False)
+        self.seletor_luz_chuvisco.blockSignals(True)
+        self.seletor_luz_chuvisco.setValue(luz_scantailor.chuvisco(pagina))
+        self.seletor_luz_chuvisco.blockSignals(False)
         if eh_preto_e_branco:
             ligado, escolhas = misto.escolhas_da_pagina(self.projeto, pagina)
             self.escolhas_misto.mostrar(ligado, escolhas.fora_do_texto,
@@ -3852,7 +3915,9 @@ class TelaConferir(QWidget):
              # "Limpar pontinhos" DESTA pagina (None = segue o livro)
              "limpar_pontinhos": pagina.limpar_pontinhos,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
-             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
+             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
+             # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
+             **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS}},
             f"{nome} em todas as {len(indices)} páginas",
         )
 
@@ -3871,7 +3936,9 @@ class TelaConferir(QWidget):
              # "Limpar pontinhos" DESTA pagina (None = segue o livro)
              "limpar_pontinhos": pagina.limpar_pontinhos,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
-             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
+             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
+             # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
+             **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS}},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 

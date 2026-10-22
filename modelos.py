@@ -116,6 +116,15 @@ class ConfigPagina:
     # valores vêm de ALGORITMOS_PB (sauvola/otsu/wolf), escolha manual ou
     # "usar em todas". Só importa quando `filtro` é Preto e branco.
     algoritmo_preto_branco: str = "auto"
+    # Item 2.17 (regra da Fase 2: igual ao ScanTailor, desligado de fabrica):
+    # as tres opcoes de luz desta pagina (core.luz_scantailor). luz_igualar =
+    # "Igualar a luz da pagina"; luz_suavizar = "Suavizar as letras" (so no
+    # Preto e branco); luz_chuvisco = "Tirar o chuvisco" (Wiener), 0 a 100, 0 =
+    # desligado. Projeto salvo antes abre com tudo desligado (campo que falta
+    # ganha o padrao). Arriscado: vir ligado (a pagina mudaria sozinha).
+    luz_igualar: bool = False
+    luz_suavizar: bool = False
+    luz_chuvisco: int = 0
 
     # "Limpar pontinhos" SO desta pagina, por cima do livro
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel

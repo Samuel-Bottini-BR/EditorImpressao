@@ -463,8 +463,9 @@ ST_FERRAMENTAS_API int st_ferramentas_suavizar_cinza(const unsigned char* pixels
                                                      char* erro,
                                                      int tamanhoErro) {
   return st_ferramentas::protegido(erro, tamanhoErro, [&]() -> int {
-    if (!parametrosValidos(pixels, largura, altura, passo, canais, saida, largura) || passoSaida < largura
-        || dpiX <= 0 || dpiY <= 0) {
+    // a saida e sempre cinza (1 byte por ponto), qualquer que seja a entrada
+    if (!pixels || !saida || largura <= 0 || altura <= 0 || (canais != 1 && canais != 3)
+        || passo < largura * canais || passoSaida < largura || dpiX <= 0 || dpiY <= 0) {
       st_ferramentas::escreverErro(erro, tamanhoErro, "parametros invalidos");
       return ST_FERRAMENTAS_ERRO_PARAMETRO;
     }
