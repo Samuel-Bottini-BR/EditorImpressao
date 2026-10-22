@@ -19,7 +19,7 @@ o backup). Repositório git ligado a
 Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. **O que manda continua sendo `docs/plano/`**
 (o Registro de mudanças de 21 e 22/10 tem tudo, com as palavras dele) e a memória `memoria/`. **Novidade principal: a
 Central de decisões** (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy), que substituiu a página de Andamento no mesmo
-endereço. **Agentes:** só o verificador da caixa do conteúdo pode ainda estar rodando (ver §2); os outros terminaram.
+endereço. **Agentes: todos parados.** O verificador da caixa do conteúdo foi **pausado a pedido do Samuel** ("pausa o agente e salva o que ele estava fazendo para continuar do mesmo lugar") no commit `c03f24b` do ramo `verif-caixa-2026-10-22`; o passo a passo do que falta está em `.claude\worktreescx22-novoelatorios\conferir\caixa-2026-10-22\ONDE-PAREI.md`. Já confirmou por máquina: GitHub 39788341137 (2234/0) vale para o código; testes de reversão provados; velocidade no PC Marial 100 307-313 s → 139-145 s; 32 de 100 páginas do Marial e as p. 3 e 12 do Egenloff mudaram o corte. **Achado novo:** o aviso "Corte deixou algo de fora" aparece em 82 de 100 páginas do Marial e 12 de 14 do Egenloff (antes e depois) — falta ver nas imagens antes de virar pergunta. Falta: imagens, janela de verdade, `conferencia.json`. Worktrees dele (com junções): `vcx22-novo`, `vcx22-antes`, `vcx22-04b`. Para retomar: chamar um verificador novo apontando esse ONDE-PAREI.
 
 ## 0. Para recomeçar
 1. `git -C D:\programas\EditorImpressao fetch origin` e `status -sb`. O `fase-1` está no commit deste checkpoint (só

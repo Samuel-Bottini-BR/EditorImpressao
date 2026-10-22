@@ -22,7 +22,7 @@ pesquisa da impressão), mais o filtro de velocidade no GitHub e esta memória.
 | `fase2-para-revisar` (`f54428e`) | APROVADO; espera a junção final |
 | `fase2-scantailor-itens-2026-10-19` (`8cb90a1`) | 2.8/2.9/2.11/2.15 APROVADOS (até `25504fb`); 2.12 parado na pergunta `a-212-desentortar` |
 | `layout-etapas4a7-2026-10-19` (`7843503`) | layout 4 a 7 APROVADO; livro aberto UPDF + tela cheia verificados (`verif-layout-updf-2026-10-22` `40bc3ed`); conferência `lyupdf` na Central; contém o merge de `25504fb` |
-| `fase2-caixa-conteudo` (`49d1ed3`) | PRONTO; verificador em `verif-caixa-2026-10-22` (worktree `vcx22-novo`) |
+| `fase2-caixa-conteudo` (`49d1ed3`) | PRONTO; verificador **pausado** em `verif-caixa-2026-10-22` (`c03f24b`, worktree `vcx22-novo`, ONDE-PAREI em `relatorios/conferir/caixa-2026-10-22/`); worktrees dele com junções: `vcx22-novo`, `vcx22-antes`, `vcx22-04b` |
 | `fase2-ferramentas-2026-10-22` (`f26407c`, worktree `fase2-novas`) | 2.4, 2.6, 2.16, 2.17, 2.18, 2.19, 2.10+1.6 PRONTOS; falta o verificador e a pergunta 8 |
 | `consertos-2026-10-21` (`2ff16e7`) | pronto; entra na junção final |
 
