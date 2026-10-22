@@ -92,8 +92,23 @@ def _processar_pagina(raiz, pid, pasta, rotulo, campos_livro=None, campos_pagina
     for pagina in projeto.paginas:
         for k, v in (campos_pagina or {}).items():
             setattr(pagina, k, v)
-        if selecao is not None:
-            pagina.guardar_selecao(selecao)
+    if selecao is not None:
+        # a marcacao que o programa acha sozinho primeiro (o mesmo caminho da
+        # previa), e a area a mao POR CIMA dela, como a pessoa faria na tela;
+        # no "antes" a mesma conta, sem a area (so ela muda)
+        from core.pdf_io import abrir_pdf
+        from core.pipeline import renderizar_pagina
+
+        doc = abrir_pdf(projeto.caminho_entrada)
+        try:
+            for pagina in projeto.paginas_ativas:
+                renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
+                marcacao = pagina.obter_selecao()
+                for regiao in selecao.regioes:
+                    marcacao.acrescentar(regiao)
+                pagina.guardar_selecao(marcacao)
+        finally:
+            doc.close()
     processar(projeto)
     frase = rp._por_onde_passou(projeto)
     extras = ", ".join(f"{k}={v}" for k, v in (campos_pagina or {}).items())
@@ -200,7 +215,8 @@ def item_2_18(raiz):
     ]
     for pid, nome, regiao in casos:
         antes, frase_a, _ = _processar_pagina(raiz, pid, pasta, "antes",
-                                              {"filtro_padrao": PRETO_E_BRANCO}, {"filtro": PRETO_E_BRANCO})
+                                              {"filtro_padrao": PRETO_E_BRANCO}, {"filtro": PRETO_E_BRANCO},
+                                              selecao=Selecao())
         depois, frase_d, _ = _processar_pagina(raiz, pid, pasta, "depois",
                                                {"filtro_padrao": PRETO_E_BRANCO}, {"filtro": PRETO_E_BRANCO},
                                                selecao=Selecao([regiao]))

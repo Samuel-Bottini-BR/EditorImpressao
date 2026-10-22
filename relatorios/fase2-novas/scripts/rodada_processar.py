@@ -188,7 +188,7 @@ def folha_de_contato(pasta: Path, nome: str, numeros: dict, altura_cm_por_linha:
         pedacos = []
         with fitz.open(str(pasta / f"{nome}-{rotulo}.pdf")) as doc:
             for i, pagina in enumerate(doc):
-                pix = pagina.get_pixmap(dpi=pontos_por_cm * 2.54)
+                pix = pagina.get_pixmap(dpi=int(round(pontos_por_cm * 2.54)))
                 img = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, pix.n)[..., :3].copy()
                 img = cv2.copyMakeBorder(img, 2, 2, 2, 2, cv2.BORDER_CONSTANT, value=(150, 150, 150))
                 legenda = Image.new("RGB", (img.shape[1], 30), "white")
