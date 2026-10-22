@@ -155,3 +155,6 @@ Sem conserto de código, sem teste de reversão (não houve bug). Imagens novas 
 - **2.17:** "Igualar a luz" em todos os filtros, com aviso no Melhorar e no Mágico pro; "Tirar o chuvisco" de 0 a 100,
   com aviso acima de 20. Os textos estão em `core/luz_scantailor.py`, e a frase aparece embaixo da linha da luz na
   aba Filtro.
+- GitHub depois dos ajustes: suíte `39807401594` (`7d13a5f`): 2177 passaram, 0 falharam; botões 234, 0 falhas.
+  Velocidade `39791117352` (`9804b98` → `4990e13`, os 7 itens): "parece mais rápido" - abrir −43%, Mágico pro −41%,
+  Preto e branco −27%.
