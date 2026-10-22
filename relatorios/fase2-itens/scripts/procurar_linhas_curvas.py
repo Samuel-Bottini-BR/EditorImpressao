@@ -73,12 +73,17 @@ def medir(cinza: np.ndarray) -> dict | None:
     altura, largura = tinta.shape
     if tinta.mean() < 0.02 or tinta.mean() > 0.4:
         return None
-    colunas = np.where(tinta.mean(axis=0) > 0.02)[0]
+    por_coluna = tinta.mean(axis=0)
+    # sem as barras pretas (lombada, beirada do scanner): coluna com mais de 60% de tinta
+    tinta[:, por_coluna > 0.6] = 0
+    colunas = np.where((por_coluna > 0.02) & (por_coluna <= 0.6))[0]
     linhas = np.where(tinta.mean(axis=1) > 0.02)[0]
     if len(colunas) < 50 or len(linhas) < 50:
         return None
     x0, x1 = colunas.min(), colunas.max()
     y0, y1 = linhas.min(), linhas.max()
+    # o bloco de texto principal: do 5% ao 95% das colunas com tinta (fora a tira da página vizinha)
+    x0, x1 = int(np.percentile(colunas, 5)), int(np.percentile(colunas, 95))
     faixa = max(6, (x1 - x0) // 10)
     meio = (x0 + x1) // 2
     maximo = int(6 / 25.4 * DPI)  # até 6 mm
@@ -91,7 +96,7 @@ def medir(cinza: np.ndarray) -> dict | None:
         dir_ = tinta[ya:yb, x1 - faixa:x1].sum(axis=1).astype(float)
         de, ne = _deslocamento(ref, esq, maximo)
         dd, nd = _deslocamento(ref, dir_, maximo)
-        if min(ne, nd) < 0.3:
+        if min(ne, nd) < 0.2:
             return None
         resultado[nome] = (de, dd)
     # tira a inclinação (a parte igual e oposta nas duas beiradas) e fica a curva
