@@ -169,4 +169,17 @@ memória: 900 MB por trabalhador + 1,5 GB de reserva). Para ver o ganho forcei 3
 - [ ] 6. conferencia.json
 
 ## Perguntas para o Samuel
-(nenhuma ainda)
+
+### P1 (2.17, 22/10 16h) — "Tirar o chuvisco" no Preto e branco apaga letra miúda antes do aviso aparecer
+O que acontece: você decidiu "Tirar o chuvisco" de 0 a 100, com aviso **acima de 20** (o aviso diz "os valores que
+mais ajudam ficam entre 10 e 20"). No Preto e branco, a legenda pequena embaixo da gravura do Escola 35 ("Adão e Eva
+expulsos do Paraíso", letra de ~1,5 mm) já começa a falhar com **10** e fica ilegível com **15 e 20** — sem aviso
+nenhum. No Boécio 7, com 10, o chuvisco do verso sai e a letra fica boa; com 20 a letra engrossa.
+Fotos: `img/217_pergunta_chuvisco_q.jpg` (Escola 35: 0, 10, 15, 20, legenda ampliada) e
+`img/217_pergunta_chuvisco_qb.jpg` (Boécio 7: 0, 10, 15, 20). Caminho: girar → não dividiu → endireitada → cortada
+→ Preto e branco → Tirar o chuvisco N.
+- **A — Deixar como está** (aviso só acima de 20). Bom: nada muda. Ruim: com 10 a 20 a letra miúda pode sumir sem aviso.
+- **B — No Preto e branco, avisar desde o primeiro número** ("pode apagar letra muito pequena; confira as legendas").
+  Bom: quem liga sabe do risco. Ruim: o aviso aparece sempre que a opção é usada no Preto e branco. *(sugestão do verificador)*
+- **C — No Preto e branco, aviso a partir de 10** (e 20 no Melhorar/Mágico pro/Original). Bom: avisa onde começou a
+  estragar nestas páginas. Ruim: o número 10 vem de duas páginas só.
