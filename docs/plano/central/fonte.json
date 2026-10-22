@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T19:50:00Z",
+        "texto": "Suas respostas foram lidas: a caixa do conteúdo foi aprovada; os 8 lugares que podem comer a página entraram na Lista de bugs com a sua regra de provar antes. Respondi as três dúvidas novas na própria pergunta."
+      },
+      {
         "em": "2026-10-22T19:30:00Z",
         "texto": "Nova conferência: caixa do conteúdo, borda preta e pintar de branco (aba Conferência), com uma pergunta sobre os avisos."
       },
@@ -338,14 +342,14 @@
       "titulo": "Caixa do conteúdo, borda preta e pintar de branco",
       "item": "2.5, 2.13 e 2.14",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "O programa acha onde está o conteúdo da página, corta a borda preta do scanner (o Kaique escolhe por livro: só o preto ou até a moldura) e pinta de branco o que sobra.",
-      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. A etiqueta do Egenloff 3 sai inteira, mas o carimbo oval de cima agora sai partido. Medir o livro e gerar o PDF ficou cerca de 2,2 vezes mais rápido. O aviso \"Corte deixou algo de fora\" aparece em quase todas as páginas.",
-      "falta": "A sua resposta na aba Conferência (caixa do conteúdo) e a pergunta dos avisos.",
+      "situacao": "Aprovado por você em 22/10. Entra no programa junto com o resto (testes no GitHub e no PC antes).",
+      "falta": "Melhorias pedidas: o aviso \"Corte deixou algo de fora\" só conta o que parece impresso (e mais acerto nesse aviso); o corte certo já na primeira vez que a página aparece; quanto mais rápido, melhor.",
       "selos": {
         "github": "sim",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "fase2-caixa-conteudo",
       "commit": "49d1ed3",
@@ -360,7 +364,7 @@
         }
       ],
       "testar": [],
-      "mudouEm": "2026-10-22T19:30:00Z"
+      "mudouEm": "2026-10-22T19:50:00Z"
     },
     {
       "id": "2.12",
@@ -388,10 +392,10 @@
       "titulo": "Tela nova: etapas 6 e 7 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Tela cheia dos filtros (etapa 6), Configurações em partes, tela dos livros e o livro aberto na tela inteira (etapa 7).",
-      "situacao": "O verificador conferiu os dois consertos (livro aberto como no UPDF e tela cheia com todas as opções). Pronto para você conferir, com ressalvas.",
-      "falta": "Sua resposta na aba Conferência > Livro aberto e tela cheia.",
+      "situacao": "Aprovado por você em 22/10 (livro aberto como no UPDF e tela cheia). Entra no programa junto com o resto (testes no GitHub e no PC antes). O agente de layout continua com as melhorias, como você mandou.",
+      "falta": "Melhorias: a tela cheia mostrar a letra igual ao PDF (com os jeitos do ScanTailor ela sai mais grossa); o quadro azul do \"Todas as páginas\" na página certa em \"Duas lado a lado\"; a janela \"Antes de processar\" mais clara e menor.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -401,7 +405,7 @@
       "commit": "2eeec20",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T16:40:00Z",
+      "mudouEm": "2026-10-22T19:50:00Z",
       "relatorio": "lyupdf",
       "ressalva": "Na tela cheia, com um dos jeitos do ScanTailor, a letra aparece mais grossa do que sai no PDF (a conta muda com a resolução)."
     },

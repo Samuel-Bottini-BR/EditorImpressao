@@ -94,6 +94,16 @@
      "quem": "samuel",
      "em": "2026-10-21T21:45:57Z",
      "texto": "o que eu estou olhando? e porque a foto sai assim? que opção foi escolhida para sair assim?"
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:24:10Z",
+     "texto": "o scantailor tem um detector de figuras também né?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T19:50:00Z",
+     "texto": "Tem, sim. No modo Misto, o ScanTailor acha sozinho as figuras da página e as deixa como no original, passando só o texto para preto e branco. O nosso \"Só as letras\" veio desse modo. O dele também erra às vezes, e por isso ele deixa a pessoa desenhar a área da figura à mão. No nosso programa isso é a aba Marcar. Melhorar o detector é o item 1.5 do plano."
     }
    ],
    "explicacao": [

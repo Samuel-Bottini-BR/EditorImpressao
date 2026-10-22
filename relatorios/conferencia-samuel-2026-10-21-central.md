@@ -132,3 +132,14 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `lu-grade` (2ª volta): **Está bom**
 - `lu-tc-igual`: marcado de novo **Melhorar**, mesmo comentário.
 - Resposta da gerente à pergunta "Tem mais alguma função que pode fazer essa mesma coisa de comer parte da pagina...": 8 lugares achados lendo o código (endireitar do livro antigo e corte à mão; corte automático deixa de fora peças pequenas e o aviso quase nunca toca; tinta na beirada; dividir em linha reta; Melhorar/Mágico pro; área papel; borda preta/pintar de branco; impressão acima de 100%). Pergunta nova `a-comer-pagina` na Central (A agora junto do 2.12 / B Lista de bugs / C provar antes).
+
+## Conferência da caixa do conteúdo (`cx22`) e outras, 22/10/2026 (18:20-18:37 UTC)
+- `cx22` DECISÃO FINAL: **Aprovado**
+- `cx-etiqueta` Egenloff 3, a etiqueta de baixo sai inteira: **Ainda não entendi** (sem comentário; refeita)
+- `cx-marial`: **Está bom**
+- `cx-velocidade`: **Está bom** — "Mas quanto mais rápidos pudermos deixar, melhor."
+- `cx-avisos-demais`: **Ainda não entendi** — "Eu não entendi, o programa está dando avisos sem precisar? \nSe está dando avisos sem precisar, precisamos investigar o que ele está confundindo, me explique melhor."
+- `cx-avisos` (pergunta): **O aviso só conta o que parece impresso** — "Mas se precisa melhorar a acuracidade desse aviso"
+- `a-comer-pagina`: **B — Só o desentortar agora; o resto para o começo da próxima fase** — "escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir"
+- Dúvidas: `dv-211-reduzir`, `dv-tela-igual`, `dv-29-cartoes`, `dv-imp-2`, `dv-29-slide`, `dv-pr-testes`: **Entendi**; `dv-opus-20`: **Entendi** — "o scantailor tem um detector de figuras também né?"
+- Ordens: "Tela nova: etapas 6 e 7 do layout" — **juntar** (18:20:18) e **continuar** (18:20:26).

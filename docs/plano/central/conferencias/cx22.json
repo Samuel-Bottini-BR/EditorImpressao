@@ -29,8 +29,12 @@
    "id": "cx-etiqueta",
    "nome": "Egenloff 3: a etiqueta de baixo sai inteira",
    "explicacao": [
-    "O que você está olhando: a folha de rosto do Egenloff, antes e depois. Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI.",
-    "Antes o corte terminava no meio da etiqueta \"1880 neu aufgelegt von George Gilbers\". Agora ele desce 17 mm e a etiqueta entra inteira; o corte tem o mesmo tamanho, então em cima ele começa mais baixo."
+    "Do que se trata: a página 3 do Egenloff (a folha de rosto) tem, embaixo, uma etiqueta colada com moldura vermelha: \"1880 neu aufgelegt von George Gilbers\". O programa cortava a página no meio dessa etiqueta, e metade dela sumia.",
+    "O que mudou: agora o corte desce 17 mm e a etiqueta sai inteira.",
+    "O que piorou em troca: o corte continua do mesmo tamanho. Como ele desceu embaixo, também desceu em cima, e o carimbo oval do alto, que antes saía inteiro, agora sai cortado ao meio. O lápis \"Af 10\" também sai. O carimbo da direita (\"Fachschule\") já saía cortado antes e continua assim.",
+    "Na foto ampliada: em cima, como era; embaixo, como ficou. O vermelho é o que o corte tira.",
+    "Outro defeito, na tela: na primeira vez que essa página aparece, o corte mostrado ainda é o antigo e não aparece aviso. Só depois de passar por outras páginas e voltar ele fica certo.",
+    "Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI."
    ],
    "olhar": "Embaixo, a etiqueta com moldura vermelha; em cima, o carimbo oval e o lápis \"Af 10\"; à direita, o carimbo \"Fachschule\".",
    "texto": "Confirmado nas fotos e na janela: a etiqueta sai inteira (o teste novo falha no código de antes). Em cima o carimbo oval fica partido e o \"Af 10\" sai; à direita o carimbo continua partido, como antes.",
@@ -54,6 +58,13 @@
     {
      "src": "cx22/img/janela_egenloff_p003_primeira_vez.jpg",
      "legenda": "Na janela, a primeira vez que a página 3 aparece: sem aviso de corte"
+    }
+   ],
+   "historico": [
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T19:50:00Z",
+     "texto": "Você marcou \"Ainda não entendi\". Refiz a explicação mais simples logo abaixo. A sua decisão final da conferência (Aprovado) já está registrada."
     }
    ]
   },
@@ -108,8 +119,15 @@
    "id": "cx-avisos-demais",
    "nome": "O aviso de corte aparece em quase todas as páginas",
    "explicacao": [
-    "O que você está olhando: o que o aviso \"Corte deixou algo de fora\" está contando. Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI.",
-    "Ele aparece em 82 de 100 páginas do Marial e em 12 de 14 do Egenloff (antes e depois, quase igual). Olhei 37 dessas páginas: só no Egenloff 3 o que ficou de fora é do livro (o carimbo)."
+    "Sim: o aviso \"Corte deixou algo de fora\" está tocando sem precisar. Ele aparece em 82 de 100 páginas do Marial e em 12 de 14 do Egenloff. Já era assim antes deste trabalho.",
+    "O que ele está confundindo com conteúdo do livro (o verificador abriu 37 dessas páginas):",
+    "• a beirada do papel e a sombra dela. Quando a sombra encosta no texto, vira um pedaço enorme;",
+    "• pontinhos de sujeira de 0,4 a 2 mm e manchas;",
+    "• o verso da folha aparecendo por transparência;",
+    "• a faixa da biblioteca (SLUB) no pé do escaneamento.",
+    "Só no Egenloff 3 o que ficou de fora era do livro de verdade: o carimbo.",
+    "Por que confunde: hoje o aviso conta qualquer coisa escura com 1 mm ou mais que ficou fora do corte. Ele não separa tinta impressa de sujeira ou sombra.",
+    "O conserto é a opção que você escolheu na pergunta dos avisos: contar só o que parece impresso, ignorando o que encosta na beirada, os pontinhos menores que uns 2 mm e o que é claro demais para ser tinta. O implementador mede a acerto do aviso antes e depois, nas mesmas 37 páginas."
    ],
    "olhar": "Os retângulos azuis: cada um é um pedaço que o aviso contou como \"ficou de fora\".",
    "texto": "No Marial, o aviso conta a beirada do papel e a sombra dela (às vezes grudada no texto, e aí vira um retângulo enorme), pontinhos de sujeira de 0,4 a 2 mm e manchas. No Egenloff conta também o verso aparecendo por transparência e a faixa da biblioteca (SLUB) no pé do escaneado. Com aviso em quase toda página, o Kaique não vai saber qual abrir.",
@@ -125,6 +143,18 @@
     {
      "src": "cx22/img/janela_marial_p008.jpg",
      "legenda": "Marial 8 na janela: o aviso fala em moldura, título ou carimbo; são três pontinhos"
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:35:40Z",
+     "texto": "Eu não entendi, o programa está dando avisos sem precisar? \nSe está dando avisos sem precisar, precisamos investigar o que ele está confundindo, me explique melhor."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T19:50:00Z",
+     "texto": "Sim, está dando aviso sem precisar. A investigação já foi feita pelo verificador: ele abriu 37 páginas com aviso e anotou o que o programa confundiu. A resposta está logo abaixo."
     }
    ]
   }
