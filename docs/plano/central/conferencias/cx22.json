@@ -1,0 +1,196 @@
+{
+ "id": "cx22",
+ "nome": "Caixa do conteúdo: etiqueta, Marial e velocidade",
+ "trabalho": "fase2-caixa-conteudo (itens 2.5, 2.13 e 2.14)",
+ "origem": "verif-caixa-2026-10-22 (conferido no fase2-caixa-conteudo 49d1ed3; antes = c66f28d)",
+ "resumo": {
+  "titulo": "O corte que segue o conteúdo: a etiqueta do Egenloff 3, o corte do Marial e a velocidade",
+  "paragrafos": [
+   "No Egenloff 3 (folha de rosto) a etiqueta de baixo \"1880 neu aufgelegt von George Gilbers\" agora sai inteira; antes o corte passava no meio dela. Em troca, em cima, o carimbo oval da biblioteca fica partido (antes ficava inteiro) e o lápis \"Af 10\" sai quase todo.",
+   "No Marial o corte mudou de lugar em 32 de 100 páginas. Ele tem sempre o mesmo tamanho; o que muda é onde fica. Em 16 páginas anda até 2,5 mm e não se vê; em 3 (25, 33 e 85) anda de 14 a 16 mm e fica melhor, com a página centrada. Nas 32 nenhuma letra, título ou nota de margem ficou de fora.",
+   "Ficou mais rápido: o Marial de 100 páginas, com as duas opções ligadas, levava 5 minutos e agora leva 2 minutos e meio no PC; o Egenloff de 14, de 1,5 a 2 minutos para 30 a 50 segundos. A conta \"Só o preto\" dá o mesmo resultado de antes (0 diferenças em 78 contas).",
+   "O que pesa: o aviso \"Corte deixou algo de fora\" aparece em 82 de 100 páginas do Marial e em 12 de 14 do Egenloff, e quase sempre o que ficou de fora é sujeira, sombra ou a beirada do papel. Isso vira uma pergunta para você.",
+   "Testes no GitHub: 2234 passaram, 0 falharam (rodada 39788341137). Visto na janela de verdade, com cliques do Windows, no Marial (páginas 7, 8 e 25) e no Egenloff (3, 6 e 12)."
+  ],
+  "veredito": "PRONTO PARA CONFERIR, com ressalvas (a principal: aviso de corte em quase todas as páginas, quase sempre por sujeira)."
+ },
+ "ressalvas": [
+  "Egenloff 3: o carimbo oval de cima passou a sair partido (a metade de cima fica de fora) e o lápis \"Af 10\" sai quase todo; o carimbo da direita (\"Fachschule für angewandte Kunst / Schneeberg\") continua partido, como antes. A pergunta do carimbo continua aberta. O implementador escreveu que os carimbos \"continuam partidos como antes\"; o oval de cima, antes, ficava inteiro.",
+  "Janela, Egenloff 3: na primeira vez que a página aparece (é a página em que a tela abre), o corte ainda é o de um livro menor (a etiqueta inteira ficaria de fora) e não aparece aviso nenhum. Depois de olhar outras páginas e voltar, o corte fica o certo e o aviso aparece. Não gerei o PDF pela janela para ver qual corte sai.",
+  "Janela: na ferramenta Cortar o retângulo verde mostra a folha inteira (com a faixa da biblioteca), não o corte que vai sair; não achei na tela onde o Kaique vê o corte que segue o conteúdo. A tela não foi mexida neste trabalho.",
+  "Janela: o número de avisos cresce enquanto se folheia (Marial: 27, 30, 31, 33, 34; sem a tela são 83). É o mesmo assunto da pergunta pr-medir-o-livro (o programa só confere as páginas visitadas).",
+  "O texto do aviso diz que ficou de fora \"um pedaço impresso desta página (moldura, título, número da página ou carimbo)\", mas no Marial 8, por exemplo, são três pontinhos e um risco na beirada do papel.",
+  "O implementador escreveu que no Marial \"o corte anda alguns mm na vertical\" e que a página que ganhou o aviso é a 7: o corte anda quase sempre para os lados (até 16 mm) e a página é a 8, contando de 1 (ele contou de 0).",
+  "Velocidade medida no PC com o livro sem a tela (medir + gerar o PDF), duas vezes cada, alternado. No GitHub, com as opções desligadas, ficou igual (rodada 39788346337). A medida que vale para a fase é a da gerente.",
+  "Não conferi: o PDF gerado pela janela, a roda do mouse, e as páginas do Marial que não mudaram de corte (olhei 3 delas com aviso: 2, 10 e 50). A página 1 dos dois livros é a capa e ficou de fora."
+ ],
+ "quadros": [
+  {
+   "id": "cx-etiqueta",
+   "nome": "Egenloff 3: a etiqueta de baixo sai inteira",
+   "explicacao": [
+    "O que você está olhando: a folha de rosto do Egenloff, antes e depois. Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI.",
+    "Antes o corte terminava no meio da etiqueta \"1880 neu aufgelegt von George Gilbers\". Agora ele desce 17 mm e a etiqueta entra inteira; o corte tem o mesmo tamanho, então em cima ele começa mais baixo."
+   ],
+   "olhar": "Embaixo, a etiqueta com moldura vermelha; em cima, o carimbo oval e o lápis \"Af 10\"; à direita, o carimbo \"Fachschule\".",
+   "texto": "Confirmado nas fotos e na janela: a etiqueta sai inteira (o teste novo falha no código de antes). Em cima o carimbo oval fica partido e o \"Af 10\" sai; à direita o carimbo continua partido, como antes.",
+   "selo": "Bom, com ressalva",
+   "ressalva": "O carimbo oval de cima, que antes saía inteiro, agora sai partido. Na janela, na primeira vez que a página aparece, o corte ainda é o antigo e não há aviso.",
+   "decisao_do_samuel": "",
+   "bate_com_a_decisao": "",
+   "imgs": [
+    {
+     "src": "cx22/img/egenloff_p003_beiradas_perto.jpg",
+     "legenda": "Ampliado: a etiqueta de baixo, o carimbo de cima e o da direita, antes e depois"
+    },
+    {
+     "src": "cx22/img/egenloff_p003__inteira.jpg",
+     "legenda": "A página inteira, antes e depois (vermelho = o que o corte tira)"
+    },
+    {
+     "src": "cx22/img/janela_egenloff_p003_ao_voltar.jpg",
+     "legenda": "Na janela, voltando à página 3: o aviso de corte aparece"
+    },
+    {
+     "src": "cx22/img/janela_egenloff_p003_primeira_vez.jpg",
+     "legenda": "Na janela, a primeira vez que a página 3 aparece: sem aviso de corte"
+    }
+   ]
+  },
+  {
+   "id": "cx-marial",
+   "nome": "Marial: o corte muda de lugar em 32 páginas",
+   "explicacao": [
+    "O que você está olhando: páginas do Marial em que o corte mudou de lugar, antes e depois. Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI.",
+    "O corte tem sempre o mesmo tamanho (o tamanho do livro); o que muda é onde ele fica. Em 16 páginas anda até 2,5 mm. Nas páginas 25, 33 e 85 anda de 14 a 16 mm para a direita: antes pegava a faixa escura da página vizinha e apertava a coluna da direita; agora a página fica centrada. A página 8 ganhou o aviso de corte."
+   ],
+   "olhar": "As notas na margem (esquerda e direita) e o fim das linhas: se alguma ficou de fora.",
+   "texto": "Olhei as 32 páginas: nenhuma letra, título, número de página ou nota de margem ficou de fora, antes nem depois. Nas páginas 75 e 99 as notas da direita ficam bem perto da beirada, mas dentro (conferido ampliado). Na página 8, o aviso novo é por três pontinhos e um risco na beirada do papel.",
+   "selo": "Bom",
+   "ressalva": "",
+   "decisao_do_samuel": "",
+   "bate_com_a_decisao": "",
+   "imgs": [
+    {
+     "src": "cx22/img/marial_p025__inteira.jpg",
+     "legenda": "Página 25: o corte anda 14 mm e a página fica centrada"
+    },
+    {
+     "src": "cx22/img/marial_p085__inteira.jpg",
+     "legenda": "Página 85: o corte anda 16 mm, as notas da esquerda continuam dentro"
+    },
+    {
+     "src": "cx22/img/marial_p008__inteira.jpg",
+     "legenda": "Página 8: o corte anda 3 mm para a esquerda (a que ganhou o aviso)"
+    },
+    {
+     "src": "cx22/img/janela_marial_p008.jpg",
+     "legenda": "Página 8 na janela de verdade, com o aviso"
+    }
+   ]
+  },
+  {
+   "id": "cx-velocidade",
+   "nome": "Mais rápido, com o mesmo resultado",
+   "explicacao": [
+    "O que você está olhando: quanto tempo o programa leva para medir o livro e gerar o PDF com as duas opções ligadas (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI, no PC, antes e depois, duas vezes cada.",
+    "Marial (100 páginas): antes 313 e 307 segundos, depois 145 e 139 (cerca de duas vezes mais rápido). Egenloff (14 páginas): antes 118 e 86 segundos, depois 47 e 31."
+   ],
+   "olhar": "Se o resultado continua o mesmo: a conta \"Só o preto\", que ficou 4 vezes mais rápida, foi comparada com a de antes em 39 páginas de verdade.",
+   "texto": "Confirmado: 0 diferenças em 78 contas (Egenloff e Marial, cor e cinza); a conta foi de 33,9 para 8,8 segundos. O tamanho das páginas do PDF é o mesmo antes e depois. No GitHub, com as opções desligadas, a velocidade ficou igual.",
+   "selo": "Bom",
+   "ressalva": "Medido no PC sem outros programas Python rodando; a medida que vale para a fase é a da gerente.",
+   "decisao_do_samuel": "",
+   "bate_com_a_decisao": "",
+   "imgs": []
+  },
+  {
+   "id": "cx-avisos-demais",
+   "nome": "O aviso de corte aparece em quase todas as páginas",
+   "explicacao": [
+    "O que você está olhando: o que o aviso \"Corte deixou algo de fora\" está contando. Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI.",
+    "Ele aparece em 82 de 100 páginas do Marial e em 12 de 14 do Egenloff (antes e depois, quase igual). Olhei 37 dessas páginas: só no Egenloff 3 o que ficou de fora é do livro (o carimbo)."
+   ],
+   "olhar": "Os retângulos azuis: cada um é um pedaço que o aviso contou como \"ficou de fora\".",
+   "texto": "No Marial, o aviso conta a beirada do papel e a sombra dela (às vezes grudada no texto, e aí vira um retângulo enorme), pontinhos de sujeira de 0,4 a 2 mm e manchas. No Egenloff conta também o verso aparecendo por transparência e a faixa da biblioteca (SLUB) no pé do escaneado. Com aviso em quase toda página, o Kaique não vai saber qual abrir.",
+   "selo": "Ruim",
+   "ressalva": "Não é deste trabalho (antes já era assim: 81 no Marial), mas pesa no uso. Vira a pergunta à parte.",
+   "decisao_do_samuel": "",
+   "bate_com_a_decisao": "",
+   "imgs": [
+    {
+     "src": "cx22/img/avisos_o_que_fica_fora.jpg",
+     "legenda": "Seis páginas: o que o aviso contou (o primeiro caso é o útil, os outros cinco não)"
+    },
+    {
+     "src": "cx22/img/janela_marial_p008.jpg",
+     "legenda": "Marial 8 na janela: o aviso fala em moldura, título ou carimbo; são três pontinhos"
+    }
+   ]
+  }
+ ],
+ "pergunta": {
+  "id": "cx22",
+  "titulo": "Caixa do conteúdo (etiqueta, Marial e velocidade): o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se este trabalho entra no programa como está.",
+   "Cada quadro mostra uma parte. O que mais pesa: no Egenloff 3 a etiqueta sai inteira, mas o carimbo oval de cima passou a sair partido; e o aviso de corte aparece em quase todas as páginas (pergunta à parte)."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ },
+ "perguntas": [
+  {
+   "id": "cx-avisos",
+   "titulo": "O aviso \"Corte deixou algo de fora\" aparece em quase todas as páginas. O que fazer?",
+   "explicacao": [
+    "O que você está escolhendo: quando o programa avisa que o corte deixou algo de fora.",
+    "Hoje ele avisa em 82 de 100 páginas do Marial e em 12 de 14 do Egenloff. Das 37 que olhei, só no Egenloff 3 o que ficou de fora é do livro (o carimbo). Nas outras é a beirada do papel, a sombra dela, pontinhos de sujeira, manchas, o verso aparecendo por transparência e a faixa da biblioteca no pé do escaneado."
+   ],
+   "opcoes": [
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "Bom: nada escapa. Ruim: o Kaique teria de abrir 82 de 100 páginas, e o aviso diz \"moldura, título ou carimbo\" quando é sujeira.",
+     "imgs": [
+      {
+       "src": "cx22/img/janela_marial_p008.jpg",
+       "legenda": "Marial 8: o aviso aparece por três pontinhos na beirada"
+      }
+     ]
+    },
+    {
+     "id": "so-o-impresso",
+     "nome": "O aviso só conta o que parece impresso",
+     "texto": "Não conta o que encosta na beirada do papel ou do escaneado, pontinhos menores que uns 2 mm, nem o que é claro demais para ser tinta (o verso aparecendo). Bom: no Egenloff 3 o aviso continua (o risco do carimbo está no meio do papel); nos outros cinco casos da foto, some. Ruim: um carimbo ou número de página encostado na beirada do papel deixaria de ser avisado.",
+     "sugestao_do_verificador": true,
+     "imgs": [
+      {
+       "src": "cx22/img/avisos_o_que_fica_fora.jpg",
+       "legenda": "Continua: Egenloff 3. Some: Egenloff 6, Marial 8, 10, 28 e 43"
+      },
+      {
+       "src": "cx22/img/egenloff_p003_beiradas_perto.jpg",
+       "legenda": "O caso útil (Egenloff 3), ampliado"
+      }
+     ]
+    },
+    {
+     "id": "so-pedaco-grande",
+     "nome": "O aviso só aparece quando o pedaço de fora é grande (mais de 5 mm, por exemplo)",
+     "texto": "Bom: mais simples; os pontinhos de sujeira param de avisar. Ruim: a sombra da beirada grudada no texto é grande e continua avisando (Marial 10, 28 e 43), e um número de página pequeno cortado deixaria de avisar.",
+     "imgs": [
+      {
+       "src": "cx22/img/aviso_opcao_c_pedacos_grandes.jpg",
+       "legenda": "O que continuaria avisando: pedaços grandes que não são do livro"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "ordem": 10
+}

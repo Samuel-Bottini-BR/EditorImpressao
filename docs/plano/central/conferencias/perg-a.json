@@ -81,6 +81,56 @@
      "quem": "gerente",
      "em": "2026-10-22T18:25:00Z",
      "texto": "Você tem razão: não precisa fazer duas vezes, e o ScanTailor não faz. Conferi no código dele e troquei a opção A pelo jeito dele, explicado logo abaixo."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T18:15:34Z",
+     "texto": "Tem mais alguma função que pode fazer essa mesma coisa de comer parte da pagina sem que a gente queira no nosso programa?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T19:05:00Z",
+     "texto": "Sua escolha ficou registrada: A, cortar uma vez só, no fim, como o ScanTailor. Sobre a sua pergunta: sim, tem. Mandei olhar o código inteiro (só leitura). A lista está na pergunta nova logo abaixo, com o que eu recomendo fazer."
+    }
+   ]
+  },
+  {
+   "id": "a-comer-pagina",
+   "titulo": "Outros lugares que podem comer parte da página: o que fazer?",
+   "explicacao": [
+    "Resposta à sua pergunta. Achei 8 lugares, além do desentortar, onde o programa pode tirar um pedaço do livro sem a gente pedir. Isso foi lendo o código, ainda não testado em página de verdade.",
+    "Os mais graves, ligados de fábrica e sem aviso:",
+    "1. Endireitar no livro antigo (começado antes de 09/10). Ele corta primeiro e depois gira dentro do mesmo retângulo: é o mesmo erro do desentortar, e os cantos podem sair. No livro novo isso não acontece, porque gira a página inteira antes de cortar. O corte feito à mão também não ganha folga para o giro.",
+    "2. O corte automático deixa de fora peças pequenas e soltas: um número de página, um reclamo ou uma anotação pequena na margem. O aviso \"Corte encostou no texto\" quase nunca toca, porque é medido uma vez só, na folha inteira, antes de dividir e endireitar, e não no corte que é usado de verdade.",
+    "3. Letra ou desenho encostado na beirada do escaneamento é confundido com a borda do scanner e pode ser cortado.",
+    "4. Dividir as duas páginas é feito com uma linha reta em pé. Numa folha dupla torta, a ponta das letras perto do meio pode ir para a outra página. O ScanTailor deixa a linha inclinada.",
+    "Os que só acontecem quando alguém liga a opção:",
+    "5. Melhorar e Mágico pro branqueiam o que parece papel: lápis fraco e letra apagada podem sumir.",
+    "6. A área \"papel\" marcada sozinha é pintada de branco, e tinta fraca que o detector não viu vai junto (suspeita).",
+    "7. Borda preta e Pintar de branco (2.13 e 2.14, desligados de fábrica): uma gravura escura colada na beirada pode ser tomada por borda do scanner. O ScanTailor tem o mesmo risco.",
+    "8. Imprimir com escala acima de 100%: o que passa da metade da folha é cortado. Avisa só pela margem pequena.",
+    "Já conhecidos: \"Reduzir cores\" (2.11) e \"Limpar a sujeira\" podem apagar acento e pingo.",
+    "O que resolve a maior parte de uma vez é o mesmo conserto que você escolheu para o desentortar: o corte vira só uma medida e a imagem é recortada uma vez, no fim. Isso resolve o 1 e o desentortar. E o aviso \"Corte encostou no texto\" passa a ser medido no corte de verdade, para avisar quando um número de página fica de fora (resolve o aviso do 2)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Fazer agora, junto com o desentortar (recomendo)",
+     "texto": "O Implementador A faz o \"cortar uma vez só, no fim\" valer para o desentortar, o endireitar do livro antigo e o corte à mão, e refaz o aviso \"Corte encostou no texto\" no corte de verdade. O verificador testa cada um em página que vai ser impressa, com o caminho inteiro. Os itens 3 a 8 entram na Lista de bugs, cada um com a página de prova. Ressalva: o livro antigo pode sair um pouco diferente de antes nos cantos (só onde hoje ele come).",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Só o desentortar agora; o resto para o começo da próxima fase",
+     "texto": "Segue a regra do plano: bug que não impede a tarefa vai para a Lista de bugs e é consertado no começo da fase seguinte. Todos os 8 entram na Lista de bugs agora.",
+     "imgs": []
+    },
+    {
+     "id": "c",
+     "nome": "C — Primeiro provar em páginas de verdade, depois decidir",
+     "texto": "O verificador procura no acervo páginas onde cada um destes acontece de fato e traz as fotos. Você decide depois, vendo.",
+     "imgs": []
     }
    ]
   }

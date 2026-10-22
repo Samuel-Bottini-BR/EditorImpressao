@@ -9,6 +9,14 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T19:30:00Z",
+        "texto": "Nova conferência: caixa do conteúdo, borda preta e pintar de branco (aba Conferência), com uma pergunta sobre os avisos."
+      },
+      {
+        "em": "2026-10-22T19:05:00Z",
+        "texto": "Respondi a sua pergunta \"tem mais alguma função que come parte da página?\": achei 8. Pergunta nova na aba do desentortar."
+      },
+      {
         "em": "2026-10-22T18:45:00Z",
         "texto": "Nova aba na Conferência: \"Suas dúvidas sem resposta\", com as 7 perguntas dos seus comentários de 21/10 respondidas."
       },
@@ -330,17 +338,17 @@
       "titulo": "Caixa do conteúdo, borda preta e pintar de branco",
       "item": "2.5, 2.13 e 2.14",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "O programa acha onde está o conteúdo da página, corta a borda preta do scanner (o Kaique escolhe por livro: só o preto ou até a moldura) e pinta de branco o que sobra.",
-      "situacao": "Pronto pelo Implementador A (22/10): etiqueta do Egenloff 3 consertada; medir o livro voltou ao tempo de antes (Marial: passada + PDF de ~500 s para ~200 s). Vai para o verificador.",
-      "falta": "Conferência do verificador.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas. A etiqueta do Egenloff 3 sai inteira, mas o carimbo oval de cima agora sai partido. Medir o livro e gerar o PDF ficou cerca de 2,2 vezes mais rápido. O aviso \"Corte deixou algo de fora\" aparece em quase todas as páginas.",
+      "falta": "A sua resposta na aba Conferência (caixa do conteúdo) e a pergunta dos avisos.",
       "selos": {
-        "github": "parte",
+        "github": "sim",
         "pc": "nao",
         "samuel": "nao"
       },
       "ramo": "fase2-caixa-conteudo",
-      "commit": "ed68928",
+      "commit": "49d1ed3",
       "fotos": [
         {
           "legenda": "Egenloff 3: a etiqueta que sai cortada",
@@ -352,7 +360,7 @@
         }
       ],
       "testar": [],
-      "mudouEm": "2026-10-22T17:00:00Z"
+      "mudouEm": "2026-10-22T19:30:00Z"
     },
     {
       "id": "2.12",
@@ -695,11 +703,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Conferir a caixa do conteúdo, borda preta e pintar de branco; depois as 7 ferramentas do Implementador B",
-      "ultimo": "Voltou da pausa e continua a caixa do conteúdo do ponto onde parou: fotos das páginas que mudaram, o excesso de avisos, a janela de verdade e a conferência para você.",
+      "ultimo": "Entregou a caixa do conteúdo: pronto para conferir, com ressalvas, e uma pergunta sobre o excesso de avisos. Próximo: as 7 ferramentas do Implementador B.",
       "ramo": "verif-caixa-2026-10-22",
-      "quando": "2026-10-22T17:54:02Z"
+      "quando": "2026-10-22T19:30:00Z"
     },
     {
       "id": "layout",
