@@ -1,6 +1,6 @@
 # Conferência da caixa do conteúdo (2.5, 2.13, 2.14) — verificador, 22/10/2026 — ONDE PAREI
 
-**PAUSADO a pedido do Samuel (via gerente), 22/10/2026.** Nenhuma janela do programa foi aberta; nenhum processo ficou rodando.
+**RETOMADO em 22/10/2026** (estava pausado a pedido do Samuel). Nenhuma janela do programa foi aberta; nenhum processo ficou rodando.
 Nenhuma rodada do GitHub foi disparada por mim.
 
 Código conferido: ramo `fase2-caixa-conteudo` em `49d1ed3` (o último código é `5bc5b33`; `4b37fc0` e `49d1ed3` só têm
@@ -20,6 +20,7 @@ Worktrees (com junções `modelos` e `gabarito\paginas`; **não apagar com Remov
 | "Só o preto" antes x depois em páginas de verdade a 300 DPI (14 Egenloff + 25 Marial, cor e cinza; `scripts/so_o_preto_igual.py`) | **0 diferenças em 78 contas**; 33,9 s → 8,8 s (**3,9×**; o implementador mediu 4,6×) |
 | Velocidade no PC, alternado, um processo por vez, sem outros python rodando (`scripts/rodar_tempos.sh`, `tempo_total.py`; duas opções ligadas, até a moldura, Original, 300 DPI; passada + geração do PDF) | **Egenloff 14:** antes 118,1 e 85,6 s → depois 47,4 e 30,7 s. **Marial 100:** antes 312,7 e 307,3 s → depois 145,1 e 138,8 s (**~2,2× mais rápido**; passada 129 → 94–96 s, geração 178–183 → 45–49 s). Números em `dados/tempo_*.json` |
 | PDFs antes x depois (`scripts/comparar_pdfs.py`) | tamanhos iguais nos dois (Egenloff miolo 252,5 x 379 mm; Marial 224 x 302,7 mm). **Egenloff: mudaram as págs. 3 e 12. Marial: mudaram 32 de 100** (4, 6, 7, 8, 16, 22, 23, 25, 28, 30, 32, 33, 36, 37, 40, 43, 45, 47, 50, 51, 64, 66, 71, 75, 78, 85, 86, 87, 88, 95, 96, 99 — contando de 1). Confirma o número do implementador |
+| Passo 1: a captura bate com o PDF (`scripts/captura_bate.py`) | sim, nas 38 capturas dos dois lados: diferença média 0,8 a 5,6 (de 0 a 255, a 60 DPI); contra a página vizinha 14 a 42, contra o outro lado (antes x depois) 3 a 32. A proporção bate (0,998 a 1,0) |
 | Aviso novo no Marial | a página que ganhou "Corte deixou algo de fora" é a **8 contando de 1** (o implementador escreveu "p. 7": provavelmente contou de 0; conferir na janela) |
 
 ## Achado que vira ressalva / pergunta (ainda sem imagem)
