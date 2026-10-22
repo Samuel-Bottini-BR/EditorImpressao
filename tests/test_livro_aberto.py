@@ -377,3 +377,30 @@ def test_a_grade_desenha_primeiro_as_de_perto(app, livro):  # noqa: F811
     ordem = list(grade._tarefa.folhas)
     grade.esquecer()
     assert ordem[0] == 20 and set(ordem[:5]) == {18, 19, 20, 21, 22}
+
+
+def test_duas_lado_a_lado_guarda_a_pagina_da_vez(app, livro):  # noqa: F811
+    """Bug de 22/10/2026 (conferência do livro aberto como o UPDF, Graduale): em
+    "Duas lado a lado", indo à folha 301, a grade "Todas as páginas" marcava de azul
+    a 300 (a outra do par) enquanto a pílula dizia 301. Causa: ao rolar até o par,
+    o acompanhar da rolagem trocava a página da vez pela primeira do par. Agora a
+    página da vez fica a escolhida enquanto o par dela é o que está na tela."""
+    from ui.widgets import paginas_rolando as pr
+    from ui.widgets.todas_as_paginas import ItemDaGrade, TodasAsPaginas
+
+    vista = pr.PaginasRolando()
+    vista.resize(900, 600)
+    vista.show()
+    vista.abrir(str(livro))
+    vista.definir_jeito(mostrar=pr.DUAS, continuo=True)
+    app.processEvents()
+    for indice in (20, 9, 4, 1, 2):       # 20, 4 e 2: a da direita do par; 9 e 1: a da esquerda
+        vista.ir_para(indice)
+        app.processEvents()
+        assert vista.atual == indice, f"foi à {indice + 1} e a página da vez virou a {vista.atual + 1}"
+
+    grade = TodasAsPaginas()
+    grade.mostrar([ItemDaGrade(indice=i, folha=i) for i in range(30)], vista.atual, "", None)
+    marcados = [q.itens[0].indice for q in grade.quadros if q.atual]
+    assert marcados == [2], f"o quadro azul tem de estar na página da vez (3), está em {marcados}"
+    vista.parar()

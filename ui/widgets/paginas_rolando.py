@@ -436,7 +436,12 @@ class PaginasRolando(QScrollArea):
 
     def _acompanhar(self) -> None:
         """Rolando sem parar, a folha mais visível vira a atual (a pílula e as
-        miniaturas acompanham)."""
+        miniaturas acompanham).
+
+        Em "Duas lado a lado" as duas do par estão na mesma altura: se a
+        página da vez já é uma delas, ela continua a da vez (antes virava a
+        primeira do par, e a grade "Todas as páginas" marcava a 300 quando se
+        ia à 301; bug de 22/10/2026, teste em tests/test_livro_aberto.py)."""
         self._pedir_as_visiveis()
         if not self.continuo:
             return
@@ -447,6 +452,8 @@ class PaginasRolando(QScrollArea):
             if ret.top() <= meio <= ret.bottom() + MARGEM:
                 melhor = indice
                 break
+        if melhor is not None and self._linha_de(melhor) == self._linha_de(self.atual):
+            melhor = self.atual
         if melhor is not None and melhor != self.atual:
             self.atual = melhor
             self.folhas.update()
