@@ -97,3 +97,19 @@ def test_na_tela_o_que_fazer(janela, pasta):
     tela.combo_receitas.setCurrentIndex(tela.combo_receitas.findData(perfis.NOME_DE_FABRICA))
     tela._por_receita()
     assert tela.cx_endireitar.isChecked() and janela.projeto.endireitar is True
+
+
+def test_configuracoes_tem_as_medidas_da_impressao(app, pasta):
+    """Item 2.6: a margem da encadernação e o que a impressora não imprime
+    ficam em Configurações e valem na janela "Montar para imprimir"."""
+    import configuracoes
+    from core import impressao as imp
+    from ui.tela_configuracoes import TelaConfiguracoes
+
+    tela = TelaConfiguracoes()
+    assert tela.margem_da_impressao.value() == 10.0
+    assert tela.borda_da_impressora.value() == 3.0
+    tela.borda_da_impressora.setValue(5.0)
+    assert imp.OpcoesDeImpressao.de_dicionario(configuracoes.ler("impressao")).borda_da_impressora_mm == 5.0
+    assert tela.combo_unidade.currentData() == unidades.CM
+    assert tela.combo_nucleos.currentData() == 0

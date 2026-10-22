@@ -103,6 +103,45 @@ class TelaConfiguracoes(QDialog):
         linha_receita.addWidget(self.combo_receita_nova, 1)
         raiz.addLayout(linha_receita)
 
+        # Item 2.6 (CONTROLE MINIMO, provisorio ate o layout): as duas medidas
+        # da encadernacao que dependem da impressora (g11, 14/10/2026: "1 cm a
+        # partir de onde a impressora imprime (1,3 cm do papel)"; "A impressora
+        # ainda come mais uns 3 mm na borda"). Ficam nas escolhas da janela
+        # "Montar para imprimir" (configuracoes.json, chave "impressao").
+        from PySide6.QtWidgets import QDoubleSpinBox
+
+        from core import impressao as imp
+
+        titulo_impressao = QLabel("Impressão")
+        titulo_impressao.setObjectName("titulo")
+        raiz.addWidget(titulo_impressao)
+        opcoes_de_impressao = imp.OpcoesDeImpressao.de_dicionario(configuracoes.ler("impressao"))
+        linha_impressao = QHBoxLayout()
+        linha_impressao.addWidget(QLabel("Margem da encadernação:"))
+        self.margem_da_impressao = QDoubleSpinBox()
+        self.margem_da_impressao.setRange(0.0, 50.0)
+        self.margem_da_impressao.setDecimals(1)
+        self.margem_da_impressao.setSuffix(" mm")
+        self.margem_da_impressao.setValue(opcoes_de_impressao.margem_mm)
+        linha_impressao.addWidget(self.margem_da_impressao)
+        linha_impressao.addWidget(QLabel("A impressora não imprime:"))
+        self.borda_da_impressora = QDoubleSpinBox()
+        self.borda_da_impressora.setRange(0.0, 20.0)
+        self.borda_da_impressora.setDecimals(1)
+        self.borda_da_impressora.setSuffix(" mm da beirada")
+        self.borda_da_impressora.setValue(opcoes_de_impressao.borda_da_impressora_mm)
+        linha_impressao.addWidget(self.borda_da_impressora)
+        raiz.addLayout(linha_impressao)
+
+        def guardar_impressao(_valor=None):
+            atual = imp.OpcoesDeImpressao.de_dicionario(configuracoes.ler("impressao"))
+            atual.margem_mm = float(self.margem_da_impressao.value())
+            atual.borda_da_impressora_mm = float(self.borda_da_impressora.value())
+            configuracoes.escrever("impressao", atual.para_dicionario())
+
+        self.margem_da_impressao.valueChanged.connect(guardar_impressao)
+        self.borda_da_impressora.valueChanged.connect(guardar_impressao)
+
         titulo = QLabel("Atalhos de teclado")
         titulo.setObjectName("titulo")
         raiz.addWidget(titulo)
