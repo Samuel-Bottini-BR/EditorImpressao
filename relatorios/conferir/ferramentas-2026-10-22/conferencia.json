@@ -1,0 +1,319 @@
+{
+ "id": "fr22",
+ "nome": "As 7 ferramentas do ScanTailor (Implementador B)",
+ "trabalho": "fase2-ferramentas-2026-10-22 (itens 2.4, 2.6, 2.10 + 1.6, 2.16, 2.17, 2.18, 2.19)",
+ "origem": "verif-ferramentas-2026-10-22 (conferido no fase2-ferramentas-2026-10-22 f26407c; antes = 9804b98)",
+ "resumo": {
+  "titulo": "As 7 ferramentas: margens iguais, montar para imprimir, duas camadas, núcleos, luz, áreas à mão e receitas",
+  "paragrafos": [
+   "As sete funcionam pelo caminho inteiro e na janela de verdade. Desligadas, o PDF sai igual ao de antes.",
+   "O livreto A4 dobra na ordem certa, com o último caderno menor, e as margens da encadernação ficam onde você pediu. O PDF em duas camadas fica 3 a 4 vezes menor sem diferença a olho. Com vários núcleos fica uns 40 % mais rápido, mas no seu PC com pouca memória ele cai para um só e fica igual.",
+   "O que pesa: tirar o chuvisco no Preto e branco apaga letra miúda já com 15 a 20, antes do aviso (pergunta à parte); apagar todas as áreas achadas de uma página faz o programa achar tudo de novo; a escala personalizada acima de 100 % corta a página (já na Lista de bugs).",
+   "A opção B da \"Tinta com a cor original\" (escurecida), que você pediu como opção separada, ainda não foi feita.",
+   "Testes no GitHub: 2177 passaram, 0 falharam (rodada 39807401594); botões 234 ações, 0 falhas. O teste do último caderno falha no código de antes (17 páginas em branco) e passa no novo."
+  ],
+  "veredito": "PRONTO PARA CONFERIR, com ressalvas (a principal: o chuvisco apaga letra miúda antes do aviso)."
+ },
+ "ressalvas": [
+  "2.17: no Preto e branco, \"Tirar o chuvisco\" com 15 e 20 deixa ilegível a legenda pequena do Escola 35; o aviso só aparece acima de 20.",
+  "2.18: apagando todas as áreas achadas de uma página, o programa detecta tudo de novo ao processar (Marial 7). Era assim antes; toca a decisão P11b.",
+  "2.18: a opção B (escurecida) da \"Tinta com a cor original\" ainda não foi feita (b-8, pendência, não defeito).",
+  "2.6: \"Escala personalizada\" é sobre o tamanho real do scan; 120 % corta a página nas metades A5 (avisa; já na Lista de bugs de 22/10). Mandar para a impressora não testado. \"são 1 cadernos prontos\".",
+  "2.4: a folha de rosto do Opus Majus (35 % maior) também fica fora da conta, não só a tabela dobrável. As margens iguais não resolvem o \"mais margem à esquerda\" do Graduale 223 nem o \"centralizar\" do Horas 14.",
+  "2.16: com pouca memória livre o programa usa 1 trabalhador e fica igual a antes. Medido no PC com outro agente trabalhando em parte do tempo.",
+  "2.10: PDF em duas camadas só aberto no leitor do programa (não no Acrobat).",
+  "Janela: arrastar os quadradinhos da área, a receita de todo livro novo e as medidas em mm na ferramenta de cortar não foram testados; roda do mouse não testada (não funciona sem foco)."
+ ],
+ "quadros": [
+  {
+   "id": "fr-24",
+   "nome": "2.4 Margens iguais em todas as páginas",
+   "explicacao": [
+    "O que você está olhando: livros pequenos feitos com páginas do gabarito, antes (programa de hoje) e depois (caixinha \"Margens iguais em todas as páginas\" marcada, 10/5/10/5 mm, no meio). Caminho: girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → filtro Original → margens iguais.",
+    "Todas as páginas do livro saem do mesmo tamanho, com branco em volta; a página menor fica no meio da folha nova."
+   ],
+   "olhar": "Se alguma coisa impressa ficou de fora e onde a página menor ficou.",
+   "texto": "Graduale, Horas e Palatino: todas do mesmo tamanho, nada some. Graduale 222 (estreita) fica no meio, com uns 4,5 cm de branco dos dois lados. Horas 14: a página vai para o meio, mas a tabela continua deslocada dentro dela (o programa usa a página cortada, não a caixa do conteúdo). No Opus Majus a tabela dobrável fica fora da conta com o aviso \"Página bem maior que as outras\" (como você decidiu), e a folha de rosto (35 % maior) também. Desmarcada, o PDF sai igual ao de antes (12 de 12 somas iguais). Na janela, os cartões da aba dos filtros já mostram a margem.",
+   "selo": "Bom, com ressalva",
+   "ressalva": "A folha de rosto do Opus Majus também ficou de fora da conta (o limite é 25 % maior que a média). Os pedidos de \"mais margem à esquerda\" (Graduale 223) e \"centralizar\" (Horas 14) não ficam resolvidos só com as margens iguais.",
+   "decisao_do_samuel": "\"Ficam as duas\"; \"Sim, a tela mostra igual ao que sai\"",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "fr22/img/24_graduale.jpg",
+     "legenda": "Graduale 221 a 223, antes e depois"
+    },
+    {
+     "src": "fr22/img/24_horas.jpg",
+     "legenda": "Horas 11, 13, 14 e 47, antes e depois"
+    },
+    {
+     "src": "fr22/img/24_palatino.jpg",
+     "legenda": "Palatino (7 páginas), antes e depois"
+    },
+    {
+     "src": "fr22/img/24_opusmajus.jpg",
+     "legenda": "Opus Majus: a tabela dobrável e a folha de rosto ficam fora da conta"
+    },
+    {
+     "src": "fr22/img/janela_24_margens.jpg",
+     "legenda": "Na janela: a caixinha e as quatro margens"
+    },
+    {
+     "src": "fr22/img/janela_24_margens_na_tela_filtro.jpg",
+     "legenda": "Na janela: os cartões dos filtros já com a margem"
+    }
+   ]
+  },
+  {
+   "id": "fr-26",
+   "nome": "2.6 Montar para imprimir (livreto A4) e as duas montagens de cadernos",
+   "explicacao": [
+    "O que você está olhando: 23 páginas de miolo do Marial (11 a 33 do PDF), pelo caminho girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → Original, montadas para imprimir. Cada metade de cada folha tem em vermelho a página do livro que eu reconheci.",
+    "Eu conferi a dobra sem usar a conta do programa: empilhei as folhas de cada caderno, dobrei na conta e li a ordem."
+   ],
+   "olhar": "A ordem depois de dobrar, o último caderno e as margens.",
+   "texto": "Livreto A4 de fábrica: 6 folhas, um caderno de 20 e um de 4 (o último menor, como você pediu), leitura 1 a 23 e uma branca no fim: certa. Margens medidas: 12,7 mm do lado de fora, 9,5 mm na costura, 16 a 17 mm em cima e embaixo. Lado esquerdo 90 % + página 5 a 80 %, cadernos de 8 e página inteira: todos certos. O \"Montar cadernos no tamanho do scan\" de sempre agora também tem o último caderno menor (antes eram 17 páginas em branco, agora 1). Pela janela: gravei o arquivo de impressão do Graduale e a dobra deu certo.",
+   "selo": "Bom, com ressalva",
+   "ressalva": "\"Escala personalizada 120 %\" é 120 % do tamanho real do scan (24 x 33 cm), e cada metade A5 mostra só um pedaço da página (o programa avisa em todas; o defeito já está na Lista de bugs). Mandar para a impressora de verdade não testei. Texto: \"são 1 cadernos prontos\".",
+   "decisao_do_samuel": "imp-1 a imp-6; \"Deixar os dois\"; página deitada com o alto à esquerda",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "fr22/img/26_livreto_fabrica.jpg",
+     "legenda": "Livreto A4 de fábrica: a dobra dá 1 a 23"
+    },
+    {
+     "src": "fr22/img/26_livreto_esq90_p5_80.jpg",
+     "legenda": "Esquerda 90 % e a página 5 com 80 %"
+    },
+    {
+     "src": "fr22/img/26_cadernos_tamanho_do_scan_novo.jpg",
+     "legenda": "Montar cadernos no tamanho do scan, agora: último caderno menor"
+    },
+    {
+     "src": "fr22/img/26_cadernos_tamanho_do_scan_antes.jpg",
+     "legenda": "O mesmo, antes: 3 folhas e meia em branco"
+    },
+    {
+     "src": "fr22/img/26_livreto_escala120.jpg",
+     "legenda": "Escala personalizada 120 %: só o meio da página cabe"
+    },
+    {
+     "src": "fr22/img/janela_26_montar_para_imprimir.jpg",
+     "legenda": "Na janela: Montar para imprimir"
+    },
+    {
+     "src": "fr22/img/janela_26_gravado.jpg",
+     "legenda": "Na janela: gravado, com as instruções"
+    },
+    {
+     "src": "fr22/img/26_janela_graduale.jpg",
+     "legenda": "O arquivo gravado pela janela: a dobra dá certo"
+    }
+   ]
+  },
+  {
+   "id": "fr-210",
+   "nome": "2.10 + 1.6 PDF em duas camadas",
+   "explicacao": [
+    "O que você está olhando: a mesma página no PDF de hoje e no PDF em duas camadas, inteira e ampliada. Caminho: girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → Preto e branco ou Melhorar → caixinha \"Gravar em duas camadas\" (na janela de processar)."
+   ],
+   "olhar": "Se a página em duas camadas ficou diferente: letra, cor, gravura.",
+   "texto": "A olho não achei diferença em nenhuma das 6 páginas (Horas 11 e 13, Escola 7, Palatino 5, Graduale 221, Opus Majus 20). O arquivo fica bem menor: Preto e branco 29 → 8 MB, Melhorar 51 → 12 MB; a Horas 11 no Preto e branco 24 → 4 MB por página. Ponto a ponto, a maior diferença é pequena (nenhum ponto passa de 42 em 255).",
+   "selo": "Bom",
+   "ressalva": "A camada de cima vai com uma perda pequena (JPEG). Não abri o PDF em duas camadas no Acrobat nem no navegador, só no leitor do programa.",
+   "decisao_do_samuel": "\"Eu quero ter a opção 1.6, mas eu quero poder deixar como está também\"",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "fr22/img/210_horas_p011_preto_e_branco.jpg",
+     "legenda": "Horas 11, Preto e branco: uma x duas camadas"
+    },
+    {
+     "src": "fr22/img/210_horas_p013_melhorar.jpg",
+     "legenda": "Horas 13, Melhorar"
+    },
+    {
+     "src": "fr22/img/210_escola_p007_melhorar.jpg",
+     "legenda": "Escola 7, Melhorar"
+    },
+    {
+     "src": "fr22/img/janela_210_duas_camadas.jpg",
+     "legenda": "Na janela: a caixinha marcada"
+    }
+   ]
+  },
+  {
+   "id": "fr-216",
+   "nome": "2.16 Todos os núcleos",
+   "explicacao": [
+    "O que você está olhando: quanto tempo o programa leva para fazer 23 páginas do Marial em Preto e branco, no seu PC, antes e depois, alternado, duas vezes cada."
+   ],
+   "olhar": "O tempo e se o PDF muda.",
+   "texto": "O PDF sai idêntico (as 23 páginas) com uma página por vez e com várias. Com 3 ao mesmo tempo ficou uns 40 % mais rápido (processar 89 a 102 s → 58 a 59 s; abrir 7,8 → 5,0 s), como no GitHub. Mas neste PC, com pouca memória livre, o programa escolhe sozinho só 1 página por vez e fica igual a antes (96 a 98 s).",
+   "selo": "Bom, com ressalva",
+   "ressalva": "Com a memória do seu PC ocupada (jogo e outros programas), o ganho não aparece. A medida que vale para a fase é a da gerente.",
+   "decisao_do_samuel": "",
+   "bate_com_a_decisao": "",
+   "imgs": [
+    {
+     "src": "fr22/img/janela_216_219_configuracoes.jpg",
+     "legenda": "Configurações: Velocidade, Medidas e receitas, Impressão"
+    }
+   ]
+  },
+  {
+   "id": "fr-217",
+   "nome": "2.17 Igualar a luz, suavizar e tirar o chuvisco",
+   "explicacao": [
+    "O que você está olhando: a mesma página com cada opção ligada. Caminho: girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → filtro → a opção (em todas as páginas)."
+   ],
+   "olhar": "Papel, tinta e letra miúda.",
+   "texto": "Igualar a luz tira a sombra do canto (Marial 7) e no Melhorar deixa a tinta lavada no Graduale 221 e no Horas 47 (o aviso aparece na janela, como você pediu). Suavizar alisa a borda da letra no Preto e branco. Tirar o chuvisco limpa os pontinhos do verso, mas engrossa a letra; no Preto e branco, com 15 e 20 a legenda pequena do Escola 35 (\"Adão e Eva expulsos do Paraíso\") fica ilegível, e o aviso só aparece acima de 20 (pergunta à parte).",
+   "selo": "Bom, com ressalva",
+   "ressalva": "A letra miúda some com o chuvisco antes do aviso aparecer.",
+   "decisao_do_samuel": "\"Igualar a luz\" em todos os filtros com aviso; \"Tirar o chuvisco\" até 100 com aviso a partir de 20",
+   "bate_com_a_decisao": "sim",
+   "imgs": [
+    {
+     "src": "fr22/img/217_marial_p007_melhorar.jpg",
+     "legenda": "Marial 7, Melhorar"
+    },
+    {
+     "src": "fr22/img/217_graduale_p221_melhorar.jpg",
+     "legenda": "Graduale 221, Melhorar: igualar deixa a tinta lavada"
+    },
+    {
+     "src": "fr22/img/217_escola_p035_legenda.jpg",
+     "legenda": "Escola 35: a legenda some com o chuvisco no Preto e branco"
+    },
+    {
+     "src": "fr22/img/janela_217_avisos.jpg",
+     "legenda": "Na janela: os dois avisos"
+    }
+   ]
+  },
+  {
+   "id": "fr-218",
+   "nome": "2.18 Mudar à mão as áreas de gravura",
+   "explicacao": [
+    "O que você está olhando: a página com a marcação que o programa acha sozinho e uma área mudada à mão por cima. Caminho: girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → Preto e branco → área à mão."
+   ],
+   "olhar": "Se a área faz o que o nome diz e não mexe fora dela.",
+   "texto": "Horas 13: título como \"Tinta com a cor original, papel branco\" sai vermelho e azul no papel branco; \"Tinta preta, fundo original\" sai preto no creme. Escola 7: \"Pintar por cima\" apaga o endereço do blog (branco ou na cor escolhida). Marial 7: apagar ou pintar de branco a área da mancha tira a mancha. Na janela: \"Mostrar as áreas achadas\" contorna de laranja, Ctrl+C e Ctrl+V cola, Delete apaga.",
+   "selo": "Bom, com ressalva",
+   "ressalva": "Se a pessoa apagar TODAS as áreas achadas de uma página, o programa acha tudo de novo ao processar e a página sai como se nada tivesse sido apagado (Marial 7; era assim antes também). Não testei arrastar os quadradinhos pela janela. A opção B da \"Tinta com a cor\" (escurecida), que você pediu, ainda não foi feita (pendência).",
+   "decisao_do_samuel": "P11 (a), P11b, TINTA3; b-8 \"As duas: A e B como opções separadas\" (B pendente)",
+   "bate_com_a_decisao": "em parte",
+   "imgs": [
+    {
+     "src": "fr22/img/218_horas_p013.jpg",
+     "legenda": "Horas 13: tinta com a cor, tinta preta, pintar por cima"
+    },
+    {
+     "src": "fr22/img/218_escola_p007.jpg",
+     "legenda": "Escola 7: pintar por cima, branco e cinza"
+    },
+    {
+     "src": "fr22/img/218_marial_p007_mancha.jpg",
+     "legenda": "Marial 7: a mancha apagada, pintada de branco e o retângulo à mão"
+    },
+    {
+     "src": "fr22/img/218_marial_p007.jpg",
+     "legenda": "Marial 7: apagando todas as áreas, a mancha volta"
+    },
+    {
+     "src": "fr22/img/janela_218_area_colada.jpg",
+     "legenda": "Na janela: a área copiada e colada"
+    }
+   ]
+  },
+  {
+   "id": "fr-219",
+   "nome": "2.19 Medidas e receitas",
+   "explicacao": [
+    "O que você está olhando: as Configurações novas e uma receita guardada num livro e posta noutro, na janela de verdade."
+   ],
+   "olhar": "Se a receita leva as opções.",
+   "texto": "Guardei \"pb com margens\" (Preto e branco + margens iguais) no Livro de Horas; num livro novo (Palatino), escolhi a receita e \"pôr neste livro\": o livro ficou em Preto e branco com margens iguais. \"Medidas em\" troca entre centímetros e milímetros. O tema já estava no programa.",
+   "selo": "Bom",
+   "ressalva": "Não testei a \"Receita de todo livro novo\" nem as medidas em mm na ferramenta de cortar.",
+   "decisao_do_samuel": "",
+   "bate_com_a_decisao": "",
+   "imgs": [
+    {
+     "src": "fr22/img/janela_216_219_configuracoes.jpg",
+     "legenda": "Configurações"
+    },
+    {
+     "src": "fr22/img/janela_219_receita_posta.jpg",
+     "legenda": "A receita posta num livro novo"
+    }
+   ]
+  }
+ ],
+ "pergunta": {
+  "id": "fr22",
+  "titulo": "As 7 ferramentas do ScanTailor: o que você decide?",
+  "explicacao": [
+   "O que você está escolhendo: se este trabalho entra no programa como está.",
+   "Cada quadro mostra uma ferramenta. O que mais pesa: o chuvisco apaga letra miúda antes do aviso (pergunta à parte) e a opção B da tinta com a cor ainda falta."
+  ],
+  "opcoes": [
+   "Aprovado",
+   "Melhorar",
+   "Ainda não entendi"
+  ]
+ },
+ "perguntas": [
+  {
+   "id": "fr-chuvisco",
+   "titulo": "\"Tirar o chuvisco\" no Preto e branco apaga letra miúda antes do aviso aparecer. O que fazer?",
+   "explicacao": [
+    "O que você está escolhendo: quando o programa avisa sobre o \"Tirar o chuvisco\".",
+    "Hoje o aviso aparece acima de 20 e diz que os melhores valores ficam entre 10 e 20. No Preto e branco, a legenda pequena do Escola 35 (\"Adão e Eva expulsos do Paraíso\", letra de 1,5 mm) começa a falhar com 10 e fica ilegível com 15 e 20. No Boécio 7, com 10, os pontinhos do verso saem e a letra fica boa. Caminho das fotos: girar → não dividiu → endireitada → cortada → Preto e branco → Tirar o chuvisco N."
+   ],
+   "opcoes": [
+    {
+     "id": "deixar",
+     "nome": "Deixar como está (aviso só acima de 20)",
+     "texto": "Bom: nada muda. Ruim: de 10 a 20 a letra miúda pode sumir sem aviso.",
+     "imgs": [
+      {
+       "src": "fr22/img/217_pergunta_chuvisco_q.jpg",
+       "legenda": "Escola 35: 0, 10, 15 e 20, a legenda ampliada"
+      }
+     ]
+    },
+    {
+     "id": "avisar-sempre-pb",
+     "nome": "No Preto e branco, avisar desde o primeiro número",
+     "texto": "O aviso diria \"pode apagar letra muito pequena; confira as legendas\" sempre que a opção for usada no Preto e branco. Bom: quem liga sabe do risco. Ruim: o aviso aparece toda vez.",
+     "sugestao_do_verificador": true,
+     "imgs": [
+      {
+       "src": "fr22/img/217_pergunta_chuvisco_q.jpg",
+       "legenda": "Escola 35: a legenda já falha com 10"
+      },
+      {
+       "src": "fr22/img/217_pergunta_chuvisco_qb.jpg",
+       "legenda": "Boécio 7: com 10 a letra fica boa"
+      }
+     ]
+    },
+    {
+     "id": "avisar-10-pb",
+     "nome": "No Preto e branco, avisar a partir de 10 (e 20 nos outros filtros)",
+     "texto": "Bom: avisa onde começou a estragar nestas páginas. Ruim: o número 10 vem de duas páginas só.",
+     "imgs": [
+      {
+       "src": "fr22/img/217_pergunta_chuvisco_qb.jpg",
+       "legenda": "Boécio 7: 0, 10, 15 e 20"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

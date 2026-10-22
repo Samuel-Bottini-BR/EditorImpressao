@@ -1,3 +1,5 @@
+**TERMINADO em 22/10/2026: PRONTO PARA CONFERIR, com ressalvas.** Nunca aprovado. Nenhuma rodada do GitHub disparada (o código não mudou). Nenhum processo meu ficou rodando.
+
 # Conferência das 7 ferramentas do Implementador B (2.4, 2.6, 2.10+1.6, 2.16, 2.17, 2.18, 2.19) — verificador, 22/10/2026 — ONDE PAREI
 
 Código conferido: ramo `fase2-ferramentas-2026-10-22` em `f26407c` (o último código é `7d13a5f`; `f26407c` só muda o
@@ -28,7 +30,7 @@ Worktrees (com junções `modelos` e `gabarito\paginas`; **não apagar com Remov
     ferramenta nova "ajustar").
   - Ressalva: fora o último caderno, não houve conserto de defeito neste ramo; os outros testes são de ferramenta nova
     (falhar no antigo é esperado, não prova conserto).
-- [ ] 2. Fotos pelo caminho inteiro, item por item (uma linha por página). Script `scripts/caminho.py` (Projeto
+- [x] 2. Fotos pelo caminho inteiro, item por item (uma linha por página). Script `scripts/caminho.py` (Projeto
   novo → `analisar_projeto` → `processar`), fotos `scripts/fotos.py`, rodada `scripts/rodada1.sh`.
 
 ### 2.4 Margens iguais (olho; todas as fotos abertas). Caminho: girar (automático) → não dividiu (uma página por
@@ -198,7 +200,7 @@ memória: 900 MB por trabalhador + 1,5 GB de reserva). Para ver o ganho forcei 3
     errado com 1). "mandar para a impressora" **não testado** (sem papel; o Samuel testa).
 - [x] 5. Velocidade antes x depois alternados: ver 2.16 acima (máquina). Outro agente começou a rodar scripts às
   16:16, depois das minhas medidas (15:51 a 16:00); durante a rodada 1 havia outro agente compilando e tirando prints.
-- [ ] 6. conferencia.json
+- [x] 6. conferencia.json (id `fr22`, imagens `fr22/img/...`, pergunta extra em `perguntas`) e relatório nos três formatos (`relatorio-verificador.md/.html/.pdf`).
 
 ## Perguntas para o Samuel
 
