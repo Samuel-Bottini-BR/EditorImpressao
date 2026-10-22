@@ -96,6 +96,17 @@ def main():
         i, r = max(achadas, key=lambda t: area(t[1]))
         return ez.com_a_area_trocada(sel, i, ez.pintada_de_branco(r))
 
+    def gravura_achada(acao):
+        def f(sel):
+            idx = [i for i, r in enumerate(sel.regioes) if r.origem in (AUTOMATICO, REDE) and r.tipo == "gravura"]
+            if not idx:
+                return None
+            i = idx[0]
+            if acao == "apagar":
+                return ez.sem_a_area(sel, i)
+            return ez.com_a_area_trocada(sel, i, ez.pintada_de_branco(sel.regioes[i]))
+        return f
+
     titulo = (0.12, 0.13, 0.76, 0.27)
     casos = [
         ("horas_p013", "hoje", None),
@@ -108,11 +119,14 @@ def main():
         ("marial_p007", "hoje", None),
         ("marial_p007", "sem-as-achadas", sem_achadas),
         ("marial_p007", "maior-achada-branca", maior_achada_branca),
+        ("marial_p007x", "mancha-apagada", gravura_achada("apagar")),
+        ("marial_p007x", "mancha-pintada-de-branco", gravura_achada("branco")),
+        ("marial_p007x", "mancha-pintar-por-cima", com(ret(PINTAR, 0.0, 0.0, 0.22, 0.23))),
     ]
     for pid, rotulo, mexer in casos:
         if o.so and o.so not in pid:
             continue
-        info = caso(raiz, pid, PRETO_E_BRANCO, pasta, rotulo, mexer)
+        info = caso(raiz, pid.rstrip("x"), PRETO_E_BRANCO, pasta, rotulo, mexer)
         print(pid, rotulo, json.dumps(info, ensure_ascii=False)[:600], flush=True)
 
     # mover / mudar o tamanho / copiar (as contas da ferramenta "Mover e mudar o tamanho da área")

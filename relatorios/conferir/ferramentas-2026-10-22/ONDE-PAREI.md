@@ -99,7 +99,32 @@ de 6 páginas. Fotos `img/217_<página>_<pb|melhorar|original>.jpg` e `img/217_e
 
 - Observação (2.4): as margens são branco puro; no filtro Original o papel creme fica com uma moldura branca em volta
   (como o ScanTailor faz).
-- [ ] 3. 2.6: PDF de impressão de verdade + dobra simulada
+- [x] 3. 2.6: PDF de impressão de verdade + dobra simulada (máquina + olho). Livro: **Marial, páginas 11 a 33 do PDF
+  (23 páginas de miolo, sem capa)**, pelo caminho inteiro (girar → não dividiu → endireitada → cortada → Original) e
+  depois `core.impressao.montar_para_impressao` (o mesmo do botão "gravar o arquivo para imprimir"). A dobra é
+  conferida **sem o código do programa** (`scripts/impressao26.py conferir`): cada metade de cada lado é reconhecida
+  comparando com as páginas do livro, e as folhas de cada caderno são empilhadas e dobradas na conta (frente e verso
+  virando na borda curta). Fotos `img/26_*.jpg` (cada metade com o número achado em vermelho), todas abertas.
+  - **Livreto A4 de fábrica**: 6 folhas, cadernos de 20 + 4 (o último menor, imp-4); leitura depois de dobrar
+    **1, 2, ..., 23 e 1 branca no fim**: certa. Margens medidas: ≥ 12,7 mm do lado de fora (pedido 13), ≥ 9,5 mm na
+    costura (pedido 10), 16,5 a 17 mm em cima e embaixo (a medida é a 0,6 mm por ponto). A página 20 (mais estreita)
+    fica no meio da metade dela.
+  - **Esquerda 90 % + página 5 com 80 %**: dobra certa; as páginas da esquerda menores, a página 5 menor ainda, as da
+    direita do tamanho de fábrica (exceção vale para uma página só, imp-1).
+  - **Cadernos de 8**: 3 cadernos (8, 8, 8), dobra certa, 1 branca.
+  - **Sem as margens**: mesma ordem das folhas do de fábrica (conferido lado a lado, `img/26_sem_margens_x_fabrica.jpg`);
+    a minha conta de reconhecer erra 3 páginas porque, sem margem, a página encosta na dobra — não é defeito do programa.
+  - **Página inteira A4 em pé**: 23 páginas na ordem, 12 folhas.
+  - **"Montar cadernos no tamanho do scan" (o de sempre)**: código novo **certo, 2 cadernos (20 + 4), 1 branca**;
+    código antigo: **20 lados, 17 páginas em branco** (3 folhas e meia vazias) — é o defeito consertado. A minha conta
+    acusa "errada" no antigo só porque calcula o último caderno do jeito novo; olhando a foto, a ordem antiga também
+    dobra certo (`img/26_cadernos_tamanho_do_scan_antes.jpg`).
+  - **Escala personalizada 120 %** (`img/26_livreto_escala120.jpg`): é 120 % do **tamanho real** do scan (Marial tem
+    24 x 33 cm), então cada metade A5 mostra só um pedaço do meio da página, e o resto é cortado. O programa avisa em
+    todas as páginas ("a margem ficou abaixo de 1 cm - em cima -9,3 cm ..."). É o defeito já na Lista de bugs
+    (22/10, "Imprimir com escala acima de 100% corta..."). Para "aumentar" depois do Ajustar (imp-2) o caminho é a
+    escala de cada lado; o nome "Escala personalizada" não diz que é sobre o tamanho real. Ressalva de tela.
+  - Imprimir direto: **não testado na impressora de verdade** (o Samuel disse que testa na conferência).
 - [ ] 4. Janela de verdade (fora da tela, WM_CLOSE)
 - [ ] 5. Velocidade antes x depois alternados
 - [ ] 6. conferencia.json
