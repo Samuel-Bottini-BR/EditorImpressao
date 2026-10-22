@@ -51,3 +51,8 @@
 
 ## Perguntas para o Samuel
 (nenhuma ainda)
+
+## GitHub (22/10)
+- 39843764387 (este ramo, `edc6143`): success; teste_botoes 216 ações, 0 falhas; erros.log vazio.
+- 39843769308 (`layout-antes-de-processar-2026-10-22`, `138e425`): success; teste_botoes 228 ações, 0 falhas; erros.log vazio.
+- **Parado aqui.** Os três itens PRONTOS PARA CONFERIR. Nenhuma pergunta aberta para o Samuel.
