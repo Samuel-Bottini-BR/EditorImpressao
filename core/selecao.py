@@ -38,13 +38,28 @@ LETRA = "letra"         # texto e traco: contraste e nitidez, sem realce de fund
 PAPEL = "papel"         # fundo: pode ir a branco sem pena
 FORA = "fora"           # nao entra no resultado (sombra da lombada, borda do scanner)
 
-TIPOS = (GRAVURA, LETRA, PAPEL, FORA)
+# Item 2.18 (decisão do Samuel P11 (a), 05/10/2026: "Trazer agora 'Pintar por
+# cima' e 'Tinta com a cor original, papel branco', mais copiar, colar e mover
+# zona"; TINTA3: "Tinta preta, fundo original" como opção). Valem POR CIMA do
+# filtro da página, dentro da área (core/editar_zonas.aplicar_por_cima), como
+# as "fill zones" do ScanTailor, que vêm por último na saída dele. Projeto de
+# antes não tem nenhuma; programa de antes que abrir um projeto com elas ignora
+# a área (tipo desconhecido não é válido).
+PINTAR = "pintar"               # pinta a área inteira com uma cor (Regiao.cor)
+TINTA_COR = "tinta_cor"         # a tinta com a cor original, o papel em branco
+TINTA_PRETA = "tinta_preta"     # a tinta em preto, o fundo como no original
+
+TIPOS = (GRAVURA, LETRA, PAPEL, FORA, PINTAR, TINTA_COR, TINTA_PRETA)
+TIPOS_POR_CIMA = (PINTAR, TINTA_COR, TINTA_PRETA)
 
 NOMES_AMIGAVEIS = {
     GRAVURA: "Gravura ou foto",
     LETRA: "Letra e traço",
     PAPEL: "Papel",
     FORA: "Fora da página",
+    PINTAR: "Pintar por cima",
+    TINTA_COR: "Tinta com a cor original, papel branco",
+    TINTA_PRETA: "Tinta preta, fundo original",
 }
 
 # --- de que jeito ela foi desenhada -----------------------------------------
@@ -105,6 +120,10 @@ class Regiao:
 
     # suavizacao da borda, em fracao da menor dimensao. Zero e corte seco.
     suavidade: float = 0.0
+
+    # Item 2.18: a cor do "Pintar por cima" ("#rrggbb"); vazio = branco.
+    # Campo novo e opcional (projeto antigo abre igual: padrao vazio).
+    cor: str = ""
 
     def valida(self) -> bool:
         """Tipo e forma reconhecidos, e pontos suficientes para desenhar a forma?"""

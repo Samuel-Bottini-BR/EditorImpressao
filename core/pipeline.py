@@ -51,7 +51,7 @@ from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
-from core import luz_scantailor, margens_scantailor, nucleos
+from core import editar_zonas, luz_scantailor, margens_scantailor, nucleos
 from core.pdf_io import (
     DPI_PREVIA,
     dpi_real_da_pagina,
@@ -1813,6 +1813,18 @@ def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndar
     para caber dentro do "suavizar nesta pagina" do item 2.17. A conta e a
     mesma de antes, linha por linha."""
     selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
+    saida, monocromatica = _filtro_da_pagina(projeto, pagina, img, selecao, dpi, dpi_do_scan)
+    # Item 2.18 (P11 (a) e TINTA3, 05/10/2026): "Pintar por cima", "Tinta com
+    # a cor original, papel branco" e "Tinta preta, fundo original" valem POR
+    # CIMA do filtro, so dentro da area (core.editar_zonas). Sem nenhuma
+    # dessas areas: o mesmo resultado, o mesmo objeto.
+    return editar_zonas.aplicar_por_cima(img, saida, monocromatica, selecao,
+                                         pagina.forca_preto, pagina.algoritmo_preto_branco)
+
+
+def _filtro_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
+                      dpi: float | None, dpi_do_scan: float | None) -> tuple[np.ndarray, bool]:
+    """O filtro da pagina com a marcacao (o corpo de sempre do _filtrar)."""
     # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
     pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)
     if pagina.filtro == PRETO_E_BRANCO:

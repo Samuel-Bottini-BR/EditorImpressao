@@ -921,15 +921,23 @@ class PainelMarcarComo(Bloco):
         _esvaziar(self.dentro)
 
     def _montar(self) -> None:
-        """(Re)desenha os três botões de tipo, destacando o escolhido."""
-        from core.selecao import GRAVURA, LETRA, PAPEL
+        """(Re)desenha os botões de tipo, destacando o escolhido.
+
+        Item 2.18 (P11 (a) e TINTA3 do Samuel, 05/10/2026): mais três, que
+        valem POR CIMA do filtro dentro da área - "pintar por cima" (com a cor
+        do botão "cor de pintar..."), "tinta com a cor, papel branco" e "tinta
+        preta, fundo original". CONTROLE MÍNIMO, provisório até o layout."""
+        from core.selecao import GRAVURA, LETRA, PAPEL, PINTAR, TINTA_COR, TINTA_PRETA
         from ui.widgets.editor_selecao import CORES_BORDA
 
         self.limpar()
         self.botoes = {}
         for tipo, texto in ((GRAVURA, "gravura ou foto"),
                             (LETRA, "letra e traço"),
-                            (PAPEL, "papel")):
+                            (PAPEL, "papel"),
+                            (PINTAR, "pintar por cima"),
+                            (TINTA_COR, "tinta com a cor, papel branco"),
+                            (TINTA_PRETA, "tinta preta, fundo original")):
             botao = botao_de_lista(texto, escolhido=(tipo == (self.tipo or GRAVURA)))
             # a cor com que a marcação aparece na página (pista visual)
             botao.setIcon(_quadradinho(CORES_BORDA[tipo]))
@@ -938,6 +946,28 @@ class PainelMarcarComo(Bloco):
             self.dentro.addWidget(botao)
             self.botoes[tipo] = botao
         self.tipo = self.tipo or GRAVURA
+        # item 2.18: a cor do "pintar por cima" (abre a caixa de cores do Qt)
+        self.botao_cor = botao_de_lista(f"cor de pintar: {self.cor}", escolhido=False)
+        self.botao_cor.setIcon(_quadradinho(QColor(self.cor)))
+        self.botao_cor.setIconSize(QSize(12, 12))
+        self.botao_cor.clicked.connect(self._escolher_cor)
+        self.dentro.addWidget(self.botao_cor)
+
+    cor_escolhida = Signal(str)
+    cor = "#ffffff"
+
+    def _escolher_cor(self) -> None:
+        """Abre a caixa de cores; a cor vale para o próximo "pintar por cima"."""
+        from PySide6.QtWidgets import QColorDialog
+
+        nova = QColorDialog.getColor(QColor(self.cor), self, "Cor para pintar por cima")
+        if nova.isValid():
+            self.definir_cor(nova.name())
+
+    def definir_cor(self, cor: str) -> None:
+        self.cor = cor or "#ffffff"
+        self._montar()
+        self.cor_escolhida.emit(self.cor)
 
     def definir_tipo(self, tipo: str) -> None:
         """Troca o tipo escolhido (gravura/letra/papel) e emite `escolheu`."""

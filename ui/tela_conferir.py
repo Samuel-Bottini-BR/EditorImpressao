@@ -738,6 +738,8 @@ class TelaConferir(QWidget):
         painel = self.paineis
         painel.para_revisar.ir_para.connect(self.ir_para_pagina)
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
+        painel.marcar_como.cor_escolhida.connect(              # item 2.18
+            lambda cor: self.editor_selecao.definir_cor_de_pintar(cor))
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
         painel.filtro_da_pagina.medidor_mudou.connect(self._medidor_soltou)
@@ -1595,6 +1597,38 @@ class TelaConferir(QWidget):
         self.linha_pedaco.setVisible(False)
         fora.addWidget(self.linha_pedaco)
 
+        # Item 2.18 (rodadas 4 e 5 do "Para revisar"; P11 (a) e P11b do
+        # Samuel, 05/10/2026). CONTROLE MINIMO, provisorio ate o layout
+        # (relatorios/fase2-novas/ONDE-PAREI.md): mostrar as areas achadas
+        # delineadas (nas paginas do "Para revisar" ja vem ligado) e, para a
+        # area escolhida com a ferramenta "Mover e mudar o tamanho da area"
+        # (tecla A), apagar, pintar de branco, copiar e colar.
+        linha_area = QHBoxLayout()
+        rotulo_area = QLabel("Área:")
+        rotulo_area.setMinimumWidth(90)
+        linha_area.addWidget(rotulo_area)
+        self.caixa_mostrar_achadas = QCheckBox("Mostrar as áreas achadas")
+        estilo.estilizar(self.caixa_mostrar_achadas, lambda: estilo_da_caixinha_com_quadrado(15))
+        self.caixa_mostrar_achadas.setToolTip(
+            "Desenha em laranja o contorno das áreas que o programa achou sozinho. "
+            "Nas páginas do \"Para revisar\" elas já aparecem.")
+        self.caixa_mostrar_achadas.toggled.connect(
+            lambda marcada: self._mostrar_as_achadas(bool(marcada)))
+        linha_area.addWidget(self.caixa_mostrar_achadas)
+        self.botao_apagar_area = _botao("apagar a área", linha_area,
+                                        lambda: self._mexer_na_area("apagar"))
+        self.botao_branco_area = _botao("pintar de branco", linha_area,
+                                        lambda: self._mexer_na_area("branco"))
+        self.botao_copiar_area = _botao("copiar", linha_area,
+                                        lambda: self._mexer_na_area("copiar"))
+        self.botao_colar_area = _botao("colar", linha_area,
+                                       lambda: self._mexer_na_area("colar"))
+        for botao in (self.botao_apagar_area, self.botao_branco_area, self.botao_copiar_area):
+            botao.setToolTip("Escolha a área antes, com a ferramenta \"Mover e mudar o "
+                             "tamanho da área\" (tecla A).")
+        linha_area.addStretch()
+        fora.addLayout(linha_area)
+
         self.aviso_marcacao = QLabel("")
         self.aviso_marcacao.setObjectName("dica")
         fora.addWidget(self.aviso_marcacao)
@@ -1608,6 +1642,28 @@ class TelaConferir(QWidget):
         self.editor_selecao.definir_tipo(tipo)
         self.paineis.marcar_como.tipo = tipo
         self.paineis.marcar_como._montar()
+
+    def _mostrar_as_achadas(self, mostrar: bool) -> None:
+        """Item 2.18: delinear as areas achadas pela maquina (a caixinha), ou
+        sempre nas paginas do "Para revisar"."""
+        pagina = self._pagina_marcada()
+        self.editor_selecao.definir_mostrar_achadas(
+            mostrar or bool(pagina is not None and pagina.precisa_revisao))
+
+    @protegido
+    def _mexer_na_area(self, acao: str) -> None:
+        """Item 2.18: apagar, pintar de branco, copiar ou colar a area escolhida
+        (a marcacao muda pelo mesmo caminho de sempre: _selecao_mudou)."""
+        editor = self.editor_selecao
+        feito = {"apagar": editor.apagar_area_escolhida,
+                 "branco": editor.pintar_de_branco_area_escolhida,
+                 "copiar": editor.copiar_area_escolhida,
+                 "colar": editor.colar}[acao]()
+        if not feito:
+            self._mostrar_aviso_da_marcacao(
+                "Nada copiado ainda." if acao == "colar" else
+                "Escolha a área antes: ferramenta \"Mover e mudar o tamanho da área\" (tecla A), "
+                "e clique nela.")
 
     def _escolher_operacao(self, operacao: str) -> None:
         """Somar ou tirar. Quem mostra o estado agora e a barra de opcoes."""
@@ -2446,6 +2502,7 @@ class TelaConferir(QWidget):
         selecao = pagina.obter_selecao()
 
         self.editor_selecao.definir_selecao(selecao)
+        self._mostrar_as_achadas(self.caixa_mostrar_achadas.isChecked())   # item 2.18
         self._mostrar_forma_da_pagina(pagina)      # item 1.2
         self._mostrar_aviso_da_marcacao(
             selecao.resumo_em_portugues() if not selecao.vazia
