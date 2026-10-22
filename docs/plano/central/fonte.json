@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T00:40:00Z",
+        "texto": "Nova conferência: as três melhorias do layout (quadro azul, \"Antes de processar\", miniaturas lembradas), aba Conferência."
+      },
+      {
         "em": "2026-10-23T00:10:00Z",
         "texto": "O desentortar (2.12) foi refeito do jeito que você escolheu. Três perguntas novas para você, com fotos (aba do desentortar)."
       },
@@ -736,32 +740,32 @@
       "titulo": "Janela \"Antes de processar\" mais clara e menor",
       "item": "Layout",
       "fase": "4",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Você pediu: \"ficou meio embolado, deve ficar mais claro e não tão grande.\"",
-      "situacao": "Pronto pelo agente de layout (22/10): janela menor (ocupava 80% da altura numa tela pequena, agora 61%), a frase em duas linhas, uma fila só de botões. Nenhum controle saiu. Testes no GitHub passaram.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas.",
       "selos": {},
       "fotos": [],
       "testar": [],
-      "falta": "O verificador, depois das 7 ferramentas, e depois a sua conferência.",
+      "falta": "A sua resposta na aba Conferência (melhorias do layout). Ressalva: o campo \"Mostrar\" corta o motivo mais comprido; vai para o agente de layout.",
       "ramo": "layout-antes-de-processar-2026-10-22",
       "commit": "138e425",
-      "mudouEm": "2026-10-22T21:30:00Z"
+      "mudouEm": "2026-10-23T00:40:00Z"
     },
     {
       "id": "miniaturas-lembradas",
       "titulo": "Lembrar as miniaturas de um livro para o outro",
       "item": "Layout",
       "fase": "4",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Lugar, abertas ou fechadas e em pares: o programa lembra para todos os livros.",
-      "situacao": "Pronto pelo agente de layout (22/10): o lugar das miniaturas, abertas ou fechadas e em pares ficam guardados de um livro para o outro. Testes no GitHub passaram.",
+      "situacao": "Conferido pelo verificador (22/10): pronto para você conferir, com ressalvas.",
       "selos": {},
       "fotos": [],
       "testar": [],
-      "falta": "O verificador, depois das 7 ferramentas, e depois a sua conferência.",
+      "falta": "A sua resposta na aba Conferência (melhorias do layout).",
       "ramo": "layout-etapas4a7-2026-10-19",
       "commit": "edc6143",
-      "mudouEm": "2026-10-22T21:30:00Z"
+      "mudouEm": "2026-10-23T00:40:00Z"
     }
   ],
   "agentes": [
@@ -789,11 +793,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Conferir as três melhorias do layout (quadro azul, \"Antes de processar\", miniaturas lembradas)",
-      "ultimo": "Entregou as 7 ferramentas (aba Conferência) e começou as três melhorias do layout.",
+      "ultimo": "Entregou as três melhorias do layout (aba Conferência), pronto para você conferir, com ressalvas. Próximo: o desentortar, depois das suas três respostas.",
       "ramo": "verif-layout-melhorias-2026-10-22",
-      "quando": "2026-10-22T22:35:00Z"
+      "quando": "2026-10-23T00:40:00Z"
     },
     {
       "id": "layout",
