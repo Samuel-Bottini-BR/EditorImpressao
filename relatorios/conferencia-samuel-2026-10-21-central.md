@@ -157,3 +157,4 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `cx-etiqueta` (2ª volta): **Está bom**; `cx-avisos-demais` (3ª volta): **Está bom**
 - `cx22` DECISÃO FINAL (de novo): **Aprovado** — "vai para o programa assim, mas vai ser investigado no futuro, esse problema."
 - Respondidas na Central: fr-218 (erro do teste; pergunta nova `fr-218-aviso`), fr-24 (sim), fr-219 (anotado), fr-26 (pergunta `fr-26-qual`), cx22 (registrado).
+- No chat (22/10, depois): `fr-218-aviso` — "1- sim" (avisar); `fr-26-qual` — "2- mandei o print." (print da janela "Montar para imprimir" com o texto do resultado espremido: `relatorios/prints-samuel/2026-10-22-montar-para-imprimir-baguncado.png`).

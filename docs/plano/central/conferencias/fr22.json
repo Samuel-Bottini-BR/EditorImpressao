@@ -390,6 +390,13 @@
      "texto": "Fica como está: pinta tudo dentro do retângulo; o Ctrl+Z desfaz.",
      "imgs": []
     }
+   ],
+   "historico": [
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T23:20:00Z",
+     "texto": "Você respondeu no chat: \"1- sim\". Fica a opção A (avisar). Vai para a rodada logo depois da junção."
+    }
    ]
   },
   {
@@ -427,6 +434,13 @@
      "nome": "As duas",
      "texto": "",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T23:20:00Z",
+     "texto": "Você respondeu no chat mandando o print: é a janela \"Montar para imprimir\", com o texto do resultado espremido embaixo das opções. Vai para o agente de layout, logo depois da junção."
     }
    ]
   }
