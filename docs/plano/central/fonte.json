@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-22T21:45:00Z",
+        "texto": "Plano mantido: a junção espera o desentortar e as 7 ferramentas do Implementador B, conferidos e aprovados. As melhorias do aviso de corte e do layout entram numa rodada logo depois. O Implementador B está fazendo a tinta com a cor."
+      },
+      {
         "em": "2026-10-22T21:30:00Z",
         "texto": "O agente de layout terminou as três melhorias. Elas esperam o verificador, que está nas 7 ferramentas do Implementador B."
       },
@@ -752,11 +756,11 @@
       "id": "implementador-b",
       "nome": "Implementador B",
       "papel": "As 7 ferramentas não começadas",
-      "estado": "terminou",
-      "tarefa": "2.4 → 2.6 → 2.16 → 2.17 → 2.18 → 2.19 → 2.10",
-      "ultimo": "Fez os ajustes das suas respostas (margens na tela, avisos do igualar a luz e do chuvisco, nomes das duas montagens). Testes no GitHub: 2177 passaram, 0 falharam. Espera a sua resposta da pergunta 8 e o verificador.",
+      "estado": "trabalhando",
+      "tarefa": "\"Tinta com a cor original\": as duas opções separadas (A como está, B escurecida)",
+      "ultimo": "Começou a sua resposta da tinta com a cor (as duas opções), para o 2.18 entrar completo na junção.",
       "ramo": "fase2-ferramentas-2026-10-22",
-      "quando": "2026-10-22T17:30:00Z"
+      "quando": "2026-10-22T21:45:00Z"
     },
     {
       "id": "verificador",
