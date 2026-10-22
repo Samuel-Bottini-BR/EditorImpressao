@@ -272,6 +272,8 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("miniaturas", lambda marcado=False: conferir.mostrar_miniaturas(bool(marcado)))
         paineis.abriu.connect(lambda chave: self.menu.marcar_painel(chave or None))
         conferir.miniaturas_mudaram.connect(self._miniaturas_mudaram)
+        # as miniaturas podem abrir fechadas (lembradas do último livro, 22/10/2026)
+        self._miniaturas_mudaram(conferir.miniaturas.aberta)
         self.menu.ligar("todas_as_paginas", conferir.abrir_todas_as_paginas)
         self.menu.ligar("filtros_tela_cheia", conferir.abrir_filtros_em_tela_cheia)
         paineis.icones_mudaram.connect(self._icones_mudaram)

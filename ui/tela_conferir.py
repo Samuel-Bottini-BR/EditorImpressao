@@ -730,7 +730,14 @@ class TelaConferir(QWidget):
         camadas.addWidget(self.pilha_da_tela, 1)
         # os lugares de encaixe que aparecem ao arrastar as miniaturas
         self.lugares_de_encaixe = _LugaresDeEncaixe(self)
-        self._por_as_miniaturas(EMBAIXO)
+        # as miniaturas voltam como a pessoa deixou no último livro (Samuel,
+        # 21/10/2026: "Sim, lembrar para todos os livros"); de fábrica, embaixo,
+        # abertas, uma a uma
+        guardadas = miniaturas_guardadas()
+        self.miniaturas.definir_aberta(guardadas["aberta"])
+        self.miniaturas.definir_em_pares(guardadas["em_pares"])
+        self._por_as_miniaturas(guardadas["lugar"])
+        self.miniaturas.em_pares_mudou.connect(lambda _p: self._guardar_as_miniaturas())
 
     def _montar_barra_de_baixo(self) -> QWidget:
         """A barra fina de baixo, como no prototipo das rodadas 9 a 11:
@@ -4183,7 +4190,19 @@ class TelaConferir(QWidget):
         botao.style().unpolish(botao)
         botao.style().polish(botao)
         botao.show()
+        self._guardar_as_miniaturas()
         self.miniaturas_mudaram.emit(m.aberta)
+
+    def _guardar_as_miniaturas(self) -> None:
+        """Grava o lugar, aberta/fechada e o "em pares" das miniaturas em
+        configuracoes.json ("miniaturas"), para o próximo livro abrir igual.
+        Só grava quando mudou (a tela é montada muitas vezes nos testes)."""
+        import configuracoes
+
+        m = self.miniaturas
+        agora = {"lugar": m.lugar, "aberta": bool(m.aberta), "em_pares": bool(m.em_pares)}
+        if agora != miniaturas_guardadas():
+            configuracoes.escrever("miniaturas", agora)
 
     def _zona_de_encaixe(self, ponto_na_tela) -> str | None:
         """Qual lugar das miniaturas está sob o ponto (coordenadas da tela do
@@ -4650,6 +4669,30 @@ class TelaConferir(QWidget):
                 self._ir_para_proximo_alerta()
                 return
         self.processar.emit()
+
+
+MINIATURAS_DE_FABRICA = {"lugar": EMBAIXO, "aberta": True, "em_pares": False}
+
+
+def miniaturas_guardadas() -> dict:
+    """Como as miniaturas ficaram no último livro (configuracoes.json,
+    "miniaturas"; layout, 22/10/2026, "Sim, lembrar para todos os livros").
+    Cada valor estranho (arquivo mexido, versão antiga) volta ao de fábrica,
+    sozinho, sem estragar os outros."""
+    import configuracoes
+
+    try:
+        salvo = configuracoes.ler("miniaturas")
+    except Exception:  # noqa: BLE001 - preferência nunca impede a tela de abrir
+        salvo = None
+    salvo = salvo if isinstance(salvo, dict) else {}
+    lugar = salvo.get("lugar")
+    return {
+        "lugar": lugar if lugar in (EMBAIXO, ESQUERDA, DIREITA) else MINIATURAS_DE_FABRICA["lugar"],
+        "aberta": salvo["aberta"] if isinstance(salvo.get("aberta"), bool) else MINIATURAS_DE_FABRICA["aberta"],
+        "em_pares": (salvo["em_pares"] if isinstance(salvo.get("em_pares"), bool)
+                     else MINIATURAS_DE_FABRICA["em_pares"]),
+    }
 
 
 def _icone_de_ajustar_o_pedaco():

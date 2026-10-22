@@ -37,7 +37,17 @@
   `relatorios/layout-antes-de-processar/antes|depois` (4 de 4 nas duas rodadas).
 - Ressalva: a página que tem dois motivos aparece em duas linhas ("Página 69 - Alinhamento duvidoso" e "Página 69 -
   Endireitar..."). Juntar numa linha mudaria as caixinhas (uma por motivo): não mexi.
-## Item 3: lembrar as miniaturas: a fazer
+## Item 3: lembrar as miniaturas para todos os livros: FEITO, PRONTO PARA CONFERIR
+- O lugar (embaixo, esquerda, direita), abertas ou fechadas e "Ver em pares" ficam em `configuracoes.json`, chave
+  nova "miniaturas" (`configuracoes.PADROES`, fora de `ui/`, só a preferência, como o "livro_aberto"). A tela de
+  trabalho (`ui/tela_conferir.py`: `miniaturas_guardadas`, `_guardar_as_miniaturas`) lê ao montar e grava a cada
+  mudança (arrastar a alça, "Lugar", seta, "Ver em pares", menu Ver). Valor estranho volta ao de fábrica. O menu Ver
+  > "Miniaturas" acompanha quando elas abrem fechadas (`ui/janela_principal.py`).
+- Teste `tests/test_miniaturas_novas.py::test_as_miniaturas_ficam_para_o_proximo_livro` (5 de 5 no arquivo; também
+  `test_barra_de_menu` 20, `test_paineis_na_tela` 22, `test_menus_que_nao_faziam_nada` 5, `test_livro_aberto` 14).
+- Janela de verdade (Boécio: alça arrastada para a esquerda com o Windows, "Ver em pares"; programa fechado e aberto
+  de novo no Palatino; seta fechada com o Windows; aberto de novo): antes 3 de 5 (o outro livro voltava embaixo,
+  uma a uma, abertas); depois 5 de 5. `relatorios/layout-4a7/melhorias-6-7/3-miniaturas-lembradas/antes|depois`.
 
 ## Perguntas para o Samuel
 (nenhuma ainda)
