@@ -51,7 +51,7 @@ from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha
-from core import margens_scantailor
+from core import margens_scantailor, nucleos
 from core.pdf_io import (
     DPI_PREVIA,
     dpi_real_da_pagina,
@@ -135,70 +135,26 @@ def analisar_projeto(
         medir_as_duas = (projeto.endireitar and endireitar_scantailor.jeito_do_livro(projeto)
                          == endireitar_scantailor.JEITO_SCANTAILOR)
 
-        for indice, info in enumerate(infos):
+        # Item 2.16: as folhas sao analisadas por varios trabalhadores ao mesmo
+        # tempo (core/nucleos.py; uma folha por trabalhador) e juntadas aqui
+        # NA ORDEM. Com 1 trabalhador, e o laco de sempre.
+        def analisar(indice: int):
+            return _analisar_a_folha(projeto, doc, indice, fora_do_padrao[indice], medir_as_duas)
+
+        trabalhadores = nucleos.quantos_trabalhadores()
+        _avisar(progresso, 0, total, f"Analisando a folha 1 de {total}")
+        for indice, (folha, partes) in nucleos.em_ordem(range(total), analisar, trabalhadores,
+                                                        cancelado):
             _checar(cancelado)
-            _avisar(progresso, indice, total, f"Analisando a folha {indice + 1} de {total}")
-
-            img = pagina_para_array(doc, indice, dpi=DPI_ANALISE)
-
-            # Item 2.1: dividir so com o livro marcado (G2 (a)), pelo jeito
-            # escolhido; o corte da sobra so na folha que nao vai ser dividida
-            # (G3 (b), desligado de fabrica).
-            lombada = (achar_divisao(img, projeto.dividir_como, DPI_ANALISE)
-                       if projeto.dividir_folhas else Lombada(0.5, 0.0, False))
-            vai_dividir_esta = projeto.dividir_folhas and lombada.e_paisagem
-            sobra = (achar_sobra(img, DPI_ANALISE)
-                     if getattr(projeto, "cortar_sobra", False) and not vai_dividir_esta
-                     else None)
-            inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
-            recorte = (detectar_bordas(img, dpi=DPI_ANALISE) if projeto.cortar_bordas
-                       else Recorte.inteiro())
-
-            # DPI de verdade, tirado da imagem embutida no PDF. Medir na imagem
-            # que acabamos de rasterizar devolveria sempre DPI_ANALISE.
-            dpi_real = dpi_real_da_pagina(doc, indice)
-
-            folha = ConfigFolha(
-                indice=indice,
-                dividir=vai_dividir_esta,
-                posicao_corte=lombada.posicao,
-                confianca_corte=lombada.confianca,
-                angulo_detectado=inclinacao.angulo,
-                confianca_angulo=inclinacao.confianca,
-                e_paisagem=lombada.e_paisagem,
-                sobra=sobra,
-            )
-            folha.alertas = analise.analisar_folha(
-                img, lombada, inclinacao, recorte,
-                vai_dividir=projeto.dividir_folhas,
-                vai_endireitar=projeto.endireitar,
-                vai_cortar=projeto.cortar_bordas,
-                dpi_real=dpi_real,
-                tamanho_fora_do_padrao=fora_do_padrao[indice],
-            )
             folhas.append(folha)
-
-            # A analise de cor e feita ja na metade certa: uma capa colorida na
-            # direita nao deve pintar a pagina da esquerda de alerta.
-            for metade, pedaco in _partes_da_folha(img, folha):
-                pagina = ConfigPagina(
-                    indice=len(paginas),
-                    folha=indice,
-                    metade=metade,
-                    filtro=projeto.filtro_padrao,
-                )
-                alertas, tem_cor = analise.analisar_pagina(pedaco, projeto.filtro_padrao)
-                pagina.alertas = alertas
-                pagina.tem_cor = tem_cor
+            for pagina, discorda in partes:
+                pagina.indice = len(paginas)
                 paginas.append(pagina)
-                if medir_as_duas:
-                    medidas: dict = {}
-                    _geometria(pedaco, pagina, projeto, dpi=DPI_ANALISE, dpi_do_scan=dpi_real,
-                               medidas=medidas, com_o_corte=False)
-                    if medidas.get("discordam"):
-                        discordam.append(pagina)
-
-            del img
+                if discorda:
+                    discordam.append(pagina)
+            if indice + 1 < total:
+                _avisar(progresso, indice + 1, total, f"Analisando a folha {indice + 2} de {total}")
+        _checar(cancelado)
 
         # Um alerta que vale para quase todas as páginas não e exceção, e sim
         # caracteristica do livro: sai das páginas e vira observação.
@@ -229,6 +185,75 @@ def analisar_projeto(
         return projeto
     finally:
         doc.close()
+
+
+def _analisar_a_folha(projeto: Projeto, doc, indice: int, fora_do_padrao: bool,
+                      medir_as_duas: bool) -> tuple[ConfigFolha, list[tuple[ConfigPagina, bool]]]:
+    """Uma folha da analise: a ConfigFolha e as paginas dela (com a pagina e
+    se as duas contas do endireitar discordam). O indice da pagina no livro e
+    posto por quem junta (analisar_projeto), na ordem. E o corpo do laco de
+    sempre, separado em 22/10/2026 (item 2.16) para varias folhas serem
+    analisadas ao mesmo tempo; a conta e a mesma, linha por linha."""
+    img = pagina_para_array(doc, indice, dpi=DPI_ANALISE)
+
+    # Item 2.1: dividir so com o livro marcado (G2 (a)), pelo jeito
+    # escolhido; o corte da sobra so na folha que nao vai ser dividida
+    # (G3 (b), desligado de fabrica).
+    lombada = (achar_divisao(img, projeto.dividir_como, DPI_ANALISE)
+               if projeto.dividir_folhas else Lombada(0.5, 0.0, False))
+    vai_dividir_esta = projeto.dividir_folhas and lombada.e_paisagem
+    sobra = (achar_sobra(img, DPI_ANALISE)
+             if getattr(projeto, "cortar_sobra", False) and not vai_dividir_esta
+             else None)
+    inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
+    recorte = (detectar_bordas(img, dpi=DPI_ANALISE) if projeto.cortar_bordas
+               else Recorte.inteiro())
+
+    # DPI de verdade, tirado da imagem embutida no PDF. Medir na imagem
+    # que acabamos de rasterizar devolveria sempre DPI_ANALISE.
+    dpi_real = dpi_real_da_pagina(doc, indice)
+
+    folha = ConfigFolha(
+        indice=indice,
+        dividir=vai_dividir_esta,
+        posicao_corte=lombada.posicao,
+        confianca_corte=lombada.confianca,
+        angulo_detectado=inclinacao.angulo,
+        confianca_angulo=inclinacao.confianca,
+        e_paisagem=lombada.e_paisagem,
+        sobra=sobra,
+    )
+    folha.alertas = analise.analisar_folha(
+        img, lombada, inclinacao, recorte,
+        vai_dividir=projeto.dividir_folhas,
+        vai_endireitar=projeto.endireitar,
+        vai_cortar=projeto.cortar_bordas,
+        dpi_real=dpi_real,
+        tamanho_fora_do_padrao=fora_do_padrao,
+    )
+
+    # A analise de cor e feita ja na metade certa: uma capa colorida na
+    # direita nao deve pintar a pagina da esquerda de alerta.
+    partes: list[tuple[ConfigPagina, bool]] = []
+    for metade, pedaco in _partes_da_folha(img, folha):
+        pagina = ConfigPagina(
+            indice=-1,                 # quem junta poe o lugar dela no livro
+            folha=indice,
+            metade=metade,
+            filtro=projeto.filtro_padrao,
+        )
+        alertas, tem_cor = analise.analisar_pagina(pedaco, projeto.filtro_padrao)
+        pagina.alertas = alertas
+        pagina.tem_cor = tem_cor
+        discorda = False
+        if medir_as_duas:
+            medidas: dict = {}
+            _geometria(pedaco, pagina, projeto, dpi=DPI_ANALISE, dpi_do_scan=dpi_real,
+                       medidas=medidas, com_o_corte=False)
+            discorda = bool(medidas.get("discordam"))
+        partes.append((pagina, discorda))
+    del img
+    return folha, partes
 
 
 # ---------------------------------------------------------------------------
@@ -2330,112 +2355,185 @@ def processar(
             doc.close()
 
 
+class _FolhaDaVez:
+    """A folha da vez de quem faz as paginas (uma so na memoria; as duas
+    metades vem dela): o desenho normal e, se alguma metade usa o item 1.1, a
+    folha sem o fundo. Os dois sao feitos so quando alguem precisa. Cada
+    trabalhador do item 2.16 tem a sua (core/nucleos.py)."""
+
+    __slots__ = ("indice", "img", "sem_fundo")
+
+    def __init__(self) -> None:
+        self.indice: int | None = None
+        self.img: np.ndarray | None = None
+        self.sem_fundo = None          # core.camadas.PaginaSemFundo da folha da vez
+
+
+def _pagina_pronta(projeto: Projeto, doc, folha: ConfigFolha, pagina: ConfigPagina,
+                   da_vez: _FolhaDaVez, posicao: int, conta_das_margens=None
+                   ) -> tuple[np.ndarray, bool]:
+    """Uma pagina do PDF final, pronta para o escritor: (imagem, monocromatica).
+
+    E o corpo do laco do processar de sempre, separado em 22/10/2026 (item
+    2.16) para varios trabalhadores poderem fazer paginas ao mesmo tempo; a
+    conta e a mesma, linha por linha. `posicao` e o lugar da pagina na lista
+    de paginas ativas (as margens iguais do item 2.4 usam)."""
+    if da_vez.indice != folha.indice:
+        da_vez.img, da_vez.sem_fundo = None, None
+        da_vez.indice = folha.indice
+
+    # Item 1.1: esta pagina sai sem o fundo? (ver usa_tirar_fundo)
+    imagem_sem_fundo = None
+    if usa_tirar_fundo(projeto, pagina):
+        if da_vez.sem_fundo is None:
+            da_vez.sem_fundo = _sem_fundo_da_folha(doc, folha, projeto.qualidade_dpi)
+        imagem_sem_fundo = da_vez.sem_fundo.imagem
+        _anotar_conferir(pagina, bool(imagem_sem_fundo is not None
+                                      and da_vez.sem_fundo.conferir))
+    else:
+        _anotar_conferir(pagina, False)
+
+    # O desenho normal da folha: para o filtro e para medir o corte
+    # (que e sempre medido nele, mesmo quando sai sem o fundo).
+    precisa_do_desenho = imagem_sem_fundo is None or (
+        _precisa_de_geometria(pagina, projeto)
+        and _geometria_guardada(folha, pagina, projeto) is None)
+    if precisa_do_desenho and da_vez.img is None:
+        da_vez.img = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+    img_folha = da_vez.img
+
+    if imagem_sem_fundo is not None:
+        # dividir, cortar e endireitar a folha sem o fundo, com o
+        # corte da folha como veio; o filtro fica de fora
+        geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
+        img, desenho = _preparar_metade_e_geometria(
+            imagem_sem_fundo, folha, pagina, projeto, geometria=geometria)
+        # as zonas sao levadas para o preparo de agora ANTES de os
+        # pedacos de "so neste pedaco" serem lidos (decisao D2)
+        _acompanhar_as_zonas(pagina, desenho)
+        # conferencia 14 ("FUNDO"): o "so neste pedaco" vale aqui tambem.
+        # Sem pedaco, `img` volta como esta e nada mais e desenhado.
+        if _tem_pedaco_com_filtro(projeto, pagina) and img_folha is None:
+            da_vez.img = img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+        img = _pedacos_na_pagina_sem_fundo(
+            doc, projeto, folha, pagina, img, imagem_sem_fundo.shape, geometria,
+            projeto.qualidade_dpi, img_folha)
+        mono = False
+    else:
+        # o corte e calculado nesta mesma imagem (a do PDF) e
+        # guardado: a previa, se vier depois, mostra este (ver
+        # _GEOMETRIAS)
+        if _precisa_de_geometria(pagina, projeto):
+            _guardar_geometria(folha, pagina, projeto, img_folha, doc)
+        dpi_desenho = dpi_scan = None
+        if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
+                or _vai_limpar_pelo_scantailor(projeto, pagina)):
+            dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
+            dpi_scan = _dpi_do_scan(doc, folha)
+        img, desenho = _preparar_metade_e_geometria(
+            img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+        _acompanhar_as_zonas(pagina, desenho)
+        img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
+
+    # Item 2.4: as margens iguais do ScanTailor (so com a conta feita, isto
+    # e, ligadas). Antes do tamanho de folha escolhido a mao, que continua
+    # valendo por cima (e nao corta nada se nao couber).
+    if conta_das_margens is not None:
+        img = _por_as_margens(img, conta_das_margens, posicao, projeto)
+
+    # Item 2/4 do teste do Boecio (secao 3a do plano): cola o conteudo (ja
+    # filtrado) dentro do tamanho de folha escolhido, com a margem branca ao
+    # redor - nunca antes daqui, porque `preparar_metade` tambem alimenta
+    # `avaliar.py` (a regua de qualidade dos filtros) e padding ali
+    # contaminaria as metricas. Sem `tamanho_folha_cm` (None, o padrao)
+    # devolve `img` sem nenhuma alteracao - comportamento de sempre.
+    img = compor_na_folha(
+        img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
+        escala=pagina.conteudo_escala,
+        deslocamento=pagina.conteudo_deslocamento,
+    )
+    return img, mono
+
+
+def _grupos_por_folha(projeto: Projeto, ativas: list[ConfigPagina]) -> list[list[tuple[int, ConfigPagina]]]:
+    """As paginas ativas juntadas por folha (as duas metades seguidas de uma
+    folha dividida vao para o mesmo trabalhador, que desenha a folha uma vez
+    so). Cada item: (posicao na lista de ativas, pagina). So referencias:
+    nenhuma imagem."""
+    grupos: list[list[tuple[int, ConfigPagina]]] = []
+    for posicao, pagina in enumerate(ativas):
+        if grupos and grupos[-1][-1][1].folha == pagina.folha:
+            grupos[-1].append((posicao, pagina))
+        else:
+            grupos.append([(posicao, pagina)])
+    return grupos
+
+
 def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
                          escritor: EscritorPDF, progresso: Progresso,
-                         cancelado: Cancelado, conta_das_margens=None) -> None:
-    """O laco do processar: cada pagina ativa, uma por vez, ate o escritor.
+                         cancelado: Cancelado, conta_das_margens=None,
+                         trabalhadores: int | None = None) -> None:
+    """O laco do processar: cada pagina ativa ate o escritor, NA ORDEM.
 
     Separado do processar em 05/10/2026 so para o tratamento de cancelar e
     erro caber em volta dele (ver processar); o conteudo e o mesmo de antes.
     Levanta Cancelou entre uma pagina e outra, e depois da ultima.
 
+    Item 2.16 (22/10/2026): com mais de um trabalhador (core/nucleos.py: de
+    fabrica todos os nucleos, como o ScanTailor), varias folhas sao feitas ao
+    mesmo tempo, cada uma por um trabalhador com a sua folha da vez, e as
+    paginas vao para o escritor na ordem do livro. Com 1 (Configuracoes,
+    "Uma pagina por vez"), e o laco de sempre, sem linha nenhuma.
+
     Arriscado: guardar aqui qualquer lista de paginas processadas (regra
-    "uma pagina por vez na memoria"): cada imagem vai para o escritor e sai.
+    "uma pagina por vez na memoria", por trabalhador): cada imagem vai para o
+    escritor e sai; a fila de core/nucleos.em_ordem tem o tamanho do numero
+    de trabalhadores, nunca o do livro.
     """
     total = len(ativas)
-    # A folha da vez, uma so na memoria (as duas metades vem dela):
-    # o desenho normal e, se alguma metade usa o item 1.1, a folha sem
-    # o fundo. Os dois sao feitos so quando alguem precisa.
-    folha_atual: int | None = None
-    img_folha: np.ndarray | None = None
-    sem_fundo = None          # core.camadas.PaginaSemFundo da folha da vez
+    if trabalhadores is None:
+        trabalhadores = nucleos.quantos_trabalhadores()
 
-    for feito, pagina in enumerate(ativas):
+    if trabalhadores <= 1:
+        da_vez = _FolhaDaVez()
+        for feito, pagina in enumerate(ativas):
+            _checar(cancelado)
+            _avisar(progresso, feito, total, f"Página {feito + 1} de {total}")
+            folha = projeto.folhas[pagina.folha]
+            if folha.apagada:
+                continue
+            img, mono = _pagina_pronta(projeto, doc, folha, pagina, da_vez, feito,
+                                       conta_das_margens)
+            escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
+            del img
         _checar(cancelado)
-        _avisar(progresso, feito, total, f"Página {feito + 1} de {total}")
+        return
 
-        folha = projeto.folhas[pagina.folha]
-        if folha.apagada:
-            continue
+    def fazer(grupo):
+        da_vez = _FolhaDaVez()
+        prontas = []
+        for posicao, pagina in grupo:
+            folha = projeto.folhas[pagina.folha]
+            if folha.apagada:
+                prontas.append(None)
+                continue
+            prontas.append(_pagina_pronta(projeto, doc, folha, pagina, da_vez, posicao,
+                                          conta_das_margens))
+        return prontas
 
-        if folha_atual != folha.indice:
-            img_folha, sem_fundo = None, None
-            folha_atual = folha.indice
-
-        # Item 1.1: esta pagina sai sem o fundo? (ver usa_tirar_fundo)
-        imagem_sem_fundo = None
-        if usa_tirar_fundo(projeto, pagina):
-            if sem_fundo is None:
-                sem_fundo = _sem_fundo_da_folha(doc, folha, projeto.qualidade_dpi)
-            imagem_sem_fundo = sem_fundo.imagem
-            _anotar_conferir(pagina, bool(imagem_sem_fundo is not None
-                                          and sem_fundo.conferir))
-        else:
-            _anotar_conferir(pagina, False)
-
-        # O desenho normal da folha: para o filtro e para medir o corte
-        # (que e sempre medido nele, mesmo quando sai sem o fundo).
-        precisa_do_desenho = imagem_sem_fundo is None or (
-            _precisa_de_geometria(pagina, projeto)
-            and _geometria_guardada(folha, pagina, projeto) is None)
-        if precisa_do_desenho and img_folha is None:
-            img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
-
-        if imagem_sem_fundo is not None:
-            # dividir, cortar e endireitar a folha sem o fundo, com o
-            # corte da folha como veio; o filtro fica de fora
-            geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
-            img, desenho = _preparar_metade_e_geometria(
-                imagem_sem_fundo, folha, pagina, projeto, geometria=geometria)
-            # as zonas sao levadas para o preparo de agora ANTES de os
-            # pedacos de "so neste pedaco" serem lidos (decisao D2)
-            _acompanhar_as_zonas(pagina, desenho)
-            # conferencia 14 ("FUNDO"): o "so neste pedaco" vale aqui tambem.
-            # Sem pedaco, `img` volta como esta e nada mais e desenhado.
-            if _tem_pedaco_com_filtro(projeto, pagina) and img_folha is None:
-                img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
-            img = _pedacos_na_pagina_sem_fundo(
-                doc, projeto, folha, pagina, img, imagem_sem_fundo.shape, geometria,
-                projeto.qualidade_dpi, img_folha)
-            mono = False
-        else:
-            # o corte e calculado nesta mesma imagem (a do PDF) e
-            # guardado: a previa, se vier depois, mostra este (ver
-            # _GEOMETRIAS)
-            if _precisa_de_geometria(pagina, projeto):
-                _guardar_geometria(folha, pagina, projeto, img_folha, doc)
-            dpi_desenho = dpi_scan = None
-            if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
-                    or _vai_limpar_pelo_scantailor(projeto, pagina)):
-                dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
-                dpi_scan = _dpi_do_scan(doc, folha)
-            img, desenho = _preparar_metade_e_geometria(
-                img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
-            _acompanhar_as_zonas(pagina, desenho)
-            img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
-
-        # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
-        # conteudo (ja filtrado) dentro do tamanho de folha escolhido,
-        # com a margem branca ao redor - nunca antes daqui, porque
-        # `preparar_metade` tambem alimenta `avaliar.py` (a regua de
-        # qualidade dos filtros) e padding ali contaminaria as
-        # metricas. Sem `tamanho_folha_cm` (None, o padrao) devolve
-        # `img` sem nenhuma alteracao - comportamento de sempre.
-        # Item 2.4: as margens iguais do ScanTailor (so com a conta feita,
-        # isto e, ligadas). Antes do tamanho de folha escolhido a mao, que
-        # continua valendo por cima (e nao corta nada se nao couber).
-        if conta_das_margens is not None:
-            img = _por_as_margens(img, conta_das_margens, feito, projeto)
-
-        img = compor_na_folha(
-            img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
-            escala=pagina.conteudo_escala,
-            deslocamento=pagina.conteudo_deslocamento,
-        )
-
-        escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
-        del img
-
+    _avisar(progresso, 0, total, f"Página 1 de {total}")
+    for grupo, prontas in nucleos.em_ordem(_grupos_por_folha(projeto, ativas), fazer,
+                                           trabalhadores, cancelado):
+        _checar(cancelado)
+        for (posicao, _pagina), pronta in zip(grupo, prontas):
+            if pronta is None:
+                continue
+            img, mono = pronta
+            escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
+            del img
+        del prontas
+        feito = grupo[-1][0] + 1
+        _avisar(progresso, feito, total, f"Página {min(feito + 1, total)} de {total}")
     _checar(cancelado)
 
 

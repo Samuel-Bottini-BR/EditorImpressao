@@ -16,6 +16,7 @@ import atalhos
 import configuracoes
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
     QGridLayout,
     QHBoxLayout,
@@ -39,6 +40,34 @@ class TelaConfiguracoes(QDialog):
         self.resize(480, 560)
 
         raiz = QVBoxLayout(self)
+
+        # Item 2.16 (CONTROLE MINIMO, provisorio ate o layout): quantas paginas
+        # o programa faz ao mesmo tempo. De fabrica todos os nucleos, como o
+        # ScanTailor; "Uma página por vez" e o jeito de antes (o desligar da
+        # regra 8). So muda a velocidade, nunca o resultado.
+        titulo_velocidade = QLabel("Velocidade")
+        titulo_velocidade.setObjectName("titulo")
+        raiz.addWidget(titulo_velocidade)
+        linha_nucleos = QHBoxLayout()
+        linha_nucleos.addWidget(QLabel("Páginas ao mesmo tempo:"))
+        self.combo_nucleos = QComboBox()
+        import os
+
+        total = os.cpu_count() or 1
+        self.combo_nucleos.addItem(f"Todos os núcleos do processador ({total})", 0)
+        self.combo_nucleos.addItem("Uma página por vez (como antes)", 1)
+        for n in (2, 4, 8):
+            if n < total:
+                self.combo_nucleos.addItem(f"{n} páginas", n)
+        indice = self.combo_nucleos.findData(int(configuracoes.ler("nucleos") or 0))
+        self.combo_nucleos.setCurrentIndex(max(0, indice))
+        self.combo_nucleos.setToolTip(
+            "Mais páginas ao mesmo tempo = o livro fica pronto mais rápido, usando mais "
+            "memória. O resultado é o mesmo. O programa usa menos se faltar memória.")
+        self.combo_nucleos.currentIndexChanged.connect(
+            lambda _i: configuracoes.escrever("nucleos", int(self.combo_nucleos.currentData())))
+        linha_nucleos.addWidget(self.combo_nucleos, 1)
+        raiz.addLayout(linha_nucleos)
 
         titulo = QLabel("Atalhos de teclado")
         titulo.setObjectName("titulo")

@@ -33,6 +33,9 @@ PADROES: dict[str, Any] = {
     # Ultima configuracao" do UPDF. Vazio = as de fabrica (as decisoes do
     # Samuel). Seguro mudar: nada (quem le corrige o que vier estranho).
     "impressao": {},
+    # Item 2.16: quantas paginas ao mesmo tempo (core/nucleos.py). 0 = todos
+    # os nucleos, como o ScanTailor (de fabrica); 1 = uma por vez, como antes.
+    "nucleos": 0,
 }
 
 
