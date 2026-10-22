@@ -63,6 +63,16 @@
      "quem": "gerente",
      "em": "2026-10-23T02:50:00Z",
      "texto": "Refiz com o exemplo do Livro de Horas 13, logo abaixo."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T23:52:01Z",
+     "texto": "eu posso ter as duas opções?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T03:30:00Z",
+     "texto": "Pode, sim. Do mesmo jeito que a tinta tem \"cor como no livro\" e \"cor escurecida\", o papel da área pode ter dois jeitos para escolher na hora de marcar: \"papel branco\" (como hoje, faz o retângulo branco) e \"papel como o resto da página\" (sem o retângulo). Pus essa opção logo abaixo: se é o que você quer, é só marcar \"As duas\"."
     }
    ],
    "explicacao": [
@@ -103,6 +113,17 @@
      "nome": "No Original e no Melhorar, o papel da área fica como o resto da página; só a tinta muda",
      "texto": "Some o retângulo branco: o papel dentro da área fica creme como em volta, e só a cor da tinta segue o A ou o B. No Preto e branco continua igual.",
      "imgs": []
+    },
+    {
+     "id": "as-duas",
+     "nome": "As duas: escolher o papel em cada área (\"papel branco\" ou \"papel como o resto da página\")",
+     "texto": "Ao marcar \"tinta com a cor\", aparecem também dois botões para o papel. De fábrica, \"papel branco\", igual a hoje. Vale em qualquer filtro, como os botões da cor.",
+     "imgs": [
+      {
+       "src": "tc23/img/horas_p013-original-pagina.jpg",
+       "legenda": "Com \"papel branco\": o retângulo branco. Com \"papel como o resto da página\": o papel fica creme, só a tinta muda."
+      }
+     ]
     },
     {
      "id": "nao-entendi",
