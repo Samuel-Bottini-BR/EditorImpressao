@@ -127,3 +127,23 @@ Situação: **pronta para a gerente publicar** (20/10).
   pixel pintadas a 2 pixels por ponto; falha no `f963cfd` com contraste 0, passa no novo).
 - Janela: etapa 5 15 de 15; print ampliado `relatorios/layout-4a7/etapa5/7-todas-uma-a-uma-ampliado.png`.
 - **Parado aqui a pedido do Samuel (21/10).** Nada começado depois disto.
+
+## 22/10/2026: livro aberto refeito "como o UPDF" (conferência: "Está pior")
+Pedido: "Eu não consigo ver a página direito, e elas estão de maneira muito ruim, da uma na internet como o updf
+faz. Tem uma pagina maior que outra ali".
+- `82175b4` e `d76b79e`: barra de baixo do livro aberto (`ui/tela_inicio.LivroAberto`) com "Uma página" (de
+  fábrica) / "Duas lado a lado" (o "Ver lado a lado" de antes, que saiu do canto de cima), "Rolar sem parar" (ligado
+  de fábrica), "Caber a página" (de fábrica) / "Caber a altura" / "Caber a largura" / "Tamanho real", e a pílula
+  "página N de M · ir para" à direita (antes ficava por cima e cobria a folha). Escolha lembrada em
+  `configuracoes.json` ("livro_aberto"; chave nova em `configuracoes.PADROES`, fora de `ui/`, só a preferência).
+- `ui/widgets/paginas_rolando.py` refeito: as páginas de uma linha com a MESMA altura; folha desenhada no tamanho
+  exato em pixels de onde é pintada e pintada 1 para 1 (com o dobro e redução por área quando o scan permite).
+- Grade "Todas as páginas": guardada na altura exata, pintada 1 para 1 num pixel inteiro, folga de 3 pontos na
+  margem, e desenha primeiro perto da página da vez.
+- Medidas (janela de verdade, Graduale folhas 301-303, a 125%): par 545 e 528 pixels → iguais (570 / 769); nitidez
+  da grade 0,69 → 0,99 (1600x821 antes: ainda cinza depois de 28 s); livro aberto 0,98 → 0,99-1,05 (o antigo já era
+  nítido na janela; o defeito era o tamanho fixo de 615 pixels de altura, mesmo maximizada). Prints:
+  `relatorios/layout-4a7/livro-updf/antes|depois` (`medidas.txt`). UPDF não está instalado no PC: sem print lado a lado.
+- Testes de reversão em `tests/test_livro_aberto.py` (5 falham no `2eeec20`): par da mesma altura, livro aberto
+  nítido a 125%, grade nítida a 125% (2 formatos), grade começa perto. 13 passam no novo.
+- Cópia do código antigo para provar: `saida_teste/antigo` (git worktree destacado do `2eeec20`, criado por mim).
