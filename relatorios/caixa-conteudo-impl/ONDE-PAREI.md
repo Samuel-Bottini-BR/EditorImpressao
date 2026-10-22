@@ -277,3 +277,9 @@ capas no tamanho delas (muito maiores, com aviso). Teste de reversão `tests/tes
   na vertical, sempre do tamanho do livro, com o conteúdo dentro). Ampliei o alto e o pé das págs. 7, 23, 64 e
   85 (`saida_teste/vel/mz_*.png`): nada partido nem perdido; a pág. 7 ganhou o aviso "ficou tinta de fora".
   Precisa ir à conferência a olho.
+- [x] Antes (`c66f28d`) | depois (`5bc5b33`), todas abertas: `img/2026-10-22/egenloff-03.jpg` (a etiqueta
+      sai inteira; em cima, o carimbo oval e a anotação "Af 10" ficam mais de fora) e `marial-007/023/064/085.jpg`
+      (o corte anda alguns mm; nada partido). Caminho: dividida, endireitada, cortada (conteúdo + borda preta até
+      a moldura), filtro Original, 300 DPI, PDF gerado pelo programa.
+- [ ] GitHub: suíte 39788341137 (ramo em `5bc5b33`); filtro de velocidade 39788346337 (`c66f28d` x `5bc5b33`,
+      opções desligadas). Ler UMA vez no fim.
