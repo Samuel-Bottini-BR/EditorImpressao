@@ -262,14 +262,16 @@ e as margens de fábrica dele, 10 mm dos lados e 5 mm em cima e embaixo) e ele c
 
 **P2 — "Pelas margens" agora segue a beirada do papel no scan, e no Cursus 176 entortou a página inteira.**
 Com o papel em volta (como o ScanTailor), o "pelas margens" procura a beirada de cima e de baixo da folha no scan
-inteiro. No Cursus 176 (com a tira da página vizinha e a sombra da lombada) a página saiu torta, com uma cunha preta
-embaixo: `depois-do-conserto/cursus_p176-pagina.jpg` (4ª coluna). Antes do conserto ele quase não fazia nada.
+inteiro. Em página com fundo escuro, sombra da lombada ou tira da página vizinha ele entorta a página inteira, com
+cunha preta: Cursus 176, Matemática 65 e 66 (`depois-do-conserto/cursus_p176-pagina.jpg`,
+`matematica_p065-pagina.jpg`, `matematica_p066-pagina.jpg`, 4ª coluna). Antes do conserto ele quase não fazia nada.
 - (a) Deixar como o ScanTailor (desligado de fábrica).
-- (b) **(recomendo)** A mesma proteção da P1-(b) também para ele.
-- (c) Só o "pelas margens" volta a receber a página já cortada (sem papel em volta), como antes.
+- (b) A mesma proteção da P1-(b) também para ele (mas a medida da P1 pode não pegar a página entortada).
+- (c) **(recomendo)** Só o "pelas margens" volta a receber a página já cortada (sem papel em volta), como antes:
+  quase não mexe, mas não estraga.
 
 **P3 — Página curva de verdade para conferir.** Procurei no acervo inteiro (script
 `scripts/procurar_linhas_curvas.py`, 2.900 páginas) e olhei as candidatas: não há página com as linhas **bem** curvas
-perto da lombada. As mais curvas são do Marial (pp. 41, 201, 501, 701: curva pequena perto da lombada) e o
-automático do ScanTailor não acha curva que baste nelas (sai igual a "Hoje"). Você tem um livro grosso escaneado
-aberto, com as linhas bem curvas, para eu testar?
+perto da lombada. As que têm alguma curva: Matemática para vencer (pp. 31, 63, 65, 66: perto da lombada, na sombra)
+e Marial (pp. 41, 201, 501, 701: curva pequena). O automático mexe pouco nas da Matemática e nada nas do Marial (não
+acha curva que baste). Você tem um livro grosso escaneado aberto, com as linhas bem curvas, para eu testar?
