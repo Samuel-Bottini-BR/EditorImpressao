@@ -105,3 +105,10 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - Livro aberto: refazer como no UPDF (barra de baixo com uma página / duas lado a lado / rolar sem parar e caber página / altura / largura / tamanho real; todas as páginas na mesma altura; página nítida): "concordo sim, pode colocar o agente de layout para trabalhar."
 - Ressalva da grade: é erro (imagem encolhida e aumentada de novo pela escala de 125%); o agente de layout mede e conserta.
 - Filtros em tela cheia: mostram todas as opções do filtro escolhido (Só as letras, os 10 tipos do ScanTailor, 2.9, 2.11, Limpar a sujeira, Mais ajustes) e a página do meio sai com todas aplicadas; o agente de layout junta o 2.8-2.15 aprovado (até 25504fb) ao ramo dele: "faça o recomendado."
+
+## Perguntas do Implementador B (22/10/2026, na Central)
+- `b-1-margens`: **Ficam as duas** · `b-2-margens-na-tela`: **Sim, a tela mostra igual ao que sai** · `b-4-girar-deitada`: **Alto à esquerda, como está** · `b-5-imprimir-direto`: **Testo uma folha na EPSON quando a conferência chegar**
+- `b-6-igualar-luz`: **Em todos, com aviso** — "mas vai ser uma opção que eu posso desligar e ligar né?" (respondido na Central: sim, caixinha desligada de fábrica)
+- `b-7-chuvisco`: **Até 100, com aviso a partir de 20** — "mas eu vou poder escolher a escala né?" (respondido: sim)
+- `b-3-cadernos-antigo`: primeiro "Ainda não entendi" — "Pera ai, mas ele monta em formato livreto também? como assim monta com dobro de largura explique melhor."; refeita com desenho em escala; depois **Deixar os dois**
+- `b-8-tinta-com-cor`: "Ainda não entendi" — "Não entendi o que estou olhando. uma está o preto e branco bem melhor, a outra apagou as letras."; refeita com Livro de Horas 13 (título vermelho e azul) e Escola 7 em quatro jeitos; aguardando resposta

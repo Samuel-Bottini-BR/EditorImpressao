@@ -279,28 +279,72 @@
   },
   {
    "id": "b-8-tinta-com-cor",
-   "titulo": "\"Tinta com a cor\" numa página em Preto e branco deixa a letra cinza",
+   "titulo": "\"Tinta com a cor original\" numa página em Preto e branco: fica como está (A) ou escurece a tinta (B)?",
    "explicacao": [
-    "No item 2.18 (marcar uma área à mão), a opção \"Tinta com a cor original, papel branco\" mantém a cor da tinta do original. Numa página em Preto e branco, a letra daquela área sai cinza (era a cor dela no livro)."
+    "O que você está escolhendo: como fica a cor de uma área que o Kaique marca à mão como \"Tinta com a cor original, papel branco\", numa página em Preto e branco.",
+    "Para que serve: no Preto e branco toda tinta vira preta, inclusive o título vermelho e azul. Com essa marcação, só aquela área guarda a cor da tinta do livro, com o papel branco em volta. O resto da página continua em Preto e branco.",
+    "Na foto ampliada do Livro de Horas 13, de cima para baixo: o Original; o Preto e branco de hoje (o título fica preto); A, com a área marcada (o vermelho e o azul voltam, com a cor que a tinta tem no livro); B, a mesma tinta escurecida (só uma simulação, para você comparar; não existe no programa).",
+    "Por que a Escola 7 parecia \"apagada\": o título dela é impresso em tinta cinza-marrom clara. A opção A devolve exatamente essa cor, por isso fica mais claro que o Preto e branco. O B fica marrom-escuro, entre os dois.",
+    "Todas as fotos passam pelo caminho inteiro de livro novo (dividir → endireitar → cortar → filtro), e cada painel diz isso no alto."
    ],
    "opcoes": [
     {
      "id": "a",
-     "nome": "Está certo, é o que a opção faz (recomendado)",
-     "texto": "Para sair preto, o Kaique escolhe outra opção na área.",
-     "imgs": []
+     "nome": "A — A cor como está no livro (o programa hoje)",
+     "texto": "A tinta volta com a cor que tem no original. Título vermelho fica vermelho como no livro; tinta desbotada fica desbotada.",
+     "imgs": [
+      {
+       "src": "pb/p8-horas_p013-titulo-ampliado.jpg",
+       "legenda": "Veja o terceiro jeito, \"A\"."
+      }
+     ]
     },
     {
      "id": "b",
-     "nome": "Nessa opção, no Preto e branco, a letra sai preta",
-     "texto": "A opção muda de comportamento no Preto e branco.",
+     "nome": "B — A cor escurecida",
+     "texto": "A tinta mantém a cor, mas mais forte (o vermelho fica vermelho-escuro, o azul fica azul-marinho). Nunca sai apagada. O agente faz como opção nova do mesmo tipo de área. Ressalva: se a área encostar numa moldura dourada, a moldura dentro da área também escurece.",
+     "imgs": [
+      {
+       "src": "pb/p8-horas_p013-titulo-ampliado.jpg",
+       "legenda": "Veja o quarto jeito, \"B\" (simulado)."
+      }
+     ]
+    },
+    {
+     "id": "ab",
+     "nome": "As duas: A e B como opções separadas",
+     "texto": "O Kaique escolhe na hora de marcar: \"cor como no livro\" ou \"cor escurecida\".",
      "imgs": []
     }
    ],
    "exemplos": [
     {
-     "src": "pb/escola_p007-tinta-com-cor.jpg",
-     "legenda": "Escola de Jesus 7. Caminho: endireitar (ScanTailor) → cortar as bordas → Preto e branco. Esquerda: hoje. Direita: o alto da página marcado à mão como \"Tinta com a cor, papel branco\": o título e as primeiras linhas saem cinza (a cor da tinta no livro)."
+     "src": "pb/p8-horas_p013-titulo-ampliado.jpg",
+     "legenda": "Livro de Horas 13, o título ampliado: Original · Preto e branco (hoje) · A \"Tinta com a cor\" (o programa) · B tinta escurecida (simulado)."
+    },
+    {
+     "src": "pb/p8-horas_p013-pagina.jpg",
+     "legenda": "A página inteira nos mesmos quatro jeitos."
+    },
+    {
+     "src": "pb/p8-escola_p007-titulo-ampliado.jpg",
+     "legenda": "Escola de Jesus 7, o título ampliado nos quatro jeitos: a tinta do livro é cinza-marrom clara."
+    },
+    {
+     "src": "pb/p8-escola_p007-pagina.jpg",
+     "legenda": "A página inteira da Escola 7 nos quatro jeitos."
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T15:25:37Z",
+     "texto": "Não entendi o que estou olhando.\numa está o preto e branco bem melhor, a outra apagou as letras."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T16:50:00Z",
+     "texto": "A foto de antes foi mal escolhida: era uma página de tinta preta desbotada, e a opção serve para tinta colorida. Refiz com um título vermelho e azul (Livro de Horas 13) e com a mesma Escola 7, cada uma em quatro jeitos."
     }
    ]
   }
