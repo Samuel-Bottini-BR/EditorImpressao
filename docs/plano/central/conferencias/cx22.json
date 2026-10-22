@@ -32,7 +32,7 @@
     "Do que se trata: a página 3 do Egenloff (a folha de rosto) tem, embaixo, uma etiqueta colada com moldura vermelha: \"1880 neu aufgelegt von George Gilbers\". O programa cortava a página no meio dessa etiqueta, e metade dela sumia.",
     "O que mudou: agora o corte desce 17 mm e a etiqueta sai inteira.",
     "O que piorou em troca: o corte continua do mesmo tamanho. Como ele desceu embaixo, também desceu em cima, e o carimbo oval do alto, que antes saía inteiro, agora sai cortado ao meio. O lápis \"Af 10\" também sai. O carimbo da direita (\"Fachschule\") já saía cortado antes e continua assim.",
-    "Na foto ampliada: em cima, como era; embaixo, como ficou. O vermelho é o que o corte tira.",
+    "Na primeira foto (ampliada): à esquerda, ANTES; à direita, DEPOIS. A linha 1 é a etiqueta de baixo, a linha 2 é o carimbo de cima e a linha 3 é o carimbo da direita. O vermelho é o que o corte tira; o que não está vermelho fica na página.",
     "Outro defeito, na tela: na primeira vez que essa página aparece, o corte mostrado ainda é o antigo e não aparece aviso. Só depois de passar por outras páginas e voltar ele fica certo.",
     "Caminho: não precisou dividir, endireitada, cortada (cortar pelo conteúdo + borda preta até a moldura), filtro Original, 300 DPI."
    ],
@@ -65,6 +65,11 @@
      "quem": "gerente",
      "em": "2026-10-22T19:50:00Z",
      "texto": "Você marcou \"Ainda não entendi\". Refiz a explicação mais simples logo abaixo. A sua decisão final da conferência (Aprovado) já está registrada."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T20:40:00Z",
+     "texto": "Corrigi a explicação da foto: eu tinha escrito \"em cima / embaixo\", mas a foto mostra antes à esquerda e depois à direita."
     }
    ]
   },
@@ -130,7 +135,7 @@
     "O conserto é a opção que você escolheu na pergunta dos avisos: contar só o que parece impresso, ignorando o que encosta na beirada, os pontinhos menores que uns 2 mm e o que é claro demais para ser tinta. O implementador mede a acerto do aviso antes e depois, nas mesmas 37 páginas."
    ],
    "olhar": "Os retângulos azuis: cada um é um pedaço que o aviso contou como \"ficou de fora\".",
-   "texto": "No Marial, o aviso conta a beirada do papel e a sombra dela (às vezes grudada no texto, e aí vira um retângulo enorme), pontinhos de sujeira de 0,4 a 2 mm e manchas. No Egenloff conta também o verso aparecendo por transparência e a faixa da biblioteca (SLUB) no pé do escaneado. Com aviso em quase toda página, o Kaique não vai saber qual abrir.",
+   "texto": "Ainda não está resolvido: o conserto (contar só o que parece impresso) é o próximo trabalho do Implementador A, depois do desentortar. No Marial, o aviso conta a beirada do papel e a sombra dela (às vezes grudada no texto, e aí vira um retângulo enorme), pontinhos de sujeira de 0,4 a 2 mm e manchas. No Egenloff conta também o verso aparecendo por transparência e a faixa da biblioteca (SLUB) no pé do escaneado. Com aviso em quase toda página, o Kaique não vai saber qual abrir.",
    "selo": "Ruim",
    "ressalva": "Não é deste trabalho (antes já era assim: 81 no Marial), mas pesa no uso. Vira a pergunta à parte.",
    "decisao_do_samuel": "",
@@ -155,6 +160,16 @@
      "quem": "gerente",
      "em": "2026-10-22T19:50:00Z",
      "texto": "Sim, está dando aviso sem precisar. A investigação já foi feita pelo verificador: ele abriu 37 páginas com aviso e anotou o que o programa confundiu. A resposta está logo abaixo."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-22T19:40:00Z",
+     "texto": "Foi resolvido? o programa parou de confundir?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T20:40:00Z",
+     "texto": "Ainda não. Por enquanto só foi achado o que ele confunde, nas 37 páginas olhadas. O conserto é a opção que você escolheu na pergunta dos avisos (contar só o que parece impresso). Ele vai para o Implementador A logo depois do desentortar. Depois o verificador mede de novo nas mesmas 37 páginas quantos avisos sobram e se o aviso do carimbo do Egenloff 3, que é de verdade, continua aparecendo. Isso volta para você conferir aqui na Central, com fotos."
     }
    ]
   }

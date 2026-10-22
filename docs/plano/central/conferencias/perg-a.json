@@ -25,6 +25,10 @@
    ],
    "exemplos": [
     {
+     "src": "img/corte-uma-vez.svg",
+     "legenda": "Desenho (não é foto): em cima, como o nosso programa faz hoje; embaixo, como o ScanTailor faz, que é a opção A que você escolheu."
+    },
+    {
      "src": "pa/righetti_f096-direita-recorte.jpg",
      "legenda": "Righetti 96, página da direita, ampliado: no \"Desentortar automático\" o cabeçalho some, aparece uma faixa preta e as linhas saem cortadas."
     },
@@ -46,19 +50,34 @@
      "id": "a",
      "nome": "A — Como o ScanTailor: cortar uma vez só, no fim (recomendo)",
      "texto": "O programa mede o corte como hoje, mas entrega ao desentortar a página ainda com o papel do próprio scan em volta. Desentorta e só então corta, uma vez, no mesmo lugar medido. Não inventa papel e não faz nada duas vezes. A ordem que você aprovou em 09/10 continua a mesma. Depois o verificador traz páginas com curva de verdade e uma régua reta por cima, para você ver se melhora. Ressalva: o que esticar além do papel que o scan tem em volta ainda sai da página (no ScanTailor também).",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "img/corte-uma-vez.svg",
+       "legenda": "A opção A é a linha de baixo do desenho. A foto de verdade vem quando o implementador terminar."
+      }
+     ]
     },
     {
      "id": "b",
      "nome": "B — Desentortar antes de medir o corte",
      "texto": "Desentorta a página inteira e só depois mede e faz o corte. Ressalva: mexe na ordem que você aprovou em 09/10 (endireitar → cortar), e o corte passa a ser medido numa página já redesenhada. Livro já começado continua igual.",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "img/corte-uma-vez.svg",
+       "legenda": "Na B o desentortar vem antes da etapa 2 (antes de marcar o corte): o corte passa a ser medido na página já redesenhada."
+      }
+     ]
     },
     {
      "id": "c",
      "nome": "C — Deixar como está, desligado, com aviso",
      "texto": "Continua desligado de fábrica; quem ligar vê o aviso \"pode cortar letras da beirada\". O conserto fica para depois.",
-     "imgs": []
+     "imgs": [
+      {
+       "src": "pa/righetti_f096-direita-recorte.jpg",
+       "legenda": "Como está hoje, ligado: no Righetti 96 o cabeçalho some e as linhas saem cortadas."
+      }
+     ]
     }
    ],
    "historico": [
@@ -112,7 +131,20 @@
     "Já conhecidos: \"Reduzir cores\" (2.11) e \"Limpar a sujeira\" podem apagar acento e pingo.",
     "O que resolve a maior parte de uma vez é o mesmo conserto que você escolheu para o desentortar: o corte vira só uma medida e a imagem é recortada uma vez, no fim. Isso resolve o 1 e o desentortar. E o aviso \"Corte encostou no texto\" passa a ser medido no corte de verdade, para avisar quando um número de página fica de fora (resolve o aviso do 2)."
    ],
-   "exemplos": [],
+   "exemplos": [
+    {
+     "src": "img/riscos-pagina.svg",
+     "legenda": "Desenho (não é foto) dos riscos 1, 2 e 4: girar dentro do corte, o número da página que fica fora e a linha reta que divide a folha torta."
+    },
+    {
+     "src": "cx22/img/egenloff_p003_beiradas_perto.jpg",
+     "legenda": "Foto de verdade de um caso parecido com o risco 2: no Egenloff 3 o corte parte o carimbo de cima e o da direita (vermelho = o que o corte tira)."
+    },
+    {
+     "src": "conf/img/211-horas_p026.jpg",
+     "legenda": "Foto de verdade do caso já conhecido: \"Reduzir cores\" apagando parte das letras no Livro de Horas 26."
+    }
+   ],
    "opcoes": [
     {
      "id": "a",
@@ -143,6 +175,11 @@
      "quem": "gerente",
      "em": "2026-10-22T19:50:00Z",
      "texto": "Registrado: agora só o desentortar. Os 8 entraram na Lista de bugs com a sua regra: no começo da próxima fase, o verificador prova cada um em páginas de verdade, com fotos, e você decide vendo."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-22T20:40:00Z",
+     "texto": "Você tinha razão: esta pergunta estava sem nenhuma foto. Pus um desenho dos três riscos mais difíceis de imaginar e duas fotos de verdade de casos parecidos que já tínhamos. As fotos de cada um dos 8 vêm quando o verificador provar em páginas de verdade, como você mandou."
     }
    ]
   }

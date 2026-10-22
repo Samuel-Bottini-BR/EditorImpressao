@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 350" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="960" height="350" fill="#ffffff"/>
+  <text x="20" y="30" font-size="20" font-weight="700" fill="#222">Desenho explicativo (não é foto): três dos riscos achados no código</text>
+  <!-- 1 girar dentro do corte -->
+  <g transform="translate(20,50)">
+    <rect x="20" y="20" width="250" height="200" fill="#ffffff" stroke="#c00" stroke-width="3"/>
+    <g transform="rotate(-6 145 120)">
+      <rect x="20" y="20" width="250" height="200" fill="#efe3c8" stroke="#999"/>
+      <g stroke="#333" stroke-width="3"><line x1="40" y1="45" x2="250" y2="45"/><line x1="40" y1="80" x2="250" y2="80"/><line x1="40" y1="115" x2="250" y2="115"/><line x1="40" y1="150" x2="250" y2="150"/><line x1="40" y1="185" x2="250" y2="185"/></g>
+    </g>
+    <text x="145" y="245" font-size="15" text-anchor="middle" fill="#333" font-weight="700">1. Gira dentro do corte (livro antigo)</text>
+    <text x="145" y="266" font-size="14" text-anchor="middle" fill="#c00">os cantos saem do quadro vermelho</text>
+  </g>
+  <!-- 2 peça pequena fora -->
+  <g transform="translate(335,50)">
+    <rect x="20" y="10" width="250" height="215" fill="#efe3c8" stroke="#999"/>
+    <rect x="45" y="40" width="200" height="150" fill="none" stroke="#c00" stroke-width="3"/>
+    <g stroke="#333" stroke-width="3"><line x1="60" y1="60" x2="230" y2="60"/><line x1="60" y1="90" x2="230" y2="90"/><line x1="60" y1="120" x2="230" y2="120"/><line x1="60" y1="150" x2="230" y2="150"/><line x1="60" y1="175" x2="200" y2="175"/></g>
+    <text x="145" y="212" font-size="16" text-anchor="middle" fill="#333" font-weight="700">23</text>
+    <circle cx="145" cy="207" r="16" fill="none" stroke="#c00" stroke-width="2"/>
+    <text x="145" y="245" font-size="15" text-anchor="middle" fill="#333" font-weight="700">2. O corte deixa de fora peça pequena</text>
+    <text x="145" y="266" font-size="14" text-anchor="middle" fill="#c00">o número da página fica fora, sem aviso</text>
+  </g>
+  <!-- 4 dividir reto -->
+  <g transform="translate(650,50)">
+    <g transform="rotate(-5 145 115)">
+      <rect x="20" y="10" width="250" height="210" fill="#efe3c8" stroke="#999"/>
+      <g stroke="#333" stroke-width="3"><line x1="35" y1="40" x2="155" y2="40"/><line x1="35" y1="75" x2="155" y2="75"/><line x1="35" y1="110" x2="155" y2="110"/><line x1="35" y1="145" x2="155" y2="145"/><line x1="35" y1="180" x2="155" y2="180"/>
+      <line x1="170" y1="40" x2="255" y2="40"/><line x1="170" y1="75" x2="255" y2="75"/><line x1="170" y1="110" x2="255" y2="110"/><line x1="170" y1="145" x2="255" y2="145"/><line x1="170" y1="180" x2="255" y2="180"/></g>
+    </g>
+    <line x1="160" y1="5" x2="160" y2="228" stroke="#c00" stroke-width="3" stroke-dasharray="7 5"/>
+    <text x="145" y="245" font-size="15" text-anchor="middle" fill="#333" font-weight="700">4. Divide com uma linha reta em pé</text>
+    <text x="145" y="266" font-size="14" text-anchor="middle" fill="#c00">na folha torta, a ponta das letras</text><text x="145" y="284" font-size="14" text-anchor="middle" fill="#c00">vai para a outra página</text>
+  </g>
+</svg>
