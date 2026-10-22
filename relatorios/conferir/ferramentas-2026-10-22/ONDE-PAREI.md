@@ -97,6 +97,45 @@ de 6 páginas. Fotos `img/217_<página>_<pb|melhorar|original>.jpg` e `img/217_e
   engrossa e borra. Original: igual.
 - "Suavizar as letras" no Melhorar não foi testado (é só do Preto e branco, como no ScanTailor).
 
+### 2.18 Áreas mudadas à mão (olho; 5 fotos abertas). Caminho: girar → não dividiu → endireitada → cortada →
+Preto e branco → a marcação que o programa acha sozinho (a mesma da tela) → a área à mão por cima → processar.
+Script `scripts/zonas218.py`. Fotos `img/218_*.jpg`.
+- **Horas 13** (`218_horas_p013.jpg`): título como "Tinta com a cor original, papel branco" → TABLE e CONTENU
+  vermelhos, DE CE QUI EST azul, papel branco (certo); "Tinta preta, fundo original" → letra preta com o creme do papel
+  dentro do retângulo (certo, como pedido); "Pintar por cima" (branco) no canto de cima → o "c" de lápis some.
+- **Escola 7** (`218_escola_p007.jpg`): endereço do blog com "Pintar por cima" branco → some; com a cor cinza
+  #c0c0c0 → um retângulo cinza no lugar (a cor escolhida vale).
+- **Marial 7** (`218_marial_p007_mancha.jpg`): a área que a máquina achou na mancha (a "gravura" do canto de cima) —
+  **apagada** → a mancha cinza sai, sobra o risco preto da beirada do scanner; **pintada de branco (o botão)** → a
+  mancha sai igual; um retângulo à mão "Pintar por cima" no mesmo lugar → sai também o começo das linhas que estão
+  dentro dele (é o retângulo; esperado).
+- **Achado (suspeita, no código, não na tela):** se a pessoa apagar **todas** as áreas achadas de uma página, a
+  marcação fica vazia e, ao processar, o programa **acha tudo de novo** (`core/pipeline.py` ~linha 1205: "se a
+  marcação guardada está vazia, detectar"). No Marial 7, apagando as 15 áreas, o PDF saiu igual ao de hoje, com a
+  mancha (`218_marial_p007.jpg`). Apagar uma área só (sobrando outras) funciona. O código antigo faz o mesmo (não é
+  deste ramo), mas toca a decisão P11b ("apagar"). Ressalva.
+- Teste ruim meu (descartado, fica a foto `218_marial_p007_maior_branca.jpg`): pintei de branco a MAIOR área achada,
+  que é uma "letra" do tamanho da página; ela vira "papel" e as outras letras por cima continuam: nada muda.
+- Contas de mover / mudar o tamanho / copiar (máquina, `trabalho/2.18/contas.json`): mover (0,1; 0,05) anda certo;
+  mudar o tamanho dá exatamente a caixa pedida; a cópia sai 3 % ao lado; a área original não muda.
+- **Pendência b-8 (não é defeito):** "Tinta com a cor original" saiu só como a opção A (cor do original); a B
+  (escurecida), que o Samuel pediu como opção separada, **ainda não foi feita**.
+
+### 2.16 Todos os núcleos + velocidade (máquina). Livro: Marial 11 a 33 (23 páginas), Preto e branco, pelo caminho
+inteiro; antes (`9804b98`) e depois alternados, um processo por vez, duas vezes cada. Este PC está com pouca memória
+livre (0,6 a 3 GB; outros programas abertos), e **de fábrica o programa novo escolhe 1 trabalhador aqui** (corta pela
+memória: 900 MB por trabalhador + 1,5 GB de reserva). Para ver o ganho forcei 3 trabalhadores.
+| | abrir (análise) | processar |
+|---|---|---|
+| antes, vez 1 / 2 | 7,9 / 7,8 s | 89,4 / 102,2 s |
+| novo com 1 trabalhador (o que este PC escolhe), vez 1 / 2 | 7,8 / 7,5 s | 96,3 / 97,6 s |
+| novo com 3 trabalhadores, vez 1 / 2 | 4,9 / 5,2 s | 58,2 / 59,0 s |
+- **O PDF sai idêntico** (somas de todas as 23 páginas iguais) no antes, no novo com 1 e no novo com 3.
+- Com 1 trabalhador fica igual ao antes (dentro do vai-e-vem: 89 a 102 s). Com 3, ~40 % mais rápido, como o filtro
+  do GitHub achou (39787700625 e 39791117352: "parece mais rápido").
+- Ressalva: no PC do Samuel com pouca memória livre o ganho não aparece (o programa cai para 1, igual a antes). A
+  medida que vale para a fase é a da gerente.
+
 - Observação (2.4): as margens são branco puro; no filtro Original o papel creme fica com uma moldura branca em volta
   (como o ScanTailor faz).
 - [x] 3. 2.6: PDF de impressão de verdade + dobra simulada (máquina + olho). Livro: **Marial, páginas 11 a 33 do PDF
