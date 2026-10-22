@@ -333,3 +333,20 @@ def test_regressao_a_frase_da_tela_diz_as_opcoes_novas():
     assert "tirando a borda preta do scanner (até o que está impresso)" in pipeline.resumo_em_portugues(p, 10)
     p.borda_preta_ate, p.borda_preta_fazer = "so_o_preto", "pintar"
     assert "pintando de branco a borda preta do scanner (só o preto)" in pipeline.resumo_em_portugues(p, 10)
+
+
+def test_regressao_a_passada_guarda_a_geometria_e_a_geracao_nao_refaz(tmp_path, monkeypatch):
+    """Lentidão de 21/10/2026 (Marial de 100 folhas: a passada que mede o
+    livro foi de ~140 para ~300 s com as opções ligadas). A passada media a
+    página e jogava o resto fora, e a geração do PDF calculava tudo de novo.
+    Desde 22/10/2026 ela guarda a geometria inteira: depois dela, toda página
+    já tem (corte, ângulo) guardado e a geração não chama a conta outra vez."""
+    caminho, projeto = _livro_medido(tmp_path, monkeypatch, BLOCOS[:3])
+    for pagina in projeto.paginas:
+        assert pipeline._geometria_guardada(projeto.folhas[pagina.folha], pagina, projeto) is not None
+    chamadas = []
+    original = pipeline._geometria
+    monkeypatch.setattr(pipeline, "_geometria", lambda *a, **k: chamadas.append(1) or original(*a, **k))
+    for i in range(3):
+        _corte(projeto, caminho, i)
+    assert chamadas == []

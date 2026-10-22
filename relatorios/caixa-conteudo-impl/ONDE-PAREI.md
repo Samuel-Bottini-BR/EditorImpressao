@@ -245,3 +245,35 @@ capas no tamanho delas (muito maiores, com aviso). Teste de reversão `tests/tes
   o que o filtro mede): estava rodando ao parar; ler `gh run view 39623840809`.
 - **Horas 11** (ramo `consertos-2026-10-21`): consertado em `2ff16e7` (ver o ONDE-PAREI de lá). Falta só a
   suíte do GitHub daquele ramo depois desse commit.
+
+## 22/10/2026 — Implementador A retoma (pedido da gerente): etiqueta do Egenloff 3 e velocidade da passada
+
+- [x] `origin/fase-1` (`9804b98`) juntado (`c66f28d`), sem conflito (só documentos).
+- [x] Rodada de velocidade 39623840809 (`31a9253` x `57de8af`, opções DESLIGADAS) lida: **"igual (dentro do vai-e-vem)"**.
+- [x] **Etiqueta do Egenloff 3** (`6566a01`): a causa era o passo que deixava a etiqueta inteira (136 pontos
+      para baixo) fazer a beirada de cima partir duas peças de um carimbo (y 295-382); `sem_partir` só
+      experimentava passos tirados das peças partidas na posição de saída. Agora experimenta pôr cada beirada
+      rente (ou com a folga de 1 mm) a cada peça da faixa do corte. Página real (`scripts/eg3.py as_duas`):
+      corte 849,208-3832,4683 → 761,409-3744,4884; a etiqueta (y 4431-4807) fica inteira. Imagem:
+      `saida_teste/livro/eg3_as_duas.jpg` (aberta). Teste de reversão
+      `test_regressao_egenloff3_o_passo_que_salva_a_etiqueta_nao_pode_partir_o_carimbo` (falha no `c66f28d`).
+      Ressalva: os carimbos da biblioteca (oval em cima, "Fachschule..." à direita) continuam partidos pelo
+      corte, como antes: a tinta deles é clara e não entra nas peças; é a pergunta aberta do carimbo.
+- [x] **Velocidade, passo 1** (`04bcda2`): cProfile da passada (Egenloff 1-14, 300 DPI): 24 de 47 s eram a
+      conta "só o preto" (`borda_preta.so_o_preto`). Reescrita com as mesmas contas (np.maximum/minimum canal a
+      canal, contagem/tamanho, soma da janela em Python na ordem do numpy): **0 diferenças em 201 contas** (67
+      páginas reais a 300 DPI x cor/girada/cinza), 114 s → 25 s. Teste `test_so_o_preto_rapido_da_o_mesmo_que_o_de_antes`.
+- [x] **Velocidade, passo 2** (`8e237ef`): a passada guarda a geometria inteira (`_guardar_geometria`, a mesma
+      da geração do PDF) em vez de medir à parte e jogar fora; a geração não recalcula. Teste de reversão
+      `test_regressao_a_passada_guarda_a_geometria_e_a_geracao_nao_refaz` (falha no `04bcda2`).
+      **Números** (PC, opções ligadas, 300 DPI, Original, antes = `c66f28d`, alternado; passada / geração / total, s):
+      | Livro | antes | depois |
+      |---|---|---|
+      | Egenloff 14 folhas | 59,5/77,3/136,8 e 55,6/72,7/128,2 | 38,1/14,0/52,1 e 39,0/12,4/51,3 |
+      | Marial 100 folhas | 256,6/304,4/560,9 e 187,9/279,4/467,4 | 132,2/51,3/183,6 e 154,4/64,6/219,1 |
+      A passada do Marial volta a ~130-155 s (era ~140 s antes de `57de8af`); o total cai ~2,5x.
+      Tamanho do livro igual. O PDF do Marial com `04bcda2` e com `8e237ef`: 100 de 100 páginas iguais.
+- **Ressalva do conserto da etiqueta:** no Marial ele muda o corte de 32 de 100 páginas (o corte anda alguns mm
+  na vertical, sempre do tamanho do livro, com o conteúdo dentro). Ampliei o alto e o pé das págs. 7, 23, 64 e
+  85 (`saida_teste/vel/mz_*.png`): nada partido nem perdido; a pág. 7 ganhou o aviso "ficou tinta de fora".
+  Precisa ir à conferência a olho.
