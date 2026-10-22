@@ -111,3 +111,17 @@ Original, Preto e branco e Melhorar). `somas_todas.sh <raiz> <saida.json>` roda 
    "igualar" só no Preto e branco e no Original?
 7. **2.17:** "tirar o chuvisco" acima de ~20 borra a letra. Limitar a escala?
 8. **2.18:** a "tinta com a cor" numa página em Preto e branco deixa a letra cinza (a cor do original). É isso?
+
+## Os dois "defeitos" do 2.18 que a gerente viu (22/10/2026): conferidos, não são do código
+
+Medi ponto a ponto o "antes" contra o "depois" das duas páginas (150 DPI): fora da área marcada só mudam 905
+pontos (Horas 13) e 109 (Marial 7), todos na beirada da área (arredondamento); a página não andou.
+1. **Horas 13, faixa preta:** a área [(0,2;0,3),(0,8;0,6)] pegava a moldura dourada do lado direito; a moldura é
+   tinta, e "tinta preta" a pinta de preto (antes, as 12 colunas antes da borda da área: 84, 81, 97... = o
+   dourado). O fundo "esverdeado" é o creme do papel original, que é o que "fundo original" pede. Refeito com a
+   área só no texto [(0,25;0,3),(0,72;0,6)]: sem faixa.
+2. **Marial 7:** a área [(0,75;0),(1;0,12)] era a do canto de cima à direita (eu escolhi mal: a mancha é à
+   esquerda); ela cobria o começo da 1ª linha ("Padre Pro...") e por isso o texto sumiu ali. A linha preta vertical
+   é a borda do scanner, que existe no "Hoje" também (abaixo da área). Refeito com a área na mancha da esquerda
+   [(0;0),(0,11;0,28)]: a mancha sai; a área retangular pega também o começo das linhas que estão dentro dela.
+Sem conserto de código, sem teste de reversão (não houve bug). Imagens novas em `relatorios/conferir/fase2-novas/2.18/`.

@@ -209,9 +209,9 @@ def item_2_18(raiz):
         ("escola_p007", "Tinta com a cor, papel branco (no título)",
          Regiao(tipo=TINTA_COR, pontos=[(0.05, 0.02), (0.95, 0.2)], origem=MAO)),
         ("horas_p013", "Tinta preta, fundo original (no texto)",
-         Regiao(tipo=TINTA_PRETA, pontos=[(0.2, 0.3), (0.8, 0.6)], origem=MAO)),
-        ("marial_p007", "Pintar por cima de branco (uma mancha)",
-         Regiao(tipo=PINTAR, pontos=[(0.75, 0.0), (1.0, 0.12)], origem=MAO, cor="#ffffff")),
+         Regiao(tipo=TINTA_PRETA, pontos=[(0.25, 0.3), (0.72, 0.6)], origem=MAO)),
+        ("marial_p007", "Pintar por cima de branco (a mancha da esquerda)",
+         Regiao(tipo=PINTAR, pontos=[(0.0, 0.0), (0.11, 0.28)], origem=MAO, cor="#ffffff")),
     ]
     for pid, nome, regiao in casos:
         antes, frase_a, _ = _processar_pagina(raiz, pid, pasta, "antes",
