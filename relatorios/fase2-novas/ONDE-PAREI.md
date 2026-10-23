@@ -252,3 +252,24 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
 11. **O nome do tipo:** o botão do "Marcar como" ainda diz "tinta com a cor, papel branco", mesmo quando se escolhe
     "papel como o resto da página". Trocar para só "tinta com a cor"? (Não mudei: nome de controle é com ele.)
     Foto: `relatorios/conferir/fase2-novas/tinta-papel/depois_painel_papel_da_pagina.png`.
+
+## Perguntas 10 e 11 respondidas (Central, 23/10/2026) — em andamento
+
+- **10, a linha preta em volta da letra no Preto e branco:** "No Preto e branco, tirar a linha preta: as duas opções de
+  papel saem iguais, com a letra limpa". Ele perguntou "Isso vai alterar alguma coisa, tirar essa linha preta?"; a
+  resposta dada: só muda a página em Preto e branco com uma área "papel como o resto da página", em que a letra sai
+  igual a "papel branco". Nada mais muda.
+  - **Feito:** `core/editar_zonas.aplicar_por_cima` ganhou `preto_e_branco` (de fábrica False); `core/pipeline` passa
+    `pagina.filtro == PRETO_E_BRANCO`. No Preto e branco o passo do "papel da página" não roda: sai idêntico ao "papel
+    branco". Original e Melhorar como antes. Commit `f8691be`.
+- **11, o nome do botão:** "manter a cor da tinta". Rótulo do "Marcar como" trocado (era "tinta com a cor, papel
+  branco"); `core/selecao.NOMES_AMIGAVEIS` (o aviso "Área escolhida: ..." e o resumo "Marcado: ...") também.
+  O código gravado no projeto.json continua `tinta_cor`. Commit `f8691be`.
+  - **Para a revisão futura dos nomes de botão:** o Samuel disse "esse botão ainda é bem confuso, mas por enquanto
+    pode ficar assim."
+- **Testes:** `tests/test_tinta_papel_preto_e_branco.py` (10 passaram aqui; no código antigo `0acf2c7` 3 falham: o
+  contorno preto, 3839 pontos a mais; a chamada direta; o nome do botão).
+  - Achado: o `test_no_pipeline_original_sem_retangulo_branco` (meu, de `b0af839`) usava `detectar_regioes=False`, com
+    que o pipeline não usa marcação nenhuma: passava sem testar nada. Trocado para True (continua passando).
+- Somas (Horas 13, Escola 7, Opus Majus 3; 45 PDFs por código) rodando em `fase2-novas-prova`; velocidade
+  `39886669584` (`0acf2c7` → `f8691be`) rodando.
