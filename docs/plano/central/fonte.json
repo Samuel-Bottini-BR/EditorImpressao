@@ -833,11 +833,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Conferir o papel da área da tinta com a cor; depois o desentortar",
-      "ultimo": "Começou a conferir o papel da área.",
+      "ultimo": "Conferiu o papel da área: pronto, com o contorno preto e o nome que você já decidiu (o Implementador B está fazendo). A conferência vai para você junto com esses dois ajustes. Próximo: o desentortar.",
       "ramo": "verif-tinta-papel-2026-10-23",
-      "quando": "2026-10-23T07:00:00Z"
+      "quando": "2026-10-23T09:00:00Z"
     },
     {
       "id": "layout",
