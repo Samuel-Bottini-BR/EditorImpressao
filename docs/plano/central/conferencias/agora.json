@@ -1,53 +1,85 @@
 {
  "id": "agora",
- "nome": "Para responder agora (1)",
+ "nome": "Para responder agora (2)",
  "trabalho": "2.12",
  "ordem": -1,
- "origem": "cópia das duas perguntas abertas",
+ "origem": "cópia das duas perguntas abertas do desentortar",
  "resumo": {
-  "titulo": "As duas perguntas que faltam responder",
+  "titulo": "Duas perguntas do desentortar",
   "paragrafos": [
-   "Uma pergunta nova do desentortar. Responder aqui vale também para a aba \"Pergunta do Implementador A\"."
+   "O verificador conferiu o desentortar inteiro: desligado nada muda; numa página curva limpa ele endireita sem perder letra; a tela fica igual ao PDF. Achou dois casos para você decidir. Responder aqui vale também para a aba do desentortar."
   ]
  },
  "quadros": [],
  "perguntas": [
   {
-   "id": "a-212-p6",
-   "titulo": "Desentortar: na tela ele não aparece (só no PDF). Mostrar na tela igual ao PDF?",
+   "id": "d212-1",
+   "titulo": "Página curva com a moldura escura do scanner: o desentortar não endireita. O que fazer?",
    "explicacao": [
-    "O ajuste do botão está feito como você pediu: se, depois do clique, a página ainda sair deformada, aparece \"Mesmo aumentando a página, o desentortar deixou esta página deformada. Quer desfazer...?\" com \"Desfazer\" e \"Manter assim\" (primeira foto).",
-    "O que o implementador achou: para ser rápida, a tela mostra a página numa imagem pequena. Nessa imagem pequena o desentortar não acha as linhas e não mexe em nada; ele só mexe na imagem grande, a do PDF. Resultado: com a qualidade da prévia de fábrica (\"Rápida\"), quem liga o desentortar vê a página como se ele não existisse, e os avisos dele só aparecem com a qualidade \"Alta\" ou quando o livro é processado.",
-    "Mesmo na \"Alta\", os cartões pequenos (Preto e branco, Melhorar, Mágico pro) mostram a página sem desentortar. Na primeira foto: o cartão Original deformado e os outros três retos — e o PDF sairia deformado nos quatro.",
-    "Isto é o mesmo assunto que você pediu antes: \"precisamos que o pdf saia que nem está na tela\" — a tela e o PDF têm de mostrar a mesma coisa."
+    "Muitas páginas do acervo têm em volta a moldura escura que o scanner deixa. Nessas, ligando o desentortar, a página continua curva.",
+    "Por quê: o programa diz ao desentortar onde está o texto, mas hoje essa marcação pega a moldura junto, e aí ele não acha as linhas curvas. Marcando só o texto, ele acha (última coluna da segunda foto).",
+    "Essa marcação do texto é provisória: a definitiva é o item 2.5 (a caixa do conteúdo, que você já aprovou), que entra na junção."
    ],
    "exemplos": [
     {
-     "src": "pa4/destino18-2-pergunta.jpg",
-     "legenda": "Destino do socialismo 18 na janela: o aviso novo (\"Desfazer\" / \"Manter assim\"); o cartão Original mostra a página deformada, os outros três mostram ela reta."
+     "src": "d212/img/causa-curvada2-moldura.jpg",
+     "legenda": "Mesma página curva, 4 colunas. 1: a página como está. 2 e 3: o desentortar com a marcação de hoje (pegando a moldura): as linhas continuam curvas. 4: marcando só o texto: as linhas ficam retas, acompanhando as linhas vermelhas."
     },
     {
-     "src": "pa4/destino_p018-direita-pagina.jpg",
-     "legenda": "A mesma página pelo caminho do PDF."
+     "src": "d212/img/ligado-curvada2-pagina.jpg",
+     "legenda": "A mesma página no programa: colunas 1 a 3 no Original (desligado, ligado, com o botão), 4 a 6 no Preto e branco. Nas seis, as linhas continuam subindo perto da lombada."
     }
    ],
    "opcoes": [
     {
      "id": "a",
-     "nome": "A — Deixar como está",
-     "texto": "Na \"Rápida\" a pessoa não vê o desentortar; para ver, troca para \"Alta\". Os cartões pequenos continuam sem mostrar.",
+     "nome": "A — Esperar o 2.5 (recomendo)",
+     "texto": "Quando a caixa do conteúdo (2.5, já aprovada) entrar junto na junção, o verificador refaz esta página. Se ainda não endireitar, volta para o implementador.",
      "imgs": []
     },
     {
      "id": "b",
-     "nome": "B — Como o ScanTailor: medir sempre na imagem grande, por trás, e a tela e os cartões mostrarem isso (recomendo)",
-     "texto": "Só nas páginas com o desentortar ligado, o programa faz a conta na imagem do PDF por trás (uns 3 a 8 segundos por página) e a tela e os cartões mostram o resultado, reduzido. A tela fica igual ao PDF e os avisos aparecem na hora. Desligado: nada muda.",
+     "nome": "B — Voltar ao implementador agora",
+     "texto": "Ele conserta a marcação antes da junção, para não pegar a moldura. Atrasa a junção.",
      "imgs": []
     },
     {
      "id": "c",
-     "nome": "C — Ao ligar o desentortar, a prévia passa sozinha para \"Alta\" naquela página",
-     "texto": "Mais simples, mas os cartões pequenos continuam sem mostrar.",
+     "nome": "C — Deixar como está",
+     "texto": "Páginas com moldura escura ficam sem desentortar.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "d212-2",
+   "titulo": "Righetti 96 com o botão: a página sai um pouco deformada e o programa não pergunta. Deveria perguntar?",
+   "explicacao": [
+    "Você pediu: \"o programa vai saber sempre que estiver deformada, o aviso deve perguntar\". No Righetti 96, depois do botão \"Desentortar aumentando a página\", o texto fica inteiro, mas as linhas de cima ficam um pouco maiores e a margem esquerda fica ondulada. O programa achou que estava bom e não perguntou \"Desfazer / Manter assim\"."
+   ],
+   "exemplos": [
+    {
+     "src": "d212/img/ligado-righetti96-pagina.jpg",
+     "legenda": "Righetti 96, 6 colunas. 1 e 4: hoje, desligado (Original e Preto e branco). 2 e 5: ligado: a proteção segura e mostra o aviso. 3 e 6: com o botão: o texto inteiro, mas as linhas de cima maiores e a margem esquerda ondulada, sem pergunta."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Está bom assim",
+     "texto": "Texto inteiro basta; quando você quiser, desfaz com Ctrl+Z.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Também perguntar \"Desfazer / Manter assim\" nesse caso",
+     "texto": "Volta ao implementador para o programa reconhecer essa deformação leve e perguntar.",
      "imgs": []
     },
     {
