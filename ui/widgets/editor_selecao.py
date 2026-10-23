@@ -286,6 +286,19 @@ class EditorSelecao(QWidget):
         self._marcos.clear()
         self.update()
 
+    def definir_marcas_do_aviso(self, caixas) -> None:
+        """As marcas do aviso do "Para revisar" (12/10/2026): retangulos
+        laranja tracejados mostrando ONDE esta o problema (Samuel, rodada 5,
+        `rv5-erro-1-desenho`: "onde sumiu, tem que aparecer selecionado
+        automaticamente, como na opção 3" - a opcao 3 era o retangulo desta
+        aba). Sao so um desenho por cima da pagina: NAO entram na marcacao
+        (nao mudam o PDF, nao vao para o desfazer). caixas: (x0, y0, x1, y1)
+        em fracao da pagina; vazia tira."""
+        novas = [tuple(c) for c in (caixas or [])]
+        if novas != getattr(self, "_marcas_do_aviso", []):
+            self._marcas_do_aviso = novas
+            self.update()
+
     def definir_ferramenta(self, ferramenta: str) -> None:
         """Troca a ferramenta ativa: muda o cursor e a dica na barra de status."""
         if ferramenta not in FERRAMENTAS:
@@ -426,6 +439,13 @@ class EditorSelecao(QWidget):
 
         if self.mostrar_marcacao:
             self._pintar_marcacao(pintor)
+        # as marcas do aviso ("onde sumiu"), por cima da marcacao
+        marcas = getattr(self, "_marcas_do_aviso", None)
+        if marcas:
+            from ui.widgets.cartao_filtro import pintar_marcas
+
+            pintar_marcas(pintor, marcas, self._area.left(), self._area.top(),
+                          self._area.width(), self._area.height())
         self._pintar_o_que_esta_sendo_desenhado(pintor)
 
     def _pintar_marcacao(self, pintor: QPainter) -> None:

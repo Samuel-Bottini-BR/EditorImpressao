@@ -561,10 +561,28 @@ class PainelParaRevisar(Painel):
 
     O texto de cada aviso (título e frase) vem de core/analise.descrever: este
     painel só decide onde e como eles aparecem.
+
+    "Está bom" de uma vez (12/10/2026; Samuel, rodada 4 do "Para revisar",
+    `rv4-aviso-so-texto`: "com todas as paginas ou com todos os motivos de
+    todas as paginas, e eu devo conseguir abrir um selecionador em aba grande"):
+    na aba "Por motivo", embaixo de cada motivo, um botão "está bom: todas"
+    (aceitar_motivo); no pé do painel, sempre à vista nas duas abas, "ver a
+    lista…" (abrir_lista: o seletor grande, ui/janela_dos_avisos.py) e "está
+    bom em tudo" (aceitar_tudo). O painel só AVISA quem escuta
+    (ui/tela_conferir.py aplica, pelo histórico: o Ctrl+Z desfaz). Os botões
+    só mudam quem está na lista, nunca a página. Só entram os avisos que ainda
+    pedem um olhar (ConfigPagina.alertas_pendentes). A aparência é provisória
+    (junção com o layout de 14/10, 20/10/2026: o pé foi o lugar escolhido pelo
+    implementador; fica com o agente de layout). Seguro mudar: os textos.
+    Arriscado: pôr o "está bom: todas" ANTES do botão do motivo em
+    self.itens (self.itens são só os botões que levam à página).
     """
 
     ir_para = Signal(int)
     contagem_mudou = Signal(int)
+    aceitar_motivo = Signal(str)     # o código do alerta
+    aceitar_tudo = Signal()
+    abrir_lista = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_REVISAR], parent, rolagem=False)
@@ -598,6 +616,13 @@ class PainelParaRevisar(Painel):
 
         self.frase = frase_do_painel("")
         self.dentro.addWidget(self.frase)
+        # O aviso do LIVRO da faixa escura na beirada (12/10/2026; Samuel,
+        # rodada 4, Camões 66: "aviso no livro basta"): quando a faixa está em
+        # quase todas as páginas, ela sai das páginas e é dita uma vez, aqui
+        # (core.pipeline.acertar_faixa_do_livro). Escondida quando não vale.
+        self.frase_do_livro = frase_do_painel("")
+        self.frase_do_livro.setVisible(False)
+        self.dentro.addWidget(self.frase_do_livro)
 
         self.pilha = QStackedWidget()
         self.pilha.setObjectName("pilhaDoPainel")
@@ -632,6 +657,22 @@ class PainelParaRevisar(Painel):
         self.pilha.addWidget(self.rolagem_dos_motivos)
 
         self.dentro.addWidget(self.pilha, 1)
+
+        # o pé: "ver a lista…" e "está bom em tudo", sempre à vista (antes
+        # ficavam no fim da lista e só apareciam rolando; verificador, 13/10)
+        self.botao_ver_a_lista = botao_de_lista("ver a lista…")
+        self.botao_ver_a_lista.setToolTip(
+            "Abre a lista de todas as páginas com aviso e os motivos, "
+            "para escolher em quais dar \"está bom\".")
+        self.botao_ver_a_lista.clicked.connect(lambda _c=False: self.abrir_lista.emit())
+        self.botao_esta_bom_em_tudo = botao_de_lista("está bom em tudo")
+        self.botao_esta_bom_em_tudo.setToolTip(
+            "Tira da lista todos os avisos de todas as páginas. "
+            "Não muda nada nas páginas; o Desfazer traz de volta.")
+        self.botao_esta_bom_em_tudo.clicked.connect(lambda _c=False: self.aceitar_tudo.emit())
+        self.no_pe.addWidget(self.botao_ver_a_lista)
+        self.no_pe.addWidget(self.botao_esta_bom_em_tudo)
+        self.pe.setVisible(False)          # só com aviso pendente (atualizar)
         self.mostrar_aba(ABA_POR_PAGINA)
 
     # --- as abas ----------------------------------------------------------
@@ -667,18 +708,31 @@ class PainelParaRevisar(Painel):
     def atualizar(self, projeto) -> None:
         """Refaz as duas listas a partir do projeto. Só refaz de verdade
         quando os avisos mudaram (a tela chama isto a cada troca de página)."""
+        from core import analise
+
+        # Só os avisos que ainda pedem um olhar (ConfigPagina.alertas_pendentes:
+        # nem a página inteira foi dada como boa, nem aquele motivo dela).
         pendentes: list[tuple[int, tuple]] = []
         if projeto is not None:
             for pagina in projeto.paginas:
-                if pagina.revisada or pagina.apagada or not pagina.alertas:
+                if pagina.apagada:
                     continue
-                pendentes.append((pagina.indice, tuple(pagina.alertas)))
-        assinatura = tuple(pendentes)
+                alertas = tuple(pagina.alertas_pendentes)
+                if alertas:
+                    pendentes.append((pagina.indice, alertas))
+        frase_da_faixa = analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA]
+        faixa_no_livro = projeto is not None and frase_da_faixa in (
+            getattr(projeto, "observacoes", None) or [])
+        assinatura = (tuple(pendentes), faixa_no_livro)
         if assinatura == self._assinatura:
             return
         self._assinatura = assinatura
         self._paginas = len(pendentes)
         self.cabecalho.definir_contagem(self._paginas)
+        self.frase_do_livro.setText("No livro inteiro: " + frase_da_faixa + "."
+                                    if faixa_no_livro else "")
+        self.frase_do_livro.setVisible(faixa_no_livro)
+        self.pe.setVisible(bool(pendentes))
         self._montar_por_pagina(pendentes)
         self._montar_por_motivo(pendentes)
         self._escrever_a_frase()
@@ -726,7 +780,15 @@ class PainelParaRevisar(Painel):
                 + ("…" if len(indices) > 20 else ""))
             self.motivos.addWidget(botao)
             self.itens.append(botao)
-        self.motivos.addWidget(frase_do_painel("clicar leva à primeira"))
+            # "está bom" neste motivo em todas as páginas (12/10/2026)
+            todas = botao_de_lista("está bom: todas" if len(indices) > 1 else "está bom")
+            todas.clicked.connect(
+                lambda _c=False, codigo=alerta: self.aceitar_motivo.emit(codigo))
+            todas.setToolTip(
+                f"Tira da lista {'as ' + str(len(indices)) + ' páginas' if len(indices) > 1 else 'a página'} "
+                f"com o aviso \"{nome}\". Não muda nada nas páginas; o Desfazer traz de volta.")
+            self.motivos.addWidget(todas)
+        self.motivos.addWidget(frase_do_painel("clicar no motivo leva à primeira página"))
 
     def definir_pagina_atual(self, indice: int) -> None:
         """Destaca, na lista "Por página", a página que está na tela (se ela

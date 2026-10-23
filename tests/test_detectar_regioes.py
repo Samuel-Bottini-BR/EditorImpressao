@@ -193,7 +193,10 @@ def test_avisa_quando_nao_sabe_se_e_desenho_ou_escrita():
 
     assert analise.DESENHO_OU_ESCRITA in analise.ALERTAS
     aviso = analise.descrever(analise.DESENHO_OU_ESCRITA)
-    assert "Marcar" in aviso.mensagem
+    # 20/10/2026: a frase deixou de dizer "aba Marcar" (o layout aprovado não
+    # tem abas); o Samuel escolheu (`r14-aviso-marcar`, C) dizer onde fica o
+    # "letra e traço" (ver core/analise.py, acima de ALERTAS)
+    assert "letra e traço" in aviso.mensagem and "Propriedades" in aviso.mensagem
 
     # a bandeira viaja na selecao, e por padrao nao existe
     assert getattr(Selecao(), "em_duvida", False) is False

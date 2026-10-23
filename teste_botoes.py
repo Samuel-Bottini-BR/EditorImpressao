@@ -350,6 +350,20 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
 
     TelaConfiguracoes.exec = _exec_configuracoes_sem_travar
 
+    # A lista dos avisos ("Antes de processar" e o seletor do painel "Para
+    # revisar", 12/10/2026) também é modal: antes era um QMessageBox, que a
+    # técnica de cima já resolvia. Aqui se clica no botão que segue em frente
+    # ("continuar assim mesmo", ou "fechar" no seletor).
+    from ui.janela_dos_avisos import JanelaDosAvisos
+
+    _exec_original_avisos = JanelaDosAvisos.exec
+
+    def _exec_avisos_sem_travar(self):
+        QTimer.singleShot(0, self.botao_continuar.click)
+        return _exec_original_avisos(self)
+
+    JanelaDosAvisos.exec = _exec_avisos_sem_travar
+
     # O diálogo "tamanho..." (Problema 1, opção A) também é modal.
     from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
 
@@ -664,6 +678,15 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             sugestao = conferir.botao_sugestao
             if aba != "marcar" and sugestao.isVisible() and sugestao.isEnabled():
                 alvos.append(sugestao)
+            # O segundo e o terceiro botao do aviso ("Para revisar", junção
+            # com o layout em 20/10/2026: moram na faixa, ao lado do primeiro).
+            # O que eles apagam ou deixam em branco volta antes de processar
+            # (_devolver_as_paginas_apagadas).
+            for extra in (getattr(conferir, "botao_sugestao_2", None),
+                          getattr(conferir, "botao_sugestao_3", None)):
+                if (aba != "marcar" and extra is not None and extra.isVisible()
+                        and extra.isEnabled()):
+                    alvos.append(extra)
         # Item 2.3 (06/10/2026): os tres botoes de girar, na linha das abas
         # (ui/widgets/barra_girar.py), valem em todas as abas.
         if hasattr(conferir, "barra_girar"):
@@ -1006,6 +1029,118 @@ def testar_tela_ampliada(conferir) -> tuple[int, int]:
     return resultado["ok"], resultado["falhas"]
 
 
+def _devolver_as_paginas_apagadas(conferir) -> tuple[int, int]:
+    """Antes de processar, devolve ao livro (pelo proprio "apagar/restaurar"
+    do programa) as paginas que este roteiro apagou ou deixou em branco.
+
+    Por que (13/10/2026): o roteiro clica em TODOS os botoes, inclusive os que
+    apagam e restauram a pagina da vez (o botao do aviso, "apagar página" da
+    aba Filtro, "Apagar esta página" e "Restaurar página apagada" do menu). Se
+    a pagina termina apagada ou nao depende de QUANTOS desses botoes existem.
+    Ate 12/10 o botao do aviso "Parece em branco" era "apagar esta página";
+    com a decisao do Samuel ele virou "Deixar em branco" (que nao apaga), a
+    conta mudou de par para impar, as paginas do livro de teste terminavam
+    todas apagadas e o programa, CERTO, recusava gerar um PDF sem pagina
+    nenhuma ("Não sobrou nenhuma página para gerar"). O teste dizia "o
+    processamento não chegou à tela final". Agora o estado antes de processar
+    nao depende mais da conta de cliques. Devolve (ok, falhas)."""
+    projeto = conferir.projeto
+    apagadas = [p.indice + 1 for p in projeto.paginas if p.apagada]
+    em_branco = [p.indice + 1 for p in projeto.paginas if getattr(p, "em_branco", False)]
+    print("\n--- antes de processar: o que o roteiro deixou nas páginas ---")
+    print(f"  páginas apagadas: {apagadas or 'nenhuma'}; em branco: {em_branco or 'nenhuma'}; "
+          f"de {len(projeto.paginas)}")
+    if "filtro" in conferir._abas_ativas:
+        conferir.barra_abas.setCurrentIndex(conferir._abas_ativas.index("filtro"))
+    for pagina in list(projeto.paginas):
+        if pagina.apagada:
+            conferir.ir_para_pagina(pagina.indice)
+            conferir.apagar_pagina()                     # o mesmo metodo do botao: restaura
+        if getattr(pagina, "em_branco", False):
+            conferir.ir_para_pagina(pagina.indice)
+            conferir._deixar_em_branco(False)            # o "voltar a página" do aviso
+    QApplication.processEvents()
+    if any(p.apagada or getattr(p, "em_branco", False) for p in projeto.paginas):
+        print("  FALHA não consegui devolver as páginas apagadas ou em branco")
+        return 0, 1
+    print(f"  ok    as {len(projeto.paginas)} páginas estão no livro")
+    return 1, 0
+
+
+def _testar_o_ver_da_lista_dos_avisos(janela, JanelaConfirmar) -> tuple[int, int]:
+    """A janela "Antes de processar" (a lista das paginas e dos motivos,
+    12/10/2026; Samuel, rodada 5 do "Para revisar": "Lista as páginas e os
+    motivos", com "ver" e "continuar assim mesmo"). Aqui o "ver": tem de levar
+    a pagina escolhida e NAO processar (a janela de confirmar nem abre). O
+    "continuar assim mesmo" e exercitado logo depois, no processar de
+    verdade (a resposta automatica de sempre, ver o comeco de main).
+
+    Para a lista ter o que mostrar sempre, a ultima pagina ganha um aviso que
+    o programa nao tira sozinho ("Qualidade baixa")."""
+    from PySide6.QtWidgets import QDialog
+
+    from core import analise
+    from core import avisos as avisos_do_livro
+    from ui.janela_dos_avisos import JanelaDosAvisos
+    from ui.janela_principal import CONFERIR
+
+    conferir = janela.tela_conferir
+    projeto = conferir.projeto
+    ultima = projeto.paginas[-1]
+    if analise.RESOLUCAO_BAIXA not in ultima.alertas:
+        ultima.alertas = list(ultima.alertas) + [analise.RESOLUCAO_BAIXA]
+    ultima.revisada = False
+    ultima.alertas_aceitos = [a for a in ultima.alertas_aceitos if a != analise.RESOLUCAO_BAIXA]
+    conferir.ir_para_pagina(0)
+    pendentes = avisos_do_livro.pendentes_do_livro(projeto)
+
+    print("\n--- antes de processar: a lista dos avisos ('ver') ---")
+    visto = {"linhas": [], "confirmar_abriu": False}
+    exec_dos_avisos = JanelaDosAvisos.exec
+    exec_do_confirmar = JanelaConfirmar.exec
+
+    def escolher_ver(dialogo) -> None:
+        visto["linhas"] = dialogo.linhas()
+        for linha in range(dialogo.lista.count()):
+            aviso = dialogo.lista.item(linha).data(Qt.UserRole)
+            if aviso.alvo == avisos_do_livro.PAGINA and aviso.indice == ultima.indice:
+                dialogo.lista.setCurrentRow(linha)
+        dialogo.botao_ver.click()
+
+    def exec_dos_avisos_com_ver(self):
+        QTimer.singleShot(0, lambda: escolher_ver(self))
+        return QDialog.exec(self)
+
+    def exec_do_confirmar_que_nao_devia_abrir(self):
+        visto["confirmar_abriu"] = True
+        QTimer.singleShot(0, self.reject)
+        return QDialog.exec(self)
+
+    JanelaDosAvisos.exec = exec_dos_avisos_com_ver
+    JanelaConfirmar.exec = exec_do_confirmar_que_nao_devia_abrir
+    try:
+        conferir.botao_processar.click()
+        esperar(0.5)
+    finally:
+        JanelaDosAvisos.exec = exec_dos_avisos
+        JanelaConfirmar.exec = exec_do_confirmar
+
+    ok = falhas = 0
+    esperada = f"Página {ultima.indice + 1}  -  {analise.descrever(analise.RESOLUCAO_BAIXA).titulo}"
+    for certo, frase in (
+        (len(visto["linhas"]) == len(pendentes) and esperada in visto["linhas"],
+         f"a janela listou as páginas e os motivos ({len(visto['linhas'])} linhas, entre elas '{esperada}')"),
+        (not visto["confirmar_abriu"] and janela.telas.currentIndex() == CONFERIR,
+         "'ver' não processou (a janela de confirmar não abriu)"),
+        (conferir.indice_pagina == ultima.indice,
+         f"'ver' levou à página {ultima.indice + 1} (está na {conferir.indice_pagina + 1})"),
+    ):
+        print(("  ok    " if certo else "  FALHA ") + frase)
+        ok += int(certo)
+        falhas += int(not certo)
+    return ok, falhas
+
+
 def testar_processar_e_final(janela) -> tuple[int, int]:
     """Clica "Processar", interage com a janela de confirmação (escolher
     pasta, digitar nome, confirmar), espera o processamento terminar e
@@ -1061,6 +1196,13 @@ def testar_processar_e_final(janela) -> tuple[int, int]:
     doc.save(str(antigo))
     doc.close()
     bytes_do_antigo = antigo.read_bytes()
+
+    ok_antes, falhas_antes = _devolver_as_paginas_apagadas(conferir)
+    resultado["ok"] += ok_antes
+    resultado["falhas"] += falhas_antes
+    ok_lista, falhas_lista = _testar_o_ver_da_lista_dos_avisos(janela, JanelaConfirmar)
+    resultado["ok"] += ok_lista
+    resultado["falhas"] += falhas_lista
 
     print("\n--- confirmar e processar ---")
     JanelaConfirmar.exec = exec_com_clique

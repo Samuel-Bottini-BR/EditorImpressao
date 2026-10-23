@@ -47,6 +47,7 @@ from core.dividir import Lombada, detectar_lombada, dividir_imagem
 from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_90, rotacionar,
                              rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
+from core import revisar
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -984,7 +985,7 @@ def _usa_o_endireitar_do_scantailor(projeto: Projeto, pagina: ConfigPagina) -> b
 
 def _anotar_contas_discordam(pagina: ConfigPagina, discordam: bool) -> None:
     """Poe ou tira o aviso C1 (analise.CONTAS_DO_ENDIREITAR_DISCORDAM), do
-    mesmo jeito que _anotar_tinta_forte_fora: ao POR, a pagina volta a "nao
+    mesmo jeito que _por_avisos_do_so_as_letras: ao POR, a pagina volta a "nao
     conferida"; o "esta bom assim" depois disso continua valendo."""
     codigo = analise.CONTAS_DO_ENDIREITAR_DISCORDAM
     tem = codigo in pagina.alertas
@@ -1139,8 +1140,28 @@ def aviso_das_opcoes_da_gravura(projeto: Projeto, quantas: int, copia) -> tuple[
 
 
 def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
-                     dpi: float | None = None, dpi_do_scan: float | None = None):
+                     dpi: float | None = None, dpi_do_scan: float | None = None,
+                     no_tamanho_do_pdf: bool = True, _de_novo: bool = False):
     """Descobre onde estao gravura, letra e papel - uma vez por pagina.
+
+    PROVISORIA E DEFINITIVA (13/10/2026). O defeito (verificador): a marcacao
+    era procurada no primeiro desenho da pagina e guardada; na janela esse
+    desenho e a previa (110 DPI), e o detector acha areas diferentes das de
+    300 DPI (Graduale 221: 9 areas contra 18). A mesma pagina saia no PDF - e
+    era medida pela regra do "Para revisar" - diferente conforme tinha sido
+    vista na tela antes ou nao (nas 89 paginas do estudo: 24 iam e 73 certas
+    na ordem da janela, 22 e 75 direto). Agora:
+      - no_tamanho_do_pdf=False (a previa): a marcacao achada fica guardada
+        como PROVISORIA (ConfigPagina.marcacao_provisoria = True). A previa
+        aparece no tempo de sempre.
+      - no_tamanho_do_pdf=True (o PDF e os desenhos que a tela pede por tras):
+        a marcacao provisoria e procurada DE NOVO nesta imagem e trocada - o
+        que a MAQUINA marcou sai, o que a pessoa marcou a mao volta por cima,
+        como quando as opcoes de gravura mudam - e passa a ser a definitiva.
+        A regra do "Para revisar" so mede com a definitiva.
+    Pagina de projeto antigo, com marcacao e sem o campo, e definitiva (fica
+    como esta). Arriscado: medir a regra com a provisoria; trocar a
+    definitiva pela achada numa imagem pequena.
 
     Item 1.2: a gravura vem do detector escolhido em escolha_da_gravura (de
     fabrica, o ScanTailor). dpi = o DPI em que `img` foi desenhada; sem ele
@@ -1175,7 +1196,9 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
 
     lida = pagina.selecao          # a lista de agora (ver a corrida, acima)
     antiga = pagina.obter_selecao()
-    refazer = _gravura_a_refazer(projeto, pagina)
+    # a provisoria (achada na previa) e trocada no desenho do tamanho do PDF
+    trocar_a_provisoria = bool(no_tamanho_do_pdf and getattr(pagina, "marcacao_provisoria", False))
+    refazer = _gravura_a_refazer(projeto, pagina) or (trocar_a_provisoria and not antiga.vazia)
     if not antiga.vazia and not refazer:
         return antiga
 
@@ -1200,7 +1223,13 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
             if regiao.origem == MAO:
                 selecao.acrescentar(regiao)
     if pagina.selecao is not lida:
-        # a pessoa marcou durante a deteccao: vale a marcacao dela
+        # a marcacao mudou durante a deteccao (a pessoa marcou a mao, ou a
+        # previa guardou a provisoria dela): vale a que esta la. No desenho
+        # do tamanho do PDF tenta mais UMA vez, por cima da de agora, para a
+        # definitiva nao se perder (a marcacao a mao volta por cima).
+        if no_tamanho_do_pdf and not _de_novo and getattr(pagina, "marcacao_provisoria", False):
+            return garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan,
+                                    no_tamanho_do_pdf=True, _de_novo=True)
         return pagina.obter_selecao()
     pagina.gravura_feita_com = assinatura_da_gravura(detector, opcoes)
 
@@ -1213,7 +1242,10 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         if analise.DESENHO_OU_ESCRITA not in pagina.alertas:
             pagina.alertas.append(analise.DESENHO_OU_ESCRITA)
 
-    pagina.guardar_selecao(selecao)
+    # o campo "provisoria" vai junto com a lista (ConfigPagina.guardar_selecao
+    # grava o campo antes dela): o outro fio nunca ve a lista nova com o
+    # campo de antes
+    pagina.guardar_selecao(selecao, provisoria=not no_tamanho_do_pdf)
     return selecao
 
 
@@ -1256,8 +1288,13 @@ def usa_tirar_fundo(projeto: Projeto, pagina: ConfigPagina) -> bool:
     mesmo sair sem o fundo, quem diz e core/camadas.py (pode deixa-la
     intacta). Com o filtro salvo num PDF sem camadas: False, e a pagina sai
     como veio (_filtrar).
+
+    Pagina marcada "Deixar em branco" (ConfigPagina.em_branco, 12/10/2026):
+    False - ela sai toda branca (_filtrar), e tirar o fundo dela seria
+    trabalho jogado fora.
     """
-    return bool(projeto.limpar and projeto.tem_camadas and pagina.filtro == TIRAR_FUNDO)
+    return bool(projeto.limpar and projeto.tem_camadas and pagina.filtro == TIRAR_FUNDO
+                and not getattr(pagina, "em_branco", False))
 
 
 def _sem_fundo_da_folha(doc, folha: ConfigFolha, dpi: int):
@@ -1387,6 +1424,8 @@ def acertar_alertas_do_fundo(projeto: Projeto,
         acertar_alertas_de_cor(projeto, [pagina])
         # e o C1 do endireitar sai onde nao vale mais (item 2.2)
         acertar_alerta_do_endireitar(projeto, pagina)
+        # e o aviso da "forca do preto sozinha" segue o reforco (12/10/2026)
+        acertar_aviso_do_reforco(projeto, pagina)
         if not usa_tirar_fundo(projeto, pagina):
             _anotar_conferir(pagina, False)
             continue
@@ -1433,6 +1472,14 @@ def renderizar_pagina(
 ) -> tuple[np.ndarray, bool]:
     """Imagem final de uma página de saida, do jeito que ela vai sair.
 
+    A marcacao de gravura, letra e papel (13/10/2026): no desenho menor que o
+    do PDF (a previa), a pagina sem marcacao ganha a que o detector acha
+    nessa imagem pequena, PROVISORIA (ConfigPagina.marcacao_provisoria), para
+    a previa aparecer no tempo de sempre. No desenho do tamanho do PDF (o
+    PDF, e o que a tela pede por tras: marcar_na_resolucao_do_pdf e a medida
+    do "Para revisar"), a provisoria e trocada pela achada nessa imagem
+    grande, que e a que vale. Ver garantir_selecao.
+
     Devolve (imagem, monocromatica). E o que a prévia da tela 3 mostra.
 
     Item 1.1: se a pagina esta no filtro "Tirar o fundo" (usa_tirar_fundo)
@@ -1477,12 +1524,60 @@ def renderizar_pagina(
     # e para o limpar pontinhos do ScanTailor (06/10/2026; milissegundos: a
     # conta do desenho e pela area, o do scan fica guardado por folha)
     dpi_desenho = dpi_scan = None
-    if _vai_detectar(projeto, pagina) or _vai_limpar_pelo_scantailor(projeto, pagina):
+    if _vai_detectar(projeto, pagina, dpi) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
     _acompanhar_as_zonas(pagina, desenho)
-    return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
+    return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+
+def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A tela precisa pedir, por tras, um desenho desta pagina no tamanho do
+    PDF? Sim quando a marcacao dela ainda e a provisoria (a achada na previa)
+    ou quando a regra do "Para revisar" vale nela (precisa_medir_para_revisar).
+    Para ui/tarefas.GerenciadorPrevias.pedir_medida. Barato: so le campos."""
+    if pagina.apagada or getattr(pagina, "em_branco", False):
+        return False
+    provisoria = bool(getattr(pagina, "marcacao_provisoria", False) and projeto.limpar
+                      and projeto.detectar_regioes and pagina.filtro != TIRAR_FUNDO)
+    return provisoria or precisa_medir_para_revisar(projeto, pagina)
+
+
+def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O que a tela pede POR TRAS para a pagina da vez (ui/tarefas, numa
+    QThread; decisao da gerente, 13/10/2026): troca a marcacao provisoria (a
+    da previa) pela achada na pagina do tamanho do PDF e, se a regra do "Para
+    revisar" vale na pagina, mede a regra. Devolve True se a marcacao da
+    pagina mudou (a tela desenha a previa de novo).
+
+    Por tras, e nao na frente: procurar na pagina grande antes de mostrar a
+    previa custava 0,8 s a mais na primeira previa de cada pagina (medido em
+    8 paginas do gabarito: de 1,14 para 1,92 s), e trocar de pagina e o que o
+    Kaique mais faz (regra 6 do plano).
+
+    Pagina em que a regra vale: o desenho inteiro no tamanho do PDF
+    (renderizar_pagina), que troca a marcacao, acha as linhas do leitor de
+    texto nessa imagem e mede. Nas outras: so desenhar a folha, preparar e
+    procurar a marcacao (sem passar o filtro, que seria tempo jogado fora).
+    Nunca levanta excecao para fora de quem chama por causa da marcacao: se a
+    procura falhar, a pagina continua com a provisoria (e a regra nao mede).
+    Arriscado: chamar isto no fio da tela (leva segundos)."""
+    lida = pagina.selecao
+    if precisa_medir_para_revisar(projeto, pagina):
+        renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
+    elif getattr(pagina, "marcacao_provisoria", False):
+        folha = projeto.folhas[pagina.folha]
+        grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+        if _precisa_de_geometria(pagina, projeto):
+            _guardar_geometria(folha, pagina, projeto, grande, doc)
+        dpi_desenho = _dpi_do_desenho(doc, folha.indice, grande)
+        dpi_scan = _dpi_do_scan(doc, folha)
+        img, desenho = _preparar_metade_e_geometria(grande, folha, pagina, projeto,
+                                                    dpi=projeto.qualidade_dpi)
+        _acompanhar_as_zonas(pagina, desenho)
+        garantir_selecao(projeto, pagina, img, dpi_desenho, dpi_scan, no_tamanho_do_pdf=True)
+    return pagina.selecao is not lida
 
 
 def _acompanhar_as_zonas(pagina: ConfigPagina, desenho: dict) -> None:
@@ -1618,15 +1713,29 @@ def converter_zonas_do_livro(
     return convertidas
 
 
-def _vai_detectar(projeto: Projeto, pagina: ConfigPagina) -> bool:
+def _vai_detectar(projeto: Projeto, pagina: ConfigPagina, dpi_pedido: float | None = None) -> bool:
     """_filtrar vai chamar a deteccao de gravura e letra nesta pagina? (a
     mesma conta de _filtrar + garantir_selecao; so serve para nao medir DPI a
     toa). Errar para "sim" so custa milissegundos. Atencao: no filtro
     Original a deteccao roda do mesmo jeito (_filtrar chama garantir_selecao
     antes de saber o filtro), e a marcacao fica guardada para quando a pessoa
-    trocar de filtro - por isso o Original NAO fica de fora aqui."""
-    return bool(projeto.limpar and pagina.filtro != TIRAR_FUNDO and projeto.detectar_regioes
-                and (not pagina.selecao or _gravura_a_refazer(projeto, pagina)))
+    trocar de filtro - por isso o Original NAO fica de fora aqui.
+    dpi_pedido: a resolucao do desenho; no do tamanho do PDF a marcacao
+    provisoria (a da previa) tambem e procurada de novo (13/10/2026)."""
+    if not (projeto.limpar and pagina.filtro != TIRAR_FUNDO and projeto.detectar_regioes):
+        return False
+    if not pagina.selecao or _gravura_a_refazer(projeto, pagina):
+        return True
+    return bool(getattr(pagina, "marcacao_provisoria", False)
+                and _e_o_desenho_do_pdf(projeto, dpi_pedido))
+
+
+def _e_o_desenho_do_pdf(projeto: Projeto, dpi_pedido: float | None) -> bool:
+    """Este desenho e do tamanho do PDF (ou maior)? Sem a resolucao (testes e
+    scripts que chamam _filtrar direto), conta como sendo: e o jeito de quem
+    gera o resultado de verdade. A previa da tela (110 DPI) e o arrasto (55)
+    dizem a resolucao e nao sao."""
+    return dpi_pedido is None or dpi_pedido >= projeto.qualidade_dpi
 
 
 def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -1714,7 +1823,36 @@ _DPIS_DO_SCAN: dict[tuple, float | None] = {}
 
 
 def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
-             dpi: float | None = None, dpi_do_scan: float | None = None) -> tuple[np.ndarray, bool]:
+             dpi: float | None = None, dpi_do_scan: float | None = None,
+             dpi_pedido: float | None = None) -> tuple[np.ndarray, bool]:
+    """Etapa 4, a porta de entrada: o filtro da pagina (_filtrar_a_pagina), ou
+    a folha toda branca se a pessoa escolheu "Deixar em branco"
+    (ConfigPagina.em_branco; Samuel, rodada 5 do "Para revisar",
+    `rv5-erro-5-sem-conteudo`). O MESMO para a previa e o PDF.
+
+    dpi_pedido: a resolucao em que o desenho foi pedido (a da previa, a do
+    arrasto, a do PDF); so serve para a regra do "Para revisar" nao ser medida
+    no desenho pequeno do arrasto (_da_para_medir). None = nao se sabe: mede.
+
+    Em branco: a pagina sai do tamanho que teria (ja dividida, cortada e
+    endireitada), em 1 bit, sem passar por filtro nem por detector. Os avisos
+    do "So as letras" ficam como estavam (nada foi medido; a pagina ja esta
+    dada como conferida, e se a pessoa voltar atras o aviso ainda esta la). No
+    fim, o aviso da "forca do preto sozinha" e acertado
+    (acertar_aviso_do_reforco). Arriscado: devolver aqui uma folha de outro
+    tamanho (a encadernacao e a folha escolhida contam com o tamanho da
+    pagina)."""
+    if getattr(pagina, "em_branco", False):
+        acertar_aviso_do_reforco(projeto, pagina)
+        return np.full(img.shape[:2], 255, np.uint8), True
+    saida = _filtrar_a_pagina(projeto, pagina, img, dpi, dpi_do_scan, dpi_pedido)
+    acertar_aviso_do_reforco(projeto, pagina)
+    return saida
+
+
+def _filtrar_a_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
+                      dpi: float | None = None, dpi_do_scan: float | None = None,
+                      dpi_pedido: float | None = None) -> tuple[np.ndarray, bool]:
     """Etapa 4: o filtro da pagina, com a marcacao de gravura/letra/papel.
 
     dpi e dpi_do_scan vao para garantir_selecao (o detector de gravura do
@@ -1757,7 +1895,7 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     tests/test_so_neste_pedaco_no_original.py.
     """
     if not projeto.limpar:
-        _anotar_tinta_forte_fora(pagina, False)
+        _tirar_avisos_do_so_as_letras(projeto, pagina)
         return img, False
     if pagina.filtro == TIRAR_FUNDO:
         # Conferencia 14 (Samuel, "FUNDO: Sim, do mesmo jeito (só muda se
@@ -1765,16 +1903,22 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         # marcacao usada e a GUARDADA (pagina.obter_selecao), sem chamar o
         # detector: o pedaco e desenhado a mao, e a pagina sem pedaco nao
         # paga o ~1 s da deteccao (e sai o mesmo objeto, como antes).
-        _anotar_tinta_forte_fora(pagina, False)
+        _tirar_avisos_do_so_as_letras(projeto, pagina)
         return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, img), False
-    selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan)
+    # a marcacao provisoria (da previa) e trocada no desenho do tamanho do PDF
+    no_pdf = _e_o_desenho_do_pdf(projeto, dpi_pedido)
+    selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan, no_tamanho_do_pdf=no_pdf)
     # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
     pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)
     if pagina.filtro == PRETO_E_BRANCO:
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
         if opcoes is not None:
-            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes, pontinhos)
-    _anotar_tinta_forte_fora(pagina, False)
+            # a regra so mede com a marcacao definitiva (a do tamanho do PDF)
+            medir = (_da_para_medir(img, dpi_pedido, projeto)
+                     and not getattr(pagina, "marcacao_provisoria", False))
+            return _filtrar_no_misto(projeto, pagina, img, selecao, opcoes, pontinhos,
+                                     medir=medir, linhas_definitivas=no_pdf)
+    _tirar_avisos_do_so_as_letras(projeto, pagina)
     return aplicar_filtro_com_selecao(
         img, pagina.filtro, selecao,
         pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
@@ -1793,32 +1937,59 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
 # muita tinta forte fora das linhas (conferencia 8, REVISAR: "Sim").
 # ---------------------------------------------------------------------------
 
-# A pagina vai para "Para revisar" (analise.TINTA_FORTE_FORA_DO_TEXTO) quando
-# a tinta forte fora das linhas de texto e fora das gravuras passa desta
-# fracao de toda a tinta da pagina. Medido na rodada da conferencia 8 (docTR +
-# Kraken; o formulario sugeria "uns 10%"): Graduale 222 76% (a musica),
-# Palatino 9 47% (a capitular e as molduras), Opus 165 6%, Marial 7 5%, Horas
-# 13 4%, Boecio 22 2%, Horas 11 menos de 1%. Com 10%, vao para revisar as
-# paginas em que o leitor deixou de fora uma parte grande do que esta impresso
-# - nao as que tem so umas letrinhas de diagrama ou pontos.
-# Medido de novo em 05/10, SO com o docTR (como no programa), nas 34 paginas
-# das 32 folhas do gabarito (relatorios/conferir/misto-no-programa-2026-10-05/
-# dados/medidas-misto.json, imagens em tinta-forte/): 19 passam de 10%, e
-# quase todas tem MUITO impresso fora do texto que o detector de gravura nao
-# marcou - moldura de filetes e floreios (Palatino 9, 10, 57, 66, 67;
-# Siebmacher 7 e 9; Rhetorica 18), tabela com regua (Horas 14, Opus 256),
-# chaves de diagrama (Rhetorica 73), musica (Graduale 221-223), gravura e
-# carimbo nao marcados (Boecio 3), pagina so de desenho (Siebmacher, lado
-# direito). Texto corrido fica abaixo de 4% (Boecio 7, 8, 22; Escola 7 e 35;
-# Palatino 5 e 7; Opus 11; Horas 11, 13, 26, 27, 47), e as de diagrama
-# pequeno entre 5% e 9% (Opus 20, 165; Marial 7). Nao ha um vao claro entre
-# as duas turmas acima de 10%: subir para 30% tiraria do aviso so 3 das 19.
-# No A, essa tinta e guardada (a moldura e a tabela saem); no C ela vai a
-# branco - e ai que o aviso mais importa. Seguro mudar: o numero (so muda
-# quem vai para revisar). Arriscado: baixar muito (quase toda pagina com
-# gravura ou sujeira na beirada iria para revisar, e o aviso deixaria de ser
-# lido).
-LIMITE_DA_TINTA_FORTE_FORA = 0.10
+# QUEM VAI PARA "PARA REVISAR" NO "SO AS LETRAS" (regra ajustada, 12/10/2026)
+#
+# Ate 12/10/2026 a pagina ia quando a tinta forte fora das linhas passava de
+# 10% de toda a tinta (o aviso "Tinta forte fora do texto", conferencia 8).
+# Nas 89 paginas do estudo isso mandava 55 e acertava 52. O Samuel aprovou a
+# regra ajustada (rodada 4, `rv4-resumo`: "Fica assim"), que manda 21 e acerta
+# 78: as contas e os limites moram em core/revisar.py, e quem poe e tira os
+# avisos e _acertar_avisos_do_misto, abaixo. O limite antigo continua valendo
+# so no "Guardar só o texto" (revisar.LIMITE_SO_O_TEXTO).
+#
+# A REGRA SO E MEDIDA NO DESENHO FEITO NA RESOLUCAO DO PDF (Projeto.
+# qualidade_dpi), nunca no da previa da tela. Medido em 12/10/2026 nas 89
+# paginas do estudo (relatorios/para-revisar-impl/conferir_89.py --programa):
+# a 300 DPI, a resolucao em que a regra foi acertada e aprovada, o programa
+# decide como o estudo; a 110 DPI (a previa) 13 paginas decidem diferente (24
+# vao, 67 certas): o texto falhado da falso em varias paginas (o preto e
+# branco pequeno quebra o traco fino) e a letra T do Antiphonal 46 nao e
+# vista (a pagina tem 396 pontos de altura na previa). Com a "forca do preto
+# sozinha", um falso "texto falhado" escureceria a pagina sem motivo.
+# Entao: o PDF (processar) mede; a tela pede, por tras, um desenho na
+# resolucao do PDF so para medir a pagina da vez (ui/tarefas.
+# GerenciadorPrevias.pedir_medida); a previa e o arrasto (55 DPI) nao medem
+# e deixam os avisos como estavam. Quem diz a resolucao e quem pede o
+# desenho (renderizar_pagina, processar); sem ela (testes, scripts que chamam
+# _filtrar direto), mede. E nunca em imagem minuscula.
+# Arriscado: medir na previa (os numeros 21 e 78 nao valem la).
+# MEDIR_SO_NA_RESOLUCAO_DO_PDF = False e so para o script que mediu isto.
+MEDIR_SO_NA_RESOLUCAO_DO_PDF = True
+DPI_MINIMO_PARA_REVISAR = 100
+LADO_MINIMO_PARA_REVISAR = 400
+
+
+def _da_para_medir(img: np.ndarray, dpi_pedido: float | None, projeto: Projeto | None = None) -> bool:
+    """A regra do "Para revisar" pode ser medida neste desenho? (ver acima)"""
+    if max(img.shape[:2]) < LADO_MINIMO_PARA_REVISAR:
+        return False
+    if dpi_pedido is None:
+        return True
+    if MEDIR_SO_NA_RESOLUCAO_DO_PDF and projeto is not None:
+        return dpi_pedido >= projeto.qualidade_dpi
+    return dpi_pedido >= DPI_MINIMO_PARA_REVISAR
+
+
+def precisa_medir_para_revisar(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A regra do "Para revisar" vale nesta pagina? (ela esta em Preto e
+    branco com "So as letras" num jeito que usa o leitor de texto, e nao foi
+    deixada em branco nem apagada). Para a tela saber se pede a medida por
+    tras (ui/tarefas.GerenciadorPrevias.pedir_medida). Barato: so le campos."""
+    if (not projeto.limpar or pagina.filtro != PRETO_E_BRANCO or pagina.apagada
+            or getattr(pagina, "em_branco", False)):
+        return False
+    opcoes = misto.opcoes_da_pagina(projeto, pagina)
+    return opcoes is not None and opcoes.precisa_das_linhas
 
 
 def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
@@ -1842,7 +2013,8 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
-                      opcoes, pontinhos=True) -> tuple[np.ndarray, bool]:
+                      opcoes, pontinhos=True, medir: bool = True,
+                      linhas_definitivas: bool = True) -> tuple[np.ndarray, bool]:
     """O Preto e branco so nas letras (core.misto.aplicar_misto) com as
     escolhas da pagina (`opcoes`, core.misto.OpcoesDoMisto) e o "Limpar
     pontinhos" dela (`pontinhos`, de pontinhos_da_pagina).
@@ -1853,51 +2025,366 @@ def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
     1 a 2,5 s na primeira vez da pagina, nunca a tela. Se o leitor nao estiver
     disponivel, sai o Misto B (o motivo vai para o erros.log).
 
-    O aviso "Tinta forte fora do texto" e acertado aqui (A e C, com linhas);
-    na B ele sai (sem as linhas, nao ha o que medir)."""
-    linhas, altura_linha = None, 0.0
+    Os avisos do "Para revisar" (regra ajustada, core/revisar.py) sao
+    acertados aqui (A e C, com o leitor de texto); na B eles saem (sem as
+    linhas, nao ha o que medir). Ver _acertar_avisos_do_misto.
+
+    "Forca do preto sozinha" (Samuel, rodada 4, `rv4-erro-4-texto-falhado`):
+    se a regra achou o texto falhado e o livro tem o reforco ligado, a forca
+    do preto desta pagina e escurecida (_reforcar_se_o_texto_falhou) e a
+    pagina e filtrada e medida DE NOVO, ja com a forca nova - e essa que
+    sai. Custa um filtro a mais, so nessas paginas e so na primeira vez."""
+    linhas, altura_linha, resultados = None, 0.0, []
     if opcoes.precisa_das_linhas:
-        resultados = linhas_do_texto.linhas_da_pagina(img, _chave_das_linhas(projeto, pagina))
+        # linhas_definitivas: no desenho do tamanho do PDF as linhas do leitor
+        # sao as achadas NESSA imagem (as da previa, achadas na pagina
+        # pequena, sao provisorias como a marcacao: core.linhas_do_texto)
+        resultados = linhas_do_texto.linhas_da_pagina(img, _chave_das_linhas(projeto, pagina),
+                                                      definitivas=linhas_definitivas)
         if resultados:
             linhas, altura_linha = misto.mascara_das_linhas(resultados, img.shape)
-    medidas: dict = {}
-    saida = misto.aplicar_misto(
-        img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pontinhos,
-        pagina.clareza_melhorar, pagina.intensidade_magico,
-        papel_da_gravura_branco=opcoes.papel_da_gravura == misto.PAPEL_BRANCO,
-        letras_na_moldura=opcoes.letras_na_moldura,
-        fora_do_texto=opcoes.fora_do_texto, linhas=linhas, altura_linha=altura_linha,
-        medidas=medidas)
-    if "forte_fora" in medidas:
-        _anotar_tinta_forte_fora(pagina, medidas["forte_fora"] > LIMITE_DA_TINTA_FORTE_FORA)
-    elif not opcoes.precisa_das_linhas:
-        _anotar_tinta_forte_fora(pagina, False)
+
+    def uma_vez():
+        """(saida, sinais): o Misto com a forca de agora e os avisos acertados."""
+        medidas: dict = {}
+        # as pecas do meio da conta, para a regra do "Para revisar" nao
+        # refazer o filtro; so quando ha o que medir (o leitor deu certo e a
+        # pagina e grande)
+        pecas: dict | None = None
+        if linhas is not None and medir:
+            pecas = {}
+        saida = misto.aplicar_misto(
+            img, selecao, pagina.forca_preto, pagina.algoritmo_preto_branco, pontinhos,
+            pagina.clareza_melhorar, pagina.intensidade_magico,
+            papel_da_gravura_branco=opcoes.papel_da_gravura == misto.PAPEL_BRANCO,
+            letras_na_moldura=opcoes.letras_na_moldura,
+            fora_do_texto=opcoes.fora_do_texto, linhas=linhas, altura_linha=altura_linha,
+            medidas=medidas, pecas=pecas)
+        sinais = None
+        if not opcoes.precisa_das_linhas:
+            _tirar_avisos_do_so_as_letras(projeto, pagina)
+        elif pecas:
+            sinais = _acertar_avisos_do_misto(projeto, pagina, opcoes, saida[0], medidas, pecas,
+                                              linhas, resultados, altura_linha)
+        return saida, sinais
+
+    saida, sinais = uma_vez()
+    if _reforcar_se_o_texto_falhou(projeto, pagina, sinais):
+        saida, depois = uma_vez()
+        if not _o_reforco_resolveu(sinais, depois):
+            # escureceu e as linhas falhadas nao cairam (o texto vermelho do
+            # Egenloff 3, o Antiphonal 252): a forca volta a de antes, o
+            # programa nao tenta de novo nesta pagina, e ela fica so com o
+            # aviso "Texto falhado" e o botao "usar mais escuro"
+            pagina.forca_preto = int(pagina.forca_antes_do_reforco)
+            pagina.forca_antes_do_reforco = None
+            pagina.reforco_desfeito = True
+            saida, _sinais = uma_vez()
     return saida
 
 
-def _anotar_tinta_forte_fora(pagina: ConfigPagina, sobrou: bool) -> None:
-    """Poe ou tira o alerta analise.TINTA_FORTE_FORA_DO_TEXTO, do mesmo jeito
-    que _anotar_conferir: ao POR, a pagina volta a "nao conferida" e o alerta
-    vai para a frente; o "esta bom assim" depois disso continua valendo (o
-    alerta ja posto nao mexe mais em `revisada`). Barato: so olha a lista."""
-    tem = analise.TINTA_FORTE_FORA_DO_TEXTO in pagina.alertas
-    if sobrou and not tem:
-        pagina.alertas.insert(0, analise.TINTA_FORTE_FORA_DO_TEXTO)
+# --- a forca do preto sozinha ---------------------------------------------------
+#
+# Samuel, rodada 4 do "Para revisar" (08/10/2026, `rv4-erro-4-texto-falhado`):
+# "Força sozinha" + "mas temos que melhorar o reconhecimento de tintas, para
+# não sair falhado assim, não precisar usar sempre o reforço." (o certo de
+# verdade e o item 1.4 do plano; rodada 5: "Fica no plano; até lá, a força
+# sozinha"). Quando a regra do "Para revisar" acha o texto falhado, o
+# programa escurece a forca do preto SO nessa pagina, avisa
+# (analise.FORCA_REFORCADA) e oferece "Desfazer".
+#
+# A forca do reforco: medido na rodada 4 (LEIA-ME, "Forca do preto"), 85 em
+# vez de 50 fecha as letras do Camoes 27 e 104; nao resolve o vermelho do
+# Egenloff 3. E o mesmo valor do botao "usar mais escuro". Seguro mudar: o
+# numero (so muda o quanto escurece).
+FORCA_DO_REFORCO = 85
+
+# QUANDO a forca age sozinha (decisao da gerente, 13/10/2026, a "P3"): o aviso
+# "Texto falhado" continua valendo com 2 linhas falhadas, mas a forca so e
+# escurecida sozinha com LINHAS_PARA_REFORCAR ou mais linhas falhadas, ou com
+# todas as linhas contadas falhadas; e, depois de escurecer, a pagina e medida
+# de novo e o reforco so fica se as linhas falhadas CAIREM
+# (_o_reforco_resolveu). Um aviso a mais custa pouco; uma pagina boa
+# escurecida sozinha custa caro.
+# O defeito que isto conserta (verificador, 13/10): no Palatino 66, pagina de
+# caligrafia de traco fino, a regra achava 3 linhas falhadas, a forca era
+# escurecida e sujava a moldura. Medido nas 89 paginas, livro novo, 300 DPI
+# (relatorios/para-revisar-impl/ONDE-PAREI.md, "Investigacao 8"): com 2
+# linhas a forca agia em 7 paginas - Camoes 27 (5 linhas falhadas de 28) e
+# 104 (1 de 1), onde precisa e resolve; Camoes 11, ljs47 103 e Palatino 66 (3
+# linhas cada: nenhum numero separa o Palatino, que nao precisava, dos outros
+# dois); Antiphonal 252 (2, e a 85 continuam 2) e Egenloff 3 (2, e a 85 viram
+# 5). Com 4 linhas ou todas, age so no Camoes 27 e no 104; as outras ficam
+# com o aviso e o botao "usar mais escuro" (um clique).
+# Seguro mudar: o numero, olhando essa tabela. Arriscado: baixar para 3 (o
+# Palatino 66 volta a ser escurecido sozinho).
+LINHAS_PARA_REFORCAR = 4
+
+
+def _o_reforco_resolveu(antes, depois) -> bool:
+    """Depois de escurecer a forca, as linhas falhadas cairam? `antes` e
+    `depois` sao os sinais (core.revisar.Sinais) da pagina com a forca dela e
+    com a do reforco; sem a medida de depois (None), nao da para dizer que
+    resolveu: nao."""
+    return depois is not None and depois.falhadas < antes.falhadas
+
+
+def _reforcar_se_o_texto_falhou(projeto: Projeto, pagina: ConfigPagina, sinais) -> bool:
+    """Escurece a forca do preto desta pagina se a regra achou o texto
+    falhado (`sinais`, de core.revisar; None = nao foi medida). Devolve True
+    se escureceu (quem chama filtra a pagina de novo).
+
+    So quando: a pagina tem LINHAS_PARA_REFORCAR ou mais linhas falhadas, ou
+    todas as linhas contadas falhadas (com menos, fica so o aviso; ver
+    LINHAS_PARA_REFORCAR); o livro tem o reforco ligado
+    (Projeto.reforcar_texto_falhado,
+    o botao de desligar da regra 8 do plano); o programa ainda nao reforcou
+    esta pagina; a pessoa nao desfez o reforco nem mexeu na forca depois dele
+    (ConfigPagina.reforco_desfeito); e a forca dela esta abaixo da do
+    reforco. Guarda a forca de antes (forca_antes_do_reforco) para o
+    "Desfazer". Vale tambem na copia da pagina que os cartoes desenham: so
+    a copia muda. Arriscado: reforcar sem guardar a forca de antes (o
+    "Desfazer" nao teria para onde voltar)."""
+    if sinais is None or not sinais.texto_falhado:
+        return False
+    todas = sinais.linhas_contadas > 0 and sinais.falhadas == sinais.linhas_contadas
+    if sinais.falhadas < LINHAS_PARA_REFORCAR and not todas:
+        return False
+    if not getattr(projeto, "reforcar_texto_falhado", False):
+        return False
+    if pagina.forca_antes_do_reforco is not None or pagina.reforco_desfeito:
+        return False
+    if int(pagina.forca_preto) >= FORCA_DO_REFORCO:
+        return False
+    pagina.forca_antes_do_reforco = int(pagina.forca_preto)
+    pagina.forca_preto = FORCA_DO_REFORCO
+    return True
+
+
+def acertar_aviso_do_reforco(projeto: Projeto, pagina: ConfigPagina) -> None:
+    """Poe ou tira o aviso "Força do preto escurecida"
+    (analise.FORCA_REFORCADA), sem desenhar nada: ele vale enquanto o reforco
+    que o programa fez estiver valendo na pagina (forca_antes_do_reforco
+    guardada, a forca ainda na do reforco, a pagina em Preto e branco e nao
+    em branco).
+
+    Se a pessoa mexeu na forca depois do reforco, a forca passa a ser dela: o
+    "Desfazer" some e o programa nao reforca de novo (reforco_desfeito).
+    Ao POR o aviso, a pagina volta a "nao conferida", como os outros avisos.
+    Chamado por _filtrar (previa e PDF) e por acertar_alertas_do_fundo (a
+    tela, a cada atualizacao). Barato: so le campos."""
+    if not hasattr(pagina, "forca_antes_do_reforco"):
+        return                    # objeto de pagina de antes do campo: nada a acertar
+    if pagina.forca_antes_do_reforco is not None and int(pagina.forca_preto) != FORCA_DO_REFORCO:
+        pagina.forca_antes_do_reforco = None
+        pagina.reforco_desfeito = True
+    vale = bool(pagina.forca_antes_do_reforco is not None and projeto.limpar
+                and pagina.filtro == PRETO_E_BRANCO and not getattr(pagina, "em_branco", False))
+    tem = analise.FORCA_REFORCADA in pagina.alertas
+    if vale and not tem:
+        pagina.alertas = [analise.FORCA_REFORCADA] + pagina.alertas
         pagina.revisada = False
-    elif not sobrou and tem:
-        pagina.alertas = [a for a in pagina.alertas if a != analise.TINTA_FORTE_FORA_DO_TEXTO]
+    elif not vale and tem:
+        pagina.alertas = [a for a in pagina.alertas if a != analise.FORCA_REFORCADA]
+        _esquecer_aceitos(pagina, [analise.FORCA_REFORCADA])
+
+
+def _esquecer_aceitos(pagina: ConfigPagina, codigos) -> None:
+    """Os avisos `codigos` sairam da pagina: saem tambem dos "está bom" dados
+    motivo a motivo (ConfigPagina.alertas_aceitos), para o aviso pedir um
+    olhar de novo se o problema voltar."""
+    aceitos = getattr(pagina, "alertas_aceitos", None)
+    if aceitos and any(c in aceitos for c in codigos):
+        pagina.alertas_aceitos = [a for a in aceitos if a not in codigos]
+
+
+def medir_para_revisar(opcoes, img_saida: np.ndarray, medidas: dict, pecas: dict,
+                       linhas: np.ndarray, resultados, altura_linha: float) -> "revisar.Sinais":
+    """Os sinais do "Para revisar" (core.revisar.Sinais) de uma pagina que
+    acabou de sair do "So as letras": junta o que core.misto.aplicar_misto
+    entregou (`pecas`, `medidas`) com a imagem que saiu (`img_saida`) e as
+    linhas do leitor de texto. Nao muda a pagina. Publica para o script que
+    confere a regra nas 89 paginas do estudo
+    (relatorios/para-revisar-impl/conferir_89.py).
+
+    No jeito de fabrica ("Guardar a tinta forte") mede o desenho apagado; no
+    "Guardar só o texto", que apaga de proposito o que nao e linha, mede so
+    onde sumiu a tinta forte (para a marca do aviso)."""
+    cinza_saida = img_saida if img_saida.ndim == 2 else cv2.cvtColor(img_saida, cv2.COLOR_BGR2GRAY)
+    fabrica = opcoes.fora_do_texto == misto.FORA_REDE
+    forte = pecas.get("forte")
+    return revisar.medir(
+        pecas["cinza"], pecas["base_tinta"], linhas, pecas["imagem"], cinza_saida < 128,
+        revisar.poligonos_das_linhas(resultados, img_saida.shape), altura_linha,
+        tinta_forte_apagada=None if fabrica else forte, com_o_desenho_apagado=fabrica)
+
+
+def _acertar_avisos_do_misto(projeto: Projeto, pagina: ConfigPagina, opcoes, img_saida: np.ndarray,
+                             medidas: dict, pecas: dict, linhas: np.ndarray, resultados,
+                             altura_linha: float):
+    """Poe e tira os avisos da regra ajustada do "Para revisar"
+    (analise.AVISOS_DO_SO_AS_LETRAS) na pagina que acabou de ser desenhada no
+    "So as letras" A ou C, e guarda onde o desenho sumiu (marcas_do_aviso).
+    Devolve os sinais medidos (core.revisar.Sinais), ou None se nao deu.
+
+    O aviso some sozinho quando o motivo some (a pessoa trocou o jeito, a
+    forca do preto, marcou a area): a conta e refeita a cada desenho. Nunca
+    levanta excecao: se a conta falhar, os avisos ficam como estavam e o
+    motivo vai para o erros.log (a pagina sai do mesmo jeito).
+    Arriscado: chamar com a imagem de um filtro que nao seja o da pagina."""
+    try:
+        sinais = medir_para_revisar(opcoes, img_saida, medidas, pecas, linhas, resultados,
+                                    altura_linha)
+    except Exception:  # noqa: BLE001 - a regra nunca derruba o desenho da pagina
+        _log.exception("nao consegui medir a pagina %s para o Para revisar", pagina.indice + 1)
+        return None
+    fabrica = opcoes.fora_do_texto == misto.FORA_REDE
+    pagina.faixa_na_beirada = bool(sinais.faixa_na_beirada)
+    codigos = revisar.motivos(sinais, desenho_apagado_vale=fabrica,
+                              tinta_forte_apagada=float(medidas.get("forte_fora", 0.0)),
+                              faixa_do_livro=_faixa_e_do_livro(projeto))
+    _por_avisos_do_so_as_letras(pagina, codigos)
+    _guardar_marcas(projeto, pagina, {
+        analise.DESENHO_APAGADO: sinais.onde_sumiu,
+        analise.SO_O_TEXTO_APAGOU: sinais.onde_sumiu_a_tinta_forte,
+        analise.TEXTO_FALHADO: sinais.linhas_falhadas,
+    }, codigos)
+    return sinais
+
+
+# os avisos em que a regra mexe: os dela e o antigo, que so sai
+_AVISOS_QUE_SAEM = frozenset(analise.AVISOS_DO_SO_AS_LETRAS) | {analise.TINTA_FORTE_FORA_DO_TEXTO}
+
+
+def _por_avisos_do_so_as_letras(pagina: ConfigPagina, codigos: list[str]) -> None:
+    """Deixa na pagina, dos avisos da regra ajustada, exatamente `codigos`
+    (os outros alertas dela nao mudam). Do mesmo jeito que _anotar_conferir:
+    ao POR um aviso que nao estava, a pagina volta a "nao conferida" e o
+    aviso vai para a frente; o "esta bom assim" depois disso continua valendo
+    (o aviso ja posto nao mexe mais em `revisada`). O aviso antigo ("Tinta
+    forte fora do texto") sai sempre. Barato: so olha a lista."""
+    novos = [c for c in codigos if c not in pagina.alertas]
+    saem = [a for a in pagina.alertas if a in _AVISOS_QUE_SAEM and a not in codigos]
+    if not novos and not saem:
+        return
+    pagina.alertas = novos + [a for a in pagina.alertas if a not in saem]
+    if saem:
+        _esquecer_aceitos(pagina, saem)
+    if novos:
+        pagina.revisada = False
+
+
+def _tirar_avisos_do_so_as_letras(projeto: Projeto, pagina: ConfigPagina) -> None:
+    """A pagina nao esta (mais) no "So as letras" A ou C: os avisos da regra
+    ajustada saem, a faixa volta a "nao medida" e as marcas somem. Barato."""
+    _por_avisos_do_so_as_letras(pagina, [])
+    if pagina.faixa_na_beirada is not None:
+        pagina.faixa_na_beirada = None
+    _guardar_marcas(projeto, pagina, {}, [])
 
 
 def _acertar_alerta_do_misto(projeto: Projeto, pagina: ConfigPagina) -> None:
-    """Tira o "Tinta forte fora do texto" da pagina que nao esta mais no
-    Misto A ou C (mudou de filtro, desligou "So as letras", escolheu B), sem
-    desenhar nada. Se ainda esta, fica como esta (a previa acerta)."""
-    if analise.TINTA_FORTE_FORA_DO_TEXTO not in pagina.alertas:
-        return
+    """Tira os avisos do "So as letras" da pagina que nao esta mais no Misto
+    A ou C (mudou de filtro, desligou "So as letras", escolheu B), sem
+    desenhar nada. Se ainda esta, ficam como estao (a previa acerta) - menos o
+    aviso antigo ("Tinta forte fora do texto"), que sai de qualquer pagina:
+    desde 12/10/2026 ninguem mais o poe, e o projeto salvo antes ainda o tem."""
     opcoes = (misto.opcoes_da_pagina(projeto, pagina)
               if projeto.limpar and pagina.filtro == PRETO_E_BRANCO else None)
     if opcoes is None or not opcoes.precisa_das_linhas:
-        _anotar_tinta_forte_fora(pagina, False)
+        if (pagina.faixa_na_beirada is not None
+                or any(a in _AVISOS_QUE_SAEM for a in pagina.alertas)):
+            _tirar_avisos_do_so_as_letras(projeto, pagina)
+    elif analise.TINTA_FORTE_FORA_DO_TEXTO in pagina.alertas:
+        pagina.alertas = [a for a in pagina.alertas if a != analise.TINTA_FORTE_FORA_DO_TEXTO]
+
+
+# --- a faixa na beirada do livro inteiro --------------------------------------
+
+# Com menos paginas medidas que isto, nao se conclui nada sobre o livro (o
+# mesmo minimo de analise.separar_observacoes).
+MINIMO_DE_PAGINAS_PARA_A_FAIXA_DO_LIVRO = 4
+
+
+def _faixa_e_do_livro(projeto: Projeto) -> bool:
+    """A faixa na beirada ja e aviso do livro? (a frase esta nas observacoes)"""
+    return analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA] in (
+        getattr(projeto, "observacoes", None) or [])
+
+
+def acertar_faixa_do_livro(projeto: Projeto) -> bool:
+    """A faixa escura na beirada em 70% ou mais das paginas medidas vira UM
+    aviso do livro (Projeto.observacoes) e sai das paginas; se deixar de ser,
+    a frase sai e o aviso volta para as paginas em que a faixa foi medida.
+    Devolve True se mudou alguma coisa (para a tela se redesenhar).
+
+    "Medida" = desenhada no "So as letras" (ConfigPagina.faixa_na_beirada nao
+    e None); a faixa so e conhecida quando a pagina e desenhada, por isso a
+    conta e sobre as paginas ja vistas, e precisa de pelo menos
+    MINIMO_DE_PAGINAS_PARA_A_FAIXA_DO_LIVRO delas. Sem desenhar nada: so le
+    campos. Chamado pela tela de conferir a cada atualizacao e no fim do PDF.
+    Quando o aviso VOLTA para uma pagina, ela nao volta a "nao conferida" (a
+    pessoa nao mexeu nela). Arriscado: tirar o minimo de paginas (a primeira
+    pagina com faixa viraria "o livro inteiro")."""
+    frase = analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA]
+    medidas = [p for p in projeto.paginas
+               if not p.apagada and p.faixa_na_beirada is not None]
+    do_livro = (len(medidas) >= MINIMO_DE_PAGINAS_PARA_A_FAIXA_DO_LIVRO
+                and revisar.faixa_no_livro([bool(p.faixa_na_beirada) for p in medidas]))
+    mudou = False
+    observacoes = list(getattr(projeto, "observacoes", None) or [])
+    if do_livro and frase not in observacoes:
+        projeto.observacoes = observacoes + [frase]
+        mudou = True
+    elif not do_livro and frase in observacoes:
+        projeto.observacoes = [o for o in observacoes if o != frase]
+        mudou = True
+    for pagina in projeto.paginas:
+        tem = analise.FAIXA_NA_BEIRADA in pagina.alertas
+        if do_livro and tem:
+            pagina.alertas = [a for a in pagina.alertas if a != analise.FAIXA_NA_BEIRADA]
+            mudou = True
+        elif not do_livro and not tem and pagina.faixa_na_beirada and not pagina.apagada:
+            pagina.alertas = pagina.alertas + [analise.FAIXA_NA_BEIRADA]
+            mudou = True
+    return mudou
+
+
+# --- onde sumiu: as marcas do aviso -------------------------------------------
+#
+# Samuel, rodada 5 (09/10/2026, `rv5-erro-1-desenho`): "onde sumiu, tem que
+# aparecer selecionado automaticamente"; `rv5-erro-6-so-texto`: "aparece
+# marcado". As caixas (fracao da pagina) saem da mesma conta do aviso
+# (core.revisar.medir) e ficam penduradas na propria pagina, num atributo
+# SOLTO, fora dos campos dela (_ATRIBUTO_DAS_MARCAS): nao vao para o
+# projeto.json (dataclasses.asdict so leva os campos), valem so nesta sessao
+# e sao refeitas a cada desenho. A copia da pagina que os cartoes de filtro
+# desenham (renderizar_com_filtro, dataclasses.replace) nao leva o atributo
+# nem mexe no da pagina de verdade - por isso nao e um dicionario por
+# pagina aqui no modulo. Seguro apagar o atributo a qualquer hora (a marca
+# volta quando a pagina e desenhada de novo).
+_ATRIBUTO_DAS_MARCAS = "_marcas_do_aviso"
+
+
+def _guardar_marcas(projeto: Projeto, pagina: ConfigPagina, marcas: dict[str, list],
+                    codigos: list[str]) -> None:
+    """Guarda na pagina as marcas dos avisos que ela tem (`codigos`); as dos
+    avisos que ela nao tem somem. Uma atribuicao so (a tela le de outro fio)."""
+    validas = {codigo: list(caixas) for codigo, caixas in marcas.items()
+               if codigo in codigos and caixas}
+    if validas or getattr(pagina, _ATRIBUTO_DAS_MARCAS, None):
+        setattr(pagina, _ATRIBUTO_DAS_MARCAS, validas)
+
+
+def marcas_do_aviso(pagina: ConfigPagina, codigo: str | None = None) -> list:
+    """As caixas (x0, y0, x1, y1, em fracao da pagina) que mostram ONDE esta o
+    problema do aviso `codigo` nesta pagina (None = as de todos os avisos que
+    ela tem agora). Vazia se a pagina ainda nao foi desenhada nesta sessao ou
+    se o aviso nao tem lugar (pagina sem conteudo, faixa). So le."""
+    guardadas = dict(getattr(pagina, _ATRIBUTO_DAS_MARCAS, None) or {})
+    if codigo is not None:
+        return list(guardadas.get(codigo, [])) if codigo in pagina.alertas else []
+    return [caixa for c, caixas in guardadas.items() if c in pagina.alertas for caixa in caixas]
 
 
 def _misto_vale(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -2396,14 +2883,15 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
             if _precisa_de_geometria(pagina, projeto):
                 _guardar_geometria(folha, pagina, projeto, img_folha, doc)
             dpi_desenho = dpi_scan = None
-            if (_vai_detectar(projeto, pagina)     # item 1.2 (ver renderizar_pagina)
+            if (_vai_detectar(projeto, pagina, projeto.qualidade_dpi)     # item 1.2
                     or _vai_limpar_pelo_scantailor(projeto, pagina)):
                 dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
                 dpi_scan = _dpi_do_scan(doc, folha)
             img, desenho = _preparar_metade_e_geometria(
                 img_folha, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
             _acompanhar_as_zonas(pagina, desenho)
-            img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan)
+            img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan,
+                                 dpi_pedido=projeto.qualidade_dpi)
 
         # Item 2/4 do teste do Boecio (secao 3a do plano): cola o
         # conteudo (ja filtrado) dentro do tamanho de folha escolhido,
@@ -2421,6 +2909,9 @@ def _escrever_as_paginas(projeto: Projeto, doc, ativas: list[ConfigPagina],
         escritor.escrever_imagem(img, dpi=projeto.qualidade_dpi, monocromatico=mono)
         del img
 
+    # Regra ajustada do "Para revisar" (12/10/2026): todas as paginas foram
+    # medidas agora; a faixa na beirada em quase todas vira aviso do livro
+    acertar_faixa_do_livro(projeto)
     _checar(cancelado)
 
 

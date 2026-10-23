@@ -74,9 +74,17 @@ class ConfigFolha:
     # analise; nao ha como mexer a mao (ainda). Seguro mudar: nada aqui.
     sobra: tuple[float, float] | None = None
 
+    # "Está bom" num motivo so (ver o mesmo campo em ConfigPagina).
+    alertas_aceitos: list[str] = field(default_factory=list)
+
+    @property
+    def alertas_pendentes(self) -> list[str]:
+        """Os alertas que ainda pedem um olhar (ver ConfigPagina.alertas_pendentes)."""
+        return _alertas_pendentes(self)
+
     @property
     def precisa_revisao(self) -> bool:
-        return bool(self.alertas) and not self.revisada
+        return bool(self.alertas_pendentes)
 
 
 @dataclass
@@ -147,6 +155,55 @@ class ConfigPagina:
     alertas: list[str] = field(default_factory=list)
     revisada: bool = False
 
+    # Regra ajustada do "Para revisar" (12/10/2026): a ultima vez que esta
+    # pagina foi desenhada no "So as letras", sobrou faixa escura na beirada?
+    # None = ainda nao medida (ou a pagina nao esta no "So as letras"). Nao e
+    # escolha de ninguem: e o que deixa core.pipeline.acertar_faixa_do_livro
+    # contar em quantas paginas MEDIDAS a faixa aparece, para ela virar um
+    # aviso so do livro em 70% ou mais (Samuel, rodada 4, Camoes 66: "São as
+    # linhas pretas: aviso no livro basta"). O aviso da pagina
+    # (analise.FAIXA_NA_BEIRADA) some quando a faixa e do livro; este campo
+    # fica, para o aviso voltar se deixar de ser. Projeto antigo, sem o campo:
+    # None. Seguro mudar: nada aqui (e interno).
+    faixa_na_beirada: bool | None = None
+
+    # "Está bom" num MOTIVO so desta pagina (Samuel, rodada 4 do "Para
+    # revisar", 08/10/2026, `rv4-aviso-so-texto`: "Eu tenho que conseguir fazer
+    # isso com uma pagina individual, com um motivo individual de uma pagina e
+    # com todas as paginas ou com todos os motivos de todas as paginas"). Os
+    # codigos de alerta (core/analise.py) que a pessoa ja aceitou nesta
+    # pagina: saem da lista "Para revisar", os outros motivos dela continuam.
+    # `revisada` continua sendo "a pagina inteira esta boa". Quando o aviso
+    # some sozinho (o problema foi resolvido), core.pipeline tira o codigo
+    # daqui tambem: se o problema voltar, o aviso volta a pedir um olhar.
+    # Projeto antigo, sem o campo: lista vazia (nada aceito por motivo).
+    # Seguro mudar: nada aqui. Arriscado: guardar aqui outra coisa que nao
+    # codigo de alerta (a lista vai para o projeto.json).
+    alertas_aceitos: list[str] = field(default_factory=list)
+
+    # "Deixar em branco" (Samuel, rodada 5, 09/10/2026, `rv5-erro-5-sem-
+    # conteudo`: os dois botoes do aviso, "Deixar em branco" e "Tirar do
+    # livro"; e 07/10: "quando é apagada uma folha, tem que ser colocada uma no
+    # lugar dele né, pois se não a encadernação vai ficar errada"). True = a
+    # pagina FICA no livro, no mesmo lugar e do mesmo tamanho, mas sai toda
+    # branca (core.pipeline._filtrar). "Tirar do livro" e o `apagada` de
+    # sempre. Por enquanto so os avisos "Parece em branco" e "Página sem
+    # conteúdo" oferecem o botao; os dois botoes em qualquer pagina estao na
+    # Lista de espera (Fase 6). Projeto antigo, sem o campo: False.
+    em_branco: bool = False
+
+    # "Forca do preto sozinha" (Samuel, rodada 4, `rv4-erro-4-texto-falhado`:
+    # "Força sozinha"): quando o texto sai falhado, o programa escurece a
+    # forca do preto SO nesta pagina e avisa, com "Desfazer"
+    # (core.pipeline._reforcar_se_o_texto_falhou).
+    #   forca_antes_do_reforco: a forca que a pagina tinha antes de o programa
+    #       escurecer (para o "Desfazer"); None = o programa nao mexeu.
+    #   reforco_desfeito: a pessoa desfez o reforco, ou mexeu na forca depois
+    #       dele: o programa nao reforca esta pagina de novo.
+    # Projeto antigo, sem os campos: None e False. Seguro mudar: nada aqui.
+    forca_antes_do_reforco: int | None = None
+    reforco_desfeito: bool = False
+
     # Onde cada tratamento vale nesta pagina: gravura aqui, letra ali, papel no
     # resto. Guardado como lista de formas, e nao como imagem, para o arquivo
     # de projeto continuar pequeno e a mesma marcacao valer em qualquer DPI.
@@ -171,6 +228,20 @@ class ConfigPagina:
     # interno. Projeto antigo sem os dois campos abre com os padroes.
     gravura_forma: str | None = None
     gravura_feita_com: str = ""
+
+    # A marcacao que a MAQUINA fez nesta pagina e a PROVISORIA, achada na
+    # previa da tela (imagem pequena)? (13/10/2026) O detector acha areas
+    # diferentes na previa e na pagina do tamanho do PDF; a que vale e a do
+    # PDF. True = a pagina foi marcada na previa e ainda falta trocar pela do
+    # tamanho do PDF (a tela pede por tras para a pagina da vez; o PDF troca
+    # ao gerar). False = definitiva, ou pagina de projeto antigo (fica como
+    # esta), ou sem marcacao. A regra do "Para revisar" so mede com a
+    # definitiva. Nao e escolha de ninguem. Quem poe e tira: guardar_selecao,
+    # chamado por core.pipeline.garantir_selecao e pela aba Marcar. Projeto
+    # antigo, sem o campo: False.
+    # Seguro mudar: nada aqui. Arriscado: por True sem haver marcacao
+    # automatica (a do tamanho do PDF apagaria o que a maquina marcou antes).
+    marcacao_provisoria: bool = False
 
     # Decisao D2 do Samuel (02/10/2026): "Sim, pode mudar (com copia de
     # seguranca dos projetos)" - as zonas ficam presas a FOLHA ORIGINAL.
@@ -220,8 +291,17 @@ class ConfigPagina:
     tamanho_folha_cm: tuple[float, float] | None = None
 
     @property
+    def alertas_pendentes(self) -> list[str]:
+        """Os alertas desta pagina que ainda pedem um olhar: nenhum se a
+        pagina inteira ja foi dada como boa (`revisada`); senao, os que a
+        pessoa ainda nao aceitou um a um (`alertas_aceitos`). E o que a faixa
+        de aviso, o painel "Para revisar" e a janela "Antes de processar"
+        mostram. O primeiro e o que a faixa mostra."""
+        return _alertas_pendentes(self)
+
+    @property
     def precisa_revisao(self) -> bool:
-        return bool(self.alertas) and not self.revisada
+        return bool(self.alertas_pendentes)
 
     def obter_selecao(self):
         """A selecao desta pagina, ja como objeto."""
@@ -229,7 +309,26 @@ class ConfigPagina:
 
         return Selecao.de_lista(self.selecao)
 
-    def guardar_selecao(self, selecao) -> None:
+    def guardar_selecao(self, selecao, provisoria: bool | None = None) -> None:
+        """Guarda a marcacao da pagina (sempre uma lista NOVA: quem procura a
+        marcacao por tras ve que ela mudou; core.pipeline.garantir_selecao).
+
+        provisoria (13/10/2026): o que a MAQUINA marcou nesta selecao veio da
+        previa (True) ou da pagina do tamanho do PDF (False)? None = como a
+        pagina ja estava (quem so acrescenta uma area a mao). Quem passa:
+        garantir_selecao e a aba Marcar (ui/tela_conferir._selecao_mudou, com
+        o que o editor tinha carregado).
+        Marcacao sem nenhuma area da maquina nunca e provisoria: e so o que a
+        pessoa fez ("Esta folha vai sair em branco", ou tudo tirado), e
+        procurar de novo por tras poria de volta areas que ela nao quer.
+        O campo e gravado ANTES da lista de proposito: o outro fio que le a
+        lista nova ja encontra o campo certo."""
+        from core.selecao import MAO
+
+        if provisoria is not None:
+            self.marcacao_provisoria = bool(provisoria)
+        if self.marcacao_provisoria and not any(r.origem != MAO for r in selecao.regioes):
+            self.marcacao_provisoria = False
         self.selecao = selecao.para_lista()
 
 
@@ -411,6 +510,21 @@ class Projeto:
     # de fabrica mora em core/pontinhos_scantailor.PADRAO).
     limpar_pontinhos: str = PONTINHOS_PADRAO
 
+    # "Forca do preto sozinha" (Samuel, rodada 4 do "Para revisar", 08/10/2026,
+    # `rv4-erro-4-texto-falhado`: "Força sozinha" + "mas temos que melhorar o
+    # reconhecimento de tintas, para não sair falhado assim, não precisar usar
+    # sempre o reforço."; rodada 5: "Fica no plano; até lá, a força sozinha").
+    # Ligado: na pagina em "So as letras" cujo texto sai falhado, o programa
+    # escurece a forca do preto so nela e avisa, com "Desfazer"
+    # (core.pipeline._reforcar_se_o_texto_falhou; ConfigPagina.
+    # forca_antes_do_reforco). E o botao de ligar e desligar da regra 8 do
+    # plano ("toda funcao automatica tem botao de ligar e desligar"); quem
+    # mostra: ui/tela_opcoes.py (grupo dos filtros). Livro NOVO: ligado.
+    # Projeto salvo antes do campo: desligado (de_dicionario) - um livro ja
+    # conferido nao muda de forca sem a pessoa pedir. Seguro mudar: o padrao
+    # do livro novo. Arriscado: trocar o setdefault de de_dicionario.
+    reforcar_texto_falhado: bool = True
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
@@ -584,6 +698,10 @@ class Projeto:
         # Item 2.2 (07/10/2026): o projeto gravado antes do endireitar do
         # ScanTailor endireitava pela conta do programa - continua com ela.
         dados.setdefault("endireitar_como", ENDIREITAR_DO_PROJETO_ANTIGO)
+        # "Forca do preto sozinha" (12/10/2026): o projeto gravado antes nao
+        # tinha o reforco - continua sem ele (a pessoa liga na tela "O que
+        # fazer" se quiser).
+        dados.setdefault("reforcar_texto_falhado", False)
         # Item 2.2, G6 (09/10/2026): o projeto gravado antes da ordem nova
         # cortava antes de endireitar - continua assim, ponto por ponto.
         dados.setdefault("ordem_do_preparo", ORDEM_DO_PROJETO_ANTIGO)
@@ -591,6 +709,16 @@ class Projeto:
         projeto.folhas = folhas
         projeto.paginas = paginas
         return projeto
+
+
+def _alertas_pendentes(item) -> list[str]:
+    """Os alertas de uma folha ou pagina que ainda pedem um olhar (ver
+    ConfigPagina.alertas_pendentes). Item de versao antiga, sem
+    `alertas_aceitos`: todos os alertas, como sempre foi."""
+    if item.revisada or not item.alertas:
+        return []
+    aceitos = getattr(item, "alertas_aceitos", None) or ()
+    return [a for a in item.alertas if a not in aceitos]
 
 
 def _so_campos_conhecidos(classe, dados: dict[str, Any]) -> dict[str, Any]:

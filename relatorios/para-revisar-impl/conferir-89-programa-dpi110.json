@@ -1,0 +1,3639 @@
+{
+ "antiphon_p088__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "faixa_na_beirada",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.1188,
+   "apagado_junto": 0.102,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.045,
+   "beirada_a": 0.0765,
+   "falhadas": 0,
+   "linhas_contadas": 6,
+   "sem_conteudo": 0.0945,
+   "linhas_fortes": 9,
+   "linhas_fracas": 1,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.03419972640218878,
+    0.025,
+    0.9658002735978112,
+    0.176
+   ]
+  ],
+  "segundos_do_desenho": 8.1
+ },
+ "antiphon_p260__inteira": {
+  "alertas": [
+   "faixa_na_beirada",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0138,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0082,
+   "beirada_a": 0.0761,
+   "falhadas": 0,
+   "linhas_contadas": 6,
+   "sem_conteudo": 0.1465,
+   "linhas_fortes": 8,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 5.2
+ },
+ "antiphonal1547_p006__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0246,
+   "apagado_junto": 0.0084,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0036,
+   "falhadas": 0,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.2043,
+   "linhas_fortes": 22,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.9
+ },
+ "antiphonal1547_p031__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0189,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0002,
+   "falhadas": 1,
+   "linhas_contadas": 13,
+   "sem_conteudo": 0.1573,
+   "linhas_fortes": 16,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.8
+ },
+ "antiphonal1547_p046__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": null,
+  "sinais": null,
+  "marcas": [],
+  "segundos_do_desenho": 1.9
+ },
+ "antiphonal1547_p076__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0359,
+   "apagado_junto": 0.0132,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0084,
+   "falhadas": 1,
+   "linhas_contadas": 22,
+   "sem_conteudo": 0.1649,
+   "linhas_fortes": 30,
+   "linhas_fracas": 2,
+   "caixas": 6
+  },
+  "marcas": [
+   [
+    0.7942238267148014,
+    0.5059952038369304,
+    0.9747292418772563,
+    0.5587529976019184
+   ],
+   [
+    0.12274368231046931,
+    0.381294964028777,
+    0.3104693140794224,
+    0.4364508393285372
+   ],
+   [
+    0.07220216606498195,
+    0.8657074340527577,
+    0.20577617328519857,
+    0.9184652278177458
+   ],
+   [
+    0.5776173285198556,
+    0.11990407673860912,
+    0.703971119133574,
+    0.17266187050359713
+   ],
+   [
+    0.5126353790613718,
+    0.6402877697841727,
+    0.6714801444043321,
+    0.7338129496402878
+   ],
+   [
+    0.37906137184115524,
+    0.38369304556354916,
+    0.4981949458483754,
+    0.4364508393285372
+   ]
+  ],
+  "segundos_do_desenho": 2.0
+ },
+ "antiphonal1547_p192__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": null,
+  "sinais": null,
+  "marcas": [],
+  "segundos_do_desenho": 2.1
+ },
+ "antiphonal1547_p252__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0225,
+   "apagado_junto": 0.0097,
+   "maior_pedaco": 0.5068,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0016,
+   "falhadas": 2,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.1946,
+   "linhas_fortes": 23,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.6560283687943262,
+    0.418013856812933,
+    0.900709219858156,
+    0.45496535796766746
+   ],
+   [
+    0.6631205673758865,
+    0.45727482678983833,
+    0.8936170212765957,
+    0.48729792147806006
+   ]
+  ],
+  "segundos_do_desenho": 2.1
+ },
+ "boecio_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0059,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 7,
+   "sem_conteudo": 0.1191,
+   "linhas_fortes": 11,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.8
+ },
+ "boecio_p007__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0107,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 2,
+   "linhas_contadas": 25,
+   "sem_conteudo": 0.0911,
+   "linhas_fortes": 29,
+   "linhas_fracas": 8,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.42857142857142855,
+    0.0691588785046729,
+    0.5925925925925926,
+    0.09532710280373832
+   ],
+   [
+    0.30423280423280424,
+    0.09532710280373832,
+    0.9523809523809523,
+    0.13457943925233645
+   ]
+  ],
+  "segundos_do_desenho": 1.9
+ },
+ "boecio_p008__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0016,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 25,
+   "sem_conteudo": 0.1104,
+   "linhas_fortes": 30,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.8
+ },
+ "boecio_p022__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0088,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 5,
+   "linhas_contadas": 28,
+   "sem_conteudo": 0.0952,
+   "linhas_fortes": 31,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.016713091922005572,
+    0.30988593155893535,
+    0.6100278551532033,
+    0.344106463878327
+   ],
+   [
+    0.016713091922005572,
+    0.3745247148288973,
+    0.5877437325905293,
+    0.41064638783269963
+   ],
+   [
+    0.022284122562674095,
+    0.4011406844106464,
+    0.5626740947075209,
+    0.44106463878326996
+   ],
+   [
+    0.019498607242339833,
+    0.435361216730038,
+    0.5292479108635098,
+    0.47718631178707227
+   ],
+   [
+    0.5097493036211699,
+    0.8003802281368821,
+    0.8802228412256268,
+    0.8422053231939164
+   ]
+  ],
+  "segundos_do_desenho": 1.8
+ },
+ "camoes_p006__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0583,
+   "apagado_junto": 0.0106,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0082,
+   "falhadas": 0,
+   "linhas_contadas": 1,
+   "sem_conteudo": 0.0161,
+   "linhas_fortes": 3,
+   "linhas_fracas": 0,
+   "caixas": 2
+  },
+  "marcas": [
+   [
+    0.4139650872817955,
+    0.5929203539823009,
+    0.5835411471321695,
+    0.6513274336283186
+   ],
+   [
+    0.456359102244389,
+    0.20353982300884957,
+    0.5261845386533666,
+    0.26194690265486725
+   ]
+  ],
+  "segundos_do_desenho": 1.8
+ },
+ "camoes_p009__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.01,
+   "falhadas": 18,
+   "linhas_contadas": 23,
+   "sem_conteudo": 0.0535,
+   "linhas_fortes": 23,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.33251833740831294,
+    0.2756183745583039,
+    0.8312958435207825,
+    0.3127208480565371
+   ],
+   [
+    0.33251833740831294,
+    0.30565371024734983,
+    0.8312958435207825,
+    0.3392226148409894
+   ],
+   [
+    0.33496332518337407,
+    0.3321554770318021,
+    0.8288508557457213,
+    0.36925795053003535
+   ],
+   [
+    0.33496332518337407,
+    0.36395759717314485,
+    0.8312958435207825,
+    0.392226148409894
+   ],
+   [
+    0.2371638141809291,
+    0.392226148409894,
+    0.8312958435207825,
+    0.4275618374558304
+   ],
+   [
+    0.2371638141809291,
+    0.42226148409893993,
+    0.8312958435207825,
+    0.45936395759717313
+   ],
+   [
+    0.2396088019559902,
+    0.450530035335689,
+    0.8312958435207825,
+    0.4876325088339223
+   ],
+   [
+    0.2396088019559902,
+    0.48056537102473496,
+    0.8312958435207825,
+    0.5141342756183745
+   ],
+   [
+    0.2396088019559902,
+    0.508833922261484,
+    0.8312958435207825,
+    0.5441696113074205
+   ],
+   [
+    0.13447432762836187,
+    0.5653710247349824,
+    0.8312958435207825,
+    0.5971731448763251
+   ],
+   [
+    0.13447432762836187,
+    0.5954063604240283,
+    0.8312958435207825,
+    0.6325088339222615
+   ],
+   [
+    0.13202933985330073,
+    0.6254416961130742,
+    0.8312958435207825,
+    0.6607773851590106
+   ],
+   [
+    0.13691931540342298,
+    0.6537102473498233,
+    0.8288508557457213,
+    0.6908127208480566
+   ],
+   [
+    0.13447432762836187,
+    0.6819787985865724,
+    0.8312958435207825,
+    0.7120141342756183
+   ],
+   [
+    0.13691931540342298,
+    0.7102473498233216,
+    0.8337408312958435,
+    0.7455830388692579
+   ],
+   [
+    0.13691931540342298,
+    0.7402826855123675,
+    0.7359413202933985,
+    0.7756183745583038
+   ],
+   [
+    0.13447432762836187,
+    0.7985865724381626,
+    0.8312958435207825,
+    0.8374558303886925
+   ],
+   [
+    0.13691931540342298,
+    0.8551236749116607,
+    0.8312958435207825,
+    0.8886925795053003
+   ]
+  ],
+  "segundos_do_desenho": 1.9
+ },
+ "camoes_p011__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0222,
+   "apagado_junto": 0.0044,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.012,
+   "falhadas": 8,
+   "linhas_contadas": 21,
+   "sem_conteudo": 0.0427,
+   "linhas_fortes": 21,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.24736842105263157,
+    0.3333333333333333,
+    0.6342105263157894,
+    0.36155202821869487
+   ],
+   [
+    0.24736842105263157,
+    0.3527336860670194,
+    0.6973684210526315,
+    0.38095238095238093
+   ],
+   [
+    0.25,
+    0.37389770723104054,
+    0.7263157894736842,
+    0.3968253968253968
+   ],
+   [
+    0.24473684210526317,
+    0.3932980599647266,
+    0.6842105263157895,
+    0.41798941798941797
+   ],
+   [
+    0.25,
+    0.4409171075837742,
+    0.6026315789473684,
+    0.4620811287477954
+   ],
+   [
+    0.25,
+    0.4603174603174603,
+    0.7684210526315789,
+    0.48853615520282184
+   ],
+   [
+    0.25,
+    0.47971781305114636,
+    0.7421052631578947,
+    0.5079365079365079
+   ],
+   [
+    0.24736842105263157,
+    0.5008818342151675,
+    0.6868421052631579,
+    0.527336860670194
+   ]
+  ],
+  "segundos_do_desenho": 1.8
+ },
+ "camoes_p027__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0019,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0102,
+   "falhadas": 25,
+   "linhas_contadas": 27,
+   "sem_conteudo": 0.0517,
+   "linhas_fortes": 28,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.07795698924731183,
+    0.12698412698412698,
+    0.8387096774193549,
+    0.16049382716049382
+   ],
+   [
+    0.08064516129032258,
+    0.15520282186948853,
+    0.8413978494623656,
+    0.18871252204585537
+   ],
+   [
+    0.07795698924731183,
+    0.18518518518518517,
+    0.8413978494623656,
+    0.21869488536155202
+   ],
+   [
+    0.07795698924731183,
+    0.21340388007054673,
+    0.8413978494623656,
+    0.24691358024691357
+   ],
+   [
+    0.07795698924731183,
+    0.24338624338624337,
+    0.8387096774193549,
+    0.2751322751322751
+   ],
+   [
+    0.07526881720430108,
+    0.2751322751322751,
+    0.8413978494623656,
+    0.30158730158730157
+   ],
+   [
+    0.07526881720430108,
+    0.35802469135802467,
+    0.8413978494623656,
+    0.3915343915343915
+   ],
+   [
+    0.11290322580645161,
+    0.4444444444444444,
+    0.8440860215053764,
+    0.47266313932980597
+   ],
+   [
+    0.07795698924731183,
+    0.4673721340388007,
+    0.8440860215053764,
+    0.4973544973544973
+   ],
+   [
+    0.08064516129032258,
+    0.49206349206349204,
+    0.8548387096774194,
+    0.5185185185185185
+   ],
+   [
+    0.08064516129032258,
+    0.5132275132275133,
+    0.8413978494623656,
+    0.5432098765432098
+   ],
+   [
+    0.07795698924731183,
+    0.5379188712522046,
+    0.8467741935483871,
+    0.5661375661375662
+   ],
+   [
+    0.08064516129032258,
+    0.5608465608465608,
+    0.8440860215053764,
+    0.5873015873015873
+   ],
+   [
+    0.08064516129032258,
+    0.5837742504409171,
+    0.8440860215053764,
+    0.6102292768959435
+   ],
+   [
+    0.08064516129032258,
+    0.6049382716049383,
+    0.8440860215053764,
+    0.6349206349206349
+   ],
+   [
+    0.07795698924731183,
+    0.6296296296296297,
+    0.8467741935483871,
+    0.656084656084656
+   ],
+   [
+    0.08064516129032258,
+    0.6525573192239859,
+    0.8467741935483871,
+    0.6790123456790124
+   ],
+   [
+    0.08333333333333333,
+    0.6754850088183422,
+    0.8467741935483871,
+    0.7037037037037037
+   ],
+   [
+    0.08602150537634409,
+    0.6966490299823633,
+    0.8494623655913979,
+    0.7248677248677249
+   ],
+   [
+    0.08602150537634409,
+    0.7213403880070547,
+    0.8413978494623656,
+    0.7495590828924162
+   ],
+   [
+    0.08602150537634409,
+    0.7425044091710759,
+    0.8467741935483871,
+    0.7707231040564374
+   ],
+   [
+    0.08602150537634409,
+    0.7671957671957672,
+    0.8467741935483871,
+    0.7954144620811288
+   ],
+   [
+    0.08602150537634409,
+    0.7901234567901234,
+    0.8440860215053764,
+    0.818342151675485
+   ],
+   [
+    0.08602150537634409,
+    0.8130511463844797,
+    0.6586021505376344,
+    0.8430335097001763
+   ],
+   [
+    0.5618279569892473,
+    0.8500881834215167,
+    0.8091397849462365,
+    0.8712522045855379
+   ]
+  ],
+  "segundos_do_desenho": 1.7
+ },
+ "camoes_p066__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0007,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0056,
+   "falhadas": 3,
+   "linhas_contadas": 24,
+   "sem_conteudo": 0.0636,
+   "linhas_fortes": 25,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.2531328320802005,
+    0.18230088495575222,
+    0.8195488721804511,
+    0.2176991150442478
+   ],
+   [
+    0.2506265664160401,
+    0.2424778761061947,
+    0.8070175438596491,
+    0.2743362831858407
+   ],
+   [
+    0.2506265664160401,
+    0.8,
+    0.9097744360902256,
+    0.8353982300884956
+   ]
+  ],
+  "segundos_do_desenho": 1.9
+ },
+ "camoes_p104__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "figura_alem_da_gravura",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0222,
+   "apagado_junto": 0.0084,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.3539,
+   "beirada_a": 0.0236,
+   "falhadas": 1,
+   "linhas_contadas": 1,
+   "sem_conteudo": 0.0725,
+   "linhas_fortes": 0,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.44038929440389296,
+    0.8021201413427562,
+    0.6618004866180048,
+    0.823321554770318
+   ]
+  ],
+  "segundos_do_desenho": 1.9
+ },
+ "cursus_p003__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0057,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0744,
+   "falhadas": 0,
+   "linhas_contadas": 59,
+   "sem_conteudo": 0.2237,
+   "linhas_fortes": 69,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "cursus_p314__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0003,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0076,
+   "falhadas": 0,
+   "linhas_contadas": 113,
+   "sem_conteudo": 0.1708,
+   "linhas_fortes": 143,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "egenloff_p003__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0205,
+   "apagado_junto": 0.0132,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0173,
+   "falhadas": 5,
+   "linhas_contadas": 15,
+   "sem_conteudo": 0.1539,
+   "linhas_fortes": 12,
+   "linhas_fracas": 16,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.42896174863387976,
+    0.08896797153024912,
+    0.630464480874317,
+    0.13116420945602442
+   ],
+   [
+    0.6878415300546448,
+    0.7849517031011692,
+    0.8709016393442623,
+    0.8159633960345705
+   ],
+   [
+    0.6905737704918032,
+    0.8113879003558719,
+    0.9112021857923497,
+    0.8413828164717845
+   ],
+   [
+    0.4016393442622951,
+    0.8408744280630401,
+    0.6031420765027322,
+    0.85866802236909
+   ],
+   [
+    0.23224043715846995,
+    0.8591764107778342,
+    0.7739071038251366,
+    0.8830706659888155
+   ]
+  ],
+  "segundos_do_desenho": 3.1
+ },
+ "egenloff_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0026,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0047,
+   "falhadas": 0,
+   "linhas_contadas": 3,
+   "sem_conteudo": 0.0654,
+   "linhas_fortes": 3,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "egenloff_p012__inteira": {
+  "alertas": [
+   "pagina_sem_conteudo",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0783,
+   "falhadas": 0,
+   "linhas_contadas": 2,
+   "sem_conteudo": 0.0001,
+   "linhas_fortes": 0,
+   "linhas_fracas": 9,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "egenloff_p047__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0037,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 3,
+   "sem_conteudo": 0.0527,
+   "linhas_fortes": 5,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.1
+ },
+ "egenloff_p121__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0665,
+   "falhadas": 0,
+   "linhas_contadas": 3,
+   "sem_conteudo": 0.0832,
+   "linhas_fortes": 4,
+   "linhas_fracas": 11,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.1
+ },
+ "egenloff_p131__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0701,
+   "falhadas": 2,
+   "linhas_contadas": 4,
+   "sem_conteudo": 0.1551,
+   "linhas_fortes": 3,
+   "linhas_fracas": 13,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.23821989528795812,
+    0.7521281922884326,
+    0.6164921465968587,
+    0.7651477215823735
+   ],
+   [
+    0.16230366492146597,
+    0.85628442663996,
+    0.3206806282722513,
+    0.8988482724086129
+   ]
+  ],
+  "segundos_do_desenho": 3.0
+ },
+ "escola_p007__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 39,
+   "sem_conteudo": 0.1658,
+   "linhas_fortes": 17,
+   "linhas_fracas": 33,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "escola_p035__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 1,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.1778,
+   "linhas_fortes": 4,
+   "linhas_fracas": 21,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "escola_p113__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.2816,
+   "linhas_fortes": 10,
+   "linhas_fracas": 16,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "escola_p197__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0022,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 20,
+   "linhas_contadas": 25,
+   "sem_conteudo": 0.0147,
+   "linhas_fortes": 6,
+   "linhas_fracas": 23,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.046130952380952384,
+    0.0778727445394112,
+    0.9955357142857143,
+    0.100664767331434
+   ],
+   [
+    0.049107142857142856,
+    0.11016144349477683,
+    0.9970238095238095,
+    0.13105413105413105
+   ],
+   [
+    0.047619047619047616,
+    0.14055080721747387,
+    0.9970238095238095,
+    0.16144349477682812
+   ],
+   [
+    0.049107142857142856,
+    0.17094017094017094,
+    0.7931547619047619,
+    0.19278252611585944
+   ],
+   [
+    0.046130952380952384,
+    0.2070275403608737,
+    0.9970238095238095,
+    0.22981956315289648
+   ],
+   [
+    0.047619047619047616,
+    0.23741690408357075,
+    0.9970238095238095,
+    0.2611585944919278
+   ],
+   [
+    0.049107142857142856,
+    0.26970560303893637,
+    0.7395833333333334,
+    0.2896486229819563
+   ],
+   [
+    0.044642857142857144,
+    0.30484330484330485,
+    0.9985119047619048,
+    0.32668566001899335
+   ],
+   [
+    0.047619047619047616,
+    0.3380816714150047,
+    0.9970238095238095,
+    0.35802469135802467
+   ],
+   [
+    0.047619047619047616,
+    0.36752136752136755,
+    0.9940476190476191,
+    0.3903133903133903
+   ],
+   [
+    0.049107142857142856,
+    0.42924976258309594,
+    0.9955357142857143,
+    0.4491927825261159
+   ],
+   [
+    0.046130952380952384,
+    0.45963912630579296,
+    0.9895833333333334,
+    0.48148148148148145
+   ],
+   [
+    0.046130952380952384,
+    0.4890788224121557,
+    0.59375,
+    0.50997150997151
+   ],
+   [
+    0.046130952380952384,
+    0.5213675213675214,
+    0.9940476190476191,
+    0.5422602089268755
+   ],
+   [
+    0.046130952380952384,
+    0.5830959164292497,
+    0.9955357142857143,
+    0.6058879392212726
+   ],
+   [
+    0.046130952380952384,
+    0.6457739791073125,
+    0.9955357142857143,
+    0.6676163342830009
+   ],
+   [
+    0.13839285714285715,
+    0.7056030389363722,
+    0.8913690476190477,
+    0.7255460588793922
+   ],
+   [
+    0.04017857142857143,
+    0.835707502374169,
+    0.9970238095238095,
+    0.8566001899335233
+   ],
+   [
+    0.043154761904761904,
+    0.8651471984805318,
+    0.9955357142857143,
+    0.8869895536562203
+   ],
+   [
+    0.043154761904761904,
+    0.8974358974358975,
+    0.9970238095238095,
+    0.9183285849952516
+   ]
+  ],
+  "segundos_do_desenho": 2.1
+ },
+ "gladstone_p005__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0007,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 26,
+   "sem_conteudo": 0.1076,
+   "linhas_fortes": 32,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.0
+ },
+ "gladstone_p018__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "em_branco"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 1,
+   "sem_conteudo": 0.0014,
+   "linhas_fortes": 1,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.1
+ },
+ "gladstone_p055__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.0893,
+   "linhas_fortes": 21,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "gladstone_p096__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0003,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 13,
+   "sem_conteudo": 0.0321,
+   "linhas_fortes": 35,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "gladstone_p116__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0023,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.0841,
+   "linhas_fortes": 24,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.2
+ },
+ "gladstone_p136__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0088,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 33,
+   "sem_conteudo": 0.0877,
+   "linhas_fortes": 50,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.0
+ },
+ "graduale_p221__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0092,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 10,
+   "sem_conteudo": 0.0591,
+   "linhas_fortes": 4,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.7
+ },
+ "graduale_p222__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0039,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 12,
+   "sem_conteudo": 0.0598,
+   "linhas_fortes": 12,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.9
+ },
+ "graduale_p223__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0136,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.0665,
+   "linhas_fortes": 6,
+   "linhas_fracas": 6,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.0
+ },
+ "graduale_p269__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0032,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.2352,
+   "beirada_a": 0.0143,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.1232,
+   "linhas_fortes": 2,
+   "linhas_fracas": 11,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.7
+ },
+ "graduale_p588__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0071,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 5,
+   "linhas_contadas": 9,
+   "sem_conteudo": 0.0488,
+   "linhas_fortes": 5,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.13027387120651368,
+    0.13985330073349633,
+    0.4256106587712805,
+    0.17408312958435207
+   ],
+   [
+    0.306439674315322,
+    0.2469437652811736,
+    0.9104367135455218,
+    0.28753056234718827
+   ],
+   [
+    0.6062176165803109,
+    0.5887530562347189,
+    0.9326424870466321,
+    0.6322738386308069
+   ],
+   [
+    0.5647668393782384,
+    0.7090464547677262,
+    0.9311621021465581,
+    0.7525672371638141
+   ],
+   [
+    0.14803849000740193,
+    0.8337408312958435,
+    0.9356032568467801,
+    0.8753056234718827
+   ]
+  ],
+  "segundos_do_desenho": 4.2
+ },
+ "horas_p011__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.0658,
+   "linhas_fortes": 0,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.0
+ },
+ "horas_p013__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0031,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.0511,
+   "linhas_fortes": 22,
+   "linhas_fracas": 2,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.1
+ },
+ "horas_p014__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0041,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 4,
+   "linhas_contadas": 35,
+   "sem_conteudo": 0.0457,
+   "linhas_fortes": 67,
+   "linhas_fracas": 60,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.33988212180746563,
+    0.13560975609756099,
+    0.5324165029469549,
+    0.1546341463414634
+   ],
+   [
+    0.639161755075311,
+    0.13365853658536586,
+    0.8074656188605108,
+    0.16048780487804878
+   ],
+   [
+    0.3372626064178127,
+    0.15609756097560976,
+    0.5180091683038638,
+    0.17609756097560975
+   ],
+   [
+    0.639161755075311,
+    0.14926829268292682,
+    0.9240340537000655,
+    0.18097560975609756
+   ]
+  ],
+  "segundos_do_desenho": 3.7
+ },
+ "horas_p016__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0002,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0023,
+   "beirada_a": 0.0002,
+   "falhadas": 0,
+   "linhas_contadas": 32,
+   "sem_conteudo": 0.0447,
+   "linhas_fortes": 41,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.8
+ },
+ "horas_p026__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0028,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 15,
+   "linhas_contadas": 31,
+   "sem_conteudo": 0.0252,
+   "linhas_fortes": 27,
+   "linhas_fracas": 13,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.1281198003327787,
+    0.19128787878787878,
+    0.6572379367720466,
+    0.21543560606060605
+   ],
+   [
+    0.17554076539101499,
+    0.2911931818181818,
+    0.5990016638935108,
+    0.3158143939393939
+   ],
+   [
+    0.11564059900166389,
+    0.3702651515151515,
+    0.6397670549084858,
+    0.39678030303030304
+   ],
+   [
+    0.06073211314475874,
+    0.3887310606060606,
+    0.56738768718802,
+    0.41429924242424243
+   ],
+   [
+    0.05906821963394343,
+    0.4071969696969697,
+    0.586522462562396,
+    0.43702651515151514
+   ],
+   [
+    0.05740432612312812,
+    0.4308712121212121,
+    0.6688851913477537,
+    0.45738636363636365
+   ],
+   [
+    0.05740432612312812,
+    0.4910037878787879,
+    0.9001663893510815,
+    0.5179924242424242
+   ],
+   [
+    0.050748752079866885,
+    0.5497159090909091,
+    0.8111480865224625,
+    0.5767045454545454
+   ],
+   [
+    0.05574043261231281,
+    0.5714962121212122,
+    0.7462562396006656,
+    0.5989583333333334
+   ],
+   [
+    0.05574043261231281,
+    0.5899621212121212,
+    0.7079866888519135,
+    0.6197916666666666
+   ],
+   [
+    0.17054908485856904,
+    0.6534090909090909,
+    0.7304492512479202,
+    0.6789772727272727
+   ],
+   [
+    0.04908485856905158,
+    0.6543560606060606,
+    0.6572379367720466,
+    0.696969696969697
+   ],
+   [
+    0.05574043261231281,
+    0.6903409090909091,
+    0.6930116472545758,
+    0.7154356060606061
+   ],
+   [
+    0.05740432612312812,
+    0.7296401515151515,
+    0.8494176372712147,
+    0.7580492424242424
+   ],
+   [
+    0.05574043261231281,
+    0.75,
+    0.4891846921797005,
+    0.7826704545454546
+   ]
+  ],
+  "segundos_do_desenho": 4.0
+ },
+ "horas_p027__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0021,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 3,
+   "linhas_contadas": 32,
+   "sem_conteudo": 0.0267,
+   "linhas_fortes": 30,
+   "linhas_fracas": 6,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.13801652892561983,
+    0.5213916314057357,
+    0.684297520661157,
+    0.5481899388810532
+   ],
+   [
+    0.13801652892561983,
+    0.5613540197461213,
+    0.5371900826446281,
+    0.5872120357310766
+   ],
+   [
+    0.2371900826446281,
+    0.6384579219558063,
+    0.9504132231404959,
+    0.6633756464503996
+   ]
+  ],
+  "segundos_do_desenho": 4.0
+ },
+ "horas_p047__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.2717,
+   "linhas_fortes": 17,
+   "linhas_fracas": 4,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.1
+ },
+ "horas_p175__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0117,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 11,
+   "sem_conteudo": 0.215,
+   "linhas_fortes": 11,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.1
+ },
+ "ljs47_p026__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.015,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0001,
+   "falhadas": 4,
+   "linhas_contadas": 71,
+   "sem_conteudo": 0.0174,
+   "linhas_fortes": 13,
+   "linhas_fracas": 78,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.6144343302990898,
+    0.09656992084432718,
+    0.8920676202860858,
+    0.11556728232189974
+   ],
+   [
+    0.6072821846553966,
+    0.11029023746701846,
+    0.8810143042912874,
+    0.13509234828496042
+   ],
+   [
+    0.6131339401820546,
+    0.1287598944591029,
+    0.9024707412223667,
+    0.15408970976253297
+   ],
+   [
+    0.6866059817945384,
+    0.4100263852242744,
+    0.8966189856957087,
+    0.43218997361477574
+   ]
+  ],
+  "segundos_do_desenho": 3.6
+ },
+ "ljs47_p049__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 1,
+   "linhas_contadas": 4,
+   "sem_conteudo": 0.0096,
+   "linhas_fortes": 62,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.9
+ },
+ "ljs47_p064__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0002,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0064,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 64,
+   "sem_conteudo": 0.0238,
+   "linhas_fortes": 40,
+   "linhas_fracas": 39,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.1
+ },
+ "ljs47_p103__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0122,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 2,
+   "linhas_contadas": 47,
+   "sem_conteudo": 0.0222,
+   "linhas_fortes": 45,
+   "linhas_fracas": 15,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.08725289706884799,
+    0.09156378600823045,
+    0.3858214042263122,
+    0.11265432098765432
+   ],
+   [
+    0.08861622358554874,
+    0.1111111111111111,
+    0.38173142467620996,
+    0.13117283950617284
+   ]
+  ],
+  "segundos_do_desenho": 3.7
+ },
+ "marial_p007__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0013,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0108,
+   "beirada_a": 0.0004,
+   "falhadas": 17,
+   "linhas_contadas": 38,
+   "sem_conteudo": 0.117,
+   "linhas_fortes": 40,
+   "linhas_fracas": 6,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.09595484477892756,
+    0.14455307262569833,
+    0.8588899341486359,
+    0.17667597765363127
+   ],
+   [
+    0.09595484477892756,
+    0.21368715083798884,
+    0.8598306679209784,
+    0.2388268156424581
+   ],
+   [
+    0.09783631232361242,
+    0.23533519553072627,
+    0.8617121354656632,
+    0.26256983240223464
+   ],
+   [
+    0.09501411100658513,
+    0.25768156424581007,
+    0.8664158043273753,
+    0.2842178770949721
+   ],
+   [
+    0.08560677328316087,
+    0.4909217877094972,
+    0.34995296331138287,
+    0.547486033519553
+   ],
+   [
+    0.09783631232361242,
+    0.5418994413407822,
+    0.8918156161806209,
+    0.571927374301676
+   ],
+   [
+    0.09595484477892756,
+    0.5607541899441341,
+    0.8974600188146754,
+    0.5921787709497207
+   ],
+   [
+    0.09313264346190028,
+    0.5879888268156425,
+    0.878645343367827,
+    0.6138268156424581
+   ],
+   [
+    0.09595484477892756,
+    0.696927374301676,
+    0.8664158043273753,
+    0.7241620111731844
+   ],
+   [
+    0.09783631232361242,
+    0.7213687150837989,
+    0.3142050799623706,
+    0.7430167597765364
+   ],
+   [
+    0.3405456255879586,
+    0.7206703910614525,
+    0.8682972718720602,
+    0.7465083798882681
+   ],
+   [
+    0.09595484477892756,
+    0.74231843575419,
+    0.8692380056444027,
+    0.7674581005586593
+   ],
+   [
+    0.09595484477892756,
+    0.7653631284916201,
+    0.8711194731890874,
+    0.789804469273743
+   ],
+   [
+    0.09783631232361242,
+    0.784217877094972,
+    0.8711194731890874,
+    0.8135474860335196
+   ],
+   [
+    0.09595484477892756,
+    0.8037709497206704,
+    0.8748824082784572,
+    0.8358938547486033
+   ],
+   [
+    0.09595484477892756,
+    0.8268156424581006,
+    0.8711194731890874,
+    0.8582402234636871
+   ],
+   [
+    0.09783631232361242,
+    0.8729050279329609,
+    0.8730009407337723,
+    0.9022346368715084
+   ]
+  ],
+  "segundos_do_desenho": 3.0
+ },
+ "marial_p454__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0514,
+   "beirada_a": 0.0024,
+   "falhadas": 9,
+   "linhas_contadas": 72,
+   "sem_conteudo": 0.0777,
+   "linhas_fortes": 75,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.17797443461160276,
+    0.08798882681564246,
+    0.5073746312684366,
+    0.11173184357541899
+   ],
+   [
+    0.1848574237954769,
+    0.11033519553072625,
+    0.5103244837758112,
+    0.13756983240223464
+   ],
+   [
+    0.18092428711897737,
+    0.17458100558659218,
+    0.5073746312684366,
+    0.20251396648044692
+   ],
+   [
+    0.18092428711897737,
+    0.30935754189944137,
+    0.5024582104228122,
+    0.3344972067039106
+   ],
+   [
+    0.17010816125860373,
+    0.5286312849162011,
+    0.49557522123893805,
+    0.5565642458100558
+   ],
+   [
+    0.16420845624385447,
+    0.7716480446927374,
+    0.49262536873156343,
+    0.797486033519553
+   ],
+   [
+    0.16125860373647985,
+    0.7912011173184358,
+    0.48770894788593905,
+    0.8177374301675978
+   ],
+   [
+    0.16617502458210423,
+    0.8135474860335196,
+    0.4916420845624385,
+    0.8386871508379888
+   ],
+   [
+    0.16322517207472959,
+    0.8358938547486033,
+    0.48770894788593905,
+    0.861731843575419
+   ]
+  ],
+  "segundos_do_desenho": 3.0
+ },
+ "marial_p840__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0013,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0043,
+   "falhadas": 0,
+   "linhas_contadas": 33,
+   "sem_conteudo": 0.0756,
+   "linhas_fortes": 44,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "matematica_p032__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "figura_alem_da_gravura",
+   "faixa_na_beirada",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0038,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.5087,
+   "beirada_a": 0.2171,
+   "falhadas": 21,
+   "linhas_contadas": 29,
+   "sem_conteudo": 0.3305,
+   "linhas_fortes": 34,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.10264900662251655,
+    0.284805091487669,
+    0.7582781456953642,
+    0.3015115354017502
+   ],
+   [
+    0.10816777041942605,
+    0.29912490055688146,
+    0.7571743929359823,
+    0.3158313444709626
+   ],
+   [
+    0.10816777041942605,
+    0.3269689737470167,
+    0.7582781456953642,
+    0.3436754176610978
+   ],
+   [
+    0.10706401766004416,
+    0.3420843277645187,
+    0.7571743929359823,
+    0.35719968178202066
+   ],
+   [
+    0.10816777041942605,
+    0.3556085918854415,
+    0.7571743929359823,
+    0.3715194908512331
+   ],
+   [
+    0.10816777041942605,
+    0.36913285600636436,
+    0.7582781456953642,
+    0.3858392999204455
+   ],
+   [
+    0.10596026490066225,
+    0.45346062052505964,
+    0.7582781456953642,
+    0.4693715194908512
+   ],
+   [
+    0.10816777041942605,
+    0.4669848846459825,
+    0.32339955849889623,
+    0.48289578361177404
+   ],
+   [
+    0.3465783664459161,
+    0.4669848846459825,
+    0.7582781456953642,
+    0.48289578361177404
+   ],
+   [
+    0.10706401766004416,
+    0.4805091487669053,
+    0.7582781456953642,
+    0.49801113762927607
+   ],
+   [
+    0.10706401766004416,
+    0.5091487669053302,
+    0.7582781456953642,
+    0.5258552108194113
+   ],
+   [
+    0.10706401766004416,
+    0.522673031026253,
+    0.5143487858719646,
+    0.5369928400954654
+   ],
+   [
+    0.5419426048565121,
+    0.5234685759745425,
+    0.7571743929359823,
+    0.5369928400954654
+   ],
+   [
+    0.10706401766004416,
+    0.5369928400954654,
+    0.5485651214128036,
+    0.5536992840095465
+   ],
+   [
+    0.10816777041942605,
+    0.5632458233890215,
+    0.7593818984547461,
+    0.5815433571996818
+   ],
+   [
+    0.10816777041942605,
+    0.5783611774065235,
+    0.7593818984547461,
+    0.5958631662688942
+   ],
+   [
+    0.10706401766004416,
+    0.5926809864757359,
+    0.7571743929359823,
+    0.609387430389817
+   ],
+   [
+    0.10816777041942605,
+    0.6062052505966588,
+    0.7593818984547461,
+    0.6237072394590294
+   ],
+   [
+    0.10816777041942605,
+    0.6221161495624503,
+    0.33002207505518766,
+    0.6372315035799523
+   ],
+   [
+    0.10816777041942605,
+    0.6913285600636436,
+    0.445916114790287,
+    0.7080350039777248
+   ],
+   [
+    0.10816777041942605,
+    0.747016706443914,
+    0.3719646799116998,
+    0.7637231503579952
+   ]
+  ],
+  "segundos_do_desenho": 3.1
+ },
+ "matematica_p072__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "texto_falhado",
+   "figura_alem_da_gravura",
+   "faixa_na_beirada",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.1393,
+   "apagado_junto": 0.1391,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.3166,
+   "beirada_a": 0.0523,
+   "falhadas": 16,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.2336,
+   "linhas_fortes": 89,
+   "linhas_fracas": 3,
+   "caixas": 3
+  },
+  "marcas": [
+   [
+    0.9018232819074333,
+    0.014,
+    0.9887798036465638,
+    0.557
+   ],
+   [
+    0.7629733520336606,
+    0.689,
+    0.9887798036465638,
+    0.9
+   ],
+   [
+    0.9018232819074333,
+    0.575,
+    0.9551192145862553,
+    0.639
+   ],
+   [
+    0.11208791208791209,
+    0.0908379013312451,
+    0.7571428571428571,
+    0.10806577916992952
+   ],
+   [
+    0.11318681318681319,
+    0.105716523101018,
+    0.46923076923076923,
+    0.12294440093970242
+   ],
+   [
+    0.11208791208791209,
+    0.11981205951448708,
+    0.7582417582417582,
+    0.13547376664056382
+   ],
+   [
+    0.10989010989010989,
+    0.42364917776037586,
+    0.3010989010989011,
+    0.4400939702427565
+   ],
+   [
+    0.10989010989010989,
+    0.49334377447141736,
+    0.389010989010989,
+    0.5097885669537979
+   ],
+   [
+    0.11098901098901098,
+    0.6178543461237275,
+    0.7395604395604396,
+    0.6327329678935004
+   ],
+   [
+    0.11208791208791209,
+    0.6319498825371965,
+    0.6406593406593407,
+    0.6460454189506656
+   ],
+   [
+    0.11098901098901098,
+    0.6452623335943618,
+    0.5472527472527473,
+    0.6617071260767423
+   ],
+   [
+    0.10989010989010989,
+    0.658574784651527,
+    0.5945054945054945,
+    0.6758026624902115
+   ],
+   [
+    0.11098901098901098,
+    0.6726703210649961,
+    0.5340659340659341,
+    0.6859827721221613
+   ],
+   [
+    0.12307692307692308,
+    0.6851996867658575,
+    0.367032967032967,
+    0.7008613938919342
+   ],
+   [
+    0.11098901098901098,
+    0.6992952231793266,
+    0.27802197802197803,
+    0.7157400156617071
+   ],
+   [
+    0.10989010989010989,
+    0.7141738449490994,
+    0.38351648351648354,
+    0.73061863743148
+   ],
+   [
+    0.10989010989010989,
+    0.7415818324197337,
+    0.378021978021978,
+    0.7572435395458105
+   ],
+   [
+    0.10989010989010989,
+    0.754894283476899,
+    0.41318681318681316,
+    0.7713390759592795
+   ],
+   [
+    0.10989010989010989,
+    0.7682067345340642,
+    0.41098901098901097,
+    0.7846515270164448
+   ]
+  ],
+  "segundos_do_desenho": 2.9
+ },
+ "opusmajus_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0012,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 12,
+   "sem_conteudo": 0.0185,
+   "linhas_fortes": 16,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.8
+ },
+ "opusmajus_p011__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 35,
+   "sem_conteudo": 0.0817,
+   "linhas_fortes": 40,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.8
+ },
+ "opusmajus_p020__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0003,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0599,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.2655,
+   "linhas_fortes": 1,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "opusmajus_p165__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0003,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 2,
+   "linhas_contadas": 35,
+   "sem_conteudo": 0.058,
+   "linhas_fortes": 45,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.0064516129032258064,
+    0.4775212636695018,
+    0.7290322580645161,
+    0.5018226002430134
+   ],
+   [
+    0.012903225806451613,
+    0.6172539489671932,
+    0.7311827956989247,
+    0.6415552855407047
+   ]
+  ],
+  "segundos_do_desenho": 2.9
+ },
+ "opusmajus_p256__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0598,
+   "apagado_junto": 0.0187,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 40,
+   "linhas_contadas": 42,
+   "sem_conteudo": 0.013,
+   "linhas_fortes": 76,
+   "linhas_fracas": 228,
+   "caixas": 6
+  },
+  "marcas": [
+   [
+    0.6852731591448931,
+    0.7124802527646129,
+    0.7612826603325415,
+    0.8167456556082149
+   ],
+   [
+    0.2529691211401425,
+    0.7535545023696683,
+    0.29097387173396677,
+    0.8325434439178515
+   ],
+   [
+    0.5213776722090261,
+    0.693522906793049,
+    0.5451306413301663,
+    0.7488151658767772
+   ],
+   [
+    0.8836104513064132,
+    0.1990521327014218,
+    0.9418052256532067,
+    0.21642969984202212
+   ],
+   [
+    0.42161520190023755,
+    0.2353870458135861,
+    0.4358669833729216,
+    0.2859399684044234
+   ],
+   [
+    0.6828978622327792,
+    0.27488151658767773,
+    0.7185273159144893,
+    0.2938388625592417
+   ],
+   [
+    0.7327790973871734,
+    0.22906793048973143,
+    0.995249406175772,
+    0.24644549763033174
+   ],
+   [
+    0.2992874109263658,
+    0.292259083728278,
+    0.5273159144893111,
+    0.31121642969984203
+   ],
+   [
+    0.7660332541567696,
+    0.2890995260663507,
+    0.9928741092636579,
+    0.30647709320695105
+   ],
+   [
+    0.6959619952494062,
+    0.3048973143759874,
+    0.9275534441805225,
+    0.32385466034755134
+   ],
+   [
+    0.33847980997624705,
+    0.3048973143759874,
+    0.5261282660332541,
+    0.33965244865718797
+   ],
+   [
+    0.7719714964370546,
+    0.31911532385466035,
+    0.9251781472684085,
+    0.334913112164297
+   ],
+   [
+    0.332541567695962,
+    0.35071090047393366,
+    0.5261282660332541,
+    0.3696682464454976
+   ],
+   [
+    0.838479809976247,
+    0.34755134281200634,
+    0.996437054631829,
+    0.3696682464454976
+   ],
+   [
+    0.2992874109263658,
+    0.3665086887835703,
+    0.45368171021377673,
+    0.38388625592417064
+   ],
+   [
+    0.332541567695962,
+    0.36808846761453395,
+    0.5296912114014252,
+    0.39968404423380727
+   ],
+   [
+    0.336104513064133,
+    0.4265402843601896,
+    0.5261282660332541,
+    0.44549763033175355
+   ],
+   [
+    0.7660332541567696,
+    0.4676145339652449,
+    0.9608076009501187,
+    0.48657187993680884
+   ],
+   [
+    0.7695961995249406,
+    0.4849921011058452,
+    0.9263657957244655,
+    0.5023696682464455
+   ],
+   [
+    0.332541567695962,
+    0.4881516587677725,
+    0.5261282660332541,
+    0.5165876777251185
+   ],
+   [
+    0.7660332541567696,
+    0.48973143759873616,
+    0.9631828978622328,
+    0.5197472353870458
+   ],
+   [
+    0.332541567695962,
+    0.5308056872037915,
+    0.5261282660332541,
+    0.5497630331753555
+   ],
+   [
+    0.7660332541567696,
+    0.5276461295418642,
+    0.996437054631829,
+    0.5481832543443917
+   ],
+   [
+    0.3752969121140142,
+    0.5434439178515008,
+    0.5261282660332541,
+    0.5624012638230648
+   ],
+   [
+    0.7660332541567696,
+    0.5418641390205371,
+    0.997624703087886,
+    0.5639810426540285
+   ],
+   [
+    0.332541567695962,
+    0.5624012638230648,
+    0.5273159144893111,
+    0.5781990521327014
+   ],
+   [
+    0.7660332541567696,
+    0.5592417061611374,
+    0.997624703087886,
+    0.5766192733017378
+   ],
+   [
+    0.3752969121140142,
+    0.5876777251184834,
+    0.5261282660332541,
+    0.608214849921011
+   ],
+   [
+    0.7327790973871734,
+    0.5892575039494471,
+    0.9608076009501187,
+    0.608214849921011
+   ],
+   [
+    0.0059382422802850355,
+    0.6066350710900474,
+    0.16152019002375298,
+    0.627172195892575
+   ],
+   [
+    0.7660332541567696,
+    0.6050552922590837,
+    0.9596199524940617,
+    0.6224328593996841
+   ],
+   [
+    0.33729216152019004,
+    0.6492890995260664,
+    0.5261282660332541,
+    0.6682464454976303
+   ],
+   [
+    0.7339667458432304,
+    0.65086887835703,
+    0.9608076009501187,
+    0.6682464454976303
+   ],
+   [
+    0.33729216152019004,
+    0.7124802527646129,
+    0.49049881235154397,
+    0.7282780410742496
+   ],
+   [
+    0.8099762470308789,
+    0.7124802527646129,
+    0.9608076009501187,
+    0.7282780410742496
+   ],
+   [
+    0.2992874109263658,
+    0.7677725118483413,
+    0.5285035629453682,
+    0.7883096366508688
+   ],
+   [
+    0.332541567695962,
+    0.7851500789889415,
+    0.5261282660332541,
+    0.8183254344391785
+   ],
+   [
+    0.37054631828978624,
+    0.8309636650868878,
+    0.5261282660332541,
+    0.8467614533965245
+   ],
+   [
+    0.33016627078384797,
+    0.8293838862559242,
+    0.5261282660332541,
+    0.8609794628751974
+   ],
+   [
+    0.7672209026128266,
+    0.8325434439178515,
+    0.9608076009501187,
+    0.8657187993680885
+   ],
+   [
+    0.332541567695962,
+    0.8593996840442338,
+    0.5285035629453682,
+    0.8783570300157978
+   ],
+   [
+    0.7719714964370546,
+    0.8578199052132701,
+    0.9608076009501187,
+    0.8815165876777251
+   ],
+   [
+    0.33729216152019004,
+    0.8909952606635071,
+    0.5273159144893111,
+    0.9083728278041074
+   ],
+   [
+    0.7339667458432304,
+    0.8894154818325435,
+    0.9631828978622328,
+    0.9115323854660348
+   ],
+   [
+    0.2992874109263658,
+    0.9036334913112164,
+    0.5273159144893111,
+    0.9225908372827805
+   ],
+   [
+    0.7660332541567696,
+    0.9052132701421801,
+    0.995249406175772,
+    0.9399684044233807
+   ]
+  ],
+  "segundos_do_desenho": 3.3
+ },
+ "palatino_p005__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.1188,
+   "linhas_fortes": 15,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "palatino_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 34,
+   "sem_conteudo": 0.1111,
+   "linhas_fortes": 43,
+   "linhas_fracas": 5,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "palatino_p009__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 27,
+   "sem_conteudo": 0.139,
+   "linhas_fortes": 32,
+   "linhas_fracas": 2,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "palatino_p010__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 28,
+   "sem_conteudo": 0.1209,
+   "linhas_fortes": 28,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "palatino_p057__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0051,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 13,
+   "sem_conteudo": 0.0782,
+   "linhas_fortes": 22,
+   "linhas_fracas": 4,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.2
+ },
+ "palatino_p066__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0049,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 3,
+   "linhas_contadas": 12,
+   "sem_conteudo": 0.1124,
+   "linhas_fortes": 18,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.16775599128540306,
+    0.7181008902077152,
+    0.5816993464052288,
+    0.8056379821958457
+   ],
+   [
+    0.40522875816993464,
+    0.7922848664688428,
+    0.7581699346405228,
+    0.8486646884272997
+   ],
+   [
+    0.5381263616557734,
+    0.8323442136498517,
+    0.8758169934640523,
+    0.9317507418397626
+   ]
+  ],
+  "segundos_do_desenho": 2.2
+ },
+ "palatino_p067__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 14,
+   "sem_conteudo": 0.0926,
+   "linhas_fortes": 16,
+   "linhas_fracas": 4,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "palatino_p076__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0086,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.0832,
+   "linhas_fortes": 19,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "palatino_p104__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0047,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 10,
+   "sem_conteudo": 0.1286,
+   "linhas_fortes": 178,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "palatino_p113__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0093,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.3162,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 12,
+   "sem_conteudo": 0.0745,
+   "linhas_fortes": 83,
+   "linhas_fracas": 5,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "pesel_p021__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "figura_alem_da_gravura",
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.139,
+   "apagado_junto": 0.139,
+   "maior_pedaco": 76.6781,
+   "vazou_da_gravura": 0.2225,
+   "beirada_a": 0.0063,
+   "falhadas": 0,
+   "linhas_contadas": 7,
+   "sem_conteudo": 0.2966,
+   "linhas_fortes": 13,
+   "linhas_fracas": 0,
+   "caixas": 4
+  },
+  "marcas": [
+   [
+    0.015313935681470138,
+    0.09,
+    0.09188361408882083,
+    0.99
+   ],
+   [
+    0.554364471669219,
+    0.89,
+    0.9050535987748851,
+    0.99
+   ],
+   [
+    0.7932618683001531,
+    0.842,
+    0.8790199081163859,
+    0.869
+   ],
+   [
+    0.4670750382848392,
+    0.805,
+    0.5237366003062787,
+    0.837
+   ]
+  ],
+  "segundos_do_desenho": 3.0
+ },
+ "rariora_p008__inteira": {
+  "alertas": [
+   "pagina_sem_conteudo"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.0021,
+   "linhas_fortes": 1,
+   "linhas_fracas": 29,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.7
+ },
+ "rariora_p099__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 22,
+   "linhas_contadas": 45,
+   "sem_conteudo": 0.0668,
+   "linhas_fortes": 60,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.0389908256880734,
+    0.08168642951251646,
+    0.6146788990825688,
+    0.1080368906455863
+   ],
+   [
+    0.6467889908256881,
+    0.08168642951251646,
+    0.9931192660550459,
+    0.10935441370223979
+   ],
+   [
+    0.0389908256880734,
+    0.10144927536231885,
+    0.9908256880733946,
+    0.13175230566534915
+   ],
+   [
+    0.027522935779816515,
+    0.1225296442687747,
+    0.9885321100917431,
+    0.15019762845849802
+   ],
+   [
+    0.03669724770642202,
+    0.14492753623188406,
+    0.9908256880733946,
+    0.17654808959156784
+   ],
+   [
+    0.03669724770642202,
+    0.1673254281949934,
+    0.9908256880733946,
+    0.19367588932806323
+   ],
+   [
+    0.03669724770642202,
+    0.18840579710144928,
+    0.9862385321100917,
+    0.2147562582345191
+   ],
+   [
+    0.03211009174311927,
+    0.20816864295125165,
+    0.9885321100917431,
+    0.23715415019762845
+   ],
+   [
+    0.034403669724770644,
+    0.2318840579710145,
+    0.9655963302752294,
+    0.25691699604743085
+   ],
+   [
+    0.02981651376146789,
+    0.2951251646903821,
+    0.9862385321100917,
+    0.3227931488801054
+   ],
+   [
+    0.02981651376146789,
+    0.31488801054018445,
+    0.9862385321100917,
+    0.3425559947299078
+   ],
+   [
+    0.02981651376146789,
+    0.3372859025032938,
+    0.9862385321100917,
+    0.36363636363636365
+   ],
+   [
+    0.02981651376146789,
+    0.3570487483530962,
+    0.9839449541284404,
+    0.38603425559947296
+   ],
+   [
+    0.02981651376146789,
+    0.380764163372859,
+    0.9839449541284404,
+    0.40711462450592883
+   ],
+   [
+    0.022935779816513763,
+    0.39920948616600793,
+    0.981651376146789,
+    0.4295125164690382
+   ],
+   [
+    0.027522935779816515,
+    0.42424242424242425,
+    0.3486238532110092,
+    0.4440052700922266
+   ],
+   [
+    0.022935779816513763,
+    0.48616600790513836,
+    0.5389908256880734,
+    0.5125164690382081
+   ],
+   [
+    0.011467889908256881,
+    0.8247694334650857,
+    0.9655963302752294,
+    0.855072463768116
+   ],
+   [
+    0.011467889908256881,
+    0.8458498023715415,
+    0.23623853211009174,
+    0.8722002635046113
+   ],
+   [
+    0.6169724770642202,
+    0.8458498023715415,
+    0.7706422018348624,
+    0.8735177865612648
+   ],
+   [
+    0.006880733944954129,
+    0.8656126482213439,
+    0.963302752293578,
+    0.8985507246376812
+   ],
+   [
+    0.016055045871559634,
+    0.9117259552042161,
+    0.963302752293578,
+    0.9380764163372859
+   ]
+  ],
+  "segundos_do_desenho": 2.1
+ },
+ "rariora_p155__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "texto_falhado",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0411,
+   "apagado_junto": 0.0016,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 4,
+   "linhas_contadas": 5,
+   "sem_conteudo": 0.175,
+   "linhas_fortes": 7,
+   "linhas_fracas": 10,
+   "caixas": 3
+  },
+  "marcas": [
+   [
+    0.01559792027729636,
+    0.826530612244898,
+    0.04679376083188908,
+    0.926530612244898
+   ],
+   [
+    0.1438474870017331,
+    0.8755102040816326,
+    0.20797227036395147,
+    0.9163265306122449
+   ],
+   [
+    0.01559792027729636,
+    0.6755102040816326,
+    0.029462738301559793,
+    0.7183673469387755
+   ],
+   [
+    0.35181975736568455,
+    0.09387755102040816,
+    0.6360485268630849,
+    0.14285714285714285
+   ],
+   [
+    0.3396880415944541,
+    0.1326530612244898,
+    0.6256499133448874,
+    0.17346938775510204
+   ],
+   [
+    0.025996533795493933,
+    0.6020408163265306,
+    0.28942807625649913,
+    0.6408163265306123
+   ],
+   [
+    0.42287694974003465,
+    0.810204081632653,
+    0.7227036395147314,
+    0.8612244897959184
+   ]
+  ],
+  "segundos_do_desenho": 2.5
+ },
+ "rariora_p169__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.002,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.1522,
+   "linhas_fortes": 11,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "rariora_p211__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0139,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 9,
+   "sem_conteudo": 0.2109,
+   "linhas_fortes": 19,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.8
+ },
+ "rariora_p365__inteira": {
+  "alertas": [
+   "texto_falhado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0048,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 11,
+   "linhas_contadas": 18,
+   "sem_conteudo": 0.0167,
+   "linhas_fortes": 33,
+   "linhas_fracas": 5,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.7842003853564548,
+    0.34162162162162163,
+    0.9595375722543352,
+    0.35783783783783785
+   ],
+   [
+    0.5953757225433526,
+    0.3491891891891892,
+    0.9788053949903661,
+    0.372972972972973
+   ],
+   [
+    0.5992292870905588,
+    0.3827027027027027,
+    0.7861271676300579,
+    0.40540540540540543
+   ],
+   [
+    0.7090558766859345,
+    0.47243243243243244,
+    0.8805394990366089,
+    0.5005405405405405
+   ],
+   [
+    0.5915221579961464,
+    0.492972972972973,
+    0.8285163776493256,
+    0.5178378378378379
+   ],
+   [
+    0.0019267822736030828,
+    0.5448648648648649,
+    0.1926782273603083,
+    0.5675675675675675
+   ],
+   [
+    0.5857418111753372,
+    0.5945945945945946,
+    0.8747591522157996,
+    0.6324324324324324
+   ],
+   [
+    0.7013487475915221,
+    0.6475675675675676,
+    0.8670520231213873,
+    0.6724324324324324
+   ],
+   [
+    0.5934489402697495,
+    0.6594594594594595,
+    0.8978805394990366,
+    0.6972972972972973
+   ],
+   [
+    0.6859344894026975,
+    0.7221621621621621,
+    0.9132947976878613,
+    0.7416216216216216
+   ],
+   [
+    0.5934489402697495,
+    0.7297297297297297,
+    0.8805394990366089,
+    0.7535135135135135
+   ]
+  ],
+  "segundos_do_desenho": 2.3
+ },
+ "rhetorica_p018__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0049,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 35,
+   "sem_conteudo": 0.1117,
+   "linhas_fortes": 42,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "rhetorica_p034__inteira": {
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0016,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 15,
+   "sem_conteudo": 0.2095,
+   "linhas_fortes": 27,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "rhetorica_p073__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0096,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 38,
+   "sem_conteudo": 0.0846,
+   "linhas_fortes": 94,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.4
+ },
+ "rhetorica_p129__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0068,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0545,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.1848,
+   "linhas_fortes": 11,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "rhetorica_p160__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0036,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 40,
+   "sem_conteudo": 0.1019,
+   "linhas_fortes": 50,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "siebmacher_p007__esquerda": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0142,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.015,
+   "falhadas": 0,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.1446,
+   "linhas_fortes": 24,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "siebmacher_p007__direita": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0198,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0399,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.079,
+   "linhas_fortes": 2,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.2
+ },
+ "siebmacher_p009__esquerda": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0047,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0159,
+   "falhadas": 0,
+   "linhas_contadas": 18,
+   "sem_conteudo": 0.1227,
+   "linhas_fortes": 19,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "siebmacher_p009__direita": {
+  "alertas": [
+   "faixa_na_beirada",
+   "contas_do_endireitar_discordam"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0222,
+   "apagado_junto": 0.0049,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0426,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.0728,
+   "linhas_fortes": 2,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ }
+}
