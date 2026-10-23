@@ -398,6 +398,16 @@
      "quem": "gerente",
      "em": "2026-10-23T07:40:00Z",
      "texto": "Refiz com a foto legendada e sem termos técnicos, logo abaixo."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-23T01:47:48Z",
+     "texto": "Isso vai alterar alguma coisa, tirar essa linha preta?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T08:10:00Z",
+     "texto": "Só muda uma coisa: numa página em Preto e branco com uma área \"papel como o resto da página\", a letra passa a sair limpa, igual a \"papel branco\". Nada mais muda: o resto da página, o \"papel branco\", o Original e o Melhorar ficam como estão. O Implementador B está fazendo, com teste que prova isso."
     }
    ],
    "explicacao": [
@@ -447,6 +457,16 @@
      "quem": "gerente",
      "em": "2026-10-23T07:40:00Z",
      "texto": "Expliquei para que serve e pus quatro nomes para escolher, logo abaixo."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-23T01:44:35Z",
+     "texto": "esse botão ainda é bem confuso, mas por enquanto pode ficar assim."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T08:10:00Z",
+     "texto": "Registrado: o nome passa a ser \"manter a cor da tinta\" por enquanto, e o \"ainda é bem confuso\" fica anotado para a revisão dos nomes de botão (Lista de espera)."
     }
    ],
    "explicacao": [

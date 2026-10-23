@@ -182,3 +182,5 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `a-212-p4` (2ª volta): **A — Não fica sabendo (deixar como está)** — "Mas eu vou poder tentar desentortar fotos né? a opção não vai sumir?." (respondido: sim)
 - `b-10-contorno`: **Ainda não entendi** (sem comentário) — refeita com foto legendada.
 - `b-11-nome`: **Ainda não entendi** — "não tem outro nome para recomendar? eu nem entendi para que serve esse botão." — refeita: para que serve + 4 nomes.
+- `b-10-contorno` (2ª volta): **No Preto e branco, tirar a linha preta** — "Isso vai alterar alguma coisa, tirar essa linha preta?"
+- `b-11-nome` (2ª volta): **"manter a cor da tinta"** — "esse botão ainda é bem confuso, mas por enquanto pode ficar assim."

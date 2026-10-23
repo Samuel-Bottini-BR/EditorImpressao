@@ -1,129 +1,15 @@
 {
  "id": "agora",
- "nome": "Para responder agora (2)",
+ "nome": "Para responder agora (0)",
  "trabalho": "2.18",
  "ordem": -1,
  "origem": "cópia das duas perguntas abertas",
  "resumo": {
   "titulo": "As duas perguntas que faltam responder",
   "paragrafos": [
-   "As duas perguntas novas da \"tinta com a cor\" (o papel da área já está feito). Responder aqui vale também para a aba \"Perguntas do Implementador B\"."
+   "Nada para responder agora."
   ]
  },
  "quadros": [],
- "perguntas": [
-  {
-   "id": "b-10-contorno",
-   "titulo": "Preto e branco: com \"papel como o resto da página\" aparece uma linha preta fina em volta da letra colorida. Tirar?",
-   "historico": [
-    {
-     "quem": "samuel",
-     "em": "2026-10-23T01:37:39Z",
-     "texto": "(Ainda não entendi, sem comentário)"
-    },
-    {
-     "quem": "gerente",
-     "em": "2026-10-23T07:40:00Z",
-     "texto": "Refiz com a foto legendada e sem termos técnicos, logo abaixo."
-    }
-   ],
-   "explicacao": [
-    "Explicando de outro jeito, com a foto legendada abaixo (o título \"PRINCIPAIS\" da Escola 7, numa página em Preto e branco, com uma área de \"tinta com a cor\" no título).",
-    "Linha 1 da foto, com \"papel branco\": a letra sai marrom, limpa.",
-    "Linha 2, com \"papel como o resto da página\": a mesma letra sai com uma linha preta fina em volta de cada letra, como se alguém tivesse contornado com caneta. Isso acontece porque o Preto e branco desenha essa linha na beirada das letras, e com \"papel como o resto da página\" ela fica.",
-    "Num livro em Preto e branco o papel já sai branco de qualquer jeito, então \"papel como o resto da página\" não ajuda em nada ali; só traz a linha preta.",
-    "Nos filtros Original e Melhorar nada disso acontece: lá a opção funciona como você queria (o retângulo branco some)."
-   ],
-   "exemplos": [
-    {
-     "src": "pb3/b10-contorno-legendado.jpg",
-     "legenda": "Em cima, \"papel branco\" (letra limpa). Embaixo, \"papel como o resto da página\" (linha preta fina em volta das letras)."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "b",
-     "nome": "No Preto e branco, tirar a linha preta: as duas opções de papel saem iguais, com a letra limpa (recomendo)",
-     "texto": "Só no Preto e branco. No Original e no Melhorar continua como você escolheu.",
-     "imgs": []
-    },
-    {
-     "id": "a",
-     "nome": "Deixar a linha preta",
-     "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "",
-     "imgs": []
-    }
-   ]
-  },
-  {
-   "id": "b-11-nome",
-   "titulo": "O botão \"tinta com a cor, papel branco\": para que serve e que nome dar?",
-   "historico": [
-    {
-     "quem": "samuel",
-     "em": "2026-10-23T01:39:35Z",
-     "texto": "não tem outro nome para recomendar? eu nem entendi para que serve esse botão."
-    },
-    {
-     "quem": "gerente",
-     "em": "2026-10-23T07:40:00Z",
-     "texto": "Expliquei para que serve e pus quatro nomes para escolher, logo abaixo."
-    }
-   ],
-   "explicacao": [
-    "Para que serve: numa página que vai sair em Preto e branco, tudo vira preto, inclusive um título vermelho e azul. Com este botão você marca um pedaço da página (por exemplo, o título) e diz: \"aqui a tinta sai colorida, como no livro\". O resto da página continua em Preto e branco.",
-    "Exemplo na foto: o Livro de Horas 13 em Preto e branco. Sem a área, o título sai preto; com a área, \"TABLE / DE CE QUI EST\" sai vermelho e azul.",
-    "Onde fica: aba Marcar → painel da direita, \"Marcar como\". Depois de clicar nele aparecem os botões da cor (\"cor como no livro\" / \"cor escurecida\") e do papel (\"papel branco\" / \"papel como o resto da página\").",
-    "O nome de hoje, \"tinta com a cor, papel branco\", ficou errado: agora o papel nem sempre é branco. Escolha um dos nomes abaixo ou escreva outro no comentário. (Todos os nomes de botão ainda vão ser revistos pelo agente novo que você pediu; este pode mudar de novo lá.)"
-   ],
-   "exemplos": [
-    {
-     "src": "tc23/img/horas_p013-pb-pagina.jpg",
-     "legenda": "Livro de Horas 13. 1ª coluna: o livro. 2ª: em Preto e branco sem a área (o título sai preto). 3ª e 4ª: em Preto e branco COM a área no título (\"TABLE / DE CE QUI EST\" sai vermelho e azul; na 4ª, escurecido)."
-    },
-    {
-     "src": "pb3/depois_painel_papel_da_pagina.png",
-     "legenda": "O botão no painel \"Marcar como\", com os quatro botões que aparecem embaixo dele."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "manter-cor",
-     "nome": "\"manter a cor da tinta\" (recomendo)",
-     "texto": "Diz o que faz: a tinta fica com a cor dela.",
-     "imgs": []
-    },
-    {
-     "id": "deixar-colorido",
-     "nome": "\"deixar colorido\"",
-     "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "titulo-colorido",
-     "nome": "\"título colorido\"",
-     "texto": "Mais fácil de lembrar, mas serve para qualquer pedaço, não só título.",
-     "imgs": []
-    },
-    {
-     "id": "tinta-com-a-cor",
-     "nome": "\"tinta com a cor\"",
-     "texto": "O nome de hoje, sem o \"papel branco\".",
-     "imgs": []
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "",
-     "imgs": []
-    }
-   ]
-  }
- ]
+ "perguntas": []
 }
