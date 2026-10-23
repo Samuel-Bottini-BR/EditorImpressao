@@ -1,84 +1,15 @@
 {
  "id": "agora",
- "nome": "Para responder agora (1)",
+ "nome": "Para responder agora (0)",
  "trabalho": "2.12",
  "ordem": -1,
  "origem": "cópia das duas perguntas abertas",
  "resumo": {
   "titulo": "As duas perguntas que faltam responder",
   "paragrafos": [
-   "Falta só esta: a das fotos de celular, explicada de outro jeito. A do botão está respondida (aba \"Pergunta do Implementador A\")."
+   "Nada para responder agora."
   ]
  },
  "quadros": [],
- "perguntas": [
-  {
-   "id": "a-212-p4",
-   "titulo": "Livros fotografados com o celular: o desentortar não mexe. O que fazer?",
-   "explicacao": [
-    "Explicando de outro jeito.",
-    "Quando um livro é passado no scanner, o PDF guarda junto o tamanho de verdade da página (por exemplo, \"esta página tem 14 cm de largura\"). Uma foto de celular não guarda isso: o PDF só sabe que a foto tem tantos pontos, e o programa acha que a página é enorme, do tamanho de um cartaz.",
-    "O desentortar do ScanTailor procura as linhas do texto contando com letras de tamanho normal de livro. Numa página que ele pensa ser um cartaz, as letras parecem gigantes, ele não reconhece as linhas e desiste. Por isso, nas fotos de celular, nada acontece: as linhas continuam curvas.",
-    "A prova está na foto do Razões do Integralismo 57: nas colunas \"Agora\" as linhas continuam curvas contra a régua vermelha. Na última coluna (\"só para mostrar a causa\"), o implementador disse ao programa o tamanho certo da página, e as linhas saíram retas.",
-    "A pergunta é: como o programa fica sabendo o tamanho de verdade da página de uma foto de celular?"
-   ],
-   "exemplos": [
-    {
-     "src": "pa3/razoes_p057-pagina.jpg",
-     "legenda": "Razões do Integralismo 57 (foto): nas colunas \"Agora\" as linhas continuam curvas; na última, com o tamanho certo informado, saem retas sob a régua."
-    },
-    {
-     "src": "pa3/razoes_p057-recorte.jpg",
-     "legenda": "O mesmo, ampliado."
-    },
-    {
-     "src": "pa3/haegy2_p521-pagina.jpg",
-     "legenda": "Haegy 521 (foto): nada muda; as linhas seguem curvas."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "a",
-     "nome": "A — Não fica sabendo (deixar como está)",
-     "texto": "Nas fotos de celular o desentortar não faz nada. Não estraga, mas não ajuda.",
-     "imgs": []
-    },
-    {
-     "id": "b",
-     "nome": "B — O Kaique diz: um campo no livro \"largura de verdade da página, em cm\" (recomendo)",
-     "texto": "Ele mede uma página do livro com a régua e digita a largura (ex.: 14 cm). Vazio de fábrica = igual a hoje. É o que o ScanTailor faz (a etapa \"Fix DPI\"). Muda a tela (um campo novo).",
-     "imgs": [
-      {
-       "src": "pa3/razoes_p057-pagina.jpg",
-       "legenda": "Última coluna: com o tamanho certo, as linhas saem retas sob a régua."
-      }
-     ]
-    },
-    {
-     "id": "c",
-     "nome": "C — O programa adivinha pelo tamanho das letras",
-     "texto": "Sem perguntar nada. É conta nossa, não do ScanTailor, e pode errar em livro de letra muito grande ou muito pequena.",
-     "imgs": []
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "",
-     "imgs": []
-    }
-   ],
-   "historico": [
-    {
-     "quem": "samuel",
-     "em": "2026-10-23T00:50:44Z",
-     "texto": "não entendi."
-    },
-    {
-     "quem": "gerente",
-     "em": "2026-10-23T05:30:00Z",
-     "texto": "Refiz a explicação logo abaixo, sem palavras técnicas."
-    }
-   ]
-  }
- ]
+ "perguntas": []
 }

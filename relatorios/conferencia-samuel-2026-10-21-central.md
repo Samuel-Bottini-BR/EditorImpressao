@@ -179,3 +179,4 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `tc23-1` (3ª volta): **As duas: escolher o papel em cada área ("papel branco" ou "papel como o resto da página")**
 - `a-212-p5`: **C — Aparece sempre, mas depois do clique o programa confere de novo e volta sozinho se a página ainda sair deformada** — "Mas o programa vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer automaticamente."
 - `a-212-p4`: **Ainda não entendi** — "não entendi." (refeita)
+- `a-212-p4` (2ª volta): **A — Não fica sabendo (deixar como está)** — "Mas eu vou poder tentar desentortar fotos né? a opção não vai sumir?." (respondido: sim)
