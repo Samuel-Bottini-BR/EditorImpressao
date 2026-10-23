@@ -176,3 +176,4 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - Respondidas na Central: tc23-janela (passo a passo), tc23-1 (refeita com exemplo), dv-l67-tela-cheia, dv-lu-tc-igual, dv-pr-antes.
 - `tc23-janela` (2ª volta): **Está bom** — "entendi agora, só temos que deixar anotado para melhorar esse painel." (já na Lista de espera, 22/10)
 - `tc23-1` (2ª volta, sem opção marcada): "eu posso ter as duas opções?" — respondido: pode; opção nova "As duas: escolher o papel em cada área".
+- `tc23-1` (3ª volta): **As duas: escolher o papel em cada área ("papel branco" ou "papel como o resto da página")**

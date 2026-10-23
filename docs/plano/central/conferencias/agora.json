@@ -1,137 +1,15 @@
 {
  "id": "agora",
- "nome": "Para responder agora (1)",
+ "nome": "Para responder agora (0)",
  "trabalho": "2.18",
  "ordem": -1,
  "origem": "cópia das duas perguntas abertas",
  "resumo": {
   "titulo": "As duas perguntas que faltam responder",
   "paragrafos": [
-   "Falta só esta: a pergunta do papel branco no Original, refeita com exemplo. A dos botões já está respondida (\"Em qualquer filtro\").",
-   "Responder aqui vale também para a aba \"Tinta com a cor\"."
+   "Nada para responder agora. Obrigado!"
   ]
  },
  "quadros": [],
- "perguntas": [
-  {
-   "id": "b-9-botoes-tinta",
-   "titulo": "\"Cor como no livro\" e \"cor escurecida\": os dois botões aparecem só no Preto e branco, ou em qualquer filtro?",
-   "explicacao": [
-    "A sua resposta da tinta com a cor (\"As duas: A e B como opções separadas\") já está feita. Quando você marca uma área como \"Tinta com a cor original, papel branco\", aparecem dois botões: \"cor como no livro\" (A, a de fábrica, igual a hoje) e \"cor escurecida\" (B).",
-    "O que o Implementador B pergunta: a pergunta de antes falava de página em Preto e branco. Ele fez os botões aparecerem em qualquer filtro, porque a escolha \"Marcar como\" é a mesma em todos e a B funciona igual no Original e no Melhorar (o papel vai a branco e a tinta escurece).",
-    "Caminho das fotos: livro novo, de fábrica → girar 0° → não dividiu → endireitar → cortar as bordas → Preto e branco + área A ou B. Colunas: Original · Preto e branco · A · B."
-   ],
-   "exemplos": [
-    {
-     "src": "pb2/horas_p013-titulo-ampliado.jpg",
-     "legenda": "Livro de Horas 13, o título ampliado: na A o vermelho e o azul como no livro; na B vermelho-escuro e azul-marinho."
-    },
-    {
-     "src": "pb2/escola_p007-titulo-ampliado.jpg",
-     "legenda": "Escola 7: na B o título fica marrom-escuro, quase tão forte quanto o Preto e branco."
-    },
-    {
-     "src": "pb2/opusmajus_p003-titulo-ampliado.jpg",
-     "legenda": "Opus Majus 3: \"OPUS MAJUS\" e \"ROGER BACON\" ficam vermelho-escuro na B."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "sempre",
-     "nome": "Em qualquer filtro, como está (recomendo)",
-     "texto": "Os dois botões aparecem sempre que se marca \"tinta com a cor\". A B também serve numa página em Original ou Melhorar.",
-     "imgs": []
-    },
-    {
-     "id": "so-pb",
-     "nome": "Só quando a página está em Preto e branco",
-     "texto": "Nos outros filtros os botões ficam escondidos e vale a A.",
-     "imgs": []
-    }
-   ]
-  },
-  {
-   "id": "tc23-1",
-   "titulo": "No Original, a área \"tinta com a cor\" fica com o papel branco no meio do papel creme. Fica assim?",
-   "historico": [
-    {
-     "quem": "samuel",
-     "em": "2026-10-22T23:23:32Z",
-     "texto": "não entendi nada, não tem exemplos."
-    },
-    {
-     "quem": "gerente",
-     "em": "2026-10-23T02:50:00Z",
-     "texto": "Refiz com o exemplo do Livro de Horas 13, logo abaixo."
-    },
-    {
-     "quem": "samuel",
-     "em": "2026-10-22T23:52:01Z",
-     "texto": "eu posso ter as duas opções?"
-    },
-    {
-     "quem": "gerente",
-     "em": "2026-10-23T03:30:00Z",
-     "texto": "Pode, sim. Do mesmo jeito que a tinta tem \"cor como no livro\" e \"cor escurecida\", o papel da área pode ter dois jeitos para escolher na hora de marcar: \"papel branco\" (como hoje, faz o retângulo branco) e \"papel como o resto da página\" (sem o retângulo). Pus essa opção logo abaixo: se é o que você quer, é só marcar \"As duas\"."
-    }
-   ],
-   "explicacao": [
-    "Exemplo: veja a primeira foto. É a mesma página, o Livro de Horas 13, com o filtro Original (as cores e o papel como no livro).",
-    "Coluna da esquerda: sem área marcada. O papel é todo creme.",
-    "Colunas do meio e da direita: com uma área \"tinta com a cor, papel branco\" marcada no título. Repare que, em volta de \"TABLE / DE CE QUI EST / CONTENU EN CE LIVRE\", aparece um RETÂNGULO BRANCO, e o resto da página continua creme. É isso que a pergunta mostra: a área deixa o papel branco só dentro dela.",
-    "No Preto e branco isso não aparece, porque lá a página inteira já sai branca. Já era assim antes desta mudança, com a opção A.",
-    "A pergunta: no Original e no Melhorar, a área deve continuar deixando o papel branco (o retângulo branco), ou deve deixar o papel da cor do resto da página e mudar só a tinta?"
-   ],
-   "exemplos": [
-    {
-     "src": "tc23/img/horas_p013-original-pagina.jpg",
-     "legenda": "Livro de Horas 13 no Original: à esquerda sem área; no meio e à direita, com a área no título — o retângulo branco em volta do título."
-    },
-    {
-     "src": "tc23/img/jan_06_ver_de_perto_original.jpg",
-     "legenda": "O mesmo na janela do programa (Ver de perto, Original)."
-    },
-    {
-     "src": "tc23/img/graduale_p221-original-pagina.jpg",
-     "legenda": "Graduale 221 no Original: o mesmo retângulo branco."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "fica",
-     "nome": "Fica assim: o papel da área sai branco em qualquer filtro",
-     "texto": "Como hoje. No Original aparece o retângulo branco.",
-     "imgs": [
-      {
-       "src": "tc23/img/horas_p013-original-pagina.jpg",
-       "legenda": "O retângulo branco (colunas do meio e da direita)."
-      }
-     ]
-    },
-    {
-     "id": "papel-igual",
-     "nome": "No Original e no Melhorar, o papel da área fica como o resto da página; só a tinta muda",
-     "texto": "Some o retângulo branco: o papel dentro da área fica creme como em volta, e só a cor da tinta segue o A ou o B. No Preto e branco continua igual.",
-     "imgs": []
-    },
-    {
-     "id": "as-duas",
-     "nome": "As duas: escolher o papel em cada área (\"papel branco\" ou \"papel como o resto da página\")",
-     "texto": "Ao marcar \"tinta com a cor\", aparecem também dois botões para o papel. De fábrica, \"papel branco\", igual a hoje. Vale em qualquer filtro, como os botões da cor.",
-     "imgs": [
-      {
-       "src": "tc23/img/horas_p013-original-pagina.jpg",
-       "legenda": "Com \"papel branco\": o retângulo branco. Com \"papel como o resto da página\": o papel fica creme, só a tinta muda."
-      }
-     ]
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "",
-     "imgs": []
-    }
-   ]
-  }
- ]
+ "perguntas": []
 }

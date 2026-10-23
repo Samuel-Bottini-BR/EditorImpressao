@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T04:00:00Z",
+        "texto": "Papel da área: \"as duas\" registrado; o Implementador B está fazendo. Não há pergunta esperando você agora."
+      },
+      {
         "em": "2026-10-23T02:50:00Z",
         "texto": "A tinta com a cor foi aprovada. Respondi as suas perguntas e refiz com exemplo a do papel branco no Original (Conferência > Para responder agora)."
       },
@@ -682,7 +686,7 @@
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "andamento",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
       "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
@@ -691,10 +695,10 @@
       },
       "fotos": [],
       "testar": [],
-      "falta": "Tinta com a cor aprovada (23/10). Falta só a pergunta do papel branco no Original. Depois da junção: o aviso do \"Pintar por cima\".",
+      "falta": "O Implementador B está fazendo a sua escolha do papel da área (as duas opções); depois o verificador e você. Depois da junção: o aviso do \"Pintar por cima\".",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-23T02:50:00Z"
+      "mudouEm": "2026-10-23T04:00:00Z"
     },
     {
       "id": "2.10",
@@ -803,11 +807,11 @@
       "id": "implementador-b",
       "nome": "Implementador B",
       "papel": "As 7 ferramentas não começadas",
-      "estado": "terminou",
-      "tarefa": "\"Tinta com a cor original\": as duas opções separadas (A como está, B escurecida)",
-      "ultimo": "Fez a tinta com a cor, opções A e B (testes no GitHub: 2185 passaram, 0 falharam; velocidade igual). Deixou uma pergunta para você sobre onde aparecem os botões.",
+      "estado": "trabalhando",
+      "tarefa": "Papel da área \"tinta com a cor\": \"papel branco\" ou \"papel como o resto da página\"",
+      "ultimo": "Começou a sua escolha do papel da área (as duas opções).",
       "ramo": "fase2-ferramentas-2026-10-22",
-      "quando": "2026-10-23T01:00:00Z"
+      "quando": "2026-10-23T04:00:00Z"
     },
     {
       "id": "verificador",
