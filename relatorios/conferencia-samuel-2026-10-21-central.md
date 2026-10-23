@@ -180,3 +180,5 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `a-212-p5`: **C — Aparece sempre, mas depois do clique o programa confere de novo e volta sozinho se a página ainda sair deformada** — "Mas o programa vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer automaticamente."
 - `a-212-p4`: **Ainda não entendi** — "não entendi." (refeita)
 - `a-212-p4` (2ª volta): **A — Não fica sabendo (deixar como está)** — "Mas eu vou poder tentar desentortar fotos né? a opção não vai sumir?." (respondido: sim)
+- `b-10-contorno`: **Ainda não entendi** (sem comentário) — refeita com foto legendada.
+- `b-11-nome`: **Ainda não entendi** — "não tem outro nome para recomendar? eu nem entendi para que serve esse botão." — refeita: para que serve + 4 nomes.
