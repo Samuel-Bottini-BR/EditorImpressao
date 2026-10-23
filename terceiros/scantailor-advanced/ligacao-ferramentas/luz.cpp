@@ -29,7 +29,10 @@
 //   - A classe de apoio tem o MESMO NOME da do ScanTailor
 //     (output::OutputGenerator::Processor), para as funcoes copiadas compilarem
 //     sem mudar uma letra. Nao pode haver outra cola nesta DLL com o mesmo nome
-//     (quem juntar com o ramo do 2.8, que tem saida.cpp, tem de conferir).
+//     no mesmo namespace: na juncao de 23/10/2026 (com o saida.cpp do 2.8 e o
+//     desentortar.cpp do 2.12, que tem a mesma classe) tudo daqui foi posto
+//     dentro de `namespace st_luz`, como o desentortar.cpp faz com o
+//     st_desentortar. Nada dentro das marcas mudou.
 
 #include <AdjustBrightness.h>
 #include <BinaryImage.h>
@@ -64,6 +67,7 @@
 
 using namespace imageproc;
 
+namespace st_luz {  // juncao de 23/10/2026: separa da classe de mesmo nome do saida.cpp
 namespace output {
 // ---------------------------------------------------------------------------
 // LIGACAO: a classe que faz o papel de OutputGenerator::Processor. So os
@@ -375,6 +379,7 @@ QImage OutputGenerator::Processor::transformToWorkingCs(bool normalize) const {
 }
 // ===== FIM DO COPIADO =====
 }  // namespace output
+}  // namespace st_luz
 
 // ---------------------------------------------------------------------------
 // LIGACAO: as funcoes em C chamadas pelo Python (core/luz_scantailor.py).
@@ -445,7 +450,7 @@ ST_FERRAMENTAS_API int st_ferramentas_igualar_luz(const unsigned char* pixels,
       st_ferramentas::escreverErro(erro, tamanhoErro, "parametros invalidos");
       return ST_FERRAMENTAS_ERRO_PARAMETRO;
     }
-    const output::OutputGenerator::Processor processador(montarImagem(pixels, largura, altura, passo, canais));
+    const st_luz::output::OutputGenerator::Processor processador(montarImagem(pixels, largura, altura, passo, canais));
     escreverImagem(processador.igualar(), canais, saida, passoSaida);
     return ST_FERRAMENTAS_OK;
   });
@@ -470,7 +475,7 @@ ST_FERRAMENTAS_API int st_ferramentas_suavizar_cinza(const unsigned char* pixels
       return ST_FERRAMENTAS_ERRO_PARAMETRO;
     }
     const QImage suave
-        = output::smoothToGrayscale(montarImagem(pixels, largura, altura, passo, canais), Dpi(dpiX, dpiY));
+        = st_luz::output::smoothToGrayscale(montarImagem(pixels, largura, altura, passo, canais), Dpi(dpiX, dpiY));
     escreverImagem(suave, 1, saida, passoSaida);
     return ST_FERRAMENTAS_OK;
   });
@@ -490,7 +495,7 @@ ST_FERRAMENTAS_API int st_ferramentas_suavizar_preto_e_branco(const unsigned cha
       return ST_FERRAMENTAS_ERRO_PARAMETRO;
     }
     BinaryImage bw = st_ferramentas::binariaDeBytes(entrada, largura, altura, passoEntrada);
-    const output::OutputGenerator::Processor processador(QImage(1, 1, QImage::Format_RGB32));
+    const st_luz::output::OutputGenerator::Processor processador(QImage(1, 1, QImage::Format_RGB32));
     processador.suavizarPretoEBranco(bw);
     st_ferramentas::bytesDeBinaria(bw, saida, passoSaida);
     return ST_FERRAMENTAS_OK;
