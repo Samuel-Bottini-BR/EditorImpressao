@@ -1,13 +1,17 @@
 {
   "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
   "geral": {
-    "frase": "Fase 2 (ferramentas do ScanTailor). Dois agentes trabalham: um nas 4 ferramentas começadas, outro nas 7 que faltam. Você aprovou 5 trabalhos, que entram no programa todos juntos no fim. Falta conferir o layout 6 e 7.",
+    "frase": "Fase 2 (ferramentas do ScanTailor). Quase tudo aprovado. Falta terminar o desentortar (tela igual ao PDF) e a conferência do papel da área; depois tudo entra no programa de uma vez.",
     "faseAtual": "2",
     "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
     "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
     "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
+      {
+        "em": "2026-10-23T12:10:00Z",
+        "texto": "Você respondeu a P6 (\"sim\": a tela mostra o desentortar igual ao PDF). O Implementador A está fazendo; o verificador voltou a conferir o papel da área. Nada para responder agora."
+      },
       {
         "em": "2026-10-23T11:00:00Z",
         "texto": "Pausa e checkpoint pedidos por você: todos os agentes parados, com tudo salvo. Falta para a junção: a sua resposta da P6 do desentortar, terminar a conferência do papel da área e conferir o desentortar."
@@ -447,10 +451,10 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "andamento",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
       "situacao": "Feito pelo Implementador A (23/10): a proteção e o botão \"Desentortar aumentando a página\". Desligado, sai idêntico ao de hoje. Testes no GitHub: 2188 passaram, 0 falharam; velocidade igual.",
-      "falta": "O ajuste do botão está feito. Falta uma pergunta para você (a tela mostrar o desentortar igual ao PDF), o verificador e a sua conferência.",
+      "falta": "Você respondeu a P6 (sim). O Implementador A está fazendo a tela mostrar o desentortar igual ao PDF; depois, o verificador e a sua conferência.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -460,7 +464,7 @@
       "commit": "7d71b15",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T09:30:00Z",
+      "mudouEm": "2026-10-23T12:10:00Z",
       "relatorio": "perg-a"
     },
     {
@@ -821,11 +825,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "parado",
-      "tarefa": "2.12: depois do botão, perguntar se a página ainda sair deformada (sua resposta P5)",
-      "ultimo": "Pausado a seu pedido (23/10), com tudo salvo para continuar: o ajuste do botão está feito; espera a sua resposta da pergunta P6.",
+      "estado": "trabalhando",
+      "tarefa": "2.12: a tela e os cartões mostrarem o desentortar igual ao PDF (sua resposta P6: sim)",
+      "ultimo": "Retomou em 23/10 com a sua resposta da P6.",
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-23T11:00:00Z"
+      "quando": "2026-10-23T12:10:00Z"
     },
     {
       "id": "implementador-b",
@@ -841,11 +845,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "parado",
+      "estado": "trabalhando",
       "tarefa": "Conferir os ajustes 10 e 11 da tinta e fechar a conferência do papel da área",
-      "ultimo": "Pausado a seu pedido (23/10) no meio da conferência dos ajustes 10 e 11 da tinta; tudo salvo para continuar do mesmo lugar.",
+      "ultimo": "Retomou em 23/10 do mesmo lugar em que parou.",
       "ramo": "verif-tinta-papel-2026-10-23",
-      "quando": "2026-10-23T11:00:00Z"
+      "quando": "2026-10-23T12:10:00Z"
     },
     {
       "id": "layout",
