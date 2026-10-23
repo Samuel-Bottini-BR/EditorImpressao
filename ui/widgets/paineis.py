@@ -979,10 +979,11 @@ class PainelMarcarComo(Bloco):
     JEITOS_DO_PAPEL = ((False, "papel branco"), (True, "papel como o resto da página"))
 
     def _montar_jeitos_da_cor(self) -> None:
-        """Embaixo do botão da tinta com a cor, um pouco recuadas, duas linhas
-        de dois botões: "cor como no livro" (A) / "cor escurecida" (B) e
-        "papel branco" / "papel como o resto da página". As duas linhas moram
-        num bloco só (um item a mais no `dentro`, como antes do papel).
+        """Embaixo do botão da tinta com a cor, um pouco recuados: "cor como
+        no livro" (A) e "cor escurecida" (B) lado a lado; embaixo, "papel
+        branco" e "papel como o resto da página" um sob o outro (lado a lado o
+        segundo não cabe nos 300 px do painel e sai cortado). Tudo num bloco
+        só (um item a mais no `dentro`, como antes do papel).
         CONTROLE MÍNIMO, provisório até o layout (sem emoji, §3)."""
         bloco = Bloco()                  # sem fundo proprio (ver Bloco)
         coluna = QVBoxLayout(bloco)
@@ -990,11 +991,12 @@ class PainelMarcarComo(Bloco):
         coluna.setSpacing(5)
         self.botoes_da_cor = {}
         self.botoes_do_papel = {}
-        for jeitos, escolhido, definir, botoes in (
-                (self.JEITOS_DA_COR, self.escurecer, self.definir_escurecer, self.botoes_da_cor),
+        for jeitos, escolhido, definir, botoes, Caixa in (
+                (self.JEITOS_DA_COR, self.escurecer, self.definir_escurecer, self.botoes_da_cor,
+                 QHBoxLayout),
                 (self.JEITOS_DO_PAPEL, self.papel_da_pagina, self.definir_papel_da_pagina,
-                 self.botoes_do_papel)):
-            caixa = QHBoxLayout()
+                 self.botoes_do_papel, QVBoxLayout)):
+            caixa = Caixa()
             caixa.setContentsMargins(0, 0, 0, 0)
             caixa.setSpacing(5)
             for valor, texto in jeitos:
