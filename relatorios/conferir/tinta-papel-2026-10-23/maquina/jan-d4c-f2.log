@@ -1,0 +1,14 @@
+  ok      no projeto aberto de novo, as áreas da página: [(False, True), (True, True), (False, False)]
+  áreas ao abrir de novo: [(0.129, False, True), (0.215, True, True), (0.299, False, False)]
+  ok      fechando e abrindo o programa, as três áreas voltam com o jeito delas: [(0.129, False, True), (0.215, True, True), (0.299, False, False)]
+  ok      o projeto.json guarda o jeito das três áreas em selecao: [(False, True), (True, True), (False, False)]
+  ok      o projeto.json guarda o jeito das três áreas em zonas_na_folha: [(False, True), (True, True), (False, False)]
+  ok      o painel Propriedades abriu pelo clique no ícone
+  print f2-01-reaberto.png (1600, 1000)
+  ok      o cartão do filtro original está à vista
+  (pus fora da tela: TelaAmpliada que ia abrir em 7,30)
+  print f2-ver-de-perto-reaberto-original.png (1600, 1055)
+  ok      a página ficou com o filtro original
+  ok      WM_CLOSE fechou a janela
+
+8 de 8 certas

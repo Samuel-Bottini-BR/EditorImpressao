@@ -7,32 +7,40 @@ Ramo `verif-tinta-papel-2026-10-23` (da ponta `0acf2c7` do `fase2-ferramentas-20
 usada só para rodar, sem mexer no ramo dela. Junções `modelos` e `gabarito\paginas` (desfazer só com
 `(Get-Item <junção>).Delete()`, nunca apagar a pasta).
 
-## Situação
+## Situação (23/10/2026, depois dos ajustes 10 e 11)
 
-Tudo conferido. **PRONTO PARA CONFERIR**, com ressalvas (nunca "aprovado"). Relatório: `relatorio-tp23.html`.
-Entrega: `conferencia.json` (id `tp23`, imagens em `img/`, fora do git).
+Tudo conferido até `d4c820b`. **PRONTO PARA CONFERIR**, com ressalvas pequenas (nunca "aprovado").
+Relatório: `relatorio-tp23.html` (.md/.pdf). Entrega para a gerente publicar: `conferencia.json` (id `tp23`, imagens
+em `img/`, fora do git; o quadro novo é o `tp23-ajustes`, com as fotos `img/d4c_*`). **Não publiquei nada na Central.**
+
+- [x] Somas de fábrica, 3e95076 x d4c820b: 36 de 36 iguais (`maquina/somas-comparacao-d4c820b.txt`)
+- [x] Resposta 10: 5 jeitos x 3 filtros x 4 páginas, 60 de 60 como esperado (`maquina/somas-papel-comparacao.txt`)
+- [x] Linha preta: pontos escuros 7342/5421/784/21198 -> 0 (`img-d4c/numeros-papel.json`, fora do git)
+- [x] Projeto antigo abre igual: 4 de 4 (`maquina/abrir-antigo-d4c.log`)
+- [x] Teste novo: 11 passam no novo; 4 falham no 3e95076 (`maquina/teste-d4c-*.txt`)
+- [x] Janela: 31 de 31 e 8 de 8 (`maquina/janela-d4c/fase*/conferencias.txt`); roteiro de 22/10 consertado (duas listas)
+- [x] GitHub lido: 39889891066 2206/0; velocidade 39886669584 nada mais lento (`maquina/github-d4c820b.txt`)
+- Worktree `.claude/worktrees/vtp23-antes` (destacada em `3e95076`, junções `modelos` e `gabarito\paginas`) criada por
+  mim nesta tarefa, só para rodar; pode ficar ou sair (junção só com `(Get-Item <junção>).Delete()`).
+
+## Situação anterior (22/10, código 3e95076)
 
 - [x] Somas de fábrica (papel branco), antigo x novo: 36 de 36 iguais (`maquina/somas-comparacao.txt`)
 - [x] Projeto antigo abre como "papel branco": 4 de 4 (`maquina/projeto-antigo/abrir-antigo.json`)
 - [x] "papel como o resto da página" no Original e no Melhorar: o retângulo some (`img/numeros-papel.json`)
 - [x] As quatro combinações com A e B: a tinta é 100% igual à do papel branco
 - [x] A área de cima manda: 36 de 36 faixas; o "tirar" do pincel: 6 de 6 (`img/cruzadas.json`)
-- [x] Teste novo: 10 passam no novo e 10 falham no antigo (`maquina/teste-*.txt`)
-- [x] Janela de verdade: 28 de 28, depois 7 de 7 ao abrir de novo (uma conferida à mão, ver `maquina/janela/fase2/conferido-a-mao.txt`), e 11 de 11 no antigo
-- [x] GitHub (lido): suíte 39877466484, 2195 passaram e 0 falharam; velocidade 39876068685 "igual"
+- [x] Janela de verdade: 28 de 28, 7 de 7 (uma à mão), 11 de 11 no antigo
 
 ## Perguntas para o Samuel
 
-Nenhuma pergunta nova. As abertas b-10 (contorno preto no Preto e branco) e b-11 (nome do tipo) não são minhas e
-não as decidi. Os casos estão nos prints: `img/escola_p007-preto_e_branco-letra-de-perto.jpg` (b-10),
-`img/jan_03_papel_da_pagina_escolhido.jpg` e `img/jan_05_tres_areas_marcadas.jpg` (b-11; a linha "Marcado:" também
-diz "papel branco").
+Nenhuma. As b-10 e b-11 foram respondidas (10 e 11) e conferidas.
 
 ## Ressalvas
 
 Ver `relatorio-tp23.md`.
 
-## Ajustes das respostas 10 e 11 (pedido da gerente, 23/10/2026) - PAUSADO pelo Samuel
+## Ajustes das respostas 10 e 11 (pedido da gerente, 23/10/2026) - FEITO em 23/10
 
 Decisões: b-10 "No Preto e branco, tirar a linha preta: as duas opções de papel saem iguais, com a letra limpa";
 b-11: botão "manter a cor da tinta" (só o rótulo; a chave no projeto.json continua `tinta_cor`).

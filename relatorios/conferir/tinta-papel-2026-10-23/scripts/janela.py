@@ -259,8 +259,14 @@ def fase2(j, tela):
             achou = cand / "projeto.json"
             break
     if achou:
-        texto = achou.read_text(encoding="utf-8")
-        base.conferir(texto.count('"papel_da_pagina": true') == 2, f"o projeto.json guarda papel_da_pagina (2 áreas true) em {achou.parent.name}")
+        # o programa grava a marcação em duas listas da página (selecao e zonas_na_folha): confere as duas
+        dados = json.loads(achou.read_text(encoding="utf-8"))
+        pg0 = dados["paginas"][0]
+        for lista in ("selecao", "zonas_na_folha"):
+            jts = [(r.get("tinta_escurecida", False), r.get("papel_da_pagina", False))
+                   for r in (pg0.get(lista) or []) if isinstance(r, dict) and r.get("tipo") == "tinta_cor"]
+            base.conferir(jts[-3:] == [(False, True), (True, True), (False, False)],
+                          f"o projeto.json guarda o jeito das três áreas em {lista}: {jts}")
     else:
         base.conferir(False, "achei o projeto.json gravado")
     abrir_propriedades(j, tela)

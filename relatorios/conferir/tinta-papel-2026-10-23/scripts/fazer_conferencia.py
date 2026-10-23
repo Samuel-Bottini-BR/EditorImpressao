@@ -12,48 +12,85 @@ def i(f, legenda):
 
 
 CAM = ("Caminho: livro novo, ajustes de fábrica (girar 0°, dividir não, endireitar sim, cortar as bordas sim), "
-       "o filtro, e a área marcada à mão como \"tinta com a cor\" em cada um dos quatro jeitos.")
+       "o filtro, e a área marcada à mão como \"manter a cor da tinta\" (o nome antigo era \"tinta com a cor\") em cada um dos quatro jeitos.")
+D10 = "\"No Preto e branco, tirar a linha preta: as duas opções de papel saem iguais, com a letra limpa\" (resposta 10, 23/10)"
+D11 = "Nome do botão: \"manter a cor da tinta\" (resposta 11, 23/10)"
 DECISAO = "\"As duas: escolher o papel em cada área ('papel branco' ou 'papel como o resto da página')\" (tc23-1, 22/10)"
 
 d = {
     "id": "tp23",
-    "nome": "O papel da área \"tinta com a cor\": \"papel branco\" ou \"papel como o resto da página\"",
-    "trabalho": "fase2-ferramentas-2026-10-22 (b0af839, 3e95076; ponta 0acf2c7)",
-    "origem": "verif-tinta-papel-2026-10-23 (antes = 639136a)",
+    "nome": "O papel da área \"manter a cor da tinta\": \"papel branco\" ou \"papel como o resto da página\" (com os ajustes 10 e 11)",
+    "trabalho": "fase2-ferramentas-2026-10-22 (b0af839, 3e95076; ajustes 10 e 11: f8691be, c95ba9e; ponta d4c820b)",
+    "origem": "verif-tinta-papel-2026-10-23 (antes = 639136a; antes dos ajustes 10 e 11 = 3e95076)",
     "resumo": {
-        "titulo": "\"Papel como o resto da página\" tira o retângulo branco; o \"papel branco\" de fábrica sai igual ao de antes",
+        "titulo": "\"Papel como o resto da página\" tira o retângulo branco; no Preto e branco as duas opções saem iguais, sem a linha preta; o botão se chama \"manter a cor da tinta\"",
         "paragrafos": [
             "Sua resposta: \"As duas: escolher o papel em cada área\". Conferi nas páginas Horas 13, Escola 7, Opus Majus 3 e Graduale 221, pelo caminho inteiro do livro novo.",
             "\"Papel branco\" (o de fábrica): saiu igual ao de antes, ponto por ponto, em 36 de 36 PDFs (Preto e branco, Original e Melhorar; com A, com B e com várias áreas juntas). Um projeto começado antes abre como \"papel branco\" e sai igual (4 de 4).",
             "\"Papel como o resto da página\": no Original e no Melhorar o retângulo branco some. No Original, com \"cor como no livro\", a página sai igual a sem área. A tinta sai igual à do \"papel branco\", tanto no A quanto no B.",
             "Onde duas áreas se cruzam, vale a de cima, e o pincel \"tirar\" devolve a página como ela era.",
             "Na janela de verdade: os quatro botões aparecem e cada área guarda o seu jeito, também depois de fechar e abrir o programa.",
-            "Testes no GitHub: 2195 passaram, 0 falharam (rodada 39877466484). Velocidade: igual (rodada 39876068685).",
+            "Seus ajustes de 23/10. Resposta 10: no Preto e branco, \"papel como o resto da página\" agora sai igual ao \"papel branco\", ponto por ponto, nas 4 páginas, com \"cor como no livro\" e com \"cor escurecida\" (8 de 8). A linha preta em volta da letra sumiu. No Original e no Melhorar o ajuste não mudou nada (40 de 40 PDFs iguais aos de antes).",
+            "Resposta 11: o botão se chama \"manter a cor da tinta\". O aviso \"Área escolhida: ...\" e a linha \"Marcado: ...\" embaixo da página também usam o nome novo e não dizem mais \"papel branco\". Projeto gravado antes abre igual (4 de 4).",
+            "De fábrica nada mudou: o \"papel branco\" saiu igual ao de antes do ajuste em 36 de 36 PDFs.",
+            "Testes no GitHub: 2206 passaram, 0 falharam (rodada 39889891066). Velocidade: nada ficou mais lento (rodada 39886669584).",
         ],
-        "veredito": "PRONTO PARA CONFERIR, com ressalvas (a principal: no Preto e branco, \"papel como o resto da página\" deixa um contorno preto na letra, a pergunta b-10).",
+        "veredito": "PRONTO PARA CONFERIR, com ressalvas pequenas (nenhuma muda o que você decidiu).",
     },
     "ressalvas": [
-        "Preto e branco com \"papel como o resto da página\": um contorno preto fino em volta da letra colorida. É a pergunta b-10, que continua aberta; não decidi. Na Escola 7 se vê bem; na Horas 13 e no Graduale são pontinhos; na Opus Majus quase nada.",
-        "O nome do tipo continua \"tinta com a cor, papel branco\", mesmo com \"papel como o resto da página\" escolhido. A linha \"Marcado:\" embaixo da página também diz \"3 de tinta com a cor original, papel branco\" quando duas das três são do papel da página. É a pergunta b-11, aberta; não decidi.",
+        "No Preto e branco, com \"papel como o resto da página\", o papel da área agora fica branco puro, igual ao \"papel branco\" (é a sua resposta 10). O resto da página no Preto e branco tem uns pontinhos cinza que o filtro deixa; dentro da área eles somem (na Escola 7, 4,5% do papel da área; nas outras, menos de 2%). Nas fotos não se nota retângulo.",
+        "Algumas fotos dos quadros 1 a 4, tiradas antes do ajuste, ainda escrevem \"tinta com a cor\" na legenda; o que elas mostram não mudou. As fotos com o nome novo estão no quadro 0.",
         "No Melhorar, \"cor como no livro\" põe a cor do livro na tinta, e não a cor que o Melhorar daria. Com \"papel como o resto da página\", o papel fica o do Melhorar e a letra fica a do livro (um pouco mais apagada que a de fora da área). É o combinado (\"só a tinta segue o A ou o B\"), mas dá para notar.",
         "A B escurece também as linhas vermelhas da pauta do Graduale e a moldura dourada da Horas 13 que caem na área, com qualquer papel. Já era assim antes (pergunta 8).",
         "Graduale 221 em Preto e branco: com qualquer área por cima, a faixa escura da beirada esquerda sai um pouco diferente de sem área. Acontece igual nos quatro jeitos e já acontecia no código de antes; não é desta mudança.",
-        "Defeito antigo da tela: ao escolher um botão do \"Marcar como\", os botões do painel aparecem por um instante como janelinhas soltas (21 vezes no roteiro novo e 7 no antigo, que tem menos cliques). Já estava na conferência anterior. Vai para a Lista de bugs.",
-        "Uma das minhas conferências da janela falhou por erro do meu roteiro, e não do programa: o programa grava cada área em duas listas, e eu contei só uma. Conferi à mão: as três áreas estão gravadas com o jeito certo.",
+        "Defeito antigo da tela: ao escolher um botão do \"Marcar como\", os botões do painel aparecem por um instante como janelinhas soltas (21 vezes no roteiro novo e 7 no antigo, que tem menos cliques). Já estava na conferência anterior e continua igual depois dos ajustes (21 vezes de novo). Vai para a Lista de bugs.",
+        "Na rodada de 22/10, uma das minhas conferências da janela falhou por erro do meu roteiro (o programa grava cada área em duas listas e eu contei só uma). Consertei o roteiro: na rodada de agora as duas listas conferem, 8 de 8.",
         "Não testei a roda do mouse, o Mágico pro, nem o pincel \"tirar\" pela janela. O \"tirar\" foi conferido nas contas.",
     ],
     "quadros": [
         {
+            "id": "tp23-ajustes",
+            "nome": "0. Ajustes das suas respostas 10 e 11 (antes e agora)",
+            "explicacao": [
+                "O que você está olhando, nas quatro primeiras fotos: a letra de perto, no Preto e branco, em três colunas. Coluna 1: como era ANTES do ajuste, com \"papel como o resto da página\" (tinha a linha preta). Coluna 2: como fica AGORA, com \"papel como o resto da página\". Coluna 3: \"papel branco\", o de fábrica. Em cima, \"cor como no livro\"; embaixo, \"cor escurecida\". Caminho: livro novo, ajustes de fábrica (girar 0°, dividir não, endireitar sim, cortar as bordas sim), filtro Preto e branco, e a área \"manter a cor da tinta\" marcada à mão.",
+                "Nas outras fotos: a janela do programa (Livro de Horas 13), antes e agora, com o botão de nome novo, o aviso ao escolher uma área, a linha \"Marcado:\" embaixo da página, o \"Ver de perto\" em Preto e branco e o programa aberto de novo.",
+            ],
+            "olhar": "Se a linha preta em volta da letra sumiu na coluna 2, e se a coluna 2 ficou igual à 3. Na janela, se o botão diz \"manter a cor da tinta\".",
+            "texto": "Resposta 10: nas quatro páginas, com A e com B, a coluna 2 saiu igual à coluna 3 ponto por ponto (8 de 8), e a coluna 3 é a mesma de antes do ajuste. A linha preta da coluna 1 sumiu: os pontos do papel que ficavam escuros eram 7.342 na Horas 13, 5.421 na Escola 7, 784 na Opus Majus e 21.198 no Graduale; agora são 0. No Original e no Melhorar o ajuste não mudou nada (40 de 40 PDFs iguais). Resposta 11: o botão diz \"manter a cor da tinta\"; escolhendo uma área, o aviso diz \"Área escolhida: manter a cor da tinta.\"; a linha embaixo diz \"Marcado: ... 3 de manter a cor da tinta.\", sem \"papel branco\". Fechando e abrindo o programa, as três áreas voltam com o jeito delas.",
+            "selo": "Bom",
+            "ressalva": "No Preto e branco, dentro da área, somem também os pontinhos cinza que o filtro deixa no papel (ver as ressalvas). Nas fotos não se nota.",
+            "decisao_do_samuel": D10 + "; " + D11,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                i("d4c_escola_p007-pb-letra-antes-e-agora.jpg", "Escola 7, Preto e branco, a letra de perto. Coluna 1: antes (linha preta). Coluna 2: agora. Coluna 3: papel branco. Em cima A, embaixo B"),
+                i("d4c_horas_p013-pb-letra-antes-e-agora.jpg", "Horas 13, Preto e branco: as mesmas três colunas (os pontinhos pretos da coluna 1 sumiram)"),
+                i("d4c_graduale_p221-pb-letra-antes-e-agora.jpg", "Graduale 221, Preto e branco: a pauta vermelha, nas três colunas"),
+                i("d4c_opusmajus_p003-pb-letra-antes-e-agora.jpg", "Opus Majus 3, Preto e branco: as três colunas (aqui a linha já era quase nada)"),
+                i("d4c_escola_p007-pb-pagina.jpg", "Escola 7, Preto e branco, agora: da esquerda para a direita, sem área; A + papel branco; A + papel da página; B + papel branco; B + papel da página"),
+                i("d4c_horas_p013-pb-pagina.jpg", "Horas 13, Preto e branco, agora: os mesmos cinco jeitos"),
+                i("d4c_graduale_p221-pb-pagina.jpg", "Graduale 221, Preto e branco, agora: os mesmos cinco jeitos"),
+                i("d4c_opusmajus_p003-pb-pagina.jpg", "Opus Majus 3, Preto e branco, agora: os mesmos cinco jeitos"),
+                i("jan_03_papel_da_pagina_escolhido.jpg", "Janela ANTES: o botão dizia \"tinta com a cor, papel branco\""),
+                i("d4c_jan_1_botao_manter_a_cor_da_tinta.jpg", "Janela AGORA: o botão diz \"manter a cor da tinta\", com os quatro botões embaixo"),
+                i("d4c_jan_2_papel_da_pagina_escolhido.jpg", "AGORA: \"papel como o resto da página\" escolhido"),
+                i("jan_05_tres_areas_marcadas.jpg", "Janela ANTES: a linha \"Marcado:\" dizia \"3 de tinta com a cor original, papel branco\""),
+                i("d4c_jan_3_tres_areas_linha_marcado.jpg", "AGORA: a linha diz \"Marcado: ... 3 de manter a cor da tinta.\""),
+                i("d4c_jan_4_area_escolhida_aviso.jpg", "AGORA: escolhendo a área do título, o aviso diz \"Área escolhida: manter a cor da tinta.\""),
+                i("d4c_jan_5_ver_de_perto_pb.jpg", "AGORA: \"Ver de perto\" em Preto e branco, com as três áreas"),
+                i("d4c_jan_6_reaberto.jpg", "AGORA: o programa aberto de novo, as três áreas voltam"),
+            ],
+        },
+        {
             "id": "tp23-janela",
-            "nome": "1. Os quatro botões na janela do programa",
+            "nome": "1. Os quatro botões na janela do programa (prints de antes do nome novo)",
             "explicacao": [
                 "O que você está olhando: o Livro de Horas 13 aberto no programa, a ferramenta Retângulo e o painel Propriedades. Cliquei em \"tinta com a cor, papel branco\" (clique do Windows, janela fora da tela).",
                 "Marquei três áreas: a 1 com \"cor como no livro\" + \"papel como o resto da página\", a 2 com \"cor escurecida\" + \"papel como o resto da página\" e a 3 com \"cor como no livro\" + \"papel branco\". Depois vi a página no \"Ver de perto\", fechei o programa e abri de novo.",
             ],
             "olhar": "Se os quatro botões aparecem, e se no \"Ver de perto\" só a área 3 (no começo do texto) faz retângulo branco.",
             "texto": "Embaixo de \"tinta com a cor, papel branco\" aparecem \"cor como no livro\" e \"cor escurecida\" lado a lado e, embaixo, \"papel branco\" e \"papel como o resto da página\", um sob o outro e inteiros. De fábrica vêm \"cor como no livro\" e \"papel branco\". Cada área saiu com o jeito escolhido, e as já marcadas não mudaram. No \"Ver de perto\" em Original, o título não tem retângulo; só a área 3 tem (é a do papel branco). Escolhendo \"letra e traço\", os quatro botões somem. Fechando e abrindo o programa, as três áreas voltam com o jeito delas. No código de antes só existem os dois botões da cor.",
-            "selo": "Bom, com ressalva",
-            "ressalva": "O nome do botão e a linha \"Marcado:\" continuam dizendo \"papel branco\" (pergunta b-11, aberta): ver os prints 4 e 6.",
+            "selo": "Bom",
+            "ressalva": "Estes prints são de antes do ajuste 11 (nome antigo do botão). O nome novo está no quadro 0.",
             "decisao_do_samuel": DECISAO,
             "bate_com_a_decisao": "sim",
             "imgs": [
@@ -101,15 +138,15 @@ d = {
         },
         {
             "id": "tp23-pb",
-            "nome": "3. Nas páginas, em Preto e branco (o contorno preto da pergunta b-10)",
+            "nome": "3. Preto e branco ANTES do ajuste 10 (a linha preta que você mandou tirar)",
             "explicacao": [
                 "O que você está olhando: as mesmas páginas e os mesmos cinco jeitos, em Preto e branco. " + CAM,
-                "A foto \"de perto\" amplia a letra 4 vezes para mostrar o contorno preto que aparece com \"papel como o resto da página\". É a pergunta b-10, que continua aberta: aqui só mostro os casos.",
+                "Estas fotos são de ANTES do ajuste da sua resposta 10 (código 3e95076). Ficam aqui para comparar; como fica agora está no quadro 0.",
             ],
             "olhar": "O contorno preto fino na beirada da letra, nos jeitos com \"papel como o resto da página\".",
             "texto": "No Preto e branco o papel já é branco, então de longe os jeitos ficam quase iguais. De perto, com \"papel como o resto da página\", a letra colorida ganha um contorno preto: é a beirada que o filtro pintou de preto um pouco além da tinta. Na Escola 7 se vê bem; na Horas 13 e no Graduale são pontinhos pretos; na Opus Majus quase não aparece. Com \"papel branco\" não há contorno.",
-            "selo": "Depende da b-10",
-            "ressalva": "O contorno preto (b-10): não decidi.",
+            "selo": "Corrigido no quadro 0",
+            "ressalva": "A linha preta destas fotos já foi tirada (resposta 10).",
             "decisao_do_samuel": DECISAO,
             "bate_com_a_decisao": "sim",
             "imgs": [
@@ -148,10 +185,10 @@ d = {
     ],
     "pergunta": {
         "id": "tp23",
-        "titulo": "O papel da \"tinta com a cor\" em dois jeitos: o que você decide?",
+        "titulo": "\"Manter a cor da tinta\" com os dois papéis, e os ajustes 10 e 11: o que você decide?",
         "explicacao": [
             "O que você está escolhendo: se os dois papéis entram no programa como estão.",
-            "O que mais pesa: o contorno preto no Preto e branco (b-10) e o nome do tipo (b-11), que continuam com você.",
+            "O que mais pesa: o quadro 0, com a linha preta tirada no Preto e branco e o nome novo do botão.",
         ],
         "opcoes": ["Aprovado", "Melhorar", "Ainda não entendi"],
     },

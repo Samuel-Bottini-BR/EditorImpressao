@@ -1,0 +1,32 @@
+ok   o livro abriu e a análise terminou
+ok   o cartão do filtro original está à vista
+ok   a página ficou com o filtro original
+ok   a ferramenta da vez é o Retângulo (retangulo)
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   antes de escolher "manter a cor da tinta", os botões da cor e do papel não aparecem
+ok   "manter a cor da tinta" ficou escolhida
+ok   o botão se chama "manter a cor da tinta" (resposta 11): "manter a cor da tinta"
+ok   aparecem os quatro botões, à vista: ['cor como no livro', 'cor escurecida'] + ['papel branco', 'papel como o resto da página']
+ok   de fábrica: "cor como no livro" e "papel branco" (painel e editor)
+ok   os dois do papel ficam um sob o outro ((18, 35, 259, 30) / (18, 70, 259, 30))
+ok   "papel como o resto da página" cabe inteiro no botão (259 >= 192 px)
+ok   clicar em "papel como o resto da página" escolhe o papel da página (painel e editor)
+ok   os quatro botões continuam à vista depois do clique
+ok   a cor não mudou (continua "cor como no livro")
+ok   área 1 saiu A + papel da página: [(0.129, False, True)]
+ok   "cor escurecida" escolhida, papel da página continua
+ok   área 2 saiu B + papel da página; a 1 não mudou: [(0.129, False, True), (0.215, True, True)]
+ok   de volta a "cor como no livro" + "papel branco" (painel e editor)
+ok   área 3 saiu A + papel branco; as outras não mudaram: [(0.129, False, True), (0.215, True, True), (0.299, False, False)]
+ok   a linha "Marcado:" usa o nome novo e não diz "papel branco": "Marcado: 2 de gravura ou foto, 2 de letra e traço, 8 de papel e 3 de manter a cor da tinta."
+ok   escolhendo a área 1, o aviso diz o nome novo: "Área escolhida: manter a cor da tinta. Arraste para mover; os quadradinhos mudam o tamanho."
+ok   o cartão do filtro original está à vista
+ok   a página ficou com o filtro original
+ok   o cartão do filtro preto_e_branco está à vista
+ok   a página ficou com o filtro preto_e_branco
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   no Preto e branco, os quatro botões também aparecem ([True, True, True, True])
+ok   escolhendo "letra e traço", os quatro botões somem ([])
+ok   voltando a "manter a cor da tinta", o papel escolhido por último (papel branco) continua
+ok   WM_CLOSE fechou a janela
+31 de 31
