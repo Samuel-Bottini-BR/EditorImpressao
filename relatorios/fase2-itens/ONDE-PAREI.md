@@ -442,3 +442,11 @@ para o caso da P2 (o "pelas margens" que entorta): aumentar a página não desen
 - As zonas da aba Marcar continuam não acompanhando o desentortar (já anotado).
 - Ligado, a proteção redesenha a marca: o desentortar ligado fica mais lento (Righetti 96: ~2 s → ~3 s por página).
   Desligado (de fábrica) não muda nada.
+
+### Fim (22/10, noite) — entregue à gerente
+
+- GitHub, suíte 39875580608 (ramo no último commit): 2188 passaram, 0 falharam, 75 pulados (o acervo); botões 221
+  ações, 0 falhas.
+- Velocidade 39872493254 (`177f711` x `5e361ce`): "igual (dentro do vai-e-vem)" — abrir 42,5 → 40,6 s; trocar de
+  página 2,20 → 2,09 s; Mágico pro 44,4 → 43,3 s; Preto e branco 22,0 → 21,9 s.
+- Abertas: P4 (livros fotografados, tamanho da página) e P5 (quando o botão aparece).
