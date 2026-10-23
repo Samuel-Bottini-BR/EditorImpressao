@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T20:30:00Z",
+        "texto": "Testes guiados: tudo o que você mostra e fala no chat vai para o relatório da sessão (D:/programas/EditorImpressao/relatorios/testes-guiados/), com os prints. Cartão novo em \"Em andamento\"."
+      },
+      {
         "em": "2026-10-23T20:00:00Z",
         "texto": "A junção entrou no programa: tudo o que você aprovou na Fase 2 já está no Editor de Impressão. Testes no seu PC: 2744 certos, nenhum errado; 233 cliques sem falha. Mais rápido: abrir o livro de 61 para 37 segundos."
       },
@@ -171,6 +175,20 @@
     ]
   },
   "trabalhos": [
+    {
+      "id": "testes-guiados",
+      "titulo": "Testes guiados (você usando o programa, eu guiando)",
+      "item": "Testes",
+      "fase": "2",
+      "coluna": "andamento",
+      "oque": "Você usa o programa num livro de verdade e eu anoto cada problema na hora, com o seu print e as suas palavras.",
+      "situacao": "Sessão 0 (23/10, você sozinho, La vida eterna): 9 achados. Relatório com todos os prints: D:/programas/EditorImpressao/relatorios/testes-guiados/2026-10-23-sessao-0/sessao-0.html",
+      "falta": "O mapa do programa (um agente está montando) e a sessão 1, comigo guiando. Os consertos ficam para o fim das sessões (sua decisão A).",
+      "selos": {},
+      "fotos": [],
+      "testar": [],
+      "mudouEm": "2026-10-23T20:30:00Z"
+    },
     {
       "id": "para-revisar",
       "titulo": "\"Para revisar\": os avisos por página",
