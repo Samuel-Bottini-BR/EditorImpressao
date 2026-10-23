@@ -353,6 +353,38 @@ def fracao_de_tinta(img: np.ndarray) -> float:
     return float((binaria > 0).mean())
 
 
+# "Parece em branco" (conserto de 21/10/2026, bug da Lista de bugs de 08/10:
+# o aviso "aparece na Gladstone 18, que tem título, e não aparece no Egenloff
+# 12 nem na Rariora 8"). Antes: fração de pontos escuros pelo Otsu abaixo de
+# FRACAO_TINTA_BRANCA. Numa página branca com um título pequeno essa fração é
+# 0,1% (Gladstone 18: em branco, errado); num verso creme só com o carimbo, o
+# Otsu conta o próprio papel (Egenloff 12: 8%, não avisava). Agora: a fração
+# de tinta FORTE (mais escura que EM_BRANCO_TOM do tom do papel) no miolo da
+# página (sem a faixa EM_BRANCO_BEIRADA de cada lado, onde ficam a borda do
+# scanner e a sombra da lombada). Medido nas 87 folhas do estudo do "Para
+# revisar" (relatorios/consertos-2026-10-21/dados/em-branco.json): Egenloff
+# 12 = 0,012%; Gladstone 18 (título) = 0,13%; toda página com conteúdo, 0,99%
+# ou mais. RESSALVA: a Rariora 8 (verso só com o texto da frente aparecendo
+# por transparência, espelhado) tem 0,21% e continua sem o aviso: separar a
+# transparência do verso da tinta da página é a "mancha do verso", problema
+# aberto (CLAUDE.md §9). Seguro mudar: o limite, entre ~0,03% e ~0,1%.
+EM_BRANCO_TINTA_FORTE = 0.0005
+EM_BRANCO_TOM = 0.5
+EM_BRANCO_BEIRADA = 0.08
+
+
+def parece_em_branco(img: np.ndarray) -> bool:
+    """A página quase não tem tinta forte no miolo (ver EM_BRANCO_TINTA_FORTE)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    a, l = cinza.shape[:2]
+    b = EM_BRANCO_BEIRADA
+    miolo = cinza[int(a * b):int(a * (1 - b)), int(l * b):int(l * (1 - b))]
+    if miolo.size == 0:
+        return False
+    papel = float(np.percentile(miolo, 90))
+    return float((miolo < EM_BRANCO_TOM * papel).mean()) < EM_BRANCO_TINTA_FORTE
+
+
 def dpi_estimado(largura_px: int, largura_pt: float) -> float:
     """Quantos pontos por polegada essa página realmente tem."""
     if largura_pt <= 0:
@@ -406,8 +438,7 @@ def analisar_pagina(img: np.ndarray, filtro: str) -> tuple[list[str], bool]:
     alertas: list[str] = []
     tem_cor, _ = detectar_cor(img)
 
-    tinta = fracao_de_tinta(img)
-    if tinta < FRACAO_TINTA_BRANCA:
+    if parece_em_branco(img):
         alertas.append(EM_BRANCO)
         return alertas, tem_cor  # numa pagina em branco os outros nao fazem sentido
 

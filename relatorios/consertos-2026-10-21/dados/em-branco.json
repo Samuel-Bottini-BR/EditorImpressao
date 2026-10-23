@@ -1,0 +1,605 @@
+{
+ "antiphon_p088": {
+  "abaixo_25": 0.002005,
+  "abaixo_35": 0.037721,
+  "abaixo_45": 0.078213,
+  "otsu": 0.21475,
+  "forte_miolo": 0.08823,
+  "pecas_fortes": 276,
+  "papel": 234.0
+ },
+ "antiphon_p260": {
+  "abaixo_25": 0.006386,
+  "abaixo_35": 0.054375,
+  "abaixo_45": 0.10898,
+  "otsu": 0.26001,
+  "forte_miolo": 0.13397,
+  "pecas_fortes": 749,
+  "papel": 230.0
+ },
+ "antiphonal1547_p006": {
+  "abaixo_25": 0.095254,
+  "abaixo_35": 0.131103,
+  "abaixo_45": 0.175952,
+  "otsu": 0.1807,
+  "forte_miolo": 0.19475,
+  "pecas_fortes": 446,
+  "papel": 204.0
+ },
+ "antiphonal1547_p031": {
+  "abaixo_25": 0.06865,
+  "abaixo_35": 0.098917,
+  "abaixo_45": 0.136099,
+  "otsu": 0.16019,
+  "forte_miolo": 0.15365,
+  "pecas_fortes": 426,
+  "papel": 208.0
+ },
+ "antiphonal1547_p046": {
+  "abaixo_25": 0.101301,
+  "abaixo_35": 0.133976,
+  "abaixo_45": 0.17341,
+  "otsu": 0.19461,
+  "forte_miolo": 0.19507,
+  "pecas_fortes": 465,
+  "papel": 216.0
+ },
+ "antiphonal1547_p076": {
+  "abaixo_25": 0.086575,
+  "abaixo_35": 0.109479,
+  "abaixo_45": 0.141739,
+  "otsu": 0.17348,
+  "forte_miolo": 0.16166,
+  "pecas_fortes": 444,
+  "papel": 206.0
+ },
+ "antiphonal1547_p192": {
+  "abaixo_25": 0.129295,
+  "abaixo_35": 0.170411,
+  "abaixo_45": 0.204666,
+  "otsu": 0.1953,
+  "forte_miolo": 0.22192,
+  "pecas_fortes": 93,
+  "papel": 215.0
+ },
+ "antiphonal1547_p252": {
+  "abaixo_25": 0.116327,
+  "abaixo_35": 0.14875,
+  "abaixo_45": 0.183093,
+  "otsu": 0.20094,
+  "forte_miolo": 0.20293,
+  "pecas_fortes": 527,
+  "papel": 209.0
+ },
+ "camoes_p006": {
+  "abaixo_25": 0.000839,
+  "abaixo_35": 0.003526,
+  "abaixo_45": 0.011483,
+  "otsu": 0.10186,
+  "forte_miolo": 0.0186,
+  "pecas_fortes": 118,
+  "papel": 206.0
+ },
+ "camoes_p009": {
+  "abaixo_25": 0.013541,
+  "abaixo_35": 0.039258,
+  "abaixo_45": 0.064095,
+  "otsu": 0.14095,
+  "forte_miolo": 0.07701,
+  "pecas_fortes": 998,
+  "papel": 191.0
+ },
+ "camoes_p011": {
+  "abaixo_25": 0.015297,
+  "abaixo_35": 0.032423,
+  "abaixo_45": 0.04998,
+  "otsu": 0.10216,
+  "forte_miolo": 0.05979,
+  "pecas_fortes": 602,
+  "papel": 193.0
+ },
+ "camoes_p027": {
+  "abaixo_25": 0.016467,
+  "abaixo_35": 0.038433,
+  "abaixo_45": 0.060915,
+  "otsu": 0.12669,
+  "forte_miolo": 0.07319,
+  "pecas_fortes": 1129,
+  "papel": 193.0
+ },
+ "camoes_p066": {
+  "abaixo_25": 0.032756,
+  "abaixo_35": 0.05207,
+  "abaixo_45": 0.069716,
+  "otsu": 0.11929,
+  "forte_miolo": 0.07835,
+  "pecas_fortes": 971,
+  "papel": 191.0
+ },
+ "camoes_p104": {
+  "abaixo_25": 0.003536,
+  "abaixo_35": 0.035543,
+  "abaixo_45": 0.091569,
+  "otsu": 0.23048,
+  "forte_miolo": 0.12128,
+  "pecas_fortes": 548,
+  "papel": 146.0
+ },
+ "cursus_p003": {
+  "abaixo_25": 0.149438,
+  "abaixo_35": 0.175812,
+  "abaixo_45": 0.17925,
+  "otsu": 0.25291,
+  "forte_miolo": 0.19075,
+  "pecas_fortes": 4676,
+  "papel": 255.0
+ },
+ "cursus_p314": {
+  "abaixo_25": 0.098043,
+  "abaixo_35": 0.124502,
+  "abaixo_45": 0.129437,
+  "otsu": 0.2241,
+  "forte_miolo": 0.14197,
+  "pecas_fortes": 8578,
+  "papel": 255.0
+ },
+ "egenloff_p003": {
+  "abaixo_25": 0.001335,
+  "abaixo_35": 0.076509,
+  "abaixo_45": 0.131898,
+  "otsu": 0.18216,
+  "forte_miolo": 0.14367,
+  "pecas_fortes": 311,
+  "papel": 195.0
+ },
+ "egenloff_p007": {
+  "abaixo_25": 0.00014,
+  "abaixo_35": 0.011861,
+  "abaixo_45": 0.045412,
+  "otsu": 0.16257,
+  "forte_miolo": 0.0592,
+  "pecas_fortes": 1344,
+  "papel": 211.0
+ },
+ "egenloff_p012": {
+  "abaixo_25": 0.0,
+  "abaixo_35": 0.0,
+  "abaixo_45": 8e-05,
+  "otsu": 0.08263,
+  "forte_miolo": 0.00012,
+  "pecas_fortes": 3,
+  "papel": 216.0
+ },
+ "egenloff_p047": {
+  "abaixo_25": 2.8e-05,
+  "abaixo_35": 0.005202,
+  "abaixo_45": 0.033399,
+  "otsu": 0.17894,
+  "forte_miolo": 0.04692,
+  "pecas_fortes": 2104,
+  "papel": 214.0
+ },
+ "egenloff_p121": {
+  "abaixo_25": 0.00059,
+  "abaixo_35": 0.033731,
+  "abaixo_45": 0.069022,
+  "otsu": 0.18095,
+  "forte_miolo": 0.07832,
+  "pecas_fortes": 259,
+  "papel": 212.0
+ },
+ "egenloff_p131": {
+  "abaixo_25": 0.041597,
+  "abaixo_35": 0.132306,
+  "abaixo_45": 0.145897,
+  "otsu": 0.19673,
+  "forte_miolo": 0.1508,
+  "pecas_fortes": 180,
+  "papel": 211.0
+ },
+ "escola_p113": {
+  "abaixo_25": 0.003675,
+  "abaixo_35": 0.122948,
+  "abaixo_45": 0.212827,
+  "otsu": 0.25965,
+  "forte_miolo": 0.24323,
+  "pecas_fortes": 583,
+  "papel": 252.0
+ },
+ "escola_p197": {
+  "abaixo_25": 0.0,
+  "abaixo_35": 1.5e-05,
+  "abaixo_45": 0.00521,
+  "otsu": 0.05621,
+  "forte_miolo": 0.01665,
+  "pecas_fortes": 304,
+  "papel": 252.0
+ },
+ "gladstone_p005": {
+  "abaixo_25": 0.080055,
+  "abaixo_35": 0.086126,
+  "abaixo_45": 0.092066,
+  "otsu": 0.06891,
+  "forte_miolo": 0.09502,
+  "pecas_fortes": 1112,
+  "papel": 255.0
+ },
+ "gladstone_p018": {
+  "abaixo_25": 0.001173,
+  "abaixo_35": 0.001231,
+  "abaixo_45": 0.001314,
+  "otsu": 0.00097,
+  "forte_miolo": 0.00134,
+  "pecas_fortes": 8,
+  "papel": 255.0
+ },
+ "gladstone_p055": {
+  "abaixo_25": 0.050289,
+  "abaixo_35": 0.054901,
+  "abaixo_45": 0.059274,
+  "otsu": 0.04545,
+  "forte_miolo": 0.06184,
+  "pecas_fortes": 990,
+  "papel": 255.0
+ },
+ "gladstone_p096": {
+  "abaixo_25": 0.025428,
+  "abaixo_35": 0.027415,
+  "abaixo_45": 0.02936,
+  "otsu": 0.02205,
+  "forte_miolo": 0.03036,
+  "pecas_fortes": 565,
+  "papel": 255.0
+ },
+ "gladstone_p116": {
+  "abaixo_25": 0.048867,
+  "abaixo_35": 0.053098,
+  "abaixo_45": 0.056914,
+  "otsu": 0.04261,
+  "forte_miolo": 0.05881,
+  "pecas_fortes": 738,
+  "papel": 255.0
+ },
+ "gladstone_p136": {
+  "abaixo_25": 0.043823,
+  "abaixo_35": 0.048033,
+  "abaixo_45": 0.051285,
+  "otsu": 0.03824,
+  "forte_miolo": 0.05274,
+  "pecas_fortes": 806,
+  "papel": 255.0
+ },
+ "graduale_p269": {
+  "abaixo_25": 0.005138,
+  "abaixo_35": 0.023974,
+  "abaixo_45": 0.070216,
+  "otsu": 0.25933,
+  "forte_miolo": 0.10472,
+  "pecas_fortes": 1341,
+  "papel": 206.0
+ },
+ "graduale_p588": {
+  "abaixo_25": 4.8e-05,
+  "abaixo_35": 0.001362,
+  "abaixo_45": 0.018294,
+  "otsu": 0.1572,
+  "forte_miolo": 0.03238,
+  "pecas_fortes": 796,
+  "papel": 218.0
+ },
+ "horas_p016": {
+  "abaixo_25": 5.6e-05,
+  "abaixo_35": 0.005094,
+  "abaixo_45": 0.031688,
+  "otsu": 0.08012,
+  "forte_miolo": 0.04636,
+  "pecas_fortes": 1807,
+  "papel": 222.0
+ },
+ "horas_p175": {
+  "abaixo_25": 0.003035,
+  "abaixo_35": 0.078481,
+  "abaixo_45": 0.181588,
+  "otsu": 0.26795,
+  "forte_miolo": 0.22389,
+  "pecas_fortes": 1580,
+  "papel": 224.0
+ },
+ "ljs47_p026": {
+  "abaixo_25": 0.0,
+  "abaixo_35": 2.7e-05,
+  "abaixo_45": 0.00488,
+  "otsu": 0.18371,
+  "forte_miolo": 0.00994,
+  "pecas_fortes": 494,
+  "papel": 230.0
+ },
+ "ljs47_p049": {
+  "abaixo_25": 0.013854,
+  "abaixo_35": 0.014929,
+  "abaixo_45": 0.018474,
+  "otsu": 0.21518,
+  "forte_miolo": 0.02392,
+  "pecas_fortes": 699,
+  "papel": 231.0
+ },
+ "ljs47_p064": {
+  "abaixo_25": 0.0,
+  "abaixo_35": 0.000113,
+  "abaixo_45": 0.005673,
+  "otsu": 0.23062,
+  "forte_miolo": 0.01406,
+  "pecas_fortes": 1160,
+  "papel": 227.0
+ },
+ "ljs47_p103": {
+  "abaixo_25": 0.017739,
+  "abaixo_35": 0.018774,
+  "abaixo_45": 0.024953,
+  "otsu": 0.21238,
+  "forte_miolo": 0.03334,
+  "pecas_fortes": 1367,
+  "papel": 225.0
+ },
+ "marial_p454": {
+  "abaixo_25": 0.005049,
+  "abaixo_35": 0.033973,
+  "abaixo_45": 0.067267,
+  "otsu": 0.19498,
+  "forte_miolo": 0.08331,
+  "pecas_fortes": 2609,
+  "papel": 183.0
+ },
+ "marial_p840": {
+  "abaixo_25": 0.009225,
+  "abaixo_35": 0.034223,
+  "abaixo_45": 0.058309,
+  "otsu": 0.15419,
+  "forte_miolo": 0.0696,
+  "pecas_fortes": 1861,
+  "papel": 222.0
+ },
+ "matematica_p032": {
+  "abaixo_25": 0.27337,
+  "abaixo_35": 0.31732,
+  "abaixo_45": 0.328304,
+  "otsu": 0.44648,
+  "forte_miolo": 0.33451,
+  "pecas_fortes": 1925,
+  "papel": 255.0
+ },
+ "matematica_p072": {
+  "abaixo_25": 0.139348,
+  "abaixo_35": 0.172034,
+  "abaixo_45": 0.201814,
+  "otsu": 0.33489,
+  "forte_miolo": 0.21749,
+  "pecas_fortes": 1512,
+  "papel": 255.0
+ },
+ "palatino_p076": {
+  "abaixo_25": 0.018714,
+  "abaixo_35": 0.046129,
+  "abaixo_45": 0.074267,
+  "otsu": 0.11928,
+  "forte_miolo": 0.08796,
+  "pecas_fortes": 1034,
+  "papel": 213.0
+ },
+ "palatino_p104": {
+  "abaixo_25": 0.05692,
+  "abaixo_35": 0.088016,
+  "abaixo_45": 0.111398,
+  "otsu": 0.12544,
+  "forte_miolo": 0.12171,
+  "pecas_fortes": 733,
+  "papel": 217.0
+ },
+ "palatino_p113": {
+  "abaixo_25": 0.035057,
+  "abaixo_35": 0.051463,
+  "abaixo_45": 0.064186,
+  "otsu": 0.07562,
+  "forte_miolo": 0.07014,
+  "pecas_fortes": 329,
+  "papel": 221.0
+ },
+ "pesel_p021": {
+  "abaixo_25": 0.020325,
+  "abaixo_35": 0.031912,
+  "abaixo_45": 0.122915,
+  "otsu": 0.5174,
+  "forte_miolo": 0.22001,
+  "pecas_fortes": 106,
+  "papel": 190.0
+ },
+ "rariora_p008": {
+  "abaixo_25": 0.000563,
+  "abaixo_35": 0.00112,
+  "abaixo_45": 0.001686,
+  "otsu": 0.20805,
+  "forte_miolo": 0.00211,
+  "pecas_fortes": 9,
+  "papel": 215.0
+ },
+ "rariora_p099": {
+  "abaixo_25": 1.8e-05,
+  "abaixo_35": 0.004936,
+  "abaixo_45": 0.040404,
+  "otsu": 0.11825,
+  "forte_miolo": 0.0589,
+  "pecas_fortes": 1429,
+  "papel": 218.0
+ },
+ "rariora_p155": {
+  "abaixo_25": 0.004103,
+  "abaixo_35": 0.039949,
+  "abaixo_45": 0.095265,
+  "otsu": 0.20349,
+  "forte_miolo": 0.12108,
+  "pecas_fortes": 434,
+  "papel": 225.0
+ },
+ "rariora_p169": {
+  "abaixo_25": 0.006526,
+  "abaixo_35": 0.042227,
+  "abaixo_45": 0.085888,
+  "otsu": 0.15536,
+  "forte_miolo": 0.10793,
+  "pecas_fortes": 691,
+  "papel": 227.0
+ },
+ "rariora_p211": {
+  "abaixo_25": 0.006632,
+  "abaixo_35": 0.051718,
+  "abaixo_45": 0.109438,
+  "otsu": 0.21118,
+  "forte_miolo": 0.1351,
+  "pecas_fortes": 732,
+  "papel": 228.0
+ },
+ "rariora_p365": {
+  "abaixo_25": 6.1e-05,
+  "abaixo_35": 0.00428,
+  "abaixo_45": 0.013098,
+  "otsu": 0.03747,
+  "forte_miolo": 0.01775,
+  "pecas_fortes": 239,
+  "papel": 203.0
+ },
+ "rhetorica_p034": {
+  "abaixo_25": 0.053166,
+  "abaixo_35": 0.111309,
+  "abaixo_45": 0.163449,
+  "otsu": 0.21665,
+  "forte_miolo": 0.18746,
+  "pecas_fortes": 1412,
+  "papel": 225.0
+ },
+ "rhetorica_p129": {
+  "abaixo_25": 0.053378,
+  "abaixo_35": 0.106534,
+  "abaixo_45": 0.157847,
+  "otsu": 0.22478,
+  "forte_miolo": 0.18114,
+  "pecas_fortes": 496,
+  "papel": 205.0
+ },
+ "rhetorica_p160": {
+  "abaixo_25": 0.009447,
+  "abaixo_35": 0.048183,
+  "abaixo_45": 0.084246,
+  "otsu": 0.12427,
+  "forte_miolo": 0.09918,
+  "pecas_fortes": 2704,
+  "papel": 218.0
+ },
+ "righetti_p006": {
+  "abaixo_25": 0.234608,
+  "abaixo_35": 0.248301,
+  "abaixo_45": 0.260096,
+  "otsu": 0.28175,
+  "forte_miolo": 0.26871,
+  "pecas_fortes": 3720,
+  "papel": 255.0
+ },
+ "righetti_p015": {
+  "abaixo_25": 0.234488,
+  "abaixo_35": 0.246737,
+  "abaixo_45": 0.257282,
+  "otsu": 0.27631,
+  "forte_miolo": 0.26338,
+  "pecas_fortes": 3750,
+  "papel": 255.0
+ },
+ "righetti_p030": {
+  "abaixo_25": 0.246989,
+  "abaixo_35": 0.259498,
+  "abaixo_45": 0.270918,
+  "otsu": 0.28166,
+  "forte_miolo": 0.27947,
+  "pecas_fortes": 2484,
+  "papel": 255.0
+ },
+ "righetti_p041": {
+  "abaixo_25": 0.217974,
+  "abaixo_35": 0.226076,
+  "abaixo_45": 0.23312,
+  "otsu": 0.24121,
+  "forte_miolo": 0.23734,
+  "pecas_fortes": 2391,
+  "papel": 255.0
+ },
+ "righetti_p050": {
+  "abaixo_25": 0.256277,
+  "abaixo_35": 0.271966,
+  "abaixo_45": 0.285726,
+  "otsu": 0.2971,
+  "forte_miolo": 0.29498,
+  "pecas_fortes": 3190,
+  "papel": 255.0
+ },
+ "righetti_p052": {
+  "abaixo_25": 0.247079,
+  "abaixo_35": 0.2635,
+  "abaixo_45": 0.277642,
+  "otsu": 0.2926,
+  "forte_miolo": 0.2883,
+  "pecas_fortes": 3368,
+  "papel": 255.0
+ },
+ "righetti_p054": {
+  "abaixo_25": 0.282698,
+  "abaixo_35": 0.302526,
+  "abaixo_45": 0.320999,
+  "otsu": 0.32499,
+  "forte_miolo": 0.33632,
+  "pecas_fortes": 3081,
+  "papel": 255.0
+ },
+ "righetti_p062": {
+  "abaixo_25": 0.231049,
+  "abaixo_35": 0.244244,
+  "abaixo_45": 0.25679,
+  "otsu": 0.2696,
+  "forte_miolo": 0.26808,
+  "pecas_fortes": 3192,
+  "papel": 255.0
+ },
+ "righetti_p064": {
+  "abaixo_25": 0.259242,
+  "abaixo_35": 0.274274,
+  "abaixo_45": 0.288775,
+  "otsu": 0.31053,
+  "forte_miolo": 0.30216,
+  "pecas_fortes": 3264,
+  "papel": 255.0
+ },
+ "righetti_p081": {
+  "abaixo_25": 0.239018,
+  "abaixo_35": 0.25098,
+  "abaixo_45": 0.26085,
+  "otsu": 0.27802,
+  "forte_miolo": 0.26642,
+  "pecas_fortes": 3512,
+  "papel": 255.0
+ },
+ "righetti_p094": {
+  "abaixo_25": 0.247119,
+  "abaixo_35": 0.26084,
+  "abaixo_45": 0.273047,
+  "otsu": 0.28005,
+  "forte_miolo": 0.28119,
+  "pecas_fortes": 3102,
+  "papel": 255.0
+ },
+ "righetti_p100": {
+  "abaixo_25": 0.232335,
+  "abaixo_35": 0.245927,
+  "abaixo_45": 0.257531,
+  "otsu": 0.27728,
+  "forte_miolo": 0.26407,
+  "pecas_fortes": 4047,
+  "papel": 255.0
+ }
+}

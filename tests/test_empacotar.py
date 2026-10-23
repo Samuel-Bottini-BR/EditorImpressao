@@ -474,9 +474,14 @@ def test_a_dll_da_gravura_vai_para_onde_o_codigo_procura():
     empacotado, a raiz do codigo e _internal/, entao o destino e core/nativo."""
     from core import gravura_scantailor
 
+    from core import st_ferramentas
+
     nativos = dict(empacotar.nativos_do_programa())
+    # desde 21/10/2026 também a DLL comum das ferramentas (bug de 20/10)
     assert set(nativos) == {gravura_scantailor.CAMINHO_DLL,
-                            gravura_scantailor.CAMINHO_DLL.with_suffix(".txt")}
+                            gravura_scantailor.CAMINHO_DLL.with_suffix(".txt"),
+                            st_ferramentas.CAMINHO_DLL,
+                            st_ferramentas.CAMINHO_DLL.with_suffix(".txt")}
     assert set(nativos.values()) == {"core/nativo"}
 
 
@@ -532,11 +537,16 @@ def test_registro_do_inno_tem_de_listar_a_dll_da_gravura():
     b = BARRA
     registro = "".join(
         f"   Compressing: D:{b}x{b}dist{b}EditorImpressao{b}_internal{b}core{b}nativo{b}{n}\n"
-        for n in ("st_gravura.dll", "st_gravura.txt"))
+        for n in ("st_gravura.dll", "st_gravura.txt", "st_ferramentas.dll", "st_ferramentas.txt"))
     assert empacotar.nativos_faltando_no_registro_do_inno(registro) == []
-    so_o_txt = registro.splitlines()[1]
-    assert empacotar.nativos_faltando_no_registro_do_inno(so_o_txt) == [
+    sem_a_da_gravura = "".join(registro.splitlines(keepends=True)[1:])
+    assert empacotar.nativos_faltando_no_registro_do_inno(sem_a_da_gravura) == [
         f"_internal{b}core{b}nativo{b}st_gravura.dll"]
+    # desde 21/10/2026: sem a st_ferramentas.dll também falta (bug de 20/10)
+    sem_ferramentas = "".join(l for l in registro.splitlines(keepends=True)
+                              if "st_ferramentas.dll" not in l)
+    assert empacotar.nativos_faltando_no_registro_do_inno(sem_ferramentas) == [
+        f"_internal{b}core{b}nativo{b}st_ferramentas.dll"]
 
 
 def test_o_script_do_inno_recusa_pasta_sem_a_dll_da_gravura():
@@ -545,3 +555,26 @@ def test_o_script_do_inno_recusa_pasta_sem_a_dll_da_gravura():
     for origem, destino in empacotar.nativos_do_programa():
         caminho = f"_internal{b}{destino.replace('/', b)}{b}{origem.name}"
         assert f'FileExists(PastaDoPrograma + "{caminho}")' in script, caminho
+
+
+# ---------------------------------------------------------------------------
+# a DLL comum das ferramentas do ScanTailor (st_ferramentas.dll) vai junto
+# ---------------------------------------------------------------------------
+
+def test_regressao_o_pacote_leva_as_duas_dlls_do_scantailor():
+    """Bug da Lista de bugs (20/10/2026): "Instalador sem a st_ferramentas.dll":
+    empacotar.py e instalador.iss levavam só a st_gravura.dll; a
+    st_ferramentas.dll (limpar pontinhos, dividir e endireitar do ScanTailor,
+    desde 06/10) não ia junto, e um instalador novo cairia no caminho "nosso"
+    sem avisar. O pacote tem de levar as duas DLLs (e o .txt de cada uma, que
+    diz a origem e a licença) e o instalador.iss tem de recusar pasta sem elas."""
+    from core import gravura_scantailor, st_ferramentas
+
+    nativos = dict(empacotar.nativos_do_programa())
+    for dll in (gravura_scantailor.CAMINHO_DLL, st_ferramentas.CAMINHO_DLL):
+        assert dll in nativos, f"{dll.name} não vai para o pacote"
+        assert dll.with_suffix(".txt") in nativos, f"{dll.with_suffix('.txt').name} não vai"
+    script = (empacotar.RAIZ / "instalador.iss").read_text(encoding="utf-8")
+    for nome in ("st_ferramentas.dll", "st_ferramentas.txt", "st_gravura.dll", "st_gravura.txt"):
+        assert f'FileExists(PastaDoPrograma + "_internal{BARRA}core{BARRA}nativo{BARRA}{nome}")' in script, nome
+    assert "core.st_ferramentas" in _valor_de(empacotar.comando_do_pyinstaller(False), "--hidden-import")
