@@ -1,13 +1,17 @@
 {
   "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
   "geral": {
-    "frase": "Fase 2 (ferramentas do ScanTailor). Tudo o que entra na junção está aprovado por você. Próximo passo: juntar tudo num ramo, testar no GitHub e no seu PC, e só então pôr no programa.",
+    "frase": "Fase 2: tudo o que você aprovou está no programa (junção de 23/10). Próximo: a rodada de melhorias (as três do layout e o que ficou anotado para depois da junção).",
     "faseAtual": "2",
     "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
     "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
     "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
+      {
+        "em": "2026-10-23T20:00:00Z",
+        "texto": "A junção entrou no programa: tudo o que você aprovou na Fase 2 já está no Editor de Impressão. Testes no seu PC: 2744 certos, nenhum errado; 233 cliques sem falha. Mais rápido: abrir o livro de 61 para 37 segundos."
+      },
       {
         "em": "2026-10-23T15:30:00Z",
         "texto": "Começou a junção: um agente está juntando tudo o que você aprovou num ramo só. Depois vêm os testes no GitHub e no seu PC; só então entra no programa."
@@ -172,18 +176,18 @@
       "titulo": "\"Para revisar\": os avisos por página",
       "item": "Para revisar",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "O programa avisa as páginas com problema e põe o conserto num botão no próprio aviso: \"Trazer de volta nesta página\", \"Deixar em branco\", \"Tirar do livro\", \"Está bom\" por página, por motivo ou em tudo.",
-      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
       "falta": "Melhorias pedidas: \"Antes de processar\" mais clara e menor; regra voltar aos 78 de 89; bolinhas de carregamento e tela igual ao PDF (na fila).",
       "ressalva": "O Boécio chega a 34% das páginas no \"Para revisar\".",
       "selos": {
         "github": "sim",
-        "pc": "nao",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "fase2-para-revisar",
-      "commit": "f54428e",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "comparar": {
         "antes": "fotos/a4n-letra-t.jpg",
         "depois": "fotos/a4n-letra-t-depois.jpg",
@@ -205,24 +209,24 @@
         "Abra o Egenloff e vá à página 12: o aviso \"Página sem conteúdo\" deve ter \"Deixar em branco\" e \"Tirar do livro\".",
         "Aperte Processar com avisos abertos: a janela deve listar as páginas e os motivos."
       ],
-      "mudouEm": "2026-10-22T03:00:00Z"
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.8",
       "titulo": "Os dez tipos de preto e branco do ScanTailor",
       "item": "2.8",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Mais jeitos de transformar a letra em preto e branco (Sauvola, Wolf e os outros oito do ScanTailor). Vem desligado: livro já começado sai igual ao de hoje.",
-      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
       "falta": "",
       "selos": {
         "github": "sim",
-        "pc": "nao",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "ffa2463",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [
         {
           "legenda": "Horas 47, de perto",
@@ -238,24 +242,24 @@
         "Abra um livro, vá ao painel Filtro, escolha Preto e branco e troque o tipo na lista nova.",
         "Confira a letra no Horas 47 e no Palatino 7 com cada tipo."
       ],
-      "mudouEm": "2026-10-22T03:00:00Z"
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.9",
       "titulo": "Texto claro em fundo escuro",
       "item": "2.9",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Página com letra clara sobre fundo escuro (capa, título em faixa) sai com a letra certa, como no ScanTailor.",
-      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
       "falta": "Melhorias pedidas: Inverter letra branca em fundo preto para economizar tinta (pesquisa, Lista de espera).",
       "selos": {
-        "github": "falta",
-        "pc": "nao",
+        "github": "sim",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "ffa2463",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [
         {
           "legenda": "Horas 187, de perto",
@@ -270,25 +274,25 @@
         "Peça \"Preparar para eu testar\".",
         "Abra o Horas e vá à página 187; ligue \"Texto claro em fundo escuro\" no painel Filtro."
       ],
-      "mudouEm": "2026-10-22T03:00:00Z"
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.11-2.15",
       "titulo": "Reduzir cores e destacar páginas diferentes",
       "item": "2.11 e 2.15",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "2.11: reduzir as cores da página, como no ScanTailor. 2.15: o programa aponta as páginas que saem muito diferentes das outras do livro (só se afastam 1° ou mais da média).",
-      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
       "falta": "Melhorias pedidas: \"Reduzir cores\" apaga parte da letra em alguns casos (Lista de bugs).",
       "ressalva": "\"Letras com a cor delas\" deixa a letra preta comum marrom-acinzentada.",
       "selos": {
-        "github": "falta",
-        "pc": "nao",
+        "github": "sim",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "ffa2463",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [
         {
           "legenda": "Horas 26 com as cores reduzidas",
@@ -304,24 +308,24 @@
         "No painel Filtro, ligue \"Reduzir cores\" no Horas 26.",
         "Abra o Boécio e veja quais páginas o programa aponta como diferentes."
       ],
-      "mudouEm": "2026-10-22T03:00:00Z"
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "layout-4a5",
       "titulo": "Tela nova: etapas 4 e 5 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "A ferramenta Marcar no painel Propriedades e o painel Filtro novo, com as frases da rodada 14.",
-      "situacao": "Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 21/10. Entra no programa junto com o resto, quando o layout 4 a 7 e as 11 ferramentas terminarem (testes no GitHub e no PC antes).",
       "falta": "Melhorias pedidas: \"Melhorar\" cortado no painel Filtro (já consertado na etapa 7b).",
       "selos": {
-        "github": "falta",
-        "pc": "nao",
+        "github": "sim",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "layout-etapas4a7-2026-10-19",
-      "commit": "2eeec20",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "comparar": {
         "antes": "fotos/ly-11-antes.jpg",
         "depois": "fotos/ly-11-depois.jpg",
@@ -332,24 +336,24 @@
         "Peça \"Preparar para eu testar\".",
         "Abra um livro e use o painel Filtro e a ferramenta Marcar pelo painel da direita."
       ],
-      "mudouEm": "2026-10-22T03:00:00Z"
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "consertos",
       "titulo": "Quatro consertos prontos",
       "item": "Consertos",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Instalador com as duas DLLs do ScanTailor; teste dos atalhos; \"Parece em branco\" na Gladstone 18; Horas 11 com pouca memória dando sempre a mesma imagem.",
-      "situacao": "Prontos. Entram no programa junto com o resto (ordem de 22/10).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Prontos. Entram no programa junto com o resto (ordem de 22/10).",
       "falta": "Testes do GitHub da última versão (na junção).",
       "selos": {
-        "github": "falta",
-        "pc": "nao",
-        "samuel": "nao"
+        "github": "sim",
+        "pc": "sim",
+        "samuel": "sim"
       },
-      "ramo": "consertos-2026-10-21",
-      "commit": "2ff16e7",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [
         {
           "legenda": "Gladstone 18",
@@ -358,7 +362,8 @@
       ],
       "testar": [
         "Depois de juntar, abra a Gladstone na página 18: o aviso \"Parece em branco\" deve estar certo."
-      ]
+      ],
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "impressao",
@@ -442,17 +447,17 @@
       "titulo": "Caixa do conteúdo, borda preta e pintar de branco",
       "item": "2.5, 2.13 e 2.14",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "O programa acha onde está o conteúdo da página, corta a borda preta do scanner (o Kaique escolhe por livro: só o preto ou até a moldura) e pinta de branco o que sobra.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa junto com o resto (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entra no programa junto com o resto (testes no GitHub e no PC antes).",
       "falta": "Melhorias pedidas: o aviso \"Corte deixou algo de fora\" só conta o que parece impresso (e mais acerto nesse aviso); o corte certo já na primeira vez que a página aparece; quanto mais rápido, melhor.",
       "selos": {
         "github": "sim",
-        "pc": "nao",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "fase2-caixa-conteudo",
-      "commit": "49d1ed3",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [
         {
           "legenda": "Egenloff 3: a etiqueta que sai cortada",
@@ -464,27 +469,27 @@
         }
       ],
       "testar": [],
-      "mudouEm": "2026-10-22T19:50:00Z"
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.12",
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Aprovado por você em 23/10 (desentortar inteiro, com a tela igual ao PDF). Entra no programa na junção (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 23/10 (desentortar inteiro, com a tela igual ao PDF). Entrou na junção (testes no GitHub e no PC antes).",
       "falta": "Depois da junção: tirar a moldura escura antes de desentortar; o aviso no Righetti 96.",
       "selos": {
         "github": "sim",
-        "pc": "nao",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "c3b66fb",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T15:10:00Z",
+      "mudouEm": "2026-10-23T20:00:00Z",
       "relatorio": "d212"
     },
     {
@@ -492,20 +497,20 @@
       "titulo": "Tela nova: etapas 6 e 7 do layout",
       "item": "Layout (Fase 4)",
       "fase": "4",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Tela cheia dos filtros (etapa 6), Configurações em partes, tela dos livros e o livro aberto na tela inteira (etapa 7).",
-      "situacao": "Aprovado por você em 22/10 (livro aberto como no UPDF e tela cheia). Entra no programa junto com o resto (testes no GitHub e no PC antes). O agente de layout continua com as melhorias, como você mandou.",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10 (livro aberto como no UPDF e tela cheia). Entra no programa junto com o resto (testes no GitHub e no PC antes). O agente de layout continua com as melhorias, como você mandou.",
       "falta": "Melhorias: a tela cheia mostrar a letra igual ao PDF (com os jeitos do ScanTailor ela sai mais grossa); o quadro azul do \"Todas as páginas\" na página certa em \"Duas lado a lado\"; a janela \"Antes de processar\" mais clara e menor.",
       "selos": {
-        "github": "falta",
-        "pc": "nao",
+        "github": "sim",
+        "pc": "sim",
         "samuel": "sim"
       },
-      "ramo": "layout-etapas4a7-2026-10-19",
-      "commit": "2eeec20",
+      "ramo": "fase-1",
+      "commit": "718454b",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T19:50:00Z",
+      "mudouEm": "2026-10-23T20:00:00Z",
       "relatorio": "lyupdf",
       "ressalva": "Na tela cheia, com um dos jeitos do ScanTailor, a letra aparece mais grossa do que sai no PDF (a conta muda com a resolução)."
     },
@@ -638,115 +643,121 @@
       "titulo": "Perguntas do Implementador B (margens, impressão, luz, áreas)",
       "item": "2.4",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Margens e alinhamento iguais em todas as páginas.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entrou na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "",
-      "mudouEm": "2026-10-22T23:00:00Z",
+      "mudouEm": "2026-10-23T20:00:00Z",
       "relatorio": "perg-b",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c"
+      "ramo": "fase-1",
+      "commit": "718454b"
     },
     {
       "id": "2.6",
       "titulo": "Tamanho final e arquivo para impressão",
       "item": "2.6",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Livreto A4 com duas A5, página inteira, escala e margens na hora de gerar o arquivo.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entrou na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-22T23:00:00Z",
+      "mudouEm": "2026-10-23T20:00:00Z",
       "falta": "Melhoria depois da junção: a tela \"bagunçada\" (pergunta de qual tela). Ressalvas: a escala de 120% corta a página; \"são 1 cadernos\".",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c"
+      "ramo": "fase-1",
+      "commit": "718454b"
     },
     {
       "id": "2.16",
       "titulo": "Usar todos os núcleos do processador",
       "item": "2.16",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Processar várias páginas ao mesmo tempo.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entrou na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c",
-      "mudouEm": "2026-10-22T23:00:00Z"
+      "ramo": "fase-1",
+      "commit": "718454b",
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.19",
       "titulo": "Unidades cm/mm e perfis de configuração",
       "item": "2.19",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Escolher cm ou mm e guardar perfis de ajustes. O tema já está feito.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entrou na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "Melhoria depois da junção: a caixa de escolher o que entra na receita.",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c",
-      "mudouEm": "2026-10-22T23:00:00Z"
+      "ramo": "fase-1",
+      "commit": "718454b",
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.17",
       "titulo": "Igualar a luz e suavizar",
       "item": "2.17",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Igualar a luz da página como filtro de imagem.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entrou na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c",
-      "mudouEm": "2026-10-22T23:00:00Z"
+      "ramo": "fase-1",
+      "commit": "718454b",
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "2.18",
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
-      "situacao": "Aprovado por você em 23/10 (papel da área e respostas 10 e 11). Entra no programa na junção (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 23/10 (papel da área e respostas 10 e 11). Entrou na junção (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "Depois da junção: o aviso do \"Pintar por cima\".",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c",
-      "mudouEm": "2026-10-23T15:10:00Z",
+      "ramo": "fase-1",
+      "commit": "718454b",
+      "mudouEm": "2026-10-23T20:00:00Z",
       "relatorio": "tp23"
     },
     {
@@ -754,19 +765,20 @@
       "titulo": "PDF em duas camadas",
       "item": "2.10 e 1.6",
       "fase": "2",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Letra em cima, fundo embaixo, como opção.",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "No programa desde 23/10 (junção da Fase 2). Aprovado por você em 22/10. Entrou na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
-        "samuel": "sim"
+        "samuel": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "",
-      "ramo": "fase2-ferramentas-2026-10-22",
-      "commit": "f26407c",
-      "mudouEm": "2026-10-22T23:00:00Z"
+      "ramo": "fase-1",
+      "commit": "718454b",
+      "mudouEm": "2026-10-23T20:00:00Z"
     },
     {
       "id": "1.4",
@@ -827,18 +839,20 @@
       "titulo": "Lembrar as miniaturas de um livro para o outro",
       "item": "Layout",
       "fase": "4",
-      "coluna": "aprovado",
+      "coluna": "programa",
       "oque": "Lugar, abertas ou fechadas e em pares: o programa lembra para todos os livros.",
-      "situacao": "Aprovado por você em 22/10. Entra na rodada logo depois da junção.",
+      "situacao": "No programa desde 23/10: veio junto com o layout 4 a 7 na junção.",
       "selos": {
-        "samuel": "sim"
+        "samuel": "sim",
+        "github": "sim",
+        "pc": "sim"
       },
       "fotos": [],
       "testar": [],
       "falta": "",
-      "ramo": "layout-etapas4a7-2026-10-19",
-      "commit": "edc6143",
-      "mudouEm": "2026-10-23T01:40:00Z"
+      "ramo": "fase-1",
+      "commit": "718454b",
+      "mudouEm": "2026-10-23T20:00:00Z"
     }
   ],
   "agentes": [
@@ -846,11 +860,11 @@
       "id": "juncao",
       "nome": "Agente da junção",
       "papel": "Junta tudo o que você aprovou",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Juntar os 6 trabalhos aprovados num ramo só, com a DLL recompilada, e rodar os testes no GitHub",
-      "ultimo": "Começou a junção (23/10).",
+      "ultimo": "Juntou os trabalhos aprovados. Testes no GitHub e no seu PC passaram; está no programa (23/10).",
       "ramo": "juncao-fase2-2026-10-23",
-      "quando": "2026-10-23T15:30:00Z"
+      "quando": "2026-10-23T20:00:00Z"
     },
     {
       "id": "implementador-a",
