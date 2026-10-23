@@ -1,0 +1,65 @@
+Ajuste da resposta 10: somas dos 5 jeitos x 3 filtros x 4 páginas, 3e95076 (antes) x d4c820b (depois)
+sem = sem área; Ab/Bb = A ou B + papel branco; Ap/Bp = A ou B + papel como o resto da página
+
+escola_p007|melhorar|Ab: antes==depois True -> certo
+escola_p007|melhorar|Ap: antes==depois True -> certo
+escola_p007|melhorar|Bb: antes==depois True -> certo
+escola_p007|melhorar|Bp: antes==depois True -> certo
+escola_p007|melhorar|sem: antes==depois True -> certo
+escola_p007|original|Ab: antes==depois True -> certo
+escola_p007|original|Ap: antes==depois True -> certo
+escola_p007|original|Bb: antes==depois True -> certo
+escola_p007|original|Bp: antes==depois True -> certo
+escola_p007|original|sem: antes==depois True -> certo
+escola_p007|preto_e_branco|Ab: antes==depois True -> certo
+escola_p007|preto_e_branco|Ap: antes==depois False; depois == Ab depois: True; antes == Ab antes: False -> certo
+escola_p007|preto_e_branco|Bb: antes==depois True -> certo
+escola_p007|preto_e_branco|Bp: antes==depois False; depois == Bb depois: True; antes == Bb antes: False -> certo
+escola_p007|preto_e_branco|sem: antes==depois True -> certo
+graduale_p221|melhorar|Ab: antes==depois True -> certo
+graduale_p221|melhorar|Ap: antes==depois True -> certo
+graduale_p221|melhorar|Bb: antes==depois True -> certo
+graduale_p221|melhorar|Bp: antes==depois True -> certo
+graduale_p221|melhorar|sem: antes==depois True -> certo
+graduale_p221|original|Ab: antes==depois True -> certo
+graduale_p221|original|Ap: antes==depois True -> certo
+graduale_p221|original|Bb: antes==depois True -> certo
+graduale_p221|original|Bp: antes==depois True -> certo
+graduale_p221|original|sem: antes==depois True -> certo
+graduale_p221|preto_e_branco|Ab: antes==depois True -> certo
+graduale_p221|preto_e_branco|Ap: antes==depois False; depois == Ab depois: True; antes == Ab antes: False -> certo
+graduale_p221|preto_e_branco|Bb: antes==depois True -> certo
+graduale_p221|preto_e_branco|Bp: antes==depois False; depois == Bb depois: True; antes == Bb antes: False -> certo
+graduale_p221|preto_e_branco|sem: antes==depois True -> certo
+horas_p013|melhorar|Ab: antes==depois True -> certo
+horas_p013|melhorar|Ap: antes==depois True -> certo
+horas_p013|melhorar|Bb: antes==depois True -> certo
+horas_p013|melhorar|Bp: antes==depois True -> certo
+horas_p013|melhorar|sem: antes==depois True -> certo
+horas_p013|original|Ab: antes==depois True -> certo
+horas_p013|original|Ap: antes==depois True -> certo
+horas_p013|original|Bb: antes==depois True -> certo
+horas_p013|original|Bp: antes==depois True -> certo
+horas_p013|original|sem: antes==depois True -> certo
+horas_p013|preto_e_branco|Ab: antes==depois True -> certo
+horas_p013|preto_e_branco|Ap: antes==depois False; depois == Ab depois: True; antes == Ab antes: False -> certo
+horas_p013|preto_e_branco|Bb: antes==depois True -> certo
+horas_p013|preto_e_branco|Bp: antes==depois False; depois == Bb depois: True; antes == Bb antes: False -> certo
+horas_p013|preto_e_branco|sem: antes==depois True -> certo
+opusmajus_p003|melhorar|Ab: antes==depois True -> certo
+opusmajus_p003|melhorar|Ap: antes==depois True -> certo
+opusmajus_p003|melhorar|Bb: antes==depois True -> certo
+opusmajus_p003|melhorar|Bp: antes==depois True -> certo
+opusmajus_p003|melhorar|sem: antes==depois True -> certo
+opusmajus_p003|original|Ab: antes==depois True -> certo
+opusmajus_p003|original|Ap: antes==depois True -> certo
+opusmajus_p003|original|Bb: antes==depois True -> certo
+opusmajus_p003|original|Bp: antes==depois True -> certo
+opusmajus_p003|original|sem: antes==depois True -> certo
+opusmajus_p003|preto_e_branco|Ab: antes==depois True -> certo
+opusmajus_p003|preto_e_branco|Ap: antes==depois False; depois == Ab depois: True; antes == Ab antes: False -> certo
+opusmajus_p003|preto_e_branco|Bb: antes==depois True -> certo
+opusmajus_p003|preto_e_branco|Bp: antes==depois False; depois == Bb depois: True; antes == Bb antes: False -> certo
+opusmajus_p003|preto_e_branco|sem: antes==depois True -> certo
+
+TUDO CERTO
