@@ -78,7 +78,10 @@ autoteste do script passou (pontinhos, dividir, endireitar, caixas, preto e bran
 - GitHub, suíte inteira + `teste_botoes.py`: rodada **39980124099** (`d746c8d`): 163 arquivos, **2690
   passaram, 0 falharam**, 113 pulados; botões **233 ações, 0 falhas**. (A primeira, 39978305829 em
   `f23c854`, deu as 8 falhas do item 8.)
-- Filtro de velocidade `fase-1` x junção: rodada **39978310467** — ver abaixo.
+- Filtro de velocidade `fase-1` x junção (`f23c854`; depois dele só mudou tela e teste): rodada
+  **39978310467**, veredito **"parece mais rápido"**: abrir o livro 61,4 → 37,4 s (−39%); trocar de página
+  4,25 → 4,26 s (igual); Mágico pro, 10 páginas 70,2 → 44,9 s (−36%); Preto e branco, 10 páginas 38,6 →
+  29,4 s (−24%). O ganho é dos vários núcleos (2.16, ligado de fábrica). Nada ficou mais lento.
 
 ## "Desligado de fábrica" junto
 
