@@ -584,3 +584,42 @@ Fotos: `fotos-p5/destino18-0-endireitar-automatico.jpg`, `fotos-p5/destino18-2-p
 - P6 está com o Samuel na Central: não mexer até a resposta.
 - Nenhuma janela do programa aberta, nenhum processo meu rodando.
 - Ao voltar: ler a rodada 39889702446, anotar aqui e entregar à gerente (o relatório já está nas seções de 23/10 acima).
+
+## 23/10/2026 — Implementador A retoma: resposta P6 do Samuel
+
+**Velocidade 39889702446 (`7d71b15` x `2a42cfb`), lida ao voltar:** "igual (dentro do vai-e-vem)" — abrir 39,2 → 39,9 s
+(+1,7%); trocar de página 2,14 → 2,11 s; Mágico pro 44,6 → 44,1 s; Preto e branco 21,8 → 22,0 s.
+
+**Resposta P6 (Samuel, 23/10, pela gerente): opção (b)** — "Como o ScanTailor: o desentortar sempre é medido na
+resolução do livro (300 DPI), numa tarefa por trás (uns 3 a 8 s por página, só nas páginas com ele ligado), e a prévia
+rápida e os cartões (Preto e branco, Melhorar, Mágico pro, Original) usam essa medida, só reduzida. A página na tela fica
+igual à do PDF, e os avisos ('Desentortar não usado' com o botão, e 'A página ainda saiu deformada') aparecem na hora."
+Desligado de fábrica: nada muda. A tela não trava (tarefa por trás; enquanto não termina, a página sem desentortar e um
+sinal discreto em português simples). Reaproveitar a medida (não medir de novo a mesma página com os mesmos ajustes).
+
+### O que mudou (commits `50a2826`, `6be1dbe`)
+
+- **A medida** (`core/pipeline.py`, perto de `_desentortar_com_o_papel_em_volta`): a página desentortada na resolução do
+  livro fica guardada na memória (`_DESENTORTADAS`), com o que a proteção decidiu. A chave é a do corte
+  (`_chave_da_geometria`: arquivo, giro, divisão, corte, ângulo, ordem) + o modo + o "aumentando a página". Filtro e
+  ajustes do filtro não entram (o desentortar vem antes do filtro): trocar de filtro não mede de novo. Limite de 400 MB
+  (as mais antigas saem). Qualquer desenho menor (prévia "Rápida"/"Média", cartões, tela ampliada, miniaturas) usa essa
+  página **reduzida**, com os avisos dela. Antes da medida, o desenho menor sai **sem desentortar** e nem chama a DLL
+  (antes ela rodava à toa, ~1 s no fio da tela nos cartões) e não mexe nos avisos.
+- **A tarefa por trás** (`ui/tarefas.py`, `_TarefaMedirDesentortar`, pool próprio de 1 fio): a tela pede a medida da
+  página da vez (`GerenciadorPrevias.pedir_desentortar`); ao terminar, a chave da prévia e dos cartões muda sozinha
+  (`estado_do_desentortar`) e a tela desenha de novo. Na qualidade "Alta" a própria prévia mede (não pede duas vezes).
+- **O sinal** (barra de baixo, ao lado de "página N de M"): **"Desentortando esta página, um momento..."**, com o
+  balão "A página na tela ainda está sem desentortar. Em alguns segundos ela aparece desentortada, igual vai sair no
+  PDF." Só aparece com o desentortar ligado e a medida pendente. Texto escolhido por mim (seguro trocar:
+  `TelaConferir.SINAL_DESENTORTANDO`).
+- **Desligado (de fábrica):** o preparo nem passa pelo código novo (só a chave da prévia ganhou um pedaço que é vazio
+  quando desligado).
+
+**Testes** — `tests/test_desentortar_medida_por_tras.py` (6): antes da medida o desenho pequeno não desentorta nem mexe
+nos avisos; uma medida só (a 300), reaproveitada a 110, a 300 e ao trocar o filtro, com o mesmo tamanho do desligado;
+desligado nada roda; limite de tamanho; na tela o sinal aparece, a medida vem por trás e o sinal some (e voltar à página
+não mede de novo); **reversão (§4.7)** Righetti 96 com o botão: a prévia rápida tem a largura proporcional à do PDF
+(no `2a42cfb`: 0,3175 em vez de 0,367 — falhou lá, `2.12/reversao-p6-no-2a42cfb.txt`; passa aqui). No PC, um arquivo por
+vez: `test_desentortar_medida_por_tras` 6; `test_desentortar_conferir_de_novo` 14; `test_desentortar_protecao` 15;
+`test_desentortar_na_tela` 5.
