@@ -156,6 +156,22 @@ def _atalhos_isolados():
 
 
 @pytest.fixture(autouse=True)
+def _aviso_da_gravura_limpo(monkeypatch):
+    """O aviso "Gravuras e fotos" é uma vez por sessão (core.detectar_regioes):
+    um teste que faz o detector cair no antigo (DLL de mentira, página sem DPI)
+    deixava a frase pendente, e a primeira janela de OUTRO teste abria a caixa
+    e falhava em _caixas_sem_resposta (suíte inteira no PC, junção de
+    23/10/2026: test_misto_consertos e test_tirar_da_lista_nao_volta, por
+    causa de test_mesma_imagem_com_pouca_memoria e test_tinta_papel_*).
+    Aqui cada teste começa e termina com o aviso limpo. Arriscado: tirar
+    (volta a depender da ordem dos testes)."""
+    from core import detectar_regioes as dr
+
+    monkeypatch.setattr(dr, "_JA_AVISADOS", set())
+    monkeypatch.setattr(dr, "_AVISO_DA_TELA", {"pendente": None, "ja_mostrado": False})
+
+
+@pytest.fixture(autouse=True)
 def _caixas_sem_resposta():
     """Falha o teste em que o vigia teve de fechar uma caixa modal."""
     _CAIXAS_SEM_RESPOSTA.clear()
