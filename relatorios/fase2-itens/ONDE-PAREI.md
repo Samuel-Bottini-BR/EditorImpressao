@@ -450,3 +450,124 @@ para o caso da P2 (o "pelas margens" que entorta): aumentar a página não desen
 - Velocidade 39872493254 (`177f711` x `5e361ce`): "igual (dentro do vai-e-vem)" — abrir 42,5 → 40,6 s; trocar de
   página 2,20 → 2,09 s; Mágico pro 44,4 → 43,3 s; Preto e branco 22,0 → 21,9 s.
 - Abertas: P4 (livros fotografados, tamanho da página) e P5 (quando o botão aparece).
+
+## 23/10/2026 — Implementador A: respostas P4 e P5 do Samuel
+
+Respostas (Central, 23/10, pela gerente):
+- **P4, fotos de celular:** "A — deixar como está" (+ "Mas eu vou poder tentar desentortar fotos né? a opção não vai
+  sumir?" — sim). **Nada mudou:** a lista "Desentortar perto da lombada" continua em qualquer livro, foto ou scanner.
+- **P5, o botão "Desentortar aumentando a página":** "C — Aparece sempre, mas depois do clique o programa confere de
+  novo...", com o ajuste: "Mas o programa vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer
+  automaticamente."
+
+### O que mudou (commits `a220c2d` e `2a42cfb`)
+
+1. O botão aparece em toda página que a proteção segurou (já era assim).
+2. Depois do clique, as mesmas duas medidas da proteção na página aumentada (`core/desentortar_scantailor.py`):
+   **tinta saindo da página** = pedaços de tinta de 1 mm cortados pela beirada da página aumentada (3 ou mais =
+   deformada); **fundo de fora entrando** = parte do lugar da página que veio de fora do corte (mais de 10% =
+   deformada; a proteção usa 2%, mas com a página crescendo um pouco de papel de fora entra de propósito: Righetti
+   5,7%, papel branco embaixo do rodapé).
+3. Ainda deformada: a página **não volta sozinha**; entra o aviso novo, com dois botões.
+4. Saiu boa: fica, sem aviso.
+5. Ctrl+Z continua desfazendo (o "Desfazer" do aviso também é uma ação do desfazer).
+
+Medido (23/10): Destino 18: 22 pedaços cortados, 39,6% de fora -> pergunta. Righetti 96: 0 e 5,7% -> sem pergunta.
+Cursus 176 e Matemática 65 "pelas margens": 0 pedaços, 17,9% e 30,4% -> pergunta. Cursus 151 automático: 0 e 0% ->
+sem pergunta.
+
+**Rótulos (provisórios, sem emoji; seguro trocar em `core/analise.py`):**
+- título do aviso: **"A página ainda saiu deformada"**;
+- frase: "Mesmo aumentando a página, o desentortar deixou esta página deformada. Quer desfazer e voltar a página sem
+  desentortar, como estava antes, ou manter assim?";
+- botões: **"Desfazer"** (laranja; volta a página sem desentortar, como antes do clique, e o aviso "Desentortar não
+  usado" volta) e **"Manter assim"** (é o "está certo" da faixa com outro nome: marca a página como conferida e ela
+  fica aumentada);
+- no Ctrl+Z: "Voltar a página N sem desentortar".
+
+**Conserto que impedia a tarefa (§4.7):** nos prints da janela, o aviso "Desentortar não usado" aparecia e **sumia
+antes do clique**. Causa: o desentortar do ScanTailor não acha as curvas em resolução baixa (Destino 18 e Righetti 96
+a 100, 150 e 200 DPI: não mexe; a 300 mexe), e as prévias pequenas (cartões, miniaturas, prévia rápida) desenhavam a
+página "sem estrago" e tiravam o aviso. Agora só o desenho na resolução do livro (`projeto.qualidade_dpi`) põe ou tira
+os avisos do desentortar (`core/pipeline._julga_os_avisos_do_desentortar`). Reversão:
+`test_reversao_previa_em_resolucao_baixa_nao_tira_os_avisos` e `test_reversao_destino_18_o_aviso_fica_depois_da_previa_rapida`
+**falharam no `a220c2d`** (`2.12/reversao-previa-no-a220c2d.txt`) e passam aqui. Isso levou à pergunta P6 abaixo.
+
+**Desligado de fábrica: idêntico.** 96 de 96 somas (32 páginas do gabarito x 3 filtros) iguais às do `b8e9af7`
+(`2.12/somas-p5.json` = `2.8/somas-antigo.json`; rodado no `a220c2d`; o conserto seguinte só mexe no caminho com o
+desentortar ligado).
+
+**Testes (PC, um arquivo por vez):** `tests/test_desentortar_conferir_de_novo.py` 14 passaram (Destino 18: aparece a
+pergunta; Righetti 96: não aparece; a faixa com "Desfazer" e "Manter assim"; o caminho na tela com o Ctrl+Z; as
+medidas; as duas reversões); `test_desentortar_protecao` 15; `test_desentortar_scantailor` 40;
+`test_desentortar_na_tela` 5; `test_paineis_na_tela` 22; `test_paineis` 33; `test_paginas_diferentes` 12;
+`test_endireitar_no_programa` 15; `test_alerta_pb` 5.
+
+### Fotos (todas abertas)
+
+Antes/depois pelo caminho inteiro (`relatorios/fase2-itens/scripts/rodada_2_12_p5.py`; livro novo, de fábrica:
+(girar) → (dividir) → endireitar → cortar → desentortar → filtro; régua vermelha), em
+`relatorios/conferir/fase2-itens/2.12/p5/` (fora do git). Colunas: Hoje · Ligado (a proteção segura) · Com o botão ·
+Depois de "Desfazer" (só quando a pergunta aparece) · Hoje P&B · Com o botão P&B.
+- **Destino do socialismo 18, direita, automático:** a proteção segura; com o botão a página monstruosa volta e
+  aparece "A página ainda saiu deformada"; "Desfazer" volta igual ao "Ligado".
+- **Righetti 96, direita, automático:** com o botão a página cresce (1385 → 1600 pontos), o texto fica inteiro, sem
+  pergunta.
+- **Cursus 176, pelas margens:** com o botão a página continua entortada (cunha preta): aparece a pergunta.
+- **Matemática 65, pelas margens:** com o botão a página continua entortada, com a sombra do livro: aparece a pergunta.
+- **Cursus 151, automático:** com o botão a página fica um pouco maior (3238 → 3289 pontos de largura), reta, sem
+  pergunta.
+- **Marial 41, automático:** página reta; nenhum aviso em coluna nenhuma (o botão nem aparece).
+
+Prints da janela de verdade, fora da tela (`relatorios/fase2-itens/scripts/janela_2_12_p5.py`, com a base do
+verificador vlm22; toda janela nova vai para fora da tela antes de aparecer; cliques do Windows; 19 de 19 conferências
+certas), em `relatorios/conferir/fase2-itens/2.12/p5/janela/`; cópias menores no git em
+`relatorios/fase2-itens/2.12/fotos-p5/`:
+- `destino18-0`: aba Endireitar, "Automático" escolhido, o aviso "Desentortar não usado" na faixa;
+- `destino18-1`: aba Filtro, a proteção segurou, botão "Desentortar aumentando a página";
+- `destino18-2`: depois do clique, **o aviso novo** com "Desfazer" e "Manter assim" (a página aumentada e deformada
+  no cartão Original);
+- `destino18-3`: depois de "Desfazer": voltam o aviso e a página de antes;
+- `destino18-4`: depois do Ctrl+Z: volta a pergunta;
+- `destino18-5`: depois de "Manter assim": a faixa calma, "1 de 2 conferidas", a página aumentada fica;
+- `righetti96-0` e `-1`: o aviso "Desentortar não usado"; `righetti96-2`: depois do clique, sem pergunta, página maior.
+
+### Perguntas para o Samuel (nova, 23/10)
+
+**P6 — Na prévia de fábrica, o desentortar não aparece (nem os avisos dele).**
+A tela de conferir desenha a página em resolução baixa para ser rápida (qualidade da prévia "Rápida", 110 DPI, a de
+fábrica). Nessa resolução o desentortar do ScanTailor não acha as linhas curvas e **não mexe na página**; só na
+resolução do livro (300 DPI, a do PDF final) ele mexe. Medido no Destino 18 e no Righetti 96: a 100, 150 e 200 DPI
+nada muda; a 300 muda. Consequência: com a qualidade "Rápida", quem liga o desentortar vê a página como se ele não
+existisse, e o aviso "Desentortar não usado" (com o botão) e o "A página ainda saiu deformada" só aparecem com a
+qualidade "Alta" ou quando o livro é processado. Os prints acima foram feitos com a qualidade "Alta". E mesmo na
+"Alta", os cartões Preto e branco, Melhorar e Mágico pro (que são pequenos) mostram a página sem desentortar
+(`fotos-p5/destino18-2-pergunta.jpg`: o cartão Original deformado, os outros três retos).
+Fotos: `fotos-p5/destino18-0-endireitar-automatico.jpg`, `fotos-p5/destino18-2-pergunta.jpg`,
+`fotos-p5/destino_p018-direita-pagina.jpg`.
+- (a) Deixar como está: na "Rápida" a pessoa não vê o desentortar; para ver, troca para "Alta".
+- (b) **(recomendo)** Como o ScanTailor: o desentortar sempre é medido na resolução do livro, numa tarefa por trás
+  (uns 3 a 8 s por página, só nas páginas com ele ligado), e a prévia rápida e os cartões usam essa medida, só
+  reduzida. A página na tela fica igual à do PDF, e os avisos aparecem na hora. Desligado de fábrica: nada muda.
+- (c) Ao ligar o desentortar numa página, o programa troca sozinho a qualidade da prévia para "Alta" enquanto ela
+  estiver na tela.
+
+### Bugs para a Lista de bugs (não impedem; não consertei)
+
+- 23/10/2026, rodapé da tela de conferir ("N com dúvida"): fica atrasado quando o aviso entra ou sai pela prévia
+  (`fotos-p5/destino18-1-protecao-segurou.jpg`: "0 com dúvida" com o aviso na faixa; `righetti96-2`: "1 com dúvida"
+  sem aviso). A faixa, a miniatura e o sinal do painel acertam; só o texto do rodapé espera a próxima mudança.
+- 23/10/2026, cartão "Preto e branco" do Righetti 96 (aba Filtro): sai quase em branco, só pontinhos
+  (`fotos-p5/righetti96-2-sem-pergunta.jpg`), com o desentortar ligado ou não (print `righetti96-1`). Não é do
+  desentortar.
+
+### Ressalvas
+
+- O limite novo (10% de fundo de fora, depois do botão) foi medido em 6 páginas; a mais perto do limite que sai boa é
+  o Righetti (5,7%), a mais perto que sai deformada é o Cursus 176 (17,9%).
+- Na junção com o `fase2-para-revisar`: lá os avisos têm até três botões (`Alerta.outra_acao`, `terceira_acao`); aqui
+  o segundo botão é o campo novo `Alerta.confirmar` (o nome do "está certo"). Na junção, passar "Manter assim" para o
+  jeito de lá e acrescentar `elif correcao == "desentortar_desfazer_aumento": self._desfazer_aumento_do_desentortar()`
+  no `_aplicar_correcao` de lá.
+- A assinatura da gravura no `pipeline` (zonas da aba Marcar) não leva o "aumentando a página" (a página aumentada
+  muda de tamanho); já estava assim, não mexi.
