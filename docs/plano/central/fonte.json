@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T05:00:00Z",
+        "texto": "O desentortar ganhou a proteção e o botão. Duas perguntas novas para você (Conferência > Para responder agora)."
+      },
+      {
         "em": "2026-10-23T04:00:00Z",
         "texto": "Papel da área: \"as duas\" registrado; o Implementador B está fazendo. Não há pergunta esperando você agora."
       },
@@ -423,20 +427,20 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Você respondeu as três perguntas (22/10): proteção nas duas (a página que perderia letra sai sem desentortar e vai para o \"Para revisar\", com botão para desentortar aumentando a página). O Implementador A está fazendo e procurando páginas curvas em \"Livros para editar\".",
-      "falta": "O Implementador A, o verificador e a sua conferência.",
+      "situacao": "Feito pelo Implementador A (23/10): a proteção e o botão \"Desentortar aumentando a página\". Desligado, sai idêntico ao de hoje. Testes no GitHub: 2188 passaram, 0 falharam; velocidade igual.",
+      "falta": "Duas perguntas novas para você (fotos de celular e quando o botão aparece), o verificador e a sua conferência.",
       "selos": {
         "github": "falta",
         "pc": "nao",
         "samuel": "nao"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "177f711",
+      "commit": "7d71b15",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T01:40:00Z",
+      "mudouEm": "2026-10-23T05:00:00Z",
       "relatorio": "perg-a"
     },
     {
@@ -797,11 +801,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "2.12: a proteção das suas respostas (P1 e P2), o botão \"desentortar aumentando a página\" e páginas curvas de \"Livros para editar\"",
-      "ultimo": "Começou as suas respostas do desentortar.",
+      "ultimo": "Fez a proteção e o botão do desentortar; achou páginas curvas em \"Livros para editar\" e deixou duas perguntas para você.",
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-23T01:40:00Z"
+      "quando": "2026-10-23T05:00:00Z"
     },
     {
       "id": "implementador-b",

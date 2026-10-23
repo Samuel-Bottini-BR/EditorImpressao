@@ -1,15 +1,108 @@
 {
  "id": "agora",
- "nome": "Para responder agora (0)",
- "trabalho": "2.18",
+ "nome": "Para responder agora (2)",
+ "trabalho": "2.12",
  "ordem": -1,
  "origem": "cópia das duas perguntas abertas",
  "resumo": {
   "titulo": "As duas perguntas que faltam responder",
   "paragrafos": [
-   "Nada para responder agora. Obrigado!"
+   "As duas perguntas novas do desentortar (o resto da explicação e as perguntas já respondidas estão na aba \"Pergunta do Implementador A\"). Responder aqui vale para lá também."
   ]
  },
  "quadros": [],
- "perguntas": []
+ "perguntas": [
+  {
+   "id": "a-212-p4",
+   "titulo": "Livros fotografados com o celular: o desentortar não mexe. O que fazer?",
+   "explicacao": [
+    "O que o implementador achou: em \"Livros para editar\", quase todos os livros com as linhas bem curvas são fotos de celular (Razões do Integralismo, Ramírez, Haegy, Atanásio). Nessas páginas o desentortar não faz nada: as linhas continuam curvas contra a régua.",
+    "Por quê: o desentortar do ScanTailor precisa saber o tamanho de verdade da página (quantos pontos por centímetro). O PDF de uma foto de celular não diz isso, então ele acha as letras \"grandes demais\" e não reconhece as linhas. Quando o implementador informou o tamanho certo (última coluna do Razões 57, \"só para mostrar a causa\"), as linhas saíram retas sob a régua.",
+    "No ScanTailor isso existe: a etapa \"Fix DPI\", onde a pessoa diz o tamanho da página.",
+    "Caminho: livro novo, de fábrica → (dividir quando o livro pede) → endireitar → cortar → desentortar → filtro. A linha vermelha é uma régua reta. Colunas: Hoje · Antes da proteção · Agora · Agora, com o botão · \"pelas margens\" antes e agora · Preto e branco."
+   ],
+   "exemplos": [
+    {
+     "src": "pa3/razoes_p057-pagina.jpg",
+     "legenda": "Razões do Integralismo 57 (foto): nas colunas \"Agora\" as linhas continuam curvas; na última, com o tamanho certo informado, saem retas sob a régua."
+    },
+    {
+     "src": "pa3/razoes_p057-recorte.jpg",
+     "legenda": "O mesmo, ampliado."
+    },
+    {
+     "src": "pa3/haegy2_p521-pagina.jpg",
+     "legenda": "Haegy 521 (foto): nada muda; as linhas seguem curvas."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Deixar como está",
+     "texto": "Nas fotos de celular o desentortar não faz nada (não estraga, mas não ajuda).",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Um campo no livro: \"largura de verdade da página, em cm\", como o \"Fix DPI\" do ScanTailor (recomendo)",
+     "texto": "O Kaique mede a página do livro com a régua e digita a largura. Vazio de fábrica = igual a hoje. Muda a tela (um campo novo) e o arquivo do projeto.",
+     "imgs": [
+      {
+       "src": "pa3/razoes_p057-pagina.jpg",
+       "legenda": "Com o tamanho certo (última coluna), as linhas saem retas."
+      }
+     ]
+    },
+    {
+     "id": "c",
+     "nome": "C — O programa adivinha o tamanho pela altura das letras",
+     "texto": "Sem perguntar nada. É conta nossa, não do ScanTailor, e pode errar em livro de letra muito grande ou muito pequena.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "a-212-p5",
+   "titulo": "O botão \"Desentortar aumentando a página\" nem sempre ajuda. Quando ele deve aparecer?",
+   "explicacao": [
+    "O botão serve para a página em que o desentortar empurraria letra para fora (Righetti 96): aumentando a página, o texto fica inteiro.",
+    "Mas há páginas em que o problema é outro: o desentortar inventa curva e deforma a página inteira (Destino do socialismo 18), ou traz o fundo de fora para dentro (Cursus 176, \"pelas margens\"). Nessas, aumentar a página não desentorta nada: o botão traz o monstro de volta (veja a coluna \"Agora, com o botão\" do Destino 18).",
+    "Caminho: livro novo, de fábrica → (dividir quando o livro pede) → endireitar → cortar → desentortar → filtro. A linha vermelha é uma régua reta. Colunas: Hoje · Antes da proteção · Agora · Agora, com o botão · \"pelas margens\" antes e agora · Preto e branco."
+   ],
+   "exemplos": [
+    {
+     "src": "pa3/righetti_p096-direita-pagina.jpg",
+     "legenda": "Righetti 96: aqui o botão ajuda (coluna \"Agora, com o botão\": o texto fica inteiro)."
+    },
+    {
+     "src": "pa3/destino_p018-direita-pagina.jpg",
+     "legenda": "Destino do socialismo 18: \"Antes da proteção\" o automático deformava a página; \"Agora\" ela sai como hoje; \"com o botão\" o monstro volta."
+    },
+    {
+     "src": "pa3/cursus_p176-pagina.jpg",
+     "legenda": "Cursus 176: o \"pelas margens\" entortava a página com cunha preta; agora sai como hoje."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — O botão aparece sempre",
+     "texto": "Em toda página que a proteção segurou. Quem clicar numa página como o Destino 18 vê a página deformada (o Ctrl+Z desfaz).",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — O botão só aparece quando o problema era letra empurrada para fora (recomendo)",
+     "texto": "No Righetti 96 aparece; no Destino 18 e no Cursus 176 não (lá o aviso só diz que a página saiu sem desentortar).",
+     "imgs": []
+    },
+    {
+     "id": "c",
+     "nome": "C — Aparece sempre, mas depois do clique o programa confere de novo e volta sozinho se a página ainda sair deformada",
+     "texto": "Com um aviso dizendo que não deu certo.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
 }
