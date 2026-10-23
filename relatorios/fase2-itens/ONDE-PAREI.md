@@ -654,3 +654,14 @@ página da direita, "Dividir" ligado, livro novo de fábrica, aba Endireitar -> 
   primeira vez. Guardada só na memória, nesta sessão (fechar e abrir o livro mede de novo), até 400 MB.
 - Na qualidade "Alta" a própria prévia mede (como antes); o sinal aparece até ela chegar.
 - O rodapé "N com dúvida" continua atrasado (bug já anotado em 23/10; visto de novo em `depois-destino18-1`).
+
+### Fim (23/10) — entregue à gerente
+
+- GitHub, suíte 39902142935 (ramo em `6be1dbe`): **2204 passaram, 0 falharam**, 79 pulados (acervo e "Livros para
+  editar"); botões 221 ações, 0 falhas.
+- Velocidade 39902159919 (`2a42cfb` x `6be1dbe`): **"igual (dentro do vai-e-vem)"** — abrir 36,8 → 36,8 s; trocar de
+  página 2,01 → 2,11 s (+5,4%, vai-e-vem 8,2%); Mágico pro 44,2 → 46,5 s (+5,2%, vai-e-vem 5,5%); Preto e branco 21,4 →
+  22,0 s (+2,6%). Ressalva honesta: Mágico pro e trocar de página ficaram perto do limite do vai-e-vem. O caminho
+  desligado (o que o teste mede) não mudou no código: o preparo desligado nem passa pelo código novo e a prova de
+  fábrica deu 96 de 96 iguais; parece vai-e-vem da máquina, mas só a medida no PC no fim da fase decide.
+- Perguntas abertas: nenhuma.
