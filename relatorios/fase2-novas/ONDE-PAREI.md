@@ -253,7 +253,7 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
     "papel como o resto da página". Trocar para só "tinta com a cor"? (Não mudei: nome de controle é com ele.)
     Foto: `relatorios/conferir/fase2-novas/tinta-papel/depois_painel_papel_da_pagina.png`.
 
-## Perguntas 10 e 11 respondidas (Central, 23/10/2026) — em andamento
+## Perguntas 10 e 11 respondidas (Central, 23/10/2026) — feito
 
 - **10, a linha preta em volta da letra no Preto e branco:** "No Preto e branco, tirar a linha preta: as duas opções de
   papel saem iguais, com a letra limpa". Ele perguntou "Isso vai alterar alguma coisa, tirar essa linha preta?"; a
@@ -287,4 +287,9 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
   (scantailor) → cortar as bordas sim → Preto e branco → a área. `escola_p007-preto_e_branco-letra-de-perto.jpg`
   (metade esquerda do título ampliada 3 vezes): antes "PRINCIPAIS" com contorno preto pontilhado; depois a letra limpa,
   sem contorno. `escola_p007-preto_e_branco-pagina.jpg`: a página inteira. 10.123 pontos mudam, todos na área.
-- Velocidade `39886669584` (`0acf2c7` → `f8691be`) rodando.
+- **Velocidade** `39886669584` (`0acf2c7` → `f8691be`): "parece mais rápido" - abrir 21,1 → 21,0 s (−0,3%, igual);
+  trocar de página 2,05 → 1,99 s (igual); Mágico pro 27,2 → 26,5 s (−2,7%); Preto e branco 16,2 → 15,7 s (−3,3%). O
+  caminho de fábrica não passa pela mudança (só pula uma conta no Preto e branco com área "papel como o resto da
+  página"): o "mais rápido" é sorte de máquina, leia como "não ficou mais lento".
+- **Suíte do GitHub** `39889891066` (`c95ba9e`): 2206 passaram, 0 falharam; botões 234 ações, 0 falhas.
+- Situação: PRONTO PARA CONFERIR (falta o verificador e o Samuel). Sem pergunta nova.
