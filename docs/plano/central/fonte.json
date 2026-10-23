@@ -1,13 +1,17 @@
 {
   "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
   "geral": {
-    "frase": "Fase 2 (ferramentas do ScanTailor). Quase tudo aprovado. Falta terminar o desentortar (tela igual ao PDF) e a conferência do papel da área; depois tudo entra no programa de uma vez.",
+    "frase": "Fase 2 (ferramentas do ScanTailor). Tudo o que entra na junção está aprovado por você. Próximo passo: juntar tudo num ramo, testar no GitHub e no seu PC, e só então pôr no programa.",
     "faseAtual": "2",
     "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
     "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
     "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
+      {
+        "em": "2026-10-23T15:10:00Z",
+        "texto": "Você aprovou o desentortar e o papel da área. Com isso, tudo o que vai para a junção está aprovado. Suas duas observações (moldura escura e o aviso no Righetti 96) estão respondidas na aba do desentortar e anotadas para depois da junção."
+      },
       {
         "em": "2026-10-23T21:00:00Z",
         "texto": "Nova conferência: o desentortar inteiro (aba Conferência), com duas perguntas para você (Para responder agora)."
@@ -463,20 +467,20 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "decidir",
+      "coluna": "aprovado",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Feito pelo Implementador A (23/10): corte uma vez só, a proteção, o botão \"Desentortar aumentando a página\" com a pergunta \"Desfazer / Manter assim\", e a tela igual ao PDF (sua P6). Desligado, sai idêntico ao de hoje. Testes no GitHub: 2204 passaram, 0 falharam; velocidade igual.",
-      "falta": "Conferido pelo verificador (23/10): pronto para você conferir, com duas perguntas (moldura escura; Righetti 96 sem pergunta).",
+      "situacao": "Aprovado por você em 23/10 (desentortar inteiro, com a tela igual ao PDF). Entra no programa na junção (testes no GitHub e no PC antes).",
+      "falta": "Depois da junção: tirar a moldura escura antes de desentortar; o aviso no Righetti 96.",
       "selos": {
         "github": "sim",
         "pc": "nao",
-        "samuel": "nao"
+        "samuel": "sim"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
       "commit": "c3b66fb",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T21:00:00Z",
+      "mudouEm": "2026-10-23T15:10:00Z",
       "relatorio": "d212"
     },
     {
@@ -726,19 +730,19 @@
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "aprovado",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
-      "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
+      "situacao": "Aprovado por você em 23/10 (papel da área e respostas 10 e 11). Entra no programa na junção (testes no GitHub e no PC antes).",
       "selos": {
         "github": "sim",
         "samuel": "sim"
       },
       "fotos": [],
       "testar": [],
-      "falta": "Papel da área e respostas 10 e 11 conferidos pelo verificador (23/10): pronto para você conferir (aba Conferência). Depois da junção: o aviso do \"Pintar por cima\".",
+      "falta": "Depois da junção: o aviso do \"Pintar por cima\".",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-23T13:30:00Z",
+      "mudouEm": "2026-10-23T15:10:00Z",
       "relatorio": "tp23"
     },
     {

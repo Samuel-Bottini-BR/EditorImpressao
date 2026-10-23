@@ -275,6 +275,18 @@
      "texto": "",
      "imgs": []
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-23T14:44:45Z",
+     "texto": "Mas fica anotado para depois da junção isso ser resolvido, porque na verdade, eu acho que o primeiro passo em uma pagina dessas seria tirar essa moldura preta transformando a pagina em totalmente branca sem mexer nas letras, ai o desentortador não iria confundir as letras com moldura preta. não é?"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T15:10:00Z",
+     "texto": "É isso mesmo. O desentortar procura as linhas do texto, e a moldura preta atrapalha porque parece uma linha grossa. Se ela for pintada de branco antes, sem mexer nas letras, sobra só o texto e ele acha a curva (a última coluna da primeira foto mostra isso). O programa já tem a ferramenta que faz isso, que você aprovou: a caixa do conteúdo e \"pintar de branco a borda preta\" (2.5, 2.13 e 2.14). Ficou anotado na Lista de bugs: logo depois da junção, provar nessa ordem (primeiro tirar a moldura, depois desentortar) e acertar o que faltar."
+    }
    ]
   },
   {
@@ -307,6 +319,18 @@
      "nome": "Ainda não entendi",
      "texto": "",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-23T14:44:35Z",
+     "texto": "Eu quero o aviso, mas isso fica para depois."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T15:10:00Z",
+     "texto": "Anotado na Lista de bugs: depois da junção, o programa também vai perguntar \"Desfazer / Manter assim\" quando a página sair levemente deformada, como no Righetti 96."
     }
    ]
   }

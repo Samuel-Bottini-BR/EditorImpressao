@@ -184,3 +184,10 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `b-11-nome`: **Ainda não entendi** — "não tem outro nome para recomendar? eu nem entendi para que serve esse botão." — refeita: para que serve + 4 nomes.
 - `b-10-contorno` (2ª volta): **No Preto e branco, tirar a linha preta** — "Isso vai alterar alguma coisa, tirar essa linha preta?"
 - `b-11-nome` (2ª volta): **"manter a cor da tinta"** — "esse botão ainda é bem confuso, mas por enquanto pode ficar assim."
+
+## 23/10/2026 (tarde) — papel da área (`tp23`) e desentortar (`d212`)
+- `a-212-p6` (no chat): **B — como o ScanTailor, a tela igual ao PDF** — "sim".
+- `tp23`: **Aprovado**; `tp23-ajustes`, `tp23-janela`, `tp23-original`, `tp23-pb`, `tp23-cruzadas`: **Está bom**.
+- `d212`: **Aprovado**; `d212-endireita`, `d212-protecao`, `d212-tela`, `d212-janela`: **Está bom**.
+- `d212-1` (moldura escura): **C — Deixar como está** — "Mas fica anotado para depois da junção isso ser resolvido, porque na verdade, eu acho que o primeiro passo em uma pagina dessas seria tirar essa moldura preta transformando a pagina em totalmente branca sem mexer nas letras, ai o desentortador não iria confundir as letras com moldura preta. não é?" (respondido na Central: sim; Lista de bugs)
+- `d212-2` (Righetti 96 sem pergunta): **A — Está bom assim** — "Eu quero o aviso, mas isso fica para depois." (Lista de bugs)

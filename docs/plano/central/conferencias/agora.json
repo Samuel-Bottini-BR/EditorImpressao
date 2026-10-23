@@ -1,94 +1,15 @@
 {
  "id": "agora",
- "nome": "Para responder agora (2)",
- "trabalho": "2.12",
+ "nome": "Para responder agora (0)",
+ "trabalho": "",
  "ordem": -1,
- "origem": "cópia das duas perguntas abertas do desentortar",
+ "origem": "perguntas abertas",
  "resumo": {
-  "titulo": "Duas perguntas do desentortar",
+  "titulo": "Nada para responder agora",
   "paragrafos": [
-   "O verificador conferiu o desentortar inteiro: desligado nada muda; numa página curva limpa ele endireita sem perder letra; a tela fica igual ao PDF. Achou dois casos para você decidir. Responder aqui vale também para a aba do desentortar."
+   "Você respondeu tudo (23/10). Quando aparecer pergunta nova, ela vem para cá."
   ]
  },
  "quadros": [],
- "perguntas": [
-  {
-   "id": "d212-1",
-   "titulo": "Página curva com a moldura escura do scanner: o desentortar não endireita. O que fazer?",
-   "explicacao": [
-    "Muitas páginas do acervo têm em volta a moldura escura que o scanner deixa. Nessas, ligando o desentortar, a página continua curva.",
-    "Por quê: o programa diz ao desentortar onde está o texto, mas hoje essa marcação pega a moldura junto, e aí ele não acha as linhas curvas. Marcando só o texto, ele acha (última coluna da segunda foto).",
-    "Essa marcação do texto é provisória: a definitiva é o item 2.5 (a caixa do conteúdo, que você já aprovou), que entra na junção."
-   ],
-   "exemplos": [
-    {
-     "src": "d212/img/causa-curvada2-moldura.jpg",
-     "legenda": "Mesma página curva, 4 colunas. 1: a página como está. 2 e 3: o desentortar com a marcação de hoje (pegando a moldura): as linhas continuam curvas. 4: marcando só o texto: as linhas ficam retas, acompanhando as linhas vermelhas."
-    },
-    {
-     "src": "d212/img/ligado-curvada2-pagina.jpg",
-     "legenda": "A mesma página no programa: colunas 1 a 3 no Original (desligado, ligado, com o botão), 4 a 6 no Preto e branco. Nas seis, as linhas continuam subindo perto da lombada."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "a",
-     "nome": "A — Esperar o 2.5 (recomendo)",
-     "texto": "Quando a caixa do conteúdo (2.5, já aprovada) entrar junto na junção, o verificador refaz esta página. Se ainda não endireitar, volta para o implementador.",
-     "imgs": []
-    },
-    {
-     "id": "b",
-     "nome": "B — Voltar ao implementador agora",
-     "texto": "Ele conserta a marcação antes da junção, para não pegar a moldura. Atrasa a junção.",
-     "imgs": []
-    },
-    {
-     "id": "c",
-     "nome": "C — Deixar como está",
-     "texto": "Páginas com moldura escura ficam sem desentortar.",
-     "imgs": []
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "",
-     "imgs": []
-    }
-   ]
-  },
-  {
-   "id": "d212-2",
-   "titulo": "Righetti 96 com o botão: a página sai um pouco deformada e o programa não pergunta. Deveria perguntar?",
-   "explicacao": [
-    "Você pediu: \"o programa vai saber sempre que estiver deformada, o aviso deve perguntar\". No Righetti 96, depois do botão \"Desentortar aumentando a página\", o texto fica inteiro, mas as linhas de cima ficam um pouco maiores e a margem esquerda fica ondulada. O programa achou que estava bom e não perguntou \"Desfazer / Manter assim\"."
-   ],
-   "exemplos": [
-    {
-     "src": "d212/img/ligado-righetti96-pagina.jpg",
-     "legenda": "Righetti 96, 6 colunas. 1 e 4: hoje, desligado (Original e Preto e branco). 2 e 5: ligado: a proteção segura e mostra o aviso. 3 e 6: com o botão: o texto inteiro, mas as linhas de cima maiores e a margem esquerda ondulada, sem pergunta."
-    }
-   ],
-   "opcoes": [
-    {
-     "id": "a",
-     "nome": "A — Está bom assim",
-     "texto": "Texto inteiro basta; quando você quiser, desfaz com Ctrl+Z.",
-     "imgs": []
-    },
-    {
-     "id": "b",
-     "nome": "B — Também perguntar \"Desfazer / Manter assim\" nesse caso",
-     "texto": "Volta ao implementador para o programa reconhecer essa deformação leve e perguntar.",
-     "imgs": []
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "",
-     "imgs": []
-    }
-   ]
-  }
- ]
+ "perguntas": []
 }
