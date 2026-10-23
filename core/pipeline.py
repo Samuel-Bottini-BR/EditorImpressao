@@ -561,9 +561,10 @@ def _preparar_metade_e_geometria(
     # "papel em volta"; desligado (o de fabrica) e o codigo de sempre.
     desentortar = desentortar_scantailor.ligado(pagina) and not so_a_geometria
     if not desentortar and not so_a_geometria:
-        # o aviso da protecao (item 2.12) so vale com o desentortar ligado;
+        # os avisos da protecao (item 2.12) so valem com o desentortar ligado;
         # desligado, so tira o aviso que tiver ficado (nao muda a imagem)
         _anotar_desentortar_saiu_sem(pagina, False)
+        _anotar_desentortar_ainda_deformada(pagina, False)
 
     if endireita_antes(projeto):
         if desentortar:
@@ -661,6 +662,7 @@ def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: floa
         reta = _rotacionar_em_volta_de(inteira, angulo, caixa)
     preparo = desentortar_scantailor.preparar_no_corte(reta, caixa, pagina, dpi)
     _anotar_desentortar_saiu_sem(pagina, preparo.saiu_sem)
+    _anotar_desentortar_ainda_deformada(pagina, preparo.ainda_deformada)
     return preparo.imagem, cortou, girar
 
 
@@ -672,14 +674,34 @@ def _anotar_desentortar_saiu_sem(pagina: ConfigPagina, saiu_sem: bool) -> None:
     disso continua valendo. Tirado quando a pagina sai desentortada (o botao
     "Desentortar aumentando a página") ou com o desentortar desligado.
     Arriscado: por o aviso sem voltar `revisada` (nasceria escondido)."""
+    _anotar_aviso_da_pagina(pagina, analise.DESENTORTAR_SAIU_SEM, saiu_sem)
+
+
+def _anotar_desentortar_ainda_deformada(pagina: ConfigPagina, deformada: bool) -> None:
+    """Poe ou tira o aviso analise.DESENTORTAR_AINDA_DEFORMADA (item 2.12,
+    resposta P5 do Samuel, 23/10/2026: depois do botao "Desentortar aumentando
+    a página" o programa confere de novo e, se a pagina ainda saiu deformada,
+    o aviso PERGUNTA - "Desfazer" ou "Manter assim" -, sem voltar sozinho).
+    Mesmo jeito de _anotar_desentortar_saiu_sem: ao por, a pagina volta a "nao
+    conferida"; o "Manter assim" (que marca a pagina como conferida) continua
+    valendo nas proximas vezes que a pagina for desenhada. Tirado quando a
+    pagina aumentada sai boa, quando o aumento e desfeito ou com o desentortar
+    desligado."""
+    _anotar_aviso_da_pagina(pagina, analise.DESENTORTAR_AINDA_DEFORMADA, deformada)
+
+
+def _anotar_aviso_da_pagina(pagina: ConfigPagina, codigo: str, vale: bool) -> None:
+    """O jeito comum dos dois avisos do desentortar (item 2.12): ao POR, na
+    frente e a pagina volta a "nao conferida"; ja posto, nada muda (o "esta
+    bom assim" continua); ao TIRAR, so sai da lista. Arriscado: por sem voltar
+    `revisada` (o aviso nasceria escondido)."""
     if not hasattr(pagina, "alertas"):
         return
-    codigo = analise.DESENTORTAR_SAIU_SEM
     tem = codigo in pagina.alertas
-    if saiu_sem and not tem:
+    if vale and not tem:
         pagina.alertas.insert(0, codigo)
         pagina.revisada = False
-    elif not saiu_sem and tem:
+    elif not vale and tem:
         pagina.alertas = [a for a in pagina.alertas if a != codigo]
 
 

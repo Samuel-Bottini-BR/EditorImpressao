@@ -2851,6 +2851,12 @@ class TelaConferir(QWidget):
             self.texto_faixa.setText(self._com_andamento(self._texto_tranquilo(aba)))
             self._pintar_faixa(alerta=False)
             self._mostrar_sugestao(aba, None)
+        # Item 2.12 (23/10/2026, resposta P5): o aviso "A página ainda saiu
+        # deformada" pergunta "Desfazer" ou "Manter assim"; o "Manter assim" e
+        # este mesmo botao (marca como conferida) com outro nome
+        # (analise.Alerta.confirmar). Os outros avisos: "está certo".
+        confirmar = alerta.confirmar if alerta is not None and not item.revisada else None
+        self.botao_esta_certo.setText(confirmar or "está certo")
 
     def _com_andamento(self, texto: str) -> str:
         """O texto da faixa, com o andamento da conversao das marcacoes no
@@ -4064,6 +4070,8 @@ class TelaConferir(QWidget):
             self._sem_recorte()
         elif correcao == "desentortar_aumentando":
             self._desentortar_aumentando()
+        elif correcao == "desentortar_desfazer_aumento":
+            self._desfazer_aumento_do_desentortar()
 
     def _desentortar_aumentando(self) -> None:
         """Item 2.12 (22/10/2026): o botão "Desentortar aumentando a página"
@@ -4081,6 +4089,29 @@ class TelaConferir(QWidget):
             "mudar_desentortar", "pagina", [self.indice_pagina],
             {"desentortar_aumentar": True},
             f"Desentortar aumentando a página {self.indice_pagina + 1}",
+        )
+
+    def _desfazer_aumento_do_desentortar(self) -> None:
+        """Item 2.12 (23/10/2026, resposta P5 do Samuel: "o aviso deve
+        perguntar e não fazer automaticamente"): o botão "Desfazer" do aviso
+        "A página ainda saiu deformada". Volta a página sem desentortar, como
+        antes do clique em "Desentortar aumentando a página": tira o aumento
+        só desta página e a proteção volta a valer (a página sai sem
+        desentortar, com o aviso "Desentortar não usado" de antes). É uma
+        ação do desfazer como as outras: o Ctrl+Z traz o aumento de volta. O
+        aviso "ainda saiu deformada" some sozinho quando a prévia nova chega
+        (core.pipeline._anotar_desentortar_ainda_deformada).
+        Arriscado: mexer no modo do desentortar aqui (a pessoa só pediu para
+        desfazer o aumento; o desentortar do livro fica como estava)."""
+        if self.projeto is None or self.trabalha_com_folhas:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if not getattr(pagina, "desentortar_aumentar", False):
+            return
+        self._registrar(
+            "mudar_desentortar", "pagina", [self.indice_pagina],
+            {"desentortar_aumentar": False},
+            f"Voltar a página {self.indice_pagina + 1} sem desentortar",
         )
 
     # --- desfazer / refazer -----------------------------------------------

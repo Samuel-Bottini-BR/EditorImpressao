@@ -411,6 +411,32 @@ FUNDO_DENTRO_MAXIMO = 0.02  # fração da página vinda de fora do corte
 AUMENTO_MAXIMO_MM = 25.0    # o "aumentando a página": até quanto cresce
 FOLGA_DO_AUMENTO_MM = 1.0   # a folga em volta da tinta (a do corte)
 
+# --- a conferência depois do botão (resposta P5 do Samuel, 23/10/2026) ------
+#
+# P5 "C — Aparece sempre, mas depois do clique o programa confere de novo...",
+# com o ajuste dele: "Mas o programa vai saber sempre que estiver deformada, o
+# aviso deve perguntar e não fazer automaticamente." Depois do botão
+# "Desentortar aumentando a página" a página NÃO volta sozinha: as mesmas duas
+# medidas da proteção são feitas de novo na página aumentada e, se ela ainda
+# sair deformada, Preparo.ainda_deformada = True (o pipeline põe o aviso
+# analise.DESENTORTAR_AINDA_DEFORMADA, que pergunta "Desfazer" ou "Manter
+# assim"). As duas medidas, na página aumentada:
+#   - "tinta saindo da página": pedaços de tinta (os mesmos de PECA_MINIMA_MM)
+#     cortados pela beirada da página AUMENTADA (a página já cresceu até
+#     AUMENTO_MAXIMO_MM; o que ainda passa disso fica cortado). PECAS_PARA_FORA
+#     ou mais = deformada (Destino do socialismo 18: 22 pedaços; Righetti 96:
+#     0; medido em 23/10/2026);
+#   - "fundo de fora entrando": a mesma fração de medir_o_estrago (o que veio
+#     de fora do corte para dentro do lugar da página), com o limite
+#     FUNDO_DENTRO_MAXIMO_AUMENTANDO. O limite é maior que o da proteção
+#     porque, quando a página cresce, um pouco de papel de fora do corte entra
+#     de propósito pela beirada oposta (Righetti 96: 5,7%, papel branco embaixo
+#     do rodapé, e a página sai boa); as que saem deformadas: Cursus 176 e
+#     Matemática 65 "pelas margens" 17,9% e 30,4%, Destino 18 39,6%.
+# SEGURO MUDAR: os limites (com nova medida nas páginas). ARRISCADO: voltar a
+# página sozinho (o Samuel pediu que o aviso pergunte).
+FUNDO_DENTRO_MAXIMO_AUMENTANDO = 0.10
+
 
 @dataclass(frozen=True)
 class Preparo:
@@ -419,12 +445,19 @@ class Preparo:
     imagem: a página que sai. saiu_sem: a proteção recusou o desentortar (a
     imagem é o corte sem desentortar e a página vai para o "Para revisar").
     pecas_para_fora, fundo_dentro: as medidas (None se não mediu).
+    ainda_deformada (23/10/2026, resposta P5): só com o "aumentando a página":
+    a página aumentada ainda saiu deformada pelas medidas (a imagem é a
+    aumentada mesmo assim; quem decide é a pessoa, pelo aviso).
+    pecas_cortadas: os pedaços de tinta cortados pela beirada da página
+    aumentada (None fora do "aumentando a página").
     """
 
     imagem: np.ndarray
     saiu_sem: bool = False
     pecas_para_fora: int | None = None
     fundo_dentro: float | None = None
+    ainda_deformada: bool = False
+    pecas_cortadas: int | None = None
 
 
 def _pontos_por_mm(dpi) -> float:
@@ -471,6 +504,28 @@ def recusar(pecas_para_fora: int, fundo_dentro: float) -> bool:
     return pecas_para_fora >= PECAS_PARA_FORA or fundo_dentro > FUNDO_DENTRO_MAXIMO
 
 
+def pecas_cortadas_pela_beirada(marca: np.ndarray, dpi) -> int:
+    """Resposta P5 (23/10/2026), a medida "tinta saindo da página" na página
+    AUMENTADA: quantos pedaços de tinta (de PECA_MINIMA_MM ou mais nos dois
+    sentidos) encostam na beirada da marca redesenhada com o crescer do
+    "aumentando a página" - isto é, ainda passam do aumento máximo e ficam
+    cortados. `marca`: a redesenhada pela DLL (Resultado.marca)."""
+    tinta = (marca < 64).astype(np.uint8)
+    if not tinta.any():
+        return 0
+    _, rotulos, caixas, _ = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    na_beirada = set(np.unique(np.concatenate(
+        [rotulos[0], rotulos[-1], rotulos[:, 0], rotulos[:, -1]])).tolist()) - {0}
+    minimo = PECA_MINIMA_MM * _pontos_por_mm(dpi)
+    return int(sum(1 for i in na_beirada if caixas[i][2] >= minimo and caixas[i][3] >= minimo))
+
+
+def ainda_deformada(pecas_cortadas: int, fundo_dentro: float) -> bool:
+    """A regra da conferência depois do botão (resposta P5, os limites no topo
+    desta parte): a página aumentada ainda saiu deformada?"""
+    return pecas_cortadas >= PECAS_PARA_FORA or fundo_dentro > FUNDO_DENTRO_MAXIMO_AUMENTANDO
+
+
 def _recorte_aumentado(imagem: np.ndarray, marca: np.ndarray, crescer: int, dpi) -> np.ndarray:
     """O "desentortar aumentando a página": da página desentortada com
     `crescer` a mais de cada lado, fica o corte de sempre mais o que a tinta
@@ -505,7 +560,10 @@ def preparar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None,
     Devolve Preparo: a página desentortada do tamanho do corte; se a proteção
     recusou, o corte sem desentortar e saiu_sem=True; com
     pagina.desentortar_aumentar, a página desentortada do tamanho que a tinta
-    precisou (sem proteção: foi a pessoa que pediu). Se a DLL não rodou
+    precisou, sem voltar sozinha (resposta P5 do Samuel, 23/10/2026: "o aviso
+    deve perguntar e não fazer automaticamente"): as mesmas medidas da
+    proteção são feitas de novo nela e, se ainda saiu deformada,
+    ainda_deformada=True (o pipeline põe o aviso que pergunta). Se a DLL não rodou
     (anotado uma vez no erros.log): o corte da página sem desentortar (o que
     sairia com o desentortar desligado), saiu_sem=False.
 
@@ -535,8 +593,9 @@ def preparar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None,
         return Preparo(sem.copy())
     pecas, fundo = medir_o_estrago(resultado.marca, crescer, dpi)
     if aumentar:
+        cortadas = pecas_cortadas_pela_beirada(resultado.marca, dpi)
         return Preparo(_recorte_aumentado(resultado.imagem, resultado.marca, crescer, dpi),
-                       False, pecas, fundo)
+                       False, pecas, fundo, ainda_deformada(cortadas, fundo), cortadas)
     if recusar(pecas, fundo):
         return Preparo(sem.copy(), True, pecas, fundo)
     h, w = y1 - y0, x1 - x0

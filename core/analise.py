@@ -71,6 +71,14 @@ ANGULO_DIFERENTE_DAS_OUTRAS = "angulo_diferente_das_outras"
 # desenhada (como o CONFERIR_FUNDO_TIRADO). O botao e a opcao C so nesta
 # pagina (ConfigPagina.desentortar_aumentar).
 DESENTORTAR_SAIU_SEM = "desentortar_saiu_sem"
+# Item 2.12, resposta P5 do Samuel (23/10/2026): "C — Aparece sempre, mas
+# depois do clique o programa confere de novo...", com o ajuste "Mas o programa
+# vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer
+# automaticamente." Depois do botao "Desentortar aumentando a página", a pagina
+# aumentada ainda saiu deformada pelas medidas da protecao
+# (core.desentortar_scantailor.ainda_deformada). A pagina NAO volta sozinha: o
+# aviso pergunta. Quem poe e tira: core.pipeline, como o DESENTORTAR_SAIU_SEM.
+DESENTORTAR_AINDA_DEFORMADA = "desentortar_ainda_deformada"
 
 
 @dataclass(frozen=True)
@@ -82,6 +90,12 @@ class Alerta:
     mensagem: str        # frase completa, na faixa da pagina
     acao: str | None     # rotulo do botao de sugestao
     correcao: str | None # o que o botao faz (lido pela interface)
+    # Item 2.12 (23/10/2026, resposta P5): o rotulo do botao "está certo" da
+    # faixa quando este aviso esta a vista (None = "está certo", o de sempre).
+    # O botao faz o mesmo de sempre (marca a pagina como conferida); so o nome
+    # muda, para o aviso que pergunta "Desfazer" ou "Manter assim". Seguro
+    # mudar: o texto. Arriscado: dar a ele outra acao (a tela nao le).
+    confirmar: str | None = None
 
 
 ALERTAS: dict[str, Alerta] = {
@@ -183,6 +197,19 @@ ALERTAS: dict[str, Alerta] = {
         "de fora para dentro dela. Por isso a página saiu sem desentortar. Se "
         "quiser, desentorte aumentando a página até caber o texto.",
         "Desentortar aumentando a página", "desentortar_aumentando",
+    ),
+    # Item 2.12, resposta P5 (23/10/2026). Rotulos provisorios (a gerente
+    # passou "A página ainda saiu deformada", "Desfazer" e "Manter assim").
+    # "Desfazer" volta a pagina sem desentortar, como antes do clique (le
+    # ui/tela_conferir._aplicar_sugestao: "desentortar_desfazer_aumento");
+    # "Manter assim" e o "está certo" da faixa com outro nome (campo
+    # confirmar). Seguro mudar: os textos. Arriscado: o codigo da correcao.
+    DESENTORTAR_AINDA_DEFORMADA: Alerta(
+        DESENTORTAR_AINDA_DEFORMADA, "A página ainda saiu deformada",
+        "Mesmo aumentando a página, o desentortar deixou esta página "
+        "deformada. Quer desfazer e voltar a página sem desentortar, como "
+        "estava antes, ou manter assim?",
+        "Desfazer", "desentortar_desfazer_aumento", "Manter assim",
     ),
     TAMANHO_DIFERENTE: Alerta(
         TAMANHO_DIFERENTE, "Tamanho diferente",
