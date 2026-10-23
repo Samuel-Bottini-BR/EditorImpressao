@@ -199,6 +199,7 @@ def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, meta
         ds.recusar = lambda pecas, fundo: False
         try:
             antes = medir("antes", filtro=ORIGINAL, desentortar=ds.AUTOMATICO)
+            antes_margens = medir("antes_margens", filtro=ORIGINAL, desentortar=ds.PELAS_MARGENS)
         finally:
             ds.recusar = recusar
         # so para mostrar a causa (pergunta P4): o desentortar ouvindo o tamanho de verdade da pagina
@@ -225,6 +226,7 @@ def rodar(nome: str, livro: str, pagina_pdf: int, giro: int, dividir: bool, meta
         ("Antes da proteção", "automático, sem proteção · Original", antes),
         ("Agora", "automático · Original" + sai(aviso_auto), auto),
         ("Agora, com o botão", "Desentortar aumentando a página · Original", maior),
+        ("Antes da proteção", "pelas margens, sem proteção · Original", antes_margens),
         ("Agora", "pelas margens · Original" + sai(aviso_margens), margens),
         ("Hoje", "desentortar desligado · Preto e branco", pb_hoje),
         ("Agora", "automático · Preto e branco", pb_auto),

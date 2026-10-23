@@ -399,7 +399,7 @@ das 24 mais curvas). Os livros usados, com o caminho:
 - `D:\Livros para editar\2 - TEOLOGIA\Patrologia\Patrística\aula_18_atanasio_de_alexandria_e_a_controversia_ar.pdf` — p. 8.
 
 **Achado que importa:** quase todos os livros bem curvos dessa pasta são **fotos** (celular), e nos PDFs deles o tamanho
-da página não é o de verdade (ex.: a página do Razões diz 86 cm de altura). O desentortar do ScanTailor reduz a
+da página não é o de verdade (ex.: a página do Razões diz 115 cm de altura). O desentortar do ScanTailor reduz a
 página para 200 DPI pelo tamanho que recebe; com o tamanho errado as letras ficam grandes demais para ele e ele não
 acha linha nenhuma. Medido no Razões 57 (direto na ferramenta, só para achar a causa): com 300 DPI (o que o programa
 diz) não acha curva; com ~1100 DPI acha e endireita. Outra coisa que atrapalha nas fotos: a caixa do texto
