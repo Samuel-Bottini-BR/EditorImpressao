@@ -111,6 +111,16 @@ class ConfigPagina:
     # Seguro mudar: nada aqui.
     endireitar_como: str | None = None
 
+    # Item 2.5, decisao g9-pagina-muito-maior do Samuel (13/10/2026): "O
+    # programa deixa essa folha de fora sozinho, e avisa". So vale com o
+    # livro em Projeto.cortar_pelo_conteudo. None = o programa decide (a
+    # pagina muito maior que as outras fica fora da conta do tamanho do
+    # livro; core/corte_pelo_conteudo.muito_maiores); True = o Kaique pos de
+    # volta na conta ("do tamanho das outras"); False = ele tirou (o "nao
+    # alinhar com as outras" do ScanTailor). Projeto antigo nao tem o campo:
+    # volta None, e com a opcao desligada nada muda. Seguro mudar: nada aqui.
+    alinhar_com_as_outras: bool | None = None
+
     # Problema 2 do plano (redesenho do fluxo): a página nasce em Original,
     # nunca com um filtro já aplicado sozinho - o Samuel decide quando
     # aplicar algo. TelaOpcoes ainda deixa escolher outro filtro padrão para
@@ -390,6 +400,42 @@ class Projeto:
     # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
     # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.
     cortar_sobra: bool = False
+    # Item 2.5, decisao G8 (a) do Samuel (05/10/2026): "Trazer como opcao
+    # 'seguir a moldura / o papel', desligada - eu quero pode escolher dentro
+    # do programa". Ligado, o corte AUTOMATICO de cada pagina passa a ser o
+    # do ScanTailor: a caixa do conteudo, do tamanho do livro (G9: "Todas as
+    # paginas do tamanho da maior: Sim"), com o aviso do que ficou de fora
+    # (g8-moldura-tinta-fora) e a folha muito maior fora da conta
+    # (g9-pagina-muito-maior). Ver core/corte_pelo_conteudo.py. DESLIGADO de
+    # fabrica: livro novo e projeto antigo saem como hoje. O corte a mao
+    # (ConfigPagina.recorte) vale como esta, ligado ou nao.
+    cortar_pelo_conteudo: bool = False
+    # Item 2.5, decisao g8-guias do Samuel (13/10/2026): "As duas" + "Mas ele
+    # vai poder tirar a automatica a hora que ele quiser." As linhas de apoio
+    # do "Mover conteudo" (core/guias.py): guias = as do Kaique, valendo no
+    # livro todo, como dicionarios {"orientacao": "de_pe"|"deitada", "mm":
+    # distancia do meio da folha} (o jeito do ScanTailor); guias_automaticas =
+    # o ima no meio e nas beiradas da folha (ligado de fabrica = como sempre).
+    # Projeto antigo nao tem os campos: volta sem linhas e com as automaticas.
+    guias: list = field(default_factory=list)
+    guias_automaticas: bool = True
+    # Item 2.13, decisoes G7 (a) do Samuel (05/10/2026: "Sim, desligada de
+    # fabrica") e g7-borda-ate-onde (20/10/2026: "O Kaique escolhe por livro:
+    # so o preto, ou ate a moldura"). borda_preta = achar a pagina dentro da
+    # borda preta do scanner e sugerir o corte (False de fabrica: livro novo e
+    # projeto antigo saem como hoje). borda_preta_ate = ate onde vai o corte
+    # sugerido: "ate_a_moldura" (o impresso, conta do ScanTailor; o que vem
+    # escolhido) ou "so_o_preto" (conta nossa). Ver core/borda_preta.py. O
+    # corte a mao (ConfigPagina.recorte) e a excecao por pagina, como sempre.
+    borda_preta: bool = False
+    borda_preta_ate: str = "ate_a_moldura"
+    # Item 2.14 (rodada 5, 09/10/2026, rv5-pag-egenloff-047: "O Kaique escolhe
+    # por livro" entre cortar fora e pintar de branco): o que fazer com o que
+    # fica fora da pagina achada, so com borda_preta ligada. "cortar" (de
+    # fabrica: o 2.13) ou "pintar" (o corte fica o de sempre e o resto vira
+    # branco). Projeto antigo volta "cortar" (e com a borda desligada nada
+    # muda). Ver core/borda_preta.py.
+    borda_preta_fazer: str = "cortar"
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True

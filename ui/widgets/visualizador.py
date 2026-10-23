@@ -43,7 +43,9 @@ from PySide6.QtGui import (
     QPen,
     QPixmap,
 )
-from PySide6.QtWidgets import QSizePolicy, QWidget
+from PySide6.QtWidgets import QMenu, QSizePolicy, QWidget
+
+from core import guias as _guias   # item 2.5, g8-guias: a conta das linhas de apoio
 
 from core.folha import (  # noqa: F401 - reexportados, ver comentario abaixo
     TAMANHOS_DE_PAPEL_CM,
@@ -141,39 +143,29 @@ def _candidatos_do_eixo(inicio: float, tamanho: float) -> list[tuple[float, str,
 def guias_ativas(
     conteudo: tuple[float, float, float, float],
     tolerancia: float = TOLERANCIA_DA_GUIA,
+    linhas=(),
+    automaticas: bool = True,
 ) -> list[str]:
-    """As guias que o conteúdo já está bem perto de bater, para desenhar."""
-    x, y, w, h = conteudo
-    ativas = []
-    nomes_x = {"centro": GUIA_CENTRO_H, "inicio": GUIA_BORDA_ESQUERDA, "fim": GUIA_BORDA_DIREITA}
-    nomes_y = {"centro": GUIA_CENTRO_V, "inicio": GUIA_BORDA_CIMA, "fim": GUIA_BORDA_BAIXO}
-    for distancia, nome, _posicao in _candidatos_do_eixo(x, w):
-        if distancia <= tolerancia:
-            ativas.append(nomes_x[nome])
-    for distancia, nome, _posicao in _candidatos_do_eixo(y, h):
-        if distancia <= tolerancia:
-            ativas.append(nomes_y[nome])
-    return ativas
+    """As guias que o conteúdo já está bem perto de bater, para desenhar.
+
+    Item 2.5 (g8-guias, 13/10/2026): a conta mudou para core/guias.ativas,
+    que também conhece as linhas do Kaique (`linhas`, como (orientação,
+    fração da folha)) e o desligar das automáticas. Sem linhas e com as
+    automáticas, dá o mesmo de antes (tests/test_guias.py)."""
+    return _guias.ativas(conteudo, linhas, automaticas, tolerancia)
 
 
 def encaixar_no_ima(
     conteudo: tuple[float, float, float, float],
     tolerancia: float = TOLERANCIA_DA_GUIA,
+    linhas=(),
+    automaticas: bool = True,
 ) -> tuple[float, float, float, float]:
     """Puxa a posição do conteúdo para a guia mais próxima de cada eixo, se
     estiver dentro da tolerância. Nunca muda w/h, só x/y - o ímã posiciona,
-    não redimensiona."""
-    x, y, w, h = conteudo
-
-    distancia_x, _nome, nova_x = min(_candidatos_do_eixo(x, w), key=lambda c: c[0])
-    if distancia_x <= tolerancia:
-        x = nova_x
-
-    distancia_y, _nome, nova_y = min(_candidatos_do_eixo(y, h), key=lambda c: c[0])
-    if distancia_y <= tolerancia:
-        y = nova_y
-
-    return (x, y, w, h)
+    não redimensiona. Item 2.5: a conta é a de core/guias.encaixar (ver
+    guias_ativas)."""
+    return _guias.encaixar(conteudo, linhas, automaticas, tolerancia)
 
 
 def numpy_para_qimage(img: np.ndarray) -> QImage:
@@ -208,6 +200,10 @@ class Visualizador(QWidget):
     # MODO_CONTEUDO. `ui/tela_conferir.py::_mover_conteudo` converte para
     # (escala, deslocamento) antes de gravar em ConfigPagina.
     conteudo_movido = Signal(tuple)
+    # Item 2.5 (g8-guias): as linhas do Kaique mudaram pelo menu do botão
+    # direito no "Mover conteúdo": lista de (orientação, fração da folha), as
+    # orientações de core/guias. Quem grava (em mm, no livro) é a tela.
+    guias_mudaram = Signal(list)
     vista_mudou = Signal(float, object)   # zoom, deslocamento (para o comparar)
     ampliar_pedido = Signal()             # duplo clique: abrir em tela cheia
 
@@ -269,6 +265,10 @@ class Visualizador(QWidget):
         # folha, e quais guias estão "grudando" agora (para desenhar).
         self._retangulo_conteudo_inicial = self._retangulo_conteudo
         self._guias_ativas_agora: list[str] = []
+        # Item 2.5 (g8-guias): as linhas do Kaique desta folha, em fração
+        # (core/guias), e se as automáticas (meio e beiradas) valem.
+        self.guias_do_livro: list[tuple[str, float]] = []
+        self.guias_automaticas = True
 
         # Zoom e deslocamento. 1,0 quer dizer "do tamanho da janela"; acima
         # disso a imagem passa a ser maior que a área e o usuário arrasta para
@@ -742,6 +742,20 @@ class Visualizador(QWidget):
                       TAMANHO_ALCA, TAMANHO_ALCA), 3, 3,
             )
 
+        # Item 2.5 (g8-guias): as linhas do Kaique ficam sempre à vista no
+        # "Mover conteúdo" (azul tracejado); a que o conteúdo está batendo
+        # fica mais grossa.
+        area = self._area
+        for i, (orientacao, fracao) in enumerate(self.guias_do_livro):
+            batendo = f"{_guias.PREFIXO_DO_KAIQUE}{i}" in self._guias_ativas_agora
+            pintor.setPen(QPen(QColor(estilo.AZUL), 3 if batendo else 1, Qt.DashLine))
+            if orientacao == _guias.DE_PE:
+                x = round(area.left() + fracao * area.width())
+                pintor.drawLine(x, area.top(), x, area.bottom())
+            else:
+                y = round(area.top() + fracao * area.height())
+                pintor.drawLine(area.left(), y, area.right(), y)
+
         if not self._guias_ativas_agora:
             return
         caneta = QPen(QColor(estilo.LARANJA), 1, Qt.DashLine)
@@ -897,6 +911,51 @@ class Visualizador(QWidget):
             self._redimensionar_conteudo(ponto, self._arrastando[len("conteudo_"):])
         else:
             self._mover_recorte(ponto)
+
+    def definir_guias(self, linhas, automaticas: bool = True) -> None:
+        """Item 2.5 (g8-guias): as linhas do Kaique desta folha, como
+        (orientação, fração da folha), e se as automáticas valem."""
+        self.guias_do_livro = [(str(o), float(p)) for o, p in linhas]
+        self.guias_automaticas = bool(automaticas)
+        self.update()
+
+    def contextMenuEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Item 2.5 (g8-guias), só no "Mover conteúdo": o menu do botão direito
+        do ScanTailor (page_layout/ImageView.cpp, linhas 652-666): pôr uma
+        linha de pé ou deitada onde clicou, tirar a linha embaixo do mouse,
+        tirar todas. Emite guias_mudaram com a lista nova (quem grava é a
+        tela, numa ação que o Ctrl+Z desfaz). Fora desse modo, nada."""
+        if self.modo != MODO_CONTEUDO or self._area.width() <= 0 or self._area.height() <= 0:
+            return
+        x = (evento.pos().x() - self._area.left()) / self._area.width()
+        y = (evento.pos().y() - self._area.top()) / self._area.height()
+        if not (0.0 <= x <= 1.0 and 0.0 <= y <= 1.0):
+            return
+        perto = _guias.mais_perto(self.guias_do_livro, x=x, y=y)
+        menu = QMenu(self)
+        if perto is None:
+            de_pe = menu.addAction("Pôr uma linha de pé aqui")
+            deitada = menu.addAction("Pôr uma linha deitada aqui")
+            tirar = None
+        else:
+            de_pe = deitada = None
+            tirar = menu.addAction("Tirar esta linha")
+        todas = menu.addAction("Tirar todas as linhas") if self.guias_do_livro else None
+        escolhida = menu.exec(evento.globalPos())
+        linhas = list(self.guias_do_livro)
+        if escolhida is None:
+            return
+        if escolhida is de_pe:
+            linhas.append((_guias.DE_PE, x))
+        elif escolhida is deitada:
+            linhas.append((_guias.DEITADA, y))
+        elif escolhida is tirar:
+            del linhas[perto]
+        elif escolhida is todas:
+            linhas = []
+        else:
+            return
+        self.guias_mudaram.emit(linhas)
 
     def mouseReleaseEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
         if self._arrastando_vista:
@@ -1124,8 +1183,10 @@ class Visualizador(QWidget):
         y = min(max(0.0, y0 + dy), 1.0 - h)
         candidato = (x, y, w, h)
 
-        self._guias_ativas_agora = guias_ativas(candidato)
-        self._retangulo_conteudo = encaixar_no_ima(candidato)
+        self._guias_ativas_agora = guias_ativas(candidato, linhas=self.guias_do_livro,
+                                                automaticas=self.guias_automaticas)
+        self._retangulo_conteudo = encaixar_no_ima(candidato, linhas=self.guias_do_livro,
+                                                   automaticas=self.guias_automaticas)
         self.update()
 
     def _redimensionar_conteudo(self, ponto: QPoint, lado: str) -> None:

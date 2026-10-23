@@ -204,6 +204,15 @@ def lista_estreita(lista) -> None:
     lista.view().setTextElideMode(Qt.ElideNone)
 
 
+def _nome_da_borda(projeto) -> str:
+    """Item 2.13: o nome de ate onde vai o corte da borda preta do livro."""
+    from core import borda_preta
+
+    return (borda_preta.NOMES[borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))]
+            + ", " + borda_preta.NOMES_DO_FAZER[                      # item 2.14
+                borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))])
+
+
 def nome_da_conta(jeito: str) -> str:
     """O nome de uma conta do endireitar COMO APARECE NOS PAINEIS.
 
@@ -1008,7 +1017,11 @@ class PainelAutomatico(Painel):
             (bool(projeto.cortar_bordas), "Cortar as bordas",
              "tira a borda preta e a sombra do scanner",
              "beirada da folha vizinha: "
-             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")),
+             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")
+             + "; seguindo o conteúdo: "                       # item 2.5
+             + ("sim" if getattr(projeto, "cortar_pelo_conteudo", False) else "não")
+             + "; borda preta: "                               # item 2.13
+             + (_nome_da_borda(projeto) if getattr(projeto, "borda_preta", False) else "não")),
             (bool(projeto.limpar), "Limpar a folha", "tira o amarelado",
              f"filtro do livro: {NOMES_AMIGAVEIS.get(filtro, filtro)}"),
             (bool(projeto.montar_cadernos), "Montar cadernos para impressão",

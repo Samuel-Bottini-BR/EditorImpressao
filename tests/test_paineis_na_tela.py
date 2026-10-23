@@ -243,8 +243,15 @@ def test_os_botoes_do_cortar_sairam_da_fila_e_moram_no_propriedades(janela, past
     assert any(t.startswith("Cortar a beirada da folha vizinha:") for t in partes)
 
 
-def test_os_botoes_do_cortar_fazem_o_mesmo_de_antes(janela, pasta):
+def test_os_botoes_do_cortar_fazem_o_mesmo_de_antes(janela, pasta, monkeypatch):
+    """Item 2.13 (20/10/2026): o "usar em todas" passou a abrir a janela "Em
+    quais páginas?" (as exceções vêm desmarcadas); aqui ela responde com as
+    páginas de fábrica, que neste livro são todas (nenhuma tem corte próprio)."""
+    from ui import dialogo_escolher_paginas as dep
+
     tela = _aberta(janela, pasta)
+    monkeypatch.setattr(type(tela), "_escolher_paginas_do_corte",
+                        lambda self: dep.paginas_de_fabrica(self.projeto, self.indice_pagina))
     tela.trilha.escolher(FERRAMENTA_CORTAR)
     tela.paineis.abrir("props")
     botoes = _botoes(tela.propriedades_das_abas["bordas"])

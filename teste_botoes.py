@@ -401,6 +401,22 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
         return _exec_original_tela_cheia(self)
 
     FiltrosEmTelaCheia.exec = _exec_tela_cheia_sem_travar
+    # A janela "Em quais páginas?" do "usar em todas" do Cortar (item 2.13)
+    # também é modal: clica "Nenhuma", "Selecionar todas" e aplica.
+    from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+    _exec_original_paginas = DialogoEscolherPaginas.exec
+
+    def _interagir_com_paginas(dialogo) -> None:
+        dialogo.botao_nenhuma.click()
+        dialogo.botao_todas.click()
+        dialogo.accept()
+
+    def _exec_paginas_sem_travar(self):
+        QTimer.singleShot(0, lambda: _interagir_com_paginas(self))
+        return _exec_original_paginas(self)
+
+    DialogoEscolherPaginas.exec = _exec_paginas_sem_travar
 
     QInputDialog.getText = staticmethod(
         lambda *a, **k: ("Projeto de teste (renomeado)", True))

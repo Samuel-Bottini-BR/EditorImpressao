@@ -153,7 +153,7 @@ from core import preto_e_branco_scantailor
 from core import claro_no_escuro, cores_scantailor
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
-                           angulo_da_pagina, angulos_medidos, jeito_de_dividir,
+                           angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
                            marcas_do_aviso, recalcular_divisao)
 from core.filtros import (
     ALGORITMOS_PB,
@@ -184,6 +184,7 @@ from ui.widgets.editor_selecao import (
     ferramenta_da_tecla,
 )
 from ui.widgets.paineis import (
+    _nome_da_borda,
     PAINEL_FILTRO,
     PAINEL_HISTORICO,
     PAINEL_PROPRIEDADES,
@@ -1269,6 +1270,7 @@ class TelaConferir(QWidget):
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
         vis.recorte_movido.connect(self._mover_recorte)
         vis.conteudo_movido.connect(self._mover_conteudo)
+        vis.guias_mudaram.connect(self._mudar_as_linhas_de_apoio)    # item 2.5, g8-guias
         assert self.projeto is not None
 
         coluna = self._conteudo_de_propriedades(ABA_BORDAS)
@@ -1313,6 +1315,19 @@ class TelaConferir(QWidget):
             self._alternar_mover_conteudo, coluna)
         self.botao_mover_conteudo.setEnabled(False)
         coluna.addWidget(frase_do_painel("(só depois de escolher um tamanho de folha)"))
+        # Item 2.5, g8-guias (Samuel, 13/10/2026: "As duas" + "Mas ele vai
+        # poder tirar a automatica a hora que ele quiser."): o ima do meio e
+        # das beiradas, para o livro todo. As linhas do Kaique: botao direito
+        # sobre a folha no "Mover conteudo". Controle minimo (lugar
+        # provisorio, listado para o agente de layout).
+        self.botao_linhas_automaticas = self._caixinha_do_painel(
+            "Linhas automáticas (meio e beiradas)",
+            "Ao mover o conteúdo, ele gruda no meio e nas beiradas da folha. "
+            "Vale para o livro todo. Para pôr suas próprias linhas, clique com o "
+            "botão direito sobre a folha no \"Mover conteúdo\".",
+            self._alternar_linhas_automaticas, coluna)
+        self.botao_linhas_automaticas.setChecked(
+            bool(getattr(self.projeto, "guias_automaticas", True)))
 
         coluna.addWidget(risco_do_painel())
         coluna.addWidget(titulo_de_secao("Qualidade da prévia"))
@@ -1334,7 +1349,14 @@ class TelaConferir(QWidget):
         coluna.addSpacing(6)
         coluna.addWidget(self._parte_do_livro(
             ["Cortar a beirada da folha vizinha: "
-             + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não")]))
+             + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não"),
+             # item 2.5 (G8): o corte que segue o conteudo
+             "Cortar seguindo o conteúdo (como o ScanTailor): "
+             + ("sim" if getattr(self.projeto, "cortar_pelo_conteudo", False) else "não"),
+             # item 2.13 (g7): a borda preta do scanner
+             "Página dentro da borda preta: "
+             + (_nome_da_borda(self.projeto) if getattr(self.projeto, "borda_preta", False)
+                else "não")]))
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -1513,6 +1535,61 @@ class TelaConferir(QWidget):
         else:
             modo = RECORTE_LIVRE
         self.visualizadores[ABA_BORDAS].definir_modo_arraste_recorte(modo)
+
+    # --- item 2.5, g8-guias: as linhas de apoio do "Mover conteudo" -------
+
+    def _mostrar_as_linhas_de_apoio(self, vis, pagina) -> None:
+        """Passa ao visualizador as linhas do livro (guardadas em mm a partir
+        do meio da folha, core/guias) convertidas para a folha desta pagina,
+        e se as automaticas valem."""
+        from core import guias
+
+        folha_cm = pagina.tamanho_folha_cm
+        linhas = []
+        if folha_cm is not None:
+            linhas = [(g.orientacao, guias.em_fracao(g, folha_cm))
+                      for g in guias.do_projeto(getattr(self.projeto, "guias", []))]
+        vis.definir_guias(linhas, bool(getattr(self.projeto, "guias_automaticas", True)))
+        self.botao_linhas_automaticas.setChecked(
+            bool(getattr(self.projeto, "guias_automaticas", True)))
+
+    def _gravar_no_livro(self, campo: str, valor, descricao: str) -> None:
+        """Uma mudanca que vale para o livro (campo "livro." da acao,
+        historico_acoes.aplicar), numa acao do Historico que o Ctrl+Z desfaz."""
+        assert self.projeto is not None and self.acoes is not None
+        acao = montar_acao(self.projeto, campo, "pagina", [], {}, descricao)
+        acao.antes[f"livro.{campo}"] = getattr(self.projeto, campo)
+        acao.depois[f"livro.{campo}"] = valor
+        aplicar(self.projeto, acao, acao.depois)
+        self.acoes.registrar(acao)
+        self.atualizar()
+
+    @protegido
+    def _mudar_as_linhas_de_apoio(self, linhas: list) -> None:
+        """O menu do botao direito mudou as linhas (fracao desta folha): grava
+        no livro em mm a partir do meio da folha (como o ScanTailor)."""
+        from core import guias
+
+        if self.projeto is None:
+            return
+        folha_cm = self.projeto.paginas[self.indice_pagina].tamanho_folha_cm
+        if folha_cm is None:
+            return
+        novas = guias.para_salvar(guias.de_fracao(o, p, folha_cm) for o, p in linhas)
+        antes = len(getattr(self.projeto, "guias", []) or [])
+        descricao = ("Linha de apoio posta" if len(novas) > antes
+                     else "Linhas de apoio tiradas" if not novas else "Linha de apoio tirada")
+        self._gravar_no_livro("guias", novas, descricao)
+
+    @protegido
+    def _alternar_linhas_automaticas(self) -> None:
+        if self.projeto is None:
+            return
+        ligadas = self.botao_linhas_automaticas.isChecked()
+        if ligadas == bool(getattr(self.projeto, "guias_automaticas", True)):
+            return
+        self._gravar_no_livro("guias_automaticas", ligadas,
+                              "Linhas automáticas " + ("ligadas" if ligadas else "desligadas"))
 
     def _alternar_mover_conteudo(self) -> None:
         """Fase 2: troca o visualizador entre editar o RECORTE (padrão) e
@@ -2653,6 +2730,7 @@ class TelaConferir(QWidget):
             from ui.widgets.visualizador import MODO_RECORTE
 
             tem_folha = pagina.tamanho_folha_cm is not None
+            self._mostrar_as_linhas_de_apoio(vis, pagina)            # item 2.5, g8-guias
             self.botao_mover_conteudo.setEnabled(tem_folha)
             if not tem_folha and self.botao_mover_conteudo.isChecked():
                 self.botao_mover_conteudo.setChecked(False)
@@ -3727,6 +3805,37 @@ class TelaConferir(QWidget):
         )
 
     @protegido
+    def _usar_corte_alargado(self) -> None:
+        """Item 2.5, g8-moldura-tinta-fora ("ele avisa e da opção e de mudar o
+        corte e mostrar ele alargado com o que foi tirado"): troca o corte desta
+        pagina pelo corte alargado (core.pipeline.corte_alargado), que passa a
+        valer como corte a mao. Desfaz com Ctrl+Z; "usar o corte do programa"
+        volta ao do conteudo. Sem corte alargado (ainda nao medido), so marca
+        como conferida."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        alargado = corte_alargado(self.projeto, pagina)
+        if alargado is None:
+            self._marcar_revisada()
+            return
+        self._registrar(
+            "recortar", "pagina", [self.indice_pagina],
+            {"recorte": [float(v) for v in alargado], "revisada": True},
+            f"Corte alargado na página {self.indice_pagina + 1}",
+        )
+
+    @protegido
+    def _alinhar_com_as_outras(self) -> None:
+        """Item 2.5, g9-pagina-muito-maior: poe de volta na conta do tamanho do
+        livro a pagina que o programa deixou de fora sozinho (o aviso deixa
+        desfazer). Desfaz com Ctrl+Z."""
+        self._registrar(
+            "alinhar", "pagina", [self.indice_pagina],
+            {"alinhar_com_as_outras": True, "revisada": True},
+            f"Página {self.indice_pagina + 1} do tamanho das outras",
+        )
+
+    @protegido
     def _recorte_automatico(self) -> None:
         self._registrar(
             "recortar", "pagina", [self.indice_pagina], {"recorte": None},
@@ -3735,14 +3844,37 @@ class TelaConferir(QWidget):
 
     @protegido
     def _recorte_em_todas(self) -> None:
+        """O "usar em todas" do Cortar. Item 2.13 (pedido do Samuel, rodada 4,
+        08/10/2026, e bug da Lista de bugs de 08/10: "usar em todas" apagava as
+        excecoes por pagina): antes de aplicar, a janela "Em quais paginas?"
+        (ui/dialogo_escolher_paginas) mostra as paginas, com as excecoes
+        desmarcadas de fabrica e "Selecionar todas" / "Nenhuma". So as
+        marcadas recebem o corte; cancelar nao muda nada."""
         assert self.projeto is not None
         recorte = self.projeto.paginas[self.indice_pagina].recorte
-        indices = [p.indice for p in self.projeto.paginas]
+        campos = {"recorte": list(recorte) if recorte else None}
+        # pendencia da D2: com marcacoes ainda no formato antigo, avisa e nao
+        # abre a janela (o mesmo que _registrar faria depois)
+        if self._espera_pelas_marcacoes("pagina", [p.indice for p in self.projeto.paginas], campos):
+            return
+        indices = self._escolher_paginas_do_corte()
+        if not indices:
+            return
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
             {"recorte": list(recorte) if recorte else None},
-            f"Corte de borda de todas as {len(indices)} páginas",
+            f"Corte de borda em {len(indices)} páginas",
         )
+
+    def _escolher_paginas_do_corte(self) -> list[int]:
+        """Abre a janela "Em quais paginas?" e devolve as marcadas (vazio se
+        cancelou). Separado para os testes trocarem a janela."""
+        from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+        dialogo = DialogoEscolherPaginas(self.projeto, self.indice_pagina, self)
+        if dialogo.exec() != DialogoEscolherPaginas.Accepted:
+            return []
+        return dialogo.escolhidas()
 
     @protegido
     def _mover_conteudo(self, retangulo: tuple) -> None:
@@ -4725,6 +4857,10 @@ class TelaConferir(QWidget):
             self._angulo_zero()
         elif correcao == "sem_recorte":
             self._sem_recorte()
+        elif correcao == "corte_alargado":           # item 2.5, g8
+            self._usar_corte_alargado()
+        elif correcao == "alinhar_com_as_outras":    # item 2.5, g9
+            self._alinhar_com_as_outras()
 
     # --- os consertos dos avisos (12/10/2026) -----------------------------
 

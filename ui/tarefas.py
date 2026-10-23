@@ -242,6 +242,45 @@ class TarefaConverterZonas(QThread):
         self.terminou.emit(self, convertidas)
 
 
+class TarefaMedirOLivro(QThread):
+    """Item 2.5 (corte que segue o conteudo, G9 "todas as paginas do tamanho
+    da maior"): mede por tras, ao abrir, o tamanho do conteudo das paginas do
+    livro (core.pipeline.medir_conteudo_do_livro), para a previa ja mostrar
+    cada pagina do tamanho do livro. So roda com a opcao do livro ligada
+    (Projeto.cortar_pelo_conteudo); desligada, nao e criada. Aqui so o fio e
+    o cancelar; o que ela mede fica guardado na memoria do core (nao muda o
+    projeto, so poe ou tira o aviso "Pagina muito maior").
+
+    Prioridade normal pelo mesmo motivo da TarefaConverterZonas (inversao de
+    prioridade com o GIL). Arriscado: esquecer de parar ao trocar de livro e
+    ao fechar (a janela para junto com a conversao das zonas)."""
+
+    terminou = Signal(object, int)          # tarefa, quantas paginas mediu
+
+    def __init__(self, projeto: Projeto) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        """Pede para parar antes da proxima pagina. O que ja foi medido fica."""
+        self._cancelar = True
+
+    def run(self) -> None:
+        """Ponto de entrada da QThread. Nunca deixa excecao escapar (cancelar
+        e qualquer erro so param a passada; o PDF mede o que faltar)."""
+        from core.pipeline import Cancelou, medir_conteudo_do_livro
+
+        medidas = 0
+        try:
+            medidas = medir_conteudo_do_livro(self.projeto, cancelado=lambda: self._cancelar)
+        except Cancelou:
+            pass
+        except Exception:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("medir_o_livro", traceback.format_exc())
+        self.terminou.emit(self, medidas)
+
+
 class _SinaisPrevia(QObject):
     """Sinais de uma tarefa de prévia. Existe separado de _TarefaPrevia porque
     QRunnable nao e QObject e nao pode emitir sinal Qt sozinho."""

@@ -498,6 +498,10 @@ def test_pendencia_d2_corte_e_angulo_esperam_as_zonas_antigas(janela, pasta, mon
     tela.ir_para_pagina(0)
     if mudanca == "recorte_em_todas":
         janela.projeto.paginas[0].recorte = [0.05, 0.05, 0.9, 0.9]
+        # item 2.13 (20/10/2026): o "usar em todas" abre a janela "Em quais
+        # paginas?"; aqui ela responde com todas
+        monkeypatch.setattr(type(tela), "_escolher_paginas_do_corte",
+                            lambda self: [p.indice for p in self.projeto.paginas])
     antes = _preparo(janela, 0)
     feitas = len(janela.acoes.feitas)
     acoes[mudanca]()

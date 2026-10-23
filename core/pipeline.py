@@ -29,6 +29,7 @@ livros de 500 páginas a 400 DPI.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import logging
 import os
 import shutil
@@ -49,6 +50,8 @@ from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_9
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
 from core import revisar
 from core import claro_no_escuro, cores_scantailor
+from core import corte_pelo_conteudo   # item 2.5 (so com Projeto.cortar_pelo_conteudo)
+from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -541,10 +544,19 @@ def _preparar_metade_e_geometria(
     if geometria is None:
         geometria = _geometria(inteira, pagina, projeto, dpi=dpi)
     recorte, angulo = geometria
+    # item 2.5: com o livro em "cortar seguindo o conteudo", o corte do livro
+    # (do tamanho das outras paginas); fora disso, volta como esta
+    recorte = _corte_do_livro(folha, pagina, projeto, recorte, angulo, inteira)
+    # item 2.14: o que fica fora da pagina achada vira branco (so com a borda
+    # preta ligada e "pintar de branco"); None = nada a pintar
+    area = None if so_a_geometria else _area_que_fica(folha, pagina, projeto)
 
     if endireita_antes(projeto):
         img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
                                                           so_a_geometria)
+        if area is not None and img is not None:
+            # a area foi medida na pagina RETA, e o recorte e fracao dela
+            img = _pintar_na_cortada(img, area, tuple(recorte) if cortou else None)
         dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
         desenho = geometria_do_desenho(
             img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
@@ -555,6 +567,10 @@ def _preparar_metade_e_geometria(
         return img, desenho
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
+    if area is not None:
+        # item 2.14, ordem antiga: a area foi medida na pagina antes do corte
+        # (a `inteira`): pinta nela, e o corte e o giro levam junto
+        inteira = borda_preta.pintar_fora(inteira, area)
     img = inteira
     girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
     if recorte is not None:
@@ -650,6 +666,18 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
             # pagina tem sua propria sombra de lombada de um lado so
             automatico = detectar_bordas(base, dpi=dpi)
             recorte = automatico.tupla
+            if _corte_sugerido(projeto, pagina):
+                # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"),
+                # medido na pagina ainda torta (nesta ordem o giro vem depois
+                # do corte); a folga do giro entra abaixo, como no corte comum
+                medido = _medir_o_conteudo(base, dpi, dpi_do_scan, automatico.pecas, projeto,
+                                           base if _corta_pela_borda(projeto, pagina) else None)
+                if medidas is not None:
+                    medidas["conteudo"] = medido
+                proprio = medido.recorte_proprio() if _troca_o_corte(projeto, pagina) else None
+                if proprio is not None:
+                    automatico = Recorte(*proprio, pecas=automatico.pecas)
+                    recorte = automatico.tupla
         else:
             recorte = tuple(pagina.recorte)
 
@@ -774,8 +802,22 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
             # `como_veio` (conserto de 20/10/2026): a pergunta "ha o que
             # recortar?" e feita na pagina antes do giro, como na ordem
             # antiga. Arriscado: tirar (o Pesel 21 volta a sair cortado rente).
-            recorte = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None,
-                                      como_veio=em_cinza() if girar else None).tupla
+            comum = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None,
+                                    como_veio=em_cinza() if girar else None)
+            recorte = comum.tupla
+            if _corte_sugerido(projeto, pagina):
+                # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"), na
+                # pagina ja reta (a ordem dele); sem caixa (pagina em branco,
+                # sem a DLL) fica o comum
+                # a borda preta ve a pagina COLORIDA (a cor separa o fundo do
+                # scanner, neutro, de cartao ou capa escura) com a cunha preta
+                cunha_preta = (((rotacionar(base, angulo, fundo=0) if girar else base))
+                               if _corta_pela_borda(projeto, pagina) else None)
+                medido = _medir_o_conteudo(reta, dpi, dpi_do_scan, comum.pecas, projeto, cunha_preta)
+                if medidas is not None:
+                    medidas["conteudo"] = medido
+                if _troca_o_corte(projeto, pagina):
+                    recorte = medido.recorte_proprio() or recorte
     return recorte, angulo
 
 
@@ -867,16 +909,30 @@ _TRANCA_GEOMETRIAS = threading.Lock()
 MAX_GEOMETRIAS = 4096
 
 
-def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
-    """Tudo de que o corte e o angulo dependem. None se o arquivo do projeto
-    nao existe (projeto de teste, arquivo movido) - ai nada e guardado."""
+def _arquivo_do_projeto(projeto: Projeto):
+    """(caminho normalizado, os.stat) do PDF do projeto, ou None se ele nao
+    existe. Separado de _chave_da_geometria so para quem faz a chave de
+    muitas paginas de uma vez (item 2.5, tamanho_do_livro) consultar o disco
+    uma vez so."""
     try:
         # normcase: o mesmo PDF escrito com `\` ou `/`, ou com maiusculas
         # diferentes, da a mesma chave (bug de 29/09, projetos.mesmo_arquivo).
         caminho = os.path.normcase(os.path.abspath(projeto.caminho_entrada))
-        info = os.stat(caminho)
+        return caminho, os.stat(caminho)
     except (OSError, TypeError, ValueError):
         return None
+
+
+def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+                        arquivo=False):
+    """Tudo de que o corte e o angulo dependem. None se o arquivo do projeto
+    nao existe (projeto de teste, arquivo movido) - ai nada e guardado.
+    arquivo: o _arquivo_do_projeto ja consultado (False = consulta aqui)."""
+    if arquivo is False:
+        arquivo = _arquivo_do_projeto(projeto)
+    if arquivo is None:
+        return None
+    caminho, info = arquivo
     recorte = None if pagina.recorte is None else tuple(round(float(v), 6) for v in pagina.recorte)
     dividir = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
     return (
@@ -888,6 +944,11 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
         faixa_da_sobra(folha, pagina, projeto),        # item 2.1
         endireitar_scantailor.jeito_da_pagina(projeto, pagina),   # item 2.2
         ordem_do_livro(projeto),                       # item 2.2, G6
+        bool(getattr(projeto, "cortar_pelo_conteudo", False)),   # item 2.5
+        (borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))   # item 2.13
+         if getattr(projeto, "borda_preta", False) else None),
+        (borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))   # item 2.14
+         if getattr(projeto, "borda_preta", False) else None),
     )
 
 
@@ -921,14 +982,18 @@ def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projet
         if chave in _GEOMETRIAS:
             return
     dpi_do_scan = (_dpi_do_scan(doc, folha)
-                   if doc is not None and _usa_o_endireitar_do_scantailor(projeto, pagina) else None)
+                   if doc is not None and (_usa_o_endireitar_do_scantailor(projeto, pagina)
+                                           or _corte_sugerido(projeto, pagina)) else None)
     medidas: dict = {}
     geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina, projeto), pagina, projeto,
                            dpi=projeto.qualidade_dpi, dpi_do_scan=dpi_do_scan, medidas=medidas)
+    conteudo = medidas.pop("conteudo", None)              # item 2.5
     with _TRANCA_GEOMETRIAS:
         _GEOMETRIAS[chave] = geometria
         while len(_GEOMETRIAS) > MAX_GEOMETRIAS:
             _GEOMETRIAS.popitem(last=False)
+        if conteudo is not None:
+            _guardar_o_conteudo(chave, conteudo)
         if medidas:
             _ANGULOS_MEDIDOS[chave] = dict(medidas)
             while len(_ANGULOS_MEDIDOS) > MAX_GEOMETRIAS:
@@ -1039,6 +1104,501 @@ def acertar_alerta_do_endireitar(projeto: Projeto, pagina: ConfigPagina) -> None
     if (not projeto.endireitar or pagina.angulo_manual is not None
             or es.jeito_do_livro(projeto) != es.JEITO_SCANTAILOR):
         _anotar_contas_discordam(pagina, False)
+
+
+# ---------------------------------------------------------------------------
+# Item 2.5: o corte que segue o conteudo, como o ScanTailor (decisoes G8 e G9
+# de 05/10/2026, g8-moldura-tinta-fora e g9-pagina-muito-maior de 13/10; as
+# contas estao em core/corte_pelo_conteudo.py). SO com o livro em
+# Projeto.cortar_pelo_conteudo (desligado de fabrica): desligado, nada aqui e
+# chamado e o livro sai identico (tests/test_corte_pelo_conteudo_no_programa.py).
+#
+# Como funciona:
+#   1. _geometria mede a caixa do conteudo da pagina (na pagina reta, no
+#      livro novo; na pagina torta, no projeto antigo, onde o giro vem depois)
+#      e o corte guardado em _GEOMETRIAS passa a ser o "proprio" (a caixa + 1
+#      mm). _guardar_geometria guarda a medida em _CONTEUDOS e o tamanho do
+#      conteudo em _TAMANHOS (os dois na mesma chave de _GEOMETRIAS).
+#   2. tamanho_do_livro: a conta do ScanTailor (o maior conteudo do livro),
+#      com as paginas ja medidas nesta sessao; a muito maior fica de fora.
+#   3. _corte_do_livro (chamado por _preparar_metade_e_geometria, isto e, na
+#      previa e no PDF): alarga o corte proprio ate o tamanho do livro e poe ou
+#      tira os dois avisos (CORTE_DEIXOU_TINTA_FORA, PAGINA_MUITO_MAIOR).
+#   4. processar mede antes, numa passada, as paginas ainda nao medidas
+#      (medir_conteudo_do_livro), para o tamanho do livro ser o mesmo da
+#      primeira a ultima pagina do PDF. A tela pode chamar a mesma passada por
+#      tras, ao abrir o livro.
+# Guardado so na memoria, nesta sessao (como _GEOMETRIAS): nada muda no
+# arquivo do projeto alem dos dois campos novos (Projeto.cortar_pelo_conteudo
+# e ConfigPagina.alinhar_com_as_outras). Seguro esvaziar a qualquer hora (a
+# proxima previa e a passada medem de novo).
+# ---------------------------------------------------------------------------
+
+_CONTEUDOS: "OrderedDict[tuple, ConteudoMedido]" = OrderedDict()
+_TAMANHOS: "OrderedDict[tuple, tuple | None]" = OrderedDict()
+# Ate 21/10/2026 a passada media numa imagem de 150 DPI (metade do tempo);
+# agora mede na mesma resolucao da geracao (projeto.qualidade_dpi): a conta
+# do ScanTailor da caixas diferentes em resolucoes diferentes, e o tamanho do
+# livro mudava (verificador, Egenloff 1-14). Fica o nome, sem uso no codigo.
+DPI_DA_PASSADA = 150
+
+
+@dataclass(frozen=True)
+class ConteudoMedido:
+    """O que _geometria mediu do conteudo de uma pagina (item 2.5): a medida
+    do ScanTailor, as pecas de tinta do corte comum (em fracao da pagina
+    medida; para a folga do giro na ordem antiga) e as candidatas ao "ficou
+    de fora" (corte_pelo_conteudo.candidatas, medidas no corte proprio)."""
+
+    medida: "corte_pelo_conteudo.MedidaDoConteudo"
+    pecas: np.ndarray | None
+    candidatas: tuple
+    # item 2.13, "so o preto" sem o 2.5: o corte e a propria pagina achada
+    # (medida.limite), sem apertar no conteudo
+    so_o_limite: bool = False
+
+    def recorte_proprio(self) -> tuple[float, float, float, float] | None:
+        """O corte da pagina sozinha, em fracao; None = fica o corte comum.
+        Segue o conteudo (caixa + 1 mm, sem passar da pagina): o 2.5 e o
+        "ate a moldura". "So o preto" sozinho: a pagina sem a faixa preta
+        (sem faixa preta nenhuma, None: o corte comum, como hoje). Sem caixa
+        (pagina em branco) mas com a pagina achada: a pagina."""
+        m = self.medida
+        inteira = (0.0, 0.0, float(m.largura), float(m.altura))
+        if self.so_o_limite:
+            if m.limite is None or tuple(m.limite) == inteira:
+                return None
+            return corte_pelo_conteudo.em_fracao(m.limite, m.largura, m.altura)
+        caixa = corte_pelo_conteudo.caixa_do_corte(m)
+        if caixa is None:
+            if m.limite is not None and tuple(m.limite) != inteira:
+                return corte_pelo_conteudo.em_fracao(m.limite, m.largura, m.altura)
+            return None
+        return corte_pelo_conteudo.em_fracao(caixa, m.largura, m.altura)
+
+
+def _corta_pelo_conteudo(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """Esta pagina usa o corte do conteudo? So com o livro ligado, o cortar
+    ligado e o corte automatico (o corte a mao vale como esta)."""
+    return bool(getattr(projeto, "cortar_pelo_conteudo", False) and projeto.cortar_bordas
+                and pagina.recorte is None)
+
+
+def _corta_pela_borda(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """Item 2.13: esta pagina usa o corte sugerido pela borda preta? So com o
+    livro ligado (Projeto.borda_preta, desligado de fabrica), o cortar ligado
+    e o corte automatico (o corte a mao e a excecao por pagina)."""
+    return bool(getattr(projeto, "borda_preta", False) and projeto.cortar_bordas
+                and pagina.recorte is None)
+
+
+def _jeito_da_borda(projeto: Projeto) -> str | None:
+    """"ate_a_moldura", "so_o_preto" ou None (borda preta desligada)."""
+    if not getattr(projeto, "borda_preta", False):
+        return None
+    return borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))
+
+
+def _so_pinta(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """Item 2.14: a borda desta pagina e PINTADA de branco em vez de cortada,
+    e o corte fica o de sempre (o 2.5, se ligado junto, continua mandando no
+    corte)."""
+    return bool(_corta_pela_borda(projeto, pagina)
+                and borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))
+                == borda_preta.PINTAR)
+
+
+def _troca_o_corte(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O corte automatico desta pagina e trocado pelo medido (2.5, ou 2.13
+    cortando fora)? Pintando (2.14) sem o 2.5, o corte fica o comum."""
+    return _corta_pelo_conteudo(projeto, pagina) or (
+        _corta_pela_borda(projeto, pagina) and not _so_pinta(projeto, pagina))
+
+
+def _corte_sugerido(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O corte automatico desta pagina e um dos novos (2.5 ou 2.13)?"""
+    return _corta_pelo_conteudo(projeto, pagina) or _corta_pela_borda(projeto, pagina)
+
+
+def _segue_o_conteudo(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O corte desta pagina segue o impresso (2.5, ou 2.13 "ate a moldura")?
+    So ai vale o aviso do que ficou de fora (g8)."""
+    return _corta_pelo_conteudo(projeto, pagina) or (
+        _corta_pela_borda(projeto, pagina) and _jeito_da_borda(projeto) == borda_preta.ATE_A_MOLDURA)
+
+
+def _medida_da_pagina(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
+                      projeto: Projeto, com_a_cunha_preta: np.ndarray | None = None):
+    """(medida, so_o_limite) de `img` conforme as opcoes do livro:
+    - 2.13 "so o preto": a pagina sem a faixa preta (borda_preta.so_o_preto)
+      vira o limite; com o 2.5 junto, o conteudo e procurado dentro dele;
+      sozinho, o corte e o proprio limite (so_o_limite);
+    - 2.13 "ate a moldura": a mesma pagina do "so o preto" vira o limite e o
+      conteudo e procurado dentro dela (ContentBoxFinder do ScanTailor). Era a
+      busca da pagina do ScanTailor (PageFinder) ate 20/10/2026; trocada
+      porque no Pesel 21 (cartao marrom escuro em volta da gravura) ela
+      cortava o cartao, o titulo e a legenda, e nas cinco paginas que o
+      Samuel escolheu como alvo da borda preta (Antiphon 260 e 88, Camoes
+      104, Cursus 3, Matematica 32) a caixa do conteudo dava o mesmo com e
+      sem ela (relatorios/caixa-conteudo-impl/parte2-*.md);
+    - so o 2.5: o conteudo na imagem inteira (a busca da pagina desligada).
+    com_a_cunha_preta: a mesma pagina COLORIDA (a cor e o que separa o fundo
+    do scanner, cinza neutro, de um cartao ou capa escura; core/borda_preta)
+    e, no livro novo com a pagina girada, com a cunha das beiradas PRETA em
+    vez de branca: so para as contas da borda preta. Achado olhando o Righetti 55 (20/10/2026): com a cunha branca, o
+    "so o preto" parava na primeira linha (a cunha e clara) e nao tirava
+    nada. A cunha fica fora da folha escaneada, entao trata-la como fundo do
+    scanner e o certo. O 2.5 sozinho continua na pagina de sempre."""
+    jeito = _jeito_da_borda(projeto)
+    if jeito is not None and com_a_cunha_preta is not None:
+        img = com_a_cunha_preta
+    com_o_conteudo = bool(getattr(projeto, "cortar_pelo_conteudo", False))
+    if jeito is not None:
+        limite = borda_preta.so_o_preto(img)
+        if jeito == borda_preta.ATE_A_MOLDURA or com_o_conteudo:
+            return corte_pelo_conteudo.medir(img, dpi, dpi_do_scan, limite=limite), False
+        altura, largura = img.shape[:2]
+        return corte_pelo_conteudo.MedidaDoConteudo(largura, altura, None, None, None,
+                                                    "so o preto", limite), True
+    return corte_pelo_conteudo.medir(img, dpi, dpi_do_scan), False
+
+
+def _medir_o_conteudo(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
+                      pecas, projeto: Projeto | None = None,
+                      com_a_cunha_preta: np.ndarray | None = None) -> ConteudoMedido:
+    """A medida do conteudo de `img` (a pagina onde o corte vai ser feito) e as
+    candidatas ao "ficou de fora". Nunca levanta excecao (sem a DLL: sem
+    caixa, e quem chama fica com o corte comum). Sem `projeto`: so o 2.5."""
+    if projeto is None:
+        medida, so_o_limite = corte_pelo_conteudo.medir(img, dpi, dpi_do_scan), False
+    else:
+        medida, so_o_limite = _medida_da_pagina(img, dpi, dpi_do_scan, projeto, com_a_cunha_preta)
+    candidatas: tuple = ()
+    caixa = None if so_o_limite else corte_pelo_conteudo.caixa_do_corte(medida)
+    if caixa is not None and pecas is not None and len(pecas):
+        cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        candidatas = tuple(corte_pelo_conteudo.candidatas(caixa, pecas, cinza, medida.mm_por_ponto))
+    return ConteudoMedido(medida, None if pecas is None else np.asarray(pecas), candidatas,
+                          so_o_limite)
+
+
+def _guardar_o_conteudo(chave: tuple, conteudo: ConteudoMedido) -> None:
+    """Guarda a medida e o tamanho (chamar com _TRANCA_GEOMETRIAS presa)."""
+    _CONTEUDOS[chave] = conteudo
+    # O tamanho de uma pagina ja medido (pela passada, medir_conteudo_do_livro)
+    # NAO e trocado: conserto de 21/10/2026 (Egenloff 1-14 a 300 DPI, achado do
+    # verificador). A passada mede a DPI_DA_PASSADA e a geometria a 300; a
+    # conta do ScanTailor decide a beirada um pouco diferente em cada uma
+    # (Egenloff 5: 380 x 358 mm), e a medida nova mudava o tamanho do livro no
+    # meio da geracao (paginas 3 e 4 com 382 mm, as outras 360). Arriscado:
+    # voltar a sobrescrever.
+    _TAMANHOS.setdefault(chave, conteudo.medida.tamanho_mm
+                         if conteudo.medida.tem_conteudo and not conteudo.so_o_limite else None)
+    for guardados in (_CONTEUDOS, _TAMANHOS):
+        while len(guardados) > MAX_GEOMETRIAS:
+            guardados.popitem(last=False)
+
+
+def _paginas_do_corte_do_livro(projeto: Projeto) -> list[ConfigPagina]:
+    """As paginas que entram na conta do tamanho do livro: as que vao para o
+    PDF, com o corte automatico."""
+    return [p for p in projeto.paginas_ativas
+            if p.recorte is None and 0 <= p.folha < len(projeto.folhas)]
+
+
+def tamanho_do_livro(projeto: Projeto) -> "corte_pelo_conteudo.TamanhoDoLivro | None":
+    """O tamanho do livro (G9, a conta do ScanTailor) com as paginas ja
+    medidas nesta sessao; None com a opcao desligada ou sem medida. A pagina
+    muito maior fica de fora sozinha (g9), menos a que o Kaique pos de volta
+    (ConfigPagina.alinhar_com_as_outras True); a que ele tirou (False) nunca
+    entra."""
+    if not getattr(projeto, "cortar_pelo_conteudo", False) or not projeto.cortar_bordas:
+        return None
+    tamanhos, dentro, fora = {}, [], []
+    arquivo = _arquivo_do_projeto(projeto)
+    for pagina in _paginas_do_corte_do_livro(projeto):
+        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto, arquivo)
+        if chave is None:
+            continue
+        with _TRANCA_GEOMETRIAS:
+            if chave not in _TAMANHOS:
+                continue
+            tamanhos[pagina.indice] = _TAMANHOS[chave]
+        alinhar = getattr(pagina, "alinhar_com_as_outras", None)
+        if alinhar is True:
+            dentro.append(pagina.indice)
+        elif alinhar is False:
+            fora.append(pagina.indice)
+    return corte_pelo_conteudo.tamanho_do_livro(tamanhos, sempre_dentro=dentro, sempre_fora=fora)
+
+
+def _anotar(pagina: ConfigPagina, codigo: str, tem: bool) -> None:
+    """Poe ou tira um aviso, do jeito de _anotar_contas_discordam: ao POR, a
+    pagina volta a "nao conferida"."""
+    esta = codigo in pagina.alertas
+    if tem and not esta:
+        pagina.alertas.insert(0, codigo)
+        pagina.revisada = False
+    elif not tem and esta:
+        pagina.alertas = [a for a in pagina.alertas if a != codigo]
+
+
+def _caixa_do_livro(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
+    """(ConteudoMedido, caixa do corte do livro em pontos, livro) desta pagina,
+    ou None quando ela nao usa o corte que segue o conteudo (2.5, ou 2.13
+    "ate a moldura") ou ainda nao foi medida. Sem o 2.5, livro e None (sem
+    tamanho do livro: so a pagina)."""
+    if not _segue_o_conteudo(projeto, pagina):
+        return None
+    chave = _chave_da_geometria(folha, pagina, projeto)
+    if chave is None:
+        return None
+    with _TRANCA_GEOMETRIAS:
+        medido = _CONTEUDOS.get(chave)
+    if medido is None or medido.so_o_limite or not medido.medida.disponivel:
+        return None
+    livro = tamanho_do_livro(projeto) if _corta_pelo_conteudo(projeto, pagina) else None
+    alinhar = getattr(pagina, "alinhar_com_as_outras", None)
+    if not medido.medida.tem_conteudo:
+        # Pagina sem conteudo (verso em branco, so um carimbo claro): do
+        # tamanho do livro, no meio da pagina, como o ScanTailor
+        # (page_layout/Utils.cpp, adaptContentRect: conteudo vazio vira um
+        # ponto no centro). Sem o livro (2.5 desligado): o corte comum.
+        # Conserto de 21/10/2026 (Egenloff 1-14: os versos em branco saiam
+        # maiores que as outras paginas).
+        if livro is None or alinhar is False:
+            return None
+        caixa = corte_pelo_conteudo.caixa_vazia(medido.medida, livro)
+        return (medido, caixa, livro) if caixa is not None else None
+    # A pagina "muito maior" (g9) fica fora da CONTA do tamanho, mas nunca sai
+    # MENOR que o livro: caixa_do_corte so alarga, entao ela cresce ate o livro
+    # no lado em que e menor e fica do tamanho dela no lado em que e maior.
+    # Conserto de 21/10/2026 (verificador, Egenloff pagina 6: o bloco de texto
+    # era mais largo que os enfeites das outras, ela ficava fora da conta e
+    # saia uma tira de 253 x 139 mm). So a que o Kaique tirou da conta
+    # (alinhar_com_as_outras False) sai do tamanho dela, como no ScanTailor.
+    sozinha = livro is None or alinhar is False
+    caixa = corte_pelo_conteudo.caixa_do_corte(medido.medida, None if sozinha else livro)
+    if caixa is not None and not sozinha:
+        # o corte do tamanho do livro nao parte uma peca impressa ao meio
+        # (conserto de 21/10/2026, Egenloff 3 com as duas opcoes)
+        caixa = corte_pelo_conteudo.sem_partir(
+            caixa, medido.candidatas, corte_pelo_conteudo.caixa_do_corte(medido.medida), medido.medida)
+    return medido, caixa, livro
+
+
+def _corte_do_livro(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
+                    recorte, angulo: float, inteira: np.ndarray):
+    """O corte que vale nesta pagina (chamado por _preparar_metade_e_geometria
+    com o corte da geometria). Fora do item 2.5, devolve `recorte` como esta
+    e so tira os avisos dele, se sobraram (opcao desligada, corte a mao).
+    Com o item 2.5 e a pagina medida: o corte do tamanho do livro, com a folga
+    do giro na ordem antiga (como o corte comum), e poe ou tira os avisos."""
+    achado = _caixa_do_livro(folha, pagina, projeto)
+    if achado is None:
+        if pagina.alertas and not _segue_o_conteudo(projeto, pagina):
+            _anotar(pagina, analise.CORTE_DEIXOU_TINTA_FORA, False)
+            _anotar(pagina, analise.PAGINA_MUITO_MAIOR, False)
+        return recorte
+    medido, caixa, livro = achado
+    _anotar(pagina, analise.CORTE_DEIXOU_TINTA_FORA,
+            bool(corte_pelo_conteudo.tiradas_do_corte(caixa, medido.candidatas)))
+    _anotar(pagina, analise.PAGINA_MUITO_MAIOR,
+            bool(livro is not None and pagina.indice in livro.muito_maiores
+                 and getattr(pagina, "alinhar_com_as_outras", None) is not True))
+    if not _troca_o_corte(projeto, pagina):
+        return recorte                      # item 2.14: pinta, nao corta
+    final = corte_pelo_conteudo.em_fracao(caixa, medido.medida.largura, medido.medida.altura)
+    if not endireita_antes(projeto) and projeto.endireitar and abs(angulo) >= ANGULO_MINIMO:
+        final = alargar_para_o_giro(Recorte(*final, pecas=medido.pecas), angulo, inteira).tupla
+    return final
+
+
+def _area_que_fica(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
+    """Item 2.14: o que NAO e pintado de branco, (x0, y0, x1, y1) em fracao
+    da pagina medida (a reta, no livro novo; a inteira antes do corte, no
+    projeto antigo): "so o preto" = a pagina achada; "ate a moldura" = o
+    impresso + 1 mm, dentro dela. None quando nao pinta (opcao desligada,
+    cortar fora, corte a mao, pagina ainda nao medida, nada a pintar)."""
+    if not _so_pinta(projeto, pagina):
+        return None
+    chave = _chave_da_geometria(folha, pagina, projeto)
+    if chave is None:
+        return None
+    with _TRANCA_GEOMETRIAS:
+        medido = _CONTEUDOS.get(chave)
+    if medido is None:
+        return None
+    m = medido.medida
+    area = None
+    if not medido.so_o_limite:
+        area = corte_pelo_conteudo.caixa_do_corte(m)
+    if area is None:
+        area = m.limite
+    if area is None or not m.largura or not m.altura:
+        return None
+    fr = (area[0] / m.largura, area[1] / m.altura, area[2] / m.largura, area[3] / m.altura)
+    if fr[0] <= 0 and fr[1] <= 0 and fr[2] >= 1 and fr[3] >= 1:
+        return None
+    return fr
+
+
+def _pintar_na_cortada(img: np.ndarray, area, recorte) -> np.ndarray:
+    """Pinta de branco, na pagina ja cortada `img`, o que fica fora de `area`
+    (fracao da pagina antes do corte); `recorte` (x, y, largura, altura em
+    fracao) e o corte que foi aplicado, None = nenhum."""
+    x, y, w, h = recorte if recorte is not None else (0.0, 0.0, 1.0, 1.0)
+    if w <= 0 or h <= 0:
+        return img
+    na_cortada = ((area[0] - x) / w, (area[1] - y) / h, (area[2] - x) / w, (area[3] - y) / h)
+    return borda_preta.pintar_fora(img, na_cortada)
+
+
+def corte_alargado(projeto: Projeto, pagina: ConfigPagina) -> tuple[float, float, float, float] | None:
+    """O corte alargado desta pagina (g8: "mostrar ele alargado com o que foi
+    tirado"), em fracao, para a tela mostrar e o botao do aviso gravar como
+    corte a mao. None quando nao ha o que alargar (nada ficou de fora, a
+    pagina nao usa o corte do conteudo ou ainda nao foi medida). Na ordem
+    antiga, sem a folga do giro (o corte a mao vale como esta)."""
+    if not 0 <= pagina.folha < len(projeto.folhas):
+        return None
+    achado = _caixa_do_livro(projeto.folhas[pagina.folha], pagina, projeto)
+    if achado is None:
+        return None
+    medido, caixa, _livro = achado
+    tiradas = corte_pelo_conteudo.tiradas_do_corte(caixa, medido.candidatas)
+    if not tiradas:
+        return None
+    m = medido.medida
+    alargada = corte_pelo_conteudo.alargar(caixa, tiradas, m.mm_por_ponto, m.largura, m.altura)
+    return corte_pelo_conteudo.em_fracao(alargada, m.largura, m.altura)
+
+
+def paginas_sem_medida_do_conteudo(projeto: Projeto) -> list[ConfigPagina]:
+    """As paginas que a passada ainda precisa medir (vazio com a opcao
+    desligada)."""
+    if not getattr(projeto, "cortar_pelo_conteudo", False) or not projeto.cortar_bordas:
+        return []
+    faltam = []
+    arquivo = _arquivo_do_projeto(projeto)
+    for pagina in _paginas_do_corte_do_livro(projeto):
+        chave = _chave_da_geometria(projeto.folhas[pagina.folha], pagina, projeto, arquivo)
+        if chave is None:
+            continue
+        with _TRANCA_GEOMETRIAS:
+            if chave in _TAMANHOS:
+                continue
+        faltam.append(pagina)
+    return faltam
+
+
+def medir_conteudo_do_livro(projeto: Projeto, doc=None, progresso: Progresso = None,
+                            cancelado: Cancelado = None) -> int:
+    """A passada do item 2.5: mede o tamanho do conteudo das paginas ainda
+    nao medidas, para o tamanho do livro valer em todas. Devolve quantas mediu.
+
+    Uma folha por vez na memoria, desenhada na resolucao do PDF
+    (projeto.qualidade_dpi, a mesma da geometria). O angulo e o
+    que ja vale na pagina (angulo_da_pagina); se ainda nao foi medido, e
+    medido aqui pela mesma conta (_geometria sem o corte). progresso(feitas,
+    total, texto) depois de cada pagina; cancelado() e olhado entre uma e
+    outra (levanta Cancelou). No fim poe ou tira o aviso PAGINA_MUITO_MAIOR em
+    todas. Sem a opcao do livro, nao faz nada. Custo: de 0,3 a 1 s por pagina
+    comum (a folha grande do Antiphon, uns 2 s).
+    Arriscado: medir aqui em outra pagina que nao a do corte (a girada de 90,
+    dividida e, no livro novo, endireitada), ou guardar em outra chave."""
+    faltam = paginas_sem_medida_do_conteudo(projeto)
+    if not faltam:
+        _avisos_da_folha_muito_maior(projeto)
+        return 0
+    abriu = doc is None
+    if abriu:
+        doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        medidas = 0
+        folha_atual, img_folha = None, None
+        for feitas, pagina in enumerate(faltam):
+            _checar(cancelado)
+            _avisar(progresso, feitas, len(faltam),
+                    f"Medindo o tamanho do livro: página {feitas + 1} de {len(faltam)}")
+            folha = projeto.folhas[pagina.folha]
+            if folha_atual != folha.indice:
+                img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+                folha_atual = folha.indice
+            # VELOCIDADE (22/10/2026): a passada guarda a geometria INTEIRA da
+            # pagina (angulo, corte comum e a medida do conteudo), pela mesma
+            # funcao que a geracao do PDF e a previa usam (_guardar_geometria,
+            # mesma imagem, mesmo DPI). Antes ela fazia a sua propria medida e
+            # jogava o resto fora, e a geracao calculava tudo de novo na mesma
+            # pagina: o angulo e a caixa do ScanTailor eram feitos duas vezes.
+            # O tamanho guardado e o da propria medida que corta (antes eram
+            # duas contas que tinham de dar o mesmo). Arriscado: voltar a
+            # medir aqui por outra conta.
+            _guardar_geometria(folha, pagina, projeto, img_folha, doc)
+            chave = _chave_da_geometria(folha, pagina, projeto)
+            with _TRANCA_GEOMETRIAS:
+                ja_tem = chave is None or chave in _TAMANHOS
+            if ja_tem:
+                medidas += 1
+                continue
+            # Reserva (nao deveria acontecer: a geometria ja estava guardada
+            # de antes sem a medida do conteudo): a medida so do tamanho.
+            # o MESMO desenho e o MESMO DPI da geometria (_guardar_geometria):
+            # a conta do ScanTailor da caixas diferentes em resolucoes
+            # diferentes (contracapa do Egenloff: 276 mm a 300 DPI, <= 252 a
+            # 150), e o tamanho do livro tem de ser o das caixas que cortam
+            dpi = float(projeto.qualidade_dpi)
+            dpi_do_scan = _dpi_do_scan(doc, folha)
+            base = preparar_para_recorte(img_folha, folha, pagina, projeto)
+            cinza = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
+            cunha_preta = base if _corta_pela_borda(projeto, pagina) else None
+            if endireita_antes(projeto) and projeto.endireitar:
+                angulo = angulo_da_pagina(projeto, pagina)
+                if angulo is None:
+                    angulo = _geometria(base, pagina, projeto, dpi=dpi, dpi_do_scan=dpi_do_scan,
+                                        com_o_corte=False)[1]
+                if abs(float(angulo or 0.0)) >= ANGULO_MINIMO:
+                    if _corta_pela_borda(projeto, pagina):
+                        cunha_preta = rotacionar(base, float(angulo), fundo=0)
+                    cinza = rotacionar(cinza, float(angulo))
+            medida, _so = _medida_da_pagina(cinza, dpi, dpi_do_scan, projeto, cunha_preta)
+            chave = _chave_da_geometria(folha, pagina, projeto)
+            if chave is not None:
+                with _TRANCA_GEOMETRIAS:
+                    if chave not in _TAMANHOS:
+                        _TAMANHOS[chave] = medida.tamanho_mm if medida.tem_conteudo else None
+                        while len(_TAMANHOS) > MAX_GEOMETRIAS:
+                            _TAMANHOS.popitem(last=False)
+                medidas += 1
+        _avisar(progresso, len(faltam), len(faltam), "Tamanho do livro medido")
+        _avisos_da_folha_muito_maior(projeto)
+        return medidas
+    finally:
+        if abriu:
+            doc.close()
+
+
+def _avisos_da_folha_muito_maior(projeto: Projeto) -> None:
+    """Poe o aviso PAGINA_MUITO_MAIOR nas paginas que ficaram de fora da conta
+    do tamanho do livro, e tira das outras (as que a passada mediu e que a
+    previa ainda nao desenhou tambem ficam sabendo)."""
+    livro = tamanho_do_livro(projeto)
+    fora = livro.muito_maiores if livro is not None else frozenset()
+    for pagina in projeto.paginas:
+        _anotar(pagina, analise.PAGINA_MUITO_MAIOR,
+                pagina.indice in fora and getattr(pagina, "alinhar_com_as_outras", None) is not True
+                and _corta_pelo_conteudo(projeto, pagina))
+
+
+def acertar_avisos_do_corte(projeto: Projeto) -> None:
+    """Tira os dois avisos do item 2.5 de onde nao valem mais (a opcao foi
+    desligada, a pagina ganhou corte a mao), sem desenhar nada. Onde ainda
+    podem valer, a previa acerta. Para a tela chamar ao mudar a opcao."""
+    for pagina in projeto.paginas:
+        if not _segue_o_conteudo(projeto, pagina):
+            _anotar(pagina, analise.CORTE_DEIXOU_TINTA_FORA, False)
+        if not _corta_pelo_conteudo(projeto, pagina):
+            _anotar(pagina, analise.PAGINA_MUITO_MAIOR, False)
 
 
 def _precisa_de_geometria(pagina: ConfigPagina, projeto: Projeto) -> bool:
@@ -1475,6 +2035,11 @@ def acertar_alertas_do_fundo(projeto: Projeto,
         acertar_alerta_do_endireitar(projeto, pagina)
         # e o aviso da "forca do preto sozinha" segue o reforco (12/10/2026)
         acertar_aviso_do_reforco(projeto, pagina)
+        # e os dois avisos do corte pelo conteudo (item 2.5), idem
+        if not _segue_o_conteudo(projeto, pagina):
+            _anotar(pagina, analise.CORTE_DEIXOU_TINTA_FORA, False)
+        if not _corta_pelo_conteudo(projeto, pagina):
+            _anotar(pagina, analise.PAGINA_MUITO_MAIOR, False)
         if not usa_tirar_fundo(projeto, pagina):
             _anotar_conferir(pagina, False)
             continue
@@ -2896,6 +3461,11 @@ def processar(
 
     doc = abrir_pdf(projeto.caminho_entrada)
     try:
+        # Item 2.5: com "cortar seguindo o conteudo", o tamanho do livro tem de
+        # estar medido antes da primeira pagina (senao a primeira e a ultima
+        # sairiam de tamanhos diferentes). Desligado: nao faz nada.
+        if getattr(projeto, "cortar_pelo_conteudo", False):
+            medir_conteudo_do_livro(projeto, doc, progresso, cancelado)
         with EscritorPDF(destino) as escritor:
             try:
                 _escrever_as_paginas(projeto, doc, ativas, escritor, progresso, cancelado)
@@ -3093,7 +3663,19 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     if projeto.endireitar:
         partes.append("endireitar as tortas")
     if projeto.cortar_bordas:
-        partes.append("cortar as bordas")
+        # itens 2.5, 2.13 e 2.14 (achado do verificador, 21/10/2026: a frase
+        # nao dizia nada das opcoes novas)
+        corte = "cortar as bordas"
+        if getattr(projeto, "borda_preta", False):
+            jeito = borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))
+            fazer = borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))
+            ate = "até o que está impresso" if jeito == borda_preta.ATE_A_MOLDURA else "só o preto"
+            corte += (f", tirando a borda preta do scanner ({ate})" if fazer == borda_preta.CORTAR_FORA
+                      else f", pintando de branco a borda preta do scanner ({ate})")
+        if getattr(projeto, "cortar_pelo_conteudo", False):
+            corte += (", seguindo o que está impresso, com todas as páginas do tamanho "
+                      "da maior")
+        partes.append(corte)
     comum = projeto.limpar and projeto.filtro_padrao not in (ORIGINAL, TIRAR_FUNDO)
     if projeto.limpar and projeto.filtro_padrao == TIRAR_FUNDO:
         if projeto.tem_camadas:

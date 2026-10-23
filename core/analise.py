@@ -89,6 +89,19 @@ CONTAS_DO_ENDIREITAR_DISCORDAM = "contas_do_endireitar_discordam"
 # analise, depois de medir todas as paginas (core.pipeline.analisar). Por
 # pagina: nunca vira caracteristica do livro.
 ANGULO_DIFERENTE_DAS_OUTRAS = "angulo_diferente_das_outras"
+# Item 2.5 (decisao g8-moldura-tinta-fora do Samuel, 13/10/2026: "Só avisa" +
+# "ele avisa e da opção e de mudar o corte e mostrar ele alargado com o que foi
+# tirado."): no livro com "cortar seguindo o conteudo"
+# (Projeto.cortar_pelo_conteudo), o corte do ScanTailor deixou de fora um
+# pedaco impresso (moldura atravessada, numero da pagina sozinho no pe).
+# Quem poe e tira: core.pipeline, quando a pagina e desenhada
+# (_corte_do_livro), como o CONTAS_DO_ENDIREITAR_DISCORDAM.
+CORTE_DEIXOU_TINTA_FORA = "corte_deixou_tinta_fora"
+# Item 2.5 (decisao g9-pagina-muito-maior, 13/10/2026: "O programa deixa essa
+# folha de fora sozinho, e avisa"): a pagina e muito maior que as outras e
+# ficou fora da conta do tamanho do livro (sai no tamanho dela). Quem poe e
+# tira: core.pipeline (_corte_do_livro e medir_conteudo_do_livro).
+PAGINA_MUITO_MAIOR = "pagina_muito_maior"
 
 
 @dataclass(frozen=True)
@@ -250,6 +263,27 @@ ALERTAS: dict[str, Alerta] = {
         "nesta página. Confira com a ferramenta Endireitar e escolha a conta que deixou "
         "o texto reto.",
         "está bom assim", "revisar",
+    ),
+    # Item 2.5, g8. O botao troca o corte desta pagina pelo corte alargado
+    # (core.pipeline.corte_alargado), que passa a valer como corte a mao; da
+    # para desfazer. "Mudar o corte" e a ferramenta Cortar, como sempre.
+    # Seguro mudar: os textos.
+    CORTE_DEIXOU_TINTA_FORA: Alerta(
+        CORTE_DEIXOU_TINTA_FORA, "Corte deixou algo de fora",
+        "O corte que segue o conteúdo deixou de fora um pedaço impresso desta "
+        "página (moldura, título, número da página ou carimbo). Confira: dá para "
+        "usar o corte alargado, que pega o que ficou de fora, ou mudar o corte.",
+        "usar o corte alargado", "corte_alargado",
+    ),
+    # Item 2.5, g9. O botao poe a pagina de volta na conta do tamanho do livro
+    # (ConfigPagina.alinhar_com_as_outras = True). Como ela sai na impressao
+    # ainda e pergunta aberta (g9-folha-maior-impressao). Seguro mudar: os textos.
+    PAGINA_MUITO_MAIOR: Alerta(
+        PAGINA_MUITO_MAIOR, "Página muito maior",
+        "Esta página é bem maior que as outras do livro (uma tabela dobrável, por "
+        "exemplo). Ela ficou fora da conta do tamanho do livro e sai no tamanho dela, "
+        "para não deixar todas as outras grandes demais.",
+        "deixar do tamanho das outras", "alinhar_com_as_outras",
     ),
     LOMBADA_INCERTA: Alerta(
         LOMBADA_INCERTA, "Lombada incerta",
