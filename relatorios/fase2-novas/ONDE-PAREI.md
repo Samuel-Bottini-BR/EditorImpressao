@@ -233,7 +233,7 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
   - Preto e branco: quase igual nas duas; mas o papel da página do Preto e branco traz o contorno preto que o filtro
     pôs em volta da letra (pergunta 10).
   - Painel (`antes_painel_de_fabrica.png`, `depois_painel_de_fabrica.png`, `depois_painel_papel_da_pagina.png`).
-- **Velocidade:** filtro do GitHub `39876068685` (`639136a` → `b0af839`; o `3e95076` só muda a tela), rodando.
+- **Velocidade:** filtro do GitHub `39876068685` (`639136a` → `b0af839`; o `3e95076` só muda a tela): **"igual (dentro do vai-e-vem)"** - abrir 40,0 → 39,7 s (−0,8%); trocar de página 3,54 → 3,55 s (+0,1%); Mágico pro 47,5 → 47,5 s (−0,1%); Preto e branco 28,8 → 28,7 s (−0,3%).
 - **Suíte do GitHub** `39877466484` (`4c4cc52`): 2195 passaram, 0 falharam; botões 234 ações, 0 falhas.
 
 ## Perguntas para o Samuel (via gerente)
