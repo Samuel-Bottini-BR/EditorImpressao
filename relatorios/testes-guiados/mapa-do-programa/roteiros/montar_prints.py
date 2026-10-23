@@ -102,10 +102,10 @@ numerar_coluna("p3-01-conferir.png", (0, 50, 56, 540), [73, 113, 153, 208, 248, 
                "4 Retângulo [R] (e Oval [O]) · 5 Laço [L] (e Ponto a ponto [P]) · 6 Pincel [B] · 7 Varinha mágica [V] "
                "(e Pegar tudo desta cor [C]) · 8 Mover e mudar o tamanho da área [A] · 9 Zoom [Z] · 10 Mão [E] · "
                "11 Os quatro filtros. O nome só aparece ao parar o mouse em cima.")
-numerar_coluna("p3-01-conferir.png", (1866, 50, 1920, 320), [70, 120, 163, 209, 254, 299],
+numerar_coluna("p3-01-conferir.png", (1866, 50, 1920, 320), [120, 163, 209, 254, 299],
                "13-coluna-da-direita.jpg",
-               "Coluna da direita, de cima para baixo: 1 seta (esconde os ícones) · 2 Para revisar (com o número de "
-               "páginas com dúvida) · 3 Automático · 4 Propriedades · 5 Filtro da página · 6 Histórico. "
+               "Coluna da direita, de cima para baixo (a seta \"»\" no alto esconde os ícones): 1 Para revisar (com o número "
+               "de páginas com dúvida) · 2 Automático · 3 Propriedades · 4 Filtro da página · 5 Histórico. "
                "Um clique abre o painel; outro clique no mesmo ícone fecha.")
 for n, (bruto, leg) in enumerate([
         ("p3-02-ferramenta-dividir.png", "Dividir a folha (1º ícone da esquerda): a linha azul \"arraste\" é onde a folha "
@@ -220,12 +220,24 @@ r("33-ajuda.jpg", "p5-02-ajuda.png", None,
   "\"Ajuda\" (tela inicial) ou Ajuda > Lista de atalhos (F1): uma caixinha que só diz \"O que dá para fazer, e por "
   "qual tecla:\". A lista só aparece clicando em \"Show Details...\" (em inglês).", largura=400)
 r("34-luz-mais-ajustes.jpg", "p5-04-filtro-pb-mais-ajustes.png", (1490, 48, 1866, 1000),
-  "Onde ficou a Luz: painel \"Filtro da página\" (5º ícone da direita) > parte \"Mais ajustes\" (abre clicando na "
+  "Onde ficou a Luz: painel \"Filtro da página\" (4º ícone da direita) > parte \"Mais ajustes\" (abre clicando na "
   "seta). Só aparece com Preto e branco, Melhorar ou Mágico pro (no Original não há \"Mais ajustes\"). A Luz é a "
   "última linha: \"Igualar a luz\", \"Suavizar\" e \"Tirar o chuvisco\", com os nomes cortados (\"Igual\", \"Suav\", "
   "\"Tirar o ch\").", [((1515, 755, 1830, 800), "Luz")], largura=420)
 r("35-area-propriedades.jpg", "p5-05-propriedades-marcar.png", (1490, 48, 1866, 1000),
   "Onde ficou a \"Área\": com uma ferramenta de marcar (ex.: Retângulo, 4º ícone da esquerda), painel "
-  "\"Propriedades\" (4º ícone da direita), lá no fim, depois de \"Marcar como\", \"Marcação desta página\" e "
+  "\"Propriedades\" (3º ícone da direita), lá no fim, depois de \"Marcar como\", \"Marcação desta página\" e "
   "\"Foto\": \"Mostrar as áreas achadas\" e os botões da área. Precisa rolar o painel para ver.",
   [((1500, 915, 1840, 1000), "Área")], largura=420)
+
+# ---------------------------------------------------------------- (a) o automático
+r("a-rodar-o-automatico-leva-aqui.jpg", "p2-06-depois-do-rodar-o-automatico.png", (0, 0, 1920, 1000),
+  "(a) Depois do clique em \"Rodar o automático...\" (livro aberto): o programa vai para a tela \"Marque o que você "
+  "quer fazer\" deste livro. Não roda nada sozinho; quem faz o programa trabalhar é o \"Conferir\" (6).",
+  [((1714, 913, 1862, 972), "6")])
+r("a-mudou-e-nao-valeu.jpg", "p2-07-conferir-de-fabrica-com-dividir.png", (0, 0, 1920, 1000),
+  "(a) Cuidado: neste livro já conferido uma vez (só Dividir + Limpar), marquei também Endireitar e Cortar e cliquei "
+  "\"Conferir\". A frase dizia \"vou dividir, endireitar e cortar\", mas a tela de conferir voltou igual: sem os "
+  "ícones de Cortar e Endireitar na coluna da esquerda e com as mesmas 10 dúvidas. É o defeito de 29/09 da Lista de "
+  "bugs (o trabalho salvo volta por cima das caixinhas).",
+  [((2, 55, 54, 540), ""), ((1868, 90, 1918, 135), "")])

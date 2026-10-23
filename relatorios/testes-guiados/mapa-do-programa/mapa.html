@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa do programa</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Mapa do programa — Editor de Impressão</h1>
+<p>Para a gerente guiar o Samuel nas sessões de teste, uma instrução por vez, e para ele ensinar o Kaique.
+Feito em 23/10/2026 pelo verificador, com a <strong>janela de verdade</strong> (ramo <code>fase-1</code> em <code>5535187</code>, já com a Fase 2),
+aberta fora da tela do Samuel, com uma pasta de dados separada (nada dos livros, receitas ou configurações dele
+foi tocado). Livro do percurso: <strong>"La vida eterna y La profundidad del alma.pdf"</strong> (180 folhas, o mesmo da sessão 0),
+copiado para a pasta de trabalho; o original não foi aberto pelo programa.</p>
+<p>Como foi feito: os cliques nos botões que o Samuel clica (caixinhas, "Conferir", ícones das duas colunas, "está
+certo", "próxima dúvida", "Confirmar e processar", "Processar", partes das Configurações) foram cliques do Windows;
+a barra de espaço e o Tab foram teclas do Windows. Os prints foram tirados da janela pelo Windows. Os nomes entre aspas
+são os que aparecem na tela, copiados da janela (não da memória do código). A janela tinha 1536 x 800 pontos, o
+tamanho da tela do Samuel com a barra de tarefas.</p>
+<p>Cada parte tem: <strong>o print legendado</strong>, <strong>o nome na tela</strong>, <strong>onde fica</strong>, <strong>o que faz</strong> e, separado, <strong>pontos
+confusos</strong>. As respostas às três perguntas (a, b, c) estão logo abaixo, antes do mapa.</p>
+<hr />
+<h2>Respostas rápidas</h2>
+<h3>(a) Onde está o "modo automático" e como chegar nele</h3>
+<p><strong>Não existe um botão que "rode o automático".</strong> O que o programa faz sozinho é escolhido na tela "Marque o que você
+quer fazer" e começa quando se clica <strong>"Conferir"</strong>: ele olha o livro inteiro ("Olhando o livro...", uns 30 a 45
+segundos neste livro) e já decide sozinho onde dividir, quanto girar, onde cortar e qual filtro usar. Depois disso,
+o Kaique só confere as páginas com dúvida e clica "Confirmar e processar". Se ninguém mexer em nada, sai como o
+programa decidiu.</p>
+<p>Há três lugares com a palavra "automático", e nenhum deles roda nada:</p>
+<ol>
+<li><strong>"Rodar o automático..."</strong> — botão da segunda linha do livro aberto (tela inicial &gt; um clique no cartão do livro).
+   Ele só leva para a tela "Marque o que você quer fazer" deste livro. Caminho: tela inicial → clique no cartão → "Rodar
+   o automático..." → marcar as caixinhas → "Conferir".</li>
+<li><strong>Painel "Automático"</strong> — 2º ícone da coluna da direita (logo abaixo do triângulo do "Para revisar"), na tela de conferir. Só <strong>mostra</strong> quais etapas estão
+   ligadas neste livro (Dividir, Endireitar, Cortar, Limpar, Montar cadernos) e tem o botão "Voltar para as opções".
+   Não tem botão de rodar e as etapas não são de clicar.</li>
+<li><strong>"Jeito do preto e branco: Automático"</strong> — dentro de "Mais ajustes", no painel Filtro da página. É outra coisa
+   (a conta do Preto e branco).</li>
+</ol>
+<p><img alt="" src="prints/a-rodar-o-automatico-leva-aqui.jpg" /></p>
+<p><img alt="" src="prints/04-livro-aberto.jpg" /></p>
+<p><img alt="" src="prints/18-paineis-da-direita.jpg" /></p>
+<p><strong>Cuidado achado no caminho (defeito já registrado em 29/09 na Lista de bugs, ainda aberto):</strong> num livro que já
+passou pelo "Conferir" uma vez, voltar pelo "Rodar o automático...", marcar mais caixinhas (ex.: Endireitar e Cortar)
+e clicar "Conferir" <strong>não vale</strong>: a frase de baixo diz que vai endireitar e cortar, mas a tela de conferir volta igual,
+sem as ferramentas novas. Só muda se o número de páginas mudar (ex.: Dividir). Para o teste, usar sempre um livro
+novo ou "começar de novo" no menu do cartão.</p>
+<p><img alt="" src="prints/a-mudou-e-nao-valeu.jpg" /></p>
+<h3>(b) Achado 0-4: por que só dois ícones na coluna da esquerda</h3>
+<p>A coluna da esquerda só mostra as ferramentas das etapas marcadas. Reproduzi cinco combinações, cada uma num livro
+novo:</p>
+<table>
+<thead>
+<tr>
+<th>Caixinhas marcadas</th>
+<th>Ícones na coluna da esquerda</th>
+<th>Páginas com dúvida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dividir + Limpar (Cortar e Endireitar desmarcadas)</td>
+<td>9: Dividir, Retângulo, Laço, Pincel, Varinha, Mover a área, Zoom, Mão, Os quatro filtros</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Dividir + Cortar</td>
+<td>2: Dividir, Cortar</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Dividir + Endireitar</strong></td>
+<td><strong>2: Dividir, Endireitar</strong></td>
+<td><strong>58</strong></td>
+</tr>
+<tr>
+<td>só Dividir</td>
+<td>1: Dividir</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Dividir + Limpar + Endireitar + Cortar</td>
+<td>11 (todas)</td>
+<td>56</td>
+</tr>
+</tbody>
+</table>
+<p>O print do Samuel tem <strong>dois ícones: a folha aberta (Dividir) e um retângulo inclinado (Endireitar)</strong>, e o rodapé
+dele diz <strong>"58 com dúvida"</strong>. As duas coisas batem exatamente com <strong>Dividir + Endireitar, com "Limpar a folha" e
+"Cortar as bordas" desmarcadas</strong>. Com Dividir + Limpar marcados apareceriam 9 ícones, não 2.</p>
+<p>Provável causa: de fábrica, "Limpar a folha", "Endireitar" e "Cortar as bordas" <strong>já vêm marcadas</strong>, e caixinha
+marcada aparece só como um tique, sem quadrado (a desmarcada tem quadrado vazio). Quem clica em "Limpar a folha"
+achando que está marcando, na verdade desmarca. Sem "Limpar a folha", somem todas as ferramentas de marcar, o Zoom,
+a Mão e "Os quatro filtros". E os painéis (Para revisar, Automático, Propriedades, Filtro, Histórico) não sumiram: eles
+moram na coluna da <strong>direita</strong> e começam fechados.</p>
+<p><img alt="" src="prints/b-icones-da-esquerda.jpg" /></p>
+<p><img alt="" src="prints/b-opcoes-dividir-e-endireitar.jpg" /></p>
+<h3>(c) Achado 0-5: a folha 5 "jogada para cima"</h3>
+<p><strong>O deslocamento já está no PDF.</strong> A página 5, aberta direto do arquivo (sem o programa), já tem o texto da direita
+lá em cima, com "PRIMERA PARTE" cortado no alto, e a página da esquerda quase vazia. A tela "Dividir a folha" mostra
+a folha como ela é (só girada de pé). Não foi o programa.</p>
+<p>Uma coisa a mais, vista nesta folha: o programa pôs a linha azul de dividir quase na beirada esquerda e a faixa
+avisa "Não tenho certeza de onde cortar. Confira a linha." (a miniatura 5 tem o "!" laranja). No print do Samuel a
+linha estava no meio.</p>
+<p><img alt="" src="prints/c-folha-5.jpg" /></p>
+<hr />
+<h2>1. Tela inicial ("Seus livros")</h2>
+<p><img alt="" src="prints/01-inicio-vazia.jpg" /></p>
+<p><img alt="" src="prints/02-inicio-com-livro.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>Onde fica</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Abrir um PDF" / "Abrir um PDF novo"</td>
+<td>primeiro quadro da grade, com o "+" azul</td>
+<td>Clique: abre a janela do Windows para escolher o PDF. Também dá para arrastar o PDF para qualquer lugar da tela. Abrir leva para "Marque o que você quer fazer".</td>
+</tr>
+<tr>
+<td>cartão do livro</td>
+<td>ao lado do "+": capa, nome, "360 páginas · hoje", "0 de 360 conferidas"</td>
+<td>Um clique: abre o livro na tela inteira. Duplo clique: continua o trabalho. Botão direito: o menu do livro.</td>
+</tr>
+<tr>
+<td>"continuar"</td>
+<td>botão azul pequeno em cima da capa, no canto</td>
+<td>Vai direto para a tela de conferir, onde parou.</td>
+</tr>
+<tr>
+<td>"procurar pelo nome"</td>
+<td>campo no alto, à direita</td>
+<td>Filtra os cartões pelo nome.</td>
+</tr>
+<tr>
+<td>"Configurações"</td>
+<td>alto, à direita</td>
+<td>Abre as Configurações (parte 5).</td>
+</tr>
+<tr>
+<td>"Ajuda"</td>
+<td>alto, à direita</td>
+<td>Abre a "Lista de atalhos" (F1).</td>
+</tr>
+</tbody>
+</table>
+<p>Menu do botão direito do cartão (o mesmo do "Mais..."): "continuar", "começar de novo", "renomear", "abrir a pasta de
+saída" (cinza até o livro gerar um PDF), "remover da lista".</p>
+<p><img alt="" src="prints/03-menu-do-cartao.jpg" /></p>
+<h3>1.1 O livro aberto (um clique no cartão)</h3>
+<p><img alt="" src="prints/04-livro-aberto.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>Onde fica</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Voltar para os livros   Esc"</td>
+<td>1ª linha, à esquerda</td>
+<td>Volta aos cartões.</td>
+</tr>
+<tr>
+<td>"Mais..."</td>
+<td>1ª linha, à direita</td>
+<td>O mesmo menu do botão direito do cartão.</td>
+</tr>
+<tr>
+<td>"Continuar" (azul)</td>
+<td>2ª linha, 1º botão</td>
+<td>Abre a tela de conferir deste livro.</td>
+</tr>
+<tr>
+<td>"Rodar o automático..."</td>
+<td>2ª linha, 2º botão</td>
+<td>Leva para "Marque o que você quer fazer" deste livro. <strong>Não roda nada.</strong></td>
+</tr>
+<tr>
+<td>"Ver todas as páginas"</td>
+<td>2ª linha, 3º botão</td>
+<td>A grade das folhas do PDF.</td>
+</tr>
+<tr>
+<td>"Confirmar e processar..."</td>
+<td>2ª linha, 4º botão</td>
+<td>Abre o trabalho e já pede a confirmação para gerar o PDF.</td>
+</tr>
+<tr>
+<td>"Onde está: ..."</td>
+<td>2ª linha, à direita</td>
+<td>O caminho do PDF no computador.</td>
+</tr>
+<tr>
+<td>"Uma página", "Duas lado a lado", "Rolar sem parar", "Caber a página", "Caber a altura", "Caber a largura", "Tamanho real"</td>
+<td>barra de baixo, no meio</td>
+<td>Jeitos de ver as páginas.</td>
+</tr>
+<tr>
+<td>"página 1 de 180 · ir para", "‹" "›"</td>
+<td>canto de baixo, à direita</td>
+<td>Andar pelas folhas.</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="" src="prints/05-ver-todas-do-livro-aberto.jpg" /></p>
+<p><strong>Pontos confusos — tela inicial e livro aberto</strong></p>
+<ul>
+<li><strong>"Rodar o automático..." não roda nada</strong>: só abre a tela das caixinhas. O nome promete uma coisa que não acontece.</li>
+<li>O livro aberto diz <strong>"360 páginas"</strong> em cima e <strong>"página 1 de 180"</strong> embaixo: uma conta páginas do livro pronto, a
+  outra conta folhas do PDF.</li>
+<li>Em "Ver todas as páginas" do livro aberto, o botão diz <strong>"só as que precisam de atenção (0)"</strong>, enquanto a tela de
+  conferir do mesmo livro diz 56 com dúvida.</li>
+<li>O nome comprido do livro é cortado no cartão ("La vida eterna y La profu...").</li>
+</ul>
+<hr />
+<h2>2. "Marque o que você quer fazer"</h2>
+<p>Aparece ao abrir um PDF novo, pelo "Rodar o automático..." e por Arquivo &gt; "Voltar para as opções".</p>
+<p><img alt="" src="prints/06-opcoes.jpg" /></p>
+<p><img alt="" src="prints/07-opcoes-inteira-de-fabrica.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>De fábrica</th>
+<th>O que faz</th>
+<th>O que liga/desliga depois</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Receita:" com "De fábrica", "pôr neste livro", "nome da receita", "guardar", "apagar"</td>
+<td>De fábrica</td>
+<td>Guarda as caixinhas desta tela com um nome e as põe de volta noutro livro.</td>
+<td>Nada na tela de conferir. Não é automático.</td>
+</tr>
+<tr>
+<td>"Dividir folhas ao meio"</td>
+<td>desmarcada</td>
+<td>Divide cada folha em duas páginas. Marcada, abre "Jeito de dividir:" (o do ScanTailor / o do Editor).</td>
+<td>Liga o 1º ícone da esquerda, "Dividir a folha".</td>
+</tr>
+<tr>
+<td>"Cortar a beirada da folha vizinha"</td>
+<td>desmarcada</td>
+<td>Corta a sobra da folha ao lado, nas folhas que não forem divididas.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Limpar a folha"</td>
+<td><strong>marcada</strong></td>
+<td>Liga os filtros. Embaixo: Original (de fábrica, "não mexe na página"), Preto e branco, Melhorar, Mágico pro; "No Preto e branco, molduras e iluminuras também em preto e branco"; "Gravuras e fotos".</td>
+<td>Liga as ferramentas de marcar (Retângulo, Laço, Pincel, Varinha, Mover a área), o Zoom, a Mão e "Os quatro filtros". <strong>Desmarcada, todas somem.</strong></td>
+</tr>
+<tr>
+<td>"Achar gravuras e fotos", "Este livro tem fotos", "Mais opções"</td>
+<td>marcada / desmarcada</td>
+<td>Procura desenhos e fotos para tratar à parte. "Mais opções": Sensibilidade, "Procurar também imagens claras", "Igualar a luz da página antes".</td>
+<td>Só aparece com "Limpar a folha".</td>
+</tr>
+<tr>
+<td>"Endireitar folhas tortas"</td>
+<td><strong>marcada</strong></td>
+<td>Endireita páginas inclinadas. Abre "Conta do endireitar:" (a do ScanTailor / a do Editor).</td>
+<td>Liga o 3º ícone, "Endireitar".</td>
+</tr>
+<tr>
+<td>"Cortar as bordas"</td>
+<td><strong>marcada</strong></td>
+<td>Tira a borda preta e a sombra do scanner.</td>
+<td>Liga o 2º ícone, "Cortar as bordas".</td>
+</tr>
+<tr>
+<td>"Cortar seguindo o conteúdo (como o ScanTailor)"</td>
+<td>desmarcada</td>
+<td>O corte abraça o que está impresso.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Achar a página dentro da borda preta do scanner"</td>
+<td>desmarcada</td>
+<td>Abre "Cortar:" (até a moldura / só o preto) e (cortar fora / pintar de branco).</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Margens iguais em todas as páginas"</td>
+<td>desmarcada</td>
+<td>Abre as quatro margens e o alinhamento.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Montar cadernos no tamanho do scan (sem A4, sem margem)"</td>
+<td>desmarcada</td>
+<td>Abre "páginas por caderno".</td>
+<td>Muda a tela "Ficou pronto!".</td>
+</tr>
+<tr>
+<td>frase de baixo (ex.: "Vou endireitar as tortas e cortar as bordas.")</td>
+<td>faixa embaixo das caixinhas</td>
+<td>Diz o que vai ser feito.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"O livro, como está agora", "‹ folha 1 de 180 ›", "tela cheia"</td>
+<td>coluna da direita</td>
+<td>Folhear o PDF antes de decidir.</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"voltar" / "Conferir"</td>
+<td>rodapé</td>
+<td>"Conferir" faz o programa olhar o livro e decidir tudo sozinho, e abre a tela de conferir.</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Com o <strong>Preto e branco</strong> escolhido aparecem mais três: "Só as letras", "Escurecer sozinho a força do preto quando o
+texto sair falhado" e "Limpar a sujeira:".</p>
+<p><img alt="" src="prints/08-opcoes-preto-e-branco.jpg" /></p>
+<p><img alt="" src="prints/09-opcoes-tudo-aberto.jpg" /></p>
+<p><strong>Pontos confusos — "Marque o que você quer fazer"</strong></p>
+<ul>
+<li><strong>Marcada = só um tique, sem quadrado; desmarcada = quadrado vazio.</strong> Parece que as marcadas "não têm caixa". É o
+  jeito mais fácil de desmarcar "Limpar a folha" sem querer (achado 0-4).</li>
+<li><strong>"Limpar a folha" vem marcada com o filtro Original, que "não mexe na página".</strong> O nome diz "tira o amarelado", mas
+  de fábrica não tira nada. A frase de baixo nem menciona a limpeza.</li>
+<li><strong>A fila "Receita" (achado 0-1)</strong> fica no topo, antes de tudo, com cinco peças e o nome "Receita"; não é automática
+  e não explica que só guarda as caixinhas.</li>
+<li><strong>Achado 0-2:</strong> "Escurecer sozinho a força do preto..." aparece <strong>marcada e cinza</strong> quando "Só as letras" está
+  desmarcada. Parece ligada e travada; na verdade não vale enquanto "Só as letras" estiver desmarcada.</li>
+<li>As caixinhas não cabem na tela: "Margens iguais" e "Montar cadernos" só aparecem rolando.</li>
+<li>Os menus do alto aparecem nesta tela, mas <strong>Editar, Marcar, Filtro, Página e Painéis ficam cinza</strong>.</li>
+<li>Nomes com "ScanTailor" (Jeito de dividir: "o do ScanTailor", "Conta do endireitar: a do ScanTailor", "Cortar
+  seguindo o conteúdo (como o ScanTailor)") não dizem nada ao Kaique.</li>
+<li>Mudar caixinhas num livro que já foi conferido e clicar "Conferir" não vale (ver a resposta (a)).</li>
+</ul>
+<hr />
+<h2>3. A tela de conferir</h2>
+<p><img alt="" src="prints/11-conferir.jpg" /></p>
+<h3>3.1 Menus do alto</h3>
+<p><img alt="" src="prints/24-menus-1.jpg" /></p>
+<p><img alt="" src="prints/25-menus-2.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Itens (como aparecem)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arquivo</td>
+<td>Abrir um livro... (Ctrl+O) · Livros recentes · Escolher a pasta de saída... · Nome do arquivo... · Confirmar e processar (Ctrl+Return) · Voltar para as opções · Configurações... · Sair (Ctrl+Q)</td>
+</tr>
+<tr>
+<td>Editar</td>
+<td>Desfazer (Ctrl+Z) · Refazer (Ctrl+Shift+Z) · Mostrar o histórico</td>
+</tr>
+<tr>
+<td>Marcar</td>
+<td>Procurar de novo · Limpar tudo · Deixar a folha em branco</td>
+</tr>
+<tr>
+<td>Filtro</td>
+<td>Original (1) · Preto e branco (2) · Melhorar (3) · Mágico pro (4)</td>
+</tr>
+<tr>
+<td>Página</td>
+<td>Ir para a página... (Ctrl+G) · Girar ¼ à esquerda (Ctrl+Left) · Girar ¼ à direita (Ctrl+Right) · Girar meia volta · Aplicar o giro em (só esta folha / todas as folhas / daqui em diante / só as pares / só as ímpares) · Apagar esta página (Del) · Restaurar página apagada</td>
+</tr>
+<tr>
+<td>Ver</td>
+<td>Aproximar (Ctrl++) · Afastar (Ctrl+-) · Ajustar à tela (Ctrl+0) · Miniaturas · Ícones da direita · Todas as páginas · Filtros em tela cheia · Modo comparar · Tema (Escuro / Cinza / Claro)</td>
+</tr>
+<tr>
+<td>Painéis</td>
+<td>Propriedades · Filtro da página · Para revisar · Automático · Histórico · Fechar o painel · Ícones da direita</td>
+</tr>
+<tr>
+<td>Ajuda</td>
+<td>Lista de atalhos (F1)</td>
+</tr>
+</tbody>
+</table>
+<p>Ao lado dos menus, em negrito, o <strong>nome da ferramenta da vez</strong> (ex.: "Dividir a folha").</p>
+<h3>3.2 Coluna de ferramentas (esquerda)</h3>
+<p><img alt="" src="prints/12-coluna-da-esquerda.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Posição</th>
+<th>Nome (balão do mouse)</th>
+<th>O que faz</th>
+<th>Aparece quando</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1º</td>
+<td>Dividir a folha</td>
+<td>"Arraste a linha azul para mudar onde a folha divide."</td>
+<td>"Dividir folhas ao meio" marcada</td>
+</tr>
+<tr>
+<td>2º</td>
+<td>Cortar as bordas</td>
+<td>"Arraste o retângulo para mudar o corte da borda."</td>
+<td>"Cortar as bordas" marcada</td>
+</tr>
+<tr>
+<td>3º</td>
+<td>Endireitar</td>
+<td>"Gire pela bolinha azul, ou desenhe a linha laranja em cima de uma linha do texto."</td>
+<td>"Endireitar folhas tortas" marcada</td>
+</tr>
+<tr>
+<td>4º</td>
+<td>Retângulo [R] (no mesmo botão: Oval [O])</td>
+<td>Marca uma área arrastando.</td>
+<td>"Limpar a folha" marcada</td>
+</tr>
+<tr>
+<td>5º</td>
+<td>Laço [L] (Ponto a ponto [P])</td>
+<td>Contorna uma área.</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>6º</td>
+<td>Pincel [B]</td>
+<td>Pinta por cima.</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>7º</td>
+<td>Varinha mágica [V] (Pegar tudo desta cor [C])</td>
+<td>Pega a mancha de uma cor.</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>8º</td>
+<td>Mover e mudar o tamanho da área [A]</td>
+<td>Move/aumenta uma área marcada.</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>9º</td>
+<td>Zoom [Z]</td>
+<td>Aproxima (com Alt, afasta).</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>10º</td>
+<td>Mão [E]</td>
+<td>Anda pela página aproximada.</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>11º</td>
+<td>Os quatro filtros</td>
+<td>A mesma página nos quatro filtros; um clique escolhe.</td>
+<td>"Limpar a folha" marcada (ou nenhuma outra etapa)</td>
+</tr>
+</tbody>
+</table>
+<p>Escolher Dividir, Cortar ou Endireitar <strong>abre sozinho o painel Propriedades</strong> (à direita), onde ficam os botões delas.</p>
+<p><img alt="" src="prints/14-02-ferramenta-dividir.jpg" /></p>
+<p><img alt="" src="prints/15-02-ferramenta-cortar.jpg" /></p>
+<p><img alt="" src="prints/16-02-ferramenta-endireitar.jpg" /></p>
+<p><img alt="" src="prints/17-11-os-quatro-filtros.jpg" /></p>
+<h3>3.3 Coluna de ícones (direita) e os painéis</h3>
+<p><img alt="" src="prints/13-coluna-da-direita.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Posição</th>
+<th>Nome (balão)</th>
+<th>O que tem dentro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no alto (sem número)</td>
+<td>seta "»" ("esconder os ícones")</td>
+<td>Esconde a coluna.</td>
+</tr>
+<tr>
+<td>1º</td>
+<td>Para revisar (com o número laranja, ex.: 56)</td>
+<td>A lista das páginas com dúvida, "Por página" ou "Por motivo"; clique numa leva até ela; "ver a lista...", "está bom em tudo".</td>
+</tr>
+<tr>
+<td>2º</td>
+<td>Automático</td>
+<td>Só mostra as etapas ligadas neste livro e a escolha de cada uma; botão "Voltar para as opções".</td>
+</tr>
+<tr>
+<td>3º</td>
+<td>Propriedades</td>
+<td>Muda conforme a ferramenta: girar a folha e "aplicar em"; os botões de Dividir/Cortar/Endireitar; com as de marcar, "Marcar como", "Marcação desta página", "Foto" e "Área". Embaixo, "PARA O LIVRO TODO" com "mudar nas opções do livro...".</td>
+</tr>
+<tr>
+<td>4º</td>
+<td>Filtro da página</td>
+<td>Os quatro filtros desta página (teclas 1 a 4), "Ajuste", "Só as letras", "Limpar a sujeira" e "Mais ajustes" (só fora do Original), "Só neste pedaço", "apagar página", "Aplicar em: só nesta / todas / daqui em diante"; o ícone de quadrado no título abre os filtros em tela cheia.</td>
+</tr>
+<tr>
+<td>5º</td>
+<td>Histórico</td>
+<td>"Desfazer", "Refazer" e a lista do que foi feito.</td>
+</tr>
+</tbody>
+</table>
+<p>Um clique no ícone abre o painel; outro clique no mesmo ícone fecha (testado com clique do Windows nos cinco). Todos
+começam fechados ao abrir um livro.</p>
+<p><img alt="" src="prints/18-paineis-da-direita.jpg" /></p>
+<h3>3.4 A faixa do aviso: "está certo" e "próxima dúvida"</h3>
+<p>Fica logo embaixo da página. À esquerda, a frase do que o programa vai fazer nesta folha; à direita, "está certo"
+(azul) e "próxima dúvida". Quando há dúvida, a faixa fica laranja e aparece um botão laranja com a sugestão (ex.:
+"aceitar o corte").</p>
+<p><img alt="" src="prints/19-esta-certo.jpg" /></p>
+<p><img alt="" src="prints/20-proxima-duvida.jpg" /></p>
+<p><img alt="" src="prints/21-barra-de-espaco.jpg" /></p>
+<ul>
+<li><strong>"está certo"</strong> (clique do Windows, folha 1, Dividir a folha): <strong>nada na tela mudou</strong> — mesma frase, mesma folha,
+  rodapé ainda "0 de 360 conferidas", miniatura sem marca nova. O balão do botão diz "Marca como conferida (a barra
+  de espaço marca e já vai para a próxima)". Confirma o achado 0-3.</li>
+<li><strong>"próxima dúvida"</strong>: foi da folha 1 para a folha 4 (a primeira com "!").</li>
+<li><strong>Barra de espaço</strong>: marcou e foi para a folha 2. O rodapé continuou "0 de 360 conferidas".</li>
+<li><strong>Tab</strong> ("Ir para a próxima dúvida"): no meu teste, com tecla do Windows, não andou (ficou na folha 2). Pode ser
+  o lugar do foco; conferir na sessão com o Samuel.</li>
+</ul>
+<h3>3.5 Miniaturas, rodapé e "ver todas"</h3>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>Onde fica</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"FOLHAS" (no Dividir) / "PÁGINAS" (nas outras ferramentas), com "⌄"</td>
+<td>cabeçalho das miniaturas, à esquerda</td>
+<td>A seta fecha as miniaturas.</td>
+</tr>
+<tr>
+<td>"•••"</td>
+<td>ao lado</td>
+<td>Balão: "Mais opções das miniaturas" (não aberto no teste).</td>
+</tr>
+<tr>
+<td>"ver todas"</td>
+<td>ao lado</td>
+<td>A grade de todas as páginas, com as de dúvida em laranja e o motivo; "voltar ao trabalho".</td>
+</tr>
+<tr>
+<td>miniaturas com número; "!" laranja = dúvida</td>
+<td>faixa de baixo</td>
+<td>Um clique vai para a folha/página.</td>
+</tr>
+<tr>
+<td>"Confirmar e processar" (azul, grande)</td>
+<td>à direita das miniaturas</td>
+<td>Ver parte 4.</td>
+</tr>
+<tr>
+<td>"‹ folha 1 de 180 ›"</td>
+<td>rodapé, à esquerda</td>
+<td>Andar uma folha (setas do teclado também).</td>
+</tr>
+<tr>
+<td>desfazer, refazer, relógio</td>
+<td>rodapé</td>
+<td>Desfazer (Ctrl+Z), Refazer (Ctrl+Shift+Z), abrir o Histórico.</td>
+</tr>
+<tr>
+<td>"La vida eterna... · 0 de 360 conferidas · 56 com dúvida"</td>
+<td>rodapé</td>
+<td>Contagem do livro.</td>
+</tr>
+<tr>
+<td>girar (três botões)</td>
+<td>canto de cima, à direita da página</td>
+<td>¼ à esquerda, ¼ à direita, meia volta.</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="" src="prints/22-ver-todas-na-conferencia.jpg" /></p>
+<h3>3.6 Tela cheia e livro aberto</h3>
+<ul>
+<li><strong>"Filtros em tela cheia"</strong> (Ver &gt; Filtros em tela cheia, ou o quadrado no título do painel Filtro da página): uma
+  janela grande com os quatro filtros, "Comparar com o Original", "Aplicar em", "Fechar sem mudar" e "Usar <filtro>".</li>
+<li><strong>"tela cheia"</strong> na tela das caixinhas: folhear o PDF grande.</li>
+<li><strong>O livro aberto</strong> (tela inicial, um clique no cartão) é a tela cheia do livro, com as páginas como vieram no PDF.</li>
+</ul>
+<p><img alt="" src="prints/23-filtros-tela-cheia.jpg" /></p>
+<h3>3.7 Atalhos de teclado importantes (todos trocáveis em Configurações &gt; Atalhos de teclado)</h3>
+<table>
+<thead>
+<tr>
+<th>Tecla</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Barra de espaço</strong></td>
+<td>Marcar como certo e avançar</td>
+</tr>
+<tr>
+<td><strong>Tab</strong></td>
+<td>Ir para a próxima dúvida</td>
+</tr>
+<tr>
+<td>Seta esquerda / direita</td>
+<td>Página anterior / próxima</td>
+</tr>
+<tr>
+<td>1, 2, 3, 4</td>
+<td>Original, Preto e branco, Melhorar, Mágico pro</td>
+</tr>
+<tr>
+<td>Del</td>
+<td>Apagar esta página</td>
+</tr>
+<tr>
+<td>Ctrl+Z / Ctrl+Shift+Z</td>
+<td>Desfazer / Refazer</td>
+</tr>
+<tr>
+<td>Ctrl+G</td>
+<td>Ir para a página...</td>
+</tr>
+<tr>
+<td>Ctrl+Left / Ctrl+Right</td>
+<td>Girar ¼ à esquerda / à direita</td>
+</tr>
+<tr>
+<td>Ctrl++ / Ctrl+- / Ctrl+0</td>
+<td>Aproximar / Afastar / Ajustar à tela</td>
+</tr>
+<tr>
+<td>Ctrl+Return (Enter)</td>
+<td>Confirmar e processar</td>
+</tr>
+<tr>
+<td>Ctrl+O / Ctrl+Q</td>
+<td>Abrir um livro / Sair</td>
+</tr>
+<tr>
+<td>R, O, L, P, B, V, C, A, Z, E</td>
+<td>Retângulo, Oval, Laço, Ponto a ponto, Pincel, Varinha, Pegar tudo desta cor, Mover a área, Zoom, Mão</td>
+</tr>
+<tr>
+<td>M / T</td>
+<td>Recorte: espelhado / proporção travada</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Lista de atalhos</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pontos confusos — tela de conferir</strong></p>
+<ul>
+<li><strong>"está certo" não dá resposta nenhuma na tela</strong> (achado 0-3): não avança, não muda a frase, não marca a miniatura,
+  não muda a contagem.</li>
+<li><strong>A contagem do rodapé conta páginas (360), e no Dividir se confere folha (180).</strong> "está certo" e a barra de espaço
+  no Dividir não mudam "0 de 360 conferidas"; escolher um filtro numa página muda (vira "1 de 360").</li>
+<li><strong>Três números diferentes de dúvidas:</strong> rodapé e "Para revisar" dizem <strong>56</strong>; a janela "Antes de processar" diz
+  <strong>"67 páginas ... (69 avisos)"</strong>; o "Ver todas as páginas" do livro aberto diz <strong>(0)</strong>.</li>
+<li><strong>Folha e página se misturam:</strong> no Dividir as miniaturas são "FOLHAS" ("folha 1 de 180"); nas outras ferramentas
+  viram "PÁGINAS" ("página 1 de 360"), e o "Para revisar" fala sempre em página.</li>
+<li><strong>O nome da ferramenta só aparece com o mouse parado em cima</strong> do ícone; a coluna da esquerda não tem palavras.</li>
+<li><strong>As ferramentas somem conforme as caixinhas</strong> e nada na tela diz isso (achado 0-4). Os painéis ficam na direita,
+  fechados, e também nada diz que estão lá.</li>
+<li><strong>"Os quatro filtros"</strong> é um ícone da esquerda (meia lua) e também um painel da direita ("Filtro da página"),
+  com o mesmo desenho; são duas portas para quase a mesma coisa.</li>
+<li><strong>"Automático"</strong> só mostra as etapas; não roda nada (resposta a).</li>
+<li><strong>Esc não fecha o "ver todas"</strong> (no teste, ficou na grade); só "voltar ao trabalho".</li>
+<li>O painel Filtro da página abriu com os quatro quadradinhos dos filtros <strong>vazios (cinza)</strong> na primeira vez; as
+  miniaturas só apareceram depois.</li>
+<li>Endireitar: a página mostrou "Preparando a prévia..." por alguns segundos.</li>
+<li>Atalho escrito em inglês: "Ctrl+Return", "Ctrl+Left", "Ctrl+Right".</li>
+<li>Na "ver todas", as páginas 7 e 9 ("parece em branco") aparecem como uma tira branca estreita num quadro preto.</li>
+</ul>
+<hr />
+<h2>4. Processar, a tela "Ficou pronto!" e montar para imprimir</h2>
+<p>Caminho: "Confirmar e processar" (botão azul da tela de conferir, ou Ctrl+Enter) → se houver dúvidas, a janela
+<strong>"Antes de processar"</strong> → a janela <strong>"Confirmar e processar"</strong> (onde salvar) → <strong>"Processar"</strong> → "Processando o
+livro..." → <strong>"Ficou pronto!"</strong>.</p>
+<p><img alt="" src="prints/26-antes-de-processar.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Mostrar:" (todos os motivos / um motivo)</td>
+<td>Filtra a lista.</td>
+</tr>
+<tr>
+<td>caixinha em cada linha, "Selecionar todas", "Nenhuma"</td>
+<td>Escolhe linhas.</td>
+</tr>
+<tr>
+<td>"está bom nas marcadas"</td>
+<td>Tira as marcadas da lista (aceita como está).</td>
+</tr>
+<tr>
+<td>"ver"</td>
+<td>Fecha e vai para a página escolhida; não processa.</td>
+</tr>
+<tr>
+<td>"continuar assim mesmo"</td>
+<td>Segue para onde salvar.</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="" src="prints/27-confirmar.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Salvar em:" e "Escolher pasta"</td>
+<td>A pasta do PDF pronto (de fábrica, Documentos &gt; Editor de Impressao).</td>
+</tr>
+<tr>
+<td>"Nome do arquivo:"</td>
+<td>De fábrica, o nome do livro com o filtro ("- original.pdf").</td>
+</tr>
+<tr>
+<td>aviso laranja</td>
+<td>"Ainda há 359 página(s) que você não conferiu..."</td>
+</tr>
+<tr>
+<td>"Gravar em duas camadas: a letra em cima, o fundo embaixo (arquivo bem menor)"</td>
+<td>desmarcada de fábrica.</td>
+</tr>
+<tr>
+<td>"Processar" / "voltar"</td>
+<td>Começa / volta para a conferência.</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="" src="prints/28-processando.jpg" /></p>
+<p>Neste livro, com Dividir + Endireitar + Cortar e filtro Original, processar levou <strong>11 minutos</strong> e o PDF saiu com
+<strong>360 páginas e 287,4 MB</strong>.</p>
+<p><img alt="" src="prints/29-ficou-pronto.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Nome na tela</th>
+<th>O que faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"abrir a pasta"</td>
+<td>Abre a pasta do PDF no Windows (não testado: abriria na tela do Samuel).</td>
+</tr>
+<tr>
+<td><strong>"imprimir agora"</strong></td>
+<td><strong>Manda o PDF direto para a impressora padrão do Windows, sem janela de impressão.</strong> (Não testado, de propósito.)</td>
+</tr>
+<tr>
+<td>"montar para imprimir em A4 (com margens)..."</td>
+<td>Abre a janela "Montar para imprimir".</td>
+</tr>
+<tr>
+<td>"fazer outro"</td>
+<td>Volta para a tela inicial.</td>
+</tr>
+</tbody>
+</table>
+<p>Os cadernos "no tamanho do scan" só saem se a caixinha "Montar cadernos no tamanho do scan (sem A4, sem margem)"
+estava marcada; aí esta tela mostra também "Como imprimir:". Neste percurso ela estava desmarcada (como vem de fábrica).</p>
+<p><img alt="" src="prints/30-montar-para-imprimir.jpg" /></p>
+<p>"Montar para imprimir": "Formato" (Livreto: A4 deitada, duas páginas por lado, na ordem dos cadernos), "Papel",
+"Folha", "Tamanho", "Escala personalizada", "Rotação automática", "Centralizar automático", "Margens da encadernação:
+1,3 cm da beirada do papel e 1 cm na costura", "Escala de cada lado"; botões "gravar o arquivo para imprimir",
+"mandar para a impressora", "cancelar", "fechar".</p>
+<p><strong>Pontos confusos — processar e imprimir</strong></p>
+<ul>
+<li><strong>"imprimir agora" imprime sem perguntar</strong> (sem escolher impressora nem quantas cópias): o livro inteiro (aqui, 360
+  páginas) sai na impressora padrão com um clique.</li>
+<li>Há <strong>dois jeitos de montar cadernos</strong> com nomes parecidos: a caixinha "Montar cadernos no tamanho do scan" (antes) e
+  "montar para imprimir em A4 (com margens)..." (depois). A "Ficou pronto!" não diz qual usar.</li>
+<li>A janela "Antes de processar" conta 67 páginas / 69 avisos; o rodapé dizia 56.</li>
+<li>O PDF com o filtro Original ficou muito grande (287 MB para 360 páginas).</li>
+<li>O processar levou 11 minutos; a tela mostra só a barra e "Página N de 360", sem tempo estimado.</li>
+</ul>
+<hr />
+<h2>5. Configurações, a Luz e a "Área"</h2>
+<p>Configurações: botão "Configurações" no alto da tela inicial, ou Arquivo &gt; "Configurações...". As partes ficam
+numa lista à esquerda; um clique em cada uma mostra o conteúdo à direita; "Fechar" embaixo.</p>
+<table>
+<thead>
+<tr>
+<th>Parte</th>
+<th>O que tem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aparência</td>
+<td>"As cores do programa. Vale na hora, em todas as telas." Escuro · Cinza (de fábrica) · Claro.</td>
+</tr>
+<tr>
+<td>Atalhos de teclado</td>
+<td>Cada atalho com a tecla; clique e aperte a nova.</td>
+</tr>
+<tr>
+<td><strong>Velocidade</strong> (nova)</td>
+<td>"Páginas ao mesmo tempo:" Todos os núcleos do processador (16) · Uma página por vez (como antes) · 2 · 4 · 8 páginas. "Só muda a velocidade, nunca o resultado."</td>
+</tr>
+<tr>
+<td><strong>Medidas e receitas</strong> (nova)</td>
+<td>"Medidas em:" centímetros · milímetros · polegadas. "Receita de todo livro novo:" De fábrica.</td>
+</tr>
+<tr>
+<td><strong>Impressão</strong> (nova)</td>
+<td>"Margem da encadernação:" 10,0 mm. "A impressora não imprime:" 3,0 mm da beirada.</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="" src="prints/31-configuracoes-atalhos.jpg" /></p>
+<p><img alt="" src="prints/32-configuracoes-velocidade.jpg" /></p>
+<p><img alt="" src="prints/32b-configuracoes-medidas.jpg" /></p>
+<p><img alt="" src="prints/32c-configuracoes-impressao.jpg" /></p>
+<p><img alt="" src="prints/33-ajuda.jpg" /></p>
+<h3>Onde ficou a Luz</h3>
+<p>Painel <strong>"Filtro da página"</strong> (4º ícone da coluna da direita, desenho de meia lua) → parte <strong>"Mais ajustes"</strong> (abre
+clicando na seta) → última linha: <strong>"Igualar a luz da página"</strong>, <strong>"Suavizar as letras"</strong> e <strong>"Tirar o chuvisco"</strong> (número de 0 a 100); o balão do mouse explica cada um. Só existe
+em página com <strong>Preto e branco, Melhorar ou Mágico pro</strong>; no Original não há "Mais ajustes". "Suavizar" só no Preto e
+branco.</p>
+<p><img alt="" src="prints/34-luz-mais-ajustes.jpg" /></p>
+<h3>Onde ficou a "Área"</h3>
+<p>Escolher uma ferramenta de marcar na coluna da esquerda (ex.: Retângulo, 4º ícone) → painel <strong>"Propriedades"</strong> (3º
+ícone da direita) → rolar até o fim, depois de "Marcar como", "Marcação desta página" e "Foto" → <strong>"Área"</strong>:
+"Mostrar as áreas achadas" e os botões da área escolhida (com a ferramenta "Mover e mudar o tamanho da área", tecla A).</p>
+<p><img alt="" src="prints/35-area-propriedades.jpg" /></p>
+<p><strong>Pontos confusos — Configurações, Luz e Área</strong></p>
+<ul>
+<li><strong>A "Ajuda" não mostra a lista</strong>: a caixa diz só "O que dá para fazer, e por qual tecla:" e a lista fica escondida
+  atrás de um botão em inglês, <strong>"Show Details..."</strong>.</li>
+<li><strong>Os nomes da Luz aparecem cortados</strong> no painel: "Igual", "Suav", "Tirar o ch".</li>
+<li>A Luz some no filtro Original (o de fábrica): quem procura não acha.</li>
+<li>A "Área" fica no fim do painel Propriedades e só com ferramenta de marcar; precisa rolar.</li>
+<li>"Receita de todo livro novo" nas Configurações e a fila "Receita" na tela das caixinhas são a mesma coisa em dois
+  lugares.</li>
+</ul>
+<hr />
+<h2>Lista dos pontos confusos (todos juntos)</h2>
+<ol>
+<li>Não existe "rodar o automático": "Rodar o automático..." só abre a tela das caixinhas, e o painel "Automático" só
+   mostra as etapas (achado 0-6).</li>
+<li>Mudar as caixinhas de um livro já conferido e clicar "Conferir" não vale (defeito de 29/09, ainda aberto).</li>
+<li>Caixinha marcada = tique sem quadrado; fácil desmarcar "Limpar a folha" sem querer — e aí somem as ferramentas de
+   marcar, o Zoom, a Mão e os filtros (achado 0-4).</li>
+<li>"Limpar a folha" vem marcada com o Original, que não limpa nada.</li>
+<li>Fila "Receita" no topo, sem explicação (achado 0-1).</li>
+<li>"Escurecer sozinho a força do preto..." marcada e cinza (achado 0-2).</li>
+<li>"está certo" sem resposta visível (achado 0-3); só a barra de espaço avança.</li>
+<li>Rodapé conta páginas enquanto o Dividir confere folhas; "está certo"/espaço no Dividir não mudam a contagem.</li>
+<li>Três números de dúvidas diferentes (56 / 67-69 / 0).</li>
+<li>Folha x página misturadas (FOLHAS/PÁGINAS, 180/360, "360 páginas" e "página 1 de 180" no livro aberto).</li>
+<li>Coluna da esquerda sem nomes (só no balão do mouse); painéis da direita fechados e sem aviso.</li>
+<li>"Os quatro filtros" (esquerda) e "Filtro da página" (direita) com o mesmo desenho.</li>
+<li>Esc não fecha o "ver todas".</li>
+<li>Tab não andou no teste (a conferir com o Samuel).</li>
+<li>"imprimir agora" manda o livro inteiro para a impressora sem perguntar.</li>
+<li>Dois "montar cadernos" com nomes parecidos.</li>
+<li>Ajuda com "Show Details..." em inglês e a lista escondida; atalhos escritos "Ctrl+Return", "Ctrl+Left".</li>
+<li>Nomes da Luz cortados; a Luz some no Original; a "Área" escondida no fim de Propriedades.</li>
+<li>Menus Editar/Marcar/Filtro/Página/Painéis cinza na tela das caixinhas.</li>
+<li>Nomes com "ScanTailor" e "Editor" nas listas (Jeito de dividir, Conta do endireitar).</li>
+<li>Quadradinhos do painel Filtro vazios na primeira abertura; "Preparando a prévia..." no Endireitar.</li>
+<li>Processar sem tempo estimado (11 min neste livro); PDF Original grande (287 MB).</li>
+</ol>
+<hr />
+<h2>Onde estão as coisas</h2>
+<ul>
+<li>Este mapa: <code>relatorios/testes-guiados/mapa-do-programa/mapa.md</code> (e <code>.html</code>, <code>.pdf</code>).</li>
+<li>Prints recortados e legendados (no git): <code>relatorios/testes-guiados/mapa-do-programa/prints/</code>.</li>
+<li>Prints inteiros e os textos tirados da janela (fora do git):
+  <code>D:\programas\EditorImpressao-arquivos\mapa-do-programa-prints\brutos\</code> (<code>textos-p1.txt</code> a <code>textos-p5.txt</code> têm cada
+  botão, caixinha e balão com a posição na janela).</li>
+<li>Roteiros que pilotaram a janela: <code>relatorios/testes-guiados/mapa-do-programa/roteiros/</code> (<code>p1</code> a <code>p5</code>,
+  <code>p1b_icones_da_esquerda.py</code> para o achado 0-4, <code>montar_prints.py</code> para os recortes).</li>
+<li>Nenhuma linha do programa mudou.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 23/10/2026 às 17:30</p>
+</body>
+</html>
