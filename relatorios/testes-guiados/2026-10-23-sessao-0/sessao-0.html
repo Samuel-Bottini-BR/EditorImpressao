@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testes guiados — sessão 0 (Samuel sozinho, 23/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Testes guiados — sessão 0 (Samuel sozinho, 23/10/2026)</h1>
+<p>Livro: "La vida eterna y La profundidad del alma.pdf" (180 folhas). Programa no <code>fase-1</code> <code>718454b</code>
+(logo depois da junção da Fase 2). Fonte: <code>ressalvas-iniciais.docx</code> (o documento dele, copiado aqui).</p>
+<p>Palavras dele no chat: "em menos de 10 minutos achei vários erros e notei como o programa está confuso"
+e "esses foi um dos poucos erros, na verdade, eu também fiquei perdido na hora de usar as ferramentas e
+preciso saber usar ela para poder ensinar o kaique, o programa não é intuitivo, não consegui nem achar o
+modo automatico."</p>
+<p>Tipos: <strong>erro</strong> (faz errado ou não faz nada) · <strong>confuso</strong> (faz, mas não dá para entender) · <strong>falta</strong> ·
+<strong>a conferir</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que ele escreveu</th>
+<th>Print</th>
+<th>Tipo</th>
+<th>O que o código diz (gerente, só leitura)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-1</td>
+<td>"Receita automática está muito confuso, esse painel"</td>
+<td><img alt="" src="image1.png" /></td>
+<td>confuso</td>
+<td>É a fila "Receita" da tela "Marque o que você quer fazer" (<code>ui/tela_opcoes.py:197-223</code>, <code>core/perfis.py</code>, item 2.19): guarda e repõe as escolhas desta tela, como os perfis do ScanTailor. Nada nela é automático. O código já diz "provisório até o layout".</td>
+</tr>
+<tr>
+<td>0-2</td>
+<td>"Essa opção não dá para desativar" ("Escurecer sozinho a força do preto quando o texto sair falhado")</td>
+<td><img alt="" src="image2.png" /></td>
+<td>confuso</td>
+<td>Só vale com "Só as letras" ligado; sem ele fica cinza, mas continua marcado (de fábrica vem marcado) — parece "ligado e travado" (<code>ui/tela_opcoes.py:544-553</code>, <code>:1039-1040</code>).</td>
+</tr>
+<tr>
+<td>0-3</td>
+<td>"clico no está certo e não acontece nada." (Dividir a folha, folha 1)</td>
+<td><img alt="" src="image3.png" /></td>
+<td>erro</td>
+<td>O clique grava a folha como conferida, mas nada na tela muda: a faixa repete a mesma frase, o rodapé conta páginas e não folhas, e não vai para a próxima (só a barra de espaço vai) (<code>ui/tela_conferir.py:666-670</code>, <code>_marcar_revisada</code> <code>:5065-5070</code>).</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>"As opções do lado sumiram, era para aparecer né, elas somem conforme se escolhe opções quando se vai abrir o pdf a primeira vez?"</td>
+<td><img alt="" src="image4.png" /></td>
+<td>confuso + a investigar</td>
+<td>Os painéis (Para revisar, Automático, Propriedades, Filtro, Histórico) ficam na coluna de ícones da <strong>direita</strong> e começam fechados; a esquerda só tem as ferramentas, e as de etapas desmarcadas somem. Só dois ícones à esquerda não bate com as escolhas (Dividir + Limpar): investigar.</td>
+</tr>
+<tr>
+<td>0-5</td>
+<td>"Olha o que o app fez com pdf jogou ele para cima, não faço a mínima ideia do porque." (folha 5)</td>
+<td><img alt="" src="image5.png" /></td>
+<td>a conferir</td>
+<td>A tela "Dividir a folha" mostra o PDF como ele é, só girado (<code>ui/tarefas.py:533-556</code>, <code>core/pdf_io.py:152-210</code>). Provável: a folha já está assim no PDF. Conferir abrindo a página 5 no Acrobat (1º passo da sessão 1).</td>
+</tr>
+<tr>
+<td>0-6</td>
+<td>"não consegui nem achar o modo automatico."</td>
+<td>—</td>
+<td>confuso</td>
+<td>O Automático existe: é um dos painéis da coluna de ícones da direita da tela de conferir (<code>PainelAutomatico</code>, <code>ui/widgets/paineis.py</code>) e o botão "Rodar o automático..." da tela inicial (<code>ui/tela_inicio.py:687</code>). Nada na tela diz isso.</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 23/10/2026 às 16:27</p>
+</body>
+</html>
