@@ -1,0 +1,383 @@
+{
+ "caminho_entrada": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\vtc23\\gabarito\\paginas\\opusmajus_p003.pdf",
+ "caminho_saida": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\vtp23\\relatorios\\conferir\\tinta-papel-2026-10-23\\maquina\\projeto-antigo\\opusmajus_p003-melhorar-antigo.pdf",
+ "nome": "opusmajus_p003",
+ "dividir_folhas": false,
+ "dividir_como": "scantailor",
+ "cortar_sobra": false,
+ "limpar": true,
+ "filtro_padrao": "melhorar",
+ "endireitar": true,
+ "endireitar_como": "scantailor",
+ "ordem_do_preparo": "endireitar_antes",
+ "cortar_bordas": true,
+ "montar_cadernos": false,
+ "paginas_por_caderno": 20,
+ "qualidade_dpi": 300,
+ "detectar_regioes": true,
+ "tem_camadas": true,
+ "perguntou_fundo": false,
+ "gravura_forma": "livre",
+ "gravura_sensibilidade": 100,
+ "gravura_mais_sensivel": false,
+ "gravura_normalizar": true,
+ "pb_decoracao_em_preto_e_branco": false,
+ "misto_so_as_letras": false,
+ "misto_fora_do_texto": "rede",
+ "misto_papel_da_gravura": "branco",
+ "misto_letras_na_moldura": "cor_papel_branco",
+ "limpar_pontinhos": "desligado",
+ "margens_iguais": false,
+ "pdf_em_duas_camadas": false,
+ "margens_mm": [
+  10.0,
+  5.0,
+  10.0,
+  5.0
+ ],
+ "margens_alinhamento": [
+  "meio",
+  "meio"
+ ],
+ "folhas": [
+  {
+   "indice": 0,
+   "dividir": false,
+   "posicao_corte": 0.5,
+   "confianca_corte": 0.0,
+   "rotacao": 0,
+   "angulo_detectado": -0.10000000000000009,
+   "confianca_angulo": 0.7950531855248846,
+   "apagada": false,
+   "e_paisagem": false,
+   "alertas": [],
+   "revisada": false,
+   "dividir_como": null,
+   "sobra": null
+  }
+ ],
+ "paginas": [
+  {
+   "indice": 0,
+   "folha": 0,
+   "metade": "inteira",
+   "recorte": null,
+   "angulo_manual": null,
+   "endireitar_como": null,
+   "filtro": "melhorar",
+   "algoritmo_preto_branco": "auto",
+   "luz_igualar": false,
+   "luz_suavizar": false,
+   "luz_chuvisco": 0,
+   "limpar_pontinhos": null,
+   "forca_preto": 50,
+   "clareza_melhorar": 50,
+   "intensidade_magico": 50,
+   "apagada": false,
+   "tem_cor": false,
+   "alertas": [],
+   "revisada": false,
+   "selecao": [
+    {
+     "tipo": "tinta_cor",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.15,
+       0.725
+      ],
+      [
+       0.75,
+       0.86
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": false
+    },
+    {
+     "tipo": "tinta_cor",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.45,
+       0.725
+      ],
+      [
+       0.75,
+       0.7925
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": true
+    },
+    {
+     "tipo": "tinta_cor",
+     "forma": "traco",
+     "pontos": [
+      [
+       0.15,
+       0.7925
+      ],
+      [
+       0.3,
+       0.7925
+      ],
+      [
+       0.45,
+       0.7925
+      ]
+     ],
+     "operacao": "subtrair",
+     "origem": "mao",
+     "espessura": 0.04,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": false
+    },
+    {
+     "tipo": "tinta_preta",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.15,
+       0.91
+      ],
+      [
+       0.75,
+       0.98
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": false
+    },
+    {
+     "tipo": "pintar",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.15,
+       0.6849999999999999
+      ],
+      [
+       0.22999999999999998,
+       0.725
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "#ffe0a0",
+     "tinta_escurecida": false
+    }
+   ],
+   "gravura_forma": null,
+   "gravura_feita_com": "scantailor|livre|-|0|1",
+   "geometria_das_zonas": {
+    "proporcao": 0.6218457101658256,
+    "rotacao": 0,
+    "corte": null,
+    "metade": "inteira",
+    "recorte": [
+     0.0,
+     0.0,
+     1.0,
+     1.0
+    ],
+    "angulo": 0.0
+   },
+   "misto_so_as_letras": null,
+   "misto_fora_do_texto": null,
+   "misto_papel_da_gravura": null,
+   "misto_letras_na_moldura": null,
+   "conteudo_escala": 1.0,
+   "conteudo_deslocamento": [
+    0.0,
+    0.0
+   ],
+   "tamanho_folha_cm": null,
+   "zonas_na_folha": [
+    {
+     "tipo": "tinta_cor",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.15,
+       0.725
+      ],
+      [
+       0.75,
+       0.725
+      ],
+      [
+       0.75,
+       0.86
+      ],
+      [
+       0.15,
+       0.86
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": false
+    },
+    {
+     "tipo": "tinta_cor",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.45,
+       0.725
+      ],
+      [
+       0.75,
+       0.725
+      ],
+      [
+       0.75,
+       0.7925
+      ],
+      [
+       0.45,
+       0.7925
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": true
+    },
+    {
+     "tipo": "tinta_cor",
+     "forma": "traco",
+     "pontos": [
+      [
+       0.15,
+       0.7925
+      ],
+      [
+       0.3,
+       0.7925
+      ],
+      [
+       0.45,
+       0.7925
+      ]
+     ],
+     "operacao": "subtrair",
+     "origem": "mao",
+     "espessura": 0.04,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": false
+    },
+    {
+     "tipo": "tinta_preta",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.15,
+       0.91
+      ],
+      [
+       0.75,
+       0.91
+      ],
+      [
+       0.75,
+       0.98
+      ],
+      [
+       0.15,
+       0.98
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "",
+     "tinta_escurecida": false
+    },
+    {
+     "tipo": "pintar",
+     "forma": "retangulo",
+     "pontos": [
+      [
+       0.15,
+       0.6849999999999999
+      ],
+      [
+       0.22999999999999998,
+       0.6849999999999999
+      ],
+      [
+       0.22999999999999998,
+       0.725
+      ],
+      [
+       0.15,
+       0.725
+      ]
+     ],
+     "operacao": "somar",
+     "origem": "mao",
+     "espessura": 0.02,
+     "confianca": 1.0,
+     "rotulo": "",
+     "filtro": "",
+     "suavidade": 0.0,
+     "cor": "#ffe0a0",
+     "tinta_escurecida": false
+    }
+   ]
+  }
+ ],
+ "criado_em": "",
+ "observacoes": []
+}

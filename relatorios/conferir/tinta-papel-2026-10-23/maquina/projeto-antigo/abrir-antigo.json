@@ -1,0 +1,58 @@
+{
+ "horas_p013": {
+  "chave_papel_no_json_antigo": false,
+  "papel_ao_abrir": [
+   false,
+   false,
+   false
+  ],
+  "cor_ao_abrir": [
+   false,
+   true,
+   false
+  ],
+  "igual_ao_antigo": true
+ },
+ "escola_p007": {
+  "chave_papel_no_json_antigo": false,
+  "papel_ao_abrir": [
+   false,
+   false,
+   false
+  ],
+  "cor_ao_abrir": [
+   false,
+   true,
+   false
+  ],
+  "igual_ao_antigo": true
+ },
+ "opusmajus_p003": {
+  "chave_papel_no_json_antigo": false,
+  "papel_ao_abrir": [
+   false,
+   false,
+   false
+  ],
+  "cor_ao_abrir": [
+   false,
+   true,
+   false
+  ],
+  "igual_ao_antigo": true
+ },
+ "graduale_p221": {
+  "chave_papel_no_json_antigo": false,
+  "papel_ao_abrir": [
+   false,
+   false,
+   false
+  ],
+  "cor_ao_abrir": [
+   false,
+   true,
+   false
+  ],
+  "igual_ao_antigo": true
+ }
+}

@@ -1,0 +1,326 @@
+{
+ "horas_p013|original": {
+  "Ap_esq_depois_Ab_dir": {
+   "so_esquerda": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   }
+  },
+  "Ab_esq_depois_Ap_dir": {
+   "so_esquerda": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   }
+  },
+  "Bp_esq_depois_Ab_dir": {
+   "so_esquerda": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   }
+  },
+  "Ab_esq_depois_Bp_dir": {
+   "so_esquerda": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   }
+  },
+  "tirar": {
+   "Ap": {
+    "onde_tirou_igual_ao_sem_area_pct": 100.0,
+    "onde_tirou_igual_a_area_pct": 100.0,
+    "resto_da_area_igual_a_area_pct": 100.0,
+    "pontos_onde_tirou": 414034
+   },
+   "Bp": {
+    "onde_tirou_igual_ao_sem_area_pct": 100.0,
+    "onde_tirou_igual_a_area_pct": 82.86,
+    "resto_da_area_igual_a_area_pct": 100.0,
+    "pontos_onde_tirou": 414034
+   }
+  }
+ },
+ "graduale_p221|original": {
+  "Ap_esq_depois_Ab_dir": {
+   "so_esquerda": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   }
+  },
+  "Ab_esq_depois_Ap_dir": {
+   "so_esquerda": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   }
+  },
+  "Bp_esq_depois_Ab_dir": {
+   "so_esquerda": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   }
+  },
+  "Ab_esq_depois_Bp_dir": {
+   "so_esquerda": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   }
+  },
+  "tirar": {
+   "Ap": {
+    "onde_tirou_igual_ao_sem_area_pct": 100.0,
+    "onde_tirou_igual_a_area_pct": 100.0,
+    "resto_da_area_igual_a_area_pct": 100.0,
+    "pontos_onde_tirou": 461752
+   },
+   "Bp": {
+    "onde_tirou_igual_ao_sem_area_pct": 100.0,
+    "onde_tirou_igual_a_area_pct": 74.87,
+    "resto_da_area_igual_a_area_pct": 100.0,
+    "pontos_onde_tirou": 461752
+   }
+  }
+ },
+ "horas_p013|preto_e_branco": {
+  "Ap_esq_depois_Ab_dir": {
+   "so_esquerda": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   }
+  },
+  "Ab_esq_depois_Ap_dir": {
+   "so_esquerda": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ap",
+    "igual_a": [
+     "Ap"
+    ],
+    "certo": true
+   }
+  },
+  "Bp_esq_depois_Ab_dir": {
+   "so_esquerda": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   }
+  },
+  "Ab_esq_depois_Bp_dir": {
+   "so_esquerda": {
+    "esperado": "Ab",
+    "igual_a": [
+     "Ab"
+    ],
+    "certo": true
+   },
+   "cruzada": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   },
+   "so_direita": {
+    "esperado": "Bp",
+    "igual_a": [
+     "Bp"
+    ],
+    "certo": true
+   }
+  },
+  "tirar": {
+   "Ap": {
+    "onde_tirou_igual_ao_sem_area_pct": 100.0,
+    "onde_tirou_igual_a_area_pct": 82.86,
+    "resto_da_area_igual_a_area_pct": 100.0,
+    "pontos_onde_tirou": 414034
+   },
+   "Bp": {
+    "onde_tirou_igual_ao_sem_area_pct": 100.0,
+    "onde_tirou_igual_a_area_pct": 82.86,
+    "resto_da_area_igual_a_area_pct": 100.0,
+    "pontos_onde_tirou": 414034
+   }
+  }
+ }
+}
