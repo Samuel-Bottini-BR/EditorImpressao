@@ -575,3 +575,12 @@ Fotos: `fotos-p5/destino18-0-endireitar-automatico.jpg`, `fotos-p5/destino18-2-p
 ### Rodando no GitHub (23/10, ~02:28 UTC)
 
 - Velocidade 39889702446 (`7d71b15` x `2a42cfb`); suíte 39889712829 (ramo em `2a4ce76`). Ler uma vez, no fim.
+
+### PAUSA (23/10, pedida pelo Samuel pela gerente) — estado exato
+
+- Feito e no ramo: P5 (`a220c2d`), conserto dos avisos na prévia baixa (`2a42cfb`), ONDE-PAREI com fotos e P6 (`2a4ce76`).
+- Suíte 39889712829 (ramo em `2a4ce76`): **2199 passaram, 0 falharam**, 78 pulados (o acervo); botões 221 ações, 0 falhas.
+- Velocidade 39889702446 (`7d71b15` x `2a42cfb`): **ainda rodando** na pausa; falta só ler o veredito no topo da rodada.
+- P6 está com o Samuel na Central: não mexer até a resposta.
+- Nenhuma janela do programa aberta, nenhum processo meu rodando.
+- Ao voltar: ler a rodada 39889702446, anotar aqui e entregar à gerente (o relatório já está nas seções de 23/10 acima).
