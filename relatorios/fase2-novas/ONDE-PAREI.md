@@ -271,5 +271,16 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
   contorno preto, 3839 pontos a mais; a chamada direta; o nome do botão).
   - Achado: o `test_no_pipeline_original_sem_retangulo_branco` (meu, de `b0af839`) usava `detectar_regioes=False`, com
     que o pipeline não usa marcação nenhuma: passava sem testar nada. Trocado para True (continua passando).
-- Somas (Horas 13, Escola 7, Opus Majus 3; 45 PDFs por código) rodando em `fase2-novas-prova`; velocidade
-  `39886669584` (`0acf2c7` → `f8691be`) rodando.
+- **Prova em páginas de verdade** (`scripts/tinta_papel.py somas23`, Horas 13, Escola 7, Opus Majus 3; sem área,
+  "papel branco" e "papel como o resto da página", A e B, em Original, Preto e branco e Melhorar = 45 PDFs por código;
+  antigo `0acf2c7` e novo `f8691be`, os dois na worktree parada `fase2-novas-prova`): **39 de 45 iguais**; os 6
+  diferentes são exatamente os de Preto e branco com "papel como o resto da página" (3 páginas × A e B), e no novo
+  esses 6 são **iguais ponto por ponto** ao "papel branco" (no antigo não eram). De fábrica (sem área e papel branco),
+  Original e Melhorar: tudo igual. Arquivos `somas-tinta-papel23-antigo-0acf2c7.json`, `somas-tinta-papel23-novo-f8691be.json`.
+- **Antes/depois** (fora do git): `relatorios/conferir/fase2-novas/pergunta-10/` (`scripts/tinta_papel.py pb23` no
+  antigo e no novo + `juntar23`). Escola 7, Preto e branco, área "manter a cor da tinta" (0; 0; 1; 0,065), cor como no
+  livro, papel como o resto da página. Caminho escrito em cada foto: girar 0° → dividir não → endireitar sim
+  (scantailor) → cortar as bordas sim → Preto e branco → a área. `escola_p007-preto_e_branco-letra-de-perto.jpg`
+  (metade esquerda do título ampliada 3 vezes): antes "PRINCIPAIS" com contorno preto pontilhado; depois a letra limpa,
+  sem contorno. `escola_p007-preto_e_branco-pagina.jpg`: a página inteira. 10.123 pontos mudam, todos na área.
+- Velocidade `39886669584` (`0acf2c7` → `f8691be`) rodando.

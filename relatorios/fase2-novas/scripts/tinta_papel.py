@@ -1,4 +1,4 @@
-"""Antes/depois do papel da "Tinta com a cor original" (2.18), 22/10/2026.
+r"""Antes/depois do papel da "Tinta com a cor original" (2.18), 22/10/2026.
 
 Resposta do Samuel à pergunta tc23-1 (o retângulo branco no papel creme do
 Original): "As duas: escolher o papel em cada área ('papel branco' ou 'papel
