@@ -73,13 +73,20 @@ def vigiar():
 
             def responder(w=w):
                 base.print_window(w, BRUTOS / f"caixa-{len(VISTAS)}.png", so_cliente=False)
-                b = w.defaultButton() or (w.buttons()[0] if w.buttons() else None)
-                if b is not None:
-                    anota(f"  respondi a caixa com '{b.text()}' (o botão já escolhido)")
-                    base.clique(w, b)
-                    base.esperar(0.5)
-                if w.isVisible():
-                    w.done(0)
+                try:
+                    b = w.defaultButton() or (w.buttons()[0] if w.buttons() else None)
+                    pref = CFG.get("respostas", {})
+                    for chave, rotulo in pref.items():
+                        if chave in w.text():
+                            b = next((x for x in w.buttons() if rotulo in x.text()), b)
+                    if b is not None:
+                        anota(f"  respondi a caixa com '{b.text()}'")
+                        base.clique(w, b)
+                        base.esperar(0.5)
+                    if w.isVisible():
+                        w.done(0)
+                except RuntimeError:
+                    pass
             QTimer.singleShot(1500, responder)
 
 
