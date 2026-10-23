@@ -38,7 +38,7 @@ ESTADO: dict = {"livro": CFG["acervo"], "eventos": []}
 
 from PySide6.QtCore import QPoint, Qt, QTimer  # noqa: E402
 from PySide6.QtWidgets import (QApplication, QDialog, QFileDialog, QLineEdit,  # noqa: E402
-                               QMessageBox, QPushButton)
+                               QMessageBox, QPushButton, QWidget)
 
 base.app.setAttribute(Qt.AA_DontUseNativeDialogs, True)
 N_PRINT = [0]
@@ -432,7 +432,11 @@ from ui.janela_dos_avisos import JanelaDosAvisos  # noqa: E402
 NOME_SAIDA = CFG["curto"] + " (pronto).pdf"
 
 
+VISTO = {"avisos": False, "confirmar": False}
+
+
 def na_confirmar(w):
+    VISTO["confirmar"] = True
     anota(f"janela de confirmar: '{w.windowTitle()}', destino sugerido {w.caminho}")
     base.gravar_textos(w, LOG, "janela de confirmar")
     w.destino.definir(SAIDA_PDF, NOME_SAIDA)
@@ -442,6 +446,8 @@ def na_confirmar(w):
 
 
 def nos_avisos(w):
+    VISTO["avisos"] = True
+    anota(f"a janela 'Antes de processar' apareceu {time.time() - T_CLIQUE:.0f} s depois do clique")
     anota(f"antes de processar: '{w.windowTitle()}' com {w.lista.count()} linhas; frase '{w._frase()}'")
     ESTADO["antes_de_processar"] = {"linhas": w.lista.count(), "frase": w._frase()}
     base.quando_abrir_janela(JanelaConfirmar, "processar-2b", BRUTOS, LOG, depois=na_confirmar, fechar=False)
@@ -451,7 +457,25 @@ def nos_avisos(w):
 base.quando_abrir_janela(JanelaDosAvisos, "processar-1-antes", BRUTOS, LOG, depois=nos_avisos, fechar=False)
 if not pendentes():
     base.quando_abrir_janela(JanelaConfirmar, "processar-2b", BRUTOS, LOG, depois=na_confirmar, fechar=False)
+anota(f"botão 'Confirmar e processar': visível={tc.botao_processar.isVisible()} ligado={tc.botao_processar.isEnabled()}")
+T_CLIQUE = time.time()
 base.clique(j, tc.botao_processar)
+esperar_ate(lambda: VISTO["avisos"] or VISTO["confirmar"], 30, 0.5)
+if not (VISTO["avisos"] or VISTO["confirmar"]):
+    bp = tc.botao_processar
+    cpt = bp.mapTo(j, bp.rect().center())
+    debaixo = j.childAt(cpt)
+    anota(f"PROBLEMA: o clique do Windows em 'Confirmar e processar' não abriu nada em 30 s. "
+          f"No ponto do clique ({cpt.x()},{cpt.y()}) está {type(debaixo).__name__} '{getattr(debaixo, 'text', lambda: '')()}'; "
+          f"página {tc.indice_pagina + 1}, aba {tc.aba_atual}, painel {tc.paineis.aberto}, janela ativa modal "
+          f"{QApplication.activeModalWidget()}, popup {QApplication.activePopupWidget()}, mouse preso {QWidget.mouseGrabber()}")
+    foto(j, "processar-nada-abriu")
+    ESTADO["clique_processar_falhou"] = True
+    QTimer.singleShot(0, bp.click)          # o mesmo botão, pelo Qt
+    esperar_ate(lambda: VISTO["avisos"] or VISTO["confirmar"], 120, 0.5)
+anota(f"depois do clique em 'Confirmar e processar', a primeira janela apareceu em {time.time() - T_CLIQUE:.0f} s")
+ESTADO["espera_confirmar_s"] = round(time.time() - T_CLIQUE)
+anota(f"janelas vistas: {VISTO}")
 base.esperar(8)
 foto(j, "processando")
 t0 = time.time()

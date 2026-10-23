@@ -48,20 +48,45 @@ _FILTRO = None
 
 def _por_fora_da_tela():
     """Toda janela que o programa abre por cima (caixa de aviso, diálogo, menu) vai para fora
-    da tela ANTES de aparecer: o Qt puxa diálogo e menu para dentro da tela do Samuel."""
-    global _FILTRO
-    from PySide6.QtCore import QEvent, QObject
+    da tela. Acréscimo dos testes com os livros (23/10/2026): o QDialog.exec põe a janela DENTRO
+    da tela (adjustPosition) depois do Show, então só o Show não basta - a "Antes de processar"
+    ficou na tela do Samuel. Agora: no Show, no Move e num relógio de 20 ms, qualquer janela de
+    cima que esteja perto da tela vai para fora, pelo Qt e pelo Windows (MoveWindow)."""
+    global _FILTRO, _GUARDA
+    from PySide6.QtCore import QEvent, QObject, QTimer
+    from PySide6.QtWidgets import QApplication
+
+    def tirar(obj, motivo):
+        try:
+            g = obj.frameGeometry()
+            if g.x() > -20000 and g.y() > -20000:
+                x, y = -31000 + (abs(g.x()) % 1000), -31000 + (abs(g.y()) % 1000)
+                obj.move(x, y)
+                if obj.testAttribute(__import__("PySide6.QtCore", fromlist=["Qt"]).Qt.WA_WState_Created):
+                    user32.MoveWindow(int(obj.winId()), x, y, g.width(), g.height(), True)
+                print(f"  (pus fora da tela [{motivo}]: {type(obj).__name__} '{obj.windowTitle()}' que estava em {g.x()},{g.y()})", flush=True)
+        except RuntimeError:
+            pass
 
     class Filtro(QObject):
         def eventFilter(self, obj, ev):  # noqa: N802
-            if ev.type() == QEvent.Show and hasattr(obj, "isWindow") and obj.isWindow():
-                g = obj.geometry()
-                if g.x() > -20000:
-                    obj.move(-31000 + (g.x() % 1000), -31000 + (g.y() % 1000))
-                    print(f"  (pus fora da tela: {type(obj).__name__} que ia abrir em {g.x()},{g.y()})", flush=True)
+            if ev.type() in (QEvent.Show, QEvent.Move) and hasattr(obj, "isWindow") and obj.isWindow():
+                tirar(obj, "evento")
+                QTimer.singleShot(0, lambda o=obj: tirar(o, "logo depois"))
             return False
     _FILTRO = Filtro()
     app.installEventFilter(_FILTRO)
+
+    def guarda():
+        for w in QApplication.topLevelWidgets():
+            if w.isVisible():
+                tirar(w, "relógio")
+    _GUARDA = QTimer()
+    _GUARDA.timeout.connect(guarda)
+    _GUARDA.start(20)
+
+
+_GUARDA = None
 
 
 def copia(nome_no_acervo: str, nome: str) -> Path:
@@ -323,7 +348,7 @@ def quando_abrir_janela(tipo, nome, saida: Path, txt: Path, depois=None, fechar=
         abertas = [w for w in QApplication.topLevelWidgets() if isinstance(w, tipo) and w.isVisible()]
         if not abertas:
             tentativas[0] += 1
-            if tentativas[0] < 200:
+            if tentativas[0] < 6000:
                 QTimer.singleShot(150, olhar)
             else:
                 print(f"  (nenhuma janela {tipo.__name__} abriu para {nome})", flush=True)

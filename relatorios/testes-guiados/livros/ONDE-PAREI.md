@@ -10,7 +10,16 @@ Ramo `testes-livros-2026-10-23` (a partir do `fase-1` em `1ba93cf`). Nenhuma lin
 
 | Livro | Situação |
 |---|---|
-| Boécio | em andamento |
+| Boécio | até o fim — `boecio.md` |
+| Palatino | em andamento |
+
+## Aviso sobre a tela do Samuel (23/10, 17:48–18:11)
+
+Nas primeiras rodadas do Boécio a janela "Antes de processar" (e por um instante a de escolher o PDF) **apareceu na
+tela do Samuel**, no canto de cima à esquerda: o Qt põe a janela de aviso dentro da tela depois de aberta, e o
+cuidado herdado do mapa só agia antes. Fechei só os meus processos (pelo PID guardado). Conserto no roteiro
+(`roteiros/base.py`): toda janela nova vai para fora da tela no Show, no Move e num relógio de 20 ms; testado (zero
+aparições na tela).
 
 ## Perguntas para o Samuel
 
