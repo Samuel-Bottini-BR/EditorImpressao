@@ -14,7 +14,8 @@ Ramo `testes-livros-2026-10-23` (a partir do `fase-1` em `1ba93cf`). Nenhuma lin
 | Palatino | até o fim — `palatino.md` |
 | Righetti | até o fim, mas sem dividir (trava) — `righetti.md` |
 | Siebmacher | até o fim — `siebmacher.md` |
-| Pesel | em andamento |
+| Pesel | até o fim — `pesel.md` |
+| Matemática | em andamento |
 
 ## Aviso sobre a tela do Samuel (23/10, 17:48–18:11)
 
