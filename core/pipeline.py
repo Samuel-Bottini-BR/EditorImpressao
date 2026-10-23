@@ -661,9 +661,28 @@ def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: floa
     else:
         reta = _rotacionar_em_volta_de(inteira, angulo, caixa)
     preparo = desentortar_scantailor.preparar_no_corte(reta, caixa, pagina, dpi)
-    _anotar_desentortar_saiu_sem(pagina, preparo.saiu_sem)
-    _anotar_desentortar_ainda_deformada(pagina, preparo.ainda_deformada)
+    if _julga_os_avisos_do_desentortar(projeto, dpi):
+        _anotar_desentortar_saiu_sem(pagina, preparo.saiu_sem)
+        _anotar_desentortar_ainda_deformada(pagina, preparo.ainda_deformada)
     return preparo.imagem, cortou, girar
+
+
+def _julga_os_avisos_do_desentortar(projeto: Projeto, dpi) -> bool:
+    """Item 2.12, conserto de 23/10/2026 (achado ao fazer os prints da janela
+    para a resposta P5): so o desenho da pagina na resolucao do livro
+    (projeto.qualidade_dpi, a do PDF final) poe ou tira os avisos do
+    desentortar. O desentortar do ScanTailor nao acha as curvas na resolucao
+    baixa (medido no Destino do socialismo 18 e no Righetti 96: a 100, 150 e
+    200 DPI nao mexe; a 300 mexe), entao a prévia rapida (110 DPI), as
+    miniaturas e os cartoes TIRAVAM o aviso que o desenho a 300 DPI tinha
+    posto: o "Desentortar não usado" e o "A página ainda saiu deformada"
+    sumiam da faixa antes do clique. dpi None (quem chama nao sabe) tambem
+    nao julga. Arriscado: julgar em qualquer resolucao (volta o aviso que
+    pisca e some)."""
+    try:
+        return dpi is not None and float(dpi) >= float(projeto.qualidade_dpi) - 0.5
+    except (TypeError, ValueError, AttributeError):
+        return False
 
 
 def _anotar_desentortar_saiu_sem(pagina: ConfigPagina, saiu_sem: bool) -> None:

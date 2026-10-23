@@ -252,3 +252,50 @@ def test_righetti_96_o_botao_da_certo_e_nao_aparece_pergunta(tmp_path):
     assert maior.shape[1] > hoje.shape[1]
     assert analise.DESENTORTAR_AINDA_DEFORMADA not in pagina.alertas
     assert analise.DESENTORTAR_SAIU_SEM not in pagina.alertas
+
+
+# ------------------------------------------------------------- REVERSÃO: o aviso que sumia
+
+def test_reversao_previa_em_resolucao_baixa_nao_tira_os_avisos(monkeypatch):
+    """REVERSÃO (§4.7) do bug de 23/10/2026 (achado nos prints da janela da
+    resposta P5): o desentortar não acha as curvas em resolução baixa, então a
+    prévia rápida (110 DPI), as miniaturas e os cartões desenhavam a página
+    "sem estrago" e TIRAVAM o aviso que o desenho na resolução do livro tinha
+    posto: o "Desentortar não usado" sumia da faixa antes do clique (no código
+    de antes, a220c2d, o aviso sai aqui). Agora só o desenho na resolução do
+    livro (projeto.qualidade_dpi) põe ou tira os avisos do desentortar."""
+    from core import pipeline
+
+    img = pagina_curva(curva=0)
+    projeto, folha, pagina = _livro(ds.AUTOMATICO)
+    pagina.alertas = [analise.DESENTORTAR_SAIU_SEM]
+    monkeypatch.setattr(ds, "preparar_no_corte",
+                        lambda reta, caixa, pag, dpi=None, **k: ds.Preparo(reta.copy(), False, 0, 0.0))
+    pipeline.preparar_metade(img, folha, pagina, projeto, dpi=110)
+    assert analise.DESENTORTAR_SAIU_SEM in pagina.alertas, "a prévia rápida tirou o aviso"
+    pagina.alertas = [analise.DESENTORTAR_AINDA_DEFORMADA]
+    pipeline.preparar_metade(img, folha, pagina, projeto, dpi=110)
+    assert analise.DESENTORTAR_AINDA_DEFORMADA in pagina.alertas
+    pipeline.preparar_metade(img, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+    assert analise.DESENTORTAR_AINDA_DEFORMADA not in pagina.alertas
+
+
+@precisa_da_dll
+@pytest.mark.skipif(not DESTINO.is_file(), reason="sem 'Livros para editar' (só no PC do Samuel)")
+def test_reversao_destino_18_o_aviso_fica_depois_da_previa_rapida(tmp_path):
+    """REVERSÃO (§4.7), o mesmo bug na página de verdade: Destino do socialismo
+    18, direita, automático. O desenho na resolução do livro põe o aviso; o
+    desenho a 110 DPI (a prévia rápida) não o tira mais (no a220c2d tirava)."""
+    from core import pipeline
+    from core.pdf_io import abrir_pdf
+
+    _, _, pagina, projeto = _pagina_do_acervo(tmp_path, DESTINO, 17, 0, True, "direita")
+    pagina.desentortar = ds.AUTOMATICO
+    doc = abrir_pdf(str(tmp_path / "pagina.pdf"))
+    try:
+        pipeline.renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
+        assert analise.DESENTORTAR_SAIU_SEM in pagina.alertas
+        pipeline.renderizar_pagina(doc, projeto, pagina, dpi=110)
+        assert analise.DESENTORTAR_SAIU_SEM in pagina.alertas, "a prévia rápida tirou o aviso"
+    finally:
+        doc.close()
