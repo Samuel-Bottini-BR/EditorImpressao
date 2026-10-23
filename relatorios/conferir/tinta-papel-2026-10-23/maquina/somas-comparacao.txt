@@ -1,0 +1,3 @@
+36 casos antigo 36 novo
+iguais 36 de 36 diferentes: []
+somas distintas: 36 de 36
