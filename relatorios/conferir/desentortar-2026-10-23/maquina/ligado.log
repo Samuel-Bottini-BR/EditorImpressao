@@ -1,0 +1,29 @@
+curvada {"_avisos": {"hoje": [], "ligado": [], "botao": [], "hoje_pb": [], "ligado_pb": [], "botao_pb": []}, "_segundos": {"hoje": 6.2, "ligado": 8.1, "botao": 8.0, "hoje_pb": 6.4, "ligado_pb": 5.5, "botao_pb": 6.1}, "_ligado_igual_a_hoje": false}
+destino18 {"_avisos": {"hoje": [], "ligado": ["desentortar_saiu_sem"], "botao": ["desentortar_ainda_deformada"], "hoje_pb": [], "ligado_pb": ["desentortar_saiu_sem"], "botao_pb": ["desentortar_ainda_deformada"]}, "_segundos": {"hoje": 4.6, "ligado": 8.3, "botao": 9.4, "hoje_pb": 4.1, "ligado_pb": 4.1, "botao_pb": 4.9}, "_ligado_igual_a_hoje": false}
+righetti96 {"_avisos": {"hoje": [], "ligado": ["desentortar_saiu_sem"], "botao": [], "hoje_pb": [], "ligado_pb": ["desentortar_saiu_sem"], "botao_pb": []}, "_segundos": {"hoje": 2.0, "ligado": 2.4, "botao": 3.3, "hoje_pb": 1.3, "ligado_pb": 1.1, "botao_pb": 1.4}, "_ligado_igual_a_hoje": true}
+cursus176 {"_avisos": {"hoje": [], "ligado": [], "botao": [], "hoje_pb": [], "ligado_pb": [], "botao_pb": []}, "_segundos": {"hoje": 3.6, "ligado": 5.9, "botao": 6.0, "hoje_pb": 2.6, "ligado_pb": 2.8, "botao_pb": 2.9}, "_ligado_igual_a_hoje": false}
+cursus176m {"_avisos": {"hoje": [], "ligado": ["desentortar_saiu_sem"], "botao": ["desentortar_ainda_deformada"], "hoje_pb": [], "ligado_pb": ["desentortar_saiu_sem"], "botao_pb": ["desentortar_ainda_deformada"]}, "_segundos": {"hoje": 3.4, "ligado": 5.2, "botao": 5.1, "hoje_pb": 3.1, "ligado_pb": 3.0, "botao_pb": 3.1}, "_ligado_igual_a_hoje": false}
+cursus151 {"_avisos": {"hoje": [], "ligado": ["desentortar_saiu_sem"], "botao": [], "hoje_pb": [], "ligado_pb": ["desentortar_saiu_sem"], "botao_pb": []}, "_segundos": {"hoje": 4.1, "ligado": 6.6, "botao": 6.9, "hoje_pb": 2.6, "ligado_pb": 2.3, "botao_pb": 2.6}, "_ligado_igual_a_hoje": false}
+matematica65 {"_avisos": {"hoje": [], "ligado": [], "botao": [], "hoje_pb": [], "ligado_pb": [], "botao_pb": []}, "_segundos": {"hoje": 4.5, "ligado": 6.6, "botao": 7.1, "hoje_pb": 3.7, "ligado_pb": 3.7, "botao_pb": 3.6}, "_ligado_igual_a_hoje": false}
+matematica31 {"_avisos": {"hoje": [], "ligado": [], "botao": [], "hoje_pb": [], "ligado_pb": [], "botao_pb": []}, "_segundos": {"hoje": 4.6, "ligado": 7.4, "botao": 5.3, "hoje_pb": 3.6, "ligado_pb": 3.8, "botao_pb": 3.4}, "_ligado_igual_a_hoje": false}
+marial41 {"_avisos": {"hoje": [], "ligado": [], "botao": [], "hoje_pb": [], "ligado_pb": [], "botao_pb": []}, "_segundos": {"hoje": 2.3, "ligado": 5.5, "botao": 5.4, "hoje_pb": 2.9, "ligado_pb": 2.9, "botao_pb": 2.9}, "_ligado_igual_a_hoje": false}
+razoes57 {"_avisos": {"hoje": [], "ligado": [], "botao": [], "hoje_pb": [], "ligado_pb": [], "botao_pb": []}, "_segundos": {"hoje": 13.4, "ligado": 21.9, "botao": 21.9, "hoje_pb": 16.0, "ligado_pb": 14.3, "botao_pb": 14.3}, "_ligado_igual_a_hoje": false}
+Traceback (most recent call last):
+  File "D:\programas\EditorImpressao\.claude\worktrees\v212\relatorios\conferir\desentortar-2026-10-23\scripts\v212.py", line 502, in <module>
+    projeto = Projeto.de_dicionario(json.loads(arq.read_text(encoding="utf-8")))
+                     ^^^^^^
+  File "D:\programas\EditorImpressao\.claude\worktrees\v212\relatorios\conferir\desentortar-2026-10-23\scripts\v212.py", line 497, in main
+    projeto = _projeto(raiz / "gabarito" / "paginas" / "escola_p007.pdf", pasta / "x.pdf")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    arq.write_text(json.dumps(projeto.para_dicionario(), ensure_ascii=False), encoding="utf-8")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\programas\EditorImpressao\.claude\worktrees\v212\relatorios\conferir\desentortar-2026-10-23\scripts\v212.py", line 400, in m_ligado
+    (pasta / f"{nome}.json").write_text(json.dumps(num, ensure_ascii=False, indent=1), encoding="utf-8")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\programas\EditorImpressao\.claude\worktrees\v212\relatorios\conferir\desentortar-2026-10-23\scripts\v212.py", line 340, in _um_caso
+    # ------------------------------------------------------------------ 2. ligado
+  File "D:\programas\EditorImpressao\.claude\worktrees\v212\relatorios\conferir\desentortar-2026-10-23\scripts\v212.py", line 75, in _pdf_de_uma_pagina
+  File "D:\programas\EditorImpressao\.venv\Lib\site-packages\pymupdf\__init__.py", line 3001, in __init__
+    raise FileNotFoundError(f"no such file: '{filename}'")
+pymupdf.FileNotFoundError: no such file: 'D:\Livros para editar\3 - TOMISMO\Santiago Ram√_rez - De Analogia - 4.pdf'
+FIM

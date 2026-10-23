@@ -1,0 +1,8 @@
+ok   curvada3: a análise terminou e abriu o Conferir
+ok   curvada3: a lista mudou a página para 'Automático (pelas linhas do texto)'
+ok   curvada3: o sinal "Desentortando esta página, um momento..." apareceu na barra de baixo
+ok   curvada3: o sinal sumiu depois da medida (1.2 s)
+ok   curvada3: a tela não travou enquanto media: maior parada 33 ms (limite que usei: 500 ms)
+ok   curvada3: aviso "Desentortar não usado": False (esperado False)
+ok   WM_CLOSE fechou a janela
+7 de 7

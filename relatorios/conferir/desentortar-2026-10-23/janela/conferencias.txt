@@ -1,0 +1,32 @@
+ok   destino18: a análise terminou e abriu o Conferir
+ok   destino18: a lista mudou a página para 'Automático (pelas linhas do texto)'
+ok   destino18: o sinal "Desentortando esta página, um momento..." apareceu na barra de baixo
+ok   destino18: o sinal sumiu depois da medida (5.2 s)
+ok   destino18: a tela não travou enquanto media: maior parada 37 ms (limite que usei: 500 ms)
+ok   destino18: na prévia Rápida apareceu o aviso "Desentortar não usado"
+ok   destino18: o botão diz "Desentortar aumentando a página"
+ok   destino18: o clique no botão ligou o "aumentando a página"
+ok   destino18: depois do clique, o aviso "A página ainda saiu deformada" (pergunta, não volta sozinho)
+ok   destino18: a página continua aumentada (o programa não desfez sozinho)
+ok   destino18: os botões dizem "Desfazer" e "Manter assim"
+ok   destino18: "Desfazer" voltou a página sem desentortar, com o aviso de antes (['desentortar_saiu_sem'])
+ok   destino18: tecla Ctrl+Z na janela que não está ativa: fez efeito? False
+ok   destino18: o Desfazer (Ctrl+Z) trouxe de volta a página aumentada e a pergunta
+ok   destino18: "Manter assim" deixou a página conferida e aumentada
+ok   WM_CLOSE fechou a janela
+ok   destino18: a análise terminou e abriu o Conferir (projeto aberto de novo)
+ok   destino18: aberto de novo, a página continua 'Automático' e aumentada
+ok   destino18: aberto de novo, mediu de novo e a página continua conferida ("Manter assim" vale) - avisos ['desentortar_ainda_deformada'], conferida=True
+ok   destino18: aberto de novo, a tela não travou: maior parada 23 ms
+ok   destino18: aberto de novo, o Desfazer (Ctrl+Z) ainda desfaz a última ação (conferida=False, aumentada=True)
+ok   WM_CLOSE fechou a janela
+ok   righetti96: a análise terminou e abriu o Conferir
+ok   righetti96: a lista mudou a página para 'Automático (pelas linhas do texto)'
+ok   righetti96: o sinal "Desentortando esta página, um momento..." apareceu na barra de baixo
+ok   righetti96: o sinal sumiu depois da medida (1.2 s)
+ok   righetti96: a tela não travou enquanto media: maior parada 34 ms (limite que usei: 500 ms)
+ok   righetti96: aviso "Desentortar não usado": True (esperado True)
+ok   righetti96: o clique no botão ligou o "aumentando a página"
+ok   righetti96: depois do botão, pergunta "ainda deformada": False (esperado False)
+ok   WM_CLOSE fechou a janela
+31 de 31

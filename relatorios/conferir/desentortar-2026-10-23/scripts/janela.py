@@ -43,6 +43,8 @@ _la = os.environ["LOCALAPPDATA"]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import v212  # noqa: E402  (só a lista de casos; ele troca o LOCALAPPDATA ao ser importado)
 os.environ["LOCALAPPDATA"] = _la
+# as páginas de teste ficam no rascunho do v212.py (fora da pasta de trabalho desta janela)
+v212._SINTETICA = r"C:\Users\fotog\AppData\Local\Temp\v212_localappdata\curvada.pdf"
 
 user32 = ctypes.windll.user32
 
@@ -101,6 +103,14 @@ def sinal(tela):
     return s is not None and s.isVisible()
 
 
+def desfazer(j, tela):
+    """O Ctrl+Z da tela: a tecla não chega a uma janela que não está ativa (a janela do roteiro
+    fica fora da tela e nunca é ativada, para não roubar o teclado do Samuel); então o clique do
+    mouse no botão "Desfazer (Ctrl+Z)" da barra de baixo, que chama a mesma ação."""
+    base.clique(j, tela.botao_desfazer_embaixo)
+    base.esperar(0.8)
+
+
 def ctrl_z(j):
     """Ctrl+Z por mensagens do Windows: Ctrl apertado no estado do teclado deste fio
     (SetKeyboardState) e as teclas postadas na janela."""
@@ -145,8 +155,6 @@ def ligar(nome, j, tela, idx, modo):
     tela.escolher_ferramenta(FERRAMENTA_ENDIREITAR)
     base.esperar(4)
     pagina = tela.projeto.paginas[idx]
-    rel = Relogio()
-    rel.comecar()
     t0 = time.perf_counter()
     combo = tela.combo_desentortar
     combo.setCurrentIndex(combo.findData(modo))
@@ -156,6 +164,10 @@ def ligar(nome, j, tela, idx, modo):
     base.conferir(viu_sinal, f"{nome}: o sinal \"{tela.SINAL_DESENTORTANDO}\" apareceu na barra de baixo")
     base.print_window(j, SAIDA / f"{nome}-1-logo-depois-de-ligar.png")
     tela.escolher_ferramenta(FERRAMENTA_FILTROS)
+    # o relógio começa depois das duas ações do roteiro (escolher na lista, trocar de aba),
+    # que rodam no fio da tela de propósito; dali até o sinal sumir, só a medida por trás roda
+    rel = Relogio()
+    rel.comecar()
     medido = esperar_que(lambda: not sinal(tela), 90)
     t_medida = time.perf_counter() - t0
     base.esperar(1)
@@ -201,10 +213,14 @@ def caso_destino():
     base.print_window(j, SAIDA / f"{nome}-4-depois-do-desfazer.png")
 
     ctrl_z(j)
+    base.esperar(1)
+    base.conferir(True, f"{nome}: tecla Ctrl+Z na janela que não está ativa: fez efeito? {pagina.desentortar_aumentar}")
+    if not pagina.desentortar_aumentar:
+        desfazer(j, tela)
     esperar_que(lambda: analise.DESENTORTAR_AINDA_DEFORMADA in pagina.alertas, 60)
     base.esperar(12)
     base.conferir(pagina.desentortar_aumentar and analise.DESENTORTAR_AINDA_DEFORMADA in pagina.alertas,
-                  f"{nome}: o Ctrl+Z trouxe de volta a página aumentada e a pergunta")
+                  f"{nome}: o Desfazer (Ctrl+Z) trouxe de volta a página aumentada e a pergunta")
     base.print_window(j, SAIDA / f"{nome}-5-depois-do-ctrl-z.png")
 
     base.clique(j, tela.botao_esta_certo)     # Manter assim
@@ -237,10 +253,10 @@ def caso_destino():
     base.esperar(6)
     base.print_window(j, SAIDA / f"{nome}-7-aberto-de-novo.png")
     # Ctrl+Z depois de abrir de novo: o histórico de ações volta com o projeto
-    ctrl_z(j)
+    desfazer(j, tela)
     base.esperar(10)
     base.conferir(not p2.revisada or not p2.desentortar_aumentar,
-                  f"{nome}: aberto de novo, o Ctrl+Z ainda desfaz a última ação (conferida={p2.revisada}, "
+                  f"{nome}: aberto de novo, o Desfazer (Ctrl+Z) ainda desfaz a última ação (conferida={p2.revisada}, "
                   f"aumentada={p2.desentortar_aumentar})")
     base.print_window(j, SAIDA / f"{nome}-8-aberto-de-novo-ctrl-z.png")
     base.fechar(j)
@@ -276,7 +292,7 @@ def principal():
         caso_destino()
     if "righetti96" in casos:
         caso_simples("righetti96", "direita", True, True, False)
-    for c in ("curvada", "curvada2"):
+    for c in ("curvada", "curvada2", "curvada3"):
         if c in casos:
             caso_simples(c, "inteira", False, False, False)
     base.gravar_resultados(SAIDA)

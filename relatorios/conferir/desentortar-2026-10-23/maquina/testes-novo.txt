@@ -1,0 +1,15 @@
+== test_desentortar_scantailor
+........................................                                 [100%]
+40 passed in 11.32s
+== test_desentortar_protecao
+...............                                                          [100%]
+15 passed in 9.34s
+== test_desentortar_conferir_de_novo
+..............                                                           [100%]
+14 passed in 29.24s
+== test_desentortar_medida_por_tras
+......                                                                   [100%]
+6 passed in 8.34s
+== test_desentortar_na_tela
+.....                                                                    [100%]
+5 passed in 2.95s
