@@ -19,6 +19,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QCheckBox,
     QDialog,
     QDialogButtonBox,
     QFrame,
@@ -110,6 +111,21 @@ class JanelaConfirmar(QDialog):
         resumo = QLabel(self._frase_do_livro())
         estilo.estilizar(resumo, lambda: f"color: {estilo.TEXTO_FRACO};")
         camadas.addWidget(resumo)
+
+        # Itens 2.10 e 1.6 (CONTROLE MINIMO, provisorio ate o layout; anotado
+        # em relatorios/fase2-novas/ONDE-PAREI.md): o PDF em duas camadas, como
+        # opcao (Samuel, 01/10/2026). Desmarcada de fabrica.
+        self.caixa_duas_camadas = QCheckBox(
+            "Gravar em duas camadas: a letra em cima, o fundo embaixo (arquivo bem menor)")
+        self.caixa_duas_camadas.setToolTip(
+            "O papel vai numa imagem pequena embaixo, e o que se imprime vai em cima, "
+            "nítido. O arquivo fica bem menor; a camada de cima tem uma perda pequena "
+            "(como uma foto JPEG de qualidade alta). Páginas só em preto e branco saem como "
+            "sempre.")
+        self.caixa_duas_camadas.setChecked(bool(getattr(projeto, "pdf_em_duas_camadas", False)))
+        self.caixa_duas_camadas.toggled.connect(
+            lambda marcada: setattr(self.projeto, "pdf_em_duas_camadas", bool(marcada)))
+        camadas.addWidget(self.caixa_duas_camadas)
 
         botoes = QDialogButtonBox()
         self.botao_processar = botoes.addButton(

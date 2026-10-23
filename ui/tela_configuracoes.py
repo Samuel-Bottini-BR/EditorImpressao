@@ -7,6 +7,9 @@ as partes ficam numa lista à esquerda e, clicando numa, ela aparece à direita.
 As partes de hoje:
     Aparência            o tema (escuro, cinza de fábrica, claro).
     Atalhos de teclado   cada atalho, com captura de tecla e aviso de conflito (a tela de antes).
+    Velocidade           páginas ao mesmo tempo (item 2.16; juntado em 23/10/2026).
+    Medidas e receitas   cm/mm/polegadas e a receita do livro novo (item 2.19).
+    Impressão            margem da encadernação e a beirada que a impressora não imprime (2.6).
 
 Ainda não entram (não existem no programa; não foram inventadas): "Para todos os livros" (a
 troca do retângulo do corte do G6 para todos os livros) e o "Lado direito" (rodada 14, 902 C:
@@ -28,6 +31,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
     QButtonGroup,
+    QComboBox,
     QDialog,
     QGridLayout,
     QHBoxLayout,
@@ -44,7 +48,9 @@ from PySide6.QtWidgets import (
 
 from ui import estilo
 
-PARTES = ("Aparência", "Atalhos de teclado")
+# Juncao de 23/10/2026: as tres ultimas sao dos itens 2.16, 2.19 e 2.6 (ver
+# _parte_velocidade); ficam no fim para nao mudar a ordem das do layout.
+PARTES = ("Aparência", "Atalhos de teclado", "Velocidade", "Medidas e receitas", "Impressão")
 
 
 class TelaConfiguracoes(QDialog):
@@ -76,6 +82,9 @@ class TelaConfiguracoes(QDialog):
         self.pilha = QStackedWidget()
         self.pilha.addWidget(self._parte_aparencia())
         self.pilha.addWidget(self._parte_atalhos())
+        self.pilha.addWidget(self._parte_velocidade())
+        self.pilha.addWidget(self._parte_medidas())
+        self.pilha.addWidget(self._parte_impressao())
         corpo.addWidget(self.pilha, 1)
         raiz.addLayout(corpo, 1)
         self.lista.currentRowChanged.connect(self.pilha.setCurrentIndex)
@@ -135,6 +144,128 @@ class TelaConfiguracoes(QDialog):
         else:
             estilo.definir_tema(nome)
             estilo.reaplicar_em_tudo()
+
+    # --- as partes do Implementador B (juncao de 23/10/2026) -----------------
+    # Os controles minimos dos itens 2.16, 2.19 e 2.6 (ramo
+    # fase2-ferramentas-2026-10-22) eram linhas soltas na tela de antes; na
+    # juncao com o layout em partes (etapa 7) viraram tres partes no fim da
+    # lista, com os mesmos controles, nomes e titulos. Provisorio: o lugar
+    # final e do agente de layout. Seguro mudar: a ordem das partes.
+
+    def _parte_velocidade(self) -> QWidget:
+        """Item 2.16 (CONTROLE MINIMO, provisorio ate o layout): quantas paginas
+        o programa faz ao mesmo tempo. De fabrica todos os nucleos, como o
+        ScanTailor; "Uma página por vez" e o jeito de antes (o desligar da
+        regra 8)."""
+        parte = QWidget()
+        caixa = QVBoxLayout(parte)
+        caixa.setContentsMargins(24, 18, 24, 12)
+        caixa.setSpacing(10)
+        self._cabeca(caixa, "Velocidade", "Quantas páginas o programa faz ao mesmo tempo. Só muda a velocidade, nunca o resultado.")
+        linha_nucleos = QHBoxLayout()
+        linha_nucleos.addWidget(QLabel("Páginas ao mesmo tempo:"))
+        self.combo_nucleos = QComboBox()
+        import os
+
+        total = os.cpu_count() or 1
+        self.combo_nucleos.addItem(f"Todos os núcleos do processador ({total})", 0)
+        self.combo_nucleos.addItem("Uma página por vez (como antes)", 1)
+        for n in (2, 4, 8):
+            if n < total:
+                self.combo_nucleos.addItem(f"{n} páginas", n)
+        indice = self.combo_nucleos.findData(int(configuracoes.ler("nucleos") or 0))
+        self.combo_nucleos.setCurrentIndex(max(0, indice))
+        self.combo_nucleos.setToolTip(
+            "Mais páginas ao mesmo tempo = o livro fica pronto mais rápido, usando mais "
+            "memória. O resultado é o mesmo. O programa usa menos se faltar memória.")
+        self.combo_nucleos.currentIndexChanged.connect(
+            lambda _i: configuracoes.escrever("nucleos", int(self.combo_nucleos.currentData())))
+        linha_nucleos.addWidget(self.combo_nucleos, 1)
+        caixa.addLayout(linha_nucleos)
+        caixa.addStretch()
+        return parte
+
+    def _parte_medidas(self) -> QWidget:
+        """Item 2.19 (CONTROLE MINIMO, provisorio ate o layout): a unidade das
+        medidas na tela (core/unidades.py; de fabrica centimetros) e a
+        receita de todo livro novo (core/perfis.py; de fabrica nenhuma)."""
+        parte = QWidget()
+        caixa = QVBoxLayout(parte)
+        caixa.setContentsMargins(24, 18, 24, 12)
+        caixa.setSpacing(10)
+        self._cabeca(caixa, "Medidas e receitas", "A unidade das medidas na tela e a receita com que todo livro novo começa.")
+        from core import perfis, unidades
+
+        linha_unidade = QHBoxLayout()
+        linha_unidade.addWidget(QLabel("Medidas em:"))
+        self.combo_unidade = QComboBox()
+        for codigo in unidades.UNIDADES:
+            self.combo_unidade.addItem(unidades.NOMES[codigo], codigo)
+        self.combo_unidade.setCurrentIndex(max(0, self.combo_unidade.findData(unidades.da_maquina())))
+        self.combo_unidade.currentIndexChanged.connect(
+            lambda _i: configuracoes.escrever(unidades.CHAVE_DAS_CONFIGURACOES,
+                                              self.combo_unidade.currentData()))
+        linha_unidade.addWidget(self.combo_unidade, 1)
+        caixa.addLayout(linha_unidade)
+        linha_receita = QHBoxLayout()
+        linha_receita.addWidget(QLabel("Receita de todo livro novo:"))
+        self.combo_receita_nova = QComboBox()
+        for nome in perfis.nomes():
+            self.combo_receita_nova.addItem(nome, nome)
+        atual = perfis.do_livro_novo() or perfis.NOME_DE_FABRICA
+        self.combo_receita_nova.setCurrentIndex(max(0, self.combo_receita_nova.findData(atual)))
+        self.combo_receita_nova.setToolTip(
+            "As caixinhas com que todo livro novo começa. As receitas se guardam na tela "
+            "\"O que fazer\".")
+        self.combo_receita_nova.currentIndexChanged.connect(
+            lambda _i: perfis.definir_do_livro_novo(self.combo_receita_nova.currentData()))
+        linha_receita.addWidget(self.combo_receita_nova, 1)
+        caixa.addLayout(linha_receita)
+        caixa.addStretch()
+        return parte
+
+    def _parte_impressao(self) -> QWidget:
+        """Item 2.6 (CONTROLE MINIMO, provisorio ate o layout): as duas medidas
+        da encadernacao que dependem da impressora (g11, 14/10/2026). Ficam nas
+        escolhas da janela "Montar para imprimir" (configuracoes.json, chave
+        "impressao")."""
+        parte = QWidget()
+        caixa = QVBoxLayout(parte)
+        caixa.setContentsMargins(24, 18, 24, 12)
+        caixa.setSpacing(10)
+        self._cabeca(caixa, "Impressão", "As duas medidas da encadernação que dependem da impressora.")
+        from PySide6.QtWidgets import QDoubleSpinBox
+
+        from core import impressao as imp
+
+        opcoes_de_impressao = imp.OpcoesDeImpressao.de_dicionario(configuracoes.ler("impressao"))
+        linha_impressao = QHBoxLayout()
+        linha_impressao.addWidget(QLabel("Margem da encadernação:"))
+        self.margem_da_impressao = QDoubleSpinBox()
+        self.margem_da_impressao.setRange(0.0, 50.0)
+        self.margem_da_impressao.setDecimals(1)
+        self.margem_da_impressao.setSuffix(" mm")
+        self.margem_da_impressao.setValue(opcoes_de_impressao.margem_mm)
+        linha_impressao.addWidget(self.margem_da_impressao)
+        linha_impressao.addWidget(QLabel("A impressora não imprime:"))
+        self.borda_da_impressora = QDoubleSpinBox()
+        self.borda_da_impressora.setRange(0.0, 20.0)
+        self.borda_da_impressora.setDecimals(1)
+        self.borda_da_impressora.setSuffix(" mm da beirada")
+        self.borda_da_impressora.setValue(opcoes_de_impressao.borda_da_impressora_mm)
+        linha_impressao.addWidget(self.borda_da_impressora)
+        caixa.addLayout(linha_impressao)
+
+        def guardar_impressao(_valor=None):
+            atual = imp.OpcoesDeImpressao.de_dicionario(configuracoes.ler("impressao"))
+            atual.margem_mm = float(self.margem_da_impressao.value())
+            atual.borda_da_impressora_mm = float(self.borda_da_impressora.value())
+            configuracoes.escrever("impressao", atual.para_dicionario())
+
+        self.margem_da_impressao.valueChanged.connect(guardar_impressao)
+        self.borda_da_impressora.valueChanged.connect(guardar_impressao)
+        caixa.addStretch()
+        return parte
 
     def _parte_atalhos(self) -> QWidget:
         """Atalhos de teclado: a tela de antes, inteira."""

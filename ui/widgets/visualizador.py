@@ -650,14 +650,21 @@ class Visualizador(QWidget):
             pintor.setPen(QColor("white"))
             pintor.drawText(caixa, Qt.AlignCenter, texto)
 
+        # Item 2.19: na unidade escolhida em Configuracoes (de fabrica cm, o
+        # mesmo texto de sempre: "1.23 cm")
+        from core import unidades
+
+        unidade = unidades.da_maquina()
         alcas = self._alcas(r)
-        etiqueta(alcas["o"] + QPoint(-30, 0), f'{medidas["esquerda"]:.2f} cm')
-        etiqueta(alcas["l"] + QPoint(30, 0), f'{medidas["direita"]:.2f} cm')
-        etiqueta(alcas["n"] + QPoint(0, -18), f'{medidas["cima"]:.2f} cm')
-        etiqueta(alcas["s"] + QPoint(0, 18), f'{medidas["baixo"]:.2f} cm')
+        etiqueta(alcas["o"] + QPoint(-30, 0), unidades.texto(medidas["esquerda"], unidade))
+        etiqueta(alcas["l"] + QPoint(30, 0), unidades.texto(medidas["direita"], unidade))
+        etiqueta(alcas["n"] + QPoint(0, -18), unidades.texto(medidas["cima"], unidade))
+        etiqueta(alcas["s"] + QPoint(0, 18), unidades.texto(medidas["baixo"], unidade))
+        largura_na_unidade = unidades.de_cm(medidas["largura_final"], unidade)
         etiqueta(
             QPoint(r.center().x(), r.top() - 26),
-            f'{medidas["largura_final"]:.2f} × {medidas["altura_final"]:.2f} cm',
+            f'{largura_na_unidade:.{unidades.CASAS[unidade]}f} × '
+            f'{unidades.texto(medidas["altura_final"], unidade)}',
         )
 
     def _desenhar_guias(self, pintor: QPainter) -> None:

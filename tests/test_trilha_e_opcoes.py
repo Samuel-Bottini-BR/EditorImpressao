@@ -43,15 +43,18 @@ def app():
 
 
 def test_as_nove_ferramentas_estao_na_trilha(app):
-    assert len(ORDEM_DA_TRILHA) == 9
+    """Desde o item 2.18 (22/10/2026) sao dez: "ajustar" (mover e mudar o
+    tamanho da area) entra depois da "cor"."""
+    assert len(ORDEM_DA_TRILHA) == 10
     esperadas = ["retangulo", "elipse", "laco", "poligono", "pincel",
-                 "varinha", "cor", "zoom", "mao"]
+                 "varinha", "cor", "ajustar", "zoom", "mao"]
     assert list(ORDEM_DA_TRILHA) == esperadas
 
 
 def test_cada_ferramenta_tem_a_letra_do_desenho(app):
     esperados = {"retangulo": "R", "elipse": "O", "laco": "L", "poligono": "P",
-                 "pincel": "B", "varinha": "V", "cor": "C", "zoom": "Z", "mao": "E"}
+                 "pincel": "B", "varinha": "V", "cor": "C", "ajustar": "A",   # item 2.18
+                 "zoom": "Z", "mao": "E"}
     assert ATALHOS_DAS_FERRAMENTAS == esperados
 
 

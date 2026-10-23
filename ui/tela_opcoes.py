@@ -87,10 +87,12 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QRadioButton,
     QScrollArea,
@@ -102,6 +104,7 @@ from PySide6.QtWidgets import (
 from core import borda_preta
 from core import dividir_scantailor
 from core import endireitar_scantailor
+from core import margens_scantailor
 from core import misto
 from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
@@ -190,6 +193,34 @@ class TelaOpcoes(QWidget):
         opcoes = QVBoxLayout(cartao)
         opcoes.setContentsMargins(20, 16, 20, 16)
         opcoes.setSpacing(6)
+
+        # Item 2.19 (CONTROLE MINIMO, provisorio ate o layout; anotado em
+        # relatorios/fase2-novas/ONDE-PAREI.md): as receitas do livro, como os
+        # perfis do ScanTailor (core/perfis.py). Por uma receita no livro
+        # marca as caixinhas abaixo; guardar leva as caixinhas de agora.
+        linha_receita = QHBoxLayout()
+        linha_receita.setSpacing(6)
+        linha_receita.addWidget(QLabel("Receita:"))
+        self.combo_receitas = QComboBox()
+        self.combo_receitas.setToolTip(
+            "Um jeito de trabalhar guardado com um nome: as caixinhas desta tela. "
+            "\"De fábrica\" é o de um livro novo sem nada mudado.")
+        linha_receita.addWidget(self.combo_receitas, 1)
+        self.botao_por_receita = QPushButton("pôr neste livro")
+        self.botao_por_receita.clicked.connect(self._por_receita)
+        linha_receita.addWidget(self.botao_por_receita)
+        self.nome_da_receita = QLineEdit()
+        self.nome_da_receita.setPlaceholderText("nome da receita")
+        linha_receita.addWidget(self.nome_da_receita, 1)
+        self.botao_guardar_receita = QPushButton("guardar")
+        self.botao_guardar_receita.clicked.connect(self._guardar_receita)
+        linha_receita.addWidget(self.botao_guardar_receita)
+        self.botao_apagar_receita = QPushButton("apagar")
+        self.botao_apagar_receita.clicked.connect(self._apagar_receita)
+        linha_receita.addWidget(self.botao_apagar_receita)
+        opcoes.addLayout(linha_receita)
+        self._encher_receitas()
+        opcoes.addWidget(_separador())
 
         self.cx_dividir = self._caixa(
             "Dividir folhas ao meio", "esta folha tem 2 páginas do livro", opcoes
@@ -302,10 +333,23 @@ class TelaOpcoes(QWidget):
         linha.addWidget(self.combo_borda_fazer)
         linha.addStretch()
         opcoes.addWidget(self.linha_borda_preta)
+        # Item 2.4 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
+        # de fabrica). CONTROLE MINIMO e PROVISORIO: o lugar e a aparencia sao
+        # do agente de layout (anotado em relatorios/fase2-novas/ONDE-PAREI.md).
+        self.cx_margens = self._caixa(
+            "Margens iguais em todas as páginas",
+            "como o ScanTailor: todas do tamanho da maior, com a margem em volta", opcoes
+        )
+        self.cx_margens.setChecked(False)
+        self.painel_margens = self._montar_margens()
+        opcoes.addWidget(self.painel_margens)
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
-            "Montar cadernos para impressão",
+            # Pergunta 3 do Samuel (22/10/2026): "Deixar os dois" - este, o de
+            # sempre, ao lado da montagem nova em A4 da tela "Ficou pronto!"; o
+            # nome diz a diferenca para o Kaique.
+            "Montar cadernos no tamanho do scan (sem A4, sem margem)",
             "para imprimir, dobrar ao meio e costurar", opcoes,
         )
         self.painel_caderno = self._montar_caderno()
@@ -369,7 +413,7 @@ class TelaOpcoes(QWidget):
 
         for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
                       self.cx_endireitar, self.cx_cortar, self.cx_cortar_pelo_conteudo,
-                      self.cx_borda_preta, self.cx_cadernos):
+                      self.cx_borda_preta, self.cx_margens, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -674,6 +718,80 @@ class TelaOpcoes(QWidget):
         self.botao_mais_opcoes.setText("Menos opções" if aberto else "Mais opções")
         self._acertar_altura_da_rolagem()
 
+    def _montar_margens(self) -> QWidget:
+        """Item 2.4: as quatro margens em mm (de fabrica as do ScanTailor:
+        10, 5, 10, 5) e onde a pagina menor fica (de fabrica no meio). So
+        aparece com "Margens iguais" marcada - ver _mudou."""
+        painel = QWidget()
+        grade = QGridLayout(painel)
+        grade.setContentsMargins(34, 4, 0, 4)
+        grade.setHorizontalSpacing(8)
+        grade.setVerticalSpacing(4)
+        self.margens_mm: dict[str, QDoubleSpinBox] = {}
+        rotulos = (("esquerda", "esquerda"), ("cima", "em cima"),
+                   ("direita", "direita"), ("baixo", "embaixo"))
+        for i, (chave, rotulo) in enumerate(rotulos):
+            caixa = QDoubleSpinBox()
+            caixa.setRange(0.0, 100.0)
+            caixa.setDecimals(1)
+            caixa.setSingleStep(1.0)
+            caixa.setSuffix(" mm")
+            caixa.valueChanged.connect(lambda _v: self._mudou())
+            self.margens_mm[chave] = caixa
+            grade.addWidget(QLabel(f"margem {rotulo}:"), i // 2, (i % 2) * 2)
+            grade.addWidget(caixa, i // 2, (i % 2) * 2 + 1)
+        self.combo_alinhar_vertical = QComboBox()
+        for codigo in margens_scantailor.VERTICAIS:
+            self.combo_alinhar_vertical.addItem(margens_scantailor.NOMES_VERTICAIS[codigo], codigo)
+        self.combo_alinhar_horizontal = QComboBox()
+        for codigo in margens_scantailor.HORIZONTAIS:
+            self.combo_alinhar_horizontal.addItem(margens_scantailor.NOMES_HORIZONTAIS[codigo], codigo)
+        for combo in (self.combo_alinhar_vertical, self.combo_alinhar_horizontal):
+            combo.setToolTip("Onde a página menor fica dentro do tamanho da maior "
+                             "(o alinhamento do ScanTailor).")
+            combo.currentIndexChanged.connect(lambda _i: self._mudou())
+        grade.addWidget(QLabel("página menor, de cima a baixo:"), 2, 0)
+        grade.addWidget(self.combo_alinhar_vertical, 2, 1)
+        grade.addWidget(QLabel("de um lado ao outro:"), 2, 2)
+        grade.addWidget(self.combo_alinhar_horizontal, 2, 3)
+        return painel
+
+    # --- item 2.19: as receitas -------------------------------------------
+
+    def _encher_receitas(self, escolher: str = "") -> None:
+        from core import perfis
+
+        self.combo_receitas.clear()
+        for nome in perfis.nomes():
+            self.combo_receitas.addItem(nome, nome)
+        if escolher:
+            self.combo_receitas.setCurrentIndex(max(0, self.combo_receitas.findData(escolher)))
+
+    def _por_receita(self) -> None:
+        """Põe a receita escolhida neste livro e mostra as caixinhas."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        if perfis.aplicar(self.combo_receitas.currentData(), self.projeto):
+            self.mostrar_opcoes()
+
+    def _guardar_receita(self) -> None:
+        """Guarda as caixinhas de agora com o nome digitado."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        nome = perfis.guardar(self.nome_da_receita.text(), self.projeto)
+        self.nome_da_receita.clear()
+        self._encher_receitas(escolher=nome)
+
+    def _apagar_receita(self) -> None:
+        from core import perfis
+
+        if perfis.apagar(self.combo_receitas.currentData()):
+            self._encher_receitas()
+
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
         esta marcada - ver _mudou."""
@@ -754,6 +872,16 @@ class TelaOpcoes(QWidget):
         self.combo_borda_fazer.setCurrentIndex(self.combo_borda_fazer.findData(
             borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))))   # item 2.14
         self.cx_borda_preta.setChecked(bool(getattr(projeto, "borda_preta", False)))
+        # item 2.4 (projeto em memoria sem os campos: os de fabrica)
+        self.cx_margens.setChecked(bool(getattr(projeto, "margens_iguais", False)))
+        margens = margens_scantailor.Margens.de(getattr(projeto, "margens_mm", None))
+        for chave, valor in zip(("esquerda", "cima", "direita", "baixo"), margens.como_lista()):
+            self.margens_mm[chave].setValue(valor)
+        vertical, horizontal = margens_scantailor.alinhamento_valido(
+            getattr(projeto, "margens_alinhamento", None))
+        self.combo_alinhar_vertical.setCurrentIndex(self.combo_alinhar_vertical.findData(vertical))
+        self.combo_alinhar_horizontal.setCurrentIndex(
+            self.combo_alinhar_horizontal.findData(horizontal))
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
@@ -862,6 +990,14 @@ class TelaOpcoes(QWidget):
         self.projeto.borda_preta_fazer = borda_preta.fazer_valido(           # item 2.14
             self.combo_borda_fazer.currentData())
         self.linha_borda_preta.setVisible(self.projeto.borda_preta)
+        # item 2.4: as margens so aparecem com a caixinha marcada (escondidas,
+        # ficam guardadas)
+        self.projeto.margens_iguais = self.cx_margens.isChecked()
+        self.projeto.margens_mm = [float(self.margens_mm[c].value())
+                                   for c in ("esquerda", "cima", "direita", "baixo")]
+        self.projeto.margens_alinhamento = list(margens_scantailor.alinhamento_valido(
+            (self.combo_alinhar_vertical.currentData(), self.combo_alinhar_horizontal.currentData())))
+        self.painel_margens.setVisible(self.projeto.margens_iguais)
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(

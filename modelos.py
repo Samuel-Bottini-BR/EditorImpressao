@@ -161,6 +161,15 @@ class ConfigPagina:
     # analise.DESENTORTAR_SAIU_SEM. Falso de fabrica; projeto salvo antes abre
     # falso. Sem efeito com o desentortar desligado.
     desentortar_aumentar: bool = False
+    # Item 2.17 (regra da Fase 2: igual ao ScanTailor, desligado de fabrica):
+    # as tres opcoes de luz desta pagina (core.luz_scantailor). luz_igualar =
+    # "Igualar a luz da pagina"; luz_suavizar = "Suavizar as letras" (so no
+    # Preto e branco); luz_chuvisco = "Tirar o chuvisco" (Wiener), 0 a 100, 0 =
+    # desligado. Projeto salvo antes abre com tudo desligado (campo que falta
+    # ganha o padrao). Arriscado: vir ligado (a pagina mudaria sozinha).
+    luz_igualar: bool = False
+    luz_suavizar: bool = False
+    luz_chuvisco: int = 0
 
     # "Limpar pontinhos" SO desta pagina, por cima do livro
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
@@ -597,6 +606,26 @@ class Projeto:
     # conferido nao muda de forca sem a pessoa pedir. Seguro mudar: o padrao
     # do livro novo. Arriscado: trocar o setdefault de de_dicionario.
     reforcar_texto_falhado: bool = True
+    # Item 2.4 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado de
+    # fabrica): margens iguais em todas as paginas, a etapa "Margens" do
+    # ScanTailor (core/margens_scantailor.py). margens_iguais False = o PDF sai
+    # como sempre (o processar nem mede as paginas). margens_mm = (esquerda,
+    # cima, direita, baixo) em mm, de fabrica as do ScanTailor (10, 5, 10, 5;
+    # G9 (a), 05/10/2026: "As do ScanTailor [...] Mas eu vou conseguir alterar
+    # isso né?"). margens_alinhamento = (vertical, horizontal), de fabrica no
+    # meio e no meio. Projeto antigo, sem os campos, abre com tudo desligado
+    # (os padroes). Quem usa: core/pipeline.processar; quem mostra:
+    # ui/tela_opcoes.py. Arriscado: trocar o padrao de margens_iguais (livro
+    # ja comecado mudaria de tamanho).
+    margens_iguais: bool = False
+    # Itens 2.10 e 1.6 (conferencia 5, P3, 01/10/2026: "Eu quero ter a opcao
+    # 1.6, mas eu quero poder deixar como esta tambem"): o PDF de saida em
+    # duas camadas, a letra em cima e o fundo embaixo (core/duas_camadas.py).
+    # Desmarcado de fabrica; projeto antigo abre desmarcado. Quem mostra:
+    # ui/janela_confirmar.py ("Confirmar e processar").
+    pdf_em_duas_camadas: bool = False
+    margens_mm: list = field(default_factory=lambda: [10.0, 5.0, 10.0, 5.0])
+    margens_alinhamento: list = field(default_factory=lambda: ["meio", "meio"])
 
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
@@ -676,6 +705,8 @@ class Projeto:
             and not self.endireitar
             and not self.cortar_bordas
             and self.total_apagadas == 0
+            # item 2.4: as margens iguais mudam a imagem (desligadas, nada muda)
+            and not getattr(self, "margens_iguais", False)
         )
 
     @property

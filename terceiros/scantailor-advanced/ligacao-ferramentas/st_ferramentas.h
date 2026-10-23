@@ -51,7 +51,8 @@
 //     o corte como medida (corteX..corteAltura); a saida tem o tamanho do corte
 //     (escolha do Samuel na Central, 22/10: "cortar uma vez so, no fim", como o
 //     ScanTailor). O resto nao mudou. (O ramo das ferramentas tambem usou o
-//     numero 8, para a luz: st_ferramentas_luz, item 2.17, em luz.cpp.)
+//     numero 8, para + igualar a luz, suavizar o cinza, suavizar o preto e
+//     branco e o filtro de Wiener: item 2.17, em luz.cpp.)
 // 9 = 22/10/2026: o desentortar ganha `crescer` (a mesma pagina desentortada
 //     numa pagina maior) e a `marca` (uma imagem cinza redesenhada com o mesmo
 //     modelo, para o Python medir para onde a tinta foi): a protecao e o
@@ -383,6 +384,68 @@ ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
                                                   double* anguloDepois,
                                                   char* erro,
                                                   int tamanhoErro);
+
+// IGUALAR A LUZ, SUAVIZAR E WIENER (item 2.17; a cola esta em luz.cpp, com as
+// funcoes de src/core/filters/output/OutputGenerator.cpp copiadas sem mudanca,
+// e src/imageproc/SavGolFilter.cpp, SavGolKernel.cpp e WienerFilter.cpp sem
+// mudanca).
+//
+// pixels, largura, altura, passo, canais: a pagina, como no dividir (1 = cinza,
+//   3 = azul, verde, vermelho, a ordem do OpenCV).
+// saida, passoSaida: o resultado, no mesmo formato da entrada (canais), menos
+//   em st_ferramentas_suavizar_cinza, que devolve sempre cinza (1 byte por
+//   ponto), como o smoothToGrayscale do ScanTailor.
+// dpiX, dpiY (suavizar_cinza): escolhem a janela e o grau do Savitzky-Golay
+//   como o ScanTailor (ate 200 DPI: 5 e 3; ate 400: 7 e 4; ate 800: 11 e 4).
+// janela, coeficiente (wiener): o "Wiener filter" do ScanTailor (de fabrica
+//   janela 5 e coeficiente 0, que nao faz nada; de 0 a 1).
+// st_ferramentas_suavizar_preto_e_branco: entrada e saida em preto e branco, 1
+//   byte por ponto (menor que 128 = preto), como o limpar pontinhos.
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// Devolvem ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixam excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_igualar_luz(const unsigned char* pixels,
+                                                  int largura,
+                                                  int altura,
+                                                  int passo,
+                                                  int canais,
+                                                  unsigned char* saida,
+                                                  int passoSaida,
+                                                  char* erro,
+                                                  int tamanhoErro);
+
+ST_FERRAMENTAS_API int st_ferramentas_suavizar_cinza(const unsigned char* pixels,
+                                                     int largura,
+                                                     int altura,
+                                                     int passo,
+                                                     int canais,
+                                                     int dpiX,
+                                                     int dpiY,
+                                                     unsigned char* saida,
+                                                     int passoSaida,
+                                                     char* erro,
+                                                     int tamanhoErro);
+
+ST_FERRAMENTAS_API int st_ferramentas_suavizar_preto_e_branco(const unsigned char* entrada,
+                                                              int largura,
+                                                              int altura,
+                                                              int passoEntrada,
+                                                              unsigned char* saida,
+                                                              int passoSaida,
+                                                              char* erro,
+                                                              int tamanhoErro);
+
+ST_FERRAMENTAS_API int st_ferramentas_wiener(const unsigned char* pixels,
+                                             int largura,
+                                             int altura,
+                                             int passo,
+                                             int canais,
+                                             int janela,
+                                             double coeficiente,
+                                             unsigned char* saida,
+                                             int passoSaida,
+                                             char* erro,
+                                             int tamanhoErro);
 
 #ifdef __cplusplus
 }

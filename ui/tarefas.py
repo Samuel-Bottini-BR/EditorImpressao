@@ -16,6 +16,7 @@ import numpy as np
 import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
+from core import luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
@@ -184,6 +185,41 @@ class TarefaProcessar(QThread):
         except Exception as erro:  # noqa: BLE001
             registrar_erro("processar", traceback.format_exc())
             self.falhou.emit(_mensagem_amigavel(erro))
+
+
+class TarefaMedirAsMargens(QThread):
+    """Item 2.4 (decisao do Samuel, 22/10/2026: "Sim, a tela mostra igual ao
+    que sai"): mede por tras o tamanho de cada pagina pronta, para a tela
+    poder mostrar as margens iguais como no PDF
+    (core.pipeline.medir_o_livro_para_as_margens; uma folha por vez, so
+    numeros ficam guardados). Nunca deixa excecao escapar."""
+
+    pronta = Signal()
+
+    def __init__(self, projeto: Projeto) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        from core.pdf_io import abrir_pdf
+        from core.pipeline import medir_o_livro_para_as_margens
+
+        try:
+            doc = abrir_pdf(self.projeto.caminho_entrada)
+            try:
+                medir_o_livro_para_as_margens(self.projeto, doc, self.projeto.paginas_ativas,
+                                              cancelado=lambda: self._cancelar)
+            finally:
+                doc.close()
+            self.pronta.emit()
+        except Cancelou:
+            pass
+        except Exception:  # noqa: BLE001
+            registrar_erro("medir as margens iguais", traceback.format_exc())
 
 
 class TarefaConverterZonas(QThread):
@@ -654,6 +690,8 @@ class GerenciadorPrevias(QObject):
             # ou nao ("" desligado): quando ela chega, a chave muda e a previa
             # e os cartoes sao desenhados de novo com a pagina desentortada
             f"{':' + estado_do_desentortar(self.projeto, p) if getattr(p, 'desentortar', 'desligado') != 'desligado' else ''}"
+            # item 2.17: igualar a luz, suavizar, chuvisco ("-" desligados)
+            f":{luz_scantailor.assinatura(p)}"
         )
 
     # --- uso --------------------------------------------------------------

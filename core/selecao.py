@@ -38,13 +38,31 @@ LETRA = "letra"         # texto e traco: contraste e nitidez, sem realce de fund
 PAPEL = "papel"         # fundo: pode ir a branco sem pena
 FORA = "fora"           # nao entra no resultado (sombra da lombada, borda do scanner)
 
-TIPOS = (GRAVURA, LETRA, PAPEL, FORA)
+# Item 2.18 (decisão do Samuel P11 (a), 05/10/2026: "Trazer agora 'Pintar por
+# cima' e 'Tinta com a cor original, papel branco', mais copiar, colar e mover
+# zona"; TINTA3: "Tinta preta, fundo original" como opção). Valem POR CIMA do
+# filtro da página, dentro da área (core/editar_zonas.aplicar_por_cima), como
+# as "fill zones" do ScanTailor, que vêm por último na saída dele. Projeto de
+# antes não tem nenhuma; programa de antes que abrir um projeto com elas ignora
+# a área (tipo desconhecido não é válido).
+PINTAR = "pintar"               # pinta a área inteira com uma cor (Regiao.cor)
+TINTA_COR = "tinta_cor"         # a tinta com a cor original, o papel em branco
+TINTA_PRETA = "tinta_preta"     # a tinta em preto, o fundo como no original
+
+TIPOS = (GRAVURA, LETRA, PAPEL, FORA, PINTAR, TINTA_COR, TINTA_PRETA)
+TIPOS_POR_CIMA = (PINTAR, TINTA_COR, TINTA_PRETA)
 
 NOMES_AMIGAVEIS = {
     GRAVURA: "Gravura ou foto",
     LETRA: "Letra e traço",
     PAPEL: "Papel",
     FORA: "Fora da página",
+    PINTAR: "Pintar por cima",
+    # "Manter a cor da tinta": nome escolhido pelo Samuel (pergunta 11,
+    # Central, 23/10/2026; era "Tinta com a cor original, papel branco"). Só
+    # o nome que a tela mostra; a chave gravada continua "tinta_cor".
+    TINTA_COR: "Manter a cor da tinta",
+    TINTA_PRETA: "Tinta preta, fundo original",
 }
 
 # --- de que jeito ela foi desenhada -----------------------------------------
@@ -105,6 +123,34 @@ class Regiao:
 
     # suavizacao da borda, em fracao da menor dimensao. Zero e corte seco.
     suavidade: float = 0.0
+
+    # Item 2.18: a cor do "Pintar por cima" ("#rrggbb"); vazio = branco.
+    # Campo novo e opcional (projeto antigo abre igual: padrao vazio).
+    cor: str = ""
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 a pergunta b-8-tinta-com-cor
+    # ("As duas: A e B como opcoes separadas"): so para TINTA_COR. False = A,
+    # "cor como no livro" (a tinta com a cor do original, o de fabrica e o que
+    # o programa sempre fez); True = B, "cor escurecida" (a mesma tinta, mais
+    # escura e um pouco mais forte; core/editar_zonas.escurecida).
+    # ARRISCADO: o padrao tem de continuar False. Projeto gravado antes disto
+    # nao tem a chave e abre com o padrao (de_dicionario), entao sai A, igual
+    # ponto por ponto (tests/test_tinta_escurecida.py); programa de antes que
+    # abrir um projeto novo descarta a chave e mostra A.
+    tinta_escurecida: bool = False
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 a pergunta tc23-1 (o
+    # retangulo branco no papel creme do Original): "As duas: escolher o papel
+    # em cada area ('papel branco' ou 'papel como o resto da pagina')". So para
+    # TINTA_COR. False = "papel branco" (o papel da area sai branco, o de
+    # fabrica e o que o programa sempre fez); True = "papel como o resto da
+    # pagina" (o papel da area fica como o filtro da pagina o deixou; so a
+    # tinta segue o A ou o B; core/editar_zonas.aplicar_por_cima).
+    # ARRISCADO: o padrao tem de continuar False. Projeto gravado antes disto
+    # nao tem a chave e abre com o padrao, entao sai papel branco, igual ponto
+    # por ponto (tests/test_tinta_papel_da_pagina.py); programa de antes que
+    # abrir um projeto novo descarta a chave e mostra papel branco.
+    papel_da_pagina: bool = False
 
     def valida(self) -> bool:
         """Tipo e forma reconhecidos, e pontos suficientes para desenhar a forma?"""

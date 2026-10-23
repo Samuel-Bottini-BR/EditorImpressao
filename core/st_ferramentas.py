@@ -67,7 +67,8 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 # 8 (22/10/2026) = o desentortar recebe a pagina com o papel do scan em volta e
 #     o corte como medida (escolha do Samuel na Central: "cortar uma vez so, no
 #     fim", como o ScanTailor); a saida tem o tamanho do corte. (O ramo das
-#     ferramentas tambem usou o 8, para a luz do item 2.17.)
+#     ferramentas tambem usou o 8: + igualar a luz, suavizar e Wiener, item
+#     2.17, core/luz_scantailor.py.)
 # 9 (22/10/2026) = o desentortar ganha o `crescer` (a mesma pagina desentortada
 #     numa pagina maior) e a `marca` redesenhada com o mesmo modelo: a protecao
 #     e o "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel).
@@ -106,6 +107,32 @@ ASSINATURAS = {
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
     # Item 2.2 (06/10/2026): endireitar a pagina (core/endireitar_scantailor.py).
+    # item 2.17 (core/luz_scantailor.py)
+    "st_ferramentas_igualar_luz": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_suavizar_cinza": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_void_p, ctypes.c_int,                               # saida (cinza), passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_suavizar_preto_e_branco": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # entrada, largura, altura, passo
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_wiener": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_double,                               # janela, coeficiente
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
     "st_ferramentas_endireitar": (ctypes.c_int, [
         ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
         ctypes.c_int,                                                # canais (1 ou 3)

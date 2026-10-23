@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import cv2
 import numpy as np
+from core import luz_scantailor  # item 2.17 (so le a escolha da pagina da vez)
 
 # --- nomes dos filtros (usados em ConfigPagina.filtro) -----------------------
 ORIGINAL = "original"
@@ -1139,6 +1140,10 @@ def filtro_preto_e_branco(
             return saida
         algoritmo = "auto"       # sem a DLL: o de fábrica (o motivo foi para o log)
     cinza = _cinza_para_binarizar(img)
+    # Item 2.17 (desligado de fabrica): o Savitzky-Golay do ScanTailor no
+    # cinza, antes de binarizar, quando a pagina da vez pediu "Suavizar as
+    # letras" (core.luz_scantailor; sem pedido devolve o mesmo cinza).
+    cinza = luz_scantailor.cinza_para_binarizar(cinza)
     janela = janela_para_altura(cinza.shape[0])
     algoritmo_de_verdade = (
         escolher_algoritmo_automatico(cinza) if algoritmo == "auto" else algoritmo
@@ -1159,6 +1164,10 @@ def filtro_preto_e_branco(
     if algoritmo == "auto" and algoritmo_de_verdade == ALGORITMO_OTSU:
         meio = _otsu_com_a_borda_do_sauvola(cinza, binaria, janela, k_meio)
         binaria = _a_borda_no_medidor(cinza, binaria, meio, janela, k_meio, forca)
+    # Item 2.17: a suavizacao morfologica do ScanTailor, depois de binarizar e
+    # ANTES de limpar os pontinhos ("It's important to keep despeckling the
+    # very last operation", OutputGenerator.cpp). Sem pedido, nada muda.
+    binaria = luz_scantailor.preto_e_branco_suavizado(binaria)
     return _limpar_os_pontinhos(binaria, despeckle, cinza.shape[0])
 
 

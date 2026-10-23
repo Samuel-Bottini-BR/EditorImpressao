@@ -1024,7 +1024,7 @@ class PainelAutomatico(Painel):
              + (_nome_da_borda(projeto) if getattr(projeto, "borda_preta", False) else "não")),
             (bool(projeto.limpar), "Limpar a folha", "tira o amarelado",
              f"filtro do livro: {NOMES_AMIGAVEIS.get(filtro, filtro)}"),
-            (bool(projeto.montar_cadernos), "Montar cadernos para impressão",
+            (bool(projeto.montar_cadernos), "Montar cadernos no tamanho do scan (sem A4, sem margem)",
              "para imprimir, dobrar ao meio e costurar", ""),
         ]
 
@@ -1117,15 +1117,30 @@ class PainelMarcarComo(Bloco):
         _esvaziar(self.dentro)
 
     def _montar(self) -> None:
-        """(Re)desenha os três botões de tipo, destacando o escolhido."""
-        from core.selecao import GRAVURA, LETRA, PAPEL
+        """(Re)desenha os botões de tipo, destacando o escolhido.
+
+        Item 2.18 (P11 (a) e TINTA3 do Samuel, 05/10/2026): mais três, que
+        valem POR CIMA do filtro dentro da área - "pintar por cima" (com a cor
+        do botão "cor de pintar..."), "manter a cor da tinta" e "tinta
+        preta, fundo original". CONTROLE MÍNIMO, provisório até o layout.
+
+        "manter a cor da tinta" (era "tinta com a cor, papel branco"): nome
+        escolhido pelo Samuel na pergunta 11 (Central, 23/10/2026). Só o
+        rótulo mudou; o código gravado no projeto.json continua TINTA_COR
+        ("tinta_cor"), então projeto antigo abre igual. ARRISCADO trocar o
+        código: projetos já gravados perderiam a área."""
+        from core.selecao import GRAVURA, LETRA, PAPEL, PINTAR, TINTA_COR, TINTA_PRETA
         from ui.widgets.editor_selecao import CORES_BORDA
 
         self.limpar()
         self.botoes = {}
+        self.botoes_do_papel = {}        # só existem com a "tinta com a cor"
         for tipo, texto in ((GRAVURA, "gravura ou foto"),
                             (LETRA, "letra e traço"),
-                            (PAPEL, "papel")):
+                            (PAPEL, "papel"),
+                            (PINTAR, "pintar por cima"),
+                            (TINTA_COR, "manter a cor da tinta"),
+                            (TINTA_PRETA, "tinta preta, fundo original")):
             botao = botao_de_lista(texto, escolhido=(tipo == (self.tipo or GRAVURA)))
             # a cor com que a marcação aparece na página (pista visual)
             botao.setIcon(_quadradinho(CORES_BORDA[tipo]))
@@ -1133,7 +1148,101 @@ class PainelMarcarComo(Bloco):
             botao.clicked.connect(lambda _c=False, t=tipo: self.definir_tipo(t))
             self.dentro.addWidget(botao)
             self.botoes[tipo] = botao
+            if tipo == TINTA_COR and self.tipo == TINTA_COR:
+                self._montar_jeitos_da_cor()
         self.tipo = self.tipo or GRAVURA
+        # item 2.18: a cor do "pintar por cima" (abre a caixa de cores do Qt)
+        self.botao_cor = botao_de_lista(f"cor de pintar: {self.cor}", escolhido=False)
+        self.botao_cor.setIcon(_quadradinho(QColor(self.cor)))
+        self.botao_cor.setIconSize(QSize(12, 12))
+        self.botao_cor.clicked.connect(self._escolher_cor)
+        self.dentro.addWidget(self.botao_cor)
+
+    cor_escolhida = Signal(str)
+    cor = "#ffffff"
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta b-8-tinta-com-cor:
+    # "As duas: A e B como opções separadas". Os dois jeitos aparecem logo
+    # abaixo de "manter a cor da tinta", só quando ela é a escolhida;
+    # valem para a próxima área marcada (a já marcada guarda o dela).
+    # De fábrica a A (False), igual ao de antes: ARRISCADO trocar.
+    escurecer_escolhido = Signal(bool)
+    escurecer = False
+    JEITOS_DA_COR = ((False, "cor como no livro"), (True, "cor escurecida"))
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta tc23-1 (o
+    # retângulo branco no papel creme do Original): "As duas: escolher o papel
+    # em cada área ('papel branco' ou 'papel como o resto da página')". Mesma
+    # regra dos dois jeitos da cor: aparecem com o "manter a cor da tinta", em
+    # qualquer filtro (b-9), e valem para a próxima área marcada.
+    # De fábrica "papel branco" (False), igual ao de antes: ARRISCADO trocar.
+    papel_escolhido = Signal(bool)
+    papel_da_pagina = False
+    JEITOS_DO_PAPEL = ((False, "papel branco"), (True, "papel como o resto da página"))
+
+    def _montar_jeitos_da_cor(self) -> None:
+        """Embaixo do botão "manter a cor da tinta", um pouco recuados: "cor como
+        no livro" (A) e "cor escurecida" (B) lado a lado; embaixo, "papel
+        branco" e "papel como o resto da página" um sob o outro (lado a lado o
+        segundo não cabe nos 300 px do painel e sai cortado). Tudo num bloco
+        só (um item a mais no `dentro`, como antes do papel).
+        CONTROLE MÍNIMO, provisório até o layout (sem emoji, §3)."""
+        bloco = Bloco()                  # sem fundo proprio (ver Bloco)
+        coluna = QVBoxLayout(bloco)
+        coluna.setContentsMargins(18, 0, 0, 0)
+        coluna.setSpacing(5)
+        self.botoes_da_cor = {}
+        self.botoes_do_papel = {}
+        for jeitos, escolhido, definir, botoes, Caixa in (
+                (self.JEITOS_DA_COR, self.escurecer, self.definir_escurecer, self.botoes_da_cor,
+                 QHBoxLayout),
+                (self.JEITOS_DO_PAPEL, self.papel_da_pagina, self.definir_papel_da_pagina,
+                 self.botoes_do_papel, QVBoxLayout)):
+            caixa = Caixa()
+            caixa.setContentsMargins(0, 0, 0, 0)
+            caixa.setSpacing(5)
+            for valor, texto in jeitos:
+                botao = botao_de_lista(texto, escolhido=(valor == escolhido))
+                botao.clicked.connect(lambda _c=False, v=valor, f=definir: f(v))
+                caixa.addWidget(botao)
+                botoes[valor] = botao
+            coluna.addLayout(caixa)
+        self.dentro.addWidget(bloco)
+
+    def definir_papel_da_pagina(self, da_pagina: bool) -> None:
+        """Troca entre "papel branco" (False) e "papel como o resto da
+        página" (True)."""
+        da_pagina = bool(da_pagina)
+        if da_pagina == self.papel_da_pagina:
+            return
+        self.papel_da_pagina = da_pagina
+        self._montar()
+        self.papel_escolhido.emit(da_pagina)
+
+    def definir_escurecer(self, escurecer: bool) -> None:
+        """Troca entre A ("cor como no livro") e B ("cor escurecida")."""
+        escurecer = bool(escurecer)
+        if escurecer == self.escurecer:
+            return
+        self.escurecer = escurecer
+        self._montar()
+        self.escurecer_escolhido.emit(escurecer)
+
+    def _escolher_cor(self) -> None:
+        """Abre a caixa de cores; a cor vale para o próximo "pintar por cima"."""
+        from PySide6.QtWidgets import QColorDialog
+
+        # aberta sem travar o programa (open, nao exec): o teste_botoes.py
+        # clica em todos os botoes e uma caixa que espera resposta o pararia
+        self.caixa_de_cor = QColorDialog(QColor(self.cor), self)
+        self.caixa_de_cor.setWindowTitle("Cor para pintar por cima")
+        self.caixa_de_cor.colorSelected.connect(lambda cor: self.definir_cor(cor.name()))
+        self.caixa_de_cor.open()
+
+    def definir_cor(self, cor: str) -> None:
+        self.cor = cor or "#ffffff"
+        self._montar()
+        self.cor_escolhida.emit(self.cor)
 
     def definir_tipo(self, tipo: str) -> None:
         """Troca o tipo escolhido (gravura/letra/papel) e emite `escolheu`."""

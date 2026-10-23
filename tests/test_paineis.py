@@ -338,7 +338,7 @@ def test_o_automatico_mostra_as_etapas_do_livro(app):
     painel.atualizar(projeto)
     nomes = [nome for _ligada, nome, _faz, _escolha in painel.linhas]
     assert nomes == ["Dividir folhas ao meio", "Endireitar folhas tortas", "Cortar as bordas",
-                     "Limpar a folha", "Montar cadernos para impressão"]
+                     "Limpar a folha", "Montar cadernos no tamanho do scan (sem A4, sem margem)"]   # nome novo: pergunta 3, 22/10
     ligadas = {nome: ligada for ligada, nome, _faz, _escolha in painel.linhas}
     assert ligadas["Dividir folhas ao meio"] is True
     assert ligadas["Endireitar folhas tortas"] is False
@@ -363,9 +363,14 @@ def test_o_automatico_leva_as_opcoes_do_livro(app):
 
 
 def test_marcar_como_tem_os_tres_um_embaixo_do_outro(app):
+    """Desde o item 2.18 (P11 (a) e TINTA3 do Samuel, 05/10/2026) são seis
+    tipos - os três de sempre e os três "por cima" - e o botão da cor de
+    pintar, um embaixo do outro."""
+    from core.selecao import PINTAR, TINTA_COR, TINTA_PRETA
+
     painel = PainelMarcarComo()
-    assert set(painel.botoes) == {GRAVURA, LETRA, PAPEL}
-    assert painel.dentro.count() == 3
+    assert set(painel.botoes) == {GRAVURA, LETRA, PAPEL, PINTAR, TINTA_COR, TINTA_PRETA}
+    assert painel.dentro.count() == 7
     assert all(not b.icon().isNull() for b in painel.botoes.values()), "a cor de cada um"
 
 

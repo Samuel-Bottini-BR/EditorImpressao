@@ -38,6 +38,20 @@ PADROES: dict[str, Any] = {
     # "direita"), se estao abertas e se estao em pares. Lido e gravado por
     # ui/tela_conferir.TelaConferir; valor estranho volta ao de fabrica.
     "miniaturas": {"lugar": "embaixo", "aberta": True, "em_pares": False},
+    # Item 2.6: as ultimas escolhas da janela "Montar para imprimir"
+    # (core/impressao.OpcoesDeImpressao.para_dicionario), como a "Predefinicao:
+    # Ultima configuracao" do UPDF. Vazio = as de fabrica (as decisoes do
+    # Samuel). Seguro mudar: nada (quem le corrige o que vier estranho).
+    "impressao": {},
+    # Item 2.16: quantas paginas ao mesmo tempo (core/nucleos.py). 0 = todos
+    # os nucleos, como o ScanTailor (de fabrica); 1 = uma por vez, como antes.
+    "nucleos": 0,
+    # Item 2.19: a unidade das medidas na tela (core/unidades.py; de fabrica
+    # "cm", o de sempre) e as receitas do livro (core/perfis.py): {nome:
+    # {campo: valor}} e a de todo livro novo ("" = nenhuma, o de fabrica).
+    "unidade": "cm",
+    "perfis": {},
+    "perfil_do_livro_novo": "",
 }
 
 

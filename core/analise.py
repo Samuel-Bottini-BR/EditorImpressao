@@ -119,6 +119,11 @@ DESENTORTAR_SAIU_SEM = "desentortar_saiu_sem"
 # (core.desentortar_scantailor.ainda_deformada). A pagina NAO volta sozinha: o
 # aviso pergunta. Quem poe e tira: core.pipeline, como o DESENTORTAR_SAIU_SEM.
 DESENTORTAR_AINDA_DEFORMADA = "desentortar_ainda_deformada"
+# Item 2.4 (g9-pagina-muito-maior, Samuel 14/10/2026: "O programa deixa essa
+# folha de fora sozinho, e avisa"): com as margens iguais ligadas, a pagina
+# muito maior que as outras (tabela dobravel) ficou fora da conta do tamanho
+# do livro. Quem poe e tira: core.pipeline.medir_o_livro_para_as_margens.
+FOLHA_MAIOR_FORA_DAS_MARGENS = "folha_maior_fora_das_margens"
 
 
 @dataclass(frozen=True)
@@ -302,6 +307,13 @@ ALERTAS: dict[str, Alerta] = {
         "exemplo). Ela ficou fora da conta do tamanho do livro e sai no tamanho dela, "
         "para não deixar todas as outras grandes demais.",
         "deixar do tamanho das outras", "alinhar_com_as_outras",
+    ),
+    # Item 2.4. Seguro mudar: os textos.
+    FOLHA_MAIOR_FORA_DAS_MARGENS: Alerta(
+        FOLHA_MAIOR_FORA_DAS_MARGENS, "Página bem maior que as outras",
+        "Esta página é bem maior que as outras (uma tabela dobrável, por exemplo) e "
+        "ficou fora da conta das margens iguais: sai do tamanho dela.",
+        "está bom assim", "revisar",
     ),
     LOMBADA_INCERTA: Alerta(
         LOMBADA_INCERTA, "Lombada incerta",

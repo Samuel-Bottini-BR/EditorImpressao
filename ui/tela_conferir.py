@@ -139,6 +139,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QSizePolicy,
+    QSpinBox,
     QStackedWidget,
     QTabBar,
     QVBoxLayout,
@@ -151,6 +152,7 @@ from core import pontinhos_scantailor as pontinhos
 from core import avisos as avisos_do_livro
 from core import preto_e_branco_scantailor
 from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
+from core import luz_scantailor
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
@@ -944,6 +946,12 @@ class TelaConferir(QWidget):
         painel.para_revisar.aceitar_tudo.connect(self._aceitar_tudo)
         painel.para_revisar.abrir_lista.connect(self._abrir_a_lista_dos_avisos)
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
+        painel.marcar_como.cor_escolhida.connect(              # item 2.18
+            lambda cor: self.editor_selecao.definir_cor_de_pintar(cor))
+        painel.marcar_como.escurecer_escolhido.connect(        # item 2.18, A ou B
+            lambda escura: self.editor_selecao.definir_tinta_escurecida(escura))
+        painel.marcar_como.papel_escolhido.connect(            # item 2.18, o papel
+            lambda da_pagina: self.editor_selecao.definir_papel_da_pagina(da_pagina))
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
         # etapa 4 do layout: a fila de filtros do painel escolhe o filtro da
@@ -1913,8 +1921,46 @@ class TelaConferir(QWidget):
         fora.addWidget(self.linha_pedaco)
 
         self.paineis.propriedades.definir_extra_de_marcar(extra)
-        # embaixo da pagina, uma pagina vazia: a pilha precisa de uma por aba
-        self.linhas_de_botoes[ABA_MARCAR] = QWidget()
+
+        # Item 2.18 (rodadas 4 e 5 do "Para revisar"; P11 (a) e P11b do
+        # Samuel, 05/10/2026). CONTROLE MINIMO, provisorio ate o layout
+        # (relatorios/fase2-novas/ONDE-PAREI.md): mostrar as areas achadas
+        # delineadas (nas paginas do "Para revisar" ja vem ligado) e, para a
+        # area escolhida com a ferramenta "Mover e mudar o tamanho da area"
+        # (tecla A), apagar, pintar de branco, copiar e colar.
+        # Juncao de 23/10/2026: no ramo das ferramentas a linha "Área:" ficava
+        # embaixo da pagina, na aba Marcar; no layout (etapas 4 a 7) o lugar
+        # embaixo da pagina da ferramenta Marcar era uma pagina vazia. A linha
+        # foi para esse lugar, igual (o resto da Marcar esta no painel
+        # Propriedades; o resumo "aviso_marcacao" e o do layout). O lugar
+        # final e do agente de layout.
+        embaixo_marcar = QWidget()
+        linha_area = QHBoxLayout(embaixo_marcar)
+        linha_area.setContentsMargins(0, 0, 0, 0)
+        rotulo_area = QLabel("Área:")
+        rotulo_area.setMinimumWidth(90)
+        linha_area.addWidget(rotulo_area)
+        self.caixa_mostrar_achadas = QCheckBox("Mostrar as áreas achadas")
+        estilo.estilizar(self.caixa_mostrar_achadas, lambda: estilo_da_caixinha_com_quadrado(15))
+        self.caixa_mostrar_achadas.setToolTip(
+            "Desenha em laranja o contorno das áreas que o programa achou sozinho. "
+            "Nas páginas do \"Para revisar\" elas já aparecem.")
+        self.caixa_mostrar_achadas.toggled.connect(
+            lambda marcada: self._mostrar_as_achadas(bool(marcada)))
+        linha_area.addWidget(self.caixa_mostrar_achadas)
+        self.botao_apagar_area = _botao("apagar a área", linha_area,
+                                        lambda: self._mexer_na_area("apagar"))
+        self.botao_branco_area = _botao("pintar de branco", linha_area,
+                                        lambda: self._mexer_na_area("branco"))
+        self.botao_copiar_area = _botao("copiar", linha_area,
+                                        lambda: self._mexer_na_area("copiar"))
+        self.botao_colar_area = _botao("colar", linha_area,
+                                       lambda: self._mexer_na_area("colar"))
+        for botao in (self.botao_apagar_area, self.botao_branco_area, self.botao_copiar_area):
+            botao.setToolTip("Escolha a área antes, com a ferramenta \"Mover e mudar o "
+                             "tamanho da área\" (tecla A).")
+        linha_area.addStretch()
+        self.linhas_de_botoes[ABA_MARCAR] = embaixo_marcar
 
     # --- acoes da aba de marcar -------------------------------------------
 
@@ -1923,6 +1969,28 @@ class TelaConferir(QWidget):
         self.editor_selecao.definir_tipo(tipo)
         self.paineis.marcar_como.tipo = tipo
         self.paineis.marcar_como._montar()
+
+    def _mostrar_as_achadas(self, mostrar: bool) -> None:
+        """Item 2.18: delinear as areas achadas pela maquina (a caixinha), ou
+        sempre nas paginas do "Para revisar"."""
+        pagina = self._pagina_marcada()
+        self.editor_selecao.definir_mostrar_achadas(
+            mostrar or bool(pagina is not None and pagina.precisa_revisao))
+
+    @protegido
+    def _mexer_na_area(self, acao: str) -> None:
+        """Item 2.18: apagar, pintar de branco, copiar ou colar a area escolhida
+        (a marcacao muda pelo mesmo caminho de sempre: _selecao_mudou)."""
+        editor = self.editor_selecao
+        feito = {"apagar": editor.apagar_area_escolhida,
+                 "branco": editor.pintar_de_branco_area_escolhida,
+                 "copiar": editor.copiar_area_escolhida,
+                 "colar": editor.colar}[acao]()
+        if not feito:
+            self._mostrar_aviso_da_marcacao(
+                "Nada copiado ainda." if acao == "colar" else
+                "Escolha a área antes: ferramenta \"Mover e mudar o tamanho da área\" (tecla A), "
+                "e clique nela.")
 
     def _escolher_operacao(self, operacao: str) -> None:
         """Somar ou tirar. Quem mostra o estado agora e a barra de opcoes."""
@@ -2346,6 +2414,44 @@ class TelaConferir(QWidget):
             caixa.toggled.connect(lambda marcada, c=campo: self._mudar_cores(c, marcada))
             linha_cores.addWidget(caixa)
         coluna_mais.addLayout(linha_cores)
+
+        # Item 2.17 (regra da Fase 2: igual ao ScanTailor, desligado de
+        # fabrica): igualar a luz, suavizar as letras (so no Preto e branco) e
+        # tirar o chuvisco, SO desta pagina. CONTROLE MINIMO, provisorio: a
+        # aparencia e do agente de layout (relatorios/fase2-novas/ONDE-PAREI.md).
+        # Juncao de 23/10/2026: no ramo era uma linha do bloco AJUSTE da aba
+        # Filtro antiga; no layout ela vai para "Mais ajustes", como as
+        # caixinhas dos itens 2.9 e 2.11 foram em 22/10.
+        # Os textos moram em core/luz_scantailor.py.
+        linha_luz = QHBoxLayout()
+        self.caixa_luz_igualar = QCheckBox(luz_scantailor.ROTULO_IGUALAR)
+        self.caixa_luz_igualar.setToolTip(luz_scantailor.EXPLICACAO_IGUALAR)
+        self.caixa_luz_suavizar = QCheckBox(luz_scantailor.ROTULO_SUAVIZAR)
+        self.caixa_luz_suavizar.setToolTip(luz_scantailor.EXPLICACAO_SUAVIZAR)
+        for caixa, campo in ((self.caixa_luz_igualar, "luz_igualar"),
+                             (self.caixa_luz_suavizar, "luz_suavizar")):
+            estilo.estilizar(caixa, lambda: estilo_da_caixinha_com_quadrado(15))
+            caixa.toggled.connect(lambda marcada, c=campo: self._mudar_luz(c, bool(marcada)))
+            linha_luz.addWidget(caixa)
+        self.rotulo_luz_chuvisco = QLabel(luz_scantailor.ROTULO_CHUVISCO + ":")
+        self.rotulo_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
+        linha_luz.addWidget(self.rotulo_luz_chuvisco)
+        self.seletor_luz_chuvisco = QSpinBox()
+        self.seletor_luz_chuvisco.setRange(0, 100)
+        self.seletor_luz_chuvisco.setSingleStep(10)
+        self.seletor_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
+        self.seletor_luz_chuvisco.setKeyboardTracking(False)
+        self.seletor_luz_chuvisco.valueChanged.connect(
+            lambda valor: self._mudar_luz("luz_chuvisco", int(valor)))
+        linha_luz.addWidget(self.seletor_luz_chuvisco)
+        linha_luz.addStretch()
+        coluna_mais.addLayout(linha_luz)
+        # os avisos das opcoes de luz (Samuel, 22/10/2026)
+        self.aviso_luz = QLabel("")
+        self.aviso_luz.setObjectName("fraco")
+        self.aviso_luz.setWordWrap(True)
+        self.aviso_luz.setVisible(False)
+        coluna_mais.addWidget(self.aviso_luz)
 
         # --- Só as letras (modo Misto, 05/10/2026), desta página ---
         # Só com o Preto e branco escolhido (ver _configurar_medidor). No
@@ -2853,6 +2959,7 @@ class TelaConferir(QWidget):
         selecao = pagina.obter_selecao()
 
         self.editor_selecao.definir_selecao(selecao)
+        self._mostrar_as_achadas(self.caixa_mostrar_achadas.isChecked())   # item 2.18
         self._mostrar_forma_da_pagina(pagina)      # item 1.2
         self._mostrar_aviso_da_marcacao(
             selecao.resumo_em_portugues() if not selecao.vazia
@@ -3045,7 +3152,7 @@ class TelaConferir(QWidget):
 
         for chave, cartao in self.cartoes.items():
             if chave == pagina.filtro:
-                cartao.definir_amostra(limitar_altura(img, 260))
+                cartao.definir_amostra(limitar_altura(self._com_as_margens(img), 260))
 
         outros = [chave for chave in self.cartoes if chave != pagina.filtro]
         if TIRAR_FUNDO in outros:
@@ -3069,7 +3176,8 @@ class TelaConferir(QWidget):
         if (chave_cache == self._cartoes_cache_chave
                 and all(c in self._cartoes_cache for c in a_pintar)):
             for chave in a_pintar:
-                self.cartoes[chave].definir_amostra(self._cartoes_cache.get(chave))
+                self.cartoes[chave].definir_amostra(
+                    self._com_as_margens(self._cartoes_cache.get(chave)))
             return
 
         for chave in a_pintar:
@@ -3080,6 +3188,37 @@ class TelaConferir(QWidget):
             pagina.forca_preto, pagina.clareza_melhorar, pagina.intensidade_magico,
             chave=chave_cache, dpi=DPI_AMOSTRA_DOS_CARTOES,
         )
+
+    def _com_as_margens(self, img):
+        """Item 2.4 (Samuel, 22/10/2026: "Sim, a tela mostra igual ao que
+        sai"): com as margens iguais ligadas, a pagina dos cartoes aparece com
+        elas, como no PDF. Enquanto as paginas nao foram medidas, pede a
+        medida por tras (TarefaMedirAsMargens) e mostra sem margem; quando
+        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo."""
+        from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
+
+        if img is None or self.projeto is None or not getattr(self.projeto, "margens_iguais", False):
+            return img
+        conta = conta_das_margens_para_a_tela(self.projeto)
+        if conta is None:
+            self._medir_as_margens()
+            return img
+        return margens_na_tela(img, self.projeto, self.projeto.paginas[self.indice_pagina], conta)
+
+    def _medir_as_margens(self) -> None:
+        from ui.tarefas import TarefaMedirAsMargens
+
+        tarefa = getattr(self, "_tarefa_das_margens", None)
+        if tarefa is not None and tarefa.isRunning():
+            return
+        self._tarefa_das_margens = TarefaMedirAsMargens(self.projeto)
+        self._tarefa_das_margens.pronta.connect(self._margens_medidas)
+        self._tarefa_das_margens.start()
+
+    def _margens_medidas(self) -> None:
+        """A medida das margens chegou: pinta os cartoes de novo."""
+        self._cartoes_cache_chave = None
+        self.atualizar()
 
     def _chave_dos_cartoes(self) -> str:
         """Tudo de que os cartoes da pagina da vez dependem: o giro, a divisao,
@@ -3175,7 +3314,7 @@ class TelaConferir(QWidget):
         a_pintar = self._cartoes_a_pintar(list(resultados), pagina)
         for chave, amostra in resultados.items():
             if chave in self.cartoes and chave in a_pintar:
-                self.cartoes[chave].definir_amostra(amostra)
+                self.cartoes[chave].definir_amostra(self._com_as_margens(amostra))
 
         self._conferir_qualidade_do_preto_e_branco(pagina, resultados)
 
@@ -4305,6 +4444,27 @@ class TelaConferir(QWidget):
                                                nome=pontinhos.NOMES_NA_TELA[novo]),
         )
 
+    @protegido
+    def _mudar_luz(self, campo: str, valor) -> None:
+        """Item 2.17: igualar a luz, suavizar as letras ou tirar o chuvisco SO
+        desta página, como ação do desfazer. Nada acontece se a página já está
+        assim (mostrar o valor nunca grava)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if getattr(pagina, campo, None) == valor:
+            return
+        rotulos = {"luz_igualar": luz_scantailor.ROTULO_IGUALAR,
+                   "luz_suavizar": luz_scantailor.ROTULO_SUAVIZAR,
+                   "luz_chuvisco": luz_scantailor.ROTULO_CHUVISCO}
+        estado = (("ligado" if valor else "desligado") if isinstance(valor, bool)
+                  else ("desligado" if not valor else f"{valor}"))
+        self._registrar(
+            "mudar_luz", "pagina", [self.indice_pagina], {campo: valor},
+            luz_scantailor.FRASE_DO_DESFAZER.format(rotulo=rotulos[campo],
+                                                    pagina=self.indice_pagina + 1, estado=estado),
+        )
+
     # --- modo Misto ("Só as letras", 05/10/2026) ---------------------------
 
     def _mudar_misto(self, campo: str, valor, descricao: str) -> None:
@@ -4407,6 +4567,20 @@ class TelaConferir(QWidget):
         # modo Misto: so no Preto e branco; mostra o que vale nesta pagina
         # (dela ou do livro), sem virar acao no desfazer
         self.escolhas_misto.setVisible(eh_preto_e_branco)
+        # item 2.17: o que vale nesta pagina, sem virar acao; suavizar so no
+        # Preto e branco
+        self.caixa_luz_suavizar.setVisible(eh_preto_e_branco)
+        for controle, valor in ((self.caixa_luz_igualar, luz_scantailor.igualar_ligado(pagina)),
+                                (self.caixa_luz_suavizar, luz_scantailor.suavizar_ligado(pagina))):
+            controle.blockSignals(True)
+            controle.setChecked(valor)
+            controle.blockSignals(False)
+        self.seletor_luz_chuvisco.blockSignals(True)
+        self.seletor_luz_chuvisco.setValue(luz_scantailor.chuvisco(pagina))
+        self.seletor_luz_chuvisco.blockSignals(False)
+        avisos = luz_scantailor.avisos_da_pagina(pagina)
+        self.aviso_luz.setText(" ".join(avisos))
+        self.aviso_luz.setVisible(bool(avisos))
         if eh_preto_e_branco:
             ligado, escolhas = misto.escolhas_da_pagina(self.projeto, pagina)
             self.escolhas_misto.mostrar(ligado, escolhas.fora_do_texto,
@@ -4846,7 +5020,9 @@ class TelaConferir(QWidget):
              "letras_com_a_cor": pagina.letras_com_a_cor,
              "reduzir_cores": pagina.reduzir_cores,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
-             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
+             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
+             # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
+             **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS}},
             f"{nome} em todas as {len(indices)} páginas",
         )
 
@@ -4868,7 +5044,9 @@ class TelaConferir(QWidget):
              "letras_com_a_cor": pagina.letras_com_a_cor,
              "reduzir_cores": pagina.reduzir_cores,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
-             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO}},
+             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
+             # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
+             **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS}},
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 

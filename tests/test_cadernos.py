@@ -66,12 +66,44 @@ def test_livro_inteiro_cobre_todas_as_paginas():
     assert vistas == list(range(total))
 
 
-def test_ultimo_caderno_completa_com_branco():
-    # 10 paginas num caderno de 20: sobram 10 brancas
-    lados = montar_ordem(10, 20)
+def test_ultimo_caderno_sai_menor_so_com_as_folhas_necessarias():
+    """Defeito herdado do embaralhador antigo (pesquisa da impressao, 20/10/2026;
+    decisao do Samuel imp-4, 21/10/2026: "Ultimo caderno menor, so com as folhas
+    necessarias"): o ultimo caderno saia sempre do tamanho cheio - 23 paginas em
+    cadernos de 20 davam 17 paginas em branco. Teste de reversao: no codigo
+    antigo sao 17 brancas e 20 lados."""
+    lados = montar_ordem(23, 20)
     brancas = sum(1 for lado in lados for p in (lado.esquerda, lado.direita) if p is None)
-    assert brancas == 10
-    assert len(lados) == 10  # 20 paginas = 5 folhas = 10 lados
+    assert brancas == 1
+    assert len(lados) == 10 + 2       # um caderno de 20 (5 folhas) e um de 4 (1 folha)
+    vistas = sorted(p for lado in lados for p in (lado.esquerda, lado.direita) if p is not None)
+    assert vistas == list(range(23))
+    # 10 paginas num caderno de 20: um caderno so, de 12 (3 folhas), 2 brancas
+    lados = montar_ordem(10, 20)
+    assert len(lados) == 6
+    assert sum(1 for lado in lados for p in (lado.esquerda, lado.direita) if p is None) == 2
+
+
+@pytest.mark.parametrize("total", [1, 2, 3, 5, 7, 21, 23, 39, 41, 199, 907])
+def test_ultimo_caderno_menor_ainda_dobra_certo(total):
+    """A dobra do ultimo caderno menor tambem tem de dar 1, 2, 3..."""
+    from core.cadernos import conferir_sequencia, tamanhos_dos_cadernos
+
+    certo, recado = conferir_sequencia(total, 20)
+    assert certo, recado
+    tamanhos = tamanhos_dos_cadernos(total, 20)
+    assert sum(tamanhos) - total < 4
+    inicio = 0
+    for n in tamanhos:
+        assert _ler_dobrado(ordem_do_caderno(n, inicio)) == list(range(inicio, inicio + n))
+        inicio += n
+
+
+def test_instrucao_diz_o_tamanho_do_ultimo_grupo():
+    from core.cadernos import instrucoes_de_impressao
+
+    assert "o último grupo tem 1 folha" in instrucoes_de_impressao(23, 20)[1]
+    assert instrucoes_de_impressao(40, 20)[1] == "Separe as folhas em grupos de 5."
 
 
 def test_paginas_por_caderno_arredonda_para_multiplo_de_quatro():
@@ -107,7 +139,7 @@ def test_conferencia_da_sequencia_responde_a_pergunta_do_kaique():
     assert certo and "sobra 1 página em branco" in recado
 
     certo, recado = conferir_sequencia(907, 20)
-    assert certo and "sobram 13 páginas em branco" in recado
+    assert certo and "sobra 1 página em branco" in recado     # imp-4: ultimo caderno de 8
 
     # a conferência não entra na lista numerada: ela não é um passo a fazer,
     # e sim o resultado de uma conferência já feita. A tela final a mostra

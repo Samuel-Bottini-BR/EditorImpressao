@@ -38,6 +38,7 @@ from PySide6.QtWidgets import QMenu, QToolTip, QWidget
 
 from ui import estilo
 from ui.widgets.editor_selecao import (
+    FERRAMENTA_AJUSTAR,
     FERRAMENTA_COR,
     FERRAMENTA_ELIPSE,
     FERRAMENTA_LACO,
@@ -90,6 +91,10 @@ USOS = {
                          "A roda do mouse muda a tolerância."),
     FERRAMENTA_COR: ("Clique numa cor e ela pega tudo daquela cor na página. "
                      "A roda do mouse muda a variação."),
+    # item 2.18: mover e mudar o tamanho das areas (controle minimo; o
+    # lugar e o desenho do icone sao do agente de layout)
+    FERRAMENTA_AJUSTAR: ("Clique numa área para escolher. Arraste para mover; os "
+                         "quadradinhos mudam o tamanho."),
     FERRAMENTA_ZOOM: "Clique para aproximar. Com Alt, afasta.",
     FERRAMENTA_MAO: "Arraste para andar pela página aproximada.",
 }
@@ -98,7 +103,7 @@ USOS = {
 GRUPOS = (
     (FERRAMENTA_DIVIDIR,), (FERRAMENTA_CORTAR,), (FERRAMENTA_ENDIREITAR,), "-",
     (FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE), (FERRAMENTA_LACO, FERRAMENTA_POLIGONO),
-    (FERRAMENTA_PINCEL,), (FERRAMENTA_VARINHA, FERRAMENTA_COR), "-",
+    (FERRAMENTA_PINCEL,), (FERRAMENTA_VARINHA, FERRAMENTA_COR), (FERRAMENTA_AJUSTAR,), "-",
     (FERRAMENTA_ZOOM,), (FERRAMENTA_MAO,), "-",
     (FERRAMENTA_FILTROS,),
 )
@@ -196,6 +201,17 @@ def desenhar_icone(pintor: QPainter, ferramenta: str, x: int, y: int, lado: int)
         pintor.setBrush(QColor(estilo.cor("azul")))
         pintor.drawEllipse(QPoint(x + lado - 6, y + 6), 4, 4)
         pintor.restore()
+    elif ferramenta == FERRAMENTA_AJUSTAR:
+        # item 2.18: uma caixa tracejada com quadradinhos nos cantos
+        pintor.save()
+        caneta = pintor.pen()
+        caneta.setStyle(Qt.DashLine)
+        pintor.setPen(caneta)
+        pintor.drawRect(QRect(x + 4, y + 4, lado - 8, lado - 8))
+        pintor.restore()
+        for cx, cy in ((x + 4, y + 4), (x + lado - 4, y + 4), (x + 4, y + lado - 4),
+                       (x + lado - 4, y + lado - 4)):
+            pintor.drawRect(QRect(cx - 2, cy - 2, 4, 4))
     elif ferramenta == FERRAMENTA_ZOOM:
         raio = lado // 2 - 4
         pintor.drawEllipse(QPoint(meio.x() - 2, meio.y() - 2), raio, raio)
