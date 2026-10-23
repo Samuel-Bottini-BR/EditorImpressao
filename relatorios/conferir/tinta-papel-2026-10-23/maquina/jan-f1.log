@@ -1,0 +1,69 @@
+  ok      o livro abriu e a análise terminou
+  filtro da página ao abrir: original
+  print f1-01-livro-aberto.png (1600, 1000)
+  ok      o cartão do filtro original está à vista
+  (pus fora da tela: TelaAmpliada que ia abrir em 7,30)
+  print f1-ver-de-perto-original-sem-area.png (1600, 1055)
+  ok      a página ficou com o filtro original
+  ok      a ferramenta da vez é o Retângulo (retangulo)
+  ok      o painel Propriedades abriu pelo clique no ícone
+  ok      antes de escolher a tinta com a cor, os botões da cor e do papel não aparecem
+  print f1-02-marcar-como-de-fabrica.png (1600, 1000)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: Bloco que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  ok      "tinta com a cor, papel branco" ficou escolhida
+  ok      aparecem os quatro botões, à vista: ['cor como no livro', 'cor escurecida'] + ['papel branco', 'papel como o resto da página']
+  ok      de fábrica: "cor como no livro" e "papel branco" (painel e editor)
+  ok      os dois do papel ficam um sob o outro ((18, 35, 259, 30) / (18, 70, 259, 30))
+  ok      "papel como o resto da página" cabe inteiro no botão (259 >= 192 px)
+  print f1-03-original-quatro-botoes-de-fabrica.png (1600, 1000)
+  ok      clicar em "papel como o resto da página" escolhe o papel da página (painel e editor)
+  ok      os quatro botões continuam à vista depois do clique
+  ok      a cor não mudou (continua "cor como no livro")
+  print f1-04-original-papel-da-pagina-escolhido.png (1600, 1000)
+  ok      área 1 saiu A + papel da página: [(0.129, False, True)]
+  ok      "cor escurecida" escolhida, papel da página continua
+  ok      área 2 saiu B + papel da página; a 1 não mudou: [(0.129, False, True), (0.215, True, True)]
+  print f1-05-original-areas-1-e-2.png (1600, 1000)
+  ok      de volta a "cor como no livro" + "papel branco" (painel e editor)
+  ok      área 3 saiu A + papel branco; as outras não mudaram: [(0.129, False, True), (0.215, True, True), (0.299, False, False)]
+  print f1-06-original-tres-areas.png (1600, 1000)
+  ok      o cartão do filtro original está à vista
+  (pus fora da tela: TelaAmpliada que ia abrir em 7,30)
+  print f1-ver-de-perto-original-tres-areas.png (1600, 1055)
+  ok      a página ficou com o filtro original
+  ok      o cartão do filtro preto_e_branco está à vista
+  (pus fora da tela: TelaAmpliada que ia abrir em 7,30)
+  print f1-ver-de-perto-pb-tres-areas.png (1600, 1055)
+  ok      a página ficou com o filtro preto_e_branco
+  print f1-07-pb-tres-areas.png (1600, 1000)
+  ok      o painel Propriedades abriu pelo clique no ícone
+  ok      no Preto e branco, os quatro botões também aparecem ([True, True, True, True])
+  print f1-08-pb-quatro-botoes.png (1600, 1000)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  ok      escolhendo "letra e traço", os quatro botões somem ([])
+  print f1-09-pb-letra-sem-botoes.png (1600, 1000)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: Bloco que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  ok      voltando à tinta com a cor, o papel escolhido por último (papel branco) continua
+  ok      WM_CLOSE fechou a janela
+
+28 de 28 certas

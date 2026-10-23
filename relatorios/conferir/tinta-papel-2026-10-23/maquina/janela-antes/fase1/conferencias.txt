@@ -1,0 +1,12 @@
+ok   o livro abriu e a análise terminou
+ok   o cartão do filtro original está à vista
+ok   a página ficou com o filtro original
+ok   a ferramenta da vez é o Retângulo (retangulo)
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   antes de escolher a tinta com a cor, os botões da cor e do papel não aparecem
+ok   "tinta com a cor, papel branco" ficou escolhida
+ok   (antes) não existem os botões do papel
+ok   o cartão do filtro original está à vista
+ok   a página ficou com o filtro original
+ok   WM_CLOSE fechou a janela
+11 de 11

@@ -1,0 +1,8 @@
+ok   no projeto aberto de novo, as áreas da página: [(False, True), (True, True), (False, False)]
+ok   fechando e abrindo o programa, as três áreas voltam com o jeito delas: [(0.129, False, True), (0.215, True, True), (0.299, False, False)]
+FALHOU o projeto.json guarda papel_da_pagina (2 áreas true) em Horas 13 -copia
+ok   o painel Propriedades abriu pelo clique no ícone
+ok   o cartão do filtro original está à vista
+ok   a página ficou com o filtro original
+ok   WM_CLOSE fechou a janela
+6 de 7

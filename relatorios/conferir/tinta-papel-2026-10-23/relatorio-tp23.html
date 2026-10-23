@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verificador tp23: o papel da tinta com a cor</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Verificador tp23: o papel da área "tinta com a cor" (item 2.18)</h1>
+<p><strong>PRONTO PARA CONFERIR, com ressalvas.</strong> Com "papel como o resto da página", o retângulo branco some. O "papel branco" de fábrica sai igual ao de antes, ponto por ponto. A principal ressalva é o contorno preto que aparece no Preto e branco (pergunta b-10, ainda aberta). Nunca "aprovado": quem marca é o Samuel.</p>
+<p>Sua resposta (tc23-1): "As duas: escolher o papel em cada área ('papel branco' ou 'papel como o resto da página')".
+Código: ramo <code>fase2-ferramentas-2026-10-22</code>, commits <code>b0af839</code> e <code>3e95076</code>. O "antes" é o <code>639136a</code>.</p>
+<h2>O que foi conferido, e como</h2>
+<table>
+<thead>
+<tr>
+<th>O que</th>
+<th>Como</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Papel branco" (de fábrica) igual ao de antes</td>
+<td>máquina: somas dos PDFs, 4 páginas x 3 filtros x (A, B, várias áreas juntas com "tirar"), código antigo x novo</td>
+<td>36 de 36 iguais (e as 36 diferentes entre si)</td>
+</tr>
+<tr>
+<td>Projeto antigo abre como "papel branco"</td>
+<td>máquina: projeto.json gravado pelo código antigo, aberto no novo</td>
+<td>4 de 4: sem o campo, abre "papel branco" e sai igual</td>
+</tr>
+<tr>
+<td>"Papel como o resto da página" no Original e no Melhorar</td>
+<td>máquina + olho, 4 páginas</td>
+<td>o papel da área fica 100% igual ao da página; no Original, com A, a página sai igual a sem área</td>
+</tr>
+<tr>
+<td>As quatro combinações com A e B</td>
+<td>máquina + olho</td>
+<td>a tinta sai 100% igual à do "papel branco", no A e no B; fora da área, 0 pontos diferentes</td>
+</tr>
+<tr>
+<td>A área de cima manda</td>
+<td>máquina + olho, 12 casos</td>
+<td>36 de 36 faixas certas</td>
+</tr>
+<tr>
+<td>O "tirar" do pincel</td>
+<td>máquina + olho, 6 casos</td>
+<td>onde passou, a página volta 100% à sem área; o resto da área não muda</td>
+</tr>
+<tr>
+<td>Teste novo do implementador</td>
+<td>máquina, um arquivo por vez</td>
+<td>10 passam no novo; 10 falham no antigo</td>
+</tr>
+<tr>
+<td>Janela de verdade (fora da tela, cliques do Windows, WM_CLOSE)</td>
+<td>olho + máquina</td>
+<td>28 de 28 (livro novo); 7 de 7 (aberto de novo, uma conferida à mão); 11 de 11 (código antigo)</td>
+</tr>
+<tr>
+<td>Suíte no GitHub</td>
+<td>lida, código igual</td>
+<td>rodada 39877466484 (<code>4c4cc52</code>, mesmo código de <code>3e95076</code>): 2195 passaram, 0 falharam; botões 234 ações, 0 falhas</td>
+</tr>
+<tr>
+<td>Velocidade</td>
+<td>lida</td>
+<td>rodada 39876068685 (<code>639136a</code> -&gt; <code>b0af839</code>; o <code>3e95076</code> só muda a tela): igual. Abrir 40,0 -&gt; 39,7 s; trocar de página 3,54 -&gt; 3,55 s; Mágico pro 47,5 -&gt; 47,5 s; Preto e branco 28,8 -&gt; 28,7 s</td>
+</tr>
+</tbody>
+</table>
+<h2>O que vi em cada página</h2>
+<p>As fotos foram tiradas pelo caminho inteiro: girar 0 -&gt; dividir não (de fábrica) -&gt; endireitar sim -&gt; cortar as bordas sim -&gt; filtro -&gt; área "tinta com a cor" marcada à mão.</p>
+<ul>
+<li><strong>Horas 13:</strong> no Original, o retângulo branco some e as linhas do verso voltam a aparecer dentro da área, como no resto da página. Com B, só o título escurece. No Preto e branco, de perto, ficam pontinhos pretos na beirada das letras (b-10).</li>
+<li><strong>Escola 7:</strong> no Original, o título fica no papel rosado da página, sem faixa branca. No Preto e branco, o contorno preto é bem visível de perto (b-10).</li>
+<li><strong>Opus Majus 3:</strong> no Original, sem retângulo branco; o vermelho fica vermelho e o preto, escuro. No Preto e branco, quase não há contorno.</li>
+<li><strong>Graduale 221:</strong> no Original e no Melhorar, sem retângulo branco. A B escurece também as linhas vermelhas da pauta, como já fazia antes. No Preto e branco, há pontinhos pretos na pauta.</li>
+<li><strong>Janela (Horas 13):</strong> os quatro botões aparecem e o segundo do papel cabe inteiro. No "Ver de perto", só a área com "papel branco" faz retângulo. As áreas continuam iguais depois de fechar e abrir o programa.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Preto e branco com "papel como o resto da página":</strong> aparece um contorno preto fino em volta da letra colorida. Contei os pontos do papel da área que ficam escuros: Graduale 21.198, Horas 13 7.342, Escola 7 5.421, Opus Majus 784. É a pergunta b-10; não decidi.</li>
+<li><strong>O nome do tipo</strong> continua "tinta com a cor, papel branco", mesmo com "papel como o resto da página" escolhido. A linha "Marcado:" também diz "3 de tinta com a cor original, papel branco" quando duas das três áreas são do papel da página. É a pergunta b-11; não decidi.</li>
+<li><strong>No Melhorar,</strong> "cor como no livro" põe na letra a cor do livro, não a do Melhorar. Com o papel da página, a letra fica um pouco mais apagada que a de fora da área. É o que foi combinado, mas dá para notar.</li>
+<li><strong>A B escurece tudo o que é tinta dentro da área,</strong> inclusive a pauta vermelha do Graduale e a moldura dourada. Já era assim antes (pergunta 8).</li>
+<li><strong>Graduale 221 em Preto e branco:</strong> com qualquer área por cima, a faixa escura da beirada esquerda sai um pouco diferente de sem área (77.787 pontos). É igual nos quatro jeitos e já acontecia no código antigo.</li>
+<li><strong>Defeito antigo da tela:</strong> os botões do "Marcar como" aparecem por um instante como janelinhas soltas (21 vezes no roteiro novo, 7 no antigo). Para a Lista de bugs.</li>
+<li><strong>Erro meu no roteiro da janela:</strong> uma conferência "falhou" porque o programa grava cada área em duas listas (<code>selecao</code> e <code>zonas_na_folha</code>) e eu contei só uma. Conferi à mão, e as três áreas estão gravadas com o jeito certo.</li>
+<li><strong>Não testei</strong> a roda do mouse, o Mágico pro, nem o "tirar" pela janela (o "tirar" foi conferido nas contas).</li>
+</ol>
+<h2>Perguntas</h2>
+<p>Nenhuma pergunta nova. As abertas b-10 (contorno preto) e b-11 (nome do tipo) não são minhas; os casos estão nos quadros 1 e 3.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 22/10/2026 às 22:28</p>
+</body>
+</html>

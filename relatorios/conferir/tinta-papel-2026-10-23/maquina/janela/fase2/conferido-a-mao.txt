@@ -1,0 +1,6 @@
+A conferencia 4 da fase 2 ("o projeto.json guarda papel_da_pagina (2 areas true)") FALHOU por erro do roteiro:
+o programa grava a marcacao em duas listas da pagina (selecao e zonas_na_folha), entao sao 4 "true", nao 2.
+Conferido a mao (23/10/2026) no projeto.json gravado pelo programa ao fechar:
+  /paginas[0]/selecao[12..14]       tinta_cor: (escurecida, papel_da_pagina) = (False, True), (True, True), (False, False)
+  /paginas[0]/zonas_na_folha[12..14] tinta_cor: (False, True), (True, True), (False, False)
+Resultado: as tres areas ficam gravadas com o jeito escolhido. Conta final da fase 2: 7 de 7.

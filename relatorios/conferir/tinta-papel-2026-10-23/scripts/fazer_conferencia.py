@@ -1,0 +1,164 @@
+"""Gera o conferencia.json do tp23 (formato da Central) e confere que toda imagem citada existe."""
+import json
+import os
+from pathlib import Path
+
+AQUI = Path(__file__).resolve().parent.parent
+os.chdir(AQUI)
+
+
+def i(f, legenda):
+    return {"src": "tp23/img/" + f, "legenda": legenda}
+
+
+CAM = ("Caminho: livro novo, ajustes de fábrica (girar 0°, dividir não, endireitar sim, cortar as bordas sim), "
+       "o filtro, e a área marcada à mão como \"tinta com a cor\" em cada um dos quatro jeitos.")
+DECISAO = "\"As duas: escolher o papel em cada área ('papel branco' ou 'papel como o resto da página')\" (tc23-1, 22/10)"
+
+d = {
+    "id": "tp23",
+    "nome": "O papel da área \"tinta com a cor\": \"papel branco\" ou \"papel como o resto da página\"",
+    "trabalho": "fase2-ferramentas-2026-10-22 (b0af839, 3e95076; ponta 0acf2c7)",
+    "origem": "verif-tinta-papel-2026-10-23 (antes = 639136a)",
+    "resumo": {
+        "titulo": "\"Papel como o resto da página\" tira o retângulo branco; o \"papel branco\" de fábrica sai igual ao de antes",
+        "paragrafos": [
+            "Sua resposta: \"As duas: escolher o papel em cada área\". Conferi nas páginas Horas 13, Escola 7, Opus Majus 3 e Graduale 221, pelo caminho inteiro do livro novo.",
+            "\"Papel branco\" (o de fábrica): saiu igual ao de antes, ponto por ponto, em 36 de 36 PDFs (Preto e branco, Original e Melhorar; com A, com B e com várias áreas juntas). Um projeto começado antes abre como \"papel branco\" e sai igual (4 de 4).",
+            "\"Papel como o resto da página\": no Original e no Melhorar o retângulo branco some. No Original, com \"cor como no livro\", a página sai igual a sem área. A tinta sai igual à do \"papel branco\", tanto no A quanto no B.",
+            "Onde duas áreas se cruzam, vale a de cima, e o pincel \"tirar\" devolve a página como ela era.",
+            "Na janela de verdade: os quatro botões aparecem e cada área guarda o seu jeito, também depois de fechar e abrir o programa.",
+            "Testes no GitHub: 2195 passaram, 0 falharam (rodada 39877466484). Velocidade: igual (rodada 39876068685).",
+        ],
+        "veredito": "PRONTO PARA CONFERIR, com ressalvas (a principal: no Preto e branco, \"papel como o resto da página\" deixa um contorno preto na letra, a pergunta b-10).",
+    },
+    "ressalvas": [
+        "Preto e branco com \"papel como o resto da página\": um contorno preto fino em volta da letra colorida. É a pergunta b-10, que continua aberta; não decidi. Na Escola 7 se vê bem; na Horas 13 e no Graduale são pontinhos; na Opus Majus quase nada.",
+        "O nome do tipo continua \"tinta com a cor, papel branco\", mesmo com \"papel como o resto da página\" escolhido. A linha \"Marcado:\" embaixo da página também diz \"3 de tinta com a cor original, papel branco\" quando duas das três são do papel da página. É a pergunta b-11, aberta; não decidi.",
+        "No Melhorar, \"cor como no livro\" põe a cor do livro na tinta, e não a cor que o Melhorar daria. Com \"papel como o resto da página\", o papel fica o do Melhorar e a letra fica a do livro (um pouco mais apagada que a de fora da área). É o combinado (\"só a tinta segue o A ou o B\"), mas dá para notar.",
+        "A B escurece também as linhas vermelhas da pauta do Graduale e a moldura dourada da Horas 13 que caem na área, com qualquer papel. Já era assim antes (pergunta 8).",
+        "Graduale 221 em Preto e branco: com qualquer área por cima, a faixa escura da beirada esquerda sai um pouco diferente de sem área. Acontece igual nos quatro jeitos e já acontecia no código de antes; não é desta mudança.",
+        "Defeito antigo da tela: ao escolher um botão do \"Marcar como\", os botões do painel aparecem por um instante como janelinhas soltas (21 vezes no roteiro novo e 7 no antigo, que tem menos cliques). Já estava na conferência anterior. Vai para a Lista de bugs.",
+        "Uma das minhas conferências da janela falhou por erro do meu roteiro, e não do programa: o programa grava cada área em duas listas, e eu contei só uma. Conferi à mão: as três áreas estão gravadas com o jeito certo.",
+        "Não testei a roda do mouse, o Mágico pro, nem o pincel \"tirar\" pela janela. O \"tirar\" foi conferido nas contas.",
+    ],
+    "quadros": [
+        {
+            "id": "tp23-janela",
+            "nome": "1. Os quatro botões na janela do programa",
+            "explicacao": [
+                "O que você está olhando: o Livro de Horas 13 aberto no programa, a ferramenta Retângulo e o painel Propriedades. Cliquei em \"tinta com a cor, papel branco\" (clique do Windows, janela fora da tela).",
+                "Marquei três áreas: a 1 com \"cor como no livro\" + \"papel como o resto da página\", a 2 com \"cor escurecida\" + \"papel como o resto da página\" e a 3 com \"cor como no livro\" + \"papel branco\". Depois vi a página no \"Ver de perto\", fechei o programa e abri de novo.",
+            ],
+            "olhar": "Se os quatro botões aparecem, e se no \"Ver de perto\" só a área 3 (no começo do texto) faz retângulo branco.",
+            "texto": "Embaixo de \"tinta com a cor, papel branco\" aparecem \"cor como no livro\" e \"cor escurecida\" lado a lado e, embaixo, \"papel branco\" e \"papel como o resto da página\", um sob o outro e inteiros. De fábrica vêm \"cor como no livro\" e \"papel branco\". Cada área saiu com o jeito escolhido, e as já marcadas não mudaram. No \"Ver de perto\" em Original, o título não tem retângulo; só a área 3 tem (é a do papel branco). Escolhendo \"letra e traço\", os quatro botões somem. Fechando e abrindo o programa, as três áreas voltam com o jeito delas. No código de antes só existem os dois botões da cor.",
+            "selo": "Bom, com ressalva",
+            "ressalva": "O nome do botão e a linha \"Marcado:\" continuam dizendo \"papel branco\" (pergunta b-11, aberta): ver os prints 4 e 6.",
+            "decisao_do_samuel": DECISAO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                i("jan_00_antes_so_os_botoes_da_cor.jpg", "Antes: só os dois botões da cor, sem os do papel"),
+                i("jan_01_antes_retangulo_branco.jpg", "Antes: no Original, a área vira um retângulo branco"),
+                i("jan_02_quatro_botoes_de_fabrica.jpg", "Depois: os quatro botões, de fábrica \"cor como no livro\" e \"papel branco\""),
+                i("jan_03_papel_da_pagina_escolhido.jpg", "\"papel como o resto da página\" escolhido (o nome do tipo continua \"papel branco\", b-11)"),
+                i("jan_04_B_e_papel_da_pagina.jpg", "\"cor escurecida\" + \"papel como o resto da página\""),
+                i("jan_05_tres_areas_marcadas.jpg", "Três áreas marcadas (a linha \"Marcado:\" diz \"papel branco\" para as três, b-11)"),
+                i("jan_06_ver_de_perto_original.jpg", "\"Ver de perto\" em Original: título sem retângulo; só a área 3 (papel branco) faz retângulo"),
+                i("jan_07_ver_de_perto_pb.jpg", "\"Ver de perto\" em Preto e branco: as mesmas áreas"),
+                i("jan_08_pb_quatro_botoes.jpg", "Preto e branco: os quatro botões também aparecem"),
+                i("jan_09_letra_sem_botoes.jpg", "Escolhendo \"letra e traço\", os quatro botões somem"),
+                i("jan_10_reaberto.jpg", "Programa aberto de novo: as três áreas voltam"),
+                i("jan_11_reaberto_ver_de_perto_original.jpg", "Aberto de novo, \"Ver de perto\" em Original: igual a antes de fechar"),
+            ],
+        },
+        {
+            "id": "tp23-original",
+            "nome": "2. Nas páginas, em Original e em Melhorar",
+            "explicacao": [
+                "O que você está olhando: cada página em cinco: sem área; \"cor como no livro\" + \"papel branco\" (o de fábrica); \"cor como no livro\" + \"papel como o resto da página\"; \"cor escurecida\" + \"papel branco\"; \"cor escurecida\" + \"papel como o resto da página\". " + CAM,
+                "Cada foto escreve por onde a página passou e com que jeito.",
+            ],
+            "olhar": "Se o retângulo branco some com \"papel como o resto da página\" e se só a tinta muda com a \"cor escurecida\".",
+            "texto": "Com \"papel branco\", a área faz o retângulo branco de sempre. Com \"papel como o resto da página\", o retângulo some: o papel da área fica o mesmo da página (100% dos pontos do papel iguais, nas 4 páginas, no Original e no Melhorar). No Original, \"cor como no livro\" + \"papel como o resto da página\" sai igual à página sem área. Com \"cor escurecida\", só a letra fica mais escura; o papel continua o da página. Fora da área, nada muda (0 pontos diferentes).",
+            "selo": "Bom, com ressalva",
+            "ressalva": "No Melhorar, \"cor como no livro\" deixa a letra com a cor do livro, um pouco mais apagada que a de fora da área.",
+            "decisao_do_samuel": DECISAO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                i("horas_p013-original-ampliado.jpg", "Horas 13, Original: o título ampliado"),
+                i("horas_p013-original-pagina.jpg", "Horas 13, Original: a página"),
+                i("escola_p007-original-ampliado.jpg", "Escola 7, Original: o título"),
+                i("escola_p007-original-pagina.jpg", "Escola 7, Original: a página"),
+                i("opusmajus_p003-original-ampliado.jpg", "Opus Majus 3, Original: a parte de baixo"),
+                i("opusmajus_p003-original-pagina.jpg", "Opus Majus 3, Original: a página"),
+                i("graduale_p221-original-ampliado.jpg", "Graduale 221, Original: as rubricas"),
+                i("graduale_p221-original-pagina.jpg", "Graduale 221, Original: a página"),
+                i("horas_p013-melhorar-ampliado.jpg", "Horas 13, Melhorar: o título"),
+                i("horas_p013-melhorar-pagina.jpg", "Horas 13, Melhorar: a página"),
+                i("graduale_p221-melhorar-ampliado.jpg", "Graduale 221, Melhorar: as rubricas"),
+                i("graduale_p221-melhorar-pagina.jpg", "Graduale 221, Melhorar: a página"),
+            ],
+        },
+        {
+            "id": "tp23-pb",
+            "nome": "3. Nas páginas, em Preto e branco (o contorno preto da pergunta b-10)",
+            "explicacao": [
+                "O que você está olhando: as mesmas páginas e os mesmos cinco jeitos, em Preto e branco. " + CAM,
+                "A foto \"de perto\" amplia a letra 4 vezes para mostrar o contorno preto que aparece com \"papel como o resto da página\". É a pergunta b-10, que continua aberta: aqui só mostro os casos.",
+            ],
+            "olhar": "O contorno preto fino na beirada da letra, nos jeitos com \"papel como o resto da página\".",
+            "texto": "No Preto e branco o papel já é branco, então de longe os jeitos ficam quase iguais. De perto, com \"papel como o resto da página\", a letra colorida ganha um contorno preto: é a beirada que o filtro pintou de preto um pouco além da tinta. Na Escola 7 se vê bem; na Horas 13 e no Graduale são pontinhos pretos; na Opus Majus quase não aparece. Com \"papel branco\" não há contorno.",
+            "selo": "Depende da b-10",
+            "ressalva": "O contorno preto (b-10): não decidi.",
+            "decisao_do_samuel": DECISAO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                i("escola_p007-preto_e_branco-letra-de-perto.jpg", "Escola 7: a letra de perto (contorno preto bem visível)"),
+                i("escola_p007-preto_e_branco-ampliado.jpg", "Escola 7: o título"),
+                i("escola_p007-preto_e_branco-pagina.jpg", "Escola 7: a página"),
+                i("horas_p013-preto_e_branco-letra-de-perto.jpg", "Horas 13: a letra de perto (pontinhos pretos)"),
+                i("horas_p013-preto_e_branco-ampliado.jpg", "Horas 13: o título"),
+                i("horas_p013-preto_e_branco-pagina.jpg", "Horas 13: a página"),
+                i("graduale_p221-preto_e_branco-letra-de-perto.jpg", "Graduale 221: a pauta de perto"),
+                i("graduale_p221-preto_e_branco-ampliado.jpg", "Graduale 221: as rubricas"),
+                i("graduale_p221-preto_e_branco-pagina.jpg", "Graduale 221: a página"),
+                i("opusmajus_p003-preto_e_branco-letra-de-perto.jpg", "Opus Majus 3: a letra de perto (quase sem contorno)"),
+                i("opusmajus_p003-preto_e_branco-ampliado.jpg", "Opus Majus 3: a parte de baixo"),
+                i("opusmajus_p003-preto_e_branco-pagina.jpg", "Opus Majus 3: a página"),
+            ],
+        },
+        {
+            "id": "tp23-cruzadas",
+            "nome": "4. Duas áreas que se cruzam, e o pincel \"tirar\"",
+            "explicacao": [
+                "O que você está olhando: duas áreas, uma à esquerda e outra à direita, que se cruzam no meio, cada uma com um jeito; e uma área com o pincel \"tirar\" passado no meio. Caminho: livro novo, ajustes de fábrica, o filtro escrito na foto.",
+            ],
+            "olhar": "Se no meio vale a área desenhada por último, e se onde passou o pincel \"tirar\" a página volta a ser a do filtro.",
+            "texto": "Nos 12 casos (Horas 13 e Graduale 221 em Original, Horas 13 em Preto e branco), o pedaço em que as duas se cruzam ficou com o jeito da área de cima, ponto por ponto. Onde passou o pincel \"tirar\", a página voltou a ser igual à sem área, e o resto da área ficou como estava (6 de 6).",
+            "selo": "Bom",
+            "ressalva": "",
+            "decisao_do_samuel": DECISAO,
+            "bate_com_a_decisao": "sim",
+            "imgs": [
+                i("horas_p013-original-cruzadas-e-tirar.jpg", "Horas 13, Original"),
+                i("graduale_p221-original-cruzadas-e-tirar.jpg", "Graduale 221, Original"),
+                i("horas_p013-preto_e_branco-cruzadas-e-tirar.jpg", "Horas 13, Preto e branco"),
+            ],
+        },
+    ],
+    "pergunta": {
+        "id": "tp23",
+        "titulo": "O papel da \"tinta com a cor\" em dois jeitos: o que você decide?",
+        "explicacao": [
+            "O que você está escolhendo: se os dois papéis entram no programa como estão.",
+            "O que mais pesa: o contorno preto no Preto e branco (b-10) e o nome do tipo (b-11), que continuam com você.",
+        ],
+        "opcoes": ["Aprovado", "Melhorar", "Ainda não entendi"],
+    },
+    "perguntas": [],
+}
+
+(AQUI / "conferencia.json").write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+todas = [x["src"] for q in d["quadros"] for x in q["imgs"]] + [x["src"] for p in d["perguntas"] for x in p["imgs"]]
+falta = [s for s in todas if not (AQUI / s.replace("tp23/", "")).is_file()]
+print(len(todas), "imagens citadas; faltam:", falta)

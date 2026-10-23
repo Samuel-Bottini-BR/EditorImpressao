@@ -1,0 +1,32 @@
+  ok      o livro abriu e a análise terminou
+  filtro da página ao abrir: original
+  print f1-01-livro-aberto.png (1600, 1000)
+  ok      o cartão do filtro original está à vista
+  (pus fora da tela: TelaAmpliada que ia abrir em 7,30)
+  print f1-ver-de-perto-original-sem-area.png (1600, 1055)
+  ok      a página ficou com o filtro original
+  ok      a ferramenta da vez é o Retângulo (retangulo)
+  ok      o painel Propriedades abriu pelo clique no ícone
+  ok      antes de escolher a tinta com a cor, os botões da cor e do papel não aparecem
+  print f1-02-marcar-como-de-fabrica.png (1600, 1000)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: Bloco que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  (pus fora da tela: _BotaoDoPainel que ia abrir em 448,168)
+  ok      "tinta com a cor, papel branco" ficou escolhida
+  ok      (antes) não existem os botões do papel
+  botões da cor (antes): ['cor como no livro', 'cor escurecida']
+  print f1-03-original-tinta-com-cor-escolhida.png (1600, 1000)
+  áreas: [(0.129, False, '(não existe)')]
+  print f1-04-original-area-marcada.png (1600, 1000)
+  ok      o cartão do filtro original está à vista
+  (pus fora da tela: TelaAmpliada que ia abrir em 7,30)
+  print f1-ver-de-perto-original-com-area.png (1600, 1055)
+  ok      a página ficou com o filtro original
+  ok      WM_CLOSE fechou a janela
+
+11 de 11 certas
