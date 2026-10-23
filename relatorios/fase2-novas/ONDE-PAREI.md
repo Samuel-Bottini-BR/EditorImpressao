@@ -267,8 +267,12 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
   O código gravado no projeto.json continua `tinta_cor`. Commit `f8691be`.
   - **Para a revisão futura dos nomes de botão:** o Samuel disse "esse botão ainda é bem confuso, mas por enquanto
     pode ficar assim."
-- **Testes:** `tests/test_tinta_papel_preto_e_branco.py` (10 passaram aqui; no código antigo `0acf2c7` 3 falham: o
-  contorno preto, 3839 pontos a mais; a chamada direta; o nome do botão).
+- **Achado do verificador** (ramo `verif-tinta-papel-2026-10-23`, `bd6f73f`): a linha "Marcado:" da aba Marcar dizia
+  "3 de tinta com a cor original, papel branco" mesmo com áreas "papel como o resto da página". Ela vem de
+  `core/selecao.NOMES_AMIGAVEIS`, já trocado em `f8691be`: agora diz "Marcado: 3 de manter a cor da tinta." O teste
+  do texto veio num commit depois (sem reescrever o ramo, por causa do verificador).
+- **Testes:** `tests/test_tinta_papel_preto_e_branco.py` (11 passaram aqui; no código antigo `0acf2c7` 4 falham: o
+  contorno preto, 3839 pontos a mais; a chamada direta; o nome do botão; a linha "Marcado:").
   - Achado: o `test_no_pipeline_original_sem_retangulo_branco` (meu, de `b0af839`) usava `detectar_regioes=False`, com
     que o pipeline não usa marcação nenhuma: passava sem testar nada. Trocado para True (continua passando).
 - **Prova em páginas de verdade** (`scripts/tinta_papel.py somas23`, Horas 13, Escola 7, Opus Majus 3; sem área,

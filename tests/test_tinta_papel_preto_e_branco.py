@@ -220,3 +220,15 @@ def test_o_codigo_gravado_nao_mudou():
     assert dados["tipo"] == "tinta_cor"
     antigo = {"tipo": "tinta_cor", "pontos": [[0.0, 0.1], [1.0, 0.4]], "origem": "mao"}
     assert Regiao.de_dicionario(antigo).tipo == TINTA_COR
+
+
+def test_a_linha_marcado_usa_o_nome_novo():
+    """Achado do verificador (ramo verif-tinta-papel-2026-10-23, bd6f73f): a
+    linha "Marcado:" embaixo da aba Marcar dizia "3 de tinta com a cor
+    original, papel branco" mesmo com duas das três áreas em "papel como o
+    resto da página". Com o nome novo (pergunta 11) ela diz "manter a cor da
+    tinta" e não afirma "papel branco". FALHA no código de antes (0acf2c7)."""
+    selecao = Selecao([_area(papel_da_pagina=True), _area(papel_da_pagina=True), _area()])
+    frase = selecao.resumo_em_portugues()
+    assert frase == "Marcado: 3 de manter a cor da tinta."
+    assert "papel branco" not in frase
