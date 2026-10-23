@@ -31,3 +31,45 @@ diz "papel branco").
 ## Ressalvas
 
 Ver `relatorio-tp23.md`.
+
+## Ajustes das respostas 10 e 11 (pedido da gerente, 23/10/2026) - PAUSADO pelo Samuel
+
+Decisões: b-10 "No Preto e branco, tirar a linha preta: as duas opções de papel saem iguais, com a letra limpa";
+b-11: botão "manter a cor da tinta" (só o rótulo; a chave no projeto.json continua `tinta_cor`).
+Código do Implementador B: ramo `fase2-ferramentas-2026-10-22`, ponta `d4c820b` (código `f8691be`, teste `c95ba9e`).
+GitHub, ainda não lido por mim: suíte 39889891066 (a gerente diz 2206/0) e velocidade 39886669584 ("parece mais rápido").
+
+### Já feito
+- Li o diff `3e95076..d4c820b`. Em `core/editar_zonas.aplicar_por_cima` entrou o parâmetro `preto_e_branco`, que o
+  `core/pipeline._filtrar_com_a_marcacao` liga quando `pagina.filtro == PRETO_E_BRANCO`; no Preto e branco o "papel da
+  página" não é desenhado. `core/selecao.NOMES_AMIGAVEIS[TINTA_COR]` = "Manter a cor da tinta"; em
+  `ui/widgets/paineis.py` o botão = "manter a cor da tinta". Teste novo `tests/test_tinta_papel_preto_e_branco.py`.
+- Nada rodado ainda; a worktree `vtp23` ainda está no código de `3e95076` (meu ramo em cima de `0acf2c7`).
+
+### O que falta (passo a passo)
+1. Juntar `origin/fase2-ferramentas-2026-10-22` (`d4c820b`) no ramo `verif-tinta-papel-2026-10-23` (`git merge`, só um
+   commit novo; ninguém mais usa este ramo).
+2. Criar a worktree destacada `.claude/worktrees/vtp23-antes` em `3e95076`, com as junções `modelos` e
+   `gabarito\paginas` (`mklink /J`), para ser o "antes".
+3. Somas de fábrica: `scripts/papel.py somas --raiz <vtp23-antes> maquina/somas-antes-3e95076.json` e o mesmo com
+   `--raiz <vtp23>` -> `maquina/somas-novo-d4c820b.json`; comparar (os 36 têm de ser iguais). Usar caminho absoluto
+   `D:/...` (o Python do Windows não entende `/d/...`), um processo por vez (a memória está curta).
+4. Preto e branco: `scripts/papel.py papel --raiz <vtp23> img-d4c/` e conferir, em `numeros-papel.json`, que no Preto e
+   branco Ap == Ab e Bp == Bb ponto por ponto nas 4 páginas, e que Original e Melhorar dão os mesmos números de
+   `img/numeros-papel.json` (o `3e95076`). Melhor ainda: acrescentar ao `papel.py` um modo que grave as somas dos 5
+   jeitos x 3 filtros x 4 páginas e comparar `3e95076` x `d4c820b` (Original e Melhorar iguais; Preto e branco: Ap
+   passa a ser igual a Ab).
+5. Projeto antigo: `json-antigo --raiz <vtc23>` (já feito em `maquina/projeto-antigo/`) e `abrir-antigo --raiz <vtp23>`
+   numa pasta nova (copiar os `*-projeto.json` e `somas-antigo.json`).
+6. Teste novo: `pytest tests/test_tinta_papel_preto_e_branco.py -q` no novo e (cópia em %TEMP%) no `vtp23-antes`: tem
+   de falhar lá.
+7. Janela: no `scripts/janela.py`, trocar `"tinta com a cor, papel branco"` pelo nome novo nas conferências, e
+   acrescentar: o texto do botão `mc.botoes[TINTA_COR].text() == "manter a cor da tinta"`, o aviso "Área escolhida: ..."
+   (procurar o texto em `ui/`) e a linha "Marcado: ..." sem "papel branco". Rodar a fase 1 e a fase 2 numa pasta nova
+   (`maquina/janela-d4c`), com a janela fora da tela e fechando com WM_CLOSE.
+8. Fotos de antes e depois: as letras de perto no Preto e branco (`img/*-preto_e_branco-letra-de-perto.jpg` é o antes) e
+   o painel (o `img/jan_03`/`jan_05` é o antes). Abrir todas as imagens novas.
+9. Ler as rodadas 39889891066 e 39886669584 do GitHub (o commit testado tem de ter o mesmo código de `d4c820b`).
+10. `conferencia.json` (id `tp23`): tirar das ressalvas a 1 (b-10) e a 2 (b-11); acrescentar o quadro "Ajustes das suas
+    respostas 10 e 11" com as fotos de antes e depois; atualizar o "trabalho" para `d4c820b`; refazer o relatório nos
+    três formatos (`scripts/relatorio_tp23.md` + `relatorio.gravar`); commit e push.
