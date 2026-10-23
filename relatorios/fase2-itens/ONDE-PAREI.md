@@ -298,3 +298,147 @@ empurrada para fora do corte ou o de fora do corte trazido para dentro -> sai se
 revisar"; (3) botão do aviso = opção C só na página (campo novo `ConfigPagina.desentortar_aumentar`);
 (4) procura de páginas curvas em `D:\Livros para editar` (`scripts/procurar_curvas_livros_para_editar.py`,
 rodando, saída fora do git em `relatorios/conferir/fase2-itens/2.12/procura-livros-para-editar/`).
+
+### 22/10 (noite) — feito: a proteção e o botão (commits `5e361ce`, `7d71b15`)
+
+**O que mudou.** Com o desentortar ligado numa página, o programa agora confere o resultado antes de usar: se a tinta
+do texto sairia da página (P1) ou se entraria na página o que estava fora dela — fundo do scanner, sombra, página
+vizinha (P2) —, a página sai **sem desentortar** (igual à de hoje) e vai para o "Para revisar" com um aviso e um botão.
+O botão faz a opção C só naquela página: desentorta e deixa a página **crescer** até caber o texto.
+
+**Os nomes na tela** (escolhidos por mim; seguro trocar em `core/analise.py`):
+- título do aviso: **"Desentortar não usado"**;
+- frase: "O desentortar empurrava o texto para fora da página, ou trazia o fundo de fora para dentro dela. Por isso a
+  página saiu sem desentortar. Se quiser, desentorte aumentando a página até caber o texto.";
+- botão: **"Desentortar aumentando a página"** (o texto que a gerente passou);
+- no Ctrl+Z: "Desentortar aumentando a página N".
+
+**Como mede (sem olhar a imagem, olhando uma "marca").** A DLL ganhou a versão 9: o mesmo desentortar redesenha também
+uma marca (onde estava a tinta do texto e onde acabava o corte) com o mesmo modelo, numa página 10 mm maior de cada
+lado. Recusa quando 3 ou mais pedaços de tinta de 1 mm caem fora do corte, ou quando mais de 2% da página veio de fora
+do corte. Dentro do corte, a página com e sem essa medida é a mesma, ponto por ponto (conferido nas 14 páginas do
+acervo, nos dois modos). Medido nas 14 páginas: Righetti 96 automático 22 pedaços (recusa); Cursus 151 automático 7
+(recusa); "pelas margens" no Cursus 176 e Matemática 31/63/65/66: 14% a 30% de fora (recusa); as que saem certas:
+0 ou 1 pedaço e até 0,7%.
+
+**Desligado de fábrica: idêntico.** 96 de 96 somas (32 páginas do gabarito x 3 filtros) iguais às do `b8e9af7`
+(`2.12/somas-v9.json`). Desligado, o preparo nem passa pelo código novo (só tira o aviso, se houver).
+
+**Reversão (§4.7)** — `tests/test_desentortar_protecao.py`, rodados no código antigo (`177f711`, worktree de rascunho
+no scratchpad): **os dois falharam lá** (`2.12/reversao-protecao-no-177f711.txt`) e passam aqui:
+- `test_reversao_righetti_96_a_tinta_nao_sai_mais_da_pagina`: margem esquerda do texto 15 pontos no antigo (a tinta
+  saía da página: "mente" -> "te") -> 173 aqui (a de hoje), com o aviso; com o botão a página cresce (1385 -> 1600
+  pontos de largura) e "mente" fica inteiro;
+- `test_reversao_cursus_176_pelas_margens_nao_entorta_mais_a_pagina`: tinta no lugar 0,70 no antigo -> 1,00 aqui.
+Mais 13 testes no mesmo arquivo (a DLL nova, as medidas, o aviso entra e sai, o campo no arquivo). No PC, um arquivo
+por vez: `test_desentortar_protecao` 15 passaram; `test_desentortar_scantailor` 40; `test_desentortar_na_tela` 5;
+`test_modelos` 4; `test_detectar_regioes` 9.
+
+**Arquivos:** `terceiros/scantailor-advanced/ligacao-ferramentas/desentortar.cpp` e `st_ferramentas.h` (DLL v9, só a
+ligação: nada dentro das marcas "COPIADO SEM MUDANCA"), `core/nativo/st_ferramentas.dll`, `core/st_ferramentas.py`,
+`core/desentortar_scantailor.py` (`preparar_no_corte`, a marca, as medidas, o aumento), `core/pipeline.py` (o aviso),
+`core/analise.py` (o aviso), `modelos.py` (`ConfigPagina.desentortar_aumentar`, falso de fábrica), `ui/tela_conferir.py`
+(o botão: `_desentortar_aumentando`), `ui/tarefas.py` (chave da prévia), testes. A DLL foi compilada na pasta de
+rascunho `build-st-ferramentas-fase2-itens` (a `build-st-ferramentas` padrão está com o CMake de outra worktree, `misto`;
+não mexi nela).
+
+### Como isto se encaixa com o ramo do "Para revisar" (`fase2-para-revisar`, ainda não juntado)
+
+Lá os avisos têm até três botões (`Alerta.outra_acao`, `terceira_acao`, lidos por `Alerta.botoes`) e a tela usa
+`_aplicar_correcao(codigo, correcao)`; aqui (base `fase-1`) o aviso só tem um botão e a tela usa `_aplicar_sugestao`.
+Na junção:
+1. `core/analise.py`: no `DESENTORTAR_SAIU_SEM`, acrescentar o segundo botão `"está bom assim", "revisar"`, como os
+   outros avisos de lá (o "Trazer de volta nesta página" tem o mesmo par).
+2. `ui/tela_conferir.py` (`_aplicar_correcao` de lá): acrescentar
+   `elif correcao == "desentortar_aumentando": self._desentortar_aumentando()` (o método vem deste ramo).
+3. `core/pipeline.py`: `_anotar_desentortar_saiu_sem` segue o mesmo jeito do `_anotar_conferir`, que é igual nos dois
+   ramos (põe na frente e volta `revisada` para falso; tira quando não vale). Lá o "está bom" por motivo
+   (`alertas_aceitos`) funciona sem mudança: o código do aviso é um texto novo.
+4. `core/avisos.py` de lá lista os avisos pelo código: nada a mudar (o título vem de `analise.descrever`).
+5. DLL: os dois ramos não mexem na DLL ao mesmo tempo (o "Para revisar" não tem DLL nova); quem juntar com o
+   `fase2-caixa-conteudo` (versão 4) recompila, como já estava anotado.
+
+### Antes/depois pelo caminho inteiro, com a régua (todas as imagens abertas)
+
+Pasta `relatorios/conferir/fase2-itens/2.12/protecao/` (fora do git; `<nome>-pagina.jpg`, `<nome>-recorte.jpg`,
+`<nome>.json`). Script `relatorios/fase2-itens/scripts/rodada_2_12.py`. Livro novo, de fábrica: (girar) → (dividir) →
+endireitar → cortar → desentortar → filtro. Colunas: Hoje · Antes da proteção (automático) · Agora automático · Agora
+com o botão · Antes da proteção (pelas margens) · Agora pelas margens · Hoje P&B · Agora automático P&B; a coluna
+"foi para o Para revisar" diz quando o aviso entrou.
+
+Acervo:
+- **Righetti 96, direita** (girar 270°, dividir): antes o automático cortava o começo das linhas; agora sai como hoje e
+  vai para o "Para revisar"; com o botão a página cresce (1385 → 1600 pontos) e o texto fica inteiro.
+- **Cursus 176**: antes o "pelas margens" entortava a página inteira, com cunha preta; agora sai como hoje, com aviso.
+- **Cursus 151**: antes o automático mexia na página reta e cortava pedaços da beirada; agora sai como hoje, com aviso.
+- **Matemática 65**: antes o "pelas margens" entortava a página e trazia a sombra do livro; agora sai como hoje, com
+  aviso. O automático mexe pouco e passa (não empurra tinta para fora).
+- **Marial 41**: página reta; nada muda em coluna nenhuma (a proteção não atrapalha).
+
+"Livros para editar" (só lidos):
+- **Destino do socialismo, p. 18 do PDF, direita** (scanner, dividir): antes o automático fazia uma página monstruosa;
+  agora sai como hoje, com aviso. **O botão traz o monstro de volta** (ver a P5).
+- **Razões do Integralismo, pp. 57 e 46** (foto): linhas curvas de verdade, mas o automático **não mexe** (igual a hoje).
+  Na última coluna, "só para mostrar a causa", o mesmo caminho dizendo ao desentortar o tamanho certo da página
+  (1100 DPI): na p. 57 as linhas saem retas pela régua (ver a P4). Na p. 46 o "pelas margens" foi para o "Para revisar".
+- **Santiago Ramírez, De Analogia 4, p. 155, direita** (foto, dividir): linhas bem curvas; nada muda em coluna nenhuma.
+- **Haegy, Manuel de Liturgie v2, p. 521** (foto): idem, nada muda.
+- **Atanásio (aula 18), p. 8** (foto): idem, nada muda.
+
+### A procura em "Livros para editar" (P3)
+
+`relatorios/fase2-itens/scripts/procurar_curvas_livros_para_editar.py` (só lê; nada gravado na pasta do Samuel). A
+pasta tem 10.550 PDFs (contando as subpastas); a procura mediu 3.255 (31%, 5 deram erro de leitura) em ~3 h e foi
+parada por mim para não segurar o PC; as candidatas já bastavam. Resultado em
+`relatorios/conferir/fase2-itens/2.12/procura-livros-para-editar/` (fora do git; `folha_0..2.jpg` são as miniaturas
+das 24 mais curvas). Os livros usados, com o caminho:
+- `D:\Livros para editar\2 - TEOLOGIA\Doutrina Social da Igreja\Corporativismo, Integralismo, Distributismo e Municipalismo à luz da DSI\22 - Olbiano de Mello\Razões do Integralismo [1935] - Olbiano de Mello.pdf` — pp. 57 e 46;
+- `D:\Livros para editar\3 - TOMISMO\Santiago RamÃ_rez - De Analogia - 4.pdf` — p. 155 (direita);
+- `D:\Livros para editar\2 - TEOLOGIA\Doutrina Social da Igreja\Corporativismo, Integralismo, Distributismo e Municipalismo à luz da DSI\9 - Octávio de Faria\Destino do socialismo - Octavio de faria.pdf` — p. 18 (direita);
+- `D:\Livros para editar\2 - TEOLOGIA\Liturgia\d-Manuel de Liturgie et Ceremonial- v2- Haegy- 1922.pdf` — p. 521;
+- `D:\Livros para editar\2 - TEOLOGIA\Patrologia\Patrística\aula_18_atanasio_de_alexandria_e_a_controversia_ar.pdf` — p. 8.
+
+**Achado que importa:** quase todos os livros bem curvos dessa pasta são **fotos** (celular), e nos PDFs deles o tamanho
+da página não é o de verdade (ex.: a página do Razões diz 86 cm de altura). O desentortar do ScanTailor reduz a
+página para 200 DPI pelo tamanho que recebe; com o tamanho errado as letras ficam grandes demais para ele e ele não
+acha linha nenhuma. Medido no Razões 57 (direto na ferramenta, só para achar a causa): com 300 DPI (o que o programa
+diz) não acha curva; com ~1100 DPI acha e endireita. Outra coisa que atrapalha nas fotos: a caixa do texto
+(`caixa_do_conteudo`, provisória até o 2.5) pega dedos, capa e sombra.
+
+### Perguntas para o Samuel (novas, 22/10 noite)
+
+**P4 — Livros fotografados: o desentortar não mexe, porque o PDF não diz o tamanho de verdade da página.**
+Fotos: `protecao/razoes_p057-pagina.jpg` (última coluna: como fica com o tamanho certo; a régua vermelha mostra as
+linhas retas), `protecao/ramirez_p155-direita-pagina.jpg`, `protecao/haegy2_p521-pagina.jpg`.
+- (a) Deixar como está: nos livros fotografados o desentortar não faz nada (não estraga, mas não ajuda).
+- (b) **(recomendo)** Como o ScanTailor faz quando o arquivo não diz o tamanho (a etapa "Fix DPI" dele): o livro
+  ganha um campo "largura de verdade da página, em cm" (o Kaique mede com a régua). Muda a tela e o arquivo do
+  projeto; vem vazio de fábrica (vazio = como hoje).
+- (c) O programa adivinha o tamanho pela altura das letras. Não existe no ScanTailor (conta nossa) e pode errar.
+
+**P5 — O botão "Desentortar aumentando a página" nem sempre ajuda.**
+No Destino do socialismo 18 o automático faz uma página monstruosa; a proteção segura (a página sai como hoje), mas o
+botão traz o monstro de volta, só maior (`protecao/destino_p018-direita-pagina.jpg`, 2ª e 4ª colunas). O mesmo vale
+para o caso da P2 (o "pelas margens" que entorta): aumentar a página não desentorta nada. O Ctrl+Z desfaz.
+- (a) Deixar assim: o botão aparece sempre no aviso; quem clica vê o resultado e desfaz se ficar ruim.
+- (b) **(recomendo)** O botão só aparece quando o motivo foi a tinta empurrada para fora (o caso do Righetti); quando
+  o motivo foi o fundo trazido para dentro (P2 e o Destino), o aviso fica só com "está bom assim" e a frase diz que
+  o desentortar não deu certo nesta página.
+- (c) O botão aparece sempre, mas depois de clicar a proteção confere de novo e, se a página continuar entortada,
+  volta sozinha e avisa.
+
+### Bugs para a Lista de bugs (não impedem; não consertei)
+
+- 22/10/2026, filtro Preto e branco em página fotografada: a sombra da mão/da página vira mancha preta grande
+  (`protecao/razoes_p057-pagina.jpg` e `protecao/atanasio_p008-pagina.jpg`, colunas "Hoje · Preto e branco").
+  Não é do desentortar (sai igual com ele desligado).
+
+### Ressalvas
+
+- O limite da proteção (3 pedaços de 1 mm; 2% de fora) foi medido em 14 páginas do acervo e 6 de "Livros para editar";
+  o Razões 57 com o tamanho certo ficou com 1,9% de fora e passou raspando. Se a P4 entrar, conferir o limite de novo.
+- Com o botão, a página que cresce traz junto o que estava em volta no scan (no Righetti, um pedaço da faixa preta de
+  cima e riscos da beirada) e fica de tamanho diferente das outras (o tamanho do livro na impressão é outro item).
+- As zonas da aba Marcar continuam não acompanhando o desentortar (já anotado).
+- Ligado, a proteção redesenha a marca: o desentortar ligado fica mais lento (Righetti 96: ~2 s → ~3 s por página).
+  Desligado (de fábrica) não muda nada.
