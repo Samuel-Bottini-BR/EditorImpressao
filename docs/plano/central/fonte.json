@@ -715,10 +715,10 @@
       },
       "fotos": [],
       "testar": [],
-      "falta": "O Implementador B está fazendo as respostas 10 e 11 (linha preta, nome do botão); o verificador confere o papel da área; depois a sua conferência.",
+      "falta": "Respostas 10 e 11 feitas (Implementador B). O verificador está fechando a conferência; depois vem para você.",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-23T08:10:00Z"
+      "mudouEm": "2026-10-23T10:00:00Z"
     },
     {
       "id": "2.10",
@@ -827,21 +827,21 @@
       "id": "implementador-b",
       "nome": "Implementador B",
       "papel": "As 7 ferramentas não começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Tinta: tirar a linha preta no Preto e branco e o nome \"manter a cor da tinta\"",
-      "ultimo": "Começou as suas respostas 10 e 11.",
+      "ultimo": "Fez as respostas 10 e 11: no Preto e branco a letra sai limpa, e o botão se chama \"manter a cor da tinta\". Testes no GitHub: 2206 passaram, 0 falharam.",
       "ramo": "fase2-ferramentas-2026-10-22",
-      "quando": "2026-10-23T08:10:00Z"
+      "quando": "2026-10-23T10:00:00Z"
     },
     {
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "terminou",
-      "tarefa": "Conferir o papel da área da tinta com a cor; depois o desentortar",
-      "ultimo": "Conferiu o papel da área: pronto, com o contorno preto e o nome que você já decidiu (o Implementador B está fazendo). A conferência vai para você junto com esses dois ajustes. Próximo: o desentortar.",
+      "estado": "trabalhando",
+      "tarefa": "Conferir os ajustes 10 e 11 da tinta e fechar a conferência do papel da área",
+      "ultimo": "Conferindo os ajustes 10 e 11.",
       "ramo": "verif-tinta-papel-2026-10-23",
-      "quando": "2026-10-23T09:00:00Z"
+      "quando": "2026-10-23T10:00:00Z"
     },
     {
       "id": "layout",
