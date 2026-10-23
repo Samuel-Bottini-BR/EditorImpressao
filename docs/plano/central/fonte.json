@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T15:30:00Z",
+        "texto": "Começou a junção: um agente está juntando tudo o que você aprovou num ramo só. Depois vêm os testes no GitHub e no seu PC; só então entra no programa."
+      },
+      {
         "em": "2026-10-23T15:10:00Z",
         "texto": "Você aprovou o desentortar e o papel da área. Com isso, tudo o que vai para a junção está aprovado. Suas duas observações (moldura escura e o aviso no Righetti 96) estão respondidas na aba do desentortar e anotadas para depois da junção."
       },
@@ -838,6 +842,16 @@
     }
   ],
   "agentes": [
+    {
+      "id": "juncao",
+      "nome": "Agente da junção",
+      "papel": "Junta tudo o que você aprovou",
+      "estado": "trabalhando",
+      "tarefa": "Juntar os 6 trabalhos aprovados num ramo só, com a DLL recompilada, e rodar os testes no GitHub",
+      "ultimo": "Começou a junção (23/10).",
+      "ramo": "juncao-fase2-2026-10-23",
+      "quando": "2026-10-23T15:30:00Z"
+    },
     {
       "id": "implementador-a",
       "nome": "Implementador A",
