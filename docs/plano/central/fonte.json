@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T19:30:00Z",
+        "texto": "O desentortar ficou pronto com a sua resposta da P6: a tela e os cartões mostram a página reta, igual ao PDF. Testes no GitHub: 2204 passaram, 0 falharam; velocidade igual. Agora o verificador confere o desentortar inteiro."
+      },
+      {
         "em": "2026-10-23T13:30:00Z",
         "texto": "Nova conferência: o papel da área da tinta com a cor e as suas respostas 10 e 11 (aba Conferência). O verificador achou tudo certo: no Preto e branco a linha preta sumiu e o botão se chama \"manter a cor da tinta\"."
       },
@@ -457,18 +461,18 @@
       "fase": "2",
       "coluna": "andamento",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
-      "situacao": "Feito pelo Implementador A (23/10): a proteção e o botão \"Desentortar aumentando a página\". Desligado, sai idêntico ao de hoje. Testes no GitHub: 2188 passaram, 0 falharam; velocidade igual.",
-      "falta": "Você respondeu a P6 (sim). O Implementador A está fazendo a tela mostrar o desentortar igual ao PDF; depois, o verificador e a sua conferência.",
+      "situacao": "Feito pelo Implementador A (23/10): corte uma vez só, a proteção, o botão \"Desentortar aumentando a página\" com a pergunta \"Desfazer / Manter assim\", e a tela igual ao PDF (sua P6). Desligado, sai idêntico ao de hoje. Testes no GitHub: 2204 passaram, 0 falharam; velocidade igual.",
+      "falta": "O verificador está conferindo o desentortar inteiro; depois vem para você.",
       "selos": {
-        "github": "falta",
+        "github": "sim",
         "pc": "nao",
         "samuel": "nao"
       },
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "commit": "7d71b15",
+      "commit": "c3b66fb",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T12:10:00Z",
+      "mudouEm": "2026-10-23T19:30:00Z",
       "relatorio": "perg-a"
     },
     {
@@ -830,11 +834,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "2.12: a tela e os cartões mostrarem o desentortar igual ao PDF (sua resposta P6: sim)",
-      "ultimo": "Retomou em 23/10 com a sua resposta da P6.",
+      "ultimo": "Entregou a P6: a tela e os cartões mostram o desentortar igual ao PDF (medido por trás, sem travar). Testes no GitHub: 2204 passaram, 0 falharam; velocidade igual.",
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-23T12:10:00Z"
+      "quando": "2026-10-23T19:30:00Z"
     },
     {
       "id": "implementador-b",
@@ -850,11 +854,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "terminou",
-      "tarefa": "Papel da área da tinta com a cor e as respostas 10 e 11",
-      "ultimo": "Entregou o papel da área (aba Conferência): pronto para você conferir. De fábrica nada mudou; no Preto e branco a linha preta sumiu. Próximo: o desentortar, quando o Implementador A entregar.",
-      "ramo": "verif-tinta-papel-2026-10-23",
-      "quando": "2026-10-23T13:30:00Z"
+      "estado": "trabalhando",
+      "tarefa": "Conferir o desentortar (2.12) inteiro",
+      "ultimo": "Começou a conferir o desentortar inteiro.",
+      "ramo": "verif-2.12-2026-10-23",
+      "quando": "2026-10-23T19:30:00Z"
     },
     {
       "id": "layout",
