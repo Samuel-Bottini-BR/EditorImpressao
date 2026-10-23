@@ -1,0 +1,12 @@
+GitHub, lido pelo verificador tp23 em 23/10/2026 (gh run view --log)
+
+Suíte 39889891066 "Testes no Windows (fase2-ferramentas-2026-10-22)": success.
+  Código testado: c95ba9efaff7f419561c944316cb1bca75c2ba54 ("codigo trocado pelo de fase2-ferramentas-2026-10-22 (c95ba9e...)").
+  c95ba9e -> d4c820b só muda relatorios/fase2-novas/ONDE-PAREI.md: o código testado é o de d4c820b.
+  TOTAL: arquivos 127, passaram 2206, falharam 0, erros 0, pulados 73.
+
+Velocidade 39886669584 "Filtro de velocidade (0acf2c7 -> f8691be)": success.
+  f8691be -> d4c820b: só testes, scripts de relatório e ONDE-PAREI (git diff --stat); o código do programa é o mesmo.
+  Veredito: "parece mais rapido: Magico pro, 10 paginas -2,7% (vai-e-vem 2,0%); Preto e branco, 10 paginas -3,3% (vai-e-vem 3,1%)".
+  Abrir o livro e trocar de página: "igual". Nada ficou mais lento.
+  (A medida que vale é o PC do Samuel no fim da fase, regra 6; uma ganho de 3% aqui não é promessa.)

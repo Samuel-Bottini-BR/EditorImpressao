@@ -1,0 +1,5 @@
+Somas de fábrica (papel branco, o campo não é tocado): 3e95076 (antes) x d4c820b (depois)
+36 casos antes, 36 depois
+iguais 36 de 36; diferentes: []
+somas distintas entre si: 36 de 36
+e o 3e95076 de hoje bate com o de ontem (somas-novo-3e95076.json): 36 de 36

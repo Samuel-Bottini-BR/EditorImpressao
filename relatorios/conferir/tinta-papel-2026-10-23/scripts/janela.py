@@ -14,6 +14,9 @@ Fase 1 (livro novo, Horas 13 do gabarito, caminho de fábrica: a análise gira, 
   WM_CLOSE.
 Fase 2 (o programa aberto de novo, mesmo livro): as três áreas voltam com o jeito delas?
 Uso: python janela.py <worktree> <saida> <fase> [antes]
+
+Ajuste da resposta 11 (23/10/2026, código d4c820b): o botão agora se chama "manter a cor da tinta";
+confere o texto do botão, o aviso "Área escolhida: ..." e a linha "Marcado: ..." (sem "papel branco").
 """
 import json
 import shutil
@@ -139,11 +142,14 @@ def fase1(j, tela):
     base.conferir("ret" in str(tela.barra_opcoes.ferramenta), f"a ferramenta da vez é o Retângulo ({tela.barra_opcoes.ferramenta})")
     abrir_propriedades(j, tela)
     mc = tela.paineis.marcar_como
-    base.conferir(not any(visiveis(mc)), "antes de escolher a tinta com a cor, os botões da cor e do papel não aparecem")
+    base.conferir(not any(visiveis(mc)), "antes de escolher \"manter a cor da tinta\", os botões da cor e do papel não aparecem")
     foto(j, "marcar-como-de-fabrica")
     base.clique(j, mc.botoes[TINTA_COR])
     base.esperar(1.5)
-    base.conferir(mc.tipo == TINTA_COR, "\"tinta com a cor, papel branco\" ficou escolhida")
+    base.conferir(mc.tipo == TINTA_COR, "\"manter a cor da tinta\" ficou escolhida")
+    if not ANTES:
+        texto = mc.botoes[TINTA_COR].text()
+        base.conferir(texto == "manter a cor da tinta", f"o botão se chama \"manter a cor da tinta\" (resposta 11): \"{texto}\"")
     if ANTES:
         base.conferir(not hasattr(mc, "botoes_do_papel"), "(antes) não existem os botões do papel")
         print("  botões da cor (antes):", [b.text() for b in getattr(mc, "botoes_da_cor", {}).values()], flush=True)
@@ -200,7 +206,21 @@ def fase1(j, tela):
     js = jeitos(tela)
     base.conferir(len(js) >= 3 and [x[1:] for x in js[-3:]] == [(False, True), (True, True), (False, False)],
                   f"área 3 saiu A + papel branco; as outras não mudaram: {js}")
+    marcado = tela.aviso_marcacao.text()
+    print("  linha embaixo da aba Marcar:", marcado, flush=True)
+    base.conferir(marcado.startswith("Marcado:") and "manter a cor da tinta" in marcado and "papel branco" not in marcado,
+                  f"a linha \"Marcado:\" usa o nome novo e não diz \"papel branco\": \"{marcado}\"")
     foto(j, "original-tres-areas")
+    ed = tela.editor_selecao
+    idx = ed.escolher_area(((AREA1[0] + AREA1[2]) / 2, (AREA1[1] + AREA1[3]) / 2))
+    aviso = tela.aviso_marcacao.text()
+    print("  aviso ao escolher a área 1:", idx, aviso, flush=True)
+    base.conferir(idx is not None and ed.selecao.regioes[idx].tipo == TINTA_COR
+                  and aviso.startswith("Área escolhida: manter a cor da tinta.") and "papel branco" not in aviso,
+                  f"escolhendo a área 1, o aviso diz o nome novo: \"{aviso}\"")
+    foto(j, "original-area-1-escolhida")
+    ed.escolhida = None
+    ed.update()
     escolher_filtro(j, tela, "original", "original-tres-areas")
     escolher_filtro(j, tela, "preto_e_branco", "pb-tres-areas")
     foto(j, "pb-tres-areas")
@@ -220,7 +240,7 @@ def fase1(j, tela):
     base.esperar(1.5)
     mc = tela.paineis.marcar_como
     base.conferir(mc.papel_da_pagina is False and tela.editor_selecao.papel_da_pagina is False,
-                  "voltando à tinta com a cor, o papel escolhido por último (papel branco) continua")
+                  "voltando a \"manter a cor da tinta\", o papel escolhido por último (papel branco) continua")
 
 
 def fase2(j, tela):

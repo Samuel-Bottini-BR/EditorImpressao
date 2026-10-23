@@ -21,6 +21,7 @@ USO (um modo por processo; --raiz = a worktree do código que se quer rodar):
     python papel.py abrir-antigo --raiz <wt nova> <pasta>
     python papel.py papel        --raiz <wt nova> <pasta>      (números e fotos dos 4 jeitos)
     python papel.py cruzadas     --raiz <wt nova> <pasta>      (a de cima manda; o "tirar")
+    python papel.py somas-papel  --raiz <wt> <saida.json>      (5 jeitos x 3 filtros x 4 páginas; ajuste 10)
 """
 from __future__ import annotations
 
@@ -426,6 +427,29 @@ def m_cruzadas(raiz, pasta):
     (pasta / "cruzadas.json").write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
+def m_somas_papel(raiz, saida):
+    """Ajuste da resposta 10 (23/10/2026): as somas dos 5 jeitos (sem área, Ab, Ap, Bb, Bp)
+    x 3 filtros x 4 páginas, para comparar 3e95076 (antes) x d4c820b (depois)."""
+    areas = _areas()
+    res = json.loads(saida.read_text(encoding="utf-8")) if saida.is_file() else {}
+    pasta = _DADOS / ("somaspapel-" + saida.stem)
+    pasta.mkdir(parents=True, exist_ok=True)
+    for pid in PAGINAS:
+        area = areas[pid]
+        for filtro in FILTROS:
+            casos = (("sem", []), ("Ab", [_regiao("cor", area, False, False)]), ("Ap", [_regiao("cor", area, False, True)]),
+                     ("Bb", [_regiao("cor", area, True, False)]), ("Bp", [_regiao("cor", area, True, True)]))
+            for rot, regs in casos:
+                chave = f"{pid}|{filtro}|{rot}"
+                if chave in res:
+                    continue
+                pdf, _ = rodar(raiz, pid, filtro, regs, pasta, rot)
+                res[chave] = _somas(pdf)
+                saida.write_text(json.dumps(res, indent=1, sort_keys=True), encoding="utf-8")
+                print(chave, "ok", flush=True)
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("modo")
@@ -436,7 +460,7 @@ def main():
     sys.path.insert(0, str(raiz))
     os.chdir(raiz)
     {"somas": m_somas, "json-antigo": m_json_antigo, "abrir-antigo": m_abrir_antigo,
-     "papel": m_papel, "cruzadas": m_cruzadas}[a.modo](raiz, a.saida.resolve())
+     "papel": m_papel, "cruzadas": m_cruzadas, "somas-papel": m_somas_papel}[a.modo](raiz, a.saida.resolve())
     return 0
 
 
