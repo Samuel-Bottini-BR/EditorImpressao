@@ -202,19 +202,52 @@ Resposta do Samuel à `b-8-tinta-com-cor` (Central, 22/10): **"As duas: A e B co
 GitHub da tinta A e B: suíte `39850503362` (`41fa7bc`): 2185 passaram, 0 falharam; botões 234 ações, 0 falhas.
 Velocidade `39849559789` (`f26407c` → `8226f33`): **"igual (dentro do vai-e-vem)"** - abrir 36,5 → 36,6 s (+0,4%); trocar de página 4,26 → 4,32 s (+1,3%); Mágico pro 45,3 → 45,0 s (−0,7%); Preto e branco 29,0 → 29,0 s (+0,1%). O caminho de fábrica não passa pela conta nova.
 
-## Papel da "tinta com a cor" em dois jeitos (tc23-1, 22/10/2026, em andamento)
+## Papel da "tinta com a cor" em dois jeitos (tc23-1, 22/10/2026, feito)
 
 Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original): "eu posso ter as duas opções?" e
 **"As duas: escolher o papel em cada área ('papel branco' ou 'papel como o resto da página')"**.
 
 - **O que mudou:** embaixo dos dois botões da cor aparecem mais dois, para o papel: **"papel branco"** (o de fábrica,
   igual ao de hoje) e **"papel como o resto da página"** (o papel dentro da área fica como o filtro da página o deixou;
-  só a tinta segue o A ou o B). Em qualquer filtro, como os da cor (b-9). Provisório até o layout.
+  só a tinta segue o A ou o B). Os dois do papel ficam um sob o outro: lado a lado o segundo saía cortado
+  ("papel como o resto da pág...") no painel de 300 px. Em qualquer filtro, como os da cor (b-9). Sem emoji.
+  Provisório até o layout. O botão do tipo continua "tinta com a cor, papel branco" (não mudei nome de controle).
 - **Dados:** campo novo e opcional `Regiao.papel_da_pagina` (padrão `False` = papel branco). Projeto antigo sai papel branco.
-- **Código:** `core/selecao.py`, `core/editar_zonas.py` (`_mascara_do_jeito`), `ui/widgets/paineis.py`,
-  `ui/widgets/editor_selecao.py`, `ui/tela_conferir.py`. Commit `b0af839`.
+- **Código:** `core/selecao.py`, `core/editar_zonas.py` (`_mascara_do_jeito`; o papel só mexe no que não é tinta),
+  `ui/widgets/paineis.py`, `ui/widgets/editor_selecao.py`, `ui/tela_conferir.py`. Commits `b0af839`, `3e95076`.
 - **Testes:** `tests/test_tinta_papel_da_pagina.py` (10 passaram; os 10 falham no código antigo, que não tem o campo).
   Também passaram `test_tinta_escurecida.py` (8), `test_editar_zonas.py` (10), `test_selecao.py` (24),
   `test_paineis.py` (33), `test_editor_selecao.py` (17).
-- **Velocidade:** filtro do GitHub `39876068685` (`639136a` → `b0af839`), rodando.
-- Falta: somas (antigo `639136a` x novo), antes/depois, print da janela, suíte do GitHub.
+- **Prova "de fábrica igual" em páginas de verdade:** `scripts/tinta_papel.py somas`, Horas 13, Escola 7 e Opus Majus 3,
+  área "papel branco" com A e com B, em Original, Preto e branco e Melhorar, código antigo (`639136a`) e novo (`3e95076`),
+  os dois na worktree parada `fase2-novas-prova`: **18 de 18 PDFs iguais** (`somas-tinta-papel-antigo-639136a.json`,
+  `somas-tinta-papel-novo-3e95076.json`).
+- **Antes/depois:** `relatorios/conferir/fase2-novas/tinta-papel/` (fora do git), feito por `scripts/tinta_papel.py fotos`.
+  Caminho de cada foto: girar (0°) → dividir (não, de fábrica) → endireitar (sim) → cortar as bordas (sim) → Original ou
+  Preto e branco → área "tinta com a cor". Cinco painéis: sem área · A + papel branco · A + papel da página · B + papel
+  branco · B + papel da página. "papel branco" = o de antes (somas iguais).
+  - Horas 13, Original: o retângulo branco some; com A a página sai igual a sem área (0 pontos diferentes); com B só o
+    título escurece (e a moldura dourada que cai na área, a ressalva de sempre). O "TABLE" e as linhas do verso que
+    transparecem no papel voltam a aparecer dentro da área (são do papel da página).
+  - Escola 7 e Opus Majus 3, Original: o mesmo (A = 0 pontos diferentes de sem área; B só a tinta).
+  - Preto e branco: quase igual nas duas; mas o papel da página do Preto e branco traz o contorno preto que o filtro
+    pôs em volta da letra (pergunta 10).
+  - Painel (`antes_painel_de_fabrica.png`, `depois_painel_de_fabrica.png`, `depois_painel_papel_da_pagina.png`).
+- **Velocidade:** filtro do GitHub `39876068685` (`639136a` → `b0af839`; o `3e95076` só muda a tela), rodando.
+
+## Perguntas para o Samuel (via gerente)
+
+10. **Preto e branco com "papel como o resto da página": letra com contorno preto.** No Preto e branco, o papel "da
+    página" é o resultado do filtro, e o filtro pinta de preto a beirada de cada letra um pouco além do que o programa
+    chama de "tinta com a cor". Com "papel branco" essa beirada some (fica branca); com "papel como o resto da página"
+    ela fica, e a letra colorida sai com um contorno preto fino. No Original não acontece (lá o papel é o do livro).
+    Na Escola 7 dá para ver; na Opus Majus 3 e na Horas 13 quase não se vê.
+    - (a) Fica assim: "papel como o resto da página" é o filtro da página, com o contorno preto.
+    - (b) No Preto e branco, "papel como o resto da página" sai igual a "papel branco" (sem contorno); muda só nos
+      filtros com cor.
+    Fotos: `relatorios/conferir/fase2-novas/tinta-papel/escola_p007-preto_e_branco-letra-de-perto.jpg` (em cima papel
+    branco, embaixo papel da página, ampliado 3 vezes), `escola_p007-preto_e_branco-titulo-ampliado.jpg` e, para
+    comparar com o Original, `horas_p013-original-titulo-ampliado.jpg`.
+11. **O nome do tipo:** o botão do "Marcar como" ainda diz "tinta com a cor, papel branco", mesmo quando se escolhe
+    "papel como o resto da página". Trocar para só "tinta com a cor"? (Não mudei: nome de controle é com ele.)
+    Foto: `relatorios/conferir/fase2-novas/tinta-papel/depois_painel_papel_da_pagina.png`.
