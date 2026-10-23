@@ -192,6 +192,40 @@ O `SkewFinder` já tinha vindo com o dividir.
 - a `st_gravura` (item 1.2), recompilada numa pasta de rascunho com os 4
   arquivos novos em `src/`, ver a seção "Duas DLLs".
 
+## O preto e branco da saída (item 2.8, desde 20/10/2026)
+
+Decisão do Samuel P8 (b), 05/10/2026: "Trazer os dez do ScanTailor como opções
+a mais"; regra de 13/10: igual ao ScanTailor, com os ajustes de fábrica dele,
+desligado de fábrica.
+
+| | |
+|---|---|
+| Cola | `ligacao-ferramentas/saida.cpp` (função em C `st_ferramentas_preto_e_branco`) |
+| Python | `core/preto_e_branco_scantailor.py`; chamado por `core.filtros.filtro_preto_e_branco` quando a página escolhe um dos dez (`ConfigPagina.algoritmo_preto_branco` = `st_otsu` ... `st_edgediv`) |
+| Arquivos novos em `src/` (sem mudança, somas em `somas-v1.2.1.txt`) | `imageproc/SavGolFilter.*`, `imageproc/SavGolKernel.*`, `core/filters/output/BlackWhiteOptions.*` (o `Binarize.cpp` com os dez jeitos já estava, desde o 1.2) |
+| Funções copiadas de `referencia/OutputGenerator.cpp` (marcas `COPIADO SEM MUDANCA`, conferidas por `tests/test_preto_e_branco_scantailor.py`) | 366-386 (`RaiseAboveBackground`), 1004-1050 (`hitMissReplaceAllDirections`), 1178-1196 (`smoothToGrayscale`), 1893-1926 (`normalizeIlluminationGray`), 2186-2192 (`adjustThreshold`), 2220-2302 (`morphologicalSmoothInPlace`), 2304-2403 (`binarize`, os dez jeitos), 2583-2606 (`transformToWorkingCs`) |
+| Ordem (a de `processWithoutDewarping`, modo preto e branco) | igualar a luz → [Wiener: coeficiente 0 de fábrica, fica de fora] → Savitzky-Golay → binarizar → suavização morfológica |
+| Ajustes de fábrica (os de `BlackWhiteOptions.cpp`) | método Otsu, ajuste do limiar 0, janela 200, k Sauvola 0,34, k Wolf 0,3, limites do Wolf 1 e 254, as três etapas ligadas |
+
+O que a ligação troca: a classe `OutputGenerator::Processor` vira uma classe
+com o mesmo nome e só os membros usados (como no 1.2); `m_colorParams` vira
+uma estrutura com só `blackWhiteOptions()`. A página chega já girada e cortada
+pelo programa, então o sistema de trabalho é a própria imagem e a área de
+conteúdo é a imagem inteira: `binarize(imagem, área)` do original vira
+`binarize(imagem)`, que é exatamente o caminho do original quando a área cobre
+a imagem toda (linhas 2412-2420). Os pontinhos (Despeckle) não entram aqui: no
+programa eles são a escolha "Limpar a sujeira", que já existe.
+
+## As cores da saída (item 2.11, desde 20/10/2026)
+
+"Letras com a cor delas" (Color segmentation) e "Reduzir cores" (Posterize), decisão P10 (a) do Samuel
+(05/10): opção desligada de fábrica. Função em C `st_ferramentas_cores` em `ligacao-ferramentas/saida.cpp`;
+Python em `core/cores_scantailor.py`, chamado no fim de `core.pipeline._filtrar`. Arquivos novos em `src/`
+(sem mudança, com soma): `imageproc/ColorSegmenter.*`, `imageproc/Posterizer.*`,
+`imageproc/ImageCombination.*`, `core/filters/output/ColorCommonOptions.*`, `core/AutoManualMode.*`. Funções
+copiadas a mais de `OutputGenerator.cpp`: 2502-2538 (`segmentImage`, `posterizeImage`). Ajustes de fábrica:
+"Reduce noise" 7, ajustes de vermelho/verde/azul 0, nível 4, sem normalizar, "forçar preto e branco" ligado.
+
 ## Como conferir que nada mudou
 
 **Não use `cmp` direto na pasta do PC.** O git deste PC está com

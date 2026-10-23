@@ -1,0 +1,43 @@
+  ok      de fábrica: miniaturas embaixo, abertas, e o 'Confirmar e processar' ao lado delas
+  1-embaixo-abertas.png  (tela inteira)
+  1-embaixo-abertas-ampliado.png  (ampliado: O cabeçalho PÁGINAS: alça, seta, três pontinhos e ver todas)
+  ok      clique nativo na seta fechou as miniaturas e o 'Confirmar e processar' desceu para a barra de baixo
+  ok      o menu Ver > Miniaturas acompanhou
+  2-embaixo-fechadas.png  (tela inteira)
+  ok      clique nativo na seta abriu de novo, e o botão voltou para o lado delas
+  ok      clique nativo nos três pontinhos abriu o menu
+  3-menu-dos-tres-pontinhos.png  (tela inteira)
+  3-menu-dos-tres-pontinhos.png  (tela inteira)
+     itens: ['Ver em pares', 'Lugar', 'Fechar as miniaturas'] ['embaixo', 'à esquerda', 'à direita, junto da página']
+  ok      'Ver em pares' juntou as miniaturas em pares
+  4-embaixo-em-pares.png  (tela inteira)
+  ok      Lugar > esquerda: a coluna de miniaturas, e o processar na barra de baixo
+  5-a-esquerda.png  (tela inteira)
+  ok      Lugar > direita: a coluna de miniaturas, e o processar na barra de baixo
+  5-a-direita.png  (tela inteira)
+  5-a-direita-com-o-painel.png  (tela inteira)
+  5-a-direita-em-pares.png  (tela inteira)
+  ok      de lado e fechadas: uma faixa fininha
+  5-a-direita-fechada.png  (tela inteira)
+
+6. arrastar pela alça
+  ok      arrastando: os três lugares aparecem, e o de baixo acende
+  6-arrastando-a-alca.png  (tela inteira)
+  ok      soltou no lugar de baixo: as miniaturas foram para baixo
+
+7. Todas as páginas
+  ok      clique nativo em 'ver todas' abriu Todas as páginas, uma a uma (901 A)
+  7-todas-uma-a-uma.png  (tela inteira)
+  7-todas-em-pares.png  (tela inteira)
+  7-todas-so-atencao.png  (tela inteira)
+  ok      clique nativo na página 3 voltou ao trabalho nela (página 3)
+  ok      menu Ver > Todas as páginas abriu a grade
+  ok      com o Dividir o cabeçalho diz FOLHAS
+  8-dividir-folhas.png  (tela inteira)
+  9-minima.png  (tela inteira)
+  9-minima-a-esquerda.png  (tela inteira)
+  9-escuro.png  (tela inteira)
+  9-claro.png  (tela inteira)
+
+conferências: 15 de 15 certas
+FIM

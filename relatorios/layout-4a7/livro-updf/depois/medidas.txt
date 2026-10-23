@@ -1,0 +1,30 @@
+1600x821 uma página: folhas na tela (altura em pixels) {301: 570}; nitidez da folha 301: 0.99
+1600x821 lado a lado: folhas na tela (altura em pixels) {302: 570, 303: 570}; nitidez da folha 302: 0.99
+1600x821 lado a lado, caber largura: folhas na tela (altura em pixels) {302: 1011, 303: 1011}; nitidez da folha 302: 1.04
+1600x821 lado a lado, caber altura: folhas na tela (altura em pixels) {302: 555, 303: 555, 304: 555, 305: 555}; nitidez da folha 302: 1.04
+1600x821 lado a lado, caber real: folhas na tela (altura em pixels) {302: 2326}; nitidez da folha 302: 1.12
+1600x821 lado a lado sem rolar: folhas na tela (altura em pixels) {302: 570, 303: 570}; nitidez da folha 302: 0.99
+1600x821 grade: folha 301 pintada com 133 x 188 pixels; nitidez 0.99
+maximizada uma página: folhas na tela (altura em pixels) {301: 769}; nitidez da folha 301: 1.05
+maximizada lado a lado: folhas na tela (altura em pixels) {302: 769, 303: 769}; nitidez da folha 302: 1.00
+maximizada lado a lado, caber largura: folhas na tela (altura em pixels) {300: 1240, 301: 1240, 302: 1240, 303: 1240}; nitidez da folha 302: 1.18
+maximizada lado a lado, caber altura: folhas na tela (altura em pixels) {302: 754, 303: 754, 304: 754, 305: 754}; nitidez da folha 302: 1.05
+maximizada lado a lado, caber real: folhas na tela (altura em pixels) {302: 2326}; nitidez da folha 302: 1.13
+maximizada lado a lado sem rolar: folhas na tela (altura em pixels) {302: 769, 303: 769}; nitidez da folha 302: 1.00
+maximizada grade: folha 301 pintada com 133 x 188 pixels; nitidez 0.99
+ok   clique nativo no cartão: o livro aberto
+ok   1600x821: clique nativo em lado a lado
+ok   1600x821: clique nativo em caber largura
+ok   1600x821: clique nativo em caber altura
+ok   1600x821: clique nativo em caber real
+ok   1600x821: clique nativo desliga o rolar sem parar
+ok   1600x821: a seta da pílula vai ao par seguinte (folha 304)
+ok   1600x821: a folha 301 aparece na grade (158 pontos)
+ok   maximizada: clique nativo em lado a lado
+ok   maximizada: clique nativo em caber largura
+ok   maximizada: clique nativo em caber altura
+ok   maximizada: clique nativo em caber real
+ok   maximizada: clique nativo desliga o rolar sem parar
+ok   maximizada: a seta da pílula vai ao par seguinte (folha 304)
+ok   maximizada: a folha 301 aparece na grade (158 pontos)
+ok   na janela mínima os botões da barra de baixo e a pílula cabem sem se cobrir

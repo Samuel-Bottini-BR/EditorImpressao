@@ -32,7 +32,11 @@ class Medidor(QFrame):
     soltou = Signal(int)
 
     def __init__(self, rotulo: str, ponta_esquerda: str, ponta_direita: str,
-                 parent=None) -> None:
+                 parent=None, em_duas_linhas: bool = False) -> None:
+        """em_duas_linhas=True (painel "Filtro da página", etapa 4 do layout,
+        20/10/2026: o painel tem 300 pontos de largura): o nome e a palavra
+        do valor em cima, e "pontas + barra" embaixo, com a barra podendo
+        encolher. False: tudo numa linha, como sempre foi."""
         super().__init__(parent)
 
         camadas = QVBoxLayout(self)
@@ -41,14 +45,16 @@ class Medidor(QFrame):
 
         linha = QHBoxLayout()
         linha.setSpacing(8)
+        linha_de_cima = QHBoxLayout() if em_duas_linhas else linha
 
         self.rotulo = QLabel(rotulo)
         self.rotulo.setStyleSheet("font-weight: 600;")
-        linha.addWidget(self.rotulo)
+        linha_de_cima.addWidget(self.rotulo)
 
         esquerda = QLabel(ponta_esquerda)
         estilo.estilizar(esquerda, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         linha.addWidget(esquerda)
+        self.ponta_esquerda = esquerda
 
         self.barra = QSlider(Qt.Horizontal)
         self.barra.setMinimum(AJUSTE_MIN)
@@ -58,7 +64,7 @@ class Medidor(QFrame):
         self.barra.setPageStep(10)
         self.barra.setTickInterval(25)
         self.barra.setTickPosition(QSlider.TicksBelow)
-        self.barra.setMinimumWidth(180)
+        self.barra.setMinimumWidth(60 if em_duas_linhas else 180)
         self.barra.valueChanged.connect(self._mudou)
         self.barra.sliderReleased.connect(self._largou)
         linha.addWidget(self.barra, 1)
@@ -66,12 +72,19 @@ class Medidor(QFrame):
         direita = QLabel(ponta_direita)
         estilo.estilizar(direita, lambda: f"color: {estilo.TEXTO_FRACO}; font-size: 12px;")
         linha.addWidget(direita)
+        self.ponta_direita = direita
 
         self.palavra = QLabel(palavra_do_ajuste(AJUSTE_PADRAO))
         self.palavra.setMinimumWidth(72)
         self.palavra.setAlignment(Qt.AlignCenter)
         estilo.estilizar(self.palavra, lambda: f"color: {estilo.AZUL}; font-weight: 600;")
-        linha.addWidget(self.palavra)
+        if em_duas_linhas:
+            linha_de_cima.addStretch()
+            self.palavra.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            linha_de_cima.addWidget(self.palavra)
+            camadas.addLayout(linha_de_cima)
+        else:
+            linha.addWidget(self.palavra)
 
         camadas.addLayout(linha)
 
@@ -99,9 +112,8 @@ class Medidor(QFrame):
         onde o mesmo medidor passa a significar outra coisa ("Força do preto"
         vira "Clareza do fundo", por exemplo)."""
         self.rotulo.setText(rotulo)
-        linha = self.layout().itemAt(0).layout()
-        linha.itemAt(1).widget().setText(ponta_esquerda)
-        linha.itemAt(3).widget().setText(ponta_direita)
+        self.ponta_esquerda.setText(ponta_esquerda)
+        self.ponta_direita.setText(ponta_direita)
 
     # --- interno ----------------------------------------------------------
 

@@ -1,0 +1,38 @@
+tests/test_antigo_aberto_vira_pronto.py :: 5 passed in 13.52s
+tests/test_barra_de_menu.py :: 20 passed in 5.29s
+tests/test_botoes_em_portugues.py :: 5 passed in 0.35s
+tests/test_cancelar_e_conferir_rapido.py :: 1 passed in 15.66s
+tests/test_cartao_pdf_gerado.py :: 4 passed in 7.73s
+tests/test_cartoes_e_previas.py :: 2 passed in 2.85s
+tests/test_converter_zonas_ao_abrir.py :: 14 passed in 19.53s
+tests/test_dialogo_tamanho_da_folha.py :: 5 passed in 0.22s
+tests/test_dividir_no_programa.py :: 19 passed in 16.95s
+tests/test_editor_selecao.py :: 17 passed, 85 warnings in 0.77s
+tests/test_endireitar_g5.py :: 13 passed in 4.82s
+tests/test_endireitar_na_tela.py :: 5 passed in 4.77s
+tests/test_folhear_pdf.py :: 8 passed in 2.13s
+tests/test_gerar_o_mesmo_livro_de_novo.py :: 6 passed in 4.31s
+tests/test_girar_cartoes_e_previas.py :: 23 passed in 23.50s
+tests/test_gravura_na_aba_marcar.py :: 8 passed in 2.69s
+tests/test_gravura_no_processamento.py :: 43 passed in 18.83s
+tests/test_ja_existe_arquivo_com_esse_nome.py :: 4 passed in 6.70s
+tests/test_janela_cabe_na_tela.py :: 2 passed in 0.59s
+tests/test_limpar_pontinhos_na_tela.py :: 19 passed in 5.89s
+tests/test_marcacao_em_todas.py :: 4 passed in 1.59s
+tests/test_menus_que_nao_faziam_nada.py :: 5 passed in 1.65s
+tests/test_mesmo_livro_outro_caminho.py :: 17 passed in 10.28s
+tests/test_misto_consertos.py :: 25 passed in 7.01s
+tests/test_misto_na_tela.py :: 14 passed in 4.39s
+tests/test_paineis.py :: 34 passed in 0.72s
+tests/test_paineis_na_tela.py :: 22 passed in 29.44s
+tests/test_previa_composta.py :: 12 passed in 2.32s
+tests/test_salva_sozinho.py :: 11 passed in 3.79s
+tests/test_substituir_e_cancelar.py :: 21 passed in 3.81s
+tests/test_tela_inicio.py :: 14 passed in 1.00s
+tests/test_tirar_da_lista_nao_volta.py :: 10 passed in 18.27s
+tests/test_tirar_fundo_no_programa.py :: 54 passed in 16.46s
+tests/test_trabalho_nao_se_perde.py :: 82 passed in 134.35s (0:02:14)
+tests/test_trilha_agrupada.py :: 18 passed in 22.96s
+tests/test_trilha_e_opcoes.py :: 29 passed, 1 warning in 0.43s
+tests/test_visualizador.py :: 70 passed, 9 warnings in 0.54s
+FIM

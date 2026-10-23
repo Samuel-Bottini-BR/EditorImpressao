@@ -7,6 +7,8 @@ um cancelar que funciona de verdade.
 
 from __future__ import annotations
 
+import copy
+
 import traceback
 from pathlib import Path
 
@@ -26,7 +28,7 @@ from core.pipeline import (
     renderizar_com_filtro,
     renderizar_pagina,
 )
-from modelos import Projeto
+from modelos import ConfigPagina, Projeto
 from registro import registrar_erro
 
 # Ordem da fila de previas (QThreadPool.start: maior sai primeiro). D4,
@@ -267,8 +269,19 @@ class _TarefaCartoes(QRunnable):
 
     def __init__(self, indice_pagina: int, base: np.ndarray, filtros: list[str],
                  forca_preto: int, clareza: int, intensidade: int,
-                 sinais: _SinaisCartoes, chave: object = None) -> None:
+                 sinais: _SinaisCartoes, chave: object = None,
+                 pagina: ConfigPagina | None = None, dpi: float = 70,
+                 despeckle=True) -> None:
         super().__init__()
+        # O "Limpar pontinhos" que vale na pagina (core.pipeline.
+        # pontinhos_da_pagina), resolvido na hora do pedido. True = o de antes
+        # do conserto de 21/10 (o nosso, sempre).
+        self.despeckle = despeckle
+        # As caixinhas da pagina (2.9 e 2.11), copiadas na hora do pedido para
+        # o outro fio nao ler a pagina enquanto a pessoa mexe nela. None =
+        # nenhuma marcada (o cartao de sempre). dpi: o da amostra.
+        self.pagina = copy.copy(pagina) if pagina is not None else None
+        self.dpi = dpi
         self.chave = chave             # volta como veio (GerenciadorPrevias.pedir_cartoes)
         self.indice_pagina = indice_pagina
         self.base = base
@@ -283,13 +296,23 @@ class _TarefaCartoes(QRunnable):
         Falha silenciosa (so vira log): o cartao so fica "preparando..." e a
         tela continua funcionando."""
         from core.filtros import aplicar_filtro
+        from core.pipeline import filtro_com_as_caixinhas
 
         resultados: dict[str, np.ndarray] = {}
         try:
             for chave in self.filtros:
-                amostra, _ = aplicar_filtro(
-                    self.base, chave, self.forca_preto, self.clareza, self.intensidade,
-                )
+                if self.pagina is None:
+                    amostra, _ = aplicar_filtro(
+                        self.base, chave, self.forca_preto, self.clareza, self.intensidade,
+                    )
+                else:
+                    # bug do verificador do 2.9 (21/10): o cartao = o filtro
+                    # na pagina, com as caixinhas dela
+                    amostra = filtro_com_as_caixinhas(
+                        self.base, self.pagina, chave, self.dpi,
+                        self.forca_preto, self.clareza, self.intensidade,
+                        algoritmo_pb=self.pagina.algoritmo_preto_branco,
+                        despeckle=self.despeckle)
                 resultados[chave] = amostra
         except Exception:  # noqa: BLE001 - cartao que falha so fica "preparando..."
             registrar_erro("cartoes", traceback.format_exc())
@@ -521,7 +544,12 @@ class GerenciadorPrevias(QObject):
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"
             # "Deixar em branco" (12/10/2026) muda a pagina desenhada
-            f":{'branca' if getattr(p, 'em_branco', False) else ''}"
+            f":{'branca' if getattr(p, 'em_branco', False) else ''}:"
+            # itens 2.9 e 2.11 (bug do verificador do 2.9, 21/10): as
+            # caixinhas da pagina mudam a previa e os cartoes
+            f"{bool(getattr(p, 'claro_no_escuro', False))}:"
+            f"{bool(getattr(p, 'letras_com_a_cor', False))}:"
+            f"{bool(getattr(p, 'reduzir_cores', False))}"
         )
 
     # --- uso --------------------------------------------------------------
@@ -746,16 +774,26 @@ class GerenciadorPrevias(QObject):
 
     def pedir_cartoes(self, indice: int, base: np.ndarray, filtros: list[str],
                        forca_preto: int, clareza: int, intensidade: int,
-                       chave: object = None) -> None:
+                       chave: object = None, dpi: float = 70) -> None:
         """Pede os cartoes que faltam para uma pagina, fora da thread da tela.
 
         chave: volta junto no sinal cartoes_prontos, para quem pediu saber de
         que estado da pagina e o resultado. A tela de conferir passa a chave
         dos cartoes (giro, corte, ajustes...) e descarta o que chegar de um
         estado que ja passou (D1, 06/10/2026)."""
+        from core.pipeline import pontinhos_da_pagina as pontinhos_prontos
+
+        pagina = (self.projeto.paginas[indice]
+                  if 0 <= indice < len(self.projeto.paginas) else None)
+        # 21/10 (bug do verificador do 2.9): o cartao = a pagina com o filtro,
+        # entao com o algoritmo e o "Limpar pontinhos" dela (antes: sempre
+        # "auto" e o nosso, e o cartao apagava pontos que a pagina mantem)
+        despeckle = (pontinhos_prontos(self.projeto, pagina, base, dpi)
+                     if pagina is not None else True)
         self._pool_cartoes.start(
             _TarefaCartoes(indice, base, filtros, forca_preto, clareza, intensidade,
-                            self._sinais_cartoes, chave=chave)
+                            self._sinais_cartoes, chave=chave, pagina=pagina, dpi=dpi,
+                            despeckle=despeckle)
         )
 
     # --- folha crua (aba "Onde cortar") -----------------------------------

@@ -28,6 +28,16 @@ PADROES: dict[str, Any] = {
     # mudar: nada aqui sem mudar ui/estilo.py junto. Arriscado: outro valor de
     # fabrica que nao seja um dos tres temas.
     "tema": "cinza",
+    # O livro aberto na tela inteira (layout, 22/10/2026, "como o UPDF"): o
+    # jeito de mostrar ("uma" ou "duas" lado a lado), se rola sem parar, e o
+    # jeito de caber ("pagina", "altura", "largura" ou "real"). Lido e gravado
+    # por ui/tela_inicio.LivroAberto; valor estranho volta ao de fabrica.
+    "livro_aberto": {"mostrar": "uma", "rolar": True, "caber": "pagina"},
+    # As miniaturas da tela de trabalho (layout, 22/10/2026; Samuel, 21/10:
+    # "Sim, lembrar para todos os livros"): o lugar ("embaixo", "esquerda" ou
+    # "direita"), se estao abertas e se estao em pares. Lido e gravado por
+    # ui/tela_conferir.TelaConferir; valor estranho volta ao de fabrica.
+    "miniaturas": {"lugar": "embaixo", "aberta": True, "em_pares": False},
 }
 
 

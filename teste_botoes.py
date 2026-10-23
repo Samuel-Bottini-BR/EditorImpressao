@@ -382,6 +382,26 @@ def _instalar_monkeypatches(caminho_pdf: str) -> None:
 
     DialogoTamanhoDaFolha.exec = _exec_tamanho_sem_travar
 
+    # A tela cheia dos filtros (etapa 6 do layout) tambem e modal: clica nos
+    # filtros da fila, liga e desliga o "Comparar com o Original" e fecha sem
+    # mudar (o "Usar" e conferido em tests/test_filtros_tela_cheia.py).
+    from ui.widgets.filtros_tela_cheia import FiltrosEmTelaCheia
+
+    _exec_original_tela_cheia = FiltrosEmTelaCheia.exec
+
+    def _interagir_com_a_tela_cheia(dialogo) -> None:
+        for cartao in list(dialogo.cartoes.values()):
+            dialogo.escolher(cartao.chave)
+        dialogo.chave_comparar.click()
+        dialogo.chave_comparar.click()
+        dialogo.botao_sem_mudar.click()
+
+    def _exec_tela_cheia_sem_travar(self):
+        QTimer.singleShot(0, lambda: _interagir_com_a_tela_cheia(self))
+        return _exec_original_tela_cheia(self)
+
+    FiltrosEmTelaCheia.exec = _exec_tela_cheia_sem_travar
+
     QInputDialog.getText = staticmethod(
         lambda *a, **k: ("Projeto de teste (renomeado)", True))
     QInputDialog.getInt = staticmethod(
@@ -454,7 +474,11 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     falhas += f
 
     # menu, no estado "tela inicial" (so Arquivo/Ver/Ajuda valem)
-    o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair"})
+    # "miniaturas" e "icones" (menu Ver, rodada 14 do layout) escondem a tira
+    # e os icones da direita: acionados aqui, os passos seguintes nao os
+    # achariam. Sao conferidos em tests/test_menu_paineis.py.
+    o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair", "miniaturas", "icones",
+                                                    "filtros_tela_cheia"})
     ok += o
     falhas += f
 
@@ -794,7 +818,12 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             print(f"  {largura}x{altura}: ok em todas as abas")
 
     print("\n--- menu (conferir) ---")
-    o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir"})
+    # "comparar" (Ver > "Modo comparar", ligado na etapa 4 do layout) abre a
+    # tela grande, que é modal: ela é conferida em testar_tela_ampliada, com
+    # o .exec() interceptado; aqui travaria a bateria.
+    o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir",
+                                                    "comparar", "miniaturas", "icones",
+                                                    "filtros_tela_cheia"})
     ok += o
     falhas += f
 

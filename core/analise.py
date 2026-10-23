@@ -83,6 +83,12 @@ AVISOS_DO_SO_AS_LETRAS = (DESENHO_APAGADO, SO_O_TEXTO_APAGOU, TEXTO_FALHADO, PAG
 # como o TINTA_FORTE_FORA_DO_TEXTO). So em livro cuja conta e a do
 # ScanTailor, e so com o angulo automatico (o a mao ja foi conferido).
 CONTAS_DO_ENDIREITAR_DISCORDAM = "contas_do_endireitar_discordam"
+# Item 2.15 (20/10/2026, igual ao ScanTailor: core/paginas_diferentes.py): o
+# angulo de endireitar desta pagina se afasta muito do das outras paginas do
+# livro (DeviationProvider, coeficiente 1,5 e 1% de fabrica). Quem poe: a
+# analise, depois de medir todas as paginas (core.pipeline.analisar). Por
+# pagina: nunca vira caracteristica do livro.
+ANGULO_DIFERENTE_DAS_OUTRAS = "angulo_diferente_das_outras"
 
 
 @dataclass(frozen=True)
@@ -294,6 +300,11 @@ ALERTAS: dict[str, Alerta] = {
     RESOLUCAO_BAIXA: Alerta(
         RESOLUCAO_BAIXA, "Qualidade baixa",
         "Esta página foi escaneada em qualidade baixa. O resultado pode não ficar bom.",
+        "está bom assim", "revisar",
+    ),
+    ANGULO_DIFERENTE_DAS_OUTRAS: Alerta(
+        ANGULO_DIFERENTE_DAS_OUTRAS, "Inclinação diferente das outras",
+        "Esta página foi endireitada num ângulo bem diferente do das outras. Veja se ficou certa.",
         "está bom assim", "revisar",
     ),
     TAMANHO_DIFERENTE: Alerta(

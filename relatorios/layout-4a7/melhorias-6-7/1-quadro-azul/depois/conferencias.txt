@@ -1,0 +1,5 @@
+ok   clique nativo no cartão: o livro aberto
+ok   1600x821: duas lado a lado ligado
+ok   1600x821: pílula 'página 301 de 750'; o quadro azul está na [301] (tem de ser 301)
+ok   maximizada: duas lado a lado ligado
+ok   maximizada: pílula 'página 301 de 750'; o quadro azul está na [301] (tem de ser 301)

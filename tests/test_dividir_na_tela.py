@@ -73,12 +73,16 @@ def test_livro_novo_nao_divide_e_o_jeito_so_aparece_marcado(janela, pasta):
     opcoes.cx_dividir.setChecked(True)
     assert not opcoes.linha_jeito_dividir.isHidden()
     assert [opcoes.combo_jeito_dividir.itemText(i) for i in range(opcoes.combo_jeito_dividir.count())] \
-        == ["o do programa", "o do ScanTailor"]
+        == ["o do Editor", "o do ScanTailor"]      # rodada 14 do layout, 907 B
     # decisao do Samuel, 07/10/2026: ao marcar, vem escolhido "o do ScanTailor"
     assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_SCANTAILOR
     assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
     opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(ds.JEITO_PROGRAMA))
     assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA     # o do programa continua opção
+    # verificador, 21/10/2026: a linha-resumo dizia "(jeito: o do programa)"
+    # com a lista logo acima dizendo "o do Editor" (rodada 14, 907 B)
+    assert "(jeito: o do Editor)" in opcoes.resumo.text()
+    assert "o do programa" not in opcoes.resumo.text()
     opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(ds.JEITO_SCANTAILOR))
     opcoes.cx_cortar_sobra.setChecked(True)
     assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR

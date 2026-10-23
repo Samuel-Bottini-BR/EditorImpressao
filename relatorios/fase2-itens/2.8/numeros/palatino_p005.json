@@ -1,0 +1,32 @@
+{
+ "palatino_p005": {
+  "tamanho": [
+   1177,
+   2070
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   608,
+   94,
+   294
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 548403,
+   "Otsu do ScanTailor": 551307,
+   "Sauvola do ScanTailor": 553988,
+   "Wolf do ScanTailor": 572574
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 6626,
+   "Sauvola do ScanTailor": 7599,
+   "Wolf do ScanTailor": 24191
+  },
+  "segundos": {
+   "Hoje: Automático": 0.68,
+   "Otsu do ScanTailor": 0.88,
+   "Sauvola do ScanTailor": 0.95,
+   "Wolf do ScanTailor": 0.94
+  },
+  "nao_rodou": {}
+ }
+}

@@ -41,6 +41,10 @@ from ui.tela_opcoes import TelaOpcoes
 
 INICIO, OPCOES, PROGRESSO, CONFERIR, FINAL = range(5)
 
+# Quantos livros o menu Arquivo > "Livros recentes" mostra (os mais mexidos
+# por ultimo). Seguro mudar.
+MAXIMO_DE_RECENTES = 10
+
 
 # (largura, altura) minimas da janela, em pontos. Ver JanelaPrincipal.__init__.
 LARGURA_E_ALTURA_MINIMAS = (1000, 600)
@@ -148,6 +152,13 @@ class JanelaPrincipal(QMainWindow):
         self.tela_inicio.continuar_projeto.connect(self._continuar_projeto)
         self.tela_inicio.recomecar_projeto.connect(self._recomecar_projeto)
         self.tela_inicio.vai_tirar_da_lista.connect(self._soltar_o_livro_tirado_da_lista)
+        # etapa 7 do layout: os botões do livro aberto e do alto da tela dos livros
+        self.tela_inicio.abrir_o_automatico.connect(
+            lambda resumo: self.abrir_livro(resumo.caminho_entrada, resumo=resumo))
+        self.tela_inicio.processar_pedido.connect(self._continuar_e_processar)
+        self.tela_inicio.configuracoes_pedidas.connect(lambda: self._abrir_configuracoes())
+        self.tela_inicio.ajuda_pedida.connect(lambda: self._mostrar_atalhos())
+        self._processar_ao_abrir = False
         self.telas.addWidget(self.tela_inicio)
 
         self.tela_opcoes = TelaOpcoes()
@@ -239,6 +250,33 @@ class JanelaPrincipal(QMainWindow):
         conferir.marcacoes_por_converter.connect(self._converter_as_zonas_se_parado)
         self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
         self.menu.ligar("apagar", conferir.apagar_pagina)
+        # Etapa 4 do layout (20/10/2026): os itens que estavam no menu e nao
+        # faziam nada (inventario de 02/10, "11 itens de menu mortos"). Os
+        # quatro "Painel: ..." do menu Ver viraram o menu Painéis (rodada 14).
+        self.menu.ligar("restaurar", conferir.restaurar_pagina)
+        self.menu.ligar("historico", conferir._mostrar_o_historico)
+        self.menu.ligar("mais_zoom", lambda: conferir.mudar_o_zoom(conferir.PASSO_DO_ZOOM))
+        self.menu.ligar("menos_zoom", lambda: conferir.mudar_o_zoom(1 / conferir.PASSO_DO_ZOOM))
+        self.menu.ligar("ajustar", lambda: conferir.mudar_o_zoom(None))
+        self.menu.ligar("comparar", self._modo_comparar)
+        self.menu.menu_recentes.aboutToShow.connect(self._montar_livros_recentes)
+        # Rodada 14 do layout: o menu Painéis (903 B) e as peças do menu Ver
+        # (904 A). Os itens marcados acompanham a tela (abrir pelo ícone, a
+        # seta que esconde os ícones), sem virar clique de novo.
+        paineis = conferir.paineis
+        for chave, painel, _texto in self.menu.PAINEIS_DO_MENU:
+            self.menu.ligar(chave, lambda marcado=False, p=painel:
+                            paineis.mostrar_painel(p, bool(marcado)))
+        self.menu.ligar("painel_fechar", paineis.fechar)
+        self.menu.ligar("icones", lambda marcado=False: paineis.mostrar_icones(bool(marcado)))
+        self.menu.ligar("miniaturas", lambda marcado=False: conferir.mostrar_miniaturas(bool(marcado)))
+        paineis.abriu.connect(lambda chave: self.menu.marcar_painel(chave or None))
+        conferir.miniaturas_mudaram.connect(self._miniaturas_mudaram)
+        # as miniaturas podem abrir fechadas (lembradas do último livro, 22/10/2026)
+        self._miniaturas_mudaram(conferir.miniaturas.aberta)
+        self.menu.ligar("todas_as_paginas", conferir.abrir_todas_as_paginas)
+        self.menu.ligar("filtros_tela_cheia", conferir.abrir_filtros_em_tela_cheia)
+        paineis.icones_mudaram.connect(self._icones_mudaram)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
         self.menu.ligar("configuracoes", self._abrir_configuracoes)
@@ -246,6 +284,61 @@ class JanelaPrincipal(QMainWindow):
         for nome in estilo.TEMAS:
             self.menu.ligar(f"tema_{nome}", lambda _marcado=False, t=nome: self._trocar_tema(t))
         self.menu.marcar_tema(estilo.tema_atual())
+
+    def _miniaturas_mudaram(self, abertas: bool) -> None:
+        """As miniaturas abriram ou fecharam (pela seta ou pelos três
+        pontinhos): o "Miniaturas" do menu Ver acompanha."""
+        item = self.menu.acoes["miniaturas"]
+        item.blockSignals(True)
+        item.setChecked(bool(abertas))
+        item.blockSignals(False)
+
+    def _icones_mudaram(self, a_vista: bool) -> None:
+        """A coluna de ícones apareceu ou sumiu (pela seta ou pelo menu): o
+        "Ícones da direita" dos menus Ver e Painéis acompanha."""
+        item = self.menu.acoes["icones"]
+        item.blockSignals(True)
+        item.setChecked(bool(a_vista))
+        item.blockSignals(False)
+
+    def _modo_comparar(self) -> None:  # noqa: D401
+        """Menu Ver > "Modo comparar": abre a página grande já com dois filtros
+        lado a lado (o "comparar" da tela grande). O item não fica marcado: a
+        tela grande é uma janela à parte, e ao fechá-la o modo acaba."""
+        self.menu.acoes["comparar"].setChecked(False)
+        if self.telas.currentIndex() == CONFERIR:
+            self.tela_conferir.ampliar(comparar=True)
+
+    def _montar_livros_recentes(self) -> None:
+        """Menu Arquivo > "Livros recentes": os livros da tela inicial (os
+        mesmos cartões), do mexido por último ao mais antigo; clicar abre o
+        livro do jeito que o cartão "continuar" abre. Montado na hora de abrir
+        o menu (a lista muda a cada livro). Passa pela mesma conferência do
+        cartão (o PDF ainda existe e é o MESMO livro: pedir_para_continuar), e
+        o livro aberto é gravado antes (abrir_livro)."""
+        menu = self.menu.menu_recentes
+        menu.clear()
+        try:
+            resumos = projetos.listar()[:MAXIMO_DE_RECENTES]
+        except Exception:  # noqa: BLE001 - o menu nunca derruba a janela
+            registrar_erro("livros recentes", traceback.format_exc())
+            resumos = []
+        if not resumos:
+            vazio = menu.addAction("(nenhum livro ainda)")
+            vazio.setEnabled(False)
+            return
+        for resumo in resumos:
+            acao = menu.addAction(resumo.nome or Path(resumo.caminho_entrada).name)
+            acao.triggered.connect(lambda _c=False, r=resumo: self.tela_inicio.pedir_para_continuar(r))
+
+    def _continuar_e_processar(self, resumo) -> None:
+        """"Confirmar e processar..." do livro aberto (etapa 7 do layout):
+        continua o trabalho; quando ele abrir, pede a confirmação de sempre
+        (processar). Se a abertura falhar ou for cancelada, nada é processado."""
+        self._processar_ao_abrir = True
+        self._continuar_projeto(resumo)
+        if self.telas.currentIndex() != PROGRESSO and self.telas.currentIndex() != CONFERIR:
+            self._processar_ao_abrir = False
 
     def _trocar_tema(self, nome: str) -> None:
         """Menu Ver > Tema (etapa 1 do layout): põe o tema para valer na hora,
@@ -299,6 +392,15 @@ class JanelaPrincipal(QMainWindow):
             self.menu.mostrar_tela_de_trabalho()
         else:
             self.menu.mostrar_tela_inicial()
+        # Etapa 7 do layout (rodadas 4 a 6): a tela dos livros não tem barra
+        # de menus, só "Configurações" e "Ajuda" no alto. As teclas dos menus
+        # continuam valendo (as ações também estão na janela).
+        if hasattr(self, "linha_dos_menus"):
+            self.linha_dos_menus.setVisible(indice != INICIO)
+        # e o livro aberto para de ler o PDF ao sair dela (duas leituras do
+        # mesmo arquivo ao mesmo tempo já travaram o MuPDF: _montar_tira)
+        if hasattr(self, "tela_inicio"):
+            self.tela_inicio.mostrar_os_livros()
         for peca in getattr(self, "_pecas_da_tela_de_trabalho", ()):
             peca.setVisible(indice == CONFERIR)
 
@@ -339,6 +441,8 @@ class JanelaPrincipal(QMainWindow):
         self._pecas_da_tela_de_trabalho = (traco, conferir.barra_opcoes)
         self.setMenuWidget(linha)
         self.linha_dos_menus = linha
+        # as teclas dos menus valem mesmo com a linha escondida (tela dos livros)
+        self.addActions(list(self.menu.acoes.values()))
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Etapa 2 do layout: os menus nunca encolhem (quem cede lugar é a
@@ -997,6 +1101,11 @@ class JanelaPrincipal(QMainWindow):
             self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
         self._salvar_agora()
+        # etapa 7 do layout: "Confirmar e processar..." do livro aberto pede a
+        # confirmação de sempre assim que o trabalho abre
+        if self._processar_ao_abrir:
+            self._processar_ao_abrir = False
+            QTimer.singleShot(0, self.processar)
         # Decisao Z1 (b): as zonas de projeto antigo sao convertidas por
         # tras, o livro inteiro, enquanto o Kaique ja trabalha.
         self._comecar_a_converter_as_zonas()

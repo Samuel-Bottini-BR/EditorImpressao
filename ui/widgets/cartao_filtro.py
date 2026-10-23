@@ -22,12 +22,16 @@ class CartaoFiltro(QFrame):
 
     escolhido = Signal(str)
     ampliar_pedido = Signal(str)   # clicar no cartão abre a página ampliada
+    # Etapa 4 do layout (20/10/2026): a mesma amostra vai também para a fila
+    # de filtros do painel "Filtro da página" (o filtro e a imagem, ou None)
+    amostra_mudou = Signal(str, object)
 
     def __init__(self, filtro: str, nome: str, explicacao: str, parent=None) -> None:
         super().__init__(parent)
         self.filtro = filtro
         self.selecionado = False
         self._pixmap: QPixmap | None = None
+        self.ultima_amostra = None
 
         self.setObjectName("cartao")
         self.setCursor(Qt.PointingHandCursor)
@@ -55,8 +59,11 @@ class CartaoFiltro(QFrame):
 
     def definir_amostra(self, img: np.ndarray | None) -> None:
         """Poe (ou tira, com None) a imagem mostrada no cartao. None mostra
-        "preparando..." - ver _Amostra.paintEvent."""
+        "preparando..." - ver _Amostra.paintEvent. Avisa a fila do painel
+        Filtro (amostra_mudou)."""
         self.amostra.definir(img)
+        self.ultima_amostra = img           # a tela cheia dos filtros começa com ela
+        self.amostra_mudou.emit(self.filtro, img)
 
     def definir_marcas(self, caixas) -> None:
         """As marcas do aviso (12/10/2026): retângulos laranja por cima da
@@ -131,13 +138,21 @@ class _Amostra(QWidget):
             pintor.drawText(self.rect(), Qt.AlignCenter, "preparando...")
             return
 
+        # nos pixels de verdade (escala do Windows), para não sair mole
+        from ui.widgets.todas_as_paginas import razao_do_pintor
+        razao = razao_do_pintor(pintor)
         escalado = self._pixmap.scaled(
-            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            self.size() * razao, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
-        x = (self.width() - escalado.width()) // 2
-        y = (self.height() - escalado.height()) // 2
+        escalado.setDevicePixelRatio(razao)
+        # juncao de 23/10/2026: o desenho nitido do layout (pixels de verdade)
+        # e as marcas do aviso do "Para revisar", em pontos de tela
+        largura = round(escalado.width() / razao)
+        altura = round(escalado.height() / razao)
+        x = round((self.width() - largura) / 2)
+        y = round((self.height() - altura) / 2)
         pintor.drawPixmap(x, y, escalado)
-        pintar_marcas(pintor, self._marcas, x, y, escalado.width(), escalado.height())
+        pintar_marcas(pintor, self._marcas, x, y, largura, altura)
 
 
 # A cor das marcas do aviso: o laranja dos avisos ("elas já vão aparecer

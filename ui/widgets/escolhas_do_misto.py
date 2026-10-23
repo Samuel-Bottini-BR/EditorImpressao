@@ -101,6 +101,13 @@ class EscolhasDoMisto(QWidget):
     sobram uns 600 pontos): o "Mais opções" numa linha embaixo dos botões e
     cada escolha com o nome em cima da lista - senão a linha passava da
     coluna e saía cortada (print de 05/10).
+    com_amostra=True (painel Filtro da página, etapa 4 do layout, 20/10/2026;
+    rodada 10, 502 B: "Menu com amostra"): no lugar dos três botões, uma
+    lista que abre com o desenho de cada jeito, o nome e a frase
+    (ui/widgets/menu_com_amostra.py), a frase do escolhido embaixo dela e o
+    "Mais opções" embaixo de tudo, como no desenho da rodada 11. Os três
+    botões continuam existindo, escondidos e acertados junto (quem os usava,
+    como os testes, segue igual).
     """
 
     so_as_letras_mudou = Signal(bool)
@@ -108,9 +115,12 @@ class EscolhasDoMisto(QWidget):
     papel_escolhido = Signal(str)
     letras_escolhidas = Signal(str)
 
-    def __init__(self, compacto: bool = False, parent=None) -> None:
+    def __init__(self, compacto: bool = False, parent=None, com_amostra: bool = False) -> None:
         super().__init__(parent)
         self._acertando = False
+        self.lista_do_texto = None
+        if com_amostra:
+            compacto = False
         fora = QVBoxLayout(self)
         fora.setContentsMargins(0, 0, 0, 0)
         fora.setSpacing(3 if compacto else 4)
@@ -131,7 +141,7 @@ class EscolhasDoMisto(QWidget):
         # o que so aparece com a caixinha marcada
         self.painel = QWidget()
         dentro = QVBoxLayout(self.painel)
-        dentro.setContentsMargins(26, 0, 0, 0)
+        dentro.setContentsMargins(0 if com_amostra else 26, 0, 0, 0)
         dentro.setSpacing(3)
 
         linha = QHBoxLayout()
@@ -156,6 +166,16 @@ class EscolhasDoMisto(QWidget):
             self.botoes[valor] = botao
             self._frases[valor] = frase
             linha.addWidget(botao)
+            botao.setVisible(not com_amostra)
+        if com_amostra:
+            from ui.widgets.menu_com_amostra import ListaComAmostra, desenho_das_letras
+            self.lista_do_texto = ListaComAmostra(desenho_das_letras)
+            for valor, texto, frase in BOTOES_DO_TEXTO:
+                self.lista_do_texto.addItem(texto, valor)
+                self.lista_do_texto.definir_detalhes(
+                    valor, frase, de_fabrica=(valor == misto.FORA_DO_TEXTO_PADRAO))
+            self.lista_do_texto.currentIndexChanged.connect(self._lista_mudou)
+            linha.addWidget(self.lista_do_texto, 1)
         self.botao_mais = QPushButton("Mais opções")
         self.botao_mais.setObjectName("plano")
         self.botao_mais.setCheckable(True)
@@ -165,11 +185,12 @@ class EscolhasDoMisto(QWidget):
             # da altura dos botoes ao lado (o "plano" de fabrica e mais alto)
             self.botao_mais.setStyleSheet("padding: 3px 8px;")
             linha.addWidget(self.botao_mais)
-        linha.addStretch()
+        if not com_amostra:
+            linha.addStretch()
         dentro.addLayout(linha)
 
         self.frase_do_escolhido = self._frase("")
-        self.frase_do_escolhido.setContentsMargins(2, 0, 0, 2)
+        self.frase_do_escolhido.setContentsMargins(0 if com_amostra else 2, 0, 0, 2)
         dentro.addWidget(self.frase_do_escolhido)
         self.frase_do_escolhido.setVisible(not compacto)
         if not compacto:
@@ -242,6 +263,9 @@ class EscolhasDoMisto(QWidget):
             botao = self.botoes.get(fora_do_texto) or self.botoes[misto.FORA_DO_TEXTO_PADRAO]
             botao.setChecked(True)
             self.frase_do_escolhido.setText(self._frases[botao.property("valor")])
+            if self.lista_do_texto is not None:
+                self.lista_do_texto.setCurrentIndex(
+                    max(0, self.lista_do_texto.findData(botao.property("valor"))))
             for combo, valor in ((self.combo_papel, papel), (self.combo_letras, letras)):
                 indice = combo.findData(valor)
                 combo.setCurrentIndex(max(0, indice))
@@ -271,8 +295,20 @@ class EscolhasDoMisto(QWidget):
         if not self._acertando:
             self.so_as_letras_mudou.emit(marcada)
 
+    def _lista_mudou(self, _indice: int) -> None:
+        """A lista com amostra (com_amostra=True) mudou: o mesmo que clicar no
+        botão escondido daquele jeito."""
+        valor = self.lista_do_texto.currentData()
+        if valor in self.botoes and not self.botoes[valor].isChecked():
+            self.botoes[valor].setChecked(True)
+            self._botao_clicado(valor)
+
     def _botao_clicado(self, valor: str) -> None:
         self.frase_do_escolhido.setText(self._frases[valor])
+        if self.lista_do_texto is not None and self.lista_do_texto.currentData() != valor:
+            self.lista_do_texto.blockSignals(True)
+            self.lista_do_texto.setCurrentIndex(max(0, self.lista_do_texto.findData(valor)))
+            self.lista_do_texto.blockSignals(False)
         if not self._acertando:
             self.fora_do_texto_escolhido.emit(valor)
 

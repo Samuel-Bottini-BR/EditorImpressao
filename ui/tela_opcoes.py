@@ -113,12 +113,25 @@ from core.filtros import (
     filtros_do_livro,
 )
 from core.pipeline import resumo_em_portugues
+
+
+def _com_o_nome_do_editor(resumo: str) -> str:
+    """Rodada 14 do layout, 907 B ("o do Editor"): a linha-resumo diz o jeito
+    de dividir pelo nome da tela, como a lista logo acima. O texto vem de
+    core/pipeline.resumo_em_portugues (que usa core/dividir_scantailor.
+    NOMES_DOS_JEITOS, fora da área do layout): a troca é feita aqui, só na
+    tela. Para a gerente: trocar lá também deixaria esta função sem efeito, e
+    ela pode sair."""
+    from core import dividir_scantailor as ds
+
+    antigo = ds.NOMES_DOS_JEITOS[ds.JEITO_PROGRAMA]
+    return resumo.replace(f"(jeito: {antigo})", f"(jeito: {nome_do_jeito_de_dividir(ds.JEITO_PROGRAMA)})")
 from modelos import Projeto
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.escolhas_do_misto import EscolhasDoMisto
 from ui.widgets.folhear_pdf import FolhearPDF
-from ui.widgets.paineis import nome_da_conta
+from ui.widgets.paineis import nome_da_conta, nome_do_jeito_de_dividir
 
 FILTROS_NA_TELA = [
     (ORIGINAL, "Original", "não mexe na página"),
@@ -189,9 +202,10 @@ class TelaOpcoes(QWidget):
         self.rotulo_jeito_dividir = QLabel("Jeito de dividir:")
         self.combo_jeito_dividir = QComboBox()
         for jeito in dividir_scantailor.JEITOS:
-            self.combo_jeito_dividir.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            # rodada 14 do layout, 907 B: "o do Editor" (ui/widgets/paineis.py)
+            self.combo_jeito_dividir.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_dividir.setToolTip(
-            "Onde a folha é dividida: o do programa procura a lombada no meio das "
+            "Onde a folha é dividida: o do Editor procura a lombada no meio das "
             "folhas deitadas; o do ScanTailor divide toda folha mais larga que alta, "
             "na dobra que ele acha. Dá para trocar numa folha só, com a ferramenta Dividir a folha.")
         self.combo_jeito_dividir.currentIndexChanged.connect(lambda _i: self._mudou())
@@ -858,7 +872,7 @@ class TelaOpcoes(QWidget):
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
         self.painel_caderno.setVisible(self.projeto.montar_cadernos)
 
-        self.resumo.setText(resumo_em_portugues(self.projeto, self.total_folhas))
+        self.resumo.setText(_com_o_nome_do_editor(resumo_em_portugues(self.projeto, self.total_folhas)))
         self._acertar_altura_da_rolagem()
         self.botao_conferir.setEnabled(self.projeto.alguma_funcao_marcada)
 

@@ -327,7 +327,8 @@ def test_os_textos_da_rodada_13(janela, pasta):
     tela = _aberta(janela, pasta)
     if "filtro" not in tela._abas_ativas:
         pytest.skip("este livro abriu sem os filtros")
-    botoes = _botoes(tela.linhas_de_botoes["filtro"])
+    # etapa 4 do layout: o "Aplicar em" mora no pé do painel Filtro
+    botoes = _botoes(tela.paineis.filtro_da_pagina.pe)
     assert "daqui em diante" in botoes and "só nas próximas" not in botoes
 
 
