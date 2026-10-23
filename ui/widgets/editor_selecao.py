@@ -19,8 +19,9 @@ provavelmente já viu isso em algum lugar:
                 copiam e colam
 
 Cada uma pode SOMAR ou SUBTRAIR, e cada marcação tem um tipo - gravura, letra
-ou papel, e desde o item 2.18 também "pintar por cima", "tinta com a cor
-original, papel branco" e "tinta preta, fundo original". Tudo vai para a mesma lista de regiões que o detector automático e a
+ou papel, e desde o item 2.18 também "pintar por cima", "manter a cor da
+tinta" (era "tinta com a cor original, papel branco"; nome novo do Samuel,
+23/10/2026, só o rótulo) e "tinta preta, fundo original". Tudo vai para a mesma lista de regiões que o detector automático e a
 rede neural usam, e por isso as três se somam em vez de competir: a máquina
 propõe, a pessoa corrige por cima, e rodar a detecção de novo não apaga a
 correção.

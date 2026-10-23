@@ -210,9 +210,20 @@ def tem_por_cima(selecao) -> bool:
 
 
 def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: bool, selecao,
-                     forca_preto: int = 50, algoritmo: str = "auto") -> tuple[np.ndarray, bool]:
+                     forca_preto: int = 50, algoritmo: str = "auto",
+                     preto_e_branco: bool = False) -> tuple[np.ndarray, bool]:
     """Os três tipos novos, por cima do resultado do filtro. Sem nenhum deles:
-    devolve (saida, monocromatica) como veio - o mesmo objeto."""
+    devolve (saida, monocromatica) como veio - o mesmo objeto.
+
+    `preto_e_branco`: a página está no filtro Preto e branco (quem chama diz,
+    pelo filtro da página; core.pipeline). Nele, "papel como o resto da
+    página" sai IGUAL a "papel branco", ponto por ponto: resposta do Samuel à
+    pergunta 10 (Central, 23/10/2026), "No Preto e branco, tirar a linha
+    preta: as duas opções de papel saem iguais, com a letra limpa". O papel
+    "da página" no Preto e branco é o resultado do filtro, que pinta de preto
+    a beirada da letra um pouco além da "tinta" medida aqui; com o papel
+    branco essa beirada some. De fábrica False: quem não diz o filtro (os
+    testes antigos, outro chamador) tem o comportamento de antes."""
     if not tem_por_cima(selecao):
         return saida, monocromatica
     altura, largura = saida.shape[:2]
@@ -245,8 +256,12 @@ def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: boo
             # Só mexe no que não é tinta, então a tinta A ou B fica como
             # acima. Sem área assim: nada é desenhado (o de fábrica, "papel
             # branco", sai igual ao de antes ponto por ponto).
-            papel = _mascara_do_jeito(selecao, altura, largura, "papel_da_pagina")
-            if papel.any():
+            # No Preto e branco (pergunta 10, 23/10/2026) não se desenha: as
+            # duas opções de papel saem iguais, com a letra limpa (sem o
+            # contorno preto do filtro). Original e Melhorar: como antes.
+            papel = (_mascara_do_jeito(selecao, altura, largura, "papel_da_pagina")
+                     if not preto_e_branco else None)
+            if papel is not None and papel.any():
                 papel &= mascara & ~tinta
                 resultado[papel] = filtrada[papel]
         else:

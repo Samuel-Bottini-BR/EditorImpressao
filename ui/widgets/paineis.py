@@ -925,8 +925,14 @@ class PainelMarcarComo(Bloco):
 
         Item 2.18 (P11 (a) e TINTA3 do Samuel, 05/10/2026): mais três, que
         valem POR CIMA do filtro dentro da área - "pintar por cima" (com a cor
-        do botão "cor de pintar..."), "tinta com a cor, papel branco" e "tinta
-        preta, fundo original". CONTROLE MÍNIMO, provisório até o layout."""
+        do botão "cor de pintar..."), "manter a cor da tinta" e "tinta
+        preta, fundo original". CONTROLE MÍNIMO, provisório até o layout.
+
+        "manter a cor da tinta" (era "tinta com a cor, papel branco"): nome
+        escolhido pelo Samuel na pergunta 11 (Central, 23/10/2026). Só o
+        rótulo mudou; o código gravado no projeto.json continua TINTA_COR
+        ("tinta_cor"), então projeto antigo abre igual. ARRISCADO trocar o
+        código: projetos já gravados perderiam a área."""
         from core.selecao import GRAVURA, LETRA, PAPEL, PINTAR, TINTA_COR, TINTA_PRETA
         from ui.widgets.editor_selecao import CORES_BORDA
 
@@ -937,7 +943,7 @@ class PainelMarcarComo(Bloco):
                             (LETRA, "letra e traço"),
                             (PAPEL, "papel"),
                             (PINTAR, "pintar por cima"),
-                            (TINTA_COR, "tinta com a cor, papel branco"),
+                            (TINTA_COR, "manter a cor da tinta"),
                             (TINTA_PRETA, "tinta preta, fundo original")):
             botao = botao_de_lista(texto, escolhido=(tipo == (self.tipo or GRAVURA)))
             # a cor com que a marcação aparece na página (pista visual)
@@ -961,7 +967,7 @@ class PainelMarcarComo(Bloco):
 
     # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta b-8-tinta-com-cor:
     # "As duas: A e B como opções separadas". Os dois jeitos aparecem logo
-    # abaixo de "tinta com a cor, papel branco", só quando ela é a escolhida;
+    # abaixo de "manter a cor da tinta", só quando ela é a escolhida;
     # valem para a próxima área marcada (a já marcada guarda o dela).
     # De fábrica a A (False), igual ao de antes: ARRISCADO trocar.
     escurecer_escolhido = Signal(bool)
@@ -971,7 +977,7 @@ class PainelMarcarComo(Bloco):
     # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta tc23-1 (o
     # retângulo branco no papel creme do Original): "As duas: escolher o papel
     # em cada área ('papel branco' ou 'papel como o resto da página')". Mesma
-    # regra dos dois jeitos da cor: aparecem com a "tinta com a cor", em
+    # regra dos dois jeitos da cor: aparecem com o "manter a cor da tinta", em
     # qualquer filtro (b-9), e valem para a próxima área marcada.
     # De fábrica "papel branco" (False), igual ao de antes: ARRISCADO trocar.
     papel_escolhido = Signal(bool)
@@ -979,7 +985,7 @@ class PainelMarcarComo(Bloco):
     JEITOS_DO_PAPEL = ((False, "papel branco"), (True, "papel como o resto da página"))
 
     def _montar_jeitos_da_cor(self) -> None:
-        """Embaixo do botão da tinta com a cor, um pouco recuados: "cor como
+        """Embaixo do botão "manter a cor da tinta", um pouco recuados: "cor como
         no livro" (A) e "cor escurecida" (B) lado a lado; embaixo, "papel
         branco" e "papel como o resto da página" um sob o outro (lado a lado o
         segundo não cabe nos 300 px do painel e sai cortado). Tudo num bloco

@@ -1818,8 +1818,11 @@ def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndar
     # a cor original, papel branco" e "Tinta preta, fundo original" valem POR
     # CIMA do filtro, so dentro da area (core.editar_zonas). Sem nenhuma
     # dessas areas: o mesmo resultado, o mesmo objeto.
+    # O filtro da pagina vai junto: no Preto e branco o "papel como o resto
+    # da pagina" sai igual ao "papel branco" (pergunta 10, 23/10/2026).
     return editar_zonas.aplicar_por_cima(img, saida, monocromatica, selecao,
-                                         pagina.forca_preto, pagina.algoritmo_preto_branco)
+                                         pagina.forca_preto, pagina.algoritmo_preto_branco,
+                                         preto_e_branco=(pagina.filtro == PRETO_E_BRANCO))
 
 
 def _filtro_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
