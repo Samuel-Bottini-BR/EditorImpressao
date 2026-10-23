@@ -162,7 +162,7 @@ def test_no_pipeline_original_sem_retangulo_branco(tmp_path):
     from modelos import ConfigPagina, Projeto
 
     def filtrar(regioes):
-        projeto = Projeto(caminho_entrada=str(tmp_path / "x.pdf"), detectar_regioes=False)
+        projeto = Projeto(caminho_entrada=str(tmp_path / "x.pdf"), detectar_regioes=True)  # com False o pipeline nao usa marcacao nenhuma
         pagina = ConfigPagina(indice=0, folha=0, filtro=ORIGINAL)
         pagina.guardar_selecao(Selecao(regioes))
         return pipeline._filtrar(projeto, pagina, _pagina())[0]

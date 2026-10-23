@@ -252,3 +252,44 @@ Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original):
 11. **O nome do tipo:** o botão do "Marcar como" ainda diz "tinta com a cor, papel branco", mesmo quando se escolhe
     "papel como o resto da página". Trocar para só "tinta com a cor"? (Não mudei: nome de controle é com ele.)
     Foto: `relatorios/conferir/fase2-novas/tinta-papel/depois_painel_papel_da_pagina.png`.
+
+## Perguntas 10 e 11 respondidas (Central, 23/10/2026) — feito
+
+- **10, a linha preta em volta da letra no Preto e branco:** "No Preto e branco, tirar a linha preta: as duas opções de
+  papel saem iguais, com a letra limpa". Ele perguntou "Isso vai alterar alguma coisa, tirar essa linha preta?"; a
+  resposta dada: só muda a página em Preto e branco com uma área "papel como o resto da página", em que a letra sai
+  igual a "papel branco". Nada mais muda.
+  - **Feito:** `core/editar_zonas.aplicar_por_cima` ganhou `preto_e_branco` (de fábrica False); `core/pipeline` passa
+    `pagina.filtro == PRETO_E_BRANCO`. No Preto e branco o passo do "papel da página" não roda: sai idêntico ao "papel
+    branco". Original e Melhorar como antes. Commit `f8691be`.
+- **11, o nome do botão:** "manter a cor da tinta". Rótulo do "Marcar como" trocado (era "tinta com a cor, papel
+  branco"); `core/selecao.NOMES_AMIGAVEIS` (o aviso "Área escolhida: ..." e o resumo "Marcado: ...") também.
+  O código gravado no projeto.json continua `tinta_cor`. Commit `f8691be`.
+  - **Para a revisão futura dos nomes de botão:** o Samuel disse "esse botão ainda é bem confuso, mas por enquanto
+    pode ficar assim."
+- **Achado do verificador** (ramo `verif-tinta-papel-2026-10-23`, `bd6f73f`): a linha "Marcado:" da aba Marcar dizia
+  "3 de tinta com a cor original, papel branco" mesmo com áreas "papel como o resto da página". Ela vem de
+  `core/selecao.NOMES_AMIGAVEIS`, já trocado em `f8691be`: agora diz "Marcado: 3 de manter a cor da tinta." O teste
+  do texto veio num commit depois (sem reescrever o ramo, por causa do verificador).
+- **Testes:** `tests/test_tinta_papel_preto_e_branco.py` (11 passaram aqui; no código antigo `0acf2c7` 4 falham: o
+  contorno preto, 3839 pontos a mais; a chamada direta; o nome do botão; a linha "Marcado:").
+  - Achado: o `test_no_pipeline_original_sem_retangulo_branco` (meu, de `b0af839`) usava `detectar_regioes=False`, com
+    que o pipeline não usa marcação nenhuma: passava sem testar nada. Trocado para True (continua passando).
+- **Prova em páginas de verdade** (`scripts/tinta_papel.py somas23`, Horas 13, Escola 7, Opus Majus 3; sem área,
+  "papel branco" e "papel como o resto da página", A e B, em Original, Preto e branco e Melhorar = 45 PDFs por código;
+  antigo `0acf2c7` e novo `f8691be`, os dois na worktree parada `fase2-novas-prova`): **39 de 45 iguais**; os 6
+  diferentes são exatamente os de Preto e branco com "papel como o resto da página" (3 páginas × A e B), e no novo
+  esses 6 são **iguais ponto por ponto** ao "papel branco" (no antigo não eram). De fábrica (sem área e papel branco),
+  Original e Melhorar: tudo igual. Arquivos `somas-tinta-papel23-antigo-0acf2c7.json`, `somas-tinta-papel23-novo-f8691be.json`.
+- **Antes/depois** (fora do git): `relatorios/conferir/fase2-novas/pergunta-10/` (`scripts/tinta_papel.py pb23` no
+  antigo e no novo + `juntar23`). Escola 7, Preto e branco, área "manter a cor da tinta" (0; 0; 1; 0,065), cor como no
+  livro, papel como o resto da página. Caminho escrito em cada foto: girar 0° → dividir não → endireitar sim
+  (scantailor) → cortar as bordas sim → Preto e branco → a área. `escola_p007-preto_e_branco-letra-de-perto.jpg`
+  (metade esquerda do título ampliada 3 vezes): antes "PRINCIPAIS" com contorno preto pontilhado; depois a letra limpa,
+  sem contorno. `escola_p007-preto_e_branco-pagina.jpg`: a página inteira. 10.123 pontos mudam, todos na área.
+- **Velocidade** `39886669584` (`0acf2c7` → `f8691be`): "parece mais rápido" - abrir 21,1 → 21,0 s (−0,3%, igual);
+  trocar de página 2,05 → 1,99 s (igual); Mágico pro 27,2 → 26,5 s (−2,7%); Preto e branco 16,2 → 15,7 s (−3,3%). O
+  caminho de fábrica não passa pela mudança (só pula uma conta no Preto e branco com área "papel como o resto da
+  página"): o "mais rápido" é sorte de máquina, leia como "não ficou mais lento".
+- **Suíte do GitHub** `39889891066` (`c95ba9e`): 2206 passaram, 0 falharam; botões 234 ações, 0 falhas.
+- Situação: PRONTO PARA CONFERIR (falta o verificador e o Samuel). Sem pergunta nova.

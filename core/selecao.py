@@ -58,7 +58,10 @@ NOMES_AMIGAVEIS = {
     PAPEL: "Papel",
     FORA: "Fora da página",
     PINTAR: "Pintar por cima",
-    TINTA_COR: "Tinta com a cor original, papel branco",
+    # "Manter a cor da tinta": nome escolhido pelo Samuel (pergunta 11,
+    # Central, 23/10/2026; era "Tinta com a cor original, papel branco"). Só
+    # o nome que a tela mostra; a chave gravada continua "tinta_cor".
+    TINTA_COR: "Manter a cor da tinta",
     TINTA_PRETA: "Tinta preta, fundo original",
 }
 
