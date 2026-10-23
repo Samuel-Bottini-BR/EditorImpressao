@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T09:30:00Z",
+        "texto": "Uma pergunta nova do desentortar: a tela mostrar o desentortar igual ao PDF (Conferência > Para responder agora)."
+      },
+      {
         "em": "2026-10-23T08:10:00Z",
         "texto": "Respostas 10 e 11 registradas; o Implementador B está fazendo. Nada para responder agora."
       },
@@ -439,10 +443,10 @@
       "titulo": "Desentortar a página curva perto da lombada",
       "item": "2.12",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Página que entorta perto da costura do livro sai reta, como no ScanTailor.",
       "situacao": "Feito pelo Implementador A (23/10): a proteção e o botão \"Desentortar aumentando a página\". Desligado, sai idêntico ao de hoje. Testes no GitHub: 2188 passaram, 0 falharam; velocidade igual.",
-      "falta": "O Implementador A está fazendo o ajuste do botão (perguntar se a página ainda sair deformada); depois o verificador e a sua conferência.",
+      "falta": "O ajuste do botão está feito. Falta uma pergunta para você (a tela mostrar o desentortar igual ao PDF), o verificador e a sua conferência.",
       "selos": {
         "github": "falta",
         "pc": "nao",
@@ -452,7 +456,7 @@
       "commit": "7d71b15",
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-23T06:00:00Z",
+      "mudouEm": "2026-10-23T09:30:00Z",
       "relatorio": "perg-a"
     },
     {

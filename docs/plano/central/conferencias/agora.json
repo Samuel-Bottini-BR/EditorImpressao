@@ -1,15 +1,62 @@
 {
  "id": "agora",
- "nome": "Para responder agora (0)",
- "trabalho": "2.18",
+ "nome": "Para responder agora (1)",
+ "trabalho": "2.12",
  "ordem": -1,
  "origem": "cópia das duas perguntas abertas",
  "resumo": {
   "titulo": "As duas perguntas que faltam responder",
   "paragrafos": [
-   "Nada para responder agora."
+   "Uma pergunta nova do desentortar. Responder aqui vale também para a aba \"Pergunta do Implementador A\"."
   ]
  },
  "quadros": [],
- "perguntas": []
+ "perguntas": [
+  {
+   "id": "a-212-p6",
+   "titulo": "Desentortar: na tela ele não aparece (só no PDF). Mostrar na tela igual ao PDF?",
+   "explicacao": [
+    "O ajuste do botão está feito como você pediu: se, depois do clique, a página ainda sair deformada, aparece \"Mesmo aumentando a página, o desentortar deixou esta página deformada. Quer desfazer...?\" com \"Desfazer\" e \"Manter assim\" (primeira foto).",
+    "O que o implementador achou: para ser rápida, a tela mostra a página numa imagem pequena. Nessa imagem pequena o desentortar não acha as linhas e não mexe em nada; ele só mexe na imagem grande, a do PDF. Resultado: com a qualidade da prévia de fábrica (\"Rápida\"), quem liga o desentortar vê a página como se ele não existisse, e os avisos dele só aparecem com a qualidade \"Alta\" ou quando o livro é processado.",
+    "Mesmo na \"Alta\", os cartões pequenos (Preto e branco, Melhorar, Mágico pro) mostram a página sem desentortar. Na primeira foto: o cartão Original deformado e os outros três retos — e o PDF sairia deformado nos quatro.",
+    "Isto é o mesmo assunto que você pediu antes: \"precisamos que o pdf saia que nem está na tela\" — a tela e o PDF têm de mostrar a mesma coisa."
+   ],
+   "exemplos": [
+    {
+     "src": "pa4/destino18-2-pergunta.jpg",
+     "legenda": "Destino do socialismo 18 na janela: o aviso novo (\"Desfazer\" / \"Manter assim\"); o cartão Original mostra a página deformada, os outros três mostram ela reta."
+    },
+    {
+     "src": "pa4/destino_p018-direita-pagina.jpg",
+     "legenda": "A mesma página pelo caminho do PDF."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Deixar como está",
+     "texto": "Na \"Rápida\" a pessoa não vê o desentortar; para ver, troca para \"Alta\". Os cartões pequenos continuam sem mostrar.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Como o ScanTailor: medir sempre na imagem grande, por trás, e a tela e os cartões mostrarem isso (recomendo)",
+     "texto": "Só nas páginas com o desentortar ligado, o programa faz a conta na imagem do PDF por trás (uns 3 a 8 segundos por página) e a tela e os cartões mostram o resultado, reduzido. A tela fica igual ao PDF e os avisos aparecem na hora. Desligado: nada muda.",
+     "imgs": []
+    },
+    {
+     "id": "c",
+     "nome": "C — Ao ligar o desentortar, a prévia passa sozinha para \"Alta\" naquela página",
+     "texto": "Mais simples, mas os cartões pequenos continuam sem mostrar.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "",
+     "imgs": []
+    }
+   ]
+  }
+ ]
 }
