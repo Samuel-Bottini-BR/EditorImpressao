@@ -571,3 +571,7 @@ Fotos: `fotos-p5/destino18-0-endireitar-automatico.jpg`, `fotos-p5/destino18-2-p
   no `_aplicar_correcao` de lá.
 - A assinatura da gravura no `pipeline` (zonas da aba Marcar) não leva o "aumentando a página" (a página aumentada
   muda de tamanho); já estava assim, não mexi.
+
+### Rodando no GitHub (23/10, ~02:28 UTC)
+
+- Velocidade 39889702446 (`7d71b15` x `2a42cfb`); suíte 39889712829 (ramo em `2a4ce76`). Ler uma vez, no fim.
