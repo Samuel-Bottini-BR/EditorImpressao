@@ -647,6 +647,19 @@ class TelaConferir(QWidget):
         linha.addWidget(self.rotulo_da_pagina)
         self.botao_proxima = botao_pequeno("›", "próxima página (seta para a direita)",
                                            lambda: self._navegar(1))
+        # Item 2.12 (resposta P6 do Samuel, 23/10/2026): o sinal discreto
+        # enquanto o desentortar desta pagina e medido por tras (3 a 8 s). A
+        # pagina na tela fica sem desentortar ate a medida chegar. So aparece
+        # em pagina com o desentortar ligado. Seguro mudar: os textos
+        # (SINAL_DESENTORTANDO e a dica).
+        self.sinal_desentortando = QLabel(self.SINAL_DESENTORTANDO)
+        self.sinal_desentortando.setObjectName("rotuloDaBarraDeBaixo")
+        self.sinal_desentortando.setToolTip(
+            "A página na tela ainda está sem desentortar. Em alguns segundos ela "
+            "aparece desentortada, igual vai sair no PDF.")
+        self.sinal_desentortando.setVisible(False)
+        linha.addSpacing(8)
+        linha.addWidget(self.sinal_desentortando)
         linha.addSpacing(8)
         self.botao_desfazer_embaixo = botao_pequeno(
             "", "Desfazer (Ctrl+Z)", self.desfazer)
@@ -698,6 +711,43 @@ class TelaConferir(QWidget):
         no painel)."""
         self.paineis.alternar(PAINEL_HISTORICO)
         self.historico_pedido.emit()
+
+    # O sinal da barra de baixo enquanto o desentortar e medido (item 2.12,
+    # resposta P6). Portugues simples, sem jargao (quem le e o Kaique).
+    SINAL_DESENTORTANDO = "Desentortando esta página, um momento..."
+
+    def _acertar_o_desentortar(self) -> None:
+        """Item 2.12 (resposta P6 do Samuel, 23/10/2026, opcao (b)): se a
+        pagina da vez tem o desentortar ligado e a medida dele (na resolucao
+        do livro) ainda nao existe, pede a medida por tras e mostra o sinal
+        discreto; senao, esconde o sinal. Barato (sem desenho). A medida
+        pronta chega por _desentortar_medido."""
+        if not hasattr(self, "sinal_desentortando"):
+            return
+        pendente = False
+        if (self.previas is not None and self.projeto is not None
+                and not self.trabalha_com_folhas
+                and 0 <= self.indice_pagina < len(self.projeto.paginas)):
+            # na qualidade "Alta" (a resolucao do livro) a propria previa mede;
+            # pedir por tras tambem seria medir duas vezes ao mesmo tempo
+            if self._dpi_atual >= self.projeto.qualidade_dpi:
+                pendente = self.previas.desentortar_pendente(self.indice_pagina)
+            else:
+                pendente = self.previas.pedir_desentortar(self.indice_pagina)
+        self.sinal_desentortando.setVisible(pendente)
+
+    def _desentortar_medido(self, indice: int) -> None:
+        """A medida do desentortar de uma pagina chegou (tarefa por tras). Se
+        e a pagina da vez, desenha de novo (a chave da previa e dos cartoes ja
+        mudou sozinha: ui/tarefas.GerenciadorPrevias.chave) e acerta a faixa,
+        a tira e os paineis (os avisos da protecao podem ter entrado)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        if indice == self.indice_pagina and not self.trabalha_com_folhas:
+            self._atualizar_previa()
+            self._alertas_da_previa()
+        else:
+            self._acertar_o_desentortar()
 
     def _atualizar_barra_de_baixo(self) -> None:
         """Pagina (ou folha, no Dividir), desfazer/refazer acesos so quando ha
@@ -2070,6 +2120,8 @@ class TelaConferir(QWidget):
             self.previas = previas
             self.previas.pronta.connect(self._previa_chegou)
             self.previas.cartoes_prontos.connect(self._cartoes_prontos)
+            # item 2.12 (resposta P6): a medida do desentortar por tras
+            self.previas.desentortar_medido.connect(self._desentortar_medido)
             self._cartoes_cache = {}
             self._cartoes_cache_chave = None
             self._tira_assinatura = None
@@ -2413,8 +2465,12 @@ class TelaConferir(QWidget):
             # a linha so aparece em folha dividida (parecer do verificador, 06/10)
             vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
+            self._acertar_o_desentortar()      # item 2.12: aqui so esconde o sinal
             return
 
+        # item 2.12 (resposta P6): a medida do desentortar, por tras, antes de
+        # pedir a previa (a previa sai sem desentortar ate ela chegar)
+        self._acertar_o_desentortar()
         img = self.previas.pegar(self.indice_pagina, self._dpi_atual)
         self.previas.pre_carregar(self.indice_pagina, self._dpi_atual)
         pagina = self.projeto.paginas[self.indice_pagina]
