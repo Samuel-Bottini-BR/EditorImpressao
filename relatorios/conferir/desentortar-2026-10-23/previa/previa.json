@@ -1,0 +1,152 @@
+{
+ "destino18|ligado": {
+  "por_medir_antes": true,
+  "mediu": true,
+  "segundos_da_medida": 5.4,
+  "avisos_depois_da_medida": [
+   "desentortar_saiu_sem"
+  ],
+  "previa_antes_tamanho": [
+   2821,
+   2003
+  ],
+  "previa_depois_tamanho": [
+   2821,
+   2003
+  ],
+  "pdf_tamanho": [
+   4537,
+   3223
+  ],
+  "proporcao_previa_depois": 0.71,
+  "proporcao_pdf": 0.7104,
+  "proporcao_previa_antes": 0.71,
+  "dif_previa_depois_x_pdf": 0.0,
+  "dif_previa_antes_x_pdf": 1.7,
+  "segundos_previa_depois_de_medida": 0.48
+ },
+ "destino18|botao": {
+  "por_medir_antes": true,
+  "mediu": true,
+  "segundos_da_medida": 6.0,
+  "avisos_depois_da_medida": [
+   "desentortar_ainda_deformada"
+  ],
+  "previa_antes_tamanho": [
+   2821,
+   2003
+  ],
+  "previa_depois_tamanho": [
+   3187,
+   2017
+  ],
+  "pdf_tamanho": [
+   5127,
+   3245
+  ],
+  "proporcao_previa_depois": 0.6329,
+  "proporcao_pdf": 0.6329,
+  "proporcao_previa_antes": 0.71,
+  "dif_previa_depois_x_pdf": 0.0,
+  "dif_previa_antes_x_pdf": 23.51,
+  "segundos_previa_depois_de_medida": 0.44
+ },
+ "righetti96|ligado": {
+  "por_medir_antes": true,
+  "mediu": true,
+  "segundos_da_medida": 0.8,
+  "avisos_depois_da_medida": [
+   "desentortar_saiu_sem"
+  ],
+  "previa_antes_tamanho": [
+   839,
+   508
+  ],
+  "previa_depois_tamanho": [
+   839,
+   508
+  ],
+  "pdf_tamanho": [
+   2288,
+   1385
+  ],
+  "proporcao_previa_depois": 0.6055,
+  "proporcao_pdf": 0.6053,
+  "proporcao_previa_antes": 0.6055,
+  "dif_previa_depois_x_pdf": 0.0,
+  "dif_previa_antes_x_pdf": 2.02,
+  "segundos_previa_depois_de_medida": 0.03
+ },
+ "righetti96|botao": {
+  "por_medir_antes": true,
+  "mediu": true,
+  "segundos_da_medida": 0.9,
+  "avisos_depois_da_medida": [],
+  "previa_antes_tamanho": [
+   839,
+   508
+  ],
+  "previa_depois_tamanho": [
+   839,
+   587
+  ],
+  "pdf_tamanho": [
+   2288,
+   1600
+  ],
+  "proporcao_previa_depois": 0.6996,
+  "proporcao_pdf": 0.6993,
+  "proporcao_previa_antes": 0.6055,
+  "dif_previa_depois_x_pdf": 0.0,
+  "dif_previa_antes_x_pdf": 37.51,
+  "segundos_previa_depois_de_medida": 0.03
+ },
+ "curvada3|ligado": {
+  "por_medir_antes": true,
+  "mediu": true,
+  "segundos_da_medida": 0.8,
+  "avisos_depois_da_medida": [],
+  "previa_antes_tamanho": [
+   689,
+   523
+  ],
+  "previa_depois_tamanho": [
+   689,
+   523
+  ],
+  "pdf_tamanho": [
+   1878,
+   1426
+  ],
+  "proporcao_previa_depois": 0.7591,
+  "proporcao_pdf": 0.7593,
+  "proporcao_previa_antes": 0.7591,
+  "dif_previa_depois_x_pdf": 0.0,
+  "dif_previa_antes_x_pdf": 37.28,
+  "segundos_previa_depois_de_medida": 0.03
+ },
+ "curvada3|botao": {
+  "por_medir_antes": true,
+  "mediu": true,
+  "segundos_da_medida": 0.9,
+  "avisos_depois_da_medida": [],
+  "previa_antes_tamanho": [
+   689,
+   523
+  ],
+  "previa_depois_tamanho": [
+   695,
+   534
+  ],
+  "pdf_tamanho": [
+   1894,
+   1456
+  ],
+  "proporcao_previa_depois": 0.7683,
+  "proporcao_pdf": 0.7687,
+  "proporcao_previa_antes": 0.7591,
+  "dif_previa_depois_x_pdf": 0.0,
+  "dif_previa_antes_x_pdf": 35.76,
+  "segundos_previa_depois_de_medida": 0.03
+ }
+}

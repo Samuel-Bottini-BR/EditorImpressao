@@ -1,0 +1,112 @@
+{
+ "hoje": {
+  "tamanho": [
+   3287,
+   2431
+  ],
+  "nitidez_toda": 0.552,
+  "nitidez_esq_terco": 0.722,
+  "nitidez_dir_terco": 0.462,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 1.0,
+  "tinta_cortada_na_beirada": 46,
+  "tinta_mm2": 14628.6
+ },
+ "ligado": {
+  "tamanho": [
+   3287,
+   2431
+  ],
+  "nitidez_toda": 0.552,
+  "nitidez_esq_terco": 0.722,
+  "nitidez_dir_terco": 0.462,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 1.0,
+  "tinta_cortada_na_beirada": 46,
+  "tinta_mm2": 14628.6
+ },
+ "botao": {
+  "tamanho": [
+   3287,
+   2453
+  ],
+  "nitidez_toda": 0.392,
+  "nitidez_esq_terco": 0.718,
+  "nitidez_dir_terco": 0.356,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": -6.0,
+  "tinta_cortada_na_beirada": 1,
+  "tinta_mm2": 13805.8
+ },
+ "hoje_pb": {
+  "tamanho": [
+   3287,
+   2431
+  ],
+  "nitidez_toda": 0.547,
+  "nitidez_esq_terco": 0.711,
+  "nitidez_dir_terco": 0.457,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 1.0,
+  "tinta_cortada_na_beirada": 52,
+  "tinta_mm2": 15034.4
+ },
+ "ligado_pb": {
+  "tamanho": [
+   3287,
+   2431
+  ],
+  "nitidez_toda": 0.547,
+  "nitidez_esq_terco": 0.711,
+  "nitidez_dir_terco": 0.457,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 1.0,
+  "tinta_cortada_na_beirada": 52,
+  "tinta_mm2": 15034.4
+ },
+ "botao_pb": {
+  "tamanho": [
+   3287,
+   2453
+  ],
+  "nitidez_toda": 0.384,
+  "nitidez_esq_terco": 0.695,
+  "nitidez_dir_terco": 0.353,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": -6.0,
+  "tinta_cortada_na_beirada": 0,
+  "tinta_mm2": 14412.5
+ },
+ "_avisos": {
+  "hoje": [],
+  "ligado": [
+   "desentortar_saiu_sem"
+  ],
+  "botao": [
+   "desentortar_ainda_deformada"
+  ],
+  "hoje_pb": [],
+  "ligado_pb": [
+   "desentortar_saiu_sem"
+  ],
+  "botao_pb": [
+   "desentortar_ainda_deformada"
+  ]
+ },
+ "_segundos": {
+  "hoje": 3.4,
+  "ligado": 5.2,
+  "botao": 5.1,
+  "hoje_pb": 3.1,
+  "ligado_pb": 3.0,
+  "botao_pb": 3.1
+ },
+ "_ligado_igual_a_hoje": false,
+ "_caminho": "endireitar, cortar, desentortar, filtro (livro novo, de fábrica)"
+}

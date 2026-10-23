@@ -1,0 +1,4 @@
+Somas do PDF de saida (processar), 32 paginas do gabarito x 3 filtros, de fabrica:
+b8e9af7: 96 PDFs; c3b66fb: 96 PDFs
+iguais: 96 de 96
+diferentes: []

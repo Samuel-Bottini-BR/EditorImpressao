@@ -1,0 +1,112 @@
+{
+ "hoje": {
+  "tamanho": [
+   4537,
+   3223
+  ],
+  "nitidez_toda": 1.733,
+  "nitidez_esq_terco": 1.304,
+  "nitidez_dir_terco": 1.984,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 9,
+  "tinta_mm2": 6780.5
+ },
+ "ligado": {
+  "tamanho": [
+   4537,
+   3223
+  ],
+  "nitidez_toda": 1.733,
+  "nitidez_esq_terco": 1.304,
+  "nitidez_dir_terco": 1.984,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 9,
+  "tinta_mm2": 6780.5
+ },
+ "botao": {
+  "tamanho": [
+   5127,
+   3245
+  ],
+  "nitidez_toda": 0.849,
+  "nitidez_esq_terco": 0.944,
+  "nitidez_dir_terco": 1.644,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 27,
+  "tinta_mm2": 7914.0
+ },
+ "hoje_pb": {
+  "tamanho": [
+   4537,
+   3223
+  ],
+  "nitidez_toda": 1.819,
+  "nitidez_esq_terco": 1.694,
+  "nitidez_dir_terco": 1.924,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 8,
+  "tinta_mm2": 6785.7
+ },
+ "ligado_pb": {
+  "tamanho": [
+   4537,
+   3223
+  ],
+  "nitidez_toda": 1.819,
+  "nitidez_esq_terco": 1.694,
+  "nitidez_dir_terco": 1.924,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 8,
+  "tinta_mm2": 6785.7
+ },
+ "botao_pb": {
+  "tamanho": [
+   5127,
+   3245
+  ],
+  "nitidez_toda": 0.906,
+  "nitidez_esq_terco": 1.429,
+  "nitidez_dir_terco": 1.617,
+  "incl_esq": 0.0,
+  "incl_meio": 0.5,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 33,
+  "tinta_mm2": 7606.3
+ },
+ "_avisos": {
+  "hoje": [],
+  "ligado": [
+   "desentortar_saiu_sem"
+  ],
+  "botao": [
+   "desentortar_ainda_deformada"
+  ],
+  "hoje_pb": [],
+  "ligado_pb": [
+   "desentortar_saiu_sem"
+  ],
+  "botao_pb": [
+   "desentortar_ainda_deformada"
+  ]
+ },
+ "_segundos": {
+  "hoje": 4.6,
+  "ligado": 8.3,
+  "botao": 9.4,
+  "hoje_pb": 4.1,
+  "ligado_pb": 4.1,
+  "botao_pb": 4.9
+ },
+ "_ligado_igual_a_hoje": false,
+ "_caminho": "dividir (ligado no livro), endireitar, cortar, desentortar, filtro (livro novo, de fábrica)"
+}

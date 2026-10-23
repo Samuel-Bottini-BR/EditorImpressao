@@ -1,0 +1,108 @@
+{
+ "hoje": {
+  "tamanho": [
+   3238,
+   2461
+  ],
+  "nitidez_toda": 0.442,
+  "nitidez_esq_terco": 0.457,
+  "nitidez_dir_terco": 0.412,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 71,
+  "tinta_mm2": 17247.3
+ },
+ "ligado": {
+  "tamanho": [
+   3238,
+   2461
+  ],
+  "nitidez_toda": 0.442,
+  "nitidez_esq_terco": 0.457,
+  "nitidez_dir_terco": 0.412,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 71,
+  "tinta_mm2": 17247.2
+ },
+ "botao": {
+  "tamanho": [
+   3289,
+   2469
+  ],
+  "nitidez_toda": 0.411,
+  "nitidez_esq_terco": 0.447,
+  "nitidez_dir_terco": 0.426,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 51,
+  "tinta_mm2": 17633.8
+ },
+ "hoje_pb": {
+  "tamanho": [
+   3238,
+   2461
+  ],
+  "nitidez_toda": 0.43,
+  "nitidez_esq_terco": 0.449,
+  "nitidez_dir_terco": 0.401,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 84,
+  "tinta_mm2": 17740.9
+ },
+ "ligado_pb": {
+  "tamanho": [
+   3238,
+   2461
+  ],
+  "nitidez_toda": 0.43,
+  "nitidez_esq_terco": 0.449,
+  "nitidez_dir_terco": 0.401,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 84,
+  "tinta_mm2": 17740.9
+ },
+ "botao_pb": {
+  "tamanho": [
+   3289,
+   2469
+  ],
+  "nitidez_toda": 0.396,
+  "nitidez_esq_terco": 0.438,
+  "nitidez_dir_terco": 0.409,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 53,
+  "tinta_mm2": 18325.5
+ },
+ "_avisos": {
+  "hoje": [],
+  "ligado": [
+   "desentortar_saiu_sem"
+  ],
+  "botao": [],
+  "hoje_pb": [],
+  "ligado_pb": [
+   "desentortar_saiu_sem"
+  ],
+  "botao_pb": []
+ },
+ "_segundos": {
+  "hoje": 4.1,
+  "ligado": 6.6,
+  "botao": 6.9,
+  "hoje_pb": 2.6,
+  "ligado_pb": 2.3,
+  "botao_pb": 2.6
+ },
+ "_ligado_igual_a_hoje": false,
+ "_caminho": "endireitar, cortar, desentortar, filtro (livro novo, de fábrica)"
+}

@@ -1,0 +1,104 @@
+{
+ "hoje": {
+  "tamanho": [
+   7253,
+   5437
+  ],
+  "nitidez_toda": 0.568,
+  "nitidez_esq_terco": 0.42,
+  "nitidez_dir_terco": 1.304,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 7,
+  "tinta_mm2": 86085.3
+ },
+ "ligado": {
+  "tamanho": [
+   7253,
+   5437
+  ],
+  "nitidez_toda": 0.568,
+  "nitidez_esq_terco": 0.42,
+  "nitidez_dir_terco": 1.304,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 7,
+  "tinta_mm2": 86085.7
+ },
+ "botao": {
+  "tamanho": [
+   7253,
+   5437
+  ],
+  "nitidez_toda": 0.568,
+  "nitidez_esq_terco": 0.42,
+  "nitidez_dir_terco": 1.304,
+  "incl_esq": 0.0,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 7,
+  "tinta_mm2": 86085.7
+ },
+ "hoje_pb": {
+  "tamanho": [
+   7253,
+   5437
+  ],
+  "nitidez_toda": 0.765,
+  "nitidez_esq_terco": 0.627,
+  "nitidez_dir_terco": 1.275,
+  "incl_esq": -1.5,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 6,
+  "tinta_mm2": 57035.2
+ },
+ "ligado_pb": {
+  "tamanho": [
+   7253,
+   5437
+  ],
+  "nitidez_toda": 0.765,
+  "nitidez_esq_terco": 0.627,
+  "nitidez_dir_terco": 1.275,
+  "incl_esq": -1.5,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 6,
+  "tinta_mm2": 57036.7
+ },
+ "botao_pb": {
+  "tamanho": [
+   7253,
+   5437
+  ],
+  "nitidez_toda": 0.765,
+  "nitidez_esq_terco": 0.627,
+  "nitidez_dir_terco": 1.275,
+  "incl_esq": -1.5,
+  "incl_meio": 0.0,
+  "incl_dir": 0.0,
+  "tinta_cortada_na_beirada": 6,
+  "tinta_mm2": 57036.7
+ },
+ "_avisos": {
+  "hoje": [],
+  "ligado": [],
+  "botao": [],
+  "hoje_pb": [],
+  "ligado_pb": [],
+  "botao_pb": []
+ },
+ "_segundos": {
+  "hoje": 13.4,
+  "ligado": 21.9,
+  "botao": 21.9,
+  "hoje_pb": 16.0,
+  "ligado_pb": 14.3,
+  "botao_pb": 14.3
+ },
+ "_ligado_igual_a_hoje": false,
+ "_caminho": "endireitar, cortar, desentortar, filtro (livro novo, de fábrica)"
+}

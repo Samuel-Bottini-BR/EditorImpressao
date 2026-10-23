@@ -1,0 +1,32 @@
+Suite 39902142935 (codigo 6be1dbe = mesmo programa de c3b66fb; de 6be1dbe a c3b66fb so mudou relatorios/)
+relatorio-parte-1: arquivos 21, passaram 367, falharam 0, erros 0, pulados 23, segundos 181
+relatorio-parte-2: arquivos 26, passaram 504, falharam 0, erros 0, pulados 50, segundos 146
+relatorio-parte-3: arquivos 27, passaram 525, falharam 0, erros 0, pulados 1, segundos 140
+relatorio-parte-4: arquivos 27, passaram 439, falharam 0, erros 0, pulados 1, segundos 162
+relatorio-parte-5: arquivos 27, passaram 369, falharam 0, erros 0, pulados 4, segundos 156
+TOTAL: arquivos 128, passaram 2204, falharam 0, erros 0, pulados 79, segundos 785
+(ultima suite completa no PC do Samuel, 08/10: 110 arquivos, 1960 passaram, 0 falharam, 59 pulados)
+
+--- falhas e erros ---
+(nenhum)
+
+--- pulados, por motivo ---
+  23  páginas e caixas do 1.3 não estão em saida_teste/ocr-1.3 (fora do git)  [test_ocr_doctr]
+  22  resultados das pontes não guardados em saida_teste/ocr-comparar (rode rodar_pontes.py)  [test_ocr_comparar]
+  10  acervo ausente nesta maquina  [test_camadas]
+   7  páginas e linhas do 1.3 não estão em saida_teste/ocr-1.3 (fora do git)  [test_ocr_tesseract]
+   5  sem o acervo (só no PC do Samuel)  [test_desentortar_conferir_de_novo, test_desentortar_medida_por_tras, test_desentortar_protecao, test_desentortar_scantailor]
+   5  páginas e linhas do WSL do 1.3 não estão em saida_teste/ocr-1.3 (fora do git)  [test_ocr_kraken]
+   2  Tesseract não instalado  [test_empacotar, test_ocr_tesseract]
+   2  sem 'Livros para editar' (só no PC do Samuel)  [test_desentortar_conferir_de_novo]
+   1  páginas do 1.3 fora do disco  [test_ocr_comparar]
+   1  Opus Majus ausente nesta maquina  [test_camadas]
+
+Velocidade 39902159919 (2a42cfb x 6be1dbe)
+**Veredito: igual (dentro do vai-e-vem)**
+| Medida | Mediana antes | Mediana depois | Diferenca | Vai-e-vem antes | Vai-e-vem depois | Pares (depois - antes) | Veredito |
+| Abrir o livro | 36,8 s | 36,8 s | -0,1% | 2,4% | 3,5% | +0,8; -0,2; +0,5 s | igual |
+| Trocar de pagina (media de 20) | 2,01 s | 2,11 s | +5,4% | 6,1% | 8,2% | +0,00; +0,17; +0,01 s | igual |
+| Magico pro, 10 paginas | 44,2 s | 46,5 s | +5,2% | 5,5% | 2,5% | -0,4; +2,3; +3,2 s | igual |
+| Preto e branco, 10 paginas | 21,4 s | 22,0 s | +2,6% | 3,5% | 7,8% | -0,2; +1,7; -0,0 s | igual |
+| Trocar de pagina (a pior das 20) | 2,83 s | 3,00 s | +6,1% | 7,3% | 6,7% | -0,01; +0,22; -0,00 s | (igual, so informativo) |
